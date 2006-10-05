@@ -1,0 +1,35 @@
+object VSTGUI: TVSTGUI
+  Left = 372
+  Top = 170
+  BorderStyle = bsNone
+  Caption = 'Simple OpAmp Simulation'
+  ClientHeight = 48
+  ClientWidth = 386
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Verdana'
+  Font.Style = []
+  PixelsPerInch = 96
+  TextHeight = 13
+  object LbGain: TLabel
+    Left = 152
+    Top = 32
+    Width = 72
+    Height = 13
+    Caption = 'OpAmp Gain'
+  end
+  object SBGain: TScrollBar
+    Left = 8
+    Top = 8
+    Width = 369
+    Height = 17
+    Max = 1000
+    Min = 100
+    PageSize = 0
+    Position = 100
+    TabOrder = 0
+    OnChange = SBGainChange
+  end
+end

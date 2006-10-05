@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">Default.Personality</Option>
+      <Option Name="ProjectType"></Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{7B533714-30FB-4F74-8596-D25A126F3549}</Option>
+    </Option>
+  </PersonalityInfo>
+  <Default.Personality>
+    
+    <Projects>
+      <Projects Name="dsp_decimator.dll">dsp_decimator.bdsproj</Projects>
+      <Projects Name="Decimator.dll">Decimator.bdsproj</Projects>
+      <Projects Name="Targets">dsp_decimator.dll Decimator.dll</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>

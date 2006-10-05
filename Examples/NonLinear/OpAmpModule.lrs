@@ -1,0 +1,24 @@
+LazarusResources.Add('TVSTOpAmp','FORMDATA',[
+  'TPF0'#9'TVSTOpAmp'#8'VSTOpAmp'#14'OldCreateOrder'#8#5'Flags'#11#17'effFlagsH'
+  +'asEditor'#20'effFlagsCanReplacing'#26'effFlagsCanDoubleReplacing'#0#7'Versi'
+  +'on'#6#3'1.0'#10'EffectName'#6#23'Simple OpAmp Simulation'#11'ProductName'#6
+  +#23'Simple OpAmp Simulation'#10'VendorName'#6#15'Christian Budde'#12'Version'
+  +'Major'#2#1#12'VersionMinor'#2#0#14'VersionRelease'#2#0#12'PlugCategory'#7#8
+  +'cgEffect'#8'TailSize'#2#0#6'CanDos'#11#19'plugAsChannelInsert'#10'plugAsSen'
+  +'d'#8'_1in1out'#8'_1in2out'#8'_2in1out'#8'_2in2out'#0#10'SampleRate'#5#0#0#0
+  +#0#0#0'D'#172#14'@'#14'CurrentProgram'#2#0#18'CurrentProgramName'#6#4'Init'
+  +#12'KeysRequired'#8#8'UniqueID'#6#4'NoLi'#12'ShellPlugins'#14#0#8'Programs'
+  +#14#1#11'DisplayName'#6#4'Init'#9'VSTModule'#7#5'Owner'#0#0#19'ParameterProp'
+  +'erties'#14#1#3'Min'#5#0#0#0#0#0#0#0#128#255'?'#3'Max'#5#0#0#0#0#0#0#0#160#2
+  +'@'#5'Curve'#7#8'ctLinear'#11'DisplayName'#6#4'Gain'#11'CurveFactor'#5#0#0#0
+  +#0#0#0#0#128#255'?'#15'SmoothingFactor'#5#0#0#0#0#0#0#0#128#255'?'#14'CanBeA'
+  +'utomated'#9#20'ReportVST2Properties'#8#9'StepFloat'#5#0#0#0#0#0#0#0#128#255
+  +'?'#14'SmallStepFloat'#5#0#0#0#0#0#0#0#128#255'?'#14'LargeStepFloat'#5#0#0#0
+  +#0#0#0#0#128#0'@'#5'Flags'#11#0#10'MinInteger'#2#1#10'MaxInteger'#2#10#11'St'
+  +'epInteger'#2#1#16'LargeStepInteger'#2#2#10'ShortLabel'#6#4'Gain'#9'VSTModul'
+  +'e'#7#5'Owner'#0#0#10'OnEditOpen'#7#12'VST_EditOpen'#17'OnParameterChange'#7
+  +#24'VSTModuleParameterChange'#9'OnProcess'#7#16'VSTModuleProcess'#18'OnProce'
+  +'ssReplacing'#7#16'VSTModuleProcess'#24'OnProcessDoubleReplacing'#7#31'VSTMo'
+  +'duleProcessDoubleReplacing'#12'OnInitialize'#7#19'VSTModuleInitialize'#4'Le'
+  +'ft'#3#243#0#3'Top'#2'g'#6'Height'#3#150#0#5'Width'#3#215#0#0#0
+]);

@@ -1,0 +1,65 @@
+unit aboutform;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls;
+
+type
+  Tabout = class(TForm)
+    Button1: TButton;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    Label11: TLabel;
+    procedure Label4Click(Sender: TObject);
+    procedure Label3Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure Label5Click(Sender: TObject);
+  end;
+
+var about: Tabout;
+
+implementation
+uses shellapi, MiniHostForm;
+
+{$R *.dfm}
+
+procedure Tabout.Label4Click(Sender: TObject);
+begin
+ ShellExecute(GetDesktopWindow(), 'open',
+  PChar('http://www.tobybear.de'), nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure Tabout.Label3Click(Sender: TObject);
+begin
+ ShellExecute(GetDesktopWindow(), 'open',
+  PChar('mailto:tobybear@web.de'), nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure Tabout.Button1Click(Sender: TObject);
+begin
+ close;
+end;
+
+procedure Tabout.FormShow(Sender: TObject);
+begin
+ label1.caption := 'Tobybear ' + appname + ' ' + appversion;
+end;
+
+procedure Tabout.Label5Click(Sender: TObject);
+begin
+ ShellExecute(GetDesktopWindow(), 'open',
+  PChar('https://www.paypal.com/xclick/business=tobybear%40web.de&item_name=MiniHost'), nil, nil, SW_SHOWNORMAL);
+end;
+
+end.
+

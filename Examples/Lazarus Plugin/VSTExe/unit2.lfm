@@ -1,0 +1,16 @@
+object VSTModule1: TVSTModule1
+  Version = '0.0'
+  VersionMajor = 1
+  SampleRate = 44100
+  CurrentProgram = -1
+  UniqueID = 'Test'
+  ShellPlugins = <>
+  Programs = <>
+  ParameterProperties = <>
+  left = 144
+  top = 255
+  Height = 0
+  HorizontalOffset = 0
+  VerticalOffset = 0
+  Width = 0
+end

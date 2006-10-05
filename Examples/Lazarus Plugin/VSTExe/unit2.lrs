@@ -1,0 +1,9 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TVSTModule1','FORMDATA',[
+  'TPF0'#11'TVSTModule1'#10'VSTModule1'#7'Version'#6#3'0.0'#12'VersionMajor'#2#1
+  +#10'SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'#14'CurrentProgram'#2#255#8'Unique'
+  +'ID'#6#4'Test'#12'ShellPlugins'#14#0#8'Programs'#14#0#19'ParameterProperties'
+  +#14#0#4'left'#3#144#0#3'top'#3#255#0#6'Height'#2#0#16'HorizontalOffset'#2#0
+  +#14'VerticalOffset'#2#0#5'Width'#2#0#0#0
+]);

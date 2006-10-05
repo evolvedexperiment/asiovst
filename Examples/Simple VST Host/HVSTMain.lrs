@@ -1,0 +1,27 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TSimpleVSTHost','FORMDATA',[
+  'TPF0'#14'TSimpleVSTHost'#13'SimpleVSTHost'#4'Left'#3#218#1#6'Height'#3#128#0
+  +#3'Top'#3#254#0#5'Width'#3#252#0#18'HorzScrollBar.Page'#3#251#0#18'VertScrol'
+  +'lBar.Page'#2'l'#7'Caption'#6#15'Simple VST Host'#11'Font.Height'#2#245#9'Fo'
+  +'nt.Name'#6#13'MS Sans Serif'#4'Menu'#7#8'MainMenu'#0#9'TMainMenu'#8'MainMen'
+  +'u'#4'left'#2#8#3'top'#2#8#0#9'TMenuItem'#6'MIFile'#7'Caption'#6#5'&File'#0#9
+  +'TMenuItem'#6'MIOpen'#7'Caption'#6#8'&Open...'#7'OnClick'#7#11'MIOpenClick'#0
+  +#0#9'TMenuItem'#2'N1'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#9'MIProcess'#7'Capt'
+  +'ion'#6#13'Process Audio'#7'OnClick'#7#14'MIProcessClick'#0#0#9'TMenuItem'#2
+  +'N2'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#6'MIExit'#7'Caption'#6#5'E&xit'#7'On'
+  +'Click'#7#11'MIExitClick'#0#0#0#9'TMenuItem'#6'MIHelp'#7'Caption'#6#5'&Help'
+  +#0#9'TMenuItem'#7'MIAbout'#7'Caption'#6#6'&About'#7'OnClick'#7#12'MIAboutCli'
+  +'ck'#0#0#0#0#11'TActionList'#10'ActionList'#4'left'#2'('#3'top'#2#8#0#9'TFil'
+  +'eExit'#10'AcFileExit'#8'Category'#6#4'File'#8'ShortCut'#3'X@'#0#0#0#8'TVstH'
+  +'ost'#7'VSTHost'#10'VstPlugIns'#14#1#11'DisplayName'#6#10'TVstPlugIn'#0#0#21
+  +'ParameterQuantization'#2#0#6'CanDos'#11#16'hcdSendVstEvents'#19'hcdSendVstM'
+  +'idiEvent'#18'hcdSendVstTimeInfo'#19'hcdReceiveVstEvents'#22'hcdReceiveVstMi'
+  +'diEvent'#21'hcdReceiveVstTimeInfo'#26'hcdReportConnectionChanges'#18'hcdAcc'
+  +'eptIOChanges'#13'hcdSizeWindow'#18'hcdAsyncProcessing'#10'hcdOffline'#13'hc'
+  +'dSupplyIdle'#19'hcdStartStopProcess'#0#5'Tempo'#5#0#0#0#0#0#0#0#240#5'@'#10
+  +'VstVersion'#3#252#8#9'PlugInDir'#6#30'C:\Programme\Audio\Plugins\VST'#17'Vs'
+  +'tTimeInfo.Flags'#11#13'vtiNanosValid'#14'vtiPpqPosValid'#13'vtiTempoValid'
+  +#12'vtiBarsValid'#16'vtiCyclePosValid'#15'vtiTimeSigValid'#13'vtiSmpteValid'
+  +#13'vtiClockValid'#0#4'left'#2'H'#3'top'#2#8#0#0#0
+]);

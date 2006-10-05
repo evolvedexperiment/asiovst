@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="2">
+    <PathDelim Value="\"/>
+    <Name Value="HostASIOLaz"/>
+    <CompilerOptions>
+      <Version Value="5"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <IncludeFiles Value="C:\ITA\Projects\VST Package\Source\"/>
+        <OtherUnitFiles Value="C:\ITA\Projects\VST Package\Source\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <CodeGeneration>
+        <Generate Value="Faster"/>
+      </CodeGeneration>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Version Minor="2"/>
+    <Files Count="6">
+      <Item1>
+        <Filename Value="..\Source\DASIOHost.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="DASIOHost"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\Source\OpenASIO.pas"/>
+        <HasRegisterProc Value="False"/>
+        <UnitName Value="OpenASIO"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\Source\Asio.pas"/>
+        <HasRegisterProc Value="False"/>
+        <UnitName Value="Asio"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\Source\DASIOConvert.pas"/>
+        <HasRegisterProc Value="False"/>
+        <UnitName Value="DASIOConvert"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\Source\DASIOGenerator.pas"/>
+        <HasRegisterProc Value="False"/>
+        <UnitName Value="DASIOGenerator"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\Source\BeRoASIO.pas"/>
+        <HasRegisterProc Value="False"/>
+        <UnitName Value="BeRoASIO"/>
+      </Item6>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="DSPBaseLaz"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)\"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <DestinationDirectory Value="$(TestDir)\publishedpackage\"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

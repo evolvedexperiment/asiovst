@@ -1,0 +1,539 @@
+---------------------------------------------------------------------------
+Welcome to the Resplendent Chessboard component for
+Delphi 2-5 and C++ Builder!
+
+version 3.03 - Feb 5, 2000
+
+Author : Daniel Terhell, Resplendence Sp, Amsterdam
+Phone  : +31 20 4972693 or +31 20 4866128
+Website: http://www.resplendence.com
+E-mail : daniel@resplendence.com
+
+Contains translated source from Tom Kerrigan's Tom's Simple Chess Program
+visit his page at http://ucsu.colorado.edu/~kerrigat
+
+Contains graphics from Andrew Gate
+---------------------------------------------------------------------------
+
+Description:
+
+The Chessboard component provides a customizable 2D Chessboard
+that can keep track of a game and verify the legality of moves.
+A chess engine from Tom's Simple Chess Program has been linked
+to the program and uses a separate thread for thinking.
+The colors, size, Pieces and Squares can be customized. The component
+can be resized at runtime.
+
+There are handlers for the following events:
+OnLegalMove, OnIllegalMove, OnCapture, OnEnPassant, OnCastling, OnPromotion,
+OnCheck, OnMate, OnStaleMate, OnDraw, OnThreefoldPosition, OnNoMatingMaterial,
+OnPaint, OnCalculateMove and OnCalculationFailed.
+
+A set of examples will be available for downloaded from our website.
+---------------------------------------------------------------------------
+
+Installation of the component:
+
+Start Delphi2-5 or Borland C++ Builder.
+Select "Component", "Install" ,"Add" and
+"Browse" and then browse to the file CHESSBRD.PAS
+The component will appear on a new tab called Chess.
+
+---------------------------------------------------------------------------
+Copyright, Liability and Author:
+
+The Chessboard component may be freely used and distributed by anyone.
+The author does not accept liability for the software in any way.
+
+If you have any bug reports, comments, suggestions, or wanted features
+then just drop me a line.
+
+------------------------------------------------------------------------------
+Product History:
+
+version 3.03 - Feb 5th 2000
+      * Added Delphi5 Compatibility
+version 3.02 - May 11th 1998
+      * Now custom pieceset is properly initialized at runtime too.
+      * Added some pieceset bitmaps.
+      * Added CustomEngine property which allows the use of a custom chess
+        engine.
+      * Added OnCalculate move and OnCalculationFailed event handlers
+      * MoveIsLegal has been moved from the private to the public interface.
+      * Fixed endless loop bug when setting SearchDepth to high value.
+version 3.01 - April 3rd 1998
+      * Removed property StandardSize and all resources out of the RES file
+        except one. Now only one piece set is automatically loaded.
+        Changing the piece set can now only be achieved through setting the
+        CustomPieceset property.
+        This may give some compatibility problems for users of
+        previous users but prevents that EXE files with this component
+        become unnecessarily big.
+      * Fixed a bug that would prevent CPP Builder programs to compile
+        properly (new keyword cannot be used in C++).
+      * Fixed a bug that would not call the OnCheck event handler as soon
+        as a promotion with check would take place.
+      * Added a function StringToSquare. It expects a two character string
+        (for instance 'e2') and returns the appropriate Square value.
+version 3.0  - February 8th 1998
+      * Translated engine of Tom's Simple Chess Program into PAS
+        and added it to the component
+      * Added properties Thinking, ThinkingPriority, SearchDepth,
+        ComputerPlaysBlack, ComputerPlaysWhite, AnimateMove, AnimationDelay
+      * Added methods Think, CancelThinking
+      * Added event OnNoMatingmaterial, OnThreefoldPosition, OnDraw and OnPaint
+      * Removed event OnOnlyTwoKingsLeft
+      * Moved resources to a RES file and added new sets
+      * Development of CPP version of the component will be discontinued
+
+version 1.22 - November 23rd 1997
+      * Changes made to CPP version of the component
+version 1.21 - October 23rd 1997
+      * GetMoveList is now always up-to-date and no longer one move behind.
+      * GetMove bug fixed in the PAS version.
+version 1.2  - September 30th 1997
+      * Bitmaps for squares and border are now properly drawn without
+        being resized (with source from Arsäne von Wyss).
+      * Solved bug that would not display the chosen CustomPieceset at runtime.
+version 1.11 - July 25th 1997
+      * Small bug in PAS file did not allow compiling of the component.
+version 1.1 - July 23th 1997
+      * Fixed bug: Pieces were not displayed properly when being dragged
+        if the Chessboard were not the child of the form
+      * Fixed bug: The letters A-H were not displayed in the right position
+        if WhiteOnTop were TRUE
+      * Removed property Align because it was put there without the
+        intention.
+      * Added property Enabled, which allows to lock the Chessboard
+      * Added member function DrawChessPiece which allows displaying
+        of a chess piece outside of the component.
+      * Datatype Square is now being used consequently
+
+version 1.0 - June 20th 1997
+      * Added PAS file for Delphi2 and Delphi3
+version 1.0 - June 11th 1997
+      * initial version (C++ Builder only)
+
+----------------------------------------------------------------------------
+Property Descriptions:
+
+AnimateMoves: Boolean
+     If set to true then Moves that have not been performed manually
+     will be animated rather than displayed immediately.
+
+AnimationDelay: Integer
+     Sets the amount of milliseconds to wait before displaying a next
+     animation frame.
+
+Boardlines: Boolean
+     Define whether lines will be drawn around the board and between the
+     squares. The settings of property LineStyle will be used.
+
+BorderBitmap: TBitmap
+     If assigned a value, this bitmap will be used to draw the border around
+     the board. BorderColor will then be ignored.
+
+BorderColor: TColor
+    Sets the color of the border. Will be visible only if no value has
+    been assigned to BorderBitmap.
+
+CastlingAllowed: CastleSet
+     This set stores whether castling is still allowed for each king in each
+     direction. Example: CastleSet<<WhiteKingSide will allow short castling
+     for white while CastleSet>>BlackQueenSide will disable long castling
+     for Black.
+
+ComputerPlaysBlack: Boolean
+     If set to true, the computer will think and move automatically when
+     it's black's turn.
+
+ComputerPlaysWhite: Boolean
+     If set to true, the computer will think and move automatically when
+     it's white's turn.
+
+CoordFont: TFont
+    Sets the font used to display the coordinates around the board.
+    DisplayCoords must include any of the sides for this property to have
+    any effect.
+
+CurrentMove: Integer
+     The current move of the game in the list. CurrentMove is a read-only
+     property and cannot be modified directly.
+     Use:  GotoMove (int move, bool WhiteMoves) to change its value.
+
+CustomPieceSet: TBitmap
+     If assigned a legal value (that is a bitmap with a Width of
+     1.5 times its Height) this bitmap will be used as the new piece set
+     instead of the default The bitmap should consist of 6 x 4 smaller square
+     bitmaps of equal size. The order of the pieces should be: pawn, knight,
+     bishop, rook, queen and king. The first row represents the white pieces,
+     the third row represents the black pieces. The second and fourth row
+     should be monochrome and will be used to determine the mask of the white
+     and black pieces respectively. The pieces will not be shown in the place
+     where the mask bitmap contains a non-zero value. This allows transparent
+     drawing of the pieces on the board.
+
+CustomEngine: Boolean
+     If true, Tom's Simple Chess Program's engine will not be used. Instead,
+     the event handler OnCalculateMove will be called (if it's assigned a
+     value). In this function the component user should do the calculation and
+     write the value back into oldSq and newSq which initally are set to None.
+     Note that a custom engine does not use a separate thread. If it takes some
+     time before the function returns, the function should regularly call
+     Application.ProcessMessages for events to be pressed.
+
+DisplayCoords: CoordSet
+     Determines whether coordinates are being displayed around the screen.
+     Example:
+
+     procedure TForm1.ShowCoords;
+     var
+         coords: CoordSet;
+     begin
+         // First retrieve the set
+         coords:=Chessbrd1.DisplayCoords;
+
+         // Now perform operations on it.
+         Include (coords,West);
+         Include (coords,North);
+         Include (coords,East);
+         Include (coords,South);
+
+         // And write the value back into DisplayCoords
+         Chessbrd1.DisplayCoords:=coords;
+     end;
+
+
+
+EnPassant: Square
+     if EnPassant doesn't equal None, it contains the square on which
+     an EnPassant capture can take place. If white moves for instance
+     E2-E4, EnPassant will be set to the value E3 (on which the pawn
+     can be taken).  Legal values are: A3-H3, A6-H6
+
+LineStyle: TPen
+     Contains the linestyle used to eventually display lines between
+     the squares and around the board.
+
+Position: String
+     The contents of the board are stored in this string which is
+     always 64 characters long. The board is stored from square
+     A8 through H8 to H1. Each character represents a piece on the
+     board. The characters P, N, B, R, Q, K represent the pawn
+     knight, bishop, rook, queen and king respectively.
+     White pieces are uppercased, black pieces lowercased. Empty
+     squares are represented by spaces.
+     To quickly initialize a standard setup, fill the string
+     with 'init'.
+
+Resizable: Boolean
+     Determines whether the ChessBoard can be resized. If TRUE,
+     when the user moves the cursor over the right-down corner,
+     the shape of the cursor will change and allow the ChessBoard
+     to be resized. The resizing does not yet happen flicker-free.
+
+ResizeMinSize: Integer
+     The minimum allowed size of the ChessBoard (it's Width and Height)
+     while it is in the resizing state.
+
+ResizeMaxSize: Integer
+     The maximum allowed size of the ChessBoard (it's Width and Height)
+     while it is in the resizing state.
+
+SearchDepth: Integer
+     Sets the level of thinking for the thinking thread. If for instance
+     SearchDepth equals 3, then the computer will evaluate all moves
+     up to 3 moves ahead if it's his turn.
+
+SizeOfBorder: Integer
+     Determines the width of the border around the board. Changing its
+     value may change the size of the chessboard as well. (Width and Height)
+
+SizeOfSquare: Integer
+     Determines the squaresize. Changing its value may change the size of
+     the chessboard as well. (Width and Height)
+
+SquareColorDark: TColor
+    The color of the dark squares. Will be visible only if no bitmap has
+    been assigned to SquareDark.
+
+SquareColorLight: TColor
+    The color of the light squares. Will be visible only if no bitmap has
+    been assigned to SquareLight.
+
+SquareDark: TBitmap
+     If assigned a value, this bitmap will be used to draw the border around
+     the board to display the dark squares. SquareColorDark will then be
+     ignored.
+
+SquareLight: TBitmap
+     If assigned a value, this bitmap will be used to display the light
+     squares. SquareColorLight will then be ignored.
+
+StandardSize: StandardSet
+    Sets the size of the standard pieceset. The standard pieceset will
+    only be used if no value has been assigned to CustomPieceSet.
+    Legal values are: size16, size32, size40, size64, size80, sizeCm36 and
+    sizeAndrew40.
+
+Thinking: Boolean (read-only)
+    Determines whether the computer is currently thinking about a move.
+
+
+ThinkingPriority: TThreadPriority
+    Sets the priority of the thinking thread. Values higher than tpNormal
+    are not allowed.
+
+WhiteOnTop: Boolean
+    Controls whether the white pieces are being
+    displayed on top of the board.
+    Use: WhiteOnTop:=not WhiteOnTop; to flip the board.
+
+WhiteToMove: Boolean
+     Readonly. Sets the turn to white if TRUE and to black if FALSE;
+
+---------------------------------------------------------------------------
+Public Methods:
+
+-Pieces can contain the following (char) values:
+ p,b,n,r,q or k for a black pawn, knight bishop, rook queen or king
+ P,B,N,R,Q or K for a white pawn, knight bishop, rook queen or king
+
+procedure Animate (oldsq,newsq: Square; delay: Integer);
+       call this function to display a move animation. oldSq and newSq
+       define the move, delay sets the amount of milliseconds to wait
+       before displaying each next.
+       It is up to the caller of this function to make sure that a legal
+       move is being visualized.
+
+function BlackInCheckAfter(oldsq, newsq: Square): Boolean
+       returns TRUE if black is in check after the indicated move
+
+procedure CancelThinking;
+       will terminate the computer's thinking process if it was
+       running.
+
+procedure ClearSquare(sq: Square);
+       will empty a square; Example: ClearSquare (E4);
+
+function ColorOfPiece (piece: Char): Integer
+       returns BLACK or WHITE  if piece is a legal piece and
+       otherwise NOPIECE
+
+function ColorOfSquare (sq: Square): Integer
+       returns BLACK or WHITE according to the color of square sqno.
+
+procedure DrawChessPiece (canvas: TCanvas; x,y: Integer; piece: Char)
+       Draws the Chess piece, indicated by 'piece'  on the given canvas,
+       at the given offset (x,y). Piece can have the following values:
+       'BNRQKP' for a white piece or 'bnrqkp' for a black piece.
+       This method uses some kind of MaskBlt, and draws only in the place
+       where the mask has its bits set so drawing on a patterned surface
+       is possible.
+
+function GetMove (moveno: Integer; whiteMoves: Boolean): MoveInfo
+       Returns a MoveInfo structure filled with the information
+       about the indicated move. Returns a structure with all
+       zero values and an initial position in the case the
+       move could not be found in the movelist.
+
+function GetMoveList: TStringList
+       Returns a TStringList with all the moves of the current game.
+
+function GotoMove (moveno: Integer; whiteMoves:Boolean): Boolean
+       Jump to the indicated move in the game and
+       set the position accordingly. Returns FALSE if
+       the move cannot be found in the movelist.
+
+function LegalMoveAvailable: Boolean;
+       Returns TRUE if a move can be made from the current position.
+
+function MouseToSquare (x, y: Integer): Square;
+       converts coordinates to a square value.
+       For instance CoordsToSquare (1,4) will return A4.
+
+function Move (oldsq, newsq: Square): Boolean
+       will make a move and return TRUE if the move is legal.
+       The move will be both displayed on the board and registered in
+       memory. For castling: pass the move of the king.
+       Example: Move (E2,E4)
+
+function MoveIsLegal (oldsq,newsq: Square): Boolean;
+       test the legality of a move without displaying or
+       registering it.
+
+function MoveBackward: Boolean
+       Moves backward in the list of played moves and sets the position
+       accordingly. Returns FALSE if there's no move available.
+
+function MoveForward: Boolean
+       Moves forward in the list of played moves and sets the position
+       accordingly. Returns FALSE if there's no move available.
+
+procedure NewGame
+       Resets the position to the initial state.
+
+function SetUpPosition (pos: MoveInfo; moveno: Integer; whiteMoves:Boolean): Boolean
+       Sets up the ChessBoard according to a given position. The first
+       move in the game will be moveno.
+
+function StringToSquare (str: String): Square;
+       Calculates the Square value according to the contents of str.
+       The length of str must be two characters long and the string
+       must represent a valid square (for instance 'E2'), otherwise
+       StringToSquare returns None.
+
+procedure Think;
+       Will start the thinking process. To have any effect, ComputerPlaysWhite
+       or ComputerPlaysBlack must be set accordingly. This function is
+       useful if the thinking process was interrupted (for instance when
+       CancelThinking has been called).
+
+procedure UpdateChessBoard (char *oldpos);
+       Ensures all pieces are displayed on the right position.
+       Can be used if you change property Position manually.
+
+function WhiteInCheckAfter(oldsq, newsq: Square):Boolean
+       returns TRUE if white is in check after the indicated move
+
+function WindowToSquare (x, y: Integer): Square
+       returns the square at the position of (x,y).
+       x and y must be relative to the current window.
+
+function XPos (sq: Square): Integer
+       returns the x-Coordinate (as an integer number in the range 1-8)
+       of the square.
+
+function YPos (sq: Square): Integer
+       returns the x-Coordinate (as an integer number in the range 1-8)
+       of the square.
+
+---------------------------------------------------------------------------
+Event Handlers:
+
+OnCalculateMove:
+procedure CalculateMove(Sender: TObject; var oldsq,newsq: Square)
+// Is called when CustomEngine is set to true and it's time for the
+// computer to think about a move. This function should calculate the
+// move, which should be written into oldSq and newSq.
+// If the function returns and oldSq and newSq do not contain a legal
+// move, then OnCalculationFailed will be called.
+// If this function consumes a lot of time, Application.Processmessages
+// should be called regularly to allow processing of events.
+
+OnCalculationFailed:
+procedure CalculationFailed (Sender: TObject;oldSq,newSq: Square)
+// Occurs when the CalculateMove function returns an invalid move.
+
+OnCapture:
+procedure Capture (Sender: TObject;oldSq,newSq: Square;CapturedPiece:Char)
+// Occurs as after a piece has been captured
+// oldSq and newSq contain information on the move just made
+// CapturedPiece contains the value of the piece that's been captured
+
+OnCastle:
+procedure Castle (Sender: TObject;oldSq,newSq: Square)
+// Occurs when a castling takes place
+// oldSq and newSq contain information on the move just made
+
+OnCheck:
+procedure Check (Sender: TObject; oldSq, newSq: Square)
+// Occurs after any of the kings have been put in check
+// oldSq and newSq contain information on the move just made
+
+OnClick:
+procedure Click; override
+// Occurs after the user clicks on the chessboard
+// See Delphi help on TControl.Click for more information
+
+OnDblClick:
+procedure DblClick; override
+// Occurs after the user doubleclicks on the chessboard
+// See Delphi help on TControl.DblClick for more information
+
+
+OnDragDrop:
+procedure DragDrop(Source: TObject;X,Y: Integer);override
+// Occurs as soon as the user drops a piece on the chessboard
+// See Delphi help on TControl.DragDrop for more information
+
+
+OnDragCanceled:
+procedure DragCanceled; override;
+// Occurs as soon as the user cancels a drag operation
+// See Delphi help on TControl.DragCanceled for more information
+
+
+OnDragOver:
+procedure DragOver(Source: TObject;X,Y: Integer; State: TDragState;var Accept: Boolean );override
+// Occurs as soon as the user drags a piece over the chessboard
+// See Delphi help on TControl.DragOver for more information
+
+
+OnDraw:
+procedure Draw(Sender: TObject);
+// Occurs after OnNoMatingMaterial, OnStaleMate or OnThreefoldPosition.
+
+
+OnEndDrag:
+procedure EndDrag(Sender, Target: TObject; X, Y: Integer);
+// See Delphi help on TControl.EndDrag for more information
+
+
+OnIllegalMove:
+procedure IllegalMove (Sender:TObject; sq: Square)
+// Occurs after an illegal move has been made
+// sq contains the original square from which was moved
+
+OnLegalMove:
+procedure LegalMove (Sender:TObject;oldSq,newSq: Square)
+// Occurs after a legal move has been made
+// oldSq and newSq contain information on the move just made
+
+
+OnMate:
+procedure Mate (Sender:TObject; oldSq,newSq: Square)
+// Occurs as soon as a king is in check and cannot move to any square
+// oldSq and newSq contain information on the move just made
+
+
+OnMouseDown:
+procedure MouseDown(Button:TMouseButton; Shift:TShiftState;X,Y: Integer); override
+// Occurs as soon as the user presses down any of the mouse buttons
+// See Delphi help on TControl.MouseDown for more information
+
+
+OnMouseMove:
+procedure MouseMove(Shift:TShiftState; X,Y: Integer); override
+// Occurs as soon as the user moves the mouse
+// See Delphi help on TControl.MouseMove for more information
+
+
+OnMouseUp:
+procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);override
+// Occurs as soon as the user releases a mouse button
+// See Delphi help on TControl.MouseUp for more information
+
+
+OnPromotion:
+procedure Promotion (Sender: TObject;oldSq,newSq: Square; var NewPiece: Char)
+// Occurs after a pawn has reached the first or the last rank of the board
+// oldSq and newSq contain information on the move just made
+// By assigning a value to NewPiece you can choose a piece of promotion
+
+
+OnStaleMate:
+procedure StaleMate (Sender: TObject; oldSq,newSq: Square)
+// Occurs after a move has been made and none of the kings is in check
+// and no move can be made without putting the king of the own color in check.
+// oldSq and newSq contain information on the move just made
+
+
+procedure TForm1.ChessBrd1StartDrag(Sender: TObject;  var DragObject: TDragObject);
+// See Delphi help on TControl.StartDrag for more information
+
+procedure ThreefoldPosition (Sender: TObject)
+// Occurs as soon as a position on the board appears for the third time in
+// the same game.
+------------------------------------------------------------------------------
+
