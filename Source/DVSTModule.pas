@@ -2073,7 +2073,7 @@ begin
   begin
    if Assigned(fOnEditIdle) then fOnEditIdle(Self);
    fEditorNeedUpdate := False;
-   fEditorForm.Invalidate;
+//   fEditorForm.Invalidate;
   end;
 end;
 
