@@ -163,8 +163,8 @@ begin
     CRLF +
     'uses ' + CRLF +
     '  Forms,' + CRLF +
-    '  VSTEffect,' + CRLF +
-    '  VSTModule;' + CRLF +
+    '  DVSTEffect,' + CRLF +
+    '  DVSTModule;' + CRLF +
     CRLF +
     'function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;' + CRLF +
     'var' + CRLF +
