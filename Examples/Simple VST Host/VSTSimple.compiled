@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<CONFIG>
-  <Compiler Value="C:\Programme\Lazarus\fpc\2.0.4\bin\i386-win32\ppc386.exe" Date="890244888"/>
-  <Params Value=" -Sd -CX -Ciro -OG1 -gl -XX -WG -vewnhi -l -Fu..\..\..\..\..\Programme\Lazarus\lcl\units\i386-win32\ -Fu..\..\..\..\..\Programme\Lazarus\lcl\units\i386-win32\win32\ -Fu..\..\..\..\..\Programme\Lazarus\components\codetools\units\i386-win32\ -Fu..\..\..\..\..\Programme\Lazarus\components\custom\ -Fu..\..\..\..\..\Programme\Lazarus\packager\units\i386-win32\ -Fu..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32\ -Fu..\..\..\Components\EQGraphX\lib\i386-win32\ -Fu..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\Packages\lib\i386-win32\ -Fu..\..\..\..\..\Programme\Lazarus\components\ASIOVST\Lazarus\lib\i386-win32\ -Fu. -oVSTSimple.exe -dLCL -dLCLwin32 VSTSimple.lpr"/>
-</CONFIG>
