@@ -76,11 +76,11 @@ uses Math, SyncObjs, DDSPBase, DVSTEffect;
 
 var WADSPHeader  : TWinAmpDSPheader =
                    (Version : $20;
-                    Description : 'PushTec for WinAmp';
+                    Description : 'Decimator for WinAmp';
                     GetModule : GetModule);
 
     WADSPModule : TWinAmpDSPModule =
-                   (Description : 'PushTec for WinAmp';
+                   (Description : 'Decimator for WinAmp';
                     HwndParent : 0;
                     hDLLinstance : 0;
                     Config : Config;
