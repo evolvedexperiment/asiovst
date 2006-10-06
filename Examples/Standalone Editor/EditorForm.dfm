@@ -62,7 +62,7 @@ object FmVSTEditor: TFmVSTEditor
     object CBPreset: TComboBox
       Left = 65
       Top = 0
-      Width = 109
+      Width = 144
       Height = 24
       BevelEdges = []
       BevelInner = bvNone
@@ -74,7 +74,7 @@ object FmVSTEditor: TFmVSTEditor
       OnChange = CBPresetChange
     end
     object ToolButton3: TToolButton
-      Left = 174
+      Left = 209
       Top = 0
       Width = 8
       Caption = 'ToolButton3'
@@ -82,9 +82,9 @@ object FmVSTEditor: TFmVSTEditor
       Style = tbsSeparator
     end
     object BtSetup: TButton
-      Left = 182
+      Left = 217
       Top = 0
-      Width = 49
+      Width = 51
       Height = 24
       Caption = '&Setup'
       TabOrder = 2
@@ -92,7 +92,7 @@ object FmVSTEditor: TFmVSTEditor
       OnClick = BtSetupClick
     end
     object ToolButton4: TToolButton
-      Left = 231
+      Left = 268
       Top = 0
       Width = 8
       Caption = 'ToolButton4'
@@ -100,9 +100,9 @@ object FmVSTEditor: TFmVSTEditor
       Style = tbsSeparator
     end
     object BtExit: TButton
-      Left = 239
+      Left = 276
       Top = 0
-      Width = 32
+      Width = 37
       Height = 24
       Caption = 'E&xit'
       TabOrder = 1
@@ -124,7 +124,6 @@ object FmVSTEditor: TFmVSTEditor
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    ExplicitHeight = 203
   end
   object VstHost: TVstHost
     VstPlugIns = <
