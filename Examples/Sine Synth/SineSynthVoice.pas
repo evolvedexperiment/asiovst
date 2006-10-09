@@ -68,25 +68,31 @@ begin
 end;
 
 function TSineSynthVoice.Process: Single;
-var IA,IB : Integer;
-    AA,AB : Single;
 begin
- fAngle.Re:=cos(2*Pi*fFrequency/fSampleRate);
- fAngle.Im:=sin(2*Pi*fFrequency/fSampleRate);
-
  result:=fPosition.Re*fAngle.Re-fPosition.Im*fAngle.Im;
  fPosition.Im:=fPosition.Im*fAngle.Re+fPosition.Re*fAngle.Im;
  fPosition.Re:=result; result:=result * fAmplitude;
 end;
 
+procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
+asm
+ fld Frequency.Double;
+ fsincos
+ fstp [CosValue].Double;
+ fstp [SinValue].Double;
+end;
+
 procedure TSineSynthVoice.SetFrequency(Frequency: Single);
 begin
  inherited;
+ fAngle.Re:=cos(2*Pi*fFrequency/fSampleRate);
+ fAngle.Im:=sin(2*Pi*fFrequency/fSampleRate);
 end;
 
 procedure TSineSynthVoice.NoteOn(Frequency, Amplitude: Single);
 begin
  fFrequency:=Frequency;
+ SetFrequency(Frequency);
  fAmplitude:=Amplitude;
 end;
 

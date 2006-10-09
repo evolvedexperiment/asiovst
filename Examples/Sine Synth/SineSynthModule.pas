@@ -3,7 +3,7 @@ unit SineSynthModule;
 interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase,
-     DVSTEffect, DVSTModule, AudioDataUnit, SineSynthVoice, VoiceList;
+     DVSTEffect, DVSTModule, SineSynthVoice, VoiceList;
 
 type
   TVSTSSModule = class(TVSTModule)
@@ -32,14 +32,6 @@ begin
   begin
    theModule:=Self;
   end;
-end;
-
-procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
-asm
- fld Frequency.Double;
- fsincos
- fstp [CosValue].Double;
- fstp [SinValue].Double;
 end;
 
 procedure TVSTSSModule.VSTModuleProcess(const inputs,

@@ -23,7 +23,7 @@ object VSTGUI: TVSTGUI
     Top = 0
     Width = 503
     Height = 73
-    BaseOctave = 4
+    BaseOctave = 3
     NumOctaves = 4
     Align = alClient
     OnMidiKeyDown = MidiKeysMidiKeyDown
