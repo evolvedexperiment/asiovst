@@ -74,19 +74,17 @@ begin
  fPosition.Re:=result; result:=result * fAmplitude;
 end;
 
-procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
-asm
- fld Frequency.Double;
- fsincos
- fstp [CosValue].Double;
- fstp [SinValue].Double;
-end;
-
 procedure TSineSynthVoice.SetFrequency(Frequency: Single);
+  procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
+  asm
+   fld Frequency.Double;
+   fsincos
+   fstp [CosValue].Double;
+   fstp [SinValue].Double;
+  end;
 begin
- inherited;
- fAngle.Re:=cos(2*Pi*fFrequency/fSampleRate);
- fAngle.Im:=sin(2*Pi*fFrequency/fSampleRate);
+ fFrequency:=Frequency;
+ GetSinCos(2*Pi*fFrequency/fSampleRate,fAngle.Im,fAngle.Re);
 end;
 
 procedure TSineSynthVoice.NoteOn(Frequency, Amplitude: Single);
