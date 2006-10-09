@@ -67,7 +67,9 @@ var theRect  : TRect;
     temp     : pchar;
     Settings : TInifile;
 begin
- VstHost[0].DLLFileName:='SineSynth.DLL';
+ if ParamCount>0
+  then VstHost[0].DLLFileName:=ParamStr(1)
+  else VstHost[0].DLLFileName:='SineSynth.DLL';
  VstHost[0].Active:=True;
  VstHost[0].Idle;
  VstHost[0].ShowEdit(TForm(VSTPanel));
