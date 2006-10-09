@@ -27,8 +27,7 @@ uses SineSynthModule, SineSynthVoice, VoiceList;
 
 procedure TVSTGUI.MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState;
   X, Y, Key: Integer);
-var
-  newNote : TSineSynthVoice;
+var newNote : TSineSynthVoice;
 const VeloDiv : Single = 1/128;
 begin
  if Key<0 then Key:=0 else if Key>119 then Key:=119;
