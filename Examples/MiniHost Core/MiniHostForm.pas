@@ -12,11 +12,13 @@ uses
   DDspBase, DASIOHost, DVstEffect, DVstHost, WaveIOX, MIDIFile, MIDI,
   ExtCtrls, ComCtrls, Menus;
 
-type shortstr = string[255];
-     pshortstr = ^shortstr;
+type
+  shortstr = string[255];
+  pshortstr = ^shortstr;
 
-const appversion = '1.0';
-      appname = 'MiniHost Core';
+const
+  appversion = '1.0';
+  appname = 'MiniHost Core';
     
 type
   TWavPlayer = class
@@ -197,7 +199,7 @@ type
     CurrentMIDIIn: Integer;
     CurrentMIDIOut: Integer;
     CurrentOutputChannel, CurrentInputChannel: Integer;
-    panel: TPanel;
+    fPanel: TPanel;
     title: string;
     maxtimeinv: double;
     mdatacnt: Integer;
@@ -252,7 +254,7 @@ type
 var
   FmMiniHost : TFmMiniHost;
   ININame    : string;
-   allowed   : boolean = false;
+  allowed   : boolean = false;
 
 implementation
 
@@ -264,14 +266,15 @@ uses Math, Inifiles, Dialogs, ShellAPI,
      OptionsForm, AboutForm, PlayerForm;
 
 procedure TFmMiniHost.FormCreate(Sender: TObject);
-var i: Integer;
-    m: TMenuItem;
-    tlist: TStringList;
-    slist: TStrings;
-    s: string;
-    Settings: TIniFile;
-    p: PVstMidiEvent;
-    mi: Integer;
+var
+  i: Integer;
+  m: TMenuItem;
+  tlist: TStringList;
+  slist: TStrings;
+  s: string;
+  Settings: TIniFile;
+  p: PVstMidiEvent;
+  mi: Integer;
 begin
  bg.picture.Bitmap.TransparentColor := $A8A8A8;
  bg.picture.Bitmap.Transparent := true;
@@ -285,13 +288,13 @@ begin
  bord4.Picture.Assign(bord0.Picture);
 
  for i := 0 to 2047 do
- begin
-  GetMem(MyEvents.Events[i], sizeof(TVSTMidiEvent));
-  FillChar(MyEvents.Events[i]^, sizeof(TVSTMidiEvent), 0);
-  p := PVstMidiEvent(MyEvents.events[i]);
-  p^.vType := 1;
-  p^.byteSize := 24;
- end;
+  begin
+   GetMem(MyEvents.Events[i], sizeof(TVSTMidiEvent));
+   FillChar(MyEvents.Events[i]^, sizeof(TVSTMidiEvent), 0);
+   p := PVstMidiEvent(MyEvents.events[i]);
+   p^.vType := 1;
+   p^.byteSize := 24;
+  end;
 
  wavefile := TWavPlayer.create;
  pluginloaded := false;
@@ -299,14 +302,17 @@ begin
 
  Player := TPlayer.Create(self);
 
- panel := TPanel.Create(self);
- panel.Parent := self;
- panel.Left := 0;
- panel.Top := status.height;
- panel.Width := 700;
- panel.Height := 1;
- panel.Tag := -1;
- panel.OnResize := PluginResize;
+ fPanel := TPanel.Create(self);
+ with fPanel do
+  begin
+   Parent := self;
+   Left := 0;
+   Top := status.height;
+   Width := 700;
+   Height := 1;
+   Tag := -1;
+   OnResize := PluginResize;
+  end;
 
  About := TAbout.Create(self);
  Options := TOptions.Create(self);
@@ -700,20 +706,24 @@ begin
  sleep(10);
  LastDir := ExtractFilePath(s);
 
- if assigned(panel) and (panel.tag = -1) then
+ if assigned(fPanel) and (fPanel.tag = -1) then
  begin
-  Panel.Free;
-  panel := nil;
+  fPanel.Free;
+  fPanel := nil;
  end;
 
- panel := TPanel.Create(self);
- panel.Parent := self;
- panel.Left := 0;
- panel.Top := 0;
- panel.tag := 0;
- panel.Width := 700;
- panel.Height := 0;
- panel.OnResize := PluginResize;
+ fPanel := TPanel.Create(self);
+ with fPanel do
+  begin
+   Parent := self;
+   Left := 0;
+   Top := 0;
+   tag := 0;
+   Width := 700;
+   Height := 0;
+   OnResize := PluginResize;
+  end;
+  
  VSTHost.BlockSize := ASIOHost.BufferSize;
  VSTHost.VSTPlugIns[0].DLLFilename := s;
 
@@ -740,16 +750,16 @@ begin
  for i := 0 to numout - 1 do
   vpp[i] := VSTHost.VSTPlugIns[0].GetOutputProperties(i);
 
- VSTHost.VSTPlugIns[0].GUIForm := TForm(panel);
- VSTHost.VSTPlugIns[0].ShowEdit(TForm(panel));
+ VSTHost.VSTPlugIns[0].GUIForm := TForm(fPanel);
+ VSTHost.VSTPlugIns[0].ShowEdit(TForm(fPanel));
 
  title := VSTHost.VSTPlugIns[0].GetVendorString + ' ' +
   VSTHost.VSTPlugIns[0].GetEffectName;
  BuildPresetList;
  r := VSTHost.VSTPlugIns[0].EditGetRect;
- panel.width := r.right - r.left;
- panel.height := r.bottom - r.top;
- panel.top := status.height;
+ fPanel.width := r.right - r.left;
+ fPanel.height := r.bottom - r.top;
+ fPanel.top := status.height;
 
  LoadPresetFXP1.Enabled := true;
  LoadBankFXB1.Enabled := true;
@@ -1238,22 +1248,22 @@ procedure TFmMiniHost.PluginResize(Sender: TObject);
 begin
  if not (effFlagsHasEditor in VSTHost.VSTPlugIns[0].EffectOptions) then
  begin
-  panel.Width := 700;
-  if (VSTHost.VSTPlugIns[0].DLLFileName = '') then
-   panel.Height := 0
-  else
-   panel.Height := 90;
+  fPanel.Width := 700;
+  if (VSTHost.VSTPlugIns[0].DLLFileName = '')
+   then fPanel.Height := 0
+   else fPanel.Height := 90;
  end;
- if panel.width < 560 then
- begin
-  ClientWidth := 560;
-  panel.left := (560 - panel.width) div 2;
- end else
- begin
-  ClientWidth := panel.width;
-  panel.left := 0;
- end;
- ClientHeight := panel.height + status.height;
+ if fPanel.width < 560 then
+  begin
+   ClientWidth := 560;
+   fPanel.left := (560 - fPanel.width) div 2;
+  end
+ else
+  begin
+   ClientWidth := fPanel.width;
+   fPanel.left := 0;
+  end;
+ ClientHeight := fPanel.height + status.height;
 end;
 
 procedure TFmMiniHost.MyMidiEvent(event: PMidiEvent);
@@ -2210,9 +2220,9 @@ begin
   if Processing then
   begin
    if effFlagsCanReplacing in VSTHost.VSTPlugIns[0].EffectOptions then
-    VSTHost.VSTPlugIns[0].processreplacing(@VSTBufIn[0], @VSTBufOut[0], bs)
+    VSTHost.VSTPlugIns[0].ProcessReplacing(@VSTBufIn[0], @VSTBufOut[0], bs)
    else
-    VSTHost.VSTPlugIns[0].process(@VSTBufIn[0], @VSTBufOut[0], bs);
+    VSTHost.VSTPlugIns[0].Process(@VSTBufIn[0], @VSTBufOut[0], bs);
    if downmix then
     for i := 0 to bs - 1 do
      for j := 2 to numout - 1 do
@@ -2248,14 +2258,14 @@ begin
   end;
 
  if recording = 1 then
- begin
-  totalframes := totalframes + ASIOHost.buffersize;
-  if wavwriter.Format.nChannels = 1 then
-   WavWriter.WriteFloatData(OutBuffer[ChOfs], bs)
-  else
-   WavWriter.WriteFloatDataSeparateStereo(OutBuffer[ChOfs],
-    OutBuffer[ChOfs + 1], bs);
- end;
+  begin
+   totalframes := totalframes + ASIOHost.buffersize;
+   if wavwriter.Format.nChannels = 1 then
+    WavWriter.WriteFloatData(OutBuffer[ChOfs], bs)
+   else
+    WavWriter.WriteFloatDataSeparateStereo(OutBuffer[ChOfs],
+     OutBuffer[ChOfs + 1], bs);
+  end;
 
  mdatacnt := 0;
  evproc := false;
