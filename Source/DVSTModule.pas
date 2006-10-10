@@ -2,10 +2,6 @@ unit DVSTModule;
 
 interface
 
-uses Windows, SysUtils, Forms, Classes, DDSPBase, DVSTEffect,
-     {$IFDEF FPC} LResources, LCLClasses, {$ENDIF}
-     Messages;
-
 {$I JEDI.INC}
 {$WARNINGS OFF}
 {$IFDEF FPC}
@@ -31,6 +27,11 @@ uses Windows, SysUtils, Forms, Classes, DDSPBase, DVSTEffect,
  {$ENDIF}
  {$OPTIMIZATION ON}
 {$ENDIF}
+
+uses
+  {$IFDEF FPC} LResources, LCLClasses, {$ELSEIF} Windows, {$ENDIF}
+  SysUtils, Forms, Classes, DDSPBase, DVSTEffect,
+  Messages;
 
 {$DEFINE _Debug}
 
