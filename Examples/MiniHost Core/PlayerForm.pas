@@ -13,14 +13,14 @@ uses
 type
   TPlayer = class(TForm)
     GroupBox4: TGroupBox;
-    midibox: TListBox;
+    MidiBox: TListBox;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
     onlych1: TCheckBox;
     GroupBox1: TGroupBox;
-    wavbox: TListBox;
+    WavBox: TListBox;
     Button5: TButton;
     Button6: TButton;
     Button7: TButton;
@@ -29,7 +29,6 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    tmp: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
@@ -52,12 +51,12 @@ type
     s_pos2: TScrollBar;
     procedure wmdropfiles(var msg: tmessage); message WM_DROPFILES;
     procedure FormCreate(Sender: TObject);
-    procedure midiboxDblClick(Sender: TObject);
+    procedure MidiBoxDblClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
-    procedure wavboxDblClick(Sender: TObject);
+    procedure WavBoxDblClick(Sender: TObject);
     procedure Button5Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
     procedure Button8Click(Sender: TObject);
@@ -71,6 +70,8 @@ type
     procedure s_posChange(Sender: TObject);
     procedure s_pitchChange(Sender: TObject);
     procedure s_pos2Change(Sender: TObject);
+  private
+    tmp: TLabel;
   public
     constructor Create(AOwner: TComponent); override;
   end;
@@ -83,16 +84,16 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses MiniHostForm, OptionsForm, shellapi;
+uses MiniHostForm, OptionsForm, ShellAPI;
 
 var FmMiniHost: TFmMiniHost;
 
-procedure TPlayer.wmdropfiles(var msg: tmessage);
-var size: integer;
+procedure TPlayer.WMDropfiles(var msg: tmessage);
+var size: Integer;
     name: pchar;
     s: string;
     t: TStringList;
-    i, nCount: integer;
+    i, nCount: Integer;
 begin
  inherited;
  nCount := DragQueryFile(msg.WParam, $FFFFFFFF, nil, 0);
@@ -119,12 +120,12 @@ end;
 
 procedure TPlayer.FormCreate(Sender: TObject);
 begin
- DragAcceptFiles(self.handle, true);
+ DragAcceptFiles(Self.Handle, true);
 end;
 
-procedure TPlayer.midiboxDblClick(Sender: TObject);
+procedure TPlayer.MidiBoxDblClick(Sender: TObject);
 begin
- Button4Click(sender);
+ Button4Click(Sender);
 end;
 
 procedure TPlayer.Button1Click(Sender: TObject);
@@ -134,16 +135,16 @@ begin
 end;
 
 procedure TPlayer.Button2Click(Sender: TObject);
-var i: integer;
+var i: Integer;
 begin
  //remove
- if midibox.ItemIndex >= 0 then
+ if MidiBox.ItemIndex >= 0 then
  begin
-  for i := 0 to midibox.Items.Count - 1 do
-   if midibox.Selected[i] then
-    FreeMem(pshortstr(midibox.Items.Objects[i]));
+  for i := 0 to MidiBox.Items.Count - 1 do
+   if MidiBox.Selected[i] then
+    FreeMem(pshortstr(MidiBox.Items.Objects[i]));
 {$IFNDEF FPC}
-  midibox.DeleteSelected;
+  MidiBox.DeleteSelected;
 {$ENDIF}
  end;
 end;
@@ -156,10 +157,10 @@ begin
   MidiFile.StopPlaying;
   MidiPlaying := false;
   Panic1Click(nil);
-  if (midibox.ItemIndex >= 0) and (midibox.Items.Count > 0) then
+  if (MidiBox.ItemIndex >= 0) and (MidiBox.Items.Count > 0) then
   begin
-   MidiFile.Filename := pshortstr(midibox.items.objects[midibox.itemindex])^;
-   label2.Caption := midibox.items[midibox.itemindex];
+   MidiFile.Filename := pshortstr(MidiBox.Items.objects[MidiBox.itemindex])^;
+   Label2.Caption := MidiBox.Items[MidiBox.itemindex];
    MidiFile.ReadFile;
    s_tempo.position := MidiFile.Bpm;
    MidiFile.StartPlaying;
@@ -179,7 +180,7 @@ begin
  end;
 end;
 
-procedure TPlayer.wavboxDblClick(Sender: TObject);
+procedure TPlayer.WavBoxDblClick(Sender: TObject);
 begin
  Button8Click(sender);
 end;
@@ -191,30 +192,30 @@ begin
 end;
 
 procedure TPlayer.Button6Click(Sender: TObject);
-var i: integer;
+var i: Integer;
 begin
  //remove
- if wavbox.ItemIndex >= 0 then
- begin
-  for i := 0 to wavbox.Items.Count - 1 do
-   if wavbox.Selected[i] then
-    FreeMem(pshortstr(wavbox.Items.Objects[i]));
-{$IFNDEF FPC}
-  wavbox.DeleteSelected;
-{$ENDIF}
- end;
+ if WavBox.ItemIndex >= 0 then
+  begin
+   for i := 0 to WavBox.Items.Count - 1 do
+    if WavBox.Selected[i] then
+     FreeMem(pshortstr(WavBox.Items.Objects[i]));
+ {$IFNDEF FPC}
+   WavBox.DeleteSelected;
+ {$ENDIF}
+  end;
 end;
 
 procedure TPlayer.Button8Click(Sender: TObject);
 begin
  //play
- if (wavbox.ItemIndex >= 0) and (wavbox.Items.Count > 0) then
- with FmMiniHost do
- begin
-  LoadWAV(pshortstr(wavbox.items.objects[wavbox.itemindex])^);
-  label4.Caption := wavbox.items[wavbox.itemindex];
-  StartPlayback2Click(nil);
- end;
+ if (WavBox.ItemIndex >= 0) and (WavBox.Items.Count > 0) then
+  with FmMiniHost do
+   begin
+    LoadWAV(pshortstr(WavBox.Items.Objects[WavBox.itemindex])^);
+    Label4.Caption := WavBox.Items[WavBox.itemindex];
+    StartPlayback2Click(nil);
+   end;
 end;
 
 procedure TPlayer.Button7Click(Sender: TObject);
@@ -227,8 +228,7 @@ procedure TPlayer.Button12Click(Sender: TObject);
 begin
  //rec
  with FmMiniHost do
-  if recording = 2 then
-   recording := 1
+  if recording = 2 then recording := 1
   else if recording = 0 then
    StartRecording1Click(nil);
 end;
@@ -276,23 +276,23 @@ begin
   FmMiniHost.MidiFile.stopplaying;
   FmMiniHost.Panic1Click(sender);
   FmMiniHost.MidiFile.PlayToTime(
-   round(FmMiniHost.MidiFile.GetTrackLength * s_pos.position / 100));
+   round(FmMiniHost.MidiFile.GetTrackLength * s_pos.position * 0.01));
   FmMiniHost.MidiFile.continueplaying;
   FmMiniHost.Timer1.Enabled := true;
  end;
- label5.caption := 'position: ' + inttostr(s_pos.position) + ' %';
+ Label5.caption := 'position: ' + inttostr(s_pos.position) + ' %';
 end;
 
 procedure TPlayer.s_pitchChange(Sender: TObject);
 begin
  FmMiniHost.Wavefile.speed := 2 * s_pitch.position / 341;
- label6.caption := 'pitch: ' + inttostr(round(200 * s_pitch.position / 341)) + ' %';
+ Label6.caption := 'pitch: ' + inttostr(round(200 * s_pitch.position / 341)) + ' %';
 end;
 
 procedure TPlayer.s_pos2Change(Sender: TObject);
 begin
- FmMiniHost.Wavefile.SetPos(round((FmMiniHost.Wavefile.size - 1) * s_pos2.position / 100));
- label7.caption := 'position: ' + inttostr(s_pos2.position) + ' %';
+ FmMiniHost.Wavefile.SetPos(round((FmMiniHost.Wavefile.size - 1) * s_pos2.position * 0.01));
+ Label7.caption := 'position: ' + inttostr(s_pos2.position) + ' %';
 end;
 
 {$IFDEF FPC}

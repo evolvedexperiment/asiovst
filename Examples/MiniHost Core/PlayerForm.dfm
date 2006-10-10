@@ -61,7 +61,7 @@ object Player: TPlayer
       Height = 14
       Caption = 'action when finished playing:'
     end
-    object midibox: TListBox
+    object MidiBox: TListBox
       Left = 8
       Top = 24
       Width = 185
@@ -79,7 +79,7 @@ object Player: TPlayer
       MultiSelect = True
       ParentFont = False
       TabOrder = 0
-      OnDblClick = midiboxDblClick
+      OnDblClick = MidiBoxDblClick
     end
     object Button1: TButton
       Left = 8
@@ -217,7 +217,7 @@ object Player: TPlayer
       Height = 14
       Caption = 'action when finished playing:'
     end
-    object wavbox: TListBox
+    object WavBox: TListBox
       Left = 8
       Top = 24
       Width = 185
@@ -235,7 +235,7 @@ object Player: TPlayer
       MultiSelect = True
       ParentFont = False
       TabOrder = 0
-      OnDblClick = wavboxDblClick
+      OnDblClick = WavBoxDblClick
     end
     object Button5: TButton
       Left = 8

@@ -8,7 +8,7 @@
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
       <Title Value="Mini Host Core"/>
-      <ActiveEditorIndexAtStart Value="2"/>
+      <ActiveEditorIndexAtStart Value="3"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -38,7 +38,7 @@
         <MinVersion Minor="2" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="MiniHost.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -55,8 +55,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="MiniHostForm.lrs"/>
         <UnitName Value="MiniHostForm"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
+        <CursorPos X="19" Y="2141"/>
+        <TopLine Value="2128"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
@@ -179,21 +179,17 @@
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="..\..\..\VSTPAC~1\Source\DVSTHost.pas"/>
+        <UnitName Value="DVSTHost"/>
+        <CursorPos X="45" Y="26"/>
+        <TopLine Value="13"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit17>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
-      <Position1>
-        <Filename Value="MiniHostForm.pas"/>
-        <Caret Line="2098" Column="39" TopLine="2082"/>
-      </Position1>
-      <Position2>
-        <Filename Value="MiniHostForm.pas"/>
-        <Caret Line="10" Column="60" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="MiniHostForm.pas"/>
-        <Caret Line="2264" Column="1" TopLine="2238"/>
-      </Position3>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>

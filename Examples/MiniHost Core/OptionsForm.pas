@@ -25,7 +25,7 @@ type
     Label8: TLabel;
     Label9: TLabel;
     Button1: TButton;
-    info: TMemo;
+    Info: TMemo;
     Label11: TLabel;
     Label12: TLabel;
     ScrollBar3: TScrollBar;
@@ -54,7 +54,7 @@ uses DVstHost;
 
 procedure TOptions.FormCreate(Sender: TObject);
 begin
- info.left := 8;
+ Info.left := 8;
 end;
 
 procedure TOptions.FillInfo;
@@ -63,52 +63,52 @@ var o, i: integer;
     b: boolean;
 begin
  Host.StopAudio;
- info.clear;
+ Info.clear;
  with host.ASIOHost do
  begin
   o := DriverIndex;
   s := host.ASIOHost.DriverList;
-  info.Lines.add('number of ASIO drivers: '+inttostr(s.Count));
-  info.Lines.add('');
+  Info.Lines.Add('number of ASIO drivers: '+IntToStr(s.Count));
+  Info.Lines.Add('');
   for i := 0 to s.Count - 1 do
   begin
    DriverIndex := i;
-   info.lines.add('driver #' + inttostr(i) + ': ');
-   info.Lines.add('name: ' + DriverName);
-   info.Lines.add('version: ' + inttostr(DriverVersion));
-   info.Lines.add('input channels: ' + inttostr(InputChannels));
-   info.Lines.add('output channels: ' + inttostr(OutputChannels));
-   info.Lines.add('input format: ' +
+   Info.lines.Add('driver #' + IntToStr(i) + ': ');
+   Info.Lines.Add('name: ' + DriverName);
+   Info.Lines.Add('version: ' + IntToStr(DriverVersion));
+   Info.Lines.Add('input channels: ' + IntToStr(InputChannels));
+   Info.Lines.Add('output channels: ' + IntToStr(OutputChannels));
+   Info.Lines.Add('input format: ' +
     ChannelTypeToString(InputChannelInfos[0].vType) +
-    ' (' + inttostr(InputChannelInfos[0].vType) + ')');
-   info.Lines.add('output format: ' +
+    ' (' + IntToStr(InputChannelInfos[0].vType) + ')');
+   Info.Lines.Add('output format: ' +
     ChannelTypeToString(OutputChannelInfos[0].vType) +
-    ' (' + inttostr(OutputChannelInfos[0].vType) + ')');
-   info.Lines.add('input latency: ' + inttostr(InputLatency));
-   info.Lines.add('output latency: ' + inttostr(OutputLatency));
-   info.Lines.add('buffer size: ' + inttostr(BufferSize));
-   info.Lines.add('min size: ' + inttostr(BufferMinimum));
-   info.Lines.add('max size: ' + inttostr(BufferMaximum));
-   info.Lines.add('pref size: ' + inttostr(BufferPreferredSize));
-   info.Lines.add('granularity: ' + inttostr(BufferGranularity));
-   info.Lines.add('samplerate: ' + floattostr(samplerate));
-   b := cansamplerate(8000) = ASE_OK;
-   info.Lines.add('samplerate 8000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := cansamplerate(16000) = ASE_OK;
-   info.Lines.add('samplerate 16000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := cansamplerate(22050) = ASE_OK;
-   info.Lines.add('samplerate 22050 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := cansamplerate(32000) = ASE_OK;
-   info.Lines.add('samplerate 32000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := cansamplerate(44100) = ASE_OK;
-   info.Lines.add('samplerate 44100 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := cansamplerate(48000) = ASE_OK;
-   info.Lines.add('samplerate 48000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := cansamplerate(96000) = ASE_OK;
-   info.Lines.add('samplerate 96000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := cansamplerate(192000) = ASE_OK;
-   info.Lines.add('samplerate 192000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   info.Lines.add('');
+    ' (' + IntToStr(OutputChannelInfos[0].vType) + ')');
+   Info.Lines.Add('input latency: ' + IntToStr(InputLatency));
+   Info.Lines.Add('output latency: ' + IntToStr(OutputLatency));
+   Info.Lines.Add('buffer size: ' + IntToStr(BufferSize));
+   Info.Lines.Add('min size: ' + IntToStr(BufferMinimum));
+   Info.Lines.Add('max size: ' + IntToStr(BufferMaximum));
+   Info.Lines.Add('pref size: ' + IntToStr(BufferPreferredSize));
+   Info.Lines.Add('granularity: ' + IntToStr(BufferGranularity));
+   Info.Lines.Add('samplerate: ' + FloatToStr(samplerate));
+   b := canSamplerate(8000) = ASE_OK;
+   Info.Lines.Add('samplerate 8000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
+   b := canSamplerate(16000) = ASE_OK;
+   Info.Lines.Add('samplerate 16000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
+   b := canSamplerate(22050) = ASE_OK;
+   Info.Lines.Add('samplerate 22050 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
+   b := canSamplerate(32000) = ASE_OK;
+   Info.Lines.Add('samplerate 32000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
+   b := canSamplerate(44100) = ASE_OK;
+   Info.Lines.Add('samplerate 44100 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
+   b := canSamplerate(48000) = ASE_OK;
+   Info.Lines.Add('samplerate 48000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
+   b := canSamplerate(96000) = ASE_OK;
+   Info.Lines.Add('samplerate 96000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
+   b := canSamplerate(192000) = ASE_OK;
+   Info.Lines.Add('samplerate 192000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
+   Info.Lines.Add('');
   end;
   DriverIndex := o;
   Host.StartAudio;
@@ -117,31 +117,31 @@ end;
 
 procedure TOptions.Button1Click(Sender: TObject);
 begin
- info.visible := not info.visible;
- if (info.lines.Count = 0) and (info.visible) then
-  FillInfo;
+ Info.Visible := not Info.Visible;
+ if (Info.Lines.Count = 0) and (Info.Visible)
+  then FillInfo;
 end;
 
 procedure TOptions.FormShow(Sender: TObject);
 begin
- groupbox2.setfocus;
+ Groupbox2.SetFocus;
 end;
 
 procedure TOptions.ScrollBar3Change(Sender: TObject);
 begin
  if not assigned(Host) then exit;
- Host.OverallVol := scrollbar2.position / 100;
- label6.caption := 'Overall Volume: ' + inttostr(scrollbar2.position);
- Host.VSTVol := scrollbar6.position / 100;
+ Host.OverallVol := Scrollbar2.position * 0.01;
+ Label6.caption := 'Overall Volume: ' + IntToStr(Scrollbar2.position);
+ Host.VSTVol := Scrollbar6.position * 0.01;
  if effFlagsIsSynth in Host.VSTHost.VSTPlugIns[0].EffectOptions
-  then label12.caption := 'VST Volume: ' + inttostr(scrollbar6.position)
-  else label12.caption := 'VST Dry/Wet Mix: ' + inttostr(scrollbar6.position);
- Host.InputVol := scrollbar5.position / 100;
- label11.caption := 'Input Volume: ' + inttostr(scrollbar5.position);
- Host.Wavefile.Vol := scrollbar1.position / 100;
- label5.caption := 'WAV Volume: ' + inttostr(scrollbar1.position);
- Host.VSTHost.Tempo := scrollbar3.position;
- label7.caption := 'Tempo: ' + inttostr(scrollbar3.position)+' bpm';
+  then label12.caption := 'VST Volume: ' + IntToStr(Scrollbar6.position)
+  else label12.caption := 'VST Dry/Wet Mix: ' + IntToStr(Scrollbar6.position);
+ Host.InputVol := Scrollbar5.position * 0.01;
+ Label11.caption := 'Input Volume: ' + IntToStr(Scrollbar5.position);
+ Host.Wavefile.Vol := scrollbar1.position * 0.01;
+ Label5.caption := 'WAV Volume: ' + IntToStr(Scrollbar1.position);
+ Host.VSTHost.Tempo := Scrollbar3.position;
+ Label7.caption := 'Tempo: ' + IntToStr(Scrollbar3.position)+' bpm';
 end;
 
 {$IFDEF FPC}

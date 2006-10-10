@@ -1,5 +1,3 @@
-{ This is an automatically generated lazarus resource file }
-
 LazarusResources.Add('TFmMiniHost','FORMDATA',[
   'TPF0'#11'TFmMiniHost'#10'FmMiniHost'#4'Left'#3'h'#1#6'Height'#3'T'#1#3'Top'#3
   +'V'#1#5'Width'#3'0'#2#18'HorzScrollBar.Page'#3'/'#2#18'VertScrollBar.Page'#3
@@ -2807,60 +2805,58 @@ LazarusResources.Add('TFmMiniHost','FORMDATA',[
   +'endVstTimeInfo'#19'hcdReceiveVstEvents'#22'hcdReceiveVstMidiEvent'#21'hcdRe'
   +'ceiveVstTimeInfo'#26'hcdReportConnectionChanges'#18'hcdAcceptIOChanges'#13
   +'hcdSizeWindow'#18'hcdAsyncProcessing'#10'hcdOffline'#13'hcdSupplyIdle'#11'h'
-  +'cdEditFile'#19'hcdStartStopProcess'#0#5'Tempo'#5#0#0#0#0#0#0#0#240#5'@'#10
-  +'VstVersion'#3#252#8#12'VendorString'#6#8'Tobybear'#13'VendorVersion'#2#1#13
-  +'ProductString'#6#8'MiniHost'#9'PlugInDir'#6#30'C:\Programme\Audio\Plugins\V'
-  +'ST'#22'VstTimeInfo.SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'#17'VstTimeInfo.Te'
-  +'mpo'#5#0#0#0#0#0#0#0#240#5'@'#17'VstTimeInfo.Flags'#11#14'vtiPpqPosValid'#13
-  +'vtiTempoValid'#15'vtiTimeSigValid'#0#4'left'#2#24#3'top'#3#136#0#0#0#9'TMai'
-  +'nMenu'#9'MainMenu1'#4'left'#3#152#0#3'top'#2'H'#0#9'TMenuItem'#5'Main1'#7'C'
-  +'aption'#6#4'Main'#0#9'TMenuItem'#9'Settings1'#7'Caption'#6#24'Show Settings'
-  +' Window ...'#7'OnClick'#7#14'Settings1Click'#0#0#9'TMenuItem ShowMIDIWAVPla'
-  +'yerrecorderWindow1'#7'Caption'#6#24'Show MIDI/WAV Window ...'#7'OnClick'#7
-  ,'%ShowMIDIWAVPlayerrecorderWindow1Click'#0#0#9'TMenuItem'#3'N15'#7'Caption'#6
-  +#1'-'#0#0#9'TMenuItem'#12'Alwaysontop1'#7'Caption'#6#13'Always on top'#7'OnC'
-  +'lick'#7#17'Alwaysontop1Click'#0#0#9'TMenuItem'#3'N16'#7'Caption'#6#1'-'#0#0
-  +#9'TMenuItem'#5'Exit1'#7'Caption'#6#4'Exit'#7'OnClick'#7#10'Exit1Click'#0#0#0
-  +#9'TMenuItem'#5'ASIO1'#7'Caption'#6#4'ASIO'#0#9'TMenuItem'#7'Driver1'#7'Capt'
-  +'ion'#6#6'Driver'#0#0#9'TMenuItem'#13'ControlPanel1'#7'Caption'#6#22'Show Co'
-  +'ntrol Panel ...'#7'OnClick'#7#18'ControlPanel1Click'#0#0#9'TMenuItem'#14'Ou'
-  +'tputChannel1'#7'Caption'#6#15'Output Channels'#0#0#9'TMenuItem'#13'InputCha'
-  +'nnel1'#7'Caption'#6#14'Input Channels'#0#0#0#9'TMenuItem'#4'VST1'#7'Caption'
-  +#6#3'VST'#0#9'TMenuItem'#11'LoadPlugin1'#7'Caption'#6#19'Load VST Plugin ...'
-  +#7'OnClick'#7#16'LoadPlugin1Click'#0#0#9'TMenuItem'#12'ClosePlugin1'#7'Capti'
-  +'on'#6#12'Close Plugin'#7'OnClick'#7#17'ClosePlugin1Click'#0#0#9'TMenuItem'#3
-  +'N14'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#16'DownmixtoStereo1'#7'Caption'#6#17
-  +'Downmix to Stereo'#7'OnClick'#7#21'DownmixtoStereo1Click'#0#0#9'TMenuItem'#9
-  +'MidiThru1'#7'Caption'#6#9'MIDI Thru'#7'OnClick'#7#14'MidiThru1Click'#0#0#0#9
-  +'TMenuItem'#5'MIDI1'#7'Caption'#6#4'MIDI'#0#9'TMenuItem'#7'MIDIIn1'#7'Captio'
-  +'n'#6#7'MIDI In'#0#0#9'TMenuItem'#8'MIDIOut1'#7'Caption'#6#8'MIDI Out'#0#0#9
-  +'TMenuItem'#2'N4'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#6'Panic1'#7'Caption'#6#6
-  +'Panic!'#8'ShortCut'#2'z'#7'OnClick'#7#11'Panic1Click'#0#0#0#9'TMenuItem'#7
-  +'Preset1'#7'Caption'#6#7'Presets'#0#9'TMenuItem'#14'LoadPresetfxp1'#7'Captio'
-  +'n'#6#23'Load Preset (*.fxp) ...'#7'Enabled'#8#7'OnClick'#7#19'LoadPresetFXP'
-  +'1Click'#0#0#9'TMenuItem'#12'LoadBankfxb1'#7'Caption'#6#21'Load Bank (*.fxb)'
-  +' ...'#7'Enabled'#8#7'OnClick'#7#17'LoadBankfxb1Click'#0#0#9'TMenuItem'#14'S'
-  +'avePresetfxp1'#7'Caption'#6#23'Save Preset (*.fxp) ...'#7'Enabled'#8#7'OnCl'
-  +'ick'#7#19'SavePresetfxp1Click'#0#0#9'TMenuItem'#12'SaveBankfxb1'#7'Caption'
-  +#6#21'Save Bank (*.fxb) ...'#7'Enabled'#8#7'OnClick'#7#17'SaveBankfxb1Click'
-  +#0#0#9'TMenuItem'#2'N2'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#13'RenamePreset1'
-  +#7'Caption'#6#13'Rename Preset'#7'Enabled'#8#7'OnClick'#7#18'RenamePreset1Cl'
-  +'ick'#0#0#9'TMenuItem'#2'N6'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#6'showpr'#7
-  +'Caption'#6#24'Show Preset in Title Bar'#7'Checked'#9#7'OnClick'#7#11'showpr'
-  +'Click'#0#0#9'TMenuItem'#14'UseMouseWheel1'#7'Caption'#6#15'Use Mouse Wheel'
-  +#7'Checked'#9#7'OnClick'#7#19'UseMouseWheel1Click'#0#0#0#9'TMenuItem'#5'Help'
-  +'1'#3'Tag'#2#249#7'Caption'#6#4'Help'#0#9'TMenuItem'#6'About1'#7'Caption'#6#5
-  +'About'#7'OnClick'#7#11'About1Click'#0#0#0#0#6'TTimer'#6'Timer1'#7'Enabled'#8
-  +#8'Interval'#3','#1#7'OnTimer'#7#11'Timer1Timer'#4'left'#2#24#3'top'#2'H'#0#0
-  +#9'TASIOHost'#8'ASIOHost'#16'PreFillOutBuffer'#7#7'bpfZero'#20'ConvertOptimi'
-  +'zations'#11#5'coSSE'#7'co3DNow'#0#10'SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'
-  +#14'ASIOTime.Speed'#5#0#0#0#0#0#0#0#128#255'?'#19'ASIOTime.SampleRate'#5#0#0
-  +#0#0#0#0'D'#172#14'@'#14'ASIOTime.Flags'#11#17'atSystemTimeValid'#21'atSampl'
-  +'ePositionValid'#17'atSampleRateValid'#12'atSpeedValid'#0#9'OnDestroy'#7#15
-  +'ASIOHostDestroy'#17'OnUpdateSamplePos'#7#23'ASIOHostUpdateSamplePos'#7'OnRe'
-  +'set'#7#13'ASIOHostReset'#16'OnLatencyChanged'#7#22'ASIOHostLatencyChanged'
-  +#19'OnSampleRateChanged'#7#25'ASIOHostSampleRateChanged'#14'OnBufferSwitch'#7
-  +#20'ASIOHostBufferSwitch'#4'left'#2'`'#3'top'#3#136#0#0#0#6'TTimer'#9'IdleTi'
-  +'mer'#8'Interval'#2'd'#7'OnTimer'#7#14'IdleTimerTimer'#4'left'#2'`'#3'top'#2
-  +'H'#0#0#0
+  +'cdEditFile'#19'hcdStartStopProcess'#0#5'Tempo'#2'x'#10'VstVersion'#3#252#8
+  +#12'VendorString'#6#8'Tobybear'#13'VendorVersion'#2#1#13'ProductString'#6#8
+  +'MiniHost'#9'PlugInDir'#6#30'C:\Programme\Audio\Plugins\VST'#22'VstTimeInfo.'
+  +'SampleRate'#4'D'#172#0#0#17'VstTimeInfo.Tempo'#2'x'#17'VstTimeInfo.Flags'#11
+  +#14'vtiPpqPosValid'#13'vtiTempoValid'#15'vtiTimeSigValid'#0#4'left'#2#24#3't'
+  +'op'#3#136#0#0#0#9'TMainMenu'#9'MainMenu1'#4'left'#3#152#0#3'top'#2'H'#0#9'T'
+  +'MenuItem'#5'Main1'#7'Caption'#6#4'Main'#0#9'TMenuItem'#9'Settings1'#7'Capti'
+  +'on'#6#24'Show Settings Window ...'#7'OnClick'#7#14'Settings1Click'#0#0#9'TM'
+  +'enuItem ShowMIDIWAVPlayerrecorderWindow1'#7'Caption'#6#24'Show MIDI/WAV Win'
+  +'dow ...'#7'OnClick'#7'%ShowMIDIWAVPlayerrecorderWindow1Click'#0#0#9'TMenuIt'
+  ,'em'#3'N15'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#12'Alwaysontop1'#7'Caption'#6
+  +#13'Always on top'#7'OnClick'#7#17'Alwaysontop1Click'#0#0#9'TMenuItem'#3'N16'
+  +#7'Caption'#6#1'-'#0#0#9'TMenuItem'#5'Exit1'#7'Caption'#6#4'Exit'#7'OnClick'
+  +#7#10'Exit1Click'#0#0#0#9'TMenuItem'#5'ASIO1'#7'Caption'#6#4'ASIO'#0#9'TMenu'
+  +'Item'#7'Driver1'#7'Caption'#6#6'Driver'#0#0#9'TMenuItem'#13'ControlPanel1'#7
+  +'Caption'#6#22'Show Control Panel ...'#7'OnClick'#7#18'ControlPanel1Click'#0
+  +#0#9'TMenuItem'#14'OutputChannel1'#7'Caption'#6#15'Output Channels'#0#0#9'TM'
+  +'enuItem'#13'InputChannel1'#7'Caption'#6#14'Input Channels'#0#0#0#9'TMenuIte'
+  +'m'#4'VST1'#7'Caption'#6#3'VST'#0#9'TMenuItem'#11'LoadPlugin1'#7'Caption'#6
+  +#19'Load VST Plugin ...'#7'OnClick'#7#16'LoadPlugin1Click'#0#0#9'TMenuItem'
+  +#12'ClosePlugin1'#7'Caption'#6#12'Close Plugin'#7'OnClick'#7#17'ClosePlugin1'
+  +'Click'#0#0#9'TMenuItem'#3'N14'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#16'Downmi'
+  +'xtoStereo1'#7'Caption'#6#17'Downmix to Stereo'#7'OnClick'#7#21'DownmixtoSte'
+  +'reo1Click'#0#0#9'TMenuItem'#9'MidiThru1'#7'Caption'#6#9'MIDI Thru'#7'OnClic'
+  +'k'#7#14'MidiThru1Click'#0#0#0#9'TMenuItem'#5'MIDI1'#7'Caption'#6#4'MIDI'#0#9
+  +'TMenuItem'#7'MIDIIn1'#7'Caption'#6#7'MIDI In'#0#0#9'TMenuItem'#8'MIDIOut1'#7
+  +'Caption'#6#8'MIDI Out'#0#0#9'TMenuItem'#2'N4'#7'Caption'#6#1'-'#0#0#9'TMenu'
+  +'Item'#6'Panic1'#7'Caption'#6#6'Panic!'#8'ShortCut'#2'z'#7'OnClick'#7#11'Pan'
+  +'ic1Click'#0#0#0#9'TMenuItem'#7'Preset1'#7'Caption'#6#7'Presets'#0#9'TMenuIt'
+  +'em'#14'LoadPresetfxp1'#7'Caption'#6#23'Load Preset (*.fxp) ...'#7'Enabled'#8
+  +#7'OnClick'#7#19'LoadPresetFXP1Click'#0#0#9'TMenuItem'#12'LoadBankfxb1'#7'Ca'
+  +'ption'#6#21'Load Bank (*.fxb) ...'#7'Enabled'#8#7'OnClick'#7#17'LoadBankfxb'
+  +'1Click'#0#0#9'TMenuItem'#14'SavePresetfxp1'#7'Caption'#6#23'Save Preset (*.'
+  +'fxp) ...'#7'Enabled'#8#7'OnClick'#7#19'SavePresetfxp1Click'#0#0#9'TMenuItem'
+  +#12'SaveBankfxb1'#7'Caption'#6#21'Save Bank (*.fxb) ...'#7'Enabled'#8#7'OnCl'
+  +'ick'#7#17'SaveBankfxb1Click'#0#0#9'TMenuItem'#2'N2'#7'Caption'#6#1'-'#0#0#9
+  +'TMenuItem'#13'RenamePreset1'#7'Caption'#6#13'Rename Preset'#7'Enabled'#8#7
+  +'OnClick'#7#18'RenamePreset1Click'#0#0#9'TMenuItem'#2'N6'#7'Caption'#6#1'-'#0
+  +#0#9'TMenuItem'#6'showpr'#7'Caption'#6#24'Show Preset in Title Bar'#7'Checke'
+  +'d'#9#7'OnClick'#7#11'showprClick'#0#0#9'TMenuItem'#14'UseMouseWheel1'#7'Cap'
+  +'tion'#6#15'Use Mouse Wheel'#7'Checked'#9#7'OnClick'#7#19'UseMouseWheel1Clic'
+  +'k'#0#0#0#9'TMenuItem'#5'Help1'#3'Tag'#2#249#7'Caption'#6#4'Help'#0#9'TMenuI'
+  +'tem'#6'About1'#7'Caption'#6#5'About'#7'OnClick'#7#11'About1Click'#0#0#0#0#6
+  +'TTimer'#6'Timer1'#7'Enabled'#8#8'Interval'#3','#1#7'OnTimer'#7#11'Timer1Tim'
+  +'er'#4'left'#2#24#3'top'#2'H'#0#0#9'TASIOHost'#8'ASIOHost'#16'PreFillOutBuff'
+  +'er'#7#7'bpfZero'#20'ConvertOptimizations'#11#5'coSSE'#7'co3DNow'#0#10'Sampl'
+  +'eRate'#4'D'#172#0#0#14'ASIOTime.Speed'#2#1#19'ASIOTime.SampleRate'#4'D'#172
+  +#0#0#14'ASIOTime.Flags'#11#17'atSystemTimeValid'#21'atSamplePositionValid'#17
+  +'atSampleRateValid'#12'atSpeedValid'#0#9'OnDestroy'#7#15'ASIOHostDestroy'#17
+  +'OnUpdateSamplePos'#7#23'ASIOHostUpdateSamplePos'#7'OnReset'#7#13'ASIOHostRe'
+  +'set'#16'OnLatencyChanged'#7#22'ASIOHostLatencyChanged'#19'OnSampleRateChang'
+  +'ed'#7#25'ASIOHostSampleRateChanged'#14'OnBufferSwitch'#7#20'ASIOHostBufferS'
+  +'witch'#4'left'#2'`'#3'top'#3#136#0#0#0#6'TTimer'#9'IdleTimer'#8'Interval'#2
+  +'d'#7'OnTimer'#7#14'IdleTimerTimer'#4'left'#2'`'#3'top'#2'H'#0#0#0
 ]);
