@@ -28,7 +28,7 @@ package VstPlugin_R5;
 
 requires
   vcl50,
-  DSPBase50;
+  DDSPBase50;
 
 contains
   DVSTModule in '..\Source\DVSTModule.pas';
