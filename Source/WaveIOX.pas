@@ -179,11 +179,7 @@ begin
       raise EWaveIOError.Create('Error 03: Cannot write wave format.');
 
     GetMem(FFormat,sizeof(FFormat^));
-    {$IFDEF FPC}
-    Move(FFormat,WriteFormat,sizeof(FFormat^));
-    {$ELSE}
-    CopyMemory(FFormat,WriteFormat,sizeof(FFormat^));
-    {$ENDIF}
+    Move(FFormat^,WriteFormat^,sizeof(FFormat^));
 
     // Ascend out of the 'fmt ' chunk,back into the 'RIFF' chunk.
     if(mmioAscend(mm,@pck,0)<>0) then
@@ -311,11 +307,7 @@ begin
       raise EWaveIOError.Create('Error 17: Cannot read ''waveformatex'' length!');
 
   GetMem(FFormat,sizeof(FFormat^)+ExtraAlloc);
-  {$IFDEF FPC}
-  Move(FFormat,FormatTmp,sizeof(FFormat^));
-  {$ELSE}
-  CopyMemory(FFormat,@FormatTmp,sizeof(FFormat^));
-  {$ENDIF}
+  Move(FFormat^,FormatTmp,sizeof(FFormat^));
   FFormat^.cbSize:=ExtraAlloc;
   if(ExtraAlloc<>0) then
     if(mmioRead(mm,PChar(FFormat)+sizeof(FFormat^),ExtraAlloc) <>
@@ -582,7 +574,7 @@ begin
        len:=PCMBufferSamplePos+PCMBufferSampleSize-FPosition;
        if(len>Count) then len:=Count;
        {$IFDEF FPC}
-//       Move(PChar(@Buffer), PChar(PCMBuffer)+(FPosition-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
+//       Move(Buffer, PChar(PCMBuffer)+(FPosition-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
        {$ELSE}
        CopyMemory(PChar(@Buffer), PChar(PCMBuffer)+(FPosition-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
        {$ENDIF}

@@ -1,11 +1,12 @@
 unit DASIOConvert;
+
 {$I JEDI.INC}
 {$WARN UNIT_PLATFORM OFF}
 {$WARN SYMBOL_PLATFORM OFF}
 
 interface
 
-uses windows;
+uses {$IFDEF FPC}LCLIntf; {$ELSE} Windows; {$ENDIF}
 
 const fGrdDiv = 0.5;
       MaxShort  : Single = $7F;

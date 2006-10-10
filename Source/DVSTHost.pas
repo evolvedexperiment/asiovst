@@ -23,7 +23,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls,
-  Forms, Registry, DVSTEffect, Math, Dialogs , StdCtrls , ComCtrls
+  Forms, Registry, DVSTEffect, Math, Dialogs, StdCtrls, ComCtrls
   {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
 type
