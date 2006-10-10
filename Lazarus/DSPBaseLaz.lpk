@@ -7,9 +7,10 @@
       <Version Value="5"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="C:\ITA\Projects\VST Package\Source\"/>
-        <OtherUnitFiles Value="C:\ITA\Projects\VST Package\Source\"/>
+        <IncludeFiles Value="C:\ITA\Projects\VSTPAC~1\Lazarus\;C:\ITA\Projects\VSTPAC~1\Source\;..\Source\"/>
+        <OtherUnitFiles Value="C:\ITA\Projects\VSTPAC~1\Lazarus\;C:\ITA\Projects\VSTPAC~1\Source\;..\Source\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+        <SrcPath Value="C:\ITA\Projects\VSTPAC~1\Lazarus\;C:\ITA\Projects\VSTPAC~1\Source\;$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\;$(LazarusDir)\components\synedit\;$(LazarusDir)\components\codetools\"/>
       </SearchPaths>
       <CodeGeneration>
         <Generate Value="Faster"/>

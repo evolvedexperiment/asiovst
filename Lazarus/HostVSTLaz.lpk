@@ -7,8 +7,8 @@
       <Version Value="5"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="C:\ITA\Projects\VST Package\Source\"/>
-        <OtherUnitFiles Value="C:\ITA\Projects\VST Package\Source\"/>
+        <IncludeFiles Value="..\Source\"/>
+        <OtherUnitFiles Value="..\Source\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>
@@ -21,7 +21,7 @@
     <Version Minor="2"/>
     <Files Count="1">
       <Item1>
-        <Filename Value="../Source/DVSTHost.pas"/>
+        <Filename Value="..\Source\DVSTHost.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="DVSTHost"/>
       </Item1>
@@ -40,6 +40,8 @@
       </Item3>
     </RequiredPkgs>
     <UsageOptions>
+      <IncludePath Value="C:\ITA\Projects\VSTPAC~1\Source\"/>
+      <ObjectPath Value="C:\ITA\Projects\VSTPAC~1\Source\"/>
       <UnitPath Value="$(PkgOutDir)\"/>
     </UsageOptions>
     <PublishOptions>

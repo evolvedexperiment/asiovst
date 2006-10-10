@@ -6,7 +6,7 @@ version=0.0
 
 [compiler]
 unittargetdir=lib/$(CPU_TARGET)-$(OS_TARGET)
-unitdir=../../../../Programme/Lazarus/ideintf/units/$(CPU_TARGET)-$(OS_TARGET)/ lib/$(CPU_TARGET)-$(OS_TARGET)/ ../../../../Programme/Lazarus/components/ASIOVST/Lazarus/lib/$(CPU_TARGET)-$(OS_TARGET)/ ../../../../Programme/Lazarus/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/ ../../../../Programme/Lazarus/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ ../../../../Programme/Lazarus/packager/units/$(CPU_TARGET)-$(OS_TARGET)/
+unitdir=../../../../Programme/Lazarus/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/ ../../../../Programme/Lazarus/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ ../../../../Programme/Lazarus/components/codetools/units/$(CPU_TARGET)-$(OS_TARGET)/ ../../../../Programme/Lazarus/components/custom/ ../../../../Programme/Lazarus/packager/units/$(CPU_TARGET)-$(OS_TARGET)/ ../../../../Programme/Lazarus/ideintf/units/$(CPU_TARGET)-$(OS_TARGET)/ lib/$(CPU_TARGET)-$(OS_TARGET)/
 options=-dLCL -dLCL$(LCL_PLATFORM) -S2
 
 [target]
