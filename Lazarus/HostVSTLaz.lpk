@@ -40,8 +40,6 @@
       </Item3>
     </RequiredPkgs>
     <UsageOptions>
-      <IncludePath Value="C:\ITA\Projects\VSTPAC~1\Source\"/>
-      <ObjectPath Value="C:\ITA\Projects\VSTPAC~1\Source\"/>
       <UnitPath Value="$(PkgOutDir)\"/>
     </UsageOptions>
     <PublishOptions>
