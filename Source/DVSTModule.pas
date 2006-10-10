@@ -3,33 +3,9 @@ unit DVSTModule;
 interface
 
 {$I JEDI.INC}
-{$WARNINGS OFF}
-{$IFDEF FPC}
- {$MODE DELPHI}
- {$HINTS OFF}
- {$OVERFLOWCHECKS OFF}
- {$RANGECHECKS OFF}
- {$IFDEF CPUI386}
-  {$DEFINE CPU386}
-  {$ASMMODE INTEL}
- {$ENDIF}
- {$IFDEF FPC_LITTLE_ENDIAN}
-  {$DEFINE LITTLE_ENDIAN}
- {$ELSE}
-  {$IFDEF FPC_BIG_ENDIAN}
-   {$DEFINE BIG_ENDIAN}
-  {$ENDIF}
- {$ENDIF}
-{$ELSE}
- {$DEFINE LITTLE_ENDIAN}
- {$IFNDEF CPU64}
-  {$DEFINE CPU32}
- {$ENDIF}
- {$OPTIMIZATION ON}
-{$ENDIF}
 
 uses
-  {$IFDEF FPC} LResources, LCLClasses, {$ELSEIF} Windows, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LCLType, LResources, LCLClasses, {$ELSE} Windows, {$ENDIF}
   SysUtils, Forms, Classes, DDSPBase, DVSTEffect,
   Messages;
 
@@ -41,8 +17,8 @@ type
   TParameterChangeEvent = procedure(Sender: TObject; const Index: Integer; var Value: Single) of object;
   TBlockSizeChangeEvent = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
-  TProcessAudioEvent = procedure({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfSingleArray; sampleframes: Integer) of object;
-  TProcessDoubleEvent = procedure({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer) of object;
+  TProcessAudioEvent = procedure(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer) of object;
+  TProcessDoubleEvent = procedure(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer) of object;
   TOnDispatcherEvent = procedure (Sender: TObject; opCode: Integer) of object;
   TGetVUEvent = procedure(var VU:Single) of object;
   TGetEditorEvent = procedure(Sender: TObject; var GUI: TForm) of object;
@@ -147,14 +123,16 @@ type
   TCustomParameterLabelEvent = procedure(Sender: TObject; const Index: Integer; var PreDefined: string) of object;
   TCustomParameterDisplayEvent = procedure(Sender: TObject; const Index: Integer; var PreDefined: string) of object;
 
+  { TCustomVstParameterProperty }
+
   TCustomVstParameterProperty = class(TCollectionItem)
   private
     i1, i2            : Single;
     fMin, fMax        : Single;
     fCurve            : TCurveType;
     fCurveFactor      : Single;
-    fDisplayName      : string;
-    fUnits            : string;
+    fDisplayName      : string[30];
+    fUnits            : {$IFNDEF FPC}string[8]{$ELSE}ansistring{$ENDIF};
     fSmoothingFactor  : Single;
     fCanBeAutomated   : Boolean;
     fV2Properties     : Boolean;
@@ -178,9 +156,16 @@ type
     procedure SetShortLabel(const Value: string);
   protected
     procedure AssignTo(Dest: TPersistent); override;
-    procedure SetDisplayName(const AValue: string); {$IFNDEF FPC} override; {$ENDIF}
-    function GetDisplayName: string; {$IFNDEF FPC} override; {$ENDIF}
-    procedure SetUnits(AUnits: string);
+    
+{$IFNDEF FPC}
+    procedure SetDisplayName(const AValue: string[30]); override;
+    function GetDisplayName: string; override;
+    procedure SetUnits(AUnits: string[8]);
+{$ELSE}
+    procedure SetDisplayName(const AValue: ansistring); override;
+    function GetDisplayName: ansistring; override;
+    procedure SetUnits(AUnits: ansistring);
+{$ENDIF}
   public
     {$IFDEF FPC}
     constructor Create(ACollection: TCollection); override;
@@ -193,8 +178,8 @@ type
     property Max: Single read fMax write fMax;
     property CC: Integer read fCC write fCC default -1;
     property Curve: TCurveType read fCurve write fCurve;
-    property DisplayName: string read fDisplayName write SetDisplayName;
-    property Units: string read fUnits write SetUnits;
+    property DisplayName{$IFNDEF FPC}: string[30] read fDisplayName write SetDisplayName{$ENDIF};
+    property Units: {$IFNDEF FPC}string[8]{$ELSE}ansistring{$ENDIF} read fUnits write SetUnits;
     property CurveFactor: Single read fCurveFactor write fCurveFactor;
     property SmoothingFactor: Single read fSmoothingFactor write fSmoothingFactor;
     property CanBeAutomated: Boolean read fCanBeAutomated write fCanBeAutomated;
@@ -247,8 +232,13 @@ type
     fParameter        : array of Single;
     fChunkData        : TMemoryStream;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure SetDisplayName(const Value: string); {$IFNDEF FPC} override; {$ENDIF}
-    function GetDisplayName: string; {$IFNDEF FPC} override;  {$ENDIF}
+    {$IFNDEF FPC}
+    procedure SetDisplayName(const AValue: string[30]); override;
+    function GetDisplayName: string; override;
+    {$ELSE}
+    procedure SetDisplayName(const AValue: ansistring); override;
+    function GetDisplayName: ansistring; override;
+    {$ENDIF}
   public
     {$IFDEF FPC}
     constructor Create(ACollection: TCollection); override;
@@ -260,7 +250,7 @@ type
     destructor Destroy; override;
     property Chunk: TMemoryStream read fChunkData write fChunkData;
   published
-    property DisplayName: string read GetDisplayName write SetDisplayName;
+    property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
     property VSTModule: TCustomVSTModule read FVSTModule write FVSTModule;
     property OnInitialize: TNotifyEvent read fOnInitialize write fOnInitialize;
     property OnLoadChunk: TChunkEvent read fOnLoadChunk write fOnLoadChunk;
@@ -298,8 +288,13 @@ type
     function GetUniqueID: string;
   protected
     procedure AssignTo(Dest: TPersistent); override;
-    procedure SetDisplayName(const Value: string); {$IFNDEF FPC} override; {$ENDIF}
-    function GetDisplayName: string; {$IFNDEF FPC} override; {$ENDIF}
+    {$IFNDEF FPC}
+    procedure SetDisplayName(const AValue: string[30]); override;
+    function GetDisplayName: string; override;
+    {$ELSE}
+    procedure SetDisplayName(const AValue: ansistring); override;
+    function GetDisplayName: ansistring; override;
+    {$ENDIF}
   public
     UID  : Integer;
     {$IFDEF FPC}
@@ -309,7 +304,7 @@ type
     {$ENDIF}
     destructor Destroy; override;
   published
-    property DisplayName: string read GetDisplayName write SetDisplayName;
+    property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
     property numInputs: Integer read fNumInputs write fNumInputs;
     property numOutputs: Integer read fNumOutputs write fNumOutputs;
     property numParams: Integer read fNumParams write fNumParams;
@@ -430,15 +425,17 @@ type
     function EditorOpen(ptr: pointer): Integer; virtual;
     procedure EditorClose; virtual;
     procedure EditorIdle; virtual;
+    function Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
+    function VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
     procedure ReadOnlyString(s: string); virtual;
-    procedure fOnBlockSaveProcess({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
-    procedure fOnBlockSaveProcessReplacing({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
-    procedure fOnProcessCopy({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
-    procedure fOnProcessMute({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
-    procedure fOnBlockSaveProcess({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
-    procedure fOnBlockSaveProcessReplacing({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
-    procedure fOnProcessCopy({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
-    procedure fOnProcessMute({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
+    procedure fOnBlockSaveProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
+    procedure fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
+    procedure fOnProcessCopy(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
+    procedure fOnProcessMute(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
+    procedure fOnBlockSaveProcess(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
+    procedure fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
+    procedure fOnProcessCopy(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
+    procedure fOnProcessMute(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
     function GetHostProduct: string;
     function GetHostVendor: string;
   protected
@@ -495,8 +492,6 @@ type
     procedure SetVersionMajor(Value: Integer);
     procedure SetVersionMinor(Value: Integer);
     procedure SetVersionRelease(Value: Integer);
-    function Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
-    function VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
     procedure UpdateVersion;
 
     // Host -> Plug
@@ -845,8 +840,7 @@ procedure processClassDoubleReplacing(effect: PVSTEffect; inputs, outputs: PPDou
 function KeyCodeToInteger(VKC:TVstKeyCode):Integer;
 
 {$IFDEF FPC}
-function InitResourceComponent(Instance: TComponent;
-  RootAncestor: TClass):Boolean;
+function InitResourceComponent(Instance: TComponent; RootAncestor: TClass):Boolean;
 {$ENDIF}
 
 implementation
@@ -995,10 +989,9 @@ begin
 end;
 
 {$ELSE}
-function InitResourceComponent(Instance: TComponent;
-  RootAncestor: TClass): Boolean;
+function InitResourceComponent(Instance: TComponent; RootAncestor: TClass): Boolean;
 begin
-  Result:=InitLazResourceComponent(Instance,RootAncestor);
+ Result:=InitLazResourceComponent(Instance,RootAncestor);
 end;
 {$ENDIF}
 
@@ -1021,8 +1014,8 @@ begin
  fEffect.magic := 'PtsV';
  fEffect.dispatcher := @dispatchEffectClass;
  fEffect.process := @processClass;
- fEffect.processReplacing := {$IFDEF FPC}@{$ENDIF}processClassReplacing;
- fEffect.processDoubleReplacing := {$IFDEF FPC}@{$ENDIF}processClassDoubleReplacing;
+ fEffect.processReplacing := processClassReplacing;
+ fEffect.processDoubleReplacing := processClassDoubleReplacing;
  fEffect.setParameter := @setParameterClass;
  fEffect.getParameter := @getParameterClass;
  fEffect.EffectFlags := [];
@@ -1250,11 +1243,13 @@ begin
                                    if Assigned(EditorForm) then
                                     begin
                                      a:=KeyCodeToInteger(keyCode);
+{$IFNDEF FPC}
                                      if keyCode.virt=0 then b:=0 else b:=KF_EXTENDED;
                                      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
                                       then PostMessage(EditorForm.ActiveControl.Handle, WM_KEYDOWN, a,b)
                                       else PostMessage(EditorForm.ActiveControl.Handle, WM_SYSKEYDOWN, a,KF_ALTDOWN);
                                      PostMessage(EditorForm.ActiveControl.Handle,WM_CHAR, a, b);
+{$ENDIF}
                                     end;
                                    if Assigned(fOnKeyDown) then fOnKeyDown(Self, keyCode);
                                    if Assigned(fOnCheckKey)
@@ -1273,10 +1268,12 @@ begin
                                    if Assigned(EditorForm) then
                                     begin
                                      a:=KeyCodeToInteger(keyCode);
+{$IFNDEF FPC}
                                      if keyCode.virt=0 then b:=0 else b:=KF_EXTENDED;
                                      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
                                       then PostMessage(EditorForm.ActiveControl.Handle, WM_KEYUP, a, b)
                                       else PostMessage(EditorForm.ActiveControl.Handle, WM_SYSKEYUP, a, KF_ALTDOWN);
+{$ENDIF}
                                     end;
                                    if Assigned(fOnKeyUp) then fOnKeyUp(Self, keyCode);
                                    if Assigned(fOnCheckKey)
@@ -1386,7 +1383,7 @@ begin
   end;
 end;
 
-procedure TCustomVSTModule.fOnProcessCopy({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnProcessCopy(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
 var i,j: Integer;
 begin
  j:=numInputs;
@@ -1394,13 +1391,13 @@ begin
  for i:=0 to j-1 do Move(inputs[i,0],outputs[i,0],sampleframes*SizeOf(Single));
 end;
 
-procedure TCustomVSTModule.fOnProcessMute({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnProcessMute(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
 var i : Integer;
 begin
  for i:=0 to numOutputs do Fillchar(outputs[i,0],0,sampleframes*SizeOf(Single));
 end;
 
-procedure TCustomVSTModule.fOnProcessCopy({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnProcessCopy(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
 var i,j: Integer;
 begin
  j:=numInputs;
@@ -1408,7 +1405,7 @@ begin
  for i:=0 to j-1 do Move(inputs[i,0],outputs[i,0],sampleframes*SizeOf(Double));
 end;
 
-procedure TCustomVSTModule.fOnProcessMute({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnProcessMute(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
 var i : Integer;
 begin
  for i:=0 to numOutputs do Fillchar(outputs[i,0],0,sampleframes*SizeOf(Double));
@@ -1429,7 +1426,7 @@ begin
   then SetInitialDelay(fInitialDelay);
 end;
 
-procedure TCustomVSTModule.fOnBlockSaveProcess({$IFNDEF FPC}const{$ENDIF} Inputs, Outputs: TArrayOfSingleArray; SampleFrames: Integer);
+procedure TCustomVSTModule.fOnBlockSaveProcess(const Inputs, Outputs: TArrayOfSingleArray; SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -1460,7 +1457,7 @@ begin
  until CurrentPosition>=SampleFrames;
 end;
 
-procedure TCustomVSTModule.fOnBlockSaveProcess({$IFNDEF FPC}const{$ENDIF} Inputs, Outputs: TArrayOfDoubleArray; SampleFrames: Integer);
+procedure TCustomVSTModule.fOnBlockSaveProcess(const Inputs, Outputs: TArrayOfDoubleArray; SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -1491,7 +1488,7 @@ begin
  until CurrentPosition>=SampleFrames;
 end;
 
-procedure TCustomVSTModule.fOnBlockSaveProcessReplacing({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -1522,7 +1519,7 @@ begin
  until CurrentPosition>=SampleFrames;
 end;
 
-procedure TCustomVSTModule.fOnBlockSaveProcessReplacing({$IFNDEF FPC}const{$ENDIF} inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -1587,7 +1584,7 @@ begin
 //                 PrepareBlockProcessing;
                 end;
   pmCopy: fOnProcessEx:=fOnProcessCopy;
-  pmMute: fOnProcessEx:=fOnProcessMute; //{$IFDEF FPC}@{$ENDIF}
+  pmMute: fOnProcessEx:=fOnProcessMute;
  end;
 end;
 
@@ -2206,13 +2203,17 @@ end;
 procedure TCustomVstParameterProperty.AssignTo(Dest: TPersistent);
 begin
  if Dest is TCustomVstParameterProperty then with TCustomVstParameterProperty(Dest) do
- begin
+ try
+  Units:=Self.Units;
   DisplayName := Self.DisplayName;
+ except
+  inherited;
  end else
   inherited;
 end;
 
-procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string);
+{$IFNDEF FPC}
+procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string[30]);
 begin
  fDisplayName:=copy(AValue,1,math.min(30,Length(AValue)));
 end;
@@ -2222,10 +2223,29 @@ begin
  Result := FDisplayName;
 end;
 
-procedure TCustomVstParameterProperty.SetUnits(AUnits: string);
+procedure TCustomVstParameterProperty.SetUnits(AUnits: string[8]);
 begin
- fUnits:=copy(AUnits,1,math.min(8,Length(AUnits)));
+ FUnits := AUnits;
 end;
+
+{$ELSE}
+
+procedure TCustomVstParameterProperty.SetDisplayName(const AValue: ansistring);
+begin
+ fDisplayName:=copy(AValue,1,math.min(30,Length(AValue)));
+end;
+
+function TCustomVstParameterProperty.GetDisplayName: ansistring;
+begin
+ Result := FDisplayName;
+end;
+
+procedure TCustomVstParameterProperty.SetUnits(AUnits: ansistring);
+begin
+ FUnits := AUnits;
+end;
+
+{$ENDIF}
 
 { TVstParameterProperties }
 
@@ -2335,6 +2355,7 @@ begin
  end;
 end;
 
+{$IFNDEF FPC}
 function TCustomVstProgram.GetDisplayName: string;
 begin
  Result := FDisplayName;
@@ -2344,6 +2365,17 @@ procedure TCustomVstProgram.SetDisplayName(const Value: string);
 begin
  fDisplayName:=copy(Value,0,50);
 end;
+{$ELSE}
+function TCustomVstProgram.GetDisplayName: ansistring;
+begin
+ Result := FDisplayName;
+end;
+
+procedure TCustomVstProgram.SetDisplayName(const AValue: ansistring);
+begin
+ fDisplayName:=copy(AValue,0,50);
+end;
+{$ENDIF}
 
 procedure TCustomVstProgram.AssignTo(Dest: TPersistent);
 var i: Integer;
@@ -2680,6 +2712,7 @@ function KeyCodeToInteger(VKC:TVstKeyCode):Integer;
 begin
  if (VKC.character=0) then
   begin
+{$IFNDEF FPC}
    case VKC.virt of
     VKEY_BACK: Result:=VK_BACK;
     VKEY_TAB: Result:=VK_TAB;
@@ -2740,6 +2773,7 @@ begin
     VKEY_EQUALS: Result:=$5D;
     else Result:=VKC.character;
    end;
+{$ENDIF}
   end
  else
   begin
@@ -2825,7 +2859,7 @@ begin
    b := val - b * 128;
    midiData[0] := $E0 + ch;
    midiData[1] := b;
-    midiData[2] := a;
+   midiData[2] := a;
    deltaframes := offset;
    if fMidiEvent.numEvents < maxMidiEvents - 1 then inc(fMidiEvent.numEvents);
   end;
@@ -3380,7 +3414,7 @@ begin
  Result := ParameterProperties[Index].ReportVST2Properties;
  if Result then
   begin
-   StrCopy(p^.vLabel,@ParameterProperties[Index].DisplayName);
+   StrCopy(p^.vLabel,@ParameterProperties[Index].DisplayName[1]);
    str:=ParameterProperties[Index].ShortLabel;
    StrCopy(p^.shortLabel,@str);
    p^.minInteger:=ParameterProperties[Index].MinInteger;
@@ -3591,7 +3625,11 @@ begin
  copyTo^.elevation := copyFrom^.elevation;
  copyTo^.radius := copyFrom^.radius;
  copyTo^.reserved := copyFrom^.reserved;
+{$IFNDEF FPC}
  CopyMemory(@(copyTo^.future), @(copyFrom^.future), 28);
+{$ELSE}
+ Move(copyTo^.future, copyFrom^.future, 28);
+{$ENDIF}
 
  Result := TRUE;
 end;
@@ -3662,11 +3700,6 @@ begin
   else inherited;
 end;
 
-function TCustomVstShellPlugin.GetDisplayName: string;
-begin
- Result := FDisplayName;
-end;
-
 function TCustomVstShellPlugin.GetUniqueID:string;
 var i : Integer;
 begin
@@ -3680,11 +3713,28 @@ begin
  UID:=FourCharToLong(fID[1], fID[2], fID[3], fID[4])
 end;
 
+{$IFNDEF FPC}
 procedure TCustomVstShellPlugin.SetDisplayName(const Value: string);
 begin
 // inherited;
  fDisplayName:=copy(Value,0,50);
 end;
+
+function TCustomVstShellPlugin.GetDisplayName: string;
+begin
+ Result := FDisplayName;
+end;
+{$ELSE}
+procedure TCustomVstShellPlugin.SetDisplayName(const AValue: ansistring);
+begin
+ fDisplayName:=copy(AValue,0,50);
+end;
+
+function TCustomVstShellPlugin.GetDisplayName: ansistring;
+begin
+ Result := FDisplayName;
+end;
+{$ENDIF}
 
 { TCustomVstShellPlugins }
 
@@ -3800,6 +3850,7 @@ initialization
 //  Set8087CW(Default8087CW or $3F);
 {$IFDEF FPC}
   RegisterInitComponentHandler(TCustomVSTModule,@InitResourceComponent);
+  RegisterInitComponentHandler(TVSTModule,@InitResourceComponent);
 {$ENDIF}
 
 end.
