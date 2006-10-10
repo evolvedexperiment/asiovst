@@ -7,12 +7,11 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <Title Value="Mini Host Core"/>
+      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
-      <Language Value=""/>
-      <CharSet Value=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -39,11 +38,11 @@
         <MinVersion Minor="2" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="16">
+    <Units Count="17">
       <Unit0>
         <Filename Value="MiniHost.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="1" Y="10"/>
+        <CursorPos X="1" Y="17"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="21"/>
@@ -56,9 +55,11 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="MiniHostForm.lrs"/>
         <UnitName Value="MiniHostForm"/>
-        <CursorPos X="1" Y="2096"/>
-        <TopLine Value="2082"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="21"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="OptionsForm.pas"/>
@@ -169,16 +170,29 @@
         <TopLine Value="574"/>
         <UsageCount Value="10"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="..\..\..\VSTPAC~1\Source\DASIOConvert.pas"/>
+        <UnitName Value="DASIOConvert"/>
+        <CursorPos X="27" Y="9"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit16>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="3" HistoryIndex="2">
       <Position1>
-        <Filename Value="MiniHost.lpr"/>
-        <Caret Line="13" Column="3" TopLine="1"/>
+        <Filename Value="MiniHostForm.pas"/>
+        <Caret Line="2098" Column="39" TopLine="2082"/>
       </Position1>
       <Position2>
-        <Filename Value="MiniHost.lpr"/>
-        <Caret Line="9" Column="11" TopLine="1"/>
+        <Filename Value="MiniHostForm.pas"/>
+        <Caret Line="10" Column="60" TopLine="1"/>
       </Position2>
+      <Position3>
+        <Filename Value="MiniHostForm.pas"/>
+        <Caret Line="2264" Column="1" TopLine="2238"/>
+      </Position3>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -186,12 +200,27 @@
     <PathDelim Value="\"/>
     <SearchPaths>
       <IncludeFiles Value="include\"/>
-      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType)\;$(LazarusDir)\components\codetools\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\components\custom\;$(LazarusDir)\packager\units\$(TargetCPU)-$(TargetOS)\;C:\ITA\Projects\VST Package\Source\;C:\ITA\Projects\VST Package\Lazarus\"/>
+      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType)\;$(LazarusDir)\components\codetools\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\components\custom\;$(LazarusDir)\packager\units\$(TargetCPU)-$(TargetOS)\;C:\ITA\Projects\VSTPAC~1\Source\;C:\ITA\Projects\VSTPAC~1\Lazarus\"/>
       <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\;$(LazarusDir)\components\synedit\;$(LazarusDir)\components\codetools\"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+        <AllowLabel Value="False"/>
+        <CPPInline Value="False"/>
+        <DelphiCompat Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
     <CodeGeneration>
       <Generate Value="Faster"/>
     </CodeGeneration>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
     <Other>
       <CompilerPath Value="$(CompPath)"/>
     </Other>

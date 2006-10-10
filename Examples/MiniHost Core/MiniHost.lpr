@@ -3,8 +3,9 @@ program MiniHost;
 {$MODE Delphi}
 
 uses
-  Forms,
+  interfaces,
   LCLIntf,
+  Forms,
   MiniHostForm in 'MiniHostForm.pas' {FmMiniHost},
   OptionsForm in 'OptionsForm.pas' {Options},
   aboutform in 'aboutform.pas' {about},
@@ -13,9 +14,10 @@ uses
   HostASIOLaz;
 
 {$R *.RES}
+
 begin
  Application.Initialize;
- Application.Title := 'Tobybear MiniHost';
+ Application.Title:='Mini Host Core';
  Application.CreateForm(TFmMiniHost, FmMiniHost);
  Application.Run;
 end.

@@ -2091,7 +2091,7 @@ begin
  ms^ := s;
 {$IFNDEF FPC}
  Player.wavbox.AddItem(extractfilename(s), TObject(ms));
- Player.wavbox.ItemIndex := Player.wavbox.Items.Add() - 1;
+ Player.wavbox.ItemIndex := Player.wavbox.Items.Count - 1;
 {$ENDIF}
 end;
 
