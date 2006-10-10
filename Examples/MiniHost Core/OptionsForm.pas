@@ -1,10 +1,15 @@
 unit OptionsForm;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, DVSTEffect, 
-  Controls, Forms, Dialogs, StdCtrls, MiniHostForm, DASIOHost, ASIO;
+  {$IFDEF FPC}LCLIntf,  LResources, Buttons, {$ELSE} Windows, {$ENDIF}
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
+  DVSTEffect, MiniHostForm, DASIOHost, ASIO;
 
 type
   TOptions = class(TForm)
@@ -40,9 +45,12 @@ type
 var Options: TOptions;
 
 implementation
-uses DVstHost;
 
+{$IFNDEF FPC}
 {$R *.dfm}
+{$ENDIF}
+
+uses DVstHost;
 
 procedure TOptions.FormCreate(Sender: TObject);
 begin
@@ -136,6 +144,10 @@ begin
  label7.caption := 'Tempo: ' + inttostr(scrollbar3.position)+' bpm';
 end;
 
+{$IFDEF FPC}
+initialization
+  {$i OptionsForm.lrs}
+  {$i OptionsForm.lrs}
+{$ENDIF}
+
 end.
-
-

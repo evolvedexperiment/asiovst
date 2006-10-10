@@ -1,10 +1,14 @@
 unit PlayerForm;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls;
+  {$IFDEF FPC}LCLIntf,  LResources, Buttons, {$ELSE} Windows, {$ENDIF}
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ComCtrls;
 
 type
   TPlayer = class(TForm)
@@ -74,8 +78,12 @@ type
 var Player: TPlayer;
 
 implementation
-uses MiniHostForm, OptionsForm, shellapi;
+
+{$IFNDEF FPC}
 {$R *.dfm}
+{$ENDIF}
+
+uses MiniHostForm, OptionsForm, shellapi;
 
 var FmMiniHost: TFmMiniHost;
 
@@ -282,6 +290,12 @@ begin
  FmMiniHost.Wavefile.SetPos(round((FmMiniHost.Wavefile.size - 1) * s_pos2.position / 100));
  label7.caption := 'position: ' + inttostr(s_pos2.position) + ' %';
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i PlayerForm.lrs}
+  {$i PlayerForm.lrs}
+{$ENDIF}
 
 end.
 

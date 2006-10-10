@@ -1,12 +1,16 @@
 unit MiniHostForm;
+
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics,
-  Controls, Forms, Dialogs, OpenASIO, DVstEffect,
-  WaveIOX, Math, StdCtrls, DVstHost, ComCtrls,
-  MIDIFile, MIDI, DASIOHost, ExtCtrls,
-  Menus, DDspBase, inifiles;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
+  DDspBase, DVstEffect, WaveIOX, DVstHost, MIDIFile, MIDI, DASIOHost,
+  ExtCtrls, Math, ComCtrls, Menus, inifiles;
 
 type shortstr = string[255];
      pshortstr = ^shortstr;
@@ -247,10 +251,11 @@ var allowed: boolean = false;
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
-uses shellapi, OptionsForm, 
-     FileCtrl, aboutform, PlayerForm;
+uses shellapi, OptionsForm, FileCtrl, aboutform, PlayerForm;
 
 procedure TFmMiniHost.FormCreate(Sender: TObject);
 var i: integer;
@@ -2220,6 +2225,12 @@ begin
  mdatacnt := 0;
  evproc := false;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i MiniHostForm.lrs}
+  {$i MiniHostForm.lrs}
+{$ENDIF}
 
 end.
 

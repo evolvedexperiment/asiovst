@@ -1,10 +1,14 @@
 unit aboutform;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls;
+  {$IFDEF FPC}LCLIntf,  LResources, Buttons, {$ELSE} Windows, {$ENDIF}
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls;
 
 type
   Tabout = class(TForm)
@@ -29,9 +33,13 @@ type
 var about: Tabout;
 
 implementation
+
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
+
 uses shellapi, MiniHostForm;
 
-{$R *.dfm}
 
 procedure Tabout.Label4Click(Sender: TObject);
 begin
@@ -60,6 +68,12 @@ begin
  ShellExecute(GetDesktopWindow(), 'open',
   PChar('https://www.paypal.com/xclick/business=tobybear%40web.de&item_name=MiniHost'), nil, nil, SW_SHOWNORMAL);
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i aboutform.lrs}
+  {$i aboutform.lrs}
+{$ENDIF}
 
 end.
 
