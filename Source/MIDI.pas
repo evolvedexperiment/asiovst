@@ -14,10 +14,15 @@
 //****************************************************************************/
 unit Midi;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  classes, SysUtils, mmsystem, Math, Windows, Contnrs;
+  {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF}
+  Classes, SysUtils, MMSystem, Math, Contnrs;
 
 const
   // size of system exclusive buffer
@@ -114,7 +119,7 @@ type
   private
     fSysExStream: TMemoryStream;
   public
-    SysExHeader: TMidiHdr;
+    SysExHeader: {$IFDEF FPC}_midihdr{$ELSE}TMidiHdr{$ENDIF};
     SysExData: TSysExBuffer;
     constructor Create;
     destructor Destroy; override;
@@ -149,7 +154,19 @@ end;
 
 { TMidiInput }
 
-procedure midiInCallback(aMidiInHandle: PHMIDIIN; aMsg: UInt; aData, aMidiData, aTimeStamp: integer); stdcall;
+{$IFDEF FPC}
+type
+  PHMIDIIN = ^HMIDIIN;
+  TMidiHdr = _midihdr;
+  TMidiInCapsA = _MIDIINCAPSA;
+  TMidiInCapsW = _MIDIINCAPSW;
+  TMidiInCaps = TMidiInCapsA;
+  TMidiOutCapsA = _MIDIOUTCAPSA;
+  TMidiOutCapsW = _MIDIOUTCAPSW;
+  TMidiOutCaps = TMidiOutCapsA;
+{$ENDIF}
+
+procedure midiInCallback(aMidiInHandle: PHMIDIIN; aMsg: Integer; aData, aMidiData, aTimeStamp: integer); stdcall;
 begin
  case aMsg of
  MIM_DATA: begin
@@ -245,7 +262,6 @@ end;
 
 procedure TMidiOutput.Close(const aDeviceIndex: integer);
 begin
- inherited;
  if GetHandle(aDeviceIndex) = 0 then Exit;
  MidiResult := midiOutClose(GetHandle(aDeviceIndex));
  fDevices.Objects[ aDeviceIndex ] := nil;
@@ -271,7 +287,6 @@ end;
 procedure TMidiOutput.Open(const aDeviceIndex: integer);
 var lHandle: THandle;
 begin
- inherited;
  // device already open;
  if GetHandle(aDeviceIndex) <> 0 then Exit;
  MidiResult := midiOutOpen(@lHandle, aDeviceIndex, 0, 0, CALLBACK_NULL);

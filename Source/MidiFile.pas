@@ -93,6 +93,10 @@
 
 unit MidiFile;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses

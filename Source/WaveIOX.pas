@@ -24,8 +24,13 @@ History:
 
 interface
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 uses
-  Windows, Classes, MMSystem, SysUtils, MSACMX, Dialogs;
+  {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF}
+  Classes, MMSystem, SysUtils, MSACMX;
 
 const
   MPEGLAYER3=85;
@@ -127,7 +132,7 @@ type
 
   TWavWriter=class(TObject)
   public
-   Format:twaveformatex;
+   Format : {$IFDEF FPC}WAVEFORMATEX{$ELSE}TWaveFormatEx{$ENDIF};
    stream:TfilewaveStream;
    constructor Create(fn:string;sr,ch,bits:longint);
    procedure WriteFloatData(p:pointer;size:longint);
@@ -174,7 +179,11 @@ begin
       raise EWaveIOError.Create('Error 03: Cannot write wave format.');
 
     GetMem(FFormat,sizeof(FFormat^));
+    {$IFDEF FPC}
+    Move(FFormat,WriteFormat,sizeof(FFormat^));
+    {$ELSE}
     CopyMemory(FFormat,WriteFormat,sizeof(FFormat^));
+    {$ENDIF}
 
     // Ascend out of the 'fmt ' chunk,back into the 'RIFF' chunk.
     if(mmioAscend(mm,@pck,0)<>0) then
@@ -265,7 +274,7 @@ end;
 procedure TWaveStream.CheckMMIOWave;
 var
   mmIOInfo: TMMIOInfo;
-  FormatTmp: TWaveFormatEx;
+  FormatTmp: {$IFDEF FPC}WAVEFORMATEX{$ELSE}TWaveFormatEx{$ENDIF};
   ExtraAlloc: Word;
 begin
   if(mmioDescend(mm,@pckRIFF,nil,0)<>0) then
@@ -302,7 +311,11 @@ begin
       raise EWaveIOError.Create('Error 17: Cannot read ''waveformatex'' length!');
 
   GetMem(FFormat,sizeof(FFormat^)+ExtraAlloc);
+  {$IFDEF FPC}
+  Move(FFormat,FormatTmp,sizeof(FFormat^));
+  {$ELSE}
   CopyMemory(FFormat,@FormatTmp,sizeof(FFormat^));
+  {$ENDIF}
   FFormat^.cbSize:=ExtraAlloc;
   if(ExtraAlloc<>0) then
     if(mmioRead(mm,PChar(FFormat)+sizeof(FFormat^),ExtraAlloc) <>
@@ -342,7 +355,7 @@ constructor TMemoryWaveStream.Create(Memory: Pointer; Size: Longint;
 var
   info: TMMIOINFO;
 begin
-  ZeroMemory(@info,sizeof(info));
+  FillChar(info,sizeof(info),0);
   with info do
   begin
     pchBuffer:=Memory;
@@ -423,20 +436,22 @@ begin
   and(FStream.Format^.wFormatTag<>3) then
   begin
     // prepare acm stream converter
-    ZeroMemory(dstwfx,sizeof(dstwfx^));
+    FillChar(dstwfx,sizeof(dstwfx^),0);
     dstwfx^.wFormatTag:=WAVE_FORMAT_PCM;
     if(acmFormatSuggest(0,FStream.FFormat,dstwfx,sizeof(dstwfx^),
       ACM_FORMATSUGGESTF_WFORMATTAG)<>0) then
       raise EWaveIOError.Create('Error 26: Cannot suggest pcm format.');
 
+{$IFNDEF FPC}
     if(acmStreamOpen(PHACMSTREAM(@acmStream),0,FStream.Format^,dstwfx^,
       nil,0,0,0)<>0) then
       raise EWaveIOError.Create('Error 27: Cannot open acm stream.');
+{$ENDIF}
 
     AllocBuffers;
 
     // prepare buffers
-    ZeroMemory(@ash,sizeof(ash));
+    FillChar(ash,sizeof(ash),0);
     with ash do
     begin
       cbStruct:=sizeof(ash);
@@ -566,7 +581,11 @@ begin
       begin
        len:=PCMBufferSamplePos+PCMBufferSampleSize-FPosition;
        if(len>Count) then len:=Count;
+       {$IFDEF FPC}
+//       Move(PChar(@Buffer), PChar(PCMBuffer)+(FPosition-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
+       {$ELSE}
        CopyMemory(PChar(@Buffer), PChar(PCMBuffer)+(FPosition-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
+       {$ENDIF}
        pos:=len;
       end
      else pos:=0;
@@ -581,7 +600,11 @@ begin
        else posf:=FPosition+Count;
       len:=posf-posi;
       // put pcm buffer data into target
+      {$IFDEF FPC}
+//      Move(PChar(@Buffer)+(posi-FPosition)*dstwfx^.nBlockAlign, PChar(PCMBuffer)+(posi-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
+      {$ELSE}
       CopyMemory(PChar(@Buffer)+(posi-FPosition)*dstwfx^.nBlockAlign, PChar(PCMBuffer)+(posi-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
+      {$ENDIF}
       pos:=pos+len;
      end;
     FPosition:=FPosition+Count;
@@ -883,7 +906,7 @@ var
   w: TfilewaveStream;
   ps:psingle;
   l,li:longint;
-  t:twaveformatex;
+  t:{$IFDEF FPC}WAVEFORMATEX{$ELSE}TWaveFormatEx{$ENDIF};
   p:pwaveformatex;
   x:single;
 begin
@@ -923,7 +946,7 @@ var
   w: TFileWaveStream;
   ps,ps2:psingle;
   l,li:longint;
-  t:twaveformatex;
+  t:{$IFDEF FPC}WAVEFORMATEX{$ELSE}TWaveFormatEx{$ENDIF};
   p:pwaveformatex;
   x:single;
 begin

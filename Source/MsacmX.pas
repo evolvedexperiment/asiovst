@@ -28,6 +28,11 @@ unit MSACMX;
 // ----------------------------------------------------------------------
 
 interface
+
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 uses Windows, MMSystem;
 
 // MMREG include
