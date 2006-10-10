@@ -1,7 +1,7 @@
 object VSTFilter: TVSTFilter
   OldCreateOrder = False
-  Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
-  Version = '0.0'
+  Flags = [effFlagsCanReplacing, effFlagsCanDoubleReplacing]
+  Version = '1.0'
   EffectName = 'Delphi VST Filter'
   ProductName = 'Delphi VST Filter'
   VendorName = 'Delphi VST'
@@ -55,7 +55,7 @@ object VSTFilter: TVSTFilter
     end
     item
       Min = 0.009999999776482582
-      Max = 20.000000000000000000
+      Max = 10.000000000000000000
       Curve = ctLinear
       DisplayName = 'Resonance'
       CurveFactor = 1.000000000000000000
@@ -67,7 +67,7 @@ object VSTFilter: TVSTFilter
       LargeStepFloat = 1.000000000000000000
       Flags = []
       MinInteger = 0
-      MaxInteger = 20
+      MaxInteger = 10
       StepInteger = 1
       LargeStepInteger = 1
       ShortLabel = 'Res'

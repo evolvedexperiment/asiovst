@@ -48,7 +48,7 @@ end;
 procedure TVSTFilter.VSTFilterParameterProperties0ParameterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fCutOffFrequency:=FreqLogToLinear(Parameter[0]);
+ fCutOffFrequency:=0.01+Parameter[0]/20000;
 end;
 
 
@@ -63,15 +63,15 @@ var i         : integer;
 begin
  cut := fCutOffFrequency;
  res := 0.1*Parameter[1];
+ fb := res + res / (1 - cut * 0.9);
  for i := 0 to sampleFrames - 1 do
   begin
-   fb := res + res / (1 - cut * 0.9);
-   fOld[0,0] := fOld[0,0] + cut * (i - fOld[0,0] + fb * (fOld[0,0] - fOld[1,0])) + kDenorm;
-   fOld[0,1] := fOld[0,1] + cut * (i - fOld[0,1] + fb * (fOld[0,1] - fOld[1,1])) + kDenorm;
+   fOld[0,0] := fOld[0,0] + cut * (inputs[0,i] - fOld[0,0] + fb * (fOld[0,0] - fOld[1,0])) + kDenorm;
+   fOld[0,1] := fOld[0,1] + cut * (inputs[1,i] - fOld[0,1] + fb * (fOld[0,1] - fOld[1,1])) + kDenorm;
    fOld[1,0] := fOld[1,0] + cut * (fOld[0,0] - fOld[1,0]);
    fOld[1,1] := fOld[1,1] + cut * (fOld[0,1] - fOld[1,1]);
-   outputs[0, i] := f_limit(fOld[1,0]);
-   outputs[1, i] := f_limit(fOld[1,1]);
+   outputs[0,i] := f_limit(fOld[1,0]);
+   outputs[1,i] := f_limit(fOld[1,1]);
   end;
 end;
 
@@ -88,11 +88,11 @@ var i         : integer;
 begin
  cut := Parameter[0] * 0.8;
  res := Parameter[1];
+ fb := res + res / (1 - cut * 0.9);
  for i := 0 to sampleFrames - 1 do
   begin
-   fb := res + res / (1 - cut * 0.9);
-   fOld[0,0] := fOld[0,0] + cut * (i - fOld[0,0] + fb * (fOld[0,0] - fOld[1,0])) + kDenorm;
-   fOld[0,1] := fOld[0,1] + cut * (i - fOld[0,1] + fb * (fOld[0,1] - fOld[1,1])) + kDenorm;
+   fOld[0,0] := fOld[0,0] + cut * (inputs[0,i] - fOld[0,0] + fb * (fOld[0,0] - fOld[1,0])) + kDenorm;
+   fOld[0,1] := fOld[0,1] + cut * (inputs[1,i] - fOld[0,1] + fb * (fOld[0,1] - fOld[1,1])) + kDenorm;
    fOld[1,0] := fOld[1,0] + cut * (fOld[0,0] - fOld[1,0]);
    fOld[1,1] := fOld[1,1] + cut * (fOld[0,1] - fOld[1,1]);
    outputs[0, i] := f_limit(fOld[1,0]);
