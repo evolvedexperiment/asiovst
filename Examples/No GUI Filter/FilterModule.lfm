@@ -1,13 +1,10 @@
 object VSTFilter: TVSTFilter
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '0.0'
   EffectName = 'Delphi VST Filter'
   ProductName = 'Delphi VST Filter'
   VendorName = 'Delphi VST'
-  VersionMajor = 1
-  VersionMinor = 0
-  VersionRelease = 0
+  VendorVersion = 0
   PlugCategory = cgEffect
   TailSize = 0
   CanDos = [plugAsChannelInsert, plugAsSend, _1in1out, _1in2out, _2in1out, _2in2out]

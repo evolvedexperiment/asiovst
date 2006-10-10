@@ -1,17 +1,18 @@
 unit FilterModule;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
-uses Windows, DDSPBase, DVSTModule;
+uses {$IFDEF FPC} LResources, LCLClasses, {$ENDIF}DDSPBase, DVSTModule;
 
 type
   TVSTFilter = class(TVSTModule)
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleArray;
-      sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const inputs,
-      outputs: TArrayOfDoubleArray; sampleframes: Integer);
-    procedure VSTFilterParameterProperties0ParameterChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
+    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
+    procedure VSTFilterParameterProperties0ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleInitialize(Sender: TObject);
   private
     fCutOffFrequency   : Single;
@@ -22,7 +23,9 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 const kDenorm = 1E-20;
 
@@ -49,8 +52,6 @@ begin
 end;
 
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,8 +74,6 @@ begin
    outputs[1, i] := f_limit(fOld[1,1]);
   end;
 end;
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,5 +99,11 @@ begin
    outputs[1, i] := f_limit(fOld[1,1]);
   end;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i FilterModule.lrs}
+  {$i FilterModule.lrs}
+{$ENDIF}
 
 end.
