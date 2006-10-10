@@ -14,6 +14,7 @@ uses
 
 type shortstr = string[255];
      pshortstr = ^shortstr;
+
 const appversion = '1.0';
       appname = 'MiniHost Core';
     

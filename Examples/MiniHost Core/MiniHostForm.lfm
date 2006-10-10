@@ -1,57 +1,54 @@
 object FmMiniHost: TFmMiniHost
-  Left = 215
-  Top = 216
+  Left = 360
+  Height = 340
+  Top = 342
+  Width = 560
+  HorzScrollBar.Page = 559
+  VertScrollBar.Page = 320
+  ActiveControl = prbox
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Tobybear MiniHost (www.tobybear.de)'
-  ClientHeight = 340
+  ClientHeight = 321
   ClientWidth = 560
   Color = 11053224
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Arial'
-  Font.Style = []
   KeyPreview = True
   Menu = MainMenu1
-  Position = poScreenCenter
-  Visible = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  PixelsPerInch = 96
-  TextHeight = 14
+  Position = poScreenCenter
+  Visible = True
   object status: TPanel
-    Left = 0
-    Top = 0
-    Width = 560
     Height = 32
+    Width = 560
     Align = alTop
     BevelOuter = bvNone
-    ParentColor = True
+    ClientHeight = 32
+    ClientWidth = 560
     TabOrder = 0
     object Shape2: TShape
       Left = 79
+      Height = 21
       Top = 6
       Width = 12
-      Height = 21
       Brush.Color = 11053224
       Pen.Style = psClear
     end
     object Shape1: TShape
       Left = 34
+      Height = 21
       Top = 6
       Width = 39
-      Height = 21
       Brush.Color = 11053224
       Pen.Style = psClear
     end
     object bg: TImage
-      Left = 0
-      Top = 0
-      Width = 560
       Height = 32
+      Width = 560
       Align = alClient
       Picture.Data = {
         07544269746D617036D20000424D36D200000000000036000000280000003002
@@ -1736,155 +1733,148 @@ object FmMiniHost: TFmMiniHost
         A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8
         A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8
         A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8
-        A8A8}
-      Transparent = True
+        A8A8
+      }
     end
     object onoff: TImage
+      Cursor = crHandPoint
       Left = 5
+      Height = 22
+      Hint = 'enable/disable processing'
       Top = 5
       Width = 22
-      Height = 22
-      Cursor = crHandPoint
-      Hint = 'enable/disable processing'
       OnMouseUp = onoffMouseUp
     end
     object quicksettings: TImage
+      Cursor = crHandPoint
       Left = 306
+      Height = 22
+      Hint = 'show/hide settings'
       Top = 5
       Width = 22
-      Height = 22
-      Cursor = crHandPoint
-      Hint = 'show/hide settings'
       OnMouseUp = quicksettingsMouseUp
     end
     object quickmidplay: TImage
+      Cursor = crHandPoint
       Left = 333
+      Height = 22
+      Hint = 'start/stop MIDI playback'
       Top = 5
       Width = 22
-      Height = 22
-      Cursor = crHandPoint
-      Hint = 'start/stop MIDI playback'
       OnMouseDown = bord2MouseDown
       OnMouseUp = quickmidplayMouseUp
     end
     object quickwavplay: TImage
+      Cursor = crHandPoint
       Left = 360
+      Height = 22
+      Hint = 'start/stop WAV playback'
       Top = 5
       Width = 22
-      Height = 22
-      Cursor = crHandPoint
-      Hint = 'start/stop WAV playback'
       OnMouseDown = bord2MouseDown
       OnMouseUp = quickwavplayMouseUp
     end
     object quickwavrec: TImage
+      Cursor = crHandPoint
       Left = 387
+      Height = 22
+      Hint = 'start/stop WAV recording'
       Top = 5
       Width = 22
-      Height = 22
-      Cursor = crHandPoint
-      Hint = 'start/stop WAV recording'
       OnMouseDown = bord2MouseDown
       OnMouseUp = quickwavrecMouseUp
     end
     object bord0: TImage
+      Cursor = crHandPoint
       Left = 3
+      Height = 26
+      Hint = 'enable/disable processing'
       Top = 3
       Width = 25
-      Height = 26
-      Cursor = crHandPoint
-      Hint = 'enable/disable processing'
-      Picture.Data =
-      Transparent = True
       OnMouseUp = onoffMouseUp
     end
     object bord2: TImage
+      Cursor = crHandPoint
       Left = 331
+      Height = 26
+      Hint = 'start/stop MIDI playback'
       Top = 3
       Width = 25
-      Height = 26
-      Cursor = crHandPoint
-      Hint = 'start/stop MIDI playback'
-      Transparent = True
       OnMouseDown = bord2MouseDown
       OnMouseUp = quickmidplayMouseUp
     end
     object bord3: TImage
+      Cursor = crHandPoint
       Left = 358
+      Height = 26
+      Hint = 'start/stop WAV playback'
       Top = 3
       Width = 25
-      Height = 26
-      Cursor = crHandPoint
-      Hint = 'start/stop WAV playback'
-      Transparent = True
       OnMouseDown = bord2MouseDown
       OnMouseUp = quickwavplayMouseUp
     end
     object bord4: TImage
+      Cursor = crHandPoint
       Left = 385
+      Height = 26
+      Hint = 'start/stop WAV recording'
       Top = 3
       Width = 25
-      Height = 26
-      Cursor = crHandPoint
-      Hint = 'start/stop WAV recording'
-      Transparent = True
       OnMouseDown = bord2MouseDown
       OnMouseUp = quickwavrecMouseUp
     end
     object bord1: TImage
+      Cursor = crHandPoint
       Left = 304
+      Height = 26
+      Hint = 'show/hide settings'
       Top = 3
       Width = 25
-      Height = 26
-      Cursor = crHandPoint
-      Hint = 'show/hide settings'
-      Transparent = True
       OnMouseUp = quicksettingsMouseUp
     end
     object prbox: TComboBox
       Left = 101
+      Height = 22
       Top = 5
       Width = 193
-      Height = 22
-      AutoComplete = False
+      AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
       AutoDropDown = True
-      Style = csOwnerDrawFixed
-      Ctl3D = False
       DropDownCount = 25
-      Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = [fsBold]
       ItemHeight = 16
       ItemIndex = 0
-      ParentCtl3D = False
-      ParentFont = False
-      TabOrder = 0
-      Text = 'presets'
+      Items.Strings = (
+        'presets'
+      )
+      MaxLength = 0
       OnChange = prboxChange
       OnClick = prboxClick
       OnDrawItem = prboxDrawItem
       OnKeyPress = prboxKeyPress
-      Items.Strings = (
-        'presets')
+      ParentCtl3D = False
+      Style = csOwnerDrawFixed
+      TabOrder = 0
+      Text = 'presets'
     end
   end
   object Panel1: TPanel
     Left = 273
+    Height = 24
     Top = 4
     Width = 22
-    Height = 24
     BevelOuter = bvNone
-    ParentColor = True
+    ClientHeight = 24
+    ClientWidth = 22
     TabOrder = 1
     object dropdown: TImage
-      Left = 0
-      Top = 0
-      Width = 22
-      Height = 24
       Cursor = crHandPoint
+      Height = 24
+      Width = 22
       Align = alClient
+      OnMouseDown = dropdownMouseDown
       Picture.Data = {
         07544269746D617096060000424D960600000000000036000000280000001600
         000018000000010018000000000060060000C40E0000C40E0000000000000000
@@ -1939,45 +1929,41 @@ object FmMiniHost: TFmMiniHost
         00000000000000000000000000000000000000000000000000C6C6C600007373
         7373737373737373737373737373737373737373737373737373737373737373
         7373737373737373737373737373737373737373737373737373737373737373
-        0000}
-      Transparent = True
-      OnMouseDown = dropdownMouseDown
+        0000
+      }
     end
     object Image2: TImage
-      Left = 0
-      Top = 0
-      Width = 22
-      Height = 11
       Cursor = crHandPoint
+      Height = 11
+      Width = 22
       OnMouseUp = Image2MouseUp
     end
   end
   object VSTHost: TVstHost
-    VstPlugIns = <
+    VstPlugIns = <    
       item
         DisplayName = 'Test'
-      end
+      end    
       item
         DisplayName = 'Test2'
       end>
     ParameterQuantization = 0
     CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdEditFile, hcdStartStopProcess]
-    ManageIdleAutomaticly = False
-    Tempo = 120.000000000000000000
+    Tempo = 120
     VstVersion = 2300
     VendorString = 'Tobybear'
     VendorVersion = 1
     ProductString = 'MiniHost'
     PlugInDir = 'C:\Programme\Audio\Plugins\VST'
-    VstTimeInfo.SampleRate = 44100.000000000000000000
-    VstTimeInfo.Tempo = 120.000000000000000000
+    VstTimeInfo.SampleRate = 44100
+    VstTimeInfo.Tempo = 120
     VstTimeInfo.Flags = [vtiPpqPosValid, vtiTempoValid, vtiTimeSigValid]
-    Left = 24
-    Top = 136
+    left = 24
+    top = 136
   end
   object MainMenu1: TMainMenu
-    Left = 152
-    Top = 72
+    left = 152
+    top = 72
     object Main1: TMenuItem
       Caption = 'Main'
       object Settings1: TMenuItem
@@ -2115,16 +2101,15 @@ object FmMiniHost: TFmMiniHost
     Enabled = False
     Interval = 300
     OnTimer = Timer1Timer
-    Left = 24
-    Top = 72
+    left = 24
+    top = 72
   end
   object ASIOHost: TASIOHost
-    CanDos = []
     PreFillOutBuffer = bpfZero
     ConvertOptimizations = [coSSE, co3DNow]
-    SampleRate = 44100.000000000000000000
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
+    SampleRate = 44100
+    ASIOTime.Speed = 1
+    ASIOTime.SampleRate = 44100
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     OnDestroy = ASIOHostDestroy
     OnUpdateSamplePos = ASIOHostUpdateSamplePos
@@ -2132,13 +2117,13 @@ object FmMiniHost: TFmMiniHost
     OnLatencyChanged = ASIOHostLatencyChanged
     OnSampleRateChanged = ASIOHostSampleRateChanged
     OnBufferSwitch = ASIOHostBufferSwitch
-    Left = 96
-    Top = 136
+    left = 96
+    top = 136
   end
   object IdleTimer: TTimer
     Interval = 100
     OnTimer = IdleTimerTimer
-    Left = 96
-    Top = 72
+    left = 96
+    top = 72
   end
 end
