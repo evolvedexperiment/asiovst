@@ -142,7 +142,9 @@ begin
   for i := 0 to midibox.Items.Count - 1 do
    if midibox.Selected[i] then
     FreeMem(pshortstr(midibox.Items.Objects[i]));
+{$IFNDEF FPC}
   midibox.DeleteSelected;
+{$ENDIF}
  end;
 end;
 
@@ -154,7 +156,7 @@ begin
   MidiFile.StopPlaying;
   MidiPlaying := false;
   Panic1Click(nil);
-  if (midibox.ItemIndex >= 0) and (midibox.Count > 0) then
+  if (midibox.ItemIndex >= 0) and (midibox.Items.Count > 0) then
   begin
    MidiFile.Filename := pshortstr(midibox.items.objects[midibox.itemindex])^;
    label2.Caption := midibox.items[midibox.itemindex];
@@ -197,14 +199,16 @@ begin
   for i := 0 to wavbox.Items.Count - 1 do
    if wavbox.Selected[i] then
     FreeMem(pshortstr(wavbox.Items.Objects[i]));
+{$IFNDEF FPC}
   wavbox.DeleteSelected;
+{$ENDIF}
  end;
 end;
 
 procedure TPlayer.Button8Click(Sender: TObject);
 begin
  //play
- if (wavbox.ItemIndex >= 0) and (wavbox.Count > 0) then
+ if (wavbox.ItemIndex >= 0) and (wavbox.Items.Count > 0) then
  with FmMiniHost do
  begin
   LoadWAV(pshortstr(wavbox.items.objects[wavbox.itemindex])^);

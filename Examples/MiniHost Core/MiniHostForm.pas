@@ -309,7 +309,9 @@ begin
 
  DragAcceptFiles(self.handle, true);
  
+{$IFNDEF FPC}
  ininame := GetApplicationDirectory + ChangeFileExt(GetApplicationFilename, '.ini');
+{$ENDIF}
 
  MidiFile := TMidiFile.create(nil);
  MidiFile.OnMidiEvent := MyMidiEvent;
@@ -494,9 +496,9 @@ begin
  Settings := TIniFile.Create(ininame);
  Settings.EraseSection('Playlist MIDI');
  Settings.EraseSection('Playlist WAV');
- for i := 0 to Player.midibox.Count - 1 do
+ for i := 0 to Player.midibox.Items.Count - 1 do
   Settings.WriteString('Playlist MIDI', PShortStr(Player.midibox.Items.Objects[i])^, '');
- for i := 0 to Player.wavbox.Count - 1 do
+ for i := 0 to Player.wavbox.Items.Count - 1 do
   Settings.WriteString('Playlist WAV', PShortStr(Player.wavbox.Items.Objects[i])^, '');
  Settings.WriteInteger('General', 'Timer', Timer1.Interval);
  Settings.WriteInteger('Layout', 'MainWindow X', Left);
@@ -666,8 +668,10 @@ begin
   m.Caption := StrPas(p);
   m.OnClick := SetPreset;
   m.tag := i;
+{$IFNDEF FPC}
   if (i > 0) and (i mod 256 <> 0) and (i mod 32 = 0) then
    m.break := mbBarBreak;
+{$ENDIF}
   s := inttostr(i);
   if i < 10 then s := '00' + s else
   if i < 100 then s := '0' + s;
@@ -711,7 +715,9 @@ begin
  try
   VSTHost.VSTPlugIns[0].Active := true;
  except
+{$IFNDEF FPC}
   msg(s + ' is not a valid VST plugin!');
+{$ENDIF}
   VSTHost.VSTPlugIns[0].Active := false;
   VSTHost.VSTPlugIns[0].DLLFilename := '';
   exit;
@@ -976,7 +982,9 @@ begin
   try
    VSTHost.VSTPlugIns[0].LoadPreset(Files[i]);
   except
+{$IFNDEF FPC}
    msg('Preset file not for this plugin (or file is corrupted)!');
+{$ENDIF}
    timer1.Enabled := true;
    exit;
   end;
@@ -1009,7 +1017,9 @@ begin
 
   s2 := prbox.Items[prbox.ItemIndex];
   s2 := copy(s2, 6, length(s2) - 5);
+{$IFNDEF FPC}
   Filename := MakeGoodFileName(s2) + '.fxp';
+{$ENDIF}
 
   if Execute then
   begin
@@ -1047,7 +1057,9 @@ begin
    try
     VSTHost.VSTPlugIns[0].LoadBank(Filename);
    except
+{$IFNDEF FPC}
     msg('Bank file not for this plugin (or file is corrupted)!');
+{$ENDIF}
     timer1.Enabled := true;
    end;
    BuildPresetList;
@@ -1377,14 +1389,14 @@ begin
     Panic1Click(nil);
     MidiFile.StartPlaying;
    end else
-   if (player.mode1.ItemIndex = 2) and (player.midibox.Count > 0) then
+   if (player.mode1.ItemIndex = 2) and (player.midibox.Items.Count > 0) then
    begin
-    player.midibox.itemindex := (Player.midibox.itemindex + 1) mod player.midibox.Count;
+    player.midibox.itemindex := (Player.midibox.itemindex + 1) mod player.midibox.Items.Count;
     player.Button4click(nil);
    end else
-   if (player.mode1.ItemIndex = 3) and (player.midibox.Count > 0) then
+   if (player.mode1.ItemIndex = 3) and (player.midibox.Items.Count > 0) then
    begin
-    player.midibox.itemindex := random(player.midibox.Count);
+    player.midibox.itemindex := random(player.midibox.Items.Count);
     player.Button4click(nil);
    end else
     MIDIPlaying := false;
@@ -1467,7 +1479,9 @@ begin
   try
    VSTHost.VSTPlugIns[0].LoadPreset(s);
   except
+{$IFNDEF FPC}
    DDspBase.msg('Preset file not for this plugin (or file is corrupted)!');
+{$ENDIF}
    exit;
   end;
  end else
@@ -1476,7 +1490,9 @@ begin
   try
    VSTHost.VSTPlugIns[0].LoadBank(s);
   except
+{$IFNDEF FPC}
    DDspBase.msg('Bank file not for this plugin (or file is corrupted)!');
+{$ENDIF}
    exit;
   end;
  end else
@@ -1716,7 +1732,7 @@ end;
 procedure TFmMiniHost.F4PlayStopWAV1Click(Sender: TObject);
 begin
  with Player do
- if wavbox.Count > 0 then
+ if wavbox.Items.Count > 0 then
  if wavbox.ItemIndex >= 0 then
  begin
   Player.label4.Caption := wavbox.items[wavbox.itemindex];
@@ -1827,14 +1843,14 @@ begin
    begin
     pmode := 0;
     player.s_pos2.position := 0;
-    if (player.mode2.ItemIndex = 2) and (player.wavbox.Count > 0) then
+    if (player.mode2.ItemIndex = 2) and (player.wavbox.Items.Count > 0) then
     begin
-     player.wavbox.itemindex := (Player.wavbox.itemindex + 1) mod player.wavbox.Count;
+     player.wavbox.itemindex := (Player.wavbox.itemindex + 1) mod player.wavbox.Items.Count;
      player.Button8click(nil);
     end else
-    if (player.mode2.ItemIndex = 3) and (player.wavbox.Count > 0) then
+    if (player.mode2.ItemIndex = 3) and (player.wavbox.Items.Count > 0) then
     begin
-     player.wavbox.itemindex := random(player.wavbox.Count);
+     player.wavbox.itemindex := random(player.wavbox.Items.Count);
      player.Button8click(nil);
     end;
    end;
@@ -1886,12 +1902,14 @@ end;
 procedure TFmMiniHost.Alwaysontop1Click(Sender: TObject);
 begin
  alwaysontop1.checked := not alwaysontop1.checked;
+{$IFNDEF FPC}
  if alwaysontop1.checked then
   SetWindowPos(self.Handle, HWND_TOPMOST, 0, 0, 0, 0,
    SWP_NOMOVE or SWP_NOACTIVATE or SWP_NOSIZE)
  else
   SetWindowPos(self.Handle, HWND_NOTOPMOST, 0, 0, 0, 0,
    SWP_NOMOVE or SWP_NOACTIVATE or SWP_NOSIZE);
+{$ENDIF}
 end;
 
 procedure TFmMiniHost.FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
@@ -2018,7 +2036,9 @@ var j, i: integer;
 begin
  if uppercase(extractfileext(s))='.MPL' then
  begin
+{$IFNDEF FPC}
   player.wavbox.SelectAll;
+{$ENDIF}
   player.button2click(nil);
   t:=tstringlist.Create;
   t.LoadFromFile(s);
@@ -2030,14 +2050,16 @@ begin
  if uppercase(extractfileext(s))<>'.MID' then exit;
  if not fileexists(s) then exit;
  j := -1;
- for i := 0 to Player.midibox.Count - 1 do
+ for i := 0 to Player.midibox.Items.Count - 1 do
   if PShortstr(Player.midibox.Items.Objects[i])^ = s then
    j := 0;
  if j = 0 then exit;
  getmem(ms, sizeof(shortstr));
  ms^ := s;
+{$IFNDEF FPC}
  Player.midibox.AddItem(extractfilename(s), TObject(ms));
- Player.midibox.ItemIndex := Player.midibox.Count - 1;
+{$ENDIF}
+ Player.midibox.ItemIndex := Player.midibox.Items.Count - 1;
 end;
 
 procedure TFmMiniHost.AddWAV(s:string);
@@ -2047,7 +2069,9 @@ var j, i: integer;
 begin
  if uppercase(extractfileext(s))='.WPL' then
  begin
+{$IFNDEF FPC}
   player.wavbox.SelectAll;
+{$ENDIF}
   player.button6click(nil);
   t:=tstringlist.Create;
   t.LoadFromFile(s);
@@ -2059,14 +2083,16 @@ begin
  if uppercase(extractfileext(s))<>'.WAV' then exit;
  if not fileexists(s) then exit;
  j := -1;
- for i := 0 to Player.wavbox.Count - 1 do
+ for i := 0 to Player.wavbox.Items.Count - 1 do
   if PShortstr(Player.wavbox.Items.Objects[i])^ = s then
    j := 0;
  if j = 0 then exit;
  getmem(ms, sizeof(shortstr));
  ms^ := s;
+{$IFNDEF FPC}
  Player.wavbox.AddItem(extractfilename(s), TObject(ms));
- Player.wavbox.ItemIndex := Player.wavbox.Count - 1;
+ Player.wavbox.ItemIndex := Player.wavbox.Items.Add() - 1;
+{$ENDIF}
 end;
 
 procedure TFmMiniHost.bord2MouseDown(Sender: TObject; Button: TMouseButton;

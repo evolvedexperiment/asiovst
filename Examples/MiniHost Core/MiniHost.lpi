@@ -7,7 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="3"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -39,14 +39,14 @@
         <MinVersion Minor="2" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="16">
       <Unit0>
         <Filename Value="MiniHost.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="3" Y="13"/>
+        <CursorPos X="1" Y="10"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -56,11 +56,9 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="MiniHostForm.lrs"/>
         <UnitName Value="MiniHostForm"/>
-        <CursorPos X="1" Y="11"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
+        <CursorPos X="1" Y="2096"/>
+        <TopLine Value="2082"/>
+        <UsageCount Value="21"/>
       </Unit1>
       <Unit2>
         <Filename Value="OptionsForm.pas"/>
@@ -69,9 +67,9 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="OptionsForm.lrs"/>
         <UnitName Value="OptionsForm"/>
-        <CursorPos X="22" Y="10"/>
-        <TopLine Value="10"/>
-        <UsageCount Value="20"/>
+        <CursorPos X="79" Y="110"/>
+        <TopLine Value="91"/>
+        <UsageCount Value="21"/>
       </Unit2>
       <Unit3>
         <Filename Value="aboutform.pas"/>
@@ -80,9 +78,9 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="aboutform.lrs"/>
         <UnitName Value="aboutform"/>
-        <CursorPos X="52" Y="18"/>
-        <TopLine Value="9"/>
-        <UsageCount Value="20"/>
+        <CursorPos X="2" Y="74"/>
+        <TopLine Value="56"/>
+        <UsageCount Value="21"/>
       </Unit3>
       <Unit4>
         <Filename Value="PlayerForm.pas"/>
@@ -91,9 +89,9 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="PlayerForm.lrs"/>
         <UnitName Value="PlayerForm"/>
-        <CursorPos X="20" Y="20"/>
-        <TopLine Value="9"/>
-        <UsageCount Value="20"/>
+        <CursorPos X="47" Y="211"/>
+        <TopLine Value="198"/>
+        <UsageCount Value="21"/>
       </Unit4>
       <Unit5>
         <Filename Value="aboutform.lfm"/>
@@ -126,157 +124,69 @@
       <Unit9>
         <Filename Value="..\..\Source\MsacmX.pas"/>
         <UnitName Value="MSACMX"/>
-        <CursorPos X="39" Y="333"/>
-        <TopLine Value="320"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <CursorPos X="12" Y="32"/>
+        <TopLine Value="19"/>
+        <UsageCount Value="11"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\..\Source\WaveIOX.pas"/>
         <UnitName Value="WaveIOX"/>
-        <CursorPos X="22" Y="32"/>
-        <TopLine Value="19"/>
-        <EditorIndex Value="3"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="11"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\packages\extra\winunits\mmsystem.pp"/>
         <UnitName Value="mmsystem"/>
-        <CursorPos X="13" Y="1086"/>
-        <TopLine Value="1074"/>
-        <UsageCount Value="10"/>
+        <CursorPos X="27" Y="2329"/>
+        <TopLine Value="2316"/>
+        <UsageCount Value="11"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="..\..\Source\MidiFile.pas"/>
+        <UnitName Value="MidiFile"/>
+        <CursorPos X="12" Y="96"/>
+        <TopLine Value="83"/>
+        <UsageCount Value="11"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\..\Source\MIDI.pas"/>
+        <UnitName Value="Midi"/>
+        <CursorPos X="1" Y="290"/>
+        <TopLine Value="277"/>
+        <UsageCount Value="11"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\objpas\sysutils\sysstrh.inc"/>
+        <CursorPos X="10" Y="163"/>
+        <TopLine Value="150"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="..\..\..\..\..\Programme\Lazarus\lcl\stdctrls.pp"/>
+        <UnitName Value="StdCtrls"/>
+        <CursorPos X="3" Y="539"/>
+        <TopLine Value="574"/>
+        <UsageCount Value="10"/>
+      </Unit15>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="2" HistoryIndex="1">
       <Position1>
-        <Filename Value="..\..\Source\MsacmX.pas"/>
-        <Caret Line="333" Column="25" TopLine="320"/>
+        <Filename Value="MiniHost.lpr"/>
+        <Caret Line="13" Column="3" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="62" Column="63" TopLine="40"/>
+        <Filename Value="MiniHost.lpr"/>
+        <Caret Line="9" Column="11" TopLine="1"/>
       </Position2>
-      <Position3>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="135" Column="26" TopLine="122"/>
-      </Position3>
-      <Position4>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="27" Column="1" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="135" Column="65" TopLine="122"/>
-      </Position5>
-      <Position6>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="182" Column="10" TopLine="169"/>
-      </Position6>
-      <Position7>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="135" Column="37" TopLine="130"/>
-      </Position7>
-      <Position8>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="183" Column="9" TopLine="169"/>
-      </Position8>
-      <Position9>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="277" Column="14" TopLine="264"/>
-      </Position9>
-      <Position10>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position10>
-      <Position11>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="135" Column="65" TopLine="122"/>
-      </Position11>
-      <Position12>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="277" Column="66" TopLine="264"/>
-      </Position12>
-      <Position13>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="314" Column="1" TopLine="301"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position14>
-      <Position15>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="187" Column="1" TopLine="172"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="315" Column="16" TopLine="302"/>
-      </Position16>
-      <Position17>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="358" Column="12" TopLine="345"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="439" Column="38" TopLine="426"/>
-      </Position18>
-      <Position19>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="445" Column="16" TopLine="432"/>
-      </Position19>
-      <Position20>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="32" Column="15" TopLine="19"/>
-      </Position20>
-      <Position21>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="445" Column="71" TopLine="432"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="846" Column="10" TopLine="833"/>
-      </Position22>
-      <Position23>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="452" Column="31" TopLine="439"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="445" Column="71" TopLine="432"/>
-      </Position24>
-      <Position25>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="846" Column="10" TopLine="833"/>
-      </Position25>
-      <Position26>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="445" Column="12" TopLine="432"/>
-      </Position26>
-      <Position27>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="32" Column="18" TopLine="19"/>
-      </Position27>
-      <Position28>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="35" Column="21" TopLine="19"/>
-      </Position28>
-      <Position29>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="445" Column="13" TopLine="432"/>
-      </Position29>
-      <Position30>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <Caret Line="32" Column="20" TopLine="19"/>
-      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType)\;$(LazarusDir)\components\codetools\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\components\custom\;$(LazarusDir)\packager\units\$(TargetCPU)-$(TargetOS)\;C:\ITA\Projects\VST Package\Source\"/>
+      <IncludeFiles Value="include\"/>
+      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType)\;$(LazarusDir)\components\codetools\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\components\custom\;$(LazarusDir)\packager\units\$(TargetCPU)-$(TargetOS)\;C:\ITA\Projects\VST Package\Source\;C:\ITA\Projects\VST Package\Lazarus\"/>
       <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\;$(LazarusDir)\components\synedit\;$(LazarusDir)\components\codetools\"/>
     </SearchPaths>
     <CodeGeneration>

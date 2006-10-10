@@ -4,9 +4,9 @@ program MiniHost;
 
 uses
   Forms,
+  LCLIntf,
   MiniHostForm in 'MiniHostForm.pas' {FmMiniHost},
   OptionsForm in 'OptionsForm.pas' {Options},
-  LCLIntf, Dialogs, {OpenASIO,}
   aboutform in 'aboutform.pas' {about},
   PlayerForm in 'PlayerForm.pas' {Player},
   HostVSTLaz,

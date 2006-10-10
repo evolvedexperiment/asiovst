@@ -40,17 +40,20 @@ implementation
 
 uses shellapi, MiniHostForm;
 
-
 procedure Tabout.Label4Click(Sender: TObject);
 begin
+{$IFNDEF FPC}
  ShellExecute(GetDesktopWindow(), 'open',
   PChar('http://www.tobybear.de'), nil, nil, SW_SHOWNORMAL);
+{$ENDIF}
 end;
 
 procedure Tabout.Label3Click(Sender: TObject);
 begin
+{$IFNDEF FPC}
  ShellExecute(GetDesktopWindow(), 'open',
   PChar('mailto:tobybear@web.de'), nil, nil, SW_SHOWNORMAL);
+{$ENDIF}
 end;
 
 procedure Tabout.Button1Click(Sender: TObject);
@@ -65,8 +68,10 @@ end;
 
 procedure Tabout.Label5Click(Sender: TObject);
 begin
+ {$IFNDEF FPC}
  ShellExecute(GetDesktopWindow(), 'open',
   PChar('https://www.paypal.com/xclick/business=tobybear%40web.de&item_name=MiniHost'), nil, nil, SW_SHOWNORMAL);
+ {$ENDIF}
 end;
 
 {$IFDEF FPC}
