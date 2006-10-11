@@ -2,18 +2,17 @@ unit SineSynthGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
-     Controls, StdCtrls, MidiKeys, DMidiKeys;
+uses
+  Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
+  Controls, StdCtrls, MidiKeys, DMidiKeys;
 
 type
   TVSTGUI = class(TForm)
     MidiKeys: TMidiKeys;
     procedure MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
     procedure MidiKeysMidiKeyUp(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
-    procedure FormKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure FormKeyUp(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
   public
     theModule: TVSTModule;
@@ -25,18 +24,17 @@ implementation
 
 uses SineSynthModule, SineSynthVoice, VoiceList;
 
-procedure TVSTGUI.MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState;
-  X, Y, Key: Integer);
+procedure TVSTGUI.MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
 var newNote : TSineSynthVoice;
 const VeloDiv : Single = 1/128;
 begin
  if Key<0 then Key:=0 else if Key>119 then Key:=119;
- theModule.MIDI_NoteOn(0,Key,128);
+ theModule.MIDI_NoteOn(0,Key,Round(128*Y/Height));
  with newNote do
   begin
    newNote:=TSineSynthVoice.Create(theModule);
    MidiKeyNr:=Key;
-   Velocity:=100;
+   Velocity:=Round(128*Y/Height);
    NoteOn(Midi2Pitch[Key],Velocity*VeloDiv);
    (theModule as TVSTSSModule).Voices.Add(newNote);
   end;
