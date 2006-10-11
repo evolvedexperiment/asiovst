@@ -29,6 +29,7 @@ requires
   vcl;
 
 contains
-  DMidiKeys in '..\Source\DMidiKeys.pas';
+  DMidiKeys in '..\Source\DMidiKeys.pas',
+  DADSRGraph in '..\Source\DADSRGraph.pas';
 
 end.
