@@ -131,8 +131,8 @@ type
     fMin, fMax        : Single;
     fCurve            : TCurveType;
     fCurveFactor      : Single;
-    fDisplayName      : string[30];
-    fUnits            : {$IFNDEF FPC}string[8]{$ELSE}ansistring{$ENDIF};
+    fDisplayName      : string;
+    fUnits            : {$IFNDEF FPC}string{$ELSE}ansistring{$ENDIF};
     fSmoothingFactor  : Single;
     fCanBeAutomated   : Boolean;
     fV2Properties     : Boolean;
@@ -158,9 +158,9 @@ type
     procedure AssignTo(Dest: TPersistent); override;
     
 {$IFNDEF FPC}
-    procedure SetDisplayName(const AValue: string[30]); override;
+    procedure SetDisplayName(const AValue: string); override;
     function GetDisplayName: string; override;
-    procedure SetUnits(AUnits: string[8]);
+    procedure SetUnits(AUnits: string);
 {$ELSE}
     procedure SetDisplayName(const AValue: ansistring); override;
     function GetDisplayName: ansistring; override;
@@ -178,8 +178,8 @@ type
     property Max: Single read fMax write fMax;
     property CC: Integer read fCC write fCC default -1;
     property Curve: TCurveType read fCurve write fCurve;
-    property DisplayName{$IFNDEF FPC}: string[30] read fDisplayName write SetDisplayName{$ENDIF};
-    property Units: {$IFNDEF FPC}string[8]{$ELSE}ansistring{$ENDIF} read fUnits write SetUnits;
+    property DisplayName{$IFNDEF FPC}: string read fDisplayName write SetDisplayName{$ENDIF};
+    property Units: {$IFNDEF FPC}string{$ELSE}ansistring{$ENDIF} read fUnits write SetUnits;
     property CurveFactor: Single read fCurveFactor write fCurveFactor;
     property SmoothingFactor: Single read fSmoothingFactor write fSmoothingFactor;
     property CanBeAutomated: Boolean read fCanBeAutomated write fCanBeAutomated;
@@ -233,7 +233,7 @@ type
     fChunkData        : TMemoryStream;
     procedure AssignTo(Dest: TPersistent); override;
     {$IFNDEF FPC}
-    procedure SetDisplayName(const AValue: string[30]); override;
+    procedure SetDisplayName(const AValue: string); override;
     function GetDisplayName: string; override;
     {$ELSE}
     procedure SetDisplayName(const AValue: ansistring); override;
@@ -289,7 +289,7 @@ type
   protected
     procedure AssignTo(Dest: TPersistent); override;
     {$IFNDEF FPC}
-    procedure SetDisplayName(const AValue: string[30]); override;
+    procedure SetDisplayName(const AValue: string); override;
     function GetDisplayName: string; override;
     {$ELSE}
     procedure SetDisplayName(const AValue: ansistring); override;
@@ -2213,7 +2213,7 @@ begin
 end;
 
 {$IFNDEF FPC}
-procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string[30]);
+procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string);
 begin
  fDisplayName:=copy(AValue,1,math.min(30,Length(AValue)));
 end;
@@ -2223,7 +2223,7 @@ begin
  Result := FDisplayName;
 end;
 
-procedure TCustomVstParameterProperty.SetUnits(AUnits: string[8]);
+procedure TCustomVstParameterProperty.SetUnits(AUnits: string);
 begin
  FUnits := AUnits;
 end;
@@ -2361,9 +2361,9 @@ begin
  Result := FDisplayName;
 end;
 
-procedure TCustomVstProgram.SetDisplayName(const Value: string);
+procedure TCustomVstProgram.SetDisplayName(const AValue: string);
 begin
- fDisplayName:=copy(Value,0,50);
+ fDisplayName:=copy(AValue,0,50);
 end;
 {$ELSE}
 function TCustomVstProgram.GetDisplayName: ansistring;
@@ -3714,10 +3714,10 @@ begin
 end;
 
 {$IFNDEF FPC}
-procedure TCustomVstShellPlugin.SetDisplayName(const Value: string);
+procedure TCustomVstShellPlugin.SetDisplayName(const AValue: string);
 begin
 // inherited;
- fDisplayName:=copy(Value,0,50);
+ fDisplayName:=copy(AValue,0,50);
 end;
 
 function TCustomVstShellPlugin.GetDisplayName: string;
