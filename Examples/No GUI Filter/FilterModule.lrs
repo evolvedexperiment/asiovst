@@ -21,8 +21,8 @@ LazarusResources.Add('TVSTFilter','FORMDATA',[
   +'terChange'#0#1#3'Min'#5#0#0#0#0#0#10#215#163#248'?'#3'Max'#5#0#0#0#0#0#0#0
   +#160#3'@'#5'Curve'#7#8'ctLinear'#11'DisplayName'#6#9'Resonance'#11'CurveFact'
   +'or'#5#0#0#0#0#0#0#0#128#255'?'#15'SmoothingFactor'#5#0#0#0#0#0#0#0#128#255
-  +'?'#14'CanBeAutomated'#9#20'ReportVST2Properties'#8#9'StepFloat'#5#0#240#255
-  +#255#255#204#204#204#251'?'#14'SmallStepFloat'#5#0#240#255#255#255#204#204
+  +'?'#14'CanBeAutomated'#9#20'ReportVST2Properties'#8#9'StepFloat'#5#0#248#255
+  +#255#255#204#204#204#251'?'#14'SmallStepFloat'#5#0#248#255#255#255#204#204
   +#204#251'?'#14'LargeStepFloat'#5#0#0#0#0#0#0#0#128#255'?'#5'Flags'#11#0#10'M'
   +'inInteger'#2#0#10'MaxInteger'#2#20#11'StepInteger'#2#1#16'LargeStepInteger'
   +#2#1#10'ShortLabel'#6#3'Res'#9'VSTModule'#7#5'Owner'#0#0#9'OnProcess'#7#16'V'

@@ -7,6 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -30,29 +31,30 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="9">
       <Unit0>
         <Filename Value="NoGUIFilter.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="15" Y="4"/>
         <TopLine Value="1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="31"/>
       </Unit0>
       <Unit1>
         <Filename Value="FilterModule.pas"/>
+        <ComponentName Value="VSTFilter"/>
         <HasResources Value="True"/>
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="FilterModule.lrs"/>
         <UnitName Value="FilterModule"/>
-        <CursorPos X="24" Y="106"/>
+        <CursorPos X="22" Y="90"/>
         <TopLine Value="79"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="31"/>
       </Unit1>
       <Unit2>
         <Filename Value="FilterModule.lfm"/>
         <CursorPos X="3" Y="7"/>
         <TopLine Value="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
         <SyntaxHighlighter Value="LFM"/>
       </Unit2>
       <Unit3>
@@ -60,34 +62,69 @@
         <UnitName Value="DVSTModule"/>
         <CursorPos X="74" Y="3"/>
         <TopLine Value="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\..\..\Programme\Lazarus\ide\lazarus.pp"/>
         <UnitName Value="Lazarus"/>
         <CursorPos X="1" Y="114"/>
         <TopLine Value="89"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\Source\DVSTModule.pas"/>
         <UnitName Value="DVSTModule"/>
-        <CursorPos X="39" Y="3580"/>
-        <TopLine Value="3555"/>
+        <CursorPos X="1" Y="64"/>
+        <TopLine Value="64"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="..\..\Lazarus\VSTModuleIDE.pas"/>
+        <UnitName Value="VSTModuleIDE"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\..\Lazarus\VSTPluginLaz.pas"/>
+        <UnitName Value="VSTPluginLaz"/>
+        <CursorPos X="12" Y="20"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\..\..\..\..\Programme\Lazarus\components\cgi\cgimodules.pas"/>
+        <UnitName Value="cgiModules"/>
+        <CursorPos X="1" Y="154"/>
+        <TopLine Value="115"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit8>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="2" HistoryIndex="1">
+      <Position1>
+        <Filename Value="..\..\Source\DVSTModule.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\Source\DVSTModule.pas"/>
+        <Caret Line="3856" Column="5" TopLine="3814"/>
+      </Position2>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <IncludeFiles Value="..\..\Source\"/>
-      <Libraries Value="..\..\Source\"/>
-      <OtherUnitFiles Value="..\..\Source\"/>
+      <IncludeFiles Value="..\..\Source\;C:\ITA\Projects\VSTPack\Lazarus\;C:\ITA\Projects\VSTPack\Source\"/>
+      <Libraries Value="..\..\Source\;C:\ITA\Projects\VSTPack\Lazarus\;C:\ITA\Projects\VSTPack\Source\"/>
+      <OtherUnitFiles Value="..\..\Source\;C:\ITA\Projects\VSTPack\Lazarus\;C:\ITA\Projects\VSTPack\Source\"/>
       <UnitOutputDirectory Value="..\..\Bin"/>
       <ObjectPath Value="..\..\Source\"/>
+      <SrcPath Value="C:\ITA\Projects\VSTPack\Lazarus\;C:\ITA\Projects\VSTPack\Source\"/>
     </SearchPaths>
     <CodeGeneration>
       <Generate Value="Faster"/>
