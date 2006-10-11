@@ -75,7 +75,7 @@ end;
 
 destructor TMidiKeys.Destroy;
 begin
- fBuffer.Destroy;
+ fBuffer.Free;
  inherited;
 end;
 
@@ -88,7 +88,7 @@ begin
   begin
    Pen.Color:=clBlack;
    Pen.Style:=psSolid;
-
+   
    // Render white keys
    s:=Width/(7*NumOctaves+1);
    for i:=0 to 7*NumOctaves do
