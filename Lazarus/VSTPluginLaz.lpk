@@ -7,10 +7,20 @@
       <Version Value="5"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="..\Source\"/>
-        <OtherUnitFiles Value="..\Source\"/>
+        <IncludeFiles Value="..\Source\;..\Lazarus\"/>
+        <OtherUnitFiles Value="..\Source\;..\Lazarus\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+        <SrcPath Value="..\Source\;..\Lazarus\"/>
       </SearchPaths>
+      <Parsing>
+        <Style Value="1"/>
+        <SyntaxOptions>
+          <CStyleOperator Value="False"/>
+          <AllowLabel Value="False"/>
+          <CPPInline Value="False"/>
+          <DelphiCompat Value="True"/>
+        </SyntaxOptions>
+      </Parsing>
       <CodeGeneration>
         <Generate Value="Faster"/>
       </CodeGeneration>
@@ -19,6 +29,12 @@
       </Other>
     </CompilerOptions>
     <Version Minor="2"/>
+    <Files Count="1">
+      <Item1>
+        <Filename Value="..\Source\DVSTModule.pas"/>
+        <UnitName Value="DVSTModule"/>
+      </Item1>
+    </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">
       <Item1>

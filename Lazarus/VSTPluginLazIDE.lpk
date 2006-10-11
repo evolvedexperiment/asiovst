@@ -7,10 +7,14 @@
       <Version Value="5"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType)\;$(LazarusDir)\components\codetools\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\components\custom\;$(LazarusDir)\packager\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\ideintf\units\$(TargetCPU)-$(TargetOS)\"/>
+        <IncludeFiles Value="..\Source\;..\Lazarus\"/>
+        <OtherUnitFiles Value="..\Source\;..\Lazarus\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-        <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\;$(LazarusDir)\components\synedit\;$(LazarusDir)\components\codetools\;$(LazarusDir)\ideintf\"/>
+        <SrcPath Value="..\Source\;..\Lazarus\"/>
       </SearchPaths>
+      <Parsing>
+        <Style Value="1"/>
+      </Parsing>
       <CodeGeneration>
         <Generate Value="Faster"/>
       </CodeGeneration>
@@ -24,6 +28,13 @@
         <CreateMakefileOnBuild Value="True"/>
       </Other>
     </CompilerOptions>
+    <Files Count="1">
+      <Item1>
+        <Filename Value="VSTModuleLazIDEIntf.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="VSTModuleLazIDEIntf"/>
+      </Item1>
+    </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">
       <Item1>
@@ -38,7 +49,7 @@
       </Item3>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)"/>
+      <UnitPath Value="$(PkgOutDir)\"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>

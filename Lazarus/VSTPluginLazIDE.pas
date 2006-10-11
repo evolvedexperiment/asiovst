@@ -7,12 +7,13 @@ unit VSTPluginLazIDE;
 interface
 
 uses
-  LazarusPackageIntf; 
+  VSTModuleLazIDEIntf, LazarusPackageIntf; 
 
 implementation
 
 procedure Register; 
 begin
+  RegisterUnit('VSTModuleLazIDEIntf', @VSTModuleLazIDEIntf.Register); 
 end; 
 
 initialization
