@@ -15,8 +15,8 @@ type
     fAttack,
     fDecay,
     fSustain,
-    fRelease    : Single;
-    fOwner      : TADSRGraph;
+    fRelease         : Single;
+    fOwner           : TADSRGraph;
   public
     constructor Create(AOwner: TADSRGraph);
     destructor Destroy; override;
@@ -34,20 +34,32 @@ type
 
   TADSRGraph = class(TGraphicControl)
   private
-    fBuffer         : TBitmap;
-    fLineWidth      : Integer;
-    fOnKeyDown      : TKeyEvent;
-    fOnKeyPress     : TKeyPressEvent;
-    fOnKeyUp        : TKeyEvent;
-    fADSRSettings   : TADSRSettings;
-    fLineColor      : TColor;
-    fTransparent    : Boolean;
-    fMouseEdit      : TADSRGraphMouseEdit;
+    fBuffer          : TBitmap;
+    fLineWidth       : Integer;
+    fOnKeyDown       : TKeyEvent;
+    fOnKeyPress      : TKeyPressEvent;
+    fOnKeyUp         : TKeyEvent;
+    fADSRSettings    : TADSRSettings;
+    fLineColor       : TColor;
+    fTransparent     : Boolean;
+    fMouseEdit       : TADSRGraphMouseEdit;
+    fOnAttackChange,
+    fOnSustainChange,
+    fOnDecayChange,
+    fOnReleaseChange : TNotifyEvent;
     procedure WMEraseBkgnd(var m: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure SetLinewidth(const Value: Integer);
     procedure SetLineColor(const Value: TColor);
     procedure SetTransparent(const Value: Boolean);
     procedure CalcIntValues;
+    function GetAttack: Single;
+    function GetDecay: Single;
+    function GetRelease: Single;
+    function GetSustain: Single;
+    procedure SetAttack(const Value: Single);
+    procedure SetDecay(const Value: Single);
+    procedure SetRelease(const Value: Single);
+    procedure SetSustain(const Value: Single);
   protected
     fA,fD,fS,fR     : Integer;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -58,6 +70,10 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Paint; override;
+    property Attack : Single read GetAttack write SetAttack;
+    property Decay : Single read GetDecay write SetDecay;
+    property Sustain : Single read GetSustain write SetSustain;
+    property Release : Single read GetRelease write SetRelease;
   published
     property Anchors;
     property Align;
@@ -75,6 +91,10 @@ type
     property OnKeyDown: TKeyEvent read FOnKeyDown write FOnKeyDown;
     property OnKeyPress: TKeyPressEvent read FOnKeyPress write FOnKeyPress;
     property OnKeyUp: TKeyEvent read FOnKeyUp write FOnKeyUp;
+    property OnAttackChange : TNotifyEvent read fOnAttackChange write fOnAttackChange;
+    property OnDecayChange : TNotifyEvent read fOnDecayChange write fOnDecayChange;
+    property OnSustainChange : TNotifyEvent read fOnSustainChange write fOnSustainChange;
+    property OnReleaseChange : TNotifyEvent read fOnReleaseChange write fOnReleaseChange;
   end;
 
 procedure Register;
@@ -113,6 +133,8 @@ begin
    fAttack := Value;
    fOwner.fA:=Round(0.25*fOwner.Width*fAttack);
    fOwner.fD:=fOwner.fA+Round(0.25*fOwner.Width*fDecay);
+   if Assigned(fOwner.fOnAttackChange)
+    then fOwner.fOnAttackChange(fOwner);
    fOwner.Invalidate;
   end;
 end;
@@ -124,6 +146,8 @@ begin
   begin
    fDecay := Value;
    fOwner.fD:=fOwner.fA+Round(0.25*fOwner.Width*fDecay);
+   if Assigned(fOwner.fOnDecayChange)
+    then fOwner.fOnDecayChange(fOwner);
    fOwner.Invalidate;
   end;
 end;
@@ -135,6 +159,8 @@ begin
   begin
    fRelease := Value;
    fOwner.fR:=fOwner.Width-round(0.25*fOwner.Width*fRelease);
+   if Assigned(fOwner.fOnReleaseChange)
+    then fOwner.fOnReleaseChange(fOwner);
    fOwner.Invalidate;
   end;
 end;
@@ -146,6 +172,8 @@ begin
   begin
    fSustain := Value;
    fOwner.fS:=Round(fOwner.Height*(1-fSustain));
+   if Assigned(fOwner.fOnSustainChange)
+    then fOwner.fOnSustainChange(fOwner);
    fOwner.Invalidate;
   end;
 end;
@@ -168,6 +196,26 @@ begin
  fBuffer.Free;
  fADSRSettings.Free;
  inherited;
+end;
+
+function TADSRGraph.GetAttack: Single;
+begin
+ Result:=ADSRSettings.Attack;
+end;
+
+function TADSRGraph.GetDecay: Single;
+begin
+ Result:=ADSRSettings.Decay;
+end;
+
+function TADSRGraph.GetRelease: Single;
+begin
+ Result:=ADSRSettings.Release;
+end;
+
+function TADSRGraph.GetSustain: Single;
+begin
+ Result:=ADSRSettings.Sustain;
 end;
 
 procedure DrawParentImage(Control: TControl; Dest: TCanvas);
@@ -233,6 +281,16 @@ begin
  fR:=Width-round(0.25*Width*fADSRSettings.Release);
 end;
 
+procedure TADSRGraph.SetAttack(const Value: Single);
+begin
+ ADSRSettings.Attack:=Value;
+end;
+
+procedure TADSRGraph.SetDecay(const Value: Single);
+begin
+ ADSRSettings.Decay:=Value;
+end;
+
 procedure TADSRGraph.SetLineColor(const Value: TColor);
 begin
  if fLineColor<>Value then
@@ -249,6 +307,16 @@ begin
    fLinewidth := Value;
    Invalidate;
   end;
+end;
+
+procedure TADSRGraph.SetRelease(const Value: Single);
+begin
+ ADSRSettings.Release:=Value;
+end;
+
+procedure TADSRGraph.SetSustain(const Value: Single);
+begin
+ ADSRSettings.Sustain:=Value;
 end;
 
 procedure TADSRGraph.SetTransparent(const Value: Boolean);
