@@ -25,8 +25,10 @@ object VSTGUI: TVSTGUI
     Height = 73
     BaseOctave = 4
     Align = alBottom
+    Color = clWhite
     OnMidiKeyDown = MidiKeysMidiKeyDown
     OnMidiKeyUp = MidiKeysMidiKeyUp
+    OnKeyColor = MidiKeysKeyColor
     ExplicitLeft = -16
     ExplicitTop = 33
     ExplicitWidth = 409

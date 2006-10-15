@@ -3,7 +3,7 @@ unit SimpleSamplerGUI;
 interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
-     Controls, StdCtrls, MidiKeys, DMidiKeys, Dialogs, WaveIOX;
+     Controls, StdCtrls, DMidiKeys, Graphics, Dialogs, WaveIOX;
 
 type
   TVSTGUI = class(TForm)
@@ -18,6 +18,8 @@ type
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure BtSampleSelectClick(Sender: TObject);
     procedure EditSampleChange(Sender: TObject);
+    procedure MidiKeysKeyColor(Sender: TObject; Key: Integer;
+      var Color: TColor);
   private
   public
     theModule: TVSTModule;
@@ -28,6 +30,14 @@ implementation
 {$R *.DFM}
 
 uses SimpleSamplerModule, SimpleSamplerVoice, VoiceList;
+
+procedure TVSTGUI.MidiKeysKeyColor(Sender: TObject; Key: Integer;
+  var Color: TColor);
+begin
+ if Key=60
+  then Color:=$00DDEEFF
+  else Color:=clWhite;
+end;
 
 procedure TVSTGUI.MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState;
   X, Y, Key: Integer);
