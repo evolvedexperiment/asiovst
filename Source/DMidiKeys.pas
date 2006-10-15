@@ -8,6 +8,7 @@ uses Windows, Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
 
 type
   TMidiKeyEvent = procedure(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer) of object;
+  TKeyColorEvent = procedure(Sender: TObject; Key: Integer; var Color : TColor) of object;
 
   TMidiKeys = class(TGraphicControl)
   private
@@ -22,16 +23,20 @@ type
     fOnKeyPress     : TKeyPressEvent;
     fOnKeyUp        : TKeyEvent;
     fLastNote       : Word;
+    fShadows        : array [0..2] of TColor;
+    FOnKeyColor: TKeyColorEvent;
     procedure WMEraseBkgnd(var m: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure SetNumOctaves(const Value: word);
     procedure SetBaseOct(const Value: integer);
     function GetKeysDown(index: Integer): Boolean;
     procedure SetKeysDown(index: Integer; const Value: Boolean);
+    procedure CalcColors(Color: TColor);
   protected
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure WMWindowPosChanged(var Message: TWMWindowPosChanged); message WM_WINDOWPOSCHANGED;
+    procedure CMColorchanged(var Message: TMessage); message CM_COLORCHANGED;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -44,6 +49,7 @@ type
     property Anchors;
     property Align;
     property Constraints;
+    property Color;
     property Enabled;
     property Visible;
     property OnMouseDown;
@@ -54,6 +60,7 @@ type
     property OnKeyUp: TKeyEvent read FOnKeyUp write FOnKeyUp;
     property OnMidiKeyDown: TMidiKeyEvent read FOnMidiKeyDown write FOnMidiKeyDown;
     property OnMidiKeyUp: TMidiKeyEvent read FOnMidiKeyUp write FOnMidiKeyUp;
+    property OnKeyColor: TKeyColorEvent read FOnKeyColor write FOnKeyColor;
   end;
 
 procedure Register;
@@ -62,6 +69,19 @@ implementation
 
 uses SysUtils;
 
+
+procedure TMidiKeys.CalcColors(Color : TColor);
+begin
+ fShadows[0]:=round(0.8*((Color shr 16) and $FF)) shl 16 + round(0.8*((Color shr 8) and $FF)) shl 8 + round(0.8*(Color and $FF));
+ fShadows[1]:=round(0.5*((Color shr 16) and $FF)) shl 16 + round(0.5*((Color shr 8) and $FF)) shl 8 + round(0.5*(Color and $FF));
+ fShadows[2]:=round(0.3*((Color shr 16) and $FF)) shl 16 + round(0.3*((Color shr 8) and $FF)) shl 8 + round(0.3*(Color and $FF));
+end;
+
+procedure TMidiKeys.CMColorchanged(var Message: TMessage);
+begin
+ CalcColors(Color);
+end;
+
 constructor TMidiKeys.Create(AOwner: TComponent);
 var i: integer;
 begin
@@ -69,6 +89,7 @@ begin
  fBaseOct := 2;
  fBuffer := TBitmap.Create;
  fNumOctaves := 3;
+ Color := clWhite;
  ControlStyle := ControlStyle+[csOpaque];
  for i := 0 to 127 do fKeysDown[i] := false;
 end;
@@ -80,50 +101,68 @@ begin
 end;
 
 procedure TMidiKeys.Paint;
-var i,o : Integer;
-    s   : Single;
-    kd  : Boolean;
+var i,o  : Integer;
+    s    : Single;
+//    kd   : Boolean;
+    kcol : TColor;
+    ncol : TColor;
+    key  : Integer;
 begin
  with fBuffer.Canvas do
   begin
    Pen.Color:=clBlack;
    Pen.Style:=psSolid;
-   
+   kcol:=Self.Color;
+
    // Render white keys
    s:=Width/(7*NumOctaves+1);
    for i:=0 to 7*NumOctaves do
     begin
-     o:=12*(i div 7); kd:=False;
+     o:=12*(i div 7);
      case (i mod 7) of
-      0: kd:=fKeysDown[BaseOctave*12+o   ];
-      1: kd:=fKeysDown[BaseOctave*12+o+ 2];
-      2: kd:=fKeysDown[BaseOctave*12+o+ 4];
-      3: kd:=fKeysDown[BaseOctave*12+o+ 5];
-      4: kd:=fKeysDown[BaseOctave*12+o+ 7];
-      5: kd:=fKeysDown[BaseOctave*12+o+ 9];
-      6: kd:=fKeysDown[BaseOctave*12+o+11];
+      0: key:=BaseOctave*12+o   ;
+      1: key:=BaseOctave*12+o+ 2;
+      2: key:=BaseOctave*12+o+ 4;
+      3: key:=BaseOctave*12+o+ 5;
+      4: key:=BaseOctave*12+o+ 7;
+      5: key:=BaseOctave*12+o+ 9;
+      6: key:=BaseOctave*12+o+11;
      end;
 
-     if kd
-      then Brush.Color:=$D0D0D0
-      else Brush.Color:=$FFFFFF;
+     if assigned(FOnKeyColor) then
+      begin
+       FOnKeyColor(Self,key,kcol);
+       CalcColors(kcol);
+      end;
+
+     if fKeysDown[key]
+      then Brush.Color:=fShadows[0]
+      else Brush.Color:=kcol;
      Rectangle(Round(i*s), 0, Round(i*s+s), Height);
-     Pen.Color:=clSilver; MoveTo(Round(i*s+s)-1,1);
+     Pen.Color:=fShadows[0]; MoveTo(Round(i*s+s)-1,1);
      LineTo(Round(i*s+s)-1,Height-1); Pen.Color:=clBlack;
     end;
 
    // Render black keys
-   Brush.Color:=$000000;
+   Brush.Color:=clBlack;
    s:=((7*NumOctaves)/(7*NumOctaves+1))*Width/(12*NumOctaves);
    for i:=0 to 12*NumOctaves+1 do
     begin
      if (i mod 12) in [1,3,6,8,10] then
       begin
-       if fKeysDown[BaseOctave*12+i]
-        then Brush.Color:=$333333
+       Key:=BaseOctave*12+i;
+
+       if assigned(FOnKeyColor) then
+        begin
+         FOnKeyColor(Self,key,kcol);
+         CalcColors(kcol);
+        end;
+
+       if fKeysDown[Key]
+        then Brush.Color:=fShadows[2]
         else Brush.Color:=clBlack;
        Rectangle(Round((i  )*s), 0, Round((i+1)*s+1), fBlackKeyHeight);
-       Pen.Color:=clGray;
+       Pen.Color:=fShadows[1];
        MoveTo(Round(i*s),1);
        LineTo(Round(i*s),fBlackKeyHeight-1);
        LineTo(Round(i*s+s)+1,fBlackKeyHeight-1);
