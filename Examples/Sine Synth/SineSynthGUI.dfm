@@ -26,6 +26,7 @@ object VSTGUI: TVSTGUI
     BaseOctave = 3
     NumOctaves = 4
     Align = alClient
+    Color = clWhite
     OnMidiKeyDown = MidiKeysMidiKeyDown
     OnMidiKeyUp = MidiKeysMidiKeyUp
     ExplicitLeft = -8
