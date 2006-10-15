@@ -26,10 +26,12 @@ package DVSTGFX;
 
 requires
   rtl,
-  vcl;
+  vcl,
+  DSPBase_D10;
 
 contains
   DMidiKeys in '..\Source\DMidiKeys.pas',
-  DADSRGraph in '..\Source\DADSRGraph.pas';
+  DADSRGraph in '..\Source\DADSRGraph.pas',
+  DWaveform in '..\Source\DWaveform.pas';
 
 end.
