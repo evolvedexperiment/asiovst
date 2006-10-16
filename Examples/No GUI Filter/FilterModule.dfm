@@ -77,8 +77,8 @@ object VSTFilter: TVSTFilter
   OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnInitialize = VSTModuleInitialize
-  Left = 243
-  Top = 103
+  Left = 443
+  Top = 102
   Height = 150
   Width = 215
 end
