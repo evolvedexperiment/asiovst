@@ -70,6 +70,7 @@ uses SysUtils;
 { TWaveform }
 
 constructor TWaveform.Create(AOwner: TComponent);
+var i : Integer;
 begin
  inherited Create(AOwner);
  fLineWidth := 1;
@@ -77,6 +78,10 @@ begin
  fTransparent := False;
  fNormalize := False;
  fBuffer := TBitmap.Create;
+ WaveLength:=1024;
+ for i:=0 to WaveLength - 1
+  do fWaveData[i]:=sin(2*Pi*i/WaveLength);
+
  ControlStyle := ControlStyle+[csOpaque];
 end;
 
@@ -145,6 +150,7 @@ begin
  with fBuffer.Canvas do
   begin
    Pen.Width:=fLineWidth;
+   Pen.Color:=fLineColor;
    r:=Width/Length(fWavedata); i:=1; w:=0; p:=0;
    mn:=Wavedata[0]*fNormalizeFak; mx:=mn;
    MoveTo(0,round(((mn*0.5)+0.5)*fBuffer.Height));
