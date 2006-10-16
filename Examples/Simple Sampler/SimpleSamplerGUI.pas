@@ -3,7 +3,7 @@ unit SimpleSamplerGUI;
 interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
-     Controls, StdCtrls, DMidiKeys, Graphics, Dialogs, WaveIOX;
+     Controls, StdCtrls, DMidiKeys, Graphics, Dialogs, WaveIOX, DWaveform;
 
 type
   TVSTGUI = class(TForm)
@@ -12,6 +12,7 @@ type
     Label1: TLabel;
     BtSampleSelect: TButton;
     OpenDialog: TOpenDialog;
+    Waveform: TWaveform;
     procedure MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
     procedure MidiKeysMidiKeyUp(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -20,6 +21,7 @@ type
     procedure EditSampleChange(Sender: TObject);
     procedure MidiKeysKeyColor(Sender: TObject; Key: Integer;
       var Color: TColor);
+    procedure FormCreate(Sender: TObject);
   private
   public
     theModule: TVSTModule;
@@ -88,12 +90,25 @@ begin
   begin
    pt:=LoadWAVFileMono(EditSample.Text,sr, c, sz);
    SetLength(TVSTSSModule(theModule).Sample,sz);
+   Waveform.WaveLength:=sz;
    for c := 0 to sz - 1 do
     begin
      TVSTSSModule(theModule).Sample[c]:=(pt)^;
+     Waveform.Wavedata[c]:=(pt)^;
      Inc(pt);
     end;
+   Waveform.RedrawBuffer; 
   end;
+end;
+
+procedure TVSTGUI.FormCreate(Sender: TObject);
+var i : Integer;
+const lngth = 4096;
+begin
+ Waveform.WaveLength:=lngth;
+ for i:=0 to lngth-1
+  do Waveform.Wavedata[i]:=sin(8*Pi*i/lngth);
+ Waveform.RedrawBuffer;
 end;
 
 procedure TVSTGUI.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

@@ -3,7 +3,7 @@ object VSTGUI: TVSTGUI
   Top = 185
   BorderStyle = bsNone
   Caption = 'SimpleSampler'
-  ClientHeight = 105
+  ClientHeight = 144
   ClientWidth = 365
   Color = clBtnFace
   TransparentColorValue = 12948623
@@ -14,13 +14,14 @@ object VSTGUI: TVSTGUI
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
+  OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
   PixelsPerInch = 96
   TextHeight = 13
   object MidiKeys: TMidiKeys
     Left = 0
-    Top = 32
+    Top = 71
     Width = 365
     Height = 73
     BaseOctave = 4
@@ -39,6 +40,14 @@ object VSTGUI: TVSTGUI
     Width = 48
     Height = 13
     Caption = 'Sample:'
+  end
+  object Waveform: TWaveform
+    Left = 8
+    Top = 32
+    Width = 349
+    Height = 33
+    Normalize = True
+    LineColor = clBlack
   end
   object EditSample: TEdit
     Left = 58
