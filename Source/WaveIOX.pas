@@ -24,13 +24,8 @@ History:
 
 interface
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ENDIF}
-
 uses
-  {$IFDEF FPC}LCLIntf, {$ELSE} Windows, {$ENDIF}
-  Classes, MMSystem, SysUtils, MSACMX;
+  Windows,Classes,MMSystem,SysUtils,MSACMX,Dialogs;
 
 const
   MPEGLAYER3=85;
@@ -132,7 +127,7 @@ type
 
   TWavWriter=class(TObject)
   public
-   Format : {$IFDEF FPC}WAVEFORMATEX{$ELSE}TWaveFormatEx{$ENDIF};
+   Format:twaveformatex;
    stream:TfilewaveStream;
    constructor Create(fn:string;sr,ch,bits:longint);
    procedure WriteFloatData(p:pointer;size:longint);
@@ -179,7 +174,7 @@ begin
       raise EWaveIOError.Create('Error 03: Cannot write wave format.');
 
     GetMem(FFormat,sizeof(FFormat^));
-    Move(FFormat^,WriteFormat^,sizeof(FFormat^));
+    CopyMemory(FFormat,WriteFormat,sizeof(FFormat^));
 
     // Ascend out of the 'fmt ' chunk,back into the 'RIFF' chunk.
     if(mmioAscend(mm,@pck,0)<>0) then
@@ -270,7 +265,7 @@ end;
 procedure TWaveStream.CheckMMIOWave;
 var
   mmIOInfo: TMMIOInfo;
-  FormatTmp: {$IFDEF FPC}WAVEFORMATEX{$ELSE}TWaveFormatEx{$ENDIF};
+  FormatTmp: TWaveFormatEx;
   ExtraAlloc: Word;
 begin
   if(mmioDescend(mm,@pckRIFF,nil,0)<>0) then
@@ -307,7 +302,7 @@ begin
       raise EWaveIOError.Create('Error 17: Cannot read ''waveformatex'' length!');
 
   GetMem(FFormat,sizeof(FFormat^)+ExtraAlloc);
-  Move(FFormat^,FormatTmp,sizeof(FFormat^));
+  CopyMemory(FFormat,@FormatTmp,sizeof(FFormat^));
   FFormat^.cbSize:=ExtraAlloc;
   if(ExtraAlloc<>0) then
     if(mmioRead(mm,PChar(FFormat)+sizeof(FFormat^),ExtraAlloc) <>
@@ -347,7 +342,7 @@ constructor TMemoryWaveStream.Create(Memory: Pointer; Size: Longint;
 var
   info: TMMIOINFO;
 begin
-  FillChar(info,sizeof(info),0);
+  ZeroMemory(@info,sizeof(info));
   with info do
   begin
     pchBuffer:=Memory;
@@ -428,22 +423,20 @@ begin
   and(FStream.Format^.wFormatTag<>3) then
   begin
     // prepare acm stream converter
-    FillChar(dstwfx,sizeof(dstwfx^),0);
+    ZeroMemory(dstwfx,sizeof(dstwfx^));
     dstwfx^.wFormatTag:=WAVE_FORMAT_PCM;
     if(acmFormatSuggest(0,FStream.FFormat,dstwfx,sizeof(dstwfx^),
       ACM_FORMATSUGGESTF_WFORMATTAG)<>0) then
       raise EWaveIOError.Create('Error 26: Cannot suggest pcm format.');
 
-{$IFNDEF FPC}
     if(acmStreamOpen(PHACMSTREAM(@acmStream),0,FStream.Format^,dstwfx^,
       nil,0,0,0)<>0) then
       raise EWaveIOError.Create('Error 27: Cannot open acm stream.');
-{$ENDIF}
 
     AllocBuffers;
 
     // prepare buffers
-    FillChar(ash,sizeof(ash),0);
+    ZeroMemory(@ash,sizeof(ash));
     with ash do
     begin
       cbStruct:=sizeof(ash);
@@ -573,11 +566,7 @@ begin
       begin
        len:=PCMBufferSamplePos+PCMBufferSampleSize-FPosition;
        if(len>Count) then len:=Count;
-       {$IFDEF FPC}
-//       Move(Buffer, PChar(PCMBuffer)+(FPosition-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
-       {$ELSE}
        CopyMemory(PChar(@Buffer), PChar(PCMBuffer)+(FPosition-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
-       {$ENDIF}
        pos:=len;
       end
      else pos:=0;
@@ -592,11 +581,7 @@ begin
        else posf:=FPosition+Count;
       len:=posf-posi;
       // put pcm buffer data into target
-      {$IFDEF FPC}
-//      Move(PChar(@Buffer)+(posi-FPosition)*dstwfx^.nBlockAlign, PChar(PCMBuffer)+(posi-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
-      {$ELSE}
       CopyMemory(PChar(@Buffer)+(posi-FPosition)*dstwfx^.nBlockAlign, PChar(PCMBuffer)+(posi-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
-      {$ENDIF}
       pos:=pos+len;
      end;
     FPosition:=FPosition+Count;
@@ -898,7 +883,7 @@ var
   w: TfilewaveStream;
   ps:psingle;
   l,li:longint;
-  t:{$IFDEF FPC}WAVEFORMATEX{$ELSE}TWaveFormatEx{$ENDIF};
+  t:twaveformatex;
   p:pwaveformatex;
   x:single;
 begin
@@ -938,7 +923,7 @@ var
   w: TFileWaveStream;
   ps,ps2:psingle;
   l,li:longint;
-  t:{$IFDEF FPC}WAVEFORMATEX{$ELSE}TWaveFormatEx{$ENDIF};
+  t:twaveformatex;
   p:pwaveformatex;
   x:single;
 begin

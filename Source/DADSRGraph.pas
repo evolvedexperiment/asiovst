@@ -1,6 +1,6 @@
 unit DADSRGraph;
 
-{-$R DADSRGraph.res}
+{$R DADSRGraph.res}
 {$R-}
 
 interface
