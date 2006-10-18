@@ -3,7 +3,7 @@ unit SimpleSamplerModule;
 interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase,
-     DVSTEffect, DVSTModule, AudioDataUnit, SimpleSamplerVoice, VoiceList;
+     DVSTEffect, DVSTModule, SimpleSamplerVoice, VoiceList;
 
 type
   TVSTSSModule = class(TVSTModule)
