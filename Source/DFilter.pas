@@ -101,6 +101,11 @@ type
     procedure CalculateCoefficients; override;
   end;
 
+  TSimpleBandpass=class(TBiquadIIRFilter)
+  protected
+    procedure CalculateCoefficients; override;
+  end;
+
 implementation
 
 uses math, DDSPBase;
@@ -157,9 +162,9 @@ begin
    if Value>0
     then fFrequency:=Value
     else fFrequency:=1;
-   SetW0; 
-   CalculateCoefficients;
   end;
+ SetW0;
+ CalculateCoefficients;
 end;
 
 procedure TFilter.SetGain(s:Single);
@@ -202,6 +207,7 @@ begin
  fFrequency:=1000;
  fBandWidth:=1;
  fSampleRate:=44100;
+ fSRR:=1/44100;
  Init;
 end;
 
@@ -480,6 +486,24 @@ begin
  fNominator[0]:=(1+alpha*fGainSpeed)*t;
  fNominator[2]:=(1-alpha*fGainSpeed)*t;
  CalcPolesZeros;
+end;
+
+{ TSimpleBandpass }
+
+procedure TSimpleBandpass.CalculateCoefficients;
+var aa, alpha,t,Amp,w : Double;
+begin
+ if (fSinW0=0)
+  then alpha:=fSinW0/(2*fBandWidth)
+  else alpha:=Sinh(ln22*cos(fW0*0.43)*fBandWidth*(fW0/fSinW0))*fSinW0;
+
+ aa:=alpha/fGainSpeed;
+ t:=1/(1+alpha);
+ fNominator[0]:=fGainSpeed*fGainSpeed*alpha*t;
+ fNominator[2]:=-fNominator[0];
+ fDenominator[1]:=-2*cos(fW0)*t;
+ fDenominator[2]:=(1-alpha)*t;
+ fNominator[1]:=0;
 end;
 
 end.
