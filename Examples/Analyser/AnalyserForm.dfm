@@ -4,7 +4,7 @@ object FmAnalyser: TFmAnalyser
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Demo application for ASIO-Host'
-  ClientHeight = 305
+  ClientHeight = 326
   ClientWidth = 446
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +17,7 @@ object FmAnalyser: TFmAnalyser
   OnDestroy = FormDestroy
   DesignSize = (
     446
-    305)
+    326)
   PixelsPerInch = 96
   TextHeight = 13
   object Lb_Drivername: TLabel
@@ -33,6 +33,27 @@ object FmAnalyser: TFmAnalyser
     Width = 77
     Height = 13
     Caption = 'Output Channel:'
+  end
+  object LbSpeed: TLabel
+    Left = 7
+    Top = 64
+    Width = 34
+    Height = 13
+    Caption = 'Speed:'
+  end
+  object LbFullscale: TLabel
+    Left = 205
+    Top = 64
+    Width = 53
+    Height = 13
+    Caption = 'Fullscale = '
+  end
+  object Lb_dB: TLabel
+    Left = 322
+    Top = 64
+    Width = 13
+    Height = 13
+    Caption = 'dB'
   end
   object DriverCombo: TComboBox
     Left = 64
@@ -63,22 +84,22 @@ object FmAnalyser: TFmAnalyser
     ItemHeight = 13
     TabOrder = 2
   end
-  object Bt_Play: TButton
+  object Bt_Analyse: TButton
     Left = 350
     Top = 32
     Width = 91
-    Height = 21
+    Height = 50
     Caption = 'Analyse'
     Default = True
     Enabled = False
     TabOrder = 3
-    OnClick = Bt_PlayClick
+    OnClick = Bt_AnalyseClick
   end
   object AnalyserChart: TChart
-    Left = 8
-    Top = 59
-    Width = 432
-    Height = 239
+    Left = 7
+    Top = 88
+    Width = 434
+    Height = 231
     BackWall.Brush.Color = clWhite
     BackWall.Brush.Style = bsClear
     Title.Text.Strings = (
@@ -93,8 +114,6 @@ object FmAnalyser: TFmAnalyser
     View3DWalls = False
     TabOrder = 4
     Anchors = [akLeft, akTop, akRight, akBottom]
-    ExplicitWidth = 465
-    ExplicitHeight = 254
     object BarSeries: TBarSeries
       Marks.ArrowLength = 20
       Marks.Visible = False
@@ -111,6 +130,46 @@ object FmAnalyser: TFmAnalyser
       YValues.Order = loNone
     end
   end
+  object RB_Fast: TRadioButton
+    Left = 49
+    Top = 63
+    Width = 40
+    Height = 17
+    Caption = '&Fast'
+    TabOrder = 5
+    OnClick = RB_FastClick
+  end
+  object RB_Medium: TRadioButton
+    Left = 91
+    Top = 63
+    Width = 55
+    Height = 17
+    Caption = '&Medium'
+    Checked = True
+    TabOrder = 6
+    TabStop = True
+    OnClick = RB_MediumClick
+  end
+  object RB_Slow: TRadioButton
+    Left = 150
+    Top = 63
+    Width = 46
+    Height = 17
+    Caption = '&Slow'
+    TabOrder = 7
+    OnClick = RB_SlowClick
+  end
+  object SEFullscaleGain: TSpinEdit
+    Left = 262
+    Top = 60
+    Width = 56
+    Height = 22
+    MaxValue = 200
+    MinValue = 0
+    TabOrder = 8
+    Value = 120
+    OnChange = SEFullscaleGainChange
+  end
   object ASIOHost: TASIOHost
     CanDos = []
     PreventClipping = pcDigital
@@ -121,7 +180,7 @@ object FmAnalyser: TFmAnalyser
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     OnBufferSwitch = ASIOHostBufferSwitch
-    Left = 308
-    Top = 32
+    Left = 252
+    Top = 24
   end
 end
