@@ -8,7 +8,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.Title := 'Demo application for ASIO-Host';
+  Application.Title := 'Simple ASIO Analyser';
   Application.CreateForm(TFmAnalyser, FmAnalyser);
   Application.Run;
 end.

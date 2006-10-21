@@ -3,7 +3,7 @@ object FmAnalyser: TFmAnalyser
   Top = 266
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'Demo application for ASIO-Host'
+  Caption = 'Simple ASIO Third Octave Analyser'
   ClientHeight = 326
   ClientWidth = 446
   Color = clBtnFace
