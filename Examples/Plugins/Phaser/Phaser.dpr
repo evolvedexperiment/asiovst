@@ -5,7 +5,7 @@ uses
   Forms,
   DVSTEffect,
   DVSTModule,
-  PhaserDM in 'PhaserDM.pas' {PhaserModule: TVSTModule},
+  PhaserDM in 'PhaserDM.pas' {PhaserModule: TPhaserModule},
   PhaserFrm in 'PhaserFrm.pas' {PhaserForm};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
