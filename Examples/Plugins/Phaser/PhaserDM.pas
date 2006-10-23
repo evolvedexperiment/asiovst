@@ -31,7 +31,7 @@ uses
 procedure TPhaserModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
 begin
   GUI := TPhaserForm.Create(nil);
-  (GUI As TPhaserForm).PhaserModule := Self;
+  (GUI As TPhaserForm).theModule := Self;
 end;
 
 procedure TPhaserModule.PhaserModuleParameterProperties0ParameterChange(
@@ -41,6 +41,10 @@ begin
   begin
    fPhaser[0].Depth:=0.01*Value;
    fPhaser[1].Depth:=fPhaser[0].Depth;
+   if assigned(EditorForm) then
+    with (EditorForm As TPhaserForm) do
+     if SBDepth.Position<>round(fPhaser[0].Depth)
+      then SBDepth.Position:=round(fPhaser[0].Depth);
   end;
 end;
 
@@ -51,6 +55,10 @@ begin
   begin
    fPhaser[0].Feedback:=Value;
    fPhaser[1].Feedback:=fPhaser[0].Feedback;
+   if assigned(EditorForm) then
+    with (EditorForm As TPhaserForm) do
+     if SBFeedback.Position<>round(fPhaser[0].Feedback)
+      then SBFeedback.Position:=round(fPhaser[0].Feedback);
   end;
 end;
 
@@ -61,6 +69,10 @@ begin
   begin
    fPhaser[0].Minimum:=Value;
    fPhaser[1].Minimum:=fPhaser[0].Minimum;
+   if assigned(EditorForm) then
+    with (EditorForm As TPhaserForm) do
+     if SBMinimum.Position<>round(fPhaser[0].Minimum)
+      then SBMinimum.Position:=round(fPhaser[0].Minimum);
   end;
 end;
 
@@ -71,6 +83,10 @@ begin
   begin
    fPhaser[0].Maximum:=Value;
    fPhaser[1].Maximum:=fPhaser[0].Maximum;
+   if assigned(EditorForm) then
+    with (EditorForm As TPhaserForm) do
+     if SBMaximum.Position<>round(fPhaser[0].Maximum)
+      then SBMaximum.Position:=round(fPhaser[0].Maximum);
   end;
 end;
 
@@ -81,6 +97,10 @@ begin
   begin
    fPhaser[0].Rate:=Value;
    fPhaser[1].Rate:=fPhaser[0].Rate;
+   if assigned(EditorForm) then
+    with (EditorForm As TPhaserForm) do
+     if SBRate.Position<>round(fPhaser[0].Rate)
+      then SBRate.Position:=round(fPhaser[0].Rate);
   end;
 end;
 
@@ -90,7 +110,11 @@ begin
  if Assigned(fPhaser[0]) and Assigned(fPhaser[1]) then
   begin
    fPhaser[0].Stages:=round(Value);
-   fPhaser[1].Stages:=round(Value);
+   fPhaser[1].Stages:=fPhaser[0].Stages;
+   if assigned(EditorForm) then
+    with (EditorForm As TPhaserForm) do
+     if SBDepth.Position<>fPhaser[0].Stages
+      then SBDepth.Position:=fPhaser[0].Stages;
   end;
 end;
 
