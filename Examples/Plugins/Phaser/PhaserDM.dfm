@@ -1,5 +1,6 @@
 object PhaserModule: TPhaserModule
   OldCreateOrder = False
+  OnCreate = VST2ModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Phaser VST Example'
