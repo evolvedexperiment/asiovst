@@ -42,10 +42,7 @@ type
   published
   end;
 
-var
-  FmASIO        : TFmASIO;
-  VolumeFactor  : Single = 1;
-  ChannelOffset : Byte = 0;
+var FmASIO        : TFmASIO;
 
 implementation
 
