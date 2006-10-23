@@ -1,6 +1,5 @@
 object PhaserModule: TPhaserModule
   OldCreateOrder = False
-  OnCreate = VST2ModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Phaser VST Example'
@@ -72,12 +71,12 @@ object PhaserModule: TPhaserModule
       ReportVST2Properties = False
       StepFloat = 20.000000000000000000
       SmallStepFloat = 20.000000000000000000
-      LargeStepFloat = 100.000000000000000000
+      LargeStepFloat = 200.000000000000000000
       Flags = []
       MinInteger = 20
       MaxInteger = 20000
       StepInteger = 20
-      LargeStepInteger = 100
+      LargeStepInteger = 200
       ShortLabel = 'min'
       VSTModule = Owner
       OnParameterChange = PhaserModuleParameterProperties2ParameterChange
@@ -145,6 +144,8 @@ object PhaserModule: TPhaserModule
       VSTModule = Owner
       OnParameterChange = PhaserModuleParameterProperties5ParameterChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VST2ModuleProcess
   OnProcessReplacing = VST2ModuleProcess

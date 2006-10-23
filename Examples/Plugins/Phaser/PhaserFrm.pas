@@ -43,14 +43,14 @@ implementation
 
 procedure TPhaserForm.SBDepthChange(Sender: TObject);
 begin
- theModule.Parameter[0]:=SBDepth.Position/1000;
+ theModule.Parameter[0]:=SBDepth.Position/10;
  LbVDepth.Caption:=FloatToStrF(theModule.Parameter[0],ffFixed,2,2);
 end;
 
 procedure TPhaserForm.SBFeedbackChange(Sender: TObject);
 begin
- theModule.Parameter[1]:=SBFeedback.Position/1000;
- LbVFeedback.Caption:=FloatToStrF(theModule.Parameter[1]*100,ffFixed,3,1)+'%';
+ theModule.Parameter[1]:=SBFeedback.Position/10;
+ LbVFeedback.Caption:=FloatToStrF(theModule.Parameter[1],ffFixed,3,1)+'%';
 end;
 
 procedure TPhaserForm.SBMinimumChange(Sender: TObject);

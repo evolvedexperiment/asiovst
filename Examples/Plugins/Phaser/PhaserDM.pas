@@ -8,7 +8,6 @@ uses
 type
   TPhaserModule = class(TVSTModule)
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
-    procedure VST2ModuleCreate(Sender: TObject);
     procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
     procedure PhaserModuleParameterProperties0ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure PhaserModuleParameterProperties1ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -16,6 +15,8 @@ type
     procedure PhaserModuleParameterProperties3ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure PhaserModuleParameterProperties4ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure PhaserModuleParameterProperties5ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
   private
     fPhaser : array [0..1] of TPhaser;
   public
@@ -34,6 +35,18 @@ begin
   (GUI As TPhaserForm).theModule := Self;
 end;
 
+procedure TPhaserModule.VSTModuleOpen(Sender: TObject);
+begin
+ fPhaser[0]:=TPhaser.Create;
+ fPhaser[1]:=TPhaser.Create;
+end;
+
+procedure TPhaserModule.VSTModuleClose(Sender: TObject);
+begin
+ fPhaser[0].Free;
+ fPhaser[1].Free;
+end;
+
 procedure TPhaserModule.PhaserModuleParameterProperties0ParameterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
@@ -41,10 +54,12 @@ begin
   begin
    fPhaser[0].Depth:=0.01*Value;
    fPhaser[1].Depth:=fPhaser[0].Depth;
+(*
    if assigned(EditorForm) then
     with (EditorForm As TPhaserForm) do
      if SBDepth.Position<>round(fPhaser[0].Depth)
       then SBDepth.Position:=round(fPhaser[0].Depth);
+*)
   end;
 end;
 
@@ -53,12 +68,14 @@ procedure TPhaserModule.PhaserModuleParameterProperties1ParameterChange(
 begin
  if Assigned(fPhaser[0]) and Assigned(fPhaser[1]) then
   begin
-   fPhaser[0].Feedback:=Value;
+   fPhaser[0].Feedback:=0.01*Value;
    fPhaser[1].Feedback:=fPhaser[0].Feedback;
+(*
    if assigned(EditorForm) then
     with (EditorForm As TPhaserForm) do
      if SBFeedback.Position<>round(fPhaser[0].Feedback)
       then SBFeedback.Position:=round(fPhaser[0].Feedback);
+*)
   end;
 end;
 
@@ -69,10 +86,12 @@ begin
   begin
    fPhaser[0].Minimum:=Value;
    fPhaser[1].Minimum:=fPhaser[0].Minimum;
+(*
    if assigned(EditorForm) then
     with (EditorForm As TPhaserForm) do
      if SBMinimum.Position<>round(fPhaser[0].Minimum)
       then SBMinimum.Position:=round(fPhaser[0].Minimum);
+*)
   end;
 end;
 
@@ -83,10 +102,12 @@ begin
   begin
    fPhaser[0].Maximum:=Value;
    fPhaser[1].Maximum:=fPhaser[0].Maximum;
+(*
    if assigned(EditorForm) then
     with (EditorForm As TPhaserForm) do
      if SBMaximum.Position<>round(fPhaser[0].Maximum)
       then SBMaximum.Position:=round(fPhaser[0].Maximum);
+*)
   end;
 end;
 
@@ -97,10 +118,12 @@ begin
   begin
    fPhaser[0].Rate:=Value;
    fPhaser[1].Rate:=fPhaser[0].Rate;
+(*
    if assigned(EditorForm) then
     with (EditorForm As TPhaserForm) do
      if SBRate.Position<>round(fPhaser[0].Rate)
       then SBRate.Position:=round(fPhaser[0].Rate);
+*)
   end;
 end;
 
@@ -111,17 +134,13 @@ begin
   begin
    fPhaser[0].Stages:=round(Value);
    fPhaser[1].Stages:=fPhaser[0].Stages;
+(*
    if assigned(EditorForm) then
     with (EditorForm As TPhaserForm) do
      if SBDepth.Position<>fPhaser[0].Stages
       then SBDepth.Position:=fPhaser[0].Stages;
+*)
   end;
-end;
-
-procedure TPhaserModule.VST2ModuleCreate(Sender: TObject);
-begin
- fPhaser[0]:=TPhaser.Create;
- fPhaser[1]:=TPhaser.Create;
 end;
 
 procedure TPhaserModule.VST2ModuleProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
