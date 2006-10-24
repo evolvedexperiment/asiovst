@@ -196,6 +196,7 @@ type
     procedure PMBufferSwitch(var Message: TMessage); message PM_BufferSwitch;
     procedure PMBufferSwitchTimeInfo(var Message: TMessage); message PM_BufferSwitchTimeInfo;
     function GetDriverList: TStrings;
+    procedure ReadState(Reader: TReader); override;
   public
     InputChannelInfos   : array of TASIOChannelInfo;
     OutputChannelInfos  : array of TASIOChannelInfo;
@@ -656,7 +657,6 @@ begin
 
   {$IFDEF ASIOMixer} FASIOMixer := TFmASIOMixer.Create(nil); {$ENDIF}
   inherited;
-  if Assigned(FOnCreate) then FOnCreate(Self);
 end;
 
 destructor TASIOHost.Destroy;
@@ -1024,6 +1024,12 @@ begin
  FASIOMixer.Show;
 end;
 {$ENDIF}
+
+procedure TASIOHost.ReadState(Reader: TReader);
+begin
+  inherited;
+  if Assigned(FOnCreate) then FOnCreate(Self);
+end;
 
 procedure TASIOHost.Reset;
 begin
