@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2006.10.18 04:08:01.062.pas,C:\ITA\Projects\VSTPack\Examples\Simple Lunch-Box\Unit1.pas=C:\ITA\Projects\VSTPack\Examples\Simple Lunch-Box\LunchBoxAbout.pas</Transaction>
+    <Transaction>2006.10.18 04:08:01.062.dfm,C:\ITA\Projects\VSTPack\Examples\Simple Lunch-Box\Unit1.dfm=C:\ITA\Projects\VSTPack\Examples\Simple Lunch-Box\LunchBoxAbout.dfm</Transaction>
+    <Transaction>2006.10.24 10:18:02.516.pas,C:\ITA\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\Unit1.pas=C:\ITA\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxVST.pas</Transaction>
+    <Transaction>2006.10.24 10:18:02.536.dfm,C:\ITA\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\Unit1.dfm=C:\ITA\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxVST.dfm</Transaction>
+  </Transactions>
+</BorlandProject>
