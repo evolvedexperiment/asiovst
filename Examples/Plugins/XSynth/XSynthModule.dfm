@@ -1,7 +1,7 @@
 object VSTSSModule: TVSTSSModule
   OldCreateOrder = False
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
+  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth, effFlagsExtIsAsync]
   Version = '1.0'
   EffectName = 'X Synth'
   ProductName = 'Sine Synth'
