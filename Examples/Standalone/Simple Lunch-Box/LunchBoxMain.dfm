@@ -1,8 +1,8 @@
-object FmVSTEditor: TFmVSTEditor
+object FmLunchBox: TFmLunchBox
   Left = 310
   Top = 208
   BorderStyle = bsSingle
-  Caption = 'Lunch Box Core'
+  Caption = 'Simple Lunch Box'
   ClientHeight = 329
   ClientWidth = 429
   Color = clBtnFace

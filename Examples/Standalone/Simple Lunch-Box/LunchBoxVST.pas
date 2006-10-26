@@ -77,19 +77,19 @@ end;
 
 procedure TFmVST.BtRealtimeEditorClick(Sender: TObject);
 begin
- if FmVSTEditor.VSTHost[0].Active
-  then FmVSTEditor.VSTHost[0].ShowEdit;
+ if FmLunchBox.VSTHost[0].Active
+  then FmLunchBox.VSTHost[0].ShowEdit;
 end;
 
 procedure TFmVST.BtOutputEditorClick(Sender: TObject);
 begin
- if FmVSTEditor.VSTHost[1].Active
-  then FmVSTEditor.VSTHost[1].ShowEdit;
+ if FmLunchBox.VSTHost[1].Active
+  then FmLunchBox.VSTHost[1].ShowEdit;
 end;
 
 procedure TFmVST.EdRealtimeVSTChange(Sender: TObject);
 begin
- with FmVSTEditor.VSTHost[0] do
+ with FmLunchBox.VSTHost[0] do
   begin
    Active:=False;
    if FileExists(EdRealtimeVST.Text) then
@@ -103,7 +103,7 @@ end;
 
 procedure TFmVST.EdOutputVSTChange(Sender: TObject);
 begin
- with FmVSTEditor.VSTHost[1] do
+ with FmLunchBox.VSTHost[1] do
   begin
    Active:=False;
    if FileExists(EdRealtimeVST.Text) then

@@ -36,7 +36,7 @@ uses IniFiles, DASIOHost, LunchBoxMain;
 procedure TFmSetup.FormCreate(Sender: TObject);
 var Settings : TInifile;
 begin
- CBDrivers.Items:=FmVSTEditor.ASIOHost.DriverList;
+ CBDrivers.Items:=FmLunchBox.ASIOHost.DriverList;
  Settings:=TIniFile.Create(ExtractFilePath(ParamStr(0))+'VSTEditor.INI');
  Top:=Settings.ReadInteger('Layout','Setup Top',Top);
  Left:=Settings.ReadInteger('Layout','Setup Left',Left);
@@ -47,27 +47,28 @@ end;
 
 procedure TFmSetup.BtControlPanelClick(Sender: TObject);
 begin
- FmVSTEditor.ASIOHost.ControlPanel;
+ FmLunchBox.ASIOHost.ControlPanel;
 end;
 
 procedure TFmSetup.CBDriversChange(Sender: TObject);
 var i : Integer;
 begin
  if CBDrivers.ItemIndex >= 0 then
-  begin
-   FmVSTEditor.ASIOHost.Active:=False;
-   FmVSTEditor.ASIOHost.DriverIndex := CBDrivers.ItemIndex;
-   CBOutput.Clear;
-   for i := 0 to (FmVSTEditor.ASIOHost.OutputChannels div 2) - 1 do
-    begin
-     CBOutput.Items.Add(
-     FmVSTEditor.ASIOHost.OutputChannelInfos[2 * i].name + ' / ' +
-     FmVSTEditor.ASIOHost.OutputChannelInfos[2 * i + 1].name);
-    end;
-   CBOutput.ItemIndex := 0;
-   FmVSTEditor.ASIOHost.OnReset(Self);
-   FmVSTEditor.ASIOHost.Active:=True;
-  end;
+  with FmLunchBox.ASIOHost do
+   begin
+    Active:=False;
+    DriverIndex := CBDrivers.ItemIndex;
+    CBOutput.Clear;
+    for i := 0 to (OutputChannels div 2) - 1 do
+     begin
+      CBOutput.Items.Add(
+      OutputChannelInfos[2 * i].name + ' / ' +
+      OutputChannelInfos[2 * i + 1].name);
+     end;
+    CBOutput.ItemIndex := 0;
+    OnReset(Self);
+    Active:=True;
+   end;
 end;
 
 procedure TFmSetup.CBInputChange(Sender: TObject);

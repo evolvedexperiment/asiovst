@@ -11,7 +11,7 @@ type
   TComplexDouble = record
                     Re, Im : Double;
                    end;
-  TFmVSTEditor = class(TForm)
+  TFmLunchBox = class(TForm)
     VstHost: TVstHost;
     ASIOHost: TASIOHost;
     XPManifest: TXPManifest;
@@ -130,7 +130,7 @@ type
     property PatternPosition : Integer read fPatPos write fPatPos;
   end;
 
-var FmVSTEditor: TFmVSTEditor;
+var FmLunchBox: TFmLunchBox;
     Samples: Array [0..8] of TSingleArray;
 
 implementation
@@ -139,27 +139,27 @@ implementation
 
 uses inifiles, WaveIOX, LunchBoxSetup, LunchBoxAbout, LunchBoxVST;
 
-procedure TFmVSTEditor.FormActivate(Sender: TObject);
+procedure TFmLunchBox.FormActivate(Sender: TObject);
 begin
  VstHost[0].EditActivate;
 end;
 
-procedure TFmVSTEditor.FormDeactivate(Sender: TObject);
+procedure TFmLunchBox.FormDeactivate(Sender: TObject);
 begin
  VstHost[0].EditDeActivate;
 end;
 
-procedure TFmVSTEditor.FormDestroy(Sender: TObject);
+procedure TFmLunchBox.FormDestroy(Sender: TObject);
 begin
  fEventList.Free;
 end;
 
-procedure TFmVSTEditor.MIAboutClick(Sender: TObject);
+procedure TFmLunchBox.MIAboutClick(Sender: TObject);
 begin
  FmAbout.Show;
 end;
 
-procedure TFmVSTEditor.MIExportMIDClick(Sender: TObject);
+procedure TFmLunchBox.MIExportMIDClick(Sender: TObject);
 begin
  if SaveMIDIDialog.Execute then
   begin
@@ -167,7 +167,7 @@ begin
   end;
 end;
 
-procedure TFmVSTEditor.MIExportWAVClick(Sender: TObject);
+procedure TFmLunchBox.MIExportWAVClick(Sender: TObject);
 begin
  if SaveWAVDialog.Execute then
   begin
@@ -175,7 +175,7 @@ begin
   end;
 end;
 
-procedure TFmVSTEditor.MILoadBeatClick(Sender: TObject);
+procedure TFmLunchBox.MILoadBeatClick(Sender: TObject);
 begin
  if OpenDialog.Execute then
   begin
@@ -183,7 +183,7 @@ begin
   end;
 end;
 
-procedure TFmVSTEditor.MINewBeatClick(Sender: TObject);
+procedure TFmLunchBox.MINewBeatClick(Sender: TObject);
 begin
  fEventList.Clear;
  CBKit.ItemIndex:=0;
@@ -193,52 +193,52 @@ begin
  SETempo.Value:=120;
 end;
 
-procedure TFmVSTEditor.MIQuitClick(Sender: TObject);
+procedure TFmLunchBox.MIQuitClick(Sender: TObject);
 begin
  Close;
 end;
 
-procedure TFmVSTEditor.MISaveBeatAsClick(Sender: TObject);
+procedure TFmLunchBox.MISaveBeatAsClick(Sender: TObject);
 begin
  ShowMessage('Feature not implemented yet');
 end;
 
-procedure TFmVSTEditor.MISaveBeatClick(Sender: TObject);
+procedure TFmLunchBox.MISaveBeatClick(Sender: TObject);
 begin
  ShowMessage('Feature not implemented yet');
 end;
 
-procedure TFmVSTEditor.MISettingsClick(Sender: TObject);
+procedure TFmLunchBox.MISettingsClick(Sender: TObject);
 begin
  FmSetup.ShowModal;
 end;
 
-procedure TFmVSTEditor.MIShowKeysClick(Sender: TObject);
+procedure TFmLunchBox.MIShowKeysClick(Sender: TObject);
 begin
  ShowMessage('Feature not implemented yet');
 end;
 
-procedure TFmVSTEditor.MIVSTClick(Sender: TObject);
+procedure TFmLunchBox.MIVSTClick(Sender: TObject);
 begin
  FmVST.Show;
 end;
 
-procedure TFmVSTEditor.SEBarChange(Sender: TObject);
+procedure TFmLunchBox.SEBarChange(Sender: TObject);
 begin
  fMaxPatSamples:=Round(fSamplesPerBeat*4*SEBar.Value);
 end;
 
-procedure TFmVSTEditor.SETempoChange(Sender: TObject);
+procedure TFmLunchBox.SETempoChange(Sender: TObject);
 begin
  fSamplesPerBeat:=60/SETempo.Value*ASIOHost.SampleRate;
 end;
 
-procedure TFmVSTEditor.TBVolumeChange(Sender: TObject);
+procedure TFmLunchBox.TBVolumeChange(Sender: TObject);
 begin
  fMetroVolume[1]:=TBVolume.Position*0.01;
 end;
 
-procedure TFmVSTEditor.CalculateSineAngles;
+procedure TFmLunchBox.CalculateSineAngles;
 var w0 : Single;
 begin
  w0:=2*Pi*1000/ASIOHost.SampleRate;
@@ -248,7 +248,7 @@ begin
  fPosition.Im := 0;
 end;
 
-procedure TFmVSTEditor.CBKitChange(Sender: TObject);
+procedure TFmLunchBox.CBKitChange(Sender: TObject);
 var sr,c,sz,i : Integer;
     pt        : PSingle;
     str       : string;
@@ -277,13 +277,13 @@ begin
   end;
 end;
 
-procedure TFmVSTEditor.CBMetronomeClick(Sender: TObject);
+procedure TFmLunchBox.CBMetronomeClick(Sender: TObject);
 begin
  fMetroVolume[1]:=Integer(CBMetronome.Checked)*TBVolume.Position*0.01;
  TBVolume.Visible:=CBMetronome.Checked;
 end;
 
-procedure TFmVSTEditor.FormCreate(Sender: TObject);
+procedure TFmLunchBox.FormCreate(Sender: TObject);
 var i        : integer;
     Settings : TInifile;
     Fl       : TSearchRec;
@@ -331,7 +331,7 @@ begin
  Settings.Free;
 end;
 
-procedure TFmVSTEditor.CreateSample(Index : Integer);
+procedure TFmLunchBox.CreateSample(Index : Integer);
 var nn : TLunchBoxSample;
 begin
  nn:=TLunchBoxSample.Create(Index);
@@ -345,59 +345,59 @@ begin
  fEventList.Add(nn)
 end;
 
-procedure TFmVSTEditor.DrumPadClick(Sender: TObject);
+procedure TFmLunchBox.DrumPadClick(Sender: TObject);
 begin
  with Sender as TButton
   do CreateSample(Tag);
 end;
 
-procedure TFmVSTEditor.BtClearClick(Sender: TObject);
+procedure TFmLunchBox.BtClearClick(Sender: TObject);
 begin
  fEventList.Clear;
 end;
 
-procedure TFmVSTEditor.BtExitClick(Sender: TObject);
+procedure TFmLunchBox.BtExitClick(Sender: TObject);
 begin
  Close;
 end;
 
-procedure TFmVSTEditor.BtFlangeMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFmLunchBox.BtFlangeMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   fFlange:=True;
 end;
 
-procedure TFmVSTEditor.BtFlangeMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TFmLunchBox.BtFlangeMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   fFlange:=False;
 end;
 
-procedure TFmVSTEditor.BtRecRevMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFmLunchBox.BtRecRevMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
  fRecRev:=True;
 end;
 
-procedure TFmVSTEditor.BtRecRevMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TFmLunchBox.BtRecRevMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
  fRecRev:=False;
 end;
 
-procedure TFmVSTEditor.BtRobotizeMouseDown(Sender: TObject;
+procedure TFmLunchBox.BtRobotizeMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
  fRobotize:=True;
 end;
 
-procedure TFmVSTEditor.BtRobotizeMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TFmLunchBox.BtRobotizeMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
  fRobotize:=False;
 end;
 
-procedure TFmVSTEditor.Requantize;
+procedure TFmLunchBox.Requantize;
 var i : Integer;
     q : Double;
 begin
@@ -414,7 +414,7 @@ begin
    end;
 end;
 
-procedure TFmVSTEditor.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleArray);
+procedure TFmLunchBox.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleArray);
 var i,j : Integer;
     met : Single;
 begin
@@ -501,7 +501,7 @@ begin
   end;
 end;
 
-procedure TFmVSTEditor.ASIOHostReset(Sender: TObject);
+procedure TFmLunchBox.ASIOHostReset(Sender: TObject);
 begin
  VSTHost.BlockSize:=ASIOHost.BufferSize;
  SetLength(VSTInBuffer[0],VSTHost.BlockSize);
@@ -510,14 +510,14 @@ begin
  SetLength(VSTOutBuffer[1],VSTHost.BlockSize);
 end;
 
-procedure TFmVSTEditor.ASIOHostSampleRateChanged(Sender: TObject);
+procedure TFmLunchBox.ASIOHostSampleRateChanged(Sender: TObject);
 begin
  fSamplesPerBeat:=60/SETempo.Value*ASIOHost.SampleRate;
  fMaxPatSamples:=Round(fSamplesPerBeat*4*SEBar.Value);
  CalculateSineAngles;
 end;
 
-procedure TFmVSTEditor.FormClose(Sender: TObject;
+procedure TFmLunchBox.FormClose(Sender: TObject;
   var Action: TCloseAction);
 var Settings : TInifile;
 begin

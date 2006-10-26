@@ -10,6 +10,7 @@ type
   TFmAbout = class(TForm)
     Label1: TLabel;
     Lb: TLabel;
+    Label2: TLabel;
     procedure FormClick(Sender: TObject);
   private
     { Private-Deklarationen }

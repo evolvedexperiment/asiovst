@@ -17,14 +17,14 @@ object FmAbout: TFmAbout
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 32
-    Top = 24
-    Width = 263
-    Height = 25
-    Caption = 'Lunchbox Battles Core'
+    Left = 24
+    Top = 17
+    Width = 258
+    Height = 32
+    Caption = 'Simple Lunchbox'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -21
+    Font.Height = -27
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
     ParentFont = False
@@ -36,6 +36,14 @@ object FmAbout: TFmAbout
     Width = 141
     Height = 13
     Caption = 'originally created by BramBos'
+    OnClick = FormClick
+  end
+  object Label2: TLabel
+    Left = 86
+    Top = 69
+    Width = 147
+    Height = 13
+    Caption = 'complete rewritten as example'
     OnClick = FormClick
   end
 end

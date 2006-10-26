@@ -6,16 +6,20 @@ File_3=TSourceModule,'c:\programme\borland\bds\4.0\source\Win32\rtl\sys\System.p
 File_4=TSourceModule,'C:\user\Christian\Projects\VSTPack\Source\DDSPBase.pas',0,1,96,12,115,0,0,,
 
 [Modules]
-Module0=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxEvent.pas
+Module0=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxAbout.pas
 Module1=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxMain.pas
 Module2=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBox.bdsproj
-Count=3
+Module3=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxVST.pas
+Module4=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxSetup.pas
+Module5=C:\user\Christian\Projects\VSTPack\Source\DASIOHost.pas
+Module6=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxEvent.pas
+Count=7
 EditWindowCount=1
 
-[C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxEvent.pas]
+[C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxAbout.pas]
 ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
+FormState=1
+FormOnTop=1
 
 [C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxMain.pas]
 ModuleType=TSourceModule
@@ -25,23 +29,47 @@ FormOnTop=1
 [C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBox.bdsproj]
 ModuleType=TBaseProject
 
+[C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxVST.pas]
+ModuleType=TSourceModule
+FormState=1
+FormOnTop=1
+
+[C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxSetup.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\user\Christian\Projects\VSTPack\Source\DASIOHost.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxEvent.pas]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
 [EditWindow0]
-ViewCount=3
-CurrentEditView=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxEvent.pas
+ViewCount=7
+CurrentEditView=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxAbout.pas
 View0=0
 View1=1
 View2=2
+View3=3
+View4=4
+View5=5
+View6=6
 PercentageSizes=1
 Create=1
 Visible=1
 Docked=0
-State=0
+State=1
 Left=1709
 Top=1125
 Width=6797
 Height=8767
-MaxLeft=0
-MaxTop=0
+MaxLeft=-10
+MaxTop=-14
 ClientWidth=6719
 ClientHeight=8401
 DockedToMainForm=0
@@ -49,28 +77,57 @@ MessageView=MessageView@EditWindow0
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
 LeftPanelSize=0
-LeftPanelClients=BorlandEditorCodeExplorer@EditWindow0
-LeftPanelData=0000080001000100000019000000426F726C616E64456469746F72436F64654578706C6F726572B70C00000000000000E201000000000000FFFFFFFF
 RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=000008000100010000000B0000004D6573736167655669657700000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 BottomMiddlePanelSize=0
-BottomMiddlePanelClients=DockSite1
-BottomMiddelPanelData=0000080001000100000009000000446F636B53697465310000000000000000000000000000000000FFFFFFFF
 
 [View0]
 CustomEditViewType=TEditView
 Module=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxMain.pas
-CursorX=11
-CursorY=367
-TopLine=352
+CursorX=15
+CursorY=133
+TopLine=112
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxMain.pas
 
 [View1]
+CustomEditViewType=TEditView
+Module=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxAbout.pas
+CursorX=1
+CursorY=1
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxAbout.pas
+
+[View2]
+CustomEditViewType=TEditView
+Module=C:\user\Christian\Projects\VSTPack\Source\DASIOHost.pas
+CursorX=57
+CursorY=23
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\user\Christian\Projects\VSTPack\Source\DASIOHost.pas
+
+[View3]
+CustomEditViewType=TEditView
+Module=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxSetup.pas
+CursorX=20
+CursorY=62
+TopLine=43
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxSetup.pas
+
+[View4]
 CustomEditViewType=TEditView
 Module=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxEvent.pas
 CursorX=22
@@ -81,11 +138,22 @@ Elisions=
 Bookmarks=
 EditViewName=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxEvent.pas
 
-[View2]
+[View5]
+CustomEditViewType=TEditView
+Module=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxVST.pas
+CursorX=17
+CursorY=106
+TopLine=95
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBoxVST.pas
+
+[View6]
 CustomEditViewType=TEditView
 Module=C:\user\Christian\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\LunchBox.dpr
-CursorX=34
-CursorY=10
+CursorX=49
+CursorY=7
 TopLine=2
 LeftCol=1
 Elisions=
@@ -264,12 +332,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4307
-Height=1396
+Width=4229
+Height=1070
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4307
-ClientHeight=1396
+ClientWidth=4229
+ClientHeight=1070
 TBDockHeight=5081
 LRDockWidth=5303
 Dockable=1
@@ -283,12 +351,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=4307
-Height=1396
+Width=4229
+Height=1070
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=4307
-ClientHeight=1396
+ClientWidth=4229
+ClientHeight=1070
 TBDockHeight=3835
 LRDockWidth=5303
 Dockable=1
@@ -341,8 +409,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-362
-Top=-1498
+Left=-183
+Top=-746
 Width=5303
 Height=3835
 MaxLeft=-1
@@ -360,8 +428,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-362
-Top=-1498
+Left=-183
+Top=-746
 Width=5303
 Height=3835
 MaxLeft=-1
@@ -379,8 +447,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-362
-Top=-1498
+Left=-183
+Top=-746
 Width=5303
 Height=3835
 MaxLeft=-1
@@ -398,8 +466,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-362
-Top=-1498
+Left=-183
+Top=-746
 Width=5303
 Height=3835
 MaxLeft=-1
@@ -452,8 +520,8 @@ SplitPos=73
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Name,
-ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,Options=0,OptionsEx=0,Font=0,Margins=0
+SelectedItem=Font.Size,
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,Font=1,Font.Style=0
 
 [BreakpointWindow]
 PercentageSizes=1
@@ -506,15 +574,15 @@ Visible=0
 Docked=1
 State=0
 Left=0
-Top=22
+Top=0
 Width=6719
-Height=1070
+Height=1043
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=6719
-ClientHeight=1070
-TBDockHeight=1070
-LRDockWidth=2773
+ClientHeight=1043
+TBDockHeight=1125
+LRDockWidth=4326
 Dockable=1
 StayOnTop=0
 
@@ -522,18 +590,18 @@ StayOnTop=0
 PercentageSizes=1
 Create=1
 Visible=0
-Docked=1
+Docked=0
 State=0
-Left=-179
-Top=-109
-Width=1465
-Height=8266
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=1465
-ClientHeight=8266
-TBDockHeight=8266
-LRDockWidth=1465
+Left=0
+Top=0
+Width=1826
+Height=6179
+MaxLeft=-10
+MaxTop=-14
+ClientWidth=1748
+ClientHeight=5854
+TBDockHeight=6179
+LRDockWidth=1826
 Dockable=1
 StayOnTop=0
 
@@ -541,6 +609,29 @@ StayOnTop=0
 DockHostCount=2
 
 [DockSite0]
+DockSiteType=1
+PercentageSizes=1
+Create=1
+Visible=0
+Docked=0
+State=0
+Left=1748
+Top=9837
+Width=4385
+Height=1870
+MaxLeft=-10
+MaxTop=-14
+ClientWidth=4307
+ClientHeight=1545
+TBDockHeight=1870
+LRDockWidth=4385
+Dockable=1
+StayOnTop=0
+TabPosition=1
+ActiveTabID=RefactoringForm
+TabDockClients=RefactoringForm,FindReferencsForm,UsagesView,RefactoringsView,QAView,MetricsView
+
+[DockSite1]
 DockSiteType=1
 PercentageSizes=1
 Create=1
@@ -562,27 +653,4 @@ StayOnTop=0
 TabPosition=1
 ActiveTabID=ProjectManager
 TabDockClients=ProjectManager,ModelViewTool,DataExplorer
-
-[DockSite1]
-DockSiteType=1
-PercentageSizes=1
-Create=1
-Visible=0
-Docked=1
-State=0
-Left=693
-Top=-672
-Width=4385
-Height=1870
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=4385
-ClientHeight=1870
-TBDockHeight=1870
-LRDockWidth=4385
-Dockable=1
-StayOnTop=0
-TabPosition=1
-ActiveTabID=RefactoringForm
-TabDockClients=RefactoringForm,FindReferencsForm,UsagesView,RefactoringsView,QAView,MetricsView
 

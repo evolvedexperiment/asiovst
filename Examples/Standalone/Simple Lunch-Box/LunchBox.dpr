@@ -4,7 +4,7 @@ uses
   Forms,
   Dialogs,
   SysUtils,
-  LunchBoxMain in 'LunchBoxMain.pas' {FmVSTEditor},
+  LunchBoxMain in 'LunchBoxMain.pas' {FmLunchBox},
   LunchBoxSetup in 'LunchBoxSetup.pas' {FmSetup},
   LunchBoxAbout in 'LunchBoxAbout.pas' {FmAbout},
   LunchBoxVST in 'LunchBoxVST.pas' {FmVST},
@@ -21,7 +21,7 @@ begin
   end;
  Application.Initialize;
  Application.Title := 'VST Plugin Editor';
- Application.CreateForm(TFmVSTEditor, FmVSTEditor);
+ Application.CreateForm(TFmLunchBox, FmLunchBox);
  Application.CreateForm(TFmSetup, FmSetup);
  Application.CreateForm(TFmAbout, FmAbout);
  Application.CreateForm(TFmVST, FmVST);
