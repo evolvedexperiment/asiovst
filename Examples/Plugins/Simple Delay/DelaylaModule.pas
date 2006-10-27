@@ -2,18 +2,18 @@ unit DelaylaModule;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule;
+uses Windows, Types, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule;
 
 type
   TSimpleDelayVST = class(TVSTModule)
     procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
     procedure VST2ModuleCreate(Sender: TObject);
-    procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleArray;
+    procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray;
       sampleframes: Integer);
     procedure DelaylaVSTParameterProperties0ParameterChange(
       Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fBuffer     : array[0..1] of TSingleArray;
+    fBuffer     : array[0..1] of TSingleDynArray;
     fBufferSize : Integer;
     fBufferPos  : Integer;
   public
@@ -40,7 +40,7 @@ begin
 end;
 
 procedure TSimpleDelayVST.VST2ModuleProcess(const inputs,
-  outputs: TArrayOfSingleArray; sampleframes: Integer);
+  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var j : Integer;
 begin
  for j:=0 to sampleframes-1 do
