@@ -30,7 +30,7 @@ type
     procedure ChannelBoxChange(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure Bt_PlayClick(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleArray);
+    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
     procedure SbFreqChange(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure SbVolumeChange(Sender: TObject);
@@ -151,7 +151,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch(Sender: TObject; InBuffer,
-  OutBuffer: TArrayOfSingleArray);
+  OutBuffer: TArrayOfSingleDynArray);
 var i: integer;
     s: single;
 begin
