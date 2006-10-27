@@ -2,7 +2,9 @@ object VSTVUMeterModule: TVSTVUMeterModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '0.0'
-  VendorVersion = 0
+  VersionMajor = 1
+  VersionMinor = 0
+  VersionRelease = 0
   PlugCategory = cgUnknown
   TailSize = 0
   CanDos = [plugAsChannelInsert, plugAsSend, _1in1out, _1in2out, _2in1out, _2in2out]

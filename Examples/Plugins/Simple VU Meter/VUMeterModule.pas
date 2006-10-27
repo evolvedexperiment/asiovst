@@ -8,10 +8,10 @@ type
   TVSTVUMeterModule = class(TVSTModule)
     procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleEditIdle(Sender: TObject);
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleArray;
+    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray;
       sampleframes: Integer);
     procedure VSTModuleProcessDoubleReplacing(const inputs,
-      outputs: TArrayOfDoubleArray; sampleframes: Integer);
+      outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure VSTModuleParameterChange(Sender: TObject;
       const Index: Integer; var Value: Single);
   private
@@ -54,7 +54,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TVSTVUMeterModule.VSTModuleProcess(const inputs,
-  outputs: TArrayOfSingleArray; sampleframes: Integer);
+  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i: integer;
 begin
  // This is usually the most important part of your plugin:
@@ -83,7 +83,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TVSTVUMeterModule.VSTModuleProcessDoubleReplacing(const inputs,
-  outputs: TArrayOfDoubleArray; sampleframes: Integer);
+  outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i: integer;
 begin
  // Same as above, but (internally) 64Bit...
