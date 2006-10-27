@@ -35,7 +35,7 @@ type
     procedure DriverComboChange(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure Bt_AnalyseClick(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleArray);
+    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
     procedure RB_MediumClick(Sender: TObject);
     procedure RB_FastClick(Sender: TObject);
     procedure RB_SlowClick(Sender: TObject);
@@ -189,7 +189,7 @@ begin
  AnalyserChart.Invalidate;
 end;
 
-procedure TFmAnalyser.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleArray);
+procedure TFmAnalyser.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
 var i,j : Integer;
     s   : Single;
 begin
