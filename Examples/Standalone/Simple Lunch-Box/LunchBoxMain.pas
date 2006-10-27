@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   XPMan, ComCtrls, ToolWin, ExtCtrls, StdCtrls, DVstHost, DASIOHost, DDSPBase,
-  Menus, Spin, LunchBoxEvent, LunchBoxEventList;
+  Menus, Types, Spin, LunchBoxEvent, LunchBoxEventList;
 
 type
   TComplexDouble = record
@@ -74,7 +74,7 @@ type
     procedure FormDeactivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BtExitClick(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleArray);
+    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
     procedure ASIOHostReset(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure MIQuitClick(Sender: TObject);
@@ -115,14 +115,14 @@ type
     fSamplesCount   : Single;
     fMetroVolume    : array [0..1] of Single;
     fOldFlange      : array [0..1] of Single;
-    fRobotBuffer    : TArrayOfSingleArray;
+    fRobotBuffer    : TArrayOfSingleDynArray;
     fRobotPos       : Integer;
     fPatPos         : Integer;
     fMaxPatSamples  : Integer;
     fEventList      : TLunchBoxEventList;
 
-    VSTInBuffer     : TArrayOfSingleArray;
-    VSTOutBuffer    : TArrayOfSingleArray;
+    VSTInBuffer     : TArrayOfSingleDynArray;
+    VSTOutBuffer    : TArrayOfSingleDynArray;
     procedure CalculateSineAngles;
     procedure CreateSample(Index: Integer);
     procedure Requantize;
@@ -131,7 +131,7 @@ type
   end;
 
 var FmLunchBox: TFmLunchBox;
-    Samples: Array [0..8] of TSingleArray;
+    Samples: Array [0..8] of TSingleDynArray;
 
 implementation
 
@@ -414,7 +414,7 @@ begin
    end;
 end;
 
-procedure TFmLunchBox.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleArray);
+procedure TFmLunchBox.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
 var i,j : Integer;
     met : Single;
 begin
