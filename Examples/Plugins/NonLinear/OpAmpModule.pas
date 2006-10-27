@@ -32,8 +32,8 @@ uses {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
 type
   TVSTOpAmp = class(TVSTModule)
     procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
@@ -73,7 +73,7 @@ begin
 end;
 
 procedure TVSTOpAmp.VSTModuleProcess(const inputs,
-  outputs: TArrayOfSingleArray; sampleframes: Integer);
+  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i,j : Integer;
 begin
  for j:=0 to min(numOutputs,numInputs)-1 do
@@ -82,7 +82,7 @@ begin
 end;
 
 procedure TVSTOpAmp.VSTModuleProcessDoubleReplacing(const inputs,
-  outputs: TArrayOfDoubleArray; sampleframes: Integer);
+  outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i,j : Integer;
 begin
  for j:=0 to min(numOutputs,numInputs)-1 do
