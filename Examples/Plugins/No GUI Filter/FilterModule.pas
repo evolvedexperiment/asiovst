@@ -10,8 +10,8 @@ uses {$IFDEF FPC} LResources, LCLClasses, {$ENDIF}DDSPBase, DVSTModule;
 
 type
   TVSTFilter = class(TVSTModule)
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure VSTFilterParameterProperties0ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleInitialize(Sender: TObject);
   private
@@ -56,7 +56,7 @@ end;
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTFilter.VSTModuleProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+procedure TVSTFilter.VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i         : integer;
     cut, res  : single;
     fb        : single;
@@ -81,7 +81,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TVSTFilter.VSTModuleProcessDoubleReplacing(const inputs,
-  outputs: TArrayOfDoubleArray; sampleframes: Integer);
+  outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i         : integer;
     cut, res  : Double;
     fb        : Double;
