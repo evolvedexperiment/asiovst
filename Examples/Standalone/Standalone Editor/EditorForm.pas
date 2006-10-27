@@ -27,12 +27,12 @@ type
     procedure FormCreate(Sender: TObject);
     procedure BtSetupClick(Sender: TObject);
     procedure BtExitClick(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleArray);
+    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
     procedure ASIOHostReset(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
-    VSTInBuffer: TArrayOfSingleArray;
-    VSTOutBuffer: TArrayOfSingleArray;
+    VSTInBuffer: TArrayOfSingleDynArray;
+    VSTOutBuffer: TArrayOfSingleDynArray;
   public
   end;
 
@@ -130,7 +130,7 @@ begin
  Close;
 end;
 
-procedure TFmVSTEditor.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleArray);
+procedure TFmVSTEditor.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
 begin
  VSTHost[0].ProcessReplacing(@InBuffer[ASIOHost.InputChannelOffset],@OutBuffer[ASIOHost.OutputChannelOffset],ASIOHost.BufferSize);
 end;
