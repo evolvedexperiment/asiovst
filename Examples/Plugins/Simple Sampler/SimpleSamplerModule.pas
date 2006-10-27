@@ -2,13 +2,14 @@ unit SimpleSamplerModule;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase,
-     DVSTEffect, DVSTModule, SimpleSamplerVoice, VoiceList;
+uses
+  Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTEffect, Types,
+  DVSTModule, SimpleSamplerVoice, VoiceList;
 
 type
   TVSTSSModule = class(TVSTModule)
     procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject;
       MidiEvent: TVstMidiEvent);
@@ -16,7 +17,7 @@ type
   private
   public
     Voices      : TVoiceList;
-    Sample      : TSingleArray;
+    Sample      : TSingleDynArray;
   end;
 
 implementation
@@ -36,7 +37,7 @@ begin
 end;
 
 procedure TVSTSSModule.VSTModuleProcess(const inputs,
-  outputs: TArrayOfSingleArray; sampleframes: Integer);
+  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i,j : Integer;
 begin
  FillChar(outputs[0,0],sampleframes*SizeOf(Single),0);
