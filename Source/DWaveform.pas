@@ -5,7 +5,7 @@ unit DWaveform;
 
 interface
 
-uses Windows, DDSPBase, Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
+uses Windows, Types, Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
 
 type
   TWaveform = class;
@@ -22,7 +22,7 @@ type
     fTransparent    : Boolean;
     fNormalize      : Boolean;
     fNormalizeFak   : Single;
-    fWavedata       : TSingleArray;
+    fWavedata       : TSingleDynArray;
     procedure WMEraseBkgnd(var m: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure SetLinewidth(const Value: Integer);
     procedure SetLineColor(const Value: TColor);
@@ -40,7 +40,7 @@ type
     destructor Destroy; override;
     procedure Paint; override;
     procedure RedrawBuffer;
-    property Wavedata : TSingleArray read fWavedata;
+    property Wavedata : TSingleDynArray read fWavedata;
     property WaveLength : Integer read GetWaveLength write SetWaveLength;
   published
     property Anchors;
