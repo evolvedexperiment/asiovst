@@ -17,7 +17,7 @@ unit DASIOHost;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, ActiveX, ASIO, DASIOConvert,
+uses Windows, Messages, SysUtils, Classes, ActiveX, ASIO, DASIOConvert, Types,
      DASIOGenerator, {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
      {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls,
      ASIOMixer, {$ENDIF} {$IFDEF D5CP} dsgnintf, {$ENDIF} DDSPBase;
@@ -59,7 +59,7 @@ type
 
   TSamplePositionUpdateEvent = procedure(Sender: TObject; SamplePosition: Int64) of object;
   TSample2Event = procedure(Sender: TObject; Sample: array of Single) of object;
-  TBufferSwitchEvent = procedure(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleArray) of object;
+  TBufferSwitchEvent = procedure(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray) of object;
 
   TBufferPreFill = (bpfNone, bpfZero, bpfNoise, bpfCustom);
 
@@ -148,14 +148,14 @@ type
     {$ENDIF}
     BuffersCreated        : boolean;
     callbacks             : TASIOCallbacks;
-    SingleInBuffer        : TArrayOfSingleArray;
-    SingleOutBuffer       : TArrayOfSingleArray;
+    SingleInBuffer        : TArrayOfSingleDynArray;
+    SingleOutBuffer       : TArrayOfSingleDynArray;
     UnAlignedBuffer       : PASIOBufferInfo;
     InputBuffer           : PASIOBufferInfo;
     OutputBuffer          : PASIOBufferInfo;
     FInputMonitor         : TInputMonitor;
     FConvertOptimizations : TConvertOptimizations;
-    FOutputVolume         : TSingleArray;
+    FOutputVolume         : TSingleDynArray;
     fClipPrevent          : TClipPreventer;
     {$IFDEF ASIOMixer}
     FASIOMixer            : TFmASIOMixer;

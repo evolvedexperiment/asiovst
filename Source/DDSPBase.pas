@@ -27,132 +27,127 @@ interface
  {$OPTIMIZATION ON}
 {$ENDIF}
 
-{$IFNDEF FPC} uses Windows; {$ENDIF}
+{$IFNDEF FPC} uses Windows, Types; {$ENDIF}
 
 type
- TSingleArray = array of Single;
- PSingleArray = ^TSingleArray;
- TArrayOfSingleArray = array of TSingleArray;
- PArrayOfSingleArray = ^TArrayOfSingleArray;
- T4SingleArray = array[0..3] of Single;
- P4SingleArray = ^T4SingleArray;
- T2SingleArray = array [0..1] of Single;
- P2SingleArray = ^T2SingleArray;
+  TSingleFixedArray = Array [0..0] of Single;
+  PSingleFixedArray = ^TSingleFixedArray;
+  TDoubleFixedArray = Array [0..0] of Double;
+  PDoubleFixedArray = ^TDoubleFixedArray;
 
- TDoubleArray = array of Double;
- PDoubleArray = ^TDoubleArray;
- TArrayOfDoubleArray = array of TDoubleArray;
- PArrayOfDoubleArray = ^TArrayOfDoubleArray;
- T4DoubleArray = array[0..3] of Double;
- P4DoubleArray = ^T4DoubleArray;
- T2DoubleArray = array [0..1] of Double;
- P2DoubleArray = ^T2SingleArray;
+  TArrayOfSingleDynArray = array of TSingleDynArray;
+  PArrayOfSingleDynArray = ^TArrayOfSingleDynArray;
+  TArrayOfDoubleDynArray = array of TDoubleDynArray;
+  PArrayOfDoubleDynArray = ^TArrayOfDoubleDynArray;
 
- TStrArray = array of string;
+  T4SingleArray = array[0..3] of Single;
+  P4SingleArray = ^T4SingleArray;
+  T4DoubleArray = array[0..3] of Double;
+  P4DoubleArray = ^T4DoubleArray;
 
- {$IFNDEF FPC}
- function GetApplicationFilename: string;
- function GetApplicationDirectory: string;
- {$ENDIF}
- function ms2smp(ms, SampleRate: Single): Single;
- function smp2ms(smp, SampleRate: Single): Single;
- function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single;
- function Sync2Smp(SyncFactor, bpm, SampleRate: Single): Integer;
- function f_Limit(v:Single;l:Single=-1;u:Single=1):Single; overload;
- function f_Limit(v:Double;l:Double=-1;u:Double=1):Double; overload;
- function dB_to_Amp(g:Single):Single;
- {$IFNDEF FPC}
- function Amp_to_dB(v:Single):Single; overload;
- function Amp_to_dB(v:T4SingleArray):Single; overload;
- {$ENDIF}
- function Smallest(A, B: Single): Single;
- function Largest(A, B: Single): Single;
- function LimitAngle(const Angle: Single): Single;
- function LinearInterpolation(f,a,b:Single):Single;
- function CubicInterpolation(fr,inm1,inp,inp1,inp2:Single):Single;
- {$IFNDEF FPC}
- function f_Frac(Sample:Single):Single;
- function f_Int(Sample:Single):Single;
- function f_Trunc(Sample:Single):Integer; overload;
- procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer); overload;
- function f_Round(Sample:Single):Integer;
- function f_Exp(x:Single):Single;
- {$ENDIF}
- const _pi=3.1415926536;
- function f_Ln2(f:Single):Single;
- function f_Floorln2(f:Single):Integer;
- {$IFNDEF FPC}
- function f_Abs(f:Single):Single; overload;
- function f_Abs(f:Double):Double; overload;
- function f_Abs(f:T4SingleArray):Single; overload;
- function f_Neg(f:Single):Single;
- function f_Root(i:Single;n:Integer):Single;
- function f_Power(i:Single;n:Integer):Single;
- function f_Log2(val:Single):Single;
- {$ENDIF}
- function f_Arctan(fValue:Single):Single;
- {$IFNDEF FPC}
- function f_Sin(fAngle:Single):Single;
- function f_Cos(fAngle:Single):Single;
- function f_Sgn(f:Single):Integer;
- {$ENDIF}
- function f_Clip(x,l,h:Single):Single;
- function f_Cliplo(x,l:Single):Single;
- function f_Cliphi(x,h:Single):Single;
- {$IFNDEF FPC}
- function f_Min(const A, B: Single) : Single;
- function f_Max(const A, B: Single) : Single;
- function f_ArcTan2(const Y, X: Extended): Extended;
- function f_Tan(const X: Extended): Extended;
- function f_CoTan(const X: Extended): Extended;
- function f_Log10(const X: Extended): Extended;
+  T2SingleArray = array [0..1] of Single;
+  P2SingleArray = ^T2SingleArray;
+  T2DoubleArray = array [0..1] of Double;
+  P2DoubleArray = ^T2SingleArray;
 
- // scale logarithmically from 20 Hz to 20 kHz
- function FreqLinearToLog(value:Single):Single;
- function FreqLogToLinear(value:Single):Single;
- {$ENDIF}
+  TStrArray = array of string;
 
- procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
- 
- function OnOff(fvalue:Single):boolean;
- function unDenormalize(fvalue:Single):Single;
+  {$IFNDEF FPC}
+  function GetApplicationFilename: string;
+  function GetApplicationDirectory: string;
+  {$ENDIF}
+  function ms2smp(ms, SampleRate: Single): Single;
+  function smp2ms(smp, SampleRate: Single): Single;
+  function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single;
+  function Sync2Smp(SyncFactor, bpm, SampleRate: Single): Integer;
+  function f_Limit(v:Single;l:Single=-1;u:Single=1):Single; overload;
+  function f_Limit(v:Double;l:Double=-1;u:Double=1):Double; overload;
+  function f_Clip(x,l,h:Single):Single;
+  function f_Cliplo(x,l:Single):Single;
+  function f_Cliphi(x,h:Single):Single;
+  function dB_to_Amp(g:Single):Single;
+  {$IFNDEF FPC}
+  function Amp_to_dB(v:Single):Single; overload;
+  function Amp_to_dB(v:T4SingleArray):Single; overload;
+  {$ENDIF}
+  function Smallest(A, B: Single): Single;
+  function Largest(A, B: Single): Single;
+  function LimitAngle(const Angle: Single): Single;
+  function LinearInterpolation(f,a,b:Single):Single;
+  function CubicInterpolation(fr,inm1,inp,inp1,inp2:Single):Single;
+  function f_Ln2(f:Single):Single;
+  function f_Floorln2(f:Single):Integer;
+  function f_Arctan(fValue:Single):Single;
+  {$IFNDEF FPC}
+  function f_Frac(Sample:Single):Single;
+  function f_Int(Sample:Single):Single;
+  function f_Trunc(Sample:Single):Integer; overload;
+  procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer); overload;
+  function f_Round(Sample:Single):Integer;
+  function f_Exp(x:Single):Single;
+  function f_Abs(f:Single):Single; overload;
+  function f_Abs(f:Double):Double; overload;
+  function f_Abs(f:T4SingleArray):Single; overload;
+  function f_Neg(f:Single):Single;
+  function f_Root(i:Single;n:Integer):Single;
+  function f_Power(i:Single;n:Integer):Single;
+  function f_Log2(val:Single):Single;
+  function f_Sin(fAngle:Single):Single;
+  function f_Cos(fAngle:Single):Single;
+  function f_Sgn(f:Single):Integer;
+  function f_Min(const A, B: Single) : Single;
+  function f_Max(const A, B: Single) : Single;
+  function f_ArcTan2(const Y, X: Extended): Extended;
+  function f_Tan(const X: Extended): Extended;
+  function f_CoTan(const X: Extended): Extended;
+  function f_Log10(const X: Extended): Extended;
 
- function Saturate(input, fMax: Single): Single;
+  // scale logarithmically from 20 Hz to 20 kHz
+  function FreqLinearToLog(value:Single):Single;
+  function FreqLogToLinear(value:Single):Single;
+  {$ENDIF}
 
- {$IFNDEF FPC}
- procedure Msg(b:boolean); overload;
- procedure Msg(m:string;m2:string=''); overload;
- procedure Msg(i:Integer); overload;
- procedure Msg(s:Single); overload;
- procedure Msg(m:string;i:Integer); overload;
+  procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
 
- function FloatWithUnit(f:Double):string;
- function SplitString(S: String; Delimiter: char): TStrArray;
- function MakeGoodFileName(s: string): string;
+  function OnOff(fvalue:Single):boolean;
+  function unDenormalize(fvalue:Single):Single;
 
- function Hermite1(const x,y0,y1,y2,y3:Single):Single;
- function Hermite2(const x,y0,y1,y2,y3:Single):Single;
- function Hermite3(const x,y0,y1,y2,y3:Single):Single;
- function Hermite4(const frac_pos, xm1, x0, x1, x2: Single): Single;
- function Hermite_asm(const frac_pos: Single; pntr : PSingle) : Single;
+  function Saturate(input, fMax: Single): Single;
 
- function Tanh2a(x:Single):Single;
- function Tanh2b(x:Single):Single;
- function Tanh2c(x:Single):Single;
- function Tanh2d(x:Single):Single;
- function Sigmoid(x:Single):Single;
- function Waveshaper1(x,t:Single):Single;
- function Waveshaper2(x,t:Single):Single;
- function Waveshaper3(x,a:Single):Single;
- function Waveshaper4(x,a:Single):Single;
- function Waveshaper5(x,a:Single):Single;
- function Waveshaper6(x:Single):Single;
- function Waveshaper7(x,a:Single):Single;
- function Waveshaper8(x,a:Single):Single;
- function SoftSat(x,a:Single):Single;
+  {$IFNDEF FPC}
+  procedure Msg(b:boolean); overload;
+  procedure Msg(m:string;m2:string=''); overload;
+  procedure Msg(i:Integer); overload;
+  procedure Msg(s:Single); overload;
+  procedure Msg(m:string;i:Integer); overload;
+
+  function FloatWithUnit(f:Double):string;
+  function SplitString(S: String; Delimiter: char): TStrArray;
+  function MakeGoodFileName(s: string): string;
+
+  function Hermite1(const x,y0,y1,y2,y3:Single):Single;
+  function Hermite2(const x,y0,y1,y2,y3:Single):Single;
+  function Hermite3(const x,y0,y1,y2,y3:Single):Single;
+  function Hermite4(const frac_pos, xm1, x0, x1, x2: Single): Single;
+  function Hermite_asm(const frac_pos: Single; pntr : PSingle) : Single;
+
+  function Tanh2a(x:Single):Single;
+  function Tanh2b(x:Single):Single;
+  function Tanh2c(x:Single):Single;
+  function Tanh2d(x:Single):Single;
+  function Sigmoid(x:Single):Single;
+  function Waveshaper1(x,t:Single):Single;
+  function Waveshaper2(x,t:Single):Single;
+  function Waveshaper3(x,a:Single):Single;
+  function Waveshaper4(x,a:Single):Single;
+  function Waveshaper5(x,a:Single):Single;
+  function Waveshaper6(x:Single):Single;
+  function Waveshaper7(x,a:Single):Single;
+  function Waveshaper8(x,a:Single):Single;
+  function SoftSat(x,a:Single):Single;
+{$ENDIF}
 
 var ln10, ln2, ln22, ln2Rez : Double;
- {$ENDIF}
 
 implementation
 
@@ -886,6 +881,7 @@ asm
  fcmovnb st(0), st(1)
  ffree   st(1)
 end;
+{$ENDIF}
 
 initialization
 
@@ -893,6 +889,5 @@ ln2    := ln(2);
 ln22   := ln2*0.5;
 ln2Rez := 1/ln2;
 ln10   := ln(10);
-{$ENDIF}
 
 end.

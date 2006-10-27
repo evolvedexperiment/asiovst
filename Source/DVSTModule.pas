@@ -17,8 +17,8 @@ type
   TParameterChangeEvent = procedure(Sender: TObject; const Index: Integer; var Value: Single) of object;
   TBlockSizeChangeEvent = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
-  TProcessAudioEvent = procedure(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer) of object;
-  TProcessDoubleEvent = procedure(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer) of object;
+  TProcessAudioEvent = procedure(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer) of object;
+  TProcessDoubleEvent = procedure(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer) of object;
   TOnDispatcherEvent = procedure (Sender: TObject; opCode: Integer) of object;
   TGetVUEvent = procedure(var VU:Single) of object;
   TGetEditorEvent = procedure(Sender: TObject; var GUI: TForm) of object;
@@ -374,8 +374,8 @@ type
     fSampleRateChangeEvent  : TSampleRateChangeEvent;
     fOnDispatcher           : TOnDispatcherEvent;
     fProcessingMode         : TProcessingMode;
-    fBlockInBuffer          : TArrayOfSingleArray;
-    fBlockOutBuffer         : TArrayOfSingleArray;
+    fBlockInBuffer          : TArrayOfSingleDynArray;
+    fBlockOutBuffer         : TArrayOfSingleDynArray;
     fBlockPosition          : Integer;
     fBlockModeSize          : Integer;
     fBlockModeOverlap       : Integer;
@@ -428,14 +428,14 @@ type
     function Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
     function VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
     procedure ReadOnlyString(s: string); virtual;
-    procedure fOnBlockSaveProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
-    procedure fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
-    procedure fOnProcessCopy(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
-    procedure fOnProcessMute(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer); overload;
-    procedure fOnBlockSaveProcess(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
-    procedure fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
-    procedure fOnProcessCopy(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
-    procedure fOnProcessMute(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer); overload;
+    procedure fOnBlockSaveProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer); overload;
+    procedure fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer); overload;
+    procedure fOnProcessCopy(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer); overload;
+    procedure fOnProcessMute(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer); overload;
+    procedure fOnBlockSaveProcess(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer); overload;
+    procedure fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer); overload;
+    procedure fOnProcessCopy(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer); overload;
+    procedure fOnProcessMute(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer); overload;
     function GetHostProduct: string;
     function GetHostVendor: string;
   protected
@@ -1338,9 +1338,9 @@ begin
 end;
 
 procedure TCustomVSTModule.Process(inputs, outputs: PPSingle; sampleFrames: Integer);
-var Ins  : TArrayOfSingleArray absolute inputs;
-    Outs : TArrayOfSingleArray absolute outputs;
-    OutsTmp: TArrayOfSingleArray;
+var Ins  : TArrayOfSingleDynArray absolute inputs;
+    Outs : TArrayOfSingleDynArray absolute outputs;
+    OutsTmp: TArrayOfSingleDynArray;
     i, j: Integer;
 begin
 // fTempo := TempoAt(0) * 0.0001; // get current bpm tempo from host
@@ -1358,8 +1358,8 @@ begin
 end;
 
 procedure TCustomVSTModule.ProcessReplacing(inputs, outputs: PPSingle; sampleFrames: Integer);
-var Ins  : TArrayOfSingleArray absolute inputs;
-    Outs : TArrayOfSingleArray absolute outputs;
+var Ins  : TArrayOfSingleDynArray absolute inputs;
+    Outs : TArrayOfSingleDynArray absolute outputs;
 begin
 // fTempo := TempoAt(0) * 0.0001; // get current bpm tempo from host
  if assigned(fOnProcessReplacingEx) then fOnProcessReplacingEx(Ins,Outs,SampleFrames);
@@ -1371,8 +1371,8 @@ begin
 end;
 
 procedure TCustomVSTModule.ProcessDoubleReplacing(inputs, outputs: PPDouble; sampleFrames: Integer);
-var Ins  : TArrayOfDoubleArray absolute inputs;
-    Outs : TArrayOfDoubleArray absolute outputs;
+var Ins  : TArrayOfDoubleDynArray absolute inputs;
+    Outs : TArrayOfDoubleDynArray absolute outputs;
 begin
 // fTempo := TempoAt(0) * 0.0001; // get current bpm tempo from host
  if assigned(fOnProcessDoublesEx) then fOnProcessDoublesEx(Ins,Outs,SampleFrames);
@@ -1383,7 +1383,7 @@ begin
   end;
 end;
 
-procedure TCustomVSTModule.fOnProcessCopy(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnProcessCopy(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i,j: Integer;
 begin
  j:=numInputs;
@@ -1391,13 +1391,13 @@ begin
  for i:=0 to j-1 do Move(inputs[i,0],outputs[i,0],sampleframes*SizeOf(Single));
 end;
 
-procedure TCustomVSTModule.fOnProcessMute(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnProcessMute(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i : Integer;
 begin
  for i:=0 to numOutputs do Fillchar(outputs[i,0],0,sampleframes*SizeOf(Single));
 end;
 
-procedure TCustomVSTModule.fOnProcessCopy(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnProcessCopy(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i,j: Integer;
 begin
  j:=numInputs;
@@ -1405,7 +1405,7 @@ begin
  for i:=0 to j-1 do Move(inputs[i,0],outputs[i,0],sampleframes*SizeOf(Double));
 end;
 
-procedure TCustomVSTModule.fOnProcessMute(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnProcessMute(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i : Integer;
 begin
  for i:=0 to numOutputs do Fillchar(outputs[i,0],0,sampleframes*SizeOf(Double));
@@ -1426,7 +1426,7 @@ begin
   then SetInitialDelay(fInitialDelay);
 end;
 
-procedure TCustomVSTModule.fOnBlockSaveProcess(const Inputs, Outputs: TArrayOfSingleArray; SampleFrames: Integer);
+procedure TCustomVSTModule.fOnBlockSaveProcess(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -1457,7 +1457,7 @@ begin
  until CurrentPosition>=SampleFrames;
 end;
 
-procedure TCustomVSTModule.fOnBlockSaveProcess(const Inputs, Outputs: TArrayOfDoubleArray; SampleFrames: Integer);
+procedure TCustomVSTModule.fOnBlockSaveProcess(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -1488,7 +1488,7 @@ begin
  until CurrentPosition>=SampleFrames;
 end;
 
-procedure TCustomVSTModule.fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -1519,7 +1519,7 @@ begin
  until CurrentPosition>=SampleFrames;
 end;
 
-procedure TCustomVSTModule.fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfDoubleArray; sampleframes: Integer);
+procedure TCustomVSTModule.fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
