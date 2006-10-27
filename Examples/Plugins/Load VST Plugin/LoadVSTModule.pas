@@ -2,15 +2,15 @@ unit LoadVSTModule;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPUtils, DVSTModule,
+uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
      DVstHost;
 
 type
   TPlugInPlugModule = class(TVSTModule)
     VstHost: TVstHost;
     procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
-    procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
-    procedure VST2ModuleProcessReplacing(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+    procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VST2ModuleProcessReplacing(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VST2ModuleCreate(Sender: TObject);
     procedure VST2ModuleOpen(Sender: TObject);
     procedure VST2ModuleClose(Sender: TObject);
@@ -45,12 +45,12 @@ begin
  VstHost[0].ShowEdit(GUI);
 end;
 
-procedure TPlugInPlugModule.VST2ModuleProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+procedure TPlugInPlugModule.VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 begin
  VstHost[0].Process(@inputs[0], @outputs[0], sampleframes);
 end;
 
-procedure TPlugInPlugModule.VST2ModuleProcessReplacing(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+procedure TPlugInPlugModule.VST2ModuleProcessReplacing(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 begin
  VstHost[0].ProcessReplacing(@inputs[0], @outputs[0], sampleframes);
 end;

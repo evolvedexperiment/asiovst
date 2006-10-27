@@ -2,14 +2,12 @@ unit LoadVSTGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPUtils, DVSTModule;
+uses Windows, Messages, SysUtils, Classes, Forms, DVSTModule;
 
 type
   TVSTGUI = class(TForm)
   private
-    { Private declarations }
   public
-    { Public declarations }
     theModule: TVSTModule;
   end;
 

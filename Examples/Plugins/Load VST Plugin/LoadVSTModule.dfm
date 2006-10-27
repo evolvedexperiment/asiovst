@@ -5,7 +5,10 @@ object PlugInPlugModule: TPlugInPlugModule
   Version = '1.0'
   EffectName = 'Load VST Plugin'
   ProductName = 'Load VST Plugin'
-  VendorVersion = 1
+  VendorName = 'Delphi VST example'
+  VersionMajor = 1
+  VersionMinor = 0
+  VersionRelease = 0
   PlugCategory = cgUnknown
   TailSize = 0
   CanDos = [plugAsChannelInsert, plugAsSend, _2in2out]
@@ -40,18 +43,8 @@ object PlugInPlugModule: TPlugInPlugModule
     VstPlugIns = <
       item
         DisplayName = 'TVstPlugIn'
-        numInputs = 0
-        numOutputs = 0
-        numPrograms = 0
-        numParams = 0
-        Version = 0
-        InitialDelay = 0
-        EffectOptions = []
-        PlugCategory = kpcUnknown
-        GUIStyle = gsOld
       end>
     ParameterQuantization = 0
-    BlockSize = 2048
     CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
     ManageIdleAutomaticly = False
     Tempo = 120.000000000000000000
