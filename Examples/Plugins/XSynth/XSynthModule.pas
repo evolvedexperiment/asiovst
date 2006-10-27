@@ -8,7 +8,7 @@ uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase,
 type
   TVSTSSModule = class(TVSTModule)
     procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleArray; sampleframes: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject;
       MidiEvent: TVstMidiEvent);
@@ -61,7 +61,7 @@ begin
 end;
 
 procedure TVSTSSModule.VSTModuleProcess(const inputs,
-  outputs: TArrayOfSingleArray; sampleframes: Integer);
+  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i,j : Integer;
     fb  : single;
 const kDenorm : Single = 1E-30;    
