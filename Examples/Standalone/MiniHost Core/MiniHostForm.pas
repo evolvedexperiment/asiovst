@@ -7,7 +7,7 @@ unit MiniHostForm;
 interface
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types,
   Forms, Messages, SysUtils, Classes, Graphics, Controls, StdCtrls,
   DDspBase, DASIOHost, DVstEffect, DVstHost, WaveIOX, MIDIFile, MIDI,
   ExtCtrls, ComCtrls, Menus;
@@ -186,15 +186,15 @@ type
     procedure UseMouseWheel1Click(Sender: TObject);
     procedure IdleTimerTimer(Sender: TObject);
     procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer,
-      OutBuffer: TArrayOfSingleArray);
+      OutBuffer: TArrayOfSingleDynArray);
   private
     downmix: boolean;
     totalframes: Integer;
     dir_plugin, dir_preset, dir_wave, dir_midi: string;
     loadprog: Integer;
     loaded, pluginloaded: boolean;
-    WavBufL, InBufL, WavBufR, InBufR: TSingleArray;
-    VSTBufIn, VSTBufOut: TArrayOfSingleArray;
+    WavBufL, InBufL, WavBufR, InBufR: TSingleDynArray;
+    VSTBufIn, VSTBufOut: TArrayOfSingleDynArray;
     CurrentASIO: Integer;
     CurrentMIDIIn: Integer;
     CurrentMIDIOut: Integer;
@@ -2146,7 +2146,7 @@ begin
 end;
 
 procedure TFmMiniHost.ASIOHostBufferSwitch(Sender: TObject; InBuffer,
-  OutBuffer: TArrayOfSingleArray);
+  OutBuffer: TArrayOfSingleDynArray);
 var j, i: Integer;
     bs, ChOfs: Integer;
 begin
