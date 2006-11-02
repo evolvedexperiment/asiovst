@@ -35,7 +35,6 @@ type
                    oc64 : procedure(source: PDouble; target: pointer; frames: longint);
                   end;
 
-
 procedure Use_x87;
 procedure Use_SSE;
 procedure Use_3DNow;
@@ -323,17 +322,30 @@ asm
   ffree st(0)
 end;
 
-procedure ToFloat32LSB_x87(source: pointer; target: PSingle; frames: longint); platform; // IEEE 754 32 bit float
+procedure ToFloat32LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 begin
- move(source^, target^, frames);
+ move(source^, target^, frames*SizeOf(Single));
 end;
 
-procedure ToFloat64LSB_x87(source: pointer; target: PSingle; frames: longint); platform; // IEEE 754 64 bit double float
+procedure ToFloat32LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+asm
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fstp  [edx+8*ecx-8].Double
+  loop @Start
+end;
+
+procedure ToFloat64LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 asm
  @Start:
   fld   [eax+8*ecx-8].double
   fstp  [edx+4*ecx-4].single
   loop @Start
+end;
+
+procedure ToFloat64LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+begin
+ move(source^, target^, frames*SizeOf(Double));
 end;
 
 procedure ToInt32LSB16_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 16 bit alignment
@@ -358,40 +370,73 @@ asm
   ffree    st(0)
 end;
 
-procedure ToInt32LSB18_x87(source: pointer; target: PSingle; frames: longint); platform; // 32 bit data with 18 bit alignment
+procedure ToInt32LSB18_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 18 bit alignment
 asm
   fld      Min18
 @Start:
-  fild     [eax+4*ecx-4].dword;
+  fild     [eax+4*ecx-4].DWord
   fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].single
+  fstp     [edx+4*ecx-4].Single
   loop     @start
   ffree    st(0)
 end;
 
-procedure ToInt32LSB20_x87(source: pointer; target: PSingle; frames: longint); platform; // 32 bit data with 20 bit alignment
+procedure ToInt32LSB18_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 18 bit alignment
+asm
+  fld      Min18
+@Start:
+  fild     [eax+4*ecx-4].DWord
+  fmul     st(0),st(1)
+  fstp     [edx+8*ecx-8].Double
+  loop     @start
+  ffree    st(0)
+end;
+
+procedure ToInt32LSB20_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 20 bit alignment
 asm
   fld      Min20
 @Start:
-  fild     [eax+4*ecx-4].dword;
+  fild     [eax+4*ecx-4].DWord
   fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].single
+  fstp     [edx+4*ecx-4].Single
   loop     @start
   ffree    st(0)
 end;
 
-procedure ToInt32LSB24_x87(source: pointer; target: PSingle; frames: longint); platform; // 32 bit data with 24 bit alignment
+procedure ToInt32LSB20_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 20 bit alignment
+asm
+  fld      Min20
+@Start:
+  fild     [eax+4*ecx-4].DWord
+  fmul     st(0),st(1)
+  fstp     [edx+8*ecx-8].Double
+  loop     @start
+  ffree    st(0)
+end;
+
+procedure ToInt32LSB24_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 24 bit alignment
 asm
   fld      Min24
 @Start:
-  fild     [eax+4*ecx-4].dword;
+  fild     [eax+4*ecx-4].DWord;
   fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].single
+  fstp     [edx+4*ecx-4].Single
   loop     @start
   ffree    st(0)
 end;
 
-procedure ToInt16MSB_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToInt32LSB24_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 24 bit alignment
+asm
+  fld      Min24
+@Start:
+  fild     [eax+4*ecx-4].DWord
+  fmul     st(0),st(1)
+  fstp     [edx+8*ecx-8].Double
+  loop     @start
+  ffree    st(0)
+end;
+
+procedure ToInt16MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 asm
   push ebx
   fld   Minsmall
@@ -399,21 +444,43 @@ asm
   mov bx,[eax+2*ecx-2]
   rol bx,$8
   mov [eax+2*ecx-2],bx
-  fild  [eax+2*ecx-2].word
+  fild  [eax+2*ecx-2].Word
   fmul  st(0),st(1)
-  fstp  [edx+4*ecx-4].single;
+  fstp  [edx+4*ecx-4].Single
   loop @start
   ffree st(0)
   pop ebx
 end;
 
-procedure ToInt24MSB_x87(source: pointer; target: PSingle; frames: longint); platform; // used for 20 bits as well
+procedure ToInt16MSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+asm
+  push ebx
+  fld   Minsmall
+ @Start:
+  mov bx,[eax+2*ecx-2]
+  rol bx,$8
+  mov [eax+2*ecx-2],bx
+  fild  [eax+2*ecx-2].Word
+  fmul  st(0),st(1)
+  fstp  [edx+8*ecx-8].Double
+  loop @start
+  ffree st(0)
+  pop ebx
+end;
+
+procedure ToInt24MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 begin
  ReverseEndian3(source, frames);
  ToInt24LSB_x87(source, target, frames);
 end;
 
-procedure ToInt32MSB_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToInt24MSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+begin
+ ReverseEndian3(source, frames);
+ ToInt24LSB_x87(source, target, frames);
+end;
+
+procedure ToInt32MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 asm
  push   ebx
  fld    minlong
@@ -421,27 +488,55 @@ asm
  mov    ebx,[eax+4*ecx-4]
  bswap  ebx
  mov    [eax+4*ecx-4],ebx
- fild   [eax+4*ecx-4].dword
+ fild   [eax+4*ecx-4].DWord
  fmul   st(0),st(1)
- fstp   [edx+4*ecx-4].single;
+ fstp   [edx+4*ecx-4].Single
  loop   @start
  ffree  st(0)
  pop    ebx
 end;
 
-procedure ToFloat32MSB_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToInt32MSB_x87(source: pointer; target: PDouble; Frames: longint); overload; platform;
+asm
+ push   ebx
+ fld    minlong
+@Start:
+ mov    ebx,[eax+4*ecx-4]
+ bswap  ebx
+ mov    [eax+4*ecx-4],ebx
+ fild   [eax+4*ecx-4].DWord
+ fmul   st(0),st(1)
+ fstp   [edx+8*ecx-8].Double
+ loop   @start
+ ffree  st(0)
+ pop    ebx
+end;
+
+procedure ToFloat32MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 begin
  ReverseEndian4(source, frames);
  move(source^, target^, frames);
 end;
 
-procedure ToFloat64MSB_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToFloat32MSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+begin
+ ReverseEndian4(source, frames);
+ move(source^, target^, frames);
+end;
+
+procedure ToFloat64MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 begin
  ReverseEndian8(source, frames);
  ToFloat64LSB_x87(source, target, frames);
 end;
 
-procedure ToInt32MSB16_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToFloat64MSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+begin
+ ReverseEndian8(source, frames);
+ ToFloat64LSB_x87(source, target, frames);
+end;
+
+procedure ToInt32MSB16_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 asm
   push     ebx
   fld      MinSmall
@@ -449,15 +544,31 @@ asm
   mov      ebx,[eax+4*ecx-4]
   bswap    ebx
   mov      [eax+4*ecx-4],ebx
-  fild     [eax+4*ecx-4].dword;
+  fild     [eax+4*ecx-4].DWord
   fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].single
+  fstp     [edx+4*ecx-4].Single
   loop     @start
   ffree    st(0)
   pop      ebx
 end;
 
-procedure ToInt32MSB18_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToInt32MSB16_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+asm
+  push     ebx
+  fld      MinSmall
+@Start:
+  mov      ebx,[eax+4*ecx-4]
+  bswap    ebx
+  mov      [eax+4*ecx-4],ebx
+  fild     [eax+4*ecx-4].DWord
+  fmul     st(0),st(1)
+  fstp     [edx+8*ecx-8].Double
+  loop     @start
+  ffree    st(0)
+  pop      ebx
+end;
+
+procedure ToInt32MSB18_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 asm
   push     ebx
   fld      Min18
@@ -465,15 +576,31 @@ asm
   mov      ebx,[eax+4*ecx-4]
   bswap    ebx
   mov      [eax+4*ecx-4],ebx
-  fild     [eax+4*ecx-4].dword;
+  fild     [eax+4*ecx-4].DWord
   fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].single
+  fstp     [edx+4*ecx-4].Single
   loop     @start
   ffree    st(0)
   pop      ebx
 end;
 
-procedure ToInt32MSB20_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToInt32MSB18_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+asm
+  push     ebx
+  fld      Min18
+@Start:
+  mov      ebx,[eax+4*ecx-4]
+  bswap    ebx
+  mov      [eax+4*ecx-4],ebx
+  fild     [eax+4*ecx-4].DWord;
+  fmul     st(0),st(1)
+  fstp     [edx+8*ecx-8].Double
+  loop     @start
+  ffree    st(0)
+  pop      ebx
+end;
+
+procedure ToInt32MSB20_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 asm
   push     ebx
   fld      Min20
@@ -481,15 +608,31 @@ asm
   mov      ebx,[eax+4*ecx-4]
   bswap    ebx
   mov      [eax+4*ecx-4],ebx
-  fild     [eax+4*ecx-4].dword;
+  fild     [eax+4*ecx-4].DWord
   fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].single
+  fstp     [edx+4*ecx-4].Single
   loop     @start
   ffree    st(0)
   pop      ebx
 end;
 
-procedure ToInt32MSB24_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToInt32MSB20_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+asm
+  push     ebx
+  fld      Min20
+@Start:
+  mov      ebx,[eax+4*ecx-4]
+  bswap    ebx
+  mov      [eax+4*ecx-4],ebx
+  fild     [eax+4*ecx-4].DWord
+  fmul     st(0),st(1)
+  fstp     [edx+8*ecx-8].Double
+  loop     @start
+  ffree    st(0)
+  pop      ebx
+end;
+
+procedure ToInt32MSB24_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 asm
   push     ebx
   fld      Min24
@@ -497,9 +640,25 @@ asm
   mov      ebx,[eax+4*ecx-4]
   bswap    ebx
   mov      [eax+4*ecx-4],ebx
-  fild     [eax+4*ecx-4].dword;
+  fild     [eax+4*ecx-4].DWord
   fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].single
+  fstp     [edx+4*ecx-4].Single
+  loop     @start
+  ffree    st(0)
+  pop      ebx
+end;
+
+procedure ToInt32MSB24_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+asm
+  push     ebx
+  fld      Min24
+@Start:
+  mov      ebx,[eax+4*ecx-4]
+  bswap    ebx
+  mov      [eax+4*ecx-4],ebx
+  fild     [eax+4*ecx-4].DWord
+  fmul     st(0),st(1)
+  fstp     [edx+8*ecx-8].Double
   loop     @start
   ffree    st(0)
   pop      ebx
@@ -507,18 +666,29 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure FromInt16LSB_x87(source: PSingle; target: pointer; frames: longint); platform;
+procedure FromInt16LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld      MaxSmall    // move to register for speed
 @Start:                // Samplecount already in ecx!
-  fld      [eax+4*ecx-4].single;
+  fld      [eax+4*ecx-4].Single
   fmul     st(0),st(1)
   fistp    word ptr [edx+2*ecx-2]
   loop     @start
   ffree    st(0)       // free after loop has finished
 end;
 
-procedure FromInt24LSB_x87(source: PSingle; target: pointer; frames: longint);
+procedure FromInt16LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  fld      MaxSmall    // move to register for speed
+@Start:                // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+  fistp    word ptr [edx+2*ecx-2]
+  loop     @start
+  ffree    st(0)       // free after loop has finished
+end;
+
+procedure FromInt24LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max24         //for speed
@@ -538,7 +708,27 @@ asm
   pop ebx
 end;
 
-procedure FromInt32LSB_x87(source: PSingle; target: pointer; frames: longint);
+procedure FromInt24LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  push ebx
+  fld   Max24         //for speed
+ @Start:
+  fld   [eax].Double
+  fmul  st(0),st(1)
+  fistp [esp-4].DWord
+  mov   ebx, [esp-4]
+  mov   [edx], bx
+  ror   ebx, 8
+  mov   [edx+2], bh
+  add   eax, 8
+  add   edx, 3
+  dec   ecx
+  jnz   @Start
+  ffree st(0)
+  pop ebx
+end;
+
+procedure FromInt32LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld   MaxLong         //for speed
  @Start:
@@ -549,69 +739,137 @@ asm
   ffree st(0)
 end;
 
-procedure FromFloat32LSB_x87(source: PSingle; target: pointer; frames: longint);   // IEEE 754 32 bit float
-begin
- move(source^, target^, frames);
+procedure FromInt32LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  fld   MaxLong         //for speed
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fmul  st(0),st(1)
+  fistp [edx+4*ecx-4].DWord
+  loop @Start
+  ffree st(0)
 end;
 
-procedure FromFloat64LSB_x87(source: PSingle; target: pointer; frames: longint);   // IEEE 754 64 bit double float
+procedure FromFloat32LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+begin
+ move(source^, target^, frames*sizeOf(Double));
+end;
+
+procedure FromFloat32LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
  @Start:
-  fld   [eax+4*ecx-4].single
-  fstp  [edx+8*ecx-8].double
+  fld   [eax+4*ecx-4].Single
+  fstp  [edx+8*ecx-8].Double
   loop @Start
 end;
 
-procedure FromInt32LSB16_x87(source: PSingle; target: pointer; frames: longint);  // 32 bit data with 16 bit alignment
+procedure FromFloat64LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+asm
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fstp  [edx+4*ecx-4].Single
+  loop @Start
+end;
+
+procedure FromFloat64LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+begin
+ move(source^, target^, frames*sizeOf(Double));
+end;
+
+procedure FromInt32LSB16_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld      MaxSmall
 @Start:
-  fld      [eax+4*ecx-4].single;
+  fld      [eax+4*ecx-4].Single
   fmul     st(0),st(1)
-  fistp    [edx+4*ecx-4].dword
+  fistp    [edx+4*ecx-4].DWord
   loop @Start
   ffree    st(0)
 end;
 
-procedure FromInt32LSB18_x87(source: PSingle; target: pointer; frames: longint);  // 32 bit data with 18 bit alignment
+procedure FromInt32LSB16_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  fld      MaxSmall
+@Start:
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+  fistp    [edx+4*ecx-4].DWord
+  loop @Start
+  ffree    st(0)
+end;
+
+procedure FromInt32LSB18_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max18
  @Start:
-  fld   [eax+4*ecx-4].single;
+  fld   [eax+4*ecx-4].Single
   fmul  st(0),st(1)
   fistp [edx+4*ecx-4].dword
   loop @Start
   ffree st(0)
 end;
 
-procedure FromInt32LSB20_x87(source: PSingle; target: pointer; frames: longint);  // 32 bit data with 20 bit alignment
+procedure FromInt32LSB18_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  fld   Max18
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fmul  st(0),st(1)
+  fistp [edx+4*ecx-4].DWord
+  loop @Start
+  ffree st(0)
+end;
+
+procedure FromInt32LSB20_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max20
  @Start:
-  fld   [eax+4*ecx-4].single;
+  fld   [eax+4*ecx-4].Single
   fmul  st(0),st(1)
-  fistp [edx+4*ecx-4].dword
+  fistp [edx+4*ecx-4].DWord
   loop @Start
   ffree st(0)
 end;
 
-procedure FromInt32LSB24_x87(source: PSingle; target: pointer; frames: longint);  // 32 bit data with 24 bit alignment
+procedure FromInt32LSB20_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  fld   Max20
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fmul  st(0),st(1)
+  fistp [edx+4*ecx-4].DWord
+  loop @Start
+  ffree st(0)
+end;
+
+procedure FromInt32LSB24_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max24
  @Start:
-  fld   [eax+4*ecx-4].single;
+  fld   [eax+4*ecx-4].Single
   fmul  st(0),st(1)
-  fistp [edx+4*ecx-4].dword
+  fistp [edx+4*ecx-4].DWord
   loop @Start
   ffree st(0)
 end;
 
-procedure FromInt16MSB_x87(source: PSingle; target: pointer; frames: longint);
+procedure FromInt32LSB24_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  fld   Max24
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fmul  st(0),st(1)
+  fistp [edx+4*ecx-4].DWord
+  loop @Start
+  ffree st(0)
+end;
+
+procedure FromInt16MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
    push ebx
    fld      MaxSmall
  @Start:
-   fld      [eax+4*ecx-4].single;
+   fld      [eax+4*ecx-4].Single
    fmul     st(0),st(1)
    fistp    word ptr [edx+2*ecx-2]
    mov      bx,[edx+2*ecx-2]
@@ -622,13 +880,35 @@ asm
    pop ebx
 end;
 
-procedure FromInt24MSB_x87(source: PSingle; target: pointer; frames: longint);  // used for 20 bits as well
+procedure FromInt16MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+   push ebx
+   fld      MaxSmall
+ @Start:
+   fld      [eax+8*ecx-8].Double
+   fmul     st(0),st(1)
+   fistp    word ptr [edx+2*ecx-2]
+   mov      bx,[edx+2*ecx-2]
+   rol      bx,$8
+   mov      [edx+2*ecx-2],bx
+   loop @Start
+   ffree    st(0)
+   pop ebx
+end;
+
+procedure FromInt24MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 begin
  FromInt24LSB_x87(source, target, frames);
  ReverseEndian3(target, frames);
 end;
 
-procedure FromInt32MSB_x87(source: PSingle; target: pointer; frames: longint);
+procedure FromInt24MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+begin
+ FromInt24LSB_x87(source, target, frames);
+ ReverseEndian3(target, frames);
+end;
+
+procedure FromInt32MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   MaxLong         //for speed
@@ -644,26 +924,54 @@ asm
   pop ebx
 end;
 
-procedure FromFloat32MSB_x87(source: PSingle; target: pointer; frames: longint);   // IEEE 754 32 bit float
+procedure FromInt32MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  push ebx
+  fld   MaxLong         //for speed
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fmul  st(0),st(1)
+  fistp [edx+4*ecx-4].DWord
+  mov ebx,[edx+4*ecx-4]
+  bswap ebx
+  mov [edx+4*ecx-4],ebx
+  loop @Start
+  ffree st(0)
+  pop ebx
+end;
+
+procedure FromFloat32MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 begin
- move(source^, target^, frames);
+ move(source^, target^, frames * SizeOf(Single));
  ReverseEndian4(target, frames);
 end;
 
-procedure FromFloat64MSB_x87(source: PSingle; target: pointer; frames: longint);   // IEEE 754 64 bit double float
+procedure FromFloat32MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+begin
+ FromFloat32LSB_x87(source, target, frames);
+ ReverseEndian4(target, frames);
+end;
+
+procedure FromFloat64MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 begin
  FromFloat64LSB_x87(source, target, frames);
  ReverseEndian8(target, frames);
 end;
 
-procedure FromInt32MSB16_x87(source: PSingle; target: pointer; frames: longint);  // 32 bit data with 16 bit alignment
+procedure FromFloat64MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+begin
+ move(source^, target^, frames * SizeOf(Double));
+ ReverseEndian8(target, frames);
+end;
+
+procedure FromInt32MSB16_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   MaxSmall
  @Start:
   fld   [eax+4*ecx-4].single
   fmul  st(0),st(1)
-  fistp [edx+4*ecx-4].dword;
+  fistp [edx+4*ecx-4].DWord
   mov ebx,[edx+4*ecx-4]
   bswap ebx
   mov [edx+4*ecx-4],ebx
@@ -672,14 +980,30 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB18_x87(source: PSingle; target: pointer; frames: longint);  // 32 bit data with 18 bit alignment
+procedure FromInt32MSB16_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  push ebx
+  fld   MaxSmall
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fmul  st(0),st(1)
+  fistp [edx+4*ecx-4].DWord
+  mov ebx,[edx+4*ecx-4]
+  bswap ebx
+  mov [edx+4*ecx-4],ebx
+  loop @Start
+  fstp st(0)
+  pop ebx
+end;
+
+procedure FromInt32MSB18_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max18
  @Start:
-  fld   [eax+4*ecx-4].single
+  fld   [eax+4*ecx-4].Single
   fmul  st(0),st(1)
-  fistp [edx+4*ecx-4].dword;
+  fistp [edx+4*ecx-4].DWord
   mov ebx,[edx+4*ecx-4]
   bswap ebx
   mov [edx+4*ecx-4],ebx
@@ -688,14 +1012,30 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB20_x87(source: PSingle; target: pointer; frames: longint);  // 32 bit data with 20 bit alignment
+procedure FromInt32MSB18_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  push ebx
+  fld   Max18
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fmul  st(0),st(1)
+  fistp [edx+8*ecx-8].DWord
+  mov ebx,[edx+4*ecx-4]
+  bswap ebx
+  mov [edx+4*ecx-4],ebx
+  loop @Start
+  ffree st(0)
+  pop ebx
+end;
+
+procedure FromInt32MSB20_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max20
  @Start:
-  fld   [eax+4*ecx-4].single
+  fld   [eax+4*ecx-4].Single
   fmul  st(0),st(1)
-  fistp [edx+4*ecx-4].dword;
+  fistp [edx+4*ecx-4].DWord
   mov ebx,[edx+4*ecx-4]
   bswap ebx
   mov [edx+4*ecx-4],ebx
@@ -704,14 +1044,30 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB24_x87(source: PSingle; target: pointer; frames: longint);  // 32 bit data with 24 bit alignment
+procedure FromInt32MSB20_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  push ebx
+  fld   Max20
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fmul  st(0),st(1)
+  fistp [edx+4*ecx-4].DWord
+  mov ebx,[edx+4*ecx-4]
+  bswap ebx
+  mov [edx+4*ecx-4],ebx
+  loop @Start
+  ffree st(0)
+  pop ebx
+end;
+
+procedure FromInt32MSB24_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max24
  @Start:
-  fld   [eax+4*ecx-4].single
+  fld   [eax+4*ecx-4].Single
   fmul  st(0),st(1)
-  fistp [edx+4*ecx-4].dword;
+  fistp [edx+4*ecx-4].DWord
   mov ebx,[edx+4*ecx-4]
   bswap ebx
   mov [edx+4*ecx-4],ebx
@@ -720,7 +1076,23 @@ asm
   pop ebx
 end;
 
-procedure MixBuffers_x87(InBuffer:PSingle; MixBuffer:PSingle; samples:integer);
+procedure FromInt32MSB24_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+  push ebx
+  fld   Max24
+ @Start:
+  fld   [eax+8*ecx-8].Double
+  fmul  st(0),st(1)
+  fistp [edx+4*ecx-4].DWord
+  mov ebx,[edx+4*ecx-4]
+  bswap ebx
+  mov [edx+4*ecx-4],ebx
+  loop @Start
+  ffree st(0)
+  pop ebx
+end;
+
+procedure MixBuffers_x87(InBuffer:PSingle; MixBuffer:PSingle; samples:integer); overload; platform;
 asm
 @Start:
   fld   [eax+4*ecx-4].Single
@@ -729,7 +1101,16 @@ asm
   loop @Start
 end;
 
-procedure Volume_x87(InBuffer:PSingle; Volume:Single; samples:integer);
+procedure MixBuffers_x87(InBuffer:PDouble; MixBuffer:PDouble; samples:integer); overload; platform;
+asm
+@Start:
+  fld   [eax+8*ecx-8].Double
+  fadd  [edx+8*ecx-8].Double
+  fstp  [edx+8*ecx-8].Double
+  loop @Start
+end;
+
+procedure Volume_x87(InBuffer:PSingle; Volume:Single; samples:integer); overload; platform;
 asm
  mov ecx,samples
  fld Volume.Single
@@ -737,6 +1118,18 @@ asm
  fld [eax+4*ecx-4].single
  fmul st(0),st(1)
  fstp [eax+4*ecx-4].single
+ loop @Start
+ fstp st(0)
+end;
+
+procedure Volume_x87(InBuffer:PDouble; Volume:Double; samples:integer); overload; platform;
+asm
+ mov ecx,samples
+ fld Volume.Double
+@Start:
+ fld [eax+8*ecx-8].Double
+ fmul st(0),st(1)
+ fstp [eax+8*ecx-8].Double
  loop @Start
  fstp st(0)
 end;
@@ -1594,6 +1987,26 @@ begin
   ToInt32LSB18.ic32    := ToInt32LSB18_x87;
   ToInt32LSB20.ic32    := ToInt32LSB20_x87;
   ToInt32LSB24.ic32    := ToInt32LSB24_x87;
+  ////////////////////////////////////////
+  ToInt16MSB.ic64      := ToInt16MSB_x87;
+  ToInt24MSB.ic64      := ToInt24MSB_x87;
+  ToInt32MSB.ic64      := ToInt32MSB_x87;
+  ToFloat32MSB.ic64    := ToFloat32MSB_x87;
+  ToFloat64MSB.ic64    := ToFloat64MSB_x87;
+  ToInt32MSB16.ic64    := ToInt32MSB16_x87;
+  ToInt32MSB18.ic64    := ToInt32MSB18_x87;
+  ToInt32MSB20.ic64    := ToInt32MSB20_x87;
+  ToInt32MSB24.ic64    := ToInt32MSB24_x87;
+  ToInt16LSB.ic64      := ToInt16LSB_x87;
+  ToInt24LSB.ic64      := ToInt24LSB_x87;
+  ToInt32LSB.ic64      := ToInt32LSB_x87;
+  ToFloat32LSB.ic64    := ToFloat32LSB_x87;
+  ToFloat64LSB.ic64    := ToFloat64LSB_x87;
+  ToInt32LSB16.ic64    := ToInt32LSB16_x87;
+  ToInt32LSB18.ic64    := ToInt32LSB18_x87;
+  ToInt32LSB20.ic64    := ToInt32LSB20_x87;
+  ToInt32LSB24.ic64    := ToInt32LSB24_x87;
+  ////////////////////////////////////////
   FromInt16MSB.oc32    := FromInt16MSB_x87;
   FromInt24MSB.oc32    := FromInt24MSB_x87;
   FromInt32MSB.oc32    := FromInt32MSB_x87;
@@ -1612,6 +2025,25 @@ begin
   FromInt32LSB18.oc32  := FromInt32LSB18_x87;
   FromInt32LSB20.oc32  := FromInt32LSB20_x87;
   FromInt32LSB24.oc32  := FromInt32LSB24_x87;
+  ////////////////////////////////////////
+  FromInt16MSB.oc64    := FromInt16MSB_x87;
+  FromInt24MSB.oc64    := FromInt24MSB_x87;
+  FromInt32MSB.oc64    := FromInt32MSB_x87;
+  FromFloat32MSB.oc64  := FromFloat32MSB_x87;
+  FromFloat64MSB.oc64  := FromFloat64MSB_x87;
+  FromInt32MSB16.oc64  := FromInt32MSB16_x87;
+  FromInt32MSB18.oc64  := FromInt32MSB18_x87;
+  FromInt32MSB20.oc64  := FromInt32MSB20_x87;
+  FromInt32MSB24.oc64  := FromInt32MSB24_x87;
+  FromInt16LSB.oc64    := FromInt16LSB_x87;
+  FromInt24LSB.oc64    := FromInt24LSB_x87;
+  FromInt32LSB.oc64    := FromInt32LSB_x87;
+  FromFloat32LSB.oc64  := FromFloat32LSB_x87;
+  FromFloat64LSB.oc64  := FromFloat64LSB_x87;
+  FromInt32LSB16.oc64  := FromInt32LSB16_x87;
+  FromInt32LSB18.oc64  := FromInt32LSB18_x87;
+  FromInt32LSB20.oc64  := FromInt32LSB20_x87;
+  FromInt32LSB24.oc64  := FromInt32LSB24_x87;
   MixBuffers           := MixBuffers_x87;
   Volume               := Volume_x87;
   ClipDigital          := ClipDigital_x86;
