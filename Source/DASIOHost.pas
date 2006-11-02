@@ -53,8 +53,6 @@ type
   TConvertOptimization = (coSSE, co3DNow);
   TConvertOptimizations = set of TConvertOptimization;
 
-  TInConvertor = procedure(source: pointer; target: PSingle; frames: longint);
-  TOutConvertor = procedure(source: PSingle; target: pointer; frames: longint);
   TClipPreventer = procedure(InBuffer:PSingle; Samples:Integer);
 
   TSamplePositionUpdateEvent = procedure(Sender: TObject; SamplePosition: Int64) of object;
@@ -1101,7 +1099,7 @@ begin
     PChannelArray := currentbuffer^.buffers[Index];
     if Assigned(PChannelArray) then
      for j := 0 to FInputChannels - 1
-      do FInConvertors[j](PChannelArray, PSingle(SingleInBuffer[j]), BufferSize);
+      do FInConvertors[j].ic32(PChannelArray, PSingle(SingleInBuffer[j]), BufferSize);
     inc(currentbuffer);
    end;
  end;
@@ -1141,7 +1139,7 @@ begin
   begin
    PChannelArray := currentbuffer^.buffers[Index];
    if assigned(PChannelArray)
-    then FOutConvertors[j](PSingle(SingleOutBuffer[j]),PChannelArray, BufferSize);
+    then FOutConvertors[j].oc32(PSingle(SingleOutBuffer[j]),PChannelArray, BufferSize);
    inc(currentbuffer);
   end;
  Driver.OutputReady;

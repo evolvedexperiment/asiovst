@@ -19,54 +19,64 @@ const fGrdDiv = 0.5;
       Min20     : Double = 1/$7FFFF;
       Max24     : Double = $7FFFFF;
       Min24     : Double = 1/$7FFFFF;
-      MaxLong   : double = $7FFFFFFF;
-      MinLong   : double = 1/$7FFFFFFF;
-      mmMaxLong : array[0..3] of single = ($7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF);
-      mmMinLong : array[0..3] of single = (1/$7FFFFFFF, 1/$7FFFFFFF, 1/$7FFFFFFF, 1/$7FFFFFFF);
+      MaxLong   : Double = $7FFFFFFF;
+      MinLong   : Double = 1/$7FFFFFFF;
+      mmMaxLong : array[0..3] of Single = ($7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF);
+      mmMinLong : array[0..3] of Single = (1/$7FFFFFFF, 1/$7FFFFFFF, 1/$7FFFFFFF, 1/$7FFFFFFF);
 
-type TFPUType = (fpuX87, fpuSSE, fpu3DNow);
+type
+  TFPUType = (fpuX87, fpuSSE, fpu3DNow);
+  TInConvertor = record
+                  ic32 : procedure(source: pointer; target: PSingle; frames: longint);
+                  ic64 : procedure(source: pointer; target: PDouble; frames: longint);
+                 end;
+  TOutConvertor = record
+                   oc32 : procedure(source: PSingle; target: pointer; frames: longint);
+                   oc64 : procedure(source: PDouble; target: pointer; frames: longint);
+                  end;
+
 
 procedure Use_x87;
 procedure Use_SSE;
 procedure Use_3DNow;
 
 var FPUType        : TFPUType;
-    ToInt16MSB     : procedure (source: pointer; target: PSingle; frames: longint);
-    ToInt24MSB     : procedure (source: pointer; target: PSingle; frames: longint);  // used for 20 bits as well
-    ToInt32MSB     : procedure (source: pointer; target: PSingle; frames: longint);
-    ToFloat32MSB   : procedure (source: pointer; target: PSingle; frames: longint);  // IEEE 754 32 bit float
-    ToFloat64MSB   : procedure (source: pointer; target: PSingle; frames: longint);  // IEEE 754 64 bit double float
-    ToInt32MSB16   : procedure (source: pointer; target: PSingle; frames: longint);  // 32 bit data with 16 bit alignment
-    ToInt32MSB18   : procedure (source: pointer; target: PSingle; frames: longint);  // 32 bit data with 18 bit alignment
-    ToInt32MSB20   : procedure (source: pointer; target: PSingle; frames: longint);  // 32 bit data with 20 bit alignment
-    ToInt32MSB24   : procedure (source: pointer; target: PSingle; frames: longint);  // 32 bit data with 24 bit alignment
-    ToInt16LSB     : procedure (source: pointer; target: PSingle; frames: longint);
-    ToInt24LSB     : procedure (source: pointer; target: PSingle; frames: longint);
-    ToInt32LSB     : procedure (source: pointer; target: PSingle; frames: longint);
-    ToFloat32LSB   : procedure (source: pointer; target: PSingle; frames: longint);   // IEEE 754 32 bit float
-    ToFloat64LSB   : procedure (source: pointer; target: PSingle; frames: longint);   // IEEE 754 64 bit double float
-    ToInt32LSB16   : procedure (source: pointer; target: PSingle; frames: longint);  // 32 bit data with 16 bit alignment
-    ToInt32LSB18   : procedure (source: pointer; target: PSingle; frames: longint);  // 32 bit data with 18 bit alignment
-    ToInt32LSB20   : procedure (source: pointer; target: PSingle; frames: longint);  // 32 bit data with 20 bit alignment
-    ToInt32LSB24   : procedure (source: pointer; target: PSingle; frames: longint);  // 32 bit data with 24 bit alignment
-    FromInt16MSB   : procedure (source: PSingle; target: pointer; frames: longint);
-    FromInt24MSB   : procedure (source: PSingle; target: pointer; frames: longint);  // used for 20 bits as well
-    FromInt32MSB   : procedure (source: PSingle; target: pointer; frames: longint);
-    FromFloat32MSB : procedure (source: PSingle; target: pointer; frames: longint);   // IEEE 754 32 bit float
-    FromFloat64MSB : procedure (source: PSingle; target: pointer; frames: longint);   // IEEE 754 64 bit double float
-    FromInt32MSB16 : procedure (source: PSingle; target: pointer; frames: longint);  // 32 bit data with 16 bit alignment
-    FromInt32MSB18 : procedure (source: PSingle; target: pointer; frames: longint);  // 32 bit data with 18 bit alignment
-    FromInt32MSB20 : procedure (source: PSingle; target: pointer; frames: longint);  // 32 bit data with 20 bit alignment
-    FromInt32MSB24 : procedure (source: PSingle; target: pointer; frames: longint);  // 32 bit data with 24 bit alignment
-    FromInt16LSB   : procedure (source: PSingle; target: pointer; frames: longint);
-    FromInt24LSB   : procedure (source: PSingle; target: pointer; frames: longint);
-    FromInt32LSB   : procedure (source: PSingle; target: pointer; frames: longint);
-    FromFloat32LSB : procedure (source: PSingle; target: pointer; frames: longint);   // IEEE 754 32 bit float
-    FromFloat64LSB : procedure (source: PSingle; target: pointer; frames: longint);   // IEEE 754 64 bit double float
-    FromInt32LSB16 : procedure (source: PSingle; target: pointer; frames: longint);  // 32 bit data with 16 bit alignment
-    FromInt32LSB18 : procedure (source: PSingle; target: pointer; frames: longint);  // 32 bit data with 18 bit alignment
-    FromInt32LSB20 : procedure (source: PSingle; target: pointer; frames: longint);  // 32 bit data with 20 bit alignment
-    FromInt32LSB24 : procedure (source: PSingle; target: pointer; frames: longint);  // 32 bit data with 24 bit alignment
+    ToInt16MSB     : TInConvertor;
+    ToInt24MSB     : TInConvertor;  // used for 20 bits as well
+    ToInt32MSB     : TInConvertor;
+    ToFloat32MSB   : TInConvertor;  // IEEE 754 32 bit float
+    ToFloat64MSB   : TInConvertor;  // IEEE 754 64 bit double float
+    ToInt32MSB16   : TInConvertor;  // 32 bit data with 16 bit alignment
+    ToInt32MSB18   : TInConvertor;  // 32 bit data with 18 bit alignment
+    ToInt32MSB20   : TInConvertor;  // 32 bit data with 20 bit alignment
+    ToInt32MSB24   : TInConvertor;  // 32 bit data with 24 bit alignment
+    ToInt16LSB     : TInConvertor;
+    ToInt24LSB     : TInConvertor;
+    ToInt32LSB     : TInConvertor;
+    ToFloat32LSB   : TInConvertor;  // IEEE 754 32 bit float
+    ToFloat64LSB   : TInConvertor;  // IEEE 754 64 bit double float
+    ToInt32LSB16   : TInConvertor;  // 32 bit data with 16 bit alignment
+    ToInt32LSB18   : TInConvertor;  // 32 bit data with 18 bit alignment
+    ToInt32LSB20   : TInConvertor;  // 32 bit data with 20 bit alignment
+    ToInt32LSB24   : TInConvertor;  // 32 bit data with 24 bit alignment
+    FromInt16MSB   : TOutConvertor;
+    FromInt24MSB   : TOutConvertor;  // used for 20 bits as well
+    FromInt32MSB   : TOutConvertor;
+    FromFloat32MSB : TOutConvertor;  // IEEE 754 32 bit float
+    FromFloat64MSB : TOutConvertor;  // IEEE 754 64 bit double float
+    FromInt32MSB16 : TOutConvertor;  // 32 bit data with 16 bit alignment
+    FromInt32MSB18 : TOutConvertor;  // 32 bit data with 18 bit alignment
+    FromInt32MSB20 : TOutConvertor;  // 32 bit data with 20 bit alignment
+    FromInt32MSB24 : TOutConvertor;  // 32 bit data with 24 bit alignment
+    FromInt16LSB   : TOutConvertor;
+    FromInt24LSB   : TOutConvertor;
+    FromInt32LSB   : TOutConvertor;
+    FromFloat32LSB : TOutConvertor;  // IEEE 754 32 bit float
+    FromFloat64LSB : TOutConvertor;  // IEEE 754 64 bit double float
+    FromInt32LSB16 : TOutConvertor;  // 32 bit data with 16 bit alignment
+    FromInt32LSB18 : TOutConvertor;  // 32 bit data with 18 bit alignment
+    FromInt32LSB20 : TOutConvertor;  // 32 bit data with 20 bit alignment
+    FromInt32LSB24 : TOutConvertor;  // 32 bit data with 24 bit alignment
 
 var MixBuffers  : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
     Volume      : procedure(InBuffer:PSingle; Volume:Single; Samples:integer);
@@ -110,7 +120,7 @@ asm
 // result := fGrdDiv * (f_abs(input + fMax) - f_abs(input - fMax));
 end;
 
-procedure ClipDigital_x86(InBuffer: PSingle; BSize: Integer); platform;
+procedure ClipDigital_x86(InBuffer: PSingle; BSize: Integer); overload; platform;
 const c1a : Single = 1;
 asm
  mov ecx,edx
@@ -127,6 +137,26 @@ asm
  add eax,4
  loop @Start
 end;
+
+{
+procedure ClipDigital_x86(InBuffer: PDouble; BSize: Integer); overload; platform;
+const c1a : Single = 1;
+asm
+ mov ecx,edx
+@Start:
+ mov edx, [eax]
+ and edx, $7FFFFFFF
+ cmp edx, c1a
+ jle @Weiter
+ mov edx, [eax]
+ and edx, $80000000
+ add edx, c1a
+ mov [eax], edx
+@Weiter:
+ add eax,8
+ loop @Start
+end;
+}
 
 procedure ClipAnalog_x87(InBuffer: PSingle; Samples: Integer); platform;
 const c3:Single=3;
@@ -205,7 +235,7 @@ end;
 /////////////////////////////////// x87 ////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure ToInt16LSB_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToInt16LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 asm
   fld   Minsmall        //for speed
  @Start:
@@ -216,7 +246,18 @@ asm
   ffree st(0)
 end;
 
-procedure ToInt24LSB_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToInt16LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+asm
+  fld   Minsmall        //for speed
+ @Start:
+  fild  [eax+2*ecx-2].Word
+  fmul  st(0),st(1)
+  fstp  [edx+8*ecx-8].Double;
+  loop @Start
+  ffree st(0)
+end;
+
+procedure ToInt24LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 asm
  fld Min24
  push ebx
@@ -238,13 +279,46 @@ asm
  ffree st(0)
 end;
 
-procedure ToInt32LSB_x87(source: pointer; target: PSingle; frames: longint); platform;
+procedure ToInt24LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+asm
+ fld Min24
+ push ebx
+ mov  ecx, frames
+@Start:
+ xor ebx,ebx
+ mov bx,[eax]
+ ror ebx,8
+ mov bh,[eax+2]
+ rol ebx,8
+ mov [esp-4],ebx
+ fild [esp-4].Single
+ fmul  st(0),st(1)
+ fstp [target].Double
+ add  eax,3
+ add  edx,8
+ loop @Start
+ pop ebx
+ ffree st(0)
+end;
+
+procedure ToInt32LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 asm
   fld   minlong         //for speed
  @Start:
   fild  [eax+4*ecx-4].dword
   fmul  st(0),st(1)
   fstp  [edx+4*ecx-4].single;
+  loop @Start
+  ffree st(0)
+end;
+
+procedure ToInt32LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+asm
+  fld   minlong         //for speed
+ @Start:
+  fild  [eax+4*ecx-4].dword
+  fmul  st(0),st(1)
+  fstp  [edx+8*ecx-8].Double;
   loop @Start
   ffree st(0)
 end;
@@ -262,13 +336,24 @@ asm
   loop @Start
 end;
 
-procedure ToInt32LSB16_x87(source: pointer; target: PSingle; frames: longint); platform; // 32 bit data with 16 bit alignment
+procedure ToInt32LSB16_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 16 bit alignment
 asm
   fld      MinSmall
 @Start:
   fild     [eax+4*ecx-4].dword;
   fmul     st(0),st(1)
   fstp     [edx+4*ecx-4].single
+  loop @Start
+  ffree    st(0)
+end;
+
+procedure ToInt32LSB16_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 16 bit alignment
+asm
+  fld      MinSmall
+@Start:
+  fild     [eax+4*ecx-4].DWord;
+  fmul     st(0),st(1)
+  fstp     [edx+8*ecx-8].Double
   loop @Start
   ffree    st(0)
 end;
@@ -1491,52 +1576,52 @@ end;
 
 procedure Use_x87;
 begin
-  ToInt16MSB     := ToInt16MSB_x87;
-  ToInt24MSB     := ToInt24MSB_x87;
-  ToInt32MSB     := ToInt32MSB_x87;
-  ToFloat32MSB   := ToFloat32MSB_x87;
-  ToFloat64MSB   := ToFloat64MSB_x87;
-  ToInt32MSB16   := ToInt32MSB16_x87;
-  ToInt32MSB18   := ToInt32MSB18_x87;
-  ToInt32MSB20   := ToInt32MSB20_x87;
-  ToInt32MSB24   := ToInt32MSB24_x87;
-  ToInt16LSB     := ToInt16LSB_x87;
-  ToInt24LSB     := ToInt24LSB_x87;
-  ToInt32LSB     := ToInt32LSB_x87;
-  ToFloat32LSB   := ToFloat32LSB_x87;
-  ToFloat64LSB   := ToFloat64LSB_x87;
-  ToInt32LSB16   := ToInt32LSB16_x87;
-  ToInt32LSB18   := ToInt32LSB18_x87;
-  ToInt32LSB20   := ToInt32LSB20_x87;
-  ToInt32LSB24   := ToInt32LSB24_x87;
-  FromInt16MSB   := FromInt16MSB_x87;
-  FromInt24MSB   := FromInt24MSB_x87;
-  FromInt32MSB   := FromInt32MSB_x87;
-  FromFloat32MSB := FromFloat32MSB_x87;
-  FromFloat64MSB := FromFloat64MSB_x87;
-  FromInt32MSB16 := FromInt32MSB16_x87;
-  FromInt32MSB18 := FromInt32MSB18_x87;
-  FromInt32MSB20 := FromInt32MSB20_x87;
-  FromInt32MSB24 := FromInt32MSB24_x87;
-  FromInt16LSB   := FromInt16LSB_x87;
-  FromInt24LSB   := FromInt24LSB_x87;
-  FromInt32LSB   := FromInt32LSB_x87;
-  FromFloat32LSB := FromFloat32LSB_x87;
-  FromFloat64LSB := FromFloat64LSB_x87;
-  FromInt32LSB16 := FromInt32LSB16_x87;
-  FromInt32LSB18 := FromInt32LSB18_x87;
-  FromInt32LSB20 := FromInt32LSB20_x87;
-  FromInt32LSB24 := FromInt32LSB24_x87;
-  MixBuffers     := MixBuffers_x87;
-  Volume         := Volume_x87;
-  ClipDigital    := ClipDigital_x86;
-  ClipAnalog     := ClipAnalog_x87;
+  ToInt16MSB.ic32      := ToInt16MSB_x87;
+  ToInt24MSB.ic32      := ToInt24MSB_x87;
+  ToInt32MSB.ic32      := ToInt32MSB_x87;
+  ToFloat32MSB.ic32    := ToFloat32MSB_x87;
+  ToFloat64MSB.ic32    := ToFloat64MSB_x87;
+  ToInt32MSB16.ic32    := ToInt32MSB16_x87;
+  ToInt32MSB18.ic32    := ToInt32MSB18_x87;
+  ToInt32MSB20.ic32    := ToInt32MSB20_x87;
+  ToInt32MSB24.ic32    := ToInt32MSB24_x87;
+  ToInt16LSB.ic32      := ToInt16LSB_x87;
+  ToInt24LSB.ic32      := ToInt24LSB_x87;
+  ToInt32LSB.ic32      := ToInt32LSB_x87;
+  ToFloat32LSB.ic32    := ToFloat32LSB_x87;
+  ToFloat64LSB.ic32    := ToFloat64LSB_x87;
+  ToInt32LSB16.ic32    := ToInt32LSB16_x87;
+  ToInt32LSB18.ic32    := ToInt32LSB18_x87;
+  ToInt32LSB20.ic32    := ToInt32LSB20_x87;
+  ToInt32LSB24.ic32    := ToInt32LSB24_x87;
+  FromInt16MSB.oc32    := FromInt16MSB_x87;
+  FromInt24MSB.oc32    := FromInt24MSB_x87;
+  FromInt32MSB.oc32    := FromInt32MSB_x87;
+  FromFloat32MSB.oc32  := FromFloat32MSB_x87;
+  FromFloat64MSB.oc32  := FromFloat64MSB_x87;
+  FromInt32MSB16.oc32  := FromInt32MSB16_x87;
+  FromInt32MSB18.oc32  := FromInt32MSB18_x87;
+  FromInt32MSB20.oc32  := FromInt32MSB20_x87;
+  FromInt32MSB24.oc32  := FromInt32MSB24_x87;
+  FromInt16LSB.oc32    := FromInt16LSB_x87;
+  FromInt24LSB.oc32    := FromInt24LSB_x87;
+  FromInt32LSB.oc32    := FromInt32LSB_x87;
+  FromFloat32LSB.oc32  := FromFloat32LSB_x87;
+  FromFloat64LSB.oc32  := FromFloat64LSB_x87;
+  FromInt32LSB16.oc32  := FromInt32LSB16_x87;
+  FromInt32LSB18.oc32  := FromInt32LSB18_x87;
+  FromInt32LSB20.oc32  := FromInt32LSB20_x87;
+  FromInt32LSB24.oc32  := FromInt32LSB24_x87;
+  MixBuffers           := MixBuffers_x87;
+  Volume               := Volume_x87;
+  ClipDigital          := ClipDigital_x86;
+  ClipAnalog           := ClipAnalog_x87;
 end;
 
 procedure Use_SSE;
 begin
  {$IFNDEF DELPHI5}
- FromInt32LSB := FromInt32LSB_SSE;
+ FromInt32LSB.oc32 := FromInt32LSB_SSE;
  MixBuffers   := MixBuffers_SSE;
  ClipDigital  := ClipDigital_SSE;
  ClipAnalog   := ClipAnalog_SSE;
@@ -1555,16 +1640,16 @@ begin
  FromInt24LSB := FromInt24LSB_3DNow;
  ToInt24LSB := ToInt24LSB_3DNow;
 }
- FromInt32LSB := FromInt32LSB_3DNow;
- ToInt32LSB := ToInt32LSB_3DNow;
- FromInt32LSB16 := FromInt32LSB16_3DNow;
- ToInt32LSB16 := ToInt32LSB16_3DNow;
- FromInt32LSB18 := FromInt32LSB18_3DNow;
- ToInt32LSB18 := ToInt32LSB18_3DNow;
- FromInt32LSB20 := FromInt32LSB20_3DNow;
- ToInt32LSB20 := ToInt32LSB20_3DNow;
- FromInt32LSB24 := FromInt32LSB24_3DNow;
- ToInt32LSB24 := ToInt32LSB24_3DNow;
+ FromInt32LSB.oc32   := FromInt32LSB_3DNow;
+ ToInt32LSB.ic32     := ToInt32LSB_3DNow;
+ FromInt32LSB16.oc32 := FromInt32LSB16_3DNow;
+ ToInt32LSB16.ic32   := ToInt32LSB16_3DNow;
+ FromInt32LSB18.oc32 := FromInt32LSB18_3DNow;
+ ToInt32LSB18.ic32   := ToInt32LSB18_3DNow;
+ FromInt32LSB20.oc32 := FromInt32LSB20_3DNow;
+ ToInt32LSB20.ic32   := ToInt32LSB20_3DNow;
+ FromInt32LSB24.oc32 := FromInt32LSB24_3DNow;
+ ToInt32LSB24.ic32   := ToInt32LSB24_3DNow;
  MixBuffers := MixBuffers_3DNow;
  Volume := Volume_3DNow;
  {$ENDIF}
