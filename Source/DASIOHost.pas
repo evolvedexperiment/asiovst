@@ -1096,11 +1096,13 @@ begin
   bpfCustom: if Assigned(FASIOGenerator) then FASIOGenerator.ProcessBlock(SingleInBuffer, false);
   else
    begin
-    PChannelArray := currentbuffer^.buffers[Index];
-    if Assigned(PChannelArray) then
-     for j := 0 to FInputChannels - 1
-      do FInConvertors[j].ic32(PChannelArray, PSingle(SingleInBuffer[j]), BufferSize);
-    inc(currentbuffer);
+    for j := 0 to FInputChannels - 1 do
+     begin
+      PChannelArray := currentbuffer^.buffers[Index];
+      if Assigned(PChannelArray) then
+        FInConvertors[j](PChannelArray, PSingle(SingleInBuffer[j]), BufferSize);
+      inc(currentbuffer);
+     end;
    end;
  end;
 

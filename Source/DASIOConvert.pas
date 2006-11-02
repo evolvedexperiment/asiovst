@@ -6,6 +6,8 @@ unit DASIOConvert;
 
 interface
 
+{$DEFINE x87}
+
 uses {$IFDEF FPC}LCLIntf; {$ELSE} Windows; {$ENDIF}
 
 const fGrdDiv = 0.5;
@@ -34,6 +36,20 @@ type
                    oc32 : procedure(source: PSingle; target: pointer; frames: longint);
                    oc64 : procedure(source: PDouble; target: pointer; frames: longint);
                   end;
+
+{$IFNDEF x87}
+type
+  TBtArray   = Array[0..0] of Byte;
+  PBtArray   = ^TBtArray;
+  TWrdArray  = Array[0..0] of Word;
+  PWrdArray  = ^TWrdArray;
+  TDblArray  = Array[0..0] of Double;
+  PDblArray  = ^TDblArray;
+  TntgrArray = Array[0..0] of Integer;
+  PntgrArray = ^TntgrArray;
+  TSnglArray = Array[0..0] of Single;
+  PSnglArray = ^TSnglArray;
+{$ENDIF}
 
 procedure Use_x87;
 procedure Use_SSE;
@@ -191,6 +207,7 @@ end;
 
 // ReverseEndian3 : reverts 3-byte entities in place
 procedure ReverseEndian3(buffer: pointer; frames: longint); platform;
+{$IFDEF x87}
 asm
  mov ecx,edx
 @Start:
@@ -201,9 +218,29 @@ asm
  add  eax,3
  loop @Start
 end;
+{$ELSE}
+type
+  TByte4Array = Array [0..2] of Byte;
+  PByte4Array = ^TByte4Array;
+var
+  BufArray : PByte4Array absolute buffer;
+  BufByte  : PByte absolute buffer;
+  i        : Integer;
+  b        : Byte;
+begin
+ for i := 0 to frames - 1 do
+  begin
+   b:=BufArray[0];
+   BufArray[0]:=BufArray[2];
+   BufArray[2]:=b;
+   Inc(BufByte,3);
+  end;
+end;
+{$ENDIF}
 
 // ReverseEndian4 : reverts 4-byte entities in place
 procedure ReverseEndian4(buffer: pointer; frames: longint); platform;
+{$IFDEF x87}
 asm
  mov ecx, frames
 @Start:
@@ -212,9 +249,28 @@ asm
  mov [eax+4*ecx-4],edx
  loop @Start
 end;
+{$ELSE}
+type
+  TByte4Array = Array [0..3] of Byte;
+  PByte4Array = ^TByte4Array;
+var
+  BufArray : PByte4Array absolute buffer;
+  BufByte  : PByte absolute buffer;
+  i        : Integer;
+  b        : Byte;
+begin
+ for i := 0 to frames - 1 do
+  begin
+   b:=BufArray[0]; BufArray[0]:=BufArray[3]; BufArray[3]:=b;
+   b:=BufArray[1]; BufArray[1]:=BufArray[2]; BufArray[2]:=b;
+   Inc(BufByte,4);
+  end;
+end;
+{$ENDIF}
 
 // ReverseEndian8 : reverts 8-byte entities in place
 procedure ReverseEndian8(buffer: pointer; frames: longint); platform;
+{$IFDEF x87}
 asm
  push ebx
  mov  ecx, frames
@@ -229,12 +285,33 @@ asm
  loop @Start
  pop ebx
 end;
+{$ELSE}
+type
+  TByte4Array = Array [0..7] of Byte;
+  PByte4Array = ^TByte4Array;
+var
+  BufArray : PByte4Array absolute buffer;
+  BufByte  : PByte absolute buffer;
+  i        : Integer;
+  b        : Byte;
+begin
+ for i := 0 to frames - 1 do
+  begin
+   b:=BufArray[0]; BufArray[0]:=BufArray[7]; BufArray[7]:=b;
+   b:=BufArray[1]; BufArray[1]:=BufArray[6]; BufArray[6]:=b;
+   b:=BufArray[2]; BufArray[2]:=BufArray[5]; BufArray[5]:=b;
+   b:=BufArray[3]; BufArray[3]:=BufArray[4]; BufArray[4]:=b;
+   Inc(BufByte,8);
+  end;
+end;
+{$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// x87 ////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure ToInt16LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   fld   Minsmall        //for speed
  @Start:
@@ -244,8 +321,19 @@ asm
   loop @Start
   ffree st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PWrdArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Minsmall;
+end;
+{$ENDIF}
 
 procedure ToInt16LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   fld   Minsmall        //for speed
  @Start:
@@ -255,8 +343,19 @@ asm
   loop @Start
   ffree st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PWrdArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Minsmall;
+end;
+{$ENDIF}
 
 procedure ToInt24LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
  fld Min24
  push ebx
@@ -277,8 +376,19 @@ asm
  pop ebx
  ffree st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min24;
+end;
+{$ENDIF}
 
 procedure ToInt24LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
  fld Min24
  push ebx
@@ -299,8 +409,19 @@ asm
  pop ebx
  ffree st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min24;
+end;
+{$ENDIF}
 
 procedure ToInt32LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   fld   minlong         //for speed
  @Start:
@@ -310,8 +431,19 @@ asm
   loop @Start
   ffree st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*minlong;
+end;
+{$ENDIF}
 
 procedure ToInt32LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   fld   minlong         //for speed
  @Start:
@@ -321,6 +453,16 @@ asm
   loop @Start
   ffree st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*minlong;
+end;
+{$ENDIF}
 
 procedure ToFloat32LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 begin
@@ -328,20 +470,42 @@ begin
 end;
 
 procedure ToFloat32LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
  @Start:
-  fld   [eax+8*ecx-8].Double
+  fld   [eax+4*ecx-4].Single
   fstp  [edx+8*ecx-8].Double
   loop @Start
 end;
+{$ELSE}
+var
+  SourceArray : PSnglArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i];
+end;
+{$ENDIF}
 
 procedure ToFloat64LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
  @Start:
-  fld   [eax+8*ecx-8].double
-  fstp  [edx+4*ecx-4].single
+  fld   [eax+8*ecx-8].Double
+  fstp  [edx+4*ecx-4].Single
   loop @Start
 end;
+{$ELSE}
+var
+  SourceArray : PDblArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i];
+end;
+{$ENDIF}
 
 procedure ToFloat64LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 begin
@@ -349,28 +513,51 @@ begin
 end;
 
 procedure ToInt32LSB16_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 16 bit alignment
+{$IFDEF x87}
 asm
   fld      MinSmall
 @Start:
-  fild     [eax+4*ecx-4].dword;
+  fild     [eax+4*ecx-4].DWord
   fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].single
+  fstp     [edx+4*ecx-4].Single
   loop @Start
   ffree    st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*MinSmall;
+end;
+{$ENDIF}
 
 procedure ToInt32LSB16_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 16 bit alignment
+{$IFDEF x87}
 asm
   fld      MinSmall
 @Start:
-  fild     [eax+4*ecx-4].DWord;
+  fild     [eax+4*ecx-4].DWord
   fmul     st(0),st(1)
   fstp     [edx+8*ecx-8].Double
   loop @Start
   ffree    st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*MinSmall;
+end;
+{$ENDIF}
 
 procedure ToInt32LSB18_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 18 bit alignment
+{$IFDEF x87}
 asm
   fld      Min18
 @Start:
@@ -380,8 +567,19 @@ asm
   loop     @start
   ffree    st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min18;
+end;
+{$ENDIF}
 
 procedure ToInt32LSB18_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 18 bit alignment
+{$IFDEF x87}
 asm
   fld      Min18
 @Start:
@@ -391,8 +589,19 @@ asm
   loop     @start
   ffree    st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min18;
+end;
+{$ENDIF}
 
 procedure ToInt32LSB20_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 20 bit alignment
+{$IFDEF x87}
 asm
   fld      Min20
 @Start:
@@ -402,8 +611,19 @@ asm
   loop     @start
   ffree    st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min20;
+end;
+{$ENDIF}
 
 procedure ToInt32LSB20_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 20 bit alignment
+{$IFDEF x87}
 asm
   fld      Min20
 @Start:
@@ -413,8 +633,19 @@ asm
   loop     @start
   ffree    st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min20;
+end;
+{$ENDIF}
 
 procedure ToInt32LSB24_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 24 bit alignment
+{$IFDEF x87}
 asm
   fld      Min24
 @Start:
@@ -424,8 +655,19 @@ asm
   loop     @start
   ffree    st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min24;
+end;
+{$ENDIF}
 
 procedure ToInt32LSB24_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 24 bit alignment
+{$IFDEF x87}
 asm
   fld      Min24
 @Start:
@@ -435,8 +677,19 @@ asm
   loop     @start
   ffree    st(0)
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min24;
+end;
+{$ENDIF}
 
 procedure ToInt16MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   push ebx
   fld   Minsmall
@@ -451,8 +704,19 @@ asm
   ffree st(0)
   pop ebx
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*MinSmall;
+end;
+{$ENDIF}
 
 procedure ToInt16MSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   push ebx
   fld   Minsmall
@@ -467,6 +731,16 @@ asm
   ffree st(0)
   pop ebx
 end;
+{$ELSE}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*MinSmall;
+end;
+{$ENDIF}
 
 procedure ToInt24MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 begin
@@ -481,6 +755,7 @@ begin
 end;
 
 procedure ToInt32MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
  push   ebx
  fld    minlong
@@ -495,8 +770,15 @@ asm
  ffree  st(0)
  pop    ebx
 end;
+{$ELSE}
+begin
+ ReverseEndian4(source, frames);
+ ToInt32LSB_x87(source, target, frames);
+end;
+{$ENDIF}
 
 procedure ToInt32MSB_x87(source: pointer; target: PDouble; Frames: longint); overload; platform;
+{$IFDEF x87}
 asm
  push   ebx
  fld    minlong
@@ -511,6 +793,12 @@ asm
  ffree  st(0)
  pop    ebx
 end;
+{$ELSE}
+begin
+ ReverseEndian4(source, frames);
+ ToInt32LSB_x87(source, target, frames);
+end;
+{$ENDIF}
 
 procedure ToFloat32MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 begin
@@ -537,6 +825,7 @@ begin
 end;
 
 procedure ToInt32MSB16_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   push     ebx
   fld      MinSmall
@@ -551,8 +840,15 @@ asm
   ffree    st(0)
   pop      ebx
 end;
+{$ELSE}
+begin
+ ReverseEndian4(source, frames);
+ ToInt32LSB16_x87(source, target, frames);
+end;
+{$ENDIF}
 
 procedure ToInt32MSB16_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   push     ebx
   fld      MinSmall
@@ -567,8 +863,15 @@ asm
   ffree    st(0)
   pop      ebx
 end;
+{$ELSE}
+begin
+ ReverseEndian4(source, frames);
+ ToInt32LSB16_x87(source, target, frames);
+end;
+{$ENDIF}
 
 procedure ToInt32MSB18_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   push     ebx
   fld      Min18
@@ -583,8 +886,15 @@ asm
   ffree    st(0)
   pop      ebx
 end;
+{$ELSE}
+begin
+ ReverseEndian4(source, frames);
+ ToInt32LSB18_x87(source, target, frames);
+end;
+{$ENDIF}
 
 procedure ToInt32MSB18_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   push     ebx
   fld      Min18
@@ -599,8 +909,15 @@ asm
   ffree    st(0)
   pop      ebx
 end;
+{$ELSE}
+begin
+ ReverseEndian4(source, frames);
+ ToInt32LSB18_x87(source, target, frames);
+end;
+{$ENDIF}
 
 procedure ToInt32MSB20_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   push     ebx
   fld      Min20
@@ -615,8 +932,15 @@ asm
   ffree    st(0)
   pop      ebx
 end;
+{$ELSE}
+begin
+ ReverseEndian4(source, frames);
+ ToInt32LSB20_x87(source, target, frames);
+end;
+{$ENDIF}
 
 procedure ToInt32MSB20_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   push     ebx
   fld      Min20
@@ -631,8 +955,15 @@ asm
   ffree    st(0)
   pop      ebx
 end;
+{$ELSE}
+begin
+ ReverseEndian4(source, frames);
+ ToInt32LSB20_x87(source, target, frames);
+end;
+{$ENDIF}
 
 procedure ToInt32MSB24_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   push     ebx
   fld      Min24
@@ -647,8 +978,15 @@ asm
   ffree    st(0)
   pop      ebx
 end;
+{$ELSE}
+begin
+ ReverseEndian4(source, frames);
+ ToInt32LSB24_x87(source, target, frames);
+end;
+{$ENDIF}
 
 procedure ToInt32MSB24_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
 asm
   push     ebx
   fld      Min24
@@ -663,6 +1001,12 @@ asm
   ffree    st(0)
   pop      ebx
 end;
+{$ELSE}
+begin
+ ReverseEndian4(source, frames);
+ ToInt32LSB24_x87(source, target, frames);
+end;
+{$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 
