@@ -168,12 +168,8 @@ begin
    fPosition.Im:=fPosition.Im*fAngle.Re+fPosition.Re*fAngle.Im;
    fPosition.Re:=s;
 
-   if fBeatPos=0 then
-    begin
-     s:=fPosition.Re*fAngle.Re-fPosition.Im*fAngle.Im;
-     fPosition.Im:=fPosition.Im*fAngle.Re+fPosition.Re*fAngle.Im;
-     fPosition.Re:=s;
-    end;
+   if fBeatPos=0
+    then s:=2*fPosition.Re*fPosition.Re-1;
 
    s:=fVolume*s*fMetroVolume;
 

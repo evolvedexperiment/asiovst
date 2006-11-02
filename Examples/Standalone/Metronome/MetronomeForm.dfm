@@ -107,7 +107,7 @@ object FmASIO: TFmASIO
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     OnSampleRateChanged = ASIOHostSampleRateChanged
-    OnBufferSwitch = ASIOHostBufferSwitch
+    OnBufferSwitch32 = ASIOHostBufferSwitch
     Left = 52
     Top = 8
   end
