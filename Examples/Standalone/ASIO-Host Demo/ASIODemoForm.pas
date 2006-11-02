@@ -30,19 +30,19 @@ type
     procedure ChannelBoxChange(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure Bt_PlayClick(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
     procedure SbFreqChange(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure SbVolumeChange(Sender: TObject);
     procedure SbPanChange(Sender: TObject);
+    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
+      OutBuffer: TArrayOfDoubleDynArray);
   private
-    procedure SetFrequency(const Value: Single);
+    procedure SetFrequency(const Value: Double);
   public
     fAngle, fPosition   : TComplexDouble;
-    fPan, fFreq, fVol   : Single;
-    fOld,fNS            : Single;
+    fPan, fFreq, fVol   : Double;
   published
-    property Frequency : Single read fFreq write SetFrequency;
+    property Frequency : Double read fFreq write SetFrequency;
   end;
 
 var
@@ -150,8 +150,24 @@ begin
  ChannelOffset := ChannelBox.ItemIndex * 2;
 end;
 
-procedure TFmASIO.ASIOHostBufferSwitch(Sender: TObject; InBuffer,
-  OutBuffer: TArrayOfSingleDynArray);
+procedure TFmASIO.SbFreqChange(Sender: TObject);
+begin
+ Frequency:=FreqLinearToLog(SbFreq.Position * 0.00001);
+end;
+
+procedure TFmASIO.SetFrequency(const Value: Double);
+begin
+ if fFreq<>Value then
+  begin
+   fFreq := Value;
+   LbFreq.Caption:='Frequency: '+FloatTostrF(fFreq,ffGeneral,5,5)+' Hz';
+   fAngle.Re:=cos(2*Pi*fFreq/ASIOHost.SampleRate);
+   fAngle.Im:=sin(2*Pi*fFreq/ASIOHost.SampleRate);
+  end;
+end;
+
+procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
+  OutBuffer: TArrayOfDoubleDynArray);
 var i: integer;
     s: single;
 begin
@@ -163,22 +179,6 @@ begin
   OutBuffer[0,i] := s * (1 - fPan);
   OutBuffer[1,i] := s * fPan;
  end;
-end;
-
-procedure TFmASIO.SbFreqChange(Sender: TObject);
-begin
- Frequency:=FreqLinearToLog(SbFreq.Position * 0.00001);
-end;
-
-procedure TFmASIO.SetFrequency(const Value: Single);
-begin
- if fFreq<>Value then
-  begin
-   fFreq := Value;
-   LbFreq.Caption:='Frequency: '+FloatTostrF(fFreq,ffGeneral,5,5)+' Hz';
-   fAngle.Re:=cos(2*Pi*fFreq/ASIOHost.SampleRate);
-   fAngle.Im:=sin(2*Pi*fFreq/ASIOHost.SampleRate);
-  end;
 end;
 
 procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
