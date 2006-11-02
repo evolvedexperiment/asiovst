@@ -449,7 +449,7 @@ object FmLunchBox: TFmLunchBox
     OnReset = ASIOHostReset
     OnLatencyChanged = ASIOHostReset
     OnSampleRateChanged = ASIOHostSampleRateChanged
-    OnBufferSwitch = ASIOHostBufferSwitch
+    OnBufferSwitch32 = ASIOHostBufferSwitch
     Left = 104
     Top = 89
   end

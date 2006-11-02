@@ -477,12 +477,7 @@ begin
    fPosition.Im:=fPosition.Im*fAngle.Re+fPosition.Re*fAngle.Im;
    fPosition.Re:=met;
 
-   if fBeatPos=0 then
-    begin
-     met:=fPosition.Re*fAngle.Re-fPosition.Im*fAngle.Im;
-     fPosition.Im:=fPosition.Im*fAngle.Re+fPosition.Re*fAngle.Im;
-     fPosition.Re:=met;
-    end;
+   if fBeatPos=0 then met:=2*met*met-1;
    met:=fVolume*met*fMetroVolume[0];
    fMetroVolume[0]:=0.995*fMetroVolume[0];
    fSamplesCount:=fSamplesCount+1;
