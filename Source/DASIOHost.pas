@@ -50,14 +50,14 @@ type
                 acdInputGain, acdInputMeter, acdOutputGain, acdOutputMeter);
   TASIOCanDos = set of TASIOCanDo;
 
+  TConvertMethod = (cmNone, cm32, cm64);
   TConvertOptimization = (coSSE, co3DNow);
   TConvertOptimizations = set of TConvertOptimization;
 
-  TClipPreventer = procedure(InBuffer:PSingle; Samples:Integer);
-
   TSamplePositionUpdateEvent = procedure(Sender: TObject; SamplePosition: Int64) of object;
   TSample2Event = procedure(Sender: TObject; Sample: array of Single) of object;
-  TBufferSwitchEvent = procedure(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray) of object;
+  TBufferSwitchEvent32 = procedure(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray) of object;
+  TBufferSwitchEvent64 = procedure(Sender: TObject; const InBuffer, OutBuffer: TArrayOfDoubleDynArray) of object;
 
   TBufferPreFill = (bpfNone, bpfZero, bpfNoise, bpfCustom);
 
@@ -129,7 +129,8 @@ type
     FOnSample2Output      : TSample2Event;
     FOnInput2Sample       : TSample2Event;
     FOnUpdateSamplePos    : TSamplePositionUpdateEvent;
-    FOnBufferSwitch       : TBufferSwitchEvent;
+    FOnBufferSwitch32     : TBufferSwitchEvent32;
+    FOnBufferSwitch64     : TBufferSwitchEvent64;
     FInputChannelOffset   : Word;
     FOutputChannelOffset  : Word;
     fASIOCanDos           : TASIOCanDos;
@@ -148,13 +149,16 @@ type
     callbacks             : TASIOCallbacks;
     SingleInBuffer        : TArrayOfSingleDynArray;
     SingleOutBuffer       : TArrayOfSingleDynArray;
+    DoubleInBuffer        : TArrayOfDoubleDynArray;
+    DoubleOutBuffer       : TArrayOfDoubleDynArray;
     UnAlignedBuffer       : PASIOBufferInfo;
     InputBuffer           : PASIOBufferInfo;
     OutputBuffer          : PASIOBufferInfo;
     FInputMonitor         : TInputMonitor;
     FConvertOptimizations : TConvertOptimizations;
     FOutputVolume         : TSingleDynArray;
-    fClipPrevent          : TClipPreventer;
+    FClipPrevent          : TClipBuffer;
+    FConvertMethod        : TConvertMethod;
     {$IFDEF ASIOMixer}
     FASIOMixer            : TFmASIOMixer;
     {$ENDIF}
@@ -188,6 +192,8 @@ type
     function CanTimeCode: Boolean;
     function CanTimeInfo: Boolean;
     function CanTransport: Boolean;
+    procedure SetOnBufferSwitch32(const Value: TBufferSwitchEvent32);
+    procedure SetOnBufferSwitch64(const Value: TBufferSwitchEvent64);
   protected
     procedure PMASIO(var Message: TMessage); message PM_ASIO;
     procedure PMUpdateSamplePos(var Message: TMessage); message PM_UpdateSamplePos;
@@ -246,7 +252,8 @@ type
     property OnInput2Sample: TSample2Event read FOnInput2Sample write FOnInput2Sample;
     property OnSample2Output: TSample2Event read FOnSample2Output write FOnSample2Output;
     property OnSampleRateChanged: TNotifyEvent read FOnSampleRateChanged write FOnSampleRateChanged;
-    property OnBufferSwitch: TBufferSwitchEvent read FOnBufferSwitch write FOnBufferSwitch;
+    property OnBufferSwitch32: TBufferSwitchEvent32 read FOnBufferSwitch32 write SetOnBufferSwitch32;
+    property OnBufferSwitch64: TBufferSwitchEvent64 read FOnBufferSwitch64 write SetOnBufferSwitch64;
     property InputMonitor: TInputMonitor read FInputMonitor write FInputMonitor default imDisabled;
     property DriverList: TStrings read FDriverList;
   end;
@@ -704,6 +711,22 @@ begin
   then FInputChannelOffset := w;
 end;
 
+procedure TASIOHost.SetOnBufferSwitch32(const Value: TBufferSwitchEvent32);
+begin
+ FOnBufferSwitch32 := Value;
+ if assigned(FOnBufferSwitch64) then FConvertMethod:=cm64 else
+ if assigned(FOnBufferSwitch32) then FConvertMethod:=cm32
+  else FConvertMethod:=cmNone;
+end;
+
+procedure TASIOHost.SetOnBufferSwitch64(const Value: TBufferSwitchEvent64);
+begin
+ FOnBufferSwitch64 := Value;
+ if assigned(FOnBufferSwitch64) then FConvertMethod:=cm64 else
+ if assigned(FOnBufferSwitch32) then FConvertMethod:=cm32
+  else FConvertMethod:=cmNone;
+end;
+
 procedure TASIOHost.SetOutputChannelOffset(const w: Word);
 begin
  if (w <> FOutputChannelOffset) and (w < FOutputChannels)
@@ -847,6 +870,7 @@ begin
 
  SetLength(InputChannelInfos, FInputChannels);
  SetLength(SingleInBuffer, FInputChannels);
+ SetLength(DoubleInBuffer, FInputChannels);
  SetLength(FInConvertors, FInputChannels);
  currentbuffer := InputBuffer;
  for i := 0 to FInputChannels - 1 do
@@ -876,6 +900,7 @@ begin
     end;
 
    SetLength(SingleInBuffer[i], BufferSize * SizeOf(Single));
+   SetLength(DoubleInBuffer[i], BufferSize * SizeOf(Single));
    FillChar(SingleInBuffer[i,0], BufferSize * SizeOf(Single), 0);
    currentbuffer^.isInput := ASIOTrue;
    currentbuffer^.channelNum := i;
@@ -887,6 +912,7 @@ begin
  OutputBuffer := currentbuffer;
  SetLength(OutputChannelInfos, FOutputChannels);
  SetLength(SingleOutBuffer, FOutputChannels);
+ SetLength(DoubleOutBuffer, FOutputChannels);
  SetLength(FOutConvertors, FOutputChannels);
  for i := 0 to FOutputChannels - 1 do
   begin
@@ -914,6 +940,7 @@ begin
     ASIOSTInt32LSB24: FOutConvertors[i] := FromInt32LSB24;
    end;
    SetLength(SingleOutBuffer[i], BufferSize * SizeOf(Single));
+   SetLength(DoubleOutBuffer[i], BufferSize * SizeOf(Single));
    FillChar(SingleOutBuffer[i,0], BufferSize * SizeOf(Single), 0);
    currentbuffer^.isInput := ASIOfalse;  // create an output buffer
    currentbuffer^.channelNum := i;
@@ -1086,63 +1113,123 @@ begin
  PMUpdSamplePos.wParam := params.timeInfo.samplePosition.hi;
  PMUpdSamplePos.LParam := params.timeInfo.samplePosition.lo;
  Dispatch(PMUpdSamplePos);
-
  currentbuffer := InputBuffer;
- case FInBufferPreFill of
-  bpfZero: for j := 0 to FInputChannels - 1
-            do FillChar(SingleInBuffer[j,0], BufferSize * SizeOf(Single), 0);
-  bpfNoise: for j := 0 to FInputChannels - 1 do
-             for i := 0 to BufferSize - 1 do SingleInBuffer[j,i] := 2 * Random - 1;
-  bpfCustom: if Assigned(FASIOGenerator) then FASIOGenerator.ProcessBlock(SingleInBuffer, false);
-  else
-   begin
-    for j := 0 to FInputChannels - 1 do
+
+ if FConvertMethod=cm64 then
+  begin
+   // 64Bit float processing
+   case FInBufferPreFill of
+    bpfZero: for j := 0 to FInputChannels - 1
+              do FillChar(DoubleInBuffer[j,0], BufferSize * SizeOf(Double), 0);
+    bpfNoise: for j := 0 to FInputChannels - 1 do
+               for i := 0 to BufferSize - 1 do DoubleInBuffer[j,i] := 2 * Random - 1;
+    else
      begin
-      PChannelArray := currentbuffer^.buffers[Index];
-      if Assigned(PChannelArray) then
-        FInConvertors[j](PChannelArray, PSingle(SingleInBuffer[j]), BufferSize);
-      inc(currentbuffer);
+      for j := 0 to FInputChannels - 1 do
+       begin
+        PChannelArray := currentbuffer^.buffers[Index];
+        if Assigned(PChannelArray) then
+          FInConvertors[j].ic64(PChannelArray, PDouble(DoubleInBuffer[j]), BufferSize);
+        inc(currentbuffer);
+       end;
      end;
    end;
- end;
 
- if fPreventClipping<>pcNone
-  then for j := 0 to FInputChannels - 1 do fClipPrevent(@SingleInBuffer[j,0], BufferSize);
+   if fPreventClipping<>pcNone
+    then for j := 0 to FInputChannels - 1 do fClipPrevent.cb64(@DoubleInBuffer[j,0], BufferSize);
 
- case FOutBufferPreFill of
-  bpfZero : for j := 0 to FOutputChannels - 1
-             do FillChar(SingleOutBuffer[j,0], BufferSize * SizeOf(Single), 0);
-  bpfNoise: for j := 0 to FOutputChannels - 1 do
-             for i := 0 to BufferSize - 1
-              do SingleOutBuffer[j,i] := 2 * Random - 1;
-  bpfCustom: if Assigned(FASIOGenerator) then FASIOGenerator.ProcessBlock(SingleOutBuffer, true);
- end;
-
- case FInputMonitor of
-  imMono: Move(SingleInBuffer[FInputChannelOffset,0], SingleOutBuffer[FOutputChannelOffset,0], BufferSize * SizeOf(Single));
-  imStereo:
-   begin
-    Move(SingleInBuffer[FInputChannelOffset  ,0], SingleOutBuffer[FOutputChannelOffset  ,0], BufferSize * SizeOf(Single));
-    Move(SingleInBuffer[FInputChannelOffset+1,0], SingleOutBuffer[FOutputChannelOffset+1,0], BufferSize * SizeOf(Single));
+   case FOutBufferPreFill of
+    bpfZero : for j := 0 to FOutputChannels - 1
+               do FillChar(DoubleOutBuffer[j,0], BufferSize * SizeOf(Double), 0);
+    bpfNoise: for j := 0 to FOutputChannels - 1 do
+               for i := 0 to BufferSize - 1
+                do DoubleOutBuffer[j,i] := 2 * Random - 1;
    end;
-  imAll:
-   for j := 0 to min(FInputChannels, FOutputChannels) - 1 do
-    Move(SingleInBuffer[j,0], SingleOutBuffer[j,0], BufferSize * SizeOf(Single));
- end;
 
- if Assigned(FOnBufferSwitch) then
-  FOnBufferSwitch(Self, SingleInBuffer, SingleOutBuffer);
+   case FInputMonitor of
+    imMono: Move(DoubleInBuffer[FInputChannelOffset,0], DoubleOutBuffer[FOutputChannelOffset,0], BufferSize * SizeOf(Double));
+    imStereo:
+     begin
+      Move(DoubleInBuffer[FInputChannelOffset  ,0], DoubleOutBuffer[FOutputChannelOffset  ,0], BufferSize * SizeOf(Double));
+      Move(DoubleInBuffer[FInputChannelOffset+1,0], DoubleOutBuffer[FOutputChannelOffset+1,0], BufferSize * SizeOf(Double));
+     end;
+    imAll:
+     for j := 0 to min(FInputChannels, FOutputChannels) - 1 do
+      Move(DoubleInBuffer[j,0], DoubleOutBuffer[j,0], BufferSize * SizeOf(Double));
+   end;
 
- if fPreventClipping<>pcNone then
-  for j := 0 to FOutputChannels - 1 do fClipPrevent(@SingleOutBuffer[j,0] ,BufferSize);
+   FOnBufferSwitch64(Self, DoubleInBuffer, DoubleOutBuffer);
 
- currentbuffer := OutputBuffer;
- for j := 0 to FOutputChannels - 1 do
+   if fPreventClipping<>pcNone then
+    for j := 0 to FOutputChannels - 1 do fClipPrevent.cb64(@DoubleOutBuffer[j,0] ,BufferSize);
+
+   currentbuffer := OutputBuffer;
+   for j := 0 to FOutputChannels - 1 do
+    begin
+     PChannelArray := currentbuffer^.buffers[Index];
+     if assigned(PChannelArray)
+      then FOutConvertors[j].oc64(PDouble(DoubleOutBuffer[j]),PChannelArray, BufferSize);
+     inc(currentbuffer);
+    end;
+  end
+ else
   begin
-   PChannelArray := currentbuffer^.buffers[Index];
-   if assigned(PChannelArray)
-    then FOutConvertors[j].oc32(PSingle(SingleOutBuffer[j]),PChannelArray, BufferSize);
-   inc(currentbuffer);
+   case FInBufferPreFill of
+    bpfZero: for j := 0 to FInputChannels - 1
+              do FillChar(SingleInBuffer[j,0], BufferSize * SizeOf(Single), 0);
+    bpfNoise: for j := 0 to FInputChannels - 1 do
+               for i := 0 to BufferSize - 1 do SingleInBuffer[j,i] := 2 * Random - 1;
+    bpfCustom: if Assigned(FASIOGenerator) then FASIOGenerator.ProcessBlock(SingleInBuffer, false);
+    else
+     begin
+      for j := 0 to FInputChannels - 1 do
+       begin
+        PChannelArray := currentbuffer^.buffers[Index];
+        if Assigned(PChannelArray) then
+          FInConvertors[j].ic32(PChannelArray, PSingle(SingleInBuffer[j]), BufferSize);
+        inc(currentbuffer);
+       end;
+     end;
+   end;
+
+   if fPreventClipping<>pcNone
+    then for j := 0 to FInputChannels - 1 do fClipPrevent.cb32(@SingleInBuffer[j,0], BufferSize);
+
+   case FOutBufferPreFill of
+    bpfZero : for j := 0 to FOutputChannels - 1
+               do FillChar(SingleOutBuffer[j,0], BufferSize * SizeOf(Single), 0);
+    bpfNoise: for j := 0 to FOutputChannels - 1 do
+               for i := 0 to BufferSize - 1
+                do SingleOutBuffer[j,i] := 2 * Random - 1;
+    bpfCustom: if Assigned(FASIOGenerator) then FASIOGenerator.ProcessBlock(SingleOutBuffer, true);
+   end;
+
+   case FInputMonitor of
+    imMono: Move(SingleInBuffer[FInputChannelOffset,0], SingleOutBuffer[FOutputChannelOffset,0], BufferSize * SizeOf(Single));
+    imStereo:
+     begin
+      Move(SingleInBuffer[FInputChannelOffset  ,0], SingleOutBuffer[FOutputChannelOffset  ,0], BufferSize * SizeOf(Single));
+      Move(SingleInBuffer[FInputChannelOffset+1,0], SingleOutBuffer[FOutputChannelOffset+1,0], BufferSize * SizeOf(Single));
+     end;
+    imAll:
+     for j := 0 to min(FInputChannels, FOutputChannels) - 1 do
+      Move(SingleInBuffer[j,0], SingleOutBuffer[j,0], BufferSize * SizeOf(Single));
+   end;
+
+   if Assigned(FOnBufferSwitch32)
+    then FOnBufferSwitch32(Self, SingleInBuffer, SingleOutBuffer);
+
+   if fPreventClipping<>pcNone then
+    for j := 0 to FOutputChannels - 1 do fClipPrevent.cb32(@SingleOutBuffer[j,0] ,BufferSize);
+
+   currentbuffer := OutputBuffer;
+   for j := 0 to FOutputChannels - 1 do
+    begin
+     PChannelArray := currentbuffer^.buffers[Index];
+     if assigned(PChannelArray)
+      then FOutConvertors[j].oc32(PSingle(SingleOutBuffer[j]),PChannelArray, BufferSize);
+     inc(currentbuffer);
+    end;
   end;
  Driver.OutputReady;
 end;

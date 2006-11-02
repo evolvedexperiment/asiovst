@@ -36,6 +36,10 @@ type
                    oc32 : procedure(source: PSingle; target: pointer; frames: longint);
                    oc64 : procedure(source: PDouble; target: pointer; frames: longint);
                   end;
+  TClipBuffer = record
+                 cb32 : procedure(InBuffer:PSingle; Samples:integer);
+                 cb64 : procedure(InBuffer:PDouble; Samples:integer);
+                end;
 
 {$IFNDEF x87}
 type
@@ -93,10 +97,16 @@ var FPUType        : TFPUType;
     FromInt32LSB20 : TOutConvertor;  // 32 bit data with 20 bit alignment
     FromInt32LSB24 : TOutConvertor;  // 32 bit data with 24 bit alignment
 
-var MixBuffers  : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
-    Volume      : procedure(InBuffer:PSingle; Volume:Single; Samples:integer);
-    ClipDigital : procedure(InBuffer:PSingle; Samples:integer);
-    ClipAnalog  : procedure(InBuffer:PSingle; Samples:Integer);
+var MixBuffers  : record
+                   mb32 : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
+                   mb64 : procedure(InBuffer:PDouble; MixBuffer:PDouble; Samples:integer);
+                  end;
+    Volume      : record
+                   v32 : procedure(InBuffer:PSingle; Volume:Single; Samples:integer);
+                   v64 : procedure(InBuffer:PDouble; Volume:Double; Samples:integer);
+                  end;
+    ClipDigital : TClipBuffer;
+    ClipAnalog  : TClipBuffer;
     EnableSSE   : Boolean;
 
 function f_abs(f:single):single;
@@ -121,7 +131,7 @@ begin
     else Result := input;
 end;
 
-function Saturate(input, fMax: single): single; platform;
+function Saturate(input, fMax: single): single; overload; platform;
 const fGrdDiv : Double = 0.5;
 asm
  fld input.Single
@@ -134,6 +144,25 @@ asm
  fmul fGrdDiv;
 // result := fGrdDiv * (f_abs(input + fMax) - f_abs(input - fMax));
 end;
+
+function Saturate(input, fMax: Double): Double; overload; platform;
+const fGrdDiv : Double = 0.5;
+{$IFDEF x87}
+asm
+ fld input.Double
+ fadd fMax.Double
+ fabs
+ fld input.Double
+ fsub fMax.Double
+ fabs
+ fsubp
+ fmul fGrdDiv;
+end;
+{$ELSE}
+begin
+ result := fGrdDiv * (f_abs(input + fMax) - f_abs(input - fMax));
+end;
+{$ENDIF}
 
 procedure ClipDigital_x86(InBuffer: PSingle; BSize: Integer); overload; platform;
 const c1a : Single = 1;
@@ -153,27 +182,40 @@ asm
  loop @Start
 end;
 
-{
 procedure ClipDigital_x86(InBuffer: PDouble; BSize: Integer); overload; platform;
-const c1a : Single = 1;
+{$IFDEF x87}
+const c1a : Double = 1;
+      c05 : Double = 0.5;
 asm
  mov ecx,edx
+ fld c1a
+ fld c05
 @Start:
- mov edx, [eax]
- and edx, $7FFFFFFF
- cmp edx, c1a
- jle @Weiter
- mov edx, [eax]
- and edx, $80000000
- add edx, c1a
- mov [eax], edx
-@Weiter:
- add eax,8
+ fld [eax+8*ecx-8].Double
+ fadd st(0),st(2)
+ fabs
+ fld [eax+8*ecx-8].Double
+ fsub st(0),st(2)
+ fabs
+ fsubp
+ fmul st(0),st(1)
+ fstp [eax+8*ecx-8].Double
  loop @Start
+ fstp st(0)
+ fstp st(0)
 end;
-}
+{$ELSE}
+var i: Integer;
+begin
+ for I := 0 to BSize - 1 do
+  begin
+   InBuffer^:=fGrdDiv * (f_abs(InBuffer^ + 1) - f_abs(InBuffer^ - 1));
+   Inc(InBuffer);
+  end;
+end;
+{$ENDIF}
 
-procedure ClipAnalog_x87(InBuffer: PSingle; Samples: Integer); platform;
+procedure ClipAnalog_x87(InBuffer: PSingle; Samples: Integer); overload; platform;
 const c3:Single=3;
       c6:Single=6;
 asm
@@ -198,6 +240,40 @@ asm
  fdiv                               // 6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input)), 2, 6, 3
  fmul st(0),st(1)                   // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
  fstp [eax+4*edx].single            // 2, 6, 3
+ test edx,edx
+ jg @Start
+ fstp st(0)
+ fstp st(0)
+ fstp st(0)
+end;
+
+procedure ClipAnalog_x87(InBuffer: PDouble; Samples: Integer); overload; platform;
+const c3:Double=3;
+      c6:Double=6;
+asm
+ fld c3.Single                      // 3
+ fld c6.Single                      // 6, 3
+ fld1                               // 1, 6, 3
+ fld1                               // 1, 1, 6, 3
+ faddp                              // 2, 6, 3
+@Start:
+ dec edx
+ mov ecx,[eax+8*edx].Integer
+ and ecx,$7FFFFFFF
+ mov [esp-8],ecx
+ mov ecx,[eax+8*edx+4].Integer
+ mov [esp-4],ecx
+ fld [esp-8].Double                 // abs(input), 2, 6, 3
+ fld st(3)                          // 3, abs(input), 2, 6, 3
+ fadd st(0),st(1)                   // 3 + abs(input), abs(input), 2, 6, 3
+ fld st(0)                          // 3 + abs(input), 3 + abs(input), abs(input), 2, 6, 3
+ fmul [eax+8*edx].Double            // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
+ fxch st(2)                         // abs(input), 3 + abs(input), input*(3 + abs(input)), 2, 6, 3
+ fmulp                              // abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
+ fadd st(0),st(3)                   // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
+ fdiv                               // 6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input)), 2, 6, 3
+ fmul st(0),st(1)                   // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
+ fstp [eax+8*edx].Double            // 2, 6, 3
  test edx,edx
  jg @Start
  fstp st(0)
@@ -2388,21 +2464,25 @@ begin
   FromInt32LSB18.oc64  := FromInt32LSB18_x87;
   FromInt32LSB20.oc64  := FromInt32LSB20_x87;
   FromInt32LSB24.oc64  := FromInt32LSB24_x87;
-  MixBuffers           := MixBuffers_x87;
-  Volume               := Volume_x87;
-  ClipDigital          := ClipDigital_x86;
-  ClipAnalog           := ClipAnalog_x87;
+  MixBuffers.mb32      := MixBuffers_x87;
+  MixBuffers.mb64      := MixBuffers_x87;
+  Volume.v32           := Volume_x87;
+  Volume.v64           := Volume_x87;
+  ClipDigital.cb32     := ClipDigital_x86;
+  ClipDigital.cb64     := ClipDigital_x86;
+  ClipAnalog.cb32      := ClipAnalog_x87;
+  ClipAnalog.cb64      := ClipAnalog_x87;
 end;
 
 procedure Use_SSE;
 begin
  {$IFNDEF DELPHI5}
  FromInt32LSB.oc32 := FromInt32LSB_SSE;
- MixBuffers   := MixBuffers_SSE;
- ClipDigital  := ClipDigital_SSE;
- ClipAnalog   := ClipAnalog_SSE;
+ MixBuffers.mb32   := MixBuffers_SSE;
+ ClipDigital.cb32  := ClipDigital_SSE;
+ ClipAnalog.cb32   := ClipAnalog_SSE;
  {$IFNDEF FPC}
- Volume       := Volume_SSE;
+ Volume.v32        := Volume_SSE;
  {$ENDIF}
  {$ENDIF}
 end;
@@ -2426,8 +2506,8 @@ begin
  ToInt32LSB20.ic32   := ToInt32LSB20_3DNow;
  FromInt32LSB24.oc32 := FromInt32LSB24_3DNow;
  ToInt32LSB24.ic32   := ToInt32LSB24_3DNow;
- MixBuffers := MixBuffers_3DNow;
- Volume := Volume_3DNow;
+ MixBuffers.mb32     := MixBuffers_3DNow;
+ Volume.v32          := Volume_3DNow;
  {$ENDIF}
 end;
 
