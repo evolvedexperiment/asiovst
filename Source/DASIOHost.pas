@@ -58,6 +58,7 @@ type
   TSample2Event = procedure(Sender: TObject; Sample: array of Single) of object;
   TBufferSwitchEvent32 = procedure(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray) of object;
   TBufferSwitchEvent64 = procedure(Sender: TObject; const InBuffer, OutBuffer: TArrayOfDoubleDynArray) of object;
+  TBufferSwitchEventNative = procedure(Sender: TObject; const InputBuffer, OutputBuffer: PASIOBufferInfo; const BufferIndex : Integer) of object;
 
   TBufferPreFill = (bpfNone, bpfZero, bpfNoise, bpfCustom);
 
@@ -131,6 +132,7 @@ type
     FOnUpdateSamplePos    : TSamplePositionUpdateEvent;
     FOnBufferSwitch32     : TBufferSwitchEvent32;
     FOnBufferSwitch64     : TBufferSwitchEvent64;
+    FOnBufferSwitchNative : TBufferSwitchEventNative;
     FInputChannelOffset   : Word;
     FOutputChannelOffset  : Word;
     fASIOCanDos           : TASIOCanDos;
@@ -254,6 +256,7 @@ type
     property OnSampleRateChanged: TNotifyEvent read FOnSampleRateChanged write FOnSampleRateChanged;
     property OnBufferSwitch32: TBufferSwitchEvent32 read FOnBufferSwitch32 write SetOnBufferSwitch32;
     property OnBufferSwitch64: TBufferSwitchEvent64 read FOnBufferSwitch64 write SetOnBufferSwitch64;
+    property OnBufferSwitchNative: TBufferSwitchEventNative read FOnBufferSwitchNative write FOnBufferSwitchNative;
     property InputMonitor: TInputMonitor read FInputMonitor write FInputMonitor default imDisabled;
     property DriverList: TStrings read FDriverList;
   end;
@@ -1115,6 +1118,7 @@ begin
  Dispatch(PMUpdSamplePos);
  currentbuffer := InputBuffer;
 
+ if assigned(FOnBufferSwitchNative) then FOnBufferSwitchNative(Self,InputBuffer,OutputBuffer,index); 
  if FConvertMethod=cm64 then
   begin
    // 64Bit float processing
