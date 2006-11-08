@@ -126,6 +126,8 @@ type
     FOnReset              : TNotifyEvent;
     FOnDriverChanged      : TNotifyEvent;
     FOnLatencyChanged     : TNotifyEvent;
+    FOnBuffersCreate      : TNotifyEvent;
+    FOnBuffersDestroy     : TNotifyEvent;
     FOnSampleRateChanged  : TNotifyEvent;
     FOnSample2Output      : TSample2Event;
     FOnInput2Sample       : TSample2Event;
@@ -251,6 +253,8 @@ type
     property OnReset: TNotifyEvent read FOnReset write FOnReset;
     property OnDriverChanged: TNotifyEvent read FOnDriverChanged write FOnDriverChanged;
     property OnLatencyChanged: TNotifyEvent read FOnLatencyChanged write FOnLatencyChanged;
+    property OnBuffersCreate: TNotifyEvent read FOnBuffersCreate write FOnBuffersCreate;
+    property OnBuffersDestroy: TNotifyEvent read FOnBuffersDestroy write FOnBuffersDestroy;
     property OnInput2Sample: TSample2Event read FOnInput2Sample write FOnInput2Sample;
     property OnSample2Output: TSample2Event read FOnSample2Output write FOnSample2Output;
     property OnSampleRateChanged: TNotifyEvent read FOnSampleRateChanged write FOnSampleRateChanged;
@@ -956,28 +960,28 @@ begin
   (FInputChannels + FOutputChannels), Fpref, callbacks) = ASE_OK);
  Driver.GetLatencies(FInputLatency, FOutputLatency);
  if Assigned (FOnLatencyChanged) then FOnLatencyChanged(Self);
+ if Assigned (FOnBuffersCreate) then FOnBuffersCreate(Self);
  Randomize;
 end;
 
 procedure TASIOHost.DestroyBuffers;
 begin
- if (Driver = nil) then Exit;
- if BuffersCreated then
- begin
-  FreeMem(UnAlignedBuffer);
-  UnAlignedBuffer := nil;
-  InputBuffer := nil;
-  OutputBuffer := nil;
-  try
-   Driver.DisposeBuffers;
-  except
-  end;
-  BuffersCreated := false;
-  SingleInBuffer := nil;
-  SingleOutBuffer := nil;
-  SetLength(InputChannelInfos, 0);
-  SetLength(OutputChannelInfos, 0);
+ if (Driver = nil) or not BuffersCreated then Exit;
+ if Assigned (FOnBuffersDestroy) then FOnBuffersDestroy(Self);
+
+ FreeMem(UnAlignedBuffer);
+ UnAlignedBuffer := nil;
+ InputBuffer := nil;
+ OutputBuffer := nil;
+ try
+  Driver.DisposeBuffers;
+ except
  end;
+ BuffersCreated := false;
+ SingleInBuffer := nil;
+ SingleOutBuffer := nil;
+ SetLength(InputChannelInfos, 0);
+ SetLength(OutputChannelInfos, 0);
 end;
 
 procedure TASIOHost.OpenDriver;
@@ -1070,14 +1074,9 @@ var inp, outp: integer;
 begin
  if Driver = nil then exit;
  case Message.WParam of
-  AM_ResetRequest:
-   begin
-    OpenDriver; // restart the driver
-    if Assigned (FOnReset) then FOnReset(Self);
-   end;
+  AM_ResetRequest: Reset;
   AM_BufferSwitch: BufferSwitch(Message.LParam); // process a buffer
-  AM_BufferSwitchTimeInfo: BufferSwitchTimeInfo(Message.LParam,
-   ASIOTime.FBufferTime);  // process a buffer with time
+  AM_BufferSwitchTimeInfo: BufferSwitchTimeInfo(Message.LParam, ASIOTime.FBufferTime);  // process a buffer with time
   AM_LatencyChanged:
    begin
     if assigned(Driver) then Driver.GetLatencies(inp, outp);
