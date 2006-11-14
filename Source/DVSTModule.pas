@@ -1124,6 +1124,7 @@ function TCustomVSTModule.dispatcher(opcode, index, value: Integer; ptr: pointer
 var a,b   : Integer;
     keyCode : TVstKeyCode;
     s       : Single;
+    Hndl    : THandle;
 begin
  if assigned(fOnDispatcher) then fOnDispatcher(Self,opcode);
  result := 0;
@@ -1243,11 +1244,14 @@ begin
                                    if Assigned(EditorForm) then
                                     begin
                                      a:=KeyCodeToInteger(keyCode);
+                                     if assigned(EditorForm.ActiveControl)
+                                      then Hndl:=EditorForm.ActiveControl.Handle
+                                      else Hndl:=EditorForm.Handle;
 {$IFNDEF FPC}
                                      if keyCode.virt=0 then b:=0 else b:=KF_EXTENDED;
                                      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
-                                      then PostMessage(EditorForm.ActiveControl.Handle, WM_KEYDOWN, a,b)
-                                      else PostMessage(EditorForm.ActiveControl.Handle, WM_SYSKEYDOWN, a,KF_ALTDOWN);
+                                      then PostMessage(Hndl, WM_KEYDOWN, a,b)
+                                      else PostMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
                                      PostMessage(EditorForm.ActiveControl.Handle,WM_CHAR, a, b);
 {$ENDIF}
                                     end;
@@ -1268,11 +1272,14 @@ begin
                                    if Assigned(EditorForm) then
                                     begin
                                      a:=KeyCodeToInteger(keyCode);
+                                     if assigned(EditorForm.ActiveControl)
+                                      then Hndl:=EditorForm.ActiveControl.Handle
+                                      else Hndl:=EditorForm.Handle;
 {$IFNDEF FPC}
                                      if keyCode.virt=0 then b:=0 else b:=KF_EXTENDED;
                                      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
-                                      then PostMessage(EditorForm.ActiveControl.Handle, WM_KEYUP, a, b)
-                                      else PostMessage(EditorForm.ActiveControl.Handle, WM_SYSKEYUP, a, KF_ALTDOWN);
+                                      then PostMessage(Hndl, WM_KEYUP, a, b)
+                                      else PostMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
 {$ENDIF}
                                     end;
                                    if Assigned(fOnKeyUp) then fOnKeyUp(Self, keyCode);
