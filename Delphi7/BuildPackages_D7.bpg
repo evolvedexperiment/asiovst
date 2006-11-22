@@ -9,15 +9,25 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = DSPBase_D7.bpl VSTPlugin_D7.bpl
+PROJECTS = DSPBase_D7.bpl VSTPlugin_D7.bpl HostASIO_D7.bpl HostVST_D7.bpl \
+  DVSTGFX.bpl
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
 
-DSPBase_D7.bpl: DSPBase_D7.dpk
+DSPBase_D7.bpl: DSPBase70.dpk
   $(DCC)
 
 VSTPlugin_D7.bpl: VSTPlugin_D7.dpk
+  $(DCC)
+
+HostASIO_D7.bpl: HostASIO_D7.dpk
+  $(DCC)
+
+HostVST_D7.bpl: HostVST_D7.dpk
+  $(DCC)
+
+DVSTGFX.bpl: DVSTGFX.dpk
   $(DCC)
 
 

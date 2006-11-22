@@ -22,12 +22,12 @@ package DVSTGFX;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'Midi Keys & More'}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
   rtl,
   vcl,
-  DSPBase_D7;
+  DSPBase70;
 
 contains
   DMidiKeys in '..\Source\DMidiKeys.pas',
