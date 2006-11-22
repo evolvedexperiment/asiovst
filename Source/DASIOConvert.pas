@@ -60,42 +60,42 @@ procedure Use_SSE;
 procedure Use_3DNow;
 
 var FPUType        : TFPUType;
-    ToInt16MSB     : TInConvertor;
-    ToInt24MSB     : TInConvertor;  // used for 20 bits as well
-    ToInt32MSB     : TInConvertor;
-    ToSingleMSB    : TInConvertor;  // IEEE 754 32 bit float
-    ToDoubleMSB    : TInConvertor;  // IEEE 754 64 bit double float
-    ToInt32MSB16   : TInConvertor;  // 32 bit data with 16 bit alignment
-    ToInt32MSB18   : TInConvertor;  // 32 bit data with 18 bit alignment
-    ToInt32MSB20   : TInConvertor;  // 32 bit data with 20 bit alignment
-    ToInt32MSB24   : TInConvertor;  // 32 bit data with 24 bit alignment
-    ToInt16LSB     : TInConvertor;
-    ToInt24LSB     : TInConvertor;
-    ToInt32LSB     : TInConvertor;
-    ToSingleLSB    : TInConvertor;  // IEEE 754 32 bit float
-    ToDoubleLSB    : TInConvertor;  // IEEE 754 64 bit double float
-    ToInt32LSB16   : TInConvertor;  // 32 bit data with 16 bit alignment
-    ToInt32LSB18   : TInConvertor;  // 32 bit data with 18 bit alignment
-    ToInt32LSB20   : TInConvertor;  // 32 bit data with 20 bit alignment
-    ToInt32LSB24   : TInConvertor;  // 32 bit data with 24 bit alignment
-    FromInt16MSB   : TOutConvertor;
-    FromInt24MSB   : TOutConvertor;  // used for 20 bits as well
-    FromInt32MSB   : TOutConvertor;
-    FromSingleMSB  : TOutConvertor;  // IEEE 754 32 bit float
-    FromDoubleMSB  : TOutConvertor;  // IEEE 754 64 bit double float
-    FromInt32MSB16 : TOutConvertor;  // 32 bit data with 16 bit alignment
-    FromInt32MSB18 : TOutConvertor;  // 32 bit data with 18 bit alignment
-    FromInt32MSB20 : TOutConvertor;  // 32 bit data with 20 bit alignment
-    FromInt32MSB24 : TOutConvertor;  // 32 bit data with 24 bit alignment
-    FromInt16LSB   : TOutConvertor;
-    FromInt24LSB   : TOutConvertor;
-    FromInt32LSB   : TOutConvertor;
-    FromSingleLSB  : TOutConvertor;  // IEEE 754 32 bit float
-    FromDoubleLSB  : TOutConvertor;  // IEEE 754 64 bit double float
-    FromInt32LSB16 : TOutConvertor;  // 32 bit data with 16 bit alignment
-    FromInt32LSB18 : TOutConvertor;  // 32 bit data with 18 bit alignment
-    FromInt32LSB20 : TOutConvertor;  // 32 bit data with 20 bit alignment
-    FromInt32LSB24 : TOutConvertor;  // 32 bit data with 24 bit alignment
+    FromInt16MSB   : TInConvertor;
+    FromInt24MSB   : TInConvertor;  // used for 20 bits as well
+    FromInt32MSB   : TInConvertor;
+    FromSingleMSB  : TInConvertor;  // IEEE 754 32 bit float
+    FromDoubleMSB  : TInConvertor;  // IEEE 754 64 bit double float
+    FromInt32MSB16 : TInConvertor;  // 32 bit data with 16 bit alignment
+    FromInt32MSB18 : TInConvertor;  // 32 bit data with 18 bit alignment
+    FromInt32MSB20 : TInConvertor;  // 32 bit data with 20 bit alignment
+    FromInt32MSB24 : TInConvertor;  // 32 bit data with 24 bit alignment
+    FromInt16LSB   : TInConvertor;
+    FromInt24LSB   : TInConvertor;
+    FromInt32LSB   : TInConvertor;
+    FromSingleLSB  : TInConvertor;  // IEEE 754 32 bit float
+    FromDoubleLSB  : TInConvertor;  // IEEE 754 64 bit double float
+    FromInt32LSB16 : TInConvertor;  // 32 bit data with 16 bit alignment
+    FromInt32LSB18 : TInConvertor;  // 32 bit data with 18 bit alignment
+    FromInt32LSB20 : TInConvertor;  // 32 bit data with 20 bit alignment
+    FromInt32LSB24 : TInConvertor;  // 32 bit data with 24 bit alignment
+    ToInt16MSB     : TOutConvertor;
+    ToInt24MSB     : TOutConvertor;  // used for 20 bits as well
+    ToInt32MSB     : TOutConvertor;
+    ToSingleMSB    : TOutConvertor;  // IEEE 754 32 bit float
+    ToDoubleMSB    : TOutConvertor;  // IEEE 754 64 bit double float
+    ToInt32MSB16   : TOutConvertor;  // 32 bit data with 16 bit alignment
+    ToInt32MSB18   : TOutConvertor;  // 32 bit data with 18 bit alignment
+    ToInt32MSB20   : TOutConvertor;  // 32 bit data with 20 bit alignment
+    ToInt32MSB24   : TOutConvertor;  // 32 bit data with 24 bit alignment
+    ToInt16LSB     : TOutConvertor;
+    ToInt24LSB     : TOutConvertor;
+    ToInt32LSB     : TOutConvertor;
+    ToSingleLSB    : TOutConvertor;  // IEEE 754 32 bit float
+    ToDoubleLSB    : TOutConvertor;  // IEEE 754 64 bit double float
+    ToInt32LSB16   : TOutConvertor;  // 32 bit data with 16 bit alignment
+    ToInt32LSB18   : TOutConvertor;  // 32 bit data with 18 bit alignment
+    ToInt32LSB20   : TOutConvertor;  // 32 bit data with 20 bit alignment
+    ToInt32LSB24   : TOutConvertor;  // 32 bit data with 24 bit alignment
 
 var MixBuffers  : record
                    mb32 : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
@@ -114,6 +114,8 @@ function f_abs(f:single):single;
 implementation
 
 uses Math;
+
+{$WARNINGS OFF}
 
 function f_abs(f: Single): Single;
 asm
@@ -1191,7 +1193,7 @@ asm
   ffree    st(0)       // free after loop has finished
 end;
 
-procedure SingleToInt16LSB_NDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt16LSB_UDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
@@ -1255,7 +1257,7 @@ asm
   ffree    st(0)       // free after loop has finished
 end;
 
-procedure DoubleToInt16LSB_NDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt16LSB_UDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
@@ -1328,7 +1330,7 @@ asm
   pop ebx
 end;
 
-procedure SingleToInt24LSB_NDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt24LSB_UDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 const Scaler: double = ((1/$10000) / $10000);  // 2^-32
 asm
   push ebx
@@ -1415,7 +1417,7 @@ asm
   pop ebx
 end;
 
-procedure DoubleToInt24LSB_NDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt24LSB_UDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 const Scaler: double = ((1/$10000) / $10000);  // 2^-32
 asm
   push ebx
@@ -1541,6 +1543,59 @@ asm
   ffree    st(0)
 end;
 
+procedure SingleToInt32LSB16_UDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    MaxSmall               // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+4*ecx-4].Single
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure SingleToInt32LSB16_TDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    MaxSmall               // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+4*ecx-4].Single
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
 procedure DoubleToInt32LSB16_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   fld      MaxSmall
@@ -1550,6 +1605,59 @@ asm
   fistp    [edx+4*ecx-4].DWord
   loop @Start
   ffree    st(0)
+end;
+
+procedure DoubleToInt32LSB16_UDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    MaxSmall               // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure DoubleToInt32LSB16_TDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    MaxSmall               // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
 end;
 
 procedure SingleToInt32LSB18_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
@@ -1563,6 +1671,59 @@ asm
   ffree st(0)
 end;
 
+procedure SingleToInt32LSB18_UDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max18                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+4*ecx-4].Single
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure SingleToInt32LSB18_TDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max18                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+4*ecx-4].Single
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
 procedure DoubleToInt32LSB18_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max18
@@ -1572,6 +1733,59 @@ asm
   fistp [edx+4*ecx-4].DWord
   loop @Start
   ffree st(0)
+end;
+
+procedure DoubleToInt32LSB18_UDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max18                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure DoubleToInt32LSB18_TDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max18                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
 end;
 
 procedure SingleToInt32LSB20_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
@@ -1585,6 +1799,59 @@ asm
   ffree st(0)
 end;
 
+procedure SingleToInt32LSB20_UDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max20                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+4*ecx-4].Single
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure SingleToInt32LSB20_TDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max20                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+4*ecx-4].Single
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
 procedure DoubleToInt32LSB20_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max20
@@ -1594,6 +1861,59 @@ asm
   fistp [edx+4*ecx-4].DWord
   loop @Start
   ffree st(0)
+end;
+
+procedure DoubleToInt32LSB20_UDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max20                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure DoubleToInt32LSB20_TDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max20                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
 end;
 
 procedure SingleToInt32LSB24_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
@@ -1607,6 +1927,59 @@ asm
   ffree st(0)
 end;
 
+procedure SingleToInt32LSB24_UDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max24                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+4*ecx-4].Single
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure SingleToInt32LSB24_TDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max24                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+4*ecx-4].Single
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
 procedure DoubleToInt32LSB24_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max24
@@ -1616,6 +1989,59 @@ asm
   fistp [edx+4*ecx-4].DWord
   loop @Start
   ffree st(0)
+end;
+
+procedure DoubleToInt32LSB24_UDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max24                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure DoubleToInt32LSB24_TDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    Max24                  // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp   [edx+4*ecx-4].DWord
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
 end;
 
 procedure SingleToInt16MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
@@ -2737,81 +3163,81 @@ end;
 
 procedure Use_x87;
 begin
-  ToInt16MSB.ic32      := Int16MSBToSingle_x87;
-  ToInt24MSB.ic32      := Int24MSBToSingle_x87;
-  ToInt32MSB.ic32      := Int32MSBToSingle_x87;
-  ToSingleMSB.ic32     := SingleMSBToSingle_x87;
-  ToDoubleMSB.ic32     := DoubleMSBToSingle_x87;
-  ToInt32MSB16.ic32    := Int32MSB16ToSingle_x87;
-  ToInt32MSB18.ic32    := Int32MSB18ToSingle_x87;
-  ToInt32MSB20.ic32    := Int32MSB20ToSingle_x87;
-  ToInt32MSB24.ic32    := Int32MSB24ToSingle_x87;
-  ToInt16LSB.ic32      := Int16LSBToSingle_x87;
-  ToInt24LSB.ic32      := Int24LSBToSingle_x87;
-  ToInt32LSB.ic32      := Int32LSBToSingle_x87;
-  ToSingleLSB.ic32     := SingleLSBToSingle_x87;
-  ToDoubleLSB.ic32     := DoubleLSBToSingle_x87;
-  ToInt32LSB16.ic32    := Int32LSB16ToSingle_x87;
-  ToInt32LSB18.ic32    := Int32LSB18ToSingle_x87;
-  ToInt32LSB20.ic32    := Int32LSB20ToSingle_x87;
-  ToInt32LSB24.ic32    := Int32LSB24ToSingle_x87;
-  ////////////////////////////////////////
-  ToInt16MSB.ic64      := Int16MSBToDouble_x87;
-  ToInt24MSB.ic64      := Int24MSBToDouble_x87;
-  ToInt32MSB.ic64      := Int32MSBToDouble_x87;
-  ToSingleMSB.ic64     := SingleMSBToDouble_x87;
-  ToDoubleMSB.ic64     := DoubleMSBToDouble_x87;
-  ToInt32MSB16.ic64    := Int32MSB16ToDouble_x87;
-  ToInt32MSB18.ic64    := Int32MSB18ToDouble_x87;
-  ToInt32MSB20.ic64    := Int32MSB20ToDouble_x87;
-  ToInt32MSB24.ic64    := Int32MSB24ToDouble_x87;
-  ToInt16LSB.ic64      := Int16LSBToDouble_x87;
-  ToInt24LSB.ic64      := Int24LSBToDouble_x87;
-  ToInt32LSB.ic64      := Int32LSBToDouble_x87;
-  ToSingleLSB.ic64     := SingleLSBToDouble_x87;
-  ToDoubleLSB.ic64     := DoubleLSBToDouble_x87;
-  ToInt32LSB16.ic64    := Int32LSB16ToDouble_x87;
-  ToInt32LSB18.ic64    := Int32LSB18ToDouble_x87;
-  ToInt32LSB20.ic64    := Int32LSB20ToDouble_x87;
-  ToInt32LSB24.ic64    := Int32LSB24ToDouble_x87;
-  ////////////////////////////////////////
-  FromInt16MSB.oc32    := SingleToInt16MSB_x87;
-  FromInt24MSB.oc32    := SingleToInt24MSB_x87;
-  FromInt32MSB.oc32    := SingleToInt32MSB_x87;
-  FromSingleMSB.oc32   := SingleToSingleMSB_x87;
-  FromDoubleMSB.oc32   := SingleToDoubleMSB_x87;
-  FromInt32MSB16.oc32  := SingleToInt32MSB16_x87;
-  FromInt32MSB18.oc32  := SingleToInt32MSB18_x87;
-  FromInt32MSB20.oc32  := SingleToInt32MSB20_x87;
-  FromInt32MSB24.oc32  := SingleToInt32MSB24_x87;
-  FromInt16LSB.oc32    := SingleToInt16LSB_x87;
-  FromInt24LSB.oc32    := SingleToInt24LSB_x87;
-  FromInt32LSB.oc32    := SingleToInt32LSB_x87;
-  FromSingleLSB.oc32   := SingleToSingleLSB_x87;
-  FromDoubleLSB.oc32   := SingleToDoubleLSB_x87;
-  FromInt32LSB16.oc32  := SingleToInt32LSB16_x87;
-  FromInt32LSB18.oc32  := SingleToInt32LSB18_x87;
-  FromInt32LSB20.oc32  := SingleToInt32LSB20_x87;
-  FromInt32LSB24.oc32  := SingleToInt32LSB24_x87;
-  ////////////////////////////////////////
-  FromInt16MSB.oc64    := DoubleToInt16MSB_x87;
-  FromInt24MSB.oc64    := DoubleToInt24MSB_x87;
-  FromInt32MSB.oc64    := DoubleToInt32MSB_x87;
-  FromSingleMSB.oc64   := DoubleToSingleMSB_x87;
-  FromDoubleMSB.oc64   := DoubleToDoubleMSB_x87;
-  FromInt32MSB16.oc64  := DoubleToInt32MSB16_x87;
-  FromInt32MSB18.oc64  := DoubleToInt32MSB18_x87;
-  FromInt32MSB20.oc64  := DoubleToInt32MSB20_x87;
-  FromInt32MSB24.oc64  := DoubleToInt32MSB24_x87;
-  FromInt16LSB.oc64    := DoubleToInt16LSB_x87;
-  FromInt24LSB.oc64    := DoubleToInt24LSB_x87;
-  FromInt32LSB.oc64    := DoubleToInt32LSB_x87;
-  FromSingleLSB.oc64   := DoubleToSingleLSB_x87;
-  FromDoubleLSB.oc64   := DoubleToDoubleLSB_x87;
-  FromInt32LSB16.oc64  := DoubleToInt32LSB16_x87;
-  FromInt32LSB18.oc64  := DoubleToInt32LSB18_x87;
-  FromInt32LSB20.oc64  := DoubleToInt32LSB20_x87;
-  FromInt32LSB24.oc64  := DoubleToInt32LSB24_x87;
+  FromInt16MSB.ic32    := Int16MSBToSingle_x87;
+  FromInt24MSB.ic32    := Int24MSBToSingle_x87;
+  FromInt32MSB.ic32    := Int32MSBToSingle_x87;
+  FromSingleMSB.ic32   := SingleMSBToSingle_x87;
+  FromDoubleMSB.ic32   := DoubleMSBToSingle_x87;
+  FromInt32MSB16.ic32  := Int32MSB16ToSingle_x87;
+  FromInt32MSB18.ic32  := Int32MSB18ToSingle_x87;
+  FromInt32MSB20.ic32  := Int32MSB20ToSingle_x87;
+  FromInt32MSB24.ic32  := Int32MSB24ToSingle_x87;
+  FromInt16LSB.ic32    := Int16LSBToSingle_x87;
+  FromInt24LSB.ic32    := Int24LSBToSingle_x87;
+  FromInt32LSB.ic32    := Int32LSBToSingle_x87;
+  FromSingleLSB.ic32   := SingleLSBToSingle_x87;
+  FromDoubleLSB.ic32   := DoubleLSBToSingle_x87;
+  FromInt32LSB16.ic32  := Int32LSB16ToSingle_x87;
+  FromInt32LSB18.ic32  := Int32LSB18ToSingle_x87;
+  FromInt32LSB20.ic32  := Int32LSB20ToSingle_x87;
+  FromInt32LSB24.ic32  := Int32LSB24ToSingle_x87;
+  /////////////////////////////////////////////
+  FromInt16MSB.ic64    := Int16MSBToDouble_x87;
+  FromInt24MSB.ic64    := Int24MSBToDouble_x87;
+  FromInt32MSB.ic64    := Int32MSBToDouble_x87;
+  FromSingleMSB.ic64   := SingleMSBToDouble_x87;
+  FromDoubleMSB.ic64   := DoubleMSBToDouble_x87;
+  FromInt32MSB16.ic64  := Int32MSB16ToDouble_x87;
+  FromInt32MSB18.ic64  := Int32MSB18ToDouble_x87;
+  FromInt32MSB20.ic64  := Int32MSB20ToDouble_x87;
+  FromInt32MSB24.ic64  := Int32MSB24ToDouble_x87;
+  FromInt16LSB.ic64    := Int16LSBToDouble_x87;
+  FromInt24LSB.ic64    := Int24LSBToDouble_x87;
+  FromInt32LSB.ic64    := Int32LSBToDouble_x87;
+  FromSingleLSB.ic64   := SingleLSBToDouble_x87;
+  FromDoubleLSB.ic64   := DoubleLSBToDouble_x87;
+  FromInt32LSB16.ic64  := Int32LSB16ToDouble_x87;
+  FromInt32LSB18.ic64  := Int32LSB18ToDouble_x87;
+  FromInt32LSB20.ic64  := Int32LSB20ToDouble_x87;
+  FromInt32LSB24.ic64  := Int32LSB24ToDouble_x87;
+  ///////////////////////////////////////////////
+  ToInt16MSB.oc32      := SingleToInt16MSB_x87;
+  ToInt24MSB.oc32      := SingleToInt24MSB_x87;
+  ToInt32MSB.oc32      := SingleToInt32MSB_x87;
+  ToSingleMSB.oc32     := SingleToSingleMSB_x87;
+  ToDoubleMSB.oc32     := SingleToDoubleMSB_x87;
+  ToInt32MSB16.oc32    := SingleToInt32MSB16_x87;
+  ToInt32MSB18.oc32    := SingleToInt32MSB18_x87;
+  ToInt32MSB20.oc32    := SingleToInt32MSB20_x87;
+  ToInt32MSB24.oc32    := SingleToInt32MSB24_x87;
+  ToInt16LSB.oc32      := SingleToInt16LSB_x87;
+  ToInt24LSB.oc32      := SingleToInt24LSB_x87;
+  ToInt32LSB.oc32      := SingleToInt32LSB_x87;
+  ToSingleLSB.oc32     := SingleToSingleLSB_x87;
+  ToDoubleLSB.oc32     := SingleToDoubleLSB_x87;
+  ToInt32LSB16.oc32    := SingleToInt32LSB16_x87;
+  ToInt32LSB18.oc32    := SingleToInt32LSB18_x87;
+  ToInt32LSB20.oc32    := SingleToInt32LSB20_x87;
+  ToInt32LSB24.oc32    := SingleToInt32LSB24_x87;
+  ///////////////////////////////////////////////
+  ToInt16MSB.oc64      := DoubleToInt16MSB_x87;
+  ToInt24MSB.oc64      := DoubleToInt24MSB_x87;
+  ToInt32MSB.oc64      := DoubleToInt32MSB_x87;
+  ToSingleMSB.oc64     := DoubleToSingleMSB_x87;
+  ToDoubleMSB.oc64     := DoubleToDoubleMSB_x87;
+  ToInt32MSB16.oc64    := DoubleToInt32MSB16_x87;
+  ToInt32MSB18.oc64    := DoubleToInt32MSB18_x87;
+  ToInt32MSB20.oc64    := DoubleToInt32MSB20_x87;
+  ToInt32MSB24.oc64    := DoubleToInt32MSB24_x87;
+  ToInt16LSB.oc64      := DoubleToInt16LSB_x87;
+  ToInt24LSB.oc64      := DoubleToInt24LSB_x87;
+  ToInt32LSB.oc64      := DoubleToInt32LSB_x87;
+  ToSingleLSB.oc64     := DoubleToSingleLSB_x87;
+  ToDoubleLSB.oc64     := DoubleToDoubleLSB_x87;
+  ToInt32LSB16.oc64    := DoubleToInt32LSB16_x87;
+  ToInt32LSB18.oc64    := DoubleToInt32LSB18_x87;
+  ToInt32LSB20.oc64    := DoubleToInt32LSB20_x87;
+  ToInt32LSB24.oc64    := DoubleToInt32LSB24_x87;
   MixBuffers.mb32      := MixBuffers_x87;
   MixBuffers.mb64      := MixBuffers_x87;
   Volume.v32           := Volume_x87;
@@ -2822,10 +3248,46 @@ begin
   ClipAnalog.cb64      := ClipAnalog_x87;
 end;
 
+procedure Use_x87_UDF;
+begin
+ Use_x87;
+ ToInt16LSB.oc32      := SingleToInt16LSB_UDF_x87;
+ ToInt24LSB.oc32      := SingleToInt24LSB_UDF_x87;
+ ToInt32LSB16.oc32    := SingleToInt32LSB16_UDF_x87;
+ ToInt32LSB18.oc32    := SingleToInt32LSB18_UDF_x87;
+ ToInt32LSB20.oc32    := SingleToInt32LSB20_UDF_x87;
+ ToInt32LSB24.oc32    := SingleToInt32LSB24_UDF_x87;
+ ///////////////////////////////////////////////
+ ToInt16LSB.oc64      := DoubleToInt16LSB_UDF_x87;
+ ToInt24LSB.oc64      := DoubleToInt24LSB_UDF_x87;
+ ToInt32LSB16.oc64    := DoubleToInt32LSB16_UDF_x87;
+ ToInt32LSB18.oc64    := DoubleToInt32LSB18_UDF_x87;
+ ToInt32LSB20.oc64    := DoubleToInt32LSB20_UDF_x87;
+ ToInt32LSB24.oc64    := DoubleToInt32LSB24_UDF_x87;
+end;
+
+procedure Use_x87_TDF;
+begin
+ Use_x87;
+ ToInt16LSB.oc32      := SingleToInt16LSB_TDF_x87;
+ ToInt24LSB.oc32      := SingleToInt24LSB_TDF_x87;
+ ToInt32LSB16.oc32    := SingleToInt32LSB16_TDF_x87;
+ ToInt32LSB18.oc32    := SingleToInt32LSB18_TDF_x87;
+ ToInt32LSB20.oc32    := SingleToInt32LSB20_TDF_x87;
+ ToInt32LSB24.oc32    := SingleToInt32LSB24_TDF_x87;
+ ///////////////////////////////////////////////
+ ToInt16LSB.oc64      := DoubleToInt16LSB_TDF_x87;
+ ToInt24LSB.oc64      := DoubleToInt24LSB_TDF_x87;
+ ToInt32LSB16.oc64    := DoubleToInt32LSB16_TDF_x87;
+ ToInt32LSB18.oc64    := DoubleToInt32LSB18_TDF_x87;
+ ToInt32LSB20.oc64    := DoubleToInt32LSB20_TDF_x87;
+ ToInt32LSB24.oc64    := DoubleToInt32LSB24_TDF_x87;
+end;
+
 procedure Use_SSE;
 begin
  {$IFNDEF DELPHI5}
-// FromInt32LSB.oc32 := SingleToInt32LSB_SSE;
+// ToInt32LSB.oc32 := SingleToInt32LSB_SSE;
  MixBuffers.mb32   := MixBuffers_SSE;
  ClipDigital.cb32  := ClipDigital_SSE;
  ClipAnalog.cb32   := ClipAnalog_SSE;
@@ -2839,21 +3301,21 @@ procedure Use_3DNow;
 begin
  {$IFNDEF DELPHI5}
 {
- FromInt16LSB := SingleToInt16LSB_3DNow;
- ToInt16LSB := ToInt16LSB_3DNow;
- FromInt24LSB := SingleToInt24LSB_3DNow;
- ToInt24LSB := ToInt24LSB_3DNow;
+ ToInt16LSB := SingleToInt16LSB_3DNow;
+ FromInt16LSB := ToInt16LSB_3DNow;
+ ToInt24LSB := SingleToInt24LSB_3DNow;
+ FromInt24LSB := ToInt24LSB_3DNow;
 }
- FromInt32LSB.oc32   := SingleToInt32LSB_3DNow;
- ToInt32LSB.ic32     := ToInt32LSB_3DNow;
- FromInt32LSB16.oc32 := SingleToInt32LSB16_3DNow;
- ToInt32LSB16.ic32   := ToInt32LSB16_3DNow;
- FromInt32LSB18.oc32 := SingleToInt32LSB18_3DNow;
- ToInt32LSB18.ic32   := ToInt32LSB18_3DNow;
- FromInt32LSB20.oc32 := SingleToInt32LSB20_3DNow;
- ToInt32LSB20.ic32   := ToInt32LSB20_3DNow;
- FromInt32LSB24.oc32 := SingleToInt32LSB24_3DNow;
- ToInt32LSB24.ic32   := ToInt32LSB24_3DNow;
+ ToInt32LSB.oc32     := SingleToInt32LSB_3DNow;
+ FromInt32LSB.ic32   := ToInt32LSB_3DNow;
+ ToInt32LSB16.oc32   := SingleToInt32LSB16_3DNow;
+ FromInt32LSB16.ic32 := ToInt32LSB16_3DNow;
+ ToInt32LSB18.oc32   := SingleToInt32LSB18_3DNow;
+ FromInt32LSB18.ic32 := ToInt32LSB18_3DNow;
+ ToInt32LSB20.oc32   := SingleToInt32LSB20_3DNow;
+ FromInt32LSB20.ic32 := ToInt32LSB20_3DNow;
+ ToInt32LSB24.oc32   := SingleToInt32LSB24_3DNow;
+ FromInt32LSB24.ic32 := ToInt32LSB24_3DNow;
  MixBuffers.mb32     := MixBuffers_3DNow;
  Volume.v32          := Volume_3DNow;
  {$ENDIF}

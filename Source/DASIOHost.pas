@@ -55,6 +55,7 @@ type
   TASIOCanDo = (acdInputMonitor, acdTimeInfo, acdTimeCode, acdTransport,
                 acdInputGain, acdInputMeter, acdOutputGain, acdOutputMeter);
   TASIOCanDos = set of TASIOCanDo;
+  TASIOOutputDither = (odNone, odUDF, odTDF);
 
   TConvertMethod = (cmNone, cm32, cm64);
   TConvertOptimization = (coSSE, co3DNow);
@@ -112,7 +113,7 @@ type
   TASIOHost = class(TComponent)
   private
     FActive               : Boolean;
-    fHandle               : HWND;
+    FHandle               : HWND;
     FPreventClipping      : TPreventClipping;
     FInBufferPreFill      : TBufferPreFill;
     FOutBufferPreFill     : TBufferPreFill;
@@ -143,32 +144,33 @@ type
     FOnBufferSwitchNative : TBufferSwitchEventNative;
     FInputChannelOffset   : Word;
     FOutputChannelOffset  : Word;
-    fASIOCanDos           : TASIOCanDos;
+    FASIOCanDos           : TASIOCanDos;
     Fmin, Fmax,
     Fpref, Fgran          : Integer;
     FInConvertors         : array of TInConvertor;
     FOutConvertors        : array of TOutConvertor;
     FASIOGenerator        : TASIOGenerator;
-    ASIOdriverlist        : TASIODriverList;
+    FASIOdriverlist       : TASIODriverList;
     {$IFDEF OpenASIO}
-    Driver                : IOpenAsio;
+    FDriver               : IOpenAsio;
     {$ELSE}
-    Driver                : IBeroASIO;
+    FDriver               : IBeroASIO;
     {$ENDIF}
-    BuffersCreated        : boolean;
-    callbacks             : TASIOCallbacks;
-    SingleInBuffer        : TArrayOfSingleDynArray;
-    SingleOutBuffer       : TArrayOfSingleDynArray;
-    DoubleInBuffer        : TArrayOfDoubleDynArray;
-    DoubleOutBuffer       : TArrayOfDoubleDynArray;
-    UnAlignedBuffer       : PASIOBufferInfo;
-    InputBuffer           : PASIOBufferInfo;
-    OutputBuffer          : PASIOBufferInfo;
+    FBuffersCreated       : Boolean;
+    FCallbacks            : TASIOCallbacks;
+    FSingleInBuffer       : TArrayOfSingleDynArray;
+    FSingleOutBuffer      : TArrayOfSingleDynArray;
+    FDoubleInBuffer       : TArrayOfDoubleDynArray;
+    FDoubleOutBuffer      : TArrayOfDoubleDynArray;
+    FUnAlignedBuffer      : PASIOBufferInfo;
+    FInputBuffer          : PASIOBufferInfo;
+    FOutputBuffer         : PASIOBufferInfo;
     FInputMonitor         : TInputMonitor;
     FConvertOptimizations : TConvertOptimizations;
     FOutputVolume         : TSingleDynArray;
     FClipPrevent          : TClipBuffer;
     FConvertMethod        : TConvertMethod;
+    FOutputDither         : TASIOOutputDither;
     {$IFDEF ASIOMixer}
     FASIOMixer            : TFmASIOMixer;
     {$ENDIF}
@@ -185,8 +187,6 @@ type
     procedure SetConvertOptimizations(const co: TConvertOptimizations);
     procedure SetASIOGenerator(const v: TASIOGenerator);
     procedure SetPreventClipping(v: TPreventClipping);
-    function GetBufferSize: Cardinal;
-    function GetSampleRate: Double;
     procedure WndProc(var Msg: TMessage);
     {$IFDEF ASIOMixer}
     procedure SetupMixer;
@@ -238,7 +238,7 @@ type
     property DriverName: string read FDriverName write SetDriverName;
     property DriverVersion: integer read FDriverVersion;
     property DriverIndex: Integer read FDriverIndex Write SetDriverIndex default -1;
-    property BufferSize: Cardinal read GetBufferSize stored false default 1;
+    property BufferSize: Cardinal read fBufferSize stored false default 1;
     property BufferMinimum: Integer read Fmin stored false;
     property BufferMaximum: Integer read Fmax stored false;
     property BufferPreferredSize: Integer read Fpref stored false;
@@ -248,10 +248,11 @@ type
     property InputChannels: Integer read FInputChannels stored false default 0;
     property InputChannelOffset : Word read FInputChannelOffset write SetInputChannelOffset default 0;
     property OutputLatency: Integer read FOutputLatency stored false default 0;
+    property OutputDither: TASIOOutputDither read FOutputDither write FOutputDither default odNone;
     property OutputChannels: Integer read FOutputChannels stored false default 0;
     property OutputChannelOffset: Word read FOutputChannelOffset write SetOutputChannelOffset default 0;
     property ConvertOptimizations: TConvertOptimizations read FConvertOptimizations write SetConvertOptimizations;
-    property SampleRate: Double read GetSampleRate write SetSampleRate;
+    property SampleRate: Double read fSampleRate write SetSampleRate;
     property ASIOTime: TASIOTimeSub read FASIOTime Write FASIOTime;
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
@@ -650,24 +651,25 @@ begin
   fHandle:=AllocateHWnd(WndProc);
   {$ENDIF}
   theHost := Self;
-  UnAlignedBuffer:=nil;
-  InputBuffer := nil;
-  OutputBuffer := nil;
-  ASIOTime := TASIOTimeSub.Create;
+  FUnAlignedBuffer:=nil;
+  FInputBuffer := nil;
+  FOutputBuffer := nil;
+  FASIOTime := TASIOTimeSub.Create;
   {$IFNDEF FPC}
   FDriverList := GetDriverList;
   {$ENDIF}
   FConvertOptimizations := [coSSE, co3DNow];
+  FOutputDither:=odNone;
 
   // set the callbacks record fields
-  callbacks.bufferSwitch := ASIOBufferSwitch;
-  callbacks.sampleRateDidChange := ASIOSampleRateDidChange;
-  callbacks.ASIOMessage := ASIOMessage;
-  callbacks.bufferSwitchTimeInfo := ASIOBufferSwitchTimeInfo;
+  FCallbacks.bufferSwitch := ASIOBufferSwitch;
+  FCallbacks.sampleRateDidChange := ASIOSampleRateDidChange;
+  FCallbacks.ASIOMessage := ASIOMessage;
+  FCallbacks.bufferSwitchTimeInfo := ASIOBufferSwitchTimeInfo;
 
   // set the driver itself to nil for now
-  Driver := nil;
-  BuffersCreated := FALSE;
+  FDriver := nil;
+  FBuffersCreated := FALSE;
 
   // and make sure all controls are enabled or disabled
   FDriverIndex := -1;
@@ -680,17 +682,17 @@ end;
 destructor TASIOHost.Destroy;
 begin
  if Assigned(FOnDestroy) then FOnDestroy(Self);
- callbacks.bufferSwitchTimeInfo := nil;
+ FCallbacks.bufferSwitchTimeInfo := nil;
  if Active then Active := False;
  CloseDriver;
  {$IFNDEF FPC}
  DeallocateHWnd(fHandle);
  {$ENDIF}
- SetLength(ASIOdriverlist, 0);
+ SetLength(FASIOdriverlist, 0);
  SetLength(FInConvertors, 0);
  SetLength(FOutConvertors, 0);
  SetLength(FOutputVolume, 0);
- SetLength(ASIOdriverlist, 0);
+ SetLength(FASIOdriverlist, 0);
  SetLength(FInConvertors, 0);
  SetLength(FOutConvertors, 0);
  SetLength(FOutputVolume, 0);
@@ -706,10 +708,10 @@ function TASIOHost.GetDriverList: TStrings;
 var i : Integer;
 begin
  Result := TStringList.Create;
- SetLength(ASIOdriverlist, 0);
- ListASIODrivers(ASIOdriverlist);
- for i := Low(ASIOdriverlist) to High(ASIOdriverlist) do
-  Result.Add(ASIOdriverlist[i].name);
+ SetLength(FASIOdriverlist, 0);
+ ListASIODrivers(FASIOdriverlist);
+ for i := Low(FASIOdriverlist) to High(FASIOdriverlist) do
+  Result.Add(FASIOdriverlist[i].name);
 end;
 
 procedure TASIOHost.SetDriverName(const s:String);
@@ -750,8 +752,8 @@ procedure TASIOHost.SetConvertOptimizations(const co: TConvertOptimizations);
 begin
  Use_x87;
  case FPUType of
- fpuSSE: if coSSE in co then Use_SSE;
- fpu3DNow: if co3DNow in co then Use_3DNow;
+  fpuSSE: if coSSE in co then Use_SSE;
+  fpu3DNow: if co3DNow in co then Use_3DNow;
  end;
  FConvertOptimizations := co;
 end;
@@ -798,10 +800,10 @@ begin
     except 
      exit;
     end;
-    if assigned(Driver) then
+    if assigned(FDriver) then
     begin
-     Driver.GetDriverName(DrName);
-     FDriverVersion := Driver.GetDriverVersion;
+     FDriver.GetDriverName(DrName);
+     FDriverVersion := FDriver.GetDriverVersion;
      CanTimeCode;   CanTimeInfo;    CanTransport;
      CanInputGain;  CanInputMeter;
      CanOutputGain; CanOutputMeter;
@@ -858,63 +860,64 @@ function TASIOHost.CreateBuffers: Boolean;
 var i             : integer;
     currentbuffer : PASIOBufferInfo;
 begin
- if Driver = nil then
+ if FDriver = nil then
  begin
   result := false;
   Exit;
  end;
- if BuffersCreated then DestroyBuffers;
- Driver.GetBufferSize(Fmin, Fmax, Fpref, Fgran);
+ if FBuffersCreated then DestroyBuffers;
+ FDriver.GetBufferSize(Fmin, Fmax, Fpref, Fgran);
  if Fmin = Fmax then Fpref := Fmin;
  FBufferSize := Fpref;
+ if (FBufferSize < 1) or (FBufferSize > 65530)
+  then FBufferSize := 4096;
  if Assigned(FASIOGenerator) then FASIOGenerator.BlockSize := FBufferSize;
- Driver.GetSampleRate(FSampleRate);
- if FSampleRate < 0 then FSampleRate := 44100;
+ FDriver.GetSampleRate(FSampleRate);
  SetSampleRate(FSampleRate);
- Driver.GetChannels(FInputChannels, FOutputChannels);
+ FDriver.GetChannels(FInputChannels, FOutputChannels);
  SetLength(FOutputVolume, FOutputChannels);
  for i := 0 to FOutputChannels - 1 do FOutputVolume[i] := 1;
  {$IFDEF ASIOMixer} SetupMixer; {$ENDIF}
 
  {$IFNDEF FPC}
- GetMem(UnAlignedBuffer, SizeOf(TAsioBufferInfo) * (FInputChannels + FOutputChannels) + 16);
- InputBuffer := Ptr(Integer(UnAlignedBuffer)+16-(Integer(UnAlignedBuffer) mod 16));
+ GetMem(FUnAlignedBuffer, SizeOf(TAsioBufferInfo) * (FInputChannels + FOutputChannels) + 16);
+ FInputBuffer := Ptr(Integer(FUnAlignedBuffer)+16-(Integer(FUnAlignedBuffer) mod 16));
  {$ENDIF}
 
  SetLength(InputChannelInfos, FInputChannels);
- SetLength(SingleInBuffer, FInputChannels);
- SetLength(DoubleInBuffer, FInputChannels);
+ SetLength(FSingleInBuffer, FInputChannels);
+ SetLength(FDoubleInBuffer, FInputChannels);
  SetLength(FInConvertors, FInputChannels);
- currentbuffer := InputBuffer;
+ currentbuffer := FInputBuffer;
  for i := 0 to FInputChannels - 1 do
   begin
    InputChannelInfos[i].channel := i;
    InputChannelInfos[i].isInput := ASIOTrue;
-   Driver.GetChannelInfo(InputChannelInfos[i]);
+   FDriver.GetChannelInfo(InputChannelInfos[i]);
     case InputChannelInfos[i].vType of
-     ASIOSTInt16MSB:   FInConvertors[i] := ToInt16MSB;
-     ASIOSTInt24MSB:   FInConvertors[i] := ToInt24MSB;
-     ASIOSTInt32MSB:   FInConvertors[i] := ToInt32MSB;
-     ASIOSTFloat32MSB: FInConvertors[i] := ToSingleMSB;
-     ASIOSTFloat64MSB: FInConvertors[i] := ToDoubleMSB;
-     ASIOSTInt32MSB16: FInConvertors[i] := ToInt32MSB16;
-     ASIOSTInt32MSB18: FInConvertors[i] := ToInt32MSB18;
-     ASIOSTInt32MSB20: FInConvertors[i] := ToInt32MSB20;
-     ASIOSTInt32MSB24: FInConvertors[i] := ToInt32MSB24;
-     ASIOSTInt16LSB:   FInConvertors[i] := ToInt16LSB;
-     ASIOSTInt24LSB:   FInConvertors[i] := ToInt24LSB;
-     ASIOSTInt32LSB:   FInConvertors[i] := ToInt32LSB;
-     ASIOSTFloat32LSB: FInConvertors[i] := ToSingleLSB;
-     ASIOSTFloat64LSB: FInConvertors[i] := ToDoubleLSB;
-     ASIOSTInt32LSB16: FInConvertors[i] := ToInt32LSB16;
-     ASIOSTInt32LSB18: FInConvertors[i] := ToInt32LSB18;
-     ASIOSTInt32LSB20: FInConvertors[i] := ToInt32LSB20;
-     ASIOSTInt32LSB24: FInConvertors[i] := ToInt32LSB24;
+     ASIOSTInt16MSB:   FInConvertors[i] := FromInt16MSB;
+     ASIOSTInt24MSB:   FInConvertors[i] := FromInt24MSB;
+     ASIOSTInt32MSB:   FInConvertors[i] := FromInt32MSB;
+     ASIOSTFloat32MSB: FInConvertors[i] := FromSingleMSB;
+     ASIOSTFloat64MSB: FInConvertors[i] := FromDoubleMSB;
+     ASIOSTInt32MSB16: FInConvertors[i] := FromInt32MSB16;
+     ASIOSTInt32MSB18: FInConvertors[i] := FromInt32MSB18;
+     ASIOSTInt32MSB20: FInConvertors[i] := FromInt32MSB20;
+     ASIOSTInt32MSB24: FInConvertors[i] := FromInt32MSB24;
+     ASIOSTInt16LSB:   FInConvertors[i] := FromInt16LSB;
+     ASIOSTInt24LSB:   FInConvertors[i] := FromInt24LSB;
+     ASIOSTInt32LSB:   FInConvertors[i] := FromInt32LSB;
+     ASIOSTFloat32LSB: FInConvertors[i] := FromSingleLSB;
+     ASIOSTFloat64LSB: FInConvertors[i] := FromDoubleLSB;
+     ASIOSTInt32LSB16: FInConvertors[i] := FromInt32LSB16;
+     ASIOSTInt32LSB18: FInConvertors[i] := FromInt32LSB18;
+     ASIOSTInt32LSB20: FInConvertors[i] := FromInt32LSB20;
+     ASIOSTInt32LSB24: FInConvertors[i] := FromInt32LSB24;
     end;
 
-   SetLength(SingleInBuffer[i], BufferSize);
-   SetLength(DoubleInBuffer[i], BufferSize);
-   FillChar(SingleInBuffer[i,0], BufferSize * SizeOf(Single), 0);
+   SetLength(FSingleInBuffer[i], FBufferSize);
+   SetLength(FDoubleInBuffer[i], FBufferSize);
+   FillChar(FSingleInBuffer[i,0], FBufferSize * SizeOf(Single), 0);
    currentbuffer^.isInput := ASIOTrue;
    currentbuffer^.channelNum := i;
    currentbuffer^.buffers[0] := nil;
@@ -922,39 +925,39 @@ begin
    inc(currentbuffer);
   end;
 
- OutputBuffer := currentbuffer;
+ FOutputBuffer := currentbuffer;
  SetLength(OutputChannelInfos, FOutputChannels);
- SetLength(SingleOutBuffer, FOutputChannels);
- SetLength(DoubleOutBuffer, FOutputChannels);
+ SetLength(FSingleOutBuffer, FOutputChannels);
+ SetLength(FDoubleOutBuffer, FOutputChannels);
  SetLength(FOutConvertors, FOutputChannels);
  for i := 0 to FOutputChannels - 1 do
   begin
    OutputChannelInfos[i].channel := i;
    OutputChannelInfos[i].isInput := ASIOFalse;   //  output
-   Driver.GetChannelInfo(OutputChannelInfos[i]);
+   FDriver.GetChannelInfo(OutputChannelInfos[i]);
    case OutputChannelInfos[i].vType of
-    ASIOSTInt16MSB:   FOutConvertors[i] := FromInt16MSB;
-    ASIOSTInt24MSB:   FOutConvertors[i] := FromInt24MSB;
-    ASIOSTInt32MSB:   FOutConvertors[i] := FromInt32MSB;
-    ASIOSTFloat32MSB: FOutConvertors[i] := FromSingleMSB;
-    ASIOSTFloat64MSB: FOutConvertors[i] := FromDoubleMSB;
-    ASIOSTInt32MSB16: FOutConvertors[i] := FromInt32MSB16;
-    ASIOSTInt32MSB18: FOutConvertors[i] := FromInt32MSB18;
-    ASIOSTInt32MSB20: FOutConvertors[i] := FromInt32MSB20;
-    ASIOSTInt32MSB24: FOutConvertors[i] := FromInt32MSB24;
-    ASIOSTInt16LSB:   FOutConvertors[i] := FromInt16LSB;
-    ASIOSTInt24LSB:   FOutConvertors[i] := FromInt24LSB;
-    ASIOSTInt32LSB:   FOutConvertors[i] := FromInt32LSB;
-    ASIOSTFloat32LSB: FOutConvertors[i] := FromSingleLSB;
-    ASIOSTFloat64LSB: FOutConvertors[i] := FromDoubleLSB;
-    ASIOSTInt32LSB16: FOutConvertors[i] := FromInt32LSB16;
-    ASIOSTInt32LSB18: FOutConvertors[i] := FromInt32LSB18;
-    ASIOSTInt32LSB20: FOutConvertors[i] := FromInt32LSB20;
-    ASIOSTInt32LSB24: FOutConvertors[i] := FromInt32LSB24;
+    ASIOSTInt16MSB:   FOutConvertors[i] := ToInt16MSB;
+    ASIOSTInt24MSB:   FOutConvertors[i] := ToInt24MSB;
+    ASIOSTInt32MSB:   FOutConvertors[i] := ToInt32MSB;
+    ASIOSTFloat32MSB: FOutConvertors[i] := ToSingleMSB;
+    ASIOSTFloat64MSB: FOutConvertors[i] := ToDoubleMSB;
+    ASIOSTInt32MSB16: FOutConvertors[i] := ToInt32MSB16;
+    ASIOSTInt32MSB18: FOutConvertors[i] := ToInt32MSB18;
+    ASIOSTInt32MSB20: FOutConvertors[i] := ToInt32MSB20;
+    ASIOSTInt32MSB24: FOutConvertors[i] := ToInt32MSB24;
+    ASIOSTInt16LSB:   FOutConvertors[i] := ToInt16LSB;
+    ASIOSTInt24LSB:   FOutConvertors[i] := ToInt24LSB;
+    ASIOSTInt32LSB:   FOutConvertors[i] := ToInt32LSB;
+    ASIOSTFloat32LSB: FOutConvertors[i] := ToSingleLSB;
+    ASIOSTFloat64LSB: FOutConvertors[i] := ToDoubleLSB;
+    ASIOSTInt32LSB16: FOutConvertors[i] := ToInt32LSB16;
+    ASIOSTInt32LSB18: FOutConvertors[i] := ToInt32LSB18;
+    ASIOSTInt32LSB20: FOutConvertors[i] := ToInt32LSB20;
+    ASIOSTInt32LSB24: FOutConvertors[i] := ToInt32LSB24;
    end;
-   SetLength(SingleOutBuffer[i], BufferSize);
-   SetLength(DoubleOutBuffer[i], BufferSize);
-   FillChar(SingleOutBuffer[i,0], BufferSize * SizeOf(Single), 0);
+   SetLength(FSingleOutBuffer[i], FBufferSize);
+   SetLength(FDoubleOutBuffer[i], FBufferSize);
+   FillChar(FSingleOutBuffer[i,0], FBufferSize * SizeOf(Single), 0);
    currentbuffer^.isInput := ASIOfalse;  // create an output buffer
    currentbuffer^.channelNum := i;
    currentbuffer^.buffers[0] := nil;
@@ -962,9 +965,9 @@ begin
    inc(currentbuffer);
   end;
 
- result := (Driver.CreateBuffers(InputBuffer,
-  (FInputChannels + FOutputChannels), Fpref, callbacks) = ASE_OK);
- Driver.GetLatencies(FInputLatency, FOutputLatency);
+ result := (FDriver.CreateBuffers(FInputBuffer,
+  (FInputChannels + FOutputChannels), Fpref, FCallbacks) = ASE_OK);
+ FDriver.GetLatencies(FInputLatency, FOutputLatency);
  if Assigned (FOnBuffersCreate) then FOnBuffersCreate(Self);
  if Assigned (FOnLatencyChanged) then FOnLatencyChanged(Self);
  Randomize;
@@ -972,22 +975,22 @@ end;
 
 procedure TASIOHost.DestroyBuffers;
 begin
- if (Driver = nil) then Exit;
- if BuffersCreated then
+ if (FDriver = nil) then Exit;
+ if FBuffersCreated then
  begin
   if Assigned (FOnBuffersDestroy)
    then FOnBuffersDestroy(Self);
-  FreeMem(UnAlignedBuffer);
-  UnAlignedBuffer := nil;
-  InputBuffer := nil;
-  OutputBuffer := nil;
+  FreeMem(FUnAlignedBuffer);
+  FUnAlignedBuffer := nil;
+  FInputBuffer := nil;
+  FOutputBuffer := nil;
   try
-   Driver.DisposeBuffers;
+   FDriver.DisposeBuffers;
   except
   end;
-  BuffersCreated := false;
-  SingleInBuffer := nil;
-  SingleOutBuffer := nil;
+  FBuffersCreated := false;
+  FSingleInBuffer := nil;
+  FSingleOutBuffer := nil;
   SetLength(InputChannelInfos, 0);
   SetLength(OutputChannelInfos, 0);
  end;
@@ -997,7 +1000,7 @@ procedure TASIOHost.OpenDriver;
 var tmpActive: Boolean;
 begin
  tmpActive := false;
- if assigned(Driver) then
+ if assigned(FDriver) then
  begin
   try
    tmpActive := Active;
@@ -1020,32 +1023,32 @@ begin
  end;
 {$ELSE}
   try
-  if CreateBeRoASIO(ASIOdriverlist[FDriverIndex].id, Driver) then
+  if CreateBeRoASIO(FASIOdriverlist[FDriverIndex].id, FDriver) then
   begin
    {$IFNDEF FPC}
-   if assigned(Driver) then
-    if not Succeeded(Driver.Init(fHandle)) then Driver := nil;
+   if assigned(FDriver) then
+    if not Succeeded(FDriver.Init(fHandle)) then FDriver := nil;
    {$ENDIF}
   end;
   except
-   Driver := nil;
+   FDriver := nil;
   end;
 {$ENDIF}
  end;
 // if Driver = nil then raise Exception.Create('ASIO Driver Failed!');
- BuffersCreated := CreateBuffers;
+ FBuffersCreated := CreateBuffers;
  if tmpActive then Active := True;
 end;
 
 procedure TASIOHost.CloseDriver;
 begin
- if assigned(Driver) then
+ if assigned(FDriver) then
  begin
   try
-   if BuffersCreated then DestroyBuffers;
+   if FBuffersCreated then DestroyBuffers;
   except
   end;
-  Driver := nil;  // RELEASE;
+  FDriver := nil;  // RELEASE;
  end;
  FInputLatency := 0;
  FOutputLatency := 0;
@@ -1056,7 +1059,8 @@ end;
 
 procedure TASIOHost.ControlPanel;
 begin
- if assigned(Driver) then Driver.ControlPanel;
+ if assigned(FDriver)
+  then FDriver.ControlPanel;
 end;
 
 {$IFDEF ASIOMixer}
@@ -1081,7 +1085,7 @@ end;
 procedure TASIOHost.PMASIO(var Message: TMessage);
 var inp, outp: integer;
 begin
- if Driver = nil then exit;
+ if FDriver = nil then exit;
  case Message.WParam of
   AM_ResetRequest:
    begin
@@ -1093,7 +1097,7 @@ begin
    ASIOTime.FBufferTime);  // process a buffer with time
   AM_LatencyChanged:
    begin
-    if assigned(Driver) then Driver.GetLatencies(inp, outp);
+    if assigned(FDriver) then FDriver.GetLatencies(inp, outp);
     if assigned(FOnLatencyChanged) then FOnLatencyChanged(Self);
    end;
  end;
@@ -1113,7 +1117,7 @@ begin
  FillChar(ASIOTime.FBufferTime, SizeOf(TASIOTime), 0);
  // get the time stamp of the buffer, not necessary if no
  // synchronization to other media is required
- if Driver.GetSamplePosition(ASIOTime.FBufferTime.timeInfo.samplePosition,
+ if FDriver.GetSamplePosition(ASIOTime.FBufferTime.timeInfo.samplePosition,
   ASIOTime.FBufferTime.timeInfo.systemTime) = ASE_OK then
    ASIOTime.Flags := ASIOTime.Flags + [atSystemTimeValid,atSamplePositionValid];
  BufferSwitchTimeInfo(index, ASIOTime.FBufferTime);
@@ -1125,67 +1129,67 @@ var i, j                : Integer;
     currentbuffer       : PASIOBufferInfo;
     PChannelArray       : Pointer;
 begin
- if Driver = nil then exit;
+ if FDriver = nil then exit;
  PMUpdSamplePos.wParam := params.timeInfo.samplePosition.hi;
  PMUpdSamplePos.LParam := params.timeInfo.samplePosition.lo;
  Dispatch(PMUpdSamplePos);
- currentbuffer := InputBuffer;
+ currentbuffer := FInputBuffer;
 
- if assigned(FOnBufferSwitchNative) then FOnBufferSwitchNative(Self,@(InputBuffer^),index); 
+ if assigned(FOnBufferSwitchNative) then FOnBufferSwitchNative(Self,@(FInputBuffer^),index) else
  if FConvertMethod=cm64 then
   begin
    // 64Bit float processing
    case FInBufferPreFill of
     bpfZero: for j := 0 to FInputChannels - 1
-              do FillChar(DoubleInBuffer[j,0], BufferSize * SizeOf(Double), 0);
+              do FillChar(FDoubleInBuffer[j,0], FBufferSize * SizeOf(Double), 0);
     bpfNoise: for j := 0 to FInputChannels - 1 do
-               for i := 0 to BufferSize - 1 do DoubleInBuffer[j,i] := 2 * Random - 1;
+               for i := 0 to FBufferSize - 1 do FDoubleInBuffer[j,i] := 2 * Random - 1;
     else
      begin
       for j := 0 to FInputChannels - 1 do
        begin
         PChannelArray := currentbuffer^.buffers[Index];
         if Assigned(PChannelArray) then
-          FInConvertors[j].ic64(PChannelArray, PDouble(DoubleInBuffer[j]), BufferSize);
+          FInConvertors[j].ic64(PChannelArray, PDouble(FDoubleInBuffer[j]), FBufferSize);
         inc(currentbuffer);
        end;
      end;
    end;
 
    if fPreventClipping<>pcNone
-    then for j := 0 to FInputChannels - 1 do fClipPrevent.cb64(@DoubleInBuffer[j,0], BufferSize);
+    then for j := 0 to FInputChannels - 1 do fClipPrevent.cb64(@FDoubleInBuffer[j,0], FBufferSize);
 
    case FOutBufferPreFill of
     bpfZero : for j := 0 to FOutputChannels - 1
-               do FillChar(DoubleOutBuffer[j,0], BufferSize * SizeOf(Double), 0);
+               do FillChar(FDoubleOutBuffer[j,0], FBufferSize * SizeOf(Double), 0);
     bpfNoise: for j := 0 to FOutputChannels - 1 do
-               for i := 0 to BufferSize - 1
-                do DoubleOutBuffer[j,i] := 2 * Random - 1;
+               for i := 0 to FBufferSize - 1
+                do FDoubleOutBuffer[j,i] := 2 * Random - 1;
    end;
 
    case FInputMonitor of
-    imMono: Move(DoubleInBuffer[FInputChannelOffset,0], DoubleOutBuffer[FOutputChannelOffset,0], BufferSize * SizeOf(Double));
+    imMono: Move(FDoubleInBuffer[FInputChannelOffset,0], FDoubleOutBuffer[FOutputChannelOffset,0], FBufferSize * SizeOf(Double));
     imStereo:
      begin
-      Move(DoubleInBuffer[FInputChannelOffset  ,0], DoubleOutBuffer[FOutputChannelOffset  ,0], BufferSize * SizeOf(Double));
-      Move(DoubleInBuffer[FInputChannelOffset+1,0], DoubleOutBuffer[FOutputChannelOffset+1,0], BufferSize * SizeOf(Double));
+      Move(FDoubleInBuffer[FInputChannelOffset  ,0], FDoubleOutBuffer[FOutputChannelOffset  ,0], FBufferSize * SizeOf(Double));
+      Move(FDoubleInBuffer[FInputChannelOffset+1,0], FDoubleOutBuffer[FOutputChannelOffset+1,0], FBufferSize * SizeOf(Double));
      end;
     imAll:
      for j := 0 to min(FInputChannels, FOutputChannels) - 1 do
-      Move(DoubleInBuffer[j,0], DoubleOutBuffer[j,0], BufferSize * SizeOf(Double));
+      Move(FDoubleInBuffer[j,0], FDoubleOutBuffer[j,0], FBufferSize * SizeOf(Double));
    end;
 
-   FOnBufferSwitch64(Self, DoubleInBuffer, DoubleOutBuffer);
+   FOnBufferSwitch64(Self, FDoubleInBuffer, FDoubleOutBuffer);
 
    if fPreventClipping<>pcNone then
-    for j := 0 to FOutputChannels - 1 do fClipPrevent.cb64(@DoubleOutBuffer[j,0] ,BufferSize);
+    for j := 0 to FOutputChannels - 1 do fClipPrevent.cb64(@FDoubleOutBuffer[j,0] ,FBufferSize);
 
-   currentbuffer := OutputBuffer;
+   currentbuffer := FOutputBuffer;
    for j := 0 to FOutputChannels - 1 do
     begin
      PChannelArray := currentbuffer^.buffers[Index];
      if assigned(PChannelArray)
-      then FOutConvertors[j].oc64(PDouble(DoubleOutBuffer[j]),PChannelArray, BufferSize);
+      then FOutConvertors[j].oc64(PDouble(FDoubleOutBuffer[j]),PChannelArray, FBufferSize);
      inc(currentbuffer);
     end;
   end
@@ -1193,124 +1197,136 @@ begin
   begin
    case FInBufferPreFill of
     bpfZero: for j := 0 to FInputChannels - 1
-              do FillChar(SingleInBuffer[j,0], BufferSize * SizeOf(Single), 0);
+              do FillChar(FSingleInBuffer[j,0], FBufferSize * SizeOf(Single), 0);
     bpfNoise: for j := 0 to FInputChannels - 1 do
-               for i := 0 to BufferSize - 1 do SingleInBuffer[j,i] := 2 * Random - 1;
-    bpfCustom: if Assigned(FASIOGenerator) then FASIOGenerator.ProcessBlock(SingleInBuffer, false);
+               for i := 0 to FBufferSize - 1 do FSingleInBuffer[j,i] := 2 * Random - 1;
+    bpfCustom: if Assigned(FASIOGenerator) then FASIOGenerator.ProcessBlock(FSingleInBuffer, false);
     else
      begin
       for j := 0 to FInputChannels - 1 do
        begin
         PChannelArray := currentbuffer^.buffers[Index];
         if Assigned(PChannelArray) then
-          FInConvertors[j].ic32(PChannelArray, PSingle(SingleInBuffer[j]), BufferSize);
+          FInConvertors[j].ic32(PChannelArray, PSingle(FSingleInBuffer[j]), FBufferSize);
         inc(currentbuffer);
        end;
      end;
    end;
 
    if fPreventClipping<>pcNone
-    then for j := 0 to FInputChannels - 1 do fClipPrevent.cb32(@SingleInBuffer[j,0], BufferSize);
+    then for j := 0 to FInputChannels - 1 do fClipPrevent.cb32(@FSingleInBuffer[j,0], FBufferSize);
 
    case FOutBufferPreFill of
     bpfZero : for j := 0 to FOutputChannels - 1
-               do FillChar(SingleOutBuffer[j,0], BufferSize * SizeOf(Single), 0);
+               do FillChar(FSingleOutBuffer[j,0], FBufferSize * SizeOf(Single), 0);
     bpfNoise: for j := 0 to FOutputChannels - 1 do
-               for i := 0 to BufferSize - 1
-                do SingleOutBuffer[j,i] := 2 * Random - 1;
-    bpfCustom: if Assigned(FASIOGenerator) then FASIOGenerator.ProcessBlock(SingleOutBuffer, true);
+               for i := 0 to FBufferSize - 1
+                do FSingleOutBuffer[j,i] := 2 * Random - 1;
+    bpfCustom: if Assigned(FASIOGenerator) then FASIOGenerator.ProcessBlock(FSingleOutBuffer, true);
    end;
 
    case FInputMonitor of
-    imMono: Move(SingleInBuffer[FInputChannelOffset,0], SingleOutBuffer[FOutputChannelOffset,0], BufferSize * SizeOf(Single));
+    imMono: Move(FSingleInBuffer[FInputChannelOffset,0], FSingleOutBuffer[FOutputChannelOffset,0], FBufferSize * SizeOf(Single));
     imStereo:
      begin
-      Move(SingleInBuffer[FInputChannelOffset  ,0], SingleOutBuffer[FOutputChannelOffset  ,0], BufferSize * SizeOf(Single));
-      Move(SingleInBuffer[FInputChannelOffset+1,0], SingleOutBuffer[FOutputChannelOffset+1,0], BufferSize * SizeOf(Single));
+      Move(FSingleInBuffer[FInputChannelOffset  ,0], FSingleOutBuffer[FOutputChannelOffset  ,0], FBufferSize * SizeOf(Single));
+      Move(FSingleInBuffer[FInputChannelOffset+1,0], FSingleOutBuffer[FOutputChannelOffset+1,0], FBufferSize * SizeOf(Single));
      end;
     imAll:
      for j := 0 to min(FInputChannels, FOutputChannels) - 1 do
-      Move(SingleInBuffer[j,0], SingleOutBuffer[j,0], BufferSize * SizeOf(Single));
+      Move(FSingleInBuffer[j,0], FSingleOutBuffer[j,0], FBufferSize * SizeOf(Single));
    end;
 
    if Assigned(FOnBufferSwitch32)
-    then FOnBufferSwitch32(Self, SingleInBuffer, SingleOutBuffer);
+    then FOnBufferSwitch32(Self, FSingleInBuffer, FSingleOutBuffer);
 
    if fPreventClipping<>pcNone then
-    for j := 0 to FOutputChannels - 1 do fClipPrevent.cb32(@SingleOutBuffer[j,0] ,BufferSize);
+    for j := 0 to FOutputChannels - 1 do fClipPrevent.cb32(@FSingleOutBuffer[j,0] ,FBufferSize);
 
-   currentbuffer := OutputBuffer;
+   currentbuffer := FOutputBuffer;
    for j := 0 to FOutputChannels - 1 do
     begin
      PChannelArray := currentbuffer^.buffers[Index];
      if assigned(PChannelArray)
-      then FOutConvertors[j].oc32(PSingle(SingleOutBuffer[j]),PChannelArray, BufferSize);
+      then FOutConvertors[j].oc32(PSingle(FSingleOutBuffer[j]),PChannelArray, FBufferSize);
      inc(currentbuffer);
     end;
   end;
- Driver.OutputReady;
+ FDriver.OutputReady;
 end;
 
 procedure TASIOHost.SetSampleRate(const Value: Double);
 begin
  FSampleRate := Value;
+ if (FSampleRate <= 0) or (FSampleRate > 1048575)
+  then FSampleRate := 44100;
  ASIOTime.SampleRate := Value;
- if assigned(Driver) then Driver.SetSampleRate(Value);
+ if assigned(FDriver) then FDriver.SetSampleRate(Value);
  if assigned(FASIOGenerator) then FASIOGenerator.SampleRate := FSampleRate;
 // if Assigned(FOnSampleRateChanged) then FOnSampleRateChanged(theHost);
 end;
 
 procedure TASIOHost.SetActive(Value: Boolean);
 var currentbuffer : PASIOBufferInfo;
-    i : Integer;
+    i,sz : Integer;
 begin
- if Driver = nil then exit;
+ if FDriver = nil then exit;
  if FActive = Value then exit;
  if Value = True then
  begin
   try
-   FActive := (Driver.Start = ASE_OK);
+   FActive := (FDriver.Start = ASE_OK);
   except
    FBufferSize := 2048;
    FSampleRate := 44100;
   end;
-  if FActive = False then Driver.Stop;
+  if FActive = False then FDriver.Stop;
  end else
  begin
   FActive := False;
   try
-   Driver.Stop;
+   FDriver.Stop;
   except
-  end; 
-  if bufferscreated then
+  end;
+  if FBuffersCreated then
   begin
-   currentbuffer := OutputBuffer;
+   currentbuffer := FOutputBuffer;
    for i := 0 to FOutputChannels - 1 do
-   begin
-    FillChar(currentbuffer^.buffers[0]^, BufferSize * 4, 0);
-    FillChar(currentbuffer^.buffers[1]^, BufferSize * 4, 0);
-    inc(currentbuffer);
-   end;
-   currentbuffer := InputBuffer;
+    begin
+     if OutputChannelInfos[i].vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz:=SizeOf(Word) else
+     if OutputChannelInfos[i].vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz:=3 else
+     if OutputChannelInfos[i].vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz:=SizeOf(Single) else
+     if OutputChannelInfos[i].vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz:=SizeOf(Double)
+      else sz:=SizeOf(Integer);
+     FillChar(currentbuffer^.buffers[0]^, FBufferSize * sz, 0);
+     FillChar(currentbuffer^.buffers[1]^, FBufferSize * sz, 0);
+     inc(currentbuffer);
+    end;
+   currentbuffer := FInputBuffer;
    for i := 0 to FInputChannels - 1 do
-   begin
-    FillChar(currentbuffer^.buffers[0]^, BufferSize * 4, 0);
-    FillChar(currentbuffer^.buffers[1]^, BufferSize * 4, 0);
-    inc(currentbuffer);
-   end;
+    begin
+     if InputChannelInfos[i].vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz:=SizeOf(Word) else
+     if InputChannelInfos[i].vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz:=3 else
+     if InputChannelInfos[i].vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz:=SizeOf(Single) else
+     if InputChannelInfos[i].vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz:=SizeOf(Double)
+      else sz:=SizeOf(Integer);
+     FillChar(currentbuffer^.buffers[0]^, FBufferSize * sz, 0);
+     FillChar(currentbuffer^.buffers[1]^, FBufferSize * sz, 0);
+     inc(currentbuffer);
+    end;
   end;
  end;
 end;
 
 function TASIOHost.GetNumDrivers: integer;
 begin
- result := length(ASIOdriverlist);
+ result := length(FASIOdriverlist);
 end;
 
 function TASIOHost.CanSampleRate(sampleRate: TASIOSampleRate): TASIOError;
 begin
- if assigned(Driver)
-  then result := Driver.CanSampleRate(sampleRate)
+ if assigned(FDriver)
+  then result := FDriver.CanSampleRate(SampleRate)
   else result := ASE_NotPresent;
 end;
 
@@ -1324,107 +1340,93 @@ begin
  BufferSwitchTimeInfo(Message.LParam, ASIOTime.FBufferTime);
 end;
 
-function TASIOHost.GetBufferSize: Cardinal;
-begin
- if (FBufferSize < 1) or (FBufferSize > 65530)
-  then FBufferSize := 4096;
- Result := FBufferSize;
-end;
-
-function TASIOHost.GetSampleRate: Double;
-begin
- if (FSampleRate < 1) or (FSampleRate > 1048575)
-  then FSampleRate := 44100;
- Result := FSampleRate;
-end;
-
 function TASIOHost.GetInputMeter(Channel:Integer): Integer;
 var ACC : TASIOChannelControls;
 begin
- if Driver = nil then begin result := -1; Exit; end;
+ if FDriver = nil then begin result := -1; Exit; end;
  ACC.isInput:=1; ACC.Channel:=Channel;
- Driver.Future(kAsioGetInputMeter,@ACC);
+ FDriver.Future(kAsioGetInputMeter,@ACC);
  Result:=ACC.meter;
 end;
 
 function TASIOHost.GetOutputMeter(Channel:Integer): Integer;
 var ACC : TASIOChannelControls;
 begin
- if Driver = nil then begin result := -1; Exit; end;
+ if FDriver = nil then begin result := -1; Exit; end;
  ACC.isInput:=0; ACC.Channel:=Channel;
- Driver.Future(kAsioGetOutputMeter,@ACC);
+ FDriver.Future(kAsioGetOutputMeter,@ACC);
  Result:=ACC.meter;
 end;
 
 procedure TASIOHost.SetInputGain(Channel:Integer; Gain: Integer);
 var ACC : TASIOChannelControls;
 begin
- if Driver = nil then Exit;
+ if FDriver = nil then Exit;
  ACC.isInput:=1; ACC.Channel:=Channel; ACC.Gain:=Gain;
- Driver.Future(kAsioSetInputGain,@ACC);
+ FDriver.Future(kAsioSetInputGain,@ACC);
 end;
 
 procedure TASIOHost.GetOutputGain(Channel:Integer; Gain: Integer);
 var ACC : TASIOChannelControls;
 begin
- if Driver = nil then Exit;
+ if FDriver = nil then Exit;
  ACC.isInput:=0; ACC.Channel:=Channel; ACC.Gain:=Gain;
- Driver.Future(kAsioSetOutputGain,@ACC);
+ FDriver.Future(kAsioSetOutputGain,@ACC);
 end;
 
 function TASIOHost.CanTimeInfo: Boolean;
 begin
- if Driver = nil
+ if FDriver = nil
   then Result:=False
-  else Result:=Driver.Future(kAsioCanTimeInfo,nil)=ASE_SUCCESS;
+  else Result:=FDriver.Future(kAsioCanTimeInfo,nil)=ASE_SUCCESS;
  fASIOCanDos:=fASIOCanDos+[acdTimeInfo];
 end;
 
 function TASIOHost.CanTimeCode: Boolean;
 begin
- if Driver = nil
+ if FDriver = nil
   then Result:=False
-  else Result:=Driver.Future(kAsioCanTimeCode,nil)=ASE_SUCCESS;
+  else Result:=FDriver.Future(kAsioCanTimeCode,nil)=ASE_SUCCESS;
  fASIOCanDos:=fASIOCanDos+[acdTimeCode];
 end;
 
 function TASIOHost.CanTransport: Boolean;
 begin
- if Driver = nil
+ if FDriver = nil
   then Result:=False
-  else Result:=Driver.Future(kAsioCanTransport,nil)=ASE_SUCCESS;
+  else Result:=FDriver.Future(kAsioCanTransport,nil)=ASE_SUCCESS;
  fASIOCanDos:=fASIOCanDos+[acdTransport];
 end;
 
 function TASIOHost.CanInputGain: Boolean;
 begin
- if Driver = nil
+ if FDriver = nil
   then Result:=False
-  else Result:=Driver.Future(kAsioCanInputGain,nil)=ASE_SUCCESS;
+  else Result:=FDriver.Future(kAsioCanInputGain,nil)=ASE_SUCCESS;
  fASIOCanDos:=fASIOCanDos+[acdInputGain];
 end;
 
 function TASIOHost.CanInputMeter: Boolean;
 begin
- if Driver = nil
+ if FDriver = nil
   then Result:=False
-  else Result:=Driver.Future(kAsioCanInputMeter,nil)=ASE_SUCCESS;
+  else Result:=FDriver.Future(kAsioCanInputMeter,nil)=ASE_SUCCESS;
  fASIOCanDos:=fASIOCanDos+[acdInputMeter];
 end;
 
 function TASIOHost.CanOutputGain: Boolean;
 begin
- if Driver = nil
+ if FDriver = nil
   then Result:=False
-  else Result:=Driver.Future(kAsioCanOutputGain,nil)=ASE_SUCCESS;
+  else Result:=FDriver.Future(kAsioCanOutputGain,nil)=ASE_SUCCESS;
  fASIOCanDos:=fASIOCanDos+[acdOutputGain];
 end;
 
 function TASIOHost.CanOutputMeter: Boolean;
 begin
- if Driver = nil
+ if FDriver = nil
   then Result:=False
-  else Result:=Driver.Future(kAsioCanOutputMeter,nil)=ASE_SUCCESS;
+  else Result:=FDriver.Future(kAsioCanOutputMeter,nil)=ASE_SUCCESS;
  fASIOCanDos:=fASIOCanDos+[acdOutputMeter];
 end;
 
