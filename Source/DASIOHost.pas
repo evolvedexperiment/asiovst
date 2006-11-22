@@ -23,19 +23,19 @@ uses Windows, Messages, SysUtils, Classes, ActiveX, ASIO, DASIOConvert, Types,
      ASIOMixer, {$ENDIF} {$IFDEF D5CP} dsgnintf, {$ENDIF} DDSPBase;
 
 const
-     // private message
-     PM_ASIO = WM_User + 1652;   // unique we hope
-     // ASIO message(s), as wParam for PM_ASIO
-     AM_ResetRequest         = 0;
-     AM_BufferSwitch         = 1;     // new buffer index in lParam
-     AM_BufferSwitchTimeInfo = 2;     // new buffer index in lParam
-                                      // time passed in MainForm.BufferTime
-     AM_LatencyChanged       = 3;
-     PM_UpdateSamplePos      = PM_ASIO + 1;  // sample pos in wParam (hi) and lParam (lo)
+  // private message
+  PM_ASIO = WM_User + 1652;   // unique we hope
+  // ASIO message(s), as wParam for PM_ASIO
+  AM_ResetRequest         = 0;
+  AM_BufferSwitch         = 1;     // new buffer index in lParam
+  AM_BufferSwitchTimeInfo = 2;     // new buffer index in lParam
+                                   // time passed in MainForm.BufferTime
+  AM_LatencyChanged       = 3;
+  PM_UpdateSamplePos      = PM_ASIO + 1;  // sample pos in wParam (hi) and lParam (lo)
 
-     PM_BufferSwitch         = PM_ASIO + 2;
-     PM_BufferSwitchTimeInfo = PM_ASIO + 3;
-     PM_Reset                = PM_ASIO + 4;
+  PM_BufferSwitch         = PM_ASIO + 2;
+  PM_BufferSwitchTimeInfo = PM_ASIO + 3;
+  PM_Reset                = PM_ASIO + 4;
 
 type
   TAsioDriverDesc = packed record
@@ -44,6 +44,12 @@ type
     path : array[0..511] of char;
   end;
   PAsioDriverDesc = ^TAsioDriverDesc;
+  TASIOBufferList = array [0..0] of TASIOBufferInfo;
+  PASIOBufferList = ^TASIOBufferList;
+  TDoubleDynArray = Types.TDoubleDynArray;
+  TSingleDynArray = Types.TSingleDynArray;
+  TArrayOfDoubleDynArray = DDSPBase.TArrayOfDoubleDynArray;
+  TArrayOfSingleDynArray = DDSPBase.TArrayOfSingleDynArray;
 
   TAsioDriverList = array of TAsioDriverDesc;
   TASIOCanDo = (acdInputMonitor, acdTimeInfo, acdTimeCode, acdTransport,
@@ -58,7 +64,7 @@ type
   TSample2Event = procedure(Sender: TObject; Sample: array of Single) of object;
   TBufferSwitchEvent32 = procedure(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray) of object;
   TBufferSwitchEvent64 = procedure(Sender: TObject; const InBuffer, OutBuffer: TArrayOfDoubleDynArray) of object;
-  TBufferSwitchEventNative = procedure(Sender: TObject; const InputBuffer, OutputBuffer: PASIOBufferInfo; const BufferIndex : Integer) of object;
+  TBufferSwitchEventNative = procedure(Sender: TObject; const BufferInfo: PASIOBufferList; const BufferIndex : Integer) of object;
 
   TBufferPreFill = (bpfNone, bpfZero, bpfNoise, bpfCustom);
 
@@ -126,9 +132,9 @@ type
     FOnReset              : TNotifyEvent;
     FOnDriverChanged      : TNotifyEvent;
     FOnLatencyChanged     : TNotifyEvent;
+    FOnSampleRateChanged  : TNotifyEvent;
     FOnBuffersCreate      : TNotifyEvent;
     FOnBuffersDestroy     : TNotifyEvent;
-    FOnSampleRateChanged  : TNotifyEvent;
     FOnSample2Output      : TSample2Event;
     FOnInput2Sample       : TSample2Event;
     FOnUpdateSamplePos    : TSamplePositionUpdateEvent;
@@ -253,14 +259,14 @@ type
     property OnReset: TNotifyEvent read FOnReset write FOnReset;
     property OnDriverChanged: TNotifyEvent read FOnDriverChanged write FOnDriverChanged;
     property OnLatencyChanged: TNotifyEvent read FOnLatencyChanged write FOnLatencyChanged;
-    property OnBuffersCreate: TNotifyEvent read FOnBuffersCreate write FOnBuffersCreate;
-    property OnBuffersDestroy: TNotifyEvent read FOnBuffersDestroy write FOnBuffersDestroy;
     property OnInput2Sample: TSample2Event read FOnInput2Sample write FOnInput2Sample;
     property OnSample2Output: TSample2Event read FOnSample2Output write FOnSample2Output;
     property OnSampleRateChanged: TNotifyEvent read FOnSampleRateChanged write FOnSampleRateChanged;
     property OnBufferSwitch32: TBufferSwitchEvent32 read FOnBufferSwitch32 write SetOnBufferSwitch32;
     property OnBufferSwitch64: TBufferSwitchEvent64 read FOnBufferSwitch64 write SetOnBufferSwitch64;
     property OnBufferSwitchNative: TBufferSwitchEventNative read FOnBufferSwitchNative write FOnBufferSwitchNative;
+    property OnBuffersCreate: TNotifyEvent read FOnBuffersCreate write FOnBuffersCreate;
+    property OnBuffersDestroy: TNotifyEvent read FOnBuffersDestroy write FOnBuffersDestroy;
     property InputMonitor: TInputMonitor read FInputMonitor write FInputMonitor default imDisabled;
     property DriverList: TStrings read FDriverList;
   end;
@@ -513,34 +519,34 @@ end;
 
 function ChannelTypeToString(vType: TASIOSampleType): string;
 begin
-  Result := '';
-  case vType of
-    ASIOSTInt16MSB   :  Result := 'Int16MSB';
-    ASIOSTInt24MSB   :  Result := 'Int24MSB';
-    ASIOSTInt32MSB   :  Result := 'Int32MSB';
-    ASIOSTFloat32MSB :  Result := 'Float32MSB';
-    ASIOSTFloat64MSB :  Result := 'Float64MSB';
+ Result := '';
+ case vType of
+  ASIOSTInt16MSB   :  Result := 'Int16MSB';
+  ASIOSTInt24MSB   :  Result := 'Int24MSB';
+  ASIOSTInt32MSB   :  Result := 'Int32MSB';
+  ASIOSTFloat32MSB :  Result := 'Float32MSB';
+  ASIOSTFloat64MSB :  Result := 'Float64MSB';
 
-    // these are used for 32 bit data buffer, with different alignment of the data inside
-    // 32 bit PCI bus systems can be more easily used with these
-    ASIOSTInt32MSB16 :  Result := 'Int32MSB16';
-    ASIOSTInt32MSB18 :  Result := 'Int32MSB18';
-    ASIOSTInt32MSB20 :  Result := 'Int32MSB20';
-    ASIOSTInt32MSB24 :  Result := 'Int32MSB24';
+  // these are used for 32 bit data buffer, with different alignment of the data inside
+  // 32 bit PCI bus systems can be more easily used with these
+  ASIOSTInt32MSB16 :  Result := 'Int32MSB16';
+  ASIOSTInt32MSB18 :  Result := 'Int32MSB18';
+  ASIOSTInt32MSB20 :  Result := 'Int32MSB20';
+  ASIOSTInt32MSB24 :  Result := 'Int32MSB24';
 
-    ASIOSTInt16LSB   :  Result := 'Int16LSB';
-    ASIOSTInt24LSB   :  Result := 'Int24LSB';
-    ASIOSTInt32LSB   :  Result := 'Int32LSB';
-    ASIOSTFloat32LSB :  Result := 'Float32LSB';
-    ASIOSTFloat64LSB :  Result := 'Float64LSB';
+  ASIOSTInt16LSB   :  Result := 'Int16LSB';
+  ASIOSTInt24LSB   :  Result := 'Int24LSB';
+  ASIOSTInt32LSB   :  Result := 'Int32LSB';
+  ASIOSTFloat32LSB :  Result := 'Float32LSB';
+  ASIOSTFloat64LSB :  Result := 'Float64LSB';
 
-    // these are used for 32 bit data buffer, with different alignment of the data inside
-    // 32 bit PCI bus systems can more easily used with these
-    ASIOSTInt32LSB16 :  Result := 'Int32LSB16';
-    ASIOSTInt32LSB18 :  Result := 'Int32LSB18';
-    ASIOSTInt32LSB20 :  Result := 'Int32LSB20';
-    ASIOSTInt32LSB24 :  Result := 'Int32LSB24';
-  end;
+  // these are used for 32 bit data buffer, with different alignment of the data inside
+  // 32 bit PCI bus systems can more easily used with these
+  ASIOSTInt32LSB16 :  Result := 'Int32LSB16';
+  ASIOSTInt32LSB18 :  Result := 'Int32LSB18';
+  ASIOSTInt32LSB20 :  Result := 'Int32LSB20';
+  ASIOSTInt32LSB24 :  Result := 'Int32LSB24';
+ end;
 end;
 
 procedure ASIOBufferSwitch(doubleBufferIndex: longint;
@@ -584,51 +590,51 @@ end;
 function ASIOMessage(selector, value: longint;
  message: pointer; opt: pdouble): longint; cdecl;
 begin
-  Result := 0;
-  case selector of
-    kASIOSelectorSupported    :   // return 1 if a selector is supported
-      begin
-        case value of
-          kASIOEngineVersion        :  Result := 1;
-          kASIOResetRequest         :  Result := 1;
-          kASIOBufferSizeChange     :  Result := 0;
-          kASIOResyncRequest        :  Result := 1;
-          kASIOLatenciesChanged     :  Result := 1;
-          kASIOSupportsTimeInfo     :  Result := 1;
-          kASIOSupportsTimeCode     :  Result := 1;
-          kASIOSupportsInputMonitor :  Result := 0;
-        end;
-      end;
-    kASIOEngineVersion        :  Result := 2;   // ASIO 2 is supported
-    kASIOResetRequest         :
-      begin
-        PMReset.Msg := PM_ASIO;
-        PMReset.WParam := AM_ResetRequest;
-        PMReset.LParam := 0;
-        theHost.Dispatch(PMReset);
-        Result := 1;
-      end;
-    kASIOBufferSizeChange     :
-      begin
-        PMReset.Msg := PM_ASIO;
-        PMReset.WParam := AM_ResetRequest;
-        PMReset.LParam := 0;
-        theHost.Dispatch(PMReset);
-        Result := 1;
-      end;
-    kASIOResyncRequest        :  ;
-    kASIOLatenciesChanged     :
-      begin
-        PMReset.Msg := PM_ASIO;
-        PMReset.WParam := AM_LatencyChanged;
-        PMReset.LParam := 0;
-        theHost.Dispatch(PMReset);
-        Result := 1;
-      end;
-    kASIOSupportsTimeInfo     :  Result := 1;
-    kASIOSupportsTimeCode     :  Result := 0;
-    kASIOSupportsInputMonitor :  Result := 0;
-  end;
+ Result := 0;
+ case selector of
+  kASIOSelectorSupported    :   // return 1 if a selector is supported
+   begin
+    case value of
+     kASIOEngineVersion        :  Result := 1;
+     kASIOResetRequest         :  Result := 1;
+     kASIOBufferSizeChange     :  Result := 0;
+     kASIOResyncRequest        :  Result := 1;
+     kASIOLatenciesChanged     :  Result := 1;
+     kASIOSupportsTimeInfo     :  Result := 1;
+     kASIOSupportsTimeCode     :  Result := 1;
+     kASIOSupportsInputMonitor :  Result := 0;
+    end;
+   end;
+  kASIOEngineVersion        :  Result := 2;   // ASIO 2 is supported
+  kASIOResetRequest         :
+   begin
+    PMReset.Msg := PM_ASIO;
+    PMReset.WParam := AM_ResetRequest;
+    PMReset.LParam := 0;
+    theHost.Dispatch(PMReset);
+    Result := 1;
+   end;
+  kASIOBufferSizeChange     :
+   begin
+    PMReset.Msg := PM_ASIO;
+    PMReset.WParam := AM_ResetRequest;
+    PMReset.LParam := 0;
+    theHost.Dispatch(PMReset);
+    Result := 1;
+   end;
+  kASIOResyncRequest        :  ;
+  kASIOLatenciesChanged     :
+   begin
+    PMReset.Msg := PM_ASIO;
+    PMReset.WParam := AM_LatencyChanged;
+    PMReset.LParam := 0;
+    theHost.Dispatch(PMReset);
+    Result := 1;
+   end;
+  kASIOSupportsTimeInfo     :  Result := 1;
+  kASIOSupportsTimeCode     :  Result := 0;
+  kASIOSupportsInputMonitor :  Result := 0;
+ end;
 end;
 
 procedure TASIOHost.WndProc(var Msg: TMessage);
@@ -889,8 +895,8 @@ begin
      ASIOSTInt16MSB:   FInConvertors[i] := ToInt16MSB;
      ASIOSTInt24MSB:   FInConvertors[i] := ToInt24MSB;
      ASIOSTInt32MSB:   FInConvertors[i] := ToInt32MSB;
-     ASIOSTFloat32MSB: FInConvertors[i] := ToFloat32MSB;
-     ASIOSTFloat64MSB: FInConvertors[i] := ToFloat64MSB;
+     ASIOSTFloat32MSB: FInConvertors[i] := ToSingleMSB;
+     ASIOSTFloat64MSB: FInConvertors[i] := ToDoubleMSB;
      ASIOSTInt32MSB16: FInConvertors[i] := ToInt32MSB16;
      ASIOSTInt32MSB18: FInConvertors[i] := ToInt32MSB18;
      ASIOSTInt32MSB20: FInConvertors[i] := ToInt32MSB20;
@@ -898,16 +904,16 @@ begin
      ASIOSTInt16LSB:   FInConvertors[i] := ToInt16LSB;
      ASIOSTInt24LSB:   FInConvertors[i] := ToInt24LSB;
      ASIOSTInt32LSB:   FInConvertors[i] := ToInt32LSB;
-     ASIOSTFloat32LSB: FInConvertors[i] := ToFloat32LSB;
-     ASIOSTFloat64LSB: FInConvertors[i] := ToFloat64LSB;
+     ASIOSTFloat32LSB: FInConvertors[i] := ToSingleLSB;
+     ASIOSTFloat64LSB: FInConvertors[i] := ToDoubleLSB;
      ASIOSTInt32LSB16: FInConvertors[i] := ToInt32LSB16;
      ASIOSTInt32LSB18: FInConvertors[i] := ToInt32LSB18;
      ASIOSTInt32LSB20: FInConvertors[i] := ToInt32LSB20;
      ASIOSTInt32LSB24: FInConvertors[i] := ToInt32LSB24;
     end;
 
-   SetLength(SingleInBuffer[i], BufferSize * SizeOf(Single));
-   SetLength(DoubleInBuffer[i], BufferSize * SizeOf(Single));
+   SetLength(SingleInBuffer[i], BufferSize);
+   SetLength(DoubleInBuffer[i], BufferSize);
    FillChar(SingleInBuffer[i,0], BufferSize * SizeOf(Single), 0);
    currentbuffer^.isInput := ASIOTrue;
    currentbuffer^.channelNum := i;
@@ -930,8 +936,8 @@ begin
     ASIOSTInt16MSB:   FOutConvertors[i] := FromInt16MSB;
     ASIOSTInt24MSB:   FOutConvertors[i] := FromInt24MSB;
     ASIOSTInt32MSB:   FOutConvertors[i] := FromInt32MSB;
-    ASIOSTFloat32MSB: FOutConvertors[i] := FromFloat32MSB;
-    ASIOSTFloat64MSB: FOutConvertors[i] := FromFloat64MSB;
+    ASIOSTFloat32MSB: FOutConvertors[i] := FromSingleMSB;
+    ASIOSTFloat64MSB: FOutConvertors[i] := FromDoubleMSB;
     ASIOSTInt32MSB16: FOutConvertors[i] := FromInt32MSB16;
     ASIOSTInt32MSB18: FOutConvertors[i] := FromInt32MSB18;
     ASIOSTInt32MSB20: FOutConvertors[i] := FromInt32MSB20;
@@ -939,15 +945,15 @@ begin
     ASIOSTInt16LSB:   FOutConvertors[i] := FromInt16LSB;
     ASIOSTInt24LSB:   FOutConvertors[i] := FromInt24LSB;
     ASIOSTInt32LSB:   FOutConvertors[i] := FromInt32LSB;
-    ASIOSTFloat32LSB: FOutConvertors[i] := FromFloat32LSB;
-    ASIOSTFloat64LSB: FOutConvertors[i] := FromFloat64LSB;
+    ASIOSTFloat32LSB: FOutConvertors[i] := FromSingleLSB;
+    ASIOSTFloat64LSB: FOutConvertors[i] := FromDoubleLSB;
     ASIOSTInt32LSB16: FOutConvertors[i] := FromInt32LSB16;
     ASIOSTInt32LSB18: FOutConvertors[i] := FromInt32LSB18;
     ASIOSTInt32LSB20: FOutConvertors[i] := FromInt32LSB20;
     ASIOSTInt32LSB24: FOutConvertors[i] := FromInt32LSB24;
    end;
-   SetLength(SingleOutBuffer[i], BufferSize * SizeOf(Single));
-   SetLength(DoubleOutBuffer[i], BufferSize * SizeOf(Single));
+   SetLength(SingleOutBuffer[i], BufferSize);
+   SetLength(DoubleOutBuffer[i], BufferSize);
    FillChar(SingleOutBuffer[i,0], BufferSize * SizeOf(Single), 0);
    currentbuffer^.isInput := ASIOfalse;  // create an output buffer
    currentbuffer^.channelNum := i;
@@ -959,29 +965,32 @@ begin
  result := (Driver.CreateBuffers(InputBuffer,
   (FInputChannels + FOutputChannels), Fpref, callbacks) = ASE_OK);
  Driver.GetLatencies(FInputLatency, FOutputLatency);
- if Assigned (FOnLatencyChanged) then FOnLatencyChanged(Self);
  if Assigned (FOnBuffersCreate) then FOnBuffersCreate(Self);
+ if Assigned (FOnLatencyChanged) then FOnLatencyChanged(Self);
  Randomize;
 end;
 
 procedure TASIOHost.DestroyBuffers;
 begin
- if (Driver = nil) or not BuffersCreated then Exit;
- if Assigned (FOnBuffersDestroy) then FOnBuffersDestroy(Self);
-
- FreeMem(UnAlignedBuffer);
- UnAlignedBuffer := nil;
- InputBuffer := nil;
- OutputBuffer := nil;
- try
-  Driver.DisposeBuffers;
- except
+ if (Driver = nil) then Exit;
+ if BuffersCreated then
+ begin
+  if Assigned (FOnBuffersDestroy)
+   then FOnBuffersDestroy(Self);
+  FreeMem(UnAlignedBuffer);
+  UnAlignedBuffer := nil;
+  InputBuffer := nil;
+  OutputBuffer := nil;
+  try
+   Driver.DisposeBuffers;
+  except
+  end;
+  BuffersCreated := false;
+  SingleInBuffer := nil;
+  SingleOutBuffer := nil;
+  SetLength(InputChannelInfos, 0);
+  SetLength(OutputChannelInfos, 0);
  end;
- BuffersCreated := false;
- SingleInBuffer := nil;
- SingleOutBuffer := nil;
- SetLength(InputChannelInfos, 0);
- SetLength(OutputChannelInfos, 0);
 end;
 
 procedure TASIOHost.OpenDriver;
@@ -1074,9 +1083,14 @@ var inp, outp: integer;
 begin
  if Driver = nil then exit;
  case Message.WParam of
-  AM_ResetRequest: Reset;
+  AM_ResetRequest:
+   begin
+    OpenDriver; // restart the driver
+    if Assigned (FOnReset) then FOnReset(Self);
+   end;
   AM_BufferSwitch: BufferSwitch(Message.LParam); // process a buffer
-  AM_BufferSwitchTimeInfo: BufferSwitchTimeInfo(Message.LParam, ASIOTime.FBufferTime);  // process a buffer with time
+  AM_BufferSwitchTimeInfo: BufferSwitchTimeInfo(Message.LParam,
+   ASIOTime.FBufferTime);  // process a buffer with time
   AM_LatencyChanged:
    begin
     if assigned(Driver) then Driver.GetLatencies(inp, outp);
@@ -1117,7 +1131,7 @@ begin
  Dispatch(PMUpdSamplePos);
  currentbuffer := InputBuffer;
 
- if assigned(FOnBufferSwitchNative) then FOnBufferSwitchNative(Self,InputBuffer,OutputBuffer,index); 
+ if assigned(FOnBufferSwitchNative) then FOnBufferSwitchNative(Self,@(InputBuffer^),index); 
  if FConvertMethod=cm64 then
   begin
    // 64Bit float processing
