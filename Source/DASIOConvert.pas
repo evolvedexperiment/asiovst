@@ -10,21 +10,21 @@ interface
 
 uses {$IFDEF FPC}LCLIntf; {$ELSE} Windows; {$ENDIF}
 
-const fGrdDiv = 0.5;
-      MaxShort  : Single = $7F;
-      MinShort  : Single = 1/$7F;
-      MaxSmall  : Single = $7FFF;
-      MinSmall  : Single = 1/$7FFF;
-      Max18     : Double = $1FFFF;
-      Min18     : Double = 1/$1FFFF;
-      Max20     : Double = $7FFFF;
-      Min20     : Double = 1/$7FFFF;
-      Max24     : Double = $7FFFFF;
-      Min24     : Double = 1/$7FFFFF;
-      MaxLong   : Double = $7FFFFFFF;
-      MinLong   : Double = 1/$7FFFFFFF;
-      mmMaxLong : array[0..3] of Single = ($7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF);
-      mmMinLong : array[0..3] of Single = (1/$7FFFFFFF, 1/$7FFFFFFF, 1/$7FFFFFFF, 1/$7FFFFFFF);
+const
+  MaxShort  : Single = $7F;
+  MinShort  : Single = 1/$7F;
+  MaxSmall  : Single = $7FFF;
+  MinSmall  : Single = 1/$7FFF;
+  Max18     : Double = $1FFFF;
+  Min18     : Double = 1/$1FFFF;
+  Max20     : Double = $7FFFF;
+  Min20     : Double = 1/$7FFFF;
+  Max24     : Double = $7FFFFF;
+  Min24     : Double = 1/$7FFFFF;
+  MaxLong   : Double = $7FFFFFFF;
+  MinLong   : Double = 1/$7FFFFFFF;
+  mmMaxLong : array[0..3] of Single = ($7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF);
+  mmMinLong : array[0..3] of Single = (1/$7FFFFFFF, 1/$7FFFFFFF, 1/$7FFFFFFF, 1/$7FFFFFFF);
 
 type
   TFPUType = (fpuX87, fpuSSE, fpu3DNow);
@@ -45,7 +45,7 @@ type
 type
   TBtArray   = Array[0..0] of Byte;
   PBtArray   = ^TBtArray;
-  TWrdArray  = Array[0..0] of Word;
+  TWrdArray  = Array[0..0] of SmallInt;
   PWrdArray  = ^TWrdArray;
   TDblArray  = Array[0..0] of Double;
   PDblArray  = ^TDblArray;
@@ -63,8 +63,8 @@ var FPUType        : TFPUType;
     ToInt16MSB     : TInConvertor;
     ToInt24MSB     : TInConvertor;  // used for 20 bits as well
     ToInt32MSB     : TInConvertor;
-    ToFloat32MSB   : TInConvertor;  // IEEE 754 32 bit float
-    ToFloat64MSB   : TInConvertor;  // IEEE 754 64 bit double float
+    ToSingleMSB    : TInConvertor;  // IEEE 754 32 bit float
+    ToDoubleMSB    : TInConvertor;  // IEEE 754 64 bit double float
     ToInt32MSB16   : TInConvertor;  // 32 bit data with 16 bit alignment
     ToInt32MSB18   : TInConvertor;  // 32 bit data with 18 bit alignment
     ToInt32MSB20   : TInConvertor;  // 32 bit data with 20 bit alignment
@@ -72,8 +72,8 @@ var FPUType        : TFPUType;
     ToInt16LSB     : TInConvertor;
     ToInt24LSB     : TInConvertor;
     ToInt32LSB     : TInConvertor;
-    ToFloat32LSB   : TInConvertor;  // IEEE 754 32 bit float
-    ToFloat64LSB   : TInConvertor;  // IEEE 754 64 bit double float
+    ToSingleLSB    : TInConvertor;  // IEEE 754 32 bit float
+    ToDoubleLSB    : TInConvertor;  // IEEE 754 64 bit double float
     ToInt32LSB16   : TInConvertor;  // 32 bit data with 16 bit alignment
     ToInt32LSB18   : TInConvertor;  // 32 bit data with 18 bit alignment
     ToInt32LSB20   : TInConvertor;  // 32 bit data with 20 bit alignment
@@ -81,8 +81,8 @@ var FPUType        : TFPUType;
     FromInt16MSB   : TOutConvertor;
     FromInt24MSB   : TOutConvertor;  // used for 20 bits as well
     FromInt32MSB   : TOutConvertor;
-    FromFloat32MSB : TOutConvertor;  // IEEE 754 32 bit float
-    FromFloat64MSB : TOutConvertor;  // IEEE 754 64 bit double float
+    FromSingleMSB  : TOutConvertor;  // IEEE 754 32 bit float
+    FromDoubleMSB  : TOutConvertor;  // IEEE 754 64 bit double float
     FromInt32MSB16 : TOutConvertor;  // 32 bit data with 16 bit alignment
     FromInt32MSB18 : TOutConvertor;  // 32 bit data with 18 bit alignment
     FromInt32MSB20 : TOutConvertor;  // 32 bit data with 20 bit alignment
@@ -90,8 +90,8 @@ var FPUType        : TFPUType;
     FromInt16LSB   : TOutConvertor;
     FromInt24LSB   : TOutConvertor;
     FromInt32LSB   : TOutConvertor;
-    FromFloat32LSB : TOutConvertor;  // IEEE 754 32 bit float
-    FromFloat64LSB : TOutConvertor;  // IEEE 754 64 bit double float
+    FromSingleLSB  : TOutConvertor;  // IEEE 754 32 bit float
+    FromDoubleLSB  : TOutConvertor;  // IEEE 754 64 bit double float
     FromInt32LSB16 : TOutConvertor;  // 32 bit data with 16 bit alignment
     FromInt32LSB18 : TOutConvertor;  // 32 bit data with 18 bit alignment
     FromInt32LSB20 : TOutConvertor;  // 32 bit data with 20 bit alignment
@@ -205,6 +205,7 @@ asm
  fstp st(0)
 end;
 {$ELSE}
+const fGrdDiv : Double = 0.5;
 var i: Integer;
 begin
  for I := 0 to BSize - 1 do
@@ -296,10 +297,10 @@ asm
 end;
 {$ELSE}
 type
-  TByte4Array = Array [0..2] of Byte;
-  PByte4Array = ^TByte4Array;
+  TByte3Array = Array [0..2] of Byte;
+  PByte3Array = ^TByte3Array;
 var
-  BufArray : PByte4Array absolute buffer;
+  BufArray : PByte3Array absolute buffer;
   BufByte  : PByte absolute buffer;
   i        : Integer;
   b        : Byte;
@@ -386,7 +387,7 @@ end;
 /////////////////////////////////// x87 ////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure ToInt16LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure Int16LSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   fld   Minsmall        //for speed
@@ -408,7 +409,7 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt16LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure Int16LSBToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   fld   Minsmall        //for speed
@@ -430,7 +431,7 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt24LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure Int24LSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
  fld Min24
@@ -454,16 +455,20 @@ asm
 end;
 {$ELSE}
 var
-  SourceArray : PntgrArray absolute source;
+  SourceInt   : PInteger absolute source;
+  SourceByte  : PByte absolute source;
   TargetArray : PSnglArray absolute target;
   i           : Integer;
 begin
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min24;
+ for i := 0 to frames - 1 do
+  begin
+   TargetArray[i]:=(SourceInt^ shl 8) *Min24;
+   Inc(SourceByte,3);
+  end;
 end;
 {$ENDIF}
 
-procedure ToInt24LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure Int24LSBToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
  fld Min24
@@ -487,24 +492,29 @@ asm
 end;
 {$ELSE}
 var
-  SourceArray : PntgrArray absolute source;
+  SourceInt   : PInteger absolute source;
+  SourceByte  : PByte absolute source;
   TargetArray : PDblArray absolute target;
   i           : Integer;
 begin
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min24;
+ for i := 0 to frames - 1 do
+  begin
+   TargetArray[i]:=(SourceInt^ shl 8) *Min24;
+   Inc(SourceByte,3);
+  end;
 end;
 {$ENDIF}
 
-procedure ToInt32LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure Int32LSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   fld   minlong         //for speed
  @Start:
-  fild  [eax+4*ecx-4].dword
+  dec ecx
+  fild  [eax+4*ecx].Dword
   fmul  st(0),st(1)
-  fstp  [edx+4*ecx-4].single;
-  loop @Start
+  fstp  [edx+4*ecx].Single
+  jnz @Start
   ffree st(0)
 end;
 {$ELSE}
@@ -518,15 +528,16 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt32LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure Int32LSBToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   fld   minlong         //for speed
  @Start:
-  fild  [eax+4*ecx-4].dword
+  dec ecx
+  fild  [eax+4*ecx].dword
   fmul  st(0),st(1)
-  fstp  [edx+8*ecx-8].Double;
-  loop @Start
+  fstp  [edx+8*ecx].Double
+  jnz @Start
   ffree st(0)
 end;
 {$ELSE}
@@ -540,18 +551,19 @@ begin
 end;
 {$ENDIF}
 
-procedure ToFloat32LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure SingleLSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 begin
  move(source^, target^, frames*SizeOf(Single));
 end;
 
-procedure ToFloat32LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure SingleLSBToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
  @Start:
-  fld   [eax+4*ecx-4].Single
-  fstp  [edx+8*ecx-8].Double
-  loop @Start
+  dec ecx
+  fld   [eax+4*ecx].Single
+  fstp  [edx+8*ecx].Double
+  jnz @Start
 end;
 {$ELSE}
 var
@@ -564,13 +576,14 @@ begin
 end;
 {$ENDIF}
 
-procedure ToFloat64LSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure DoubleLSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
  @Start:
-  fld   [eax+8*ecx-8].Double
-  fstp  [edx+4*ecx-4].Single
-  loop @Start
+  dec ecx
+  fld   [eax+8*ecx].Double
+  fstp  [edx+4*ecx].Single
+  jnz @Start
 end;
 {$ELSE}
 var
@@ -583,12 +596,12 @@ begin
 end;
 {$ENDIF}
 
-procedure ToFloat64LSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure DoubleLSBToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 begin
  move(source^, target^, frames*SizeOf(Double));
 end;
 
-procedure ToInt32LSB16_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 16 bit alignment
+procedure Int32LSB16ToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 16 bit alignment
 {$IFDEF x87}
 asm
   fld      MinSmall
@@ -610,7 +623,7 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt32LSB16_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 16 bit alignment
+procedure Int32LSB16ToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 16 bit alignment
 {$IFDEF x87}
 asm
   fld      MinSmall
@@ -632,7 +645,7 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt32LSB18_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 18 bit alignment
+procedure Int32LSB18ToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 18 bit alignment
 {$IFDEF x87}
 asm
   fld      Min18
@@ -654,7 +667,7 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt32LSB18_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 18 bit alignment
+procedure Int32LSB18ToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 18 bit alignment
 {$IFDEF x87}
 asm
   fld      Min18
@@ -676,7 +689,7 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt32LSB20_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 20 bit alignment
+procedure Int32LSB20ToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 20 bit alignment
 {$IFDEF x87}
 asm
   fld      Min20
@@ -698,7 +711,7 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt32LSB20_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 20 bit alignment
+procedure Int32LSB20ToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 20 bit alignment
 {$IFDEF x87}
 asm
   fld      Min20
@@ -720,7 +733,7 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt32LSB24_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 24 bit alignment
+procedure Int32LSB24ToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform; // 32 bit data with 24 bit alignment
 {$IFDEF x87}
 asm
   fld      Min24
@@ -742,7 +755,7 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt32LSB24_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 24 bit alignment
+procedure Int32LSB24ToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform; // 32 bit data with 24 bit alignment
 {$IFDEF x87}
 asm
   fld      Min24
@@ -764,7 +777,7 @@ begin
 end;
 {$ENDIF}
 
-procedure ToInt16MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure Int16MSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   push ebx
@@ -782,16 +795,17 @@ asm
 end;
 {$ELSE}
 var
-  SourceArray : PntgrArray absolute source;
+  SourceArray : PWrdArray absolute source;
   TargetArray : PSnglArray absolute target;
   i           : Integer;
 begin
+ ReverseEndian4(source, frames div 2);
  for i := 0 to frames - 1
   do TargetArray[i]:=SourceArray[i]*MinSmall;
 end;
 {$ENDIF}
 
-procedure ToInt16MSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure Int16MSBToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   push ebx
@@ -809,28 +823,81 @@ asm
 end;
 {$ELSE}
 var
-  SourceArray : PntgrArray absolute source;
+  SourceArray : PWrdArray absolute source;
   TargetArray : PDblArray absolute target;
   i           : Integer;
 begin
+ ReverseEndian4(source, frames div 2);
  for i := 0 to frames - 1
   do TargetArray[i]:=SourceArray[i]*MinSmall;
 end;
 {$ENDIF}
 
-procedure ToInt24MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure Int24MSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
+asm
+ fld Min24
+ push ebx
+@Start:
+ xor ebx,ebx
+
+ mov bl,[eax+2]
+ mov bh,[eax+1]
+ ror ebx,8
+ mov bh,[eax  ]
+ rol ebx,8
+
+ mov [esp-4],ebx
+ fild [esp-4].Single
+ fmul  st(0),st(1)
+ fstp [target].Single
+ add  eax,3
+ add  target,4
+ loop @Start
+
+ pop ebx
+ ffree st(0)
+end;
+{$ELSE}
 begin
  ReverseEndian3(source, frames);
- ToInt24LSB_x87(source, target, frames);
+ Int24LSBToSingle_x87(source, target, frames);
 end;
+{$ENDIF}
 
-procedure ToInt24MSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure Int24MSBToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
+asm
+ fld Min24
+ push ebx
+@Start:
+ xor ebx,ebx
+
+ mov bl,[eax+2]
+ mov bh,[eax+1]
+ ror ebx,8
+ mov bh,[eax  ]
+ rol ebx,8
+
+ mov [esp-4],ebx
+ fild [esp-4].Single
+ fmul  st(0),st(1)
+ fstp [target].Double
+ add  eax,3
+ add  target,8
+ loop @Start
+
+ pop ebx
+ ffree st(0)
+end;
+{$ELSE}
 begin
  ReverseEndian3(source, frames);
- ToInt24LSB_x87(source, target, frames);
+ Int24LSBToDouble_x87(source, target, frames);
 end;
+{$ENDIF}
 
-procedure ToInt32MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure Int32MSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
  push   ebx
@@ -849,11 +916,11 @@ end;
 {$ELSE}
 begin
  ReverseEndian4(source, frames);
- ToInt32LSB_x87(source, target, frames);
+ Int32LSBToSingle_x87(source, target, frames);
 end;
 {$ENDIF}
 
-procedure ToInt32MSB_x87(source: pointer; target: PDouble; Frames: longint); overload; platform;
+procedure Int32MSBToDouble_x87(source: pointer; target: PDouble; Frames: longint); overload; platform;
 {$IFDEF x87}
 asm
  push   ebx
@@ -872,35 +939,62 @@ end;
 {$ELSE}
 begin
  ReverseEndian4(source, frames);
- ToInt32LSB_x87(source, target, frames);
+ Int32LSBToDouble_x87(source, target, frames);
 end;
 {$ENDIF}
 
-procedure ToFloat32MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure SingleMSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+{$IFDEF x87}
+asm
+ push ebx
+ mov ecx, frames
+@Start:
+ mov ebx,[eax+4*ecx-4]
+ bswap ebx
+ mov [edx+4*ecx-4],ebx
+ loop @Start
+ pop ebx
+end;
+{$ELSE}
+begin
+ move(source^, target^, frames*SizeOf(Single));
+ ReverseEndian4(target, frames);
+end;
+{$ENDIF}
+
+procedure SingleMSBToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+{$IFDEF x87}
+asm
+ push ebx
+ @Start:
+  mov ebx,[source+4*frames-4]
+  bswap ebx
+  mov [esp-4],ebx
+  fld   [esp-4].Single
+  fstp  [target+8*frames-8].Double
+  loop @Start
+ pop ebx
+end;
+{$ELSE}
 begin
  ReverseEndian4(source, frames);
- move(source^, target^, frames);
+ SingleLSBToDouble_x87(source, target, frames);
 end;
+{$ENDIF}
 
-procedure ToFloat32MSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
-begin
- ReverseEndian4(source, frames);
- move(source^, target^, frames);
-end;
-
-procedure ToFloat64MSB_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure DoubleMSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 begin
  ReverseEndian8(source, frames);
- ToFloat64LSB_x87(source, target, frames);
+ DoubleLSBToSingle_x87(source, target, frames);
 end;
 
-procedure ToFloat64MSB_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure DoubleMSBToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 begin
- ReverseEndian8(source, frames);
- ToFloat64LSB_x87(source, target, frames);
+ move(source^, target^, frames*SizeOf(Double));
+ ReverseEndian8(target, frames);
 end;
 
-procedure ToInt32MSB16_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure Int32MSB16ToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   push     ebx
@@ -919,11 +1013,11 @@ end;
 {$ELSE}
 begin
  ReverseEndian4(source, frames);
- ToInt32LSB16_x87(source, target, frames);
+ Int32LSB16ToSingle_x87(source, target, frames);
 end;
 {$ENDIF}
 
-procedure ToInt32MSB16_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure Int32MSB16ToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   push     ebx
@@ -942,11 +1036,11 @@ end;
 {$ELSE}
 begin
  ReverseEndian4(source, frames);
- ToInt32LSB16_x87(source, target, frames);
+ Int32LSB16ToDouble_x87(source, target, frames);
 end;
 {$ENDIF}
 
-procedure ToInt32MSB18_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure Int32MSB18ToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   push     ebx
@@ -965,11 +1059,11 @@ end;
 {$ELSE}
 begin
  ReverseEndian4(source, frames);
- ToInt32LSB18_x87(source, target, frames);
+ Int32LSB18ToSingle_x87(source, target, frames);
 end;
 {$ENDIF}
 
-procedure ToInt32MSB18_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure Int32MSB18ToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   push     ebx
@@ -978,7 +1072,7 @@ asm
   mov      ebx,[eax+4*ecx-4]
   bswap    ebx
   mov      [eax+4*ecx-4],ebx
-  fild     [eax+4*ecx-4].DWord;
+  fild     [eax+4*ecx-4].DWord
   fmul     st(0),st(1)
   fstp     [edx+8*ecx-8].Double
   loop     @start
@@ -988,11 +1082,11 @@ end;
 {$ELSE}
 begin
  ReverseEndian4(source, frames);
- ToInt32LSB18_x87(source, target, frames);
+ Int32LSB18ToDouble_x87(source, target, frames);
 end;
 {$ENDIF}
 
-procedure ToInt32MSB20_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure Int32MSB20ToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   push     ebx
@@ -1011,11 +1105,11 @@ end;
 {$ELSE}
 begin
  ReverseEndian4(source, frames);
- ToInt32LSB20_x87(source, target, frames);
+ Int32LSB20ToSingle_x87(source, target, frames);
 end;
 {$ENDIF}
 
-procedure ToInt32MSB20_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure Int32MSB20ToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   push     ebx
@@ -1034,11 +1128,11 @@ end;
 {$ELSE}
 begin
  ReverseEndian4(source, frames);
- ToInt32LSB20_x87(source, target, frames);
+ Int32LSB20ToDouble_x87(source, target, frames);
 end;
 {$ENDIF}
 
-procedure ToInt32MSB24_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
+procedure Int32MSB24ToSingle_x87(source: pointer; target: PSingle; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   push     ebx
@@ -1057,11 +1151,11 @@ end;
 {$ELSE}
 begin
  ReverseEndian4(source, frames);
- ToInt32LSB24_x87(source, target, frames);
+ Int32LSB24ToSingle_x87(source, target, frames);
 end;
 {$ENDIF}
 
-procedure ToInt32MSB24_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
+procedure Int32MSB24ToDouble_x87(source: pointer; target: PDouble; frames: longint); overload; platform;
 {$IFDEF x87}
 asm
   push     ebx
@@ -1080,13 +1174,13 @@ end;
 {$ELSE}
 begin
  ReverseEndian4(source, frames);
- ToInt32LSB24_x87(source, target, frames);
+ Int32LSB24ToDouble_x87(source, target, frames);
 end;
 {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure FromInt16LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt16LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld      MaxSmall    // move to register for speed
 @Start:                // Samplecount already in ecx!
@@ -1097,7 +1191,60 @@ asm
   ffree    st(0)       // free after loop has finished
 end;
 
-procedure FromInt16LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt16LSB_NDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    MaxSmall               // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+4*ecx-4].Single
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul st(0),st(3)
+  faddp
+
+  fistp    word ptr [edx+2*ecx-2]
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure SingleToInt16LSB_TDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    MaxSmall               // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+4*ecx-4].Single
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp    word ptr [edx+2*ecx-2]
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure DoubleToInt16LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   fld      MaxSmall    // move to register for speed
 @Start:                // Samplecount already in ecx!
@@ -1108,14 +1255,67 @@ asm
   ffree    st(0)       // free after loop has finished
 end;
 
-procedure FromInt24LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt16LSB_NDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    MaxSmall               // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul st(0),st(3)
+  faddp
+
+  fistp    word ptr [edx+2*ecx-2]
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure DoubleToInt16LSB_TDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+ push ebx
+ fld    Scaler                 // move to register for speed
+ fld    MaxSmall               // move to register for speed
+ @Start:                       // Samplecount already in ecx!
+  fld      [eax+8*ecx-8].Double
+  fmul     st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp    word ptr [edx+2*ecx-2]
+ loop     @start
+ ffree    st(0)                // free after loop has finished
+ ffree    st(1)                // free after loop has finished
+ pop ebx
+end;
+
+procedure SingleToInt24LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max24         //for speed
  @Start:
   fld   [eax].dword
   fmul  st(0),st(1)
-  fistp [esp-4].dword;
+  fistp [esp-4].Single
   mov   ebx, [esp-4]
   mov   [edx], bx
   ror   ebx, 8
@@ -1128,7 +1328,74 @@ asm
   pop ebx
 end;
 
-procedure FromInt24LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt24LSB_NDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1/$10000) / $10000);  // 2^-32
+asm
+  push ebx
+  fld   Scaler                 // move to register for speed
+  fld   Max24                  //for speed
+ @Start:
+  fld   [eax].dword
+  fmul  st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul Scaler.Double
+  faddp
+
+  fistp [esp-4].Single
+  mov   ebx, [esp-4]
+  mov   [edx], bx
+  ror   ebx, 8
+  mov   [edx+2], bh
+  add   eax, 4
+  add   edx, 3
+  dec   ecx
+  jnz   @Start
+  ffree    st(0)               // free after loop has finished
+  ffree    st(1)               // free after loop has finished
+  pop ebx
+end;
+
+procedure SingleToInt24LSB_TDF_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+  push ebx
+  fld   Scaler                 // move to register for speed
+  fld   Max24                  //for speed
+ @Start:
+  fld   [eax].Single
+  fmul  st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp [esp-4].dword;
+  mov   ebx, [esp-4]
+  mov   [edx], bx
+  ror   ebx, 8
+  mov   [edx+2], bh
+  add   eax, 4
+  add   edx, 3
+  dec   ecx
+  jnz   @Start
+  ffree    st(0)               // free after loop has finished
+  ffree    st(1)               // free after loop has finished
+  pop ebx
+end;
+
+procedure DoubleToInt24LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max24         //for speed
@@ -1148,7 +1415,74 @@ asm
   pop ebx
 end;
 
-procedure FromInt32LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt24LSB_NDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((1/$10000) / $10000);  // 2^-32
+asm
+  push ebx
+  fld   Scaler                 // move to register for speed
+  fld   Max24                  //for speed
+ @Start:
+  fld   [eax].Double
+  fmul  st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  fmul Scaler.Double
+  faddp
+
+  fistp [esp-4].dword;
+  mov   ebx, [esp-4]
+  mov   [edx], bx
+  ror   ebx, 8
+  mov   [edx+2], bh
+  add   eax, 8
+  add   edx, 3
+  dec   ecx
+  jnz   @Start
+  ffree    st(0)               // free after loop has finished
+  ffree    st(1)               // free after loop has finished
+  pop ebx
+end;
+
+procedure DoubleToInt24LSB_TDF_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+asm
+  push ebx
+  fld   Scaler                 // move to register for speed
+  fld   Max24                  //for speed
+ @Start:
+  fld   [eax].Double
+  fmul  st(0),st(1)
+
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  imul  ebx,RandSeed,$08088405
+  inc   ebx
+  mov RandSeed,ebx
+  fild  RandSeed
+  faddp
+  fmul st(0),st(3)
+  faddp
+
+  fistp [esp-4].dword;
+  mov   ebx, [esp-4]
+  mov   [edx], bx
+  ror   ebx, 8
+  mov   [edx+2], bh
+  add   eax, 8
+  add   edx, 3
+  dec   ecx
+  jnz   @Start
+  ffree    st(0)               // free after loop has finished
+  ffree    st(1)               // free after loop has finished
+  pop ebx
+end;
+
+procedure SingleToInt32LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld   MaxLong         //for speed
  @Start:
@@ -1159,7 +1493,7 @@ asm
   ffree st(0)
 end;
 
-procedure FromInt32LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt32LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   fld   MaxLong         //for speed
  @Start:
@@ -1170,12 +1504,20 @@ asm
   ffree st(0)
 end;
 
-procedure FromFloat32LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToSingleLSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 begin
- move(source^, target^, frames*sizeOf(Double));
+ move(source^, target^, frames*sizeOf(Single));
 end;
 
-procedure FromFloat32LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToSingleLSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+asm
+ @Start:
+  fld   [source+8*frames-8].Double
+  fstp  [target+4*frames-4].Single
+  loop @Start
+end;
+
+procedure SingleToDoubleLSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
  @Start:
   fld   [eax+4*ecx-4].Single
@@ -1183,20 +1525,12 @@ asm
   loop @Start
 end;
 
-procedure FromFloat64LSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
-asm
- @Start:
-  fld   [eax+8*ecx-8].Double
-  fstp  [edx+4*ecx-4].Single
-  loop @Start
-end;
-
-procedure FromFloat64LSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToDoubleLSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 begin
  move(source^, target^, frames*sizeOf(Double));
 end;
 
-procedure FromInt32LSB16_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt32LSB16_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld      MaxSmall
 @Start:
@@ -1207,7 +1541,7 @@ asm
   ffree    st(0)
 end;
 
-procedure FromInt32LSB16_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt32LSB16_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   fld      MaxSmall
 @Start:
@@ -1218,7 +1552,7 @@ asm
   ffree    st(0)
 end;
 
-procedure FromInt32LSB18_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt32LSB18_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max18
  @Start:
@@ -1229,7 +1563,7 @@ asm
   ffree st(0)
 end;
 
-procedure FromInt32LSB18_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt32LSB18_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max18
  @Start:
@@ -1240,7 +1574,7 @@ asm
   ffree st(0)
 end;
 
-procedure FromInt32LSB20_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt32LSB20_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max20
  @Start:
@@ -1251,7 +1585,7 @@ asm
   ffree st(0)
 end;
 
-procedure FromInt32LSB20_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt32LSB20_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max20
  @Start:
@@ -1262,7 +1596,7 @@ asm
   ffree st(0)
 end;
 
-procedure FromInt32LSB24_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt32LSB24_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max24
  @Start:
@@ -1273,7 +1607,7 @@ asm
   ffree st(0)
 end;
 
-procedure FromInt32LSB24_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt32LSB24_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   fld   Max24
  @Start:
@@ -1284,7 +1618,7 @@ asm
   ffree st(0)
 end;
 
-procedure FromInt16MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt16MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
    push ebx
    fld      MaxSmall
@@ -1300,7 +1634,7 @@ asm
    pop ebx
 end;
 
-procedure FromInt16MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt16MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
    push ebx
    fld      MaxSmall
@@ -1316,19 +1650,19 @@ asm
    pop ebx
 end;
 
-procedure FromInt24MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt24MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 begin
- FromInt24LSB_x87(source, target, frames);
+ SingleToInt24LSB_x87(source, target, frames);
  ReverseEndian3(target, frames);
 end;
 
-procedure FromInt24MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt24MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 begin
- FromInt24LSB_x87(source, target, frames);
+ DoubleToInt24LSB_x87(source, target, frames);
  ReverseEndian3(target, frames);
 end;
 
-procedure FromInt32MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt32MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   MaxLong         //for speed
@@ -1344,7 +1678,7 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt32MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   MaxLong         //for speed
@@ -1360,31 +1694,45 @@ asm
   pop ebx
 end;
 
-procedure FromFloat32MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToSingleMSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 begin
  move(source^, target^, frames * SizeOf(Single));
  ReverseEndian4(target, frames);
 end;
 
-procedure FromFloat32MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToSingleMSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+{$IFDEF x87}
+asm
+ push ebx
+ @Start:
+  fld   [source+8*frames-8].Double
+  fstp  [target+4*frames-4].Single
+  mov ebx,[target+4*frames-4]
+  bswap ebx
+  mov [target+4*frames-4],ebx
+  loop @Start
+ pop ebx
+end;
+{$ELSE}
 begin
- FromFloat32LSB_x87(source, target, frames);
+ DoubleLSBToSingle_x87(source, target, frames);
  ReverseEndian4(target, frames);
 end;
+{$ENDIF}
 
-procedure FromFloat64MSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToDoubleMSB_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 begin
- FromFloat64LSB_x87(source, target, frames);
+ SingleToDoubleLSB_x87(source, target, frames);
  ReverseEndian8(target, frames);
 end;
 
-procedure FromFloat64MSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToDoubleMSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 begin
  move(source^, target^, frames * SizeOf(Double));
  ReverseEndian8(target, frames);
 end;
 
-procedure FromInt32MSB16_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt32MSB16_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   MaxSmall
@@ -1400,7 +1748,7 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB16_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt32MSB16_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   MaxSmall
@@ -1416,7 +1764,7 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB18_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt32MSB18_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max18
@@ -1432,14 +1780,14 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB18_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt32MSB18_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max18
  @Start:
   fld   [eax+8*ecx-8].Double
   fmul  st(0),st(1)
-  fistp [edx+8*ecx-8].DWord
+  fistp [edx+4*ecx-4].DWord
   mov ebx,[edx+4*ecx-4]
   bswap ebx
   mov [edx+4*ecx-4],ebx
@@ -1448,7 +1796,7 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB20_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt32MSB20_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max20
@@ -1464,7 +1812,7 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB20_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt32MSB20_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max20
@@ -1480,7 +1828,7 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB24_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
+procedure SingleToInt32MSB24_x87(source: PSingle; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max24
@@ -1496,7 +1844,7 @@ asm
   pop ebx
 end;
 
-procedure FromInt32MSB24_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
+procedure DoubleToInt32MSB24_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
   push ebx
   fld   Max24
@@ -1673,7 +2021,7 @@ asm
 @EndAdd:
 end;
 
-procedure FromFloat32LSB_SSE(source: PSingle; target: pointer; frames: longint);   // IEEE 754 32 bit float
+procedure SingleToSingle_SSE(source: PSingle; target: pointer; frames: longint);   // IEEE 754 32 bit float
 asm
  push ecx
  shr ecx,5  // number of large iterations = number of elements / 16
@@ -1723,7 +2071,7 @@ asm
 @EndAdd:
 end;
 
-procedure FromInt32LSB_SSE(source: PSingle; target: pointer; frames: longint);
+procedure SingleToInt32LSB_SSE(source: PSingle; target: pointer; frames: longint);
 asm
  movups xmm7,mmMaxLong
 
@@ -1916,7 +2264,7 @@ const mmInt      : array[0..1] of integer = ($30000000, $30000000);
       mmSmall    : array[0..1] of integer = ($30000000, $30000000);
       mmDivSmall : array[0..1] of integer = ($4F000000, $4F000000);
 
-procedure FromInt16LSB_3DNow(source: PSingle; target: pointer; frames: longint);
+procedure SingleToInt16LSB_3DNow(source: PSingle; target: pointer; frames: longint);
 var temp64 : array[0..3] of Word;
 asm
   femms                     // Fast MMX Enter/Leave
@@ -1955,7 +2303,7 @@ asm
   femms                     // Fast MMX Enter/Leave
 end;
 
-procedure FromInt32LSB_3DNow(source: PSingle; target: pointer; frames: longint);
+procedure SingleToInt32LSB_3DNow(source: PSingle; target: pointer; frames: longint);
 asm
   femms                     // Fast MMX Enter/Leave
   shr       ecx, 3          // Unroll the loop by 8
@@ -1986,7 +2334,7 @@ asm
   femms                    // Fast MMX Enter/Leave
 end;
 
-procedure FromInt32LSB16_3DNow(source: PSingle; target: pointer; frames: longint);
+procedure SingleToInt32LSB16_3DNow(source: PSingle; target: pointer; frames: longint);
 asm
   femms                     // Fast MMX Enter/Leave
   shr       ecx, 3          // Unroll the loop by 8
@@ -2017,7 +2365,7 @@ asm
   femms                    // Fast MMX Enter/Leave
 end;
 
-procedure FromInt32LSB18_3DNow(source: PSingle; target: pointer; frames: longint);
+procedure SingleToInt32LSB18_3DNow(source: PSingle; target: pointer; frames: longint);
 asm
   femms                     // Fast MMX Enter/Leave
   shr       ecx, 3          // Unroll the loop by 8
@@ -2048,7 +2396,7 @@ asm
   femms                    // Fast MMX Enter/Leave
 end;
 
-procedure FromInt32LSB20_3DNow(source: PSingle; target: pointer; frames: longint);
+procedure SingleToInt32LSB20_3DNow(source: PSingle; target: pointer; frames: longint);
 asm
   femms                     // Fast MMX Enter/Leave
   shr       ecx, 3          // Unroll the loop by 8
@@ -2079,7 +2427,7 @@ asm
   femms                    // Fast MMX Enter/Leave
 end;
 
-procedure FromInt32LSB24_3DNow(source: PSingle; target: pointer; frames: longint);
+procedure SingleToInt32LSB24_3DNow(source: PSingle; target: pointer; frames: longint);
 asm
   femms                     // Fast MMX Enter/Leave
   shr       ecx, 3          // Unroll the loop by 8
@@ -2389,81 +2737,81 @@ end;
 
 procedure Use_x87;
 begin
-  ToInt16MSB.ic32      := ToInt16MSB_x87;
-  ToInt24MSB.ic32      := ToInt24MSB_x87;
-  ToInt32MSB.ic32      := ToInt32MSB_x87;
-  ToFloat32MSB.ic32    := ToFloat32MSB_x87;
-  ToFloat64MSB.ic32    := ToFloat64MSB_x87;
-  ToInt32MSB16.ic32    := ToInt32MSB16_x87;
-  ToInt32MSB18.ic32    := ToInt32MSB18_x87;
-  ToInt32MSB20.ic32    := ToInt32MSB20_x87;
-  ToInt32MSB24.ic32    := ToInt32MSB24_x87;
-  ToInt16LSB.ic32      := ToInt16LSB_x87;
-  ToInt24LSB.ic32      := ToInt24LSB_x87;
-  ToInt32LSB.ic32      := ToInt32LSB_x87;
-  ToFloat32LSB.ic32    := ToFloat32LSB_x87;
-  ToFloat64LSB.ic32    := ToFloat64LSB_x87;
-  ToInt32LSB16.ic32    := ToInt32LSB16_x87;
-  ToInt32LSB18.ic32    := ToInt32LSB18_x87;
-  ToInt32LSB20.ic32    := ToInt32LSB20_x87;
-  ToInt32LSB24.ic32    := ToInt32LSB24_x87;
+  ToInt16MSB.ic32      := Int16MSBToSingle_x87;
+  ToInt24MSB.ic32      := Int24MSBToSingle_x87;
+  ToInt32MSB.ic32      := Int32MSBToSingle_x87;
+  ToSingleMSB.ic32     := SingleMSBToSingle_x87;
+  ToDoubleMSB.ic32     := DoubleMSBToSingle_x87;
+  ToInt32MSB16.ic32    := Int32MSB16ToSingle_x87;
+  ToInt32MSB18.ic32    := Int32MSB18ToSingle_x87;
+  ToInt32MSB20.ic32    := Int32MSB20ToSingle_x87;
+  ToInt32MSB24.ic32    := Int32MSB24ToSingle_x87;
+  ToInt16LSB.ic32      := Int16LSBToSingle_x87;
+  ToInt24LSB.ic32      := Int24LSBToSingle_x87;
+  ToInt32LSB.ic32      := Int32LSBToSingle_x87;
+  ToSingleLSB.ic32     := SingleLSBToSingle_x87;
+  ToDoubleLSB.ic32     := DoubleLSBToSingle_x87;
+  ToInt32LSB16.ic32    := Int32LSB16ToSingle_x87;
+  ToInt32LSB18.ic32    := Int32LSB18ToSingle_x87;
+  ToInt32LSB20.ic32    := Int32LSB20ToSingle_x87;
+  ToInt32LSB24.ic32    := Int32LSB24ToSingle_x87;
   ////////////////////////////////////////
-  ToInt16MSB.ic64      := ToInt16MSB_x87;
-  ToInt24MSB.ic64      := ToInt24MSB_x87;
-  ToInt32MSB.ic64      := ToInt32MSB_x87;
-  ToFloat32MSB.ic64    := ToFloat32MSB_x87;
-  ToFloat64MSB.ic64    := ToFloat64MSB_x87;
-  ToInt32MSB16.ic64    := ToInt32MSB16_x87;
-  ToInt32MSB18.ic64    := ToInt32MSB18_x87;
-  ToInt32MSB20.ic64    := ToInt32MSB20_x87;
-  ToInt32MSB24.ic64    := ToInt32MSB24_x87;
-  ToInt16LSB.ic64      := ToInt16LSB_x87;
-  ToInt24LSB.ic64      := ToInt24LSB_x87;
-  ToInt32LSB.ic64      := ToInt32LSB_x87;
-  ToFloat32LSB.ic64    := ToFloat32LSB_x87;
-  ToFloat64LSB.ic64    := ToFloat64LSB_x87;
-  ToInt32LSB16.ic64    := ToInt32LSB16_x87;
-  ToInt32LSB18.ic64    := ToInt32LSB18_x87;
-  ToInt32LSB20.ic64    := ToInt32LSB20_x87;
-  ToInt32LSB24.ic64    := ToInt32LSB24_x87;
+  ToInt16MSB.ic64      := Int16MSBToDouble_x87;
+  ToInt24MSB.ic64      := Int24MSBToDouble_x87;
+  ToInt32MSB.ic64      := Int32MSBToDouble_x87;
+  ToSingleMSB.ic64     := SingleMSBToDouble_x87;
+  ToDoubleMSB.ic64     := DoubleMSBToDouble_x87;
+  ToInt32MSB16.ic64    := Int32MSB16ToDouble_x87;
+  ToInt32MSB18.ic64    := Int32MSB18ToDouble_x87;
+  ToInt32MSB20.ic64    := Int32MSB20ToDouble_x87;
+  ToInt32MSB24.ic64    := Int32MSB24ToDouble_x87;
+  ToInt16LSB.ic64      := Int16LSBToDouble_x87;
+  ToInt24LSB.ic64      := Int24LSBToDouble_x87;
+  ToInt32LSB.ic64      := Int32LSBToDouble_x87;
+  ToSingleLSB.ic64     := SingleLSBToDouble_x87;
+  ToDoubleLSB.ic64     := DoubleLSBToDouble_x87;
+  ToInt32LSB16.ic64    := Int32LSB16ToDouble_x87;
+  ToInt32LSB18.ic64    := Int32LSB18ToDouble_x87;
+  ToInt32LSB20.ic64    := Int32LSB20ToDouble_x87;
+  ToInt32LSB24.ic64    := Int32LSB24ToDouble_x87;
   ////////////////////////////////////////
-  FromInt16MSB.oc32    := FromInt16MSB_x87;
-  FromInt24MSB.oc32    := FromInt24MSB_x87;
-  FromInt32MSB.oc32    := FromInt32MSB_x87;
-  FromFloat32MSB.oc32  := FromFloat32MSB_x87;
-  FromFloat64MSB.oc32  := FromFloat64MSB_x87;
-  FromInt32MSB16.oc32  := FromInt32MSB16_x87;
-  FromInt32MSB18.oc32  := FromInt32MSB18_x87;
-  FromInt32MSB20.oc32  := FromInt32MSB20_x87;
-  FromInt32MSB24.oc32  := FromInt32MSB24_x87;
-  FromInt16LSB.oc32    := FromInt16LSB_x87;
-  FromInt24LSB.oc32    := FromInt24LSB_x87;
-  FromInt32LSB.oc32    := FromInt32LSB_x87;
-  FromFloat32LSB.oc32  := FromFloat32LSB_x87;
-  FromFloat64LSB.oc32  := FromFloat64LSB_x87;
-  FromInt32LSB16.oc32  := FromInt32LSB16_x87;
-  FromInt32LSB18.oc32  := FromInt32LSB18_x87;
-  FromInt32LSB20.oc32  := FromInt32LSB20_x87;
-  FromInt32LSB24.oc32  := FromInt32LSB24_x87;
+  FromInt16MSB.oc32    := SingleToInt16MSB_x87;
+  FromInt24MSB.oc32    := SingleToInt24MSB_x87;
+  FromInt32MSB.oc32    := SingleToInt32MSB_x87;
+  FromSingleMSB.oc32   := SingleToSingleMSB_x87;
+  FromDoubleMSB.oc32   := SingleToDoubleMSB_x87;
+  FromInt32MSB16.oc32  := SingleToInt32MSB16_x87;
+  FromInt32MSB18.oc32  := SingleToInt32MSB18_x87;
+  FromInt32MSB20.oc32  := SingleToInt32MSB20_x87;
+  FromInt32MSB24.oc32  := SingleToInt32MSB24_x87;
+  FromInt16LSB.oc32    := SingleToInt16LSB_x87;
+  FromInt24LSB.oc32    := SingleToInt24LSB_x87;
+  FromInt32LSB.oc32    := SingleToInt32LSB_x87;
+  FromSingleLSB.oc32   := SingleToSingleLSB_x87;
+  FromDoubleLSB.oc32   := SingleToDoubleLSB_x87;
+  FromInt32LSB16.oc32  := SingleToInt32LSB16_x87;
+  FromInt32LSB18.oc32  := SingleToInt32LSB18_x87;
+  FromInt32LSB20.oc32  := SingleToInt32LSB20_x87;
+  FromInt32LSB24.oc32  := SingleToInt32LSB24_x87;
   ////////////////////////////////////////
-  FromInt16MSB.oc64    := FromInt16MSB_x87;
-  FromInt24MSB.oc64    := FromInt24MSB_x87;
-  FromInt32MSB.oc64    := FromInt32MSB_x87;
-  FromFloat32MSB.oc64  := FromFloat32MSB_x87;
-  FromFloat64MSB.oc64  := FromFloat64MSB_x87;
-  FromInt32MSB16.oc64  := FromInt32MSB16_x87;
-  FromInt32MSB18.oc64  := FromInt32MSB18_x87;
-  FromInt32MSB20.oc64  := FromInt32MSB20_x87;
-  FromInt32MSB24.oc64  := FromInt32MSB24_x87;
-  FromInt16LSB.oc64    := FromInt16LSB_x87;
-  FromInt24LSB.oc64    := FromInt24LSB_x87;
-  FromInt32LSB.oc64    := FromInt32LSB_x87;
-  FromFloat32LSB.oc64  := FromFloat32LSB_x87;
-  FromFloat64LSB.oc64  := FromFloat64LSB_x87;
-  FromInt32LSB16.oc64  := FromInt32LSB16_x87;
-  FromInt32LSB18.oc64  := FromInt32LSB18_x87;
-  FromInt32LSB20.oc64  := FromInt32LSB20_x87;
-  FromInt32LSB24.oc64  := FromInt32LSB24_x87;
+  FromInt16MSB.oc64    := DoubleToInt16MSB_x87;
+  FromInt24MSB.oc64    := DoubleToInt24MSB_x87;
+  FromInt32MSB.oc64    := DoubleToInt32MSB_x87;
+  FromSingleMSB.oc64   := DoubleToSingleMSB_x87;
+  FromDoubleMSB.oc64   := DoubleToDoubleMSB_x87;
+  FromInt32MSB16.oc64  := DoubleToInt32MSB16_x87;
+  FromInt32MSB18.oc64  := DoubleToInt32MSB18_x87;
+  FromInt32MSB20.oc64  := DoubleToInt32MSB20_x87;
+  FromInt32MSB24.oc64  := DoubleToInt32MSB24_x87;
+  FromInt16LSB.oc64    := DoubleToInt16LSB_x87;
+  FromInt24LSB.oc64    := DoubleToInt24LSB_x87;
+  FromInt32LSB.oc64    := DoubleToInt32LSB_x87;
+  FromSingleLSB.oc64   := DoubleToSingleLSB_x87;
+  FromDoubleLSB.oc64   := DoubleToDoubleLSB_x87;
+  FromInt32LSB16.oc64  := DoubleToInt32LSB16_x87;
+  FromInt32LSB18.oc64  := DoubleToInt32LSB18_x87;
+  FromInt32LSB20.oc64  := DoubleToInt32LSB20_x87;
+  FromInt32LSB24.oc64  := DoubleToInt32LSB24_x87;
   MixBuffers.mb32      := MixBuffers_x87;
   MixBuffers.mb64      := MixBuffers_x87;
   Volume.v32           := Volume_x87;
@@ -2477,7 +2825,7 @@ end;
 procedure Use_SSE;
 begin
  {$IFNDEF DELPHI5}
- FromInt32LSB.oc32 := FromInt32LSB_SSE;
+// FromInt32LSB.oc32 := SingleToInt32LSB_SSE;
  MixBuffers.mb32   := MixBuffers_SSE;
  ClipDigital.cb32  := ClipDigital_SSE;
  ClipAnalog.cb32   := ClipAnalog_SSE;
@@ -2491,20 +2839,20 @@ procedure Use_3DNow;
 begin
  {$IFNDEF DELPHI5}
 {
- FromInt16LSB := FromInt16LSB_3DNow;
+ FromInt16LSB := SingleToInt16LSB_3DNow;
  ToInt16LSB := ToInt16LSB_3DNow;
- FromInt24LSB := FromInt24LSB_3DNow;
+ FromInt24LSB := SingleToInt24LSB_3DNow;
  ToInt24LSB := ToInt24LSB_3DNow;
 }
- FromInt32LSB.oc32   := FromInt32LSB_3DNow;
+ FromInt32LSB.oc32   := SingleToInt32LSB_3DNow;
  ToInt32LSB.ic32     := ToInt32LSB_3DNow;
- FromInt32LSB16.oc32 := FromInt32LSB16_3DNow;
+ FromInt32LSB16.oc32 := SingleToInt32LSB16_3DNow;
  ToInt32LSB16.ic32   := ToInt32LSB16_3DNow;
- FromInt32LSB18.oc32 := FromInt32LSB18_3DNow;
+ FromInt32LSB18.oc32 := SingleToInt32LSB18_3DNow;
  ToInt32LSB18.ic32   := ToInt32LSB18_3DNow;
- FromInt32LSB20.oc32 := FromInt32LSB20_3DNow;
+ FromInt32LSB20.oc32 := SingleToInt32LSB20_3DNow;
  ToInt32LSB20.ic32   := ToInt32LSB20_3DNow;
- FromInt32LSB24.oc32 := FromInt32LSB24_3DNow;
+ FromInt32LSB24.oc32 := SingleToInt32LSB24_3DNow;
  ToInt32LSB24.ic32   := ToInt32LSB24_3DNow;
  MixBuffers.mb32     := MixBuffers_3DNow;
  Volume.v32          := Volume_3DNow;

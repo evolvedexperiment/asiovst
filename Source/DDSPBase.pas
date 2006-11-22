@@ -30,6 +30,8 @@ interface
 {$IFNDEF FPC} uses Windows, Types; {$ENDIF}
 
 type
+  TDoubleDynArray = Types.TDoubleDynArray;
+  TSingleDynArray = Types.TSingleDynArray;
   TSingleFixedArray = Array [0..0] of Single;
   PSingleFixedArray = ^TSingleFixedArray;
   TDoubleFixedArray = Array [0..0] of Double;
