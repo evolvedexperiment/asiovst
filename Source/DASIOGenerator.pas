@@ -6,7 +6,6 @@ interface
 uses
   Windows, Messages, Classes, SysUtils, DDSPBase;
 
-{-$I DSPTYPES.INC}
 type
   TNoiseColor = (ncWhite, ncPink, ncBrown);
   TToneFlavor = (tfSine, tfSaw, tfSquare, tfTriangle, tfPulse);

@@ -41,6 +41,8 @@ type
                  cb64 : procedure(InBuffer:PDouble; Samples:integer);
                 end;
 
+  TClipCheckFunction = function (source: Pointer; frames: longint):Boolean;
+
 {$IFNDEF x87}
 type
   TBtArray   = Array[0..0] of Byte;
@@ -58,56 +60,94 @@ type
 procedure Use_x87;
 procedure Use_SSE;
 procedure Use_3DNow;
+procedure Use_x87_UDF;
+procedure Use_x87_TDF;
 
-var FPUType        : TFPUType;
-    FromInt16MSB   : TInConvertor;
-    FromInt24MSB   : TInConvertor;  // used for 20 bits as well
-    FromInt32MSB   : TInConvertor;
-    FromSingleMSB  : TInConvertor;  // IEEE 754 32 bit float
-    FromDoubleMSB  : TInConvertor;  // IEEE 754 64 bit double float
-    FromInt32MSB16 : TInConvertor;  // 32 bit data with 16 bit alignment
-    FromInt32MSB18 : TInConvertor;  // 32 bit data with 18 bit alignment
-    FromInt32MSB20 : TInConvertor;  // 32 bit data with 20 bit alignment
-    FromInt32MSB24 : TInConvertor;  // 32 bit data with 24 bit alignment
-    FromInt16LSB   : TInConvertor;
-    FromInt24LSB   : TInConvertor;
-    FromInt32LSB   : TInConvertor;
-    FromSingleLSB  : TInConvertor;  // IEEE 754 32 bit float
-    FromDoubleLSB  : TInConvertor;  // IEEE 754 64 bit double float
-    FromInt32LSB16 : TInConvertor;  // 32 bit data with 16 bit alignment
-    FromInt32LSB18 : TInConvertor;  // 32 bit data with 18 bit alignment
-    FromInt32LSB20 : TInConvertor;  // 32 bit data with 20 bit alignment
-    FromInt32LSB24 : TInConvertor;  // 32 bit data with 24 bit alignment
-    ToInt16MSB     : TOutConvertor;
-    ToInt24MSB     : TOutConvertor;  // used for 20 bits as well
-    ToInt32MSB     : TOutConvertor;
-    ToSingleMSB    : TOutConvertor;  // IEEE 754 32 bit float
-    ToDoubleMSB    : TOutConvertor;  // IEEE 754 64 bit double float
-    ToInt32MSB16   : TOutConvertor;  // 32 bit data with 16 bit alignment
-    ToInt32MSB18   : TOutConvertor;  // 32 bit data with 18 bit alignment
-    ToInt32MSB20   : TOutConvertor;  // 32 bit data with 20 bit alignment
-    ToInt32MSB24   : TOutConvertor;  // 32 bit data with 24 bit alignment
-    ToInt16LSB     : TOutConvertor;
-    ToInt24LSB     : TOutConvertor;
-    ToInt32LSB     : TOutConvertor;
-    ToSingleLSB    : TOutConvertor;  // IEEE 754 32 bit float
-    ToDoubleLSB    : TOutConvertor;  // IEEE 754 64 bit double float
-    ToInt32LSB16   : TOutConvertor;  // 32 bit data with 16 bit alignment
-    ToInt32LSB18   : TOutConvertor;  // 32 bit data with 18 bit alignment
-    ToInt32LSB20   : TOutConvertor;  // 32 bit data with 20 bit alignment
-    ToInt32LSB24   : TOutConvertor;  // 32 bit data with 24 bit alignment
+var FPUType             : TFPUType;
+    FromInt16MSB        : TInConvertor;
+    FromInt24MSB        : TInConvertor;  // used for 20 bits as well
+    FromInt32MSB        : TInConvertor;
+    FromSingleMSB       : TInConvertor;  // IEEE 754 32 bit float
+    FromDoubleMSB       : TInConvertor;  // IEEE 754 64 bit double float
+    FromInt32MSB16      : TInConvertor;  // 32 bit data with 16 bit alignment
+    FromInt32MSB18      : TInConvertor;  // 32 bit data with 18 bit alignment
+    FromInt32MSB20      : TInConvertor;  // 32 bit data with 20 bit alignment
+    FromInt32MSB24      : TInConvertor;  // 32 bit data with 24 bit alignment
+    FromInt16LSB        : TInConvertor;
+    FromInt24LSB        : TInConvertor;
+    FromInt32LSB        : TInConvertor;
+    FromSingleLSB       : TInConvertor;  // IEEE 754 32 bit float
+    FromDoubleLSB       : TInConvertor;  // IEEE 754 64 bit double float
+    FromInt32LSB16      : TInConvertor;  // 32 bit data with 16 bit alignment
+    FromInt32LSB18      : TInConvertor;  // 32 bit data with 18 bit alignment
+    FromInt32LSB20      : TInConvertor;  // 32 bit data with 20 bit alignment
+    FromInt32LSB24      : TInConvertor;  // 32 bit data with 24 bit alignment
+    ToInt16MSB          : TOutConvertor;
+    ToInt24MSB          : TOutConvertor;  // used for 20 bits as well
+    ToInt32MSB          : TOutConvertor;
+    ToSingleMSB         : TOutConvertor;  // IEEE 754 32 bit float
+    ToDoubleMSB         : TOutConvertor;  // IEEE 754 64 bit double float
+    ToInt32MSB16        : TOutConvertor;  // 32 bit data with 16 bit alignment
+    ToInt32MSB18        : TOutConvertor;  // 32 bit data with 18 bit alignment
+    ToInt32MSB20        : TOutConvertor;  // 32 bit data with 20 bit alignment
+    ToInt32MSB24        : TOutConvertor;  // 32 bit data with 24 bit alignment
+    ToInt16LSB          : TOutConvertor;
+    ToInt24LSB          : TOutConvertor;
+    ToInt32LSB          : TOutConvertor;
+    ToSingleLSB         : TOutConvertor;  // IEEE 754 32 bit float
+    ToDoubleLSB         : TOutConvertor;  // IEEE 754 64 bit double float
+    ToInt32LSB16        : TOutConvertor;  // 32 bit data with 16 bit alignment
+    ToInt32LSB18        : TOutConvertor;  // 32 bit data with 18 bit alignment
+    ToInt32LSB20        : TOutConvertor;  // 32 bit data with 20 bit alignment
+    ToInt32LSB24        : TOutConvertor;  // 32 bit data with 24 bit alignment
 
-var MixBuffers  : record
-                   mb32 : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
-                   mb64 : procedure(InBuffer:PDouble; MixBuffer:PDouble; Samples:integer);
-                  end;
-    Volume      : record
-                   v32 : procedure(InBuffer:PSingle; Volume:Single; Samples:integer);
-                   v64 : procedure(InBuffer:PDouble; Volume:Double; Samples:integer);
-                  end;
-    ClipDigital : TClipBuffer;
-    ClipAnalog  : TClipBuffer;
-    EnableSSE   : Boolean;
+    ClipCheckInt16MSB   : TClipCheckFunction;
+    ClipCheckInt24MSB   : TClipCheckFunction;  // used for 20 bits as well
+    ClipCheckInt32MSB   : TClipCheckFunction;
+    ClipCheckSingleMSB  : TClipCheckFunction;  // IEEE 754 32 bit float
+    ClipCheckDoubleMSB  : TClipCheckFunction;  // IEEE 754 64 bit double float
+    ClipCheckInt32MSB16 : TClipCheckFunction;  // 32 bit data with 16 bit alignment
+    ClipCheckInt32MSB18 : TClipCheckFunction;  // 32 bit data with 18 bit alignment
+    ClipCheckInt32MSB20 : TClipCheckFunction;  // 32 bit data with 20 bit alignment
+    ClipCheckInt32MSB24 : TClipCheckFunction;  // 32 bit data with 24 bit alignment
+    ClipCheckInt16LSB   : TClipCheckFunction;
+    ClipCheckInt24LSB   : TClipCheckFunction;
+    ClipCheckInt32LSB   : TClipCheckFunction;
+    ClipCheckSingleLSB  : TClipCheckFunction;  // IEEE 754 32 bit float
+    ClipCheckDoubleLSB  : TClipCheckFunction;  // IEEE 754 64 bit double float
+    ClipCheckInt32LSB16 : TClipCheckFunction;  // 32 bit data with 16 bit alignment
+    ClipCheckInt32LSB18 : TClipCheckFunction;  // 32 bit data with 18 bit alignment
+    ClipCheckInt32LSB20 : TClipCheckFunction;  // 32 bit data with 20 bit alignment
+    ClipCheckInt32LSB24 : TClipCheckFunction;  // 32 bit data with 24 bit alignment
+
+
+var MixBuffers : record
+                  mb32 : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
+                  mb64 : procedure(InBuffer:PDouble; MixBuffer:PDouble; Samples:integer);
+                 end;
+    Volume     : record
+                  v32 : procedure(InBuffer:PSingle; Volume:Single; Samples:integer);
+                  v64 : procedure(InBuffer:PDouble; Volume:Double; Samples:integer);
+                 end;
+    FadeInLinear  : record
+                     v32 : procedure(InBuffer:PSingle; Samples:integer);
+                     v64 : procedure(InBuffer:PDouble; Samples:integer);
+                    end;
+    FadeOutLinear : record
+                     v32 : procedure(InBuffer:PSingle; Samples:integer);
+                     v64 : procedure(InBuffer:PDouble; Samples:integer);
+                    end;
+    FadeLinear    : record
+                     v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
+                     v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
+                    end;
+    FadeExponential : record
+                       v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
+                       v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
+                      end;
+    ClipDigital   : TClipBuffer;
+    ClipAnalog    : TClipBuffer;
+    EnableSSE     : Boolean;
 
 function f_abs(f:single):single;
 
@@ -115,6 +155,7 @@ implementation
 
 uses Math;
 
+var RandSeed : LongInt;
 {$WARNINGS OFF}
 
 function f_abs(f: Single): Single;
@@ -251,8 +292,8 @@ asm
 end;
 
 procedure ClipAnalog_x87(InBuffer: PDouble; Samples: Integer); overload; platform;
-const c3:Double=3;
-      c6:Double=6;
+const c3:Single=3;
+      c6:Single=6;
 asm
  fld c3.Single                      // 3
  fld c6.Single                      // 6, 3
@@ -264,7 +305,7 @@ asm
  mov ecx,[eax+8*edx].Integer
  and ecx,$7FFFFFFF
  mov [esp-8],ecx
- mov ecx,[eax+8*edx+4].Integer
+ mov ecx,[eax+4*edx+4].Integer
  mov [esp-4],ecx
  fld [esp-8].Double                 // abs(input), 2, 6, 3
  fld st(3)                          // 3, abs(input), 2, 6, 3
@@ -283,6 +324,254 @@ asm
  fstp st(0)
  fstp st(0)
 end;
+
+procedure FadeInLinear_x87(InBuffer: PSingle; Samples: Integer); overload; platform;
+{$IFDEF x87}
+asm
+ mov [esp-4],edx
+ fild [esp-4].Single           // Samples
+ fld1                          // 1, Samples
+ fdivrp                        // 1 / Samples
+
+ @FadeLoop:
+   mov [esp-4],edx
+   fild [esp-4].Single         // i, 1 / Samples
+   dec edx
+   fmul st(0),st(1)            // i / Samples, 1 / Samples
+   fmul [eax+4*edx].Single     // i * Value / Samples, 1 / Samples
+   fstp [eax+4*edx].Single     // write back
+ jnz @FadeLoop
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
+var i : Integer;
+begin
+ for i:=0 to Samples-1 do
+  begin
+   InBuffer^:=InBuffer^*(i+1)/Samples;
+   inc(InBuffer);
+  end;
+end;
+{$ENDIF}
+
+procedure FadeInLinear_x87(InBuffer: PDouble; Samples: Integer); overload; platform;
+{$IFDEF x87}
+asm
+ mov [esp-4],edx
+ fild [esp-4].Single           // Samples
+ fld1                          // 1, Samples
+ fdivrp                        // 1 / Samples
+
+ @FadeLoop:
+   mov [esp-4],edx
+   fild [esp-4].Single         // i, 1 / Samples
+   fmul st(0),st(1)            // i / Samples, 1 / Samples
+   dec edx
+   fmul [eax+8*edx].Double     // i * Value / Samples, 1 / Samples
+   fstp [eax+8*edx].Double     // write back
+ jnz @FadeLoop
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
+var i : Integer;
+begin
+ for i:=0 to Samples-1 do
+  begin
+   InBuffer^:=InBuffer^*(i+1)/Samples;
+   inc(InBuffer);
+  end;
+end;
+{$ENDIF}
+
+procedure FadeOutLinear_x87(InBuffer: PSingle; Samples: Integer); overload; platform;
+{$IFDEF x87}
+asm
+ mov [esp-4],edx
+ fild [esp-4].Single           // Samples
+ fld1                          // 1, Samples
+ fdivrp                        // 1 / Samples
+
+ @FadeLoop:
+   mov [esp-4],edx
+   fild [esp-4].Single         // i, 1 / Samples
+   fmul st(0),st(1)            // i / Samples, 1 / Samples
+   fld1                        // 1, i / Samples, 1 / Samples
+   fsubp                       // 1 - i / Samples, 1 / Samples
+   dec edx
+   fmul [eax+4*edx-4].Single   // Value * (1 - i / Samples), 1 / Samples
+   fstp [eax+4*edx-4].Single   // write back
+ jnz @FadeLoop
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
+var i : Integer;
+begin
+ for i:=0 to Samples-1 do
+  begin
+   InBuffer^:=InBuffer^*(i+1)/Samples;
+   inc(InBuffer);
+  end;
+end;
+{$ENDIF}
+
+procedure FadeOutLinear_x87(InBuffer: PDouble; Samples: Integer); overload; platform;
+{$IFDEF x87}
+asm
+ mov [esp-4],edx
+ fild [esp-4].Single           // Samples
+ fld1                          // 1, Samples
+ fdivrp                        // 1 / Samples
+
+ @FadeLoop:
+   mov [esp-4],edx
+   fild [esp-4].Single         // i, 1 / Samples
+   fmul st(0),st(1)            // i / Samples, 1 / Samples
+   fld1                        // 1, i / Samples, 1 / Samples
+   fsubp                       // 1 - i / Samples, 1 / Samples
+   dec edx
+   fmul [eax+8*edx-8].Double   // Value * (1 - i / Samples), 1 / Samples
+   fstp [eax+8*edx-8].Double   // write back
+ jnz @FadeLoop
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
+var i : Integer;
+begin
+ for i:=0 to Samples-1 do
+  begin
+   InBuffer^:=InBuffer^*(Samples-i)/Samples;
+   inc(InBuffer);
+  end;
+end;
+{$ENDIF}
+
+procedure FadeExponential_x87(InBuffer: PSingle; Samples: Integer; CurrentFadeFak, FadeMul : Double); overload; platform;
+{$IFDEF x87}
+asm
+ fld FadeMul.Double
+ fld CurrentFadeFak.Double
+
+ @FadeLoop:
+   dec edx
+   fld  [eax+4*edx].Single     // Value, CurrentFadeFak
+   fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
+   fstp [eax+4*edx].Single     // write back
+   fmul st(0),st(1)            // CurrentFadeFak
+   // ToDo : Clipcheck!
+ jnz @FadeLoop
+
+ @FadeLoopEnd:
+ fstp st(0)                    // clear stack
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
+var i : Integer;
+begin
+ for i:=0 to Samples-1 do
+  begin
+   InBuffer^:=InBuffer^*CurrentFadeFak;
+   CurrentFadeFak:=CurrentFadeFak*FadeMul;
+   if CurrentFadeFak>1 then exit;
+   inc(InBuffer);
+  end;
+end;
+{$ENDIF}
+
+procedure FadeExponential_x87(InBuffer: PDouble; Samples: Integer; CurrentFadeFak, FadeMul : Double); overload; platform;
+{$IFDEF x87}
+asm
+ fld FadeMul.Double
+ fld CurrentFadeFak.Double
+
+ @FadeLoop:
+   dec edx
+   fld  [eax+8*edx].Double     // Value, CurrentFadeFak
+   fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
+   fstp [eax+8*edx].Double     // write back
+   fmul st(0),st(1)            // CurrentFadeFak
+   // ToDo : Clipcheck!
+ jnz @FadeLoop
+
+ @FadeLoopEnd:
+ fstp st(0)                    // clear stack
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
+var i : Integer;
+begin
+ for i:=0 to Samples-1 do
+  begin
+   InBuffer^:=InBuffer^*CurrentFadeFak;
+   CurrentFadeFak:=CurrentFadeFak*FadeMul;
+   if CurrentFadeFak>1 then exit;
+   inc(InBuffer);
+  end;
+end;
+{$ENDIF}
+
+procedure FadeLinear_x87(InBuffer: PSingle; Samples: Integer; CurrentFadeFak, FadeAddInc : Double); overload; platform;
+{$IFDEF x87}
+asm
+ fld FadeAddInc.Double
+ fld CurrentFadeFak.Double
+
+ @FadeLoop:
+   dec edx
+   fld  [eax+4*edx].Single     // Value, CurrentFadeFak
+   fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
+   fstp [eax+4*edx].Single     // write back
+   fadd st(0),st(1)            // CurrentFadeFak + FadeAddInc
+   // ToDo : Clipcheck!
+ jnz @FadeLoop
+
+ @FadeLoopEnd:
+ fstp st(0)                    // clear stack
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
+var i : Integer;
+begin
+ for i:=0 to Samples-1 do
+  begin
+   InBuffer^:=InBuffer^*CurrentFadeFak;
+   CurrentFadeFak:=CurrentFadeFak*FadeMul;
+   if CurrentFadeFak>1 then exit;
+   inc(InBuffer);
+  end;
+end;
+{$ENDIF}
+
+procedure FadeLinear_x87(InBuffer: PDouble; Samples: Integer; CurrentFadeFak, FadeAddInc : Double); overload; platform;
+{$IFDEF x87}
+asm
+ fld FadeAddInc.Double
+ fld CurrentFadeFak.Double
+
+ @FadeLoop:
+   dec edx
+   fld  [eax+8*edx].Double     // Value, CurrentFadeFak
+   fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
+   fstp [eax+8*edx].Double     // write back
+   fmul st(0),st(1)            // CurrentFadeFak + FadeAddInc
+   // ToDo : Clipcheck!
+ jnz @FadeLoop
+
+ @FadeLoopEnd:
+ fstp st(0)                    // clear stack
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
+var i : Integer;
+begin
+ for i:=0 to Samples-1 do
+  begin
+   InBuffer^:=InBuffer^*CurrentFadeFak;
+   CurrentFadeFak:=CurrentFadeFak*FadeMul;
+   if CurrentFadeFak>1 then exit;
+   inc(InBuffer);
+  end;
+end;
+{$ENDIF}
 
 // ReverseEndian3 : reverts 3-byte entities in place
 procedure ReverseEndian3(buffer: pointer; frames: longint); platform;
@@ -2286,6 +2575,265 @@ asm
   pop ebx
 end;
 
+function ClipCheckInt16LSB_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PSmallInt absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$7FFF) or (v^=$8000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt32LSB_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$7FFFFFF) or (v^=$80000000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt32LSB16_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$7FFF) or (v^=$8000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt32LSB18_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$1FFFF) or (v^=$20000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt32LSB20_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$7FFFF) or (v^=$80000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt32LSB24_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$7FFFFF) or (v^=$800000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckSingleLSB_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PSingle absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^>1) or (v^<1) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckDoubleLSB_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PDouble absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^>1) or (v^<1) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt16MSB_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PSmallInt absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   // ToDo BitReverse!!
+   if (v^=$7FFF) or (v^=$8000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt32MSB_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$FFFFF7F) or (v^=$80) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt32MSB16_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$7FFF) or (v^=$8000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt32MSB18_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$1FFFF) or (v^=$20000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt32MSB20_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$7FFFF) or (v^=$80000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt32MSB24_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   if (v^=$7FFFFF) or (v^=$800000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckSingleMSB_x87(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PSingle absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   // ToDo ByteSwap here
+   if (v^>1) or (v^<1) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckDoubleMSB_x87(source: Pointer; frames: longint):Boolean;
+var i  : Integer;
+    v : PDouble absolute source;
+begin
+ Result:=false;
+ for i:=0 to Frames-1 do
+  begin
+   // ToDo ByteSwap here
+   if (v^>1) or (v^<1) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
 procedure MixBuffers_x87(InBuffer:PSingle; MixBuffer:PSingle; samples:integer); overload; platform;
 asm
 @Start:
@@ -3246,11 +3794,39 @@ begin
   ClipDigital.cb64     := ClipDigital_x86;
   ClipAnalog.cb32      := ClipAnalog_x87;
   ClipAnalog.cb64      := ClipAnalog_x87;
+  FadeInLinear.v32     := FadeInLinear_x87;
+  FadeInLinear.v64     := FadeInLinear_x87;
+  FadeOutLinear.v32    := FadeOutLinear_x87;
+  FadeOutLinear.v64    := FadeOutLinear_x87;
+  FadeLinear.v32       := FadeLinear_x87;
+  FadeLinear.v64       := FadeLinear_x87;
+  FadeExponential.v32  := FadeExponential_x87;
+  FadeExponential.v64  := FadeExponential_x87;
+
+  ClipCheckInt16MSB    := ClipCheckInt16MSB_x87;
+//  ClipCheckInt24MSB    := ClipCheckInt24MSB_x87;
+  ClipCheckInt32MSB    := ClipCheckInt32MSB_x87;
+  ClipCheckSingleMSB   := ClipCheckSingleMSB_x87;
+  ClipCheckDoubleMSB   := ClipCheckDoubleMSB_x87;
+  ClipCheckInt32MSB16  := ClipCheckInt32MSB16_x87;
+  ClipCheckInt32MSB18  := ClipCheckInt32MSB18_x87;
+  ClipCheckInt32MSB20  := ClipCheckInt32MSB20_x87;
+  ClipCheckInt32MSB24  := ClipCheckInt32MSB24_x87;
+  ClipCheckInt16LSB    := ClipCheckInt16LSB_x87;
+//  ClipCheckInt24LSB    := ClipCheckInt24LSB_x87;
+  ClipCheckInt32LSB    := ClipCheckInt32LSB_x87;
+  ClipCheckSingleLSB   := ClipCheckSingleLSB_x87;
+  ClipCheckDoubleLSB   := ClipCheckDoubleLSB_x87;
+  ClipCheckInt32LSB16  := ClipCheckInt32LSB16_x87;
+  ClipCheckInt32LSB18  := ClipCheckInt32LSB18_x87;
+  ClipCheckInt32LSB20  := ClipCheckInt32LSB20_x87;
+  ClipCheckInt32LSB24  := ClipCheckInt32LSB24_x87;
 end;
 
 procedure Use_x87_UDF;
 begin
  Use_x87;
+ RandSeed:=GetTickCount;
  ToInt16LSB.oc32      := SingleToInt16LSB_UDF_x87;
  ToInt24LSB.oc32      := SingleToInt24LSB_UDF_x87;
  ToInt32LSB16.oc32    := SingleToInt32LSB16_UDF_x87;
@@ -3269,6 +3845,7 @@ end;
 procedure Use_x87_TDF;
 begin
  Use_x87;
+ RandSeed:=GetTickCount;
  ToInt16LSB.oc32      := SingleToInt16LSB_TDF_x87;
  ToInt24LSB.oc32      := SingleToInt24LSB_TDF_x87;
  ToInt32LSB16.oc32    := SingleToInt32LSB16_TDF_x87;
@@ -3359,4 +3936,3 @@ initialization
  end;
  if FPUType = fpu3DNow then Use_3DNow;
 end.
-
