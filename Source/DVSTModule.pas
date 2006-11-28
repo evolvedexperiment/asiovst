@@ -1254,13 +1254,13 @@ begin
                                       else PostMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
                                      PostMessage(EditorForm.ActiveControl.Handle,WM_CHAR, a, b);
 {$ENDIF}
+                                     if Assigned(fOnKeyDown) then fOnKeyDown(Self, keyCode);
+                                     if Assigned(fOnCheckKey)
+                                      then if fOnCheckKey(Self, Char(a))
+                                            then result := 1
+                                            else result := -1
+                                      else result := -1;
                                     end;
-                                   if Assigned(fOnKeyDown) then fOnKeyDown(Self, keyCode);
-                                   if Assigned(fOnCheckKey)
-                                    then if fOnCheckKey(Self, Char(a))
-                                          then result := 1
-                                          else result := -1
-                                    else result := -1;
                                   except
                                    result := -1;
                                   end else result := -1;
@@ -1281,13 +1281,13 @@ begin
                                       then PostMessage(Hndl, WM_KEYUP, a, b)
                                       else PostMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
 {$ENDIF}
+                                     if Assigned(fOnKeyUp) then fOnKeyUp(Self, keyCode);
+                                     if Assigned(fOnCheckKey)
+                                      then if fOnCheckKey(Self, Char(a))
+                                            then result := 1
+                                            else result := -1
+                                      else result := -1;
                                     end;
-                                   if Assigned(fOnKeyUp) then fOnKeyUp(Self, keyCode);
-                                   if Assigned(fOnCheckKey)
-                                    then if fOnCheckKey(Self, Char(a))
-                                          then result := 1
-                                          else result := -1
-                                    else result := -1;
                                   except
                                    result := -1;
                                   end else result := -1;
@@ -1738,6 +1738,7 @@ function TCustomVSTModule.getChunk(var data: pointer; isPreset: Boolean): Intege
 var i,j  : Integer;
     tmps : TMemoryStream;
 begin
+ Result := 0;
  if (numPrograms<=0) then Exit;
  if isPreset then
  begin
@@ -1768,6 +1769,7 @@ var i: integer;
     pi: pinteger;
     pb: pbyte;
 begin
+ Result := 0;
  if (numPrograms<=0) then Exit;
  if isPreset then
   with Programs[fCurProgram] do
@@ -1938,7 +1940,7 @@ end;
 
 function TCustomVSTModule.Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
 begin
- if (Index>=numParams) or (Index>=fParameterProperties.Count) then Exit;
+ if (Index>=numParams) or (Index>=fParameterProperties.Count) then begin Result := 0; Exit; end; 
  result := (value - fParameterProperties[index].min) / (fParameterProperties[index].max - fParameterProperties[index].min);
  case fParameterProperties[index].curve of
   ctLogarithmic: result := ln(fParameterProperties[index].curveFactor * result + 1) / ln(fParameterProperties[index].curveFactor + 1);
@@ -2039,6 +2041,7 @@ begin
  except
  end;
 }
+ Result := 0;
  if Assigned(fOnEditOpen) then fOnEditOpen(Self, GUI);
  if assigned(GUI) then
   try
@@ -2056,8 +2059,7 @@ begin
      then for i:=0 to pr-1 do fOnParameterChangeEvent(Self,i,Programs[fCurProgram].fParameter[i])
      else for i:=0 to pr-1 do fOnParameterChangeEvent(Self,i,fParameter[i]);
   except
-  end
- else Result := 0;
+  end;
 end;
 
 procedure TCustomVSTModule.EditorClose;
@@ -2411,8 +2413,11 @@ end;
 function TCustomVstProgram.GetParameter(AIndex: Integer): Single;
 begin
  if (AIndex>=0) and (AIndex<VSTModule.numParams)
-  then result:=fParameter[AIndex]
-  else // raise exception.Create('Index out of bounds');
+  then result:=fParameter[AIndex] else
+   begin
+    Result := 0;
+    // raise exception.Create('Index out of bounds');
+   end; 
 end;
 
 { TVstPrograms }

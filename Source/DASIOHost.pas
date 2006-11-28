@@ -796,9 +796,8 @@ begin
  SetLength(FASIOdriverlist, 0);
  SetLength(FASIOdriverlist, 0);
  FDriverList.Free;
- ASIOTime.Free;
+ FreeAndNil(FASIOTime);
  inherited;
- {$IFDEF ASIOMixer} FASIOMixer.Free; {$ENDIF}
 end;
 
 procedure TCustomASIOHostBasic.WndProc(var Msg: TMessage);
@@ -1317,33 +1316,8 @@ end;
 constructor TCustomASIOHost.Create(AOwner: TComponent);
 begin
   fClipPrevent:=ClipDigital;
-//  if AOwner is TForm then Handy := TForm(AOwner).Handle else Handy := Application.Handle;
-  {$IFNDEF FPC}
-  fHandle:=AllocateHWnd(WndProc);
-  {$ENDIF}
-  theHost := Self;
-  FUnAlignedBuffer:=nil;
-  FInputBuffer := nil;
-  FOutputBuffer := nil;
-  FASIOTime := TASIOTimeSub.Create;
-  {$IFNDEF FPC}
-  FDriverList := GetDriverList;
-  {$ENDIF}
   FConvertOptimizations := [coSSE, co3DNow];
   FOutputDither:=odNone;
-
-  // set the callbacks record fields
-  FCallbacks.bufferSwitch := ASIOBufferSwitch;
-  FCallbacks.sampleRateDidChange := ASIOSampleRateDidChange;
-  FCallbacks.ASIOMessage := ASIOMessage;
-  FCallbacks.bufferSwitchTimeInfo := ASIOBufferSwitchTimeInfo;
-
-  // set the driver itself to nil for now
-  FDriver := nil;
-  FBuffersCreated := FALSE;
-
-  // and make sure all controls are enabled or disabled
-  FDriverIndex := -1;
   FInputMonitor := imDisabled;
 
   {$IFDEF ASIOMixer} FASIOMixer := TFmASIOMixer.Create(nil); {$ENDIF}
@@ -1352,25 +1326,14 @@ end;
 
 destructor TCustomASIOHost.Destroy;
 begin
- if Assigned(FOnDestroy) then FOnDestroy(Self);
- FCallbacks.bufferSwitchTimeInfo := nil;
- if Active then Active := False;
- CloseDriver;
- {$IFNDEF FPC}
- DeallocateHWnd(fHandle);
- {$ENDIF}
- SetLength(FASIOdriverlist, 0);
  SetLength(FInConvertors, 0);
  SetLength(FOutConvertors, 0);
  SetLength(FOutputVolume, 0);
- SetLength(FASIOdriverlist, 0);
  SetLength(FInConvertors, 0);
  SetLength(FOutConvertors, 0);
  SetLength(FOutputVolume, 0);
- FDriverList.Free;
- ASIOTime.Free;
- inherited;
  {$IFDEF ASIOMixer} FASIOMixer.Free; {$ENDIF}
+ inherited;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
