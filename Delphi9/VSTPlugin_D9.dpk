@@ -1,0 +1,48 @@
+package VSTPlugin_D9;
+
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'VST Plugin Project Wizard (design-time)'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vcl,
+  designide,
+  vclactnband,
+  vclx,
+  xmlrtl,
+  DSPBase_D9;
+
+contains
+  DVSTProjectCreator in '..\Source\DVSTProjectCreator.pas',
+  Config in '..\Source\Config.pas',
+  OpenToolsUtils in '..\Source\OpenToolsUtils.pas',
+  DVSTEditorCreator in '..\Source\DVSTEditorCreator.pas',
+  DVSTModule in '..\Source\DVSTModule.pas',
+  DVSTModuleCreator in '..\Source\DVSTModuleCreator.pas',
+  DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',
+  DVSTPluginWizardFrm in '..\Source\DVSTPluginWizardFrm.pas',
+  DVSTPluginWizardReg in '..\Source\DVSTPluginWizardReg.pas';
+
+end.
