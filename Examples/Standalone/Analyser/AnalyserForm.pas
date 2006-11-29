@@ -148,7 +148,7 @@ begin
   begin
    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
    ChannelBox.Clear;
-   for i := 0 to ASIOHost.InputChannels - 1
+   for i := 0 to ASIOHost.InputChannelCount - 1
     do ChannelBox.Items.Add(ASIOHost.InputChannelInfos[i].name);
    with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
     try

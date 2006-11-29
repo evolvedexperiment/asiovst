@@ -179,7 +179,7 @@ object FmAnalyser: TFmAnalyser
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    OnBufferSwitch = ASIOHostBufferSwitch
+    OnBufferSwitch32 = ASIOHostBufferSwitch
     Left = 252
     Top = 24
   end
