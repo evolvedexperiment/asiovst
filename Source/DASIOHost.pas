@@ -295,32 +295,14 @@ type
     procedure SetOnBufferSwitch64(const Value: TBufferSwitchEvent64);
     procedure SetOutputDither(const Value: TASIOOutputDither);
   protected
-    FSampleRate           : Double;
-    FInputBuffer          : PASIOBufferInfo;
-    FOutputBuffer         : PASIOBufferInfo;
-    FActive               : Boolean;
-    FDriverIndex          : Integer;
-    FDriverList           : TStrings;
-    FDriverName           : String;
-    FDriverVersion        : integer;
     FInputLatency         : Integer;
     FOutputLatency        : Integer;
-    FInputChannelCount    : Integer;
-    FOutputChannelCount   : Integer;
-    FBufferSize           : Cardinal;
     FInConvertors         : array of TInConvertor;
     FOutConvertors        : array of TOutConvertor;
-    {$IFDEF OpenASIO}
-    FDriver               : IOpenAsio;
-    {$ELSE}
-    FDriver               : IBeroASIO;
-    {$ENDIF}
     function CreateBuffers: Boolean; override;
     procedure DestroyBuffers; override;
     procedure BufferSwitchTimeInfo(index: integer; const params: TASIOTime); override;
   public
-    InputChannelInfos   : array of TASIOChannelInfo;
-    OutputChannelInfos  : array of TASIOChannelInfo;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     {$IFDEF ASIOMixer}
@@ -386,7 +368,7 @@ type
     property DriverList;
   end;
 
-var theHost             : TCustomASIOHost;
+var theHost             : TCustomASIOHostBasic;
     PMUpdSamplePos      : TMessage;
     PMBufSwitch         : TMessage;
     PMBufSwitchTimeInfo : TMessage;
@@ -760,7 +742,7 @@ begin
   {$IFNDEF FPC}
   fHandle:=AllocateHWnd(WndProc);
   {$ENDIF}
-//  theHost := Self;
+  theHost := Self;
   FUnAlignedBuffer:=nil;
   FInputBuffer := nil;
   FOutputBuffer := nil;
