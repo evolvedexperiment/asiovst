@@ -147,6 +147,10 @@ var MixBuffers : record
                       end;
     ClipDigital   : TClipBuffer;
     ClipAnalog    : TClipBuffer;
+    Trigger       : record
+                     v32 : function(InBuffer: PSingle; Samples: Integer; TriggerFaktor : Double): Integer;
+                     v64 : function(InBuffer: PDouble; Samples: Integer; TriggerFaktor : Double): Integer;
+                    end;
     EnableSSE     : Boolean;
 
 function f_abs(f:single):single;
@@ -448,19 +452,27 @@ end;
 procedure FadeExponential_x87(InBuffer: PSingle; Samples: Integer; CurrentFadeFak, FadeMul : Double); overload; platform;
 {$IFDEF x87}
 asm
+ fld1
  fld FadeMul.Double
  fld CurrentFadeFak.Double
+ mov ecx,eax
 
  @FadeLoop:
+   fld  [ecx+4*edx-4].Single   // Value, CurrentFadeFak, FadeMul, 1
+   fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak, FadeMul, 1
+   fstp [ecx+4*edx-4].Single   // CurrentFadeFak, FadeMul, 1
+   fmul st(0),st(1)            // CurrentFadeFak * FadeMul = CurrentFadeFak, FadeMul, 1
+
+   fcomi st(0), st(2)          // CurrentFadeFak <-> 1 ?
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+   jb @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+
    dec edx
-   fld  [eax+4*edx].Single     // Value, CurrentFadeFak
-   fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
-   fstp [eax+4*edx].Single     // write back
-   fmul st(0),st(1)            // CurrentFadeFak
-   // ToDo : Clipcheck!
  jnz @FadeLoop
 
  @FadeLoopEnd:
+ fstp st(0)                    // clear stack
  fstp st(0)                    // clear stack
  fstp st(0)                    // clear stack
 end;
@@ -480,19 +492,27 @@ end;
 procedure FadeExponential_x87(InBuffer: PDouble; Samples: Integer; CurrentFadeFak, FadeMul : Double); overload; platform;
 {$IFDEF x87}
 asm
+ fld1
  fld FadeMul.Double
  fld CurrentFadeFak.Double
+ mov ecx, eax                  // ecx = eax
 
  @FadeLoop:
-   dec edx
-   fld  [eax+8*edx].Double     // Value, CurrentFadeFak
+   fld  [ecx+8*edx-8].Double   // Value, CurrentFadeFak
    fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
-   fstp [eax+8*edx].Double     // write back
+   fstp [ecx+8*edx-8].Double   // write back
    fmul st(0),st(1)            // CurrentFadeFak
-   // ToDo : Clipcheck!
+
+   fcomi st(0), st(2)          // CurrentFadeFak <-> 1 ?
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+   jb @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+
+   dec edx
  jnz @FadeLoop
 
  @FadeLoopEnd:
+ fstp st(0)                    // clear stack
  fstp st(0)                    // clear stack
  fstp st(0)                    // clear stack
 end;
@@ -512,19 +532,27 @@ end;
 procedure FadeLinear_x87(InBuffer: PSingle; Samples: Integer; CurrentFadeFak, FadeAddInc : Double); overload; platform;
 {$IFDEF x87}
 asm
+ fld1
  fld FadeAddInc.Double
  fld CurrentFadeFak.Double
+ mov ecx, eax                  // ecx = eax
 
  @FadeLoop:
-   dec edx
-   fld  [eax+4*edx].Single     // Value, CurrentFadeFak
+   fld  [ecx+4*edx-4].Single   // Value, CurrentFadeFak
    fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
-   fstp [eax+4*edx].Single     // write back
+   fstp [ecx+4*edx-4].Single   // write back
    fadd st(0),st(1)            // CurrentFadeFak + FadeAddInc
-   // ToDo : Clipcheck!
+
+   fcomi st(0), st(2)          // CurrentFadeFak <-> 1 ?
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+   jb @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+
+   dec edx
  jnz @FadeLoop
 
  @FadeLoopEnd:
+ fstp st(0)                    // clear stack
  fstp st(0)                    // clear stack
  fstp st(0)                    // clear stack
 end;
@@ -544,19 +572,27 @@ end;
 procedure FadeLinear_x87(InBuffer: PDouble; Samples: Integer; CurrentFadeFak, FadeAddInc : Double); overload; platform;
 {$IFDEF x87}
 asm
+ fld1
  fld FadeAddInc.Double
  fld CurrentFadeFak.Double
+ mov ecx, eax                  // ecx = eax
 
  @FadeLoop:
-   dec edx
-   fld  [eax+8*edx].Double     // Value, CurrentFadeFak
+   fld  [ecx+8*edx-8].Double   // Value, CurrentFadeFak
    fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
-   fstp [eax+8*edx].Double     // write back
+   fstp [ecx+8*edx-8].Double   // write back
    fmul st(0),st(1)            // CurrentFadeFak + FadeAddInc
-   // ToDo : Clipcheck!
+
+   fcomi st(0), st(2)          // CurrentFadeFak <-> 1 ?
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+   jb @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+
+   dec edx
  jnz @FadeLoop
 
  @FadeLoopEnd:
+ fstp st(0)                    // clear stack
  fstp st(0)                    // clear stack
  fstp st(0)                    // clear stack
 end;
@@ -570,6 +606,92 @@ begin
    if CurrentFadeFak>1 then exit;
    inc(InBuffer);
   end;
+end;
+{$ENDIF}
+
+function Trigger_x87(InBuffer: PSingle; Samples: Integer; TriggerFaktor : Double): Integer; overload; platform;
+{$IFDEF x87}
+asm
+ fld TriggerFaktor.Double
+ mov ecx, eax                  // ecx = eax
+
+ @FadeLoop:
+   fld  [ecx+4*edx-4].Single   // Value, TriggerFaktor
+   fabs                        // |Value|, TriggerFaktor
+
+   fcomi st(0), st(1)          // CurrentFadeFak <-> 1 ?
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+   fstp st(0)                  // TriggerFaktor
+   jb @TriggerFound            // if |Value| > TriggerFaktor then exit!
+
+   dec edx
+ jnz @FadeLoop
+
+ mov result, -1                // not triggered
+ jmp @FadeLoopEnd
+
+ @TriggerFound:
+ mov result, edx               // triggered at sample edx
+
+ @FadeLoopEnd:
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
+var i : Integer;
+begin
+ result:=0;
+ for i:=0 to Samples-1 do
+  begin
+   if f_abs(InBuffer^)>TriggerFaktor
+    then exit
+    else inc(result);
+   inc(InBuffer);
+  end;
+ result:=-1;
+end;
+{$ENDIF}
+
+function Trigger_x87(InBuffer: PDouble; Samples: Integer; TriggerFaktor : Double): Integer; overload; platform;
+{$IFDEF x87}
+asm
+ fld TriggerFaktor.Double
+ mov ecx, eax                  // ecx = eax
+
+ @FadeLoop:
+   fld  [ecx+8*edx-8].Double   // Value, TriggerFaktor
+   fabs                        // |Value|, TriggerFaktor
+
+   fcomi st(0), st(1)          // CurrentFadeFak <-> 1 ?
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+   fstp st(0)                  // TriggerFaktor
+   jb @TriggerFound            // if |Value| > TriggerFaktor then exit!
+
+   dec edx
+ jnz @FadeLoop
+
+ mov result, -1                // not triggered
+ jmp @FadeLoopEnd
+
+ @TriggerFound:
+ mov result, edx               // triggered at sample edx
+
+ @FadeLoopEnd:
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
+var i : Integer;
+begin
+ result:=0;
+ for i:=0 to Samples-1 do
+  begin
+   if f_abs(InBuffer^)>TriggerFaktor
+    then exit
+    else inc(result);
+   inc(InBuffer);
+  end;
+ result:=-1;
 end;
 {$ENDIF}
 
@@ -2672,6 +2794,31 @@ begin
 end;
 
 function ClipCheckSingleLSB_x87(source: Pointer; frames: longint):Boolean;
+{$IFDEF x87}
+asm
+ mov result, 1                 // Annahme, es klippt!
+ mov ecx, eax                  // ecx = eax
+ xor eax, eax
+ fld1
+ @FadeLoop:
+   fld  [ecx+4*edx-4].Single   // Value, CurrentFadeFak
+   fabs
+   fcomi st(0), st(1)          // CurrentFadeFak <-> 1 ?
+{
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+}
+   fstp st(0)                  // clear stack
+   ja @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+
+   dec edx
+ jnz @FadeLoop
+ mov result, 0                 // na gut, klippt doch nicht :-/
+
+ @FadeLoopEnd:
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
 var i : Integer;
     v : PSingle absolute source;
 begin
@@ -2686,8 +2833,34 @@ begin
    inc(v);
   end;
 end;
+{$ENDIF}
 
 function ClipCheckDoubleLSB_x87(source: Pointer; frames: longint):Boolean;
+{$IFDEF x87}
+asm
+ mov result, 1                 // Annahme, es klippt!
+ mov ecx, eax                  // ecx = eax
+ xor eax, eax
+ fld1
+ @FadeLoop:
+   fld  [ecx+8*edx-8].Double   // Value, CurrentFadeFak
+   fabs
+   fcomi st(0), st(1)          // CurrentFadeFak <-> 1 ?
+{
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+}
+   fstp st(0)                  // clear stack
+   ja @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+
+   dec edx
+ jnz @FadeLoop
+ mov result, 0                 // na gut, klippt doch nicht :-/
+
+ @FadeLoopEnd:
+ fstp st(0)                    // clear stack
+end;
+{$ELSE}
 var i : Integer;
     v : PDouble absolute source;
 begin
@@ -2702,6 +2875,7 @@ begin
    inc(v);
   end;
 end;
+{$ENDIF}
 
 function ClipCheckInt16MSB_x87(source: Pointer; frames: longint):Boolean;
 var i : Integer;
@@ -3802,6 +3976,8 @@ begin
   FadeLinear.v64       := FadeLinear_x87;
   FadeExponential.v32  := FadeExponential_x87;
   FadeExponential.v64  := FadeExponential_x87;
+  Trigger.v32          := Trigger_x87;
+  Trigger.v64          := Trigger_x87;
 
   ClipCheckInt16MSB    := ClipCheckInt16MSB_x87;
 //  ClipCheckInt24MSB    := ClipCheckInt24MSB_x87;

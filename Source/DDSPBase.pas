@@ -27,6 +27,8 @@ interface
  {$OPTIMIZATION ON}
 {$ENDIF}
 
+{$DEFINE x87}
+
 {$IFNDEF FPC} uses Windows, Types; {$ENDIF}
 
 type
@@ -148,6 +150,11 @@ type
   function Waveshaper8(x,a:Single):Single;
   function SoftSat(x,a:Single):Single;
 {$ENDIF}
+
+  function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
+  function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
+  procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload;
+  procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
 
 var ln10, ln2, ln22, ln2Rez : Double;
 
@@ -882,6 +889,194 @@ asm
  fcomi   st(0), st(1)
  fcmovnb st(0), st(1)
  ffree   st(1)
+end;
+{$ENDIF}
+
+function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload; platform;
+{$IFDEF x87}
+asm
+ test edx,edx
+ jz @End
+
+ mov result,edx                // Result := edx
+ dec edx
+ jnz @End                      // only one sample -> exit!
+ fld  [eax+4*edx].Single       // Value
+ fabs                          // |Value| = Max
+
+ @FindMaxLoop:
+   fld  [eax+4*edx-4].Single   // Value, Max
+   fabs                        // |Value|, Max
+
+   fcomi st(0), st(1)          // |Value| <-> Max ?
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+   jae @NextSample             // if |Value| <-> Max then next sample!
+   fxch                        // OldMax, |Value|
+   mov result,edx              // Result := edx
+
+   @NextSample:
+   fstp st(0)                  // Value, Max
+   dec edx
+ jnz @FindMaxLoop
+
+ mov edx,result              // edx := Result
+ sub edx,1                   // edx := edx - 1  -> index starts at 0!
+ mov result,edx              // Result := edx
+
+ @End:
+end;
+{$ELSE}
+var i : Integer;
+    d : Double;
+begin
+ result:=0; d:=f_abs(InBuffer^);
+ for i:=1 to Samples-1 do
+  begin
+   if f_abs(InBuffer^)>d then
+    begin
+     Result:=i;
+     d:=f_abs(InBuffer^);
+    end;
+   inc(InBuffer);
+  end;
+end;
+{$ENDIF}
+
+function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload; platform;
+{$IFDEF x87}
+asm
+ test edx,edx
+ jz @End
+
+ mov result,edx                // Result := edx
+ dec edx
+ jnz @End                      // only one sample -> exit!
+ fld  [eax+8*edx].Double       // Value
+ fabs                          // |Value| = Max
+
+ @FindMaxLoop:
+   fld  [eax+8*edx-8].Double   // Value, Max
+   fabs                        // |Value|, Max
+
+   fcomi st(0), st(1)          // |Value| <-> Max ?
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+   jae @NextSample             // if |Value| <-> Max then next sample!
+   fxch                        // OldMax, |Value|
+   mov result,edx              // Result := edx
+
+   @NextSample:
+   fstp st(0)                  // Value, Max
+   dec edx
+ jnz @FindMaxLoop
+
+ mov edx,result              // edx := Result
+ sub edx,1                   // edx := edx - 1  -> index starts at 0!
+ mov result,edx              // Result := edx
+
+ @End:
+end;
+{$ELSE}
+var i : Integer;
+    d : Double;
+begin
+ result:=0; d:=f_abs(InBuffer^);
+ for i:=1 to Samples-1 do
+  begin
+   if f_abs(InBuffer^)>d then
+    begin
+     Result:=i;
+     d:=f_abs(InBuffer^);
+    end;
+   inc(InBuffer);
+  end;
+end;
+{$ENDIF}
+
+procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload; platform;
+{$IFDEF x87}
+asm
+ test edx,edx
+ jz @End
+
+ push edx
+ fldz                          // DC
+ @CalcDCLoop:
+   dec edx
+   fadd  [eax+4*edx].Single    // DC = DC + Value
+ jnz @CalcDCLoop
+ pop edx
+
+ mov [esp-4],edx
+ fild [esp-4].Integer          // Length, DC
+ fdivp                         // RealDC = DC / Length
+
+ @SubstractDCLoop:
+   dec edx
+   fld  [eax+4*edx].Single     // Value, RealDC
+   fsub st(0),st(1)            // Value-RealDC, RealDC
+   fstp  [eax+4*edx].Single    // RealDC
+ jnz @SubstractDCLoop
+ fstp st(0)                    // clear stack
+
+ @End:
+end;
+{$ELSE}
+var InBuf : array [0..0] of Double absolute InBuffer;
+    d : Double;
+    i : Integer;
+begin
+ if Samples=0 then Exit;
+ d:=InBuf[0];
+ for i:=1 to Samples-1
+  do d:=d+InBuf[i];
+ d:=d/Samples;
+ for i:=0 to Samples-1
+  do InBuf[i]:=InBuf[i]-d;
+end;
+{$ENDIF}
+
+procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload; platform;
+{$IFDEF x87}
+asm
+ test edx,edx
+ jz @End
+
+ push edx
+ fldz                          // DC
+ @CalcDCLoop:
+   dec edx
+   fadd  [eax+8*edx].Double    // DC = DC + Value
+ jnz @CalcDCLoop
+ pop edx
+
+ mov [esp-4],edx
+ fild [esp-4].Integer          // Length, DC
+ fdivp                         // RealDC = DC / Length
+
+ @SubstractDCLoop:
+   dec edx
+   fld  [eax+8*edx].Double     // Value, RealDC
+   fsub st(0),st(1)            // Value-RealDC, RealDC
+   fstp  [eax+8*edx].Double    // RealDC
+ jnz @SubstractDCLoop
+ fstp st(0)                    // clear stack
+
+ @End:
+end;
+{$ELSE}
+var InBuf : array [0..0] of Double absolute InBuffer;
+    d : Double;
+    i : Integer;
+begin
+ if Samples=0 then Exit;
+ d:=InBuf[0];
+ for i:=1 to Samples-1
+  do d:=d+InBuf[i];
+ d:=d/Samples;
+ for i:=0 to Samples-1
+  do InBuf[i]:=InBuf[i]-d;
 end;
 {$ENDIF}
 

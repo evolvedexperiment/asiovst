@@ -44,7 +44,7 @@ type
     path : array[0..511] of char;
   end;
   PAsioDriverDesc = ^TAsioDriverDesc;
-  TASIOBufferList = array [0..0] of PASIOBufferInfo;
+  TASIOBufferList = array [0..0] of TASIOBufferInfo;
   PASIOBufferList = ^TASIOBufferList;
   TDoubleDynArray = Types.TDoubleDynArray;
   TSingleDynArray = Types.TSingleDynArray;
@@ -742,6 +742,7 @@ begin
   {$IFNDEF FPC}
   fHandle:=AllocateHWnd(WndProc);
   {$ENDIF}
+  //if theHost<>nil then
   theHost := Self;
   FUnAlignedBuffer:=nil;
   FInputBuffer := nil;

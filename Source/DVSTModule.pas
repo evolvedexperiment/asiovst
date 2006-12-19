@@ -6,8 +6,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, LCLClasses, {$ELSE} Windows, {$ENDIF}
-  SysUtils, Forms, Classes, DDSPBase, DVSTEffect,
-  Messages;
+  SysUtils, Forms, Classes, DDSPBase, DVSTEffect, Messages;
 
 {$DEFINE _Debug}
 
@@ -1252,7 +1251,7 @@ begin
                                      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
                                       then PostMessage(Hndl, WM_KEYDOWN, a,b)
                                       else PostMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
-                                     PostMessage(EditorForm.ActiveControl.Handle,WM_CHAR, a, b);
+                                     PostMessage(Hndl,WM_CHAR, a, b);
 {$ENDIF}
                                      if Assigned(fOnKeyDown) then fOnKeyDown(Self, keyCode);
                                      if Assigned(fOnCheckKey)
