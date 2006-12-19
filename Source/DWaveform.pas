@@ -1,6 +1,6 @@
 unit DWaveform;
 
-{-$R DWaveform.res}
+{$R DWaveform.res}
 {$R-}
 
 interface
