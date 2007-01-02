@@ -286,7 +286,6 @@ type
     procedure SetConvertOptimizations(const co: TConvertOptimizations);
     procedure SetASIOGenerator(const v: TASIOGenerator);
     procedure SetPreventClipping(v: TPreventClipping);
-    procedure WndProc(var Msg: TMessage);
     {$IFDEF ASIOMixer}
     procedure SetupMixer;
     procedure VolumeChange(Sender: TObject);
@@ -1290,11 +1289,6 @@ procedure TCustomASIOHostBasic.SetASIOCanDos(const Value: TASIOCanDos); begin en
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// TCustomASIOHost ////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-procedure TCustomASIOHost.WndProc(var Msg: TMessage);
-begin
- with Msg do Result := DefWindowProc(fHandle, Msg, wParam, lParam);
-end;
 
 constructor TCustomASIOHost.Create(AOwner: TComponent);
 begin
