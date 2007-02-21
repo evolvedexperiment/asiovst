@@ -1249,9 +1249,9 @@ begin
 {$IFNDEF FPC}
                                      if keyCode.virt=0 then b:=0 else b:=KF_EXTENDED;
                                      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
-                                      then PostMessage(Hndl, WM_KEYDOWN, a,b)
-                                      else PostMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
-                                     PostMessage(Hndl,WM_CHAR, a, b);
+                                      then SendMessage(Hndl, WM_KEYDOWN, a,b)
+                                      else SendMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
+                                     SendMessage(Hndl,WM_CHAR, a, b);
 {$ENDIF}
                                      if Assigned(fOnKeyDown) then fOnKeyDown(Self, keyCode);
                                      if Assigned(fOnCheckKey)
@@ -1277,8 +1277,8 @@ begin
 {$IFNDEF FPC}
                                      if keyCode.virt=0 then b:=0 else b:=KF_EXTENDED;
                                      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
-                                      then PostMessage(Hndl, WM_KEYUP, a, b)
-                                      else PostMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
+                                      then SendMessage(Hndl, WM_KEYUP, a, b)
+                                      else SendMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
 {$ENDIF}
                                      if Assigned(fOnKeyUp) then fOnKeyUp(Self, keyCode);
                                      if Assigned(fOnCheckKey)

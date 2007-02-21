@@ -29,7 +29,9 @@ interface
 
 {$DEFINE x87}
 
-{$IFNDEF FPC} uses Windows, Types; {$ENDIF}
+{$IFNDEF FPC} uses Windows, Types;
+{$ELSE} uses Types;
+{$ENDIF}
 
 type
   TDoubleDynArray = Types.TDoubleDynArray;

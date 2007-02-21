@@ -6,7 +6,9 @@ unit DASIOConvert;
 
 interface
 
+{$IFNDEF FPC}
 {$DEFINE x87}
+{$ENDIF}
 
 uses {$IFDEF FPC}LCLIntf; {$ELSE} Windows; {$ENDIF}
 
@@ -562,7 +564,7 @@ begin
  for i:=0 to Samples-1 do
   begin
    InBuffer^:=InBuffer^*CurrentFadeFak;
-   CurrentFadeFak:=CurrentFadeFak*FadeMul;
+   CurrentFadeFak:=CurrentFadeFak+FadeAddInc;
    if CurrentFadeFak>1 then exit;
    inc(InBuffer);
   end;
@@ -602,7 +604,7 @@ begin
  for i:=0 to Samples-1 do
   begin
    InBuffer^:=InBuffer^*CurrentFadeFak;
-   CurrentFadeFak:=CurrentFadeFak*FadeMul;
+   CurrentFadeFak:=CurrentFadeFak+FadeAddInc;
    if CurrentFadeFak>1 then exit;
    inc(InBuffer);
   end;
@@ -1925,8 +1927,8 @@ end;
 procedure DoubleToSingleLSB_x87(source: PDouble; target: pointer; frames: longint); overload; platform;
 asm
  @Start:
-  fld   [source+8*frames-8].Double
-  fstp  [target+4*frames-4].Single
+  fld   [source+8*ecx-8].Double
+  fstp  [target+4*ecx-4].Single
   loop @Start
 end;
 
