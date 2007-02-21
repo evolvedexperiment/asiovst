@@ -406,6 +406,7 @@ begin
      1 : q:=1/fSamplesPerBeat;
      2 : q:=2/fSamplesPerBeat;
      3 : q:=4/fSamplesPerBeat;
+     else exit;
     end;
  for i := 0 to fEventList.Count - 1 do
   with fEventList.Items[i] do
@@ -439,7 +440,7 @@ begin
 
  // Apply Flange
  if fFlange then
-  for j := 0 to ASIOHost.OutputChannels - 1 do
+  for j := 0 to ASIOHost.OutputChannelCount - 1 do
    for i := 0 to ASIOHost.BufferSize - 1 do
     begin
      met:=OutBuffer[j,i];
@@ -451,7 +452,7 @@ begin
  if fRobotize then
   for i := 0 to ASIOHost.BufferSize - 1 do
    begin
-    for j := 0 to ASIOHost.OutputChannels - 1 do
+    for j := 0 to ASIOHost.OutputChannelCount - 1 do
      begin
       fRobotBuffer[j,fRobotPos] := 0.7 * fRobotBuffer[j,fRobotPos] + 0.6 * OutBuffer[j,i];
       OutBuffer[j,i] := fRobotBuffer[j,fRobotPos];
@@ -463,7 +464,7 @@ begin
 
  // Apply Overdrive
  if CBOverdrive.Checked then
-  for j := 0 to ASIOHost.OutputChannels - 1 do
+  for j := 0 to ASIOHost.OutputChannelCount - 1 do
    for i := 0 to ASIOHost.BufferSize - 1
     do OutBuffer[j,i] := Tanh2c(12*OutBuffer[j,i]);
 
@@ -491,7 +492,7 @@ begin
       then inc(fBeatPos)
       else fBeatPos:=0;
     end;
-   for j := 0 to ASIOHost.OutputChannels - 1
+   for j := 0 to ASIOHost.OutputChannelCount - 1
     do OutBuffer[j,i] := OutBuffer[j,i] + met * fMetroVolume[1];
   end;
 end;

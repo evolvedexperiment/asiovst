@@ -59,7 +59,7 @@ begin
     Active:=False;
     DriverIndex := CBDrivers.ItemIndex;
     CBOutput.Clear;
-    for i := 0 to (OutputChannels div 2) - 1 do
+    for i := 0 to (OutputChannelCount div 2) - 1 do
      begin
       CBOutput.Items.Add(
       OutputChannelInfos[2 * i].name + ' / ' +
