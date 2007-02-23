@@ -182,6 +182,7 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 7
     OnClick = DrumPadClick
+    OnMouseDown = BtMouseDown
   end
   object Bt8: TButton
     Tag = 1
@@ -198,6 +199,7 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 8
     OnClick = DrumPadClick
+    OnMouseDown = BtMouseDown
   end
   object Bt9: TButton
     Tag = 2
@@ -214,6 +216,7 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 9
     OnClick = DrumPadClick
+    OnMouseDown = BtMouseDown
   end
   object Bt4: TButton
     Tag = 3
@@ -230,6 +233,7 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 4
     OnClick = DrumPadClick
+    OnMouseDown = BtMouseDown
   end
   object Bt5: TButton
     Tag = 4
@@ -246,6 +250,7 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 5
     OnClick = DrumPadClick
+    OnMouseDown = BtMouseDown
   end
   object Bt6: TButton
     Tag = 5
@@ -262,6 +267,7 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 6
     OnClick = DrumPadClick
+    OnMouseDown = BtMouseDown
   end
   object Bt1: TButton
     Tag = 6
@@ -278,6 +284,7 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 1
     OnClick = DrumPadClick
+    OnMouseDown = BtMouseDown
   end
   object Bt2: TButton
     Tag = 7
@@ -294,6 +301,7 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 2
     OnClick = DrumPadClick
+    OnMouseDown = BtMouseDown
   end
   object Bt3: TButton
     Tag = 8
@@ -310,6 +318,7 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 3
     OnClick = DrumPadClick
+    OnMouseDown = BtMouseDown
   end
   object CBMetronome: TCheckBox
     Left = 316
@@ -337,9 +346,8 @@ object FmLunchBox: TFmLunchBox
     Width = 65
     Height = 17
     Caption = 'De&lay'
-    Enabled = False
     TabOrder = 12
-    OnClick = CBMetronomeClick
+    OnClick = CBDelayClick
   end
   object BtRobotize: TButton
     Left = 316
@@ -357,7 +365,6 @@ object FmLunchBox: TFmLunchBox
     Width = 107
     Height = 26
     Caption = 'Rec&&Rev (&B)'
-    Enabled = False
     TabOrder = 14
     OnMouseDown = BtRecRevMouseDown
     OnMouseUp = BtRecRevMouseUp
@@ -510,7 +517,7 @@ object FmLunchBox: TFmLunchBox
         Visible = False
         OnClick = MIVSTClick
       end
-      object MoreSettings1: TMenuItem
+      object MIMoreSettings: TMenuItem
         Caption = '&More Settings'
         Visible = False
       end

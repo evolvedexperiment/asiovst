@@ -39,6 +39,7 @@ type
     property SampleRate : Single read GetSampleRate write SetSampleRate;
     property MidiKeyNr : Integer read fMidiKeyNr write fMidiKeyNr;
     property Velocity : Integer read fVelocity write fVelocity;
+    property SampleIndex : Integer read fSampleIndex;
   end;
 
 implementation
