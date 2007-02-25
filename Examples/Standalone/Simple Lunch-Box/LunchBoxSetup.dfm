@@ -1,10 +1,10 @@
 object FmSetup: TFmSetup
-  Left = 805
-  Top = 354
+  Left = 333
+  Top = 221
   BorderStyle = bsDialog
   Caption = 'Setup'
-  ClientHeight = 86
-  ClientWidth = 224
+  ClientHeight = 109
+  ClientWidth = 228
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,6 +14,9 @@ object FmSetup: TFmSetup
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  DesignSize = (
+    228
+    109)
   PixelsPerInch = 96
   TextHeight = 13
   object LbPreset: TLabel
@@ -34,35 +37,58 @@ object FmSetup: TFmSetup
     Caption = 'Output:'
     Layout = tlCenter
   end
+  object Label2: TLabel
+    Left = 4
+    Top = 88
+    Width = 138
+    Height = 13
+    Caption = 'Playback Samplerate'
+    Layout = tlCenter
+  end
   object CBDrivers: TComboBox
     Left = 88
     Top = 2
-    Width = 132
+    Width = 136
     Height = 21
     Style = csDropDownList
-    Color = clBtnFace
+    Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 0
     OnChange = CBDriversChange
+    ExplicitWidth = 132
   end
   object CBOutput: TComboBox
     Left = 64
     Top = 29
-    Width = 156
+    Width = 160
     Height = 21
     Style = csDropDownList
-    Color = clBtnFace
+    Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
     TabOrder = 1
     OnChange = CBOutputChange
+    ExplicitWidth = 156
   end
   object BtControlPanel: TButton
     Left = 4
-    Top = 56
-    Width = 216
+    Top = 55
+    Width = 220
     Height = 25
+    Anchors = [akLeft, akTop, akRight]
     Caption = 'Control Panel'
     TabOrder = 2
     OnClick = BtControlPanelClick
+  end
+  object SESampleRate: TSpinEdit
+    Left = 148
+    Top = 85
+    Width = 76
+    Height = 22
+    Anchors = [akLeft, akTop, akRight]
+    MaxValue = 0
+    MinValue = 0
+    TabOrder = 3
+    Value = 44100
+    OnChange = SESampleRateChange
   end
 end

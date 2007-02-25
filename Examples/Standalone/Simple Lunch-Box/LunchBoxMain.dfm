@@ -3,7 +3,7 @@ object FmLunchBox: TFmLunchBox
   Top = 208
   BorderStyle = bsSingle
   Caption = 'Simple Lunch Box'
-  ClientHeight = 329
+  ClientHeight = 333
   ClientWidth = 429
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,6 +18,8 @@ object FmLunchBox: TFmLunchBox
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnDeactivate = FormDeactivate
+  OnKeyDown = FormKeyDown
+  OnKeyUp = FormKeyUp
   PixelsPerInch = 96
   TextHeight = 16
   object LbQuantize: TLabel
@@ -74,6 +76,8 @@ object FmLunchBox: TFmLunchBox
       TabOrder = 0
       Text = 'Acoustic'
       OnChange = CBKitChange
+      OnKeyDown = FormKeyDown
+      OnKeyUp = FormKeyUp
       Items.Strings = (
         'Acoustic'
         'Detroit'
@@ -107,6 +111,8 @@ object FmLunchBox: TFmLunchBox
       TabOrder = 1
       Value = 120
       OnChange = SETempoChange
+      OnKeyDown = FormKeyDown
+      OnKeyUp = FormKeyUp
     end
     object ToolButton4: TToolButton
       Left = 201
@@ -134,6 +140,8 @@ object FmLunchBox: TFmLunchBox
       TabOrder = 2
       Value = 1
       OnChange = SEBarChange
+      OnKeyDown = FormKeyDown
+      OnKeyUp = FormKeyUp
     end
     object ToolButton3: TToolButton
       Left = 274
@@ -163,6 +171,8 @@ object FmLunchBox: TFmLunchBox
       TabOrder = 3
       Text = 'Flat'
       OnChange = CBKitChange
+      OnKeyDown = FormKeyDown
+      OnKeyUp = FormKeyUp
       Items.Strings = (
         'Human'
         'Flat')
@@ -182,6 +192,8 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 7
     OnClick = DrumPadClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtMouseDown
   end
   object Bt8: TButton
@@ -199,6 +211,8 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 8
     OnClick = DrumPadClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtMouseDown
   end
   object Bt9: TButton
@@ -216,6 +230,8 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 9
     OnClick = DrumPadClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtMouseDown
   end
   object Bt4: TButton
@@ -233,6 +249,8 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 4
     OnClick = DrumPadClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtMouseDown
   end
   object Bt5: TButton
@@ -250,6 +268,8 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 5
     OnClick = DrumPadClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtMouseDown
   end
   object Bt6: TButton
@@ -267,6 +287,8 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 6
     OnClick = DrumPadClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtMouseDown
   end
   object Bt1: TButton
@@ -284,6 +306,8 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 1
     OnClick = DrumPadClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtMouseDown
   end
   object Bt2: TButton
@@ -301,6 +325,8 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 2
     OnClick = DrumPadClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtMouseDown
   end
   object Bt3: TButton
@@ -318,6 +344,8 @@ object FmLunchBox: TFmLunchBox
     ParentFont = False
     TabOrder = 3
     OnClick = DrumPadClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtMouseDown
   end
   object CBMetronome: TCheckBox
@@ -330,6 +358,8 @@ object FmLunchBox: TFmLunchBox
     State = cbChecked
     TabOrder = 10
     OnClick = CBMetronomeClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
   end
   object CBOverdrive: TCheckBox
     Left = 316
@@ -339,6 +369,8 @@ object FmLunchBox: TFmLunchBox
     Caption = 'Overdr&ive'
     TabOrder = 11
     OnClick = CBMetronomeClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
   end
   object CBDelay: TCheckBox
     Left = 316
@@ -348,6 +380,8 @@ object FmLunchBox: TFmLunchBox
     Caption = 'De&lay'
     TabOrder = 12
     OnClick = CBDelayClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
   end
   object BtRobotize: TButton
     Left = 316
@@ -356,6 +390,8 @@ object FmLunchBox: TFmLunchBox
     Height = 26
     Caption = 'Robotize (&V)'
     TabOrder = 13
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtRobotizeMouseDown
     OnMouseUp = BtRobotizeMouseUp
   end
@@ -366,16 +402,20 @@ object FmLunchBox: TFmLunchBox
     Height = 26
     Caption = 'Rec&&Rev (&B)'
     TabOrder = 14
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtRecRevMouseDown
     OnMouseUp = BtRecRevMouseUp
   end
   object BtFlange: TButton
     Left = 316
-    Top = 300
+    Top = 298
     Width = 107
     Height = 26
     Caption = 'Flange (&N)'
     TabOrder = 15
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     OnMouseDown = BtFlangeMouseDown
     OnMouseUp = BtFlangeMouseUp
   end
@@ -389,15 +429,19 @@ object FmLunchBox: TFmLunchBox
     TabOrder = 16
     ThumbLength = 14
     OnChange = TBVolumeChange
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
   end
   object BtClear: TButton
     Left = 316
     Top = 174
     Width = 107
-    Height = 32
+    Height = 35
     Caption = 'Clea&r'
     TabOrder = 17
     OnClick = BtClearClick
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
   end
   object CBQuantize: TComboBox
     Left = 369
@@ -416,6 +460,8 @@ object FmLunchBox: TFmLunchBox
     TabOrder = 18
     Text = '16th'
     OnChange = CBKitChange
+    OnKeyDown = FormKeyDown
+    OnKeyUp = FormKeyUp
     Items.Strings = (
       'free'
       '4th'
@@ -455,7 +501,7 @@ object FmLunchBox: TFmLunchBox
     OnReset = ASIOHostReset
     OnLatencyChanged = ASIOHostReset
     OnSampleRateChanged = ASIOHostSampleRateChanged
-    OnBufferSwitch32 = ASIOHostBufferSwitch
+    OnBufferSwitch32 = ASIOHostBufferSwitch32
     Left = 104
     Top = 89
   end
@@ -491,11 +537,11 @@ object FmLunchBox: TFmLunchBox
         Caption = '-'
       end
       object MIExportWAV: TMenuItem
-        Caption = 'E&xport WAV'
+        Caption = 'E&xport WAV...'
         OnClick = MIExportWAVClick
       end
       object MIExportMID: TMenuItem
-        Caption = 'Ex&port MID'
+        Caption = 'Ex&port MID...'
         OnClick = MIExportMIDClick
       end
       object N4: TMenuItem
@@ -514,7 +560,6 @@ object FmLunchBox: TFmLunchBox
       end
       object MIVST: TMenuItem
         Caption = '&VST Settings'
-        Visible = False
         OnClick = MIVSTClick
       end
       object MIMoreSettings: TMenuItem

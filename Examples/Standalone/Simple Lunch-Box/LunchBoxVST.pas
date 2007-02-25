@@ -111,7 +111,7 @@ begin
      DLLFileName:=EdRealtimeVST.Text;
      Active:=True;
     end;
-   BtRealtimeEditor.Enabled:=Active;
+   BtOutputEditor.Enabled:=Active;
   end;
 end;
 

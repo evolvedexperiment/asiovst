@@ -3,7 +3,7 @@ unit LunchBoxSetup;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Forms, StdCtrls;
+  Windows, Messages, SysUtils, Classes, Controls, Forms, StdCtrls, Spin;
 
 type
   TFmSetup = class(TForm)
@@ -12,12 +12,15 @@ type
     CBDrivers: TComboBox;
     CBOutput: TComboBox;
     BtControlPanel: TButton;
+    Label2: TLabel;
+    SESampleRate: TSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure CBDriversChange(Sender: TObject);
     procedure CBInputChange(Sender: TObject);
     procedure CBOutputChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BtControlPanelClick(Sender: TObject);
+    procedure SESampleRateChange(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -66,6 +69,7 @@ begin
       OutputChannelInfos[2 * i + 1].name);
      end;
     CBOutput.ItemIndex := 0;
+    SESampleRate.Value:=Round(Samplerate);
     OnReset(Self);
     Active:=True;
    end;
@@ -89,6 +93,17 @@ begin
  Settings.WriteInteger('Layout','Setup Left',Left);
  Settings.WriteInteger('Setup','ASIO Driver',CBDrivers.ItemIndex);
  Settings.Free;
+end;
+
+procedure TFmSetup.SESampleRateChange(Sender: TObject);
+var i : Integer;
+begin
+ for i:=0 to FmLunchBox.EventList.Count-1 do
+  with FmLunchBox.EventList[i] do
+   begin
+    SampleRate:=sqr(FmLunchBox.ASIOHost.SampleRate)/SESampleRate.Value;
+    Frequency:=Samples[SampleIndex].SampleRate/SampleRate;
+   end;
 end;
 
 end.

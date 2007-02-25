@@ -95,11 +95,11 @@ begin
  while fSampleFrac>=1 do
   begin
    inc(fSamplePos);
-   if fSamplePos>=Length(Samples[fSampleIndex])
+   if fSamplePos>=Length(Samples[fSampleIndex].Data)
     then NoteOff;
    fSampleFrac:=fSampleFrac-1;
    Move(fMem[1],fMem[0],12);
-   fMem[3]:=Samples[fSampleIndex,fSamplePos];
+   fMem[3]:=Samples[fSampleIndex].Data[fSamplePos];
   end;
 end;
 

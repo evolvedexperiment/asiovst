@@ -9,6 +9,10 @@ uses
 
 type
   TComplexDouble = record Re, Im : Double; end;
+  TSampleRec = record
+                Data       : TSingleDynArray;
+                SampleRate : Double;
+               end;
   TFmLunchBox = class(TForm)
     VstHost: TVstHost;
     ASIOHost: TASIOHost;
@@ -73,8 +77,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
     procedure ASIOHostReset(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure TBVolumeChange(Sender: TObject);
@@ -103,8 +105,10 @@ type
     procedure MILoadBeatClick(Sender: TObject);
     procedure MIAboutClick(Sender: TObject);
     procedure CBDelayClick(Sender: TObject);
-    procedure BtMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure BtMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     fMetAngle       : TComplexDouble;
     fMetPosition    : TComplexDouble;
@@ -113,6 +117,7 @@ type
     fFlange         : Boolean;
     fRobotize       : Boolean;
     fRecRev         : Boolean;
+    fRealtimeVST    : Boolean;
     fBeatPos        : Integer;
     fVolume         : Single;
     fSamplesPerBeat : Single;
@@ -136,12 +141,14 @@ type
     procedure CreateSample(Index: Integer);
     procedure Requantize;
     procedure AdjustDelayLength;
+    procedure RenderOutput(Buffer: TArrayOfSingleDynArray; BufferLength: Integer; Loop: Boolean);
   public
     property PatternPosition : Integer read fPatPos write fPatPos;
+    property EventList : TLunchBoxEventList read fEventList;
   end;
 
 var FmLunchBox: TFmLunchBox;
-    Samples: Array [0..8] of TSingleDynArray;
+    Samples: Array [0..8] of TSampleRec;
 
 implementation
 
@@ -164,6 +171,30 @@ begin
  fEventList.Free;
 end;
 
+procedure TFmLunchBox.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+ case Key of
+  86 : fRobotize:=True;
+  66 : fRecRev:=True;
+  78 : fFlange:=True;
+  79 : CBOverdrive.Checked:=not CBOverdrive.Checked;
+  80 : CBDelay.Checked:=not CBDelay.Checked;
+  82 : fRealtimeVST:=True;
+ end;
+end;
+
+procedure TFmLunchBox.FormKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+ case Key of
+  86 : fRobotize:=False;
+  66 : fRecRev:=False;
+  78 : fFlange:=False;
+  82 : fRealtimeVST:=False;
+ end;
+end;
+
 procedure TFmLunchBox.MIAboutClick(Sender: TObject);
 begin
  FmAbout.Show;
@@ -178,10 +209,25 @@ begin
 end;
 
 procedure TFmLunchBox.MIExportWAVClick(Sender: TObject);
+var Buffer : TArrayOfSingleDynArray;
+    i      : Integer;
 begin
  if SaveWAVDialog.Execute then
   begin
-   ShowMessage('Feature not implemented yet');
+   ASIOHost.Active:=False;
+   SetLength(Buffer,2);
+   SetLength(Buffer[0],2*fMaxPatSamples);
+   SetLength(Buffer[1],2*fMaxPatSamples);
+   fSamplesCount:=0; fPatPos:=0;
+   for i:=0 to Length(fDelayBuffer)-1 do FillChar(fDelayBuffer[i,0],Length(fDelayBuffer[i])*SizeOf(Single),0);
+   for i:=0 to Length(fFlangeBuffer)-1 do FillChar(fFlangeBuffer[i,0],Length(fFlangeBuffer[i])*SizeOf(Single),0);
+   for i:=0 to Length(fRobotBuffer)-1 do FillChar(fRobotBuffer[i,0],Length(fRobotBuffer[i])*SizeOf(Single),0);
+   for i:=0 to Length(fRecRevBuffer)-1 do FillChar(fRecRevBuffer[i,0],Length(fRecRevBuffer[i])*SizeOf(Single),0);
+   for i:=0 to fEventList.Count - 1 do fEventList.Items[i].NoteOff;
+   RenderOutput(Buffer,2*fMaxPatSamples,false);
+   SaveWAVFileSeparateStereo(SaveWAVDialog.FileName,@Buffer[0,0],@Buffer[1,0],Round(ASIOHost.SampleRate),2,16,2*fMaxPatSamples);
+   fSamplesCount:=0; fPatPos:=0;
+   ASIOHost.Active:=True;
   end;
 end;
 
@@ -278,11 +324,33 @@ procedure TFmLunchBox.CBKitChange(Sender: TObject);
 var sr,c,sz,i : Integer;
     pt        : PSingle;
     str       : string;
+    Fl        : TSearchRec;
+    done      : Boolean;
 begin
  with TStringList.Create do
   try
    str:=ExtractFilePath(Application.ExeName)+'.\sounds\'+CBKit.Text+'.kit';
-   if not fileexists(str) then exit;
+   if not fileexists(str) then
+    begin
+     done:=FindFirst(ExtractFilePath(Application.ExeName)+'.\sounds\*.kit',faAnyFile,Fl)<>0;
+     while not done do
+      begin
+       with TStringList.Create do
+        try
+         LoadFromFile(ExtractFilePath(Application.ExeName)+'.\sounds\'+Fl.Name);
+         if CBKit.Text=Strings[0] then
+          begin
+           str:=ExtractFilePath(Application.ExeName)+'.\sounds\'+Fl.Name;
+           Break;
+          end;
+        finally
+         Free;
+         done:=FindNext(Fl)<>0;
+        end;
+      end;
+     FindClose(Fl);
+     if not fileexists(str) then exit;
+    end;
    LoadFromFile(str);
    for i := 0 to 8 do
     begin
@@ -290,10 +358,11 @@ begin
      if FileExists(str) then
       begin
        pt:=LoadWAVFileMono(str,sr, c, sz);
-       SetLength(Samples[i],sz);
+       SetLength(Samples[i].Data,sz);
+       Samples[i].SampleRate:=sr;
        for c := 0 to sz - 1 do
         begin
-         Samples[i,c]:=(pt)^;
+         Samples[i].Data[c]:=(pt)^;
          Inc(pt);
         end;
       end;
@@ -362,8 +431,8 @@ begin
  with nn do
   begin
    PatternPosition:=fPatPos;
-   SampleRate:=ASIOHost.SampleRate;
-   Frequency:=32000/SampleRate;
+   SampleRate:=sqr(ASIOHost.SampleRate)/FmSetup.SESampleRate.Value;
+   Frequency:=Samples[Index].SampleRate/SampleRate;
    NoteOn(1);
   end;
  fEventList.Add(nn)
@@ -439,13 +508,13 @@ procedure TFmLunchBox.Requantize;
 var i : Integer;
     q : Double;
 begin
-    case CBQuantize.ItemIndex of
-     0 : q:=1;
-     1 : q:=1/fSamplesPerBeat;
-     2 : q:=2/fSamplesPerBeat;
-     3 : q:=4/fSamplesPerBeat;
-     else exit;
-    end;
+ case CBQuantize.ItemIndex of
+  0 : q:=1;
+  1 : q:=1/fSamplesPerBeat;
+  2 : q:=2/fSamplesPerBeat;
+  3 : q:=4/fSamplesPerBeat;
+  else exit;
+ end;
  for i := 0 to fEventList.Count - 1 do
   with fEventList.Items[i] do
    begin
@@ -453,46 +522,46 @@ begin
    end;
 end;
 
-procedure TFmLunchBox.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
+procedure TFmLunchBox.RenderOutput(Buffer: TArrayOfSingleDynArray; BufferLength : Integer; Loop: Boolean);
 var i,j : Integer;
     tmp : Single;
 begin
- for i := 0 to ASIOHost.BufferSize - 1 do
+ for i := 0 to BufferLength - 1 do
   begin
-   inc(fPatPos);
-   if fPatPos>=fMaxPatSamples then
-    begin
-     fPatPos:=0;
-//     fSamplesCount:=fSamplesPerBeat; fBeatPos:=4;
-     Requantize;
-    end;
    for j := 0 to fEventList.Count - 1 do
     begin
      if fPatPos=fEventList.Items[j].PatternPosition
       then fEventList.Items[j].NoteOn(1);
      if fEventList.Items[j].IsPlaying
-      then OutBuffer[0,i] := OutBuffer[0,i] + fEventList.Items[j].Process;
+      then Buffer[0,i] := Buffer[0,i] + fEventList.Items[j].Process;
+    end;
+   inc(fPatPos);
+   if (fPatPos>=fMaxPatSamples) and Loop then
+    begin
+     fPatPos:=0;
+//     fSamplesCount:=fSamplesPerBeat; fBeatPos:=4;
+     Requantize;
     end;
   end;
 
- move(OutBuffer[0,0], OutBuffer[1,0], ASIOHost.BufferSize * SizeOf(Single));
+ move(Buffer[0,0], Buffer[1,0], BufferLength * SizeOf(Single));
 
  // Apply Overdrive
  if CBOverdrive.Checked then
-  for j := 0 to ASIOHost.OutputChannelCount - 1 do
-   for i := 0 to ASIOHost.BufferSize - 1
-    do OutBuffer[j,i] := 0.3*Tanh2c(12*OutBuffer[j,i]);
+  for j := 0 to Length(Buffer) - 1 do
+   for i := 0 to BufferLength - 1
+    do Buffer[j,i] := 0.3*Tanh2c(12*Buffer[j,i]);
 
  // Apply Flange
  if fFlange then
-  for i := 0 to ASIOHost.BufferSize - 1 do
+  for i := 0 to BufferLength - 1 do
    begin
-    for j := 0 to ASIOHost.OutputChannelCount - 1 do
+    for j := 0 to Length(Buffer) - 1 do
      begin
-      tmp:=OutBuffer[j,i];
+      tmp:=Buffer[j,i];
       if (i mod 2)=0
-       then OutBuffer[j,i] := OutBuffer[j,i] - fFlangePosition.Re*fFlangeBuffer[j,1]
-       else OutBuffer[j,i] := OutBuffer[j,i] - fFlangePosition.Im*fFlangeBuffer[j,2];
+       then Buffer[j,i] := Buffer[j,i] - fFlangePosition.Re*fFlangeBuffer[j,1]
+       else Buffer[j,i] := Buffer[j,i] - fFlangePosition.Im*fFlangeBuffer[j,2];
       fFlangeBuffer[j,2]:=fFlangeBuffer[j,1];
       fFlangeBuffer[j,1]:=fFlangeBuffer[j,0];
       fFlangeBuffer[j,0]:=tmp;
@@ -504,12 +573,12 @@ begin
 
  // Apply Robotize
  if fRobotize then
-  for i := 0 to ASIOHost.BufferSize - 1 do
+  for i := 0 to BufferLength - 1 do
    begin
-    for j := 0 to ASIOHost.OutputChannelCount-1 do
+    for j := 0 to Length(Buffer)-1 do
      begin
-      fRobotBuffer[j,fRobotPos] := 0.7 * fRobotBuffer[j,fRobotPos] + 0.6 * OutBuffer[j,i];
-      OutBuffer[j,i] := fRobotBuffer[j,fRobotPos];
+      fRobotBuffer[j,fRobotPos] := 0.7 * fRobotBuffer[j,fRobotPos] + 0.6 * Buffer[j,i];
+      Buffer[j,i] := fRobotBuffer[j,fRobotPos];
      end;
     if fRobotPos<Length(fRobotBuffer[0])
      then inc(fRobotPos)
@@ -517,25 +586,25 @@ begin
     end;
 
  if fRecRev then
-  for j := 0 to ASIOHost.OutputChannelCount-1 do
+  for j := 0 to Length(Buffer)-1 do
    begin
-    SetLength(fRecRevBuffer[j],Length(fRecRevBuffer[j])+ASIOHost.BufferSize);
-    Move(OutBuffer[j,0],fRecRevBuffer[j,Length(fRecRevBuffer[j])-ASIOHost.BufferSize],ASIOHost.BufferSize*SizeOf(Single));
+    SetLength(fRecRevBuffer[j],Length(fRecRevBuffer[j])+BufferLength);
+    Move(Buffer[j,0],fRecRevBuffer[j,Length(fRecRevBuffer[j])-BufferLength],BufferLength*SizeOf(Single));
    end else
  if Length(fRecRevBuffer[0])>0 then
-  for j := 0 to ASIOHost.OutputChannelCount-1 do
+  for j := 0 to Length(Buffer)-1 do
    begin
-    for i:=0 to ASIOHost.BufferSize-1
-     do OutBuffer[j,i]:=OutBuffer[j,i]+fRecRevBuffer[j,Length(fRecRevBuffer[j])-i-1];
-    SetLength(fRecRevBuffer[j],Length(fRecRevBuffer[j])-ASIOHost.BufferSize);
+    for i:=0 to BufferLength-1
+     do Buffer[j,i]:=Buffer[j,i]+fRecRevBuffer[j,Length(fRecRevBuffer[j])-i-1];
+    SetLength(fRecRevBuffer[j],Length(fRecRevBuffer[j])-BufferLength);
    end;
 
- for i := 0 to ASIOHost.BufferSize - 1 do
+ for i := 0 to BufferLength - 1 do
   begin
-   for j := 0 to ASIOHost.OutputChannelCount - 1 do
+   for j := 0 to Length(Buffer) - 1 do
     begin
-     OutBuffer[j,i] := OutBuffer[j,i] + fDelayVolume[1]*fDelayBuffer[j,fDelayPos[j]];
-     fDelayBuffer[j,fDelayPos[j]]:=OutBuffer[j,i];
+     Buffer[j,i] := Buffer[j,i] + fDelayVolume[1]*fDelayBuffer[j,fDelayPos[j]];
+     fDelayBuffer[j,fDelayPos[j]]:=Buffer[j,i];
      inc(fDelayPos[j]);
      if fDelayPos[j]>=fDelayLength[j]
       then fDelayPos[j]:=0;
@@ -543,33 +612,42 @@ begin
    fDelayVolume[1]:=0.9999*fDelayVolume[1]+0.0001*fDelayVolume[0];
   end;
 
-//   VSTHost[0].ProcessReplacing(@OutBuffer[ASIOHost.OuputChannelOffset],@OutBuffer[ASIOHost.OutputChannelOffset],ASIOHost.BufferSize);
-//   VSTHost[1].ProcessReplacing(@OutBuffer[ASIOHost.OuputChannelOffset],@OutBuffer[ASIOHost.OutputChannelOffset],ASIOHost.BufferSize);
+ if VSTHost[0].Active and fRealtimeVST
+  then VSTHost[0].ProcessReplacing(@Buffer[0],@Buffer[0],BufferLength);
+ if VSTHost[1].Active
+  then VSTHost[1].ProcessReplacing(@Buffer[0],@Buffer[0],BufferLength);
 
  // Apply Metronome
- for i := 0 to ASIOHost.BufferSize - 1 do
-  begin
-   tmp:=fMetPosition.Re*fMetAngle.Re-fMetPosition.Im*fMetAngle.Im;
-   fMetPosition.Im:=fMetPosition.Im*fMetAngle.Re+fMetPosition.Re*fMetAngle.Im;
-   fMetPosition.Re:=tmp;
+ if Loop then
+  for i := 0 to BufferLength - 1 do
+   begin
+    tmp:=fMetPosition.Re*fMetAngle.Re-fMetPosition.Im*fMetAngle.Im;
+    fMetPosition.Im:=fMetPosition.Im*fMetAngle.Re+fMetPosition.Re*fMetAngle.Im;
+    fMetPosition.Re:=tmp;
 
-   if fBeatPos=0 then tmp:=2*sqr(tmp)-1;
-   tmp:=fVolume*tmp*fMetroVolume[0];
-   fMetroVolume[0]:=0.995*fMetroVolume[0];
-   fSamplesCount:=fSamplesCount+1;
-   if fSamplesCount>fSamplesPerBeat then
-    begin
-     fMetroVolume[0]:=1;
-     fSamplesCount:=fSamplesCount-fSamplesPerBeat;
-     fMetPosition.Re:=1;
-     fMetPosition.Im:=0;
-     if fBeatPos<3
-      then inc(fBeatPos)
-      else begin fBeatPos:=0; fRecRev:=False; end;
-    end;
-   for j := 0 to ASIOHost.OutputChannelCount - 1
-    do OutBuffer[j,i] := OutBuffer[j,i] + tmp * fMetroVolume[1];
-  end;
+    if fBeatPos=0 then tmp:=2*sqr(tmp)-1;
+    tmp:=fVolume*tmp*fMetroVolume[0];
+    fMetroVolume[0]:=0.995*fMetroVolume[0];
+    fSamplesCount:=fSamplesCount+1;
+    if fSamplesCount>fSamplesPerBeat then
+     begin
+      fMetroVolume[0]:=1;
+      fSamplesCount:=fSamplesCount-fSamplesPerBeat;
+      fMetPosition.Re:=1;
+      fMetPosition.Im:=0;
+      if fBeatPos<3
+       then inc(fBeatPos)
+       else begin fBeatPos:=0; fRecRev:=False; end;
+     end;
+    for j := 0 to Length(Buffer) - 1
+     do Buffer[j,i] := Buffer[j,i] + tmp * fMetroVolume[1];
+   end;
+end;
+
+procedure TFmLunchBox.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
+  OutBuffer: TArrayOfSingleDynArray);
+begin
+ RenderOutput(OutBuffer, ASIOHost.BufferSize, True);
 end;
 
 procedure TFmLunchBox.ASIOHostReset(Sender: TObject);

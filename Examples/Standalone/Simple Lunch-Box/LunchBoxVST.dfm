@@ -1,6 +1,6 @@
 object FmVST: TFmVST
-  Left = 666
-  Top = 285
+  Left = 343
+  Top = 356
   Caption = 'VST Setup'
   ClientHeight = 128
   ClientWidth = 299
