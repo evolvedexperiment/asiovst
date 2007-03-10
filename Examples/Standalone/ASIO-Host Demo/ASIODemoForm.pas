@@ -1,14 +1,19 @@
 unit AsioDemoForm;
 
+{$MODE Delphi}
+
 interface
 
-uses Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+uses {$IFDEF FPC} LCLType, LResources, Buttons, {$ENDIF}
+     Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
      Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase;
 
 type
   TComplexDouble = record
                     Re, Im : Double;
                    end;
+
+  { TFmASIO }
   TFmASIO = class(TForm)
     Bt_CP: TButton;
     Bt_Play: TButton;
@@ -52,7 +57,9 @@ var
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 uses inifiles, registry, DASIOConvert;
 
@@ -95,7 +102,7 @@ begin
   begin
    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
    ChannelBox.Clear;
-   for i := 0 to (ASIOHost.OutputChannels div 2) - 1 do
+   for i := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
    begin
     ChannelBox.Items.Add(
      ASIOHost.OutputChannelInfos[2 * i].name + ' / ' +
@@ -203,4 +210,10 @@ begin
   else LbPanorama.Caption:='Panorama: '+Inttostr(round(100*(fPan*2-1)));
 end;
 
+{$IFDEF FPC}
+initialization
+  {$i AsioDemoForm.lrs}
+{$ENDIF}
+
 end.
+
