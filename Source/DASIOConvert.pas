@@ -4078,6 +4078,7 @@ end;
 
 initialization
  Use_x87;
+ {$IFNDEF FPC}
  try
   FPUType := fpuX87;
   asm
@@ -4113,4 +4114,5 @@ initialization
  @END_3DNow:
  end;
  if FPUType = fpu3DNow then Use_3DNow;
+ {$ENDIF}
 end.

@@ -17,8 +17,9 @@ unit DASIOHost;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, ActiveX, ASIO, DASIOConvert, Types, Dialogs,
-     DASIOGenerator, {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
+uses {$IFDEF FPC} LCLIntf, {$ENDIF} Windows, Messages, SysUtils, Classes,
+     ActiveX, ASIO, DASIOConvert, Types, Dialogs, DASIOGenerator,
+     {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
      {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls,
      ASIOMixer, {$ENDIF} {$IFDEF D5CP} dsgnintf, {$ENDIF} DDSPBase;
 
@@ -50,6 +51,8 @@ type
   TSingleDynArray = Types.TSingleDynArray;
   TArrayOfDoubleDynArray = DDSPBase.TArrayOfDoubleDynArray;
   TArrayOfSingleDynArray = DDSPBase.TArrayOfSingleDynArray;
+  PArrayOfDoubleDynArray = DDSPBase.PArrayOfDoubleDynArray;
+  PArrayOfSingleDynArray = DDSPBase.PArrayOfSingleDynArray;
 
   TAsioDriverList = array of TAsioDriverDesc;
   TASIOCanDo = (acdInputMonitor, acdTimeInfo, acdTimeCode, acdTransport,
@@ -739,8 +742,8 @@ constructor TCustomASIOHostBasic.Create(AOwner: TComponent);
 begin
 //  if AOwner is TForm then Handy := TForm(AOwner).Handle else Handy := Application.Handle;
   {$IFNDEF FPC}
-  fHandle:=AllocateHWnd(WndProc);
   {$ENDIF}
+  fHandle:=AllocateHWnd(WndProc);
   //if theHost<>nil then
   theHost := Self;
   FUnAlignedBuffer:=nil;
@@ -748,8 +751,8 @@ begin
   FOutputBuffer := nil;
   FASIOTime := TASIOTimeSub.Create;
   {$IFNDEF FPC}
-  FDriverList := GetDriverList;
   {$ENDIF}
+  FDriverList := GetDriverList;
 
   // set the callbacks record fields
   FCallbacks.bufferSwitch := ASIOBufferSwitch;
@@ -773,8 +776,8 @@ begin
  if Active then Active := False;
  CloseDriver;
  {$IFNDEF FPC}
- DeallocateHWnd(fHandle);
  {$ENDIF}
+ DeallocateHWnd(fHandle);
  SetLength(FASIOdriverlist, 0);
  SetLength(FASIOdriverlist, 0);
  FDriverList.Free;
@@ -867,10 +870,8 @@ begin
  SetSampleRate(FSampleRate);
  FDriver.GetChannels(FInputChannelCount, FOutputChannelCount);
 
- {$IFNDEF FPC}
  GetMem(FUnAlignedBuffer, SizeOf(TAsioBufferInfo) * (FInputChannelCount + FOutputChannelCount) + 16);
- FInputBuffer := Ptr(Integer(FUnAlignedBuffer)+16-(Integer(FUnAlignedBuffer) mod 16));
- {$ENDIF}
+ FInputBuffer := PASIOBufferInfo(Integer(FUnAlignedBuffer)+16-(Integer(FUnAlignedBuffer) mod 16));
 
  SetLength(InputChannelInfos, FInputChannelCount);
  SetLength(FInConvertors, FInputChannelCount);
@@ -989,11 +990,11 @@ begin
  begin
  {$IFDEF OpenASIO}
  try
-  if OpenASIOCreate(ASIOdriverlist[FDriverIndex].id, Driver) then
+  if OpenASIOCreate(FASIOdriverlist[FDriverIndex].id, FDriver) then
   begin
-   if assigned(Driver) then
-    if not Succeeded(Driver.Init(Handy)) then
-     Driver := nil;
+   if assigned(FDriver) then
+    if not Succeeded(FDriver.Init(fHandle)) then
+     FDriver := nil;
   end;
  except
  end;
@@ -1002,9 +1003,9 @@ begin
   if CreateBeRoASIO(FASIOdriverlist[FDriverIndex].id, FDriver) then
   begin
    {$IFNDEF FPC}
+   {$ENDIF}
    if assigned(FDriver) then
     if not Succeeded(FDriver.Init(fHandle)) then FDriver := nil;
-   {$ENDIF}
   end;
   except
    FDriver := nil;
@@ -1431,10 +1432,8 @@ begin
  for i := 0 to FOutputChannelCount - 1 do FOutputVolume[i] := 1;
  {$IFDEF ASIOMixer} SetupMixer; {$ENDIF}
 
- {$IFNDEF FPC}
  GetMem(FUnAlignedBuffer, SizeOf(TAsioBufferInfo) * (FInputChannelCount + FOutputChannelCount) + 16);
- FInputBuffer := Ptr(Integer(FUnAlignedBuffer)+16-(Integer(FUnAlignedBuffer) mod 16));
- {$ENDIF}
+ FInputBuffer := PASIOBufferInfo(Integer(FUnAlignedBuffer)+16-(Integer(FUnAlignedBuffer) mod 16));
 
  SetLength(InputChannelInfos, FInputChannelCount);
  SetLength(FSingleInBuffer, FInputChannelCount);
