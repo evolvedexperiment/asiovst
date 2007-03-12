@@ -1,8 +1,9 @@
 program ASIODemo;
 
-{$MODE Delphi}
+{$mode objfpc}{$H+}
 
 uses
+  Interfaces, // this includes the LCL widgetset
   Forms,
   AsioDemoForm in 'ASIODemoForm.pas' {FmASIO}, HostASIOLaz;
 

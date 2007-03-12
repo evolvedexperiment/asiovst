@@ -4,9 +4,10 @@ unit AsioDemoForm;
 
 interface
 
-uses {$IFDEF FPC} LCLType, LResources, Buttons, {$ENDIF}
-     Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-     Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase;
+uses {$IFDEF FPC} LCLType, LResources, Buttons,
+     {$ELSE} Windows, Messages, Math, {$ENDIF}
+     SysUtils, Classes, Graphics, Controls, Forms,
+     StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase;
 
 type
   TComplexDouble = record
@@ -61,10 +62,11 @@ implementation
 {$R *.DFM}
 {$ENDIF}
 
-uses inifiles, registry, DASIOConvert;
+uses inifiles, DASIOConvert;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
+ Exit;
  DriverCombo.Items := ASIOHost.DriverList;
  if DriverCombo.Items.Count = 0 then
   try
