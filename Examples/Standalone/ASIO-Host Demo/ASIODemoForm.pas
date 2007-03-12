@@ -1,20 +1,20 @@
 unit AsioDemoForm;
 
+{$IFDEF FPC}
 {$MODE Delphi}
+{$ENDIF}
 
 interface
 
 uses {$IFDEF FPC} LCLType, LResources, Buttons,
-     {$ELSE} Windows, Messages, Math, {$ENDIF}
-     SysUtils, Classes, Graphics, Controls, Forms,
-     StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase;
+     {$ELSE} Windows, {$ENDIF}
+     Forms, Classes, Controls, StdCtrls, DASIOHost, DDspBase;
 
 type
   TComplexDouble = record
                     Re, Im : Double;
                    end;
 
-  { TFmASIO }
   TFmASIO = class(TForm)
     Bt_CP: TButton;
     Bt_Play: TButton;
@@ -62,11 +62,10 @@ implementation
 {$R *.DFM}
 {$ENDIF}
 
-uses inifiles, DASIOConvert;
+uses SysUtils, Inifiles;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
- Exit;
  DriverCombo.Items := ASIOHost.DriverList;
  if DriverCombo.Items.Count = 0 then
   try

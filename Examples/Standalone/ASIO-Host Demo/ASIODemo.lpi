@@ -7,12 +7,10 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
-      <Language Value=""/>
-      <CharSet Value=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -35,14 +33,14 @@
         <MinVersion Minor="2" Valid="True"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="26">
       <Unit0>
         <Filename Value="ASIODemo.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="25" Y="17"/>
+        <CursorPos X="1" Y="15"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -52,10 +50,10 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="ASIODemoForm.lrs"/>
         <UnitName Value="AsioDemoForm"/>
-        <CursorPos X="10" Y="18"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="20"/>
+        <CursorPos X="104" Y="105"/>
+        <TopLine Value="78"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -68,9 +66,11 @@
       <Unit3>
         <Filename Value="..\..\..\Source\DDSPBase.pas"/>
         <UnitName Value="DDSPBase"/>
-        <CursorPos X="26" Y="523"/>
-        <TopLine Value="501"/>
-        <UsageCount Value="10"/>
+        <CursorPos X="19" Y="33"/>
+        <TopLine Value="12"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="ASIODemoForm.lrs"/>
@@ -94,18 +94,20 @@
       <Unit7>
         <Filename Value="..\..\..\Source\DASIOHost.pas"/>
         <UnitName Value="DASIOHost"/>
-        <CursorPos X="35" Y="1057"/>
-        <TopLine Value="1036"/>
+        <CursorPos X="64" Y="24"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="3"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\..\..\Source\DASIOConvert.pas"/>
         <UnitName Value="DASIOConvert"/>
-        <CursorPos X="8" Y="14"/>
+        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\..\Source\JEDI.inc"/>
@@ -116,46 +118,125 @@
       <Unit10>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\interfaces.pp"/>
         <UnitName Value="Interfaces"/>
-        <CursorPos X="32" Y="19"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
+        <CursorPos X="19" Y="7"/>
+        <TopLine Value="3"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\..\..\Source\DASIOGenerator.pas"/>
         <UnitName Value="DASIOGenerator"/>
+        <CursorPos X="5" Y="166"/>
+        <TopLine Value="124"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\win\wininc\struct.inc"/>
+        <CursorPos X="16" Y="4774"/>
+        <TopLine Value="4753"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\inc\objpash.inc"/>
+        <CursorPos X="38" Y="74"/>
+        <TopLine Value="73"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\..\..\Source\ASIO.pas"/>
+        <UnitName Value="ASIO"/>
+        <CursorPos X="20" Y="82"/>
+        <TopLine Value="48"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lclintf.pas"/>
+        <UnitName Value="LCLIntf"/>
+        <CursorPos X="37" Y="8"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\win32\system.pp"/>
+        <UnitName Value="System"/>
+        <CursorPos X="12" Y="16"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\win\wininc\messages.inc"/>
+        <CursorPos X="24" Y="1220"/>
+        <TopLine Value="1198"/>
+        <UsageCount Value="10"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\win\wininc\ascdef.inc"/>
+        <CursorPos X="1" Y="188"/>
+        <TopLine Value="166"/>
+        <UsageCount Value="10"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lmessages.pp"/>
+        <UnitName Value="LMessages"/>
+        <CursorPos X="8" Y="34"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\include\lclintfh.inc"/>
+        <CursorPos X="18" Y="63"/>
+        <TopLine Value="44"/>
+        <UsageCount Value="10"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\objpas\objpas.pp"/>
+        <UnitName Value="objpas"/>
+        <CursorPos X="8" Y="28"/>
+        <TopLine Value="7"/>
+        <UsageCount Value="10"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\win\messages.pp"/>
+        <UnitName Value="messages"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
-      </Unit11>
+      </Unit22>
+      <Unit23>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\objpas\types.pp"/>
+        <UnitName Value="types"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="7"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lcltype.pp"/>
+        <UnitName Value="LCLType"/>
+        <CursorPos X="90" Y="541"/>
+        <TopLine Value="519"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\win32lclintf.inc"/>
+        <CursorPos X="35" Y="288"/>
+        <TopLine Value="264"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit25>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
-      <Position1>
-        <Filename Value="ASIODemo.lpr"/>
-        <Caret Line="10" Column="5" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="ASIODemo.lpr"/>
-        <Caret Line="17" Column="1" TopLine="1"/>
-      </Position2>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
-    <Parsing>
-      <SyntaxOptions>
-        <DelphiCompat Value="True"/>
-      </SyntaxOptions>
-    </Parsing>
     <CodeGeneration>
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
-      <Debugging>
-        <UseLineInfoUnit Value="False"/>
-      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -167,75 +248,19 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="17">
+    <BreakPoints Count="3">
       <Item1>
         <Source Value="ASIODemoForm.pas"/>
-        <Line Value="68"/>
+        <Line Value="126"/>
       </Item1>
       <Item2>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="815"/>
-      </Item2>
-      <Item3>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="858"/>
-      </Item3>
-      <Item4>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="1052"/>
-      </Item4>
-      <Item5>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="1065"/>
-      </Item5>
-      <Item6>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="1128"/>
-      </Item6>
-      <Item7>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="1416"/>
-      </Item7>
-      <Item8>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="746"/>
-      </Item8>
-      <Item9>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="979"/>
-      </Item9>
-      <Item10>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="1058"/>
-      </Item10>
-      <Item11>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="1069"/>
-      </Item11>
-      <Item12>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="836"/>
-      </Item12>
-      <Item13>
-        <Source Value="..\..\..\Source\DASIOHost.pas"/>
-        <Line Value="1022"/>
-      </Item13>
-      <Item14>
-        <Source Value="ASIODemoForm.pas"/>
-        <Line Value="99"/>
-      </Item14>
-      <Item15>
-        <Source Value="ASIODemoForm.pas"/>
-        <Line Value="126"/>
-      </Item15>
-      <Item16>
         <Source Value="ASIODemoForm.pas"/>
         <Line Value="168"/>
-      </Item16>
-      <Item17>
+      </Item2>
+      <Item3>
         <Source Value="ASIODemoForm.pas"/>
         <Line Value="182"/>
-      </Item17>
+      </Item3>
     </BreakPoints>
     <Exceptions Count="2">
       <Item1>

@@ -11,7 +11,6 @@ uses
 
 begin
   Application.Initialize;
-  Application.Title := 'Demo application for ASIO-Host';
   Application.CreateForm(TFmASIO, FmASIO);
   Application.Run;
 end.
