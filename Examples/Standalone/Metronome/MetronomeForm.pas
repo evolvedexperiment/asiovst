@@ -1,9 +1,14 @@
 unit MetronomeForm;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
-uses Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-     Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase, Spin;
+uses {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
+     SysUtils, Classes, Graphics, Controls, Forms, Math, StdCtrls, ComCtrls,
+     ExtCtrls, DDspBase, Spin, Buttons, DASIOHost;
 
 type
   TComplexDouble = record
@@ -46,7 +51,9 @@ var FmASIO        : TFmASIO;
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 uses inifiles, registry, DASIOConvert;
 
@@ -173,7 +180,7 @@ begin
 
    s:=fVolume*s*fMetroVolume;
 
-   for j := 0 to ASIOHost.OutputChannels - 1 do OutBuffer[j,i] := s;
+   for j := 0 to ASIOHost.OutputChannelCount - 1 do OutBuffer[j,i] := s;
    fMetroVolume:=0.995*fMetroVolume;
    fSamplesCount:=fSamplesCount+1;
    if fSamplesCount>fSamplesPerBeat then
@@ -188,5 +195,11 @@ begin
     end;
   end;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i MetronomeForm.lrs}
+  {$i MetronomeForm.lrs}
+{$ENDIF}
 
 end.
