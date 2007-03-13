@@ -1,10 +1,15 @@
 unit AnalyserForm;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
-uses Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-     Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase, DFilter,
-     TeeProcs, TeEngine, Chart, Series, Spin;
+uses {$IFDEF FPC} LCLIntf, LResources, TAGraph,
+     {$ELSE} Windows, TeeProcs, TeEngine, Series, {$ENDIF}
+     SysUtils, Classes, Controls, Forms, StdCtrls, ComCtrls, DDspBase,
+     DFilter, Chart, Spin, Buttons, DASIOHost;
 
 const
   cNumFrequencies = 32;
@@ -13,6 +18,9 @@ const
        1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000);
 
 type
+
+  { TFmAnalyser }
+
   TFmAnalyser = class(TForm)
     Bt_CP: TButton;
     Bt_Analyse: TButton;
@@ -30,6 +38,7 @@ type
     LbFullscale: TLabel;
     SEFullscaleGain: TSpinEdit;
     Lb_dB: TLabel;
+    procedure AnalyserChartClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
@@ -56,9 +65,11 @@ var
 
 implementation
 
-{$R *.DFM}
+{$IFDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
-uses inifiles, registry, DASIOConvert;
+uses Inifiles, Registry;
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var i : Integer;
@@ -99,6 +110,11 @@ begin
       else BarSeries.Add(0,FloatToStr(0.001*Frequency)+' kHz');
     end;
   end;
+end;
+
+procedure TFmAnalyser.AnalyserChartClick(Sender: TObject);
+begin
+
 end;
 
 procedure TFmAnalyser.FormDestroy(Sender: TObject);
@@ -182,7 +198,7 @@ begin
 end;
 
 procedure TFmAnalyser.UpdateBarGraph;
-var i,j : Integer;
+var j : Integer;
 begin
  for j := 0 to cNumFrequencies-1
   do BarSeries.YValue[j]:=fFilterRMS[j]+ fFSGain;
@@ -201,5 +217,11 @@ begin
   end;
  UpdateBarGraph;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i AnalyserForm.lrs}
+  {$i AnalyserForm.lrs}
+{$ENDIF}
 
 end.
