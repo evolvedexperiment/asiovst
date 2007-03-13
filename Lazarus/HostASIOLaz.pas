@@ -8,7 +8,7 @@ interface
 
 uses
   DASIOHost, OpenASIO, Asio, DASIOConvert, DASIOGenerator, BeRoASIO, 
-    LazarusPackageIntf; 
+  LazarusPackageIntf;
 
 implementation
 
