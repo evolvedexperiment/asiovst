@@ -36,7 +36,9 @@ unit ASIO;
 
 interface
 
-uses Windows;
+{$I JEDI.INC}
+{$IFDEF FPC} uses LCLIntf;
+{$ELSE} uses Windows; {$ENDIF}
 
 const
   ASIOFalse = 0;

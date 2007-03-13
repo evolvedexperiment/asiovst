@@ -5,8 +5,8 @@ unit DASIOHost;
 // Benjamin Rosseaux. Please give credit if you use this component in your
 // programs. Thanks to Martin Fay (original Delphi ASIO interface)
 
-{$R DASIOHost.res}
 {$I JEDI.INC}
+{$R DASIOHost.res}
 {.$DEFINE OpenASIO}
 // define OpenASIO to compile using old OpenASIO interface (needs OpenASIO.dll)
 
@@ -17,8 +17,8 @@ unit DASIOHost;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, {$ENDIF} Windows, Messages, SysUtils, Classes,
-     ActiveX, ASIO, DASIOConvert, Types, Dialogs, DASIOGenerator,
+uses {$IFDEF FPC} LCLIntf, LclType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
+     SysUtils, Classes, ASIO, Types, DASIOConvert, DASIOGenerator,
      {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
      {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls,
      ASIOMixer, {$ENDIF} {$IFDEF D5CP} dsgnintf, {$ENDIF} DDSPBase;
@@ -40,7 +40,7 @@ const
 
 type
   TAsioDriverDesc = packed record
-    id   : TCLSID;
+    id   : TGUID; //TCLSID;
     name : array[0..511] of char;
     path : array[0..511] of char;
   end;
@@ -120,7 +120,7 @@ type
     FBuffersCreated       : Boolean;
     FOnBufferSwitchNative : TBufferSwitchEventNative;
   protected
-    FHandle               : HWND;
+    FHandle               : THandle;
     FASIOTime             : TASIOTimeSub;
     FOnCreate             : TNotifyEvent;
     FOnDestroy            : TNotifyEvent;
@@ -159,7 +159,19 @@ type
     procedure SetActive(Value: Boolean); virtual;
     procedure SetDriverIndex(Value: Integer); virtual;
     procedure SetDriverName(const s: String); virtual;
+    {$IFDEF FPC}
+    procedure WndProc(var Msg: TLMessage);
+    procedure PMASIO(var Message: TLMessage); message PM_ASIO;
+    procedure PMUpdateSamplePos(var Message: TLMessage); message PM_UpdateSamplePos;
+    procedure PMBufferSwitch(var Message: TLMessage); message PM_BufferSwitch;
+    procedure PMBufferSwitchTimeInfo(var Message: TLMessage); message PM_BufferSwitchTimeInfo;
+    {$ELSE}
     procedure WndProc(var Msg: TMessage);
+    procedure PMASIO(var Message: TMessage); message PM_ASIO;
+    procedure PMUpdateSamplePos(var Message: TMessage); message PM_UpdateSamplePos;
+    procedure PMBufferSwitch(var Message: TMessage); message PM_BufferSwitch;
+    procedure PMBufferSwitchTimeInfo(var Message: TMessage); message PM_BufferSwitchTimeInfo;
+    {$ENDIF}
     function GetInputMeter(Channel:Integer): Integer; virtual;
     function GetOutputMeter(Channel:Integer): Integer; virtual;
     function CanInputGain: Boolean; virtual;
@@ -175,10 +187,6 @@ type
     procedure SetSampleRate(const Value: Double); virtual;
     procedure BufferSwitch(index: integer); virtual;
     procedure BufferSwitchTimeInfo(index: integer; const params: TASIOTime); virtual;
-    procedure PMASIO(var Message: TMessage); message PM_ASIO;
-    procedure PMUpdateSamplePos(var Message: TMessage); message PM_UpdateSamplePos;
-    procedure PMBufferSwitch(var Message: TMessage); message PM_BufferSwitch;
-    procedure PMBufferSwitchTimeInfo(var Message: TMessage); message PM_BufferSwitchTimeInfo;
     function GetDriverList: TStrings;
     procedure ReadState(Reader: TReader); override;
   public
@@ -371,10 +379,17 @@ type
   end;
 
 var theHost             : TCustomASIOHostBasic;
+    {$IFDEF FPC}
+    PMUpdSamplePos      : TLMessage;
+    PMBufSwitch         : TLMessage;
+    PMBufSwitchTimeInfo : TLMessage;
+    PMReset             : TLMessage;
+    {$ELSE}
     PMUpdSamplePos      : TMessage;
     PMBufSwitch         : TMessage;
     PMBufSwitchTimeInfo : TMessage;
     PMReset             : TMessage;
+    {$ENDIF}
 
 procedure Register;
 function ChannelTypeToString(vType: TASIOSampleType): string;
@@ -409,6 +424,7 @@ begin
       dllpath := reg.ReadString('');
       if (ExtractFilePath(dllpath) = '') and (dllpath <> '') then
       begin
+        {$IFNDEF FPC}
         buf[0] := #0;
         temps := dllpath;   // backup the value
         if GetSystemDirectory(buf, 1023) <> 0 then   // try the system directory first
@@ -426,6 +442,7 @@ begin
             dllpath := s + '\' + temps;
           end;
         end;
+       {$ENDIF}
       end;
 
       if FileExists(dllpath) then
@@ -771,24 +788,34 @@ end;
 
 destructor TCustomASIOHostBasic.Destroy;
 begin
- if Assigned(FOnDestroy) then FOnDestroy(Self);
- FCallbacks.bufferSwitchTimeInfo := nil;
- if Active then Active := False;
- CloseDriver;
- {$IFNDEF FPC}
- {$ENDIF}
- DeallocateHWnd(fHandle);
- SetLength(FASIOdriverlist, 0);
- SetLength(FASIOdriverlist, 0);
- FDriverList.Free;
- FreeAndNil(FASIOTime);
- inherited;
+ try
+  if Assigned(FOnDestroy) then FOnDestroy(Self);
+  FCallbacks.bufferSwitchTimeInfo := nil;
+  if Active then Active := False;
+  CloseDriver;
+  DeallocateHWnd(fHandle);
+  SetLength(FASIOdriverlist, 0);
+  SetLength(FASIOdriverlist, 0);
+  FDriverList.Free;
+  FreeAndNil(FASIOTime);
+ finally
+  inherited;
+ end;
 end;
 
+{$IFNDEF FPC}
 procedure TCustomASIOHostBasic.WndProc(var Msg: TMessage);
 begin
  with Msg do Result := DefWindowProc(fHandle, Msg, wParam, lParam);
 end;
+{$ELSE}
+function DefWindowProc(hWnd:THandle; Msg:UINT; wParam:WPARAM; lParam:LPARAM):LRESULT; external 'user32' name 'DefWindowProcA';
+
+procedure TCustomASIOHostBasic.WndProc(var Msg: TLMessage);
+begin
+ with Msg do Result := DefWindowProc(fHandle, Msg, wParam, lParam);
+end;
+{$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -975,6 +1002,10 @@ end;
 
 procedure TCustomASIOHostBasic.OpenDriver;
 var tmpActive: Boolean;
+
+  function Succeeded(Res: HResult): Boolean;
+  begin Result := Res and $80000000 = 0; end;
+
 begin
  tmpActive := false;
  if assigned(FDriver) then
@@ -1012,7 +1043,7 @@ begin
   end;
 {$ENDIF}
  end;
-// if Driver = nil then raise Exception.Create('ASIO Driver Failed!');
+ if fDriver = nil then raise Exception.Create('ASIO Driver Failed!');
  FBuffersCreated := CreateBuffers;
  if tmpActive then Active := True;
 end;
@@ -1059,7 +1090,11 @@ begin
  if Assigned (FOnReset) then FOnReset(Self);
 end;
 
+{$IFDEF FPC}
+procedure TCustomASIOHostBasic.PMASIO(var Message: TLMessage);
+{$ELSE}
 procedure TCustomASIOHostBasic.PMASIO(var Message: TMessage);
+{$ENDIF}
 var inp, outp: integer;
 begin
  if FDriver = nil then exit;
@@ -1080,7 +1115,11 @@ begin
  end;
 end;
 
+{$IFDEF FPC}
+procedure TCustomASIOHostBasic.PMUpdateSamplePos(var Message: TLMessage);
+{$ELSE}
 procedure TCustomASIOHostBasic.PMUpdateSamplePos(var Message: TMessage);
+{$ENDIF}
 var Samples: TASIOSamples;
 begin
  Samples.hi := Message.wParam;
@@ -1185,12 +1224,20 @@ begin
   else result := ASE_NotPresent;
 end;
 
+{$IFDEF FPC}
+procedure TCustomASIOHostBasic.PMBufferSwitch(var Message: TLMessage);
+{$ELSE}
 procedure TCustomASIOHostBasic.PMBufferSwitch(var Message: TMessage);
+{$ENDIF}
 begin
  BufferSwitch(Message.LParam);
 end;
 
+{$IFDEF FPC}
+procedure TCustomASIOHostBasic.PMBufferSwitchTimeInfo(var Message: TLMessage);
+{$ELSE}
 procedure TCustomASIOHostBasic.PMBufferSwitchTimeInfo(var Message: TMessage);
+{$ENDIF}
 begin
  BufferSwitchTimeInfo(Message.LParam, ASIOTime.FBufferTime);
 end;

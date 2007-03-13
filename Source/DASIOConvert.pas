@@ -8,6 +8,7 @@ interface
 
 {$IFNDEF FPC}
 {$DEFINE x87}
+{$ELSE}
 {$ENDIF}
 
 uses {$IFDEF FPC}LCLIntf; {$ELSE} Windows; {$ENDIF}

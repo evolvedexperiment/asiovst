@@ -3,8 +3,7 @@ unit DASIOGenerator;
 
 interface
 
-uses
-  Windows, Messages, Classes, SysUtils, DDSPBase;
+uses Classes, DDSPBase;
 
 type
   TNoiseColor = (ncWhite, ncPink, ncBrown);

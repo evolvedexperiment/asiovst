@@ -72,8 +72,8 @@ type
   function f_Cliplo(x,l:Single):Single;
   function f_Cliphi(x,h:Single):Single;
   function dB_to_Amp(g:Single):Single;
-  {$IFNDEF FPC}
   function Amp_to_dB(v:Single):Single; overload;
+  {$IFNDEF FPC}
   function Amp_to_dB(v:T4SingleArray):Single; overload;
   {$ENDIF}
   function Smallest(A, B: Single): Single;
@@ -108,10 +108,10 @@ type
   function f_CoTan(const X: Extended): Extended;
   function f_Log10(const X: Extended): Extended;
 
+  {$ENDIF}
   // scale logarithmically from 20 Hz to 20 kHz
   function FreqLinearToLog(value:Single):Single;
   function FreqLogToLinear(value:Single):Single;
-  {$ENDIF}
 
   procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
 
@@ -256,7 +256,6 @@ begin
  Result:=inp+0.5*fr*(inp1-inm1+fr*(4*inp1+2*inm1-5*inp-inp2 +fr*(3*(inp-inp1)-inm1+inp2)));
 end;
 
-{$IFNDEF FPC}
 function Amp_to_dB(v:Single):Single;
 asm
  fldlg2
@@ -265,6 +264,7 @@ asm
  fmul Twenty.Double
 end;
 
+{$IFNDEF FPC}
 function Amp_to_dB(v:T4SingleArray):Single;
 asm
  fldlg2
@@ -1082,11 +1082,15 @@ begin
 end;
 {$ENDIF}
 
-initialization
+procedure InitConstants;
+begin
+ ln2    := ln(2);
+ ln22   := ln2*0.5;
+ ln2Rez := 1/ln2;
+ ln10   := ln(10);
+end;
 
-ln2    := ln(2);
-ln22   := ln2*0.5;
-ln2Rez := 1/ln2;
-ln10   := ln(10);
+initialization
+ InitConstants;
 
 end.
