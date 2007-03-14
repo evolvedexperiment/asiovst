@@ -6,9 +6,9 @@ unit TetrisEditor;
 
 interface
 
-uses {$IFDEF FPC}LCLIntf, LResources, {$ENDIF} Messages, SysUtils, Classes,
-     Forms, TetrisUnit, Controls, StdCtrls, ExtCtrls, Graphics,
-     DDSPBase, DVSTModule;
+uses {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, Types, {$ENDIF} Messages,
+     SysUtils, Classes, Forms, TetrisUnit, Controls, StdCtrls, ExtCtrls,
+     Graphics, DDSPBase, DVSTEffect, DVSTModule;
 
 type
   TFmTetris = class(TForm)
@@ -51,13 +51,11 @@ end;
 procedure TFmTetris.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-{
  if key = VK_SPACE then fTetris.StepGame;
  if key  = VK_LEFT then fTetris.Left;
   if key  = VK_right then fTetris.right;
    if key  = VK_up then fTetris.Rotate;
     if key  = VK_DOWN then fTetris.StepGame;
-}
  FormPaint(nil);
 end;
 

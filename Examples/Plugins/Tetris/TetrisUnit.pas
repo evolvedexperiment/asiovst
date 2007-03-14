@@ -1,6 +1,8 @@
 unit TetrisUnit;
 
+{$IFDEF FPC}
 {$MODE Delphi}
+{$ENDIF}
 
 (*
 ___ ____ ___ ____ _ ____    ___  _   _    ____ ____ _  _ ____ 
@@ -10,8 +12,8 @@ ___ ____ ___ ____ _ ____    ___  _   _    ____ ____ _  _ ____
 *)
 interface
 
-uses
-  LCLIntf, Messages, Classes, Sysutils, Graphics;
+uses {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF} 
+     Messages, Classes, Sysutils, Graphics;
 
 type
   TSprite = array[0..3] of array [0..3] of Integer;
