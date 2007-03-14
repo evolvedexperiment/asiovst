@@ -7,8 +7,8 @@ uses
   Interfaces,
   Forms,
   DVSTEffect,
-  VSTPluginLaz,
-  VSTPluginLazIDE,
+//  VSTPluginLaz,
+//  VSTPluginLazIDE,
   TetrisUnit in 'TetrisUnit.pas',
   TetrisDM in 'TetrisDM.pas' {TetrisModule: TVSTModule},
   TetrisEditor in 'TetrisEditor.pas' {FmTetris};

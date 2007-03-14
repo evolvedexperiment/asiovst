@@ -38,7 +38,7 @@
       <Unit0>
         <Filename Value="Tetris.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="14" Y="9"/>
+        <CursorPos X="3" Y="11"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
@@ -50,7 +50,7 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="TetrisDM.lrs"/>
         <UnitName Value="TetrisDM"/>
-        <CursorPos X="21" Y="20"/>
+        <CursorPos X="3" Y="11"/>
         <TopLine Value="1"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="20"/>
@@ -63,8 +63,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="TetrisEditor.lrs"/>
         <UnitName Value="TetrisEditor"/>
-        <CursorPos X="1" Y="61"/>
-        <TopLine Value="33"/>
+        <CursorPos X="49" Y="52"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -80,7 +80,7 @@
       <Unit4>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\interfaces.pp"/>
         <UnitName Value="Interfaces"/>
-        <CursorPos X="43" Y="11"/>
+        <CursorPos X="49" Y="14"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit4>
@@ -92,40 +92,51 @@
         <UsageCount Value="10"/>
       </Unit5>
     </Units>
-    <JumpHistory Count="7" HistoryIndex="6">
+    <JumpHistory Count="9" HistoryIndex="8">
       <Position1>
         <Filename Value="TetrisEditor.pas"/>
-        <Caret Line="3" Column="15" TopLine="1"/>
+        <Caret Line="61" Column="1" TopLine="33"/>
       </Position1>
       <Position2>
         <Filename Value="TetrisEditor.pas"/>
-        <Caret Line="8" Column="69" TopLine="1"/>
+        <Caret Line="9" Column="44" TopLine="1"/>
       </Position2>
       <Position3>
         <Filename Value="TetrisEditor.pas"/>
-        <Caret Line="38" Column="1" TopLine="1"/>
+        <Caret Line="95" Column="15" TopLine="55"/>
       </Position3>
       <Position4>
         <Filename Value="TetrisEditor.pas"/>
-        <Caret Line="97" Column="5" TopLine="55"/>
+        <Caret Line="37" Column="20" TopLine="1"/>
       </Position4>
       <Position5>
-        <Filename Value="TetrisEditor.pas"/>
-        <Caret Line="10" Column="75" TopLine="1"/>
+        <Filename Value="TetrisDM.pas"/>
+        <Caret Line="20" Column="21" TopLine="1"/>
       </Position5>
       <Position6>
-        <Filename Value="TetrisEditor.pas"/>
-        <Caret Line="11" Column="6" TopLine="4"/>
+        <Filename Value="TetrisDM.pas"/>
+        <Caret Line="17" Column="52" TopLine="7"/>
       </Position6>
       <Position7>
-        <Filename Value="Tetris.lpr"/>
-        <Caret Line="10" Column="18" TopLine="1"/>
+        <Filename Value="TetrisEditor.pas"/>
+        <Caret Line="11" Column="36" TopLine="1"/>
       </Position7>
+      <Position8>
+        <Filename Value="TetrisEditor.pas"/>
+        <Caret Line="23" Column="50" TopLine="2"/>
+      </Position8>
+      <Position9>
+        <Filename Value="TetrisEditor.pas"/>
+        <Caret Line="11" Column="6" TopLine="1"/>
+      </Position9>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="Tetris.dll"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
       <Libraries Value="C:\ITA\Projects\VSTPack\Source\"/>
@@ -136,6 +147,9 @@
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
+      <Debugging>
+        <UseLineInfoUnit Value="False"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

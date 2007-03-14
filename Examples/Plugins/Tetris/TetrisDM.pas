@@ -8,7 +8,7 @@ interface
 
 uses 
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  Messages, SysUtils, Classes, Forms, DDSPBase, DVSTEffect, DVSTModule;
+  SysUtils, Classes, Forms, DDSPBase, DVSTEffect, DVSTModule;
 
 type
   TTetrisModule = class(TVSTModule)

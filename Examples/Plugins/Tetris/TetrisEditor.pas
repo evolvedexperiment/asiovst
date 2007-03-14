@@ -6,9 +6,9 @@ unit TetrisEditor;
 
 interface
 
-uses {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, Types, {$ENDIF} Messages,
+uses {$IFDEF FPC}LCLIntf, LResources, LCLType, {$ELSE} Windows, Types, {$ENDIF}
      SysUtils, Classes, Forms, TetrisUnit, Controls, StdCtrls, ExtCtrls,
-     Graphics, DDSPBase, DVSTEffect, DVSTModule;
+     Graphics, DDSPBase, DVSTModule;
 
 type
   TFmTetris = class(TForm)
