@@ -2,6 +2,10 @@ unit DFilter;
 
 interface
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 type
   TComplex=record
              Re : Single;
