@@ -58,56 +58,6 @@ object FmAnalyser: TFmAnalyser
     Color = clNone
     ParentColor = False
   end
-  object AnalyserChart: TChart
-    Left = 7
-    Height = 231
-    Top = 88
-    Width = 434
-    AutoUpdateXMin = True
-    AutoUpdateXMax = True
-    AutoUpdateYMin = True
-    AutoUpdateYMax = True
-    Legend.Alignment = laRight
-    Legend.Frame.OnChange = nil
-    Legend.OnChange = nil
-    Title.Brush.Color = clBtnFace
-    Title.Font.Color = clBlue
-    Title.Frame.OnChange = nil
-    Title.Alignment = taCenter
-    Title.Text.Strings = (
-      'TChart'
-    )
-    Title.OnChange = nil
-    Foot.Brush.Color = clBtnFace
-    Foot.Font.Color = clBlue
-    Foot.Frame.OnChange = nil
-    Foot.Alignment = taCenter
-    Foot.OnChange = nil
-    AllowZoom = True
-    LeftAxis.Visible = True
-    LeftAxis.Title.Caption = 'Magnitude [dB]'
-    LeftAxis.Title.Angle = 90
-    LeftAxis.Title.OnChange = nil
-    LeftAxis.Grid.Color = clGray
-    LeftAxis.Grid.Style = psDot
-    LeftAxis.Grid.Visible = True
-    LeftAxis.Grid.OnChange = nil
-    LeftAxis.OnChange = nil
-    BottomAxis.Visible = True
-    BottomAxis.Title.OnChange = nil
-    BottomAxis.Grid.Color = clGray
-    BottomAxis.Grid.Style = psDot
-    BottomAxis.Grid.Visible = True
-    BottomAxis.Grid.OnChange = nil
-    BottomAxis.OnChange = nil
-    Frame.Visible = True
-    Frame.OnChange = nil
-    BackColor = clBtnFace
-    AxisVisible = True
-    Color = clBtnFace
-    ParentColor = False
-    OnClick = AnalyserChartClick
-  end
   object DriverCombo: TComboBox
     Left = 64
     Height = 21
@@ -192,6 +142,17 @@ object FmAnalyser: TFmAnalyser
     OnChange = SEFullscaleGainChange
     TabOrder = 6
     Value = 120
+  end
+  object AnalyserChart: TBarChart
+    Left = 7
+    Height = 238
+    Top = 88
+    Width = 434
+    BevelOuter = bvNone
+    ChildSizing.Layout = cclTopToBottomThenLeftToRight
+    TabOrder = 8
+    Bars = <>
+    LabelPosition = plCenter
   end
   object ASIOHost: TASIOHost
     PreventClipping = pcDigital

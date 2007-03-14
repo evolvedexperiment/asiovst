@@ -7,12 +7,10 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
-      <Language Value=""/>
-      <CharSet Value=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -39,13 +37,13 @@
         <MinVersion Minor="2" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="5">
       <Unit0>
         <Filename Value="Analyser.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="78" Y="7"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="2"/>
+        <CursorPos X="26" Y="15"/>
+        <TopLine Value="15"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -56,8 +54,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="AnalyserForm.lrs"/>
         <UnitName Value="AnalyserForm"/>
-        <CursorPos X="14" Y="131"/>
-        <TopLine Value="115"/>
+        <CursorPos X="76" Y="220"/>
+        <TopLine Value="199"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -65,30 +63,149 @@
       <Unit2>
         <Filename Value="..\..\..\Lazarus\HostASIOLaz.pas"/>
         <UnitName Value="HostASIOLaz"/>
-        <CursorPos X="1" Y="11"/>
+        <CursorPos X="46" Y="12"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <UnitName Value="DFilter"/>
+        <CursorPos X="15" Y="6"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\chart.pp"/>
+        <UnitName Value="Chart"/>
+        <CursorPos X="7" Y="41"/>
+        <TopLine Value="32"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="24" HistoryIndex="23">
       <Position1>
         <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="24" Column="3" TopLine="21"/>
+        <Caret Line="31" Column="1" TopLine="25"/>
       </Position1>
       <Position2>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="28" Column="13" TopLine="25"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\..\Lazarus\HostASIOLaz.pas"/>
+        <Caret Line="11" Column="1" TopLine="1"/>
+      </Position3>
+      <Position4>
         <Filename Value="..\..\..\Lazarus\HostASIOLaz.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
-      </Position2>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="25" Column="18" TopLine="24"/>
+      </Position6>
+      <Position7>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="30" Column="1" TopLine="9"/>
+      </Position7>
+      <Position8>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="118" Column="20" TopLine="91"/>
+      </Position8>
+      <Position9>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="117" Column="20" TopLine="96"/>
+      </Position9>
+      <Position10>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="29" Column="18" TopLine="1"/>
+      </Position10>
+      <Position11>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="118" Column="25" TopLine="96"/>
+      </Position11>
+      <Position12>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="117" Column="33" TopLine="96"/>
+      </Position12>
+      <Position13>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="118" Column="33" TopLine="96"/>
+      </Position13>
+      <Position14>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="117" Column="70" TopLine="96"/>
+      </Position14>
+      <Position15>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="118" Column="81" TopLine="96"/>
+      </Position15>
+      <Position16>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="112" Column="1" TopLine="100"/>
+      </Position16>
+      <Position17>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="165" Column="7" TopLine="133"/>
+      </Position17>
+      <Position18>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="218" Column="8" TopLine="194"/>
+      </Position18>
+      <Position19>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="230" Column="77" TopLine="199"/>
+      </Position19>
+      <Position20>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="241" Column="1" TopLine="199"/>
+      </Position20>
+      <Position21>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="71" Column="6" TopLine="43"/>
+      </Position21>
+      <Position22>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="220" Column="24" TopLine="190"/>
+      </Position22>
+      <Position23>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="219" Column="12" TopLine="198"/>
+      </Position23>
+      <Position24>
+        <Filename Value="AnalyserForm.pas"/>
+        <Caret Line="220" Column="45" TopLine="199"/>
+      </Position24>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
+      <Libraries Value="C:\ITA\Projects\VSTPack\Source\"/>
+      <OtherUnitFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
+      <SrcPath Value="C:\ITA\Projects\VSTPack\Source\"/>
+    </SearchPaths>
     <CodeGeneration>
       <Generate Value="Faster"/>
     </CodeGeneration>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
     <Other>
       <CompilerPath Value="$(CompPath)"/>
     </Other>

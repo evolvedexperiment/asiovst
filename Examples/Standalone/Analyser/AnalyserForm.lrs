@@ -16,50 +16,36 @@ LazarusResources.Add('TFmAnalyser','FORMDATA',[
   +#4'Left'#3#205#0#6'Height'#2#14#3'Top'#2'@'#5'Width'#2'7'#7'Caption'#6#12'Fu'
   +'llscale = '#5'Color'#7#6'clNone'#11'ParentColor'#8#0#0#6'TLabel'#5'Lb_dB'#4
   +'Left'#3'B'#1#6'Height'#2#14#3'Top'#2'@'#5'Width'#2#13#7'Caption'#6#2'dB'#5
-  +'Color'#7#6'clNone'#11'ParentColor'#8#0#0#6'TChart'#13'AnalyserChart'#4'Left'
-  +#2#7#6'Height'#3#231#0#3'Top'#2'X'#5'Width'#3#178#1#14'AutoUpdateXMin'#9#14
-  +'AutoUpdateXMax'#9#14'AutoUpdateYMin'#9#14'AutoUpdateYMax'#9#16'Legend.Align'
-  +'ment'#7#7'laRight'#21'Legend.Frame.OnChange'#13#15'Legend.OnChange'#13#17'T'
-  +'itle.Brush.Color'#7#9'clBtnFace'#16'Title.Font.Color'#7#6'clBlue'#20'Title.'
-  +'Frame.OnChange'#13#15'Title.Alignment'#7#8'taCenter'#18'Title.Text.Strings'
-  +#1#6#6'TChart'#0#14'Title.OnChange'#13#16'Foot.Brush.Color'#7#9'clBtnFace'#15
-  +'Foot.Font.Color'#7#6'clBlue'#19'Foot.Frame.OnChange'#13#14'Foot.Alignment'#7
-  +#8'taCenter'#13'Foot.OnChange'#13#9'AllowZoom'#9#16'LeftAxis.Visible'#9#22'L'
-  +'eftAxis.Title.Caption'#6#14'Magnitude [dB]'#20'LeftAxis.Title.Angle'#2'Z'#23
-  +'LeftAxis.Title.OnChange'#13#19'LeftAxis.Grid.Color'#7#6'clGray'#19'LeftAxis'
-  +'.Grid.Style'#7#5'psDot'#21'LeftAxis.Grid.Visible'#9#22'LeftAxis.Grid.OnChan'
-  +'ge'#13#17'LeftAxis.OnChange'#13#18'BottomAxis.Visible'#9#25'BottomAxis.Titl'
-  +'e.OnChange'#13#21'BottomAxis.Grid.Color'#7#6'clGray'#21'BottomAxis.Grid.Sty'
-  +'le'#7#5'psDot'#23'BottomAxis.Grid.Visible'#9#24'BottomAxis.Grid.OnChange'#13
-  +#19'BottomAxis.OnChange'#13#13'Frame.Visible'#9#14'Frame.OnChange'#13#9'Back'
-  +'Color'#7#9'clBtnFace'#11'AxisVisible'#9#5'Color'#7#9'clBtnFace'#11'ParentCo'
-  +'lor'#8#7'OnClick'#7#18'AnalyserChartClick'#0#0#9'TComboBox'#11'DriverCombo'
-  +#4'Left'#2'@'#6'Height'#2#21#3'Top'#2#7#5'Width'#3#17#1#16'AutoCompleteText'
-  +#11#22'cbactEndOfLineComplete'#20'cbactSearchAscending'#0#10'ItemHeight'#2#13
-  +#9'MaxLength'#2#0#8'OnChange'#7#17'DriverComboChange'#5'Style'#7#14'csDropDo'
-  +'wnList'#8'TabOrder'#2#0#0#0#7'TButton'#5'Bt_CP'#4'Left'#3'^'#1#6'Height'#2
-  +#21#3'Top'#2#8#5'Width'#2'['#25'BorderSpacing.InnerBorder'#2#4#7'Caption'#6
-  +#13'Control Panel'#7'Enabled'#8#7'OnClick'#7#10'Bt_CPClick'#8'TabOrder'#2#1#0
-  +#0#9'TComboBox'#10'ChannelBox'#4'Left'#2'h'#6'Height'#2#21#3'Top'#2' '#5'Wid'
-  +'th'#3#233#0#16'AutoCompleteText'#11#22'cbactEndOfLineComplete'#20'cbactSear'
-  +'chAscending'#0#10'ItemHeight'#2#13#9'MaxLength'#2#0#5'Style'#7#14'csDropDow'
-  +'nList'#8'TabOrder'#2#2#0#0#7'TButton'#10'Bt_Analyse'#4'Left'#3'^'#1#6'Heigh'
-  +'t'#2'2'#3'Top'#2' '#5'Width'#2'['#25'BorderSpacing.InnerBorder'#2#4#7'Capti'
-  +'on'#6#7'Analyse'#7'Default'#9#7'Enabled'#8#7'OnClick'#7#15'Bt_AnalyseClick'
-  +#8'TabOrder'#2#3#0#0#12'TRadioButton'#7'RB_Fast'#4'Left'#2'1'#6'Height'#2#13
-  +#3'Top'#2'?'#5'Width'#2'('#7'Caption'#6#5'&Fast'#7'OnClick'#7#12'RB_FastClic'
-  +'k'#8'TabOrder'#2#4#0#0#12'TRadioButton'#9'RB_Medium'#4'Left'#2'['#6'Height'
-  +#2#13#3'Top'#2'?'#5'Width'#2'9'#7'Caption'#6#7'&Medium'#7'Checked'#9#7'OnCli'
-  +'ck'#7#14'RB_MediumClick'#5'State'#7#9'cbChecked'#8'TabOrder'#2#5#0#0#12'TRa'
-  +'dioButton'#7'RB_Slow'#4'Left'#3#150#0#6'Height'#2#13#3'Top'#2'?'#5'Width'#2
-  +'+'#7'Caption'#6#5'&Slow'#7'OnClick'#7#12'RB_SlowClick'#8'TabOrder'#2#7#0#0#9
-  +'TSpinEdit'#15'SEFullscaleGain'#4'Left'#3#6#1#6'Height'#2#22#3'Top'#2'<'#5'W'
-  +'idth'#2'8'#8'MaxValue'#3#200#0#8'OnChange'#7#21'SEFullscaleGainChange'#8'Ta'
-  +'bOrder'#2#6#5'Value'#2'x'#0#0#9'TASIOHost'#8'ASIOHost'#15'PreventClipping'#7
-  +#9'pcDigital'#16'PreFillOutBuffer'#7#7'bpfZero'#20'ConvertOptimizations'#11#5
-  +'coSSE'#0#10'SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'#14'ASIOTime.Speed'#5#0#0
-  +#0#0#0#0#0#128#255'?'#19'ASIOTime.SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'#14
-  +'ASIOTime.Flags'#11#17'atSystemTimeValid'#21'atSamplePositionValid'#17'atSam'
-  +'pleRateValid'#12'atSpeedValid'#0#16'OnBufferSwitch32'#7#20'ASIOHostBufferSw'
-  +'itch'#4'left'#3#252#0#3'top'#2#24#0#0#0
+  +'Color'#7#6'clNone'#11'ParentColor'#8#0#0#9'TComboBox'#11'DriverCombo'#4'Lef'
+  +'t'#2'@'#6'Height'#2#21#3'Top'#2#7#5'Width'#3#17#1#16'AutoCompleteText'#11#22
+  +'cbactEndOfLineComplete'#20'cbactSearchAscending'#0#10'ItemHeight'#2#13#9'Ma'
+  +'xLength'#2#0#8'OnChange'#7#17'DriverComboChange'#5'Style'#7#14'csDropDownLi'
+  +'st'#8'TabOrder'#2#0#0#0#7'TButton'#5'Bt_CP'#4'Left'#3'^'#1#6'Height'#2#21#3
+  +'Top'#2#8#5'Width'#2'['#25'BorderSpacing.InnerBorder'#2#4#7'Caption'#6#13'Co'
+  +'ntrol Panel'#7'Enabled'#8#7'OnClick'#7#10'Bt_CPClick'#8'TabOrder'#2#1#0#0#9
+  +'TComboBox'#10'ChannelBox'#4'Left'#2'h'#6'Height'#2#21#3'Top'#2' '#5'Width'#3
+  +#233#0#16'AutoCompleteText'#11#22'cbactEndOfLineComplete'#20'cbactSearchAsce'
+  +'nding'#0#10'ItemHeight'#2#13#9'MaxLength'#2#0#5'Style'#7#14'csDropDownList'
+  +#8'TabOrder'#2#2#0#0#7'TButton'#10'Bt_Analyse'#4'Left'#3'^'#1#6'Height'#2'2'
+  +#3'Top'#2' '#5'Width'#2'['#25'BorderSpacing.InnerBorder'#2#4#7'Caption'#6#7
+  +'Analyse'#7'Default'#9#7'Enabled'#8#7'OnClick'#7#15'Bt_AnalyseClick'#8'TabOr'
+  +'der'#2#3#0#0#12'TRadioButton'#7'RB_Fast'#4'Left'#2'1'#6'Height'#2#13#3'Top'
+  +#2'?'#5'Width'#2'('#7'Caption'#6#5'&Fast'#7'OnClick'#7#12'RB_FastClick'#8'Ta'
+  +'bOrder'#2#4#0#0#12'TRadioButton'#9'RB_Medium'#4'Left'#2'['#6'Height'#2#13#3
+  +'Top'#2'?'#5'Width'#2'9'#7'Caption'#6#7'&Medium'#7'Checked'#9#7'OnClick'#7#14
+  +'RB_MediumClick'#5'State'#7#9'cbChecked'#8'TabOrder'#2#5#0#0#12'TRadioButton'
+  +#7'RB_Slow'#4'Left'#3#150#0#6'Height'#2#13#3'Top'#2'?'#5'Width'#2'+'#7'Capti'
+  +'on'#6#5'&Slow'#7'OnClick'#7#12'RB_SlowClick'#8'TabOrder'#2#7#0#0#9'TSpinEdi'
+  +'t'#15'SEFullscaleGain'#4'Left'#3#6#1#6'Height'#2#22#3'Top'#2'<'#5'Width'#2
+  +'8'#8'MaxValue'#3#200#0#8'OnChange'#7#21'SEFullscaleGainChange'#8'TabOrder'#2
+  +#6#5'Value'#2'x'#0#0#9'TBarChart'#13'AnalyserChart'#4'Left'#2#7#6'Height'#3
+  +#238#0#3'Top'#2'X'#5'Width'#3#178#1#10'BevelOuter'#7#6'bvNone'#18'ChildSizin'
+  +'g.Layout'#7#29'cclTopToBottomThenLeftToRight'#8'TabOrder'#2#8#4'Bars'#14#0
+  +#13'LabelPosition'#7#8'plCenter'#0#0#9'TASIOHost'#8'ASIOHost'#15'PreventClip'
+  +'ping'#7#9'pcDigital'#16'PreFillOutBuffer'#7#7'bpfZero'#20'ConvertOptimizati'
+  +'ons'#11#5'coSSE'#0#10'SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'#14'ASIOTime.Sp'
+  +'eed'#5#0#0#0#0#0#0#0#128#255'?'#19'ASIOTime.SampleRate'#5#0#0#0#0#0#0'D'#172
+  +#14'@'#14'ASIOTime.Flags'#11#17'atSystemTimeValid'#21'atSamplePositionValid'
+  +#17'atSampleRateValid'#12'atSpeedValid'#0#16'OnBufferSwitch32'#7#20'ASIOHost'
+  +'BufferSwitch'#4'left'#3#252#0#3'top'#2#24#0#0#0
 ]);

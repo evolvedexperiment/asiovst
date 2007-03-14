@@ -9,7 +9,7 @@ interface
 uses {$IFDEF FPC} LCLIntf, LResources, TAGraph,
      {$ELSE} Windows, TeeProcs, TeEngine, Series, {$ENDIF}
      SysUtils, Classes, Controls, Forms, StdCtrls, ComCtrls, DDspBase,
-     DFilter, Chart, Spin, Buttons, DASIOHost;
+     DFilter, Chart, Spin, Buttons, DASIOHost, ExtCtrls;
 
 const
   cNumFrequencies = 32;
@@ -22,6 +22,12 @@ type
   { TFmAnalyser }
 
   TFmAnalyser = class(TForm)
+    {$IFNDEF FPC}
+    AnalyserChart: TChart;
+    BarSeries: TBarSeries;
+    {$ELSE}
+    AnalyserChart: TBarChart;
+    {$ENDIF}
     Bt_CP: TButton;
     Bt_Analyse: TButton;
     DriverCombo: TComboBox;
@@ -29,8 +35,6 @@ type
     ASIOHost: TASIOHost;
     Lb_Drivername: TLabel;
     Lb_Channels: TLabel;
-    AnalyserChart: TChart;
-    BarSeries: TBarSeries;
     LbSpeed: TLabel;
     RB_Fast: TRadioButton;
     RB_Medium: TRadioButton;
@@ -38,7 +42,6 @@ type
     LbFullscale: TLabel;
     SEFullscaleGain: TSpinEdit;
     Lb_dB: TLabel;
-    procedure AnalyserChartClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
@@ -65,7 +68,7 @@ var
 
 implementation
 
-{$IFDEF FPC}
+{$IFNDEF FPC}
 {$R *.dfm}
 {$ENDIF}
 
@@ -105,16 +108,17 @@ begin
      SampleRate:=44100;
      Bandwidth:=1;
      Frequency:=cThirdOctaveFrequencies[i];
+     {$IFNDEF FPC}
      if Frequency<1000
       then BarSeries.Add(0,FloatToStr(Frequency)+' Hz')
       else BarSeries.Add(0,FloatToStr(0.001*Frequency)+' kHz');
+     {$ELSE}
+     if Frequency<1000
+      then AnalyserChart.AddBar(FloatToStr(Frequency)+' Hz', 0, $000000FF)
+      else AnalyserChart.AddBar(FloatToStr(0.001*Frequency)+' kHz', 0, $000000FF);
+     {$ENDIF}
     end;
   end;
-end;
-
-procedure TFmAnalyser.AnalyserChartClick(Sender: TObject);
-begin
-
 end;
 
 procedure TFmAnalyser.FormDestroy(Sender: TObject);
@@ -151,7 +155,9 @@ end;
 procedure TFmAnalyser.SEFullscaleGainChange(Sender: TObject);
 begin
  fFSGain:=SEFullscaleGain.Value;
+ {$IFNDEF FPC}
  AnalyserChart.LeftAxis.Maximum:=fFSGain+20;
+ {$ENDIF}
 end;
 
 procedure TFmAnalyser.DriverComboChange(Sender: TObject);
@@ -200,9 +206,15 @@ end;
 procedure TFmAnalyser.UpdateBarGraph;
 var j : Integer;
 begin
+ {$IFNDEF FPC}
  for j := 0 to cNumFrequencies-1
   do BarSeries.YValue[j]:=fFilterRMS[j]+ fFSGain;
  AnalyserChart.Invalidate;
+ {$ELSE}
+ for j := 0 to cNumFrequencies-1
+  do TBar(AnalyserChart.Bars.Items[j]).Value:=round(fFilterRMS[j]+ fFSGain);
+ AnalyserChart.Invalidate;
+ {$ENDIF}
 end;
 
 procedure TFmAnalyser.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
@@ -213,7 +225,7 @@ begin
   begin
    s:=InBuffer[fChannelNr,i];
    for j := 0 to cNumFrequencies-1
-    do fFilterRMS[j]:=fSpeedConst[0]*fFilterRMS[j]+fSpeedConst[1]*Amp_to_dB(f_abs(fFilterArray[j].Process(s+1E-24)));
+    do fFilterRMS[j]:=fSpeedConst[0]*fFilterRMS[j]+fSpeedConst[1]*Amp_to_dB(abs(fFilterArray[j].Process(s+1E-24)));
   end;
  UpdateBarGraph;
 end;
