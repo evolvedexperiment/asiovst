@@ -1,10 +1,14 @@
 unit TetrisEditor;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
-uses 
-  Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
-  Graphics, TetrisUnit, Controls, StdCtrls, ExtCtrls;
+uses {$IFDEF FPC}LCLIntf, LResources, {$ENDIF} Messages, SysUtils, Classes,
+     Forms, TetrisUnit, Controls, StdCtrls, ExtCtrls, Graphics,
+     DDSPBase, DVSTModule;
 
 type
   TFmTetris = class(TForm)
@@ -28,7 +32,9 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TFmTetris.FormCreate(Sender: TObject);
 begin
@@ -45,11 +51,13 @@ end;
 procedure TFmTetris.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+{
  if key = VK_SPACE then fTetris.StepGame;
  if key  = VK_LEFT then fTetris.Left;
   if key  = VK_right then fTetris.right;
    if key  = VK_up then fTetris.Rotate;
     if key  = VK_DOWN then fTetris.StepGame;
+}
  FormPaint(nil);
 end;
 
@@ -82,5 +90,10 @@ begin
   FormPaint(nil);
   TetrisTimer.Interval:=TrimInt(1000 - fTetris.lines*10,100,1000);
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i TetrisEditor.lrs}
+{$ENDIF}
 
 end.

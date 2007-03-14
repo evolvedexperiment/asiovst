@@ -1,10 +1,14 @@
 unit TetrisDM;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
-  DDSPBase, DVSTEffect, DVSTModule;
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
+  Messages, SysUtils, Classes, Forms, DDSPBase, DVSTEffect, DVSTModule;
 
 type
   TTetrisModule = class(TVSTModule)
@@ -17,10 +21,11 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
-uses
-  TetrisEditor;
+uses TetrisEditor;
 
 function TTetrisModule.VSTModuleCheckKey(Sender: TObject; Key: Char): Boolean;
 begin
@@ -49,5 +54,11 @@ begin
     FormPaint(nil);
    end;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i TetrisDM.lrs}
+  {$i TetrisDM.lrs}
+{$ENDIF}
 
 end.

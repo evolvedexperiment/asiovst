@@ -1,4 +1,7 @@
 unit TetrisUnit;
+
+{$MODE Delphi}
+
 (*
 ___ ____ ___ ____ _ ____    ___  _   _    ____ ____ _  _ ____ 
  |  |___  |  |__/ | [__     |__]  \_/     |__| |__/ |\ | |  | 
@@ -8,7 +11,7 @@ ___ ____ ___ ____ _ ____    ___  _   _    ____ ____ _  _ ____
 interface
 
 uses
-  Windows, Messages, Classes, Sysutils, Graphics;
+  LCLIntf, Messages, Classes, Sysutils, Graphics;
 
 type
   TSprite = array[0..3] of array [0..3] of Integer;
