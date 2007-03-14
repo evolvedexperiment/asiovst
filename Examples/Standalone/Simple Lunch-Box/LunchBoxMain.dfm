@@ -40,6 +40,7 @@ object FmLunchBox: TFmLunchBox
     Top = 0
     Width = 429
     Height = 24
+    ButtonHeight = 13
     Caption = 'ToolBar'
     Flat = False
     Font.Charset = DEFAULT_CHARSET
@@ -61,7 +62,7 @@ object FmLunchBox: TFmLunchBox
       Left = 8
       Top = 2
       Width = 19
-      Height = 22
+      Height = 13
       Caption = 'kit:'
       Layout = tlCenter
     end
@@ -97,7 +98,7 @@ object FmLunchBox: TFmLunchBox
       Left = 119
       Top = 2
       Width = 29
-      Height = 22
+      Height = 13
       Caption = 'BPM:'
       Layout = tlCenter
     end
@@ -126,7 +127,7 @@ object FmLunchBox: TFmLunchBox
       Left = 208
       Top = 2
       Width = 25
-      Height = 22
+      Height = 13
       Caption = 'Bar:'
       Layout = tlCenter
     end
@@ -155,7 +156,7 @@ object FmLunchBox: TFmLunchBox
       Left = 282
       Top = 2
       Width = 34
-      Height = 22
+      Height = 13
       Caption = 'Style:'
       Layout = tlCenter
     end
@@ -437,7 +438,7 @@ object FmLunchBox: TFmLunchBox
     Top = 174
     Width = 107
     Height = 35
-    Caption = 'Clea&r'
+    Caption = 'C&lear'
     TabOrder = 17
     OnClick = BtClearClick
     OnKeyDown = FormKeyDown

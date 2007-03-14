@@ -9,7 +9,8 @@ uses
   LunchBoxAbout in 'LunchBoxAbout.pas' {FmAbout},
   LunchBoxVST in 'LunchBoxVST.pas' {FmVST},
   LunchBoxEventList in 'LunchBoxEventList.pas',
-  LunchBoxEvent in 'LunchBoxEvent.pas';
+  LunchBoxEvent in 'LunchBoxEvent.pas',
+  LunchBoxInputFilter in 'LunchBoxInputFilter.pas';
 
 {$R *.res}
 
@@ -22,9 +23,9 @@ begin
  Application.Initialize;
  Application.Title := 'VST Plugin Editor';
  Application.CreateForm(TFmLunchBox, FmLunchBox);
- Application.CreateForm(TFmSetup, FmSetup);
- Application.CreateForm(TFmAbout, FmAbout);
- Application.CreateForm(TFmVST, FmVST);
- Application.Run;
+  Application.CreateForm(TFmSetup, FmSetup);
+  Application.CreateForm(TFmAbout, FmAbout);
+  Application.CreateForm(TFmVST, FmVST);
+  Application.Run;
 end.
 

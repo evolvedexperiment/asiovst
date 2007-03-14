@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   XPMan, ComCtrls, ToolWin, ExtCtrls, StdCtrls, DVstHost, DASIOHost, DDSPBase,
-  Menus, Types, Spin, LunchBoxEvent, LunchBoxEventList;
+  Menus, Types, Spin, LunchBoxEvent, LunchBoxEventList, LunchBoxInputFilter;
 
 type
   TComplexDouble = record Re, Im : Double; end;
@@ -134,11 +134,14 @@ type
     fPatPos         : Integer;
     fMaxPatSamples  : Integer;
     fEventList      : TLunchBoxEventList;
+    fInputEnvs      : Array [0..1] of Double;
+    fInputDCs       : Array [0..1] of Double;
+    fInputFilter    : Array [0..1] of TInputFilter;
 
     VSTInBuffer     : TArrayOfSingleDynArray;
     VSTOutBuffer    : TArrayOfSingleDynArray;
     procedure CalculateSineAngles;
-    procedure CreateSample(Index: Integer);
+    procedure CreateSample(Index: Integer; Amplitude : Double = 1);
     procedure Requantize;
     procedure AdjustDelayLength;
     procedure RenderOutput(Buffer: TArrayOfSingleDynArray; BufferLength: Integer; Loop: Boolean);
@@ -154,7 +157,7 @@ implementation
 
 {$R *.DFM}
 
-uses inifiles, WaveIOX, LunchBoxSetup, LunchBoxAbout, LunchBoxVST;
+uses Math, inifiles, WaveIOX, LunchBoxSetup, LunchBoxAbout, LunchBoxVST;
 
 procedure TFmLunchBox.FormActivate(Sender: TObject);
 begin
@@ -394,6 +397,17 @@ begin
  fVolume := 1;
  fRobotPos:=0;
  fDelayVolume[1]:=0;
+ fInputDCs[0]:=-1E-3;
+ fInputDCs[1]:=0.1;
+ fInputEnvs[0]:=0.1;
+ fInputEnvs[1]:=0.1;
+ fInputFilter[0]:=TInputFilterLP.Create;
+ with fInputFilter[0] do
+  begin
+   SampleRate:=ASIOHost.SampleRate;
+   SetFilterValues(150,-1,0.5);
+   Order:=14;
+  end;
 
  CBKit.Items.Clear;
  done:=FindFirst(ExtractFilePath(Application.ExeName)+'.\sounds\*.kit',faAnyFile,Fl)<>0;
@@ -424,7 +438,7 @@ begin
  Settings.Free;
 end;
 
-procedure TFmLunchBox.CreateSample(Index : Integer);
+procedure TFmLunchBox.CreateSample(Index : Integer; Amplitude : Double = 1);
 var nn : TLunchBoxSample;
 begin
  nn:=TLunchBoxSample.Create(Index);
@@ -433,7 +447,7 @@ begin
    PatternPosition:=fPatPos;
    SampleRate:=sqr(ASIOHost.SampleRate)/FmSetup.SESampleRate.Value;
    Frequency:=Samples[Index].SampleRate/SampleRate;
-   NoteOn(1);
+   NoteOn(Amplitude);
   end;
  fEventList.Add(nn)
 end;
@@ -646,8 +660,44 @@ end;
 
 procedure TFmLunchBox.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
   OutBuffer: TArrayOfSingleDynArray);
+var i   : Integer;
+    d,t : Double;
 begin
  RenderOutput(OutBuffer, ASIOHost.BufferSize, True);
+ for i := 0 to ASIOHost.BufferSize - 1 do
+  begin
+   t:=5E-3+InBuffer[0,i];
+   d:=0.5*(t+fInputDCs[0]);
+   fInputDCs[0]:=t;
+
+   d:=abs(d);
+   fInputEnvs[0]:=0.99995*fInputEnvs[0];
+   if d>fInputEnvs[0] then fInputEnvs[0]:=d;
+
+   fInputEnvs[1]:=0.99995*fInputEnvs[1];
+   if d>fInputEnvs[1]
+    then fInputEnvs[1]:=fInputEnvs[1]+0.5*(d-fInputEnvs[1]);
+
+   t:=fInputEnvs[0]/fInputEnvs[1]-1;
+   d:=abs(t-fInputDCs[1]);
+   fInputDCs[1]:=t;
+
+   if d>0.15 then
+    begin
+     CreateSample(Random(9),min(d-0.15,1));
+     fInputEnvs[1]:=fInputEnvs[0];
+     fInputDCs[1]:=0;
+    end;
+  end;
+
+(*
+ for i := 0 to ASIOHost.BufferSize - 1 do
+  begin
+   OutBuffer[0,i]:=fInputFilter[0].ProcessSample(OutBuffer[0,i]+1E-32);
+   OutBuffer[1,i]:=OutBuffer[0,i];
+//   z:=fHPFilterArray[j].ProcessSample(d+1E-32);
+  end;
+*)
 end;
 
 procedure TFmLunchBox.ASIOHostReset(Sender: TObject);
@@ -690,6 +740,7 @@ procedure TFmLunchBox.ASIOHostSampleRateChanged(Sender: TObject);
 begin
  fSamplesPerBeat:=60/SETempo.Value*ASIOHost.SampleRate;
  fMaxPatSamples:=Round(fSamplesPerBeat*4*SEBar.Value);
+ fInputFilter[0].SampleRate:=ASIOHost.SampleRate;
  CalculateSineAngles;
 end;
 

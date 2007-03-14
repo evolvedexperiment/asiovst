@@ -106,9 +106,9 @@ begin
  with FmLunchBox.VSTHost[1] do
   begin
    Active:=False;
-   if FileExists(EdRealtimeVST.Text) then
+   if FileExists(EdOutputVST.Text) then
     begin
-     DLLFileName:=EdRealtimeVST.Text;
+     DLLFileName:=EdOutputVST.Text;
      Active:=True;
     end;
    BtOutputEditor.Enabled:=Active;
