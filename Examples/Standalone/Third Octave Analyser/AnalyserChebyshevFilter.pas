@@ -2,7 +2,9 @@ unit AnalyserChebyshevFilter;
 
 interface
 
+{$IFNDEF FPC}
 {$DEFINE x87}
+{$ENDIF}
 
 type
   TChebyshevFilter = class(TObject)
@@ -35,7 +37,6 @@ type
   public
     constructor Create; virtual;
     function ProcessSample(const s:Double):Double; virtual; abstract;
-    function ProcessSampleASM:Double; virtual; abstract;
     procedure CalcCoefficients; virtual; abstract;
     procedure SetFilterValues(const Frequency, Gain, Q : Single); virtual;
     procedure ResetState; virtual; abstract;
@@ -63,7 +64,6 @@ type
     procedure ResetState; override;
     procedure CalcCoefficients; override;
     function ProcessSample(const s:Double):Double; override;
-    function ProcessSampleASM: Double; override;
     function Magnitude(f: Single): Single; override;
     function MagnitudeLog10(f: Single): Single; override;
   end;
@@ -80,7 +80,6 @@ type
     procedure ResetState; override;
     procedure CalcCoefficients; override;
     function ProcessSample(const s:Double):Double; override;
-    function ProcessSampleASM: Double; override;
     function Magnitude(f: Single): Single; override;
     function MagnitudeLog10(f: Single): Single; override;
   end;
@@ -372,33 +371,6 @@ begin
 end;
 {$ENDIF}
 
-function TChebyshevILP10Filter.ProcessSampleASM: Double;
-asm
- push ecx
- mov ecx, 10
- @FilterLoop:
-  sub ecx,2
-  fld st(0)
-  fmul [self.fA + ecx*8].Double
-  fadd [self.fD64 + ecx*8].Double
-  fld st(0)
-  fld st(0)
-  fmul [self.fB + ecx*8].Double
-  fadd [self.fD64 + ecx*8 + 8].Double
-  fld st(3)
-  fmul [self.fA + ecx*8 + 8].Double
-  faddp
-  fstp [self.fD64 + ecx*8].Double
-  fmul [self.fB + ecx*8 + 8].Double
-  fxch
-  fxch st(2)
-  fmul [self.fA + ecx*8].Double
-  faddp
-  fstp [self.fD64 + ecx*8 + 8].Double
- jnz @FilterLoop
- pop ecx
-end;
-
 procedure TChebyshevILP10Filter.ResetState;
 begin
  FillChar(fD64[0],10*SizeOf(Double),0);
@@ -617,33 +589,6 @@ begin
  Result  := a;
 end;
 {$ENDIF}
-
-function TChebyshevIHP10Filter.ProcessSampleASM: Double;
-asm
- push ecx
- mov ecx, 10
- @FilterLoop:
-  sub ecx,2
-  fld st(0)
-  fmul [self.fA + ecx*8].Double
-  fadd [self.fD64 + ecx*8].Double
-  fld st(0)
-  fld st(0)
-  fmul [self.fB + ecx*8].Double
-  fadd [self.fD64 + ecx*8 + 8].Double
-  fld st(3)
-  fmul [self.fA + ecx*8 + 8].Double
-  faddp
-  fstp [self.fD64 + ecx*8].Double
-  fmul [self.fB + ecx*8 + 8].Double
-  fxch
-  fxch st(2)
-  fmul [self.fA + ecx*8].Double
-  faddp
-  fstp [self.fD64 + ecx*8 + 8].Double
- jnz @FilterLoop
- pop ecx
-end;
 
 procedure TChebyshevIHP10Filter.ResetState;
 begin

@@ -1,6 +1,7 @@
 program Analyser;
 
 uses
+  Interfaces,
   Forms,
   AnalyserForm in 'AnalyserForm.pas' {FmASIO},
   AnalyserChebyshevFilter in 'AnalyserChebyshevFilter.pas';

@@ -2,7 +2,7 @@ unit AnalyserForm;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF}
+uses {$IFDEF FPC} LCLIntf, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
      Messages, SysUtils, Classes, Graphics, Controls, Forms,
      Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase,
      Spin, AnalyserChebyshevFilter, DBarChart;
@@ -65,7 +65,9 @@ var
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 uses inifiles, registry, DASIOConvert;
 
@@ -73,7 +75,7 @@ procedure TFmAnalyser.FormCreate(Sender: TObject);
 var i   : Integer;
 const HalfThirdMulFak : Double = 1.1224620483093729814335330496792; // = Power(2,1/6)
 begin
- BarChart.Margin:=Rect(5,10,15,0);
+// BarChart.Margin:=Rect(5,10,15,0);
  fChannelNr:=0;
  fSpeedConst[0]:=0.999; fSpeedConst[1]:=1-fSpeedConst[0];
  fFSGain:=SEFullscaleGain.Value;
@@ -124,7 +126,7 @@ begin
     end;
   end;
 
- ASIOHost.OnBufferSwitch32:=BSDownSampled;
+// ASIOHost.OnBufferSwitch32:=BSDownSampled;
  fDownSampleMax:=fLPFilterArray[cNumFrequencies-1].DownsampleFaktor;
 end;
 
@@ -256,7 +258,11 @@ begin
  BarChart.Invalidate;
 end;
 
+{$IFDEF FPC}
 initialization
  Set8087CW(Default8087CW or $3F);
+ {$i AnalyserForm.lrs}
+ {$i AnalyserForm.lrs}
+{$ENDIF}
 
 end.
