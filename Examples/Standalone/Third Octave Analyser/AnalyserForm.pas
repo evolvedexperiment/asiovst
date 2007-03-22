@@ -2,10 +2,10 @@ unit AnalyserForm;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-     Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase, GR32_Image,
-     Spin, G32BarChartUnit, AnalyserChebyshevFilter, DFFTR, DFFTRSD,
-     AudioChartUnit, AudioDataUnit, DBarChart;
+uses {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$END}
+     Messages, SysUtils, Classes, Graphics, Controls, Forms,
+     Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase,
+     Spin, G32BarChartUnit, AnalyserChebyshevFilter, DBarChart;
 
 const
   cNumFrequencies = 32;
