@@ -7,7 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -37,7 +37,7 @@
         <MinVersion Minor="2" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="Analyser.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -52,7 +52,7 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="AnalyserForm.lrs"/>
         <UnitName Value="AnalyserForm"/>
-        <CursorPos X="41" Y="16"/>
+        <CursorPos X="41" Y="8"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
@@ -92,52 +92,33 @@
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <UnitName Value="DBarChart"/>
+        <CursorPos X="26" Y="260"/>
+        <TopLine Value="223"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit7>
     </Units>
-    <JumpHistory Count="11" HistoryIndex="10">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="220" Column="76" TopLine="199"/>
+        <Caret Line="8" Column="41" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="5" Column="35" TopLine="1"/>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <Caret Line="56" Column="22" TopLine="36"/>
       </Position2>
       <Position3>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="76" Column="3" TopLine="55"/>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <Caret Line="376" Column="52" TopLine="376"/>
       </Position3>
       <Position4>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="127" Column="3" TopLine="106"/>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <Caret Line="54" Column="15" TopLine="50"/>
       </Position4>
-      <Position5>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="262" Column="1" TopLine="221"/>
-      </Position5>
-      <Position6>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="71" Column="1" TopLine="43"/>
-      </Position6>
-      <Position7>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="261" Column="5" TopLine="223"/>
-      </Position7>
-      <Position8>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position8>
-      <Position9>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="256" Column="29" TopLine="227"/>
-      </Position9>
-      <Position10>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="254" Column="38" TopLine="227"/>
-      </Position10>
-      <Position11>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="258" Column="24" TopLine="227"/>
-      </Position11>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

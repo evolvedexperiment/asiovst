@@ -1,163 +1,174 @@
 object FmAnalyser: TFmAnalyser
   Left = 291
+  Height = 367
   Top = 266
+  Width = 458
+  HorzScrollBar.Page = 457
+  VertScrollBar.Page = 366
+  ActiveControl = DriverCombo
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Simple ASIO Third Octave Analyser'
-  ClientHeight = 328
-  ClientWidth = 446
-  Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  PixelsPerInch = 96
-  TextHeight = 13
   object Lb_Drivername: TLabel
     Left = 7
+    Height = 14
     Top = 12
-    Width = 31
-    Height = 13
+    Width = 34
     Caption = 'Driver:'
+    Color = clNone
+    ParentColor = False
   end
   object Lb_Channels: TLabel
     Left = 7
+    Height = 14
     Top = 36
-    Width = 77
-    Height = 13
+    Width = 81
     Caption = 'Output Channel:'
+    Color = clNone
+    ParentColor = False
   end
   object LbSpeed: TLabel
     Left = 7
+    Height = 14
     Top = 64
-    Width = 34
-    Height = 13
+    Width = 35
     Caption = 'Speed:'
+    Color = clNone
+    ParentColor = False
   end
   object LbFullscale: TLabel
     Left = 205
+    Height = 14
     Top = 64
-    Width = 53
-    Height = 13
+    Width = 55
     Caption = 'Fullscale = '
+    Color = clNone
+    ParentColor = False
   end
   object Lb_dB: TLabel
     Left = 322
+    Height = 14
     Top = 64
     Width = 13
-    Height = 13
     Caption = 'dB'
+    Color = clNone
+    ParentColor = False
   end
   object BarChart: TBarChart
-    Left = 0
-    Top = 88
-    Width = 446
-    Height = 240
+    Height = 280
+    Top = 87
+    Width = 458
     Align = alBottom
-    FontQuality = 2
-    MagnitudeUpper = 90.000000000000000000
+    TabOrder = 8
+    Bars = <>
+    Depth = 5
   end
   object DriverCombo: TComboBox
     Left = 64
+    Height = 21
     Top = 7
     Width = 273
-    Height = 21
-    Style = csDropDownList
+    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
     ItemHeight = 13
-    TabOrder = 0
+    MaxLength = 0
     OnChange = DriverComboChange
+    Style = csDropDownList
+    TabOrder = 0
   end
   object Bt_CP: TButton
     Left = 350
+    Height = 21
     Top = 8
     Width = 91
-    Height = 21
+    BorderSpacing.InnerBorder = 4
     Caption = 'Control Panel'
     Enabled = False
-    TabOrder = 1
     OnClick = Bt_CPClick
+    TabOrder = 1
   end
   object ChannelBox: TComboBox
     Left = 104
+    Height = 21
     Top = 32
     Width = 233
-    Height = 21
-    Style = csDropDownList
+    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
     ItemHeight = 13
+    MaxLength = 0
+    Style = csDropDownList
     TabOrder = 2
   end
   object Bt_Analyse: TButton
     Left = 350
+    Height = 50
     Top = 32
     Width = 91
-    Height = 50
+    BorderSpacing.InnerBorder = 4
     Caption = 'Analyse'
     Default = True
     Enabled = False
-    TabOrder = 3
     OnClick = Bt_AnalyseClick
+    TabOrder = 3
   end
   object RB_Fast: TRadioButton
     Left = 49
+    Height = 13
     Top = 63
     Width = 40
-    Height = 17
     Caption = '&Fast'
-    TabOrder = 4
     OnClick = RB_FastClick
+    TabOrder = 4
   end
   object RB_Medium: TRadioButton
     Left = 91
+    Height = 13
     Top = 63
-    Width = 55
-    Height = 17
+    Width = 57
     Caption = '&Medium'
     Checked = True
-    TabOrder = 5
-    TabStop = True
     OnClick = RB_MediumClick
+    State = cbChecked
+    TabOrder = 5
   end
   object RB_Slow: TRadioButton
     Left = 150
+    Height = 13
     Top = 63
-    Width = 46
-    Height = 17
+    Width = 43
     Caption = '&Slow'
-    TabOrder = 6
     OnClick = RB_SlowClick
+    TabOrder = 6
   end
   object SEFullscaleGain: TSpinEdit
     Left = 262
+    Height = 22
     Top = 60
     Width = 56
-    Height = 22
     MaxValue = 200
-    MinValue = 0
+    OnChange = SEFullscaleGainChange
     TabOrder = 7
     Value = 120
-    OnChange = SEFullscaleGainChange
   end
   object ASIOHost: TASIOHost
-    CanDos = []
     PreventClipping = pcDigital
     PreFillOutBuffer = bpfZero
     ConvertOptimizations = [coSSE]
-    SampleRate = 44100.000000000000000000
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
+    SampleRate = 44100
+    ASIOTime.Speed = 1
+    ASIOTime.SampleRate = 44100
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     OnBufferSwitch32 = BSDownSampled
-    Left = 252
-    Top = 24
+    left = 252
+    top = 24
   end
   object Timer: TTimer
     Enabled = False
     Interval = 40
     OnTimer = TimerTimer
-    Left = 280
-    Top = 24
+    left = 280
+    top = 24
   end
 end
