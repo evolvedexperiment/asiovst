@@ -2,10 +2,10 @@ unit AnalyserForm;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$END}
+uses {$IFDEF FPC} LCLIntf, {$ELSE} Windows, {$ENDIF}
      Messages, SysUtils, Classes, Graphics, Controls, Forms,
      Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase,
-     Spin, G32BarChartUnit, AnalyserChebyshevFilter, DBarChart;
+     Spin, AnalyserChebyshevFilter, DBarChart;
 
 const
   cNumFrequencies = 32;
@@ -214,7 +214,7 @@ begin
 end;
 
 procedure TFmAnalyser.BSDownSampled(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray);
-var i,j,r : Integer;
+var i,j   : Integer;
     d,z,s : Double;
 begin
  for i := 0 to ASIOHost.BufferSize - 1 do
