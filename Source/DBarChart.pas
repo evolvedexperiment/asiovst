@@ -2,12 +2,14 @@ unit DBarChart;
 
 interface
 
-uses Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls,
-     RTLConsts;
+uses {$IFDEF FPC} LCLIntf, LResources, LMessages, Windows,
+     {$ELSE} Windows, RTLConsts, {$ENDIF}
+     Classes, Graphics, Forms, Messages, SysUtils, Controls;
 
 {$R DBarChart.res}
 {$R-}
 {$DEFINE x87}
+{$I JEDI.INC}
 
 const
   cNumFrequencies = 32;
@@ -18,7 +20,7 @@ const
 type
   TPaintEvent = procedure(Sender: TObject; const Buffer: TBitmap) of object;
 
-  TBarChart = class(TGraphicControl)
+  TFrequencyBarChart = class(TGraphicControl)
   private
     fOnPaint             : TPaintEvent;
     fFontAlpha           : Byte;
@@ -49,7 +51,11 @@ type
     fChartRect    : TRect;
     fDoubleBuffer : TBitmap;
     procedure CalcChartRect;
+    {$IFDEF FPC}
+    procedure CMColorChanged(var Message: TLMessage); message CM_COLORCHANGED;
+    {$ELSE}
     procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
+    {$ENDIF}
     procedure MouseMove(Shift: TShiftState; X: Integer; Y: Integer); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
@@ -67,12 +73,18 @@ type
   published
     property Align;
     property Anchors;
+    {$IFNDEF FPC}
     property BiDiMode;
+    property OnCanResize;
+    property OnMouseWheel;
+    property OnMouseWheelDown;
+    property OnMouseWheelUp;
+    property Margin: TRect read fMargin write SetMargin;
+    {$ENDIF}
     property Constraints;
     property Color;
     property ShowHint;
     property Visible;
-    property OnCanResize;
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;
@@ -84,9 +96,6 @@ type
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
-    property OnMouseWheel;
-    property OnMouseWheelDown;
-    property OnMouseWheelUp;
     property OnResize;
     property OnStartDock;
     property OnStartDrag;
@@ -95,7 +104,6 @@ type
     property DragCursor;
     property DragMode;
     property Font;
-    property Margin: TRect read fMargin write SetMargin;
     property FontAlpha: Byte read fFontAlpha write SetFontAlpha default 255;
     property FontQuality: Byte read fFontQuality write SetFontQuality default 4;
     property Transparent : Boolean read fTransparent write SetTransparent default false;
@@ -115,16 +123,16 @@ procedure Register;
 
 implementation
 
-uses ShellAPI, Math, Dialogs, Types;
+uses Math, Dialogs, Types;
 
 procedure Register;
 begin
- RegisterComponents('Audio', [TBarChart]);
+ RegisterComponents('Audio', [TFrequencyBarChart]);
 end;
 
-{ TBarChart }
+{ TFrequencyBarChart }
 
-constructor TBarChart.Create(AOwner: TComponent);
+constructor TFrequencyBarChart.Create(AOwner: TComponent);
 var i : Integer;
 begin
  inherited Create(AOwner);
@@ -144,13 +152,13 @@ begin
   do fMagnitudeArray[i]:=0;
 end;
 
-destructor TBarChart.Destroy;
+destructor TFrequencyBarChart.Destroy;
 begin
  FreeAndNil(fDoubleBuffer);
  inherited Destroy;
 end;
 
-procedure TBarChart.CalcChartRect;
+procedure TFrequencyBarChart.CalcChartRect;
 begin
  fChartRect.Top:=max(ClientRect.Top,ClientRect.Top+fMargin.Top);
  fChartRect.Right:=min(ClientRect.Right,ClientRect.Right-fMargin.Right);
@@ -158,13 +166,13 @@ begin
  fChartRect.Left:=max(ClientRect.Left,ClientRect.Left+fMargin.Left)+Canvas.TextWidth('100')+4+Canvas.TextHeight('dB');
 end;
 
-procedure TBarChart.CMColorChanged(var Message: TMessage);
+procedure TFrequencyBarChart.CMColorChanged(var Message: TMessage);
 begin
  inherited;
  Invalidate;
 end;
 
-procedure TBarChart.DrawFast;
+procedure TFrequencyBarChart.DrawFast;
 var i           : Integer;
     r           : TRect;
     Offset      : Integer;
@@ -200,7 +208,7 @@ end;
 procedure DrawParentImage(Control: TControl; Dest: TCanvas);
 var
   SaveIndex: Integer;
-  DC: HDC;
+  DC: Integer;
   Position: TPoint;
 begin
  with Control do
@@ -217,13 +225,12 @@ begin
   end;
 end;
 
-procedure TBarChart.DrawAxis;
+procedure TFrequencyBarChart.DrawAxis;
 var s,c          : Double;
     txt          : string;
     ChartHeight  : Integer;
     ChartWidth   : Integer;
     i,x,y        : Integer;
-    Offset       : Integer;
     BarWidth     : Integer;
     MagCount     : Integer;
     BitMaps      : Array [0..1] of TBitmap;
@@ -243,26 +250,6 @@ var s,c          : Double;
    else result:=FloatToStrF(Value     ,ffGeneral,4,4)
  end;
 
- function CeilX(Value: Double):Integer;
- const half : Double = 0.5;
- asm
-  fld Value
-  fadd half
-  fistp result.Integer
- end;
-
- function f_Abs(v:Double):Double;
- asm
-  fld v.Double
-  fabs
- end;
-
- function f_rnd(Sample:Single):Integer;
- asm
-  fld Sample.Single
-  fistp Result.Integer
- end;
-
 begin
  with fDoubleBuffer.Canvas do
   begin
@@ -270,7 +257,7 @@ begin
     then DrawParentImage(Self, fDoubleBuffer.Canvas)
     else
      begin
-      Brush.Color:=Color;
+      Brush.Color:=Self.Color;
       FillRect(ClientRect);
      end;
 
@@ -281,18 +268,18 @@ begin
    if fRange<>0 then
     begin
      s:=fGranular*fRangeReci;
-     c:=fZeroPosition+CeilX((-fZeroPosition/s))*s;
+     c:=fZeroPosition+Ceil((-fZeroPosition/s))*s;
      if c<0 then c:=c+2*s;
      if c>=0 then
       while c<1 do
        begin
-        MoveTo(fChartRect.Left-2,fChartRect.Top+f_rnd((1-c)*ChartHeight));
-        if f_Abs(c-fZeroPosition)<0.1*s
+        MoveTo(fChartRect.Left-2,fChartRect.Top+round((1-c)*ChartHeight));
+        if Abs(c-fZeroPosition)<0.1*s
          then Canvas.Pen.Color:=clSilver
          else Canvas.Pen.Color:=clGray;
-        LineTo(fChartRect.Right,fChartRect.Top+f_rnd((1-c)*ChartHeight));
+        LineTo(fChartRect.Right,fChartRect.Top+round((1-c)*ChartHeight));
         txt:=FloatToStrX((-fZeroPosition+c)*fRange);
-        TextOut(fChartRect.Left-Canvas.TextWidth(txt)-4,fChartRect.Top+f_rnd((1-c)*ChartHeight)-Canvas.TextHeight(txt) div 2,txt);
+        TextOut(fChartRect.Left-Canvas.TextWidth(txt)-4,fChartRect.Top+round((1-c)*ChartHeight)-Canvas.TextHeight(txt) div 2,txt);
         c:=c+s;
        end;
     end;
@@ -338,9 +325,7 @@ begin
    ChartWidth:=fChartRect.Right-fChartRect.Left-3;
    BarWidth:=ChartWidth div Length(fMagnitudeArray);
    MagCount:=Length(fMagnitudeArray);
-   if BarWidth>2
-    then begin BarWidth:=BarWidth-1; Offset:=1; end
-    else Offset:=0;
+   if BarWidth>2 then BarWidth:=BarWidth-1;
 
    txt:='31.5';
    s:=3+fChartRect.Left+ChartWidth* 3/(MagCount)+(BarWidth-TextWidth(txt))*0.5;
@@ -368,7 +353,7 @@ begin
   end;
 end;
 
-procedure TBarChart.SetFontAlpha(const Value: Byte);
+procedure TFrequencyBarChart.SetFontAlpha(const Value: Byte);
 begin
  if fFontAlpha<>Value then
   begin
@@ -377,7 +362,7 @@ begin
   end;
 end;
 
-procedure TBarChart.SetFontQuality(const Value: Byte);
+procedure TFrequencyBarChart.SetFontQuality(const Value: Byte);
 begin
  if fFontQuality<>Value then
   begin
@@ -386,7 +371,7 @@ begin
   end;
 end;
 
-procedure TBarChart.MouseMove(Shift: TShiftState; X, Y: Integer);
+procedure TFrequencyBarChart.MouseMove(Shift: TShiftState; X, Y: Integer);
 var dt : Double;
 begin
  if X<fChartRect.Left
@@ -404,7 +389,7 @@ begin
  inherited;
 end;
 
-procedure TBarChart.MouseDown(Button: TMouseButton;
+procedure TFrequencyBarChart.MouseDown(Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
  try
@@ -415,7 +400,7 @@ begin
  end;
 end;
 
-procedure TBarChart.MouseUp(Button: TMouseButton;
+procedure TFrequencyBarChart.MouseUp(Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
  fOldMouse.X:=-1;
@@ -423,11 +408,11 @@ begin
  inherited;
 end;
 
-procedure TBarChart.ResetAxis;
+procedure TFrequencyBarChart.ResetAxis;
 begin
 end;
 
-procedure TBarChart.SetMagnitudeLower(const Value: Double);
+procedure TFrequencyBarChart.SetMagnitudeLower(const Value: Double);
 begin
  if fMagnitudeLower<>Value then
   begin
@@ -437,7 +422,7 @@ begin
   end;
 end;
 
-procedure TBarChart.SetMagnitudeUpper(const Value: Double);
+procedure TFrequencyBarChart.SetMagnitudeUpper(const Value: Double);
 begin
  if fMagnitudeUpper<>Value then
   begin
@@ -447,7 +432,7 @@ begin
   end;
 end;
 
-procedure TBarChart.SetMagnitudeLimits(const Upper, Lower: Double);
+procedure TFrequencyBarChart.SetMagnitudeLimits(const Upper, Lower: Double);
 begin
  if (fMagnitudeLower<>Lower) or (fMagnitudeUpper<>Upper) then
   begin
@@ -458,23 +443,15 @@ begin
   end;
 end;
 
-procedure TBarChart.CalcGranularity;
+procedure TFrequencyBarChart.CalcGranularity;
 var
   FontHeight : Integer;
-  Base       : Integer;
   Ep1,Ep2    : Integer;
   MaxLabDist : Double;
   MaxLabNo   : Integer;
 
- function CeilX(Value: Double):Integer;
- const half : Double = 0.5000000000000001;
- asm
-  fld Value
-  fadd half
-  fistp result.Integer
- end;
-
  function CeiL10(Value: Double):Integer;
+ {$IFNDEF FPC}
  const half : Double = 0.5;
  asm
   fldlg2
@@ -484,6 +461,11 @@ var
   fsub half
   fistp result.Integer
  end;
+ {$ELSE}
+ begin
+  result:=Ceil(Log2(abs(Value)));
+ end;
+ {$ENDIF}
 
 begin
  try
@@ -496,10 +478,10 @@ begin
 
  if fChartRect.Bottom=fChartRect.Top
   then MaxLabNo:=10
-  else MaxLabNo:=Round((fChartRect.Bottom-fChartRect.Top)/(2*FontHeight)-0.5);
+  else MaxLabNo:=round((fChartRect.Bottom-fChartRect.Top) / (2*FontHeight)-0.5);
  MaxLabDist:=(fRange/MaxLabNo);
  Ep1:=CeiL10(MaxLabDist);
- Ep2:=CeilX(MaxLabDist*IntPower(10,-Ep1));
+ Ep2:=Ceil(MaxLabDist*IntPower(10,-Ep1));
  case Ep2 of
   1       : fGranular:=IntPower(10,Ep1);
   2,3     : fGranular:=2*IntPower(10,Ep1);
@@ -509,53 +491,7 @@ begin
  if fGranular<1 then fGranular:=1;
 end;
 
-(*
- function CeiL10(Value: Double):Integer;
- const half : Double = 0.5;
- asm
-  fldlg2
-  fld Value
-  fabs
-  fyl2x
-  fsub half
-  fistp result.Integer
- end;
-
- function f_rnd(Sample:Single):Integer;
- asm
-  fld Sample.Single
-  fistp Result.Integer
- end;
-
-begin
- try
-  if Parent<>nil
-   then FontHeight := 2*Canvas.TextHeight('dB')
-   else FontHeight := 20;
- except
-  FontHeight := 20;
- end;
- Base:=Round((fChartRect.Bottom-fChartRect.Top)/FontHeight-0.5);
-
- try
-  Ep1:=CeiL10(abs(fRange));
-  Ep2:=f_rnd(abs(fRange)*IntPower(Base,-Ep1+1));
-  case (Ep2 mod 30) of
-   1       : Ep2:=1;
-   2,3     : Ep2:=2;
-   4,5,6,7 : Ep2:=5;
-   8,9     : begin Ep2:=1; inc(Ep1) end;
-   10..19  : Ep2:=20;
-   20..29  : Ep2:=30;
-  end;
-  fGranular:=IntPower(10,Ep1-1)*Ep2;
- except
-  fGranular:=10;
- end;
-end;
-*)
-
-procedure TBarChart.SetRange(const Value: Double);
+procedure TFrequencyBarChart.SetRange(const Value: Double);
 begin
  if fRange <> Value then
   begin
@@ -568,13 +504,13 @@ begin
   end;
 end;
 
-procedure TBarChart.DblClick;
+procedure TFrequencyBarChart.DblClick;
 begin
  inherited;
  fDoubleClick:=True;
 end;
 
-procedure TBarChart.SetTransparent(const Value: Boolean);
+procedure TFrequencyBarChart.SetTransparent(const Value: Boolean);
 begin
  if fTransparent<>Value then
   begin
@@ -583,27 +519,27 @@ begin
   end;
 end;
 
-function TBarChart.GetMagnitudedB(index: Integer): Double;
+function TFrequencyBarChart.GetMagnitudedB(index: Integer): Double;
 begin
  if (index<0) or (index>=cNumFrequencies)
   then raise Exception.Create('Index out of bounds');
  Result:=fMagnitudeArray[index];
 end;
 
-procedure TBarChart.SetMagnitudedB(index: Integer; const Value: Double);
+procedure TFrequencyBarChart.SetMagnitudedB(index: Integer; const Value: Double);
 begin
  if (index<0) or (index>=cNumFrequencies)
   then raise Exception.Create('Index out of bounds');
  fMagnitudeArray[index]:=Value;
 end;
 
-procedure TBarChart.SetMargin(const Value: TRect);
+procedure TFrequencyBarChart.SetMargin(const Value: TRect);
 begin
  fMargin := Value;
  CalcChartRect;
 end;
 
-procedure TBarChart.Paint;
+procedure TFrequencyBarChart.Paint;
 begin
  inherited;
  DrawAxis;
@@ -611,7 +547,7 @@ begin
  Canvas.Draw(0,0,fDoubleBuffer);
 end;
 
-procedure TBarChart.Resize;
+procedure TFrequencyBarChart.Resize;
 begin
  inherited;
  CalcChartRect;
@@ -619,7 +555,7 @@ begin
  fDoubleBuffer.Height:=Height;
 end;
 
-procedure TBarChart.ReadState(Reader: TReader);
+procedure TFrequencyBarChart.ReadState(Reader: TReader);
 begin
  inherited;
  CalcChartRect;
