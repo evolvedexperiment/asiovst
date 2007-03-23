@@ -11,7 +11,7 @@ uses
 //  VSTPluginLazIDE,
   TetrisUnit in 'TetrisUnit.pas',
   TetrisDM in 'TetrisDM.pas' {TetrisModule: TVSTModule},
-  TetrisEditor in 'TetrisEditor.pas' {FmTetris};
+  TetrisEditor in 'TetrisEditor.pas' {FmTetris}, Unit1;
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
