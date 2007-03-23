@@ -76,8 +76,7 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i aboutform.lrs}
-  {$i aboutform.lrs}
+  {$i AboutForm.lrs}
 {$ENDIF}
 
 end.

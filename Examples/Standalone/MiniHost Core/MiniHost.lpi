@@ -7,11 +7,12 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <Title Value="Mini Host Core"/>
-      <ActiveEditorIndexAtStart Value="3"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
+      <Language Value=""/>
+      <CharSet Value=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -38,15 +39,13 @@
         <MinVersion Minor="2" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="18">
+    <Units Count="10">
       <Unit0>
         <Filename Value="MiniHost.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="1" Y="17"/>
+        <CursorPos X="1" Y="14"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="0"/>
-        <UsageCount Value="21"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="20"/>
       </Unit0>
       <Unit1>
         <Filename Value="MiniHostForm.pas"/>
@@ -55,10 +54,10 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="MiniHostForm.lrs"/>
         <UnitName Value="MiniHostForm"/>
-        <CursorPos X="19" Y="2141"/>
-        <TopLine Value="2128"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="21"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -68,20 +67,20 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="OptionsForm.lrs"/>
         <UnitName Value="OptionsForm"/>
-        <CursorPos X="79" Y="110"/>
-        <TopLine Value="91"/>
-        <UsageCount Value="21"/>
+        <CursorPos X="1" Y="22"/>
+        <TopLine Value="22"/>
+        <UsageCount Value="20"/>
       </Unit2>
       <Unit3>
-        <Filename Value="aboutform.pas"/>
+        <Filename Value="AboutForm.pas"/>
         <ComponentName Value="about"/>
         <HasResources Value="True"/>
         <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="aboutform.lrs"/>
-        <UnitName Value="aboutform"/>
-        <CursorPos X="2" Y="74"/>
-        <TopLine Value="56"/>
-        <UsageCount Value="21"/>
+        <ResourceFilename Value="AboutForm.lrs"/>
+        <UnitName Value="AboutForm"/>
+        <CursorPos X="1" Y="80"/>
+        <TopLine Value="41"/>
+        <UsageCount Value="20"/>
       </Unit3>
       <Unit4>
         <Filename Value="PlayerForm.pas"/>
@@ -90,123 +89,75 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="PlayerForm.lrs"/>
         <UnitName Value="PlayerForm"/>
-        <CursorPos X="47" Y="211"/>
-        <TopLine Value="198"/>
-        <UsageCount Value="21"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="aboutform.lfm"/>
-        <CursorPos X="18" Y="14"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="LFM"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="MiniHostForm.lfm"/>
-        <CursorPos X="27" Y="55"/>
-        <TopLine Value="43"/>
-        <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="LFM"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="OptionsForm.lfm"/>
-        <CursorPos X="17" Y="9"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="LFM"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="PlayerForm.lfm"/>
-        <CursorPos X="17" Y="9"/>
-        <TopLine Value="9"/>
-        <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="LFM"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="..\..\Source\MsacmX.pas"/>
-        <UnitName Value="MSACMX"/>
-        <CursorPos X="12" Y="32"/>
-        <TopLine Value="19"/>
-        <UsageCount Value="11"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="..\..\Source\WaveIOX.pas"/>
-        <UnitName Value="WaveIOX"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="11"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\packages\extra\winunits\mmsystem.pp"/>
-        <UnitName Value="mmsystem"/>
-        <CursorPos X="27" Y="2329"/>
-        <TopLine Value="2316"/>
-        <UsageCount Value="11"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="..\..\Source\MidiFile.pas"/>
-        <UnitName Value="MidiFile"/>
-        <CursorPos X="12" Y="96"/>
-        <TopLine Value="83"/>
-        <UsageCount Value="11"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="..\..\Source\MIDI.pas"/>
-        <UnitName Value="Midi"/>
-        <CursorPos X="1" Y="290"/>
-        <TopLine Value="277"/>
-        <UsageCount Value="11"/>
-      </Unit13>
-      <Unit14>
-        <Filename Value="..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\objpas\sysutils\sysstrh.inc"/>
-        <CursorPos X="10" Y="163"/>
-        <TopLine Value="150"/>
+        <UsageCount Value="20"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\interfaces.pp"/>
+        <UnitName Value="Interfaces"/>
+        <CursorPos X="1" Y="45"/>
+        <TopLine Value="3"/>
         <UsageCount Value="10"/>
-      </Unit14>
-      <Unit15>
-        <Filename Value="..\..\..\..\..\Programme\Lazarus\lcl\stdctrls.pp"/>
-        <UnitName Value="StdCtrls"/>
-        <CursorPos X="3" Y="539"/>
-        <TopLine Value="574"/>
-        <UsageCount Value="10"/>
-      </Unit15>
-      <Unit16>
-        <Filename Value="..\..\..\VSTPAC~1\Source\DASIOConvert.pas"/>
-        <UnitName Value="DASIOConvert"/>
-        <CursorPos X="27" Y="9"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\..\..\Source\DVSTHost.pas"/>
+        <UnitName Value="DVSTHost"/>
+        <CursorPos X="50" Y="13"/>
         <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\..\..\Source\DDSPBase.pas"/>
+        <UnitName Value="DDSPBase"/>
+        <CursorPos X="20" Y="36"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\..\..\Source\WaveIOX.pas"/>
+        <UnitName Value="WaveIOX"/>
+        <CursorPos X="9" Y="29"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\..\..\Source\MIDI.pas"/>
+        <UnitName Value="Midi"/>
+        <CursorPos X="21" Y="317"/>
+        <TopLine Value="297"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
-      </Unit16>
-      <Unit17>
-        <Filename Value="..\..\..\VSTPAC~1\Source\DVSTHost.pas"/>
-        <UnitName Value="DVSTHost"/>
-        <CursorPos X="45" Y="26"/>
-        <TopLine Value="13"/>
-        <EditorIndex Value="3"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit17>
+      </Unit9>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="4" HistoryIndex="3">
+      <Position1>
+        <Filename Value="MiniHostForm.pas"/>
+        <Caret Line="7" Column="1" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="MiniHostForm.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="MiniHostForm.pas"/>
+        <Caret Line="2277" Column="1" TopLine="2237"/>
+      </Position3>
+      <Position4>
+        <Filename Value="MiniHostForm.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position4>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <IncludeFiles Value="include\"/>
-      <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType)\;$(LazarusDir)\components\codetools\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\components\custom\;$(LazarusDir)\packager\units\$(TargetCPU)-$(TargetOS)\;C:\ITA\Projects\VSTPAC~1\Source\;C:\ITA\Projects\VSTPAC~1\Lazarus\"/>
-      <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\;$(LazarusDir)\components\synedit\;$(LazarusDir)\components\codetools\"/>
+      <IncludeFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
+      <OtherUnitFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
+      <SrcPath Value="C:\ITA\Projects\VSTPack\Source\"/>
     </SearchPaths>
-    <Parsing>
-      <SyntaxOptions>
-        <CStyleOperator Value="False"/>
-        <AllowLabel Value="False"/>
-        <CPPInline Value="False"/>
-        <DelphiCompat Value="True"/>
-      </SyntaxOptions>
-    </Parsing>
     <CodeGeneration>
       <Generate Value="Faster"/>
     </CodeGeneration>

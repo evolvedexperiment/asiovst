@@ -9,8 +9,8 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types,
   Forms, Messages, SysUtils, Classes, Graphics, Controls, StdCtrls,
-  DDspBase, DASIOHost, DVstEffect, DVstHost, WaveIOX, MIDIFile, MIDI,
-  ExtCtrls, ComCtrls, Menus;
+  DDspBase, DVstEffect, WaveIOX, MIDIFile, MIDI,
+  ExtCtrls, ComCtrls, Menus, DVSTHost, DASIOHost;
 
 type
   shortstr = string[255];
@@ -2273,7 +2273,6 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i MiniHostForm.lrs}
   {$i MiniHostForm.lrs}
 {$ENDIF}
 

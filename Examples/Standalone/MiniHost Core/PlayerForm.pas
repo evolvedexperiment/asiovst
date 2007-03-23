@@ -298,7 +298,6 @@ end;
 {$IFDEF FPC}
 initialization
   {$i PlayerForm.lrs}
-  {$i PlayerForm.lrs}
 {$ENDIF}
 
 end.

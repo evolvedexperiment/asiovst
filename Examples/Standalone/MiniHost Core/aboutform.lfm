@@ -9,8 +9,6 @@ object about: Tabout
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'About'
-  ClientHeight = 314
-  ClientWidth = 225
   Font.Height = -11
   Font.Name = 'Arial'
   OnShow = FormShow

@@ -50,7 +50,7 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses DVstHost;
+{uses DVstHost;}
 
 procedure TOptions.FormCreate(Sender: TObject);
 begin
@@ -76,8 +76,8 @@ begin
    Info.lines.Add('driver #' + IntToStr(i) + ': ');
    Info.Lines.Add('name: ' + DriverName);
    Info.Lines.Add('version: ' + IntToStr(DriverVersion));
-   Info.Lines.Add('input channels: ' + IntToStr(InputChannels));
-   Info.Lines.Add('output channels: ' + IntToStr(OutputChannels));
+   Info.Lines.Add('input channels: ' + IntToStr(InputChannelCount));
+   Info.Lines.Add('output channels: ' + IntToStr(OutputChannelCount));
    Info.Lines.Add('input format: ' +
     ChannelTypeToString(InputChannelInfos[0].vType) +
     ' (' + IntToStr(InputChannelInfos[0].vType) + ')');
@@ -146,7 +146,6 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i OptionsForm.lrs}
   {$i OptionsForm.lrs}
 {$ENDIF}
 
