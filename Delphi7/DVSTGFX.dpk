@@ -1,5 +1,6 @@
 package DVSTGFX;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -32,6 +33,7 @@ requires
 contains
   DMidiKeys in '..\Source\DMidiKeys.pas',
   DADSRGraph in '..\Source\DADSRGraph.pas',
-  DWaveform in '..\Source\DWaveform.pas';
+  DWaveform in '..\Source\DWaveform.pas',
+  DBarChart in '..\Source\DBarChart.pas';
 
 end.
