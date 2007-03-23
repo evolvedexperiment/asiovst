@@ -1,10 +1,14 @@
 unit DMidiKeys;
+
+{$I JEDI.INC}
 {$R DMidiKeys.res}
 {$R-}
 
 interface
 
-uses Windows, Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
+uses {$IFDEF FPC} LCLIntf, LResources, LMessages,
+     {$ELSE} Windows, {$ENDIF}
+     Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
 
 type
   TMidiKeyEvent = procedure(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer) of object;
@@ -35,7 +39,11 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    {$IFDEF FPC}
+    procedure WMWindowPosChanged(var Message: TLMWindowPosChanged); message WM_WINDOWPOSCHANGED;
+    {$ELSE}
     procedure WMWindowPosChanged(var Message: TWMWindowPosChanged); message WM_WINDOWPOSCHANGED;
+    {$ENDIF}
     procedure CMColorchanged(var Message: TMessage); message CM_COLORCHANGED;
   public
     constructor Create(AOwner: TComponent); override;
@@ -294,8 +302,19 @@ begin
  Invalidate;
 end;
 
+{$IFDEF FPC}
+procedure TMidiKeys.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := PtrInt(False); end;
+procedure TMidiKeys.WMWindowPosChanged(var Message: TLMWindowPosChanged);
+begin
+ if Assigned(fBuffer) then
+  begin
+   fBuffer.Width := Width;
+   fBuffer.Height := Height;
+   fBlackKeyHeight := Round(0.63*Height);
+  end;
+end;
+{$ELSE}
 procedure TMidiKeys.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := LRESULT(False); end;
-
 procedure TMidiKeys.WMWindowPosChanged(var Message: TWMWindowPosChanged);
 begin
  if Assigned(fBuffer) then
@@ -305,6 +324,7 @@ begin
    fBlackKeyHeight := Round(0.63*Height);
   end;
 end;
+{$ENDIF}
 
 procedure Register;
 begin
