@@ -1,7 +1,7 @@
 object FmAnalyser: TFmAnalyser
-  Left = 291
+  Left = 292
   Height = 367
-  Top = 266
+  Top = 223
   Width = 458
   HorzScrollBar.Page = 457
   VertScrollBar.Page = 366
@@ -63,6 +63,7 @@ object FmAnalyser: TFmAnalyser
     Top = 87
     Width = 458
     Align = alBottom
+    MagnitudeUpper = 90
   end
   object DriverCombo: TComboBox
     Left = 64

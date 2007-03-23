@@ -52,13 +52,12 @@ object FmAnalyser: TFmAnalyser
     Height = 13
     Caption = 'dB'
   end
-  object BarChart: TBarChart
+  object BarChart: TFrequencyBarChart
     Left = 0
     Top = 88
     Width = 446
     Height = 240
     Align = alBottom
-    FontQuality = 2
     MagnitudeUpper = 90.000000000000000000
   end
   object DriverCombo: TComboBox

@@ -2,8 +2,8 @@ unit AnalyserForm;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-     Messages, SysUtils, Classes, Graphics, Controls, Forms,
+uses {$IFDEF FPC} LCLIntf, LResources, Buttons, {$ELSE} Windows, Messages, {$ENDIF}
+     SysUtils, Classes, Graphics, Controls, Forms,
      Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase,
      Spin, AnalyserChebyshevFilter, DBarChart;
 
@@ -47,8 +47,8 @@ type
     procedure AnalyserChartDblClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
-    fLPFilterArray : Array [0..cNumFrequencies-1] of TChebyshevILP10Filter;
-    fHPFilterArray : Array [0..cNumFrequencies-1] of TChebyshevIHP10Filter;
+    fLPFilterArray : Array [0..cNumFrequencies-1] of TAnalyseFilterLP;
+    fHPFilterArray : Array [0..cNumFrequencies-1] of TAnalyseFilterHP;
     fFilterRMS     : Array [0..cNumFrequencies-1] of Single;
     fChannelNr     : Integer;
     fSpeedConst    : Array [0..1] of Single;
@@ -69,13 +69,12 @@ implementation
 {$R *.DFM}
 {$ENDIF}
 
-uses inifiles, registry, DASIOConvert;
+uses inifiles, DASIOConvert;
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var i   : Integer;
 const HalfThirdMulFak : Double = 1.1224620483093729814335330496792; // = Power(2,1/6)
 begin
-// BarChart.Margin:=Rect(5,10,15,0);
  fChannelNr:=0;
  fSpeedConst[0]:=0.999; fSpeedConst[1]:=1-fSpeedConst[0];
  fFSGain:=SEFullscaleGain.Value;
@@ -104,29 +103,26 @@ begin
 
  for i:=0 to cNumFrequencies-1 do
   begin
-   fLPFilterArray[i]:=TChebyshevILP10Filter.Create;
+   fLPFilterArray[i]:=TAnalyseFilterLP.Create;
    with fLPFilterArray[i] do
     begin
      SampleRate:=44100;
-//     SetFilterValues(0.9566*(cThirdOctaveFrequencies[cNumFrequencies-i-1]*HalfThirdMulFak),0,1);
      SetFilterValues(0.87*(cThirdOctaveFrequencies[cNumFrequencies-i-1]*HalfThirdMulFak),0,10);
      if fDownSampler=-1 then DownsampleAmount:=0 else
       while Power(2,DownsampleAmount)*Frequency<0.125*SampleRate do DownsampleAmount:=DownsampleAmount+1;
      CalcCoefficients;
     end;
 
-   fHPFilterArray[i]:=TChebyshevIHP10Filter.Create;
+   fHPFilterArray[i]:=TAnalyseFilterHP.Create;
    with fHPFilterArray[i] do
     begin
      SampleRate:=44100;
-//     SetFilterValues(1.20524*(cThirdOctaveFrequencies[cNumFrequencies-i-1]/HalfThirdMulFak),0,1);
      SetFilterValues(1.149*(cThirdOctaveFrequencies[cNumFrequencies-i-1]/HalfThirdMulFak),0,10);
      DownsampleAmount:=fLPFilterArray[i].DownsampleAmount;
      CalcCoefficients;
     end;
   end;
 
-// ASIOHost.OnBufferSwitch32:=BSDownSampled;
  fDownSampleMax:=fLPFilterArray[cNumFrequencies-1].DownsampleFaktor;
 end;
 
@@ -168,7 +164,6 @@ end;
 procedure TFmAnalyser.SEFullscaleGainChange(Sender: TObject);
 begin
  fFSGain:=SEFullscaleGain.Value;
-// AnalyserChart.LeftAxis.Maximum:=fFSGain+20;
 end;
 
 procedure TFmAnalyser.DriverComboChange(Sender: TObject);
@@ -230,7 +225,7 @@ begin
      d:=fLPFilterArray[j].ProcessSample(d+1E-32);
      z:=fHPFilterArray[j].ProcessSample(d+1E-32);
 
-     s:=Power(fSpeedConst[0],2*(fLPFilterArray[j].DownsampleAmount+1));
+     s:=IntPower(fSpeedConst[0],8*fLPFilterArray[j].DownsampleAmount+1);
      fFilterRMS[j]:=s*fFilterRMS[j]+(1-s)*Amp_to_dB(abs(z));
     end;
    inc(fDownSampler);
