@@ -20,26 +20,23 @@ const
 type
   TPaintEvent = procedure(Sender: TObject; const Buffer: TBitmap) of object;
 
+  { TFrequencyBarChart }
+
   TFrequencyBarChart = class(TGraphicControl)
   private
     fOnPaint             : TPaintEvent;
-    fFontAlpha           : Byte;
-    fFontQuality         : Byte;
     fMargin              : TRect;
     fOldMouse            : TPoint;
     fDoubleClick         : Boolean;
-    fTransparent         : Boolean;
     fMagnitudeArray      : array [0..cNumFrequencies-1] of Double;
     fMagnitudeUpper      : Double;
     fMagnitudeLower      : Double;
     fRange,fRangeReci    : Double;
     fGranular            : Double;
     fZeroPosition        : Double;
-    procedure SetFontAlpha(const Value: Byte);
-    procedure SetFontQuality(const Value: Byte);
+    fRepaintAxis         : Boolean;
     procedure DrawFast;
     procedure DrawAxis;
-    procedure SetTransparent(const Value: Boolean);
     function GetMagnitudedB(index: Integer): Double;
     procedure SetMagnitudedB(index: Integer; const Value: Double);
     procedure SetMagnitudeLower(const Value: Double);
@@ -47,6 +44,7 @@ type
     procedure SetRange(const Value: Double);
     procedure CalcGranularity;
     procedure SetMargin(const Value: TRect);
+    procedure DrawGrid;
   protected
     fChartRect    : TRect;
     fDoubleBuffer : TBitmap;
@@ -104,9 +102,6 @@ type
     property DragCursor;
     property DragMode;
     property Font;
-    property FontAlpha: Byte read fFontAlpha write SetFontAlpha default 255;
-    property FontQuality: Byte read fFontQuality write SetFontQuality default 4;
-    property Transparent : Boolean read fTransparent write SetTransparent default false;
     property OnPaint: TPaintEvent read fOnPaint write fOnPaint;
     property MagnitudeLower : Double read fMagnitudeLower write SetMagnitudeLower;
     property MagnitudeUpper : Double read fMagnitudeUpper write SetMagnitudeUpper;
@@ -142,11 +137,9 @@ begin
  fDoubleBuffer:=TBitmap.Create;
  fDoubleBuffer.Width:=Width;
  fDoubleBuffer.Height:=Height;
- fTransparent:=false;
- fFontAlpha:=255;
- fFontQuality:=2;
  fOldMouse.Y:=-1;
  fOldMouse.X:=-1;
+ fRepaintAxis:=True;
  SetMagnitudeLimits(90,0);
  for i:=0 to Length(fMagnitudeArray)-1
   do fMagnitudeArray[i]:=0;
@@ -192,7 +185,7 @@ begin
     else Offset:=0;
    for i:=0 to MagCount-1 do
     begin
-     r:=Rect(3+fChartRect.Left+Round(ChartWidth*i/(MagCount)), max(fChartRect.Bottom-Round((fMagnitudeArray[i]-fMagnitudeLower)/fRange*ChartHeight),0), 3+fChartRect.Left+Round(ChartWidth*i/(MagCount) +BarWidth)-Offset,fChartRect.Bottom);
+     r:=Rect(3+fChartRect.Left+Round(ChartWidth*i/(MagCount)), max(fChartRect.Bottom-1-Round((fMagnitudeArray[i]-fMagnitudeLower)/fRange*ChartHeight),0), 3+fChartRect.Left+Round(ChartWidth*i/(MagCount) +BarWidth)-Offset,fChartRect.Bottom-1);
      if r.Top>r.Bottom then continue;
      case (i mod 10) of
       3: Brush.Color:=$0A0A8A;
@@ -202,26 +195,6 @@ begin
      Pen.Color:=$0A0A0A;
      FillRect(r);
     end;
-  end;
-end;
-
-procedure DrawParentImage(Control: TControl; Dest: TCanvas);
-var
-  SaveIndex: Integer;
-  DC: Integer;
-  Position: TPoint;
-begin
- with Control do
-  begin
-   if Parent = nil then Exit;
-   DC := Dest.Handle;
-   SaveIndex := SaveDC(DC);
-   GetViewportOrgEx(DC, Position);
-   SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-   IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-   Parent.Perform(WM_ERASEBKGND, DC, 0);
-   Parent.Perform(WM_PAINT, DC, 0);
-   RestoreDC(DC, SaveIndex);
   end;
 end;
 
@@ -251,18 +224,15 @@ var s,c          : Double;
  end;
 
 begin
+ fRepaintAxis:=False;
  with fDoubleBuffer.Canvas do
   begin
-   if fTransparent
-    then DrawParentImage(Self, fDoubleBuffer.Canvas)
-    else
-     begin
-      Brush.Color:=Self.Color;
-      FillRect(ClientRect);
-     end;
-
+   Brush.Color:=Self.Color;
+   FillRect(ClientRect);
    Pen.Color:=clBlack;
+   Brush.Color:=clBlack;
    FrameRect(fChartRect);
+   Brush.Color:=Self.Color;
    ChartHeight:=(fChartRect.Bottom-fChartRect.Top);
 
    if fRange<>0 then
@@ -353,21 +323,34 @@ begin
   end;
 end;
 
-procedure TFrequencyBarChart.SetFontAlpha(const Value: Byte);
-begin
- if fFontAlpha<>Value then
-  begin
-   fFontAlpha := Value;
-   Invalidate;
-  end;
-end;
+procedure TFrequencyBarChart.DrawGrid;
+var s,c          : Double;
+    ChartHeight  : Integer;
 
-procedure TFrequencyBarChart.SetFontQuality(const Value: Byte);
 begin
- if fFontQuality<>Value then
+ with fDoubleBuffer.Canvas do
   begin
-   fFontQuality := Value;
-   Invalidate;
+   Brush.Color:=Self.Color;
+   FillRect(fChartRect);
+   Pen.Color:=clBlack;
+   Brush.Color:=clBlack;
+   FrameRect(fChartRect);
+   Brush.Color:=Self.Color;
+   ChartHeight:=(fChartRect.Bottom-fChartRect.Top);
+
+   if fRange<>0 then
+    begin
+     s:=fGranular*fRangeReci;
+     c:=fZeroPosition+Ceil((-fZeroPosition/s))*s;
+     if c<0 then c:=c+2*s;
+     if c>=0 then
+      while c<1 do
+       begin
+        MoveTo(fChartRect.Left-2,fChartRect.Top+round((1-c)*ChartHeight));
+        LineTo(fChartRect.Right,fChartRect.Top+round((1-c)*ChartHeight));
+        c:=c+s;
+       end;
+    end;
   end;
 end;
 
@@ -418,6 +401,7 @@ begin
   begin
    fMagnitudeLower := Value;
    Range := fMagnitudeUpper - fMagnitudeLower;
+   fRepaintAxis:=True;
    Invalidate;
   end;
 end;
@@ -428,6 +412,7 @@ begin
   begin
    fMagnitudeUpper := Value;
    Range := fMagnitudeUpper - fMagnitudeLower;
+   fRepaintAxis:=True;
    Invalidate;
   end;
 end;
@@ -439,6 +424,7 @@ begin
    fMagnitudeLower := Lower;
    fMagnitudeUpper := Upper;
    Range := fMagnitudeUpper - fMagnitudeLower;
+   fRepaintAxis:=True;
    Invalidate;
   end;
 end;
@@ -454,16 +440,16 @@ var
  {$IFNDEF FPC}
  const half : Double = 0.5;
  asm
-  fldlg2
-  fld Value
-  fabs
-  fyl2x
+  fldlg2          // lg2
+  fld Value       // Value, lg2
+  fabs            // abs(Value), lg2
+  fyl2x           // abs(Value), lg2
   fsub half
   fistp result.Integer
  end;
  {$ELSE}
  begin
-  result:=Ceil(Log2(abs(Value)));
+  result:=Ceil(Log10(2)*Log2(abs(Value)));
  end;
  {$ENDIF}
 
@@ -510,15 +496,6 @@ begin
  fDoubleClick:=True;
 end;
 
-procedure TFrequencyBarChart.SetTransparent(const Value: Boolean);
-begin
- if fTransparent<>Value then
-  begin
-   fTransparent:=Value;
-   Invalidate;
-  end;
-end;
-
 function TFrequencyBarChart.GetMagnitudedB(index: Integer): Double;
 begin
  if (index<0) or (index>=cNumFrequencies)
@@ -542,7 +519,9 @@ end;
 procedure TFrequencyBarChart.Paint;
 begin
  inherited;
- DrawAxis;
+ if fRepaintAxis
+  then DrawAxis
+  else DrawGrid;
  DrawFast;
  Canvas.Draw(0,0,fDoubleBuffer);
 end;
@@ -553,6 +532,7 @@ begin
  CalcChartRect;
  fDoubleBuffer.Width:=Width;
  fDoubleBuffer.Height:=Height;
+ fRepaintAxis:=True;
 end;
 
 procedure TFrequencyBarChart.ReadState(Reader: TReader);
