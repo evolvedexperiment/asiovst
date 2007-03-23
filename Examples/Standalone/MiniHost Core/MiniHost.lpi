@@ -7,7 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -54,8 +54,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="MiniHostForm.lrs"/>
         <UnitName Value="MiniHostForm"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
+        <CursorPos X="3" Y="55"/>
+        <TopLine Value="11"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -124,30 +124,18 @@
       <Unit9>
         <Filename Value="..\..\..\Source\MIDI.pas"/>
         <UnitName Value="Midi"/>
-        <CursorPos X="21" Y="317"/>
-        <TopLine Value="297"/>
+        <CursorPos X="39" Y="326"/>
+        <TopLine Value="257"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit9>
     </Units>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
-        <Filename Value="MiniHostForm.pas"/>
-        <Caret Line="7" Column="1" TopLine="1"/>
+        <Filename Value="..\..\..\Source\MIDI.pas"/>
+        <Caret Line="317" Column="21" TopLine="297"/>
       </Position1>
-      <Position2>
-        <Filename Value="MiniHostForm.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="MiniHostForm.pas"/>
-        <Caret Line="2277" Column="1" TopLine="2237"/>
-      </Position3>
-      <Position4>
-        <Filename Value="MiniHostForm.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position4>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

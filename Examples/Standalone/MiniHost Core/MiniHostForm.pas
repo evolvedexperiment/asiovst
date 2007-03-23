@@ -50,6 +50,8 @@ type
     pos: Integer;
   end;
 
+  { TFmMiniHost }
+
   TFmMiniHost = class(TForm)
     VSTHost: TVSTHost;
     MainMenu1: TMainMenu;
