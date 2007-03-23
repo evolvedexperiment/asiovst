@@ -1,9 +1,13 @@
 unit EditorSetup;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Forms, StdCtrls;
+  {$IFDEF FPC} LCLIntf, LResources,
+  {$ELSE} Windows, Messages, {$ENDIF}
+  SysUtils, Classes, Controls, Forms, StdCtrls;
 
 type
   TFmSetup = class(TForm)
@@ -31,7 +35,9 @@ implementation
 
 uses inifiles, EditorForm;
 
+{$IFNDEF FPC}
 {$R *.dfm}
+{$ENDIF}
 
 procedure TFmSetup.FormCreate(Sender: TObject);
 var Settings : TInifile;
@@ -53,14 +59,14 @@ begin
    FmVSTEditor.ASIOHost.Active:=False;
    FmVSTEditor.ASIOHost.DriverIndex := CBDrivers.ItemIndex;
    CBInput.Clear;
-   for i := 0 to (FmVSTEditor.ASIOHost.InputChannels div 2) - 1 do
+   for i := 0 to (FmVSTEditor.ASIOHost.InputChannelCount div 2) - 1 do
     begin
      CBInput.Items.Add(
      FmVSTEditor.ASIOHost.InputChannelInfos[2 * i].name + ' / ' +
      FmVSTEditor.ASIOHost.InputChannelInfos[2 * i + 1].name);
     end;
    CBOutput.Clear;
-   for i := 0 to (FmVSTEditor.ASIOHost.OutputChannels div 2) - 1 do
+   for i := 0 to (FmVSTEditor.ASIOHost.OutputChannelCount div 2) - 1 do
     begin
      CBOutput.Items.Add(
      FmVSTEditor.ASIOHost.OutputChannelInfos[2 * i].name + ' / ' +
@@ -93,4 +99,10 @@ begin
  Settings.Free;
 end;
 
+{$IFDEF FPC}
+initialization
+  {$i EditorSetup.lrs}
+{$ENDIF}
+
 end.
+

@@ -1,0 +1,29 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
+LazarusResources.Add('TFmSetup','FORMDATA',[
+  'TPF0'#8'TFmSetup'#7'FmSetup'#4'Left'#3#141#2#6'Height'#2'V'#3'Top'#3#163#2#5
+  +'Width'#3#226#0#18'HorzScrollBar.Page'#3#225#0#18'VertScrollBar.Page'#2'U'#13
+  +'ActiveControl'#7#9'CBDrivers'#11'BorderStyle'#7#12'bsToolWindow'#7'Caption'
+  +#6#5'Setup'#11'Font.Height'#2#245#9'Font.Name'#6#7'Verdana'#10'Font.Style'#11
+  +#6'fsBold'#0#8'OnCreate'#7#10'FormCreate'#9'OnDestroy'#7#11'FormDestroy'#0#6
+  +'TLabel'#8'LbPreset'#4'Left'#2#4#6'Height'#2#21#3'Top'#2#2#5'Width'#2'Q'#8'A'
+  +'utoSize'#8#7'Caption'#6#12'ASIO Driver:'#5'Color'#7#6'clNone'#6'Layout'#7#8
+  +'tlCenter'#11'ParentColor'#8#0#0#6'TLabel'#4'LbIn'#4'Left'#2#4#6'Height'#2#21
+  +#3'Top'#2'"'#5'Width'#2'%'#8'AutoSize'#8#7'Caption'#6#6'Input:'#5'Color'#7#6
+  +'clNone'#6'Layout'#7#8'tlCenter'#11'ParentColor'#8#0#0#6'TLabel'#6'Label1'#4
+  +'Left'#2#4#6'Height'#2#21#3'Top'#2':'#5'Width'#2'%'#8'AutoSize'#8#7'Caption'
+  +#6#7'Output:'#5'Color'#7#6'clNone'#6'Layout'#7#8'tlCenter'#11'ParentColor'#8
+  +#0#0#9'TComboBox'#9'CBDrivers'#4'Left'#2'X'#6'Height'#2#21#3'Top'#2#2#5'Widt'
+  +'h'#3#132#0#16'AutoCompleteText'#11#22'cbactEndOfLineComplete'#20'cbactSearc'
+  +'hAscending'#0#5'Color'#7#9'clBtnFace'#10'ItemHeight'#2#13#9'MaxLength'#2#0#8
+  +'OnChange'#7#15'CBDriversChange'#5'Style'#7#14'csDropDownList'#8'TabOrder'#2
+  +#0#0#0#9'TComboBox'#7'CBInput'#4'Left'#2'0'#6'Height'#2#21#3'Top'#2'"'#5'Wid'
+  +'th'#3#172#0#16'AutoCompleteText'#11#22'cbactEndOfLineComplete'#20'cbactSear'
+  +'chAscending'#0#5'Color'#7#9'clBtnFace'#10'ItemHeight'#2#13#9'MaxLength'#2#0
+  +#8'OnChange'#7#13'CBInputChange'#5'Style'#7#14'csDropDownList'#8'TabOrder'#2
+  +#1#0#0#9'TComboBox'#8'CBOutput'#4'Left'#2'0'#6'Height'#2#21#3'Top'#2':'#5'Wi'
+  +'dth'#3#172#0#16'AutoCompleteText'#11#22'cbactEndOfLineComplete'#20'cbactSea'
+  +'rchAscending'#0#5'Color'#7#9'clBtnFace'#10'ItemHeight'#2#13#9'MaxLength'#2#0
+  +#8'OnChange'#7#14'CBOutputChange'#5'Style'#7#14'csDropDownList'#8'TabOrder'#2
+  +#2#0#0#0
+]);

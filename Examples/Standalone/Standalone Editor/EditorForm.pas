@@ -1,12 +1,19 @@
 unit EditorForm;
 
+{$MODE Delphi}
+
 interface
 
 uses
-  FastCodeMoveDC, Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ComCtrls, ToolWin, ExtCtrls, StdCtrls, DVstHost, DASIOHost, DDSPBase, XPMan;
+  {$IFDEF FPC} LCLIntf, LResources, Buttons,
+  {$ELSE} Windows, Messages, XPMan, {$ENDIF}
+  SysUtils, Classes, Graphics, Controls, Forms,
+  ComCtrls, ExtCtrls, StdCtrls, DDSPBase, DVSTHost, DASIOHost;
 
 type
+
+  { TFmVSTEditor }
+
   TFmVSTEditor = class(TForm)
     ToolBar: TToolBar;
     ToolButton1: TToolButton;
@@ -16,18 +23,20 @@ type
     VstHost: TVstHost;
     ToolButton4: TToolButton;
     ASIOHost: TASIOHost;
+    {$IFNDEF FPC}
     XPManifest1: TXPManifest;
+    {$ENDIF}
     VSTPanel: TPanel;
     CBPreset: TComboBox;
     BtSetup: TButton;
     BtExit: TButton;
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray);
     procedure CBPresetChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BtSetupClick(Sender: TObject);
     procedure BtExitClick(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
     procedure ASIOHostReset(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
@@ -41,7 +50,9 @@ var
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 uses inifiles, EditorSetup;
 
@@ -130,7 +141,8 @@ begin
  Close;
 end;
 
-procedure TFmVSTEditor.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
+procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
+  OutBuffer: TArrayOfSingleDynArray);
 begin
  VSTHost[0].ProcessReplacing(@InBuffer[ASIOHost.InputChannelOffset],@OutBuffer[ASIOHost.OutputChannelOffset],ASIOHost.BufferSize);
 end;
@@ -154,5 +166,11 @@ begin
  Settings.WriteInteger('Layout','Main Left',Left);
  Settings.Free;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i EditorForm.lrs}
+  {$i EditorForm.lrs}
+{$ENDIF}
 
 end.
