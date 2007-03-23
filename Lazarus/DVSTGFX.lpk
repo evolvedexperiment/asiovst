@@ -17,12 +17,20 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="1">
+    <Files Count="3">
       <Item1>
         <Filename Value="..\Source\DBarChart.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="DBarChart"/>
       </Item1>
+      <Item2>
+        <Filename Value="..\Source\DMidiKeys.pas"/>
+        <HasRegisterProc Value="True"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\Source\DWaveform.pas"/>
+        <HasRegisterProc Value="True"/>
+      </Item3>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="1">
