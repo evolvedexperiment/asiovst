@@ -24,6 +24,10 @@ History:
 
 interface
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 uses
   Windows,Classes,MMSystem,SysUtils,MSACMX,Dialogs;
 
