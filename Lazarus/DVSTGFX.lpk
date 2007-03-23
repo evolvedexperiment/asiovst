@@ -32,7 +32,10 @@
       </Item1>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)"/>
+      <IncludePath Value="C:\Programme\Lazarus\lcl\"/>
+      <LibraryPath Value="C:\Programme\Lazarus\lcl\"/>
+      <ObjectPath Value="C:\Programme\Lazarus\lcl\"/>
+      <UnitPath Value="$(PkgOutDir)\"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
