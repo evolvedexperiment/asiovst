@@ -58,14 +58,11 @@ object FmAnalyser: TFmAnalyser
     Color = clNone
     ParentColor = False
   end
-  object BarChart: TBarChart
+  object BarChart: TFrequencyBarChart
     Height = 280
     Top = 87
     Width = 458
     Align = alBottom
-    TabOrder = 8
-    Bars = <>
-    Depth = 5
   end
   object DriverCombo: TComboBox
     Left = 64

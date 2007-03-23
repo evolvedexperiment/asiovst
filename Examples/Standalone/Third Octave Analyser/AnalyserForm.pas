@@ -33,7 +33,7 @@ type
     SEFullscaleGain: TSpinEdit;
     Lb_dB: TLabel;
     Timer: TTimer;
-    BarChart: TBarChart;
+    BarChart: TFrequencyBarChart;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);

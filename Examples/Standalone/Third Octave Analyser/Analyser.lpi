@@ -7,7 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -37,7 +37,7 @@
         <MinVersion Minor="2" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="12">
       <Unit0>
         <Filename Value="Analyser.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -52,7 +52,7 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="AnalyserForm.lrs"/>
         <UnitName Value="AnalyserForm"/>
-        <CursorPos X="41" Y="8"/>
+        <CursorPos X="42" Y="8"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
@@ -95,30 +95,165 @@
       <Unit7>
         <Filename Value="..\..\..\Source\DBarChart.pas"/>
         <UnitName Value="DBarChart"/>
-        <CursorPos X="26" Y="260"/>
-        <TopLine Value="223"/>
+        <CursorPos X="19" Y="64"/>
+        <TopLine Value="43"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\FPC\2.1.3\source\rtl\objpas\math.pp"/>
+        <UnitName Value="math"/>
+        <CursorPos X="10" Y="325"/>
+        <TopLine Value="304"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="AnalyserForm.lfm"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="LFM"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <CursorPos X="15" Y="1769"/>
+        <TopLine Value="1751"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\include\graphiccontrol.inc"/>
+        <CursorPos X="32" Y="87"/>
+        <TopLine Value="61"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit11>
     </Units>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="8" Column="41" TopLine="1"/>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <Caret Line="41" Column="19" TopLine="20"/>
       </Position1>
       <Position2>
         <Filename Value="..\..\..\Source\DBarChart.pas"/>
-        <Caret Line="56" Column="22" TopLine="36"/>
+        <Caret Line="175" Column="34" TopLine="154"/>
       </Position2>
       <Position3>
         <Filename Value="..\..\..\Source\DBarChart.pas"/>
-        <Caret Line="376" Column="52" TopLine="376"/>
+        <Caret Line="208" Column="15" TopLine="187"/>
       </Position3>
       <Position4>
         <Filename Value="..\..\..\Source\DBarChart.pas"/>
-        <Caret Line="54" Column="15" TopLine="50"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position4>
+      <Position5>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <Caret Line="203" Column="12" TopLine="173"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <Caret Line="408" Column="1" TopLine="387"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <Caret Line="22" Column="9" TopLine="1"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <Caret Line="25" Column="34" TopLine="4"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <Caret Line="64" Column="19" TopLine="43"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1772" Column="15" TopLine="1751"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="22" Column="1" TopLine="22"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="29" Column="30" TopLine="7"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="204" Column="23" TopLine="182"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="227" Column="12" TopLine="206"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="228" Column="18" TopLine="207"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="464" Column="20" TopLine="443"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1174" Column="22" TopLine="1153"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1552" Column="20" TopLine="1531"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1553" Column="52" TopLine="1532"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1554" Column="20" TopLine="1533"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1574" Column="59" TopLine="1553"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1747" Column="22" TopLine="1726"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1768" Column="13" TopLine="1747"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1769" Column="63" TopLine="1748"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\include\graphiccontrol.inc"/>
+        <Caret Line="57" Column="3" TopLine="48"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\include\graphiccontrol.inc"/>
+        <Caret Line="62" Column="41" TopLine="40"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\include\graphiccontrol.inc"/>
+        <Caret Line="65" Column="14" TopLine="43"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\include\graphiccontrol.inc"/>
+        <Caret Line="82" Column="32" TopLine="60"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\include\graphiccontrol.inc"/>
+        <Caret Line="85" Column="54" TopLine="61"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
