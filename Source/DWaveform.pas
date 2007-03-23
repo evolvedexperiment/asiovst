@@ -5,7 +5,10 @@ unit DWaveform;
 
 interface
 
-uses Windows, Types, Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
+uses
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, Windows,
+  {$ELSE} Windows, {$ENDIF}
+  Types, Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
 
 type
   TWaveform = class;
@@ -34,7 +37,11 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    {$IFDEF FPC}
+    procedure WMWindowPosChanged(var Message: TLMWindowPosChanged); message WM_WINDOWPOSCHANGED;
+    {$ELSE}
     procedure WMWindowPosChanged(var Message: TWMWindowPosChanged); message WM_WINDOWPOSCHANGED;
+    {$ENDIF}
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -99,7 +106,7 @@ end;
 procedure DrawParentImage(Control: TControl; Dest: TCanvas);
 var
   SaveIndex: Integer;
-  DC: HDC;
+  DC: THandle;
   Position: TPoint;
 begin
  with Control do
@@ -269,6 +276,18 @@ end;
 
 procedure TWaveform.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := LRESULT(False); end;
 
+{$IFDEF FPC}
+procedure TWaveform.WMWindowPosChanged(var Message: TLMWindowPosChanged);
+begin
+ if Assigned(fBuffer) then
+  begin
+   fBuffer.Width := Width;
+   fBuffer.Height := Height;
+   fHalfHeight := Height div 2;
+   RedrawBuffer;
+  end;
+end;
+{$ELSE}
 procedure TWaveform.WMWindowPosChanged(var Message: TWMWindowPosChanged);
 begin
  if Assigned(fBuffer) then
@@ -279,6 +298,7 @@ begin
    RedrawBuffer;
   end;
 end;
+{$ENDIF}
 
 procedure Register;
 begin

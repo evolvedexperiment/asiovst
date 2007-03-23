@@ -22,9 +22,10 @@ unit DVSTHost;
 interface
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLClasses, {$ENDIF} Windows,
-  Messages, SysUtils, Classes, Graphics, Controls,
-  Forms, Registry, DVSTEffect, Math, Dialogs, StdCtrls, ComCtrls
+  {$IFDEF FPC} LCLIntf, LCLClasses, LMessages, Dynlibs,
+  {$ELSE} Windows, Messages, {$ENDIF}
+  SysUtils, Classes, Graphics, Controls, Forms, Registry, DVSTEffect, Math,
+  Dialogs, StdCtrls, ComCtrls
   {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
 type
@@ -70,7 +71,7 @@ type
     FDLLHandle          : THandle;
     FDisplayName        : string;
     FMainFunction       : TMainProc;
-    FHandle             : HWND;
+    FHandle             : THandle;
     FEditOpen           : boolean;
     FWantMidi           : boolean;
     FNeedIdle           : boolean;
@@ -2014,9 +2015,10 @@ begin
  case FDLLHandle = 0 of
    TRUE:
    try
-//    @FMainFunction := @whatifnoentry;
+    {$IFNDEF FPC}
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NIL, GetLastError, 0, Buf, 256, NIL);
     MessageBox(0 , Buf, 'GetLastError'+#0, MB_OK + MB_ICONINFORMATION );
+    {$ENDIF}
    finally
     result := 1;
    end

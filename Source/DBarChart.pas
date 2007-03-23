@@ -2,7 +2,7 @@ unit DBarChart;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, LResources, LMessages, Windows,
+uses {$IFDEF FPC} LCLIntf, LResources, LMessages,
      {$ELSE} Windows, RTLConsts, {$ENDIF}
      Classes, Graphics, Forms, Messages, SysUtils, Controls;
 
@@ -523,6 +523,7 @@ begin
   then DrawAxis
   else DrawGrid;
  DrawFast;
+ Canvas.CopyMode := cmSrcCopy;
  Canvas.Draw(0,0,fDoubleBuffer);
 end;
 
