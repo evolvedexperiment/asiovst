@@ -2068,8 +2068,8 @@ object FmMiniHost: TFmMiniHost
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiPpqPosValid, vtiTempoValid, vtiTimeSigValid]
-    Left = 24
-    Top = 136
+    Left = 88
+    Top = 72
   end
   object MainMenu1: TMainMenu
     AutoHotkeys = maManual
@@ -2228,14 +2228,14 @@ object FmMiniHost: TFmMiniHost
     OnReset = ASIOHostReset
     OnLatencyChanged = ASIOHostLatencyChanged
     OnSampleRateChanged = ASIOHostSampleRateChanged
-    OnBufferSwitch = ASIOHostBufferSwitch
-    Left = 96
-    Top = 136
+    OnBufferSwitch32 = ASIOHostBufferSwitch32
+    Left = 120
+    Top = 72
   end
   object IdleTimer: TTimer
     Interval = 100
     OnTimer = IdleTimerTimer
-    Left = 96
+    Left = 56
     Top = 72
   end
 end

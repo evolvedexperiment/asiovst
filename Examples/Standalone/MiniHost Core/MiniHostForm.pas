@@ -167,26 +167,19 @@ type
       Rect: TRect; State: TOwnerDrawState);
     procedure Image2MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure dropdownMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure dropdownMouseDown(Sender: TObject; Button: TMouseButton;      Shift: TShiftState; X, Y: Integer);
     procedure prboxChange(Sender: TObject);
-    procedure quicksettingsMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure quickmidplayMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure quickwavplayMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure quickwavrecMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure bord2MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure quicksettingsMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure quickmidplayMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure quickwavplayMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure quickwavrecMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure bord2MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ShowMIDIWAVPlayerrecorderWindow1Click(Sender: TObject);
     procedure DownmixToStereo1Click(Sender: TObject);
     procedure MidiThru1Click(Sender: TObject);
     procedure UseMouseWheel1Click(Sender: TObject);
     procedure IdleTimerTimer(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer,
-      OutBuffer: TArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray);
   private
     downmix: boolean;
     totalframes: Integer;
@@ -2145,7 +2138,7 @@ begin
  VSTHost.VSTPlugIns[0].EditIdle;
 end;
 
-procedure TFmMiniHost.ASIOHostBufferSwitch(Sender: TObject; InBuffer,
+procedure TFmMiniHost.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
   OutBuffer: TArrayOfSingleDynArray);
 var j, i: Integer;
     bs, ChOfs: Integer;
