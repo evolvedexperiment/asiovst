@@ -7,7 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="5"/>
+      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -37,7 +37,7 @@
       <Unit0>
         <Filename Value="ASIODemo.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="1" Y="15"/>
+        <CursorPos X="14" Y="6"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="26"/>
@@ -50,8 +50,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="ASIODemoForm.lrs"/>
         <UnitName Value="AsioDemoForm"/>
-        <CursorPos X="103" Y="181"/>
-        <TopLine Value="161"/>
+        <CursorPos X="21" Y="57"/>
+        <TopLine Value="22"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
@@ -67,10 +67,8 @@
         <Filename Value="..\..\..\Source\DDSPBase.pas"/>
         <UnitName Value="DDSPBase"/>
         <CursorPos X="19" Y="33"/>
-        <TopLine Value="12"/>
-        <EditorIndex Value="4"/>
+        <TopLine Value="6"/>
         <UsageCount Value="14"/>
-        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="ASIODemoForm.lrs"/>
@@ -94,9 +92,9 @@
       <Unit7>
         <Filename Value="..\..\..\Source\DASIOHost.pas"/>
         <UnitName Value="DASIOHost"/>
-        <CursorPos X="2" Y="816"/>
-        <TopLine Value="800"/>
-        <EditorIndex Value="3"/>
+        <CursorPos X="3" Y="1770"/>
+        <TopLine Value="1737"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="14"/>
         <Loaded Value="True"/>
       </Unit7>
@@ -105,9 +103,7 @@
         <UnitName Value="DASIOConvert"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="2"/>
         <UsageCount Value="14"/>
-        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\..\Source\JEDI.inc"/>
@@ -206,26 +202,20 @@
         <UnitName Value="types"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="7"/>
         <UsageCount Value="14"/>
-        <Loaded Value="True"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lcltype.pp"/>
         <UnitName Value="LCLType"/>
         <CursorPos X="90" Y="541"/>
         <TopLine Value="519"/>
-        <EditorIndex Value="6"/>
         <UsageCount Value="14"/>
-        <Loaded Value="True"/>
       </Unit24>
       <Unit25>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\win32lclintf.inc"/>
         <CursorPos X="38" Y="291"/>
         <TopLine Value="252"/>
-        <EditorIndex Value="5"/>
         <UsageCount Value="14"/>
-        <Loaded Value="True"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfacebase.pp"/>
@@ -241,11 +231,45 @@
         <UsageCount Value="10"/>
       </Unit27>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="7" HistoryIndex="6">
+      <Position1>
+        <Filename Value="..\..\..\Source\DASIOHost.pas"/>
+        <Caret Line="816" Column="2" TopLine="765"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\..\Source\DASIOHost.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\..\Source\DASIOHost.pas"/>
+        <Caret Line="1779" Column="5" TopLine="1737"/>
+      </Position3>
+      <Position4>
+        <Filename Value="ASIODemoForm.pas"/>
+        <Caret Line="181" Column="103" TopLine="161"/>
+      </Position4>
+      <Position5>
+        <Filename Value="ASIODemoForm.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="ASIODemoForm.pas"/>
+        <Caret Line="220" Column="1" TopLine="178"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\..\Source\DASIOHost.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position7>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="..\..\..\Lazarus\"/>
+      <OtherUnitFiles Value="..\..\..\Source\"/>
+      <SrcPath Value="..\..\..\Source\"/>
+    </SearchPaths>
     <CodeGeneration>
       <Generate Value="Faster"/>
     </CodeGeneration>
