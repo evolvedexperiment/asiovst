@@ -22,9 +22,9 @@ unit DVSTHost;
 interface
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLClasses, LMessages, Dynlibs,
+  {$IFDEF FPC} LCLIntf, LResources, Dynlibs,
   {$ELSE} Windows, Messages, {$ENDIF}
-  SysUtils, Classes, Graphics, Controls, Forms, Registry, DVSTEffect, Math,
+  SysUtils, Classes, Graphics, Controls, Forms, Registry, DVSTEffect,
   Dialogs, StdCtrls, ComCtrls
   {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
@@ -2495,6 +2495,10 @@ begin
 end;
 
 initialization
+ {$IFDEF FPC}
+ {$i TASIOHost.lrs}
+ {$i TASIOHostBasic.lrs}
+ {$ENDIF}
  audioMaster := AudioMasterCallback;
 
 end.
