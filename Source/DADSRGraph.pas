@@ -5,7 +5,10 @@ unit DADSRGraph;
 
 interface
 
-uses Windows, Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
+uses
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, Windows,
+  {$ELSE} Windows, {$ENDIF}
+  Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
 
 type
   TADSRGraphMouseEdit = (meNone, meAttack, meDecay, meSustain, meRelease);

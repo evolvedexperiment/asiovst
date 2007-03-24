@@ -7,7 +7,7 @@ unit DVSTGFX;
 interface
 
 uses
-  DBarChart, DMidiKeys, DWaveform, LazarusPackageIntf; 
+  DBarChart, DMidiKeys, DWaveform, DADSRGraph, LazarusPackageIntf; 
 
 implementation
 
@@ -16,6 +16,7 @@ begin
   RegisterUnit('DBarChart', @DBarChart.Register); 
   RegisterUnit('DMidiKeys', @DMidiKeys.Register); 
   RegisterUnit('DWaveform', @DWaveform.Register); 
+  RegisterUnit('DADSRGraph', @DADSRGraph.Register); 
 end; 
 
 initialization
