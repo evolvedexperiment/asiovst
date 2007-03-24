@@ -56,7 +56,7 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="LunchBoxMain.lrs"/>
         <UnitName Value="LunchBoxMain"/>
-        <CursorPos X="2" Y="465"/>
+        <CursorPos X="29" Y="495"/>
         <TopLine Value="463"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
@@ -147,14 +147,20 @@
     <Version Value="5"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <IncludeFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
-      <OtherUnitFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
-      <SrcPath Value="C:\ITA\Projects\VSTPack\Source\"/>
+      <IncludeFiles Value="..\..\..\Lazarus\"/>
+      <OtherUnitFiles Value="..\..\..\Source\;..\..\..\Lazarus\"/>
+      <SrcPath Value="..\..\..\Source\"/>
     </SearchPaths>
     <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
+      <Debugging>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
