@@ -7,7 +7,6 @@
       <Version Value="5"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="..\Source\"/>
         <OtherUnitFiles Value="..\Source\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
@@ -18,7 +17,7 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Version Minor="2"/>
+    <Version Minor="3"/>
     <Files Count="1">
       <Item1>
         <Filename Value="..\Source\DVSTHost.pas"/>

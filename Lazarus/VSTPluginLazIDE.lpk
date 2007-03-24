@@ -7,10 +7,9 @@
       <Version Value="5"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="..\Source\;..\Lazarus\"/>
-        <OtherUnitFiles Value="..\Source\;..\Lazarus\"/>
+        <OtherUnitFiles Value="..\Source\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-        <SrcPath Value="..\Source\;..\Lazarus\"/>
+        <SrcPath Value="..\Source\"/>
       </SearchPaths>
       <Parsing>
         <Style Value="1"/>
@@ -28,6 +27,7 @@
         <CreateMakefileOnBuild Value="True"/>
       </Other>
     </CompilerOptions>
+    <Version Minor="3"/>
     <Files Count="1">
       <Item1>
         <Filename Value="VSTModuleLazIDEIntf.pas"/>
