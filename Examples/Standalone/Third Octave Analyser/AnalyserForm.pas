@@ -257,7 +257,6 @@ end;
 initialization
  Set8087CW(Default8087CW or $3F);
  {$i AnalyserForm.lrs}
- {$i AnalyserForm.lrs}
 {$ENDIF}
 
 end.
