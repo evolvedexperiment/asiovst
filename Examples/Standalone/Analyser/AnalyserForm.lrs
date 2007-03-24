@@ -40,12 +40,12 @@ LazarusResources.Add('TFmAnalyser','FORMDATA',[
   +'8'#8'MaxValue'#3#200#0#8'OnChange'#7#21'SEFullscaleGainChange'#8'TabOrder'#2
   +#6#5'Value'#2'x'#0#0#9'TBarChart'#13'AnalyserChart'#4'Left'#2#7#6'Height'#3
   +#238#0#3'Top'#2'X'#5'Width'#3#178#1#10'BevelOuter'#7#6'bvNone'#18'ChildSizin'
-  +'g.Layout'#7#29'cclTopToBottomThenLeftToRight'#8'TabOrder'#2#8#4'Bars'#14#0
-  +#13'LabelPosition'#7#8'plCenter'#0#0#9'TASIOHost'#8'ASIOHost'#15'PreventClip'
-  +'ping'#7#9'pcDigital'#16'PreFillOutBuffer'#7#7'bpfZero'#20'ConvertOptimizati'
-  +'ons'#11#5'coSSE'#0#10'SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'#14'ASIOTime.Sp'
-  +'eed'#5#0#0#0#0#0#0#0#128#255'?'#19'ASIOTime.SampleRate'#5#0#0#0#0#0#0'D'#172
-  +#14'@'#14'ASIOTime.Flags'#11#17'atSystemTimeValid'#21'atSamplePositionValid'
-  +#17'atSampleRateValid'#12'atSpeedValid'#0#16'OnBufferSwitch32'#7#20'ASIOHost'
-  +'BufferSwitch'#4'left'#3#252#0#3'top'#2#24#0#0#0
+  +'g.Layout'#7#29'cclTopToBottomThenLeftToRight'#8'TabOrder'#2#8#4'Bars'#14#0#5
+  +'Depth'#2#5#13'LabelPosition'#7#8'plCenter'#0#0#9'TASIOHost'#8'ASIOHost'#15
+  +'PreventClipping'#7#9'pcDigital'#16'PreFillOutBuffer'#7#7'bpfZero'#20'Conver'
+  +'tOptimizations'#11#5'coSSE'#0#10'SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'#14
+  +'ASIOTime.Speed'#5#0#0#0#0#0#0#0#128#255'?'#19'ASIOTime.SampleRate'#5#0#0#0#0
+  +#0#0'D'#172#14'@'#14'ASIOTime.Flags'#11#17'atSystemTimeValid'#21'atSamplePos'
+  +'itionValid'#17'atSampleRateValid'#12'atSpeedValid'#0#16'OnBufferSwitch32'#7
+  +#20'ASIOHostBufferSwitch'#4'left'#3#252#0#3'top'#2#24#0#0#0
 ]);

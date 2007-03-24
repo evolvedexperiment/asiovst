@@ -152,6 +152,7 @@ object FmAnalyser: TFmAnalyser
     ChildSizing.Layout = cclTopToBottomThenLeftToRight
     TabOrder = 8
     Bars = <>
+    Depth = 5
     LabelPosition = plCenter
   end
   object ASIOHost: TASIOHost

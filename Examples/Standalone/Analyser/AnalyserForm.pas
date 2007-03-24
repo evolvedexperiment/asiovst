@@ -72,7 +72,7 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses Inifiles, Registry;
+uses Inifiles;
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var i : Integer;
@@ -232,7 +232,6 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i AnalyserForm.lrs}
   {$i AnalyserForm.lrs}
 {$ENDIF}
 

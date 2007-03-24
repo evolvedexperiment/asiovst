@@ -42,7 +42,7 @@
         <Filename Value="Analyser.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="26" Y="15"/>
-        <TopLine Value="15"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="3"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -54,8 +54,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="AnalyserForm.lrs"/>
         <UnitName Value="AnalyserForm"/>
-        <CursorPos X="76" Y="220"/>
-        <TopLine Value="199"/>
+        <CursorPos X="14" Y="75"/>
+        <TopLine Value="54"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -88,113 +88,23 @@
         <Loaded Value="True"/>
       </Unit4>
     </Units>
-    <JumpHistory Count="24" HistoryIndex="23">
+    <JumpHistory Count="2" HistoryIndex="1">
       <Position1>
         <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="31" Column="1" TopLine="25"/>
+        <Caret Line="235" Column="1" TopLine="196"/>
       </Position1>
       <Position2>
         <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="28" Column="13" TopLine="25"/>
+        <Caret Line="34" Column="22" TopLine="1"/>
       </Position2>
-      <Position3>
-        <Filename Value="..\..\..\Lazarus\HostASIOLaz.pas"/>
-        <Caret Line="11" Column="1" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="..\..\..\Lazarus\HostASIOLaz.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="..\..\..\Source\DFilter.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position5>
-      <Position6>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="25" Column="18" TopLine="24"/>
-      </Position6>
-      <Position7>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="30" Column="1" TopLine="9"/>
-      </Position7>
-      <Position8>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="118" Column="20" TopLine="91"/>
-      </Position8>
-      <Position9>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="117" Column="20" TopLine="96"/>
-      </Position9>
-      <Position10>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="29" Column="18" TopLine="1"/>
-      </Position10>
-      <Position11>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="118" Column="25" TopLine="96"/>
-      </Position11>
-      <Position12>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="117" Column="33" TopLine="96"/>
-      </Position12>
-      <Position13>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="118" Column="33" TopLine="96"/>
-      </Position13>
-      <Position14>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="117" Column="70" TopLine="96"/>
-      </Position14>
-      <Position15>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="118" Column="81" TopLine="96"/>
-      </Position15>
-      <Position16>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="112" Column="1" TopLine="100"/>
-      </Position16>
-      <Position17>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="165" Column="7" TopLine="133"/>
-      </Position17>
-      <Position18>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="218" Column="8" TopLine="194"/>
-      </Position18>
-      <Position19>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="230" Column="77" TopLine="199"/>
-      </Position19>
-      <Position20>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="241" Column="1" TopLine="199"/>
-      </Position20>
-      <Position21>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="71" Column="6" TopLine="43"/>
-      </Position21>
-      <Position22>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="220" Column="24" TopLine="190"/>
-      </Position22>
-      <Position23>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="219" Column="12" TopLine="198"/>
-      </Position23>
-      <Position24>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="220" Column="45" TopLine="199"/>
-      </Position24>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <IncludeFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
-      <Libraries Value="C:\ITA\Projects\VSTPack\Source\"/>
-      <OtherUnitFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
-      <SrcPath Value="C:\ITA\Projects\VSTPack\Source\"/>
+      <OtherUnitFiles Value="..\..\..\Source\"/>
+      <SrcPath Value="..\..\..\Source\"/>
     </SearchPaths>
     <CodeGeneration>
       <Generate Value="Faster"/>
