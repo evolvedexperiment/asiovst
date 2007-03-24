@@ -170,7 +170,6 @@ end;
 {$IFDEF FPC}
 initialization
   {$i EditorForm.lrs}
-  {$i EditorForm.lrs}
 {$ENDIF}
 
 end.

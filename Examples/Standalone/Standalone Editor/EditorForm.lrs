@@ -1,5 +1,3 @@
-{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
-
 LazarusResources.Add('TFmVSTEditor','FORMDATA',[
   'TPF0'#12'TFmVSTEditor'#11'FmVSTEditor'#4'Left'#3'E'#1#6'Height'#3#228#0#3'To'
   +'p'#3'R'#2#5'Width'#3'I'#1#18'HorzScrollBar.Page'#3'H'#1#18'VertScrollBar.Pa'
@@ -37,17 +35,16 @@ LazarusResources.Add('TFmVSTEditor','FORMDATA',[
   +'meInfo'#19'hcdReceiveVstEvents'#22'hcdReceiveVstMidiEvent'#21'hcdReceiveVst'
   +'TimeInfo'#26'hcdReportConnectionChanges'#18'hcdAcceptIOChanges'#13'hcdSizeW'
   +'indow'#18'hcdAsyncProcessing'#10'hcdOffline'#13'hcdSupplyIdle'#19'hcdStartS'
-  +'topProcess'#0#5'Tempo'#5#0#0#0#0#0#0#0#240#5'@'#10'VstVersion'#3#252#8#9'Pl'
-  +'ugInDir'#6#30'C:\Programme\Audio\Plugins\VST'#22'VstTimeInfo.SampleRate'#5#0
-  +#0#0#0#0#0'D'#172#14'@'#17'VstTimeInfo.Tempo'#5#0#0#0#0#0#0#0#240#5'@'#17'Vs'
-  +'tTimeInfo.Flags'#11#13'vtiNanosValid'#14'vtiPpqPosValid'#13'vtiTempoValid'
-  +#12'vtiBarsValid'#16'vtiCyclePosValid'#15'vtiTimeSigValid'#13'vtiSmpteValid'
-  +#13'vtiClockValid'#0#4'left'#2'`'#3'top'#2'K'#0#0#9'TASIOHost'#8'ASIOHost'#15
-  +'PreventClipping'#7#8'pcAnalog'#20'ConvertOptimizations'#11#5'coSSE'#7'co3DN'
-  +'ow'#0#10'SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'#14'ASIOTime.Speed'#5#0#0#0#0
-  +#0#0#0#128#255'?'#19'ASIOTime.SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'#14'ASIO'
-  +'Time.Flags'#11#17'atSystemTimeValid'#21'atSamplePositionValid'#17'atSampleR'
-  +'ateValid'#12'atSpeedValid'#0#7'OnReset'#7#13'ASIOHostReset'#16'OnLatencyCha'
-  +'nged'#7#13'ASIOHostReset'#16'OnBufferSwitch32'#7#22'ASIOHostBufferSwitch32'
-  +#4'left'#2'|'#3'top'#2'K'#0#0#0
+  +'topProcess'#0#5'Tempo'#2'x'#10'VstVersion'#3#252#8#9'PlugInDir'#6#30'C:\Pro'
+  +'gramme\Audio\Plugins\VST'#22'VstTimeInfo.SampleRate'#4'D'#172#0#0#17'VstTim'
+  +'eInfo.Tempo'#2'x'#17'VstTimeInfo.Flags'#11#13'vtiNanosValid'#14'vtiPpqPosVa'
+  +'lid'#13'vtiTempoValid'#12'vtiBarsValid'#16'vtiCyclePosValid'#15'vtiTimeSigV'
+  +'alid'#13'vtiSmpteValid'#13'vtiClockValid'#0#4'left'#2'`'#3'top'#2'K'#0#0#9
+  +'TASIOHost'#8'ASIOHost'#15'PreventClipping'#7#8'pcAnalog'#20'ConvertOptimiza'
+  +'tions'#11#5'coSSE'#7'co3DNow'#0#10'SampleRate'#4'D'#172#0#0#14'ASIOTime.Spe'
+  +'ed'#2#1#19'ASIOTime.SampleRate'#4'D'#172#0#0#14'ASIOTime.Flags'#11#17'atSys'
+  +'temTimeValid'#21'atSamplePositionValid'#17'atSampleRateValid'#12'atSpeedVal'
+  +'id'#0#7'OnReset'#7#13'ASIOHostReset'#16'OnLatencyChanged'#7#13'ASIOHostRese'
+  +'t'#16'OnBufferSwitch32'#7#22'ASIOHostBufferSwitch32'#4'left'#2'|'#3'top'#2
+  +'K'#0#0#0
 ]);
