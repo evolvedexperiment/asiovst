@@ -34,7 +34,7 @@ type
   TWinampDSPModule = record
                       Description   : Pchar;
                       HwndParent    : THandle;
-                      hDLLinstance  : Hinst;
+                      hDLLinstance  : THandle;
                       Config        : TWAConfig;
                       Init          : TWAInit;
                       ModifySamples : TWAModifySamples;
@@ -129,8 +129,6 @@ var WADSPHeader      : TWinAmpDSPheader =
 {$IFNDEF FPC}
 {$R *.DFM}
 {$ENDIF}
-
-exports winampDSPGetHeader2;
 
 function winampDSPGetHeader2 : PWinAmpDSPHeader; cdecl;
 begin
