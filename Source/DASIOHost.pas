@@ -17,9 +17,9 @@ unit DASIOHost;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, LclType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
-     SysUtils, Classes, ASIO, Types, DASIOConvert, DASIOGenerator,
-     {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
+uses {$IFDEF FPC} LCLIntf, LclType, LMessages, LResources, {$ELSE}
+     Windows, Messages, {$ENDIF} SysUtils, Classes, ASIO, Types, DASIOConvert,
+     DASIOGenerator, {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
      {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls,
      ASIOMixer, {$ENDIF} {$IFDEF D5CP} dsgnintf, {$ENDIF} DDSPBase;
 
@@ -1767,7 +1767,10 @@ begin
 end;
 
 initialization
-
+ {$IFDEF FPC}
+ {$i TASIOHost.lrs}
+ {$i TASIOHostBasic.lrs}
+ {$ENDIF}
  PMUpdSamplePos.Msg := PM_UpdateSamplePos;
  PMBufSwitch.Msg := PM_BufferSwitch;
  PMBufSwitchTimeInfo.Msg := PM_BufferSwitchTimeInfo;
