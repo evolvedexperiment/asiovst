@@ -54,8 +54,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="MiniHostForm.lrs"/>
         <UnitName Value="MiniHostForm"/>
-        <CursorPos X="3" Y="55"/>
-        <TopLine Value="11"/>
+        <CursorPos X="23" Y="33"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -131,25 +131,35 @@
         <Loaded Value="True"/>
       </Unit9>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="2" HistoryIndex="1">
       <Position1>
-        <Filename Value="..\..\..\Source\MIDI.pas"/>
-        <Caret Line="317" Column="21" TopLine="297"/>
+        <Filename Value="MiniHostForm.pas"/>
+        <Caret Line="28" Column="16" TopLine="1"/>
       </Position1>
+      <Position2>
+        <Filename Value="MiniHostForm.pas"/>
+        <Caret Line="2260" Column="24" TopLine="2232"/>
+      </Position2>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <IncludeFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
-      <OtherUnitFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
-      <SrcPath Value="C:\ITA\Projects\VSTPack\Source\"/>
+      <IncludeFiles Value="..\..\..\Lazarus\"/>
+      <OtherUnitFiles Value="..\..\..\Source\;..\..\..\Lazarus\"/>
+      <SrcPath Value="..\..\..\Source\"/>
     </SearchPaths>
     <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
+      <Debugging>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
