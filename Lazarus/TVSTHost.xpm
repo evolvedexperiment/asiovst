@@ -1,5 +1,5 @@
 /* XPM */
-static char *TVSTHost[] = {
+static char *tvsthost[] = {
 "32 32 41 1",
 ". c #000000000000",
 ", c #939293929392",

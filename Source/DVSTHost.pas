@@ -2496,8 +2496,7 @@ end;
 
 initialization
  {$IFDEF FPC}
- {$i TASIOHost.lrs}
- {$i TASIOHostBasic.lrs}
+ {$i TVSTHost.lrs}
  {$ENDIF}
  audioMaster := AudioMasterCallback;
 
