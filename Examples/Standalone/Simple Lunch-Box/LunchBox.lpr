@@ -1,16 +1,17 @@
 program LunchBox;
 
+{$MODE Delphi}
+
 uses
-  Forms,
-  Dialogs,
-  SysUtils,
+  Interfaces,
+  Forms, Dialogs, SysUtils,
   LunchBoxMain in 'LunchBoxMain.pas' {FmLunchBox},
   LunchBoxSetup in 'LunchBoxSetup.pas' {FmSetup},
   LunchBoxAbout in 'LunchBoxAbout.pas' {FmAbout},
   LunchBoxVST in 'LunchBoxVST.pas' {FmVST},
   LunchBoxEventList in 'LunchBoxEventList.pas',
   LunchBoxEvent in 'LunchBoxEvent.pas',
-  LunchBoxInputFilter in 'LunchBoxInputFilter.pas';
+  LunchBoxInputFilter in 'LunchBoxInputFilter.pas', HostVSTLaz, HostASIOLaz;
 
 {$R *.res}
 

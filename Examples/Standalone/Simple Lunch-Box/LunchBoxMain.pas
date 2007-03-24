@@ -1,11 +1,17 @@
 unit LunchBoxMain;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  XPMan, ComCtrls, ToolWin, ExtCtrls, StdCtrls, DVstHost, DASIOHost, DDSPBase,
-  Menus, Types, Spin, LunchBoxEvent, LunchBoxEventList, LunchBoxInputFilter;
+  {$IFDEF FPC}LCLIntf, LMessages, LResources, Buttons,
+  {$ELSE} Windows, Messages, XPMan,{$ENDIF}
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, ToolWin,
+  ExtCtrls, StdCtrls, DDSPBase, Menus, Types, Spin, LunchBoxEvent,
+  LunchBoxEventList, LunchBoxInputFilter, DVSTHost, DASIOHost;
 
 type
   TComplexDouble = record Re, Im : Double; end;
@@ -16,7 +22,7 @@ type
   TFmLunchBox = class(TForm)
     VstHost: TVstHost;
     ASIOHost: TASIOHost;
-    XPManifest: TXPManifest;
+    {$IFNDEF FPC}XPManifest: TXPManifest; {$ENDIF}
     MainMenu: TMainMenu;
     MIFile: TMenuItem;
     MIOptions: TMenuItem;
@@ -155,7 +161,9 @@ var FmLunchBox: TFmLunchBox;
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 uses Math, inifiles, WaveIOX, LunchBoxSetup, LunchBoxAbout, LunchBoxVST;
 
@@ -754,5 +762,10 @@ begin
  Settings.WriteInteger('Layout','Main Left',Left);
  Settings.Free;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i LunchBoxMain.lrs}
+{$ENDIF}
 
 end.

@@ -1,5 +1,9 @@
 unit LunchBoxEventList;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses Classes, RTLConsts, LunchBoxEvent;
@@ -39,7 +43,9 @@ type
     function Remove(SimpleSamplerVoice: TLunchBoxSample): Integer;
     procedure Pack;
     procedure Sort(Compare: TListSortCompare);
+    {$IFNDEF FPC}
     procedure Assign(ListA: TLunchBoxEventList; AOperator: TListAssignOp = laCopy; ListB: TLunchBoxEventList = nil);
+    {$ENDIF}
     property Capacity: Integer read FCapacity write SetCapacity;
     property Count: Integer read FCount write SetCount;
     property Items[Index: Integer]: TLunchBoxSample read Get write Put; default;
@@ -299,6 +305,7 @@ begin
  if OwnsObjects then if Action = lnDeleted then SimpleSamplerVoice.Free;
 end;
 
+{$IFNDEF FPC}
 procedure TLunchBoxEventList.Assign(ListA: TLunchBoxEventList; AOperator: TListAssignOp; ListB: TLunchBoxEventList);
 var
   I: Integer;
@@ -380,6 +387,7 @@ begin
       end;
   end;
 end;
+{$ENDIF}
 
 function TLunchBoxEventList.FindInstanceOf(AClass: TClass; AExact: Boolean;
   AStartAt: Integer): Integer;

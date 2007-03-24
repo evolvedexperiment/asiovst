@@ -1,8 +1,12 @@
 unit LunchBoxInputFilter;
 
-interface
-
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ELSE}
 {$DEFINE x87}
+{$ENDIF}
+
+interface
 
 type
   TInputFilter = class(TObject)
@@ -39,7 +43,6 @@ type
   public
     constructor Create; virtual;
     function ProcessSample(const s:Double):Double; virtual; abstract;
-    function ProcessSampleASM:Double; virtual; abstract;
     procedure CalcCoefficients; virtual; abstract;
     procedure SetFilterValues(const Frequency, Gain, Q : Single); virtual;
     procedure ResetState; virtual; abstract;
@@ -64,7 +67,6 @@ type
     procedure ResetState; override;
     procedure CalcCoefficients; override;
     function ProcessSample(const s:Double):Double; override;
-    function ProcessSampleASM: Double; override;
     function Magnitude(f: Single): Single; override;
     function MagnitudeLog10(f: Single): Single; override;
   end;
@@ -77,7 +79,6 @@ type
     procedure ResetState; override;
     procedure CalcCoefficients; override;
     function ProcessSample(const s:Double):Double; override;
-    function ProcessSampleASM: Double; override;
     function Magnitude(f: Single): Single; override;
     function MagnitudeLog10(f: Single): Single; override;
   end;
@@ -383,34 +384,6 @@ begin
 end;
 {$ENDIF}
 
-function TInputFilterLP.ProcessSampleASM: Double;
-asm
- push ecx
- mov ecx, [self.fOrder]
- shl ecx,1
- @FilterLoop:
-  sub ecx,4
-  fld st(0)
-  fmul [self.fAB+ecx*8].Double
-  fadd [self.fD64+ecx*4].Double
-  fld st(0)
-  fld st(0)
-  fmul [self.fAB+ecx*8+8].Double
-  fadd [self.fD64+ecx*4+8].Double
-  fld st(3)
-  fmul [self.fAB+ecx*8+8].Double
-  faddp
-  fstp [self.fD64+ecx*4].Double
-  fmul [self.fAB+ecx*8+24].Double
-  fxch
-  fxch st(2)
-  fmul [self.fAB+ecx*8].Double
-  faddp
-  fstp [self.fD64+ecx*4+8].Double
- jnz @FilterLoop
- pop ecx
-end;
-
 procedure TInputFilterLP.ResetState;
 begin
  FillChar(fD64[0],10*SizeOf(Double),0);
@@ -607,34 +580,6 @@ begin
   end;
 end;
 {$ENDIF}
-
-function TInputFilterHP.ProcessSampleASM: Double;
-asm
- push ecx
- mov ecx, [self.fOrder]
- shl ecx,1
- @FilterLoop:
-  sub ecx,4
-  fld st(0)
-  fmul [self.fAB+ecx*8].Double
-  fadd [self.fD64+ecx*4].Double
-  fld st(0)
-  fld st(0)
-  fmul [self.fAB+ecx*8+8].Double
-  fadd [self.fD64+ecx*4+8].Double
-  fld st(3)
-  fmul [self.fAB+ecx*8+8].Double
-  faddp
-  fstp [self.fD64+ecx*4].Double
-  fmul [self.fAB+ecx*8+24].Double
-  fxch
-  fxch st(2)
-  fmul [self.fAB+ecx*8].Double
-  faddp
-  fstp [self.fD64+ecx*4+8].Double
- jnz @FilterLoop
- pop ecx
-end;
 
 procedure TInputFilterHP.ResetState;
 begin

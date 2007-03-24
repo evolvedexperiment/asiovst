@@ -1,9 +1,15 @@
 unit LunchBoxSetup;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Forms, StdCtrls, Spin;
+  {$IFDEF FPC}LCLIntf, LMessages, LResources, Buttons,
+  {$ELSE} Windows, Messages,{$ENDIF}
+  SysUtils, Classes, Controls, Forms, StdCtrls, Spin;
 
 type
   TFmSetup = class(TForm)
@@ -22,9 +28,7 @@ type
     procedure BtControlPanelClick(Sender: TObject);
     procedure SESampleRateChange(Sender: TObject);
   private
-    { Private-Deklarationen }
   public
-    { Public-Deklarationen }
   end;
 
 var
@@ -34,7 +38,9 @@ implementation
 
 uses IniFiles, DASIOHost, LunchBoxMain;
 
+{$IFNDEF FPC}
 {$R *.dfm}
+{$ENDIF}
 
 procedure TFmSetup.FormCreate(Sender: TObject);
 var Settings : TInifile;
@@ -105,5 +111,10 @@ begin
     Frequency:=Samples[SampleIndex].SampleRate/SampleRate;
    end;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i LunchBoxSetup.lrs}
+{$ENDIF}
 
 end.
