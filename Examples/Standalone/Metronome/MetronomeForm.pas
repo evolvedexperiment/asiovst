@@ -6,8 +6,8 @@ unit MetronomeForm;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
-     SysUtils, Classes, Graphics, Controls, Forms, Math, StdCtrls, ComCtrls,
+uses {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
+     SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ComCtrls,
      ExtCtrls, DDspBase, Spin, Buttons, DASIOHost;
 
 type
@@ -55,7 +55,7 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses inifiles, registry, DASIOConvert;
+uses inifiles, DASIOConvert;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
@@ -198,7 +198,6 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i MetronomeForm.lrs}
   {$i MetronomeForm.lrs}
 {$ENDIF}
 

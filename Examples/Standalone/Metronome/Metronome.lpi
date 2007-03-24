@@ -8,7 +8,7 @@
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
       <Title Value="ASIO Metronome"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -38,7 +38,7 @@
       <Unit0>
         <Filename Value="Metronome.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="39" Y="14"/>
+        <CursorPos X="4" Y="15"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
@@ -51,8 +51,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="MetronomeForm.lrs"/>
         <UnitName Value="MetronomeForm"/>
-        <CursorPos X="60" Y="171"/>
-        <TopLine Value="163"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -72,17 +72,44 @@
         <UsageCount Value="10"/>
       </Unit3>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="5" HistoryIndex="4">
+      <Position1>
+        <Filename Value="MetronomeForm.pas"/>
+        <Caret Line="202" Column="1" TopLine="162"/>
+      </Position1>
+      <Position2>
+        <Filename Value="MetronomeForm.pas"/>
+        <Caret Line="31" Column="27" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="MetronomeForm.pas"/>
+        <Caret Line="9" Column="40" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="MetronomeForm.pas"/>
+        <Caret Line="58" Column="16" TopLine="22"/>
+      </Position4>
+      <Position5>
+        <Filename Value="MetronomeForm.pas"/>
+        <Caret Line="204" Column="5" TopLine="162"/>
+      </Position5>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="..\..\..\Lazarus\"/>
+      <OtherUnitFiles Value="..\..\..\Source\"/>
+      <SrcPath Value="..\..\..\Source\"/>
+    </SearchPaths>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <UseLineInfoUnit Value="False"/>
         <StripSymbols Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>
