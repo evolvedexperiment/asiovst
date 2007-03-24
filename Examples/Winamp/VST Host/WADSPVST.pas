@@ -2,7 +2,13 @@ unit WADSPVST;
 
 interface
 
-uses Windows, Forms, SysUtils, Registry, Menus, ExtCtrls, DVstHost, Graphics,
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
+uses {$IFDEF FPC} LCLIntf, LResources, Windows,
+     {$ELSE} Windows, Messages, {$ENDIF}
+     Forms, SysUtils, Registry, Menus, ExtCtrls, DVstHost, Graphics,
      Dialogs, StdCtrls, Controls, DDspBase, Classes;
 
 type
@@ -27,7 +33,7 @@ type
 
   TWinampDSPModule = record
                       Description   : Pchar;
-                      HwndParent    : Hwnd;
+                      HwndParent    : THandle;
                       hDLLinstance  : Hinst;
                       Config        : TWAConfig;
                       Init          : TWAInit;
@@ -64,7 +70,6 @@ type
     procedure EdVSTNameClick(Sender: TObject);
     procedure CBPresetChange(Sender: TObject);
     procedure PUVSTPluginPopup(Sender: TObject);
-    procedure CBPresetDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
     procedure MILoadDLLDrawItem(Sender: TObject; ACanvas: TCanvas; ARect: TRect; Selected: Boolean);
     procedure MIResetClick(Sender: TObject);
     procedure MIResetDllClick(Sender: TObject);
@@ -88,7 +93,6 @@ type
     procedure LoadRecent(Sender: TObject);
     procedure ResizeChannelArray(NewChannelNumber: Integer);
   protected
-    procedure CreateParams(var Params: TCreateParams); override;
     procedure ClosePlugin;
   public
   end;
@@ -122,7 +126,9 @@ var WADSPHeader      : TWinAmpDSPheader =
     FmWinAmpVST      : TFmWinAmpVST = nil;
     CriticalSection  : TCriticalSection;
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 exports winampDSPGetHeader2;
 
@@ -328,12 +334,6 @@ begin
   Sleep(5);
  except
  end;
-end;
-
-procedure TFmWinAmpVST.CreateParams(var Params: TCreateParams);
-begin
- inherited CreateParams(Params);
-// Params.WndParent := WADSPModule.HwndParent;
 end;
 
 procedure TFmWinAmpVST.ResizeChannelArray(NewChannelNumber: Integer);
@@ -607,22 +607,6 @@ begin
   end;
 end;
 
-procedure TFmWinAmpVST.CBPresetDrawItem(Control: TWinControl;
-  Index: Integer; Rect: TRect; State: TOwnerDrawState);
-begin
- if Index < 0 then exit;
-// prbox.Canvas.brush.color:=$006C4C44;
- with Control As TComboBox do
-  try
-   if odSelected in State
-    then Canvas.Brush.color:=fColorEdit+$00101010
-    else Canvas.Brush.color:=fColorEdit;
-   Canvas.FillRect(Rect);
-   Canvas.TextOut(Rect.Left + 2, Rect.top, items[index]);
-  except
-  end;
-end;
-
 procedure TFmWinAmpVST.MILoadDLLDrawItem(Sender: TObject; ACanvas: TCanvas; ARect: TRect; Selected: Boolean);
 begin
 // ACanvas.Brush.color:=$00585858;
@@ -699,5 +683,10 @@ begin
  EdVSTName.Font.Color:=PanelControl.Font.Color;
  CBPreset.Font.Color:=PanelControl.Font.Color;
 end;
+
+initialization
+  {$IFDEF FPC}
+  {$i WADSPVST.lrs}
+  {$ENDIF}
 
 end.

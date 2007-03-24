@@ -1,0 +1,60 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
+LazarusResources.Add('TFmWinAmpVST','FORMDATA',[
+  'TPF0'#12'TFmWinAmpVST'#11'FmWinAmpVST'#4'Left'#3'E'#1#6'Height'#3#139#0#3'To'
+  +'p'#3'\'#1#5'Width'#3'r'#1#18'HorzScrollBar.Page'#3'q'#1#18'VertScrollBar.Pa'
+  +'ge'#3#138#0#13'ActiveControl'#7#9'EdVSTName'#11'BorderIcons'#11#12'biSystem'
+  +'Menu'#0#11'BorderStyle'#7#12'bsToolWindow'#7'Caption'#6'#VST Host DSP Plugi'
+  +'n v1.0 for Winamp'#5'Color'#4#168#168#168#0#10'Font.Color'#7#7'clWhite'#11
+  +'Font.Height'#2#245#9'Font.Name'#6#5'Arial'#9'Icon.Data'#10'B'#1#0#0'>'#1#0#0
+  +#0#0#1#0#1#0#16#16#16#0#0#0#0#0'('#1#0#0#22#0#0#0'('#0#0#0#16#0#0#0' '#0#0#0
+  +#1#0#4#0#0#0#0#0#192#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#0#128#0
+  +#0#128#0#0#0#128#128#0#128#0#0#0#128#0#128#0#128#128#0#0#128#128#128#0#192
+  +#192#192#0#0#0#255#0#0#255#0#0#0#255#255#0#255#0#0#0#255#0#255#0#255#255#0#0
+  +#255#255#255#0#0#0#0#0#0#0#0#0#3#0#0#8#240#0#0#0#1#187#0#143#255#0#0#0#0'{'
+  +#179#143#255#240#0#0#0#7';'#179#255#255#0#0#0#7#131#187'8'#255#240#0#0#143
+  +#136#179#187'?'#255#0#8#247'3'#251';'#179#143#240#15#247#187'8'#187';?'#128#0
+  +#248';'#255#187#179#24#0#0#15#247';'#187#179#0#0#0#0#255#243#184#187#0#0#0#0
+  +#15#255#131#139#176#0#0#0#0#255#248#3';'#0#0#0#0#15#128#0#3'0'#0#0#0#7#0#0#0
+  +#16#190''#0#0#140'?'#0#0#128#31#0#0#128#15#0#0#192#7#0#0#192#3#0#0#128#1#0#0
+  +#0#0#0#0#0#0#0#0#128#1#0#0#192#3#0#0#224#7#0#0#240#3#0#0#248#1#0#0#252'!'#0#0
+  +#254'y'#0#0#8'OnCreate'#7#10'FormCreate'#6'OnShow'#7#8'FormShow'#8'Position'
+  +#7#14'poScreenCenter'#8'ShowHint'#9#0#6'TPanel'#12'PanelControl'#6'Height'#2
+  +#30#5'Width'#3'r'#1#5'Align'#7#5'alTop'#8'TabOrder'#2#1#0#6'TLabel'#9'LbProg'
+  +'ram'#4'Left'#3#152#0#6'Height'#2#24#3'Top'#2#2#5'Width'#2','#8'AutoSize'#8#7
+  +'Caption'#6#9'Program: '#5'Color'#7#6'clNone'#6'Layout'#7#8'tlCenter'#11'Par'
+  +'entColor'#8#0#0#6'TLabel'#8'LbPlugin'#4'Left'#2#3#6'Height'#2#24#3'Top'#2#2
+  +#5'Width'#2':'#9'Alignment'#7#8'taCenter'#8'AutoSize'#8#7'Caption'#6#11'VST '
+  +'Plugin:'#5'Color'#7#6'clNone'#6'Layout'#7#8'tlCenter'#11'ParentColor'#8#7'O'
+  +'nClick'#7#13'LbPluginClick'#0#0#6'TPanel'#6'Panel1'#4'Left'#3#160#1#6'Heigh'
+  +'t'#2#24#3'Top'#2#3#5'Width'#2#22#10'BevelOuter'#7#6'bvNone'#8'TabOrder'#2#0
+  +#0#0#9'TComboBox'#8'CBPreset'#4'Left'#3#197#0#6'Height'#2#20#3'Top'#2#4#5'Wi'
+  +'dth'#2'd'#16'AutoCompleteText'#11#22'cbactEndOfLineComplete'#20'cbactSearch'
+  +'Ascending'#0#5'Color'#4'XXX'#0#10'Font.Color'#7#7'clWhite'#11'Font.Height'#2
+  +#245#9'Font.Name'#6#5'Arial'#10'ItemHeight'#2#14#9'MaxLength'#2#0#8'OnChange'
+  +#7#14'CBPresetChange'#5'Style'#7#16'csOwnerDrawFixed'#8'TabOrder'#2#2#0#0#5
+  +'TEdit'#9'EdVSTName'#4'Left'#2'<'#6'Height'#2#22#3'Top'#2#4#5'Width'#2'U'#10
+  +'Font.Color'#7#7'clWhite'#11'Font.Height'#2#245#9'Font.Name'#6#5'Arial'#7'On'
+  +'Click'#7#14'EdVSTNameClick'#8'ReadOnly'#9#8'TabOrder'#2#1#0#0#0#6'TPanel'#5
+  +'PnGUI'#6'Height'#2'm'#3'Top'#2#30#5'Width'#3'r'#1#5'Align'#7#8'alClient'#8
+  +'TabOrder'#2#0#0#0#8'TVstHost'#7'VstHost'#10'VstPlugIns'#14#1#11'DisplayName'
+  +#6#10'TVstPlugIn'#26'OnAudioMasterUpdateDisplay'#7'*VstHostVstPlugIns0AudioM'
+  +'asterUpdateDisplay'#0#0#21'ParameterQuantization'#2#0#6'CanDos'#11#16'hcdSe'
+  +'ndVstEvents'#19'hcdSendVstMidiEvent'#18'hcdSendVstTimeInfo'#19'hcdReceiveVs'
+  +'tEvents'#22'hcdReceiveVstMidiEvent'#21'hcdReceiveVstTimeInfo'#13'hcdSizeWin'
+  +'dow'#18'hcdAsyncProcessing'#10'hcdOffline'#13'hcdSupplyIdle'#11'hcdEditFile'
+  +#19'hcdStartStopProcess'#0#5'Tempo'#5#0#0#0#0#0#0#0#240#5'@'#10'VstVersion'#3
+  +#252#8#9'PlugInDir'#6#30'C:\Programme\Audio\Plugins\VST'#22'VstTimeInfo.Samp'
+  +'leRate'#5#0#0#0#0#0#0'D'#172#14'@'#17'VstTimeInfo.Tempo'#5#0#0#0#0#0#0#0#240
+  +#5'@'#17'VstTimeInfo.Flags'#11#13'vtiNanosValid'#14'vtiPpqPosValid'#13'vtiTe'
+  +'mpoValid'#12'vtiBarsValid'#16'vtiCyclePosValid'#15'vtiTimeSigValid'#13'vtiS'
+  +'mpteValid'#13'vtiClockValid'#0#4'left'#3#192#0#0#0#6'TTimer'#5'Timer'#7'Ena'
+  +'bled'#8#8'Interval'#3','#1#7'OnTimer'#7#12'CallEditIdle'#4'left'#3#220#0#0#0
+  +#10'TPopupMenu'#11'PUVSTPlugin'#7'OnPopup'#7#16'PUVSTPluginPopup'#4'left'#3
+  +#248#0#0#9'TMenuItem'#9'MILoadDLL'#7'Caption'#6#11'Load DLL...'#7'OnClick'#7
+  +#14'MILoadDLLClick'#0#0#9'TMenuItem'#8'MIRecent'#7'Caption'#6#6'Recent'#0#9
+  +'TMenuItem'#2'N1'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#7'MIReset'#7'Caption'#6
+  +#5'Reset'#7'OnClick'#7#12'MIResetClick'#0#0#0#9'TMenuItem'#2'N2'#7'Caption'#6
+  +#1'-'#0#0#9'TMenuItem'#10'MIResetDll'#7'Caption'#6#5'Reset'#7'OnClick'#7#15
+  +'MIResetDllClick'#0#0#0#0
+]);

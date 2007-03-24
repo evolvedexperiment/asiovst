@@ -1,0 +1,153 @@
+object FmWinAmpVST: TFmWinAmpVST
+  Left = 325
+  Height = 139
+  Top = 348
+  Width = 370
+  HorzScrollBar.Page = 369
+  VertScrollBar.Page = 138
+  ActiveControl = EdVSTName
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsToolWindow
+  Caption = 'VST Host DSP Plugin v1.0 for Winamp'
+  Color = 11053224
+  Font.Color = clWhite
+  Font.Height = -11
+  Font.Name = 'Arial'
+  Icon.Data = {
+    3E01000000000100010010101000000000002801000016000000280000001000
+    0000200000000100040000000000C00000000000000000000000000000000000
+    0000000000000000800000800000008080008000000080008000808000008080
+    8000C0C0C0000000FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFF
+    FF00000000000000000003000008F000000001BB008FFF000000007BB38FFFF0
+    000000073BB3FFFF0000000783BB38FFF000008F88B3BB3FFF0008F733FB3BB3
+    8FF00FF7BB38BB3B3F8000F83BFFBBB31800000FF73BBBB300000000FFF3B8BB
+    000000000FFF838BB000000000FFF8033B000000000F80000330000000070000
+    0010BE7F00008C3F0000801F0000800F0000C0070000C0030000800100000000
+    00000000000080010000C0030000E0070000F0030000F8010000FC210000FE79
+    0000
+  }
+  OnCreate = FormCreate
+  OnShow = FormShow
+  Position = poScreenCenter
+  ShowHint = True
+  object PanelControl: TPanel
+    Height = 30
+    Width = 370
+    Align = alTop
+    TabOrder = 1
+    object LbProgram: TLabel
+      Left = 152
+      Height = 24
+      Top = 2
+      Width = 44
+      AutoSize = False
+      Caption = 'Program: '
+      Color = clNone
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object LbPlugin: TLabel
+      Left = 3
+      Height = 24
+      Top = 2
+      Width = 58
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'VST Plugin:'
+      Color = clNone
+      Layout = tlCenter
+      ParentColor = False
+      OnClick = LbPluginClick
+    end
+    object Panel1: TPanel
+      Left = 416
+      Height = 24
+      Top = 3
+      Width = 22
+      BevelOuter = bvNone
+      TabOrder = 0
+    end
+    object CBPreset: TComboBox
+      Left = 197
+      Height = 20
+      Top = 4
+      Width = 100
+      AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+      Color = 5789784
+      Font.Color = clWhite
+      Font.Height = -11
+      Font.Name = 'Arial'
+      ItemHeight = 14
+      MaxLength = 0
+      OnChange = CBPresetChange
+      Style = csOwnerDrawFixed
+      TabOrder = 2
+    end
+    object EdVSTName: TEdit
+      Left = 60
+      Height = 22
+      Top = 4
+      Width = 85
+      Font.Color = clWhite
+      Font.Height = -11
+      Font.Name = 'Arial'
+      OnClick = EdVSTNameClick
+      ReadOnly = True
+      TabOrder = 1
+    end
+  end
+  object PnGUI: TPanel
+    Height = 109
+    Top = 30
+    Width = 370
+    Align = alClient
+    TabOrder = 0
+  end
+  object VstHost: TVstHost
+    VstPlugIns = <    
+      item
+        DisplayName = 'TVstPlugIn'
+        OnAudioMasterUpdateDisplay = VstHostVstPlugIns0AudioMasterUpdateDisplay
+      end>
+    ParameterQuantization = 0
+    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdEditFile, hcdStartStopProcess]
+    Tempo = 120
+    VstVersion = 2300
+    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
+    VstTimeInfo.SampleRate = 44100
+    VstTimeInfo.Tempo = 120
+    VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
+    left = 192
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 300
+    OnTimer = CallEditIdle
+    left = 220
+  end
+  object PUVSTPlugin: TPopupMenu
+    OnPopup = PUVSTPluginPopup
+    left = 248
+    object MILoadDLL: TMenuItem
+      Caption = 'Load DLL...'
+      OnClick = MILoadDLLClick
+    end
+    object MIRecent: TMenuItem
+      Caption = 'Recent'
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object MIReset: TMenuItem
+        Caption = 'Reset'
+        OnClick = MIResetClick
+      end
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object MIResetDll: TMenuItem
+      Caption = 'Reset'
+      OnClick = MIResetDllClick
+    end
+  end
+end
