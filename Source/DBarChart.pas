@@ -545,5 +545,8 @@ begin
 end;
 
 initialization
+ {$IFDEF FPC}
+ {$i TFreqencyBarChart.lrs}
+ {$ENDIF}
 
 end.

@@ -35,6 +35,8 @@ type
     property Release : Single read fRelease write SetRelease;
   end;
 
+  { TADSRGraph }
+
   TADSRGraph = class(TGraphicControl)
   private
     fBuffer          : TBitmap;
@@ -68,7 +70,8 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure WMWindowPosChanged(var Message: TWMWindowPosChanged); message WM_WINDOWPOSCHANGED;
+    procedure Resize; override;
+    procedure ReadState(Reader: TReader); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -366,21 +369,32 @@ begin
  Invalidate;
 end;
 
-procedure TADSRGraph.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := LRESULT(False); end;
-
-procedure TADSRGraph.WMWindowPosChanged(var Message: TWMWindowPosChanged);
+procedure TADSRGraph.Resize;
 begin
- if Assigned(fBuffer) then
-  begin
-   fBuffer.Width := Width;
-   fBuffer.Height := Height;
-   CalcIntValues;
-  end;
+ inherited Resize;
+ fBuffer.Width := Width;
+ fBuffer.Height := Height;
+ CalcIntValues;
 end;
+
+procedure TADSRGraph.ReadState(Reader: TReader);
+begin
+ inherited ReadState(Reader);
+ fBuffer.Width := Width;
+ fBuffer.Height := Height;
+ CalcIntValues;
+end;
+
+procedure TADSRGraph.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := LRESULT(False); end;
 
 procedure Register;
 begin
  RegisterComponents('Audio', [TADSRGraph]);
 end;
+
+initialization
+ {$IFDEF FPC}
+ {$i TADSRGraph.lrs}
+ {$ENDIF}
 
 end.

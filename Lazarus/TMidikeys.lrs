@@ -1,0 +1,30 @@
+LazarusResources.Add('TMidiKeys','XPM',[
+  '/* XPM */'#13#10'static char *tmidikeys[] = {'#13#10'"24 24 41 1",'#13#10'". c'
+  +' #9B929B929B92",'#13#10'", c #979297929792",'#13#10'"- c #000000000000",'#13
+  +#10'"* c #F7FFF7FFF7FF",'#13#10'"a c #FFFFFFFFFFFF",'#13#10'"b c #F1FFF1FFF1'
+  +'FF",'#13#10'"c c #FAFFFAFFFAFF",'#13#10'"d c #3A243A243A24",'#13#10'"e c #9'
+  +'19291929192",'#13#10'"f c #E4FFE4FFE4FF",'#13#10'"g c #DBDBDBDBDBDB",'#13#10
+  +'"h c #8A928A928A92",'#13#10'"i c #180018001800",'#13#10'"j c #796D796D796D"'
+  +','#13#10'"k c #E0FFE0FFE0FF",'#13#10'"l c #8C928C928C92",'#13#10'"m c #EDFF'
+  +'EDFFEDFF",'#13#10'"n c #E6FFE6FFE6FF",'#13#10'"o c #F3FFF3FFF3FF",'#13#10'"'
+  +'p c #FBFFFBFFFBFF",'#13#10'"q c #859285928592",'#13#10'"r c #BFB6BFB6BFB6",'
+  +#13#10'"s c #584958495849",'#13#10'"t c #C9DBC9DBC9DB",'#13#10'"u c #C7DBC7D'
+  +'BC7DB",'#13#10'"v c #120012001200",'#13#10'"w c #0A000A000A00",'#13#10'"x c'
+  +' #FEFFFEFFFEFF",'#13#10'"y c #B8B6B8B6B8B6",'#13#10'"z c #C4DBC4DBC4DB",'#13
+  +#10'"A c #C0DBC0DBC0DB",'#13#10'"B c #DEDBDEDBDEDB",'#13#10'"C c #D7DBD7DBD7'
+  +'DB",'#13#10'"D c #D5DBD5DBD5DB",'#13#10'"E c #D9DBD9DBD9DB",'#13#10'"F c #8'
+  +'69286928692",'#13#10'"G c #716D716D716D",'#13#10'"H c #B2B6B2B6B2B6",'#13#10
+  +'"I c #849284928492",'#13#10'"J c #AFB6AFB6AFB6",'#13#10'"K c #B7B6B7B6B7B6"'
+  +','#13#10'".*bd-ikpq-vypCD*G-wJprw-",'#13#10'".acd-imal-vzakBaG-wyauw-",'#13
+  +#10'".a*d-imal-vAakgaG-wKauw-",'#13#10'".a*d-imal-vAakgaG-wKauw-",'#13#10'".'
+  +'a*d-imal-vAakgaG-wKauw-",'#13#10'".a*d-imal-vAakgaG-wKauw-",'#13#10'".a*d-i'
+  +'mal-vAakgaG-wKauw-",'#13#10'",a*d-imal-vAakgaG-wKauw-",'#13#10'".a*d-imal-v'
+  +'AakgaG-wKauw-",'#13#10'".a*d-imal-vAakgaG-wKauw-",'#13#10'".a*d-imal-vAakga'
+  +'G-wKauw-",'#13#10'".a*d-imal-vAakgaG-wKauw-",'#13#10'".a*d-imal-vAakgaG-wKa'
+  +'uw-",'#13#10'".a*d-inaq-wrakgaG-wKaz--",'#13#10'".ace-joarsjBakgaHG-DaBG-",'
+  +#13#10'",aaaffaaatxaakEaaaDmaamB",'#13#10'".aaagkaaau*aakEaaatmaanD",'#13#10
+  +'".aaagkaaau*aakEaaatmaanD",'#13#10'".aaagkaaau*aakEaaatmaanD",'#13#10'".aaa'
+  +'gkaaau*aakEaaatmaanD",'#13#10'".aaagkaaau*aakEaaatmaanD",'#13#10'".aaagkaaa'
+  +'u*aakEaaatmaanD",'#13#10'".aaagkaaau*aakEaaatmaanD",'#13#10'"-...hl..,j...l'
+  +'F.,.I,..eq"'#13#10'};'#13#10
+]);

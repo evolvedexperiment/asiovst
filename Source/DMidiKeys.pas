@@ -14,6 +14,8 @@ type
   TMidiKeyEvent = procedure(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer) of object;
   TKeyColorEvent = procedure(Sender: TObject; Key: Integer; var Color : TColor) of object;
 
+  { TMidiKeys }
+
   TMidiKeys = class(TGraphicControl)
   private
     fBlackKeyHeight : Integer;
@@ -29,7 +31,6 @@ type
     fLastNote       : Word;
     fShadows        : array [0..2] of TColor;
     FOnKeyColor: TKeyColorEvent;
-    procedure WMEraseBkgnd(var m: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure SetNumOctaves(const Value: word);
     procedure SetBaseOct(const Value: integer);
     function GetKeysDown(index: Integer): Boolean;
@@ -39,12 +40,9 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    {$IFDEF FPC}
-    procedure WMWindowPosChanged(var Message: TLMWindowPosChanged); message WM_WINDOWPOSCHANGED;
-    {$ELSE}
-    procedure WMWindowPosChanged(var Message: TWMWindowPosChanged); message WM_WINDOWPOSCHANGED;
-    {$ENDIF}
     procedure CMColorchanged(var Message: TMessage); message CM_COLORCHANGED;
+    procedure Resize; override;
+    procedure ReadState(Reader: TReader); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -302,33 +300,29 @@ begin
  Invalidate;
 end;
 
-{$IFDEF FPC}
-procedure TMidiKeys.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := PtrInt(False); end;
-procedure TMidiKeys.WMWindowPosChanged(var Message: TLMWindowPosChanged);
+procedure TMidiKeys.Resize;
 begin
- if Assigned(fBuffer) then
-  begin
-   fBuffer.Width := Width;
-   fBuffer.Height := Height;
-   fBlackKeyHeight := Round(0.63*Height);
-  end;
+ inherited Resize;
+ fBuffer.Width := Width;
+ fBuffer.Height := Height;
+ fBlackKeyHeight := Round(0.63*Height);
 end;
-{$ELSE}
-procedure TMidiKeys.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := LRESULT(False); end;
-procedure TMidiKeys.WMWindowPosChanged(var Message: TWMWindowPosChanged);
+
+procedure TMidiKeys.ReadState(Reader: TReader);
 begin
- if Assigned(fBuffer) then
-  begin
-   fBuffer.Width := Width;
-   fBuffer.Height := Height;
-   fBlackKeyHeight := Round(0.63*Height);
-  end;
+ inherited ReadState(Reader);
+ fBuffer.Width := Width;
+ fBuffer.Height := Height;
+ fBlackKeyHeight := Round(0.63*Height);
 end;
-{$ENDIF}
 
 procedure Register;
 begin
  RegisterComponents('Audio', [TMidiKeys]);
 end;
 
+initialization
+ {$IFDEF FPC}
+ {$i TMidiKeys.lrs}
+ {$ENDIF}
 end.

@@ -13,6 +13,8 @@ uses
 type
   TWaveform = class;
 
+  { TWaveform }
+
   TWaveform = class(TGraphicControl)
   private
     fBuffer         : TBitmap;
@@ -37,11 +39,8 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    {$IFDEF FPC}
-    procedure WMWindowPosChanged(var Message: TLMWindowPosChanged); message WM_WINDOWPOSCHANGED;
-    {$ELSE}
-    procedure WMWindowPosChanged(var Message: TWMWindowPosChanged); message WM_WINDOWPOSCHANGED;
-    {$ENDIF}
+    procedure ReadState(Reader: TReader); override;
+    procedure Resize; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -274,35 +273,34 @@ begin
 // Invalidate;
 end;
 
-procedure TWaveform.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := LRESULT(False); end;
+procedure TWaveform.ReadState(Reader: TReader);
+begin
+ inherited ReadState(Reader);
+ fBuffer.Width := Width;
+ fBuffer.Height := Height;
+ fHalfHeight := Height div 2;
+ RedrawBuffer;
+end;
 
-{$IFDEF FPC}
-procedure TWaveform.WMWindowPosChanged(var Message: TLMWindowPosChanged);
+procedure TWaveform.Resize;
 begin
- if Assigned(fBuffer) then
-  begin
-   fBuffer.Width := Width;
-   fBuffer.Height := Height;
-   fHalfHeight := Height div 2;
-   RedrawBuffer;
-  end;
+ inherited Resize;
+ fBuffer.Width := Width;
+ fBuffer.Height := Height;
+ fHalfHeight := Height div 2;
+ RedrawBuffer;
 end;
-{$ELSE}
-procedure TWaveform.WMWindowPosChanged(var Message: TWMWindowPosChanged);
-begin
- if Assigned(fBuffer) then
-  begin
-   fBuffer.Width := Width;
-   fBuffer.Height := Height;
-   fHalfHeight := Height div 2;
-   RedrawBuffer;
-  end;
-end;
-{$ENDIF}
+
+procedure TWaveform.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := LRESULT(False); end;
 
 procedure Register;
 begin
  RegisterComponents('Audio', [TWaveform]);
 end;
 
-end.
+initialization
+ {$IFDEF FPC}
+ {$i TWaveform.lrs}
+ {$ENDIF}
+
+ end.
