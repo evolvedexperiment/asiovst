@@ -25,9 +25,8 @@ interface
   {$DEFINE CPU32}
  {$ENDIF}
  {$OPTIMIZATION ON}
+ {$DEFINE x87}
 {$ENDIF}
-
-{$DEFINE x87}
 
 {$IFNDEF FPC} uses Windows, Types;
 {$ELSE} uses Types;
@@ -120,23 +119,6 @@ type
 
   function Saturate(input, fMax: Single): Single;
 
-  {$IFNDEF FPC}
-  procedure Msg(b:boolean); overload;
-  procedure Msg(m:string;m2:string=''); overload;
-  procedure Msg(i:Integer); overload;
-  procedure Msg(s:Single); overload;
-  procedure Msg(m:string;i:Integer); overload;
-
-  function FloatWithUnit(f:Double):string;
-  function SplitString(S: String; Delimiter: char): TStrArray;
-  function MakeGoodFileName(s: string): string;
-
-  function Hermite1(const x,y0,y1,y2,y3:Single):Single;
-  function Hermite2(const x,y0,y1,y2,y3:Single):Single;
-  function Hermite3(const x,y0,y1,y2,y3:Single):Single;
-  function Hermite4(const frac_pos, xm1, x0, x1, x2: Single): Single;
-  function Hermite_asm(const frac_pos: Single; pntr : PSingle) : Single;
-
   function Tanh2a(x:Single):Single;
   function Tanh2b(x:Single):Single;
   function Tanh2c(x:Single):Single;
@@ -151,7 +133,23 @@ type
   function Waveshaper7(x,a:Single):Single;
   function Waveshaper8(x,a:Single):Single;
   function SoftSat(x,a:Single):Single;
-{$ENDIF}
+  {$IFNDEF FPC}
+  procedure Msg(b:boolean); overload;
+  procedure Msg(m:string;m2:string=''); overload;
+  procedure Msg(i:Integer); overload;
+  procedure Msg(s:Single); overload;
+  procedure Msg(m:string;i:Integer); overload;
+
+  function FloatWithUnit(f:Double):string;
+  function SplitString(S: String; Delimiter: char): TStrArray;
+  function MakeGoodFileName(s: string): string;
+  {$ENDIF}
+
+  function Hermite1(const x,y0,y1,y2,y3:Single):Single;
+  function Hermite2(const x,y0,y1,y2,y3:Single):Single;
+  function Hermite3(const x,y0,y1,y2,y3:Single):Single;
+  function Hermite4(const frac_pos, xm1, x0, x1, x2: Single): Single;
+  function Hermite_asm(const frac_pos: Single; pntr : PSingle) : Single;
 
   function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
   function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
@@ -162,9 +160,7 @@ var ln10, ln2, ln22, ln2Rez : Double;
 
 implementation
 
-{$IFNDEF FPC}
 uses Math, SysUtils;
-{$ENDIF}
 
 const Half   : Double = 0.5;
       LN2R   : Double = 1.442695041;
@@ -757,9 +753,8 @@ begin
  Result:=(x*b)/(a*b+12);
 end;
 
-{$IFNDEF FPC}
-
 function Tanh2c(x:Single):Single;
+{$IFDEF x87}
 const c3:Single=3;
       c6:Single=6;
 asm
@@ -774,9 +769,17 @@ asm
  fadd c6.Single
  fdiv
 end;
-{ var a,b:Single; begin a:=f_abs(x); b:=3+a; Result:=(x*b)/(a*b+6); end; }
+{$ELSE}
+var a,b:Single;
+begin
+ a:=f_abs(x);
+ b:=3+a;
+ Result:=(x*b)/(a*b+6);
+end;
+{$ENDIF}
 
 function Tanh2d(x:Single):Single;
+{$IFDEF x87}
 const c3:Single=3;
 asm
  fld x.Single;
@@ -785,7 +788,11 @@ asm
  fadd c3
  fdiv
 end;
-{ begin Result:=x/(f_abs(x)+3); end; }
+{$ELSE}
+begin
+ Result:=x/(f_abs(x)+3);
+end;
+{$ENDIF}
 
 function Sigmoid(x:Single):Single;
 begin
@@ -875,6 +882,7 @@ begin
   end;
 end;
 
+{$IFNDEF FPC}
 function f_Min(const A, B: Single) : Single;
 asm
  fld     dword ptr [ebp+$08]
