@@ -106,6 +106,7 @@ begin
    with fFilterArray[i] do
     begin
      SampleRate:=44100;
+     Gain:=0;
      Bandwidth:=1;
      Frequency:=cThirdOctaveFrequencies[i];
      {$IFNDEF FPC}
@@ -225,7 +226,7 @@ begin
   begin
    s:=InBuffer[fChannelNr,i];
    for j := 0 to cNumFrequencies-1
-    do fFilterRMS[j]:=fSpeedConst[0]*fFilterRMS[j]+fSpeedConst[1]*Amp_to_dB(abs(fFilterArray[j].Process(s+1E-24)));
+    do fFilterRMS[j]:=fSpeedConst[0]*fFilterRMS[j]+fSpeedConst[1]*Amp_to_dB(abs(fFilterArray[j].ProcessSample(s+1E-24)));
   end;
  UpdateBarGraph;
 end;

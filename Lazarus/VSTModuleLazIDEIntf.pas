@@ -9,7 +9,6 @@ uses
 
 type
   { TVSTModuleLibraryDescriptor }
-
   TVSTModuleLibraryDescriptor = class(TProjectDescriptor)
   public
     constructor Create; override;
@@ -20,7 +19,6 @@ type
   end;
 
   { TFileDescPascalUnitWithVSTModule }
-
   TFileDescPascalUnitWithVSTModule = class(TFileDescPascalUnitWithResource)
   public
     constructor Create; override;

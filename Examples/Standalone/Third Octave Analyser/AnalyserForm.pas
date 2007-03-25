@@ -5,7 +5,7 @@ interface
 uses {$IFDEF FPC} LCLIntf, LResources, Buttons, {$ELSE} Windows, Messages, {$ENDIF}
      SysUtils, Classes, Graphics, Controls, Forms,
      Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase,
-     Spin, AnalyserChebyshevFilter, DBarChart;
+     Spin, DChebyshevFilter, DBarChart;
 
 const
   cNumFrequencies = 32;
@@ -47,8 +47,8 @@ type
     procedure AnalyserChartDblClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
-    fLPFilterArray : Array [0..cNumFrequencies-1] of TAnalyseFilterLP;
-    fHPFilterArray : Array [0..cNumFrequencies-1] of TAnalyseFilterHP;
+    fLPFilterArray : Array [0..cNumFrequencies-1] of TChebyshev1LP;
+    fHPFilterArray : Array [0..cNumFrequencies-1] of TChebyshev1HP;
     fFilterRMS     : Array [0..cNumFrequencies-1] of Single;
     fChannelNr     : Integer;
     fSpeedConst    : Array [0..1] of Single;
@@ -103,23 +103,23 @@ begin
 
  for i:=0 to cNumFrequencies-1 do
   begin
-   fLPFilterArray[i]:=TAnalyseFilterLP.Create;
+   fLPFilterArray[i]:=TChebyshev1LP.Create;
    with fLPFilterArray[i] do
     begin
      SampleRate:=44100;
      SetFilterValues(0.87*(cThirdOctaveFrequencies[cNumFrequencies-i-1]*HalfThirdMulFak),0,10);
      if fDownSampler=-1 then DownsampleAmount:=0 else
-      while Power(2,DownsampleAmount)*Frequency<0.125*SampleRate do DownsampleAmount:=DownsampleAmount+1;
-     CalcCoefficients;
+      while Power(2,DownsampleAmount)*Frequency<0.2*SampleRate do DownsampleAmount:=DownsampleAmount+1;
+     CalculateCoefficients;
     end;
 
-   fHPFilterArray[i]:=TAnalyseFilterHP.Create;
+   fHPFilterArray[i]:=TChebyshev1HP.Create;
    with fHPFilterArray[i] do
     begin
      SampleRate:=44100;
      SetFilterValues(1.149*(cThirdOctaveFrequencies[cNumFrequencies-i-1]/HalfThirdMulFak),0,10);
      DownsampleAmount:=fLPFilterArray[i].DownsampleAmount;
-     CalcCoefficients;
+     CalculateCoefficients;
     end;
   end;
 

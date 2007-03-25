@@ -11,31 +11,37 @@ type
              Re : Single;
              Im : Single;
             end;
-  TCalcType = (tpPeak, tpLowShelf, tpHiShelf);
   TPNType=array[0..1] of TComplex;
 
   TFilter=class(TObject)
   private
-    procedure SetSampleRate(const Value: Single);
   protected
-    fGain        : Single;
-    fGainSpeed   : Single;
-    fFrequency   : Single;
-    fSinW0, fW0  : Single;
-    fSampleRate  : Single;
-    fSRR         : Single; // reciprocal of fSampleRate
+    fGain        : Double;
+    fGainSpeed   : Double;
+    fFrequency   : Double;
+    fSinW0, fW0  : Double;
+    fSampleRate  : Double;
+    fSRR         : Double; // reciprocal of fSampleRate
     procedure SetW0; virtual;
-    procedure SetGain(s:Single); virtual;
-    procedure SetFrequency(Value:Single); virtual;
+    procedure SetGain(const Value:Double); virtual;
+    procedure SetFrequency(const Value:Double); virtual;
+    procedure SetSampleRate(const Value: Double); virtual;
     procedure CalculateCoefficients; virtual; abstract;
   public
     constructor Create; virtual;
-    function Magnitude(f:Single):Single; virtual; abstract;
-    function Phase(f:Single):Single; virtual; abstract;
+    function ProcessSample(Input:Single):Single; virtual; abstract;
+    function Magnitude(Frequency:Double):Double; virtual; abstract;
+    function Phase(Frequency:Double):Double; virtual; abstract;
+    procedure ResetStates; virtual; abstract;
+    procedure Reset; virtual; abstract;
+    property GainSpeed: Double read fGainSpeed;
+    property SampleRateReci : Double read fSRR;
+    property SinW0: Double read fSinW0;
+    property W0: Double read fW0;
   published
-    property Gain: Single read fGain write SetGain;
-    property Frequency: Single read fFrequency write SetFrequency;
-    property SampleRate: Single read fSampleRate write SetSampleRate;
+    property Gain: Double read fGain write SetGain;
+    property Frequency: Double read fFrequency write SetFrequency;
+    property SampleRate: Double read fSampleRate write SetSampleRate;
   end;
 
   TIIRFilter=class(TFilter)
@@ -54,30 +60,21 @@ type
     fNominator   : array[0..2] of Double;
     fPoles       : TPNType;
     fZeros       : TPNType;
-    fCalc        : Procedure of Object;
-    fCalcType    : TCalcType;
   protected
-//    a         : array[0..2] of Double;
-//    b         : array[1..2] of Double;
     fState    : array[0..1] of Double;
-    procedure CalcRBJ;
-    procedure CalcLowShelf;
-    procedure CalcHiShelf;
-    procedure CalcPolesZeros;
-    procedure Init;
+    procedure CalcPolesZeros; virtual;
     function GetPoles:TPNType;
     function GetZeros:TPNType;
-    procedure SetCalcType(const value :TCalcType);
-    procedure CalculateCoefficients; override;
   public
-    constructor Create;
-    function Process(s:single):single;
-    function Magnitude(f:Single):Single; override;
-    function Phase(f:Single):Single; override;
+    constructor Create; override;
+    procedure ResetStates; override;
+    function ProcessSample(Input:Single):Single; override;
+    function Magnitude(Frequency:Double):Double; override;
+    function Phase(Frequency:Double):Double; override;
+    procedure Reset; override;
     property Poles: TPNType read fPoles; //GetPoles;
     property Zeros: TPNType read fZeros; //GetZeros;
   published
-    property CalcType: TCalcType read fCalcType write SetCalcType;
   end;
 
   TSimplePeakFilter=class(TBiquadIIRFilter)
@@ -115,39 +112,25 @@ implementation
 uses math, DDSPBase;
 
 function cf_phi(f,rate,a0,a1,a2,b1,b2:Double): Double;
-const pihalf = pi*0.5; pia    = 1/pi;
+const pia = 1/pi;
 var w : Double;
 begin
  w:=(2*f*pi)/rate;
- Result:=((ArcTan2(
-                  (
-                    a0+a1*b1+a2*b2+
-                   (a0*b1+a1*(1+b2)+a2*b1)*cos(w)+
-                   (a0*b2+a2)*cos(2*w)
-                  )
-                  /
-                  (
-                    1+b1*b1+b2*b2+
-                    2*
-                    (
-                     (b1+b1*b2)*cos(w)+ b2*cos(2*w)
-                    )
-                  )
-                  ,
-                  (
-                   (
-                     a1-a0*b1+a2*b1-a1*b2+
-                     2*(-a0*b2+a2)*cos(w)
-                   )*sin(w)
-                  /
-                   (
-                     1+b1*b1+b2*b2+
-                     2*(b1 + b1*b2)*cos(w)+
-                     2*b2*cos(2*w)
-                   )
-                  )
-                 )-pihalf)
-                 *pia);
+ Result:=ArcTan2((
+                   a0+a1*b1+a2*b2+
+                  (a0*b1+a1*(1+b2)+a2*b1)*cos(w)+
+                  (a0*b2+a2)*cos(2*w))
+                /
+                ( 1+b1*b1+b2*b2+
+                  2*((b1+b1*b2)*cos(w)+ b2*cos(2*w)))
+                ,
+               ((a1-a0*b1+a2*b1-a1*b2+
+                   2*(-a0*b2+a2)*cos(w))*sin(w)
+                /
+                 ( 1+b1*b1+b2*b2+
+                   2*(b1 + b1*b2)*cos(w)+
+                   2*b2*cos(2*w)))
+               )*pia-0.5;
 end;
 
 { TFilter }
@@ -159,7 +142,7 @@ begin
  SetW0;
 end;
 
-procedure TFilter.SetFrequency(Value:Single);
+procedure TFilter.SetFrequency(const Value:Double);
 begin
  if fFrequency <> Value then
   begin
@@ -171,14 +154,14 @@ begin
  CalculateCoefficients;
 end;
 
-procedure TFilter.SetGain(s:Single);
+procedure TFilter.SetGain(const Value:Double);
 begin
- fGain:=s;
+ fGain:=Value;
  fGainSpeed:=dB_to_Amp(fGain);
  CalculateCoefficients;
 end;
 
-procedure TFilter.SetSampleRate(const Value: Single);
+procedure TFilter.SetSampleRate(const Value: Double);
 begin
  fSampleRate := Value;
  fSRR:= 1 / fSampleRate;
@@ -205,20 +188,18 @@ end;
 
 constructor TBiquadIIRFilter.create;
 begin
- inherited create;
- fCalc:=CalcRBJ;
  fGain:=0;
  fFrequency:=1000;
  fBandWidth:=1;
  fSampleRate:=44100;
  fSRR:=1/44100;
- Init;
+ ResetStates;
 end;
 
-function TBiquadIIRFilter.Magnitude(f:Single):Single;
+function TBiquadIIRFilter.Magnitude(Frequency:Double):Double;
 var cw : Double;
 begin
- cw:=2*cos(f*pi*fSRR);
+ cw:=2*cos(Frequency*pi*fSRR);
  Result:=10*Log10( (( (fNominator[0]-fNominator[2])*
                       (fNominator[0]-fNominator[2])+
                        fNominator[1]*fNominator[1] +
@@ -232,79 +213,44 @@ begin
                                      cw*fDenominator[2])*cw )));
 end;
 
-function TBiquadIIRFilter.Phase(f:Single):Single;
+function TBiquadIIRFilter.Phase(Frequency:Double):Double;
+const pihalf = pi*0.5;
+      pia    = 1/pi;
+var cw, sw, den : Double;
 begin
- Result:=cf_phi(f,fSampleRate,fNominator[0],fNominator[1],fNominator[2],fDenominator[1],fDenominator[2]);
+ GetSinCos(Frequency*pi*fSRR,sw,cw);
+ den:=1+sqr(fDenominator[1])+sqr(fDenominator[2])-2*fDenominator[2]+
+      2*cw*(fDenominator[1]*(1+fDenominator[2])+2*fDenominator[2]*cw);
+ Result:=ArcTan2(
+                  (
+                    fNominator[0]+fNominator[1]*fDenominator[1]+fNominator[2]*fDenominator[2]+
+                   (fNominator[0]*fDenominator[1]+fNominator[1]*(1+fDenominator[2])+fNominator[2]*fDenominator[1])*cw+
+                   (fNominator[0]*fDenominator[2]+fNominator[2])*(2*cw*cw-1)
+                  )/den,
+                  (
+                    fNominator[1]-fNominator[0]*fDenominator[1]+
+                    fNominator[2]*fDenominator[1]-fNominator[1]*fDenominator[2]+
+                     2*(-fNominator[0]*fDenominator[2]+fNominator[2])*cw
+                   )*sw
+                  /den
+                )/Pi-0.5;
 end;
 
-procedure TBiquadIIRFilter.Init;
+procedure TBiquadIIRFilter.Reset;
 begin
- // initialize values
- fDenominator[1]:=0;
- fDenominator[2]:=0;
- fNominator[0]:=0;
- fNominator[1]:=0;
- fNominator[2]:=0;
- fcalc;
+ Gain:=0;
+end;
+
+procedure TBiquadIIRFilter.ResetStates;
+begin
+ fState[0]:=0;
+ fState[1]:=0;
 end;
 
 function dB_to_Amp(g:single):single;
 begin
  if (g>-90.0) then result:=math.power(10,g*0.05)
  else result:=0;
-end;
-
-procedure TBiquadIIRFilter.CalcRBJ;
-var alpha,t,Amp,w : Double;
-begin
- Amp:=math.Power(10,fGain/40);
- w:=2*PI*fFrequency*fSRR;
- alpha:=Sinh((Ln2/2)*fBandWidth*(w/Sin(w)))*Sin(w);
- t:=1/(1+alpha/Amp);
- fNominator[0]:=(1+alpha*Amp)*t;
- fNominator[1]:=-2*cos(w)*t;
- fNominator[2]:=(1-alpha*Amp)*t;
- fDenominator[1]:=fNominator[1];
- fDenominator[2]:=(1-alpha/Amp)*t;
- CalcPolesZeros;
-end;
-
-procedure TBiquadIIRFilter.CalcLowShelf;
-var be,Amp,b0,w0,t,co,si : Double;
-begin
- Amp:=math.Power(10,fGain/40);
- w0:=2*PI*fFrequency*fSRR;
- be:=sqrt(Amp)/0.7;
- co:=cos(w0);
- si:=sin(w0);
-
- b0:=1/((Amp+1.0)+(Amp-1.0)*co+be*si);
- fNominator[0]:=0.5*((Amp+1.0)-(Amp-1.0)*co+be*si);
- fNominator[1]:=(Amp-1.0)-(Amp+1.0)*co;
- fNominator[2]:=0.5*((Amp+1.0)-(Amp-1.0)*co-be*si);
- fDenominator[1]:=(-2.0*((Amp-1.0)+(Amp+1.0)*co))*b0;
- fDenominator[2]:=((Amp+1.0)+(Amp-1.0)*co-be*si)*b0;
-
- CalcPolesZeros;
-end;
-
-procedure TBiquadIIRFilter.CalcHiShelf;
-var be,Amp,b0,w0,t,co,si : Double;
-begin
- Amp:=math.Power(10,fGain/40);
- w0:=2*PI*fFrequency*fSRR;
- be:=sqrt(Amp)/0.7;
- co:=cos(w0);
- si:=sin(w0);
-
- b0:=1/((Amp+1.0)-(Amp-1.0)*co+be*si);
- fNominator[0]:=0.5*(Amp*((Amp+1.0)+(Amp-1.0)*co+be*si));
- fNominator[1]:=-Amp*((Amp-1.0)+(Amp+1.0)*co);
- fNominator[2]:=0.5*(Amp*((Amp+1.0)+(Amp-1.0)*co-be*si));
- fDenominator[1]:=(2.0*((Amp-1.0)-(Amp+1.0)*co))*b0;
- fDenominator[2]:=((Amp+1.0)-(Amp-1.0)*co-be*si)*b0;
-
- CalcPolesZeros;
 end;
 
 procedure TBiquadIIRFilter.CalcPolesZeros;
@@ -350,11 +296,11 @@ begin
    end;
 end;
 
-function TBiquadIIRFilter.Process(s:single):single;
+function TBiquadIIRFilter.ProcessSample(Input:Single):Single;
 begin
- result    := fNominator[0]*s + fState[0];
- fState[0] := fNominator[1]*s - fDenominator[1]*result + fState[1];
- fState[1] := fNominator[2]*s - fDenominator[2]*result;
+ result    := fNominator[0]*Input + fState[0];
+ fState[0] := fNominator[1]*Input - fDenominator[1]*result + fState[1];
+ fState[1] := fNominator[2]*Input - fDenominator[2]*result;
 end;
 
 function TBiquadIIRFilter.GetPoles:TPNType;
@@ -379,29 +325,10 @@ begin
  Result[1].Im:=-sqrt(q-(p*p));
 end;
 
-procedure TBiquadIIRFilter.SetCalcType(const value :TCalcType);
-begin
- if fCalcType<>Value then
-  begin
-   fCalcType:=Value;
-   case fCalcType of
-     tpPeak       : fCalc:=CalcRBJ;
-     tpLowShelf   : fCalc:=CalcLowshelf;
-     tpHiShelf    : fCalc:=CalcHishelf;
-   end;
-   fcalc;
-  end;
-end;
-
-procedure TBiquadIIRFilter.CalculateCoefficients;
-begin
- fCalc;
-end;
-
 { TSimplePeakFilter }
 
 procedure TSimplePeakFilter.CalculateCoefficients;
-var aa, alpha,t,Amp,w : Double;
+var aa,alpha,t : Double;
 begin
  if (fSinW0=0)
   then alpha:=fSinW0/(2*fBandWidth)
@@ -420,7 +347,7 @@ end;
 { TSimpleLowShelfFilter }
 
 procedure TSimpleLowShelfFilter.CalculateCoefficients;
-var aa, alpha,t,Amp,w : Double;
+var aa, alpha,t : Double;
 begin
  if (fSinW0=0)
   then alpha:=fSinW0/(2*fBandWidth)
@@ -457,7 +384,7 @@ end;
 { TSimpleLowpassFilter }
 
 procedure TSimpleLowpassFilter.CalculateCoefficients;
-var aa, alpha,t,Amp,w : Double;
+var aa, alpha,t : Double;
 begin
  if (fSinW0=0)
   then alpha:=fSinW0/(2*fBandWidth)
@@ -476,7 +403,7 @@ end;
 { TSimpleHighpassFilter }
 
 procedure TSimpleHighpassFilter.CalculateCoefficients;
-var aa, alpha,t,Amp,w : Double;
+var aa, alpha,t : Double;
 begin
  if (fSinW0=0)
   then alpha:=fSinW0/(2*fBandWidth)
@@ -495,13 +422,12 @@ end;
 { TSimpleBandpass }
 
 procedure TSimpleBandpass.CalculateCoefficients;
-var aa, alpha,t,Amp,w : Double;
+var alpha,t : Double;
 begin
  if (fSinW0=0)
   then alpha:=fSinW0/(2*fBandWidth)
   else alpha:=Sinh(ln22*cos(fW0*0.43)*fBandWidth*(fW0/fSinW0))*fSinW0;
 
- aa:=alpha/fGainSpeed;
  t:=1/(1+alpha);
  fNominator[0]:=fGainSpeed*fGainSpeed*alpha*t;
  fNominator[2]:=-fNominator[0];
