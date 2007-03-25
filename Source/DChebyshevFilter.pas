@@ -2,7 +2,9 @@ unit DChebyshevFilter;
 
 interface
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ELSE}
 {$DEFINE x87}
 {$ENDIF}
 
@@ -30,7 +32,7 @@ type
     procedure SetRippleFactors; virtual;
   public
     constructor Create; override;
-    procedure SetFilterValues(const Frequency, Gain, Ripple : Single); virtual;
+    procedure SetFilterValues(const AFrequency, AGain, ARipple : Single); virtual;
     function Magnitude(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; virtual;
     procedure ResetStates; override;
@@ -160,10 +162,10 @@ begin
  fRippleFactors[0]:=sqr(cosh(t));
 end;
 
-procedure TChebyshev1Filter.SetFilterValues(const Frequency, Gain, Ripple : Single);
+procedure TChebyshev1Filter.SetFilterValues(const AFrequency, AGain, ARipple : Single);
 const ln10_0025 : Double = 5.7564627325E-2;
 begin
- fFrequency:=Frequency; fGain:=Gain; fRipple:=Ripple;
+ fFrequency:=AFrequency; fGain:=AGain; fRipple:=ARipple;
  fGainSpeed:=Exp((fGain*ln10_0025));
  SetW0;
  SetRippleFactors;
@@ -272,8 +274,8 @@ begin
  for i:=(fOrder div 2)-1 downto 0 do
   begin
    t :=cos( ((i*2+1)*Pi*0.05) );
-   t1:=1/(fRipple[0]-(t*t));
-   t2:=K*t1*fRipple[1]*(2*t);
+   t1:=1/(fRippleFactors[0]-(t*t));
+   t2:=K*t1*fRippleFactors[1]*(2*t);
    t:=     1/(t2+K2+t1);
    fAB[4*i]   := K2*t;
    fAB[4*i+1] := 2*fAB[4*i];
@@ -343,7 +345,7 @@ var
   y,x : Double;
   i   : Integer;
 begin
- Result:=s;
+ Result:=Input;
  for i := 0 to (fOrder div 2) - 1 do
   begin
    x:=Result;
@@ -465,8 +467,8 @@ begin
  for i:=(fOrder div 2)-1 downto 0 do
   begin
    t :=sqr( sin( ((i*2+1)*Pi/(4*fOrder)) ) );
-   t1:=1/(fRipple[0]+4*t-4*sqr(t)-1);
-   t2:=2*K*t1*fRipple[1]*(1-2*t);
+   t1:=1/(fRippleFactors[0]+4*t-4*sqr(t)-1);
+   t2:=2*K*t1*fRippleFactors[1]*(1-2*t);
    fAB[4*i]   := 1/(t2+1+t1*K2);
    fAB[4*i+1] :=-2*fAB[4*i];
    fAB[4*i+2] := 2*(   1-t1*K2)*fAB[4*i];
@@ -535,7 +537,7 @@ var
   y,x : Double;
   i   : Integer;
 begin
- Result:=s;
+ Result:=Input;
  for i := 0 to (fOrder div 2) - 1 do
   begin
    x:=Result;
