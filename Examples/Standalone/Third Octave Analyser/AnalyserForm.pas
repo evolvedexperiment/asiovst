@@ -5,7 +5,7 @@ interface
 uses {$IFDEF FPC} LCLIntf, LResources, Buttons, {$ELSE} Windows, Messages, {$ENDIF}
      SysUtils, Classes, Graphics, Controls, Forms,
      Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase,
-     Spin, DChebyshevFilter, DBarChart;
+     Spin, DChebyshevFilter, DButterworthFilter, DBarChart;
 
 const
   cNumFrequencies = 32;

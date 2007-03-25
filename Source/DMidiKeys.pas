@@ -30,12 +30,14 @@ type
     fOnKeyUp        : TKeyEvent;
     fLastNote       : Word;
     fShadows        : array [0..2] of TColor;
+    fEndWithC       : Boolean;
     FOnKeyColor: TKeyColorEvent;
     procedure SetNumOctaves(const Value: word);
     procedure SetBaseOct(const Value: integer);
     function GetKeysDown(index: Integer): Boolean;
     procedure SetKeysDown(index: Integer; const Value: Boolean);
     procedure CalcColors(Color: TColor);
+    procedure SetEndWithC(const Value: Boolean);
   protected
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
@@ -52,6 +54,7 @@ type
   published
     property BaseOctave: Integer read FBaseOct write SetBaseOct default 2;
     property NumOctaves: Word read FNumOctaves write SetNumOctaves default 3;
+    property IncludeLastOctave: Boolean read fEndWithC write SetEndWithC default false;
     property Anchors;
     property Align;
     property Constraints;
@@ -75,7 +78,6 @@ implementation
 
 uses SysUtils;
 
-
 procedure TMidiKeys.CalcColors(Color : TColor);
 begin
  fShadows[0]:=round(0.8*((Color shr 16) and $FF)) shl 16 + round(0.8*((Color shr 8) and $FF)) shl 8 + round(0.8*(Color and $FF));
@@ -95,6 +97,7 @@ begin
  fBaseOct := 2;
  fBuffer := TBitmap.Create;
  fNumOctaves := 3;
+ fEndWithC:=False;
  Color := clWhite;
  ControlStyle := ControlStyle+[csOpaque];
  for i := 0 to 127 do fKeysDown[i] := false;
@@ -121,7 +124,9 @@ begin
    kcol:=Self.Color;
 
    // Render white keys
-   s:=Width/(7*NumOctaves+1);
+   if fEndWithC
+    then s:=Width/(7*NumOctaves+1)
+    else s:=Width/(7*NumOctaves);
    for i:=0 to 7*NumOctaves do
     begin
      o:=12*(i div 7);
@@ -151,8 +156,13 @@ begin
 
    // Render black keys
    Brush.Color:=clBlack;
-   s:=((7*NumOctaves)/(7*NumOctaves+1))*Width/(12*NumOctaves);
-   for i:=0 to 12*NumOctaves+1 do
+   if fEndWithC
+    then s:=((7*NumOctaves)/(7*NumOctaves+1))*Width/(12*NumOctaves)
+    else s:=Width/(12*NumOctaves);
+   if fEndWithC
+    then o:=12*NumOctaves
+    else o:=12*NumOctaves+1;
+   for i:=0 to o do
     begin
      if (i mod 12) in [1,3,6,8,10] then
       begin
@@ -278,6 +288,12 @@ begin
  if (Value < 0) or (Value > 10) then exit;
  fBaseOct := Value;
  while fBaseOct + fNumOctaves > 10 do SetNumOctaves(fNumOctaves - 1);
+end;
+
+procedure TMidiKeys.SetEndWithC(const Value: Boolean);
+begin
+ fEndWithC := Value;
+ Invalidate;
 end;
 
 procedure TMidiKeys.SetKeysDown(index: Integer; const Value: Boolean);
