@@ -3,7 +3,7 @@ program Analyser;
 uses
   Forms,
   AnalyserForm in 'AnalyserForm.pas' {FmASIO},
-  DChebyshevFilter in 'DChebyshevFilter.pas';
+  DChebyshevFilter in '..\..\..\Source\DChebyshevFilter.pas';
 
 {$R *.RES}
 

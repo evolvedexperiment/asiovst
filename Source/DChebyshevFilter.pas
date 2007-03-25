@@ -11,10 +11,7 @@ uses DFilter;
 type
   TChebyshev1Filter = class(TIIRFilter)
   private
-    function GetFrequency: Double;
-    function GetGain: Double;
     function GetRipple: Double;
-    function GetSampleRate: Double;
     procedure SetDownsamplePower(Value: Integer);
     procedure SetOrder(const Value: Integer);
   protected
@@ -33,7 +30,6 @@ type
     procedure SetRippleFactors; virtual;
   public
     constructor Create; override;
-    function ProcessSample(const s:Double):Double; virtual; abstract;
     procedure SetFilterValues(const Frequency, Gain, Ripple : Single); virtual;
     function Magnitude(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; virtual;
@@ -51,7 +47,7 @@ type
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;
-    function ProcessSample(const s:Double):Double; override;
+    function ProcessSample(const Input:Double):Double; override;
     function Magnitude(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; override;
   end;
@@ -62,7 +58,7 @@ type
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;
-    function ProcessSample(const s:Double):Double; override;
+    function ProcessSample(const Input:Double):Double; override;
     function Magnitude(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; override;
   end;
@@ -79,16 +75,6 @@ begin
  fGain:=0; fRipple:=1;
  fOrder:=10;
  SampleRate:=44100;
-end;
-
-function TChebyshev1Filter.GetFrequency: Double;
-begin
- Result:=fFrequency;
-end;
-
-function TChebyshev1Filter.GetGain: Double;
-begin
- Result:=fGain;
 end;
 
 function TChebyshev1Filter.GetRipple: Double;
@@ -115,11 +101,6 @@ begin
    fSampleRate := Value;
    fSRR:=1/fSampleRate;
   end;
-end;
-
-function TChebyshev1Filter.GetSampleRate: Double;
-begin
- result:=fSampleRate;
 end;
 
 procedure TChebyshev1Filter.SetDownsamplePower(Value: Integer);
@@ -330,12 +311,12 @@ begin
  Result:=10*Log10(Result);
 end;
 
-function TChebyshev1LP.ProcessSample(const s: Double): Double;
+function TChebyshev1LP.ProcessSample(const Input: Double): Double;
 {$IFDEF x87}
 asm
  mov ecx, [self.fOrder]
  shl ecx, 1
- fld s.Double;
+ fld Input.Double;
  @FilterLoop:
   sub ecx,4
   fld st(0)
@@ -522,12 +503,12 @@ begin
  Result:=10*log10(Result);
 end;
 
-function TChebyshev1HP.ProcessSample(const s: Double): Double;
+function TChebyshev1HP.ProcessSample(const Input: Double): Double;
 {$IFDEF x87}
 asm
  mov ecx, [self.fOrder]
  shl ecx, 1
- fld s.Double;
+ fld Input.Double;
  @FilterLoop:
   sub ecx,4
   fld st(0)

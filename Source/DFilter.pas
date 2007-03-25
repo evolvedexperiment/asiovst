@@ -29,7 +29,7 @@ type
     procedure CalculateCoefficients; virtual; abstract;
   public
     constructor Create; virtual;
-    function ProcessSample(Input:Single):Single; virtual; abstract;
+    function ProcessSample(const Input:Double):Double; virtual; abstract;
     function Magnitude(Frequency:Double):Double; virtual; abstract;
     function Phase(Frequency:Double):Double; virtual; abstract;
     procedure ResetStates; virtual; abstract;
@@ -68,7 +68,7 @@ type
   public
     constructor Create; override;
     procedure ResetStates; override;
-    function ProcessSample(Input:Single):Single; override;
+    function ProcessSample(const Input:Double):Double; override;
     function Magnitude(Frequency:Double):Double; override;
     function Phase(Frequency:Double):Double; override;
     procedure Reset; override;
@@ -296,7 +296,7 @@ begin
    end;
 end;
 
-function TBiquadIIRFilter.ProcessSample(Input:Single):Single;
+function TBiquadIIRFilter.ProcessSample(const Input:Double):Double;
 begin
  result    := fNominator[0]*Input + fState[0];
  fState[0] := fNominator[1]*Input - fDenominator[1]*result + fState[1];
