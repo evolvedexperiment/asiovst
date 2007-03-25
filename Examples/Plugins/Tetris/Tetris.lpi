@@ -34,7 +34,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="7">
       <Unit0>
         <Filename Value="Tetris.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -93,18 +93,6 @@
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit6>
-      <Unit7>
-        <Filename Value="..\..\..\..\..\..\argh\unit1.pas"/>
-        <ComponentName Value="CGIDatamodule1"/>
-        <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="..\..\..\..\..\..\argh\unit1.lrs"/>
-        <UnitName Value="Unit1"/>
-        <CursorPos X="16" Y="24"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="0"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-      </Unit7>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
@@ -117,7 +105,7 @@
     <SearchPaths>
       <IncludeFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
       <Libraries Value="C:\ITA\Projects\VSTPack\Source\"/>
-      <OtherUnitFiles Value="C:\ITA\Projects\VSTPack\Source\;C:\argh\"/>
+      <OtherUnitFiles Value="C:\ITA\Projects\VSTPack\Source\"/>
       <SrcPath Value="C:\ITA\Projects\VSTPack\Source\"/>
     </SearchPaths>
     <CodeGeneration>
