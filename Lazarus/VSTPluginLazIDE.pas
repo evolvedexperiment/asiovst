@@ -18,4 +18,5 @@ end;
 
 initialization
   RegisterPackage('VSTPluginLazIDE', @Register); 
+
 end.

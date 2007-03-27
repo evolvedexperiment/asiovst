@@ -5,7 +5,8 @@ unit VSTModuleLazIDEIntf;
 interface
 
 uses
-  Classes, SysUtils, DVSTModule, LazIDEIntf, ProjectIntf, Controls, Forms;
+  Classes, SysUtils, DVSTModule, VSTPluginLaz, LazIDEIntf, ProjectIntf,
+  Controls, Forms;
 
 type
   { TVSTModuleLibraryDescriptor }
@@ -108,7 +109,8 @@ begin
   AProject.AddPackageDependency('VSTPluginLaz');
 
   // compiler options
-  AProject.LazCompilerOptions.Win32GraphicApp:=false;
+  AProject.LazCompilerOptions.Win32GraphicApp:=true;
+  AProject.LazCompilerOptions.ExecutableType:=cetLibrary;
   Result:= mrOK;
 end;
 
@@ -147,5 +149,7 @@ begin
   Result:='VST Module'#13
          +'A datamodule for VST Plugins';
 end;
+
+initialization
 
 end.

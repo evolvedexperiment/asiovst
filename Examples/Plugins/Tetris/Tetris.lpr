@@ -7,11 +7,11 @@ uses
   Interfaces,
   Forms,
   DVSTEffect,
-//  VSTPluginLaz,
-//  VSTPluginLazIDE,
+  DVSTModule,
+  VSTPluginLaz,
   TetrisUnit in 'TetrisUnit.pas',
   TetrisDM in 'TetrisDM.pas' {TetrisModule: TVSTModule},
-  TetrisEditor in 'TetrisEditor.pas' {FmTetris}, Unit1;
+  TetrisEditor in 'TetrisEditor.pas' {FmTetris};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var

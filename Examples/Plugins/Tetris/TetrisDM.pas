@@ -8,9 +8,10 @@ interface
 
 uses 
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  SysUtils, Classes, Forms, DDSPBase, DVSTEffect, DVSTModule;
+  DDSPBase, DVSTModule, DVSTEffect, SysUtils, Classes, Forms;
 
 type
+  { TTetrisModule }
   TTetrisModule = class(TVSTModule)
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleEditorKeyDown(Sender: TObject; var keyCode: TVstKeyCode);
@@ -57,7 +58,6 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i TetrisDM.lrs}
   {$i TetrisDM.lrs}
 {$ENDIF}
 

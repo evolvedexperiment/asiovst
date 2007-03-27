@@ -5,8 +5,9 @@ interface
 {$I JEDI.INC}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LCLClasses, {$ELSE} Windows, {$ENDIF}
-  SysUtils, Forms, Classes, DDSPBase, DVSTEffect, Messages;
+  {$IFDEF FPC} LCLIntf, LCLType, LResources, LCLClasses, RtlConsts,
+  {$ELSE} Windows, {$ENDIF} SysUtils, Forms, Classes, DDSPBase,
+  DVSTEffect, Messages;
 
 {$DEFINE _Debug}
 
@@ -734,9 +735,7 @@ type
 
   TVSTModule = class(TCustomVSTModule)
   public
-    {$IFNDEF FPC}
     constructor Create(AOwner: TComponent); override;
-    {$ENDIF}
   published
     property Flags;
     property About;
@@ -876,6 +875,7 @@ const
 
   {CPU signatures}
 
+{$IFNDEF FPC}
   IntelLowestSEPSupportSignature = $633;
   K7DuronA0Signature = $630;
   C3Samuel2EffModel = 7;
@@ -883,6 +883,7 @@ const
   PMBaniasEffModel = 9;
   PMDothanEffModel = $D;
   P3LowestEffModel = 7;
+{$ENDIF}
 
 const maxMidiEvents = 256;
 
@@ -988,6 +989,19 @@ begin
 end;
 
 {$ELSE}
+constructor TVSTModule.Create(AOwner: TComponent);
+begin
+  CreateNew(AOwner);
+  if (ClassType <> TDataModule) and
+     not (csDesigning in ComponentState) then
+    begin
+    if not InitInheritedComponent(Self, TVSTModule) then
+      raise EStreamError.CreateFmt(SErrNoSTreaming, [ClassName]);
+    if OldCreateOrder then
+      DoCreate;
+    end;
+end;
+
 function InitResourceComponent(Instance: TComponent; RootAncestor: TClass): Boolean;
 begin
  Result:=InitLazResourceComponent(Instance,RootAncestor);
