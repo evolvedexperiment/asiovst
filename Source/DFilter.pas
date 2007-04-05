@@ -39,6 +39,8 @@ type
     procedure ResetStates; virtual; abstract;
     procedure Reset; virtual; abstract;
     procedure RenderImpulseResponse(ImpulseResonseBuffer : TDoubleDynArray); virtual; abstract;
+    procedure PushStates; virtual; abstract;
+    procedure PopStates; virtual; abstract;
     property GainSpeed: Double read fGainSpeed;
     property SampleRateReci : Double read fSRR;
     property SinW0: Double read fSinW0;
@@ -67,7 +69,8 @@ type
     fPoles       : TPNType;
     fZeros       : TPNType;
   protected
-    fState    : array[0..1] of Double;
+    fState       : array[0..1] of Double;
+    fStateStack  : array of array[0..1] of Double;
     procedure CalcPolesZeros; virtual;
     function GetPoles:TPNType;
     function GetZeros:TPNType;
@@ -78,6 +81,8 @@ type
     function Magnitude(Frequency:Double):Double; override;
     function Phase(Frequency:Double):Double; override;
     procedure Reset; override;
+    procedure PushStates; override;
+    procedure PopStates; override;
     property Poles: TPNType read fPoles; //GetPoles;
     property Zeros: TPNType read fZeros; //GetZeros;
   published
@@ -242,6 +247,17 @@ begin
                 )/Pi-0.5;
 end;
 
+procedure TBiquadIIRFilter.PopStates;
+begin
+ if Length(fStateStack)>0 then
+  begin
+   Move(fStateStack[0,0],fState[0], Length(fStateStack[0])*SizeOf(Double));
+   if Length(fStateStack)>1
+    then Move(fStateStack[1,0],fStateStack[0,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
+   SetLength(fStateStack,Length(fStateStack)-1);
+  end;
+end;
+
 procedure TBiquadIIRFilter.Reset;
 begin
  Gain:=0;
@@ -307,6 +323,14 @@ begin
  result    := fNominator[0]*Input + fState[0];
  fState[0] := fNominator[1]*Input - fDenominator[1]*result + fState[1];
  fState[1] := fNominator[2]*Input - fDenominator[2]*result;
+end;
+
+procedure TBiquadIIRFilter.PushStates;
+begin
+ SetLength(fStateStack,Length(fStateStack)+1);
+ if Length(fStateStack)>1
+  then Move(fStateStack[0,0],fStateStack[1,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
+ Move(fState[0],fStateStack[0,0],Length(fStateStack[0])*SizeOf(Double));
 end;
 
 function TBiquadIIRFilter.GetPoles:TPNType;

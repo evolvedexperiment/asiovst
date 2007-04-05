@@ -8,7 +8,7 @@ interface
 {$DEFINE x87}
 {$ENDIF}
 
-uses DFilter;
+uses DDSPBase, DFilter;
 
 type
   TButterworthFilter = class(TIIRFilter)
@@ -19,7 +19,8 @@ type
     fDownsampleFak  : Integer;
     fOrder          : Integer;
     fAB             : array [0..127] of Double;
-    fD64            : array [0.. 63] of Double;
+    fState          : array [0.. 63] of Double;
+    fStateStack     : array of array [0.. 63] of Double;
     procedure SetW0; override;
     procedure SetOrder(Value: Integer); override;
     procedure SetGain(const Value: Double); override;
@@ -33,6 +34,9 @@ type
     function MagnitudeLog10(Frequency:Double):Double; virtual;
     procedure ResetStates; override;
     procedure Reset; override;
+    procedure RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray); override;
+    procedure PushStates; override;
+    procedure PopStates; override;
     property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
     property DownsampleFaktor : Integer read fDownsampleFak;
   end;
@@ -61,7 +65,7 @@ type
 
 implementation
 
-uses Math, DDSPBase, SysUtils;
+uses Math, SysUtils;
 
 constructor TButterworthFilter.Create;
 begin
@@ -74,6 +78,17 @@ begin
  CalculateCoefficients;
 end;
 
+procedure TButterworthFilter.RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray);
+var i : Integer;
+begin
+ if Length(ImpulseResonseBuffer)=0 then Exit;
+ PushStates;
+ ImpulseResonseBuffer[0]:=ProcessSample(1);
+ for i:=1 to Length(ImpulseResonseBuffer)-1
+  do ImpulseResonseBuffer[i]:=ProcessSample(1);
+ PopStates;
+end;
+
 procedure TButterworthFilter.Reset;
 begin
  fGain:=0;
@@ -82,7 +97,7 @@ end;
 
 procedure TButterworthFilter.ResetStates;
 begin
- FillChar(fD64[0],fOrder*SizeOf(Double),0);
+ FillChar(fState[0],fOrder*SizeOf(Double),0);
 end;
 
 procedure TButterworthFilter.SetSampleRate(const Value: Double);
@@ -164,6 +179,25 @@ begin
  result:=20*Log10(Magnitude(Frequency));
 end;
 
+procedure TButterworthFilter.PopStates;
+begin
+ if Length(fStateStack)>0 then
+  begin
+   Move(fStateStack[0,0],fState[0], Length(fStateStack[0])*SizeOf(Double));
+   if Length(fStateStack)>1
+    then Move(fStateStack[1,0],fStateStack[0,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
+   SetLength(fStateStack,Length(fStateStack)-1);
+  end;
+end;
+
+procedure TButterworthFilter.PushStates;
+begin
+ SetLength(fStateStack,Length(fStateStack)+1);
+ if Length(fStateStack)>1
+  then Move(fStateStack[0,0],fStateStack[1,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
+ Move(fState[0],fStateStack[0,0],Length(fStateStack[0])*SizeOf(Double));
+end;
+
 { TButterworthFilterLP }
 
 constructor TButterworthLP.Create;
@@ -227,21 +261,21 @@ asm
   sub ecx,4
   fld st(0)
   fmul [self.fAB+ecx*8].Double
-  fadd [self.fD64+ecx*4].Double
+  fadd [self.fState+ecx*4].Double
   fld st(0)
   fld st(0)
   fmul [self.fAB+ecx*8+16].Double
-  fadd [self.fD64+ecx*4+8].Double
+  fadd [self.fState+ecx*4+8].Double
   fld st(3)
   fmul [self.fAB+ecx*8+8].Double
   faddp
-  fstp [self.fD64+ecx*4].Double
+  fstp [self.fState+ecx*4].Double
   fmul [self.fAB+ecx*8+24].Double
   fxch
   fxch st(2)
   fmul [self.fAB+ecx*8].Double
   faddp
-  fstp [self.fD64+ecx*4+8].Double
+  fstp [self.fState+ecx*4+8].Double
  jnz @FilterLoop
 end;
 {$ELSE}
@@ -253,9 +287,9 @@ begin
  for i := 0 to (fOrder div 2) - 1 do
   begin
    x:=Result;
-   Result      := fAB[4*i+0]*x                      + fD64[2*i];
-   fD64[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result  + fD64[2*i+1];
-   fD64[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
+   Result        := fAB[4*i+0]*x                     + fState[2*i];
+   fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
+   fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
   end;
 end;
 {$ENDIF}
@@ -323,21 +357,21 @@ asm
   sub ecx,4
   fld st(0)
   fmul [self.fAB+ecx*8].Double
-  fadd [self.fD64+ecx*4].Double
+  fadd [self.fState+ecx*4].Double
   fld st(0)
   fld st(0)
   fmul [self.fAB+ecx*8+16].Double
-  fadd [self.fD64+ecx*4+8].Double
+  fadd [self.fState+ecx*4+8].Double
   fld st(3)
   fmul [self.fAB+ecx*8+8].Double
   faddp
-  fstp [self.fD64+ecx*4].Double
+  fstp [self.fState+ecx*4].Double
   fmul [self.fAB+ecx*8+24].Double
   fxch
   fxch st(2)
   fmul [self.fAB+ecx*8].Double
   faddp
-  fstp [self.fD64+ecx*4+8].Double
+  fstp [self.fState+ecx*4+8].Double
  jnz @FilterLoop
 end;
 {$ELSE}
@@ -349,9 +383,9 @@ begin
  for i := 0 to (fOrder div 2) - 1 do
   begin
    x:=Result;
-   Result      := fAB[4*i+0]*x                      + fD64[2*i];
-   fD64[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result  + fD64[2*i+1];
-   fD64[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
+   Result        := fAB[4*i+0]*x                     + fState[2*i];
+   fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
+   fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
   end;
 end;
 {$ENDIF}
