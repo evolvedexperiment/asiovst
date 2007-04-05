@@ -758,8 +758,6 @@ end;
 constructor TCustomASIOHostBasic.Create(AOwner: TComponent);
 begin
 //  if AOwner is TForm then Handy := TForm(AOwner).Handle else Handy := Application.Handle;
-  {$IFNDEF FPC}
-  {$ENDIF}
   fHandle:=AllocateHWnd(WndProc);
   //if theHost<>nil then
   theHost := Self;
@@ -767,8 +765,6 @@ begin
   FInputBuffer := nil;
   FOutputBuffer := nil;
   FASIOTime := TASIOTimeSub.Create;
-  {$IFNDEF FPC}
-  {$ENDIF}
   FDriverList := GetDriverList;
 
   // set the callbacks record fields
@@ -1351,14 +1347,17 @@ end;
 
 destructor TCustomASIOHost.Destroy;
 begin
- SetLength(FInConvertors, 0);
- SetLength(FOutConvertors, 0);
- SetLength(FOutputVolume, 0);
- SetLength(FInConvertors, 0);
- SetLength(FOutConvertors, 0);
- SetLength(FOutputVolume, 0);
- {$IFDEF ASIOMixer} FASIOMixer.Free; {$ENDIF}
- inherited;
+ try
+  SetLength(FInConvertors, 0);
+  SetLength(FOutConvertors, 0);
+  SetLength(FOutputVolume, 0);
+  SetLength(FInConvertors, 0);
+  SetLength(FOutConvertors, 0);
+  SetLength(FOutputVolume, 0);
+  {$IFDEF ASIOMixer} FASIOMixer.Free; {$ENDIF}
+ finally
+  inherited;
+ end;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////

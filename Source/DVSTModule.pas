@@ -425,8 +425,6 @@ type
     function EditorOpen(ptr: pointer): Integer; virtual;
     procedure EditorClose; virtual;
     procedure EditorIdle; virtual;
-    function Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
-    function VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
     procedure ReadOnlyString(s: string); virtual;
     procedure fOnBlockSaveProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer); overload;
     procedure fOnBlockSaveProcessReplacing(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer); overload;
@@ -455,6 +453,8 @@ type
     fProductName            : string;
     fIsHostAutomation       : Boolean;
     fHostProduct            : string;
+    function Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
+    function VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
     function GetEffect: PVSTEffect;
     function Dispatcher(opcode, index, value: Integer; ptr: pointer; opt: Single): Integer; virtual;
     procedure SetAudioMaster(const AM :TAudioMasterCallbackFunc); virtual;

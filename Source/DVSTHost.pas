@@ -226,13 +226,13 @@ type
     procedure SetViewPosition(x, y: Integer);
     function KeysRequired: Integer;
     procedure SavePreset(FileName: TFileName); overload;
-    procedure SavePreset(str: TStream); overload;
+    procedure SavePreset(Stream: TStream); overload;
     procedure LoadPreset(FileName: TFileName); overload;
-    procedure LoadPreset(str: TStream); overload;
+    procedure LoadPreset(Stream: TStream); overload;
     procedure SaveBank(FileName: TFileName); overload;
-    procedure SaveBank(str: TStream); overload;
+    procedure SaveBank(Stream: TStream); overload;
     procedure LoadBank(FileName: TFileName); overload;
-    procedure LoadBank(str: TStream); overload;
+    procedure LoadBank(Stream: TStream); overload;
     property Parameters[Index: Integer]:Single read GetParameter write SetParameter;
     property VstOfflineTask : TVstOfflineTask read FVstOfflineTask;
   published
@@ -2192,14 +2192,14 @@ begin
  end; 
 end;
 
-procedure TVstPlugIn.SavePreset(str: TStream);
+procedure TVstPlugIn.SavePreset(Stream: TStream);
 var p2: TFXChunkSet;
     s: string;
     x: integer;
     PBuffer: Pointer;
     pp: TFXPreset;
 begin
- str.Seek(0, 0);
+ Stream.Seek(0, 0);
  if not assigned(PVstEffect) then exit;
  if effFlagsProgramChunks in EffectOptions then
   begin
@@ -2222,19 +2222,19 @@ begin
    p2.byteSize := sizeof(p2) - sizeof(longint) * 2 + p2.chunkSize - 8;
    SwapLong(p2.byteSize);
    SwapLong(p2.chunkSize);
-   str.WriteBuffer(p2, sizeof(p2) - sizeof(pointer));
-   str.WriteBuffer(PBuffer^, x);
+   Stream.WriteBuffer(p2, sizeof(p2) - sizeof(pointer));
+   Stream.WriteBuffer(PBuffer^, x);
   end
  else
   begin
    pp := GetPreset(GetProgram);
-   str.WriteBuffer(pp, sizeof(pp) - sizeof(single));
-   str.WriteBuffer(pp.params^, sizeof(single) * numParams);
+   Stream.WriteBuffer(pp, sizeof(pp) - sizeof(single));
+   Stream.WriteBuffer(pp.params^, sizeof(single) * numParams);
    FreeMem(pp.params);
   end;
 end;
 
-procedure TVstPlugIn.LoadBank(str: TStream);
+procedure TVstPlugIn.LoadBank(Stream: TStream);
 var i: Integer;
     p: TFXSet;
     p2: TFXChunkBank;
@@ -2248,30 +2248,30 @@ var i: Integer;
     usechunk: boolean;
 begin
  if not assigned(PVstEffect) then exit;
- str.Seek(9, 0);
- str.Read(b, 1);
+ Stream.Seek(9, 0);
+ Stream.Read(b, 1);
  usechunk := (b <> $78);
- str.Seek(0, 0);
+ Stream.Seek(0, 0);
 
 // if eoProgramChunks in EffectOptions then
  if usechunk then
  begin
   ptr := @p2;
-  str.Read(ptr^, sizeof(TFXChunkBank) - sizeof(pointer));
+  Stream.Read(ptr^, sizeof(TFXChunkBank) - sizeof(pointer));
 
   x := FourCharToLong(uid[1], uid[2], uid[3], uid[4]);
   SwapLong(x);
   if p2.fxId <> x then raise Exception.Create('bank file not for this plugin!');
 
-  x := str.Size - str.Position;
+  x := Stream.Size - Stream.Position;
   GetMem(pb2, x + 1);
-  j := str.Read(pb2^, x);
+  j := Stream.Read(pb2^, x);
   SetChunk(pb2, j, false);
   FreeMem(pb2);
  end else
  begin
   ptr := @p;
-  str.Read(ptr^, sizeof(TFXSet) - sizeof(pointer));
+  Stream.Read(ptr^, sizeof(TFXSet) - sizeof(pointer));
   x := FourCharToLong(uid[1], uid[2], uid[3], uid[4]);
   SwapLong(x);
   if p.fxId <> x then raise Exception.Create('bank file not for this plugin!');
@@ -2286,14 +2286,14 @@ begin
   for j := 0 to p.numPrograms - 1 do
   begin
    ptr := @pp;
-   str.Read(ptr^, sizeof(TFXPreset) - sizeof(pointer));
+   Stream.Read(ptr^, sizeof(TFXPreset) - sizeof(pointer));
    SetProgram(j);
    SetProgramName(pp.prgName);
    SwapLong(pp.numParams);
    ptr := @x;
    for i := 0 to pp.numParams - 1 do
    begin
-    str.Read(ptr^, sizeof(single));
+    Stream.Read(ptr^, sizeof(single));
     SwapLong(x);
     s := psingle(ptr)^;
     SetParameter(i, s);
@@ -2302,7 +2302,7 @@ begin
  end;
 end;
 
-procedure TVstPlugIn.LoadPreset(str: TStream);
+procedure TVstPlugIn.LoadPreset(Stream: TStream);
 var i: Integer;
     p: TFXPreset;
     p2: TFXChunkset;
@@ -2315,30 +2315,30 @@ var i: Integer;
     usechunk: boolean;
 begin
  if not assigned(PVstEffect) then exit;
- str.Seek(9, 0);
- str.Read(b, 1);
+ Stream.Seek(9, 0);
+ Stream.Read(b, 1);
  usechunk := (b <> $78);
- str.Seek(0, 0);
+ Stream.Seek(0, 0);
 
 // if eoProgramChunks in EffectOptions then
  if usechunk then
  begin
   ptr := @p2;
-  str.Read(ptr^, sizeof(TFXChunkset) - sizeof(pointer));
+  Stream.Read(ptr^, sizeof(TFXChunkset) - sizeof(pointer));
   x := FourCharToLong(uid[1], uid[2], uid[3], uid[4]);
   SwapLong(x);
   if p2.fxId <> x then raise Exception.Create('preset file not for this plugin!');
   SetProgramName(p2.prgName);
 
-  x := str.Size - str.Position;
+  x := Stream.Size - Stream.Position;
   GetMem(pb2, x + 1);
-  j := str.Read(pb2^, x);
+  j := Stream.Read(pb2^, x);
   SetChunk(pb2, j, true);
   FreeMem(pb2);
  end else
  begin
   ptr := @p;
-  str.Read(ptr^, sizeof(TFXPreset) - sizeof(pointer));
+  Stream.Read(ptr^, sizeof(TFXPreset) - sizeof(pointer));
   x := FourCharToLong(uid[1], uid[2], uid[3], uid[4]);
   SwapLong(x);
   if p.fxId <> x then raise Exception.Create('preset file not for this plugin!');
@@ -2353,7 +2353,7 @@ begin
   ptr := @x;
   for i := 0 to p.numParams - 1 do
   begin
-   str.Read(ptr^, sizeof(single));
+   Stream.Read(ptr^, sizeof(single));
    SwapLong(x);
    s := psingle(ptr)^;
    SetParameter(i, s);
@@ -2361,7 +2361,7 @@ begin
  end;
 end;
 
-procedure TVstPlugIn.SaveBank(str: TStream);
+procedure TVstPlugIn.SaveBank(Stream: TStream);
 var p: TFXSet;
     p2: TFXChunkBank;
     j, x: integer;
@@ -2369,7 +2369,7 @@ var p: TFXSet;
     pp: TFXPreset;
 begin
  if not assigned(PVstEffect) then exit;
- str.Seek(0, 0);
+ Stream.Seek(0, 0);
  if effFlagsProgramChunks in EffectOptions then
  begin
   p2.chunkMagic := FourCharToLong('C','c','n','K');
@@ -2389,8 +2389,8 @@ begin
   p2.byteSize := sizeof(p2) - sizeof(longint) * 3 + p2.chunkSize + 8;
   SwapLong(p2.byteSize);
   SwapLong(p2.chunkSize);
-  str.WriteBuffer(p2, sizeof(p2) - sizeof(pointer));
-  str.WriteBuffer(PBuffer^, x);
+  Stream.WriteBuffer(p2, sizeof(p2) - sizeof(pointer));
+  Stream.WriteBuffer(PBuffer^, x);
  end else
  begin
   p.chunkMagic := FourCharToLong('C','c','n','K');
@@ -2409,12 +2409,12 @@ begin
   p.byteSize := sizeof(p) - sizeof(longint) +
    (sizeof(TFXPreset) + (numParams - 1) * sizeof(single)) * numPrograms;
   SwapLong(p.byteSize);
-  str.WriteBuffer(p, sizeof(p) - sizeof(single));
+  Stream.WriteBuffer(p, sizeof(p) - sizeof(single));
   for j := 0 to numPrograms - 1 do
   begin
    pp := GetPreset(j);
-   str.WriteBuffer(pp, sizeof(pp) - sizeof(single));
-   str.WriteBuffer(pp.params^, sizeof(single) * numParams);
+   Stream.WriteBuffer(pp, sizeof(pp) - sizeof(single));
+   Stream.WriteBuffer(pp.params^, sizeof(single) * numParams);
    FreeMem(pp.params);
   end;
  end;

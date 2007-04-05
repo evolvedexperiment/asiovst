@@ -14,7 +14,6 @@ type
   TButterworthFilter = class(TIIRFilter)
   private
     procedure SetDownsamplePower(Value: Integer);
-    procedure SetOrder(const Value: Integer);
   protected
     fDownsamplePow  : Integer;
     fDownsampleFak  : Integer;
@@ -22,9 +21,11 @@ type
     fAB             : array [0..127] of Double;
     fD64            : array [0.. 63] of Double;
     procedure SetW0; override;
-    procedure SetFrequency(const Value: Double); override;
+    procedure SetOrder(Value: Integer); override;
     procedure SetGain(const Value: Double); override;
+    procedure SetFrequency(const Value: Double); override;
     procedure SetSampleRate(const Value: Double); override;
+    function GetOrder:Integer; override;
   public
     constructor Create; override;
     procedure SetFilterValues(const AFrequency, AGain : Single); virtual;
@@ -34,7 +35,6 @@ type
     procedure Reset; override;
     property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
     property DownsampleFaktor : Integer read fDownsampleFak;
-    property Order : Integer read fOrder write SetOrder;
   end;
 
   TButterworthLP = class(TButterworthFilter)
@@ -69,8 +69,9 @@ begin
  fDownsampleFak:=1;
  fFrequency:=0;
  fGain:=0;
- Order:=10;
+ fOrder:=10;
  SampleRate:=44100;
+ CalculateCoefficients;
 end;
 
 procedure TButterworthFilter.Reset;
@@ -119,16 +120,25 @@ begin
  fGainSpeed:=Exp(fGain*ln10_0025);
 end;
 
-procedure TButterworthFilter.SetOrder(const Value: Integer);
+procedure TButterworthFilter.SetOrder(Value: Integer);
 begin
- fOrder := Value;
- CalculateCoefficients;
+ if Value<2 then Value:=2 else
+ if Value>64 then Value:=64;
+ if fOrder<>Value then
+  begin
+   fOrder := Value;
+   CalculateCoefficients;
+  end;
 end;
 
 procedure TButterworthFilter.SetFrequency(const Value: Double);
 begin
- if fFrequency <> Value
-  then SetW0;
+ if fFrequency <> Value then
+  begin
+   fFrequency:=Value;
+   SetW0;
+   CalculateCoefficients;
+  end;
 end;
 
 procedure TButterworthFilter.SetFilterValues(const AFrequency, AGain : Single);
@@ -137,6 +147,11 @@ begin
  fFrequency:=AFrequency; fGain:=AGain;
  fGainSpeed:=Exp((fGain*ln10_0025));
  SetW0;
+end;
+
+function TButterworthFilter.GetOrder: Integer;
+begin
+ Result:=fOrder;
 end;
 
 function TButterworthFilter.Magnitude(Frequency: Double): Double;

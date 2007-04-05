@@ -6,6 +6,8 @@ interface
 {$MODE Delphi}
 {$ENDIF}
 
+uses DDSPBase;
+
 type
   TComplex=record
              Re : Single;
@@ -26,6 +28,8 @@ type
     procedure SetGain(const Value:Double); virtual;
     procedure SetFrequency(const Value:Double); virtual;
     procedure SetSampleRate(const Value: Double); virtual;
+    procedure SetOrder(Value: Integer); virtual; abstract;
+    function GetOrder: Integer; virtual; abstract;
     procedure CalculateCoefficients; virtual; abstract;
   public
     constructor Create; virtual;
@@ -34,6 +38,7 @@ type
     function Phase(Frequency:Double):Double; virtual; abstract;
     procedure ResetStates; virtual; abstract;
     procedure Reset; virtual; abstract;
+    procedure RenderImpulseResponse(ImpulseResonseBuffer : TDoubleDynArray); virtual; abstract;
     property GainSpeed: Double read fGainSpeed;
     property SampleRateReci : Double read fSRR;
     property SinW0: Double read fSinW0;
@@ -42,6 +47,7 @@ type
     property Gain: Double read fGain write SetGain;
     property Frequency: Double read fFrequency write SetFrequency;
     property SampleRate: Double read fSampleRate write SetSampleRate;
+    property Order: Integer read GetOrder write SetOrder; 
   end;
 
   TIIRFilter=class(TFilter)
@@ -109,7 +115,7 @@ type
 
 implementation
 
-uses math, DDSPBase;
+uses Math;
 
 function cf_phi(f,rate,a0,a1,a2,b1,b2:Double): Double;
 const pia = 1/pi;

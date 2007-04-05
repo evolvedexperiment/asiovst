@@ -15,7 +15,6 @@ type
   private
     function GetRipple: Double;
     procedure SetDownsamplePower(Value: Integer);
-    procedure SetOrder(const Value: Integer);
   protected
     fRipple         : Double;
     fRippleFactors  : array [0..1] of Double;
@@ -25,11 +24,13 @@ type
     fAB             : array [0..127] of Double;
     fD64            : array [0.. 63] of Double;
     procedure SetW0; override;
-    procedure SetFrequency(const Value: Double); override;
+    procedure SetOrder(Value: Integer); override;
     procedure SetGain(const Value: Double); override;
     procedure SetRipple(const Value: Double); virtual;
+    procedure SetFrequency(const Value: Double); override;
     procedure SetSampleRate(const Value: Double); override;
     procedure SetRippleFactors; virtual;
+    function GetOrder: Integer; override;
   public
     constructor Create; override;
     procedure SetFilterValues(const AFrequency, AGain, ARipple : Single); virtual;
@@ -40,7 +41,6 @@ type
     property Ripple : Double read GetRipple write SetRipple;
     property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
     property DownsampleFaktor : Integer read fDownsampleFak;
-    property Order : Integer read fOrder write SetOrder;
   end;
 
   TChebyshev1LP = class(TChebyshev1Filter)
@@ -77,6 +77,11 @@ begin
  fGain:=0; fRipple:=1;
  fOrder:=10;
  SampleRate:=44100;
+end;
+
+function TChebyshev1Filter.GetOrder: Integer;
+begin
+ Result:=fOrder;
 end;
 
 function TChebyshev1Filter.GetRipple: Double;
@@ -130,9 +135,10 @@ begin
  fGainSpeed:=Exp(fGain*ln10_0025);
 end;
 
-procedure TChebyshev1Filter.SetOrder(const Value: Integer);
+procedure TChebyshev1Filter.SetOrder(Value: Integer);
 begin
  fOrder := Value;
+ SetRippleFactors;
  CalculateCoefficients;
 end;
 
@@ -140,8 +146,10 @@ procedure TChebyshev1Filter.SetFrequency(const Value: Double);
 begin
  if fFrequency <> Value then
   begin
+   fFrequency:=Value;
    SetW0;
    SetRippleFactors;
+   CalculateCoefficients;
   end;
 end;
 
@@ -151,15 +159,17 @@ begin
   begin
    fRipple := Value;
    SetRippleFactors;
+   CalculateCoefficients;
   end;
 end;
 
 procedure TChebyshev1Filter.SetRippleFactors;
 var t : Double;
 begin
- t:=arcsinh(fRipple)/fOrder;
+ t:=arcsinh(1/fRipple)/fOrder;
  fRippleFactors[1]:=sinh(t);
  fRippleFactors[0]:=sqr(cosh(t));
+ ResetStates;
 end;
 
 procedure TChebyshev1Filter.SetFilterValues(const AFrequency, AGain, ARipple : Single);
