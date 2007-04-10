@@ -74,6 +74,8 @@ type
     procedure CalcPolesZeros; virtual;
     function GetPoles:TPNType;
     function GetZeros:TPNType;
+    function GetOrder: Integer; override;
+    procedure SetOrder(Value: Integer); override;
   public
     constructor Create; override;
     procedure ResetStates; override;
@@ -168,7 +170,7 @@ end;
 procedure TFilter.SetGain(const Value:Double);
 begin
  fGain:=Value;
- fGainSpeed:=dB_to_Amp(fGain);
+ fGainSpeed:=dB_to_Amp(0.5*fGain);
  CalculateCoefficients;
 end;
 
@@ -269,6 +271,9 @@ begin
  fState[1]:=0;
 end;
 
+procedure TBiquadIIRFilter.SetOrder(Value: Integer);
+begin end;
+
 function dB_to_Amp(g:single):single;
 begin
  if (g>-90.0) then result:=math.power(10,g*0.05)
@@ -331,6 +336,11 @@ begin
  if Length(fStateStack)>1
   then Move(fStateStack[0,0],fStateStack[1,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
  Move(fState[0],fStateStack[0,0],Length(fStateStack[0])*SizeOf(Double));
+end;
+
+function TBiquadIIRFilter.GetOrder: Integer;
+begin
+ result:=2;
 end;
 
 function TBiquadIIRFilter.GetPoles:TPNType;
@@ -396,18 +406,23 @@ end;
 { TSimpleHighShelfFilter }
 
 procedure TSimpleHighShelfFilter.CalculateCoefficients;
-var cn,alpha,t   : Double;
+var cn,alpha,t,sA,A1,A2 : Double;
 begin
  if (fSinW0=0)
   then alpha:=fSinW0/(2*fBandWidth)
   else alpha:=Sinh(ln22*cos(fW0*0.43)*fBandWidth*(fW0/fSinW0))*fSinW0;
  t:=1/(1+alpha);
  cn:=cos(fW0);
- fNominator[0]:=fGainSpeed*fGainSpeed*(1+cn)*0.5*t;
- fNominator[1]:=-2*fNominator[0];
- fNominator[2]:=fNominator[0];
- fDenominator[1]:=-2*cn*t;
- fDenominator[2]:=(1-alpha)*t;
+
+ sA:=2*sqrt(fGainSpeed)*alpha;
+ A1:=fGainSpeed+1;
+ A2:=fGainSpeed-1;
+ t:=1/(A1-(A2*cn)+sA);
+ fDenominator[1]:=2*(A2-A1*cn)*t;
+ fDenominator[2]:=(A1-A2*cn-sA)*t;
+ fNominator[0]:=fGainSpeed*(A1+A2*cn+sA)*t;
+ fNominator[1]:=fGainSpeed*(A2+A1*cn)*-2*t;
+ fNominator[2]:=fGainSpeed*(A1+A2*cn-sA)*t;
  CalcPolesZeros;
 end;
 

@@ -55,7 +55,6 @@ begin
      10 : fEQs[j,i].Frequency:=20000;
     end;
     fEQs[j,i].Bandwidth:=1;
-    fEQs[j,i].CalcType:=tpPeak;
    end;
 end;
 
@@ -107,18 +106,18 @@ var i : Integer;
 begin
  for i:=0 to sampleframes - 1 do
   begin
-   outputs[0,i]:=fEQs[0, 0].Process(fEQs[0, 1].Process(
-                 fEQs[0, 2].Process(fEQs[0, 3].Process(
-                 fEQs[0, 4].Process(fEQs[0, 5].Process(
-                 fEQs[0, 6].Process(fEQs[0, 7].Process(
-                 fEQs[0, 8].Process(fEQs[0, 9].Process(
-                 fEQs[0,10].Process(inputs[0,i])))))))))));
-   outputs[1,i]:=fEQs[1, 0].Process(fEQs[1, 1].Process(
-                 fEQs[1, 2].Process(fEQs[1, 3].Process(
-                 fEQs[1, 4].Process(fEQs[1, 5].Process(
-                 fEQs[1, 6].Process(fEQs[1, 7].Process(
-                 fEQs[1, 8].Process(fEQs[1, 9].Process(
-                 fEQs[1,10].Process(inputs[1,i])))))))))));
+   outputs[0,i]:=fEQs[0, 0].ProcessSample(fEQs[0, 1].ProcessSample(
+                 fEQs[0, 2].ProcessSample(fEQs[0, 3].ProcessSample(
+                 fEQs[0, 4].ProcessSample(fEQs[0, 5].ProcessSample(
+                 fEQs[0, 6].ProcessSample(fEQs[0, 7].ProcessSample(
+                 fEQs[0, 8].ProcessSample(fEQs[0, 9].ProcessSample(
+                 fEQs[0,10].ProcessSample(inputs[0,i])))))))))));
+   outputs[1,i]:=fEQs[1, 0].ProcessSample(fEQs[1, 1].ProcessSample(
+                 fEQs[1, 2].ProcessSample(fEQs[1, 3].ProcessSample(
+                 fEQs[1, 4].ProcessSample(fEQs[1, 5].ProcessSample(
+                 fEQs[1, 6].ProcessSample(fEQs[1, 7].ProcessSample(
+                 fEQs[1, 8].ProcessSample(fEQs[1, 9].ProcessSample(
+                 fEQs[1,10].ProcessSample(inputs[1,i])))))))))));
   end;
 end;
 
@@ -129,18 +128,18 @@ var i : Integer;
 begin
  for i:=0 to sampleframes - 1 do
   begin
-   outputs[0,i]:=fEQs[0, 0].Process(fEQs[0, 1].Process(
-                 fEQs[0, 2].Process(fEQs[0, 3].Process(
-                 fEQs[0, 4].Process(fEQs[0, 5].Process(
-                 fEQs[0, 6].Process(fEQs[0, 7].Process(
-                 fEQs[0, 8].Process(fEQs[0, 9].Process(
-                 fEQs[0,10].Process(inputs[0,i]+inputs[1,i])))))))))));
-   outputs[1,i]:=fEQs[1, 0].Process(fEQs[1, 1].Process(
-                 fEQs[1, 2].Process(fEQs[1, 3].Process(
-                 fEQs[1, 4].Process(fEQs[1, 5].Process(
-                 fEQs[1, 6].Process(fEQs[1, 7].Process(
-                 fEQs[1, 8].Process(fEQs[1, 9].Process(
-                 fEQs[1,10].Process(inputs[1,i]-inputs[1,i])))))))))));
+   outputs[0,i]:=fEQs[0, 0].ProcessSample(fEQs[0, 1].ProcessSample(
+                 fEQs[0, 2].ProcessSample(fEQs[0, 3].ProcessSample(
+                 fEQs[0, 4].ProcessSample(fEQs[0, 5].ProcessSample(
+                 fEQs[0, 6].ProcessSample(fEQs[0, 7].ProcessSample(
+                 fEQs[0, 8].ProcessSample(fEQs[0, 9].ProcessSample(
+                 fEQs[0,10].ProcessSample(inputs[0,i]+inputs[1,i])))))))))));
+   outputs[1,i]:=fEQs[1, 0].ProcessSample(fEQs[1, 1].ProcessSample(
+                 fEQs[1, 2].ProcessSample(fEQs[1, 3].ProcessSample(
+                 fEQs[1, 4].ProcessSample(fEQs[1, 5].ProcessSample(
+                 fEQs[1, 6].ProcessSample(fEQs[1, 7].ProcessSample(
+                 fEQs[1, 8].ProcessSample(fEQs[1, 9].ProcessSample(
+                 fEQs[1,10].ProcessSample(inputs[1,i]-inputs[1,i])))))))))));
    d:=0.25*(outputs[0,i]+outputs[0,i]);
    outputs[1,i]:=0.25*(outputs[0,i]-outputs[0,i]);
    outputs[0,i]:=d;
