@@ -5,7 +5,7 @@ interface
 {$IFDEF FPC}
 {$MODE Delphi}
 {$ELSE}
-{$DEFINE x87}
+{$DEFINE _x87}
 {$ENDIF}
 
 uses DDSPBase, DFilter;
@@ -48,6 +48,7 @@ type
     constructor Create; override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input:Double):Double; override;
+    function ProcessSample(const Input:Double; PrePost : TPrePost):Double; override;
     function Magnitude(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; override;
   end;
@@ -59,6 +60,7 @@ type
     constructor Create; override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input:Double):Double; override;
+    function ProcessSample(const Input:Double; PrePost : TPrePost):Double; override;
     function Magnitude(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; override;
   end;
@@ -294,6 +296,52 @@ begin
 end;
 {$ENDIF}
 
+function TButterworthLP.ProcessSample(const Input:Double; PrePost : TPrePost):Double;
+var
+  y,x   : Double;
+  i     : Integer;
+  o2,o4 :
+begin
+ Result:=Input;
+ o4:=(fOrder div 4);
+ (fOrder div 2)-o4;
+ if PrePost=ppPre then
+  for i := 0 to (fOrder div 4) - 1 do
+   begin
+    x:=Result;
+    Result        := fAB[4*i+0]*x                     + fState[2*i];
+    fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
+    fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
+   end
+  else
+  for i := 0 to ((fOrder div 2)-(fOrder div 4)) - 1 do
+   begin
+    x:=Result;
+    Result        := fAB[4*i+0]*x                     + fState[2*i];
+    fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
+    fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
+   end
+
+{
+ if PrePost=ppPre then
+  for i := 0 to ((fOrder div 2)-(fOrder div 4)) - 1 do
+   begin
+    x:=Result;
+    Result        := fAB[8*i+0]*x                     + fState[4*i];
+    fState[4*i  ] := fAB[8*i+1]*x + fAB[8*i+2]*Result + fState[4*i+1];
+    fState[4*i+1] := fAB[8*i+0]*x + fAB[8*i+3]*Result;
+   end
+  else
+  for i := 0 to (fOrder div 4) - 1 do
+   begin
+    x:=Result;
+    Result        := fAB[8*i+4]*x                     + fState[4*i+2];
+    fState[4*i+2] := fAB[8*i+5]*x + fAB[8*i+6]*Result + fState[4*i+3];
+    fState[4*i+3] := fAB[8*i+4]*x + fAB[8*i+7]*Result;
+   end
+}
+end;
+
 { TButterworthFilterHP }
 
 constructor TButterworthHP.Create;
@@ -389,5 +437,29 @@ begin
   end;
 end;
 {$ENDIF}
+
+function TButterworthHP.ProcessSample(const Input:Double; PrePost : TPrePost):Double;
+var
+  y,x : Double;
+  i   : Integer;
+begin
+ Result:=Input;
+ if PrePost=ppPre then
+  for i := 0 to ((fOrder div 2)-(fOrder div 4)) - 1 do
+   begin
+    x:=Result;
+    Result        := fAB[8*i+0]*x                     + fState[4*i];
+    fState[4*i  ] := fAB[8*i+1]*x + fAB[8*i+2]*Result + fState[4*i+1];
+    fState[4*i+1] := fAB[8*i+0]*x + fAB[8*i+3]*Result;
+   end
+  else
+  for i := 0 to (fOrder div 4) - 1 do
+   begin
+    x:=Result;
+    Result        := fAB[8*i+4]*x                     + fState[4*i+2];
+    fState[4*i+2] := fAB[8*i+5]*x + fAB[8*i+6]*Result + fState[4*i+3];
+    fState[4*i+3] := fAB[8*i+4]*x + fAB[8*i+7]*Result;
+   end
+end;
 
 end.

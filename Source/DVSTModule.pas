@@ -5,9 +5,9 @@ interface
 {$I JEDI.INC}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LCLClasses, RtlConsts,
-  {$ELSE} Windows, {$ENDIF} SysUtils, Forms, Classes, DDSPBase,
-  DVSTEffect, Messages;
+  {$IFDEF FPC} LCLIntf, LCLType, LResources, LCLClasses, LMessages, RtlConsts,
+  {$ELSE} Windows, Messages, {$ENDIF} SysUtils, Forms, Classes,
+  DDSPBase, DVSTEffect;
 
 {$DEFINE _Debug}
 
@@ -1183,12 +1183,7 @@ begin
                           result := 1;
                          end
                         else result := 0;
-(*
-                         fEditorRect.bottom := 176;
-                         fEditorRect.right := 578;
-                         v := 1;
-*)
-                        end;
+                       end;
   effEditOpen        : if (effFlagsHasEditor in fEffect.EffectFlags) then result := EditorOpen(ptr);
   effEditClose       : if (effFlagsHasEditor in fEffect.EffectFlags) then EditorClose;
   effEditIdle        : if (effFlagsHasEditor in fEffect.EffectFlags) then EditorIdle;

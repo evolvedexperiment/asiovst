@@ -33,6 +33,7 @@ contains
   DMidiKeys in '..\Source\DMidiKeys.pas',
   DADSRGraph in '..\Source\DADSRGraph.pas',
   DWaveform in '..\Source\DWaveform.pas',
-  DBarChart in '..\Source\DBarChart.pas';
+  DBarChart in '..\Source\DBarChart.pas',
+  DDial in '..\Source\DDial.pas';
 
 end.

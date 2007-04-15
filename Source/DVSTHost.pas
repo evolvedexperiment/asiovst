@@ -1445,6 +1445,7 @@ begin
        Anchors := [akLeft, akTop, akRight]; Left := 4; Top := 5;
        Width := Form.Width - 4 * Left; Height := 21; ItemHeight := 13;
        TabOrder := 2; OnChange := ParamChange; Text := ''; itemindex := 0;
+       Font.Color:=clWindowText;
        OnChange(nil);
       end;
     end;
