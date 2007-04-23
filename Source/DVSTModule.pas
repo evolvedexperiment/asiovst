@@ -1727,8 +1727,8 @@ begin
      then str:=FloatToStr(fOnGetChunkParamEvent(Self,Index))
      else
       if (numPrograms>0)
-       then str:=FloatToStr(Programs[fCurProgram].fParameter[Index])
-       else str:=FloatToStr(fParameter[index]);
+       then str:=FloatToStrF(Programs[fCurProgram].fParameter[Index],ffGeneral,4,4)
+       else str:=FloatToStrF(fParameter[index],ffGeneral,4,4);
     if Assigned(fParameterProperties[index].fOnCPD)
      then fParameterProperties[index].fOnCPD(Self,Index,str);
    end;

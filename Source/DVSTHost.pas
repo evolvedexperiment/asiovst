@@ -1453,10 +1453,11 @@ begin
     begin
      theRect.top:=0;
      theRect.left:=0;
-     theRect.bottom:=Form.Width;
-     theRect.right:=4+FnumParams*16;
-
+     theRect.bottom:=4+FnumParams*16;
+     theRect.right:=Form.Width;
      GUIForm:=Form; wxw:=0;
+     GUIForm.ClientWidth := theRect.right - theRect.left;
+     GUIForm.ClientHeight := theRect.Bottom - theRect.Top;
      with TLabel.Create(Form) do
       try
        Parent := Form; Alignment := taCenter;
@@ -1475,7 +1476,7 @@ begin
          Anchors := [akLeft, akTop, akRight];
          Kind := sbHorizontal; LargeChange:=10;
          Height := 16; Top := 2+i*Height; Tag:=i;
-         Left := wxw+2; Width := Form.Width-Left-4;
+         Left := wxw+2; Width := Form.Width-Left-72;
          Min := 0; Max := 1000; TabOrder := 3+i;
          Position := round(Parameters[i]*1000);
          OnChange := ListParamChange;
@@ -1485,6 +1486,12 @@ begin
         Name := 'LbL'+IntToStr(i); Parent := Form; Caption := GetParamName(i)+':';
         Height := 16; Alignment := taCenter; Left := 2; Top := 2+i*Height;
        end;
+      with TLabel.Create(Form) do
+       begin
+        Name := 'LbV'+IntToStr(i); Parent := Form; Caption := GetParamDisplay(i);
+        Height := 16; Alignment := taCenter; Left := Form.Width-Left-72;
+        AutoSize:=False; Alignment:=taCenter; Width:=65; Top := 2+i*Height;
+       end;
       end;
      FEditOpen:=True;
     end;
@@ -1493,10 +1500,13 @@ begin
 end;
 
 procedure TVstPlugin.ListParamChange(Sender: TObject);
+var lb : TLabel;
 begin
  with (Sender As TScrollBar) do
   try
    Parameters[Tag]:=Position*0.001;
+   lb:=TLabel(GUIForm.FindComponent('LbV'+IntToStr(Tag)));
+   if Assigned(lb) then lb.Caption:=GetParamDisplay(Tag);
   except
   end;
 end;

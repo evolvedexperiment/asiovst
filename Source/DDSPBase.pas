@@ -113,6 +113,9 @@ type
   function FreqLogToLinear(value:Single):Single;
 
   procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
+  function ComplexAbsolute(Re, Im : Double):Double;
+  procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
+  procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
 
   function OnOff(fvalue:Single):boolean;
   function unDenormalize(fvalue:Single):Single;
@@ -155,6 +158,8 @@ type
   function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
   procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload;
   procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
+  procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
+  procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames:Integer);
 
 var ln10, ln2, ln22, ln2Rez : Double;
 
@@ -396,13 +401,15 @@ begin
  Result:=(((Integer((@f)^) and $7f800000) shr 23)-$7f);
 end;
 
-function f_Abs(f:Single):Single; overload;
 {$IFNDEF FPC}
+function f_Abs(f:Single):Single; overload;
 asm
- fld f.Single
- fabs
+ mov eax,f.Integer
+ and eax,$7FFFFFFF
+ mov f.Integer,eax
 end;
 {$ELSE}
+function f_Abs(f:Single):Single; overload; inline;
 var i:Integer;
 begin
  i:=Integer((@f)^) and $7FFFFFFF;
@@ -554,6 +561,67 @@ asm
  fsincos
  fstp [CosValue].Double;
  fstp [SinValue].Double;
+end;
+
+// Complex Absolute Value
+function ComplexAbsolute(Re, Im : Double):Double; inline;
+begin
+ result:=sqrt(sqr(Re)+Sqr(Im));
+end;
+
+// Discrete Fourier Transform
+procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
+var k, i, sz       : Integer;
+    sr, si, sd, kc : Double;
+begin
+ sz:=Length(realTime);
+ Assert(sz=Length(imagTime));
+ Assert(sz=Length(realFreq));
+ Assert(sz=Length(imagFreq));
+
+ sd:=1/sz;
+ FillChar(realFreq[0],sz*sizeOf(Single),0);
+ FillChar(imagFreq[0],sz*sizeOf(Single),0);
+
+ for k:=0 to sz-1 do
+  begin
+   kc:=2*PI*k*sd;
+   for i:=0 to sz-1 do
+    begin
+     GetSinCos(kc*i, sr, si);
+     realFreq[k] := realFreq[k] + (realTime[i] * sr) + (imagTime[i] * si);
+     imagFreq[k] := imagFreq[k] - (realTime[i] * si) + (imagTime[i] * sr);
+    end;
+  end;
+end;
+
+// Inverse Discrete Fourier Transform
+procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
+var k, i, sz       : Integer;
+    sr, si, sd, kc : Double;
+begin
+ sz:=Length(realTime);
+ Assert(sz=Length(imagTime));
+ Assert(sz=Length(realFreq));
+ Assert(sz=Length(imagFreq));
+
+ sd:=1/sz;
+ FillChar(realTime[0],sz*sizeOf(Single),0);
+ FillChar(realTime[0],sz*sizeOf(Single),0);
+
+ for k:=0 to sz-1 do
+  begin
+   kc:=2*PI*k*sd;
+   for i:=0 to sz-1 do
+    begin
+     GetSinCos(kc*i, sr, si);
+     realTime[k] := realTime[k] + (realFreq[i] * sr) + (imagFreq[i] * si);
+     realTime[k] := realTime[k] - (realFreq[i] * si) + (imagFreq[i] * sr);
+    end;
+
+   realTime[k] := realTime[k]*sd;
+   imagTime[k] := imagTime[k]*sd;
+  end;
 end;
 
 function OnOff(fvalue:Single):boolean;
@@ -1087,6 +1155,46 @@ begin
  d:=d/Samples;
  for i:=0 to Samples-1
   do InBuf[i]:=InBuf[i]-d;
+end;
+{$ENDIF}
+
+procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
+{$IFDEF x87}
+asm
+@MarioLand:
+ fld [eax+ecx*4-4].Single
+ fstp [edx+ecx*8-8].Double
+ loop @MarioLand
+end;
+{$ELSE}
+var i : Integer;
+begin
+ for i:=0 to fLength-1 do
+  begin
+   Singles^:=Doubles^;
+   inc(Singles);
+   inc(Doubles);
+  end;
+end;
+{$ENDIF}
+
+procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames:Integer);
+{$IFDEF x87}
+asm
+@MarioLand:
+ fld [eax+ecx*8-8].Double
+ fstp [edx+ecx*4-4].Single
+ loop @MarioLand
+end;
+{$ELSE}
+var i : Integer;
+begin
+ for i:=0 to SampleFrames-1 do
+  begin
+   Singles^:=Doubles^;
+   inc(Singles);
+   inc(Doubles);
+  end;
 end;
 {$ENDIF}
 
