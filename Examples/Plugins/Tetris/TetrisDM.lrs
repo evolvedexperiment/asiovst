@@ -7,5 +7,5 @@ LazarusResources.Add('TTetrisModule','FORMDATA',[
   +#12'KeysRequired'#9#8'UniqueID'#6#4'Tetr'#12'ShellPlugins'#14#0#8'Programs'
   +#14#0#19'ParameterProperties'#14#0#10'OnEditOpen'#7#17'VSTModuleEditOpen'#15
   +'OnEditorKeyDown'#7#22'VSTModuleEditorKeyDown'#10'OnCheckKey'#7#17'VSTModule'
-  +'CheckKey'#4'Left'#3#13#1#3'Top'#2'3'#6'Height'#3#150#0#5'Width'#3#215#0#0#0
+  +'CheckKey'#0#0
 ]);

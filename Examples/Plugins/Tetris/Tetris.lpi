@@ -11,7 +11,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="10"/>
+      <ActiveEditorIndexAtStart Value="3"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -39,8 +39,8 @@
       <Unit0>
         <Filename Value="Tetris.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="13" Y="10"/>
-        <TopLine Value="1"/>
+        <CursorPos X="28" Y="37"/>
+        <TopLine Value="18"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
@@ -52,9 +52,9 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="TetrisDM.lrs"/>
         <UnitName Value="TetrisDM"/>
-        <CursorPos X="30" Y="15"/>
+        <CursorPos X="1" Y="59"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit1>
@@ -67,7 +67,7 @@
         <UnitName Value="TetrisEditor"/>
         <CursorPos X="1" Y="31"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -91,28 +91,24 @@
         <UnitName Value="Lazarus"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="10"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="..\..\..\Source\DVSTModule.pas"/>
         <ComponentName Value="VSTModule"/>
         <HasResources Value="True"/>
         <UnitName Value="DVSTModule"/>
-        <CursorPos X="3" Y="23"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="4"/>
+        <CursorPos X="7" Y="1246"/>
+        <TopLine Value="1244"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="TetrisDM.lfm"/>
-        <CursorPos X="3" Y="23"/>
+        <CursorPos X="33" Y="22"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="3"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
         <SyntaxHighlighter Value="LFM"/>
       </Unit7>
       <Unit8>
@@ -120,18 +116,14 @@
         <UnitName Value="CustomFormEditor"/>
         <CursorPos X="44" Y="1556"/>
         <TopLine Value="1542"/>
-        <EditorIndex Value="7"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\designer\jitforms.pp"/>
         <UnitName Value="JITForms"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="8"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\ide\include\ide.inc"/>
@@ -188,9 +180,7 @@
         <UnitName Value="Main"/>
         <CursorPos X="37" Y="5040"/>
         <TopLine Value="5019"/>
-        <EditorIndex Value="5"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit18>
       <Unit19>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\components\codetools\codetoolmanager.pas"/>
@@ -274,9 +264,7 @@
         <UnitName Value="FormEditor"/>
         <CursorPos X="3" Y="50"/>
         <TopLine Value="14"/>
-        <EditorIndex Value="6"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32.inc"/>
@@ -296,9 +284,7 @@
         <UnitName Value="GR32"/>
         <CursorPos X="30" Y="805"/>
         <TopLine Value="783"/>
-        <EditorIndex Value="15"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit33>
       <Unit34>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lclintf.pas"/>
@@ -376,9 +362,7 @@
         <UnitName Value="GR32_Image"/>
         <CursorPos X="1" Y="39"/>
         <TopLine Value="15"/>
-        <EditorIndex Value="14"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit45>
       <Unit46>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lmessages.pp"/>
@@ -403,20 +387,16 @@
       <Unit49>
         <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32_Reg.pas"/>
         <UnitName Value="GR32_Reg"/>
-        <CursorPos X="64" Y="34"/>
+        <CursorPos X="65" Y="34"/>
         <TopLine Value="26"/>
-        <EditorIndex Value="9"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit49>
       <Unit50>
         <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32_Dsgn_Color.pas"/>
         <UnitName Value="GR32_Dsgn_Color"/>
         <CursorPos X="48" Y="34"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="11"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit50>
       <Unit51>
         <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32_Dsgn_Bitmap.pas"/>
@@ -426,9 +406,7 @@
         <UnitName Value="GR32_Dsgn_Bitmap"/>
         <CursorPos X="49" Y="413"/>
         <TopLine Value="391"/>
-        <EditorIndex Value="12"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit51>
       <Unit52>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\ideintf\formeditingintf.pas"/>
@@ -456,40 +434,26 @@
         <UnitName Value="GR32_Dsgn_Misc"/>
         <CursorPos X="47" Y="34"/>
         <TopLine Value="14"/>
-        <EditorIndex Value="13"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit55>
     </Units>
-    <JumpHistory Count="7" HistoryIndex="6">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
-        <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32_Dsgn_Bitmap.pas"/>
-        <Caret Line="45" Column="12" TopLine="23"/>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="23" Column="2" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32_Dsgn_Misc.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="1140" Column="9" TopLine="1123"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32_Dsgn_Misc.pas"/>
-        <Caret Line="155" Column="38" TopLine="135"/>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="1257" Column="48" TopLine="1239"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32_Dsgn_Misc.pas"/>
-        <Caret Line="34" Column="36" TopLine="1"/>
+        <Filename Value="Tetris.lpr"/>
+        <Caret Line="23" Column="17" TopLine="13"/>
       </Position4>
-      <Position5>
-        <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32_Reg.pas"/>
-        <Caret Line="34" Column="37" TopLine="26"/>
-      </Position5>
-      <Position6>
-        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\ide\lazarus.pp"/>
-        <Caret Line="47" Column="31" TopLine="12"/>
-      </Position6>
-      <Position7>
-        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\ide\lazarus.pp"/>
-        <Caret Line="1" Column="94" TopLine="1"/>
-      </Position7>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -502,10 +466,19 @@
       <OtherUnitFiles Value="..\..\..\Source\;..\..\..\Lazarus\;$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType)\;$(LazarusDir)\components\codetools\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\components\custom\;$(LazarusDir)\packager\units\$(TargetCPU)-$(TargetOS)\;C:\Programme\Borland\Library\Bitmap\Graphics32\Packages\;C:\Programme\Borland\Library\Bitmap\Graphics32\"/>
       <SrcPath Value="$(LazarusDir)\lcl\;$(LazarusDir)\lcl\interfaces\$(LCLWidgetType)\;$(LazarusDir)\components\synedit\;$(LazarusDir)\components\codetools\;..\..\..\Source\;$(LazarusDir)\fpc\2.1.1\source\rtl\objpas\;C:\Programme\Borland\Library\Bitmap\Graphics32\Packages\;C:\Programme\Borland\Library\Bitmap\Graphics32\"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <DelphiCompat Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
     <CodeGeneration>
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
+      <Debugging>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -517,7 +490,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="3">
+    <BreakPoints Count="2">
       <Item1>
         <Source Value="..\..\..\..\..\Programme\Lazarus\components\ASIOVST\Source\DVSTModule.pas"/>
         <Line Value="2155"/>
@@ -526,10 +499,6 @@
         <Source Value="..\..\..\..\..\Programme\Lazarus\components\ASIOVST\Source\DVSTModule.pas"/>
         <Line Value="2297"/>
       </Item2>
-      <Item3>
-        <Source Value="Tetris.lpr"/>
-        <Line Value="21"/>
-      </Item3>
     </BreakPoints>
     <Exceptions Count="2">
       <Item1>

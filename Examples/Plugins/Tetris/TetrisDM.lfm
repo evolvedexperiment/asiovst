@@ -20,8 +20,4 @@ object TetrisModule: TTetrisModule
   OnEditOpen = VSTModuleEditOpen
   OnEditorKeyDown = VSTModuleEditorKeyDown
   OnCheckKey = VSTModuleCheckKey
-  Left = 269
-  Top = 51
-  Height = 150
-  Width = 215
 end

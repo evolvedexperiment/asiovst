@@ -56,9 +56,4 @@ begin
    end;
 end;
 
-{$IFDEF FPC}
-initialization
-  {$i TetrisDM.lrs}
-{$ENDIF}
-
 end.
