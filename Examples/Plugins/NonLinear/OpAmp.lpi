@@ -7,6 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
@@ -26,13 +27,15 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="OpAmp.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="16" Y="20"/>
+        <CursorPos X="25" Y="29"/>
         <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="21"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="OpAmpModule.pas"/>
@@ -41,9 +44,11 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="OpAmpModule.lrs"/>
         <UnitName Value="OpAmpModule"/>
-        <CursorPos X="26" Y="33"/>
-        <TopLine Value="5"/>
+        <CursorPos X="36" Y="44"/>
+        <TopLine Value="21"/>
+        <EditorIndex Value="0"/>
         <UsageCount Value="21"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="OpAmpGUI.pas"/>
@@ -80,6 +85,13 @@
         <TopLine Value="367"/>
         <UsageCount Value="10"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\interfaces.pp"/>
+        <UnitName Value="Interfaces"/>
+        <CursorPos X="39" Y="13"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit7>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
@@ -87,13 +99,13 @@
     <Version Value="5"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\Bin\OPAmp.dll"/>
+      <Filename Value="..\..\..\Bin\OPAmp.dll"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="..\..\Source\"/>
-      <Libraries Value="..\..\Source\"/>
-      <OtherUnitFiles Value="..\..\Source\"/>
-      <UnitOutputDirectory Value="..\..\Bin"/>
+      <IncludeFiles Value="..\..\..\Source\"/>
+      <Libraries Value="..\..\..\Source\"/>
+      <OtherUnitFiles Value="..\..\..\Source\"/>
+      <UnitOutputDirectory Value="..\..\..\Bin"/>
       <ObjectPath Value="..\..\Source\"/>
     </SearchPaths>
     <Parsing>

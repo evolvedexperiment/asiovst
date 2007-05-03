@@ -4,7 +4,6 @@ library OpAmp;
 {$MODE Delphi}
 
 uses
-  SysUtils,
   Interfaces,
   Forms,
   DVSTModule,
