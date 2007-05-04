@@ -11,7 +11,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="3"/>
+      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -39,8 +39,8 @@
       <Unit0>
         <Filename Value="Tetris.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="28" Y="37"/>
-        <TopLine Value="18"/>
+        <CursorPos X="1" Y="21"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
@@ -54,9 +54,7 @@
         <UnitName Value="TetrisDM"/>
         <CursorPos X="1" Y="59"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="3"/>
         <UsageCount Value="25"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="TetrisEditor.pas"/>
@@ -98,8 +96,8 @@
         <ComponentName Value="VSTModule"/>
         <HasResources Value="True"/>
         <UnitName Value="DVSTModule"/>
-        <CursorPos X="7" Y="1246"/>
-        <TopLine Value="1244"/>
+        <CursorPos X="1" Y="49"/>
+        <TopLine Value="34"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="12"/>
         <Loaded Value="True"/>
@@ -437,23 +435,31 @@
         <UsageCount Value="10"/>
       </Unit55>
     </Units>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="6" HistoryIndex="5">
       <Position1>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="23" Column="2" TopLine="1"/>
+        <Filename Value="Tetris.lpr"/>
+        <Caret Line="11" Column="23" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="1140" Column="9" TopLine="1123"/>
+        <Filename Value="Tetris.lpr"/>
+        <Caret Line="23" Column="18" TopLine="1"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="1257" Column="48" TopLine="1239"/>
+        <Filename Value="Tetris.lpr"/>
+        <Caret Line="37" Column="8" TopLine="17"/>
       </Position3>
       <Position4>
-        <Filename Value="Tetris.lpr"/>
-        <Caret Line="23" Column="17" TopLine="13"/>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="753" Column="17" TopLine="736"/>
       </Position4>
+      <Position5>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="684" Column="28" TopLine="667"/>
+      </Position5>
+      <Position6>
+        <Filename Value="Tetris.lpr"/>
+        <Caret Line="47" Column="28" TopLine="1"/>
+      </Position6>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -468,16 +474,18 @@
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <DelphiCompat Value="True"/>
+        <CPPInline Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
+      <Checks>
+        <StackChecks Value="True"/>
+      </Checks>
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
         <UseLineInfoUnit Value="False"/>
-        <StripSymbols Value="True"/>
       </Debugging>
       <Options>
         <Win32>

@@ -19,10 +19,11 @@ var
 begin
   try
     TetrisModule := TTetrisModule.Create(Application);
+    TetrisModule.Effect^.user := TetrisModule;
+    TetrisModule.AudioMaster := audioMaster;
     with TetrisModule do
     begin
-      Effect^.user := TetrisModule;
-      AudioMaster := audioMaster;
+      Result := Effect;
       Flags := [effFlagsHasEditor];
       Version := '1.0';
       EffectName := 'Tetris';
@@ -33,7 +34,7 @@ begin
       VersionRelease := 0;
       PlugCategory := cgEffect;
       TailSize := 0;
-      CanDos := [];
+      CanDos := [plugAsChannelInsert, plugAsSend, mixDryWet, _2in2out];
       SampleRate := 44100.0;
       CurrentProgram := -1;
       KeysRequired := True;
@@ -41,7 +42,6 @@ begin
       OnEditOpen := VSTModuleEditOpen;
       OnEditorKeyDown := VSTModuleEditorKeyDown;
       OnCheckKey := VSTModuleCheckKey;
-      Result := Effect;
     end;
   except
     Result := nil;
