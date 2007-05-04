@@ -1,7 +1,29 @@
 unit FilterModule;
 
 {$IFDEF FPC}
-{$MODE Delphi}
+ {$MODE DELPHI}
+ {$WARNINGS OFF}
+ {$HINTS OFF}
+ {$OVERFLOWCHECKS OFF}
+ {$RANGECHECKS OFF}
+ {$IFDEF CPUI386}
+  {$DEFINE CPU386}
+  {$ASMMODE INTEL}
+ {$ENDIF}
+ {$IFDEF FPC_LITTLE_ENDIAN}
+  {$DEFINE LITTLE_ENDIAN}
+ {$ELSE}
+  {$IFDEF FPC_BIG_ENDIAN}
+   {$DEFINE BIG_ENDIAN}
+  {$ENDIF}
+ {$ENDIF}
+{$ELSE}
+ {$DEFINE LITTLE_ENDIAN}
+ {$IFNDEF CPU64}
+  {$DEFINE CPU32}
+ {$ENDIF}
+ {$OPTIMIZATION ON}
+ {$DEFINE x87}
 {$ENDIF}
 
 interface
@@ -99,11 +121,5 @@ begin
    outputs[1, i] := f_limit(fOld[1,1]);
   end;
 end;
-
-{$IFDEF FPC}
-initialization
-  {$i FilterModule.lrs}
-  {$i FilterModule.lrs}
-{$ENDIF}
 
 end.

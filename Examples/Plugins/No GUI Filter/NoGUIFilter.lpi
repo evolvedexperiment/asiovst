@@ -4,15 +4,19 @@
     <PathDelim Value="\"/>
     <Version Value="5"/>
     <General>
+      <Flags>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+      </Flags>
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
-      <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <TargetFileExt Value=".dll"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
-      <Language Value=""/>
-      <CharSet Value=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -31,104 +35,167 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="13">
       <Unit0>
         <Filename Value="NoGUIFilter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="15" Y="4"/>
+        <CursorPos X="33" Y="123"/>
         <TopLine Value="1"/>
-        <UsageCount Value="31"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="36"/>
+        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="FilterModule.pas"/>
-        <ComponentName Value="VSTFilter"/>
-        <HasResources Value="True"/>
-        <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="FilterModule.lrs"/>
-        <UnitName Value="FilterModule"/>
-        <CursorPos X="22" Y="90"/>
-        <TopLine Value="79"/>
-        <UsageCount Value="31"/>
-      </Unit1>
-      <Unit2>
-        <Filename Value="FilterModule.lfm"/>
-        <CursorPos X="3" Y="7"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="9"/>
-        <SyntaxHighlighter Value="LFM"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="..\..\..\..\..\Programme\Lazarus\components\ASIOVST\Source\DVSTModule.pas"/>
-        <UnitName Value="DVSTModule"/>
-        <CursorPos X="74" Y="3"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="9"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\..\..\..\..\Programme\Lazarus\ide\lazarus.pp"/>
-        <UnitName Value="Lazarus"/>
-        <CursorPos X="1" Y="114"/>
-        <TopLine Value="89"/>
-        <UsageCount Value="9"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="..\..\Source\DVSTModule.pas"/>
-        <UnitName Value="DVSTModule"/>
-        <CursorPos X="1" Y="64"/>
-        <TopLine Value="64"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="..\..\Lazarus\VSTModuleIDE.pas"/>
-        <UnitName Value="VSTModuleIDE"/>
+        <Filename Value="..\..\..\Source\DVSTEffect.pas"/>
+        <UnitName Value="DVSTEffect"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="..\..\Lazarus\VSTPluginLaz.pas"/>
-        <UnitName Value="VSTPluginLaz"/>
-        <CursorPos X="12" Y="20"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <ComponentName Value="VSTModule"/>
+        <HasResources Value="True"/>
+        <UnitName Value="DVSTModule"/>
+        <CursorPos X="76" Y="602"/>
+        <TopLine Value="586"/>
+        <UsageCount Value="11"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\Source\DDSPBase.pas"/>
+        <UnitName Value="DDSPBase"/>
+        <CursorPos X="14" Y="4"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="11"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\forms.pp"/>
+        <UnitName Value="Forms"/>
+        <CursorPos X="1" Y="1785"/>
+        <TopLine Value="1751"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32_Blend.pas"/>
+        <UnitName Value="GR32_Blend"/>
+        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="FilterModule.pas"/>
+        <HasResources Value="True"/>
+        <UnitName Value="FilterModule"/>
+        <CursorPos X="19" Y="11"/>
+        <TopLine Value="91"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="FilterModule.lfm"/>
+        <CursorPos X="1" Y="7"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="LFM"/>
       </Unit7>
       <Unit8>
-        <Filename Value="..\..\..\..\..\Programme\Lazarus\components\cgi\cgimodules.pas"/>
-        <UnitName Value="cgiModules"/>
-        <CursorPos X="1" Y="154"/>
-        <TopLine Value="115"/>
-        <EditorIndex Value="0"/>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lclintf.pas"/>
+        <UnitName Value="LCLIntf"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="53"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\interfaces.pp"/>
+        <UnitName Value="Interfaces"/>
+        <CursorPos X="36" Y="40"/>
+        <TopLine Value="11"/>
+        <UsageCount Value="10"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\win32int.pp"/>
+        <UnitName Value="Win32Int"/>
+        <CursorPos X="31" Y="316"/>
+        <TopLine Value="294"/>
+        <UsageCount Value="10"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\inc\compproc.inc"/>
+        <CursorPos X="29" Y="435"/>
+        <TopLine Value="420"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\inc\system.inc"/>
+        <CursorPos X="3" Y="661"/>
+        <TopLine Value="657"/>
+        <UsageCount Value="10"/>
+      </Unit12>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="6" HistoryIndex="5">
       <Position1>
-        <Filename Value="..\..\Source\DVSTModule.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="11" Column="11" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\Source\DVSTModule.pas"/>
-        <Caret Line="3856" Column="5" TopLine="3814"/>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="8" Column="7" TopLine="1"/>
       </Position2>
+      <Position3>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="31" Column="9" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="32" Column="8" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="2" Column="6" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="132" Column="16" TopLine="99"/>
+      </Position6>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\..\..\Bin\NoGUIFilter.dll"/>
+    </Target>
     <SearchPaths>
-      <IncludeFiles Value="..\..\Source\;C:\ITA\Projects\VSTPack\Lazarus\;C:\ITA\Projects\VSTPack\Source\"/>
-      <Libraries Value="..\..\Source\;C:\ITA\Projects\VSTPack\Lazarus\;C:\ITA\Projects\VSTPack\Source\"/>
-      <OtherUnitFiles Value="..\..\Source\;C:\ITA\Projects\VSTPack\Lazarus\;C:\ITA\Projects\VSTPack\Source\"/>
-      <UnitOutputDirectory Value="..\..\Bin"/>
+      <IncludeFiles Value="..\..\..\Source\"/>
+      <Libraries Value="..\..\..\Source\"/>
+      <OtherUnitFiles Value="..\..\..\Source\"/>
+      <UnitOutputDirectory Value="..\..\..\Bin"/>
       <ObjectPath Value="..\..\Source\"/>
-      <SrcPath Value="C:\ITA\Projects\VSTPack\Lazarus\;C:\ITA\Projects\VSTPack\Source\"/>
+      <SrcPath Value="..\..\..\Source\"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <D2Extensions Value="False"/>
+        <CStyleOperator Value="False"/>
+        <AllowLabel Value="False"/>
+        <CPPInline Value="False"/>
+        <DelphiCompat Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
     <CodeGeneration>
+      <Checks>
+        <StackChecks Value="True"/>
+      </Checks>
       <Generate Value="Faster"/>
     </CodeGeneration>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
     <Other>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
