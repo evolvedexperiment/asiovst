@@ -8,22 +8,15 @@ unit DMinBlep;
 
 interface
 
+uses DDSPBase;
+
+procedure RealCepstrum(signal, realCepstrum : TSingleDynArray);
+procedure MinimumPhase(realCepstrum, minimumPhase : TSingleDynArray);
+function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TSingleDynArray;
+
 implementation
 
-uses DDSPBase, Math;
-
-// SINC Function
-function Sinc(x:Double):Double;
-var pix : Double;
-begin
- if (x=0)
-  then result:=1
-  else
-   begin
-    pix:=PI*x;
-    result:=sin(pix)/pix;
-   end;
-end;
+uses Math;
 
 // Generate Blackman Window
 procedure BlackmanWindow(Data : TSingleDynArray);
@@ -42,7 +35,7 @@ begin
 end;
 
 // Complex Exponential
-procedure ComplexExponential(Re, Im : Double; zx, zy: PDouble);
+procedure ComplexExponential(Re, Im : Double; zx, zy: PSingle);
 var expx : Double;
 begin
  expx := exp(Re);
@@ -126,10 +119,10 @@ begin
 end;
 
 // Generate MinBLEP And Return It In An Array Of Floating Point Values
-function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : PSingle;
+function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TSingleDynArray;
 var i, n     : Integer;
     r, a, b  : Double;
-    buffer1, buffer2, minBLEP : TSingleDynArray;
+    buffer1, buffer2 : TSingleDynArray;
 begin
  n:=(2 * zeroCrossings * overSampling) + 1;
  SetLength(buffer1,n);
@@ -153,21 +146,19 @@ begin
  MinimumPhase(buffer2, buffer1);
 
  // Integrate Into MinBLEP
- setLength(minBLEP,n);
+ setLength(result,n);
  a:=0;
  for i:=0 to n-1 do
   begin
    a:=a+buffer1[i];
-   minBLEP[i]:=a;
+   result[i]:=a;
   end;
 
  // Normalize
- a:=minBLEP[n - 1];
+ a:=result[n - 1];
  a:=1/a;
  for i:=0 to n-1
-  do minBLEP[i] := minBLEP[i] * a;
-
- result:=@minBLEP[0];
+  do result[i] := result[i] * a;
 end;
 
 end.

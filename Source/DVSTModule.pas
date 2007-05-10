@@ -1252,10 +1252,10 @@ begin
                                    if Assigned(EditorForm) then
                                     begin
                                      a:=KeyCodeToInteger(keyCode);
+{$IFNDEF FPC}
                                      if assigned(EditorForm.ActiveControl)
                                       then Hndl:=EditorForm.ActiveControl.Handle
                                       else Hndl:=EditorForm.Handle;
-{$IFNDEF FPC}
                                      if keyCode.virt=0 then b:=0 else b:=KF_EXTENDED;
                                      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
                                       then SendMessage(Hndl, WM_KEYDOWN, a,b)

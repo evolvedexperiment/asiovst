@@ -2020,6 +2020,8 @@ end;
 
 function TVstPlugin.GetEntryPoints(theDll: TFileName): integer;
 var Buf : Array[0..511] of char;
+    LE  : Integer;
+    str : string;
 begin
  result := 0;
  FDLLHandle := SafeLoadLibrary(pChar(theDll),7);
@@ -2027,7 +2029,13 @@ begin
    TRUE:
    try
     {$IFNDEF FPC}
-    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NIL, GetLastError, 0, Buf, 256, NIL);
+    LE:=GetLastError;
+    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NIL, LE, 0, @Buf[0], 256, NIL);
+    if Buf='' then
+     begin
+      str:=IntToStr(LE);
+      StrCopy(@Buf[0], @str[1]);
+     end;
     MessageBox(0 , Buf, 'GetLastError'+#0, MB_OK + MB_ICONINFORMATION );
     {$ENDIF}
    finally
