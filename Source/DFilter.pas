@@ -58,8 +58,12 @@ type
   private
   protected
     fBandWidth   : Single;
+    fAlpha       : Double;
+    procedure SetW0; override;
     procedure SetBW(s:Single); virtual;
+    procedure SetAlpha; virtual;
   public
+    constructor Create; override;
   published
     property Bandwidth: Single read fBandWidth write SetBW;
   end;
@@ -90,6 +94,11 @@ type
   published
   end;
 
+  TSimpleGainFilter=class(TBiquadIIRFilter)
+  protected
+    procedure CalculateCoefficients; override;
+  end;
+
   TSimplePeakFilter=class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
@@ -105,17 +114,25 @@ type
     procedure CalculateCoefficients; override;
   end;
 
-  TSimpleLowpassFilter=class(TBiquadIIRFilter)
+  TSimpleHighcutFilter=class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TSimpleHighpassFilter=class(TBiquadIIRFilter)
+  TSimpleLowcutFilter=class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   end;
+
+  TSimpleLowpassFilter=class(TSimpleHighcutFilter);
+  TSimpleHighpassFilter=class(TSimpleLowcutFilter);
 
   TSimpleBandpass=class(TBiquadIIRFilter)
+  protected
+    procedure CalculateCoefficients; override;
+  end;
+
+  TSimpleNotch=class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   end;
@@ -170,7 +187,7 @@ end;
 procedure TFilter.SetGain(const Value:Double);
 begin
  fGain:=Value;
- fGainSpeed:=dB_to_Amp(fGain);
+ fGainSpeed:=dB_to_Amp(0.5*fGain);
  CalculateCoefficients;
 end;
 
@@ -189,12 +206,33 @@ end;
 
 { TIIRFilter }
 
+constructor TIIRFilter.Create;
+begin
+ fBandWidth:=1;
+ SetAlpha;
+ inherited;
+end;
+
+procedure TIIRFilter.SetAlpha;
+begin
+ if (fSinW0=0)
+  then fAlpha:=fSinW0/(2*fBandWidth)
+  else fAlpha:=Sinh(ln22*cos(fW0*0.5)*fBandWidth*(fW0/fSinW0))*fSinW0;
+end;
+
 procedure TIIRFilter.SetBW(s:Single);
 begin
- if s=0
+ if s<=0
   then fBandWidth:=0.01
   else fBandWidth:=s;
+ SetAlpha; 
  CalculateCoefficients;
+end;
+
+procedure TIIRFilter.SetW0;
+begin
+ inherited;
+ SetAlpha;
 end;
 
 { TBiquadIIRFilter }
@@ -202,6 +240,7 @@ end;
 constructor TBiquadIIRFilter.create;
 begin
  fGain:=0;
+ fGainSpeed:=1;
  fFrequency:=1000;
  fBandWidth:=1;
  fSampleRate:=44100;
@@ -360,112 +399,119 @@ end;
 { TSimplePeakFilter }
 
 procedure TSimplePeakFilter.CalculateCoefficients;
-var aa,alpha,t : Double;
+var t : Double;
 begin
- if (fSinW0=0)
-  then alpha:=fSinW0/(2*fBandWidth)
-  else alpha:=Sinh(ln22*cos(fW0*0.43)*fBandWidth*(fW0/fSinW0))*fSinW0;
-
- aa:=alpha/fGainSpeed;
- t:=1/(1+aa);
- fDenominator[2]:=-(aa-1)*t;
+ t:=fGainSpeed/(fGainSpeed+fAlpha);
+ fDenominator[2]:=(fGainSpeed-fAlpha)/(fGainSpeed+fAlpha);
  fNominator[1]:=-2*cos(fW0)*t;
  fDenominator[1]:=fNominator[1];
- fNominator[0]:=(1+alpha*fGainSpeed)*t;
- fNominator[2]:=(1-alpha*fGainSpeed)*t;
+ fNominator[0]:=(1+fAlpha*fGainSpeed)*t;
+ fNominator[2]:=(1-fAlpha*fGainSpeed)*t;
  CalcPolesZeros;
 end;
 
 { TSimpleLowShelfFilter }
 
 procedure TSimpleLowShelfFilter.CalculateCoefficients;
-var aa, alpha,t : Double;
+var t,A1,A2 : Double;
+    cn,sA   : Double;
 begin
- if (fSinW0=0)
-  then alpha:=fSinW0/(2*fBandWidth)
-  else alpha:=Sinh(ln22*cos(fW0*0.43)*fBandWidth*(fW0/fSinW0))*fSinW0;
-
- aa:=alpha/fGainSpeed;
- t:=1/(1+aa);
- fDenominator[2]:=-(aa-1)*t;
- fNominator[1]:=-2*cos(fW0)*t;
- fDenominator[1]:=fNominator[1];
- fNominator[0]:=(1+alpha*fGainSpeed)*t;
- fNominator[2]:=(1-alpha*fGainSpeed)*t;
+ sA:=2*sqrt(fGainSpeed)*fAlpha; cn:=cos(fW0);
+ A1:=fGainSpeed+1; A2:=fGainSpeed-1; t:=1/(A1+A2*cn+sA);
+ fDenominator[1]:=-2*(A2+A1*cn)*t;
+ fDenominator[2]:=(A1+A2*cn-sA)*t;
+ fNominator[0]:=fGainSpeed*t*(A1-A2*cn+sA);
+ fNominator[1]:=fGainSpeed*t*(A2-A1*cn)*2;
+ fNominator[2]:=fGainSpeed*t*(A1-A2*cn-sA);
  CalcPolesZeros;
 end;
 
 { TSimpleHighShelfFilter }
 
 procedure TSimpleHighShelfFilter.CalculateCoefficients;
-var cn,alpha,t   : Double;
+var t,A1,A2 : Double;
+    cn,sA   : Double;
 begin
- if (fSinW0=0)
-  then alpha:=fSinW0/(2*fBandWidth)
-  else alpha:=Sinh(ln22*cos(fW0*0.43)*fBandWidth*(fW0/fSinW0))*fSinW0;
- t:=1/(1+alpha);
+ cn:=cos(fW0);  sA:=2*sqrt(fGainSpeed)*fAlpha;
+ A1:=fGainSpeed+1; A2:=fGainSpeed-1; t:=1/(A1-(A2*cn)+sA);
+ fDenominator[1]:=2*(A2-A1*cn)*t;
+ fDenominator[2]:=(A1-A2*cn-sA)*t;
+ fNominator[0]:=fGainSpeed*(A1+A2*cn+sA)*t;
+ fNominator[1]:=fGainSpeed*(A2+A1*cn)*-2*t;
+ fNominator[2]:=fGainSpeed*(A1+A2*cn-sA)*t;
+ CalcPolesZeros;
+end;
+
+{ TSimpleHighcut }
+
+procedure TSimpleHighcutFilter.CalculateCoefficients;
+var cn,t   : Double;
+begin
+ t:=1/(1+fAlpha);
  cn:=cos(fW0);
- fNominator[0]:=fGainSpeed*fGainSpeed*(1+cn)*0.5*t;
+ fNominator[0]:=fGainSpeed*fGainSpeed*(1-cn)*0.5*t;
+ fNominator[1]:=2*fNominator[0];
+ fNominator[2]:=fNominator[0];
+ fDenominator[1]:=-2*cn*t;
+ fDenominator[2]:=(1-fAlpha)*t;
+ CalcPolesZeros;
+end;
+
+{ TSimpleLowcutFilter }
+
+procedure TSimpleLowcutFilter.CalculateCoefficients;
+var cn,t   : Double;
+begin
+ t:=1/(1+fAlpha);
+ cn:=cos(fW0);
+ fNominator[0]:=sqr(fGainSpeed)*(1+cn)*0.5*t;
  fNominator[1]:=-2*fNominator[0];
  fNominator[2]:=fNominator[0];
  fDenominator[1]:=-2*cn*t;
- fDenominator[2]:=(1-alpha)*t;
- CalcPolesZeros;
-end;
-
-{ TSimpleLowpassFilter }
-
-procedure TSimpleLowpassFilter.CalculateCoefficients;
-var aa, alpha,t : Double;
-begin
- if (fSinW0=0)
-  then alpha:=fSinW0/(2*fBandWidth)
-  else alpha:=Sinh(ln22*cos(fW0*0.43)*fBandWidth*(fW0/fSinW0))*fSinW0;
-
- aa:=alpha/fGainSpeed;
- t:=1/(1+aa);
- fDenominator[2]:=-(aa-1)*t;
- fNominator[1]:=-2*cos(fW0)*t;
- fDenominator[1]:=fNominator[1];
- fNominator[0]:=(1+alpha*fGainSpeed)*t;
- fNominator[2]:=(1-alpha*fGainSpeed)*t;
- CalcPolesZeros;
-end;
-
-{ TSimpleHighpassFilter }
-
-procedure TSimpleHighpassFilter.CalculateCoefficients;
-var aa, alpha,t : Double;
-begin
- if (fSinW0=0)
-  then alpha:=fSinW0/(2*fBandWidth)
-  else alpha:=Sinh(ln22*cos(fW0*0.43)*fBandWidth*(fW0/fSinW0))*fSinW0;
-
- aa:=alpha/fGainSpeed;
- t:=1/(1+aa);
- fDenominator[2]:=-(aa-1)*t;
- fNominator[1]:=-2*cos(fW0)*t;
- fDenominator[1]:=fNominator[1];
- fNominator[0]:=(1+alpha*fGainSpeed)*t;
- fNominator[2]:=(1-alpha*fGainSpeed)*t;
+ fDenominator[2]:=(1-fAlpha)*t;
  CalcPolesZeros;
 end;
 
 { TSimpleBandpass }
 
 procedure TSimpleBandpass.CalculateCoefficients;
-var alpha,t : Double;
+var t : Double;
 begin
- if (fSinW0=0)
-  then alpha:=fSinW0/(2*fBandWidth)
-  else alpha:=Sinh(ln22*cos(fW0*0.43)*fBandWidth*(fW0/fSinW0))*fSinW0;
-
- t:=1/(1+alpha);
- fNominator[0]:=fGainSpeed*fGainSpeed*alpha*t;
+ t:=1/(1+fAlpha);
+ fNominator[0]:=fGainSpeed*fGainSpeed*fAlpha*t;
  fNominator[2]:=-fNominator[0];
  fDenominator[1]:=-2*cos(fW0)*t;
- fDenominator[2]:=(1-alpha)*t;
+ fDenominator[2]:=(1-fAlpha)*t;
  fNominator[1]:=0;
+end;
+
+{ TSimpleNotch }
+
+procedure TSimpleNotch.CalculateCoefficients;
+var t,a : Double;
+begin
+ try
+  t:=1/(1+fAlpha); a:=sqr(fGainSpeed);
+  fDenominator[1]:=2*cos(fW0)*t;
+  fNominator[1]:=-fDenominator[1]*a;
+  fDenominator[2]:=(fAlpha-1)*t;
+
+  fNominator[0]:=a*t;
+  fNominator[2]:=fNominator[0];
+ except
+  fNominator[0]:=1; fNominator[1]:=0; fNominator[2]:=0; fDenominator[1]:=0; fDenominator[2]:=0;
+ end;
+end;
+
+{ TSimpleGainFilter }
+
+procedure TSimpleGainFilter.CalculateCoefficients;
+begin
+ fNominator[0]:=sqr(fGainSpeed);
+ fNominator[1]:=0;
+ fNominator[2]:=0;
+ fDenominator[1]:=0;
+ fDenominator[2]:=0;
 end;
 
 end.

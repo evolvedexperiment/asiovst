@@ -35,6 +35,8 @@ interface
 type
   TDoubleDynArray = Types.TDoubleDynArray;
   TSingleDynArray = Types.TSingleDynArray;
+  PDoubleDynArray = ^TDoubleDynArray;
+  PSingleDynArray = ^TSingleDynArray;
   TSingleFixedArray = Array [0..0] of Single;
   PSingleFixedArray = ^TSingleFixedArray;
   TDoubleFixedArray = Array [0..0] of Double;
