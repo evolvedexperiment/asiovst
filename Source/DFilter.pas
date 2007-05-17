@@ -9,11 +9,7 @@ interface
 uses DDSPBase;
 
 type
-  TComplex=record
-             Re : Single;
-             Im : Single;
-            end;
-  TPNType = array[0..1] of TComplex;
+  TPNType = array[0..1] of TComplexSingle;
   TPrePost = (ppPre, ppPost);
 
   TFilter=class(TObject)
@@ -36,8 +32,14 @@ type
     constructor Create; virtual;
     function ProcessSample(const Input:Double):Double; overload; virtual; abstract;
     function ProcessSample(const Input:Double; PrePost : TPrePost):Double; overload; virtual; abstract;
-    function Magnitude(Frequency:Double):Double; virtual; abstract;
+    function ProcessSampleASM:Double; virtual;
+    function MagnitudeSquared(Frequency:Double):Double; virtual; abstract;
+    function MagnitudeLog10(Frequency:Double):Double; virtual; abstract;
     function Phase(Frequency:Double):Double; virtual; abstract;
+    function Real(Frequency:Double):Double; virtual; abstract;
+    function Imaginary(Frequency:Double):Double; virtual; abstract;
+    procedure Complex(Frequency:Double; out Real, Imaginary : Double); overload; virtual; abstract;
+    procedure Complex(Frequency:Double; out Real, Imaginary : Single); overload; virtual; abstract;
     procedure ResetStates; virtual; abstract;
     procedure Reset; virtual; abstract;
     procedure RenderImpulseResponse(ImpulseResonseBuffer : TDoubleDynArray); virtual; abstract;
@@ -69,23 +71,31 @@ type
   end;
 
   TBiquadIIRFilter=class(TIIRFilter)
-  private
-    fDenominator : array[1..2] of Single;
+  protected
+    fDenominator : array[1..2] of Double;
     fNominator   : array[0..2] of Double;
     fPoles       : TPNType;
     fZeros       : TPNType;
-  protected
     fState       : array[0..1] of Double;
     fStateStack  : array of array[0..1] of Double;
     procedure CalcPolesZeros; virtual;
     function GetPoles:TPNType;
     function GetZeros:TPNType;
+    function GetOrder: Integer; override;
+    procedure SetOrder(Value: Integer); override;
   public
     constructor Create; override;
     procedure ResetStates; override;
     function ProcessSample(const Input:Double):Double; override;
-    function Magnitude(Frequency:Double):Double; override;
+    function ProcessSampleASM:Double; override;
+    function MagnitudeSquared(Frequency:Double):Double; override;
+    function MagnitudeLog10(Frequency:Double):Double; override;
     function Phase(Frequency:Double):Double; override;
+    function Real(Frequency:Double):Double; override;
+    function Imaginary(Frequency:Double):Double; override;
+    procedure Complex(Frequency:Double; out Real, Imaginary : Double); overload; override;
+    procedure Complex(Frequency:Double; out Real, Imaginary : Single); overload; override;
+    procedure RenderImpulseResponse(ImpulseResonseBuffer : TDoubleDynArray); override;
     procedure Reset; override;
     procedure PushStates; override;
     procedure PopStates; override;
@@ -172,6 +182,20 @@ begin
  SetW0;
 end;
 
+function TFilter.ProcessSampleASM: Double;
+asm
+ push eax
+ push ecx
+ push edx
+ fstp [esp-4].Single
+ push dword ptr [esp-4]
+ mov edx,[eax]
+ call dword ptr [edx+$24] // ProcessSample
+ pop edx
+ pop ecx
+ pop eax
+end;
+
 procedure TFilter.SetFrequency(const Value:Double);
 begin
  if fFrequency <> Value then
@@ -248,55 +272,83 @@ begin
  ResetStates;
 end;
 
-function TBiquadIIRFilter.Magnitude(Frequency:Double):Double;
+function TBiquadIIRFilter.MagnitudeSquared(Frequency:Double):Double;
 var cw : Double;
 begin
  cw:=2*cos(Frequency*pi*fSRR);
- Result:=10*Log10( (( (fNominator[0]-fNominator[2])*
-                      (fNominator[0]-fNominator[2])+
-                       fNominator[1]*fNominator[1] +
-                      (fNominator[0]*fNominator[1] +
-                       fNominator[1]*fNominator[2] +
-                       fNominator[0]*fNominator[2] * cw) * cw)
-                     /
-                     ((fDenominator[2]+1)*(fDenominator[2]+1) +
-                       fDenominator[1]*fDenominator[1] +
-                      (fDenominator[1]*(fDenominator[2]-1)-
-                                     cw*fDenominator[2])*cw )));
+ Result:=sqrt((sqr(fNominator[0]-fNominator[2])+sqr(fNominator[1])+(fNominator[1]*(fNominator[0]+fNominator[2])+fNominator[0]*fNominator[2]*cw)*cw)
+             /(sqr(1-fDenominator[2])+sqr(fDenominator[1])+(fDenominator[1]*(fDenominator[2]+1)+cw*fDenominator[2])*cw ));
+end;
+
+function TBiquadIIRFilter.MagnitudeLog10(Frequency: Double): Double;
+var cw : Double;
+begin
+ cw:=2*cos(Frequency*pi*fSRR);
+ Result:=10*log10((sqr(fNominator[0]-fNominator[2])+sqr(fNominator[1])+(fNominator[1]*(fNominator[0]+fNominator[2])+fNominator[0]*fNominator[2]*cw)*cw)
+                 /(sqr(1-fDenominator[2])+sqr(fDenominator[1])+(fDenominator[1]*(fDenominator[2]+1)+cw*fDenominator[2])*cw ));
 end;
 
 function TBiquadIIRFilter.Phase(Frequency:Double):Double;
-const pihalf = pi*0.5;
-      pia    = 1/pi;
-var cw, sw, den : Double;
+var cw, sw : Double;
 begin
  GetSinCos(Frequency*pi*fSRR,sw,cw);
- den:=1+sqr(fDenominator[1])+sqr(fDenominator[2])-2*fDenominator[2]+
-      2*cw*(fDenominator[1]*(1+fDenominator[2])+2*fDenominator[2]*cw);
- Result:=ArcTan2(
-                  (
-                    fNominator[0]+fNominator[1]*fDenominator[1]+fNominator[2]*fDenominator[2]+
-                   (fNominator[0]*fDenominator[1]+fNominator[1]*(1+fDenominator[2])+fNominator[2]*fDenominator[1])*cw+
-                   (fNominator[0]*fDenominator[2]+fNominator[2])*(2*cw*cw-1)
-                  )/den,
-                  (
-                    fNominator[1]-fNominator[0]*fDenominator[1]+
-                    fNominator[2]*fDenominator[1]-fNominator[1]*fDenominator[2]+
-                     2*(-fNominator[0]*fDenominator[2]+fNominator[2])*cw
-                   )*sw
-                  /den
-                )/Pi-0.5;
+ Result:=ArcTan2(-sw*(fNominator[0]*(2*cw*fDenominator[2]+fDenominator[1])+fNominator[1]*(fDenominator[2]-1)-fNominator[2]*(2*cw+fDenominator[1])),
+                     (fNominator[0]*(fDenominator[2]*(2*sqr(cw)-1)+1+fDenominator[1]*cw)+fNominator[1]*(cw*fDenominator[2]+cw+fDenominator[1])+fNominator[2]*(2*sqr(cw)+fDenominator[1]*cw+fDenominator[2]-1)));
 end;
 
-procedure TBiquadIIRFilter.PopStates;
+function TBiquadIIRFilter.Real(Frequency: Double): Double;
+var cw : Double;
 begin
- if Length(fStateStack)>0 then
-  begin
-   Move(fStateStack[0,0],fState[0], Length(fStateStack[0])*SizeOf(Double));
-   if Length(fStateStack)>1
-    then Move(fStateStack[1,0],fStateStack[0,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
-   SetLength(fStateStack,Length(fStateStack)-1);
-  end;
+ cw := cos(Frequency * pi * fSRR);
+ Real      := (fNominator[0] + fNominator[1] * fDenominator[1] + fNominator[2] * fDenominator[2]
+              +        cw     * (fNominator[1] * (1 + fDenominator[2]) + fDenominator[1] * (fNominator[2] + fNominator[0]))
+              + (2*sqr(cw)-1) * (fNominator[0] * fDenominator[2] + fNominator[2]))
+              / ( sqr(fDenominator[2]) - 2 * fDenominator[2] + sqr(fDenominator[1]) + 1
+              + 2 * cw * (fDenominator[1] * (fDenominator[2] + 1) + 2 * cw * fDenominator[2]));
+end;
+
+function TBiquadIIRFilter.Imaginary(Frequency: Double): Double;
+var cw : Double;
+begin
+ cw := cos(Frequency * pi * fSRR);
+ Imaginary := (fDenominator[1] * (fNominator[2] - fNominator[0]) + fNominator[1] * (1 - fDenominator[2])
+              + 2 * cw * (fNominator[2] - fNominator[0] * fDenominator[2])) * sqrt(1 - sqr(cw))
+              / ( sqr(fDenominator[2]) - 2 * fDenominator[2] + sqr(fDenominator[1]) + 1
+              + 2 * cw * (fDenominator[1] * (fDenominator[2] + 1) + 2 * cw * fDenominator[2]))
+end;
+
+procedure TBiquadIIRFilter.Complex(Frequency: Double; out Real, Imaginary: Double);
+var cw, Divider : Double;
+begin
+ cw := cos(Frequency * pi * fSRR);
+ Divider   := 1 / ( sqr(fDenominator[2]) - 2 * fDenominator[2] + sqr(fDenominator[1]) + 1
+                    + 2 * cw * (fDenominator[1] * (fDenominator[2] + 1) + 2 * cw * fDenominator[2]));
+ Real      := (fNominator[0] + fNominator[1] * fDenominator[1] + fNominator[2] * fDenominator[2]
+              +        cw     * (fNominator[1] * (1 + fDenominator[2]) + fDenominator[1] * (fNominator[2] + fNominator[0]))
+              + (2*sqr(cw)-1) * (fNominator[0] * fDenominator[2] + fNominator[2])) * Divider;
+ Imaginary := (fDenominator[1] * (fNominator[2] - fNominator[0]) + fNominator[1] * (1 - fDenominator[2])
+              + 2 * cw * (fNominator[2] - fNominator[0] * fDenominator[2])) * sqrt(1 - sqr(cw)) * Divider;
+end;
+
+procedure TBiquadIIRFilter.Complex(Frequency: Double; out Real, Imaginary: Single);
+var cw, Divider : Double;
+begin
+ cw := cos(Frequency * pi * fSRR);
+ Divider   := 1 / ( sqr(fDenominator[2]) - 2 * fDenominator[2] + sqr(fDenominator[1]) + 1
+                    + 2 * cw * (fDenominator[1] * (fDenominator[2] + 1) + 2 * cw * fDenominator[2]));
+ Real      := (fNominator[0] + fNominator[1] * fDenominator[1] + fNominator[2] * fDenominator[2]
+              +        cw     * (fNominator[1] * (1 + fDenominator[2]) + fDenominator[1] * (fNominator[2] + fNominator[0]))
+              + (2*sqr(cw)-1) * (fNominator[0] * fDenominator[2] + fNominator[2])) * Divider;
+ Imaginary := (fDenominator[1] * (fNominator[2] - fNominator[0]) + fNominator[1] * (1 - fDenominator[2])
+              + 2 * cw * (fNominator[2] - fNominator[0] * fDenominator[2])) * sqrt(1 - sqr(cw)) * Divider;
+end;
+
+procedure TBiquadIIRFilter.RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray);
+var i : Integer;
+begin
+ ImpulseResonseBuffer[0]:=ProcessSample(1);
+ for i:=1 to Length(ImpulseResonseBuffer)-1
+  do ImpulseResonseBuffer[i]:=ProcessSample(0);
 end;
 
 procedure TBiquadIIRFilter.Reset;
@@ -309,6 +361,9 @@ begin
  fState[0]:=0;
  fState[1]:=0;
 end;
+
+procedure TBiquadIIRFilter.SetOrder(Value: Integer);
+begin {Dummy Function} end;
 
 function dB_to_Amp(g:single):single;
 begin
@@ -366,6 +421,28 @@ begin
  fState[1] := fNominator[2]*Input - fDenominator[2]*result;
 end;
 
+function TBiquadIIRFilter.ProcessSampleASM:Double;
+asm
+ fld st(0)                           // s, s
+ fmul [self.fNominator].Double       // a0*s, s
+ fadd [self.fState].Double           // r=d0+a0*s, s
+ fld st(0)                           // r, r, s
+ fld st(0)                           // r, r, r, s
+ fmul [self.fDenominator].Double     // b0*r, r, r, s
+ fld st(3)                           // s, b0*r, r, r, s
+ fmul [self.fNominator+8].Double     // a1*s, b0*r, r, r, s
+ fsubrp                              // a1*s + b0*r, r, r, s
+ fadd [self.fState+8].Double         // d1+a1*s-b0*r, r, r, s
+
+ fstp [self.fState].Double           // d0 = a1*s + d1+b1*r, r, r, s
+ fmul [self.fDenominator+8].Double   // b1*r, r, s
+ fxch st(2)                          // s, r, b1*r,
+ fmul [self.fNominator+16].Double    // a2*s, r, b1*r,
+ fsubrp st(2), st(0)                 // b1*r + a2*s, r, !!!
+ fxch
+ fstp [self.fState+8].Double         // d1 = b1*r + a2*s, r, !!!
+end;
+
 procedure TBiquadIIRFilter.PushStates;
 begin
  SetLength(fStateStack,Length(fStateStack)+1);
@@ -373,6 +450,20 @@ begin
   then Move(fStateStack[0,0],fStateStack[1,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
  Move(fState[0],fStateStack[0,0],Length(fStateStack[0])*SizeOf(Double));
 end;
+
+procedure TBiquadIIRFilter.PopStates;
+begin
+ if Length(fStateStack)>0 then
+  begin
+   Move(fStateStack[0,0],fState[0], Length(fStateStack[0])*SizeOf(Double));
+   if Length(fStateStack)>1
+    then Move(fStateStack[1,0],fStateStack[0,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
+   SetLength(fStateStack,Length(fStateStack)-1);
+  end;
+end;
+
+function TBiquadIIRFilter.GetOrder: Integer;
+begin Result := 2; end;
 
 function TBiquadIIRFilter.GetPoles:TPNType;
 var p,q : Single;

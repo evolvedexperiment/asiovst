@@ -57,6 +57,15 @@ type
   T2DoubleArray = array [0..1] of Double;
   P2DoubleArray = ^T2SingleArray;
 
+  TComplexSingle = record
+                    Re : Single;
+                    Im : Single;
+                   end;
+  TComplexDouble = record
+                    Re : Double;
+                    Im : Double;
+                   end;
+
   TStrArray = array of string;
 
   {$IFNDEF FPC}
@@ -115,7 +124,25 @@ type
   function FreqLogToLinear(value:Single):Single;
 
   procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
-  function ComplexAbsolute(Re, Im : Double):Double;
+  function Complex(Re, Im : Double):TComplexDouble; overload;
+  function Complex(Re, Im : Single):TComplexSingle; overload;
+  function ComplexAbsolute(Re, Im : Double):Double; overload;
+  function ComplexAbsolute(Re, Im : Single):Single; overload;
+  function ComplexAbsolute(Complex:TComplexDouble):Double; overload;
+  function ComplexAbsolute(Complex:TComplexSingle):Single; overload;
+  function ComplexArgument(Re, Im : Double):Double; overload;
+  function ComplexArgument(Re, Im : Single):Single; overload;
+  function ComplexArgument(Complex:TComplexDouble):Double; overload;
+  function ComplexArgument(Complex:TComplexSingle):Single; overload;
+  function ComplexMultiply(A,B : TComplexSingle):TComplexSingle; overload;
+  function ComplexMultiply(A,B : TComplexDouble):TComplexDouble; overload;
+  function ComplexMultiply(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
+  function ComplexMultiply(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
+  procedure ComplexMultiplyInplace(var A : TComplexSingle; B : TComplexSingle) overload;
+  procedure ComplexMultiplyInplace(var A : TComplexDouble; B : TComplexDouble) overload;
+  procedure ComplexMultiplyInplace(var ARe,AIm : Single; BRe,BIm : Single) overload;
+  procedure ComplexMultiplyInplace(var ARe,AIm : Double; BRe,BIm : Double) overload;
+
   procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray); overload;
   procedure DFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray); overload;
   procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray); overload;
@@ -573,10 +600,114 @@ asm
  fstp [SinValue].Double;
 end;
 
-// Complex Absolute Value
-function ComplexAbsolute(Re, Im : Double):Double; // inline;
+// Complex Stuff
+
+function Complex(Re, Im : Double):TComplexDouble; overload;
+begin
+ Result.Re:=Re;
+ Result.Im:=Im;
+end;
+
+function Complex(Re, Im : Single):TComplexSingle; overload;
+begin
+ Result.Re:=Re;
+ Result.Im:=Im;
+end;
+
+function ComplexAbsolute(Re, Im : Single):Single; overload;
 begin
  result:=sqrt(sqr(Re)+Sqr(Im));
+end;
+
+function ComplexAbsolute(Re, Im : Double):Double; overload;
+begin
+ result:=sqrt(sqr(Re)+Sqr(Im));
+end;
+
+function ComplexAbsolute(Complex:TComplexDouble):Double; overload;
+begin
+ result:=sqrt(sqr(Complex.Re)+Sqr(Complex.Im));
+end;
+
+function ComplexAbsolute(Complex:TComplexSingle):Single; overload;
+begin
+ result:=sqrt(sqr(Complex.Re)+Sqr(Complex.Im));
+end;
+
+function ComplexArgument(Re, Im : Single):Single; overload;
+begin
+ result:=ArcTan2(Im,Re);
+end;
+
+function ComplexArgument(Re, Im : Double):Double; overload;
+begin
+ result:=ArcTan2(Im,Re);
+end;
+
+function ComplexArgument(Complex:TComplexDouble):Double; overload;
+begin
+ result:=ArcTan2(Complex.Im,Complex.Re);
+end;
+
+function ComplexArgument(Complex:TComplexSingle):Single; overload;
+begin
+ result:=ArcTan2(Complex.Im,Complex.Re);
+end;
+
+function ComplexMultiply(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
+begin
+ Result.Re := ARe * BRe - AIm * BIm;
+ Result.Im := AIm * BRe + ARe * BIm;
+end;
+
+function ComplexMultiply(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
+begin
+ Result.Re := ARe * BRe - AIm * BIm;
+ Result.Im := AIm * BRe + ARe * BIm;
+end;
+
+function ComplexMultiply(A,B : TComplexSingle):TComplexSingle; overload;
+begin
+ Result.Re := A.Re * B.Re - A.Im * B.Im;
+ Result.Im := A.Im * B.Re + A.Re * B.Im;
+end;
+
+function ComplexMultiply(A,B : TComplexDouble):TComplexDouble; overload;
+begin
+ Result.Re := A.Re * B.Re - A.Im * B.Im;
+ Result.Im := A.Im * B.Re + A.Re * B.Im;
+end;
+
+procedure ComplexMultiplyInplace(var A : TComplexSingle; B : TComplexSingle) overload;
+var Temp : Single;
+begin
+ Temp := A.Re;
+ A.Re := A.Re * B.Re - A.Im * B.Im;
+ A.Im := A.Im * B.Re + Temp * B.Im;
+end;
+
+procedure ComplexMultiplyInplace(var A : TComplexDouble; B : TComplexDouble) overload;
+var Temp : Double;
+begin
+ Temp := A.Re;
+ A.Re := A.Re * B.Re - A.Im * B.Im;
+ A.Im := A.Im * B.Re + Temp * B.Im;
+end;
+
+procedure ComplexMultiplyInplace(var ARe, AIm : Single; BRe, BIm : Single) overload;
+var Tmp : Single;
+begin
+ Tmp := ARe;
+ ARe := ARe * BRe - AIm * BIm;
+ AIm := AIm * BRe + Tmp * BIm;
+end;
+
+procedure ComplexMultiplyInplace(var ARe, AIm  : Double; BRe, BIm : Double) overload;
+var Tmp : Single;
+begin
+ Tmp := ARe;
+ ARe := ARe * BRe - AIm * BIm;
+ AIm := AIm * BRe + Tmp * BIm;
 end;
 
 // Discrete Fourier Transform
