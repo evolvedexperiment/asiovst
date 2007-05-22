@@ -30,7 +30,7 @@ type
   public
     constructor Create; override;
     procedure SetFilterValues(const AFrequency, AGain : Single); virtual;
-    function Magnitude(Frequency:Double):Double; override;
+    function MagnitudeSquared(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; virtual;
     procedure ResetStates; override;
     procedure Reset; override;
@@ -49,7 +49,7 @@ type
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input:Double):Double; override;
     function ProcessSample(const Input:Double; PrePost : TPrePost):Double; override;
-    function Magnitude(Frequency:Double):Double; override;
+    function MagnitudeSquared(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; override;
   end;
 
@@ -61,7 +61,7 @@ type
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input:Double):Double; override;
     function ProcessSample(const Input:Double; PrePost : TPrePost):Double; override;
-    function Magnitude(Frequency:Double):Double; override;
+    function MagnitudeSquared(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; override;
   end;
 
@@ -171,14 +171,14 @@ begin
  Result:=fOrder;
 end;
 
-function TButterworthFilter.Magnitude(Frequency: Double): Double;
+function TButterworthFilter.MagnitudeSquared(Frequency: Double): Double;
 begin
  Result:=1;
 end;
 
 function TButterworthFilter.MagnitudeLog10(Frequency: Double): Double;
 begin
- result:=20*Log10(Magnitude(Frequency));
+ result:=20*Log10(MagnitudeSquared(Frequency));
 end;
 
 procedure TButterworthFilter.PopStates;
@@ -227,7 +227,7 @@ begin
  fAB[1]:=fAB[1]*t;
 end;
 
-function TButterworthLP.Magnitude(Frequency:Double):Double;
+function TButterworthLP.MagnitudeSquared(Frequency:Double):Double;
 var
   i    : Integer;
   a,cw : Double;
@@ -300,29 +300,8 @@ function TButterworthLP.ProcessSample(const Input:Double; PrePost : TPrePost):Do
 var
   y,x   : Double;
   i     : Integer;
-  o2,o4 :
 begin
  Result:=Input;
- o4:=(fOrder div 4);
- (fOrder div 2)-o4;
- if PrePost=ppPre then
-  for i := 0 to (fOrder div 4) - 1 do
-   begin
-    x:=Result;
-    Result        := fAB[4*i+0]*x                     + fState[2*i];
-    fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
-    fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
-   end
-  else
-  for i := 0 to ((fOrder div 2)-(fOrder div 4)) - 1 do
-   begin
-    x:=Result;
-    Result        := fAB[4*i+0]*x                     + fState[2*i];
-    fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
-    fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
-   end
-
-{
  if PrePost=ppPre then
   for i := 0 to ((fOrder div 2)-(fOrder div 4)) - 1 do
    begin
@@ -339,7 +318,6 @@ begin
     fState[4*i+2] := fAB[8*i+5]*x + fAB[8*i+6]*Result + fState[4*i+3];
     fState[4*i+3] := fAB[8*i+4]*x + fAB[8*i+7]*Result;
    end
-}
 end;
 
 { TButterworthFilterHP }
@@ -369,7 +347,7 @@ begin
  fAB[1]:=fAB[1]*t;
 end;
 
-function TButterworthHP.Magnitude(Frequency:Double):Double;
+function TButterworthHP.MagnitudeSquared(Frequency:Double):Double;
 var
   i    : Integer;
   a,cw : Double;
