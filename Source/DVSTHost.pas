@@ -16,9 +16,11 @@ VST is a trademark of:
 
 unit DVSTHost;
 
-{$R DVstHost.res}
 {$I ASIOVST.INC}
 {-$DEFINE SB}
+{$IFNDEF FPC}
+{$R DVstHost.res}
+{$ENDIF}
 
 interface
 
@@ -407,10 +409,10 @@ var FBlockSize     : Integer = 2048;
     HostWindows    : TObjectList;
 
 const
- SCRound8087CW: Word =     $133F; // round FPU codeword, with exceptions disabled
- SCChop8087CW: Word =      $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
- SCRoundDown8087CW: Word = $173F; // exceptions disabled
- SCRoundUp8087CW: Word =   $1B3F; // exceptions disabled
+ SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
+ SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
+ SCRoundDown8087CW : Word = $173F; // exceptions disabled
+ SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -2024,12 +2026,16 @@ begin
 end;
 
 function TVstPlugin.GetEntryPoints(theDll: TFileName): integer;
+    {$IFNDEF FPC}
 var Buf : Array[0..511] of char;
     LE  : Integer;
     str : string;
+    {$ENDIF}
 begin
  result := 0;
  FDLLHandle := SafeLoadLibrary(pChar(theDll),7);
+// FDLLHandle := LoadLibraryEx(pChar(theDll), 0, DONT_RESOLVE_DLL_REFERENCES);
+
  case FDLLHandle = 0 of
    TRUE:
    try
@@ -2523,5 +2529,9 @@ initialization
  {$i TVSTHost.lrs}
  {$ENDIF}
  audioMaster := AudioMasterCallback;
+ HostWindows := TObjectList.Create;
+ 
+finalization
+ HostWindows.Free;
 
 end.

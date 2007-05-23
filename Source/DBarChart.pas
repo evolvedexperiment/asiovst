@@ -5,8 +5,8 @@ interface
 uses {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
      Classes, Graphics, Forms, Messages, SysUtils, Controls;
 
-{$R DBarChart.res}
 {$I ASIOVST.INC}
+{$IFNDEF FPC} {$R DBarChart.res} {$ENDIF}
 
 const
   cNumFrequencies = 32;

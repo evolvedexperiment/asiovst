@@ -12,7 +12,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="2"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -61,11 +61,9 @@
       <Unit3>
         <Filename Value="..\..\..\Source\DVSTHost.pas"/>
         <UnitName Value="DVSTHost"/>
-        <CursorPos X="37" Y="25"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="2"/>
+        <CursorPos X="21" Y="16"/>
+        <TopLine Value="8"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="WADSPVST.lrs"/>
@@ -81,40 +79,7 @@
         <UsageCount Value="10"/>
       </Unit5>
     </Units>
-    <JumpHistory Count="8" HistoryIndex="7">
-      <Position1>
-        <Filename Value="WADSPVST.pas"/>
-        <Caret Line="63" Column="33" TopLine="52"/>
-      </Position1>
-      <Position2>
-        <Filename Value="WADSPVST.pas"/>
-        <Caret Line="9" Column="40" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="WADSPVST.pas"/>
-        <Caret Line="275" Column="34" TopLine="254"/>
-      </Position3>
-      <Position4>
-        <Filename Value="WADSPVST.pas"/>
-        <Caret Line="9" Column="48" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="WADSPVST.pas"/>
-        <Caret Line="275" Column="21" TopLine="254"/>
-      </Position5>
-      <Position6>
-        <Filename Value="WADSPVST.pas"/>
-        <Caret Line="133" Column="1" TopLine="112"/>
-      </Position6>
-      <Position7>
-        <Filename Value="WADSPVST.pas"/>
-        <Caret Line="9" Column="43" TopLine="1"/>
-      </Position7>
-      <Position8>
-        <Filename Value="WADSPVST.pas"/>
-        <Caret Line="275" Column="34" TopLine="254"/>
-      </Position8>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>

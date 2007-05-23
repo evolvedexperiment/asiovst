@@ -1,6 +1,7 @@
 unit DADSRGraph;
 
-{$R DADSRGraph.res}
+{$I ASIOVST.INC}
+{$IFNDEF FPC} {$R DADSRGraph.res} {$ENDIF}
 {$R-}
 
 interface

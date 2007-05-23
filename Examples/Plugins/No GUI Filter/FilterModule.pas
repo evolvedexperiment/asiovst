@@ -1,34 +1,10 @@
 unit FilterModule;
 
-{$IFDEF FPC}
- {$MODE DELPHI}
- {$WARNINGS OFF}
- {$HINTS OFF}
- {$OVERFLOWCHECKS OFF}
- {$RANGECHECKS OFF}
- {$IFDEF CPUI386}
-  {$DEFINE CPU386}
-  {$ASMMODE INTEL}
- {$ENDIF}
- {$IFDEF FPC_LITTLE_ENDIAN}
-  {$DEFINE LITTLE_ENDIAN}
- {$ELSE}
-  {$IFDEF FPC_BIG_ENDIAN}
-   {$DEFINE BIG_ENDIAN}
-  {$ENDIF}
- {$ENDIF}
-{$ELSE}
- {$DEFINE LITTLE_ENDIAN}
- {$IFNDEF CPU64}
-  {$DEFINE CPU32}
- {$ENDIF}
- {$OPTIMIZATION ON}
- {$DEFINE x87}
-{$ENDIF}
+{$I ASIOVST.INC}
 
 interface
 
-uses {$IFDEF FPC} LResources, LCLClasses, {$ENDIF}DDSPBase, DVSTModule;
+uses DDSPBase, DVSTModule;
 
 type
   TVSTFilter = class(TVSTModule)
@@ -40,7 +16,6 @@ type
     fCutOffFrequency   : Single;
     fOld               : array [0..1] of array[0..1] of Double;
   public
-    { Public declarations }
   end;
 
 implementation

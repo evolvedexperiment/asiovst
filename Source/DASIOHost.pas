@@ -6,7 +6,9 @@ unit DASIOHost;
 // programs. Thanks to Martin Fay (original Delphi ASIO interface)
 
 {$I ASIOVST.INC}
+{$IFNDEF FPC}
 {$R DASIOHost.res}
+{$ENDIF}
 {.$DEFINE OpenASIO}
 // define OpenASIO to compile using old OpenASIO interface (needs OpenASIO.dll)
 
@@ -408,9 +410,11 @@ function findDrvPath(const clsidstr: string; var dllpath: string): longint;
 var
    reg     : TRegistry;
    success : boolean;
+   {$IFNDEF FPC}
    buf     : array[0..1024] of char;
    s       : string;
    temps   : string;
+   {$ENDIF}
 begin
   Result := -1;
 

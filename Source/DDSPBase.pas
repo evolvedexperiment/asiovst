@@ -8,6 +8,8 @@ interface
 uses {$IFNDEF FPC} Windows, {$ENDIF} Types;
 {$ELSE} uses Windows; {$DEFINE PUREPASCAL} {$ENDIF}
 
+{$IFDEF FPC} {$DEFINE PUREPASCAL} {$ENDIF}
+
 type
   {$IFNDEF DELPHI7_UP}
   TDoubleDynArray = Array of Double;
@@ -300,7 +302,7 @@ end;
 function Amp_to_dB(v:Single):Single;
 {$IFDEF PUREPASCAL}
 begin
- result:=20*Log10(v);
+ result:=Twenty*Log10(v);
 {$ELSE}
 asm
  fldlg2
@@ -632,10 +634,9 @@ end;
 function FreqLinearToLog(value:Single):Single;
 {$IFDEF PUREPASCAL}
 begin
- Result:=(20.0*Exp(value*6.907755279));
+ Result:=(Twenty*Exp(value*6.907755279));
 {$ELSE}
-const fltl1:Double=20;
-      fltl2:Double=6.907755279;
+const fltl2:Double=6.907755279;
 asm
  FLD Value.Single
  FMUL fltl2
@@ -650,7 +651,7 @@ asm
  FADD
  FSCALE              { result := z * 2**i }
  FSTP    ST(1)
- FMUL fltl1
+ FMUL Twenty
 {$ENDIF}
 end;
 

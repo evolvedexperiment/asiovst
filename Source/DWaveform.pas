@@ -1,6 +1,7 @@
 unit DWaveform;
 
-{$R DWaveform.res}
+{$I ASIOVST.INC}
+{$IFNDEF FPC} {$R DWaveform.res} {$ENDIF}
 {$R-}
 
 interface

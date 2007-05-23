@@ -8,12 +8,11 @@
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
-        <Runnable Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".dll"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -27,6 +26,8 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <HostApplicationFilename Value="C:\ITA\Projects\VSTPack\Bin\VST Plugin Analyser.exe"/>
+        <CommandLineParams Value="NoGUIFilter.dll"/>
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
@@ -35,14 +36,14 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="15">
+    <Units Count="23">
       <Unit0>
         <Filename Value="NoGUIFilter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="15" Y="16"/>
+        <CursorPos X="12" Y="10"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="39"/>
+        <UsageCount Value="40"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -57,16 +58,20 @@
         <ComponentName Value="VSTModule"/>
         <HasResources Value="True"/>
         <UnitName Value="DVSTModule"/>
-        <CursorPos X="8" Y="1137"/>
-        <TopLine Value="1126"/>
+        <CursorPos X="27" Y="1145"/>
+        <TopLine Value="1121"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\DDSPBase.pas"/>
         <UnitName Value="DDSPBase"/>
-        <CursorPos X="1" Y="185"/>
-        <TopLine Value="161"/>
+        <CursorPos X="1" Y="11"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\forms.pp"/>
@@ -84,11 +89,15 @@
       </Unit5>
       <Unit6>
         <Filename Value="FilterModule.pas"/>
+        <ComponentName Value="VSTFilter"/>
         <HasResources Value="True"/>
+        <ResourceFilename Value="FilterModule.lrs"/>
         <UnitName Value="FilterModule"/>
-        <CursorPos X="19" Y="11"/>
-        <TopLine Value="91"/>
+        <CursorPos X="23" Y="7"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="FilterModule.lfm"/>
@@ -133,8 +142,8 @@
       <Unit13>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\ide\lazarus.pp"/>
         <UnitName Value="Lazarus"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
+        <CursorPos X="33" Y="112"/>
+        <TopLine Value="83"/>
         <UsageCount Value="10"/>
       </Unit13>
       <Unit14>
@@ -144,8 +153,105 @@
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit14>
+      <Unit15>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\ide\main.pp"/>
+        <UnitName Value="Main"/>
+        <CursorPos X="35" Y="1103"/>
+        <TopLine Value="1086"/>
+        <UsageCount Value="10"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="..\..\..\Source\DVSTHost.pas"/>
+        <UnitName Value="DVSTHost"/>
+        <CursorPos X="6" Y="21"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="..\..\..\Lazarus\HostVSTLaz.pas"/>
+        <UnitName Value="HostVSTLaz"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="..\..\..\Source\DASIOHost.pas"/>
+        <UnitName Value="DASIOHost"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="..\..\..\Source\DBarChart.pas"/>
+        <UnitName Value="DBarChart"/>
+        <CursorPos X="1" Y="9"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="..\..\..\Source\DMidiKeys.pas"/>
+        <UnitName Value="DMidiKeys"/>
+        <CursorPos X="1" Y="5"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="..\..\..\Source\DWaveform.pas"/>
+        <UnitName Value="DWaveform"/>
+        <CursorPos X="1" Y="4"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="..\..\..\Source\DADSRGraph.pas"/>
+        <UnitName Value="DADSRGraph"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit22>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="10" HistoryIndex="9">
+      <Position1>
+        <Filename Value="FilterModule.pas"/>
+        <Caret Line="108" Column="30" TopLine="91"/>
+      </Position1>
+      <Position2>
+        <Filename Value="FilterModule.pas"/>
+        <Caret Line="125" Column="5" TopLine="91"/>
+      </Position2>
+      <Position3>
+        <Filename Value="FilterModule.pas"/>
+        <Caret Line="7" Column="23" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="3874" Column="1" TopLine="3844"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="8" Column="57" TopLine="1"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="1001" Column="51" TopLine="984"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="8" Column="34" TopLine="1"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="1009" Column="34" TopLine="992"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="17" Column="39" TopLine="1"/>
+      </Position10>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
@@ -171,6 +277,7 @@
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
       <Checks>
         <StackChecks Value="True"/>
       </Checks>
@@ -181,6 +288,7 @@
         <UseLineInfoUnit Value="False"/>
         <StripSymbols Value="True"/>
       </Debugging>
+      <LinkSmart Value="True"/>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

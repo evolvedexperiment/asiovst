@@ -5,9 +5,8 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  {$IFDEF FPC} LCLIntf, LCLType, LResources, LCLClasses, LMessages, RtlConsts,
-  {$ELSE} Windows, Messages, {$ENDIF} SysUtils, Forms, Classes,
-  DDSPBase, DVSTEffect;
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, RtlConsts, {$ELSE} Windows,
+  Messages, {$ENDIF} SysUtils, Forms, Classes, DDSPBase, DVSTEffect;
 
 {$DEFINE _Debug}
 
