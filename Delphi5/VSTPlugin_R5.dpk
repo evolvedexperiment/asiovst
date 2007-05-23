@@ -1,6 +1,5 @@
 package VstPlugin_R5;
 
-{$R *.RES}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -28,7 +27,7 @@ package VstPlugin_R5;
 
 requires
   vcl50,
-  DDSPBase50;
+  DSPBase50;
 
 contains
   DVSTModule in '..\Source\DVSTModule.pas';

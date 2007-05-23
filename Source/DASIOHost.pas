@@ -18,10 +18,10 @@ unit DASIOHost;
 interface
 
 uses {$IFDEF FPC} LCLIntf, LclType, LMessages, LResources, {$ELSE}
-     Windows, Messages, {$ENDIF} SysUtils, Classes, ASIO, Types, DASIOConvert,
+     Windows, Messages, {$ENDIF} SysUtils, Classes, ASIO, DASIOConvert,
      DASIOGenerator, {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
      {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls,
-     ASIOMixer, {$ENDIF} {$IFDEF D5CP} dsgnintf, {$ENDIF} DDSPBase;
+     ASIOMixer, {$ENDIF} {$IFDEF DELPHI5} Forms, dsgnintf, {$ENDIF} DDSPBase;
 
 const
   // private message
@@ -47,8 +47,8 @@ type
   PAsioDriverDesc = ^TAsioDriverDesc;
   TASIOBufferList = array [0..0] of TASIOBufferInfo;
   PASIOBufferList = ^TASIOBufferList;
-  TDoubleDynArray = Types.TDoubleDynArray;
-  TSingleDynArray = Types.TSingleDynArray;
+  TDoubleDynArray = DDSPBase.TDoubleDynArray;
+  TSingleDynArray = DDSPBase.TSingleDynArray;
   TArrayOfDoubleDynArray = DDSPBase.TArrayOfDoubleDynArray;
   TArrayOfSingleDynArray = DDSPBase.TArrayOfSingleDynArray;
   PArrayOfDoubleDynArray = DDSPBase.PArrayOfDoubleDynArray;

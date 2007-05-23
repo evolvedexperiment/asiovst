@@ -1,13 +1,12 @@
 unit DMidiKeys;
 
-{$I JEDI.INC}
+{$I ASIOVST.INC}
 {$R DMidiKeys.res}
 {$R-}
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, LResources, LMessages,
-     {$ELSE} Windows, {$ENDIF}
+uses {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
      Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
 
 type

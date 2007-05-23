@@ -1,6 +1,5 @@
 package HostVST_D5;
 
-{$R *.RES}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}

@@ -2,14 +2,11 @@ unit DBarChart;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, LResources, LMessages,
-     {$ELSE} Windows, RTLConsts, {$ENDIF}
+uses {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
      Classes, Graphics, Forms, Messages, SysUtils, Controls;
 
 {$R DBarChart.res}
-{$R-}
-{$DEFINE x87}
-{$I JEDI.INC}
+{$I ASIOVST.INC}
 
 const
   cNumFrequencies = 32;
@@ -74,10 +71,11 @@ type
     {$IFNDEF FPC}
     property BiDiMode;
     property OnCanResize;
+{
     property OnMouseWheel;
     property OnMouseWheelDown;
     property OnMouseWheelUp;
-    property Margin: TRect read fMargin write SetMargin;
+}    property Margin: TRect read fMargin write SetMargin;
     {$ENDIF}
     property Constraints;
     property Color;
@@ -118,7 +116,7 @@ procedure Register;
 
 implementation
 
-uses Math, Dialogs, Types;
+uses Math, Dialogs;
 
 procedure Register;
 begin

@@ -2,30 +2,7 @@ unit DVSTEffect;
 
 interface 
 
-{$WARNINGS OFF}
-{$IFDEF FPC}
- {$MODE DELPHI}
- {$HINTS OFF}
- {$OVERFLOWCHECKS OFF}
- {$RANGECHECKS OFF}
- {$IFDEF CPUI386}
-  {$DEFINE CPU386}
-  {$ASMMODE INTEL}
- {$ENDIF}
- {$IFDEF FPC_LITTLE_ENDIAN}
-  {$DEFINE LITTLE_ENDIAN}
- {$ELSE}
-  {$IFDEF FPC_BIG_ENDIAN}
-   {$DEFINE BIG_ENDIAN}
-  {$ENDIF}
- {$ENDIF}
-{$ELSE}
- {$DEFINE LITTLE_ENDIAN}
- {$IFNDEF CPU64}
-  {$DEFINE CPU32}
- {$ENDIF}
- {$OPTIMIZATION ON}
-{$ENDIF}
+{$I ASIOVST.INC}
 
 uses Windows;
 
@@ -432,15 +409,17 @@ type
     numSamplesOutputProcessed: ^longint;
   end;
 
+
   // Language //////////////////////////////////////////////////////////////////
   TVstHostLanguage = (
-    kVstLangUnknown  = 0,
-    kVstLangEnglish  = 1,
-    kVstLangGerman   = 2,
-    kVstLangFrench   = 3,
-    kVstLangItalian  = 4,
-    kVstLangSpanish  = 5,
-    kVstLangJapanese = 6);
+    kVstLangUnknown  {$IFDEF DELPHI6_UP} = 0 {$ENDIF},
+    kVstLangEnglish  {$IFDEF DELPHI6_UP} = 1 {$ENDIF},
+    kVstLangGerman   {$IFDEF DELPHI6_UP} = 2 {$ENDIF},
+    kVstLangFrench   {$IFDEF DELPHI6_UP} = 3 {$ENDIF},
+    kVstLangItalian  {$IFDEF DELPHI6_UP} = 4 {$ENDIF},
+    kVstLangSpanish  {$IFDEF DELPHI6_UP} = 5 {$ENDIF},
+    kVstLangJapanese {$IFDEF DELPHI6_UP} = 6 {$ENDIF});
+
 
   // Parameter Properties //////////////////////////////////////////////////////
   PVstParameterProperties = ^TVstParameterProperties;
@@ -666,48 +645,40 @@ const
 // Speaker Arrangement Types /////////////////////////////////////////////////
 type
   TVstSpeakerArrangementType = (
+    {$IFDEF DELPHI6_UP}
     satUserDefined     = -2,
     satEmpty           = -1,
-
-    satMono            =  0,  // M
-
-    satStereo          =  1,	 // L R
-    satStereoSurround  =  2,	 // Ls Rs
-    satStereoCenter	   =  3,  // Lc Rc
-    satStereoSide      =  4,  // Sl Sr
-    satStereoCLfe      =  5,  // C Lfe
-
-    sat30Cine          =  6,  // L R C
-    sat30Music         =  7,  // L R S
-    sat31Cine          =  8,  // L R C Lfe
-    sat31Music         =  9,  // L R Lfe S
-
-    sat40Cine          = 10,  // L R C   S (LCRS)
-    sat40Music         = 11,  // L R Ls  Rs (Quadro)
-    sat41Cine          = 12,  // L R C   Lfe S (LCRS+Lfe)
-    sat41Music         = 13,  // L R Lfe Ls Rs (Quadro+Lfe)
-
-    sat50              = 14,  // L R C Ls  Rs
-    sat51              = 15,  // L R C Lfe Ls Rs
-
-    sat60Cine          = 16,  // L R C   Ls  Rs Cs
-    sat60Music         = 17,  // L R Ls  Rs  Sl Sr
-    sat61Cine          = 18,  // L R C   Lfe Ls Rs Cs
-    sat61Music         = 19,  // L R Lfe Ls  Rs Sl Sr
-
-    sat70Cine          = 20,  // L R C Ls  Rs Lc Rc
-    sat70Music         = 21,  // L R C Ls  Rs Sl Sr
-    sat71Cine          = 22,  // L R C Lfe Ls Rs Lc Rc
-    sat71Music         = 23,  // L R C Lfe Ls Rs Sl Sr
-
-    sat80Cine          = 24,  // L R C Ls  Rs Lc Rc Cs
-    sat80Music         = 25,  // L R C Ls  Rs Cs Sl Sr
-    sat81Cine          = 26,  // L R C Lfe Ls Rs Lc Rc Cs
-    sat81Music         = 27,  // L R C Lfe Ls Rs Cs Sl Sr
-
-    sat102             = 28,  // L R C Lfe Ls Rs Tfl Tfc Tfr Trl Trr Lfe2
-
-    satNumSpeakerArr   = 29);
+    {$ENDIF}
+    satMono            {$IFDEF DELPHI6_UP} =  0 {$ENDIF},  // M
+    satStereo          {$IFDEF DELPHI6_UP} =  1 {$ENDIF},  // L R
+    satStereoSurround  {$IFDEF DELPHI6_UP} =  2 {$ENDIF},  // Ls Rs
+    satStereoCenter    {$IFDEF DELPHI6_UP} =  3 {$ENDIF},  // Lc Rc
+    satStereoSide      {$IFDEF DELPHI6_UP} =  4 {$ENDIF},  // Sl Sr
+    satStereoCLfe      {$IFDEF DELPHI6_UP} =  5 {$ENDIF},  // C Lfe
+    sat30Cine          {$IFDEF DELPHI6_UP} =  6 {$ENDIF},  // L R C
+    sat30Music         {$IFDEF DELPHI6_UP} =  7 {$ENDIF},  // L R S
+    sat31Cine          {$IFDEF DELPHI6_UP} =  8 {$ENDIF},  // L R C Lfe
+    sat31Music         {$IFDEF DELPHI6_UP} =  9 {$ENDIF},  // L R Lfe S
+    sat40Cine          {$IFDEF DELPHI6_UP} = 10 {$ENDIF},  // L R C   S (LCRS)
+    sat40Music         {$IFDEF DELPHI6_UP} = 11 {$ENDIF},  // L R Ls  Rs (Quadro)
+    sat41Cine          {$IFDEF DELPHI6_UP} = 12 {$ENDIF},  // L R C   Lfe S (LCRS+Lfe)
+    sat41Music         {$IFDEF DELPHI6_UP} = 13 {$ENDIF},  // L R Lfe Ls Rs (Quadro+Lfe)
+    sat50              {$IFDEF DELPHI6_UP} = 14 {$ENDIF},  // L R C Ls  Rs
+    sat51              {$IFDEF DELPHI6_UP} = 15 {$ENDIF},  // L R C Lfe Ls Rs
+    sat60Cine          {$IFDEF DELPHI6_UP} = 16 {$ENDIF},  // L R C   Ls  Rs Cs
+    sat60Music         {$IFDEF DELPHI6_UP} = 17 {$ENDIF},  // L R Ls  Rs  Sl Sr
+    sat61Cine          {$IFDEF DELPHI6_UP} = 18 {$ENDIF},  // L R C   Lfe Ls Rs Cs
+    sat61Music         {$IFDEF DELPHI6_UP} = 19 {$ENDIF},  // L R Lfe Ls  Rs Sl Sr
+    sat70Cine          {$IFDEF DELPHI6_UP} = 20 {$ENDIF},  // L R C Ls  Rs Lc Rc
+    sat70Music         {$IFDEF DELPHI6_UP} = 21 {$ENDIF},  // L R C Ls  Rs Sl Sr
+    sat71Cine          {$IFDEF DELPHI6_UP} = 22 {$ENDIF},  // L R C Lfe Ls Rs Lc Rc
+    sat71Music         {$IFDEF DELPHI6_UP} = 23 {$ENDIF},  // L R C Lfe Ls Rs Sl Sr
+    sat80Cine          {$IFDEF DELPHI6_UP} = 24 {$ENDIF},  // L R C Ls  Rs Lc Rc Cs
+    sat80Music         {$IFDEF DELPHI6_UP} = 25 {$ENDIF},  // L R C Ls  Rs Cs Sl Sr
+    sat81Cine          {$IFDEF DELPHI6_UP} = 26 {$ENDIF},  // L R C Lfe Ls Rs Lc Rc Cs
+    sat81Music         {$IFDEF DELPHI6_UP} = 27 {$ENDIF},  // L R C Lfe Ls Rs Cs Sl Sr
+    sat102             {$IFDEF DELPHI6_UP} = 28 {$ENDIF},  // L R C Lfe Ls Rs Tfl Tfc Tfr Trl Trr Lfe2
+    satNumSpeakerArr   {$IFDEF DELPHI6_UP} = 29 {$ENDIF});
 
 // Offline Processing ////////////////////////////////////////////////////////
 type
@@ -1018,8 +989,8 @@ type
 // PanLaw Type ///////////////////////////////////////////////////////////////
 type
   TVstPanLawType = (
-    kLinearPanLaw     = 0,   // L = pan * M; R = (1 - pan) * M;
-    kEqualPowerPanLaw = 1);  // L = pow (pan, 0.5) * M; R = pow ((1 - pan), 0.5) * M;
+    kLinearPanLaw     {$IFDEF DELPHI6_UP} = 0 {$ENDIF},  // L = pan * M; R = (1 - pan) * M;
+    kEqualPowerPanLaw {$IFDEF DELPHI6_UP} = 1 {$ENDIF}); // L = pow (pan, 0.5) * M; R = pow ((1 - pan), 0.5) * M;
 
 const
   cMagic           = 'CcnK';

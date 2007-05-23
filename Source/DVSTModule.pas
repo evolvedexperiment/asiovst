@@ -73,6 +73,7 @@ type
   TCPUInstructions = set of TCPUInstruction;
 
   {$IFNDEF FPC}
+  {$IFDEF DELPHI6_UP}
   TCPU = class(TPersistent)
   private
     fVendor           : TCPUVendor;
@@ -113,6 +114,7 @@ const VendorStr: array[Low(TCPUVendor)..High(TCPUVendor)] of ShortString =
       InstructionSupportStr: array[Low(TCPUInstruction)..High(TCPUInstruction)] of ShortString =
        ('FPU', 'TSC', 'CX8', 'SEP', 'CMOV', 'MMX', 'FXSR', 'SSE', 'SSE2',
         'SSE3', 'MONITOR', 'CX16', 'X64', 'MMX+', '3DNow!+', '3DNow!');
+{$ENDIF}
 {$ENDIF}
 
 type
@@ -1052,9 +1054,9 @@ begin
  fBlockSize:=1024;
  fBlockModeSize:=1024;
  fBlockModeOverlap:=0;
- {$IFNDEF FPC}
+ {$IFNDEF FPC}{$IFDEF DELPHI6_UP}
  fCPU:=TCPU.Create;
- {$ENDIF}
+ {$ENDIF}{$ENDIF}
  fProcessingMode:=pmNormal;
  fChunkData:=TMemoryStream.Create;
  fVstShellPlugins := TCustomVstShellPlugins.Create(Self);
@@ -1077,9 +1079,9 @@ begin
   if assigned(fParameterProperties) then fParameterProperties.Free;
   if assigned(fVstPrograms) then fVstPrograms.Free;
   if Assigned(fEditorForm) then fEditorForm.Free;
-  {$IFNDEF FPC}
+  {$IFNDEF FPC}{$IFDEF DELPHI6_UP}
   if Assigned(fCPU) then fCPU.Free;
-  {$ENDIF}
+  {$ENDIF}{$ENDIF}
   if Assigned(fChunkData) then fChunkData.Free;
   if Assigned(fVstShellPlugins) then fVstShellPlugins.Free;
   for i := 0 to maxMidiEvents - 1 do FreeMem(fMidiEvent.events[i]);

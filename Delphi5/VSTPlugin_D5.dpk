@@ -1,6 +1,5 @@
 package VstPlugin_D5;
 
-{$R *.RES}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -33,6 +32,7 @@ requires
 
 contains
   DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',
-  DVSTPluginWizardDialog in '..\Source\DVSTPluginWizardDialog.pas' {VSTPluginWizardDialog};
+  DVSTPluginWizardDialog in '..\Source\DVSTPluginWizardDialog.pas' {VSTPluginWizardDialog},
+  Config in '..\Source\Config.pas';
 
 end.

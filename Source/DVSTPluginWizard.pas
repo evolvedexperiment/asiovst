@@ -11,10 +11,10 @@ unit DVSTPluginWizard;
 
 interface
 
-{$I JEDI.INC}
+{$I ASIOVST.INC}
 
 uses
-  Windows, ToolsAPI, Config;
+  Windows, ToolsAPI , Config;
 
 type
   TVSTPluginWizard = class(TNotifierObject, IOTAWizard, IOTARepositoryWizard,

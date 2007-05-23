@@ -1,6 +1,6 @@
 package DVSTGFX;
 
-{$ALIGN 8}
+{$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -25,10 +25,13 @@ package DVSTGFX;
 {$IMPLICITBUILD OFF}
 
 requires
-  rtl,
-  vcl;
+  vcl50,
+  DSPBase50;
 
 contains
-  DMidiKeys in '..\Source\DMidiKeys.pas';
+  DMidiKeys in '..\Source\DMidiKeys.pas',
+  DADSRGraph in '..\Source\DADSRGraph.pas',
+  DWaveform in '..\Source\DWaveform.pas',
+  DBarChart in '..\Source\DBarChart.pas';
 
 end.

@@ -1,7 +1,6 @@
 package DSPBase50;
 
-{$R 'DDSPBase.dcr'}
-{$ALIGN 8}
+{$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -26,7 +25,7 @@ package DSPBase50;
 {$IMPLICITBUILD OFF}
 
 requires
-  vcl;
+  vcl50;
 
 contains
   DDSPBase in '..\Source\DDSPBase.pas',

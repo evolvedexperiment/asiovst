@@ -6,9 +6,8 @@ unit DWaveform;
 interface
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, Windows,
-  {$ELSE} Windows, {$ENDIF}
-  Types, Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, Windows, {$ELSE} Windows, {$ENDIF}
+  Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DDSPBase;
 
 type
   TWaveform = class;

@@ -40,7 +40,7 @@ procedure DoCreateMethod(FormDesigner: FormDesignerInterface;
 implementation
 
 uses
-  SysUtils, StrUtils, Variants;
+  SysUtils, StrUtils;
 
 function GetCurrentProjectGroup: IOTAProjectGroup;
 var
@@ -54,7 +54,7 @@ begin
   for i := 0 to IModuleServices.ModuleCount - 1 do
   begin
     IModule := IModuleServices.Modules[i];
-    if IModule.QueryInterface(IOTAProjectGroup, IProjectGroup) = S_OK then
+    if IModule.QueryInterface(IOTAProjectGroup, IProjectGroup) = 0 then
     begin
       Result := IProjectGroup;
       Break;
@@ -86,7 +86,7 @@ begin
 
   if Module <> nil then
   begin
-    if Module.QueryInterface(IOTAProject, NewModule) = S_OK then
+    if Module.QueryInterface(IOTAProject, NewModule) = 0 then
     begin
       Result := NewModule;
     end
@@ -100,7 +100,7 @@ begin
       NewModule := Module.OwnerModules[0];
     {$ENDIF}
       if NewModule <> nil then
-        if NewModule.QueryInterface(IOTAProject, Result) <> S_OK then
+        if NewModule.QueryInterface(IOTAProject, Result) <> 0 then
           Result := nil;
     end;
   end;

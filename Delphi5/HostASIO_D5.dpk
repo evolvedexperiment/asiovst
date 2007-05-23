@@ -1,6 +1,5 @@
 package HostASIO_D5;
 
-{$R *.RES}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -26,8 +25,7 @@ package HostASIO_D5;
 {$IMPLICITBUILD OFF}
 
 requires
-  vcl50;
-  rtl,
+  vcl50,
   DSPBase50;
 
 contains

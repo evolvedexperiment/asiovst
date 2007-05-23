@@ -4,11 +4,18 @@ interface
 
 {$I ASIOVST.inc}
 
+{$IFDEF DELPHI7_UP}
 uses {$IFNDEF FPC} Windows, {$ENDIF} Types;
+{$ELSE} uses Windows; {$DEFINE PUREPASCAL} {$ENDIF}
 
 type
+  {$IFNDEF DELPHI7_UP}
+  TDoubleDynArray = Array of Double;
+  TSingleDynArray = Array of Single;
+  {$ELSE}
   TDoubleDynArray = Types.TDoubleDynArray;
   TSingleDynArray = Types.TSingleDynArray;
+  {$ENDIF}
   PDoubleDynArray = ^TDoubleDynArray;
   PSingleDynArray = ^TSingleDynArray;
   TSingleFixedArray = Array [0..0] of Single;
@@ -58,7 +65,7 @@ type
   function dB_to_Amp(g:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function Amp_to_dB(v:Single):Single; overload;
   {$IFNDEF FPC}
-  procedure Amp_to_dB(const v:T4SingleArray); overload;
+  procedure Amp_to_dB(var v:T4SingleArray); overload;
   {$ENDIF}
   function Smallest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function Largest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -78,7 +85,7 @@ type
   function f_Exp(x:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Abs(f:Single):Single; overload;
   function f_Abs(f:Double):Double; overload;
-  procedure f_Abs(const f:T4SingleArray); overload;
+  procedure f_Abs(var f:T4SingleArray); overload;
   function f_Neg(f:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Root(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Power(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -305,7 +312,7 @@ asm
 end;
 
 {$IFNDEF FPC}
-procedure Amp_to_dB(const v:T4SingleArray);
+procedure Amp_to_dB(var v:T4SingleArray);
 {$IFDEF PUREPASCAL}
 begin
  v[0]:=Amp_to_dB(v[0]);
@@ -512,7 +519,6 @@ function f_Abs(f:Double):Double; overload;
 {$IFDEF PUREPASCAL}
 begin
  result:=Abs(f);
-end;
 {$ELSE}
 asm
  fld f.Double
@@ -520,14 +526,13 @@ asm
 {$ENDIF}
 end;
 
-procedure f_Abs(const f:T4SingleArray); overload;
+procedure f_Abs(var f:T4SingleArray); overload;
 {$IFDEF PUREPASCAL}
 begin
  f[0]:=Abs(f[0]);
  f[1]:=Abs(f[1]);
  f[2]:=Abs(f[2]);
  f[3]:=Abs(f[3]);
-end;
 {$ELSE}
 asm
  fld [eax].Single
@@ -1370,7 +1375,7 @@ asm
 end;
 {$ENDIF}
 
-function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload; platform;
+function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
 {$IFDEF PUREPASCAL}
 var i : Integer;
     d : Double;
@@ -1420,7 +1425,7 @@ asm
 {$ENDIF}
 end;
 
-function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload; platform;
+function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
 {$IFDEF PUREPASCAL}
 var i : Integer;
     d : Double;
@@ -1470,7 +1475,7 @@ asm
 {$ENDIF}
 end;
 
-procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload; platform;
+procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload;
 {$IFDEF PUREPASCAL}
 var InBuf : array [0..0] of Double absolute InBuffer;
     d : Double;
@@ -1512,7 +1517,7 @@ asm
 {$ENDIF}
 end;
 
-procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload; platform;
+procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
 {$IFDEF PUREPASCAL}
 var InBuf : array [0..0] of Double absolute InBuffer;
     d : Double;
