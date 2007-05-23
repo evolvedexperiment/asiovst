@@ -2,35 +2,9 @@ unit DDSPBase;
 
 interface
 
-{$IFDEF FPC}
- {$MODE DELPHI}
- {$WARNINGS OFF}
- {$HINTS OFF}
- {$OVERFLOWCHECKS OFF}
- {$RANGECHECKS OFF}
- {$IFDEF CPUI386}
-  {$DEFINE CPU386}
-  {$ASMMODE INTEL}
- {$ENDIF}
- {$IFDEF FPC_LITTLE_ENDIAN}
-  {$DEFINE LITTLE_ENDIAN}
- {$ELSE}
-  {$IFDEF FPC_BIG_ENDIAN}
-   {$DEFINE BIG_ENDIAN}
-  {$ENDIF}
- {$ENDIF}
-{$ELSE}
- {$DEFINE LITTLE_ENDIAN}
- {$IFNDEF CPU64}
-  {$DEFINE CPU32}
- {$ENDIF}
- {$OPTIMIZATION ON}
- {$DEFINE x87}
-{$ENDIF}
+{$I ASIOVST.inc}
 
-{$IFNDEF FPC} uses Windows, Types;
-{$ELSE} uses Types;
-{$ENDIF}
+uses {$IFNDEF FPC} Windows, {$ENDIF} Types;
 
 type
   TDoubleDynArray = Types.TDoubleDynArray;
@@ -69,48 +43,49 @@ type
   TStrArray = array of string;
 
   {$IFNDEF FPC}
-  function GetApplicationFilename: string;
-  function GetApplicationDirectory: string;
+  function GetApplicationFilename: string; {$IFDEF useinlining} inline; {$ENDIF}
+  function GetApplicationDirectory: string; {$IFDEF useinlining} inline; {$ENDIF}
   {$ENDIF}
-  function ms2smp(ms, SampleRate: Single): Single;
-  function smp2ms(smp, SampleRate: Single): Single;
-  function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single;
-  function Sync2Smp(SyncFactor, bpm, SampleRate: Single): Integer;
-  function f_Limit(v:Single;l:Single=-1;u:Single=1):Single; overload;
-  function f_Limit(v:Double;l:Double=-1;u:Double=1):Double; overload;
-  function f_Clip(x,l,h:Single):Single;
-  function f_Cliplo(x,l:Single):Single;
-  function f_Cliphi(x,h:Single):Single;
-  function dB_to_Amp(g:Single):Single;
+  function ms2smp(ms, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function smp2ms(smp, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function Sync2Smp(SyncFactor, bpm, SampleRate: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Limit(v:Single;l:Single=-1;u:Single=1):Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Limit(v:Double;l:Double=-1;u:Double=1):Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Clip(x,l,h:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Cliplo(x,l:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Cliphi(x,h:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function dB_to_Amp(g:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function Amp_to_dB(v:Single):Single; overload;
   {$IFNDEF FPC}
-  function Amp_to_dB(v:T4SingleArray):Single; overload;
+  procedure Amp_to_dB(const v:T4SingleArray); overload;
   {$ENDIF}
-  function Smallest(A, B: Single): Single;
-  function Largest(A, B: Single): Single;
-  function LimitAngle(const Angle: Single): Single;
-  function LinearInterpolation(f,a,b:Single):Single;
-  function CubicInterpolation(fr,inm1,inp,inp1,inp2:Single):Single;
-  function f_Ln2(f:Single):Single;
-  function f_Floorln2(f:Single):Integer;
-  function f_Arctan(fValue:Single):Single;
+  function Smallest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function Largest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function LimitAngle(const Angle: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function LinearInterpolation(f,a,b:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function CubicInterpolation(fr,inm1,inp,inp1,inp2:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Ln2(f:Single):Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Floorln2(f:Single):Integer; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Arctan(Value:Single):Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Arctan(Value:Double):Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
   {$IFNDEF FPC}
   function f_Frac(Sample:Single):Single;
   function f_Int(Sample:Single):Single;
   function f_Trunc(Sample:Single):Integer; overload;
   procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer); overload;
   function f_Round(Sample:Single):Integer;
-  function f_Exp(x:Single):Single;
+  function f_Exp(x:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Abs(f:Single):Single; overload;
   function f_Abs(f:Double):Double; overload;
-  function f_Abs(f:T4SingleArray):Single; overload;
-  function f_Neg(f:Single):Single;
-  function f_Root(i:Single;n:Integer):Single;
-  function f_Power(i:Single;n:Integer):Single;
-  function f_Log2(val:Single):Single;
-  function f_Sin(fAngle:Single):Single;
-  function f_Cos(fAngle:Single):Single;
-  function f_Sgn(f:Single):Integer;
+  procedure f_Abs(const f:T4SingleArray); overload;
+  function f_Neg(f:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Root(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Power(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Log2(val:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Sin(Angle:Single):Single;
+  function f_Cos(Angle:Single):Single;
+  function f_Sgn(f:Single):Integer; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Min(const A, B: Single) : Single;
   function f_Max(const A, B: Single) : Single;
   function f_ArcTan2(const Y, X: Extended): Extended;
@@ -139,9 +114,11 @@ type
   function ComplexMultiply(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
   function ComplexMultiply(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
   procedure ComplexMultiplyInplace(var A : TComplexSingle; B : TComplexSingle) overload;
+  {$IFDEF DELPHI8_UP}
   procedure ComplexMultiplyInplace(var A : TComplexDouble; B : TComplexDouble) overload;
   procedure ComplexMultiplyInplace(var ARe,AIm : Single; BRe,BIm : Single) overload;
   procedure ComplexMultiplyInplace(var ARe,AIm : Double; BRe,BIm : Double) overload;
+  {$ENDIF}
 
   procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray); overload;
   procedure DFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray); overload;
@@ -235,31 +212,51 @@ end;
 {$IFNDEF FPC}
 {$WARNINGS OFF}
 function f_ArcTan2(const Y, X: Extended): Extended;
+{$IFDEF PUREPASCAL}
+begin
+ result:=ArcTan2(Y,X);
+{$ELSE}
 asm
  fld Y
  fld X
  fpatan
+{$ENDIF}
 end;
 
 function f_Tan(const X: Extended): Extended;
+{$IFDEF PUREPASCAL}
+begin
+ result:=Tan(X);
+{$ELSE}
 asm
  fld X
  fptan
  fstp st(0)
+{$ENDIF}
 end;
 
 function f_CoTan(const X: Extended): Extended;
+{$IFDEF PUREPASCAL}
+begin
+ result:=CoTan(X);
+{$ELSE}
 asm
  fld X
  fptan
  fdivrp
+{$ENDIF}
 end;
 
 function f_Log10(const X: Extended): Extended;
+{$IFDEF PUREPASCAL}
+begin
+ result:=Log10(X);
+{$ELSE}
 asm
  fldlg2
  fld x
  fyl2x
+{$ENDIF}
 end;
 {$ENDIF}
 
@@ -281,7 +278,7 @@ function LimitAngle(const Angle: Single): Single;
 begin
  Result := Angle;
  while Result < 0 do Result:=Result+360;
- while Result > 359 do Result:=Result-360;
+ while Result >= 360 do Result:=Result-360;
 end;
 
 function LinearInterpolation(f,a,b:Single):Single;
@@ -295,15 +292,27 @@ begin
 end;
 
 function Amp_to_dB(v:Single):Single;
+{$IFDEF PUREPASCAL}
+begin
+ result:=20*Log10(v);
+{$ELSE}
 asm
  fldlg2
  fld v
  fyl2x
  fmul Twenty.Double
+{$ENDIF}
 end;
 
 {$IFNDEF FPC}
-function Amp_to_dB(v:T4SingleArray):Single;
+procedure Amp_to_dB(const v:T4SingleArray);
+{$IFDEF PUREPASCAL}
+begin
+ v[0]:=Amp_to_dB(v[0]);
+ v[1]:=Amp_to_dB(v[1]);
+ v[2]:=Amp_to_dB(v[2]);
+ v[3]:=Amp_to_dB(v[3]);
+{$ELSE}
 asm
  fldlg2
  fld [eax].Single
@@ -325,16 +334,32 @@ asm
  fyl2x
  fmul Twenty.Double
  fstp [eax+12].Single
+{$ENDIF}
 end;
 
 function f_Trunc(Sample:Single):Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result:=Round(Sample-0.5);
+{$ELSE}
 asm
  fld Sample.Single
  fsub half
  fistp Result.Integer
+{$ENDIF}
 end;
 
 procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer);
+{$IFDEF PUREPASCAL}
+var i : Integer;
+begin
+ for i:=0 to SampleFrames-1 do
+  begin
+   Output^:=Round(Input^-0.5);
+   inc(Output);
+   inc(Input);
+  end;
+{$ELSE}
 asm
  @Start:
  fld [eax].Single
@@ -343,9 +368,14 @@ asm
  add eax,4
  add edx,4
  loop    @Start
+{$ENDIF}
 end;
 
 function f_Frac(Sample:Single):Single;
+{$IFDEF PUREPASCAL}
+begin
+ result:=Sample-Round(Sample-0.5);
+{$ELSE}
 const magic:Single=2E21;
 var i : Integer;
 asm
@@ -356,76 +386,99 @@ asm
 // fadd magic.Single fsub magic.Single //instead of frndint->HyperFast
  frndint
  fsubp
+{$ENDIF}
 end;
 
 function f_Int(Sample:Single):Single;
+{$IFDEF PUREPASCAL}
+begin
+ result:=Round(Sample-0.5);
+{$ELSE}
 asm
  fld Sample.Single
  fsub half
  frndint
+{$ENDIF}
 end;
 
 function f_Round(Sample:Single):Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result:=Round(Sample-0.5);
+{$ELSE}
 asm
  fld Sample.Single
  frndint
  fistp Result.Integer
+{$ENDIF}
 end;
 
 function f_Exp(x:Single):Single;
 begin
- Result:=Exp(x*LN2R*ln(2));
+ Result:=Exp(x*ln2);
 end;
 
-function f_Sin(fAngle:Single):Single;
+function f_Sin(Angle:Single):Single;
 const sin1:Double=7.61e-03;
       sin2:Double=-1.6605e-01;
       sin3:Double=1;
+{$IFDEF PUREPASCAL}
+var Asqr : Double;
+begin
+ Asqr:=sqr(Angle);
+ result:=(((Asqr*sin1)*Asqr+sin2*Asqr)+1)*Angle;
+{$ELSE}
 asm
- fld fAngle.Single
- fmul fAngle.Single
+ fld Angle.Single
+ fmul Angle.Single
  fld sin1.Double
  fmul st(0),st(1)
  fld sin2.Double
  faddp st(1),st(0)
  fmulp st(1),st(0)
- fadd sin3.Double
- fmul fAngle
+ fld1
+ faddp
+ fmul Angle
+{$ENDIF}
 end;
 
-function f_Cos(fAngle:Single):Single;
+function f_Cos(Angle:Single):Single;
 const sin1:Double=3.705e-02;
       sin2:Double=-4.967e-01;
-      sin3:Double=1;
+{$IFDEF PUREPASCAL}
+var Asqr : Double;
+begin
+ Asqr:=sqr(Angle);
+ result:=(((Asqr*sin1)*Asqr+sin2*Asqr)+1)*Angle;
+{$ELSE}
 asm
- fld fAngle.Single
- fmul fAngle.Single
+ fld Angle.Single
+ fmul Angle.Single
  fld sin1.Double
  fmul st(0),st(1)
  fld sin2.Double
  faddp st(1),st(0)
  fmulp st(1),st(0)
- fadd sin3.Double
- fmul fAngle
+ fld1
+ faddp
+ fmul Angle
+{$ENDIF}
 end;
 
 {$ENDIF}
 
-function f_ArcTan(fValue:Single):Single;
-var fVSqr,fResult:Single;
+function f_ArcTan(Value:Single):Single;
+var VSqr : Double;
 begin
- fVSqr:=fValue*fValue;
- fResult:=0.0208351;
- fResult:=fResult*fVSqr;
- fResult:=fResult-0.085133;
- fResult:=fResult*fVSqr;
- fResult:=fResult+0.180141;
- fResult:=fResult*fVSqr;
- fResult:=fResult-0.3302995;
- fResult:=fResult*fVSqr;
- fResult:=fResult+0.999866;
- fResult:=fResult*fValue;
- Result:=fResult;
+ VSqr:=sqr(Value);
+ Result:=((((0.0208351*VSqr-0.085133)*VSqr+0.180141)*VSqr-0.3302995)*VSqr+0.999866)*Value;
+end;
+
+function f_ArcTan(Value:Double):Double;
+var VSqr : Double;
+begin
+ VSqr:=sqr(Value);
+ Result:=((((0.0208351*VSqr-0.085133)*VSqr+0.180141)*VSqr-0.3302995)*VSqr+0.999866)*Value;
 end;
 
 function f_Ln2(f:Single):Single;
@@ -456,12 +509,26 @@ end;
 
 {$IFNDEF FPC}
 function f_Abs(f:Double):Double; overload;
+{$IFDEF PUREPASCAL}
+begin
+ result:=Abs(f);
+end;
+{$ELSE}
 asm
  fld f.Double
  fabs
+{$ENDIF}
 end;
 
-function f_Abs(f:T4SingleArray):Single; overload;
+procedure f_Abs(const f:T4SingleArray); overload;
+{$IFDEF PUREPASCAL}
+begin
+ f[0]:=Abs(f[0]);
+ f[1]:=Abs(f[1]);
+ f[2]:=Abs(f[2]);
+ f[3]:=Abs(f[3]);
+end;
+{$ELSE}
 asm
  fld [eax].Single
  fabs
@@ -475,6 +542,7 @@ asm
  fld [eax+12].Single
  fabs
  fstp [eax+12].Single
+{$ENDIF}
 end;
 {$ENDIF}
 
@@ -487,12 +555,10 @@ begin
 end;
 
 {$IFNDEF FPC}
-
 function f_Sgn(f:Single):Integer;
 begin
  Result:=1-((Integer((@f)^) shr 31)shl 1);
 end;
-
 {$ENDIF}
 
 function f_Log2(val:Single):Single;
@@ -560,6 +626,10 @@ end;
 
 // scale logarithmicly from 20 Hz to 20 kHz
 function FreqLinearToLog(value:Single):Single;
+{$IFDEF PUREPASCAL}
+begin
+ Result:=(20.0*Exp(value*6.907755279));
+{$ELSE}
 const fltl1:Double=20;
       fltl2:Double=6.907755279;
 asm
@@ -577,10 +647,14 @@ asm
  FSCALE              { result := z * 2**i }
  FSTP    ST(1)
  FMUL fltl1
-// Result:=(20.0*Exp(value*flt1));
+{$ENDIF}
 end;
 
 function FreqLogToLinear(Value:Single):Single;
+{$IFDEF PUREPASCAL}
+begin
+ Result:=ln(value*0.05)*1.44764826019E-1;
+{$ELSE}
 const fltl1:Double=0.05;
       fltl2:Double=1.44764826019E-1;
 asm
@@ -589,15 +663,21 @@ asm
  fmul fltl1
  fyl2x
  fmul fltl2
-// Result:=(ln(value*0.05)*ln2Rez))*0.10034333188799371439986123402106;
+{$ENDIF}
 end;
 
 procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
+{$IFDEF PUREPASCAL}
+begin
+ SinValue:=Sin(Frequency);
+ CosValue:=Cos(Frequency);
+{$ELSE}
 asm
  fld Frequency.Double;
  fsincos
  fstp [CosValue].Double;
  fstp [SinValue].Double;
+{$ENDIF}
 end;
 
 // Complex Stuff
@@ -686,6 +766,7 @@ begin
  A.Im := A.Im * B.Re + Temp * B.Im;
 end;
 
+{$IFDEF DELPHI8_UP}
 procedure ComplexMultiplyInplace(var A : TComplexDouble; B : TComplexDouble) overload;
 var Temp : Double;
 begin
@@ -709,11 +790,12 @@ begin
  ARe := ARe * BRe - AIm * BIm;
  AIm := AIm * BRe + Tmp * BIm;
 end;
+{$ENDIF}
 
 // Discrete Fourier Transform
 procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
 var k, i, sz       : Integer;
-    sr, si, sd, kc : Double;
+    sr, si, sd, kc : Extended;
 begin
  sz:=Length(realTime);
  Assert(sz=Length(imagTime));
@@ -729,7 +811,7 @@ begin
    kc:=2*PI*k*sd;
    for i:=0 to sz-1 do
     begin
-     GetSinCos(kc*i, sr, si);
+     SinCos(kc*i, sr, si);
      realFreq[k] := realFreq[k] + (realTime[i] * sr) + (imagTime[i] * si);
      imagFreq[k] := imagFreq[k] - (realTime[i] * si) + (imagTime[i] * sr);
     end;
@@ -739,7 +821,7 @@ end;
 // Inverse Discrete Fourier Transform
 procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
 var k, i, sz       : Integer;
-    sr, si, sd, kc : Double;
+    sr, si, sd, kc : Extended;
 begin
  sz:=Length(realTime);
  Assert(sz=Length(imagTime));
@@ -755,7 +837,7 @@ begin
    kc:=2*PI*k*sd;
    for i:=0 to sz-1 do
     begin
-     GetSinCos(kc*i, sr, si);
+     SinCos(kc*i, sr, si);
      realTime[k] := realTime[k] + (realFreq[i] * sr) + (imagFreq[i] * si);
      realTime[k] := realTime[k] - (realFreq[i] * si) + (imagFreq[i] * sr);
     end;
@@ -768,7 +850,7 @@ end;
 // Discrete Fourier Transform
 procedure DFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray);
 var k, i, sz       : Integer;
-    sr, si, sd, kc : Double;
+    sr, si, sd, kc : Extended;
 begin
  sz:=Length(realTime);
  Assert(sz=Length(imagTime));
@@ -784,7 +866,7 @@ begin
    kc:=2*PI*k*sd;
    for i:=0 to sz-1 do
     begin
-     GetSinCos(kc*i, sr, si);
+     SinCos(kc*i, sr, si);
      realFreq[k] := realFreq[k] + (realTime[i] * sr) + (imagTime[i] * si);
      imagFreq[k] := imagFreq[k] - (realTime[i] * si) + (imagTime[i] * sr);
     end;
@@ -794,7 +876,7 @@ end;
 // Inverse Discrete Fourier Transform
 procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray);
 var k, i, sz       : Integer;
-    sr, si, sd, kc : Double;
+    sr, si, sd, kc : Extended;
 begin
  sz:=Length(realTime);
  Assert(sz=Length(imagTime));
@@ -810,7 +892,7 @@ begin
    kc:=2*PI*k*sd;
    for i:=0 to sz-1 do
     begin
-     GetSinCos(kc*i, sr, si);
+     SinCos(kc*i, sr, si);
      realTime[k] := realTime[k] + (realFreq[i] * sr) + (imagFreq[i] * si);
      realTime[k] := realTime[k] - (realFreq[i] * si) + (imagFreq[i] * sr);
     end;
@@ -822,7 +904,7 @@ end;
 
 procedure DFT(realTime,realFreq,imagFreq : TSingleDynArray);
 var k, i, sz       : Integer;
-    sr, si, sd, kc : Double;
+    sr, si, sd, kc : Extended;
 begin
  sz:=Length(realTime);
  Assert(sz=Length(realFreq));
@@ -837,7 +919,7 @@ begin
    kc:=2*PI*k*sd;
    for i:=0 to sz-1 do
     begin
-     GetSinCos(kc*i, sr, si);
+     SinCos(kc*i, sr, si);
      realFreq[k] := realFreq[k] + (realTime[i] * sr);
      imagFreq[k] := imagFreq[k] - (realTime[i] * si);
     end;
@@ -847,7 +929,7 @@ end;
 // Inverse Discrete Fourier Transform
 procedure InverseDFT(realTime,realFreq,imagFreq : TSingleDynArray);
 var k, i, sz       : Integer;
-    sr, si, sd, kc : Double;
+    sr, si, sd, kc : Extended;
 begin
  sz:=Length(realTime);
  Assert(sz=Length(realFreq));
@@ -861,7 +943,7 @@ begin
    kc:=2*PI*k*sd;
    for i:=0 to sz-1 do
     begin
-     GetSinCos(kc*i, sr, si);
+     SinCos(kc*i, sr, si);
      realTime[k] := realTime[k] + (realFreq[i] * sr) + (imagFreq[i] * si);
      realTime[k] := realTime[k] - (realFreq[i] * si) + (imagFreq[i] * sr);
     end;
@@ -873,7 +955,7 @@ end;
 // Discrete Fourier Transform
 procedure DFT(realTime,realFreq,imagFreq : TDoubleDynArray);
 var k, i, sz       : Integer;
-    sr, si, sd, kc : Double;
+    sr, si, sd, kc : Extended;
 begin
  sz:=Length(realTime);
  Assert(sz=Length(realFreq));
@@ -888,7 +970,7 @@ begin
    kc:=2*PI*k*sd;
    for i:=0 to sz-1 do
     begin
-     GetSinCos(kc*i, sr, si);
+     SinCos(kc*i, sr, si);
      realFreq[k] := realFreq[k] + (realTime[i] * sr);
      imagFreq[k] := imagFreq[k] - (realTime[i] * si);
     end;
@@ -898,7 +980,7 @@ end;
 // Inverse Discrete Fourier Transform
 procedure InverseDFT(realTime,realFreq,imagFreq : TDoubleDynArray);
 var k, i, sz       : Integer;
-    sr, si, sd, kc : Double;
+    sr, si, sd, kc : Extended;
 begin
  sz:=Length(realTime);
  Assert(sz=Length(realFreq));
@@ -912,7 +994,7 @@ begin
    kc:=2*PI*k*sd;
    for i:=0 to sz-1 do
     begin
-     GetSinCos(kc*i, sr, si);
+     SinCos(kc*i, sr, si);
      realTime[k] := realTime[k] + (realFreq[i] * sr) + (imagFreq[i] * si);
      realTime[k] := realTime[k] - (realFreq[i] * si) + (imagFreq[i] * sr);
     end;
@@ -996,11 +1078,7 @@ end;
 
 function Sync2Smp(SyncFactor, bpm, SampleRate: Single): Integer;
 begin
- {$IFNDEF FPC}
- Result := f_Round(SyncFactor * SampleRate * 60 / bpm);
- {$ELSE}
  Result := Round(SyncFactor * SampleRate * 60 / bpm);
- {$ENDIF}
 end;
 
 function ms2smp(ms, SampleRate: Single): Single;
@@ -1132,7 +1210,13 @@ begin
 end;
 
 function Tanh2c(x:Single):Single;
-{$IFDEF x87}
+{$IFDEF PUREPASCAL}
+var a,b:Single;
+begin
+ a:=f_abs(x);
+ b:=3+a;
+ Result:=(x*b)/(a*b+6);
+{$ELSE}
 const c3:Single=3;
       c6:Single=6;
 asm
@@ -1146,18 +1230,14 @@ asm
  fmulp
  fadd c6.Single
  fdiv
-end;
-{$ELSE}
-var a,b:Single;
-begin
- a:=f_abs(x);
- b:=3+a;
- Result:=(x*b)/(a*b+6);
-end;
 {$ENDIF}
+end;
 
 function Tanh2d(x:Single):Single;
-{$IFDEF x87}
+{$IFDEF PUREPASCAL}
+begin
+ Result:=x/(f_abs(x)+3);
+{$ELSE}
 const c3:Single=3;
 asm
  fld x.Single;
@@ -1165,12 +1245,8 @@ asm
  fabs
  fadd c3
  fdiv
-end;
-{$ELSE}
-begin
- Result:=x/(f_abs(x)+3);
-end;
 {$ENDIF}
+end;
 
 function Sigmoid(x:Single):Single;
 begin
@@ -1262,26 +1338,54 @@ end;
 
 {$IFNDEF FPC}
 function f_Min(const A, B: Single) : Single;
+{$IFDEF PUREPASCAL}
+begin
+ if A>B
+  then result:=B
+  else result:=A
+{$ELSE}
 asm
  fld     dword ptr [ebp+$08]
  fld     dword ptr [ebp+$0c]
  fcomi   st(0), st(1)
  fcmovnb st(0), st(1)
  ffree   st(1)
+{$ENDIF}
 end;
 
 function f_Max(const A, B: Single) : Single;
+{$IFDEF PUREPASCAL}
+begin
+ if A<B
+  then result:=B
+  else result:=A
+{$ELSE}
 asm
  fld     dword ptr [ebp+$0c]
  fld     dword ptr [ebp+$08]
  fcomi   st(0), st(1)
  fcmovnb st(0), st(1)
  ffree   st(1)
+{$ENDIF}
 end;
 {$ENDIF}
 
 function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload; platform;
-{$IFDEF x87}
+{$IFDEF PUREPASCAL}
+var i : Integer;
+    d : Double;
+begin
+ result:=0; d:=f_abs(InBuffer^);
+ for i:=1 to Samples-1 do
+  begin
+   if f_abs(InBuffer^)>d then
+    begin
+     Result:=i;
+     d:=f_abs(InBuffer^);
+    end;
+   inc(InBuffer);
+  end;
+{$ELSE}
 asm
  test edx,edx
  jz @End
@@ -1313,8 +1417,11 @@ asm
  mov result,edx              // Result := edx
 
  @End:
+{$ENDIF}
 end;
-{$ELSE}
+
+function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload; platform;
+{$IFDEF PUREPASCAL}
 var i : Integer;
     d : Double;
 begin
@@ -1328,11 +1435,7 @@ begin
     end;
    inc(InBuffer);
   end;
-end;
-{$ENDIF}
-
-function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload; platform;
-{$IFDEF x87}
+{$ELSE}
 asm
  test edx,edx
  jz @End
@@ -1364,26 +1467,23 @@ asm
  mov result,edx              // Result := edx
 
  @End:
-end;
-{$ELSE}
-var i : Integer;
-    d : Double;
-begin
- result:=0; d:=f_abs(InBuffer^);
- for i:=1 to Samples-1 do
-  begin
-   if f_abs(InBuffer^)>d then
-    begin
-     Result:=i;
-     d:=f_abs(InBuffer^);
-    end;
-   inc(InBuffer);
-  end;
-end;
 {$ENDIF}
+end;
 
 procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload; platform;
-{$IFDEF x87}
+{$IFDEF PUREPASCAL}
+var InBuf : array [0..0] of Double absolute InBuffer;
+    d : Double;
+    i : Integer;
+begin
+ if Samples=0 then Exit;
+ d:=InBuf[0];
+ for i:=1 to Samples-1
+  do d:=d+InBuf[i];
+ d:=d/Samples;
+ for i:=0 to Samples-1
+  do InBuf[i]:=InBuf[i]-d;
+{$ELSE}
 asm
  test edx,edx
  jz @End
@@ -1409,8 +1509,11 @@ asm
  fstp st(0)                    // clear stack
 
  @End:
+{$ENDIF}
 end;
-{$ELSE}
+
+procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload; platform;
+{$IFDEF PUREPASCAL}
 var InBuf : array [0..0] of Double absolute InBuffer;
     d : Double;
     i : Integer;
@@ -1422,11 +1525,7 @@ begin
  d:=d/Samples;
  for i:=0 to Samples-1
   do InBuf[i]:=InBuf[i]-d;
-end;
-{$ENDIF}
-
-procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload; platform;
-{$IFDEF x87}
+{$ELSE}
 asm
  test edx,edx
  jz @End
@@ -1452,31 +1551,30 @@ asm
  fstp st(0)                    // clear stack
 
  @End:
-end;
-{$ELSE}
-var InBuf : array [0..0] of Double absolute InBuffer;
-    d : Double;
-    i : Integer;
-begin
- if Samples=0 then Exit;
- d:=InBuf[0];
- for i:=1 to Samples-1
-  do d:=d+InBuf[i];
- d:=d/Samples;
- for i:=0 to Samples-1
-  do InBuf[i]:=InBuf[i]-d;
-end;
 {$ENDIF}
+end;
 
 procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
-{$IFDEF x87}
+{$IFDEF PUREPASCAL}
+var i : Integer;
+begin
+ for i:=0 to SampleFrames-1 do
+  begin
+   Singles^:=Doubles^;
+   inc(Singles);
+   inc(Doubles);
+  end;
+{$ELSE}
 asm
 @MarioLand:
  fld [eax+ecx*4-4].Single
  fstp [edx+ecx*8-8].Double
  loop @MarioLand
+{$ENDIF}
 end;
-{$ELSE}
+
+procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames:Integer);
+{$IFDEF PUREPASCAL}
 var i : Integer;
 begin
  for i:=0 to SampleFrames-1 do
@@ -1485,28 +1583,14 @@ begin
    inc(Singles);
    inc(Doubles);
   end;
-end;
-{$ENDIF}
-
-procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames:Integer);
-{$IFDEF x87}
+{$ELSE}
 asm
 @MarioLand:
  fld [eax+ecx*8-8].Double
  fstp [edx+ecx*4-4].Single
  loop @MarioLand
-end;
-{$ELSE}
-var i : Integer;
-begin
- for i:=0 to SampleFrames-1 do
-  begin
-   Singles^:=Doubles^;
-   inc(Singles);
-   inc(Doubles);
-  end;
-end;
 {$ENDIF}
+end;
 
 procedure InitConstants;
 begin

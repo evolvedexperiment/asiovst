@@ -1343,10 +1343,14 @@ end;
 function TVstPlugin.EditOpen(Handle: THandle): Integer;
 var i: integer;
 begin
- i := VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
- if i > 0 then FEditOpen := true
- else FEditOpen := false;
- result := i;
+ i:=0;
+ try
+  i := VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
+ finally
+  if i > 0 then FEditOpen := true
+  else FEditOpen := false;
+  result := i;
+ end;
 end;
 
 procedure TVstPlugin.onEditActivate(Sender: TObject);

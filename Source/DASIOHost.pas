@@ -5,7 +5,7 @@ unit DASIOHost;
 // Benjamin Rosseaux. Please give credit if you use this component in your
 // programs. Thanks to Martin Fay (original Delphi ASIO interface)
 
-{$I JEDI.INC}
+{$I ASIOVST.INC}
 {$R DASIOHost.res}
 {.$DEFINE OpenASIO}
 // define OpenASIO to compile using old OpenASIO interface (needs OpenASIO.dll)
@@ -791,8 +791,7 @@ begin
   CloseDriver;
   DeallocateHWnd(fHandle);
   SetLength(FASIOdriverlist, 0);
-  SetLength(FASIOdriverlist, 0);
-  FDriverList.Free;
+  FreeAndNil(FDriverList);
   FreeAndNil(FASIOTime);
  finally
   inherited;

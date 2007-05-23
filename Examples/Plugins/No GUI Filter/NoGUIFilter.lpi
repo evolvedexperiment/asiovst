@@ -13,7 +13,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".dll"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -35,14 +35,14 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="13">
+    <Units Count="15">
       <Unit0>
         <Filename Value="NoGUIFilter.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="33" Y="123"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="37"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -120,9 +120,9 @@
       </Unit10>
       <Unit11>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\inc\compproc.inc"/>
-        <CursorPos X="29" Y="435"/>
+        <CursorPos X="25" Y="444"/>
         <TopLine Value="420"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit11>
@@ -132,33 +132,24 @@
         <TopLine Value="657"/>
         <UsageCount Value="10"/>
       </Unit12>
+      <Unit13>
+        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\ide\lazarus.pp"/>
+        <UnitName Value="Lazarus"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="..\..\..\..\Components\Audio Chart\AudioChartsL.pas"/>
+        <UnitName Value="AudioChartsL"/>
+        <CursorPos X="3" Y="10"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit14>
     </Units>
-    <JumpHistory Count="6" HistoryIndex="5">
-      <Position1>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="11" Column="11" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="8" Column="7" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="31" Column="9" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="32" Column="8" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="2" Column="6" TopLine="1"/>
-      </Position5>
-      <Position6>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="132" Column="16" TopLine="99"/>
-      </Position6>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
@@ -190,6 +181,10 @@
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
+      <Debugging>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

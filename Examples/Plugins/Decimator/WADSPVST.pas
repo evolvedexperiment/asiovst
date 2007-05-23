@@ -241,7 +241,7 @@ begin
   try
    LoadVST;
    RootKey:=HKEY_CURRENT_USER;
-   if OpenKeyReadOnly('SOFTWARE\LeftoverLasagne\PushTec\WinAmp') then
+   if OpenKeyReadOnly('SOFTWARE\ASIOVST\WinAmp') then
     begin
      if ValueExists('Visible') then if ReadBool('Visible') then Show;
      if ValueExists('Left') then Left:=ReadInteger('Left');
@@ -257,7 +257,7 @@ procedure TFmWinAmpVST.ClosePlugin;
 begin
  with TRegistry.Create do
   try
-   if OpenKey('Software\LeftoverLasagne\PushTec\WinAmp',True) then
+   if OpenKey('Software\ASIOVST\WinAmp',True) then
     begin
      WriteBool('Visible',Visible);
      WriteInteger('Left',Left);
@@ -321,7 +321,7 @@ begin
    except
      raise
    end;
-   Caption := 'Leftover Lasagne - PushTec';
+   Caption := 'ASIO-VST - Decimator';
   finally
    CriticalSection.Leave;
   end;
