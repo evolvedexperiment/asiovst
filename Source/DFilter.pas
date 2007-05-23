@@ -66,6 +66,9 @@ type
     procedure SetAlpha; virtual;
   public
     constructor Create; override;
+    procedure RenderImpulseResponse(ImpulseResonseBuffer : TDoubleDynArray); override;
+    procedure Complex(Frequency:Double; out Real, Imaginary : Single); overload; override;
+    function Phase(Frequency:Double):Double; override;
   published
     property Bandwidth: Single read fBandWidth write SetBW;
   end;
@@ -95,7 +98,6 @@ type
     function Imaginary(Frequency:Double):Double; override;
     procedure Complex(Frequency:Double; out Real, Imaginary : Double); overload; override;
     procedure Complex(Frequency:Double; out Real, Imaginary : Single); overload; override;
-    procedure RenderImpulseResponse(ImpulseResonseBuffer : TDoubleDynArray); override;
     procedure Reset; override;
     procedure PushStates; override;
     procedure PopStates; override;
@@ -230,11 +232,31 @@ end;
 
 { TIIRFilter }
 
+procedure TIIRFilter.Complex(Frequency: Double; out Real, Imaginary: Single);
+var R,I : Double;
+begin
+ Complex(Frequency, R, I);
+ Real:=R; Imaginary:=I;
+end;
+
 constructor TIIRFilter.Create;
 begin
  fBandWidth:=1;
  SetAlpha;
  inherited;
+end;
+
+function TIIRFilter.Phase(Frequency: Double): Double;
+begin
+ Result:=ArcTan2(Imaginary(Frequency), Real(Frequency));
+end;
+
+procedure TIIRFilter.RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray);
+var i : Integer;
+begin
+ ImpulseResonseBuffer[0]:=ProcessSample(1);
+ for i:=1 to Length(ImpulseResonseBuffer)-1
+  do ImpulseResonseBuffer[i]:=ProcessSample(0);
 end;
 
 procedure TIIRFilter.SetAlpha;
@@ -341,14 +363,6 @@ begin
               + (2*sqr(cw)-1) * (fNominator[0] * fDenominator[2] + fNominator[2])) * Divider;
  Imaginary := (fDenominator[1] * (fNominator[2] - fNominator[0]) + fNominator[1] * (1 - fDenominator[2])
               + 2 * cw * (fNominator[2] - fNominator[0] * fDenominator[2])) * sqrt(1 - sqr(cw)) * Divider;
-end;
-
-procedure TBiquadIIRFilter.RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray);
-var i : Integer;
-begin
- ImpulseResonseBuffer[0]:=ProcessSample(1);
- for i:=1 to Length(ImpulseResonseBuffer)-1
-  do ImpulseResonseBuffer[i]:=ProcessSample(0);
 end;
 
 procedure TBiquadIIRFilter.Reset;

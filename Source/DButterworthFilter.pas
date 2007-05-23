@@ -31,7 +31,7 @@ type
     constructor Create; override;
     procedure SetFilterValues(const AFrequency, AGain : Single); virtual;
     function MagnitudeSquared(Frequency:Double):Double; override;
-    function MagnitudeLog10(Frequency:Double):Double; virtual;
+    function MagnitudeLog10(Frequency:Double):Double; override;
     procedure ResetStates; override;
     procedure Reset; override;
     procedure RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray); override;
@@ -282,8 +282,8 @@ asm
 end;
 {$ELSE}
 var
-  y,x : Double;
-  i   : Integer;
+  x : Double;
+  i : Integer;
 begin
  Result:=Input;
  for i := 0 to (fOrder div 2) - 1 do
@@ -298,8 +298,8 @@ end;
 
 function TButterworthLP.ProcessSample(const Input:Double; PrePost : TPrePost):Double;
 var
-  y,x   : Double;
-  i     : Integer;
+  x : Double;
+  i : Integer;
 begin
  Result:=Input;
  if PrePost=ppPre then
@@ -402,8 +402,8 @@ asm
 end;
 {$ELSE}
 var
-  y,x : Double;
-  i   : Integer;
+  x : Double;
+  i : Integer;
 begin
  Result:=Input;
  for i := 0 to (fOrder div 2) - 1 do
@@ -418,8 +418,8 @@ end;
 
 function TButterworthHP.ProcessSample(const Input:Double; PrePost : TPrePost):Double;
 var
-  y,x : Double;
-  i   : Integer;
+  x : Double;
+  i : Integer;
 begin
  Result:=Input;
  if PrePost=ppPre then

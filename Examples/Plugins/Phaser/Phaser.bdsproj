@@ -130,7 +130,7 @@
 			<Directories Name="UsePackages">False</Directories>
 		</Directories>
 		<Parameters>
-			<Parameters Name="RunParams"> Phaser.dll</Parameters>
+			<Parameters Name="RunParams">Phaser.dll</Parameters>
 			<Parameters Name="HostApplication">C:\ITA\Projects\VSTPack\Bin\VST Plugin Analyser.exe</Parameters>
 			<Parameters Name="Launcher"></Parameters>
 			<Parameters Name="UseLauncher">False</Parameters>

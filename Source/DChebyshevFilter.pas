@@ -23,6 +23,7 @@ type
     fOrder          : Integer;
     fAB             : array [0..127] of Double;
     fD64            : array [0.. 63] of Double;
+    fStateStack     : array [0.. 63] of Double;
     procedure SetW0; override;
     procedure SetOrder(Value: Integer); override;
     procedure SetGain(const Value: Double); override;
@@ -34,10 +35,12 @@ type
   public
     constructor Create; override;
     procedure SetFilterValues(const AFrequency, AGain, ARipple : Single); virtual;
-    function Magnitude(Frequency:Double):Double; override;
-    function MagnitudeLog10(Frequency:Double):Double; virtual;
+    function MagnitudeSquared(Frequency:Double):Double; override;
+    function MagnitudeLog10(Frequency:Double):Double; override;
     procedure ResetStates; override;
     procedure Reset; override;
+    procedure PushStates; override;
+    procedure PopStates; override;
     property Ripple : Double read GetRipple write SetRipple;
     property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
     property DownsampleFaktor : Integer read fDownsampleFak;
@@ -50,7 +53,7 @@ type
     constructor Create; override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input:Double):Double; override;
-    function Magnitude(Frequency:Double):Double; override;
+    function MagnitudeSquared(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; override;
   end;
 
@@ -61,7 +64,7 @@ type
     constructor Create; override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input:Double):Double; override;
-    function Magnitude(Frequency:Double):Double; override;
+    function MagnitudeSquared(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; override;
   end;
 
@@ -181,14 +184,24 @@ begin
  SetRippleFactors;
 end;
 
-function TChebyshev1Filter.Magnitude(Frequency: Double): Double;
+function TChebyshev1Filter.MagnitudeSquared(Frequency: Double): Double;
 begin
  Result:=1;
 end;
 
+procedure TChebyshev1Filter.PopStates;
+begin
+ Move(fStateStack[0],fD64[0],Length(fStateStack)*SizeOf(fStateStack[0]));
+end;
+
+procedure TChebyshev1Filter.PushStates;
+begin
+ Move(fD64[0],fStateStack[0],Length(fStateStack)*SizeOf(fStateStack[0]));
+end;
+
 function TChebyshev1Filter.MagnitudeLog10(Frequency: Double): Double;
 begin
- result:=20*Log10(Magnitude(Frequency));
+ result:=20*Log10(MagnitudeSquared(Frequency));
 end;
 
 { TChebyshev1FilterLP }
@@ -297,7 +310,7 @@ begin
 end;
 {$ENDIF}
 
-function TChebyshev1LP.Magnitude(Frequency:Double):Double;
+function TChebyshev1LP.MagnitudeSquared(Frequency:Double):Double;
 var
   i    : Integer;
   a,cw : Double;
@@ -307,7 +320,6 @@ begin
 
  for i := 0 to (fOrder div 2) - 1
   do Result:=Result*fAB[4*i]*fAB[4*i]*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
- Result:=sqrt(Result);
 end;
 
 function TChebyshev1LP.MagnitudeLog10(Frequency:Double):Double;
@@ -489,7 +501,7 @@ begin
 end;
 {$ENDIF}
 
-function TChebyshev1HP.Magnitude(Frequency:Double):Double;
+function TChebyshev1HP.MagnitudeSquared(Frequency:Double):Double;
 var
   i    : Integer;
   a,cw : Double;
@@ -499,7 +511,6 @@ begin
 
  for i := 0 to (fOrder div 2) - 1
   do Result:=Result*fAB[4*i]*fAB[4*i]*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
- Result:=sqrt(Result);
 end;
 
 function TChebyshev1HP.MagnitudeLog10(Frequency: Double): Double;

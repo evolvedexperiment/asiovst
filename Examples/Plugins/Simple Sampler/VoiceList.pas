@@ -11,7 +11,6 @@ type
     FCount: Integer;
     FCapacity: Integer;
     FOwnsObjects: Boolean;
-    function FindInstanceOf(AClass: TClass; AExact: Boolean; AStartAt: Integer): Integer;
   protected
     function Get(Index: Integer): TSimpleSamplerVoice;
     procedure Grow; virtual;
@@ -379,21 +378,6 @@ begin
         end;
       end;
   end;
-end;
-
-function TVoiceList.FindInstanceOf(AClass: TClass; AExact: Boolean;
-  AStartAt: Integer): Integer;
-var I: Integer;
-begin
- Result := -1;
- for I := AStartAt to Count - 1 do
-  if (AExact and (Items[I].ClassType = AClass)) or
-     (not AExact and Items[I].InheritsFrom(AClass))
-   then
-    begin
-     Result := I;
-     break;
-    end;
 end;
 
 end.

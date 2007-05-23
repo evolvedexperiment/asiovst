@@ -114,7 +114,6 @@ var i,o  : Integer;
     s    : Single;
 //    kd   : Boolean;
     kcol : TColor;
-    ncol : TColor;
     key  : Integer;
 begin
  with fBuffer.Canvas do
@@ -138,6 +137,7 @@ begin
       4: key:=BaseOctave*12+o+ 7;
       5: key:=BaseOctave*12+o+ 9;
       6: key:=BaseOctave*12+o+11;
+      else raise Exception.Create('Oops');
      end;
 
      if assigned(FOnKeyColor) then
@@ -279,6 +279,7 @@ begin
      4: Result:=BaseOctave*12+o+ 7;
      5: Result:=BaseOctave*12+o+ 9;
      6: Result:=BaseOctave*12+o+11;
+     else raise Exception.Create('Oops');
     end;
    end;
 end;
