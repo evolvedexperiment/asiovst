@@ -13,7 +13,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".dll"/>
-      <ActiveEditorIndexAtStart Value="2"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -39,10 +39,10 @@
       <Unit0>
         <Filename Value="NoGUIFilter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="33" Y="123"/>
+        <CursorPos X="15" Y="16"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="39"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -57,15 +57,15 @@
         <ComponentName Value="VSTModule"/>
         <HasResources Value="True"/>
         <UnitName Value="DVSTModule"/>
-        <CursorPos X="76" Y="602"/>
-        <TopLine Value="586"/>
+        <CursorPos X="8" Y="1137"/>
+        <TopLine Value="1126"/>
         <UsageCount Value="11"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\DDSPBase.pas"/>
         <UnitName Value="DDSPBase"/>
-        <CursorPos X="14" Y="4"/>
-        <TopLine Value="1"/>
+        <CursorPos X="1" Y="185"/>
+        <TopLine Value="161"/>
         <UsageCount Value="11"/>
       </Unit3>
       <Unit4>
@@ -120,11 +120,9 @@
       </Unit10>
       <Unit11>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\inc\compproc.inc"/>
-        <CursorPos X="25" Y="444"/>
+        <CursorPos X="25" Y="439"/>
         <TopLine Value="420"/>
-        <EditorIndex Value="2"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\inc\system.inc"/>
@@ -137,9 +135,7 @@
         <UnitName Value="Lazarus"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\..\..\..\Components\Audio Chart\AudioChartsL.pas"/>

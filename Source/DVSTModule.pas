@@ -2,7 +2,7 @@ unit DVSTModule;
 
 interface
 
-{$I JEDI.INC}
+{$I ASIOVST.INC}
 
 uses
   {$IFDEF FPC} LCLIntf, LCLType, LResources, LCLClasses, LMessages, RtlConsts,
@@ -870,6 +870,7 @@ type
                           cef_26, cef_27, cef_28, cefLM, cefEx3DNow, cef3DNow);
   TCpuExtendedFeatureSet = set of TCpuExtendedFeatures;
 
+{$IFNDEF FPC}
 const
   VendorIDString: array[Low(TCPUVendor)..High(TCPUVendor)] of TVendorStr =
   ('', 'AuthenticAMD', 'CentaurHauls', 'CyrixInstead', 'GenuineIntel', 'GenuineTMx86',
@@ -877,7 +878,6 @@ const
 
   {CPU signatures}
 
-{$IFNDEF FPC}
   IntelLowestSEPSupportSignature = $633;
   K7DuronA0Signature = $630;
   C3Samuel2EffModel = 7;
@@ -1136,7 +1136,7 @@ begin
 end;
 
 function TCustomVSTModule.dispatcher(opcode, index, value: Integer; ptr: pointer; opt: Single): Integer;
-var a,b   : Integer;
+var a,b     : Integer;
     keyCode : TVstKeyCode;
     s       : Single;
     Hndl    : THandle;

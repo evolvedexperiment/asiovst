@@ -10,7 +10,7 @@ unit DVSTProjectCreator;
 
 interface
 
-{$I JEDI.INC}
+{$I ASIOVST.INC}
 
 uses
   ToolsAPI,

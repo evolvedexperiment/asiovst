@@ -36,7 +36,7 @@ unit ASIO;
 
 interface
 
-{$I JEDI.INC}
+{$I ASIOVST.INC}
 {$IFDEF FPC} uses LCLIntf;
 {$ELSE} uses Windows; {$ENDIF}
 

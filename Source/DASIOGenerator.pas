@@ -1,7 +1,8 @@
 unit DASIOGenerator;
-{$I JEDI.INC}
 
 interface
+
+{$I ASIOVST.INC}
 
 uses Classes, DDSPBase;
 

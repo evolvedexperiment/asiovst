@@ -189,7 +189,6 @@ implementation
 uses Math, SysUtils;
 
 const Half   : Double = 0.5;
-      LN2R   : Double = 1.442695041;
       Twenty : Double = 20;
 
 { Math }

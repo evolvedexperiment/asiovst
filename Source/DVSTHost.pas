@@ -15,8 +15,9 @@ VST is a trademark of:
 }
 
 unit DVSTHost;
+
 {$R DVstHost.res}
-{$I JEDI.Inc}
+{$I ASIOVST.INC}
 {-$DEFINE SB}
 
 interface
