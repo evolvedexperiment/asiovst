@@ -45,7 +45,7 @@ end;
 procedure TVSTFilter.VSTFilterParameterProperties0ParameterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fCutOffFrequency:=0.01+Parameter[0]/20000;
+ fCutOffFrequency:=0.01+Parameter[0]*0.00005;
 end;
 
 
@@ -54,9 +54,9 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TVSTFilter.VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-var i         : integer;
-    cut, res  : single;
-    fb        : single;
+var i         : Integer;
+    cut, res  : Single;
+    fb        : Single;
 begin
  cut := fCutOffFrequency;
  res := 0.1*Parameter[1];
@@ -79,7 +79,7 @@ end;
 
 procedure TVSTFilter.VSTModuleProcessDoubleReplacing(const inputs,
   outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
-var i         : integer;
+var i         : Integer;
     cut, res  : Double;
     fb        : Double;
 begin

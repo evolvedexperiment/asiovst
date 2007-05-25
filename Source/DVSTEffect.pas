@@ -284,8 +284,6 @@ type
     Future           : array[0..55] of Byte;            // pls zero
   end;
 
-// VstEvent types ////////////////////////////////////////////////////////////
-type
   TVSTEventType = ( etNone,
     etMidi,      // 1: midi event, can be cast as VstMidiEvent (see below)
     etAudio,     // 2: audio
@@ -337,7 +335,6 @@ type
 // refers to the current time slice. note the new slice is
 // already started when processEvents() is called
 
-type
   TVstTimeInfoFlag = (
     vtiTransportChanged, // Indicates that Playing, Cycle or Recording has changed
     vtiTransportPlaying,
@@ -379,8 +376,6 @@ type
     Flags              : TVstTimeInfoFlags; // see above
   end;
 
-type
-  // Variable IO for Offline Processing ////////////////////////////////////////
   PVstVariableIo = ^TVstVariableIo;
   TVstVariableIo = packed record
     Inputs                    : PPSingle;
@@ -391,7 +386,6 @@ type
     numSamplesOutputProcessed : PLongInt;
   end;
 
-  // Language //////////////////////////////////////////////////////////////////
   TVstHostLanguage = (
     kVstLangUnknown,
     kVstLangEnglish,
@@ -401,8 +395,6 @@ type
     kVstLangSpanish,
     kVstLangJapanese
   );
-
-  // Parameter Properties //////////////////////////////////////////////////////
 
   TVstParameterPropertiesFlag = (
     kVstParameterIsSwitch,
@@ -431,7 +423,6 @@ type
     // note that the kVstParameterSupportsDisplayIndex flag must be set.
     // host can scan all parameters, and find out in what order
     // to display them:
-
     DisplayIndex     : SmallInt;  // for remote controllers, the index where this parameter
                                   // should be displayed (starting with 0)
 
@@ -490,8 +481,6 @@ type
     Flags                 : TMidiProgramNameFlags;  // omni etc, see below
   end;
 
-// MidiProgramName ///////////////////////////////////////////////////////////
-type
   PMidiProgramCategory = ^TMidiProgramCategory;
   TMidiProgramCategory = packed record
     ThisCategoryIndex   : LongInt;      // >= 0. fill struct for this category index.
@@ -500,8 +489,6 @@ type
     Flags               : LongInt;      // reserved, none defined yet, zero.
   end;
 
-// MidiKeyName ///////////////////////////////////////////////////////////////
-type
   PMidiKeyName = ^TMidiKeyName;
   TMidiKeyName = packed record
     ThisProgramIndex : LongInt;    // >= 0. fill struct for this program index.
@@ -517,7 +504,7 @@ type
 // user-defined speaker types (to be extended in the negative range)
 // (will be handled as their corresponding speaker types with abs values:
 // e.g abs(stU1) == stL, abs(stU2) == stR)
-type
+
   TVstSpeakerType = (
     {$IFDEF DELPHI6_UP}
     stU32                          = -32,
@@ -575,9 +562,6 @@ type
     stTrr      {$IFDEF DELPHI6_UP} = 18 {$ENDIF},  // Top Rear Right (Trr)
     stLfe2     {$IFDEF DELPHI6_UP} = 19 {$ENDIF}); // Subbass 2 (Lfe2)
 
-// Speaker Properties ////////////////////////////////////////////////////////
-
-type
   PVstSpeakerProperties = ^TVstSpeakerProperties;
   TVstSpeakerProperties = record      // units:      range:            except:
     Azimuth   : Single;               // rad         -PI...PI    10.f for LFE channel
@@ -597,8 +581,6 @@ type
 // for user interface representation, grads are more likely to be used, and the
 // origins will obviously 'shift' accordingly.
 
-//---Speaker Arrangement---------------------------
-type
   PVstSpeakerArrangement = ^TVstSpeakerArrangement;
   TVstSpeakerArrangement = record
     vType       : LongInt;                               // (was float lfeGain) LFE channel gain is adjusted [dB] higher than other channels)
@@ -606,8 +588,6 @@ type
     Speakers    : array[0..7] of TVstSpeakerProperties;  // variable
   end;
 
-// Speaker Arrangement Types /////////////////////////////////////////////////
-type
   TVstSpeakerArrangementType = (
     {$IFDEF DELPHI6_UP}
     satUserDefined     = -2,
@@ -684,7 +664,7 @@ type
 
     // other data access
     ExtraBuffer: Pointer;               // set by plug
-    value: LongInt;                     // set by host or plug
+    Value: LongInt;                     // set by host or plug
     Index: LongInt;                     // set by host or plug
 
     // file attributes
@@ -803,7 +783,6 @@ type
   end;
 
 // Used by member virt of VstKeyCode /////////////////////////////////////////
-type
   TVstVirtualKey = LongInt;
 
 const
@@ -892,13 +871,22 @@ type
     mimeType2 : array[0..127] of char;
   end;
 
+  TVstFileCommand = (
+    kVstFileLoad,
+    kVstFileSave,
+    kVstMultipleFilesLoad ,
+    kVstDirectorySelect
+  );
+
+  TVstFileTypeType = (kVstFileType);
+
   PVstFileSelect = ^TVstFileSelect;
   TVstFileSelect = packed record
-    Command              : LongInt;         // see enum kVstFileLoad....
-    vType                : LongInt;         // see enum kVstFileType...
-    MacCreator           : LongInt;         // optional: 0 = no creator
-    nbFileTypes          : LongInt;         // nb of fileTypes to used
-    FileTypes            : PVstFileType;    // list of fileTypes
+    Command              : TVstFileCommand;  // see enum kVstFileLoad....
+    vType                : TVstFileTypeType; // see enum kVstFileType...
+    MacCreator           : LongInt;          // optional: 0 = no creator
+    nbFileTypes          : LongInt;          // nb of fileTypes to used
+    FileTypes            : PVstFileType;     // list of fileTypes
     Title                : array[0..1023] of char;  // text display in the file selector's title
     InitialPath          : PChar;   // initial path
     ReturnPath           : PChar;   // use with kVstFileLoad and kVstDirectorySelect
@@ -912,17 +900,6 @@ type
     Future               : array[0..115] of Byte;   // future use
   end;
 
-const
-  kVstFileLoad          = 0;
-  kVstFileSave          = 1;
-  kVstMultipleFilesLoad = 2;
-  kVstDirectorySelect   = 3;
-
-  kVstFileType          = 0;
-
-
-// Structure used for effBeginLoadBank/effBeginLoadProgram ///////////////////
-type
   PVstPatchChunkInfo = ^TVstPatchChunkInfo;
   TVstPatchChunkInfo = packed record
     version        : LongInt;               // Format Version (should be 1)
@@ -932,9 +909,6 @@ type
     future         : array[0..47] of char;
   end;
 
-
-// PanLaw Type ///////////////////////////////////////////////////////////////
-type
   TVstPanLawType = (
     kLinearPanLaw,      // L = pan * M; R = (1 - pan) * M;
     kEqualPowerPanLaw); // L = pow (pan, 0.5) * M; R = pow ((1 - pan), 0.5) * M;
@@ -962,7 +936,7 @@ type
     fxVersion  : LongInt;
 
     numParams  : LongInt;
-    prgName    : array[0..27] of char;
+    prgName    : array[0..27] of Char;
     params     : Pointer; //array[0..0] of Single;    // variable no. of parameters
   end;
 
@@ -979,7 +953,7 @@ type
     fxVersion   : LongInt;
 
     numPrograms : LongInt;
-    prgName     : array[0..27] of char;
+    prgName     : array[0..27] of Char;
 
     chunkSize   : LongInt;
     chunk       : Pointer; //array[0..7] of char;    // variable
@@ -1003,7 +977,6 @@ type
     programs    : Pointer;//array[0..0] of fxPreset;  // variable no. of programs
   end;
 
-
   //--------------------------------------------------------------------
   // For Bank (.fxb) with chunk (magic = 'FBCh')
   //--------------------------------------------------------------------
@@ -1023,7 +996,6 @@ type
     chunk       : Pointer; //array[0..7] of char;    // variable
   end;
 
-type
   PPERect = ^PERect;
   PERect = ^ERect;
   ERect = record
@@ -1093,8 +1065,7 @@ begin
     StrCopy(text, ' Huge!  ');
     Exit;
   end;
-
-  StrCopy(text, PChar(Format('%7d', [Value])));  // sprintf(aString, '%7d', value);
+  StrCopy(text, PChar(Format('%7d', [Value])));
 end;
 
 procedure float2stringAsLong(value: Single; text: PChar);
@@ -1104,8 +1075,7 @@ begin
    StrCopy(text, ' Huge!  ');
    Exit;
   end;
-
- StrCopy(text, PChar(Format('%7.0f', [value])));  // sprintf(aString, '%7d', value);
+ StrCopy(text, PChar(Format('%7.0f', [value])));
 end;
 
 procedure Hz2string(samples, sampleRate: Single; text: PChar);

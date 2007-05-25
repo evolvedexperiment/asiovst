@@ -467,12 +467,12 @@ begin
                                                if Assigned(thePlug.FOnProcessEvents)
                                                 then thePlug.FOnProcessEvents(thePlug, ptr);
                                              end;
-    audioMasterSetTime                     : {$IFDEF Debug} showmessage('TODO: audioMasterSetTime, VstTimenfo* in <ptr>, filter in <value>, not supported') {$ENDIF Debug};
+    audioMasterSetTime                     : {$IFDEF Debug} Exception.Create('TODO: audioMasterSetTime, VstTimenfo* in <ptr>, filter in <value>, not supported') {$ENDIF Debug};
     audioMasterTempoAt                     : result := round(FHostTempo) * 10000;
     audioMasterGetNumAutomatableParameters : result := theHost.FnumAutomatable;
     audioMasterGetParameterQuantization    : if Value=-1
                                               then result := theHost.FParamQuan
-                                              else {$IFDEF Debug} showmessage('TODO: audioMasterGetParameterQuantization, returns the integer value for +1.0 representation') {$ENDIF Debug};
+                                              else {$IFDEF Debug} Exception.Create('TODO: audioMasterGetParameterQuantization, returns the integer value for +1.0 representation') {$ENDIF Debug};
                                               // or 1 if full single float precision is maintained
                                               // in automation. parameter index in <value> (-1: all, any)
     audioMasterIOChanged                   : if Assigned(thePlug) then
@@ -507,13 +507,9 @@ begin
     audioMasterGetOutputLatency            : if theHost <> nil then result := theHost.FOutputLatency else result := 0;
     audioMasterGetPreviousPlug             : begin
                                               if PlugNr=0 then Result:=0;
-                                              {$IFDEF Debug} showmessage('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
-                                              showMessage('Please contact me: Christian@savioursofsoul.de');
+                                              {$IFDEF Debug} Exception.Create('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
                                              end;
-    audioMasterGetNextPlug                 : {$IFDEF Debug}
-                                              showmessage('TODO: audioMasterGetNextPlug, ' +
-                                               'output pin in <value> (-1: first to come), returns cEffect*')
-                                              {$ENDIF Debug};
+    audioMasterGetNextPlug                 : {$IFDEF Debug}  Exception.Create('TODO: audioMasterGetNextPlug, output pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
     audioMasterWillReplaceOrAccumulate     : if thePlug<>nil then result := Integer(thePlug.FReplaceOrAccumulate) else result := 0;
     audioMasterGetCurrentProcessLevel      : if thePlug<>nil then result := Integer(thePlug.FProcessLevel) else result := 0;
     audioMasterGetAutomationState          : if thePlug<>nil then result := Integer(thePlug.FAutomationState) else result := 0;
@@ -536,12 +532,9 @@ begin
                                               if Assigned(thePlug) then
                                                if Assigned(thePlug.FOnAMSetOutputSampleRate)
                                                 then thePlug.FOnAMSetOutputSampleRate(thePlug,opt);
-                                              FSampleRate := opt; // showmessage('audioMasterSetOutputSampleRate, for variable i/o, sample rate in <opt>');
+                                              FSampleRate := opt; // Exception.Create('audioMasterSetOutputSampleRate, for variable i/o, sample rate in <opt>');
                                              end;
-    audioMasterGetOutputSpeakerArrangement : {$IFDEF Debug}
-                                              showmessage('TODO: audioMasterGetSpeakerArrangement, ' +
-                                             '(long)input in <value>, output in <ptr>')
-                                             {$ENDIF Debug};
+    audioMasterGetOutputSpeakerArrangement : {$IFDEF Debug} Exception.Create('TODO: audioMasterGetSpeakerArrangement, (long)input in <value>, output in <ptr>') {$ENDIF Debug};
     audioMasterGetVendorString             : StrCopy(pchar(ptr),PChar(theHost.VendorString));
     audioMasterGetProductString            : StrCopy(pchar(ptr),PChar(theHost.ProductString));
     audioMasterGetVendorVersion            : if theHost <> nil
@@ -608,7 +601,7 @@ begin
     audioMasterOpenFileSelector            : begin
                                               if (ptr <> nil) and not Assigned(HostDialog) then
                                                begin
-                                                case PVstFileSelect(ptr).vType of
+                                                case PVstFileSelect(ptr).Command of
                                                  kVstFileLoad:
                                                   begin
                                                    HostDialog := TOpenDialog.Create(theHost);
@@ -672,7 +665,7 @@ begin
                                              end;
     audioMasterCloseFileSelector           : begin
                                               if assigned(HostDialog) then
-                                              case PVstFileSelect(ptr).vType of
+                                              case PVstFileSelect(ptr).Command of
                                                kVstFileLoad:
                                                 begin
                                                  if TOpenDialog(HostDialog).Title = PVstFileSelect(ptr).title then
@@ -701,11 +694,11 @@ begin
                                                begin
                                                end;
                                                else
-                                                {$IFDEF Debug} showmessage('TODO: close a fileselector operation with VstFileSelect* in <ptr>: Must be always called after an open !') {$ENDIF Debug};
+                                                {$IFDEF Debug} raise Exception.Create('TODO: close a fileselector operation with VstFileSelect* in <ptr>: Must be always called after an open !') {$ENDIF Debug};
                                               end;
                                              end;
-     audioMasterEditFile                   : {$IFDEF Debug} showmessage('TODO: open an editor for audio (defined by XML text in ptr') {$ENDIF Debug};
-     audioMasterGetChunkFile               : {$IFDEF Debug} showmessage('TODO: get the native path of currently loading bank or project') {$ENDIF Debug};
+     audioMasterEditFile                   : {$IFDEF Debug} Exception.Create('TODO: open an editor for audio (defined by XML text in ptr') {$ENDIF Debug};
+     audioMasterGetChunkFile               : {$IFDEF Debug} Exception.Create('TODO: get the native path of currently loading bank or project') {$ENDIF Debug};
     else
      try
        raise Exception.Create('Check: '+inttostr(Integer(opcode))+' - '+inttostr(index)+' - '+inttostr(value)+' - '+floattostr(opt));
