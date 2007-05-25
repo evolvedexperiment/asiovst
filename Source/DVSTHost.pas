@@ -25,14 +25,12 @@ unit DVSTHost;
 interface
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, Dynlibs,
-  {$ELSE} Windows, Messages, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Registry, DVSTEffect,
-  Dialogs, StdCtrls, ComCtrls
-  {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
+  Dialogs, StdCtrls, ComCtrls {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
 type
-  TVendorSpecificEvent = function(opcode, index, value: longint; ptr: pointer; opt: Single): integer of object;
+  TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: longint; ptr: pointer; opt: Single): integer of object;
   TVstShowEditEvent = procedure(Sender: TObject; Form: TForm) of object;
   TVstAutomateEvent = procedure(Sender: TObject; ParamIndex, ParamValue: LongInt) of object;
   TVstProcessEventsEvent = procedure(Sender: TObject; p: PVstEvents) of object;
@@ -49,25 +47,13 @@ type
                 hcdOffline, hcdSupplyIdle, hcdSupportShell, // 'shell' handling via uniqueID as suggested by Waves
                 hcdOpenFileSelector, hcdCloseFileSelector, hcdEditFile,
                 hcdShellCategory, hcdStartStopProcess);
-  TVstTimeInfoFlag = (vtiTransportChanged, vtiTransportPlaying,
-                      vtiTransportCycleActive, vtiTransportRecording,
-                      vtiAutomationWriting, vtiAutomationReading,
-                      vtiNanosValid, vtiPpqPosValid, vtiTempoValid,
-                      vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid,
-                      vtiSmpteValid, vtiClockValid);
-  TPlugCategory = (kpcUnknown, kpcEffect, kpcSynth, kpcAnalysis, kpcMastering,
-                   kpcSpacializer, kpcRoomFx, kpcSurroundFx, kpcRestoration,
-                   kpcOfflineProcess, kpcShell, kpcGenerator);
   TKnobMode = (knCircular, knCircularRelativ, knLinear);
-  TPanLaw = (plLinearPanLaw, plEqualPowerPanLaw);
-
 
   TReplaceOrAccumulate = (roa0NotSupported, roa1Replace, roa2Accumulate);
   TCurrentProcessLevel = (cpl0NotSupported, cpl1UserThread, cpl2AudioThread,
    cpl3Sequencer, cpl4OfflineProcessing);
   TAutomationState = (as0NotSupported, as1Off, as2Read, as3Write, as4ReadWrite);
   THostCanDos = set of THostCanDo;
-  TVstTimeInfoFlags = set of TVstTimeInfoFlag;
 
   TVstPlugIn = class(TCollectionItem)
   private
@@ -87,7 +73,7 @@ type
     FProgramNr          : Integer;
     FuID                : string;
     FVstVersion         : Integer;
-    FPlugCategory       : TPlugCategory;
+    FPlugCategory       : TVstPlugCategory;
     FDLLFileName        : TFileName;
     FVstOfflineTask     : TVstOfflineTask;
     FReplaceOrAccumulate: TReplaceOrAccumulate;
@@ -115,7 +101,7 @@ type
     FOnVendorSpecific   : TVendorSpecificEvent;
     fGUIFormCreated     : Boolean;
     fGUIStyle           : TGUIStyle;
-    function VstDispatch(opCode: Integer; index: Integer = 0; value: Integer = 0; pntr: pointer = nil; opt: double = 0): Integer; {overload;} //virtual;
+    function VstDispatch(opCode : TDispatcherOpcode; Index: Integer = 0; value: Integer = 0; pntr: pointer = nil; opt: double = 0): Integer; {overload;} //virtual;
     function EditOpen(Handle: THandle): Integer;
     procedure EditClose;
     procedure Activate(b: Boolean);
@@ -185,7 +171,7 @@ type
     function ConnectOutput(OutputNr: Integer; state: boolean): Integer;
     function GetInputProperties(InputNr: Integer): TVstPinProperties;
     function GetOutputProperties(OutputNr: Integer): TVstPinProperties;
-    function GetPlugCategory: Integer;
+    function GetPlugCategory: TVstPlugCategory;
     function GetCurrentPosition: Integer;
     function GetDestinationBuffer: Integer;
     function OfflineNotify(pntr: PVstAudioFile; numAudioFiles: Integer; start: boolean): Integer;
@@ -210,7 +196,7 @@ type
     procedure SetTotalSampleToProcess;
     procedure BeginSetProgram;
     procedure EndSetProgram;
-    procedure SetPanLaw(PanLaw: TPanLaw; Gain: Single);
+    procedure SetPanLaw(PanLaw: TVstPanLawType; Gain: Single);
     function GetMidiProgramName(MidiProgramNamePointer : PMidiProgramName): Integer;
     function GetCurrentMidiProgram(MidiProgramNamePointer : PMidiProgramName): Integer;
     function GetMidiProgramCategory(MidiProgramCategoryPointer : PMidiProgramCategory): Integer;
@@ -254,7 +240,7 @@ type
     property PluginVstVersion: Integer read FVstVersion stored False default -1;
     property EditVisible: Boolean read FEditOpen;
     property EffectOptions: TEffFlags read GetEffOptions stored False;
-    property PlugCategory: TPlugCategory read FPlugCategory stored False;
+    property PlugCategory: TVstPlugCategory read FPlugCategory stored False;
     property ProgramNr: Integer read GetProgram write SetProgram default -1;
     property ProgramName: string read GetProgramName write SetProgramName;
     property VendorString: string read GetVendorString stored False;
@@ -392,7 +378,7 @@ var audioMaster : TAudioMasterCallbackFunc;
 
 procedure Register;
 function string2Language(LanguageString : string): TVstHostLanguage;
-function PlugCategory2String(Category:TPlugCategory):string;
+function PlugCategory2String(Category:TVstPlugCategory):string;
 function EffOptions2String(EffOpts: TEffFlags):string;
 
 implementation
@@ -422,7 +408,7 @@ begin
  result := 1;
 end;
 
-function AudioMasterCallback(effect: PVSTEffect; opcode, index,value: longint; ptr: pointer; opt: Single): longint; cdecl;
+function AudioMasterCallback(effect: PVSTEffect; opcode : TAudioMasterOpcode; index,value: longint; ptr: pointer; opt: Single): longint; cdecl;
 var thePlug  : TVstPlugin;
     PlugNr,i : Integer;
 begin
@@ -440,7 +426,7 @@ begin
    end;
 
    result := 0;
-   case opcode of
+   case TAudiomasterOpcode(opcode) of
     audioMasterAutomate                    : begin
                                               if Assigned(thePlug) then
                                                if Assigned(thePlug.FOnAMAutomate)
@@ -563,7 +549,7 @@ begin
                                               else result := 0;
     audioMasterVendorSpecific              : if assigned(thePlug) then
                                               if assigned(thePlug.FOnVendorSpecific)
-                                               then thePlug.FOnVendorSpecific(opcode, index, value, ptr, opt);
+                                               then thePlug.FOnVendorSpecific(TAudiomasterOpcode(opcode), index, value, ptr, opt);
     audioMasterSetIcon                     : {$IFDEF Debug} showmessage('TODO: audioMasterSetIcon, void* in <ptr>, format not defined yet, Could be a CBitmap .') {$ENDIF Debug};
     audioMasterCanDo                       : begin
                                               if shortstring(PChar(ptr))='sendVstEvents' then Result := Integer(hcdSendVstEvents in FHostCanDos)
@@ -720,7 +706,12 @@ begin
                                              end;
      audioMasterEditFile                   : {$IFDEF Debug} showmessage('TODO: open an editor for audio (defined by XML text in ptr') {$ENDIF Debug};
      audioMasterGetChunkFile               : {$IFDEF Debug} showmessage('TODO: get the native path of currently loading bank or project') {$ENDIF Debug};
-    else MessageDlg('Check: '+inttostr(opcode)+' - '+inttostr(index)+' - '+inttostr(value)+' - '+floattostr(opt), mtWarning, [mbOK], 0);
+    else
+     try
+       raise Exception.Create('Check: '+inttostr(Integer(opcode))+' - '+inttostr(index)+' - '+inttostr(value)+' - '+floattostr(opt));
+     except
+       result := 0;
+     end;
    end;
  except
   result := 0;
@@ -762,21 +753,7 @@ end;
 
 function TVstTimeInformation.GetVTIflags :TVstTimeInfoFlags;
 begin
- result := [];
- if (fVstTimeInfo.flags and kVstTransportChanged) <> 0 then result := result + [vtiTransportChanged] else result := result - [vtiTransportChanged];
- if (fVstTimeInfo.flags and kVstTransportPlaying) <> 0 then result := result + [vtiTransportPlaying] else result := result - [vtiTransportPlaying];
- if (fVstTimeInfo.flags and kVstTransportCycleActive) <> 0 then result := result + [vtiTransportCycleActive] else result := result - [vtiTransportCycleActive];;
- if (fVstTimeInfo.flags and kVstTransportRecording) <> 0 then result := result + [vtiTransportRecording] else result := result - [vtiTransportRecording];
- if (fVstTimeInfo.flags and kVstAutomationWriting) <> 0 then result := result + [vtiAutomationWriting] else result := result - [vtiAutomationWriting];
- if (fVstTimeInfo.flags and kVstAutomationReading) <> 0 then result := result + [vtiAutomationReading] else result := result - [vtiAutomationReading];
- if (fVstTimeInfo.flags and kVstNanosValid) <> 0 then result := result + [vtiNanosValid] else result := result - [vtiNanosValid];
- if (fVstTimeInfo.flags and kVstPpqPosValid) <> 0 then result := result + [vtiPpqPosValid] else result := result - [vtiPpqPosValid];
- if (fVstTimeInfo.flags and kVstTempoValid) <> 0 then result := result + [vtiTempoValid] else result := result - [vtiTempoValid];
- if (fVstTimeInfo.flags and kVstBarsValid) <> 0 then result := result + [vtiBarsValid] else result := result - [vtiBarsValid];
- if (fVstTimeInfo.flags and kVstCyclePosValid) <> 0 then result := result + [vtiCyclePosValid] else result := result - [vtiCyclePosValid];
- if (fVstTimeInfo.flags and kVstTimeSigValid) <> 0 then result := result + [vtiTimeSigValid] else result := result - [vtiTimeSigValid];
- if (fVstTimeInfo.flags and kVstSmpteValid) <> 0 then result := result + [vtiSmpteValid] else result := result - [vtiSmpteValid];
- if (fVstTimeInfo.flags and kVstClockValid) <> 0 then result := result + [vtiClockValid] else result := result - [vtiClockValid];
+ result := fVstTimeInfo.Flags;
 end;
 
 function TVstTimeInformation.GetVTIdouble(Index :Integer): Double;
@@ -832,24 +809,8 @@ begin
 end;
 
 procedure TVstTimeInformation.SetVTIflags(Flags:TVstTimeInfoFlags);
-var temp : Integer;
 begin
- temp := 0;
- if (vtiTransportChanged in Flags) then temp := temp+kVstTransportChanged;
- if (vtiTransportPlaying in Flags) then temp := temp+kVstTransportPlaying;
- if (vtiTransportCycleActive in Flags) then temp := temp+kVstTransportCycleActive;
- if (vtiTransportRecording in Flags) then temp := temp+kVstTransportRecording;
- if (vtiAutomationWriting in Flags) then temp := temp+kVstAutomationWriting;
- if (vtiAutomationReading in Flags) then temp := temp+kVstAutomationReading;
- if (vtiNanosValid in Flags) then temp := temp+kVstNanosValid;
- if (vtiPpqPosValid in Flags) then temp := temp+kVstPpqPosValid;
- if (vtiTempoValid in Flags) then temp := temp+kVstTempoValid;
- if (vtiBarsValid in Flags) then temp := temp+kVstBarsValid;
- if (vtiCyclePosValid in Flags) then temp := temp+kVstCyclePosValid;
- if (vtiTimeSigValid in Flags) then temp := temp+kVstTimeSigValid;
- if (vtiSmpteValid in Flags) then temp := temp+kVstSmpteValid;
- if (vtiClockValid in Flags) then temp := temp+kVstClockValid;
- FVstTimeInfo.flags := temp;
+ fVstTimeInfo.Flags := Flags;
 end;
 
 { TVstHost }
@@ -1143,23 +1104,11 @@ begin
  SetBlockSize(FBlocksize);
  SetBypass(false);
  FActive := true;
-// FEffOptions := [];
  FuID := ''; for i := 3 downto 0 do FuID := FuID + char(PVstEffect.uniqueID shr (i * 8));
-{
- if (PVstEffect.flags and effFlagsHasEditor) <> 0 then FEffOptions := FEffOptions + [eoHasEditor] else FEffOptions := FEffOptions - [eoHasEditor];
- if (PVstEffect.flags and effFlagsHasClip) <> 0 then FEffOptions := FEffOptions + [eoHasClip] else FEffOptions := FEffOptions - [eoHasClip];
- if (PVstEffect.flags and effFlagsHasVu) <> 0 then FEffOptions := FEffOptions + [eoHasVu] else FEffOptions := FEffOptions - [eoHasVu];;
- if (PVstEffect.flags and effFlagsCanMono) <> 0 then FEffOptions := FEffOptions + [eoCanMono] else FEffOptions := FEffOptions - [eoCanMono];
- if (PVstEffect.flags and effFlagsCanReplacing) <> 0 then FEffOptions := FEffOptions + [eoCanReplacing] else FEffOptions := FEffOptions - [eoCanReplacing];
- if (PVstEffect.flags and effFlagsProgramChunks) <> 0 then FEffOptions := FEffOptions + [eoProgramChunks] else FEffOptions := FEffOptions - [eoProgramChunks];
- if (PVstEffect.flags and effFlagsIsSynth) <> 0 then FEffOptions := FEffOptions + [eoIsSynth] else FEffOptions := FEffOptions - [eoIsSynth];
- if (PVstEffect.flags and effFlagsNoSoundInStop) <> 0 then FEffOptions := FEffOptions + [eoNoSoundInStop] else FEffOptions := FEffOptions - [eoNoSoundInStop];
- if (PVstEffect.flags and effFlagsExtIsAsync) <> 0 then FEffOptions := FEffOptions + [eoExtIsAsync] else FEffOptions := FEffOptions - [eoExtIsAsync];
- if (PVstEffect.flags and effFlagsExtHasBuffer) <> 0 then FEffOptions := FEffOptions + [eoExtHasBuffer] else FEffOptions := FEffOptions - [eoExtHasBuffer];
-}
+
  Fversion := PVstEffect.version;
  FVstVersion := GetVstVersion;
- FPlugCategory := TPlugCategory(GetPlugCategory{+1});
+ FPlugCategory := GetPlugCategory;
  FnumInputs := PVstEffect.numInputs;
  FnumOutputs := PVstEffect.numOutputs;
  FnumPrograms := PVstEffect.numPrograms;
@@ -1184,7 +1133,7 @@ begin
  FnumParams:=0;
 end;
 
-function TVstPlugin.VstDispatch(opCode, index, value: Integer; pntr: pointer; opt: double): Integer;
+function TVstPlugin.VstDispatch(opCode : TDispatcherOpcode; Index, Value: Integer; Pntr: pointer; opt: double): Integer;
 begin
  try
   asm
@@ -1194,7 +1143,8 @@ begin
   if not assigned(PVstEffect) then
    result := 0
   else
-   result := PVstEffect.Dispatcher(PVstEffect, opCode, index, value, pntr, opt);
+   result := Integer(opCode);
+   result := PVstEffect.Dispatcher(PVstEffect, TDispatcherOpcode(result), index, value, pntr, opt);
  except
   result := 0;
  end;
@@ -1338,8 +1288,10 @@ function TVstPlugin.EditGetRect: ERect;
 var temp: PPERect;
 begin
  getmem(temp, SizeOf(PPERect));
- if factive then VstDispatch(effEditGetRect, 0, 0, temp);
- result := temp^^;
+ if fActive then VstDispatch(effEditGetRect, 0, 0, temp);
+ if Assigned(temp) then
+  if Assigned(temp^)
+   then result := temp^^;
  FreeMem(temp);
 end;
 
@@ -1348,6 +1300,7 @@ var i: integer;
 begin
  i:=0;
  try
+//  raise Exception.Create(IntToStr(Integer(effEditOpen)));
   i := VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
  finally
   if i > 0 then FEditOpen := true
@@ -1713,9 +1666,11 @@ begin
  Dispose(temp);
 end;
 
-function TVstPlugin.GetPlugCategory:Integer;
+function TVstPlugin.GetPlugCategory:TVstPlugCategory;
 begin
- if FActive then result := VstDispatch(effGetPlugCategory) else result := -1;
+ if FActive
+  then result := TVstPlugCategory(VstDispatch(effGetPlugCategory))
+  else result := kpcUnknown;
 end;
 
 function TVstPlugin.GetCurrentPosition:Integer;
@@ -2006,7 +1961,7 @@ begin
  // is called, indicates how many sample will be processed
 end;
 
-procedure TVstPlugin.SetPanLaw(PanLaw: TPanLaw; Gain: Single);
+procedure TVstPlugin.SetPanLaw(PanLaw: TVstPanLawType; Gain: Single);
 begin
  if FActive then VstDispatch(effSetPanLaw, 0, Integer(PanLaw), nil, Gain); // PanLaw : Type (Linear, Equal Power,.. see enum PanLaw Type) in <value>,                                                                // Gain in <opt>: for Linear : [1.0 => 0dB PanLaw], [~0.58 => -4.5dB], [0.5 => -6.02dB]
 end;
@@ -2046,8 +2001,8 @@ begin
      begin
       str:=IntToStr(LE);
       StrCopy(@Buf[0], @str[1]);
-     end;
-    MessageBox(0 , Buf, 'GetLastError'+#0, MB_OK + MB_ICONINFORMATION );
+      raise Exception.Create(str);
+     end else raise Exception.Create(buf);
     {$ENDIF}
    finally
     result := 1;
@@ -2466,7 +2421,7 @@ begin
  else Result:=kVstLangEnglish
 end;
 
-function PlugCategory2String(Category:TPlugCategory):string;
+function PlugCategory2String(Category:TVstPlugCategory):string;
 begin
   case Category of
     kpcUnknown        : Result:='Unknown';

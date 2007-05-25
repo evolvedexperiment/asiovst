@@ -8,7 +8,7 @@ uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, RtlConsts, {$ELSE} Windows,
   Messages, {$ENDIF} SysUtils, Forms, Classes, DDSPBase, DVSTEffect;
 
-{$DEFINE _Debug}
+{$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
 
 type
   TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
@@ -18,7 +18,7 @@ type
   TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
   TProcessAudioEvent = procedure(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer) of object;
   TProcessDoubleEvent = procedure(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer) of object;
-  TOnDispatcherEvent = procedure (Sender: TObject; opCode: Integer) of object;
+  TOnDispatcherEvent = procedure (Sender: TObject; opCode: TDispatcherOpcode) of object;
   TGetVUEvent = procedure(var VU:Single) of object;
   TGetEditorEvent = procedure(Sender: TObject; var GUI: TForm) of object;
   TChunkEvent = procedure(Sender: TObject; const Index : Integer; const isPreset : Boolean) of object;
@@ -52,12 +52,6 @@ type
   TVstPluginCategory = (cgUnknown, cgEffect, cgSynth, cgAnalysis,
    cgMastering, cgSpacializer, cgRoomFx, cgSurroundFx, cgRestoration,
    cgOfflineProcess, cgShell, cgGenerator);
-
-  TParameterPropertiesFlag = (ppfIsSwitch, ppfUsesIntegerMinMax, ppfUsesFloatStep,
-                              ppfUsesIntStep, ppfSupportsDisplayIndex,
-                              ppfSupportsDisplayCategory, ppfCanRamp);
-  TParameterPropertiesFlags = set of TParameterPropertiesFlag;
-
 
   TProcessingMode = (pmNormal, pmBlockSave, pmCopy, pmMute);
 
@@ -140,7 +134,7 @@ type
     fStepFloat        : Single;
     fSmallStepFloat   : Single;
     fLargeStepFloat   : Single;
-    fFlags            : TParameterPropertiesFlags;
+    fFlags            : TVstParameterPropertiesFlags;
     fMinInteger       : Integer;
     fMaxInteger       : Integer;
     fStepInteger      : Integer;
@@ -188,7 +182,7 @@ type
     property StepFloat: Single read fStepFloat write fStepFloat;
     property SmallStepFloat: Single read fSmallStepFloat write fSmallStepFloat;
     property LargeStepFloat: Single read fLargeStepFloat write fLargeStepFloat;
-    property Flags: TParameterPropertiesFlags read fFlags write fFlags;
+    property Flags: TVstParameterPropertiesFlags read fFlags write fFlags;
     property MinInteger: Integer read fMinInteger write fMinInteger;
     property MaxInteger: Integer read fMaxInteger write fMaxInteger;
     property StepInteger: Integer read fStepInteger write fStepInteger;
@@ -420,7 +414,7 @@ type
 
     procedure SetVstPrograms(const Value: TCustomVstPrograms);
     procedure SetParameterProperties(const Value : TCustomVstParameterProperties);
-    procedure setParameterAutomated(index: Integer; value: Single);
+    procedure setParameterAutomated(Index: Integer; Value: Single);
     procedure SetVstShellPlugins(const Value: TCustomVstShellPlugins);
     procedure SetKeysRequired(const Value: Boolean);
     function EditorOpen(ptr: pointer): Integer; virtual;
@@ -457,12 +451,12 @@ type
     function Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
     function VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
     function GetEffect: PVSTEffect;
-    function Dispatcher(opcode, index, value: Integer; ptr: pointer; opt: Single): Integer; virtual;
+    function Dispatcher(opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single): Integer; virtual;
     procedure SetAudioMaster(const AM :TAudioMasterCallbackFunc); virtual;
     procedure setNumInputs(inputs: Integer); virtual;
     procedure setNumOutputs(outputs: Integer); virtual;
-    procedure SetSampleRate(newvalue: Single); virtual;
-    procedure SetBlockSize(newvalue: Integer); virtual;
+    procedure SetSampleRate(newValue: Single); virtual;
+    procedure SetBlockSize(newValue: Integer); virtual;
     function GetUniqueID:string; virtual;
     procedure SetUniqueID(fID:string); virtual;
     procedure SetProgram(aProgram: Integer); virtual;
@@ -475,9 +469,9 @@ type
     procedure setInitialDelay(delay: Integer); virtual;
     procedure SetNumParams(newNum : Integer); virtual;
     procedure SetNumPrograms(newNum : Integer); virtual;
-    procedure getParameterLabel(index: Integer; text: pchar); virtual;
-    procedure getParameterDisplay(index: Integer; text: pchar); virtual;
-    procedure getParameterName(index: Integer; text: pchar); virtual;
+    procedure getParameterLabel(Index: Integer; text: pchar); virtual;
+    procedure getParameterDisplay(Index: Integer; text: pchar); virtual;
+    procedure getParameterName(Index: Integer; text: pchar); virtual;
     procedure ReadState(Reader: TReader); override;
     procedure SetOnProcess(v : TProcessAudioEvent);
     procedure SetOnProcessReplacing(v : TProcessAudioEvent);
@@ -486,8 +480,8 @@ type
     procedure PrepareBlockProcessing; virtual;
     procedure SetBlockForcedSize(v: Integer); virtual;
     procedure SetBlockOverlapSize(v: Integer); virtual;
-    procedure setParameter(const index: Integer; value: Single); virtual;
-    function getParameter(index: Integer): Single; virtual;
+    procedure setParameter(const Index: Integer; Value: Single); virtual;
+    function getParameter(Index: Integer): Single; virtual;
     function ProcessEvents(events: PVstEvents): Integer; virtual;  // wants no more...else return 1! VstEvents and VstMidiEvents are declared in aeffectx.h
     procedure SetEffectName(const Value: string); virtual;
     procedure SetVersionMajor(Value: Integer);
@@ -558,7 +552,7 @@ type
     function getVendorString(text: pchar): Boolean; virtual;  // fill text with a string identifying the vendor (max 64 char)
     function getProductString(text: pchar): Boolean; virtual; // fills text with a string with product name (max 64 char)
     function getVendorVersion: Integer; virtual;
-    function canDo(text: pchar): Integer; virtual; // see 'plugCanDos' in audioeffectx.cpp. return values: 0: don't know (default), 1: yes, -1: no
+    function canDo(text: pchar): Integer; virtual; // see 'plugCanDos' in audioeffectx.cpp. return Values: 0: don't know (default), 1: yes, -1: no
     function getIcon: pointer; virtual;  // not yet defined
     function setViewPosition(x, y: Integer): Boolean; virtual;
     function fxIdle: Integer; virtual;
@@ -581,7 +575,7 @@ type
     function getChunkFile(nativePath: pointer): Boolean;
 
     // Host -> Plug
-    function setTotalSampleToProcess(value: Integer): Integer; virtual;   // Called in offline (non RealTime) Process before process is called, indicates how many sample will be processed
+    function setTotalSampleToProcess(Value: Integer): Integer; virtual;   // Called in offline (non RealTime) Process before process is called, indicates how many sample will be processed
     function getNextShellPlugin(const AName: pchar): Integer; virtual;           // This opcode is only called, if Plugin is of type kPlugCategShell. Should return the next plugin's uniqueID. name points to a char buffer of size 64, which is to be filled with the name of the plugin including the terminating zero.
     function startProcess: Integer; virtual;                              // Called one time before the start of process call
     function stopProcess: Integer; virtual;                               // Called after the stop of process call
@@ -592,8 +586,8 @@ type
     // Tools
     function allocateArrangement(var arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean; virtual;   // Allocate memory for a VstSpeakerArrangement containing the given number of channels
     function deallocateArrangement(var arrangement: PVstSpeakerArrangement): Boolean; virtual;                      // Delete/free memory for a speaker arrangement
-    function copySpeaker(copyTo, copyFrom: PVstSpeakerProperties): Boolean; virtual;    // Feed the "to" speaker properties with the same values than "from"'s ones. It is assumed here that "to" exists yet, ie this function won't allocate memory for the speaker (this will prevent from having a difference between an Arrangement's number of channels and its actual speakers...)
-    function matchArrangement(var matchTo: PVstSpeakerArrangement; matchFrom: PVstSpeakerArrangement): Boolean; virtual;    // "to" is deleted, then created and initialized with the same values as "from" ones ("from" must exist).
+    function copySpeaker(copyTo, copyFrom: PVstSpeakerProperties): Boolean; virtual;    // Feed the "to" speaker properties with the same Values than "from"'s ones. It is assumed here that "to" exists yet, ie this function won't allocate memory for the speaker (this will prevent from having a difference between an Arrangement's number of channels and its actual speakers...)
+    function matchArrangement(var matchTo: PVstSpeakerArrangement; matchFrom: PVstSpeakerArrangement): Boolean; virtual;    // "to" is deleted, then created and initialized with the same Values as "from" ones ("from" must exist).
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
@@ -623,7 +617,7 @@ type
 
     // Plug -> Host
     function getNumAutomatableParameters: Integer; virtual;
-    function getParameterQuantization: Integer; virtual; // returns the integer value for +1.0 representation, or 1 if full single float precision is maintained in automation. parameter Index in <value> (-1: all, any)
+    function getParameterQuantization: Integer; virtual; // returns the integer Value for +1.0 representation, or 1 if full single float precision is maintained in automation. parameter Index in <Value> (-1: all, any)
 
     // Plug -> Host
     function ioChanged: Boolean; virtual;   // tell host numInputs and/or numOutputs and/or numParameters has changed
@@ -665,7 +659,7 @@ type
     {$IFDEF DELPHI6_UP} property CPU: TCPU read fCPU; {$ENDIF}
     property Version: string read FVersion write FVersion;
     property UniqueID: string read GetUniqueID write setUniqueID;
-    property Parameter[index: Integer]: Single read getParameter write setParameterAutomated;
+    property Parameter[Index: Integer]: Single read getParameter write setParameterAutomated;
     property Chunk: TMemoryStream read fChunkData write fChunkData;
     property Programs: TCustomVstPrograms read FVstPrograms write SetVstPrograms;
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
@@ -828,13 +822,13 @@ type
   TVstParameterProperty = TCustomVstParameterProperty;
   TVstParameterProperties = TCustomVstParameterProperties;
 
-function opcode2String(opcode: integer): string;
-function dispatchEffectClass(effect: PVSTEffect; opcode, index, value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
-function getParameterClass(effect: PVSTEffect; index: Integer): Single; cdecl;
-procedure setParameterClass(effect: PVSTEffect; index: Integer; value: Single); cdecl;
-procedure processClass(effect: PVSTEffect; inputs, outputs: PPSingle; sampleframes: Integer); cdecl;
-procedure processClassReplacing(effect: PVSTEffect; inputs, outputs: PPSingle; sampleframes: Integer); cdecl;
-procedure processClassDoubleReplacing(effect: PVSTEffect; inputs, outputs: PPDouble; sampleframes: Integer); cdecl;
+function opcode2String(opcode: TDispatcherOpcode): string;
+function dispatchEffectClass(Effect: PVSTEffect; opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
+function getParameterClass(Effect: PVSTEffect; Index: Integer): Single; cdecl;
+procedure setParameterClass(Effect: PVSTEffect; Index: Integer; Value: Single); cdecl;
+procedure processClass(Effect: PVSTEffect; inputs, outputs: PPSingle; sampleframes: Integer); cdecl;
+procedure processClassReplacing(Effect: PVSTEffect; inputs, outputs: PPSingle; sampleframes: Integer); cdecl;
+procedure processClassDoubleReplacing(Effect: PVSTEffect; inputs, outputs: PPDouble; sampleframes: Integer); cdecl;
 
 function KeyCodeToInteger(VKC:TVstKeyCode):Integer;
 
@@ -888,7 +882,7 @@ const
 
 const maxMidiEvents = 256;
 
-function opcode2String(opcode: integer): string;
+function opcode2String(opcode: TDispatcherOpcode): string;
 begin
  case opcode of
   effOpen                           : result:='effOpen';
@@ -1066,8 +1060,8 @@ begin
  begin
   GetMem(fMidiEvent.events[i], sizeof(TVstMidiEvent));
   FillChar(fMidiEvent.events[i]^, sizeof(TVstMidiEvent), 0);
-  PVstMidiEvent(fMidiEvent.events[i])^.vType := 1;
-  PVstMidiEvent(fMidiEvent.events[i])^.byteSize := 24;
+  PVstMidiEvent(fMidiEvent.events[i])^.EventType := etMidi;
+  PVstMidiEvent(fMidiEvent.events[i])^.ByteSize := 24;
  end;
 end;
 
@@ -1134,7 +1128,7 @@ begin
    then PlugCategory:=cgUnknown;
 end;
 
-function TCustomVSTModule.dispatcher(opcode, index, value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.Dispatcher(opcode: TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 var a,b     : Integer;
     keyCode : TVstKeyCode;
     s       : Single;
@@ -1143,26 +1137,26 @@ begin
  if assigned(fOnDispatcher) then fOnDispatcher(Self,opcode);
  result := 0;
 
- {$IFDEF Debug} fLog.Add(TimeToStr(Now-fTmStmp)+' Opcode: '+opcode2String(opcode)+' Value: '+IntToStr(value)); {$ENDIF}
+ {$IFDEF Debug} fLog.Add(TimeToStr(Now-fTmStmp)+' Opcode: '+opcode2String(opcode)+' Value: '+IntToStr(Value)); {$ENDIF}
  {$IFDEF Debug} fLog.SaveToFile('Debug.log'); {$ENDIF}
 
  case opcode of
   effOpen            : if assigned(fOnOpen) then fOnOpen(Self);
   effClose           : if assigned(fOnClose) then fOnClose(Self);
-  effSetProgram      : if (value < fEffect.numPrograms) and (value >= 0) and (value <> fCurProgram)
-                        then CurrentProgram:=value;
+  effSetProgram      : if (Value < fEffect.numPrograms) and (Value >= 0) and (Value <> fCurProgram)
+                        then CurrentProgram:=Value;
   effGetProgram      : result := fCurProgram;
   effSetProgramName  : if numPrograms>0
                         then Programs[fCurProgram].DisplayName:=string(PChar(ptr));
   effGetProgramName  : if numPrograms>0
                         then StrPCopy(ptr,Programs[fCurProgram].DisplayName)
                         else StrPCopy(ptr,'');
-  effGetParamLabel   : getParameterLabel(index, ptr);
-  effGetParamDisplay : getParameterDisplay(index, ptr);
-  effGetParamName    : getParameterName(index, ptr);
+  effGetParamLabel   : getParameterLabel(Index, ptr);
+  effGetParamDisplay : getParameterDisplay(Index, ptr);
+  effGetParamName    : getParameterName(Index, ptr);
   effSetSampleRate   : begin setSampleRate(opt); result:=1; end;
-  effSetBlockSize    : setBlockSize(value);
-  effMainsChanged    : if (value = 0) then Suspend else Resume;
+  effSetBlockSize    : setBlockSize(Value);
+  effMainsChanged    : if (Value = 0) then Suspend else Resume;
   effGetVu           : if assigned(fOnGetVUEvent)
                         then
                          begin
@@ -1192,20 +1186,20 @@ begin
   effEditSleep       : if assigned(fOnEditSleep) then fOnEditSleep(Self);
    // new
   effIdentify        : result := FourCharToLong('N', 'v', 'E', 'f');
-  effGetChunk        : result := getChunk(pointer(ptr^), (index <> 0));
-  effSetChunk        : result := setChunk(ptr, value, (index <> 0));
+  effGetChunk        : result := getChunk(pointer(ptr^), (Index <> 0));
+  effSetChunk        : result := setChunk(ptr, Value, (Index <> 0));
   effProcessEvents             : result := ProcessEvents(ptr);
   effCanBeAutomated            : result := integer(canParameterBeAutomated(Index));
   effString2Parameter          : result := integer(string2parameter(Index, ptr));
   effGetNumProgramCategories   : result := fNumCategories;
-  effGetProgramNameIndexed     : result := integer(getProgramNameIndexed(value, Index, ptr));
+  effGetProgramNameIndexed     : result := integer(getProgramNameIndexed(Value, Index, ptr));
   effCopyProgram               : result := integer(copyProgram(Index));
   effConnectInput              : begin
-                                  if assigned(fOnInConnected) then fOnInConnected(Self,Index,(value <> 0));
+                                  if assigned(fOnInConnected) then fOnInConnected(Self,Index,(Value <> 0));
                                   result := 1;
                                  end;
   effConnectOutput             : begin
-                                  if assigned(fOnOutConnected) then fOnOutConnected(Self,Index,(value <> 0));
+                                  if assigned(fOnOutConnected) then fOnOutConnected(Self,Index,(Value <> 0));
                                   result := 1;
                                  end;
   effGetInputProperties        : result := integer(getInputProperties(Index, ptr));
@@ -1214,32 +1208,32 @@ begin
   effGetCurrentPosition        : result := reportCurrentPosition;
   effGetDestinationBuffer      : result := Integer(reportDestinationBuffer);
   effOfflineNotify             : if assigned(fOnOfflineNotify)
-                                  then begin fOnOfflineNotify(Self, PVstAudioFile(ptr)^, value, (Index <> 0)); result := 1; end
+                                  then begin fOnOfflineNotify(Self, PVstAudioFile(ptr)^, Value, (Index <> 0)); result := 1; end
                                   else result := 0;
   effOfflinePrepare            : if assigned(fOnOfflinePrepare)
-                                  then begin fOnOfflinePrepare(Self, PVstOfflineTask(offline)^, value); result := 1; end
+                                  then begin fOnOfflinePrepare(Self, PVstOfflineTask(offline)^, Value); result := 1; end
                                   else result := 0;
   effOfflineRun                : if assigned(fOnofflineRun)
-                                  then begin fOnofflineRun(Self, PVstOfflineTask(offline)^, value); result := 1; end
+                                  then begin fOnofflineRun(Self, PVstOfflineTask(offline)^, Value); result := 1; end
                                   else result := 0;
-  effSetSpeakerArrangement     : result := Integer(setSpeakerArrangement(pointer(value), ptr));
+  effSetSpeakerArrangement     : result := Integer(setSpeakerArrangement(pointer(Value), ptr));
   effProcessVarIo              : if assigned(fOnProcessVarIO)
                                   then begin fOnProcessVarIO(Self, PVstVariableIo(ptr)^); result := 1; end
                                   else result := 0;
   effSetBlockSizeAndSampleRate : begin
-                                  setBlockSizeAndSampleRate(value, opt);
+                                  setBlockSizeAndSampleRate(Value, opt);
                                   result := 1;
                                  end;
-  effSetBypass                 : result := Integer(setBypass(value <> 0));
+  effSetBypass                 : result := Integer(setBypass(Value <> 0));
   effGetEffectName             : result := Integer(getEffectName(ptr));
   effGetErrorText              : result := Integer(getErrorText(ptr));
   effGetVendorString           : result := Integer(getVendorString(ptr));
   effGetProductString          : result := Integer(getProductString(ptr));
   effGetVendorVersion          : result := getVendorVersion;
-  effVendorSpecific            : if assigned(fOnVendorSpecific) then result := fOnVendorSpecific(Self, Index, value, ptr, opt);
+  effVendorSpecific            : if assigned(fOnVendorSpecific) then result := fOnVendorSpecific(Self, Index, Value, ptr, opt);
   effCanDo                     : result := canDo(ptr);
   effGetIcon                   : result := Integer(getIcon);
-  effSetViewPosition           : result := Integer(setViewPosition(Index, value));
+  effSetViewPosition           : result := Integer(setViewPosition(Index, Value));
   effGetTailSize               : result := fTailSize;
   effIdle                      : result := fxIdle;
   effGetParameterProperties    : result := Integer(getParameterProperties(Index, ptr));
@@ -1248,7 +1242,7 @@ begin
   effEditKeyDown               : if fKeysRequired then
                                   try
                                    keyCode.character := Index;
-                                   keyCode.virt := value;
+                                   keyCode.virt := Value;
                                    keyCode.modifier := Round(opt);
                                    if Assigned(EditorForm) then
                                     begin
@@ -1276,7 +1270,7 @@ begin
   effEditKeyUp                 : if fKeysRequired then
                                   try
                                    keyCode.character := Index;
-                                   keyCode.virt := value;
+                                   keyCode.virt := Value;
                                    keyCode.modifier := Round(opt);
                                    if Assigned(EditorForm) then
                                     begin
@@ -1301,7 +1295,7 @@ begin
                                    result := -1;
                                   end else result := -1;
   effSetEditKnobMode          : if Assigned(fOnSetKnobMode)
-                                 then begin fOnSetKnobMode(Self, value); result := 1; end
+                                 then begin fOnSetKnobMode(Self, Value); result := 1; end
                                  else result := 0;
   effGetMidiProgramName       : result := getMidiProgramName(Index, PMidiProgramName(ptr));
   effGetCurrentMidiProgram    : result := getCurrentMidiProgram(Index, PMidiProgramName(ptr));
@@ -1314,15 +1308,20 @@ begin
   effEndSetProgram          : if Assigned(fOnEndSetProgram)
                                  then begin fOnEndSetProgram(Self); result := 1; end
                                  else result := 0;
-  effGetSpeakerArrangement    : result := Integer(getSpeakerArrangement(PVstSpeakerArrangement(value), PVstSpeakerArrangement(ptr)));
-  effSetTotalSampleToProcess  : result := setTotalSampleToProcess(value);
+  effGetSpeakerArrangement    : result := Integer(getSpeakerArrangement(PVstSpeakerArrangement(Value), PVstSpeakerArrangement(ptr)));
+  effSetTotalSampleToProcess  : result := setTotalSampleToProcess(Value);
   effShellGetNextPlugin       : result := getNextShellPlugin(pchar(ptr));
   effStartProcess             : result := startProcess;
   effStopProcess              : result := stopProcess ();
-  effSetPanLaw                : result := Integer(setPanLaw(value, opt));
+  effSetPanLaw                : result := Integer(setPanLaw(Value, opt));
   effBeginLoadBank            : result := beginLoadBank(PVstPatchChunkInfo(ptr));
   effBeginLoadProgram         : result := beginLoadProgram(PVstPatchChunkInfo(ptr));
-  else result := 0;
+  else
+   try
+     raise Exception.Create('unknown opcode');
+   except
+     result := 0;
+   end;
  end;
 end;
 
@@ -1703,24 +1702,24 @@ begin
   else result:='';
 end;
 
-procedure TCustomVSTModule.getParameterLabel(index: Integer; text: pchar);
+procedure TCustomVSTModule.getParameterLabel(Index: Integer; text: pchar);
 var str : string;
 begin
- if (index >= fEffect.numParams) or (Index>=fParameterProperties.Count)
+ if (Index >= fEffect.numParams) or (Index>=fParameterProperties.Count)
   then str:='undefined'
   else
    begin
-    str:=fParameterProperties[index].Units;
-    if Assigned(fParameterProperties[index].fOnCPL)
-     then fParameterProperties[index].fOnCPL(Self,Index,str);
+    str:=fParameterProperties[Index].Units;
+    if Assigned(fParameterProperties[Index].fOnCPL)
+     then fParameterProperties[Index].fOnCPL(Self,Index,str);
    end;
  StrPCopy(text, str)
 end;
 
-procedure TCustomVSTModule.getParameterDisplay(index: Integer; text: pchar);
+procedure TCustomVSTModule.getParameterDisplay(Index: Integer; text: pchar);
 var str : string;
 begin
- if (index >= fEffect.numParams) or (Index>=fParameterProperties.Count)
+ if (Index >= fEffect.numParams) or (Index>=fParameterProperties.Count)
   then str:='undefined'
   else
    begin
@@ -1729,18 +1728,18 @@ begin
      else
       if (numPrograms>0)
        then str:=FloatToStrF(Programs[fCurProgram].fParameter[Index],ffGeneral,4,4)
-       else str:=FloatToStrF(fParameter[index],ffGeneral,4,4);
-    if Assigned(fParameterProperties[index].fOnCPD)
-     then fParameterProperties[index].fOnCPD(Self,Index,str);
+       else str:=FloatToStrF(fParameter[Index],ffGeneral,4,4);
+    if Assigned(fParameterProperties[Index].fOnCPD)
+     then fParameterProperties[Index].fOnCPD(Self,Index,str);
    end;
  StrPCopy(text, str)
 end;
 
-procedure TCustomVSTModule.getParameterName(index: Integer; text: pchar);
+procedure TCustomVSTModule.getParameterName(Index: Integer; text: pchar);
 begin
- if (index >= fEffect.numParams) or (Index>=fParameterProperties.Count)
+ if (Index >= fEffect.numParams) or (Index>=fParameterProperties.Count)
   then StrPCopy(text, 'undefined')
-  else StrPCopy(text,fParameterProperties[index].DisplayName);
+  else StrPCopy(text,fParameterProperties[Index].DisplayName);
 end;
 
 function TCustomVSTModule.getChunk(var data: pointer; isPreset: Boolean): Integer;
@@ -1811,21 +1810,21 @@ begin
  fEditorNeedUpdate:=True;
 end;
 
-procedure TCustomVSTModule.setSampleRate(newvalue: Single);
+procedure TCustomVSTModule.setSampleRate(newValue: Single);
 begin
- if fSampleRate<>newvalue then
+ if fSampleRate<>newValue then
   begin
-   fSampleRate := newvalue;
-   if assigned(fSampleRateChangeEvent) then fSampleRateChangeEvent(Self,newvalue);
+   fSampleRate := newValue;
+   if assigned(fSampleRateChangeEvent) then fSampleRateChangeEvent(Self,newValue);
   end;
 end;
 
-procedure TCustomVSTModule.setBlockSize(newvalue: Integer);
+procedure TCustomVSTModule.setBlockSize(newValue: Integer);
 begin
- if fBlockSize<>newvalue then
+ if fBlockSize<>newValue then
   begin
-   fBlockSize := newvalue;
-   if assigned(fBlockSizeChangeEvent) then fBlockSizeChangeEvent(Self,newvalue);
+   fBlockSize := newValue;
+   if assigned(fBlockSizeChangeEvent) then fBlockSizeChangeEvent(Self,newValue);
   end;
 end;
 
@@ -1950,13 +1949,13 @@ end;
 function TCustomVSTModule.Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
 begin
  if (Index>=numParams) or (Index>=fParameterProperties.Count) then begin Result := 0; Exit; end; 
- result := (value - fParameterProperties[index].min) / (fParameterProperties[index].max - fParameterProperties[index].min);
- case fParameterProperties[index].curve of
-  ctLogarithmic: result := ln(fParameterProperties[index].curveFactor * result + 1) / ln(fParameterProperties[index].curveFactor + 1);
-  ctExponential: result := exp(result * ln(fParameterProperties[index].curveFactor + 1)) - 1;
-  ctFrequencyScale: if fParameterProperties[index].min<>0
-                     then result := ln((fParameterProperties[index].max/fParameterProperties[index].min)*result+1)/ln((fParameterProperties[index].max/fParameterProperties[index].min))
-                     else result := ln((fParameterProperties[index].max)*result+1)/ln((fParameterProperties[index].max));
+ result := (Value - fParameterProperties[Index].min) / (fParameterProperties[Index].max - fParameterProperties[Index].min);
+ case fParameterProperties[Index].curve of
+  ctLogarithmic: result := ln(fParameterProperties[Index].curveFactor * result + 1) / ln(fParameterProperties[Index].curveFactor + 1);
+  ctExponential: result := exp(result * ln(fParameterProperties[Index].curveFactor + 1)) - 1;
+  ctFrequencyScale: if fParameterProperties[Index].min<>0
+                     then result := ln((fParameterProperties[Index].max/fParameterProperties[Index].min)*result+1)/ln((fParameterProperties[Index].max/fParameterProperties[Index].min))
+                     else result := ln((fParameterProperties[Index].max)*result+1)/ln((fParameterProperties[Index].max));
   else
  end;
  result := f_limit(result, 0, 1);
@@ -1965,38 +1964,38 @@ end;
 function TCustomVSTModule.VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
 begin
  Result := Value;
- case fParameterProperties[index].curve of
-  ctLogarithmic: Result := (exp(Result * ln(fParameterProperties[index].curveFactor + 1)) - 1) / fParameterProperties[index].curveFactor;
-  ctExponential: Result := ln(fParameterProperties[index].curveFactor * Result + 1) / ln(fParameterProperties[index].curveFactor + 1);
+ case fParameterProperties[Index].curve of
+  ctLogarithmic: Result := (exp(Result * ln(fParameterProperties[Index].curveFactor + 1)) - 1) / fParameterProperties[Index].curveFactor;
+  ctExponential: Result := ln(fParameterProperties[Index].curveFactor * Result + 1) / ln(fParameterProperties[Index].curveFactor + 1);
  else
  end;
- Result := fParameterProperties[index].Smooth(Result * (fParameterProperties[index].max - fParameterProperties[index].min) + fParameterProperties[index].min);
+ Result := fParameterProperties[Index].Smooth(Result * (fParameterProperties[Index].max - fParameterProperties[Index].min) + fParameterProperties[Index].min);
 end;
 
 procedure TCustomVSTModule.ReadOnlyString(s: string);
 begin end;
 
-procedure TCustomVSTModule.setParameterAutomated(index: Integer; value: Single);
+procedure TCustomVSTModule.setParameterAutomated(Index: Integer; Value: Single);
 begin
  if (Index>=numParams) or (Index>=fParameterProperties.Count) then Exit;
  setParameter(Index,Value);
- if fParameterProperties[index].CanBeAutomated and Assigned(fAudioMaster) and not fIsHostAutomation
-  then fAudioMaster(@fEffect, audioMasterAutomate, index, 0, nil, Parameter2VSTParameter(value,index));
+ if fParameterProperties[Index].CanBeAutomated and Assigned(fAudioMaster) and not fIsHostAutomation
+  then fAudioMaster(@fEffect, audioMasterAutomate, Index, 0, nil, Parameter2VSTParameter(Value,Index));
 end;
 
-procedure TCustomVSTModule.setParameter(const index: Integer; value: Single);
+procedure TCustomVSTModule.setParameter(const Index: Integer; Value: Single);
 begin
  if fParameterUpdate then exit;
- {$IFDEF Debug} fLog.Add('Set Parameter: '+FloatToStr(value)); {$ENDIF}
+ {$IFDEF Debug} fLog.Add('Set Parameter: '+FloatToStr(Value)); {$ENDIF}
  fParameterUpdate:=True;
  try
-  if (index >= fEffect.numParams) or (Index < 0) or (Index>=fParameterProperties.Count)
+  if (Index >= fEffect.numParams) or (Index < 0) or (Index>=fParameterProperties.Count)
    then raise exception.Create('Index out of bounds');
   if (effFlagsProgramChunks in fEffect.EffectFlags)
    then
     begin
-     if Assigned(ParameterProperties[index].fOnSPC)
-      then fParameterProperties[index].fOnSPC(Self,Index,Value);
+     if Assigned(ParameterProperties[Index].fOnSPC)
+      then fParameterProperties[Index].fOnSPC(Self,Index,Value);
      if Assigned(OnParameterChange)
       then OnParameterChange(Self, Index, Value);
     end
@@ -2005,17 +2004,17 @@ begin
      if (numPrograms>0) and (fCurProgram>=0)
       then
        begin
-        Programs[fCurProgram].fParameter[index] := Value;
-        if Assigned(ParameterProperties[index].fOnSPC)
-         then fParameterProperties[index].fOnSPC(Self,Index,Programs[fCurProgram].fParameter[Index]);
+        Programs[fCurProgram].fParameter[Index] := Value;
+        if Assigned(ParameterProperties[Index].fOnSPC)
+         then fParameterProperties[Index].fOnSPC(Self,Index,Programs[fCurProgram].fParameter[Index]);
         if Assigned(OnParameterChange)
          then OnParameterChange(Self, Index, Programs[fCurProgram].fParameter[Index]);
        end
       else
        begin
-        fParameter[index] := Value;
-        if Assigned(ParameterProperties[index].fOnSPC)
-         then fParameterProperties[index].fOnSPC(Self,Index,fParameter[Index]);
+        fParameter[Index] := Value;
+        if Assigned(ParameterProperties[Index].fOnSPC)
+         then fParameterProperties[Index].fOnSPC(Self,Index,fParameter[Index]);
         if Assigned(OnParameterChange)
          then OnParameterChange(Self, Index, fParameter[Index]);
        end
@@ -2026,7 +2025,7 @@ begin
  end;
 end;
 
-function TCustomVSTModule.getParameter(index: Integer): Single;
+function TCustomVSTModule.getParameter(Index: Integer): Single;
 begin
  if (effFlagsProgramChunks in fEffect.EffectFlags)
   then Result:=fOnGetChunkParamEvent(Self,Index)
@@ -2118,57 +2117,57 @@ end;
 
 // Functions
 
-function dispatchEffectClass(effect: PVSTEffect; opcode, index, value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
+function dispatchEffectClass(Effect: PVSTEffect; opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
 var VSTModule: TCustomVSTModule;
 begin
- VSTModule := TCustomVSTModule(effect^.vObject);
+ VSTModule := TCustomVSTModule(Effect^.vObject);
  if (opcode = effClose) then
   try
-   VSTModule.dispatcher(opcode, index, value, ptr, opt);
+   VSTModule.dispatcher(opcode, Index, Value, ptr, opt);
    VSTModule.Free;
    Result := 1;
   except
    Result := 0;
   end
- else Result := VSTModule.dispatcher(opcode, index, value, ptr, opt);
+ else Result := VSTModule.dispatcher(opcode, Index, Value, ptr, opt);
 end;
 
-function getParameterClass(effect: PVSTEffect; index: Integer): Single; cdecl;
+function getParameterClass(Effect: PVSTEffect; Index: Integer): Single; cdecl;
 var VSTModule: TCustomVSTModule;
 begin
- VSTModule := TCustomVSTModule(effect^.vObject);
+ VSTModule := TCustomVSTModule(Effect^.vObject);
  if (Index<VSTModule.numParams) and (Index<VSTModule.fParameterProperties.Count)
-  then Result := VSTModule.Parameter2VSTParameter(VSTModule.getParameter(index),Index)
+  then Result := VSTModule.Parameter2VSTParameter(VSTModule.getParameter(Index),Index)
   else Result := 0;
 end;
 
-procedure setParameterClass(effect: PVSTEffect; index: Integer; value: Single); cdecl;
+procedure setParameterClass(Effect: PVSTEffect; Index: Integer; Value: Single); cdecl;
 begin
- with TCustomVSTModule(effect^.vObject) do
+ with TCustomVSTModule(Effect^.vObject) do
   begin
-   {$IFDEF Debug} fLog.Add('Set Parameter Class: '+FloatToStr(value)); {$ENDIF}
+   {$IFDEF Debug} fLog.Add('Set Parameter Class: '+FloatToStr(Value)); {$ENDIF}
    if fIsHostAutomation then exit;
    fIsHostAutomation:=True;
    if ((Index>=numParams) or (Index>=fParameterProperties.Count)) and Assigned(OnParameterSizeFailed)
-    then OnParameterSizeFailed(TCustomVSTModule(effect^.vObject))
-    else setParameter(index, VSTParameter2Parameter(value,index));
+    then OnParameterSizeFailed(TCustomVSTModule(Effect^.vObject))
+    else setParameter(Index, VSTParameter2Parameter(Value,Index));
    fIsHostAutomation:=False;
   end;
 end;
 
-procedure processClass(effect: PVSTEffect; inputs, outputs: PPSingle; sampleframes: Integer); cdecl;
+procedure processClass(Effect: PVSTEffect; inputs, outputs: PPSingle; sampleframes: Integer); cdecl;
 begin
- TCustomVSTModule(effect^.vObject).process(inputs, outputs, sampleFrames);
+ TCustomVSTModule(Effect^.vObject).process(inputs, outputs, sampleFrames);
 end;
 
-procedure processClassReplacing(effect: PVSTEffect; inputs, outputs: PPSingle; sampleframes: Integer); cdecl;
+procedure processClassReplacing(Effect: PVSTEffect; inputs, outputs: PPSingle; sampleframes: Integer); cdecl;
 begin
- TCustomVSTModule(effect^.vObject).processReplacing(inputs, outputs, sampleFrames);
+ TCustomVSTModule(Effect^.vObject).processReplacing(inputs, outputs, sampleFrames);
 end;
 
-procedure processClassDoubleReplacing(effect: PVSTEffect; inputs, outputs: PPDouble; sampleframes: Integer); cdecl;
+procedure processClassDoubleReplacing(Effect: PVSTEffect; inputs, outputs: PPDouble; sampleframes: Integer); cdecl;
 begin
- TCustomVSTModule(effect^.vObject).processDoubleReplacing(inputs, outputs, sampleFrames);
+ TCustomVSTModule(Effect^.vObject).processDoubleReplacing(inputs, outputs, sampleFrames);
 end;
 
 // TVstParameterProperty
@@ -2476,8 +2475,8 @@ asm
   POP     EAX            {store EFLAGS in EAX}
   MOV     EDX, EAX       {save in EDX for later testing}
   XOR     EAX, $200000;  {flip ID bit in EFLAGS}
-  PUSH    EAX            {save new EFLAGS value on stack}
-  POPFD                  {replace current EFLAGS value}
+  PUSH    EAX            {save new EFLAGS Value on stack}
+  POPFD                  {replace current EFLAGS Value}
   PUSHFD                 {get new EFLAGS}
   POP     EAX            {store new EFLAGS in EAX}
   XOR     EAX, EDX       {check if ID bit changed}
@@ -2490,7 +2489,7 @@ function IsFPU_Available: Boolean;
 var _FCW, _FSW: Word;
 asm
   MOV     EAX, False     {initialize return register}
-  MOV     _FSW, $5A5A    {store a non-zero value}
+  MOV     _FSW, $5A5A    {store a non-zero Value}
   FNINIT                 {must use non-wait form}
   FNSTSW  _FSW           {store the status}
   CMP     _FSW, 0        {was the correct status read?}
@@ -3082,14 +3081,14 @@ begin
  ireadsource := Integer(readSource);
 
  if Assigned(fAudioMaster)
-  then Result := (fAudioMaster(@fEffect, audioMasterOfflineRead, ireadsource, option, offline, 0) <> 0)
+  then Result := (fAudioMaster(@fEffect, audioMasterOfflineRead, ireadsource, Integer(option), offline, 0) <> 0)
   else Result := FALSE;
 end;
 
 function TCustomVSTModule.offlineWrite(offline: PVstOfflineTask; option: TVstOfflineOption): Boolean;
 begin
  if Assigned(fAudioMaster)
-  then Result := (fAudioMaster(@fEffect, audioMasterOfflineWrite, 0, option, offline, 0) <> 0)
+  then Result := (fAudioMaster(@fEffect, audioMasterOfflineWrite, 0, Integer(option), offline, 0) <> 0)
   else Result := FALSE;
 end;
 
@@ -3209,7 +3208,7 @@ function TCustomVSTModule.ProcessEvents(events: PVstEvents): Integer;
 var i: integer;
 begin
  for i := 0 to events^.numEvents - 1 do
-  if (events^.events[i]^.vtype = kVstMidiType) then
+  if (events^.events[i]^.EventType = etMidi) then
    if assigned(fProcessMidi) then fProcessMidi(Self, PVstMidiEvent(events^.events[i])^);
  Result := 1;
 end;
@@ -3217,7 +3216,7 @@ end;
 function TCustomVSTModule.canParameterBeAutomated(Index: Integer): Boolean;
 begin
  if Index<ParameterProperties.Count
-  then Result := ParameterProperties[index].CanBeAutomated
+  then Result := ParameterProperties[Index].CanBeAutomated
   else Result := TRUE
 end;
 
@@ -3268,11 +3267,11 @@ begin
   sat:=satStereo;
   cpf:=[cpfIsActive,cpfIsStereo];
   if Assigned(fOnGetInputProperties) then fOnGetInputProperties(Self,str1,str2,sat,cpf);
-  StrPCopy(properties^.vLabel, str1); // set name of input channel:
+  StrPCopy(properties^.Caption, str1); // set name of input channel:
   StrPCopy(properties^.shortLabel, str2); // set name of input channel:
-  if cpfIsActive in cpf then properties^.flags := kVstPinIsActive else properties^.flags :=0;
-  if cpfIsStereo in cpf then properties^.flags := properties^.flags or kVstPinIsStereo;
-  if cpfUseSpeaker in cpf then properties^.flags := properties^.flags or kVstPinUseSpeaker;
+  if cpfIsActive in cpf then properties^.flags := [vppIsActive] else properties^.flags := [];
+  if cpfIsStereo in cpf then properties^.flags := properties^.flags + [vppIsStereo];
+  if cpfUseSpeaker in cpf then properties^.flags := properties^.flags + [vppUseSpeaker];
 
   Result := true;
  end;
@@ -3292,11 +3291,11 @@ begin
   sat:=satStereo;
   cpf:=[cpfIsActive,cpfIsStereo];
   if Assigned(fOnGetOutputProperties) then fOnGetOutputProperties(Self,str1,str2,sat,cpf);
-  StrPCopy(properties^.vLabel, str1); // set name of input channel:
+  StrPCopy(properties^.Caption, str1); // set name of input channel:
   StrPCopy(properties^.shortLabel, str2); // set name of input channel:
-  if cpfIsActive in cpf then properties^.flags := kVstPinIsActive else properties^.flags :=0;
-  if cpfIsStereo in cpf then properties^.flags := properties^.flags or kVstPinIsStereo;
-  if cpfUseSpeaker in cpf then properties^.flags := properties^.flags or kVstPinUseSpeaker;
+  if cpfIsActive in cpf then properties^.flags := [vppIsActive] else properties^.flags := [];
+  if cpfIsStereo in cpf then properties^.flags := properties^.flags + [vppIsStereo];
+  if cpfUseSpeaker in cpf then properties^.flags := properties^.flags + [vppUseSpeaker];
   Result := true;
  end;
 end;
@@ -3378,7 +3377,7 @@ end;
 
 function TCustomVSTModule.getVendorVersion: Integer;
 begin
- Result := feffect.Version;
+ Result := fEffect.Version;
 end;
 
 function TCustomVSTModule.canDo(text: pchar): Integer;
@@ -3435,7 +3434,7 @@ begin
  Result := ParameterProperties[Index].ReportVST2Properties;
  if Result then
   begin
-   StrCopy(p^.vLabel,@ParameterProperties[Index].DisplayName[1]);
+   StrCopy(p^.Caption,@ParameterProperties[Index].DisplayName[1]);
    str:=ParameterProperties[Index].ShortLabel;
    StrCopy(p^.shortLabel,@str);
    p^.minInteger:=ParameterProperties[Index].MinInteger;
@@ -3446,13 +3445,7 @@ begin
    p^.largeStepFloat:=ParameterProperties[Index].LargeStepFloat;
    p^.smallStepFloat:=ParameterProperties[Index].SmallStepFloat;
    p^.displayIndex:=0;
-   if ppfIsSwitch in ParameterProperties[Index].Flags then p^.flags:=kVstParameterIsSwitch else p^.flags:=0;
-   if ppfUsesIntegerMinMax in ParameterProperties[Index].Flags then p^.flags:=kVstParameterUsesIntegerMinMax;
-   if ppfUsesFloatStep in ParameterProperties[Index].Flags then p^.flags:=kVstParameterUsesFloatStep;
-   if ppfUsesIntStep in ParameterProperties[Index].Flags then p^.flags:=kVstParameterUsesIntStep;
-   if ppfSupportsDisplayIndex in ParameterProperties[Index].Flags then p^.flags:=kVstParameterSupportsDisplayIndex;
-   if ppfSupportsDisplayCategory in ParameterProperties[Index].Flags then p^.flags:=kVstParameterSupportsDisplayCategory;
-   if ppfCanRamp in ParameterProperties[Index].Flags then p^.flags:=p^.flags+kVstParameterCanRamp;
+   p^.Flags:=ParameterProperties[Index].Flags;
   end;
 end;
 
@@ -3534,9 +3527,9 @@ begin
   else Result := nil;
 end;
 
-function TCustomVSTModule.setTotalSampleToProcess(value: Integer): Integer;
+function TCustomVSTModule.setTotalSampleToProcess(Value: Integer): Integer;
 begin
- Result := value;
+ Result := Value;
 end;
 
 function TCustomVSTModule.getNextShellPlugin(const AName: pchar): Integer;
