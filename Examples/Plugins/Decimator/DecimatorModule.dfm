@@ -8,10 +8,11 @@ object VSTDecimator: TVSTDecimator
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = cgEffect
+  PlugCategory = vcgEffect
   TailSize = 0
-  CanDos = [plugAsChannelInsert, plugAsSend, _2in2out]
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd1in2out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000
+  numCategories = 1
   CurrentProgram = 0
   CurrentProgramName = 'Preset 1'
   KeysRequired = False
@@ -64,7 +65,7 @@ object VSTDecimator: TVSTDecimator
       StepFloat = 1.000000000000000000
       SmallStepFloat = 1.000000000000000000
       LargeStepFloat = 2.000000000000000000
-      Flags = [ppfUsesIntegerMinMax, ppfUsesIntStep]
+      Flags = []
       MinInteger = 1
       MaxInteger = 24
       StepInteger = 1
@@ -118,7 +119,7 @@ object VSTDecimator: TVSTDecimator
       SmoothingFactor = 1.000000000000000000
       CanBeAutomated = True
       ReportVST2Properties = False
-      Flags = []
+      Flags = [kVstParameterIsSwitch]
       MinInteger = 0
       MaxInteger = 0
       StepInteger = 0

@@ -5,11 +5,14 @@ object MIDIModule: TMIDIModule
   EffectName = 'MIDI Plugin'
   ProductName = 'MIDI Plugin'
   VendorName = 'Delphi VST'
-  VendorVersion = 1
-  PlugCategory = cgUnknown
+  VersionMajor = 1
+  VersionMinor = 0
+  VersionRelease = 0
+  PlugCategory = vcgSynth
   TailSize = 0
-  CanDos = [sendVstEvents, sendVstMidiEvent, receiveVstEvents, receiveVstMidiEvent, plugAsChannelInsert, plugAsSend, _2in2out]
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd1in2out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000
+  numCategories = 1
   CurrentProgram = -1
   KeysRequired = False
   UniqueID = 'MIDI'

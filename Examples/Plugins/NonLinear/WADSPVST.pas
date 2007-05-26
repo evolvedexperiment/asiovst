@@ -1,6 +1,9 @@
 unit WADSPVST;
 
+{$I ASIOVST.INC}
+{$IFDEF Delphi_10_Up}
 {$INLINE AUTO}
+{$ENDIF}
 
 interface
 
@@ -47,17 +50,12 @@ type
 
   TFmWinAmpVST = class(TForm)
     VstHost: TVstHost;
-    Timer: TTimer;
     PnGUI: TPanel;
     procedure FormCreate(Sender: TObject);
-    procedure TimerTimer(Sender: TObject);
   private
-    fColDetected : Boolean;
-    PushTecModule : TVSTOpAmp;
-    procedure SetScheme;
+    OpAmpModule : TVSTOpAmp;
     procedure LoadVST;
     procedure ClosePlugin;
-    procedure CallEditIdle(Sender: TObject);
   protected
     procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -125,7 +123,6 @@ begin
   end
  else
   begin
-   This_Mod^.UserData^.Timer.OnTimer:=This_Mod^.UserData^.CallEditIdle;
    Application.ProcessMessages; sleep(10);
    WADSPModule.UserData^.Visible:=True;
   end;
@@ -143,7 +140,6 @@ function ModifySamples(This_Mod : PWinAmpDSPModule; Samples : Pointer;
                        NumSamples, BitPerSample, nCh, sRate : Integer) : Integer;
 var TmpData : TArrayOfSingleDynArray;
     i,j,ch  : Integer;
-    Smpls   : PByte;
     Temp    : Integer;
 const
   DivFak8  : Single = 1/$80;     MulFak8:Single  = $7F;
@@ -269,10 +265,9 @@ begin
    Free;
   end;
  Visible:=False; 
- Timer.Enabled:=False;
  with VstHost[0] do
   try
-   SavePreset(ExtractFilePath(Application.ExeName)+'pushtec.fxp');
+   SavePreset(ExtractFilePath(Application.ExeName)+'OpAmp.fxp');
    CloseEdit;
    Active:=False;
    Unload;
@@ -287,16 +282,6 @@ begin
  Params.WndParent := WADSPModule.HwndParent;
 end;
 
-procedure TFmWinAmpVST.TimerTimer(Sender: TObject);
-begin
- VstHost[0].EditIdle;
-// if not fColDetected then SetScheme;
-end;
-
-procedure TFmWinAmpVST.SetScheme;
-begin
-end;
-
 procedure TFmWinAmpVST.LoadVST;
 var rct  : ERect;
 begin
@@ -309,10 +294,10 @@ begin
    try Unload; except end;
    sleep(10);
 
-   PushTecModule:=TVSTOpAmp.Create(Application);
-   PushTecModule.Effect^.user:=PushTecModule;
-   PushTecModule.AudioMaster:=audioMaster;
-   PVstEffect:=PushTecModule.Effect;
+   OpAmpModule:=TVSTOpAmp.Create(Application);
+   OpAmpModule.Effect^.user:=OpAmpModule;
+   OpAmpModule.AudioMaster:=audioMaster;
+   PVstEffect:=OpAmpModule.Effect;
 
    Active:=True;
    try
@@ -330,12 +315,6 @@ begin
  rct:=VSTHost[0].EditGetRect;
  ClientWidth := rct.right - rct.left;
  ClientHeight := rct.bottom - rct.Top;
-end;
-
-procedure TFmWinAmpVST.CallEditIdle(Sender: TObject);
-var rct  : ERect;
-begin
- VstHost[0].EditIdle;
 end;
 
 end.

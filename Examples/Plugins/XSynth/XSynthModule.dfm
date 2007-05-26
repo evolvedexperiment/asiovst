@@ -9,10 +9,11 @@ object VSTSSModule: TVSTSSModule
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = cgSynth
+  PlugCategory = vcgSynth
   TailSize = 0
-  CanDos = [sendVstEvents, sendVstMidiEvent, sendVstTimeInfo, receiveVstEvents, receiveVstMidiEvent, receiveVstTimeInfo, plugAsChannelInsert, plugAsSend, _1in1out, _1in2out, _2in1out, _2in2out]
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
+  numCategories = 1
   CurrentProgram = 0
   CurrentProgramName = 'Default'
   KeysRequired = False
@@ -336,7 +337,7 @@ object VSTSSModule: TVSTSSModule
       StepFloat = 1.000000000000000000
       SmallStepFloat = 1.000000000000000000
       LargeStepFloat = 5.000000000000000000
-      Flags = [ppfUsesIntegerMinMax, ppfUsesIntStep]
+      Flags = []
       MinInteger = 0
       MaxInteger = 100
       StepInteger = 1

@@ -9,14 +9,15 @@ object VSTSSModule: TVSTSSModule
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = cgSynth
+  PlugCategory = vcgSynth
   TailSize = 0
-  CanDos = [sendVstEvents, sendVstMidiEvent, sendVstTimeInfo, receiveVstEvents, receiveVstMidiEvent, receiveVstTimeInfo, plugAsChannelInsert, plugAsSend, _1in1out, _1in2out, _2in1out, _2in2out]
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcdMixDryWet, vcd2in2out]
   SampleRate = 44100.000000000000000000
+  numCategories = 1
   CurrentProgram = 0
   CurrentProgramName = 'Default'
   KeysRequired = False
-  UniqueID = 'SiSy'
+  UniqueID = 'Voco'
   ShellPlugins = <>
   Programs = <
     item

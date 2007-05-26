@@ -8,10 +8,11 @@ object PluginDataModule: TPluginDataModule
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = cgEffect
+  PlugCategory = vcgEffect
   TailSize = 0
-  CanDos = []
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd1in2out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000
+  numCategories = 1
   CurrentProgram = 0
   CurrentProgramName = 'Default'
   KeysRequired = False

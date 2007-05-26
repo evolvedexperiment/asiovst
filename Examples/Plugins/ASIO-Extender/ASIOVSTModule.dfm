@@ -1,15 +1,16 @@
-object SimpleDelayVST: TSimpleDelayVST
+object ASIOVSTModule: TASIOVSTModule
   OldCreateOrder = False
-  OnCreate = VST2ModuleCreate
-  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
+  OnCreate = VSTModuleCreate
+  OnDestroy = VST2ModuleDestroy
+  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
-  EffectName = 'Simple Delay'
-  ProductName = 'Simple Delay'
-  VendorName = 'VST Wizard Example'
+  EffectName = 'ASIO Extender'
+  ProductName = 'ASIO Extender'
+  VendorName = 'ASIO/VST Project'
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = vcgEffect
+  PlugCategory = vcgUnknown
   TailSize = 0
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
@@ -17,28 +18,18 @@ object SimpleDelayVST: TSimpleDelayVST
   CurrentProgram = 0
   CurrentProgramName = 'Init'
   KeysRequired = False
-  UniqueID = 'dlay'
+  UniqueID = 'ASIO'
   ShellPlugins = <>
   Programs = <
-    item
-      DisplayName = 'Init'
-      VSTModule = Owner
-    end
-    item
-      DisplayName = 'Init'
-      VSTModule = Owner
-    end
     item
       DisplayName = 'Init'
       VSTModule = Owner
     end>
   ParameterProperties = <
     item
-      Min = 1.000000000000000000
-      Max = 44100.000000000000000000
+      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Delay Length'
-      Units = 'Samples'
+      DisplayName = 'ASIO Driver'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       CanBeAutomated = True
@@ -49,13 +40,12 @@ object SimpleDelayVST: TSimpleDelayVST
       StepInteger = 0
       LargeStepInteger = 0
       VSTModule = Owner
-      OnParameterChange = DelaylaVSTParameterProperties0ParameterChange
+      OnCustomParameterDisplay = ASIOVSTModuleParameterProperties0CustomParameterDisplay
     end>
-  OnEditOpen = VST_EditOpen
   OnProcess = VST2ModuleProcess
   OnProcessReplacing = VST2ModuleProcess
-  Left = 248
-  Top = 106
-  Height = 150
-  Width = 215
+  Left = 281
+  Top = 208
+  Height = 270
+  Width = 480
 end

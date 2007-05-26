@@ -99,7 +99,7 @@ end;
 
 function TPlugInPlugModule.VST2ModuleCanDo(Sender: TObject; CanDoText: String): Integer;
 begin
- VstHost[0].CanDo(@CanDoText);
+ result:=VstHost[0].CanDo(@CanDoText);
 end;
 
 procedure TPlugInPlugModule.VST2ModuleEditTop(Sender: TObject);

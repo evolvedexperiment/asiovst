@@ -63,11 +63,4 @@ object FmWinAmpVST: TFmWinAmpVST
     Left = 32
     Top = 48
   end
-  object Timer: TTimer
-    Enabled = False
-    Interval = 300
-    OnTimer = TimerTimer
-    Left = 60
-    Top = 48
-  end
 end

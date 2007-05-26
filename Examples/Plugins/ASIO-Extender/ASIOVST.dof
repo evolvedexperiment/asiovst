@@ -90,18 +90,18 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=..\..\..\Bin
+OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\..\Source
-Packages=vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;dclOffice2k
+SearchPath=
+Packages=vcl;rtl;vclx;inet;vclie;dbrtl;dsnap;dsnapcon;vcldb;VclSmp;inetdb;bdertl;vcldbx;teeui;teedb;tee;dss;visualclx;vclactnband;vclshlctrls;dclOffice2k;madBasic_;madDisAsm_;madExcept_;GR32_D7;GR32_DSGN_D7;DJcl;JvStdCtrlsD7R;JvAppFrmD7R;JvCoreD7R;JvBandsD7R;JvBDED7R;JvDlgsD7R;JvCmpD7R;JvCryptD7R;JvCtrlsD7R;JvCustomD7R;JvDockingD7R;JvEDID7R;qrpt;JvGlobusD7R;JvHMID7R;JvInspectorD7R;JvInterpreterD7R;JvJansD7R;JvManagedThreadsD7R;JvMMD7R;JvPageCompsD7R;JvPluginD7R;JvPrintPreviewD7R;JvSystemD7R;JvTimeFrameworkD7R;JvValidatorsD7R;JvWizardD7R;JvXPCtrlsD7R;FlatStyle_D6;FlatControls_D7;DifferentEvolution;CPortLib7;AurelioVector;EQGraphX;PJDF;FullScaleMeter;miscActiveX;GradEd;SizeGrid
 Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=NoGUIFilter.dll
-HostApplication=..\..\Bin\VST Plugin Analyser.exe
+RunParams=
+HostApplication=
 Launcher=
 UseLauncher=0
 DebugCWD=
@@ -134,13 +134,9 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=1
-Item0=..\..\Source
-[HistoryLists\hlOutputDirectorry]
-Count=2
-Item0=..\..\..\Bin
-Item1=..\..\Bin
+[Excluded Packages]
+c:\programme\borland\delphi7\Bin\dclie70.bpl=Internet Explorer-Komponenten
+C:\Programme\Borland\Delphi7\Projects\Bpl\JvDBD7D.bpl=JVCL Database Components
+c:\programme\borland\delphi7\Bin\dclmlwiz70.bpl=Borland Markup Language-Experten
+c:\programme\borland\delphi7\Bin\DBWEBXPRT.BPL=Borland Package für Web-Experten
+c:\programme\borland\delphi7\Projects\Bpl\GR32_Charts_D7.bpl=GR32 Charts

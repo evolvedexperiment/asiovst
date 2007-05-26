@@ -1,47 +1,42 @@
 [Closed Files]
-File_0=SourceModule,'C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpGUI.pas',0,1,1,16,26,0,0
-File_1=SourceModule,'C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpModule.pas',0,1,31,1,52,0,0
-File_2=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQGUI.pas',0,1,1221,37,1251,1,0
-File_3=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQModule.pas',0,1,1327,21,1357,1,0
-File_4=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQMLP.pas',0,1,753,1,784,0,0
-File_5=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQFilter.pas',0,1,129,41,147,0,0
-File_6=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQBasicFilter.pas',0,1,1,31,10,0,0
-File_7=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQIIRFilter.pas',0,1,120,10,236,0,0
-File_8=SourceModule,'C:\ITA\Projects\Library\DFFTRD.pas',0,1,2429,42,2458,0,0
+File_0=SourceModule,'C:\ITA\Projects\VSTPack\Source\DVSTEffect.pas',0,1,590,1,590,0,0
+File_1=SourceModule,'C:\ITA\Projects\VSTPack\Source\DASIOHost.pas',0,1,55,1,72,0,0
+File_2=SourceModule,'C:\ITA\Projects\VST Plugins\Unfinished\ASIO-Extender\Neu\ASIOVST.dpr',0,1,1,6,7,0,0
+File_3=SourceModule,'C:\ITA\Projects\VSTPack\Source\DVSTModule.pas',0,1,718,1,734,0,0
+File_4=SourceModule,'c:\programme\borland\delphi7\source\rtl\Win\Windows.pas',0,1,28568,1,28584,0,0
+File_5=SourceModule,'C:\ITA\Projects\ASIO Host\DASIOHost.pas',0,1,1074,1,1065,0,0
+File_6=SourceModule,'C:\ITA\Projects\ASIO Host\ASIO-Host DAT\ASIODemoForm.pas',0,1,138,1,159,1,0
+File_7=SourceModule,'c:\ita\projects\components\audio chart\AudioChartUnit.pas',0,1,1,32,28,0,0
 
 [Modules]
-Module0=C:\ITA\Projects\VSTPack\Examples\Plugins\Decimator\DecimatorModule.pas
-Module1=C:\ITA\Projects\VSTPack\Examples\Plugins\Decimator\DecimatorGUI.pas
-Module2=c:\programme\borland\delphi7\source\vcl\Controls.pas
+Module0=C:\ITA\Projects\VSTPack\Examples\Plugins\ASIO-Extender\ASIOVSTModule.pas
+Module1=C:\ITA\Projects\VSTPack\Examples\Plugins\ASIO-Extender\ASIOVST.dpr
+Module2=C:\ITA\Projects\VSTPack\Examples\Plugins\ASIO-Extender\ASIOVSTGUI.pas
 Count=3
 EditWindowCount=1
 
-[C:\ITA\Projects\VSTPack\Examples\Plugins\Decimator\DecimatorModule.pas]
+[C:\ITA\Projects\VSTPack\Examples\Plugins\ASIO-Extender\ASIOVSTModule.pas]
 ModuleType=SourceModule
 FormState=1
-FormOnTop=1
+FormOnTop=0
 
-[C:\ITA\Projects\VSTPack\Examples\Plugins\Decimator\DecimatorGUI.pas]
-ModuleType=SourceModule
-FormState=1
-FormOnTop=1
-
-[c:\programme\borland\delphi7\source\vcl\Controls.pas]
+[C:\ITA\Projects\VSTPack\Examples\Plugins\ASIO-Extender\ASIOVST.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\Programme\Borland\Delphi7\Bin\ProjectGroup1.bpg]
-FormState=0
+[C:\ITA\Projects\VSTPack\Examples\Plugins\ASIO-Extender\ASIOVSTGUI.pas]
+ModuleType=SourceModule
+FormState=1
 FormOnTop=0
 
-[C:\ITA\Projects\VSTPack\Examples\Plugins\Decimator\Decimator.dpr]
+[C:\ITA\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
 [EditWindow0]
 ViewCount=3
-CurrentView=2
+CurrentView=1
 View0=0
 View1=1
 View2=2
@@ -50,41 +45,41 @@ MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=0
-Left=247
-Top=103
-Width=1026
-Height=884
+Left=256
+Top=125
+Width=1085
+Height=758
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1018
-ClientHeight=857
+ClientWidth=1077
+ClientHeight=731
 LeftPanelSize=140
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000000C000000436F64654578706C6F726572FFFFFFFF
 RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=00000400010000000B0000004D65737361676556696577FA03000000000000025500000000000000010000000000000000000000000100000000FA030000000000000100000000FA03000000000000FFFFFFFF
+BottomPanelData=00000400010000000B0000004D6573736167655669657700000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=c:\programme\borland\delphi7\source\vcl\Controls.pas
-CursorX=1
-CursorY=961
-TopLine=939
-LeftCol=1
-
-[View1]
-Module=C:\ITA\Projects\VSTPack\Examples\Plugins\Decimator\DecimatorGUI.pas
-CursorX=1
-CursorY=1
+Module=C:\ITA\Projects\VSTPack\Examples\Plugins\ASIO-Extender\ASIOVST.dpr
+CursorX=60
+CursorY=8
 TopLine=1
 LeftCol=1
 
+[View1]
+Module=C:\ITA\Projects\VSTPack\Examples\Plugins\ASIO-Extender\ASIOVSTModule.pas
+CursorX=4
+CursorY=42
+TopLine=11
+LeftCol=1
+
 [View2]
-Module=C:\ITA\Projects\VSTPack\Examples\Plugins\Decimator\DecimatorModule.pas
-CursorX=5
-CursorY=284
-TopLine=262
+Module=C:\ITA\Projects\VSTPack\Examples\Plugins\ASIO-Extender\ASIOVSTGUI.pas
+CursorX=19
+CursorY=11
+TopLine=1
 LeftCol=1
 
 [Watches]
@@ -192,8 +187,8 @@ LRDockWidth=190
 Dockable=1
 SplitPos=122
 ArrangeBy=Name
-SelectedItem=ProductName
-ExpandedItems=Anchors,AppNameText,Bar,Borders,BottomAxis,BottomAxis.Grid,Brush,CaptionText,FillObject,FillObject.Brush,FillObject.Gradient,Flags,Marks,Options,Pattern,sStyle.Background,sStyle.Selection,sStyle.Selection.Border,sStyle.Selection.Mode,sStyle.Shadow,Title.Font,XValues,YValues
+SelectedItem=OnCreate
+ExpandedItems=Anchors,AppNameText,Bar,Borders,BottomAxis,BottomAxis.Grid,Brush,CaptionText,FillObject,FillObject.Brush,FillObject.Gradient,Marks,Options,Pattern,sStyle.Background,sStyle.Selection,sStyle.Selection.Border,sStyle.Selection.Mode,sStyle.Shadow,Title.Font,XValues,YValues
 HiddenCategories=Legacy
 
 [BreakpointWindow]
@@ -465,11 +460,11 @@ State=0
 Left=0
 Top=12
 Width=140
-Height=845
+Height=719
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=140
-ClientHeight=845
+ClientHeight=719
 TBDockHeight=305
 LRDockWidth=140
 Dockable=1
@@ -480,11 +475,11 @@ Visible=0
 State=0
 Left=12
 Top=0
-Width=1006
+Width=1065
 Height=85
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1006
+ClientWidth=1065
 ClientHeight=85
 TBDockHeight=85
 LRDockWidth=443

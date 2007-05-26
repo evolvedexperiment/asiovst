@@ -2,8 +2,8 @@ unit XSynthModule;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase,
-     DVSTEffect, DVSTModule, XSynthVoice, VoiceList;
+uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTEffect,
+     DVSTModule, XSynthVoice, VoiceList;
 
 type
   TVSTSSModule = class(TVSTModule)

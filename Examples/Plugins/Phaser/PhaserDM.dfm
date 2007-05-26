@@ -8,10 +8,11 @@ object PhaserModule: TPhaserModule
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = cgEffect
+  PlugCategory = vcgEffect
   TailSize = 0
-  CanDos = []
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
+  numCategories = 1
   CurrentProgram = -1
   KeysRequired = False
   UniqueID = 'phsx'

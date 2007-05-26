@@ -9,10 +9,11 @@ object VSTSSModule: TVSTSSModule
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = cgEffect
+  PlugCategory = vcgSynth
   TailSize = 0
-  CanDos = [sendVstEvents, sendVstMidiEvent, sendVstTimeInfo, receiveVstEvents, receiveVstMidiEvent, receiveVstTimeInfo, plugAsChannelInsert, plugAsSend, _1in1out, _1in2out, _2in1out, _2in2out]
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
+  numCategories = 1
   CurrentProgram = 0
   CurrentProgramName = 'Default'
   KeysRequired = False
@@ -23,27 +24,7 @@ object VSTSSModule: TVSTSSModule
       DisplayName = 'Default'
       VSTModule = Owner
     end>
-  ParameterProperties = <
-    item
-      Min = 2.000000000000000000
-      Max = 32.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Order'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      CanBeAutomated = True
-      ReportVST2Properties = False
-      StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 2.000000000000000000
-      Flags = [ppfUsesIntegerMinMax, ppfUsesIntStep]
-      MinInteger = 2
-      MaxInteger = 32
-      StepInteger = 1
-      LargeStepInteger = 2
-      ShortLabel = 'Order'
-      VSTModule = Owner
-    end>
+  ParameterProperties = <>
   OnEditOpen = VST_EditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

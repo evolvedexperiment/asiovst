@@ -1,61 +1,37 @@
 [Closed Files]
-File_0=SourceModule,'C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpModule.lrs',0,1,1,17,1,0,0
-File_1=SourceModule,'C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpGUI.lrs',0,1,1,17,1,0,0
-File_2=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQGUI.pas',0,1,1221,37,1251,1,0
-File_3=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQModule.pas',0,1,1327,21,1357,1,0
-File_4=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQMLP.pas',0,1,753,1,784,0,0
-File_5=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQFilter.pas',0,1,129,41,147,0,0
-File_6=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQBasicFilter.pas',0,1,1,31,10,0,0
-File_7=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQIIRFilter.pas',0,1,120,10,236,0,0
-File_8=SourceModule,'C:\ITA\Projects\Library\DFFTRD.pas',0,1,2429,42,2458,0,0
-File_9=SourceModule,'C:\ITA\Projects\Components\Audio Chart\AudioDataUnit.pas',0,1,942,19,960,0,0
+File_0=SourceModule,'C:\ITA\Projects\VSTPack\Examples\Plugins\NonLinear\OpAmpModule.pas',0,1,60,61,77,1,0
+File_1=SourceModule,'C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpModule.lrs',0,1,1,17,1,0,0
+File_2=SourceModule,'C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpGUI.lrs',0,1,1,17,1,0,0
+File_3=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQGUI.pas',0,1,1221,37,1251,1,0
+File_4=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQModule.pas',0,1,1327,21,1357,1,0
+File_5=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQMLP.pas',0,1,753,1,784,0,0
+File_6=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQFilter.pas',0,1,129,41,147,0,0
+File_7=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQBasicFilter.pas',0,1,1,31,10,0,0
+File_8=SourceModule,'C:\ITA\Projects\VST Plugins\EQs\Electri-Q\Source\ElectriQIIRFilter.pas',0,1,120,10,236,0,0
+File_9=SourceModule,'C:\ITA\Projects\Library\DFFTRD.pas',0,1,2429,42,2458,0,0
 
 [Modules]
-Module0=C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpModule.pas
-Module1=C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmp.dpr
-Module2=c:\programme\borland\delphi7\source\rtl\common\classes.pas
-Module3=C:\ITA\Projects\VST Package\Source\DVSTModule.pas
-Module4=C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpGUI.pas
-Count=5
+Module0=c:\programme\borland\delphi7\source\rtl\common\classes.pas
+Count=1
 EditWindowCount=1
-
-[C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpModule.pas]
-ModuleType=SourceModule
-FormState=1
-FormOnTop=0
-
-[C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmp.dpr]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
 
 [c:\programme\borland\delphi7\source\rtl\common\classes.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\ITA\Projects\VST Package\Source\DVSTModule.pas]
-ModuleType=SourceModule
+[C:\Programme\Borland\Delphi7\Bin\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
-[C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpGUI.pas]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[C:\Programme\Borland\Delphi7\Projects\ProjectGroup1.bpg]
+[C:\ITA\Projects\VSTPack\Examples\Plugins\NonLinear\OpAmp.dpr]
 FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=5
-CurrentView=1
+ViewCount=1
+CurrentView=0
 View0=0
-View1=1
-View2=2
-View3=3
-View4=4
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
@@ -73,39 +49,11 @@ LeftPanelSize=140
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000000C000000436F64654578706C6F726572FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=85
+BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
+BottomPanelData=00000400010000000B0000004D6573736167655669657700000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmp.dpr
-CursorX=1
-CursorY=15
-TopLine=1
-LeftCol=1
-
-[View1]
-Module=C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpModule.pas
-CursorX=25
-CursorY=1
-TopLine=1
-LeftCol=1
-
-[View2]
-Module=C:\ITA\Projects\VST Package\Examples\NonLinear\OpAmpGUI.pas
-CursorX=15
-CursorY=15
-TopLine=7
-LeftCol=1
-
-[View3]
-Module=C:\ITA\Projects\VST Package\Source\DVSTModule.pas
-CursorX=1
-CursorY=969
-TopLine=959
-LeftCol=1
-
-[View4]
 Module=c:\programme\borland\delphi7\source\rtl\common\classes.pas
 CursorX=1
 CursorY=10759
@@ -146,13 +94,13 @@ Visible=1
 State=2
 Left=0
 Top=0
-Width=1280
+Width=1600
 Height=105
 MaxLeft=-1
 MaxTop=-1
-MaxWidth=1288
+MaxWidth=1608
 MaxHeight=105
-ClientWidth=1280
+ClientWidth=1600
 ClientHeight=78
 
 [ProjectManager]
@@ -218,9 +166,9 @@ LRDockWidth=190
 Dockable=1
 SplitPos=122
 ArrangeBy=Name
-SelectedItem=Name
-ExpandedItems=Anchors,AppNameText,Bar,Borders,BottomAxis,BottomAxis.Grid,Brush,CaptionText,FillObject,FillObject.Brush,FillObject.Gradient,Marks,Options,Pattern,sStyle.Background,sStyle.Selection,sStyle.Selection.Border,sStyle.Selection.Mode,sStyle.Shadow,Title.Font,XValues,YValues
-HiddenCategories=Locale,Advanced,"File Access",Legacy
+SelectedItem=
+ExpandedItems=Anchors,AppNameText,Bar,Borders,BottomAxis,BottomAxis.Grid,Brush,CanDos,CaptionText,FillObject,FillObject.Brush,FillObject.Gradient,Marks,Options,Pattern,sStyle.Background,sStyle.Selection,sStyle.Selection.Border,sStyle.Selection.Mode,sStyle.Shadow,Title.Font,XValues,YValues
+HiddenCategories=Legacy
 
 [BreakpointWindow]
 Create=1
@@ -436,6 +384,22 @@ TBDockHeight=298
 LRDockWidth=454
 Dockable=1
 
+[fmToDo]
+Create=1
+Visible=0
+State=0
+Left=273
+Top=230
+Width=477
+Height=307
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=469
+ClientHeight=283
+TBDockHeight=307
+LRDockWidth=477
+Dockable=1
+
 [fmProjOptionSets]
 Create=1
 Visible=0
@@ -475,18 +439,18 @@ State=0
 Left=0
 Top=12
 Width=140
-Height=757
+Height=845
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=140
-ClientHeight=757
+ClientHeight=845
 TBDockHeight=305
 LRDockWidth=140
 Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=12
 Top=0

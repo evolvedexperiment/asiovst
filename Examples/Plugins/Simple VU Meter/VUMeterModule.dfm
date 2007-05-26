@@ -1,17 +1,21 @@
 object VSTVUMeterModule: TVSTVUMeterModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
-  Version = '0.0'
+  Version = '1.0'
+  EffectName = 'VU Meter'
+  ProductName = 'VU Meter'
+  VendorName = 'ASIO-VST Project'
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = cgUnknown
+  PlugCategory = vcgAnalysis
   TailSize = 0
-  CanDos = [plugAsChannelInsert, plugAsSend, _1in1out, _1in2out, _2in1out, _2in2out]
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
+  numCategories = 1
   CurrentProgram = -1
   KeysRequired = False
-  UniqueID = 'NoEf'
+  UniqueID = 'VUMt'
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <
