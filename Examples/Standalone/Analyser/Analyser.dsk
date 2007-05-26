@@ -10,30 +10,23 @@ File_7=SourceModule,'C:\Programme\Borland\Library\Bitmap\Graphics32\GR32.pas',0,
 File_8=SourceModule,'C:\Programme\Borland\Library\Bitmap\Graphics32\GR32_Image.pas',0,1,22,1,1,0,0
 
 [Modules]
-Module0=C:\ITA\Projects\VST Package\Examples\ASIO-Host Demo\ASIODemoForm.pas
-Module1=C:\ITA\Projects\VST Package\Examples\ASIO-Host Demo\ASIODemo.dpr
-Count=2
+Module0=C:\ITA\Projects\VSTPack\Examples\Standalone\Analyser\Analyser.dpr
+Count=1
 EditWindowCount=1
 
-[C:\ITA\Projects\VST Package\Examples\ASIO-Host Demo\ASIODemoForm.pas]
-ModuleType=SourceModule
-FormState=1
-FormOnTop=1
-
-[C:\ITA\Projects\VST Package\Examples\ASIO-Host Demo\ASIODemo.dpr]
+[C:\ITA\Projects\VSTPack\Examples\Standalone\Analyser\Analyser.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\Programme\Borland\Delphi7\Projects\ProjectGroup1.bpg]
+[C:\ITA\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=2
-CurrentView=1
+ViewCount=1
+CurrentView=0
 View0=0
-View1=1
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
@@ -56,17 +49,10 @@ BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=C:\ITA\Projects\VST Package\Examples\ASIO-Host Demo\ASIODemo.dpr
+Module=C:\ITA\Projects\VSTPack\Examples\Standalone\Analyser\Analyser.dpr
 CursorX=1
 CursorY=1
 TopLine=1
-LeftCol=1
-
-[View1]
-Module=C:\ITA\Projects\VST Package\Examples\ASIO-Host Demo\ASIODemoForm.pas
-CursorX=61
-CursorY=6
-TopLine=46
 LeftCol=1
 
 [Watches]
@@ -104,8 +90,8 @@ Left=0
 Top=0
 Width=1280
 Height=105
-MaxLeft=-4
-MaxTop=-4
+MaxLeft=-1
+MaxTop=-1
 MaxWidth=1288
 MaxHeight=105
 ClientWidth=1280
@@ -174,9 +160,9 @@ LRDockWidth=190
 Dockable=1
 SplitPos=122
 ArrangeBy=Name
-SelectedItem=InputMonitor
+SelectedItem=
 ExpandedItems=Anchors,AppNameText,Bar,Borders,BottomAxis,BottomAxis.Grid,Brush,CaptionText,FillObject,FillObject.Brush,FillObject.Gradient,Marks,Options,Pattern,sStyle.Background,sStyle.Selection,sStyle.Selection.Border,sStyle.Selection.Mode,sStyle.Shadow,Title.Font,XValues,YValues
-HiddenCategories=Locale,Advanced,"File Access",Legacy
+HiddenCategories=Legacy
 
 [BreakpointWindow]
 Create=1
@@ -390,6 +376,22 @@ ClientWidth=446
 ClientHeight=274
 TBDockHeight=298
 LRDockWidth=454
+Dockable=1
+
+[fmToDo]
+Create=1
+Visible=0
+State=0
+Left=273
+Top=230
+Width=477
+Height=307
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=469
+ClientHeight=283
+TBDockHeight=307
+LRDockWidth=477
 Dockable=1
 
 [fmProjOptionSets]

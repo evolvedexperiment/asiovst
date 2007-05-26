@@ -287,7 +287,7 @@ begin
    GetMem(MyEvents.Events[i], sizeof(TVSTMidiEvent));
    FillChar(MyEvents.Events[i]^, sizeof(TVSTMidiEvent), 0);
    p := PVstMidiEvent(MyEvents.events[i]);
-   p^.vType := 1;
+   p^.EventType := etMidi;
    p^.byteSize := 24;
   end;
 
@@ -1462,7 +1462,7 @@ var i: Integer;
 begin
  if CurrentMidiOut = 0 then exit;
  for i := 0 to ev^.numEvents - 1 do
- if (ev.events[i].vtype = kVstMidiType) then
+ if (ev.events[i].EventType = etMidi) then
  begin
   event := PVstMidiEvent(ev^.events[i]);
   MidiOutput.Send(CurrentMidiOut - 1, event^.mididata[0],

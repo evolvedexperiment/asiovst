@@ -11,10 +11,28 @@ File_8=SourceModule,'c:\programme\borland\delphi7\source\rtl\Win\Windows.pas',0,
 File_9=SourceModule,'C:\ITA\Projects\Components\Controls\FlatControlsGauge.pas',0,1,114,1,124,0,0
 
 [Modules]
-Module0=C:\ITA\Projects\VSTPack\Examples\Standalone\Third Octave Analyser\AnalyserForm.pas
-Module1=C:\ITA\Projects\VSTPack\Examples\Standalone\Third Octave Analyser\Analyser.dpr
-Count=2
+Module0=C:\ITA\Projects\VSTPack\Source\DChebyshevFilter.pas
+Module1=C:\ITA\Projects\VSTPack\Source\ASIOVST.inc
+Module2=C:\ITA\Projects\VSTPack\Source\DFilter.pas
+Module3=C:\ITA\Projects\VSTPack\Examples\Standalone\Third Octave Analyser\AnalyserForm.pas
+Module4=C:\ITA\Projects\VSTPack\Examples\Standalone\Third Octave Analyser\Analyser.dpr
+Count=5
 EditWindowCount=1
+
+[C:\ITA\Projects\VSTPack\Source\DChebyshevFilter.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\ITA\Projects\VSTPack\Source\ASIOVST.inc]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\ITA\Projects\VSTPack\Source\DFilter.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
 
 [C:\ITA\Projects\VSTPack\Examples\Standalone\Third Octave Analyser\AnalyserForm.pas]
 ModuleType=SourceModule
@@ -26,15 +44,18 @@ ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[C:\Programme\Borland\Delphi7\Bin\ProjectGroup1.bpg]
+[C:\ITA\Projects\VSTPack\Examples\Standalone\Simple Lunch-Box\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=2
-CurrentView=1
+ViewCount=5
+CurrentView=2
 View0=0
 View1=1
+View2=2
+View3=3
+View4=4
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
@@ -52,9 +73,9 @@ LeftPanelSize=140
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000000C000000436F64654578706C6F726572FFFFFFFF
 RightPanelSize=0
-BottomPanelSize=85
+BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
+BottomPanelData=00000400010000000B0000004D6573736167655669657700000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
 Module=C:\ITA\Projects\VSTPack\Examples\Standalone\Third Octave Analyser\Analyser.dpr
@@ -65,9 +86,30 @@ LeftCol=1
 
 [View1]
 Module=C:\ITA\Projects\VSTPack\Examples\Standalone\Third Octave Analyser\AnalyserForm.pas
-CursorX=53
-CursorY=232
-TopLine=213
+CursorX=32
+CursorY=106
+TopLine=93
+LeftCol=1
+
+[View2]
+Module=C:\ITA\Projects\VSTPack\Source\DChebyshevFilter.pas
+CursorX=4
+CursorY=230
+TopLine=211
+LeftCol=1
+
+[View3]
+Module=C:\ITA\Projects\VSTPack\Source\ASIOVST.inc
+CursorX=21
+CursorY=180
+TopLine=160
+LeftCol=1
+
+[View4]
+Module=C:\ITA\Projects\VSTPack\Source\DFilter.pas
+CursorX=1
+CursorY=354
+TopLine=346
 LeftCol=1
 
 [Watches]
@@ -107,9 +149,9 @@ Width=1600
 Height=105
 MaxLeft=-1
 MaxTop=-1
-MaxWidth=1600
+MaxWidth=1608
 MaxHeight=105
-ClientWidth=1592
+ClientWidth=1600
 ClientHeight=78
 
 [ProjectManager]
@@ -175,7 +217,7 @@ LRDockWidth=190
 Dockable=1
 SplitPos=122
 ArrangeBy=Name
-SelectedItem=OnTimer
+SelectedItem=Action
 ExpandedItems=Anchors,AppNameText,Bar,Borders,BottomAxis,BottomAxis.Grid,Brush,CaptionText,FillObject,FillObject.Brush,FillObject.Gradient,Marks,Options,Pattern,sStyle.Background,sStyle.Selection,sStyle.Selection.Border,sStyle.Selection.Mode,sStyle.Shadow,Title.Font,XAxis,XValues,YAxis,YValues
 HiddenCategories=Legacy
 
@@ -448,28 +490,28 @@ State=0
 Left=0
 Top=12
 Width=140
-Height=631
+Height=719
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=140
-ClientHeight=631
+ClientHeight=719
 TBDockHeight=305
 LRDockWidth=140
 Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=12
 Top=0
 Width=1065
-Height=85
+Height=185
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1065
-ClientHeight=85
-TBDockHeight=85
+ClientHeight=185
+TBDockHeight=185
 LRDockWidth=443
 Dockable=1
 

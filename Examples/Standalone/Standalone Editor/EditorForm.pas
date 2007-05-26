@@ -1,19 +1,15 @@
 unit EditorForm;
 
-{$MODE Delphi}
+{$I ASIOVST.INC}
 
 interface
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, Buttons,
-  {$ELSE} Windows, Messages, XPMan, {$ENDIF}
-  SysUtils, Classes, Graphics, Controls, Forms,
-  ComCtrls, ExtCtrls, StdCtrls, DDSPBase, DVSTHost, DASIOHost;
+  {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages, XPMan,
+  {$ENDIF}SysUtils, Classes, Graphics, Controls, Forms, ComCtrls, ExtCtrls,
+  StdCtrls, DDSPBase, DVSTHost, DASIOHost, ToolWin;
 
 type
-
-  { TFmVSTEditor }
-
   TFmVSTEditor = class(TForm)
     ToolBar: TToolBar;
     ToolButton1: TToolButton;

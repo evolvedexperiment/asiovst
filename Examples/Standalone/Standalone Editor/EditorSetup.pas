@@ -1,12 +1,11 @@
 unit EditorSetup;
 
-{$MODE Delphi}
+{$I ASIOVST.INC}
 
 interface
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources,
-  {$ELSE} Windows, Messages, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Controls, Forms, StdCtrls;
 
 type
