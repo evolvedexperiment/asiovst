@@ -99,8 +99,8 @@ type
     FOnAMEndEdit        : TVstAutomationNotifyEvent;
     FOnAMPinConnected   : TVstPinConnectedEvent;
     FOnVendorSpecific   : TVendorSpecificEvent;
-    fGUIFormCreated     : Boolean;
-    fGUIStyle           : TGUIStyle;
+    FGUIFormCreated     : Boolean;
+    FGUIStyle           : TGUIStyle;
     function VstDispatch(opCode : TDispatcherOpcode; Index: Integer = 0; value: Integer = 0; pntr: pointer = nil; opt: double = 0): Integer; {overload;} //virtual;
     function EditOpen(Handle: THandle): Integer;
     procedure EditClose;

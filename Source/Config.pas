@@ -76,17 +76,10 @@ end;
 
 function TConfig.RandomLetter: char;
 begin
- {$IFDEF DELPHI6_UP}
   if Random < 0.5 then
     Result := char(RandomRange(Ord('A'), Ord('Z')))
   else
     Result := char(RandomRange(Ord('a'), Ord('z')));
- {$ELSE}
-  if Random < 0.5 then
-    Result := char(Ord('A')+Random(Ord('Z')-Ord('A')))
-  else
-    Result := char(Ord('a')+Random(Ord('z')-Ord('a')));
- {$ENDIF}
 end;
 
 function TConfig.RandomUniqueID: string;

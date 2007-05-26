@@ -9,10 +9,10 @@ uses
   Messages, {$ENDIF} SysUtils, Forms, Classes, DDSPBase, DVSTEffect;
 
 {$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
+{$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
 type
   TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
-
   TParameterChangeEvent = procedure(Sender: TObject; const Index: Integer; var Value: Single) of object;
   TBlockSizeChangeEvent = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
@@ -58,6 +58,7 @@ type
 
   TCurveType = (ctLinear, ctLogarithmic, ctExponential, ctFrequencyScale);
 
+  {$IFDEF CPU_Detection}
   TCPUVendor = (cvUnknown, cvAMD, cvCentaur, cvCyrix, cvIntel, cvTransmeta,
                 cvNexGen, cvRise, cvUMC, cvNSC, cvSiS);
 
@@ -66,10 +67,9 @@ type
 
   TCPUInstructions = set of TCPUInstruction;
 
-  {$IFNDEF FPC}
-  {$IFDEF DELPHI6_UP}
   TCPU = class(TPersistent)
   private
+    FOwner            : TPersistent;
     FVendor           : TCPUVendor;
     FSignature        : Cardinal;
     FEffFamily        : Byte;
@@ -86,8 +86,10 @@ type
     procedure GetProcessorCacheInfo;
     procedure GetExtendedProcessorCacheInfo;
     procedure VerifyOSSupportForXMMRegisters;
+  protected
+    function GetOwner: TPersistent; override;
   public
-    constructor Create;
+    constructor Create(AOwner : TPersistent);
     destructor Destroy; override;
   published
     property Vendor: TCPUVendor read fVendor;
@@ -108,7 +110,6 @@ const VendorStr: array[Low(TCPUVendor)..High(TCPUVendor)] of ShortString =
       InstructionSupportStr: array[Low(TCPUInstruction)..High(TCPUInstruction)] of ShortString =
        ('FPU', 'TSC', 'CX8', 'SEP', 'CMOV', 'MMX', 'FXSR', 'SSE', 'SSE2',
         'SSE3', 'MONITOR', 'CX16', 'X64', 'MMX+', '3DNow!+', '3DNow!');
-{$ENDIF}
 {$ENDIF}
 
 type
@@ -335,7 +336,7 @@ type
     FParameterUpdate        : Boolean;
     FAbout                  : string;
     FVersion                : string;
-    {$IFDEF DELPHI6_UP}
+    {$IFDEF CPU_Detection}
     FCPU                    : TCPU;
     {$ENDIF}
 
@@ -657,7 +658,7 @@ type
     property OffQualities: Integer read FEffect.offQualities write FEffect.offQualities default 0;
     property IORatio: Integer read FEffect.ioRatio write FEffect.ioRatio default 1;
     property About: string read FAbout write ReadOnlyString stored False;
-    {$IFDEF DELPHI6_UP} property CPU: TCPU read fCPU; {$ENDIF}
+    {$IFDEF CPU_Detection} property CPU: TCPU read fCPU; {$ENDIF}
     property Version: string read FVersion write FVersion;
     property UniqueID: string read GetUniqueID write setUniqueID;
     property Parameter[Index: Integer]: Single read getParameter write setParameterAutomated;
@@ -735,7 +736,7 @@ type
   published
     property Flags;
     property About;
-   {$IFDEF DELPHI6_UP} property CPU; {$ENDIF}
+    {$IFDEF CPU_Detection} property CPU; {$ENDIF}
     property Version;
     property EffectName;
     property ProductName;
@@ -844,6 +845,7 @@ uses Controls, Math;
 resourcestring
   SResNotFound = 'Resource %s not found';
 
+{$IFDEF CPU_Detection}
 type
   TRegisters = record EAX, EBX, ECX, EDX: Cardinal;  end;
   TVendorStr = string[12];
@@ -864,7 +866,6 @@ type
                           cef_26, cef_27, cef_28, cefLM, cefEx3DNow, cef3DNow);
   TCpuExtendedFeatureSet = set of TCpuExtendedFeatures;
 
-{$IFNDEF FPC}
 const
   VendorIDString: array[Low(TCPUVendor)..High(TCPUVendor)] of TVendorStr =
   ('', 'AuthenticAMD', 'CentaurHauls', 'CyrixInstead', 'GenuineIntel', 'GenuineTMx86',
@@ -1051,9 +1052,9 @@ begin
  FBlockSize:=1024;
  FBlockModeSize:=1024;
  FBlockModeOverlap:=0;
- {$IFNDEF FPC}{$IFDEF DELPHI6_UP}
- FCPU:=TCPU.Create;
- {$ENDIF}{$ENDIF}
+ {$IFDEF CPU_Detection}
+ FCPU:=TCPU.Create(Self);
+ {$ENDIF}
  FProcessingMode:=pmNormal;
  FChunkData:=TMemoryStream.Create;
  FVstShellPlugins := TCustomVstShellPlugins.Create(Self);
@@ -1076,9 +1077,9 @@ begin
   if Assigned(FParameterProperties) then FParameterProperties.Free;
   if Assigned(FVstPrograms) then FVstPrograms.Free;
   if Assigned(FEditorForm) then FEditorForm.Free;
-  {$IFNDEF FPC}{$IFDEF DELPHI6_UP}
+  {$IFDEF CPU_Detection}
   if Assigned(FCPU) then FCPU.Free;
-  {$ENDIF}{$ENDIF}
+  {$ENDIF}
   if Assigned(FChunkData) then FChunkData.Free;
   if Assigned(FVstShellPlugins) then FVstShellPlugins.Free;
   for i := 0 to maxMidiEvents - 1 do FreeMem(FMidiEvent.events[i]);
@@ -2464,7 +2465,7 @@ begin
  inherited SetItem(Index, Value);
 end;
 
-{$IFDEF DELPHI6_UP}
+{$IFDEF CPU_Detection}
 {$WARNINGS ON}
 function IsCPUID_Available: Boolean; register;
 asm
@@ -2517,16 +2518,20 @@ asm
   POP     EBX
 end;
 
-constructor TCPU.Create;
+constructor TCPU.Create(AOwner : TPersistent);
 begin
- inherited;
-// Name := 'CPU';
+ inherited Create;
  GetCPUInfo;
 end;
 
 destructor TCPU.Destroy;
 begin
  inherited;
+end;
+
+function TCPU.GetOwner: TPersistent;
+begin
+ Result:=FOwner;
 end;
 
 procedure TCPU.GetCPUVendor;
@@ -2710,7 +2715,7 @@ begin
     if MaxExCPUID >= $80000006 then GetExtendedProcessorCacheInfo;
     end;
   except
-    on E: Exception do
+    on E: Exception do raise;
   end;
 end;
 {$ENDIF}

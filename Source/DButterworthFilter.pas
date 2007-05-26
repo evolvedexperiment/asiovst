@@ -2,11 +2,7 @@ unit DButterworthFilter;
 
 interface
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ELSE}
-{$DEFINE _x87}
-{$ENDIF}
+{$I ASIOVST.INC}
 
 uses DDSPBase, DFilter;
 

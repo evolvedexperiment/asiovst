@@ -80,14 +80,14 @@ begin
     begin
       NumInputs    := NUM_INPUTS_SYNTH;
       NumOutputs   := NUM_OUTPUTS_SYNTH;
-      PlugCategory := cgSynth;
+      PlugCategory := vcgSynth;
       Flags := Flags + [effFlagsIsSynth];
     end
     else
     begin
       NumInputs    := NUM_INPUTS_EFFECT;
       NumOutputs   := NUM_OUTPUTS_EFFECT;
-      PlugCategory := cgEffect;
+      PlugCategory := vcgEffect;
     end;
 
     if FConfig.UseEditor then

@@ -177,7 +177,7 @@
       {$DEFINE RTL185_UP}
       {$UNDEF UNKNOWN_COMPILER_VERSION}
     {$ENDIF}
-
+    {$DEFINE CPU386}
 {$ENDIF BORLAND}
 
 {------------------------------------------------------------------------------}

@@ -2,13 +2,9 @@ unit DChebyshevFilter;
 
 interface
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ELSE}
-{$DEFINE x87}
-{$ENDIF}
+{$I ASIOVST.INC}
 
-uses DFilter;
+uses DFilter, DDSPBase;
 
 type
   TChebyshev1Filter = class(TIIRFilter)
@@ -23,7 +19,6 @@ type
     fOrder          : Integer;
     fAB             : array [0..127] of Double;
     fD64            : array [0.. 63] of Double;
-    fStateStack     : array [0.. 63] of Double;
     procedure SetW0; override;
     procedure SetOrder(Value: Integer); override;
     procedure SetGain(const Value: Double); override;
@@ -39,11 +34,10 @@ type
     function MagnitudeLog10(Frequency:Double):Double; override;
     procedure ResetStates; override;
     procedure Reset; override;
-    procedure PushStates; override;
-    procedure PopStates; override;
     property Ripple : Double read GetRipple write SetRipple;
     property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
     property DownsampleFaktor : Integer read fDownsampleFak;
+    procedure RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray); override;
   end;
 
   TChebyshev1LP = class(TChebyshev1Filter)
@@ -70,7 +64,7 @@ type
 
 implementation
 
-uses Math, DDSPBase, SysUtils;
+uses Math, SysUtils;
 
 constructor TChebyshev1Filter.Create;
 begin
@@ -189,19 +183,9 @@ begin
  Result:=1;
 end;
 
-procedure TChebyshev1Filter.PopStates;
-begin
- Move(fStateStack[0],fD64[0],Length(fStateStack)*SizeOf(fStateStack[0]));
-end;
-
-procedure TChebyshev1Filter.PushStates;
-begin
- Move(fD64[0],fStateStack[0],Length(fStateStack)*SizeOf(fStateStack[0]));
-end;
-
 function TChebyshev1Filter.MagnitudeLog10(Frequency: Double): Double;
 begin
- result:=20*Log10(MagnitudeSquared(Frequency));
+ result:=10*Log10(MagnitudeSquared(Frequency));
 end;
 
 { TChebyshev1FilterLP }
@@ -212,8 +196,35 @@ begin
  fGainSpeed:=1;
 end;
 
+procedure TChebyshev1Filter.RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray);
+var i : Integer;
+begin
+ ImpulseResonseBuffer[0]:=ProcessSample(1);
+ for i:=1 to Length(ImpulseResonseBuffer)-1
+  do ImpulseResonseBuffer[i]:=ProcessSample(0);
+end;
+
 procedure TChebyshev1LP.CalculateCoefficients;
-{$IFDEF x87}
+{$IFDEF PUREPASCAL}
+var K,K2    : Double;
+    t,t1,t2 : Double;
+    i       : Integer;
+begin
+ K:=tan(fW0*0.5); K2:=K*K;
+ for i:=(fOrder div 2)-1 downto 0 do
+  begin
+   t :=cos( ((i*2+1)*Pi*0.05) );
+   t1:=1/(fRippleFactors[0]-(t*t));
+   t2:=K*t1*fRippleFactors[1]*(2*t);
+   t:=     1/(t2+K2+t1);
+   fAB[4*i]   := K2*t;
+   fAB[4*i+1] := 2*fAB[4*i];
+   fAB[4*i+2] := 2*(-K2+t1)*t;
+   fAB[4*i+3] :=   (-K2-t1+t2)*t;
+  end;
+ fAB[0]:=fAB[0]*fGainSpeed;
+ fAB[1]:=fAB[1]*fGainSpeed;
+{$ELSE}
 const chalf : Double = 0.5;
 asm
  fld1
@@ -287,28 +298,8 @@ asm
  fld [self.fAB+8].Double              // load fA[1]
  fmul [self.fGainSpeed].Double        // apply fGainSpeed
  fstp [self.fAB+8].Double             // store fA[1]
-end;
-{$ELSE}
-var K,K2    : Double;
-    t,t1,t2 : Double;
-    i       : Integer;
-begin
- K:=tan(fW0*0.5); K2:=K*K;
- for i:=(fOrder div 2)-1 downto 0 do
-  begin
-   t :=cos( ((i*2+1)*Pi*0.05) );
-   t1:=1/(fRippleFactors[0]-(t*t));
-   t2:=K*t1*fRippleFactors[1]*(2*t);
-   t:=     1/(t2+K2+t1);
-   fAB[4*i]   := K2*t;
-   fAB[4*i+1] := 2*fAB[4*i];
-   fAB[4*i+2] := 2*(-K2+t1)*t;
-   fAB[4*i+3] :=   (-K2-t1+t2)*t;
-  end;
- fAB[0]:=fAB[0]*fGainSpeed;
- fAB[1]:=fAB[1]*fGainSpeed;
-end;
 {$ENDIF}
+end;
 
 function TChebyshev1LP.MagnitudeSquared(Frequency:Double):Double;
 var
@@ -364,8 +355,8 @@ asm
 end;
 {$ELSE}
 var
-  y,x : Double;
-  i   : Integer;
+  x : Double;
+  i : Integer;
 begin
  Result:=Input;
  for i := 0 to (fOrder div 2) - 1 do
@@ -555,8 +546,8 @@ asm
 end;
 {$ELSE}
 var
-  y,x : Double;
-  i   : Integer;
+  x : Double;
+  i : Integer;
 begin
  Result:=Input;
  for i := 0 to (fOrder div 2) - 1 do
