@@ -1074,12 +1074,14 @@ begin
  FNeedIdle := false;
  FWantMidi := false;
  if PVstEffect = nil then
- begin
-  if not loadOK then
-   raise Exception.Create('This is not a valid Vst Plugin!')
-  else
-   raise Exception.Create('Loading failed!');
- end;
+  try
+   if not loadOK then
+    raise Exception.Create('This is not a valid Vst Plugin!')
+   else
+    raise Exception.Create('Loading failed!');
+  except
+   raise;
+  end;
  if Longint(PVstEffect.Magic)<>FourCharToLong('V','s','t','P')
   then raise Exception.Create('There is no magic in it... failed!');
  if PVstEffect.uniqueID=0 then

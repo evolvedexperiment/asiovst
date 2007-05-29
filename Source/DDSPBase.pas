@@ -29,6 +29,10 @@ type
   PArrayOfSingleDynArray = ^TArrayOfSingleDynArray;
   TArrayOfDoubleDynArray = array of TDoubleDynArray;
   PArrayOfDoubleDynArray = ^TArrayOfDoubleDynArray;
+  TSingleDynMatrix = TArrayOfSingleDynArray;
+  PSingleDynMatrix = ^TSingleDynMatrix;
+  TDoubleDynMatrix = TArrayOfDoubleDynArray;
+  PDoubleDynMatrix = ^TDoubleDynMatrix;
 
   T4SingleArray = array[0..3] of Single;
   P4SingleArray = ^T4SingleArray;
@@ -55,6 +59,8 @@ type
   function GetApplicationFilename: string; {$IFDEF useinlining} inline; {$ENDIF}
   function GetApplicationDirectory: string; {$IFDEF useinlining} inline; {$ENDIF}
   {$ENDIF}
+  procedure SetMatrixLength(Matrix : TDoubleDynMatrix; Size : TPoint); overload;
+  procedure SetMatrixLength(Matrix : TSingleDynMatrix; Size : TPoint); overload;
   function ms2smp(ms, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function smp2ms(smp, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -192,6 +198,22 @@ uses Math, SysUtils;
 
 const Half   : Double = 0.5;
       Twenty : Double = 20;
+
+procedure SetMatrixLength(Matrix : TDoubleDynMatrix; Size : TPoint);
+var i : Integer;
+begin
+ SetLength(Matrix,Size.X);
+ for i:=0 to Size.X-1
+  do SetLength(Matrix[i],Size.Y);
+end;
+
+procedure SetMatrixLength(Matrix : TSingleDynMatrix; Size : TPoint);
+var i : Integer;
+begin
+ SetLength(Matrix,Size.X);
+ for i:=0 to Size.X-1
+  do SetLength(Matrix[i],Size.Y);
+end;
 
 { Math }
 

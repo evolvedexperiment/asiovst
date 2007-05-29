@@ -5,7 +5,7 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, RtlConsts, {$ELSE} Windows,
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows,
   Messages, {$ENDIF} SysUtils, Forms, Classes, DDSPBase, DVSTEffect;
 
 {$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
@@ -129,7 +129,7 @@ type
     FCurve            : TCurveType;
     FCurveFactor      : Single;
     FDisplayName      : string;
-    FUnits            : {$IFNDEF FPC}string{$ELSE}ansistring{$ENDIF};
+    FUnits            : string;
     FSmoothingFactor  : Single;
     FCanBeAutomated   : Boolean;
     FV2Properties     : Boolean;
@@ -154,15 +154,9 @@ type
   protected
     procedure AssignTo(Dest: TPersistent); override;
     
-{$IFNDEF FPC}
     procedure SetDisplayName(const AValue: string); override;
     function GetDisplayName: string; override;
     procedure SetUnits(AUnits: string);
-{$ELSE}
-    procedure SetDisplayName(const AValue: ansistring); override;
-    function GetDisplayName: ansistring; override;
-    procedure SetUnits(AUnits: ansistring);
-{$ENDIF}
   public
     {$IFDEF FPC}
     constructor Create(ACollection: TCollection); override;
@@ -176,7 +170,7 @@ type
     property CC: Integer read FCC write FCC default -1;
     property Curve: TCurveType read FCurve write FCurve;
     property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
-    property Units: {$IFNDEF FPC}string{$ELSE}ansistring{$ENDIF} read FUnits write SetUnits;
+    property Units: {$IFNDEF FPC}string{$ELSE}string{$ENDIF} read FUnits write SetUnits;
     property CurveFactor: Single read FCurveFactor write FCurveFactor;
     property SmoothingFactor: Single read FSmoothingFactor write FSmoothingFactor;
     property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated;
@@ -229,22 +223,16 @@ type
     FParameter        : array of Single;
     FChunkData        : TMemoryStream;
     procedure AssignTo(Dest: TPersistent); override;
-    {$IFNDEF FPC}
     procedure SetDisplayName(const AValue: string); override;
     function GetDisplayName: string; override;
-    {$ELSE}
-    procedure SetDisplayName(const AValue: ansistring); override;
-    function GetDisplayName: ansistring; override;
-    {$ENDIF}
   public
     {$IFDEF FPC}
     constructor Create(ACollection: TCollection); override;
-    property Parameter[ndx: Integer]: Single read GetParameter write SetParameter;
     {$ELSE}
     constructor Create(Collection: TCollection); override;
-    property Parameter[AIndex: Integer]: Single read GetParameter write SetParameter;
     {$ENDIF}
     destructor Destroy; override;
+    property Parameter[AIndex: Integer]: Single read GetParameter write SetParameter;
     property Chunk: TMemoryStream read fChunkData write fChunkData;
   published
     property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
@@ -285,13 +273,8 @@ type
     function GetUniqueID: string;
   protected
     procedure AssignTo(Dest: TPersistent); override;
-    {$IFNDEF FPC}
     procedure SetDisplayName(const AValue: string); override;
     function GetDisplayName: string; override;
-    {$ELSE}
-    procedure SetDisplayName(const AValue: ansistring); override;
-    function GetDisplayName: ansistring; override;
-    {$ENDIF}
   public
     UID  : Integer;
     {$IFDEF FPC}
@@ -840,10 +823,7 @@ function InitResourceComponent(Instance: TComponent; RootAncestor: TClass):Boole
 
 implementation
 
-uses Controls, Math;
-
-resourcestring
-  SResNotFound = 'Resource %s not found';
+uses Controls, Math, RtlConsts;
 
 {$IFDEF CPU_Detection}
 type
@@ -970,6 +950,9 @@ end;
 { TVSTModule }
 
 {$IFNDEF FPC}
+resourcestring
+  SResNotFound = 'Resource %s not found';
+
 constructor TVSTModule.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
@@ -984,7 +967,6 @@ begin
    end;
   end;
 end;
-
 {$ELSE}
 constructor TVSTModule.Create(AOwner: TComponent);
 begin
@@ -992,8 +974,9 @@ begin
   if (ClassType <> TDataModule) and
      not (csDesigning in ComponentState) then
     begin
-    if not InitInheritedComponent(Self, TVSTModule) then
-      raise EStreamError.CreateFmt(SErrNoSTreaming, [ClassName]);
+    if not InitInheritedComponent(Self, TVSTModule)
+     then
+      raise EStreamError.CreateFmt(SErrNoStreaming, [ClassName]);
     if OldCreateOrder then
       DoCreate;
     end;
@@ -1252,10 +1235,10 @@ begin
                                    if Assigned(EditorForm) then
                                     begin
                                      a:=KeyCodeToInteger(keyCode);
-{$IFNDEF FPC}
                                      if Assigned(EditorForm.ActiveControl)
                                       then Hndl:=EditorForm.ActiveControl.Handle
                                       else Hndl:=EditorForm.Handle;
+{$IFNDEF FPC}
                                      if keyCode.virt=0 then b:=0 else b:=KF_EXTENDED;
                                      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
                                       then SendMessage(Hndl, WM_KEYDOWN, a,b)
@@ -2227,7 +2210,6 @@ begin
   inherited;
 end;
 
-{$IFNDEF FPC}
 procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string);
 begin
  FDisplayName:=Copy(AValue,1,Math.Min(30,Length(AValue)));
@@ -2242,25 +2224,6 @@ procedure TCustomVstParameterProperty.SetUnits(AUnits: string);
 begin
  FUnits := AUnits;
 end;
-
-{$ELSE}
-
-procedure TCustomVstParameterProperty.SetDisplayName(const AValue: ansistring);
-begin
- FDisplayName:=copy(AValue,1,Math.Min(30,Length(AValue)));
-end;
-
-function TCustomVstParameterProperty.GetDisplayName: ansistring;
-begin
- Result := FDisplayName;
-end;
-
-procedure TCustomVstParameterProperty.SetUnits(AUnits: ansistring);
-begin
- FUnits := AUnits;
-end;
-
-{$ENDIF}
 
 { TVstParameterProperties }
 
@@ -2370,7 +2333,6 @@ begin
  end;
 end;
 
-{$IFNDEF FPC}
 function TCustomVstProgram.GetDisplayName: string;
 begin
  Result := FDisplayName;
@@ -2380,17 +2342,6 @@ procedure TCustomVstProgram.SetDisplayName(const AValue: string);
 begin
  FDisplayName:=copy(AValue,0,50);
 end;
-{$ELSE}
-function TCustomVstProgram.GetDisplayName: ansistring;
-begin
- Result := FDisplayName;
-end;
-
-procedure TCustomVstProgram.SetDisplayName(const AValue: ansistring);
-begin
- FDisplayName:=copy(AValue,0,50);
-end;
-{$ENDIF}
 
 procedure TCustomVstProgram.AssignTo(Dest: TPersistent);
 var i: Integer;
@@ -3630,12 +3581,7 @@ begin
  copyTo^.Elevation := copyFrom^.Elevation;
  copyTo^.Radius := copyFrom^.Radius;
  copyTo^.Reserved := copyFrom^.Reserved;
-{$IFNDEF FPC}
- CopyMemory(@(copyTo^.Future), @(copyFrom^.future), 28);
-{$ELSE}
  Move(copyTo^.Future, copyFrom^.future, 28);
-{$ENDIF}
-
  Result := True;
 end;
 
@@ -3713,10 +3659,8 @@ begin
  UID:=FourCharToLong(fID[1], fID[2], fID[3], fID[4])
 end;
 
-{$IFNDEF FPC}
 procedure TCustomVstShellPlugin.SetDisplayName(const AValue: string);
 begin
-// inherited;
  FDisplayName:=Copy(AValue,0,50);
 end;
 
@@ -3724,17 +3668,6 @@ function TCustomVstShellPlugin.GetDisplayName: string;
 begin
  Result := FDisplayName;
 end;
-{$ELSE}
-procedure TCustomVstShellPlugin.SetDisplayName(const AValue: ansistring);
-begin
- FDisplayName:=Copy(AValue,0,50);
-end;
-
-function TCustomVstShellPlugin.GetDisplayName: ansistring;
-begin
- Result := FDisplayName;
-end;
-{$ENDIF}
 
 { TCustomVstShellPlugins }
 

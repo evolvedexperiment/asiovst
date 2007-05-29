@@ -30,7 +30,6 @@ type
     function MagnitudeLog10(Frequency:Double):Double; override;
     procedure ResetStates; override;
     procedure Reset; override;
-    procedure RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray); override;
     procedure PushStates; override;
     procedure PopStates; override;
     property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
@@ -44,9 +43,8 @@ type
     constructor Create; override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input:Double):Double; override;
-    function ProcessSample(const Input:Double; PrePost : TPrePost):Double; override;
     function MagnitudeSquared(Frequency:Double):Double; override;
-    function MagnitudeLog10(Frequency:Double):Double; override;
+    function Phase(Frequency: Double): Double; override;
   end;
 
   TButterworthHP = class(TButterworthFilter)
@@ -56,9 +54,7 @@ type
     constructor Create; override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input:Double):Double; override;
-    function ProcessSample(const Input:Double; PrePost : TPrePost):Double; override;
     function MagnitudeSquared(Frequency:Double):Double; override;
-    function MagnitudeLog10(Frequency:Double):Double; override;
   end;
 
 implementation
@@ -74,17 +70,6 @@ begin
  fOrder:=10;
  SampleRate:=44100;
  CalculateCoefficients;
-end;
-
-procedure TButterworthFilter.RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray);
-var i : Integer;
-begin
- if Length(ImpulseResonseBuffer)=0 then Exit;
- PushStates;
- ImpulseResonseBuffer[0]:=ProcessSample(1);
- for i:=1 to Length(ImpulseResonseBuffer)-1
-  do ImpulseResonseBuffer[i]:=ProcessSample(1);
- PopStates;
 end;
 
 procedure TButterworthFilter.Reset;
@@ -228,25 +213,26 @@ var
   i    : Integer;
   a,cw : Double;
 begin
- cw:=2*cos(Frequency*pi*fSRR); a:=4+cw*(4+cw);
+ cw:=2*cos(2*Frequency*pi*fSRR); a:=4+cw*(4+cw);
  Result:=1;
-
  for i := 0 to (fOrder div 2) - 1
   do Result:=Result*fAB[4*i]*fAB[4*i]*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
- Result:=sqrt(Abs(1E-32+Result));
+ Result:=Abs(1E-32+Result);
 end;
 
-function TButterworthLP.MagnitudeLog10(Frequency:Double):Double;
-var
-  i    : Integer;
-  a,cw : Double;
+function TButterworthLP.Phase(Frequency:Double):Double;
+var cw, sw, Nom, Den : Double;
+    i : Integer;
 begin
- cw:=2*cos(Frequency*pi*fSRR); a:=4+cw*(4+cw);
- Result:=1;
-
- for i := 0 to (fOrder div 2) - 1
-  do Result:=Result*fAB[4*i]*fAB[4*i]*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
- Result:=10*Log10(Abs(1E-32+Result));
+ GetSinCos(2*Frequency*pi*fSRR,sw,cw);
+ Nom := sw * fAB[0] * 2 * (fAB[3] -1) * (1 + cw);
+ Den := fAB[0] * (2 * fAB[2] * (1 + cw) + cw * (2 * fAB[3] * (cw + 1) + 2 * (1 + cw)));
+ for i := 1 to (fOrder div 2) - 1 do
+  begin
+   Nom := Nom * sw * fAB[4*i] * 2 * (fAB[4*i+3] - 1) * (cw + 1);
+   Den := Den * fAB[4*i] * (2 * fAB[4*i+2] * (1 + cw) + cw * (2 * fAB[4*i+3] * (cw + 1) + 2 * (1 + cw)));
+  end;
+ Result:=ArcTan2(Nom,Den);
 end;
 
 function TButterworthLP.ProcessSample(const Input: Double): Double;
@@ -292,30 +278,6 @@ begin
 end;
 {$ENDIF}
 
-function TButterworthLP.ProcessSample(const Input:Double; PrePost : TPrePost):Double;
-var
-  x : Double;
-  i : Integer;
-begin
- Result:=Input;
- if PrePost=ppPre then
-  for i := 0 to ((fOrder div 2)-(fOrder div 4)) - 1 do
-   begin
-    x:=Result;
-    Result        := fAB[8*i+0]*x                     + fState[4*i];
-    fState[4*i  ] := fAB[8*i+1]*x + fAB[8*i+2]*Result + fState[4*i+1];
-    fState[4*i+1] := fAB[8*i+0]*x + fAB[8*i+3]*Result;
-   end
-  else
-  for i := 0 to (fOrder div 4) - 1 do
-   begin
-    x:=Result;
-    Result        := fAB[8*i+4]*x                     + fState[4*i+2];
-    fState[4*i+2] := fAB[8*i+5]*x + fAB[8*i+6]*Result + fState[4*i+3];
-    fState[4*i+3] := fAB[8*i+4]*x + fAB[8*i+7]*Result;
-   end
-end;
-
 { TButterworthFilterHP }
 
 constructor TButterworthHP.Create;
@@ -348,25 +310,12 @@ var
   i    : Integer;
   a,cw : Double;
 begin
- cw:=2*cos(Frequency*pi*fSRR); a:=sqr(cw-2);
+ cw:=2*cos(2*Frequency*pi*fSRR); a:=sqr(cw-2);
  Result:=1;
 
  for i := 0 to (fOrder div 2) - 1
   do Result:=Result*fAB[4*i]*fAB[4*i]*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
  Result:=sqrt(Result);
-end;
-
-function TButterworthHP.MagnitudeLog10(Frequency: Double): Double;
-var
-  i    : Integer;
-  a,cw : Double;
-begin
- cw:=2*cos(Frequency*pi*fSRR); a:=sqr(cw-2);
- Result:=1;
-
- for i := 0 to (fOrder div 2) - 1
-  do Result:=Result*fAB[4*i]*fAB[4*i]*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
- Result:=10*log10(Result);
 end;
 
 function TButterworthHP.ProcessSample(const Input: Double): Double;
@@ -411,29 +360,5 @@ begin
   end;
 end;
 {$ENDIF}
-
-function TButterworthHP.ProcessSample(const Input:Double; PrePost : TPrePost):Double;
-var
-  x : Double;
-  i : Integer;
-begin
- Result:=Input;
- if PrePost=ppPre then
-  for i := 0 to ((fOrder div 2)-(fOrder div 4)) - 1 do
-   begin
-    x:=Result;
-    Result        := fAB[8*i+0]*x                     + fState[4*i];
-    fState[4*i  ] := fAB[8*i+1]*x + fAB[8*i+2]*Result + fState[4*i+1];
-    fState[4*i+1] := fAB[8*i+0]*x + fAB[8*i+3]*Result;
-   end
-  else
-  for i := 0 to (fOrder div 4) - 1 do
-   begin
-    x:=Result;
-    Result        := fAB[8*i+4]*x                     + fState[4*i+2];
-    fState[4*i+2] := fAB[8*i+5]*x + fAB[8*i+6]*Result + fState[4*i+3];
-    fState[4*i+3] := fAB[8*i+4]*x + fAB[8*i+7]*Result;
-   end
-end;
 
 end.

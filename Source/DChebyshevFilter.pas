@@ -37,7 +37,6 @@ type
     property Ripple : Double read GetRipple write SetRipple;
     property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
     property DownsampleFaktor : Integer read fDownsampleFak;
-    procedure RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray); override;
   end;
 
   TChebyshev1LP = class(TChebyshev1Filter)
@@ -194,14 +193,6 @@ constructor TChebyshev1LP.Create;
 begin
  inherited Create;
  fGainSpeed:=1;
-end;
-
-procedure TChebyshev1Filter.RenderImpulseResponse(ImpulseResonseBuffer: TDoubleDynArray);
-var i : Integer;
-begin
- ImpulseResonseBuffer[0]:=ProcessSample(1);
- for i:=1 to Length(ImpulseResonseBuffer)-1
-  do ImpulseResonseBuffer[i]:=ProcessSample(0);
 end;
 
 procedure TChebyshev1LP.CalculateCoefficients;
