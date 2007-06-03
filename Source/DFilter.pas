@@ -57,17 +57,17 @@ type
   TIIRFilter=class(TFilter)
   private
   protected
-    fBandWidth   : Single;
+    fBandWidth   : Double;
     fAlpha       : Double;
     procedure SetW0; override;
-    procedure SetBW(s:Single); virtual;
+    procedure SetBW(const value:Double); virtual;
     procedure SetAlpha; virtual;
   public
     constructor Create; override;
     procedure GetIR(ImpulseResonse : TSingleDynArray); overload; override;
     procedure GetIR(ImpulseResonse : TDoubleDynArray); overload; override;
   published
-    property Bandwidth: Single read fBandWidth write SetBW;
+    property Bandwidth: Double read fBandWidth write SetBW;
   end;
 
   TBiquadIIRFilter=class(TIIRFilter)
@@ -153,33 +153,12 @@ implementation
 
 uses Math;
 
-function cf_phi(f,rate,a0,a1,a2,b1,b2:Double): Double;
-const pia = 1/pi;
-var w : Double;
-begin
- w:=(2*f*pi)/rate;
- Result:=ArcTan2((
-                   a0+a1*b1+a2*b2+
-                  (a0*b1+a1*(1+b2)+a2*b1)*cos(w)+
-                  (a0*b2+a2)*cos(2*w))
-                /
-                ( 1+b1*b1+b2*b2+
-                  2*((b1+b1*b2)*cos(w)+ b2*cos(2*w)))
-                ,
-               ((a1-a0*b1+a2*b1-a1*b2+
-                   2*(-a0*b2+a2)*cos(w))*sin(w)
-                /
-                 ( 1+b1*b1+b2*b2+
-                   2*(b1 + b1*b2)*cos(w)+
-                   2*b2*cos(2*w)))
-               )*pia-0.5;
-end;
-
 { TFilter }
 
 constructor TFilter.Create;
 begin
  fGain:=0; fGainSpeed:=1;
+ SampleRate:=44100;
  fFrequency:=1000;
  SetW0;
 end;
@@ -268,11 +247,11 @@ begin
   else fAlpha:=Sinh(ln22*cos(fW0*0.5)*fBandWidth*(fW0/fSinW0))*fSinW0;
 end;
 
-procedure TIIRFilter.SetBW(s:Single);
+procedure TIIRFilter.SetBW(const Value: Double);
 begin
- if s<=0
+ if Value<=0
   then fBandWidth:=0.01
-  else fBandWidth:=s;
+  else fBandWidth:=Value;
  SetAlpha;
  CalculateCoefficients;
 end;

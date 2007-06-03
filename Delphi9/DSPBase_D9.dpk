@@ -30,6 +30,7 @@ requires
 
 contains
   DVSTEffect in '..\Source\DVSTEffect.pas',
-  DDSPBase in '..\Source\DDSPBase.pas';
+  DDSPBase in '..\Source\DDSPBase.pas',
+  DFilter in '..\Source\DFilter.pas';
 
 end.

@@ -6,7 +6,7 @@ interface
 
 {$IFDEF DELPHI7_UP}
 uses {$IFNDEF FPC} Windows, {$ENDIF} Types;
-{$ELSE} uses Windows; {$DEFINE PUREPASCAL} {$ENDIF}
+{$ELSE} uses LCLIntf; {$DEFINE PUREPASCAL} {$ENDIF}
 
 {$IFDEF FPC} {$DEFINE PUREPASCAL} {$ENDIF}
 
@@ -58,9 +58,9 @@ type
   {$IFNDEF FPC}
   function GetApplicationFilename: string; {$IFDEF useinlining} inline; {$ENDIF}
   function GetApplicationDirectory: string; {$IFDEF useinlining} inline; {$ENDIF}
-  {$ENDIF}
   procedure SetMatrixLength(Matrix : TDoubleDynMatrix; Size : TPoint); overload;
   procedure SetMatrixLength(Matrix : TSingleDynMatrix; Size : TPoint); overload;
+  {$ENDIF}
   function ms2smp(ms, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function smp2ms(smp, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -199,6 +199,7 @@ uses Math, SysUtils;
 const Half   : Double = 0.5;
       Twenty : Double = 20;
 
+{$IFNDEF FPC}
 procedure SetMatrixLength(Matrix : TDoubleDynMatrix; Size : TPoint);
 var i : Integer;
 begin
@@ -214,6 +215,7 @@ begin
  for i:=0 to Size.X-1
   do SetLength(Matrix[i],Size.Y);
 end;
+{$ENDIF}
 
 { Math }
 

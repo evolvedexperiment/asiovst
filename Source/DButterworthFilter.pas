@@ -236,7 +236,20 @@ begin
 end;
 
 function TButterworthLP.ProcessSample(const Input: Double): Double;
-{$IFDEF x87}
+{$IFDEF PUREPASCAL}
+var
+  x : Double;
+  i : Integer;
+begin
+ Result:=Input;
+ for i := 0 to (fOrder div 2) - 1 do
+  begin
+   x:=Result;
+   Result        := fAB[4*i+0]*x                     + fState[2*i];
+   fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
+   fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
+  end;
+{$ELSE}
 asm
  mov ecx, [self.fOrder]
  shl ecx, 1
@@ -261,22 +274,8 @@ asm
   faddp
   fstp [self.fState+ecx*4+8].Double
  jnz @FilterLoop
-end;
-{$ELSE}
-var
-  x : Double;
-  i : Integer;
-begin
- Result:=Input;
- for i := 0 to (fOrder div 2) - 1 do
-  begin
-   x:=Result;
-   Result        := fAB[4*i+0]*x                     + fState[2*i];
-   fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
-   fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
-  end;
-end;
 {$ENDIF}
+end;
 
 { TButterworthFilterHP }
 
@@ -319,7 +318,20 @@ begin
 end;
 
 function TButterworthHP.ProcessSample(const Input: Double): Double;
-{$IFDEF x87}
+{$IFDEF PUREPASCAL}
+var
+  x : Double;
+  i : Integer;
+begin
+ Result:=Input;
+ for i := 0 to (fOrder div 2) - 1 do
+  begin
+   x:=Result;
+   Result        := fAB[4*i+0]*x                     + fState[2*i];
+   fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
+   fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
+  end;
+{$ELSE}
 asm
  mov ecx, [self.fOrder]
  shl ecx, 1
@@ -344,21 +356,7 @@ asm
   faddp
   fstp [self.fState+ecx*4+8].Double
  jnz @FilterLoop
-end;
-{$ELSE}
-var
-  x : Double;
-  i : Integer;
-begin
- Result:=Input;
- for i := 0 to (fOrder div 2) - 1 do
-  begin
-   x:=Result;
-   Result        := fAB[4*i+0]*x                     + fState[2*i];
-   fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
-   fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
-  end;
-end;
 {$ENDIF}
+end;
 
 end.

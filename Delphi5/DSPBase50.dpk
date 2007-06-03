@@ -29,6 +29,7 @@ requires
 
 contains
   DDSPBase in '..\Source\DDSPBase.pas',
-  DVSTEffect in '..\Source\DVSTEffect.pas';
+  DVSTEffect in '..\Source\DVSTEffect.pas',
+  DFilter in '..\Source\DFilter.pas';
 
 end.
