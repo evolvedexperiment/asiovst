@@ -54,7 +54,7 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="EditorForm.lrs"/>
         <UnitName Value="EditorForm"/>
-        <CursorPos X="24" Y="33"/>
+        <CursorPos X="106" Y="18"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="21"/>
@@ -100,22 +100,18 @@
         <UsageCount Value="10"/>
       </Unit6>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
         <Filename Value="EditorForm.pas"/>
-        <Caret Line="11" Column="9" TopLine="1"/>
+        <Caret Line="33" Column="24" TopLine="1"/>
       </Position1>
-      <Position2>
-        <Filename Value="EditorForm.pas"/>
-        <Caret Line="173" Column="1" TopLine="133"/>
-      </Position2>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
     <PathDelim Value="\"/>
     <SearchPaths>
-      <IncludeFiles Value="..\..\..\Lazarus\"/>
+      <IncludeFiles Value="..\..\..\Lazarus\;..\..\..\Source\"/>
       <OtherUnitFiles Value="..\..\..\Source\;..\..\..\Lazarus\"/>
       <SrcPath Value="..\..\..\Source\"/>
     </SearchPaths>

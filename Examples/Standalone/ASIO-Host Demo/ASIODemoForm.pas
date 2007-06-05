@@ -1,13 +1,10 @@
 unit AsioDemoForm;
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ENDIF}
+{$I ASIOVST.INC}
 
 interface
 
-uses {$IFDEF FPC} LCLType, LResources, Buttons,
-     {$ELSE} Windows, {$ENDIF}
+uses {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
      Forms, Classes, Controls, StdCtrls, DASIOHost, DDspBase;
 
 type

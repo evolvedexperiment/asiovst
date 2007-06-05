@@ -7,7 +7,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="5"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -37,13 +37,13 @@
         <MinVersion Minor="2" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="Analyser.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="25" Y="7"/>
+        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -70,9 +70,11 @@
       <Unit3>
         <Filename Value="..\..\..\Source\DFilter.pas"/>
         <UnitName Value="DFilter"/>
-        <CursorPos X="15" Y="6"/>
+        <CursorPos X="1" Y="7"/>
         <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\chart.pp"/>
@@ -97,9 +99,9 @@
       <Unit7>
         <Filename Value="..\..\..\Source\DBarChart.pas"/>
         <UnitName Value="DBarChart"/>
-        <CursorPos X="1" Y="550"/>
-        <TopLine Value="510"/>
-        <EditorIndex Value="4"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="7"/>
         <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit7>
@@ -114,7 +116,9 @@
         <Filename Value="AnalyserForm.lfm"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
         <SyntaxHighlighter Value="LFM"/>
       </Unit9>
       <Unit10>
@@ -128,9 +132,7 @@
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\include\graphiccontrol.inc"/>
         <CursorPos X="41" Y="76"/>
         <TopLine Value="51"/>
-        <EditorIndex Value="5"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\include\control.inc"/>
@@ -154,127 +156,68 @@
       <Unit15>
         <Filename Value="..\..\..\Source\DASIOHost.pas"/>
         <UnitName Value="DASIOHost"/>
-        <CursorPos X="11" Y="348"/>
-        <TopLine Value="327"/>
-        <EditorIndex Value="3"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="6"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
         <UnitName Value="DChebyshevFilter"/>
-        <CursorPos X="15" Y="540"/>
-        <TopLine Value="509"/>
-        <EditorIndex Value="2"/>
+        <CursorPos X="1" Y="7"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="4"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="..\..\..\Source\DButterworthFilter.pas"/>
+        <UnitName Value="DButterworthFilter"/>
+        <CursorPos X="1" Y="7"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit17>
     </Units>
-    <JumpHistory Count="26" HistoryIndex="25">
+    <JumpHistory Count="9" HistoryIndex="8">
       <Position1>
-        <Filename Value="..\..\..\Source\DASIOHost.pas"/>
-        <Caret Line="277" Column="3" TopLine="256"/>
+        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Caret Line="6" Column="15" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="278" Column="20" TopLine="253"/>
+        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Caret Line="175" Column="1" TopLine="160"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="21" Column="19" TopLine="1"/>
+        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Caret Line="467" Column="8" TopLine="445"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\..\Source\DASIOHost.pas"/>
-        <Caret Line="277" Column="1" TopLine="256"/>
+        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Caret Line="443" Column="1" TopLine="435"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="34" Column="29" TopLine="1"/>
+        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Caret Line="6" Column="12" TopLine="1"/>
       </Position5>
       <Position6>
         <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="36" Column="63" TopLine="14"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position6>
       <Position7>
         <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="61" Column="20" TopLine="40"/>
+        <Caret Line="222" Column="12" TopLine="195"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="77" Column="19" TopLine="56"/>
+        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Caret Line="642" Column="11" TopLine="617"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="82" Column="37" TopLine="61"/>
-      </Position9>
-      <Position10>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="84" Column="17" TopLine="63"/>
-      </Position10>
-      <Position11>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="144" Column="13" TopLine="123"/>
-      </Position11>
-      <Position12>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="148" Column="38" TopLine="127"/>
-      </Position12>
-      <Position13>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="150" Column="19" TopLine="129"/>
-      </Position13>
-      <Position14>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="152" Column="11" TopLine="131"/>
-      </Position14>
-      <Position15>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="153" Column="13" TopLine="132"/>
-      </Position15>
-      <Position16>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="157" Column="38" TopLine="136"/>
-      </Position16>
-      <Position17>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="160" Column="20" TopLine="139"/>
-      </Position17>
-      <Position18>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="161" Column="9" TopLine="140"/>
-      </Position18>
-      <Position19>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="183" Column="9" TopLine="162"/>
-      </Position19>
-      <Position20>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="246" Column="20" TopLine="225"/>
-      </Position20>
-      <Position21>
-        <Filename Value="..\..\..\Source\DASIOHost.pas"/>
-        <Caret Line="277" Column="24" TopLine="256"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="470" Column="25" TopLine="441"/>
-      </Position22>
-      <Position23>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
+        <Filename Value="..\..\..\Source\DButterworthFilter.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
-      </Position23>
-      <Position24>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="351" Column="10" TopLine="316"/>
-      </Position24>
-      <Position25>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <Caret Line="540" Column="11" TopLine="508"/>
-      </Position25>
-      <Position26>
-        <Filename Value="AnalyserForm.pas"/>
-        <Caret Line="234" Column="55" TopLine="220"/>
-      </Position26>
+      </Position9>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

@@ -1,7 +1,7 @@
 object FmMiniHost: TFmMiniHost
   Left = 360
   Height = 340
-  Top = 342
+  Top = 230
   Width = 560
   HorzScrollBar.Page = 559
   VertScrollBar.Page = 320
@@ -9,6 +9,8 @@ object FmMiniHost: TFmMiniHost
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Tobybear MiniHost (www.tobybear.de)'
+  ClientHeight = 321
+  ClientWidth = 560
   Color = 11053224
   Font.Height = -11
   Font.Name = 'Arial'
@@ -25,6 +27,8 @@ object FmMiniHost: TFmMiniHost
     Width = 560
     Align = alTop
     BevelOuter = bvNone
+    ClientHeight = 32
+    ClientWidth = 560
     TabOrder = 0
     object Shape2: TShape
       Left = 79
@@ -1948,6 +1952,8 @@ object FmMiniHost: TFmMiniHost
     Top = 4
     Width = 22
     BevelOuter = bvNone
+    ClientHeight = 24
+    ClientWidth = 22
     TabOrder = 1
     object dropdown: TImage
       Cursor = crHandPoint

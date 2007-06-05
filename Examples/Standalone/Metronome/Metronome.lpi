@@ -72,28 +72,7 @@
         <UsageCount Value="10"/>
       </Unit3>
     </Units>
-    <JumpHistory Count="5" HistoryIndex="4">
-      <Position1>
-        <Filename Value="MetronomeForm.pas"/>
-        <Caret Line="202" Column="1" TopLine="162"/>
-      </Position1>
-      <Position2>
-        <Filename Value="MetronomeForm.pas"/>
-        <Caret Line="31" Column="27" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="MetronomeForm.pas"/>
-        <Caret Line="9" Column="40" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="MetronomeForm.pas"/>
-        <Caret Line="58" Column="16" TopLine="22"/>
-      </Position4>
-      <Position5>
-        <Filename Value="MetronomeForm.pas"/>
-        <Caret Line="204" Column="5" TopLine="162"/>
-      </Position5>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>

@@ -9,6 +9,8 @@ object FmASIO: TFmASIO
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Demo application for ASIO-Host'
+  ClientHeight = 220
+  ClientWidth = 479
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate

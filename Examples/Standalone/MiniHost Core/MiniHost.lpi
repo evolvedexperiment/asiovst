@@ -54,8 +54,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="MiniHostForm.lrs"/>
         <UnitName Value="MiniHostForm"/>
-        <CursorPos X="23" Y="33"/>
-        <TopLine Value="1"/>
+        <CursorPos X="18" Y="2158"/>
+        <TopLine Value="2143"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -131,16 +131,7 @@
         <Loaded Value="True"/>
       </Unit9>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
-      <Position1>
-        <Filename Value="MiniHostForm.pas"/>
-        <Caret Line="28" Column="16" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="MiniHostForm.pas"/>
-        <Caret Line="2260" Column="24" TopLine="2232"/>
-      </Position2>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>

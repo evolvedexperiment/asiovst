@@ -1,13 +1,15 @@
 object FmVSTEditor: TFmVSTEditor
-  Left = 325
-  Height = 228
-  Top = 594
-  Width = 329
-  HorzScrollBar.Page = 328
-  VertScrollBar.Page = 227
+  Left = 383
+  Height = 132
+  Top = 242
+  Width = 320
+  HorzScrollBar.Page = 319
+  VertScrollBar.Page = 131
   ActiveControl = CBPreset
   BorderStyle = bsToolWindow
   Caption = 'ITA VST Plugin Editor'
+  ClientHeight = 132
+  ClientWidth = 320
   Font.Height = -13
   Font.Name = 'Verdana'
   Font.Style = [fsBold]
@@ -17,7 +19,7 @@ object FmVSTEditor: TFmVSTEditor
   OnDeactivate = FormDeactivate
   object ToolBar: TToolBar
     Height = 27
-    Width = 329
+    Width = 320
     ButtonHeight = 24
     Color = clBtnFace
     EdgeInner = esNone
@@ -56,7 +58,7 @@ object FmVSTEditor: TFmVSTEditor
       Width = 144
       AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
       Color = clBtnFace
-      ItemHeight = 16
+      ItemHeight = 13
       MaxLength = 0
       OnChange = CBPresetChange
       Style = csDropDownList
@@ -98,9 +100,9 @@ object FmVSTEditor: TFmVSTEditor
     end
   end
   object VSTPanel: TPanel
-    Height = 201
+    Height = 105
     Top = 27
-    Width = 329
+    Width = 320
     Align = alClient
     BevelOuter = bvNone
     Font.Color = 6695441
