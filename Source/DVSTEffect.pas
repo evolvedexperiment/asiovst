@@ -4,7 +4,7 @@ interface
 
 {$I ASIOVST.INC}
 
-uses Windows;
+{$IFDEF FPC}uses LCLIntf;{$ELSE}uses Windows;{$ENDIF}
 
 const kEffectMagic = 'VstP';
 
