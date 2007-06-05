@@ -3,6 +3,7 @@ unit DFilter;
 interface
 
 {$I ASIOVST.INC}
+{$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses DDSPBase;
 
@@ -168,6 +169,10 @@ begin
 end;
 
 function TFilter.ProcessSampleASM: Double;
+{$IFDEF PUREPASCAL}
+begin
+end;
+{$ELSE}
 asm
  push eax
  push ecx
@@ -180,6 +185,7 @@ asm
  pop ecx
  pop eax
 end;
+{$ENDIF}
 
 procedure TFilter.SetFrequency(const Value:Double);
 begin
@@ -435,6 +441,10 @@ begin
 end;
 
 function TBiquadIIRFilter.ProcessSampleASM:Double;
+{$IFDEF PUREPASCAL}
+begin
+end;
+{$ELSE}
 asm
  fld st(0)                           // s, s
  fmul [self.fNominator].Double       // a0*s, s
@@ -455,6 +465,7 @@ asm
  fxch
  fstp [self.fState+8].Double         // d1 = b1*r + a2*s, r, !!!
 end;
+{$ENDIF}
 
 procedure TBiquadIIRFilter.PushStates;
 begin
@@ -625,8 +636,8 @@ end;
 
 function TSimpleGainFilter.ProcessSampleASM: Double;
 asm
- fmul [self.fGainSpeed].Double
- fmul [self.fGainSpeed].Double
+ fmul [eax.fGainSpeed].Double
+ fmul [eax.fGainSpeed].Double
 end;
 
 end.
