@@ -28,6 +28,7 @@ type
   public
     constructor Create; virtual;
     function ProcessSample(const Input:Double):Double; overload; virtual; abstract;
+    function ProcessSample(const Input:Int64):Int64; overload; virtual; abstract;
     function ProcessSampleASM:Double; virtual;
     function MagnitudeSquared(Frequency:Double):Double; virtual; abstract;
     function MagnitudeLog10(Frequency:Double):Double; virtual; abstract;
@@ -37,6 +38,7 @@ type
     procedure Complex(Frequency:Double; out Real, Imaginary : Double); overload; virtual; abstract;
     procedure Complex(Frequency:Double; out Real, Imaginary : Single); overload; virtual; abstract;
     procedure ResetStates; virtual; abstract;
+    procedure ResetStatesInt64; virtual; abstract;
     procedure Reset; virtual; abstract;
     procedure GetIR(ImpulseResonse : TSingleDynArray); overload; virtual; abstract;
     procedure GetIR(ImpulseResonse : TDoubleDynArray); overload; virtual; abstract;
@@ -72,12 +74,12 @@ type
 
   TBiquadIIRFilter=class(TIIRFilter)
   protected
-    fDenominator : array[1..2] of Double;
-    fNominator   : array[0..2] of Double;
-    fPoles       : TPNType;
-    fZeros       : TPNType;
-    fState       : array[0..1] of Double;
-    fStateStack  : array of array[0..1] of Double;
+    fDenominator  : array[1..2] of Double;
+    fNominator    : array[0..2] of Double;
+    fPoles        : TPNType;
+    fZeros        : TPNType;
+    fState        : array[0..1] of Double;
+    fStateStack   : array of array[0..1] of Double;
     procedure CalcPolesZeros; virtual;
     function GetPoles:TPNType;
     function GetZeros:TPNType;
@@ -86,7 +88,9 @@ type
   public
     constructor Create; override;
     procedure ResetStates; override;
+    procedure ResetStatesInt64; override;
     function ProcessSample(const Input:Double):Double; override;
+    function ProcessSample(const Input:Int64):Int64; override;
     function ProcessSampleASM:Double; override;
     function MagnitudeSquared(Frequency:Double):Double; override;
     function MagnitudeLog10(Frequency:Double):Double; override;
@@ -357,6 +361,12 @@ begin
  fState[1]:=0;
 end;
 
+procedure TBiquadIIRFilter.ResetStatesInt64;
+begin
+ PInt64(@fState[0])^ := 0;
+ PInt64(@fState[1])^ := 0;
+end;
+
 procedure TBiquadIIRFilter.SetOrder(Value: Integer);
 begin {Dummy Function} end;
 
@@ -414,6 +424,14 @@ begin
  result    := fNominator[0]*Input + fState[0];
  fState[0] := fNominator[1]*Input - fDenominator[1]*result + fState[1];
  fState[1] := fNominator[2]*Input - fDenominator[2]*result;
+end;
+
+function TBiquadIIRFilter.ProcessSample(const Input: Int64): Int64;
+var i64 : Int64;
+begin
+ result              := Round(fNominator[0]*Input) + PInt64(@fState[0])^;
+ PInt64(@fState[0])^ := Round(fNominator[1]*Input) - Round(fDenominator[1]*result) + PInt64(@fState[1])^;
+ PInt64(@fState[1])^ := Round(fNominator[2]*Input) - Round(fDenominator[2]*result);
 end;
 
 function TBiquadIIRFilter.ProcessSampleASM:Double;
