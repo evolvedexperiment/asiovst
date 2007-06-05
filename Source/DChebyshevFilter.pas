@@ -3,6 +3,7 @@ unit DChebyshevFilter;
 interface
 
 {$I ASIOVST.INC}
+{$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses DFilter, DDSPBase;
 
@@ -219,7 +220,7 @@ begin
 const chalf : Double = 0.5;
 asm
  fld1
- fild [self.fOrder]                   // fOrder, 1
+ fild [self.fOrder]                    // fOrder, 1
  fadd st(0),st(0)                     // 2*fOrder, 1
  fdivp                                // 1/2*fOrder
 
