@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="5"/>
+    <General>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=".exe"/>
+      <ActiveEditorIndexAtStart Value="0"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+      <Language Value=""/>
+      <CharSet Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="3">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="HostVSTLaz"/>
+        <MinVersion Minor="2" Valid="True"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="HostASIOLaz"/>
+        <MinVersion Minor="2" Valid="True"/>
+      </Item3>
+    </RequiredPackages>
+    <Units Count="3">
+      <Unit0>
+        <Filename Value="VSTAnalyser.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos X="8" Y="11"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="VAMain.pas"/>
+        <ComponentName Value="FmVSTAnalyser"/>
+        <HasResources Value="True"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="VAMain.lrs"/>
+        <UnitName Value="VAMain"/>
+        <CursorPos X="25" Y="12"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="VAPlotIR.pas"/>
+        <ComponentName Value="FmPlotIR"/>
+        <HasResources Value="True"/>
+        <ResourceFilename Value="VAPlotIR.lrs"/>
+        <UnitName Value="VAPlotIR"/>
+        <CursorPos X="22" Y="10"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit2>
+    </Units>
+    <JumpHistory Count="5" HistoryIndex="4">
+      <Position1>
+        <Filename Value="VAMain.pas"/>
+        <Caret Line="2" Column="10" TopLine="1"/>
+      </Position1>
+      <Position2>
+        <Filename Value="VAPlotIR.pas"/>
+        <Caret Line="29" Column="17" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="VAMain.pas"/>
+        <Caret Line="184" Column="22" TopLine="161"/>
+      </Position3>
+      <Position4>
+        <Filename Value="VAMain.pas"/>
+        <Caret Line="1" Column="12" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="VAMain.pas"/>
+        <Caret Line="192" Column="13" TopLine="161"/>
+      </Position5>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="..\..\..\Lazarus\;..\..\..\Source\"/>
+      <OtherUnitFiles Value="..\..\..\Source\;..\..\..\Lazarus\"/>
+      <SrcPath Value="..\..\..\Source\"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="2">
+      <Item1>
+        <Name Value="ECodetoolError"/>
+      </Item1>
+      <Item2>
+        <Name Value="EFOpenError"/>
+      </Item2>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
