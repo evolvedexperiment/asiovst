@@ -433,7 +433,6 @@ begin
 end;
 
 function TBiquadIIRFilter.ProcessSample(const Input: Int64): Int64;
-var i64 : Int64;
 begin
  result              := Round(fNominator[0]*Input) + PInt64(@fState[0])^;
  PInt64(@fState[0])^ := Round(fNominator[1]*Input) - Round(fDenominator[1]*result) + PInt64(@fState[1])^;
