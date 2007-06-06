@@ -58,6 +58,7 @@ type
     property OnMouseMove;
     property OnMouseUp;
     property Color;
+    property PopupMenu;
     property Normalize: Boolean read fNormalize write SetNormalize default False;
     property LineWidth: Integer read fLineWidth write SetLineWidth default 1;
     property LineColor: TColor read fLineColor write SetLineColor;
@@ -147,11 +148,11 @@ begin
    fNormalizeFak:=0;
    for i := 0 to Length(fWavedata) - 1 do
     if abs(fWavedata[i])>fNormalizeFak
-     then fNormalizeFak:=abs(fWavedata[i]);
+     then fNormalizeFak:=-abs(fWavedata[i]);
    if fNormalizeFak=0
-    then fNormalizeFak:=1
-    else fNormalizeFak:=1/fNormalizeFak;
-  end else fNormalizeFak:=1;
+    then fNormalizeFak:=-1
+    else fNormalizeFak:=-1/fNormalizeFak;
+  end else fNormalizeFak:=-1;
 
  with fBuffer.Canvas do
   begin
