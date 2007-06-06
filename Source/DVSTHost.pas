@@ -26,8 +26,9 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
-  SysUtils, Classes, Graphics, Controls, Forms, Registry, DVSTEffect,
-  Dialogs, StdCtrls, ComCtrls {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
+  {$IFDEF MSWINDOWS} Registry, {$ENDIF} SysUtils, Classes, Graphics, Controls,
+  Forms, DVSTEffect, Dialogs, StdCtrls, ComCtrls
+  {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
 type
   TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: longint; ptr: pointer; opt: Single): integer of object;
@@ -825,6 +826,8 @@ begin
                  hcdReceiveVstTimeInfo, hcdReportConnectionChanges,
                  hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing,
                  hcdOffline, hcdSupplyIdle, hcdStartStopProcess];
+
+ {$IFDEF MSWINDOWS}
  with TRegistry.Create do
   try
    RootKey := HKEY_LOCAL_MACHINE;
@@ -836,6 +839,7 @@ begin
   finally
    Free;
   end;
+ {$ENDIF}
  try
   FVstPlugIns := TVstPlugIns.Create(Self);
   FVTI := TVstTimeInformation.Create;

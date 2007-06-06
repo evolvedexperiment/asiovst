@@ -139,15 +139,6 @@ procedure TWaveform.RedrawBuffer;
 var i,p,o     : Integer;
     r,w,mn,mx : Single;
 begin
- fBuffer.Canvas.Brush.Color:=Self.Color;
-
- {$IFNDEF FPC}
- if fTransparent
-  then DrawParentImage(Self, fBuffer.Canvas)
-  else
- {$ENDIF}
- fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
-
  if Length(fWavedata)<1 then exit;
  if fNormalize then
   begin
@@ -162,9 +153,17 @@ begin
 
  with fBuffer.Canvas do
   begin
+   Brush.Color:=Self.Color;
+   {$IFNDEF FPC}
+   if fTransparent
+    then DrawParentImage(Self, fBuffer.Canvas)
+    else
+   {$ENDIF}
+   FillRect(ClipRect);
+
    Pen.Width:=fLineWidth;
    Pen.Color:=fLineColor;
-   r:=Width/Length(fWavedata); i:=1; w:=0; p:=0;
+   r:=Self.Width/Length(fWavedata); i:=1; w:=0; p:=0;
    mn:=Wavedata[0]*fNormalizeFak; mx:=mn;
    MoveTo(0,round(((mn*0.5)+0.5)*fBuffer.Height));
    while i<Length(fWavedata) do
