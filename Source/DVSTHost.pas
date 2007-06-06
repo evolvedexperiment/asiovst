@@ -718,12 +718,15 @@ end;
 
 constructor TVstTimeInformation.Create;
 begin
- FVstTimeInfo.sampleRate :=  44100;
- FVstTimeInfo.timeSigNumerator := 4;
- FVstTimeInfo.timeSigDenominator := 4;
- FVstTimeInfo.smpteFrameRate := 1;
- FVstTimeInfo.samplePos := 0;
- FVstTimeInfo.ppqPos := 0;
+ with FVstTimeInfo do
+  begin
+   SampleRate :=  44100;
+   timeSigNumerator := 4;
+   timeSigDenominator := 4;
+   smpteFrameRate := 1;
+   samplePos := 0;
+   ppqPos := 0;
+  end;
  Flags := [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid,
            vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid];
 end;
@@ -737,8 +740,9 @@ procedure TVstTimeInformation.AssignTo(Dest: TPersistent);
 begin
  if Dest is TVstTimeInformation then
    with TVstTimeInformation(Dest) do
-   begin
+   try
      fVstTimeInfo := Self.FVstTimeInfo;
+   finally  
      Change;
    end
  else inherited AssignTo(Dest);
@@ -816,6 +820,11 @@ begin
  FSampleRate := 44100;
  FBlocksize := 2048;
  FLanguage := kVstLangEnglish;
+ FHostCanDos := [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo,
+                 hcdReceiveVstEvents, hcdReceiveVstMidiEvent,
+                 hcdReceiveVstTimeInfo, hcdReportConnectionChanges,
+                 hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing,
+                 hcdOffline, hcdSupplyIdle, hcdStartStopProcess];
  with TRegistry.Create do
   try
    RootKey := HKEY_LOCAL_MACHINE;
@@ -827,24 +836,25 @@ begin
   finally
    Free;
   end;
- FVstPlugIns := TVstPlugIns.Create(Self);
- FVTI := TVstTimeInformation.Create;
- FVTI.OnChanged := VstTimeInfoChanged;
- if Assigned(FOnCreate) then FOnCreate(Self);
- FHostCanDos := [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo,
-                 hcdReceiveVstEvents, hcdReceiveVstMidiEvent,
-                 hcdReceiveVstTimeInfo, hcdReportConnectionChanges,
-                 hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing,
-                 hcdOffline, hcdSupplyIdle, hcdStartStopProcess];
+ try
+  FVstPlugIns := TVstPlugIns.Create(Self);
+  FVTI := TVstTimeInformation.Create;
+  FVTI.OnChanged := VstTimeInfoChanged;
+ finally
+  if Assigned(FOnCreate) then FOnCreate(Self);
+ end;
 end;
 
 destructor TVstHost.Destroy;
 begin
- while FVstPlugIns.Count > 0 do FVstPlugIns[0].Free;
- FVstPlugIns.Free;
- FVTI.Free;
- inherited;
  if Assigned(FOnDestroy) then FOnDestroy(Self);
+ if Assigned(FVstPlugIns) then
+  begin
+   while FVstPlugIns.Count > 0 do FVstPlugIns[0].Free;
+   FVstPlugIns.Free;
+  end;
+ if Assigned(FVTI) then FreeAndNil(FVTI);
+ inherited;
 end;
 
 procedure TVstHost.VstTimeInfoChanged(Sender: TObject);
@@ -877,7 +887,8 @@ end;
 procedure TVstHost.setHostTempo(tempo:Single);
 begin
  FHostTempo := tempo;
- VstTimeInfo.tempo := Tempo;
+ if Assigned(VstTimeInfo)
+  then VstTimeInfo.tempo := Tempo;
 end;
 
 function TVstHost.getHostCanDos : THostCanDos;
@@ -917,19 +928,24 @@ end;
 procedure TVstHost.UpdateVstTimeInfo(samples: word = 1);
 var p: double;
 begin
- with FVTI.FVstTimeInfo do
- begin
-  samplePos := samplePos + samples;
-  p := sampleRate * 240 / tempo;
-  if samplePos >= p then samplePos := samplePos - p;
-  ppqPos := (samplePos / sampleRate) * (tempo / 60);
- end;
+ if Assigned(FVTI) then
+  with FVTI.FVstTimeInfo do
+   begin
+    samplePos := samplePos + samples;
+    p := sampleRate * 240 / tempo;
+    if samplePos >= p then samplePos := samplePos - p;
+    ppqPos := (samplePos / sampleRate) * (tempo / 60);
+   end;
 end;
 
 procedure TVstHost.ResetVstTimeInformation;
 begin
- FVTI.FVstTimeInfo.samplePos := 0;
- FVTI.FVstTimeInfo.ppqPos := 0;
+ if Assigned(FVTI) then
+  with FVTI do
+   begin
+    FVstTimeInfo.samplePos := 0;
+    FVstTimeInfo.ppqPos := 0;
+   end;
 end;
 
 { TVstPlugIns }

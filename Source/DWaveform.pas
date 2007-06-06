@@ -35,6 +35,7 @@ type
     procedure SetWaveLength(const Value: Integer);
     function GetWaveLength: Integer;
     procedure SetNormalize(const Value: Boolean);
+    procedure ResetSize;
   protected
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
@@ -194,18 +195,18 @@ begin
      inc(i);
     end;
 
-   if mn=mx then LineTo(Width,round(mn*fHalfHeight+fHalfHeight)) else
+   if mn=mx then LineTo(Self.Width,round(mn*fHalfHeight+fHalfHeight)) else
     begin
      o:=fBuffer.Canvas.PenPos.Y-fHalfHeight;
      if abs(o-mn*fHalfHeight)<abs(o-mx*fHalfHeight)
       then
        begin
-        LineTo(Width,round(mn*fHalfHeight+fHalfHeight));
-        LineTo(Width,round(mx*fHalfHeight+fHalfHeight));
+        LineTo(Self.Width,round(mn*fHalfHeight+fHalfHeight));
+        LineTo(Self.Width,round(mx*fHalfHeight+fHalfHeight));
        end else
        begin
-        LineTo(Width,round(mx*fHalfHeight+fHalfHeight));
-        LineTo(Width,round(mn*fHalfHeight+fHalfHeight));
+        LineTo(Self.Width,round(mx*fHalfHeight+fHalfHeight));
+        LineTo(Self.Width,round(mn*fHalfHeight+fHalfHeight));
        end;
     end;
   end;
@@ -262,9 +263,8 @@ procedure TWaveform.MouseDown(Button: TMouseButton; Shift: TShiftState;
 begin
  MouseCapture := True;
  inherited MouseDown(Button, Shift, X, Y);
- if (x < 0) or (x > width) or (y < 0) or (y > height) or not (ssLeft in Shift) then exit;
-
-// Invalidate;
+ if (x < 0) or (x > width) or (y < 0) or (y > height)
+  or not (ssLeft in Shift) then exit;
 end;
 
 procedure TWaveform.MouseMove(Shift: TShiftState; X, Y: Integer);
@@ -276,25 +276,26 @@ procedure TWaveform.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Inte
 begin
  MouseCapture := False;
  inherited MouseUp(Button, Shift, X, Y);
-// Invalidate;
+end;
+
+procedure TWaveform.ResetSize;
+begin
+ fBuffer.Width := Width;
+ fBuffer.Height := Height;
+ fHalfHeight := Height div 2;
+ RedrawBuffer;
 end;
 
 procedure TWaveform.ReadState(Reader: TReader);
 begin
  inherited ReadState(Reader);
- fBuffer.Width := Width;
- fBuffer.Height := Height;
- fHalfHeight := Height div 2;
- RedrawBuffer;
+ ResetSize;
 end;
 
 procedure TWaveform.Resize;
 begin
  inherited Resize;
- fBuffer.Width := Width;
- fBuffer.Height := Height;
- fHalfHeight := Height div 2;
- RedrawBuffer;
+ ResetSize;
 end;
 
 procedure TWaveform.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := 0; end;
