@@ -1,18 +1,17 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="\"/>
+    <PathDelim Value="/"/>
     <Version Value="5"/>
     <General>
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <Title Value="Simple VST Analyser"/>
+      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
-      <Language Value=""/>
-      <CharSet Value=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -26,7 +25,7 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="2">
       <Item1>
         <PackageName Value="LCL"/>
       </Item1>
@@ -34,19 +33,15 @@
         <PackageName Value="HostVSTLaz"/>
         <MinVersion Minor="2" Valid="True"/>
       </Item2>
-      <Item3>
-        <PackageName Value="HostASIOLaz"/>
-        <MinVersion Minor="2" Valid="True"/>
-      </Item3>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="7">
       <Unit0>
         <Filename Value="VSTAnalyser.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="8" Y="11"/>
+        <CursorPos X="1" Y="13"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="21"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -56,10 +51,10 @@
         <IsPartOfProject Value="True"/>
         <ResourceFilename Value="VAMain.lrs"/>
         <UnitName Value="VAMain"/>
-        <CursorPos X="25" Y="12"/>
+        <CursorPos X="25" Y="10"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -68,55 +63,71 @@
         <HasResources Value="True"/>
         <ResourceFilename Value="VAPlotIR.lrs"/>
         <UnitName Value="VAPlotIR"/>
-        <CursorPos X="22" Y="10"/>
+        <CursorPos X="53" Y="7"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="../../../Source/DWaveform.pas"/>
+        <UnitName Value="DWaveform"/>
+        <CursorPos X="40" Y="166"/>
+        <TopLine Value="145"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../../Source/ASIOVST.inc"/>
+        <CursorPos X="21" Y="364"/>
+        <TopLine Value="350"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="/usr/local/share/lazarus/lcl/graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <CursorPos X="14" Y="1029"/>
+        <TopLine Value="836"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../../Source/DVSTHost.pas"/>
+        <UnitName Value="DVSTHost"/>
+        <CursorPos X="29" Y="97"/>
+        <TopLine Value="84"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Bookmarks Count="1">
+          <Item0 X="2" Y="830" ID="1"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit6>
     </Units>
-    <JumpHistory Count="5" HistoryIndex="4">
-      <Position1>
-        <Filename Value="VAMain.pas"/>
-        <Caret Line="2" Column="10" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="VAPlotIR.pas"/>
-        <Caret Line="29" Column="17" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="VAMain.pas"/>
-        <Caret Line="184" Column="22" TopLine="161"/>
-      </Position3>
-      <Position4>
-        <Filename Value="VAMain.pas"/>
-        <Caret Line="1" Column="12" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="VAMain.pas"/>
-        <Caret Line="192" Column="13" TopLine="161"/>
-      </Position5>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
-    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="VSTAnalyser"/>
+    </Target>
     <SearchPaths>
-      <IncludeFiles Value="..\..\..\Lazarus\;..\..\..\Source\"/>
-      <OtherUnitFiles Value="..\..\..\Source\;..\..\..\Lazarus\"/>
-      <SrcPath Value="..\..\..\Source\"/>
+      <IncludeFiles Value="../../../Lazarus/;../../../Source/"/>
+      <OtherUnitFiles Value="../../../Source/;../../../Lazarus/"/>
+      <LCLWidgetType Value="carbon"/>
+      <SrcPath Value="../../../Source/"/>
     </SearchPaths>
     <CodeGeneration>
-      <SmartLinkUnit Value="True"/>
       <Generate Value="Faster"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="Darwin"/>
     </CodeGeneration>
     <Linking>
-      <Debugging>
-        <UseLineInfoUnit Value="False"/>
-        <StripSymbols Value="True"/>
-      </Debugging>
-      <LinkSmart Value="True"/>
       <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-framework carbon"/>
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>
