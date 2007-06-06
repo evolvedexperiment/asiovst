@@ -27,7 +27,8 @@ package DVSTGFX;
 
 requires
   rtl,
-  vcl;
+  vcl,
+  DSPBase_D10;
 
 contains
   DMidiKeys in '..\Source\DMidiKeys.pas',
