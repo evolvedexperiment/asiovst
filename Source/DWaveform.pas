@@ -7,7 +7,7 @@ unit DWaveform;
 interface
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, Windows, {$ELSE} Windows, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
   Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DDSPBase;
 
 type
@@ -103,6 +103,7 @@ begin
  result:=Length(fWavedata);
 end;
 
+{$IFNDEF FPC}
 procedure DrawParentImage(Control: TControl; Dest: TCanvas);
 var
   SaveIndex: Integer;
@@ -122,6 +123,7 @@ begin
    RestoreDC(DC, SaveIndex);
   end;
 end;
+{$ENDIF}
 
 procedure TWaveform.Paint;
 begin
@@ -138,9 +140,12 @@ var i,p,o     : Integer;
 begin
  fBuffer.Canvas.Brush.Color:=Self.Color;
 
+ {$IFNDEF FPC}
  if fTransparent
   then DrawParentImage(Self, fBuffer.Canvas)
-  else fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
+  else
+ {$ENDIF}
+ fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
 
  if Length(fWavedata)<1 then exit;
  if fNormalize then
@@ -292,7 +297,7 @@ begin
  RedrawBuffer;
 end;
 
-procedure TWaveform.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := LRESULT(False); end;
+procedure TWaveform.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := 0; end;
 
 procedure Register;
 begin

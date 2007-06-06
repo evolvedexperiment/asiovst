@@ -7,7 +7,7 @@ unit DADSRGraph;
 interface
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, Windows,
+  {$IFDEF FPC} LCLIntf, LResources, LMessages,
   {$ELSE} Windows, {$ENDIF}
   Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
 
@@ -225,6 +225,7 @@ begin
  Result:=ADSRSettings.Sustain;
 end;
 
+{$IFNDEF FPC}
 procedure DrawParentImage(Control: TControl; Dest: TCanvas);
 var
   SaveIndex: Integer;
@@ -244,14 +245,18 @@ begin
    RestoreDC(DC, SaveIndex);
   end;
 end;
+{$ENDIF}
 
 procedure TADSRGraph.Paint;
 begin
  fBuffer.Canvas.Brush.Color:=Self.Color;
 
+ {$IFNDEF FPC}
  if fTransparent
   then DrawParentImage(Self, fBuffer.Canvas)
-  else fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
+  else
+ {$ENDIF}
+ fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
 
  with fBuffer.Canvas do
   begin
@@ -386,7 +391,7 @@ begin
  CalcIntValues;
 end;
 
-procedure TADSRGraph.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := LRESULT(False); end;
+procedure TADSRGraph.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := 0; end;
 
 procedure Register;
 begin
