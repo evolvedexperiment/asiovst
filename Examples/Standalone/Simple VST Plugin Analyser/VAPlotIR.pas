@@ -12,9 +12,7 @@ type
     PUDisplay: TPopupMenu;
     MIWaveform: TMenuItem;
   private
-    { Private-Deklarationen }
   public
-    { Public-Deklarationen }
   end;
 
 var

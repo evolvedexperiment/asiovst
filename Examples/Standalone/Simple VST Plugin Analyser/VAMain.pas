@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages, XPMan,
   {$ENDIF}SysUtils, Classes, Graphics, Controls, Forms, ComCtrls, ExtCtrls,
-  StdCtrls, DDSPBase, DVSTHost, DASIOHost, ToolWin, Menus, Dialogs;
+  StdCtrls, DDSPBase, DVSTHost, Menus, Dialogs;
 
 type
   TFmVSTAnalyser = class(TForm)

@@ -36,8 +36,6 @@ object FmVSTAnalyser: TFmVSTAnalyser
     ParentFont = False
     TabOrder = 0
     OnClick = VSTPanelClick
-    ExplicitWidth = 329
-    ExplicitHeight = 228
   end
   object VstHost: TVstHost
     VstPlugIns = <
