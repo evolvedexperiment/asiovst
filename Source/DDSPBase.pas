@@ -6,7 +6,8 @@ interface
 
 {$IFDEF DELPHI7_UP}
 uses {$IFNDEF FPC} Windows, {$ENDIF} Types;
-{$ELSE} uses LCLIntf; {$DEFINE PUREPASCAL} {$ENDIF}
+{$ELSE} uses {$IFDEF FPC} LCLIntf; {$ELSE} Windows;{$ENDIF}
+{$DEFINE PUREPASCAL} {$ENDIF}
 
 {$IFDEF FPC} {$DEFINE PUREPASCAL} {$ENDIF}
 
