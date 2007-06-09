@@ -117,6 +117,10 @@ type
   procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
   function Complex(Re, Im : Double):TComplexDouble; overload;
   function Complex(Re, Im : Single):TComplexSingle; overload;
+  function ComplexSign(A : TComplexSingle):Single; overload;
+  function ComplexSign(A : TComplexDouble):Double; overload;
+  function ComplexSign(Re, Im : Single):Single; overload;
+  function ComplexSign(Re, Im : Double):Double; overload;
   function ComplexAbsolute(Re, Im : Double):Double; overload;
   function ComplexAbsolute(Re, Im : Single):Single; overload;
   function ComplexAbsolute(Complex:TComplexDouble):Double; overload;
@@ -125,6 +129,10 @@ type
   function ComplexArgument(Re, Im : Single):Single; overload;
   function ComplexArgument(Complex:TComplexDouble):Double; overload;
   function ComplexArgument(Complex:TComplexSingle):Single; overload;
+  function ComplexLog10(Re, Im : Single):TComplexSingle; overload;
+  function ComplexLog10(Re, Im : Double):TComplexDouble; overload;
+  function ComplexLog10(Complex: TComplexSingle):TComplexSingle; overload;
+  function ComplexLog10(Complex: TComplexDouble):TComplexDouble; overload;
   function ComplexMultiply(A,B : TComplexSingle):TComplexSingle; overload;
   function ComplexMultiply(A,B : TComplexDouble):TComplexDouble; overload;
   function ComplexMultiply(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
@@ -722,6 +730,58 @@ function Complex(Re, Im : Single):TComplexSingle; overload;
 begin
  Result.Re:=Re;
  Result.Im:=Im;
+end;
+
+function ComplexSign(A : TComplexSingle):Single; overload;
+begin
+ if (A.Re >= 0) and (A.Im > 0) then result:=1 else
+ if (A.Re <= 0) and (A.Im < 0) then result:=-1
+  else Result:=sign(A.Re);
+end;
+
+function ComplexSign(A : TComplexDouble):Double; overload;
+begin
+ if (A.Re >= 0) and (A.Im > 0) then result:=1 else
+ if (A.Re <= 0) and (A.Im < 0) then result:=-1
+  else Result:=sign(A.Re);
+end;
+
+function ComplexSign(Re, Im : Single):Single; overload;
+begin
+ if (Re >= 0) and (Im > 0) then result:=1 else
+ if (Re <= 0) and (Im < 0) then result:=-1
+  else Result:=sign(Re);
+end;
+
+function ComplexSign(Re, Im : Double):Double; overload;
+begin
+ if (Re >= 0) and (Im > 0) then result:=1 else
+ if (Re <= 0) and (Im < 0) then result:=-1
+  else Result:=sign(Re);
+end;
+
+function ComplexLog10(Re, Im : Single):TComplexSingle; overload;
+begin
+ Result.Re:=Log10((sqr(Re)+Sqr(Im)));
+ Result.Im:=ArcTan2(Im,Re);
+end;
+
+function ComplexLog10(Re, Im : Double):TComplexDouble; overload;
+begin
+ Result.Re:=Log10((sqr(Re)+Sqr(Im)));
+ Result.Im:=ArcTan2(Im,Re);
+end;
+
+function ComplexLog10(Complex : TComplexSingle):TComplexSingle; overload;
+begin
+ Result.Re:=Log10((sqr(Complex.Re)+Sqr(Complex.Im)));
+ Result.Im:=ArcTan2(Complex.Im,Complex.Re);
+end;
+
+function ComplexLog10(Complex: TComplexDouble):TComplexDouble; overload;
+begin
+ Result.Re:=Log10((sqr(Complex.Re)+Sqr(Complex.Im)));
+ Result.Im:=ArcTan2(Complex.Im,Complex.Re);
 end;
 
 function ComplexAbsolute(Re, Im : Single):Single; overload;
