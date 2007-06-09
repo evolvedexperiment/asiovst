@@ -233,9 +233,9 @@ var i : Integer;
 begin
  if Length(ImpulseResonse)=0 then Exit;
  PushStates;
- ImpulseResonse[0]:=ProcessSample(1);
+ ImpulseResonse[0]:=ProcessSample(1.0);
  for i:=1 to Length(ImpulseResonse)-1
-  do ImpulseResonse[i]:=ProcessSample(0);
+  do ImpulseResonse[i]:=ProcessSample(0.0);
  PopStates;
 end;
 
@@ -244,9 +244,9 @@ var i : Integer;
 begin
  if Length(ImpulseResonse)=0 then Exit;
  PushStates;
- ImpulseResonse[0]:=ProcessSample(1);
+ ImpulseResonse[0]:=ProcessSample(1.0);
  for i:=1 to Length(ImpulseResonse)-1
-  do ImpulseResonse[i]:=ProcessSample(0);
+  do ImpulseResonse[i]:=ProcessSample(0.0);
  PopStates;
 end;
 
