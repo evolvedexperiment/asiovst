@@ -252,7 +252,7 @@ type
     effFlagsUnused2,             // Unused
     effFlagsExtIsAsync,          // NOT USED IN 2.4! - for external dsp; plug returns immedeately from process()
                                  // host polls plug position (current block) via effGetCurrentPosition
-    effFlagsExtHasBuffer,        // NOT USED IN 2.4! - external dsp, may have their own output buffe (32 bit float)
+    effFlagsExtHasBuffer,        // NOT USED IN 2.4! - external dsp, may have their own output buffer (32 bit float)
                                  // host then requests this via effGetDestinationBuffer
     effFlagsCanDoubleReplacing); // plug-in supports double precision processing
 
@@ -451,19 +451,19 @@ type
     Future          : array[0..47] of Byte;
   end;
 
-  TVstPlugCategory = (
-    kpcUnknown,
-    kpcEffect,
-    kpcSynth,
-    kpcAnalysis,
-    kpcMastering,
-    kpcSpacializer,    // 'panners'
-    kpcRoomFx,         // delays and reverbs
-    kpcSurroundFx,     // dedicated surround processor
-    kpcRestoration,
-    kpcOfflineProcess,
-    kpcShell,          // plugin which is only a container of plugins.
-    kpcGenerator
+  TVstPluginCategory = (
+    vpcUnknown,
+    vpcEffect,
+    vpcSynth,
+    vpcAnalysis,
+    vpcMastering,
+    vpcSpacializer,    // 'panners'
+    vpcRoomFx,         // delays and reverbs
+    vpcSurroundFx,     // dedicated surround processor
+    vpcRestoration,
+    vpcOfflineProcess,
+    vpcShell,          // plugin which is only a container of plugins.
+    vpcGenerator
   );
 
   TMidiProgramNameFlag = (mpnIsOmni); // default is multi. for omni mode, channel 0 is used for inquiries and program changes

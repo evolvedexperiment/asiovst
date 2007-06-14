@@ -50,10 +50,6 @@ type
    vcdBypass);
   TVstCanDos = set of TVstCanDo;
 
-  TVstPluginCategory = (vcgUnknown, vcgEffect, vcgSynth, vcgAnalysis,
-   vcgMastering, vcgSpacializer, vcgRoomFx, vcgSurroundFx, vcgRestoration,
-   vcgOfflineProcess, vcgShell, vcgGenerator);
-
   TProcessingMode = (pmNormal, pmBlockSave, pmCopy, pmMute);
 
   TCurveType = (ctLinear, ctLogarithmic, ctExponential, ctFrequencyScale);
@@ -1085,7 +1081,7 @@ begin
  hv:=(HostProduct<>'WaveLab') {or (shortstring(temp)<>'energyXT')};
  if hv then hv:=(canHostDo('shellCategory')=1);
 
- if (PlugCategory=vcgShell) and hv then
+ if (PlugCategory=vpcShell) and hv then
   begin
    rUID:=getCurrentUniqueId;
    if (rUID>0) then
@@ -1112,8 +1108,8 @@ begin
     end;
   end
  else
-  if (PlugCategory=vcgShell)
-   then PlugCategory:=vcgUnknown;
+  if (PlugCategory=vpcShell)
+   then PlugCategory:=vpcUnknown;
 end;
 
 function TCustomVSTModule.Dispatcher(opcode: TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single): Integer;
@@ -3641,7 +3637,7 @@ begin
  FNumOutputs   := -1;
  FNumPrograms  := -1;
  FNumParams    := -1;
- FPlugCategory := vcgUnknown;
+ FPlugCategory := vpcUnknown;
  FVSTModule    := (Collection As TCustomVstShellPlugins).VSTModule;
 end;
 

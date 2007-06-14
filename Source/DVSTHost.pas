@@ -39,7 +39,7 @@ type
   TVstSampleRateChangedEvent = procedure(Sender: TObject; SampleRate: Single) of object;
   TVstPinConnectedEvent = function(Sender: TObject; PinNr: Integer; isInput: Boolean):Boolean of object;
   TVstOfflineEvent = procedure(Sender: TObject; VstOfflineTaskPointer: PVstOfflineTask) of object;
-  TGUIStyle = (gsOld, gsList);
+  TGUIStyle = (gsDefault, gsOld, gsList);
 
   THostCanDo = (hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo,
                 hcdReceiveVstEvents, hcdReceiveVstMidiEvent,
@@ -129,6 +129,8 @@ type
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
+    constructor Create(Collection: TCollection); override;
+    destructor Destroy; override;
     function GetDisplayName: string; override;
     function GetVendorString: string;
     function GetProductString: string;
@@ -138,8 +140,6 @@ type
     function GetProgramName: string;
     procedure SetProgramName(newName: string);
     procedure SetSampleRate(fSR: double);
-    constructor Create(Collection: TCollection); override;
-    destructor Destroy; override;
     procedure Open;
     procedure Close;
     function Load(PluginDll: TFilename): Boolean;
@@ -268,7 +268,7 @@ type
     property OnAfterLoad: TNotifyEvent read FOnAfterLoad write FOnAfterLoad;
     property OnProcessEvents: TVstProcessEventsEvent read FOnProcessEvents write FOnProcessEvents;
     property DLLFileName: TFileName read FDLLFileName write SetDLLFileName;
-    property GUIStyle : TGUIStyle read fGUIStyle write SetGUIStyle default gsOld;
+    property GUIStyle : TGUIStyle read fGUIStyle write SetGUIStyle default gsDefault;
   end;
 
   TVstPlugIns = class(TOwnedCollection)
@@ -1040,17 +1040,18 @@ end;
 
 constructor TVstPlugIn.Create(Collection: TCollection);
 begin
- FDisplayName := inherited GetDisplayName;
  inherited;
- FMainFunction := nil;
- PVstEffect := nil;
- FEditOpen := false;
- FNeedIdle := false;
- FWantMidi := false;
- FVstVersion := -1;
- FPlugCategory:= kpcUnknown;
- FDLLFileName := '';
- fGUIFormCreated:=False;
+ FDisplayName    := inherited GetDisplayName;
+ FMainFunction   := nil;
+ PVstEffect      := nil;
+ FEditOpen       := false;
+ FNeedIdle       := false;
+ FWantMidi       := false;
+ FVstVersion     := -1;
+ FPlugCategory   := kpcUnknown;
+ FDLLFileName    := '';
+ FGUIStyle       := gsDefault;
+ fGUIFormCreated := False;
 end;
 
 destructor TVstPlugin.Destroy;
@@ -1369,7 +1370,7 @@ var param: string;
     i,wxw: Integer;
     theRect: ERect;
 begin
- if (effFlagsHasEditor in PVstEffect.EffectFlags) then
+ if (effFlagsHasEditor in PVstEffect.EffectFlags) and (fGUIStyle=gsDefault) then
   begin
    if not FEditOpen then
    begin
@@ -1424,7 +1425,7 @@ begin
        OnChange(nil);
       end;
     end;
-   gsList:
+   gsDefault, gsList:
     begin
      theRect.top:=0;
      theRect.left:=0;
@@ -1538,7 +1539,8 @@ var i: Integer;
 begin
  if not Assigned(PVstEffect) then Exit;
  if assigned(FOnCloseEdit) then FOnCloseEdit(Self);
- if (effFlagsHasEditor in PVstEffect.EffectFlags) then EditClose else
+ if (effFlagsHasEditor in PVstEffect.EffectFlags) and (FGUIStyle=gsDefault)
+  then EditClose else
   if Assigned(GUIForm) then
    case fGUIStyle of
     gsOld:
@@ -1552,12 +1554,12 @@ begin
       i:=0;
       repeat
        if GUIForm.FindComponent('ParamBar'+IntToStr(i))=nil then Break;
-       GUIForm.FindComponent('ParamBar'+IntToStr(i)).Free; inc(i);
-      until false;
-      i:=0;
-      repeat
+       GUIForm.FindComponent('ParamBar'+IntToStr(i)).Free;
        if GUIForm.FindComponent('LbL'+IntToStr(i))=nil then Break;
-       GUIForm.FindComponent('LbL'+IntToStr(i)).Free; inc(i);
+       GUIForm.FindComponent('LbL'+IntToStr(i)).Free;
+       if GUIForm.FindComponent('LbV'+IntToStr(i))=nil then Break;
+       GUIForm.FindComponent('LbV'+IntToStr(i)).Free;
+       inc(i);
       until false;
      end;
    end;

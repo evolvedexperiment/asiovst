@@ -143,6 +143,16 @@ type
   procedure ComplexMultiplyInplace(var ARe,AIm : Single; BRe,BIm : Single) overload;
   procedure ComplexMultiplyInplace(var ARe,AIm : Double; BRe,BIm : Double) overload;
   {$ENDIF}
+  function ComplexDivide(A,B : TComplexSingle):TComplexSingle; overload;
+  function ComplexDivide(A,B : TComplexDouble):TComplexDouble; overload;
+  function ComplexDivide(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
+  function ComplexDivide(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
+  procedure ComplexDivideInplace(var A : TComplexSingle; B : TComplexSingle) overload;
+  {$IFDEF DELPHI8_UP}
+  procedure ComplexDivideInplace(var A : TComplexDouble; B : TComplexDouble) overload;
+  procedure ComplexDivideInplace(var ARe,AIm : Single; BRe,BIm : Single) overload;
+  procedure ComplexDivideInplace(var ARe,AIm : Double; BRe,BIm : Double) overload;
+  {$ENDIF}
 
   procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray); overload;
   procedure DFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray); overload;
@@ -874,11 +884,81 @@ begin
 end;
 
 procedure ComplexMultiplyInplace(var ARe, AIm  : Double; BRe, BIm : Double) overload;
-var Tmp : Single;
+var Tmp : Double;
 begin
  Tmp := ARe;
  ARe := ARe * BRe - AIm * BIm;
  AIm := AIm * BRe + Tmp * BIm;
+end;
+{$ENDIF}
+
+function ComplexDivide(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
+var Divisor : Double;
+begin
+ Divisor := sqr(BRe) + sqr(BIm);
+ Result.Re := (ARe * BRe + AIm * BIm) / Divisor;
+ Result.Im := (AIm * BRe - ARe * BIm) / Divisor;
+end;
+
+function ComplexDivide(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
+var Divisor : Double;
+begin
+ Divisor := sqr(BRe) + sqr(BIm);
+ Result.Re := (ARe * BRe + AIm * BIm) / Divisor;
+ Result.Im := (AIm * BRe - ARe * BIm) / Divisor;
+end;
+
+function ComplexDivide(A,B : TComplexSingle):TComplexSingle; overload;
+var Divisor : Double;
+begin
+ Divisor := sqr(B.Re) + sqr(B.Im);
+ Result.Re := (A.Re * B.Re + A.Im * B.Im) / Divisor;
+ Result.Im := (A.Im * B.Re - A.Re * B.Im) / Divisor;
+end;
+
+function ComplexDivide(A,B : TComplexDouble):TComplexDouble; overload;
+var Divisor : Double;
+begin
+ Divisor := sqr(B.Re) + sqr(B.Im);
+ Result.Re := (A.Re * B.Re + A.Im * B.Im) / Divisor;
+ Result.Im := (A.Im * B.Re - A.Re * B.Im) / Divisor;
+end;
+
+procedure ComplexDivideInplace(var A : TComplexSingle; B : TComplexSingle) overload;
+var Divisor, Temp : Double;
+begin
+ Divisor := sqr(B.Re) + sqr(B.Im);
+ Temp := A.Re;
+ A.Re := (A.Re * B.Re + A.Im * B.Im) / Divisor;
+ A.Im := (A.Im * B.Re - Temp * B.Im) / Divisor;
+end;
+
+{$IFDEF DELPHI8_UP}
+procedure ComplexDivideInplace(var A : TComplexDouble; B : TComplexDouble) overload;
+var Divisor, Temp : Double;
+begin
+ Divisor := sqr(B.Re) + sqr(B.Im);
+ Temp := A.Re;
+ A.Re := (A.Re * B.Re + A.Im * B.Im) / Divisor;
+ A.Im := (A.Im * B.Re - Temp * B.Im) / Divisor;
+end;
+
+procedure ComplexDivideInplace(var ARe, AIm : Single; BRe, BIm : Single) overload;
+var Divisor, Temp : Double;
+begin
+ Divisor := sqr(BRe) + sqr(BIm);
+ Temp := ARe;
+ ARe  := (ARe * BRe + AIm  * BIm) / Divisor;
+ AIm  := (AIm * BRe - Temp * BIm) / Divisor;
+end;
+
+procedure ComplexDivideInplace(var ARe, AIm  : Double; BRe, BIm : Double) overload;
+var Divisor, Temp : Double;
+begin
+ Divisor := sqr(BRe) + sqr(BIm);
+ Temp := ARe;
+ ARe  := (ARe * BRe + AIm  * BIm) / Divisor;
+ AIm  := (AIm * BRe - Temp * BIm) / Divisor;
 end;
 {$ENDIF}
 
