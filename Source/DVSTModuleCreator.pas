@@ -80,14 +80,14 @@ begin
     begin
       NumInputs    := NUM_INPUTS_SYNTH;
       NumOutputs   := NUM_OUTPUTS_SYNTH;
-      PlugCategory := vcgSynth;
+      PlugCategory := vpcSynth;
       Flags := Flags + [effFlagsIsSynth];
     end
     else
     begin
       NumInputs    := NUM_INPUTS_EFFECT;
       NumOutputs   := NUM_OUTPUTS_EFFECT;
-      PlugCategory := vcgEffect;
+      PlugCategory := vpcEffect;
     end;
 
     if FConfig.UseEditor then

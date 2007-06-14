@@ -30,8 +30,8 @@ object VSTSSModule: TVSTSSModule
   OnProcessReplacing = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi
   OnInitialize = VSTModuleInitialize
-  Left = 200
-  Top = 103
+  Left = 460
+  Top = 80
   Height = 150
   Width = 215
 end

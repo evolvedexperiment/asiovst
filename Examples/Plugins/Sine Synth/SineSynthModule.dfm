@@ -1,7 +1,7 @@
 object VSTSSModule: TVSTSSModule
   OldCreateOrder = False
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth, effFlagsExtIsAsync]
+  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth, effFlagsUnused1]
   Version = '1.0'
   EffectName = 'Sine Synth'
   ProductName = 'Sine Synth'
@@ -9,9 +9,9 @@ object VSTSSModule: TVSTSSModule
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = vcgSynth
+  PlugCategory = vpcSynth
   TailSize = 0
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
+  CanDos = [vcdSendVstEvents, vcdSendVstMidiEvent, vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   numCategories = 1
   CurrentProgram = 0
