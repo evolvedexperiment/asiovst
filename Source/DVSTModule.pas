@@ -966,16 +966,13 @@ end;
 {$ELSE}
 constructor TVSTModule.Create(AOwner: TComponent);
 begin
-  CreateNew(AOwner);
-  if (ClassType <> TDataModule) and
-     not (csDesigning in ComponentState) then
-    begin
-    if not InitInheritedComponent(Self, TVSTModule)
-     then
-      raise EStreamError.CreateFmt(SErrNoStreaming, [ClassName]);
-    if OldCreateOrder then
-      DoCreate;
-    end;
+ CreateNew(AOwner);
+ if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
+  begin
+   if not InitInheritedComponent(Self, TCustomVSTModule)
+    then raise EStreamError.CreateFmt(SErrNoStreaming, [ClassName]);
+   if OldCreateOrder then DoCreate;
+  end;
 end;
 
 function InitResourceComponent(Instance: TComponent; RootAncestor: TClass): Boolean;

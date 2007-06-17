@@ -74,7 +74,7 @@ type
     FProgramNr          : Integer;
     FuID                : string;
     FVstVersion         : Integer;
-    FPlugCategory       : TVstPlugCategory;
+    FPlugCategory       : TVstPluginCategory;
     FDLLFileName        : TFileName;
     FVstOfflineTask     : TVstOfflineTask;
     FReplaceOrAccumulate: TReplaceOrAccumulate;
@@ -172,7 +172,7 @@ type
     function ConnectOutput(OutputNr: Integer; state: boolean): Integer;
     function GetInputProperties(InputNr: Integer): TVstPinProperties;
     function GetOutputProperties(OutputNr: Integer): TVstPinProperties;
-    function GetPlugCategory: TVstPlugCategory;
+    function GetPlugCategory: TVstPluginCategory;
     function GetCurrentPosition: Integer;
     function GetDestinationBuffer: Integer;
     function OfflineNotify(pntr: PVstAudioFile; numAudioFiles: Integer; start: boolean): Integer;
@@ -241,7 +241,7 @@ type
     property PluginVstVersion: Integer read FVstVersion stored False default -1;
     property EditVisible: Boolean read FEditOpen;
     property EffectOptions: TEffFlags read GetEffOptions stored False;
-    property PlugCategory: TVstPlugCategory read FPlugCategory stored False;
+    property PlugCategory: TVstPluginCategory read FPlugCategory stored False;
     property ProgramNr: Integer read GetProgram write SetProgram default -1;
     property ProgramName: string read GetProgramName write SetProgramName;
     property VendorString: string read GetVendorString stored False;
@@ -379,7 +379,7 @@ var audioMaster : TAudioMasterCallbackFunc;
 
 procedure Register;
 function string2Language(LanguageString : string): TVstHostLanguage;
-function PlugCategory2String(Category:TVstPlugCategory):string;
+function PlugCategory2String(Category:TVstPluginCategory):string;
 function EffOptions2String(EffOpts: TEffFlags):string;
 
 implementation
@@ -1048,7 +1048,7 @@ begin
  FNeedIdle       := false;
  FWantMidi       := false;
  FVstVersion     := -1;
- FPlugCategory   := kpcUnknown;
+ FPlugCategory   := vpcUnknown;
  FDLLFileName    := '';
  FGUIStyle       := gsDefault;
  fGUIFormCreated := False;
@@ -1142,7 +1142,7 @@ begin
   end;
  FActive := false;
  FVersion := 0;
- FPlugCategory := kpcUnknown;
+ FPlugCategory := vpcUnknown;
  FnumInputs:=0;
  FnumOutputs:=0;
  FnumPrograms:=0;
@@ -1683,11 +1683,11 @@ begin
  Dispose(temp);
 end;
 
-function TVstPlugin.GetPlugCategory:TVstPlugCategory;
+function TVstPlugin.GetPlugCategory:TVstPluginCategory;
 begin
  if FActive
-  then result := TVstPlugCategory(VstDispatch(effGetPlugCategory))
-  else result := kpcUnknown;
+  then result := TVstPluginCategory(VstDispatch(effGetPlugCategory))
+  else result := vpcUnknown;
 end;
 
 function TVstPlugin.GetCurrentPosition:Integer;
@@ -2438,21 +2438,21 @@ begin
  else Result:=kVstLangEnglish
 end;
 
-function PlugCategory2String(Category:TVstPlugCategory):string;
+function PlugCategory2String(Category:TVstPluginCategory):string;
 begin
   case Category of
-    kpcUnknown        : Result:='Unknown';
-    kpcEffect         : Result:='Effect';
-    kpcSynth          : Result:='Synth';
-    kpcAnalysis       : Result:='Analysis';
-    kpcMastering      : Result:='Mastering';
-    kpcSpacializer    : Result:='Spacializer';
-    kpcRoomFx         : Result:='RoomFx';
-    kpcSurroundFx     : Result:='SurroundFx';
-    kpcRestoration    : Result:='Restoration';
-    kpcOfflineProcess : Result:='OfflineProcess';
-    kpcShell          : Result:='Shell';
-    kpcGenerator      : Result:='Generator';
+    vpcUnknown        : Result:='Unknown';
+    vpcEffect         : Result:='Effect';
+    vpcSynth          : Result:='Synth';
+    vpcAnalysis       : Result:='Analysis';
+    vpcMastering      : Result:='Mastering';
+    vpcSpacializer    : Result:='Spacializer';
+    vpcRoomFx         : Result:='RoomFx';
+    vpcSurroundFx     : Result:='SurroundFx';
+    vpcRestoration    : Result:='Restoration';
+    vpcOfflineProcess : Result:='OfflineProcess';
+    vpcShell          : Result:='Shell';
+    vpcGenerator      : Result:='Generator';
   end;
 end;
 
