@@ -1805,6 +1805,7 @@ end;
 
 procedure TCustomVSTModule.SetSampleRate(newValue: Single);
 begin
+ {$IFDEF Debug} FLog.Add('Set Samplerate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if fSampleRate<>newValue then
   begin
    fSampleRate := newValue;
@@ -2086,10 +2087,10 @@ end;
 procedure TCustomVSTModule.ReadState(Reader: TReader);
 var i: Integer;
 begin
- {$IFDEF Debug} FLog.Add('ReadState'); {$ENDIF}
+ {$IFDEF Debug} FLog.Add('Before ReadState'); {$ENDIF}
  {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
  inherited;
- {$IFDEF Debug} FLog.Add('Ui1'); {$ENDIF}
+ {$IFDEF Debug} FLog.Add('After ReadState'); {$ENDIF}
  {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
  for i:=0 to numPrograms-1
   do if Assigned(Programs[i].FOnInitialize) then Programs[i].FOnInitialize(Programs[i]);
@@ -2097,7 +2098,7 @@ begin
   then FCurProgram:=-1
   else CurrentProgram:=0;
  if Assigned(FOnInitialize) then FOnInitialize(Self);
- {$IFDEF Debug} FLog.Add('Ui2'); {$ENDIF}
+ {$IFDEF Debug} FLog.Add('End ReadState'); {$ENDIF}
  {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
 end;
 
@@ -2953,6 +2954,7 @@ end;
 function TCustomVSTModule.UpdateSampleRate: Double;
 var i : Integer;
 begin
+ {$IFDEF Debug} FLog.Add('Update Samplerate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if Assigned(FAudioMaster) then
   begin
    i := FAudioMaster(@FEffect, audioMasterGetSampleRate, 0, 0, nil, 0);
@@ -3274,6 +3276,7 @@ end;
 
 procedure TCustomVSTModule.SetBlockSizeAndSampleRate(aBlockSize: Integer; aSampleRate: Single);
 begin
+ {$IFDEF Debug} FLog.Add('Set BlockSize/Samplerate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if fSampleRate<>aSampleRate then
   begin
    fSampleRate := aSampleRate;

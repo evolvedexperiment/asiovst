@@ -1341,26 +1341,23 @@ begin
  if GUIForm = nil then
   begin
    GUIForm := TForm.Create(nil);
-   GUIForm.Caption := VendorString + ' - ' + ProductString;
-   GUIForm.BorderStyle := bsToolWindow;
-   GUIForm.Position := poDesktopCenter;
-   GUIForm.OnClose := onFormClose;
-   GUIForm.OnActivate := onEditActivate;
-   GUIForm.OnDeActivate := onEditDeActivate;
-   if GUIForm.Caption=' - ' then GUIForm.Caption := GetEffectName;
+   with GUIForm do
+    begin
+     Caption := VendorString + ' - ' + ProductString;
+     BorderStyle := bsToolWindow;
+     Position := poDesktopCenter;
+     OnClose := onFormClose;
+     OnActivate := onEditActivate;
+     OnDeActivate := onEditDeActivate;
+     if Caption=' - ' then Caption := GetEffectName;
+    end;
    fGUIFormCreated:=True;
    ShowEdit(GUIForm);
    if (effFlagsHasEditor in PVstEffect.EffectFlags)
     then theRect := EditGetRect
-    else
-     begin
-      theRect.Left := 0;
-      theRect.Right := 200;
-      theRect.Top := 0;
-      theRect.Bottom := 80;
-     end;
-    GUIForm.ClientWidth := theRect.right - theRect.left;
-    GUIForm.ClientHeight := theRect.Bottom - theRect.Top;
+    else theRect:=Rect(0, 200, 0, 80);
+   GUIForm.ClientWidth := theRect.right - theRect.left;
+   GUIForm.ClientHeight := theRect.Bottom - theRect.Top;
   end;
  GUIForm.Visible := True;
 end;
@@ -1427,11 +1424,9 @@ begin
     end;
    gsDefault, gsList:
     begin
-     theRect.top:=0;
-     theRect.left:=0;
-     theRect.bottom:=4+FnumParams*16;
-     theRect.right:=Form.Width;
+     theRect:=Rect(0,0,Form.Width,4+FnumParams*16);
      GUIForm:=Form; wxw:=0;
+     GUIForm.Visible:=False;
      GUIForm.ClientWidth := theRect.right - theRect.left;
      GUIForm.ClientHeight := theRect.Bottom - theRect.Top;
      with TLabel.Create(Form) do
@@ -1469,6 +1464,7 @@ begin
         AutoSize:=False; Alignment:=taCenter; Width:=65; Top := 2+i*Height;
        end;
       end;
+     GUIForm.Visible:=True;
      FEditOpen:=True;
     end;
   end;

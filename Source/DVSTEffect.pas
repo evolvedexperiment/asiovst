@@ -1005,6 +1005,7 @@ type
 
 function FourCharToLong(C1, C2, C3, C4: Char): Longint;
 function FMod(d1, d2: Double): Double;
+function Rect(Left, Top, Right, Bottom : Smallint):ERect;
 
 procedure dB2string(value: Single; text: PChar);
 procedure dB2stringRound(value: Single; text: PChar);
@@ -1102,6 +1103,14 @@ begin
  if (value <> 0)
   then r := logN(maxValue, value);
  Result :=  r;
+end;
+
+function Rect(Left, Top, Right, Bottom : Smallint):ERect;
+begin
+ Result.Left:=Left;
+ Result.Top:=Top;
+ Result.Right:=Right;
+ Result.Bottom:=Bottom;
 end;
 
 {$WARNINGS ON}
