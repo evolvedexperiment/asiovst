@@ -8,7 +8,7 @@ uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows,
   Messages, {$ENDIF} SysUtils, Forms, Classes, DDSPBase, DVSTEffect;
 
-{$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
+{$IFDEF FPC} {.$DEFINE Debug} {$ENDIF}
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
 type
@@ -166,7 +166,7 @@ type
     property CC: Integer read FCC write FCC default -1;
     property Curve: TCurveType read FCurve write FCurve;
     property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
-    property Units: {$IFNDEF FPC}string{$ELSE}string{$ENDIF} read FUnits write SetUnits;
+    property Units: string read FUnits write SetUnits;
     property CurveFactor: Single read FCurveFactor write FCurveFactor;
     property SmoothingFactor: Single read FSmoothingFactor write FSmoothingFactor;
     property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated;
@@ -966,7 +966,7 @@ end;
 {$ELSE}
 constructor TVSTModule.Create(AOwner: TComponent);
 begin
- CreateNew(AOwner);
+ inherited Create(AOwner);
  if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
   begin
    if not InitInheritedComponent(Self, TCustomVSTModule)
@@ -1050,14 +1050,14 @@ destructor TCustomVSTModule.Destroy;
 var i : Integer;
 begin
  try
-  if Assigned(FParameterProperties) then FParameterProperties.Free;
-  if Assigned(FVstPrograms) then FVstPrograms.Free;
-  if Assigned(FEditorForm) then FEditorForm.Free;
+  if Assigned(FParameterProperties) then FreeAndNil(FParameterProperties);
+  if Assigned(FVstPrograms) then FreeAndNil(FVstPrograms);
+  if Assigned(FEditorForm) then FreeAndNil(FEditorForm);
   {$IFDEF CPU_Detection}
-  if Assigned(FCPU) then FCPU.Free;
+  if Assigned(FCPU) then FreeAndNil(FCPU);
   {$ENDIF}
-  if Assigned(FChunkData) then FChunkData.Free;
-  if Assigned(FVstShellPlugins) then FVstShellPlugins.Free;
+  if Assigned(FChunkData) then FreeAndNil(FChunkData);
+  if Assigned(FVstShellPlugins) then FreeAndNil(FVstShellPlugins);
   for i := 0 to maxMidiEvents - 1 do FreeMem(FMidiEvent.events[i]);
   {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
  finally
@@ -1805,7 +1805,6 @@ end;
 
 procedure TCustomVSTModule.SetSampleRate(newValue: Single);
 begin
- {$IFDEF Debug} FLog.Add('Set Samplerate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if fSampleRate<>newValue then
   begin
    fSampleRate := newValue;
@@ -1973,11 +1972,11 @@ end;
 procedure TCustomVSTModule.SetParameter(const Index: Integer; Value: Single);
 begin
  if FParameterUpdate then exit;
- {$IFDEF Debug} FLog.Add('Set Parameter: '+FloatToStr(Value)); {$ENDIF}
+ {$IFDEF Debug} FLog.Add(TimeToStr(Now-fTmStmp)+'Set Parameter: '+FloatToStr(Value)); {$ENDIF}
  FParameterUpdate:=True;
  try
   if (Index >= FEffect.numParams) or (Index < 0) or (Index>=FParameterProperties.Count)
-   then raise exception.Create('Index out of bounds');
+   then raise Exception.Create('Index out of bounds');
   if (effFlagsProgramChunks in FEffect.EffectFlags)
    then
     begin
@@ -2030,12 +2029,6 @@ function TCustomVSTModule.EditorOpen(ptr: Pointer): Integer;
 var GUI  : TForm;
     i,pr : Integer;
 begin
-{
- try
-  if Application.Handle=0 then Application.Handle:=HWnd(ptr);
- except
- end;
-}
  Result := 0;
  if Assigned(FOnEditOpen) then FOnEditOpen(Self, GUI);
  if Assigned(GUI) then
@@ -2059,14 +2052,8 @@ end;
 
 procedure TCustomVSTModule.EditorClose;
 begin
-// Application.Handle:=0;
  if Assigned(FOnEditClose) then FOnEditClose(Self);
- if Assigned(FEditorForm) then
-  begin
-//   FEditorForm.ParentWindow:=0;
-   FEditorForm.Free;
-   FEditorForm:=nil;
-  end;
+ if Assigned(FEditorForm) then FreeAndNil(FEditorForm);
 end;
 
 procedure TCustomVSTModule.EditorIdle;
@@ -2075,7 +2062,6 @@ begin
   begin
    if Assigned(FOnEditIdle) then FOnEditIdle(Self);
    FEditorNeedUpdate := False;
-//   FEditorForm.Invalidate;
   end;
 end;
 
@@ -2132,7 +2118,7 @@ procedure SetParameterClass(Effect: PVSTEffect; Index: Integer; Value: Single); 
 begin
  with TCustomVSTModule(Effect^.vObject) do
   begin
-   {$IFDEF Debug} FLog.Add('Set Parameter Class: '+FloatToStr(Value)); {$ENDIF}
+   {$IFDEF Debug} FLog.Add(TimeToStr(Now-fTmStmp)+'Set Parameter Class: '+FloatToStr(Value)); {$ENDIF}
    if FIsHostAutomation then exit;
    FIsHostAutomation:=True;
    if ((Index>=numParams) or (Index>=FParameterProperties.Count)) and Assigned(OnParameterSizeFailed)
@@ -2157,7 +2143,7 @@ begin
  TCustomVSTModule(Effect^.vObject).ProcessDoubleReplacing(Inputs, Outputs, sampleFrames);
 end;
 
-// TVstParameterProperty
+// TCustomVstParameterProperty
 
 {$IFDEF FPC}
 constructor TCustomVstParameterProperty.Create(ACollection: TCollection);
@@ -2166,7 +2152,7 @@ constructor TCustomVstParameterProperty.Create(Collection: TCollection);
 {$ENDIF}
 var i: Integer;
 begin
- inherited;
+ inherited Create(Collection);
  FMin:=0;
  FMax:=1;
  FCC:=-1;
@@ -2188,10 +2174,11 @@ destructor TCustomVstParameterProperty.Destroy;
 var i: Integer;
 begin
  try
-  if not (effFlagsProgramChunks in VSTModule.FEffect.EffectFlags) then
-   if VSTModule.FEffect.numPrograms>0
-    then for i:=0 to VSTModule.FEffect.numPrograms-1 do SetLength(VSTModule.Programs[i].FParameter,Collection.Count-1)
-    else SetLength(VSTModule.FParameter,Collection.Count-1);
+  if assigned(VSTModule) then
+   if not (effFlagsProgramChunks in VSTModule.FEffect.EffectFlags) then
+    if VSTModule.FEffect.numPrograms>0
+     then for i:=0 to VSTModule.FEffect.numPrograms-1 do SetLength(VSTModule.Programs[i].FParameter,Collection.Count-1)
+     else SetLength(VSTModule.FParameter,Collection.Count-1);
  except
  end;
  inherited;
@@ -2231,7 +2218,7 @@ begin
  FUnits := AUnits;
 end;
 
-{ TVstParameterProperties }
+{ TCustomVstParameterProperties }
 
 constructor TCustomVstParameterProperties.Create(AOwner: TComponent);
 begin
