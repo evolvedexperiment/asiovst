@@ -216,7 +216,8 @@ procedure TFilter.SetW0;
 begin
  fW0:=2*Pi*fFrequency*fSRR;
  fSinW0:=sin(fW0);
- if fW0>3.1 then fW0:=3.1;
+ if fW0>3.1
+  then fW0:=3.1;
 end;
 
 { TIIRFilter }
@@ -517,8 +518,8 @@ var t : Double;
 begin
  t:=fGainSpeed/(fGainSpeed+fAlpha);
  fDenominator[2]:=(fGainSpeed-fAlpha)/(fGainSpeed+fAlpha);
- fNominator[1]:=-2*cos(fW0)*t;
- fDenominator[1]:=fNominator[1];
+ fDenominator[1]:=-2*cos(fW0)*t;
+ fNominator[1]:=fDenominator[1];
  fNominator[0]:=(1+fAlpha*fGainSpeed)*t;
  fNominator[2]:=(1-fAlpha*fGainSpeed)*t;
  CalcPolesZeros;
