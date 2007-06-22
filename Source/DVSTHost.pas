@@ -2053,7 +2053,6 @@ begin
    if assigned(FMainFunction)
     then PVstEffect := FMainFunction(@audioMaster)
     else PVstEffect := nil;
-//  if PVstEffect = nil then raise exception.Create('PlugIn ' + PluginDll + ' could not be loaded');
   if PVstEffect <> nil then
   begin
    if Assigned(FOnAfterLoad) then FOnAfterLoad(Self);
@@ -2062,7 +2061,7 @@ begin
   begin
    result := false;
    Unload;
-   exit;
+   raise exception.Create('PlugIn ' + PluginDll + ' could not be loaded');
   end;
  except
   result := false;
