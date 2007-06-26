@@ -121,7 +121,7 @@ end;
 
 procedure TButterworthFilter.SetOrder(Value: Integer);
 begin
- if Value<2 then Value:=2 else
+ if Value<1 then Value:=1 else
  if Value>64 then Value:=64;
  if fOrder<>Value then
   begin
@@ -195,6 +195,7 @@ var i : Integer;
     K,K2,t,a  : Double;
 begin
  K:=tan(fW0*0.5); K2:=K*K;
+
  for i:=0 to (fOrder div 2) - 1 do
   begin
    a:=-2*cos((2*i+fOrder+1)/(2*fOrder)*PI)*K;
@@ -204,7 +205,14 @@ begin
    fAB[4*i+2]:=-2*(K2-1)*t;
    fAB[4*i+3]:=(a-K2-1)*t;
   end;
- t:=fGainSpeed*fGainSpeed;
+ if (fOrder mod 2) = 1 then
+  begin
+   i:=((fOrder+1) div 2)-1; t:=1/(K+1);
+   fAB[4*i]:=K*t;
+   fAB[4*i+1]:=fAB[4*i];
+   fAB[4*i+2]:=(1-K)*t;
+  end;
+ t:=sqr(fGainSpeed);
  fAB[0]:=fAB[0]*t;
  fAB[1]:=fAB[1]*t;
 end;
@@ -214,10 +222,15 @@ var
   i    : Integer;
   a,cw : Double;
 begin
- cw:=2*cos(2*Frequency*pi*fSRR); a:=4+cw*(4+cw);
+ cw:=2*cos(2*Frequency*pi*fSRR); a:=sqr(cw+2);
  Result:=1;
  for i := 0 to (fOrder div 2) - 1
-  do Result:=Result*fAB[4*i]*fAB[4*i]*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
+  do Result:=Result*sqr(fAB[4*i])*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
+ if (fOrder mod 2) = 1 then
+  begin
+   i:=((fOrder+1) div 2) - 1;
+   Result:=Result*sqr(fAB[4*i])*(cw+2)/(1+sqr(fAB[4*i+2])-cw*fAB[4*i+2]);
+  end;
  Result:=Abs(1E-32+Result);
 end;
 
@@ -250,11 +263,21 @@ begin
    fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
    fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
   end;
+ if (fOrder mod 2)=1 then
+  begin
+   i:=((fOrder+1) div 2) - 1;
+   x           := fAB[4*i]*Result;
+   Result      := x + fState[2*i];
+   fState[2*i] := x + fAB[4*i+2]*Result;
+  end;
 {$ELSE}
 asm
  mov ecx, [self.fOrder]
- shl ecx, 1
+ shr ecx, 1
+ shl ecx, 2
+ push ecx
  fld Input.Double;
+ jz @SingleStage
  @FilterLoop:
   sub ecx,4
   fld st(0)
@@ -274,8 +297,26 @@ asm
   fmul [self.fAB+ecx*8].Double
   faddp
   fstp [self.fState+ecx*4+8].Double
- jnz @FilterLoop
-{$ENDIF}
+ ja @FilterLoop
+
+ @SingleStage:
+ pop ecx
+ shr ecx, 1
+ sub ecx, [self.fOrder]
+ jz @End
+  mov ecx, [self.fOrder]
+  dec ecx
+  shl ecx, 1
+  fmul [self.fAB+ecx*8].Double
+  fld st(0)
+  fadd [self.fState+ecx*4].Double
+  fld st(0)
+  fmul [self.fAB+ecx*8+16].Double
+  faddp st(2), st(0)
+  fxch
+  fstp [self.fState+ecx*4].Double
+ @End:
+ {$ENDIF}
 end;
 
 { TButterworthFilterHP }
@@ -291,6 +332,7 @@ var i : Integer;
     K,K2,t,a  : Double;
 begin
  K:=tan(fW0*0.5); K2:=K*K;
+
  for i:=0 to (fOrder div 2) - 1 do
   begin
    a:=-2*cos((2*i+fOrder+1)/(2*fOrder)*PI)*K;
@@ -298,9 +340,16 @@ begin
    fAB[4*i+0]:=t;
    fAB[4*i+1]:=-2*t;
    fAB[4*i+2]:=-2*(K2-1)*t;
-   fAB[4*i+3]:=-(K2-a+1)*t;
+   fAB[4*i+3]:=(a-K2-1)*t;
   end;
- t:=fGainSpeed*fGainSpeed;
+ if (fOrder mod 2) = 1 then
+  begin
+   i:=((fOrder+1) div 2)-1; t:=1/(K+1);
+   fAB[4*i]:=t;
+   fAB[4*i+1]:=fAB[4*i];
+   fAB[4*i+2]:=(1-K)*t;
+  end;
+ t:=sqr(fGainSpeed);
  fAB[0]:=fAB[0]*t;
  fAB[1]:=fAB[1]*t;
 end;
@@ -312,10 +361,14 @@ var
 begin
  cw:=2*cos(2*Frequency*pi*fSRR); a:=sqr(cw-2);
  Result:=1;
-
  for i := 0 to (fOrder div 2) - 1
-  do Result:=Result*fAB[4*i]*fAB[4*i]*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
- Result:=sqrt(Result);
+  do Result:=Result*sqr(fAB[4*i])*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
+ if (fOrder mod 2) = 1 then
+  begin
+   i:=((fOrder+1) div 2) - 1;
+   Result:=Result*sqr(fAB[4*i])*(cw-2)/(1+sqr(fAB[4*i+2])-cw*fAB[4*i+2]);
+  end;
+ Result:=Abs(1E-32+Result);
 end;
 
 function TButterworthHP.ProcessSample(const Input: Double): Double;
@@ -332,11 +385,21 @@ begin
    fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
    fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
   end;
+ if (fOrder mod 2)=1 then
+  begin
+   i:=((fOrder+1) div 2) - 1;
+   x:=fAB[4*i]*Result;
+   Result      :=  x + fState[2*i];
+   fState[2*i] := -x + fAB[4*i+2]*Result;
+  end;
 {$ELSE}
 asm
  mov ecx, [self.fOrder]
- shl ecx, 1
+ shr ecx, 1
+ shl ecx, 2
+ push ecx
  fld Input.Double;
+ jz @SingleStage
  @FilterLoop:
   sub ecx,4
   fld st(0)
@@ -356,8 +419,26 @@ asm
   fmul [self.fAB+ecx*8].Double
   faddp
   fstp [self.fState+ecx*4+8].Double
- jnz @FilterLoop
-{$ENDIF}
+ ja @FilterLoop
+
+ @SingleStage:
+ pop ecx
+ shr ecx, 1
+ sub ecx, [self.fOrder]
+ jz @End
+  mov ecx, [self.fOrder]
+  dec ecx
+  shl ecx, 1
+  fmul [self.fAB+ecx*8].Double
+  fld st(0)
+  fadd [self.fState+ecx*4].Double
+  fld st(0)
+  fmul [self.fAB+ecx*8+16].Double
+  fsubrp st(2), st(0)
+  fxch
+  fstp [self.fState+ecx*4].Double
+ @End:
+ {$ENDIF}
 end;
 
 end.
