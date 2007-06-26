@@ -3,7 +3,7 @@ unit DVSTModule;
 interface
 
 {$I ASIOVST.INC}
-{.$DEFINE UseDelphi}
+{$DEFINE UseDelphi}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows,
@@ -984,7 +984,7 @@ begin
  {$ENDIF}
 end;
 {$ELSE}
-constructor TVSTModule.Create{$IFDEF UseDelphi}(AOwner: TComponent){$ENDIF};
+constructor TVSTModule.Create(AOwner: TComponent);
 begin
  {$IFDEF UseDelphi}
  inherited Create(AOwner);
@@ -995,14 +995,13 @@ begin
    if OldCreateOrder then DoCreate;
   end;
  {$ELSE}
- inherited Create;
- if Assigned(OnCreate) then OnCreate(Self);
+ inherited Create(AOwner);
  {$ENDIF}
 end;
 
 function InitResourceComponent(Instance: TComponent; RootAncestor: TClass): Boolean;
 begin
- Result:=InitLazResourceComponent(Instance,RootAncestor);
+//  Result:=InitLazResourceComponent(Instance,RootAncestor);
 end;
 {$ENDIF}
 
@@ -2067,13 +2066,16 @@ begin
  if Assigned(GUI) then
   try
    FEditorForm:=GUI;
-   {$IFNDEF FPC}
-   FEditorForm.ParentWindow:=HWnd(ptr);
-   {$ENDIF}
-   FEditorForm.Visible:=True;
-   FEditorForm.BorderStyle:=bsNone;
-   FEditorForm.SetBounds(0, 0, FEditorForm.Width, FEditorForm.Height);
-   FEditorForm.Invalidate;
+   with FEditorForm do
+    begin
+     {$IFNDEF FPC}
+     ParentWindow:=HWnd(ptr);
+     {$ENDIF}
+     Visible:=True;
+     BorderStyle:=bsNone;
+     SetBounds(0, 0, Width, Height);
+     Invalidate;
+    end;
    Result := 1; pr := min(numParams,FParameterProperties.Count);
    if Assigned(FOnParameterChangeEvent) and (not (effFlagsProgramChunks in FEffect.EffectFlags)) then
     if numPrograms>0
@@ -2187,7 +2189,7 @@ constructor TCustomVstParameterProperty.Create(Collection: TCollection);
 {$ENDIF}
 var i: Integer;
 begin
- inherited Create(Collection);
+ inherited;
  FMin:=0;
  FMax:=1;
  FCC:=-1;
@@ -2197,12 +2199,17 @@ begin
  FCanBeAutomated:=True;
  FDisplayName := 'Parameter '+IntTostr(Collection.Count);
  FVSTModule := (Collection As TCustomVstParameterProperties).VSTModule;
- VSTModule.FEffect.numParams:=Collection.Count;
+ try
+// Exit;
+  FVSTModule.FEffect.numParams := Collection.Count;
+// Exit;
 
- if not (effFlagsProgramChunks in VSTModule.FEffect.EffectFlags) then
-  if (VSTModule.FEffect.numPrograms>0)
-   then for i:=0 to VSTModule.FEffect.numPrograms-1 do SetLength(VSTModule.Programs[i].FParameter,Collection.Count)
-   else SetLength(VSTModule.FParameter,Collection.Count);
+  if not (effFlagsProgramChunks in fVSTModule.FEffect.EffectFlags) then
+   if (FVSTModule.FEffect.numPrograms>0)
+    then for i:=0 to FVSTModule.FEffect.numPrograms-1 do SetLength(FVSTModule.Programs[i].FParameter,Collection.Count)
+    else SetLength(FVSTModule.FParameter,Collection.Count);
+ except
+ end;
 end;
 
 destructor TCustomVstParameterProperty.Destroy;

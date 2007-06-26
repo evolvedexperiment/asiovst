@@ -2057,12 +2057,7 @@ begin
   begin
    if Assigned(FOnAfterLoad) then FOnAfterLoad(Self);
    result := true;
-  end else
-  begin
-   result := false;
-   Unload;
-   raise exception.Create('PlugIn ' + PluginDll + ' could not be loaded');
-  end;
+  end else raise exception.Create('PlugIn ' + PluginDll + ' could not be loaded');
  except
   result := false;
   Unload;
