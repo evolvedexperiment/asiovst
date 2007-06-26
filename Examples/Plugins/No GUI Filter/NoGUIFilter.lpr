@@ -14,24 +14,27 @@ begin
   VSTModule1:=TVSTFilter.Create(nil);
   VSTModule1.Effect^.user:=VSTModule1;
   VSTModule1.AudioMaster:=audioMaster;
-  Result := nil;
+  Result := VSTModule1.Effect;
 
   with VSTModule1 do
-  begin
-    Flags := [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing];
-    Version := '0.0';
+  try
+    Flags := [effFlagsCanReplacing, effFlagsCanDoubleReplacing];
+    Version := '1.0';
     EffectName := 'Delphi VST Filter';
     ProductName := 'Delphi VST Filter';
     VendorName := 'Delphi VST';
-    PlugCategory := vcgEffect;
+    PlugCategory := vpcEffect;
     TailSize := 0;
     CanDos := [vcdplugAsChannelInsert, vcdplugAsSend, vcd1in1out, vcd1in2out,
                vcd2in1out, vcd2in2out];
     SampleRate := 44100.0;
-    CurrentProgram := 0;
-    CurrentProgramName := 'Preset 1';
     KeysRequired := False;
     UniqueID := 'Filt';
+    OnProcess := VSTModuleProcess;
+    OnProcessReplacing := VSTModuleProcess;
+    OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacing;
+    OnInitialize := VSTModuleInitialize;
+
     with (Programs.Add) do
     begin
       DisplayName := 'Preset 1';
@@ -48,14 +51,15 @@ begin
       VSTModule:=VSTModule1;
     end;
 
-    with ParameterProperties.Add do
+    with (ParameterProperties.Add) do
     begin
+      VSTModule := VSTModule1;
       Min := 20.0;
       Max := 20000.0;
-      Curve := ctLinear;
+      Curve := ctLogarithmic;
       DisplayName := 'Cutoff Frequency';
       Units := 'Hz';
-      CurveFactor := 1.0;
+      CurveFactor := 1000.0;
       SmoothingFactor := 1.0;
       CanBeAutomated := True;
       ReportVST2Properties := False;
@@ -68,10 +72,9 @@ begin
       StepInteger := 100;
       LargeStepInteger := 1000;
       ShortLabel := 'Cutoff';
-      VSTModule := VSTModule1;
       OnParameterChange := VSTFilterParameterProperties0ParameterChange;
     end;
-    with ParameterProperties.Add do
+    with (ParameterProperties.Add) do
     begin
       Min := 0.01;
       Max := 20.0;
@@ -92,12 +95,11 @@ begin
       ShortLabel := 'Res';
       VSTModule := VSTModule1;
     end;
-    OnProcess := VSTModuleProcess;
-    OnProcessReplacing := VSTModuleProcess;
-    OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacing;
-    OnInitialize := VSTModuleInitialize;
+    CurrentProgram := 0;
+    if Assigned(OnCreate) then OnCreate(VSTModule1);
+    if Assigned(OnInitialize) then OnInitialize(VSTModule1);
+  except
   end;
-  Result := VSTModule1.Effect;
 end;
 
 exports Main name 'main';
