@@ -3,6 +3,7 @@ unit DVSTModule;
 interface
 
 {$I ASIOVST.INC}
+{.$DEFINE UseDelphi}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows,
@@ -10,6 +11,7 @@ uses
 
 {$IFDEF FPC} {.$DEFINE Debug} {$ENDIF}
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
+
 
 type
   TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
@@ -310,7 +312,11 @@ type
 
   { TCustomVSTModule }
 
+  {$IFDEF UseDelphi}
   TCustomVSTModule = class(TDataModule)
+  {$ELSE}
+  TCustomVSTModule = class(TComponent)
+  {$ENDIF}
   private
     FParameterUpdate        : Boolean;
     FAbout                  : string;
@@ -390,6 +396,10 @@ type
     FOnCheckKey             : TOnCheckKey;
     FVstShellPlugins        : TCustomVstShellPlugins;
     FCurrentVstShellPlugin  : Integer;
+    {$IFNDEF UseDelphi}
+    fOnDestroy              : TNotifyEvent;
+    fOnCreate               : TNotifyEvent;
+    {$ENDIF}
     {$IFDEF Debug} FLog     : TStringList; {$ENDIF}
     {$IFDEF Debug} FTmStmp  : TDateTime; {$ENDIF}
 
@@ -453,7 +463,9 @@ type
     procedure getParameterLabel(Index: Integer; Text: pchar); virtual;
     procedure getParameterDisplay(Index: Integer; Text: pchar); virtual;
     procedure getParameterName(Index: Integer; Text: pchar); virtual;
+    {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
+    {$ENDIF}
     procedure SetOnProcess(v : TProcessAudioEvent);
     procedure SetOnProcessReplacing(v : TProcessAudioEvent);
     procedure SetOnProcessDoubleReplacing(v : TProcessDoubleEvent);
@@ -644,7 +656,6 @@ type
     property Chunk: TMemoryStream read fChunkData write fChunkData;
     property Programs: TCustomVstPrograms read FVstPrograms write SetVstPrograms;
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
-    property OldCreateOrder;
     property numCategories: Integer read fNumCategories write fNumCategories;
     property EffectName: string read FEffectName write SetEffectName;
     property ProductName: string read fProductName write fProductName;
@@ -658,8 +669,9 @@ type
     property ShellPlugins: TCustomVstShellPlugins read FVstShellPlugins write SetVstShellPlugins;
     property TailSize: Integer read fTailSize write fTailSize;
     property CanDos: TVstCanDos read fCanDos write fCanDos;
-    property OnCreate;
-    property OnDestroy;
+
+    property OnCreate {$IFNDEF UseDelphi} : TNotifyEvent read fOnCreate write fOnCreate {$ENDIF};
+    property OnDestroy {$IFNDEF UseDelphi} : TNotifyEvent read fOnDestroy write fOnDestroy {$ENDIF};
     property OnOpen: TNotifyEvent read FOnOpen write FOnOpen;
     property OnClose: TNotifyEvent read FOnClose write FOnClose;
     property OnResume: TNotifyEvent read FOnResume write FOnResume;
@@ -712,6 +724,7 @@ type
   TVSTModule = class(TCustomVSTModule)
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
   published
     property Flags;
     property About;
@@ -749,9 +762,11 @@ type
     property Programs;
     property ParameterProperties;
     property OnGetChunkParameter;
+    {$IFDEF UseDelphi}
     property OldCreateOrder;
     property OnCreate;
     property OnDestroy;
+    {$ENDIF}
     property OnOpen;
     property OnClose;
     property OnEditOpen;
@@ -951,10 +966,11 @@ resourcestring
 
 constructor TVSTModule.Create(AOwner: TComponent);
 begin
+ {$IFDEF UseDelphi}
  inherited Create(AOwner);
  if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
   begin
-   if not InitInheritedComponent(Self, TCustomVSTModule) then
+   if not InitInheritedComponent(Self, TCustomVSTModule) then;
      raise EResNotFound.CreateFmt(SResNotFound, [ClassName]);
    try
     if Assigned(OnCreate) and OldCreateOrder then OnCreate(Self);
@@ -962,10 +978,15 @@ begin
     Forms.Application.HandleException(Self);
    end;
   end;
+ {$ELSE}
+ inherited Create(AOwner);
+ if Assigned(OnCreate) then OnCreate(Self);
+ {$ENDIF}
 end;
 {$ELSE}
-constructor TVSTModule.Create(AOwner: TComponent);
+constructor TVSTModule.Create{$IFDEF UseDelphi}(AOwner: TComponent){$ENDIF};
 begin
+ {$IFDEF UseDelphi}
  inherited Create(AOwner);
  if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
   begin
@@ -973,6 +994,10 @@ begin
     then raise EStreamError.CreateFmt(SErrNoStreaming, [ClassName]);
    if OldCreateOrder then DoCreate;
   end;
+ {$ELSE}
+ inherited Create;
+ if Assigned(OnCreate) then OnCreate(Self);
+ {$ENDIF}
 end;
 
 function InitResourceComponent(Instance: TComponent; RootAncestor: TClass): Boolean;
@@ -981,12 +1006,20 @@ begin
 end;
 {$ENDIF}
 
+destructor TVSTModule.Destroy;
+begin
+ {$IFNDEF UseDelphi}
+ if Assigned(fOnDestroy) then fOnDestroy(Self);
+ {$ENDIF}
+ inherited;
+end;
+
 { TCustomVST1Module }
 
-constructor TCustomVSTModule.Create(AOwner: TComponent);
+constructor TCustomVSTModule.Create{$IFDEF UseDelphi}(AOwner: TComponent){$ENDIF};
 var i : Integer;
 begin
- inherited CreateNew(AOwner);
+ {$IFDEF UseDelphi} inherited CreateNew(AOwner); {$ENDIF}
  {$IFDEF Debug} FLog:=TStringList.Create; {$ENDIF}
  {$IFDEF Debug} fTmStmp:=Now; {$ENDIF}
  {$IFDEF Debug} FLog.Add('Create '+TimeToStr(fTmStmp)); {$ENDIF}
@@ -2070,6 +2103,7 @@ begin
  FEditorNeedUpdate := True;
 end;
 
+{$IFDEF UseDelphi}
 procedure TCustomVSTModule.ReadState(Reader: TReader);
 var i: Integer;
 begin
@@ -2087,6 +2121,7 @@ begin
  {$IFDEF Debug} FLog.Add('End ReadState'); {$ENDIF}
  {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
 end;
+{$ENDIF}
 
 // Functions
 
