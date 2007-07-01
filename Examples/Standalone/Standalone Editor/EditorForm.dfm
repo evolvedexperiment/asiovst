@@ -31,16 +31,17 @@ object FmVSTEditor: TFmVSTEditor
     TabOrder = 0
     object ToolButton1: TToolButton
       Left = 0
-      Top = 2
+      Top = 0
       Width = 4
       Caption = 'ToolButton1'
       Style = tbsSeparator
     end
     object LbPreset: TLabel
       Left = 4
-      Top = 2
+      Top = 0
       Width = 53
       Height = 24
+      Margins.Bottom = 0
       AutoSize = False
       Caption = 'Preset: '
       Font.Charset = DEFAULT_CHARSET
@@ -53,7 +54,7 @@ object FmVSTEditor: TFmVSTEditor
     end
     object ToolButton2: TToolButton
       Left = 57
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton2'
       ImageIndex = 0
@@ -61,7 +62,7 @@ object FmVSTEditor: TFmVSTEditor
     end
     object CBPreset: TComboBox
       Left = 65
-      Top = 2
+      Top = 0
       Width = 144
       Height = 24
       BevelEdges = []
@@ -75,7 +76,7 @@ object FmVSTEditor: TFmVSTEditor
     end
     object ToolButton3: TToolButton
       Left = 209
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton3'
       ImageIndex = 1
@@ -83,7 +84,7 @@ object FmVSTEditor: TFmVSTEditor
     end
     object BtSetup: TButton
       Left = 217
-      Top = 2
+      Top = 0
       Width = 51
       Height = 24
       Caption = '&Setup'
@@ -93,7 +94,7 @@ object FmVSTEditor: TFmVSTEditor
     end
     object ToolButton4: TToolButton
       Left = 268
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton4'
       ImageIndex = 2
@@ -101,7 +102,7 @@ object FmVSTEditor: TFmVSTEditor
     end
     object BtExit: TButton
       Left = 276
-      Top = 2
+      Top = 0
       Width = 37
       Height = 24
       Caption = 'E&xit'

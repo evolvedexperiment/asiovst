@@ -50,7 +50,7 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses inifiles, EditorSetup;
+uses inifiles, DVSTEffect, EditorSetup;
 
 procedure TFmVSTEditor.CBPresetChange(Sender: TObject);
 begin
@@ -74,15 +74,18 @@ var theRect  : TRect;
     temp     : pchar;
     Settings : TInifile;
 begin
- if ParamCount>0
-  then VstHost[0].DLLFileName:=ParamStr(1)
-  else VstHost[0].DLLFileName:='SineSynth.DLL';
- VstHost[0].Active:=True;
- VstHost[0].Idle;
- VstHost[0].ShowEdit(TForm(VSTPanel));
- VstHost[0].Idle;
- VstHost[0].EditIdle;
- Caption :=  VstHost[0].GetVendorString + ' ' + VstHost[0].GetEffectName;
+ with VstHost[0] do
+  begin
+   if ParamCount>0
+    then DLLFileName:=ParamStr(1)
+    else DLLFileName:='NoGuiFilter.DLL';
+   Active:=True;
+   Idle;
+   ShowEdit(TForm(VSTPanel));
+   Idle;
+   EditIdle;
+   Caption :=  GetVendorString + ' ' + GetEffectName;
+  end;
  CBPreset.Clear;
  getmem(temp, 25);
  for i:=0 to VstHost[0].numPrograms-1 do
@@ -116,9 +119,12 @@ begin
    VstHost[0].ProgramNr:=0;
    CBPreset.ItemIndex:=0;
   end;
- theRect:=VstHost[0].GetRect;
- ClientWidth:=theRect.Right-theRect.Left;
- ClientHeight:=theRect.Bottom-theRect.Top+ToolBar.Height;
+ if (effFlagsHasEditor in VstHost[0].EffectOptions) then
+  begin
+   theRect:=VstHost[0].GetRect;
+   ClientWidth:=theRect.Right-theRect.Left;
+   ClientHeight:=theRect.Bottom-theRect.Top+ToolBar.Height;
+  end;
  SetLength(VSTInBuffer,2);
  SetLength(VSTOutBuffer,2);
  Settings:=TIniFile.Create(ExtractFilePath(ParamStr(0))+'VSTEditor.INI');
@@ -156,11 +162,19 @@ procedure TFmVSTEditor.FormClose(Sender: TObject;
   var Action: TCloseAction);
 var Settings : TInifile;
 begin
+ with VSTHost[0] do
+  try
+   Active:=False; UnLoad;
+  except
+  end;
  ASIOHOST.Active:=False;
- Settings:=TIniFile.Create(ExtractFilePath(ParamStr(0))+'VSTEditor.INI');
- Settings.WriteInteger('Layout','Main Top',Top);
- Settings.WriteInteger('Layout','Main Left',Left);
- Settings.Free;
+ with TIniFile.Create(ExtractFilePath(ParamStr(0))+'VSTEditor.INI') do
+  try
+   WriteInteger('Layout','Main Top',Top);
+   WriteInteger('Layout','Main Left',Left);
+  finally
+   Free;
+  end;
 end;
 
 {$IFDEF FPC}
