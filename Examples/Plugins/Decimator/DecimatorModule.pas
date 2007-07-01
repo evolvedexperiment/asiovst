@@ -80,8 +80,7 @@ end;
 
 procedure TVSTDecimator.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
 begin
- GUI := TVSTGUI.Create(nil);
- (GUI As TVSTGUI).theModule:=Self;
+ GUI := TVSTGUI.Create(Self);
 end;
 
 

@@ -14,7 +14,6 @@ type
     procedure par0Change(Sender: TObject);
   private
   public
-    theModule: TVSTModule;
   end;
 
 implementation
@@ -25,7 +24,7 @@ uses MIDIPlugInModule;
 
 procedure TVSTGUI.par0Change(Sender: TObject);
 begin
- with (theModule As TMIDIModule)
+ with (Owner As TMIDIModule)
   do Parameter[0]:=(Sender as TScrollbar).Position;
 end;
 

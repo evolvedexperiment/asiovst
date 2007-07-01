@@ -5,8 +5,7 @@ uses
   Forms,
   DVSTEffect,
   DVSTModule,
-  LoadVSTModule in 'LoadVSTModule.pas' {PlugInPlugModule: TVSTModule},
-  LoadVSTGUI in 'LoadVSTGUI.pas' {VSTGUI};
+  LoadVSTModule in 'LoadVSTModule.pas' {PlugInPlugModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var PlugInPlugModule : TPlugInPlugModule;

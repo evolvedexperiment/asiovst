@@ -3,8 +3,8 @@ object FmReverb: TFmReverb
   Top = 252
   BorderStyle = bsNone
   Caption = 'fReeverb'
-  ClientHeight = 257
-  ClientWidth = 194
+  ClientHeight = 211
+  ClientWidth = 189
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,49 +16,55 @@ object FmReverb: TFmReverb
   TextHeight = 13
   object LbDry: TLabel
     Left = 8
-    Top = 216
+    Top = 192
     Width = 16
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Dry'
   end
   object LbWet: TLabel
     Left = 32
-    Top = 216
+    Top = 192
     Width = 20
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Wet'
   end
   object Label1: TLabel
     Left = 60
-    Top = 216
+    Top = 192
     Width = 28
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Width'
   end
   object LbSize: TLabel
     Left = 124
-    Top = 216
+    Top = 192
     Width = 20
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Size'
   end
   object LbStretch: TLabel
     Left = 150
-    Top = 216
+    Top = 192
     Width = 34
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Stretch'
   end
   object LbDamp: TLabel
     Left = 92
-    Top = 216
+    Top = 192
     Width = 28
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Damp'
   end
   object SDry: TScrollBar
     Left = 8
-    Top = 32
+    Top = 8
     Width = 16
     Height = 177
     Kind = sbVertical
@@ -68,7 +74,7 @@ object FmReverb: TFmReverb
   end
   object SWet: TScrollBar
     Left = 33
-    Top = 32
+    Top = 8
     Width = 16
     Height = 177
     Kind = sbVertical
@@ -78,7 +84,7 @@ object FmReverb: TFmReverb
   end
   object SWidth: TScrollBar
     Left = 65
-    Top = 32
+    Top = 8
     Width = 16
     Height = 177
     Kind = sbVertical
@@ -88,7 +94,7 @@ object FmReverb: TFmReverb
   end
   object SRoomSize: TScrollBar
     Left = 129
-    Top = 32
+    Top = 8
     Width = 16
     Height = 177
     Kind = sbVertical
@@ -107,7 +113,7 @@ object FmReverb: TFmReverb
   end
   object SStretch: TScrollBar
     Left = 158
-    Top = 32
+    Top = 8
     Width = 16
     Height = 177
     Kind = sbVertical
@@ -119,57 +125,12 @@ object FmReverb: TFmReverb
   end
   object SDamp: TScrollBar
     Left = 97
-    Top = 32
+    Top = 8
     Width = 16
     Height = 177
     Kind = sbVertical
     PageSize = 0
     TabOrder = 6
     OnChange = SDampChange
-  end
-  object AMMB1: TActionMainMenuBar
-    Left = 0
-    Top = 0
-    Width = 194
-    Height = 24
-    UseSystemFont = False
-    ActionManager = AM1
-    Caption = 'AMMB1'
-    ColorMap.HighlightColor = 14410210
-    ColorMap.BtnSelectedColor = clBtnFace
-    ColorMap.UnusedColor = 14410210
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    PersistentHotKeys = True
-    Spacing = 0
-  end
-  object AM1: TActionManager
-    ActionBars = <
-      item
-        Items = <
-          item
-            Items = <
-              item
-                Caption = '&ActionClientItem0'
-              end
-              item
-                Caption = 'A&ctionClientItem1'
-              end
-              item
-                Caption = 'Ac&tionClientItem2'
-              end>
-            Caption = '&Item'
-          end
-          item
-            Caption = '&Noch einer'
-          end>
-        ActionBar = AMMB1
-      end>
-    Left = 64
-    Top = 40
-    StyleName = 'XP Style'
   end
 end

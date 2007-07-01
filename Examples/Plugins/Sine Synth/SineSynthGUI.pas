@@ -13,9 +13,6 @@ type
     procedure MidiKeysMidiKeyUp(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-  private
-  public
-    theModule: TVSTModule;
   end;
 
 implementation
@@ -29,14 +26,14 @@ var newNote : TSineSynthVoice;
 const VeloDiv : Single = 1/128;
 begin
  if Key<0 then Key:=0 else if Key>119 then Key:=119;
- theModule.MIDI_NoteOn(0,Key,Round(128*Y/Height));
+ TVSTSSModule(Owner).MIDI_NoteOn(0,Key,Round(128*Y/Height));
  with newNote do
   begin
-   newNote:=TSineSynthVoice.Create(theModule);
+   newNote:=TSineSynthVoice.Create(TVSTSSModule(Owner));
    MidiKeyNr:=Key;
    Velocity:=Round(128*Y/Height);
    NoteOn(Midi2Pitch[Key],Velocity*VeloDiv);
-   (theModule as TVSTSSModule).Voices.Add(newNote);
+   (Owner as TVSTSSModule).Voices.Add(newNote);
   end;
 end;
 
@@ -46,8 +43,8 @@ var i : Integer;
 begin
  if ssRight in Shift then Exit;
  if Key<0 then Key:=0 else if Key>119 then Key:=119;
- theModule.MIDI_NoteOff(0,Key,128);
- with (theModule as TVSTSSModule) do
+ TVSTSSModule(Owner).MIDI_NoteOff(0,Key,128);
+ with (Owner as TVSTSSModule) do
   for i:=0 to Voices.Count-1 do
    if (Voices[i].MidiKeyNr=Key) then
     begin
@@ -82,7 +79,7 @@ begin
   82  : Note:=77;
   else Exit;
  end;
- with (theModule as TVSTSSModule) do
+ with (Owner as TVSTSSModule) do
   begin
    for i:=0 to Voices.Count-1 do
     if (Voices[i].MidiKeyNr=Note) then Exit;
@@ -90,11 +87,11 @@ begin
   end;
  with newNote do
   begin
-   newNote:=TSineSynthVoice.Create(theModule);
+   newNote:=TSineSynthVoice.Create(TVSTSSModule(Owner));
    MidiKeyNr:=Note;
    Velocity:=100;
    NoteOn(Midi2Pitch[Note],Velocity*VeloDiv);
-   (theModule as TVSTSSModule).Voices.Add(newNote);
+   (Owner as TVSTSSModule).Voices.Add(newNote);
   end;
 end;
 
@@ -122,8 +119,8 @@ begin
   82  : Note:=77;
   else Exit;
  end;
- theModule.MIDI_NoteOff(0,Note,100);
- with (theModule as TVSTSSModule) do
+ TVSTSSModule(Owner).MIDI_NoteOff(0,Note,100);
+ with (Owner as TVSTSSModule) do
   for i:=0 to Voices.Count-1 do
    if (Voices[i].MidiKeyNr=Note) then
     begin

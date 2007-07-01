@@ -16,21 +16,18 @@ type
     par0: TScrollBar;
     par1: TScrollBar;
     procedure ParameterChange(Sender: TObject);
-  private
-    { Private declarations }
-  public
-    { Public declarations }
-    theModule: TVSTModule;
   end;
 
 implementation
 
 {$R *.DFM}
 
+uses VUMeterModule;
+
 procedure TVSTVUMeterGUI.ParameterChange(Sender: TObject);
 begin
- with (Sender as TScrollbar)
-  do theModule.Parameter[Tag]:=Position;
+ with (Sender as TScrollbar), (Owner As TVSTVUMeterModule)
+  do Parameter[Tag]:=Position;
 end;
 
 end.

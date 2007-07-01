@@ -19,12 +19,8 @@ type
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure BtSampleSelectClick(Sender: TObject);
     procedure EditSampleChange(Sender: TObject);
-    procedure MidiKeysKeyColor(Sender: TObject; Key: Integer;
-      var Color: TColor);
+    procedure MidiKeysKeyColor(Sender: TObject; Key: Integer; var Color: TColor);
     procedure FormCreate(Sender: TObject);
-  private
-  public
-    theModule: TVSTModule;
   end;
 
 implementation
@@ -47,14 +43,14 @@ var newNote : TSimpleSamplerVoice;
 const VeloDiv : Single = 1/128;
 begin
  if Key<0 then Key:=0 else if Key>119 then Key:=119;
- theModule.MIDI_NoteOn(0,Key,128);
+ (Owner as TVSTSSModule).MIDI_NoteOn(0,Key,128);
  with newNote do
   begin
-   newNote:=TSimpleSamplerVoice.Create(theModule);
+   newNote:=TSimpleSamplerVoice.Create((Owner as TVSTSSModule));
    MidiKeyNr:=Key;
    Velocity:=100;
    NoteOn(Midi2Pitch[Key],Velocity*VeloDiv);
-   (theModule as TVSTSSModule).Voices.Add(newNote);
+   (Owner as TVSTSSModule).Voices.Add(newNote);
   end;
 end;
 
@@ -64,8 +60,8 @@ var i : Integer;
 begin
  if ssRight in Shift then Exit;
  if Key<0 then Key:=0 else if Key>119 then Key:=119;
- theModule.MIDI_NoteOff(0,Key,128);
- with (theModule as TVSTSSModule) do
+ (Owner as TVSTSSModule).MIDI_NoteOff(0,Key,128);
+ with (Owner as TVSTSSModule) do
   for i:=0 to Voices.Count-1 do
    if (Voices[i].MidiKeyNr=Key) then
     begin
@@ -89,11 +85,11 @@ begin
  if FileExists(EditSample.Text) then
   begin
    pt:=LoadWAVFileMono(EditSample.Text,sr, c, sz);
-   SetLength(TVSTSSModule(theModule).Sample,sz);
+   SetLength(TVSTSSModule(Owner).Sample,sz);
    Waveform.WaveLength:=sz;
    for c := 0 to sz - 1 do
     begin
-     TVSTSSModule(theModule).Sample[c]:=(pt)^;
+     TVSTSSModule(Owner).Sample[c]:=(pt)^;
      Waveform.Wavedata[c]:=(pt)^;
      Inc(pt);
     end;
@@ -137,7 +133,7 @@ begin
   82  : Note:=77;
   else Exit;
  end;
- with (theModule as TVSTSSModule) do
+ with (Owner as TVSTSSModule) do
   begin
    for i:=0 to Voices.Count-1 do
     if (Voices[i].MidiKeyNr=Note) then Exit;
@@ -145,11 +141,11 @@ begin
   end;
  with newNote do
   begin
-   newNote:=TSimpleSamplerVoice.Create(theModule);
+   newNote:=TSimpleSamplerVoice.Create((Owner as TVSTSSModule));
    MidiKeyNr:=Note;
    Velocity:=100;
    NoteOn(Midi2Pitch[Note],Velocity*VeloDiv);
-   (theModule as TVSTSSModule).Voices.Add(newNote);
+   (Owner as TVSTSSModule).Voices.Add(newNote);
   end;
 end;
 
@@ -177,8 +173,8 @@ begin
   82  : Note:=77;
   else Exit;
  end;
- theModule.MIDI_NoteOff(0,Note,100);
- with (theModule as TVSTSSModule) do
+ (Owner as TVSTSSModule).MIDI_NoteOff(0,Note,100);
+ with (Owner as TVSTSSModule) do
   for i:=0 to Voices.Count-1 do
    if (Voices[i].MidiKeyNr=Note) then
     begin

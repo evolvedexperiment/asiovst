@@ -35,8 +35,7 @@ end;
 
 procedure TTetrisModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
 begin
-  GUI := TFmTetris.Create(nil);
-  (GUI As TFmTetris).TetrisModule := Self;
+  GUI := TFmTetris.Create(Self);
 end;
 
 procedure TTetrisModule.VSTModuleEditorKeyDown(Sender: TObject;

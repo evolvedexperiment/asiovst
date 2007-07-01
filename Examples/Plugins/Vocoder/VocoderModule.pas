@@ -47,10 +47,9 @@ uses VocoderGUI, Math;
 procedure TVSTSSModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
 // Do not delete this if you are using the editor
 begin
- GUI := TVSTGUI.Create(nil);
+ GUI := TVSTGUI.Create(Self);
  with (GUI As TVSTGUI) do
   begin
-   theModule:=Self;
    SBInputLevel.Position:=round(Amp_to_dB(fVolFactors[0]));
    SBSynthLevel.Position:=round(Amp_to_dB(fVolFactors[1]));
    SBVocoderLevel.Position:=round(Amp_to_dB(fVolFactors[2]));

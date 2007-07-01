@@ -17,18 +17,12 @@ type
     procedure fReeverbVSTParameterProperties1ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure fReeverbVSTParameterProperties2ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure fReeverbVSTParameterProperties3ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VST2ModuleSampleRateChange(Sender: TObject;
-      SampleRate: Single);
-    procedure fReeverbVSTParameterProperties4ParameterChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure fReeverbVSTParameterProperties5ParameterChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure fReeverbVSTParameterProperties6ParameterChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure fReeverbVSTParameterProperties8ParameterChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure fReeverbVSTParameterProperties7ParameterChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VST2ModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure fReeverbVSTParameterProperties4ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure fReeverbVSTParameterProperties5ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure fReeverbVSTParameterProperties6ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure fReeverbVSTParameterProperties8ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure fReeverbVSTParameterProperties7ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VST2ModuleCreate(Sender: TObject);
     procedure VST2ModuleDestroy(Sender: TObject);
   private
@@ -77,10 +71,8 @@ implementation
 uses fReeverbGUI;
 
 procedure TfReeverbVST.VST_EditOpen(Sender: TObject; var GUI: TForm);
-// Do not delete this if you are using the editor
 begin
- GUI := TFmReverb.Create(nil);
- (GUI As TFmReverb).theModule:=Self;
+ GUI := TFmReverb.Create(Self);
 end;
 
 function TfReeverbVST.GetDamp: Single;
@@ -264,7 +256,7 @@ begin
  ShuffleAllPassFeedBack;
 end;
 
-procedure TfReeverbVST.VST2ModuleSampleRateChange(Sender: TObject; SampleRate: Single);
+procedure TfReeverbVST.VST2ModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
  BufferRezize;
 end;

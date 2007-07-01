@@ -19,6 +19,7 @@ object FmASIOVST: TFmASIOVST
     Top = 7
     Width = 63
     Height = 13
+    Margins.Bottom = 0
     Caption = 'ASIO Output:'
     Transparent = True
   end

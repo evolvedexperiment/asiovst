@@ -29,11 +29,7 @@ uses SimpleSamplerGUI, Math;
 procedure TVSTSSModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
 // Do not delete this if you are using the editor
 begin
- GUI := TVSTGUI.Create(nil);
- with (GUI As TVSTGUI) do
-  begin
-   theModule:=Self;
-  end;
+ GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TVSTSSModule.VSTModuleProcess(const inputs,

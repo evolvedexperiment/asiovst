@@ -11,10 +11,6 @@ type
       Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcessMidi(Sender: TObject;
       MidiEvent: TVstMidiEvent);
-  private
-    { Private declarations }
-  public
-    { Public declarations }
   end;
 
 implementation
@@ -26,8 +22,7 @@ uses MIDIPlugInGUI;
 procedure TMIDIModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
 // Do not delete this if you are using the editor
 begin
- GUI := TVSTGUI.Create(nil);
- (GUI As TVSTGUI).theModule:=Self;
+ GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TMIDIModule.MIDIModuleParameterProperties0ParameterChange(

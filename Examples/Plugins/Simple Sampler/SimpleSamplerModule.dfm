@@ -1,7 +1,7 @@
 object VSTSSModule: TVSTSSModule
   OldCreateOrder = False
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth, effFlagsExtIsAsync]
+  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth, effFlagsUnused1]
   Version = '1.0'
   EffectName = 'Simple Sampler'
   ProductName = 'Simple Sampler'
@@ -9,9 +9,9 @@ object VSTSSModule: TVSTSSModule
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = vcgSynth
+  PlugCategory = vpcSynth
   TailSize = 0
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
+  CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   numCategories = 1
   CurrentProgram = 0
@@ -30,8 +30,8 @@ object VSTSSModule: TVSTSSModule
   OnProcessReplacing = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi
   OnInitialize = VSTModuleInitialize
-  Left = 460
-  Top = 80
+  Left = 247
+  Top = 85
   Height = 150
   Width = 215
 end

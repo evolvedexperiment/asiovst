@@ -52,9 +52,6 @@ type
     procedure Osc2ADSRReleaseChange(Sender: TObject);
     procedure Osc2ADSRSustainChange(Sender: TObject);
     procedure Osc2LevelChange(Sender: TObject);
-  private
-  public
-    theModule: TVSTModule;
   end;
 
 implementation
@@ -68,14 +65,14 @@ var newNote : TXSynthVoice;
 const VeloDiv : Single = 1/128;
 begin
  if Key<0 then Key:=0 else if Key>119 then Key:=119;
- theModule.MIDI_NoteOn(0,Key,Round(128*Y/Height));
+ TVSTSSModule(Owner).MIDI_NoteOn(0,Key,Round(128*Y/Height));
  with newNote do
   begin
-   newNote:=TXSynthVoice.Create(theModule);
+   newNote:=TXSynthVoice.Create(TVSTSSModule(Owner));
    MidiKeyNr:=Key;
    Velocity:=Round(128*Y/Height);
    NoteOn(Midi2Pitch[Key],Velocity*VeloDiv);
-   (theModule as TVSTSSModule).Voices.Add(newNote);
+   (Owner as TVSTSSModule).Voices.Add(newNote);
   end;
 end;
 
@@ -85,8 +82,8 @@ var i : Integer;
 begin
  if ssRight in Shift then Exit;
  if Key<0 then Key:=0 else if Key>119 then Key:=119;
- theModule.MIDI_NoteOff(0,Key,128);
- with (theModule as TVSTSSModule) do
+ TVSTSSModule(Owner).MIDI_NoteOff(0,Key,128);
+ with (Owner as TVSTSSModule) do
   begin
    i:=0;
    while i<Voices.Count do
@@ -100,82 +97,82 @@ end;
 
 procedure TVSTGUI.SBDriveChange(Sender: TObject);
 begin
- theModule.Parameter[theModule.numParams-4]:=0.1*SBDrive.Position;
+ with TVSTSSModule(Owner) do Parameter[numParams-4]:=0.1*SBDrive.Position;
 end;
 
 procedure TVSTGUI.SBCutoffChange(Sender: TObject);
 begin
- theModule.Parameter[theModule.numParams-3]:=FreqLinearToLog(0.01*SBCutoff.Position);
+ with TVSTSSModule(Owner) do Parameter[numParams-3]:=FreqLinearToLog(0.01*SBCutoff.Position);
 end;
 
 procedure TVSTGUI.SBResonanceChange(Sender: TObject);
 begin
- theModule.Parameter[theModule.numParams-2]:=SBResonance.Position;
+ with TVSTSSModule(Owner) do Parameter[numParams-2]:=SBResonance.Position;
 end;
 
 procedure TVSTGUI.SBLevelChange(Sender: TObject);
 begin
- theModule.Parameter[theModule.numParams-1]:=SBLevel.Position;
+ with TVSTSSModule(Owner) do Parameter[numParams-1]:=SBLevel.Position;
 end;
 
 procedure TVSTGUI.CBOsc1TypeChange(Sender: TObject);
 begin
- theModule.Parameter[0]:=CBOsc1Type.ItemIndex;
+ TVSTSSModule(Owner).Parameter[0]:=CBOsc1Type.ItemIndex;
 end;
 
 procedure TVSTGUI.Osc1ADSRAttackChange(Sender: TObject);
 begin
- theModule.Parameter[1]:=100*Osc1ADSR.Attack;
+ TVSTSSModule(Owner).Parameter[1]:=100*Osc1ADSR.Attack;
 end;
 
 procedure TVSTGUI.Osc1ADSRDecayChange(Sender: TObject);
 begin
- theModule.Parameter[2]:=100*Osc1ADSR.Decay;
+ TVSTSSModule(Owner).Parameter[2]:=100*Osc1ADSR.Decay;
 end;
 
 procedure TVSTGUI.Osc1ADSRReleaseChange(Sender: TObject);
 begin
- theModule.Parameter[3]:=100*Osc1ADSR.Release;
+ TVSTSSModule(Owner).Parameter[3]:=100*Osc1ADSR.Release;
 end;
 
 procedure TVSTGUI.Osc1ADSRSustainChange(Sender: TObject);
 begin
- theModule.Parameter[4]:=100*Osc1ADSR.Sustain;
+ TVSTSSModule(Owner).Parameter[4]:=100*Osc1ADSR.Sustain;
 end;
 
 procedure TVSTGUI.Osc1LevelChange(Sender: TObject);
 begin
- theModule.Parameter[5]:=Osc1Level.Position;
+ TVSTSSModule(Owner).Parameter[5]:=Osc1Level.Position;
 end;
 
 procedure TVSTGUI.CBOsc2TypeChange(Sender: TObject);
 begin
- theModule.Parameter[6]:=CBOsc2Type.ItemIndex;
+ TVSTSSModule(Owner).Parameter[6]:=CBOsc2Type.ItemIndex;
 end;
 
 procedure TVSTGUI.Osc2ADSRAttackChange(Sender: TObject);
 begin
- theModule.Parameter[7]:=100*Osc2ADSR.Attack;
+ TVSTSSModule(Owner).Parameter[7]:=100*Osc2ADSR.Attack;
 end;
 
 procedure TVSTGUI.Osc2ADSRDecayChange(Sender: TObject);
 begin
- theModule.Parameter[8]:=100*Osc2ADSR.Decay;
+ TVSTSSModule(Owner).Parameter[8]:=100*Osc2ADSR.Decay;
 end;
 
 procedure TVSTGUI.Osc2ADSRReleaseChange(Sender: TObject);
 begin
- theModule.Parameter[9]:=100*Osc2ADSR.Release;
+ TVSTSSModule(Owner).Parameter[9]:=100*Osc2ADSR.Release;
 end;
 
 procedure TVSTGUI.Osc2ADSRSustainChange(Sender: TObject);
 begin
- theModule.Parameter[10]:=100*Osc2ADSR.Sustain;
+ TVSTSSModule(Owner).Parameter[10]:=100*Osc2ADSR.Sustain;
 end;
 
 procedure TVSTGUI.Osc2LevelChange(Sender: TObject);
 begin
- theModule.Parameter[11]:=Osc2Level.Position;
+ TVSTSSModule(Owner).Parameter[11]:=Osc2Level.Position;
 end;
 
 procedure TVSTGUI.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -204,7 +201,7 @@ begin
   82  : Note:=77;
   else Exit;
  end;
- with (theModule as TVSTSSModule) do
+ with (Owner as TVSTSSModule) do
   begin
    for i:=0 to Voices.Count-1 do
     if (Voices[i].MidiKeyNr=Note) then Exit;
@@ -212,11 +209,11 @@ begin
   end;
  with newNote do
   begin
-   newNote:=TXSynthVoice.Create(theModule);
+   newNote:=TXSynthVoice.Create(TVSTSSModule(Owner));
    MidiKeyNr:=Note;
    Velocity:=100;
    NoteOn(Midi2Pitch[Note],Velocity*VeloDiv);
-   (theModule as TVSTSSModule).Voices.Add(newNote);
+   (Owner as TVSTSSModule).Voices.Add(newNote);
   end;
 end;
 
@@ -244,8 +241,8 @@ begin
   82  : Note:=77;
   else Exit;
  end;
- theModule.MIDI_NoteOff(0,Note,100);
- with (theModule as TVSTSSModule) do
+ TVSTSSModule(Owner).MIDI_NoteOff(0,Note,100);
+ with (Owner as TVSTSSModule) do
   for i:=0 to Voices.Count-1 do
    if (Voices[i].MidiKeyNr=Note) then
     begin

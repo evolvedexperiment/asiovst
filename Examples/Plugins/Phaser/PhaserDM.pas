@@ -31,8 +31,7 @@ uses
 
 procedure TPhaserModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
 begin
-  GUI := TPhaserForm.Create(nil);
-  (GUI As TPhaserForm).theModule := Self;
+  GUI := TPhaserForm.Create(Self);
 end;
 
 procedure TPhaserModule.VSTModuleOpen(Sender: TObject);

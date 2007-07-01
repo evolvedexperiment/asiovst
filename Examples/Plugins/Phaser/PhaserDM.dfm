@@ -8,7 +8,7 @@ object PhaserModule: TPhaserModule
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = vcgEffect
+  PlugCategory = vpcEffect
   TailSize = 0
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000

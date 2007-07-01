@@ -16,8 +16,6 @@ type
     fBuffer     : array[0..1] of TSingleDynArray;
     fBufferSize : Integer;
     fBufferPos  : Integer;
-  public
-    { Public declarations }
   end;
 
 implementation
@@ -29,8 +27,7 @@ uses DelaylaGUI;
 procedure TSimpleDelayVST.VST_EditOpen(Sender: TObject; var GUI: TForm);
 // Do not delete this if you are using the editor
 begin
- GUI := TVSTGUI.Create(nil);
- (GUI As TVSTGUI).theModule:=Self;
+ GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TSimpleDelayVST.VST2ModuleCreate(Sender: TObject);

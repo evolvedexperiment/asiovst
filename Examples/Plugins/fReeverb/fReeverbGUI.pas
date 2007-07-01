@@ -22,8 +22,6 @@ type
     LbStretch: TLabel;
     SDamp: TScrollBar;
     LbDamp: TLabel;
-    AMMB1: TActionMainMenuBar;
-    AM1: TActionManager;
     procedure SWetChange(Sender: TObject);
     procedure SDryChange(Sender: TObject);
     procedure SWidthChange(Sender: TObject);
@@ -33,46 +31,47 @@ type
     procedure SDampChange(Sender: TObject);
   private
   public
-    theModule: TVSTModule;
   end;
 
 implementation
 
 {$R *.DFM}
 
+uses fReeverbModule;
+
 procedure TFmReverb.SDryChange(Sender: TObject);
 begin
- theModule.Parameter[0]:=SDry.Max-SDry.Position;
+ TfReeverbVST(Owner).Parameter[0]:=SDry.Max-SDry.Position;
 end;
 
 procedure TFmReverb.SWetChange(Sender: TObject);
 begin
- theModule.Parameter[1]:=SWet.Max-SWet.Position;
+ TfReeverbVST(Owner).Parameter[1]:=SWet.Max-SWet.Position;
 end;
 
 procedure TFmReverb.SWidthChange(Sender: TObject);
 begin
- theModule.Parameter[2]:=SWidth.Max-SWidth.Position;
+ TfReeverbVST(Owner).Parameter[2]:=SWidth.Max-SWidth.Position;
 end;
 
 procedure TFmReverb.SRoomSizeChange(Sender: TObject);
 begin
- theModule.Parameter[3]:=(SRoomSize.Max-SRoomSize.Position)/SRoomSize.Max;
+ TfReeverbVST(Owner).Parameter[3]:=(SRoomSize.Max-SRoomSize.Position)/SRoomSize.Max;
 end;
 
 procedure TFmReverb.CBFreezeClick(Sender: TObject);
 begin
- theModule.Parameter[4]:=Byte(CBFreeze.Checked);
+ TfReeverbVST(Owner).Parameter[4]:=Byte(CBFreeze.Checked);
 end;
 
 procedure TFmReverb.SStretchChange(Sender: TObject);
 begin
- theModule.Parameter[5]:=(SStretch.Max-SStretch.Position);
+ TfReeverbVST(Owner).Parameter[5]:=(SStretch.Max-SStretch.Position);
 end;
 
 procedure TFmReverb.SDampChange(Sender: TObject);
 begin
- theModule.Parameter[6]:=SDamp.Max-SDamp.Position;
+ TfReeverbVST(Owner).Parameter[6]:=SDamp.Max-SDamp.Position;
 end;
 
 end.

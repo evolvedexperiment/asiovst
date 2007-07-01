@@ -50,7 +50,6 @@ type
     procedure LbLMClick(Sender: TObject);
     procedure LbRSClick(Sender: TObject);
   public
-    PluginDataModule: TVSTModule;
   end;
 
 implementation
@@ -65,15 +64,17 @@ begin
   begin
    LbLM.Caption:='M';
    LbRS.Caption:='S';
-   PluginDataModule.OnProcess:=(PluginDataModule As TPluginDataModule).VSTModuleProcessMS;
+   with TPluginDataModule(Owner)
+    do OnProcess:=VSTModuleProcessMS;
   end else
  if LbLM.Caption='M' then
   begin
    LbLM.Caption:='L';
    LbRS.Caption:='R';
-   PluginDataModule.OnProcess:=(PluginDataModule As TPluginDataModule).VSTModuleProcessLR;
+   with TPluginDataModule(Owner)
+    do OnProcess:=VSTModuleProcessLR;
   end;
- PluginDataModule.OnProcessReplacing:=PluginDataModule.OnProcess;
+ TPluginDataModule(Owner).OnProcessReplacing:=TPluginDataModule(Owner).OnProcess;
 end;
 
 procedure TEditorForm.LbRSClick(Sender: TObject);
@@ -82,21 +83,23 @@ begin
   begin
    LbLM.Caption:='M';
    LbRS.Caption:='S';
-   PluginDataModule.OnProcess:=(PluginDataModule As TPluginDataModule).VSTModuleProcessMS;
+   with TPluginDataModule(Owner)
+    do OnProcess:=VSTModuleProcessMS;
   end else
  if LbLM.Caption='S' then
   begin
    LbLM.Caption:='L';
    LbRS.Caption:='R';
-   PluginDataModule.OnProcess:=(PluginDataModule As TPluginDataModule).VSTModuleProcessLR;
+   with TPluginDataModule(Owner)
+    do OnProcess:=VSTModuleProcessLR;
   end;
- PluginDataModule.OnProcessReplacing:=PluginDataModule.OnProcess;
+ TPluginDataModule(Owner).OnProcessReplacing:=TPluginDataModule(Owner).OnProcess;
 end;
 
 procedure TEditorForm.SBChange(Sender: TObject);
 begin
  with Sender As TScrollBar
-  do PluginDataModule.Parameter[Tag]:=Position*0.1;
+  do TPluginDataModule(Owner).Parameter[Tag]:=Position*0.1;
 end;
 
 end.

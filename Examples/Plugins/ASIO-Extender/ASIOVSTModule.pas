@@ -1,5 +1,7 @@
 unit ASIOVSTModule;
 
+{$I ASIOVST.INC}
+
 interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DASIOHost,
@@ -34,9 +36,9 @@ uses Math,ASIOVSTGUI;
 procedure TASIOVSTModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
 // Do not delete this if you are using the editor
 begin
- GUI := TFmASIOVST.Create(nil);
- (GUI As TFmASIOVST).theModule:=Self;
- (GUI As TFmASIOVST).CB_ASIO.Items:=fASIOHost.DriverList;
+ GUI := TFmASIOVST.Create(Self);
+ with (GUI As TFmASIOVST)
+  do CB_ASIO.Items:=fASIOHost.DriverList;
 end;
 
 procedure TASIOVSTModule.VST2ModuleDestroy(Sender: TObject);

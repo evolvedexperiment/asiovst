@@ -13,17 +13,17 @@ type
     LbRate: TLabel;
     LbCut: TLabel;
     LbRes: TLabel;
-    FltType: TImage;
-    FltType2: TImage;
     LbVol: TLabel;
     LbBits: TLabel;
-    ImageDecimator: TImage;
-    ImageTobyBear: TImage;
-    PanelAbout: TPanel;
-    ImageAbout: TImage;
-    LbVSTTechnology: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    LbVSTTechnology: TLabel;
+    PanelAbout: TPanel;
+    FltType: TImage;
+    FltType2: TImage;
+    ImageAbout: TImage;
+    ImageTobyBear: TImage;
+    ImageDecimator: TImage;
     ShSHRateBg: TShape;
     ShSHRate: TShape;
     ShBitsBg: TShape;
@@ -69,12 +69,13 @@ type
   private
     fMouseContext  : TMouseContext;
   public
-    theModule: TVSTModule;
   end;
 
 implementation
 
 {$R *.DFM}
+
+uses DecimatorModule;
 
 procedure TVSTGUI.FormCreate(Sender: TObject);
 begin
@@ -86,12 +87,12 @@ begin
  if FltType.visible then
   begin
    FltType.visible:=false;
-   theModule.Parameter[4]:=0;
+   TVSTDecimator(Owner).Parameter[4]:=0;
   end
  else
   begin
    FltType.visible:=true;
-   theModule.Parameter[4]:=1;
+   TVSTDecimator(Owner).Parameter[4]:=1;
   end;
 end;
 
@@ -222,12 +223,12 @@ begin
  if (ssLeft in Shift) and (fMouseContext=mcSHRate)  then
   begin
    if ShSHRateBg.Height-Y>ShSHRateBg.Height
-    then theModule.Parameter[0]:=44100
+    then TVSTDecimator(Owner).Parameter[0]:=44100
     else
      if ShSHRateBg.Height-Y<0
-      then theModule.Parameter[0]:=44.1
-      else theModule.Parameter[0]:=FreqLinearToLog(1-Y/ShSHRateBg.Height)*2.205;
-   LbRate.Caption:=FloatToStrF(theModule.Parameter[0],ffGeneral,5,2);
+      then TVSTDecimator(Owner).Parameter[0]:=44.1
+      else TVSTDecimator(Owner).Parameter[0]:=FreqLinearToLog(1-Y/ShSHRateBg.Height)*2.205;
+   LbRate.Caption:=FloatToStrF(TVSTDecimator(Owner).Parameter[0],ffGeneral,5,2);
   end;
 end;
 
@@ -236,12 +237,12 @@ begin
  if (ssLeft in Shift) and (fMouseContext=mcBits) then
   begin
    if ShBitsBg.Height-Y>ShBitsBg.Height
-    then theModule.Parameter[1]:=24
+    then TVSTDecimator(Owner).Parameter[1]:=24
     else
      if ShBitsBg.Height-Y<0
-      then theModule.Parameter[1]:=1
-      else theModule.Parameter[1]:=Round(23*(1-(Y/ShBitsBg.Height))+1);
-   LbBits.Caption:=IntToStr(Round(theModule.Parameter[1]));
+      then TVSTDecimator(Owner).Parameter[1]:=1
+      else TVSTDecimator(Owner).Parameter[1]:=Round(23*(1-(Y/ShBitsBg.Height))+1);
+   LbBits.Caption:=IntToStr(Round(TVSTDecimator(Owner).Parameter[1]));
   end;
 end;
 
@@ -250,12 +251,12 @@ begin
  if (ssLeft in Shift) and (fMouseContext=mcCut) and (Y>=-10) then
   begin
    if ShCutBg.Height-Y>ShCutBg.Height
-    then theModule.Parameter[2]:=20000
+    then TVSTDecimator(Owner).Parameter[2]:=20000
     else
      if ShCutBg.Height-Y<0
-      then theModule.Parameter[2]:=20
-      else theModule.Parameter[2]:=FreqLinearToLog(1-Y/ShCutBg.Height);
-   LbCut.Caption:=FloatToStrF(theModule.Parameter[2],ffGeneral,5,2);
+      then TVSTDecimator(Owner).Parameter[2]:=20
+      else TVSTDecimator(Owner).Parameter[2]:=FreqLinearToLog(1-Y/ShCutBg.Height);
+   LbCut.Caption:=FloatToStrF(TVSTDecimator(Owner).Parameter[2],ffGeneral,5,2);
   end;
 end;
 
@@ -264,12 +265,12 @@ begin
  if (ssLeft in Shift) and (fMouseContext=mcRes) then
   begin
    if ShResBg.Height-Y>ShResBg.Height
-    then theModule.Parameter[3]:=8
+    then TVSTDecimator(Owner).Parameter[3]:=8
     else
      if ShResBg.Height-Y<=0
-      then theModule.Parameter[3]:=0.1
-      else theModule.Parameter[3]:=8*(1-Y/ShResBg.Height);
-   LbRes.Caption:=FloatToStrF(theModule.Parameter[3],ffGeneral,2,2);
+      then TVSTDecimator(Owner).Parameter[3]:=0.1
+      else TVSTDecimator(Owner).Parameter[3]:=8*(1-Y/ShResBg.Height);
+   LbRes.Caption:=FloatToStrF(TVSTDecimator(Owner).Parameter[3],ffGeneral,2,2);
   end;
 end;
 
@@ -278,12 +279,12 @@ begin
  if (ssLeft in Shift) and (fMouseContext=mcMix) then
   begin
    if ShMixBg.Height-Y>ShMixBg.Height
-    then theModule.Parameter[5]:=100
+    then TVSTDecimator(Owner).Parameter[5]:=100
     else
      if ShMixBg.Height-Y<=0
-      then theModule.Parameter[5]:=0
-      else theModule.Parameter[5]:=100*(1-Y/ShMixBg.Height);
-   LbMix.Caption:=IntToStr(round(theModule.Parameter[5]));
+      then TVSTDecimator(Owner).Parameter[5]:=0
+      else TVSTDecimator(Owner).Parameter[5]:=100*(1-Y/ShMixBg.Height);
+   LbMix.Caption:=IntToStr(round(TVSTDecimator(Owner).Parameter[5]));
   end;
 end;
 
@@ -292,12 +293,12 @@ begin
  if (ssLeft in Shift) and (fMouseContext=mcVol) then
   begin
    if ShVolBg.Height-Y>ShVolBg.Height
-    then theModule.Parameter[6]:=-24
+    then TVSTDecimator(Owner).Parameter[6]:=-24
     else
      if ShVolBg.Height-Y<=0
-      then theModule.Parameter[6]:=6
-      else theModule.Parameter[6]:=6-30*Y/ShVolBg.Height;
-   LbVol.Caption:=IntToStr(round(theModule.Parameter[6]));
+      then TVSTDecimator(Owner).Parameter[6]:=6
+      else TVSTDecimator(Owner).Parameter[6]:=6-30*Y/ShVolBg.Height;
+   LbVol.Caption:=IntToStr(round(TVSTDecimator(Owner).Parameter[6]));
   end;
 end;
 

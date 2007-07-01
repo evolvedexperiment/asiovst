@@ -28,8 +28,7 @@ uses EditorFrm;
 
 procedure TPluginDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
 begin
-  GUI := TEditorForm.Create(nil);
-  (GUI As TEditorForm).PluginDataModule := Self;
+  GUI := TEditorForm.Create(Self);
 end;
 
 procedure TPluginDataModule.VSTModuleOpen(Sender: TObject);

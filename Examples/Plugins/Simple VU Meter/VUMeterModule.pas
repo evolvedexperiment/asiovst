@@ -17,8 +17,6 @@ type
   private
     fPeak   : array [0..1] of Double;
     fVolume : array [0..1] of Double;
-  public
-    { Public declarations }
   end;
 
 implementation
@@ -28,10 +26,8 @@ implementation
 uses VUMeterGUI;
 
 procedure TVSTVUMeterModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
-// Do not delete this if you are using the editor
 begin
- GUI := TVSTVUMeterGUI.Create(nil);
- (GUI As TVSTVUMeterGUI).theModule:=Self;
+ GUI := TVSTVUMeterGUI.Create(Self);
 end;
 
 procedure TVSTVUMeterModule.VSTModuleEditIdle(Sender: TObject);

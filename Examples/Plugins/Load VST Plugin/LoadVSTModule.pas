@@ -26,22 +26,19 @@ type
     procedure VST2ModuleStartProcess(Sender: TObject);
     procedure VST2ModuleStopProcess(Sender: TObject);
   private
-    { Private declarations }
   public
-    { Public declarations }
   end;
 
 implementation
 
 {$R *.DFM}
 
-uses Dialogs, LoadVSTGUI;
+uses Dialogs;
 
 procedure TPlugInPlugModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
 // Do not delete this if you are using the editor
 begin
- GUI := TVSTGUI.Create(nil);
- (GUI As TVSTGUI).theModule:=Self;
+ GUI := TForm.Create(Self);
  VstHost[0].ShowEdit(GUI);
 end;
 

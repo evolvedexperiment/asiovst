@@ -10,10 +10,8 @@ type
     procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
-    procedure VSTModuleProcessMidi(Sender: TObject;
-      MidiEvent: TVstMidiEvent);
+    procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleDestroy(Sender: TObject);
-  private
   public
     Voices      : TVoiceList;
   end;
@@ -27,11 +25,7 @@ uses SineSynthGUI, Math;
 procedure TVSTSSModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
 // Do not delete this if you are using the editor
 begin
- GUI := TVSTGUI.Create(nil);
- with (GUI As TVSTGUI) do
-  begin
-   theModule:=Self;
-  end;
+ GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TVSTSSModule.VSTModuleProcess(const inputs,

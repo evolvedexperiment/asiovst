@@ -1,9 +1,11 @@
 unit ASIOVSTGUI;
 
+{$I ASIOVST.INC}
+
 interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
-  DASIOHost, Controls, StdCtrls;
+     DASIOHost, Controls, StdCtrls;
 
 type
   TFmASIOVST = class(TForm)
@@ -11,7 +13,6 @@ type
     CB_ASIO: TComboBox;
   private
   public
-    theModule: TVSTModule;
   end;
 
 implementation

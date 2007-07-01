@@ -39,6 +39,7 @@ object VSTGUI: TVSTGUI
     Top = 8
     Width = 48
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Sample:'
   end
   object Waveform: TWaveform

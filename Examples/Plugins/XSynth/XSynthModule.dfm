@@ -9,7 +9,7 @@ object VSTSSModule: TVSTSSModule
   VersionMajor = 1
   VersionMinor = 0
   VersionRelease = 0
-  PlugCategory = vcgSynth
+  PlugCategory = vpcSynth
   TailSize = 0
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000

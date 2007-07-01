@@ -12,17 +12,18 @@ type
     procedure SampleBarChange(Sender: TObject);
   private
   public
-    theModule: TVSTModule;
   end;
 
 implementation
 
 {$R *.DFM}
 
+uses DelaylaModule;
+
 procedure TVSTGUI.SampleBarChange(Sender: TObject);
 begin
  LbSamples.Caption:=IntToStr(SampleBar.Position);
- theModule.Parameter[0]:=SampleBar.Position;
+ TSimpleDelayVST(Owner).Parameter[0]:=SampleBar.Position;
 end;
 
 end.

@@ -23,6 +23,7 @@ object VSTGUI: TVSTGUI
     Top = 56
     Width = 321
     Height = 65
+    Margins.Bottom = 0
     Alignment = taCenter
     Caption = 
       'Use the slider to adjust the transpose value for incoming MIDI n' +
@@ -34,6 +35,7 @@ object VSTGUI: TVSTGUI
     Top = 152
     Width = 282
     Height = 13
+    Margins.Bottom = 0
     Caption = 'VST is a trademark of Steinberg Media Technologies GmbH'
   end
   object Label3: TLabel
@@ -41,6 +43,7 @@ object VSTGUI: TVSTGUI
     Top = 8
     Width = 58
     Height = 13
+    Margins.Bottom = 0
     Caption = 'transpose: 0'
   end
   object par0: TScrollBar
