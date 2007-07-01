@@ -12,7 +12,6 @@ uses
 {$IFDEF FPC} {.$DEFINE Debug} {$ENDIF}
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
-
 type
   TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
   TParameterChangeEvent = procedure(Sender: TObject; const Index: Integer; var Value: Single) of object;
@@ -970,7 +969,7 @@ begin
  inherited Create(AOwner);
  if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
   begin
-   if not InitInheritedComponent(Self, TCustomVSTModule) then;
+   if not InitInheritedComponent(Self, TCustomVSTModule) then
      raise EResNotFound.CreateFmt(SResNotFound, [ClassName]);
    try
     if Assigned(OnCreate) and OldCreateOrder then OnCreate(Self);
@@ -2070,6 +2069,8 @@ begin
     begin
      {$IFNDEF FPC}
      ParentWindow:=HWnd(ptr);
+     {$ELSE}
+     Handle:=Integer(ptr);
      {$ENDIF}
      Visible:=True;
      BorderStyle:=bsNone;

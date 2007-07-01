@@ -547,6 +547,7 @@ asm
  mov eax,f.Integer
  and eax,$7FFFFFFF
  mov f.Integer,eax
+ fld f.Single
 end;
 {$ELSE}
 function f_Abs(f:Single):Single; overload; inline;

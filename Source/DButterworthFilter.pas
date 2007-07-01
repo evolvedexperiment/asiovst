@@ -90,7 +90,8 @@ begin
  if Value<>fSampleRate then
   begin
    fSampleRate := Value;
-   fSRR:=1/fSampleRate;
+   fSRR:=1/fSampleRate; SetW0;
+   CalculateCoefficients;
   end;
 end;
 

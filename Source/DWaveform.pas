@@ -144,7 +144,7 @@ begin
   begin
    fNormalizeFak:=0;
    for i := 0 to Length(fWavedata) - 1 do
-    if abs(fWavedata[i])>fNormalizeFak
+    if abs(fWavedata[i])<fNormalizeFak
      then fNormalizeFak:=-abs(fWavedata[i]);
    if fNormalizeFak=0
     then fNormalizeFak:=-1
@@ -165,7 +165,7 @@ begin
    Pen.Color:=fLineColor;
    r:=Self.Width/Length(fWavedata); i:=1; w:=0; p:=0;
    mn:=Wavedata[0]*fNormalizeFak; mx:=mn;
-   MoveTo(0,round(((mn*0.5)+0.5)*fBuffer.Height));
+   MoveTo(0,round(mn*fHalfHeight+fHalfHeight));
    while i<Length(fWavedata) do
     begin
      if Wavedata[i]*fNormalizeFak>mx then mx:=Wavedata[i]*fNormalizeFak else
@@ -174,7 +174,7 @@ begin
      if w>p then
       begin
        p:=round(w);
-       if mn=mx then LineTo(p,round(((mn*0.5)+0.5)*fBuffer.Height)) else
+       if mn=mx then LineTo(p,round(mn*fHalfHeight+fHalfHeight)) else
         begin
          o:=fBuffer.Canvas.PenPos.Y-fHalfHeight;
          if abs(o-mn*fHalfHeight)<abs(o-mx*fHalfHeight)
