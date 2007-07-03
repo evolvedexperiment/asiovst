@@ -41,7 +41,7 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
       LargeStepInteger = 1
       ShortLabel = 'thrshld'
       VSTModule = Owner
-      OnParameterChange = SimpleLimiterDataModuleParameterProperties0ParameterChange
+      OnParameterChange = SLThresholdChange
     end
     item
       Min = 1.000000000000000000
@@ -62,7 +62,50 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
       LargeStepInteger = 10
       ShortLabel = 'ratio'
       VSTModule = Owner
-      OnParameterChange = SimpleLimiterDataModuleParameterProperties1ParameterChange
+      OnParameterChange = SLRatioChange
+    end
+    item
+      Min = 0.009999999776482582
+      Max = 1000.000000000000000000
+      Curve = ctLogarithmic
+      DisplayName = 'Attack'
+      Units = 'ms'
+      CurveFactor = 100000.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      CanBeAutomated = True
+      ReportVST2Properties = False
+      StepFloat = 0.100000001490116100
+      SmallStepFloat = 0.100000001490116100
+      Flags = [kVstParameterUsesFloatStep]
+      MinInteger = 1
+      MaxInteger = 1000
+      StepInteger = 1
+      LargeStepInteger = 0
+      ShortLabel = 'Attack'
+      VSTModule = Owner
+      OnParameterChange = SLAttackChange
+    end
+    item
+      Min = 5.000000000000000000
+      Max = 5000.000000000000000000
+      Curve = ctLogarithmic
+      DisplayName = 'Release'
+      Units = 'ms'
+      CurveFactor = 1000.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      CanBeAutomated = True
+      ReportVST2Properties = False
+      StepFloat = 1.000000000000000000
+      SmallStepFloat = 1.000000000000000000
+      LargeStepFloat = 5.000000000000000000
+      Flags = []
+      MinInteger = 5
+      MaxInteger = 5000
+      StepInteger = 1
+      LargeStepInteger = 5
+      ShortLabel = 'Release'
+      VSTModule = Owner
+      OnParameterChange = SLReleaseChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess

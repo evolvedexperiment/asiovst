@@ -3,7 +3,7 @@ object EditorForm: TEditorForm
   Top = 81
   BorderStyle = bsNone
   Caption = 'EditorForm'
-  ClientHeight = 86
+  ClientHeight = 160
   ClientWidth = 252
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -23,7 +23,7 @@ object EditorForm: TEditorForm
     Margins.Bottom = 0
     Caption = 'Threshold:'
   end
-  object LbdB: TLabel
+  object LbThresholdValue: TLabel
     Left = 193
     Top = 8
     Width = 51
@@ -33,7 +33,7 @@ object EditorForm: TEditorForm
     AutoSize = False
     Caption = 'dB'
   end
-  object Label1: TLabel
+  object LbRatio: TLabel
     Left = 8
     Top = 46
     Width = 29
@@ -41,9 +41,43 @@ object EditorForm: TEditorForm
     Margins.Bottom = 0
     Caption = 'Ratio:'
   end
-  object LbRatio: TLabel
+  object LbRatioValue: TLabel
     Left = 193
     Top = 46
+    Width = 51
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taRightJustify
+    AutoSize = False
+  end
+  object LbAttack: TLabel
+    Left = 8
+    Top = 84
+    Width = 35
+    Height = 13
+    Margins.Bottom = 0
+    Caption = 'Attack:'
+  end
+  object LbAttackValue: TLabel
+    Left = 193
+    Top = 84
+    Width = 51
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taRightJustify
+    AutoSize = False
+  end
+  object LbRelease: TLabel
+    Left = 8
+    Top = 122
+    Width = 42
+    Height = 13
+    Margins.Bottom = 0
+    Caption = 'Release:'
+  end
+  object LbReleaseValue: TLabel
+    Left = 193
+    Top = 122
     Width = 51
     Height = 13
     Margins.Bottom = 0
@@ -71,5 +105,28 @@ object EditorForm: TEditorForm
     PageSize = 0
     TabOrder = 1
     OnChange = SBRatioChange
+  end
+  object SBAttack: TScrollBar
+    Left = 8
+    Top = 100
+    Width = 236
+    Height = 16
+    Max = 300
+    Min = -200
+    PageSize = 0
+    TabOrder = 2
+    OnChange = SBAttackChange
+  end
+  object SBRelease: TScrollBar
+    Left = 8
+    Top = 138
+    Width = 236
+    Height = 16
+    Max = 370
+    Min = 70
+    PageSize = 0
+    Position = 70
+    TabOrder = 3
+    OnChange = SBReleaseChange
   end
 end

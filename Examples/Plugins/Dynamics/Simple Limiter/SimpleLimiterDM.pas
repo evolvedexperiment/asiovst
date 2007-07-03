@@ -3,20 +3,18 @@ unit SimpleLimiterDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
-  DDSPBase, DVSTModule, DDynamics;
+  Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule, DDynamics;
 
 type
   TSimpleLimiterDataModule = class(TVSTModule)
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray;
-      sampleframes: Integer);
-    procedure SimpleLimiterDataModuleParameterProperties0ParameterChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure SimpleLimiterDataModuleParameterProperties1ParameterChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure SLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     fSimpleLimiters : Array [0..1] of TSimpleLimiter;
   public
@@ -26,10 +24,9 @@ implementation
 
 {$R *.DFM}
 
-uses
-  EditorFrm;
+uses Math, EditorFrm;
 
-procedure TSimpleLimiterDataModule.SimpleLimiterDataModuleParameterProperties0ParameterChange(
+procedure TSimpleLimiterDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fSimpleLimiters[0].Threshold := Value;
@@ -39,15 +36,50 @@ begin
    if SBThreshold.Position <> Round(Value) then
     begin
      SBThreshold.Position := Round(Value);
-     LbdB.Caption := IntToStr(SBThreshold.Position) + ' dB';
+     LbThresholdValue.Caption := IntToStr(SBThreshold.Position) + ' dB';
     end;
 end;
 
-procedure TSimpleLimiterDataModule.SimpleLimiterDataModuleParameterProperties1ParameterChange(
+procedure TSimpleLimiterDataModule.SLRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fSimpleLimiters[0].Ratio := 1 / Value;
  fSimpleLimiters[1].Ratio := 1 / Value;
+ if Assigned(EditorForm) then
+  with EditorForm As TEditorForm do
+   if SBRatio.Position <> Round(100 * Log10(Value)) then
+    begin
+     SBRatio.Position := Round(100 * Log10(Value));
+     LbRatioValue.Caption := '1 : ' + FloatToStrF(Value, ffGeneral, 4, 4);
+    end;
+end;
+
+procedure TSimpleLimiterDataModule.SLReleaseChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSimpleLimiters[0].Decay := Value;
+ fSimpleLimiters[1].Decay := Value;
+ if Assigned(EditorForm) then
+  with EditorForm As TEditorForm do
+   if SBRelease.Position <> Round(Value) then
+    begin
+     SBRelease.Position := Round(100 * Log10(Value));
+     LbReleaseValue.Caption := '1 : ' + FloatToStrF(Value, ffGeneral, 4, 4);
+    end;
+end;
+
+procedure TSimpleLimiterDataModule.SLAttackChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSimpleLimiters[0].Attack := Value;
+ fSimpleLimiters[1].Attack := Value;
+ if Assigned(EditorForm) then
+  with EditorForm As TEditorForm do
+   if SBAttack.Position <> Round(100 * Log10(Value)) then
+    begin
+     SBAttack.Position := Round(100 * Log10(Value));
+     LbAttackValue.Caption := '1 : ' + FloatToStrF(Value, ffGeneral, 4, 4);
+    end;
 end;
 
 procedure TSimpleLimiterDataModule.VSTModuleCreate(Sender: TObject);

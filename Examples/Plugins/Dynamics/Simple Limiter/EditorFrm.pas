@@ -10,12 +10,20 @@ type
   TEditorForm = class(TForm)
     LbThreshold: TLabel;
     SBThreshold: TScrollBar;
-    LbdB: TLabel;
-    Label1: TLabel;
+    LbThresholdValue: TLabel;
     LbRatio: TLabel;
+    LbRatioValue: TLabel;
     SBRatio: TScrollBar;
+    LbAttack: TLabel;
+    LbAttackValue: TLabel;
+    SBAttack: TScrollBar;
+    LbRelease: TLabel;
+    LbReleaseValue: TLabel;
+    SBRelease: TScrollBar;
     procedure SBThresholdChange(Sender: TObject);
     procedure SBRatioChange(Sender: TObject);
+    procedure SBAttackChange(Sender: TObject);
+    procedure SBReleaseChange(Sender: TObject);
   public
   end;
 
@@ -28,7 +36,7 @@ uses Math, SimpleLimiterDM;
 procedure TEditorForm.SBThresholdChange(Sender: TObject);
 begin
  TSimpleLimiterDataModule(Owner).Parameter[0] := SBThreshold.Position;
- LbdB.Caption := IntToStr(SBThreshold.Position) + ' dB';
+ LbThresholdValue.Caption := IntToStr(SBThreshold.Position) + ' dB';
 end;
 
 procedure TEditorForm.SBRatioChange(Sender: TObject);
@@ -36,7 +44,25 @@ begin
  with TSimpleLimiterDataModule(Owner) do
   begin
    Parameter[1] := Power(10, 0.01*SBRatio.Position);
-   LbRatio.Caption := '1 : ' + FloatToStrF(Parameter[1], ffGeneral, 4, 4);
+   LbRatioValue.Caption := '1 : ' + FloatToStrF(Parameter[1], ffGeneral, 4, 4);
+  end;
+end;
+
+procedure TEditorForm.SBAttackChange(Sender: TObject);
+begin
+ with TSimpleLimiterDataModule(Owner) do
+  begin
+   Parameter[2] := Power(10, 0.01*SBAttack.Position);
+   LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 4) + ' ms';
+  end;
+end;
+
+procedure TEditorForm.SBReleaseChange(Sender: TObject);
+begin
+ with TSimpleLimiterDataModule(Owner) do
+  begin
+   Parameter[3] := Power(10, 0.01*SBRelease.Position);
+   LbReleaseValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 4) + ' ms';
   end;
 end;
 
