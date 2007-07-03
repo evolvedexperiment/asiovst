@@ -10,7 +10,7 @@
 	</PersonalityInfo>
 	<Delphi.Personality>
 		<Source>
-			<Source Name="MainSource">SimpleGate.dpr</Source>
+			<Source Name="MainSource">SimpleLimiter.dpr</Source>
 		</Source>
 		<FileVersion>
 			<FileVersion Name="Version">7.0</FileVersion>
@@ -130,7 +130,7 @@
 			<Directories Name="UsePackages">False</Directories>
 		</Directories>
 		<Parameters>
-			<Parameters Name="RunParams">c:\Programme\Audio\Plugins\VST\=Delphi=\SimpleGate.DLL</Parameters>
+			<Parameters Name="RunParams">c:\Programme\Audio\Plugins\VST\=Delphi=\SimpleLimiter.DLL</Parameters>
 			<Parameters Name="HostApplication">C:\ITA\Projects\Applications\Sound &amp; RECording\Bin\VSTPluginAnalyser.exe</Parameters>
 			<Parameters Name="Launcher"></Parameters>
 			<Parameters Name="UseLauncher">False</Parameters>

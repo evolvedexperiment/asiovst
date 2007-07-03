@@ -1,11 +1,11 @@
-object SimpleGateDataModule: TSimpleGateDataModule
+object SimpleLimiterDataModule: TSimpleLimiterDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor]
   Version = '0.0'
-  EffectName = 'Simple Gate'
-  ProductName = 'Simple Gate'
+  EffectName = 'Simple Limiter'
+  ProductName = 'Simple Limiter'
   VendorName = 'ASIO-VST Delphi Project'
   VersionMajor = 1
   VersionMinor = 0
@@ -40,7 +40,7 @@ object SimpleGateDataModule: TSimpleGateDataModule
       LargeStepInteger = 1
       ShortLabel = 'thrshld'
       VSTModule = Owner
-      OnParameterChange = SimpleGateDataModuleParameterProperties0ParameterChange
+      OnParameterChange = SimpleLimiterDataModuleParameterProperties0ParameterChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess

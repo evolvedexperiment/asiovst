@@ -1,24 +1,24 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library SimpleGate;
+library SimpleLimiter;
 
 uses
   FastMM4,
   Forms,
   DVSTEffect,
   DVSTModule,
-  SimpleGateDM in 'SimpleGateDM.pas' {SimpleGateDataModule: TVSTModule},
+  SimpleLimiterDM in 'SimpleLimiterDM.pas' {SimpleLimiterDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
-  SimpleGateDataModule: TSimpleGateDataModule;
+  SimpleLimiterDataModule: TSimpleLimiterDataModule;
 begin
   try
-    SimpleGateDataModule := TSimpleGateDataModule.Create(Application);
-    SimpleGateDataModule.AudioMaster := audioMaster;
-    with SimpleGateDataModule do
+    SimpleLimiterDataModule := TSimpleLimiterDataModule.Create(Application);
+    SimpleLimiterDataModule.AudioMaster := audioMaster;
+    with SimpleLimiterDataModule do
     begin
-      Effect^.user := SimpleGateDataModule;
+      Effect^.user := SimpleLimiterDataModule;
       Result := Effect;
     end;
   except

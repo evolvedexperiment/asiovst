@@ -67,10 +67,10 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Min = 0.009999999776482582
       Max = 1000.000000000000000000
-      Curve = ctExponential
+      Curve = ctLogarithmic
       DisplayName = 'Attack'
       Units = 'ms'
-      CurveFactor = 10.000000000000000000
+      CurveFactor = 100000.000000000000000000
       SmoothingFactor = 1.000000000000000000
       CanBeAutomated = True
       ReportVST2Properties = False
@@ -89,10 +89,10 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Min = 0.009999999776482582
       Max = 2.500000000000000000
-      Curve = ctExponential
+      Curve = ctLogarithmic
       DisplayName = 'Hold'
       Units = 'ms'
-      CurveFactor = 10.000000000000000000
+      CurveFactor = 250.000000000000000000
       SmoothingFactor = 1.000000000000000000
       CanBeAutomated = True
       ReportVST2Properties = False
@@ -108,10 +108,10 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Min = 5.000000000000000000
       Max = 5000.000000000000000000
-      Curve = ctExponential
+      Curve = ctLogarithmic
       DisplayName = 'Decay'
       Units = 'ms'
-      CurveFactor = 10.000000000000000000
+      CurveFactor = 1000.000000000000000000
       SmoothingFactor = 1.000000000000000000
       CanBeAutomated = True
       ReportVST2Properties = False
@@ -187,14 +187,16 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       LargeStepInteger = 1
       ShortLabel = 'SCSrc'
       VSTModule = Owner
+      OnParameterChange = EAGSideChainSourceChange
+      OnCustomParameterDisplay = EAGSideChainSourceDisplay
     end
     item
       Min = 20.000000000000000000
       Max = 4000.000000000000000000
-      Curve = ctLinear
+      Curve = ctLogarithmic
       DisplayName = 'Lo Cut'
       Units = 'Hz'
-      CurveFactor = 1.000000000000000000
+      CurveFactor = 200.000000000000000000
       SmoothingFactor = 1.000000000000000000
       CanBeAutomated = True
       ReportVST2Properties = False
@@ -213,10 +215,10 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Min = 0.200000002980232200
       Max = 20.000000000000000000
-      Curve = ctLinear
+      Curve = ctLogarithmic
       DisplayName = 'Hi Cut'
       Units = 'kHz'
-      CurveFactor = 1.000000000000000000
+      CurveFactor = 100.000000000000000000
       SmoothingFactor = 1.000000000000000000
       CanBeAutomated = True
       ReportVST2Properties = False
@@ -251,6 +253,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       LargeStepInteger = 1
       ShortLabel = 'Ratio'
       VSTModule = Owner
+      OnParameterChange = EAGRatioChange
     end
     item
       Min = 1.000000000000000000
@@ -272,6 +275,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       LargeStepInteger = 1
       ShortLabel = 'Knee'
       VSTModule = Owner
+      OnParameterChange = EAGKneeChange
     end
     item
       Min = -80.000000000000000000
@@ -293,13 +297,14 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       LargeStepInteger = 10
       ShortLabel = 'Range'
       VSTModule = Owner
+      OnParameterChange = EAGRangeChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcessBypass
   OnProcessReplacing = VSTModuleProcessBypass
-  Left = 659
-  Top = 292
+  Left = 552
+  Top = 84
   Height = 150
   Width = 215
 end

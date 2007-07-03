@@ -3,7 +3,7 @@ object EditorForm: TEditorForm
   Top = 81
   BorderStyle = bsNone
   Caption = 'EditorForm'
-  ClientHeight = 278
+  ClientHeight = 279
   ClientWidth = 321
   Color = 11327984
   Font.Charset = DEFAULT_CHARSET
@@ -464,6 +464,7 @@ object EditorForm: TEditorForm
       ParentFont = False
       TabOrder = 2
       Text = 'INT'
+      OnChange = CBSideChainChange
       Items.Strings = (
         'INT'
         'EXT')
@@ -503,15 +504,16 @@ object EditorForm: TEditorForm
       Top = 18
       Width = 48
       Height = 48
-      Position = 10.000000000000000000
-      Min = 10.000000000000000000
-      Max = 100.000000000000000000
+      Position = 3.970000028610230000
+      Min = 1.000000000000000000
+      Max = 10.000000000000000000
       ColorCircle = 6057334
       ColorLine = clBlack
       StitchKind = skHorizontal
       PointerAngles.Start = 210
       PointerAngles.Range = 300
       PointerAngles.Resolution = 300.000000000000000000
+      OnChange = DialRatioChange
     end
     object LbKnee: TLabel
       Left = 63
@@ -534,15 +536,16 @@ object EditorForm: TEditorForm
       Top = 18
       Width = 48
       Height = 48
-      Position = 10.000000000000000000
-      Min = 10.000000000000000000
-      Max = 60.000000000000000000
+      Position = 3.000000000000000000
+      Min = 1.000000000000000000
+      Max = 6.000000000000000000
       ColorCircle = 6057334
       ColorLine = clBlack
       StitchKind = skHorizontal
       PointerAngles.Start = 210
       PointerAngles.Range = 300
       PointerAngles.Resolution = 300.000000000000000000
+      OnChange = DialKneeChange
     end
     object LbRange: TLabel
       Left = 117
@@ -565,14 +568,16 @@ object EditorForm: TEditorForm
       Top = 18
       Width = 48
       Height = 48
-      Min = -800.000000000000000000
-      Max = 100.000000000000000000
+      Position = -40.000000000000000000
+      Min = -80.000000000000000000
+      Max = -0.009999999776482582
       ColorCircle = 6057334
       ColorLine = clBlack
       StitchKind = skHorizontal
       PointerAngles.Start = 210
       PointerAngles.Range = 300
       PointerAngles.Resolution = 300.000000000000000000
+      OnChange = DialRangeChange
     end
     object EdRatio: TEdit
       Left = 18

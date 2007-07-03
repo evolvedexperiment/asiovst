@@ -42,6 +42,7 @@ type
 
   TGate = class(TDynamics)
   private
+    fGainReductionFactor : Double;
     procedure SetHold(const Value: Double);
     procedure SetRatio(const Value: Double);
     procedure SetRange(const Value: Double);
@@ -49,6 +50,7 @@ type
     function GetLowCut: Double;
     procedure SetHighCut(const Value: Double);
     procedure SetLowCut(const Value: Double);
+    procedure SetKnee(const Value: Double);
   protected
     fGain        : Double;
     fHold        : Double;
@@ -72,6 +74,7 @@ type
   published
     property Hold : Double read fHold write SetHold;      // in s
     property Range : Double read fRange write SetRange;   // in dB
+    property Knee : Double read fKnee write SetKnee;      // in dB
     property Duck : Boolean read fDuck write fDuck;       // not implemented yet
     property Ratio : Double read fRatio write SetRatio;
     property SideChainLowCut : Double read GetLowCut write SetLowCut;     // in Hz
@@ -253,10 +256,12 @@ end;
 
 function TGate.ProcessSample(Input: Double): Double;
 begin
- if abs(Input)<fThreshold
-  then fGain := fGain * fAttackFactor
-  else fGain := 1 * fDecayFactor;
- result := fSideChain; // Input * fGain;
+ if abs(Input)>fThreshold
+  then fGainReductionFactor := 1  + (fGainReductionFactor - 1) * fAttackFactor
+  else fGainReductionFactor := fGainReductionFactor * fDecayFactor;
+
+ fGain := fRangeFactor + (1-fRangeFactor) * fGainReductionFactor;
+ result := Input * fGain;
 end;
 
 procedure TGate.CalculateHoldSamples;
@@ -275,6 +280,14 @@ begin
   begin
     fHold := Value;
     CalculateHoldSamples;
+  end;
+end;
+
+procedure TGate.SetKnee(const Value: Double);
+begin
+ if fKnee <> Value then
+  begin
+   fKnee := Value;
   end;
 end;
 

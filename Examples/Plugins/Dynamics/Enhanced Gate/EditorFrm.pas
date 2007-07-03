@@ -2,9 +2,9 @@ unit EditorFrm;
 
 interface
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule, Controls,
-  StdCtrls, DDial, Gauges;
+  StdCtrls, Graphics, DDial, Gauges;
 
 type
   TEditorForm = class(TForm)
@@ -56,6 +56,10 @@ type
     procedure DialDecayChange(Sender: TObject);
     procedure DialLoCutChange(Sender: TObject);
     procedure DialHiCutChange(Sender: TObject);
+    procedure CBSideChainChange(Sender: TObject);
+    procedure DialRatioChange(Sender: TObject);
+    procedure DialKneeChange(Sender: TObject);
+    procedure DialRangeChange(Sender: TObject);
   private
   public
     procedure UpdateThreshold;
@@ -64,6 +68,9 @@ type
     procedure UpdateDecay;
     procedure UpdateHiCut;
     procedure UpdateLoCut;
+    procedure UpdateKnee;
+    procedure UpdateRange;
+    procedure UpdateRatio;
   end;
 
 implementation
@@ -99,6 +106,13 @@ begin
  UpdateHold;
 end;
 
+procedure TEditorForm.DialDecayChange(Sender: TObject);
+begin
+ with TEnhancedGateDataModule(Owner)
+  do Parameter[4] := Power(10, DialDecay.Position);
+ UpdateDecay;
+end;
+
 procedure TEditorForm.CBDuckClick(Sender: TObject);
 begin
  with TEnhancedGateDataModule(Owner)
@@ -111,11 +125,10 @@ begin
   do Parameter[6] := Integer(CBStereoLink.Checked);
 end;
 
-procedure TEditorForm.DialDecayChange(Sender: TObject);
+procedure TEditorForm.CBSideChainChange(Sender: TObject);
 begin
  with TEnhancedGateDataModule(Owner)
-  do Parameter[4] := Power(10, DialDecay.Position);
- UpdateDecay;
+  do Parameter[7] := CBSideChain.ItemIndex;
 end;
 
 procedure TEditorForm.DialLoCutChange(Sender: TObject);
@@ -132,8 +145,28 @@ begin
  UpdateHiCut;
 end;
 
+procedure TEditorForm.DialRatioChange(Sender: TObject);
+begin
+ with TEnhancedGateDataModule(Owner)
+  do Parameter[10] := DialRatio.Position;
+ UpdateRatio;
+end;
+
+procedure TEditorForm.DialKneeChange(Sender: TObject);
+begin
+ with TEnhancedGateDataModule(Owner)
+  do Parameter[11] := DialKnee.Position;
+ UpdateKnee;
+end;
+
+procedure TEditorForm.DialRangeChange(Sender: TObject);
+begin
+ with TEnhancedGateDataModule(Owner)
+  do Parameter[12] := DialRange.Position;
+ UpdateRange;
+end;
+
 procedure TEditorForm.UpdateThreshold;
-var i : Integer;
 begin
  with TEnhancedGateDataModule(Owner) do
   begin
@@ -191,6 +224,9 @@ begin
    if Parameter[8]<1000
     then EdLoCut.Text := FloatToStrF(Parameter[8], ffFixed, 5, Round(2.49999-Log10(Parameter[8]))) + ' Hz'
     else EdLoCut.Text := FloatToStrF(0.001*Parameter[8], ffFixed, 5, 1) + ' kHz';
+   if Parameter[8]>Parameter[9]*1100
+    then GBSideChain.Font.Color:=clRed
+    else GBSideChain.Font.Color:=clBlack;
   end;
 end;
 
@@ -203,6 +239,39 @@ begin
    if Parameter[9]<1000
     then EdHiCut.Text := FloatToStrF(1000*Parameter[9], ffFixed, 5, 0) + ' Hz'
     else EdHiCut.Text := FloatToStrF(Parameter[9], ffFixed, 5, Round(4.49999-Log10(Parameter[9])) ) + ' kHz';
+   if Parameter[8]>Parameter[9]*1100
+    then GBSideChain.Font.Color:=clRed
+    else GBSideChain.Font.Color:=clBlack;
+  end;
+end;
+
+procedure TEditorForm.UpdateRatio;
+begin
+ with TEnhancedGateDataModule(Owner) do
+  begin
+   if DialRatio.Position <> Parameter[10]
+    then DialRatio.Position := Parameter[10];
+   EdRatio.Text := FloatToStrF(Parameter[10], ffGeneral, 5, 5);
+  end;
+end;
+
+procedure TEditorForm.UpdateKnee;
+begin
+ with TEnhancedGateDataModule(Owner) do
+  begin
+   if DialKnee.Position <> Parameter[11]
+    then DialKnee.Position := Parameter[11];
+   EdKnee.Text := FloatToStrF(Parameter[11], ffFixed, 5, 2) + ' dB';
+  end;
+end;
+
+procedure TEditorForm.UpdateRange;
+begin
+ with TEnhancedGateDataModule(Owner) do
+  begin
+   if DialRange.Position <> Parameter[12]
+    then DialRange.Position := Parameter[12];
+   EdRange.Text := FloatToStrF(Parameter[12], ffFixed, 5, 1) + ' dB';
   end;
 end;
 

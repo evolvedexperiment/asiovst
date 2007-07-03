@@ -19,11 +19,11 @@ implementation
 
 {$R *.DFM}
 
-uses SimpleGateDM;
+uses SimpleLimiterDM;
 
 procedure TEditorForm.ScrollBarChange(Sender: TObject);
 begin
- TSimpleGateDataModule(Owner).Parameter[0] := ScrollBar.Position;
+ TSimpleLimiterDataModule(Owner).Parameter[0] := ScrollBar.Position;
  LbdB.Caption := IntToStr(ScrollBar.Position) + ' dB';
 end;
 

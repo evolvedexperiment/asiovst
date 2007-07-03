@@ -1,4 +1,4 @@
-unit SimpleGateDM;
+unit SimpleLimiterDM;
 
 interface
 
@@ -7,16 +7,16 @@ uses
   DDSPBase, DVSTModule, DDynamics;
 
 type
-  TSimpleGateDataModule = class(TVSTModule)
+  TSimpleLimiterDataModule = class(TVSTModule)
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray;
       sampleframes: Integer);
-    procedure SimpleGateDataModuleParameterProperties0ParameterChange(
+    procedure SimpleLimiterDataModuleParameterProperties0ParameterChange(
       Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fSimpleGates : Array [0..1] of TSimpleGate;
+    fSimpleLimiters : Array [0..1] of TSimpleLimiter;
   public
   end;
 
@@ -27,11 +27,11 @@ implementation
 uses
   EditorFrm;
 
-procedure TSimpleGateDataModule.SimpleGateDataModuleParameterProperties0ParameterChange(
+procedure TSimpleLimiterDataModule.SimpleLimiterDataModuleParameterProperties0ParameterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fSimpleGates[0].Threshold := Value;
- fSimpleGates[1].Threshold := Value;
+ fSimpleLimiters[0].Threshold := Value;
+ fSimpleLimiters[1].Threshold := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
    if ScrollBar.Position <> Round(Value) then
@@ -41,31 +41,31 @@ begin
     end;
 end;
 
-procedure TSimpleGateDataModule.VSTModuleCreate(Sender: TObject);
+procedure TSimpleLimiterDataModule.VSTModuleCreate(Sender: TObject);
 begin
- fSimpleGates[0] := TSimpleGate.Create;
- fSimpleGates[1] := TSimpleGate.Create;
+ fSimpleLimiters[0] := TSimpleLimiter.Create;
+ fSimpleLimiters[1] := TSimpleLimiter.Create;
 end;
 
-procedure TSimpleGateDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TSimpleLimiterDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(fSimpleGates[0]);
- FreeAndNil(fSimpleGates[1]);
+ FreeAndNil(fSimpleLimiters[0]);
+ FreeAndNil(fSimpleLimiters[1]);
 end;
 
-procedure TSimpleGateDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
+procedure TSimpleLimiterDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
 begin
   GUI := TEditorForm.Create(Self);
 end;
 
-procedure TSimpleGateDataModule.VSTModuleProcess(const Inputs,
+procedure TSimpleLimiterDataModule.VSTModuleProcess(const Inputs,
   Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i : Integer;
 begin
  for i := 0 to sampleframes - 1 do
   begin
-    Outputs[0,i] := fSimpleGates[0].ProcessSample(Inputs[0,i]);
-    Outputs[1,i] := fSimpleGates[0].ProcessSample(Inputs[1,i]);
+    Outputs[0,i] := fSimpleLimiters[0].ProcessSample(Inputs[0,i]);
+    Outputs[1,i] := fSimpleLimiters[0].ProcessSample(Inputs[1,i]);
   end;
 end;
 

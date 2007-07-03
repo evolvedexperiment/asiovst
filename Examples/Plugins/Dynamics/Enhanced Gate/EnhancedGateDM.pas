@@ -26,6 +26,11 @@ type
     procedure EAGDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGLoCutChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGHiCutChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure EAGSideChainSourceDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure EAGSideChainSourceChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure EAGRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure EAGKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure EAGRangeChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     fEnhancedGates : Array [0..NrChannels-1] of TGate;
   public
@@ -99,6 +104,41 @@ begin
   then (EditorForm As TEditorForm).UpdateThreshold;
 end;
 
+procedure TEnhancedGateDataModule.EAGRangeChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+var i : Integer;
+begin
+ for i := 0 to NrChannels - 1
+  do fEnhancedGates[i].Range := Value;
+ if Assigned(EditorForm) then
+  with EditorForm As TEditorForm do UpdateRange;
+end;
+
+procedure TEnhancedGateDataModule.EAGRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
+var i : Integer;
+begin
+ for i := 0 to NrChannels - 1
+  do fEnhancedGates[i].Ratio := Value;
+ if Assigned(EditorForm) then
+  with EditorForm As TEditorForm do UpdateRatio;
+end;
+
+procedure TEnhancedGateDataModule.EAGSideChainSourceChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+begin
+ if Assigned(EditorForm) then
+  with EditorForm As TEditorForm
+   do CBSideChain.ItemIndex := Integer(Round(Value));
+end;
+
+procedure TEnhancedGateDataModule.EAGSideChainSourceDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: string);
+begin
+ if Boolean(Round(Parameter[index]))
+  then PreDefined:='Ext'
+  else PreDefined:='Int';
+end;
+
 procedure TEnhancedGateDataModule.EAGLoCutChange(Sender: TObject; const Index: Integer; var Value: Single);
 var i : Integer;
 begin
@@ -133,6 +173,15 @@ begin
   do fEnhancedGates[i].Hold := Value;
  if Assigned(EditorForm)
   then TEditorForm(EditorForm).UpdateHold;
+end;
+
+procedure TEnhancedGateDataModule.EAGKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
+var i : Integer;
+begin
+ for i := 0 to NrChannels - 1
+  do fEnhancedGates[i].Knee := Value;
+ if Assigned(EditorForm) then
+  with EditorForm As TEditorForm do UpdateKnee;
 end;
 
 procedure TEnhancedGateDataModule.EAGDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -172,6 +221,9 @@ begin
    UpdateDecay;
    UpdateHiCut;
    UpdateLoCut;
+   UpdateRatio;
+   UpdateKnee;
+   UpdateRange;
   end;
 end;
 
