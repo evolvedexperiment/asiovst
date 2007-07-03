@@ -51,13 +51,17 @@ type
     fOnChange    : TNotifyEvent;
     fMouseIsDown : Boolean;
     fOldMousPos  : TPoint;
-    fCircleColor : TColor;
+    fColorCircle : TColor;
+    fColorLine   : TColor;
     fColorAuto   : Boolean;
+    fLineWidth   : Integer;
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetColorAuto(const Value: Boolean);
+    procedure SetLineWidth(const Value: Integer);
     procedure SetTransparent(const Value: Boolean);
-    procedure SetCircleColor(const Value: TColor);
+    procedure SetColorCircle(const Value: TColor);
+    procedure SetColorLine(const Value: TColor);
     procedure SetMax(const Value: Single);
     procedure SetMin(const Value: Single);
     procedure SetNumGlyphs(const Value: Integer);
@@ -75,10 +79,9 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure SettingsChanged(Sender: TObject); virtual;
-    procedure CalcCircleColor;
+    procedure CalcColorCircle;
     procedure Paint; override;
     procedure Resize; override;
-    procedure ReadState(Reader: TReader); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -120,7 +123,9 @@ type
     property Position: Single read FPosition write SetPosition;
     property Min: Single read FMin write SetMin;
     property Max: Single read FMax write SetMax;
-    property ColorCircle : TColor read fCircleColor write SetCircleColor;
+    property ColorCircle : TColor read fColorCircle write SetColorCircle default clBlack;
+    property ColorLine : TColor read fColorLine write SetColorLine default clRed;
+    property LineWidth : Integer read fLineWidth write SetLineWidth default 2;
     property NumGlyphs: Integer read fNumGlyphs write SetNumGlyphs default 1;
     property DialBitmap: TBitmap read fDialBitmap write SetDialBitmap;
     property StitchKind: TStitchKind read fStitchKind write SetStitchKind;
@@ -259,6 +264,9 @@ begin
                   csDoubleClicks, csReplicatable, csOpaque];
  FPnterAngles := TDialPointerAngles.Create;
  FPnterAngles.OnChange := SettingsChanged;
+ fColorCircle := clBlack;
+ fColorLine := clRed;
+ fLineWidth := 2;
  fMin := 0;
  fMax := 100;
  fPosition := 0;
@@ -269,6 +277,8 @@ end;
 
 destructor TDial.Destroy;
 begin
+ FreeAndNil(fDialBitmap);
+ FreeAndNil(fPnterAngles);
  Dec(ControlCounter);
  if ControlCounter = 0 then
   begin
@@ -316,10 +326,11 @@ end;
 
 procedure TDial.Paint;
 type TComplex = record Re,Im : Single; end;
-var theRect   : TRect;
-    GlyphNr,i : Integer;
-    Val,Off   : TComplex;
-    Rad,tmp   : Single;
+var theRect    : TRect;
+    GlyphNr,i  : Integer;
+    Val,Off    : TComplex;
+    Rad,tmp    : Single;
+    PtsArray   : Array of TPoint;
 
 
   procedure GetSinCos(Frequency: Single; var SinValue, CosValue : Single);
@@ -334,33 +345,42 @@ begin
  inherited;
  with Canvas do
   begin
-   if fTransparent
-    then DrawParentImage(Self, Canvas)
-    else FillRect(ClientRect);
-
    if fDialBitmap.Empty then
     begin
-     Rad:=0.45*Math.Min(Width,Height);
-     GetSinCos(PositionToAngle-(PI*0.5),Val.Im,Val.Re);
-     MoveTo(Round(0.5*Width),Round(0.5*Height));
-     LineTo(Round(Val.Re*Rad+0.5*Width),Round(Val.Im*Rad+0.5*Height));
-     Val.Im:=Val.Im*Rad;
-     Val.Re:=Val.Re*Rad;
-     GetSinCos(Pi/Rad,Off.Im,Off.Re);
-     MoveTo(round(0.5*Width+Val.Re),Round(0.5*Height+Val.Im));
-     Pen.Color:=fCircleColor;
-     GlyphNr:=Round(1.9*Pi/Off.Im);
-     for i:=0 to GlyphNr-3 do
+     Lock;
+     Brush.Color := Self.Color;
+     if fTransparent
+      then DrawParentImage(Self, Canvas)
+      else FillRect(ClientRect);
+     FillRect(ClientRect);
+     Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
+     GlyphNr:=Round(2 / arcsin(1 / Rad)) + 1;
+     if GlyphNr > 1 then
       begin
-       tmp:=Val.Re*Off.Re-Val.Im*Off.Im;
-       Val.Im:=Val.Im*Off.Re+Val.Re*Off.Im;
-       Val.Re:=tmp;
-       LineTo(round(0.5*Width+Val.Re),Round(0.5*Height+Val.Im));
+       SetLength(PtsArray, GlyphNr);
+       GetSinCos(PositionToAngle - (PI * 0.5), Val.Im, Val.Re);
+       Val.Re := Val.Re * Rad; Val.Im := Val.Im * Rad;
+       GetSinCos(2 * Pi / (GlyphNr - 1), Off.Im, Off.Re);
+       PtsArray[0] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
+       for i:=1 to GlyphNr - 1 do
+        begin
+         tmp := Val.Re * Off.Re - Val.Im * Off.Im;
+         Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
+         Val.Re := tmp;
+         PtsArray[i] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
+        end;
+       Pen.Width := fLineWidth;
+       Pen.Color := fColorLine;
+       Brush.Color := fColorCircle;
+       Polygon(PtsArray);
       end;
+     MoveTo(PtsArray[0].X, PtsArray[0].Y);
+     LineTo(Round(0.5 * Width), Round(0.5 * Height));
+     Unlock;
     end
    else
     begin
-     GlyphNr:=Trunc((fPosition-fMin)/((fMax+1)-fMin) * fNumGlyphs);
+     GlyphNr:=Trunc((fPosition - fMin) / ((fMax + 1) - fMin) * fNumGlyphs);
      theRect:=ClientRect;
      if fStitchKind=skVertical then
       begin
@@ -385,12 +405,6 @@ begin
   Height:=ClientRect.Bottom-ClientRect.Top;
  except
  end;
-end;
-
-procedure TDial.ReadState(Reader: TReader);
-begin
-  inherited;
-
 end;
 
 procedure TDial.CMFontChanged(var Message: TMessage);
@@ -563,7 +577,10 @@ begin
 // if fMouseIsDown then Position := CircularMouseToPosition(X, Y);
 
  Range := Max - (Min - 1);
- if fMouseIsDown then Position := Position + (fOldMousPos.Y - Y)*0.005*Range;
+ if fMouseIsDown then
+ if ssCtrl in Shift
+  then Position := Position + (fOldMousPos.Y - Y)*0.001*Range
+  else Position := Position + (fOldMousPos.Y - Y)*0.005*Range;
  fOldMousPos.X:=X; fOldMousPos.Y:=Y;
 
  P := ClientToScreen(Point(X, Y));
@@ -586,30 +603,47 @@ begin
  FPnterAngles.Assign(Value);
 end;
 
-procedure TDial.CalcCircleColor;
+procedure TDial.CalcColorCircle;
 begin
  if (Color and $000000FF)<$80 then
   if (((Color and $0000FF00) shr  8)<$80) or
-     (((Color and $00FF0000) shr 16)<$80) then fCircleColor:=$FFFFFF
+     (((Color and $00FF0000) shr 16)<$80) then fColorCircle:=$FFFFFF
   else
  if (((Color and $0000FF00) shr  8)<$80) and
-    (((Color and $00FF0000) shr 16)<$80) then fCircleColor:=$FFFFFF;
+    (((Color and $00FF0000) shr 16)<$80) then fColorCircle:=$FFFFFF;
  Invalidate;
 end;
 
 procedure TDial.SetColorAuto(const Value: Boolean);
 begin
- CalcCircleColor;
+ CalcColorCircle;
 end;
 
-procedure TDial.SetCircleColor(const Value: TColor);
+procedure TDial.SetColorCircle(const Value: TColor);
 begin
- if not fColorAuto and (Value<>fCircleColor) then
+ if not fColorAuto and (Value<>fColorCircle) then
   begin
-   fCircleColor:=Value;
+   fColorCircle:=Value;
    Invalidate;
   end;
 end;
 
+procedure TDial.SetColorLine(const Value: TColor);
+begin
+ if not fColorAuto and (Value<>fColorLine) then
+  begin
+   fColorLine:=Value;
+   Invalidate;
+  end;
+end;
+
+procedure TDial.SetLineWidth(const Value: Integer);
+begin
+ if (Value<>fLineWidth) then
+  begin
+   fLineWidth:=Value;
+   Invalidate;
+  end;
+end;
 
 end.

@@ -1,24 +1,24 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library SimpleGate;
+library EnhancedGate;
 
 uses
   FastMM4,
   Forms,
   DVSTEffect,
   DVSTModule,
-  SimpleGateDM in 'SimpleGateDM.pas' {SimpleGateDataModule: TVSTModule},
+  EnhancedGateDM in 'EnhancedGateDM.pas' {EnhancedGateDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
-  SimpleGateDataModule: TSimpleGateDataModule;
+  EnhancedGateDataModule: TEnhancedGateDataModule;
 begin
   try
-    SimpleGateDataModule := TSimpleGateDataModule.Create(Application);
-    SimpleGateDataModule.AudioMaster := audioMaster;
-    with SimpleGateDataModule do
+    EnhancedGateDataModule := TEnhancedGateDataModule.Create(Application);
+    EnhancedGateDataModule.AudioMaster := audioMaster;
+    with EnhancedGateDataModule do
     begin
-      Effect^.user := SimpleGateDataModule;
+      Effect^.user := EnhancedGateDataModule;
       Result := Effect;
     end;
   except
