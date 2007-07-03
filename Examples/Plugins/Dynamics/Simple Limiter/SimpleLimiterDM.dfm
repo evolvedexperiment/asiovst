@@ -23,6 +23,7 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
   ParameterProperties = <
     item
       Min = -96.000000000000000000
+      Max = 1.000000000000000000
       Curve = ctLinear
       DisplayName = 'Threshold'
       Units = 'dB'
@@ -41,12 +42,33 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
       ShortLabel = 'thrshld'
       VSTModule = Owner
       OnParameterChange = SimpleLimiterDataModuleParameterProperties0ParameterChange
+    end
+    item
+      Min = 1.000000000000000000
+      Max = 100.000000000000000000
+      Curve = ctLinear
+      DisplayName = 'Ratio'
+      CurveFactor = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      CanBeAutomated = True
+      ReportVST2Properties = False
+      StepFloat = 1.000000000000000000
+      SmallStepFloat = 1.000000000000000000
+      LargeStepFloat = 10.000000000000000000
+      Flags = []
+      MinInteger = 1
+      MaxInteger = 100
+      StepInteger = 1
+      LargeStepInteger = 10
+      ShortLabel = 'ratio'
+      VSTModule = Owner
+      OnParameterChange = SimpleLimiterDataModuleParameterProperties1ParameterChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
-  Left = 218
-  Top = 81
+  Left = 452
+  Top = 121
   Height = 150
   Width = 215
 end

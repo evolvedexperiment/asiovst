@@ -15,6 +15,8 @@ type
       sampleframes: Integer);
     procedure SimpleLimiterDataModuleParameterProperties0ParameterChange(
       Sender: TObject; const Index: Integer; var Value: Single);
+    procedure SimpleLimiterDataModuleParameterProperties1ParameterChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
     fSimpleLimiters : Array [0..1] of TSimpleLimiter;
   public
@@ -34,11 +36,18 @@ begin
  fSimpleLimiters[1].Threshold := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
-   if ScrollBar.Position <> Round(Value) then
+   if SBThreshold.Position <> Round(Value) then
     begin
-     ScrollBar.Position := Round(Value);
-     LbdB.Caption := IntToStr(ScrollBar.Position) + ' dB';
+     SBThreshold.Position := Round(Value);
+     LbdB.Caption := IntToStr(SBThreshold.Position) + ' dB';
     end;
+end;
+
+procedure TSimpleLimiterDataModule.SimpleLimiterDataModuleParameterProperties1ParameterChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSimpleLimiters[0].Ratio := 1 / Value;
+ fSimpleLimiters[1].Ratio := 1 / Value;
 end;
 
 procedure TSimpleLimiterDataModule.VSTModuleCreate(Sender: TObject);
@@ -65,7 +74,7 @@ begin
  for i := 0 to sampleframes - 1 do
   begin
     Outputs[0,i] := fSimpleLimiters[0].ProcessSample(Inputs[0,i]);
-    Outputs[1,i] := fSimpleLimiters[0].ProcessSample(Inputs[1,i]);
+    Outputs[1,i] := fSimpleLimiters[1].ProcessSample(Inputs[1,i]);
   end;
 end;
 

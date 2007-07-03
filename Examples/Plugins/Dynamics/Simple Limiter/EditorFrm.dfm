@@ -3,7 +3,7 @@ object EditorForm: TEditorForm
   Top = 81
   BorderStyle = bsNone
   Caption = 'EditorForm'
-  ClientHeight = 46
+  ClientHeight = 86
   ClientWidth = 252
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -33,7 +33,24 @@ object EditorForm: TEditorForm
     AutoSize = False
     Caption = 'dB'
   end
-  object ScrollBar: TScrollBar
+  object Label1: TLabel
+    Left = 8
+    Top = 46
+    Width = 29
+    Height = 13
+    Margins.Bottom = 0
+    Caption = 'Ratio:'
+  end
+  object LbRatio: TLabel
+    Left = 193
+    Top = 46
+    Width = 51
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taRightJustify
+    AutoSize = False
+  end
+  object SBThreshold: TScrollBar
     Left = 8
     Top = 24
     Width = 236
@@ -43,6 +60,16 @@ object EditorForm: TEditorForm
     PageSize = 0
     Position = -80
     TabOrder = 0
-    OnChange = ScrollBarChange
+    OnChange = SBThresholdChange
+  end
+  object SBRatio: TScrollBar
+    Left = 8
+    Top = 62
+    Width = 236
+    Height = 16
+    Max = 200
+    PageSize = 0
+    TabOrder = 1
+    OnChange = SBRatioChange
   end
 end

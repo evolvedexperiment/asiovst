@@ -7,27 +7,33 @@ uses DButterworthFilter;
 type
   TDynamics = class
   private
-    fSampleRate: Double;
-    fSampleRateRez: Double;
-    fThreshold: Double;
-    fDecay: Double;
-    fAttack: Double;
     procedure SetThreshold(const Value: Double);
-    function GetThreshold: Double;
+    procedure SetRatio(const Value: Double);
     procedure SetAttack(const Value: Double);
     procedure SetDecay(const Value: Double);
     procedure CalculateAttackFactor;
     procedure CalculateDecayFactor;
+    procedure CalculateThreshold;
+    function GetThreshold: Double;
   protected
-    fLevel: Double;
-    fDecayFactor: Double;
-    fAttackFactor: Double;
+    fPeak          : Double;
+    fLevel         : Double;
+    fRatio         : Double;
+    fSampleRate    : Double;
+    fSampleRateRez : Double;
+    fThreshold     : Double;
+    fThresholddB   : Double;
+    fDecay         : Double;
+    fAttack        : Double;
+    fDecayFactor   : Double;
+    fAttackFactor  : Double;
     procedure SetSampleRate(const Value: Double); virtual;
   public
     function ProcessSample(Input : Double):Double; virtual; abstract;
     constructor Create; virtual;
   published
-    property Threshold : Double read GetThreshold write SetThreshold;   // in dB
+    property Threshold : Double read fThresholddB write SetThreshold;   // in dB
+    property Ratio : Double read fRatio write SetRatio;
     property Attack : Double read fAttack write SetAttack;            // in ms
     property Decay : Double read fDecay write SetDecay;         // in ms
     property SampleRate : Double read fSampleRate write SetSampleRate;
@@ -44,7 +50,6 @@ type
   private
     fGainReductionFactor : Double;
     procedure SetHold(const Value: Double);
-    procedure SetRatio(const Value: Double);
     procedure SetRange(const Value: Double);
     function GetHighCut: Double;
     function GetLowCut: Double;
@@ -54,7 +59,6 @@ type
   protected
     fGain        : Double;
     fHold        : Double;
-    fRatio       : Double;
     fKnee        : Double;
     fRange       : Double;
     fRangeFactor : Double;
@@ -76,7 +80,6 @@ type
     property Range : Double read fRange write SetRange;   // in dB
     property Knee : Double read fKnee write SetKnee;      // in dB
     property Duck : Boolean read fDuck write fDuck;       // not implemented yet
-    property Ratio : Double read fRatio write SetRatio;
     property SideChainLowCut : Double read GetLowCut write SetLowCut;     // in Hz
     property SideChainHighCut : Double read GetHighCut write SetHighCut;  // in Hz
   end;
@@ -96,6 +99,7 @@ type
 
   TSimpleLimiter = class(TDynamics)
   private
+    fGain        : Double;
   public
     constructor Create; override;
     function ProcessSample(Input : Double):Double; override;
@@ -121,10 +125,11 @@ constructor TDynamics.Create;
 begin
   fSampleRate := 44100;
   fSampleRateRez := 1 / fSampleRate;
-  fThreshold := 1E-4;
+  fThresholddB := -40;
   fAttack := 5;
   fDecay := 5;
   fLevel := 0;
+  CalculateThreshold;
   CalculateAttackFactor;
   CalculateDecayFactor;
 end;
@@ -146,6 +151,14 @@ begin
   else fDecayFactor := exp( -ln2 / (fDecay * 0.001 * SampleRate));
 end;
 
+procedure TDynamics.SetRatio(const Value: Double);
+begin
+ if fRatio <>Value then
+  begin
+    fRatio := Value;
+  end;
+end;
+
 procedure TDynamics.SetAttack(const Value: Double);
 begin
   if fAttack <> Value then
@@ -164,9 +177,18 @@ begin
   end;
 end;
 
+procedure TDynamics.CalculateThreshold;
+begin
+  fThreshold := dB_to_Amp(fThresholddB);
+end;
+
 procedure TDynamics.SetThreshold(const Value: Double);
 begin
-  fThreshold := dB_to_Amp(Value);
+  if fThresholddB <> Value then
+  begin
+    fThresholddB := Value;
+    CalculateThreshold;
+  end;
 end;
 
 { TSimpleGate }
@@ -213,9 +235,13 @@ end;
 
 function TSimpleLimiter.ProcessSample(Input: Double): Double;
 begin
-  if Input > Threshold
-    then result := Threshold
-    else result := Input;
+ if abs(Input)>fPeak
+  then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
+  else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
+ if fPeak > fThreshold
+  then fGain := (dB_to_Amp((1 - fRatio)*fThresholddB + fRatio * (Amp_to_dB(fPeak)))) / fPeak
+  else fGain := 1;
+ result := fGain * Input;
 end;
 
 { TGate }
@@ -307,14 +333,6 @@ begin
   begin
    fRange := Value;
    CalculateRangeFactor;
-  end;
-end;
-
-procedure TGate.SetRatio(const Value: Double);
-begin
- if fRatio <>Value then
-  begin
-    fRatio := Value;
   end;
 end;
 
