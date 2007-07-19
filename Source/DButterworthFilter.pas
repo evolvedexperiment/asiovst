@@ -33,6 +33,12 @@ type
     procedure Reset; override;
     procedure PushStates; override;
     procedure PopStates; override;
+    procedure ResetStatesInt64; override;
+    procedure Complex(Frequency: Double; out Real: Double; out Imaginary: Double); override;
+    procedure Complex(Frequency: Double; out Real: Single; out Imaginary: Single); override;
+    function Imaginary(Frequency: Double): Double; override;
+    function Phase(Frequency: Double): Double; override;
+    function Real(Frequency: Double): Double; override;
     property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
     property DownsampleFaktor : Integer read fDownsampleFak;
   end;
@@ -82,6 +88,12 @@ end;
 procedure TButterworthFilter.ResetStates;
 begin
  FillChar(fState[0],fOrder*SizeOf(Double),0);
+end;
+
+procedure TButterworthFilter.ResetStatesInt64;
+begin
+ PInt64(@fState[0])^ := 0;
+ PInt64(@fState[1])^ := 0;
 end;
 
 procedure TButterworthFilter.SetSampleRate(const Value: Double);
@@ -154,6 +166,60 @@ begin
  Result:=fOrder;
 end;
 
+function TButterworthFilter.Real(Frequency: Double): Double;
+var Temp : Double;
+begin
+ Complex(Frequency, result, Temp);
+end;
+
+function TButterworthFilter.Imaginary(Frequency: Double): Double;
+var Temp : Double;
+begin
+ Complex(Frequency, Temp, result);
+end;
+
+procedure TButterworthFilter.Complex(Frequency: Double; out Real, Imaginary: Double);
+var cw, Divider  : Double;
+    cmplx        : TComplexDouble;
+    i            : Integer;
+begin
+ if fOrder = 0 then
+  begin
+   Real := 1;
+   Imaginary := 1;
+  end
+ else
+  begin
+   cw := cos(2 * Frequency * pi * fSRR);
+   Divider   := 1 / ( sqr(fAB[3]) - 2 * fAB[3] + sqr(fAB[2]) + 1
+                      + 2 * cw * (fAB[2] * (fAB[3] + 1) + 2 * cw * fAB[3]));
+   Real      := (fAB[0] + fAB[1] * fAB[2] + fAB[0] * fAB[3]
+                + cw * (fAB[1] * (1 + fAB[3]) + fAB[2] * 2 * fAB[0])
+                + (2 * sqr(cw) - 1) * fAB[0] * (fAB[3] + 1)) * Divider;
+   Imaginary := (fAB[1] * (1 - fAB[3])
+                + 2 * cw * fAB[0] * (1 - fAB[3])) * sqrt(1 - sqr(cw)) * Divider;
+   for i := 1 to (fOrder div 2) - 1 do
+    begin
+     Divider   := 1 / ( sqr(fAB[4*i+3]) - 2 * fAB[4*i+3] + sqr(fAB[4*i+2]) + 1
+                + 2 * cw * (fAB[4*i+2] * (fAB[4*i+3] + 1) + 2 * cw * fAB[4*i+3]));
+     cmplx.Re  := (fAB[4*i+0] + fAB[4*i+1] * fAB[4*i+2] + fAB[4*i+0] * fAB[4*i+3]
+                 + cw * (fAB[4*i+1] * (1 + fAB[4*i+3]) + fAB[4*i+2] * 2 * fAB[4*i+0])
+                 + (2*sqr(cw)-1) * fAB[4*i+0] * (fAB[4*i+3] + 1)) * Divider;
+     cmplx.Im := (fAB[4*i+1] * (1 - fAB[4*i+3])
+                 + 2 * cw * (fAB[4*i+0] - fAB[4*i+0] * fAB[4*i+3])) * sqrt(1 - sqr(cw)) * Divider;
+     ComplexMultiplyInplace(Real, Imaginary, cmplx.Re, cmplx.Im);
+    end;
+  end;
+end;
+
+procedure TButterworthFilter.Complex(Frequency: Double; out Real, Imaginary: Single);
+var cmplx : TComplexDouble;
+begin
+ Complex(Frequency, cmplx.Re, cmplx.Im);
+ Real := cmplx.Re;
+ Imaginary := cmplx.Im;
+end;
+
 function TButterworthFilter.MagnitudeSquared(Frequency: Double): Double;
 begin
  Result:=1;
@@ -162,6 +228,13 @@ end;
 function TButterworthFilter.MagnitudeLog10(Frequency: Double): Double;
 begin
  result:=20*Log10(MagnitudeSquared(Frequency));
+end;
+
+function TButterworthFilter.Phase(Frequency: Double): Double;
+var cmplx : TComplexDouble;
+begin
+ Complex(Frequency, cmplx.Re, cmplx.Im);
+ Result := ArcTan2(cmplx.Im, cmplx.Re);
 end;
 
 procedure TButterworthFilter.PopStates;
