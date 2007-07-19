@@ -53,7 +53,7 @@ begin
  with TSimpleLimiterDataModule(Owner) do
   begin
    Parameter[2] := Power(10, 0.01*SBAttack.Position);
-   LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 4) + ' ms';
+   LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
   end;
 end;
 
@@ -61,8 +61,8 @@ procedure TEditorForm.SBReleaseChange(Sender: TObject);
 begin
  with TSimpleLimiterDataModule(Owner) do
   begin
-   Parameter[3] := Power(10, 0.01*SBRelease.Position);
-   LbReleaseValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 4) + ' ms';
+   Parameter[3] := Power(10, 0.001*SBRelease.Position);
+   LbReleaseValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 5) + ' ms';
   end;
 end;
 

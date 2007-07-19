@@ -63,8 +63,8 @@ begin
   with EditorForm As TEditorForm do
    if SBRelease.Position <> Round(Value) then
     begin
-     SBRelease.Position := Round(100 * Log10(Value));
-     LbReleaseValue.Caption := '1 : ' + FloatToStrF(Value, ffGeneral, 4, 4);
+     SBRelease.Position := Round(1000 * Log10(Value));
+     LbReleaseValue.Caption := FloatToStrF(Value, ffGeneral, 4, 5) + ' ms';
     end;
 end;
 
@@ -78,7 +78,7 @@ begin
    if SBAttack.Position <> Round(100 * Log10(Value)) then
     begin
      SBAttack.Position := Round(100 * Log10(Value));
-     LbAttackValue.Caption := '1 : ' + FloatToStrF(Value, ffGeneral, 4, 4);
+     LbAttackValue.Caption := FloatToStrF(Value, ffGeneral, 4, 2) + ' ms';
     end;
 end;
 

@@ -13,6 +13,9 @@ object EditorForm: TEditorForm
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
+  DesignSize = (
+    252
+    160)
   PixelsPerInch = 96
   TextHeight = 13
   object LbThreshold: TLabel
@@ -24,12 +27,13 @@ object EditorForm: TEditorForm
     Caption = 'Threshold:'
   end
   object LbThresholdValue: TLabel
-    Left = 193
+    Left = 160
     Top = 8
-    Width = 51
+    Width = 84
     Height = 13
     Margins.Bottom = 0
     Alignment = taRightJustify
+    Anchors = [akTop, akRight]
     AutoSize = False
     Caption = 'dB'
   end
@@ -42,12 +46,13 @@ object EditorForm: TEditorForm
     Caption = 'Ratio:'
   end
   object LbRatioValue: TLabel
-    Left = 193
+    Left = 160
     Top = 46
-    Width = 51
+    Width = 84
     Height = 13
     Margins.Bottom = 0
     Alignment = taRightJustify
+    Anchors = [akTop, akRight]
     AutoSize = False
   end
   object LbAttack: TLabel
@@ -59,12 +64,13 @@ object EditorForm: TEditorForm
     Caption = 'Attack:'
   end
   object LbAttackValue: TLabel
-    Left = 193
+    Left = 168
     Top = 84
-    Width = 51
+    Width = 76
     Height = 13
     Margins.Bottom = 0
     Alignment = taRightJustify
+    Anchors = [akTop, akRight]
     AutoSize = False
   end
   object LbRelease: TLabel
@@ -76,12 +82,13 @@ object EditorForm: TEditorForm
     Caption = 'Release:'
   end
   object LbReleaseValue: TLabel
-    Left = 193
+    Left = 160
     Top = 122
-    Width = 51
+    Width = 84
     Height = 13
     Margins.Bottom = 0
     Alignment = taRightJustify
+    Anchors = [akTop, akRight]
     AutoSize = False
   end
   object SBThreshold: TScrollBar
@@ -89,6 +96,7 @@ object EditorForm: TEditorForm
     Top = 24
     Width = 236
     Height = 16
+    Anchors = [akLeft, akTop, akRight]
     Max = 0
     Min = -96
     PageSize = 0
@@ -101,6 +109,7 @@ object EditorForm: TEditorForm
     Top = 62
     Width = 236
     Height = 16
+    Anchors = [akLeft, akTop, akRight]
     Max = 200
     PageSize = 0
     TabOrder = 1
@@ -111,6 +120,7 @@ object EditorForm: TEditorForm
     Top = 100
     Width = 236
     Height = 16
+    Anchors = [akLeft, akTop, akRight]
     Max = 300
     Min = -200
     PageSize = 0
@@ -122,10 +132,13 @@ object EditorForm: TEditorForm
     Top = 138
     Width = 236
     Height = 16
-    Max = 370
-    Min = 70
+    Anchors = [akLeft, akTop, akRight]
+    LargeChange = 100
+    Max = 3699
+    Min = 699
     PageSize = 0
-    Position = 70
+    Position = 700
+    SmallChange = 10
     TabOrder = 3
     OnChange = SBReleaseChange
   end
