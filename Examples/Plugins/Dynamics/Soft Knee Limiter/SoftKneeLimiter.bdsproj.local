@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2007.07.02 01:48:24.234.pas,C:\ITA\Projects\VSTPack\Examples\Plugins\Dynamics\EditorFrm.pas=C:\ITA\Projects\VSTPack\Examples\Plugins\EditorFrm.pas</Transaction>
+    <Transaction>2007.07.02 01:48:24.234.dfm,C:\ITA\Projects\VSTPack\Examples\Plugins\Dynamics\EditorFrm.dfm=C:\ITA\Projects\VSTPack\Examples\Plugins\EditorFrm.dfm</Transaction>
+    <Transaction>2007.07.02 01:48:44.890.bdsproj,C:\ITA\Projects\VSTPack\Examples\Plugins\Dynamics\SoftKneeLimiter.bdsproj=C:\ITA\Projects\VSTPack\Examples\Plugins\Dynamics\SoftKneeLimiter.bdsproj</Transaction>
+    <Transaction>2007.07.02 01:48:51.109.pas,C:\ITA\Projects\VSTPack\Examples\Plugins\EditorFrm.pas=C:\ITA\Projects\VSTPack\Examples\Plugins\Dynamics\EditorFrm.pas</Transaction>
+    <Transaction>2007.07.02 01:48:51.109.dfm,C:\ITA\Projects\VSTPack\Examples\Plugins\EditorFrm.dfm=C:\ITA\Projects\VSTPack\Examples\Plugins\Dynamics\EditorFrm.dfm</Transaction>
+  </Transactions>
+</BorlandProject>
