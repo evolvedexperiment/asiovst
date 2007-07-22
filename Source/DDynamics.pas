@@ -14,7 +14,6 @@ type
     procedure CalculateAttackFactor;
     procedure CalculateDecayFactor;
     procedure CalculateThreshold;
-    function GetThreshold: Double;
   protected
     fPeak          : Double;
     fLevel         : Double;
@@ -48,7 +47,6 @@ type
 
   TGate = class(TDynamics)
   private
-    fGainReductionFactor : Double;
     procedure SetHold(const Value: Double);
     procedure SetRange(const Value: Double);
     function GetHighCut: Double;
@@ -106,9 +104,20 @@ type
   published
   end;
 
+  TSoftKneeLimiter = class(TSimpleLimiter)
+  private
+    fSoftKnee: Double;
+    procedure SetSoftKnee(const Value: Double);
+  public
+    constructor Create; override;
+    function ProcessSample(Input : Double):Double; override;
+  published
+    property SoftKnee : Double read fSoftKnee write SetSoftKnee;
+  end;
+
 implementation
 
-uses DDSPBase;
+uses Math, DDSPBase;
 
 { TDynamics }
 
@@ -134,15 +143,10 @@ begin
   CalculateDecayFactor;
 end;
 
-function TDynamics.GetThreshold: Double;
-begin
-  Result := Amp_to_dB(fThreshold)
-end;
-
 procedure TDynamics.CalculateAttackFactor;
 begin
   if fAttack = 0 then fAttackFactor := 0
-  else fAttackFactor := exp( -ln2 / (fAttack * 0.001 * SampleRate));
+  else fAttackFactor := 1 - exp( -ln2 / (fAttack * 0.001 * SampleRate));
 end;
 
 procedure TDynamics.CalculateDecayFactor;
@@ -225,25 +229,6 @@ begin
   fRatio := Value;
 end;
 
-{ TSimpleLimiter }
-
-constructor TSimpleLimiter.Create;
-begin
-  inherited;
-
-end;
-
-function TSimpleLimiter.ProcessSample(Input: Double): Double;
-begin
- if abs(Input)>fPeak
-  then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
-  else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
- if fPeak > fThreshold
-  then fGain := (dB_to_Amp((1 - fRatio)*fThresholddB + fRatio * (Amp_to_dB(fPeak)))) / fPeak
-  else fGain := 1;
- result := fGain * Input;
-end;
-
 { TGate }
 
 constructor TGate.Create;
@@ -282,11 +267,21 @@ end;
 
 function TGate.ProcessSample(Input: Double): Double;
 begin
- if abs(Input)>fThreshold
-  then fGainReductionFactor := 1  + (fGainReductionFactor - 1) * fAttackFactor
-  else fGainReductionFactor := fGainReductionFactor * fDecayFactor;
+ if abs(Input)>fPeak
+  then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
+  else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
 
- fGain := fRangeFactor + (1-fRangeFactor) * fGainReductionFactor;
+ if fPeak < fThreshold
+  then fGain := 1
+  else fGain := Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1);
+
+(*
+ if abs(Input)>fThreshold
+  then fGain := 1  + (fGain - 1) * fAttackFactor
+  else fGain := fGain * fDecayFactor;
+*)
+
+ fGain := fRangeFactor + (1-fRangeFactor) * fGain;
  result := Input * fGain;
 end;
 
@@ -342,6 +337,52 @@ begin
   CalculateHoldSamples;
   fLowCut.SampleRate := Value;
   fHighCut.SampleRate := Value;
+end;
+
+{ TSimpleLimiter }
+
+constructor TSimpleLimiter.Create;
+begin
+  inherited;
+
+end;
+
+function TSimpleLimiter.ProcessSample(Input: Double): Double;
+begin
+ if abs(Input)>fPeak
+  then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
+  else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
+
+ if fPeak < fThreshold
+  then fGain := 1
+  else fGain := Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1);
+
+ result := fGain * Input;
+end;
+
+{ TSoftKneeLimiter }
+
+constructor TSoftKneeLimiter.Create;
+begin
+ inherited;
+ fSoftKnee := 1;
+end;
+
+function TSoftKneeLimiter.ProcessSample(Input: Double): Double;
+var InternalRatio, Knee : Double;
+begin
+ if abs(Input)>fPeak
+  then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
+  else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
+ Knee := 0.5 *(1 + Tanh2c(fSoftKnee * log10(fPeak / fThreshold)));
+ InternalRatio := 1 + Knee * (fRatio - 1);
+ fGain := Power(fThreshold, 1 - InternalRatio) * Power(fPeak, InternalRatio - 1);
+ result := fGain * Input;
+end;
+
+procedure TSoftKneeLimiter.SetSoftKnee(const Value: Double);
+begin
+  fSoftKnee := Value;
 end;
 
 end.
