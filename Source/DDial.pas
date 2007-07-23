@@ -86,6 +86,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
+    property Enabled;
     property Align;
     property Anchors;
     property Font;

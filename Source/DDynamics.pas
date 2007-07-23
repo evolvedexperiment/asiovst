@@ -7,8 +7,6 @@ uses DButterworthFilter;
 type
   TDynamics = class
   private
-    procedure SetThreshold(const Value: Double);
-    procedure SetRatio(const Value: Double);
     procedure SetAttack(const Value: Double);
     procedure SetDecay(const Value: Double);
     procedure CalculateAttackFactor;
@@ -16,6 +14,7 @@ type
     procedure CalculateThreshold;
   protected
     fPeak          : Double;
+    fGain          : Double;
     fLevel         : Double;
     fRatio         : Double;
     fSampleRate    : Double;
@@ -27,6 +26,8 @@ type
     fDecayFactor   : Double;
     fAttackFactor  : Double;
     procedure SetSampleRate(const Value: Double); virtual;
+    procedure SetThreshold(const Value: Double); virtual;
+    procedure SetRatio(const Value: Double); virtual;
   public
     function ProcessSample(Input : Double):Double; virtual; abstract;
     constructor Create; virtual;
@@ -55,7 +56,6 @@ type
     procedure SetLowCut(const Value: Double);
     procedure SetKnee(const Value: Double);
   protected
-    fGain        : Double;
     fHold        : Double;
     fKnee        : Double;
     fRange       : Double;
@@ -84,10 +84,12 @@ type
 
   TSimpleCompressor = class(TDynamics)
   private
-    fRatio: Double;
-    procedure SetRatio(const Value: Double);
+    fRatio       : Double;
+    fMakeUpGain  : Array [0..1] of Double;
+    procedure RatioThresholdChanged;
   protected
-    fGainFaktor: Double;
+    procedure SetThreshold(const Value: Double); override;
+    procedure SetRatio(const Value: Double); override;
   public
     constructor Create; override;
     function ProcessSample(Input : Double):Double; override;
@@ -97,11 +99,14 @@ type
 
   TSimpleLimiter = class(TDynamics)
   private
-    fGain        : Double;
+    fThresholdRatioFactor : Double;
+    procedure RatioThresholdChanged;
+  protected
+    procedure SetRatio(const Value: Double); override;
+    procedure SetThreshold(const Value: Double); override;
   public
     constructor Create; override;
     function ProcessSample(Input : Double):Double; override;
-  published
   end;
 
   TSoftKneeLimiter = class(TSimpleLimiter)
@@ -219,14 +224,35 @@ end;
 
 function TSimpleCompressor.ProcessSample(Input: Double): Double;
 begin
-  if Input > Threshold
-    then result := Input * fGainFaktor
-    else result := Input;
+ if abs(Input)>fPeak
+  then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
+  else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
+
+ if fPeak < fThreshold
+  then fGain := fMakeUpGain[0]
+  else fGain := fMakeUpGain[1] * Power(fPeak, fRatio - 1);
+
+ result := fGain * Input;
 end;
 
 procedure TSimpleCompressor.SetRatio(const Value: Double);
 begin
-  fRatio := Value;
+ inherited;
+ RatioThresholdChanged;
+end;
+
+procedure TSimpleCompressor.SetThreshold(const Value: Double);
+begin
+ inherited;
+ RatioThresholdChanged;
+end;
+
+procedure  TSimpleCompressor.RatioThresholdChanged;
+var dbl : Double;
+begin
+ dbl := Power(fThreshold, 1 - fRatio);
+ fMakeUpGain[0] := 1 / (dbl * Power(1, fRatio - 1));
+ fMakeUpGain[1] := fMakeUpGain[0] * dbl;
 end;
 
 { TGate }
@@ -267,21 +293,14 @@ end;
 
 function TGate.ProcessSample(Input: Double): Double;
 begin
- if abs(Input)>fPeak
-  then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
-  else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
+ if abs(fSideChain)>fPeak
+  then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
+  else fPeak := abs(fSideChain) + (fPeak - abs(fSideChain)) * fDecayFactor;
 
  if fPeak < fThreshold
-  then fGain := 1
-  else fGain := Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1);
+  then fGain := Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1) * (1-fRangeFactor) + fRangeFactor
+  else fGain := fRangeFactor + (1-fRangeFactor);
 
-(*
- if abs(Input)>fThreshold
-  then fGain := 1  + (fGain - 1) * fAttackFactor
-  else fGain := fGain * fDecayFactor;
-*)
-
- fGain := fRangeFactor + (1-fRangeFactor) * fGain;
  result := Input * fGain;
 end;
 
@@ -348,6 +367,7 @@ begin
 end;
 
 function TSimpleLimiter.ProcessSample(Input: Double): Double;
+{$IFNDEF PUREPASCAL}
 begin
  if abs(Input)>fPeak
   then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
@@ -355,9 +375,89 @@ begin
 
  if fPeak < fThreshold
   then fGain := 1
-  else fGain := Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1);
+  else fGain := fThresholdRatioFactor * Power(fPeak, fRatio - 1);
 
  result := fGain * Input;
+end;
+{$ELSE}
+asm
+ fld Input                        // Input
+ fabs                             // abs(Input)
+ fld [self.fPeak].Double          // fPeak, abs(Input)
+ mov edx, eax                     // edx = self
+ fcom st(1)                       // fPeak, abs(Input)
+ fstsw ax                         // ax = FPU Status Word
+ sahf                             // ax -> EFLAGS register
+ jbe @Attack                      // goto Attack
+@Decay:
+ fsub st(0), st(1)                // fPeak - abs(Input), abs(Input)
+ fmul [edx.fDecayFactor].Double   // (fPeak - abs(Input)) * fDecayFactor, abs(Input)
+ faddp                            // (fPeak - abs(Input)) * fDecayFactor + abs(Input)
+ fst [self.fPeak].Double          // fPeak := (fPeak - abs(Input)) * fDecayFactor + abs(Input)
+ jmp @EndAttack
+@Attack:
+ fxch                             // abs(Input), fPeak
+ fsub st(0), st(1)                // abs(Input) - fPeak, fPeak
+ fmul [edx.fAttackFactor].Double  // (abs(Input) - fPeak) * fAttackFactor, fPeak
+ faddp                            // (abs(Input) - fPeak) * fAttackFactor + fPeak
+ fst  [self.fPeak].Double         // fPeak := (abs(Input) - fPeak) * fAttackFactor + fPeak
+@EndAttack:
+
+ fld [edx.fThreshold].Double      // fThreshold, fPeak
+ fcom st(1)                       // fThreshold, fPeak
+ fstsw ax                         // ax = FPU Status Word
+ sahf                             // ax -> EFLAGS register
+ fstp st(0)                       // fPeak
+ jbe @Limit                       // goto Limit
+ fstp st(0)                       // --
+ fld Input                        // Input
+ jmp @Exit
+@Limit:
+
+ fld [edx.fRatio].Double          // fRatio, fPeak
+ fld1                             // 1, fRatio, fPeak
+ fsubp                            // fRatio - 1, fPeak
+ fxch
+ fldln2                           // {
+ fxch                             //
+ fyl2x                            //
+ fxch                             //
+ fmulp   st(1), st                //  P
+ fldl2e                           //  O
+ fmulp   st(1), st                //  W
+ fld     st(0)                    //  E
+ frndint                          //  R
+ fsub    st(1), st                //
+ fxch    st(1)                    //
+ f2xm1                            //
+ fld1                             //
+ faddp   st(1), st                //
+ fscale                           // }
+ fstp    st(1)
+
+ fmul [edx.fThresholdRatioFactor].Double // fThresholdRatioFactor * Power(fPeak, fRatio - 1)
+ fmul Input                              // Input * fThresholdRatioFactor * Power(fPeak, fRatio - 1)
+
+
+@Exit:
+end;
+{$ENDIF}
+
+procedure TSimpleLimiter.SetRatio(const Value: Double);
+begin
+ inherited;
+ RatioThresholdChanged;
+end;
+
+procedure TSimpleLimiter.SetThreshold(const Value: Double);
+begin
+ inherited;
+ RatioThresholdChanged;
+end;
+
+procedure TSimpleLimiter.RatioThresholdChanged;
+begin
+ fThresholdRatioFactor := Power(fThreshold, 1 - fRatio);
 end;
 
 { TSoftKneeLimiter }
