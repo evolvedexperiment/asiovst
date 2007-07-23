@@ -1,4 +1,4 @@
-object SimpleLimiterDataModule: TSimpleLimiterDataModule
+object SimpleCompressorDataModule: TSimpleCompressorDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy

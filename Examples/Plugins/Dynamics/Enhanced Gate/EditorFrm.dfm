@@ -296,6 +296,7 @@ object EditorForm: TEditorForm
       Width = 49
       Height = 17
       Caption = 'DUCK'
+      Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -311,6 +312,7 @@ object EditorForm: TEditorForm
       Width = 82
       Height = 17
       Caption = 'STEREOLINK'
+      Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -504,7 +506,7 @@ object EditorForm: TEditorForm
       Top = 18
       Width = 48
       Height = 48
-      Position = 3.970000028610230000
+      Position = 3.970000028610229000
       Min = 1.000000000000000000
       Max = 10.000000000000000000
       ColorCircle = 6057334
@@ -524,6 +526,7 @@ object EditorForm: TEditorForm
       Alignment = taCenter
       AutoSize = False
       Caption = 'KNEE'
+      Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -9
@@ -539,8 +542,8 @@ object EditorForm: TEditorForm
       Position = 3.000000000000000000
       Min = 1.000000000000000000
       Max = 6.000000000000000000
-      ColorCircle = 6057334
-      ColorLine = clBlack
+      ColorCircle = 9416640
+      ColorLine = 6057334
       StitchKind = skHorizontal
       PointerAngles.Start = 210
       PointerAngles.Range = 300
@@ -568,7 +571,7 @@ object EditorForm: TEditorForm
       Top = 18
       Width = 48
       Height = 48
-      Position = -40.000000000000000000
+      Position = -0.009999999776482582
       Min = -80.000000000000000000
       Max = -0.009999999776482582
       ColorCircle = 6057334
@@ -603,6 +606,7 @@ object EditorForm: TEditorForm
       Height = 19
       BiDiMode = bdRightToLeft
       Color = clBlack
+      Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -9

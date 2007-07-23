@@ -84,8 +84,8 @@ type
 
   TSimpleCompressor = class(TDynamics)
   private
-    fRatio       : Double;
     fMakeUpGain  : Array [0..1] of Double;
+    fSideChain   : Double;
     procedure RatioThresholdChanged;
   protected
     procedure SetThreshold(const Value: Double); override;
@@ -93,6 +93,7 @@ type
   public
     constructor Create; override;
     function ProcessSample(Input : Double):Double; override;
+    procedure InputSideChain(Input : Double); virtual;
   published
     property Ratio : Double read fRatio write SetRatio;
   end;
@@ -222,17 +223,23 @@ begin
   fRatio := 1;
 end;
 
+procedure TSimpleCompressor.InputSideChain(Input: Double);
+begin
+ fSideChain := Input;
+end;
+
 function TSimpleCompressor.ProcessSample(Input: Double): Double;
 begin
- if abs(Input)>fPeak
-  then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
-  else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
+ if abs(fSideChain)>fPeak
+  then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
+  else fPeak := abs(fSideChain) + (fPeak - abs(fSideChain)) * fDecayFactor;
 
  if fPeak < fThreshold
   then fGain := fMakeUpGain[0]
   else fGain := fMakeUpGain[1] * Power(fPeak, fRatio - 1);
 
  result := fGain * Input;
+ fSideChain := Input;
 end;
 
 procedure TSimpleCompressor.SetRatio(const Value: Double);
