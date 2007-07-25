@@ -315,7 +315,7 @@ type
 
   // defined events ////////////////////////////////////////////////////////////
   PVstMidiEvent = ^TVstMidiEvent;
-  TVstMidiEvent = packed record             // to be casted from a VstEvent
+  TVstMidiEvent = record                    // to be casted from a VstEvent
     EventType       : TVSTEventType;        // kVstMidiType
     ByteSize        : LongInt;              // 24
     DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
