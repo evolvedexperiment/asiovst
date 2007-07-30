@@ -1733,7 +1733,7 @@ begin
   then str:='undefined'
   else
    begin
-    str:=FParameterProperties[Index].Units;
+    str := FParameterProperties[Index].Units;
     if Assigned(FParameterProperties[Index].FOnCPL)
      then FParameterProperties[Index].FOnCPL(Self,Index,str);
    end;
@@ -2238,7 +2238,7 @@ procedure TCustomVstParameterProperty.AssignTo(Dest: TPersistent);
 begin
  if Dest is TCustomVstParameterProperty then with TCustomVstParameterProperty(Dest) do
  try
-  Units:=Self.Units;
+  Units := Self.Units;
   DisplayName := Self.DisplayName;
  except
   inherited;

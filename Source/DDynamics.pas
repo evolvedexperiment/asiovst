@@ -2,16 +2,14 @@ unit DDynamics;
 
 interface
 
-uses DButterworthFilter;
+uses DDSPBase, DButterworthFilter;
 
 type
   TDynamics = class
   private
     procedure SetAttack(const Value: Double);
     procedure SetDecay(const Value: Double);
-    procedure CalculateAttackFactor;
-    procedure CalculateDecayFactor;
-    procedure CalculateThreshold;
+    function GetGainReductiondB: Double;
   protected
     fPeak          : Double;
     fGain          : Double;
@@ -28,6 +26,9 @@ type
     procedure SetSampleRate(const Value: Double); virtual;
     procedure SetThreshold(const Value: Double); virtual;
     procedure SetRatio(const Value: Double); virtual;
+    procedure CalculateAttackFactor; virtual;
+    procedure CalculateDecayFactor; virtual;
+    procedure CalculateThreshold; virtual;
   public
     function ProcessSample(Input : Double):Double; virtual; abstract;
     constructor Create; virtual;
@@ -37,6 +38,8 @@ type
     property Attack : Double read fAttack write SetAttack;            // in ms
     property Decay : Double read fDecay write SetDecay;         // in ms
     property SampleRate : Double read fSampleRate write SetSampleRate;
+    property GainReductionFactor : Double read fGain; // in dB
+    property GainReductiondB : Double read GetGainReductiondB; // in dB
   end;
 
   TSimpleGate = class(TDynamics)
@@ -83,19 +86,54 @@ type
   end;
 
   TSimpleCompressor = class(TDynamics)
-  private
-    fMakeUpGain  : Array [0..1] of Double;
-    fSideChain   : Double;
-    procedure RatioThresholdChanged;
   protected
+    fSideChain   : Double;
+    fMakeUpGain  : Array [0..1] of Double;
+    procedure RatioThresholdChanged; virtual;
     procedure SetThreshold(const Value: Double); override;
     procedure SetRatio(const Value: Double); override;
   public
     constructor Create; override;
     function ProcessSample(Input : Double):Double; override;
     procedure InputSideChain(Input : Double); virtual;
+  end;
+
+  TSimpleRMSCompressor = class(TSimpleCompressor)
+  private
+    fRMSTime    : Double;
+    procedure SetRMSTime(const Value: Double);
+    procedure UpdateRMSBuffer;
+  protected
+    fRMSSize    : Integer;
+    fRMSPos     : Integer;
+    fRMSFactor  : Double;
+    fRMSBuffer  : TDoubleDynArray;
+    fCurrentRMS : Double;
+    procedure SetSampleRate(const Value: Double); override;
+  public
+    constructor Create; override;
+    function ProcessSample(Input : Double):Double; override;
   published
-    property Ratio : Double read fRatio write SetRatio;
+    property RMSTime : Double read fRMSTime write SetRMSTime;  // in ms
+  end;
+
+  TCompressor = class(TSimpleRMSCompressor)
+  private
+    function GetHighCut: Double;
+    function GetLowCut: Double;
+    procedure SetHighCut(const Value: Double);
+    procedure SetLowCut(const Value: Double);
+  protected
+    fLowCut      : TButterworthHP;
+    fHighCut     : TButterworthLP;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure InputSideChain(Input : Double); override;
+    function ProcessSample(Input : Double):Double; override;
+  published
+    property SideChainLowCut : Double read GetLowCut write SetLowCut;     // in Hz
+    property SideChainHighCut : Double read GetHighCut write SetHighCut;  // in Hz
   end;
 
   TSimpleLimiter = class(TDynamics)
@@ -123,7 +161,7 @@ type
 
 implementation
 
-uses Math, DDSPBase;
+uses SysUtils, Math;
 
 { TDynamics }
 
@@ -133,6 +171,8 @@ begin
   begin
     fSampleRate := Value;
     fSampleRateRez := 1 / fSampleRate;
+    CalculateAttackFactor;
+    CalculateDecayFactor;
   end;
 end;
 
@@ -147,6 +187,11 @@ begin
   CalculateThreshold;
   CalculateAttackFactor;
   CalculateDecayFactor;
+end;
+
+function TDynamics.GetGainReductiondB: Double;
+begin
+ result := Amp_to_dB(fGain);
 end;
 
 procedure TDynamics.CalculateAttackFactor;
@@ -213,53 +258,6 @@ begin
   if abs(Input)<fThreshold
    then Result := 0
    else Result := Input;
-end;
-
-{ TSimpleCompressor }
-
-constructor TSimpleCompressor.Create;
-begin
-  inherited;
-  fRatio := 1;
-end;
-
-procedure TSimpleCompressor.InputSideChain(Input: Double);
-begin
- fSideChain := Input;
-end;
-
-function TSimpleCompressor.ProcessSample(Input: Double): Double;
-begin
- if abs(fSideChain)>fPeak
-  then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
-  else fPeak := abs(fSideChain) + (fPeak - abs(fSideChain)) * fDecayFactor;
-
- if fPeak < fThreshold
-  then fGain := fMakeUpGain[0]
-  else fGain := fMakeUpGain[1] * Power(fPeak, fRatio - 1);
-
- result := fGain * Input;
- fSideChain := Input;
-end;
-
-procedure TSimpleCompressor.SetRatio(const Value: Double);
-begin
- inherited;
- RatioThresholdChanged;
-end;
-
-procedure TSimpleCompressor.SetThreshold(const Value: Double);
-begin
- inherited;
- RatioThresholdChanged;
-end;
-
-procedure  TSimpleCompressor.RatioThresholdChanged;
-var dbl : Double;
-begin
- dbl := Power(fThreshold, 1 - fRatio);
- fMakeUpGain[0] := 1 / (dbl * Power(1, fRatio - 1));
- fMakeUpGain[1] := fMakeUpGain[0] * dbl;
 end;
 
 { TGate }
@@ -363,6 +361,164 @@ begin
   CalculateHoldSamples;
   fLowCut.SampleRate := Value;
   fHighCut.SampleRate := Value;
+end;
+
+{ TSimpleCompressor }
+
+constructor TSimpleCompressor.Create;
+begin
+  inherited;
+  fPeak := 0;
+  fRatio := 1;
+  RatioThresholdChanged;
+end;
+
+procedure TSimpleCompressor.InputSideChain(Input: Double);
+begin
+ fSideChain := Input;
+end;
+
+function TSimpleCompressor.ProcessSample(Input: Double): Double;
+begin
+ if abs(fSideChain)>fPeak
+  then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
+  else fPeak := abs(fSideChain) + (fPeak - abs(fSideChain)) * fDecayFactor;
+
+ if fPeak < fThreshold
+  then fGain := fMakeUpGain[0]
+  else fGain := fMakeUpGain[1] * Power(fPeak, fRatio - 1);
+
+ result := fGain * Input;
+ fSideChain := Input;
+end;
+
+procedure TSimpleCompressor.SetRatio(const Value: Double);
+begin
+ inherited;
+ RatioThresholdChanged;
+end;
+
+procedure TSimpleCompressor.SetThreshold(const Value: Double);
+begin
+ inherited;
+ RatioThresholdChanged;
+end;
+
+procedure  TSimpleCompressor.RatioThresholdChanged;
+var dbl : Double;
+begin
+ dbl := Power(fThreshold, 1 - fRatio);
+ fMakeUpGain[0] := 1 / (dbl * Power(1, fRatio - 1));
+ fMakeUpGain[1] := fMakeUpGain[0] * dbl;
+end;
+
+{ TSimpleRMSCompressor }
+
+constructor TSimpleRMSCompressor.Create;
+begin
+ inherited;
+ fCurrentRMS := 0;
+ fRMSTime := 10;
+ UpdateRMSBuffer;
+end;
+
+function TSimpleRMSCompressor.ProcessSample(Input: Double): Double;
+begin
+ fCurrentRMS := fCurrentRMS - fRMSBuffer[fRMSPos] + sqr(Input);
+ fRMSBuffer[fRMSPos] := sqr(Input);
+ if fRMSPos < fRMSSize then inc(fRMSPos) else fRMSPos := 0;
+ fSideChain := Sqrt(fCurrentRMS * fRMSFactor);
+ Result := inherited ProcessSample(Input);
+end;
+
+procedure TSimpleRMSCompressor.UpdateRMSBuffer;
+var i : Integer;
+begin
+ i := Round(fSampleRate * 0.001 * fRMSTime);
+ SetLength(fRMSBuffer, i);
+ if i > fRMSSize then FillChar(fRMSBuffer[fRMSSize], (i - fRMSSize) * SizeOf(Double), 0);
+ fRMSSize := i; fRMSFactor := 1 / fRMSSize;
+ if fRMSPos > fRMSSize then fRMSPos := 0;
+end;
+
+procedure TSimpleRMSCompressor.SetRMSTime(const Value: Double);
+begin
+ if fRMSTime <> Value then
+  begin
+   fRMSTime := Value;
+   UpdateRMSBuffer;
+  end;
+end;
+
+procedure TSimpleRMSCompressor.SetSampleRate(const Value: Double);
+begin
+ inherited;
+ UpdateRMSBuffer;
+end;
+
+{ TCompressor }
+
+constructor TCompressor.Create;
+begin
+ inherited;
+ fLowCut  := TButterworthHP.Create;
+ fHighCut := TButterworthLP.Create;
+ fLowCut.Frequency := 20;
+ fHighCut.Frequency := 20000;
+end;
+
+destructor TCompressor.Destroy;
+begin
+ fLowCut.Free;
+ fHighCut.Free;
+ inherited;
+end;
+
+function TCompressor.GetHighCut: Double;
+begin
+ result := fHighCut.Frequency;
+end;
+
+function TCompressor.GetLowCut: Double;
+begin
+ result := fLowCut.Frequency;
+end;
+
+procedure TCompressor.InputSideChain(Input: Double);
+begin
+ Input := fHighCut.ProcessSample(fLowCut.ProcessSample(Input));
+// fSideChain := Input;
+ fCurrentRMS := fCurrentRMS - fRMSBuffer[fRMSPos] + sqr(Input);
+ if fCurrentRMS < 0 then fCurrentRMS := 0;
+ fRMSBuffer[fRMSPos] := sqr(Input);
+ if fRMSPos < fRMSSize then inc(fRMSPos) else fRMSPos := 0;
+ fSideChain := Sqrt(fCurrentRMS * fRMSFactor);
+end;
+
+function TCompressor.ProcessSample(Input: Double): Double;
+begin
+ if abs(fSideChain)>fPeak
+  then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
+  else fPeak := abs(fSideChain) + (fPeak - abs(fSideChain)) * fDecayFactor;
+
+ if fPeak < fThreshold
+  then fGain := fMakeUpGain[0]
+  else fGain := fMakeUpGain[1] * Power(fPeak, fRatio - 1);
+
+ result := fGain * Input;
+ fSideChain := abs(result);
+end;
+
+procedure TCompressor.SetHighCut(const Value: Double);
+begin
+ if fHighCut.Frequency <> Value
+  then fHighCut.Frequency := Value;
+end;
+
+procedure TCompressor.SetLowCut(const Value: Double);
+begin
+ if fLowCut.Frequency <> Value
+  then fLowCut.Frequency := Value;
 end;
 
 { TSimpleLimiter }

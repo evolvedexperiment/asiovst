@@ -412,6 +412,7 @@ end;
 function AudioMasterCallback(effect: PVSTEffect; opcode : TAudioMasterOpcode; index,value: longint; ptr: pointer; opt: Single): longint; cdecl;
 var thePlug  : TVstPlugin;
     PlugNr,i : Integer;
+    str      : string;
 begin
  try
    thePlug := nil;
@@ -543,7 +544,9 @@ begin
                                               else result := 0;
     audioMasterVendorSpecific              : if assigned(thePlug) then
                                               if assigned(thePlug.FOnVendorSpecific)
-                                               then thePlug.FOnVendorSpecific(TAudiomasterOpcode(opcode), index, value, ptr, opt);
+                                               then result := thePlug.FOnVendorSpecific(TAudiomasterOpcode(opcode), index, value, ptr, opt)
+                                               else result := 0
+                                              else result := 0;
     audioMasterSetIcon                     : {$IFDEF Debug} showmessage('TODO: audioMasterSetIcon, void* in <ptr>, format not defined yet, Could be a CBitmap .') {$ENDIF Debug};
     audioMasterCanDo                       : begin
                                               if shortstring(PChar(ptr))='sendVstEvents' then Result := Integer(hcdSendVstEvents in FHostCanDos)
@@ -1441,6 +1444,17 @@ begin
 
      for i:=0 to FnumParams - 1 do
       begin
+       with TLabel.Create(Form) do
+        begin
+         Name := 'LbL'+IntToStr(i); Parent := Form; Caption := GetParamName(i)+':';
+         Height := 16; Alignment := taCenter; Left := 2; Top := 2+i*Height;
+        end;
+       with TLabel.Create(Form) do
+        begin
+         Name := 'LbV'+IntToStr(i); Parent := Form; Alignment := taCenter;
+         Height := 16; Left := Form.Width-Left-72; AutoSize:=False;
+         Alignment:=taCenter; Width:=65; Top := 2+i*Height;
+        end;
        with TScrollBar.Create(Form) do
         begin
          Name := 'ParamBar'+IntToStr(i); Parent := Form;
@@ -1449,20 +1463,10 @@ begin
          Height := 16; Top := 2+i*Height; Tag:=i;
          Left := wxw+2; Width := Form.Width-Left-72;
          Min := 0; Max := 1000; TabOrder := 3+i;
-         Position := round(Parameters[i]*1000);
+         Position := Round(1000 * Parameters[i]);
          OnChange := ListParamChange;
-       end;
-      with TLabel.Create(Form) do
-       begin
-        Name := 'LbL'+IntToStr(i); Parent := Form; Caption := GetParamName(i)+':';
-        Height := 16; Alignment := taCenter; Left := 2; Top := 2+i*Height;
-       end;
-      with TLabel.Create(Form) do
-       begin
-        Name := 'LbV'+IntToStr(i); Parent := Form; Caption := GetParamDisplay(i);
-        Height := 16; Alignment := taCenter; Left := Form.Width-Left-72;
-        AutoSize:=False; Alignment:=taCenter; Width:=65; Top := 2+i*Height;
-       end;
+         ListParamChange(GUIForm.FindComponent('ParamBar'+IntToStr(i)));
+        end;
       end;
      GUIForm.Visible:=True;
      FEditOpen:=True;
@@ -1472,13 +1476,39 @@ begin
 end;
 
 procedure TVstPlugin.ListParamChange(Sender: TObject);
-var lb : TLabel;
+var lb  : TLabel;
+    str : string;
+    i   : Integer;
 begin
  with (Sender As TScrollBar) do
   try
-   Parameters[Tag]:=Position*0.001;
+   Parameters[Tag] := Position * 0.001;
    lb:=TLabel(GUIForm.FindComponent('LbV'+IntToStr(Tag)));
-   if Assigned(lb) then lb.Caption:=GetParamDisplay(Tag);
+   if Assigned(lb) then
+    begin
+     if GetParamLabel(Tag)<>''
+      then str := GetParamDisplay(Tag) + ' ' + GetParamLabel(Tag)
+      else str := GetParamDisplay(Tag);
+     if Length(str) < 9
+      then lb.Caption := str
+      else
+       begin
+        str := GetParamDisplay(Tag);
+        if Pos('.', str)>0 then
+         begin
+          i := Length(str) - 1;
+          while str[i] = '0' do
+           begin
+            Delete(str, i, 1);
+            dec(i);
+           end;
+         end;
+        if GetParamLabel(Tag)<>''
+         then lb.Caption := str + ' ' + GetParamLabel(Tag)
+         else lb.Caption := str;
+        if Length(lb.Caption) > 9 then lb.Caption := str
+       end;
+    end;
   except
   end;
 end;
@@ -2022,7 +2052,9 @@ begin
    end
    else
     begin
-     @FMainFunction := GetProcAddress(FDLLHandle, 'main');
+     if Lowercase(ExtractFileExt(theDll)) = '.vst3'
+      then @FMainFunction := GetProcAddress(FDLLHandle, 'GetPluginFactory')
+      else @FMainFunction := GetProcAddress(FDLLHandle, 'main');
      if not Assigned(FMainFunction) then @FMainFunction := GetProcAddress(FDLLHandle, 'VSPPluginMain');
      if not Assigned(FMainFunction) then
       begin
