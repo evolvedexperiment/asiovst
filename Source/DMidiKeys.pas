@@ -262,22 +262,26 @@ begin
  if y<fBlackKeyHeight
   then
    begin
-    virtWidth:=Width*((7*NumOctaves)/(7*NumOctaves+1));
-    virtWidth:=virtWidth/(12*NumOctaves);
+    if fEndWithC
+     then virtWidth := Width / (7*NumOctaves + 1) * 7 * NumOctaves
+     else virtWidth := Width;
+    virtWidth := virtWidth / (12 * NumOctaves);
     Result:=BaseOctave*12+round(x/virtWidth-0.5);
    end
   else
    begin
-    i:=Round(x*(7*NumOctaves+1)/width-0.5);
-    o:=12*(i div 7);
+    if fEndWithC
+     then i := Round(x * (7 * NumOctaves + 1) / width - 0.5)
+     else i := Round(x * (7 * NumOctaves) / width - 0.5);
+    o := 12 * (i div 7);
     case (i mod 7) of
-     0: Result:=BaseOctave*12+o   ;
-     1: Result:=BaseOctave*12+o+ 2;
-     2: Result:=BaseOctave*12+o+ 4;
-     3: Result:=BaseOctave*12+o+ 5;
-     4: Result:=BaseOctave*12+o+ 7;
-     5: Result:=BaseOctave*12+o+ 9;
-     6: Result:=BaseOctave*12+o+11;
+     0: Result := BaseOctave * 12 + o     ;
+     1: Result := BaseOctave * 12 + o +  2;
+     2: Result := BaseOctave * 12 + o +  4;
+     3: Result := BaseOctave * 12 + o +  5;
+     4: Result := BaseOctave * 12 + o +  7;
+     5: Result := BaseOctave * 12 + o +  9;
+     6: Result := BaseOctave * 12 + o + 11;
      else raise Exception.Create('Oops');
     end;
    end;

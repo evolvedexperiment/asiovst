@@ -3,13 +3,13 @@ unit DVSTModule;
 interface
 
 {$I ASIOVST.INC}
-{$DEFINE UseDelphi}
+{.$DEFINE UseDelphi}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows,
   Messages, {$ENDIF} SysUtils, Forms, Classes, DDSPBase, DVSTEffect;
 
-{$IFDEF FPC} {.$DEFINE Debug} {$ENDIF}
+{$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
 type
@@ -17,8 +17,8 @@ type
   TParameterChangeEvent = procedure(Sender: TObject; const Index: Integer; var Value: Single) of object;
   TBlockSizeChangeEvent = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
-  TProcessAudioEvent = procedure(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer) of object;
-  TProcessDoubleEvent = procedure(const Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer) of object;
+  TProcessAudioEvent = procedure(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer) of object;
+  TProcessDoubleEvent = procedure(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer) of object;
   TOnDispatcherEvent = procedure (Sender: TObject; opCode: TDispatcherOpcode) of object;
   TGetVUEvent = procedure(var VU:Single) of object;
   TGetEditorEvent = procedure(Sender: TObject; var GUI: TForm) of object;
@@ -150,7 +150,7 @@ type
     procedure SetShortLabel(const Value: string);
   protected
     procedure AssignTo(Dest: TPersistent); override;
-    
+
     procedure SetDisplayName(const AValue: string); override;
     function GetDisplayName: string; override;
     procedure SetUnits(AUnits: string);
@@ -411,14 +411,14 @@ type
     procedure EditorClose; virtual;
     procedure EditorIdle; virtual;
     procedure ReadOnlyString(s: string); virtual;
-    procedure FOnBlockSaveProcess(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer); overload;
-    procedure FOnBlockSaveProcessReplacing(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer); overload;
-    procedure FOnProcessCopy(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer); overload;
-    procedure FOnProcessMute(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer); overload;
-    procedure FOnBlockSaveProcess(const Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer); overload;
-    procedure FOnBlockSaveProcessReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer); overload;
-    procedure FOnProcessCopy(const Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer); overload;
-    procedure FOnProcessMute(const Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer); overload;
+    procedure FOnBlockSaveProcess(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer); overload;
+    procedure FOnBlockSaveProcessReplacing(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer); overload;
+    procedure FOnProcessCopy(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer); overload;
+    procedure FOnProcessMute(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer); overload;
+    procedure FOnBlockSaveProcess(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer); overload;
+    procedure FOnBlockSaveProcessReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer); overload;
+    procedure FOnProcessCopy(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer); overload;
+    procedure FOnProcessMute(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer); overload;
     function GetHostProduct: string;
     function GetHostVendor: string;
   protected
@@ -584,9 +584,9 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
     procedure EditorPostUpdate; virtual;
-    procedure Process(Inputs, Outputs: PPSingle; sampleFrames: Integer); virtual;
-    procedure ProcessReplacing(Inputs, Outputs: PPSingle; sampleFrames: Integer); virtual;
-    procedure ProcessDoubleReplacing(Inputs, Outputs: PPDouble; sampleFrames: Integer); virtual;
+    procedure Process(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
+    procedure ProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
+    procedure ProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer); virtual;
     function GetChunk(var data: pointer; isPreset: Boolean): Integer; virtual;   // returns byteSize
     function SetChunk(data: pointer; byteSize: Integer; isPreset: Boolean): Integer; virtual;
 
@@ -821,9 +821,9 @@ function Opcode2String(opcode: TDispatcherOpcode): string;
 function DispatchEffectClass(Effect: PVSTEffect; opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
 function GetParameterClass(Effect: PVSTEffect; Index: Integer): Single; cdecl;
 procedure SetParameterClass(Effect: PVSTEffect; Index: Integer; Value: Single); cdecl;
-procedure ProcessClass(Effect: PVSTEffect; Inputs, Outputs: PPSingle; sampleframes: Integer); cdecl;
-procedure ProcessClassReplacing(Effect: PVSTEffect; Inputs, Outputs: PPSingle; sampleframes: Integer); cdecl;
-procedure ProcessClassDoubleReplacing(Effect: PVSTEffect; Inputs, Outputs: PPDouble; sampleframes: Integer); cdecl;
+procedure ProcessClass(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
+procedure ProcessClassReplacing(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
+procedure ProcessClassDoubleReplacing(Effect: PVSTEffect; Inputs, Outputs: PPDouble; SampleFrames: Integer); cdecl;
 
 function KeyCodeToInteger(VKC:TVstKeyCode):Integer;
 
@@ -1376,17 +1376,18 @@ begin
  FEffect.uniqueID:=FourCharToLong(fID[1], fID[2], fID[3], fID[4])
 end;
 
-procedure TCustomVSTModule.Process(Inputs, Outputs: PPSingle; sampleFrames: Integer);
+procedure TCustomVSTModule.Process(Inputs, Outputs: PPSingle; SampleFrames: Integer);
 var Ins  : TArrayOfSingleDynArray absolute Inputs;
     Outs : TArrayOfSingleDynArray absolute Outputs;
     OutsTmp: TArrayOfSingleDynArray;
     i, j: Integer;
 begin
 // fTempo := TempoAt(0) * 0.0001; // Get current bpm tempo from host
- SetLength(OutsTmp, FEffect.NumOutputs, sampleFrames);
- for j := 0 to FEffect.NumOutputs - 1 do FillChar(OutsTmp[j][0], sampleFrames*SizeOf(Single), 0);
- if Assigned(FOnProcessEx) then FOnProcessEx(Ins,Outs,SampleFrames);
- for i := 0 to sampleFrames - 1 do
+ SetLength(OutsTmp, FEffect.NumOutputs, SampleFrames);
+ for j := 0 to FEffect.NumOutputs - 1
+  do FillChar(OutsTmp[j, 0], SampleFrames*SizeOf(Single), 0);
+ if Assigned(FOnProcessEx) then FOnProcessEx(Ins, OutsTmp, SampleFrames);
+ for i := 0 to SampleFrames - 1 do
   for j := 0 to FEffect.NumOutputs - 1 do
    Outs[j, i] := Outs[j, i] + OutsTmp[j, i];
  if FMidiEvent.numEvents > 0 then
@@ -1396,7 +1397,7 @@ begin
   end;
 end;
 
-procedure TCustomVSTModule.ProcessReplacing(Inputs, Outputs: PPSingle; sampleFrames: Integer);
+procedure TCustomVSTModule.ProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
 var Ins  : TArrayOfSingleDynArray absolute Inputs;
     Outs : TArrayOfSingleDynArray absolute Outputs;
 begin
@@ -1409,7 +1410,7 @@ begin
   end;
 end;
 
-procedure TCustomVSTModule.ProcessDoubleReplacing(Inputs, Outputs: PPDouble; sampleFrames: Integer);
+procedure TCustomVSTModule.ProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer);
 var Ins  : TArrayOfDoubleDynArray absolute Inputs;
     Outs : TArrayOfDoubleDynArray absolute Outputs;
 begin
@@ -1422,32 +1423,32 @@ begin
   end;
 end;
 
-procedure TCustomVSTModule.FOnProcessCopy(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TCustomVSTModule.FOnProcessCopy(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
 var i,j: Integer;
 begin
- j:=numInputs;
- if numOutputs<numInputs then j:=numOutputs;
- for i:=0 to j-1 do Move(Inputs[i,0],Outputs[i,0],sampleframes*SizeOf(Single));
+ j:=numInputs; if numOutputs < numInputs then j := numOutputs;
+ for i:=0 to j-1 do Move(Inputs[i,0], Outputs[i,0], SampleFrames * SizeOf(Single));
 end;
 
-procedure TCustomVSTModule.FOnProcessMute(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TCustomVSTModule.FOnProcessMute(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
 var i : Integer;
 begin
- for i:=0 to numOutputs do Fillchar(Outputs[i,0],0,sampleframes*SizeOf(Single));
+ for i := 0 to numOutputs - 1
+  do Fillchar(Outputs[i,0], 0, SampleFrames * SizeOf(Single));
 end;
 
-procedure TCustomVSTModule.FOnProcessCopy(const Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+procedure TCustomVSTModule.FOnProcessCopy(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
 var i,j: Integer;
 begin
- j:=numInputs;
- if numOutputs<numInputs then j:=numOutputs;
- for i:=0 to j-1 do Move(Inputs[i,0],Outputs[i,0],sampleframes*SizeOf(Double));
+ j := numInputs; if numOutputs < numInputs then j := numOutputs;
+ for i := 0 to j - 1 do Move(Inputs[i,0], Outputs[i,0], SampleFrames * SizeOf(Double));
 end;
 
-procedure TCustomVSTModule.FOnProcessMute(const Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+procedure TCustomVSTModule.FOnProcessMute(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
 var i : Integer;
 begin
- for i:=0 to numOutputs do Fillchar(Outputs[i,0],0,sampleframes*SizeOf(Double));
+ for i := 0 to numOutputs - 1
+  do Fillchar(Outputs[i,0], 0, SampleFrames * SizeOf(Double));
 end;
 
 procedure TCustomVSTModule.SetBlockForcedSize(v: Integer);
@@ -1474,26 +1475,26 @@ begin
  repeat
   if FBlockPosition+(SampleFrames-CurrentPosition)<FBlockModeSize then
    begin
-    for i:=0 to numInputs-1  do move(Inputs[i,CurrentPosition],fBlockInBuffer[i,FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
-    for i:=0 to numOutputs-1 do move(fBlockOutBuffer[i,FBlockPosition],Outputs[i,CurrentPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
+    for i := 0 to numInputs-1  do move(Inputs[i,CurrentPosition],fBlockInBuffer[i,FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
+    for i := 0 to numOutputs-1 do move(fBlockOutBuffer[i,FBlockPosition],Outputs[i,CurrentPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
 
     FBlockPosition:=FBlockPosition+(SampleFrames-CurrentPosition);
     CurrentPosition:=SampleFrames;
    end
   else
    begin
-    for i:=0 to numInputs-1  do move(Inputs[i,CurrentPosition],fBlockInBuffer[i,FBlockPosition],(FBlockModeSize-FBlockPosition)*Sizeof(Single));
-    for i:=0 to numOutputs-1 do move(fBlockOutBuffer[i,FBlockPosition],Outputs[i,CurrentPosition],(FBlockModeSize-FBlockPosition)*Sizeof(Single));
+    for i := 0 to numInputs-1  do move(Inputs[i,CurrentPosition],fBlockInBuffer[i,FBlockPosition],(FBlockModeSize-FBlockPosition)*Sizeof(Single));
+    for i := 0 to numOutputs-1 do move(fBlockOutBuffer[i,FBlockPosition],Outputs[i,CurrentPosition],(FBlockModeSize-FBlockPosition)*Sizeof(Single));
 
     FOnProcess(fBlockInBuffer,fBlockOutBuffer,FBlockModeSize);
 
     for i:=0 to numInputs-1  do move(fBlockInBuffer[i,(FBlockModeSize-FBlockModeOverlap)],fBlockInBuffer[i,0],FBlockModeOverlap*Sizeof(Single));
 //    for i:=0 to numOutputs-1 do move(fBlockOutBuffer[i,ProcessSizeH],fBlockOutBuffer[i,0],ProcessSizeH*Sizeof(Single));
 
-    CurrentPosition:=CurrentPosition+(FBlockModeSize-FBlockPosition);
-    FBlockPosition:=FBlockModeOverlap;
+    CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
+    FBlockPosition := FBlockModeOverlap;
    end;
- until CurrentPosition>=SampleFrames;
+ until CurrentPosition >= SampleFrames;
 end;
 
 procedure TCustomVSTModule.FOnBlockSaveProcess(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
@@ -1505,8 +1506,8 @@ begin
  repeat
   if FBlockPosition+(SampleFrames-CurrentPosition)<FBlockModeSize then
    begin
-    for i:=0 to numInputs-1  do move(Inputs[i,CurrentPosition],fBlockInBuffer[i,FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Double));
-    for i:=0 to numOutputs-1 do move(fBlockOutBuffer[i,FBlockPosition],Outputs[i,CurrentPosition],(SampleFrames-CurrentPosition)*Sizeof(Double));
+    for i := 0 to numInputs - 1  do move(Inputs[i,CurrentPosition],fBlockInBuffer[i,FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Double));
+    for i := 0 to numOutputs - 1 do move(fBlockOutBuffer[i,FBlockPosition],Outputs[i,CurrentPosition],(SampleFrames-CurrentPosition)*Sizeof(Double));
 
     FBlockPosition:=FBlockPosition+(SampleFrames-CurrentPosition);
     CurrentPosition:=SampleFrames;
@@ -1518,8 +1519,8 @@ begin
 
     FOnProcess(fBlockInBuffer,fBlockOutBuffer,FBlockModeSize);
 
-    for i:=0 to numInputs-1  do move(fBlockInBuffer[i,(FBlockModeSize-FBlockModeOverlap)],fBlockInBuffer[i,0],FBlockModeOverlap*Sizeof(Double));
-//    for i:=0 to numOutputs-1 do move(fBlockOutBuffer[i,ProcessSizeH],fBlockOutBuffer[i,0],ProcessSizeH*Sizeof(Double));
+    for i := 0 to numInputs - 1  do move(fBlockInBuffer[i,(FBlockModeSize-FBlockModeOverlap)],fBlockInBuffer[i,0],FBlockModeOverlap*Sizeof(Double));
+//    for i := 0 to numOutputs - 1 do move(fBlockOutBuffer[i,ProcessSizeH],fBlockOutBuffer[i,0],ProcessSizeH*Sizeof(Double));
 
     CurrentPosition:=CurrentPosition+(FBlockModeSize-FBlockPosition);
     FBlockPosition:=FBlockModeOverlap;
@@ -1527,7 +1528,7 @@ begin
  until CurrentPosition>=SampleFrames;
 end;
 
-procedure TCustomVSTModule.FOnBlockSaveProcessReplacing(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TCustomVSTModule.FOnBlockSaveProcessReplacing(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -1536,8 +1537,8 @@ begin
  repeat
   if FBlockPosition+(SampleFrames-CurrentPosition)<FBlockModeSize then
    begin
-    for i:=0 to numInputs-1  do move(Inputs[i,CurrentPosition],fBlockInBuffer[i,FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
-    for i:=0 to numOutputs-1 do move(fBlockOutBuffer[i,FBlockPosition],Outputs[i,CurrentPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
+    for i := 0 to numInputs - 1  do move(Inputs[i,CurrentPosition],fBlockInBuffer[i,FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
+    for i := 0 to numOutputs - 1 do move(fBlockOutBuffer[i,FBlockPosition],Outputs[i,CurrentPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
 
     FBlockPosition:=FBlockPosition+(SampleFrames-CurrentPosition);
     CurrentPosition:=SampleFrames;
@@ -1558,18 +1559,16 @@ begin
  until CurrentPosition>=SampleFrames;
 end;
 
-procedure TCustomVSTModule.FOnBlockSaveProcessReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+procedure TCustomVSTModule.FOnBlockSaveProcessReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
  CurrentPosition:=0;
-
  repeat
   if FBlockPosition+(SampleFrames-CurrentPosition)<FBlockModeSize then
    begin
     for i:=0 to numInputs-1  do move(Inputs[i,CurrentPosition],fBlockInBuffer[i,FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Double));
     for i:=0 to numOutputs-1 do move(fBlockOutBuffer[i,FBlockPosition],Outputs[i,CurrentPosition],(SampleFrames-CurrentPosition)*Sizeof(Double));
-
     FBlockPosition:=FBlockPosition+(SampleFrames-CurrentPosition);
     CurrentPosition:=SampleFrames;
    end
@@ -1577,12 +1576,9 @@ begin
    begin
     for i:=0 to numInputs-1  do move(Inputs[i,CurrentPosition],fBlockInBuffer[i,FBlockPosition],(FBlockModeSize-FBlockPosition)*Sizeof(Double));
     for i:=0 to numOutputs-1 do move(fBlockOutBuffer[i,FBlockPosition],Outputs[i,CurrentPosition],(FBlockModeSize-FBlockPosition)*Sizeof(Double));
-
     FOnProcessReplacing(fBlockInBuffer,fBlockOutBuffer,FBlockModeSize);
-
     for i:=0 to numInputs-1  do move(fBlockInBuffer[i,(FBlockModeSize-FBlockModeOverlap)],fBlockInBuffer[i,0],FBlockModeOverlap*Sizeof(Double));
 //    for i:=0 to numOutputs-1 do move(fBlockOutBuffer[i,FBlockModeOverlap],fBlockOutBuffer[i,0],(FBlockModeSize-FBlockModeOverlap)*Sizeof(Double));
-
     CurrentPosition:=CurrentPosition+(FBlockModeSize-FBlockPosition);
     FBlockPosition:=FBlockModeOverlap;
    end;
@@ -1782,9 +1778,9 @@ begin
  end else
  begin
   tmps:=TMemoryStream.Create;
-  for i:=0 to numPrograms-1 do
+  for i := 0 to numPrograms - 1 do
    begin
-    Programs[i].Chunk.Position:=0;
+    Programs[i].Chunk.Position := 0;
     if Assigned(Programs[i].FOnStoreChunk)
      then Programs[i].FOnStoreChunk(Programs[FCurProgram],FCurProgram,False);
     j := Programs[i].Chunk.Size;
@@ -2057,31 +2053,30 @@ end;
 //------------------------------------------------------------------------------
 
 function TCustomVSTModule.EditorOpen(ptr: Pointer): Integer;
-var GUI  : TForm;
-    i,pr : Integer;
+var i,pr : Integer;
 begin
  Result := 0;
- if Assigned(FOnEditOpen) then FOnEditOpen(Self, GUI);
- if Assigned(GUI) then
+ if Assigned(FOnEditOpen) then FOnEditOpen(Self, FEditorForm);
+ if Assigned(FEditorForm) then
   try
-   FEditorForm:=GUI;
+   Result := 1;
    with FEditorForm do
     begin
      {$IFNDEF FPC}
-     ParentWindow:=HWnd(ptr);
+     ParentWindow := HWnd(ptr);
      {$ELSE}
-     Handle:=Integer(ptr);
+     Handle := Integer(ptr);
      {$ENDIF}
      Visible:=True;
      BorderStyle:=bsNone;
      SetBounds(0, 0, Width, Height);
      Invalidate;
     end;
-   Result := 1; pr := min(numParams,FParameterProperties.Count);
+   pr := min(numParams, FParameterProperties.Count);
    if Assigned(FOnParameterChangeEvent) and (not (effFlagsProgramChunks in FEffect.EffectFlags)) then
-    if numPrograms>0
-     then for i:=0 to pr-1 do FOnParameterChangeEvent(Self,i,Programs[FCurProgram].FParameter[i])
-     else for i:=0 to pr-1 do FOnParameterChangeEvent(Self,i,FParameter[i]);
+    if numPrograms > 0
+     then for i := 0 to pr - 1 do FOnParameterChangeEvent(Self, i, Programs[FCurProgram].FParameter[i])
+     else for i := 0 to pr - 1 do FOnParameterChangeEvent(Self, i, FParameter[i]);
   except
   end;
 end;
@@ -2115,11 +2110,11 @@ begin
  inherited;
  {$IFDEF Debug} FLog.Add('After ReadState'); {$ENDIF}
  {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
- for i:=0 to numPrograms-1
+ for i := 0 to numPrograms - 1
   do if Assigned(Programs[i].FOnInitialize) then Programs[i].FOnInitialize(Programs[i]);
- if numPrograms<0
-  then FCurProgram:=-1
-  else CurrentProgram:=0;
+ if numPrograms < 0
+  then FCurProgram := -1
+  else CurrentProgram := 0;
  if Assigned(FOnInitialize) then FOnInitialize(Self);
  {$IFDEF Debug} FLog.Add('End ReadState'); {$ENDIF}
  {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
@@ -2166,19 +2161,19 @@ begin
   end;
 end;
 
-procedure ProcessClass(Effect: PVSTEffect; Inputs, Outputs: PPSingle; sampleframes: Integer); cdecl;
+procedure ProcessClass(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
 begin
- TCustomVSTModule(Effect^.vObject).Process(Inputs, Outputs, sampleFrames);
+ TCustomVSTModule(Effect^.vObject).Process(Inputs, Outputs, SampleFrames);
 end;
 
-procedure ProcessClassReplacing(Effect: PVSTEffect; Inputs, Outputs: PPSingle; sampleframes: Integer); cdecl;
+procedure ProcessClassReplacing(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
 begin
- TCustomVSTModule(Effect^.vObject).ProcessReplacing(Inputs, Outputs, sampleFrames);
+ TCustomVSTModule(Effect^.vObject).ProcessReplacing(Inputs, Outputs, SampleFrames);
 end;
 
-procedure ProcessClassDoubleReplacing(Effect: PVSTEffect; Inputs, Outputs: PPDouble; sampleframes: Integer); cdecl;
+procedure ProcessClassDoubleReplacing(Effect: PVSTEffect; Inputs, Outputs: PPDouble; SampleFrames: Integer); cdecl;
 begin
- TCustomVSTModule(Effect^.vObject).ProcessDoubleReplacing(Inputs, Outputs, sampleFrames);
+ TCustomVSTModule(Effect^.vObject).ProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
 end;
 
 // TCustomVstParameterProperty
@@ -2206,9 +2201,10 @@ begin
 // Exit;
 
   if not (effFlagsProgramChunks in fVSTModule.FEffect.EffectFlags) then
-   if (FVSTModule.FEffect.numPrograms>0)
-    then for i:=0 to FVSTModule.FEffect.numPrograms-1 do SetLength(FVSTModule.Programs[i].FParameter,Collection.Count)
-    else SetLength(FVSTModule.FParameter,Collection.Count);
+   with FVSTModule do
+    if (FEffect.numPrograms>0)
+     then for i := 0 to FEffect.numPrograms-1 do SetLength(Programs[i].FParameter,Collection.Count)
+     else SetLength(FParameter,Collection.Count);
  except
  end;
 end;
@@ -2218,10 +2214,11 @@ var i: Integer;
 begin
  try
   if assigned(VSTModule) then
-   if not (effFlagsProgramChunks in VSTModule.FEffect.EffectFlags) then
-    if VSTModule.FEffect.numPrograms>0
-     then for i:=0 to VSTModule.FEffect.numPrograms-1 do SetLength(VSTModule.Programs[i].FParameter,Collection.Count-1)
-     else SetLength(VSTModule.FParameter,Collection.Count-1);
+   with FVSTModule do
+    if not (effFlagsProgramChunks in FEffect.EffectFlags) then
+     if FEffect.numPrograms>0
+      then for i:=0 to FEffect.numPrograms-1 do SetLength(Programs[i].FParameter,Collection.Count-1)
+      else SetLength(FParameter,Collection.Count-1);
  except
  end;
  inherited;
@@ -2236,14 +2233,15 @@ end;
 
 procedure TCustomVstParameterProperty.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomVstParameterProperty then with TCustomVstParameterProperty(Dest) do
- try
-  Units := Self.Units;
-  DisplayName := Self.DisplayName;
- except
-  inherited;
- end else
-  inherited;
+ if Dest is TCustomVstParameterProperty then
+  with TCustomVstParameterProperty(Dest) do
+   try
+    Units := Self.Units;
+    DisplayName := Self.DisplayName;
+   except
+    inherited;
+   end
+  else inherited;
 end;
 
 procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string);
@@ -2388,7 +2386,7 @@ begin
     if Length(Self.FParameter)>0 then
      begin
       SetLength(TCustomVstProgram(Dest).FParameter,Length(Self.FParameter));
-      for i:=0 to Length(Self.FParameter)-1 do Parameter[i]:=Self.Parameter[i];
+      for i := 0 to Length(Self.FParameter) - 1 do Parameter[i]:=Self.Parameter[i];
      end;
     DisplayName := Self.DisplayName;
    end
@@ -3194,7 +3192,7 @@ end;
 
 function TCustomVSTModule.CanParameterBeAutomated(Index: Integer): Boolean;
 begin
- if Index<ParameterProperties.Count
+ if Index < ParameterProperties.Count
   then Result := ParameterProperties[Index].CanBeAutomated
   else Result := True
 end;
@@ -3203,10 +3201,10 @@ function TCustomVSTModule.String2parameter(Index: Integer; Text: pchar): Boolean
 var tmp : string;
 begin
  Result := False;
- if Text<>nil then
+ if Text <> nil then
   try
-   tmp:=Text;
-   Parameter[Index]:=StrtoFloat(tmp);
+   tmp := Text;
+   Parameter[Index] := StrtoFloat(tmp);
    Result := True;
   except
   end;
@@ -3626,29 +3624,23 @@ end;
 function TCustomVSTModule.MatchArrangement(var matchTo: PVstSpeakerArrangement; matchFrom: PVstSpeakerArrangement): Boolean;
 var i: Integer;
 begin
- if matchFrom = nil then
-  begin
+ if matchFrom = nil then Result := False else
+ if not deallocateArrangement(matchTo) or
+    not allocateArrangement(matchTo, matchFrom^.numChannels)
+  then Result := False
+  else
+   begin
+    matchTo^.vType := matchFrom^.vType;
+    for i := 0 to matchTo^.numChannels-1 do
+     begin
+      if not copySpeaker(@(matchTo^.speakers[i]), @(matchFrom^.speakers[i])) then
+       begin
+        Result := False;
+        Exit;
+       end;
+     end;
     Result := False;
-    Exit;
-  end;
-
- if not deallocateArrangement(matchTo) or not allocateArrangement(matchTo, matchFrom^.numChannels) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
- matchTo^.vType := matchFrom^.vType;
- for i := 0 to matchTo^.numChannels-1 do
-  begin
-   if not copySpeaker(@(matchTo^.speakers[i]), @(matchFrom^.speakers[i])) then
-    begin
-     Result := False;
-     Exit;
-    end;
-  end;
-
- Result := False;
+   end;
 end;
 
 {$WARNINGS ON}
@@ -3694,12 +3686,12 @@ end;
 
 procedure TCustomVstShellPlugin.SetUniqueID(fID:string);
 begin
- UID:=FourCharToLong(fID[1], fID[2], fID[3], fID[4])
+ UID := FourCharToLong(fID[1], fID[2], fID[3], fID[4])
 end;
 
 procedure TCustomVstShellPlugin.SetDisplayName(const AValue: string);
 begin
- FDisplayName:=Copy(AValue,0,50);
+ FDisplayName := Copy(AValue,0,50);
 end;
 
 function TCustomVstShellPlugin.GetDisplayName: string;

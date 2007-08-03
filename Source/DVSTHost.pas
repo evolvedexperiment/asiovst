@@ -412,7 +412,6 @@ end;
 function AudioMasterCallback(effect: PVSTEffect; opcode : TAudioMasterOpcode; index,value: longint; ptr: pointer; opt: Single): longint; cdecl;
 var thePlug  : TVstPlugin;
     PlugNr,i : Integer;
-    str      : string;
 begin
  try
    thePlug := nil;
@@ -1289,8 +1288,9 @@ begin
 end;
 
 function TVstPlugin.GetVu: Single;
+const Divisor : Double = 1 / 32767;
 begin
- if FActive then result := VstDispatch(effGetVu)/32767 else result := -1;
+ if FActive then result := VstDispatch(effGetVu) * Divisor else result := -1;
 end;
 
 function TVstPlugin.GetRect: TRect;
@@ -1575,7 +1575,7 @@ begin
       GUIForm.FindComponent('ParamBar').Free;
       GUIForm.FindComponent('LbL').Free;
      end;
-    gsList:
+    gsDefault, gsList:
      begin
       i:=0;
       repeat

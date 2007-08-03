@@ -11,7 +11,7 @@ object VSTSSModule: TVSTSSModule
   VersionRelease = 0
   PlugCategory = vpcSynth
   TailSize = 0
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
+  CanDos = [vcdSendVstEvents, vcdSendVstMidiEvent, vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   numCategories = 1
   CurrentProgram = 0

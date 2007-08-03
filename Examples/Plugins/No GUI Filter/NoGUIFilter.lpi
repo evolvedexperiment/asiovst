@@ -12,7 +12,7 @@
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=".dll"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -40,7 +40,7 @@
       <Unit0>
         <Filename Value="NoGUIFilter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="5" Y="81"/>
+        <CursorPos X="15" Y="16"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="52"/>
@@ -49,19 +49,17 @@
       <Unit1>
         <Filename Value="..\..\..\Source\DVSTEffect.pas"/>
         <UnitName Value="DVSTEffect"/>
-        <CursorPos X="16" Y="261"/>
-        <TopLine Value="192"/>
-        <EditorIndex Value="6"/>
+        <CursorPos X="42" Y="92"/>
+        <TopLine Value="70"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\Source\DVSTModule.pas"/>
         <ComponentName Value="VSTModule"/>
         <HasResources Value="True"/>
         <UnitName Value="DVSTModule"/>
-        <CursorPos X="41" Y="28"/>
-        <TopLine Value="1"/>
+        <CursorPos X="3" Y="3339"/>
+        <TopLine Value="3337"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="18"/>
         <Bookmarks Count="4">
@@ -259,17 +257,13 @@
         <UnitName Value="LResources"/>
         <CursorPos X="42" Y="2621"/>
         <TopLine Value="2615"/>
-        <EditorIndex Value="3"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit29>
       <Unit30>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.5\source\rtl\objpas\classes\classesh.inc"/>
         <CursorPos X="12" Y="1655"/>
         <TopLine Value="1638"/>
-        <EditorIndex Value="4"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.5\source\rtl\objpas\classes\collect.inc"/>
@@ -294,12 +288,43 @@
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.5\source\rtl\objpas\classes\classes.inc"/>
         <CursorPos X="1" Y="541"/>
         <TopLine Value="535"/>
-        <EditorIndex Value="5"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit34>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="8" HistoryIndex="7">
+      <Position1>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="173" Column="28" TopLine="158"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="447" Column="14" TopLine="430"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="630" Column="22" TopLine="613"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="647" Column="36" TopLine="630"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="1134" Column="39" TopLine="1117"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="1897" Column="23" TopLine="1880"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="1235" Column="29" TopLine="1221"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
+        <Caret Line="1241" Column="57" TopLine="1221"/>
+      </Position8>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>

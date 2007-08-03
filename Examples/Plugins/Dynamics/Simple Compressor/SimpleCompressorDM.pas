@@ -16,7 +16,7 @@ type
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fSimpleCompressors : Array [0..1] of TSimpleCompressor;
+    fSimpleCompressors : Array [0..1] of TSimpleRMSCompressor;
   public
   end;
 
@@ -84,8 +84,8 @@ end;
 
 procedure TSimpleCompressorDataModule.VSTModuleCreate(Sender: TObject);
 begin
- fSimpleCompressors[0] := TSimpleCompressor.Create;
- fSimpleCompressors[1] := TSimpleCompressor.Create;
+ fSimpleCompressors[0] := TSimpleRMSCompressor.Create;
+ fSimpleCompressors[1] := TSimpleRMSCompressor.Create;
 end;
 
 procedure TSimpleCompressorDataModule.VSTModuleDestroy(Sender: TObject);

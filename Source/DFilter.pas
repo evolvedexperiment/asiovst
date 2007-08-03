@@ -202,7 +202,7 @@ end;
 procedure TFilter.SetGain(const Value:Double);
 begin
  fGain:=Value;
- fGainSpeed:=dB_to_Amp(0.5*fGain);
+ fGainSpeed:=dB_to_Amp(0.5 * fGain);
  CalculateCoefficients;
 end;
 

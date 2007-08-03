@@ -53,6 +53,7 @@ type
     function MagnitudeSquared(Frequency:Double):Double; override;
     function Phase(Frequency: Double): Double; override;
   end;
+  TButterworthHighCut = TButterworthLP;
 
   TButterworthHP = class(TButterworthFilter)
   private
@@ -63,6 +64,7 @@ type
     function ProcessSample(const Input:Double):Double; override;
     function MagnitudeSquared(Frequency:Double):Double; override;
   end;
+  TButterworthLowCut = TButterworthHP;
 
 implementation
 
@@ -207,7 +209,9 @@ begin
                  + (2*sqr(cw)-1) * fAB[4*i+0] * (fAB[4*i+3] + 1)) * Divider;
      cmplx.Im := (fAB[4*i+1] * (1 - fAB[4*i+3])
                  + 2 * cw * (fAB[4*i+0] - fAB[4*i+0] * fAB[4*i+3])) * sqrt(1 - sqr(cw)) * Divider;
+{$IFNDEF FPC}
      ComplexMultiplyInplace(Real, Imaginary, cmplx.Re, cmplx.Im);
+{$ENDIF}
     end;
   end;
 end;
