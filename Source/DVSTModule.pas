@@ -3,7 +3,7 @@ unit DVSTModule;
 interface
 
 {$I ASIOVST.INC}
-{.$DEFINE UseDelphi}
+{$DEFINE UseDelphi}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows,

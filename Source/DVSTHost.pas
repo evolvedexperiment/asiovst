@@ -1469,6 +1469,7 @@ begin
         end;
       end;
      GUIForm.Visible:=True;
+     GUIForm.Invalidate;
      FEditOpen:=True;
     end;
   end;
