@@ -119,19 +119,19 @@
 			<Linker Name="ExeDescription"></Linker>
 		</Linker>
 		<Directories>
-			<Directories Name="OutputDir">c:\Programme\Audio\Plugins\VST\=Delphi=\</Directories>
+			<Directories Name="OutputDir">$(ProgramFiles)\Audio\Plugins\VST\=Delphi=\</Directories>
 			<Directories Name="UnitOutputDir"></Directories>
 			<Directories Name="PackageDLLOutputDir"></Directories>
 			<Directories Name="PackageDCPOutputDir"></Directories>
 			<Directories Name="SearchPath"></Directories>
-			<Directories Name="Packages"></Directories>
+			<Directories Name="Packages">rtl;vclx;vcl;vcldb;dclOfficeXP;VclSmp;vclactnband;GR32_BDS2006;JclVcl;Jcl;JvCoreD10R;JvSystemD10R;JvStdCtrlsD10R;JvAppFrmD10R;JvBandsD10R;dbrtl;bdertl;JvDBD10R;JvDlgsD10R;JvBDED10R;JvCmpD10R;JvCryptD10R;JvCtrlsD10R;JvCustomD10R;JvDockingD10R;JvDotNetCtrlsD10R;JvEDID10R;JvGlobusD10R;JvHMID10R;JvInterpreterD10R;JvJansD10R;JvManagedThreadsD10R;JvMMD10R;JvNetD10R;JvPageCompsD10R;JvPluginD10R;JvPrintPreviewD10R;JvRuntimeDesignD10R;JvTimeFrameworkD10R;JvUIBD10R;JvValidatorsD10R;JvWizardD10R;JvXPCtrlsD10R;DSPBase_D10;xmlrtl;FlatControls;DVSTGFX;GR32_DSGN_BDS2006;GR32_Controls_D10;HostVST_D10;HostASIO_D10;GR32_Charts_D10;MFComponents_D2006R</Directories>
 			<Directories Name="Conditionals"></Directories>
 			<Directories Name="DebugSourceDirs"></Directories>
 			<Directories Name="UsePackages">False</Directories>
 		</Directories>
 		<Parameters>
-			<Parameters Name="RunParams">c:\Programme\Audio\Plugins\VST\=Delphi=\SimpleLimiter.DLL</Parameters>
-			<Parameters Name="HostApplication">C:\ITA\Projects\Applications\Sound &amp; RECording\Bin\VSTPluginAnalyser.exe</Parameters>
+			<Parameters Name="RunParams">$(ProgramFiles)\Audio\Plugins\VST\=Delphi=\SimpleLimiter.DLL</Parameters>
+			<Parameters Name="HostApplication">C:\Users\Christian Budde\Projects\Applications\Sound &amp; RECording\Bin\VSTPluginAnalyser.exe</Parameters>
 			<Parameters Name="Launcher"></Parameters>
 			<Parameters Name="UseLauncher">False</Parameters>
 			<Parameters Name="DebugCWD"></Parameters>
