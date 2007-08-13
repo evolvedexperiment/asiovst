@@ -598,6 +598,7 @@ type
     function IsOutputConnected(output: Integer): Boolean; virtual;
 
     procedure MIDI_Out(b1, b2, b3, b4: byte; offset: Integer = 0);
+    procedure MIDI_SendSysEx(Data: array of byte; offset: Integer = 0);
     procedure MIDI_CC(ch, num, val: Integer; offset: Integer = 0);
     procedure MIDI_ChannelAftertouch(ch, val: Integer; offset: Integer = 0);
     procedure MIDI_NoteOff(ch, note, val: Integer; offset: Integer = 0);
@@ -2799,6 +2800,7 @@ procedure TCustomVSTModule.MIDI_Out(b1, b2, b3, b4: byte; offset: Integer);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
+   EventType := etMidi;
    MidiData[0] := b1;
    MidiData[1] := b2;
    MidiData[2] := b3;
@@ -2812,6 +2814,7 @@ procedure TCustomVSTModule.MIDI_CC(ch, num, val: Integer; offset: Integer = 0);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
+   EventType := etMidi;
    MidiData[0] := $B0 + ch;
    MidiData[1] := num;
    MidiData[2] := val;
@@ -2824,6 +2827,7 @@ procedure TCustomVSTModule.MIDI_ChannelAftertouch(ch, val: Integer; offset: Inte
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
+   EventType := etMidi;
    MidiData[0] := $D0 + ch;
    MidiData[1] := val;
    MidiData[2] := 0;
@@ -2836,6 +2840,7 @@ procedure TCustomVSTModule.MIDI_NoteOff(ch, note, val: Integer; offset: Integer 
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
+   EventType := etMidi;
    MidiData[0] := $80 + ch;
    MidiData[1] := note;
    MidiData[2] := val;
@@ -2848,6 +2853,7 @@ procedure TCustomVSTModule.MIDI_NoteOn(ch, note, val: Integer; offset: Integer =
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
+   EventType := etMidi;
    MidiData[0] := $90 + ch;
    MidiData[1] := note;
    MidiData[2] := val;
@@ -2861,6 +2867,7 @@ var a, b: Integer;
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
+   EventType := etMidi;
    a := (val div 128) + 64;
    b := (val div 128);
    b := val - b * 128;
@@ -2876,6 +2883,7 @@ procedure TCustomVSTModule.MIDI_PitchBend2(ch, x1, x2: Integer; offset: Integer 
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
+   EventType := etMidi;
    MidiData[0] := $E0 + ch;
    MidiData[1] := x1;
    MidiData[2] := x2;
@@ -2888,6 +2896,7 @@ procedure TCustomVSTModule.MIDI_PolyAftertouch(ch, note, val: Integer; offset: I
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
+   EventType := etMidi;
    MidiData[0] := $A0 + ch;
    MidiData[1] := note;
    MidiData[2] := val;
@@ -2900,10 +2909,24 @@ procedure TCustomVSTModule.MIDI_ProgramChange(ch, val: Integer; offset: Integer 
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
+   EventType := etMidi;
    MidiData[0] := $D0 + ch;
    MidiData[1] := val;
    MidiData[2] := 0;
    DeltaFrames := offset;
+   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+  end;
+end;
+
+procedure TCustomVSTModule.MIDI_SendSysEx(Data: array of byte; offset: Integer);
+begin
+ with PVstMidiSysexEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
+  begin
+   EventType := etSysEx;
+   DeltaFrames := offset;
+   dumpBytes := Length(Data);
+   GetMem(sysexDump, dumpBytes);
+   Move(Data[0], sysexDump^, dumpBytes);
    if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
   end;
 end;

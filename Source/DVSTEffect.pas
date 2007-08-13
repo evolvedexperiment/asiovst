@@ -329,6 +329,18 @@ type
     Reserved2       : Byte;                 // zero
   end;
 
+  PVstMidiSysexEvent = ^TVstMidiSysexEvent;
+  TVstMidiSysexEvent = record               // to be casted from a VstEvent
+    EventType       : TVSTEventType;        // kVstSysexType
+    ByteSize        : LongInt;              // 24
+    DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
+    Flags           : LongInt;              // not defined yet
+    dumpBytes       : LongInt;          		// byte size of sysexDump
+    resvd1          : Pointer;              // zero (Reserved for future use)
+    sysexDump       : PChar;                // sysex dump
+    resvd2          : Pointer;              //< zero (Reserved for future use)
+  end;
+
 // VstTimeInfo ///////////////////////////////////////////////////////////////
 //
 // VstTimeInfo as requested via audioMasterGetTime (getTimeInfo())
