@@ -159,6 +159,18 @@ type
     property SoftKnee : Double read fSoftKnee write SetSoftKnee;
   end;
 
+  TSoftKneeFeedbackLimiter = class(TSoftKneeLimiter)
+  protected
+    fOversample : Integer;
+    fFilter     : TButterworthLowCut;
+    procedure SetSampleRate(const Value: Double); override;
+    procedure CalculateAttackFactor; override;
+    procedure CalculateDecayFactor; override;
+  public
+    function ProcessSample(Input : Double):Double; override;
+    constructor Create; override;
+  end;
+
 implementation
 
 uses SysUtils, Math;
@@ -646,6 +658,85 @@ end;
 procedure TSoftKneeLimiter.SetSoftKnee(const Value: Double);
 begin
   fSoftKnee := Value;
+end;
+
+{ TSoftKneeFeedbackLimiter }
+
+constructor TSoftKneeFeedbackLimiter.Create;
+begin
+ inherited;
+ fGain := 1;
+ fOversample := Round(1E5 / Samplerate + 0.5);
+ fFilter := TButterworthLowCut.Create;
+ fFilter.Frequency := 13.8;
+ fFilter.Order := 1;
+ CalculateAttackFactor;
+ CalculateDecayFactor;
+end;
+
+procedure TSoftKneeFeedbackLimiter.CalculateAttackFactor;
+begin
+  if fAttack = 0 then fAttackFactor := 0
+  else fAttackFactor := exp( -ln2 / (fOversample * fAttack * 0.001 * SampleRate));
+end;
+
+procedure TSoftKneeFeedbackLimiter.CalculateDecayFactor;
+begin
+  if fDecay = 0 then fDecayFactor := 0
+  else fDecayFactor := exp( -ln2 / (fOversample * fDecay * 0.001 * SampleRate));
+end;
+
+procedure TSoftKneeFeedbackLimiter.SetSampleRate(const Value: Double);
+begin
+ inherited;
+ fFilter.SampleRate := Value;
+ fOversample := Round(1E5 / Value + 0.5);
+ CalculateAttackFactor;
+ CalculateDecayFactor;
+end;
+
+function TSoftKneeFeedbackLimiter.ProcessSample(Input: Double): Double;
+var InternalRatio, Knee : Double;
+    OversampleCount     : Integer;
+begin
+ if abs(Input)>fPeak
+  then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
+  else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
+
+ Knee := 0.5 *(1 + Tanh2c(fSoftKnee * log10(fPeak / fThreshold)));
+ InternalRatio := 1 + Knee * (fRatio - 1);
+
+ if fPeak < fThreshold
+  then fGain := 1
+//  else fGain := 1 / (1 + 2 *(fPeak - fThreshold));
+//  else fGain := fThresholdRatioFactor * Power(fPeak, fRatio - 1);
+//  else fGain := fThreshold / fPeak;
+//  else fGain := * Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1);
+  else fGain := Power(fThreshold, 1 - InternalRatio) * Power(fPeak, InternalRatio - 1);
+
+
+ result := fGain * Input;
+
+(*
+ Input := fFilter.ProcessSample(Input);
+ result := fGain * Input;
+ if abs(result)>fPeak
+  then fPeak := abs(result) + (fPeak - abs(result)) * fAttackFactor
+  else fPeak := abs(result) + (fPeak - abs(result)) * fDecayFactor;
+ Knee := 0.5 *(1 + Tanh2c(fSoftKnee * log10(fPeak / fThreshold)));
+ InternalRatio := 1 + Knee * (fRatio - 1);
+ for OversampleCount := 0 to fOversample - 1 do
+  begin
+   result := Input * Power(fThreshold, 1 - InternalRatio) * Power(fPeak, InternalRatio - 1);
+   if abs(result)>fPeak
+    then fPeak := abs(result) + (fPeak - abs(result)) * fAttackFactor
+    else fPeak := abs(result) + (fPeak - abs(result)) * fDecayFactor;
+   fPeak := 1E-30 + fPeak;
+   Knee := 0.5 *(1 + Tanh2c(fSoftKnee * log10(fPeak / fThreshold)));
+   InternalRatio := 1 + Knee * (fRatio - 1);
+  end;
+ fGain := Power(fThreshold, 1 - InternalRatio) * Power(fPeak, InternalRatio - 1);
+*)
 end;
 
 end.

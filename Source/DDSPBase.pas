@@ -163,8 +163,10 @@ type
   procedure InverseDFT(realTime,realFreq,imagFreq : TSingleDynArray); overload;
   procedure InverseDFT(realTime,realFreq,imagFreq : TDoubleDynArray); overload;
 
-  function OnOff(fvalue:Single):boolean;
-  function unDenormalize(fvalue:Single):Single;
+  function RoundToPowerOf2(Value:Integer) : Integer;
+  function TruncToPowerOf2(Value:Integer) : Integer;
+  function OnOff(fvalue:Single) : Boolean;
+  function unDenormalize(fvalue:Single) : Single;
 
   function Saturate(input, fMax: Single): Single;
 
@@ -1171,6 +1173,19 @@ begin
 
    realTime[k] := realTime[k]*sd;
   end;
+end;
+
+function RoundToPowerOf2(Value:Integer) : Integer;
+begin
+ Result := round(Log2(Value));
+ Result := (Value shr (Result - 1)) shl (Result - 1); 
+end;
+
+function TruncToPowerOf2(Value:Integer) : Integer;
+begin
+ result := 1;
+ while result <= value do result := result shl 1;
+ result := result shr 1;
 end;
 
 function OnOff(fvalue:Single):boolean;
