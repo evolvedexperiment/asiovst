@@ -148,8 +148,18 @@ type
                                   //     Gain in <opt>: for Linear : [1.0 => 0dB PanLaw], [~0.58 => -4.5dB], [0.5 => -6.02dB]
     effBeginLoadBank,             // 75: Called before a Bank is loaded, <ptr> points to VstPatchChunkInfo structure
                                   //     return -1 if the Bank can not be loaded, return 1 if it can be loaded else 0 (for compatibility)
-    effBeginLoadProgram           // 76: Called before a Program is loaded, <ptr> points to VstPatchChunkInfo structure
-  );                              //     return -1 if the Program can not be loaded, return 1 if it can be loaded else 0 (for compatibility)
+    effBeginLoadProgram,          // 76: Called before a Program is loaded, <ptr> points to VstPatchChunkInfo structure
+                                  //     return -1 if the Program can not be loaded, return 1 if it can be loaded else 0 (for compatibility)
+    effSetProcessPrecision,       // 77: see TProcessPrecision
+    effGetNumMidiInputChannels,   // 78: return number of used MIDI input channels (1-15)  @see AudioEffectX::getNumMidiInputChannels
+    effGetNumMidiOutputChannels   // 79: return number of used MIDI output channels (1-15)  @see AudioEffectX::getNumMidiOutputChannels
+  );
+
+  TProcessPrecision = (
+    pp32, //< single precision float (32bits)
+    pp64  //< double precision (64bits)
+  );
+
 
   TAudioMasterOpcode = (
     audioMasterAutomate,      //  0: index, value, returns 0

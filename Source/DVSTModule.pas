@@ -9,6 +9,8 @@ uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows,
   Messages, {$ENDIF} SysUtils, Forms, Classes, DDSPBase, DVSTEffect;
 
+{$DEFINE Debug}
+
 {$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
@@ -170,16 +172,16 @@ type
     property Units: string read FUnits write SetUnits;
     property CurveFactor: Single read FCurveFactor write FCurveFactor;
     property SmoothingFactor: Single read FSmoothingFactor write FSmoothingFactor;
-    property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated;
-    property ReportVST2Properties: Boolean read FV2Properties write FV2Properties;
+    property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated default true;
+    property ReportVST2Properties: Boolean read FV2Properties write FV2Properties default false;
     property StepFloat: Single read FStepFloat write FStepFloat;
     property SmallStepFloat: Single read FSmallStepFloat write FSmallStepFloat;
     property LargeStepFloat: Single read FLargeStepFloat write FLargeStepFloat;
-    property Flags: TVstParameterPropertiesFlags read FFlags write fFlags;
-    property MinInteger: Integer read FMinInteger write FMinInteger;
-    property MaxInteger: Integer read FMaxInteger write FMaxInteger;
-    property StepInteger: Integer read FStepInteger write FStepInteger;
-    property LargeStepInteger: Integer read FLargeStepInteger write FLargeStepInteger;
+    property Flags: TVstParameterPropertiesFlags read FFlags write FFlags default [];
+    property MinInteger: Integer read FMinInteger write FMinInteger default 0;
+    property MaxInteger: Integer read FMaxInteger write FMaxInteger default 100;
+    property StepInteger: Integer read FStepInteger write FStepInteger default 1;
+    property LargeStepInteger: Integer read FLargeStepInteger write FLargeStepInteger default 10;
     property ShortLabel: string read GetShortLabel write SetShortLabel;
     property VSTModule: TCustomVSTModule read FVSTModule write FVSTModule;
     property OnParameterChange: TParameterChangeEvent read FOnSPC write FOnSPC;
@@ -354,6 +356,7 @@ type
     FBlockSizeChangeEvent   : TBlockSizeChangeEvent;
     FSampleRateChangeEvent  : TSampleRateChangeEvent;
     FOnDispatcher           : TOnDispatcherEvent;
+    FProcessPrecisition     : TProcessPrecision;
     FProcessingMode         : TProcessingMode;
     FBlockInBuffer          : TArrayOfSingleDynArray;
     FBlockOutBuffer         : TArrayOfSingleDynArray;
@@ -366,7 +369,7 @@ type
     FCanDos                 : TVstCanDos;
     FPlugCategory           : TVstPluginCategory;
     FMidiEvent              : TVstEvents;
-    FkeysRequired           : Boolean;
+    FKeysRequired           : Boolean;
 
     FOnGetChunkParamEvent   : TGetChunkParameterEvent;
     FOnOfflineNotify        : TOfflineNotifyEvent;
@@ -656,18 +659,19 @@ type
     property Chunk: TMemoryStream read fChunkData write fChunkData;
     property Programs: TCustomVstPrograms read FVstPrograms write SetVstPrograms;
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
-    property numCategories: Integer read fNumCategories write fNumCategories;
+    property numCategories: Integer read fNumCategories write fNumCategories default 1;
     property EffectName: string read FEffectName write SetEffectName;
     property ProductName: string read fProductName write fProductName;
     property VendorName: string read fVendorName write fVendorName;
-    property VersionMajor: Integer read FVersionMajor write SetVersionMajor;
-    property VersionMinor: Integer read FVersionMinor write SetVersionMinor;
-    property VersionRelease: Integer read FVersionRelease write SetVersionRelease;
-    property PlugCategory: TVstPluginCategory read fPlugCategory write fPlugCategory;
-    property KeysRequired: Boolean read fkeysRequired write SetKeysRequired;
+    property VersionMajor: Integer read FVersionMajor write SetVersionMajor default 1;
+    property VersionMinor: Integer read FVersionMinor write SetVersionMinor default 0;
+    property VersionRelease: Integer read FVersionRelease write SetVersionRelease default 0;
+    property PlugCategory: TVstPluginCategory read fPlugCategory write fPlugCategory default vpcUnknown;
+    property ProcessPrecisition: TProcessPrecision read FProcessPrecisition write FProcessPrecisition default pp32;
+    property KeysRequired: Boolean read FKeysRequired write SetKeysRequired default False;
     property Tempo: Single read fTempo;
     property ShellPlugins: TCustomVstShellPlugins read FVstShellPlugins write SetVstShellPlugins;
-    property TailSize: Integer read fTailSize write fTailSize;
+    property TailSize: Integer read FTailSize write FTailSize default 0;
     property CanDos: TVstCanDos read fCanDos write fCanDos;
 
     property OnCreate {$IFNDEF UseDelphi} : TNotifyEvent read fOnCreate write fOnCreate {$ENDIF};
@@ -955,6 +959,10 @@ begin
   effSetPanLaw                      : Result:='effSetPanLaw';
   effBeginLoadBank                  : Result:='effBeginLoadBank';
   effBeginLoadProgram               : Result:='effBeginLoadProgram';
+  effSetProcessPrecision            : Result:='effSetProcessPrecision';
+  effGetNumMidiInputChannels        : Result:='effGetNumMidiInputChannels';
+  effGetNumMidiOutputChannels       : Result:='effGetNumMidiOutputChannels';
+  else Result := 'unkown opcode: ' +IntToStr(Integer(Opcode));
  end;
 end;
 
@@ -1026,6 +1034,9 @@ begin
  Randomize;
  FVersion := '0.0';
  FAbout := 'VST Plugin Wizard by Christian Budde & Tobybear';
+ FProcessPrecisition := pp32;
+ FKeysRequired := False;
+ FTailSize := 0;
  FVersionMajor := 1;
  FVersionMinor := 0;
  FVersionRelease := 0;
@@ -1150,8 +1161,11 @@ begin
  if Assigned(FOnDispatcher) then FOnDispatcher(Self,opcode);
  Result := 0;
 
- {$IFDEF Debug} FLog.Add(TimeToStr(Now-fTmStmp)+' Opcode: '+opcode2String(opcode)+' Value: '+IntToStr(Value)); {$ENDIF}
- {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug}
+ if not (opcode in [effIdle, effEditIdle]) then
+  FLog.Add(TimeToStr(Now - fTmStmp)+' Opcode: '+opcode2String(opcode)+' Value: '+IntToStr(Value));
+ FLog.SaveToFile('Debug.log');
+ {$ENDIF}
 
  case opcode of
   effOpen            : if Assigned(FOnOpen) then FOnOpen(Self);
@@ -1341,6 +1355,9 @@ begin
   effSetPanLaw                : Result := Integer(setPanLaw(Value, opt));
   effBeginLoadBank            : Result := beginLoadBank(PVstPatchChunkInfo(ptr));
   effBeginLoadProgram         : Result := beginLoadProgram(PVstPatchChunkInfo(ptr));
+  effSetProcessPrecision      : Result := Integer(fProcessPrecisition); //< [value]: @see VstProcessPrecision  @see AudioEffectX::setProcessPrecision
+  effGetNumMidiInputChannels	: Result := 0; //< [return value]: number of used MIDI input channels (1-15)  @see AudioEffectX::getNumMidiInputChannels
+  effGetNumMidiOutputChannels	: Result := 0; //< [return value]: number of used MIDI output channels (1-15)  @see AudioEffectX::getNumMidiOutputChannels
   else
    try
      raise Exception.Create('unknown opcode');
@@ -1993,14 +2010,15 @@ procedure TCustomVSTModule.SetParameterAutomated(Index: Integer; Value: Single);
 begin
  if (Index>=numParams) or (Index>=FParameterProperties.Count) then Exit;
  setParameter(Index,Value);
- if FParameterProperties[Index].CanBeAutomated and Assigned(FAudioMaster) and not FIsHostAutomation
-  then FAudioMaster(@FEffect, audioMasterAutomate, Index, 0, nil, Parameter2VSTParameter(Value,Index));
+ if Assigned(FAudioMaster) and Assigned(FParameterProperties[Index]) then
+  if FParameterProperties[Index].CanBeAutomated and not FIsHostAutomation
+   then FAudioMaster(@FEffect, audioMasterAutomate, Index, 0, nil, Parameter2VSTParameter(Value,Index));
 end;
 
 procedure TCustomVSTModule.SetParameter(const Index: Integer; Value: Single);
 begin
  if FParameterUpdate then exit;
- {$IFDEF Debug} FLog.Add(TimeToStr(Now-fTmStmp)+'Set Parameter: '+FloatToStr(Value)); {$ENDIF}
+ {$IFDEF Debug} FLog.Add(TimeToStr(Now-fTmStmp)+' Set Parameter: Index: '+IntToStr(index) + ' Value: '+FloatToStr(Value)); {$ENDIF}
  FParameterUpdate:=True;
  try
   if (Index >= FEffect.numParams) or (Index < 0) or (Index>=FParameterProperties.Count)
@@ -2187,20 +2205,23 @@ constructor TCustomVstParameterProperty.Create(Collection: TCollection);
 var i: Integer;
 begin
  inherited;
- FMin:=0;
- FMax:=1;
- FCC:=-1;
- FCurve:=ctLinear;
- FCurveFactor:=1;
- FSmoothingFactor:=1;
- FCanBeAutomated:=True;
+ FMin         := 0;
+ FMax         := 1;
+ FMinInteger  := 0;
+ FMaxInteger  := 100;
+ FStepInteger := 1;
+ FCC          := -1;
+ FCurve       := ctLinear;
+ FFlags       := [];
+ FCurveFactor := 1;
+ FLargeStepInteger := 10;
+ FSmoothingFactor  := 1;
+ FCanBeAutomated   := True;
+ FV2Properties     := False;
  FDisplayName := 'Parameter '+IntTostr(Collection.Count);
  FVSTModule := (Collection As TCustomVstParameterProperties).VSTModule;
  try
-// Exit;
   FVSTModule.FEffect.numParams := Collection.Count;
-// Exit;
-
   if not (effFlagsProgramChunks in fVSTModule.FEffect.EffectFlags) then
    with FVSTModule do
     if (FEffect.numPrograms>0)
@@ -3327,7 +3348,7 @@ end;
 
 procedure TCustomVSTModule.SetBlockSizeAndSampleRate(aBlockSize: Integer; aSampleRate: Single);
 begin
- {$IFDEF Debug} FLog.Add('Set BlockSize/Samplerate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} FLog.Add('Set BlockSize/Samplerate: Blocksize ' + IntToStr(aBlockSize) + ' Samplerate ' + FloatToStr(aSampleRate)); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if fSampleRate<>aSampleRate then
   begin
    fSampleRate := aSampleRate;
