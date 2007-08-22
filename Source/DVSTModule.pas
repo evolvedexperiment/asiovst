@@ -284,10 +284,10 @@ type
     destructor Destroy; override;
   published
     property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
-    property numInputs: Integer read FNumInputs write FNumInputs;
-    property numOutputs: Integer read FNumOutputs write FNumOutputs;
-    property numParams: Integer read FNumParams write FNumParams;
-    property numPrograms: Integer read FNumPrograms write FNumPrograms;
+    property numInputs: Integer read FNumInputs write FNumInputs default -1;
+    property numOutputs: Integer read FNumOutputs write FNumOutputs default -1;
+    property numParams: Integer read FNumParams write FNumParams default -1;
+    property numPrograms: Integer read FNumPrograms write FNumPrograms default -1;
     property PlugCategory: TVstPluginCategory read FPlugCategory write FPlugCategory;
     property UniqueID: string read GetUniqueID write SetUniqueID;
     property VSTModule: TCustomVSTModule read FVSTModule write FVSTModule;
