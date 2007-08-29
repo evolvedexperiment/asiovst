@@ -9,10 +9,11 @@ uses
   ASIOVSTGUI in 'ASIOVSTGUI.pas' {FmASIOVST};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var VSTModule : TVSTModule;
+var VSTModule : TASIOVSTModule;
 begin
  try
-  VSTModule:=TVSTModule.Create(Application);
+  VSTModule := TASIOVSTModule.Create(Application);
+  VSTModule.AudioMaster := audiomaster;
   VSTModule.Effect^.user:=VSTModule;
   Result := VSTModule.Effect;
  except

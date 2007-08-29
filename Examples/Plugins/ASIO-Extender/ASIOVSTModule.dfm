@@ -34,18 +34,25 @@ object ASIOVSTModule: TASIOVSTModule
       SmoothingFactor = 1.000000000000000000
       CanBeAutomated = True
       ReportVST2Properties = False
+      StepFloat = 0.100000001490116100
+      SmallStepFloat = 0.009999999776482582
+      LargeStepFloat = 0.500000000000000000
       Flags = []
       MinInteger = 0
-      MaxInteger = 0
-      StepInteger = 0
-      LargeStepInteger = 0
+      MaxInteger = 1
+      StepInteger = 1
+      LargeStepInteger = 1
       VSTModule = Owner
-      OnCustomParameterDisplay = ASIOVSTModuleParameterProperties0CustomParameterDisplay
+      OnParameterChange = ASIODriverChange
+      OnCustomParameterDisplay = ASIODriverDisplay
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
+  OnEditOpen = VST_EditOpen
   OnProcess = VST2ModuleProcess
   OnProcessReplacing = VST2ModuleProcess
-  Left = 281
-  Top = 208
-  Height = 270
-  Width = 480
+  Left = 249
+  Top = 330
+  Height = 156
+  Width = 285
 end
