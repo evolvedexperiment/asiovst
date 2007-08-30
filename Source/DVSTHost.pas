@@ -115,6 +115,11 @@ type
     function GetEntryPoints(theDll: TFileName): integer;
     function GetPreset(i: integer): TFXPreset;
     function GetInitialDelay: Integer;
+    function GetEffOptions: TEffFlags;
+    function GetnumInputs: Integer;
+    function GetnumOutputs: Integer;
+    function GetnumParams: Integer;
+    function GetnumPrograms: Integer;
     {$IFDEF SB}
     procedure ScrollChange(Sender: TObject; ScrollPos: Integer);
     {$ELSE}
@@ -122,7 +127,6 @@ type
     procedure SetGUIStyle(const Value: TGUIStyle);
     procedure ListParamChange(Sender: TObject);
     {$ENDIF}
-    function GetEffOptions: TEffFlags;
   public
     PVstEffect          : PVSTEffect;
     GUIForm             : TForm;
@@ -228,10 +232,10 @@ type
   published
     property Active: boolean read FActive write Activate default false;
     property DisplayName: string read GetDisplayName write FDisplayName;
-    property numInputs: Integer read FnumInputs stored False default -1 ;
-    property numOutputs: Integer read FnumOutputs stored False default -1 ;
-    property numPrograms: Integer read FnumPrograms stored False default -1 ;
-    property numParams: Integer read FnumParams stored False default -1;
+    property numInputs: Integer read GetnumInputs stored False default -1 ;
+    property numOutputs: Integer read GetnumOutputs stored False default -1 ;
+    property numPrograms: Integer read GetnumPrograms stored False default -1 ;
+    property numParams: Integer read GetnumParams stored False default -1;
     property Version: Integer read Fversion stored False default -1;
     property InitialDelay: Integer read GetInitialDelay stored False;
     property ReplaceOrAccumulate: TReplaceOrAccumulate read FReplaceOrAccumulate write FReplaceOrAccumulate default roa0NotSupported;
@@ -477,8 +481,14 @@ begin
                                               // or 1 if full single float precision is maintained
                                               // in automation. parameter index in <value> (-1: all, any)
     audioMasterIOChanged                   : if Assigned(thePlug) then
-                                              if Assigned(thePlug.FOnAMIOChanged)
-                                               then thePlug.FOnAMIOChanged(thePlug);
+                                              begin
+                                               thePlug.FnumInputs := effect.numInputs;
+                                               thePlug.FnumOutputs := effect.numOutputs;
+                                               thePlug.FnumPrograms := effect.numPrograms;
+                                               thePlug.FnumParams := effect.numParams;
+                                               if Assigned(thePlug.FOnAMIOChanged)
+                                                then thePlug.FOnAMIOChanged(thePlug);
+                                              end;
     audioMasterNeedIdle                    : if Assigned(thePlug) then
                                               begin
                                                thePlug.FNeedIdle := true;
@@ -1145,10 +1155,10 @@ begin
  FActive := false;
  FVersion := 0;
  FPlugCategory := vpcUnknown;
- FnumInputs:=0;
- FnumOutputs:=0;
- FnumPrograms:=0;
- FnumParams:=0;
+ FnumInputs := 0;
+ FnumOutputs := 0;
+ FnumPrograms := 0;
+ FnumParams := 0;
 end;
 
 function TVstPlugin.VstDispatch(opCode : TDispatcherOpcode; Index, Value: Integer; Pntr: pointer; opt: double): Integer;
@@ -1370,7 +1380,7 @@ var param: string;
     i,wxw: Integer;
     theRect: ERect;
 begin
- if (effFlagsHasEditor in PVstEffect.EffectFlags) and (fGUIStyle=gsDefault) then
+ if (effFlagsHasEditor in PVstEffect.EffectFlags) and (fGUIStyle = gsDefault) then
   begin
    if not FEditOpen then
    begin
@@ -1427,7 +1437,7 @@ begin
     end;
    gsDefault, gsList:
     begin
-     theRect:=Rect(0,0,Form.Width,4+FnumParams*16);
+     theRect:=Rect(0,0,Form.Width,4 + numParams * 16);
      GUIForm:=Form; wxw:=0;
      GUIForm.Visible:=False;
      GUIForm.ClientWidth := theRect.right - theRect.left;
@@ -1442,7 +1452,7 @@ begin
        Free;
       end;
 
-     for i:=0 to FnumParams - 1 do
+     for i:=0 to numParams - 1 do
       begin
        with TLabel.Create(Form) do
         begin
@@ -1556,9 +1566,10 @@ end;
 
 procedure TVstPlugin.EditClose;
 begin
- if FEditOpen
-  then VstDispatch(effEditClose);
- FEditOpen := false;
+ if FEditOpen then
+  if not Boolean(VstDispatch(effEditClose))
+   then // ToDo
+ FEditOpen := False;
 end;
 
 procedure TVstPlugin.CloseEdit;
@@ -1662,6 +1673,13 @@ begin
  if FActive then
   result := VstDispatch(effGetNumProgramCategories)
  else result := -1;
+end;
+
+function TVstPlugIn.GetnumPrograms: Integer;
+begin
+ if Assigned(PVstEffect)
+  then result := PVstEffect^.numPrograms
+  else result := FnumPrograms;
 end;
 
 function TVstPlugin.GetProgramNameIndexed(category, index: Integer; ProgramName: PChar): Integer;
@@ -1908,6 +1926,27 @@ begin
  // struct will be filled with information for 'thisProgramIndex'.
  // returns number of used programIndexes.
  // if 0 is returned, no MidiProgramNames supported.
+end;
+
+function TVstPlugIn.GetnumInputs: Integer;
+begin
+ if Assigned(PVstEffect)
+  then result := PVstEffect^.numInputs
+  else result := FnumInputs;
+end;
+
+function TVstPlugIn.GetnumOutputs: Integer;
+begin
+ if Assigned(PVstEffect)
+  then result := PVstEffect^.numOutputs
+  else result := FnumOutputs;
+end;
+
+function TVstPlugIn.GetnumParams: Integer;
+begin
+ if Assigned(PVstEffect)
+  then result := PVstEffect^.numParams
+  else result := FnumParams;
 end;
 
 function TVstPlugin.GetCurrentMidiProgram(MidiProgramNamePointer : PMidiProgramName): Integer;

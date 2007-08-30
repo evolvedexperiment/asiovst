@@ -9,8 +9,6 @@ uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows,
   Messages, {$ENDIF} SysUtils, Forms, Classes, DDSPBase, DVSTEffect;
 
-{$DEFINE Debug}
-
 {$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
@@ -1027,10 +1025,12 @@ constructor TCustomVSTModule.Create{$IFDEF UseDelphi}(AOwner: TComponent){$ENDIF
 var i : Integer;
 begin
  {$IFDEF UseDelphi} inherited CreateNew(AOwner); {$ENDIF}
- {$IFDEF Debug} FLog:=TStringList.Create; {$ENDIF}
- {$IFDEF Debug} fTmStmp:=Now; {$ENDIF}
- {$IFDEF Debug} FLog.Add('Create '+TimeToStr(fTmStmp)); {$ENDIF}
- {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug}
+ FLog:=TStringList.Create;
+ fTmStmp:=Now;
+ FLog.Add('Create: ' + TimeToStr(fTmStmp));
+ FLog.SaveToFile('Debug.log');
+ {$ENDIF}
  Randomize;
  FVersion := '0.0';
  FAbout := 'VST Plugin Wizard by Christian Budde & Tobybear';
@@ -1058,11 +1058,11 @@ begin
    resvd2 := 0;
    user := nil;
    uniqueID := FourCharToLong('N', 'o', 'E', 'f');
-   ioRatio:= 1;
-   numParams:=0;
-   numPrograms:=0;
-   numInputs:=2;
-   numOutputs:=2;
+   ioRatio := 1;
+   numParams := 0;
+   numPrograms := 0;
+   numInputs := 2;
+   numOutputs := 2;
   end;
  FParameterProperties := TCustomVstParameterProperties.Create(Self);
  FVstPrograms := TCustomVstPrograms.Create(Self);
@@ -1168,7 +1168,10 @@ begin
  {$ENDIF}
 
  case opcode of
-  effOpen            : if Assigned(FOnOpen) then FOnOpen(Self);
+  effOpen            : begin
+                        {$IFDEF Debug} FLog.Add('Host: ' + HostProduct); {$ENDIF}
+                        if Assigned(FOnOpen) then FOnOpen(Self);
+                       end;
   effClose           : if Assigned(FOnClose) then FOnClose(Self);
   effSetProgram      : if (Value < FEffect.numPrograms) and (Value >= 0) and (Value <> FCurProgram)
                         then CurrentProgram:=Value;
@@ -1257,7 +1260,9 @@ begin
   effGetVendorString           : Result := Integer(GetVendorString(ptr));
   effGetProductString          : Result := Integer(GetProductString(ptr));
   effGetVendorVersion          : Result := GetVendorVersion;
-  effVendorSpecific            : if Assigned(FOnVendorSpecific) then Result := FOnVendorSpecific(Self, Index, Value, ptr, opt);
+  effVendorSpecific            : if Assigned(FOnVendorSpecific)
+                                  then Result := FOnVendorSpecific(Self, Index, Value, ptr, opt)
+                                  else Result := 0;
   effCanDo                     : Result := canDo(ptr);
   effGetIcon                   : Result := Integer(getIcon);
   effSetViewPosition           : Result := Integer(setViewPosition(Index, Value));
@@ -1370,15 +1375,15 @@ end;
 procedure TCustomVSTModule.SetNumParams(newNum : Integer);
 begin
  if Assigned(FParameterProperties)
-  then FEffect.numParams:=FParameterProperties.Count
-  else FEffect.numParams:=0
+  then FEffect.numParams := FParameterProperties.Count
+  else FEffect.numParams := 0;
 end;
 
 procedure TCustomVSTModule.SetNumPrograms(newNum : Integer);
 begin
  if Assigned(fVstPrograms)
-  then FEffect.numPrograms:=fVstPrograms.Count
-  else FEffect.numPrograms:=0
+  then FEffect.numPrograms := fVstPrograms.Count
+  else FEffect.numPrograms := 0;
 end;
 
 function TCustomVSTModule.GetUniqueID:string;
@@ -1478,9 +1483,9 @@ end;
 
 procedure TCustomVSTModule.SetBlockOverlapSize(v: Integer);
 begin
- if v<FBlockModeSize
-  then FBlockModeOverlap:=v;
- if (FProcessingMode=pmBlockSave) and (FEffect.InitialDelay<FBlockModeSize-FBlockModeOverlap)
+ if v < FBlockModeSize
+  then FBlockModeOverlap := v;
+ if (FProcessingMode = pmBlockSave) and (FEffect.InitialDelay < FBlockModeSize - FBlockModeOverlap)
   then SetInitialDelay(FInitialDelay);
 end;
 
@@ -1775,9 +1780,9 @@ end;
 
 procedure TCustomVSTModule.GetParameterName(Index: Integer; Text: pchar);
 begin
- if (Index >= FEffect.numParams) or (Index>=FParameterProperties.Count)
+ if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
   then StrPCopy(Text, 'undefined')
-  else StrPCopy(Text,FParameterProperties[Index].DisplayName);
+  else StrPCopy(Text, FParameterProperties[Index].DisplayName);
 end;
 
 function TCustomVSTModule.GetChunk(var data: pointer; isPreset: Boolean): Integer;
@@ -1939,25 +1944,23 @@ end;
 
 procedure TCustomVSTModule.SetPluginFlags(newFlags : TEffFlags);
 begin
- FEffect.EffectFlags:=newFlags;
+ FEffect.EffectFlags := newFlags;
 end;
 
 function TCustomVSTModule.GetPluginFlags: TEffFlags;
 begin
- Result:=FEffect.EffectFlags;
+ Result := FEffect.EffectFlags;
 end;
 
 procedure TCustomVSTModule.SetInitialDelay(delay: Integer);
-var hst : string;
 begin
- if FInitialDelay<>delay then
+ if FInitialDelay <> delay then
   begin
-   FInitialDelay:=delay;
+   FInitialDelay := delay;
    if (FProcessingMode=pmBlockSave) and (FInitialDelay<FBlockModeSize-FBlockModeOverlap)
-    then FEffect.initialDelay := FBlockModeSize-FBlockModeOverlap
+    then FEffect.initialDelay := FBlockModeSize - FBlockModeOverlap
     else FEffect.initialDelay := FInitialDelay;
-   hst:=HostProduct;
-   if hst<>'energyXT'
+   if HostProduct <> 'energyXT'
     then IOChanged;
   end;
 end;
@@ -2219,16 +2222,17 @@ begin
  FCanBeAutomated   := True;
  FV2Properties     := False;
  FDisplayName := 'Parameter '+IntTostr(Collection.Count);
+
  FVSTModule := (Collection As TCustomVstParameterProperties).VSTModule;
- try
-  FVSTModule.FEffect.numParams := Collection.Count;
-  if not (effFlagsProgramChunks in fVSTModule.FEffect.EffectFlags) then
-   with FVSTModule do
+ with FVSTModule do
+  try
+   FVSTModule.FEffect.numParams := Collection.Count;
+   if not (effFlagsProgramChunks in fVSTModule.FEffect.EffectFlags) then
     if (FEffect.numPrograms>0)
-     then for i := 0 to FEffect.numPrograms-1 do SetLength(Programs[i].FParameter,Collection.Count)
-     else SetLength(FParameter,Collection.Count);
- except
- end;
+     then for i := 0 to FEffect.numPrograms-1 do SetLength(Programs[i].FParameter, Collection.Count)
+     else SetLength(FParameter, Collection.Count);
+  except
+  end;
 end;
 
 destructor TCustomVstParameterProperty.Destroy;
@@ -2237,10 +2241,14 @@ begin
  try
   if assigned(VSTModule) then
    with FVSTModule do
-    if not (effFlagsProgramChunks in FEffect.EffectFlags) then
-     if FEffect.numPrograms>0
-      then for i:=0 to FEffect.numPrograms-1 do SetLength(Programs[i].FParameter,Collection.Count-1)
-      else SetLength(FParameter,Collection.Count-1);
+    begin
+     if not (effFlagsProgramChunks in FEffect.EffectFlags) then
+      if FEffect.numPrograms>0
+       then for i:=0 to FEffect.numPrograms-1 do SetLength(Programs[i].FParameter, Collection.Count - 1)
+       else SetLength(FParameter,Collection.Count - 1);
+     if (HostProduct <> 'Cubase VST') and (HostProduct <> 'Unknown') and (HostProduct <> '')
+      then FEffect.numParams := Collection.Count - 1;
+    end;
  except
  end;
  inherited;
@@ -2374,9 +2382,9 @@ begin
  fVSTModule := (Collection As TCustomVstPrograms).VSTModule;
  VSTModule.FEffect.numPrograms:=Collection.Count;
  if not (effFlagsProgramChunks in VSTModule.FEffect.EffectFlags)
-  then SetLength(FParameter,VSTModule.numParams)
-  else fChunkData:=TMemoryStream.Create;
- if VSTModule.FCurProgram<0 then VSTModule.FCurProgram:=0;
+  then SetLength(FParameter, VSTModule.numParams)
+  else fChunkData := TMemoryStream.Create;
+ if VSTModule.FCurProgram < 0 then VSTModule.FCurProgram:=0;
 end;
 
 destructor TCustomVstProgram.Destroy;
@@ -2418,8 +2426,8 @@ end;
 procedure TCustomVstProgram.SetParameter(AIndex: Integer; s: Single);
 begin
  if effFlagsProgramChunks in fVSTModule.Flags then exit;
- if (AIndex>=0) and (AIndex<VSTModule.numParams)
-  then FParameter[AIndex]:=s
+ if (AIndex >= 0) and (AIndex < VSTModule.numParams)
+  then FParameter[AIndex] := s
   else //raise exception.Create('Index out of bounds');
 end;
 
@@ -3801,19 +3809,25 @@ end;
 function TCustomVSTModule.GetHostProduct: string;
 var Text : pchar;
 begin
- if FHostProduct='' then
+ if (FHostProduct = '') or (FHostProduct = 'Unknown') then
   begin
    Getmem(Text, 64);
    try
     if GetHostProductString(Text)
-     then Result:=shortstring(Text)
-     else Result:='Unknown';
+     then Result := shortstring(Text)
+     else Result := 'Unknown';
+    if Result = 'Unknown' then
+    try
+     Result := shortstring(Text);
+    except
+     Result := 'Unknown';
+    end;  
    finally
     FreeMem(Text);
-    FHostProduct:=Result;
+    FHostProduct := Result;
    end
   end
- else Result:=FHostProduct;
+ else Result := FHostProduct;
 end;
 
 function TCustomVSTModule.GetHostVendor: string;
@@ -3822,8 +3836,8 @@ begin
  Getmem(Text, 64);
  try
   if GetHostVendorString(Text)
-   then Result:=shortstring(Text)
-   else Result:='Unknown';
+   then Result:='Unknown'
+   else Result:=shortstring(Text);
  finally
   FreeMem(Text);
  end;
