@@ -1117,7 +1117,7 @@ begin
   end;
  if Longint(PVstEffect.Magic)<>FourCharToLong('V','s','t','P')
   then raise Exception.Create('There is no magic in it... failed!');
- if PVstEffect.uniqueID=0 then
+ if PVstEffect.uniqueID = 0 then
   begin
    sl:= TStringList.Create;
    while ShellGetNextPlugin(tmp)<>0 do
@@ -2095,7 +2095,7 @@ begin
      if Lowercase(ExtractFileExt(theDll)) = '.vst3'
       then @FMainFunction := GetProcAddress(FDLLHandle, 'GetPluginFactory')
       else @FMainFunction := GetProcAddress(FDLLHandle, 'main');
-     if not Assigned(FMainFunction) then @FMainFunction := GetProcAddress(FDLLHandle, 'VSPPluginMain');
+     if not Assigned(FMainFunction) then @FMainFunction := GetProcAddress(FDLLHandle, 'VSTPluginMain');
      if not Assigned(FMainFunction) then
       begin
        @FMainFunction := @whatifnoentry;
