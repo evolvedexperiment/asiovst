@@ -12,6 +12,9 @@ object FmPage: TFmPage
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnPaint = FormPaint
   DesignSize = (
     340
     400)
@@ -21,14 +24,12 @@ object FmPage: TFmPage
     Left = 8
     Top = 8
     Width = 324
-    Height = 384
+    Height = 177
     Anchors = [akLeft, akTop, akRight, akBottom]
     BorderStyle = bsNone
     ParentColor = True
     ReadOnly = True
     TabOrder = 0
-    ExplicitWidth = 224
-    ExplicitHeight = 144
   end
   object VstHost: TVstHost
     VstPlugIns = <

@@ -36,6 +36,7 @@ const
   IDD_PROPDLG = 100;
 
 function propdlgproc(hDlg: HWND; uMsg: UINT; wp: WPARAM; lp: LPARAM): boolean; stdcall;
+var str : string;
 begin
   Result := true;
   case uMsg of
@@ -44,6 +45,7 @@ begin
        if PPropSheetPage(lp)^.lParam = 0 then Exit;
        with TVSTPluginPropertySheet(PPropSheetPage(lp)^.lParam) do
         begin
+         str := FFileName;
          FPageForm := TFmPage.Create(nil);
          with TFmPage(FPageForm) do
           begin
@@ -51,7 +53,7 @@ begin
            WindowState := wsMaximized;
            ParentWindow := hDlg;
            Show;
-           FileName := FFileName;
+           FileName := str;
           end;
         end;
       except
