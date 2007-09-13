@@ -1459,15 +1459,30 @@ procedure TFmMiniHost.ProcessEvents(Sender: TObject;
  ev: PVstEvents);
 var i: Integer;
     event: PVstMidiEvent;
+    Sysex : PVstMidiSysexEvent;
+    aStream: TMemoryStream;
 begin
  if CurrentMidiOut = 0 then exit;
  for i := 0 to ev^.numEvents - 1 do
- if (ev.events[i].EventType = etMidi) then
- begin
-  event := PVstMidiEvent(ev^.events[i]);
-  MidiOutput.Send(CurrentMidiOut - 1, event^.mididata[0],
-   event^.mididata[1], event^.mididata[2]);
- end;
+  if (ev.events[i].EventType = etMidi) then
+   begin
+    event := PVstMidiEvent(ev^.events[i]);
+    MidiOutput.Send(CurrentMidiOut - 1, event^.mididata[0],
+      event^.mididata[1], event^.mididata[2]);
+   end else
+  if ev.events[i].EventType = etSysex then
+   begin
+    Sysex := PVstMidiSysexEvent(ev^.events[i]);
+    if Sysex.dumpBytes > 0 then
+     begin
+      AStream := TMemoryStream.Create;
+      aStream.Size := Sysex.dumpBytes;
+      aStream.Position := 0;
+      Move(Sysex.SysexDump^, pchar(aStream.Memory)[0], Sysex.dumpBytes);
+      MidiOutput.SendSysEx(CurrentMidiOut - 1,aStream);
+      aStream.Free;
+     end;
+   end;
 end;
 
 procedure TFmMiniHost.wmdropfiles(var msg: tmessage);
