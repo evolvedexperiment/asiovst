@@ -163,6 +163,9 @@ type
   protected
     fOversample : Integer;
     fFilter     : TButterworthLowCut;
+    fAttackFac2 : Double;
+    fDecayFac2  : Double;
+    fPeak2      : Double;
     procedure SetSampleRate(const Value: Double); override;
     procedure CalculateAttackFactor; override;
     procedure CalculateDecayFactor; override;
@@ -676,67 +679,86 @@ end;
 
 procedure TSoftKneeFeedbackLimiter.CalculateAttackFactor;
 begin
-  if fAttack = 0 then fAttackFactor := 0
+ if fAttack = 0
+  then fAttackFactor := 0
   else fAttackFactor := exp( -ln2 / (fOversample * fAttack * 0.001 * SampleRate));
+ fAttackFac2 := exp( -ln2 / (0.48 * SampleRate));
 end;
 
 procedure TSoftKneeFeedbackLimiter.CalculateDecayFactor;
 begin
-  if fDecay = 0 then fDecayFactor := 0
-  else fDecayFactor := exp( -ln2 / (fOversample * fDecay * 0.001 * SampleRate));
+ if fDecay = 0 then fDecayFactor := 0
+  else fDecayFactor := exp( -ln2 / ( {fOversample *} fDecay * 0.001 * SampleRate));
+ fDecayFac2 := exp( -ln2 / (0.98 * SampleRate));
 end;
 
 procedure TSoftKneeFeedbackLimiter.SetSampleRate(const Value: Double);
 begin
  inherited;
  fFilter.SampleRate := Value;
- fOversample := Round(1E5 / Value + 0.5);
+ fOversample := Round(1E5 / Value + 1.5);
  CalculateAttackFactor;
  CalculateDecayFactor;
 end;
 
 function TSoftKneeFeedbackLimiter.ProcessSample(Input: Double): Double;
-var InternalRatio, Knee : Double;
-    OversampleCount     : Integer;
+var InternalRatio    : Double;
+    OversampleCount  : Integer;
+    PeakdB           : Double;
 begin
- if abs(Input)>fPeak
-  then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
-  else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
-
- Knee := 0.5 *(1 + Tanh2c(fSoftKnee * log10(fPeak / fThreshold)));
- InternalRatio := 1 + Knee * (fRatio - 1);
-
- if fPeak < fThreshold
-  then fGain := 1
-//  else fGain := 1 / (1 + 2 *(fPeak - fThreshold));
-//  else fGain := fThresholdRatioFactor * Power(fPeak, fRatio - 1);
-//  else fGain := fThreshold / fPeak;
-//  else fGain := * Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1);
-  else fGain := Power(fThreshold, 1 - InternalRatio) * Power(fPeak, InternalRatio - 1);
-
-
- result := fGain * Input;
-
-(*
  Input := fFilter.ProcessSample(Input);
+(*
+
+// threshold = -13.4 .. - 13
+
  result := fGain * Input;
+ if abs(result)>fPeak2
+  then fPeak2 := abs(result) + (fPeak2 - abs(result)) * fAttackFac2
+  else fPeak2 := abs(result) + (fPeak2 - abs(result)) * fDecayFac2;
+
+ if abs(result)>fPeak
+  then
+   begin
+    fPeak := abs(result) + (fPeak - abs(result)) * fAttackFactor;
+    PeakdB := Amp_to_dB(abs(0.3 * fPeak2 + 0.7 * fPeak + 1E-32));
+    InternalRatio := - (3 + 3 * (PeakdB - fThresholddB - 0.5) / (abs(PeakdB - fThresholddB) + 1));
+    fGain := dB_to_Amp(PeakdB * InternalRatio - fThresholddB * InternalRatio);
+    for OversampleCount := 1 to fOversample - 1 do
+     begin
+      result := fGain * Input;
+      fPeak := abs(result) + (fPeak - abs(result)) * fAttackFactor;
+      PeakdB := Amp_to_dB(abs(0.3 * fPeak2 + 0.7 * fPeak + 1E-32));
+      InternalRatio := - (3 + 3 * (PeakdB - fThresholddB - 0.5) / (abs(PeakdB - fThresholddB) + 1));
+      fGain := dB_to_Amp(PeakdB * InternalRatio - fThresholddB * InternalRatio);
+     end
+   end
+  else
+   begin
+    fPeak := abs(result) + (fPeak - abs(result)) * fDecayFactor;
+    PeakdB := Amp_to_dB(abs(0.3 * fPeak2 + 0.7 * fPeak + 1E-32));
+    InternalRatio := - (3 + 3 * (PeakdB - fThresholddB - 0.5) / (abs(PeakdB - fThresholddB) + 1));
+    fGain := dB_to_Amp(PeakdB * InternalRatio - fThresholddB * InternalRatio);
+   end;
+
+*)
+ result := fGain * Input;
+{
  if abs(result)>fPeak
   then fPeak := abs(result) + (fPeak - abs(result)) * fAttackFactor
   else fPeak := abs(result) + (fPeak - abs(result)) * fDecayFactor;
- Knee := 0.5 *(1 + Tanh2c(fSoftKnee * log10(fPeak / fThreshold)));
- InternalRatio := 1 + Knee * (fRatio - 1);
- for OversampleCount := 0 to fOversample - 1 do
-  begin
-   result := Input * Power(fThreshold, 1 - InternalRatio) * Power(fPeak, InternalRatio - 1);
-   if abs(result)>fPeak
-    then fPeak := abs(result) + (fPeak - abs(result)) * fAttackFactor
-    else fPeak := abs(result) + (fPeak - abs(result)) * fDecayFactor;
-   fPeak := 1E-30 + fPeak;
-   Knee := 0.5 *(1 + Tanh2c(fSoftKnee * log10(fPeak / fThreshold)));
-   InternalRatio := 1 + Knee * (fRatio - 1);
-  end;
- fGain := Power(fThreshold, 1 - InternalRatio) * Power(fPeak, InternalRatio - 1);
-*)
+}
+ fPeak := fDecayFactor * fPeak;
+ if abs(result) > fPeak
+  then fPeak := abs(result) + (fPeak - abs(result)) * fAttackFactor;
+
+ fPeak2 := fDecayFac2 * fPeak2;
+ if abs(result) > fPeak2
+  then fPeak2 := abs(result) + (fPeak2 - abs(result)) * fAttackFac2;
+
+ PeakdB := Amp_to_dB(abs(0.3 * fPeak + 0.7 * fPeak2 + 1E-32));
+// InternalRatio := - (3 + 3 * (PeakdB - fThresholddB - 0.5) / (abs(PeakdB - fThresholddB) + 1));
+ InternalRatio := - (2.6 + 2.6 * (PeakdB - fThresholddB - 1.5) / (abs(PeakdB - fThresholddB) + 2));
+ fGain := dB_to_Amp(PeakdB * InternalRatio - fThresholddB * InternalRatio);
 end;
 
 end.
