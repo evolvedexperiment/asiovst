@@ -61,7 +61,6 @@ type
     FDLLHandle          : THandle;
     FDisplayName        : string;
     FMainFunction       : TMainProc;
-    FHandle             : THandle;
     FEditOpen           : boolean;
     FWantMidi           : boolean;
     FNeedIdle           : boolean;
@@ -103,8 +102,6 @@ type
     FGUIFormCreated     : Boolean;
     FGUIStyle           : TGUIStyle;
     function VstDispatch(opCode : TDispatcherOpcode; Index: Integer = 0; value: Integer = 0; pntr: pointer = nil; opt: double = 0): Integer; {overload;} //virtual;
-    function EditOpen(Handle: THandle): Integer;
-    procedure EditClose;
     procedure Activate(b: Boolean);
     procedure onFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ParamChange(Sender: TObject);
@@ -148,9 +145,11 @@ type
     procedure Close;
     function Load(PluginDll: TFilename): Boolean;
     procedure UnLoad;
-    function EditGetRect: ERect;
     procedure ShowEdit(Form: TForm); overload;
     procedure ShowEdit; overload;
+    function EditGetRect: ERect;
+    function EditOpen(Handle: THandle): Integer;
+    procedure EditClose;
     procedure CloseEdit;
     procedure MainsChanged(bOn: boolean);
     procedure SetParameter(index: Integer; parameter: Single); virtual;
@@ -1385,7 +1384,6 @@ begin
    if not FEditOpen then
    begin
     EditOpen(Form.Handle);
-    FHandle := Form.Handle;
     EditIdle;
    end;
 //  else raise exception.Create('Editor is already open!');
@@ -1394,7 +1392,7 @@ begin
   case fGUIStyle of
    gsOld:
     begin
-     GUIForm:=Form;
+     GUIForm := Form;
      FEditOpen:=True;
      with TLabel.Create(Form) do
       begin
