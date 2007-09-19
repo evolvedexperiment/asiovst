@@ -65,16 +65,16 @@ type
 
 implementation
 
-uses Math, SysUtils;
+uses Math, Dialogs, SysUtils;
 
 constructor TBesselFilter.Create;
 begin
- fDownsamplePow:=0;
- fDownsampleFak:=1;
- fFrequency:=0;
- fGain:=0;
- fOrder:=10;
- SampleRate:=44100;
+ fDownsamplePow := 0;
+ fDownsampleFak := 1;
+ fFrequency     := 0;
+ fGain          := 0;
+ fOrder         := 6;
+ SampleRate     := 44100;
  CalculateCoefficients;
 end;
 
@@ -101,7 +101,8 @@ begin
  if Value<>fSampleRate then
   begin
    fSampleRate := Value;
-   fSRR:=1/fSampleRate; SetW0;
+   fSRR := 1 / fSampleRate;
+   SetW0;
    CalculateCoefficients;
   end;
 end;
@@ -119,23 +120,23 @@ end;
 
 procedure TBesselFilter.SetW0;
 begin
- fW0:=2*Pi*fSRR*(fFrequency*fDownsampleFak);
- fSinW0:=sin(fW0);
- if fW0>3.1 then fW0:=3.1;
+ fW0 := 2 * Pi * fSRR * (fFrequency * fDownsampleFak);
+ fSinW0 := sin(fW0);
+ if fW0 > 3.1 then fW0 := 3.1;
 end;
 
 procedure TBesselFilter.SetGain(const Value: Double);
 const ln10_0025 : Double = 5.7564627325E-2;
 begin
  fGain := Value;
- fGainSpeed:=Exp(fGain*ln10_0025);
+ fGainSpeed := Exp(fGain * ln10_0025);
 end;
 
 procedure TBesselFilter.SetOrder(Value: Integer);
 begin
- if Value<1 then Value:=1 else
- if Value>64 then Value:=64;
- if fOrder<>Value then
+ if Value <  1 then Value :=  1 else
+ if Value > 64 then Value := 64;
+ if fOrder <> Value then
   begin
    fOrder := Value;
    CalculateCoefficients;
@@ -146,7 +147,7 @@ procedure TBesselFilter.SetFrequency(const Value: Double);
 begin
  if fFrequency <> Value then
   begin
-   fFrequency:=Value;
+   fFrequency := Value;
    SetW0;
    CalculateCoefficients;
   end;
@@ -155,14 +156,15 @@ end;
 procedure TBesselFilter.SetFilterValues(const AFrequency, AGain : Single);
 const ln10_0025 : Double = 5.7564627325E-2;
 begin
- fFrequency:=AFrequency; fGain:=AGain;
- fGainSpeed:=Exp((fGain*ln10_0025));
+ fFrequency := AFrequency;
+ fGain := AGain;
+ fGainSpeed := Exp(fGain * ln10_0025);
  SetW0;
 end;
 
 function TBesselFilter.GetOrder: Integer;
 begin
- Result:=fOrder;
+ Result := fOrder;
 end;
 
 function TBesselFilter.Real(Frequency: Double): Double;
@@ -225,12 +227,12 @@ end;
 
 function TBesselFilter.MagnitudeSquared(Frequency: Double): Double;
 begin
- Result:=1;
+ Result := 1;
 end;
 
 function TBesselFilter.MagnitudeLog10(Frequency: Double): Double;
 begin
- result:=20*Log10(MagnitudeSquared(Frequency));
+ result := 20 * Log10(MagnitudeSquared(Frequency));
 end;
 
 function TBesselFilter.Phase(Frequency: Double): Double;
@@ -265,19 +267,41 @@ constructor TBesselLP.Create;
 begin
  inherited Create;
  fGainSpeed := 1;
+ fOrder := 6;
+end;
+
+function CalculateReverseBesselPolynomial(Order : Integer;  X : Double): Double;
+begin
+ if Order = 0 then Result := 1 else
+ if Order = 1 then Result := X + 1
+  else Result := (2 * Order - 1) * CalculateReverseBesselPolynomial(Order - 1, X)
+                        + sqr(X) * CalculateReverseBesselPolynomial(Order - 2, X);
+end;
+
+function CalculateReverseBesselPolynomial0(Order : Integer): Double;
+begin
+ if Order < 2 then Result := 1
+  else Result := (2 * Order - 1) * CalculateReverseBesselPolynomial0(Order - 1);
+end;
+
+function CalculateBesselFactor(Order, Term : Integer): Double;
+begin
+ result := Factorial(2 * Order - Term) / (IntPower(2, Order - Term) * Factorial(Term) * Factorial(Order - Term));
 end;
 
 procedure TBesselLP.CalculateCoefficients;
 var K, t  : Double;
 begin
+// ShowMessage(FloatToStr(CalculateReverseBesselPolynomial0(6)));
+
  K     := tan(fW0 * 0.5);
- t     := 1 / ((((((     K +   21) * K +  210)* K + 1260)*K +  4725) * K + 10395)*K +  10395);
- fB[0] :=   - ( (((( 6 * K +   84) * K +  420)* K * K       -  9450) * K - 41580)*K -  62370)*t;
- fB[1] :=   - ((((((15 * K +  105) * K -  210)* K - 3780)*K -  4725) * K + 51975)*K + 155925)*t;
- fB[2] :=   - (   ((20 * K * K         -  840)* K * K       + 18900) * K * K        - 207900)*t;
- fB[3] :=   - ((((((15 * K -  105) * K -  210)* K + 3780)*K -  4725) * K - 51975)*K + 155925)*t;
- fB[4] :=   - ( (((( 6 * K -   84) * K +  420)* K * K       -  9450) * K + 41580)*K -  62370)*t;
- fB[5] :=   - ((((((     K -   21) * K +  210)* K - 1260)*K +  4725) * K - 10395)*K +  10395)*t;
+ t     := 1 / ((((((     K + 1 * 21) * K + 1 * 210)* K + 1 * 1260)*K + 1 * 4725) * K + 1 * 10395)*K +  1 * 10395);
+ fB[0] :=   - ( (((( 6 * K + 4 * 21) * K + 2 * 210)* K * K           - 2 * 4725) * K - 4 * 10395)*K -  6 * 10395)*t;
+ fB[1] :=   - ((((((15 * K + 5 * 21) * K - 1 * 210)* K - 3 * 1260)*K - 1 * 4725) * K + 5 * 10395)*K + 15 * 10395)*t;
+ fB[2] :=   - (   ((20 * K * K           - 4 * 210)* K * K           + 4 * 4725) * K * K            - 20 * 10395)*t;
+ fB[3] :=   - ((((((15 * K - 5 * 21) * K - 1 * 210)* K + 3 * 1260)*K - 1 * 4725) * K - 5 * 10395)*K + 15 * 10395)*t;
+ fB[4] :=   - ( (((( 6 * K - 4 * 21) * K + 2 * 210)* K * K           - 2 * 4725) * K + 4 * 10395)*K -  6 * 10395)*t;
+ fB[5] :=   - ((((((     K - 1 * 21) * K + 1 * 210)* K - 1 * 1260)*K + 1 * 4725) * K - 1 * 10395)*K +  1 * 10395)*t;
 
  fA[0] :=   10395 * t * fGainSpeed;
  fA[1] := - 6 * fA[0];
@@ -326,39 +350,39 @@ end;
 
 function TBesselLP.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
-var a : Double;
-    i : Integer;
+var i : Integer;
 begin
- result  := fA[0] * Input + fState[0];
- for i := 1 to fOrder - 2
+ result    := fA[0] * Input + fState[0];
+ for i := 1 to fOrder - 1
   do fState[i - 1] := fA[i] * Input + fB[i - 1] * result + fState[i];
- fState[fOrder] := fA[fOrder - 1] * Input + fB[fOrder]*result;
+ fState[fOrder - 1] := fA[fOrder] * Input + fB[fOrder - 1] * result;
 end;
 {$ELSE}
 asm
- fld Input.Single
+ fld Input.Double
  fmul [self.fA].Double
  fadd [self.fState].Double
  mov ecx, 1
+ mov edx, [self.fOrder]
 
 @StageLoop:
  fld st(0)
- fmul [self.fB + ecx * 8].Double
- fadd [self.fState + ecx * 8 + 8].Double
- fld Input.Single
- fmul [self.fA  + ecx * 8 + 8].Double
+ fmul [self.fB + ecx * 8 - 8].Double
+ fadd [self.fState + ecx * 8].Double
+ fld Input.Double
+ fmul [self.fA + ecx * 8].Double
  faddp
- fstp [self.fState].Double
+ fstp [self.fState + ecx * 8 - 8].Double
  inc ecx
- test ecx, fOrder
- loop @StageLoop
+ test ecx, edx
+ jnp @StageLoop
 
  fld st(0)
- fmul [self.fB + ecx * 8].Double
- fld Input.Single
- fmul [self.fA + ecx * 8 + 8].Double
+ fmul [self.fB + ecx * 8 - 8].Double
+ fld Input.Double
+ fmul [self.fA + ecx * 8].Double
  faddp
- fstp [self.fState + ecx * 8].Double
+ fstp [self.fState + ecx * 8 - 8].Double
 end;
 {$ENDIF}
 
@@ -411,39 +435,39 @@ end;
 
 function TBesselHP.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
-var a : Double;
-    i : Integer;
+var i : Integer;
 begin
- result  := fA[0] * Input + fState[0];
- for i := 1 to fOrder - 2
+ result    := fA[0] * Input + fState[0];
+ for i := 1 to fOrder - 1
   do fState[i - 1] := fA[i] * Input + fB[i - 1] * result + fState[i];
- fState[fOrder] := fA[fOrder - 1] * Input + fB[fOrder] * result;
+ fState[fOrder - 1] := fA[fOrder] * Input + fB[fOrder - 1] * result;
 end;
 {$ELSE}
 asm
- fld Input.Single
+ fld Input.Double
  fmul [self.fA].Double
  fadd [self.fState].Double
  mov ecx, 1
+ mov edx, [self.fOrder]
 
 @StageLoop:
  fld st(0)
- fmul [self.fB + ecx * 8].Double
- fadd [self.fState + ecx * 8 + 8].Double
- fld Input.Single
- fmul [self.fA  + ecx * 8 + 8].Double
+ fmul [self.fB + ecx * 8 - 8].Double
+ fadd [self.fState + ecx * 8].Double
+ fld Input.Double
+ fmul [self.fA + ecx * 8].Double
  faddp
- fstp [self.fState].Double
+ fstp [self.fState + ecx * 8 - 8].Double
  inc ecx
- test ecx, fOrder
- loop @StageLoop
+ test ecx, edx
+ jnp @StageLoop
 
  fld st(0)
- fmul [self.fB + ecx * 8].Double
- fld Input.Single
- fmul [self.fA + ecx * 8 + 8].Double
+ fmul [self.fB + ecx * 8 - 8].Double
+ fld Input.Double
+ fmul [self.fA + ecx * 8].Double
  faddp
- fstp [self.fState + ecx * 8].Double
+ fstp [self.fState + ecx * 8 - 8].Double
 end;
 {$ENDIF}
 
