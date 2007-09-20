@@ -65,6 +65,7 @@ type
   function smp2ms(smp, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function Sync2Smp(SyncFactor, bpm, SampleRate: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
+  function Factorial(Order : Integer) : Double;
   function f_Limit(v:Single;l:Single=-1;u:Single=1):Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Limit(v:Double;l:Double=-1;u:Double=1):Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Clip(x,l,h:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -238,6 +239,19 @@ end;
 {$ENDIF}
 
 { Math }
+
+function Factorial(Order : Integer) : Double;
+var i : Integer;
+begin
+ if Order = 0
+  then result := 1
+  else
+   begin
+    result := 1;
+    for i := 2 to Order
+     do result := result * i;
+   end;
+end;
 
 // Limit a value to be l<=v<=u
 function f_Limit(v:Single;l:Single=-1;u:Single=1):Single; overload;
