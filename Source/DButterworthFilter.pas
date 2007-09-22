@@ -72,12 +72,13 @@ uses Math, SysUtils;
 
 constructor TButterworthFilter.Create;
 begin
- fDownsamplePow:=0;
- fDownsampleFak:=1;
- fFrequency:=0;
- fGain:=0;
- fOrder:=10;
- SampleRate:=44100;
+ fDownsamplePow := 0;
+ fDownsampleFak := 1;
+ fFrequency := 0;
+ fGain := 0;
+ fGainSpeed := 1;
+ fOrder := 10;
+ SampleRate := 44100;
  CalculateCoefficients;
 end;
 
@@ -132,6 +133,7 @@ const ln10_0025 : Double = 5.7564627325E-2;
 begin
  fGain := Value;
  fGainSpeed:=Exp(fGain*ln10_0025);
+ CalculateCoefficients;
 end;
 
 procedure TButterworthFilter.SetOrder(Value: Integer);

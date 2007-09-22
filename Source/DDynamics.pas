@@ -33,13 +33,13 @@ type
     function ProcessSample(Input : Double):Double; virtual; abstract;
     constructor Create; virtual;
   published
-    property Threshold : Double read fThresholddB write SetThreshold;   // in dB
+    property Threshold : Double read fThresholddB write SetThreshold;  // in dB
     property Ratio : Double read fRatio write SetRatio;
-    property Attack : Double read fAttack write SetAttack;            // in ms
-    property Decay : Double read fDecay write SetDecay;         // in ms
+    property Attack : Double read fAttack write SetAttack;             // in ms
+    property Decay : Double read fDecay write SetDecay;                // in ms
     property SampleRate : Double read fSampleRate write SetSampleRate;
-    property GainReductionFactor : Double read fGain; // in dB
-    property GainReductiondB : Double read GetGainReductiondB; // in dB
+    property GainReductionFactor : Double read fGain;                  // in dB
+    property GainReductiondB : Double read GetGainReductiondB;         // in dB
   end;
 
   TSimpleGate = class(TDynamics)
