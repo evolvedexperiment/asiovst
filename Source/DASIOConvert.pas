@@ -851,12 +851,10 @@ asm
  fld Min24
  push ebx
  mov  ecx, frames
+
 @Start:
- xor ebx,ebx
- mov bx,[eax]
- ror ebx,8
- mov bh,[eax+2]
- rol ebx,8
+ mov ebx,[eax]
+ xor ebx, $FFFFFF
  mov [esp-4],ebx
  fild [esp-4].Single
  fmul  st(0),st(1)
@@ -876,7 +874,7 @@ var
 begin
  for i := 0 to frames - 1 do
   begin
-   TargetArray[i]:=(SourceInt^ shl 8) *Min24;
+   TargetArray[i] := (SourceInt^ shl 8) * MinLong;
    Inc(SourceByte,3);
   end;
 end;
@@ -888,18 +886,16 @@ asm
  fld Min24
  push ebx
  mov  ecx, frames
+
 @Start:
- xor ebx,ebx
- mov bx,[eax]
- ror ebx,8
- mov bh,[eax+2]
- rol ebx,8
+ mov ebx,[eax]
+ xor ebx, $FFFFFF
  mov [esp-4],ebx
  fild [esp-4].Single
  fmul  st(0),st(1)
  fstp [target].Double
- add  eax,3
- add  edx,8
+ add  eax, 3
+ add  edx, 8
  loop @Start
  pop ebx
  ffree st(0)
@@ -913,7 +909,7 @@ var
 begin
  for i := 0 to frames - 1 do
   begin
-   TargetArray[i]:=(SourceInt^ shl 8) *Min24;
+   TargetArray[i]:=(SourceInt^ shl 8) * MinLong;
    Inc(SourceByte,3);
   end;
 end;
@@ -1723,6 +1719,7 @@ asm
 end;
 
 procedure SingleToInt24LSB_x87(source: PSingle; target: pointer; frames: longint); overload;
+{$IFDEF x87}
 asm
   push ebx
   fld   Max24         //for speed
@@ -1741,6 +1738,20 @@ asm
   ffree st(0)
   pop ebx
 end;
+{$ELSE}
+var
+  SourceArray : PSnglArray absolute source;
+  Target      : PInteger absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1 do
+  begin
+   SourceInt^ := TargetArray[i]
+   TargetArray[i]:=(SourceInt^ shl 8) * MinLong;
+   Inc(SourceByte,3);
+  end;
+end;
+{$ENDIF}
 
 procedure SingleToInt24LSB_UDF_x87(source: PSingle; target: pointer; frames: longint); overload;
 const Scaler: double = ((1/$10000) / $10000);  // 2^-32
