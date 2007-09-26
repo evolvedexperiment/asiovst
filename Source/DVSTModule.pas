@@ -3,14 +3,10 @@ unit DVSTModule;
 interface
 
 {$I ASIOVST.INC}
-{$DEFINE UseDelphi}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows,
   Messages, {$ENDIF} SysUtils, Forms, Classes, DDSPBase, DVSTEffect;
-
-{$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
-{$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
 type
   TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);

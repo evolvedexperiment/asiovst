@@ -418,4 +418,8 @@
 
 {$IFDEF DELPHI9_UP} {$DEFINE useinlining} {$ENDIF}
 
-{-$DEFINE Debug}
+{$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
+{$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
+
+{$DEFINE Debug}
+{$DEFINE UseDelphi}
