@@ -60,7 +60,7 @@ uses inifiles, DASIOConvert;
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
  DriverCombo.Items := ASIOHost.DriverList;
- fSamplesPerBeat:=60/SETempo.Value*ASIOHost.SampleRate;
+ fSamplesPerBeat := 60 / SETempo.Value*ASIOHost.SampleRate;
  fSamplesCount := 0;
  fMetroVolume := 1;
  fVolume := 1;
