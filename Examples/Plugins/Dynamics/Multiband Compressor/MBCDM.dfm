@@ -2,7 +2,7 @@ object MBCDataModule: TMBCDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = []
+  Flags = [effFlagsHasEditor]
   Version = '0.0'
   EffectName = 'Multiband Compressor'
   ProductName = 'Multiband Compressor'
