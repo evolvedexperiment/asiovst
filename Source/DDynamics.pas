@@ -109,6 +109,8 @@ type
   TSimpleFeedbackCompressor = class(TSimpleCompressor)
   protected
     procedure RatioThresholdChanged; override;
+    procedure CalculateAttackFactor; override;
+    procedure CalculateDecayFactor; override;
   public
     function ProcessSample(Input : Double):Double; override;
   end;
@@ -461,12 +463,24 @@ var dbl : Double;
 begin
  dbl := Power(fThreshold, 1 - fRatio);
  if fAutoMakeUp
-  then fMakeUpGain[0] := 1 / (dbl * Power(1, fRatio - 1))
+  then fMakeUpGain[0] := 1 / dbl
   else fMakeUpGain[0] := dB_to_Amp(fMakeUpGaindB);
  fMakeUpGain[1] := fMakeUpGain[0] * dbl;
 end;
 
 { TSimpleFeedbackCompressor }
+
+procedure TSimpleFeedbackCompressor.CalculateAttackFactor;
+begin
+  if fAttack = 0 then fAttackFactor := 0
+  else fAttackFactor := 1 - exp( -ln2 / (fAttack / fRatio * 0.001 * SampleRate));
+end;
+
+procedure TSimpleFeedbackCompressor.CalculateDecayFactor;
+begin
+  if fDecay = 0 then fDecayFactor := 0
+  else fDecayFactor := exp( -ln2 / (fDecay  / fRatio * 0.001 * SampleRate));
+end;
 
 function TSimpleFeedbackCompressor.ProcessSample(Input: Double): Double;
 var dbl : Double;
@@ -486,11 +500,12 @@ end;
 procedure TSimpleFeedbackCompressor.RatioThresholdChanged;
 var dbl : Double;
 begin
- dbl := Power(fThreshold, 1 / fRatio - 1);
  if fAutoMakeUp
-  then fMakeUpGain[0] := 1 / dbl
+  then fMakeUpGain[0] := 1 / Power(fThreshold, 1 - fRatio)
   else fMakeUpGain[0] := dB_to_Amp(fMakeUpGaindB);
- fMakeUpGain[1] := dbl;
+ fMakeUpGain[1] := Power(fThreshold, 1 / fRatio - 1);
+ CalculateAttackFactor;
+ CalculateDecayFactor;
 end;
 
 { TSimpleRMSCompressor }
