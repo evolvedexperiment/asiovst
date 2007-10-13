@@ -86,17 +86,33 @@ type
   end;
 
   TSimpleCompressor = class(TDynamics)
+  private
+    procedure SetAutoMakeUp(const Value: Boolean);
+    procedure SetMakeUpGaindB(const Value: Double);
   protected
-    fSideChain   : Double;
-    fMakeUpGain  : Array [0..1] of Double;
+    fSideChain    : Double;
+    fAutoMakeUp   : Boolean;
+    fMakeUpGaindB : Double;
+    fMakeUpGain   : Array [0..1] of Double;
     procedure RatioThresholdChanged; virtual;
     procedure SetThreshold(const Value: Double); override;
     procedure SetRatio(const Value: Double); override;
+  published
   public
     constructor Create; override;
     function ProcessSample(Input : Double):Double; override;
     procedure InputSideChain(Input : Double); virtual;
+    property AutoMakeUp : Boolean read fAutoMakeUp write SetAutoMakeUp;
+    property MakeUpGaindB : Double read fMakeUpGaindB write SetMakeUpGaindB; //in dB
   end;
+
+  TSimpleFeedbackCompressor = class(TSimpleCompressor)
+  protected
+    procedure RatioThresholdChanged; override;
+  public
+    function ProcessSample(Input : Double):Double; override;
+  end;
+
 
   TSimpleRMSCompressor = class(TSimpleCompressor)
   private
@@ -385,6 +401,8 @@ begin
   inherited;
   fPeak := 0;
   fRatio := 1;
+  fMakeUpGaindB := 0;
+  fAutoMakeUp := False;
   RatioThresholdChanged;
 end;
 
@@ -407,6 +425,25 @@ begin
  fSideChain := Input;
 end;
 
+procedure TSimpleCompressor.SetAutoMakeUp(const Value: Boolean);
+begin
+ fAutoMakeUp := Value;
+ if fAutoMakeUp <> Value then
+  begin
+   fAutoMakeUp := Value;
+   RatioThresholdChanged;
+  end;
+end;
+
+procedure TSimpleCompressor.SetMakeUpGaindB(const Value: Double);
+begin
+ if fMakeUpGaindB <> Value then
+  begin
+   fMakeUpGaindB := Value;
+   RatioThresholdChanged;
+  end;
+end;
+
 procedure TSimpleCompressor.SetRatio(const Value: Double);
 begin
  inherited;
@@ -423,8 +460,37 @@ procedure  TSimpleCompressor.RatioThresholdChanged;
 var dbl : Double;
 begin
  dbl := Power(fThreshold, 1 - fRatio);
- fMakeUpGain[0] := 1 / (dbl * Power(1, fRatio - 1));
+ if fAutoMakeUp
+  then fMakeUpGain[0] := 1 / (dbl * Power(1, fRatio - 1))
+  else fMakeUpGain[0] := dB_to_Amp(fMakeUpGaindB);
  fMakeUpGain[1] := fMakeUpGain[0] * dbl;
+end;
+
+{ TSimpleFeedbackCompressor }
+
+function TSimpleFeedbackCompressor.ProcessSample(Input: Double): Double;
+var dbl : Double;
+begin
+ if abs(fSideChain)>fPeak
+  then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
+  else fPeak := abs(fSideChain) + (fPeak - abs(fSideChain)) * fDecayFactor;
+
+ if fPeak < fThreshold
+  then fGain := 1
+  else fGain := fMakeUpGain[1] * Power(fPeak, 1 - 1 / fRatio);
+
+ fSideChain := fGain * Input;
+ result := fSideChain * fMakeUpGain[0];
+end;
+
+procedure TSimpleFeedbackCompressor.RatioThresholdChanged;
+var dbl : Double;
+begin
+ dbl := Power(fThreshold, 1 / fRatio - 1);
+ if fAutoMakeUp
+  then fMakeUpGain[0] := 1 / dbl
+  else fMakeUpGain[0] := dB_to_Amp(fMakeUpGaindB);
+ fMakeUpGain[1] := dbl;
 end;
 
 { TSimpleRMSCompressor }

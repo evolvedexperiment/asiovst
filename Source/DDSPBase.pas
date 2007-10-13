@@ -270,9 +270,9 @@ end;
 // Convert a value in dB's to a linear amplitude
 function dB_to_Amp(g:Single):Single;
 begin
- if (g>-144.0)
-  then Result:=exp(g*0.115129254)
-  else Result:=0;
+ if (g > -144.0)
+  then Result := exp(g * 0.115129254)
+  else Result := 0;
 end;
 
 {$IFNDEF FPC}
@@ -360,7 +360,7 @@ end;
 function Amp_to_dB(v:Single):Single;
 {$IFDEF PUREPASCAL}
 begin
- result:=Twenty*Log10(v);
+ result := Twenty * Log10(v);
 {$ELSE}
 asm
  fldlg2

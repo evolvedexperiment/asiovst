@@ -21,7 +21,7 @@ type
   TChunkEvent = procedure(Sender: TObject; const Index : Integer; const isPreset : Boolean) of object;
   TGetChunkParameterEvent = function(Sender: TObject; const Index: Integer): Single of object;
   TProcessMidiEvent = procedure(Sender: TObject; MidiEvent: TVstMidiEvent) of object;
-  TSoftBypassEvent = procedure(Sender: TObject; onOff: Boolean) of object;
+  TSoftBypassEvent = procedure(Sender: TObject; isBypass: Boolean) of object;
   TInOutConnectedEvent = procedure(Sender: TObject; Index: Integer; State: Boolean) of object;
   TSetKnobModeEvent = procedure (Sender: TObject; val: Integer) of object;
   TVSTKeyEvent = procedure(Sender: TObject; var keyCode : TVstKeyCode) of object;
@@ -535,7 +535,7 @@ type
     function SetSpeakerArrangement(pluginInput, pluginOutput: PVstSpeakerArrangement): Boolean; virtual;
     function GetSpeakerArrangement(var pluginInput, pluginOutput: PVstSpeakerArrangement): Boolean; virtual;
     procedure SetBlockSizeAndSampleRate(aBlockSize: Integer; aSampleRate: Single); virtual;
-    function SetBypass(onOff: Boolean): Boolean; virtual; // for 'soft-bypass; Process() still called
+    function SetBypass(isBypass: Boolean): Boolean; virtual; // for 'soft-bypass; Process() still called
     function GetEffectName(AName: pchar): Boolean; virtual;  // name max 32 char
     function GetErrorText(Text: pchar): Boolean; virtual;  // max 256 char
     function GetVendorString(Text: pchar): Boolean; virtual;  // fill Text with a string identifying the vendor (max 64 char)
@@ -3365,11 +3365,12 @@ begin
   end;
 end;
 
-function TCustomVSTModule.SetBypass(onOff: Boolean): Boolean;
+function TCustomVSTModule.SetBypass(isBypass: Boolean): Boolean;
 begin
+ {$IFDEF Debug} if onOff then FLog.Add('SoftBypass: On') else FLog.Add('SoftBypass: Off'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if Assigned(FOnSoftBypass) then
   begin
-   FOnSoftBypass(Self, onOff);
+   FOnSoftBypass(Self, isBypass);
    Result := True;
   end
  else Result := False;
