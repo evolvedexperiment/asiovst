@@ -115,6 +115,15 @@ type
     function ProcessSample(Input : Double):Double; override;
   end;
 
+  TSoftKneeFeedbackCompressor = class(TSimpleFeedbackCompressor)
+  private
+    fRatioReciprocal     : Double;
+    fThresholdReciprocal : Double;
+  protected
+    procedure RatioThresholdChanged; override;
+  public
+    function ProcessSample(Input : Double):Double; override;
+  end;
 
   TSimpleRMSCompressor = class(TSimpleCompressor)
   private
@@ -506,6 +515,28 @@ begin
  fMakeUpGain[1] := Power(fThreshold, 1 / fRatio - 1);
  CalculateAttackFactor;
  CalculateDecayFactor;
+end;
+
+{ TSoftKneeFeedbackCompressor }
+
+procedure TSoftKneeFeedbackCompressor.RatioThresholdChanged;
+begin
+ inherited;
+ fRatioReciprocal := 1 / fRatio;
+ fThresholdReciprocal := 1 / fThreshold;
+end;
+
+function TSoftKneeFeedbackCompressor.ProcessSample(Input: Double): Double;
+var a : Double;
+begin
+ result := fGain * Input;
+ if abs(result)>fPeak
+  then fPeak := abs(result) + (fPeak - abs(result)) * fAttackFactor
+  else fPeak := abs(result) + (fPeak - abs(result)) * fDecayFactor;
+
+ a := Power(fPeak, fRatioReciprocal);
+ fGain := (1 - a / (a + 3)) * fThresholdReciprocal;
+ result := fThreshold * result;
 end;
 
 { TSimpleRMSCompressor }
