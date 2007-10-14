@@ -83,7 +83,7 @@ end;
 procedure TSimpleFeedbackCompressorDataModule.VSTModuleCreate(Sender: TObject);
 begin
  fSimpleFeedbackCompressors[0] := TSimpleFeedbackCompressor.Create;
- fSimpleFeedbackCompressors[1] := TSimpleFeedbackCompressor.Create;
+ fSimpleFeedbackCompressors[1] := TSimpleCompressor.Create;
 end;
 
 procedure TSimpleFeedbackCompressorDataModule.VSTModuleDestroy(Sender: TObject);
