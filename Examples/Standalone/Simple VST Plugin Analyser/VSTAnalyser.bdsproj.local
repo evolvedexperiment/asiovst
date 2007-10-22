@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<BorlandProject>
-	<Transactions>
-    <Transaction>2007.06.06 12:25:33.999.pas,C:\ITA\Projects\VSTPack\Examples\Standalone\Simple VST Plugin Analyser\Unit1.pas=C:\ITA\Projects\VSTPack\Examples\Standalone\Simple VST Plugin Analyser\VAPlotIR.pas</Transaction>
-    <Transaction>2007.06.06 12:25:33.999.dfm,C:\ITA\Projects\VSTPack\Examples\Standalone\Simple VST Plugin Analyser\Unit1.dfm=C:\ITA\Projects\VSTPack\Examples\Standalone\Simple VST Plugin Analyser\VAPlotIR.dfm</Transaction>
-  </Transactions>
-</BorlandProject>
