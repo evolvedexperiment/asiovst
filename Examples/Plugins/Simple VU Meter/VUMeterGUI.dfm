@@ -87,6 +87,7 @@ object VSTVUMeterGUI: TVSTVUMeterGUI
     OnChange = ParameterChange
   end
   object Timer: TTimer
+    Interval = 25
     OnTimer = TimerTimer
     Left = 16
     Top = 112
