@@ -2,7 +2,7 @@ unit SimpleSamplerGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
+uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
      Controls, StdCtrls, DMidiKeys, Graphics, Dialogs, WaveIOX, DWaveform;
 
 type

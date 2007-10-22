@@ -1,6 +1,7 @@
-package DSPBase_D10;
+package VstPlugin_D6;
 
-{$ALIGN 8}
+{$R *.RES}
+{$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -21,16 +22,17 @@ package DSPBase_D10;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'DSP Base ASIO/VST Package'}
-{$IMPLICITBUILD ON}
+{$DESCRIPTION 'VST Plugin Wizard (design-time)'}
+{$DESIGNONLY}
+{$IMPLICITBUILD OFF}
 
 requires
   vcl,
-  rtl;
+  designide,
+  VSTPlugin_R6;
 
 contains
-  DVSTEffect in '..\Source\DVSTEffect.pas',
-  DDSPBase in '..\Source\DDSPBase.pas',
-  DFilter in '..\Source\DFilter.pas';
+  DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',
+  DVSTPluginWizardDialog in '..\Source\DVSTPluginWizardDialog.pas' {VSTPluginWizardDialog};
 
 end.

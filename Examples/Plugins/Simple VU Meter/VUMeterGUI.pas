@@ -2,7 +2,7 @@ unit VUMeterGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
+uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
   Controls, StdCtrls, ExtCtrls;
 
 type

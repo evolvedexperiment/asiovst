@@ -8,7 +8,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-  Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DDSPBase;
+  Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DAVDCommon;
 
 type
   TWaveform = class;

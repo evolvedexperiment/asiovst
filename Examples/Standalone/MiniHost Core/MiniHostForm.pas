@@ -9,7 +9,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types,
   Forms, Messages, SysUtils, Classes, Graphics, Controls, StdCtrls,
-  DDspBase, DVstEffect, WaveIOX, MIDIFile, MIDI,
+  DAVDCommon, DVstEffect, WaveIOX, MIDIFile, MIDI,
   ExtCtrls, ComCtrls, Menus, DVSTHost, DASIOHost;
 
 type
@@ -1505,7 +1505,7 @@ begin
    VSTHost.VSTPlugIns[0].LoadPreset(s);
   except
 {$IFNDEF FPC}
-   DDspBase.msg('Preset file not for this plugin (or file is corrupted)!');
+   DAVDCommon.msg('Preset file not for this plugin (or file is corrupted)!');
 {$ENDIF}
    exit;
   end;
@@ -1516,7 +1516,7 @@ begin
    VSTHost.VSTPlugIns[0].LoadBank(s);
   except
 {$IFNDEF FPC}
-   DDspBase.msg('Bank file not for this plugin (or file is corrupted)!');
+   DAVDCommon.msg('Bank file not for this plugin (or file is corrupted)!');
 {$ENDIF}
    exit;
   end;

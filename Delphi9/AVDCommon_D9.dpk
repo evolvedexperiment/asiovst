@@ -1,4 +1,4 @@
-package DVSTGFX;
+package AVDCommon_D9;
 
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -21,16 +21,16 @@ package DVSTGFX;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'Midi Keys & More'}
-{$IMPLICITBUILD OFF}
+{$DESCRIPTION 'Base Package for ASIO/VST/DSP'}
+{$IMPLICITBUILD ON}
 
 requires
-  rtl,
-  vcl;
+  vcl,
+  rtl;
 
 contains
-  DMidiKeys in '..\Source\DMidiKeys.pas',
-  DADSRGraph in '..\Source\DADSRGraph.pas',
-  DWaveform in '..\Source\DWaveform.pas';
+  DVSTEffect in '..\Source\DVSTEffect.pas',
+  DAVDCommon in '..\Source\DAVDCommon.pas',
+  DFilter in '..\Source\DFilter.pas';
 
 end.

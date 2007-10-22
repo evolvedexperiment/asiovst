@@ -2,12 +2,12 @@
 Dieser Quelltext dient nur dem Übersetzen und Installieren des Packages.
  }
 
-unit DSPBaseLaz; 
+unit AVDCommonLaz; 
 
 interface
 
 uses
-  DDSPBase, DVSTEffect, LazarusPackageIntf; 
+  DAVDCommon, DVSTEffect, LazarusPackageIntf; 
 
 implementation
 
@@ -16,5 +16,5 @@ begin
 end; 
 
 initialization
-  RegisterPackage('DSPBaseLaz', @Register); 
+  RegisterPackage('AVDCommonLaz', @Register);
 end.

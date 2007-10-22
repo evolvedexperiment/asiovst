@@ -3,7 +3,7 @@ unit XSynthGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
   Controls, StdCtrls, DMidiKeys, DADSRGraph;
 
 type

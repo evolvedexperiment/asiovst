@@ -2,7 +2,7 @@ unit MIDIPlugInModule;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTEffect, DVSTModule;
+uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect, DVSTModule;
 
 type
   TMIDIModule = class(TVSTModule)

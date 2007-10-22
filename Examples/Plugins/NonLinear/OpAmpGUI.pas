@@ -27,7 +27,7 @@ unit OpAmpGUI;
 interface
 
 uses {$IFDEF FPC}LCLIntf, LResources, {$ENDIF} Messages, SysUtils, Classes,
-     Forms, DDSPBase, DVSTModule, Controls, StdCtrls;
+     Forms, DAVDCommon, DVSTModule, Controls, StdCtrls;
 
 type
   TVSTGUI = class(TForm)

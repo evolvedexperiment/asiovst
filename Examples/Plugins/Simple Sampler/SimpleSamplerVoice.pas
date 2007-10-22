@@ -43,7 +43,7 @@ type
 
 implementation
 
-uses DDSPBase, SimpleSamplerModule;
+uses DAVDCommon, SimpleSamplerModule;
 
 { TSimpleSamplerVoice }
 

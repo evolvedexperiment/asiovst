@@ -2,7 +2,7 @@ unit DecimatorModule;
 
 interface
 
-uses Windows, DDSPBase, Forms, DVSTEffect, DVSTModule;
+uses Windows, DAVDCommon, Forms, DVSTEffect, DVSTModule;
 
 type
   TVSTDecimator = class(TVSTModule)

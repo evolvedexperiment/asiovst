@@ -3,7 +3,7 @@ unit EditorFrm;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule, Controls,
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, Controls,
   StdCtrls;
 
 type

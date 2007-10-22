@@ -1,4 +1,4 @@
-package DVSTGFX;
+package DVSTGui_D10;
 
 {$R *.res}
 {$ALIGN 8}
@@ -23,17 +23,18 @@ package DVSTGFX;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'Midi Keys & More'}
-{$IMPLICITBUILD ON}
+{$IMPLICITBUILD OFF}
 
 requires
   rtl,
   vcl,
-  DSPBase70;
+  AVDCommon_D10;
 
 contains
   DMidiKeys in '..\Source\DMidiKeys.pas',
   DADSRGraph in '..\Source\DADSRGraph.pas',
   DWaveform in '..\Source\DWaveform.pas',
-  DBarChart in '..\Source\DBarChart.pas';
+  DBarChart in '..\Source\DBarChart.pas',
+  DDial in '..\Source\DDial.pas';
 
 end.

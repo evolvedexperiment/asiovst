@@ -68,8 +68,8 @@
         <SyntaxHighlighter Value="LFM"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\..\Source\DDSPBase.pas"/>
-        <UnitName Value="DDSPBase"/>
+        <Filename Value="..\..\Source\DAVDCommon.pas"/>
+        <UnitName Value="DAVDCommon"/>
         <CursorPos X="23" Y="14"/>
         <TopLine Value="25"/>
         <UsageCount Value="10"/>

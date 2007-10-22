@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages, XPMan,
   {$ENDIF}SysUtils, Classes, Graphics, Controls, Forms, ComCtrls, ExtCtrls,
-  StdCtrls, DDSPBase, DVSTHost, DASIOHost, ToolWin;
+  StdCtrls, DAVDCommon, DVSTHost, DASIOHost, ToolWin;
 
 type
   TFmVSTEditor = class(TForm)

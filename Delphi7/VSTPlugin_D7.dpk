@@ -29,7 +29,7 @@ requires
   rtl,
   vcl,
   designide,
-  DSPBase70;
+  AVDCommon_D7;
 
 contains
   Config in '..\Source\Config.pas',

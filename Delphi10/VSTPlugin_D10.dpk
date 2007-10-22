@@ -32,7 +32,7 @@ requires
   vclactnband,
   vclx,
   xmlrtl,
-  DSPBase_D10;
+  AVDCommon_D10;
 
 contains
   DVSTProjectCreator in '..\Source\DVSTProjectCreator.pas',

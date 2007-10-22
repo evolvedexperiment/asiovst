@@ -5,7 +5,7 @@ interface
 {$I ASIOVST.INC}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
-uses DFilter, DDSPBase;
+uses DFilter, DAVDCommon;
 
 type
   TChebyshev1Filter = class(TIIRFilter)

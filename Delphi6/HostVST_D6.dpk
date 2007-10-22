@@ -27,7 +27,7 @@ package HostVST_D6;
 
 requires
   vcl,
-  DSPBase60;
+  AVDCommon_D6;
 
 contains
   DVstHost in '..\Source\DVstHost.pas';

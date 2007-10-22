@@ -10,7 +10,7 @@ uses
   {$IFDEF FPC}LCLIntf, LMessages, LResources, Buttons,
   {$ELSE} Windows, Messages, XPMan,{$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, ToolWin,
-  ExtCtrls, StdCtrls, DDSPBase, Menus, Types, Spin, LunchBoxEvent,
+  ExtCtrls, StdCtrls, DAVDCommon, Menus, Types, Spin, LunchBoxEvent,
   LunchBoxEventList, LunchBoxInputFilter, DVSTHost, DASIOHost;
 
 type

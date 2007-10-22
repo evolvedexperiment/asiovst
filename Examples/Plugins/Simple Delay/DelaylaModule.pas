@@ -2,7 +2,7 @@ unit DelaylaModule;
 
 interface
 
-uses Windows, Types, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule;
+uses Windows, Types, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 
 type
   TSimpleDelayVST = class(TVSTModule)

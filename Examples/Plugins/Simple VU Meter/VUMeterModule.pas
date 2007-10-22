@@ -2,7 +2,7 @@ unit VUMeterModule;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule;
+uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 
 type
   TVSTVUMeterModule = class(TVSTModule)

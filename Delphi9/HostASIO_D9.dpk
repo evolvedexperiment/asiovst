@@ -25,7 +25,7 @@ package HostASIO_D9;
 {$IMPLICITBUILD ON}
 
 requires
-  DSPBase_D9,
+  AVDCommon_D9,
   vcl,
   rtl;
 

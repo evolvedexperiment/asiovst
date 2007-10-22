@@ -38,7 +38,7 @@ type
 
 implementation
 
-uses DDSPBase, VocoderModule;
+uses DAVDCommon, VocoderModule;
 
 { TVocoderVoice }
 

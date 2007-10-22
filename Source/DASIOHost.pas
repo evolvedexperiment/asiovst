@@ -23,7 +23,7 @@ uses {$IFDEF FPC} LCLIntf, LclType, LMessages, LResources, {$ELSE}
      Windows, Messages, {$ENDIF} SysUtils, Classes, ASIO, DASIOConvert,
      DASIOGenerator, {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
      {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls,
-     ASIOMixer, {$ENDIF} {$IFDEF DELPHI5} Forms, dsgnintf, {$ENDIF} DDSPBase;
+     ASIOMixer, {$ENDIF} {$IFDEF DELPHI5} Forms, dsgnintf, {$ENDIF} DAVDCommon;
 
 const
   // private message
@@ -49,12 +49,12 @@ type
   PAsioDriverDesc = ^TAsioDriverDesc;
   TASIOBufferList = array [0..0] of TASIOBufferInfo;
   PASIOBufferList = ^TASIOBufferList;
-  TDoubleDynArray = DDSPBase.TDoubleDynArray;
-  TSingleDynArray = DDSPBase.TSingleDynArray;
-  TArrayOfDoubleDynArray = DDSPBase.TArrayOfDoubleDynArray;
-  TArrayOfSingleDynArray = DDSPBase.TArrayOfSingleDynArray;
-  PArrayOfDoubleDynArray = DDSPBase.PArrayOfDoubleDynArray;
-  PArrayOfSingleDynArray = DDSPBase.PArrayOfSingleDynArray;
+  TDoubleDynArray = DAVDCommon.TDoubleDynArray;
+  TSingleDynArray = DAVDCommon.TSingleDynArray;
+  TArrayOfDoubleDynArray = DAVDCommon.TArrayOfDoubleDynArray;
+  TArrayOfSingleDynArray = DAVDCommon.TArrayOfSingleDynArray;
+  PArrayOfDoubleDynArray = DAVDCommon.PArrayOfDoubleDynArray;
+  PArrayOfSingleDynArray = DAVDCommon.PArrayOfSingleDynArray;
 
   TAsioDriverList = array of TAsioDriverDesc;
   TASIOCanDo = (acdInputMonitor, acdTimeInfo, acdTimeCode, acdTransport,

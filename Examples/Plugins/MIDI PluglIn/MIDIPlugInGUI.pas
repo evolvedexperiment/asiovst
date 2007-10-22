@@ -2,7 +2,7 @@ unit MIDIPlugInGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
+uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
   ExtCtrls, Controls, StdCtrls;
 
 type

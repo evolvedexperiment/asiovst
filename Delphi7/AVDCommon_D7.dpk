@@ -1,7 +1,6 @@
-package VstPlugin_D6;
+package AVDCommon_D7;
 
-{$R *.RES}
-{$ALIGN ON}
+{$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -22,17 +21,16 @@ package VstPlugin_D6;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'VST Plugin Wizard (design-time)'}
-{$DESIGNONLY}
-{$IMPLICITBUILD OFF}
+{$DESCRIPTION 'Base Package for ASIO/VST/DSP'}
+{$IMPLICITBUILD ON}
 
 requires
   vcl,
-  designide,
-  VSTPluginR6;
+  rtl;
 
 contains
-  DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',
-  DVSTPluginWizardDialog in '..\Source\DVSTPluginWizardDialog.pas' {VSTPluginWizardDialog};
+  DAVDCommon in '..\Source\DAVDCommon.pas',
+  DVSTEffect in '..\Source\DVSTEffect.pas',
+  DFilter in '..\Source\DFilter.pas';
 
 end.

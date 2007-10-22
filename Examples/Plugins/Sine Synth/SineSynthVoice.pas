@@ -38,7 +38,7 @@ type
 
 implementation
 
-uses DDSPBase, SineSynthModule;
+uses DAVDCommon, SineSynthModule;
 
 { TSineSynthVoice }
 

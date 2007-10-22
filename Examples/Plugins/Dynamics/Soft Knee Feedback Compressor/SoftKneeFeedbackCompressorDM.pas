@@ -3,7 +3,7 @@ unit SoftKneeFeedbackCompressorDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule, DDynamics;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, DDynamics;
 
 type
   TSoftKneeFeedbackCompressorDataModule = class(TVSTModule)

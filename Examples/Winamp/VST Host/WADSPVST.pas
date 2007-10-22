@@ -9,7 +9,7 @@ interface
 uses {$IFDEF FPC} LCLIntf, LResources, Windows,
      {$ELSE} Windows, Messages, {$ENDIF}
      Forms, SysUtils, Registry, Menus, ExtCtrls, DVstHost, Graphics,
-     Dialogs, StdCtrls, Controls, DDspBase, Classes;
+     Dialogs, StdCtrls, Controls, DAVDCommon, Classes;
 
 type
   TSmallIntArray = array [0..20000] of Smallint;

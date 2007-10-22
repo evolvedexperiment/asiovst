@@ -25,7 +25,7 @@ package HostVST_D10;
 {$IMPLICITBUILD ON}
 
 requires
-  DSPBase_D10,
+  AVDCommon_D10,
   vcl,
   rtl,
   designide;

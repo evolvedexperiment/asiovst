@@ -5,7 +5,7 @@ interface
 {$I ASIOVST.INC}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
-uses DDSPBase, DFilter;
+uses DAVDCommon, DFilter;
 
 type
   TBesselFilter = class(TIIRFilter)

@@ -3,7 +3,7 @@ unit MBCGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DDSPBase, Graphics, DVSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, Graphics, DVSTModule,
   Controls, StdCtrls, DDial, ExtCtrls;
 
 type

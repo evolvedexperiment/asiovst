@@ -132,8 +132,8 @@
         <Loaded Value="True"/>
       </Unit7>
       <Unit8>
-        <Filename Value="..\..\..\Source\DDSPBase.pas"/>
-        <UnitName Value="DDSPBase"/>
+        <Filename Value="..\..\..\Source\DAVDCommon.pas"/>
+        <UnitName Value="DAVDCommon"/>
         <CursorPos X="1" Y="147"/>
         <TopLine Value="126"/>
         <EditorIndex Value="1"/>

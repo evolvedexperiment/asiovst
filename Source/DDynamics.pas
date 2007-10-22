@@ -2,7 +2,7 @@ unit DDynamics;
 
 interface
 
-uses DDSPBase, DButterworthFilter;
+uses DAVDCommon, DButterworthFilter;
 
 type
   TDynamics = class

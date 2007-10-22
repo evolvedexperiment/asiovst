@@ -8,7 +8,7 @@ interface
 
 uses {$IFDEF FPC} LCLIntf, LResources, TAGraph,
      {$ELSE} Windows, TeeProcs, TeEngine, Series, {$ENDIF}
-     SysUtils, Classes, Controls, Forms, StdCtrls, ComCtrls, DDspBase,
+     SysUtils, Classes, Controls, Forms, StdCtrls, ComCtrls, DAVDCommon,
      DFilter, Chart, Spin, Buttons, DASIOHost, ExtCtrls;
 
 const

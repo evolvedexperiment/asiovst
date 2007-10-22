@@ -189,7 +189,7 @@ begin
     CRLF +
     'uses ' + CRLF +
     '  Windows, Messages, SysUtils, Classes, Forms, ' + CRLF +
-    '  DDSPBase, DVSTModule;' + CRLF +
+    '  DAVDCommon, DVSTModule;' + CRLF +
     CRLF +
     'type' + CRLF +
     '  T' + FormIdent + ' = class(T' + AncestorIdent + ')' + CRLF;

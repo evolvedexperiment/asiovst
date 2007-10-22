@@ -1,4 +1,4 @@
-package DSPBase_D9;
+package DVSTGui_D9;
 
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -21,16 +21,16 @@ package DSPBase_D9;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'DSP Base ASIO/VST Package'}
-{$IMPLICITBUILD ON}
+{$DESCRIPTION 'Midi Keys & More'}
+{$IMPLICITBUILD OFF}
 
 requires
-  vcl,
-  rtl;
+  rtl,
+  vcl;
 
 contains
-  DVSTEffect in '..\Source\DVSTEffect.pas',
-  DDSPBase in '..\Source\DDSPBase.pas',
-  DFilter in '..\Source\DFilter.pas';
+  DMidiKeys in '..\Source\DMidiKeys.pas',
+  DADSRGraph in '..\Source\DADSRGraph.pas',
+  DWaveform in '..\Source\DWaveform.pas';
 
 end.

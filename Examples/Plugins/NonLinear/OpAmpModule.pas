@@ -27,7 +27,7 @@ unit OpAmpModule;
 interface
 
 uses {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
-     Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule;
+     Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 
 type
   TVSTOpAmp = class(TVSTModule)

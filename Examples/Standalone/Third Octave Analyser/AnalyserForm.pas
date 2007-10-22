@@ -4,7 +4,7 @@ interface
 
 uses {$IFDEF FPC} LCLIntf, LResources, Buttons, {$ELSE} Windows, Messages, {$ENDIF}
      SysUtils, Classes, Graphics, Controls, Forms,
-     Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DDspBase,
+     Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DAVDCommon,
      Spin, DChebyshevFilter, DButterworthFilter, DBarChart;
 
 const

@@ -3,7 +3,7 @@ unit SineSynthGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
   Controls, StdCtrls, DMidiKeys, Graphics;
 
 type

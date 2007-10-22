@@ -1,6 +1,5 @@
-package DSPBase70;
+package AVDCommon_D10;
 
-{$R '..\Source\DDSPBase.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -22,7 +21,7 @@ package DSPBase70;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'DSP Base ASIO/VST Package'}
+{$DESCRIPTION 'Base Package for ASIO/VST/DSP'}
 {$IMPLICITBUILD ON}
 
 requires
@@ -30,8 +29,8 @@ requires
   rtl;
 
 contains
-  DDSPBase in '..\Source\DDSPBase.pas',
   DVSTEffect in '..\Source\DVSTEffect.pas',
+  DAVDCommon in '..\Source\DAVDCommon.pas',
   DFilter in '..\Source\DFilter.pas';
 
 end.

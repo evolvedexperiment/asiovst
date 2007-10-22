@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows,
-  Messages, {$ENDIF} SysUtils, Forms, Classes, DDSPBase, DVSTEffect;
+  Messages, {$ENDIF} SysUtils, Forms, Classes, DAVDCommon, DVSTEffect;
 
 type
   TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);

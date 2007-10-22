@@ -8,7 +8,7 @@ unit DMinBlep;
 
 interface
 
-uses DDSPBase;
+uses DAVDCommon;
 
 procedure RealCepstrum(signal, realCepstrum : TSingleDynArray);
 procedure MinimumPhase(realCepstrum, minimumPhase : TSingleDynArray);

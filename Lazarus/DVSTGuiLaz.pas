@@ -2,7 +2,7 @@
 Dieser Quelltext dient nur dem Übersetzen und Installieren des Packages.
  }
 
-unit DVSTGFX; 
+unit DVSTGuiLaz; 
 
 interface
 
@@ -20,5 +20,5 @@ begin
 end; 
 
 initialization
-  RegisterPackage('DVSTGFX', @Register); 
+  RegisterPackage('DVSTGuiLaz', @Register); 
 end.

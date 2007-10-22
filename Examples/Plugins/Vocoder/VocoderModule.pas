@@ -2,7 +2,7 @@ unit VocoderModule;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase,
+uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon,
      DVSTEffect, DVSTModule, VocoderVoice, VoiceList,
      DChebyshevFilter, DFilter;
 

@@ -48,7 +48,7 @@ type
 
 implementation
 
-uses DDSPBase, LunchBoxMain;
+uses DAVDCommon, LunchBoxMain;
 
 { TLunchBoxSample }
 

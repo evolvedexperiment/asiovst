@@ -8,7 +8,7 @@ uses
   Forms,
   DVSTModule,
   DVSTEffect,
-  DDSPBase,
+  DAVDCommon,
   OpAmpModule in 'OpAmpModule.pas' {VSTOpAmp: TVSTModule},
   OpAmpGUI in 'OpAmpGUI.pas' {VSTGUI};
 

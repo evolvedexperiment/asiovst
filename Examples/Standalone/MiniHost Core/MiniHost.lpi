@@ -108,8 +108,8 @@
         <UsageCount Value="10"/>
       </Unit6>
       <Unit7>
-        <Filename Value="..\..\..\Source\DDSPBase.pas"/>
-        <UnitName Value="DDSPBase"/>
+        <Filename Value="..\..\..\Source\DAVDCommon.pas"/>
+        <UnitName Value="DAVDCommon"/>
         <CursorPos X="20" Y="36"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>

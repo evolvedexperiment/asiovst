@@ -104,7 +104,7 @@ type
 
 implementation
 
-uses DDSPBase;
+uses DAVDCommon;
 
 const kDenorm=1E-25;
 

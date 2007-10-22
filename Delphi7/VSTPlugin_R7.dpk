@@ -28,7 +28,7 @@ package VstPlugin_R7;
 requires
   rtl,
   vcl,
-  DSPBase70;
+  AVDCommon_D7;
 
 contains
   DVSTModule in '..\Source\DVSTModule.pas';

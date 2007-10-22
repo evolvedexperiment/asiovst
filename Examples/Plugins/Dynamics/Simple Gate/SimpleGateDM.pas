@@ -4,7 +4,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, 
-  DDSPBase, DVSTModule, DDynamics;
+  DAVDCommon, DVSTModule, DDynamics;
 
 type
   TSimpleGateDataModule = class(TVSTModule)

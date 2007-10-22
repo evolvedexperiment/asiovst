@@ -2,7 +2,7 @@ unit XSynthModule;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTEffect,
+uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect,
      DVSTModule, XSynthVoice, VoiceList;
 
 type

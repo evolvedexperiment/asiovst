@@ -1,7 +1,5 @@
-package DSPBase60;
+package DVSTGui_D6;
 
-{$R *.res}
-{$R 'DDSPBase.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -23,15 +21,14 @@ package DSPBase60;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'DSP Base ASIO/VST Package'}
+{$DESCRIPTION 'Midi Keys & More'}
 {$IMPLICITBUILD OFF}
 
 requires
+  rtl,
   vcl;
 
 contains
-  DDSPBase in '..\Source\DDSPBase.pas',
-  DVSTEffect in '..\Source\DVSTEffect.pas',
-  DFilter in '..\Source\DFilter.pas';
+  DMidiKeys in '..\Source\DMidiKeys.pas';
 
 end.

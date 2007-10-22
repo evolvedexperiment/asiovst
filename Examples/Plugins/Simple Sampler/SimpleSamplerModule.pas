@@ -3,7 +3,7 @@ unit SimpleSamplerModule;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTEffect, Types,
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect, Types,
   DVSTModule, SimpleSamplerVoice, VoiceList;
 
 type

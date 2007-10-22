@@ -28,7 +28,7 @@ package VstPlugin_R6;
 
 requires
   vcl,
-  DSPBase60;
+  AVDCommon_D6;
 
 contains
   DVSTModule in '..\Source\DVSTModule.pas';

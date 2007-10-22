@@ -4,7 +4,7 @@ unit ASIOVSTGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
+uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
      DASIOHost, Controls, StdCtrls;
 
 type

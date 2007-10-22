@@ -5,7 +5,7 @@ unit AsioDemoForm;
 interface
 
 uses {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-     Forms, Classes, Controls, StdCtrls, DASIOHost, DDspBase;
+     Forms, Classes, Controls, StdCtrls, DASIOHost, DAVDCommon;
 
 type
   TComplexDouble = record

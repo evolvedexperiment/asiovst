@@ -85,7 +85,7 @@ type
 
 implementation
 
-uses Math, DDSPBase, SysUtils;
+uses Math, DAVDCommon, SysUtils;
 
 constructor TInputFilter.Create;
 begin

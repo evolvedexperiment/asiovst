@@ -4,7 +4,7 @@ interface
 
 {$I ASIOVST.INC}
 
-uses Classes, DDSPBase;
+uses Classes, DAVDCommon;
 
 type
   TNoiseColor = (ncWhite, ncPink, ncBrown);

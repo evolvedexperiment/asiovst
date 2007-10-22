@@ -121,7 +121,7 @@ type
 
 implementation
 
-uses Math, SysUtils, DDSPBase, XSynthModule;
+uses Math, SysUtils, DAVDCommon, XSynthModule;
 
 { TOscilator }
 

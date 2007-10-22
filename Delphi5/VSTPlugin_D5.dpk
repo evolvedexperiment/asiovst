@@ -28,7 +28,7 @@ package VstPlugin_D5;
 requires
   vcl50,
   dsnide50,
-  VSTPluginR5;
+  VSTPlugin_R5;
 
 contains
   DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',

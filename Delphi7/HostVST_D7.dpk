@@ -26,7 +26,7 @@ package HostVST_D7;
 
 requires
   vcl,
-  DSPBase70,
+  AVDCommon_D7,
   rtl,
   designide;
 

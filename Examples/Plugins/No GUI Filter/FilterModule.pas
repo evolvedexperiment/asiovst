@@ -4,7 +4,7 @@ unit FilterModule;
 
 interface
 
-uses DDSPBase, DVSTModule;
+uses DAVDCommon, DVSTModule;
 
 type
   TVSTFilter = class(TVSTModule)
