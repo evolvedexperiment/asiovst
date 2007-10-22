@@ -117,42 +117,46 @@ type
   procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
   function Complex(Re, Im : Double):TComplexDouble; overload;
   function Complex(Re, Im : Single):TComplexSingle; overload;
+
   function ComplexSign(A : TComplexSingle):Single; overload;
   function ComplexSign(A : TComplexDouble):Double; overload;
   function ComplexSign(Re, Im : Single):Single; overload;
   function ComplexSign(Re, Im : Double):Double; overload;
+
   function ComplexAbsolute(Re, Im : Double):Double; overload;
   function ComplexAbsolute(Re, Im : Single):Single; overload;
   function ComplexAbsolute(Complex:TComplexDouble):Double; overload;
   function ComplexAbsolute(Complex:TComplexSingle):Single; overload;
+
   function ComplexArgument(Re, Im : Double):Double; overload;
   function ComplexArgument(Re, Im : Single):Single; overload;
   function ComplexArgument(Complex:TComplexDouble):Double; overload;
   function ComplexArgument(Complex:TComplexSingle):Single; overload;
+
   function ComplexLog10(Re, Im : Single):TComplexSingle; overload;
   function ComplexLog10(Re, Im : Double):TComplexDouble; overload;
   function ComplexLog10(Complex: TComplexSingle):TComplexSingle; overload;
   function ComplexLog10(Complex: TComplexDouble):TComplexDouble; overload;
+
   function ComplexMultiply(A,B : TComplexSingle):TComplexSingle; overload;
   function ComplexMultiply(A,B : TComplexDouble):TComplexDouble; overload;
   function ComplexMultiply(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
   function ComplexMultiply(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
-  procedure ComplexMultiplyInplace(var A : TComplexSingle; B : TComplexSingle) overload;
-  {$IFDEF DELPHI8_UP}
-  procedure ComplexMultiplyInplace(var A : TComplexDouble; B : TComplexDouble) overload;
-  procedure ComplexMultiplyInplace(var ARe,AIm : Single; BRe,BIm : Single) overload;
-  procedure ComplexMultiplyInplace(var ARe,AIm : Double; BRe,BIm : Double) overload;
-  {$ENDIF}
+
+  procedure ComplexMultiplyInplace(var A : TComplexSingle; B : TComplexSingle); overload;
+  procedure ComplexMultiplyInplace(var A : TComplexDouble; B : TComplexDouble); overload;
+  procedure ComplexMultiplyInplace(var ARe,AIm : Single; BRe,BIm : Single); overload;
+  procedure ComplexMultiplyInplace(var ARe,AIm : Double; BRe,BIm : Double); overload;
+
   function ComplexDivide(A,B : TComplexSingle):TComplexSingle; overload;
   function ComplexDivide(A,B : TComplexDouble):TComplexDouble; overload;
   function ComplexDivide(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
   function ComplexDivide(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
-  procedure ComplexDivideInplace(var A : TComplexSingle; B : TComplexSingle) overload;
-  {$IFDEF DELPHI8_UP}
-  procedure ComplexDivideInplace(var A : TComplexDouble; B : TComplexDouble) overload;
-  procedure ComplexDivideInplace(var ARe,AIm : Single; BRe,BIm : Single) overload;
-  procedure ComplexDivideInplace(var ARe,AIm : Double; BRe,BIm : Double) overload;
-  {$ENDIF}
+
+  procedure ComplexDivideInplace(var A : TComplexSingle; B : TComplexSingle); overload;
+  procedure ComplexDivideInplace(var A : TComplexDouble; B : TComplexDouble); overload;
+  procedure ComplexDivideInplace(var ARe,AIm : Single; BRe,BIm : Single); overload;
+  procedure ComplexDivideInplace(var ARe,AIm : Double; BRe,BIm : Double); overload;
 
   procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray); overload;
   procedure DFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray); overload;
@@ -254,14 +258,14 @@ begin
 end;
 
 // Limit a value to be l<=v<=u
-function f_Limit(v:Single;l:Single=-1;u:Single=1):Single; overload;
+function f_Limit(v:Single;l:Single=-1;u:Single=1):Single;
 begin
  if v<l then Result:=l
  else if v>u then Result:=u else Result:=v;
 end;
 
 // Limit a value to be l<=v<=u
-function f_Limit(v:Double;l:Double=-1;u:Double=1):Double; overload;
+function f_Limit(v:Double;l:Double=-1;u:Double=1):Double;
 begin
  if v<l then Result:=l
  else if v>u then Result:=u else Result:=v;
@@ -558,7 +562,7 @@ begin
 end;
 
 {$IFNDEF FPC}
-function f_Abs(f:Single):Single; overload;
+function f_Abs(f:Single):Single;
 asm
  mov eax,f.Integer
  and eax,$7FFFFFFF
@@ -566,7 +570,7 @@ asm
  fld f.Single
 end;
 {$ELSE}
-function f_Abs(f:Single):Single; overload; inline;
+function f_Abs(f:Single):Single; inline;
 var i:Integer;
 begin
  i:=Integer((@f)^) and $7FFFFFFF;
@@ -575,7 +579,7 @@ end;
 {$ENDIF}
 
 {$IFNDEF FPC}
-function f_Abs(f:Double):Double; overload;
+function f_Abs(f:Double):Double;
 {$IFDEF PUREPASCAL}
 begin
  result:=Abs(f);
@@ -586,7 +590,7 @@ asm
 {$ENDIF}
 end;
 
-procedure f_Abs(var f:T4SingleArray); overload;
+procedure f_Abs(var f:T4SingleArray);
 {$IFDEF PUREPASCAL}
 begin
  f[0]:=Abs(f[0]);
@@ -746,135 +750,135 @@ end;
 
 // Complex Stuff
 
-function Complex(Re, Im : Double):TComplexDouble; overload;
+function Complex(Re, Im : Double):TComplexDouble;
 begin
  Result.Re:=Re;
  Result.Im:=Im;
 end;
 
-function Complex(Re, Im : Single):TComplexSingle; overload;
+function Complex(Re, Im : Single):TComplexSingle;
 begin
  Result.Re:=Re;
  Result.Im:=Im;
 end;
 
-function ComplexSign(A : TComplexSingle):Single; overload;
+function ComplexSign(A : TComplexSingle):Single;
 begin
  if (A.Re >= 0) and (A.Im > 0) then result:=1 else
  if (A.Re <= 0) and (A.Im < 0) then result:=-1
   else Result:=sign(A.Re);
 end;
 
-function ComplexSign(A : TComplexDouble):Double; overload;
+function ComplexSign(A : TComplexDouble):Double;
 begin
  if (A.Re >= 0) and (A.Im > 0) then result:=1 else
  if (A.Re <= 0) and (A.Im < 0) then result:=-1
   else Result:=sign(A.Re);
 end;
 
-function ComplexSign(Re, Im : Single):Single; overload;
+function ComplexSign(Re, Im : Single):Single;
 begin
  if (Re >= 0) and (Im > 0) then result:=1 else
  if (Re <= 0) and (Im < 0) then result:=-1
   else Result:=sign(Re);
 end;
 
-function ComplexSign(Re, Im : Double):Double; overload;
+function ComplexSign(Re, Im : Double):Double;
 begin
  if (Re >= 0) and (Im > 0) then result:=1 else
  if (Re <= 0) and (Im < 0) then result:=-1
   else Result:=sign(Re);
 end;
 
-function ComplexLog10(Re, Im : Single):TComplexSingle; overload;
+function ComplexLog10(Re, Im : Single):TComplexSingle;
 begin
  Result.Re:=Log10((sqr(Re)+Sqr(Im)));
  Result.Im:=ArcTan2(Im,Re);
 end;
 
-function ComplexLog10(Re, Im : Double):TComplexDouble; overload;
+function ComplexLog10(Re, Im : Double):TComplexDouble;
 begin
  Result.Re:=Log10((sqr(Re)+Sqr(Im)));
  Result.Im:=ArcTan2(Im,Re);
 end;
 
-function ComplexLog10(Complex : TComplexSingle):TComplexSingle; overload;
+function ComplexLog10(Complex : TComplexSingle):TComplexSingle;
 begin
  Result.Re:=Log10((sqr(Complex.Re)+Sqr(Complex.Im)));
  Result.Im:=ArcTan2(Complex.Im,Complex.Re);
 end;
 
-function ComplexLog10(Complex: TComplexDouble):TComplexDouble; overload;
+function ComplexLog10(Complex: TComplexDouble):TComplexDouble;
 begin
  Result.Re:=Log10((sqr(Complex.Re)+Sqr(Complex.Im)));
  Result.Im:=ArcTan2(Complex.Im,Complex.Re);
 end;
 
-function ComplexAbsolute(Re, Im : Single):Single; overload;
+function ComplexAbsolute(Re, Im : Single):Single;
 begin
  result:=sqrt(sqr(Re)+Sqr(Im));
 end;
 
-function ComplexAbsolute(Re, Im : Double):Double; overload;
+function ComplexAbsolute(Re, Im : Double):Double;
 begin
  result:=sqrt(sqr(Re)+Sqr(Im));
 end;
 
-function ComplexAbsolute(Complex:TComplexDouble):Double; overload;
+function ComplexAbsolute(Complex:TComplexDouble):Double;
 begin
  result:=sqrt(sqr(Complex.Re)+Sqr(Complex.Im));
 end;
 
-function ComplexAbsolute(Complex:TComplexSingle):Single; overload;
+function ComplexAbsolute(Complex:TComplexSingle):Single;
 begin
  result:=sqrt(sqr(Complex.Re)+Sqr(Complex.Im));
 end;
 
-function ComplexArgument(Re, Im : Single):Single; overload;
+function ComplexArgument(Re, Im : Single):Single;
 begin
  result:=ArcTan2(Im,Re);
 end;
 
-function ComplexArgument(Re, Im : Double):Double; overload;
+function ComplexArgument(Re, Im : Double):Double;
 begin
  result:=ArcTan2(Im,Re);
 end;
 
-function ComplexArgument(Complex:TComplexDouble):Double; overload;
+function ComplexArgument(Complex:TComplexDouble):Double;
 begin
  result:=ArcTan2(Complex.Im,Complex.Re);
 end;
 
-function ComplexArgument(Complex:TComplexSingle):Single; overload;
+function ComplexArgument(Complex:TComplexSingle):Single;
 begin
  result:=ArcTan2(Complex.Im,Complex.Re);
 end;
 
-function ComplexMultiply(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
+function ComplexMultiply(ARe,AIm,BRe,BIm : Single):TComplexSingle;
 begin
  Result.Re := ARe * BRe - AIm * BIm;
  Result.Im := AIm * BRe + ARe * BIm;
 end;
 
-function ComplexMultiply(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
+function ComplexMultiply(ARe,AIm,BRe,BIm : Double):TComplexDouble;
 begin
  Result.Re := ARe * BRe - AIm * BIm;
  Result.Im := AIm * BRe + ARe * BIm;
 end;
 
-function ComplexMultiply(A,B : TComplexSingle):TComplexSingle; overload;
+function ComplexMultiply(A,B : TComplexSingle):TComplexSingle;
 begin
  Result.Re := A.Re * B.Re - A.Im * B.Im;
  Result.Im := A.Im * B.Re + A.Re * B.Im;
 end;
 
-function ComplexMultiply(A,B : TComplexDouble):TComplexDouble; overload;
+function ComplexMultiply(A,B : TComplexDouble):TComplexDouble;
 begin
  Result.Re := A.Re * B.Re - A.Im * B.Im;
  Result.Im := A.Im * B.Re + A.Re * B.Im;
 end;
 
-procedure ComplexMultiplyInplace(var A : TComplexSingle; B : TComplexSingle) overload;
+procedure ComplexMultiplyInplace(var A : TComplexSingle; B : TComplexSingle);
 var Temp : Single;
 begin
  Temp := A.Re;
@@ -882,8 +886,7 @@ begin
  A.Im := A.Im * B.Re + Temp * B.Im;
 end;
 
-{$IFDEF DELPHI8_UP}
-procedure ComplexMultiplyInplace(var A : TComplexDouble; B : TComplexDouble) overload;
+procedure ComplexMultiplyInplace(var A : TComplexDouble; B : TComplexDouble);
 var Temp : Double;
 begin
  Temp := A.Re;
@@ -891,7 +894,7 @@ begin
  A.Im := A.Im * B.Re + Temp * B.Im;
 end;
 
-procedure ComplexMultiplyInplace(var ARe, AIm : Single; BRe, BIm : Single) overload;
+procedure ComplexMultiplyInplace(var ARe, AIm : Single; BRe, BIm : Single);
 var Tmp : Single;
 begin
  Tmp := ARe;
@@ -899,16 +902,16 @@ begin
  AIm := AIm * BRe + Tmp * BIm;
 end;
 
-procedure ComplexMultiplyInplace(var ARe, AIm  : Double; BRe, BIm : Double) overload;
+procedure ComplexMultiplyInplace(var ARe, AIm  : Double; BRe, BIm : Double);
 var Tmp : Double;
 begin
  Tmp := ARe;
  ARe := ARe * BRe - AIm * BIm;
  AIm := AIm * BRe + Tmp * BIm;
 end;
-{$ENDIF}
 
-function ComplexDivide(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
+
+function ComplexDivide(ARe,AIm,BRe,BIm : Single):TComplexSingle;
 var Divisor : Double;
 begin
  Divisor := sqr(BRe) + sqr(BIm);
@@ -916,7 +919,7 @@ begin
  Result.Im := (AIm * BRe - ARe * BIm) / Divisor;
 end;
 
-function ComplexDivide(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
+function ComplexDivide(ARe,AIm,BRe,BIm : Double):TComplexDouble;
 var Divisor : Double;
 begin
  Divisor := sqr(BRe) + sqr(BIm);
@@ -924,7 +927,7 @@ begin
  Result.Im := (AIm * BRe - ARe * BIm) / Divisor;
 end;
 
-function ComplexDivide(A,B : TComplexSingle):TComplexSingle; overload;
+function ComplexDivide(A,B : TComplexSingle):TComplexSingle;
 var Divisor : Double;
 begin
  Divisor := sqr(B.Re) + sqr(B.Im);
@@ -932,7 +935,7 @@ begin
  Result.Im := (A.Im * B.Re - A.Re * B.Im) / Divisor;
 end;
 
-function ComplexDivide(A,B : TComplexDouble):TComplexDouble; overload;
+function ComplexDivide(A,B : TComplexDouble):TComplexDouble;
 var Divisor : Double;
 begin
  Divisor := sqr(B.Re) + sqr(B.Im);
@@ -940,7 +943,7 @@ begin
  Result.Im := (A.Im * B.Re - A.Re * B.Im) / Divisor;
 end;
 
-procedure ComplexDivideInplace(var A : TComplexSingle; B : TComplexSingle) overload;
+procedure ComplexDivideInplace(var A : TComplexSingle; B : TComplexSingle);
 var Divisor, Temp : Double;
 begin
  Divisor := sqr(B.Re) + sqr(B.Im);
@@ -949,8 +952,7 @@ begin
  A.Im := (A.Im * B.Re - Temp * B.Im) / Divisor;
 end;
 
-{$IFDEF DELPHI8_UP}
-procedure ComplexDivideInplace(var A : TComplexDouble; B : TComplexDouble) overload;
+procedure ComplexDivideInplace(var A : TComplexDouble; B : TComplexDouble);
 var Divisor, Temp : Double;
 begin
  Divisor := sqr(B.Re) + sqr(B.Im);
@@ -959,7 +961,7 @@ begin
  A.Im := (A.Im * B.Re - Temp * B.Im) / Divisor;
 end;
 
-procedure ComplexDivideInplace(var ARe, AIm : Single; BRe, BIm : Single) overload;
+procedure ComplexDivideInplace(var ARe, AIm : Single; BRe, BIm : Single);
 var Divisor, Temp : Double;
 begin
  Divisor := sqr(BRe) + sqr(BIm);
@@ -968,7 +970,7 @@ begin
  AIm  := (AIm * BRe - Temp * BIm) / Divisor;
 end;
 
-procedure ComplexDivideInplace(var ARe, AIm  : Double; BRe, BIm : Double) overload;
+procedure ComplexDivideInplace(var ARe, AIm  : Double; BRe, BIm : Double);
 var Divisor, Temp : Double;
 begin
  Divisor := sqr(BRe) + sqr(BIm);
@@ -976,7 +978,6 @@ begin
  ARe  := (ARe * BRe + AIm  * BIm) / Divisor;
  AIm  := (AIm * BRe - Temp * BIm) / Divisor;
 end;
-{$ENDIF}
 
 // Discrete Fourier Transform
 procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
@@ -1569,7 +1570,7 @@ asm
 end;
 {$ENDIF}
 
-function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
+function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer;
 {$IFDEF PUREPASCAL}
 var i : Integer;
     d : Double;
@@ -1619,7 +1620,7 @@ asm
 {$ENDIF}
 end;
 
-function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
+function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer;
 {$IFDEF PUREPASCAL}
 var i : Integer;
     d : Double;
@@ -1669,7 +1670,7 @@ asm
 {$ENDIF}
 end;
 
-procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload;
+procedure DCSubstract(InBuffer: PSingle; Samples: Integer);
 {$IFDEF PUREPASCAL}
 var InBuf : array [0..0] of Double absolute InBuffer;
     d : Double;
@@ -1711,7 +1712,7 @@ asm
 {$ENDIF}
 end;
 
-procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
+procedure DCSubstract(InBuffer: PDouble; Samples: Integer);
 {$IFDEF PUREPASCAL}
 var InBuf : array [0..0] of Double absolute InBuffer;
     d : Double;

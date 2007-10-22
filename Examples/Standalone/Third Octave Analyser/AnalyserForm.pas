@@ -253,10 +253,11 @@ begin
  BarChart.Invalidate;
 end;
 
-{$IFDEF FPC}
+
 initialization
- Set8087CW(Default8087CW or $3F);
- {$i AnalyserForm.lrs}
+Set8087CW(Default8087CW or $3F);
+{$IFDEF FPC}
+{$i AnalyserForm.lrs}
 {$ENDIF}
 
 end.

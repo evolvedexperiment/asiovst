@@ -3,7 +3,7 @@ unit PhaserFrm;
 interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule,
-  Controls, StdCtrls, ExtCtrls, GraphicEx, Graphics;
+  Controls, StdCtrls, ExtCtrls, Graphics;
 
 type
   TPhaserForm = class(TForm)

@@ -11271,15 +11271,12 @@ object PhaserForm: TPhaserForm
       F32B8BF32B8CF32C8CF32C8DF32C8DF52C8EF52C8EF52C8FF52E8FF52E90F52E
       90F52E90F52E90F52E90F52E90F52E90F52F91F52E90F52E90F52E90F52E90F5
       2E90F52E90F52E90F52E8FF52C8FF5000000}
-    ExplicitWidth = 391
-    ExplicitHeight = 306
   end
   object LbVDepth: TLabel
     Left = 190
     Top = 102
     Width = 89
     Height = 13
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Font.Charset = DEFAULT_CHARSET
@@ -11295,7 +11292,6 @@ object PhaserForm: TPhaserForm
     Top = 84
     Width = 46
     Height = 16
-    Margins.Bottom = 0
     Caption = 'Depth:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -11310,7 +11306,6 @@ object PhaserForm: TPhaserForm
     Top = 119
     Width = 75
     Height = 16
-    Margins.Bottom = 0
     Caption = 'Feedback:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -11325,7 +11320,6 @@ object PhaserForm: TPhaserForm
     Top = 154
     Width = 65
     Height = 16
-    Margins.Bottom = 0
     Caption = 'Minimum:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -11340,7 +11334,6 @@ object PhaserForm: TPhaserForm
     Top = 190
     Width = 69
     Height = 16
-    Margins.Bottom = 0
     Caption = 'Maximum:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -11355,7 +11348,6 @@ object PhaserForm: TPhaserForm
     Top = 226
     Width = 38
     Height = 16
-    Margins.Bottom = 0
     Caption = 'Rate:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -11370,7 +11362,6 @@ object PhaserForm: TPhaserForm
     Top = 136
     Width = 89
     Height = 13
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Font.Charset = DEFAULT_CHARSET
@@ -11386,7 +11377,6 @@ object PhaserForm: TPhaserForm
     Top = 172
     Width = 89
     Height = 13
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Font.Charset = DEFAULT_CHARSET
@@ -11402,7 +11392,6 @@ object PhaserForm: TPhaserForm
     Top = 207
     Width = 89
     Height = 13
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Font.Charset = DEFAULT_CHARSET
@@ -11418,7 +11407,6 @@ object PhaserForm: TPhaserForm
     Top = 244
     Width = 89
     Height = 13
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Font.Charset = DEFAULT_CHARSET
@@ -11434,7 +11422,6 @@ object PhaserForm: TPhaserForm
     Top = 261
     Width = 54
     Height = 16
-    Margins.Bottom = 0
     Caption = 'Stages:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -11449,7 +11436,6 @@ object PhaserForm: TPhaserForm
     Top = 276
     Width = 89
     Height = 13
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Font.Charset = DEFAULT_CHARSET
