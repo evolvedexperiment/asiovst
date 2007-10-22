@@ -17,6 +17,9 @@ type
   private
     fPeak   : array [0..1] of Double;
     fVolume : array [0..1] of Double;
+    function GetPeak(index: Integer): Double;
+  public
+    property Peak[index : Integer] : Double read GetPeak;
   end;
 
 implementation
@@ -30,18 +33,16 @@ begin
  GUI := TVSTVUMeterGUI.Create(Self);
 end;
 
-procedure TVSTVUMeterModule.VSTModuleEditIdle(Sender: TObject);
-var tmp : Integer;
+function TVSTVUMeterModule.GetPeak(index: Integer): Double;
 begin
- with (EditorForm As TVSTVUMeterGUI) do
-  begin
-   tmp:=round(300+3*Amp_to_dB(fPeak[0]));
-   if tmp>0 then vu_l.Width := tmp else vu_l.Width := 0;
-   tmp:=round(300+3*Amp_to_dB(fPeak[1]));
-   if tmp>0 then vu_r.Width := tmp else vu_r.Width := 0;
-   gain_l.Caption := 'left gain: ' + inttostr(round(Parameter[0])) + ' db(fs)';
-   gain_r.Caption := 'right gain: ' + inttostr(round(Parameter[1])) + ' db(fs)';
-  end;
+ result := fPeak[index];
+end;
+
+procedure TVSTVUMeterModule.VSTModuleEditIdle(Sender: TObject);
+begin
+ if Assigned(EditorForm) then
+  with (EditorForm As TVSTVUMeterGUI)
+   do TimerTimer(Sender);
 end;
 
 

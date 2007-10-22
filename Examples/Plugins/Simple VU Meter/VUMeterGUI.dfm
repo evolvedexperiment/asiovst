@@ -86,4 +86,9 @@ object VSTVUMeterGUI: TVSTVUMeterGUI
     TabOrder = 1
     OnChange = ParameterChange
   end
+  object Timer: TTimer
+    OnTimer = TimerTimer
+    Left = 16
+    Top = 112
+  end
 end
