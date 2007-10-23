@@ -94,7 +94,9 @@
 unit MidiFile;
 
 {$IFDEF FPC}
-{$MODE Delphi}
+  {$MODE Delphi}
+{$ELSE}
+  {$R MidiFile.res}
 {$ENDIF}
 
 interface
