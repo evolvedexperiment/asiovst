@@ -6,6 +6,8 @@ procedure Register;
 
 implementation
 
+{$IFNDEF FPC}{$R DASIOHost.res}{$ENDIF}
+
 uses Classes, DASIOHOST, DASIOGenerator;
 
 procedure Register;
@@ -16,6 +18,12 @@ begin
  RegisterComponentEditor(TASIOHost, TASIOControlPanel);
  {$ENDIF}
  {$ENDIF}
-end;
+end; 
+
+{$IFDEF FPC}
+  initialization
+  {$i TASIOHost.lrs}
+  {$i TASIOHostBasic.lrs}
+{$ENDIF}
 
 end.

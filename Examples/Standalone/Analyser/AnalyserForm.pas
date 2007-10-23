@@ -22,12 +22,8 @@ type
   { TFmAnalyser }
 
   TFmAnalyser = class(TForm)
-    {$IFNDEF FPC}
     AnalyserChart: TChart;
     BarSeries: TBarSeries;
-    {$ELSE}
-    AnalyserChart: TBarChart;
-    {$ENDIF}
     Bt_CP: TButton;
     Bt_Analyse: TButton;
     DriverCombo: TComboBox;

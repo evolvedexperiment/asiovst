@@ -6,9 +6,6 @@ unit DASIOHost;
 // programs. Thanks to Martin Fay (original Delphi ASIO interface)
 
 {$I ASIOVST.INC}
-{$IFNDEF FPC}
-{$R DASIOHost.res}
-{$ENDIF}
 {.$DEFINE OpenASIO}
 // define OpenASIO to compile using old OpenASIO interface (needs OpenASIO.dll)
 
@@ -1757,10 +1754,6 @@ begin
 end;
 
 initialization
- {$IFDEF FPC}
- {$i TASIOHost.lrs}
- {$i TASIOHostBasic.lrs}
- {$ENDIF}
  PMUpdSamplePos.Msg := PM_UpdateSamplePos;
  PMBufSwitch.Msg := PM_BufferSwitch;
  PMBufSwitchTimeInfo.Msg := PM_BufferSwitchTimeInfo;

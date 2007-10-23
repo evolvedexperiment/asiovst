@@ -9,14 +9,11 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = TOAnalyser.exe VSTEditor.exe VSTAnalyser.exe LunchBox.exe \
+PROJECTS = VSTEditor.exe VSTAnalyser.exe LunchBox.exe \
   MiniHost.exe Metronome.exe ASIODemo.exe Analyser.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
-
-TOAnalyser.exe: Standalone\Third Octave Analyser\TOAnalyser.dpr
-  $(DCC)
 
 VSTEditor.exe: Standalone\Standalone Editor\VSTEditor.dpr
   $(DCC)
