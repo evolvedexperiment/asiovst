@@ -1,4 +1,4 @@
-program Analyser;
+program TOAnalyser;
 
 uses
   Interfaces,

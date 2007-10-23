@@ -28,6 +28,7 @@ requires
   vcl50;
 
 contains
-  DAVDCommon in '..\Source\DAVDCommon.pas';
+  DAVDCommon in '..\Source\DAVDCommon.pas',
+  CPUDetectionTool in '..\Source\CPUDetectionTool.pas';
 
 end.

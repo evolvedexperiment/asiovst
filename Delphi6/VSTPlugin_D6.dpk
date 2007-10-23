@@ -33,6 +33,7 @@ requires
 
 contains
   DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',
-  DVSTPluginWizarDGuiDialog in '..\Source\DVSTPluginWizarDGuiDialog.pas' {VSTPluginWizarDGuiDialog};
+  DVSTPluginWizarDGuiDialog in '..\Source\DVSTPluginWizarDGuiDialog.pas' {VSTPluginWizarDGuiDialog},
+  DVSTEffect in '..\Source\DVSTEffect.pas';
 
 end.

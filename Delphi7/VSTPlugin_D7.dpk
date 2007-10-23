@@ -40,6 +40,7 @@ contains
   DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',
   DVSTPluginWizardFrm in '..\Source\DVSTPluginWizardFrm.pas' {VSTPluginWizardForm},
   DVSTPluginWizardReg in '..\Source\DVSTPluginWizardReg.pas',
-  DVSTProjectCreator in '..\Source\DVSTProjectCreator.pas';
+  DVSTProjectCreator in '..\Source\DVSTProjectCreator.pas',
+  DVSTEffect in '..\Source\DVSTEffect.pas';
 
 end.

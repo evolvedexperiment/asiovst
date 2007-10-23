@@ -97,9 +97,8 @@ begin
 end;
 
 procedure TEditorForm.SBChange(Sender: TObject);
-begin
- with Sender As TScrollBar
-  do TPluginDataModule(Owner).Parameter[Tag]:=Position*0.1;
+begin             
+  TPluginDataModule(Owner).Parameter[(Sender As TScrollBar).Tag]:=(Sender As TScrollBar).Position*0.1;
 end;
 
 end.

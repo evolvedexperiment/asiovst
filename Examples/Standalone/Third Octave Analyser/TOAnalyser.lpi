@@ -39,7 +39,7 @@
     </RequiredPackages>
     <Units Count="18">
       <Unit0>
-        <Filename Value="Analyser.lpr"/>
+        <Filename Value="TOAnalyser.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>

@@ -43,6 +43,7 @@ contains
   DVSTModuleCreator in '..\Source\DVSTModuleCreator.pas',
   DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',
   DVSTPluginWizardFrm in '..\Source\DVSTPluginWizardFrm.pas',
-  DVSTPluginWizardReg in '..\Source\DVSTPluginWizardReg.pas';
+  DVSTPluginWizardReg in '..\Source\DVSTPluginWizardReg.pas',
+  DVSTEffect in '..\Source\DVSTEffect.pas';
 
 end.

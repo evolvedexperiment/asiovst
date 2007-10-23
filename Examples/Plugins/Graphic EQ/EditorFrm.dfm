@@ -1,6 +1,6 @@
 object EditorForm: TEditorForm
-  Left = 463
-  Top = 181
+  Left = 644
+  Top = 195
   BorderStyle = bsNone
   Caption = 'EditorForm'
   ClientHeight = 390
@@ -35,7 +35,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 32
     Height = 13
-    Margins.Bottom = 0
     Caption = '20 Hz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -52,7 +51,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 32
     Height = 13
-    Margins.Bottom = 0
     Caption = '40 Hz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -69,7 +67,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 32
     Height = 13
-    Margins.Bottom = 0
     Caption = '80 Hz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -86,7 +83,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 39
     Height = 13
-    Margins.Bottom = 0
     Caption = '160 Hz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -103,7 +99,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 39
     Height = 13
-    Margins.Bottom = 0
     Caption = '320 Hz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -120,7 +115,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 39
     Height = 13
-    Margins.Bottom = 0
     Caption = '640 Hz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -137,7 +131,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 39
     Height = 13
-    Margins.Bottom = 0
     Caption = '1.2kHz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -154,7 +147,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 43
     Height = 13
-    Margins.Bottom = 0
     Caption = '2.5 kHz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -171,7 +163,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 32
     Height = 13
-    Margins.Bottom = 0
     Caption = '5 kHz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -188,7 +179,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 39
     Height = 13
-    Margins.Bottom = 0
     Caption = '10 kHz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -205,7 +195,6 @@ object EditorForm: TEditorForm
     Top = 190
     Width = 39
     Height = 13
-    Margins.Bottom = 0
     Caption = '20 kHz'
     Color = clBtnShadow
     Font.Charset = DEFAULT_CHARSET
@@ -222,7 +211,6 @@ object EditorForm: TEditorForm
     Top = 70
     Width = 27
     Height = 52
-    Margins.Bottom = 0
     Caption = 'L'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -238,7 +226,6 @@ object EditorForm: TEditorForm
     Top = 270
     Width = 34
     Height = 52
-    Margins.Bottom = 0
     Caption = 'R'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
