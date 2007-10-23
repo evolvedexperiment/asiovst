@@ -19,7 +19,6 @@ object FmReverb: TFmReverb
     Top = 192
     Width = 16
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Dry'
   end
   object LbWet: TLabel
@@ -27,7 +26,6 @@ object FmReverb: TFmReverb
     Top = 192
     Width = 20
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Wet'
   end
   object Label1: TLabel
@@ -35,7 +33,6 @@ object FmReverb: TFmReverb
     Top = 192
     Width = 28
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Width'
   end
   object LbSize: TLabel
@@ -43,7 +40,6 @@ object FmReverb: TFmReverb
     Top = 192
     Width = 20
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Size'
   end
   object LbStretch: TLabel
@@ -51,7 +47,6 @@ object FmReverb: TFmReverb
     Top = 192
     Width = 34
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Stretch'
   end
   object LbDamp: TLabel
@@ -59,7 +54,6 @@ object FmReverb: TFmReverb
     Top = 192
     Width = 28
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Damp'
   end
   object SDry: TScrollBar

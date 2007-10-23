@@ -8,12 +8,9 @@ interface
 
 uses {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
      SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ComCtrls,
-     ExtCtrls, DAVDCommon, Spin, Buttons, DASIOHost;
+     ExtCtrls, DAVDCommon, DAVDComplex, Spin, Buttons, DASIOHost;
 
 type
-  TComplexDouble = record
-                    Re, Im : Double;
-                   end;
   TFmASIO = class(TForm)
     Bt_CP: TButton;
     Bt_Play: TButton;

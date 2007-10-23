@@ -4,7 +4,7 @@ interface
 
 uses {$IFDEF FPC} LCLIntf, LResources, Buttons, {$ELSE} Windows, Messages, {$ENDIF}
      SysUtils, Classes, Graphics, Controls, Forms,
-     Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DAVDCommon,
+     Math, StdCtrls, ComCtrls, DASIOHost, ExtCtrls, DAVDCommon, DAVDComplex,
      Spin, DDspChebyshevFilter, DDspButterworthFilter, DGuiBarChart;
 
 const
@@ -14,9 +14,6 @@ const
        1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000);
 
 type
-  TComplexDouble = record
-                    Re, Im : Double;
-                   end;
   TFmAnalyser = class(TForm)
     Bt_CP: TButton;
     Bt_Analyse: TButton;

@@ -2,14 +2,11 @@ unit SimpleSamplerVoice;
 
 interface
 
-uses DVSTModule;
+uses DVSTModule, DAVDComplex;
 
 {$i Consts.inc}
 
 type
-  TComplexDouble = record
-                    Re, Im : Double;
-                   end;
   TSimpleSamplerVoice = class(TObject)
   private
     fMidiKeyNr  : Integer;

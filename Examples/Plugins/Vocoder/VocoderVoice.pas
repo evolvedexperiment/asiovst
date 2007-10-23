@@ -2,14 +2,11 @@ unit VocoderVoice;
 
 interface
 
-uses DVSTModule;
+uses DVSTModule, DAVDComplex;
 
 {$i Consts.inc}
 
 type
-  TComplexDouble = record
-                    Re, Im : Double;
-                   end;
   TVocoderVoice = class(TObject)
   private
     fMidiKeyNr  : Integer;

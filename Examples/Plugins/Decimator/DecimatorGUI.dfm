@@ -1929,7 +1929,6 @@ object VSTGUI: TVSTGUI
     Top = 184
     Width = 40
     Height = 14
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Caption = 'Mix'
@@ -1946,7 +1945,6 @@ object VSTGUI: TVSTGUI
     Top = 184
     Width = 40
     Height = 14
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Caption = 'Rate'
@@ -1963,7 +1961,6 @@ object VSTGUI: TVSTGUI
     Top = 184
     Width = 40
     Height = 14
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Caption = 'Cut'
@@ -1980,7 +1977,6 @@ object VSTGUI: TVSTGUI
     Top = 184
     Width = 40
     Height = 14
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Caption = 'Res'
@@ -1997,7 +1993,6 @@ object VSTGUI: TVSTGUI
     Top = 184
     Width = 40
     Height = 14
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Caption = 'Vol'
@@ -2014,7 +2009,6 @@ object VSTGUI: TVSTGUI
     Top = 184
     Width = 40
     Height = 14
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
     Caption = 'Bits'
@@ -3289,7 +3283,6 @@ object VSTGUI: TVSTGUI
       Width = 207
       Height = 13
       Cursor = crHandPoint
-      Margins.Bottom = 0
       Caption = 'VST Plugin Technology by Steinberg'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clSilver
@@ -3306,7 +3299,6 @@ object VSTGUI: TVSTGUI
       Width = 215
       Height = 65
       Cursor = crHandPoint
-      Margins.Bottom = 0
       Alignment = taCenter
       Caption = 
         'Decimator 1.0'#13#10'A rather simple bitcrusher-type effect'#13#10'It is not' +
@@ -3327,7 +3319,6 @@ object VSTGUI: TVSTGUI
       Width = 135
       Height = 26
       Cursor = crHandPoint
-      Margins.Bottom = 0
       Alignment = taCenter
       Caption = 'web: www.tobybear.de'#13#10'mail: tobybear@web.de'
       Font.Charset = DEFAULT_CHARSET

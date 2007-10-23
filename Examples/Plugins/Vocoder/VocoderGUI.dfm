@@ -29,10 +29,6 @@ object VSTGUI: TVSTGUI
     Color = clWhite
     OnMidiKeyDown = MidiKeysMidiKeyDown
     OnMidiKeyUp = MidiKeysMidiKeyUp
-    ExplicitLeft = -8
-    ExplicitTop = -8
-    ExplicitWidth = 522
-    ExplicitHeight = 93
   end
   object LbInput: TLabel
     Left = 8

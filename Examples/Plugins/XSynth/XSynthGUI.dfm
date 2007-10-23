@@ -29,7 +29,6 @@ object VSTGUI: TVSTGUI
     Color = clWhite
     OnMidiKeyDown = MidiKeysMidiKeyDown
     OnMidiKeyUp = MidiKeysMidiKeyUp
-    ExplicitWidth = 497
   end
   object GBOSC1: TGroupBox
     Left = 8
@@ -43,7 +42,6 @@ object VSTGUI: TVSTGUI
       Top = 19
       Width = 33
       Height = 13
-      Margins.Bottom = 0
       Caption = 'Type:'
     end
     object Osc1ADSR: TADSRGraph
@@ -68,7 +66,6 @@ object VSTGUI: TVSTGUI
       Top = 53
       Width = 38
       Height = 13
-      Margins.Bottom = 0
       Caption = 'ADSR:'
     end
     object Label5: TLabel
@@ -76,7 +73,6 @@ object VSTGUI: TVSTGUI
       Top = 81
       Width = 35
       Height = 13
-      Margins.Bottom = 0
       Caption = 'Level:'
     end
     object CBOsc1Type: TComboBox
@@ -118,7 +114,6 @@ object VSTGUI: TVSTGUI
       Top = 19
       Width = 33
       Height = 13
-      Margins.Bottom = 0
       Caption = 'Type:'
     end
     object Osc2ADSR: TADSRGraph
@@ -143,7 +138,6 @@ object VSTGUI: TVSTGUI
       Top = 53
       Width = 38
       Height = 13
-      Margins.Bottom = 0
       Caption = 'ADSR:'
     end
     object Label6: TLabel
@@ -151,7 +145,6 @@ object VSTGUI: TVSTGUI
       Top = 81
       Width = 35
       Height = 13
-      Margins.Bottom = 0
       Caption = 'Level:'
     end
     object CBOsc2Type: TComboBox
@@ -193,7 +186,6 @@ object VSTGUI: TVSTGUI
       Top = 81
       Width = 35
       Height = 13
-      Margins.Bottom = 0
       Caption = 'Level:'
     end
     object LbDrive: TLabel
@@ -201,7 +193,6 @@ object VSTGUI: TVSTGUI
       Top = 19
       Width = 36
       Height = 13
-      Margins.Bottom = 0
       Caption = 'Drive:'
     end
     object Label3: TLabel
@@ -209,7 +200,6 @@ object VSTGUI: TVSTGUI
       Top = 38
       Width = 40
       Height = 13
-      Margins.Bottom = 0
       Caption = 'Cutoff:'
     end
     object Label4: TLabel
@@ -217,7 +207,6 @@ object VSTGUI: TVSTGUI
       Top = 57
       Width = 30
       Height = 13
-      Margins.Bottom = 0
       Caption = 'Res.:'
     end
     object SBLevel: TScrollBar

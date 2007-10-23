@@ -22,7 +22,6 @@ object FmASIOVST: TFmASIOVST
     Top = 7
     Width = 59
     Height = 13
-    Margins.Bottom = 0
     Caption = 'ASIO Driver:'
     Transparent = True
     OnClick = Lb_ASIOOutputClick

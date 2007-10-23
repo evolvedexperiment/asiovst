@@ -10,11 +10,10 @@ uses
   {$IFDEF FPC}LCLIntf, LMessages, LResources, Buttons,
   {$ELSE} Windows, Messages, XPMan,{$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, ToolWin,
-  ExtCtrls, StdCtrls, DAVDCommon, Menus, Types, Spin, LunchBoxEvent,
+  ExtCtrls, StdCtrls, DAVDCommon, DAVDComplex, Menus, Types, Spin, LunchBoxEvent,
   LunchBoxEventList, LunchBoxInputFilter, DVSTHost, DASIOHost;
 
 type
-  TComplexDouble = record Re, Im : Double; end;
   TSampleRec = record
                 Data       : TSingleDynArray;
                 SampleRate : Double;

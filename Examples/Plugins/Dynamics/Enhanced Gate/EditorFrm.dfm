@@ -20,7 +20,6 @@ object EditorForm: TEditorForm
     Top = 257
     Width = 147
     Height = 16
-    Margins.Bottom = 0
     Alignment = taCenter
     Caption = 'ENHANCED AUDIO GATE'
     Font.Charset = DEFAULT_CHARSET
@@ -35,7 +34,6 @@ object EditorForm: TEditorForm
     Top = 256
     Width = 147
     Height = 16
-    Margins.Bottom = 0
     Alignment = taCenter
     Caption = 'ENHANCED AUDIO GATE'
     Font.Charset = DEFAULT_CHARSET
@@ -64,7 +62,6 @@ object EditorForm: TEditorForm
       Top = 88
       Width = 58
       Height = 13
-      Margins.Bottom = 0
       Alignment = taCenter
       AutoSize = False
       Caption = 'THRESHOLD'
@@ -96,7 +93,6 @@ object EditorForm: TEditorForm
       Top = 88
       Width = 58
       Height = 13
-      Margins.Bottom = 0
       Alignment = taCenter
       AutoSize = False
       Caption = 'ATTACK'
@@ -127,7 +123,6 @@ object EditorForm: TEditorForm
       Top = 88
       Width = 58
       Height = 13
-      Margins.Bottom = 0
       Alignment = taCenter
       AutoSize = False
       Caption = 'HOLD'
@@ -158,7 +153,6 @@ object EditorForm: TEditorForm
       Top = 88
       Width = 58
       Height = 13
-      Margins.Bottom = 0
       Alignment = taCenter
       AutoSize = False
       Caption = 'DECAY'
@@ -341,7 +335,6 @@ object EditorForm: TEditorForm
       Top = 68
       Width = 50
       Height = 13
-      Margins.Bottom = 0
       Alignment = taCenter
       AutoSize = False
       Caption = 'LO CUT'
@@ -373,7 +366,6 @@ object EditorForm: TEditorForm
       Top = 68
       Width = 48
       Height = 13
-      Margins.Bottom = 0
       Alignment = taCenter
       AutoSize = False
       Caption = 'HI CUT'
@@ -405,7 +397,6 @@ object EditorForm: TEditorForm
       Top = 106
       Width = 50
       Height = 13
-      Margins.Bottom = 0
       Alignment = taCenter
       AutoSize = False
       Caption = 'SOURCE:'
@@ -490,7 +481,6 @@ object EditorForm: TEditorForm
       Top = 68
       Width = 50
       Height = 13
-      Margins.Bottom = 0
       Alignment = taCenter
       AutoSize = False
       Caption = 'RATIO'
@@ -522,7 +512,6 @@ object EditorForm: TEditorForm
       Top = 68
       Width = 48
       Height = 13
-      Margins.Bottom = 0
       Alignment = taCenter
       AutoSize = False
       Caption = 'KNEE'
@@ -555,7 +544,6 @@ object EditorForm: TEditorForm
       Top = 68
       Width = 48
       Height = 13
-      Margins.Bottom = 0
       Alignment = taCenter
       AutoSize = False
       Caption = 'RANGE'

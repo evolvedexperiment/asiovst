@@ -55,7 +55,6 @@ object FmSetup: TFmSetup
     ItemHeight = 13
     TabOrder = 0
     OnChange = CBDriversChange
-    ExplicitWidth = 132
   end
   object CBOutput: TComboBox
     Left = 64
@@ -67,7 +66,6 @@ object FmSetup: TFmSetup
     ItemHeight = 13
     TabOrder = 1
     OnChange = CBOutputChange
-    ExplicitWidth = 156
   end
   object BtControlPanel: TButton
     Left = 4

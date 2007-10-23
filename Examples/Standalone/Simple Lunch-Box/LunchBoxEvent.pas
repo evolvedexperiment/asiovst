@@ -6,10 +6,9 @@ unit LunchBoxEvent;
 
 interface
 
+uses DAVDComplex;
+
 type
-  TComplexDouble = record
-                    Re, Im : Double;
-                   end;
   TLunchBoxSample = class(TObject)
   private
     fMidiKeyNr   : Integer;

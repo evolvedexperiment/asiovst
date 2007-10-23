@@ -2,15 +2,11 @@ unit XSynthVoice;
 
 interface
 
-uses DVSTModule;
+uses DVSTModule, DAVDComplex;
 
 {$i Consts.inc}
 
 type
-  TComplexDouble = record
-                    Re, Im : Double;
-                   end;
-
   TOscilatorType = (otNone, otSine, otHalfSine, otSquare, otNoise);
   TADSRStage = (adsrAttack, adsrDecay, adsrSustain, adsrRelease);
   TOsc = record

@@ -23,7 +23,6 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 51
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Threshold:'
   end
   object LbThresholdValue: TLabel
@@ -31,7 +30,6 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 84
     Height = 13
-    Margins.Bottom = 0
     Alignment = taRightJustify
     Anchors = [akTop, akRight]
     AutoSize = False
@@ -42,7 +40,6 @@ object EditorForm: TEditorForm
     Top = 46
     Width = 29
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Ratio:'
   end
   object LbRatioValue: TLabel
@@ -50,7 +47,6 @@ object EditorForm: TEditorForm
     Top = 46
     Width = 84
     Height = 13
-    Margins.Bottom = 0
     Alignment = taRightJustify
     Anchors = [akTop, akRight]
     AutoSize = False
@@ -60,7 +56,6 @@ object EditorForm: TEditorForm
     Top = 84
     Width = 35
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Attack:'
   end
   object LbAttackValue: TLabel
@@ -68,7 +63,6 @@ object EditorForm: TEditorForm
     Top = 84
     Width = 76
     Height = 13
-    Margins.Bottom = 0
     Alignment = taRightJustify
     Anchors = [akTop, akRight]
     AutoSize = False
@@ -78,7 +72,6 @@ object EditorForm: TEditorForm
     Top = 122
     Width = 42
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Release:'
   end
   object LbReleaseValue: TLabel
@@ -86,7 +79,6 @@ object EditorForm: TEditorForm
     Top = 122
     Width = 84
     Height = 13
-    Margins.Bottom = 0
     Alignment = taRightJustify
     Anchors = [akTop, akRight]
     AutoSize = False
@@ -96,7 +88,6 @@ object EditorForm: TEditorForm
     Top = 160
     Width = 51
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Soft Knee:'
   end
   object LbSoftKneeValue: TLabel
@@ -104,7 +95,6 @@ object EditorForm: TEditorForm
     Top = 160
     Width = 84
     Height = 13
-    Margins.Bottom = 0
     Alignment = taRightJustify
     Anchors = [akTop, akRight]
     AutoSize = False

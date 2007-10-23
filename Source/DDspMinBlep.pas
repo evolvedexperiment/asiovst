@@ -16,7 +16,7 @@ function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TSingleDynArra
 
 implementation
 
-uses Math;
+uses Math, DAVDComplex;
 
 // Generate Blackman Window
 procedure BlackmanWindow(Data : TSingleDynArray);

@@ -30,16 +30,12 @@ object VSTGUI: TVSTGUI
     OnMidiKeyDown = MidiKeysMidiKeyDown
     OnMidiKeyUp = MidiKeysMidiKeyUp
     OnKeyColor = MidiKeysKeyColor
-    ExplicitLeft = -16
-    ExplicitTop = 33
-    ExplicitWidth = 409
   end
   object Label1: TLabel
     Left = 8
     Top = 8
     Width = 48
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Sample:'
   end
   object Waveform: TWaveform

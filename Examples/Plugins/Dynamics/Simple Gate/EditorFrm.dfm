@@ -20,7 +20,6 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 51
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Threshold:'
   end
   object LbdB: TLabel
@@ -28,7 +27,6 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 51
     Height = 13
-    Margins.Bottom = 0
     Alignment = taRightJustify
     AutoSize = False
     Caption = 'dB'

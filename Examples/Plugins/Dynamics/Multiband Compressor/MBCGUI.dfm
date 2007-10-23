@@ -51,7 +51,6 @@ object FmMBC: TFmMBC
     Font.Style = []
     ParentFont = False
     Transparent = True
-    ExplicitLeft = 474
   end
   object LbMasterGain: TLabel
     Left = 34

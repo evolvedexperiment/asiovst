@@ -20,7 +20,6 @@ object VSTVUMeterGUI: TVSTVUMeterGUI
     Top = 104
     Width = 302
     Height = 65
-    Margins.Bottom = 0
     Alignment = taCenter
     Caption = 
       'The first 2 sliders adjust the volume of the left and right chan' +
@@ -32,7 +31,6 @@ object VSTVUMeterGUI: TVSTVUMeterGUI
     Top = 192
     Width = 282
     Height = 13
-    Margins.Bottom = 0
     Caption = 'VST is a trademark of Steinberg Media Technologies GmbH'
   end
   object vu_l: TShape
@@ -52,7 +50,6 @@ object VSTVUMeterGUI: TVSTVUMeterGUI
     Top = 62
     Width = 78
     Height = 13
-    Margins.Bottom = 0
     Caption = 'left gain: 0 db(fs)'
   end
   object gain_r: TLabel
@@ -60,7 +57,6 @@ object VSTVUMeterGUI: TVSTVUMeterGUI
     Top = 78
     Width = 84
     Height = 13
-    Margins.Bottom = 0
     Caption = 'right gain: 0 db(fs)'
   end
   object par0: TScrollBar

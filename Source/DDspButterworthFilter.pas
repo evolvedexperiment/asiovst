@@ -68,7 +68,7 @@ type
 
 implementation
 
-uses Math, SysUtils;
+uses Math, SysUtils, DAVDComplex;
 
 constructor TButterworthFilter.Create;
 begin

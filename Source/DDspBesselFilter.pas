@@ -65,7 +65,7 @@ type
 
 implementation
 
-uses Math, Dialogs, SysUtils;
+uses Math, Dialogs, SysUtils, DAVDComplex;
 
 constructor TBesselFilter.Create;
 begin

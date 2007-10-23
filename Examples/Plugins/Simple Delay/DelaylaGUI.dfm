@@ -20,7 +20,6 @@ object VSTGUI: TVSTGUI
     Top = 32
     Width = 244
     Height = 13
-    Margins.Bottom = 0
     Alignment = taCenter
     AutoSize = False
   end
