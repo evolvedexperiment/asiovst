@@ -1,4 +1,4 @@
-unit DBarChart;
+unit DGuiBarChart;
 
 interface
 
@@ -6,7 +6,7 @@ uses {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
      Classes, Graphics, Forms, Messages, SysUtils, Controls;
 
 {$I ASIOVST.INC}
-{$IFNDEF FPC} {$R DBarChart.res} {$ENDIF}
+{$IFNDEF FPC} {$R DGuiBarChart.res} {$ENDIF}
 
 const
   cNumFrequencies = 32;

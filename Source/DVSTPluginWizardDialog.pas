@@ -1,4 +1,4 @@
-unit DVSTPluginWizardDialog;
+unit DVSTPluginWizarDGuiDialog;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   StdCtrls;
 
 type
-  TVSTPluginWizardDialog = class(TForm)
+  TVSTPluginWizarDGuiDialog = class(TForm)
     EdClassName: TEdit;
     LbEffectName: TLabel;
     BtCreate: TButton;
@@ -20,7 +20,7 @@ type
   end;
 
 var
-  VSTPluginWizardDialog: TVSTPluginWizardDialog;
+  VSTPluginWizarDGuiDialog: TVSTPluginWizarDGuiDialog;
 
 implementation
 

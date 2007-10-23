@@ -1,4 +1,4 @@
-unit DPhaser;
+unit DDspPhaser;
 
 {$I ASIOVST.INC}
 

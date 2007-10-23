@@ -3,7 +3,7 @@ unit PhaserDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, DPhaser;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, DDspPhaser;
 
 type
   TPhaserModule = class(TVSTModule)

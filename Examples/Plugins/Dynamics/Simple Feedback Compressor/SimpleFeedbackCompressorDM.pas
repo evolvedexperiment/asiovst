@@ -3,7 +3,7 @@ unit SimpleFeedbackCompressorDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, DDynamics;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, DDspDynamics;
 
 type
   TSimpleFeedbackCompressorDataModule = class(TVSTModule)

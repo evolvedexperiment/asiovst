@@ -20,24 +20,24 @@
     <Version Minor="3"/>
     <Files Count="4">
       <Item1>
-        <Filename Value="..\Source\DBarChart.pas"/>
+        <Filename Value="..\Source\DGuiBarChart.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="DBarChart"/>
+        <UnitName Value="DGuiBarChart"/>
       </Item1>
       <Item2>
-        <Filename Value="..\Source\DMidiKeys.pas"/>
+        <Filename Value="..\Source\DGuiMidiKeys.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="DMidiKeys"/>
+        <UnitName Value="DGuiMidiKeys"/>
       </Item2>
       <Item3>
-        <Filename Value="..\Source\DWaveform.pas"/>
+        <Filename Value="..\Source\DGuiWaveform.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="DWaveform"/>
+        <UnitName Value="DGuiWaveform"/>
       </Item3>
       <Item4>
-        <Filename Value="..\Source\DADSRGraph.pas"/>
+        <Filename Value="..\Source\DGuiADSRGraph.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="DADSRGraph"/>
+        <UnitName Value="DGuiADSRGraph"/>
       </Item4>
     </Files>
     <Type Value="RunAndDesignTime"/>

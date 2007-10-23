@@ -21,7 +21,7 @@ package VSTPlugin_D9;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'VST Plugin Project Wizard (design-time)'}
+{$DESCRIPTION 'ASIO/VST VST Plugin Project Wizard (design-time)'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 

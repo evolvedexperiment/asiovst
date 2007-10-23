@@ -1,8 +1,8 @@
-unit DDynamics;
+unit DDspDynamics;
 
 interface
 
-uses DAVDCommon, DButterworthFilter;
+uses DAVDCommon, DDspButterworthFilter;
 
 type
   TDynamics = class

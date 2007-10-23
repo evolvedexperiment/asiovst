@@ -1,4 +1,4 @@
-unit DDial;
+unit DGuiDial;
 
 interface
 
@@ -351,7 +351,8 @@ begin
     begin
      Lock;
      DblBuffer := TBitmap.Create;
-     DblBuffer.SetSize(Width, Height);
+     DblBuffer.Width:=Width;
+     DblBuffer.Height:=Height;
      with DblBuffer.Canvas do
       begin
        Brush.Color := Self.Color;

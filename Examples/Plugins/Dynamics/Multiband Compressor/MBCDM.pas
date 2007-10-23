@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule, DFilter, DButterworthFilter, DDynamics;
+  DAVDCommon, DVSTModule, DDspFilter, DDspButterworthFilter, DDspDynamics;
 
 type
   TMultiband = record

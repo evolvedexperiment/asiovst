@@ -22,12 +22,13 @@ package HostVST_D6;
 {$WRITEABLECONST ON}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'VST Host'}
+{$DESCRIPTION 'ASIO/VST VST Host'}
 {$IMPLICITBUILD OFF}
 
 requires
   vcl,
-  AVDCommon_D6;
+  AVDCommon_D6,
+  VstPlugin_D6;
 
 contains
   DVstHost in '..\Source\DVstHost.pas';

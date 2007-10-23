@@ -1,11 +1,11 @@
-unit DBesselFilter;
+unit DDspBesselFilter;
 
 interface
 
 {$I ASIOVST.INC}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
-uses DAVDCommon, DFilter;
+uses DAVDCommon, DDspFilter;
 
 type
   TBesselFilter = class(TIIRFilter)

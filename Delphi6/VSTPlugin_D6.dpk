@@ -22,7 +22,7 @@ package VstPlugin_D6;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'VST Plugin Wizard (design-time)'}
+{$DESCRIPTION 'ASIO/VST VST Plugin Wizard (design-time)'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 
@@ -33,6 +33,6 @@ requires
 
 contains
   DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',
-  DVSTPluginWizardDialog in '..\Source\DVSTPluginWizardDialog.pas' {VSTPluginWizardDialog};
+  DVSTPluginWizarDGuiDialog in '..\Source\DVSTPluginWizarDGuiDialog.pas' {VSTPluginWizarDGuiDialog};
 
 end.

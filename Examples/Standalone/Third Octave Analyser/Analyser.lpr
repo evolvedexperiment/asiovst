@@ -4,7 +4,7 @@ uses
   Interfaces,
   Forms,
   AnalyserForm in 'AnalyserForm.pas' {FmASIO},
-  DChebyshevFilter in 'DChebyshevFilter.pas';
+  DDspChebyshevFilter in 'DDspChebyshevFilter.pas';
 
 {$R *.RES}
 

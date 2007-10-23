@@ -1,4 +1,4 @@
-unit DMinBlep;
+unit DDspMinBlep;
 
 // MinBLEP Generation Code
 // By Daniel Werner

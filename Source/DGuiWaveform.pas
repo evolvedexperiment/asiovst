@@ -1,7 +1,7 @@
-unit DWaveform;
+unit DGuiWaveform;
 
 {$I ASIOVST.INC}
-{$IFNDEF FPC} {$R DWaveform.res} {$ENDIF}
+{$IFNDEF FPC} {$R DGuiWaveform.res} {$ENDIF}
 {$R-}
 
 interface
@@ -11,10 +11,7 @@ uses
   Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DAVDCommon;
 
 type
-  TWaveform = class;
-
   { TWaveform }
-
   TWaveform = class(TGraphicControl)
   private
     fBuffer         : TBitmap;

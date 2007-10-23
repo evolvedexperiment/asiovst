@@ -4,7 +4,7 @@ interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon,
      DVSTEffect, DVSTModule, VocoderVoice, VoiceList,
-     DChebyshevFilter, DFilter;
+     DDspChebyshevFilter, DDspFilter;
 
 const
   cNumFrequencies = 32;

@@ -1,7 +1,7 @@
-unit DMidiKeys;
+unit DGuiMidiKeys;
 
 {$I ASIOVST.INC}
-{$IFNDEF FPC} {$R DMidiKeys.res} {$ENDIF}
+{$IFNDEF FPC} {$R DGuiMidiKeys.res} {$ENDIF}
 {$R-}
 
 interface

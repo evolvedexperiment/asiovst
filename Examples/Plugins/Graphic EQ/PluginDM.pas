@@ -4,7 +4,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, 
-  DAVDCommon, DVSTModule, DFilter;
+  DAVDCommon, DVSTModule, DDspFilter;
 
 type
   TPluginDataModule = class(TVSTModule)

@@ -22,7 +22,7 @@ package DVSTGui_D10;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'Midi Keys & More'}
+{$DESCRIPTION 'ASIO/VST GUI Components'}
 {$IMPLICITBUILD OFF}
 
 requires
@@ -31,10 +31,10 @@ requires
   AVDCommon_D10;
 
 contains
-  DMidiKeys in '..\Source\DMidiKeys.pas',
-  DADSRGraph in '..\Source\DADSRGraph.pas',
-  DWaveform in '..\Source\DWaveform.pas',
-  DBarChart in '..\Source\DBarChart.pas',
-  DDial in '..\Source\DDial.pas';
+  DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
+  DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
+  DGuiWaveform in '..\Source\DGuiWaveform.pas',
+  DGuiBarChart in '..\Source\DGuiBarChart.pas',
+  DGuiDial in '..\Source\DGuiDial.pas';
 
 end.

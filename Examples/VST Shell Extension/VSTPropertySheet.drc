@@ -220,7 +220,7 @@
 #define SysConst_SReadAccess 65518
 #define SysConst_SWriteAccess 65519
 #define SysConst_SInvalidInteger 65520
-#define SysConst_SInvalidGUID 65521
+#define SysConst_SInvaliDGuiD 65521
 #define SysConst_SOutOfMemory 65522
 #define SysConst_SInOutError 65523
 #define SysConst_SFileNotFound 65524
@@ -449,7 +449,7 @@ BEGIN
 	SysConst_SReadAccess,	"Lesen"
 	SysConst_SWriteAccess,	"Schreiben"
 	SysConst_SInvalidInteger,	"'%s' ist kein gültiger Integerwert"
-	SysConst_SInvalidGUID,	"'%s' kein gültiger Wert für GUID"
+	SysConst_SInvaliDGuiD,	"'%s' kein gültiger Wert für GUID"
 	SysConst_SOutOfMemory,	"Zu wenig Arbeitsspeicher"
 	SysConst_SInOutError,	"E/A-Fehler %d"
 	SysConst_SFileNotFound,	"Datei nicht gefunden"

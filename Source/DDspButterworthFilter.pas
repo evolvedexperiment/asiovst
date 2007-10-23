@@ -1,11 +1,11 @@
-unit DButterworthFilter;
+unit DDspButterworthFilter;
 
 interface
 
 {$I ASIOVST.INC}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
-uses DAVDCommon, DFilter;
+uses DAVDCommon, DDspFilter;
 
 type
   TButterworthFilter = class(TIIRFilter)

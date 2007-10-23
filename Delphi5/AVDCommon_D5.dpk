@@ -21,15 +21,13 @@ package AVDCommon_D5;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'Base Package for ASIO/VST/DSP'}
+{$DESCRIPTION 'ASIO/VST Base Package'}
 {$IMPLICITBUILD OFF}
 
 requires
   vcl50;
 
 contains
-  DAVDCommon in '..\Source\DAVDCommon.pas',
-  DVSTEffect in '..\Source\DVSTEffect.pas',
-  DFilter in '..\Source\DFilter.pas';
+  DAVDCommon in '..\Source\DAVDCommon.pas';
 
 end.

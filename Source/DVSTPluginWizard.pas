@@ -99,7 +99,7 @@ var
 begin
   Config := TConfig.Create;
   try
-    if ShowWizardDialog(Config) then
+    if ShowWizarDGuiDialog(Config) then
     begin
       CreateProject(Config);
       CreateVSTModule(Config);

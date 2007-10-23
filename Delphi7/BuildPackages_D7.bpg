@@ -10,7 +10,7 @@ DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = AVDCommon_D7.bpl VSTPlugin_D7.bpl HostASIO_D7.bpl HostVST_D7.bpl \
-  DVSTGui_D7.bpl
+  DVSTGui_D7.bpl AVDDSP_D7.bpl
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -30,4 +30,5 @@ HostVST_D7.bpl: HostVST_D7.dpk
 DVSTGui_D7.bpl: DVSTGui_D7.dpk
   $(DCC)
 
-
+AVDDSP_D7.bpl: AVDDSP_D7.dpk
+  $(DCC)

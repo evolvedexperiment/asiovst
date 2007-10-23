@@ -186,29 +186,29 @@
         <UsageCount Value="9"/>
       </Unit18>
       <Unit19>
-        <Filename Value="..\..\..\Source\DBarChart.pas"/>
-        <UnitName Value="DBarChart"/>
+        <Filename Value="..\..\..\Source\DGuiBarChart.pas"/>
+        <UnitName Value="DGuiBarChart"/>
         <CursorPos X="1" Y="9"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>
       </Unit19>
       <Unit20>
-        <Filename Value="..\..\..\Source\DMidiKeys.pas"/>
-        <UnitName Value="DMidiKeys"/>
+        <Filename Value="..\..\..\Source\DGuiMidiKeys.pas"/>
+        <UnitName Value="DGuiMidiKeys"/>
         <CursorPos X="1" Y="5"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>
       </Unit20>
       <Unit21>
-        <Filename Value="..\..\..\Source\DWaveform.pas"/>
-        <UnitName Value="DWaveform"/>
+        <Filename Value="..\..\..\Source\DGuiWaveform.pas"/>
+        <UnitName Value="DGuiWaveform"/>
         <CursorPos X="1" Y="4"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>
       </Unit21>
       <Unit22>
-        <Filename Value="..\..\..\Source\DADSRGraph.pas"/>
-        <UnitName Value="DADSRGraph"/>
+        <Filename Value="..\..\..\Source\DGuiADSRGraph.pas"/>
+        <UnitName Value="DGuiADSRGraph"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>

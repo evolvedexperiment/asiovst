@@ -3,8 +3,8 @@ program Analyser;
 uses
   Forms,
   AnalyserForm in 'AnalyserForm.pas' {FmASIO},
-  DChebyshevFilter in '..\..\..\Source\DChebyshevFilter.pas',
-  DButterworthFilter in '..\..\..\Source\DButterworthFilter.pas';
+  DDspChebyshevFilter in '..\..\..\Source\DDspChebyshevFilter.pas',
+  DDspButterworthFilter in '..\..\..\Source\DDspButterworthFilter.pas';
 
 {$R *.RES}
 

@@ -1,11 +1,11 @@
-unit DChebyshevFilter;
+unit DDspChebyshevFilter;
 
 interface
 
 {$I ASIOVST.INC}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
-uses DFilter, DAVDCommon;
+uses DDspFilter, DAVDCommon;
 
 type
   TChebyshev1Filter = class(TIIRFilter)

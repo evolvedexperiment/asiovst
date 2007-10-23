@@ -70,8 +70,8 @@
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\..\..\Source\DFilter.pas"/>
-        <UnitName Value="DFilter"/>
+        <Filename Value="..\..\..\Source\DDspFilter.pas"/>
+        <UnitName Value="DDspFilter"/>
         <CursorPos X="15" Y="6"/>
         <TopLine Value="1"/>
         <EditorIndex Value="4"/>

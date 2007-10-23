@@ -4,7 +4,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, Graphics, DVSTModule,
-  Controls, StdCtrls, DDial, ExtCtrls;
+  Controls, StdCtrls, DGuiDial, ExtCtrls;
 
 type
   TFmMBC = class(TForm)

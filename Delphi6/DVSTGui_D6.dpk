@@ -21,7 +21,7 @@ package DVSTGui_D6;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'Midi Keys & More'}
+{$DESCRIPTION 'ASIO/VST GUI Components'}
 {$IMPLICITBUILD OFF}
 
 requires
@@ -29,6 +29,10 @@ requires
   vcl;
 
 contains
-  DMidiKeys in '..\Source\DMidiKeys.pas';
+  DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
+  DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
+  DGuiWaveform in '..\Source\DGuiWaveform.pas',
+  DGuiBarChart in '..\Source\DGuiBarChart.pas',
+  DGuiDial in '..\Source\DGuiDial.pas';
 
 end.

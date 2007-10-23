@@ -1,7 +1,7 @@
-unit DADSRGraph;
+unit DGuiADSRGraph;
 
 {$I ASIOVST.INC}
-{$IFNDEF FPC} {$R DADSRGraph.res} {$ENDIF}
+{$IFNDEF FPC} {$R DGuiADSRGraph.res} {$ENDIF}
 {$R-}
 
 interface

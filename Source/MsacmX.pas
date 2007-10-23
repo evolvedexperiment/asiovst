@@ -512,7 +512,7 @@ type
 		dwFilterTag      : DWORD           ;
 		cbFilterSize     : DWORD           ;
 		fdwSupport       : DWORD           ;
-		cStandardFilters : DWORD           ;
+		cStandarDDspFilters : DWORD           ;
 		szFilterTag      : array[0..ACMFILTERTAGDETAILS_FILTERTAG_CHARS-1] of char;
 	end;
 
@@ -524,7 +524,7 @@ type
 		dwFilterTag      : DWORD           ;
 		cbFilterSize     : DWORD           ;
 		fdwSupport       : DWORD           ;
-		cStandardFilters : DWORD           ;
+		cStandarDDspFilters : DWORD           ;
 		szFilterTag      : array[0..ACMFILTERTAGDETAILS_FILTERTAG_CHARS-1] of wchar;
 	end;
 

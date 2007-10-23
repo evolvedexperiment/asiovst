@@ -1,4 +1,4 @@
-package DVSTGui_D5;
+package AVDDSP_D5;
 
 {$ALIGN ON}
 {$ASSERTIONS ON}
@@ -21,18 +21,20 @@ package DVSTGui_D5;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'ASIO/VST GUI Components'}
-{$IMPLICITBUILD OFF}
+{$DESCRIPTION 'ASIO/VST DSP Package'}
+{$IMPLICITBUILD ON}
 
 requires
-  vcl50,
+  vcl,
+  rtl,
   AVDCommon_D5;
 
 contains
-  DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
-  DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
-  DGuiWaveform in '..\Source\DGuiWaveform.pas',
-  DGuiBarChart in '..\Source\DGuiBarChart.pas',
-  DGuiDial in '..\Source\DGuiDial.pas';
+  DDspBesselFilter in '..\Source\DDspBesselFilter.pas',
+  DDspButterworthFilter in '..\Source\DDspButterworthFilter.pas',
+  DDspChebyshevFilter in '..\Source\DDspChebyshevFilter.pas',
+  DDspDynamics in '..\Source\DDspDynamics.pas',
+  DDspMinBlep in '..\Source\DDspMinBlep.pas',
+  DDspPhaser in '..\Source\DDspPhaser.pas';
 
 end.

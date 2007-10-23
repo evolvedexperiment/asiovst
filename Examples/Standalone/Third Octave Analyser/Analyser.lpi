@@ -68,8 +68,8 @@
         <UsageCount Value="10"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\..\..\Source\DFilter.pas"/>
-        <UnitName Value="DFilter"/>
+        <Filename Value="..\..\..\Source\DDspFilter.pas"/>
+        <UnitName Value="DDspFilter"/>
         <CursorPos X="1" Y="7"/>
         <TopLine Value="1"/>
         <EditorIndex Value="1"/>
@@ -97,8 +97,8 @@
         <UsageCount Value="10"/>
       </Unit6>
       <Unit7>
-        <Filename Value="..\..\..\Source\DBarChart.pas"/>
-        <UnitName Value="DBarChart"/>
+        <Filename Value="..\..\..\Source\DGuiBarChart.pas"/>
+        <UnitName Value="DGuiBarChart"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <EditorIndex Value="7"/>
@@ -163,8 +163,8 @@
         <Loaded Value="True"/>
       </Unit15>
       <Unit16>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
-        <UnitName Value="DChebyshevFilter"/>
+        <Filename Value="..\..\..\Source\DDspChebyshevFilter.pas"/>
+        <UnitName Value="DDspChebyshevFilter"/>
         <CursorPos X="1" Y="7"/>
         <TopLine Value="1"/>
         <EditorIndex Value="4"/>
@@ -172,8 +172,8 @@
         <Loaded Value="True"/>
       </Unit16>
       <Unit17>
-        <Filename Value="..\..\..\Source\DButterworthFilter.pas"/>
-        <UnitName Value="DButterworthFilter"/>
+        <Filename Value="..\..\..\Source\DDspButterworthFilter.pas"/>
+        <UnitName Value="DDspButterworthFilter"/>
         <CursorPos X="1" Y="7"/>
         <TopLine Value="1"/>
         <EditorIndex Value="5"/>
@@ -183,39 +183,39 @@
     </Units>
     <JumpHistory Count="9" HistoryIndex="8">
       <Position1>
-        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Filename Value="..\..\..\Source\DDspFilter.pas"/>
         <Caret Line="6" Column="15" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Filename Value="..\..\..\Source\DDspFilter.pas"/>
         <Caret Line="175" Column="1" TopLine="160"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Filename Value="..\..\..\Source\DDspFilter.pas"/>
         <Caret Line="467" Column="8" TopLine="445"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Filename Value="..\..\..\Source\DDspFilter.pas"/>
         <Caret Line="443" Column="1" TopLine="435"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Filename Value="..\..\..\Source\DDspFilter.pas"/>
         <Caret Line="6" Column="12" TopLine="1"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
+        <Filename Value="..\..\..\Source\DDspChebyshevFilter.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\..\Source\DChebyshevFilter.pas"/>
+        <Filename Value="..\..\..\Source\DDspChebyshevFilter.pas"/>
         <Caret Line="222" Column="12" TopLine="195"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\..\Source\DFilter.pas"/>
+        <Filename Value="..\..\..\Source\DDspFilter.pas"/>
         <Caret Line="642" Column="11" TopLine="617"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\..\Source\DButterworthFilter.pas"/>
+        <Filename Value="..\..\..\Source\DDspButterworthFilter.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position9>
     </JumpHistory>

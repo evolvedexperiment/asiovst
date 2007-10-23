@@ -1,4 +1,4 @@
-object VSTPluginWizardDialog: TVSTPluginWizardDialog
+object VSTPluginWizarDGuiDialog: TVSTPluginWizarDGuiDialog
   Left = 293
   Top = 161
   HorzScrollBar.Visible = False

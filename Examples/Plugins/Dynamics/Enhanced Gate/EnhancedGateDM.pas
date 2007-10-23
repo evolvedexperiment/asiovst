@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule, DDynamics;
+  DAVDCommon, DVSTModule, DDspDynamics;
 
 const NrChannels = 2;
 

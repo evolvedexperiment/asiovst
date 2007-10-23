@@ -3,7 +3,7 @@ unit SimpleSamplerGUI;
 interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-     Controls, StdCtrls, DMidiKeys, Graphics, Dialogs, WaveIOX, DWaveform;
+     Controls, StdCtrls, DGuiMidiKeys, Graphics, Dialogs, WaveIOX, DGuiWaveform;
 
 type
   TVSTGUI = class(TForm)

@@ -21,14 +21,15 @@ package HostVST_D10;
 {$WRITEABLECONST ON}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'VST Host'}
+{$DESCRIPTION 'ASIO/VST VST Host'}
 {$IMPLICITBUILD ON}
 
 requires
   AVDCommon_D10,
   vcl,
   rtl,
-  designide;
+  designide,
+  VstPlugin_D10;
 
 contains
   DVSTHost in '..\Source\DVSTHost.pas';

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  Controls, StdCtrls, DMidiKeys, Graphics;
+  Controls, StdCtrls, DGuiMidiKeys, Graphics;
 
 type
   TVSTGUI = class(TForm)
