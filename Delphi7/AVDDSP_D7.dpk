@@ -36,6 +36,11 @@ contains
   DDspDynamics in '..\Source\DDspDynamics.pas',
   DDspMinBlep in '..\Source\DDspMinBlep.pas',
   DDspPhaser in '..\Source\DDspPhaser.pas',
-  DDspFilter in '..\Source\DDspFilter.pas';
+  DDspFilter in '..\Source\DDspFilter.pas',
+  DDspWaveshaper in '..\Source\DDspWaveshaper.pas',
+  DDspInterpolation in '..\Source\DDspInterpolation.pas',
+  DDspWindowing in '..\Source\DDspWindowing.pas',
+  DDspFFT in '..\Source\DDspFFT.pas',
+  DDspDFT in '..\Source\DDspDFT.pas';
 
 end.

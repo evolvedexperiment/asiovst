@@ -19,7 +19,7 @@ type
   PSingleFixedArray = ^TSingleFixedArray;
   TDoubleFixedArray = Array [0..0] of Double;
   PDoubleFixedArray = ^TDoubleFixedArray;
-   
+
   TArrayOfSingleDynArray = array of TSingleDynArray;
   PArrayOfSingleDynArray = ^TArrayOfSingleDynArray;
   TArrayOfDoubleDynArray = array of TDoubleDynArray;
@@ -39,8 +39,6 @@ type
   P2SingleArray = ^T2SingleArray;
   T2DoubleArray = array [0..1] of Double;
   P2DoubleArray = ^T2SingleArray;
-
-
 
   TStrArray = array of string;
 
@@ -68,8 +66,6 @@ type
   function Smallest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function Largest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function LimitAngle(const Angle: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function LinearInterpolation(f,a,b:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function CubicInterpolation(fr,inm1,inp,inp1,inp2:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Ln2(f:Single):Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Floorln2(f:Single):Integer; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Arctan(Value:Single):Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
@@ -103,40 +99,21 @@ type
   function FreqLinearToLog(value:Single):Single;
   function FreqLogToLinear(value:Single):Single;
 
-  procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
-
-
-  procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray); overload;
-  procedure DFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray); overload;
-  procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray); overload;
-  procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray); overload;
-
-  procedure DFT(realTime,realFreq,imagFreq : TSingleDynArray); overload;
-  procedure DFT(realTime,realFreq,imagFreq : TDoubleDynArray); overload;
-  procedure InverseDFT(realTime,realFreq,imagFreq : TSingleDynArray); overload;
-  procedure InverseDFT(realTime,realFreq,imagFreq : TDoubleDynArray); overload;
+  procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double); overload;
+  procedure GetSinCos(Frequency: Extended; var SinValue, CosValue : Extended); overload;
+  procedure GetSinCos(Frequency: Single; var SinValue, CosValue : Single); overload;
 
   function RoundToPowerOf2(Value:Integer) : Integer;
   function TruncToPowerOf2(Value:Integer) : Integer;
   function OnOff(fvalue:Single) : Boolean;
   function unDenormalize(fvalue:Single) : Single;
 
-  function Saturate(input, fMax: Single): Single;
-
   function Tanh2a(x:Single):Single;
   function Tanh2b(x:Single):Single;
   function Tanh2c(x:Single):Single;
   function Tanh2d(x:Single):Single;
   function Sigmoid(x:Single):Single;
-  function Waveshaper1(x,t:Single):Single;
-  function Waveshaper2(x,t:Single):Single;
-  function Waveshaper3(x,a:Single):Single;
-  function Waveshaper4(x,a:Single):Single;
-  function Waveshaper5(x,a:Single):Single;
-  function Waveshaper6(x:Single):Single;
-  function Waveshaper7(x,a:Single):Single;
-  function Waveshaper8(x,a:Single):Single;
-  function SoftSat(x,a:Single):Single;
+  function Sinc(x:Double):Double;
   {$IFNDEF FPC}
   procedure Msg(b:boolean); overload;
   procedure Msg(m:string;m2:string=''); overload;
@@ -149,12 +126,6 @@ type
   function MakeGoodFileName(s: string): string;
   {$ENDIF}
 
-  function Sinc(x:Double):Double;
-  function Hermite1(const x,y0,y1,y2,y3:Single):Single;
-  function Hermite2(const x,y0,y1,y2,y3:Single):Single;
-  function Hermite3(const x,y0,y1,y2,y3:Single):Single;
-  function Hermite4(const frac_pos, xm1, x0, x1, x2: Single): Single;
-  function Hermite_asm(const frac_pos: Single; pntr : PSingle) : Single;
 
   function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
   function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
@@ -297,16 +268,6 @@ begin
  Result := Angle;
  while Result < 0 do Result:=Result+360;
  while Result >= 360 do Result:=Result-360;
-end;
-
-function LinearInterpolation(f,a,b:Single):Single;
-begin
- Result:=(1-f)*a+f*b;
-end;
-
-function CubicInterpolation(fr,inm1,inp,inp1,inp2:Single):Single;
-begin
- Result:=inp+0.5*fr*(inp1-inm1+fr*(4*inp1+2*inm1-5*inp-inp2 +fr*(3*(inp-inp1)-inm1+inp2)));
 end;
 
 function Amp_to_dB(v:Single):Single;
@@ -512,10 +473,8 @@ end;
 {$IFNDEF FPC}
 function f_Abs(f:Single):Single;
 asm
- mov eax,f.Integer
- and eax,$7FFFFFFF
- mov f.Integer,eax
- fld f.Single
+ fld f
+ fabs
 end;
 {$ELSE}
 function f_Abs(f:Single):Single; inline;
@@ -633,14 +592,6 @@ begin
  Result:=x;
 end;
 
-function Saturate(input, fMax: Single): Single;
-var x1, x2: Single;
-begin
- x1 := f_abs(input + fMax);
- x2 := f_abs(input - fMax);
- Result := Half * (x1 - x2);
-end;
-
 // scale logarithmicly from 20 Hz to 20 kHz
 function FreqLinearToLog(value:Single):Single;
 {$IFDEF PUREPASCAL}
@@ -680,6 +631,20 @@ asm
  fyl2x
  fmul fltl2
 {$ENDIF}
+end;   
+
+procedure GetSinCos(Frequency: Extended; var SinValue, CosValue : Extended);
+{$IFDEF PUREPASCAL}
+begin
+ SinValue:=Sin(Frequency);
+ CosValue:=Cos(Frequency);
+{$ELSE}
+asm
+  fld Frequency;
+  fsincos
+  fstp    tbyte ptr [edx]    // Cos
+  fstp    tbyte ptr [eax]    // Sin
+{$ENDIF}
 end;
 
 procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
@@ -696,216 +661,21 @@ asm
 {$ENDIF}
 end;
 
-// Discrete Fourier Transform
-procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
-var k, i, sz       : Integer;
-    sr, si, sd, kc : Extended;
+procedure GetSinCos(Frequency: Single; var SinValue, CosValue : Single);
+{$IFDEF PUREPASCAL}
 begin
- sz:=Length(realTime);
- Assert(sz=Length(imagTime));
- Assert(sz=Length(realFreq));
- Assert(sz=Length(imagFreq));
-
- sd:=1/sz;
- FillChar(realFreq[0],sz*sizeOf(Single),0);
- FillChar(imagFreq[0],sz*sizeOf(Single),0);
-
- for k:=0 to sz-1 do
-  begin
-   kc:=2*PI*k*sd;
-   for i:=0 to sz-1 do
-    begin
-     SinCos(kc*i, sr, si);
-     realFreq[k] := realFreq[k] + (realTime[i] * sr) + (imagTime[i] * si);
-     imagFreq[k] := imagFreq[k] - (realTime[i] * si) + (imagTime[i] * sr);
-    end;
-  end;
+ SinValue:=Sin(Frequency);
+ CosValue:=Cos(Frequency);
+{$ELSE}
+asm
+ fld Frequency;
+ fsincos
+ fstp [CosValue];
+ fstp [SinValue];
+{$ENDIF}
 end;
 
-// Inverse Discrete Fourier Transform
-procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
-var k, i, sz       : Integer;
-    sr, si, sd, kc : Extended;
-begin
- sz:=Length(realTime);
- Assert(sz=Length(imagTime));
- Assert(sz=Length(realFreq));
- Assert(sz=Length(imagFreq));
 
- sd:=1/sz;
- FillChar(realTime[0],sz*sizeOf(Single),0);
- FillChar(imagTime[0],sz*sizeOf(Single),0);
-
- for k:=0 to sz-1 do
-  begin
-   kc:=2*PI*k*sd;
-   for i:=0 to sz-1 do
-    begin
-     SinCos(kc*i, sr, si);
-     realTime[k] := realTime[k] + (realFreq[i] * sr) + (imagFreq[i] * si);
-     realTime[k] := realTime[k] - (realFreq[i] * si) + (imagFreq[i] * sr);
-    end;
-
-   realTime[k] := realTime[k]*sd;
-   imagTime[k] := imagTime[k]*sd;
-  end;
-end;
-
-// Discrete Fourier Transform
-procedure DFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray);
-var k, i, sz       : Integer;
-    sr, si, sd, kc : Extended;
-begin
- sz:=Length(realTime);
- Assert(sz=Length(imagTime));
- Assert(sz=Length(realFreq));
- Assert(sz=Length(imagFreq));
-
- sd:=1/sz;
- FillChar(realFreq[0],sz*sizeOf(Double),0);
- FillChar(imagFreq[0],sz*sizeOf(Double),0);
-
- for k:=0 to sz-1 do
-  begin
-   kc:=2*PI*k*sd;
-   for i:=0 to sz-1 do
-    begin
-     SinCos(kc*i, sr, si);
-     realFreq[k] := realFreq[k] + (realTime[i] * sr) + (imagTime[i] * si);
-     imagFreq[k] := imagFreq[k] - (realTime[i] * si) + (imagTime[i] * sr);
-    end;
-  end;
-end;
-
-// Inverse Discrete Fourier Transform
-procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray);
-var k, i, sz       : Integer;
-    sr, si, sd, kc : Extended;
-begin
- sz:=Length(realTime);
- Assert(sz=Length(imagTime));
- Assert(sz=Length(realFreq));
- Assert(sz=Length(imagFreq));
-
- sd:=1/sz;
- FillChar(realTime[0],sz*sizeOf(Double),0);
- FillChar(imagTime[0],sz*sizeOf(Double),0);
-
- for k:=0 to sz-1 do
-  begin
-   kc:=2*PI*k*sd;
-   for i:=0 to sz-1 do
-    begin
-     SinCos(kc*i, sr, si);
-     realTime[k] := realTime[k] + (realFreq[i] * sr) + (imagFreq[i] * si);
-     realTime[k] := realTime[k] - (realFreq[i] * si) + (imagFreq[i] * sr);
-    end;
-
-   realTime[k] := realTime[k]*sd;
-   imagTime[k] := imagTime[k]*sd;
-  end;
-end;
-
-procedure DFT(realTime,realFreq,imagFreq : TSingleDynArray);
-var k, i, sz       : Integer;
-    sr, si, sd, kc : Extended;
-begin
- sz:=Length(realTime);
- Assert(sz=Length(realFreq));
- Assert(sz=Length(imagFreq));
-
- sd:=1/sz;
- FillChar(realFreq[0],sz*sizeOf(Single),0);
- FillChar(imagFreq[0],sz*sizeOf(Single),0);
-
- for k:=0 to sz-1 do
-  begin
-   kc:=2*PI*k*sd;
-   for i:=0 to sz-1 do
-    begin
-     SinCos(kc*i, sr, si);
-     realFreq[k] := realFreq[k] + (realTime[i] * sr);
-     imagFreq[k] := imagFreq[k] - (realTime[i] * si);
-    end;
-  end;
-end;
-
-// Inverse Discrete Fourier Transform
-procedure InverseDFT(realTime,realFreq,imagFreq : TSingleDynArray);
-var k, i, sz       : Integer;
-    sr, si, sd, kc : Extended;
-begin
- sz:=Length(realTime);
- Assert(sz=Length(realFreq));
- Assert(sz=Length(imagFreq));
-
- sd:=1/sz;
- FillChar(realTime[0],sz*sizeOf(Single),0);
-
- for k:=0 to sz-1 do
-  begin
-   kc:=2*PI*k*sd;
-   for i:=0 to sz-1 do
-    begin
-     SinCos(kc*i, sr, si);
-     realTime[k] := realTime[k] + (realFreq[i] * sr) + (imagFreq[i] * si);
-     realTime[k] := realTime[k] - (realFreq[i] * si) + (imagFreq[i] * sr);
-    end;
-
-   realTime[k] := realTime[k]*sd;
-  end;
-end;
-
-// Discrete Fourier Transform
-procedure DFT(realTime,realFreq,imagFreq : TDoubleDynArray);
-var k, i, sz       : Integer;
-    sr, si, sd, kc : Extended;
-begin
- sz:=Length(realTime);
- Assert(sz=Length(realFreq));
- Assert(sz=Length(imagFreq));
-
- sd:=1/sz;
- FillChar(realFreq[0],sz*sizeOf(Double),0);
- FillChar(imagFreq[0],sz*sizeOf(Double),0);
-
- for k:=0 to sz-1 do
-  begin
-   kc:=2*PI*k*sd;
-   for i:=0 to sz-1 do
-    begin
-     SinCos(kc*i, sr, si);
-     realFreq[k] := realFreq[k] + (realTime[i] * sr);
-     imagFreq[k] := imagFreq[k] - (realTime[i] * si);
-    end;
-  end;
-end;
-
-// Inverse Discrete Fourier Transform
-procedure InverseDFT(realTime,realFreq,imagFreq : TDoubleDynArray);
-var k, i, sz       : Integer;
-    sr, si, sd, kc : Extended;
-begin
- sz:=Length(realTime);
- Assert(sz=Length(realFreq));
- Assert(sz=Length(imagFreq));
-
- sd:=1/sz;
- FillChar(realTime[0],sz*sizeOf(Double),0);
-
- for k:=0 to sz-1 do
-  begin
-   kc:=2*PI*k*sd;
-   for i:=0 to sz-1 do
-    begin
-     SinCos(kc*i, sr, si);
-     realTime[k] := realTime[k] + (realFreq[i] * sr) + (imagFreq[i] * si);
-     realTime[k] := realTime[k] - (realFreq[i] * si) + (imagFreq[i] * sr);
-    end;
-
-   realTime[k] := realTime[k]*sd;
-  end;
-end;
 
 function RoundToPowerOf2(Value:Integer) : Integer;
 begin
@@ -1028,88 +798,6 @@ begin
    end;
 end;
 
-function Hermite_asm(const frac_pos: Single; pntr : PSingle) : Single;
-// Parameter explanation:
-// frac_pos: fractional value [0.0f - 1.0f] to interpolator
-// pntr: pointer to float array where:
-// pntr[0] = previous sample (idx = -1)
-// pntr[1] = current sample (idx = 0)
-// pntr[2] = next sample (idx = +1)
-// pntr[3] = after next sample (idx = +2)
-// The interpolation takes place between pntr[1] and pntr[2].
-const c_half : Double = 0.5;
-asm
- fld dword ptr [pntr+8];       // x1
- fsub dword ptr [pntr];        // x1-xm1
- fld dword ptr [pntr+4];       // x0           x1-xm1
- fsub dword ptr [pntr+8];      // v            x1-xm1
- fld dword ptr [pntr+12];      // x2           v            x1-xm1
- fsub dword ptr [pntr+4];      // x2-x0        v            x1-xm1
- fxch st(2);                   // x1-m1        v            x2-x0
- fmul c_half;                  // c            v            x2-x0
- fxch st(2);                   // x2-x0        v            c
- fmul c_half;                  // 0.5*(x2-x0)  v            c
- fxch st(2);                   // c            v            0.5*(x2-x0)
- fst st(3);                    // c            v            0.5*(x2-x0)  c
- fadd st(0), st(1);            // w            v            0.5*(x2-x0)  c
- fxch st(2);                   // 0.5*(x2-x0)  v            w            c
- faddp st(1), st(0);           // v+.5(x2-x0)  w            c
- fadd st(0), st(1);            // a            w            c
- fadd st(1), st(0);            // a            b_neg        c
- fmul frac_pos.Single;         // a*frac       b_neg        c
- fsubrp st(1), st(0);          // a*f-b        c
- fmul frac_pos.Single;         // (a*f-b)*f    c
- faddp st(1), st(0);           // res-x0/f
- fmul frac_pos.Single;         // res-x0
- fadd dword ptr [pntr+4]       // res
-end;
-
-function Hermite1(const x,y0,y1,y2,y3:Single):Single;
-var c0,c1,c2,c3: Single;
-begin
- // 4-point, 3rd-order Hermite (x-form)
- c0:=y1;
- c1:=0.5*(y2-y0);
- c2:=y0-2.5*y1+2*y2-0.5*y3;
- c3:=1.5*(y1-y2)+0.5*(y3-y0);
- Result:=((c3*x+c2)*x+c1)*x+c0;
-end;
-
-function Hermite2(const x,y0,y1,y2,y3:Single):Single;
-var c0,c1,c2,c3: Single;
-begin
- // 4-point, 3rd-order Hermite (x-form)
- c0:=y1;
- c1:=0.5*(y2-y0);
- c3:=1.5*(y1-y2)+0.5*(y3-y0);
- c2:=y0-y1+c1-c3;
- Result:=((c3*x+c2)*x+c1)*x+c0;
-end;
-
-function Hermite3(const x,y0,y1,y2,y3:Single):Single;
-var c0,c1,c2,c3, y0my1 : Single;
-begin
- // 4-point, 3rd-order Hermite (x-form)
- c0:=y1;
- c1:=0.5*(y2-y0);
- y0my1:=y0-y1;
- c3:=(y1-y2)+0.5*(y3-y0my1-y2);
- c2:=y0my1+c1-c3;
- Result:=((c3*x+c2)*x+c1)*x+c0;
-end;
-
-function Hermite4(const frac_pos, xm1, x0, x1, x2: Single): Single;
-var c,v,w,a : Single;
-    b_neg   : Single;
-begin
- c :=(x1-xm1)*0.5;
- v := x0-x1;
- w := c+v;
- a := w+v+(x2-x0)*0.5;
- b_neg := w + a;
- Result:=((((a * frac_pos) - b_neg) * frac_pos + c) * frac_pos + x0);
-end;
-
 function Tanh2a(x:Single):Single;
 var a,b:Single;
 begin
@@ -1173,84 +861,6 @@ begin
    if x < 0
     then Result:=-1
     else Result:= 1;
-end;
-
-function Waveshaper1(x, t :Single):Single;
-begin
- if f_abs(x)<t
-  then Result:=x
-  else
-   begin
-    if x>0
-     then Result:=  t + (1-t)*tanh((x-t)/(1-t))
-     else Result:=-(t + (1-t)*tanh((-x-t)/(1-t)));
-   end;
-end;
-
-function Waveshaper2(x,t:Single):Single;
-begin
- if f_abs(x)<t
-  then Result:=x
-  else
-   begin
-    if x>0
-     then Result:=  t + (1-t)*sigmoid( (x-t)/((1-t)*1.5))
-     else Result:=-(t + (1-t)*sigmoid((-x-t)/((1-t)*1.5)));
-   end;
-end;
-
-function Waveshaper3(x,a:Single):Single;
-begin
- Result:=x*(abs(x)+a)/(x*x+(a-1)*abs(x)+1);
-end;
-
-function sign(x:Single):Single;
-begin
- result:=0;
- if x<0 then result:=-1 else
- if x>0 then result:=1;
-end;
-
-function Waveshaper4(x,a:Single):Single;
-begin
- Result:=sign(x)*power(arctan(power(abs(x), a)), (1/a));
-end;
-
-function Waveshaper5(x,a:Single):Single;
-begin
- a:= 2*a/(1-a);
- Result:=(1+a)*x/(1+a*abs(x));
-end;
-
-function Waveshaper6(x:Single):Single;
-var a,b :Single;
-begin
- x:=x*0.686306;
- a:=1+exp(sqrt(f_abs(x))*-0.75);
- b:=exp(x);
- Result:=(b-exp(-x*a))*b/(b*b+1);
-end;
-
-function Waveshaper7(x,a:Single):Single;
-begin
- Result:=sign(x)*exp(ln(abs(x))*a);
-end;
-
-function Waveshaper8(x,a:Single):Single;
-begin
- Result:=sign(x)*exp(ln(a)*abs(x));
-end;
-
-function SoftSat(x,a:Single):Single;
-var b,c : Single;
-begin
- b:=f_abs(x);
- if b<a then Result:=x else
- if b>1 then Result:=sign(x)*(a+1)*0.5 else
-  begin
-   c:=((x-a)/(1-a));
-   Result:=a+(x-a)/(1+c*c);
-  end;
 end;
 
 {$IFNDEF FPC}

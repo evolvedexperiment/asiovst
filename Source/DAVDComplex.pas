@@ -1,28 +1,51 @@
 unit DAVDComplex;
 
 interface
-  type
-    TComplexSingle = record
+
+type
+  PComplexSingle = ^TComplexSingle;
+  TComplexSingle = record
                     Re : Single;
                     Im : Single;
                    end;
-    TComplexDouble = record
+
+  PComplexDouble = ^TComplexDouble;
+  TComplexDouble = record
                     Re : Double;
                     Im : Double;
                    end;
 
+  PComplexSingleDynArray = ^TComplexSingleDynArray;
+  TComplexSingleDynArray = array of TComplexSingle;
+
+  PComplexDoubleDynArray = ^TComplexDoubleDynArray;
+  TComplexDoubleDynArray = array of TComplexDouble;
+
   function Complex(Re, Im : Double):TComplexDouble; overload;
   function Complex(Re, Im : Single):TComplexSingle; overload;
+
+  function ComplexPolar(Magnitude, Angle: Single): TComplexSingle; overload;
+  function ComplexPolar(Magnitude, Angle: Double): TComplexDouble; overload;
 
   function ComplexSign(A : TComplexSingle):Single; overload;
   function ComplexSign(A : TComplexDouble):Double; overload;
   function ComplexSign(Re, Im : Single):Single; overload;
   function ComplexSign(Re, Im : Double):Double; overload;
 
-  function ComplexAbsolute(Re, Im : Double):Double; overload;
-  function ComplexAbsolute(Re, Im : Single):Single; overload;
-  function ComplexAbsolute(Complex:TComplexDouble):Double; overload;
-  function ComplexAbsolute(Complex:TComplexSingle):Single; overload;
+  function ComplexConjugate(Re, Im : Double): TComplexDouble; overload;
+  function ComplexConjugate(Re, Im : Single): TComplexSingle; overload;
+  function ComplexConjugate(a: TComplexDouble): TComplexDouble; overload;
+  function ComplexConjugate(a: TComplexSingle): TComplexSingle; overload;
+
+  function ComplexInvert(Re, Im : Double): TComplexDouble; overload;
+  function ComplexInvert(Re, Im : Single): TComplexSingle; overload;
+  function ComplexInvert(a: TComplexDouble): TComplexDouble; overload;
+  function ComplexInvert(a: TComplexSingle): TComplexSingle; overload;
+
+  function ComplexMagnitude(Re, Im : Double):Double; overload;
+  function ComplexMagnitude(Re, Im : Single):Single; overload;
+  function ComplexMagnitude(Complex:TComplexDouble):Double; overload;
+  function ComplexMagnitude(Complex:TComplexSingle):Single; overload;
 
   function ComplexArgument(Re, Im : Double):Double; overload;
   function ComplexArgument(Re, Im : Single):Single; overload;
@@ -33,6 +56,26 @@ interface
   function ComplexLog10(Re, Im : Double):TComplexDouble; overload;
   function ComplexLog10(Complex: TComplexSingle):TComplexSingle; overload;
   function ComplexLog10(Complex: TComplexDouble):TComplexDouble; overload;
+
+  function ComplexAdd(A,B : TComplexSingle):TComplexSingle; overload;
+  function ComplexAdd(A,B : TComplexDouble):TComplexDouble; overload;
+  function ComplexAdd(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
+  function ComplexAdd(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
+
+  procedure ComplexAddInplace(var A : TComplexSingle; B : TComplexSingle); overload;
+  procedure ComplexAddInplace(var A : TComplexDouble; B : TComplexDouble); overload;
+  procedure ComplexAddInplace(var ARe,AIm : Single; BRe,BIm : Single); overload;
+  procedure ComplexAddInplace(var ARe,AIm : Double; BRe,BIm : Double); overload;
+
+  function ComplexSubtract(A,B : TComplexSingle):TComplexSingle; overload;
+  function ComplexSubtract(A,B : TComplexDouble):TComplexDouble; overload;
+  function ComplexSubtract(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
+  function ComplexSubtract(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
+
+  procedure ComplexSubtractInplace(var A : TComplexSingle; B : TComplexSingle); overload;
+  procedure ComplexSubtractInplace(var A : TComplexDouble; B : TComplexDouble); overload;
+  procedure ComplexSubtractInplace(var ARe,AIm : Single; BRe,BIm : Single); overload;
+  procedure ComplexSubtractInplace(var ARe,AIm : Double; BRe,BIm : Double); overload;
 
   function ComplexMultiply(A,B : TComplexSingle):TComplexSingle; overload;
   function ComplexMultiply(A,B : TComplexDouble):TComplexDouble; overload;
@@ -53,7 +96,18 @@ interface
   procedure ComplexDivideInplace(var A : TComplexDouble; B : TComplexDouble); overload;
   procedure ComplexDivideInplace(var ARe,AIm : Single; BRe,BIm : Single); overload;
   procedure ComplexDivideInplace(var ARe,AIm : Double; BRe,BIm : Double); overload;
-  
+
+  function ComplexSqr(Re, Im : Single): TComplexSingle; overload;
+  function ComplexSqr(Re, Im : Double): TComplexDouble; overload;
+  function ComplexSqr(a: TComplexSingle): TComplexSingle; overload;
+  function ComplexSqr(a: TComplexDouble): TComplexDouble; overload;
+
+  function ComplexSqrt(Re, Im : Single): TComplexSingle; overload;
+  function ComplexSqrt(Re, Im : Double): TComplexDouble; overload;
+  function ComplexSqrt(a: TComplexSingle): TComplexSingle; overload;
+  function ComplexSqrt(a: TComplexDouble): TComplexDouble; overload;
+
+
 implementation
 
 uses Math;
@@ -68,6 +122,19 @@ function Complex(Re, Im : Single):TComplexSingle;
 begin
  Result.Re:=Re;
  Result.Im:=Im;
+end;             
+
+
+function ComplexPolar(Magnitude, Angle: Single): TComplexSingle;
+begin
+  Result.Re := Magnitude * cos(Angle);
+  Result.Im := Magnitude * sin(Angle);
+end;
+
+function ComplexPolar(Magnitude, Angle: Double): TComplexDouble;
+begin
+  Result.Re := Magnitude * cos(Angle);
+  Result.Im := Magnitude * sin(Angle);
 end;
 
 function ComplexSign(A : TComplexSingle):Single;
@@ -98,6 +165,57 @@ begin
   else Result:=sign(Re);
 end;
 
+function ComplexConjugate(Re, Im : Double): TComplexDouble;
+begin
+  Result.Re := Re;
+  Result.Im := -Im;
+end;
+
+function ComplexConjugate(Re, Im : Single): TComplexSingle;  
+begin
+  Result.Re := Re;
+  Result.Im := -Im;
+end;
+
+
+function ComplexConjugate(a: TComplexSingle): TComplexSingle;
+begin
+  Result.Re := a.Re;
+  Result.Im := -a.Im;
+end;
+
+function ComplexConjugate(a: TComplexDouble): TComplexDouble;
+begin
+  Result.Re := a.Re;
+  Result.Im := -a.Im;
+end;
+
+     
+function ComplexInvert(Re, Im : Double): TComplexDouble;
+begin
+  Result.Re := -Re;
+  Result.Im := -Im;
+end;
+
+function ComplexInvert(Re, Im : Single): TComplexSingle; 
+begin
+  Result.Re := -Re;
+  Result.Im := -Im;
+end;
+
+function ComplexInvert(a: TComplexSingle): TComplexSingle;
+begin
+  Result.Re := -a.Re;
+  Result.Im := -a.Im;
+end;
+
+function ComplexInvert(a: TComplexDouble): TComplexDouble;
+begin
+  Result.Re := -a.Re;
+  Result.Im := -a.Im;
+end;
+
+
 function ComplexLog10(Re, Im : Single):TComplexSingle;
 begin
  Result.Re:=Log10((sqr(Re)+Sqr(Im)));
@@ -122,24 +240,24 @@ begin
  Result.Im:=ArcTan2(Complex.Im,Complex.Re);
 end;
 
-function ComplexAbsolute(Re, Im : Single):Single;
+function ComplexMagnitude(Re, Im : Single):Single;
 begin
- result:=sqrt(sqr(Re)+Sqr(Im));
+ result:=hypot(Re,Im);
 end;
 
-function ComplexAbsolute(Re, Im : Double):Double;
+function ComplexMagnitude(Re, Im : Double):Double;
 begin
- result:=sqrt(sqr(Re)+Sqr(Im));
+ result:=hypot(Re,Im);
 end;
 
-function ComplexAbsolute(Complex:TComplexDouble):Double;
+function ComplexMagnitude(Complex:TComplexDouble):Double;
 begin
- result:=sqrt(sqr(Complex.Re)+Sqr(Complex.Im));
+ result:=hypot(Complex.Re,Complex.Im);
 end;
 
-function ComplexAbsolute(Complex:TComplexSingle):Single;
+function ComplexMagnitude(Complex:TComplexSingle):Single;
 begin
- result:=sqrt(sqr(Complex.Re)+Sqr(Complex.Im));
+ result:=hypot(Complex.Re,Complex.Im);
 end;
 
 function ComplexArgument(Re, Im : Single):Single;
@@ -161,6 +279,105 @@ function ComplexArgument(Complex:TComplexSingle):Single;
 begin
  result:=ArcTan2(Complex.Im,Complex.Re);
 end;
+
+
+function ComplexAdd(ARe,AIm,BRe,BIm : Single):TComplexSingle;
+begin
+ Result.Re := ARe + BRe;
+ Result.Im := AIm + BIm;
+end;
+
+function ComplexAdd(ARe,AIm,BRe,BIm : Double):TComplexDouble;
+begin
+ Result.Re := ARe + BRe;
+ Result.Im := AIm + BIm;
+end;
+
+function ComplexAdd(A,B : TComplexSingle):TComplexSingle;
+begin
+ Result.Re := A.Re + B.Re;
+ Result.Im := A.Im + B.Im;
+end;
+
+function ComplexAdd(A,B : TComplexDouble):TComplexDouble;
+begin
+ Result.Re := A.Re + B.Re;
+ Result.Im := A.Im + B.Im;
+end;
+
+procedure ComplexAddInplace(var A : TComplexSingle; B : TComplexSingle);
+begin
+ A.Re := A.Re + B.Re;
+ A.Im := A.Im + B.Im;
+end;
+
+procedure ComplexAddInplace(var A : TComplexDouble; B : TComplexDouble);
+begin
+ A.Re := A.Re + B.Re;
+ A.Im := A.Im + B.Im;
+end;
+
+procedure ComplexAddInplace(var ARe, AIm : Single; BRe, BIm : Single);
+begin
+ ARe := ARe + BRe;
+ AIm := AIm + BIm;
+end;
+
+procedure ComplexAddInplace(var ARe, AIm  : Double; BRe, BIm : Double);
+begin
+ ARe := ARe + BRe;
+ AIm := AIm + BIm;
+end;
+
+
+function ComplexSubtract(ARe,AIm,BRe,BIm : Single):TComplexSingle;
+begin
+ Result.Re := ARe - BRe;
+ Result.Im := AIm - BIm;
+end;
+
+function ComplexSubtract(ARe,AIm,BRe,BIm : Double):TComplexDouble;
+begin
+ Result.Re := ARe - BRe;
+ Result.Im := AIm - BIm;
+end;
+
+function ComplexSubtract(A,B : TComplexSingle):TComplexSingle;
+begin
+ Result.Re := A.Re - B.Re;
+ Result.Im := A.Im - B.Im;
+end;
+
+function ComplexSubtract(A,B : TComplexDouble):TComplexDouble;
+begin
+ Result.Re := A.Re - B.Re;
+ Result.Im := A.Im - B.Im;
+end;
+
+procedure ComplexSubtractInplace(var A : TComplexSingle; B : TComplexSingle);
+begin
+ A.Re := A.Re - B.Re;
+ A.Im := A.Im - B.Im;
+end;
+
+procedure ComplexSubtractInplace(var A : TComplexDouble; B : TComplexDouble);
+begin
+ A.Re := A.Re - B.Re;
+ A.Im := A.Im - B.Im;
+end;
+
+procedure ComplexSubtractInplace(var ARe, AIm : Single; BRe, BIm : Single);
+begin
+ ARe := ARe - BRe;
+ AIm := AIm - BIm;
+end;
+
+procedure ComplexSubtractInplace(var ARe, AIm  : Double; BRe, BIm : Double);
+begin
+ ARe := ARe - BRe;
+ AIm := AIm - BIm;
+end;
+
 
 function ComplexMultiply(ARe,AIm,BRe,BIm : Single):TComplexSingle;
 begin
@@ -217,6 +434,8 @@ begin
  ARe := ARe * BRe - AIm * BIm;
  AIm := AIm * BRe + Tmp * BIm;
 end;
+
+
 
 
 function ComplexDivide(ARe,AIm,BRe,BIm : Single):TComplexSingle;
@@ -285,6 +504,86 @@ begin
  Temp := ARe;
  ARe  := (ARe * BRe + AIm  * BIm) / Divisor;
  AIm  := (AIm * BRe - Temp * BIm) / Divisor;
+end;
+
+
+
+function ComplexSqr(Re, Im : Single): TComplexSingle;
+begin
+  Result.Re := sqr(Re) - sqr(Im);
+  Result.Im := 2 * Re * Im;
+end;
+
+function ComplexSqr(Re, Im : Double): TComplexDouble;
+begin
+  Result.Re := sqr(Re) - sqr(Im);
+  Result.Im := 2 * Re * Im;
+end;
+
+function ComplexSqr(a: TComplexSingle): TComplexSingle;
+begin
+  Result.Re := sqr(a.Re) - sqr(a.Im);
+  Result.Im := 2 * a.Re * a.Im;
+end;
+
+function ComplexSqr(a: TComplexDouble): TComplexDouble;
+begin
+  Result.Re := sqr(a.Re) - sqr(a.Im);
+  Result.Im := 2 * a.Re * a.Im;
+end;
+
+
+
+function ComplexSqrt(Re, Im : Single): TComplexSingle;
+  function FSqrt(x: Single): Single;
+  begin
+    if x>0 then Result:= Sqrt(x) else Result := 0;
+  end;
+var Mag: Single;
+begin
+  Mag:= ComplexMagnitude(Re, Im);
+  Result.Re:= FSqrt(0.5 * (Mag + Re));
+  Result.Im:= FSqrt(0.5 * (Mag - Re));
+  if (Im < 0.0) then Result.Im:= -Result.Im;
+end;
+
+function ComplexSqrt(Re, Im : Double): TComplexDouble;
+  function FSqrt(x: Double): Double;
+  begin
+    if x>0 then Result:= Sqrt(x) else Result := 0;
+  end;
+var Mag: Double;
+begin
+  Mag:= ComplexMagnitude(Re, Im);
+  Result.Re:= FSqrt(0.5 * (Mag + Re));
+  Result.Im:= FSqrt(0.5 * (Mag - Re));
+  if (Im < 0.0) then Result.Im:= -Result.Im;
+end;
+
+function ComplexSqrt(a: TComplexSingle): TComplexSingle;
+  function FSqrt(x: Single): Single;
+  begin
+    if x>0 then Result:= Sqrt(x) else Result := 0;
+  end;
+var Mag: Single;
+begin
+  Mag:= ComplexMagnitude(a);
+  Result.Re:= FSqrt(0.5 * (Mag + a.Re));
+  Result.Im:= FSqrt(0.5 * (Mag - a.Re));
+  if (a.Im < 0.0) then Result.Im:= -Result.Im;
+end;
+
+function ComplexSqrt(a: TComplexDouble): TComplexDouble;
+  function FSqrt(x: Double): Double;
+  begin
+    if x>0 then Result:= Sqrt(x) else Result := 0;
+  end;
+var Mag: Double;
+begin
+  Mag:= ComplexMagnitude(a);
+  Result.Re:= FSqrt(0.5 * (Mag + a.Re));
+  Result.Im:= FSqrt(0.5 * (Mag - a.Re));
+  if (a.Im < 0.0) then Result.Im:= -Result.Im;
 end;
 
 end.

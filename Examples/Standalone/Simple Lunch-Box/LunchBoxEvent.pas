@@ -47,7 +47,7 @@ type
 
 implementation
 
-uses DAVDCommon, LunchBoxMain;
+uses DAVDCommon, LunchBoxMain, DDspInterpolation;
 
 { TLunchBoxSample }
 

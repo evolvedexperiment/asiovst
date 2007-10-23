@@ -16,7 +16,7 @@ function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TSingleDynArra
 
 implementation
 
-uses Math, DAVDComplex;
+uses Math, DAVDComplex, DDspDFT;
 
 // Generate Blackman Window
 procedure BlackmanWindow(Data : TSingleDynArray);
@@ -69,7 +69,7 @@ begin
  // Calculate Log Of Absolute Value
  for i:=0 to sz-1 do
   begin
-   realFreq[i]:=log10(ComplexAbsolute(realFreq[i], imagFreq[i]));
+   realFreq[i]:=log10(ComplexMagnitude(realFreq[i], imagFreq[i]));
    imagFreq[i]:=0;
   end;
 

@@ -160,63 +160,14 @@ var MixBuffers : record
                     end;
     EnableSSE     : Boolean;
 
-function f_abs(f:single):single;
-
 implementation
 
-uses Math;
+uses Math, DAVDCommon, DDspWaveshaper;
 
 var RandSeed : LongInt;
 {$WARNINGS OFF}
 
-function f_abs(f: Single): Single;
-asm
- fld f
- fabs
-end;
 
-function Saturate2(input, fMax: single): single;
-begin
- if input > fMax
-  then result := fMax
-  else
-   if input < -fMax
-    then result := -fMax
-    else Result := input;
-end;
-
-function Saturate(input, fMax: single): single; overload;
-const fGrdDiv : Double = 0.5;
-asm
- fld input.Single
- fadd fMax
- fabs
- fld input.Single
- fsub fMax
- fabs
- fsubp
- fmul fGrdDiv;
-// result := fGrdDiv * (f_abs(input + fMax) - f_abs(input - fMax));
-end;
-
-function Saturate(input, fMax: Double): Double; overload;
-const fGrdDiv : Double = 0.5;
-{$IFDEF x87}
-asm
- fld input.Double
- fadd fMax.Double
- fabs
- fld input.Double
- fsub fMax.Double
- fabs
- fsubp
- fmul fGrdDiv;
-end;
-{$ELSE}
-begin
- result := fGrdDiv * (f_abs(input + fMax) - f_abs(input - fMax));
-end;
-{$ENDIF}
 
 procedure ClipDigital_x86(InBuffer: PSingle; BSize: Integer); overload;
 const c1a : Single = 1;

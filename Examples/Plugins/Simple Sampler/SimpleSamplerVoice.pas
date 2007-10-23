@@ -40,7 +40,7 @@ type
 
 implementation
 
-uses DAVDCommon, SimpleSamplerModule;
+uses DAVDCommon, SimpleSamplerModule, DDspInterpolation;
 
 { TSimpleSamplerVoice }
 
