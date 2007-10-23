@@ -108,7 +108,7 @@ object FmMBC: TFmMBC
     ParentFont = False
     Transparent = True
   end
-  object DlLowThreshold: TDial
+  object DlLowThreshold: TGuiDial
     Left = 33
     Top = 236
     Width = 35
@@ -123,7 +123,7 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlLowThresholdChange
   end
-  object DlLowRatio: TDial
+  object DlLowRatio: TGuiDial
     Left = 77
     Top = 236
     Width = 35
@@ -137,12 +137,13 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlLowRatioChange
   end
-  object DlLowAttack: TDial
+  object DlLowAttack: TGuiDial
     Left = 124
     Top = 236
     Width = 35
     Height = 35
     Position = 1.000000000000000000
+    DefaultPosition = 1.000000000000000000
     Min = 1.000000000000000000
     Max = 3.000000000000000000
     ColorCircle = 3160125
@@ -153,12 +154,13 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlLowAttackChange
   end
-  object DlLowRelease: TDial
+  object DlLowRelease: TGuiDial
     Left = 168
     Top = 236
     Width = 35
     Height = 35
     Position = 1.000000000000000000
+    DefaultPosition = 1.000000000000000000
     Min = 1.000000000000000000
     Max = 3.000000000000000000
     ColorCircle = 3160125
@@ -169,7 +171,7 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlLowReleaseChange
   end
-  object DlLowGain: TDial
+  object DlLowGain: TGuiDial
     Left = 212
     Top = 236
     Width = 35
@@ -184,7 +186,7 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlLowGainChange
   end
-  object DlMidThreshold: TDial
+  object DlMidThreshold: TGuiDial
     Left = 286
     Top = 236
     Width = 35
@@ -199,7 +201,7 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlMidThresholdChange
   end
-  object DlMidRatio: TDial
+  object DlMidRatio: TGuiDial
     Left = 327
     Top = 236
     Width = 35
@@ -213,12 +215,13 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlMidRatioChange
   end
-  object DlMidAttack: TDial
+  object DlMidAttack: TGuiDial
     Left = 374
     Top = 236
     Width = 35
     Height = 35
     Position = 1.000000000000000000
+    DefaultPosition = 1.000000000000000000
     Min = 1.000000000000000000
     Max = 3.000000000000000000
     ColorCircle = 3160125
@@ -229,12 +232,13 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlMidAttackChange
   end
-  object DlMidRelease: TDial
+  object DlMidRelease: TGuiDial
     Left = 418
     Top = 236
     Width = 35
     Height = 35
     Position = 1.000000000000000000
+    DefaultPosition = 1.000000000000000000
     Min = 1.000000000000000000
     Max = 3.000000000000000000
     ColorCircle = 3160125
@@ -245,7 +249,7 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlMidReleaseChange
   end
-  object DlMidGain: TDial
+  object DlMidGain: TGuiDial
     Left = 462
     Top = 236
     Width = 35
@@ -260,7 +264,7 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlMidGainChange
   end
-  object DlHighThreshold: TDial
+  object DlHighThreshold: TGuiDial
     Left = 533
     Top = 236
     Width = 35
@@ -275,7 +279,7 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlHighThresholdChange
   end
-  object DlHighRatio: TDial
+  object DlHighRatio: TGuiDial
     Left = 577
     Top = 236
     Width = 35
@@ -289,12 +293,13 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlHighRatioChange
   end
-  object DlHighAttack: TDial
+  object DlHighAttack: TGuiDial
     Left = 624
     Top = 236
     Width = 35
     Height = 35
     Position = 1.000000000000000000
+    DefaultPosition = 1.000000000000000000
     Min = 1.000000000000000000
     Max = 3.000000000000000000
     ColorCircle = 3160125
@@ -305,12 +310,13 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlHighAttackChange
   end
-  object DlHighRelease: TDial
+  object DlHighRelease: TGuiDial
     Left = 668
     Top = 236
     Width = 35
     Height = 35
     Position = 1.000000000000000000
+    DefaultPosition = 1.000000000000000000
     Min = 1.000000000000000000
     Max = 3.000000000000000000
     ColorCircle = 3160125
@@ -321,7 +327,7 @@ object FmMBC: TFmMBC
     PointerAngles.Resolution = 274.000000000000000000
     OnChange = DlHighReleaseChange
   end
-  object DlHighGain: TDial
+  object DlHighGain: TGuiDial
     Left = 712
     Top = 236
     Width = 35

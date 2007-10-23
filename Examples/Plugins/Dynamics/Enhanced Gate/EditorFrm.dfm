@@ -72,7 +72,7 @@ object EditorForm: TEditorForm
       Font.Style = []
       ParentFont = False
     end
-    object DialThreshold: TDial
+    object DialThreshold: TGuiDial
       Left = 16
       Top = 32
       Width = 56
@@ -103,7 +103,7 @@ object EditorForm: TEditorForm
       Font.Style = []
       ParentFont = False
     end
-    object DialAttack: TDial
+    object DialAttack: TGuiDial
       Left = 112
       Top = 32
       Width = 56
@@ -133,7 +133,7 @@ object EditorForm: TEditorForm
       Font.Style = []
       ParentFont = False
     end
-    object DialHold: TDial
+    object DialHold: TGuiDial
       Left = 175
       Top = 32
       Width = 56
@@ -163,7 +163,7 @@ object EditorForm: TEditorForm
       Font.Style = []
       ParentFont = False
     end
-    object DialDecay: TDial
+    object DialDecay: TGuiDial
       Left = 238
       Top = 32
       Width = 56
@@ -345,7 +345,7 @@ object EditorForm: TEditorForm
       Font.Style = []
       ParentFont = False
     end
-    object DialLoCut: TDial
+    object DialLoCut: TGuiDial
       Left = 8
       Top = 18
       Width = 48
@@ -376,7 +376,7 @@ object EditorForm: TEditorForm
       Font.Style = []
       ParentFont = False
     end
-    object DialHiCut: TDial
+    object DialHiCut: TGuiDial
       Left = 62
       Top = 18
       Width = 48
@@ -491,7 +491,7 @@ object EditorForm: TEditorForm
       Font.Style = []
       ParentFont = False
     end
-    object DialRatio: TDial
+    object DialRatio: TGuiDial
       Left = 9
       Top = 18
       Width = 48
@@ -523,7 +523,7 @@ object EditorForm: TEditorForm
       Font.Style = []
       ParentFont = False
     end
-    object DialKnee: TDial
+    object DialKnee: TGuiDial
       Left = 63
       Top = 18
       Width = 48
@@ -554,7 +554,7 @@ object EditorForm: TEditorForm
       Font.Style = []
       ParentFont = False
     end
-    object DialRange: TDial
+    object DialRange: TGuiDial
       Left = 117
       Top = 18
       Width = 48

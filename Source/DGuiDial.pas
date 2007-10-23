@@ -6,9 +6,10 @@ uses Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls,
      Consts, DGuiBaseControl;
 
 type
-  TStitchKind = (skHorizontal, skVertical);
+  TGuiDialStitchKind = (skHorizontal, skVertical);
+  TGuiDialRMBFunc = (rmbfReset,rmbfCircular);
 
-  TDialSettings = class(TPersistent)
+  TGuiDialSettings = class(TPersistent)
   private
     FOnChange: TNotifyEvent;
   private
@@ -19,7 +20,7 @@ type
     constructor Create; virtual;
   end;
 
-  TDialPointerAngles = class(TDialSettings)
+  TGuiDialPointerAngles = class(TGuiDialSettings)
   private
     FResolution: Extended;
     FStart: Integer;
@@ -37,17 +38,18 @@ type
     property Resolution: Extended read FResolution write SetResolution;
   end;
 
-  TDial = class(TGraphicControl)
+  TGuiDial = class(TGraphicControl)
   private
     fOnPaint     : TNotifyEvent;
     fAutoSize    : Boolean;
     fTransparent : Boolean;
     fDialBitmap  : TBitmap;
-    fStitchKind  : TStitchKind;
+    fStitchKind  : TGuiDialStitchKind;
     fMin, fMax   : Single;
     fPosition    : Single;
+    fDefaultPosition    : Single;
     fNumGlyphs   : Integer;
-    fPnterAngles : TDialPointerAngles;
+    fPnterAngles : TGuiDialPointerAngles;
     fOnChange    : TNotifyEvent;
     fMouseIsDown : Boolean;
     fOldMousPos  : TPoint;
@@ -55,6 +57,7 @@ type
     fColorLine   : TColor;
     fColorAuto   : Boolean;
     fLineWidth   : Integer;
+    fRightMouseButton: TGuiDialRMBFunc;
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetColorAuto(const Value: Boolean);
@@ -66,11 +69,11 @@ type
     procedure SetMin(const Value: Single);
     procedure SetNumGlyphs(const Value: Integer);
     procedure SetPosition(Value: Single);
+    procedure SetDefaultPosition(Value: Single);
     procedure SetDialBitmap(const Value: TBitmap);
-    procedure SetStitchKind(const Value: TStitchKind);
+    procedure SetStitchKind(const Value: TGuiDialStitchKind);
     function CircularMouseToPosition(X, Y: Integer): Single;
-    procedure MouseTimerHandler(Sender: TObject);
-    procedure SetPointerAngles(const Value: TDialPointerAngles);
+    procedure SetPointerAngles(const Value: TGuiDialPointerAngles);
     function PositionToAngle: Single;
   protected
     procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
@@ -122,180 +125,161 @@ type
     property ColorAuto: Boolean read fColorAuto write SetColorAuto default false;
     property Transparent: Boolean read fTransparent write SetTransparent default false;
     property Position: Single read FPosition write SetPosition;
+    property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
     property Min: Single read FMin write SetMin;
     property Max: Single read FMax write SetMax;
     property ColorCircle : TColor read fColorCircle write SetColorCircle default clBlack;
     property ColorLine : TColor read fColorLine write SetColorLine default clRed;
     property LineWidth : Integer read fLineWidth write SetLineWidth default 2;
+    property RightMouseButton: TGuiDialRMBFunc read fRightMouseButton write fRightMouseButton default rmbfCircular;
     property NumGlyphs: Integer read fNumGlyphs write SetNumGlyphs default 1;
     property DialBitmap: TBitmap read fDialBitmap write SetDialBitmap;
-    property StitchKind: TStitchKind read fStitchKind write SetStitchKind;
-    property PointerAngles: TDialPointerAngles read FPnterAngles write SetPointerAngles;
+    property StitchKind: TGuiDialStitchKind read fStitchKind write SetStitchKind;
+    property PointerAngles: TGuiDialPointerAngles read FPnterAngles write SetPointerAngles;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
   end;
 
-var MouseInDialControl: TDial = nil;
-
 implementation
 
-uses ExtCtrls, Math;
-
-var
-  MouseTimer: TTimer = nil;
-  ControlCounter: Integer = 0;
+uses ExtCtrls, Math, DAVDCommon;
 
 function RadToDeg(const Radians: Extended): Extended;  { Degrees := Radians * 180 / PI }
 const DegPi : Double = (180 / PI);
 begin
- Result := Radians * DegPi;
-end;
-
-function ArcTan2(const Y, X: Extended): Extended;
-asm
- fld y
- fld x
- fpatan
+  Result := Radians * DegPi;
 end;
 
 function RelativeAngle(X1, Y1, X2, Y2: Integer): Single;
 const MulFak=180/pi;
 begin
- Result:=arctan2(X2-X1,Y1-Y2)*MulFak;
+  Result:=arctan2(X2-X1,Y1-Y2)*MulFak;
 end;
 
 function SafeAngle(Angle: Single): Single;
 begin
- while Angle < 0 do Angle:=Angle+360;
- while Angle >= 360 do Angle:=Angle-360;
- Result := Angle;
+  while Angle < 0 do Angle:=Angle+360;
+  while Angle >= 360 do Angle:=Angle-360;
+  Result := Angle;
 end;
 
 { This function solves for x in the equation "x is y% of z". }
 function SolveForX(Y, Z: Longint): Longint;
 begin
- Result := round( Z * (Y * 0.01) );//tt
+  Result := round( Z * (Y * 0.01) );//tt
 end;
 
 { This function solves for y in the equation "x is y% of z". }
 function SolveForY(X, Z: Longint): Longint;
 begin
- if Z = 0
-  then Result := 0
-  else Result := round( (X * 100.0) / Z ); //t
+  if Z = 0 then Result := 0 else Result := round( (X * 100.0) / Z ); //t
 end;
 
-{ TDialSettings }
 
-procedure TDialSettings.Changed;
+
+procedure TGuiDialSettings.Changed;
 begin
- if Assigned(FOnChange) then FOnChange(Self);
+  if Assigned(FOnChange) then FOnChange(Self);
 end;
 
-constructor TDialSettings.Create;
+constructor TGuiDialSettings.Create;
 begin
- inherited;
+  inherited;
 end;
 
-{ TDialPointerAngles }
 
-procedure TDialPointerAngles.AssignTo(Dest: TPersistent);
+
+
+procedure TGuiDialPointerAngles.AssignTo(Dest: TPersistent);
 begin
- if Dest is TDialPointerAngles then with TDialPointerAngles(Dest) do
+  if Dest is TGuiDialPointerAngles then with TGuiDialPointerAngles(Dest) do
   begin
-   FRange := Self.Range;
-   FStart := Self.Start;
-   FResolution := Self.Resolution;
-   Changed;
+    FRange := Self.Range;
+    FStart := Self.Start;
+    FResolution := Self.Resolution;
+    Changed;
   end else inherited;
 end;
 
-constructor TDialPointerAngles.Create;
+constructor TGuiDialPointerAngles.Create;
 begin
- inherited;
- FStart := 0;
- FRange := 360;
- FResolution := 0;
+  inherited;
+  FStart := 0;
+  FRange := 360;
+  FResolution := 0;
 end;
 
-procedure TDialPointerAngles.SetRange(const Value: Integer);
+procedure TGuiDialPointerAngles.SetRange(const Value: Integer);
 begin
- if (Range < 1) or (Range > 360)
-  then raise Exception.Create('Range must be 1..360');
- FRange := Value;
- if Range > Resolution then Resolution := Range;
- Changed;
+  if (Value < 1) or (Value > 360) then
+    raise Exception.Create('Range must be 1..360');
+
+  FRange := Value;
+  if FRange > Resolution then Resolution := FRange;
+  Changed;
 end;
 
-procedure TDialPointerAngles.SetResolution(const Value: Extended);
+procedure TGuiDialPointerAngles.SetResolution(const Value: Extended);
 begin
- if (Value < 0) or (Value > Range)
-  then raise Exception.Create('Resolution must be above 0 and less than ' + IntToStr(Range + 1));
- FResolution := Value;
- Changed;
+  if (Value < 0) or (Value > Range) then
+    raise Exception.Create('Resolution must be above 0 and less than ' + IntToStr(Range + 1));
+
+  FResolution := Value;
+  Changed;
 end;
 
-procedure TDialPointerAngles.SetStart(const Value: Integer);
+procedure TGuiDialPointerAngles.SetStart(const Value: Integer);
 begin
- if (Value < 0) or (Value > 359)
-  then raise Exception.Create('Start must be 0..359');
- FStart := Value;
- Changed;
+  if (Value < 0) or (Value > 359) then
+    raise Exception.Create('Start must be 0..359');
+
+  FStart := Value;
+  Changed;
 end;
 
-{ TDial }
 
-constructor TDial.Create(AOwner: TComponent);
+
+
+constructor TGuiDial.Create(AOwner: TComponent);
 begin
- inherited Create(AOwner);
- if MouseTimer = nil then
-  begin
-   MouseTimer := TTimer.Create(nil);
-   MouseTimer.Enabled := False;
-   MouseTimer.Interval := 100;
-  end;
- Inc(ControlCounter);
- ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
-                  csDoubleClicks, csReplicatable, csOpaque];
- FPnterAngles := TDialPointerAngles.Create;
- FPnterAngles.OnChange := SettingsChanged;
- fColorCircle := clBlack;
- fColorLine := clRed;
- fLineWidth := 2;
- fMin := 0;
- fMax := 100;
- fPosition := 0;
- fNumGlyphs := 1;
- fStitchKind:=skHorizontal;
- fDialBitmap := TBitmap.Create;
+  inherited Create(AOwner);
+  ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
+                   csDoubleClicks, csReplicatable, csOpaque];
+  FPnterAngles := TGuiDialPointerAngles.Create;
+  FPnterAngles.OnChange := SettingsChanged;
+  fColorCircle := clBlack;
+  fColorLine := clRed;
+  fLineWidth := 2;
+  fRightMouseButton := rmbfCircular;
+  fMin := 0;
+  fMax := 100;
+  fPosition := 0;
+  fDefaultPosition := 0;
+  fNumGlyphs := 1;
+  fStitchKind:=skHorizontal;
+  fDialBitmap := TBitmap.Create;
 end;
 
-destructor TDial.Destroy;
+destructor TGuiDial.Destroy;
 begin
- FreeAndNil(fDialBitmap);
- FreeAndNil(fPnterAngles);
- Dec(ControlCounter);
- if ControlCounter = 0 then
-  begin
-   MouseTimer.Free;
-   MouseTimer := nil;
-  end;
- inherited Destroy;
+  FreeAndNil(fDialBitmap);
+  FreeAndNil(fPnterAngles);
+  inherited Destroy;
 end;
 
-procedure TDial.SettingsChanged(Sender: TObject);
+procedure TGuiDial.SettingsChanged(Sender: TObject);
 begin
- Invalidate;
+  Invalidate;
 end;
 
-function TDial.PositionToAngle: Single;
+function TGuiDial.PositionToAngle: Single;
 var
   Percircle: Single;
   Range: Single;
 const Pi180 : Double = PI/180;
 begin
- Range := Max - Min;
- Percircle := (fPosition - Min) * 360 / Range;
- Result := SafeAngle(PointerAngles.Start + (PointerAngles.Range * Percircle / 360))* Pi180;
+  Range := Max - Min;
+  Percircle := (fPosition - Min) * 360 / Range;
+  Result := SafeAngle(PointerAngles.Start + (PointerAngles.Range * Percircle / 360))* Pi180;
 end;
 
 procedure DrawParentImage(Control: TControl; Dest: TCanvas);
@@ -304,21 +288,22 @@ var
   DC: HDC;
   Position: TPoint;
 begin
- with Control do
+  with Control do
   begin
-   if Parent = nil then Exit;
-   DC := Dest.Handle;
-   SaveIndex := SaveDC(DC);
-   GetViewportOrgEx(DC, Position);
-   SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-   IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-   Parent.Perform(WM_ERASEBKGND, DC, 0);
-   Parent.Perform(WM_PAINT, DC, 0);
-   RestoreDC(DC, SaveIndex);
+    if Parent = nil then Exit;
+
+    DC := Dest.Handle;
+    SaveIndex := SaveDC(DC);
+    GetViewportOrgEx(DC, Position);
+    SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
+    IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
+    Parent.Perform(WM_ERASEBKGND, DC, 0);
+    Parent.Perform(WM_PAINT, DC, 0);
+    RestoreDC(DC, SaveIndex);
   end;
 end;
 
-procedure TDial.Paint;
+procedure TGuiDial.Paint;
 type TComplex = record Re,Im : Single; end;
 var theRect    : TRect;
     GlyphNr,i  : Integer;
@@ -327,20 +312,11 @@ var theRect    : TRect;
     PtsArray   : Array of TPoint;
     DblBuffer  : TBitmap;
 
-
-  procedure GetSinCos(Frequency: Single; var SinValue, CosValue : Single);
-  asm
-   fld Frequency.Single;
-   fsincos
-   fstp [CosValue].Single;
-   fstp [SinValue].Single;
-  end;
-
 begin
- inherited;
- with Canvas do
+  inherited;
+  with Canvas do
   begin
-   if fDialBitmap.Empty then
+    if fDialBitmap.Empty then
     begin
      Lock;
      DblBuffer := TBitmap.Create;
@@ -352,7 +328,6 @@ begin
        if fTransparent
         then DrawParentImage(Self, Canvas)
         else FillRect(ClientRect);
-       FillRect(ClientRect);
        Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
        GlyphNr:=Round(2 / arcsin(1 / Rad)) + 1;
        if GlyphNr > 1 then
@@ -395,134 +370,143 @@ begin
        theRect.Left := fDialBitmap.Width * GlyphNr div fNumGlyphs;
        theRect.Right := fDialBitmap.Width * (GlyphNr+1) div fNumGlyphs;
       end;
-     Draw(0,0,fDialBitmap);
+
+     CopyRect(clientrect,fDialBitmap.Canvas,theRect);
     end;
    if Assigned(fOnPaint) then fOnPaint(Self);
   end;
 end;
 
-procedure TDial.Resize;
+procedure TGuiDial.Resize;
 begin
- try
-  Width:=ClientRect.Right-ClientRect.Left;
-  Height:=ClientRect.Bottom-ClientRect.Top;
- except
- end;
-end;
-
-procedure TDial.CMFontChanged(var Message: TMessage);
-begin
- inherited;
- Invalidate;
-end;
-
-procedure TDial.CMColorChanged(var Message: TMessage);
-begin
- inherited;
-end;
-
-procedure TDial.DoAutoSize;
-begin
- if fNumGlyphs=0 then Exit;
- if fStitchKind=skVertical then
-  begin
-   Width:=fDialBitmap.Width;
-   Height:=fDialBitmap.Height div fNumGlyphs;
-  end
- else
-  begin
-   Width:=fDialBitmap.Width div fNumGlyphs;
-   Height:=fDialBitmap.Height;
+  try
+    Width:=ClientRect.Right-ClientRect.Left;
+    Height:=ClientRect.Bottom-ClientRect.Top;
+  except
   end;
 end;
 
-procedure TDial.SetAutoSize(const Value: boolean);
+procedure TGuiDial.CMFontChanged(var Message: TMessage);
 begin
- if fAutoSize<>Value then
+  inherited;
+  Invalidate;
+end;
+
+procedure TGuiDial.CMColorChanged(var Message: TMessage);
+begin
+  inherited;
+end;
+
+procedure TGuiDial.DoAutoSize;
+begin
+  if fNumGlyphs=0 then Exit;
+
+  if fStitchKind=skVertical then
   begin
-   fAutoSize := Value;
-   if Autosize then DoAutoSize;
-   Invalidate;
+    Width:=fDialBitmap.Width;
+    Height:=fDialBitmap.Height div fNumGlyphs;
+  end else begin
+    Width:=fDialBitmap.Width div fNumGlyphs;
+    Height:=fDialBitmap.Height;
   end;
 end;
 
-procedure TDial.SetTransparent(const Value: Boolean);
+procedure TGuiDial.SetAutoSize(const Value: boolean);
 begin
- if fTransparent<>Value then
+  if fAutoSize<>Value then
   begin
-   fTransparent := Value;
-   Invalidate;
+    fAutoSize := Value;
+    if Autosize then DoAutoSize;
+    Invalidate;
   end;
 end;
 
-procedure TDial.SetMax(const Value: Single);
+procedure TGuiDial.SetTransparent(const Value: Boolean);
 begin
- if Value <> FMax then
+  if fTransparent<>Value then
   begin
-   if Value < FMin then
-    if not (csLoading in ComponentState) then
-     raise EInvalidOperation.CreateFmt(SOutOfRange, [FMin + 1, MaxInt]);
+    fTransparent := Value;
+    Invalidate;
+  end;
+end;
+
+procedure TGuiDial.SetMax(const Value: Single);
+begin
+  if Value <> FMax then
+  begin
+    if (Value < FMin) and not (csLoading in ComponentState) then
+      raise EInvalidOperation.CreateFmt(SOutOfRange, [FMin + 1, MaxInt]);
+
    FMax := Value;
    if fPosition > Value then fPosition := Value;
+   if fDefaultPosition > Value then fDefaultPosition := Value;
    Invalidate;
   end;
 end;
 
-procedure TDial.SetMin(const Value: Single);
+procedure TGuiDial.SetMin(const Value: Single);
 begin
- if Value <> FMin then
+  if Value <> FMin then
   begin
-   if Value > FMax then
-    if not (csLoading in ComponentState)
-     then raise EInvalidOperation.CreateFmt(SOutOfRange, [-MaxInt, FMax - 1]);
-   FMin := Value;
-   if fPosition < Value then fPosition := Value;
-   Invalidate;
+    if (Value > FMax) and not (csLoading in ComponentState) then
+      raise EInvalidOperation.CreateFmt(SOutOfRange, [-MaxInt, FMax - 1]);
+
+    FMin := Value;
+    if fPosition < Value then fPosition := Value;
+    if fDefaultPosition < Value then fDefaultPosition := Value;
+    Invalidate;
   end;
 end;
 
-procedure TDial.SetNumGlyphs(const Value: Integer);
+procedure TGuiDial.SetNumGlyphs(const Value: Integer);
 begin
- if fNumGlyphs <> Value then
+  if fNumGlyphs <> Value then
   begin
-   fNumGlyphs := Value;
-   DoAutoSize;
-   Invalidate;
+    fNumGlyphs := Value;
+    DoAutoSize;
+    Invalidate;
   end;
 end;
 
-procedure TDial.SetPosition(Value: Single);
+procedure TGuiDial.SetPosition(Value: Single);
 begin
- if Value < FMin then Value := FMin else
- if Value > FMax then Value := FMax;
- if fPosition <> Value then
+  if Value < FMin then Value := FMin else
+  if Value > FMax then Value := FMax;
+
+  if fPosition <> Value then
   begin
-   fPosition := Value;
-   if not (csLoading in ComponentState) then
-    if Assigned(FOnChange)
-     then FOnChange(Self);
-   Invalidate;
+    fPosition := Value;
+    if not (csLoading in ComponentState) and Assigned(FOnChange) then FOnChange(Self);
+    Invalidate;
   end;
 end;
 
-procedure TDial.SetDialBitmap(const Value: TBitmap);
+procedure TGuiDial.SetDefaultPosition(Value: Single);
 begin
- fDialBitmap.Assign(Value);
- DoAutoSize;
- Invalidate;
+  if Value < FMin then Value := FMin else
+  if Value > FMax then Value := FMax;
+
+  fDefaultPosition := Value;
 end;
 
-procedure TDial.SetStitchKind(const Value: TStitchKind);
+procedure TGuiDial.SetDialBitmap(const Value: TBitmap);
 begin
- if fStitchKind <> Value then
+  fDialBitmap.Assign(Value);
+  DoAutoSize;
+  Invalidate;
+end;
+
+procedure TGuiDial.SetStitchKind(const Value: TGuiDialStitchKind);
+begin
+  if fStitchKind <> Value then
   begin
-   fStitchKind := Value;
-   DoAutoSize;
-   Invalidate;
+    fStitchKind := Value;
+    DoAutoSize;
+    Invalidate;
   end;
 end;
 
-function TDial.CircularMouseToPosition(X, Y: Integer): Single;
+function TGuiDial.CircularMouseToPosition(X, Y: Integer): Single;
 var
   Range: Single;
   Angle: Single;
@@ -532,120 +516,104 @@ begin
   Result := Angle * Range / PointerAngles.Range;
   while Result > Max do Result:=Result-Range;
   while Result < Min do Result:=Result+Range;
-  if Result > Max
-   then Result := fPosition;
-  if Result < Min
-   then Result := fPosition;
+
+  if Result > Max then Result := fPosition;
+  if Result < Min then Result := fPosition;
 end;
 
-procedure TDial.MouseTimerHandler (Sender: TObject);
-var
-  P: TPoint;
-begin
- GetCursorPos (P);
-// if FindDragTarget(P, True) <> Self
-//  then MouseLeave;
-end;
-
-procedure TDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
+procedure TGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
- if (Button = mbLeft) and Enabled then
+ if ((Button = mbLeft) or (Button = mbRight)) and Enabled then
   begin
-//   SetFocus;
+   MouseCapture := True;
    fMouseIsDown := true;
-   fOldMousPos.X:=X; fOldMousPos.Y:=Y;
+
+   if ssCtrl in Shift then position := fDefaultPosition;
+   if (Button = mbRight) and (fRightMouseButton=rmbfReset) then position := fDefaultPosition;
+
+   fOldMousPos.X:=X;
+   fOldMousPos.Y:=Y;
+
    Click;
    inherited MouseDown(Button, Shift, X, Y);
   end;
 end;
 
-procedure TDial.MouseUp(Button: TMouseButton; Shift: TShiftState; X,
-  Y: Integer);
+procedure TGuiDial.MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
- if (Button = mbLeft) and Enabled then
+  if ((Button = mbLeft) or (Button = mbRight)) and Enabled then
   begin
-   fMouseIsDown := false;
-   fOldMousPos.X:=X; fOldMousPos.Y:=Y;
-   inherited MouseUp(Button, Shift, X, Y);
+    MouseCapture := false;
+    fMouseIsDown := false;
+
+    fOldMousPos.X:=X;
+    fOldMousPos.Y:=Y;
+    inherited MouseUp(Button, Shift, X, Y);
   end;
 end;
 
-procedure TDial.MouseMove(Shift: TShiftState; X, Y: Integer);
+procedure TGuiDial.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
-  P: TPoint;
   Range: Single;
 begin
- inherited;
-// if fMouseIsDown then Position := CircularMouseToPosition(X, Y);
+  inherited;
 
- Range := Max - (Min - 1);
- if fMouseIsDown then
- if ssCtrl in Shift
-  then Position := Position + (fOldMousPos.Y - Y)*0.001*Range
+  Range := Max - (Min - 1);
+  if fMouseIsDown then
+  if ssShift in Shift then Position := Position + (fOldMousPos.Y - Y)*0.001*Range
+  else if (ssRight in Shift) and (fRightMouseButton=rmbfCircular) then position := CircularMouseToPosition(x,y)
   else Position := Position + (fOldMousPos.Y - Y)*0.005*Range;
- fOldMousPos.X:=X; fOldMousPos.Y:=Y;
 
- P := ClientToScreen(Point(X, Y));
- if (MouseInDialControl <> Self) and (FindDragTarget(P, True) = Self) then
-  begin
-//   if Assigned(MouseInDialControl) then MouseInDialControl.MouseLeave;
-   if (GetActiveWindow <> 0) then
-    begin
-     if MouseTimer.Enabled then MouseTimer.Enabled := False;
-     MouseInDialControl := Self;
-     MouseTimer.OnTimer := MouseTimerHandler;
-     MouseTimer.Enabled := True;
-//     MouseEnter;
-    end;
-  end;
+
+  fOldMousPos.X:=X;
+  fOldMousPos.Y:=Y;
 end;
 
-procedure TDial.SetPointerAngles(const Value: TDialPointerAngles);
+procedure TGuiDial.SetPointerAngles(const Value: TGuiDialPointerAngles);
 begin
- FPnterAngles.Assign(Value);
+  FPnterAngles.Assign(Value);
 end;
 
-procedure TDial.CalcColorCircle;
+procedure TGuiDial.CalcColorCircle;
 begin
- if (Color and $000000FF)<$80 then
-  if (((Color and $0000FF00) shr  8)<$80) or
-     (((Color and $00FF0000) shr 16)<$80) then fColorCircle:=$FFFFFF
+  if (Color and $000000FF)<$80 then
+    if (((Color and $0000FF00) shr  8)<$80) or (((Color and $00FF0000) shr 16)<$80) then fColorCircle:=$FFFFFF
   else
- if (((Color and $0000FF00) shr  8)<$80) and
-    (((Color and $00FF0000) shr 16)<$80) then fColorCircle:=$FFFFFF;
- Invalidate;
+    if (((Color and $0000FF00) shr  8)<$80) and (((Color and $00FF0000) shr 16)<$80) then fColorCircle:=$FFFFFF;
+
+  Invalidate;
 end;
 
-procedure TDial.SetColorAuto(const Value: Boolean);
+procedure TGuiDial.SetColorAuto(const Value: Boolean);
 begin
- CalcColorCircle;
+  CalcColorCircle;
 end;
 
-procedure TDial.SetColorCircle(const Value: TColor);
+procedure TGuiDial.SetColorCircle(const Value: TColor);
 begin
- if not fColorAuto and (Value<>fColorCircle) then
+  if not fColorAuto and (Value<>fColorCircle) then
   begin
-   fColorCircle:=Value;
-   Invalidate;
+    fColorCircle:=Value;
+    Invalidate;
   end;
 end;
 
-procedure TDial.SetColorLine(const Value: TColor);
+procedure TGuiDial.SetColorLine(const Value: TColor);
 begin
- if not fColorAuto and (Value<>fColorLine) then
+  if not fColorAuto and (Value<>fColorLine) then
   begin
-   fColorLine:=Value;
-   Invalidate;
+    fColorLine:=Value;
+    Invalidate;
   end;
 end;
 
-procedure TDial.SetLineWidth(const Value: Integer);
+procedure TGuiDial.SetLineWidth(const Value: Integer);
 begin
- if (Value<>fLineWidth) then
+  if (Value<>fLineWidth) then
   begin
-   fLineWidth:=Value;
-   Invalidate;
+    fLineWidth:=Value;
+    Invalidate;
   end;
 end; 
 
