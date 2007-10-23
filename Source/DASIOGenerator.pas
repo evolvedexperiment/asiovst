@@ -48,8 +48,6 @@ type
    property ToneFlavor:TToneFlavor read fToneFlavor write fToneFlavor;
   end;
 
-procedure Register;
-
 implementation
 
 uses Math, DASIOHost;
@@ -154,12 +152,6 @@ begin
  for i := 1 to High(SingleBlock) do
   for j := 0 to Blocksize - 1 do
    SingleBlock[i, j] := SingleBlock[0, j];
-end;
-
-procedure Register;
-begin
-  RegisterComponents('Audio', [TASIOGeneratorNoise]);
-  RegisterComponents('Audio', [TASIOGeneratorTone]);
 end;
 
 initialization

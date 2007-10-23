@@ -3,10 +3,9 @@ unit DGuiBarChart;
 interface
 
 uses {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-     Classes, Graphics, Forms, Messages, SysUtils, Controls;
+     Classes, Graphics, Forms, Messages, SysUtils, Controls, DGuiBaseControl;
 
 {$I ASIOVST.INC}
-{$IFNDEF FPC} {$R DGuiBarChart.res} {$ENDIF}
 
 const
   cNumFrequencies = 32;
@@ -112,16 +111,9 @@ const crUp=1;
       crMid=3;
       cr5dB=4;
 
-procedure Register;
-
 implementation
 
 uses Math, Dialogs;
-
-procedure Register;
-begin
- RegisterComponents('Audio', [TFrequencyBarChart]);
-end;
 
 { TFrequencyBarChart }
 
@@ -540,11 +532,6 @@ begin
  CalcChartRect;
  fDoubleBuffer.Width:=Width;
  fDoubleBuffer.Height:=Height;
-end;
-
-initialization
- {$IFDEF FPC}
- {$i TFreqencyBarChart.lrs}
- {$ENDIF}
+end;      
 
 end.

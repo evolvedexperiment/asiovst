@@ -1,13 +1,11 @@
 unit DGuiMidiKeys;
 
 {$I ASIOVST.INC}
-{$IFNDEF FPC} {$R DGuiMidiKeys.res} {$ENDIF}
-{$R-}
 
 interface
 
 uses {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-     Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
+     Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DGuiBaseControl;
 
 type
   TMidiKeyEvent = procedure(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer) of object;
@@ -70,8 +68,6 @@ type
     property OnMidiKeyUp: TMidiKeyEvent read FOnMidiKeyUp write FOnMidiKeyUp;
     property OnKeyColor: TKeyColorEvent read FOnKeyColor write FOnKeyColor;
   end;
-
-procedure Register;
 
 implementation
 
@@ -336,13 +332,4 @@ begin
  fBlackKeyHeight := Round(0.63*Height);
 end;
 
-procedure Register;
-begin
- RegisterComponents('Audio', [TMidiKeys]);
-end;
-
-initialization
- {$IFDEF FPC}
- {$i TMidiKeys.lrs}
- {$ENDIF}
 end.

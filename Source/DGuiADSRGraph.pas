@@ -1,15 +1,13 @@
 unit DGuiADSRGraph;
 
 {$I ASIOVST.INC}
-{$IFNDEF FPC} {$R DGuiADSRGraph.res} {$ENDIF}
-{$R-}
 
 interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
   {$ELSE} Windows, {$ENDIF}
-  Classes, Graphics, Forms, Controls, ExtCtrls, Messages;
+  Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DGuiBaseControl;
 
 type
   TADSRGraphMouseEdit = (meNone, meAttack, meDecay, meSustain, meRelease);
@@ -103,8 +101,6 @@ type
     property OnSustainChange : TNotifyEvent read fOnSustainChange write fOnSustainChange;
     property OnReleaseChange : TNotifyEvent read fOnReleaseChange write fOnReleaseChange;
   end;
-
-procedure Register;
 
 implementation
 
@@ -391,16 +387,9 @@ begin
  CalcIntValues;
 end;
 
-procedure TADSRGraph.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := 0; end;
-
-procedure Register;
+procedure TADSRGraph.WMEraseBkgnd(var m: TWMEraseBkgnd);
 begin
- RegisterComponents('Audio', [TADSRGraph]);
+  m.Result := 0;
 end;
-
-initialization
- {$IFDEF FPC}
- {$i TADSRGraph.lrs}
- {$ENDIF}
 
 end.

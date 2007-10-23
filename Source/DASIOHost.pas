@@ -393,7 +393,6 @@ var theHost             : TCustomASIOHostBasic;
     PMReset             : TMessage;
     {$ENDIF}
 
-procedure Register;
 function ChannelTypeToString(vType: TASIOSampleType): string;
 procedure ListAsioDrivers(var List: TAsioDriverList);
 
@@ -1755,17 +1754,6 @@ begin
     odTDF  : Use_x87_TDF;
    end;
   end;
-end;
-
-procedure Register;
-begin
- RegisterComponents('Audio', [TASIOHost]);
- RegisterComponents('Audio', [TASIOHostBasic]);
- {$IFDEF DELPHI5}
- {$IFDEF D5CP}
- RegisterComponentEditor(TASIOHost, TASIOControlPanel);
- {$ENDIF}
- {$ENDIF}
 end;
 
 initialization

@@ -2484,7 +2484,7 @@ end;
 
 procedure Register;
 begin
-  RegisterComponents('Audio', [TVstHost]);
+  RegisterComponents('ASIO/VST Basics', [TVstHost]);
 end;
 
 function string2Language(LanguageString : string): TVSTHostLanguage;

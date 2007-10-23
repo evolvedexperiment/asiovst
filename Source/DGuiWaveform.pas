@@ -1,14 +1,12 @@
 unit DGuiWaveform;
 
 {$I ASIOVST.INC}
-{$IFNDEF FPC} {$R DGuiWaveform.res} {$ENDIF}
-{$R-}
 
 interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-  Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DAVDCommon;
+  Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DAVDCommon, DGuiBaseControl;
 
 type
   { TWaveform }
@@ -65,8 +63,6 @@ type
     property OnKeyPress: TKeyPressEvent read FOnKeyPress write FOnKeyPress;
     property OnKeyUp: TKeyEvent read FOnKeyUp write FOnKeyUp;
   end;
-
-procedure Register;
 
 implementation
 
@@ -294,16 +290,9 @@ begin
  ResetSize;
 end;
 
-procedure TWaveform.WMEraseBkgnd(var m: TWMEraseBkgnd); begin m.Result := 0; end;
-
-procedure Register;
+procedure TWaveform.WMEraseBkgnd(var m: TWMEraseBkgnd);
 begin
- RegisterComponents('Audio', [TWaveform]);
+  m.Result := 0;
 end;
 
-initialization
- {$IFDEF FPC}
- {$i TWaveform.lrs}
- {$ENDIF}
-
- end.
+end.

@@ -3,7 +3,7 @@ unit DGuiDial;
 interface
 
 uses Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls,
-     Consts;
+     Consts, DGuiBaseControl;
 
 type
   TStitchKind = (skHorizontal, skVertical);
@@ -136,8 +136,6 @@ type
 
 var MouseInDialControl: TDial = nil;
 
-procedure Register;
-
 implementation
 
 uses ExtCtrls, Math;
@@ -145,11 +143,6 @@ uses ExtCtrls, Math;
 var
   MouseTimer: TTimer = nil;
   ControlCounter: Integer = 0;
-
-procedure Register;
-begin
- RegisterComponents('Audio', [TDial]);
-end;
 
 function RadToDeg(const Radians: Extended): Extended;  { Degrees := Radians * 180 / PI }
 const DegPi : Double = (180 / PI);
@@ -654,6 +647,6 @@ begin
    fLineWidth:=Value;
    Invalidate;
   end;
-end;
+end; 
 
 end.

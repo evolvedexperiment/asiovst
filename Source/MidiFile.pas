@@ -905,7 +905,7 @@ end;
 
 procedure Register;
 begin
-  RegisterComponents('Synth', [TMidiFile]);
+  RegisterComponents('ASIO/VST Basics', [TMidiFile]);
 end;
 
 end.

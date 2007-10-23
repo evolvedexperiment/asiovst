@@ -37,6 +37,7 @@ contains
   DASIOGenerator in '..\Source\DASIOGenerator.pas',
   ASIOChannelStrip in '..\Source\ASIOChannelStrip.pas',
   ASIOMixer in '..\Source\ASIOMixer.pas',
-  BeRoASIO in '..\Source\BeRoASIO.pas';
+  BeRoASIO in '..\Source\BeRoASIO.pas',
+  DASIORegister in '..\Source\DASIORegister.pas';
 
 end.
