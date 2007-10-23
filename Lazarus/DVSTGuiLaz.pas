@@ -7,13 +7,12 @@ unit DVSTGuiLaz;
 interface
 
 uses
-  DGuiBarChart, DGuiMidiKeys, DGuiWaveform, DGuiADSRGraph, LazarusPackageIntf; 
+  DGuiMidiKeys, DGuiWaveform, DGuiADSRGraph, LazarusPackageIntf; 
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('DGuiBarChart', @DGuiBarChart.Register); 
   RegisterUnit('DGuiMidiKeys', @DGuiMidiKeys.Register); 
   RegisterUnit('DGuiWaveform', @DGuiWaveform.Register); 
   RegisterUnit('DGuiADSRGraph', @DGuiADSRGraph.Register); 
