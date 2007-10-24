@@ -75,15 +75,14 @@ end;
 
 procedure TFmVSTAnalyser.MIPlotIRClick(Sender: TObject);
 begin
- FmPlotIR.Waveform.WaveLength:=VstHost.BlockSize;
  with VstHost[0] do
   if Active then
    begin
     VSTInBuffer[0,0]:=1;
     FillChar(VSTInBuffer[0,1],(VstHost.BlockSize-1)*SizeOf(Single),0);
     ProcessReplacing(@VSTInBuffer[0],@VSTOutBuffer[0],VstHost.BlockSize);
-    Move(VSTOutBuffer[0,0], FmPlotIR.Waveform.Wavedata[0], VstHost.BlockSize*SizeOf(Single));
-    FmPlotIR.Waveform.RedrawBuffer;
+
+    FmPlotIR.Waveform.SetWaveForm(VSTOutBuffer, true, true);
    end;
  FmPlotIR.ShowModal;
 end;

@@ -3,7 +3,7 @@ object VSTGUI: TVSTGUI
   Top = 185
   BorderStyle = bsNone
   Caption = 'SimpleSampler'
-  ClientHeight = 144
+  ClientHeight = 231
   ClientWidth = 365
   Color = clBtnFace
   TransparentColorValue = 12948623
@@ -21,7 +21,7 @@ object VSTGUI: TVSTGUI
   TextHeight = 13
   object MidiKeys: TMidiKeys
     Left = 0
-    Top = 71
+    Top = 158
     Width = 365
     Height = 73
     BaseOctave = 4
@@ -38,13 +38,16 @@ object VSTGUI: TVSTGUI
     Height = 13
     Caption = 'Sample:'
   end
-  object Waveform: TWaveform
+  object Waveform: TGuiStaticWaveform
     Left = 8
     Top = 32
     Width = 349
-    Height = 33
-    Normalize = True
+    Height = 121
+    Transparent = True
     LineColor = clBlack
+    DisplayChannels = 2
+    NormalizationType = ntOverallChannels
+    WaveDrawMode = wdmOutline
   end
   object EditSample: TEdit
     Left = 58

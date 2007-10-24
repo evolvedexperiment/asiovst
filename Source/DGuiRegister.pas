@@ -12,7 +12,7 @@ uses Classes, DGuiWaveform, DGuiDial, DGuiMidiKeys, DGuiADSRGraph;
 
 procedure Register;
 begin
- RegisterComponents('ASIO/VST GUI', [TWaveform,TMidiKeys,TGuiDial,TADSRGraph]);
+ RegisterComponents('ASIO/VST GUI', [TGuiStaticWaveform,TMidiKeys,TGuiDial,TADSRGraph]);
 end;
 
 end.

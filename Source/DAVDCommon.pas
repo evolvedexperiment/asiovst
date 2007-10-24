@@ -4,7 +4,7 @@ interface
 
 {$I ASIOVST.inc}
 
-uses {$IFNDEF FPC}Windows{$ELSE}LCLIntf{$ENDIF};
+uses{$IFNDEF FPC}Windows{$ELSE}LCLIntf{$ENDIF};
 
 {$IFDEF FPC}
   {$DEFINE PUREPASCAL}
@@ -13,6 +13,7 @@ uses {$IFNDEF FPC}Windows{$ELSE}LCLIntf{$ENDIF};
 type
   TDoubleDynArray = Array of Double;
   TSingleDynArray = Array of Single;
+
   PDoubleDynArray = ^TDoubleDynArray;
   PSingleDynArray = ^TSingleDynArray;
   TSingleFixedArray = Array [0..0] of Single;

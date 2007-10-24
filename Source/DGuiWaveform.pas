@@ -6,44 +6,54 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-  Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DAVDCommon, DGuiBaseControl;
+  Classes, Controls, Graphics, DAVDCommon, DGuiBaseControl;
 
 type
-  { TWaveform }
-  TWaveform = class(TGraphicControl)
+  TGuiNormalizationType = (ntNone, ntPerChannel, ntOverallChannels);
+  TGuiWaveDrawMode = (wdmSolid, wdmPoints, wdmOutline);
+
+  TGuiStaticWaveform = class(TGuiBaseControl)
   private
-    fBuffer         : TBitmap;
-    fLineWidth      : Integer;
-    fHalfHeight     : Integer;
-    fOnKeyDown      : TKeyEvent;
-    fOnKeyPress     : TKeyPressEvent;
-    fOnKeyUp        : TKeyEvent;
-    fLineColor      : TColor;
-    fTransparent    : Boolean;
-    fNormalize      : Boolean;
-    fNormalizeFak   : Single;
-    fWavedata       : TSingleDynArray;
-    procedure WMEraseBkgnd(var m: TWMEraseBkgnd); message WM_ERASEBKGND;
-    procedure SetLinewidth(const Value: Integer);
-    procedure SetLineColor(const Value: TColor);
-    procedure SetTransparent(const Value: Boolean);
-    procedure SetWaveLength(const Value: Integer);
-    function GetWaveLength: Integer;
-    procedure SetNormalize(const Value: Boolean);
-    procedure ResetSize;
+    fNormalizationType:    TGuiNormalizationType;
+    fNormalizationFactors: TSingleDynArray;
+    fWaveHalfHeight:  Integer;
+    fWaveData:        TArrayOfSingleDynArray;
+    fWaveVPadding:    Integer;
+    fDisplayChannels: Integer;
+    fMedianVisible:   Boolean;
+    fMedianColor:     TColor;
+    fMedianLineWidth: Integer;
+    fWaveDrawMode:    TGuiWaveDrawMode;
+
+    procedure SetNormalizationType(Value: TGuiNormalizationType);
+    function  GetWaveLength: Integer;
+    function  GetWaveChannels: Integer;
+    procedure SetWaveVPadding(Value: Integer);
+    procedure SetDisplayChannels(Value: Integer);
+
+    procedure SetMedianVisible(Value: Boolean);
+    procedure SetMedianColor(Value: TColor);
+    procedure SetMedianLineWidth(Value: Integer);
+    procedure SetWaveDrawMode(Value: TGuiWaveDrawMode);
   protected
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure ReadState(Reader: TReader); override;
-    procedure Resize; override;
+    procedure DrawSamples(var OldMaxPos, OldMinPos: TPoint; NewMax, NewMin: TPoint);
+    procedure ResizeBuffer; override;
+    procedure DrawMedian(YOffset: integer);
+    procedure DrawGraphs;
+    procedure DrawSingleWave(YOffset, HalfHeight, Channel: integer);
+    function  GetMaxAmp(Channel: integer): single;
   public
     constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    procedure Paint; override;
-    procedure RedrawBuffer;
-    property Wavedata : TSingleDynArray read fWavedata;
-    property WaveLength : Integer read GetWaveLength write SetWaveLength;
+    destructor  Destroy; override;
+    procedure   RedrawBuffer(doBufferFlip: Boolean); override;
+
+    procedure SetWaveForm(NewWaveData: TSingleDynArray;  DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false); overload;
+    procedure SetWaveForm(NewWaveData: TArrayOfSingleDynArray; DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false);overload;
+    procedure ClearWaveForm(DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false);
+
+    property Wavedata: TArrayOfSingleDynArray read fWaveData;
+    property WaveLength: Integer read GetWaveLength;
+    property WaveChannels: Integer read GetWaveChannels;
   published
     property Anchors;
     property Align;
@@ -55,244 +65,348 @@ type
     property OnMouseUp;
     property Color;
     property PopupMenu;
-    property Normalize: Boolean read fNormalize write SetNormalize default False;
-    property LineWidth: Integer read fLineWidth write SetLineWidth default 1;
-    property LineColor: TColor read fLineColor write SetLineColor;
-    property Transparent: Boolean read fTransparent write SetTransparent default False;
-    property OnKeyDown: TKeyEvent read FOnKeyDown write FOnKeyDown;
-    property OnKeyPress: TKeyPressEvent read FOnKeyPress write FOnKeyPress;
-    property OnKeyUp: TKeyEvent read FOnKeyUp write FOnKeyUp;
+    property Transparent;
+    property LineWidth;
+    property LineColor;
+    
+    property DisplayChannels: integer read fDisplayChannels write SetDisplayChannels;
+    property WaveVPadding: Integer read fWaveVPadding write SetWaveVPadding default 3;
+
+    property MedianVisible: Boolean read fMedianVisible write SetMedianVisible default true;
+    property MedianColor: TColor read fMedianColor write SetMedianColor default clRed;
+    property MedianLineWidth: Integer read fMedianLineWidth write SetMedianLineWidth default 1;
+    property NormalizationType: TGuiNormalizationType read fNormalizationType write SetNormalizationType default ntNone;
+    property WaveDrawMode: TGuiWaveDrawMode read fWaveDrawMode write SetWaveDrawMode default wdmSolid;
   end;
 
 implementation
 
-uses SysUtils;
+uses Math;
 
-{ TWaveform }
-
-constructor TWaveform.Create(AOwner: TComponent);
-var i : Integer;
+constructor TGuiStaticWaveform.Create(AOwner: TComponent);
 begin
- inherited Create(AOwner);
- fLineWidth := 1;
- fLineColor := clBlack;
- fTransparent := False;
- fNormalize := False;
- fBuffer := TBitmap.Create;
- WaveLength:=1024;
- for i:=0 to WaveLength - 1
-  do fWaveData[i]:=sin(2*Pi*i/WaveLength);
+  inherited Create(AOwner);
+  fNormalizationType := ntNone;
+  
+  fDisplayChannels := 1;
+  fWaveVPadding    := 3;
+  fMedianVisible   := true;
+  fMedianColor     := clRed;
+  fMedianLineWidth := 1;
+  fWaveDrawMode    := wdmSolid;
 
- ControlStyle := ControlStyle+[csOpaque];
+  SetLength(fNormalizationFactors,fDisplayChannels); // !IMPORTANT
+  ClearWaveForm;
 end;
 
-destructor TWaveform.Destroy;
+destructor TGuiStaticWaveform.Destroy;
 begin
- fBuffer.Free;
- inherited;
+  ClearWaveForm;
+  inherited;
 end;
 
-function TWaveform.GetWaveLength: Integer;
+procedure TGuiStaticWaveform.ClearWaveForm(DoRedrawBuffer, DoFlipBuffer: Boolean);
+var i: integer;
 begin
- result:=Length(fWavedata);
+  for i:=0 to Length(fWaveData)-1 do SetLength(fWaveData[i],0);
+  SetLength(fWaveData,0);
+
+  if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
 end;
 
-{$IFNDEF FPC}
-procedure DrawParentImage(Control: TControl; Dest: TCanvas);
-var
-  SaveIndex: Integer;
-  DC: THandle;
-  Position: TPoint;
+function TGuiStaticWaveform.GetWaveLength: Integer;
+var i: integer;
 begin
- with Control do
+  result := 0;
+  for i:=0 to Length(fWaveData)-1 do
+    result:=Max(result, Length(fWavedata[i]));
+end;
+
+function TGuiStaticWaveform.GetWaveChannels: Integer;
+begin
+  result:=Length(fWavedata);
+end;
+
+procedure TGuiStaticWaveform.SetDisplayChannels(Value: Integer);
+begin
+  if Value < 1 then Value:=1;
+  if fDisplayChannels<>Value then
   begin
-   if Parent = nil then Exit;
-   DC := Dest.Handle;
-   SaveIndex := SaveDC(DC);
-   GetViewportOrgEx(DC, Position);
-   SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-   IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-   Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
-   Parent.Perform(WM_PAINT, Longint(DC), 0);
-   RestoreDC(DC, SaveIndex);
-  end;
-end;
-{$ENDIF}
-
-procedure TWaveform.Paint;
-begin
- with Canvas do
-  begin
-   CopyMode := cmSrcCopy;
-   Draw(0, 0, fBuffer);
+    fDisplayChannels := Value;
+    ResizeBuffer;
   end;
 end;
 
-procedure TWaveform.RedrawBuffer;
-var i,p,o     : Integer;
-    r,w,mn,mx : Single;
+
+procedure TGuiStaticWaveform.SetMedianVisible(Value: Boolean);
 begin
- if Length(fWavedata)<1 then exit;
- if fNormalize then
+  if fMedianVisible<>Value then
   begin
-   fNormalizeFak:=0;
-   for i := 0 to Length(fWavedata) - 1 do
-    if abs(fWavedata[i])<fNormalizeFak
-     then fNormalizeFak:=-abs(fWavedata[i]);
-   if fNormalizeFak=0
-    then fNormalizeFak:=-1
-    else fNormalizeFak:=-1/fNormalizeFak;
-  end else fNormalizeFak:=-1;
+    fMedianVisible := Value;
+    RedrawBuffer(true);
+  end;
+end;
 
- with fBuffer.Canvas do
+procedure TGuiStaticWaveform.SetMedianColor(Value: TColor);
+begin
+  if fMedianColor<>Value then
   begin
-   Brush.Color:=Self.Color;
-   {$IFNDEF FPC}
-   if fTransparent
-    then DrawParentImage(Self, fBuffer.Canvas)
-    else
-   {$ENDIF}
-   FillRect(ClipRect);
+    fMedianColor := Value;
+    RedrawBuffer(true);
+  end;
+end;
 
-   Pen.Width:=fLineWidth;
-   Pen.Color:=fLineColor;
-   r:=Self.Width/Length(fWavedata); i:=1; w:=0; p:=0;
-   mn:=Wavedata[0]*fNormalizeFak; mx:=mn;
-   MoveTo(0,round(mn*fHalfHeight+fHalfHeight));
-   while i<Length(fWavedata) do
+procedure TGuiStaticWaveform.SetMedianLineWidth(Value: Integer);
+begin
+  if fMedianLineWidth<>Value then
+  begin
+    fMedianLineWidth := Value;
+    RedrawBuffer(true);
+  end;
+end;
+
+procedure TGuiStaticWaveform.SetWaveVPadding(Value: Integer);
+begin
+  if fWaveVPadding<>Value then
+  begin
+    fWaveVPadding := Value;
+    ResizeBuffer;
+  end;
+end;
+
+procedure TGuiStaticWaveform.SetNormalizationType(Value: TGuiNormalizationType);
+begin
+  if fNormalizationType<>Value then
+  begin
+    fNormalizationType := Value;
+    RedrawBuffer(true);
+  end;
+end;
+
+procedure TGuiStaticWaveform.SetWaveDrawMode(Value: TGuiWaveDrawMode);
+begin
+  if fWaveDrawMode<>Value then
+  begin
+    fWaveDrawMode := Value;
+    RedrawBuffer(true);
+  end;
+end;
+
+procedure TGuiStaticWaveform.ResizeBuffer;
+begin
+  fWaveHalfHeight := Height div (2*fDisplayChannels) - fWaveVPadding;
+  SetLength(fNormalizationFactors,fDisplayChannels);
+
+  inherited;
+end;
+
+procedure TGuiStaticWaveform.SetWaveForm(NewWaveData: TSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
+var len: integer;
+begin
+  ClearWaveForm;
+  SetLength(fWaveData,1);
+
+  len:=Length(NewWaveData);
+  SetLength(fWaveData[0], len);
+  move(NewWaveData[0],fWaveData[0][0], len * SizeOf(Single));
+
+  if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
+end;
+
+
+procedure TGuiStaticWaveform.SetWaveForm(NewWaveData: TArrayOfSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
+var i, len: integer;
+begin
+  if Length(NewWaveData) < 1 then
+    ClearWaveForm(DoRedrawBuffer, DoFlipBuffer)
+  else begin
+    ClearWaveForm;
+    SetLength(fWaveData,Length(NewWaveData));
+    for i := 0 to Length(NewWaveData)-1 do
     begin
-     if Wavedata[i]*fNormalizeFak>mx then mx:=Wavedata[i]*fNormalizeFak else
-     if Wavedata[i]*fNormalizeFak<mn then mn:=Wavedata[i]*fNormalizeFak;
-     w:=w+r;
-     if w>p then
-      begin
-       p:=round(w);
-       if mn=mx then LineTo(p,round(mn*fHalfHeight+fHalfHeight)) else
-        begin
-         o:=fBuffer.Canvas.PenPos.Y-fHalfHeight;
-         if abs(o-mn*fHalfHeight)<abs(o-mx*fHalfHeight)
-          then
-           begin
-            LineTo(p,round(mn*fHalfHeight+fHalfHeight));
-            LineTo(p,round(mx*fHalfHeight+fHalfHeight));
-           end else
-           begin
-            LineTo(p,round(mx*fHalfHeight+fHalfHeight));
-            LineTo(p,round(mn*fHalfHeight+fHalfHeight));
+      len:=Length(NewWaveData[i]);
+      SetLength(fWaveData[i], len);
+      move(NewWaveData[i][0],fWaveData[i][0], len * SizeOf(Single));
+    end;
+
+    if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
+  end;
+end;
+
+function TGuiStaticWaveform.GetMaxAmp(Channel: integer):single;
+var i: integer;
+begin
+  Result:=0;
+  for i:=0 to length(fWaveData[Channel])-1 do Result:=max(Result,abs(fWaveData[Channel][i]));
+end;
+
+procedure TGuiStaticWaveform.DrawMedian(YOffset: integer);
+begin
+  with fBuffer.Canvas do
+  begin
+    Pen.Width:=fMedianLineWidth;
+    Pen.Color:=fMedianColor;
+
+    MoveTo(0,YOffset);
+    LineTo(width,YOffset);
+  end;
+end;
+
+procedure TGuiStaticWaveform.DrawSamples(var OldMaxPos, OldMinPos: TPoint; NewMax, NewMin: TPoint);
+var LastCenter: Integer;
+begin
+  LastCenter:=(OldMaxPos.Y+OldMinPos.Y) div 2;
+
+  with fBuffer.Canvas do
+  begin
+    case fWaveDrawMode of
+      wdmPoints: begin
+             Pixels[NewMax.X, NewMax.Y] := Pen.Color;
+             Pixels[NewMin.X, NewMin.Y] := Pen.Color;
            end;
-        end;
-       mn:=Wavedata[i]*fNormalizeFak;
-       mx:=mn;
-      end;
-     inc(i);
-    end;
 
-   if mn=mx then LineTo(Self.Width,round(mn*fHalfHeight+fHalfHeight)) else
+      wdmOutline: begin
+             if OldMaxPos.Y=OldMinPos.Y then
+             begin
+               MoveTo(NewMin.X, NewMin.Y);
+               LineTo(OldMinPos.X, OldMinPos.Y);
+               if NewMax.Y<>NewMin.Y then LineTo(NewMax.X, NewMax.Y);
+             end else if NewMax.Y=NewMin.Y then
+             begin
+               MoveTo(OldMinPos.X, OldMinPos.Y);
+               LineTo(NewMax.X, NewMax.Y);
+               LineTo(OldMaxPos.X, OldMaxPos.Y);
+             end else begin   
+               MoveTo(NewMin.X, NewMin.Y);
+               LineTo(OldMinPos.X, OldMinPos.Y);
+               MoveTo(NewMax.X, NewMax.Y);
+               LineTo(OldMaxPos.X, OldMaxPos.Y); 
+             end;
+           end;
+
+      else begin
+             if abs(NewMax.Y-LastCenter) > abs(NewMin.Y-LastCenter) then
+             begin
+               LineTo(NewMax.X, NewMax.Y);
+             end else begin
+               if NewMin.Y<>NewMax.Y then LineTo(NewMax.X, NewMax.Y);
+               LineTo(NewMin.X, NewMin.Y);
+             end;
+           end
+    end
+  end;
+
+  OldMaxPos:=NewMax;
+  OldMinPos:=NewMin;
+end;
+
+procedure TGuiStaticWaveform.DrawSingleWave(YOffset, HalfHeight, Channel: integer);
+var SampleWidth, COffset, MinSample, MaxSample: single;
+  OldMaxPos: TPoint;
+  OldMinPos: TPoint;
+  COffsetRounded, i: integer;
+begin
+  with fBuffer.Canvas do
+  begin
+    Pen.Width:=fLineWidth;
+    Pen.Color:=fLineColor;
+
+    SampleWidth:=(width-1) / (WaveLength-1);
+
+    MinSample := fWaveData[Channel][0];
+    MaxSample := MinSample;
+
+    COffset:=0;
+    COffsetRounded:=0;
+    i:=1;
+    while i<Length(fWavedata[Channel]) do
     begin
-     o:=fBuffer.Canvas.PenPos.Y-fHalfHeight;
-     if abs(o-mn*fHalfHeight)<abs(o-mx*fHalfHeight)
-      then
-       begin
-        LineTo(Self.Width,round(mn*fHalfHeight+fHalfHeight));
-        LineTo(Self.Width,round(mx*fHalfHeight+fHalfHeight));
-       end else
-       begin
-        LineTo(Self.Width,round(mx*fHalfHeight+fHalfHeight));
-        LineTo(Self.Width,round(mn*fHalfHeight+fHalfHeight));
-       end;
+      COffset:=COffset+SampleWidth;
+      if (COffset > COffsetRounded) or (i = Length(fWavedata[Channel])-1) then
+      begin
+        if COffsetRounded=1 then
+        begin
+          OldMaxPos := Point(0, round(YOffset-MaxSample*fNormalizationFactors[Channel]*HalfHeight));
+          OldMinPos := Point(0, round(YOffset-MinSample*fNormalizationFactors[Channel]*HalfHeight));
+          MoveTo((OldMinPos.X+OldMaxPos.X) div 2, (OldMinPos.Y+OldMaxPos.Y) div 2);
+        end;
+
+        COffsetRounded := ceil(COffset);
+        DrawSamples(
+          OldMaxPos,
+          OldMinPos,
+          Point(COffsetRounded-1, round(YOffset-MaxSample*fNormalizationFactors[Channel]*HalfHeight)),
+          Point(COffsetRounded-1, round(YOffset-MinSample*fNormalizationFactors[Channel]*HalfHeight)));
+
+        MaxSample := fWaveData[Channel][i];
+        MinSample := MaxSample;
+      end else begin
+        if fWaveData[Channel][i] > MaxSample then
+          MaxSample := fWaveData[Channel][i]
+        else if fWaveData[Channel][i] < MinSample then
+          MinSample := fWaveData[Channel][i];
+      end;
+
+      inc(i);
     end;
   end;
- Invalidate; 
 end;
 
-procedure TWaveform.SetLineColor(const Value: TColor);
+procedure TGuiStaticWaveform.DrawGraphs;
+var YOffset, i: integer;
 begin
- if fLineColor<>Value then
+  with fBuffer.Canvas do for i:=0 to fDisplayChannels-1 do
   begin
-   fLineColor := Value;
-   Invalidate;
+    YOffset := (fWaveVPadding+fWaveHalfHeight) * (i*2+1);
+
+    if fNormalizationFactors[i]>0 then DrawSingleWave(YOffset, fWaveHalfHeight, i);
+
+    if fMedianVisible then DrawMedian(YOffset);
   end;
 end;
 
-procedure TWaveform.SetLinewidth(const Value: Integer);
+procedure TGuiStaticWaveform.RedrawBuffer(doBufferFlip: Boolean);
+var i: integer; MaxAmp, Amp: single;
 begin
- if (Value>0) and (Value<200) and (fLinewidth<>Value) then
+  fBuffer.Canvas.Brush.Color:=Self.Color;
+
+  {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+      fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
+
+  MaxAmp := 0;
+  if fDisplayChannels<1 then exit;
+  for i:=0 to fDisplayChannels-1 do
+    if i>=length(fWaveData) then
+      fNormalizationFactors[i] := 0
+    else if length(fWaveData[i])<1 then
+      fNormalizationFactors[i] := 0
+    else begin
+      Amp := GetMaxAmp(i);
+      MaxAmp := Max(MaxAmp, Amp);
+      if Amp = 0 then
+        fNormalizationFactors[i]:=0
+      else
+        fNormalizationFactors[i] := 1/Amp;
+    end;
+
+  if fNormalizationType = ntNone then
   begin
-   fLinewidth := Value;
-   Invalidate;
+    for i:=0 to fDisplayChannels-1 do
+      if fNormalizationFactors[i]>0 then
+        fNormalizationFactors[i] := 1;
+
+  end else if (fNormalizationType = ntOverallChannels) and (MaxAmp > 0) then
+  begin 
+    for i:=0 to fDisplayChannels-1 do
+      if fNormalizationFactors[i]>0 then
+        fNormalizationFactors[i] := 1/MaxAmp;
   end;
+
+  DrawGraphs;
+  if doBufferFlip then Invalidate;
 end;
 
-procedure TWaveform.SetNormalize(const Value: Boolean);
-begin
- if fNormalize<>Value then
-  begin
-   fNormalize := Value;
-   RedrawBuffer;
-  end;
-end;
 
-procedure TWaveform.SetTransparent(const Value: Boolean);
-begin
- if fTransparent<>Value then
-  begin
-   fTransparent := Value;
-   RedrawBuffer;
-  end;
-end;
 
-procedure TWaveform.SetWaveLength(const Value: Integer);
-begin
- if Length(fWaveData)<>Value then
-  begin
-   SetLength(fWaveData,Value);
-   RedrawBuffer;
-  end;
-end;
-
-procedure TWaveform.MouseDown(Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
-begin
- MouseCapture := True;
- inherited MouseDown(Button, Shift, X, Y);
- if (x < 0) or (x > width) or (y < 0) or (y > height)
-  or not (ssLeft in Shift) then exit;
-end;
-
-procedure TWaveform.MouseMove(Shift: TShiftState; X, Y: Integer);
-begin
- inherited MouseMove(Shift, X, Y);
-end;
-
-procedure TWaveform.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
- MouseCapture := False;
- inherited MouseUp(Button, Shift, X, Y);
-end;
-
-procedure TWaveform.ResetSize;
-begin
- fBuffer.Width := Width;
- fBuffer.Height := Height;
- fHalfHeight := Height div 2;
- RedrawBuffer;
-end;
-
-procedure TWaveform.ReadState(Reader: TReader);
-begin
- inherited ReadState(Reader);
- ResetSize;
-end;
-
-procedure TWaveform.Resize;
-begin
- inherited Resize;
- ResetSize;
-end;
-
-procedure TWaveform.WMEraseBkgnd(var m: TWMEraseBkgnd);
-begin
-  m.Result := 0;
-end;
 
 end.

@@ -3,7 +3,8 @@ unit SimpleSamplerGUI;
 interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-     Controls, StdCtrls, DGuiMidiKeys, Graphics, Dialogs, WaveIOX, DGuiWaveform;
+     Controls, StdCtrls, DGuiMidiKeys, Graphics, Dialogs, WaveIOX, DGuiWaveform,
+  DGuiBaseControl;
 
 type
   TVSTGUI = class(TForm)
@@ -12,7 +13,7 @@ type
     Label1: TLabel;
     BtSampleSelect: TButton;
     OpenDialog: TOpenDialog;
-    Waveform: TWaveform;
+    Waveform: TGuiStaticWaveform;
     procedure MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
     procedure MidiKeysMidiKeyUp(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -82,7 +83,7 @@ procedure TVSTGUI.EditSampleChange(Sender: TObject);
 var sr,c,sz : Integer;
     pt      : PSingle;
 begin
- if FileExists(EditSample.Text) then
+ {if FileExists(EditSample.Text) then
   begin
    pt:=LoadWAVFileMono(EditSample.Text,sr, c, sz);
    SetLength(TVSTSSModule(Owner).Sample,sz);
@@ -93,18 +94,33 @@ begin
      Waveform.Wavedata[c]:=(pt)^;
      Inc(pt);
     end;
-   Waveform.RedrawBuffer; 
+   Waveform.RedrawBuffer(true);
+  end;
+
+      FmPlotIR.Waveform.SetWaveForm(VSTOutBuffer, true, true);
+   }
+   
+  if FileExists(EditSample.Text) then
+  begin
+    pt:=LoadWAVFileMono(EditSample.Text,sr, c, sz);
+    SetLength(TVSTSSModule(Owner).Sample,sz);
+    for c := 0 to sz - 1 do
+    begin
+      TVSTSSModule(Owner).Sample[c]:=(pt)^;
+      Inc(pt);
+    end;
+    Waveform.SetWaveForm(TVSTSSModule(Owner).Sample, true, true);
   end;
 end;
 
 procedure TVSTGUI.FormCreate(Sender: TObject);
-var i : Integer;
-const lngth = 4096;
+//var i : Integer;
+//const lngth = 4096;
 begin
- Waveform.WaveLength:=lngth;
- for i:=0 to lngth-1
-  do Waveform.Wavedata[i]:=sin(8*Pi*i/lngth);
- Waveform.RedrawBuffer;
+// Waveform.WaveLength:=lngth;
+/// for i:=0 to lngth-1
+//  do Waveform.Wavedata[i]:=sin(8*Pi*i/lngth);
+// Waveform.RedrawBuffer(false);
 end;
 
 procedure TVSTGUI.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

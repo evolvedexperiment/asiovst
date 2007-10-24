@@ -13,7 +13,7 @@ object FmPlotIR: TFmPlotIR
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Waveform: TWaveform
+  object Waveform: TGuiStaticWaveform
     Left = 0
     Top = 0
     Width = 387
@@ -21,6 +21,10 @@ object FmPlotIR: TFmPlotIR
     Align = alClient
     PopupMenu = PUDisplay
     LineColor = clBlack
+    DisplayChannels = 1
+    MedianColor = clLime
+    MedianLineWidth = 3
+    NormalizationType = ntOverallChannels
   end
   object PUDisplay: TPopupMenu
     Left = 192

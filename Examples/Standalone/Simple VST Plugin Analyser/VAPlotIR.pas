@@ -4,11 +4,12 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages,{$ENDIF}
-  SysUtils, Classes, Graphics, Controls, Forms, DGuiWaveform, Menus;
+  SysUtils, Classes, Graphics, Controls, Forms, DGuiWaveform, Menus,
+  DGuiBaseControl;
 
 type
   TFmPlotIR = class(TForm)
-    Waveform: TWaveform;
+    Waveform: TGuiStaticWaveform;
     PUDisplay: TPopupMenu;
     MIWaveform: TMenuItem;
   private
