@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  Controls, StdCtrls, DGuiMidiKeys, DGuiADSRGraph;
+  Controls, StdCtrls, DGuiMidiKeys, DGuiADSRGraph, DGuiBaseControl;
 
 type
   TVSTGUI = class(TForm)
@@ -18,8 +18,8 @@ type
     GBOutput: TGroupBox;
     LbLevel: TLabel;
     SBLevel: TScrollBar;
-    Osc1ADSR: TADSRGraph;
-    Osc2ADSR: TADSRGraph;
+    Osc1ADSR: TGuiADSRGraph;
+    Osc2ADSR: TGuiADSRGraph;
     Label1: TLabel;
     Label2: TLabel;
     LbDrive: TLabel;

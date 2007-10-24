@@ -177,17 +177,17 @@ end;
 
 procedure TGuiBaseControl.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
+ inherited MouseDown(Button, Shift, X, Y);
  MouseCapture := True;
  fMouseButtonDown := True;
- inherited MouseDown(Button, Shift, X, Y);
 end;
 
 
 procedure TGuiBaseControl.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
+begin                           
+ inherited MouseUp(Button, Shift, X, Y);
  MouseCapture := False;
  fMouseButtonDown:= False;
- inherited MouseUp(Button, Shift, X, Y);
 end;
 
 end.

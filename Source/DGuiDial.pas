@@ -12,7 +12,6 @@ type
   TGuiDialSettings = class(TPersistent)
   private
     FOnChange: TNotifyEvent;
-  private
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   protected
     procedure Changed;

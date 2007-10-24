@@ -358,6 +358,7 @@ end;
 procedure TGuiStaticWaveform.RedrawBuffer(doBufferFlip: Boolean);
 var i: integer; MaxAmp, Amp: single;
 begin
+  fBuffer.Canvas.Lock;
   fBuffer.Canvas.Brush.Color:=Self.Color;
 
   {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
@@ -393,6 +394,7 @@ begin
   end;
 
   DrawGraphs;
+  fBuffer.Canvas.UnLock;
   if doBufferFlip then Invalidate;
 end;
 

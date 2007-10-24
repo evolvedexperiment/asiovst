@@ -10,23 +10,27 @@ uses
   Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DGuiBaseControl;
 
 type
-  TADSRGraphMouseEdit = (meNone, meAttack, meDecay, meSustain, meRelease);
-  TADSRGraph = class;
-  TADSRSettings = class(TPersistent)
+  TGuiADSRGraphMouseEdit = (meNone, meAttack, meDecay, meSustain, meRelease);
+  TGuiADSRGraph = class;
+  TGuiADSROnChange = procedure (Sender: TObject; EditType: TGuiADSRGraphMouseEdit) of object;
+
+  TGuiADSRSettings = class(TPersistent)
   private
     fAttack,
     fDecay,
     fSustain,
-    fRelease         : Single;
-    fOwner           : TADSRGraph;
+    fRelease:  Single;
+    FOnChange: TGuiADSROnChange;
+    property OnChange: TGuiADSROnChange read FOnChange write FOnChange;
+  protected
+    procedure Changed(EditType: TGuiADSRGraphMouseEdit);
   public
-    constructor Create(AOwner: TADSRGraph);
+    constructor Create;
     destructor Destroy; override;
     procedure SetAttack(Value: Single);
     procedure SetDecay(Value: Single);
     procedure SetRelease(Value: Single);
     procedure SetSustain(Value: Single);
-    function GetOwner: TPersistent; override;
   published
     property Attack : Single read fAttack write SetAttack;
     property Decay : Single read fDecay write SetDecay;
@@ -34,362 +38,344 @@ type
     property Release : Single read fRelease write SetRelease;
   end;
 
-  { TADSRGraph }
 
-  TADSRGraph = class(TGraphicControl)
+
+  TGuiADSRGraph = class(TGuiBaseControl)
   private
-    fBuffer          : TBitmap;
-    fLineWidth       : Integer;
-    fOnKeyDown       : TKeyEvent;
-    fOnKeyPress      : TKeyPressEvent;
-    fOnKeyUp         : TKeyEvent;
-    fADSRSettings    : TADSRSettings;
-    fLineColor       : TColor;
-    fTransparent     : Boolean;
-    fMouseEdit       : TADSRGraphMouseEdit;
+    fADSRSettings    : TGuiADSRSettings;
+    fMouseEdit       : TGuiADSRGraphMouseEdit;
     fOnAttackChange,
     fOnSustainChange,
     fOnDecayChange,
     fOnReleaseChange : TNotifyEvent;
-    procedure WMEraseBkgnd(var m: TWMEraseBkgnd); message WM_ERASEBKGND;
-    procedure SetLinewidth(const Value: Integer);
-    procedure SetLineColor(const Value: TColor);
-    procedure SetTransparent(const Value: Boolean);
+    fGridColor: TColor;
+    fGridWidth: Integer;
+    fGridStyle: TPenStyle;
+    fGridVPadding: Integer;
+    fEnvVPadding: Integer;
+    fEnvHPadding: Integer;
+
     procedure CalcIntValues;
     function GetAttack: Single;
     function GetDecay: Single;
     function GetRelease: Single;
     function GetSustain: Single;
-    procedure SetAttack(const Value: Single);
-    procedure SetDecay(const Value: Single);
-    procedure SetRelease(const Value: Single);
-    procedure SetSustain(const Value: Single);
+    procedure SetAttack(Value: Single);
+    procedure SetDecay(Value: Single);
+    procedure SetRelease(Value: Single);
+    procedure SetSustain(Value: Single);
+
+    procedure SetGridColor(Value: TColor);
+    procedure SetGridWidth(Value: Integer);
+    procedure SetGridStyle(Value: TPenStyle);
+    procedure SetGridVPadding(Value: Integer);
+    procedure SetEnvVPadding(Value: Integer);
+    procedure SetEnvHPadding(Value: Integer);
   protected
-    fA,fD,fS,fR     : Integer;
+    fA,fD,fS,fR: Integer;
+    procedure ResizeBuffer; override;
+    procedure RedrawBuffer(doBufferFlip: Boolean); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure Resize; override;
-    procedure ReadState(Reader: TReader); override;
+    procedure SettingsChanged(Sender: TObject; EditType: TGuiADSRGraphMouseEdit); virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Paint; override;
     property Attack : Single read GetAttack write SetAttack;
     property Decay : Single read GetDecay write SetDecay;
     property Sustain : Single read GetSustain write SetSustain;
     property Release : Single read GetRelease write SetRelease;
-  published
-    property Anchors;
-    property Align;
-    property Constraints;
-    property Enabled;
-    property Visible;
-    property OnMouseDown;
-    property OnMouseMove;
-    property OnMouseUp;
-    property Color;
-    property ADSRSettings: TADSRSettings read fADSRSettings write fADSRSettings;
-    property LineWidth: Integer read fLineWidth write SetLineWidth;
-    property LineColor: TColor read fLineColor write SetLineColor;
-    property Transparent: Boolean read fTransparent write SetTransparent;
-    property OnKeyDown: TKeyEvent read FOnKeyDown write FOnKeyDown;
-    property OnKeyPress: TKeyPressEvent read FOnKeyPress write FOnKeyPress;
-    property OnKeyUp: TKeyEvent read FOnKeyUp write FOnKeyUp;
+  published    
+    property Transparent;
+    property LineWidth;
+    property LineColor;
+    
+    property ADSRSettings: TGuiADSRSettings read fADSRSettings write fADSRSettings;
     property OnAttackChange : TNotifyEvent read fOnAttackChange write fOnAttackChange;
     property OnDecayChange : TNotifyEvent read fOnDecayChange write fOnDecayChange;
     property OnSustainChange : TNotifyEvent read fOnSustainChange write fOnSustainChange;
     property OnReleaseChange : TNotifyEvent read fOnReleaseChange write fOnReleaseChange;
+
+    property GridColor: TColor read fGridColor write SetGridColor default clSilver;
+    property GridWidth: Integer read fGridWidth write SetGridWidth default 1;
+    property GridStyle: TPenStyle read fGridStyle write SetGridStyle default psSolid;
+    property GridVPadding: Integer read fGridVPadding write SetGridVPadding default 0;
+    
+    property EnvVPadding: Integer read fEnvVPadding write SetEnvVPadding default 0;
+    property EnvHPadding: Integer read fEnvHPadding write SetEnvHPadding default 0;
   end;
 
 implementation
 
 uses SysUtils;
 
-{ TADSRSettings }
-
-constructor TADSRSettings.Create(AOwner: TADSRGraph);
+constructor TGuiADSRSettings.Create;
 begin
- inherited Create;
- fAttack:=0.5;
- fDecay:=0.5;
- fSustain:=0.5;
- fRelease:=0.5;
- fOwner:=AOwner;
+  inherited Create;
+  Attack  := 0.5;
+  fDecay   := 0.5;
+  fSustain := 0.5;
+  fRelease := 0.5;
 end;
 
-destructor TADSRSettings.Destroy;
+destructor TGuiADSRSettings.Destroy;
 begin
   inherited;
 end;
 
-function TADSRSettings.GetOwner: TPersistent;
+procedure TGuiADSRSettings.Changed(EditType: TGuiADSRGraphMouseEdit);
 begin
- Result:=fOwner;
+  if Assigned(FOnChange) then FOnChange(Self, EditType);
 end;
 
-procedure TADSRSettings.SetAttack(Value: Single);
+procedure TGuiADSRSettings.SetAttack(Value: Single);
 begin
- if Value<0 then Value:=0 else if Value>1 then Value:=1;
- if (fAttack<>Value) then
+  if Value<0 then Value:=0 else if Value>1 then Value:=1;
+
+  if (fAttack<>Value) then
   begin
-   fAttack := Value;
-   fOwner.fA:=Round(0.25*fOwner.Width*fAttack);
-   fOwner.fD:=fOwner.fA+Round(0.25*fOwner.Width*fDecay);
-   if Assigned(fOwner.fOnAttackChange)
-    then fOwner.fOnAttackChange(fOwner);
-   fOwner.Invalidate;
+    fAttack := Value;
+    Changed(meAttack);
   end;
 end;
 
-procedure TADSRSettings.SetDecay(Value: Single);
+procedure TGuiADSRSettings.SetDecay(Value: Single);
 begin
- if Value<0 then Value:=0 else if Value>1 then Value:=1;
- if (fDecay<>Value) then
+  if Value<0 then Value:=0 else if Value>1 then Value:=1;
+
+  if (fDecay<>Value) then
   begin
-   fDecay := Value;
-   fOwner.fD:=fOwner.fA+Round(0.25*fOwner.Width*fDecay);
-   if Assigned(fOwner.fOnDecayChange)
-    then fOwner.fOnDecayChange(fOwner);
-   fOwner.Invalidate;
+    fDecay := Value;
+    Changed(meDecay);
   end;
 end;
 
-procedure TADSRSettings.SetRelease(Value: Single);
+procedure TGuiADSRSettings.SetSustain(Value: Single);
 begin
- if Value<0 then Value:=0 else if Value>1 then Value:=1;
- if (fRelease<>Value) then
+  if Value<0 then Value:=0 else if Value>1 then Value:=1;
+
+  if (fSustain<>Value) then
   begin
-   fRelease := Value;
-   fOwner.fR:=fOwner.Width-round(0.25*fOwner.Width*fRelease);
-   if Assigned(fOwner.fOnReleaseChange)
-    then fOwner.fOnReleaseChange(fOwner);
-   fOwner.Invalidate;
+    fSustain := Value;
+    Changed(meSustain);
   end;
 end;
 
-procedure TADSRSettings.SetSustain(Value: Single);
+procedure TGuiADSRSettings.SetRelease(Value: Single);
 begin
- if Value<0 then Value:=0 else if Value>1 then Value:=1;
- if (fSustain<>Value) then
+  if Value<0 then Value:=0 else if Value>1 then Value:=1;
+
+  if (fRelease<>Value) then
   begin
-   fSustain := Value;
-   fOwner.fS:=Round(fOwner.Height*(1-fSustain));
-   if Assigned(fOwner.fOnSustainChange)
-    then fOwner.fOnSustainChange(fOwner);
-   fOwner.Invalidate;
+    fRelease := Value;
+    Changed(meRelease);
   end;
 end;
 
-{ TADSRGraph }
 
-constructor TADSRGraph.Create(AOwner: TComponent);
+
+
+
+constructor TGuiADSRGraph.Create(AOwner: TComponent);
 begin
- inherited Create(AOwner);
- fLineWidth := 1;
- fLineColor := clBlack;
- fTransparent := False;
- fBuffer := TBitmap.Create;
- fADSRSettings := TADSRSettings.Create(Self);
- ControlStyle := ControlStyle+[csOpaque];
+  inherited Create(AOwner);
+  fADSRSettings := TGuiADSRSettings.Create;
+  fADSRSettings.OnChange := SettingsChanged;
+
+  fGridColor:=clSilver;
+  fGridWidth:=1;
+  fGridStyle:=psSolid;
+  fGridVPadding:=0;  
+  fEnvVPadding:=0;
+  fEnvHPadding:=0;
 end;
 
-destructor TADSRGraph.Destroy;
+destructor TGuiADSRGraph.Destroy;
 begin
- fBuffer.Free;
- fADSRSettings.Free;
- inherited;
+  fADSRSettings.Free;
+  inherited;
 end;
 
-function TADSRGraph.GetAttack: Single;
+procedure TGuiADSRGraph.SettingsChanged(Sender: TObject; EditType: TGuiADSRGraphMouseEdit);
 begin
- Result:=ADSRSettings.Attack;
+  CalcIntValues;
+  if (EditType=meAttack)  and Assigned(fOnAttackChange)  then fOnAttackChange(self);
+  if (EditType=meDecay)   and Assigned(fOnDecayChange)   then fOnDecayChange(self);
+  if (EditType=meSustain) and Assigned(fOnSustainChange) then fOnSustainChange(self);
+  if (EditType=meRelease) and Assigned(fOnReleaseChange) then fOnReleaseChange(self);
+  RedrawBuffer(true);
 end;
 
-function TADSRGraph.GetDecay: Single;
-begin
- Result:=ADSRSettings.Decay;
-end;
+function TGuiADSRGraph.GetAttack: Single;  begin Result:=ADSRSettings.Attack; end;
+function TGuiADSRGraph.GetDecay: Single;   begin Result:=ADSRSettings.Decay; end;
+function TGuiADSRGraph.GetRelease: Single; begin Result:=ADSRSettings.Release; end;
+function TGuiADSRGraph.GetSustain: Single; begin Result:=ADSRSettings.Sustain; end;
 
-function TADSRGraph.GetRelease: Single;
-begin
- Result:=ADSRSettings.Release;
-end;
+procedure TGuiADSRGraph.SetAttack(Value: Single);  begin ADSRSettings.Attack:=Value; end;
+procedure TGuiADSRGraph.SetDecay(Value: Single);   begin ADSRSettings.Decay:=Value; end;
+procedure TGuiADSRGraph.SetRelease(Value: Single); begin ADSRSettings.Release:=Value; end;
+procedure TGuiADSRGraph.SetSustain(Value: Single); begin ADSRSettings.Sustain:=Value; end;
 
-function TADSRGraph.GetSustain: Single;
+procedure TGuiADSRGraph.SetGridColor(Value: TColor);
 begin
- Result:=ADSRSettings.Sustain;
-end;
-
-{$IFNDEF FPC}
-procedure DrawParentImage(Control: TControl; Dest: TCanvas);
-var
-  SaveIndex: Integer;
-  DC: HDC;
-  Position: TPoint;
-begin
- with Control do
+  if fGridColor<>Value then
   begin
-   if Parent = nil then Exit;
-   DC := Dest.Handle;
-   SaveIndex := SaveDC(DC);
-   GetViewportOrgEx(DC, Position);
-   SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-   IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-   Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
-   Parent.Perform(WM_PAINT, Longint(DC), 0);
-   RestoreDC(DC, SaveIndex);
+    fGridColor := Value;
+    RedrawBuffer(true);
   end;
 end;
-{$ENDIF}
 
-procedure TADSRGraph.Paint;
+procedure TGuiADSRGraph.SetGridWidth(Value: Integer);
 begin
- fBuffer.Canvas.Brush.Color:=Self.Color;
-
- {$IFNDEF FPC}
- if fTransparent
-  then DrawParentImage(Self, fBuffer.Canvas)
-  else
- {$ENDIF}
- fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
-
- with fBuffer.Canvas do
+  if fGridWidth<>Value then
   begin
-   Pen.Width:=1;
-   Pen.Style:=psDash;
-   Pen.Color:=clSilver;
-   MoveTo(fA,0); LineTo(fA,Height);
-   MoveTo(fD,0); LineTo(fD,Height);
-   MoveTo(fR,0); LineTo(fR,Height);
+    fGridWidth := Value;
+    RedrawBuffer(true);
+  end;  
+end;
 
-   Pen.Color:=fLineColor;
-   Pen.Style:=psSolid;
-   Pen.Width:=fLinewidth;
-
-   MoveTo(0,Height);
-   LineTo(fA,0);
-   LineTo(fD,fS);
-   LineTo(fR,fS);
-   Pen.Style:=psSolid;
-   LineTo(Width,Height);
-  end;
- with Canvas do
+procedure TGuiADSRGraph.SetGridStyle(Value: TPenStyle);
+begin
+  if fGridStyle<>Value then
   begin
-   CopyMode := cmSrcCopy;
-   Draw(0, 0, fBuffer);
+    fGridStyle := Value;
+    RedrawBuffer(true);
   end;
 end;
 
-procedure TADSRGraph.CalcIntValues;
+procedure TGuiADSRGraph.SetGridVPadding(Value: Integer);
 begin
- fA:=Round(0.25*Width*fADSRSettings.Attack);
- fD:=fA+Round(0.25*Width*fADSRSettings.Decay);
- fS:=Round(Height*(1-fADSRSettings.Sustain));
- fR:=Width-round(0.25*Width*fADSRSettings.Release);
-end;
-
-procedure TADSRGraph.SetAttack(const Value: Single);
-begin
- ADSRSettings.Attack:=Value;
-end;
-
-procedure TADSRGraph.SetDecay(const Value: Single);
-begin
- ADSRSettings.Decay:=Value;
-end;
-
-procedure TADSRGraph.SetLineColor(const Value: TColor);
-begin
- if fLineColor<>Value then
+  if fGridVPadding<>Value then
   begin
-   fLineColor := Value;
-   Invalidate;
+    fGridVPadding := Value;
+    RedrawBuffer(true);
   end;
 end;
 
-procedure TADSRGraph.SetLinewidth(const Value: Integer);
+procedure TGuiADSRGraph.SetEnvVPadding(Value: Integer);
 begin
- if (Value>0) and (Value<200) and (fLinewidth<>Value) then
+  if fEnvVPadding<>Value then
   begin
-   fLinewidth := Value;
-   Invalidate;
+    fEnvVPadding := Value;
+    RedrawBuffer(true);
   end;
 end;
 
-procedure TADSRGraph.SetRelease(const Value: Single);
+procedure TGuiADSRGraph.SetEnvHPadding(Value: Integer);
 begin
- ADSRSettings.Release:=Value;
-end;
-
-procedure TADSRGraph.SetSustain(const Value: Single);
-begin
- ADSRSettings.Sustain:=Value;
-end;
-
-procedure TADSRGraph.SetTransparent(const Value: Boolean);
-begin
- if fTransparent<>Value then
+  if fEnvHPadding<>Value then
   begin
-   fTransparent := Value;
-   Invalidate;
+    fEnvHPadding := Value;
+    RedrawBuffer(true);
   end;
 end;
 
-procedure TADSRGraph.MouseDown(Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
+procedure TGuiADSRGraph.RedrawBuffer(doBufferFlip: Boolean);
 begin
- MouseCapture := True;
- inherited MouseDown(Button, Shift, X, Y);
- if (x < 0) or (x > width) or (y < 0) or (y > height) or not (ssLeft in Shift) then exit;
- if (x>fA-5) and (x<fA+5) then fMouseEdit:=meAttack else
- if (x>fD-5) and (x<fD+5) then fMouseEdit:=meDecay else
- if (x>fR-5) and (x<fR+5) then fMouseEdit:=meRelease else
- if (y>fS-5) and (y<fS+5) and (x>=fD) and (x<=fR) then fMouseEdit:=meSustain
-  else fMouseEdit:=meNone;
+  with fBuffer.Canvas do
+  begin
+    Lock;
+    Brush.Color:=Self.Color;
 
- Invalidate;
+    {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+      FillRect(ClipRect);
+    if fGridStyle<>psClear then
+    begin
+      Pen.Width:=fGridWidth;
+      Pen.Style:=fGridStyle;
+      Pen.Color:=fGridColor;
+
+      MoveTo(fA,fGridVPadding); LineTo(fA,Height-fGridVPadding);
+      MoveTo(fD,fGridVPadding); LineTo(fD,Height-fGridVPadding);
+      MoveTo(fR,fGridVPadding); LineTo(fR,Height-fGridVPadding);
+    end;
+
+    Pen.Color:=fLineColor;
+    Pen.Style:=psSolid;
+    Pen.Width:=fLinewidth;
+
+    MoveTo(fEnvHPadding,Height-fEnvVPadding);
+    LineTo(fA,fEnvVPadding);
+    LineTo(fD,fS);
+    LineTo(fR,fS);
+    LineTo(Width-fEnvHPadding,Height-fEnvVPadding);
+
+    UnLock;
+  end;
+  
+  if doBufferFlip then Invalidate;
 end;
 
-procedure TADSRGraph.MouseMove(Shift: TShiftState; X, Y: Integer);
+procedure TGuiADSRGraph.CalcIntValues;
+var nwidth, nheight: integer;
 begin
- inherited MouseMove(Shift, X, Y);
- if not (ssLeft in Shift) then fMouseEdit:=meNone else
-  case fMouseEdit of
-   meAttack   : fADSRSettings.Attack:=x/(0.25*Width);
-   meDecay    : fADSRSettings.Decay:=(x-fA)/(0.25*Width);
-   meSustain  : fADSRSettings.Sustain:=1-y/Height;
-   meRelease  : fADSRSettings.Release:=(Width-x)/(0.25*Width);
+  nwidth:=Width-2*fEnvHPadding;
+  nheight:=Height-2*fEnvVPadding;
+
+  fA:=Round(0.25*nwidth*fADSRSettings.Attack);
+  fD:=fA+Round(0.25*nwidth*fADSRSettings.Decay);
+  fS:=Round(nheight*(1-fADSRSettings.Sustain));
+  fR:=nwidth-round(0.25*nwidth*fADSRSettings.Release);
+
+  fA:=fA+fEnvHPadding;
+  fD:=fD+fEnvHPadding;
+  fS:=fS+fEnvVPadding;
+  fR:=fR+fEnvHPadding;
+end;
+
+procedure TGuiADSRGraph.ResizeBuffer;
+begin         
+  CalcIntValues;
+  inherited;
+end;
+
+procedure TGuiADSRGraph.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Enabled then
+  begin
+    inherited;
+    if (x < fEnvHPadding) or (x > width-fEnvHPadding) or (y < fEnvVPadding) or (y > height-fEnvVPadding) or not (ssLeft in Shift) then exit;
+
+    if (x>fA-5) and (x<fA+fLineWidth) then fMouseEdit:=meAttack
+    else if (x>fD-fLineWidth) and (x<fD+5) then fMouseEdit:=meDecay
+    else if (x>fR-fLineWidth) and (x<fR+5) then fMouseEdit:=meRelease
+    else if (y>fS-5) and (y<fS+5) and (x>=fD+5) and (x<=fR-5) then fMouseEdit:=meSustain
+    else fMouseEdit:=meNone;
+
+    RedrawBuffer(true);
   end;
 end;
 
-procedure TADSRGraph.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TGuiADSRGraph.MouseMove(Shift: TShiftState; X, Y: Integer);
+var nwidth, nheight: integer;
 begin
- MouseCapture := False;
- inherited MouseUp(Button, Shift, X, Y);
- fMouseEdit:=meNone;
- Invalidate;
+  if Enabled then
+  begin
+    inherited;
+    
+    nwidth:=Width-2*fEnvHPadding;
+    nheight:=Height-2*fEnvVPadding;
+    x:=x-fEnvHPadding;
+    y:=y-fEnvVPadding;
+    if not (ssLeft in Shift) then fMouseEdit:=meNone else
+    case fMouseEdit of
+      meAttack   : fADSRSettings.Attack:=x/(0.25*nwidth);
+      meDecay    : fADSRSettings.Decay:=(x-fA+fEnvHPadding)/(0.25*nwidth);
+      meSustain  : fADSRSettings.Sustain:=1-y/nheight;
+      meRelease  : fADSRSettings.Release:=(nwidth-x)/(0.25*nwidth);
+    end;
+  end;
 end;
 
-procedure TADSRGraph.Resize;
+procedure TGuiADSRGraph.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
- inherited Resize;
- fBuffer.Width := Width;
- fBuffer.Height := Height;
- CalcIntValues;
-end;
-
-procedure TADSRGraph.ReadState(Reader: TReader);
-begin
- inherited ReadState(Reader);
- fBuffer.Width := Width;
- fBuffer.Height := Height;
- CalcIntValues;
-end;
-
-procedure TADSRGraph.WMEraseBkgnd(var m: TWMEraseBkgnd);
-begin
-  m.Result := 0;
+  if Enabled then
+  begin
+    inherited;
+    fMouseEdit:=meNone;
+    RedrawBuffer(true);
+  end;
 end;
 
 end.
