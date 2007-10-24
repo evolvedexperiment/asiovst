@@ -46,12 +46,14 @@ type
   PAsioDriverDesc = ^TAsioDriverDesc;
   TASIOBufferList = array [0..0] of TASIOBufferInfo;
   PASIOBufferList = ^TASIOBufferList;
+(*
   TDoubleDynArray = DAVDCommon.TDoubleDynArray;
   TSingleDynArray = DAVDCommon.TSingleDynArray;
   TArrayOfDoubleDynArray = DAVDCommon.TArrayOfDoubleDynArray;
   TArrayOfSingleDynArray = DAVDCommon.TArrayOfSingleDynArray;
   PArrayOfDoubleDynArray = DAVDCommon.PArrayOfDoubleDynArray;
   PArrayOfSingleDynArray = DAVDCommon.PArrayOfSingleDynArray;
+*)
 
   TAsioDriverList = array of TAsioDriverDesc;
   TASIOCanDo = (acdInputMonitor, acdTimeInfo, acdTimeCode, acdTransport,

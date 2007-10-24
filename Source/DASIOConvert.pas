@@ -162,7 +162,7 @@ var MixBuffers : record
 
 implementation
 
-uses Math, DAVDCommon, DDspWaveshaper;
+uses Math, DDspWaveshaper;
 
 var RandSeed : LongInt;
 {$WARNINGS OFF}
