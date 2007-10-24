@@ -38,31 +38,27 @@ type
     property Resolution: Extended read FResolution write SetResolution;
   end;
 
-  TGuiDial = class(TGraphicControl)
+  TGuiDial = class(TGuiBaseControl)
   private
-    fOnPaint     : TNotifyEvent;
     fAutoSize    : Boolean;
-    fTransparent : Boolean;
     fDialBitmap  : TBitmap;
     fStitchKind  : TGuiDialStitchKind;
     fMin, fMax   : Single;
     fPosition    : Single;
-    fDefaultPosition    : Single;
     fNumGlyphs   : Integer;
-    fPnterAngles : TGuiDialPointerAngles;
     fOnChange    : TNotifyEvent;
-    fMouseIsDown : Boolean;
     fOldMousPos  : TPoint;
     fColorCircle : TColor;
     fColorLine   : TColor;
     fColorAuto   : Boolean;
     fLineWidth   : Integer;
+    fPointerAngles : TGuiDialPointerAngles;
+    fDefaultPosition    : Single;
     fRightMouseButton: TGuiDialRMBFunc;
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetColorAuto(const Value: Boolean);
     procedure SetLineWidth(const Value: Integer);
-    procedure SetTransparent(const Value: Boolean);
     procedure SetColorCircle(const Value: TColor);
     procedure SetColorLine(const Value: TColor);
     procedure SetMax(const Value: Single);
@@ -76,54 +72,18 @@ type
     procedure SetPointerAngles(const Value: TGuiDialPointerAngles);
     function PositionToAngle: Single;
   protected
-    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
-    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
     procedure MouseUp (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure CalcColorCircle;
-    procedure Paint; override;
-    procedure Resize; override;
+    procedure RedrawBuffer(doBufferFlip: Boolean); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property Enabled;
-    property Align;
-    property Anchors;
-    property Font;
-    property BiDiMode;
-    property Constraints;
-    property Color;
-    property ShowHint;
-    property Visible;
-    property OnCanResize;
-    property OnClick;
-    property OnConstrainedResize;
-    property OnContextPopup;
-    property OnDblClick;
-    property OnDragDrop;
-    property OnDragOver;
-    property OnEndDock;
-    property OnEndDrag;
-    property OnMouseDown;
-    property OnMouseMove;
-    property OnMouseUp;
-    property OnMouseWheel;
-    property OnMouseWheelDown;
-    property OnMouseWheelUp;
-    property OnResize;
-    property OnStartDock;
-    property OnStartDrag;
-    property PopupMenu;
-    property DragKind;
-    property DragCursor;
-    property DragMode;
-    property OnPaint: TNotifyEvent read fOnPaint write fOnPaint;
     property AutoSize: Boolean read fAutoSize write SetAutoSize default false;
     property ColorAuto: Boolean read fColorAuto write SetColorAuto default false;
-    property Transparent: Boolean read fTransparent write SetTransparent default false;
     property Position: Single read FPosition write SetPosition;
     property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
     property Min: Single read FMin write SetMin;
@@ -135,7 +95,7 @@ type
     property NumGlyphs: Integer read fNumGlyphs write SetNumGlyphs default 1;
     property DialBitmap: TBitmap read fDialBitmap write SetDialBitmap;
     property StitchKind: TGuiDialStitchKind read fStitchKind write SetStitchKind;
-    property PointerAngles: TGuiDialPointerAngles read FPnterAngles write SetPointerAngles;
+    property PointerAngles: TGuiDialPointerAngles read fPointerAngles write SetPointerAngles;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
   end;
 
@@ -242,10 +202,8 @@ end;
 constructor TGuiDial.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
-                   csDoubleClicks, csReplicatable, csOpaque];
-  FPnterAngles := TGuiDialPointerAngles.Create;
-  FPnterAngles.OnChange := SettingsChanged;
+  fPointerAngles := TGuiDialPointerAngles.Create;
+  fPointerAngles.OnChange := SettingsChanged;
   fColorCircle := clBlack;
   fColorLine := clRed;
   fLineWidth := 2;
@@ -262,13 +220,13 @@ end;
 destructor TGuiDial.Destroy;
 begin
   FreeAndNil(fDialBitmap);
-  FreeAndNil(fPnterAngles);
+  FreeAndNil(fPointerAngles);
   inherited Destroy;
 end;
 
 procedure TGuiDial.SettingsChanged(Sender: TObject);
 begin
-  Invalidate;
+  RedrawBuffer(true);
 end;
 
 function TGuiDial.PositionToAngle: Single;
@@ -282,124 +240,75 @@ begin
   Result := SafeAngle(PointerAngles.Start + (PointerAngles.Range * Percircle / 360))* Pi180;
 end;
 
-procedure DrawParentImage(Control: TControl; Dest: TCanvas);
-var
-  SaveIndex: Integer;
-  DC: HDC;
-  Position: TPoint;
-begin
-  with Control do
-  begin
-    if Parent = nil then Exit;
-
-    DC := Dest.Handle;
-    SaveIndex := SaveDC(DC);
-    GetViewportOrgEx(DC, Position);
-    SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-    IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-    Parent.Perform(WM_ERASEBKGND, DC, 0);
-    Parent.Perform(WM_PAINT, DC, 0);
-    RestoreDC(DC, SaveIndex);
-  end;
-end;
-
-procedure TGuiDial.Paint;
+procedure TGuiDial.RedrawBuffer(doBufferFlip: Boolean);
 type TComplex = record Re,Im : Single; end;
 var theRect    : TRect;
     GlyphNr,i  : Integer;
     Val,Off    : TComplex;
     Rad,tmp    : Single;
     PtsArray   : Array of TPoint;
-    DblBuffer  : TBitmap;
-
 begin
-  inherited;
-  with Canvas do
+  with fBuffer.Canvas do
   begin
+    Lock;
+
     if fDialBitmap.Empty then
     begin
-     Lock;
-     DblBuffer := TBitmap.Create;
-     DblBuffer.Width:=Width;
-     DblBuffer.Height:=Height;
-     with DblBuffer.Canvas do
+      Brush.Color := Self.Color;
+
+      {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+      FillRect(ClipRect);
+
+      Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
+      GlyphNr:=Round(2 / arcsin(1 / Rad)) + 1;
+      if GlyphNr > 1 then
       begin
-       Brush.Color := Self.Color;
-       if fTransparent
-        then DrawParentImage(Self, Canvas)
-        else FillRect(ClientRect);
-       Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
-       GlyphNr:=Round(2 / arcsin(1 / Rad)) + 1;
-       if GlyphNr > 1 then
+        SetLength(PtsArray, GlyphNr);
+        GetSinCos(PositionToAngle - (PI * 0.5), Val.Im, Val.Re);
+        Val.Re := Val.Re * Rad; Val.Im := Val.Im * Rad;
+        GetSinCos(2 * Pi / (GlyphNr - 1), Off.Im, Off.Re);
+        PtsArray[0] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
+
+        for i:=1 to GlyphNr - 1 do
         begin
-         SetLength(PtsArray, GlyphNr);
-         GetSinCos(PositionToAngle - (PI * 0.5), Val.Im, Val.Re);
-         Val.Re := Val.Re * Rad; Val.Im := Val.Im * Rad;
-         GetSinCos(2 * Pi / (GlyphNr - 1), Off.Im, Off.Re);
-         PtsArray[0] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
-         for i:=1 to GlyphNr - 1 do
-          begin
-           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
-           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
-           Val.Re := tmp;
-           PtsArray[i] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
-          end;
-         Pen.Width := fLineWidth;
-         Pen.Color := fColorLine;
-         Brush.Color := fColorCircle;
-         Polygon(PtsArray);
+          tmp := Val.Re * Off.Re - Val.Im * Off.Im;
+          Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
+          Val.Re := tmp;
+          PtsArray[i] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
         end;
-       MoveTo(PtsArray[0].X, PtsArray[0].Y);
-       LineTo(Round(0.5 * Width), Round(0.5 * Height));
-      end;
-     Draw(0,0, DblBuffer);
-     DblBuffer.Free;
-     Unlock;
-    end
-   else
-    begin
-     GlyphNr:=Trunc((fPosition - fMin) / ((fMax + 1) - fMin) * fNumGlyphs);
-     theRect:=ClientRect;
-     if fStitchKind=skVertical then
-      begin
-       theRect.Top := fDialBitmap.Height * GlyphNr div fNumGlyphs;
-       theRect.Bottom := fDialBitmap.Height * (GlyphNr+1) div fNumGlyphs;
-      end
-     else
-      begin
-       theRect.Left := fDialBitmap.Width * GlyphNr div fNumGlyphs;
-       theRect.Right := fDialBitmap.Width * (GlyphNr+1) div fNumGlyphs;
+
+        Pen.Width := fLineWidth;
+        Pen.Color := fColorLine;
+        Brush.Color := fColorCircle;
+        Polygon(PtsArray);
       end;
 
-     CopyRect(clientrect,fDialBitmap.Canvas,theRect);
+      MoveTo(PtsArray[0].X, PtsArray[0].Y);
+      LineTo(Round(0.5 * Width), Round(0.5 * Height));
+
+    end else begin
+      GlyphNr:=Trunc((fPosition - fMin) / ((fMax + 1) - fMin) * fNumGlyphs);
+      theRect:=ClientRect;
+      if fStitchKind=skVertical then
+      begin
+        theRect.Top := fDialBitmap.Height * GlyphNr div fNumGlyphs;
+        theRect.Bottom := fDialBitmap.Height * (GlyphNr+1) div fNumGlyphs;
+      end else begin
+        theRect.Left := fDialBitmap.Width * GlyphNr div fNumGlyphs;
+        theRect.Right := fDialBitmap.Width * (GlyphNr+1) div fNumGlyphs;
+      end;
+
+      CopyRect(clientrect,fDialBitmap.Canvas,theRect);
     end;
-   if Assigned(fOnPaint) then fOnPaint(Self);
+    Unlock;
   end;
-end;
 
-procedure TGuiDial.Resize;
-begin
-  try
-    Width:=ClientRect.Right-ClientRect.Left;
-    Height:=ClientRect.Bottom-ClientRect.Top;
-  except
-  end;
-end;
-
-procedure TGuiDial.CMFontChanged(var Message: TMessage);
-begin
-  inherited;
-  Invalidate;
-end;
-
-procedure TGuiDial.CMColorChanged(var Message: TMessage);
-begin
-  inherited;
+  if doBufferFlip then Invalidate;
 end;
 
 procedure TGuiDial.DoAutoSize;
 begin
-  if fNumGlyphs=0 then Exit;
+  if fDialBitmap.Empty or (fNumGlyphs=0) then Exit;
 
   if fStitchKind=skVertical then
   begin
@@ -417,16 +326,6 @@ begin
   begin
     fAutoSize := Value;
     if Autosize then DoAutoSize;
-    Invalidate;
-  end;
-end;
-
-procedure TGuiDial.SetTransparent(const Value: Boolean);
-begin
-  if fTransparent<>Value then
-  begin
-    fTransparent := Value;
-    Invalidate;
   end;
 end;
 
@@ -440,7 +339,7 @@ begin
    FMax := Value;
    if fPosition > Value then fPosition := Value;
    if fDefaultPosition > Value then fDefaultPosition := Value;
-   Invalidate;
+   RedrawBuffer(true);
   end;
 end;
 
@@ -454,7 +353,7 @@ begin
     FMin := Value;
     if fPosition < Value then fPosition := Value;
     if fDefaultPosition < Value then fDefaultPosition := Value;
-    Invalidate;
+    RedrawBuffer(true);
   end;
 end;
 
@@ -464,7 +363,6 @@ begin
   begin
     fNumGlyphs := Value;
     DoAutoSize;
-    Invalidate;
   end;
 end;
 
@@ -477,7 +375,7 @@ begin
   begin
     fPosition := Value;
     if not (csLoading in ComponentState) and Assigned(FOnChange) then FOnChange(Self);
-    Invalidate;
+    RedrawBuffer(true);
   end;
 end;
 
@@ -493,7 +391,6 @@ procedure TGuiDial.SetDialBitmap(const Value: TBitmap);
 begin
   fDialBitmap.Assign(Value);
   DoAutoSize;
-  Invalidate;
 end;
 
 procedure TGuiDial.SetStitchKind(const Value: TGuiDialStitchKind);
@@ -501,8 +398,7 @@ begin
   if fStitchKind <> Value then
   begin
     fStitchKind := Value;
-    DoAutoSize;
-    Invalidate;
+    DoAutoSize; 
   end;
 end;
 
@@ -524,32 +420,26 @@ end;
 procedure TGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
- if ((Button = mbLeft) or (Button = mbRight)) and Enabled then
+  if Enabled then
   begin
-   MouseCapture := True;
-   fMouseIsDown := true;
+    Click;
+    inherited MouseDown(Button, Shift, X, Y);
 
-   if ssCtrl in Shift then position := fDefaultPosition;
-   if (Button = mbRight) and (fRightMouseButton=rmbfReset) then position := fDefaultPosition;
+    if ssCtrl in Shift then position := fDefaultPosition;
+    if (Button = mbRight) and (fRightMouseButton=rmbfReset) then position := fDefaultPosition;
 
-   fOldMousPos.X:=X;
-   fOldMousPos.Y:=Y;
-
-   Click;
-   inherited MouseDown(Button, Shift, X, Y);
+    fOldMousPos.X:=X;
+    fOldMousPos.Y:=Y;
   end;
 end;
 
 procedure TGuiDial.MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
-  if ((Button = mbLeft) or (Button = mbRight)) and Enabled then
+  if Enabled then
   begin
-    MouseCapture := false;
-    fMouseIsDown := false;
-
+    inherited MouseUp(Button, Shift, X, Y);
     fOldMousPos.X:=X;
     fOldMousPos.Y:=Y;
-    inherited MouseUp(Button, Shift, X, Y);
   end;
 end;
 
@@ -557,22 +447,23 @@ procedure TGuiDial.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
   Range: Single;
 begin
-  inherited;
+  if enabled then inherited;
 
-  Range := Max - (Min - 1);
-  if fMouseIsDown then
-  if ssShift in Shift then Position := Position + (fOldMousPos.Y - Y)*0.001*Range
-  else if (ssRight in Shift) and (fRightMouseButton=rmbfCircular) then position := CircularMouseToPosition(x,y)
-  else Position := Position + (fOldMousPos.Y - Y)*0.005*Range;
+  if fMouseButtonDown then
+  begin
+    Range := Max - (Min - 1);
+    if ssShift in Shift then Position := Position + (fOldMousPos.Y - Y)*0.001*Range
+    else if (ssRight in Shift) and (fRightMouseButton=rmbfCircular) then position := CircularMouseToPosition(x,y)
+    else Position := Position + (fOldMousPos.Y - Y)*0.005*Range;
+    fOldMousPos.X:=X;
+    fOldMousPos.Y:=Y;
+  end;
 
-
-  fOldMousPos.X:=X;
-  fOldMousPos.Y:=Y;
 end;
 
 procedure TGuiDial.SetPointerAngles(const Value: TGuiDialPointerAngles);
 begin
-  FPnterAngles.Assign(Value);
+  fPointerAngles.Assign(Value);
 end;
 
 procedure TGuiDial.CalcColorCircle;
@@ -582,7 +473,7 @@ begin
   else
     if (((Color and $0000FF00) shr  8)<$80) and (((Color and $00FF0000) shr 16)<$80) then fColorCircle:=$FFFFFF;
 
-  Invalidate;
+  RedrawBuffer(true);
 end;
 
 procedure TGuiDial.SetColorAuto(const Value: Boolean);
@@ -595,7 +486,7 @@ begin
   if not fColorAuto and (Value<>fColorCircle) then
   begin
     fColorCircle:=Value;
-    Invalidate;
+    RedrawBuffer(true);
   end;
 end;
 
@@ -604,7 +495,7 @@ begin
   if not fColorAuto and (Value<>fColorLine) then
   begin
     fColorLine:=Value;
-    Invalidate;
+    RedrawBuffer(true);
   end;
 end;
 
@@ -613,7 +504,7 @@ begin
   if (Value<>fLineWidth) then
   begin
     fLineWidth:=Value;
-    Invalidate;
+    RedrawBuffer(true);
   end;
 end; 
 

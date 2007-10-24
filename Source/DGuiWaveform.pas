@@ -55,16 +55,6 @@ type
     property WaveLength: Integer read GetWaveLength;
     property WaveChannels: Integer read GetWaveChannels;
   published
-    property Anchors;
-    property Align;
-    property Constraints;
-    property Enabled;
-    property Visible;
-    property OnMouseDown;
-    property OnMouseMove;
-    property OnMouseUp;
-    property Color;
-    property PopupMenu;
     property Transparent;
     property LineWidth;
     property LineColor;

@@ -8,10 +8,10 @@ uses {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
 type
   TGuiBaseControl = class(TGraphicControl)
   protected
-    fBuffer: TBitmap;
-    
-    fLineColor      : TColor;
-    fLineWidth      : Integer;
+    fBuffer:          TBitmap;
+    fOnPaint:         TNotifyEvent;
+    fLineColor:       TColor;
+    fLineWidth:       Integer;
     fMouseButtonDown: Boolean;
 
     {$IFNDEF FPC}
@@ -40,6 +40,38 @@ type
     {$IFNDEF FPC}
     property Transparent: Boolean read fTransparent write SetTransparent default False;
     {$ENDIF}
+  published   
+    property Enabled;
+    property Align;
+    property Anchors;
+    property Constraints;
+    property Color;
+    property ShowHint;
+    property Visible;
+    property PopupMenu;
+    property DragKind;
+    property DragCursor;
+    property DragMode;
+
+    property OnCanResize;
+    property OnClick;
+    property OnConstrainedResize;
+    property OnContextPopup;
+    property OnDblClick;
+    property OnDragDrop;
+    property OnDragOver;
+    property OnEndDock;
+    property OnEndDrag;
+    property OnMouseDown;
+    property OnMouseMove;
+    property OnMouseUp;
+    property OnMouseWheel;
+    property OnMouseWheelDown;
+    property OnMouseWheelUp;
+    property OnResize;
+    property OnStartDock;
+    property OnStartDrag; 
+    property OnPaint: TNotifyEvent read fOnPaint write fOnPaint;
   end;
 
 implementation
@@ -53,7 +85,8 @@ begin
   fTransparent := False; 
   fBuffer := TBitmap.Create;
   fMouseButtonDown := false;
-  ControlStyle := ControlStyle+[csOpaque];
+  ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
+                   csDoubleClicks, csReplicatable, csOpaque];
 end;
 
 destructor TGuiBaseControl.Destroy;
@@ -68,7 +101,8 @@ begin
   begin
     CopyMode := cmSrcCopy;
     Draw(0, 0, fBuffer);
-  end;
+  end;   
+   if Assigned(fOnPaint) then fOnPaint(Self);
 end;
 
 procedure TGuiBaseControl.ResizeBuffer;
