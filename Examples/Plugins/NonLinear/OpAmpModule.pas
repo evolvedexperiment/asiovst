@@ -27,7 +27,7 @@ unit OpAmpModule;
 interface
 
 uses {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
-     Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+     Messages, SysUtils, Classes, Forms, DDSPBase, DVSTModule;
 
 type
   TVSTOpAmp = class(TVSTModule)
@@ -37,7 +37,7 @@ type
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fGain : Double;
+    fGain   : Double;
   public
   end;
 
@@ -50,62 +50,44 @@ implementation
 uses Math, OpAmpGUI;
 
 procedure TVSTOpAmp.VST_EditOpen(Sender: TObject; var GUI: TForm);
-// Do not delete this if you are using the editor
 begin
- GUI := TVSTGUI.Create(nil);
- (GUI As TVSTGUI).theModule:=Self;
-end;
-
-function Tanh2a(x:Single):Single;
-var a,b:Single;
-
-function f_Abs(f:Single):Single; overload;
-var i:Integer;
-begin
- i:=Integer((@f)^) and $7FFFFFFF;
- Result:=Single((@i)^);
-end;
-
-begin
- a:=f_abs(x);
- b:=12+a*(6+a*(3+a));
- Result:=(x*b)/(a*b+24);
+ GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TVSTOpAmp.VSTModuleProcess(const inputs,
   outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-var i,j : Integer;
+var i, j : Integer;
 begin
- for j:=0 to min(numOutputs,numInputs)-1 do
-  for i:=0 to sampleframes-1
-   do Outputs[j,i]:=Tanh2a(fGain*Inputs[j,i]);
+ for j := 0 to min(numOutputs, numInputs) - 1 do
+  for i := 0 to sampleframes - 1
+   do Outputs[j, i] := Tanh2a(fGain * Inputs[j, i]);
 end;
 
 procedure TVSTOpAmp.VSTModuleProcessDoubleReplacing(const inputs,
   outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i,j : Integer;
 begin
- for j:=0 to min(numOutputs,numInputs)-1 do
-  for i:=0 to sampleframes-1
-   do Outputs[j,i]:=Tanh2a(fGain*Inputs[j,i]);
+ for j := 0 to min(numOutputs, numInputs) - 1 do
+  for i := 0 to sampleframes - 1
+   do Outputs[j, i] := Tanh2a(fGain * Inputs[j, i]);
 end;
 
 procedure TVSTOpAmp.VSTModuleInitialize(Sender: TObject);
 begin
- Parameter[0]:=1;
+ Parameter[0] := 1;
 end;
 
 procedure TVSTOpAmp.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var i : Integer;
 begin
- fGain:=2*Value;
+ fGain := 2 * dB_to_Amp(Value);
  if Assigned(fEditorForm) then
   with fEditorForm As TVSTGUI do
    begin
-    i:=Round(100*Value);
-    if SBGain.Position<>i
-     then SBGain.Position:=i;
+    i := Round(10 * Value);
+    if SBGain.Position <> i
+     then SBGain.Position := i;
    end;   
 end;
 

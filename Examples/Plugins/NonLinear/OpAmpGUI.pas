@@ -27,7 +27,7 @@ unit OpAmpGUI;
 interface
 
 uses {$IFDEF FPC}LCLIntf, LResources, {$ENDIF} Messages, SysUtils, Classes,
-     Forms, DAVDCommon, DVSTModule, Controls, StdCtrls;
+     Forms, DDSPBase, DVSTModule, Controls, StdCtrls;
 
 type
   TVSTGUI = class(TForm)
@@ -45,9 +45,11 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
+uses OpAmpModule;
+
 procedure TVSTGUI.SBGainChange(Sender: TObject);
 begin
- theModule.Parameter[0]:=SBGain.Position*0.01;
+ TVSTOpAmp(Owner).Parameter[0] := SBGain.Position * 0.1;
 end;
 
 {$IFDEF FPC}

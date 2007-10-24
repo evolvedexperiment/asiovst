@@ -27,10 +27,10 @@ object VSTGUI: TVSTGUI
     Top = 8
     Width = 369
     Height = 17
-    Max = 1000
-    Min = 100
+    Max = 200
+    Min = -400
     PageSize = 0
-    Position = 100
+    Position = 20
     TabOrder = 0
     OnChange = SBGainChange
   end
