@@ -15,7 +15,7 @@ interface
 {$ELSE}
 {$ENDIF}
 
-uses {$IFDEF FPC}LCLIntf; {$ELSE} Windows; {$ENDIF}
+uses {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF}, DAVDCommon;
 
 const
   MaxShort  : Single = $7F;

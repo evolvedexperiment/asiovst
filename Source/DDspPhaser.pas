@@ -4,6 +4,8 @@ unit DDspPhaser;
 
 interface
 
+
+
 type
   TLFOSine = class(TObject)
   protected

@@ -5,7 +5,7 @@ interface
 {$I ASIOVST.INC}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
-uses DAVDCommon, DAVDComplex;
+uses DAVDComplex, DAVDCommon;
 
 type
   TPNType = array[0..1] of TComplexSingle;

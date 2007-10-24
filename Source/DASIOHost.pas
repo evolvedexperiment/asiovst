@@ -16,11 +16,13 @@ unit DASIOHost;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, LclType, LMessages, LResources, {$ELSE}
-     Windows, Messages, {$ENDIF} SysUtils, Classes, ASIO, DASIOConvert,
-     DASIOGenerator, {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
-     {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls,
-     ASIOMixer, {$ENDIF} {$IFDEF DELPHI5} Forms, dsgnintf, {$ENDIF} DAVDCommon;
+uses
+  {$IFDEF FPC}LCLIntf, LclType, LMessages, LResources,
+  {$ELSE}Windows, Messages,{$ENDIF}
+  {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
+  {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls, ASIOMixer,{$ENDIF}
+  {$IFDEF DELPHI5} Forms, dsgnintf, {$ENDIF}
+  SysUtils, Classes, ASIO, DASIOConvert, DASIOGenerator,DAVDCommon;
 
 const
   // private message

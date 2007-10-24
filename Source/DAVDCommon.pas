@@ -5,6 +5,7 @@ interface
 {$I ASIOVST.inc}
 
 {$IFDEF DELPHI7_UP}
+{$ObjExportAll On}
 uses {$IFNDEF FPC} Windows, {$ENDIF} Types;
 {$ELSE} uses LCLIntf; {$DEFINE PUREPASCAL} {$ENDIF}
 

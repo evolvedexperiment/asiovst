@@ -2,7 +2,7 @@ unit DDspDFT;
 
 interface
 
-  uses DAVDCommon, DAVDComplex;
+  uses DAVDComplex, DAVDCommon;
 
   procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray); overload;
   procedure DFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray); overload;

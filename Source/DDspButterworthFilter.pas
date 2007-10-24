@@ -5,7 +5,7 @@ interface
 {$I ASIOVST.INC}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
-uses DAVDCommon, DDspFilter;
+uses DDspFilter, DAVDCommon;
 
 type
   TButterworthFilter = class(TIIRFilter)

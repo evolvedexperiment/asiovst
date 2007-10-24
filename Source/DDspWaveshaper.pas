@@ -2,32 +2,32 @@ unit DDspWaveshaper;
 
 interface
 
-  function Waveshaper1(x,t:Single):Single; overload;
-  function Waveshaper1(x,t:Double):Double; overload;
-  function Waveshaper2(x,t:Single):Single; overload;
-  function Waveshaper2(x,t:Double):Double; overload;
-  function Waveshaper3(x,a:Single):Single; overload;
-  function Waveshaper3(x,a:Double):Double; overload;
-  function Waveshaper4(x,a:Single):Single; overload;
-  function Waveshaper4(x,a:Double):Double; overload;
-  function Waveshaper5(x,a:Single):Single; overload;
-  function Waveshaper5(x,a:Double):Double; overload;
-  function Waveshaper6(x:Single):Single; overload;
-  function Waveshaper6(x:Double):Double; overload;
-  function Waveshaper7(x,a:Single):Single; overload;
-  function Waveshaper7(x,a:Double):Double; overload;
-  function Waveshaper8(x,a:Single):Single; overload;
-  function Waveshaper8(x,a:Double):Double; overload;
-  function Saturate(input, fMax: single): single; overload;
-  function Saturate(input, fMax: Double): Double; overload;
-  function Saturate2(input, fMax: single): single; overload;
-  function Saturate2(input, fMax: Double): Double; overload;
-  function SoftSat(x,a:Single):Single; overload;
-  function SoftSat(x,a:Double):Double; overload;
+uses Math, DAVDCommon;
+
+function Waveshaper1(x,t:Single):Single; overload;
+function Waveshaper1(x,t:Double):Double; overload;
+function Waveshaper2(x,t:Single):Single; overload;
+function Waveshaper2(x,t:Double):Double; overload;
+function Waveshaper3(x,a:Single):Single; overload;
+function Waveshaper3(x,a:Double):Double; overload;
+function Waveshaper4(x,a:Single):Single; overload;
+function Waveshaper4(x,a:Double):Double; overload;
+function Waveshaper5(x,a:Single):Single; overload;
+function Waveshaper5(x,a:Double):Double; overload;
+function Waveshaper6(x:Single):Single; overload;
+function Waveshaper6(x:Double):Double; overload;
+function Waveshaper7(x,a:Single):Single; overload;
+function Waveshaper7(x,a:Double):Double; overload;
+function Waveshaper8(x,a:Single):Single; overload;
+function Waveshaper8(x,a:Double):Double; overload;
+function Saturate(input, fMax: single): single; overload;
+function Saturate(input, fMax: Double): Double; overload;
+function Saturate2(input, fMax: single): single; overload;
+function Saturate2(input, fMax: Double): Double; overload;
+function SoftSat(x,a:Single):Single; overload;
+function SoftSat(x,a:Double):Double; overload;
 
 implementation
-
-uses DAVDCommon, Math;
 
 function Waveshaper1(x, t :Single):Single;
 begin
