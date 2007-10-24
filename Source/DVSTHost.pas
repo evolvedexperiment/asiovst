@@ -27,7 +27,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
   {$IFDEF MSWINDOWS} Registry, {$ENDIF} SysUtils, Classes, Graphics, Controls,
-  Forms, DVSTEffect, Dialogs, StdCtrls, ComCtrls
+  Forms, DAVDCommon, DVSTEffect, Dialogs, StdCtrls, ComCtrls
   {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
 type

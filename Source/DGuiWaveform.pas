@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-  Classes, Controls, Graphics, DAVDCommon, DGuiBaseControl;
+  Classes, Controls, Graphics, DGuiBaseControl, DAVDCommon;
 
 type
   TGuiNormalizationType = (ntNone, ntPerChannel, ntOverallChannels);

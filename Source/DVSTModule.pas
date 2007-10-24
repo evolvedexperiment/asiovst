@@ -11,7 +11,7 @@ uses
     Windows,
     Messages,
   {$ENDIF}
-  SysUtils, Forms, Classes, DAVDCommon, DVSTEffect;
+  SysUtils, Forms, Classes, DVSTEffect, DAVDCommon;
 
 type
   TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);

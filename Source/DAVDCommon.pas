@@ -4,15 +4,20 @@ interface
 
 {$I ASIOVST.inc}
 
-uses{$IFNDEF FPC}Windows{$ELSE}LCLIntf{$ENDIF};
+{$IFDEF DELPHI7_UP}
+uses {$IFNDEF FPC} Windows, {$ENDIF} Types;
+{$ELSE} uses LCLIntf; {$DEFINE PUREPASCAL} {$ENDIF}
 
-{$IFDEF FPC}
-  {$DEFINE PUREPASCAL}
-{$ENDIF}
+{$IFDEF FPC} {$DEFINE PUREPASCAL} {$ENDIF}
 
 type
+  {$IFNDEF DELPHI7_UP}
   TDoubleDynArray = Array of Double;
   TSingleDynArray = Array of Single;
+  {$ELSE}
+  TDoubleDynArray = Types.TDoubleDynArray;
+  TSingleDynArray = Types.TSingleDynArray;
+  {$ENDIF}
 
   PDoubleDynArray = ^TDoubleDynArray;
   PSingleDynArray = ^TSingleDynArray;

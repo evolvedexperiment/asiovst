@@ -1,5 +1,6 @@
 package HostVST_D7;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -26,7 +27,6 @@ package HostVST_D7;
 
 requires
   vcl,
-  AVDCommon_D7,
   rtl,
   designide,
   VstPlugin_D7;

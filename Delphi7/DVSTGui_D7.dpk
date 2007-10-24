@@ -1,5 +1,6 @@
 package DVSTGui_D7;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -30,11 +31,11 @@ requires
   AVDCommon_D7;
 
 contains
-  DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
   DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
-  DGuiWaveform in '..\Source\DGuiWaveform.pas',
-  DGuiDial in '..\Source\DGuiDial.pas',
   DGuiBaseControl in '..\Source\DGuiBaseControl.pas',
-  DGuiRegister in '..\Source\DGuiRegister.pas';
+  DGuiRegister in '..\Source\DGuiRegister.pas',
+  DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
+  DGuiDial in '..\Source\DGuiDial.pas',
+  DGuiWaveform in '..\Source\DGuiWaveform.pas';
 
 end.
