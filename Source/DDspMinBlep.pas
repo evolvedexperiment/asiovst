@@ -8,7 +8,7 @@ unit DDspMinBlep;
 
 interface
 
-uses DAVDCommon;
+uses DDspWindowing, DAVDCommon;
 
 procedure RealCepstrum(signal, realCepstrum : TAVDSingleDynArray);
 procedure MinimumPhase(realCepstrum, minimumPhase : TAVDSingleDynArray);
@@ -17,22 +17,6 @@ function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TAVDSingleDynA
 implementation
 
 uses Math, DAVDComplex, DDspDFT;
-
-// Generate Blackman Window
-procedure BlackmanWindow(Data : TAVDSingleDynArray);
-var l,i   : Integer;
-    f,fm : Double;
-const cBlackman : array [0..2] of Double = ( 0.34, -0.5, 0.16);
-begin
- l  := Length(Data) - 1;
- fm := 1 / l;
- for i:=0 to l do
-  begin
-   // using the chebyshev polynom identity to get rid of the cos(2*x)
-   f := cos((2 * PI * i) * fm);
-   Data[i]:= cBlackman[0] + f * (cBlackman[1] + cBlackman[2] * f);
-  end;
-end;
 
 // Complex Exponential
 procedure ComplexExponential(Re, Im : Double; zx, zy: PSingle);
@@ -138,8 +122,7 @@ begin
   end;
 
  // Window Sinc
- BlackmanWindow(buffer2);
- for i:=0 to n-1 do buffer1[i] := buffer1[i]*buffer2[i];
+ ApplyBlackmanWindow(buffer1);
 
  // Minimum Phase Reconstruction
  RealCepstrum(buffer1, buffer2);
