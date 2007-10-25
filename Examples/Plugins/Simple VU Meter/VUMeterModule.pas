@@ -69,8 +69,8 @@ begin
    // simple (but not very efficient) VU meter code:
    fPeak[0]:=fPeak[0]*0.9999;
    fPeak[1]:=fPeak[1]*0.9999;
-   if f_abs(outputs[0, i])>fPeak[0] then fPeak[0]:=f_abs(outputs[0, i]);
-   if f_abs(outputs[1, i])>fPeak[1] then fPeak[1]:=f_abs(outputs[1, i]);
+   if abs(outputs[0, i]) > fPeak[0] then fPeak[0] := abs(outputs[0, i]);
+   if abs(outputs[1, i]) > fPeak[1] then fPeak[1] := abs(outputs[1, i]);
   end;
 end;
 
@@ -92,8 +92,8 @@ begin
    // simple (but not very efficient) VU meter code:
    fPeak[0]:=fPeak[0]*0.9999;
    fPeak[1]:=fPeak[1]*0.9999;
-   if f_abs(outputs[0, i])>fPeak[0] then fPeak[0]:=f_abs(outputs[0, i]);
-   if f_abs(outputs[1, i])>fPeak[1] then fPeak[1]:=f_abs(outputs[1, i]);
+   if abs(outputs[0, i]) > fPeak[0] then fPeak[0] := abs(outputs[0, i]);
+   if abs(outputs[1, i]) > fPeak[1] then fPeak[1] := abs(outputs[1, i]);
   end;
 end;
 

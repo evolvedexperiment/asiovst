@@ -158,7 +158,7 @@ asm
  fabs
  fsubp
  fmul fGrdDiv;
-// result := fGrdDiv * (f_abs(input + fMax) - f_abs(input - fMax));
+// result := fGrdDiv * (abs(input + fMax) - abs(input - fMax));
 end;
 
 function Saturate(input, fMax: Double): Double;
@@ -176,7 +176,7 @@ asm
 end;
 {$ELSE}
 begin
- result := fGrdDiv * (f_abs(input + fMax) - f_abs(input - fMax));
+ result := fGrdDiv * (abs(input + fMax) - abs(input - fMax));
 end;
 {$ENDIF}
 

@@ -91,12 +91,10 @@ type
   procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer); overload;
   function f_Round(Sample:Single):Integer;
   function f_Exp(x:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Abs(f:Single): Single; overload;
-  function f_Abs(f:Double): Double; overload;
 
-  procedure f_AbsV(var f:Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
-  procedure f_AbsV(var f:Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
-  procedure f_AbsV(var f:T4SingleArray); overload;
+  procedure f_Abs(var f:Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
+  procedure f_Abs(var f:Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
+  procedure f_Abs(var f:T4SingleArray); overload;
 
   function f_Neg(f:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Root(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -488,33 +486,19 @@ begin
  Result:=(((Integer((@f)^) and $7F800000) shr 23)-$7F);
 end;
 
-procedure f_AbsV(var f:Single);
+procedure f_Abs(var f:Single);
 var i : Integer absolute f;
 begin
  i := i and $7FFFFFFF;
 end;
 
-procedure f_AbsV(var f:Double);
+procedure f_Abs(var f:Double);
 var i : array [0..1] of Integer absolute f;
 begin
  i[0] := i[0] and $7FFFFFFF;
 end;
 
-function f_Abs(f:Single): Single;
-var i : Integer absolute f;
-begin
- i := i and $7FFFFFFF; 
- result:=f;
-end;
-
-function f_Abs(f:Double): Double;
-var i : array [0..1] of Integer absolute f;
-begin
- i[0] := i[0] and $7FFFFFFF;
- result:=f;
-end;   
-
-procedure f_AbsV(var f:T4SingleArray);
+procedure f_Abs(var f:T4SingleArray);
 {$IFDEF PUREPASCAL}
 begin
  f_AbsV(f[0]);

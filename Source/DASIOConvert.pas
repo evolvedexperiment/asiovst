@@ -215,7 +215,7 @@ var i: Integer;
 begin
  for I := 0 to BSize - 1 do
   begin
-   InBuffer^:=fGrdDiv * (f_abs(InBuffer^ + 1) - f_abs(InBuffer^ - 1));
+   InBuffer^:=fGrdDiv * (abs(InBuffer^ + 1) - abs(InBuffer^ - 1));
    Inc(InBuffer);
   end;
 end;
@@ -570,7 +570,7 @@ begin
  result:=0;
  for i:=0 to Samples-1 do
   begin
-   if f_abs(InBuffer^)>TriggerFaktor
+   if abs(InBuffer^)>TriggerFaktor
     then exit
     else inc(result);
    inc(InBuffer);
@@ -612,7 +612,7 @@ begin
  result:=0;
  for i:=0 to Samples-1 do
   begin
-   if f_abs(InBuffer^)>TriggerFaktor
+   if abs(InBuffer^)>TriggerFaktor
     then exit
     else inc(result);
    inc(InBuffer);
@@ -3076,7 +3076,7 @@ const c3:Single=3;
       mmc2   : array[0..3] of Single = (2,2,2,2);
       mmc3   : array[0..3] of Single = (3,3,3,3);
       mmc6   : array[0..3] of Single = (6,6,6,6);
-// a:=f_abs(x); b:=3+a; Result:=(x*b)/(a*b+6);
+// a:=abs(x); b:=3+a; Result:=(x*b)/(a*b+6);
 asm
  mov ecx,edx
  push ecx

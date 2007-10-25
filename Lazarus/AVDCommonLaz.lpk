@@ -7,10 +7,10 @@
       <Version Value="5"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="C:\Code\VSTPack\Source\;.\"/>
-        <OtherUnitFiles Value="C:\Code\VSTPack\Source\;.\"/>
+        <IncludeFiles Value="C:\Code\VSTPack\Source\"/>
+        <OtherUnitFiles Value="C:\Code\VSTPack\Source\"/>
         <UnitOutputDirectory Value="C:\Code\VSTPack\Bin"/>
-        <SrcPath Value="C:\Code\VSTPack\Source\;.\"/>
+        <SrcPath Value="C:\Code\VSTPack\Source\"/>
       </SearchPaths>
       <CodeGeneration>
         <Generate Value="Faster"/>
