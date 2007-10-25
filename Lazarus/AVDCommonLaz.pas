@@ -7,7 +7,7 @@ unit AVDCommonLaz;
 interface
 
 uses
-  DAVDCommon, CPUDetectionTool, DAVDComplex, MidiFile, LazarusPackageIntf; 
+  DAVDCommon, MidiFile, DAVDComplex, LazarusPackageIntf; 
 
 implementation
 
