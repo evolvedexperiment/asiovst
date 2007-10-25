@@ -8,7 +8,7 @@ uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
 
 type
   TVSTGUI = class(TForm)
-    MidiKeys: TMidiKeys;
+    MidiKeys: TGuiMidiKeys;
     EditSample: TEdit;
     Label1: TLabel;
     BtSampleSelect: TButton;

@@ -18,7 +18,7 @@ object VSTGUI: TVSTGUI
   OnKeyUp = FormKeyUp
   PixelsPerInch = 96
   TextHeight = 13
-  object MidiKeys: TMidiKeys
+  object MidiKeys: TGuiMidiKeys
     Left = 0
     Top = 0
     Width = 503

@@ -8,7 +8,7 @@ uses
 
 type
   TVSTGUI = class(TForm)
-    MidiKeys: TMidiKeys;
+    MidiKeys: TGuiMidiKeys;
     procedure MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
     procedure MidiKeysMidiKeyUp(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

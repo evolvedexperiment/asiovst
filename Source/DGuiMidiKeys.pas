@@ -11,9 +11,7 @@ type
   TMidiKeyEvent = procedure(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer) of object;
   TKeyColorEvent = procedure(Sender: TObject; Key: Integer; var Color : TColor) of object;
 
-  { TMidiKeys }
-
-  TMidiKeys = class(TGraphicControl)
+  TGuiMidiKeys = class(TGraphicControl)
   private
     fBlackKeyHeight : Integer;
     fBuffer         : TBitmap;
@@ -73,19 +71,19 @@ implementation
 
 uses SysUtils;
 
-procedure TMidiKeys.CalcColors(Color : TColor);
+procedure TGuiMidiKeys.CalcColors(Color : TColor);
 begin
  fShadows[0]:=round(0.8*((Color shr 16) and $FF)) shl 16 + round(0.8*((Color shr 8) and $FF)) shl 8 + round(0.8*(Color and $FF));
  fShadows[1]:=round(0.5*((Color shr 16) and $FF)) shl 16 + round(0.5*((Color shr 8) and $FF)) shl 8 + round(0.5*(Color and $FF));
  fShadows[2]:=round(0.3*((Color shr 16) and $FF)) shl 16 + round(0.3*((Color shr 8) and $FF)) shl 8 + round(0.3*(Color and $FF));
 end;
 
-procedure TMidiKeys.CMColorchanged(var Message: TMessage);
+procedure TGuiMidiKeys.CMColorchanged(var Message: TMessage);
 begin
  CalcColors(Color);
 end;
 
-constructor TMidiKeys.Create(AOwner: TComponent);
+constructor TGuiMidiKeys.Create(AOwner: TComponent);
 var i: integer;
 begin
  inherited Create(AOwner);
@@ -98,13 +96,13 @@ begin
  for i := 0 to 127 do fKeysDown[i] := false;
 end;
 
-destructor TMidiKeys.Destroy;
+destructor TGuiMidiKeys.Destroy;
 begin
  fBuffer.Free;
  inherited;
 end;
 
-procedure TMidiKeys.Paint;
+procedure TGuiMidiKeys.Paint;
 var i,o  : Integer;
     s    : Single;
 //    kd   : Boolean;
@@ -188,7 +186,7 @@ begin
   end;
 end;
 
-procedure TMidiKeys.MouseDown(Button: TMouseButton; Shift: TShiftState;
+procedure TGuiMidiKeys.MouseDown(Button: TMouseButton; Shift: TShiftState;
   X, Y: Integer);
 var i : Integer;
 begin
@@ -214,7 +212,7 @@ begin
  Invalidate;
 end;
 
-procedure TMidiKeys.MouseMove(Shift: TShiftState; X, Y: Integer);
+procedure TGuiMidiKeys.MouseMove(Shift: TShiftState; X, Y: Integer);
 var i : Integer;
 begin
  inherited MouseMove(Shift, X, Y);
@@ -238,7 +236,7 @@ begin
   end;
 end;
 
-procedure TMidiKeys.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TGuiMidiKeys.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
  MouseCapture := False;
  inherited MouseUp(Button, Shift, X, Y);
@@ -251,7 +249,7 @@ begin
  Invalidate;
 end;
 
-function TMidiKeys.PositionToNote(x, y: Integer): Integer;
+function TGuiMidiKeys.PositionToNote(x, y: Integer): Integer;
 var virtWidth : Single;
     i,o       : Integer;
 begin
@@ -283,31 +281,31 @@ begin
    end;
 end;
 
-procedure TMidiKeys.SetBaseOct(const Value: integer);
+procedure TGuiMidiKeys.SetBaseOct(const Value: integer);
 begin
  if (Value < 0) or (Value > 10) then exit;
  fBaseOct := Value;
  while fBaseOct + fNumOctaves > 10 do SetNumOctaves(fNumOctaves - 1);
 end;
 
-procedure TMidiKeys.SetEndWithC(const Value: Boolean);
+procedure TGuiMidiKeys.SetEndWithC(const Value: Boolean);
 begin
  fEndWithC := Value;
  Invalidate;
 end;
 
-procedure TMidiKeys.SetKeysDown(index: Integer; const Value: Boolean);
+procedure TGuiMidiKeys.SetKeysDown(index: Integer; const Value: Boolean);
 begin
  fKeysDown[index]:=Value;
  Invalidate;
 end;
 
-function TMidiKeys.GetKeysDown(index: Integer): Boolean;
+function TGuiMidiKeys.GetKeysDown(index: Integer): Boolean;
 begin
  result:=fKeysDown[index];
 end;
 
-procedure TMidiKeys.SetNumOctaves(const Value: word);
+procedure TGuiMidiKeys.SetNumOctaves(const Value: word);
 begin
  if (Value < 1) or (Value > 10) then exit;
  FNumOctaves := Value;
@@ -316,7 +314,7 @@ begin
  Invalidate;
 end;
 
-procedure TMidiKeys.Resize;
+procedure TGuiMidiKeys.Resize;
 begin
  inherited Resize;
  fBuffer.Width := Width;
@@ -324,7 +322,7 @@ begin
  fBlackKeyHeight := Round(0.63*Height);
 end;
 
-procedure TMidiKeys.ReadState(Reader: TReader);
+procedure TGuiMidiKeys.ReadState(Reader: TReader);
 begin
  inherited ReadState(Reader);
  fBuffer.Width := Width;

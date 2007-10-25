@@ -8,7 +8,7 @@ uses
 
 type
   TVSTGUI = class(TForm)
-    MidiKeys: TMidiKeys;
+    MidiKeys: TGuiMidiKeys;
     GBOSC1: TGroupBox;
     CBOsc1Type: TComboBox;
     LbOsc1Type: TLabel;
