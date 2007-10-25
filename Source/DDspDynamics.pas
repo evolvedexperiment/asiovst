@@ -134,7 +134,7 @@ type
     fRMSSize    : Integer;
     fRMSPos     : Integer;
     fRMSFactor  : Double;
-    fRMSBuffer  : TDoubleDynArray;
+    fRMSBuffer  : TAVDDoubleDynArray;
     fCurrentRMS : Double;
     procedure SetSampleRate(const Value: Double); override;
   public

@@ -288,7 +288,7 @@ type
     FUnAlignedBuffer      : PASIOBufferInfo;
     FInputMonitor         : TInputMonitor;
     FConvertOptimizations : TConvertOptimizations;
-    FOutputVolume         : TSingleDynArray;
+    FOutputVolume         : TAVDSingleDynArray;
     FClipPrevent          : TClipBuffer;
     FConvertMethod        : TConvertMethod;
     FOutputDither         : TASIOOutputDither;

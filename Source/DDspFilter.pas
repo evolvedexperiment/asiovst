@@ -41,8 +41,8 @@ type
     procedure ResetStates; virtual; abstract;
     procedure ResetStatesInt64; virtual; abstract;
     procedure Reset; virtual; abstract;
-    procedure GetIR(ImpulseResonse : TSingleDynArray); overload; virtual; abstract;
-    procedure GetIR(ImpulseResonse : TDoubleDynArray); overload; virtual; abstract;
+    procedure GetIR(ImpulseResonse : TAVDSingleDynArray); overload; virtual; abstract;
+    procedure GetIR(ImpulseResonse : TAVDDoubleDynArray); overload; virtual; abstract;
     procedure PushStates; virtual; abstract;
     procedure PopStates; virtual; abstract;
 
@@ -67,8 +67,8 @@ type
     procedure SetAlpha; virtual;
   public
     constructor Create; override;
-    procedure GetIR(ImpulseResonse : TSingleDynArray); overload; override;
-    procedure GetIR(ImpulseResonse : TDoubleDynArray); overload; override;
+    procedure GetIR(ImpulseResonse : TAVDSingleDynArray); overload; override;
+    procedure GetIR(ImpulseResonse : TAVDDoubleDynArray); overload; override;
   published
     property Bandwidth: Double read fBandWidth write SetBW;
   end;
@@ -229,7 +229,7 @@ begin
  inherited;
 end;
 
-procedure TIIRFilter.GetIR(ImpulseResonse: TSingleDynArray);
+procedure TIIRFilter.GetIR(ImpulseResonse: TAVDSingleDynArray);
 var i : Integer;
 begin
  if Length(ImpulseResonse)=0 then Exit;
@@ -240,7 +240,7 @@ begin
  PopStates;
 end;
 
-procedure TIIRFilter.GetIR(ImpulseResonse: TDoubleDynArray);
+procedure TIIRFilter.GetIR(ImpulseResonse: TAVDDoubleDynArray);
 var i : Integer;
 begin
  if Length(ImpulseResonse)=0 then Exit;

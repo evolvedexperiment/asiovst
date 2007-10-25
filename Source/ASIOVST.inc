@@ -421,5 +421,6 @@
 {$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
-{-$DEFINE Debug}
+{$DEFINE UseNativeTypes}
 {$DEFINE UseDelphi}
+{-$DEFINE Debug}

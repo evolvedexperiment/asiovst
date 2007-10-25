@@ -10,27 +10,27 @@ interface
 
 uses DAVDCommon;
 
-procedure RealCepstrum(signal, realCepstrum : TSingleDynArray);
-procedure MinimumPhase(realCepstrum, minimumPhase : TSingleDynArray);
-function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TSingleDynArray;
+procedure RealCepstrum(signal, realCepstrum : TAVDSingleDynArray);
+procedure MinimumPhase(realCepstrum, minimumPhase : TAVDSingleDynArray);
+function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TAVDSingleDynArray;
 
 implementation
 
 uses Math, DAVDComplex, DDspDFT;
 
 // Generate Blackman Window
-procedure BlackmanWindow(Data : TSingleDynArray);
+procedure BlackmanWindow(Data : TAVDSingleDynArray);
 var l,i   : Integer;
     f,fm : Double;
 const cBlackman : array [0..2] of Double = ( 0.34, -0.5, 0.16);
 begin
- l:=Length(Data) - 1;
- fm:=1/l;
+ l  := Length(Data) - 1;
+ fm := 1 / l;
  for i:=0 to l do
   begin
    // using the chebyshev polynom identity to get rid of the cos(2*x)
-   f:=cos((2*PI*i)*fm);
-   Data[i]:= cBlackman[0]+f*(cBlackman[1]+cBlackman[2]*f);
+   f := cos((2 * PI * i) * fm);
+   Data[i]:= cBlackman[0] + f * (cBlackman[1] + cBlackman[2] * f);
   end;
 end;
 
@@ -44,8 +44,8 @@ begin
 end;
 
 // Compute Real Cepstrum Of Signal
-procedure RealCepstrum(signal, realCepstrum : TSingleDynArray);
-var realTime, imagTime, realFreq, imagFreq : TSingleDynArray;
+procedure RealCepstrum(signal, realCepstrum : TAVDSingleDynArray);
+var realTime, imagTime, realFreq, imagFreq : TAVDSingleDynArray;
     i,sz  : Integer;
 begin
  sz:=Length(signal);
@@ -82,8 +82,8 @@ begin
 end;
 
 // Compute Minimum Phase Reconstruction Of Signal
-procedure MinimumPhase(realCepstrum, minimumPhase : TSingleDynArray);
-var realTime, imagTime, realFreq, imagFreq : TSingleDynArray;
+procedure MinimumPhase(realCepstrum, minimumPhase : TAVDSingleDynArray);
+var realTime, imagTime, realFreq, imagFreq : TAVDSingleDynArray;
     n, i, nd2 : Integer;
 begin
  n:=Length(realCepstrum);
@@ -119,22 +119,22 @@ begin
 end;
 
 // Generate MinBLEP And Return It In An Array Of Floating Point Values
-function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TSingleDynArray;
+function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TAVDSingleDynArray;
 var i, n     : Integer;
     r, a, b  : Double;
-    buffer1, buffer2 : TSingleDynArray;
+    buffer1, buffer2 : TAVDSingleDynArray;
 begin
- n:=(2 * zeroCrossings * overSampling) + 1;
+ n := (2 * zeroCrossings * overSampling) + 1;
  SetLength(buffer1,n);
  SetLength(buffer2,n);
 
  // Generate Sinc
- a:=-zeroCrossings;
- b:= zeroCrossings;
- for i:=0 to n-1 do
+ a := -zeroCrossings;
+ b :=  zeroCrossings;
+ for i := 0 to n - 1 do
   begin
-   r:=i/(n-1);
-   buffer1[i]:=Sinc(a + (r * (b - a)));
+   r := i / (n - 1);
+   buffer1[i] := Sinc(a + (r * (b - a)));
   end;
 
  // Window Sinc
@@ -147,17 +147,17 @@ begin
 
  // Integrate Into MinBLEP
  setLength(result,n);
- a:=0;
- for i:=0 to n-1 do
+ a := 0;
+ for i := 0 to n - 1 do
   begin
-   a:=a+buffer1[i];
-   result[i]:=a;
+   a := a + buffer1[i];
+   result[i] := a;
   end;
 
  // Normalize
- a:=result[n - 1];
- a:=1/a;
- for i:=0 to n-1
+ a := result[n - 1];
+ a := 1 / a;
+ for i := 0 to n - 1
   do result[i] := result[i] * a;
 end;
 

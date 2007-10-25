@@ -15,7 +15,7 @@ type
   TGuiStaticWaveform = class(TGuiBaseControl)
   private
     fNormalizationType:    TGuiNormalizationType;
-    fNormalizationFactors: TSingleDynArray;
+    fNormalizationFactors: TAVDSingleDynArray;
     fWaveHalfHeight:  Integer;
     fWaveData:        TArrayOfSingleDynArray;
     fWaveVPadding:    Integer;

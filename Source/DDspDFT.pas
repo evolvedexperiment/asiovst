@@ -4,19 +4,19 @@ interface
 
   uses DAVDComplex, DAVDCommon;
 
-  procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray); overload;
-  procedure DFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray); overload;
-  procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray); overload;
-  procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray); overload;
+  procedure DFT(realTime,imagTime,realFreq,imagFreq : TAVDSingleDynArray); overload;
+  procedure DFT(realTime,imagTime,realFreq,imagFreq : TAVDDoubleDynArray); overload;
+  procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TAVDSingleDynArray); overload;
+  procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TAVDDoubleDynArray); overload;
 
-  procedure DFT(realTime,realFreq,imagFreq : TSingleDynArray); overload;
-  procedure DFT(realTime,realFreq,imagFreq : TDoubleDynArray); overload;
-  procedure InverseDFT(realTime,realFreq,imagFreq : TSingleDynArray); overload;
-  procedure InverseDFT(realTime,realFreq,imagFreq : TDoubleDynArray); overload;
+  procedure DFT(realTime,realFreq,imagFreq : TAVDSingleDynArray); overload;
+  procedure DFT(realTime,realFreq,imagFreq : TAVDDoubleDynArray); overload;
+  procedure InverseDFT(realTime,realFreq,imagFreq : TAVDSingleDynArray); overload;
+  procedure InverseDFT(realTime,realFreq,imagFreq : TAVDDoubleDynArray); overload;
   
 implementation
 
-procedure DFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
+procedure DFT(realTime,imagTime,realFreq,imagFreq : TAVDSingleDynArray);
 var k, i, sz       : Integer;
     sr, si, sd, kc : Extended;
 begin
@@ -41,7 +41,7 @@ begin
   end;
 end;
 
-procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TSingleDynArray);
+procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TAVDSingleDynArray);
 var k, i, sz       : Integer;
     sr, si, sd, kc : Extended;
 begin
@@ -69,7 +69,7 @@ begin
   end;
 end;
 
-procedure DFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray);
+procedure DFT(realTime,imagTime,realFreq,imagFreq : TAVDDoubleDynArray);
 var k, i, sz       : Integer;
     sr, si, sd, kc : Extended;
 begin
@@ -94,7 +94,7 @@ begin
   end;
 end;
 
-procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TDoubleDynArray);
+procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TAVDDoubleDynArray);
 var k, i, sz       : Integer;
     sr, si, sd, kc : Extended;
 begin
@@ -125,7 +125,7 @@ end;
 
 
 
-procedure DFT(realTime,realFreq,imagFreq : TSingleDynArray);
+procedure DFT(realTime,realFreq,imagFreq : TAVDSingleDynArray);
 var k, i, sz       : Integer;
     sr, si, sd, kc : Extended;
 begin
@@ -149,7 +149,7 @@ begin
   end;
 end;
 
-procedure InverseDFT(realTime,realFreq,imagFreq : TSingleDynArray);
+procedure InverseDFT(realTime,realFreq,imagFreq : TAVDSingleDynArray);
 var k, i, sz       : Integer;
     sr, si, sd, kc : Extended;
 begin
@@ -174,7 +174,7 @@ begin
   end;
 end;
 
-procedure DFT(realTime,realFreq,imagFreq : TDoubleDynArray);
+procedure DFT(realTime,realFreq,imagFreq : TAVDDoubleDynArray);
 var k, i, sz       : Integer;
     sr, si, sd, kc : Extended;
 begin
@@ -198,7 +198,7 @@ begin
   end;
 end;
 
-procedure InverseDFT(realTime,realFreq,imagFreq : TDoubleDynArray);
+procedure InverseDFT(realTime,realFreq,imagFreq : TAVDDoubleDynArray);
 var k, i, sz       : Integer;
     sr, si, sd, kc : Extended;
 begin

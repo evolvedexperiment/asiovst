@@ -4,23 +4,38 @@ interface
 
 {$I ASIOVST.inc}
 
-uses {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF};
+{$IFDEF DELPHI7_UP}
+uses Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};
+{$ELSE}
+uses LCLIntf; {$DEFINE PUREPASCAL}
+{$ENDIF}
+
 {$IFDEF FPC} {$DEFINE PUREPASCAL} {$ENDIF}
 
 type
-  TDoubleDynArray = Array of Double;
-  TSingleDynArray = Array of Single;
+  {$IFNDEF DELPHI7_UP}
+  TAVDDoubleDynArray = Array of Double;
+  TAVDSingleDynArray = Array of Single;
+  {$ELSE}
+  {$IFDEF UseNativeTypes}
+  TAVDDoubleDynArray = Types.TDoubleDynArray;
+  TAVDSingleDynArray = Types.TSingleDynArray;
+  {$ELSE}
+  TAVDDoubleDynArray = Array of Double;
+  TAVDSingleDynArray = Array of Single;
+  {$ENDIF}
+  {$ENDIF}
 
-  PDoubleDynArray = ^TDoubleDynArray;
-  PSingleDynArray = ^TSingleDynArray;
+  PDoubleDynArray = ^TAVDDoubleDynArray;
+  PSingleDynArray = ^TAVDSingleDynArray;
   TSingleFixedArray = Array [0..0] of Single;
   PSingleFixedArray = ^TSingleFixedArray;
   TDoubleFixedArray = Array [0..0] of Double;
   PDoubleFixedArray = ^TDoubleFixedArray;
 
-  TArrayOfSingleDynArray = array of TSingleDynArray;
+  TArrayOfSingleDynArray = array of TAVDSingleDynArray;
   PArrayOfSingleDynArray = ^TArrayOfSingleDynArray;
-  TArrayOfDoubleDynArray = array of TDoubleDynArray;
+  TArrayOfDoubleDynArray = array of TAVDDoubleDynArray;
   PArrayOfDoubleDynArray = ^TArrayOfDoubleDynArray;
 
   TSingleDynMatrix = TArrayOfSingleDynArray;
@@ -75,8 +90,8 @@ type
   procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer); overload;
   function f_Round(Sample:Single):Integer;
   function f_Exp(x:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Abs(f:Single):Single; overload;
-  function f_Abs(f:Double):Double; overload;
+  procedure f_Abs(var f:Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
+  procedure f_Abs(var f:Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
   procedure f_Abs(var f:T4SingleArray); overload;
   function f_Neg(f:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Root(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -103,8 +118,8 @@ type
 
   function RoundToPowerOf2(Value:Integer) : Integer;
   function TruncToPowerOf2(Value:Integer) : Integer;
-  function OnOff(fvalue:Single) : Boolean;
-  function unDenormalize(fvalue:Single) : Single;
+  function OnOff(value:Single) : Boolean;
+  function unDenormalize(value:Single) : Single;
 
   function Tanh2a(x:Single):Single;
   function Tanh2b(x:Single):Single;
@@ -285,10 +300,10 @@ end;
 procedure Amp_to_dB(var v:T4SingleArray);
 {$IFDEF PUREPASCAL}
 begin
- v[0]:=Amp_to_dB(v[0]);
- v[1]:=Amp_to_dB(v[1]);
- v[2]:=Amp_to_dB(v[2]);
- v[3]:=Amp_to_dB(v[3]);
+ v[0] := Amp_to_dB(v[0]);
+ v[1] := Amp_to_dB(v[1]);
+ v[2] := Amp_to_dB(v[2]);
+ v[3] := Amp_to_dB(v[3]);
 {$ELSE}
 asm
  fldlg2
@@ -317,7 +332,7 @@ end;
 function f_Trunc(Sample:Single):Integer;
 {$IFDEF PUREPASCAL}
 begin
- result:=Round(Sample-0.5);
+ result := Round(Sample - 0.5);
 {$ELSE}
 asm
  fld Sample.Single
@@ -330,9 +345,9 @@ procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer);
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin
- for i:=0 to SampleFrames-1 do
+ for i := 0 to SampleFrames - 1 do
   begin
-   Output^:=Round(Input^-0.5);
+   Output^ := Round(Input^ - 0.5);
    inc(Output);
    inc(Input);
   end;
@@ -369,7 +384,7 @@ end;
 function f_Int(Sample:Single):Single;
 {$IFDEF PUREPASCAL}
 begin
- result:=Round(Sample-0.5);
+ result := Round(Sample - 0.5);
 {$ELSE}
 asm
  fld Sample.Single
@@ -381,7 +396,7 @@ end;
 function f_Round(Sample:Single):Integer;
 {$IFDEF PUREPASCAL}
 begin
- result:=Round(Sample-0.5);
+ result := Round(Sample);
 {$ELSE}
 asm
  fld Sample.Single
@@ -392,13 +407,12 @@ end;
 
 function f_Exp(x:Single):Single;
 begin
- Result:=Exp(x*ln2);
+ Result := Exp(x * ln2);
 end;
 
 function f_Sin(Angle:Single):Single;
-const sin1:Double=7.61e-03;
-      sin2:Double=-1.6605e-01;
-      sin3:Double=1;
+const sin1 : Double = 7.61e-03;
+      sin2 : Double = -1.6605e-01;
 {$IFDEF PUREPASCAL}
 var Asqr : Double;
 begin
@@ -420,8 +434,8 @@ asm
 end;
 
 function f_Cos(Angle:Single):Single;
-const sin1:Double=3.705e-02;
-      sin2:Double=-4.967e-01;
+const sin1 : Double =  3.705e-02;
+      sin2 : Double = -4.967e-01;
 {$IFDEF PUREPASCAL}
 var Asqr : Double;
 begin
@@ -447,61 +461,47 @@ end;
 function f_ArcTan(Value:Single):Single;
 var VSqr : Double;
 begin
- VSqr:=sqr(Value);
- Result:=((((0.0208351*VSqr-0.085133)*VSqr+0.180141)*VSqr-0.3302995)*VSqr+0.999866)*Value;
+ VSqr   := sqr(Value);
+ Result := ((((0.0208351*VSqr-0.085133)*VSqr+0.180141)*VSqr-0.3302995)*VSqr+0.999866)*Value;
 end;
 
 function f_ArcTan(Value:Double):Double;
 var VSqr : Double;
 begin
- VSqr:=sqr(Value);
- Result:=((((0.0208351*VSqr-0.085133)*VSqr+0.180141)*VSqr-0.3302995)*VSqr+0.999866)*Value;
+ VSqr   := sqr(Value);
+ Result := ((((0.0208351*VSqr-0.085133)*VSqr+0.180141)*VSqr-0.3302995)*VSqr+0.999866)*Value;
 end;
 
 function f_Ln2(f:Single):Single;
 begin
- Result:=(((Integer((@f)^) and $7f800000) shr 23)-$7f)+(Integer((@f)^) and $007fffff)/$800000;
+ Result := (((Integer((@f)^) and $7F800000) shr 23) - $7F) +
+             (Integer((@f)^) and $007FFFFF) / $800000;
 end;
 
 function f_FloorLn2(f:Single):Integer;
 begin
- Result:=(((Integer((@f)^) and $7f800000) shr 23)-$7f);
+ Result:=(((Integer((@f)^) and $7F800000) shr 23)-$7F);
 end;
 
-{$IFNDEF FPC}
-function f_Abs(f:Single):Single;
-asm
- fld f
- fabs
-end;
-{$ELSE}
-function f_Abs(f:Single):Single; inline;
-var i:Integer;
+procedure f_Abs(var f:Single);
+var i : Integer absolute f;
 begin
- i:=Integer((@f)^) and $7FFFFFFF;
- Result:=Single((@i)^);
+ i := i and $7FFFFFFF;
 end;
-{$ENDIF}
 
-{$IFNDEF FPC}
-function f_Abs(f:Double):Double;
-{$IFDEF PUREPASCAL}
+procedure f_Abs(var f:Double);
+var i : array [0..1] of Integer absolute f;
 begin
- result:=Abs(f);
-{$ELSE}
-asm
- fld f.Double
- fabs
-{$ENDIF}
+ i[0] := i[0] and $7FFFFFFF;
 end;
 
 procedure f_Abs(var f:T4SingleArray);
 {$IFDEF PUREPASCAL}
 begin
- f[0]:=Abs(f[0]);
- f[1]:=Abs(f[1]);
- f[2]:=Abs(f[2]);
- f[3]:=Abs(f[3]);
+ f_Abs(f[0]);
+ f_Abs(f[1]);
+ f_Abs(f[2]);
+ f_Abs(f[3]);
 {$ELSE}
 asm
  fld [eax].Single
@@ -518,76 +518,63 @@ asm
  fstp [eax+12].Single
 {$ENDIF}
 end;
-{$ENDIF}
 
 function f_Neg(f:Single):Single;
 var i,j:Integer;
 begin
- j:=$80000000;
- i:=Integer((@f)^) xor j;
- Result:=Single((@i)^);
+ j := $80000000;
+ i := Integer((@f)^) xor j;
+ Result := Single((@i)^);
 end;
 
 {$IFNDEF FPC}
 function f_Sgn(f:Single):Integer;
 begin
- Result:=1-((Integer((@f)^) shr 31)shl 1);
+ Result := 1 - ((Integer((@f)^) shr 31) shl 1);
 end;
 {$ENDIF}
 
 function f_Log2(val:Single):Single;
 var log2,x:Integer;
 begin
- x:=Integer((@val)^);
- log2:=((x shr 23) and 255)-128;
- x:=x and (not(255 shl 23));
- x:=x+127 shl 23;
- Result:=Single((@x)^)+log2;
+ x := Integer((@val)^);
+ log2 := ((x shr 23) and 255) - 128;
+ x := x and (not(255 shl 23));
+ x := x + 127 shl 23;
+ Result:=Single((@x)^) + log2;
 end;
 
 function f_Power(i:Single;n:Integer):Single;
 var l:Integer;
 begin
- l:=Integer((@i)^);
- l:=l-$3F800000;l:=l shl (n-1);l:=l+$3F800000;
+ l := Integer((@i)^);
+ l := (l - $3F800000) shl (n-1) + $3F800000;
  Result:=Single((@l)^);
 end;
 
 function f_Root(i:Single;n:Integer):Single;
 var l:Integer;
 begin
- l:=Integer((@i)^);
- l:=l-$3F800000;l:=l shr (n-1);l:=l+$3F800000;
+ l := Integer((@i)^);
+ l := (l - $3F800000) shr (n-1) + $3F800000;
  Result:=Single((@l)^);
 end;
 
 function f_Cliplo(x,l:Single):Single;
 begin
- x:=x-l;
- x:=x+f_abs(x);
- x:=x*0.5;
- x:=x+l;
- Result:=x;
+ x := x - l;
+ Result := (x + abs(x)) * 0.5 + l;
 end;
 
 function f_Cliphi(x,h:Single):Single;
 begin
- x:=h-x;
- x:=x+f_abs(x);
- x:=x*0.5;
- x:=h-x;
- Result:=x;
+ x := h - x;
+ Result := h -(x + abs(x)) * 0.5;
 end;
 
 function f_Clip(x,l,h:Single):Single;
-var x1,x2:Single;
 begin
- x1:=f_abs(x-l);
- x2:=f_abs(x-h);
- x:=x1+(l+h);
- x:=x-x2;
- x:=x*0.5;
- Result:=x;
+ Result := (abs(x-l) + (l+h) - abs(x-h)) * 0.5;
 end;
 
 // scale logarithmicly from 20 Hz to 20 kHz
@@ -673,8 +660,6 @@ asm
 {$ENDIF}
 end;
 
-
-
 function RoundToPowerOf2(Value:Integer) : Integer;
 begin
  Result := round(Log2(Value));
@@ -688,13 +673,14 @@ begin
  result := result shr 1;
 end;
 
-function OnOff(fvalue:Single):boolean;
-begin Result:=fvalue>0.5 end;
+function OnOff(value:Single):boolean;
+begin Result := value > 0.5 end;
 
-function UnDenormalize(fvalue:Single):Single;
+function UnDenormalize(value : Single) : Single;
 begin
- if (f_abs(fvalue)<1.0e-15) then fvalue := 0.0;
- Result:=fvalue;
+ if (abs(value) < 1.0e-20)
+  then Result := 0.0
+  else Result := value;
 end;
 
 { String Functions }
@@ -715,33 +701,33 @@ begin MessageBox(0,PChar(m+' '+inttostr(i)),'',mb_ok); end;
 function GetApplicationFilename:string;
 var s  : array[0..1500] of char;
 begin
- GetModuleFilename(hinstance,s,sizeof(s));
- Result:=strpas(s);
- Result:=ExtractFilename(Result);
+ GetModuleFilename(hinstance, s, sizeof(s));
+ Result := strpas(s);
+ Result := ExtractFilename(Result);
 end;
 
 function GetApplicationDirectory:string;
 var s  : array[0..1500] of char;
 begin
- GetModuleFilename(hinstance,s,sizeof(s));
- Result:=strpas(s);
- Result:=ExtractFilename(Result);
+ GetModuleFilename(hinstance, s, sizeof(s));
+ Result := strpas(s);
+ Result := ExtractFileDir(Result);
 end;
 
 function FloatWithUnit(f:Double):string;
 begin
- if f>1 then result:=FloatToStrF(f,ffFixed,3,3)+ 's' else
- if f>0.001 then result:=FloatToStrF(1000*f,ffFixed,3,3)+ 'ms' else
- if f>0.000001
-  then result:=FloatToStrF(1000000*f,ffFixed,3,3)+ 'µs'
-  else result:=FloatToStrF(1000000000*f,ffFixed,3,3)+ 'ns'
+ if f > 1 then result := FloatToStrF(f, ffFixed, 3, 3)+ 's' else
+ if f > 0.001 then result:=FloatToStrF(1E3 * f, ffFixed, 3, 3)+ 'ms' else
+ if f > 0.000001
+  then result:=FloatToStrF(1E6 * f,ffFixed,3,3)+ 'µs'
+  else result:=FloatToStrF(1E9 * f,ffFixed,3,3)+ 'ns'
 end;
 
 function SplitString(S: String; Delimiter: char): TStrArray;
 var C: Integer;
 begin
  repeat
-  SetLength(Result, Length(Result)+ 1);
+  SetLength(Result, Length(Result) + 1);
   C := Pos(Delimiter, S);
   if C = 0 then C := Length(S) + 1;
   Result[Length(Result)- 1] := Copy(S, 1, C- 1);
@@ -791,34 +777,34 @@ begin
   then result:=1
   else
    begin
-    pix:=PI*x;
-    result:=sin(pix)/pix;
+    pix := PI * x;
+    result := sin(pix) / pix;
    end;
 end;
 
 function Tanh2a(x:Single):Single;
 var a,b:Single;
 begin
- a:=f_abs(x);
- b:=12+a*(6+a*(3+a));
- Result:=(x*b)/(a*b+24);
+ a := abs(x);
+ b := 12 + a * (6 + a * (3 + a));
+ Result := (x * b) / (a * b + 24);
 end;
 
 function Tanh2b(x:Single):Single;
 var a,b:Single;
 begin
- a:=f_abs(x);
- b:=(6+a*(3+a));
- Result:=(x*b)/(a*b+12);
+ a := abs(x);
+ b := (6 + a * (3 + a));
+ Result := (x * b) / (a * b + 12);
 end;
 
 function Tanh2c(x:Single):Single;
 {$IFDEF PUREPASCAL}
 var a,b:Single;
 begin
- a:=f_abs(x);
- b:=3+a;
- Result:=(x*b)/(a*b+6);
+ a := abs(x);
+ b := 3 + a;
+ Result := (x * b) / (a * b + 6 );
 {$ELSE}
 const c3:Single=3;
       c6:Single=6;
@@ -839,7 +825,7 @@ end;
 function Tanh2d(x:Single):Single;
 {$IFDEF PUREPASCAL}
 begin
- Result:=x/(f_abs(x)+3);
+ Result:=x / (abs(x) + 3);
 {$ELSE}
 const c3:Single=3;
 asm
@@ -853,8 +839,8 @@ end;
 
 function Sigmoid(x:Single):Single;
 begin
- if(f_abs(x)<1)
-  then Result:=x*(1.5 - 0.5*x*x)
+ if(abs(x)<1)
+  then Result := x * (1.5 - 0.5 * x * x)
   else
    if x < 0
     then Result:=-1
@@ -900,13 +886,14 @@ function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer;
 var i : Integer;
     d : Double;
 begin
- result:=0; d:=f_abs(InBuffer^);
+ result := 0;
+ d := abs(InBuffer^);
  for i:=1 to Samples-1 do
   begin
-   if f_abs(InBuffer^)>d then
+   if abs(InBuffer^) > d then
     begin
-     Result:=i;
-     d:=f_abs(InBuffer^);
+     Result := i;
+     d := abs(InBuffer^);
     end;
    inc(InBuffer);
   end;
@@ -950,13 +937,14 @@ function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer;
 var i : Integer;
     d : Double;
 begin
- result:=0; d:=f_abs(InBuffer^);
- for i:=1 to Samples-1 do
+ result := 0;
+ d := abs(InBuffer^);
+ for i := 1 to Samples - 1 do
   begin
-   if f_abs(InBuffer^)>d then
+   if abs(InBuffer^) > d then
     begin
-     Result:=i;
-     d:=f_abs(InBuffer^);
+     Result := i;
+     d := abs(InBuffer^);
     end;
    inc(InBuffer);
   end;

@@ -4,8 +4,6 @@ unit DDspPhaser;
 
 interface
 
-
-
 type
   TLFOSine = class(TObject)
   protected
@@ -112,90 +110,90 @@ const kDenorm=1E-25;
 
 constructor TLFOSine.Create;
 begin
- fMax:=1;
- fMin:=0;
- fValue:=1;
- fPos:=0;
- Speed:=100;
- fScale:=fMax-((fMin+fMax)*0.5);
+ fMax   := 1;
+ fMin   := 0;
+ fValue := 1;
+ fPos   := 0;
+ Speed  := 100;
+ fScale := fMax - ((fMin + fMax) * 0.5);
  inherited;
- fPosMul:=(Sqrt(fScale*2))/$80000000;
- fHalfScale:=(Sqrt(fScale*2))*0.5;
+ fPosMul := (Sqrt(fScale * 2)) / $80000000;
+ fHalfScale := (Sqrt(fScale * 2)) * 0.5;
 end;
 
 procedure TLFOSine.SetMin(v: Single);
 begin
- fMin:=v;
- fScale:=fMax-((fMin+fMax)*0.5);
+ fMin := v;
+ fScale := fMax - ((fMin + fMax) * 0.5);
 end;
 
 procedure TLFOSine.SetMax(v: Single);
 begin
- fMax:=v;
- fScale:=fMax-((fMin+fMax)*0.5);
+ fMax := v;
+ fScale := fMax - ((fMin + fMax) * 0.5);
 end;
 
-procedure TLFOSine.SetSpeed(v:Single);
+procedure TLFOSine.SetSpeed(v: Single);
 begin
- fSpeed:=v;
- iSpeed:=Round($100000000/fSpeed);
+ fSpeed := v;
+ iSpeed := Round($100000000 / fSpeed);
 end;
 
 function TLFOSine.GetValue:Single;
 begin
- Result:=Abs(fPos*fPosMul)-fHalfScale;
- Result:=Result*(fHalfScale*2-Abs(Result))*2;
- Result:=Result+((fMin+fMax)*0.5);
- fPos:=fPos+iSpeed;
+ Result := Abs(fPos*fPosMul)-fHalfScale;
+ Result := Result*(fHalfScale*2-Abs(Result))*2;
+ Result := Result+((fMin+fMax)*0.5);
+ fPos   := fPos + iSpeed;
 end;
 
 constructor TLFOTriangle.Create;
 begin
- fMax:=1;
- fMin:=0;
- fValue:=1;
- fPos:=0;
- Speed:=100;
- fScale:=fMax-((fMin+fMax)*0.5);
- fPosMul:=fScale/$80000000;
- fHalfScale:=(Sqrt(fScale*2))*0.5;
+ fMax    := 1;
+ fMin    := 0;
+ fValue  := 1;
+ fPos    := 0;
+ Speed   := 100;
+ fScale  := fMax - ((fMin + fMax) * 0.5);
+ fPosMul := fScale / $80000000;
+ fHalfScale := (Sqrt(fScale * 2)) * 0.5;
 end;
 
 procedure TLFOTriangle.SetMin(v: Single);
 begin
- fMin:=v;
- fScale:=fMax-((fMin+fMax)*0.5);
+ fMin   := v;
+ fScale := fMax - ((fMin + fMax) * 0.5);
 end;
 
 procedure TLFOTriangle.SetMax(v: Single);
 begin
- fMax:=v;
- fScale:=fMax-((fMin+fMax)*0.5);
+ fMax   := v;
+ fScale := fMax - ((fMin + fMax) * 0.5);
 end;
 
 procedure TLFOTriangle.SetSpeed(v:Single);
 begin
- fSpeed:=v;
- iSpeed:=Round($100000000/fSpeed);
+ fSpeed := v;
+ iSpeed := Round($100000000 / fSpeed);
 end;
 
 function TLFOTriangle.GetValue:Single;
 begin
- Result:=Abs(fPos*(2*fPosMul))+fMin;
- fPos:=fPos+iSpeed;
+ Result := Abs(fPos * (2 * fPosMul)) + fMin;
+ fPos   := fPos + iSpeed;
 end;
 
 constructor TMasterAllpass.Create;
 begin
  inherited;
- fA1:=0;
- fY[0]:=0;
- fY[1]:=0;
- fY[2]:=0;
- fY[3]:=0;
- fY[4]:=0;
- fY[5]:=0;
- fStages:=1;
+ fA1   := 0;
+ fY[0] := 0;
+ fY[1] := 0;
+ fY[2] := 0;
+ fY[3] := 0;
+ fY[4] := 0;
+ fY[5] := 0;
+ fStages := 1;
 end;
 
 destructor TMasterAllpass.Destroy;

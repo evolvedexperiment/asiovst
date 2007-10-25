@@ -31,19 +31,19 @@ implementation
 
 function Waveshaper1(x, t :Single):Single;
 begin
- if f_abs(x)<t
-  then Result:=x
+ if abs(x) < t
+  then Result := x
   else
    begin
     if x>0
-     then Result:=  t + (1-t)*tanh((x-t)/(1-t))
-     else Result:=-(t + (1-t)*tanh((-x-t)/(1-t)));
+     then Result :=   t + (1-t)*tanh((x-t)/(1-t))
+     else Result := -(t + (1-t)*tanh((-x-t)/(1-t)));
    end;
 end;
 
 function Waveshaper1(x, t :Double):Double;
 begin
- if f_abs(x)<t
+ if abs(x) < t
   then Result:=x
   else
    begin
@@ -55,11 +55,11 @@ end;
 
 function Waveshaper2(x,t:Single):Single;
 begin
- if f_abs(x)<t
+ if abs(x) < t
   then Result:=x
   else
    begin
-    if x>0
+    if x > 0
      then Result:=  t + (1-t)*sigmoid( (x-t)/((1-t)*1.5))
      else Result:=-(t + (1-t)*sigmoid((-x-t)/((1-t)*1.5)));
    end;
@@ -67,84 +67,84 @@ end;
 
 function Waveshaper2(x,t:Double):Double;
 begin
- if f_abs(x)<t
-  then Result:=x
+ if abs(x)<t
+  then Result := x
   else
    begin
-    if x>0
-     then Result:=  t + (1-t)*sigmoid( (x-t)/((1-t)*1.5))
-     else Result:=-(t + (1-t)*sigmoid((-x-t)/((1-t)*1.5)));
+    if x > 0
+     then Result :=   t + (1-t)*sigmoid( (x-t)/((1-t)*1.5))
+     else Result := -(t + (1-t)*sigmoid((-x-t)/((1-t)*1.5)));
    end;
 end;
 
 function Waveshaper3(x,a:Single):Single;
 begin
- Result:=x*(abs(x)+a)/(x*x+(a-1)*abs(x)+1);
+ Result := x * (abs(x) + a) / (x * x + (a - 1) * abs(x) + 1);
 end;
 
 function Waveshaper3(x,a:Double):Double;
 begin
- Result:=x*(abs(x)+a)/(x*x+(a-1)*abs(x)+1);
+ Result := x * (abs(x) + a) / (x * x + (a - 1) * abs(x) + 1);
 end;
 
 function Waveshaper4(x,a:Single):Single;
 begin
- Result:=sign(x)*power(arctan(power(abs(x), a)), (1/a));
+ Result := sign(x) * power(arctan(power(abs(x), a)), (1 / a));
 end;
 
 function Waveshaper4(x,a:Double):Double;
 begin
- Result:=sign(x)*power(arctan(power(abs(x), a)), (1/a));
+ Result := sign(x) * power(arctan(power(abs(x), a)), (1 / a));
 end;
 
 function Waveshaper5(x,a:Single):Single;
 begin
- a:= 2*a/(1-a);
- Result:=(1+a)*x/(1+a*abs(x));
+ a := 2 * a / (1 - a);
+ Result := (1 + a) * x / (1 + a * abs(x));
 end;
 
 function Waveshaper5(x,a:Double):Double;
 begin
- a:= 2*a/(1-a);
- Result:=(1+a)*x/(1+a*abs(x));
+ a := 2 * a / (1 - a);
+ Result := (1 + a) * x / (1 + a * abs(x));
 end;
 
 function Waveshaper6(x:Single):Single;
 var a,b :Single;
 begin
- x:=x*0.686306;
- a:=1+exp(sqrt(f_abs(x))*-0.75);
- b:=exp(x);
- Result:=(b-exp(-x*a))*b/(b*b+1);
+ x := x * 0.686306;
+ a := 1 + exp(sqrt(abs(x)) * -0.75);
+ b := exp(x);
+ Result := (b - exp(-x * a)) * b / (b * b + 1);
 end;
 
 function Waveshaper6(x:Double):Double;
 var a,b :Double;
 begin
- x:=x*0.686306;
- a:=1+exp(sqrt(f_abs(x))*-0.75);
- b:=exp(x);
- Result:=(b-exp(-x*a))*b/(b*b+1);
+ x := x * 0.686306;
+ a := 1 + exp(sqrt(abs(x)) * -0.75);
+ b := exp(x);
+ Result := (b - exp(-x * a)) * b / (b * b + 1);
 end;
 
 function Waveshaper7(x,a:Single):Single;
 begin
- Result:=sign(x)*exp(ln(abs(x))*a);
+ Result := sign(x) * exp(ln(abs(x)) * a);
 end;
 
 function Waveshaper7(x,a:Double):Double;
 begin
- Result:=sign(x)*exp(ln(abs(x))*a);
+ Result := sign(x) * exp(ln(abs(x)) * a);
 end;
 
 function Waveshaper8(x,a:Single):Single;
 begin
- Result:=sign(x)*exp(ln(a)*abs(x));
+ Result := sign(x) * exp(ln(a) * abs(x));
 end;
 
 function Waveshaper8(x,a:Double):Double;
 begin
- Result:=sign(x)*exp(ln(a)*abs(x));
+ Result := sign(x) * exp(ln(a) * abs(x));
 end;
 
 function Saturate(input, fMax: single): single;
@@ -203,26 +203,25 @@ end;
 function SoftSat(x,a:Single):Single;
 var b,c : Single;
 begin
- b:=f_abs(x);
- if b<a then Result:=x else
- if b>1 then Result:=sign(x)*(a+1)*0.5 else
+ b := abs(x);
+ if b < a then Result := x else
+ if b > 1 then Result := sign(x) * (a + 1) * 0.5 else
   begin
-   c:=((x-a)/(1-a));
-   Result:=a+(x-a)/(1+c*c);
+   c := ((x - a) / (1 - a));
+   Result := a + (x - a) / (1 + c * c);
   end;
 end;
 
 function SoftSat(x,a:Double):Double;
 var b,c : Double;
 begin
- b:=f_abs(x);
- if b<a then Result:=x else
- if b>1 then Result:=sign(x)*(a+1)*0.5 else
+ b := abs(x);
+ if b < a then Result := x else
+ if b > 1 then Result := sign(x) * (a + 1) * 0.5 else
   begin
-   c:=((x-a)/(1-a));
-   Result:=a+(x-a)/(1+c*c);
+   c := ((x - a) / (1 - a));
+   Result := a + (x - a) / (1 + c * c);
   end;
 end;
-
 
 end.
