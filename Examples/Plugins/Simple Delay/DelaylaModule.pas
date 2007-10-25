@@ -13,7 +13,7 @@ type
     procedure DelaylaVSTParameterProperties0ParameterChange(
       Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fBuffer     : array[0..1] of TSingleDynArray;
+    fBuffer     : array[0..1] of TAVDSingleDynArray;
     fBufferSize : Integer;
     fBufferPos  : Integer;
   end;

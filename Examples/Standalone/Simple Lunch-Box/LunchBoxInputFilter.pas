@@ -8,6 +8,8 @@ unit LunchBoxInputFilter;
 
 interface
 
+uses DAVDCommon;
+
 type
   TInputFilter = class(TObject)
   private
@@ -24,7 +26,7 @@ type
     fSRR            : Double;
     fSinW0,fW0      : Double;
     fGainSpeed      : Double;
-    fRipple         : array [0..1] of Double;
+    fRipple         : T2DoubleArray;
     fDownsamplePow  : Integer;
     fDownsampleFak  : Integer;
     fOrder          : Integer;
@@ -85,7 +87,7 @@ type
 
 implementation
 
-uses Math, DAVDCommon, SysUtils;
+uses Math, SysUtils;
 
 constructor TInputFilter.Create;
 begin

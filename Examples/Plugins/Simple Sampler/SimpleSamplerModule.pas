@@ -17,7 +17,7 @@ type
   private
   public
     Voices      : TVoiceList;
-    Sample      : TSingleDynArray;
+    Sample      : TAVDSingleDynArray;
   end;
 
 implementation

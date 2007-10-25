@@ -93,7 +93,7 @@ type
     fSideChain    : Double;
     fAutoMakeUp   : Boolean;
     fMakeUpGaindB : Double;
-    fMakeUpGain   : Array [0..1] of Double;
+    fMakeUpGain   : T2DoubleArray;
     procedure RatioThresholdChanged; virtual;
     procedure SetThreshold(const Value: Double); override;
     procedure SetRatio(const Value: Double); override;
@@ -492,7 +492,6 @@ begin
 end;
 
 function TSimpleFeedbackCompressor.ProcessSample(Input: Double): Double;
-var dbl : Double;
 begin
  if abs(fSideChain)>fPeak
   then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
@@ -507,7 +506,6 @@ begin
 end;
 
 procedure TSimpleFeedbackCompressor.RatioThresholdChanged;
-var dbl : Double;
 begin
  if fAutoMakeUp
   then fMakeUpGain[0] := 1 / Power(fThreshold, 1 - fRatio)
@@ -815,7 +813,6 @@ end;
 
 function TSoftKneeFeedbackLimiter.ProcessSample(Input: Double): Double;
 var InternalRatio    : Double;
-    OversampleCount  : Integer;
     PeakdB           : Double;
 begin
  Input := fFilter.ProcessSample(Input);

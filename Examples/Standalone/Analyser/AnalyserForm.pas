@@ -52,7 +52,7 @@ type
     fFilterArray : Array [0..cNumFrequencies-1] of TSimpleBandpass;
     fFilterRMS   : Array [0..cNumFrequencies-1] of Single;
     fChannelNr   : Integer;
-    fSpeedConst  : Array [0..1] of Single;
+    fSpeedConst  : T2SingleArray;
     fFSGain      : Single;
     procedure UpdateBarGraph;
   public

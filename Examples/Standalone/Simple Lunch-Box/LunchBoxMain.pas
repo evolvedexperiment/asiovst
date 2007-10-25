@@ -15,7 +15,7 @@ uses
 
 type
   TSampleRec = record
-                Data       : TSingleDynArray;
+                Data       : TAVDSingleDynArray;
                 SampleRate : Double;
                end;
   TFmLunchBox = class(TForm)
@@ -127,7 +127,7 @@ type
     fVolume         : Single;
     fSamplesPerBeat : Single;
     fSamplesCount   : Single;
-    fMetroVolume    : array [0..1] of Single;
+    fMetroVolume    : T2SingleArray;
     fFlangeBuffer   : TArrayOfSingleDynArray;
     fRobotBuffer    : TArrayOfSingleDynArray;
     fRecRevBuffer   : TArrayOfSingleDynArray;
@@ -135,12 +135,12 @@ type
     fDelayBuffer    : TArrayOfSingleDynArray;
     fDelayPos       : array of Integer;
     fDelayLength    : array of Integer;
-    fDelayVolume    : array [0..1] of Single;
+    fDelayVolume    : T2SingleArray;
     fPatPos         : Integer;
     fMaxPatSamples  : Integer;
     fEventList      : TLunchBoxEventList;
-    fInputEnvs      : Array [0..1] of Double;
-    fInputDCs       : Array [0..1] of Double;
+    fInputEnvs      : T2DoubleArray;
+    fInputDCs       : T2DoubleArray;
     fInputFilter    : Array [0..1] of TInputFilter;
 
     VSTInBuffer     : TArrayOfSingleDynArray;

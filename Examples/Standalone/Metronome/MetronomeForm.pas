@@ -82,7 +82,6 @@ begin
 end;
 
 procedure TFmASIO.DriverComboChange(Sender: TObject);
-var i        : Integer;
 begin
  Bt_CP.Enabled := False;
  Bt_Play.Enabled := False;

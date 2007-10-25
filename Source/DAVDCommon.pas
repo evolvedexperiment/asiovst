@@ -14,20 +14,21 @@ uses LCLIntf; {$DEFINE PUREPASCAL}
 
 type
   {$IFNDEF DELPHI7_UP}
-  TAVDDoubleDynArray = Array of Double;
-  TAVDSingleDynArray = Array of Single;
+    TAVDDoubleDynArray = Array of Double;
+    TAVDSingleDynArray = Array of Single;
   {$ELSE}
-  {$IFDEF UseNativeTypes}
-  TAVDDoubleDynArray = Types.TDoubleDynArray;
-  TAVDSingleDynArray = Types.TSingleDynArray;
-  {$ELSE}
-  TAVDDoubleDynArray = Array of Double;
-  TAVDSingleDynArray = Array of Single;
-  {$ENDIF}
+    {$IFDEF UseNativeTypes}
+      TAVDDoubleDynArray = Types.TDoubleDynArray;
+      TAVDSingleDynArray = Types.TSingleDynArray;
+    {$ELSE}
+      TAVDDoubleDynArray = Array of Double;
+      TAVDSingleDynArray = Array of Single;
+    {$ENDIF}
   {$ENDIF}
 
-  PDoubleDynArray = ^TAVDDoubleDynArray;
-  PSingleDynArray = ^TAVDSingleDynArray;
+  PAVDDoubleDynArray = ^TAVDDoubleDynArray;
+  PAVDSingleDynArray = ^TAVDSingleDynArray;
+
   TSingleFixedArray = Array [0..0] of Single;
   PSingleFixedArray = ^TSingleFixedArray;
   TDoubleFixedArray = Array [0..0] of Double;
@@ -90,9 +91,13 @@ type
   procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer); overload;
   function f_Round(Sample:Single):Integer;
   function f_Exp(x:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
-  procedure f_Abs(var f:Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
-  procedure f_Abs(var f:Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
-  procedure f_Abs(var f:T4SingleArray); overload;
+  function f_Abs(f:Single): Single; overload;
+  function f_Abs(f:Double): Double; overload;
+
+  procedure f_AbsV(var f:Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
+  procedure f_AbsV(var f:Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
+  procedure f_AbsV(var f:T4SingleArray); overload;
+
   function f_Neg(f:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Root(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Power(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -483,25 +488,39 @@ begin
  Result:=(((Integer((@f)^) and $7F800000) shr 23)-$7F);
 end;
 
-procedure f_Abs(var f:Single); overload;
+procedure f_AbsV(var f:Single);
 var i : Integer absolute f;
 begin
  i := i and $7FFFFFFF;
 end;
 
-procedure f_Abs(var f:Double); overload;
+procedure f_AbsV(var f:Double);
 var i : array [0..1] of Integer absolute f;
 begin
  i[0] := i[0] and $7FFFFFFF;
 end;
 
-procedure f_Abs(var f:T4SingleArray); overload;
+function f_Abs(f:Single): Single;
+var i : Integer absolute f;
+begin
+ i := i and $7FFFFFFF; 
+ result:=f;
+end;
+
+function f_Abs(f:Double): Double;
+var i : array [0..1] of Integer absolute f;
+begin
+ i[0] := i[0] and $7FFFFFFF;
+ result:=f;
+end;   
+
+procedure f_AbsV(var f:T4SingleArray);
 {$IFDEF PUREPASCAL}
 begin
- f_Abs(f[0]);
- f_Abs(f[1]);
- f_Abs(f[2]);
- f_Abs(f[3]);
+ f_AbsV(f[0]);
+ f_AbsV(f[1]);
+ f_AbsV(f[2]);
+ f_AbsV(f[3]);
 {$ELSE}
 asm
  fld [eax].Single

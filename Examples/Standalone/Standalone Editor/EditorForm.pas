@@ -160,7 +160,6 @@ end;
 
 procedure TFmVSTEditor.FormClose(Sender: TObject;
   var Action: TCloseAction);
-var Settings : TInifile;
 begin
  with VSTHost[0] do
   try

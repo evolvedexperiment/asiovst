@@ -188,7 +188,7 @@ type
     dir_plugin, dir_preset, dir_wave, dir_midi: string;
     loadprog: Integer;
     loaded, pluginloaded: boolean;
-    WavBufL, InBufL, WavBufR, InBufR: TSingleDynArray;
+    WavBufL, InBufL, WavBufR, InBufR: TAVDSingleDynArray;
     VSTBufIn, VSTBufOut: TArrayOfSingleDynArray;
     CurrentASIO: Integer;
     CurrentMIDIIn: Integer;
@@ -2269,7 +2269,7 @@ begin
 
  if recording = 1 then
   begin
-   totalframes := totalframes + ASIOHost.buffersize;
+   totalframes := totalframes + integer(ASIOHost.buffersize);
    if wavwriter.Format.nChannels = 1 then
     WavWriter.WriteFloatData(OutBuffer[ChOfs], bs)
    else

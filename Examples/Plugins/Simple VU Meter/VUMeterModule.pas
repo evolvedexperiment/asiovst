@@ -15,8 +15,8 @@ type
     procedure VSTModuleParameterChange(Sender: TObject;
       const Index: Integer; var Value: Single);
   private
-    fPeak   : array [0..1] of Double;
-    fVolume : array [0..1] of Double;
+    fPeak   : T2DoubleArray;
+    fVolume : T2DoubleArray;
     function GetPeak(index: Integer): Double;
   public
     property Peak[index : Integer] : Double read GetPeak;

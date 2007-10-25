@@ -52,7 +52,7 @@ begin
    Memo.Clear;
    Memo.Lines.Add('Driver: ' + AsioHost.DriverName);
    Memo.Lines.Add('Buffersize: ' + IntToStr(AsioHost.BufferSize));
-   Memo.Lines.Add('Latency: ' + IntToStr(AsioHost.InputLatency + AsioHost.OutputLatency + AsioHost.BufferSize));
+   Memo.Lines.Add('Latency: ' + IntToStr(AsioHost.InputLatency + AsioHost.OutputLatency + integer(AsioHost.BufferSize)));
    Memo.Lines.Add('Channel 1: ' + AsioHost.OutputChannelInfos[0].name);
    Memo.Lines.Add('Channel 2: ' + AsioHost.OutputChannelInfos[1].name);
    Memo.Lines.Add('Format In 1: ' + ChannelTypeToString(AsioHost.OutputChannelInfos[0].vType));

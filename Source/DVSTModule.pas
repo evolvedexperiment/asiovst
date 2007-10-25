@@ -68,7 +68,7 @@ type
 
   TCustomVstParameterProperty = class(TCollectionItem)
   private
-    FSmoothStates     : Array [0..1] of Single;
+    FSmoothStates     : T2SingleArray;
     FMin, fMax        : Single;
     FCurve            : TCurveType;
     FCurveFactor      : Single;
