@@ -7,7 +7,7 @@ unit AVDCommonLaz;
 interface
 
 uses
-  DAVDCommon, DVSTEffect, LazarusPackageIntf; 
+  DAVDCommon, CPUDetectionTool, DAVDComplex, MidiFile, LazarusPackageIntf; 
 
 implementation
 
@@ -16,5 +16,5 @@ begin
 end; 
 
 initialization
-  RegisterPackage('AVDCommonLaz', @Register);
+  RegisterPackage('AVDCommonLaz', @Register); 
 end.

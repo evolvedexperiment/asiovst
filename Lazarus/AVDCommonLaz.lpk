@@ -1,49 +1,51 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="2">
+  <ProjectOptions>
     <PathDelim Value="\"/>
-    <Name Value="DSPBaseLaz"/>
-    <CompilerOptions>
-      <Version Value="5"/>
-      <PathDelim Value="\"/>
-      <SearchPaths>
-        <OtherUnitFiles Value="..\Source\"/>
-        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-      </SearchPaths>
-      <CodeGeneration>
-        <Generate Value="Faster"/>
-      </CodeGeneration>
-      <Other>
-        <CompilerPath Value="$(CompPath)"/>
-      </Other>
-    </CompilerOptions>
-    <Version Minor="3"/>
-    <Files Count="2">
-      <Item1>
-        <Filename Value="..\Source\DAVDCommon.pas"/>
-        <UnitName Value="DAVDCommon"/>
-      </Item1>
-      <Item2>
-        <Filename Value="..\Source\DVSTEffect.pas"/>
-        <UnitName Value="DVSTEffect"/>
-      </Item2>
-    </Files>
-    <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="2">
-      <Item1>
-        <PackageName Value="LCL"/>
-      </Item1>
-      <Item2>
-        <PackageName Value="FCL"/>
-      </Item2>
-    </RequiredPkgs>
-    <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)\"/>
-    </UsageOptions>
+    <Version Value="6"/>
+    <General>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=".exe"/>
+      <ActiveEditorIndexAtStart Value="0"/>
+    </General>
     <PublishOptions>
       <Version Value="2"/>
-      <DestinationDirectory Value="$(TestDir)\publishedpackage\"/>
-      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
     </PublishOptions>
-  </Package>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <Units Count="1">
+      <Unit0>
+        <Filename Value="..\Source\DAVDCommon.pas"/>
+        <UnitName Value="DAVDCommon"/>
+        <CursorPos X="32" Y="207"/>
+        <TopLine Value="194"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit0>
+    </Units>
+    <JumpHistory Count="1" HistoryIndex="0">
+      <Position1>
+        <Filename Value="..\Source\DAVDCommon.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position1>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <PathDelim Value="\"/>
+    <CodeGeneration>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
 </CONFIG>
