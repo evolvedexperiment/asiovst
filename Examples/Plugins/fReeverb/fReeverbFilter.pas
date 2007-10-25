@@ -26,7 +26,7 @@ type
   TAllpass = class(TObject)
   private
     fFeedback: Single;
-    fBuffer: TSingleDynArray;
+    fBuffer: TAVDSingleDynArray;
     fBufferSize,
     fBufferIndex: Integer;
     procedure SetBufferSize(const Value: Integer);
@@ -46,7 +46,7 @@ type
     fFilterStore,
     fDampA,
     fDampB: Single;
-    fBuffer: TSingleDynArray;
+    fBuffer: TAVDSingleDynArray;
     fBufferSize,
     fBufferIndex: Integer;
     fDamp: Single;
