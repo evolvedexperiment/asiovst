@@ -47,7 +47,7 @@ type
     destructor  Destroy; override;
     procedure   RedrawBuffer(doBufferFlip: Boolean); override;
 
-    procedure SetWaveForm(NewWaveData: TSingleDynArray;  DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false); overload;
+    procedure SetWaveForm(NewWaveData: TAVDSingleDynArray;  DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false); overload;
     procedure SetWaveForm(NewWaveData: TArrayOfSingleDynArray; DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false);overload;
     procedure ClearWaveForm(DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false);
 
@@ -190,7 +190,7 @@ begin
   inherited;
 end;
 
-procedure TGuiStaticWaveform.SetWaveForm(NewWaveData: TSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
+procedure TGuiStaticWaveform.SetWaveForm(NewWaveData: TAVDSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
 var len: integer;
 begin
   ClearWaveForm;
