@@ -1876,7 +1876,7 @@ end;
 
 procedure TCustomVSTModule.SetParameterProperties(const Value : TCustomVstParameterProperties);
 begin
- FVstPrograms.Assign(Value);
+ FParameterProperties.Assign(Value);
 end;
 
 function TCustomVSTModule.Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
