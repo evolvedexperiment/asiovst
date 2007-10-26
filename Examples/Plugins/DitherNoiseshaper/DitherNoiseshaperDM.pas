@@ -32,6 +32,8 @@ procedure TDitherNoiseshaperModule.VSTModuleCreate(Sender: TObject);
 begin
  fDitherNoiseshaper[0] := TDitherNoiseShaper.Create;
  fDitherNoiseshaper[1] := TDitherNoiseShaper.Create;
+ Parameter[0] := 0;
+ Parameter[1] := 16;
 end;
 
 procedure TDitherNoiseshaperModule.VSTModuleDestroy(Sender: TObject);

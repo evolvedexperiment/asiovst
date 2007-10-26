@@ -3,7 +3,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'Dither & Noiseshaper Plugin'
   ProductName = 'ASIO & VST for Delphi project'
   VendorName = 'http://sourceforge.net/projects/delphiasiovst/'
