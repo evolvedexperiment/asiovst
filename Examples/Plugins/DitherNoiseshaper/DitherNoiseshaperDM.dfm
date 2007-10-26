@@ -1,5 +1,7 @@
 object DitherNoiseshaperModule: TDitherNoiseshaperModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '0.0'
   EffectName = 'Dither & Noiseshaper Plugin'
@@ -13,6 +15,24 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <
+    item
+      Min = 2.000000000000000000
+      Max = 32.000000000000000000
+      Curve = ctLinear
+      DisplayName = 'Bit Depth'
+      Units = 'Bit'
+      CurveFactor = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      LargeStepFloat = 1.000000000000000000
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      MinInteger = 2
+      MaxInteger = 32
+      LargeStepInteger = 1
+      VSTModule = Owner
+      OnParameterChange = DNBitDepthChange
+      OnCustomParameterDisplay = DNBitDepthDisplay
+    end
     item
       Max = 7.000000000000000000
       Curve = ctLinear

@@ -11,10 +11,12 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure DNTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure DNTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray;
-      SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs,
-      Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+    procedure DNBitDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure DNBitDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
     fDitherNoiseshaper : array [0..1] of TDitherNoiseShaper;
   end;
@@ -26,11 +28,23 @@ implementation
 uses
   DitherNoiseshaperGUI;
 
+procedure TDitherNoiseshaperModule.VSTModuleCreate(Sender: TObject);
+begin
+ fDitherNoiseshaper[0] := TDitherNoiseShaper.Create;
+ fDitherNoiseshaper[1] := TDitherNoiseShaper.Create;
+end;
+
+procedure TDitherNoiseshaperModule.VSTModuleDestroy(Sender: TObject);
+begin
+ fDitherNoiseshaper[0].Free;
+ fDitherNoiseshaper[1].Free;
+end;
+
 procedure TDitherNoiseshaperModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
 begin
  GUI := TFmDitherNoiseshaper.Create(Self);
  with TFmDitherNoiseshaper(GUI)
-  do CBNoiseshaperType.ItemIndex := Round(Parameter[0])
+  do CBNoiseshaperType.ItemIndex := Round(Parameter[1])
 end;
 
 procedure TDitherNoiseshaperModule.VSTModuleProcess(const Inputs,
@@ -55,9 +69,25 @@ begin
   end;
 end;
 
+procedure TDitherNoiseshaperModule.DNBitDepthDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := IntToStr(Round(Parameter[Index]));
+end;
+
+procedure TDitherNoiseshaperModule.DNBitDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fDitherNoiseshaper[0].BitDepth := Round(Value);
+ fDitherNoiseshaper[1].BitDepth := fDitherNoiseshaper[0].BitDepth;
+ if EditorForm <> nil then
+  with TFmDitherNoiseshaper(EditorForm)
+   do if SEBitDepth.Value <> Round(Value)
+    then SEBitDepth.Value := Round(Value)
+end;
+
 procedure TDitherNoiseshaperModule.DNTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fDitherNoiseshaper[0].DitherType := TDitherType(Round(Index));
+ fDitherNoiseshaper[0].DitherType := TDitherType(Round(Value));
  fDitherNoiseshaper[1].DitherType := fDitherNoiseshaper[0].DitherType;
  if EditorForm <> nil then
   with TFmDitherNoiseshaper(EditorForm)

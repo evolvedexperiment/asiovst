@@ -2,9 +2,9 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
   Left = 218
   Top = 81
   BorderStyle = bsNone
-  Caption = 'FmDitherNoiseshaper'
-  ClientHeight = 30
-  ClientWidth = 255
+  Caption = 'Dither & Noiseshaper Example'
+  ClientHeight = 56
+  ClientWidth = 249
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,15 +16,29 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
   PixelsPerInch = 96
   TextHeight = 13
   object LbNoiseshaperType: TLabel
-    Left = 8
-    Top = 8
+    Left = 4
+    Top = 34
     Width = 90
     Height = 13
     Caption = 'Noiseshaper Type:'
   end
+  object LbFinalBitDepth: TLabel
+    Left = 4
+    Top = 7
+    Width = 73
+    Height = 13
+    Caption = 'Final Bit Depth:'
+  end
+  object LbBit: TLabel
+    Left = 156
+    Top = 7
+    Width = 12
+    Height = 13
+    Caption = 'Bit'
+  end
   object CBNoiseshaperType: TComboBox
-    Left = 104
-    Top = 5
+    Left = 100
+    Top = 31
     Width = 145
     Height = 21
     Style = csDropDownList
@@ -42,5 +56,16 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
       '5th Order improved E-weighting'
       '9th Order improved E-weighting'
       '2nd Order simple highpass')
+  end
+  object SEBitDepth: TSpinEdit
+    Left = 100
+    Top = 4
+    Width = 49
+    Height = 22
+    MaxValue = 32
+    MinValue = 2
+    TabOrder = 1
+    Value = 16
+    OnChange = SEBitDepthChange
   end
 end

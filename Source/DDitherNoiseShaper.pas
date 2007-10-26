@@ -39,6 +39,7 @@ begin
  inherited;
  SetLength(fHistory, 2 * fOrder);
  FillChar(fHistory, 2 * fOrder * sizeof(Double), 0);
+ SetBitDepth(16);
  SetDitherType(dtor9Fc);
  fHistoryPos := 8;
  Randomize;
@@ -133,7 +134,7 @@ end;
 
 procedure TDitherNoiseShaper.Reset;
 begin
- FillChar(fHistory, 2 * fOrder * SizeOf(Double), 0);
+ FillChar(fHistory[0], 2 * fOrder * SizeOf(Double), 0);
  fHistoryPos := 8;
 end;
 
