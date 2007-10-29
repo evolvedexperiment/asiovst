@@ -189,22 +189,22 @@ end;
 
 procedure ClipDigital_x86(InBuffer: PDouble; BSize: Integer); overload;
 {$IFDEF x87}
-const c1a : Double = 1;
-      c05 : Double = 0.5;
+const
+  c05 : Double = 0.5;
 asm
  mov ecx,edx
- fld c1a
+ fld1
  fld c05
 @Start:
- fld [eax+8*ecx-8].Double
- fadd st(0),st(2)
+ fld [eax + 8 * ecx - 8].Double
+ fadd st(0), st(2)
  fabs
- fld [eax+8*ecx-8].Double
- fsub st(0),st(2)
+ fld [eax + 8 * ecx - 8].Double
+ fsub st(0), st(3)
  fabs
  fsubp
  fmul st(0),st(1)
- fstp [eax+8*ecx-8].Double
+ fstp [eax + 8 * ecx - 8].Double
  loop @Start
  fstp st(0)
  fstp st(0)
@@ -215,7 +215,7 @@ var i: Integer;
 begin
  for I := 0 to BSize - 1 do
   begin
-   InBuffer^:=fGrdDiv * (abs(InBuffer^ + 1) - abs(InBuffer^ - 1));
+   InBuffer^ := fGrdDiv * (abs(InBuffer^ + 1) - abs(InBuffer^ - 1));
    Inc(InBuffer);
   end;
 end;

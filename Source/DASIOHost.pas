@@ -768,6 +768,7 @@ begin
   FUnAlignedBuffer:=nil;
   FInputBuffer := nil;
   FOutputBuffer := nil;
+  FSampleRate := 44100;
   FASIOTime := TASIOTimeSub.Create;
   FDriverList := GetDriverList;
 
