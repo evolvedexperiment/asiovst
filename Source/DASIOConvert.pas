@@ -805,7 +805,7 @@ asm
 
 @Start:
  mov ebx,[eax]
- xor ebx, $FFFFFF
+ and ebx, $FFFFFF
  mov [esp-4],ebx
  fild [esp-4].Single
  fmul  st(0),st(1)
@@ -826,7 +826,7 @@ begin
  for i := 0 to frames - 1 do
   begin
    TargetArray[i] := (SourceInt^ shl 8) * MinLong;
-   Inc(SourceByte,3);
+   Inc(SourceByte, 3);
   end;
 end;
 {$ENDIF}
@@ -840,7 +840,7 @@ asm
 
 @Start:
  mov ebx,[eax]
- xor ebx, $FFFFFF
+ and ebx, $FFFFFF
  mov [esp-4],ebx
  fild [esp-4].Single
  fmul  st(0),st(1)
@@ -860,8 +860,8 @@ var
 begin
  for i := 0 to frames - 1 do
   begin
-   TargetArray[i]:=(SourceInt^ shl 8) * MinLong;
-   Inc(SourceByte,3);
+   TargetArray[i] := (SourceInt^ shl 8) * MinLong;
+   Inc(SourceByte, 3);
   end;
 end;
 {$ENDIF}
@@ -1669,15 +1669,17 @@ asm
  pop ebx
 end;
 
+
+
 procedure SingleToInt24LSB_x87(source: PSingle; target: pointer; frames: longint); overload;
 {$IFDEF x87}
 asm
   push ebx
   fld   Max24         //for speed
  @Start:
-  fld   [eax].dword
+  fld   [eax].Single
   fmul  st(0),st(1)
-  fistp [esp-4].Single
+  fistp [esp-4].DWord
   mov   ebx, [esp-4]
   mov   [edx], bx
   ror   ebx, 8
@@ -1692,14 +1694,13 @@ end;
 {$ELSE}
 var
   SourceArray : PSnglArray absolute source;
-  Target      : PInteger absolute target;
+  TargetInt   : PByte absolute target;
   i           : Integer;
 begin
- for i := 0 to frames - 1 do
+ for i := 0 to Frames - 1 do
   begin
-   SourceInt^ := TargetArray[i]
-   TargetArray[i]:=(SourceInt^ shl 8) * MinLong;
-   Inc(SourceByte,3);
+   PInteger(TargetInt)^ := round(SourceArray^[i] * Max24);
+   Inc(TargetInt, 3);
   end;
 end;
 {$ENDIF}

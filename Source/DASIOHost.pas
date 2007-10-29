@@ -22,7 +22,7 @@ uses
   {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
   {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls, ASIOMixer,{$ENDIF}
   {$IFDEF DELPHI5} Forms, dsgnintf, {$ENDIF}
-  SysUtils, Classes, ASIO, DASIOConvert, DASIOGenerator,DAVDCommon;
+  SysUtils, Classes, ASIO, DASIOConvert, DASIOGenerator, DAVDCommon;
 
 const
   // private message

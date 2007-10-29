@@ -34,6 +34,8 @@ type
     procedure SbVolumeChange(Sender: TObject);
     procedure SbPanChange(Sender: TObject);
     procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TArrayOfDoubleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
+      OutBuffer: TArrayOfSingleDynArray);
   private
     procedure SetFrequency(const Value: Double);
   public
@@ -162,6 +164,21 @@ begin
    LbFreq.Caption:='Frequency: '+FloatTostrF(fFreq,ffGeneral,5,5)+' Hz';
    GetSinCos(2 * Pi * fFreq / ASIOHost.SampleRate, fAngle.Im, fAngle.Re);
   end;
+end;
+
+procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
+  OutBuffer: TArrayOfSingleDynArray);
+var i: integer;
+    d: Double;
+begin
+ for i := 0 to ASIOHost.BufferSize - 1 do
+ begin
+  d := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
+  fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
+  fPosition.Re := d; d := d * fVol;
+  OutBuffer[0,i] := d * (1 - fPan);
+  OutBuffer[1,i] := d * fPan;
+ end;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
