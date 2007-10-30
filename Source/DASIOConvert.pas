@@ -75,7 +75,7 @@ var FPUType             : TFPUType;
     FromInt24MSB        : TInConvertor;  // used for 20 bits as well
     FromInt32MSB        : TInConvertor;
     FromSingleMSB       : TInConvertor;  // IEEE 754 32 bit float
-    FromDoubleMSB       : TInConvertor;  // IEEE 754 64 bit double float
+    FromDoubleMSB       : TInConvertor;  // IEEE 754 64 bit Double float
     FromInt32MSB16      : TInConvertor;  // 32 bit data with 16 bit alignment
     FromInt32MSB18      : TInConvertor;  // 32 bit data with 18 bit alignment
     FromInt32MSB20      : TInConvertor;  // 32 bit data with 20 bit alignment
@@ -84,7 +84,7 @@ var FPUType             : TFPUType;
     FromInt24LSB        : TInConvertor;
     FromInt32LSB        : TInConvertor;
     FromSingleLSB       : TInConvertor;  // IEEE 754 32 bit float
-    FromDoubleLSB       : TInConvertor;  // IEEE 754 64 bit double float
+    FromDoubleLSB       : TInConvertor;  // IEEE 754 64 bit Double float
     FromInt32LSB16      : TInConvertor;  // 32 bit data with 16 bit alignment
     FromInt32LSB18      : TInConvertor;  // 32 bit data with 18 bit alignment
     FromInt32LSB20      : TInConvertor;  // 32 bit data with 20 bit alignment
@@ -93,7 +93,7 @@ var FPUType             : TFPUType;
     ToInt24MSB          : TOutConvertor;  // used for 20 bits as well
     ToInt32MSB          : TOutConvertor;
     ToSingleMSB         : TOutConvertor;  // IEEE 754 32 bit float
-    ToDoubleMSB         : TOutConvertor;  // IEEE 754 64 bit double float
+    ToDoubleMSB         : TOutConvertor;  // IEEE 754 64 bit Double float
     ToInt32MSB16        : TOutConvertor;  // 32 bit data with 16 bit alignment
     ToInt32MSB18        : TOutConvertor;  // 32 bit data with 18 bit alignment
     ToInt32MSB20        : TOutConvertor;  // 32 bit data with 20 bit alignment
@@ -102,7 +102,7 @@ var FPUType             : TFPUType;
     ToInt24LSB          : TOutConvertor;
     ToInt32LSB          : TOutConvertor;
     ToSingleLSB         : TOutConvertor;  // IEEE 754 32 bit float
-    ToDoubleLSB         : TOutConvertor;  // IEEE 754 64 bit double float
+    ToDoubleLSB         : TOutConvertor;  // IEEE 754 64 bit Double float
     ToInt32LSB16        : TOutConvertor;  // 32 bit data with 16 bit alignment
     ToInt32LSB18        : TOutConvertor;  // 32 bit data with 18 bit alignment
     ToInt32LSB20        : TOutConvertor;  // 32 bit data with 20 bit alignment
@@ -112,7 +112,7 @@ var FPUType             : TFPUType;
     ClipCheckInt24MSB   : TClipCheckFunction;  // used for 20 bits as well
     ClipCheckInt32MSB   : TClipCheckFunction;
     ClipCheckSingleMSB  : TClipCheckFunction;  // IEEE 754 32 bit float
-    ClipCheckDoubleMSB  : TClipCheckFunction;  // IEEE 754 64 bit double float
+    ClipCheckDoubleMSB  : TClipCheckFunction;  // IEEE 754 64 bit Double float
     ClipCheckInt32MSB16 : TClipCheckFunction;  // 32 bit data with 16 bit alignment
     ClipCheckInt32MSB18 : TClipCheckFunction;  // 32 bit data with 18 bit alignment
     ClipCheckInt32MSB20 : TClipCheckFunction;  // 32 bit data with 20 bit alignment
@@ -121,7 +121,7 @@ var FPUType             : TFPUType;
     ClipCheckInt24LSB   : TClipCheckFunction;
     ClipCheckInt32LSB   : TClipCheckFunction;
     ClipCheckSingleLSB  : TClipCheckFunction;  // IEEE 754 32 bit float
-    ClipCheckDoubleLSB  : TClipCheckFunction;  // IEEE 754 64 bit double float
+    ClipCheckDoubleLSB  : TClipCheckFunction;  // IEEE 754 64 bit Double float
     ClipCheckInt32LSB16 : TClipCheckFunction;  // 32 bit data with 16 bit alignment
     ClipCheckInt32LSB18 : TClipCheckFunction;  // 32 bit data with 18 bit alignment
     ClipCheckInt32LSB20 : TClipCheckFunction;  // 32 bit data with 20 bit alignment
@@ -1200,20 +1200,20 @@ asm
  fld Min24
  push ebx
 @Start:
- xor ebx,ebx
+ xor ebx, ebx
 
- mov bl,[eax+2]
- mov bh,[eax+1]
- ror ebx,8
- mov bh,[eax  ]
- rol ebx,8
+ mov bl, [eax + 2]
+ mov bh, [eax + 1]
+ ror ebx, 8
+ mov bh, [eax]
+ rol ebx, 8
 
- mov [esp-4],ebx
+ mov [esp-4], ebx
  fild [esp-4].Single
- fmul  st(0),st(1)
+ fmul  st(0), st(1)
  fstp [target].Single
- add  eax,3
- add  target,4
+ add  eax, 3
+ add  target, 4
  loop @Start
 
  pop ebx
@@ -1232,20 +1232,20 @@ asm
  fld Min24
  push ebx
 @Start:
- xor ebx,ebx
+ xor ebx, ebx
 
- mov bl,[eax+2]
- mov bh,[eax+1]
- ror ebx,8
- mov bh,[eax  ]
- rol ebx,8
+ mov bl, [eax + 2]
+ mov bh, [eax + 1]
+ ror ebx, 8
+ mov bh, [eax]
+ rol ebx, 8
 
- mov [esp-4],ebx
+ mov [esp-4], ebx
  fild [esp-4].Single
- fmul  st(0),st(1)
+ fmul  st(0), st(1)
  fstp [target].Double
- add  eax,3
- add  target,8
+ add  eax, 3
+ add  target, 8
  loop @Start
 
  pop ebx
@@ -1553,7 +1553,7 @@ asm
 end;
 
 procedure SingleToInt16LSB_UDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -1577,7 +1577,7 @@ asm
 end;
 
 procedure SingleToInt16LSB_TDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -1617,7 +1617,7 @@ asm
 end;
 
 procedure DoubleToInt16LSB_UDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -1641,7 +1641,7 @@ asm
 end;
 
 procedure DoubleToInt16LSB_TDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -1706,7 +1706,7 @@ end;
 {$ENDIF}
 
 procedure SingleToInt24LSB_UDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((1/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1/$10000) / $10000);  // 2^-32
 asm
   push ebx
   fld   Scaler                 // move to register for speed
@@ -1737,7 +1737,7 @@ asm
 end;
 
 procedure SingleToInt24LSB_TDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
   push ebx
   fld   Scaler                 // move to register for speed
@@ -1793,7 +1793,7 @@ asm
 end;
 
 procedure DoubleToInt24LSB_UDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((1/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1/$10000) / $10000);  // 2^-32
 asm
   push ebx
   fld   Scaler                 // move to register for speed
@@ -1824,7 +1824,7 @@ asm
 end;
 
 procedure DoubleToInt24LSB_TDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
   push ebx
   fld   Scaler                 // move to register for speed
@@ -1919,7 +1919,7 @@ asm
 end;
 
 procedure SingleToInt32LSB16_UDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -1943,7 +1943,7 @@ asm
 end;
 
 procedure SingleToInt32LSB16_TDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -1983,7 +1983,7 @@ asm
 end;
 
 procedure DoubleToInt32LSB16_UDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2007,7 +2007,7 @@ asm
 end;
 
 procedure DoubleToInt32LSB16_TDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2047,7 +2047,7 @@ asm
 end;
 
 procedure SingleToInt32LSB18_UDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2071,7 +2071,7 @@ asm
 end;
 
 procedure SingleToInt32LSB18_TDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2111,7 +2111,7 @@ asm
 end;
 
 procedure DoubleToInt32LSB18_UDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2135,7 +2135,7 @@ asm
 end;
 
 procedure DoubleToInt32LSB18_TDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2175,7 +2175,7 @@ asm
 end;
 
 procedure SingleToInt32LSB20_UDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2199,7 +2199,7 @@ asm
 end;
 
 procedure SingleToInt32LSB20_TDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2239,7 +2239,7 @@ asm
 end;
 
 procedure DoubleToInt32LSB20_UDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2263,7 +2263,7 @@ asm
 end;
 
 procedure DoubleToInt32LSB20_TDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2303,7 +2303,7 @@ asm
 end;
 
 procedure SingleToInt32LSB24_UDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2327,7 +2327,7 @@ asm
 end;
 
 procedure SingleToInt32LSB24_TDF_x87(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2367,7 +2367,7 @@ asm
 end;
 
 procedure DoubleToInt32LSB24_UDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((1.0/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
@@ -2391,25 +2391,25 @@ asm
 end;
 
 procedure DoubleToInt32LSB24_TDF_x87(source: PDouble; target: pointer; frames: longint); overload;
-const Scaler: double = ((0.5/$10000) / $10000);  // 2^-32
+const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
  fld    Max24                  // move to register for speed
  @Start:                       // Samplecount already in ecx!
-  fld      [eax+8*ecx-8].Double
-  fmul     st(0),st(1)
+  fld   [eax+8*ecx-8].Double
+  fmul  st(0),st(1)
 
   imul  ebx,RandSeed,$08088405
   inc   ebx
-  mov RandSeed,ebx
+  mov   RandSeed,ebx
   fild  RandSeed
   imul  ebx,RandSeed,$08088405
   inc   ebx
-  mov RandSeed,ebx
+  mov   RandSeed,ebx
   fild  RandSeed
   faddp
-  fmul st(0),st(3)
+  fmul  st(0), st(3)
   faddp
 
   fistp   [edx+4*ecx-4].DWord
