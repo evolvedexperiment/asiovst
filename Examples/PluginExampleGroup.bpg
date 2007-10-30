@@ -14,7 +14,7 @@ PROJECTS = SoftKneeLimiter.dll SoftKneeFeedbackCompressor.dll SimpleLimiter.dll 
   MultibandCompressor.dll EnhancedGate.dll XSynth.dll Vocoder.dll Tetris.dll \
   SineSynth.dll VUMeter.dll SimpleSampler.dll Delayla.dll Phaser.dll OpAmp.dll \
   NoGUIFilter.dll MIDIPlugIn.dll LoadVSTPlugin.dll GraphicEQ.dll fReeverb.dll \
-  Decimator.dll ASIOVST.dll
+  Decimator.dll ASIOVST.dll DitherNoiseshaper.dll
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -89,6 +89,9 @@ Decimator.dll: Plugins\Decimator\Decimator.dpr
   $(DCC)
 
 ASIOVST.dll: Plugins\ASIO-Extender\ASIOVST.dpr
+  $(DCC)
+
+DitherNoiseshaper.dll: Plugins\DitherNoiseshaper\DitherNoiseshaper.dpr
   $(DCC)
 
 

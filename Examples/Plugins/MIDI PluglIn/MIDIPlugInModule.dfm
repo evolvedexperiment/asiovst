@@ -5,16 +5,9 @@ object MIDIModule: TMIDIModule
   EffectName = 'MIDI Plugin'
   ProductName = 'MIDI Plugin'
   VendorName = 'Delphi VST'
-  VersionMajor = 1
-  VersionMinor = 0
-  VersionRelease = 0
-  PlugCategory = vpcUnknown
-  TailSize = 0
   CanDos = [vcdSendVstEvents, vcdSendVstMidiEvent, vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd1in2out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  numCategories = 1
   CurrentProgram = -1
-  KeysRequired = False
   UniqueID = 'MIDI'
   ShellPlugins = <>
   Programs = <>
@@ -27,10 +20,6 @@ object MIDIModule: TMIDIModule
       Units = 'semitone'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
-      CanBeAutomated = True
-      ReportVST2Properties = False
-      Flags = []
-      MinInteger = 0
       MaxInteger = 0
       StepInteger = 0
       LargeStepInteger = 0

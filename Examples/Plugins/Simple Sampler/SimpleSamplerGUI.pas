@@ -14,13 +14,13 @@ type
     BtSampleSelect: TButton;
     OpenDialog: TOpenDialog;
     Waveform: TGuiStaticWaveform;
-    procedure MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
-    procedure MidiKeysMidiKeyUp(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure BtSampleSelectClick(Sender: TObject);
     procedure EditSampleChange(Sender: TObject);
-    procedure MidiKeysKeyColor(Sender: TObject; Key: Integer; var Color: TColor);
+    procedure MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
+      Velocity: Single);
+    procedure MidiKeysNoteOff(Sender: TObject; KeyNr: Byte);
     procedure FormCreate(Sender: TObject);
   end;
 
@@ -30,41 +30,26 @@ implementation
 
 uses SimpleSamplerModule, SimpleSamplerVoice, VoiceList;
 
-procedure TVSTGUI.MidiKeysKeyColor(Sender: TObject; Key: Integer;
-  var Color: TColor);
-begin
- if Key=60
-  then Color:=$00DDEEFF
-  else Color:=clWhite;
-end;
 
-procedure TVSTGUI.MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState;
-  X, Y, Key: Integer);
+procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
+  Velocity: Single);
 var newNote : TSimpleSamplerVoice;
-const VeloDiv : Single = 1/128;
 begin
- if Key<0 then Key:=0 else if Key>119 then Key:=119;
- (Owner as TVSTSSModule).MIDI_NoteOn(0,Key,128);
- with newNote do
-  begin
-   newNote:=TSimpleSamplerVoice.Create((Owner as TVSTSSModule));
-   MidiKeyNr:=Key;
-   Velocity:=100;
-   NoteOn(Midi2Pitch[Key],Velocity*VeloDiv);
-   (Owner as TVSTSSModule).Voices.Add(newNote);
-  end;
+  (Owner as TVSTSSModule).MIDI_NoteOn(0,KeyNr,round(Velocity*128));
+  newNote:=TSimpleSamplerVoice.Create((Owner as TVSTSSModule));
+  newNote.MidiKeyNr:=KeyNr;
+  newNote.Velocity:=round(Velocity*127);
+  newNote.NoteOn(Midi2Pitch[KeyNr],Velocity);
+  (Owner as TVSTSSModule).Voices.Add(newNote);
 end;
 
-procedure TVSTGUI.MidiKeysMidiKeyUp(Sender: TObject; Shift: TShiftState; X,
-  Y, Key: Integer);
+procedure TVSTGUI.MidiKeysNoteOff(Sender: TObject; KeyNr: Byte);
 var i : Integer;
 begin
- if ssRight in Shift then Exit;
- if Key<0 then Key:=0 else if Key>119 then Key:=119;
- (Owner as TVSTSSModule).MIDI_NoteOff(0,Key,128);
- with (Owner as TVSTSSModule) do
-  for i:=0 to Voices.Count-1 do
-   if (Voices[i].MidiKeyNr=Key) then
+  (Owner as TVSTSSModule).MIDI_NoteOff(0,KeyNr,0);
+  with (Owner as TVSTSSModule) do
+  for i:=Voices.Count-1 downto 0 do
+   if (Voices[i].MidiKeyNr=KeyNr) then
     begin
      Voices.Delete(i);
      Break;
@@ -83,23 +68,6 @@ procedure TVSTGUI.EditSampleChange(Sender: TObject);
 var sr,c,sz : Integer;
     pt      : PSingle;
 begin
- {if FileExists(EditSample.Text) then
-  begin
-   pt:=LoadWAVFileMono(EditSample.Text,sr, c, sz);
-   SetLength(TVSTSSModule(Owner).Sample,sz);
-   Waveform.WaveLength:=sz;
-   for c := 0 to sz - 1 do
-    begin
-     TVSTSSModule(Owner).Sample[c]:=(pt)^;
-     Waveform.Wavedata[c]:=(pt)^;
-     Inc(pt);
-    end;
-   Waveform.RedrawBuffer(true);
-  end;
-
-      FmPlotIR.Waveform.SetWaveForm(VSTOutBuffer, true, true);
-   }
-   
   if FileExists(EditSample.Text) then
   begin
     pt:=LoadWAVFileMono(EditSample.Text,sr, c, sz);
@@ -111,16 +79,6 @@ begin
     end;
     Waveform.SetWaveForm(TVSTSSModule(Owner).Sample, true, true);
   end;
-end;
-
-procedure TVSTGUI.FormCreate(Sender: TObject);
-//var i : Integer;
-//const lngth = 4096;
-begin
-// Waveform.WaveLength:=lngth;
-/// for i:=0 to lngth-1
-//  do Waveform.Wavedata[i]:=sin(8*Pi*i/lngth);
-// Waveform.RedrawBuffer(false);
 end;
 
 procedure TVSTGUI.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -197,6 +155,11 @@ begin
      Voices.Delete(i);
      Break;
     end;
+end;
+
+procedure TVSTGUI.FormCreate(Sender: TObject);
+begin
+  MidiKeys.SetKeyColor(60,60,$00DDEEFF,$00EEFFFF, $00BBCCE6);
 end;
 
 end.

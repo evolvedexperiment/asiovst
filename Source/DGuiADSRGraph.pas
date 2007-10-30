@@ -73,12 +73,19 @@ type
     procedure SetEnvHPadding(Value: Integer);
   protected
     fA,fD,fS,fR: Integer;
+    fCursorADR: TCursor;
+    fCursorS: TCursor;
+    fCursorDefault: TCursor;
     procedure ResizeBuffer; override;
     procedure RedrawBuffer(doBufferFlip: Boolean); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
+    procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure SettingsChanged(Sender: TObject; EditType: TGuiADSRGraphMouseEdit); virtual;
+    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseLeave; override;
+
+    procedure SettingsChanged(Sender: TObject; EditType: TGuiADSRGraphMouseEdit); dynamic;
+    function CheckForMouseFunc(x,y: Integer): TGuiADSRGraphMouseEdit; dynamic;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -90,6 +97,7 @@ type
     property Transparent;
     property LineWidth;
     property LineColor;
+    property Color;
     
     property ADSRSettings: TGuiADSRSettings read fADSRSettings write fADSRSettings;
     property OnAttackChange : TNotifyEvent read fOnAttackChange write fOnAttackChange;
@@ -104,6 +112,10 @@ type
     
     property EnvVPadding: Integer read fEnvVPadding write SetEnvVPadding default 0;
     property EnvHPadding: Integer read fEnvHPadding write SetEnvHPadding default 0;
+    
+    property CursorDefault: TCursor read fCursorDefault write fCursorDefault default crDefault;
+    property CursorADR: TCursor read fCursorADR write fCursorADR default crSizeWE;
+    property CursorS: TCursor read fCursorS write fCursorS default crSizeNS;
   end;
 
 implementation
@@ -189,6 +201,9 @@ begin
   fGridVPadding:=0;  
   fEnvVPadding:=0;
   fEnvHPadding:=0;
+  fCursorADR:=crSizeWE;
+  fCursorS:=crSizeNS;
+  fCursorDefault:=crDefault;
 end;
 
 destructor TGuiADSRGraph.Destroy;
@@ -273,7 +288,7 @@ end;
 
 procedure TGuiADSRGraph.RedrawBuffer(doBufferFlip: Boolean);
 begin
-  with fBuffer.Canvas do
+  if (Width>0) and (Height>0) then with fBuffer.Canvas do
   begin
     Lock;
     Brush.Color:=Self.Color;
@@ -295,11 +310,11 @@ begin
     Pen.Style:=psSolid;
     Pen.Width:=fLinewidth;
 
-    MoveTo(fEnvHPadding,Height-fEnvVPadding);
+    MoveTo(fEnvHPadding,Height-fEnvVPadding-1);
     LineTo(fA,fEnvVPadding);
     LineTo(fD,fS);
     LineTo(fR,fS);
-    LineTo(Width-fEnvHPadding,Height-fEnvVPadding);
+    LineTo(Width-fEnvHPadding-1,Height-fEnvVPadding-1);
 
     UnLock;
   end;
@@ -310,8 +325,8 @@ end;
 procedure TGuiADSRGraph.CalcIntValues;
 var nwidth, nheight: integer;
 begin
-  nwidth:=Width-2*fEnvHPadding;
-  nheight:=Height-2*fEnvVPadding;
+  nwidth:=Width-2*fEnvHPadding-1;
+  nheight:=Height-2*fEnvVPadding-1;
 
   fA:=Round(0.25*nwidth*fADSRSettings.Attack);
   fD:=fA+Round(0.25*nwidth*fADSRSettings.Decay);
@@ -330,52 +345,72 @@ begin
   inherited;
 end;
 
+function TGuiADSRGraph.CheckForMouseFunc(x,y: Integer): TGuiADSRGraphMouseEdit;
+begin
+  Result:=meNone;
+  if (x < fEnvHPadding) or (x > width-fEnvHPadding) or (y < fEnvVPadding) or (y > height-fEnvVPadding) then exit;
+
+  if (x>fA-5) and (x<fA+fLineWidth) then Result:=meAttack
+  else if (x>fD-fLineWidth) and (x<fD+5) then Result:=meDecay
+  else if (x>fR-fLineWidth) and (x<fR+5) then Result:=meRelease
+  else if (y>fS-5) and (y<fS+5) and (x>=fD+5) and (x<=fR-5) then Result:=meSustain
+  else Result:=meNone;
+end;
+
 procedure TGuiADSRGraph.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if Enabled then
   begin
-    inherited;
-    if (x < fEnvHPadding) or (x > width-fEnvHPadding) or (y < fEnvVPadding) or (y > height-fEnvVPadding) or not (ssLeft in Shift) then exit;
-
-    if (x>fA-5) and (x<fA+fLineWidth) then fMouseEdit:=meAttack
-    else if (x>fD-fLineWidth) and (x<fD+5) then fMouseEdit:=meDecay
-    else if (x>fR-fLineWidth) and (x<fR+5) then fMouseEdit:=meRelease
-    else if (y>fS-5) and (y<fS+5) and (x>=fD+5) and (x<=fR-5) then fMouseEdit:=meSustain
-    else fMouseEdit:=meNone;
-
-    RedrawBuffer(true);
+    if not (ssLeft in Shift) then exit;
+    fMouseEdit:=CheckForMouseFunc(x,y);
   end;
+
+  inherited;
 end;
 
-procedure TGuiADSRGraph.MouseMove(Shift: TShiftState; X, Y: Integer);
+
+procedure TGuiADSRGraph.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
 var nwidth, nheight: integer;
 begin
-  if Enabled then
-  begin
-    inherited;
-    
-    nwidth:=Width-2*fEnvHPadding;
-    nheight:=Height-2*fEnvVPadding;
-    x:=x-fEnvHPadding;
-    y:=y-fEnvVPadding;
-    if not (ssLeft in Shift) then fMouseEdit:=meNone else
-    case fMouseEdit of
-      meAttack   : fADSRSettings.Attack:=x/(0.25*nwidth);
-      meDecay    : fADSRSettings.Decay:=(x-fA+fEnvHPadding)/(0.25*nwidth);
-      meSustain  : fADSRSettings.Sustain:=1-y/nheight;
-      meRelease  : fADSRSettings.Release:=(nwidth-x)/(0.25*nwidth);
-    end;
+  nwidth:=Width-2*fEnvHPadding-1;
+  nheight:=Height-2*fEnvVPadding-1;
+  x:=x-fEnvHPadding;
+  y:=y-fEnvVPadding;
+  if not (ssLeft in Shift) then fMouseEdit:=meNone else
+  case fMouseEdit of
+    meAttack   : fADSRSettings.Attack:=x/(0.25*nwidth);
+    meDecay    : fADSRSettings.Decay:=(x-fA+fEnvHPadding)/(0.25*nwidth);
+    meSustain  : fADSRSettings.Sustain:=1-y/nheight;
+    meRelease  : fADSRSettings.Release:=(nwidth-x)/(0.25*nwidth);
   end;
+
+  inherited;
 end;
 
 procedure TGuiADSRGraph.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
+  if Enabled then fMouseEdit:=meNone;
+
+  inherited;
+end;
+
+procedure TGuiADSRGraph.MouseMove(Shift: TShiftState; X, Y: Integer);
+begin
   if Enabled then
   begin
-    inherited;
-    fMouseEdit:=meNone;
-    RedrawBuffer(true);
+    case CheckForMouseFunc(x,y) of
+      meNone:    cursor:=fCursorDefault;
+      meSustain: cursor:=fCursorS;
+      else cursor:=fCursorADR;
+    end; 
   end;
+  
+  inherited;
+end;
+
+procedure TGuiADSRGraph.MouseLeave;
+begin
+  inherited;
 end;
 
 end.

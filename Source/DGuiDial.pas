@@ -46,7 +46,6 @@ type
     fPosition    : Single;
     fNumGlyphs   : Integer;
     fOnChange    : TNotifyEvent;
-    fOldMousPos  : TPoint;
     fColorCircle : TColor;
     fColorLine   : TColor;
     fColorAuto   : Boolean;
@@ -71,16 +70,18 @@ type
     procedure SetPointerAngles(const Value: TGuiDialPointerAngles);
     function PositionToAngle: Single;
   protected
-    procedure MouseUp (Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure CalcColorCircle;
     procedure RedrawBuffer(doBufferFlip: Boolean); override;
+
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
+    procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-  published
+  published  
+    property Color;
     property AutoSize: Boolean read fAutoSize write SetAutoSize default false;
     property ColorAuto: Boolean read fColorAuto write SetColorAuto default false;
     property Position: Single read FPosition write SetPosition;
@@ -229,9 +230,7 @@ begin
 end;
 
 function TGuiDial.PositionToAngle: Single;
-var
-  Percircle: Single;
-  Range: Single;
+var Percircle: Single; Range: Single;
 const Pi180 : Double = PI/180;
 begin
   Range := Max - Min;
@@ -247,17 +246,18 @@ var theRect    : TRect;
     Rad,tmp    : Single;
     PtsArray   : Array of TPoint;
 begin
-  with fBuffer.Canvas do
+
+  if (Width>0) and (Height>0) then with fBuffer.Canvas do
   begin
     Lock;
-
+    
     if fDialBitmap.Empty then
     begin
       Brush.Color := Self.Color;
-
+      
       {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
       FillRect(ClipRect);
-
+      
       Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
       GlyphNr:=Round(2 / arcsin(1 / Rad)) + 1;
       if GlyphNr > 1 then
@@ -280,11 +280,11 @@ begin
         Pen.Color := fColorLine;
         Brush.Color := fColorCircle;
         Polygon(PtsArray);
-      end;
+      end; 
 
       MoveTo(PtsArray[0].X, PtsArray[0].Y);
       LineTo(Round(0.5 * Width), Round(0.5 * Height));
-
+           
     end else begin
       GlyphNr:=Trunc((fPosition - fMin) / ((fMax + 1) - fMin) * fNumGlyphs);
       theRect:=ClientRect;
@@ -298,11 +298,11 @@ begin
       end;
 
       CopyRect(clientrect,fDialBitmap.Canvas,theRect);
-    end;
+    end; 
     Unlock;
   end;
 
-  if doBufferFlip then Invalidate;
+  if doBufferFlip then Invalidate;  
 end;
 
 procedure TGuiDial.DoAutoSize;
@@ -421,43 +421,29 @@ procedure TGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
 begin
   if Enabled then
   begin
-    Click;
-    inherited MouseDown(Button, Shift, X, Y);
-
     if ssCtrl in Shift then position := fDefaultPosition;
     if (Button = mbRight) and (fRightMouseButton=rmbfReset) then position := fDefaultPosition;
-
-    fOldMousPos.X:=X;
-    fOldMousPos.Y:=Y;
   end;
+
+  inherited;
 end;
 
-procedure TGuiDial.MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+procedure TGuiDial.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
+var Range: Single;
 begin
-  if Enabled then
-  begin
-    inherited MouseUp(Button, Shift, X, Y);
-    fOldMousPos.X:=X;
-    fOldMousPos.Y:=Y;
-  end;
+  Range := Max - (Min - 1);
+  if ssShift in Shift then
+    Position := Position + (MouseState.LastEventY - Y)*0.001*Range
+  else
+    Position := Position + (MouseState.LastEventY - Y)*0.005*Range;
+
+  inherited;
 end;
 
-procedure TGuiDial.MouseMove(Shift: TShiftState; X, Y: Integer);
-var
-  Range: Single;
+procedure TGuiDial.DragMouseMoveRight(Shift: TShiftState; X, Y: Integer);
 begin
-  if enabled then inherited;
-
-  if fMouseButtonDown then
-  begin
-    Range := Max - (Min - 1);
-    if ssShift in Shift then Position := Position + (fOldMousPos.Y - Y)*0.001*Range
-    else if (ssRight in Shift) and (fRightMouseButton=rmbfCircular) then position := CircularMouseToPosition(x,y)
-    else Position := Position + (fOldMousPos.Y - Y)*0.005*Range;
-    fOldMousPos.X:=X;
-    fOldMousPos.Y:=Y;
-  end;
-
+  if fRightMouseButton=rmbfCircular then position := CircularMouseToPosition(x,y);
+  inherited;
 end;
 
 procedure TGuiDial.SetPointerAngles(const Value: TGuiDialPointerAngles);

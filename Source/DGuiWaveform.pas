@@ -57,7 +57,8 @@ type
   published
     property Transparent;
     property LineWidth;
-    property LineColor;
+    property LineColor; 
+    property Color;
     
     property DisplayChannels: integer read fDisplayChannels write SetDisplayChannels;
     property WaveVPadding: Integer read fWaveVPadding write SetWaveVPadding default 3;
@@ -358,43 +359,47 @@ end;
 procedure TGuiStaticWaveform.RedrawBuffer(doBufferFlip: Boolean);
 var i: integer; MaxAmp, Amp: single;
 begin
-  fBuffer.Canvas.Lock;
-  fBuffer.Canvas.Brush.Color:=Self.Color;
+  if (Width>0) and (Height>0) then
+  begin
+    fBuffer.Canvas.Lock;
+    fBuffer.Canvas.Brush.Color:=Self.Color;
 
-  {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
-      fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
+    {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+        fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
 
-  MaxAmp := 0;
-  if fDisplayChannels<1 then exit;
-  for i:=0 to fDisplayChannels-1 do
-    if i>=length(fWaveData) then
-      fNormalizationFactors[i] := 0
-    else if length(fWaveData[i])<1 then
-      fNormalizationFactors[i] := 0
-    else begin
-      Amp := GetMaxAmp(i);
-      MaxAmp := Max(MaxAmp, Amp);
-      if Amp = 0 then
-        fNormalizationFactors[i]:=0
-      else
-        fNormalizationFactors[i] := 1/Amp;
+    MaxAmp := 0;
+    if fDisplayChannels<1 then exit;
+    for i:=0 to fDisplayChannels-1 do
+      if i>=length(fWaveData) then
+        fNormalizationFactors[i] := 0
+      else if length(fWaveData[i])<1 then
+        fNormalizationFactors[i] := 0
+      else begin
+        Amp := GetMaxAmp(i);
+        MaxAmp := Max(MaxAmp, Amp);
+        if Amp = 0 then
+          fNormalizationFactors[i]:=0
+        else
+          fNormalizationFactors[i] := 1/Amp;
+      end;
+
+    if fNormalizationType = ntNone then
+    begin
+      for i:=0 to fDisplayChannels-1 do
+        if fNormalizationFactors[i]>0 then
+          fNormalizationFactors[i] := 1;
+
+    end else if (fNormalizationType = ntOverallChannels) and (MaxAmp > 0) then
+    begin
+      for i:=0 to fDisplayChannels-1 do
+        if fNormalizationFactors[i]>0 then
+          fNormalizationFactors[i] := 1/MaxAmp;
     end;
 
-  if fNormalizationType = ntNone then
-  begin
-    for i:=0 to fDisplayChannels-1 do
-      if fNormalizationFactors[i]>0 then
-        fNormalizationFactors[i] := 1;
-
-  end else if (fNormalizationType = ntOverallChannels) and (MaxAmp > 0) then
-  begin 
-    for i:=0 to fDisplayChannels-1 do
-      if fNormalizationFactors[i]>0 then
-        fNormalizationFactors[i] := 1/MaxAmp;
+    DrawGraphs;
+    fBuffer.Canvas.UnLock;
   end;
-
-  DrawGraphs;
-  fBuffer.Canvas.UnLock;
+  
   if doBufferFlip then Invalidate;
 end;
 

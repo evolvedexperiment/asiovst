@@ -32,8 +32,6 @@ type
     Label5: TLabel;
     Osc2Level: TScrollBar;
     Label6: TLabel;
-    procedure MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
-    procedure MidiKeysMidiKeyUp(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SBLevelChange(Sender: TObject);
@@ -52,47 +50,40 @@ type
     procedure Osc2ADSRReleaseChange(Sender: TObject);
     procedure Osc2ADSRSustainChange(Sender: TObject);
     procedure Osc2LevelChange(Sender: TObject);
+    procedure MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
+      Velocity: Single);
+    procedure MidiKeysNoteOff(Sender: TObject; KeyNr: Byte);
   end;
 
 implementation
 
 {$R *.DFM}
 
-uses XSynthModule, XSynthVoice, VoiceList;
+uses XSynthModule, XSynthVoice, VoiceList;  
 
-procedure TVSTGUI.MidiKeysMidiKeyDown(Sender: TObject; Shift: TShiftState; X, Y, Key: Integer);
+procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
+  Velocity: Single);
 var newNote : TXSynthVoice;
-const VeloDiv : Single = 1/128;
 begin
- if Key<0 then Key:=0 else if Key>119 then Key:=119;
- TVSTSSModule(Owner).MIDI_NoteOn(0,Key,Round(128*Y/Height));
- with newNote do
-  begin
-   newNote:=TXSynthVoice.Create(TVSTSSModule(Owner));
-   MidiKeyNr:=Key;
-   Velocity:=Round(128*Y/Height);
-   NoteOn(Midi2Pitch[Key],Velocity*VeloDiv);
-   (Owner as TVSTSSModule).Voices.Add(newNote);
-  end;
+  (Owner as TVSTSSModule).MIDI_NoteOn(0,KeyNr,round(Velocity*128));
+  newNote:=TXSynthVoice.Create((Owner as TVSTSSModule));
+  newNote.MidiKeyNr:=KeyNr;
+  newNote.Velocity:=round(Velocity*127);
+  newNote.NoteOn(Midi2Pitch[KeyNr],Velocity);
+  (Owner as TVSTSSModule).Voices.Add(newNote);
 end;
 
-procedure TVSTGUI.MidiKeysMidiKeyUp(Sender: TObject; Shift: TShiftState; X,
-  Y, Key: Integer);
+procedure TVSTGUI.MidiKeysNoteOff(Sender: TObject; KeyNr: Byte);
 var i : Integer;
 begin
- if ssRight in Shift then Exit;
- if Key<0 then Key:=0 else if Key>119 then Key:=119;
- TVSTSSModule(Owner).MIDI_NoteOff(0,Key,128);
- with (Owner as TVSTSSModule) do
-  begin
-   i:=0;
-   while i<Voices.Count do
-    if (Voices[i].MidiKeyNr=Key) and not Voices[i].Released then
-     begin
-      Voices.Items[i].NoteOff;
-      Break;
-     end else inc(i);
-  end;
+  (Owner as TVSTSSModule).MIDI_NoteOff(0,KeyNr,0);
+  with (Owner as TVSTSSModule) do
+  for i:=Voices.Count-1 downto 0 do
+   if (Voices[i].MidiKeyNr=KeyNr) and not Voices[i].Released then
+    begin
+     Voices.Items[i].NoteOff;
+     Break;
+    end;
 end;
 
 procedure TVSTGUI.SBDriveChange(Sender: TObject);

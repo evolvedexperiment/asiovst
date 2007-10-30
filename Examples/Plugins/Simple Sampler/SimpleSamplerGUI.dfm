@@ -24,12 +24,17 @@ object VSTGUI: TVSTGUI
     Top = 158
     Width = 365
     Height = 73
-    BaseOctave = 4
     Align = alBottom
-    Color = clWhite
-    OnMidiKeyDown = MidiKeysMidiKeyDown
-    OnMidiKeyUp = MidiKeysMidiKeyUp
-    OnKeyColor = MidiKeysKeyColor
+    ReleaseMouseBtnOnLeave = False
+    KeyDownMode = kdmFlat
+    Height3d = 0.200000002980232200
+    BlackKeyHeight = 0.629999995231628400
+    BaseOctave = 4
+    KeyZones = <>
+    ShowKeyZones = False
+    KeyZoneHeight = 10
+    OnNoteOn = MidiKeysNoteOn
+    OnNoteOff = MidiKeysNoteOff
   end
   object Label1: TLabel
     Left = 8

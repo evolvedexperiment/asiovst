@@ -1,7 +1,7 @@
 object VSTSSModule: TVSTSSModule
   OldCreateOrder = False
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth, effFlagsUnused1]
+  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'Simple Sampler'
   ProductName = 'Simple Sampler'
