@@ -249,6 +249,7 @@ type
 
   TMainProc = function(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl;
 
+  // IMPORTANT: This enum has to be ordered this way!!!
   TEffFlag = (
     effFlagsHasEditor,           // if set, is expected to react to editor messages
     effFlagsHasClip,             // NOT USED SINCE 2.4 - return > 1. in getVu() if clipped
@@ -256,10 +257,10 @@ type
     effFlagsCanMono,             // NOT USED SINCE 2.4 - if numInputs == 2, makes sense to be used for mono in
     effFlagsCanReplacing,        // MUST BE SET! supports in place output (processReplacing() exsists)
     effFlagsProgramChunks,       // program data are handled in formatless chunks
-    effFlagsIsSynth,             // host may assign mixer channels for its outputs
-    effFlagsNoSoundInStop,       // does not produce sound when input is all silence
     effFlagsUnused1,             // Unused
     effFlagsUnused2,             // Unused
+    effFlagsIsSynth,             // host may assign mixer channels for its outputs
+    effFlagsNoSoundInStop,       // does not produce sound when input is all silence
     effFlagsExtIsAsync,          // NOT USED IN 2.4! - for external dsp; plug returns immedeately from process()
                                  // host polls plug position (current block) via effGetCurrentPosition
     effFlagsExtHasBuffer,        // NOT USED IN 2.4! - external dsp, may have their own output buffer (32 bit float)
