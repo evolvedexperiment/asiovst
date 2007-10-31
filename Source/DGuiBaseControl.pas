@@ -37,12 +37,12 @@ type
     fOnDragMouseMove: TGuiOnDragMouseMove;
     {$IFNDEF FPC}
     fTransparent: Boolean;
-    procedure DrawParentImage(Dest: TCanvas);
-    procedure SetTransparent(Value: Boolean);
+    procedure DrawParentImage(Dest: TCanvas); virtual;
+    procedure SetTransparent(Value: Boolean); virtual;
     {$ENDIF}
 
-    procedure SetLinewidth(Value: Integer);
-    procedure SetLineColor(Value: TColor);
+    procedure SetLineWidth(Value: Integer); virtual;
+    procedure SetLineColor(Value: TColor); virtual;
     procedure RedrawBuffer(doBufferFlip: Boolean = false); dynamic; abstract;
     procedure ResizeBuffer; dynamic;
     procedure MouseEnter; dynamic;
@@ -66,8 +66,8 @@ type
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     
-    procedure SetRedrawInterval(Value: Integer);
-    function  GetRedrawInterval: Integer;
+    procedure SetRedrawInterval(Value: Integer); virtual;
+    function  GetRedrawInterval: Integer; virtual;
   public
     MouseState: TGuiMouseState;
     constructor Create(AOwner: TComponent); overload; override;
@@ -78,12 +78,12 @@ type
     procedure UpdateGuiTimer(Sender: TObject); virtual;
 
     property LineWidth: Integer read fLineWidth write SetLineWidth default 1;
-    property LineColor: TColor read fLineColor write SetLineColor;
+    property LineColor: TColor read fLineColor write SetLineColor default clBlack;
     {$IFNDEF FPC}
     property Transparent: Boolean read fTransparent write SetTransparent default False;
     {$ENDIF}   
     property RedrawInterval: Integer read GetRedrawInterval write SetRedrawInterval default 0;
-    property ReleaseMouseBtnOnLeave: Boolean read fReleaseMouseBtnOnLeave write fReleaseMouseBtnOnLeave;
+    property ReleaseMouseBtnOnLeave: Boolean read fReleaseMouseBtnOnLeave write fReleaseMouseBtnOnLeave default false;
   published
 
     property Enabled;
@@ -232,6 +232,7 @@ end;
 procedure TGuiBaseControl.UpdateGuiTimer(Sender: TObject);
 begin
   if not fTimerMustRedraw then exit;
+  
   fRedrawTimer.Enabled:=false;
   RedrawBuffer(true);
   fRedrawTimer.Enabled:=true;

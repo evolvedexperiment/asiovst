@@ -111,7 +111,7 @@ type
     procedure InitFormFromConfig(Config: TConfig);
   end;
 
-function ShowWizarDGuiDialog(Config: TConfig): Boolean;
+function ShowWizardGuiDialog(Config: TConfig): Boolean;
 
 implementation
 
@@ -156,7 +156,7 @@ const
   PROJECT_PATH_DOES_NOT_EXIST =
     'The project path does not exist. Would you like to create it?';
 
-function ShowWizarDGuiDialog(Config: TConfig): Boolean;
+function ShowWizardGuiDialog(Config: TConfig): Boolean;
 begin
   with TVSTPluginWizardForm.Create(nil) do
   try

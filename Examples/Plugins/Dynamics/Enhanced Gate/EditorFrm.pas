@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, Controls,
-  StdCtrls, Graphics, DGuiDial, Gauges;
+  StdCtrls, Graphics, DGuiDial, Gauges, DGuiBaseControl;
 
 type
   TEditorForm = class(TForm)

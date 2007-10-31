@@ -219,8 +219,7 @@ begin
       CRLF +
       'procedure T' + FormIdent + '.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);' + CRLF +
       'begin' + CRLF +
-      '  GUI := T' + FConfig.EditorFormName + '.Create(nil);' + CRLF +
-      '  (GUI As T' + FConfig.EditorFormName + ').' + FormIdent + ' := Self;' + CRLF +
+      '  GUI := T' + FConfig.EditorFormName + '.Create(Self);' + CRLF +
       'end;' + CRLF +
       CRLF;
   end;

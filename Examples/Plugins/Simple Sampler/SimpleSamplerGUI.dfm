@@ -49,8 +49,7 @@ object VSTGUI: TVSTGUI
     Width = 349
     Height = 121
     Transparent = True
-    LineColor = clBlack
-    DisplayChannels = 2
+    DisplayChannels = 1
     NormalizationType = ntOverallChannels
     WaveDrawMode = wdmOutline
   end

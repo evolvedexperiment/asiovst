@@ -60,7 +60,7 @@ type
     property LineColor; 
     property Color;
     
-    property DisplayChannels: integer read fDisplayChannels write SetDisplayChannels;
+    property DisplayChannels: integer read fDisplayChannels write SetDisplayChannels default 2;
     property WaveVPadding: Integer read fWaveVPadding write SetWaveVPadding default 3;
 
     property MedianVisible: Boolean read fMedianVisible write SetMedianVisible default true;
@@ -79,7 +79,7 @@ begin
   inherited Create(AOwner);
   fNormalizationType := ntNone;
   
-  fDisplayChannels := 1;
+  fDisplayChannels := 2;
   fWaveVPadding    := 3;
   fMedianVisible   := true;
   fMedianColor     := clRed;
@@ -192,14 +192,10 @@ begin
 end;
 
 procedure TGuiStaticWaveform.SetWaveForm(NewWaveData: TAVDSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
-var len: integer;
 begin
   ClearWaveForm;
   SetLength(fWaveData,1);
-
-  len:=Length(NewWaveData);
-  SetLength(fWaveData[0], len);
-  move(NewWaveData[0],fWaveData[0][0], len * SizeOf(Single));
+  fWaveData[0] := NewWaveData;
 
   if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
 end;
@@ -308,7 +304,7 @@ begin
     MaxSample := MinSample;
 
     COffset:=0;
-    COffsetRounded:=0;
+    COffsetRounded:=1;
     i:=1;
     while i<Length(fWavedata[Channel]) do
     begin
@@ -363,7 +359,7 @@ begin
   begin
     fBuffer.Canvas.Lock;
     fBuffer.Canvas.Brush.Color:=Self.Color;
-
+ 
     {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
         fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
 
@@ -382,7 +378,7 @@ begin
         else
           fNormalizationFactors[i] := 1/Amp;
       end;
-
+    
     if fNormalizationType = ntNone then
     begin
       for i:=0 to fDisplayChannels-1 do
@@ -395,7 +391,7 @@ begin
         if fNormalizationFactors[i]>0 then
           fNormalizationFactors[i] := 1/MaxAmp;
     end;
-
+          
     DrawGraphs;
     fBuffer.Canvas.UnLock;
   end;

@@ -32,6 +32,7 @@ contains
   DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
   DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
   DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas',
+  DGuiDynamicWaveform in '..\Source\DGuiDynamicWaveform.pas',
   DGuiDial in '..\Source\DGuiDial.pas',
   DGuiBaseControl in '..\Source\DGuiBaseControl.pas',
   DGuiRegister in '..\Source\DGuiRegister.pas',

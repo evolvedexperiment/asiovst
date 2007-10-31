@@ -46,19 +46,15 @@ type
     fPosition    : Single;
     fNumGlyphs   : Integer;
     fOnChange    : TNotifyEvent;
-    fColorCircle : TColor;
-    fColorLine   : TColor;
-    fColorAuto   : Boolean;
-    fLineWidth   : Integer;
+    fCircleColor : TColor;
+    fAutoColor   : Boolean;
     fPointerAngles : TGuiDialPointerAngles;
     fDefaultPosition    : Single;
     fRightMouseButton: TGuiDialRMBFunc;
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
-    procedure SetColorAuto(const Value: Boolean);
-    procedure SetLineWidth(const Value: Integer);
-    procedure SetColorCircle(const Value: TColor);
-    procedure SetColorLine(const Value: TColor);
+    procedure SetAutoColor(const Value: Boolean);
+    procedure SetCircleColor(const Value: TColor);
     procedure SetMax(const Value: Single);
     procedure SetMin(const Value: Single);
     procedure SetNumGlyphs(const Value: Integer);
@@ -66,9 +62,9 @@ type
     procedure SetDefaultPosition(Value: Single);
     procedure SetDialBitmap(const Value: TBitmap);
     procedure SetStitchKind(const Value: TGuiDialStitchKind);
-    function CircularMouseToPosition(X, Y: Integer): Single;
     procedure SetPointerAngles(const Value: TGuiDialPointerAngles);
-    function PositionToAngle: Single;
+    function  CircularMouseToPosition(X, Y: Integer): Single;
+    function  PositionToAngle: Single;
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure CalcColorCircle;
@@ -82,15 +78,16 @@ type
     destructor Destroy; override;
   published  
     property Color;
+    property LineWidth;
+    property LineColor;
+    property CircleColor : TColor read fCircleColor write SetCircleColor default clBlack;
+
     property AutoSize: Boolean read fAutoSize write SetAutoSize default false;
-    property ColorAuto: Boolean read fColorAuto write SetColorAuto default false;
+    property AutoColor: Boolean read fAutoColor write SetAutoColor default false;
     property Position: Single read FPosition write SetPosition;
     property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
     property Min: Single read FMin write SetMin;
     property Max: Single read FMax write SetMax;
-    property ColorCircle : TColor read fColorCircle write SetColorCircle default clBlack;
-    property ColorLine : TColor read fColorLine write SetColorLine default clRed;
-    property LineWidth : Integer read fLineWidth write SetLineWidth default 2;
     property RightMouseButton: TGuiDialRMBFunc read fRightMouseButton write fRightMouseButton default rmbfCircular;
     property NumGlyphs: Integer read fNumGlyphs write SetNumGlyphs default 1;
     property DialBitmap: TBitmap read fDialBitmap write SetDialBitmap;
@@ -204,8 +201,8 @@ begin
   inherited Create(AOwner);
   fPointerAngles := TGuiDialPointerAngles.Create;
   fPointerAngles.OnChange := SettingsChanged;
-  fColorCircle := clBlack;
-  fColorLine := clRed;
+  fCircleColor := clBlack;
+  fLineColor := clRed;
   fLineWidth := 2;
   fRightMouseButton := rmbfCircular;
   fMin := 0;
@@ -277,8 +274,8 @@ begin
         end;
 
         Pen.Width := fLineWidth;
-        Pen.Color := fColorLine;
-        Brush.Color := fColorCircle;
+        Pen.Color := fLineColor;
+        Brush.Color := fCircleColor;
         Polygon(PtsArray);
       end; 
 
@@ -454,43 +451,25 @@ end;
 procedure TGuiDial.CalcColorCircle;
 begin
   if (Color and $000000FF)<$80 then
-    if (((Color and $0000FF00) shr  8)<$80) or (((Color and $00FF0000) shr 16)<$80) then fColorCircle:=$FFFFFF
+    if (((Color and $0000FF00) shr  8)<$80) or (((Color and $00FF0000) shr 16)<$80) then fCircleColor:=$FFFFFF
   else
-    if (((Color and $0000FF00) shr  8)<$80) and (((Color and $00FF0000) shr 16)<$80) then fColorCircle:=$FFFFFF;
+    if (((Color and $0000FF00) shr  8)<$80) and (((Color and $00FF0000) shr 16)<$80) then fCircleColor:=$FFFFFF;
 
   RedrawBuffer(true);
 end;
 
-procedure TGuiDial.SetColorAuto(const Value: Boolean);
+procedure TGuiDial.SetAutoColor(const Value: Boolean);
 begin
   CalcColorCircle;
 end;
 
-procedure TGuiDial.SetColorCircle(const Value: TColor);
+procedure TGuiDial.SetCircleColor(const Value: TColor);
 begin
-  if not fColorAuto and (Value<>fColorCircle) then
+  if not fAutoColor and (Value<>fCircleColor) then
   begin
-    fColorCircle:=Value;
+    fCircleColor:=Value;
     RedrawBuffer(true);
   end;
 end;
-
-procedure TGuiDial.SetColorLine(const Value: TColor);
-begin
-  if not fColorAuto and (Value<>fColorLine) then
-  begin
-    fColorLine:=Value;
-    RedrawBuffer(true);
-  end;
-end;
-
-procedure TGuiDial.SetLineWidth(const Value: Integer);
-begin
-  if (Value<>fLineWidth) then
-  begin
-    fLineWidth:=Value;
-    RedrawBuffer(true);
-  end;
-end; 
 
 end.
