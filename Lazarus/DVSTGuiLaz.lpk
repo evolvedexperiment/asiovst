@@ -30,9 +30,9 @@
         <UnitName Value="DGuiMidiKeys"/>
       </Item2>
       <Item3>
-        <Filename Value="..\Source\DGuiWaveform.pas"/>
+        <Filename Value="..\Source\DGuiStaticWaveform.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="DGuiWaveform"/>
+        <UnitName Value="DGuiStaticWaveform"/>
       </Item3>
       <Item4>
         <Filename Value="..\Source\DGuiADSRGraph.pas"/>

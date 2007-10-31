@@ -31,7 +31,7 @@ requires
 contains
   DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
   DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
-  DGuiWaveform in '..\Source\DGuiWaveform.pas',
+  DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas',
   DGuiDial in '..\Source\DGuiDial.pas',
   DGuiBaseControl in '..\Source\DGuiBaseControl.pas',
   DGuiRegister in '..\Source\DGuiRegister.pas',

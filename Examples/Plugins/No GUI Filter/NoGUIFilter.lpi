@@ -200,8 +200,8 @@
         <UsageCount Value="9"/>
       </Unit20>
       <Unit21>
-        <Filename Value="..\..\..\Source\DGuiWaveform.pas"/>
-        <UnitName Value="DGuiWaveform"/>
+        <Filename Value="..\..\..\Source\DGuiStaticWaveform.pas"/>
+        <UnitName Value="DGuiStaticWaveform"/>
         <CursorPos X="1" Y="4"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>

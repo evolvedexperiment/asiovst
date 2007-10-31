@@ -3,7 +3,7 @@ unit SimpleSamplerGUI;
 interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-     Controls, StdCtrls, DGuiMidiKeys, Graphics, Dialogs, WaveIOX, DGuiWaveform,
+     Controls, StdCtrls, DGuiMidiKeys, Graphics, Dialogs, WaveIOX, DGuiStaticWaveform,
   DGuiBaseControl;
 
 type

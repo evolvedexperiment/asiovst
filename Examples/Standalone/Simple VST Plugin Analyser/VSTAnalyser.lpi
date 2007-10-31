@@ -70,8 +70,8 @@
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="../../../Source/DGuiWaveform.pas"/>
-        <UnitName Value="DGuiWaveform"/>
+        <Filename Value="../../../Source/DGuiStaticWaveform.pas"/>
+        <UnitName Value="DGuiStaticWaveform"/>
         <CursorPos X="40" Y="166"/>
         <TopLine Value="145"/>
         <EditorIndex Value="5"/>

@@ -36,7 +36,7 @@ contains
   DGuiRegister in '..\Source\DGuiRegister.pas',
   DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
   DGuiDial in '..\Source\DGuiDial.pas',
-  DGuiWaveform in '..\Source\DGuiWaveform.pas',
+  DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas',
   DGuiMidiKeyZones in '..\Source\DGuiMidiKeyZones.pas';
 
 end.

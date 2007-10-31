@@ -8,7 +8,7 @@ implementation
 
 {$IFNDEF FPC}{$R DGUIRegister.res}{$ENDIF}
 
-uses Classes, DGuiWaveform, DGuiDial, DGuiMidiKeys, DGuiADSRGraph;
+uses Classes, DGuiStaticWaveform, DGuiDial, DGuiMidiKeys, DGuiADSRGraph;
 
 procedure Register;
 begin
