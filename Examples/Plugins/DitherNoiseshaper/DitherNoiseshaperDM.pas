@@ -4,7 +4,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, 
-  DAVDCommon, DVSTModule, DDitherNoiseshaper;
+  DAVDCommon, DVSTModule, DDspDitherNoiseshaper;
 
 type
   TDitherNoiseshaperModule = class(TVSTModule)

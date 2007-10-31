@@ -30,10 +30,8 @@ end;
 // Generate window function (Gaussian)
 procedure ApplyGaussianWindow(const Data : TAVDSingleDynArray);
 var i,j : Integer;
-    k   : Double;
 begin
  j := Length(Data)-1;
- k := 1/j;
  for i:=0 to j
   do Data[i]:=Data[i]*(exp(-5.0/(sqr(j)) * (2 * i - j) * (2 * i - j)));
 end;

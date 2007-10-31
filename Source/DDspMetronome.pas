@@ -1,4 +1,4 @@
-unit DMetronome;
+unit DDspMetronome;
 
 interface
 

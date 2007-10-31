@@ -1,4 +1,4 @@
-unit DDitherNoiseShaper;
+unit DDspDitherNoiseShaper;
 
 interface
 

@@ -180,9 +180,9 @@ begin
 end;
 
 procedure TBesselFilter.Complex(Frequency: Double; out Real, Imaginary: Double);
-var cw, Divider  : Double;
+(*var cw, Divider  : Double;
     cmplx        : TComplexDouble;
-    i            : Integer;
+    i            : Integer;*)
 begin
 (*
  if fOrder = 0 then
@@ -345,10 +345,11 @@ begin
 end;
 
 function TBesselLP.MagnitudeSquared(Frequency:Double):Double;
-var
+(*var
   i    : Integer;
-  a,cw : Double;
+  a,cw : Double;*)
 begin
+  Result:=1; // dummy
 (*
  cw:=2*cos(2*Frequency*pi*fSRR); a:=sqr(cw+2);
  Result:=1;
@@ -364,9 +365,10 @@ begin
 end;
 
 function TBesselLP.Phase(Frequency:Double):Double;
-var cw, sw, Nom, Den : Double;
-    i : Integer;
+(*var cw, sw, Nom, Den : Double;
+    i : Integer;*)
 begin
+  Result:=0; // dummy
 (*
  GetSinCos(2*Frequency*pi*fSRR,sw,cw);
  Nom := sw * fAB[0] * 2 * (fAB[3] -1) * (1 + cw);
@@ -464,10 +466,11 @@ begin
 end;
 
 function TBesselHP.MagnitudeSquared(Frequency:Double):Double;
-var
+(*var
   i    : Integer;
-  a,cw : Double;
+  a,cw : Double;*)
 begin
+  Result:=1; // dummy
 (*
  cw:=2*cos(2*Frequency*pi*fSRR); a:=sqr(cw-2);
  Result:=1;
