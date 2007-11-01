@@ -116,10 +116,9 @@ type
   end;
 
   TSoftKneeFeedbackCompressor = class(TSimpleFeedbackCompressor)
-  private
+  protected
     fRatioReciprocal     : Double;
     fThresholdReciprocal : Double;
-  protected
     procedure RatioThresholdChanged; override;
   public
     function ProcessSample(Input : Double):Double; override;
@@ -226,6 +225,7 @@ begin
   fAttack := 5;
   fDecay := 5;
   fLevel := 0;
+  fRatio := 1;
   CalculateThreshold;
   CalculateAttackFactor;
   CalculateDecayFactor;
