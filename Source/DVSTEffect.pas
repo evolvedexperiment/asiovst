@@ -249,22 +249,6 @@ type
 
   TMainProc = function(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl;
 
-  {$IFDEF DELPHI6_UP}
-  TEffFlag = (
-    effFlagsHasEditor = 0,            // if set, is expected to react to editor messages
-    effFlagsHasClip = 1,              // NOT USED SINCE 2.4 - return > 1. in getVu() if clipped
-    effFlagsHasVu = 2,                // NOT USED SINCE 2.4 - return vu value in getVu(); > 1. means clipped
-    effFlagsCanMono = 3,              // NOT USED SINCE 2.4 - if numInputs == 2, makes sense to be used for mono in
-    effFlagsCanReplacing = 4,         // MUST BE SET! supports in place output (processReplacing() exsists)
-    effFlagsProgramChunks = 5,        // program data are handled in formatless chunks
-    effFlagsIsSynth = 8,              // host may assign mixer channels for its outputs
-    effFlagsNoSoundInStop = 9,        // does not produce sound when input is all silence
-    effFlagsExtIsAsync = 9,           // NOT USED IN 2.4! - for external dsp; plug returns immedeately from process()
-                                      // host polls plug position (current block) via effGetCurrentPosition
-    effFlagsExtHasBuffer = 10,        // NOT USED IN 2.4! - external dsp, may have their own output buffer (32 bit float)
-                                      // host then requests this via effGetDestinationBuffer
-    effFlagsCanDoubleReplacing = 11); // plug-in supports double precision processing
-  {$ELSE}
   TEffFlag = (
     effFlagsHasEditor,           // if set, is expected to react to editor messages
     effFlagsHasClip,             // NOT USED SINCE 2.4 - return > 1. in getVu() if clipped
@@ -281,7 +265,6 @@ type
     effFlagsExtHasBuffer,        // NOT USED IN 2.4! - external dsp, may have their own output buffer (32 bit float)
                                  // host then requests this via effGetDestinationBuffer
     effFlagsCanDoubleReplacing); // plug-in supports double precision processing
-  {$ENDIF}
 
   TEffFlags = set of TEffFlag;
 
