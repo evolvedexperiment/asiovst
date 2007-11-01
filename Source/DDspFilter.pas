@@ -427,11 +427,32 @@ begin
 end;
 
 function TBiquadIIRFilter.ProcessSample(const Input:Double):Double;
+{$IFDEF PUREPASCAL}
 begin
- result    := fNominator[0]*Input + fState[0];
- fState[0] := fNominator[1]*Input - fDenominator[1]*result + fState[1];
- fState[1] := fNominator[2]*Input - fDenominator[2]*result;
+ result    := fNominator[0] * Input + fState[0];
+ fState[0] := fNominator[1] * Input - fDenominator[1] * result + fState[1];
+ fState[1] := fNominator[2] * Input - fDenominator[2] * result;
 end;
+{$ELSE}
+asm
+ fld Input.Double                    // Input
+ fmul [self.fNominator].Double       // a0 * Input
+ fadd [self.fState].Double           // r = d0 + a0 * Input
+ fld st(0)                           // r, r
+ fld st(0)                           // r, r, r
+ fmul [self.fDenominator].Double     // b0 * r, r, r
+ fld Input.Double                    // Input, b0 * r, r, r
+ fmul [self.fNominator + 8].Double   // a1 * Input, b0 * r, r, r
+ fsubrp                              // a1 * Input + b0 * r, r, r
+ fadd [self.fState+8].Double         // d1 + a1 * Input - b0 * r, r, r
+ fstp [self.fState].Double           // d0 = a1 * Input + d1 + b1 * r, r, r
+ fmul [self.fDenominator+8].Double   // b1*r, r
+ fld Input.Double                    // Input, b1*r, r
+ fmul [self.fNominator+16].Double    // a2*Input, b1*r, r
+ fsubrp st(1), st(0)                 // b1*r + a2*Input, r !!!
+ fstp [self.fState+8].Double         // d1 = b1*r + a2*Input, r !!!
+end;
+{$ENDIF}
 
 function TBiquadIIRFilter.ProcessSample(const Input: Int64): Int64;
 begin
