@@ -30,6 +30,9 @@ requires
   AVDCommon_D6;
 
 contains
+  DDspBaseComponent in '..\Source\DDspBaseComponent.pas',
+  DDspRegister in '..\Source\DDspRegister.pas',
+  DDspEnvelopeFollower in '..\Source\DDspEnvelopeFollower.pas',
   DDspBesselFilter in '..\Source\DDspBesselFilter.pas',
   DDspButterworthFilter in '..\Source\DDspButterworthFilter.pas',
   DDspChebyshevFilter in '..\Source\DDspChebyshevFilter.pas',

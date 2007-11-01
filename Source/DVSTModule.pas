@@ -1356,7 +1356,7 @@ procedure TCustomVSTModule.FOnProcessMute(const Inputs, Outputs: TArrayOfSingleD
 var i : Integer;
 begin
  for i := 0 to numOutputs - 1
-  do Fillchar(Outputs[i,0], 0, SampleFrames * SizeOf(Single));
+  do Fillchar(Outputs[i,0], SampleFrames * SizeOf(Single), 0);
 end;
 
 procedure TCustomVSTModule.FOnProcessCopy(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
@@ -1370,7 +1370,7 @@ procedure TCustomVSTModule.FOnProcessMute(const Inputs, Outputs: TArrayOfDoubleD
 var i : Integer;
 begin
  for i := 0 to numOutputs - 1
-  do Fillchar(Outputs[i,0], 0, SampleFrames * SizeOf(Double));
+  do Fillchar(Outputs[i,0], SampleFrames * SizeOf(Double), 0);
 end;
 
 procedure TCustomVSTModule.SetBlockForcedSize(v: Integer);

@@ -1,6 +1,5 @@
 package DVSTGui_D7;
 
-{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -38,6 +37,7 @@ contains
   DGuiDial in '..\Source\DGuiDial.pas',
   DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas',
   DGuiDynamicWaveform in '..\Source\DGuiDynamicWaveform.pas',
-  DGuiMidiKeyZones in '..\Source\DGuiMidiKeyZones.pas';
+  DGuiMidiKeyZones in '..\Source\DGuiMidiKeyZones.pas',
+  DGuiLevelMeter in '..\Source\DGuiLevelMeter.pas';
 
 end.

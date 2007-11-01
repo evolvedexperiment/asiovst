@@ -49,7 +49,6 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
-
 procedure TVSTVUMeterModule.VSTModuleProcess(const inputs,
   outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i: integer;
@@ -61,7 +60,7 @@ begin
  // that were pre-calculated and stored in the variables vol_l and vol_r
  // in the parameterChanged procedure.
  // There is also a simple VU meter code here
- for i := 0 to sampleframes - 1 do
+for i := 0 to sampleframes - 1 do
   begin
    outputs[0, i] := inputs[0, i] * fVolume[0];
    outputs[1, i] := inputs[1, i] * fVolume[1];
