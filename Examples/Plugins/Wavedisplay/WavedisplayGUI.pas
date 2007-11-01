@@ -10,17 +10,15 @@ uses
 type
   TWavedisplayGUI = class(TForm)
     Display: TGuiDynamicWaveform;
-    ddDrawMode: TComboBox;
     Label1: TLabel;
-    ddWaveSize: TComboBox;
     Label2: TLabel;
     Label3: TLabel;
+    ddWaveSize: TComboBox;
+    ddDrawMode: TComboBox;
     ddProcessing: TComboBox;
     procedure ddProcessingChange(Sender: TObject);
     procedure ddWaveSizeChange(Sender: TObject);
     procedure ddDrawModeChange(Sender: TObject);
-  public
-    WavedisplayModule: TVSTModule;
   end;
 
 implementation
@@ -51,9 +49,10 @@ end;
 procedure TWavedisplayGUI.ddDrawModeChange(Sender: TObject);
 begin
   case ddDrawMode.ItemIndex of
-    0: Display.WaveDrawMode:=wdmSolid;
-    1: Display.WaveDrawMode:=wdmOutline;
-    2: Display.WaveDrawMode:=wdmPoints;
+    0: Display.WaveDrawMode := wdmSolid;
+    1: Display.WaveDrawMode := wdmOutline;
+    2: Display.WaveDrawMode := wdmPoints;
+    3: Display.WaveDrawMode := wdmSimple;
   end;
 end;
 

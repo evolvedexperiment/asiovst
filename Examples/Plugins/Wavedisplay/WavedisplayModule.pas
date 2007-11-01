@@ -35,7 +35,7 @@ begin
     (EditorForm as TWavedisplayGUI).Display.ProcessBufferIndirect(Inputs, 2, SampleFrames);
 
   for i := 0 to 1 do
-    move(inputs[i,0], outputs[i,0], SampleFrames*sizeOf(single));
+    move(inputs[i,0], outputs[i,0], SampleFrames * sizeOf(Single));
 end;
 
 end.

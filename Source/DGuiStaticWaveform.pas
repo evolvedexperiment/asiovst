@@ -10,7 +10,7 @@ uses
 
 type
   TGuiNormalizationType = (ntNone, ntPerChannel, ntOverallChannels);
-  TGuiWaveDrawMode = (wdmSolid, wdmPoints, wdmOutline);
+  TGuiWaveDrawMode = (wdmSolid, wdmPoints, wdmOutline, wdmSimple);
 
   TGuiStaticWaveform = class(TGuiBaseControl)
   private
@@ -242,8 +242,6 @@ end;
 procedure TGuiStaticWaveform.DrawSamples(var OldMaxPos, OldMinPos: TPoint; NewMax, NewMin: TPoint);
 var LastCenter: Integer;
 begin
-  LastCenter:=(OldMaxPos.Y+OldMinPos.Y) div 2;
-
   with fBuffer.Canvas do
   begin
     case fWaveDrawMode of
@@ -263,21 +261,27 @@ begin
                MoveTo(OldMinPos.X, OldMinPos.Y);
                LineTo(NewMax.X, NewMax.Y);
                LineTo(OldMaxPos.X, OldMaxPos.Y);
-             end else begin   
+             end else begin
                MoveTo(NewMin.X, NewMin.Y);
                LineTo(OldMinPos.X, OldMinPos.Y);
                MoveTo(NewMax.X, NewMax.Y);
-               LineTo(OldMaxPos.X, OldMaxPos.Y); 
+               LineTo(OldMaxPos.X, OldMaxPos.Y);
              end;
            end;
+      wdmSimple: begin
+                  LineTo(OldMaxPos.X, NewMin.Y);
+                  LineTo(NewMax.X, NewMax.Y);
+                 end;
 
       else begin
-             if abs(NewMax.Y-LastCenter) > abs(NewMin.Y-LastCenter) then
+             LastCenter := (OldMaxPos.Y+OldMinPos.Y) div 2;
+             if abs(NewMax.Y-LastCenter) < abs(NewMin.Y-LastCenter) then
              begin
                LineTo(NewMax.X, NewMax.Y);
+               if NewMin.Y<>NewMax.Y then LineTo(NewMin.X, NewMin.Y);
              end else begin
-               if NewMin.Y<>NewMax.Y then LineTo(NewMax.X, NewMax.Y);
                LineTo(NewMin.X, NewMin.Y);
+               if NewMin.Y<>NewMax.Y then LineTo(NewMax.X, NewMax.Y);
              end;
            end
     end

@@ -61,7 +61,8 @@ object WavedisplayGUI: TWavedisplayGUI
     Items.Strings = (
       'Solid'
       'Outline'
-      'Points')
+      'Points'
+      'Simple')
   end
   object ddWaveSize: TComboBox
     Left = 198
