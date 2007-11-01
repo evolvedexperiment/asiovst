@@ -1,5 +1,6 @@
 package AVDDSP_D10;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -46,6 +47,7 @@ contains
   DDspFFT in '..\Source\DDspFFT.pas',
   DDspDFT in '..\Source\DDspDFT.pas',
   DDspDitherNoiseShaper in '..\Source\DDspDitherNoiseShaper.pas',
-  DDspMetronome in '..\Source\DDspMetronome.pas';
+  DDspMetronome in '..\Source\DDspMetronome.pas',
+  DDSPRemez in '..\Source\DDSPRemez.pas';
 
 end.

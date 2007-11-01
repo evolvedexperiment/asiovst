@@ -84,7 +84,6 @@ type
     property RippleRatio : Double read fRippleRatio write fRippleRatio;
   end;
 
-procedure register;
 procedure Remez(var h : TAVDDoubleDynArray; const bands, des, weight: TAVDDoubleDynArray; FilterTyp:TFilterKind);
 
 implementation
@@ -880,15 +879,6 @@ begin
   begin
    fHighFrequency := Value;
   end;
-end;
-
-
-procedure register;
-begin
-  RegisterComponents('ASIO/VST DSP', [TRemezLowpassFilterDesigner,
-                                      TRemezHighpassFilterDesigner,
-                                      TRemezBandpassFilterDesigner,
-                                      TRemezBandstopFilterDesigner]);
 end;
 
 end.

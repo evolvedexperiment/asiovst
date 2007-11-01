@@ -7,11 +7,16 @@ procedure Register;
 implementation
 
 {$IFNDEF FPC}{$R DDspRegister.res}{$ENDIF}
-uses Classes, DDspEnvelopeFollower;
+uses Classes, DDspEnvelopeFollower, DDSPRemez;
 
 procedure Register;
 begin
-  RegisterComponents('ASIO/VST DSP', [TDspEnvelopeFollower]);
+  RegisterComponents('ASIO/VST DSP', [TRemezLowpassFilterDesigner,
+                                      TRemezHighpassFilterDesigner,
+                                      TRemezBandpassFilterDesigner,
+                                      TRemezBandstopFilterDesigner,
+                                      TDspEnvelopeFollower]);
 end;
 
-end.
+
+end.
