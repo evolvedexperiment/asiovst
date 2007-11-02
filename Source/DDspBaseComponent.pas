@@ -13,13 +13,13 @@ type
   protected
     fBypass: Boolean;
     fEnabled: Boolean;
-    fSampleRate: Integer;
+    fSampleRate: Single;
     fChannels: Integer;
     fNextDspQueueItem: TDspBaseComponent;
     fOnDestroy: TDspDestroyNotification;
 
     procedure SetNextDspQueueItem(const Value: TDspBaseComponent); virtual;
-    procedure SetSampleRate(const Value: Integer); virtual;
+    procedure SetSampleRate(const Value: Single); virtual;
     procedure SetChannels(const Value: Integer); virtual;
     procedure SampleRateChanged; virtual;
     procedure ChannelsChanged; virtual;
@@ -50,20 +50,23 @@ type
     function ProcessQueue(channel: integer; input: TAVDDoubleDynArray): TAVDDoubleDynArray; overload; virtual;
     function ProcessQueue(input: TArrayOfSingleDynArray): TArrayOfSingleDynArray;           overload; virtual;
     function ProcessQueue(input: TArrayOfDoubleDynArray): TArrayOfDoubleDynArray;           overload; virtual;
+
     property OnDestroy: TDspDestroyNotification read fOnDestroy write fOnDestroy;
+    procedure OwnerChangedSampleRate(Sender: TObject; const SampleRate: Single);
   published
     property Enabled: Boolean                    read FEnabled          write fEnabled      default true;
     property Bypass: Boolean                     read FBypass           write fBypass       default true;
-    property SampleRate: Integer                 read fSampleRate       write SetSampleRate default 44100;
     property Channels: Integer                   read fChannels         write SetChannels   default 2;
     property NextDspQueueItem: TDspBaseComponent read fNextDspQueueItem write SetNextDspQueueItem;
+    property SampleRate: Single                  read fSampleRate       write SetSampleRate;
   end;
 
 implementation
 
-uses Sysutils, Dialogs;
+uses Sysutils, DVSTModule, Math;
 
 constructor TDspBaseComponent.Create(AOwner: TComponent);
+var OVST: TCustomVSTModule;
 begin
   inherited;
   fNextDspQueueItem := nil;
@@ -71,6 +74,16 @@ begin
   fBypass           := true;
   fSampleRate       := 44100;
   fChannels         := 2;
+
+  if AOwner is TCustomVSTModule then
+  begin
+    OVST:=AOwner as TCustomVSTModule;
+    if not assigned(OVST.OnSampleRateChange) then
+      OVST.OnSampleRateChange := OwnerChangedSampleRate;
+
+    fSampleRate:=OVST.SampleRate;
+    fChannels := max(OVST.numInputs, OVST.numOutputs);
+  end;
   Init;
 end;
 
@@ -82,7 +95,12 @@ end;
 
 destructor TDspBaseComponent.Destroy;
 begin
-  if assigned(fOnDestroy) then fOnDestroy(self, fNextDspQueueItem); 
+//  if Owner is TCustomVSTModule then
+//    with Owner as TCustomVSTModule do
+//      if (@OnSampleRateChange = @OwnerChangedSampleRate) then
+//        OnSampleRateChange:=nil;
+
+  if assigned(fOnDestroy) then fOnDestroy(self, fNextDspQueueItem);
   inherited;
 end;
 
@@ -150,8 +168,13 @@ begin
   if fNextDspQueueItem = Sender then fNextDspQueueItem:=Replacement;
 end;
 
+procedure TDspBaseComponent.OwnerChangedSampleRate(Sender: TObject; const SampleRate: Single);
+begin
+  SetSampleRate(SampleRate);
+end;
 
-procedure TDspBaseComponent.SetSampleRate(const Value: Integer);
+
+procedure TDspBaseComponent.SetSampleRate(const Value: Single);
 begin
   if (fSampleRate<>Value) and (Value>0) then
   begin
