@@ -588,7 +588,7 @@ begin
   if fKeyZoneHeight <> Value then
   begin
     fKeyZoneHeight := Value;
-    if not ShowKeyZones and (fKeyZoneHeight>0) then fShowKeyZones := true;
+    if not (csLoading in  ComponentState) and not ShowKeyZones and (fKeyZoneHeight>0) then fShowKeyZones := true;
     CalculateVisibleKeys;
     RedrawBuffer(true);
   end;
