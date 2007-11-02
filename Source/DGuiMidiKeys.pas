@@ -256,8 +256,8 @@ type
     property IncludeLastOctave: Boolean read fIncludeLastOctave write SetIncludeLastOctave default false;
     property KeyZones: TGuiKeyZoneCollection read fKeyZones write SetKeyZones;
 
-    property ShowKeyZones: Boolean read fShowKeyZones write SetShowKeyZones;
-    property KeyZoneHeight: Integer read fKeyZoneHeight write SetKeyZoneHeight;
+    property ShowKeyZones: Boolean read fShowKeyZones write SetShowKeyZones default True;
+    property KeyZoneHeight: Integer read fKeyZoneHeight write SetKeyZoneHeight default 10;
     property AllowKeyDragging: Boolean read fAllowKeyDragging write fAllowKeyDragging default true;
 
     property OnMouseUpOnMidiKey: TGuiOnMouseUpOnMidiKey read fOnMouseUpOnMidiKey write fOnMouseUpOnMidiKey;
@@ -296,7 +296,7 @@ begin
   inherited Create(AOwner);
   fKeyZones := TGuiKeyZoneCollection.Create(self);
    
-  fShowKeyZones         := true;
+  fShowKeyZones         := True;
   fKeyZoneHeight        := 10;
 
   fAllowKeyDragging        := true;
@@ -388,8 +388,8 @@ begin
     exclude(Flags, kfVisible);
   end;
 
-  if fShowKeyZones then TopMargin:=fKeyZoneHeight+2 else TopMargin:=1;
-  BottomMargin := height-1;
+  if fShowKeyZones then TopMargin := fKeyZoneHeight+2 else TopMargin := 1;
+  BottomMargin := height - 1;
   
 
   // set white keys  
