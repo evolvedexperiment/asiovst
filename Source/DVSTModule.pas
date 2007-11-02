@@ -11,7 +11,7 @@ uses
     Windows,
     Messages,
   {$ENDIF}
-  SysUtils, Forms, Classes, DVSTEffect, DAVDCommon;
+  SysUtils, Forms, Classes, DVSTEffect, DAVDCommon, DAVDProcessingComponent;
 
 type
   TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
@@ -568,6 +568,10 @@ type
     function GetPreviousPlug(input: Integer): PVSTEffect; virtual;  // input can be -1 in which case the first found is returned
     function GetNextPlug(output: Integer): PVSTEffect; virtual;     // output can be -1 in which case the first found is returned
     function UpdateDisplay: Boolean; virtual; // something has changed, update 'multi-fx' display returns True if supported
+
+    // Plug <-> DSP
+    procedure RegisterDSPItem(item: TAVDProcessingComponent);
+    procedure UnRegisterDSPItem(item: TAVDProcessingComponent);
 
     // Properties
     property EditorForm: TForm read FEditorForm;
@@ -3338,6 +3342,19 @@ begin
      end;
     Result := False;
    end;
+end;
+
+
+
+
+procedure TCustomVSTModule.RegisterDSPItem(item: TAVDProcessingComponent);
+begin
+
+end;
+
+procedure TCustomVSTModule.UnRegisterDSPItem(item: TAVDProcessingComponent);
+begin
+
 end;
 
 {$WARNINGS ON}

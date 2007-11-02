@@ -33,6 +33,7 @@ contains
   DAVDCommon in '..\Source\DAVDCommon.pas',
   CPUDetectionTool in '..\Source\CPUDetectionTool.pas',
   DAVDComplex in '..\Source\DAVDComplex.pas',
-  MidiFile in '..\Source\MidiFile.pas';
+  MidiFile in '..\Source\MidiFile.pas',
+  DAVDProcessingComponent in '..\Source\DAVDProcessingComponent.pas';
 
 end.

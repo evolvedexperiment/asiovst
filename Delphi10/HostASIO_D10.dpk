@@ -28,8 +28,7 @@ package HostASIO_D10;
 requires
   AVDCommon_D10,
   vcl,
-  rtl,
-  AVDDSP_D10;
+  rtl;
 
 contains
   DASIOHost in '..\Source\DASIOHost.pas',

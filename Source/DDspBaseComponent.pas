@@ -2,38 +2,40 @@ unit DDspBaseComponent;
 
 interface
 
-uses Classes, DAVDCommon, Contnrs;
+uses Classes, DAVDCommon, Contnrs, DAVDProcessingComponent;
 
 type
-  TDspBaseComponent = class;
   TDspQueueList = TComponentList;
-  TDspDestroyNotification = procedure(Sender: TObject; Replacement: TDspBaseComponent) of object;
 
-  TDspBaseComponent = class(TComponent)
+  TDspBaseComponent = class(TAVDProcessingComponent)
   protected
     fBypass: Boolean;
     fEnabled: Boolean;
     fSampleRate: Single;
     fChannels: Integer;
     fNextDspQueueItem: TDspBaseComponent;
-    fOnDestroy: TDspDestroyNotification;
+    fPrevDspQueueItem: TDspBaseComponent;
+
+    procedure SetSampleRate(const Value: Single); override;
+    procedure SetChannels(const Value: Integer); override;
 
     procedure SetNextDspQueueItem(const Value: TDspBaseComponent); virtual;
-    procedure SetSampleRate(const Value: Single); virtual;
-    procedure SetChannels(const Value: Integer); virtual;
     procedure SampleRateChanged; virtual;
     procedure ChannelsChanged; virtual;
     procedure UpdateParameters; virtual;
+
+    procedure RegisterInOwner(item: TDspBaseComponent);
+    procedure UnRegisterInOwner(item: TDspBaseComponent);
   public
     constructor Create(AOwner: TComponent); overload; override;
     constructor Create(AOwner: TComponent; UseSampleRate: Integer); reintroduce; overload;
     destructor Destroy; override;
 
-    procedure NextQueueItemDestroyed(Sender: TObject; Replacement: TDspBaseComponent);
-
-    procedure Init; virtual;               // called automaticaly in constructor
-    procedure Reset; virtual;              // called manualy
+    procedure Init; override;               // called automaticaly in constructor
+    procedure Reset; override;              // called manualy
     procedure ResetQueue; virtual;
+    function  GetFollowingItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
+    function  GetPreviousItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
     function  GetQueueItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
 
 
@@ -51,40 +53,32 @@ type
     function ProcessQueue(input: TArrayOfSingleDynArray): TArrayOfSingleDynArray;           overload; virtual;
     function ProcessQueue(input: TArrayOfDoubleDynArray): TArrayOfDoubleDynArray;           overload; virtual;
 
-    property OnDestroy: TDspDestroyNotification read fOnDestroy write fOnDestroy;
-    procedure OwnerChangedSampleRate(Sender: TObject; const SampleRate: Single);
+    property PrevDspQueueItem: TDspBaseComponent read fPrevDspQueueItem write fPrevDspQueueItem;
   published
     property Enabled: Boolean                    read FEnabled          write fEnabled      default true;
     property Bypass: Boolean                     read FBypass           write fBypass       default true;
     property Channels: Integer                   read fChannels         write SetChannels   default 2;
-    property NextDspQueueItem: TDspBaseComponent read fNextDspQueueItem write SetNextDspQueueItem;
     property SampleRate: Single                  read fSampleRate       write SetSampleRate;
+    property NextDspQueueItem: TDspBaseComponent read fNextDspQueueItem write SetNextDspQueueItem;
   end;
 
 implementation
 
-uses Sysutils, DVSTModule, Math;
+uses Sysutils, Math, DVSTModule;
 
 constructor TDspBaseComponent.Create(AOwner: TComponent);
-var OVST: TCustomVSTModule;
 begin
   inherited;
   fNextDspQueueItem := nil;
+  fPrevDspQueueItem := nil;
   fEnabled          := true;
   fBypass           := true;
   fSampleRate       := 44100;
   fChannels         := 2;
 
-  if AOwner is TCustomVSTModule then
-  begin
-    OVST:=AOwner as TCustomVSTModule;
-    if not assigned(OVST.OnSampleRateChange) then
-      OVST.OnSampleRateChange := OwnerChangedSampleRate;
-
-    fSampleRate:=OVST.SampleRate;
-    fChannels := max(OVST.numInputs, OVST.numOutputs);
-  end;
   Init;
+
+  RegisterInOwner(self);
 end;
 
 constructor TDspBaseComponent.Create(AOwner: TComponent; UseSampleRate: Integer);
@@ -95,13 +89,28 @@ end;
 
 destructor TDspBaseComponent.Destroy;
 begin
-//  if Owner is TCustomVSTModule then
-//    with Owner as TCustomVSTModule do
-//      if (@OnSampleRateChange = @OwnerChangedSampleRate) then
-//        OnSampleRateChange:=nil;
+  UnRegisterInOwner(self);
 
-  if assigned(fOnDestroy) then fOnDestroy(self, fNextDspQueueItem);
+  if assigned(fNextDspQueueItem) then
+  begin
+    fNextDspQueueItem.PrevDspQueueItem := fPrevDspQueueItem;
+    if not assigned(fPrevDspQueueItem) then RegisterInOwner(fNextDspQueueItem);
+
+  end;
+  if assigned(fPrevDspQueueItem) then fPrevDspQueueItem.NextDspQueueItem := fNextDspQueueItem;
   inherited;
+end;
+
+procedure TDspBaseComponent.RegisterInOwner(item: TDspBaseComponent);
+begin
+  if Owner is TCustomVSTModule then
+    (Owner as TCustomVSTModule).RegisterDSPItem(item);
+end;
+
+procedure TDspBaseComponent.UnRegisterInOwner(item: TDspBaseComponent);
+begin
+  if Owner is TCustomVSTModule then
+    (Owner as TCustomVSTModule).UnRegisterDSPItem(item);
 end;
 
 procedure TDspBaseComponent.Init;  begin end;
@@ -125,7 +134,7 @@ begin
 end;
 
 
-function TDspBaseComponent.GetQueueItems(var items: TDspQueueList): boolean;
+function TDspBaseComponent.GetFollowingItems(var items: TDspQueueList): boolean;
 var i: integer;
 begin
   Result:=true;
@@ -142,8 +151,42 @@ begin
       end;
 
     items.Add(fNextDspQueueItem);
-    Result:=Result and fNextDspQueueItem.GetQueueItems(items);
+    Result:=Result and fNextDspQueueItem.GetFollowingItems(items);
   end;
+end;
+
+function TDspBaseComponent.GetPreviousItems(var items: TDspQueueList): boolean;
+var i: integer;
+begin
+  Result:=true;
+  if not assigned(items) then
+    items:=TDspQueueList.Create(false);
+
+  if assigned(fPrevDspQueueItem) then
+  begin
+    for i:=items.Count-1 downto 0 do
+      if items[i]=fPrevDspQueueItem then
+      begin
+        Result:=false;
+        exit;
+      end;
+
+    items.Insert(0, fPrevDspQueueItem);
+    Result:=Result and fNextDspQueueItem.GetPreviousItems(items);
+  end;
+end;
+
+function TDspBaseComponent.GetQueueItems(var items: TDspQueueList): boolean;
+var mypos: integer;
+begin
+  result:=GetPreviousItems(items);
+  if not result then exit;
+
+  mypos:=items.Count;
+
+  result:=result and GetFollowingItems(items);
+  if not result then exit;
+  items.Insert(mypos,self);
 end;
 
 procedure TDspBaseComponent.SetNextDspQueueItem(const Value: TDspBaseComponent);
@@ -154,25 +197,18 @@ begin
     backup := fNextDspQueueItem;
     fNextDspQueueItem := Value;
     x:=nil;
-    if not GetQueueItems(x) then
+    if (fPrevDspQueueItem=Value) or not (GetQueueItems(x)) then
     begin
       fNextDspQueueItem := backup;
       raise Exception.Create('Processing queue loopback');
-    end else
-      fNextDspQueueItem.OnDestroy := NextQueueItemDestroyed;
+    end else begin
+      if not assigned(fNextDspQueueItem.PrevDspQueueItem) then
+        UnRegisterInOwner(fNextDspQueueItem.PrevDspQueueItem);
+
+      fNextDspQueueItem.PrevDspQueueItem:=self;
+    end;
   end;
 end;
-
-procedure TDspBaseComponent.NextQueueItemDestroyed(Sender: TObject; Replacement: TDspBaseComponent);
-begin
-  if fNextDspQueueItem = Sender then fNextDspQueueItem:=Replacement;
-end;
-
-procedure TDspBaseComponent.OwnerChangedSampleRate(Sender: TObject; const SampleRate: Single);
-begin
-  SetSampleRate(SampleRate);
-end;
-
 
 procedure TDspBaseComponent.SetSampleRate(const Value: Single);
 begin

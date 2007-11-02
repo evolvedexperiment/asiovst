@@ -26,8 +26,7 @@ package HostASIO_D5;
 
 requires
   vcl50,
-  AVDCommon_D5,
-  AVDDSP_D5;
+  AVDCommon_D5;
 
 contains
   DASIOHost in '..\Source\DASIOHost.pas',
