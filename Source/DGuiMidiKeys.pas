@@ -1147,7 +1147,7 @@ begin
   if (fMidiKeyDragging.Button <> mbRight) then
   begin
     AllNotesOff(true, KeyNr);
-    FireNoteOn(KeyNr, [kfPressed, kfByMouse]);
+    if KeyNr>=0 then FireNoteOn(KeyNr, [kfPressed, kfByMouse]);
   end;
 
   if Assigned(fOnMoveKeyDragging) then fOnMoveKeyDragging(self, KeyNr, fMidiKeyDragging, Shift, X, Y);
