@@ -5,7 +5,7 @@ interface
 {$I ASIOVST.INC}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
-uses DAVDComplex, DAVDCommon;
+uses DDspBaseComponent, DAVDComplex, DAVDCommon;
 
 type
   TPNType = array[0..1] of TComplexSingle;
@@ -152,6 +152,24 @@ type
   TSimpleNotch=class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
+  end;
+
+  TDspLowpassFilter = class(TDspBaseComponent)
+  private
+    fFrequency: Single;
+    fFilter : Array of TSimpleLowpassFilter;
+    procedure SetFrequency(const Value: Single);
+  protected
+    procedure SampleRateChanged; override;
+    procedure ChannelsChanged; override;
+  published
+  public
+    procedure Init; override;
+    procedure Reset; override;
+    function Process(channel: integer; input: Single): Single; override;
+    function Process(channel: integer; input: Double): Double; override;
+  published
+    property Frequency: Single read fFrequency write SetFrequency;  // 20..20000
   end;
 
 implementation
@@ -666,6 +684,60 @@ function TSimpleGainFilter.ProcessSampleASM: Double;
 asm
  fmul [eax.fGainSpeed].Double
  fmul [eax.fGainSpeed].Double
+end;
+
+{ TDspLowpassFilter }
+
+procedure TDspLowpassFilter.ChannelsChanged;
+var i : Integer;
+begin
+ inherited;
+ for i := fChannels to Length(fFilter) - 1
+  do fFilter[i].Free;
+ SetLength(fFilter, fChannels);
+ for i := 0 to fChannels - 1
+  do if not Assigned(fFilter[i])
+   then fFilter[i] := TSimpleLowpassFilter.Create;
+end;
+
+procedure TDspLowpassFilter.Init;
+begin
+  Reset;
+end;
+
+function TDspLowpassFilter.Process(channel: integer; input: Double): Double;
+begin
+ fFilter[channel].ProcessSample(Input);
+end;
+
+function TDspLowpassFilter.Process(channel: integer; input: Single): Single;
+begin
+ fFilter[channel].ProcessSample(Input);
+end;
+
+procedure TDspLowpassFilter.Reset;
+begin
+  ChannelsChanged;
+  SampleRateChanged;
+end;
+
+procedure TDspLowpassFilter.SampleRateChanged;
+var i : Integer;
+begin
+ inherited;
+ for i := 0 to Length(fFilter) - 1
+  do fFilter[i].SampleRate := fSampleRate;
+end;
+
+procedure TDspLowpassFilter.SetFrequency(const Value: Single);
+var i : Integer;
+begin
+ if fFrequency <> Value then
+  begin
+   fFrequency := Value;
+   for i := 0 to Length(fFilter) - 1
+    do fFilter[i].Frequency := fFrequency;
+  end;
 end;
 
 end.
