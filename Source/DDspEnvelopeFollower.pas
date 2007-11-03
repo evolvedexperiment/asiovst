@@ -21,8 +21,8 @@ type
   public
     procedure Init; override;
     procedure Reset; override;
-    function Process(channel: integer; input: Single): Single; override;
-    function Process(channel: integer; input: Double): Double; override;
+    function Process(channel: integer; input: Single): Single; overload;
+    function Process(channel: integer; input: Double): Double; overload;
   published
     property Attack:  single read fAttack write SetAttack;   // 0..1
     property Release: single read fRelease write SetRelease; // 0..1
@@ -34,6 +34,9 @@ uses Math;
 
 procedure TDspEnvelopeFollower.Init;
 begin
+  fStdProcessS  := Process;
+  fStdProcessD  := Process;
+
   fAttack:=0.5;
   fRelease:=0.5;
   Reset;

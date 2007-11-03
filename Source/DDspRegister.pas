@@ -7,7 +7,7 @@ procedure Register;
 implementation
 
 {$IFNDEF FPC}{$R DDspRegister.res}{$ENDIF}
-uses Classes, DDspEnvelopeFollower, DDSPRemez;
+uses Classes, DDspEnvelopeFollower, DDSPRemez, DDspFilter;
 
 procedure Register;
 begin
@@ -15,7 +15,8 @@ begin
                                       TRemezHighpassFilterDesigner,
                                       TRemezBandpassFilterDesigner,
                                       TRemezBandstopFilterDesigner,
-                                      TDspEnvelopeFollower]);
+                                      TDspEnvelopeFollower,
+                                      TDspLowpassFilter]);
 end;
 
 

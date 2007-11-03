@@ -166,8 +166,8 @@ type
   public
     procedure Init; override;
     procedure Reset; override;
-    function Process(channel: integer; input: Single): Single; override;
-    function Process(channel: integer; input: Double): Double; override;
+    function Process(channel: integer; input: Single): Single; overload;
+    function Process(channel: integer; input: Double): Double; overload;
   published
     property Frequency: Single read fFrequency write SetFrequency;  // 20..20000
   end;
@@ -702,17 +702,19 @@ end;
 
 procedure TDspLowpassFilter.Init;
 begin
+  fStdProcessS  := Process;
+  fStdProcessD  := Process;
   Reset;
 end;
 
 function TDspLowpassFilter.Process(channel: integer; input: Double): Double;
 begin
- fFilter[channel].ProcessSample(Input);
+  Result:=fFilter[channel].ProcessSample(Input);
 end;
 
 function TDspLowpassFilter.Process(channel: integer; input: Single): Single;
 begin
- fFilter[channel].ProcessSample(Input);
+  Result:=fFilter[channel].ProcessSample(Input);
 end;
 
 procedure TDspLowpassFilter.Reset;

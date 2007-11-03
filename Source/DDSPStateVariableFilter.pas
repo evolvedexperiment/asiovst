@@ -13,8 +13,8 @@ type
     fF1,fF  : Single;
     fFS,fFr : Single;
     fD1,fD2 : Double;
-    ftL,ftH : Double;
-    ftB,ftN : Double;
+    //ftL,ftH : Double;
+    //ftB,ftN : Double;
     fFTM    : TFrequencyTuningMethod;
     procedure SetFrequency(v:Single);
     procedure SetQ(v:Single);
