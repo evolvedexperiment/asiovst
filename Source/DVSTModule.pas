@@ -312,7 +312,8 @@ type
     FPlugCategory           : TVstPluginCategory;
     FMidiEvent              : TVstEvents;
     FKeysRequired           : Boolean;
-
+    FDspQueueList           : TAVDProcessingComponentList;
+    
     FOnGetChunkParamEvent   : TGetChunkParameterEvent;
     FOnOfflineNotify        : TOfflineNotifyEvent;
     FOnOfflinePrepare       : TOfflinePrepareEvent;
@@ -425,6 +426,8 @@ type
     procedure SetVersionMinor(Value: Integer);
     procedure SetVersionRelease(Value: Integer);
     procedure UpdateVersion;
+    procedure SampleRateChanged;
+    procedure BlockSizeChanged;
 
     // Host -> Plug
     function CanParameterBeAutomated(Index: Integer): Boolean; virtual;
@@ -993,11 +996,15 @@ begin
    PVstMidiEvent(FMidiEvent.events[i])^.EventType := etMidi;
    PVstMidiEvent(FMidiEvent.events[i])^.ByteSize := 24;
   end;
+
+ FDspQueueList := TAVDProcessingComponentList.Create;
 end;
 
 destructor TCustomVSTModule.Destroy;
 var i : Integer;
 begin
+ FDspQueueList.Free;
+ 
  try
   if Assigned(FParameterProperties) then FreeAndNil(FParameterProperties);
   if Assigned(FVstPrograms) then FreeAndNil(FVstPrograms);
@@ -1761,7 +1768,7 @@ begin
  if fSampleRate<>newValue then
   begin
    fSampleRate := newValue;
-   if Assigned(fSampleRateChangeEvent) then fSampleRateChangeEvent(Self,newValue);
+   SampleRateChanged;
   end;
 end;
 
@@ -1770,7 +1777,7 @@ begin
  if fBlockSize<>newValue then
   begin
    fBlockSize := newValue;
-   if Assigned(fBlockSizeChangeEvent) then fBlockSizeChangeEvent(Self,newValue);
+   BlockSizeChanged;
   end;
 end;
 
@@ -2660,6 +2667,8 @@ end;
 
 function TCustomVSTModule.IOChanged: Boolean;
 begin
+ FDspQueueList.SetChannels(max(FEffect.numInputs, FEffect.numOutputs));
+ 
  if Assigned(FAudioMaster)
   then Result := (FAudioMaster(@FEffect, audioMasterIOChanged, 0, 0, nil, 0) <> 0)
   else Result := False;
@@ -2689,7 +2698,7 @@ begin
    if (i > 0) then
     begin
      fSampleRate := i;
-     if Assigned(OnSampleRateChange) then OnSampleRateChange(Self, sampleRate);
+     SampleRateChanged;
     end;
   end;
  Result := sampleRate;
@@ -2704,7 +2713,7 @@ begin
    if (i > 0) then
     begin
      FBlockSize := i;
-     if Assigned(OnBlockSizeChange) then OnBlockSizeChange(Self, fBlockSize);
+     BlockSizeChanged;
     end;
   end;
  Result := BlockSize;
@@ -3008,15 +3017,15 @@ begin
  if fSampleRate<>aSampleRate then
   begin
    fSampleRate := aSampleRate;
-   if Assigned(fSampleRateChangeEvent) then fSampleRateChangeEvent(Self,aSampleRate);
+   SampleRateChanged;
   end;
  if fBlockSize<>aBlockSize then
   begin
    fBlockSize := aBlockSize;
-   if Assigned(fBlockSizeChangeEvent) then fBlockSizeChangeEvent(Self,aBlockSize);
+   BlockSizeChanged;
   end;
 end;
-
+    
 function TCustomVSTModule.SetBypass(isBypass: Boolean): Boolean;
 begin
  {$IFDEF Debug} if onOff then FLog.Add('SoftBypass: On') else FLog.Add('SoftBypass: Off'); FLog.SaveToFile('Debug.log'); {$ENDIF}
@@ -3345,16 +3354,33 @@ begin
 end;
 
 
+procedure TCustomVSTModule.BlockSizeChanged;
+begin
+  if Assigned(fSampleRateChangeEvent) then fSampleRateChangeEvent(Self,fSampleRate);
+end;
 
+procedure TCustomVSTModule.SampleRateChanged;
+begin
+  FDspQueueList.SetSampleRate(fSampleRate);
+  if Assigned(fSampleRateChangeEvent) then fSampleRateChangeEvent(Self,fSampleRate);
+end;
 
 procedure TCustomVSTModule.RegisterDSPItem(item: TAVDProcessingComponent);
 begin
+ with FDspQueueList do
+  begin
+   if IndexOf(item)<0 then Add(item);
 
+   Item.SampleRate:=FSampleRate;
+   Item.Channels:=max(FEffect.numInputs, FEffect.numOutputs);
+  end;
 end;
 
 procedure TCustomVSTModule.UnRegisterDSPItem(item: TAVDProcessingComponent);
 begin
-
+ with FDspQueueList do
+  if IndexOf(item)>=0
+   then Remove(item);
 end;
 
 {$WARNINGS ON}
