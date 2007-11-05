@@ -1,0 +1,56 @@
+package AVDDSP_D11;
+
+{$R *.res}
+{$M+}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'ASIO/VST DSP Package'}
+{$IMPLICITBUILD ON}
+
+requires
+  vcl,
+  rtl,
+  VstPlugin_D11,
+  AVDCommon_D11;
+
+contains
+  DDspBaseComponent in '..\Source\DDspBaseComponent.pas',
+  DDspRegister in '..\Source\DDspRegister.pas',
+  DDspEnvelopeFollower in '..\Source\DDspEnvelopeFollower.pas',
+  DDspBesselFilter in '..\Source\DDspBesselFilter.pas',
+  DDspButterworthFilter in '..\Source\DDspButterworthFilter.pas',
+  DDspChebyshevFilter in '..\Source\DDspChebyshevFilter.pas',
+  DDspDynamics in '..\Source\DDspDynamics.pas',
+  DDspMinBlep in '..\Source\DDspMinBlep.pas',
+  DDspPhaser in '..\Source\DDspPhaser.pas',
+  DDspFilter in '..\Source\DDspFilter.pas',
+  DDspWaveshaper in '..\Source\DDspWaveshaper.pas',
+  DDspInterpolation in '..\Source\DDspInterpolation.pas',
+  DDspWindowing in '..\Source\DDspWindowing.pas',
+  DDspFFT in '..\Source\DDspFFT.pas',
+  DDspDFT in '..\Source\DDspDFT.pas',
+  DDspDitherNoiseShaper in '..\Source\DDspDitherNoiseShaper.pas',
+  DDspMetronome in '..\Source\DDspMetronome.pas',
+  DDSPRemez in '..\Source\DDSPRemez.pas',
+  DDSPStateVariableFilter in '..\Source\DDSPStateVariableFilter.pas';
+
+end.
