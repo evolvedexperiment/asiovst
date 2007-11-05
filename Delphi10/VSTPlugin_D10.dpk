@@ -36,15 +36,24 @@ requires
   AVDCommon_D10;
 
 contains
-  DVSTProjectCreator in '..\Source\DVSTProjectCreator.pas',
   Config in '..\Source\Config.pas',
   OpenToolsUtils in '..\Source\OpenToolsUtils.pas',
   DVSTEditorCreator in '..\Source\DVSTEditorCreator.pas',
   DVSTModule in '..\Source\DVSTModule.pas',
   DVSTModuleCreator in '..\Source\DVSTModuleCreator.pas',
   DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',
-  DVSTPluginWizardFrm in '..\Source\DVSTPluginWizardFrm.pas',
+  DVSTPluginWizardFrm in '..\Source\DVSTPluginWizardFrm.pas' {VSTPluginWizardForm},
   DVSTPluginWizardReg in '..\Source\DVSTPluginWizardReg.pas',
-  DVSTEffect in '..\Source\DVSTEffect.pas';
+  DVSTProjectCreator in '..\Source\DVSTProjectCreator.pas',
+  DVSTEffect in '..\Source\DVSTEffect.pas',
+  DVSTBasicModule in '..\Source\DVSTBasicModule.pas',
+  DVSTEffectFunctions in '..\Source\DVSTEffectFunctions.pas',
+  DVSTShellPlugins in '..\Source\DVSTShellPlugins.pas',
+  DVSTParameters in '..\Source\DVSTParameters.pas',
+  DVSTPrograms in '..\Source\DVSTPrograms.pas',
+  DVSTCustomModule in '..\Source\DVSTCustomModule.pas',
+  DVSTModuleWithPrograms in '..\Source\DVSTModuleWithPrograms.pas',
+  DVSTModuleWithMidi in '..\Source\DVSTModuleWithMidi.pas',
+  DVSTModuleWithDsp in '..\Source\DVSTModuleWithDsp.pas';
 
 end.

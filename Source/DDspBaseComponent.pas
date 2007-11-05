@@ -136,7 +136,7 @@ type
 
 implementation
 
-uses Sysutils, Math, DVSTModule;
+uses Sysutils, Math, DVSTModuleWithDsp;
 
 constructor TDspBaseComponent.Create(AOwner: TComponent);
 begin
@@ -192,14 +192,14 @@ end;
 
 procedure TDspBaseComponent.RegisterInOwner(item: TDspBaseComponent);
 begin
-  if Owner is TCustomVSTModule then
-    (Owner as TCustomVSTModule).RegisterDSPItem(item);
+  if Owner is TDspVSTModule then
+    (Owner as TDspVSTModule).RegisterDSPItem(item);
 end;
 
 procedure TDspBaseComponent.UnRegisterInOwner(item: TDspBaseComponent);
 begin
-  if Owner is TCustomVSTModule then
-    (Owner as TCustomVSTModule).UnRegisterDSPItem(item);
+  if Owner is TDspVSTModule then
+    (Owner as TDspVSTModule).UnRegisterDSPItem(item);
 end;
 
 procedure TDspBaseComponent.Init;  begin end;

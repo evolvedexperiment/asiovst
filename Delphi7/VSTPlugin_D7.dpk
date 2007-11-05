@@ -42,6 +42,15 @@ contains
   DVSTPluginWizardFrm in '..\Source\DVSTPluginWizardFrm.pas' {VSTPluginWizardForm},
   DVSTPluginWizardReg in '..\Source\DVSTPluginWizardReg.pas',
   DVSTProjectCreator in '..\Source\DVSTProjectCreator.pas',
-  DVSTEffect in '..\Source\DVSTEffect.pas';
+  DVSTEffect in '..\Source\DVSTEffect.pas',
+  DVSTBasicModule in '..\Source\DVSTBasicModule.pas',
+  DVSTEffectFunctions in '..\Source\DVSTEffectFunctions.pas',
+  DVSTShellPlugins in '..\Source\DVSTShellPlugins.pas',
+  DVSTParameters in '..\Source\DVSTParameters.pas',
+  DVSTPrograms in '..\Source\DVSTPrograms.pas',
+  DVSTCustomModule in '..\Source\DVSTCustomModule.pas',
+  DVSTModuleWithPrograms in '..\Source\DVSTModuleWithPrograms.pas',
+  DVSTModuleWithMidi in '..\Source\DVSTModuleWithMidi.pas',
+  DVSTModuleWithDsp in '..\Source\DVSTModuleWithDsp.pas';
 
 end.

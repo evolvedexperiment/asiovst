@@ -2,7 +2,7 @@
 library SoftKneeLimiter;
 
 uses
-  FastMM4,
+  //FastMM4,
   Forms,
   DVSTEffect,
   DVSTModule,

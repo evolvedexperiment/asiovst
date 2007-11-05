@@ -45,8 +45,8 @@ object VSTVUMeterModule: TVSTVUMeterModule
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  Left = 243
-  Top = 108
+  Left = 209
+  Top = 120
   Height = 150
   Width = 215
 end

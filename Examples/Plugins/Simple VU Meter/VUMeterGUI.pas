@@ -24,25 +24,27 @@ implementation
 
 {$R *.DFM}
 
-uses VUMeterModule;
+uses VUMeterModule, dialogs;
 
 procedure TVSTVUMeterGUI.ParameterChange(Sender: TObject);
 begin
- with (Sender as TScrollbar), (Owner As TVSTVUMeterModule)
-  do Parameter[Tag]:=Position;
+  with (Owner As TVSTVUMeterModule) do
+    Parameter[(Sender as TScrollbar).Tag]:=(Sender as TScrollbar).Position;
 end;
 
 procedure TVSTVUMeterGUI.TimerTimer(Sender: TObject);
 var tmp : Integer;
 begin
- with (Owner As TVSTVUMeterModule) do
+  with (Owner As TVSTVUMeterModule) do
   begin
-   tmp := round(300+3*Amp_to_dB(Peak[0]));
-   if tmp > 0 then vu_l.Width := tmp else vu_l.Width := 0;
-   tmp := round(300+3*Amp_to_dB(Peak[1]));
-   if tmp>0 then vu_r.Width := tmp else vu_r.Width := 0;
-   gain_l.Caption := 'left gain: ' + inttostr(round(Parameter[0])) + ' db(fs)';
-   gain_r.Caption := 'right gain: ' + inttostr(round(Parameter[1])) + ' db(fs)';
+    tmp := round(300+3*Amp_to_dB(Peak[0]));
+
+    if tmp > 0 then vu_l.Width := tmp else vu_l.Width := 0;
+    tmp := round(300+3*Amp_to_dB(Peak[1]));
+
+    if tmp>0 then vu_r.Width := tmp else vu_r.Width := 0;
+    gain_l.Caption := 'left gain: ' + inttostr(round(Parameter[0])) + ' db(fs)';
+    gain_r.Caption := 'right gain: ' + inttostr(round(Parameter[1])) + ' db(fs)';
   end;
 end;
 
