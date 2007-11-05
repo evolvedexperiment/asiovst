@@ -31,7 +31,7 @@ type
     function  SendVstEventsToHost(events: PVstEvents): Boolean;  // True: success
 
     function  GetNumAutomatableParameters: Integer; virtual;
-    procedure setParameterAutomated(Index: Integer; Value: Single); virtual;
+    procedure SetParameterAutomated(Index: Integer; Value: Single); virtual;
     function  GetParameterQuantization: Integer; virtual; // returns the Integer Value for +1.0 representation, or 1 if full single float precision is maintained in automation. parameter Index in <Value> (-1: all, any)
 
     function  GetInputLatency: Integer; virtual;

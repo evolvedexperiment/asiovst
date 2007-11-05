@@ -119,15 +119,15 @@ type
 
 
     procedure SetAudioMaster(const AM :TAudioMasterCallbackFunc); override;
-    procedure setNumInputs(Inputs: Integer); virtual;
-    procedure setNumOutputs(Outputs: Integer); virtual;
+    procedure SetNumInputs(Inputs: Integer); virtual;
+    procedure SetNumOutputs(Outputs: Integer); virtual;
     procedure SetSampleRate(newValue: Single); virtual;
     procedure SetBlockSize(newValue: Integer); virtual;
     function GetUniqueID:string; virtual;
     procedure SetUniqueID(fID:string); virtual;
     procedure SetPluginFlags(newFlags : TEffFlags); virtual;
     function GetPluginFlags: TEffFlags; virtual;
-    procedure setInitialDelay(delay: Integer); virtual;
+    procedure SetInitialDelay(delay: Integer); virtual;
     {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
     {$ENDIF}
@@ -631,7 +631,7 @@ end;
 
 function TCustomVSTModule.HostCallSetBypass(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  {$IFDEF Debug} if onOff then FLog.Add('SoftBypass: On') else FLog.Add('SoftBypass: Off'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+  {$IFDEF Debug} if Value <> 0 then FLog.Add('SoftBypass: On') else FLog.Add('SoftBypass: Off'); FLog.SaveToFile('Debug.log'); {$ENDIF}
   if Assigned(FOnSoftBypass) then
   begin
     FOnSoftBypass(Self, Value <> 0);

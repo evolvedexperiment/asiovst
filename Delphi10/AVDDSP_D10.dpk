@@ -27,6 +27,7 @@ package AVDDSP_D10;
 requires
   vcl,
   rtl,
+  VstPlugin_D10,
   AVDCommon_D10;
 
 contains
