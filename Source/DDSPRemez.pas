@@ -717,7 +717,6 @@ procedure TRemezLowpassFilterDesigner.CalculateFilterKernel(var Data: TAVDDouble
 var
   bands, weights, desired : TAVDDoubleDynArray;
 begin
- inherited;
  SetLength(bands, 4);
  SetLength(weights, 2);
  SetLength(desired, 2);
@@ -753,7 +752,6 @@ procedure TRemezHighpassFilterDesigner.CalculateFilterKernel(var Data: TAVDDoubl
 var
   bands, weights, desired : TAVDDoubleDynArray;
 begin
- inherited;
  SetLength(bands, 4);
  SetLength(weights, 2);
  SetLength(desired, 2);
@@ -789,7 +787,6 @@ procedure TRemezBandpassFilterDesigner.CalculateFilterKernel(var Data: TAVDDoubl
 var
   bands, weights, desired : TAVDDoubleDynArray;
 begin
- inherited;
  SetLength(bands, 6);
  SetLength(weights, 3);
  SetLength(desired, 3);
@@ -838,7 +835,6 @@ procedure TRemezBandstopFilterDesigner.CalculateFilterKernel(var Data: TAVDDoubl
 var
   bands, weights, desired : TAVDDoubleDynArray;
 begin
- inherited;
  SetLength(bands, 6);
  SetLength(weights, 3);
  SetLength(desired, 3);

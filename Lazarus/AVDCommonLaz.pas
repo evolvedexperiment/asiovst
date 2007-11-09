@@ -7,7 +7,8 @@ unit AVDCommonLaz;
 interface
 
 uses
-  DAVDCommon, MidiFile, DAVDComplex, LazarusPackageIntf; 
+  DAVDCommon, DAVDComplex, MidiFile, DDspRegister, DDspEnvelopeFollower, 
+    LazarusPackageIntf; 
 
 implementation
 

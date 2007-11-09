@@ -2,6 +2,8 @@ unit DDspBaseComponent;
 
 interface
 
+{$I ASIOVST.inc}
+
 uses Classes, DAVDCommon, Contnrs, DAVDProcessingComponent;
 
 type
@@ -17,10 +19,6 @@ type
 
   TDspBaseComponent = class(TAVDProcessingComponent)
   protected
-    fBypass: Boolean;
-    fEnabled: Boolean;
-    fSampleRate: Single;
-    fChannels: Integer;
     fNextDspQueueItem: TDspBaseComponent;
     fPrevDspQueueItem: TDspBaseComponent;
 

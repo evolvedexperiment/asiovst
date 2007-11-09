@@ -2,6 +2,8 @@ unit DDspEnvelopeFollower;
 
 interface
 
+{$I ASIOVST.inc}
+
 uses DDspBaseComponent, DAVDCommon;
 
 type
@@ -84,7 +86,11 @@ end;
 function TDspEnvelopeFollower.Process(channel: integer; input: Double): Double;
 var tmp: Double;
 begin
+ {$IFDEF FPC}
+  input := abs(input);
+ {$ELSE}
   f_abs(input);
+ {$ENDIF}
 
   if input>=fLastOutputDouble[channel] then
     tmp:=fInternalAttack
@@ -98,7 +104,11 @@ end;
 function TDspEnvelopeFollower.Process(channel: integer; input: Single): Single;
 var tmp: Single;
 begin
+ {$IFDEF FPC}
+  input := abs(input);
+ {$ELSE}
   f_abs(input);
+ {$ENDIF}
 
   if input>=fLastOutputSingle[channel] then
     tmp:=fInternalAttack

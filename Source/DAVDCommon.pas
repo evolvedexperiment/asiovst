@@ -486,25 +486,25 @@ begin
  Result:=(((Integer((@f)^) and $7F800000) shr 23)-$7F);
 end;
 
-procedure f_Abs(var f:Single);
+procedure f_Abs(var f:Single); overload;
 var i : Integer absolute f;
 begin
  i := i and $7FFFFFFF;
 end;
 
-procedure f_Abs(var f:Double);
+procedure f_Abs(var f:Double); overload;
 var i : array [0..1] of Integer absolute f;
 begin
  i[0] := i[0] and $7FFFFFFF;
 end;
 
-procedure f_Abs(var f:T4SingleArray);
+procedure f_Abs(var f:T4SingleArray); overload;
 {$IFDEF PUREPASCAL}
 begin
- f_AbsV(f[0]);
- f_AbsV(f[1]);
- f_AbsV(f[2]);
- f_AbsV(f[3]);
+ f_Abs(f[0]);
+ f_Abs(f[1]);
+ f_Abs(f[2]);
+ f_Abs(f[3]);
 {$ELSE}
 asm
  fld [eax].Single

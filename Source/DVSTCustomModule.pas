@@ -4,7 +4,9 @@ interface
 
 {$I ASIOVST.INC}
 
-uses  Classes, Forms, DVSTEffect, DVSTShellPlugins, DVSTBasicModule, DAVDCommon;
+uses
+  {$IFDEF FPC}LCLType, LMessages, Controls, {$ELSE} {$ENDIF} Classes, Forms,
+  DVSTEffect, DVSTShellPlugins, DVSTBasicModule, DAVDCommon;
 
 type
   TProcessingMode = (pmNormal, pmBlockSave, pmCopy, pmMute);
