@@ -8,7 +8,7 @@ implementation
 
 {$IFNDEF FPC}{$R DASIOHost.res}{$ENDIF}
 
-uses Classes, DASIOHOST, DASIOGenerator;
+uses {$IFDEF FPC} LResources, {$ENDIF} Classes, DASIOHOST, DASIOGenerator;
 
 procedure Register;
 begin

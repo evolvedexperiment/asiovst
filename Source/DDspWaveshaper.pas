@@ -2,6 +2,8 @@ unit DDspWaveshaper;
 
 interface
 
+{$I ASIOVST.INC}
+
 uses Math, DAVDCommon;
 
 function Waveshaper1(x,t:Single):Single; overload;
@@ -148,6 +150,7 @@ begin
 end;
 
 function Saturate(input, fMax: single): single;
+{$IFNDEF FPC}
 const fGrdDiv : Double = 0.5;
 asm
  fld input.Single
@@ -160,10 +163,15 @@ asm
  fmul fGrdDiv;
 // result := fGrdDiv * (abs(input + fMax) - abs(input - fMax));
 end;
+{$ELSE}
+begin
+ result := 0.5 * (abs(input + fMax) - abs(input - fMax));
+end;
+{$ENDIF}
 
 function Saturate(input, fMax: Double): Double;
-const fGrdDiv : Double = 0.5;
 {$IFNDEF FPC}
+const fGrdDiv : Double = 0.5;
 asm
  fld input.Double
  fadd fMax.Double
@@ -176,7 +184,7 @@ asm
 end;
 {$ELSE}
 begin
- result := fGrdDiv * (abs(input + fMax) - abs(input - fMax));
+ result := 0.5 * (abs(input + fMax) - abs(input - fMax));
 end;
 {$ENDIF}
 

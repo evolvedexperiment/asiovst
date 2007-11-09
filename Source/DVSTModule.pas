@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.INC}
 
-uses classes, DVSTModuleWithDsp;
+uses
+  {$IFDEF FPC} LCLIntf, {$ENDIF} Classes, DVSTModuleWithDsp;
 
 type
   TVSTModule = class(TDspVSTModule)
@@ -101,7 +102,7 @@ function InitResourceComponent(Instance: TComponent; RootAncestor: TClass):Boole
 
 implementation
 
-uses Forms;
+uses Forms, RtlConsts;
 
 
 
@@ -137,7 +138,7 @@ begin
  inherited Create(AOwner);
  if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
   begin
-   if not InitInheritedComponent(Self, TCustomVSTModule)
+   if not InitInheritedComponent(Self, TDspVSTModule)
     then raise EStreamError.CreateFmt(SErrNoStreaming, [ClassName]);
    if OldCreateOrder then DoCreate;
   end;

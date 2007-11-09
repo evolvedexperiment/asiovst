@@ -8,13 +8,13 @@ interface
 
 uses
   DASIOHost, OpenASIO, Asio, DASIOConvert, DASIOGenerator, BeRoASIO, 
-    LazarusPackageIntf; 
+    DASIORegister, LazarusPackageIntf; 
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('DASIOHost', @DASIOHost.Register); 
+  RegisterUnit('DASIORegister', @DASIORegister.Register); 
 end; 
 
 initialization

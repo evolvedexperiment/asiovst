@@ -1,6 +1,10 @@
 unit DDspInterpolation;
 
 interface
+
+{$I ASIOVST.INC}
+{$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
+
   function Hermite1(const x,y0,y1,y2,y3:Single):Single;
   function Hermite2(const x,y0,y1,y2,y3:Single):Single;
   function Hermite3(const x,y0,y1,y2,y3:Single):Single;

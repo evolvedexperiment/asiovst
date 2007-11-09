@@ -18,10 +18,9 @@
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="6">
+    <Files Count="7">
       <Item1>
         <Filename Value="..\Source\DASIOHost.pas"/>
-        <HasRegisterProc Value="True"/>
         <UnitName Value="DASIOHost"/>
       </Item1>
       <Item2>
@@ -44,16 +43,26 @@
         <Filename Value="..\Source\BeRoASIO.pas"/>
         <UnitName Value="BeRoASIO"/>
       </Item6>
+      <Item7>
+        <Filename Value="..\Source\DASIORegister.pas"/>
+        <HasRegisterProc Value="True"/>
+      </Item7>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="4">
       <Item1>
-        <PackageName Value="FCL"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="AVDDSPLaz"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="AVDCommonLaz"/>
       </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item4>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)\"/>

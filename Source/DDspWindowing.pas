@@ -2,17 +2,19 @@ unit DDspWindowing;
 
 interface
 
+{$I ASIOVST.INC}
+
 uses DAVDCommon;
 
-procedure ApplyBlackmanWindow(const Data : TAVDSingleDynArray);
-procedure ApplyGaussianWindow(const Data : TAVDSingleDynArray);
-procedure ApplyBlackmanHarrisWindow(const Data : TAVDSingleDynArray);
-procedure ApplyHanningWindow(const Data : TAVDSingleDynArray);
-procedure ApplyHammingWindow(const Data : TAVDSingleDynArray);
+procedure ApplyBlackmanWindow(var Data : TAVDSingleDynArray);
+procedure ApplyGaussianWindow(var Data : TAVDSingleDynArray);
+procedure ApplyBlackmanHarrisWindow(var Data : TAVDSingleDynArray);
+procedure ApplyHanningWindow(var Data : TAVDSingleDynArray);
+procedure ApplyHammingWindow(var Data : TAVDSingleDynArray);
 
 implementation
 
-procedure ApplyBlackmanWindow(const Data : TAVDSingleDynArray);
+procedure ApplyBlackmanWindow(var Data : TAVDSingleDynArray);
 var l,i   : Integer;
     f,fm : Double;
 const cBlackman : array [0..2] of Double = ( 0.34, -0.5, 0.16);
@@ -28,7 +30,7 @@ begin
 end;
 
 // Generate window function (Gaussian)
-procedure ApplyGaussianWindow(const Data : TAVDSingleDynArray);
+procedure ApplyGaussianWindow(var Data : TAVDSingleDynArray);
 var i,j : Integer;
 begin
  j := Length(Data)-1;
@@ -37,7 +39,7 @@ begin
 end;
 
 // Generate window function (Blackman-Harris)
-procedure ApplyBlackmanHarrisWindow(const Data : TAVDSingleDynArray);
+procedure ApplyBlackmanHarrisWindow(var Data : TAVDSingleDynArray);
 var i,j : Integer;
     k   : Double;
 begin
@@ -50,7 +52,7 @@ begin
 end;
 
 // Generate window function (Hanning)
-procedure ApplyHanningWindow(const Data : TAVDSingleDynArray);
+procedure ApplyHanningWindow(var Data : TAVDSingleDynArray);
 var i,j : Integer;
     k   : Double;
 begin
@@ -61,7 +63,7 @@ begin
 end;
 
 // Generate window function (Hamming)
-procedure ApplyHammingWindow(const Data : TAVDSingleDynArray);
+procedure ApplyHammingWindow(var Data : TAVDSingleDynArray);
 var i,j : Integer;
     k   : Double;
 begin
