@@ -7,15 +7,8 @@ unit AVDCommonLaz;
 interface
 
 uses
-  DAVDCommon, DAVDComplex, MidiFile, DDspRegister, DDspEnvelopeFollower, 
-    LazarusPackageIntf; 
+  MidiFile, DAVDCommon, DAVDComplex, DDSPRemez; 
 
 implementation
 
-procedure Register; 
-begin
-end; 
-
-initialization
-  RegisterPackage('AVDCommonLaz', @Register); 
 end.
