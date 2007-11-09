@@ -254,7 +254,7 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleLevelParameterChange
     end>
   OnOpen = VSTModuleOpen
-  OnEditOpen = VST_EditOpen
+  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi

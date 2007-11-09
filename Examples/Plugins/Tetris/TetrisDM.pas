@@ -13,9 +13,10 @@ uses
 type
   { TTetrisModule }
   TTetrisModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleEditorKeyDown(Sender: TObject; var keyCode: TVstKeyCode);
     function VSTModuleCheckKey(Sender: TObject; Key: Char): Boolean;
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
   public
   end;
@@ -33,7 +34,8 @@ begin
  result:=True;
 end;
 
-procedure TTetrisModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
+procedure TTetrisModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
 begin
   GUI := TFmTetris.Create(Self);
 end;

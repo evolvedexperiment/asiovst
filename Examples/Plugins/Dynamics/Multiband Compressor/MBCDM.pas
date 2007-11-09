@@ -18,7 +18,6 @@ type
   end;
 
   TMBCDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
@@ -42,6 +41,8 @@ type
     procedure MBCDMLowReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMMidReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMHighReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fMultiband : Array [0..1] of TMultiband;
   public
@@ -103,6 +104,12 @@ begin
     Highpass.Free;
     HighComp.Free;
    end;
+end;
+
+procedure TMBCDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TFmMBC.Create(Self);
 end;
 
 procedure TMBCDataModule.MBCDMLowFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -397,11 +404,6 @@ begin
     if SbHighFreq.Position <> Round(10000 * FreqLogToLinear(Value))
      then SbHighFreq.Position := Round(10000 * FreqLogToLinear(Value));
    end;
-end;
-
-procedure TMBCDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
-begin
- GUI := TFmMBC.Create(Self);
 end;
 
 procedure TMBCDataModule.VSTModuleProcess(const Inputs,

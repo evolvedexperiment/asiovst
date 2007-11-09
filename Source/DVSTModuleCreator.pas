@@ -197,7 +197,7 @@ begin
   if FConfig.UseEditor then
   begin
     s := s +
-      '    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);' +
+      '    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);' +
       CRLF;
   end;
 
@@ -217,7 +217,7 @@ begin
       'uses' + CRLF +
       '  ' + FConfig.EditorUnitName + ';' + CRLF +
       CRLF +
-      'procedure T' + FormIdent + '.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);' + CRLF +
+      'procedure T' + FormIdent + '.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);' + CRLF +
       'begin' + CRLF +
       '  GUI := T' + FConfig.EditorFormName + '.Create(Self);' + CRLF +
       'end;' + CRLF +

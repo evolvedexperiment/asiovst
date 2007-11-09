@@ -73,7 +73,7 @@ object VSTSSModule: TVSTSSModule
       VSTModule = Owner
       OnParameterChange = VSTSSModuleParameterProperties2ParameterChange
     end>
-  OnEditOpen = VST_EditOpen
+  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi

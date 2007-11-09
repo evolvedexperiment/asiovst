@@ -10,7 +10,6 @@ const NrChannels = 2;
 
 type
   TEnhancedGateDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
@@ -31,6 +30,8 @@ type
     procedure EAGRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGRangeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fEnhancedGates : Array [0..NrChannels-1] of TGate;
   public
@@ -67,6 +68,25 @@ var i : Integer;
 begin
  for i := 0 to NrChannels - 1
   do FreeAndNil(fEnhancedGates[i]);
+end;
+
+procedure TEnhancedGateDataModule.VSTModuleEditOpen(Sender: TObject;
+  var GUI: TForm; ParentWindow: Cardinal);
+begin
+ GUI := TEditorForm.Create(Self);
+ with (GUI as TEditorForm) do
+  begin
+   CBOnOff.Checked:=Boolean(Round(Parameter[0]));
+   UpdateThreshold;
+   UpdateAttack;
+   UpdateHold;
+   UpdateDecay;
+   UpdateHiCut;
+   UpdateLoCut;
+   UpdateRatio;
+   UpdateKnee;
+   UpdateRange;
+  end;
 end;
 
 procedure TEnhancedGateDataModule.EAGPowerChange(Sender: TObject;
@@ -207,24 +227,6 @@ begin
   with TEditorForm(EditorForm) do
    if CBStereoLink.Checked <> Boolean(Round(Value))
     then CBStereoLink.Checked:=Boolean(Round(Value));
-end;
-
-procedure TEnhancedGateDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
-begin
- GUI := TEditorForm.Create(Self);
- with (GUI as TEditorForm) do
-  begin
-   CBOnOff.Checked:=Boolean(Round(Parameter[0]));
-   UpdateThreshold;
-   UpdateAttack;
-   UpdateHold;
-   UpdateDecay;
-   UpdateHiCut;
-   UpdateLoCut;
-   UpdateRatio;
-   UpdateKnee;
-   UpdateRange;
-  end;
 end;
 
 procedure TEnhancedGateDataModule.VSTModuleProcess(const Inputs,

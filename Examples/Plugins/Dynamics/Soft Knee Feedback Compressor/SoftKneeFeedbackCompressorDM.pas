@@ -7,7 +7,6 @@ uses
 
 type
   TSoftKneeFeedbackCompressorDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
@@ -15,6 +14,8 @@ type
     procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fSoftKneeFeedbackCompressors : Array [0..1] of TSimpleCompressor;
   public
@@ -83,7 +84,7 @@ end;
 procedure TSoftKneeFeedbackCompressorDataModule.VSTModuleCreate(Sender: TObject);
 begin
  fSoftKneeFeedbackCompressors[0] := TSoftKneeFeedbackCompressor.Create;
- fSoftKneeFeedbackCompressors[1] := TSimpleCompressor.Create;
+ fSoftKneeFeedbackCompressors[1] := TSoftKneeFeedbackCompressor.Create;
 end;
 
 procedure TSoftKneeFeedbackCompressorDataModule.VSTModuleDestroy(Sender: TObject);
@@ -92,7 +93,8 @@ begin
  FreeAndNil(fSoftKneeFeedbackCompressors[1]);
 end;
 
-procedure TSoftKneeFeedbackCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
+procedure TSoftKneeFeedbackCompressorDataModule.VSTModuleEditOpen(
+  Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
   GUI := TEditorForm.Create(Self);
 end;

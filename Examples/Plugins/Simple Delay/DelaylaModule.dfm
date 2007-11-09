@@ -41,7 +41,7 @@ object SimpleDelayVST: TSimpleDelayVST
       VSTModule = Owner
       OnParameterChange = DelaylaVSTParameterProperties0ParameterChange
     end>
-  OnEditOpen = VST_EditOpen
+  OnEditOpen = VSTModuleEditOpen
   OnProcess = VST2ModuleProcess
   OnProcessReplacing = VST2ModuleProcess
   Left = 248

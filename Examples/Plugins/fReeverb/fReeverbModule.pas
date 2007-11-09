@@ -10,21 +10,22 @@ type
   TAllpassArray = array [0..1] of TAllpass;
 
   TfReeverbVST = class(TVSTModule)
-    procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
-    procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VST2ModuleProcessReplacing(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcessReplacing(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure fReeverbVSTParameterProperties0ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure fReeverbVSTParameterProperties1ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure fReeverbVSTParameterProperties2ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure fReeverbVSTParameterProperties3ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VST2ModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure fReeverbVSTParameterProperties4ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure fReeverbVSTParameterProperties5ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure fReeverbVSTParameterProperties6ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure fReeverbVSTParameterProperties8ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure fReeverbVSTParameterProperties7ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VST2ModuleCreate(Sender: TObject);
-    procedure VST2ModuleDestroy(Sender: TObject);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fGain         : Single;
     fRoomSize     : Single;
@@ -69,11 +70,6 @@ implementation
 {$R *.DFM}
 
 uses fReeverbGUI;
-
-procedure TfReeverbVST.VST_EditOpen(Sender: TObject; var GUI: TForm);
-begin
- GUI := TFmReverb.Create(Self);
-end;
 
 function TfReeverbVST.GetDamp: Single;
 begin
@@ -180,7 +176,7 @@ begin
   end;
 end;
 
-procedure TfReeverbVST.VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TfReeverbVST.VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var OutL, OutR, Inp: Single;
     i, j: integer;
 begin
@@ -207,7 +203,7 @@ begin
   end;
 end;
 
-procedure TfReeverbVST.VST2ModuleProcessReplacing(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TfReeverbVST.VSTModuleProcessReplacing(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var OutL, OutR, inp: Single;
     i, j: integer;
 begin
@@ -256,7 +252,7 @@ begin
  ShuffleAllPassFeedBack;
 end;
 
-procedure TfReeverbVST.VST2ModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+procedure TfReeverbVST.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
  BufferRezize;
 end;
@@ -379,7 +375,7 @@ begin
 *)
 end;
 
-procedure TfReeverbVST.VST2ModuleCreate(Sender: TObject);
+procedure TfReeverbVST.VSTModuleCreate(Sender: TObject);
 var i : Integer;
 const
   stereoSpread = 23;
@@ -443,7 +439,7 @@ begin
  Mute;
 end;
 
-procedure TfReeverbVST.VST2ModuleDestroy(Sender: TObject);
+procedure TfReeverbVST.VSTModuleDestroy(Sender: TObject);
 var i: integer;
 begin
  for i:=0 to 3 do
@@ -456,6 +452,12 @@ begin
    if Assigned(fComb[i,0]) then FreeAndNil(fComb[i,0]);
    if Assigned(fComb[i,1]) then FreeAndNil(fComb[i,1]);
   end;
+end;
+
+procedure TfReeverbVST.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TFmReverb.Create(Self);
 end;
 
 end.

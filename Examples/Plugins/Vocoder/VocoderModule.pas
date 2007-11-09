@@ -14,7 +14,6 @@ const
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject;
@@ -26,6 +25,8 @@ type
       const Index: Integer; var Value: Single);
     procedure VSTSSModuleParameterProperties2ParameterChange(Sender: TObject;
       const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fAnalysisFiltersLP : Array [0..cNumFrequencies-1] of TChebyshev1LP;
     fAnalysisFiltersHP : Array [0..cNumFrequencies-1] of TChebyshev1HP;
@@ -44,7 +45,8 @@ implementation
 
 uses VocoderGUI, Math;
 
-procedure TVSTSSModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
+procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
 // Do not delete this if you are using the editor
 begin
  GUI := TVSTGUI.Create(Self);

@@ -8,12 +8,13 @@ uses
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject;
       MidiEvent: TVstMidiEvent);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
   public
     Voices      : TVoiceList;
@@ -25,12 +26,6 @@ implementation
 {$R *.DFM}
 
 uses SimpleSamplerGUI, Math;
-
-procedure TVSTSSModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
-// Do not delete this if you are using the editor
-begin
- GUI := TVSTGUI.Create(Self);
-end;
 
 procedure TVSTSSModule.VSTModuleProcess(const inputs,
   outputs: TArrayOfSingleDynArray; sampleframes: Integer);
@@ -45,6 +40,13 @@ begin
 
  for i:=1 to numOutputs-1
   do Move(outputs[0,0], outputs[i,0], sampleframes * SizeOf(Single));
+end;
+
+procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+// Do not delete this if you are using the editor
+begin
+ GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TVSTSSModule.VSTModuleInitialize(Sender: TObject);

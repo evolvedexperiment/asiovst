@@ -8,9 +8,10 @@ uses
 
 type
   TWavedisplayModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleProcess(const Inputs,
       Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
   public
   end;
@@ -22,7 +23,8 @@ implementation
 uses
   WavedisplayGUI;
 
-procedure TWavedisplayModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
+procedure TWavedisplayModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
 begin
   GUI := TWavedisplayGUI.Create(Self);
 end;

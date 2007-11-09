@@ -36,7 +36,7 @@ object VSTSSModule: TVSTSSModule
       ShortLabel = 'Order'
       VSTModule = Owner
     end>
-  OnEditOpen = VST_EditOpen
+  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi

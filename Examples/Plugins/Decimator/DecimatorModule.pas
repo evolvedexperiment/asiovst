@@ -7,11 +7,12 @@ uses Windows, DAVDCommon, Forms, DVSTEffect, DVSTModule;
 type
   TVSTDecimator = class(TVSTModule)
     procedure VSTModuleInitialize(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fCutoffFreqNorm  : Double;
     fResonance       : Double;
@@ -78,11 +79,11 @@ begin
   end;
 end;
 
-procedure TVSTDecimator.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
+procedure TVSTDecimator.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
 begin
  GUI := TVSTGUI.Create(Self);
 end;
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Parameter Changed

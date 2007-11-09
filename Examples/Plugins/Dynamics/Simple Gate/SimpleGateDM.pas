@@ -8,13 +8,14 @@ uses
 
 type
   TSimpleGateDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray;
       sampleframes: Integer);
     procedure SimpleGateDataModuleParameterProperties0ParameterChange(
       Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fSimpleGates : Array [0..1] of TSimpleGate;
   public
@@ -53,7 +54,8 @@ begin
  FreeAndNil(fSimpleGates[1]);
 end;
 
-procedure TSimpleGateDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
+procedure TSimpleGateDataModule.VSTModuleEditOpen(Sender: TObject;
+  var GUI: TForm; ParentWindow: Cardinal);
 begin
   GUI := TEditorForm.Create(Self);
 end;

@@ -5,8 +5,8 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  {$IFDEF FPC}LCLType, LMessages, Controls, {$ELSE} {$ENDIF} Classes, Forms,
-  DVSTEffect, DVSTShellPlugins, DVSTBasicModule, DAVDCommon;
+  {$IFDEF FPC}LCLIntf, LMessages, Controls, {$ELSE} Windows, Messages, {$ENDIF}
+  Classes, Forms, DVSTEffect, DVSTShellPlugins, DVSTBasicModule, DAVDCommon;
 
 type
   TProcessingMode = (pmNormal, pmBlockSave, pmCopy, pmMute);
@@ -38,7 +38,7 @@ type
   TSetKnobModeEvent      = procedure(Sender: TObject; val: Integer) of object;
   TSoftBypassEvent       = procedure(Sender: TObject; isBypass: Boolean) of object;
   TOnSetPanLawEvent      = procedure(Sender: TObject; var vType: Integer; var val: single) of object;
-  TGetEditorEvent        = procedure(Sender: TObject; var GUI: TForm) of object;
+  TGetEditorEvent        = procedure(Sender: TObject; var GUI: TForm; ParentWindow : THandle) of object;
   TOnVendorSpecificEvent = function(Sender: TObject; lArg1, lArg2: Integer; ptrArg: pointer; floatArg: Single): Integer of object;
   TOnCanDoEvent          = function(Sender: TObject; CanDoText: String): Integer of object;
   TOnCheckKey            = function(Sender: TObject; Key: Char): Boolean of object;
@@ -280,7 +280,7 @@ type
 
 implementation
 
-uses SysUtils, windows, Messages, Math;
+uses SysUtils, Math;
 
 
 constructor TCustomVSTModule.Create(AOwner: TComponent);
@@ -452,7 +452,7 @@ begin
   if (effFlagsHasEditor in FEffect.EffectFlags) then
   begin
 
-    if Assigned(FOnEditOpen) then FOnEditOpen(Self, FEditorForm);
+    if Assigned(FOnEditOpen) then FOnEditOpen(Self, FEditorForm, THandle(ptr));
     if Assigned(FEditorForm) then
     try
       Result := 1;
@@ -461,9 +461,8 @@ begin
         {$IFNDEF FPC}
           ParentWindow := HWnd(ptr);
         {$ELSE}
-          Handle := Integer(ptr);
+          Parent := FindOwnerControl(THandle(ptr));
         {$ENDIF}
-
         Visible := True;
         BorderStyle := bsNone;
         SetBounds(0, 0, Width, Height);
@@ -747,25 +746,19 @@ begin
         Hndl := EditorForm.Handle;
 
       {$IFNDEF FPC}
-
-        if keyCode.virt=0 then b := 0 else b := KF_EXTENDED;
-        if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
-          SendMessage(Hndl, WM_KEYDOWN, a,b)
-        else
-          SendMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
-
-        SendMessage(Hndl,WM_CHAR, a, b);
-
+      if keyCode.virt=0 then b := 0 else b := KF_EXTENDED;
+      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
+        SendMessage(Hndl, WM_KEYDOWN, a,b)
+      else
+        SendMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
+      SendMessage(Hndl,WM_CHAR, a, b);
       {$ELSE}
-
-        if keyCode.virt=0 then b := 0 else b := $100;
-        if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
-          SendMessage(Hndl, LM_KEYDOWN, a,b)
-        else
-          SendMessage(Hndl, LM_SYSKEYDOWN, a, $2000);
-
-        SendMessage(Hndl,LM_CHAR, a, b);
-
+      if keyCode.virt=0 then b := 0 else b := $100;
+      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
+        SendMessage(Hndl, LM_KEYDOWN, a,b)
+      else
+        SendMessage(Hndl, LM_SYSKEYDOWN, a, $2000);
+      SendMessage(Hndl,LM_CHAR, a, b);
       {$ENDIF}
 
       if Assigned(FOnKeyDown) then FOnKeyDown(Self, keyCode);
@@ -802,25 +795,20 @@ begin
         Hndl := EditorForm.ActiveControl.Handle
       else
         Hndl := EditorForm.Handle;
-
       {$IFNDEF FPC}
-
-        if keyCode.virt=0 then b := 0 else b := KF_EXTENDED;
-        if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
-          SendMessage(Hndl, WM_KEYUP, a, b)
-        else
-          SendMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
-
+      if keyCode.virt=0 then b := 0 else b := KF_EXTENDED;
+      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
+        SendMessage(Hndl, WM_KEYUP, a, b)
+      else
+        SendMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
       {$ELSE}
+      if keyCode.virt=0 then b := 0 else b := $100;
+      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
+        SendMessage(Hndl, LM_KEYUP, a,b)
+      else
+        SendMessage(Hndl, LM_SYSKEYUP, a, $2000);
 
-        if keyCode.virt=0 then b := 0 else b := $100;
-        if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
-          SendMessage(Hndl, LM_KEYUP, a,b)
-        else
-          SendMessage(Hndl, LM_SYSKEYUP, a, $2000);
-
-        SendMessage(Hndl,LM_CHAR, a, b);
-
+      SendMessage(Hndl,LM_CHAR, a, b);
       {$ENDIF}
 
       if Assigned(FOnKeyUp) then FOnKeyUp(Self, keyCode);

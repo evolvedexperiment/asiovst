@@ -7,7 +7,6 @@ uses
 
 type
   TSoftKneeLimiterDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
@@ -21,6 +20,8 @@ type
       const SampleRate: Single);
     procedure SKLSoftKneeChange(
       Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fSoftKneeLimiters : Array [0..1] of TSoftKneeLimiter;
   public
@@ -114,7 +115,8 @@ begin
  FreeAndNil(fSoftKneeLimiters[1]);
 end;
 
-procedure TSoftKneeLimiterDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
+procedure TSoftKneeLimiterDataModule.VSTModuleEditOpen(Sender: TObject;
+  var GUI: TForm; ParentWindow: Cardinal);
 begin
  GUI := TEditorForm.Create(Self);
 end;

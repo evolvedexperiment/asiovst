@@ -7,7 +7,6 @@ uses
 
 type
   TPhaserModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure PhaserModuleParameterProperties0ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure PhaserModuleParameterProperties1ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -17,6 +16,8 @@ type
     procedure PhaserModuleParameterProperties5ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fPhaser : array [0..1] of TPhaser;
   public
@@ -29,11 +30,6 @@ implementation
 uses
   PhaserFrm;
 
-procedure TPhaserModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
-begin
-  GUI := TPhaserForm.Create(Self);
-end;
-
 procedure TPhaserModule.VSTModuleOpen(Sender: TObject);
 begin
  fPhaser[0]:=TPhaser.Create;
@@ -44,6 +40,12 @@ procedure TPhaserModule.VSTModuleClose(Sender: TObject);
 begin
  fPhaser[0].Free;
  fPhaser[1].Free;
+end;
+
+procedure TPhaserModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+  GUI := TPhaserForm.Create(Self);
 end;
 
 procedure TPhaserModule.PhaserModuleParameterProperties0ParameterChange(

@@ -78,7 +78,7 @@ begin
   begin
    if ParamCount>0
     then DLLFileName:=ParamStr(1)
-    else DLLFileName:='NoGuiFilter.DLL';
+    else DLLFileName:='SimpleFilter.DLL';
    Active:=True;
    Idle;
    ShowEdit(TForm(VSTPanel));

@@ -6,12 +6,13 @@ uses Windows, Types, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 
 type
   TSimpleDelayVST = class(TVSTModule)
-    procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
     procedure VST2ModuleCreate(Sender: TObject);
     procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray;
       sampleframes: Integer);
     procedure DelaylaVSTParameterProperties0ParameterChange(
       Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fBuffer     : array[0..1] of TAVDSingleDynArray;
     fBufferSize : Integer;
@@ -23,12 +24,6 @@ implementation
 {$R *.DFM}
 
 uses DelaylaGUI;
-
-procedure TSimpleDelayVST.VST_EditOpen(Sender: TObject; var GUI: TForm);
-// Do not delete this if you are using the editor
-begin
- GUI := TVSTGUI.Create(Self);
-end;
 
 procedure TSimpleDelayVST.VST2ModuleCreate(Sender: TObject);
 begin
@@ -50,6 +45,12 @@ begin
    if fBufferPos>=fBufferSize
     then fBufferPos:=0;
    end;
+end;
+
+procedure TSimpleDelayVST.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TSimpleDelayVST.DelaylaVSTParameterProperties0ParameterChange(

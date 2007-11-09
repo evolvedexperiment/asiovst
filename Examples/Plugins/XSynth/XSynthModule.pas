@@ -7,7 +7,6 @@ uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect,
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject;
@@ -31,6 +30,8 @@ type
     procedure VSTSSModuleOsc2ReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTSSModuleOsc2SustainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTSSModuleOsc2LevelChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fLevel  : Single;
     fDrive  : Single;
@@ -49,12 +50,6 @@ implementation
 {$R *.DFM}
 
 uses XSynthGUI, Math;
-
-procedure TVSTSSModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
-// Do not delete this if you are using the editor
-begin
- GUI := TVSTGUI.Create(Self);
-end;
 
 procedure TVSTSSModule.VSTModuleProcess(const inputs,
   outputs: TArrayOfSingleDynArray; sampleframes: Integer);
@@ -369,6 +364,13 @@ end;
 procedure TVSTSSModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(Voices);
+end;
+
+procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+// Do not delete this if you are using the editor
+begin
+ GUI := TVSTGUI.Create(Self);
 end;
 
 end.

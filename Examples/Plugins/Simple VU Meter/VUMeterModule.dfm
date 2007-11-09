@@ -39,7 +39,7 @@ object VSTVUMeterModule: TVSTVUMeterModule
       LargeStepInteger = 0
       VSTModule = Owner
     end>
-  OnEditOpen = VST_EditOpen
+  OnEditOpen = VSTModuleEditOpen
   OnEditIdle = VSTModuleEditIdle
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess

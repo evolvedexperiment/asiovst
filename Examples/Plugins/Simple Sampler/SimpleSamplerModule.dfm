@@ -19,7 +19,7 @@ object VSTSSModule: TVSTSSModule
       VSTModule = Owner
     end>
   ParameterProperties = <>
-  OnEditOpen = VST_EditOpen
+  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi

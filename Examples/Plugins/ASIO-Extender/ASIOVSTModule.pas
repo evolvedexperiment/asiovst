@@ -9,9 +9,8 @@ uses Windows, Messages, SysUtils, Classes, Forms, DASIOHost,
 
 type
   TASIOVSTModule = class(TVSTModule)
-    procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
-    procedure VST2ModuleDestroy(Sender: TObject);
-    procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
     procedure VSTModuleCreate(Sender: TObject);
     procedure ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -19,6 +18,8 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray);
     procedure AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fASIOHost        : TASIOHost;
     fInBuffer        : TArrayOfSingleDynArray;
@@ -75,7 +76,19 @@ begin
   end;
 end;
 
-procedure TASIOVSTModule.VST2ModuleDestroy(Sender: TObject);
+procedure TASIOVSTModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TFmASIOVST.Create(Self);
+ with (GUI As TFmASIOVST) do
+  try
+   CB_ASIO.Items := fASIOHost.DriverList;
+   DisplayASIOInformation;
+  except
+  end;
+end;
+
+procedure TASIOVSTModule.VSTModuleDestroy(Sender: TObject);
 begin
  fASIOHost.Free;
 end;
@@ -90,17 +103,6 @@ procedure TASIOVSTModule.VSTModuleClose(Sender: TObject);
 begin
  if Assigned(fASIOHost)
   then fASIOHost.Active := False;
-end;
-
-procedure TASIOVSTModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
-begin
- GUI := TFmASIOVST.Create(Self);
- with (GUI As TFmASIOVST) do
-  try
-   CB_ASIO.Items := fASIOHost.DriverList;
-   DisplayASIOInformation;
-  except
-  end;
 end;
 
 procedure TASIOVSTModule.AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray);
@@ -134,7 +136,7 @@ begin
  fIntWritePos := 0;
 end;
 
-procedure TASIOVSTModule.VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TASIOVSTModule.VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i, j : Integer;
 begin
  j := 0;

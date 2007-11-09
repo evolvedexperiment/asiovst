@@ -8,7 +8,6 @@ uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
 type
   TPlugInPlugModule = class(TVSTModule)
     VstHost: TVstHost;
-    procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
     procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VST2ModuleProcessReplacing(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VST2ModuleCreate(Sender: TObject);
@@ -25,6 +24,8 @@ type
     procedure VST2ModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VST2ModuleStartProcess(Sender: TObject);
     procedure VST2ModuleStopProcess(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
   public
   end;
@@ -34,13 +35,6 @@ implementation
 {$R *.DFM}
 
 uses Dialogs;
-
-procedure TPlugInPlugModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
-// Do not delete this if you are using the editor
-begin
- GUI := TForm.Create(Self);
- VstHost[0].ShowEdit(GUI);
-end;
 
 procedure TPlugInPlugModule.VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 begin
@@ -134,6 +128,13 @@ end;
 procedure TPlugInPlugModule.VST2ModuleStopProcess(Sender: TObject);
 begin
  VstHost[0].StopProcess;
+end;
+
+procedure TPlugInPlugModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TForm.Create(Self);
+ VstHost[0].ShowEdit(GUI);
 end;
 
 end.

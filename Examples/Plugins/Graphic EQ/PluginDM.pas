@@ -8,13 +8,14 @@ uses
 
 type
   TPluginDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleProcessLR(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleProcessMS(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fEQs : Array [0..1,0..10] of TSimplePeakFilter;
   public
@@ -26,7 +27,8 @@ implementation
 
 uses EditorFrm;
 
-procedure TPluginDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
+procedure TPluginDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
 begin
   GUI := TEditorForm.Create(Self);
 end;

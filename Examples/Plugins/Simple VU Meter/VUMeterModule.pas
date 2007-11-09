@@ -6,14 +6,12 @@ uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 
 type
   TVSTVUMeterModule = class(TVSTModule)
-    procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleEditIdle(Sender: TObject);
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray;
-      sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const inputs,
-      outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
-    procedure VSTModuleParameterChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
+    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fPeak   : T2DoubleArray;
     fVolume : T2DoubleArray;
@@ -28,11 +26,6 @@ implementation
 
 uses VUMeterGUI;
 
-procedure TVSTVUMeterModule.VST_EditOpen(Sender: TObject; var GUI: TForm);
-begin
- GUI := TVSTVUMeterGUI.Create(Self);
-end;
-
 function TVSTVUMeterModule.GetPeak(index: Integer): Double;
 begin
  result := fPeak[index];
@@ -45,6 +38,11 @@ begin
    do TimerTimer(Sender);
 end;
 
+procedure TVSTVUMeterModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TVSTVUMeterGUI.Create(Self);
+end;
 
 ////////////////////////////////////////////////////////////////////////////////
 // 32 Bit Processing

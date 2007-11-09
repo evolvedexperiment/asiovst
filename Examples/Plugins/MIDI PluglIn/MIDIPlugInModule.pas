@@ -6,11 +6,12 @@ uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect, DVSTMo
 
 type
   TMIDIModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure MIDIModuleParameterProperties0ParameterChange(
       Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcessMidi(Sender: TObject;
       MidiEvent: TVstMidiEvent);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   end;
 
 implementation
@@ -18,12 +19,6 @@ implementation
 {$R *.DFM}
 
 uses MIDIPlugInGUI;
-
-procedure TMIDIModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
-// Do not delete this if you are using the editor
-begin
- GUI := TVSTGUI.Create(Self);
-end;
 
 procedure TMIDIModule.MIDIModuleParameterProperties0ParameterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
@@ -35,6 +30,12 @@ begin
    // Update Scrollbar, if necessary
    if par0.Position<>round(Value) then par0.Position:=round(Value); 
   end;
+end;
+
+procedure TMIDIModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TMIDIModule.VSTModuleProcessMidi(Sender: TObject;

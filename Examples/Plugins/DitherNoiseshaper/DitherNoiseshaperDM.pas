@@ -8,7 +8,6 @@ uses
 
 type
   TDitherNoiseshaperModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
     procedure DNTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure DNTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
@@ -17,6 +16,8 @@ type
     procedure DNBitDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fDitherNoiseshaper : array [0..1] of TDitherNoiseShaper;
   end;
@@ -42,7 +43,8 @@ begin
  fDitherNoiseshaper[1].Free;
 end;
 
-procedure TDitherNoiseshaperModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm);
+procedure TDitherNoiseshaperModule.VSTModuleEditOpen(Sender: TObject;
+  var GUI: TForm; ParentWindow: Cardinal);
 begin
  GUI := TFmDitherNoiseshaper.Create(Self);
  with TFmDitherNoiseshaper(GUI)

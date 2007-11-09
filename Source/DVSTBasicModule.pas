@@ -13,6 +13,10 @@ type
   protected
     FEffect: TVSTEffect;
     FAudioMaster: TAudioMasterCallbackFunc;
+    {$IFNDEF UseDelphi}
+    FOnCreate: TNotifyEvent;
+    FOnDestroy: TNotifyEvent;
+    {$ENDIF}
 
     function GetEffect: PVSTEffect; virtual;
 
@@ -173,6 +177,10 @@ type
 
     property Effect: PVSTEffect read GetEffect;
     property AudioMaster: TAudioMasterCallbackFunc read FAudioMaster write SetAudioMaster;
+    {$IFNDEF UseDelphi}
+    property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
+    property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
+    {$ENDIF}
   end;
 
 implementation
