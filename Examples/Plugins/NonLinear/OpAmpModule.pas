@@ -9,11 +9,12 @@ uses {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
 
 type
   TVSTOpAmp = class(TVSTModule)
-    procedure VST_EditOpen(Sender: TObject; var GUI: TForm);
     procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
     fGain   : Double;
   public
@@ -26,11 +27,6 @@ implementation
 {$ENDIF}
 
 uses Math, OpAmpGUI;
-
-procedure TVSTOpAmp.VST_EditOpen(Sender: TObject; var GUI: TForm);
-begin
- GUI := TVSTGUI.Create(Self);
-end;
 
 procedure TVSTOpAmp.VSTModuleProcess(const inputs,
   outputs: TArrayOfSingleDynArray; sampleframes: Integer);
@@ -48,6 +44,12 @@ begin
  for j := 0 to min(numOutputs, numInputs) - 1 do
   for i := 0 to sampleframes - 1
    do Outputs[j, i] := Tanh2a(fGain * Inputs[j, i]);
+end;
+
+procedure TVSTOpAmp.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TVSTOpAmp.VSTModuleInitialize(Sender: TObject);

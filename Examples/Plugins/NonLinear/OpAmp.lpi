@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="\"/>
-    <Version Value="5"/>
+    <Version Value="6"/>
     <General>
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
@@ -31,7 +31,7 @@
       <Unit0>
         <Filename Value="OpAmp.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="25" Y="25"/>
         <TopLine Value="1"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="21"/>
@@ -61,7 +61,7 @@
       <Unit3>
         <Filename Value="OpAmpModule.lfm"/>
         <CursorPos X="3" Y="52"/>
-        <TopLine Value="22"/>
+        <TopLine Value="14"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
@@ -88,19 +88,14 @@
         <UsageCount Value="10"/>
       </Unit6>
       <Unit7>
-        <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\interfaces.pp"/>
+        <Filename Value="..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\interfaces.pp"/>
         <UnitName Value="Interfaces"/>
         <CursorPos X="39" Y="13"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit7>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
-      <Position1>
-        <Filename Value="OpAmpModule.lfm"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position1>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>

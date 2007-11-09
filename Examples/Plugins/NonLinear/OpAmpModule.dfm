@@ -35,7 +35,7 @@ object VSTOpAmp: TVSTOpAmp
       ShortLabel = 'Gain'
       VSTModule = Owner
     end>
-  OnEditOpen = VST_EditOpen
+  OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
