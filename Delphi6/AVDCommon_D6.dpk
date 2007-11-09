@@ -32,6 +32,8 @@ contains
   CPUDetectionTool in '..\Source\CPUDetectionTool.pas',
   DAVDComplex in '..\Source\DAVDComplex.pas',
   MidiFile in '..\Source\MidiFile.pas',
-  DAVDProcessingComponent in '..\Source\DAVDProcessingComponent.pas';
+  DAVDProcessingComponent in '..\Source\DAVDProcessingComponent.pas',
+  DAVDBufferMathPascal in '..\Source\DAVDBufferMathPascal.pas',
+  DAVDBufferMathAsm in '..\Source\DAVDBufferMathAsm.pas';
 
 end.

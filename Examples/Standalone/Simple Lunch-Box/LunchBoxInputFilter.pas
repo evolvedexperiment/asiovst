@@ -1,10 +1,6 @@
 unit LunchBoxInputFilter;
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ELSE}
-{$DEFINE x87}
-{$ENDIF}
+{$I ASIOVST.inc}
 
 interface
 

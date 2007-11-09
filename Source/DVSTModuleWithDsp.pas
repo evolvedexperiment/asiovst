@@ -151,7 +151,6 @@ begin
     SetInitialDelay(FInitialDelay);
 end;
 
-
 procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
 var i,j: Integer;
 begin

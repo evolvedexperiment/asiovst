@@ -926,15 +926,19 @@ var Ins  : TArrayOfSingleDynArray absolute Inputs;
     OutsTmp: TArrayOfSingleDynArray;
     i, j: Integer;
 begin
-  SetLength(OutsTmp, FEffect.NumOutputs, SampleFrames);
-  for j := 0 to FEffect.NumOutputs - 1 do
-    FillChar(OutsTmp[j, 0], SampleFrames*SizeOf(Single), 0);
-
-  if Assigned(FOnProcessEx) then FOnProcessEx(Ins, OutsTmp, SampleFrames);
-
-  for i := 0 to SampleFrames - 1 do
+  if Assigned(FOnProcessEx) then FOnProcessEx(Ins, OutsTmp, SampleFrames)
+  else if Assigned(FOnProcessReplacingEx) then
+  begin
+    SetLength(OutsTmp, FEffect.NumOutputs, SampleFrames);
     for j := 0 to FEffect.NumOutputs - 1 do
-      Outs[j, i] := Outs[j, i] + OutsTmp[j, i];
+      FillChar(OutsTmp[j, 0], SampleFrames*SizeOf(Single), 0);
+
+    FOnProcessReplacingEx(Ins, OutsTmp, SampleFrames);
+
+    for i := 0 to SampleFrames - 1 do
+      for j := 0 to FEffect.NumOutputs - 1 do
+        Outs[j, i] := Outs[j, i] + OutsTmp[j, i];
+  end;
 end;
 
 procedure TCustomVSTModule.HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);

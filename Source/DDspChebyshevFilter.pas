@@ -3,7 +3,6 @@ unit DDspChebyshevFilter;
 interface
 
 {$I ASIOVST.INC}
-{$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses DDspFilter, DAVDCommon;
 
