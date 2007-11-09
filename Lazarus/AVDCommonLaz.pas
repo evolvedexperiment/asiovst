@@ -7,7 +7,7 @@ unit AVDCommonLaz;
 interface
 
 uses
-  MidiFile, DAVDCommon, DAVDComplex, DDSPRemez; 
+  DAVDComplex, MidiFile, DAVDCommon; 
 
 implementation
 
