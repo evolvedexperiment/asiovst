@@ -1,8 +1,8 @@
-program BMTest_Single;
+program BMTestDouble;
 
 uses
   Forms,
-  BMTestSingleU in 'BMTestSingleU.pas' {BufferMathForm};
+  BMTestSDoubleU in 'BMTestDoubleU.pas' {BufferMathForm};
 
 {$R *.res}
 
