@@ -62,6 +62,10 @@ procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output:
 procedure ClearArrays(const output: TArrayOfSingleDynArray; dim1, dim2: integer);
 procedure CopyArrays(const input, output: TArrayOfSingleDynArray; dim1, dim2: integer);
 
+// when output has no dimensions use this:
+procedure CreateArrayCopy(const input: TArrayOfSingleDynArray; out output: TArrayOfSingleDynArray; dim1, dim2: integer);
+procedure CreateEmptyArray(out output: TArrayOfSingleDynArray; dim1, dim2: integer);
+
 implementation
 
 
@@ -368,5 +372,17 @@ begin
   for i:=0 to dim1-1 do move(input[i,0], output[i,0], dim2*4)//copy(input[i], 0, dim2*4);
 end;
 
+
+procedure CreateArrayCopy(const input: TArrayOfSingleDynArray; out output: TArrayOfSingleDynArray; dim1, dim2: integer);
+begin
+  SetLength(output, dim1, dim2);
+  CopyArrays(input, output, dim1, dim2);
+end;
+
+procedure CreateEmptyArray(out output: TArrayOfSingleDynArray; dim1, dim2: integer);
+begin
+  SetLength(output, dim1, dim2);
+  ClearArrays(output, dim1, dim2);
+end;
 
 end.

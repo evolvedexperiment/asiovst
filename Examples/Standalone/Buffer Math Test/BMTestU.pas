@@ -52,17 +52,12 @@ uses DAVDCommon, DAVDBufferMathAsm, DAVDBufferMathPascal, DVSTEffect;
 procedure GenerateTestBuffers(var input1,input2,input3, output: TArrayOfSingleDynArray);
 var i,j: integer;
 begin
-  setlength(input1, TEST_DIM_1);
-  setlength(input2, TEST_DIM_1);
-  setlength(input3, TEST_DIM_1);
-  setlength(output, TEST_DIM_1);
+  setlength(input1, TEST_DIM_1, TEST_DIM_2);
+  setlength(input2, TEST_DIM_1, TEST_DIM_2);
+  setlength(input3, TEST_DIM_1, TEST_DIM_2);
+  setlength(output, TEST_DIM_1, TEST_DIM_2);
   for i:=0 to TEST_DIM_1-1 do for j:=0 to TEST_DIM_2-1 do
   begin
-    setlength(input1[i], TEST_DIM_2);
-    setlength(input2[i], TEST_DIM_2);
-    setlength(input3[i], TEST_DIM_2);
-    setlength(output[i], TEST_DIM_2);
-
     input1[i,j] := j+1;
     input2[i,j] := i+1;
     input3[i,j] := 15;
@@ -364,7 +359,7 @@ begin
                            + floattostr(output[0,0]) + ' | '
                            + floattostr(output[0,TEST_DIM_2-1]) + ' | '
                            + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1])); 
+                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
   ResultMemo.Lines.Add('---------------------------------------------------------------------------');
   ResultMemo.Lines.Add('DONE');
 end;

@@ -97,10 +97,8 @@ begin
 end;
 
 procedure TGuiStaticWaveform.ClearWaveForm(DoRedrawBuffer, DoFlipBuffer: Boolean);
-var i: integer;
 begin
-  for i:=0 to Length(fWaveData)-1 do SetLength(fWaveData[i],0);
-  SetLength(fWaveData,0);
+  SetLength(fWaveData,0,0);
 
   if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
 end;

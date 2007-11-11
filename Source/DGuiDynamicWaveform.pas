@@ -60,12 +60,9 @@ end;
 procedure TGuiDynamicWaveform.ProcessBufferIndirect(NewWaveData: TArrayOfSingleDynArray; Channels, SampleFrames: Integer);
 var tmp: TArrayOfSingleDynArray; i: integer;
 begin
-  SetLength(tmp,Channels);
+  SetLength(tmp,Channels, SampleFrames);
   for i:=0 to Channels-1 do
-  begin
-    SetLength(tmp[i],SampleFrames);
     move(NewWaveData[i,0], tmp[i,0], SampleFrames*SizeOf(Single));
-  end;
 
   ProcessBuffer(tmp, SampleFrames);
 end;
@@ -154,14 +151,11 @@ procedure TGuiDynamicWaveform.UpdateInternalBuffer;
 var i: integer;
 begin
   for i:=fInternalBufferChannels to Length(fInternalBuffer)-1 do SetLength(fInternalBuffer[i],0);
-  SetLength(fInternalBuffer, fInternalBufferChannels);
+  SetLength(fInternalBuffer, fInternalBufferChannels, fInternalBufferSize);
 
   if fInternalBufferChannels>0 then
     for i:=0 to Length(fInternalBuffer)-1 do
-    begin
-      SetLength(fInternalBuffer[i],fInternalBufferSize);
       FillChar(fInternalBuffer[i][0],SizeOf(single)*fInternalBufferSize,0);
-    end;
 end;
 
 procedure TGuiDynamicWaveform.SetInternalBufferChannels(const Value: Integer);

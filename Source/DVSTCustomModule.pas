@@ -280,7 +280,9 @@ type
 
 implementation
 
-uses SysUtils, Math;
+uses SysUtils, Math,
+  {$IFDEF PUREPASCAL}DAVDBufferMathAsm{$ELSE}DAVDBufferMathPascal,
+  DAVDBufferMathPascal{$ENDIF};
 
 
 constructor TCustomVSTModule.Create(AOwner: TComponent);
@@ -311,6 +313,41 @@ begin
  FCurrentVstShellPlugin := 0;
  FNumCategories := 1;
 end;
+
+procedure TCustomVSTModule.HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer);
+var Ins  : TArrayOfSingleDynArray absolute Inputs;
+    Outs : TArrayOfSingleDynArray absolute Outputs;
+    OutsTmp: TArrayOfSingleDynArray;
+    j: Integer;
+begin
+  if Assigned(FOnProcessEx) then FOnProcessEx(Ins, Outs, SampleFrames)
+  else if Assigned(FOnProcessReplacingEx) then
+  begin
+    CreateEmptyArray(OutsTmp, FEffect.NumOutputs, SampleFrames);
+
+    FOnProcessReplacingEx(Ins, OutsTmp, SampleFrames);
+
+    AddArrays(Outs, OutsTmp, Outs, FEffect.NumOutputs, SampleFrames);
+  end;
+end;
+
+procedure TCustomVSTModule.HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
+var Ins  : TArrayOfSingleDynArray absolute Inputs;
+    Outs : TArrayOfSingleDynArray absolute Outputs;
+begin
+  if Assigned(FOnProcessReplacingEx) then FOnProcessReplacingEx(Ins,Outs,SampleFrames);
+end;
+
+procedure TCustomVSTModule.HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer);
+var Ins  : TArrayOfDoubleDynArray absolute Inputs;
+    Outs : TArrayOfDoubleDynArray absolute Outputs;
+begin
+  if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins,Outs,SampleFrames);
+end;
+
+
+
+
 
 destructor TCustomVSTModule.Destroy;
 begin
@@ -906,45 +943,6 @@ begin
  FEffect.uniqueID := FourCharToLong(fID[1], fID[2], fID[3], fID[4])
 end;
 
-
-
-procedure TCustomVSTModule.HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-var Ins  : TArrayOfSingleDynArray absolute Inputs;
-    Outs : TArrayOfSingleDynArray absolute Outputs;
-    OutsTmp: TArrayOfSingleDynArray;
-    i, j: Integer;
-begin
-  if Assigned(FOnProcessEx) then FOnProcessEx(Ins, OutsTmp, SampleFrames)
-  else if Assigned(FOnProcessReplacingEx) then
-  begin
-    SetLength(OutsTmp, FEffect.NumOutputs, SampleFrames);
-    for j := 0 to FEffect.NumOutputs - 1 do
-      FillChar(OutsTmp[j, 0], SampleFrames*SizeOf(Single), 0);
-
-    FOnProcessReplacingEx(Ins, OutsTmp, SampleFrames);
-
-    for i := 0 to SampleFrames - 1 do
-      for j := 0 to FEffect.NumOutputs - 1 do
-        Outs[j, i] := Outs[j, i] + OutsTmp[j, i];
-  end;
-end;
-
-procedure TCustomVSTModule.HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-var Ins  : TArrayOfSingleDynArray absolute Inputs;
-    Outs : TArrayOfSingleDynArray absolute Outputs;
-begin
-  if Assigned(FOnProcessReplacingEx) then FOnProcessReplacingEx(Ins,Outs,SampleFrames);
-end;
-
-procedure TCustomVSTModule.HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer);
-var Ins  : TArrayOfDoubleDynArray absolute Inputs;
-    Outs : TArrayOfDoubleDynArray absolute Outputs;
-begin
-  if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins,Outs,SampleFrames);
-end;
-
-
-
 procedure TCustomVSTModule.SetSampleRate(newValue: Single);
 begin
  if fSampleRate<>newValue then
@@ -1217,6 +1215,5 @@ procedure TCustomVSTModule.UpdateVersion;
 begin
   FEffect.version := (FVersionMajor shl 16) + (FVersionMinor shl 8) + FVersionRelease;
 end;
-
 
 end.
