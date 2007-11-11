@@ -19,6 +19,7 @@ type
     TestAddMulBtn: TButton;
     TestAddScaledBtn: TButton;
     TestAddModulatedBtn: TButton;
+    Button1: TButton;
     procedure TestCopyBtnClick(Sender: TObject);
     procedure TestAddBtnClick(Sender: TObject);
     procedure TestSubBtnClick(Sender: TObject);
@@ -29,6 +30,7 @@ type
     procedure TestAddMulBtnClick(Sender: TObject);
     procedure TestAddScaledBtnClick(Sender: TObject);
     procedure TestAddModulatedBtnClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -38,7 +40,7 @@ type
 
 const TEST_DIM_1 = 20;
       TEST_DIM_2 = 512;
-      TEST_RUNS  = 20000;
+      TEST_RUNS  = 10000;
 
 var
   BufferMathForm: TBufferMathForm;
@@ -99,7 +101,39 @@ begin
   showmessage(floattostr(n[1,45]));
 end;
 
+procedure convtest(x: PDouble);
+var n: TAVDDoubleDynArray absolute x;
+begin
+  showmessage(floattostr(n[0]));
+  showmessage(floattostr(n[45]));
+end;
 
+procedure TBufferMathForm.Button1Click(Sender: TObject);
+var x: PPDouble; i,j: integer; n: TArrayOfDoubleDynArray;
+begin
+  getmem(x, 2*sizeof(PDouble));
+  for j:=0 to 1 do
+  begin
+    getmem(x^, 200*sizeof(Double));
+    for i:=0 to 199 do begin x^^:=i+(j*200); inc(x^); end;
+    for i:=0 to 199 do dec(x^);
+    inc(x);
+  end;
+  for j:=0 to 1 do dec(x);
+
+  setlength(n,2);
+  setlength(n[0],200);
+  setlength(n[1],200);
+
+  convtest(x^);
+
+  move(x^^,n[0,0],200*sizeof(double));
+  inc(x);
+  move(x^^,n[1,0],200*sizeof(double));
+//  showmessage(floattostr(x^^));
+  showmessage(floattostr(n[0,0]));
+  showmessage(floattostr(n[1,45]));
+end;
 
 
 
@@ -226,7 +260,7 @@ begin
                            + floattostr(output[TEST_DIM_1-1,0]) + ' | '
                            + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1])); 
   ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add('DONE');    
 end;
 
 procedure TBufferMathForm.TestMulBtnClick(Sender: TObject);
@@ -288,7 +322,7 @@ begin
                            + floattostr(output[TEST_DIM_1-1,0]) + ' | '
                            + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1])); 
   ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add('DONE');  
 end;
 
 procedure TBufferMathForm.TestClearBtnClick(Sender: TObject);
@@ -325,7 +359,7 @@ begin
                            + floattostr(output[TEST_DIM_1-1,0]) + ' | '
                            + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1])); 
   ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add('DONE'); 
 end;  
 
 procedure TBufferMathForm.TestCopyBufBtnClick(Sender: TObject);
@@ -361,7 +395,7 @@ begin
                            + floattostr(output[TEST_DIM_1-1,0]) + ' | '
                            + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
   ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add('DONE'); 
 end;
 
 
@@ -476,7 +510,7 @@ begin
                            + floattostr(output[TEST_DIM_1-1,0]) + ' | '
                            + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));   
   ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add('DONE');   
 end;
 
 procedure TBufferMathForm.TestAddMulBtnClick(Sender: TObject);
@@ -629,7 +663,7 @@ begin
                            + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
 
   ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add('DONE');   
 end;
 
 procedure TBufferMathForm.TestAddModulatedBtnClick(Sender: TObject);
@@ -667,7 +701,7 @@ begin
                            + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
 
   ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add('DONE'); 
 end;
 
 end.

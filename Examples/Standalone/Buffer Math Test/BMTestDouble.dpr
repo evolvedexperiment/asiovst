@@ -2,7 +2,7 @@ program BMTestDouble;
 
 uses
   Forms,
-  BMTestSDoubleU in 'BMTestDoubleU.pas' {BufferMathForm};
+  BMTestDoubleU in 'BMTestDoubleU.pas' {BufferMathForm};
 
 {$R *.res}
 
