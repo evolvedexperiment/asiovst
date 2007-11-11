@@ -1,6 +1,6 @@
 object BufferMathForm: TBufferMathForm
-  Left = 161
-  Top = 126
+  Left = 216
+  Top = 133
   Width = 981
   Height = 366
   Caption = 'Buffer-Math Test'
@@ -15,7 +15,7 @@ object BufferMathForm: TBufferMathForm
   PixelsPerInch = 96
   TextHeight = 13
   object TestCopyBtn: TButton
-    Left = 160
+    Left = 784
     Top = 8
     Width = 177
     Height = 25
@@ -116,14 +116,5 @@ object BufferMathForm: TBufferMathForm
     Caption = 'Test add modulated buffers'
     TabOrder = 10
     OnClick = TestAddModulatedBtnClick
-  end
-  object Button1: TButton
-    Left = 352
-    Top = 8
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 11
-    OnClick = Button1Click
   end
 end

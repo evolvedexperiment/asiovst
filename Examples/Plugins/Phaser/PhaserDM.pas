@@ -7,7 +7,7 @@ uses
 
 type
   TPhaserModule = class(TVSTModule)
-    procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VST2ModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure PhaserModuleParameterProperties0ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure PhaserModuleParameterProperties1ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure PhaserModuleParameterProperties2ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -144,7 +144,7 @@ begin
   end;
 end;
 
-procedure TPhaserModule.VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TPhaserModule.VST2ModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i: Integer;
 begin
  for i:=0 to sampleframes-1 do

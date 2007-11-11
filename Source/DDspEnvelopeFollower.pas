@@ -23,8 +23,8 @@ type
   public
     procedure Init; override;
     procedure Reset; override;
-    function Process(channel: integer; input: Single): Single; overload;
-    function Process(channel: integer; input: Double): Double; overload;
+    function Process(input: Single; channel: integer): Single; overload;
+    function Process(input: Double; channel: integer): Double; overload;
   published
     property Attack:  single read fAttack write SetAttack;   // 0..1
     property Release: single read fRelease write SetRelease; // 0..1
@@ -83,7 +83,7 @@ begin
   end;
 end;
 
-function TDspEnvelopeFollower.Process(channel: integer; input: Double): Double;
+function TDspEnvelopeFollower.Process(input: Double; channel: integer): Double;
 var tmp: Double;
 begin
  {$IFDEF FPC}
@@ -101,7 +101,7 @@ begin
   result:=fLastOutputDouble[channel];
 end;
 
-function TDspEnvelopeFollower.Process(channel: integer; input: Single): Single;
+function TDspEnvelopeFollower.Process(input: Single; channel: integer): Single;
 var tmp: Single;
 begin
  {$IFDEF FPC}

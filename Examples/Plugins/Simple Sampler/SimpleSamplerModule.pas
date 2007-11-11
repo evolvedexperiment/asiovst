@@ -8,7 +8,7 @@ uses
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject;
       MidiEvent: TVstMidiEvent);
@@ -27,7 +27,7 @@ implementation
 
 uses SimpleSamplerGUI, Math;
 
-procedure TVSTSSModule.VSTModuleProcess(const inputs,
+procedure TVSTSSModule.VSTModuleProcess(inputs,
   outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i,j : Integer;
 begin

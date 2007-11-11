@@ -20,8 +20,8 @@ type
   TMBCDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure MBCDMLowFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMHighFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDCLowOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -406,7 +406,7 @@ begin
    end;
 end;
 
-procedure TMBCDataModule.VSTModuleProcess(const Inputs,
+procedure TMBCDataModule.VSTModuleProcess(Inputs,
   Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i : Integer;
 begin
@@ -431,7 +431,7 @@ begin
   end;
 end;
 
-procedure TMBCDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
+procedure TMBCDataModule.VSTModuleProcessDoubleReplacing(Inputs,
   Outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i : Integer;
 begin

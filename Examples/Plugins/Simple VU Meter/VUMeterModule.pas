@@ -7,8 +7,8 @@ uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 type
   TVSTVUMeterModule = class(TVSTModule)
     procedure VSTModuleEditIdle(Sender: TObject);
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
       ParentWindow: Cardinal);
@@ -47,7 +47,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
-procedure TVSTVUMeterModule.VSTModuleProcess(const inputs,
+procedure TVSTVUMeterModule.VSTModuleProcess(inputs,
   outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i: integer;
 begin
@@ -76,7 +76,7 @@ end;
 // 64 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTVUMeterModule.VSTModuleProcessDoubleReplacing(const inputs,
+procedure TVSTVUMeterModule.VSTModuleProcessDoubleReplacing(inputs,
   outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i: integer;
 begin

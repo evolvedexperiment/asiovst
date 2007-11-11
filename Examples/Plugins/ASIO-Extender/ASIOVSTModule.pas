@@ -10,7 +10,7 @@ uses Windows, Messages, SysUtils, Classes, Forms, DASIOHost,
 type
   TASIOVSTModule = class(TVSTModule)
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
     procedure VSTModuleCreate(Sender: TObject);
     procedure ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -136,7 +136,7 @@ begin
  fIntWritePos := 0;
 end;
 
-procedure TASIOVSTModule.VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TASIOVSTModule.VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i, j : Integer;
 begin
  j := 0;

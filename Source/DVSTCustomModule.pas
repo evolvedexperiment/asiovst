@@ -9,8 +9,6 @@ uses
   Classes, Forms, DVSTEffect, DVSTShellPlugins, DVSTBasicModule, DAVDCommon;
 
 type
-  TProcessingMode = (pmNormal, pmBlockSave, pmCopy, pmMute);
-
   TVstCanDo = (vcdSendVstEvents,       vcdSendVstMidiEvent,      vcdSendVstTimeInfo, vcdReceiveVstEvents,
                vcdReceiveVstMidiEvent, vcdReceiveVstTimeInfo,    vcdOffline,         vcdPlugAsChannelInsert,
                vcdPlugAsSend,          vcdMixDryWet,             vcdNoRealTime,      vcdMultipass,
@@ -23,8 +21,8 @@ type
   
   TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
 
-  TProcessAudioEvent     = procedure(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer) of object;
-  TProcessDoubleEvent    = procedure(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer) of object;
+  TProcessAudioEvent     = procedure(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer) of object;
+  TProcessDoubleEvent    = procedure(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer) of object;
   TGetVUEvent            = procedure(var VU:Single) of object;
   TBlockSizeChangeEvent  = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
@@ -281,8 +279,7 @@ type
 implementation
 
 uses SysUtils, Math,
-  {$IFDEF PUREPASCAL}DAVDBufferMathAsm{$ELSE}DAVDBufferMathPascal,
-  DAVDBufferMathPascal{$ENDIF};
+  {$IFDEF PUREPASCAL}DAVDBufferMathAsm{$ELSE}DAVDBufferMathPascal{$ENDIF};
 
 
 constructor TCustomVSTModule.Create(AOwner: TComponent);
@@ -296,7 +293,7 @@ begin
  {$ENDIF}
  Randomize;
  FVersion := '0.0';
- FAbout := 'VST Plugin Wizard by Christian Budde & Tobybear';
+ FAbout := 'VST Plugin Template by Christian Budde, Tobybear & MyCo';
  FProcessPrecisition := pp32;
  FKeysRequired := False;
  FTailSize := 0;
@@ -314,37 +311,110 @@ begin
  FNumCategories := 1;
 end;
 
-procedure TCustomVSTModule.HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-var Ins  : TArrayOfSingleDynArray absolute Inputs;
-    Outs : TArrayOfSingleDynArray absolute Outputs;
-    OutsTmp: TArrayOfSingleDynArray;
-    j: Integer;
-begin
-  if Assigned(FOnProcessEx) then FOnProcessEx(Ins, Outs, SampleFrames)
-  else if Assigned(FOnProcessReplacingEx) then
+
+{$IFDEF CONVERT_TO_DYNARRAY}
+  procedure TCustomVSTModule.HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer);
+  var Ins  : TArrayOfSingleDynArray absolute Inputs;
+      Outs : TArrayOfSingleDynArray absolute Outputs;
+      OutsTmp, tmpI, tmpO: TArrayOfSingleDynArray;
   begin
-    CreateEmptyArray(OutsTmp, FEffect.NumOutputs, SampleFrames);
+    if Assigned(FOnProcessEx) then
+    begin
+      CreateArrayCopy(Ins,tmpI, FEffect.NumOutputs, SampleFrames);
+      CreateArrayCopy(Outs,tmpO, FEffect.NumOutputs, SampleFrames);
 
-    FOnProcessReplacingEx(Ins, OutsTmp, SampleFrames);
+      FOnProcessEx(tmpI, tmpO, SampleFrames);
 
-    AddArrays(Outs, OutsTmp, Outs, FEffect.NumOutputs, SampleFrames);
+      CopyArrays(tmpO, Outs, FEffect.NumOutputs, SampleFrames);
+      CopyArrays(tmpI, Ins, FEffect.NumOutputs, SampleFrames);
+    end else if Assigned(FOnProcessReplacingEx) then
+    begin
+      CreateArrayCopy(Ins,tmpI, FEffect.NumOutputs, SampleFrames);
+      CreateEmptyArray(OutsTmp, FEffect.NumOutputs, SampleFrames);
+
+      FOnProcessReplacingEx(tmpI, OutsTmp, SampleFrames);
+
+      AddArrays(OutsTmp, Outs, Outs, FEffect.NumOutputs, SampleFrames);
+      CopyArrays(tmpI, Ins, FEffect.NumOutputs, SampleFrames);
+    end;
   end;
-end;
 
-procedure TCustomVSTModule.HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-var Ins  : TArrayOfSingleDynArray absolute Inputs;
-    Outs : TArrayOfSingleDynArray absolute Outputs;
-begin
-  if Assigned(FOnProcessReplacingEx) then FOnProcessReplacingEx(Ins,Outs,SampleFrames);
-end;
+{$ELSE}
+  procedure TCustomVSTModule.HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer);
+  var Ins  : TArrayOfSingleDynArray absolute Inputs;
+      Outs : TArrayOfSingleDynArray absolute Outputs;
+      OutsTmp: TArrayOfSingleDynArray;
+  begin
+    if Assigned(FOnProcessEx) then FOnProcessEx(Ins, Outs, SampleFrames)
+    else if Assigned(FOnProcessReplacingEx) then
+    begin
+      CreateEmptyArray(OutsTmp, FEffect.NumOutputs, SampleFrames);
 
-procedure TCustomVSTModule.HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer);
-var Ins  : TArrayOfDoubleDynArray absolute Inputs;
-    Outs : TArrayOfDoubleDynArray absolute Outputs;
-begin
-  if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins,Outs,SampleFrames);
-end;
+      FOnProcessReplacingEx(Ins, OutsTmp, SampleFrames);
 
+      AddArrays(Outs, OutsTmp, Outs, FEffect.NumOutputs, SampleFrames);
+    end;
+  end;
+
+{$ENDIF}
+
+{$IFDEF CONVERT_TO_DYNARRAY}
+  procedure TCustomVSTModule.HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
+  var Ins  : TArrayOfSingleDynArray absolute Inputs;
+      Outs : TArrayOfSingleDynArray absolute Outputs;
+      tmpI, tmpO: TArrayOfSingleDynArray;
+  begin
+    if Assigned(FOnProcessReplacingEx) then
+    begin
+      CreateArrayCopy(Ins,tmpI, FEffect.NumOutputs, SampleFrames);
+      CreateArrayCopy(Outs,tmpO, FEffect.NumOutputs, SampleFrames);
+
+      FOnProcessReplacingEx(tmpI, tmpO, SampleFrames);
+
+      CopyArrays(tmpO, Outs, FEffect.NumOutputs, SampleFrames);
+      CopyArrays(tmpI, Ins, FEffect.NumOutputs, SampleFrames);
+    end;
+  end;
+
+{$ELSE}
+  procedure TCustomVSTModule.HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
+  var Ins  : TArrayOfSingleDynArray absolute Inputs;
+      Outs : TArrayOfSingleDynArray absolute Outputs;
+  begin
+    if Assigned(FOnProcessReplacingEx) then FOnProcessReplacingEx(Ins,Outs,SampleFrames);
+  end;
+
+{$ENDIF}
+
+
+
+{$IFDEF CONVERT_TO_DYNARRAY}
+  procedure TCustomVSTModule.HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer);
+  var Ins  : TArrayOfDoubleDynArray absolute Inputs;
+      Outs : TArrayOfDoubleDynArray absolute Outputs;
+      tmpI, tmpO: TArrayOfDoubleDynArray;
+  begin
+    if Assigned(FOnProcessDoublesEx) then
+    begin
+      CreateArrayCopy(Ins,tmpI, FEffect.NumOutputs, SampleFrames);
+      CreateArrayCopy(Outs,tmpO, FEffect.NumOutputs, SampleFrames);
+
+      FOnProcessDoublesEx(tmpI, tmpO, SampleFrames);
+
+      CopyArrays(tmpO, Outs, FEffect.NumOutputs, SampleFrames);
+      CopyArrays(tmpI, Ins, FEffect.NumOutputs, SampleFrames);
+    end;
+  end;
+
+{$ELSE}
+  procedure TCustomVSTModule.HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer);
+  var Ins  : TArrayOfDoubleDynArray absolute Inputs;
+      Outs : TArrayOfDoubleDynArray absolute Outputs;
+  begin
+    if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins,Outs,SampleFrames);
+  end;
+
+{$ENDIF}
 
 
 

@@ -8,8 +8,8 @@ uses DAVDCommon, DVSTModule;
 
 type
   TVSTFilter = class(TVSTModule)
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure VSTFilterParameterProperties0ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleInitialize(Sender: TObject);
   private
@@ -53,7 +53,7 @@ end;
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTFilter.VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TVSTFilter.VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i         : Integer;
     cut, res  : Single;
     fb        : Single;
@@ -77,7 +77,7 @@ end;
 // 64 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTFilter.VSTModuleProcessDoubleReplacing(const inputs,
+procedure TVSTFilter.VSTModuleProcessDoubleReplacing(inputs,
   outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i         : Integer;
     cut, res  : Double;

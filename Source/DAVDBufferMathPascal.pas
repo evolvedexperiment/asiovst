@@ -145,7 +145,7 @@ procedure CopyArrays(const input, output: TArrayOfDoubleDynArray; dim1, dim2: in
 procedure CreateArrayCopy(const input: TArrayOfDoubleDynArray; out output: TArrayOfDoubleDynArray; dim1, dim2: integer); overload;
 procedure CreateEmptyArray(out output: TArrayOfDoubleDynArray; dim1, dim2: integer); overload;
 
-
+procedure SetDimensions(var output: TArrayOfDoubleDynArray; dim1, dim2: integer);
 
 
 implementation
@@ -784,7 +784,6 @@ begin
   for i:=0 to dim1-1 do move(input[i,0], output[i,0], dim2 * SizeOf(Double))
 end;
 
-
 procedure CreateArrayCopy(const input: TArrayOfDoubleDynArray; out output: TArrayOfDoubleDynArray; dim1, dim2: integer);
 begin
   SetLength(output, dim1, dim2);
@@ -795,6 +794,11 @@ procedure CreateEmptyArray(out output: TArrayOfDoubleDynArray; dim1, dim2: integ
 begin
   SetLength(output, dim1, dim2);
   ClearArrays(output, dim1, dim2);
+end;   
+
+procedure SetDimensions(var output: TArrayOfDoubleDynArray; dim1, dim2: integer);
+begin
+  setlength(output, dim1, dim2);
 end;
 
 

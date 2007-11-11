@@ -2,15 +2,36 @@ unit DAVDProcessingComponent;
 
 interface
 
-uses Classes;
+uses Classes, DAVDCommon;
 
 type
+  TDspBaseProcessFuncS   = function(input: Single; channel: integer): Single of object;
+  TDspBaseProcessFuncD   = function(input: Double; channel: integer): Double of object;
+  TDspBaseProcessFuncSA  = function(input: TAVDSingleDynArray; SampleFrames: Integer; channel: integer): TAVDSingleDynArray of object;
+  TDspBaseProcessFuncDA  = function(input: TAVDDoubleDynArray; SampleFrames: Integer; channel: integer): TAVDDoubleDynArray of object;
+  TDspBaseProcessFuncSAA = function(input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray of object;
+  TDspBaseProcessFuncDAA = function(input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray of object;
+
   TAVDProcessingComponent = class(TComponent)
   protected
     fBypass: Boolean;
     fEnabled: Boolean;
     fSampleRate: Single;
     fChannels: Integer;
+
+    fProcessS:   TDspBaseProcessFuncS;
+    fProcessD:   TDspBaseProcessFuncD;
+    fProcessSA:  TDspBaseProcessFuncSA;
+    fProcessDA:  TDspBaseProcessFuncDA;
+    fProcessSAA: TDspBaseProcessFuncSAA;
+    fProcessDAA: TDspBaseProcessFuncDAA;
+
+    fProcessQueueS:   TDspBaseProcessFuncS;
+    fProcessQueueD:   TDspBaseProcessFuncD;
+    fProcessQueueSA:  TDspBaseProcessFuncSA;
+    fProcessQueueDA:  TDspBaseProcessFuncDA;
+    fProcessQueueSAA: TDspBaseProcessFuncSAA;
+    fProcessQueueDAA: TDspBaseProcessFuncDAA;
 
     procedure SetBypass(const Value: Boolean); virtual; abstract;
     procedure SetEnabled(const Value: Boolean); virtual; abstract;
@@ -23,7 +44,21 @@ type
     property Enabled: Boolean   read fEnabled    write SetEnabled    default true;
     property Bypass: Boolean    read fBypass     write SetBypass     default true;
     property Channels: Integer  read fChannels   write SetChannels   default 2;
-    property SampleRate: Single read fSampleRate write SetSampleRate;
+    property SampleRate: Single read fSampleRate write SetSampleRate;    
+
+    property ProcessS:   TDspBaseProcessFuncS   read fProcessS;
+    property ProcessD:   TDspBaseProcessFuncD   read fProcessD;
+    property ProcessSA:  TDspBaseProcessFuncSA  read fProcessSA;
+    property ProcessDA:  TDspBaseProcessFuncDA  read fProcessDA;
+    property ProcessSAA: TDspBaseProcessFuncSAA read fProcessSAA;
+    property ProcessDAA: TDspBaseProcessFuncDAA read fProcessDAA;
+
+    property ProcessQueueS:   TDspBaseProcessFuncS   read fProcessQueueS;
+    property ProcessQueueD:   TDspBaseProcessFuncD   read fProcessQueueD;
+    property ProcessQueueSA:  TDspBaseProcessFuncSA  read fProcessQueueSA;
+    property ProcessQueueDA:  TDspBaseProcessFuncDA  read fProcessQueueDA;
+    property ProcessQueueSAA: TDspBaseProcessFuncSAA read fProcessQueueSAA;
+    property ProcessQueueDAA: TDspBaseProcessFuncDAA read fProcessQueueDAA;
   end;
 
   TAVDProcessingComponentList = class(TList)

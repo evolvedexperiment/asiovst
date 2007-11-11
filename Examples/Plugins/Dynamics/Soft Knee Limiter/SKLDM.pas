@@ -9,12 +9,12 @@ type
   TSoftKneeLimiterDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
     procedure SKLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs,
+    procedure VSTModuleProcessDoubleReplacing(Inputs,
       Outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject;
       const SampleRate: Single);
@@ -121,7 +121,7 @@ begin
  GUI := TEditorForm.Create(Self);
 end;
 
-procedure TSoftKneeLimiterDataModule.VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TSoftKneeLimiterDataModule.VSTModuleProcess(Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i : Integer;
 begin
  for i := 0 to sampleframes - 1 do
@@ -131,7 +131,7 @@ begin
   end;
 end;
 
-procedure TSoftKneeLimiterDataModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+procedure TSoftKneeLimiterDataModule.VSTModuleProcessDoubleReplacing(Inputs, Outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i : Integer;
 begin
  for i := 0 to sampleframes - 1 do

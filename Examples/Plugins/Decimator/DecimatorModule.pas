@@ -7,8 +7,8 @@ uses Windows, DAVDCommon, Forms, DVSTEffect, DVSTModule;
 type
   TVSTDecimator = class(TVSTModule)
     procedure VSTModuleInitialize(Sender: TObject);
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
@@ -175,7 +175,7 @@ end;
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTDecimator.VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TVSTDecimator.VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i     :Integer;
 begin
  if Parameter[4]<0.5 then
@@ -242,7 +242,7 @@ end;
 // 64 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTDecimator.VSTModuleProcessDoubleReplacing(const inputs,
+procedure TVSTDecimator.VSTModuleProcessDoubleReplacing(inputs,
   outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i : Integer;
 begin

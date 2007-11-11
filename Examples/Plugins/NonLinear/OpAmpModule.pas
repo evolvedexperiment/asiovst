@@ -9,8 +9,8 @@ uses {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
 
 type
   TVSTOpAmp = class(TVSTModule)
-    procedure VSTModuleProcess(const inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
@@ -28,7 +28,7 @@ implementation
 
 uses Math, OpAmpGUI;
 
-procedure TVSTOpAmp.VSTModuleProcess(const inputs,
+procedure TVSTOpAmp.VSTModuleProcess(inputs,
   outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i, j : Integer;
 begin
@@ -37,7 +37,7 @@ begin
    do Outputs[j, i] := Tanh2a(fGain * Inputs[j, i]);
 end;
 
-procedure TVSTOpAmp.VSTModuleProcessDoubleReplacing(const inputs,
+procedure TVSTOpAmp.VSTModuleProcessDoubleReplacing(inputs,
   outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
 var i,j : Integer;
 begin

@@ -7,7 +7,7 @@ uses Windows, Types, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 type
   TSimpleDelayVST = class(TVSTModule)
     procedure VST2ModuleCreate(Sender: TObject);
-    procedure VST2ModuleProcess(const inputs, outputs: TArrayOfSingleDynArray;
+    procedure VST2ModuleProcess(inputs, outputs: TArrayOfSingleDynArray;
       sampleframes: Integer);
     procedure DelaylaVSTParameterProperties0ParameterChange(
       Sender: TObject; const Index: Integer; var Value: Single);
@@ -31,7 +31,7 @@ begin
  fBufferPos:=0;
 end;
 
-procedure TSimpleDelayVST.VST2ModuleProcess(const inputs,
+procedure TSimpleDelayVST.VST2ModuleProcess(inputs,
   outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var j : Integer;
 begin

@@ -10,7 +10,7 @@ type
   TSimpleGateDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray;
+    procedure VSTModuleProcess(Inputs, Outputs: TArrayOfSingleDynArray;
       sampleframes: Integer);
     procedure SimpleGateDataModuleParameterProperties0ParameterChange(
       Sender: TObject; const Index: Integer; var Value: Single);
@@ -60,7 +60,7 @@ begin
   GUI := TEditorForm.Create(Self);
 end;
 
-procedure TSimpleGateDataModule.VSTModuleProcess(const Inputs,
+procedure TSimpleGateDataModule.VSTModuleProcess(Inputs,
   Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
 var i : Integer;
 begin

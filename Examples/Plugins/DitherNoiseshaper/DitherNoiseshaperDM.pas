@@ -10,8 +10,8 @@ type
   TDitherNoiseshaperModule = class(TVSTModule)
     procedure DNTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure DNTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+    procedure VSTModuleProcess(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
     procedure DNBitDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure DNBitDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleCreate(Sender: TObject);
@@ -51,7 +51,7 @@ begin
   do CBNoiseshaperType.ItemIndex := Round(Parameter[1])
 end;
 
-procedure TDitherNoiseshaperModule.VSTModuleProcess(const Inputs,
+procedure TDitherNoiseshaperModule.VSTModuleProcess(Inputs,
   Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
 var i : Integer;
 begin
@@ -62,7 +62,7 @@ begin
   end;
 end;
 
-procedure TDitherNoiseshaperModule.VSTModuleProcessDoubleReplacing(const Inputs,
+procedure TDitherNoiseshaperModule.VSTModuleProcessDoubleReplacing(Inputs,
   Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
 var i : Integer;
 begin
