@@ -271,8 +271,8 @@ end;
 procedure TIIRFilter.SetAlpha;
 begin
  if (fSinW0=0)
-  then fAlpha := fSinW0/(2*fBandWidth)
-  else fAlpha := Sinh(ln22*cos(fW0*0.5)*fBandWidth*(fW0/fSinW0))*fSinW0;
+  then fAlpha := fSinW0 /( 2 * fBandWidth)
+  else fAlpha := Sinh(ln22 * cos(fW0 * 0.5) * fBandWidth * (fW0 / fSinW0)) * fSinW0;
 end;
 
 procedure TIIRFilter.SetBW(const Value: Double);
@@ -556,10 +556,10 @@ var t : Double;
 begin
  t := fGainSpeed / (fGainSpeed + fAlpha);
  fDenominator[2] := (fGainSpeed - fAlpha) / (fGainSpeed + fAlpha);
- fDenominator[1] := -2*cos(fW0)*t;
- fNominator[1]   := fDenominator[1];
- fNominator[0]   := (1 + fAlpha * fGainSpeed) * t;
- fNominator[2]   := (1 - fAlpha * fGainSpeed) * t;
+ fDenominator[1] := -2 * cos(fW0)*t;
+ fNominator[1] := fDenominator[1];
+ fNominator[0] := (1 + fAlpha * fGainSpeed) * t;
+ fNominator[2] := (1 - fAlpha * fGainSpeed) * t;
  CalcPolesZeros;
 end;
 
@@ -573,7 +573,7 @@ begin
  cn := cos(fW0);
  A1 := fGainSpeed + 1;
  A2 := fGainSpeed - 1;
- t := 1 / (A1 + A2 * cn + sA);
+ t  := 1 / (A1 + A2 * cn + sA);
  fDenominator[1] := -2 * (A2 + A1 * cn) * t;
  fDenominator[2] := (A1 + A2 * cn - sA) * t;
  fNominator[0] := fGainSpeed * t * (A1 - A2 * cn + sA);
