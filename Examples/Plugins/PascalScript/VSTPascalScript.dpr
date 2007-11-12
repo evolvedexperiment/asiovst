@@ -5,8 +5,8 @@ uses
   Forms,
   DVSTEffect,
   DVSTModule,
-  PSDM in 'C:\Code\VSTPack\Examples\Plugins\PascalScript\PSDM.pas' {PascalScriptDataModule: TVSTModule},
-  PSGUI in 'C:\Code\VSTPack\Examples\Plugins\PascalScript\PSGUI.pas' {FmPascalScript};
+  PSDM in 'PSDM.pas' {PascalScriptDataModule: TVSTModule},
+  PSGUI in 'PSGUI.pas' {FmPascalScript};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var

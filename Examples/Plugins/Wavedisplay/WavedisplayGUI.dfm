@@ -3,8 +3,8 @@ object WavedisplayGUI: TWavedisplayGUI
   Top = 110
   BorderStyle = bsNone
   Caption = 'WavedisplayGUI'
-  ClientHeight = 216
-  ClientWidth = 458
+  ClientHeight = 230
+  ClientWidth = 532
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,14 +13,16 @@ object WavedisplayGUI: TWavedisplayGUI
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
+  DesignSize = (
+    532
+    230)
   PixelsPerInch = 96
   TextHeight = 13
   object Display: TGuiDynamicWaveform
     Left = 0
     Top = 33
-    Width = 458
-    Height = 183
-    Align = alBottom
+    Width = 491
+    Height = 197
     Anchors = [akLeft, akTop, akRight, akBottom]
     Color = clWhite
     RedrawInterval = 50
@@ -46,6 +48,27 @@ object WavedisplayGUI: TWavedisplayGUI
     Width = 84
     Height = 13
     Caption = 'Processing mode:'
+  end
+  object GuiLevelMeter1: TGuiLevelMeter
+    Left = 494
+    Top = 33
+    Width = 34
+    Height = 197
+    Anchors = [akTop, akRight, akBottom]
+    FillColor = clBlack
+    MaxLineColor = clBlack
+    MaxLineWidth = 0
+    ClippingLineWidth = 0
+    ClippingFillColor = clBlack
+    ShowMaximum = False
+    ShowClipping = scNo
+    SampleRate = 44100.000000000000000000
+    MaximumTimeFactor = 10.000000000000000000
+    LevelAttack = 0.500000000000000000
+    LevelRelease = 0.500000000000000000
+    LevelDirection = ldirHorizontal
+    DisplayChannels = 0
+    BarWidthPercentage = 0.800000011920928900
   end
   object ddDrawMode: TComboBox
     Left = 68

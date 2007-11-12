@@ -15,7 +15,7 @@ object BufferMathForm: TBufferMathForm
   PixelsPerInch = 96
   TextHeight = 13
   object TestCopyBtn: TButton
-    Left = 160
+    Left = 784
     Top = 8
     Width = 177
     Height = 25
@@ -116,5 +116,23 @@ object BufferMathForm: TBufferMathForm
     Caption = 'Test add modulated buffers'
     TabOrder = 10
     OnClick = TestAddModulatedBtnClick
+  end
+  object TestFindPeaksBtn: TButton
+    Left = 160
+    Top = 8
+    Width = 105
+    Height = 25
+    Caption = 'Find buffer peaks'
+    TabOrder = 11
+    OnClick = TestFindPeaksBtnClick
+  end
+  object TestBufferSumsBtn: TButton
+    Left = 272
+    Top = 8
+    Width = 105
+    Height = 25
+    Caption = 'buffer sums'
+    TabOrder = 12
+    OnClick = TestBufferSumsBtnClick
   end
 end

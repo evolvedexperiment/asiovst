@@ -65,6 +65,7 @@ begin
   FillChar(fLastOutputDouble[0], fChannels * SizeOf(Double), 0);
 end;
 
+
 procedure TDspEnvelopeFollower.SetAttack(const Value: single);
 begin
   if fAttack <> Value then

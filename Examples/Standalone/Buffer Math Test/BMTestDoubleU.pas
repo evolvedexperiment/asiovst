@@ -19,6 +19,8 @@ type
     TestAddMulBtn: TButton;
     TestAddScaledBtn: TButton;
     TestAddModulatedBtn: TButton;
+    TestBufferSumsBtn: TButton;
+    TestFindPeaksBtn: TButton;
     procedure TestCopyBtnClick(Sender: TObject);
     procedure TestAddBtnClick(Sender: TObject);
     procedure TestSubBtnClick(Sender: TObject);
@@ -29,6 +31,8 @@ type
     procedure TestAddMulBtnClick(Sender: TObject);
     procedure TestAddScaledBtnClick(Sender: TObject);
     procedure TestAddModulatedBtnClick(Sender: TObject);
+    procedure TestFindPeaksBtnClick(Sender: TObject);
+    procedure TestBufferSumsBtnClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -659,6 +663,94 @@ begin
                            + floattostr(output[0,TEST_DIM_2-1]) + ' | '
                            + floattostr(output[TEST_DIM_1-1,0]) + ' | '
                            + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+
+  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
+  ResultMemo.Lines.Add('DONE');
+end;
+
+procedure TBufferMathForm.TestFindPeaksBtnClick(Sender: TObject);
+var input1,input2,input3, output: TArrayOfDoubleDynArray;
+    minpeaks, maxpeaks: TAVDDoubleDynArray;
+    i: integer;
+    A,B, freq: Int64;
+begin
+  ResultMemo.clear; Refresh;
+  GenerateTestBuffers(input1,input2, input3, output);
+  setlength(minpeaks, TEST_DIM_1);
+  setlength(maxpeaks, TEST_DIM_1);
+  fillchar(minpeaks[0], TEST_DIM_1*sizeof(double), 0);
+  fillchar(maxpeaks[0], TEST_DIM_1*sizeof(double), 0);
+
+  QueryPerformanceFrequency(freq);
+  QueryPerformanceCounter(A);
+  for i:=0 to TEST_RUNS do
+    DAVDBufferMathPascal.GetPeaks(input1, minpeaks, maxpeaks, TEST_DIM_1, TEST_DIM_2);
+
+  QueryPerformanceCounter(B);
+  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms find peaks with pure Pascal,  Testvals: '
+                           + floattostr(minpeaks[0]) + ' | '
+                           + floattostr(maxpeaks[0]) + ' | '
+                           + floattostr(minpeaks[TEST_DIM_1-1])
+                           + floattostr(maxpeaks[TEST_DIM_1-1]));
+
+  GenerateTestBuffers(input1,input2, input3, output);
+  fillchar(minpeaks[0], TEST_DIM_1*sizeof(single), 0);
+  fillchar(maxpeaks[0], TEST_DIM_1*sizeof(single), 0);
+
+  QueryPerformanceCounter(A);
+  for i:=0 to TEST_RUNS do
+    DAVDBufferMathAsm.GetPeaks(input1, minpeaks, maxpeaks, TEST_DIM_1, TEST_DIM_2);
+
+  QueryPerformanceCounter(B);
+  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add find peaks ASM,  Testvals: '
+                           + floattostr(minpeaks[0]) + ' | '
+                           + floattostr(maxpeaks[0]) + ' | '
+                           + floattostr(minpeaks[TEST_DIM_1-1])
+                           + floattostr(maxpeaks[TEST_DIM_1-1]));;
+
+  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
+  ResultMemo.Lines.Add('DONE');
+end;
+
+procedure TBufferMathForm.TestBufferSumsBtnClick(Sender: TObject);
+var input1,input2,input3, output: TArrayOfDoubleDynArray;
+    minsums, maxsums: TAVDDoubleDynArray;
+    i: integer;
+    A,B, freq: Int64;
+begin
+  ResultMemo.clear; Refresh;
+  GenerateTestBuffers(input1,input2, input3, output);
+  setlength(minsums, TEST_DIM_1);
+  setlength(maxsums, TEST_DIM_1);
+  fillchar(minsums[0], TEST_DIM_1*sizeof(double), 0);
+  fillchar(maxsums[0], TEST_DIM_1*sizeof(double), 0);
+
+  QueryPerformanceFrequency(freq);
+  QueryPerformanceCounter(A);
+  for i:=0 to TEST_RUNS do
+    DAVDBufferMathPascal.GetSums(input1, minsums, maxsums, TEST_DIM_1, TEST_DIM_2);
+
+  QueryPerformanceCounter(B);
+  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms find sums with pure Pascal,  Testvals: '
+                           + floattostr(minsums[0]) + ' | '
+                           + floattostr(maxsums[0]) + ' | '
+                           + floattostr(minsums[TEST_DIM_1-1])
+                           + floattostr(maxsums[TEST_DIM_1-1]));
+
+  GenerateTestBuffers(input1,input2, input3, output);
+  fillchar(minsums[0], TEST_DIM_1*sizeof(single), 0);
+  fillchar(maxsums[0], TEST_DIM_1*sizeof(single), 0);
+
+  QueryPerformanceCounter(A);
+  for i:=0 to TEST_RUNS do
+    DAVDBufferMathAsm.GetSums(input1, minsums, maxsums, TEST_DIM_1, TEST_DIM_2);
+
+  QueryPerformanceCounter(B);
+  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add find sums ASM,  Testvals: '
+                           + floattostr(minsums[0]) + ' | '
+                           + floattostr(maxsums[0]) + ' | '
+                           + floattostr(minsums[TEST_DIM_1-1])
+                           + floattostr(maxsums[TEST_DIM_1-1]));;
 
   ResultMemo.Lines.Add('---------------------------------------------------------------------------');
   ResultMemo.Lines.Add('DONE');

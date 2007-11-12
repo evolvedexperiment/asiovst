@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
   Controls, DGuiBaseControl, DGuiStaticWaveform, DGuiDynamicWaveform,
-  ExtCtrls, StdCtrls;
+  ExtCtrls, StdCtrls, DGuiLevelMeter;
 
 type
   TWavedisplayGUI = class(TForm)
@@ -16,6 +16,7 @@ type
     ddWaveSize: TComboBox;
     ddDrawMode: TComboBox;
     ddProcessing: TComboBox;
+    GuiLevelMeter1: TGuiLevelMeter;
     procedure ddProcessingChange(Sender: TObject);
     procedure ddWaveSizeChange(Sender: TObject);
     procedure ddDrawModeChange(Sender: TObject);

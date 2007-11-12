@@ -1,6 +1,6 @@
 object BufferMathForm: TBufferMathForm
-  Left = 216
-  Top = 133
+  Left = 158
+  Top = 277
   Width = 981
   Height = 366
   Caption = 'Buffer-Math Test'
@@ -116,5 +116,23 @@ object BufferMathForm: TBufferMathForm
     Caption = 'Test add modulated buffers'
     TabOrder = 10
     OnClick = TestAddModulatedBtnClick
+  end
+  object TestBufferSumsBtn: TButton
+    Left = 272
+    Top = 8
+    Width = 105
+    Height = 25
+    Caption = 'buffer sums'
+    TabOrder = 11
+    OnClick = TestBufferSumsBtnClick
+  end
+  object TestFindPeaksBtn: TButton
+    Left = 160
+    Top = 8
+    Width = 105
+    Height = 25
+    Caption = 'Find buffer peaks'
+    TabOrder = 12
+    OnClick = TestFindPeaksBtnClick
   end
 end

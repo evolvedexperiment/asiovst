@@ -19,69 +19,74 @@ EVERYTHING FOR SINGLE
 --------------------------------------------------------------------------------------------}
 
 {TYPE: TAVDSingleDynArray}
-procedure AddArrays(const input1, input2, output: TAVDSingleDynArray; dim2: integer); overload;
-procedure SubArrays(const from,   amount, output: TAVDSingleDynArray; dim2: integer); overload;
-procedure MulArrays(const input1, input2, output: TAVDSingleDynArray; dim2: integer); overload;
+procedure AddArrays(const input1, input2, output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure SubArrays(const from,   amount, output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure MulArrays(const input1, input2, output: TAVDSingleDynArray; const dim2: integer); overload;
 
-procedure AddArrays(const input1: TAVDSingleDynArray; const input2: single; const output: TAVDSingleDynArray; dim2: integer); overload;
-procedure SubArrays(const from:   TAVDSingleDynArray; const amount: single; const output: TAVDSingleDynArray; dim2: integer); overload;
-procedure MulArrays(const input1: TAVDSingleDynArray; const input2: single; const output: TAVDSingleDynArray; dim2: integer); overload;
+procedure AddArrays(const input1: TAVDSingleDynArray; const input2: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure SubArrays(const from:   TAVDSingleDynArray; const amount: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure MulArrays(const input1: TAVDSingleDynArray; const input2: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
 
-procedure AddScaledArrays(const input1, input2: TAVDSingleDynArray; const factor1, factor2: single; const output: TAVDSingleDynArray; dim2: integer); overload;
-procedure AddModulatedArrays(const input1, input2, envelope1, envelope2: TAVDSingleDynArray; const output: TAVDSingleDynArray; dim2: integer); overload;
+procedure AddScaledArrays(const input1, input2: TAVDSingleDynArray; const factor1, factor2: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure AddModulatedArrays(const input1, input2, envelope1, envelope2: TAVDSingleDynArray; const output: TAVDSingleDynArray; const dim2: integer); overload;
 
-procedure MulAddArrays(const factor1, factor2, summand, output: TAVDSingleDynArray; dim2: integer); overload;
-procedure MulAddArrays(const factor1: TAVDSingleDynArray; const factor2: single; const summand, output: TAVDSingleDynArray; dim2: integer); overload;
-procedure MulAddArrays(const factor1, factor2: TAVDSingleDynArray; const summand: single; const output: TAVDSingleDynArray; dim2: integer); overload;
-procedure MulAddArrays(const factor1: TAVDSingleDynArray; const factor2, summand: single; const output: TAVDSingleDynArray; dim2: integer); overload;
+procedure MulAddArrays(const factor1, factor2, summand, output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure MulAddArrays(const factor1: TAVDSingleDynArray; const factor2: single; const summand, output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure MulAddArrays(const factor1, factor2: TAVDSingleDynArray; const summand: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure MulAddArrays(const factor1: TAVDSingleDynArray; const factor2, summand: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
 
-procedure AddMulArrays(const summand1, summand2, factor, output: TAVDSingleDynArray; dim2: integer); overload;
-procedure AddMulArrays(const summand1: TAVDSingleDynArray; const summand2: single; const factor, output: TAVDSingleDynArray; dim2: integer); overload;
-procedure AddMulArrays(const summand1, summand2: TAVDSingleDynArray; const factor: single; const output: TAVDSingleDynArray; dim2: integer); overload;
-procedure AddMulArrays(const summand1: TAVDSingleDynArray; const summand2, factor: single; const output: TAVDSingleDynArray; dim2: integer); overload;
+procedure AddMulArrays(const summand1, summand2, factor, output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure AddMulArrays(const summand1: TAVDSingleDynArray; const summand2: single; const factor, output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure AddMulArrays(const summand1, summand2: TAVDSingleDynArray; const factor: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
+procedure AddMulArrays(const summand1: TAVDSingleDynArray; const summand2, factor: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
+
+procedure GetPeaks(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer); overload;
+procedure GetSums(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer); overload;
 
 
-{TYPE: TArrayOfSingleDynArray}
-procedure AddArrays(const input1, input2, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);  overload;
-procedure SubArrays(const from,   amount, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);  overload;
-procedure MulArrays(const input1, input2, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);  overload;
+{TYPE: TAVDArrayOfSingleDynArray}
+procedure AddArrays(const input1, input2, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);  overload;
+procedure SubArrays(const from,   amount, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);  overload;
+procedure MulArrays(const input1, input2, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);  overload;
 
 procedure AddArrays(const input1: TAVDArrayOfSingleDynArray; const input2:single;
-                    const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+                    const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 procedure SubArrays(const from:   TAVDArrayOfSingleDynArray; const amount:single;
-                    const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+                    const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 procedure MulArrays(const input1: TAVDArrayOfSingleDynArray; const input2:single;
-                    const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
-
+                    const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
+                    
 
 procedure MulAddArrays(const factor1, factor2, summand, output: TAVDArrayOfSingleDynArray;
-                       dim1, dim2: integer); overload;
+                       const dim1, dim2: integer); overload;
 procedure MulAddArrays(const factor1: TAVDArrayOfSingleDynArray; const factor2: single;
-                       const summand, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+                       const summand, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 procedure MulAddArrays(const factor1, factor2: TAVDArrayOfSingleDynArray; const summand: single;
-                       const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+                       const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 procedure MulAddArrays(const factor1: TAVDArrayOfSingleDynArray; const factor2, summand: single;
-                       const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+                       const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;    
 
 procedure AddMulArrays(const summand1, summand2, factor, output: TAVDArrayOfSingleDynArray;
-                       dim1, dim2: integer); overload;
+                       const dim1, dim2: integer); overload;
 procedure AddMulArrays(const summand1: TAVDArrayOfSingleDynArray; const summand2: single;
-                       const factor, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+                       const factor, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 procedure AddMulArrays(const summand1, summand2: TAVDArrayOfSingleDynArray; const factor: single;
-                       const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+                       const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 procedure AddMulArrays(const summand1: TAVDArrayOfSingleDynArray; const summand2, factor: single;
-                       const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+                       const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 
-procedure AddScaledArrays(const input1, input2: TAVDArrayOfSingleDynArray; const factor1, factor2: single; output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
-procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+procedure AddScaledArrays(const input1, input2: TAVDArrayOfSingleDynArray; const factor1, factor2: single; output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
+procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 
-procedure ClearArrays(const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
-procedure CopyArrays(const input, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+procedure ClearArrays(const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
+procedure CopyArrays(const input, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 
 // when output has no dimensions use this:
-procedure CreateArrayCopy(const input: TAVDArrayOfSingleDynArray; out output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
-procedure CreateEmptyArray(out output: TAVDArrayOfSingleDynArray; dim1, dim2: integer); overload;
+procedure CreateArrayCopy(const input: TAVDArrayOfSingleDynArray; out output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
+procedure CreateEmptyArray(out output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 
+procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer); overload;
+procedure GetSums(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer); overload;
 
 
 {-------------------------------------------------------------------------------------------
@@ -89,71 +94,75 @@ EVERYTHING AGAIN FOR DOUBLE
 --------------------------------------------------------------------------------------------}
 
 {TYPE: TAVDDoubleDynArray}
-procedure AddArrays(const input1, input2, output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure SubArrays(const from,   amount, output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure MulArrays(const input1, input2, output: TAVDDoubleDynArray; dim2: integer); overload;
+procedure AddArrays(const input1, input2, output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure SubArrays(const from,   amount, output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure MulArrays(const input1, input2, output: TAVDDoubleDynArray; const dim2: integer); overload;
 
-procedure AddArrays(const input1: TAVDDoubleDynArray; const input2: Double; const output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure SubArrays(const from:   TAVDDoubleDynArray; const amount: Double; const output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure MulArrays(const input1: TAVDDoubleDynArray; const input2: Double; const output: TAVDDoubleDynArray; dim2: integer); overload;
+procedure AddArrays(const input1: TAVDDoubleDynArray; const input2: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure SubArrays(const from:   TAVDDoubleDynArray; const amount: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure MulArrays(const input1: TAVDDoubleDynArray; const input2: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
 
-procedure AddScaledArrays(const input1, input2: TAVDDoubleDynArray; const factor1, factor2: Double; const output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure AddModulatedArrays(const input1, input2, envelope1, envelope2: TAVDDoubleDynArray; const output: TAVDDoubleDynArray; dim2: integer); overload;
+procedure AddScaledArrays(const input1, input2: TAVDDoubleDynArray; const factor1, factor2: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure AddModulatedArrays(const input1, input2, envelope1, envelope2: TAVDDoubleDynArray; const output: TAVDDoubleDynArray; const dim2: integer); overload;
 
-procedure MulAddArrays(const factor1, factor2, summand, output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure MulAddArrays(const factor1: TAVDDoubleDynArray; const factor2: Double; const summand, output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure MulAddArrays(const factor1, factor2: TAVDDoubleDynArray; const summand: Double; const output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure MulAddArrays(const factor1: TAVDDoubleDynArray; const factor2, summand: Double; const output: TAVDDoubleDynArray; dim2: integer); overload;
+procedure MulAddArrays(const factor1, factor2, summand, output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure MulAddArrays(const factor1: TAVDDoubleDynArray; const factor2: Double; const summand, output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure MulAddArrays(const factor1, factor2: TAVDDoubleDynArray; const summand: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure MulAddArrays(const factor1: TAVDDoubleDynArray; const factor2, summand: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
 
-procedure AddMulArrays(const summand1, summand2, factor, output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure AddMulArrays(const summand1: TAVDDoubleDynArray; const summand2: Double; const factor, output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure AddMulArrays(const summand1, summand2: TAVDDoubleDynArray; const factor: Double; const output: TAVDDoubleDynArray; dim2: integer); overload;
-procedure AddMulArrays(const summand1: TAVDDoubleDynArray; const summand2, factor: Double; const output: TAVDDoubleDynArray; dim2: integer); overload;
+procedure AddMulArrays(const summand1, summand2, factor, output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure AddMulArrays(const summand1: TAVDDoubleDynArray; const summand2: Double; const factor, output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure AddMulArrays(const summand1, summand2: TAVDDoubleDynArray; const factor: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
+procedure AddMulArrays(const summand1: TAVDDoubleDynArray; const summand2, factor: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
+
+procedure GetPeaks(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer); overload;
+procedure GetSums(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer); overload;
 
 
-
-{TYPE: TArrayOfDoubleDynArray}
-procedure AddArrays(const input1, input2, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);  overload;
-procedure SubArrays(const from,   amount, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);  overload;
-procedure MulArrays(const input1, input2, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);  overload;
+{TYPE: TAVDArrayOfDoubleDynArray}
+procedure AddArrays(const input1, input2, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);  overload;
+procedure SubArrays(const from,   amount, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);  overload;
+procedure MulArrays(const input1, input2, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);  overload;
 
 procedure AddArrays(const input1: TAVDArrayOfDoubleDynArray; const input2:Double;
-                    const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+                    const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 procedure SubArrays(const from:   TAVDArrayOfDoubleDynArray; const amount:Double;
-                    const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+                    const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 procedure MulArrays(const input1: TAVDArrayOfDoubleDynArray; const input2:Double;
-                    const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+                    const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 
 
 procedure MulAddArrays(const factor1, factor2, summand, output: TAVDArrayOfDoubleDynArray;
-                       dim1, dim2: integer); overload;
+                       const dim1, dim2: integer); overload;
 procedure MulAddArrays(const factor1: TAVDArrayOfDoubleDynArray; const factor2: Double;
-                       const summand, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+                       const summand, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 procedure MulAddArrays(const factor1, factor2: TAVDArrayOfDoubleDynArray; const summand: Double;
-                       const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+                       const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 procedure MulAddArrays(const factor1: TAVDArrayOfDoubleDynArray; const factor2, summand: Double;
-                       const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+                       const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 
 procedure AddMulArrays(const summand1, summand2, factor, output: TAVDArrayOfDoubleDynArray;
-                       dim1, dim2: integer); overload;
+                       const dim1, dim2: integer); overload;
 procedure AddMulArrays(const summand1: TAVDArrayOfDoubleDynArray; const summand2: Double;
-                       const factor, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+                       const factor, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 procedure AddMulArrays(const summand1, summand2: TAVDArrayOfDoubleDynArray; const factor: Double;
-                       const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+                       const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 procedure AddMulArrays(const summand1: TAVDArrayOfDoubleDynArray; const summand2, factor: Double;
-                       const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+                       const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 
-procedure AddScaledArrays(const input1, input2: TAVDArrayOfDoubleDynArray; const factor1, factor2: Double; output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
-procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+procedure AddScaledArrays(const input1, input2: TAVDArrayOfDoubleDynArray; const factor1, factor2: Double; output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
+procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 
 
-procedure ClearArrays(const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
-procedure CopyArrays(const input, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+procedure ClearArrays(const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
+procedure CopyArrays(const input, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 
 // when output has no dimensions use this:
-procedure CreateArrayCopy(const input: TAVDArrayOfDoubleDynArray; out output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
-procedure CreateEmptyArray(out output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer); overload;
+procedure CreateArrayCopy(const input: TAVDArrayOfDoubleDynArray; out output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
+procedure CreateEmptyArray(out output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 
+procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer); overload;
+procedure GetSums(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer); overload;
 
 implementation
 
@@ -166,7 +175,7 @@ EVERYTHING FOR SINGLE
 procedure AddArrays(const {eax}   input1,
                           {edx}   input2,
                           {ecx}   output: TAVDSingleDynArray;
-                          {stack} dim2: integer);
+                    const {stack} dim2: integer);
 asm
   push ebx
   mov ebx,dim2
@@ -186,7 +195,7 @@ end;
 procedure SubArrays(const {eax}   from,
                           {edx}   amount,
                           {ecx}   output: TAVDSingleDynArray;
-                          {stack} dim2: integer);
+                    const {stack} dim2: integer);
 asm
   push ebx
   mov ebx,dim2
@@ -206,7 +215,7 @@ end;
 procedure MulArrays(const {eax}   input1,
                           {edx}   input2,
                           {ecx}   output: TAVDSingleDynArray;
-                          {stack} dim2: integer); 
+                    const {stack} dim2: integer);
 asm
   push ebx
   mov ebx,dim2
@@ -231,7 +240,7 @@ end;
 procedure AddArrays(const {eax}   input1: TAVDSingleDynArray;
                     const {stack} input2: single;
                     const {edx}   output: TAVDSingleDynArray;
-                          {ecx}   dim2: integer);
+                    const {ecx}   dim2: integer);
 asm
   shl dim2, 2
   @start:
@@ -246,7 +255,7 @@ end;
 procedure SubArrays(const {eax}   from: TAVDSingleDynArray;
                     const {stack} amount: single;
                     const {edx}   output: TAVDSingleDynArray;
-                          {ecx}   dim2: integer);
+                    const {ecx}   dim2: integer);
 asm
   shl dim2, 2
   @start:
@@ -261,7 +270,7 @@ end;
 procedure MulArrays(const {eax}   input1: TAVDSingleDynArray;
                     const {stack} input2: single;
                     const {edx}   output: TAVDSingleDynArray;
-                          {ecx}   dim2: integer);
+                    const {ecx}   dim2: integer);
 asm
   shl dim2, 2
   @start:
@@ -280,7 +289,7 @@ procedure MulAddArrays(const {eax}   factor1,
                              {edx}   factor2,
                              {ecx}   summand,
                              {stack} output: TAVDSingleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -306,7 +315,7 @@ procedure MulAddArrays(const {eax}   factor1: TAVDSingleDynArray;
                        const {stack} factor2: single;
                        const {edx}   summand,
                              {ecx}   output: TAVDSingleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
 
@@ -329,7 +338,7 @@ procedure MulAddArrays(const {eax}   factor1,
                              {edx}   factor2: TAVDSingleDynArray;
                        const {stack} summand: single;
                        const {ecx}   output: TAVDSingleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
 
@@ -352,7 +361,7 @@ procedure MulAddArrays(const {eax}   factor1: TAVDSingleDynArray;
                        const {stack} factor2,
                              {stack} summand: single;
                        const {edx}   output: TAVDSingleDynArray;
-                             {ecx}   dim2: integer);
+                       const {ecx}   dim2: integer);
 asm
   shl dim2, 2
 
@@ -375,7 +384,7 @@ procedure AddMulArrays(const {eax}   summand1,
                              {edx}   summand2,
                              {ecx}   factor,
                              {stack} output: TAVDSingleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -401,7 +410,7 @@ procedure AddMulArrays(const {eax}   summand1: TAVDSingleDynArray;
                        const {stack} summand2: single;
                        const {edx}   factor,
                              {ecx}   output: TAVDSingleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
 
@@ -424,7 +433,7 @@ procedure AddMulArrays(const {eax}   summand1,
                              {edx}   summand2: TAVDSingleDynArray;
                        const {stack} factor: single;
                        const {ecx}   output: TAVDSingleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
 
@@ -447,7 +456,7 @@ procedure AddMulArrays(const {eax}   summand1: TAVDSingleDynArray;
                        const {stack} summand2,
                              {stack} factor: single;
                        const {edx}   output: TAVDSingleDynArray;
-                             {ecx}   dim2: integer);
+                       const {ecx}   dim2: integer);
 asm
   shl dim2, 2
 
@@ -469,7 +478,7 @@ procedure AddScaledArrays(const {eax}   input1,
                           const {stack} factor1,
                                 {stack} factor2: single;
                           const {ecx}   output: TAVDSingleDynArray;
-                                {stack} dim2: integer);
+                          const {stack} dim2: integer);
 asm
   push ebx
 
@@ -496,7 +505,7 @@ procedure AddModulatedArrays(const {eax}   input1,
                                    {ecx}   envelope1,
                                    {stack} envelope2: TAVDSingleDynArray;
                              const {stack} output: TAVDSingleDynArray;
-                                   {stack} dim2: integer);
+                             const {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -529,8 +538,8 @@ end;
 procedure AddArrays(const {eax}   input1,
                           {edx}   input2,
                           {ecx}   output: TAVDArrayOfSingleDynArray;
-                          {stack} dim1,
-                          {stack} dim2: integer); 
+                    const {stack} dim1,
+                          {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -574,7 +583,7 @@ end;
 procedure SubArrays(const {eax}   from,
                           {edx}   amount,
                           {ecx}   output: TAVDArrayOfSingleDynArray;
-                          {stack} dim1,
+                    const {stack} dim1,
                           {stack} dim2: integer);
 asm
   push ebx
@@ -619,7 +628,7 @@ end;
 procedure MulArrays(const {eax}   input1,
                           {edx}   input2,
                           {ecx}   output: TAVDArrayOfSingleDynArray;
-                          {stack} dim1,
+                    const {stack} dim1,
                           {stack} dim2: integer);
 asm
   push ebx
@@ -669,11 +678,11 @@ end;
 
 
 
-procedure AddArrays({eax}   const input1: TAVDArrayOfSingleDynArray;
-                    {stack} const input2:single;
-                    {edx}   const output: TAVDArrayOfSingleDynArray;
-                    {ecx}   dim1,
-                    {stack} dim2: integer);
+procedure AddArrays(const {eax}   input1: TAVDArrayOfSingleDynArray;
+                    const {stack} input2:single;
+                    const {edx}   output: TAVDArrayOfSingleDynArray;
+                    const {ecx}   dim1,
+                          {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -711,11 +720,11 @@ asm
     pop ebx
 end;
 
-procedure SubArrays({eax}   const from: TAVDArrayOfSingleDynArray;
-                    {stack} const amount:single;
-                    {edx}   const output: TAVDArrayOfSingleDynArray;
-                    {ecx}   dim1,
-                    {stack} dim2: integer);
+procedure SubArrays(const {eax}   from: TAVDArrayOfSingleDynArray;
+                    const {stack} amount:single;
+                    const {edx}   output: TAVDArrayOfSingleDynArray;
+                    const {ecx}   dim1,
+                          {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -753,11 +762,11 @@ asm
     pop ebx
 end;
 
-procedure MulArrays({eax}   const input1: TAVDArrayOfSingleDynArray;
-                    {stack} const input2:single;
-                    {edx}   const output: TAVDArrayOfSingleDynArray;
-                    {ecx}   dim1,
-                    {stack} dim2: integer);
+procedure MulArrays(const {eax}   input1: TAVDArrayOfSingleDynArray;
+                    const {stack} input2:single;
+                    const {edx}   output: TAVDArrayOfSingleDynArray;
+                    const {ecx}   dim1,
+                          {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -800,28 +809,28 @@ end;
 
 
 
-procedure MulAddArrays(const factor1, factor2, summand, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+procedure MulAddArrays(const factor1, factor2, summand, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2[i], summand[i], output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1: TAVDArrayOfSingleDynArray; const factor2: single;
-                       const summand, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+                       const summand, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2, summand[i], output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1, factor2: TAVDArrayOfSingleDynArray; const summand: single;
-                       const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+                       const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2[i], summand, output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1: TAVDArrayOfSingleDynArray; const factor2, summand: single;
-                       const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+                       const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2, summand, output[i], dim2);
@@ -832,25 +841,25 @@ end;
 
 
 
-procedure AddMulArrays(const summand1, summand2, factor, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+procedure AddMulArrays(const summand1, summand2, factor, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2[i], factor[i], output[i], dim2);
 end;
 
-procedure AddMulArrays(const summand1: TAVDArrayOfSingleDynArray; const summand2: single; const factor, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+procedure AddMulArrays(const summand1: TAVDArrayOfSingleDynArray; const summand2: single; const factor, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2, factor[i], output[i], dim2);
 end;
 
-procedure AddMulArrays(const summand1, summand2: TAVDArrayOfSingleDynArray; const factor: single; const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+procedure AddMulArrays(const summand1, summand2: TAVDArrayOfSingleDynArray; const factor: single; const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2[i], factor, output[i], dim2);
 end;
 
-procedure AddMulArrays(const summand1: TAVDArrayOfSingleDynArray; const summand2, factor: single; const output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+procedure AddMulArrays(const summand1: TAVDArrayOfSingleDynArray; const summand2, factor: single; const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2, factor, output[i], dim2);
@@ -861,7 +870,7 @@ end;
 
 
 
-procedure AddScaledArrays(const input1, input2: TAVDArrayOfSingleDynArray; const factor1, factor2: single; output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+procedure AddScaledArrays(const input1, input2: TAVDArrayOfSingleDynArray; const factor1, factor2: single; output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddScaledArrays(input1[i], input2[i], factor1, factor2, output[i], dim2);
@@ -870,7 +879,7 @@ end;
 
 
 
-procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddModulatedArrays(input1[i], input2[i], envelope1[i], envelope2[i], output[i], dim2);
@@ -879,7 +888,7 @@ end;
 
 
 procedure ClearArrays(const {eax} output: TAVDArrayOfSingleDynArray;
-                            {edx} dim1,
+                      const {edx} dim1,
                             {ecx} dim2: integer);
 asm
   push ebx
@@ -910,7 +919,7 @@ end;
 
 procedure CopyArrays(const {eax}   input,
                            {edx}   output: TAVDArrayOfSingleDynArray;
-                           {ecx}   dim1,
+                     const {ecx}   dim1,
                            {stack} dim2: integer);
 asm
   push ebx
@@ -939,13 +948,13 @@ asm
     pop ebx
 end;
 
-procedure CreateArrayCopy(const input: TAVDArrayOfSingleDynArray; out output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+procedure CreateArrayCopy(const input: TAVDArrayOfSingleDynArray; out output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 begin
   SetLength(output, dim1, dim2);
   CopyArrays(input, output, dim1, dim2);
 end;
 
-procedure CreateEmptyArray(out output: TAVDArrayOfSingleDynArray; dim1, dim2: integer);
+procedure CreateEmptyArray(out output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 begin
   SetLength(output, dim1, dim2);
   ClearArrays(output, dim1, dim2);
@@ -966,7 +975,7 @@ EVERYTHING AGAIN FOR DOUBLE
 procedure AddArrays(const {eax}   input1,
                           {edx}   input2,
                           {ecx}   output: TAVDDoubleDynArray;
-                          {stack} dim2: integer);
+                    const {stack} dim2: integer);
 asm
   push ebx
   mov ebx,dim2
@@ -986,7 +995,7 @@ end;
 procedure SubArrays(const {eax}   from,
                           {edx}   amount,
                           {ecx}   output: TAVDDoubleDynArray;
-                          {stack} dim2: integer); 
+                    const {stack} dim2: integer);
 asm
   push ebx
   mov ebx,dim2
@@ -1006,7 +1015,7 @@ end;
 procedure MulArrays(const {eax}   input1,
                           {edx}   input2,
                           {ecx}   output: TAVDDoubleDynArray;
-                          {stack} dim2: integer); 
+                    const {stack} dim2: integer);
 asm
   push ebx
   mov ebx,dim2
@@ -1031,7 +1040,7 @@ end;
 procedure AddArrays(const {eax}   input1: TAVDDoubleDynArray;
                     const {stack} input2: Double;
                     const {edx}   output: TAVDDoubleDynArray;
-                          {ecx}   dim2: integer);
+                    const {ecx}   dim2: integer);
 asm
   shl dim2, 3
   @start:
@@ -1046,7 +1055,7 @@ end;
 procedure SubArrays(const {eax}   from: TAVDDoubleDynArray;
                     const {stack} amount: Double;
                     const {edx}   output: TAVDDoubleDynArray;
-                          {ecx}   dim2: integer);
+                    const {ecx}   dim2: integer);
 asm
   shl dim2, 3
   @start:
@@ -1061,7 +1070,7 @@ end;
 procedure MulArrays(const {eax}   input1: TAVDDoubleDynArray;
                     const {stack} input2: Double;
                     const {edx}   output: TAVDDoubleDynArray;
-                          {ecx}   dim2: integer);
+                    const {ecx}   dim2: integer);
 asm
   shl dim2, 3
   @start:
@@ -1080,7 +1089,7 @@ procedure MulAddArrays(const {eax}   factor1,
                              {edx}   factor2,
                              {ecx}   summand,
                              {stack} output: TAVDDoubleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -1106,7 +1115,7 @@ procedure MulAddArrays(const {eax}   factor1: TAVDDoubleDynArray;
                        const {stack} factor2: Double;
                        const {edx}   summand,
                              {ecx}   output: TAVDDoubleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
 
@@ -1129,7 +1138,7 @@ procedure MulAddArrays(const {eax}   factor1,
                              {edx}   factor2: TAVDDoubleDynArray;
                        const {stack} summand: Double;
                        const {ecx}   output: TAVDDoubleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
 
@@ -1152,7 +1161,7 @@ procedure MulAddArrays(const {eax}   factor1: TAVDDoubleDynArray;
                        const {stack} factor2,
                              {stack} summand: Double;
                        const {edx}   output: TAVDDoubleDynArray;
-                             {ecx}   dim2: integer);
+                       const {ecx}   dim2: integer);
 asm
   shl dim2, 3
 
@@ -1175,7 +1184,7 @@ procedure AddMulArrays(const {eax}   summand1,
                              {edx}   summand2,
                              {ecx}   factor,
                              {stack} output: TAVDDoubleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -1201,7 +1210,7 @@ procedure AddMulArrays(const {eax}   summand1: TAVDDoubleDynArray;
                        const {stack} summand2: Double;
                        const {edx}   factor,
                              {ecx}   output: TAVDDoubleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
 
@@ -1224,7 +1233,7 @@ procedure AddMulArrays(const {eax}   summand1,
                              {edx}   summand2: TAVDDoubleDynArray;
                        const {stack} factor: Double;
                        const {ecx}   output: TAVDDoubleDynArray;
-                             {stack} dim2: integer);
+                       const {stack} dim2: integer);
 asm
   push ebx
 
@@ -1247,7 +1256,7 @@ procedure AddMulArrays(const {eax}   summand1: TAVDDoubleDynArray;
                        const {stack} summand2,
                              {stack} factor: Double;
                        const {edx}   output: TAVDDoubleDynArray;
-                             {ecx}   dim2: integer);
+                       const {ecx}   dim2: integer);
 asm
   shl dim2, 3
 
@@ -1269,7 +1278,7 @@ procedure AddScaledArrays(const {eax}   input1,
                           const {stack} factor1,
                                 {stack} factor2: Double;
                           const {ecx}   output: TAVDDoubleDynArray;
-                                {stack} dim2: integer);
+                          const {stack} dim2: integer);
 asm
   push ebx
 
@@ -1296,7 +1305,7 @@ procedure AddModulatedArrays(const {eax}   input1,
                                    {ecx}   envelope1,
                                    {stack} envelope2: TAVDDoubleDynArray;
                              const {stack} output: TAVDDoubleDynArray;
-                                   {stack} dim2: integer);
+                             const {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -1329,7 +1338,7 @@ end;
 procedure AddArrays(const {eax}   input1,
                           {edx}   input2,
                           {ecx}   output: TAVDArrayOfDoubleDynArray;
-                          {stack} dim1,
+                    const {stack} dim1,
                           {stack} dim2: integer);
 asm
   push ebx
@@ -1374,7 +1383,7 @@ end;
 procedure SubArrays(const {eax}   from,
                           {edx}   amount,
                           {ecx}   output: TAVDArrayOfDoubleDynArray;
-                          {stack} dim1,
+                    const {stack} dim1,
                           {stack} dim2: integer);
 asm
   push ebx
@@ -1419,7 +1428,7 @@ end;
 procedure MulArrays(const {eax}   input1,
                           {edx}   input2,
                           {ecx}   output: TAVDArrayOfDoubleDynArray;
-                          {stack} dim1,
+                    const {stack} dim1,
                           {stack} dim2: integer);
 asm
   push ebx
@@ -1469,11 +1478,11 @@ end;
 
 
 
-procedure AddArrays({eax}   const input1: TAVDArrayOfDoubleDynArray;
-                    {stack} const input2:Double;
-                    {edx}   const output: TAVDArrayOfDoubleDynArray;
-                    {ecx}   dim1,
-                    {stack} dim2: integer);
+procedure AddArrays(const {eax}   input1: TAVDArrayOfDoubleDynArray;
+                    const {stack} input2:Double;
+                    const {edx}   output: TAVDArrayOfDoubleDynArray;
+                    const {ecx}   dim1,
+                          {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -1511,11 +1520,11 @@ asm
     pop ebx
 end;
 
-procedure SubArrays({eax}   const from: TAVDArrayOfDoubleDynArray;
-                    {stack} const amount:Double;
-                    {edx}   const output: TAVDArrayOfDoubleDynArray;
-                    {ecx}   dim1,
-                    {stack} dim2: integer);
+procedure SubArrays(const {eax}   from: TAVDArrayOfDoubleDynArray;
+                    const {stack} amount:Double;
+                    const {edx}   output: TAVDArrayOfDoubleDynArray;
+                    const {ecx}   dim1,
+                          {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -1553,11 +1562,11 @@ asm
     pop ebx
 end;
 
-procedure MulArrays({eax}   const input1: TAVDArrayOfDoubleDynArray;
-                    {stack} const input2:Double;
-                    {edx}   const output: TAVDArrayOfDoubleDynArray;
-                    {ecx}   dim1,
-                    {stack} dim2: integer);
+procedure MulArrays(const {eax}   input1: TAVDArrayOfDoubleDynArray;
+                    const {stack} input2:Double;
+                    const {edx}   output: TAVDArrayOfDoubleDynArray;
+                    const {ecx}   dim1,
+                          {stack} dim2: integer);
 asm
   push ebx
   push esi
@@ -1600,28 +1609,28 @@ end;
 
 
 
-procedure MulAddArrays(const factor1, factor2, summand, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+procedure MulAddArrays(const factor1, factor2, summand, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2[i], summand[i], output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1: TAVDArrayOfDoubleDynArray; const factor2: Double;
-                       const summand, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+                       const summand, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2, summand[i], output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1, factor2: TAVDArrayOfDoubleDynArray; const summand: Double;
-                       const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+                       const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2[i], summand, output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1: TAVDArrayOfDoubleDynArray; const factor2, summand: Double;
-                       const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+                       const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2, summand, output[i], dim2);
@@ -1632,25 +1641,25 @@ end;
 
 
 
-procedure AddMulArrays(const summand1, summand2, factor, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+procedure AddMulArrays(const summand1, summand2, factor, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2[i], factor[i], output[i], dim2);
 end;
 
-procedure AddMulArrays(const summand1: TAVDArrayOfDoubleDynArray; const summand2: Double; const factor, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+procedure AddMulArrays(const summand1: TAVDArrayOfDoubleDynArray; const summand2: Double; const factor, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2, factor[i], output[i], dim2);
 end;
 
-procedure AddMulArrays(const summand1, summand2: TAVDArrayOfDoubleDynArray; const factor: Double; const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+procedure AddMulArrays(const summand1, summand2: TAVDArrayOfDoubleDynArray; const factor: Double; const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2[i], factor, output[i], dim2);
 end;
 
-procedure AddMulArrays(const summand1: TAVDArrayOfDoubleDynArray; const summand2, factor: Double; const output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+procedure AddMulArrays(const summand1: TAVDArrayOfDoubleDynArray; const summand2, factor: Double; const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2, factor, output[i], dim2);
@@ -1661,7 +1670,7 @@ end;
 
 
 
-procedure AddScaledArrays(const input1, input2: TAVDArrayOfDoubleDynArray; const factor1, factor2: Double; output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+procedure AddScaledArrays(const input1, input2: TAVDArrayOfDoubleDynArray; const factor1, factor2: Double; output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddScaledArrays(input1[i], input2[i], factor1, factor2, output[i], dim2);
@@ -1670,7 +1679,7 @@ end;
 
 
 
-procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
   for i:=0 to dim1-1 do AddModulatedArrays(input1[i], input2[i], envelope1[i], envelope2[i], output[i], dim2);
@@ -1679,7 +1688,7 @@ end;
 
 
 procedure ClearArrays(const {eax} output: TAVDArrayOfDoubleDynArray;
-                            {edx} dim1,
+                      const {edx} dim1,
                             {ecx} dim2: integer);
 asm
   push ebx
@@ -1711,7 +1720,7 @@ end;
 
 procedure CopyArrays(const {eax}   input,
                            {edx}   output: TAVDArrayOfDoubleDynArray;
-                           {ecx}   dim1,
+                     const {ecx}   dim1,
                            {stack} dim2: integer);
 asm
   push ebx
@@ -1741,16 +1750,52 @@ asm
     pop ebx
 end;
 
-procedure CreateArrayCopy(const input: TAVDArrayOfDoubleDynArray; out output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+procedure CreateArrayCopy(const input: TAVDArrayOfDoubleDynArray; out output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 begin
   SetLength(output, dim1, dim2);
   CopyArrays(input, output, dim1, dim2);
 end;
 
-procedure CreateEmptyArray(out output: TAVDArrayOfDoubleDynArray; dim1, dim2: integer);
+procedure CreateEmptyArray(out output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 begin
   SetLength(output, dim1, dim2);
   ClearArrays(output, dim1, dim2);
-end;   
+end;
+
+
+procedure GetPeaks(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer);
+begin
+
+end;
+
+procedure GetSums(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer);
+begin
+
+end;
+procedure GetPeaks(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer);
+begin
+
+end;
+procedure GetSums(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer);
+begin
+
+end;
+procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
+begin
+
+end;
+procedure GetSums(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
+begin
+
+end;
+procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
+begin
+
+end;
+procedure GetSums(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
+begin
+
+end;
+
 
 end.

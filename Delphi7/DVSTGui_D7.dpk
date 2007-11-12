@@ -1,5 +1,6 @@
 package DVSTGui_D7;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -27,7 +28,9 @@ package DVSTGui_D7;
 requires
   rtl,
   vcl,
-  AVDCommon_D7;
+  AVDCommon_D7,
+  VstPlugin_D7,
+  AVDDSP_D7;
 
 contains
   DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
