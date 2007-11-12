@@ -30,8 +30,8 @@ procedure AddMulArrays(const summand1: TAVDSingleDynArray; const summand2: singl
 procedure AddMulArrays(const summand1, summand2: TAVDSingleDynArray; const factor: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
 procedure AddMulArrays(const summand1: TAVDSingleDynArray; const summand2, factor: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
 
-procedure GetPeaks(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer); overload;
-procedure GetSums(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer); overload;
+procedure GetPeaks(const input: TAVDSingleDynArray; var outputmin, outputmax: Single; const dim2: integer); overload;
+procedure GetSums(const input: TAVDSingleDynArray; var outputmin, outputmax: Single; const dim2: integer); overload;
 
 {TYPE: TAVDArrayOfSingleDynArray}
 procedure AddArrays(const input1, input2, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);  overload;
@@ -75,8 +75,8 @@ procedure CopyArrays(const input, output: TAVDArrayOfSingleDynArray; const dim1,
 procedure CreateArrayCopy(const input: TAVDArrayOfSingleDynArray; out output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 procedure CreateEmptyArray(out output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 
-procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer); overload;
-procedure GetSums(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer); overload;
+procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer); overload;
+procedure GetSums(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer); overload;
 
 {-------------------------------------------------------------------------------------------
 EVERYTHING AGAIN FOR DOUBLE
@@ -104,8 +104,8 @@ procedure AddMulArrays(const summand1: TAVDDoubleDynArray; const summand2: Doubl
 procedure AddMulArrays(const summand1, summand2: TAVDDoubleDynArray; const factor: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
 procedure AddMulArrays(const summand1: TAVDDoubleDynArray; const summand2, factor: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
 
-procedure GetPeaks(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer); overload;
-procedure GetSums(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer); overload;
+procedure GetPeaks(const input: TAVDDoubleDynArray; var outputmin, outputmax: Double; const dim2: integer); overload;
+procedure GetSums(const input: TAVDDoubleDynArray; var outputmin, outputmax: Double; const dim2: integer); overload;
 
 
 {TYPE: TAVDArrayOfDoubleDynArray}
@@ -152,8 +152,8 @@ procedure CreateEmptyArray(out output: TAVDArrayOfDoubleDynArray; const dim1, di
 
 procedure SetDimensions(var output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 
-procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer); overload;
-procedure GetSums(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer); overload;
+procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer); overload;
+procedure GetSums(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer); overload;
 
 implementation
 
@@ -526,7 +526,7 @@ procedure AddMulArrays(const summand1: TAVDDoubleDynArray; const summand2: Doubl
 var j: integer;
 begin
   for j:=0 to dim2-1 do
-    output[j] := (summand1[j] + summand2) * fact[j];
+    output[j] := (summand1[j] + summand2) * factor[j];
 end;
 
 procedure AddMulArrays(const summand1, summand2: TAVDDoubleDynArray; const factor: Double; const output: TAVDDoubleDynArray; const dim2: integer);
@@ -717,39 +717,80 @@ begin
   setlength(output, dim1, dim2);
 end;
 
-procedure GetPeaks(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer);
+procedure GetPeaks(const input: TAVDSingleDynArray; var outputmin, outputmax: Single; const dim2: integer);
+var j: integer;
 begin
-
+  outputmin := input[0];
+  outputmax := input[0];
+  for j:=1 to dim2-1 do
+  begin
+    if      outputmin>input[j] then outputmin := input[j]
+    else if outputmax<input[j] then outputmax := input[j];
+  end;
 end;
 
-procedure GetSums(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer);
+procedure GetSums(const input: TAVDSingleDynArray; var outputmin, outputmax: Single; const dim2: integer);
+var j: integer;
 begin
-
+  outputmin := 0;
+  outputmax := 0;
+  for j:=1 to dim2-1 do
+  begin
+    if input[j]<0 then outputmin := outputmin + input[j]
+    else               outputmax := outputmax + input[j];
+  end;
 end;
-procedure GetPeaks(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer);
-begin
 
+procedure GetPeaks(const input: TAVDDoubleDynArray; var outputmin, outputmax: Double; const dim2: integer);
+var j: integer;
+begin
+  outputmin := input[0];
+  outputmax := input[0];
+  for j:=1 to dim2-1 do
+  begin
+    if      outputmin>input[j] then outputmin := input[j]
+    else if outputmax<input[j] then outputmax := input[j];
+  end;
 end;
-procedure GetSums(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer);
-begin
 
+procedure GetSums(const input: TAVDDoubleDynArray; var outputmin, outputmax: Double; const dim2: integer);
+var j: integer;
+begin
+  outputmin := 0;
+  outputmax := 0;
+  for j:=1 to dim2-1 do
+  begin
+    if input[j]<0 then outputmin := outputmin + input[j]
+    else               outputmax := outputmax + input[j];
+  end;
 end;
 
-procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
+procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
+var i: integer;
 begin
-
+  for i:=0 to dim1-1 do
+    GetPeaks(input[i], outputmin[i], outputmax[i], dim2);
 end;
-procedure GetSums(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
-begin
 
+procedure GetSums(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
+var i: integer;
+begin
+  for i:=0 to dim1-1 do
+    GetSums(input[i], outputmin[i], outputmax[i], dim2);
 end;
-procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
-begin
 
+procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
+var i: integer;
+begin
+  for i:=0 to dim1-1 do
+    GetPeaks(input[i], outputmin[i], outputmax[i], dim2);
 end;
-procedure GetSums(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
-begin
 
+procedure GetSums(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
+var i: integer;
+begin
+  for i:=0 to dim1-1 do
+    GetSums(input[i], outputmin[i], outputmax[i], dim2);
 end;
 
 

@@ -40,8 +40,8 @@ procedure AddMulArrays(const summand1: TAVDSingleDynArray; const summand2: singl
 procedure AddMulArrays(const summand1, summand2: TAVDSingleDynArray; const factor: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
 procedure AddMulArrays(const summand1: TAVDSingleDynArray; const summand2, factor: single; const output: TAVDSingleDynArray; const dim2: integer); overload;
 
-procedure GetPeaks(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer); overload;
-procedure GetSums(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer); overload;
+procedure GetPeaks(const input: TAVDSingleDynArray; var outputmin, outputmax: Single; const dim2: integer); overload;
+procedure GetSums(const input: TAVDSingleDynArray; var outputmin, outputmax: Single; const dim2: integer); overload;
 
 
 {TYPE: TAVDArrayOfSingleDynArray}
@@ -85,8 +85,8 @@ procedure CopyArrays(const input, output: TAVDArrayOfSingleDynArray; const dim1,
 procedure CreateArrayCopy(const input: TAVDArrayOfSingleDynArray; out output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 procedure CreateEmptyArray(out output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer); overload;
 
-procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer); overload;
-procedure GetSums(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer); overload;
+procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer); overload;
+procedure GetSums(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer); overload;
 
 
 {-------------------------------------------------------------------------------------------
@@ -115,8 +115,8 @@ procedure AddMulArrays(const summand1: TAVDDoubleDynArray; const summand2: Doubl
 procedure AddMulArrays(const summand1, summand2: TAVDDoubleDynArray; const factor: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
 procedure AddMulArrays(const summand1: TAVDDoubleDynArray; const summand2, factor: Double; const output: TAVDDoubleDynArray; const dim2: integer); overload;
 
-procedure GetPeaks(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer); overload;
-procedure GetSums(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer); overload;
+procedure GetPeaks(const input: TAVDDoubleDynArray; var outputmin, outputmax: Double; const dim2: integer); overload;
+procedure GetSums(const input: TAVDDoubleDynArray; var outputmin, outputmax: Double; const dim2: integer); overload;
 
 
 {TYPE: TAVDArrayOfDoubleDynArray}
@@ -161,8 +161,8 @@ procedure CopyArrays(const input, output: TAVDArrayOfDoubleDynArray; const dim1,
 procedure CreateArrayCopy(const input: TAVDArrayOfDoubleDynArray; out output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 procedure CreateEmptyArray(out output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer); overload;
 
-procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer); overload;
-procedure GetSums(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer); overload;
+procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer); overload;
+procedure GetSums(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer); overload;
 
 implementation
 
@@ -1763,38 +1763,272 @@ begin
 end;
 
 
-procedure GetPeaks(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer);
-begin
+procedure GetPeaks(const {eax}   input: TAVDSingleDynArray;
+                     var {edx}   outputmin,
+                         {ecx}   outputmax: Single;
+                   const {stack} dim2: integer);
+asm
+  push ebx
+  push edi
+  push esi
 
+
+  mov esi, input
+
+  shl dim2, 2
+  mov ebx, dim2
+
+  mov edi,[input]
+  mov [outputmin], edi
+  mov [outputmax], edi
+
+  @innerloop:
+    sub ebx, 4
+    jc @cleanup
+
+    fld [esi+ebx].Single
+    fcom [outputmin].Single
+    fnstsw ax
+    sahf
+    jnb @nostoremin
+      fstp st
+      fld  [esi+ebx].Single
+      fstp [outputmin].single
+      jmp @innerloop
+
+  @nostoremin:
+    fcomp [outputmax].Single
+    fnstsw ax
+    sahf
+    jbe @innerloop
+      fld  [esi+ebx].Single
+      fstp [outputmax].single
+
+  jmp @innerloop
+
+  @cleanup:
+    pop esi
+    pop edi
+    pop ebx
+{
+  push ebx
+  push edi
+  push esi
+
+
+  mov esi, input
+
+  shl dim2, 2
+  mov ebx, dim2
+
+  fld [esi].Single
+  fld [esi].Single
+
+  @innerloop:
+    sub ebx, 4
+    jz @cleanup
+
+    fld [esi+ebx].Single
+    fcom st(2)
+    fnstsw ax
+    sahf
+
+    jbe @nostoremin
+    fstp st(2)
+    jmp @innerloop
+
+    @nostoremin:
+      fcom st(1)
+      fnstsw ax
+      sahf
+      jnb @removefromst
+        fstp st(1)
+        jmp @innerloop
+
+      @removefromst:
+        fstp st
+        jmp @innerloop
+
+  @cleanup:
+    fstp [outputmin].Single
+    fstp [outputmax].Single
+    pop esi
+    pop edi
+    pop ebx }
 end;
 
-procedure GetSums(const input: TAVDSingleDynArray; out outputmin, outputmax: Single; const dim2: integer);
-begin
+procedure GetPeaks(const {eax}   input: TAVDDoubleDynArray;
+                     var {edx}   outputmin,
+                         {ecx}   outputmax: Double;
+                   const {stack} dim2: integer);
+asm
+  push ebx
+  push edi
+  push esi
 
+
+  mov esi, input
+
+  shl dim2, 3
+  mov ebx, dim2
+
+  fld [esi].Double
+  fld [esi].Double
+
+  @innerloop:
+    sub ebx, 8
+    jz @cleanup
+
+    fld [esi+ebx].Double
+    fcom st(2)
+    fnstsw ax
+    sahf
+
+    jbe @nostoremin
+    fstp st(2)
+    jmp @innerloop
+
+    @nostoremin:
+      fcom st(1)
+      fnstsw ax
+      sahf
+      jnb @removefromst
+        fstp st(1)
+        jmp @innerloop
+
+      @removefromst:
+        fstp st
+        jmp @innerloop
+
+  @cleanup:
+    fstp [outputmin].Double
+    fstp [outputmax].Double
+    pop esi
+    pop edi
+    pop ebx 
 end;
-procedure GetPeaks(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer);
-begin
 
+
+procedure GetSums(const {eax}   input: TAVDSingleDynArray;
+                    var {edx}   outputmin,
+                        {ecx}   outputmax: Single;
+                  const {stack} dim2: integer);
+asm
+  push ebx
+  push edi
+  push esi
+  push eax
+
+  mov esi, input
+
+  shl dim2, 2
+  mov ebx, dim2
+
+  fldz
+  fldz
+  fldz
+
+  @innerloop:
+    sub ebx, 4              // dec(dim2);
+    jc @cleanup
+
+    fld [esi+ebx].Single
+    fcom st(3)
+    fnstsw ax
+    sahf
+    jnb @nostoremin
+      faddp st(1),st
+      jmp @innerloop
+
+    @nostoremin:
+      faddp st(2), st
+      jmp @innerloop
+
+  
+  @cleanup:
+    fstp [outputmin].Single
+    fstp [outputmax].Single
+    fstp [esi]
+    pop eax
+    pop esi
+    pop edi
+    pop ebx
 end;
-procedure GetSums(const input: TAVDDoubleDynArray; out outputmin, outputmax: Double; const dim2: integer);
-begin
 
+
+
+procedure GetSums(const {eax}   input: TAVDDoubleDynArray;
+                    var {edx}   outputmin,
+                        {ecx}   outputmax: Double;
+                  const {stack} dim2: integer);
+asm
+  push ebx
+  push edi
+  push esi
+  push eax
+
+  mov esi, input
+
+  shl dim2, 3
+  mov ebx, dim2
+
+  fldz
+  fldz
+  fldz
+
+  @innerloop:
+    sub ebx, 8              // dec(dim2);
+    jc @cleanup
+
+    fld [esi+ebx].Double
+    fcom st(3)
+    fnstsw ax
+    sahf
+    jnb @nostoremin
+      faddp st(1),st
+      jmp @innerloop
+
+    @nostoremin:
+      faddp st(2), st
+      jmp @innerloop
+
+  
+  @cleanup:
+    fstp [outputmin].Double
+    fstp [outputmax].Double
+    fstp [esi]
+    pop eax
+    pop esi
+    pop edi
+    pop ebx
 end;
-procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
-begin
 
+procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
+var i: integer;
+begin
+  for i:=0 to dim1-1 do
+    GetPeaks(input[i], outputmin[i], outputmax[i], dim2);
 end;
-procedure GetSums(const input: TAVDArrayOfSingleDynArray; out outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
-begin
 
+procedure GetSums(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
+var i: integer;
+begin
+  for i:=0 to dim1-1 do
+    GetSums(input[i], outputmin[i], outputmax[i], dim2);
 end;
-procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
-begin
 
+procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
+var i: integer;
+begin
+  for i:=0 to dim1-1 do
+    GetPeaks(input[i], outputmin[i], outputmax[i], dim2);
 end;
-procedure GetSums(const input: TAVDArrayOfDoubleDynArray; out outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
-begin
 
+procedure GetSums(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
+var i: integer;
+begin
+  for i:=0 to dim1-1 do
+    GetSums(input[i], outputmin[i], outputmax[i], dim2);
 end;
 
 
