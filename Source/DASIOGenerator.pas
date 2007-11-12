@@ -18,7 +18,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure ProcessBlock(SingleBlock: TArrayOfSingleDynArray; isOutput: boolean = true); virtual;
+    procedure ProcessBlock(SingleBlock: TAVDArrayOfSingleDynArray; isOutput: boolean = true); virtual;
   published
     property SampleRate: Double read fSampleRate write SetSampleRate;
     property BlockSize: Cardinal read fBlockSize write SetBlockSize;
@@ -29,7 +29,7 @@ type
    NoiZe : Array[0..7] of Single;
    fNoiseColor: TNoiseColor;
   public
-   procedure ProcessBlock(SingleBlock:TArrayOfSingleDynArray; isOutput: boolean = true); override;
+   procedure ProcessBlock(SingleBlock:TAVDArrayOfSingleDynArray; isOutput: boolean = true); override;
   published
    property NoiseColor: TNoiseColor read fNoiseColor write fNoiseColor;
   end;
@@ -42,7 +42,7 @@ type
    procedure SetFrequency(value: Single);
   public
    constructor Create(AOwner: TComponent); override;
-   procedure ProcessBlock(SingleBlock: TArrayOfSingleDynArray; isOutput: boolean = true); override;
+   procedure ProcessBlock(SingleBlock: TAVDArrayOfSingleDynArray; isOutput: boolean = true); override;
   published
    property Frequency: Single read fFrequency write SetFrequency;
    property ToneFlavor:TToneFlavor read fToneFlavor write fToneFlavor;
@@ -66,7 +66,7 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TASIOGenerator.ProcessBlock(SingleBlock: TArrayOfSingleDynArray; isOutput: boolean = true);
+procedure TASIOGenerator.ProcessBlock(SingleBlock: TAVDArrayOfSingleDynArray; isOutput: boolean = true);
 begin
  FillChar(SingleBlock[0], BlockSize * SizeOf(Single), 0);
 end;
@@ -81,7 +81,7 @@ begin
  fBlockSize := Value;
 end;
 
-procedure TASIOGeneratorNoise.ProcessBlock(SingleBlock: TArrayOfSingleDynArray;
+procedure TASIOGeneratorNoise.ProcessBlock(SingleBlock: TAVDArrayOfSingleDynArray;
  isOutput: boolean = true);
 var i, j : integer;
 begin
@@ -123,7 +123,7 @@ begin
  fFrequency := 1000;
 end;
 
-procedure TASIOGeneratorTone.ProcessBlock(SingleBlock: TArrayOfSingleDynArray;
+procedure TASIOGeneratorTone.ProcessBlock(SingleBlock: TAVDArrayOfSingleDynArray;
  isOutput: boolean = true);
 var i, j : Integer;
     fPh: Double;

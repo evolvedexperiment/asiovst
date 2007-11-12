@@ -17,9 +17,9 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer); override;
-    procedure HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer); override;
-    procedure HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer); override;
+    procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
+    procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
+    procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
 
     function HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
     function HostCallGetCurrentMidiProgram     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
@@ -82,7 +82,7 @@ begin
 end;
 
 
-procedure TVSTModuleWithMidi.HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer);
+procedure TVSTModuleWithMidi.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 begin
   inherited;
   if FMidiEvent.numEvents > 0 then
@@ -92,7 +92,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
+procedure TVSTModuleWithMidi.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 begin
   inherited;
   if FMidiEvent.numEvents > 0 then
@@ -102,9 +102,9 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer);
-var Ins  : TArrayOfDoubleDynArray absolute Inputs;
-    Outs : TArrayOfDoubleDynArray absolute Outputs;
+procedure TVSTModuleWithMidi.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
+var Ins  : TAVDArrayOfDoubleDynArray absolute Inputs;
+    Outs : TAVDArrayOfDoubleDynArray absolute Outputs;
 begin
   inherited;
   if FMidiEvent.numEvents > 0 then

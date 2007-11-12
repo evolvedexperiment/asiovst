@@ -31,7 +31,7 @@ end;
 procedure TFmPerformanceTest.TimerTimer(Sender: TObject);
 begin
  with TPerformanceTestModule(Owner)
-  do LbCycles.Caption := FloatToStrF(Cycles, ffGeneral, 4, 4);
+  do LbCycles.Caption := FloatToStrF(Cycles, ffGeneral, 8, 8);
 end;
 
 end.

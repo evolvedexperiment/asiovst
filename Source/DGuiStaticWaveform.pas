@@ -17,7 +17,7 @@ type
     fNormalizationType:    TGuiNormalizationType;
     fNormalizationFactors: TAVDSingleDynArray;
     fWaveHalfHeight:  Integer;
-    fWaveData:        TArrayOfSingleDynArray;
+    fWaveData:        TAVDArrayOfSingleDynArray;
     fWaveVPadding:    Integer;
     fDisplayChannels: Integer;
     fMedianVisible:   Boolean;
@@ -48,10 +48,10 @@ type
     procedure   RedrawBuffer(doBufferFlip: Boolean); override;
 
     procedure SetWaveForm(NewWaveData: TAVDSingleDynArray;  DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false); overload;
-    procedure SetWaveForm(NewWaveData: TArrayOfSingleDynArray; DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false);overload;
+    procedure SetWaveForm(NewWaveData: TAVDArrayOfSingleDynArray; DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false);overload;
     procedure ClearWaveForm(DoRedrawBuffer: Boolean = false; DoFlipBuffer: Boolean = false);
 
-    property Wavedata: TArrayOfSingleDynArray read fWaveData;
+    property Wavedata: TAVDArrayOfSingleDynArray read fWaveData;
     property WaveLength: Integer read GetWaveLength;
     property WaveChannels: Integer read GetWaveChannels;
   published
@@ -199,7 +199,7 @@ begin
 end;
 
 
-procedure TGuiStaticWaveform.SetWaveForm(NewWaveData: TArrayOfSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
+procedure TGuiStaticWaveform.SetWaveForm(NewWaveData: TAVDArrayOfSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
 var i, len: integer;
 begin
   if Length(NewWaveData) < 1 then

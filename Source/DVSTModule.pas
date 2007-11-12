@@ -47,6 +47,7 @@ type
     property ShellPlugins;
     property Programs;
     property ParameterProperties;
+    property ProcessPrecisition;
     property OnGetChunkParameter;
     property OnOpen;
     property OnClose;
@@ -117,7 +118,7 @@ begin
  {$IFDEF UseDelphi}
  inherited Create(AOwner);
  if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
-  begin
+  try
    if not InitInheritedComponent(Self, TDspVSTModule) then
      raise EResNotFound.CreateFmt(SResNotFound, [ClassName]);
    try
@@ -125,6 +126,7 @@ begin
    except
     Forms.Application.HandleException(Self);
    end;
+  except
   end;
  {$ELSE}
  inherited Create(AOwner);
@@ -137,10 +139,11 @@ begin
  {$IFDEF UseDelphi}
  inherited Create(AOwner);
  if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
-  begin
+  try
    if not InitInheritedComponent(Self, TDspVSTModule)
     then raise EStreamError.CreateFmt(SErrNoStreaming, [ClassName]);
    if OldCreateOrder then DoCreate;
+  except
   end;
  {$ELSE}
  inherited Create(AOwner);

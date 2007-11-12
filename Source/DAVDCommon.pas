@@ -10,39 +10,42 @@ uses Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};
 uses LCLIntf; {$DEFINE PUREPASCAL}
 {$ENDIF}
 
-{$IFDEF FPC} {$DEFINE PUREPASCAL} {$ENDIF}
-
 type
   {$IFNDEF DELPHI7_UP}
-    TAVDDoubleDynArray = Array of Double;
     TAVDSingleDynArray = Array of Single;
+    TAVDDoubleDynArray = Array of Double;
   {$ELSE}
     {$IFDEF UseNativeTypes}
-      TAVDDoubleDynArray = Types.TDoubleDynArray;
       TAVDSingleDynArray = Types.TSingleDynArray;
+      TAVDDoubleDynArray = Types.TDoubleDynArray;
     {$ELSE}
-      TAVDDoubleDynArray = Array of Double;
       TAVDSingleDynArray = Array of Single;
+      TAVDDoubleDynArray = Array of Double;
     {$ENDIF}
   {$ENDIF}
 
-  PAVDDoubleDynArray = ^TAVDDoubleDynArray;
   PAVDSingleDynArray = ^TAVDSingleDynArray;
+  PAVDDoubleDynArray = ^TAVDDoubleDynArray;
 
-  TSingleFixedArray = Array [0..0] of Single;
-  PSingleFixedArray = ^TSingleFixedArray;
-  TDoubleFixedArray = Array [0..0] of Double;
-  PDoubleFixedArray = ^TDoubleFixedArray;
+  TAVDSingleFixedArray = Array [0..0] of Single;
+  PAVDSingleFixedArray = ^TAVDSingleFixedArray;
+  TAVDDoubleFixedArray = Array [0..0] of Double;
+  PAVDDoubleFixedArray = ^TAVDDoubleFixedArray;
 
-  TArrayOfSingleDynArray = array of TAVDSingleDynArray;
-  PArrayOfSingleDynArray = ^TArrayOfSingleDynArray;
-  TArrayOfDoubleDynArray = array of TAVDDoubleDynArray;
-  PArrayOfDoubleDynArray = ^TArrayOfDoubleDynArray;
+  TAVDArrayOfSingleDynArray = array of TAVDSingleDynArray;
+  PAVDArrayOfSingleDynArray = ^TAVDArrayOfSingleDynArray;
+  TAVDArrayOfDoubleDynArray = array of TAVDDoubleDynArray;
+  PAVDArrayOfDoubleDynArray = ^TAVDArrayOfDoubleDynArray;
 
-  TSingleDynMatrix = TArrayOfSingleDynArray;
-  PSingleDynMatrix = ^TSingleDynMatrix;
-  TDoubleDynMatrix = TArrayOfDoubleDynArray;
-  PDoubleDynMatrix = ^TDoubleDynMatrix;
+  TAVDArrayOfSingleFixedArray = array [0..0] of TAVDSingleFixedArray;
+  PAVDArrayOfSingleFixedArray = ^TAVDArrayOfSingleFixedArray;
+  TAVDArrayOfDoubleFixedArray = array [0..0] of TAVDDoubleFixedArray;
+  PAVDArrayOfDoubleFixedArray = ^TAVDArrayOfDoubleFixedArray;
+
+  TAVDSingleDynMatrix = TAVDArrayOfSingleDynArray;
+  PAVDSingleDynMatrix = ^TAVDSingleDynMatrix;
+  TAVDDoubleDynMatrix = TAVDArrayOfDoubleDynArray;
+  PAVDDoubleDynMatrix = ^TAVDDoubleDynMatrix;
 
   T4SingleArray = array[0..3] of Single;
   P4SingleArray = ^T4SingleArray;
@@ -59,8 +62,8 @@ type
   {$IFNDEF FPC}
   function GetApplicationFilename: string; {$IFDEF useinlining} inline; {$ENDIF}
   function GetApplicationDirectory: string; {$IFDEF useinlining} inline; {$ENDIF}
-  procedure SetMatrixLength(Matrix : TDoubleDynMatrix; Size : TPoint); overload;
-  procedure SetMatrixLength(Matrix : TSingleDynMatrix; Size : TPoint); overload;
+  procedure SetMatrixLength(Matrix : TAVDDoubleDynMatrix; Size : TPoint); overload;
+  procedure SetMatrixLength(Matrix : TAVDSingleDynMatrix; Size : TPoint); overload;
   {$ENDIF}
   function ms2smp(ms, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function smp2ms(smp, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -98,7 +101,8 @@ type
 
   function f_Neg(f:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Root(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Power(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_IntPower(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Power(base, exp :Double) : Double; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Log2(val:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Sin(Angle:Single):Single;
   function f_Cos(Angle:Single):Single;
@@ -160,7 +164,7 @@ const Half   : Double = 0.5;
       Twenty : Double = 20;
 
 {$IFNDEF FPC}
-procedure SetMatrixLength(Matrix : TDoubleDynMatrix; Size : TPoint);
+procedure SetMatrixLength(Matrix : TAVDDoubleDynMatrix; Size : TPoint);
 var i : Integer;
 begin
  SetLength(Matrix,Size.X);
@@ -168,7 +172,7 @@ begin
   do SetLength(Matrix[i],Size.Y);
 end;
 
-procedure SetMatrixLength(Matrix : TSingleDynMatrix; Size : TPoint);
+procedure SetMatrixLength(Matrix : TAVDSingleDynMatrix; Size : TPoint);
 var i : Integer;
 begin
  SetLength(Matrix,Size.X);
@@ -547,12 +551,17 @@ begin
  Result:=Single((@x)^) + log2;
 end;
 
-function f_Power(i:Single;n:Integer):Single;
+function f_IntPower(i:Single;n:Integer):Single;
 var l:Integer;
 begin
  l := Integer((@i)^);
  l := (l - $3F800000) shl (n-1) + $3F800000;
  Result:=Single((@l)^);
+end;
+
+function f_Power(base, exp :Double) : Double;
+begin
+ Result := Power(base, exp);
 end;
 
 function f_Root(i:Single;n:Integer):Single;

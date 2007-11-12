@@ -9,8 +9,8 @@ type
   TDspBaseProcessFuncD   = function(input: Double; channel: integer): Double of object;
   TDspBaseProcessFuncSA  = function(input: TAVDSingleDynArray; SampleFrames: Integer; channel: integer): TAVDSingleDynArray of object;
   TDspBaseProcessFuncDA  = function(input: TAVDDoubleDynArray; SampleFrames: Integer; channel: integer): TAVDDoubleDynArray of object;
-  TDspBaseProcessFuncSAA = function(input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray of object;
-  TDspBaseProcessFuncDAA = function(input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray of object;
+  TDspBaseProcessFuncSAA = function(input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray of object;
+  TDspBaseProcessFuncDAA = function(input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray of object;
 
   TAVDProcessingComponent = class(TComponent)
   protected

@@ -16,8 +16,8 @@ type
     FProcessingMode    : TProcessingMode;
     FBlockPosition     : Integer;
     FDspQueueList      : TAVDProcessingComponentList;
-    FBlockInBuffer     : TArrayOfSingleDynArray;
-    FBlockOutBuffer    : TArrayOfSingleDynArray;
+    FBlockInBuffer     : TAVDArrayOfSingleDynArray;
+    FBlockOutBuffer    : TAVDArrayOfSingleDynArray;
     FOnProcess         : TProcessAudioEvent;
     FOnProcessReplacing: TProcessAudioEvent;
     FOnProcessDoubles  : TProcessDoubleEvent;
@@ -25,16 +25,16 @@ type
     function IOChanged: Boolean; override;
     procedure SampleRateChanged; override;
 
-    procedure DoProcessCopy(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer); overload;
-    procedure DoProcessCopy(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer); overload;
-    procedure DoProcessMute(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer); overload;
-    procedure DoProcessMute(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcess(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcess(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcessReplacing(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcessReplacing(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer); overload;
-    procedure DoProcessDspQueue(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer); overload;
-    procedure DoProcessDspQueue(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer); overload;
+    procedure DoProcessCopy(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessCopy(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessMute(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessMute(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
+    procedure DoBlockSaveProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
+    procedure DoBlockSaveProcess(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
+    procedure DoBlockSaveProcessReplacing(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
+    procedure DoBlockSaveProcessReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
 
     procedure SetNumInputs(Inputs: Integer); override;
     procedure SetNumOutputs(Outputs: Integer); override;
@@ -159,27 +159,27 @@ end;
 
 
 
-procedure TDspVSTModule.DoProcessCopy(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 begin
   CopyArrays(Inputs, Outputs, min(FEffect.numInputs, FEffect.numOutputs), SampleFrames);
 end;
 
-procedure TDspVSTModule.DoProcessCopy(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
 begin
   CopyArrays(Inputs, Outputs, min(FEffect.numInputs, FEffect.numOutputs), SampleFrames);
 end;
 
-procedure TDspVSTModule.DoProcessMute(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 begin
   ClearArrays(Outputs, FEffect.numOutputs, SampleFrames);
 end;
 
-procedure TDspVSTModule.DoProcessMute(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
 begin
   ClearArrays(Outputs, FEffect.numOutputs, SampleFrames);
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcess(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -207,7 +207,7 @@ begin
   until CurrentPosition >= SampleFrames;
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcess(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -235,7 +235,7 @@ begin
   until CurrentPosition>=SampleFrames;
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcessReplacing(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcessReplacing(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -263,7 +263,7 @@ begin
   until CurrentPosition>=SampleFrames;
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcessReplacing(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcessReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -307,8 +307,8 @@ begin
 end;
 
 {$IFDEF CONVERT_TO_DYNARRAY}
-  procedure TDspVSTModule.DoProcessDspQueue(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
-  var tmpI, tmpO: TArrayOfSingleDynArray;
+  procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  var tmpI, tmpO: TAVDArrayOfSingleDynArray;
   begin
     if FDspQueueList.Count>0 then
     begin
@@ -318,8 +318,8 @@ end;
     end else tmpO:=nil; // there was a compiler warning... stupid
   end;
 
-  procedure TDspVSTModule.DoProcessDspQueue(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
-  var tmpI, tmpO: TArrayOfDoubleDynArray;
+  procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+  var tmpI, tmpO: TAVDArrayOfDoubleDynArray;
   begin
     if FDspQueueList.Count>0 then
     begin
@@ -330,16 +330,16 @@ end;
   end;
 
 {$ELSE}
-  procedure TDspVSTModule.DoProcessDspQueue(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
+  procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
   begin
     if FDspQueueList.Count>0 then
-      outputs := FDspQueueList.Items[0].ProcessQueueSAA(Inputs,SampleFrames);
+//      outputs := FDspQueueList.Items[0].ProcessQueueSAA(Inputs,SampleFrames);
   end;
 
-  procedure TDspVSTModule.DoProcessDspQueue(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+  procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
   begin
     if FDspQueueList.Count>0 then
-      outputs := FDspQueueList.Items[0].ProcessQueueDAA(Inputs,SampleFrames);
+//      outputs := FDspQueueList.Items[0].ProcessQueueDAA(Inputs,SampleFrames);
   end;
 
 {$ENDIF}

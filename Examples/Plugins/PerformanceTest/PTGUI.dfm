@@ -4,7 +4,7 @@ object FmPerformanceTest: TFmPerformanceTest
   BorderStyle = bsNone
   Caption = 'Performance Test'
   ClientHeight = 38
-  ClientWidth = 243
+  ClientWidth = 261
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,6 +13,9 @@ object FmPerformanceTest: TFmPerformanceTest
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
+  DesignSize = (
+    261
+    38)
   PixelsPerInch = 96
   TextHeight = 13
   object LbPerformance: TLabel
@@ -25,10 +28,12 @@ object FmPerformanceTest: TFmPerformanceTest
   object LbCycles: TLabel
     Left = 181
     Top = 13
-    Width = 54
+    Width = 73
     Height = 13
+    Anchors = [akLeft, akTop, akRight]
     AutoSize = False
-    Caption = 'ns'
+    Caption = '0'
+    ExplicitWidth = 54
   end
   object BtPatchFunctionCalls: TButton
     Left = 8

@@ -18,11 +18,11 @@ type
                vcdLiveWithoutToolbar,  vcdConformsToWindowRules, vcdBypass);
                
   TVstCanDos = set of TVstCanDo;
-  
+
   TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
 
-  TProcessAudioEvent     = procedure(Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer) of object;
-  TProcessDoubleEvent    = procedure(Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer) of object;
+  TProcessAudioEvent     = procedure(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer) of object;
+  TProcessDoubleEvent    = procedure(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer) of object;
   TGetVUEvent            = procedure(var VU:Single) of object;
   TBlockSizeChangeEvent  = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
@@ -151,9 +151,9 @@ type
     procedure   EditorPostUpdate; virtual;
 
     procedure HostCallDispatchEffect(opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single); override;
-    procedure HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer); override;
-    procedure HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer); override;
-    procedure HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer); override;
+    procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
+    procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
+    procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
 
     function HostCallOpen                      (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
     function HostCallClose                     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
@@ -278,8 +278,7 @@ type
 
 implementation
 
-uses SysUtils, Math,
-  {$IFDEF PUREPASCAL}DAVDBufferMathAsm{$ELSE}DAVDBufferMathPascal{$ENDIF};
+uses SysUtils, Math, {$IFDEF PUREPASCAL}DAVDBufferMathPascal{$ELSE}DAVDBufferMathAsm{$ENDIF};
 
 
 constructor TCustomVSTModule.Create(AOwner: TComponent);
@@ -313,10 +312,10 @@ end;
 
 
 {$IFDEF CONVERT_TO_DYNARRAY}
-  procedure TCustomVSTModule.HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-  var Ins  : TArrayOfSingleDynArray absolute Inputs;
-      Outs : TArrayOfSingleDynArray absolute Outputs;
-      OutsTmp, tmpI, tmpO: TArrayOfSingleDynArray;
+  procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+  var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
+      Outs : TAVDArrayOfSingleDynArray absolute Outputs;
+      OutsTmp, tmpI, tmpO: TAVDArrayOfSingleDynArray;
   begin
     if Assigned(FOnProcessEx) then
     begin
@@ -340,10 +339,10 @@ end;
   end;
 
 {$ELSE}
-  procedure TCustomVSTModule.HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-  var Ins  : TArrayOfSingleDynArray absolute Inputs;
-      Outs : TArrayOfSingleDynArray absolute Outputs;
-      OutsTmp: TArrayOfSingleDynArray;
+  procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+  var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
+      Outs : TAVDArrayOfSingleDynArray absolute Outputs;
+      OutsTmp: TAVDArrayOfSingleDynArray;
   begin
     if Assigned(FOnProcessEx) then FOnProcessEx(Ins, Outs, SampleFrames)
     else if Assigned(FOnProcessReplacingEx) then
@@ -359,10 +358,10 @@ end;
 {$ENDIF}
 
 {$IFDEF CONVERT_TO_DYNARRAY}
-  procedure TCustomVSTModule.HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-  var Ins  : TArrayOfSingleDynArray absolute Inputs;
-      Outs : TArrayOfSingleDynArray absolute Outputs;
-      tmpI, tmpO: TArrayOfSingleDynArray;
+  procedure TCustomVSTModule.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+  var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
+      Outs : TAVDArrayOfSingleDynArray absolute Outputs;
+      tmpI, tmpO: TAVDArrayOfSingleDynArray;
   begin
     if Assigned(FOnProcessReplacingEx) then
     begin
@@ -375,24 +374,22 @@ end;
       CopyArrays(tmpI, Ins, FEffect.NumOutputs, SampleFrames);
     end;
   end;
-
 {$ELSE}
-  procedure TCustomVSTModule.HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-  var Ins  : TArrayOfSingleDynArray absolute Inputs;
-      Outs : TArrayOfSingleDynArray absolute Outputs;
+  procedure TCustomVSTModule.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+  var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
+      Outs : TAVDArrayOfSingleDynArray absolute Outputs;
   begin
     if Assigned(FOnProcessReplacingEx) then FOnProcessReplacingEx(Ins,Outs,SampleFrames);
   end;
-
 {$ENDIF}
 
 
 
 {$IFDEF CONVERT_TO_DYNARRAY}
-  procedure TCustomVSTModule.HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer);
-  var Ins  : TArrayOfDoubleDynArray absolute Inputs;
-      Outs : TArrayOfDoubleDynArray absolute Outputs;
-      tmpI, tmpO: TArrayOfDoubleDynArray;
+  procedure TCustomVSTModule.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
+  var Ins  : TAVDArrayOfDoubleDynArray absolute Inputs;
+      Outs : TAVDArrayOfDoubleDynArray absolute Outputs;
+      tmpI, tmpO: TAVDArrayOfDoubleDynArray;
   begin
     if Assigned(FOnProcessDoublesEx) then
     begin
@@ -405,15 +402,13 @@ end;
       CopyArrays(tmpI, Ins, FEffect.NumOutputs, SampleFrames);
     end;
   end;
-
 {$ELSE}
-  procedure TCustomVSTModule.HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer);
-  var Ins  : TArrayOfDoubleDynArray absolute Inputs;
-      Outs : TArrayOfDoubleDynArray absolute Outputs;
+  procedure TCustomVSTModule.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
+  var Ins  : TAVDArrayOfDoubleDynArray absolute Inputs;
+      Outs : TAVDArrayOfDoubleDynArray absolute Outputs;
   begin
     if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins,Outs,SampleFrames);
   end;
-
 {$ENDIF}
 
 

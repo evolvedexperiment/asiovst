@@ -85,9 +85,9 @@ type
   public
     constructor Create(AOwner: TComponent); override;
 
-    procedure HostCallProcess(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual; abstract;
-    procedure HostCallProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual; abstract;
-    procedure HostCallProcessDoubleReplacing(Inputs, Outputs: PPDouble; SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); virtual; abstract;
 
     function  HostCallGetParameter(Index: Integer): Single; virtual; abstract;
     procedure HostCallSetParameter(Index: Integer; Value: Single); virtual; abstract;

@@ -76,17 +76,17 @@ type
     function ProcessQueueBasic (input: TAVDDoubleDynArray; SampleFrames: Integer; channel: integer): TAVDDoubleDynArray; overload; virtual;
     function ProcessQueueBypass(input: TAVDDoubleDynArray; SampleFrames: Integer; channel: integer): TAVDDoubleDynArray; overload; virtual;
 
-    function ProcessSilence    (input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray; overload; virtual;
-    function ProcessBypass     (input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray; overload; virtual;
-    function ProcessBasic      (input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray; overload; virtual;
-    function ProcessQueueBasic (input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray; overload; virtual;
-    function ProcessQueueBypass(input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray; overload; virtual;
+    function ProcessSilence    (input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray; overload; virtual;
+    function ProcessBypass     (input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray; overload; virtual;
+    function ProcessBasic      (input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray; overload; virtual;
+    function ProcessQueueBasic (input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray; overload; virtual;
+    function ProcessQueueBypass(input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray; overload; virtual;
 
-    function ProcessSilence    (input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray; overload; virtual;
-    function ProcessBypass     (input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray; overload; virtual;
-    function ProcessBasic      (input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray; overload; virtual;
-    function ProcessQueueBasic (input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray; overload; virtual;
-    function ProcessQueueBypass(input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray; overload; virtual;
+    function ProcessSilence    (input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray; overload; virtual;
+    function ProcessBypass     (input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray; overload; virtual;
+    function ProcessBasic      (input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray; overload; virtual;
+    function ProcessQueueBasic (input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray; overload; virtual;
+    function ProcessQueueBypass(input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray; overload; virtual;
 
     property PrevDspQueueItem: TDspBaseComponent read fPrevDspQueueItem write fPrevDspQueueItem;
   published
@@ -433,12 +433,12 @@ begin
   Fillchar(Result[0], length(input) * SizeOf(Double), 0);
 end;
 
-function TDspBaseComponent.ProcessSilence(input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray;
+function TDspBaseComponent.ProcessSilence(input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray;
 begin
   CreateEmptyArray(Result, fChannels, SampleFrames);
 end;
 
-function TDspBaseComponent.ProcessSilence(input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray;
+function TDspBaseComponent.ProcessSilence(input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray;
 begin
   CreateEmptyArray(Result, fChannels, SampleFrames);
 end;
@@ -467,12 +467,12 @@ begin
   Result:=Copy(input);
 end;
 
-function TDspBaseComponent.ProcessBypass(input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray;
+function TDspBaseComponent.ProcessBypass(input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray;
 begin
   CreateArrayCopy(input, Result, fChannels, SampleFrames);
 end;
 
-function TDspBaseComponent.ProcessBypass(input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray;
+function TDspBaseComponent.ProcessBypass(input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray;
 begin
   CreateArrayCopy(input, Result, fChannels, SampleFrames);
 end;
@@ -506,7 +506,7 @@ begin
     Result[i]:=fProcessD(input[i], channel);
 end;
 
-function TDspBaseComponent.ProcessBasic(input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray;
+function TDspBaseComponent.ProcessBasic(input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray;
 var i: integer;
 begin
   setlength(Result, length(input));
@@ -514,7 +514,7 @@ begin
     Result[i]:=ProcessBasic(input[i], SampleFrames, i)
 end;
 
-function TDspBaseComponent.ProcessBasic(input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray;
+function TDspBaseComponent.ProcessBasic(input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray;
 var i: integer;
 begin
   setlength(Result, length(input));
@@ -545,12 +545,12 @@ begin
   Result:=fNextDspQueueItem.ProcessQueueDA(fProcessDA(input, SampleFrames, channel), SampleFrames, channel);
 end;
 
-function TDspBaseComponent.ProcessQueueBasic(input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray;
+function TDspBaseComponent.ProcessQueueBasic(input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray;
 begin
   Result:=fNextDspQueueItem.ProcessQueueSAA(fProcessSAA(input, SampleFrames), SampleFrames);
 end;
 
-function TDspBaseComponent.ProcessQueueBasic(input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray;
+function TDspBaseComponent.ProcessQueueBasic(input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray;
 begin
   Result:=fNextDspQueueItem.ProcessQueueDAA(fProcessDAA(input, SampleFrames), SampleFrames);
 end;
@@ -578,12 +578,12 @@ begin
   Result:=fNextDspQueueItem.ProcessQueueDA(input, SampleFrames, channel);
 end;
 
-function TDspBaseComponent.ProcessQueueBypass(input: TArrayOfSingleDynArray; SampleFrames: Integer): TArrayOfSingleDynArray;
+function TDspBaseComponent.ProcessQueueBypass(input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray;
 begin
   Result:=fNextDspQueueItem.ProcessQueueSAA(input, SampleFrames);
 end;
 
-function TDspBaseComponent.ProcessQueueBypass(input: TArrayOfDoubleDynArray; SampleFrames: Integer): TArrayOfDoubleDynArray;
+function TDspBaseComponent.ProcessQueueBypass(input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray;
 begin
   Result:=fNextDspQueueItem.ProcessQueueDAA(input, SampleFrames);
 end;

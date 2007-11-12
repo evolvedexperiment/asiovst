@@ -2,6 +2,7 @@
 library PerformanceTest;
 
 uses
+  FastMM4,
   Forms,
   DVSTEffect,
   DVSTModule,

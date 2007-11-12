@@ -11,7 +11,7 @@ type
   private
     fWaveProcessMode: TGuiWaveProcessMode;
     fInternalBufferSize: Integer;
-    fInternalBuffer: TArrayOfSingleDynArray;
+    fInternalBuffer: TAVDArrayOfSingleDynArray;
     fInternalBufferChannels: Integer;
 
     procedure SetInternalBufferSize(const Value: Integer);
@@ -23,9 +23,9 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure ProcessBufferIndirect(NewWaveData: TArrayOfSingleDynArray; Channels, SampleFrames: Integer);
+    procedure ProcessBufferIndirect(NewWaveData: TAVDArrayOfSingleDynArray; Channels, SampleFrames: Integer);
     procedure ProcessBuffer(NewWaveData: TAVDSingleDynArray; InpLen: Integer = -1); overload;
-    procedure ProcessBuffer(NewWaveData: TArrayOfSingleDynArray; InpLen: Integer = -1); overload;
+    procedure ProcessBuffer(NewWaveData: TAVDArrayOfSingleDynArray; InpLen: Integer = -1); overload;
   published
     property RedrawInterval;
 
@@ -57,8 +57,8 @@ begin
   inherited;
 end;
 
-procedure TGuiDynamicWaveform.ProcessBufferIndirect(NewWaveData: TArrayOfSingleDynArray; Channels, SampleFrames: Integer);
-var tmp: TArrayOfSingleDynArray; i: integer;
+procedure TGuiDynamicWaveform.ProcessBufferIndirect(NewWaveData: TAVDArrayOfSingleDynArray; Channels, SampleFrames: Integer);
+var tmp: TAVDArrayOfSingleDynArray; i: integer;
 begin
   SetLength(tmp,Channels, SampleFrames);
   for i:=0 to Channels-1 do
@@ -68,14 +68,14 @@ begin
 end;
 
 procedure TGuiDynamicWaveform.ProcessBuffer(NewWaveData: TAVDSingleDynArray; InpLen: Integer);
-var tmp: TArrayOfSingleDynArray;
+var tmp: TAVDArrayOfSingleDynArray;
 begin
   SetLength(tmp,1);
   tmp[0] := NewWaveData;
   ProcessBuffer(tmp, InpLen);
 end;
 
-procedure TGuiDynamicWaveform.ProcessBuffer(NewWaveData: TArrayOfSingleDynArray; InpLen: Integer);
+procedure TGuiDynamicWaveform.ProcessBuffer(NewWaveData: TAVDArrayOfSingleDynArray; InpLen: Integer);
 var nOffset, Amount, i, tmpLen: integer;
     stepw,pos, frac: single;
     InputBuffer: TAVDSingleDynArray;
