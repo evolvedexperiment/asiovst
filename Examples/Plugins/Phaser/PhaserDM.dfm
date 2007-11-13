@@ -25,7 +25,7 @@ object PhaserModule: TPhaserModule
       LargeStepInteger = 0
       ShortLabel = 'depth'
       VSTModule = Owner
-      OnParameterChange = PhaserModuleParameterProperties0ParameterChange
+      OnParameterChange = PMDepthChange
     end
     item
       Max = 100.000000000000000000
@@ -40,7 +40,7 @@ object PhaserModule: TPhaserModule
       LargeStepInteger = 1
       ShortLabel = 'fdbck'
       VSTModule = Owner
-      OnParameterChange = PhaserModuleParameterProperties1ParameterChange
+      OnParameterChange = PMFeedbackChange
     end
     item
       Min = 20.000000000000000000
@@ -59,7 +59,7 @@ object PhaserModule: TPhaserModule
       LargeStepInteger = 200
       ShortLabel = 'min'
       VSTModule = Owner
-      OnParameterChange = PhaserModuleParameterProperties2ParameterChange
+      OnParameterChange = PMMinimumChange
     end
     item
       Min = 20.000000000000000000
@@ -78,7 +78,7 @@ object PhaserModule: TPhaserModule
       LargeStepInteger = 200
       ShortLabel = 'max'
       VSTModule = Owner
-      OnParameterChange = PhaserModuleParameterProperties3ParameterChange
+      OnParameterChange = PMMaximumChange
     end
     item
       Max = 10.000000000000000000
@@ -93,7 +93,7 @@ object PhaserModule: TPhaserModule
       LargeStepInteger = 2
       ShortLabel = 'rate'
       VSTModule = Owner
-      OnParameterChange = PhaserModuleParameterProperties4ParameterChange
+      OnParameterChange = PMRateChange
     end
     item
       Min = 1.000000000000000000
@@ -110,13 +110,14 @@ object PhaserModule: TPhaserModule
       LargeStepInteger = 1
       ShortLabel = 'stage'
       VSTModule = Owner
-      OnParameterChange = PhaserModuleParameterProperties5ParameterChange
+      OnParameterChange = PMStagesChange
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
-  OnProcess = VST2ModuleProcess
-  OnProcessReplacing = VST2ModuleProcess
+  OnProcess = VSTModuleProcess
+  OnProcessReplacing = VSTModuleProcess
+  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   Left = 272
   Top = 81
   Height = 150

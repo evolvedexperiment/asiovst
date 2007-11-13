@@ -31,7 +31,7 @@ object SimpleGateDataModule: TSimpleGateDataModule
       LargeStepInteger = 1
       ShortLabel = 'thrshld'
       VSTModule = Owner
-      OnParameterChange = SimpleGateDataModuleParameterProperties0ParameterChange
+      OnParameterChange = SGDMThresholdChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess

@@ -138,7 +138,7 @@ end;
 
 function ModifySamples(This_Mod : PWinAmpDSPModule; Samples : Pointer;
                        NumSamples, BitPerSample, nCh, sRate : Integer) : Integer;
-var TmpData : TArrayOfSingleDynArray;
+var TmpData : TAVDArrayOfSingleDynArray;
     i,j,ch  : Integer;
     Temp    : Integer;
 const

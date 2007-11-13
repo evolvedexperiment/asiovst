@@ -9,7 +9,7 @@ type
   TSimpleFeedbackCompressorDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
     procedure SLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -99,8 +99,8 @@ begin
   GUI := TEditorForm.Create(Self);
 end;
 
-procedure TSimpleFeedbackCompressorDataModule.VSTModuleProcess(Inputs,
-  Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TSimpleFeedbackCompressorDataModule.VSTModuleProcess(const Inputs,
+  Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 var i : Integer;
 begin
  for i := 0 to sampleframes - 1 do

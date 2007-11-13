@@ -9,8 +9,9 @@ uses
 type
   TPerformanceTestModule = class(TVSTModule)
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; SampleFrames: Integer);
+    procedure VSTModuleCreate(Sender: TObject);
   private
     function GetProcessorCycles: Double;
   public
@@ -134,20 +135,31 @@ begin
  FEffect.ProcessDoubleReplacing := ProcessDoubleReplacingFunc;
 end;
 
+procedure TPerformanceTestModule.VSTModuleCreate(Sender: TObject);
+var DataTest   : TAVDDoubleDynArray;
+    DataGetmem : PSingle;
+begin
+ SetMinimumBlockAlignment(mba8Byte);
+ DataGetmem := GetMemory(8192 * SizeOf(Single));
+ SetLength(DataTest, 8192);
+ FindMaximum(PSingle(@DataTest[0]), 8192);
+ FindMaximum(DataGetmem, 8192);
+end;
+
 procedure TPerformanceTestModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
  GUI := TFmPerformanceTest.Create(Self);
 end;
 
 procedure TPerformanceTestModule.VSTModuleProcess(const Inputs,
-  Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
+  Outputs: TAVDArrayOfSingleDynArray; SampleFrames: Integer);
 begin
  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
  Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TPerformanceTestModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+  Outputs: TAVDArrayOfDoubleDynArray; SampleFrames: Integer);
 begin
  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
  Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));

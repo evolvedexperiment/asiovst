@@ -8,8 +8,8 @@ uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
 type
   TPlugInPlugModule = class(TVSTModule)
     VstHost: TVstHost;
-    procedure VST2ModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VST2ModuleProcessReplacing(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VST2ModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VST2ModuleProcessReplacing(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
     procedure VST2ModuleCreate(Sender: TObject);
     procedure VST2ModuleOpen(Sender: TObject);
     procedure VST2ModuleClose(Sender: TObject);
@@ -36,12 +36,12 @@ implementation
 
 uses Dialogs;
 
-procedure TPlugInPlugModule.VST2ModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TPlugInPlugModule.VST2ModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 begin
  VstHost[0].Process(@inputs[0], @outputs[0], sampleframes);
 end;
 
-procedure TPlugInPlugModule.VST2ModuleProcessReplacing(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TPlugInPlugModule.VST2ModuleProcessReplacing(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 begin
  VstHost[0].ProcessReplacing(@inputs[0], @outputs[0], sampleframes);
 end;
@@ -50,7 +50,6 @@ procedure TPlugInPlugModule.VST2ModuleCreate(Sender: TObject);
 begin
  with TOpenDialog.Create(Self) do
   try
-   Name := 'OpenDialog';
    DefaultExt := 'dll';
    Filter := 'VST Plugin (*.DLL)|*.dll';
    Options := [ofHideReadOnly, ofFileMustExist, ofEnableSizing];

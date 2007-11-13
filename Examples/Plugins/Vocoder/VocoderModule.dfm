@@ -35,7 +35,7 @@ object VSTSSModule: TVSTSSModule
       StepInteger = 3
       ShortLabel = 'vol in'
       VSTModule = Owner
-      OnParameterChange = VSTSSModuleParameterProperties0ParameterChange
+      OnParameterChange = VocInputVolumeChange
     end
     item
       Min = -80.000000000000000000
@@ -53,7 +53,7 @@ object VSTSSModule: TVSTSSModule
       StepInteger = 3
       ShortLabel = 'vol syn'
       VSTModule = Owner
-      OnParameterChange = VSTSSModuleParameterProperties1ParameterChange
+      OnParameterChange = VocSynthVolumeChange
     end
     item
       Min = -80.000000000000000000
@@ -71,7 +71,7 @@ object VSTSSModule: TVSTSSModule
       StepInteger = 3
       ShortLabel = 'vol voc'
       VSTModule = Owner
-      OnParameterChange = VSTSSModuleParameterProperties2ParameterChange
+      OnParameterChange = VocVocoderVolumeChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess

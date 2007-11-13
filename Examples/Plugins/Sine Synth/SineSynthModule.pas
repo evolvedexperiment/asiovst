@@ -7,12 +7,14 @@ uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon,
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
       ParentWindow: Cardinal);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs,
+      Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
   public
     Voices      : TVoiceList;
   end;
@@ -24,18 +26,33 @@ implementation
 uses SineSynthGUI, Math;
 
 procedure TVSTSSModule.VSTModuleProcess(inputs,
-  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-var i,j : Integer;
+  outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var i, j : Integer;
 begin
- FillChar(outputs[0,0],sampleframes*SizeOf(Single),0);
- FillChar(outputs[1,0],sampleframes*SizeOf(Single),0);
+ FillChar(outputs[0, 0], sampleframes * SizeOf(Single), 0);
+ FillChar(outputs[1, 0], sampleframes * SizeOf(Single), 0);
 
- for j:=0 to sampleframes-1 do
-  for i:=0 to Voices.Count-1
-   do outputs[0,j]:=outputs[0,j]+Voices[i].Process;
+ for j := 0 to sampleframes - 1 do
+  for i := 0 to Voices.Count - 1
+   do outputs[0,j] := outputs[0, j] + Voices[i].Process;
 
- for i:=1 to numOutputs-1
-  do Move(outputs[0,0], outputs[i,0], sampleframes * SizeOf(Single));
+ for i := 1 to numOutputs - 1
+  do Move(outputs[0, 0], outputs[i, 0], sampleframes * SizeOf(Single));
+end;
+
+procedure TVSTSSModule.VSTModuleProcessDoubleReplacing(const Inputs,
+  Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+var i, j : Integer;
+begin
+ FillChar(outputs[0, 0], sampleframes * SizeOf(Double), 0);
+ FillChar(outputs[1, 0], sampleframes * SizeOf(Double), 0);
+
+ for j := 0 to SampleFrames - 1 do
+  for i := 0 to Voices.Count - 1
+   do outputs[0,j] := outputs[0, j] + Voices[i].Process;
+
+ for i := 1 to numOutputs - 1
+  do Move(outputs[0, 0], outputs[i, 0], sampleframes * SizeOf(Double));
 end;
 
 procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;

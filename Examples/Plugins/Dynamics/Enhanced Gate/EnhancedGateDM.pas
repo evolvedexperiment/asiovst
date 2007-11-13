@@ -12,8 +12,8 @@ type
   TEnhancedGateDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VSTModuleProcessBypass(Inputs, Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcessBypass(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
     procedure EAGThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure EAGOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -229,8 +229,8 @@ begin
     then CBStereoLink.Checked:=Boolean(Round(Value));
 end;
 
-procedure TEnhancedGateDataModule.VSTModuleProcess(Inputs,
-  Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TEnhancedGateDataModule.VSTModuleProcess(const Inputs,
+  Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 var i,j : Integer;
 begin
  for j := 0 to NrChannels - 1 do
@@ -241,8 +241,8 @@ begin
    end;
 end;
 
-procedure TEnhancedGateDataModule.VSTModuleProcessBypass(Inputs,
-  Outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TEnhancedGateDataModule.VSTModuleProcessBypass(const Inputs,
+  Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 var j : Integer;
 begin
  for j := 0 to NrChannels - 1

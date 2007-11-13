@@ -3,16 +3,16 @@ unit PSDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule, DVSTPrograms, uPSRuntime;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
+  DVSTPrograms, uPSRuntime;
 
 type
   TVSTProcessSample = procedure (Channel : Integer; var Data : Double) of object;
 
   TPascalScriptDataModule = class(TVSTModule)
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VPSStoreChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
@@ -105,7 +105,7 @@ begin
 end;
 
 procedure TPascalScriptDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TArrayOfSingleDynArray; SampleFrames: Integer);
+  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i : Integer;
   d : Double;
@@ -124,7 +124,7 @@ begin
 end;
 
 procedure TPascalScriptDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TArrayOfDoubleDynArray; SampleFrames: Integer);
+  Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
 var i : Integer;
 begin
  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));

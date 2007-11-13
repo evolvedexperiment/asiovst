@@ -7,10 +7,9 @@ uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect,
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
-    procedure VSTModuleProcessMidi(Sender: TObject;
-      MidiEvent: TVstMidiEvent);
+    procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
 
@@ -51,8 +50,7 @@ implementation
 
 uses XSynthGUI, Math;
 
-procedure TVSTSSModule.VSTModuleProcess(inputs,
-  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TVSTSSModule.VSTModuleProcess(inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 var i,j : Integer;
     fb  : single;
 const kDenorm : Single = 1E-30;    

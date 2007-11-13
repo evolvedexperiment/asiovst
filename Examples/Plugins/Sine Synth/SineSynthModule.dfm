@@ -39,6 +39,7 @@ object VSTSSModule: TVSTSSModule
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessMidi = VSTModuleProcessMidi
   OnInitialize = VSTModuleInitialize
   Left = 200

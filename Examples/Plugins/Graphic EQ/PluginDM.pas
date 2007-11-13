@@ -8,8 +8,8 @@ uses
 
 type
   TPluginDataModule = class(TVSTModule)
-    procedure VSTModuleProcessLR(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VSTModuleProcessMS(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcessLR(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcessMS(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -101,8 +101,8 @@ begin
    end;
 end;
 
-procedure TPluginDataModule.VSTModuleProcessLR(inputs,
-  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TPluginDataModule.VSTModuleProcessLR(const inputs,
+  outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 var i : Integer;
 begin
  for i:=0 to sampleframes - 1 do
@@ -122,8 +122,8 @@ begin
   end;
 end;
 
-procedure TPluginDataModule.VSTModuleProcessMS(inputs,
-  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TPluginDataModule.VSTModuleProcessMS(const inputs,
+  outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 var i : Integer;
     d : Double; 
 begin

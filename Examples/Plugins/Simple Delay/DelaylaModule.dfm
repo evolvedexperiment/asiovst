@@ -39,7 +39,7 @@ object SimpleDelayVST: TSimpleDelayVST
       StepInteger = 0
       LargeStepInteger = 0
       VSTModule = Owner
-      OnParameterChange = DelaylaVSTParameterProperties0ParameterChange
+      OnParameterChange = SDDelayLengthChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VST2ModuleProcess

@@ -7,12 +7,9 @@ uses Windows, Types, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 type
   TSimpleDelayVST = class(TVSTModule)
     procedure VST2ModuleCreate(Sender: TObject);
-    procedure VST2ModuleProcess(inputs, outputs: TArrayOfSingleDynArray;
-      sampleframes: Integer);
-    procedure DelaylaVSTParameterProperties0ParameterChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: Cardinal);
+    procedure VST2ModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
     fBuffer     : array[0..1] of TAVDSingleDynArray;
     fBufferSize : Integer;
@@ -31,8 +28,7 @@ begin
  fBufferPos:=0;
 end;
 
-procedure TSimpleDelayVST.VST2ModuleProcess(inputs,
-  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TSimpleDelayVST.VST2ModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 var j : Integer;
 begin
  for j:=0 to sampleframes-1 do
@@ -53,8 +49,7 @@ begin
  GUI := TVSTGUI.Create(Self);
 end;
 
-procedure TSimpleDelayVST.DelaylaVSTParameterProperties0ParameterChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TSimpleDelayVST.SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fBufferSize:=round(Value);
  SetLength(fBuffer[0],fBufferSize);

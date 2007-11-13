@@ -7,8 +7,8 @@ uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 type
   TVSTVUMeterModule = class(TVSTModule)
     procedure VSTModuleEditIdle(Sender: TObject);
-    procedure VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(inputs, outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TAVDArrayOfDoubleDynArray; const sampleframes: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
       ParentWindow: Cardinal);
@@ -47,8 +47,8 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
-procedure TVSTVUMeterModule.VSTModuleProcess(inputs,
-  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TVSTVUMeterModule.VSTModuleProcess(const inputs,
+  outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 var i: integer;
 begin
  // This is usually the most important part of your plugin:
@@ -76,8 +76,8 @@ end;
 // 64 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTVUMeterModule.VSTModuleProcessDoubleReplacing(inputs,
-  outputs: TArrayOfDoubleDynArray; sampleframes: Integer);
+procedure TVSTVUMeterModule.VSTModuleProcessDoubleReplacing(const inputs,
+  outputs: TAVDArrayOfDoubleDynArray; const sampleframes: Integer);
 var i: integer;
 begin
  // Same as above, but (internally) 64Bit...

@@ -310,109 +310,39 @@ begin
  FNumCategories := 1;
 end;
 
+procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
+    Outs : TAVDArrayOfSingleDynArray absolute Outputs;
+    OutsTmp : TAVDArrayOfSingleDynArray;
+    i, j    : Integer;
+begin
+ if Assigned(FOnProcessEx)
+  then FOnProcessEx(Ins, Outs, SampleFrames)
+  else if Assigned(FOnProcessReplacingEx) then
+   begin
+    SetLength(OutsTmp, FEffect.NumOutputs, SampleFrames);
+    ClearArrays(OutsTmp, FEffect.NumOutputs, SampleFrames);
+    FOnProcessReplacingEx(Ins, OutsTmp, SampleFrames);
+    for i := 0 to FEffect.NumOutputs - 1 do
+     for j := 0 to SampleFrames - 1
+      do Outs[i, j] := Outs[i, j] + OutsTmp[i, j];
+   end;
+end;
 
-{$IFDEF CONVERT_TO_DYNARRAY}
-  procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
-  var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
-      Outs : TAVDArrayOfSingleDynArray absolute Outputs;
-      OutsTmp, tmpI, tmpO: TAVDArrayOfSingleDynArray;
-  begin
-    if Assigned(FOnProcessEx) then
-    begin
-      CreateArrayCopy(Ins,tmpI, FEffect.NumOutputs, SampleFrames);
-      CreateArrayCopy(Outs,tmpO, FEffect.NumOutputs, SampleFrames);
+procedure TCustomVSTModule.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
+    Outs : TAVDArrayOfSingleDynArray absolute Outputs;
+begin
+  if Assigned(FOnProcessReplacingEx)
+   then FOnProcessReplacingEx(Ins, Outs, SampleFrames);
+end;
 
-      FOnProcessEx(tmpI, tmpO, SampleFrames);
-
-      CopyArrays(tmpO, Outs, FEffect.NumOutputs, SampleFrames);
-      CopyArrays(tmpI, Ins, FEffect.NumOutputs, SampleFrames);
-    end else if Assigned(FOnProcessReplacingEx) then
-    begin
-      CreateArrayCopy(Ins,tmpI, FEffect.NumOutputs, SampleFrames);
-      CreateEmptyArray(OutsTmp, FEffect.NumOutputs, SampleFrames);
-
-      FOnProcessReplacingEx(tmpI, OutsTmp, SampleFrames);
-
-      AddArrays(OutsTmp, Outs, Outs, FEffect.NumOutputs, SampleFrames);
-      CopyArrays(tmpI, Ins, FEffect.NumOutputs, SampleFrames);
-    end;
-  end;
-
-{$ELSE}
-  procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
-  var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
-      Outs : TAVDArrayOfSingleDynArray absolute Outputs;
-      OutsTmp: TAVDArrayOfSingleDynArray;
-  begin
-    if Assigned(FOnProcessEx) then FOnProcessEx(Ins, Outs, SampleFrames)
-    else if Assigned(FOnProcessReplacingEx) then
-    begin
-      CreateEmptyArray(OutsTmp, FEffect.NumOutputs, SampleFrames);
-
-      FOnProcessReplacingEx(Ins, OutsTmp, SampleFrames);
-
-      AddArrays(Outs, OutsTmp, Outs, FEffect.NumOutputs, SampleFrames);
-    end;
-  end;
-
-{$ENDIF}
-
-{$IFDEF CONVERT_TO_DYNARRAY}
-  procedure TCustomVSTModule.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
-  var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
-      Outs : TAVDArrayOfSingleDynArray absolute Outputs;
-      tmpI, tmpO: TAVDArrayOfSingleDynArray;
-  begin
-    if Assigned(FOnProcessReplacingEx) then
-    begin
-      CreateArrayCopy(Ins,tmpI, FEffect.NumOutputs, SampleFrames);
-      CreateArrayCopy(Outs,tmpO, FEffect.NumOutputs, SampleFrames);
-
-      FOnProcessReplacingEx(tmpI, tmpO, SampleFrames);
-
-      CopyArrays(tmpO, Outs, FEffect.NumOutputs, SampleFrames);
-      CopyArrays(tmpI, Ins, FEffect.NumOutputs, SampleFrames);
-    end;
-  end;
-{$ELSE}
-  procedure TCustomVSTModule.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
-  var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
-      Outs : TAVDArrayOfSingleDynArray absolute Outputs;
-  begin
-    if Assigned(FOnProcessReplacingEx) then FOnProcessReplacingEx(Ins,Outs,SampleFrames);
-  end;
-{$ENDIF}
-
-
-
-{$IFDEF CONVERT_TO_DYNARRAY}
-  procedure TCustomVSTModule.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
-  var Ins  : TAVDArrayOfDoubleDynArray absolute Inputs;
-      Outs : TAVDArrayOfDoubleDynArray absolute Outputs;
-      tmpI, tmpO: TAVDArrayOfDoubleDynArray;
-  begin
-    if Assigned(FOnProcessDoublesEx) then
-    begin
-      CreateArrayCopy(Ins,tmpI, FEffect.NumOutputs, SampleFrames);
-      CreateArrayCopy(Outs,tmpO, FEffect.NumOutputs, SampleFrames);
-
-      FOnProcessDoublesEx(tmpI, tmpO, SampleFrames);
-
-      CopyArrays(tmpO, Outs, FEffect.NumOutputs, SampleFrames);
-      CopyArrays(tmpI, Ins, FEffect.NumOutputs, SampleFrames);
-    end;
-  end;
-{$ELSE}
-  procedure TCustomVSTModule.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
-  var Ins  : TAVDArrayOfDoubleDynArray absolute Inputs;
-      Outs : TAVDArrayOfDoubleDynArray absolute Outputs;
-  begin
-    if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins,Outs,SampleFrames);
-  end;
-{$ENDIF}
-
-
-
+procedure TCustomVSTModule.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
+var Ins  : TAVDArrayOfDoubleDynArray absolute Inputs;
+    Outs : TAVDArrayOfDoubleDynArray absolute Outputs;
+begin
+  if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins, Outs,SampleFrames);
+end;
 
 destructor TCustomVSTModule.Destroy;
 begin

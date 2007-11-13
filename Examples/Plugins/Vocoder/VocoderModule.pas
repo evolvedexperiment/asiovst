@@ -14,19 +14,14 @@ const
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VSTModuleProcess(inputs, outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
-    procedure VSTModuleProcessMidi(Sender: TObject;
-      MidiEvent: TVstMidiEvent);
+    procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTSSModuleParameterProperties0ParameterChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure VSTSSModuleParameterProperties1ParameterChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure VSTSSModuleParameterProperties2ParameterChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: Cardinal);
+    procedure VocInputVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VocSynthVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VocVocoderVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
     fAnalysisFiltersLP : Array [0..cNumFrequencies-1] of TChebyshev1LP;
     fAnalysisFiltersHP : Array [0..cNumFrequencies-1] of TChebyshev1HP;
@@ -100,8 +95,8 @@ begin
  Parameter[2]:=0;
 end;
 
-procedure TVSTSSModule.VSTModuleProcess(inputs,
-  outputs: TArrayOfSingleDynArray; sampleframes: Integer);
+procedure TVSTSSModule.VSTModuleProcess(const inputs,
+  outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 var i,j   : Integer;
     d,z,s : Double;
 begin
@@ -179,7 +174,7 @@ begin
   end;
 end;
 
-procedure TVSTSSModule.VSTSSModuleParameterProperties0ParameterChange(
+procedure TVSTSSModule.VocInputVolumeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fVolFactors[0]:=dB_to_Amp(Value);
@@ -190,7 +185,7 @@ begin
    end;
 end;
 
-procedure TVSTSSModule.VSTSSModuleParameterProperties1ParameterChange(
+procedure TVSTSSModule.VocSynthVolumeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fVolFactors[1]:=dB_to_Amp(Value);
@@ -201,7 +196,7 @@ begin
    end;
 end;
 
-procedure TVSTSSModule.VSTSSModuleParameterProperties2ParameterChange(
+procedure TVSTSSModule.VocVocoderVolumeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fVolFactors[2]:=dB_to_Amp(Value);

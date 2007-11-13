@@ -2,8 +2,8 @@ unit DelaylaGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms,
-  Controls, StdCtrls, DAVDCommon, DVSTModule;
+uses
+  Windows, SysUtils, Classes, Forms, Controls, StdCtrls, DVSTModule, DAVDCommon;
 
 type
   TVSTGUI = class(TForm)

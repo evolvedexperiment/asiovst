@@ -1,5 +1,6 @@
 object PerformanceTestModule: TPerformanceTestModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor]
   Version = '1.0'
   EffectName = 'Performance Tester'
@@ -17,8 +18,8 @@ object PerformanceTestModule: TPerformanceTestModule
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  Left = 218
-  Top = 81
+  Left = 309
+  Top = 202
   Height = 150
   Width = 215
 end
