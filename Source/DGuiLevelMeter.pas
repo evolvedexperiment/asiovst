@@ -420,12 +420,12 @@ begin
 end;
 
 procedure TGuiLevelMeter.ProcessBuffer(NewWaveData: TAVDArrayOfSingleDynArray; InpLen: Integer);
-var tmpbuf: TAVDArrayOfSingleDynArray;
+var //tmpbuf: TAVDArrayOfSingleDynArray;
     dummy: TAVDSingleDynArray;
 begin
   SetLength(dummy, FPeakEnvFollower.Channels);
-  tmpbuf := FPeakEnvFollower.ProcessSAA(NewWaveData, InpLen);
-  GetPeaks(tmpbuf, dummy, FLastPeaks, FPeakEnvFollower.Channels, InpLen);
+  FPeakEnvFollower.ProcessSAA(NewWaveData);
+  GetPeaks(NewWaveData, dummy, FLastPeaks, FPeakEnvFollower.Channels, InpLen);
 //  tmpbuf := FMaxEnvFollower.ProcessSAA(NewWaveData, InpLen);
 //  GetPeaks(tmpbuf, dummy, FLastMaxPeaks, FPeakEnvFollower.Channels, InpLen);
 

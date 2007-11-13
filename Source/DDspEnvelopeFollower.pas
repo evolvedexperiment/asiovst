@@ -23,8 +23,8 @@ type
   public
     procedure Init; override;
     procedure Reset; override;
-    function Process(input: Single; channel: integer): Single; overload;
-    function Process(input: Double; channel: integer): Double; overload;
+    procedure Process(var Data: Single; const channel: integer); overload;
+    procedure Process(var Data: Double; const channel: integer); overload;
   published
     property Attack:  single read fAttack write SetAttack;   // 0..1
     property Release: single read fRelease write SetRelease; // 0..1
@@ -84,40 +84,40 @@ begin
   end;
 end;
 
-function TDspEnvelopeFollower.Process(input: Double; channel: integer): Double;
+procedure TDspEnvelopeFollower.Process(var Data: Double; const channel: integer);
 var tmp: Double;
 begin
  {$IFDEF FPC}
-  input := abs(input);
+  Data := abs(Data);
  {$ELSE}
-  f_abs(input);
+  f_abs(Data);
  {$ENDIF}
 
-  if input>=fLastOutputDouble[channel] then
+  if Data>=fLastOutputDouble[channel] then
     tmp:=fInternalAttack
   else
     tmp:=fInternalRelease;
 
-  fLastOutputDouble[channel] := tmp * (fLastOutputDouble[channel] - input) + input;
-  result:=fLastOutputDouble[channel];
+  fLastOutputDouble[channel] := tmp * (fLastOutputDouble[channel] - Data) + Data;
+  Data:=fLastOutputDouble[channel];
 end;
 
-function TDspEnvelopeFollower.Process(input: Single; channel: integer): Single;
+procedure TDspEnvelopeFollower.Process(var Data: Single; const channel: integer);
 var tmp: Single;
 begin
  {$IFDEF FPC}
-  input := abs(input);
+  Data := abs(Data);
  {$ELSE}
-  f_abs(input);
+  f_abs(Data);
  {$ENDIF}
 
-  if input>=fLastOutputSingle[channel] then
+  if Data>=fLastOutputSingle[channel] then
     tmp:=fInternalAttack
   else
     tmp:=fInternalRelease;
 
-  fLastOutputSingle[channel] := tmp * (fLastOutputSingle[channel] - input) + input;
-  result:=fLastOutputSingle[channel];
+  fLastOutputSingle[channel] := tmp * (fLastOutputSingle[channel] - Data) + Data;
+  Data:=fLastOutputSingle[channel];  
 end;
 
 end.

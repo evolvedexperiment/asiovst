@@ -83,11 +83,11 @@ type
     procedure ProcessQueueBasic (var ProcessBuffer: TAVDDoubleDynArray; const channel: integer); overload; virtual;
     procedure ProcessQueueBypass(var ProcessBuffer: TAVDDoubleDynArray; const channel: integer); overload; virtual;
 
-    procedure ProcessSilence    (var ProcessBuffer: TAVDArrayOfSingleDynArray) overload; virtual;
-    procedure ProcessBypass     (var ProcessBuffer: TAVDArrayOfSingleDynArray) overload; virtual;
-    procedure ProcessBasic      (var ProcessBuffer: TAVDArrayOfSingleDynArray) overload; virtual;
-    procedure ProcessQueueBasic (var ProcessBuffer: TAVDArrayOfSingleDynArray) overload; virtual;
-    procedure ProcessQueueBypass(var ProcessBuffer: TAVDArrayOfSingleDynArray) overload; virtual;
+    procedure ProcessSilence    (var ProcessBuffer: TAVDArrayOfSingleDynArray); overload; virtual;
+    procedure ProcessBypass     (var ProcessBuffer: TAVDArrayOfSingleDynArray); overload; virtual;
+    procedure ProcessBasic      (var ProcessBuffer: TAVDArrayOfSingleDynArray); overload; virtual;
+    procedure ProcessQueueBasic (var ProcessBuffer: TAVDArrayOfSingleDynArray); overload; virtual;
+    procedure ProcessQueueBypass(var ProcessBuffer: TAVDArrayOfSingleDynArray); overload; virtual;
 
     procedure ProcessSilence    (var ProcessBuffer: TAVDArrayOfDoubleDynArray); overload; virtual;
     procedure ProcessBypass     (var ProcessBuffer: TAVDArrayOfDoubleDynArray); overload; virtual;
@@ -498,7 +498,6 @@ begin
 end;
 
 procedure TDspBaseComponent.ProcessBasic(var Data: Double; const channel: integer);
-var tmp: single;
 begin
  fProcessD(Data, channel);
 end;
