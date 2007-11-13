@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;SineSynth Installer
+;Simple Sampler Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -14,8 +14,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Sine Synth Installer"
-  OutFile "SineSynth.exe"
+  Name "Simple Sampler Installer"
+  OutFile "SimpleSampler_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -23,7 +23,7 @@ SetCompressor lzma
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
-  BrandingText "SineSynth VST Plugin"
+  BrandingText "Delphi ASIO & VST Package"
 
   ; Turn on the xp style of drawing
   XPStyle ON
@@ -31,7 +31,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Sine Synth"
+  !define PRODUCT_NAME "Simple Sampler"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://sourceforge.net/projects/delphiasiovst/"
@@ -70,17 +70,17 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "SineSynth VST-Plugin" SecProgramFiles
+Section "Simple Sampler VST-Plugin" SecProgramFiles
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\SineSynth.dll"
+  File "..\Bin\SimpleSampler.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Package\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallSineSynth.exe"
+  WriteUninstaller "$INSTDIR\UninstallSimpleSampler.exe"
 
 
 SectionEnd
@@ -89,13 +89,13 @@ SectionEnd
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Sine Synth VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Simple Sampler VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "SineSynth VST Plugin"
+  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Simple Sampler VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -108,7 +108,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\SineSynth.dll"
+  Delete "$INSTDIR\SimpleSampler.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Package\${PRODUCT_NAME}"
 
 SectionEnd
