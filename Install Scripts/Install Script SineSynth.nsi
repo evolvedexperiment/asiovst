@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Decimator Installer
+;SineSynth Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -14,8 +14,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Decimator Installer"
-  OutFile "Decimator.exe"
+  Name "Sine Synth Installer"
+  OutFile "SineSynth.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -23,7 +23,7 @@ SetCompressor lzma
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
-  BrandingText "Decimator VST Plugin"
+  BrandingText "SineSynth VST Plugin"
 
   ; Turn on the xp style of drawing
   XPStyle ON
@@ -31,6 +31,14 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
+  !define PRODUCT_NAME "Sine Synth"
+  !define PRODUCT_VERSION "1.0.0"
+  !define PRODUCT_PUBLISHER "Christian Budde"
+  !define PRODUCT_WEB_SITE "http://sourceforge.net/projects/delphiasiovst/"
+  !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Package\${PRODUCT_NAME}"
+  !define PRODUCT_DIR_ROOT_KEY "HKLM"
+  !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Package\Uninstall\${PRODUCT_NAME}"
+  !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
 
 ;--------------------------------
@@ -38,7 +46,7 @@ SetCompressor lzma
 
   ;Remember the installer language
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
-  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\ITA\Non Linear"
+  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Package\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 ;--------------------------------
@@ -62,17 +70,17 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Decimator VST-Plugin" SecProgramFiles
+Section "SineSynth VST-Plugin" SecProgramFiles
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "Decimator.dll"
+  File "..\Bin\SineSynth.dll"
 
   ;Store installation folder
-  WriteRegStr HKLM "SOFTWARE\ITA\Decimator" "" $INSTDIR
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Package\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallDecimator.exe"
+  WriteUninstaller "$INSTDIR\UninstallSineSynth.exe"
 
 
 SectionEnd
@@ -81,13 +89,13 @@ SectionEnd
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Decimator VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Sine Synth VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Decimator VST Plugin"
+  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "SineSynth VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -100,7 +108,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Decimator.dll"
-  DeleteRegKey HKLM "SOFTWARE\ITA\Decimator"
+  Delete "$INSTDIR\SineSynth.dll"
+  DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Package\${PRODUCT_NAME}"
 
 SectionEnd
