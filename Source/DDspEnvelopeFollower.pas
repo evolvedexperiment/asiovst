@@ -52,8 +52,8 @@ end;
 
 procedure TDspEnvelopeFollower.SampleRateChanged;
 begin
-  fInternalAttack :=power(0.01,1/((0.00000001+fAttack*1.99999999)*fSampleRate));
-  fInternalRelease:=power(0.01,1/((0.00000001+fRelease*1.99999999)*fSampleRate));
+  fInternalAttack  := power(0.01, 1/((0.00000001 + fAttack  * 1.99999999) * fSampleRate));
+  fInternalRelease := power(0.01, 1/((0.00000001 + fRelease * 1.99999999) * fSampleRate));
 end;
 
 procedure TDspEnvelopeFollower.ChannelsChanged;

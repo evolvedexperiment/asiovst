@@ -10,11 +10,6 @@ type
   TDspQueueList = TComponentList;
 
   TDspBaseComponent = class(TAVDProcessingComponent)
-  private
-    fSampleRate: Single;
-    fEnabled: Boolean;
-    fChannels: Integer;
-    fBypass: Boolean;
   protected
     fNextDspQueueItem: TDspBaseComponent;
     fPrevDspQueueItem: TDspBaseComponent;
