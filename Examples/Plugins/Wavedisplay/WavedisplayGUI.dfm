@@ -67,7 +67,7 @@ object WavedisplayGUI: TWavedisplayGUI
     MaximumTimeFactor = 10.000000000000000000
     LevelRelease = 0.899999976158142100
     LevelDirection = ldirHorizontal
-    BarWidthPercentage = 0.800000011920929000
+    BarWidthPercentage = 0.800000011920928900
   end
   object ddDrawMode: TComboBox
     Left = 68
