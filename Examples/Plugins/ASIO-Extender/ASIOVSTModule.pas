@@ -139,16 +139,15 @@ procedure TASIOVSTModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var i, j : Integer;
 begin
- j := 0;
  for i := 0 to sampleFrames - 1 do
   begin
-   for j := 0 to 1 do
-    begin
-     fInBuffer[j, fIntWritePos] := inputs[j, i];
-     PSingle(outputs[j, i])^    := fOutBuffer[j, fIntWritePos];
-    end;
+   fInBuffer[0,fIntWritePos] := inputs[0,i];
+   fInBuffer[1,fIntWritePos] := inputs[1,i];
+   outputs[0,i] := fOutBuffer[0,fIntWritePos];
+   outputs[1,i] := fOutBuffer[1,fIntWritePos];
    Inc(fIntWritePos);
    if fIntWritePos >= fIntBufSize then fIntWritePos := 0;
+   j := 0;
    while (j < 500) and (fIntWritePos = fIntReadPos) and fASIOHost.Active do
     begin
      inc(j);
