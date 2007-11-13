@@ -49,12 +49,13 @@ object WavedisplayGUI: TWavedisplayGUI
     Height = 13
     Caption = 'Processing mode:'
   end
-  object GuiLevelMeter1: TGuiLevelMeter
+  object LevelMeter: TGuiLevelMeter
     Left = 494
     Top = 33
     Width = 34
     Height = 197
     Anchors = [akTop, akRight, akBottom]
+    RedrawInterval = 30
     FillColor = clBlack
     MaxLineColor = clBlack
     MaxLineWidth = 0
@@ -64,11 +65,9 @@ object WavedisplayGUI: TWavedisplayGUI
     ShowClipping = scNo
     SampleRate = 44100.000000000000000000
     MaximumTimeFactor = 10.000000000000000000
-    LevelAttack = 0.500000000000000000
-    LevelRelease = 0.500000000000000000
+    LevelRelease = 0.899999976158142100
     LevelDirection = ldirHorizontal
-    DisplayChannels = 0
-    BarWidthPercentage = 0.800000011920928900
+    BarWidthPercentage = 0.800000011920929000
   end
   object ddDrawMode: TComboBox
     Left = 68

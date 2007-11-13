@@ -69,7 +69,7 @@ type
 implementation
 
 uses Math,
-  {$IFDEF PUREPASCAL}DAVDBufferMathAsm{$ELSE}DAVDBufferMathPascal{$ENDIF};
+  {$IFDEF PUREPASCAL}DDAVDBufferMathPascal{$ELSE}DAVDBufferMathAsm{$ENDIF};
 
 constructor TDspVSTModule.Create(AOwner: TComponent);
 begin

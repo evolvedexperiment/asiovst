@@ -15,7 +15,6 @@ type
   TGuiLevelMeter = class(TGuiBaseControl)
   private
     FShowMaximum        : Boolean;
-    FDisplayChannels    : Integer;
     FMaxLineWidth       : Integer;
     FClippingLineWidth  : Integer;
     FBarWidthPercentage : Single;
@@ -63,6 +62,7 @@ type
     function GetSampleRate: Single;
     function GetLevelAttack: Single;
     function GetLevelRelease: Single;
+    function GetDisplayChannels: Integer;
   protected
     procedure SetRedrawInterval(Value: Integer); override;
   public
@@ -106,19 +106,21 @@ type
     property LevelRelease: Single read GetLevelRelease write SetLevelRelease;
 
     property LevelDirection: TGuiLevelDirection read FLevelDirection write SetLevelDirection default ldmVertical;
-    property DisplayChannels: Integer read FDisplayChannels write SetDisplayChannels default 2;
+    property DisplayChannels: Integer read GetDisplayChannels write SetDisplayChannels default 2;
     property BarWidthPercentage: Single read FBarWidthPercentage write SetBarWidthPercentage;
   end;
   
 implementation
 
-uses SysUtils;
+uses SysUtils,
+    {$IFDEF PUREPASCAL}DAVDBufferMathPascal{$ELSE}DAVDBufferMathAsm{$ENDIF};
 
 { TGuiLevelMeter }
 
 constructor TGuiLevelMeter.Create(AOwner: TComponent);
-begin
+begin    
   inherited;
+
   FPeakEnvFollower:=TDspEnvelopeFollower.Create(self);
   FMaxEnvFollower:=TDspEnvelopeFollower.Create(self);
 
@@ -140,16 +142,18 @@ begin
   FShowClipping      := scTop;
 
   FLevelDirection    := ldmVertical;
-  FDisplayChannels   := 2;
+  FPeakEnvFollower.Channels := 2;
+  FMaxEnvFollower.Channels := 2;
 
   FMaximumTimeFactor := 10;
   FBarWidthPercentage:= 0.8;
 
   ResetPeaks;
 
+  fRedrawTimer.Interval := 30;
   SampleRate         := 44100;
-  LevelAttack        := 0.5;
-  LevelRelease       := 0.5;
+  LevelAttack        := 0;
+  LevelRelease       := 0;
 end;
 
 destructor TGuiLevelMeter.Destroy;
@@ -163,10 +167,10 @@ end;
 
 procedure TGuiLevelMeter.ResetPeaks;
 begin
-  setlength(FLastPeaks, FDisplayChannels);
-  setlength(FLastMaxPeaks, FDisplayChannels);
-  FillChar(FLastPeaks[0], SizeOf(Single)*FDisplayChannels, 0);
-  FillChar(FLastMaxPeaks[0], SizeOf(Single)*FDisplayChannels, 0);
+  setlength(FLastPeaks, FPeakEnvFollower.Channels);
+  setlength(FLastMaxPeaks, FPeakEnvFollower.Channels);
+  FillChar(FLastPeaks[0], SizeOf(Single)*FPeakEnvFollower.Channels, 0);
+  FillChar(FLastMaxPeaks[0], SizeOf(Single)*FPeakEnvFollower.Channels, 0);
   RedrawBuffer(true);
 end;
 
@@ -220,7 +224,10 @@ begin
     {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
       fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
 
-   fBuffer.Canvas.UnLock;
+//    fBuffer.Canvas.TextOut(0,0, FloatToStr(fLastPeaks[0]));
+    fBuffer.Canvas.Rectangle(0,0,width, round(height*fLastPeaks[0]));
+
+    fBuffer.Canvas.UnLock;
   end;
 
   if doBufferFlip then Invalidate;
@@ -291,11 +298,18 @@ end;
 
 procedure TGuiLevelMeter.SetDisplayChannels(const Value: Integer);
 begin
-  if FDisplayChannels <> Value then
+  if FPeakEnvFollower.Channels <> Value then
   begin
-    FDisplayChannels := Value;
+    FPeakEnvFollower.Channels := Value;
+    FMaxEnvFollower.Channels := Value;
     ResetPeaks;
   end;
+end;
+
+
+function TGuiLevelMeter.GetDisplayChannels: Integer;
+begin
+  Result := FPeakEnvFollower.Channels;
 end;
 
 procedure TGuiLevelMeter.SetFillColor(const Value: TColor);
@@ -406,8 +420,16 @@ begin
 end;
 
 procedure TGuiLevelMeter.ProcessBuffer(NewWaveData: TAVDArrayOfSingleDynArray; InpLen: Integer);
+var tmpbuf: TAVDArrayOfSingleDynArray;
+    dummy: TAVDSingleDynArray;
 begin
+  SetLength(dummy, FPeakEnvFollower.Channels);
+  tmpbuf := FPeakEnvFollower.ProcessSAA(NewWaveData, InpLen);
+  GetPeaks(tmpbuf, dummy, FLastPeaks, FPeakEnvFollower.Channels, InpLen);
+//  tmpbuf := FMaxEnvFollower.ProcessSAA(NewWaveData, InpLen);
+//  GetPeaks(tmpbuf, dummy, FLastMaxPeaks, FPeakEnvFollower.Channels, InpLen);
 
+  fTimerMustRedraw:=true;
 end;
 
 end.

@@ -100,7 +100,7 @@ type
 implementation
 
 uses Sysutils, Math, DVSTModuleWithDsp
-  {$IFDEF PUREPASCAL},DAVDBufferMathAsm{$ELSE},DAVDBufferMathPascal{$ENDIF};
+  {$IFDEF PUREPASCAL},DAVDBufferMathPascal{$ELSE},DAVDBufferMathAsm{$ENDIF};
 
 constructor TDspBaseComponent.Create(AOwner: TComponent);
 begin

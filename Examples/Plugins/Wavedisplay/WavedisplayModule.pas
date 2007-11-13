@@ -8,8 +8,10 @@ uses
 
 type
   TWavedisplayModule = class(TVSTModule)
-    procedure VSTModuleProcess(Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleProcess(const Inputs,
+      Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
   private
   public
   end;
@@ -27,11 +29,15 @@ begin
   GUI := TWavedisplayGUI.Create(Self);
 end;
 
-procedure TWavedisplayModule.VSTModuleProcess(Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TWavedisplayModule.VSTModuleProcess(const Inputs,
+  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var i: Integer;
 begin
   if Assigned(Editorform) then
+  begin
     (EditorForm as TWavedisplayGUI).Display.ProcessBufferIndirect(Inputs, 2, SampleFrames);
+    (EditorForm as TWavedisplayGUI).LevelMeter.ProcessBufferIndirect(Inputs, 2, SampleFrames);
+  end;
 
   for i := 0 to 1 do
     move(inputs[i,0], outputs[i,0], SampleFrames * sizeOf(Single));

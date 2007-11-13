@@ -39,8 +39,8 @@ begin
   fStdProcessS  := Process;
   fStdProcessD  := Process;
 
-  fAttack:=0.5;
-  fRelease:=0.5;
+  fAttack:=0;
+  fRelease:=0;
   Reset;
 end;
 
@@ -52,8 +52,8 @@ end;
 
 procedure TDspEnvelopeFollower.SampleRateChanged;
 begin
-  fInternalAttack:=power(0.01,1/((0.001+fAttack*1.999)*fSampleRate));
-  fInternalRelease:=power(0.01,1/((0.001+fRelease*1.999)*fSampleRate));
+  fInternalAttack :=power(0.01,1/((0.00000001+fAttack*1.99999999)*fSampleRate));
+  fInternalRelease:=power(0.01,1/((0.00000001+fRelease*1.99999999)*fSampleRate));
 end;
 
 procedure TDspEnvelopeFollower.ChannelsChanged;

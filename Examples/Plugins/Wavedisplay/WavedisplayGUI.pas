@@ -16,7 +16,7 @@ type
     ddWaveSize: TComboBox;
     ddDrawMode: TComboBox;
     ddProcessing: TComboBox;
-    GuiLevelMeter1: TGuiLevelMeter;
+    LevelMeter: TGuiLevelMeter;
     procedure ddProcessingChange(Sender: TObject);
     procedure ddWaveSizeChange(Sender: TObject);
     procedure ddDrawModeChange(Sender: TObject);
