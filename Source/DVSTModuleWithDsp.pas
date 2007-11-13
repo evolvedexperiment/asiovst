@@ -325,13 +325,31 @@ begin
 end;
 
 procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  ProcessBuffer : TAVDArrayOfSingleDynArray;
+  i             : Integer;
 begin
-// if FDspQueueList.Count>0 then outputs := FDspQueueList.Items[0].ProcessQueueSAA(Inputs,SampleFrames);
+ SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
+ for i := 0 to numInputs - 1
+  do Move(Inputs[i, 0], ProcessBuffer[i, 0], SampleFrames * SizeOf(Single));
+ if FDspQueueList.Count > 0
+  then FDspQueueList.Items[0].ProcessQueueSAA(ProcessBuffer);
+ for i := 0 to numOutputs - 1
+  do Move(ProcessBuffer[i, 0], Outputs[i, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  ProcessBuffer : TAVDArrayOfDoubleDynArray;
+  i             : Integer;
 begin
-// if FDspQueueList.Count>0 then outputs := FDspQueueList.Items[0].ProcessQueueDAA(Inputs,SampleFrames);
+ SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
+ for i := 0 to numInputs - 1
+  do Move(Inputs[i, 0], ProcessBuffer[i, 0], SampleFrames * SizeOf(Double));
+ if FDspQueueList.Count > 0
+  then FDspQueueList.Items[0].ProcessQueueDAA(ProcessBuffer);
+ for i := 0 to numOutputs - 1
+  do Move(ProcessBuffer[i, 0], Outputs[i, 0], SampleFrames * SizeOf(Double));
 end;
 
 procedure TDspVSTModule.SetOnProcess(v : TProcessAudioEvent);

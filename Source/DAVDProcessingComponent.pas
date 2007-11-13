@@ -5,12 +5,12 @@ interface
 uses Classes, DAVDCommon;
 
 type
-  TDspBaseProcessFuncS   = function(input: Single; channel: integer): Single of object;
-  TDspBaseProcessFuncD   = function(input: Double; channel: integer): Double of object;
-  TDspBaseProcessFuncSA  = function(input: TAVDSingleDynArray; SampleFrames: Integer; channel: integer): TAVDSingleDynArray of object;
-  TDspBaseProcessFuncDA  = function(input: TAVDDoubleDynArray; SampleFrames: Integer; channel: integer): TAVDDoubleDynArray of object;
-  TDspBaseProcessFuncSAA = function(input: TAVDArrayOfSingleDynArray; SampleFrames: Integer): TAVDArrayOfSingleDynArray of object;
-  TDspBaseProcessFuncDAA = function(input: TAVDArrayOfDoubleDynArray; SampleFrames: Integer): TAVDArrayOfDoubleDynArray of object;
+  TDspBaseProcessFuncS   = procedure(var Data: Single; const channel: integer) of object;
+  TDspBaseProcessFuncD   = procedure(var Data: Double; const channel: integer) of object;
+  TDspBaseProcessFuncSA  = procedure(var ProcessBuffer: TAVDSingleDynArray; const channel: integer) of object;
+  TDspBaseProcessFuncDA  = procedure(var ProcessBuffer: TAVDDoubleDynArray; const channel: integer) of object;
+  TDspBaseProcessFuncSAA = procedure(var ProcessBuffer: TAVDArrayOfSingleDynArray) of object;
+  TDspBaseProcessFuncDAA = procedure(var ProcessBuffer: TAVDArrayOfDoubleDynArray) of object;
 
   TAVDProcessingComponent = class(TComponent)
   protected
