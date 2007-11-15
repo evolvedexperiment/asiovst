@@ -41,8 +41,8 @@ type
     procedure MIPresetClick(Sender: TObject);
     procedure VSTPanelClick(Sender: TObject);
   private
-    VSTInBuffer: TArrayOfSingleDynArray;
-    VSTOutBuffer: TArrayOfSingleDynArray;
+    VSTInBuffer: TAVDArrayOfSingleDynArray;
+    VSTOutBuffer: TAVDArrayOfSingleDynArray;
     procedure LoadVSTPlugin(DLLName: TFileName);
   public
   end;

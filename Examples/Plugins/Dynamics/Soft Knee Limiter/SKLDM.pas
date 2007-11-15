@@ -9,12 +9,12 @@ type
   TSoftKneeLimiterDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
     procedure SKLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TArrayOfDoubleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const sampleframes: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure SKLSoftKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);

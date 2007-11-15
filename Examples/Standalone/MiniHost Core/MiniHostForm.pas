@@ -181,7 +181,7 @@ type
     procedure MidiThru1Click(Sender: TObject);
     procedure UseMouseWheel1Click(Sender: TObject);
     procedure IdleTimerTimer(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
   private
     downmix: boolean;
     totalframes: Integer;
@@ -189,7 +189,7 @@ type
     loadprog: Integer;
     loaded, pluginloaded: boolean;
     WavBufL, InBufL, WavBufR, InBufR: TAVDSingleDynArray;
-    VSTBufIn, VSTBufOut: TArrayOfSingleDynArray;
+    VSTBufIn, VSTBufOut: TAVDArrayOfSingleDynArray;
     CurrentASIO: Integer;
     CurrentMIDIIn: Integer;
     CurrentMIDIOut: Integer;
@@ -2156,7 +2156,7 @@ begin
 end;
 
 procedure TFmMiniHost.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TArrayOfSingleDynArray);
+  OutBuffer: TAVDArrayOfSingleDynArray);
 var j, i: Integer;
     bs, ChOfs: Integer;
 begin

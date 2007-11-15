@@ -43,7 +43,6 @@ object FmVSTAnalyser: TFmVSTAnalyser
         DisplayName = 'Plugin'
       end>
     ParameterQuantization = 0
-    BlockSize = 1024
     CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
     ManageIdleAutomaticly = False
     Tempo = 120.000000000000000000

@@ -27,7 +27,7 @@ type
     procedure DriverComboChange(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure Bt_PlayClick(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
     procedure SBVolumeChange(Sender: TObject);
     procedure SETempoChange(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
@@ -161,7 +161,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch(Sender: TObject; InBuffer,
-  OutBuffer: TArrayOfSingleDynArray);
+  OutBuffer: TAVDArrayOfSingleDynArray);
 var i,j : Integer;
     s   : Single;
 begin

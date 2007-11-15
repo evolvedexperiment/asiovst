@@ -84,7 +84,7 @@ type
     fColorBorder   : TColor;
     fBypass        : Boolean;
     fRegistryEntry : string;
-    fTmpData       : TArrayOfSingleDynArray;
+    fTmpData       : TAVDArrayOfSingleDynArray;
     fNrChannels    : Integer;
     fSampleRate    : Integer;
     fNumSamples    : Integer;

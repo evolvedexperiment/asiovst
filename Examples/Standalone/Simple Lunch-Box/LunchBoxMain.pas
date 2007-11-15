@@ -111,7 +111,7 @@ type
     procedure MIAboutClick(Sender: TObject);
     procedure CBDelayClick(Sender: TObject);
     procedure BtMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
@@ -128,11 +128,11 @@ type
     fSamplesPerBeat : Single;
     fSamplesCount   : Single;
     fMetroVolume    : T2SingleArray;
-    fFlangeBuffer   : TArrayOfSingleDynArray;
-    fRobotBuffer    : TArrayOfSingleDynArray;
-    fRecRevBuffer   : TArrayOfSingleDynArray;
+    fFlangeBuffer   : TAVDArrayOfSingleDynArray;
+    fRobotBuffer    : TAVDArrayOfSingleDynArray;
+    fRecRevBuffer   : TAVDArrayOfSingleDynArray;
     fRobotPos       : Integer;
-    fDelayBuffer    : TArrayOfSingleDynArray;
+    fDelayBuffer    : TAVDArrayOfSingleDynArray;
     fDelayPos       : array of Integer;
     fDelayLength    : array of Integer;
     fDelayVolume    : T2SingleArray;
@@ -143,13 +143,13 @@ type
     fInputDCs       : T2DoubleArray;
     fInputFilter    : Array [0..1] of TInputFilter;
 
-    VSTInBuffer     : TArrayOfSingleDynArray;
-    VSTOutBuffer    : TArrayOfSingleDynArray;
+    VSTInBuffer     : TAVDArrayOfSingleDynArray;
+    VSTOutBuffer    : TAVDArrayOfSingleDynArray;
     procedure CalculateSineAngles;
     procedure CreateSample(Index: Integer; Amplitude : Double = 1);
     procedure Requantize;
     procedure AdjustDelayLength;
-    procedure RenderOutput(Buffer: TArrayOfSingleDynArray; BufferLength: Integer; Loop: Boolean);
+    procedure RenderOutput(Buffer: TAVDArrayOfSingleDynArray; BufferLength: Integer; Loop: Boolean);
   public
     property PatternPosition : Integer read fPatPos write fPatPos;
     property EventList : TLunchBoxEventList read fEventList;
@@ -219,7 +219,7 @@ begin
 end;
 
 procedure TFmLunchBox.MIExportWAVClick(Sender: TObject);
-var Buffer : TArrayOfSingleDynArray;
+var Buffer : TAVDArrayOfSingleDynArray;
     i      : Integer;
 begin
  if SaveWAVDialog.Execute then
@@ -543,7 +543,7 @@ begin
    end;
 end;
 
-procedure TFmLunchBox.RenderOutput(Buffer: TArrayOfSingleDynArray; BufferLength : Integer; Loop: Boolean);
+procedure TFmLunchBox.RenderOutput(Buffer: TAVDArrayOfSingleDynArray; BufferLength : Integer; Loop: Boolean);
 var i,j : Integer;
     tmp : Single;
 begin
@@ -666,7 +666,7 @@ begin
 end;
 
 procedure TFmLunchBox.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TArrayOfSingleDynArray);
+  OutBuffer: TAVDArrayOfSingleDynArray);
 var i   : Integer;
     d,t : Double;
 begin
