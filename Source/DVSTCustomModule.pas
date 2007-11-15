@@ -40,6 +40,7 @@ type
   TOnVendorSpecificEvent = function(Sender: TObject; lArg1, lArg2: Integer; ptrArg: pointer; floatArg: Single): Integer of object;
   TOnCanDoEvent          = function(Sender: TObject; CanDoText: String): Integer of object;
   TOnCheckKey            = function(Sender: TObject; Key: Char): Boolean of object;
+  TOnEditClose           = procedure(Sender: TObject; var DestroyForm: boolean) of object;
 
   TOnGetChannelPropertiesEvent = function(Sender: TObject; var vLabel: ShortString; var shortLabel: ShortString; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags:TChannelPropertyFlags): Integer of object;
 
@@ -49,7 +50,7 @@ type
     FVersion                : string;
     FEditorRect             : ERect;
 
-    FOnEditClose            : TNotifyEvent;
+    FOnEditClose            : TOnEditClose;
     FOnEditIdle             : TNotifyEvent;
     FOnEditTop              : TNotifyEvent;
     FOnEditSleep            : TNotifyEvent;
@@ -243,7 +244,7 @@ type
     property OnResume: TNotifyEvent read FOnResume write FOnResume;
     property OnSuspend: TNotifyEvent read FOnSuspend write FOnSuspend;
     property OnEditOpen: TGetEditorEvent read FOnEditOpen write FOnEditOpen;
-    property OnEditClose: TNotifyEvent read FOnEditClose write FOnEditClose;
+    property OnEditClose: TOnEditClose read FOnEditClose write FOnEditClose;
     property OnEditIdle: TNotifyEvent read FOnEditIdle write FOnEditIdle;
     property OnEditTop: TNotifyEvent read FOnEditTop write FOnEditTop;
     property OnEditSleep: TNotifyEvent read FOnEditSleep write FOnEditSleep;
@@ -506,11 +507,13 @@ begin
 end;
 
 function TCustomVSTModule.HostCallEditClose(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+var DestroyForm: Boolean;
 begin
   if (effFlagsHasEditor in FEffect.EffectFlags) then
   begin
-    if Assigned(FOnEditClose) then FOnEditClose(Self);
-    if Assigned(FEditorForm) then FreeAndNil(FEditorForm);
+    DestroyForm := true;
+    if Assigned(FOnEditClose) then FOnEditClose(Self, DestroyForm);
+    if DestroyForm and Assigned(FEditorForm) then FreeAndNil(FEditorForm);
   end;
 
   Result := 0;

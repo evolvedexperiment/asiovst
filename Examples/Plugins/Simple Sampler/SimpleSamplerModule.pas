@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect, 
-  DVSTModule, SimpleSamplerVoice, VoiceList;
+  DVSTModule, SimpleSamplerVoice, SimpleSamplerGUI, VoiceList;
 
 type
   TVSTSSModule = class(TVSTModule)
@@ -15,17 +15,20 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs,
       Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleEditClose(Sender: TObject;
+      var DestroyForm: Boolean);
   private
   public
-    Voices      : TVoiceList;
-    Sample      : TAVDSingleDynArray;
+    Voices : TVoiceList;
+    Sample : TAVDSingleDynArray;
+    MyGUI  : TVSTGUI;
   end;
 
 implementation
 
 {$R *.DFM}
 
-uses SimpleSamplerGUI, Math;
+uses Math;
 
 procedure TVSTSSModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -61,12 +64,13 @@ procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
   ParentWindow: Cardinal);
 // Do not delete this if you are using the editor
 begin
- GUI := TVSTGUI.Create(Self);
+  GUI := MyGUI;
 end;
 
 procedure TVSTSSModule.VSTModuleInitialize(Sender: TObject);
 begin
  Voices:=TVoiceList.Create(True);
+ MyGUI := TVSTGUI.Create(Self);
 end;
 
 procedure TVSTSSModule.VSTModuleProcessMidi(Sender: TObject;
@@ -110,6 +114,13 @@ end;
 procedure TVSTSSModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(Voices);
+ MyGUI.Free;
+end;
+
+procedure TVSTSSModule.VSTModuleEditClose(Sender: TObject;
+  var DestroyForm: Boolean);
+begin
+  DestroyForm:=false;
 end;
 
 end.

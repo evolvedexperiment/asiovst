@@ -20,6 +20,7 @@ object VSTSSModule: TVSTSSModule
     end>
   ParameterProperties = <>
   OnEditOpen = VSTModuleEditOpen
+  OnEditClose = VSTModuleEditClose
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
