@@ -55,19 +55,11 @@ object WavedisplayGUI: TWavedisplayGUI
     Width = 34
     Height = 197
     Anchors = [akTop, akRight, akBottom]
-    RedrawInterval = 30
-    FillColor = clBlack
-    MaxLineColor = clBlack
-    MaxLineWidth = 0
-    ClippingLineWidth = 0
-    ClippingFillColor = clBlack
-    ShowMaximum = False
-    ShowClipping = scNo
-    SampleRate = 44100.000000000000000000
-    MaximumTimeFactor = 10.000000000000000000
-    LevelRelease = 0.899999976158142100
-    LevelDirection = ldirHorizontal
-    BarWidthPercentage = 0.800000011920928900
+    RedrawInterval = 15
+    ShowClipping = scBottomRight
+    LevelRelease = 1.000000000000000000
+    BarWidthPercentage = 0.800000011920929000
+    MaximumTimeFactor = 3.000000000000000000
   end
   object ddDrawMode: TComboBox
     Left = 68
