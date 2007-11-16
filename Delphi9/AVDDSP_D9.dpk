@@ -49,6 +49,7 @@ contains
   DDspDitherNoiseShaper in '..\Source\DDspDitherNoiseShaper.pas',
   DDspMetronome in '..\Source\DDspMetronome.pas',
   DDSPRemez in '..\Source\DDSPRemez.pas',
-  DDSPStateVariableFilter in '..\Source\DDSPStateVariableFilter.pas';
+  DDSPStateVariableFilter in '..\Source\DDSPStateVariableFilter.pas',
+  DDspVoice in '..\Source\DDspVoice.pas';
 
 end.

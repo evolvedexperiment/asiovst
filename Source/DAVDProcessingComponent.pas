@@ -14,10 +14,10 @@ type
 
   TAVDProcessingComponent = class(TComponent)
   protected
-    fBypass: Boolean;
-    fEnabled: Boolean;
+    fBypass:     Boolean;
+    fEnabled:    Boolean;
     fSampleRate: Single;
-    fChannels: Integer;
+    fChannels:   Integer;
 
     fProcessS:   TDspBaseProcessFuncS;
     fProcessD:   TDspBaseProcessFuncD;
@@ -40,6 +40,9 @@ type
   public
     procedure Init; virtual; abstract;
     procedure Reset; virtual; abstract;
+
+    procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); virtual; abstract;
+    procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent); virtual; abstract;
 
     property Enabled: Boolean   read fEnabled    write SetEnabled    default true;
     property Bypass: Boolean    read fBypass     write SetBypass     default true;
@@ -70,14 +73,16 @@ type
     function Extract(Item: TAVDProcessingComponent): TAVDProcessingComponent;
     function First: TAVDProcessingComponent;
     function IndexOf(Item: TAVDProcessingComponent): Integer;
-    procedure Insert(Index: Integer; Item: TAVDProcessingComponent);
     function Last: TAVDProcessingComponent;
     function Remove(Item: TAVDProcessingComponent): Integer;
+    procedure Insert(Index: Integer; Item: TAVDProcessingComponent);
 
     procedure SetSampleRate(Value: Single);
     procedure SetChannels(Value: Integer);
     procedure SetEnabled(Value: Boolean);
     procedure SetBypass(Value: Boolean);
+
+    procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent);
 
     property Items[Index: Integer]: TAVDProcessingComponent read Get write Put;
   end;
@@ -157,6 +162,13 @@ var i: integer;
 begin
   for i := Count-1 downto 0 do
     Items[i].Bypass := Value;
+end;
+
+procedure TAVDProcessingComponentList.ProcessMidiEvent(MidiEvent: TAVDMidiEvent);
+var i: integer;
+begin
+  for i := Count-1 downto 0 do
+    Items[i].ProcessMidiEventQueue(MidiEvent);
 end;
 
 end.

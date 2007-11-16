@@ -11,8 +11,9 @@ type
 
   TVSTModuleWithMidi = class(TCustomVSTModule)
   protected
-    FMidiEvent  : TVstEvents;
-    FProcessMidi: TProcessMidiEvent;
+    FMidiEvent    : TVstEvents;
+    fOnProcessMidi: TProcessMidiEvent;
+    procedure ProcessMidiEvent(MidiEvent: TVstMidiEvent); virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -37,7 +38,7 @@ type
     procedure MIDI_PolyAftertouch(ch, note, val: Integer; offset: Integer = 0);
     procedure MIDI_ProgramChange(ch, val: Integer; offset: Integer = 0);
 
-    property OnProcessMidi: TProcessMidiEvent read fProcessMidi write fProcessMidi;
+    property OnProcessMidi: TProcessMidiEvent read fOnProcessMidi write fOnProcessMidi;
   end;
   
 implementation
@@ -67,13 +68,18 @@ begin
   inherited;
 end;
 
+procedure TVSTModuleWithMidi.ProcessMidiEvent(MidiEvent: TVstMidiEvent);
+begin
+  fOnProcessMidi(Self, MidiEvent);
+end;
+
 function TVSTModuleWithMidi.HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 var i: Integer;
 begin
   Result:= inherited HostCallProcessEvents(Index, Value, ptr, opt);
   for i := 0 to PVstEvents(ptr)^.numEvents - 1 do
     if (PVstEvents(ptr)^.events[i]^.EventType = etMidi) then
-      if Assigned(fProcessMidi) then fProcessMidi(Self, PVstMidiEvent(PVstEvents(ptr)^.events[i])^);
+      if Assigned(fOnProcessMidi) then ProcessMidiEvent(PVstMidiEvent(PVstEvents(ptr)^.events[i])^);
 end;
 
 function TVSTModuleWithMidi.HostCallGetCurrentMidiProgram(Index, Value: Integer; ptr: pointer; opt: Single): Integer;

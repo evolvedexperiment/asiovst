@@ -17,14 +17,15 @@ type
     fRelease: Single;
     procedure SetAttack(const Value: single);
     procedure SetRelease(const Value: single);
+    procedure BeforeDestroy; override;
   protected
     procedure SampleRateChanged; override;
     procedure ChannelsChanged; override;
+    procedure Process(var Data: Single; const channel: integer); overload;
+    procedure Process(var Data: Double; const channel: integer); overload;
   public
     procedure Init; override;
     procedure Reset; override;
-    procedure Process(var Data: Single; const channel: integer); overload;
-    procedure Process(var Data: Double; const channel: integer); overload;
   published
     property Attack:  single read fAttack write SetAttack;   // 0..1
     property Release: single read fRelease write SetRelease; // 0..1
@@ -42,6 +43,12 @@ begin
   fAttack:=0;
   fRelease:=0;
   Reset;
+end;
+
+procedure TDspEnvelopeFollower.BeforeDestroy;
+begin
+  SetLength(fLastOutputSingle, 0);
+  SetLength(fLastOutputDouble, 0);
 end;
 
 procedure TDspEnvelopeFollower.Reset;

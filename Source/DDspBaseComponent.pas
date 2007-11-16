@@ -36,11 +36,11 @@ type
     procedure SetNextDspQueueItem(const Value: TDspBaseComponent); virtual;
     procedure SampleRateChanged; virtual;
     procedure ChannelsChanged; virtual;
-    procedure UpdateParameters; virtual;
+    procedure UpdateParameters; virtual;  
+    procedure BeforeDestroy; virtual;
 
     procedure RegisterInOwner(item: TDspBaseComponent);
     procedure UnRegisterInOwner(item: TDspBaseComponent);
-  published
   public
     constructor Create(AOwner: TComponent); overload; override;
     constructor Create(AOwner: TComponent; UseSampleRate: Integer); reintroduce; overload;
@@ -89,6 +89,10 @@ type
     procedure ProcessBasic      (var ProcessBuffer: TAVDArrayOfDoubleDynArray); overload; virtual;
     procedure ProcessQueueBasic (var ProcessBuffer: TAVDArrayOfDoubleDynArray); overload; virtual;
     procedure ProcessQueueBypass(var ProcessBuffer: TAVDArrayOfDoubleDynArray); overload; virtual;
+
+    procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); override;
+    procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent); override;
+
 
     property PrevDspQueueItem: TDspBaseComponent read fPrevDspQueueItem write fPrevDspQueueItem;
   published
@@ -144,6 +148,8 @@ end;
 
 destructor TDspBaseComponent.Destroy;
 begin
+  BeforeDestroy;
+  
   UnRegisterInOwner(self);
 
   if assigned(fNextDspQueueItem) then
@@ -155,6 +161,9 @@ begin
   if assigned(fPrevDspQueueItem) then fPrevDspQueueItem.NextDspQueueItem := fNextDspQueueItem;
   inherited;
 end;
+
+procedure TDspBaseComponent.BeforeDestroy;
+begin end;
 
 procedure TDspBaseComponent.RegisterInOwner(item: TDspBaseComponent);
 begin
@@ -595,5 +604,15 @@ begin
  fNextDspQueueItem.ProcessQueueDAA(ProcessBuffer);
 end;
 
+procedure TDspBaseComponent.ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+begin end;
+
+procedure TDspBaseComponent.ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent);
+var FilterEvent: Boolean;
+begin
+  FilterEvent:=false;
+  ProcessMidiEvent(MidiEvent, FilterEvent);
+  if not FilterEvent and assigned(fNextDspQueueItem) then fNextDspQueueItem.ProcessMidiEventQueue(MidiEvent);
+end;
 
 end.

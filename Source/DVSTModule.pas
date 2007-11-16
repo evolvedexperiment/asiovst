@@ -110,8 +110,6 @@ uses Forms, RtlConsts;
 { TVSTModule }
     
 {$IFNDEF FPC}
-resourcestring
-  SResNotFound = 'Resource %s not found';
 
 constructor TVSTModule.Create(AOwner: TComponent);
 begin
@@ -120,7 +118,7 @@ begin
  if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
   try
    if not InitInheritedComponent(Self, TDspVSTModule) then
-     raise EResNotFound.CreateFmt(SResNotFound, [ClassName]);
+     raise EResNotFound.CreateFmt('Resource %s not found', [ClassName]);
    try
     if Assigned(OnCreate) and OldCreateOrder then OnCreate(Self);
    except
@@ -141,7 +139,7 @@ begin
  if (ClassType <> TVSTModule) and not (csDesigning in ComponentState) then
   try
    if not InitInheritedComponent(Self, TDspVSTModule)
-    then raise EStreamError.CreateFmt(SErrNoStreaming, [ClassName]);
+    then raise EStreamError.CreateFmt('Resource %s not found', [ClassName]);
    if OldCreateOrder then DoCreate;
   except
   end;

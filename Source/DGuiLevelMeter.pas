@@ -11,7 +11,8 @@ uses
 type
   TGuiLevelDirection = (ldirHorizontal, ldirHorizontalInverted, ldmVertical, ldmVerticalInverted);
   TGuiShowClipping = (scNo, scTopLeft, scBottomRight);
-  
+
+
   TGuiLevelMeter = class(TGuiBaseControl)
   private
     FShowMaximum        : Boolean;

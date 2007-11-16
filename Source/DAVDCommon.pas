@@ -58,6 +58,15 @@ type
   P2DoubleArray = ^T2SingleArray;
 
   TStrArray = array of string;
+  
+  TAVDMidiEvent = record
+    MidiData        : array[0..3] of Byte;  // 1 thru 3 midi Bytes; midiData[3] is reserved (zero)
+    DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
+    NoteOffset      : LongInt;              // offset into note from note start if available, else 0
+    NoteLength      : LongInt;              // (in sample frames) of entire note, if available, else 0
+    Detune          : Byte;                 // -64 to +63 cents; for scales other than 'well-tempered' ('microtuning')
+    NoteOffVelocity : Byte;
+  end;
 
   {$IFNDEF FPC}
   function GetApplicationFilename: string; {$IFDEF useinlining} inline; {$ENDIF}
@@ -88,11 +97,16 @@ type
   function f_Arctan(Value:Single):Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Arctan(Value:Double):Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
   {$IFNDEF FPC}
-  function f_Frac(Sample:Single):Single;
-  function f_Int(Sample:Single):Single;
+  function f_Frac(Sample:Single):Single; overload;
+  function f_Frac(Sample:Double):Double; overload;
+  function f_Int(Sample:Single):Single; overload;
+  function f_Int(Sample:Double):Double; overload;
   function f_Trunc(Sample:Single):Integer; overload;
+  function f_Trunc(Sample:Double):Integer; overload;
   procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer); overload;
-  function f_Round(Sample:Single):Integer;
+  function f_Round(Sample:Single):Integer; overload;
+  function f_Round(Sample:Double):Integer; overload;
+
   function f_Exp(x:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
 
   procedure f_Abs(var f:Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
@@ -348,6 +362,18 @@ asm
 {$ENDIF}
 end;
 
+function f_Trunc(Sample:Double):Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result := Round(Sample - 0.5);
+{$ELSE}
+asm
+ fld Sample.Double
+ fsub half
+ fistp Result.Integer
+{$ENDIF}
+end;
+
 procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer);
 {$IFDEF PUREPASCAL}
 var i : Integer;
@@ -375,14 +401,26 @@ function f_Frac(Sample:Single):Single;
 begin
  result:=Sample-Round(Sample-0.5);
 {$ELSE}
-const magic:Single=2E21;
 var i : Integer;
 asm
  fld Sample.Single
  fld Sample.Single
  fsub half
-// fistp i fild i //instead of frndint->Faster
-// fadd magic.Single fsub magic.Single //instead of frndint->HyperFast
+ frndint
+ fsubp
+{$ENDIF}
+end;     
+
+function f_Frac(Sample:Double):Double;
+{$IFDEF PUREPASCAL}
+begin
+ result:=Sample-Round(Sample-0.5);
+{$ELSE}
+var i : Integer;
+asm
+ fld Sample.Double
+ fld Sample.Double
+ fsub half
  frndint
  fsubp
 {$ENDIF}
@@ -400,6 +438,19 @@ asm
 {$ENDIF}
 end;
 
+
+function f_Int(Sample:Double):Double;
+{$IFDEF PUREPASCAL}
+begin
+ result := Round(Sample - 0.5);
+{$ELSE}
+asm
+ fld Sample.Double
+ fsub half
+ frndint
+{$ENDIF}
+end;
+
 function f_Round(Sample:Single):Integer;
 {$IFDEF PUREPASCAL}
 begin
@@ -410,6 +461,30 @@ asm
  frndint
  fistp Result.Integer
 {$ENDIF}
+end;
+
+function f_Round(Sample:Double):Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result := Round(Sample);
+{$ELSE}
+asm
+ fld Sample.Double
+ frndint
+ fistp Result.Integer
+{$ENDIF}
+end;   
+
+procedure f_Abs(var f:Single);
+var i : Integer absolute f;
+begin
+ i := i and $7FFFFFFF;
+end;
+
+procedure f_Abs(var f:Double);
+var i : array [0..1] of Integer absolute f;
+begin
+ i[0] := i[0] and $7FFFFFFF;
 end;
 
 function f_Exp(x:Single):Single;
@@ -488,18 +563,6 @@ end;
 function f_FloorLn2(f:Single):Integer;
 begin
  Result:=(((Integer((@f)^) and $7F800000) shr 23)-$7F);
-end;
-
-procedure f_Abs(var f:Single); overload;
-var i : Integer absolute f;
-begin
- i := i and $7FFFFFFF;
-end;
-
-procedure f_Abs(var f:Double); overload;
-var i : array [0..1] of Integer absolute f;
-begin
- i[0] := i[0] and $7FFFFFFF;
 end;
 
 procedure f_Abs(var f:T4SingleArray); overload;

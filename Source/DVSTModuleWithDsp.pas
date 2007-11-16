@@ -4,7 +4,7 @@ interface
 
 {$I ASIOVST.INC}
 
-uses classes, DVSTModuleWithPrograms, DAVDProcessingComponent, DAVDCommon, DVSTCustomModule;
+uses classes, DVSTModuleWithPrograms, DAVDProcessingComponent, DAVDCommon, DVSTCustomModule, DVSTEffect;
 
 type
   TProcessingMode = (pmNormal, pmBlockSave, pmCopy, pmMute, pmDspQueue);
@@ -37,6 +37,8 @@ type
     procedure DoBlockSaveProcessReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
     procedure DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
     procedure DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
+
+    procedure ProcessMidiEvent(MidiEvent: TVstMidiEvent); override;
 
     procedure SetNumInputs(Inputs: Integer); override;
     procedure SetNumOutputs(Outputs: Integer); override;
@@ -158,7 +160,24 @@ begin
     SetInitialDelay(FInitialDelay);
 end;
 
+procedure TDspVSTModule.ProcessMidiEvent(MidiEvent: TVstMidiEvent);
+var tmp: TAVDMidiEvent;
+begin
+  with MidiEvent do
+  begin
+    tmp.MidiData[0]     := MidiData[0];
+    tmp.MidiData[1]     := MidiData[1];
+    tmp.MidiData[2]     := MidiData[2];
+    tmp.DeltaFrames     := DeltaFrames;
+    tmp.NoteOffset      := NoteOffset;
+    tmp.NoteLength      := NoteLength;
+    tmp.Detune          := Detune;
+    tmp.NoteOffVelocity := NoteOffVelocity;
+  end;
 
+  FDspQueueList.ProcessMidiEvent(tmp);
+  inherited;
+end;
 
 
 procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
