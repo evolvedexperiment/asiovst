@@ -51,6 +51,13 @@ contains
   DDspMetronome in '..\Source\DDspMetronome.pas',
   DDSPRemez in '..\Source\DDSPRemez.pas',
   DDSPStateVariableFilter in '..\Source\DDSPStateVariableFilter.pas',
-  DDspVoice in '..\Source\DDspVoice.pas';
+  DDspVoice in '..\Source\DDspVoice.pas',
+  DDSPOscSine in '..\Source\DDSPOscSine.pas',
+  DDSPOscSaw in '..\Source\DDSPOscSaw.pas',
+  DDSPOscRamp in '..\Source\DDSPOscRamp.pas',
+  DDSPOscSquare in '..\Source\DDSPOscSquare.pas',
+  DDSPOscNoise in '..\Source\DDSPOscNoise.pas',
+  DDSPOscAbsSine in '..\Source\DDSPOscAbsSine.pas',
+  DDSPBaseOsc in '..\Source\DDSPBaseOsc.pas';
 
 end.
