@@ -794,13 +794,13 @@ end;
 procedure Int24LSBToSingle_x87(source: pointer; target: PSingle; frames: longint); overload;
 {$IFDEF x87}
 asm
- fld Min24
+ fld MinLong
  push ebx
  mov  ecx, frames
 
 @Start:
  mov ebx,[eax]
- and ebx, $FFFFFF
+ shl ebx, 8
  mov [esp-4],ebx
  fild [esp-4].Single
  fmul  st(0),st(1)
