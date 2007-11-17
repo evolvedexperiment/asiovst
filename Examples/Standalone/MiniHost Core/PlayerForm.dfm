@@ -18,21 +18,21 @@ object Player: TPlayer
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 14
-  object GroupBox4: TGroupBox
+  object GbMidiFilePlayer: TGroupBox
     Left = 7
     Top = 0
     Width = 201
     Height = 417
     Caption = ' MIDI File Player '
     TabOrder = 0
-    object Label1: TLabel
+    object LbMidiCurrentFile: TLabel
       Left = 8
       Top = 294
       Width = 55
       Height = 14
       Caption = 'current file:'
     end
-    object Label2: TLabel
+    object LbMidiFile: TLabel
       Left = 8
       Top = 308
       Width = 36
@@ -40,21 +40,21 @@ object Player: TPlayer
       Caption = '<none>'
       Transparent = True
     end
-    object tmp: TLabel
+    object LbMidiTempo: TLabel
       Left = 8
       Top = 328
       Width = 76
       Height = 14
       Caption = 'tempo: 120 bpm'
     end
-    object Label5: TLabel
+    object LbMidiPosition: TLabel
       Left = 8
-      Top = 368
+      Top = 366
       Width = 62
       Height = 14
       Caption = 'position: 0 %'
     end
-    object Label9: TLabel
+    object LbMidiPlayMode: TLabel
       Left = 8
       Top = 245
       Width = 141
@@ -81,43 +81,43 @@ object Player: TPlayer
       TabOrder = 0
       OnDblClick = MidiBoxDblClick
     end
-    object Button1: TButton
+    object BtMidiAdd: TButton
       Left = 8
       Top = 192
       Width = 49
       Height = 17
       Caption = 'add'
       TabOrder = 1
-      OnClick = Button1Click
+      OnClick = BtMidiAddClick
     end
-    object Button2: TButton
+    object BtMidiRemove: TButton
       Left = 64
       Top = 192
       Width = 49
       Height = 17
       Caption = 'remove'
       TabOrder = 2
-      OnClick = Button2Click
+      OnClick = BtMidiRemoveClick
     end
-    object Button3: TButton
+    object BtMidiStop: TButton
       Left = 64
       Top = 216
       Width = 49
       Height = 17
       Caption = 'stop'
       TabOrder = 3
-      OnClick = Button3Click
+      OnClick = BtMidiStopClick
     end
-    object Button4: TButton
+    object BtMidiPlay: TButton
       Left = 8
       Top = 216
       Width = 49
       Height = 17
       Caption = 'play'
       TabOrder = 4
-      OnClick = Button4Click
+      OnClick = BtMidiPlayClick
     end
-    object onlych1: TCheckBox
+    object CbOnlyChannel1: TCheckBox
       Left = 124
       Top = 192
       Width = 69
@@ -125,7 +125,7 @@ object Player: TPlayer
       Caption = 'only CH1'
       TabOrder = 5
     end
-    object mode1: TComboBox
+    object CBMidiPlayMode: TComboBox
       Left = 8
       Top = 261
       Width = 140
@@ -152,7 +152,7 @@ object Player: TPlayer
         'play next file in list'
         'play random file in list')
     end
-    object s_tempo: TScrollBar
+    object SbTempo: TScrollBar
       Left = 8
       Top = 344
       Width = 177
@@ -162,33 +162,33 @@ object Player: TPlayer
       PageSize = 0
       Position = 120
       TabOrder = 7
-      OnChange = s_tempoChange
+      OnChange = SbTempoChange
     end
-    object s_pos: TScrollBar
+    object SbMidiPosition: TScrollBar
       Left = 8
       Top = 384
       Width = 177
       Height = 16
       PageSize = 0
       TabOrder = 8
-      OnChange = s_posChange
+      OnChange = SbMidiPositionChange
     end
   end
-  object GroupBox1: TGroupBox
+  object GbWavFilePlayer: TGroupBox
     Left = 215
     Top = 0
     Width = 201
     Height = 417
     Caption = ' WAV File Player '
     TabOrder = 1
-    object Label3: TLabel
+    object LbWavCurrentFile: TLabel
       Left = 8
       Top = 294
       Width = 55
       Height = 14
       Caption = 'current file:'
     end
-    object Label4: TLabel
+    object LbWaveFile: TLabel
       Left = 8
       Top = 308
       Width = 36
@@ -196,21 +196,21 @@ object Player: TPlayer
       Caption = '<none>'
       Transparent = True
     end
-    object Label6: TLabel
+    object LbWavPitch: TLabel
       Left = 8
       Top = 328
       Width = 60
       Height = 14
       Caption = 'pitch: 100 %'
     end
-    object Label7: TLabel
+    object LbWavPosition: TLabel
       Left = 8
       Top = 368
       Width = 62
       Height = 14
       Caption = 'position: 0 %'
     end
-    object Label10: TLabel
+    object LbWavPlayMode: TLabel
       Left = 8
       Top = 245
       Width = 141
@@ -237,43 +237,43 @@ object Player: TPlayer
       TabOrder = 0
       OnDblClick = WavBoxDblClick
     end
-    object Button5: TButton
+    object BtWavAdd: TButton
       Left = 8
       Top = 192
       Width = 49
       Height = 17
       Caption = 'add'
       TabOrder = 1
-      OnClick = Button5Click
+      OnClick = BtWavAddClick
     end
-    object Button6: TButton
+    object BtWavRemove: TButton
       Left = 64
       Top = 192
       Width = 49
       Height = 17
       Caption = 'remove'
       TabOrder = 2
-      OnClick = Button6Click
+      OnClick = BtWavRemoveClick
     end
-    object Button7: TButton
+    object BtWavStop: TButton
       Left = 64
       Top = 216
       Width = 49
       Height = 17
       Caption = 'stop'
       TabOrder = 3
-      OnClick = Button7Click
+      OnClick = BtWavStopClick
     end
-    object Button8: TButton
+    object BtWavPlay: TButton
       Left = 8
       Top = 216
       Width = 49
       Height = 17
       Caption = 'play'
       TabOrder = 4
-      OnClick = Button8Click
+      OnClick = BtWavPlayClick
     end
-    object mode2: TComboBox
+    object CBWavPlayMode: TComboBox
       Left = 8
       Top = 261
       Width = 140
@@ -294,14 +294,14 @@ object Player: TPlayer
       ParentFont = False
       TabOrder = 5
       Text = 'play same file again'
-      OnChange = mode2Change
+      OnChange = CBWavPlayModeChange
       Items.Strings = (
         'stop playback'
         'play same file again'
         'play next file in list'
         'play random file in list')
     end
-    object s_pitch: TScrollBar
+    object SbPitch: TScrollBar
       Left = 8
       Top = 344
       Width = 177
@@ -311,33 +311,33 @@ object Player: TPlayer
       PageSize = 0
       Position = 170
       TabOrder = 6
-      OnChange = s_pitchChange
+      OnChange = SbPitchChange
     end
-    object s_pos2: TScrollBar
+    object SbWavPosition: TScrollBar
       Left = 8
       Top = 384
       Width = 177
       Height = 16
       PageSize = 0
       TabOrder = 7
-      OnChange = s_pos2Change
+      OnChange = SbWavPositionChange
     end
   end
-  object GroupBox2: TGroupBox
+  object GbWavRecorder: TGroupBox
     Left = 7
     Top = 418
     Width = 410
     Height = 105
     Caption = ' WAV Recorder '
     TabOrder = 2
-    object Label8: TLabel
+    object LbCurrentRecordFile: TLabel
       Left = 8
       Top = 48
       Width = 138
       Height = 14
       Caption = 'current file (click to change):'
     end
-    object wavfile: TLabel
+    object LbRecordFile: TLabel
       Left = 8
       Top = 62
       Width = 36
@@ -345,43 +345,43 @@ object Player: TPlayer
       Cursor = crHandPoint
       Caption = '<none>'
       Transparent = True
-      OnClick = wavfileClick
+      OnClick = LbRecordFileClick
     end
-    object rstatus: TLabel
+    object LbStatus: TLabel
       Left = 8
       Top = 80
       Width = 75
       Height = 14
       Caption = 'status: stopped'
     end
-    object Button10: TButton
+    object BtWavPause: TButton
       Left = 64
       Top = 24
       Width = 49
       Height = 17
       Caption = 'pause'
       TabOrder = 0
-      OnClick = Button10Click
+      OnClick = BtWavPauseClick
     end
-    object Button11: TButton
+    object BtWavStopRec: TButton
       Left = 120
       Top = 24
       Width = 49
       Height = 17
       Caption = 'stop'
       TabOrder = 1
-      OnClick = Button11Click
+      OnClick = BtWavStopRecClick
     end
-    object Button12: TButton
+    object BtWavRecord: TButton
       Left = 8
       Top = 24
       Width = 49
       Height = 17
       Caption = 'record'
       TabOrder = 2
-      OnClick = Button12Click
+      OnClick = BtWavRecordClick
     end
-    object recinmono: TCheckBox
+    object CbRecInMono: TCheckBox
       Left = 185
       Top = 24
       Width = 96
@@ -389,7 +389,7 @@ object Player: TPlayer
       Caption = 'record in mono'
       TabOrder = 3
     end
-    object rformat: TComboBox
+    object CbRecordFormat: TComboBox
       Left = 304
       Top = 22
       Width = 89

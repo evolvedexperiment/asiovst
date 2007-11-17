@@ -11,26 +11,26 @@ uses
   Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls;
 
 type
-  TAbout = class(TForm)
-    Button1: TButton;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    Label11: TLabel;
-    procedure Label4Click(Sender: TObject);
-    procedure Label3Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+  TFmAbout = class(TForm)
+    BtOK: TButton;
+    LbTitle: TLabel;
+    LbCopyright: TLabel;
+    LbMail: TLabel;
+    LbWeb: TLabel;
+    LbDonate: TLabel;
+    Lbml: TLabel;
+    LbTrademarks: TLabel;
+    LbHours: TLabel;
+    LbReadManual: TLabel;
+    LbWb: TLabel;
+    procedure LbWebClick(Sender: TObject);
+    procedure LbMailClick(Sender: TObject);
+    procedure BtOKClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure Label5Click(Sender: TObject);
+    procedure LbDonateClick(Sender: TObject);
   end;
 
-var About: TAbout;
+var FmAbout: TFmAbout;
 
 implementation
 
@@ -40,7 +40,7 @@ implementation
 
 uses ShellAPI, MiniHostForm;
 
-procedure TAbout.Label4Click(Sender: TObject);
+procedure TFmAbout.LbWebClick(Sender: TObject);
 begin
 {$IFNDEF FPC}
  ShellExecute(GetDesktopWindow(), 'open',
@@ -48,7 +48,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TAbout.Label3Click(Sender: TObject);
+procedure TFmAbout.LbMailClick(Sender: TObject);
 begin
 {$IFNDEF FPC}
  ShellExecute(GetDesktopWindow(), 'open',
@@ -56,17 +56,17 @@ begin
 {$ENDIF}
 end;
 
-procedure TAbout.Button1Click(Sender: TObject);
+procedure TFmAbout.BtOKClick(Sender: TObject);
 begin
  close;
 end;
 
-procedure TAbout.FormShow(Sender: TObject);
+procedure TFmAbout.FormShow(Sender: TObject);
 begin
- Label1.caption := 'Tobybear ' + appname + ' ' + appversion;
+ LbTitle.caption := 'Tobybear ' + appname + ' ' + appversion;
 end;
 
-procedure TAbout.Label5Click(Sender: TObject);
+procedure TFmAbout.LbDonateClick(Sender: TObject);
 begin
  {$IFNDEF FPC}
  ShellExecute(GetDesktopWindow(), 'open',

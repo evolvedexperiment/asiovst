@@ -3,10 +3,9 @@ program MiniHost;
 uses
   Forms,
   MiniHostForm in 'MiniHostForm.pas' {FmMiniHost},
-  OptionsForm in 'OptionsForm.pas' {Options},
-  Windows, Dialogs, OpenASIO,
-  aboutform in 'aboutform.pas' {about},
-  PlayerForm in 'PlayerForm.pas' {Player};
+  OptionsForm in 'OptionsForm.pas' {FmOptions},
+  PlayerForm in 'PlayerForm.pas' {Player},
+  AboutForm in 'aboutform.pas' {FmAbout};
 
 {$R *.RES}
 begin

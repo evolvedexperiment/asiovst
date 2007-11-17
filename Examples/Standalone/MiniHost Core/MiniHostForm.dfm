@@ -5,7 +5,7 @@ object FmMiniHost: TFmMiniHost
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Tobybear MiniHost (www.tobybear.de)'
-  ClientHeight = 340
+  ClientHeight = 378
   ClientWidth = 560
   Color = 11053224
   TransparentColorValue = clMaroon
@@ -15,7 +15,7 @@ object FmMiniHost: TFmMiniHost
   Font.Name = 'Arial'
   Font.Style = []
   KeyPreview = True
-  Menu = MainMenu1
+  Menu = MainMenu
   OldCreateOrder = False
   Position = poScreenCenter
   Scaled = False
@@ -28,7 +28,7 @@ object FmMiniHost: TFmMiniHost
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 14
-  object status: TPanel
+  object PnStatus: TPanel
     Left = 0
     Top = 0
     Width = 560
@@ -55,7 +55,7 @@ object FmMiniHost: TFmMiniHost
       Brush.Color = 11053224
       Pen.Style = psClear
     end
-    object bg: TImage
+    object ToolBarBackground: TImage
       Left = 0
       Top = 0
       Width = 560
@@ -1746,8 +1746,9 @@ object FmMiniHost: TFmMiniHost
         A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8
         A8A8}
       Transparent = True
+      ExplicitTop = -3
     end
-    object onoff: TImage
+    object IOnOff: TImage
       Left = 5
       Top = 5
       Width = 22
@@ -1756,9 +1757,9 @@ object FmMiniHost: TFmMiniHost
       Hint = 'enable/disable processing'
       ParentShowHint = False
       ShowHint = True
-      OnMouseUp = onoffMouseUp
+      OnMouseUp = IOnOffMouseUp
     end
-    object quicksettings: TImage
+    object IQuickSettings: TImage
       Left = 306
       Top = 5
       Width = 22
@@ -1767,9 +1768,9 @@ object FmMiniHost: TFmMiniHost
       Hint = 'show/hide settings'
       ParentShowHint = False
       ShowHint = True
-      OnMouseUp = quicksettingsMouseUp
+      OnMouseUp = IQuickSettingsMouseUp
     end
-    object quickmidplay: TImage
+    object IQuickMidPlay: TImage
       Left = 333
       Top = 5
       Width = 22
@@ -1779,9 +1780,9 @@ object FmMiniHost: TFmMiniHost
       ParentShowHint = False
       ShowHint = True
       OnMouseDown = bord2MouseDown
-      OnMouseUp = quickmidplayMouseUp
+      OnMouseUp = IQuickMidPlayMouseUp
     end
-    object quickwavplay: TImage
+    object IQuickWavPlay: TImage
       Left = 360
       Top = 5
       Width = 22
@@ -1791,9 +1792,9 @@ object FmMiniHost: TFmMiniHost
       ParentShowHint = False
       ShowHint = True
       OnMouseDown = bord2MouseDown
-      OnMouseUp = quickwavplayMouseUp
+      OnMouseUp = IQuickWavPlayMouseUp
     end
-    object quickwavrec: TImage
+    object IQuickWavRec: TImage
       Left = 387
       Top = 5
       Width = 22
@@ -1803,7 +1804,7 @@ object FmMiniHost: TFmMiniHost
       ParentShowHint = False
       ShowHint = True
       OnMouseDown = bord2MouseDown
-      OnMouseUp = quickwavrecMouseUp
+      OnMouseUp = IQuickWavRecMouseUp
     end
     object bord0: TImage
       Left = 3
@@ -1880,7 +1881,7 @@ object FmMiniHost: TFmMiniHost
         B6717CB6717CB6717CB6717CB6717CB6717CB6717CB6717CB600}
       ShowHint = True
       Transparent = True
-      OnMouseUp = onoffMouseUp
+      OnMouseUp = IOnOffMouseUp
     end
     object bord2: TImage
       Left = 331
@@ -1893,7 +1894,7 @@ object FmMiniHost: TFmMiniHost
       ShowHint = True
       Transparent = True
       OnMouseDown = bord2MouseDown
-      OnMouseUp = quickmidplayMouseUp
+      OnMouseUp = IQuickMidPlayMouseUp
     end
     object bord3: TImage
       Left = 358
@@ -1906,7 +1907,7 @@ object FmMiniHost: TFmMiniHost
       ShowHint = True
       Transparent = True
       OnMouseDown = bord2MouseDown
-      OnMouseUp = quickwavplayMouseUp
+      OnMouseUp = IQuickWavPlayMouseUp
     end
     object bord4: TImage
       Left = 385
@@ -1919,7 +1920,7 @@ object FmMiniHost: TFmMiniHost
       ShowHint = True
       Transparent = True
       OnMouseDown = bord2MouseDown
-      OnMouseUp = quickwavrecMouseUp
+      OnMouseUp = IQuickWavRecMouseUp
     end
     object bord1: TImage
       Left = 304
@@ -1931,9 +1932,9 @@ object FmMiniHost: TFmMiniHost
       ParentShowHint = False
       ShowHint = True
       Transparent = True
-      OnMouseUp = quicksettingsMouseUp
+      OnMouseUp = IQuickSettingsMouseUp
     end
-    object prbox: TComboBox
+    object PresetBox: TComboBox
       Left = 101
       Top = 5
       Width = 193
@@ -1958,10 +1959,10 @@ object FmMiniHost: TFmMiniHost
       ParentFont = False
       TabOrder = 0
       Text = 'presets'
-      OnChange = prboxChange
-      OnClick = prboxClick
-      OnDrawItem = prboxDrawItem
-      OnKeyPress = prboxKeyPress
+      OnChange = PresetBoxChange
+      OnClick = PresetBoxClick
+      OnDrawItem = PresetBoxDrawItem
+      OnKeyPress = PresetBoxKeyPress
       Items.Strings = (
         'presets')
     end
@@ -1974,7 +1975,7 @@ object FmMiniHost: TFmMiniHost
     BevelOuter = bvNone
     ParentColor = True
     TabOrder = 1
-    object dropdown: TImage
+    object IBtDropDown: TImage
       Left = 0
       Top = 0
       Width = 22
@@ -2037,15 +2038,15 @@ object FmMiniHost: TFmMiniHost
         7373737373737373737373737373737373737373737373737373737373737373
         0000}
       Transparent = True
-      OnMouseDown = dropdownMouseDown
+      OnMouseDown = IBtDropDownMouseDown
     end
-    object Image2: TImage
+    object IBtLeftRight: TImage
       Left = 0
       Top = 0
       Width = 22
       Height = 11
       Cursor = crHandPoint
-      OnMouseUp = Image2MouseUp
+      OnMouseUp = IBtLeftRightMouseUp
     end
   end
   object VSTHost: TVstHost
@@ -2071,147 +2072,148 @@ object FmMiniHost: TFmMiniHost
     Left = 88
     Top = 72
   end
-  object MainMenu1: TMainMenu
+  object MainMenu: TMainMenu
     AutoHotkeys = maManual
     Left = 152
     Top = 72
-    object Main1: TMenuItem
+    object MIMain: TMenuItem
       Caption = 'Main'
-      object Settings1: TMenuItem
+      object MISettings: TMenuItem
         Caption = 'Show Settings Window ...'
-        OnClick = Settings1Click
+        ShortCut = 113
+        OnClick = MISettingsClick
       end
-      object ShowMIDIWAVPlayerrecorderWindow1: TMenuItem
+      object MIShowMIDIWAVWindow: TMenuItem
         Caption = 'Show MIDI/WAV Window ...'
-        OnClick = ShowMIDIWAVPlayerrecorderWindow1Click
+        OnClick = MIShowMIDIWAVWindowClick
       end
-      object N15: TMenuItem
+      object N1: TMenuItem
         Caption = '-'
       end
-      object Alwaysontop1: TMenuItem
+      object MIAlwaysOnTop: TMenuItem
         Caption = 'Always on top'
-        OnClick = Alwaysontop1Click
+        OnClick = MIAlwaysOnTopClick
       end
-      object N16: TMenuItem
+      object N2: TMenuItem
         Caption = '-'
       end
-      object Exit1: TMenuItem
+      object MIExit: TMenuItem
         Caption = 'Exit'
-        OnClick = Exit1Click
+        OnClick = MIExitClick
       end
     end
-    object ASIO1: TMenuItem
+    object MIASIO: TMenuItem
       Caption = 'ASIO'
-      object Driver1: TMenuItem
+      object MIAsioDriver: TMenuItem
         Caption = 'Driver'
       end
-      object ControlPanel1: TMenuItem
+      object MIASIOControlPanel: TMenuItem
         Caption = 'Show Control Panel ...'
-        OnClick = ControlPanel1Click
+        OnClick = MIASIOControlPanelClick
       end
-      object OutputChannel1: TMenuItem
+      object MIASIOOutputChannel: TMenuItem
         Caption = 'Output Channels'
       end
-      object InputChannel1: TMenuItem
+      object MIASIOInputChannel: TMenuItem
         Caption = 'Input Channels'
       end
     end
-    object VST1: TMenuItem
+    object MIVST: TMenuItem
       Caption = 'VST'
-      object LoadPlugin1: TMenuItem
+      object MIVSTLoadPlugin: TMenuItem
         Caption = 'Load VST Plugin ...'
-        OnClick = LoadPlugin1Click
+        OnClick = MIVSTLoadPluginClick
       end
-      object ClosePlugin1: TMenuItem
+      object MIVSTClosePlugin: TMenuItem
         Caption = 'Close Plugin'
-        OnClick = ClosePlugin1Click
+        OnClick = MIVSTClosePluginClick
       end
-      object N14: TMenuItem
+      object N3: TMenuItem
         Caption = '-'
       end
-      object DownmixtoStereo1: TMenuItem
+      object MIDownMixToStereo: TMenuItem
         Caption = 'Downmix to Stereo'
-        OnClick = DownmixtoStereo1Click
+        OnClick = MIDownMixToStereoClick
       end
-      object MidiThru1: TMenuItem
+      object MIMidiThru: TMenuItem
         Caption = 'MIDI Thru'
-        OnClick = MidiThru1Click
+        OnClick = MIMidiThruClick
       end
     end
-    object MIDI1: TMenuItem
+    object MIMIDI: TMenuItem
       Caption = 'MIDI'
-      object MIDIIn1: TMenuItem
+      object MIMIDIIn: TMenuItem
         Caption = 'MIDI In'
       end
-      object MIDIOut1: TMenuItem
+      object MIMIDIOut: TMenuItem
         Caption = 'MIDI Out'
       end
       object N4: TMenuItem
         Caption = '-'
       end
-      object Panic1: TMenuItem
+      object MIPanic: TMenuItem
         Caption = 'Panic!'
         ShortCut = 122
-        OnClick = Panic1Click
+        OnClick = MIPanicClick
       end
     end
-    object Preset1: TMenuItem
+    object MIPreset: TMenuItem
       Caption = 'Presets'
-      object LoadPresetfxp1: TMenuItem
+      object MILoadPreset: TMenuItem
         Caption = 'Load Preset (*.fxp) ...'
         Enabled = False
-        OnClick = LoadPresetFXP1Click
+        OnClick = MILoadPresetClick
       end
-      object LoadBankfxb1: TMenuItem
+      object MILoadBank: TMenuItem
         Caption = 'Load Bank (*.fxb) ...'
         Enabled = False
-        OnClick = LoadBankfxb1Click
+        OnClick = MILoadBankClick
       end
-      object SavePresetfxp1: TMenuItem
+      object MISavePreset: TMenuItem
         Caption = 'Save Preset (*.fxp) ...'
         Enabled = False
-        OnClick = SavePresetfxp1Click
+        OnClick = MISavePresetClick
       end
-      object SaveBankfxb1: TMenuItem
+      object MISaveBank: TMenuItem
         Caption = 'Save Bank (*.fxb) ...'
         Enabled = False
-        OnClick = SaveBankfxb1Click
+        OnClick = MISaveBankClick
       end
-      object N2: TMenuItem
+      object N5: TMenuItem
         Caption = '-'
       end
-      object RenamePreset1: TMenuItem
+      object MIRenamePreset: TMenuItem
         Caption = 'Rename Preset'
         Enabled = False
-        OnClick = RenamePreset1Click
+        OnClick = MIRenamePresetClick
       end
       object N6: TMenuItem
         Caption = '-'
       end
-      object showpr: TMenuItem
+      object MIShowPreset: TMenuItem
         Caption = 'Show Preset in Title Bar'
         Checked = True
-        OnClick = showprClick
+        OnClick = MIShowPresetClick
       end
-      object UseMouseWheel1: TMenuItem
+      object MIUseMouseWheel: TMenuItem
         Caption = 'Use Mouse Wheel'
         Checked = True
-        OnClick = UseMouseWheel1Click
+        OnClick = MIUseMouseWheelClick
       end
     end
-    object Help1: TMenuItem
+    object MIHelp: TMenuItem
       Tag = -7
       Caption = 'Help'
-      object About1: TMenuItem
+      object MIAbout: TMenuItem
         Caption = 'About'
-        OnClick = About1Click
+        OnClick = MIAboutClick
       end
     end
   end
-  object Timer1: TTimer
+  object WaveTimer: TTimer
     Enabled = False
     Interval = 300
-    OnTimer = Timer1Timer
+    OnTimer = WaveTimerTimer
     Left = 24
     Top = 72
   end

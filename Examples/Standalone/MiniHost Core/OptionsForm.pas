@@ -7,42 +7,42 @@ unit OptionsForm;
 interface
 
 uses
-  {$IFDEF FPC}LCLIntf,  LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
-  DVSTEffect, MiniHostForm, DASIOHost, ASIO;
+  {$IFDEF FPC}LCLIntf,  LResources, Buttons, LMessages,{$ELSE} Windows,
+  Messages,{$ENDIF} Classes, Controls, Forms, StdCtrls, MiniHostForm;
 
 type
-  TOptions = class(TForm)
-    GroupBox1: TGroupBox;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    GroupBox2: TGroupBox;
-    Label6: TLabel;
-    Label5: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    Button1: TButton;
-    Info: TMemo;
-    Label11: TLabel;
-    Label12: TLabel;
-    ScrollBar3: TScrollBar;
-    ScrollBar1: TScrollBar;
-    ScrollBar5: TScrollBar;
-    ScrollBar6: TScrollBar;
-    ScrollBar2: TScrollBar;
+  TFmOptions = class(TForm)
+    GbASIO: TGroupBox;
+    GbGlobalSetting: TGroupBox;
+    LbASIODriver: TLabel;
+    LbOutputs: TLabel;
+    LbBufferSize: TLabel;
+    LbSampleRate: TLabel;
+    LbOverallVolume: TLabel;
+    LbWavVolume: TLabel;
+    LbTempo: TLabel;
+    LbInputs: TLabel;
+    LbFormat: TLabel;
+    LbInputVolume: TLabel;
+    LbVSTVolume: TLabel;
+    BtInfo: TButton;
+    MemoInfo: TMemo;
+    SbTempo: TScrollBar;
+    SbWavVolume: TScrollBar;
+    SbInputVolume: TScrollBar;
+    SbVSTVolume: TScrollBar;
+    SbOverallVolume: TScrollBar;
     procedure FormCreate(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure BtInfoClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure ScrollBar3Change(Sender: TObject);
+    procedure SbTempoChange(Sender: TObject);
   public
     Host: TFmMiniHost;
     procedure FillInfo;
   end;
 
-var Options: TOptions;
+var
+  FmOptions: TFmOptions;
 
 implementation
 
@@ -50,98 +50,90 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-{uses DVstHost;}
+uses SysUtils, DVSTEffect, DASIOHost, ASIO;
 
-procedure TOptions.FormCreate(Sender: TObject);
+procedure TFmOptions.FormCreate(Sender: TObject);
 begin
- Info.left := 8;
+ MemoInfo.left := 8;
 end;
 
-procedure TOptions.FillInfo;
+procedure TFmOptions.FillInfo;
 var o, i: integer;
     s: TStrings;
-    b: boolean;
 begin
  Host.StopAudio;
- Info.clear;
- with host.ASIOHost do
- begin
-  o := DriverIndex;
-  s := host.ASIOHost.DriverList;
-  Info.Lines.Add('number of ASIO drivers: '+IntToStr(s.Count));
-  Info.Lines.Add('');
-  for i := 0 to s.Count - 1 do
+ with Host.ASIOHost, MemoInfo do
   begin
-   DriverIndex := i;
-   Info.lines.Add('driver #' + IntToStr(i) + ': ');
-   Info.Lines.Add('name: ' + DriverName);
-   Info.Lines.Add('version: ' + IntToStr(DriverVersion));
-   Info.Lines.Add('input channels: ' + IntToStr(InputChannelCount));
-   Info.Lines.Add('output channels: ' + IntToStr(OutputChannelCount));
-   Info.Lines.Add('input format: ' +
-    ChannelTypeToString(InputChannelInfos[0].vType) +
-    ' (' + IntToStr(InputChannelInfos[0].vType) + ')');
-   Info.Lines.Add('output format: ' +
-    ChannelTypeToString(OutputChannelInfos[0].vType) +
-    ' (' + IntToStr(OutputChannelInfos[0].vType) + ')');
-   Info.Lines.Add('input latency: ' + IntToStr(InputLatency));
-   Info.Lines.Add('output latency: ' + IntToStr(OutputLatency));
-   Info.Lines.Add('buffer size: ' + IntToStr(BufferSize));
-   Info.Lines.Add('min size: ' + IntToStr(BufferMinimum));
-   Info.Lines.Add('max size: ' + IntToStr(BufferMaximum));
-   Info.Lines.Add('pref size: ' + IntToStr(BufferPreferredSize));
-   Info.Lines.Add('granularity: ' + IntToStr(BufferGranularity));
-   Info.Lines.Add('samplerate: ' + FloatToStr(samplerate));
-   b := canSamplerate(8000) = ASE_OK;
-   Info.Lines.Add('samplerate 8000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := canSamplerate(16000) = ASE_OK;
-   Info.Lines.Add('samplerate 16000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := canSamplerate(22050) = ASE_OK;
-   Info.Lines.Add('samplerate 22050 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := canSamplerate(32000) = ASE_OK;
-   Info.Lines.Add('samplerate 32000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := canSamplerate(44100) = ASE_OK;
-   Info.Lines.Add('samplerate 44100 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := canSamplerate(48000) = ASE_OK;
-   Info.Lines.Add('samplerate 48000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := canSamplerate(96000) = ASE_OK;
-   Info.Lines.Add('samplerate 96000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   b := canSamplerate(192000) = ASE_OK;
-   Info.Lines.Add('samplerate 192000 Hz possible: ' + booltostr(b{$IFNDEF FPC}, true{$ENDIF}));
-   Info.Lines.Add('');
+   Clear;
+   o := DriverIndex;
+   s := host.ASIOHost.DriverList;
+   Lines.Add('number of ASIO drivers: '+IntToStr(s.Count));
+   Lines.Add('');
+   for i := 0 to s.Count - 1 do
+    with Lines do
+     begin
+      DriverIndex := i;
+      Add('driver #' + IntToStr(i) + ': ');
+      Add('name: ' + DriverName);
+      Add('version: ' + IntToStr(DriverVersion));
+      Add('input channels: ' + IntToStr(InputChannelCount));
+      Add('output channels: ' + IntToStr(OutputChannelCount));
+      Add('input format: ' +
+        ChannelTypeToString(InputChannelInfos[0].vType) +
+        ' (' + IntToStr(InputChannelInfos[0].vType) + ')');
+      Add('output format: ' +
+        ChannelTypeToString(OutputChannelInfos[0].vType) +
+        ' (' + IntToStr(OutputChannelInfos[0].vType) + ')');
+      Add('input latency: '  + IntToStr(InputLatency));
+      Add('output latency: ' + IntToStr(OutputLatency));
+      Add('buffer size: ' + IntToStr(BufferSize));
+      Add('min size: '    + IntToStr(BufferMinimum));
+      Add('max size: '    + IntToStr(BufferMaximum));
+      Add('pref size: '   + IntToStr(BufferPreferredSize));
+      Add('granularity: ' + IntToStr(BufferGranularity));
+      Add('samplerate: '  + FloatToStr(SampleRate));
+      Add('samplerate 8000 Hz possible: '   + BoolToStr(canSamplerate(  8000) = ASE_OK{$IFNDEF FPC}, True{$ENDIF}));
+      Add('samplerate 16000 Hz possible: '  + BoolToStr(canSamplerate( 16000) = ASE_OK{$IFNDEF FPC}, True{$ENDIF}));
+      Add('samplerate 22050 Hz possible: '  + BoolToStr(canSamplerate( 22050) = ASE_OK{$IFNDEF FPC}, True{$ENDIF}));
+      Add('samplerate 32000 Hz possible: '  + BoolToStr(canSamplerate( 32000) = ASE_OK{$IFNDEF FPC}, True{$ENDIF}));
+      Add('samplerate 44100 Hz possible: '  + BoolToStr(canSamplerate( 44100) = ASE_OK{$IFNDEF FPC}, True{$ENDIF}));
+      Add('samplerate 48000 Hz possible: '  + BoolToStr(canSamplerate( 48000) = ASE_OK{$IFNDEF FPC}, True{$ENDIF}));
+      Add('samplerate 96000 Hz possible: '  + BoolToStr(canSamplerate( 96000) = ASE_OK{$IFNDEF FPC}, True{$ENDIF}));
+      Add('samplerate 192000 Hz possible: ' + BoolToStr(canSamplerate(192000) = ASE_OK{$IFNDEF FPC}, True{$ENDIF}));
+      Add('');
+     end;
+   DriverIndex := o;
+   Host.StartAudio;
   end;
-  DriverIndex := o;
-  Host.StartAudio;
- end;
 end;
 
-procedure TOptions.Button1Click(Sender: TObject);
+procedure TFmOptions.BtInfoClick(Sender: TObject);
 begin
- Info.Visible := not Info.Visible;
- if (Info.Lines.Count = 0) and (Info.Visible)
+ MemoInfo.Visible := not MemoInfo.Visible;
+ if (MemoInfo.Lines.Count = 0) and (MemoInfo.Visible)
   then FillInfo;
 end;
 
-procedure TOptions.FormShow(Sender: TObject);
+procedure TFmOptions.FormShow(Sender: TObject);
 begin
- Groupbox2.SetFocus;
+ GbGlobalSetting.SetFocus;
 end;
 
-procedure TOptions.ScrollBar3Change(Sender: TObject);
+procedure TFmOptions.SbTempoChange(Sender: TObject);
 begin
- if not assigned(Host) then exit;
- Host.OverallVol := Scrollbar2.position * 0.01;
- Label6.caption := 'Overall Volume: ' + IntToStr(Scrollbar2.position);
- Host.VSTVol := Scrollbar6.position * 0.01;
- if effFlagsIsSynth in Host.VSTHost.VSTPlugIns[0].EffectOptions
-  then label12.caption := 'VST Volume: ' + IntToStr(Scrollbar6.position)
-  else label12.caption := 'VST Dry/Wet Mix: ' + IntToStr(Scrollbar6.position);
- Host.InputVol := Scrollbar5.position * 0.01;
- Label11.caption := 'Input Volume: ' + IntToStr(Scrollbar5.position);
- Host.Wavefile.Vol := scrollbar1.position * 0.01;
- Label5.caption := 'WAV Volume: ' + IntToStr(Scrollbar1.position);
- Host.VSTHost.Tempo := Scrollbar3.position;
- Label7.caption := 'Tempo: ' + IntToStr(Scrollbar3.position)+' bpm';
+ if not Assigned(Host) then exit;
+ Host.OverallVolume := SbOverallVolume.Position * 0.01;
+ LbOverallVolume.caption := 'Overall Volume: ' + IntToStr(SbOverallVolume.Position);
+ Host.VSTVol := SbVSTVolume.Position * 0.01;
+ if effFlagsIsSynth in Host.VSTHost[0].EffectOptions
+  then LbVSTVolume.caption := 'VST Volume: ' + IntToStr(SbVSTVolume.Position)
+  else LbVSTVolume.caption := 'VST Dry/Wet Mix: ' + IntToStr(SbVSTVolume.Position);
+ Host.InputVol := SbInputVolume.Position * 0.01;
+ LbInputVolume.caption := 'Input Volume: ' + IntToStr(SbInputVolume.Position);
+ Host.Wavefile.Volume := SbWavVolume.Position * 0.01;
+ LbWavVolume.caption := 'WAV Volume: ' + IntToStr(SbWavVolume.Position);
+ Host.VSTHost.Tempo := SbTempo.Position;
+ LbTempo.caption := 'Tempo: ' + IntToStr(SbTempo.Position)+' bpm';
 end;
 
 {$IFDEF FPC}

@@ -1,4 +1,4 @@
-object about: Tabout
+object FmAbout: TFmAbout
   Left = 370
   Top = 241
   BorderIcons = []
@@ -17,7 +17,7 @@ object about: Tabout
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 14
-  object Label1: TLabel
+  object LbTitle: TLabel
     Left = 48
     Top = 16
     Width = 121
@@ -30,7 +30,7 @@ object about: Tabout
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object Label2: TLabel
+  object LbCopyright: TLabel
     Left = 15
     Top = 184
     Width = 189
@@ -40,7 +40,7 @@ object about: Tabout
       '(C)opyright in 2004 by Tobias Fleischer'#13#10'based on the Delphi VST' +
       ' and ASIO '#13#10'host code by Christian Budde'
   end
-  object Label3: TLabel
+  object LbMail: TLabel
     Left = 40
     Top = 160
     Width = 101
@@ -53,9 +53,9 @@ object about: Tabout
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
-    OnClick = Label3Click
+    OnClick = LbMailClick
   end
-  object Label4: TLabel
+  object LbWeb: TLabel
     Left = 40
     Top = 144
     Width = 130
@@ -68,9 +68,9 @@ object about: Tabout
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
-    OnClick = Label4Click
+    OnClick = LbWebClick
   end
-  object Label5: TLabel
+  object LbDonate: TLabel
     Left = 24
     Top = 120
     Width = 175
@@ -83,16 +83,16 @@ object about: Tabout
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     ParentFont = False
-    OnClick = Label5Click
+    OnClick = LbDonateClick
   end
-  object Label6: TLabel
+  object Lbml: TLabel
     Left = 8
     Top = 160
     Width = 27
     Height = 14
     Caption = 'email:'
   end
-  object Label7: TLabel
+  object LbTrademarks: TLabel
     Left = 40
     Top = 240
     Width = 150
@@ -100,7 +100,7 @@ object about: Tabout
     Alignment = taCenter
     Caption = 'VST and ASIO are registered '#13#10'trademarks by Steinberg GmbH'
   end
-  object Label8: TLabel
+  object LbHours: TLabel
     Left = 8
     Top = 64
     Width = 203
@@ -110,27 +110,27 @@ object about: Tabout
       'Countless hours of coding were needed'#13#10'to make this little appli' +
       'cation, so please '#13#10'donate some money if you use it regularly!'
   end
-  object Label9: TLabel
+  object LbReadManual: TLabel
     Left = 8
-    Top = 40
+    Top = 36
     Width = 203
     Height = 14
     Caption = 'Read the included manual for detailed help'
   end
-  object Label11: TLabel
+  object LbWb: TLabel
     Left = 8
     Top = 144
     Width = 25
     Height = 14
     Caption = 'web:'
   end
-  object Button1: TButton
+  object BtOK: TButton
     Left = 72
     Top = 280
     Width = 75
     Height = 25
     Caption = 'OK'
     TabOrder = 0
-    OnClick = Button1Click
+    OnClick = BtOKClick
   end
 end
