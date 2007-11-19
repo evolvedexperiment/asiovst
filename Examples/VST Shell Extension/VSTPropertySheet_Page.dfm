@@ -20,15 +20,19 @@ object FmPage: TFmPage
     400)
   PixelsPerInch = 96
   TextHeight = 13
-  object Memo: TMemo
+  object Memo: TListBox
     Left = 8
     Top = 8
     Width = 324
     Height = 177
+    AutoComplete = False
     Anchors = [akLeft, akTop, akRight, akBottom]
+    BevelInner = bvNone
+    BevelOuter = bvNone
     BorderStyle = bsNone
+    ExtendedSelect = False
+    ItemHeight = 13
     ParentColor = True
-    ReadOnly = True
     TabOrder = 0
   end
   object VstHost: TVstHost

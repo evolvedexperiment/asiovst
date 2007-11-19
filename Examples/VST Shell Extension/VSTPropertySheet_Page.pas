@@ -9,7 +9,7 @@ uses
 type
   TFmPage = class(TForm)
     VstHost: TVstHost;
-    Memo: TMemo;
+    Memo: TListBox;
     procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -57,7 +57,7 @@ begin
    try
     DLLFileName := FFileName;
     Active := True;
-    with Memo.Lines do
+    with Memo.Items do
      begin
       Add('Effect Name: ' + GetEffectName {+ 'Unique ID: ' + PVstEffect^.UniqueID + ', '});
       Add('Vendor: ' + VendorString + ', Product: ' + ProductString);
@@ -72,14 +72,16 @@ begin
         fm := TForm.Create(nil);
         with fm do
          try
-          EditOpen(Handle);
+          ShowEdit(fm);
           EditIdle; Idle;
+          Application.ProcessMessages;
           r := EditGetRect;
-          Width := r.Right - r.Left;
-          Height := r.Bottom - r.Top;
+          ClientWidth := r.Right - r.Left;
+          ClientHeight := r.Bottom - r.Top;
           FGUIBitmap.Width := Self.Width;
           FGUIBitmap.Height := (Height * FGUIBitmap.Width) div Width;
-          Sleep(100); Idle; EditIdle;
+          Visible := True;
+          Application.ProcessMessages;
           StretchBlt(FGUIBitmap.Canvas.Handle, 0, 0, FGUIBitmap.Width, FGUIBitmap.Height,
                      Canvas.Handle, r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top, cmSrcCopy);
          finally
@@ -90,7 +92,7 @@ begin
      end;
    finally
     if not Active
-     then Memo.Lines.Add('Error while loading');
+     then Memo.Items.Add('Error while loading');
     Active := False;
     UnLoad;
    end;

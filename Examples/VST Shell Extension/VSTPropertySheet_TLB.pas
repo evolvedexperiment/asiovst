@@ -12,10 +12,10 @@ unit VSTPropertySheet_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// Datei generiert am 07.09.2007 01:44:47 aus der unten beschriebenen Typbibliothek.
+// Datei generiert am 19.11.2007 02:10:43 aus der unten beschriebenen Typbibliothek.
 
 // ************************************************************************  //
-// Typbib: C:\ITA\Projects\VSTPack\Examples\VST Shell Extension\VSTPropertySheet.tlb (1)
+// Typbib: C:\Code\VSTPack\Examples\VST Shell Extension\VSTPropertySheet.tlb (1)
 // LIBID: {7AD849A6-7662-4436-B0F4-5B84E8825D33}
 // LCID: 0
 // Hilfedatei: 
