@@ -70,7 +70,7 @@ end;
 
 procedure TVSTModuleWithMidi.ProcessMidiEvent(MidiEvent: TVstMidiEvent);
 begin
-  fOnProcessMidi(Self, MidiEvent);
+  if Assigned(fOnProcessMidi) then fOnProcessMidi(Self, MidiEvent);
 end;
 
 function TVSTModuleWithMidi.HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
@@ -79,7 +79,7 @@ begin
   Result:= inherited HostCallProcessEvents(Index, Value, ptr, opt);
   for i := 0 to PVstEvents(ptr)^.numEvents - 1 do
     if (PVstEvents(ptr)^.events[i]^.EventType = etMidi) then
-      if Assigned(fOnProcessMidi) then ProcessMidiEvent(PVstMidiEvent(PVstEvents(ptr)^.events[i])^);
+      ProcessMidiEvent(PVstMidiEvent(PVstEvents(ptr)^.events[i])^);
 end;
 
 function TVSTModuleWithMidi.HostCallGetCurrentMidiProgram(Index, Value: Integer; ptr: pointer; opt: Single): Integer;

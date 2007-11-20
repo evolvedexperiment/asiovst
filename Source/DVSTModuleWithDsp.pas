@@ -23,6 +23,7 @@ type
     FOnProcess         : TProcessAudioEvent;
     FOnProcessReplacing: TProcessAudioEvent;
     FOnProcessDoubles  : TProcessDoubleEvent;
+    FDspDirectProcessItem: TAVDProcessingComponent;
 
     function IOChanged: Boolean; override;
     procedure SampleRateChanged; override;
@@ -51,6 +52,7 @@ type
     procedure PrepareBlockProcessing; virtual;
     procedure SetBlockForcedSize(v: Integer); virtual;
     procedure SetBlockOverlapSize(v: Integer); virtual;
+    procedure SetDspDirectProcessItem(v: TAVDProcessingComponent); virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -66,11 +68,13 @@ type
     property OnProcess: TProcessAudioEvent read FOnProcess write SetOnProcess;
     property OnProcessReplacing: TProcessAudioEvent read FOnProcessReplacing write SetOnProcessReplacing;
     property OnProcessDoubleReplacing: TProcessDoubleEvent read FOnProcessDoubles write SetOnProcessDoubleReplacing;
+  published
+    property DspDirectProcessItem: TAVDProcessingComponent read fDspDirectProcessItem write SetDspDirectProcessItem default nil;
   end;
 
 implementation
 
-uses Math,
+uses Math, SysUtils,
   {$IFDEF PUREPASCAL}DDAVDBufferMathPascal{$ELSE}DAVDBufferMathAsm{$ENDIF};
 
 constructor TDspVSTModule.Create(AOwner: TComponent);
@@ -79,6 +83,7 @@ begin
   FProcessingMode := pmNormal;      
   FBlockModeSize := 1024;  
   FBlockModeOverlap := 0;
+  FDspDirectProcessItem:=nil;
   FDspQueueList := TAVDProcessingComponentList.Create;
 end;
 
@@ -90,12 +95,16 @@ end;
 
 procedure TDspVSTModule.RegisterDSPItem(item: TAVDProcessingComponent);
 begin
- with FDspQueueList do
+  with FDspQueueList do
   begin
-   if IndexOf(item)<0 then Add(item);
-
-   Item.SampleRate:=FSampleRate;
-   Item.Channels:=max(FEffect.numInputs, FEffect.numOutputs);
+    if IndexOf(item)<0 then
+    begin
+      Add(item);
+      if (FProcessingMode = pmDspQueue) and not Assigned(FDspDirectProcessItem) then
+        FDspDirectProcessItem:=item;
+    end;
+    Item.SampleRate:=FSampleRate;
+    Item.Channels:=max(FEffect.numInputs, FEffect.numOutputs);
   end;
 end;
 
@@ -104,6 +113,12 @@ begin
  with FDspQueueList do
   if IndexOf(item)>=0
    then Remove(item);
+
+  if FDspDirectProcessItem=item then
+  begin
+    if FDspQueueList.Count>0 then FDspDirectProcessItem:=FDspQueueList.Items[0]
+    else FDspDirectProcessItem:=nil;
+  end;
 end;
 
 function TDspVSTModule.IOChanged: Boolean;
@@ -161,7 +176,7 @@ begin
 end;
 
 procedure TDspVSTModule.ProcessMidiEvent(MidiEvent: TVstMidiEvent);
-var tmp: TAVDMidiEvent;
+var tmp: TAVDMidiEvent; filter: boolean;
 begin
   with MidiEvent do
   begin
@@ -175,8 +190,10 @@ begin
     tmp.NoteOffVelocity := NoteOffVelocity;
   end;
 
-  FDspQueueList.ProcessMidiEvent(tmp);
-  inherited;
+  filter := false;
+  FDspQueueList.ProcessMidiEvent(tmp, filter);
+
+  if not filter then inherited;
 end;
 
 
@@ -253,7 +270,7 @@ begin
       for i := 0 to numInputs-1  do move(Inputs[i,CurrentPosition], fBlockInBuffer64[i,FBlockPosition],(FBlockModeSize-FBlockPosition) * Sizeof(Double));
       for i := 0 to numOutputs-1 do move(fBlockOutBuffer64[i,FBlockPosition], PDouble(@Outputs[i,CurrentPosition])^, (FBlockModeSize-FBlockPosition) * Sizeof(Double));
 
-// ToDo      FOnProcessDoubles(TAVDArrayOfDoubleDynArray(fBlockInBuffer64), TAVDArrayOfDoubleDynArray(fBlockOutBuffer64), FBlockModeSize);
+      FOnProcessDoubles(fBlockInBuffer64, fBlockOutBuffer64, FBlockModeSize);
 
       for i := 0 to numInputs - 1  do move(fBlockInBuffer64[i, (FBlockModeSize - FBlockModeOverlap)], fBlockInBuffer64[i,0], FBlockModeOverlap * Sizeof(Double));
 
@@ -310,7 +327,7 @@ begin
       for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], fBlockInBuffer64[i, FBlockPosition],(FBlockModeSize - FBlockPosition) * Sizeof(Double));
       for i := 0 to numOutputs - 1 do move(fBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Double));
 
-// ToDo      FOnProcessDoubles(TAVDArrayOfDoubleDynArray(fBlockInBuffer64), TAVDArrayOfDoubleDynArray(fBlockOutBuffer64), FBlockModeSize);
+      FOnProcessDoubles(fBlockInBuffer64, fBlockOutBuffer64, FBlockModeSize);
 
       for i := 0 to numInputs  - 1 do move(fBlockInBuffer64[i, (FBlockModeSize - FBlockModeOverlap)], fBlockInBuffer64[i, 0], FBlockModeOverlap * Sizeof(Double));
 
@@ -344,32 +361,27 @@ begin
 end;
 
 procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  ProcessBuffer : TAVDArrayOfSingleDynArray;
-  i             : Integer;
+var ProcessBuffer : TAVDArrayOfSingleDynArray;
+    i: Integer;
 begin
  SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
- for i := 0 to numInputs - 1
-  do Move(Inputs[i, 0], ProcessBuffer[i, 0], SampleFrames * SizeOf(Single));
- if FDspQueueList.Count > 0
-  then FDspQueueList.Items[0].ProcessQueueSAA(ProcessBuffer);
- for i := 0 to numOutputs - 1
-  do Move(ProcessBuffer[i, 0], Outputs[i, 0], SampleFrames * SizeOf(Single));
+ for i := 0 to numInputs - 1 do Move(Inputs[i, 0], ProcessBuffer[i, 0], SampleFrames * SizeOf(Single));
+  if assigned(FDspDirectProcessItem) then
+   FDspDirectProcessItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
+ for i := 0 to numOutputs - 1 do Move(ProcessBuffer[i, 0], Outputs[i, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
-var
-  ProcessBuffer : TAVDArrayOfDoubleDynArray;
-  i             : Integer;
+var ProcessBuffer : TAVDArrayOfDoubleDynArray;
+    i: Integer;
 begin
  SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
- for i := 0 to numInputs - 1
-  do Move(Inputs[i, 0], ProcessBuffer[i, 0], SampleFrames * SizeOf(Double));
- if FDspQueueList.Count > 0
-  then FDspQueueList.Items[0].ProcessQueueDAA(ProcessBuffer);
- for i := 0 to numOutputs - 1
-  do Move(ProcessBuffer[i, 0], Outputs[i, 0], SampleFrames * SizeOf(Double));
+ for i := 0 to numInputs - 1 do Move(Inputs[i, 0], ProcessBuffer[i, 0], SampleFrames * SizeOf(Double));
+ if assigned(FDspDirectProcessItem) then
+   FDspDirectProcessItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
+ for i := 0 to numOutputs - 1 do Move(ProcessBuffer[i, 0], Outputs[i, 0], SampleFrames * SizeOf(Double));
 end;
+
 
 procedure TDspVSTModule.SetOnProcess(v : TProcessAudioEvent);
 begin
@@ -460,6 +472,21 @@ begin
           FOnProcessDoublesEx := DoProcessDspQueue;
         end;
     end;
+  end;
+end;
+
+procedure TDspVSTModule.SetDspDirectProcessItem(v: TAVDProcessingComponent);
+begin
+  if v<>FDspDirectProcessItem then
+  begin
+    if v=nil then
+      FDspDirectProcessItem:=v
+    else if FDspQueueList.IndexOf(v)>=0 then
+    begin
+      FDspDirectProcessItem:=v;
+      SetProcessingMode(pmDspQueue);
+    end else
+      raise Exception.Create('DspDirectProcessItem has to be the first item of a queue');
   end;
 end;
 

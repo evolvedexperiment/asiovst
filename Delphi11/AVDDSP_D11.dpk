@@ -59,6 +59,8 @@ contains
   DDSPOscSquare in '..\Source\DDSPOscSquare.pas',
   DDSPOscNoise in '..\Source\DDSPOscNoise.pas',
   DDSPOscAbsSine in '..\Source\DDSPOscAbsSine.pas',
-  DDSPBaseOsc in '..\Source\DDSPBaseOsc.pas';
+  DDSPBaseOsc in '..\Source\DDSPBaseOsc.pas',
+  DDspVoiceController in '..\Source\DDspVoiceController.pas',
+  DDspVoiceList in '..\Source\DDspVoiceList.pas';
 
 end.

@@ -9,7 +9,7 @@ procedure Register;
 implementation
 
 {$IFNDEF FPC}{$R DDspRegister.res}{$ENDIF}
-uses Classes, DDspEnvelopeFollower, DDSPRemez, DDspFilter,
+uses Classes, DDspEnvelopeFollower, DDSPRemez, DDspFilter, DDspVoiceController,
   DDspOscSine, DDspOscSaw, DDspOscRamp, DDspOscSquare, DDspOscNoise, DDspOscAbsSine,
   ToolsAPI,
   {$IFDEF DELPHI6_UP}
@@ -30,6 +30,7 @@ begin
                                       TRemezBandstopFilterDesigner,
                                       TDspEnvelopeFollower,
                                       TDspLowpassFilter,
+                                      TDspVoiceController,
                                       TDspOscSine,
                                       TDspOscSaw,
                                       TDspOscRamp,

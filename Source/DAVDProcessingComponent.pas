@@ -7,10 +7,10 @@ uses Classes, DAVDCommon;
 type
   TDspBaseProcessFuncS   = procedure(var Data: Single; const channel: integer) of object;
   TDspBaseProcessFuncD   = procedure(var Data: Double; const channel: integer) of object;
-  TDspBaseProcessFuncSA  = procedure(var ProcessBuffer: TAVDSingleDynArray; const channel: integer) of object;
-  TDspBaseProcessFuncDA  = procedure(var ProcessBuffer: TAVDDoubleDynArray; const channel: integer) of object;
-  TDspBaseProcessFuncSAA = procedure(var ProcessBuffer: TAVDArrayOfSingleDynArray) of object;
-  TDspBaseProcessFuncDAA = procedure(var ProcessBuffer: TAVDArrayOfDoubleDynArray) of object;
+  TDspBaseProcessFuncSA  = procedure(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer) of object;
+  TDspBaseProcessFuncDA  = procedure(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer) of object;
+  TDspBaseProcessFuncSAA = procedure(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer) of object;
+  TDspBaseProcessFuncDAA = procedure(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer) of object;
 
   TAVDProcessingComponent = class(TComponent)
   protected
@@ -18,6 +18,8 @@ type
     fEnabled:    Boolean;
     fSampleRate: Single;
     fChannels:   Integer;
+
+    fTrailingSamples: Integer;
 
     fProcessS:   TDspBaseProcessFuncS;
     fProcessD:   TDspBaseProcessFuncD;
@@ -40,14 +42,19 @@ type
   public
     procedure Init; virtual; abstract;
     procedure Reset; virtual; abstract;
+    procedure ResetQueue; virtual; abstract;
 
     procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); virtual; abstract;
-    procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent); virtual; abstract;
+    procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); virtual; abstract;
+
+    function GetQueueTrailingSamples: integer; virtual; abstract;
 
     property Enabled: Boolean   read fEnabled    write SetEnabled    default true;
     property Bypass: Boolean    read fBypass     write SetBypass     default true;
     property Channels: Integer  read fChannels   write SetChannels   default 2;
     property SampleRate: Single read fSampleRate write SetSampleRate;    
+
+    property TrailingSamples: Integer read fTrailingSamples write fTrailingSamples default 0;
 
     property ProcessS:   TDspBaseProcessFuncS   read fProcessS;
     property ProcessD:   TDspBaseProcessFuncD   read fProcessD;
@@ -82,7 +89,7 @@ type
     procedure SetEnabled(Value: Boolean);
     procedure SetBypass(Value: Boolean);
 
-    procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent);
+    procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
 
     property Items[Index: Integer]: TAVDProcessingComponent read Get write Put;
   end;
@@ -164,11 +171,16 @@ begin
     Items[i].Bypass := Value;
 end;
 
-procedure TAVDProcessingComponentList.ProcessMidiEvent(MidiEvent: TAVDMidiEvent);
-var i: integer;
+procedure TAVDProcessingComponentList.ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+var i: integer; filter: boolean;
 begin
+  FilterEvent:=false;
   for i := Count-1 downto 0 do
-    Items[i].ProcessMidiEventQueue(MidiEvent);
+  begin
+    filter:=false;
+    Items[i].ProcessMidiEventQueue(MidiEvent, filter);
+    FilterEvent:=FilterEvent or filter;
+  end;
 end;
 
 end.

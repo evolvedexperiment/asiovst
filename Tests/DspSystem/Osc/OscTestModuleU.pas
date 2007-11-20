@@ -10,7 +10,7 @@ uses
 
 type
   TOscTestModule = class(TVSTModule)
-    DspOscSaw1: TDspOscSaw;
+    DspOscSine1: TDspOscSine;
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
   public

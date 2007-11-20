@@ -1,5 +1,6 @@
 object OscTestModule: TOscTestModule
   OldCreateOrder = False
+  DspDirectProcessItem = DspOscSine1
   Flags = [effFlagsHasEditor]
   Version = '0.0'
   EffectName = 'OscTest'
@@ -15,15 +16,15 @@ object OscTestModule: TOscTestModule
   Programs = <>
   ParameterProperties = <>
   OnEditOpen = VSTModuleEditOpen
-  Left = 192
-  Top = 114
+  Left = 233
+  Top = 112
   Height = 150
   Width = 215
-  object DspOscSaw1: TDspOscSaw
+  object DspOscSine1: TDspOscSine
     SampleRate = 44100.000000000000000000
     Amplitude = 1.000000000000000000
     Frequency = 440.000000000000000000
-    Left = 96
-    Top = 32
+    Left = 144
+    Top = 24
   end
 end

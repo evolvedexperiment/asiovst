@@ -47,7 +47,7 @@ implementation
 
 uses
   SysUtils,
-  DVSTModule, DVSTEffect, OpenToolsUtils;
+  DVSTCustomModule, DVSTModule, DVSTEffect, OpenToolsUtils;
 
 const
   CRLF               = #13#10;
@@ -81,6 +81,7 @@ begin
       NumInputs    := NUM_INPUTS_SYNTH;
       NumOutputs   := NUM_OUTPUTS_SYNTH;
       PlugCategory := vpcSynth;
+      CanDos := CanDos + [vcdReceiveVstEvents, vcdReceiveVstMidiEvent];
       Flags := Flags + [effFlagsIsSynth];
     end
     else

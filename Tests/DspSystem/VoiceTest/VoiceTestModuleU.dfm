@@ -1,22 +1,31 @@
 object VoiceTestModule: TVoiceTestModule
   OldCreateOrder = False
-  Flags = [effFlagsHasEditor, effFlagsIsSynth]
+  DspDirectProcessItem = DspVoiceController1
+  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
   Version = '0.0'
   EffectName = 'VoiceTest'
   ProductName = 'VoiceTest'
   VendorName = 'MyCo'
   PlugCategory = vpcSynth
-  CanDos = []
+  CanDos = [vcdSendVstEvents, vcdSendVstMidiEvent, vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  numInputs = 0
   CurrentProgram = -1
+  ProcessingMode = pmDspQueue
   UniqueID = 'Qxpl'
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <>
   OnEditOpen = VSTModuleEditOpen
-  Left = 422
-  Top = 113
+  Left = 470
+  Top = 116
   Height = 152
   Width = 215
+  object DspVoiceController1: TDspVoiceController
+    SampleRate = 44100.000000000000000000
+    MaxVoices = 1
+    LimitVoices = lvtKillOldest
+    OnCreateVoice = DspVoiceController1CreateVoice
+    Left = 24
+    Top = 8
+  end
 end
