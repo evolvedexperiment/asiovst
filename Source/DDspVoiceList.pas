@@ -105,7 +105,7 @@ begin
   Result:=nil;
 
   for i:=0 to Count-1 do
-    if (not OnlyNoteOnVoices or Items[i].IsVoiceOn) then
+    if (not OnlyNoteOnVoices or Items[i].IsVoiceNoteOn) then
     begin
       Result:=Items[i];
       exit;
@@ -117,7 +117,7 @@ var i: integer;
 begin
   Result:=nil;
   for i:=Count-1 downto 0 do
-    if (not OnlyNoteOnVoices or Items[i].IsVoiceOn) then
+    if (not OnlyNoteOnVoices or Items[i].IsVoiceNoteOn) then
     begin
       if Result=nil then Result:=Items[i]
       else if abs(Result.VoiceInfo.NoteNr-KeyNr)>abs(Items[i].VoiceInfo.NoteNr-KeyNr) then Result := Items[i];
@@ -129,7 +129,7 @@ var i: integer;
 begin
   Result:=nil;
   for i:=Count-1 downto 0 do
-    if (Items[i].VoiceInfo.NoteNr = KeyNr) and (not OnlyNoteOnVoices or Items[i].IsVoiceOn) then
+    if (Items[i].VoiceInfo.NoteNr = KeyNr) and (not OnlyNoteOnVoices or Items[i].IsVoiceNoteOn) then
     begin
       Result := Items[i];
       exit;
@@ -141,7 +141,7 @@ var i: integer;
 begin
   Result:=0;
   for i:=Count-1 downto 0 do
-    if Items[i].IsVoiceOn then inc(Result);
+    if Items[i].IsVoiceNoteOn then inc(Result);
 end;
 
 procedure TDspVoiceList.ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);

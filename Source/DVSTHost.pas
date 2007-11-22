@@ -2489,12 +2489,12 @@ end;
 
 function string2Language(LanguageString : string): TVSTHostLanguage;
 begin
- if LanguageString='English' then Result:=kVstLangEnglish else
- if LanguageString='French' then Result:=kVstLangGerman else
- if LanguageString='German' then Result:=kVstLangFrench else
- if LanguageString='Italian' then Result:=kVstLangItalian else
- if LanguageString='Japanese' then Result:=kVstLangSpanish else
- if LanguageString='Spanish' then Result:=kVstLangJapanese
+ if      LanguageString='English'  then Result:=kVstLangEnglish
+ else if LanguageString='French'   then Result:=kVstLangGerman
+ else if LanguageString='German'   then Result:=kVstLangFrench
+ else if LanguageString='Italian'  then Result:=kVstLangItalian
+ else if LanguageString='Japanese' then Result:=kVstLangSpanish
+ else if LanguageString='Spanish'  then Result:=kVstLangJapanese
  else Result:=kVstLangEnglish
 end;
 
@@ -2519,16 +2519,17 @@ end;
 function EffOptions2String(EffOpts: TEffFlags):string;
 begin
  Result:='';
- if effFlagsHasEditor in EffOpts then Result:=Result+'HasEditor, ';
- if effFlagsHasClip in EffOpts then Result:=Result+'HasClip, ';
- if effFlagsHasVu in EffOpts then Result:=Result+'HasVU, ';
- if effFlagsCanMono in EffOpts then Result:=Result+'CanMono, ';
- if effFlagsCanReplacing in EffOpts then Result:=Result+'CanReplacing, ';
+ if effFlagsHasEditor     in EffOpts then Result:=Result+'HasEditor, ';
+ if effFlagsHasClip       in EffOpts then Result:=Result+'HasClip, ';
+ if effFlagsHasVu         in EffOpts then Result:=Result+'HasVU, ';
+ if effFlagsCanMono       in EffOpts then Result:=Result+'CanMono, ';
+ if effFlagsCanReplacing  in EffOpts then Result:=Result+'CanReplacing, ';
  if effFlagsProgramChunks in EffOpts then Result:=Result+'ProgramChunks, ';
- if effFlagsIsSynth in EffOpts then Result:=Result+'IsSynth, ';
+ if effFlagsIsSynth       in EffOpts then Result:=Result+'IsSynth, ';
  if effFlagsNoSoundInStop in EffOpts then Result:=Result+'NoSoundInStop, ';
- if effFlagsExtIsAsync in EffOpts then Result:=Result+'ExtIsAsync, ';
- if effFlagsExtHasBuffer in EffOpts then Result:=Result+'ExtHasBuffer, ';
+ if effFlagsExtIsAsync    in EffOpts then Result:=Result+'ExtIsAsync, ';
+ if effFlagsExtHasBuffer  in EffOpts then Result:=Result+'ExtHasBuffer, ';
+
  if Length(Result)>2 then Result:=Copy(Result,0,Length(Result)-2)
 end;
 

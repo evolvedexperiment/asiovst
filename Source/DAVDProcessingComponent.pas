@@ -35,26 +35,32 @@ type
     fProcessQueueSAA: TDspBaseProcessFuncSAA;
     fProcessQueueDAA: TDspBaseProcessFuncDAA;
 
+    function GetTrailingSamplesQueue: integer; virtual; abstract;
+
     procedure SetBypass(const Value: Boolean); virtual; abstract;
     procedure SetEnabled(const Value: Boolean); virtual; abstract;
     procedure SetSampleRate(const Value: Single); virtual; abstract;
     procedure SetChannels(const Value: Integer); virtual; abstract;
+    procedure SetTrailingSamples(const Value: Integer); virtual; abstract;
   public
     procedure Init; virtual; abstract;
     procedure Reset; virtual; abstract;
     procedure ResetQueue; virtual; abstract;
 
+    procedure NoteOff; virtual; abstract;
+    procedure NoteOffQueue; virtual; abstract;
+
     procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); virtual; abstract;
     procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); virtual; abstract;
 
-    function GetQueueTrailingSamples: integer; virtual; abstract;
-
+    
     property Enabled: Boolean   read fEnabled    write SetEnabled    default true;
     property Bypass: Boolean    read fBypass     write SetBypass     default true;
     property Channels: Integer  read fChannels   write SetChannels   default 2;
     property SampleRate: Single read fSampleRate write SetSampleRate;    
 
-    property TrailingSamples: Integer read fTrailingSamples write fTrailingSamples default 0;
+    property TrailingSamples: Integer read fTrailingSamples write SetTrailingSamples default 0;
+    property TrailingSamplesQueue: Integer read GetTrailingSamplesQueue;
 
     property ProcessS:   TDspBaseProcessFuncS   read fProcessS;
     property ProcessD:   TDspBaseProcessFuncD   read fProcessD;
@@ -75,6 +81,8 @@ type
   protected
     function Get(Index: Integer): TAVDProcessingComponent;
     procedure Put(Index: Integer; Item: TAVDProcessingComponent);
+
+    function GetTrailingSamplesQueue: integer;
   public
     function Add(Item: TAVDProcessingComponent): Integer;
     function Extract(Item: TAVDProcessingComponent): TAVDProcessingComponent;
@@ -89,12 +97,16 @@ type
     procedure SetEnabled(Value: Boolean);
     procedure SetBypass(Value: Boolean);
 
-    procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+    procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+    procedure NoteOffQueue;
 
+    property TrailingSamplesQueue: integer read GetTrailingSamplesQueue;
     property Items[Index: Integer]: TAVDProcessingComponent read Get write Put;
   end;
 
 implementation
+
+uses Math;
 
 { TAVDProcessingComponentList }
 
@@ -171,7 +183,7 @@ begin
     Items[i].Bypass := Value;
 end;
 
-procedure TAVDProcessingComponentList.ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+procedure TAVDProcessingComponentList.ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
 var i: integer; filter: boolean;
 begin
   FilterEvent:=false;
@@ -182,5 +194,21 @@ begin
     FilterEvent:=FilterEvent or filter;
   end;
 end;
+
+procedure TAVDProcessingComponentList.NoteOffQueue;
+var i: integer;
+begin
+  for i := Count-1 downto 0 do
+    Items[i].NoteOffQueue;
+end;
+
+function TAVDProcessingComponentList.GetTrailingSamplesQueue: integer;
+var i: integer;
+begin
+  result:=0;
+  for i := Count-1 downto 0 do
+    result:=max(result, Items[i].TrailingSamplesQueue);
+end;
+
 
 end.

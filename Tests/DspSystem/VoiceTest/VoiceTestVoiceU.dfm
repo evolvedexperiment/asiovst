@@ -3,6 +3,8 @@ object VoiceTestVoice: TVoiceTestVoice
   OnCreate = DspVoiceCreate
   DspDirectProcessItem = DspOscSine1
   VoiceProcessingMode = pmDspQueue
+  TrailingType = vttAutomatic
+  TrailingSamples = 0
   Left = 249
   Top = 116
   Height = 150

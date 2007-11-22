@@ -24,14 +24,12 @@ object VSTGUI: TVSTGUI
     Width = 498
     Height = 73
     Align = alBottom
-    ReleaseMouseBtnOnLeave = False
     KeyDownMode = kdmFlat
     Height3d = 0.200000002980232200
     BlackKeyHeight = 0.629999995231628400
     NumOctaves = 4
     KeyZones = <>
     ShowKeyZones = False
-    KeyZoneHeight = 10
     OnNoteOn = MidiKeysNoteOn
     OnNoteOff = MidiKeysNoteOff
   end
@@ -55,7 +53,6 @@ object VSTGUI: TVSTGUI
       Width = 89
       Height = 29
       LineWidth = 2
-      LineColor = clBlack
       ADSRSettings.Attack = 0.500000000000000000
       ADSRSettings.Decay = 0.500000000000000000
       ADSRSettings.Sustain = 0.500000000000000000
@@ -128,7 +125,6 @@ object VSTGUI: TVSTGUI
       Width = 86
       Height = 29
       LineWidth = 2
-      LineColor = clBlack
       ADSRSettings.Attack = 0.500000000000000000
       ADSRSettings.Decay = 0.500000000000000000
       ADSRSettings.Sustain = 0.500000000000000000

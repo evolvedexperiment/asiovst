@@ -53,7 +53,7 @@ type
     procedure MidiNoteOff(MidiEvent: TAVDMidiEvent);
     procedure MidiAllNotesOff;
 
-    procedure UpdateVoiceList;
+    procedure UpdateVoiceList(DecrementTrailing: Integer = 0; Channel: integer = -1);
 
     {
     procedure SendParamChange(ParamId: Integer; ParamValue: Single); overload;
@@ -72,7 +72,8 @@ type
 implementation
 
 uses SysUtils
-  {$IFDEF PUREPASCAL},DAVDBufferMathPascal{$ELSE},DAVDBufferMathAsm{$ENDIF};
+  {$IFDEF PUREPASCAL},DAVDBufferMathPascal{$ELSE},DAVDBufferMathAsm{$ENDIF},
+  DAVDProcessingComponent;
 
 { TDspVoiceController }
 
@@ -150,8 +151,13 @@ begin
                     end;
   end;
 
-  if Result and assigned(FOnVoiceCountChanged) then
-    FOnVoiceCountChanged(self, FVoiceList.PlayingVoiceCount, FVoiceList.Count);
+  if Result then
+  begin
+    v.SampleRate := fSampleRate;
+    v.Channels   := fChannels;
+    if assigned(FOnVoiceCountChanged) then
+      FOnVoiceCountChanged(self, FVoiceList.PlayingVoiceCount, FVoiceList.Count);
+  end;
 end;
 
 procedure TDspVoiceController.RemoveVoice(v: TDspVoice);
@@ -191,7 +197,7 @@ begin
   tmp := FVoiceList.GetVoiceByKey(MidiEvent.MidiData[1]);
   if tmp<>nil then
   begin
-    tmp.VoiceOff;
+    tmp.VoiceNoteOff;
     if assigned(FOnVoiceNoteOff) then FOnVoiceNoteOff(self, tmp);
 
     if assigned(FOnVoiceCountChanged) then
@@ -204,7 +210,7 @@ var i: integer;
 begin
   for i:=FVoiceList.Count-1 downto 0 do
   begin
-    FVoiceList.items[i].VoiceOff;
+    FVoiceList.items[i].VoiceNoteOff;
     if assigned(FOnVoiceNoteOff) then FOnVoiceNoteOff(self, FVoiceList.items[i]);
   end;
 
@@ -212,12 +218,14 @@ begin
     FOnVoiceCountChanged(self, FVoiceList.PlayingVoiceCount, FVoiceList.Count);
 end;
 
-procedure TDspVoiceController.UpdateVoiceList;
+procedure TDspVoiceController.UpdateVoiceList(DecrementTrailing, Channel: Integer);
 var i: integer;
 begin
   for i:=FVoiceList.Count-1 downto 0 do
     if not FVoiceList.items[i].IsAlive then
-      RemoveVoice(FVoiceList.items[i]);
+      RemoveVoice(FVoiceList.items[i])
+    else
+      FVoiceList.items[i].DecrementTrailing(DecrementTrailing, Channel);
 end;
 
 {
@@ -241,7 +249,7 @@ begin
   if FSampleProcessRun>512 then
   begin
     FSampleProcessRun:=0;
-    UpdateVoiceList;
+    UpdateVoiceList(512, channel);
   end;
 
   backup := Data;
@@ -252,7 +260,7 @@ begin
     tmp := backup;
     FVoiceList.items[i].ProcessS(tmp, channel);
     Data := Data + tmp;
-  end;  
+  end;
 end;
 
 procedure TDspVoiceController.Process(var Data: Double; const channel: integer);
@@ -262,7 +270,7 @@ begin
   if FSampleProcessRun>512 then
   begin
     FSampleProcessRun:=0;
-    UpdateVoiceList;
+    UpdateVoiceList(512, channel);
   end;
 
   backup := Data;
@@ -279,7 +287,7 @@ end;
 procedure TDspVoiceController.Process(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
 var i: integer; tmp, backup: TAVDSingleDynArray;
 begin
-  UpdateVoiceList;
+  UpdateVoiceList(SampleFrames, channel);
 
   backup := copy(ProcessBuffer);
   fillchar(ProcessBuffer, SampleFrames * SizeOf(Single), 0);
@@ -296,7 +304,7 @@ end;
 procedure TDspVoiceController.Process(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
 var i: integer; tmp, backup: TAVDDoubleDynArray;
 begin
-  UpdateVoiceList;
+  UpdateVoiceList(SampleFrames, channel);
 
   backup := copy(ProcessBuffer);
   fillchar(ProcessBuffer, SampleFrames * SizeOf(Double), 0);
@@ -313,7 +321,7 @@ end;
 procedure TDspVoiceController.Process(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
 var i: integer; tmp, backup: TAVDArrayOfSingleDynArray;
 begin
-  UpdateVoiceList;
+  UpdateVoiceList(SampleFrames);
 
   CreateArrayCopy(ProcessBuffer, backup, fChannels, SampleFrames);
   ClearArrays(ProcessBuffer, fChannels, SampleFrames);
@@ -330,7 +338,7 @@ end;
 procedure TDspVoiceController.Process(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
 var i: integer; tmp, backup: TAVDArrayOfDoubleDynArray;
 begin
-  UpdateVoiceList;
+  UpdateVoiceList(SampleFrames);
 
   CreateArrayCopy(ProcessBuffer, backup, fChannels, SampleFrames);
   ClearArrays(ProcessBuffer, fChannels, SampleFrames);

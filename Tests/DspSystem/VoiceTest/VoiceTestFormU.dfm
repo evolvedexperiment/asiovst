@@ -3,8 +3,8 @@ object VoiceTestForm: TVoiceTestForm
   Top = 114
   BorderStyle = bsNone
   Caption = 'VoiceTestForm'
-  ClientHeight = 57
-  ClientWidth = 124
+  ClientHeight = 73
+  ClientWidth = 175
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,4 +15,32 @@ object VoiceTestForm: TVoiceTestForm
   Scaled = False
   PixelsPerInch = 96
   TextHeight = 13
+  object Label1: TLabel
+    Left = 16
+    Top = 16
+    Width = 67
+    Height = 13
+    Caption = 'Active voices:'
+  end
+  object Label2: TLabel
+    Left = 16
+    Top = 40
+    Width = 74
+    Height = 13
+    Caption = 'Existing Voices:'
+  end
+  object lblActiveV: TLabel
+    Left = 104
+    Top = 16
+    Width = 6
+    Height = 13
+    Caption = '0'
+  end
+  object lblAllV: TLabel
+    Left = 104
+    Top = 40
+    Width = 6
+    Height = 13
+    Caption = '0'
+  end
 end

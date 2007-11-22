@@ -13,8 +13,8 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure DspVoiceController1CreateVoice(Sender: TDspVoiceController;
       MidiEvent: TAVDMidiEvent; var NewVoice: TDspVoice);
-  private
-  public
+    procedure DspVoiceController1VoiceCountChanged(
+      Sender: TDspVoiceController; ActiveVoices, AllVoices: Integer);
   end;
 
 implementation
@@ -22,7 +22,7 @@ implementation
 {$R *.DFM}
 
 uses
-  VoiceTestFormU, VoiceTestVoiceU;
+  VoiceTestFormU, VoiceTestVoiceU, DVSTCustomModule;
 
 procedure TVoiceTestModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
@@ -36,6 +36,18 @@ var x: TDspVoiceInfo;
 begin
   x := TDspVoiceInfo.Create(MidiEvent);
   NewVoice := TVoiceTestVoice.Create(Sender, x);
+end;
+
+procedure TVoiceTestModule.DspVoiceController1VoiceCountChanged(
+  Sender: TDspVoiceController; ActiveVoices, AllVoices: Integer);
+begin
+  // just for debugging / this is not a good way to display voice count
+  // because it's too slow and makes some bugs
+  if assigned(EditorForm) then with EditorForm as TVoiceTestForm do
+  begin
+    lblAllV.Caption:=inttostr(AllVoices);
+    lblActiveV.Caption:=inttostr(ActiveVoices);
+  end;
 end;
 
 end.

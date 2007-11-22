@@ -22,10 +22,11 @@ object VoiceTestModule: TVoiceTestModule
   Width = 215
   object DspVoiceController1: TDspVoiceController
     SampleRate = 44100.000000000000000000
-    MaxVoices = 1
+    MaxVoices = 5
     LimitVoices = lvtKillOldest
     OnCreateVoice = DspVoiceController1CreateVoice
-    Left = 24
+    OnVoiceCountChanged = DspVoiceController1VoiceCountChanged
+    Left = 40
     Top = 8
   end
 end

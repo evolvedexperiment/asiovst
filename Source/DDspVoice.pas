@@ -30,12 +30,11 @@ type
     fSampleRate:      Single;
     fChannels:        Integer;
 
-    fIsVoiceOn:       Boolean;
-    fIsAlive:         Boolean;
-    {fTrailingSamples: Integer;
+    fIsVoiceNoteOn:   Boolean;
+    fTrailingSamples: Integer;
     fTrailingType:    TDspVoiceTrailingType;
 
-    fOffTrailingCounter: Integer;  }
+    fOffTrailingCounter: array of Integer;
 
     fVoiceInfo:       TDspVoiceInfo;
     FDspQueueList:    TAVDProcessingComponentList;
@@ -67,6 +66,7 @@ type
     fOnVoiceNoteOff: TDspOnVoiceNoteOff;
 
     procedure UpdateProcessingFunctions; virtual;
+    procedure InitializeTrailing; virtual;
 
     procedure SetEnabled(const Value: Boolean);   virtual;
     procedure SetSampleRate(const Value: Single); virtual;
@@ -106,11 +106,12 @@ type
 
     procedure SetVoiceProcessingMode(const Value: TDspVoiceProcessingMode);
 
-    {
+    function GetIsAlive: Boolean;
+
     procedure SetTrailingSamples(const Value: Integer);  virtual;
-    procedure SetTrailingType(const Value: TDspVoiceTrailingType);  virtual; }
+    procedure SetTrailingType(const Value: TDspVoiceTrailingType); virtual;
   public
-    constructor Create(AOwner: TComponent);overload; override;
+    constructor Create(AOwner: TComponent); overload; override;
     constructor Create(AOwner: TComponent; VoiceInfo: TDspVoiceInfo); reintroduce; overload;
     destructor Destroy; override;
 
@@ -122,11 +123,13 @@ type
 
     procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); virtual;
 
-    procedure VoiceOff; virtual;
-    {procedure UpdateTrailingSamples; virtual;
-                                                 }
-    property IsAlive:    Boolean read fIsAlive;  
-    property IsVoiceOn:  Boolean read fIsVoiceOn;
+    procedure VoiceNoteOff; virtual;
+    procedure DecrementTrailing(DecrementTrailing: Integer = 0; Channel: integer = -1);
+
+    procedure UpdateTrailingSamples; virtual;
+
+    property IsAlive:        Boolean read GetIsAlive;
+    property IsVoiceNoteOn:  Boolean read fIsVoiceNoteOn;
 
     property ProcessS:   TDspBaseProcessFuncS   read fProcessS;
     property ProcessD:   TDspBaseProcessFuncD   read fProcessD;
@@ -154,9 +157,9 @@ type
     property OnProcessDAA: TDspBaseProcessFuncDAA read fUserProcessDAA write SetUserProcessDAA;
 
     property OnVoiceNoteOff: TDspOnVoiceNoteOff read fOnVoiceNoteOff write fOnVoiceNoteOff;
-   {
+
     property TrailingType: TDspVoiceTrailingType read fTrailingType write SetTrailingType;
-    property TrailingSamples: Integer read fTrailingSamples write SetTrailingSamples; }
+    property TrailingSamples: Integer read fTrailingSamples write SetTrailingSamples;
   end;
 
 implementation
@@ -197,12 +200,12 @@ begin
 
   FDspQueueList   := TAVDProcessingComponentList.Create;
   fVoiceInfo      := nil;
-  fIsAlive        := true;
   fEnabled        := true;
-  fIsVoiceOn      := true;
+  fIsVoiceNoteOn  := true;
 
   FDspDirectProcessItem:=nil;
-   
+  fTrailingType := vttAutomatic;
+  
   inherited Create(AOwner);
 
   Init;
@@ -277,6 +280,7 @@ begin
   begin
     fChannels := Value;
     FDspQueueList.SetChannels(fChannels);
+    InitializeTrailing;
   end;
 end;
 
@@ -289,8 +293,13 @@ begin
   end;
 end;
 
-
-
+procedure TDspVoice.InitializeTrailing;
+var i: integer;
+begin
+  setlength(fOffTrailingCounter, fChannels);
+  for i:=fChannels-1 downto 0 do
+    fOffTrailingCounter[i] := fTrailingSamples;
+end;
 
 procedure TDspVoice.UpdateProcessingFunctions;
 begin
@@ -410,7 +419,23 @@ begin
   end;
 end;
 
+procedure TDspVoice.SetTrailingSamples(const Value: Integer);
+begin
+  if fTrailingSamples<>Value then
+  begin
+    fTrailingSamples := Value;
+    fTrailingType := vttManually;
+  end;
+end;
 
+procedure TDspVoice.SetTrailingType(const Value: TDspVoiceTrailingType);
+begin
+  if fTrailingType<>Value then
+  begin
+    fTrailingType := Value;
+    UpdateTrailingSamples;
+  end;
+end;
 
 
 
@@ -519,25 +544,51 @@ end;
 
 
 
+procedure TDspVoice.UpdateTrailingSamples;
+begin
+  if fTrailingType=vttManually then exit;
+
+  fTrailingSamples := FDspQueueList.TrailingSamplesQueue;
+end;
 
 procedure TDspVoice.ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
 begin
-  FDspQueueList.ProcessMidiEvent(MidiEvent, FilterEvent);
+  FDspQueueList.ProcessMidiEventQueue(MidiEvent, FilterEvent);
 end;
 
-
-
-procedure TDspVoice.VoiceOff;
+procedure TDspVoice.VoiceNoteOff;
 var CanGoOff: Boolean;
 begin
   CanGoOff := true;
   if Assigned(fOnVoiceNoteOff) then fOnVoiceNoteOff(self, CanGoOff);
   if CanGoOff then
   begin
-    fIsVoiceOn:=false;
-    // temporary:
-    fIsAlive := false;
+    FDspQueueList.NoteOffQueue;
+    InitializeTrailing;
+    fIsVoiceNoteOn:=false;
   end;
+end;
+
+procedure TDspVoice.DecrementTrailing(DecrementTrailing: Integer = 0; Channel: integer = -1);
+var i: Integer;
+begin
+  if not fIsVoiceNoteOn and (DecrementTrailing>0) then
+    if Channel>=0 then
+      fOffTrailingCounter[Channel] := fOffTrailingCounter[Channel] - DecrementTrailing
+    else for i:=fChannels-1 downto 0 do
+      fOffTrailingCounter[i] := fOffTrailingCounter[i] - DecrementTrailing;
+end;
+
+function TDspVoice.GetIsAlive: Boolean;
+var i: integer;
+begin
+  Result:=true;
+  if fIsVoiceNoteOn then exit;
+
+  for i:=fChannels-1 downto 0 do
+    if fOffTrailingCounter[i]>0 then exit;
+
+  Result:=false;
 end;
 
 end.

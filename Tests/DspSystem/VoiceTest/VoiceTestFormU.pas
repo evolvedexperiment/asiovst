@@ -3,16 +3,19 @@ unit VoiceTestFormU;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
+  ExtCtrls, Controls, StdCtrls;
 
 type
   TVoiceTestForm = class(TForm)
-  public
-    VoiceTestModule: TVSTModule;
+    Label1: TLabel;
+    Label2: TLabel;
+    lblActiveV: TLabel;
+    lblAllV: TLabel;
   end;
 
 implementation
 
 {$R *.DFM}
 
-end. 
+end.

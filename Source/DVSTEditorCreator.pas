@@ -150,8 +150,8 @@ begin
     CRLF +
     'type' + CRLF +
     '  T' + FormIdent + ' = class(T' + AncestorIdent + ')' + CRLF +
-    '  public' + CRLF +
-    '    ' + FConfig.PluginFormName + ': TVSTModule;' + CRLF +
+    //'  public' + CRLF +
+    //'    ' + FConfig.PluginFormName + ': TVSTModule;' + CRLF +
     '  end;' + CRLF + CRLF +
     'implementation' + CRLF +
     CRLF +

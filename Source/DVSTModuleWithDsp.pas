@@ -191,7 +191,7 @@ begin
   end;
 
   filter := false;
-  FDspQueueList.ProcessMidiEvent(tmp, filter);
+  FDspQueueList.ProcessMidiEventQueue(tmp, filter);
 
   if not filter then inherited;
 end;

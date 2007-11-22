@@ -28,15 +28,19 @@ type
     fStdProcessQueueSAA: TDspBaseProcessFuncSAA;
     fStdProcessQueueDAA: TDspBaseProcessFuncDAA;
     
+    function  GetTrailingSamplesQueue: integer; override;
+
     procedure SetBypass(const Value: Boolean); override;
     procedure SetEnabled(const Value: Boolean); override;
     procedure SetSampleRate(const Value: Single); override;
     procedure SetChannels(const Value: Integer); override;
+    procedure SetTrailingSamples(const Value: Integer); override;
 
     procedure SetNextDspQueueItem(const Value: TDspBaseComponent); virtual;
     procedure SampleRateChanged; virtual;
     procedure ChannelsChanged; virtual;
-    procedure UpdateParameters; virtual;  
+    procedure UpdateParameters; virtual;
+    procedure TrailingSamplesChanged; virtual;
     procedure BeforeDestroy; virtual;
 
     procedure RegisterInOwner(item: TDspBaseComponent);
@@ -46,15 +50,18 @@ type
     constructor Create(AOwner: TComponent; UseSampleRate: Integer); reintroduce; overload;
     destructor Destroy; override;
 
-    procedure Init; override;               // called automaticaly in constructor
-    procedure Reset; override;              // called manualy
+    procedure Init; override;       // called automaticaly in constructor
+    procedure Reset; override;      // called manualy
     procedure ResetQueue; override;
+
+    procedure NoteOff; override;
+    procedure NoteOffQueue; override;
+
     function  GetFollowingItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
     function  GetPreviousItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
     function  GetQueueItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
 
-    function  GetQueueTrailingSamples: integer; override;
-
+    
     procedure ProcessSilence    (var Data: Single; const channel: integer); overload; virtual;
     procedure ProcessBypass     (var Data: Single; const channel: integer); overload; virtual;
     procedure ProcessQueueBasic (var Data: Single; const channel: integer); overload; virtual;
@@ -92,7 +99,6 @@ type
 
     procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); override;
     procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); override;
-
 
     property PrevDspQueueItem: TDspBaseComponent read fPrevDspQueueItem write fPrevDspQueueItem;
   published
@@ -180,6 +186,7 @@ end;
 procedure TDspBaseComponent.Init;  begin end;
 procedure TDspBaseComponent.Reset; begin end;
 procedure TDspBaseComponent.UpdateParameters; begin end;
+procedure TDspBaseComponent.NoteOff; begin end;
 
 procedure TDspBaseComponent.SampleRateChanged;
 begin
@@ -187,6 +194,11 @@ begin
 end;
 
 procedure TDspBaseComponent.ChannelsChanged;
+begin
+  UpdateParameters;
+end;
+
+procedure TDspBaseComponent.TrailingSamplesChanged;
 begin
   UpdateParameters;
 end;
@@ -304,6 +316,18 @@ begin
   end;
 end;
 
+procedure TDspBaseComponent.SetTrailingSamples(const Value: Integer);
+begin
+  if (fTrailingSamples<>Value) and (Value>=0) then
+  begin
+    fTrailingSamples := Value;
+    TrailingSamplesChanged;
+
+     if Owner is TDspVoice then
+      (Owner as TDspVoice).UpdateTrailingSamples;
+  end;
+end;
+
 procedure TDspBaseComponent.SetBypass(const Value: Boolean);
 begin
   fBypass := Value;
@@ -417,8 +441,6 @@ begin
   fEnabled := Value;
   if fEnabled and fBypass then SetBypass(true);
 end;
-
-
 
 
 
@@ -609,10 +631,16 @@ begin
     fNextDspQueueItem.ProcessMidiEventQueue(MidiEvent, FilterEvent);
 end;
 
-function TDspBaseComponent.GetQueueTrailingSamples: integer;
+function TDspBaseComponent.GetTrailingSamplesQueue: integer;
 begin
   result:=fTrailingSamples;
-  if assigned(fNextDspQueueItem) then result:=max(result, fNextDspQueueItem.GetQueueTrailingSamples);
+  if assigned(fNextDspQueueItem) then result:=max(result, fNextDspQueueItem.TrailingSamplesQueue);
+end;
+
+procedure TDspBaseComponent.NoteOffQueue;
+begin
+  NoteOff;
+  if assigned(fNextDspQueueItem) then fNextDspQueueItem.NoteOffQueue;
 end;
 
 end.
