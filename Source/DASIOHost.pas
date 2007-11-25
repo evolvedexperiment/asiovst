@@ -1178,6 +1178,7 @@ begin
  end else
  begin
   FActive := False;
+//  if GetCurrentThreadID = MainThreadID then
   try
    FDriver.Stop;
   except
@@ -1186,23 +1187,24 @@ begin
   begin
    currentbuffer := FOutputBuffer;
    for i := 0 to FOutputChannelCount - 1 do
-    begin
-     if OutputChannelInfos[i].vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz:=SizeOf(Word) else
-     if OutputChannelInfos[i].vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz:=3 else
-     if OutputChannelInfos[i].vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz:=SizeOf(Single) else
-     if OutputChannelInfos[i].vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz:=SizeOf(Double)
-      else sz:=SizeOf(Integer);
-     FillChar(currentbuffer^.buffers[0]^, FBufferSize * sz, 0);
-     FillChar(currentbuffer^.buffers[1]^, FBufferSize * sz, 0);
-     inc(currentbuffer);
-    end;
+    with OutputChannelInfos[i] do
+     begin
+      if vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz := SizeOf(Word) else
+      if vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz := 3 else
+      if vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
+      if vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
+       else sz := SizeOf(Integer);
+      FillChar(currentbuffer^.buffers[0]^, FBufferSize * sz, 0);
+      FillChar(currentbuffer^.buffers[1]^, FBufferSize * sz, 0);
+      inc(currentbuffer);
+     end;
    currentbuffer := FInputBuffer;
    for i := 0 to FInputChannelCount - 1 do
     begin
-     if InputChannelInfos[i].vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz:=SizeOf(Word) else
-     if InputChannelInfos[i].vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz:=3 else
-     if InputChannelInfos[i].vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz:=SizeOf(Single) else
-     if InputChannelInfos[i].vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz:=SizeOf(Double)
+     if InputChannelInfos[i].vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz := SizeOf(Word) else
+     if InputChannelInfos[i].vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz := 3 else
+     if InputChannelInfos[i].vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
+     if InputChannelInfos[i].vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
       else sz:=SizeOf(Integer);
      FillChar(currentbuffer^.buffers[0]^, FBufferSize * sz, 0);
      FillChar(currentbuffer^.buffers[1]^, FBufferSize * sz, 0);
@@ -1396,10 +1398,10 @@ end;
 
 procedure TCustomASIOHost.SetConvertOptimizations(const co: TConvertOptimizations);
 begin
- Use_x87;
- case FPUType of
-  fpuSSE: if coSSE in co then Use_SSE;
-  fpu3DNow: if co3DNow in co then Use_3DNow;
+ Use_FPU;
+ case ProcessorType of
+  ptSSE: if coSSE in co then Use_SSE;
+  pt3DNow: if co3DNow in co then Use_3DNow;
  end;
  FConvertOptimizations := co;
 end;
@@ -1672,7 +1674,7 @@ begin
     begin
      PChannelArray := currentbuffer^.buffers[Index];
      if assigned(PChannelArray)
-      then FOutConvertors[j].oc64(PDouble(FDoubleOutBuffer[j]),PChannelArray, FBufferSize);
+      then FOutConvertors[j].oc64(PDouble(FDoubleOutBuffer[j]), PChannelArray, FBufferSize);
      inc(currentbuffer);
     end;
   end
@@ -1746,14 +1748,14 @@ begin
    case FOutputDither of
     odNone :
       begin
-       Use_x87;
-       case FPUType of
-        fpuSSE: if coSSE in FConvertOptimizations then Use_SSE;
-        fpu3DNow: if co3DNow in FConvertOptimizations then Use_3DNow;
+       Use_FPU;
+       case ProcessorType of
+        ptSSE: if coSSE in FConvertOptimizations then Use_SSE;
+        pt3DNow: if co3DNow in FConvertOptimizations then Use_3DNow;
        end;
       end;
-    odUDF  : Use_x87_UDF;
-    odTDF  : Use_x87_TDF;
+    odUDF  : Use_FPU_UDF;
+    odTDF  : Use_FPU_TDF;
    end;
   end;
 end;

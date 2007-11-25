@@ -225,7 +225,7 @@ begin
 end;
 
 // Convert a value in dB's to a linear amplitude
-function dB_to_Amp(g:Single):Single;
+function dB_to_Amp(g:Single) : Single;
 begin
  if (g > -144.0)
   then Result := exp(g * 0.115129254)

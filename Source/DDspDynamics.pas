@@ -222,6 +222,7 @@ begin
   fSampleRate := 44100;
   fSampleRateRez := 1 / fSampleRate;
   fThresholddB := -40;
+  fRatio := 1;
   fAttack := 5;
   fDecay := 5;
   fLevel := 0;
