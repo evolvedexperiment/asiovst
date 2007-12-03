@@ -183,7 +183,17 @@ asm
 end;
 
 procedure ClipDigital_x86(InBuffer: PDouble; BSize: Integer); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+const fGrdDiv : Double = 0.5;
+var i: Integer;
+begin
+ for I := 0 to BSize - 1 do
+  begin
+   InBuffer^ := fGrdDiv * (abs(InBuffer^ + 1) - abs(InBuffer^ - 1));
+   Inc(InBuffer);
+  end;
+end;
+{$ELSE}
 const
   c05 : Double = 0.5;
 asm
@@ -204,21 +214,11 @@ asm
  fstp st(0)
  fstp st(0)
 end;
-{$ELSE}
-const fGrdDiv : Double = 0.5;
-var i: Integer;
-begin
- for I := 0 to BSize - 1 do
-  begin
-   InBuffer^ := fGrdDiv * (abs(InBuffer^ + 1) - abs(InBuffer^ - 1));
-   Inc(InBuffer);
-  end;
-end;
 {$ENDIF}
 
 procedure ClipAnalog_FPU(InBuffer: PSingle; Samples: Integer); overload;
-const c3:Single=3;
-      c6:Single=6;
+const c3:Single = 3;
+      c6:Single = 6;
 asm
  fld c3.Single                      // 3
  fld c6.Single                      // 6, 3
@@ -249,8 +249,8 @@ asm
 end;
 
 procedure ClipAnalog_FPU(InBuffer: PDouble; Samples: Integer); overload;
-const c3:Single=3;
-      c6:Single=6;
+const c3:Single = 3;
+      c6:Single = 6;
 asm
  fld c3.Single                      // 3
  fld c6.Single                      // 6, 3
@@ -283,7 +283,16 @@ asm
 end;
 
 procedure FadeInLinear_FPU(InBuffer: PSingle; Samples: Integer); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var i : Integer;
+begin
+ for i:=0 to Samples-1 do
+  begin
+   InBuffer^:=InBuffer^*(i+1)/Samples;
+   inc(InBuffer);
+  end;
+end;
+{$ELSE}
 asm
  mov [esp-4],edx
  fild [esp-4].Single           // Samples
@@ -300,7 +309,10 @@ asm
  jnz @FadeLoop
  fstp st(0)                    // clear stack
 end;
-{$ELSE}
+{$ENDIF}
+
+procedure FadeInLinear_FPU(InBuffer: PDouble; Samples: Integer); overload;
+{$IFDEF PUREPASCAL}
 var i : Integer;
 begin
  for i:=0 to Samples-1 do
@@ -309,10 +321,7 @@ begin
    inc(InBuffer);
   end;
 end;
-{$ENDIF}
-
-procedure FadeInLinear_FPU(InBuffer: PDouble; Samples: Integer); overload;
-{$IFDEF FPU}
+{$ELSE}
 asm
  mov [esp-4],edx
  fild [esp-4].Single           // Samples
@@ -329,7 +338,10 @@ asm
  jnz @FadeLoop
  fstp st(0)                    // clear stack
 end;
-{$ELSE}
+{$ENDIF}
+
+procedure FadeOutLinear_FPU(InBuffer: PSingle; Samples: Integer); overload;
+{$IFDEF PUREPASCAL}
 var i : Integer;
 begin
  for i:=0 to Samples-1 do
@@ -338,10 +350,7 @@ begin
    inc(InBuffer);
   end;
 end;
-{$ENDIF}
-
-procedure FadeOutLinear_FPU(InBuffer: PSingle; Samples: Integer); overload;
-{$IFDEF FPU}
+{$ELSE}
 asm
  mov [esp-4],edx
  fild [esp-4].Single           // Samples
@@ -360,19 +369,19 @@ asm
  jnz @FadeLoop
  fstp st(0)                    // clear stack
 end;
-{$ELSE}
+{$ENDIF}
+
+procedure FadeOutLinear_FPU(InBuffer: PDouble; Samples: Integer); overload;
+{$IFDEF PUREPASCAL}
 var i : Integer;
 begin
  for i:=0 to Samples-1 do
   begin
-   InBuffer^:=InBuffer^*(i+1)/Samples;
+   InBuffer^:=InBuffer^*(Samples-i)/Samples;
    inc(InBuffer);
   end;
 end;
-{$ENDIF}
-
-procedure FadeOutLinear_FPU(InBuffer: PDouble; Samples: Integer); overload;
-{$IFDEF FPU}
+{$ELSE}
 asm
  mov [esp-4],edx
  fild [esp-4].Single           // Samples
@@ -390,15 +399,6 @@ asm
    fstp [eax+8*edx-8].Double   // write back
  jnz @FadeLoop
  fstp st(0)                    // clear stack
-end;
-{$ELSE}
-var i : Integer;
-begin
- for i:=0 to Samples-1 do
-  begin
-   InBuffer^:=InBuffer^*(Samples-i)/Samples;
-   inc(InBuffer);
-  end;
 end;
 {$ENDIF}
 
@@ -644,18 +644,7 @@ end;
 
 // ReverseEndian3 : reverts 3-byte entities in place
 procedure ReverseEndian3(buffer: pointer; frames: longint);
-{$IFDEF FPU}
-asm
- mov ecx,edx
-@Start:
- mov dh,[eax+2]
- mov dl,[eax  ]
- mov [eax+2],dl
- mov [eax  ],dh
- add  eax,3
- loop @Start
-end;
-{$ELSE}
+{$IFDEF PUREPASCAL}
 type
   TByte3Array = Array [0..2] of Byte;
   PByte3Array = ^TByte3Array;
@@ -673,20 +662,22 @@ begin
    Inc(BufByte,3);
   end;
 end;
+{$ELSE}
+asm
+ mov ecx,edx
+@Start:
+ mov dh,[eax+2]
+ mov dl,[eax  ]
+ mov [eax+2],dl
+ mov [eax  ],dh
+ add  eax,3
+ loop @Start
+end;
 {$ENDIF}
 
 // ReverseEndian4 : reverts 4-byte entities in place
 procedure ReverseEndian4(buffer: pointer; frames: longint);
-{$IFDEF FPU}
-asm
- mov ecx, frames
-@Start:
- mov edx,[eax+4*ecx-4]
- bswap edx
- mov [eax+4*ecx-4],edx
- loop @Start
-end;
-{$ELSE}
+{$IFDEF PUREPASCAL}
 type
   TByte4Array = Array [0..3] of Byte;
   PByte4Array = ^TByte4Array;
@@ -698,16 +689,44 @@ var
 begin
  for i := 0 to frames - 1 do
   begin
-   b:=BufArray[0]; BufArray[0]:=BufArray[3]; BufArray[3]:=b;
-   b:=BufArray[1]; BufArray[1]:=BufArray[2]; BufArray[2]:=b;
-   Inc(BufByte,4);
+   b := BufArray[0]; BufArray[0] := BufArray[3]; BufArray[3] := b;
+   b := BufArray[1]; BufArray[1] := BufArray[2]; BufArray[2] := b;
+   Inc(BufByte, 4);
   end;
+end;
+{$ELSE}
+asm
+ mov ecx, frames
+@Start:
+ mov edx, [eax + 4 * ecx - 4]
+ bswap edx
+ mov [eax + 4 * ecx - 4], edx
+ loop @Start
 end;
 {$ENDIF}
 
 // ReverseEndian8 : reverts 8-byte entities in place
 procedure ReverseEndian8(buffer: pointer; frames: longint);
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+type
+  TByte4Array = Array [0..7] of Byte;
+  PByte4Array = ^TByte4Array;
+var
+  BufArray : PByte4Array absolute buffer;
+  BufByte  : PByte absolute buffer;
+  i        : Integer;
+  b        : Byte;
+begin
+ for i := 0 to frames - 1 do
+  begin
+   b := BufArray[0]; BufArray[0] := BufArray[7]; BufArray[7] := b;
+   b := BufArray[1]; BufArray[1] := BufArray[6]; BufArray[6] := b;
+   b := BufArray[2]; BufArray[2] := BufArray[5]; BufArray[5] := b;
+   b := BufArray[3]; BufArray[3] := BufArray[4]; BufArray[4] := b;
+   Inc(BufByte, 8);
+  end;
+end;
+{$ELSE}
 asm
  push ebx
  mov  ecx, frames
@@ -722,25 +741,6 @@ asm
  loop @Start
  pop ebx
 end;
-{$ELSE}
-type
-  TByte4Array = Array [0..7] of Byte;
-  PByte4Array = ^TByte4Array;
-var
-  BufArray : PByte4Array absolute buffer;
-  BufByte  : PByte absolute buffer;
-  i        : Integer;
-  b        : Byte;
-begin
- for i := 0 to frames - 1 do
-  begin
-   b:=BufArray[0]; BufArray[0]:=BufArray[7]; BufArray[7]:=b;
-   b:=BufArray[1]; BufArray[1]:=BufArray[6]; BufArray[6]:=b;
-   b:=BufArray[2]; BufArray[2]:=BufArray[5]; BufArray[5]:=b;
-   b:=BufArray[3]; BufArray[3]:=BufArray[4]; BufArray[4]:=b;
-   Inc(BufByte,8);
-  end;
-end;
 {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -748,7 +748,16 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure Int16LSBToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PWrdArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Minsmall;
+end;
+{$ELSE}
 asm
   fld   Minsmall        //for speed
  @Start:
@@ -758,19 +767,19 @@ asm
   loop @Start
   ffree st(0)
 end;
-{$ELSE}
+{$ENDIF}
+
+procedure Int16LSBToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
+{$IFDEF PUREPASCAL}
 var
   SourceArray : PWrdArray absolute source;
-  TargetArray : PSnglArray absolute target;
+  TargetArray : PDblArray absolute target;
   i           : Integer;
 begin
  for i := 0 to frames - 1
   do TargetArray[i]:=SourceArray[i]*Minsmall;
 end;
-{$ENDIF}
-
-procedure Int16LSBToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
+{$ELSE}
 asm
   fld   Minsmall        //for speed
  @Start:
@@ -780,19 +789,23 @@ asm
   loop @Start
   ffree st(0)
 end;
-{$ELSE}
-var
-  SourceArray : PWrdArray absolute source;
-  TargetArray : PDblArray absolute target;
-  i           : Integer;
-begin
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Minsmall;
-end;
 {$ENDIF}
 
 procedure Int24LSBToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceInt   : PInteger absolute source;
+  SourceByte  : PByte absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1 do
+  begin
+   TargetArray[i] := (SourceInt^ shl 8) * MinLong;
+   Inc(SourceByte, 3);
+  end;
+end;
+{$ELSE}
 asm
  fld MinLong
  push ebx
@@ -811,11 +824,14 @@ asm
  pop ebx
  ffree st(0)
 end;
-{$ELSE}
+{$ENDIF}
+
+procedure Int24LSBToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
+{$IFDEF PUREPASCAL}
 var
   SourceInt   : PInteger absolute source;
   SourceByte  : PByte absolute source;
-  TargetArray : PSnglArray absolute target;
+  TargetArray : PDblArray absolute target;
   i           : Integer;
 begin
  for i := 0 to frames - 1 do
@@ -824,10 +840,7 @@ begin
    Inc(SourceByte, 3);
   end;
 end;
-{$ENDIF}
-
-procedure Int24LSBToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
+{$ELSE}
 asm
  fld Min24
  push ebx
@@ -846,23 +859,19 @@ asm
  pop ebx
  ffree st(0)
 end;
-{$ELSE}
-var
-  SourceInt   : PInteger absolute source;
-  SourceByte  : PByte absolute source;
-  TargetArray : PDblArray absolute target;
-  i           : Integer;
-begin
- for i := 0 to frames - 1 do
-  begin
-   TargetArray[i] := (SourceInt^ shl 8) * MinLong;
-   Inc(SourceByte, 3);
-  end;
-end;
 {$ENDIF}
 
 procedure Int32LSBToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*minlong;
+end;
+{$ELSE}
 asm
   fld   minlong         //for speed
  @Start:
@@ -873,37 +882,28 @@ asm
   jnz @Start
   ffree st(0)
 end;
-{$ELSE}
-var
-  SourceArray : PntgrArray absolute source;
-  TargetArray : PSnglArray absolute target;
-  i           : Integer;
-begin
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*minlong;
-end;
 {$ENDIF}
 
 procedure Int32LSBToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
-asm
-  fld   minlong         //for speed
- @Start:
-  dec ecx
-  fild  [eax+4*ecx].dword
-  fmul  st(0),st(1)
-  fstp  [edx+8*ecx].Double
-  jnz @Start
-  ffree st(0)
-end;
-{$ELSE}
+{$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute source;
   TargetArray : PDblArray absolute target;
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*minlong;
+  do TargetArray[i] := SourceArray[i]*minlong;
+end;
+{$ELSE}
+asm
+  fld   minlong         //for speed
+ @Start:
+  dec ecx
+  fild  [eax + 4 * ecx].DWord
+  fmul  st(0), st(1)
+  fstp  [edx + 8 * ecx].Double
+  jnz @Start
+  ffree st(0)
 end;
 {$ENDIF}
 
@@ -913,15 +913,7 @@ begin
 end;
 
 procedure SingleLSBToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
-asm
- @Start:
-  dec ecx
-  fld   [eax+4*ecx].Single
-  fstp  [edx+8*ecx].Double
-  jnz @Start
-end;
-{$ELSE}
+{$IFDEF PUREPASCAL}
 var
   SourceArray : PSnglArray absolute source;
   TargetArray : PDblArray absolute target;
@@ -930,18 +922,18 @@ begin
  for i := 0 to frames - 1
   do TargetArray[i]:=SourceArray[i];
 end;
-{$ENDIF}
-
-procedure DoubleLSBToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
+{$ELSE}
 asm
  @Start:
   dec ecx
-  fld   [eax+8*ecx].Double
-  fstp  [edx+4*ecx].Single
+  fld   [eax+4*ecx].Single
+  fstp  [edx+8*ecx].Double
   jnz @Start
 end;
-{$ELSE}
+{$ENDIF}
+
+procedure DoubleLSBToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
+{$IFDEF PUREPASCAL}
 var
   SourceArray : PDblArray absolute source;
   TargetArray : PSnglArray absolute target;
@@ -949,6 +941,14 @@ var
 begin
  for i := 0 to frames - 1
   do TargetArray[i]:=SourceArray[i];
+end;
+{$ELSE}
+asm
+ @Start:
+  dec ecx
+  fld   [eax+8*ecx].Double
+  fstp  [edx+4*ecx].Single
+  jnz @Start
 end;
 {$ENDIF}
 
@@ -958,7 +958,16 @@ begin
 end;
 
 procedure Int32LSB16ToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload; // 32 bit data with 16 bit alignment
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*MinSmall;
+end;
+{$ELSE}
 asm
   fld      MinSmall
 @Start:
@@ -967,20 +976,20 @@ asm
   fstp     [edx+4*ecx-4].Single
   loop @Start
   ffree    st(0)
-end;
-{$ELSE}
-var
-  SourceArray : PntgrArray absolute source;
-  TargetArray : PSnglArray absolute target;
-  i           : Integer;
-begin
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*MinSmall;
 end;
 {$ENDIF}
 
 procedure Int32LSB16ToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload; // 32 bit data with 16 bit alignment
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*MinSmall;
+end;
+{$ELSE}
 asm
   fld      MinSmall
 @Start:
@@ -990,19 +999,19 @@ asm
   loop @Start
   ffree    st(0)
 end;
-{$ELSE}
-var
-  SourceArray : PntgrArray absolute source;
-  TargetArray : PDblArray absolute target;
-  i           : Integer;
-begin
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*MinSmall;
-end;
 {$ENDIF}
 
 procedure Int32LSB18ToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload; // 32 bit data with 18 bit alignment
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min18;
+end;
+{$ELSE}
 asm
   fld      Min18
 @Start:
@@ -1011,20 +1020,20 @@ asm
   fstp     [edx+4*ecx-4].Single
   loop     @start
   ffree    st(0)
-end;
-{$ELSE}
-var
-  SourceArray : PntgrArray absolute source;
-  TargetArray : PSnglArray absolute target;
-  i           : Integer;
-begin
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min18;
 end;
 {$ENDIF}
 
 procedure Int32LSB18ToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload; // 32 bit data with 18 bit alignment
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PDblArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min18;
+end;
+{$ELSE}
 asm
   fld      Min18
 @Start:
@@ -1034,19 +1043,19 @@ asm
   loop     @start
   ffree    st(0)
 end;
-{$ELSE}
-var
-  SourceArray : PntgrArray absolute source;
-  TargetArray : PDblArray absolute target;
-  i           : Integer;
-begin
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min18;
-end;
 {$ENDIF}
 
 procedure Int32LSB20ToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload; // 32 bit data with 20 bit alignment
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min20;
+end;
+{$ELSE}
 asm
   fld      Min20
 @Start:
@@ -1056,19 +1065,19 @@ asm
   loop     @start
   ffree    st(0)
 end;
-{$ELSE}
+{$ENDIF}
+
+procedure Int32LSB20ToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload; // 32 bit data with 20 bit alignment
+{$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute source;
-  TargetArray : PSnglArray absolute target;
+  TargetArray : PDblArray absolute target;
   i           : Integer;
 begin
  for i := 0 to frames - 1
   do TargetArray[i]:=SourceArray[i]*Min20;
 end;
-{$ENDIF}
-
-procedure Int32LSB20ToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload; // 32 bit data with 20 bit alignment
-{$IFDEF FPU}
+{$ELSE}
 asm
   fld      Min20
 @Start:
@@ -1078,19 +1087,19 @@ asm
   loop     @start
   ffree    st(0)
 end;
-{$ELSE}
-var
-  SourceArray : PntgrArray absolute source;
-  TargetArray : PDblArray absolute target;
-  i           : Integer;
-begin
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min20;
-end;
 {$ENDIF}
 
 procedure Int32LSB24ToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload; // 32 bit data with 24 bit alignment
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PntgrArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*Min24;
+end;
+{$ELSE}
 asm
   fld      Min24
 @Start:
@@ -1100,19 +1109,19 @@ asm
   loop     @start
   ffree    st(0)
 end;
-{$ELSE}
+{$ENDIF}
+
+procedure Int32LSB24ToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload; // 32 bit data with 24 bit alignment
+{$IFDEF PUREPASCAL}
 var
   SourceArray : PntgrArray absolute source;
-  TargetArray : PSnglArray absolute target;
+  TargetArray : PDblArray absolute target;
   i           : Integer;
 begin
  for i := 0 to frames - 1
   do TargetArray[i]:=SourceArray[i]*Min24;
 end;
-{$ENDIF}
-
-procedure Int32LSB24ToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload; // 32 bit data with 24 bit alignment
-{$IFDEF FPU}
+{$ELSE}
 asm
   fld      Min24
 @Start:
@@ -1122,19 +1131,20 @@ asm
   loop     @start
   ffree    st(0)
 end;
-{$ELSE}
-var
-  SourceArray : PntgrArray absolute source;
-  TargetArray : PDblArray absolute target;
-  i           : Integer;
-begin
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min24;
-end;
 {$ENDIF}
 
 procedure Int16MSBToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PWrdArray absolute source;
+  TargetArray : PSnglArray absolute target;
+  i           : Integer;
+begin
+ ReverseEndian4(source, frames div 2);
+ for i := 0 to frames - 1
+  do TargetArray[i]:=SourceArray[i]*MinSmall;
+end;
+{$ELSE}
 asm
   push ebx
   fld   Minsmall
@@ -1149,20 +1159,20 @@ asm
   ffree st(0)
   pop ebx
 end;
-{$ELSE}
+{$ENDIF}
+
+procedure Int16MSBToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
+{$IFDEF PUREPASCAL}
 var
   SourceArray : PWrdArray absolute source;
-  TargetArray : PSnglArray absolute target;
+  TargetArray : PDblArray absolute target;
   i           : Integer;
 begin
  ReverseEndian4(source, frames div 2);
  for i := 0 to frames - 1
   do TargetArray[i]:=SourceArray[i]*MinSmall;
 end;
-{$ENDIF}
-
-procedure Int16MSBToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
+{$ELSE}
 asm
   push ebx
   fld   Minsmall
@@ -1177,20 +1187,15 @@ asm
   ffree st(0)
   pop ebx
 end;
-{$ELSE}
-var
-  SourceArray : PWrdArray absolute source;
-  TargetArray : PDblArray absolute target;
-  i           : Integer;
-begin
- ReverseEndian4(source, frames div 2);
- for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*MinSmall;
-end;
 {$ENDIF}
 
 procedure Int24MSBToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ ReverseEndian3(source, frames);
+ Int24LSBToSingle_FPU(source, target, frames);
+end;
+{$ELSE}
 asm
  fld Min24
  push ebx
@@ -1214,15 +1219,15 @@ asm
  pop ebx
  ffree st(0)
 end;
-{$ELSE}
-begin
- ReverseEndian3(source, frames);
- Int24LSBToSingle_FPU(source, target, frames);
-end;
 {$ENDIF}
 
 procedure Int24MSBToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ ReverseEndian3(source, frames);
+ Int24LSBToDouble_FPU(source, target, frames);
+end;
+{$ELSE}
 asm
  fld Min24
  push ebx
@@ -1246,15 +1251,15 @@ asm
  pop ebx
  ffree st(0)
 end;
-{$ELSE}
-begin
- ReverseEndian3(source, frames);
- Int24LSBToDouble_FPU(source, target, frames);
-end;
 {$ENDIF}
 
 procedure Int32MSBToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ ReverseEndian4(source, frames);
+ Int32LSBToSingle_FPU(source, target, frames);
+end;
+{$ELSE}
 asm
  push   ebx
  fld    minlong
@@ -1269,15 +1274,15 @@ asm
  ffree  st(0)
  pop    ebx
 end;
-{$ELSE}
-begin
- ReverseEndian4(source, frames);
- Int32LSBToSingle_FPU(source, target, frames);
-end;
 {$ENDIF}
 
 procedure Int32MSBToDouble_FPU(source: pointer; target: PDouble; Frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ ReverseEndian4(source, frames);
+ Int32LSBToDouble_FPU(source, target, frames);
+end;
+{$ELSE}
 asm
  push   ebx
  fld    minlong
@@ -1292,15 +1297,15 @@ asm
  ffree  st(0)
  pop    ebx
 end;
-{$ELSE}
-begin
- ReverseEndian4(source, frames);
- Int32LSBToDouble_FPU(source, target, frames);
-end;
 {$ENDIF}
 
 procedure SingleMSBToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ move(source^, target^, frames*SizeOf(Single));
+ ReverseEndian4(target, frames);
+end;
+{$ELSE}
 asm
  push ebx
  mov ecx, frames
@@ -1311,15 +1316,15 @@ asm
  loop @Start
  pop ebx
 end;
-{$ELSE}
-begin
- move(source^, target^, frames*SizeOf(Single));
- ReverseEndian4(target, frames);
-end;
 {$ENDIF}
 
 procedure SingleMSBToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ ReverseEndian4(source, frames);
+ SingleLSBToDouble_FPU(source, target, frames);
+end;
+{$ELSE}
 asm
  push ebx
  @Start:
@@ -1330,11 +1335,6 @@ asm
   fstp  [target+8*frames-8].Double
   loop @Start
  pop ebx
-end;
-{$ELSE}
-begin
- ReverseEndian4(source, frames);
- SingleLSBToDouble_FPU(source, target, frames);
 end;
 {$ENDIF}
 
@@ -1351,30 +1351,35 @@ begin
 end;
 
 procedure Int32MSB16ToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
-asm
-  push     ebx
-  fld      MinSmall
-@Start:
-  mov      ebx,[eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4],ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].Single
-  loop     @start
-  ffree    st(0)
-  pop      ebx
-end;
-{$ELSE}
+{$IFDEF PUREPASCAL}
 begin
  ReverseEndian4(source, frames);
  Int32LSB16ToSingle_FPU(source, target, frames);
 end;
+{$ELSE}
+asm
+  push     ebx
+  fld      MinSmall
+@Start:
+  mov      ebx,[eax+4*ecx-4]
+  bswap    ebx
+  mov      [eax+4*ecx-4],ebx
+  fild     [eax+4*ecx-4].DWord
+  fmul     st(0),st(1)
+  fstp     [edx+4*ecx-4].Single
+  loop     @start
+  ffree    st(0)
+  pop      ebx
+end;
 {$ENDIF}
 
 procedure Int32MSB16ToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ ReverseEndian4(source, frames);
+ Int32LSB16ToDouble_FPU(source, target, frames);
+end;
+{$ELSE}
 asm
   push     ebx
   fld      MinSmall
@@ -1389,38 +1394,38 @@ asm
   ffree    st(0)
   pop      ebx
 end;
-{$ELSE}
-begin
- ReverseEndian4(source, frames);
- Int32LSB16ToDouble_FPU(source, target, frames);
-end;
 {$ENDIF}
 
 procedure Int32MSB18ToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
-asm
-  push     ebx
-  fld      Min18
-@Start:
-  mov      ebx,[eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4],ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].Single
-  loop     @start
-  ffree    st(0)
-  pop      ebx
-end;
-{$ELSE}
+{$IFDEF PUREPASCAL}
 begin
  ReverseEndian4(source, frames);
  Int32LSB18ToSingle_FPU(source, target, frames);
 end;
+{$ELSE}
+asm
+  push     ebx
+  fld      Min18
+@Start:
+  mov      ebx,[eax+4*ecx-4]
+  bswap    ebx
+  mov      [eax+4*ecx-4],ebx
+  fild     [eax+4*ecx-4].DWord
+  fmul     st(0),st(1)
+  fstp     [edx+4*ecx-4].Single
+  loop     @start
+  ffree    st(0)
+  pop      ebx
+end;
 {$ENDIF}
 
 procedure Int32MSB18ToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ ReverseEndian4(source, frames);
+ Int32LSB18ToDouble_FPU(source, target, frames);
+end;
+{$ELSE}
 asm
   push     ebx
   fld      Min18
@@ -1435,38 +1440,38 @@ asm
   ffree    st(0)
   pop      ebx
 end;
-{$ELSE}
-begin
- ReverseEndian4(source, frames);
- Int32LSB18ToDouble_FPU(source, target, frames);
-end;
 {$ENDIF}
 
 procedure Int32MSB20ToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
-asm
-  push     ebx
-  fld      Min20
-@Start:
-  mov      ebx,[eax+4*ecx-4]
-  bswap    ebx
-  mov      [eax+4*ecx-4],ebx
-  fild     [eax+4*ecx-4].DWord
-  fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].Single
-  loop     @start
-  ffree    st(0)
-  pop      ebx
-end;
-{$ELSE}
+{$IFDEF PUREPASCAL}
 begin
  ReverseEndian4(source, frames);
  Int32LSB20ToSingle_FPU(source, target, frames);
 end;
+{$ELSE}
+asm
+  push     ebx
+  fld      Min20
+@Start:
+  mov      ebx,[eax+4*ecx-4]
+  bswap    ebx
+  mov      [eax+4*ecx-4],ebx
+  fild     [eax+4*ecx-4].DWord
+  fmul     st(0),st(1)
+  fstp     [edx+4*ecx-4].Single
+  loop     @start
+  ffree    st(0)
+  pop      ebx
+end;
 {$ENDIF}
 
 procedure Int32MSB20ToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ ReverseEndian4(source, frames);
+ Int32LSB20ToDouble_FPU(source, target, frames);
+end;
+{$ELSE}
 asm
   push     ebx
   fld      Min20
@@ -1481,15 +1486,15 @@ asm
   ffree    st(0)
   pop      ebx
 end;
-{$ELSE}
-begin
- ReverseEndian4(source, frames);
- Int32LSB20ToDouble_FPU(source, target, frames);
-end;
 {$ENDIF}
 
 procedure Int32MSB24ToSingle_FPU(source: pointer; target: PSingle; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ ReverseEndian4(source, frames);
+ Int32LSB24ToSingle_FPU(source, target, frames);
+end;
+{$ELSE}
 asm
   push     ebx
   fld      Min24
@@ -1504,15 +1509,15 @@ asm
   ffree    st(0)
   pop      ebx
 end;
-{$ELSE}
-begin
- ReverseEndian4(source, frames);
- Int32LSB24ToSingle_FPU(source, target, frames);
-end;
 {$ENDIF}
 
 procedure Int32MSB24ToDouble_FPU(source: pointer; target: PDouble; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ ReverseEndian4(source, frames);
+ Int32LSB24ToDouble_FPU(source, target, frames);
+end;
+{$ELSE}
 asm
   push     ebx
   fld      Min24
@@ -1526,11 +1531,6 @@ asm
   loop     @start
   ffree    st(0)
   pop      ebx
-end;
-{$ELSE}
-begin
- ReverseEndian4(source, frames);
- Int32LSB24ToDouble_FPU(source, target, frames);
 end;
 {$ENDIF}
 
@@ -1667,7 +1667,19 @@ end;
 
 
 procedure SingleToInt24LSB_FPU(source: PSingle; target: pointer; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+var
+  SourceArray : PSnglArray absolute source;
+  TargetInt   : PByte absolute target;
+  i           : Integer;
+begin
+ for i := 0 to Frames - 1 do
+  begin
+   PInteger(TargetInt)^ := round(SourceArray^[i] * Max24);
+   Inc(TargetInt, 3);
+  end;
+end;
+{$ELSE}
 asm
   push ebx
   fld   Max24         //for speed
@@ -1685,18 +1697,6 @@ asm
   jnz   @Start
   ffree st(0)
   pop ebx
-end;
-{$ELSE}
-var
-  SourceArray : PSnglArray absolute source;
-  TargetInt   : PByte absolute target;
-  i           : Integer;
-begin
- for i := 0 to Frames - 1 do
-  begin
-   PInteger(TargetInt)^ := round(SourceArray^[i] * Max24);
-   Inc(TargetInt, 3);
-  end;
 end;
 {$ENDIF}
 
@@ -1869,9 +1869,9 @@ procedure DoubleToInt32LSB_FPU(source: PDouble; target: pointer; frames: longint
 asm
   fld   MaxLong         //for speed
  @Start:
-  fld   [eax+8*ecx-8].Double
-  fmul  st(0),st(1)
-  fistp [edx+4*ecx-4].DWord
+  fld   [eax + 8 * ecx - 8].Double
+  fmul  st(0), st(1)
+  fistp [edx + 4 * ecx - 4].DWord
   loop @Start
   ffree st(0)
 end;
@@ -2497,7 +2497,12 @@ begin
 end;
 
 procedure DoubleToSingleMSB_FPU(source: PDouble; target: pointer; frames: longint); overload;
-{$IFDEF FPU}
+{$IFDEF PUREPASCAL}
+begin
+ DoubleLSBToSingle_FPU(source, target, frames);
+ ReverseEndian4(target, frames);
+end;
+{$ELSE}
 asm
  push ebx
  @Start:
@@ -2508,11 +2513,6 @@ asm
   mov [target+4*frames-4],ebx
   loop @Start
  pop ebx
-end;
-{$ELSE}
-begin
- DoubleLSBToSingle_FPU(source, target, frames);
- ReverseEndian4(target, frames);
 end;
 {$ENDIF}
 
@@ -2663,12 +2663,29 @@ begin
  Result:=false;
  for i:=0 to Frames-1 do
   begin
-   if (v^=$7FFF) or (v^=$8000) then
+   if (v^ = $7FFF) or (v^ = $8000) then
     begin
      Result:=True;
      Exit;
     end;
    inc(v);
+  end;
+end;
+
+function ClipCheckInt24LSB_FPU(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+    b : PByte absolute source;
+begin
+ Result:=false;
+ for i := 0 to Frames - 1 do
+  begin
+   if (v^ = $7FFFFF) or (v^ = $800000) then
+    begin
+     Result:=True;
+     Exit;
+    end;
+   inc(b, 3);
   end;
 end;
 
@@ -2679,7 +2696,7 @@ begin
  Result:=false;
  for i:=0 to Frames-1 do
   begin
-   if (v^=$7FFFFFF) or (v^=$80000000) then
+   if (v^ = $7FFFFFF) or (v^ = $80000000) then
     begin
      Result:=True;
      Exit;
@@ -2695,7 +2712,7 @@ begin
  Result:=false;
  for i:=0 to Frames-1 do
   begin
-   if (v^=$7FFF) or (v^=$8000) then
+   if (v^ = $7FFF) or (v^ = $8000) then
     begin
      Result:=True;
      Exit;
@@ -2711,7 +2728,7 @@ begin
  Result:=false;
  for i:=0 to Frames-1 do
   begin
-   if (v^=$1FFFF) or (v^=$20000) then
+   if (v^ = $1FFFF) or (v^ = $20000) then
     begin
      Result:=True;
      Exit;
@@ -2727,7 +2744,7 @@ begin
  Result:=false;
  for i:=0 to Frames-1 do
   begin
-   if (v^=$7FFFF) or (v^=$80000) then
+   if (v^ = $7FFFF) or (v^ = $80000) then
     begin
      Result:=True;
      Exit;
@@ -2743,7 +2760,7 @@ begin
  Result:=false;
  for i:=0 to Frames-1 do
   begin
-   if (v^=$7FFFFF) or (v^=$800000) then
+   if (v^ = $7FFFFF) or (v^ = $800000) then
     begin
      Result:=True;
      Exit;
@@ -2767,6 +2784,7 @@ begin
     end;
    inc(v);
   end;
+end;
 {$ELSE}
 asm
  mov result, 1                 // Annahme, es klippt!
@@ -2790,8 +2808,8 @@ asm
 
  @FadeLoopEnd:
  fstp st(0)                    // clear stack
-{$ENDIF}
 end;
+{$ENDIF}
 
 function ClipCheckDoubleLSB_FPU(source: Pointer; frames: longint):Boolean;
 {$IFDEF PUREPASCAL}
@@ -2808,6 +2826,7 @@ begin
     end;
    inc(v);
   end;
+end;
 {$ELSE}
 asm
  mov result, 1                 // Annahme, es klippt!
@@ -2831,23 +2850,40 @@ asm
 
  @FadeLoopEnd:
  fstp st(0)                    // clear stack
-{$ENDIF}
 end;
+{$ENDIF}
 
 function ClipCheckInt16MSB_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PSmallInt absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames - 1 do
+  begin
+   if (v^ = $FF7F) or (v^ = $0080) then
+    begin
+     Result := True;
+     Exit;
+    end;
+   inc(v);
+  end;
+end;
+
+function ClipCheckInt24MSB_FPU(source: Pointer; frames: longint):Boolean;
+var i : Integer;
+    v : PInteger absolute source;
+    b : PByte absolute source;
+begin
+ Result := false;
+ for i := 0 to Frames - 1 do
   begin
    // ToDo BitReverse!!
-   if (v^=$7FFF) or (v^=$8000) then
+   if (v^ = $7FFFFF) or (v^ = $800000) then
     begin
      Result:=True;
      Exit;
     end;
-   inc(v);
+   inc(b, 3);
   end;
 end;
 
@@ -2855,10 +2891,10 @@ function ClipCheckInt32MSB_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PInteger absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
-   if (v^=$FFFFF7F) or (v^=$80) then
+   if (v^ = $FFFFF7F) or (v^ = $80) then
     begin
      Result:=True;
      Exit;
@@ -2874,7 +2910,7 @@ begin
  Result:=false;
  for i:=0 to Frames-1 do
   begin
-   if (v^=$7FFF) or (v^=$8000) then
+   if (v^ = $7FFF) or (v^ = $8000) then
     begin
      Result:=True;
      Exit;
@@ -2890,7 +2926,7 @@ begin
  Result:=false;
  for i:=0 to Frames-1 do
   begin
-   if (v^=$1FFFF) or (v^=$20000) then
+   if (v^ = $1FFFF) or (v^ = $20000) then
     begin
      Result:=True;
      Exit;
@@ -2906,7 +2942,7 @@ begin
  Result:=false;
  for i:=0 to Frames-1 do
   begin
-   if (v^=$7FFFF) or (v^=$80000) then
+   if (v^ = $7FFFF) or (v^ = $80000) then
     begin
      Result:=True;
      Exit;
@@ -2922,7 +2958,7 @@ begin
  Result:=false;
  for i:=0 to Frames-1 do
   begin
-   if (v^=$7FFFFF) or (v^=$800000) then
+   if (v^ = $7FFFFF) or (v^ = $800000) then
     begin
      Result:=True;
      Exit;
@@ -3066,8 +3102,8 @@ asm
 end;
 
 procedure ClipAnalog_SSE(InBuffer: PSingle; Samples: Integer);
-const c3:Single=3;
-      c6:Single=6;
+const c3:Single = 3;
+      c6:Single = 6;
       mm1sgn : array[0..3] of Integer = ($7FFFFFFF,$7FFFFFFF,$7FFFFFFF,$7FFFFFFF);
       mmc2   : array[0..3] of Single = (2,2,2,2);
       mmc3   : array[0..3] of Single = (3,3,3,3);
@@ -3937,7 +3973,7 @@ begin
   Trigger.v64          := Trigger_FPU;
 
   ClipCheckInt16MSB    := ClipCheckInt16MSB_FPU;
-//  ClipCheckInt24MSB    := ClipCheckInt24MSB_FPU;
+  ClipCheckInt24MSB    := ClipCheckInt24MSB_FPU;
   ClipCheckInt32MSB    := ClipCheckInt32MSB_FPU;
   ClipCheckSingleMSB   := ClipCheckSingleMSB_FPU;
   ClipCheckDoubleMSB   := ClipCheckDoubleMSB_FPU;
@@ -3946,7 +3982,7 @@ begin
   ClipCheckInt32MSB20  := ClipCheckInt32MSB20_FPU;
   ClipCheckInt32MSB24  := ClipCheckInt32MSB24_FPU;
   ClipCheckInt16LSB    := ClipCheckInt16LSB_FPU;
-//  ClipCheckInt24LSB    := ClipCheckInt24LSB_FPU;
+  ClipCheckInt24LSB    := ClipCheckInt24LSB_FPU;
   ClipCheckInt32LSB    := ClipCheckInt32LSB_FPU;
   ClipCheckSingleLSB   := ClipCheckSingleLSB_FPU;
   ClipCheckDoubleLSB   := ClipCheckDoubleLSB_FPU;
