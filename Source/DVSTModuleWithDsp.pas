@@ -4,7 +4,9 @@ interface
 
 {$I ASIOVST.INC}
 
-uses classes, DVSTModuleWithPrograms, DAVDProcessingComponent, DAVDCommon, DVSTCustomModule, DVSTEffect;
+uses
+  Classes, DVSTModuleWithPrograms, DAVDProcessingComponent, DVSTCustomModule,
+  DAVDCommon, DVSTEffect;
 
 type
   TProcessingMode = (pmNormal, pmBlockSave, pmCopy, pmMute, pmDspQueue);

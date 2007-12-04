@@ -9,13 +9,15 @@ uses
   Classes, Forms, DVSTEffect, DVSTShellPlugins, DVSTBasicModule, DAVDCommon;
 
 type
-  TVstCanDo = (vcdSendVstEvents,       vcdSendVstMidiEvent,      vcdSendVstTimeInfo, vcdReceiveVstEvents,
-               vcdReceiveVstMidiEvent, vcdReceiveVstTimeInfo,    vcdOffline,         vcdPlugAsChannelInsert,
-               vcdPlugAsSend,          vcdMixDryWet,             vcdNoRealTime,      vcdMultipass,
-               vcdMetapass,            vcd1in1out,               vcd1in2out,         vcd2in1out,
-               vcd2in2out,             vcd2in4out,               vcd4in2out,         vcd4in4out,
-               vcd4in8out,             vcd8in4out,               vcd8in8out,         vcdMidiProgramNames,
-               vcdLiveWithoutToolbar,  vcdConformsToWindowRules, vcdBypass);
+  TVstCanDo = (vcdSendVstEvents,      vcdSendVstMidiEvent,      vcdSendVstTimeInfo,
+               vcdReceiveVstEvents,   vcdReceiveVstMidiEvent,   vcdReceiveVstTimeInfo,
+               vcdOffline,            vcdPlugAsChannelInsert,   vcdPlugAsSend,
+               vcdMixDryWet,          vcdNoRealTime,            vcdMultipass,
+               vcdMetapass,           vcd1in1out,               vcd1in2out,
+               vcd2in1out,            vcd2in2out,               vcd2in4out,
+               vcd4in2out,            vcd4in4out,               vcd4in8out,
+               vcd8in4out,            vcd8in8out,               vcdMidiProgramNames,
+               vcdLiveWithoutToolbar, vcdConformsToWindowRules, vcdBypass);
                
   TVstCanDos = set of TVstCanDo;
 

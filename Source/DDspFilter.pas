@@ -4,12 +4,13 @@ interface
 
 {$I ASIOVST.INC}
 
-uses DDspBaseComponent, DAVDComplex, DAVDCommon;
+uses
+  Classes, DDspBaseComponent, DAVDComplex, DAVDCommon;
 
 type
   TPNType = array[0..1] of TComplexSingle;
 
-  TFilter=class(TObject)
+  TFilter=class(TPersistent)
   private
   protected
     fGain        : Double;
