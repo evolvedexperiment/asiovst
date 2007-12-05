@@ -1858,9 +1858,9 @@ procedure SingleToInt32LSB_FPU(source: PSingle; target: pointer; frames: longint
 asm
   fld   MaxLong         //for speed
  @Start:
-  fld   [eax+4*ecx-4].single
+  fld   [eax + 4 * ecx - 4].single
   fmul  st(0),st(1)
-  fistp [edx+4*ecx-4].dword;
+  fistp [edx + 4 * ecx - 4].dword;
   loop @Start
   ffree st(0)
 end;

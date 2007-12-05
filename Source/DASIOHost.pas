@@ -33,6 +33,8 @@ const
   AM_BufferSwitchTimeInfo = 2;     // new buffer index in lParam
                                    // time passed in MainForm.BufferTime
   AM_LatencyChanged       = 3;
+
+  
   PM_UpdateSamplePos      = PM_ASIO + 1;  // sample pos in wParam (hi) and lParam (lo)
 
   PM_BufferSwitch         = PM_ASIO + 2;
@@ -48,14 +50,12 @@ type
   PAsioDriverDesc = ^TAsioDriverDesc;
   TASIOBufferList = array [0..0] of TASIOBufferInfo;
   PASIOBufferList = ^TASIOBufferList;
-(*
-  TDoubleDynArray = DAVDCommon.TDoubleDynArray;
-  TSingleDynArray = DAVDCommon.TSingleDynArray;
-  TArrayOfDoubleDynArray = DAVDCommon.TArrayOfDoubleDynArray;
-  TArrayOfSingleDynArray = DAVDCommon.TArrayOfSingleDynArray;
-  PArrayOfDoubleDynArray = DAVDCommon.PArrayOfDoubleDynArray;
-  PArrayOfSingleDynArray = DAVDCommon.PArrayOfSingleDynArray;
-*)
+
+  TASIOSelectorSupport = (assEngineVersion, assResetRequest,
+                          assBufferSizeChange, assResyncRequest,
+                          assLatenciesChanged, assSupportsTimeInfo,
+                          assSupportsTimeCode, assSupportsInputMonitor);
+  TASIOSelectorSupports = set of TASIOSelectorSupport;                        
 
   TAsioDriverList = array of TAsioDriverDesc;
   TASIOCanDo = (acdInputMonitor, acdTimeInfo, acdTimeCode, acdTransport,
@@ -122,6 +122,8 @@ type
     Fpref, Fgran          : Integer;
     FBuffersCreated       : Boolean;
     FOnBufferSwitchNative : TBufferSwitchEventNative;
+    function GetInputChannelInfo(index: Integer): TASIOChannelInfo;
+    function GetOutputChannelInfo(index: Integer): TASIOChannelInfo;
   protected
     FHandle               : THandle;
     FASIOTime             : TASIOTimeSub;
@@ -152,6 +154,8 @@ type
     FInputChannelCount    : Integer;
     FOutputChannelCount   : Integer;
     FBufferSize           : Cardinal;
+    FInputChannelInfos    : array of TASIOChannelInfo;
+    FOutputChannelInfos   : array of TASIOChannelInfo;
     FInConvertors         : array of TInConvertor;
     FOutConvertors        : array of TOutConvertor;
     {$IFDEF OpenASIO}
@@ -159,6 +163,7 @@ type
     {$ELSE}
     FDriver               : IBeroASIO;
     {$ENDIF}
+    FASIOSelectorSupport  : TASIOSelectorSupports;
     procedure SetActive(Value: Boolean); virtual;
     procedure SetDriverIndex(Value: Integer); virtual;
     procedure SetDriverName(const s: String); virtual;
@@ -193,8 +198,6 @@ type
     function GetDriverList: TStrings;
     procedure ReadState(Reader: TReader); override;
   public
-    InputChannelInfos   : array of TASIOChannelInfo;
-    OutputChannelInfos  : array of TASIOChannelInfo;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure ControlPanel; virtual;
@@ -235,6 +238,9 @@ type
     property OnBuffersCreate: TNotifyEvent read FOnBuffersCreate write FOnBuffersCreate;
     property OnBuffersDestroy: TNotifyEvent read FOnBuffersDestroy write FOnBuffersDestroy;
     property DriverList: TStrings read FDriverList;
+    property SelectorSupport : TASIOSelectorSupports read FASIOSelectorSupport write FASIOSelectorSupport;
+    property InputChannelInfos[index : Integer] : TASIOChannelInfo read GetInputChannelInfo;
+    property OutputChannelInfos[index : Integer] : TASIOChannelInfo read GetOutputChannelInfo;
   end;
 
   TASIOHostBasic = class(TCustomASIOHostBasic)
@@ -253,6 +259,7 @@ type
     property InputChannelCount;
     property OutputLatency;
     property OutputChannelCount;
+    property SelectorSupport;
     property SampleRate;
     property ASIOTime;
     property OnCreate;
@@ -361,6 +368,7 @@ type
     property OutputChannelCount;
     property OutputChannelOffset;
     property ConvertOptimizations;
+    property SelectorSupport;
     property SampleRate;
     property ASIOTime;
     property OnCreate;
@@ -715,14 +723,14 @@ begin
   kASIOSelectorSupported    :   // return 1 if a selector is supported
    begin
     case value of
-     kASIOEngineVersion        :  Result := 1;
-     kASIOResetRequest         :  Result := 1;
-     kASIOBufferSizeChange     :  Result := 0;
-     kASIOResyncRequest        :  Result := 1;
-     kASIOLatenciesChanged     :  Result := 1;
-     kASIOSupportsTimeInfo     :  Result := 1;
-     kASIOSupportsTimeCode     :  Result := 1;
-     kASIOSupportsInputMonitor :  Result := 0;
+     kASIOEngineVersion        : if assigned(theHost) then Result := Integer(assEngineVersion in theHost.FASIOSelectorSupport) else Result := 1;
+     kASIOResetRequest         : if assigned(theHost) then Result := Integer(assResetRequest in theHost.FASIOSelectorSupport) else Result := 1;
+     kASIOBufferSizeChange     : if assigned(theHost) then Result := Integer(assBufferSizeChange in theHost.FASIOSelectorSupport) else Result := 1;
+     kASIOResyncRequest        : if assigned(theHost) then Result := Integer(assResyncRequest in theHost.FASIOSelectorSupport) else Result := 1;
+     kASIOLatenciesChanged     : if assigned(theHost) then Result := Integer(assLatenciesChanged in theHost.FASIOSelectorSupport) else Result := 1;
+     kASIOSupportsTimeInfo     : if assigned(theHost) then Result := Integer(assSupportsTimeInfo in theHost.FASIOSelectorSupport) else Result := 0;
+     kASIOSupportsTimeCode     : if assigned(theHost) then Result := Integer(assSupportsTimeCode in theHost.FASIOSelectorSupport) else Result := 0;
+     kASIOSupportsInputMonitor : if assigned(theHost) then Result := Integer(assSupportsInputMonitor in theHost.FASIOSelectorSupport) else Result := 0;
     end;
    end;
   kASIOEngineVersion        :  Result := 2;   // ASIO 2 is supported
@@ -752,8 +760,14 @@ begin
     Result := 1;
    end;
   kASIOSupportsTimeInfo     :  Result := 1;
-  kASIOSupportsTimeCode     :  Result := 0;
-  kASIOSupportsInputMonitor :  Result := 0;
+  kASIOSupportsTimeCode     :
+   begin
+    Result := 0;
+   end;
+  kASIOSupportsInputMonitor :
+   begin
+    Result := 1;
+   end;
  end;
 end;
 
@@ -771,6 +785,9 @@ begin
   FSampleRate := 44100;
   FASIOTime := TASIOTimeSub.Create;
   FDriverList := GetDriverList;
+  FASIOSelectorSupport := [assEngineVersion, assResetRequest,
+                           assBufferSizeChange, assResyncRequest,
+                           assLatenciesChanged];
 
   // set the callbacks record fields
   FCallbacks.bufferSwitch := ASIOBufferSwitch;
@@ -883,10 +900,10 @@ var i             : integer;
     currentbuffer : PASIOBufferInfo;
 begin
  if FDriver = nil then
- begin
-  result := false;
-  Exit;
- end;
+  begin
+   result := false;
+   Exit;
+  end;
  if FBuffersCreated then DestroyBuffers;
  FDriver.GetBufferSize(Fmin, Fmax, Fpref, Fgran);
  if Fmin = Fmax then Fpref := Fmin;
@@ -900,15 +917,15 @@ begin
  GetMem(FUnAlignedBuffer, SizeOf(TAsioBufferInfo) * (FInputChannelCount + FOutputChannelCount) + 16);
  FInputBuffer := PASIOBufferInfo(Integer(FUnAlignedBuffer)+16-(Integer(FUnAlignedBuffer) mod 16));
 
- SetLength(InputChannelInfos, FInputChannelCount);
+ SetLength(fInputChannelInfos, FInputChannelCount);
  SetLength(FInConvertors, FInputChannelCount);
  currentbuffer := FInputBuffer;
  for i := 0 to FInputChannelCount - 1 do
   begin
-   InputChannelInfos[i].channel := i;
-   InputChannelInfos[i].isInput := ASIOTrue;
-   FDriver.GetChannelInfo(InputChannelInfos[i]);
-    case InputChannelInfos[i].vType of
+   FInputChannelInfos[i].channel := i;
+   FInputChannelInfos[i].isInput := ASIOTrue;
+   FDriver.GetChannelInfo(FInputChannelInfos[i]);
+    case FInputChannelInfos[i].vType of
      ASIOSTInt16MSB:   FInConvertors[i] := FromInt16MSB;
      ASIOSTInt24MSB:   FInConvertors[i] := FromInt24MSB;
      ASIOSTInt32MSB:   FInConvertors[i] := FromInt32MSB;
@@ -937,14 +954,14 @@ begin
   end;
 
  FOutputBuffer := currentbuffer;
- SetLength(OutputChannelInfos, FOutputChannelCount);
+ SetLength(FOutputChannelInfos, FOutputChannelCount);
  SetLength(FOutConvertors, FOutputChannelCount);
  for i := 0 to FOutputChannelCount - 1 do
   begin
-   OutputChannelInfos[i].channel := i;
-   OutputChannelInfos[i].isInput := ASIOFalse;   //  output
-   FDriver.GetChannelInfo(OutputChannelInfos[i]);
-   case OutputChannelInfos[i].vType of
+   FOutputChannelInfos[i].channel := i;
+   FOutputChannelInfos[i].isInput := ASIOFalse;   //  output
+   FDriver.GetChannelInfo(FOutputChannelInfos[i]);
+   case FOutputChannelInfos[i].vType of
     ASIOSTInt16MSB:   FOutConvertors[i] := ToInt16MSB;
     ASIOSTInt24MSB:   FOutConvertors[i] := ToInt24MSB;
     ASIOSTInt32MSB:   FOutConvertors[i] := ToInt32MSB;
@@ -977,6 +994,11 @@ begin
  if Assigned (FOnBuffersCreate) then FOnBuffersCreate(Self);
  if Assigned (FOnLatencyChanged) then FOnLatencyChanged(Self);
  Randomize;
+
+{
+ ASIOMessage()
+    ASIOInputMonitor  TASIOInputMonitor
+}
 end;
 
 procedure TCustomASIOHostBasic.DestroyBuffers;
@@ -995,8 +1017,8 @@ begin
   except
   end;
   FBuffersCreated := false;
-  SetLength(InputChannelInfos, 0);
-  SetLength(OutputChannelInfos, 0);
+  SetLength(FInputChannelInfos, 0);
+  SetLength(FOutputChannelInfos, 0);
  end;
 end;
 
@@ -1187,7 +1209,7 @@ begin
   begin
    currentbuffer := FOutputBuffer;
    for i := 0 to FOutputChannelCount - 1 do
-    with OutputChannelInfos[i] do
+    with FOutputChannelInfos[i] do
      begin
       if vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz := SizeOf(Word) else
       if vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz := 3 else
@@ -1201,10 +1223,10 @@ begin
    currentbuffer := FInputBuffer;
    for i := 0 to FInputChannelCount - 1 do
     begin
-     if InputChannelInfos[i].vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz := SizeOf(Word) else
-     if InputChannelInfos[i].vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz := 3 else
-     if InputChannelInfos[i].vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
-     if InputChannelInfos[i].vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
+     if FInputChannelInfos[i].vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz := SizeOf(Word) else
+     if FInputChannelInfos[i].vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz := 3 else
+     if FInputChannelInfos[i].vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
+     if FInputChannelInfos[i].vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
       else sz:=SizeOf(Integer);
      FillChar(currentbuffer^.buffers[0]^, FBufferSize * sz, 0);
      FillChar(currentbuffer^.buffers[1]^, FBufferSize * sz, 0);
@@ -1242,6 +1264,20 @@ procedure TCustomASIOHostBasic.PMBufferSwitchTimeInfo(var Message: TMessage);
 {$ENDIF}
 begin
  BufferSwitchTimeInfo(Message.LParam, ASIOTime.FBufferTime);
+end;
+
+function TCustomASIOHostBasic.GetInputChannelInfo(index: Integer): TASIOChannelInfo;
+begin
+ assert(index >= 0);
+ assert(index < FInputChannelCount);
+ result := FInputChannelInfos[index];
+end;
+
+function TCustomASIOHostBasic.GetOutputChannelInfo(index: Integer): TASIOChannelInfo;
+begin
+ assert(index >= 0);
+ assert(index < FOutputChannelCount);
+ result := FOutputChannelInfos[index];
 end;
 
 function TCustomASIOHostBasic.GetInputMeter(Channel:Integer): Integer;
@@ -1487,17 +1523,17 @@ begin
  GetMem(FUnAlignedBuffer, SizeOf(TAsioBufferInfo) * (FInputChannelCount + FOutputChannelCount) + 16);
  FInputBuffer := PASIOBufferInfo(Integer(FUnAlignedBuffer)+16-(Integer(FUnAlignedBuffer) mod 16));
 
- SetLength(InputChannelInfos, FInputChannelCount);
+ SetLength(FInputChannelInfos, FInputChannelCount);
  SetLength(FSingleInBuffer, FInputChannelCount);
  SetLength(FDoubleInBuffer, FInputChannelCount);
  SetLength(FInConvertors, FInputChannelCount);
  currentbuffer := FInputBuffer;
  for i := 0 to FInputChannelCount - 1 do
   begin
-   InputChannelInfos[i].channel := i;
-   InputChannelInfos[i].isInput := ASIOTrue;
-   FDriver.GetChannelInfo(InputChannelInfos[i]);
-    case InputChannelInfos[i].vType of
+   FInputChannelInfos[i].channel := i;
+   FInputChannelInfos[i].isInput := ASIOTrue;
+   FDriver.GetChannelInfo(FInputChannelInfos[i]);
+    case FInputChannelInfos[i].vType of
      ASIOSTInt16MSB:   FInConvertors[i] := FromInt16MSB;
      ASIOSTInt24MSB:   FInConvertors[i] := FromInt24MSB;
      ASIOSTInt32MSB:   FInConvertors[i] := FromInt32MSB;
@@ -1530,16 +1566,16 @@ begin
   end;
 
  FOutputBuffer := currentbuffer;
- SetLength(OutputChannelInfos, FOutputChannelCount);
+ SetLength(FOutputChannelInfos, FOutputChannelCount);
  SetLength(FSingleOutBuffer, FOutputChannelCount);
  SetLength(FDoubleOutBuffer, FOutputChannelCount);
  SetLength(FOutConvertors, FOutputChannelCount);
  for i := 0 to FOutputChannelCount - 1 do
   begin
-   OutputChannelInfos[i].channel := i;
-   OutputChannelInfos[i].isInput := ASIOFalse;   //  output
-   FDriver.GetChannelInfo(OutputChannelInfos[i]);
-   case OutputChannelInfos[i].vType of
+   FOutputChannelInfos[i].channel := i;
+   FOutputChannelInfos[i].isInput := ASIOFalse;   //  output
+   FDriver.GetChannelInfo(FOutputChannelInfos[i]);
+   case FOutputChannelInfos[i].vType of
     ASIOSTInt16MSB:   FOutConvertors[i] := ToInt16MSB;
     ASIOSTInt24MSB:   FOutConvertors[i] := ToInt24MSB;
     ASIOSTInt32MSB:   FOutConvertors[i] := ToInt32MSB;
@@ -1596,8 +1632,8 @@ begin
   FBuffersCreated := false;
   FSingleInBuffer := nil;
   FSingleOutBuffer := nil;
-  SetLength(InputChannelInfos, 0);
-  SetLength(OutputChannelInfos, 0);
+  SetLength(FInputChannelInfos, 0);
+  SetLength(FOutputChannelInfos, 0);
  end;
 end;
 

@@ -37,7 +37,7 @@ object FmASIO: TFmASIO
     Width = 310
     Height = 13
     Caption = 
-      '(C)opyright in 2004-2006 by  Christian Budde and Tobias Fleische' +
+      '(C)opyright in 2004-2007 by  Christian Budde and Tobias Fleische' +
       'r'
   end
   object LbFreq: TLabel
@@ -140,6 +140,7 @@ object FmASIO: TFmASIO
     CanDos = []
     PreventClipping = pcDigital
     ConvertOptimizations = [coSSE]
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     SampleRate = 44100.000000000000000000
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000

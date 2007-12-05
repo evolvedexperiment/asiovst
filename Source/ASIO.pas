@@ -173,11 +173,11 @@ const
 
 type
   TASIOTimeCode = packed record
-    speed           : double;        // speed relation (fraction of nominal speed)
+    speed           : Double;        // speed relation (fraction of nominal speed)
 	                                    // optional; set to 0. or 1. if not supported
     timecodeSamples : TASIOSamples;  // time in samples
-    flags           : longword;      // some information flags (see below)
-    future          : array[0..63] of char;
+    flags           : Longword;      // some information flags (see below)
+    future          : array[0..63] of Char;
   end;
 
 type
@@ -187,22 +187,22 @@ const
   kTcValid      = 1;
   kTcRunning    = 1 shl 1;
   kTcReverse    = 1 shl 2;
-  TcOnspeed     = 1 shl 3;
+  kTcOnspeed    = 1 shl 3;
   kTcStill      = 1 shl 4;
   kTcSpeedValid = 1 shl 8;
 
 type
   TAsioTimeInfo = packed record
-    speed          : double;           // absolute speed (1. = nominal)
+    speed          : Double;           // absolute speed (1. = nominal)
     systemTime     : TASIOTimeStamp;   // system time related to samplePosition, in nanoseconds
 	                                      // on mac, must be derived from Microseconds() (not UpTime()!)
 	                                      // on windows, must be derived from timeGetTime()
     samplePosition : TASIOSamples;
     sampleRate     : TASIOSampleRate;  // current rate
-    flags          : longword;         // (see below)
+    flags          : Longword;         // (see below)
     reserved       : array[0..11] of char;
   end;
-  TAsioTimeInfoFlags = longint;
+  TAsioTimeInfoFlags = Longint;
 
 const
   kSystemTimeValid     = 1;            // must always be valid
@@ -447,7 +447,7 @@ type
   end;
 
 const
-  kAsioEnableTimeCodeRead  = 1;    // no arguments
+  kAsioEnableTimeCodeRead  =  1;    // no arguments
   kAsioDisableTimeCodeRead =	2;    // no arguments
   kAsioSetInputMonitor     =	3;    // ASIOInputMonitor* in params
   kAsioTransport           =	4;    // ASIOTransportParameters* in params
@@ -467,8 +467,8 @@ const
   // DSD support
   // The following extensions are required to allow switching
   // and control of the DSD subsystem.
-  kAsioSetIoFormat	        = $23111961; // ASIOIoFormat * in params.
-  kAsioGetIoFormat	        = $23111983; // ASIOIoFormat * in params.
+  kAsioSetIoFormat	       = $23111961; // ASIOIoFormat * in params.
+  kAsioGetIoFormat	       = $23111983; // ASIOIoFormat * in params.
   kAsioCanDoIoFormat       = $23112004; // ASIOIoFormat * in params.
 
 type

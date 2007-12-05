@@ -34,21 +34,19 @@ type
     procedure SbVolumeChange(Sender: TObject);
     procedure SbPanChange(Sender: TObject);
     procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfDoubleDynArray);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-      OutBuffer: TAVDArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
   private
     procedure SetFrequency(const Value: Double);
   public
     fAngle, fPosition   : TComplexDouble;
     fPan, fFreq, fVol   : Double;
+    fChannelOffset      : Byte;
   published
     property Frequency : Double read fFreq write SetFrequency;
   end;
 
 var
   FmASIO        : TFmASIO;
-  VolumeFactor  : Single = 1;
-  ChannelOffset : Byte = 0;
 
 implementation
 
@@ -80,14 +78,17 @@ begin
    Free;
   end;
 
- fPosition.Re:=0;
- fPosition.Im:=-1;
- fFreq := 1000; fPan:=0.5; fVol:=1;
+ fPosition.Re   :=    0;
+ fPosition.Im   :=   -1;
+ fFreq          := 1000;
+ fPan           :=    0.5;
+ fVol           :=    1;
+ fChannelOffset :=    0;
  GetSinCos(2 * Pi * fFreq / ASIOHost.SampleRate, fAngle.Im, fAngle.Re);
 end;
 
 procedure TFmASIO.DriverComboChange(Sender: TObject);
-var i        : Integer;
+var i : Integer;
 begin
  Bt_CP.Enabled := False;
  Bt_Play.Enabled := False;
@@ -148,7 +149,7 @@ end;
 
 procedure TFmASIO.ChannelBoxChange(Sender: TObject);
 begin
- ChannelOffset := ChannelBox.ItemIndex * 2;
+ fChannelOffset := ChannelBox.ItemIndex * 2;
 end;
 
 procedure TFmASIO.SbFreqChange(Sender: TObject);
