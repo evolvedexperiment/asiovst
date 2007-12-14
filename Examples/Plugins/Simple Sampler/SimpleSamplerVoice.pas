@@ -46,15 +46,15 @@ uses DAVDCommon, SimpleSamplerModule, DDspInterpolation;
 
 constructor TSimpleSamplerVoice.Create(theModule: TVSTModule);
 begin
- fVSTModule:=theModule;
+ fVSTModule       := theModule;
  if theModule.SampleRate=0
-  then SampleRate:=44100
-  else SampleRate:=theModule.SampleRate;
- fPosition.Re:=0;
- fPosition.Im:=-1;
- fSamplePos:=0;
- fSampleFrac:=0;
- fSampleInc:=0;
+  then SampleRate := 44100
+  else SampleRate := theModule.SampleRate;
+ fPosition.Re     :=  0;
+ fPosition.Im     := -1;
+ fSamplePos       :=  0;
+ fSampleFrac      :=  0;
+ fSampleInc       :=  0;
 end;
 
 destructor TSimpleSamplerVoice.Destroy;
@@ -64,12 +64,12 @@ end;
 
 function TSimpleSamplerVoice.GetSampleRate: Single;
 begin
- result:=fSampleRate;
+ result := fSampleRate;
 end;
 
 procedure TSimpleSamplerVoice.SetSampleRate(v: Single);
 begin
- if (v > 0) then fSampleRate:=v;
+ if (v > 0) then fSampleRate := v;
 end;
 
 function TSimpleSamplerVoice.Process: Single;
@@ -82,16 +82,16 @@ begin
   end
  else
   begin
-   Result:=fAmplitude*Hermite_asm(fSampleFrac, @fMem[0]);
-   fSampleFrac:=fSampleFrac+fSampleInc;
-   while fSampleFrac>=1 do
+   Result := fAmplitude * Hermite32_asm(fSampleFrac, @fMem[0]);
+   fSampleFrac := fSampleFrac + fSampleInc;
+   while fSampleFrac >= 1 do
      begin
       inc(fSamplePos);
-      if fSamplePos>=Length(TVSTSSModule(fVSTModule).Sample)
-       then fSamplePos:=0;
-      fSampleFrac:=fSampleFrac-1;
-      Move(fMem[1],fMem[0],12);
-      fMem[3]:=TVSTSSModule(fVSTModule).Sample[fSamplePos];
+      if fSamplePos >= Length(TVSTSSModule(fVSTModule).Sample)
+       then fSamplePos := 0;
+      fSampleFrac := fSampleFrac - 1;
+      Move(fMem[1], fMem[0], 12);
+      fMem[3] := TVSTSSModule(fVSTModule).Sample[fSamplePos];
      end;
   end;
 end;
@@ -105,20 +105,20 @@ procedure TSimpleSamplerVoice.SetFrequency(Frequency: Single);
    fstp [SinValue].Double;
   end;
 begin
- fFrequency:=Frequency;
- fSampleInc:=Frequency/440;
- GetSinCos(2*Pi*fFrequency/fSampleRate,fAngle.Im,fAngle.Re);
+ fFrequency := Frequency;
+ fSampleInc := Frequency / 440;
+ GetSinCos(2 * Pi * fFrequency / fSampleRate, fAngle.Im, fAngle.Re);
 end;
 
 procedure TSimpleSamplerVoice.NoteOn(Frequency, Amplitude: Single);
 begin
  SetFrequency(Frequency);
- fAmplitude:=Amplitude;
+ fAmplitude := Amplitude;
 end;
 
 procedure TSimpleSamplerVoice.NoteOff;
 begin
- fAmplitude:=0;
+ fAmplitude := 0;
 end;
 
 end.
