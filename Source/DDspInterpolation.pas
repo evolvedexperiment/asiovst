@@ -9,13 +9,14 @@ interface
   function Hermite2(const x,y0,y1,y2,y3:Single):Single;
   function Hermite3(const x,y0,y1,y2,y3:Single):Single;
   function Hermite4(const frac_pos, xm1, x0, x1, x2: Single): Single;
-  function Hermite_asm(const frac_pos: Single; pntr : PSingle) : Single;
+  function Hermite32_asm(const frac_pos: Single; pntr : PSingle) : Single;
+  function Hermite64_asm(const frac_pos: Double; pntr : PDouble) : Double;
   function LinearInterpolation(f,a,b:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function CubicInterpolation(fr,inm1,inp,inp1,inp2:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
 
 implementation
 
-function Hermite_asm(const frac_pos: Single; pntr : PSingle) : Single;
+function Hermite32_asm(const frac_pos: Single; pntr : PSingle) : Single;
 // Parameter explanation:
 // frac_pos: fractional value [0.0f - 1.0f] to interpolator
 // pntr: pointer to float array where:
@@ -26,12 +27,12 @@ function Hermite_asm(const frac_pos: Single; pntr : PSingle) : Single;
 // The interpolation takes place between pntr[1] and pntr[2].
 const c_half : Double = 0.5;
 asm
- fld dword ptr [pntr+8];       // x1
- fsub dword ptr [pntr];        // x1-xm1
- fld dword ptr [pntr+4];       // x0           x1-xm1
- fsub dword ptr [pntr+8];      // v            x1-xm1
- fld dword ptr [pntr+12];      // x2           v            x1-xm1
- fsub dword ptr [pntr+4];      // x2-x0        v            x1-xm1
+ fld  [pntr+8].Single;         // x1
+ fsub [pntr].Single;           // x1-xm1
+ fld  [pntr+4].Single;         // x0           x1-xm1
+ fsub [pntr+8].Single;         // v            x1-xm1
+ fld  [pntr+12].Single;        // x2           v            x1-xm1
+ fsub [pntr+4].Single;         // x2-x0        v            x1-xm1
  fxch st(2);                   // x1-m1        v            x2-x0
  fmul c_half;                  // c            v            x2-x0
  fxch st(2);                   // x2-x0        v            c
@@ -48,7 +49,43 @@ asm
  fmul frac_pos.Single;         // (a*f-b)*f    c
  faddp st(1), st(0);           // res-x0/f
  fmul frac_pos.Single;         // res-x0
- fadd dword ptr [pntr+4]       // res
+ fadd [pntr+4].Single          // res
+end;
+
+function Hermite64_asm(const frac_pos: Double; pntr : PDouble) : Double;
+// Parameter explanation:
+// frac_pos: fractional value [0.0f - 1.0f] to interpolator
+// pntr: pointer to float array where:
+// pntr[0] = previous sample (idx = -1)
+// pntr[1] = current sample (idx = 0)
+// pntr[2] = next sample (idx = +1)
+// pntr[3] = after next sample (idx = +2)
+// The interpolation takes place between pntr[1] and pntr[2].
+const c_half : Double = 0.5;
+asm
+ fld  [pntr+16].Double;        // x1
+ fsub [pntr].Double;           // x1-xm1
+ fld  [pntr+8].Double;         // x0           x1-xm1
+ fsub [pntr+16].Double;        // v            x1-xm1
+ fld  [pntr+24].Double;        // x2           v            x1-xm1
+ fsub [pntr+8].Double;         // x2-x0        v            x1-xm1
+ fxch st(2);                   // x1-m1        v            x2-x0
+ fmul c_half;                  // c            v            x2-x0
+ fxch st(2);                   // x2-x0        v            c
+ fmul c_half;                  // 0.5*(x2-x0)  v            c
+ fxch st(2);                   // c            v            0.5*(x2-x0)
+ fst st(3);                    // c            v            0.5*(x2-x0)  c
+ fadd st(0), st(1);            // w            v            0.5*(x2-x0)  c
+ fxch st(2);                   // 0.5*(x2-x0)  v            w            c
+ faddp st(1), st(0);           // v+.5(x2-x0)  w            c
+ fadd st(0), st(1);            // a            w            c
+ fadd st(1), st(0);            // a            b_neg        c
+ fmul frac_pos.Double;         // a*frac       b_neg        c
+ fsubrp st(1), st(0);          // a*f-b        c
+ fmul frac_pos.Double;         // (a*f-b)*f    c
+ faddp st(1), st(0);           // res-x0/f
+ fmul frac_pos.Double;         // res-x0
+ fadd [pntr+8].Double          // res
 end;
 
 function Hermite1(const x,y0,y1,y2,y3:Single):Single;
