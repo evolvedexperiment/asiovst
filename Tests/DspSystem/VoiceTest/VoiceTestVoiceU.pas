@@ -4,11 +4,12 @@ interface
 
 uses
   SysUtils, Classes, DDspVoice, DAVDProcessingComponent, DDspBaseComponent,
-  DDSPBaseOsc, DDSPOscSaw, DDSPOscSine;
+  DDSPBaseOsc, DDSPOscSaw, DDSPOscSine, DDspEnvelope, DDspEnvelopeFollower;
 
 type
   TVoiceTestVoice = class(TDspVoice)
     DspOscSine1: TDspOscSine;
+    DspEnvelope1: TDspEnvelope;
     procedure DspVoiceCreate(Sender: TObject);
   private
     { Private declarations }

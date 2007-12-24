@@ -42,26 +42,13 @@ type
     procedure UpdateParameters; virtual;
     procedure TrailingSamplesChanged; virtual;
     procedure BeforeDestroy; virtual;
+    procedure UpdateProcessingFunc; virtual;
 
     procedure RegisterInOwner(item: TDspBaseComponent);
     procedure UnRegisterInOwner(item: TDspBaseComponent);
-  public
-    constructor Create(AOwner: TComponent); overload; override;
-    constructor Create(AOwner: TComponent; UseSampleRate: Integer); reintroduce; overload;
-    destructor Destroy; override;
 
-    procedure Init; override;       // called automaticaly in constructor
-    procedure Reset; override;      // called manualy
-    procedure ResetQueue; override;
+    procedure IncProcessSampleCount(SampleCount: Integer = 0; Channel: integer = -1); virtual;
 
-    procedure NoteOff; override;
-    procedure NoteOffQueue; override;
-
-    function  GetFollowingItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
-    function  GetPreviousItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
-    function  GetQueueItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
-
-    
     procedure ProcessSilence    (var Data: Single; const channel: integer); overload; virtual;
     procedure ProcessBypass     (var Data: Single; const channel: integer); overload; virtual;
     procedure ProcessQueueBasic (var Data: Single; const channel: integer); overload; virtual;
@@ -96,7 +83,24 @@ type
     procedure ProcessBasic      (var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
     procedure ProcessQueueBasic (var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
     procedure ProcessQueueBypass(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
+  public
+    constructor Create(AOwner: TComponent); overload; override;
+    constructor Create(AOwner: TComponent; UseSampleRate: Integer); reintroduce; overload;
+    destructor Destroy; override;
 
+    procedure Init; override;       // called automaticaly in constructor
+    procedure Reset; override;      // called manualy
+    procedure ResetQueue; override;
+
+    procedure NoteOff; override;
+    procedure NoteOffQueue; override;
+
+    function  GetFollowingItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
+    function  GetPreviousItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
+    function  GetQueueItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
+
+    
+    
     procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); override;
     procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); override;
 
@@ -117,6 +121,7 @@ uses Sysutils, Math, DVSTModuleWithDsp, DDspVoice
 constructor TDspBaseComponent.Create(AOwner: TComponent);
 begin
   inherited;
+
   fNextDspQueueItem := nil;
   fPrevDspQueueItem := nil;
   fEnabled          := true;
@@ -139,12 +144,12 @@ begin
   fStdProcessQueueSAA:= ProcessQueueBasic;
   fStdProcessQueueDAA:= ProcessQueueBasic;
 
+  RegisterInOwner(self);
+
   Init;
 
-  SetEnabled(fEnabled);
-  SetBypass(fBypass);
-
-  RegisterInOwner(self);
+  UpdateProcessingFunc;
+  
 end;
 
 constructor TDspBaseComponent.Create(AOwner: TComponent; UseSampleRate: Integer);
@@ -183,10 +188,13 @@ begin
   else if Owner is TDspVoice     then (Owner as TDspVoice    ).UnRegisterDSPItem(item);
 end;
 
-procedure TDspBaseComponent.Init;  begin end;
+// abstract, but may be never overridden
+procedure TDspBaseComponent.Init; begin end;
 procedure TDspBaseComponent.Reset; begin end;
 procedure TDspBaseComponent.UpdateParameters; begin end;
 procedure TDspBaseComponent.NoteOff; begin end;
+procedure TDspBaseComponent.IncProcessSampleCount(SampleCount, Channel: integer);
+begin end;
 
 procedure TDspBaseComponent.SampleRateChanged;
 begin
@@ -289,8 +297,7 @@ begin
     end;
 
     // Important
-    SetEnabled(fEnabled);
-    SetBypass(fBypass);
+    UpdateProcessingFunc;
   end;
 end;
 
@@ -330,96 +337,81 @@ end;
 
 procedure TDspBaseComponent.SetBypass(const Value: Boolean);
 begin
-  fBypass := Value;
-  if not fEnabled then exit;
-
-  if Value then
+  if fBypass <> Value then
   begin
-    // bypass everything
-    fProcessS  := ProcessBypass;
-    fProcessD  := ProcessBypass;
-    fProcessSA := ProcessBypass;
-    fProcessDA := ProcessBypass;
-    fProcessSAA:= ProcessBypass;
-    fProcessDAA:= ProcessBypass;
-
-    if assigned(fNextDspQueueItem) then
-    begin
-      // ignore this item and call directly the next item
-      fProcessQueueS  := ProcessQueueBypass;
-      fProcessQueueD  := ProcessQueueBypass;
-      fProcessQueueSA := ProcessQueueBypass;
-      fProcessQueueDA := ProcessQueueBypass;
-      fProcessQueueSAA:= ProcessQueueBypass;
-      fProcessQueueDAA:= ProcessQueueBypass;
-    end else begin
-      // bypass this item and there is no next item, so don't call it
-      fProcessQueueS  := ProcessBypass;
-      fProcessQueueD  := ProcessBypass;
-      fProcessQueueSA := ProcessBypass;
-      fProcessQueueDA := ProcessBypass;
-      fProcessQueueSAA:= ProcessBypass;
-      fProcessQueueDAA:= ProcessBypass;
-    end;
-  end else begin
-    // process item
-    fProcessS  := fStdProcessS;
-    fProcessD  := fStdProcessD;
-    fProcessSA := fStdProcessSA;
-    fProcessDA := fStdProcessDA;
-    fProcessSAA:= fStdProcessSAA;
-    fProcessDAA:= fStdProcessDAA;
-
-    if assigned(fNextDspQueueItem) then
-    begin
-      // process this item and pass output to the next
-      fProcessQueueS  := fStdProcessQueueS;
-      fProcessQueueD  := fStdProcessQueueD;
-      fProcessQueueSA := fStdProcessQueueSA;
-      fProcessQueueDA := fStdProcessQueueDA;
-      fProcessQueueSAA:= fStdProcessQueueSAA;
-      fProcessQueueDAA:= fStdProcessQueueDAA;
-    end else begin
-      // only process this item
-      fProcessQueueS  := fStdProcessS;
-      fProcessQueueD  := fStdProcessD;
-      fProcessQueueSA := fStdProcessSA;
-      fProcessQueueDA := fStdProcessDA;
-      fProcessQueueSAA:= fStdProcessSAA;
-      fProcessQueueDAA:= fStdProcessDAA;
-    end;
+    fBypass := Value;
+    UpdateProcessingFunc;
   end;
 end;
 
 procedure TDspBaseComponent.SetEnabled(const Value: Boolean);
 begin
-  if Value then
+  if fEnabled <> Value then
   begin
-    // enable everything
-    fProcessS  := fStdProcessS;
-    fProcessD  := fStdProcessD;
-    fProcessSA := fStdProcessSA;
-    fProcessDA := fStdProcessDA;
-    fProcessSAA:= fStdProcessSAA;
-    fProcessDAA:= fStdProcessDAA;
+    fEnabled := Value;
+    UpdateProcessingFunc;
+  end;
+end;
 
-    if assigned(fNextDspQueueItem) then
+procedure TDspBaseComponent.UpdateProcessingFunc;
+begin
+  if fEnabled then
+  begin
+    if fBypass then
     begin
-      // process this item and pass output to the next
-      fProcessQueueS  := fStdProcessQueueS;
-      fProcessQueueD  := fStdProcessQueueD;
-      fProcessQueueSA := fStdProcessQueueSA;
-      fProcessQueueDA := fStdProcessQueueDA;
-      fProcessQueueSAA:= fStdProcessQueueSAA;
-      fProcessQueueDAA:= fStdProcessQueueDAA;
+      // bypass everything
+      fProcessS  := ProcessBypass;
+      fProcessD  := ProcessBypass;
+      fProcessSA := ProcessBypass;
+      fProcessDA := ProcessBypass;
+      fProcessSAA:= ProcessBypass;
+      fProcessDAA:= ProcessBypass;
+
+      if assigned(fNextDspQueueItem) then
+      begin
+        // ignore this item and call directly the next item
+        fProcessQueueS  := ProcessQueueBypass;
+        fProcessQueueD  := ProcessQueueBypass;
+        fProcessQueueSA := ProcessQueueBypass;
+        fProcessQueueDA := ProcessQueueBypass;
+        fProcessQueueSAA:= ProcessQueueBypass;
+        fProcessQueueDAA:= ProcessQueueBypass;
+      end else begin
+        // bypass this item and there is no next item, so don't call it
+        fProcessQueueS  := ProcessBypass;
+        fProcessQueueD  := ProcessBypass;
+        fProcessQueueSA := ProcessBypass;
+        fProcessQueueDA := ProcessBypass;
+        fProcessQueueSAA:= ProcessBypass;
+        fProcessQueueDAA:= ProcessBypass;
+      end;
     end else begin
-      // only Process this item
-      fProcessQueueS  := fStdProcessS;
-      fProcessQueueD  := fStdProcessD;
-      fProcessQueueSA := fStdProcessSA;
-      fProcessQueueDA := fStdProcessDA;
-      fProcessQueueSAA:= fStdProcessSAA;
-      fProcessQueueDAA:= fStdProcessDAA;
+      // process item
+      fProcessS  := fStdProcessS;
+      fProcessD  := fStdProcessD;
+      fProcessSA := fStdProcessSA;
+      fProcessDA := fStdProcessDA;
+      fProcessSAA:= fStdProcessSAA;
+      fProcessDAA:= fStdProcessDAA;
+
+      if assigned(fNextDspQueueItem) then
+      begin
+        // process this item and pass output to the next
+        fProcessQueueS  := fStdProcessQueueS;
+        fProcessQueueD  := fStdProcessQueueD;
+        fProcessQueueSA := fStdProcessQueueSA;
+        fProcessQueueDA := fStdProcessQueueDA;
+        fProcessQueueSAA:= fStdProcessQueueSAA;
+        fProcessQueueDAA:= fStdProcessQueueDAA;
+      end else begin
+        // only process this item
+        fProcessQueueS  := fStdProcessS;
+        fProcessQueueD  := fStdProcessD;
+        fProcessQueueSA := fStdProcessSA;
+        fProcessQueueDA := fStdProcessDA;
+        fProcessQueueSAA:= fStdProcessSAA;
+        fProcessQueueDAA:= fStdProcessDAA;
+      end;
     end;
   end else begin
     // disable everything
@@ -437,12 +429,8 @@ begin
     fProcessQueueDA := ProcessSilence;
     fProcessQueueSAA:= ProcessSilence;
     fProcessQueueDAA:= ProcessSilence;
-  end;
-  fEnabled := Value;
-  if fEnabled and fBypass then SetBypass(true);
+  end;  
 end;
-
-
 
 procedure TDspBaseComponent.ProcessSilence(var Data: Single; const channel: integer);
 begin
@@ -480,32 +468,38 @@ end;
 
 procedure TDspBaseComponent.ProcessBypass(var Data: Single; const channel: integer);
 begin
- // Do nothing
+  // Do nothing with the data
+  IncProcessSampleCount(1, channel);
 end;
 
 procedure TDspBaseComponent.ProcessBypass(var Data: Double; const channel: integer);
 begin
- // Do nothing
+ // Do nothing with the data
+ IncProcessSampleCount(1, channel);
 end;
 
 procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
 begin
  // Do nothing with the buffer
+ IncProcessSampleCount(SampleFrames, channel);
 end;
 
 procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
 begin
  // Do nothing with the buffer
+ IncProcessSampleCount(SampleFrames, channel);
 end;
 
 procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
 begin
  // Do nothing with the buffer
+ IncProcessSampleCount(SampleFrames);
 end;
 
 procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
- // Do nothing with the buffer
+ // Do nothing with the buffer 
+ IncProcessSampleCount(SampleFrames);
 end;
 
 
@@ -578,11 +572,13 @@ end;
 
 procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
 begin
+ fProcessSAA(ProcessBuffer, SampleFrames);
  fNextDspQueueItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
+ fProcessDAA(ProcessBuffer, SampleFrames);
  fNextDspQueueItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
 end;
 

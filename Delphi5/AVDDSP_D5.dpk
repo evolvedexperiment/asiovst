@@ -58,6 +58,7 @@ contains
   DDSPOscAbsSine in '..\Source\DDSPOscAbsSine.pas',
   DDSPBaseOsc in '..\Source\DDSPBaseOsc.pas',
   DDspVoiceController in '..\Source\DDspVoiceController.pas',
-  DDspVoiceList in '..\Source\DDspVoiceList.pas';
+  DDspVoiceList in '..\Source\DDspVoiceList.pas',
+  DDspEnvelope in '..\Source\DDspEnvelope.pas';
 
 end.

@@ -245,7 +245,10 @@ begin
     begin
       Add(item);
       if (FVoiceProcessingMode = pmDspQueue) and not Assigned(FDspDirectProcessItem) then
+      begin
         FDspDirectProcessItem:=item;
+        UpdateProcessingFunctions;
+      end;
     end;  
     Item.SampleRate:=FSampleRate;
     Item.Channels:=fChannels;  
@@ -262,6 +265,7 @@ begin
   begin
     if FDspQueueList.Count>0 then FDspDirectProcessItem:=FDspQueueList.Items[0]
     else FDspDirectProcessItem:=nil;
+    UpdateProcessingFunctions;
   end;
 end;
 
@@ -514,32 +518,32 @@ end;
 
 procedure TDspVoice.ProcessDspItem(var Data: Single; const channel: integer);
 begin
-  FDspDirectProcessItem.ProcessS(Data, channel);
+  FDspDirectProcessItem.ProcessQueueS(Data, channel);
 end;
 
 procedure TDspVoice.ProcessDspItem(var Data: Double; const channel: integer);
 begin
-  FDspDirectProcessItem.ProcessD(Data, channel);
+  FDspDirectProcessItem.ProcessQueueD(Data, channel);
 end;
 
 procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
 begin
-  FDspDirectProcessItem.ProcessSA(ProcessBuffer, channel, SampleFrames);
+  FDspDirectProcessItem.ProcessQueueSA(ProcessBuffer, channel, SampleFrames);
 end;
 
 procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
 begin
-  FDspDirectProcessItem.ProcessDA(ProcessBuffer, channel, SampleFrames);
+  FDspDirectProcessItem.ProcessQueueDA(ProcessBuffer, channel, SampleFrames);
 end;
 
 procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
 begin
-  FDspDirectProcessItem.ProcessSAA(ProcessBuffer, SampleFrames);
+  FDspDirectProcessItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
 end;
 
 procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
-  FDspDirectProcessItem.ProcessDAA(ProcessBuffer, SampleFrames);
+  FDspDirectProcessItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
 end;
 
 

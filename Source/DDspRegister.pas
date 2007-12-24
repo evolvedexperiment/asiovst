@@ -11,6 +11,7 @@ implementation
 {$IFNDEF FPC}{$R DDspRegister.res}{$ENDIF}
 uses Classes, DDspEnvelopeFollower, DDSPRemez, DDspFilter, DDspVoiceController,
   DDspOscSine, DDspOscSaw, DDspOscRamp, DDspOscSquare, DDspOscNoise, DDspOscAbsSine,
+  DDspEnvelope,
   ToolsAPI,
   {$IFDEF DELPHI6_UP}
   DesignIntf,    // DsgnIntf renamed to DesignIntf from Delphi 6
@@ -36,7 +37,8 @@ begin
                                       TDspOscRamp,
                                       TDspOscSquare,
                                       TDspOscNoise,
-                                      TDspOscAbsSine]);
+                                      TDspOscAbsSine,
+                                      TDspEnvelope]);
   {$IFDEF DELPHI5}
   RegisterCustomModule(TDspVoice, TDataModuleDesignerCustomModule);
   {$ELSE}

@@ -23,17 +23,21 @@ type
     FFilterNoteEvents: Boolean;
     FVoiceList: TDspVoiceList;
 
-    FSampleProcessRun: integer;
+    FSampleProcessRun: array of integer;
 
     FOnBeforeVoiceFree: TDspOnVCBeforeVoiceFree;
     FOnCreateVoice: TDspOnVCCreateVoice;
     FOnVoiceCountChanged: TDspOnVCVoiceCountChanged;
     FOnVoiceNoteOff: TDspOnVCVoiceNoteOff;
 
+    procedure SetEnabled(const Value: Boolean); override;
     procedure SetMaxVoices(const Value: Integer);
     procedure SampleRateChanged; override;
     procedure ChannelsChanged; override;
     procedure BeforeDestroy; override;
+
+    procedure IncProcessSampleCount(SampleCount: Integer = 0; Channel: integer = -1); override;
+
 
     procedure Process(var Data: Single; const channel: integer); overload;
     procedure Process(var Data: Double; const channel: integer); overload;
@@ -52,8 +56,6 @@ type
     procedure MidiNoteOn(MidiEvent: TAVDMidiEvent);
     procedure MidiNoteOff(MidiEvent: TAVDMidiEvent);
     procedure MidiAllNotesOff;
-
-    procedure UpdateVoiceList(DecrementTrailing: Integer = 0; Channel: integer = -1);
 
     {
     procedure SendParamChange(ParamId: Integer; ParamValue: Single); overload;
@@ -80,8 +82,7 @@ uses SysUtils
 procedure TDspVoiceController.Init;
 begin
   inherited;
-  FSampleProcessRun := 0;
-  
+
   fStdProcessS   := Process;
   fStdProcessD   := Process;
   fStdProcessSA  := Process;
@@ -107,19 +108,28 @@ procedure TDspVoiceController.BeforeDestroy;
 begin
   inherited;
   Reset;
-  FVoiceList.Free
+  FVoiceList.Free;
+  setlength(FSampleProcessRun, 0);
 end;
 
 procedure TDspVoiceController.ChannelsChanged;
 begin
   inherited;
   FVoiceList.SetChannels(fChannels);
+  setlength(FSampleProcessRun, fChannels);
+  fillchar(FSampleProcessRun, fChannels * SizeOf(integer), 0);
 end;
 
 procedure TDspVoiceController.SampleRateChanged;
 begin
   inherited;
   FVoiceList.SetSampleRate(fSampleRate);
+end;
+
+procedure TDspVoiceController.SetEnabled(const Value: Boolean);
+begin
+  inherited;
+  if not fEnabled then reset;
 end;
 
 procedure TDspVoiceController.SetMaxVoices(const Value: Integer);
@@ -180,6 +190,8 @@ begin
   // if same key has a playing voice: force it to go off (should never happen)
   MidiNoteOff(MidiEvent);
 
+  if not fEnabled then exit;
+  
   newVoice := nil;
   if assigned(FOnCreateVoice) then FOnCreateVoice(self, MidiEvent, newVoice);
   if not assigned(newVoice) then exit;
@@ -218,16 +230,6 @@ begin
     FOnVoiceCountChanged(self, FVoiceList.PlayingVoiceCount, FVoiceList.Count);
 end;
 
-procedure TDspVoiceController.UpdateVoiceList(DecrementTrailing, Channel: Integer);
-var i: integer;
-begin
-  for i:=FVoiceList.Count-1 downto 0 do
-    if not FVoiceList.items[i].IsAlive then
-      RemoveVoice(FVoiceList.items[i])
-    else
-      FVoiceList.items[i].DecrementTrailing(DecrementTrailing, Channel);
-end;
-
 {
 procedure TDspVoiceController.SendParamChange(ParamId: Integer; ParamValue: Pointer);
 begin
@@ -245,12 +247,7 @@ end;
 procedure TDspVoiceController.Process(var Data: Single; const channel: integer);
 var i: integer; tmp, backup: single;
 begin
-  inc(FSampleProcessRun);
-  if FSampleProcessRun>512 then
-  begin
-    FSampleProcessRun:=0;
-    UpdateVoiceList(512, channel);
-  end;
+  IncProcessSampleCount(1, channel);
 
   backup := Data;
   Data   := 0;
@@ -266,12 +263,7 @@ end;
 procedure TDspVoiceController.Process(var Data: Double; const channel: integer);
 var i: integer; tmp, backup: double;
 begin
-  inc(FSampleProcessRun);
-  if FSampleProcessRun>512 then
-  begin
-    FSampleProcessRun:=0;
-    UpdateVoiceList(512, channel);
-  end;
+  IncProcessSampleCount(1, channel);
 
   backup := Data;
   Data   := 0;
@@ -287,7 +279,7 @@ end;
 procedure TDspVoiceController.Process(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
 var i: integer; tmp, backup: TAVDSingleDynArray;
 begin
-  UpdateVoiceList(SampleFrames, channel);
+  IncProcessSampleCount(SampleFrames, channel);
 
   backup := copy(ProcessBuffer);
   fillchar(ProcessBuffer, SampleFrames * SizeOf(Single), 0);
@@ -304,7 +296,7 @@ end;
 procedure TDspVoiceController.Process(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
 var i: integer; tmp, backup: TAVDDoubleDynArray;
 begin
-  UpdateVoiceList(SampleFrames, channel);
+  IncProcessSampleCount(SampleFrames, channel);
 
   backup := copy(ProcessBuffer);
   fillchar(ProcessBuffer, SampleFrames * SizeOf(Double), 0);
@@ -321,7 +313,7 @@ end;
 procedure TDspVoiceController.Process(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
 var i: integer; tmp, backup: TAVDArrayOfSingleDynArray;
 begin
-  UpdateVoiceList(SampleFrames);
+  IncProcessSampleCount(SampleFrames);
 
   CreateArrayCopy(ProcessBuffer, backup, fChannels, SampleFrames);
   ClearArrays(ProcessBuffer, fChannels, SampleFrames);
@@ -338,7 +330,7 @@ end;
 procedure TDspVoiceController.Process(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
 var i: integer; tmp, backup: TAVDArrayOfDoubleDynArray;
 begin
-  UpdateVoiceList(SampleFrames);
+  IncProcessSampleCount(SampleFrames);
 
   CreateArrayCopy(ProcessBuffer, backup, fChannels, SampleFrames);
   ClearArrays(ProcessBuffer, fChannels, SampleFrames);
@@ -352,8 +344,30 @@ begin
   end;
 end;
 
+procedure TDspVoiceController.IncProcessSampleCount(SampleCount, Channel: integer);
+var i: integer; doUpdate: boolean;
+begin
+  doUpdate := channel<0;
+
+  if not doUpdate then
+  begin
+    FSampleProcessRun[Channel]:=FSampleProcessRun[Channel]+SampleCount;
+    doUpdate := (FSampleProcessRun[Channel]>511);
+    if doUpdate then FSampleProcessRun[Channel]:=0;
+  end;
+
+  if doUpdate then
+  begin
+    for i:=FVoiceList.Count-1 downto 0 do
+      if not FVoiceList.items[i].IsAlive then
+        RemoveVoice(FVoiceList.items[i])
+      else
+        FVoiceList.items[i].DecrementTrailing(SampleCount, Channel);
+  end;
+end;
+
 procedure TDspVoiceController.ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
-var Status  : Byte;
+var Status: Byte;
 begin
   Status:=MidiEvent.midiData[0] and $F0; // channel information is removed
 
@@ -371,7 +385,7 @@ begin
     MidiAllNotesOff;
   end;
 
-  if not FilterEvent then FVoiceList.ProcessMidiEvent(MidiEvent, FilterEvent);
+  if not FilterEvent or not fEnabled then FVoiceList.ProcessMidiEvent(MidiEvent, FilterEvent);
 end;
 
 end.
