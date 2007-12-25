@@ -39,8 +39,12 @@ type
     procedure TimeToSamples;
 
     procedure ChannelsChanged;   override;
-    procedure Process(var Data: Single; const channel: integer); overload;
-    procedure Process(var Data: Double; const channel: integer); overload;
+    procedure IgnoreInputProcess(var Data: Single; const channel: integer); overload;
+    procedure IgnoreInputProcess(var Data: Double; const channel: integer); overload;
+    procedure MultiplyProcess(var Data: Single; const channel: integer); overload;
+    procedure MultiplyProcess(var Data: Double; const channel: integer); overload;
+    procedure AddProcess(var Data: Single; const channel: integer); overload;
+    procedure AddProcess(var Data: Double; const channel: integer); overload;
   public
     procedure Init;  override;
     procedure Reset; override;
@@ -67,8 +71,8 @@ uses Math, dialogs;
 
 procedure TDspEnvelope.Init;
 begin         
-  fStdProcessS  := Process;
-  fStdProcessD  := Process;
+  fStdProcessS  := MultiplyProcess;
+  fStdProcessD  := MultiplyProcess;
   
   FInverted := false;
   FInputProcessing:=eipMultiply;
@@ -172,6 +176,22 @@ end;
 procedure TDspEnvelope.SetInputProcessing(const Value: TDspEnvelopeInputProcessing);
 begin
   FInputProcessing := Value;
+
+  case FInputProcessing of
+    eipIgnoreInput: begin
+            fStdProcessS  := IgnoreInputProcess;
+            fStdProcessD  := IgnoreInputProcess;
+          end;
+    eipMultiply: begin
+            fStdProcessS  := MultiplyProcess;
+            fStdProcessD  := MultiplyProcess;
+          end;
+    eipAdd: begin
+            fStdProcessS  := AddProcess;
+            fStdProcessD  := AddProcess;
+          end;
+  end;
+  UpdateProcessingFunc;
 end;
 
 procedure TDspEnvelope.SetInverted(const Value: Boolean);
@@ -179,76 +199,101 @@ begin
   FInverted := Value;
 end;
 
-procedure TDspEnvelope.Process(var Data: Single; const channel: integer);
-var amp: single;
+procedure TDspEnvelope.IgnoreInputProcess(var Data: Single; const channel: integer);
 begin
   if fNoteOff then
   begin
     // Release
-    amp := FSustain * (1-fInternalCounter[channel]/fTrailingSamples);
+    Data := FSustain * (1-fInternalCounter[channel]/fTrailingSamples);
 
   end else if fInternalCounter[channel]>FDecaySamples+FAttackSamples then
   begin
     // Sustain
-    amp := FSustain;
+    Data := FSustain;
   end else if fInternalCounter[channel]>FAttackSamples then
   begin
     // Decay
     if FSustain=1 then
-      amp := 1
+      Data := 1
     else begin
-      amp := 1-(fInternalCounter[channel]-FAttackSamples)/FDecaySamples;
-      amp := amp*(1-FSustain)+FSustain;
+      Data := 1-(fInternalCounter[channel]-FAttackSamples)/FDecaySamples;
+      Data := Data*(1-FSustain)+FSustain;
     end;
   end else begin
     // Attack
-    amp := fInternalCounter[channel]/FAttackSamples;
+    Data := fInternalCounter[channel]/FAttackSamples;
   end;
 
 
   if FInverted then
-    amp := MaxAmplitude*(1-amp)
+    Data := MaxAmplitude*(1-Data)
   else
-    amp := amp*MaxAmplitude;
+    Data := Data*MaxAmplitude;
 
-  Data := Data*amp;
   inc(fInternalCounter[channel]);
 end;
 
-procedure TDspEnvelope.Process(var Data: Double; const channel: integer);
-var amp: double;
+procedure TDspEnvelope.IgnoreInputProcess(var Data: Double; const channel: integer);
 begin
   if fNoteOff then
   begin
     // Release
-    amp := FSustain * (1-fInternalCounter[channel]/fTrailingSamples);
+    Data := FSustain * (1-fInternalCounter[channel]/fTrailingSamples);
 
   end else if fInternalCounter[channel]>FDecaySamples+FAttackSamples then
   begin
     // Sustain
-    amp := FSustain;
+    Data := FSustain;
   end else if fInternalCounter[channel]>FAttackSamples then
   begin
     // Decay
     if FSustain=1 then
-      amp := 1
+      Data := 1
     else begin
-      amp := 1-(fInternalCounter[channel]-FAttackSamples)/FDecaySamples;
-      amp := amp*(1-FSustain)+FSustain;
+      Data := 1-(fInternalCounter[channel]-FAttackSamples)/FDecaySamples;
+      Data := Data*(1-FSustain)+FSustain;
     end;
   end else begin
     // Attack
-    amp := fInternalCounter[channel]/FAttackSamples;
+    Data := fInternalCounter[channel]/FAttackSamples;
   end;
 
 
   if FInverted then
-    amp := MaxAmplitude*(1-amp)
+    Data := MaxAmplitude*(1-Data)
   else
-    amp := amp*MaxAmplitude;
+    Data := Data*MaxAmplitude;
 
-  Data := Data*amp;
   inc(fInternalCounter[channel]);
+end;
+
+procedure TDspEnvelope.MultiplyProcess(var Data: Single; const channel: integer);
+var amp: single;
+begin
+  IgnoreInputProcess(amp, channel);
+  Data := Data*amp;
+end;
+
+procedure TDspEnvelope.MultiplyProcess(var Data: Double; const channel: integer);        
+var amp: double;
+begin
+  IgnoreInputProcess(amp, channel);
+  Data := Data*amp;
+end;
+
+
+procedure TDspEnvelope.AddProcess(var Data: Single; const channel: integer);
+var amp: single;
+begin
+  IgnoreInputProcess(amp, channel);
+  Data := Data+amp;
+end;
+
+procedure TDspEnvelope.AddProcess(var Data: Double; const channel: integer);       
+var amp: double;
+begin
+  IgnoreInputProcess(amp, channel);
+  Data := Data+amp;
 end;
 
 end.
