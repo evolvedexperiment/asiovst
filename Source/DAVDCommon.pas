@@ -139,6 +139,7 @@ type
 
   function RoundToPowerOf2(Value:Integer) : Integer;
   function TruncToPowerOf2(Value:Integer) : Integer;
+  function ExtendToPowerOf2(Value:Integer) : Integer;
   function OnOff(value:Single) : Boolean;
   function unDenormalize(value:Single) : Single;
 
@@ -746,6 +747,12 @@ begin
  result := 1;
  while result <= value do result := result shl 1;
  result := result shr 1;
+end;
+
+function ExtendToPowerOf2(Value:Integer) : Integer;
+begin
+ result := 1;
+ while result < value do result := result shl 1;
 end;
 
 function OnOff(value:Single):boolean;
