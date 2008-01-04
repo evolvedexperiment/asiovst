@@ -57,8 +57,17 @@ type
   T2DoubleArray = array [0..1] of Double;
   P2DoubleArray = ^T2SingleArray;
 
+  TAVDMinMaxSingle = record
+    min : Single;
+    max : Single;
+  end;
+  TAVDMinMaxDouble = record
+    min : Double;
+    max : Double;
+  end;
+
   TStrArray = array of string;
-  
+
   TAVDMidiEvent = record
     MidiData        : array[0..3] of Byte;  // 1 thru 3 midi Bytes; midiData[3] is reserved (zero)
     DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
@@ -164,6 +173,8 @@ type
 
   function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
   function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
+  procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TAVDMinMaxSingle); overload;
+  procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TAVDMinMaxDouble); overload;
   procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload;
   procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
   procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
@@ -969,6 +980,7 @@ var i : Integer;
     d : Double;
 begin
  result := 0;
+ assert(Samples > 0);
  d := abs(InBuffer^);
  for i:=1 to Samples-1 do
   begin
@@ -1020,6 +1032,7 @@ var i : Integer;
     d : Double;
 begin
  result := 0;
+ assert(Samples > 0);
  d := abs(InBuffer^);
  for i := 1 to Samples - 1 do
   begin
@@ -1063,6 +1076,36 @@ asm
 
  @End:
 {$ENDIF}
+end;
+
+procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TAVDMinMaxSingle);
+var i : Integer;
+    d : Double;
+begin
+ assert(Samples > 0);
+ MinMax.min := InBuffer^;
+ MinMax.max := InBuffer^;
+ for i := 1 to Samples - 1 do
+  begin
+   if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
+   if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
+   inc(InBuffer);
+  end;
+end;
+
+procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TAVDMinMaxDouble);
+var i : Integer;
+    d : Double;
+begin
+ assert(Samples > 0);
+ MinMax.min := InBuffer^;
+ MinMax.max := InBuffer^;
+ for i := 1 to Samples - 1 do
+  begin
+   if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
+   if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
+   inc(InBuffer);
+  end;
 end;
 
 procedure DCSubstract(InBuffer: PSingle; Samples: Integer);
