@@ -11,7 +11,7 @@ type
     FFrequency: single;
     FAmplitude: single;
     FAngle:     TComplexDouble;
-    FPosition:  TComplexDoubleDynArray;
+    FPosition:  TAVDComplexDoubleDynArray;
 
     procedure SetAmplitude(const Value: single); virtual;
     procedure SetDCOffset(const Value: single);  virtual;
@@ -22,15 +22,15 @@ type
     procedure ChannelsChanged;   override; 
     procedure BeforeDestroy;     override;
 
-    procedure Process(var Data: Single; const channel: integer); overload; virtual; abstract;
-    procedure Process(var Data: Double; const channel: integer); overload; virtual; abstract;
+    procedure Process(var Data: Single; const Channel: Integer); overload; virtual; abstract;
+    procedure Process(var Data: Double; const Channel: Integer); overload; virtual; abstract;
   public
     procedure Init;  override;
     procedure Reset; override;
   published
-    property Amplitude: single read FAmplitude write SetAmplitude; //  0..1
-    property DCOffset:  single read FDCOffset  write SetDCOffset;  // -1..1
-    property Frequency: single read FFrequency write SetFrequency; //  0..Samplerate
+    property Amplitude: Single read FAmplitude write SetAmplitude; //  0..1
+    property DCOffset:  Single read FDCOffset  write SetDCOffset;  // -1..1
+    property Frequency: Single read FFrequency write SetFrequency; //  0..Samplerate
   end;
 
 implementation
@@ -57,7 +57,7 @@ end;
 
 procedure TDspBaseOsc.BeforeDestroy;
 begin
-  setlength(FPosition,0);
+  SetLength(FPosition, 0);
 end;
 
 procedure TDspBaseOsc.SampleRateChanged;
@@ -68,15 +68,15 @@ end;
 
 procedure TDspBaseOsc.FrequencyChanged;
 begin
-  GetSinCos(2*Pi*FFrequency/FSampleRate,FAngle.Im,FAngle.Re);
+  GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
 end;
 
 procedure TDspBaseOsc.ChannelsChanged;
 var i: integer;
 begin
-  setlength(FPosition,fChannels);
+  SetLength(FPosition, FChannels);
 
-  for i:=0 to fChannels-1 do
+  for i := 0 to fChannels - 1 do
   begin
     FPosition[i].Re := 0;
     FPosition[i].Im := -1;
@@ -95,7 +95,7 @@ end;
 
 procedure TDspBaseOsc.SetFrequency(const Value: single);
 begin
-  if FFrequency<>Value then
+  if FFrequency <> Value then
   begin
     FFrequency := Value;
     FrequencyChanged;

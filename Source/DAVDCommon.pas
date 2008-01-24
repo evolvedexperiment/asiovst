@@ -146,6 +146,7 @@ type
   procedure GetSinCos(Frequency: Extended; var SinValue, CosValue : Extended); overload;
   procedure GetSinCos(Frequency: Single; var SinValue, CosValue : Single); overload;
 
+  function IsPowerOf2(Value:Integer) : Boolean;
   function RoundToPowerOf2(Value:Integer) : Integer;
   function TruncToPowerOf2(Value:Integer) : Integer;
   function ExtendToPowerOf2(Value:Integer) : Integer;
@@ -747,6 +748,11 @@ asm
 {$ENDIF}
 end;
 
+function IsPowerOf2(Value:Integer) : Boolean;
+begin
+ result := abs(IntPower(2, round(Log2(Value))) - Value) < 1E-20;
+end;
+
 function RoundToPowerOf2(Value:Integer) : Integer;
 begin
  Result := round(Log2(Value));
@@ -1080,7 +1086,6 @@ end;
 
 procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TAVDMinMaxSingle);
 var i : Integer;
-    d : Double;
 begin
  assert(Samples > 0);
  MinMax.min := InBuffer^;
@@ -1095,7 +1100,6 @@ end;
 
 procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TAVDMinMaxDouble);
 var i : Integer;
-    d : Double;
 begin
  assert(Samples > 0);
  MinMax.min := InBuffer^;
@@ -1224,8 +1228,8 @@ begin
 {$ELSE}
 asm
 @MarioLand:
- fld [eax+ecx*8-8].Double
- fstp [edx+ecx*4-4].Single
+ fld [eax + ecx * 8 - 8].Double
+ fstp [edx + ecx * 4 - 4].Single
  loop @MarioLand
 {$ENDIF}
 end;

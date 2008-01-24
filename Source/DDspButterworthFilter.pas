@@ -100,46 +100,46 @@ end;
 
 procedure TButterworthFilter.SetSampleRate(const Value: Double);
 begin
- if Value=0 then Exit;
- if Value<>fSampleRate then
+ if Value = 0 then Exit;
+ if Value <> fSampleRate then
   begin
    fSampleRate := Value;
-   fSRR:=1/fSampleRate; SetW0;
+   fSRR := 1 / fSampleRate; SetW0;
    CalculateCoefficients;
   end;
 end;
 
 procedure TButterworthFilter.SetDownsamplePower(Value: Integer);
 begin
- if Value<0 then Value:=0;
- if fDownsamplePow<>Value then
+ if Value < 0 then Value := 0;
+ if fDownsamplePow <> Value then
   begin
    fDownsamplePow := Value;
-   fDownsampleFak := round(IntPower(2,fDownsamplePow));
+   fDownsampleFak := round(IntPower(2, fDownsamplePow));
    SetW0;
   end;
 end;
 
 procedure TButterworthFilter.SetW0;
 begin
- fW0:=2*Pi*fSRR*(fFrequency*fDownsampleFak);
- fSinW0:=sin(fW0);
- if fW0>3.1 then fW0:=3.1;
+ fW0 := 2 * Pi * fSRR * (fFrequency * fDownsampleFak);
+ fSinW0 := sin(fW0);
+ if fW0 > 3.1 then fW0 := 3.1;
 end;
 
 procedure TButterworthFilter.SetGain(const Value: Double);
 const ln10_0025 : Double = 5.7564627325E-2;
 begin
  fGain := Value;
- fGainSpeed:=Exp(fGain*ln10_0025);
+ fGainSpeed := Exp(fGain * ln10_0025);
  CalculateCoefficients;
 end;
 
 procedure TButterworthFilter.SetOrder(Value: Integer);
 begin
- if Value<1 then Value:=1 else
- if Value>64 then Value:=64;
- if fOrder<>Value then
+ if Value <  1 then Value :=  1 else
+ if Value > 64 then Value := 64;
+ if fOrder <> Value then
   begin
    fOrder := Value;
    CalculateCoefficients;
@@ -166,7 +166,7 @@ end;
 
 function TButterworthFilter.GetOrder: Integer;
 begin
- Result:=fOrder;
+ Result := fOrder;
 end;
 
 function TButterworthFilter.Real(Frequency: Double): Double;

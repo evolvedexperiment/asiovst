@@ -15,11 +15,11 @@ type
                     Im : Double;
                    end;
 
-  PComplexSingleDynArray = ^TComplexSingleDynArray;
-  TComplexSingleDynArray = array of TComplexSingle;
+  PAVDComplexSingleDynArray = ^TAVDComplexSingleDynArray;
+  TAVDComplexSingleDynArray = array of TComplexSingle;
 
-  PComplexDoubleDynArray = ^TComplexDoubleDynArray;
-  TComplexDoubleDynArray = array of TComplexDouble;
+  PAVDComplexDoubleDynArray = ^TAVDComplexDoubleDynArray;
+  TAVDComplexDoubleDynArray = array of TComplexDouble;
 
   function Complex(Re, Im : Double):TComplexDouble; overload;
   function Complex(Re, Im : Single):TComplexSingle; overload;

@@ -10,7 +10,7 @@ uses
 type
   TPNType = array[0..1] of TComplexSingle;
 
-  TFilter=class(TPersistent)
+  TFilter = class(TPersistent)
   private
   protected
     fGain        : Double;
@@ -93,13 +93,13 @@ type
     function ProcessSample(const Input:Double):Double; override;
     function ProcessSample(const Input:Int64):Int64; override;
     function ProcessSampleASM:Double; override;
-    function MagnitudeSquared(Frequency:Double):Double; override;
-    function MagnitudeLog10(Frequency:Double):Double; override;
-    function Phase(Frequency:Double):Double; override;
-    function Real(Frequency:Double):Double; override;
-    function Imaginary(Frequency:Double):Double; override;
-    procedure Complex(Frequency:Double; out Real, Imaginary : Double); overload; override;
-    procedure Complex(Frequency:Double; out Real, Imaginary : Single); overload; override;
+    function MagnitudeSquared(Frequency: Double):Double; override;
+    function MagnitudeLog10(Frequency: Double):Double; override;
+    function Phase(Frequency: Double):Double; override;
+    function Real(Frequency: Double):Double; override;
+    function Imaginary(Frequency: Double):Double; override;
+    procedure Complex(Frequency: Double; out Real, Imaginary : Double); overload; override;
+    procedure Complex(Frequency: Double; out Real, Imaginary : Single); overload; override;
     procedure Reset; override;
     procedure PushStates; override;
     procedure PopStates; override;
@@ -529,7 +529,7 @@ function TBiquadIIRFilter.GetOrder: Integer;
 begin Result := 2; end;
 
 function TBiquadIIRFilter.GetPoles:TPNType;
-var p,q : Single;
+var p, q : Double;
 begin
  p := fDenominator[1]/(2*fDenominator[2]);
  q := (1/fDenominator[2]);
@@ -540,7 +540,7 @@ begin
 end;
 
 function TBiquadIIRFilter.GetZeros:TPNType;
-var p,q : Single;
+var p, q : Double;
 begin
  p := fNominator[1]/(2*fNominator[2]);
  q := (fNominator[0]/fNominator[2]);
