@@ -150,6 +150,10 @@ type
   function RoundToPowerOf2(Value:Integer) : Integer;
   function TruncToPowerOf2(Value:Integer) : Integer;
   function ExtendToPowerOf2(Value:Integer) : Integer;
+  function TruncLog2(Value : Extended): Integer; overload;
+  function TruncLog2(Value : Integer): Integer; overload;
+  function CeilLog2(Value : Extended): Integer; overload;
+  function CeilLog2(Value : Integer): Integer; overload;
   function OnOff(value:Single) : Boolean;
   function unDenormalize(value:Single) : Single;
 
@@ -756,7 +760,7 @@ end;
 function RoundToPowerOf2(Value:Integer) : Integer;
 begin
  Result := round(Log2(Value));
- Result := (Value shr (Result - 1)) shl (Result - 1); 
+ Result := (Value shr (Result - 1)) shl (Result - 1);
 end;
 
 function TruncToPowerOf2(Value:Integer) : Integer;
@@ -770,6 +774,51 @@ function ExtendToPowerOf2(Value:Integer) : Integer;
 begin
  result := 1;
  while result < value do result := result shl 1;
+end;
+
+function TruncLog2(Value : Extended): Integer;
+asm
+ fld Value.Extended
+ fxtract
+ fstp st(0)
+ fistp result.Integer
+end;
+
+function TruncLog2(Value : Integer): Integer;
+var
+  temp : Integer;
+asm
+ mov temp, Value;
+ fild temp.Integer
+ fld Value.Extended
+ fxtract
+ fstp st(0)
+ fistp result.Integer
+end;
+
+function CeilLog2(Value : Extended): Integer;
+asm
+ fld Value.Extended
+ fld1
+ fsubp
+ fxtract
+ fstp st(0)
+ fld1
+ faddp
+ fistp result.Integer
+end;
+
+function CeilLog2(Value : Integer): Integer;
+var
+  temp : Integer;
+asm
+ dec Value
+ mov temp, Value;
+ fild temp.Integer
+ fxtract
+ fstp st(0)
+ fistp result.Integer
+ inc result
 end;
 
 function OnOff(value:Single):boolean;
