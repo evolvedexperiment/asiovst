@@ -21,6 +21,12 @@ type
   PAVDComplexDoubleDynArray = ^TAVDComplexDoubleDynArray;
   TAVDComplexDoubleDynArray = array of TComplexDouble;
 
+  PAVDComplexSingleFixedArray = ^TAVDComplexSingleFixedArray;
+  TAVDComplexSingleFixedArray = array [0..0] of TComplexSingle;
+
+  PAVDComplexDoubleFixedArray = ^TAVDComplexDoubleFixedArray;
+  TAVDComplexDoubleFixedArray = array [0..0] of TComplexDouble;
+
   function Complex(Re, Im : Double):TComplexDouble; overload;
   function Complex(Re, Im : Single):TComplexSingle; overload;
 
