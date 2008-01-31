@@ -133,6 +133,7 @@ type
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     function GetDisplayName: string; override;
+    function GetFriendlyNameString(const StringLength: Integer): string;
     function GetVendorString: string;
     function GetProductString: string;
     function GetVendorVersion: Integer;
@@ -1802,6 +1803,28 @@ begin
     result := shortstring(temp);
    FreeMem(temp);
   end;
+end;
+
+function TVstPlugIn.GetFriendlyNameString(const StringLength: Integer): string;
+var
+  Variations : array [0..6] of string;
+  i, j       : Integer;
+begin
+ Variations[0] := GetEffectName;
+ Variations[1] := GetVendorString + ' - ' + GetProductString;
+ Variations[2] := GetVendorString + ' - ' + GetProductString + ' - ' + GetEffectName;
+ Variations[3] := GetProductString + ' - ' + GetEffectName;
+ Variations[4] := GetVendorString + ' - ' + GetEffectName;
+ Variations[5] := GetProductString + ' - ' + GetEffectName;
+ Variations[6] := GetProductString;
+ j := Length(Variations[0]);
+ for i := 1 to 6 do
+  if (Length(Variations[i]) > j) and
+     (Length(Variations[i]) < StringLength)
+   then j := i;
+ result := Variations[j];
+ if result = ''
+  then result := DisplayName;
 end;
 
 function TVstPlugin.GetVendorString: string;
