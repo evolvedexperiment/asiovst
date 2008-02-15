@@ -116,7 +116,9 @@ type
   end;
 {$ENDIF}
 
-  TCustomASIOHostBasic = class(TComponent)
+  TCustomAudioDevice = class(TComponent);
+
+  TCustomASIOHostBasic = class(TCustomAudioDevice)
   private
     Fmin, Fmax,
     Fpref, Fgran          : Integer;
