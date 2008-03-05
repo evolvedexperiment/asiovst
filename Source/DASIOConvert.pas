@@ -65,95 +65,97 @@ procedure Use_3DNow;
 procedure Use_FPU_UDF;
 procedure Use_FPU_TDF;
 
-var ProcessorType       : TProcessorType;
-    FromInt16MSB        : TInConvertor;
-    FromInt24MSB        : TInConvertor;  // used for 20 bits as well
-    FromInt32MSB        : TInConvertor;
-    FromSingleMSB       : TInConvertor;  // IEEE 754 32 bit float
-    FromDoubleMSB       : TInConvertor;  // IEEE 754 64 bit Double float
-    FromInt32MSB16      : TInConvertor;  // 32 bit data with 16 bit alignment
-    FromInt32MSB18      : TInConvertor;  // 32 bit data with 18 bit alignment
-    FromInt32MSB20      : TInConvertor;  // 32 bit data with 20 bit alignment
-    FromInt32MSB24      : TInConvertor;  // 32 bit data with 24 bit alignment
-    FromInt16LSB        : TInConvertor;
-    FromInt24LSB        : TInConvertor;
-    FromInt32LSB        : TInConvertor;
-    FromSingleLSB       : TInConvertor;  // IEEE 754 32 bit float
-    FromDoubleLSB       : TInConvertor;  // IEEE 754 64 bit Double float
-    FromInt32LSB16      : TInConvertor;  // 32 bit data with 16 bit alignment
-    FromInt32LSB18      : TInConvertor;  // 32 bit data with 18 bit alignment
-    FromInt32LSB20      : TInConvertor;  // 32 bit data with 20 bit alignment
-    FromInt32LSB24      : TInConvertor;  // 32 bit data with 24 bit alignment
-    ToInt16MSB          : TOutConvertor;
-    ToInt24MSB          : TOutConvertor;  // used for 20 bits as well
-    ToInt32MSB          : TOutConvertor;
-    ToSingleMSB         : TOutConvertor;  // IEEE 754 32 bit float
-    ToDoubleMSB         : TOutConvertor;  // IEEE 754 64 bit Double float
-    ToInt32MSB16        : TOutConvertor;  // 32 bit data with 16 bit alignment
-    ToInt32MSB18        : TOutConvertor;  // 32 bit data with 18 bit alignment
-    ToInt32MSB20        : TOutConvertor;  // 32 bit data with 20 bit alignment
-    ToInt32MSB24        : TOutConvertor;  // 32 bit data with 24 bit alignment
-    ToInt16LSB          : TOutConvertor;
-    ToInt24LSB          : TOutConvertor;
-    ToInt32LSB          : TOutConvertor;
-    ToSingleLSB         : TOutConvertor;  // IEEE 754 32 bit float
-    ToDoubleLSB         : TOutConvertor;  // IEEE 754 64 bit Double float
-    ToInt32LSB16        : TOutConvertor;  // 32 bit data with 16 bit alignment
-    ToInt32LSB18        : TOutConvertor;  // 32 bit data with 18 bit alignment
-    ToInt32LSB20        : TOutConvertor;  // 32 bit data with 20 bit alignment
-    ToInt32LSB24        : TOutConvertor;  // 32 bit data with 24 bit alignment
+var
+  ProcessorType       : TProcessorType;
+  FromInt16MSB        : TInConvertor;
+  FromInt24MSB        : TInConvertor;  // used for 20 bits as well
+  FromInt32MSB        : TInConvertor;
+  FromSingleMSB       : TInConvertor;  // IEEE 754 32 bit float
+  FromDoubleMSB       : TInConvertor;  // IEEE 754 64 bit Double float
+  FromInt32MSB16      : TInConvertor;  // 32 bit data with 16 bit alignment
+  FromInt32MSB18      : TInConvertor;  // 32 bit data with 18 bit alignment
+  FromInt32MSB20      : TInConvertor;  // 32 bit data with 20 bit alignment
+  FromInt32MSB24      : TInConvertor;  // 32 bit data with 24 bit alignment
+  FromInt16LSB        : TInConvertor;
+  FromInt24LSB        : TInConvertor;
+  FromInt32LSB        : TInConvertor;
+  FromSingleLSB       : TInConvertor;  // IEEE 754 32 bit float
+  FromDoubleLSB       : TInConvertor;  // IEEE 754 64 bit Double float
+  FromInt32LSB16      : TInConvertor;  // 32 bit data with 16 bit alignment
+  FromInt32LSB18      : TInConvertor;  // 32 bit data with 18 bit alignment
+  FromInt32LSB20      : TInConvertor;  // 32 bit data with 20 bit alignment
+  FromInt32LSB24      : TInConvertor;  // 32 bit data with 24 bit alignment
+  ToInt16MSB          : TOutConvertor;
+  ToInt24MSB          : TOutConvertor;  // used for 20 bits as well
+  ToInt32MSB          : TOutConvertor;
+  ToSingleMSB         : TOutConvertor;  // IEEE 754 32 bit float
+  ToDoubleMSB         : TOutConvertor;  // IEEE 754 64 bit Double float
+  ToInt32MSB16        : TOutConvertor;  // 32 bit data with 16 bit alignment
+  ToInt32MSB18        : TOutConvertor;  // 32 bit data with 18 bit alignment
+  ToInt32MSB20        : TOutConvertor;  // 32 bit data with 20 bit alignment
+  ToInt32MSB24        : TOutConvertor;  // 32 bit data with 24 bit alignment
+  ToInt16LSB          : TOutConvertor;
+  ToInt24LSB          : TOutConvertor;
+  ToInt32LSB          : TOutConvertor;
+  ToSingleLSB         : TOutConvertor;  // IEEE 754 32 bit float
+  ToDoubleLSB         : TOutConvertor;  // IEEE 754 64 bit Double float
+  ToInt32LSB16        : TOutConvertor;  // 32 bit data with 16 bit alignment
+  ToInt32LSB18        : TOutConvertor;  // 32 bit data with 18 bit alignment
+  ToInt32LSB20        : TOutConvertor;  // 32 bit data with 20 bit alignment
+  ToInt32LSB24        : TOutConvertor;  // 32 bit data with 24 bit alignment
 
-    ClipCheckInt16MSB   : TClipCheckFunction;
-    ClipCheckInt24MSB   : TClipCheckFunction;  // used for 20 bits as well
-    ClipCheckInt32MSB   : TClipCheckFunction;
-    ClipCheckSingleMSB  : TClipCheckFunction;  // IEEE 754 32 bit float
-    ClipCheckDoubleMSB  : TClipCheckFunction;  // IEEE 754 64 bit Double float
-    ClipCheckInt32MSB16 : TClipCheckFunction;  // 32 bit data with 16 bit alignment
-    ClipCheckInt32MSB18 : TClipCheckFunction;  // 32 bit data with 18 bit alignment
-    ClipCheckInt32MSB20 : TClipCheckFunction;  // 32 bit data with 20 bit alignment
-    ClipCheckInt32MSB24 : TClipCheckFunction;  // 32 bit data with 24 bit alignment
-    ClipCheckInt16LSB   : TClipCheckFunction;
-    ClipCheckInt24LSB   : TClipCheckFunction;
-    ClipCheckInt32LSB   : TClipCheckFunction;
-    ClipCheckSingleLSB  : TClipCheckFunction;  // IEEE 754 32 bit float
-    ClipCheckDoubleLSB  : TClipCheckFunction;  // IEEE 754 64 bit Double float
-    ClipCheckInt32LSB16 : TClipCheckFunction;  // 32 bit data with 16 bit alignment
-    ClipCheckInt32LSB18 : TClipCheckFunction;  // 32 bit data with 18 bit alignment
-    ClipCheckInt32LSB20 : TClipCheckFunction;  // 32 bit data with 20 bit alignment
-    ClipCheckInt32LSB24 : TClipCheckFunction;  // 32 bit data with 24 bit alignment
+  ClipCheckInt16MSB   : TClipCheckFunction;
+  ClipCheckInt24MSB   : TClipCheckFunction;  // used for 20 bits as well
+  ClipCheckInt32MSB   : TClipCheckFunction;
+  ClipCheckSingleMSB  : TClipCheckFunction;  // IEEE 754 32 bit float
+  ClipCheckDoubleMSB  : TClipCheckFunction;  // IEEE 754 64 bit Double float
+  ClipCheckInt32MSB16 : TClipCheckFunction;  // 32 bit data with 16 bit alignment
+  ClipCheckInt32MSB18 : TClipCheckFunction;  // 32 bit data with 18 bit alignment
+  ClipCheckInt32MSB20 : TClipCheckFunction;  // 32 bit data with 20 bit alignment
+  ClipCheckInt32MSB24 : TClipCheckFunction;  // 32 bit data with 24 bit alignment
+  ClipCheckInt16LSB   : TClipCheckFunction;
+  ClipCheckInt24LSB   : TClipCheckFunction;
+  ClipCheckInt32LSB   : TClipCheckFunction;
+  ClipCheckSingleLSB  : TClipCheckFunction;  // IEEE 754 32 bit float
+  ClipCheckDoubleLSB  : TClipCheckFunction;  // IEEE 754 64 bit Double float
+  ClipCheckInt32LSB16 : TClipCheckFunction;  // 32 bit data with 16 bit alignment
+  ClipCheckInt32LSB18 : TClipCheckFunction;  // 32 bit data with 18 bit alignment
+  ClipCheckInt32LSB20 : TClipCheckFunction;  // 32 bit data with 20 bit alignment
+  ClipCheckInt32LSB24 : TClipCheckFunction;  // 32 bit data with 24 bit alignment
 
 
-var MixBuffers : record
-                  mb32 : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
-                  mb64 : procedure(InBuffer:PDouble; MixBuffer:PDouble; Samples:integer);
-                 end;
-    Volume     : record
-                  v32 : procedure(InBuffer:PSingle; Volume:Single; Samples:integer);
-                  v64 : procedure(InBuffer:PDouble; Volume:Double; Samples:integer);
-                 end;
-    FadeInLinear  : record
-                     v32 : procedure(InBuffer:PSingle; Samples:integer);
-                     v64 : procedure(InBuffer:PDouble; Samples:integer);
-                    end;
-    FadeOutLinear : record
-                     v32 : procedure(InBuffer:PSingle; Samples:integer);
-                     v64 : procedure(InBuffer:PDouble; Samples:integer);
-                    end;
-    FadeLinear    : record
+var
+  MixBuffers : record
+                mb32 : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
+                mb64 : procedure(InBuffer:PDouble; MixBuffer:PDouble; Samples:integer);
+               end;
+  Volume     : record
+                v32 : procedure(InBuffer:PSingle; Volume:Single; Samples:integer);
+                v64 : procedure(InBuffer:PDouble; Volume:Double; Samples:integer);
+               end;
+  FadeInLinear  : record
+                   v32 : procedure(InBuffer:PSingle; Samples:integer);
+                   v64 : procedure(InBuffer:PDouble; Samples:integer);
+                  end;
+  FadeOutLinear : record
+                   v32 : procedure(InBuffer:PSingle; Samples:integer);
+                   v64 : procedure(InBuffer:PDouble; Samples:integer);
+                  end;
+  FadeLinear    : record
+                   v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
+                   v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
+                  end;
+  FadeExponential : record
                      v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
                      v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
                     end;
-    FadeExponential : record
-                       v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
-                       v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
-                      end;
-    ClipDigital   : TClipBuffer;
-    ClipAnalog    : TClipBuffer;
-    Trigger       : record
-                     v32 : function(InBuffer: PSingle; Samples: Integer; TriggerFaktor : Double): Integer;
-                     v64 : function(InBuffer: PDouble; Samples: Integer; TriggerFaktor : Double): Integer;
-                    end;
-    EnableSSE     : Boolean;
+  ClipDigital   : TClipBuffer;
+  ClipAnalog    : TClipBuffer;
+  Trigger       : record
+                   v32 : function(InBuffer: PSingle; Samples: Integer; TriggerFaktor : Double): Integer;
+                   v64 : function(InBuffer: PDouble; Samples: Integer; TriggerFaktor : Double): Integer;
+                  end;
+  EnableSSE     : Boolean;
 
 implementation
 
@@ -165,7 +167,8 @@ var RandSeed : LongInt;
 
 
 procedure ClipDigital_x86(InBuffer: PSingle; BSize: Integer); overload;
-const c1a : Single = 1;
+const
+  c1a : Single = 1;
 asm
  mov ecx,edx
 @Start:
@@ -184,12 +187,12 @@ end;
 
 procedure ClipDigital_x86(InBuffer: PDouble; BSize: Integer); overload;
 {$IFDEF PUREPASCAL}
-const fGrdDiv : Double = 0.5;
-var i: Integer;
+var
+  i: Integer;
 begin
  for I := 0 to BSize - 1 do
   begin
-   InBuffer^ := fGrdDiv * (abs(InBuffer^ + 1) - abs(InBuffer^ - 1));
+   InBuffer^ := 0.5 * (abs(InBuffer^ + 1) - abs(InBuffer^ - 1));
    Inc(InBuffer);
   end;
 end;
@@ -217,8 +220,9 @@ end;
 {$ENDIF}
 
 procedure ClipAnalog_FPU(InBuffer: PSingle; Samples: Integer); overload;
-const c3:Single = 3;
-      c6:Single = 6;
+const
+  c3: Single = 3;
+  c6: Single = 6;
 asm
  fld c3.Single                      // 3
  fld c6.Single                      // 6, 3
@@ -227,20 +231,20 @@ asm
  faddp                              // 2, 6, 3
 @Start:
  dec edx
- mov ecx,[eax+4*edx].Integer
- and ecx,$7FFFFFFF
- mov [esp-4],ecx
- fld [esp-4].Single                 // abs(input), 2, 6, 3
+ mov ecx,[eax + 4 * edx].Integer
+ and ecx, $7FFFFFFF
+ mov [esp - 4],ecx
+ fld [esp - 4].Single               // abs(input), 2, 6, 3
  fld st(3)                          // 3, abs(input), 2, 6, 3
- fadd st(0),st(1)                   // 3 + abs(input), abs(input), 2, 6, 3
+ fadd st(0), st(1)                  // 3 + abs(input), abs(input), 2, 6, 3
  fld st(0)                          // 3 + abs(input), 3 + abs(input), abs(input), 2, 6, 3
- fmul [eax+4*edx].single            // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
+ fmul [eax + 4 * edx].Single        // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
  fxch st(2)                         // abs(input), 3 + abs(input), input*(3 + abs(input)), 2, 6, 3
  fmulp                              // abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
- fadd st(0),st(3)                   // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
+ fadd st(0), st(3)                  // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
  fdiv                               // 6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input)), 2, 6, 3
- fmul st(0),st(1)                   // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
- fstp [eax+4*edx].single            // 2, 6, 3
+ fmul st(0), st(1)                  // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
+ fstp [eax + 4 * edx].Single        // 2, 6, 3
  test edx,edx
  jg @Start
  fstp st(0)
@@ -249,8 +253,9 @@ asm
 end;
 
 procedure ClipAnalog_FPU(InBuffer: PDouble; Samples: Integer); overload;
-const c3:Single = 3;
-      c6:Single = 6;
+const
+  c3: Single = 3;
+  c6: Single = 6;
 asm
  fld c3.Single                      // 3
  fld c6.Single                      // 6, 3
@@ -259,23 +264,23 @@ asm
  faddp                              // 2, 6, 3
 @Start:
  dec edx
- mov ecx,[eax+8*edx].Integer
- and ecx,$7FFFFFFF
- mov [esp-8],ecx
- mov ecx,[eax+4*edx+4].Integer
- mov [esp-4],ecx
- fld [esp-8].Double                 // abs(input), 2, 6, 3
+ mov ecx, [eax + 8 * edx].Integer
+ and ecx, $7FFFFFFF
+ mov [esp - 8],ecx
+ mov ecx, [eax + 4 * edx + 4].Integer
+ mov [esp - 4],ecx
+ fld [esp - 8].Double               // abs(input), 2, 6, 3
  fld st(3)                          // 3, abs(input), 2, 6, 3
- fadd st(0),st(1)                   // 3 + abs(input), abs(input), 2, 6, 3
+ fadd st(0), st(1)                  // 3 + abs(input), abs(input), 2, 6, 3
  fld st(0)                          // 3 + abs(input), 3 + abs(input), abs(input), 2, 6, 3
- fmul [eax+8*edx].Double            // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
+ fmul [eax + 8 * edx].Double        // input*(3 + abs(input)), 3 + abs(input), abs(input), 2, 6, 3
  fxch st(2)                         // abs(input), 3 + abs(input), input*(3 + abs(input)), 2, 6, 3
  fmulp                              // abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
- fadd st(0),st(3)                   // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
+ fadd st(0), st(3)                  // 6 + abs(input)* (3 + abs(input)), input*(3 + abs(input)), 2, 6, 3
  fdiv                               // 6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input)), 2, 6, 3
- fmul st(0),st(1)                   // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
- fstp [eax+8*edx].Double            // 2, 6, 3
- test edx,edx
+ fmul st(0), st(1)                  // 2 * (6 + abs(input)* (3 + abs(input)) / input*(3 + abs(input))), 2, 6, 3
+ fstp [eax + 8 * edx].Double        // 2, 6, 3
+ test edx, edx
  jg @Start
  fstp st(0)
  fstp st(0)
@@ -284,133 +289,146 @@ end;
 
 procedure FadeInLinear_FPU(InBuffer: PSingle; Samples: Integer); overload;
 {$IFDEF PUREPASCAL}
-var i : Integer;
+var
+  i : Integer;
+  d : Double;
 begin
- for i:=0 to Samples-1 do
+ d := 1 / (Samples - 1);
+ for i := 0 to Samples - 1 do
   begin
-   InBuffer^:=InBuffer^*(i+1)/Samples;
+   InBuffer^ := InBuffer^ * i * d;
    inc(InBuffer);
   end;
 end;
 {$ELSE}
 asm
- mov [esp-4],edx
- fild [esp-4].Single           // Samples
- fld1                          // 1, Samples
- fdivrp                        // 1 / Samples
+ mov [esp - 4], edx
+ fild [esp - 4].Single           // Samples
+ fld1                            // 1, Samples
+ fdivrp                          // 1 / Samples
 
  @FadeLoop:
-   mov [esp-4],edx
-   fild [esp-4].Single         // i, 1 / Samples
+   mov [esp - 4], edx
+   fild [esp - 4].Single         // i, 1 / Samples
    dec edx
-   fmul st(0),st(1)            // i / Samples, 1 / Samples
-   fmul [eax+4*edx].Single     // i * Value / Samples, 1 / Samples
-   fstp [eax+4*edx].Single     // write back
+   fmul st(0), st(1)             // i / Samples, 1 / Samples
+   fmul [eax + 4 * edx].Single   // i * Value / Samples, 1 / Samples
+   fstp [eax + 4 * edx].Single   // write back
  jnz @FadeLoop
- fstp st(0)                    // clear stack
+ fstp st(0)                      // clear stack
 end;
 {$ENDIF}
 
 procedure FadeInLinear_FPU(InBuffer: PDouble; Samples: Integer); overload;
 {$IFDEF PUREPASCAL}
-var i : Integer;
+var
+  i : Integer;
+  d : Double;
 begin
- for i:=0 to Samples-1 do
+ d := 1 / (Samples - 1);
+ for i := 0 to Samples - 1 do
   begin
-   InBuffer^:=InBuffer^*(i+1)/Samples;
+   InBuffer^ := InBuffer^ * i * d;
    inc(InBuffer);
   end;
 end;
 {$ELSE}
 asm
- mov [esp-4],edx
- fild [esp-4].Single           // Samples
- fld1                          // 1, Samples
- fdivrp                        // 1 / Samples
+ mov [esp - 4],edx
+ fild [esp - 4].Single             // Samples
+ fld1                              // 1, Samples
+ fdivrp                            // 1 / Samples
 
  @FadeLoop:
-   mov [esp-4],edx
-   fild [esp-4].Single         // i, 1 / Samples
-   fmul st(0),st(1)            // i / Samples, 1 / Samples
+   mov [esp - 4],edx
+   fild [esp - 4].Single           // i, 1 / Samples
+   fmul st(0), st(1)               // i / Samples, 1 / Samples
    dec edx
-   fmul [eax+8*edx].Double     // i * Value / Samples, 1 / Samples
-   fstp [eax+8*edx].Double     // write back
+   fmul [eax + 8 * edx].Double     // i * Value / Samples, 1 / Samples
+   fstp [eax + 8 * edx].Double     // write back
  jnz @FadeLoop
- fstp st(0)                    // clear stack
+ fstp st(0)                        // clear stack
 end;
 {$ENDIF}
 
 procedure FadeOutLinear_FPU(InBuffer: PSingle; Samples: Integer); overload;
 {$IFDEF PUREPASCAL}
-var i : Integer;
+var
+  i : Integer;
+  d : Double;
 begin
- for i:=0 to Samples-1 do
+ d := 1 / (Samples - 1);
+ for i := Samples - 1 downto 0 do
   begin
-   InBuffer^:=InBuffer^*(i+1)/Samples;
+   InBuffer^ := InBuffer^ * i * d;
    inc(InBuffer);
   end;
 end;
 {$ELSE}
 asm
- mov [esp-4],edx
- fild [esp-4].Single           // Samples
- fld1                          // 1, Samples
- fdivrp                        // 1 / Samples
+ mov [esp - 4],edx
+ fild [esp - 4].Single               // Samples
+ fld1                                // 1, Samples
+ fdivrp                              // 1 / Samples
 
  @FadeLoop:
-   mov [esp-4],edx
-   fild [esp-4].Single         // i, 1 / Samples
-   fmul st(0),st(1)            // i / Samples, 1 / Samples
-   fld1                        // 1, i / Samples, 1 / Samples
-   fsubp                       // 1 - i / Samples, 1 / Samples
+   mov [esp - 4],edx
+   fild [esp - 4].Single             // i, 1 / Samples
+   fmul st(0), st(1)                 // i / Samples, 1 / Samples
+   fld1                              // 1, i / Samples, 1 / Samples
+   fsubp                             // 1 - i / Samples, 1 / Samples
    dec edx
-   fmul [eax+4*edx-4].Single   // Value * (1 - i / Samples), 1 / Samples
-   fstp [eax+4*edx-4].Single   // write back
+   fmul [eax + 4 * edx - 4].Single   // Value * (1 - i / Samples), 1 / Samples
+   fstp [eax + 4 * edx - 4].Single   // write back
  jnz @FadeLoop
- fstp st(0)                    // clear stack
+ fstp st(0)                          // clear stack
 end;
 {$ENDIF}
 
 procedure FadeOutLinear_FPU(InBuffer: PDouble; Samples: Integer); overload;
 {$IFDEF PUREPASCAL}
-var i : Integer;
+var
+  i : Integer;
+  d : Double;
 begin
- for i:=0 to Samples-1 do
+ d := 1 / (Samples - 1);
+ for i := Samples - 1 downto 0 do
   begin
-   InBuffer^:=InBuffer^*(Samples-i)/Samples;
+   InBuffer^ := InBuffer^ * i * d;
    inc(InBuffer);
   end;
 end;
 {$ELSE}
 asm
- mov [esp-4],edx
- fild [esp-4].Single           // Samples
- fld1                          // 1, Samples
- fdivrp                        // 1 / Samples
+ mov [esp - 4],edx
+ fild [esp - 4].Single              // Samples
+ fld1                               // 1, Samples
+ fdivrp                             // 1 / Samples
 
  @FadeLoop:
-   mov [esp-4],edx
-   fild [esp-4].Single         // i, 1 / Samples
-   fmul st(0),st(1)            // i / Samples, 1 / Samples
-   fld1                        // 1, i / Samples, 1 / Samples
-   fsubp                       // 1 - i / Samples, 1 / Samples
+   mov [esp - 4],edx
+   fild [esp - 4].Single            // i, 1 / Samples
+   fmul st(0), st(1)                // i / Samples, 1 / Samples
+   fld1                             // 1, i / Samples, 1 / Samples
+   fsubp                            // 1 - i / Samples, 1 / Samples
    dec edx
-   fmul [eax+8*edx-8].Double   // Value * (1 - i / Samples), 1 / Samples
-   fstp [eax+8*edx-8].Double   // write back
+   fmul [eax + 8 * edx - 8].Double  // Value * (1 - i / Samples), 1 / Samples
+   fstp [eax + 8 * edx - 8].Double  // write back
  jnz @FadeLoop
- fstp st(0)                    // clear stack
+ fstp st(0)                         // clear stack
 end;
 {$ENDIF}
 
 procedure FadeExponential_FPU(InBuffer: PSingle; Samples: Integer; CurrentFadeFak, FadeMul : Double); overload;
 {$IFDEF PUREPASCAL}
-var i : Integer;
+var
+  i : Integer;
 begin
- for i:=0 to Samples-1 do
+ for i := 0 to Samples - 1 do
   begin
-   InBuffer^:=InBuffer^*CurrentFadeFak;
-   CurrentFadeFak:=CurrentFadeFak*FadeMul;
-   if CurrentFadeFak>1 then exit;
+   InBuffer^ := InBuffer^ * CurrentFadeFak;
+   CurrentFadeFak := CurrentFadeFak * FadeMul;
+   if CurrentFadeFak > 1 then exit;
    inc(InBuffer);
   end;
 {$ELSE}
@@ -421,15 +439,15 @@ asm
  mov ecx,eax
 
  @FadeLoop:
-   fld  [ecx+4*edx-4].Single   // Value, CurrentFadeFak, FadeMul, 1
-   fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak, FadeMul, 1
-   fstp [ecx+4*edx-4].Single   // CurrentFadeFak, FadeMul, 1
-   fmul st(0),st(1)            // CurrentFadeFak * FadeMul = CurrentFadeFak, FadeMul, 1
+   fld  [ecx + 4 * edx - 4].Single  // Value, CurrentFadeFak, FadeMul, 1
+   fmul st(0), st(1)                // Value * CurrentFadeFak, CurrentFadeFak, FadeMul, 1
+   fstp [ecx + 4 * edx - 4].Single  // CurrentFadeFak, FadeMul, 1
+   fmul st(0), st(1)                // CurrentFadeFak * FadeMul = CurrentFadeFak, FadeMul, 1
 
-   fcomi st(0), st(2)          // CurrentFadeFak <-> 1 ?
-   fstsw ax                    // ax = FPU Status Word
-   sahf                        // ax -> EFLAGS register
-   jb @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+   fcomi st(0), st(2)               // CurrentFadeFak <-> 1 ?
+   fstsw ax                         // ax = FPU Status Word
+   sahf                             // ax -> EFLAGS register
+   jb @FadeLoopEnd                  // if CurrentFadeFak > 1 then exit!
 
    dec edx
  jnz @FadeLoop
@@ -443,40 +461,41 @@ end;
 
 procedure FadeExponential_FPU(InBuffer: PDouble; Samples: Integer; CurrentFadeFak, FadeMul : Double); overload;
 {$IFDEF PUREPASCAL}
-var i : Integer;
+var
+  i : Integer;
 begin
- for i:=0 to Samples-1 do
+ for i := 0 to Samples - 1 do
   begin
-   InBuffer^:=InBuffer^*CurrentFadeFak;
-   CurrentFadeFak:=CurrentFadeFak*FadeMul;
-   if CurrentFadeFak>1 then exit;
+   InBuffer^ := InBuffer^ * CurrentFadeFak;
+   CurrentFadeFak := CurrentFadeFak * FadeMul;
+   if CurrentFadeFak > 1 then exit;
    inc(InBuffer);
   end;
 {$ELSE}
 asm
- fld1
- fld FadeMul.Double
- fld CurrentFadeFak.Double
- mov ecx, eax                  // ecx = eax
+ fld1                                // 1
+ fld FadeMul.Double                  // FadeMul, 1
+ fld CurrentFadeFak.Double           // CurrentFadeFak, FadeMul, 1
+ mov ecx, eax                        // ecx = eax
 
  @FadeLoop:
-   fld  [ecx+8*edx-8].Double   // Value, CurrentFadeFak
-   fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
-   fstp [ecx+8*edx-8].Double   // write back
-   fmul st(0),st(1)            // CurrentFadeFak
+   fld  [ecx + 8 * edx - 8].Double   // Value, CurrentFadeFak, FadeMul, 1
+   fmul st(0), st(1)                 // Value * CurrentFadeFak, CurrentFadeFak, ...
+   fstp [ecx + 8 * edx - 8].Double   // write back
+   fmul st(0), st(1)                 // FadeMul * CurrentFadeFak, FadeMul, 1
 
-   fcomi st(0), st(2)          // CurrentFadeFak <-> 1 ?
-   fstsw ax                    // ax = FPU Status Word
-   sahf                        // ax -> EFLAGS register
-   jb @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+   fcomi st(0), st(2)                // CurrentFadeFak <-> 1 ?
+   fstsw ax                          // ax = FPU Status Word
+   sahf                              // ax -> EFLAGS register
+   jb @FadeLoopEnd                   // if CurrentFadeFak > 1 then exit!
 
    dec edx
  jnz @FadeLoop
 
  @FadeLoopEnd:
- fstp st(0)                    // clear stack
- fstp st(0)                    // clear stack
- fstp st(0)                    // clear stack
+ fstp st(0)                          // clear stack
+ fstp st(0)                          // clear stack
+ fstp st(0)                          // clear stack
 {$ENDIF}
 end;
 
@@ -484,10 +503,10 @@ procedure FadeLinear_FPU(InBuffer: PSingle; Samples: Integer; CurrentFadeFak, Fa
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin
- for i:=0 to Samples-1 do
+ for i := 0 to Samples-1 do
   begin
-   InBuffer^:=InBuffer^*CurrentFadeFak;
-   CurrentFadeFak:=CurrentFadeFak+FadeAddInc;
+   InBuffer^ := InBuffer^*CurrentFadeFak;
+   CurrentFadeFak := CurrentFadeFak+FadeAddInc;
    if CurrentFadeFak>1 then exit;
    inc(InBuffer);
   end;
@@ -496,26 +515,26 @@ asm
  fld1
  fld FadeAddInc.Double
  fld CurrentFadeFak.Double
- mov ecx, eax                  // ecx = eax
+ mov ecx, eax                        // ecx = eax
 
  @FadeLoop:
-   fld  [ecx+4*edx-4].Single   // Value, CurrentFadeFak
-   fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
-   fstp [ecx+4*edx-4].Single   // write back
-   fadd st(0),st(1)            // CurrentFadeFak + FadeAddInc
+   fld  [ecx + 4 * edx - 4].Single   // Value, CurrentFadeFak
+   fmul st(0), st(1)                 // Value * CurrentFadeFak, CurrentFadeFak
+   fstp [ecx + 4 * edx - 4].Single   // write back
+   fadd st(0), st(1)                 // CurrentFadeFak + FadeAddInc
 
-   fcomi st(0), st(2)          // CurrentFadeFak <-> 1 ?
-   fstsw ax                    // ax = FPU Status Word
-   sahf                        // ax -> EFLAGS register
-   jb @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+   fcomi st(0), st(2)                // CurrentFadeFak <-> 1 ?
+   fstsw ax                          // ax = FPU Status Word
+   sahf                              // ax -> EFLAGS register
+   jb @FadeLoopEnd                   // if CurrentFadeFak > 1 then exit!
 
    dec edx
  jnz @FadeLoop
 
  @FadeLoopEnd:
- fstp st(0)                    // clear stack
- fstp st(0)                    // clear stack
- fstp st(0)                    // clear stack
+ fstp st(0)                          // clear stack
+ fstp st(0)                          // clear stack
+ fstp st(0)                          // clear stack
 {$ENDIF}
 end;
 
@@ -523,11 +542,11 @@ procedure FadeLinear_FPU(InBuffer: PDouble; Samples: Integer; CurrentFadeFak, Fa
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin
- for i:=0 to Samples-1 do
+ for i := 0 to Samples - 1 do
   begin
-   InBuffer^:=InBuffer^*CurrentFadeFak;
-   CurrentFadeFak:=CurrentFadeFak+FadeAddInc;
-   if CurrentFadeFak>1 then exit;
+   InBuffer^ := InBuffer^ * CurrentFadeFak;
+   CurrentFadeFak := CurrentFadeFak + FadeAddInc;
+   if CurrentFadeFak > 1 then exit;
    inc(InBuffer);
   end;
 {$ELSE}
@@ -535,42 +554,43 @@ asm
  fld1
  fld FadeAddInc.Double
  fld CurrentFadeFak.Double
- mov ecx, eax                  // ecx = eax
+ mov ecx, eax                      // ecx = eax
 
  @FadeLoop:
-   fld  [ecx+8*edx-8].Double   // Value, CurrentFadeFak
-   fmul st(0),st(1)            // Value * CurrentFadeFak, CurrentFadeFak
-   fstp [ecx+8*edx-8].Double   // write back
-   fmul st(0),st(1)            // CurrentFadeFak + FadeAddInc
+   fld  [ecx + 8 * edx - 8].Double // Value, CurrentFadeFak
+   fmul st(0),st(1)                // Value * CurrentFadeFak, CurrentFadeFak
+   fstp [ecx + 8 * edx - 8].Double // write back
+   fmul st(0),st(1)                // CurrentFadeFak + FadeAddInc
 
-   fcomi st(0), st(2)          // CurrentFadeFak <-> 1 ?
-   fstsw ax                    // ax = FPU Status Word
-   sahf                        // ax -> EFLAGS register
-   jb @FadeLoopEnd             // if CurrentFadeFak > 1 then exit!
+   fcomi st(0), st(2)              // CurrentFadeFak <-> 1 ?
+   fstsw ax                        // ax = FPU Status Word
+   sahf                            // ax -> EFLAGS register
+   jb @FadeLoopEnd                 // if CurrentFadeFak > 1 then exit!
 
    dec edx
  jnz @FadeLoop
 
  @FadeLoopEnd:
- fstp st(0)                    // clear stack
- fstp st(0)                    // clear stack
- fstp st(0)                    // clear stack
+ fstp st(0)                        // clear stack
+ fstp st(0)                        // clear stack
+ fstp st(0)                        // clear stack
 {$ENDIF}
 end;
 
 function Trigger_FPU(InBuffer: PSingle; Samples: Integer; TriggerFaktor : Double): Integer; overload;
 {$IFDEF PUREPASCAL}
-var i : Integer;
+var
+  i : Integer;
 begin
- result:=0;
- for i:=0 to Samples-1 do
+ result := 0;
+ for i := 0 to Samples-1 do
   begin
    if abs(InBuffer^)>TriggerFaktor
     then exit
     else inc(result);
    inc(InBuffer);
   end;
- result:=-1;
+ result := -1;
 {$ELSE}
 asm
  fld TriggerFaktor.Double
@@ -604,15 +624,15 @@ function Trigger_FPU(InBuffer: PDouble; Samples: Integer; TriggerFaktor : Double
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin
- result:=0;
- for i:=0 to Samples-1 do
+ result := 0;
+ for i := 0 to Samples-1 do
   begin
    if abs(InBuffer^)>TriggerFaktor
     then exit
     else inc(result);
    inc(InBuffer);
   end;
- result:=-1;
+ result := -1;
 {$ELSE}
 asm
  fld TriggerFaktor.Double
@@ -656,9 +676,9 @@ var
 begin
  for i := 0 to frames - 1 do
   begin
-   b:=BufArray[0];
-   BufArray[0]:=BufArray[2];
-   BufArray[2]:=b;
+   b := BufArray[0];
+   BufArray[0] := BufArray[2];
+   BufArray[2] := b;
    Inc(BufByte,3);
   end;
 end;
@@ -755,7 +775,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Minsmall;
+  do TargetArray[i] := SourceArray[i]*Minsmall;
 end;
 {$ELSE}
 asm
@@ -777,7 +797,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Minsmall;
+  do TargetArray[i] := SourceArray[i]*Minsmall;
 end;
 {$ELSE}
 asm
@@ -869,7 +889,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*minlong;
+  do TargetArray[i] := SourceArray[i]*minlong;
 end;
 {$ELSE}
 asm
@@ -920,7 +940,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i];
+  do TargetArray[i] := SourceArray[i];
 end;
 {$ELSE}
 asm
@@ -940,7 +960,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i];
+  do TargetArray[i] := SourceArray[i];
 end;
 {$ELSE}
 asm
@@ -965,7 +985,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*MinSmall;
+  do TargetArray[i] := SourceArray[i]*MinSmall;
 end;
 {$ELSE}
 asm
@@ -987,7 +1007,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*MinSmall;
+  do TargetArray[i] := SourceArray[i]*MinSmall;
 end;
 {$ELSE}
 asm
@@ -1009,7 +1029,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min18;
+  do TargetArray[i] := SourceArray[i]*Min18;
 end;
 {$ELSE}
 asm
@@ -1031,7 +1051,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min18;
+  do TargetArray[i] := SourceArray[i]*Min18;
 end;
 {$ELSE}
 asm
@@ -1053,7 +1073,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min20;
+  do TargetArray[i] := SourceArray[i]*Min20;
 end;
 {$ELSE}
 asm
@@ -1075,7 +1095,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min20;
+  do TargetArray[i] := SourceArray[i]*Min20;
 end;
 {$ELSE}
 asm
@@ -1097,15 +1117,15 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min24;
+  do TargetArray[i] := SourceArray[i] * Min24;
 end;
 {$ELSE}
 asm
   fld      Min24
 @Start:
-  fild     [eax+4*ecx-4].DWord;
+  fild     [eax + 4 * ecx - 4].DWord;
   fmul     st(0),st(1)
-  fstp     [edx+4*ecx-4].Single
+  fstp     [edx + 4 * ecx - 4].Single
   loop     @start
   ffree    st(0)
 end;
@@ -1119,7 +1139,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*Min24;
+  do TargetArray[i] := SourceArray[i] * Min24;
 end;
 {$ELSE}
 asm
@@ -1142,19 +1162,19 @@ var
 begin
  ReverseEndian4(source, frames div 2);
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*MinSmall;
+  do TargetArray[i] := SourceArray[i] * MinSmall;
 end;
 {$ELSE}
 asm
   push ebx
   fld   Minsmall
  @Start:
-  mov bx,[eax+2*ecx-2]
-  rol bx,$8
-  mov [eax+2*ecx-2],bx
-  fild  [eax+2*ecx-2].Word
-  fmul  st(0),st(1)
-  fstp  [edx+4*ecx-4].Single
+  mov bx,[eax + 2 * ecx - 2]
+  rol bx, $8
+  mov [eax + 2 * ecx - 2],bx
+  fild  [eax + 2 * ecx - 2].Word
+  fmul  st(0), st(1)
+  fstp  [edx + 4 * ecx - 4].Single
   loop @start
   ffree st(0)
   pop ebx
@@ -1170,7 +1190,7 @@ var
 begin
  ReverseEndian4(source, frames div 2);
  for i := 0 to frames - 1
-  do TargetArray[i]:=SourceArray[i]*MinSmall;
+  do TargetArray[i] := SourceArray[i] * MinSmall;
 end;
 {$ELSE}
 asm
@@ -2660,12 +2680,12 @@ function ClipCheckInt16LSB_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PSmallInt absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^ = $7FFF) or (v^ = $8000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2677,12 +2697,12 @@ var i : Integer;
     v : PInteger absolute source;
     b : PByte absolute source;
 begin
- Result:=false;
+ Result := false;
  for i := 0 to Frames - 1 do
   begin
    if (v^ = $7FFFFF) or (v^ = $800000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(b, 3);
@@ -2693,12 +2713,12 @@ function ClipCheckInt32LSB_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PInteger absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^ = $7FFFFFF) or (v^ = $80000000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2709,12 +2729,12 @@ function ClipCheckInt32LSB16_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PInteger absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^ = $7FFF) or (v^ = $8000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2725,12 +2745,12 @@ function ClipCheckInt32LSB18_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PInteger absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^ = $1FFFF) or (v^ = $20000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2741,12 +2761,12 @@ function ClipCheckInt32LSB20_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PInteger absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^ = $7FFFF) or (v^ = $80000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2757,12 +2777,12 @@ function ClipCheckInt32LSB24_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PInteger absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^ = $7FFFFF) or (v^ = $800000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2774,12 +2794,12 @@ function ClipCheckSingleLSB_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PSingle absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^>1) or (v^<1) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2816,12 +2836,12 @@ function ClipCheckDoubleLSB_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PDouble absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^>1) or (v^<1) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2880,7 +2900,7 @@ begin
    // ToDo BitReverse!!
    if (v^ = $7FFFFF) or (v^ = $800000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(b, 3);
@@ -2896,7 +2916,7 @@ begin
   begin
    if (v^ = $FFFFF7F) or (v^ = $80) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2907,12 +2927,12 @@ function ClipCheckInt32MSB16_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PInteger absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^ = $7FFF) or (v^ = $8000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2923,12 +2943,12 @@ function ClipCheckInt32MSB18_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PInteger absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^ = $1FFFF) or (v^ = $20000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2939,12 +2959,12 @@ function ClipCheckInt32MSB20_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PInteger absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^ = $7FFFF) or (v^ = $80000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2955,12 +2975,12 @@ function ClipCheckInt32MSB24_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PInteger absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    if (v^ = $7FFFFF) or (v^ = $800000) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2971,13 +2991,13 @@ function ClipCheckSingleMSB_FPU(source: Pointer; frames: longint):Boolean;
 var i : Integer;
     v : PSingle absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    // ToDo ByteSwap here
    if (v^>1) or (v^<1) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -2988,13 +3008,13 @@ function ClipCheckDoubleMSB_FPU(source: Pointer; frames: longint):Boolean;
 var i  : Integer;
     v : PDouble absolute source;
 begin
- Result:=false;
- for i:=0 to Frames-1 do
+ Result := false;
+ for i := 0 to Frames-1 do
   begin
    // ToDo ByteSwap here
    if (v^>1) or (v^<1) then
     begin
-     Result:=True;
+     Result := True;
      Exit;
     end;
    inc(v);
@@ -3108,7 +3128,7 @@ const c3:Single = 3;
       mmc2   : array[0..3] of Single = (2,2,2,2);
       mmc3   : array[0..3] of Single = (3,3,3,3);
       mmc6   : array[0..3] of Single = (6,6,6,6);
-// a:=abs(x); b:=3+a; Result:=(x*b)/(a*b+6);
+// a := abs(x); b := 3+a; Result := (x*b)/(a*b+6);
 asm
  mov ecx,edx
  push ecx
@@ -3995,7 +4015,7 @@ end;
 procedure Use_FPU_UDF;
 begin
  Use_FPU;
- RandSeed:=GetTickCount;
+ RandSeed := GetTickCount;
  ToInt16LSB.oc32      := SingleToInt16LSB_UDF_FPU;
  ToInt24LSB.oc32      := SingleToInt24LSB_UDF_FPU;
  ToInt32LSB16.oc32    := SingleToInt32LSB16_UDF_FPU;
@@ -4014,7 +4034,7 @@ end;
 procedure Use_FPU_TDF;
 begin
  Use_FPU;
- RandSeed:=GetTickCount;
+ RandSeed := GetTickCount;
  ToInt16LSB.oc32      := SingleToInt16LSB_TDF_FPU;
  ToInt24LSB.oc32      := SingleToInt24LSB_TDF_FPU;
  ToInt32LSB16.oc32    := SingleToInt32LSB16_TDF_FPU;
