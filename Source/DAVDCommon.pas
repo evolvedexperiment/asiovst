@@ -126,7 +126,9 @@ type
   function f_Root(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_IntPower(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Power(base, exp :Double) : Double; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Log2(val:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Log2Laurent(val:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Log2Continous5(val:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Log2MinError5(val:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Sin(Angle:Single):Single;
   function f_Cos(Angle:Single):Single;
   function f_Sgn(f:Single):Integer; {$IFDEF useinlining} inline; {$ENDIF}
@@ -157,6 +159,28 @@ type
   function OnOff(value:Single) : Boolean;
   function unDenormalize(value:Single) : Single;
 
+  function FastTanhOpt3(x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt4(x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt5(x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt6(x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt7(x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt3(x: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt4(x: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt5(x: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt6(x: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt7(x: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+
+  function FastTanhOpt3asm(x: Single): Single; assembler; overload;
+  function FastTanhOpt4asm(x: Single): Single; assembler; overload;
+  function FastTanhOpt5asm(x: Single): Single; assembler; overload;
+  function FastTanhOpt6asm(x: Single): Single; assembler; overload;
+  function FastTanhOpt7asm(x: Single): Single; assembler; overload;
+  function FastTanhOpt3asm(x: Double): Double; assembler; overload;
+  function FastTanhOpt4asm(x: Double): Double; assembler; overload;
+  function FastTanhOpt5asm(x: Double): Double; assembler; overload;
+  function FastTanhOpt6asm(x: Double): Double; assembler; overload;
+  function FastTanhOpt7asm(x: Double): Double; assembler; overload;
+
   function Tanh2a(x:Single):Single;
   function Tanh2b(x:Single):Single;
   function Tanh2c(x:Single):Single;
@@ -185,14 +209,22 @@ type
   procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
   procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames:Integer);
 
-var ln10, ln2, ln22, ln2Rez : Double;
+var
+  ln10, ln2, ln22, ln2Rez : Double;
+
+const
+  MinusOneThird : Double = -1/3;
+  Two           : Double = 2;
+  MinusTwoThird : Double = -2/3;
+
 
 implementation
 
 uses Math, SysUtils;
 
-const Half   : Double = 0.5;
-      Twenty : Double = 20;
+const
+  Half          : Double = 0.5;
+  Twenty        : Double = 20;
 
 {$IFNDEF FPC}
 procedure SetMatrixLength(Matrix : TAVDDoubleDynMatrix; Size : TPoint);
@@ -561,14 +593,14 @@ function f_ArcTan(Value:Single):Single;
 var VSqr : Double;
 begin
  VSqr   := sqr(Value);
- Result := ((((0.0208351*VSqr-0.085133)*VSqr+0.180141)*VSqr-0.3302995)*VSqr+0.999866)*Value;
+ Result := ((((0.0208351 * VSqr - 0.085133) * VSqr + 0.180141) * VSqr - 0.3302995) * VSqr + 0.999866) * Value;
 end;
 
 function f_ArcTan(Value:Double):Double;
 var VSqr : Double;
 begin
  VSqr   := sqr(Value);
- Result := ((((0.0208351*VSqr-0.085133)*VSqr+0.180141)*VSqr-0.3302995)*VSqr+0.999866)*Value;
+ Result := ((((0.0208351 * VSqr - 0.085133) * VSqr + 0.180141) * VSqr - 0.3302995) * VSqr + 0.999866) * Value;
 end;
 
 function f_Ln2(f:Single):Single;
@@ -621,14 +653,45 @@ begin
 end;
 {$ENDIF}
 
-function f_Log2(val:Single):Single;
-var log2,x:Integer;
+function f_Log2Laurent(val: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute val;
 begin
- x := Integer((@val)^);
- log2 := ((x shr 23) and 255) - 128;
- x := x and (not(255 shl 23));
- x := x + 127 shl 23;
- Result:=Single((@x)^) + log2;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ val := ((MinusOneThird * val) + Two) * val + MinusTwoThird;
+ Result := val + log2;
+end;
+
+function f_Log2MinError5(val: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute val;
+begin
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ val := ((( - 8.18038640187952054E-2 *
+        val + 6.46216635143615381E-1) *
+        val - 2.12293700635511007) *
+        val + 4.07217052527789480) *
+        val - 1.51355930430330177;
+ Result := val + log2;
+end;
+
+function f_Log2Continous5(val: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute val;
+begin
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ val := ((( - 8.21343513178931783E-2 *
+        val + 6.49732456739820052E-1) *
+        val - 2.13417801862571777) *
+        val + 4.08642207062728868) *
+        val - 1.51984215742349793;
+ Result := val + log2;
 end;
 
 function f_IntPower(i:Single;n:Integer):Single;
@@ -954,8 +1017,9 @@ begin
  b := 3 + a;
  Result := (x * b) / (a * b + 6 );
 {$ELSE}
-const c3:Single=3;
-      c6:Single=6;
+const
+  c3: Single = 3;
+  c6: Single = 6;
 asm
  fld x.Single;
  fabs
@@ -983,6 +1047,426 @@ asm
  fadd c3
  fdiv
 {$ENDIF}
+end;
+
+function FastTanhOpt3(x: Single): Single;
+var
+  a, b : Double;
+begin
+ a := abs(x);
+ b := 1.26175667589988239 + a *
+    (-0.54699348440059470 + a *
+    ( 2.66559097474027817));
+ Result := (b * x) / (b * a + 1);
+end;
+
+function FastTanhOpt4(x: Single): Single;
+var
+  a, b : Double;
+begin
+ a := abs(x);
+ b :=  0.89690305801668457 + a *
+     ( 1.89047619399687661 + a *
+     (-1.35205169119085666 + a *
+       1.74656303770202670));
+ Result := (b * x) / (b * a + 1);
+end;
+
+function FastTanhOpt5(x: Single): Single;
+var
+  a, b : Double;
+begin
+ a := abs(x);
+ b :=  1.03971379878158321 + a *
+     ( 0.54953758170495126 + a *
+     ( 2.13184139104070569 + a *
+     (-1.46060069227128242 + a *
+     ( 0.91996358346770157))));
+ Result := (b * x) / (b * a + 1);
+end;
+
+function FastTanhOpt6(x: Single): Single;
+var
+  a, b : Double;
+begin
+ a := abs(x);
+ b :=  0.98516470896867081 + a *
+     ( 1.21020234045009012 + a *
+     (-0.22720155259481389 + a *
+     ( 1.89719615102030725 + a *
+     (-1.07161642656874956 + a *
+     ( 0.40487405571569546)))));
+ Result := (b * x) / (b * a + 1);
+end;
+
+function FastTanhOpt7(x: Single): Single;
+var
+  a, b : Double;
+begin
+ a := abs(x);
+ b :=  1.00518193411912860 + a *
+     ( 0.91005085146116016 + a *
+     ( 1.14542500876429276 + a *
+     (-0.76509890972158046 + a *
+     ( 1.34808969964882519 + a *
+     (-0.60147655894944263 + a *
+     ( 0.15264109378548973))))));
+ Result := (b * x) / (b * a + 1);
+end;
+
+function FastTanhOpt3(x: Double): Double;
+var
+  a, b : Double;
+begin
+ a := abs(x);
+ b := 1.26175667589988239 + a *
+    (-0.54699348440059470 + a *
+    ( 2.66559097474027817));
+ Result := (b * x) / (b * a + 1);
+end;
+
+function FastTanhOpt4(x: Double): Double;
+var
+  a, b : Double;
+begin
+ a := abs(x);
+ b :=  0.89690305801668457 + a *
+     ( 1.89047619399687661 + a *
+     (-1.35205169119085666 + a *
+       1.74656303770202670));
+ Result := (b * x) / (b * a + 1);
+end;
+
+function FastTanhOpt5(x: Double): Double;
+var
+  a, b : Double;
+begin
+ a := abs(x);
+ b :=  1.03971379878158321 + a *
+     ( 0.54953758170495126 + a *
+     ( 2.13184139104070569 + a *
+     (-1.46060069227128242 + a *
+     ( 0.91996358346770157))));
+ Result := (b * x) / (b * a + 1);
+end;
+
+function FastTanhOpt6(x: Double): Double;
+var
+  a, b : Double;
+begin
+ a := abs(x);
+ b :=  0.98516470896867081 + a *
+     ( 1.21020234045009012 + a *
+     (-0.22720155259481389 + a *
+     ( 1.89719615102030725 + a *
+     (-1.07161642656874956 + a *
+     ( 0.40487405571569546)))));
+ Result := (b * x) / (b * a + 1);
+end;
+
+function FastTanhOpt7(x: Double): Double;
+var
+  a, b : Double;
+begin
+ a := abs(x);
+ b :=  1.00518193411912860 + a *
+     ( 0.91005085146116016 + a *
+     ( 1.14542500876429276 + a *
+     (-0.76509890972158046 + a *
+     ( 1.34808969964882519 + a *
+     (-0.60147655894944263 + a *
+     ( 0.15264109378548973))))));
+ Result := (b * x) / (b * a + 1);
+end;
+
+function FastTanhOpt3asm(x: Single): Single; assembler;
+const
+  c0 : Double =  2.66559097474027817;
+  c1 : Double = -0.54699348440059470;
+  c2 : Double =  1.26175667589988239;
+asm
+ fld x.Single      // Load x
+ fld st(0)         // Copy x
+ fabs              // Stack: abs(x), x
+ fld c0            // Load c0 as working value, abs(x) => a
+ fmul st(0), st(1) // Stack: a * c0, a, x
+ fadd c1           // Stack: c1 + a * c0, a, x
+ fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, x
+ fadd c2           // Stack: b := c2 + a * (c1 + a * c0), a, x
+ fxch st(2)        // exchange b and x, Stack: x, a, b
+ fmul st(0), st(2) // Stack: b * x, a, b
+ fxch st(2)        // exchange b * x and x, Stack: b, a, b * x
+ fmulp             // Stack: b * a, b * x
+ fld1              // Stack: 1, b * a, b * x
+ faddp             // Stack: 1 + b * a, b * x
+ fdivp             // Stack: (b * x) / (1 + b * a)
+end;
+
+function FastTanhOpt4asm(x: Single): Single; assembler;
+const
+  c0 : Double =  1.74656303770202670;
+  c1 : Double = -1.35205169119085666;
+  c2 : Double =  1.89047619399687661;
+  c3 : Double =  0.89690305801668457;
+asm
+ fld x.Single      // Load x
+ fld st(0)         // Copy x
+ fabs              // Stack: abs(x), x
+ fld c0            // Load c0 as working value, abs(x) => a
+ fmul st(0), st(1) // Stack: a * c0, a, x
+ fadd c1           // Stack: c1 + a * c0, a, x
+ fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, x
+ fadd c2           // Stack: c2 + a * (c1 + a * c0), a, x
+ fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, x
+ fadd c3           // Stack: b := c3 + a * (c2 + a * (c1 + a * c0)), a, x
+ fxch st(2)        // exchange b and x, Stack: x, a, b
+ fmul st(0), st(2) // Stack: b * x, a, b
+ fxch st(2)        // exchange b * x and x, Stack: b, a, b * x
+ fmulp             // Stack: b * a, b * x
+ fld1              // Stack: 1, b * a, b * x
+ faddp             // Stack: 1 + b * a, b * x
+ fdivp             // Stack: (b * x) / (1 + b * a)
+end;
+
+function FastTanhOpt5asm(x: Single): Single; assembler;
+const
+  c0 : Double =  0.91996358346770157;
+  c1 : Double = -1.46060069227128242;
+  c2 : Double =  2.13184139104070569;
+  c3 : Double =  0.54953758170495126;
+  c4 : Double =  1.03971379878158321;
+asm
+ fld x.Single      // Load x
+ fld st(0)         // Copy x
+ fabs              // Stack: abs(x), x
+ fld c0            // Load c0 as working value, abs(x) => a
+ fmul st(0), st(1) // Stack: a * c0, a, x
+ fadd c1           // Stack: c1 + a * c0, a, x
+ fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, x
+ fadd c2           // Stack: c2 + a * (c1 + a * c0), a, x
+ fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, x
+ fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, x
+ fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fxch st(2)        // exchange b and x, Stack: x, a, b
+ fmul st(0), st(2) // Stack: b * x, a, b
+ fxch st(2)        // exchange b * x and x, Stack: b, a, b * x
+ fmulp             // Stack: b * a, b * x
+ fld1              // Stack: 1, b * a, b * x
+ faddp             // Stack: 1 + b * a, b * x
+ fdivp             // Stack: (b * x) / (1 + b * a)
+end;
+
+function FastTanhOpt6asm(x: Single): Single; assembler;
+const
+  c0 : Double =  0.40487405571569546;
+  c1 : Double = -1.07161642656874956;
+  c2 : Double =  1.89719615102030725;
+  c3 : Double = -0.22720155259481389;
+  c4 : Double =  1.21020234045009012;
+  c5 : Double =  0.98516470896867081;
+asm
+ fld x.Single      // Load x
+ fld st(0)         // Copy x
+ fabs              // Stack: abs(x), x
+ fld c0            // Load c0 as working value, abs(x) => a
+ fmul st(0), st(1) // Stack: a * c0, a, x
+ fadd c1           // Stack: c1 + a * c0, a, x
+ fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, x
+ fadd c2           // Stack: c2 + a * (c1 + a * c0), a, x
+ fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, x
+ fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, x
+ fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fadd c4           // Stack: c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, x
+ fadd c5           // Stack: b := c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, x
+ fxch st(2)        // exchange b and x, Stack: x, a, b
+ fmul st(0), st(2) // Stack: b * x, a, b
+ fxch st(2)        // exchange b * x and x, Stack: b, a, b * x
+ fmulp             // Stack: b * a, b * x
+ fld1              // Stack: 1, b * a, b * x
+ faddp             // Stack: 1 + b * a, b * x
+ fdivp             // Stack: (b * x) / (1 + b * a)
+end;
+
+function FastTanhOpt7asm(x: Single): Single; assembler;
+const
+  c0 : Double =  0.152641093785489734;
+  c1 : Double = -0.60147655894944263;
+  c2 : Double =  1.34808969964882519;
+  c3 : Double = -0.765098909721580456;
+  c4 : Double =  1.14542500876429276;
+  c5 : Double =  0.91005085146116016;
+  c6 : Double =  1.00518193411912860;
+asm
+ fld x.Single      // Load x
+ fld st(0)         // Copy x
+ fabs              // Stack: abs(x), x
+ fld c0            // Load c0 as working value, abs(x) => a
+ fmul st(0), st(1) // Stack: a * c0, a, x
+ fadd c1           // Stack: c1 + a * c0, a, x
+ fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, x
+ fadd c2           // Stack: c2 + a * (c1 + a * c0), a, x
+ fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, x
+ fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, x
+ fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, x
+ fadd c5           // Stack: c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, x
+ fmul st(0), st(1) // Stack: a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, x
+ fadd c6           // Stack: b := c6 + a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, x
+ fxch st(2)        // exchange b and x, Stack: x, a, b
+ fmul st(0), st(2) // Stack: b * x, a, b
+ fxch st(2)        // exchange b * x and x, Stack: b, a, b * x
+ fmulp             // Stack: b * a, b * x
+ fld1              // Stack: 1, b * a, b * x
+ faddp             // Stack: 1 + b * a, b * x
+ fdivp             // Stack: (b * x) / (1 + b * a)
+end;
+
+function FastTanhOpt3asm(x: Double): Double; assembler;
+const
+  c0 : Double =  2.66559097474027817;
+  c1 : Double = -0.54699348440059470;
+  c2 : Double =  1.26175667589988239;
+asm
+ fld x.Double      // Load x
+ fld st(0)         // Copy x
+ fabs              // Stack: abs(x), x
+ fld c0            // Load c0 as working value, abs(x) => a
+ fmul st(0), st(1) // Stack: a * c0, a, x
+ fadd c1           // Stack: c1 + a * c0, a, x
+ fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, x
+ fadd c2           // Stack: b := c2 + a * (c1 + a * c0), a, x
+ fxch st(2)        // exchange b and x, Stack: x, a, b
+ fmul st(0), st(2) // Stack: b * x, a, b
+ fxch st(2)        // exchange b * x and x, Stack: b, a, b * x
+ fmulp             // Stack: b * a, b * x
+ fld1              // Stack: 1, b * a, b * x
+ faddp             // Stack: 1 + b * a, b * x
+ fdivp             // Stack: (b * x) / (1 + b * a)
+end;
+
+function FastTanhOpt4asm(x: Double): Double; assembler;
+const
+  c0 : Double =  1.74656303770202670;
+  c1 : Double = -1.35205169119085666;
+  c2 : Double =  1.89047619399687661;
+  c3 : Double =  0.89690305801668457;
+asm
+ fld x.Double      // Load x
+ fld st(0)         // Copy x
+ fabs              // Stack: abs(x), x
+ fld c0            // Load c0 as working value, abs(x) => a
+ fmul st(0), st(1) // Stack: a * c0, a, x
+ fadd c1           // Stack: c1 + a * c0, a, x
+ fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, x
+ fadd c2           // Stack: c2 + a * (c1 + a * c0), a, x
+ fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, x
+ fadd c3           // Stack: b := c3 + a * (c2 + a * (c1 + a * c0)), a, x
+ fxch st(2)        // exchange b and x, Stack: x, a, b
+ fmul st(0), st(2) // Stack: b * x, a, b
+ fxch st(2)        // exchange b * x and x, Stack: b, a, b * x
+ fmulp             // Stack: b * a, b * x
+ fld1              // Stack: 1, b * a, b * x
+ faddp             // Stack: 1 + b * a, b * x
+ fdivp             // Stack: (b * x) / (1 + b * a)
+end;
+
+function FastTanhOpt5asm(x: Double): Double; assembler;
+const
+  c4 : Double =  0.91996358346770157;
+  c3 : Double = -1.46060069227128242;
+  c2 : Double =  2.13184139104070569;
+  c1 : Double =  0.54953758170495126;
+  c0 : Double =  1.03971379878158321;
+asm
+ fld x.Double      // Load x
+ fld st(0)         // Copy x
+ fabs              // Stack: abs(x), x
+ fld c0            // Load c0 as working value, abs(x) => a
+ fmul st(0), st(1) // Stack: a * c0, a, x
+ fadd c1           // Stack: c1 + a * c0, a, x
+ fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, x
+ fadd c2           // Stack: c2 + a * (c1 + a * c0), a, x
+ fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, x
+ fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, x
+ fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fxch st(2)        // exchange b and x, Stack: x, a, b
+ fmul st(0), st(2) // Stack: b * x, a, b
+ fxch st(2)        // exchange b * x and x, Stack: b, a, b * x
+ fmulp             // Stack: b * a, b * x
+ fld1              // Stack: 1, b * a, b * x
+ faddp             // Stack: 1 + b * a, b * x
+ fdivp             // Stack: (b * x) / (1 + b * a)
+end;
+
+function FastTanhOpt6asm(x: Double): Double; assembler;
+const
+  c0 : Double =  0.40487405571569546;
+  c1 : Double = -1.07161642656874956;
+  c2 : Double =  1.89719615102030725;
+  c3 : Double = -0.22720155259481389;
+  c4 : Double =  1.21020234045009012;
+  c5 : Double =  0.98516470896867081;
+asm
+ fld x.Double      // Load x
+ fld st(0)         // Copy x
+ fabs              // Stack: abs(x), x
+ fld c0            // Load c0 as working value, abs(x) => a
+ fmul st(0), st(1) // Stack: a * c0, a, x
+ fadd c1           // Stack: c1 + a * c0, a, x
+ fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, x
+ fadd c2           // Stack: c2 + a * (c1 + a * c0), a, x
+ fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, x
+ fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, x
+ fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fadd c4           // Stack: c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, x
+ fadd c5           // Stack: b := c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, x
+ fxch st(2)        // exchange b and x, Stack: x, a, b
+ fmul st(0), st(2) // Stack: b * x, a, b
+ fxch st(2)        // exchange b * x and x, Stack: b, a, b * x
+ fmulp             // Stack: b * a, b * x
+ fld1              // Stack: 1, b * a, b * x
+ faddp             // Stack: 1 + b * a, b * x
+ fdivp             // Stack: (b * x) / (1 + b * a)
+end;
+
+function FastTanhOpt7asm(x: Double): Double; assembler;
+const
+  c0 : Double =  0.152641093785489734;
+  c1 : Double = -0.60147655894944263;
+  c2 : Double =  1.34808969964882519;
+  c3 : Double = -0.765098909721580456;
+  c4 : Double =  1.14542500876429276;
+  c5 : Double =  0.91005085146116016;
+  c6 : Double =  1.00518193411912860;
+asm
+ fld x.Double      // Load x
+ fld st(0)         // Copy x
+ fabs              // Stack: abs(x), x
+ fld c0            // Load c0 as working value, abs(x) => a
+ fmul st(0), st(1) // Stack: a * c0, a, x
+ fadd c1           // Stack: c1 + a * c0, a, x
+ fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, x
+ fadd c2           // Stack: c2 + a * (c1 + a * c0), a, x
+ fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, x
+ fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, x
+ fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, x
+ fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, x
+ fadd c5           // Stack: c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, x
+ fmul st(0), st(1) // Stack: a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, x
+ fadd c6           // Stack: b := c6 + a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, x
+ fxch st(2)        // exchange b and x, Stack: x, a, b
+ fmul st(0), st(2) // Stack: b * x, a, b
+ fxch st(2)        // exchange b * x and x, Stack: b, a, b * x
+ fmulp             // Stack: b * a, b * x
+ fld1              // Stack: 1, b * a, b * x
+ faddp             // Stack: 1 + b * a, b * x
+ fdivp             // Stack: (b * x) / (1 + b * a)
 end;
 
 function Sigmoid(x:Single):Single;
