@@ -2221,6 +2221,7 @@ object FmMiniHost: TFmMiniHost
     CanDos = []
     PreFillOutBuffer = bpfZero
     ConvertOptimizations = [coSSE, co3DNow]
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     SampleRate = 44100.000000000000000000
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000

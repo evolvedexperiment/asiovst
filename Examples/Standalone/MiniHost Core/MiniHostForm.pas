@@ -863,7 +863,7 @@ begin
    for i := 0 to MIASIOOutputChannel.Count - 1 do MIASIOOutputChannel.Delete(0);
    for i := 0 to MIASIOInputChannel.Count - 1 do MIASIOInputChannel.Delete(0);
    j := 0;
-   for i := 0 to length(ASIOHost.OutputChannelInfos) - 1 do
+   for i := 0 to ASIOHost.OutputChannelCount - 1 do
     if not odd(i) then
     begin
      m := TMenuItem.Create(self);
@@ -871,7 +871,7 @@ begin
      m.tag := j;
      inc(j);
      m.OnClick := SetChannel;
-     if i < length(ASIOHost.OutputChannelInfos) - 1 then
+     if i < ASIOHost.OutputChannelCount - 1 then
       m.Caption :=
        ASIOHost.OutputChannelInfos[i].name + ' / ' +
        ASIOHost.OutputChannelInfos[i + 1].name
@@ -888,7 +888,7 @@ begin
    m.Caption := 'None';
    MIASIOInputChannel.Add(m);
    j := 1;
-   for i := 0 to length(ASIOHost.InputChannelInfos) - 1 do
+   for i := 0 to ASIOHost.InputChannelCount - 1 do
     if not odd(i) then
      begin
       m := TMenuItem.Create(self);
@@ -896,7 +896,7 @@ begin
       m.tag := j;
       inc(j);
       m.OnClick := SetChannelI;
-      if i < length(ASIOHost.InputChannelInfos) - 1 then
+      if i < ASIOHost.InputChannelCount - 1 then
        m.Caption :=
         ASIOHost.InputChannelInfos[i].name
          + ' / ' + ASIOHost.InputChannelInfos[i + 1].name
@@ -907,7 +907,7 @@ begin
      end;
 
    MIASIOInputChannel.Items[0].Click;
-   if length(ASIOHost.OutputChannelInfos) > 0
+   if ASIOHost.OutputChannelCount > 0
     then MIASIOOutputChannel.Items[0].Click;
   end;
  FmOptions.LbASIODriver.Caption := 'ASIO Driver: ' + ASIOHost.DriverName;
@@ -919,7 +919,7 @@ begin
   FmOptions.LbInputs.Caption := 'Inputs: ' + MIASIOInputChannel.Items[0].Caption
  else
   FmOptions.LbInputs.Caption := 'Inputs: None';
- if length(ASIOHost.OutputChannelInfos) > 0 then
+ if ASIOHost.OutputChannelCount > 0 then
   FmOptions.LbFormat.Caption := 'Format: ' + inttostr(ASIOHost.OutputChannelInfos[0].vType) + ' ' + ChannelTypeToString(ASIOHost.OutputChannelInfos[0].vType)
  else
   FmOptions.LbFormat.Caption := 'Format: None';

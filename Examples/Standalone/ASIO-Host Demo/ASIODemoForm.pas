@@ -4,8 +4,9 @@ unit AsioDemoForm;
 
 interface
 
-uses {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-     Forms, Classes, Controls, StdCtrls, DASIOHost, DAVDComplex, DAVDCommon;
+uses
+  {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
+  Forms, Classes, Controls, StdCtrls, DASIOHost, DAVDComplex, DAVDCommon;
 
 type
   TFmASIO = class(TForm)
@@ -54,7 +55,8 @@ implementation
 {$R *.DFM}
 {$ENDIF}
 
-uses SysUtils, Inifiles;
+uses
+  SysUtils, Inifiles;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
@@ -162,39 +164,39 @@ begin
  if fFreq<>Value then
   begin
    fFreq := Value;
-   LbFreq.Caption:='Frequency: '+FloatTostrF(fFreq,ffGeneral,5,5)+' Hz';
+   LbFreq.Caption := 'Frequency: ' + FloatTostrF(fFreq, ffGeneral, 5, 5) + ' Hz';
    GetSinCos(2 * Pi * fFreq / ASIOHost.SampleRate, fAngle.Im, fAngle.Re);
   end;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
   OutBuffer: TAVDArrayOfSingleDynArray);
-var i: integer;
-    d: Double;
+var i, j : integer;
+    d    : Double;
 begin
  for i := 0 to ASIOHost.BufferSize - 1 do
- begin
-  d := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
-  fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
-  fPosition.Re := d; d := d * fVol;
-  OutBuffer[0,i] := d * (1 - fPan);
-  OutBuffer[1,i] := d * fPan;
- end;
+  begin
+   d := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
+   fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
+   fPosition.Re := d; d := d * fVol;
+   for j := 0 to ASIOHost.OutputChannelCount - 1
+    do OutBuffer[j, i] := d;
+  end;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
   OutBuffer: TAVDArrayOfDoubleDynArray);
-var i: integer;
-    d: Double;
+var i, j : integer;
+    d    : Double;
 begin
  for i := 0 to ASIOHost.BufferSize - 1 do
- begin
-  d := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
-  fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
-  fPosition.Re := d; d := d * fVol;
-  OutBuffer[0,i] := d * (1 - fPan);
-  OutBuffer[1,i] := d * fPan;
- end;
+  begin
+   d := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
+   fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
+   fPosition.Re := d; d := d * fVol;
+   for j := 0 to ASIOHost.OutputChannelCount - 1
+    do OutBuffer[j, i] := d;
+  end;
 end;
 
 procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
@@ -206,16 +208,18 @@ procedure TFmASIO.SbVolumeChange(Sender: TObject);
 begin
  fVol := SbVolume.position * 0.00001;
  if fVol=0
-  then LbVolume.Caption:='Volume: 0 equals -oo dB'
-  else LbVolume.Caption:='Volume: '+FloattostrF(fVol,ffFixed,2,2)+' equals '+FloattostrF(Amp_to_dB(fVol),ffGeneral,2,2)+' dB';
+  then LbVolume.Caption := 'Volume: 0 equals -oo dB'
+  else LbVolume.Caption := 'Volume: ' +
+                           FloattostrF(fVol, ffFixed, 2, 2) + ' equals ' +
+                           FloattostrF(Amp_to_dB(fVol), ffGeneral, 2, 2) + ' dB';
 end;
 
 procedure TFmASIO.SbPanChange(Sender: TObject);
 begin
  fPan := SbPan.Position * 0.01;
- if fPan=0.5
-  then LbPanorama.Caption:='Panorama: C'
-  else LbPanorama.Caption:='Panorama: '+Inttostr(round(100*(fPan*2-1)));
+ if fPan = 0.5
+  then LbPanorama.Caption := 'Panorama: C'
+  else LbPanorama.Caption := 'Panorama: ' + Inttostr(round(100 * (fPan * 2 - 1)));
 end;
 
 {$IFDEF FPC}

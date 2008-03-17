@@ -37,7 +37,7 @@ object FmASIO: TFmASIO
     Width = 310
     Height = 13
     Caption = 
-      '(C)opyright in 2004-2007 by  Christian Budde and Tobias Fleische' +
+      '(C)opyright in 2004-2008 by  Christian Budde and Tobias Fleische' +
       'r'
   end
   object LbFreq: TLabel
