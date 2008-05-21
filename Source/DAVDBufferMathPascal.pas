@@ -2,7 +2,8 @@ unit DAVDBufferMathPascal;
 
 interface
 
-uses DAVDCommon;
+uses
+  DAVDCommon;
 
 {-------------------------------------------------------------------------------------------
 EVERYTHING FOR SINGLE

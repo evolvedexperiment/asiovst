@@ -9,9 +9,8 @@ well, I did my best... but ASM is not my world...
 
 interface
 
-uses DAVDCommon;
-
-
+uses
+  DAVDCommon;
 
 
 {-------------------------------------------------------------------------------------------
@@ -182,12 +181,12 @@ asm
   shl ebx, 2
 
   @start:
-     sub ebx, 4                //    dec(dim2);
-     fld  [input1+ebx].Single  // \
-     fadd [input2+ebx].Single  //  > output= input1+input2;
-     fstp [output+ebx].Single  // /
+     sub ebx, 4                  //    dec(dim2);
+     fld  [input1 + ebx].Single  // \
+     fadd [input2 + ebx].Single  //  > output= input1+input2;
+     fstp [output + ebx].Single  // /
 
-     jnz @start                //    loop until dim2 = 0
+     jnz @start                  //    loop until dim2 = 0
 
   pop ebx
 end;
@@ -202,12 +201,12 @@ asm
   shl ebx, 2
 
   @start:
-     sub ebx, 4                //    dec(dim2);
-     fld  [from  +ebx].Single  // \
-     fsub [amount+ebx].Single  //  > output:= from-amount;
-     fstp [output+ebx].Single  // /
+     sub ebx, 4                  //    dec(dim2);
+     fld  [from   + ebx].Single  // \
+     fsub [amount + ebx].Single  //  > output:= from-amount;
+     fstp [output + ebx].Single  // /
 
-     jnz @start                //    loop until dim2 = 0
+     jnz @start                  //    loop until dim2 = 0
 
   pop ebx
 end;
@@ -222,12 +221,12 @@ asm
   shl ebx, 2
 
   @start:
-     sub ebx, 4                //    dec(dim2);
-     fld  [input1+ebx].Single  // \
-     fmul [input2+ebx].Single  //  > output:= input1*input2;
-     fstp [output+ebx].Single  // /
+     sub ebx, 4                  //    dec(dim2);
+     fld  [input1 + ebx].Single  // \
+     fmul [input2 + ebx].Single  //  > output:= input1*input2;
+     fstp [output + ebx].Single  // /
 
-     jnz @start                //    loop until dim2 = 0
+     jnz @start                  //    loop until dim2 = 0
 
   pop ebx
 end;
@@ -244,12 +243,12 @@ procedure AddArrays(const {eax}   input1: TAVDSingleDynArray;
 asm
   shl dim2, 2
   @start:
-     sub dim2, 4               //    dec(dim2);
-     fld  [input1+dim2].Single  // \
-     fadd [input2].Single      //  > output:= input1+input2;
-     fstp [output+dim2].Single  // /
+     sub dim2, 4                  //    dec(dim2);
+     fld  [input1 + dim2].Single  // \
+     fadd [input2       ].Single  //  > output := input1 + input2;
+     fstp [output + dim2].Single  // /
 
-     jnz @start                //    loop until dim2 = 0
+     jnz @start                   //    loop until dim2 = 0
 end;
 
 procedure SubArrays(const {eax}   from: TAVDSingleDynArray;
@@ -259,12 +258,12 @@ procedure SubArrays(const {eax}   from: TAVDSingleDynArray;
 asm
   shl dim2, 2
   @start:
-     sub dim2, 4               //    dec(dim2);
-     fld  [from+dim2].Single  // \
-     fsub [amount].Single       //  > output:= from-amount;
-     fstp [output+dim2].Single  // /
+     sub dim2, 4                  //    dec(dim2);
+     fld  [from   + dim2].Single  // \
+     fsub [amount       ].Single  //  > output := from - amount;
+     fstp [output + dim2].Single  // /
 
-     jnz @start                //    loop until dim2 = 0
+     jnz @start                   //    loop until dim2 = 0
 end;
 
 procedure MulArrays(const {eax}   input1: TAVDSingleDynArray;
@@ -274,12 +273,12 @@ procedure MulArrays(const {eax}   input1: TAVDSingleDynArray;
 asm
   shl dim2, 2
   @start:
-     sub dim2, 4               //    dec(dim2);
-     fld  [input1+dim2].Single  // \
-     fmul [input2].Single      //  > output:= input1*input2;
-     fstp [output+dim2].Single  // /
+     sub dim2, 4                  //    dec(dim2);
+     fld  [input1 + dim2].Single  // \
+     fmul [input2       ].Single  //  > output:= input1*input2;
+     fstp [output + dim2].Single  // /
 
-     jnz @start                //    loop until dim2 = 0
+     jnz @start                   //    loop until dim2 = 0
 end;
 
 
@@ -299,13 +298,13 @@ asm
   shl ebx, 2
 
   @start:
-     sub ebx, 4               // dec(dim2);
-     fld  [factor1+ebx].Single  // \
-     fmul [factor2+ebx].Single  //  > x      = factor1*factor2
-     fadd [summand+ebx].Single  //  > output = x+summand
-     fstp [esi+ebx].Single      // /
+     sub ebx, 4                   // dec(dim2);
+     fld  [factor1 + ebx].Single  // \
+     fmul [factor2 + ebx].Single  //  > x      = factor1*factor2
+     fadd [summand + ebx].Single  //  > output = x+summand
+     fstp [esi + ebx].Single      // /
 
-     jnz @start                //    loop until dim2 = 0
+     jnz @start                   //    loop until dim2 = 0
      
   pop esi
   pop ebx
@@ -323,13 +322,13 @@ asm
   shl ebx, 2
 
   @start:
-     sub ebx, 4               // dec(dim2);
-     fld  [factor1+ebx].Single  // \
-     fmul [factor2].Single      //  > x      = factor1*factor2
-     fadd [summand+ebx].Single  //  > output = x+summand
-     fstp [output+ebx].Single   // /
+     sub ebx, 4                   // dec(dim2);
+     fld  [factor1 + ebx].Single  // \
+     fmul [factor2      ].Single  //  > x      = factor1*factor2
+     fadd [summand + ebx].Single  //  > output = x+summand
+     fstp [output  + ebx].Single  // /
 
-     jnz @start                //    loop until dim2 = 0
+     jnz @start                   //    loop until dim2 = 0
 
   pop ebx
 end;
@@ -346,13 +345,13 @@ asm
   shl ebx, 2
 
   @start:
-     sub ebx, 4               // dec(dim2);
-     fld  [factor1+ebx].Single  // \
-     fmul [factor2+ebx].Single  //  > x      = factor1*factor2
-     fadd [summand].Single      //  > output = x+summand
-     fstp [output+ebx].Single   // /
+     sub ebx, 4                   // dec(dim2);
+     fld  [factor1 + ebx].Single  // \
+     fmul [factor2 + ebx].Single  //  > x      = factor1*factor2
+     fadd [summand      ].Single  //  > output = x+summand
+     fstp [output  + ebx].Single  // /
 
-     jnz @start                //    loop until dim2 = 0
+     jnz @start                   //    loop until dim2 = 0
 
   pop ebx
 end;
@@ -366,11 +365,11 @@ asm
   shl dim2, 2
 
   @start:
-     sub dim2, 4               // dec(dim2);
-     fld  [factor1+dim2].Single  // \
-     fmul [factor2].Single       //  > x      = factor1*factor2
-     fadd [summand].Single       //  > output = x+summand
-     fstp [output+dim2].Single   // /
+     sub dim2, 4                   // dec(dim2);
+     fld  [factor1 + dim2].Single  // \
+     fmul [factor2       ].Single  //  > x      = factor1*factor2
+     fadd [summand       ].Single  //  > output = x+summand
+     fstp [output  + dim2].Single  // /
 
      jnz @start                //    loop until dim2 = 0
 end;
@@ -812,28 +811,28 @@ end;
 procedure MulAddArrays(const factor1, factor2, summand, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2[i], summand[i], output[i], dim2);
+  for i := 0 to dim1 - 1 do MulAddArrays(factor1[i], factor2[i], summand[i], output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1: TAVDArrayOfSingleDynArray; const factor2: single;
                        const summand, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2, summand[i], output[i], dim2);
+  for i := 0 to dim1 - 1 do MulAddArrays(factor1[i], factor2, summand[i], output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1, factor2: TAVDArrayOfSingleDynArray; const summand: single;
                        const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2[i], summand, output[i], dim2);
+  for i := 0 to dim1 - 1 do MulAddArrays(factor1[i], factor2[i], summand, output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1: TAVDArrayOfSingleDynArray; const factor2, summand: single;
                        const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2, summand, output[i], dim2);
+  for i := 0 to dim1 - 1 do MulAddArrays(factor1[i], factor2, summand, output[i], dim2);
 end;
 
 
@@ -844,25 +843,25 @@ end;
 procedure AddMulArrays(const summand1, summand2, factor, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2[i], factor[i], output[i], dim2);
+  for i := 0 to dim1 - 1 do AddMulArrays(summand1[i], summand2[i], factor[i], output[i], dim2);
 end;
 
 procedure AddMulArrays(const summand1: TAVDArrayOfSingleDynArray; const summand2: single; const factor, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2, factor[i], output[i], dim2);
+  for i := 0 to dim1 - 1 do AddMulArrays(summand1[i], summand2, factor[i], output[i], dim2);
 end;
 
 procedure AddMulArrays(const summand1, summand2: TAVDArrayOfSingleDynArray; const factor: single; const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2[i], factor, output[i], dim2);
+  for i := 0 to dim1 - 1 do AddMulArrays(summand1[i], summand2[i], factor, output[i], dim2);
 end;
 
 procedure AddMulArrays(const summand1: TAVDArrayOfSingleDynArray; const summand2, factor: single; const output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2, factor, output[i], dim2);
+  for i := 0 to dim1 - 1 do AddMulArrays(summand1[i], summand2, factor, output[i], dim2);
 end;
 
 
@@ -873,7 +872,7 @@ end;
 procedure AddScaledArrays(const input1, input2: TAVDArrayOfSingleDynArray; const factor1, factor2: single; output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddScaledArrays(input1[i], input2[i], factor1, factor2, output[i], dim2);
+  for i := 0 to dim1 - 1 do AddScaledArrays(input1[i], input2[i], factor1, factor2, output[i], dim2);
 end;
 
 
@@ -882,7 +881,7 @@ end;
 procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output: TAVDArrayOfSingleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddModulatedArrays(input1[i], input2[i], envelope1[i], envelope2[i], output[i], dim2);
+  for i := 0 to dim1 - 1 do AddModulatedArrays(input1[i], input2[i], envelope1[i], envelope2[i], output[i], dim2);
 end;
 
 
@@ -1535,21 +1534,21 @@ asm
   shl dim2, 3
 
   @outerloop:
-    sub ebx, 4               // dec(dim1);
-    jc @cleanup              // if dim1 < 0 then exit;
+    sub ebx, 4                 // dec(dim1);
+    jc @cleanup                // if dim1 < 0 then exit;
 
-    mov esi,[eax+ebx]
-    mov edi,[edx+ebx]
+    mov esi,[eax + ebx]
+    mov edi,[edx + ebx]
     push ebx
 
     mov ebx, dim2
     @innerloop:
-      sub ebx, 8             //    dec(dim2);
-      fld  [esi+ebx].Double  // \
-      fsub [amount].Double   //  > output:= from-amount;
-      fstp [edi+ebx].Double  // /
+      sub ebx, 8               //    dec(dim2);
+      fld  [esi + ebx].Double  // \
+      fsub [amount   ].Double  //  > output:= from-amount;
+      fstp [edi + ebx].Double  // /
 
-      jnz @innerloop         // loop until dim2 = 0
+      jnz @innerloop           // loop until dim2 = 0
 
     pop ebx
 
@@ -1577,21 +1576,21 @@ asm
   shl dim2, 3
 
   @outerloop:
-    sub ebx, 4               // dec(dim1);
-    jc @cleanup              // if dim1 < 0 then exit;
+    sub ebx, 4                 // dec(dim1);
+    jc @cleanup                // if dim1 < 0 then exit;
 
-    mov esi,[eax+ebx]
-    mov edi,[edx+ebx]
+    mov esi, [eax + ebx]
+    mov edi, [edx + ebx]
     push ebx
 
     mov ebx, dim2
     @innerloop:
-      sub ebx, 8             //    dec(dim2);
-      fld  [esi+ebx].Double  // \
-      fmul [input2].Double   //  > output:= input1*input2;
-      fstp [edi+ebx].Double  // /
+      sub ebx, 8               //    dec(dim2);
+      fld  [esi + ebx].Double  // \
+      fmul [input2   ].Double  //  > output:= input1*input2;
+      fstp [edi + ebx].Double  // /
 
-      jnz @innerloop         // loop until dim2 = 0
+      jnz @innerloop           // loop until dim2 = 0
 
     pop ebx
 
@@ -1612,28 +1611,28 @@ end;
 procedure MulAddArrays(const factor1, factor2, summand, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2[i], summand[i], output[i], dim2);
+  for i := 0 to dim1 - 1 do MulAddArrays(factor1[i], factor2[i], summand[i], output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1: TAVDArrayOfDoubleDynArray; const factor2: Double;
                        const summand, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2, summand[i], output[i], dim2);
+  for i := 0 to dim1 - 1 do MulAddArrays(factor1[i], factor2, summand[i], output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1, factor2: TAVDArrayOfDoubleDynArray; const summand: Double;
                        const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2[i], summand, output[i], dim2);
+  for i := 0 to dim1 - 1 do MulAddArrays(factor1[i], factor2[i], summand, output[i], dim2);
 end;
 
 procedure MulAddArrays(const factor1: TAVDArrayOfDoubleDynArray; const factor2, summand: Double;
                        const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do MulAddArrays(factor1[i], factor2, summand, output[i], dim2);
+  for i := 0 to dim1 - 1 do MulAddArrays(factor1[i], factor2, summand, output[i], dim2);
 end;
 
 
@@ -1644,25 +1643,25 @@ end;
 procedure AddMulArrays(const summand1, summand2, factor, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2[i], factor[i], output[i], dim2);
+  for i := 0 to dim1 - 1 do AddMulArrays(summand1[i], summand2[i], factor[i], output[i], dim2);
 end;
 
 procedure AddMulArrays(const summand1: TAVDArrayOfDoubleDynArray; const summand2: Double; const factor, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2, factor[i], output[i], dim2);
+  for i := 0 to dim1 - 1 do AddMulArrays(summand1[i], summand2, factor[i], output[i], dim2);
 end;
 
 procedure AddMulArrays(const summand1, summand2: TAVDArrayOfDoubleDynArray; const factor: Double; const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2[i], factor, output[i], dim2);
+  for i := 0 to dim1 - 1 do AddMulArrays(summand1[i], summand2[i], factor, output[i], dim2);
 end;
 
 procedure AddMulArrays(const summand1: TAVDArrayOfDoubleDynArray; const summand2, factor: Double; const output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddMulArrays(summand1[i], summand2, factor, output[i], dim2);
+  for i := 0 to dim1 - 1 do AddMulArrays(summand1[i], summand2, factor, output[i], dim2);
 end;
 
 
@@ -1673,7 +1672,7 @@ end;
 procedure AddScaledArrays(const input1, input2: TAVDArrayOfDoubleDynArray; const factor1, factor2: Double; output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddScaledArrays(input1[i], input2[i], factor1, factor2, output[i], dim2);
+  for i := 0 to dim1 - 1 do AddScaledArrays(input1[i], input2[i], factor1, factor2, output[i], dim2);
 end;
 
 
@@ -1682,7 +1681,7 @@ end;
 procedure AddModulatedArrays(const input1, input2, envelope1, envelope2, output: TAVDArrayOfDoubleDynArray; const dim1, dim2: integer);
 var i: integer;
 begin
-  for i:=0 to dim1-1 do AddModulatedArrays(input1[i], input2[i], envelope1[i], envelope2[i], output[i], dim2);
+  for i := 0 to dim1 - 1 do AddModulatedArrays(input1[i], input2[i], envelope1[i], envelope2[i], output[i], dim2);
 end;
 
 
@@ -1932,7 +1931,7 @@ asm
     sub ebx, 4              // dec(dim2);
     jc @cleanup
 
-    fld [esi+ebx].Single
+    fld [esi + ebx].Single
     fcom st(3)
     fnstsw ax
     sahf
@@ -1944,11 +1943,11 @@ asm
       faddp st(2), st
       jmp @innerloop
 
-  
+
   @cleanup:
     fstp [outputmin].Single
     fstp [outputmax].Single
-    fstp [esi]
+    fstp [esi].Single
     pop eax
     pop esi
     pop edi
@@ -1980,7 +1979,7 @@ asm
     sub ebx, 8              // dec(dim2);
     jc @cleanup
 
-    fld [esi+ebx].Double
+    fld [esi + ebx].Double
     fcom st(3)
     fnstsw ax
     sahf
@@ -1996,7 +1995,7 @@ asm
   @cleanup:
     fstp [outputmin].Double
     fstp [outputmax].Double
-    fstp [esi]
+    fstp [esi].Double
     pop eax
     pop esi
     pop edi
@@ -2004,30 +2003,34 @@ asm
 end;
 
 procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
-var i: integer;
+var
+  i: integer;
 begin
-  for i:=0 to dim1-1 do
+  for i := 0 to dim1 - 1 do
     GetPeaks(input[i], outputmin[i], outputmax[i], dim2);
 end;
 
 procedure GetSums(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
-var i: integer;
+var
+  i: integer;
 begin
-  for i:=0 to dim1-1 do
+  for i := 0 to dim1 - 1 do
     GetSums(input[i], outputmin[i], outputmax[i], dim2);
 end;
 
 procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
-var i: integer;
+var
+  i: integer;
 begin
-  for i:=0 to dim1-1 do
+  for i := 0 to dim1 - 1 do
     GetPeaks(input[i], outputmin[i], outputmax[i], dim2);
 end;
 
 procedure GetSums(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
-var i: integer;
+var
+  i: integer;
 begin
-  for i:=0 to dim1-1 do
+  for i := 0 to dim1 - 1 do
     GetSums(input[i], outputmin[i], outputmax[i], dim2);
 end;
 

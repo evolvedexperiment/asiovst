@@ -1,5 +1,5 @@
 {$DEFINE CONVERT_TO_DYNARRAY}
-{ $DEFINE UseNativeTypes}
+{$DEFINE UseNativeTypes}
 {$DEFINE UseDelphi}
 {-$DEFINE Debug}
 

@@ -126,35 +126,42 @@ var
 
 var
   MixBuffers : record
-                mb32 : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
-                mb64 : procedure(InBuffer:PDouble; MixBuffer:PDouble; Samples:integer);
-               end;
-  Volume     : record
-                v32 : procedure(InBuffer:PSingle; Volume:Single; Samples:integer);
-                v64 : procedure(InBuffer:PDouble; Volume:Double; Samples:integer);
-               end;
+    mb32 : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
+    mb64 : procedure(InBuffer:PDouble; MixBuffer:PDouble; Samples:integer);
+  end;
+
+  Volume : record
+    v32 : procedure(InBuffer:PSingle; Volume:Single; Samples:integer);
+    v64 : procedure(InBuffer:PDouble; Volume:Double; Samples:integer);
+  end;
+
   FadeInLinear  : record
-                   v32 : procedure(InBuffer:PSingle; Samples:integer);
-                   v64 : procedure(InBuffer:PDouble; Samples:integer);
-                  end;
+    v32 : procedure(InBuffer:PSingle; Samples:integer);
+    v64 : procedure(InBuffer:PDouble; Samples:integer);
+  end;
+
   FadeOutLinear : record
-                   v32 : procedure(InBuffer:PSingle; Samples:integer);
-                   v64 : procedure(InBuffer:PDouble; Samples:integer);
-                  end;
-  FadeLinear    : record
-                   v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
-                   v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
-                  end;
+    v32 : procedure(InBuffer:PSingle; Samples: Integer);
+    v64 : procedure(InBuffer:PDouble; Samples: Integer);
+  end;
+
+  FadeLinear : record
+    v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
+    v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
+  end;
+
   FadeExponential : record
-                     v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
-                     v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
-                    end;
+    v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
+    v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
+  end;
+  
+  Trigger : record
+    v32 : function(InBuffer: PSingle; Samples: Integer; TriggerFaktor : Double): Integer;
+    v64 : function(InBuffer: PDouble; Samples: Integer; TriggerFaktor : Double): Integer;
+  end;
+  
   ClipDigital   : TClipBuffer;
   ClipAnalog    : TClipBuffer;
-  Trigger       : record
-                   v32 : function(InBuffer: PSingle; Samples: Integer; TriggerFaktor : Double): Integer;
-                   v64 : function(InBuffer: PDouble; Samples: Integer; TriggerFaktor : Double): Integer;
-                  end;
   EnableSSE     : Boolean;
 
 implementation
@@ -420,7 +427,7 @@ end;
 {$ENDIF}
 
 procedure FadeExponential_FPU(InBuffer: PSingle; Samples: Integer; CurrentFadeFak, FadeMul : Double); overload;
-{$IFDEF PUREPASCAL}
+{-$IFDEF PUREPASCAL}
 var
   i : Integer;
 begin
@@ -431,8 +438,12 @@ begin
    if CurrentFadeFak > 1 then exit;
    inc(InBuffer);
   end;
+(*
 {$ELSE}
 asm
+ This assembler snippet unfortunately processes the signal backwards. Do not
+ use unless you rewrite the code! 
+
  fld1
  fld FadeMul.Double
  fld CurrentFadeFak.Double
@@ -457,10 +468,11 @@ asm
  fstp st(0)                    // clear stack
  fstp st(0)                    // clear stack
 {$ENDIF}
+*)
 end;
 
 procedure FadeExponential_FPU(InBuffer: PDouble; Samples: Integer; CurrentFadeFak, FadeMul : Double); overload;
-{$IFDEF PUREPASCAL}
+{-$IFDEF PUREPASCAL}
 var
   i : Integer;
 begin
@@ -471,8 +483,12 @@ begin
    if CurrentFadeFak > 1 then exit;
    inc(InBuffer);
   end;
+(*
 {$ELSE}
 asm
+ This assembler snippet unfortunately processes the signal backwards. Do not
+ use unless you rewrite the code! 
+
  fld1                                // 1
  fld FadeMul.Double                  // FadeMul, 1
  fld CurrentFadeFak.Double           // CurrentFadeFak, FadeMul, 1
@@ -497,6 +513,7 @@ asm
  fstp st(0)                          // clear stack
  fstp st(0)                          // clear stack
 {$ENDIF}
+*)
 end;
 
 procedure FadeLinear_FPU(InBuffer: PSingle; Samples: Integer; CurrentFadeFak, FadeAddInc : Double); overload;
@@ -4126,4 +4143,5 @@ initialization
  end;
  if ProcessorType = pt3DNow then Use_3DNow;
  {$ENDIF}
+ 
 end.

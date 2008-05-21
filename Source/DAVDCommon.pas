@@ -4,7 +4,7 @@ interface
 
 {$I ASIOVST.inc}
 
-{$IFDEF DELPHI7_UP}
+{$IFDEF DELPHI5_UP}
 uses Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};
 {$ELSE}
 uses LCLIntf; {$DEFINE PUREPASCAL}
@@ -199,7 +199,6 @@ type
   function MakeGoodFileName(s: string): string;
   {$ENDIF}
 
-
   function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
   function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
   procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TAVDMinMaxSingle); overload;
@@ -276,8 +275,8 @@ end;
 // Convert a value in dB's to a linear amplitude
 function dB_to_Amp(g:Single) : Single;
 begin
- if (g > -144.0)
-  then Result := exp(g * 0.115129254)
+ if (g > -300.0)
+  then Result := exp(g * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
   else Result := 0;
 end;
 
@@ -423,9 +422,10 @@ asm
 {$ENDIF}
 end;
 
-procedure f_Trunc(Input:PSingle; Output:PInteger; SampleFrames: Integer);
+procedure f_Trunc(Input: PSingle; Output: PInteger; SampleFrames: Integer);
 {$IFDEF PUREPASCAL}
-var i : Integer;
+var
+  i : Integer;
 begin
  for i := 0 to SampleFrames - 1 do
   begin
@@ -445,10 +445,10 @@ asm
 {$ENDIF}
 end;
 
-function f_Frac(Sample:Single):Single;
+function f_Frac(Sample: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- result:=Sample-Round(Sample-0.5);
+ result:=Sample - Round(Sample - 0.5);
 {$ELSE}
 var i : Integer;
 asm
@@ -458,12 +458,12 @@ asm
  frndint
  fsubp
 {$ENDIF}
-end;     
+end;
 
-function f_Frac(Sample:Double):Double;
+function f_Frac(Sample: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- result:=Sample-Round(Sample-0.5);
+ result := Sample - Round(Sample - 0.5);
 {$ELSE}
 var i : Integer;
 asm
@@ -475,7 +475,7 @@ asm
 {$ENDIF}
 end;
 
-function f_Int(Sample:Single):Single;
+function f_Int(Sample: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  result := Round(Sample - 0.5);
@@ -488,7 +488,7 @@ asm
 end;
 
 
-function f_Int(Sample:Double):Double;
+function f_Int(Sample: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  result := Round(Sample - 0.5);
@@ -500,7 +500,7 @@ asm
 {$ENDIF}
 end;
 
-function f_Round(Sample:Single):Integer;
+function f_Round(Sample: Single): Integer;
 {$IFDEF PUREPASCAL}
 begin
  result := Round(Sample);
@@ -512,7 +512,7 @@ asm
 {$ENDIF}
 end;
 
-function f_Round(Sample:Double):Integer;
+function f_Round(Sample: Double): Integer;
 {$IFDEF PUREPASCAL}
 begin
  result := Round(Sample);
@@ -524,31 +524,32 @@ asm
 {$ENDIF}
 end;   
 
-procedure f_Abs(var f:Single);
+procedure f_Abs(var f: Single);
 var i : Integer absolute f;
 begin
  i := i and $7FFFFFFF;
 end;
 
-procedure f_Abs(var f:Double);
+procedure f_Abs(var f: Double);
 var i : array [0..1] of Integer absolute f;
 begin
  i[0] := i[0] and $7FFFFFFF;
 end;
 
-function f_Exp(x:Single):Single;
+function f_Exp(x: Single): Single;
 begin
  Result := Exp(x * ln2);
 end;
 
-function f_Sin(Angle:Single):Single;
-const sin1 : Double = 7.61e-03;
-      sin2 : Double = -1.6605e-01;
+function f_Sin(Angle: Single): Single;
+const
+  sin1 : Double = 7.61e-03;
+  sin2 : Double = -1.6605e-01;
 {$IFDEF PUREPASCAL}
 var Asqr : Double;
 begin
- Asqr:=sqr(Angle);
- result:=(((Asqr*sin1)*Asqr+sin2*Asqr)+1)*Angle;
+ Asqr   := sqr(Angle);
+ result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Angle;
 {$ELSE}
 asm
  fld Angle.Single
@@ -565,13 +566,15 @@ asm
 end;
 
 function f_Cos(Angle:Single):Single;
-const sin1 : Double =  3.705e-02;
-      sin2 : Double = -4.967e-01;
+const
+  sin1 : Double =  3.705e-02;
+  sin2 : Double = -4.967e-01;
 {$IFDEF PUREPASCAL}
-var Asqr : Double;
+var
+  Asqr : Double;
 begin
- Asqr:=sqr(Angle);
- result:=(((Asqr*sin1)*Asqr+sin2*Asqr)+1)*Angle;
+ Asqr   := sqr(Angle);
+ result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Angle;
 {$ELSE}
 asm
  fld Angle.Single
@@ -589,32 +592,32 @@ end;
 
 {$ENDIF}
 
-function f_ArcTan(Value:Single):Single;
+function f_ArcTan(Value: Single): Single;
 var VSqr : Double;
 begin
  VSqr   := sqr(Value);
  Result := ((((0.0208351 * VSqr - 0.085133) * VSqr + 0.180141) * VSqr - 0.3302995) * VSqr + 0.999866) * Value;
 end;
 
-function f_ArcTan(Value:Double):Double;
+function f_ArcTan(Value: Double): Double;
 var VSqr : Double;
 begin
  VSqr   := sqr(Value);
  Result := ((((0.0208351 * VSqr - 0.085133) * VSqr + 0.180141) * VSqr - 0.3302995) * VSqr + 0.999866) * Value;
 end;
 
-function f_Ln2(f:Single):Single;
+function f_Ln2(f: Single): Single;
 begin
  Result := (((Integer((@f)^) and $7F800000) shr 23) - $7F) +
              (Integer((@f)^) and $007FFFFF) / $800000;
 end;
 
-function f_FloorLn2(f:Single):Integer;
+function f_FloorLn2(f: Single): Integer;
 begin
  Result:=(((Integer((@f)^) and $7F800000) shr 23)-$7F);
 end;
 
-procedure f_Abs(var f:T4SingleArray); overload;
+procedure f_Abs(var f: T4SingleArray); overload;
 {$IFDEF PUREPASCAL}
 begin
  f_Abs(f[0]);
@@ -638,7 +641,7 @@ asm
 {$ENDIF}
 end;
 
-function f_Neg(f:Single):Single;
+function f_Neg(f: Single): Single;
 var i,j:Integer;
 begin
  j := $80000000;
@@ -925,13 +928,13 @@ begin
  Result := ExtractFileDir(Result);
 end;
 
-function FloatWithUnit(f:Double):string;
+function FloatWithUnit(f: Double):string;
 begin
- if f > 1 then result := FloatToStrF(f, ffFixed, 3, 3)+ 's' else
- if f > 0.001 then result:=FloatToStrF(1E3 * f, ffFixed, 3, 3)+ 'ms' else
+ if f > 1 then result := FloatToStrF(f, ffFixed, 6, 3)+ 's' else
+ if f > 0.001 then result:=FloatToStrF(1E3 * f, ffFixed, 6, 3)+ 'ms' else
  if f > 0.000001
-  then result:=FloatToStrF(1E6 * f,ffFixed,3,3)+ 'µs'
-  else result:=FloatToStrF(1E9 * f,ffFixed,3,3)+ 'ns'
+  then result := FloatToStrF(1E6 * f, ffFixed, 6, 3)+ 'µs'
+  else result := FloatToStrF(1E9 * f, ffFixed, 6, 3)+ 'ns'
 end;
 
 function SplitString(S: String; Delimiter: char): TStrArray;
@@ -1513,6 +1516,158 @@ asm
 end;
 {$ENDIF}
 
+procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TAVDMinMaxSingle);
+var i : Integer;
+begin
+ assert(Samples > 0);
+ MinMax.min := InBuffer^;
+ MinMax.max := InBuffer^;
+ for i := 1 to Samples - 1 do
+  begin
+   if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
+   if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
+   inc(InBuffer);
+  end;
+end;
+
+procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TAVDMinMaxDouble);
+var i : Integer;
+begin
+ assert(Samples > 0);
+ MinMax.min := InBuffer^;
+ MinMax.max := InBuffer^;
+ for i := 1 to Samples - 1 do
+  begin
+   if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
+   if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
+   inc(InBuffer);
+  end;
+end;
+
+procedure DCSubstract(InBuffer: PSingle; Samples: Integer);
+{$IFDEF PUREPASCAL}
+var
+  InBuf : array [0..0] of Double absolute InBuffer;
+  d : Double;
+  i : Integer;
+begin
+ if Samples = 0 then Exit;
+ d := InBuf[0];
+ for i := 1 to Samples - 1
+  do d := d + InBuf[i];
+ d := d / Samples;
+ for i := 0 to Samples - 1
+  do InBuf[i] := InBuf[i] - d;
+{$ELSE}
+asm
+ test edx,edx
+ jz @End
+
+ push edx
+ fldz                          // DC
+ @CalcDCLoop:
+   dec edx
+   fadd  [eax+4*edx].Single    // DC = DC + Value
+ jnz @CalcDCLoop
+ pop edx
+
+ mov [esp-4],edx
+ fild [esp-4].Integer          // Length, DC
+ fdivp                         // RealDC = DC / Length
+
+ @SubstractDCLoop:
+   dec edx
+   fld  [eax+4*edx].Single     // Value, RealDC
+   fsub st(0),st(1)            // Value-RealDC, RealDC
+   fstp  [eax+4*edx].Single    // RealDC
+ jnz @SubstractDCLoop
+ fstp st(0)                    // clear stack
+
+ @End:
+{$ENDIF}
+end;
+
+procedure DCSubstract(InBuffer: PDouble; Samples: Integer);
+{$IFDEF PUREPASCAL}
+var
+  InBuf : array [0..0] of Double absolute InBuffer;
+  d : Double;
+  i : Integer;
+begin
+ if Samples = 0 then Exit;
+ d := InBuf[0];
+ for i := 1 to Samples - 1
+  do d := d + InBuf[i];
+ d := d / Samples;
+ for i := 0 to Samples - 1
+  do InBuf[i] := InBuf[i] - d;
+{$ELSE}
+asm
+ test edx,edx
+ jz @End
+
+ push edx
+ fldz                          // DC
+ @CalcDCLoop:
+   dec edx
+   fadd  [eax+8*edx].Double    // DC = DC + Value
+ jnz @CalcDCLoop
+ pop edx
+
+ mov [esp-4],edx
+ fild [esp-4].Integer          // Length, DC
+ fdivp                         // RealDC = DC / Length
+
+ @SubstractDCLoop:
+   dec edx
+   fld  [eax+8*edx].Double     // Value, RealDC
+   fsub st(0),st(1)            // Value-RealDC, RealDC
+   fstp  [eax+8*edx].Double    // RealDC
+ jnz @SubstractDCLoop
+ fstp st(0)                    // clear stack
+
+ @End:
+{$ENDIF}
+end;
+
+procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
+{$IFDEF PUREPASCAL}
+var i : Integer;
+begin
+ for i := 0 to SampleFrames - 1 do
+  begin
+   Doubles^ := Singles^;
+   inc(Singles);
+   inc(Doubles);
+  end;
+{$ELSE}
+asm
+@MarioLand:
+ fld  [eax + ecx * 4 - 4].Single
+ fstp [edx + ecx * 8 - 8].Double
+ loop @MarioLand
+{$ENDIF}
+end;
+
+procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames:Integer);
+{$IFDEF PUREPASCAL}
+var i : Integer;
+begin
+ for i:=0 to SampleFrames-1 do
+  begin
+   Singles^:=Doubles^;
+   inc(Singles);
+   inc(Doubles);
+  end;
+{$ELSE}
+asm
+@MarioLand:
+ fld [eax + ecx * 8 - 8].Double
+ fstp [edx + ecx * 4 - 4].Single
+ loop @MarioLand
+{$ENDIF}
+end;
+
 function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer;
 {$IFDEF PUREPASCAL}
 var i : Integer;
@@ -1566,9 +1721,11 @@ asm
 end;
 
 function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer;
+{$DEFINE PUREPASCAL}
 {$IFDEF PUREPASCAL}
-var i : Integer;
-    d : Double;
+var
+  i : Integer;
+  d : Double;
 begin
  result := 0;
  assert(Samples > 0);
@@ -1589,7 +1746,7 @@ asm
 
  mov result,edx                // Result := edx
  dec edx
- jnz @End                      // only one sample -> exit!
+ jz @End                       // only one sample -> exit!
  fld  [eax+8*edx].Double       // Value
  fabs                          // |Value| = Max
 
@@ -1614,156 +1771,6 @@ asm
  mov result,edx              // Result := edx
 
  @End:
-{$ENDIF}
-end;
-
-procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TAVDMinMaxSingle);
-var i : Integer;
-begin
- assert(Samples > 0);
- MinMax.min := InBuffer^;
- MinMax.max := InBuffer^;
- for i := 1 to Samples - 1 do
-  begin
-   if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
-   if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
-   inc(InBuffer);
-  end;
-end;
-
-procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TAVDMinMaxDouble);
-var i : Integer;
-begin
- assert(Samples > 0);
- MinMax.min := InBuffer^;
- MinMax.max := InBuffer^;
- for i := 1 to Samples - 1 do
-  begin
-   if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
-   if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
-   inc(InBuffer);
-  end;
-end;
-
-procedure DCSubstract(InBuffer: PSingle; Samples: Integer);
-{$IFDEF PUREPASCAL}
-var InBuf : array [0..0] of Double absolute InBuffer;
-    d : Double;
-    i : Integer;
-begin
- if Samples=0 then Exit;
- d:=InBuf[0];
- for i:=1 to Samples-1
-  do d:=d+InBuf[i];
- d:=d/Samples;
- for i:=0 to Samples-1
-  do InBuf[i]:=InBuf[i]-d;
-{$ELSE}
-asm
- test edx,edx
- jz @End
-
- push edx
- fldz                          // DC
- @CalcDCLoop:
-   dec edx
-   fadd  [eax+4*edx].Single    // DC = DC + Value
- jnz @CalcDCLoop
- pop edx
-
- mov [esp-4],edx
- fild [esp-4].Integer          // Length, DC
- fdivp                         // RealDC = DC / Length
-
- @SubstractDCLoop:
-   dec edx
-   fld  [eax+4*edx].Single     // Value, RealDC
-   fsub st(0),st(1)            // Value-RealDC, RealDC
-   fstp  [eax+4*edx].Single    // RealDC
- jnz @SubstractDCLoop
- fstp st(0)                    // clear stack
-
- @End:
-{$ENDIF}
-end;
-
-procedure DCSubstract(InBuffer: PDouble; Samples: Integer);
-{$IFDEF PUREPASCAL}
-var InBuf : array [0..0] of Double absolute InBuffer;
-    d : Double;
-    i : Integer;
-begin
- if Samples=0 then Exit;
- d:=InBuf[0];
- for i:=1 to Samples-1
-  do d:=d+InBuf[i];
- d:=d/Samples;
- for i:=0 to Samples-1
-  do InBuf[i]:=InBuf[i]-d;
-{$ELSE}
-asm
- test edx,edx
- jz @End
-
- push edx
- fldz                          // DC
- @CalcDCLoop:
-   dec edx
-   fadd  [eax+8*edx].Double    // DC = DC + Value
- jnz @CalcDCLoop
- pop edx
-
- mov [esp-4],edx
- fild [esp-4].Integer          // Length, DC
- fdivp                         // RealDC = DC / Length
-
- @SubstractDCLoop:
-   dec edx
-   fld  [eax+8*edx].Double     // Value, RealDC
-   fsub st(0),st(1)            // Value-RealDC, RealDC
-   fstp  [eax+8*edx].Double    // RealDC
- jnz @SubstractDCLoop
- fstp st(0)                    // clear stack
-
- @End:
-{$ENDIF}
-end;
-
-procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
-{$IFDEF PUREPASCAL}
-var i : Integer;
-begin
- for i:=0 to SampleFrames-1 do
-  begin
-   Singles^:=Doubles^;
-   inc(Singles);
-   inc(Doubles);
-  end;
-{$ELSE}
-asm
-@MarioLand:
- fld [eax+ecx*4-4].Single
- fstp [edx+ecx*8-8].Double
- loop @MarioLand
-{$ENDIF}
-end;
-
-procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames:Integer);
-{$IFDEF PUREPASCAL}
-var i : Integer;
-begin
- for i:=0 to SampleFrames-1 do
-  begin
-   Singles^:=Doubles^;
-   inc(Singles);
-   inc(Doubles);
-  end;
-{$ELSE}
-asm
-@MarioLand:
- fld [eax + ecx * 8 - 8].Double
- fstp [edx + ecx * 4 - 4].Single
- loop @MarioLand
 {$ENDIF}
 end;
 

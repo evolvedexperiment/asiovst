@@ -516,12 +516,12 @@ end;
 
 procedure TBiquadIIRFilter.PopStates;
 begin
- if Length(fStateStack)>0 then
+ if Length(fStateStack) > 0 then
   begin
-   Move(fStateStack[0,0],fState[0], Length(fStateStack[0])*SizeOf(Double));
-   if Length(fStateStack)>1
-    then Move(fStateStack[1,0],fStateStack[0,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
-   SetLength(fStateStack,Length(fStateStack)-1);
+   Move(fStateStack[0, 0], fState[0], Length(fStateStack[0]) * SizeOf(Double));
+   if Length(fStateStack) > 1
+    then Move(fStateStack[1, 0], fStateStack[0, 0], (Length(fStateStack) - 1) * Length(fStateStack[0]) * SizeOf(Double));
+   SetLength(fStateStack, Length(fStateStack) - 1);
   end;
 end;
 
@@ -531,8 +531,8 @@ begin Result := 2; end;
 function TBiquadIIRFilter.GetPoles:TPNType;
 var p, q : Double;
 begin
- p := fDenominator[1]/(2*fDenominator[2]);
- q := (1/fDenominator[2]);
+ p := fDenominator[1] / (2 * fDenominator[2]);
+ q := (1 / fDenominator[2]);
  Result[0].Re := p;
  Result[1].Re := p;
  Result[0].Im := sqrt(q-(p*p));
