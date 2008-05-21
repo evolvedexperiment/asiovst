@@ -807,14 +807,14 @@ end;
 procedure GetSinCos(Frequency: Single; var SinValue, CosValue : Single);
 {$IFDEF PUREPASCAL}
 begin
- SinValue:=Sin(Frequency);
- CosValue:=Cos(Frequency);
+ SinValue := Sin(Frequency);
+ CosValue := Cos(Frequency);
 {$ELSE}
 asm
  fld Frequency;
  fsincos
- fstp [CosValue];
- fstp [SinValue];
+ fstp [CosValue].Single;
+ fstp [SinValue].Single;
 {$ENDIF}
 end;
 
