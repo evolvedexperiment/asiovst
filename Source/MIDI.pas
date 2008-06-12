@@ -137,18 +137,21 @@ begin
  inherited;
 end;
 
-var gMidiInput: TMidiInput;
-    gMidiOutput: TMidiOutput;
+var
+  gMidiInput: TMidiInput;
+  gMidiOutput: TMidiOutput;
 
 function MidiInput: TMidiInput;
 begin
- if not assigned(gMidiInput) then gMidiInput := TMidiInput.Create;
+ if not assigned(gMidiInput)
+  then gMidiInput := TMidiInput.Create;
  Result := gMidiInput;
 end;
 
 function MidiOutput: TMidiOutput;
 begin
- if not assigned(gMidiOutput) then gMidiOutput := TMidiOutput.Create;
+ if not assigned(gMidiOutput)
+  then gMidiOutput := TMidiOutput.Create;
  Result := gMidiOutput;
 end;
 

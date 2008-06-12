@@ -223,6 +223,7 @@ type
     fMDataCnt       : Integer;
     procedure MyMidiEvent(event: PMidiEvent);
     procedure MidiData(const aDeviceIndex: Integer; const aStatus, aData1, aData2: byte);
+    procedure SysExData(const aDeviceIndex: integer; const aStream: TMemoryStream);
     procedure ClosePlugin;
     procedure ASIOChange(Sender: TObject);
     procedure SetChannel(Sender: TObject);
@@ -297,6 +298,8 @@ begin
  bord3.Picture.Assign(bord0.Picture);
  bord4.Picture.Assign(bord0.Picture);
 
+ Assert(SizeOf(TVSTMidiEvent) = SizeOf(TVstMidiSysexEvent));
+
  for i := 0 to 2047 do
   begin
    GetMem(fMyEvents.Events[i], SizeOf(TVSTMidiEvent));
@@ -346,14 +349,14 @@ begin
   m.OnClick := MIDIInChange;
   MIMIDIIn.Add(m);
   for mi := 0 to MidiInput.Devices.Count - 1 do
-  begin
-   m := TMenuItem.Create(self);
-   m.RadioItem := True;
-   m.tag := mi + 1;
-   m.Caption := MidiInput.Devices[mi];
-   m.OnClick := MIDIInChange;
-   MIMIDIIn.Add(m);
-  end;
+   begin
+    m := TMenuItem.Create(self);
+    m.RadioItem := True;
+    m.tag := mi + 1;
+    m.Caption := MidiInput.Devices[mi];
+    m.OnClick := MIDIInChange;
+    MIMIDIIn.Add(m);
+   end;
  except
   MessageDlg('ERROR: A serious problem occured with MIDI-In drivers!', mtError, [mbOK], 0);
  end;
@@ -366,14 +369,14 @@ begin
   m.OnClick := MIDIOutChange;
   MIMIDIOut.Add(m);
   for mi := 0 to MidiOutput.Devices.Count - 1 do
-  begin
-   m := TMenuItem.Create(self);
-   m.RadioItem := True;
-   m.tag := mi + 1;
-   m.Caption := MidiOutput.Devices[mi];
-   m.OnClick := MIDIOutChange;
-   MIMIDIOut.Add(m);
-  end;
+   begin
+    m := TMenuItem.Create(self);
+    m.RadioItem := True;
+    m.tag := mi + 1;
+    m.Caption := MidiOutput.Devices[mi];
+    m.OnClick := MIDIOutChange;
+    MIMIDIOut.Add(m);
+   end;
  except
   MessageDlg('ERROR: A serious problem occured with MIDI-Out drivers', mtError, [mbOK], 0);
  end;
@@ -403,6 +406,7 @@ begin
  end;
 
  MidiInput.OnMidiData := MidiData;
+ MidiInput.OnSysExData := SysExData;
 
  Settings := TIniFile.Create(ININame);
  i := Settings.ReadInteger('Audio', 'ASIO Driver', 0);
@@ -793,18 +797,36 @@ begin
  end;
 end;
 
-procedure TFmMiniHost.MidiData(const aDeviceIndex: Integer; const aStatus, aData1, aData2: byte);
+procedure TFmMiniHost.MidiData(const aDeviceIndex: Integer; const aStatus, aData1, aData2: Byte);
 begin
  if aStatus = $FE then exit; // ignore active sensing
  if (not Player.CbOnlyChannel1.checked) or ((aStatus and $0F) = 0) then
- begin
-  if (aStatus and $F0) = $90 then //ok
-   NoteOn(aStatus, aData1, aData2)
-  else if (aStatus and $F0) = $80 then
-   NoteOff(aStatus, aData1)
-  else
-   AddMidiData(aStatus, aData1, aData2);
- end;
+  begin
+   if (aStatus and $F0) = $90
+    then NoteOn(aStatus, aData1, aData2) //ok
+    else
+   if (aStatus and $F0) = $80
+    then NoteOff(aStatus, aData1)
+    else AddMidiData(aStatus, aData1, aData2);
+  end;
+end;
+
+procedure TFmMiniHost.SysExData(const aDeviceIndex: integer; const aStream: TMemoryStream);
+begin
+ // yet ToDo...
+ if fMDataCnt > 2046 then exit;
+ inc(fMDataCnt);
+ with PVstMidiSysexEvent(fMyEvents.events[fMDataCnt - 1])^ do
+  begin
+   EventType := etSysEx;
+   ByteSize := 24;
+   DeltaFrames := 0;
+   Flags := 0;
+   dumpBytes := aStream.Size;
+   sysexDump := aStream.Memory;
+   resvd1 := 0;
+   resvd2 := 0;
+  end;
 end;
 
 procedure TFmMiniHost.ASIOHostLatencyChanged(Sender: TObject);
@@ -932,7 +954,8 @@ begin
 end;
 
 procedure TFmMiniHost.MIPanicClick(Sender: TObject);
-var Ch, Note: word;
+var
+  Ch, Note: word;
 begin
  fMDataCnt := 0;
  for Note := 0 to 127 do AddMidiData($80, Note, 0);
@@ -1575,6 +1598,7 @@ begin
  inc(fMDataCnt);
  with PVstMidiEvent(fMyEvents.events[fMDataCnt - 1])^ do
   begin
+   EventType := etMidi;
    deltaFrames := pos;
    midiData[0] := d1;
    midiData[1] := d2;
@@ -1604,14 +1628,15 @@ end;
 procedure TFmMiniHost.ProcessNoteOnOff(ch, n, v: byte);
 begin
  if v = 0 then
- begin // Note Off
-  if ch >= $90 then ch := ch - $10;
-  AddMidiData(ch, n, 0);
- end else
- begin // Note On
-  if ch < $90 then ch := ch + $10;
-  AddMidiData(ch, n, v);
- end;
+  begin // Note Off
+   if ch >= $90 then ch := ch - $10;
+   AddMidiData(ch, n, 0);
+  end
+ else
+  begin // Note On
+   if ch < $90 then ch := ch + $10;
+   AddMidiData(ch, n, v);
+  end;
 end;
 
 procedure TFmMiniHost.MIAboutClick(Sender: TObject);
@@ -2102,9 +2127,9 @@ begin
     begin
      for i := 0 to fMDataCnt - 1 do
       MidiOutput.Send(fCurrentMidiOut - 1,
-       PVstMidiEvent(fMyEvents.events[i])^.midiData[0],
-       PVstMidiEvent(fMyEvents.events[i])^.midiData[1],
-       PVstMidiEvent(fMyEvents.events[i])^.midiData[2]);
+                      PVstMidiEvent(fMyEvents.events[i])^.midiData[0],
+                      PVstMidiEvent(fMyEvents.events[i])^.midiData[1],
+                      PVstMidiEvent(fMyEvents.events[i])^.midiData[2]);
     end;
   end;
 
