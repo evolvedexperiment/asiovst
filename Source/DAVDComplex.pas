@@ -397,25 +397,25 @@ begin
 end;
 
 
-function ComplexMultiply(ARe,AIm,BRe,BIm : Single):TComplexSingle;
+function ComplexMultiply(ARe, AIm, BRe, BIm : Single):TComplexSingle;
 begin
  Result.Re := ARe * BRe - AIm * BIm;
  Result.Im := AIm * BRe + ARe * BIm;
 end;
 
-function ComplexMultiply(ARe,AIm,BRe,BIm : Double):TComplexDouble;
+function ComplexMultiply(ARe, AIm, BRe, BIm : Double):TComplexDouble;
 begin
  Result.Re := ARe * BRe - AIm * BIm;
  Result.Im := AIm * BRe + ARe * BIm;
 end;
 
-function ComplexMultiply(A,B : TComplexSingle):TComplexSingle;
+function ComplexMultiply(A, B : TComplexSingle):TComplexSingle;
 begin
  Result.Re := A.Re * B.Re - A.Im * B.Im;
  Result.Im := A.Im * B.Re + A.Re * B.Im;
 end;
 
-function ComplexMultiply(A,B : TComplexDouble):TComplexDouble;
+function ComplexMultiply(A, B : TComplexDouble):TComplexDouble;
 begin
  Result.Re := A.Re * B.Re - A.Im * B.Im;
  Result.Im := A.Im * B.Re + A.Re * B.Im;

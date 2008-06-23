@@ -103,9 +103,8 @@ function InitResourceComponent(Instance: TComponent; RootAncestor: TClass):Boole
 
 implementation
 
-uses Forms, RtlConsts;
-
-
+uses
+  Forms, RtlConsts;
 
 { TVSTModule }
     

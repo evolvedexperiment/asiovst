@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.INC}
 
-uses classes, DVSTModuleWithMidi, DVSTParameters, DVSTPrograms, DVSTEffect;
+uses
+  Classes, DVSTModuleWithMidi, DVSTParameters, DVSTPrograms, DVSTEffect;
 
 type
   TGetChunkParameterEvent = function(Sender: TObject; const Index: Integer): Single of object;
@@ -294,12 +295,13 @@ begin
 end;
 
 function TVSTModuleWithPrograms.HostCallSetChunk(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
-var i: Integer;
-    pi: pInteger;
-    pb: pbyte;
+var
+  i  : Integer;
+  pi : pInteger;
+  pb : pbyte;
 begin
   Result := 0;
-  if (numPrograms<=0) then Exit;
+  if (numPrograms <= 0) then Exit;
   if Index <> 0 then
     with Programs[FCurProgram] do
     begin
@@ -309,7 +311,7 @@ begin
       Result := Value;
 
       if Assigned(OnLoadChunk) then
-        OnLoadChunk(Programs[FCurProgram],FCurProgram,True);
+        OnLoadChunk(Programs[FCurProgram], FCurProgram, True);
     end
   else begin
     pb := ptr;

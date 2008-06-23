@@ -42,7 +42,7 @@ type
   TOnVendorSpecificEvent = function(Sender: TObject; lArg1, lArg2: Integer; ptrArg: pointer; floatArg: Single): Integer of object;
   TOnCanDoEvent          = function(Sender: TObject; CanDoText: String): Integer of object;
   TOnCheckKey            = function(Sender: TObject; Key: Char): Boolean of object;
-  TOnEditClose           = procedure(Sender: TObject; var DestroyForm: boolean) of object;
+  TOnEditClose           = procedure(Sender: TObject; var DestroyForm: Boolean) of object;
 
   TOnGetChannelPropertiesEvent = function(Sender: TObject; var vLabel: ShortString; var shortLabel: ShortString; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags:TChannelPropertyFlags): Integer of object;
 

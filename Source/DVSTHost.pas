@@ -1808,7 +1808,7 @@ end;
 function TVstPlugIn.GetFriendlyNameString(const StringLength: Integer): string;
 var
   Variations : array [0..6] of string;
-  i, j       : Integer;
+  i, j, v    : Integer;
 begin
  Variations[0] := GetEffectName;
  Variations[1] := GetVendorString + ' - ' + GetProductString;
@@ -1817,12 +1817,16 @@ begin
  Variations[4] := GetVendorString + ' - ' + GetEffectName;
  Variations[5] := GetProductString + ' - ' + GetEffectName;
  Variations[6] := GetProductString;
+ v := 0;
  j := Length(Variations[0]);
  for i := 1 to 6 do
   if (Length(Variations[i]) > j) and
-     (Length(Variations[i]) < StringLength)
-   then j := i;
- result := Variations[j];
+     (Length(Variations[i]) < StringLength) then
+   begin
+    v := i;
+    j := Length(Variations[i]);
+   end;
+ result := Variations[v];
  if result = ''
   then result := DisplayName;
 end;
