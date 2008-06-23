@@ -105,9 +105,13 @@ type
   function f_Floorln2(f:Single):Integer; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Arctan(Value:Single):Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Arctan(Value:Double):Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  {$IFNDEF FPC}
   function f_Frac(Sample:Single):Single; overload;
   function f_Frac(Sample:Double):Double; overload;
+  procedure f_Abs(var f:Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
+  procedure f_Abs(var f:Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
+  procedure f_Abs(var f:T4SingleArray); overload;
+
+  {$IFNDEF FPC}
   function f_Int(Sample:Single):Single; overload;
   function f_Int(Sample:Double):Double; overload;
   function f_Trunc(Sample:Single):Integer; overload;
@@ -117,10 +121,6 @@ type
   function f_Round(Sample:Double):Integer; overload;
 
   function f_Exp(x:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
-
-  procedure f_Abs(var f:Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
-  procedure f_Abs(var f:Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
-  procedure f_Abs(var f:T4SingleArray); overload;
 
   function f_Neg(f:Single):Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Root(i:Single;n:Integer):Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -222,7 +222,9 @@ implementation
 uses Math, SysUtils;
 
 const
+  {$IFNDEF PUREPASCAL}
   Half          : Double = 0.5;
+  {$ENDIF}
   Twenty        : Double = 20;
 
 {$IFNDEF FPC}
@@ -365,6 +367,48 @@ asm
 {$ENDIF}
 end;
 
+function f_Frac(Sample: Single): Single;
+{$IFDEF PUREPASCAL}
+begin
+ result:=Sample - Round(Sample - 0.5);
+{$ELSE}
+var i : Integer;
+asm
+ fld Sample.Single
+ fld Sample.Single
+ fsub half
+ frndint
+ fsubp
+{$ENDIF}
+end;
+
+function f_Frac(Sample: Double): Double;
+{$IFDEF PUREPASCAL}
+begin
+ result := Sample - Round(Sample - 0.5);
+{$ELSE}
+var i : Integer;
+asm
+ fld Sample.Double
+ fld Sample.Double
+ fsub half
+ frndint
+ fsubp
+{$ENDIF}
+end;
+
+procedure f_Abs(var f: Single);
+var i : Integer absolute f;
+begin
+ i := i and $7FFFFFFF;
+end;
+
+procedure f_Abs(var f: Double);
+var i : array [0..1] of Integer absolute f;
+begin
+ i[0] := i[0] and $7FFFFFFF;
+end;
+
 {$IFNDEF FPC}
 procedure Amp_to_dB(var v:T4SingleArray);
 {$IFDEF PUREPASCAL}
@@ -445,36 +489,6 @@ asm
 {$ENDIF}
 end;
 
-function f_Frac(Sample: Single): Single;
-{$IFDEF PUREPASCAL}
-begin
- result:=Sample - Round(Sample - 0.5);
-{$ELSE}
-var i : Integer;
-asm
- fld Sample.Single
- fld Sample.Single
- fsub half
- frndint
- fsubp
-{$ENDIF}
-end;
-
-function f_Frac(Sample: Double): Double;
-{$IFDEF PUREPASCAL}
-begin
- result := Sample - Round(Sample - 0.5);
-{$ELSE}
-var i : Integer;
-asm
- fld Sample.Double
- fld Sample.Double
- fsub half
- frndint
- fsubp
-{$ENDIF}
-end;
-
 function f_Int(Sample: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
@@ -486,7 +500,6 @@ asm
  frndint
 {$ENDIF}
 end;
-
 
 function f_Int(Sample: Double): Double;
 {$IFDEF PUREPASCAL}
@@ -523,18 +536,6 @@ asm
  fistp Result.Integer
 {$ENDIF}
 end;   
-
-procedure f_Abs(var f: Single);
-var i : Integer absolute f;
-begin
- i := i and $7FFFFFFF;
-end;
-
-procedure f_Abs(var f: Double);
-var i : array [0..1] of Integer absolute f;
-begin
- i[0] := i[0] and $7FFFFFFF;
-end;
 
 function f_Exp(x: Single): Single;
 begin
@@ -619,11 +620,16 @@ end;
 
 procedure f_Abs(var f: T4SingleArray); overload;
 {$IFDEF PUREPASCAL}
+var
+  i0 : Integer absolute f[0];
+  i1 : Integer absolute f[0];
+  i2 : Integer absolute f[0];
+  i3 : Integer absolute f[0];
 begin
- f_Abs(f[0]);
- f_Abs(f[1]);
- f_Abs(f[2]);
- f_Abs(f[3]);
+ i0 := i0 and $7FFFFFFF;
+ i1 := i1 and $7FFFFFFF;
+ i2 := i2 and $7FFFFFFF;
+ i3 := i3 and $7FFFFFFF;
 {$ELSE}
 asm
  fld [eax].Single
@@ -739,7 +745,7 @@ end;
 function FreqLinearToLog(value:Single):Single;
 {$IFDEF PUREPASCAL}
 begin
- Result:=(Twenty*Exp(value*6.907755279));
+ Result := (Twenty * Exp(value * 6.907755279));
 {$ELSE}
 const fltl2:Double=6.907755279;
 asm
@@ -843,14 +849,23 @@ begin
 end;
 
 function TruncLog2(Value : Extended): Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result := round(log2(Value));
+{$ELSE}
 asm
  fld Value.Extended
  fxtract
  fstp st(0)
  fistp result.Integer
+{$ENDIF}
 end;
 
 function TruncLog2(Value : Integer): Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result := round(log2(Value));
+{$ELSE}
 var
   temp : Integer;
 asm
@@ -860,9 +875,14 @@ asm
  fxtract
  fstp st(0)
  fistp result.Integer
+{$ENDIF}
 end;
 
 function CeilLog2(Value : Extended): Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result := round(log2(Value) + 1);
+{$ELSE}
 asm
  fld Value.Extended
  fld1
@@ -872,9 +892,14 @@ asm
  fld1
  faddp
  fistp result.Integer
+{$ENDIF}
 end;
 
 function CeilLog2(Value : Integer): Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result := round(log2(Value) + 1);
+{$ELSE}
 var
   temp : Integer;
 asm
@@ -885,6 +910,7 @@ asm
  fstp st(0)
  fistp result.Integer
  inc result
+{$ENDIF}
 end;
 
 function OnOff(value:Single):boolean;

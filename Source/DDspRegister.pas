@@ -9,17 +9,20 @@ procedure Register;
 implementation
 
 {$IFNDEF FPC}{$R DDspRegister.res}{$ENDIF}
-uses Classes, DDspEnvelopeFollower, DDSPRemez, DDspFilter, DDspVoiceController,
-  DDspOscSine, DDspOscSaw, DDspOscRamp, DDspOscSquare, DDspOscNoise, DDspOscAbsSine,
-  DDspEnvelope,
-  ToolsAPI,
-  {$IFDEF DELPHI6_UP}
-  DesignIntf,    // DsgnIntf renamed to DesignIntf from Delphi 6
-//DesignEditors, // TCustomModule moved to DesignEditors from Delphi 6
-  DMForm,
-  {$ELSE}
-  DsgnIntf,
-  DMDesigner,
+uses
+  Classes, DDspEnvelopeFollower, DDSPRemez, DDspFilter, DDspVoiceController,
+  DDspOscSine, DDspOscSaw, DDspOscRamp, DDspOscSquare, DDspOscNoise,
+  DDspOscAbsSine, DDspEnvelope,
+  {$IFNDEF FPC}
+   ToolsAPI,
+   {$IFDEF DELPHI6_UP}
+   DesignIntf,    // DsgnIntf renamed to DesignIntf from Delphi 6
+// DesignEditors, // TCustomModule moved to DesignEditors from Delphi 6
+   DMForm,
+   {$ELSE}
+   DsgnIntf,
+   DMDesigner,
+   {$ENDIF}
   {$ENDIF}
   DDspVoice;
 
@@ -39,10 +42,12 @@ begin
                                       TDspOscNoise,
                                       TDspOscAbsSine,
                                       TDspEnvelope]);
-  {$IFDEF DELPHI5}
-  RegisterCustomModule(TDspVoice, TDataModuleDesignerCustomModule);
-  {$ELSE}
-  RegisterCustomModule(TDspVoice, TDataModuleCustomModule);
+  {$IFNDEF FPC}
+   {$IFDEF DELPHI5}
+   RegisterCustomModule(TDspVoice, TDataModuleDesignerCustomModule);
+   {$ELSE}
+   RegisterCustomModule(TDspVoice, TDataModuleCustomModule);
+   {$ENDIF}
   {$ENDIF}
 end;
 

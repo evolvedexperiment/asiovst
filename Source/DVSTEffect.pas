@@ -6,7 +6,8 @@ interface
 
 {$IFDEF FPC}uses LCLIntf;{$ELSE}uses Windows;{$ENDIF}
 
-const kEffectMagic = 'VstP';
+const
+  kEffectMagic = 'VstP';
 
 type
   PPSingle = ^PSingle;

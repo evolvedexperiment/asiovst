@@ -2,7 +2,10 @@ unit DDspDitherNoiseShaper;
 
 interface
 
-uses DAVDCommon;
+{$I ASIOVST.INC}
+
+uses
+  DAVDCommon;
 
 type
   TDitherType = (dtor9Fc, dtor3Fc, dtor2MEc, dtor3MEc, dtor9MEc, dtor5IEc,

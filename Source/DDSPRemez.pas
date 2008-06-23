@@ -2,7 +2,10 @@ unit DDSPRemez;
 
 interface
 
-uses Classes, DAVDCommon;
+{$I ASIOVST.INC}
+
+uses
+  Classes, DAVDCommon;
 
 type
   TFilterKind = (fkBandPass, fkDifferentiator, fkHilbert);

@@ -67,7 +67,12 @@ type
 
 implementation
 
-uses Math, SysUtils, DAVDComplex;
+{$IFDEF FPC}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
+uses
+  Math, SysUtils, DAVDComplex;
 
 constructor TButterworthFilter.Create;
 begin
@@ -182,9 +187,10 @@ begin
 end;
 
 procedure TButterworthFilter.Complex(Frequency: Double; out Real, Imaginary: Double);
-var cw, Divider  : Double;
-    cmplx        : TComplexDouble;
-    i            : Integer;
+var
+  cw, Divider  : Double;
+  cmplx        : TComplexDouble;
+  i            : Integer;
 begin
  if fOrder = 0 then
   begin
@@ -210,9 +216,7 @@ begin
                  + (2*sqr(cw)-1) * fAB[4*i+0] * (fAB[4*i+3] + 1)) * Divider;
      cmplx.Im := (fAB[4*i+1] * (1 - fAB[4*i+3])
                  + 2 * cw * (fAB[4*i+0] - fAB[4*i+0] * fAB[4*i+3])) * sqrt(1 - sqr(cw)) * Divider;
-{$IFNDEF FPC}
      ComplexMultiplyInplace(Real, Imaginary, cmplx.Re, cmplx.Im);
-{$ENDIF}
     end;
   end;
 end;

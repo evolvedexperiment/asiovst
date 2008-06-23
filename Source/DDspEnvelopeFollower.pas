@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.inc}
 
-uses DDspBaseComponent, DAVDCommon;
+uses
+  DDspBaseComponent, DAVDCommon;
 
 type
   TDspEnvelopeFollower = class(TDspBaseComponent)

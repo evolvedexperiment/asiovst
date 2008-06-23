@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.INC}
 
-uses Classes, DAVDCommon, DAVDProcessingComponent;
+uses
+  Classes, DAVDCommon, DAVDProcessingComponent;
 
 type
   TDspVoice = class;
@@ -164,18 +165,22 @@ type
 
 implementation
 
-uses Forms, SysUtils
-  {$IFDEF PUREPASCAL},DAVDBufferMathPascal{$ELSE},DAVDBufferMathAsm{$ENDIF};
+{$IFDEF FPC}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
 
+uses
+  Forms, SysUtils
+  {$IFDEF PUREPASCAL},DAVDBufferMathPascal{$ELSE},DAVDBufferMathAsm{$ENDIF};
 
 constructor TDspVoiceInfo.Create(MidiEvent: TAVDMidiEvent);
 begin
   inherited Create;
-  NoteNr:=MidiEvent.MidiData[1];
+  NoteNr := MidiEvent.MidiData[1];
 
-  Velocity:=MidiEvent.MidiData[2]/127;
-  Offset:=MidiEvent.DeltaFrames;
-  InitialMidiEvent:=MidiEvent;
+  Velocity := MidiEvent.MidiData[2] / 127;
+  Offset := MidiEvent.DeltaFrames;
+  InitialMidiEvent := MidiEvent;
 end;
 
 

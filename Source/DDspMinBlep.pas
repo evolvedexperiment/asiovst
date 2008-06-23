@@ -8,7 +8,10 @@ unit DDspMinBlep;
 
 interface
 
-uses DDspWindowing, DAVDCommon;
+{$I ASIOVST.INC}
+
+uses
+  DDspWindowing, DAVDCommon;
 
 procedure RealCepstrum(signal, realCepstrum : TAVDSingleDynArray);
 procedure MinimumPhase(realCepstrum, minimumPhase : TAVDSingleDynArray);

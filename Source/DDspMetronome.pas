@@ -2,7 +2,10 @@ unit DDspMetronome;
 
 interface
 
-uses DAVDCommon, DAVDComplex;
+{$I ASIOVST.INC}
+
+uses
+  DAVDCommon, DAVDComplex;
 
 type
   TMetronome = class

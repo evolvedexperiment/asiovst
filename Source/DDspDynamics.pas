@@ -2,7 +2,10 @@ unit DDspDynamics;
 
 interface
 
-uses DDspButterworthFilter, DAVDCommon;
+{$I ASIOVST.INC}
+
+uses
+  DDspButterworthFilter, DAVDCommon;
 
 type
   TDynamics = class

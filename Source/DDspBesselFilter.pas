@@ -64,7 +64,12 @@ type
 
 implementation
 
-uses Math, Dialogs, SysUtils, DAVDComplex;
+{$IFDEF FPC}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
+uses
+  Math, Dialogs, SysUtils, DAVDComplex;
 
 constructor TBesselFilter.Create;
 begin

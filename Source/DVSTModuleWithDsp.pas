@@ -76,8 +76,13 @@ type
 
 implementation
 
-uses Math, SysUtils,
-  {$IFDEF PUREPASCAL}DDAVDBufferMathPascal{$ELSE}DAVDBufferMathAsm{$ENDIF};
+{$IFDEF FPC}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
+uses
+  Math, SysUtils,
+  {$IFDEF PUREPASCAL}DAVDBufferMathPascal{$ELSE}DAVDBufferMathAsm{$ENDIF};
 
 constructor TDspVSTModule.Create(AOwner: TComponent);
 begin

@@ -162,21 +162,23 @@ implementation
 {-------------------------------------------------------------------------------------------
 EVERYTHING FOR SINGLE
 --------------------------------------------------------------------------------------------}
-procedure AddArrays(const input1, input2, output: TAVDSingleDynArray;const dim2: integer);
-var j: integer;
+procedure AddArrays(const input1, input2, output: TAVDSingleDynArray; const dim2: integer);
+var
+  j: integer;
 begin
-  for j:=0 to dim2-1 do
+  for j := 0 to dim2 - 1 do
     output[j] := input1[j] + input2[j];
 end;
 
 procedure SubArrays(const from, amount, output: TAVDSingleDynArray; const dim2: integer);
-var input1: TAVDSingleDynArray absolute from;
-    input2: TAVDSingleDynArray absolute amount;
-    outp: TAVDSingleDynArray absolute output;
-    j: integer;
+var
+  input1 : TAVDSingleDynArray absolute from;
+  input2 : TAVDSingleDynArray absolute amount;
+  outp   : TAVDSingleDynArray absolute output;
+  j      : integer;
 begin
-  for j:=0 to dim2-1 do
-    output[j] := input1[j] - input2[j];
+  for j := 0 to dim2 - 1 do
+    outp[j] := input1[j] - input2[j];
 end;
 
 procedure MulArrays(const input1, input2,output: TAVDSingleDynArray; const dim2: integer);
@@ -767,21 +769,24 @@ begin
 end;
 
 procedure GetPeaks(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
-var i: integer;
+var
+  i: integer;
 begin
-  for i:=0 to dim1-1 do
+  for i := 0 to dim1 - 1 do
     GetPeaks(input[i], outputmin[i], outputmax[i], dim2);
 end;
 
 procedure GetSums(const input: TAVDArrayOfSingleDynArray; const outputmin, outputmax: TAVDSingleDynArray; const dim1, dim2: integer);
-var i: integer;
+var
+  i: integer;
 begin
   for i:=0 to dim1-1 do
     GetSums(input[i], outputmin[i], outputmax[i], dim2);
 end;
 
 procedure GetPeaks(const input: TAVDArrayOfDoubleDynArray; const outputmin, outputmax: TAVDDoubleDynArray; const dim1, dim2: integer);
-var i: integer;
+var
+  i: integer;
 begin
   for i:=0 to dim1-1 do
     GetPeaks(input[i], outputmin[i], outputmax[i], dim2);

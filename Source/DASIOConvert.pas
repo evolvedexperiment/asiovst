@@ -1641,9 +1641,9 @@ procedure DoubleToInt16LSB_FPU(source: PDouble; target: pointer; frames: longint
 asm
   fld      MaxSmall    // move to register for speed
 @Start:                // Samplecount already in ecx!
-  fld      [eax+8*ecx-8].Double
-  fmul     st(0),st(1)
-  fistp    word ptr [edx+2*ecx-2]
+  fld      [eax + 8 * ecx - 8].Double
+  fmul     st(0), st(1)
+  fistp    word ptr [edx + 2 * ecx - 2]
   loop     @start
   ffree    st(0)       // free after loop has finished
 end;
@@ -1667,8 +1667,8 @@ asm
 
   fistp    word ptr [edx+2*ecx-2]
  loop     @start
- ffree    st(0)                // free after loop has finished
- ffree    st(1)                // free after loop has finished
+ fstp     st(0)                // free after loop has finished
+ fstp     st(0)                // free after loop has finished
  pop ebx
 end;
 
@@ -1676,28 +1676,28 @@ procedure DoubleToInt16LSB_TDF_FPU(source: PDouble; target: pointer; frames: lon
 const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
- fld    Scaler                 // move to register for speed
- fld    MaxSmall               // move to register for speed
+ fld       Scaler              // move to register for speed
+ fld       MaxSmall            // move to register for speed
  @Start:                       // Samplecount already in ecx!
-  fld      [eax+8*ecx-8].Double
-  fmul     st(0),st(1)
+  fld      [eax + 8 * ecx - 8].Double
+  fmul     st(0), st(1)
 
-  imul  ebx,RandSeed,$08088405
-  inc   ebx
-  mov RandSeed,ebx
-  fild  RandSeed
-  imul  ebx,RandSeed,$08088405
-  inc   ebx
-  mov RandSeed,ebx
-  fild  RandSeed
+  imul     ebx, RandSeed, $08088405
+  inc      ebx
+  mov      RandSeed, ebx
+  fild     RandSeed
+  imul     ebx, RandSeed, $08088405
+  inc      ebx
+  mov      RandSeed, ebx
+  fild     RandSeed
   faddp
-  fmul st(0),st(3)
+  fmul     st(0), st(3)
   faddp
 
-  fistp    word ptr [edx+2*ecx-2]
- loop     @start
- ffree    st(0)                // free after loop has finished
- ffree    st(1)                // free after loop has finished
+  fistp    word ptr [edx + 2 * ecx - 2]
+ loop      @start
+ fstp     st(0)                // free after loop has finished
+ fstp     st(0)                // free after loop has finished
  pop ebx
 end;
 
@@ -1732,7 +1732,7 @@ asm
   add   edx, 3
   dec   ecx
   jnz   @Start
-  ffree st(0)
+  fstp     st(0)               // free after loop has finished
   pop ebx
 end;
 {$ENDIF}
@@ -1742,7 +1742,7 @@ const Scaler: Double = ((1/$10000) / $10000);  // 2^-32
 asm
   push ebx
   fld   Scaler                 // move to register for speed
-  fld   Max24                  //for speed
+  fld   Max24                  // for speed
  @Start:
   fld   [eax].dword
   fmul  st(0),st(1)
@@ -1763,8 +1763,8 @@ asm
   add   edx, 3
   dec   ecx
   jnz   @Start
-  ffree    st(0)               // free after loop has finished
-  ffree    st(1)               // free after loop has finished
+  fstp     st(0)               // free after loop has finished
+  fstp     st(0)               // free after loop has finished
   pop ebx
 end;
 
@@ -1799,8 +1799,8 @@ asm
   add   edx, 3
   dec   ecx
   jnz   @Start
-  ffree    st(0)               // free after loop has finished
-  ffree    st(1)               // free after loop has finished
+  fstp     st(0)               // free after loop has finished
+  fstp     st(0)               // free after loop has finished
   pop ebx
 end;
 
@@ -1850,8 +1850,8 @@ asm
   add   edx, 3
   dec   ecx
   jnz   @Start
-  ffree    st(0)               // free after loop has finished
-  ffree    st(1)               // free after loop has finished
+  fstp     st(0)               // free after loop has finished
+  fstp     st(0)               // free after loop has finished
   pop ebx
 end;
 
@@ -1865,19 +1865,19 @@ asm
   fld   [eax].Double
   fmul  st(0),st(1)
 
-  imul  ebx,RandSeed,$08088405
+  imul  ebx, RandSeed, $08088405
   inc   ebx
-  mov RandSeed,ebx
+  mov RandSeed, ebx
   fild  RandSeed
-  imul  ebx,RandSeed,$08088405
+  imul  ebx, RandSeed, $08088405
   inc   ebx
-  mov RandSeed,ebx
+  mov RandSeed, ebx
   fild  RandSeed
   faddp
   fmul st(0),st(3)
   faddp
 
-  fistp [esp-4].dword;
+  fistp [esp-4].Integer
   mov   ebx, [esp-4]
   mov   [edx], bx
   ror   ebx, 8
@@ -1886,8 +1886,8 @@ asm
   add   edx, 3
   dec   ecx
   jnz   @Start
-  ffree    st(0)               // free after loop has finished
-  ffree    st(1)               // free after loop has finished
+  fstp     st(0)               // free after loop has finished
+  fstp     st(0)               // free after loop has finished
   pop ebx
 end;
 
@@ -1895,9 +1895,9 @@ procedure SingleToInt32LSB_FPU(source: PSingle; target: pointer; frames: longint
 asm
   fld   MaxLong         //for speed
  @Start:
-  fld   [eax + 4 * ecx - 4].single
+  fld   [eax + 4 * ecx - 4].Single
   fmul  st(0),st(1)
-  fistp [edx + 4 * ecx - 4].dword;
+  fistp [edx + 4 * ecx - 4].Integer
   loop @Start
   ffree st(0)
 end;
@@ -1908,63 +1908,64 @@ asm
  @Start:
   fld   [eax + 8 * ecx - 8].Double
   fmul  st(0), st(1)
-  fistp [edx + 4 * ecx - 4].DWord
+  fistp [edx + 4 * ecx - 4].Integer
   loop @Start
   ffree st(0)
 end;
 
 procedure SingleToSingleLSB_FPU(source: PSingle; target: pointer; frames: longint); overload;
 begin
- move(source^, target^, frames*sizeOf(Single));
+ move(source^, target^, frames * SizeOf(Single));
 end;
 
 procedure DoubleToSingleLSB_FPU(source: PDouble; target: pointer; frames: longint); overload;
 asm
  @Start:
-  fld   [source+8*ecx-8].Double
-  fstp  [target+4*ecx-4].Single
+  fld   [source + 8 * ecx - 8].Double
+  fstp  [target + 4 * ecx - 4].Single
   loop @Start
 end;
 
 procedure SingleToDoubleLSB_FPU(source: PSingle; target: pointer; frames: longint); overload;
 asm
  @Start:
-  fld   [eax+4*ecx-4].Single
-  fstp  [edx+8*ecx-8].Double
+  fld   [eax + 4 * ecx - 4].Single
+  fstp  [edx + 8 * ecx - 8].Double
   loop @Start
 end;
 
 procedure DoubleToDoubleLSB_FPU(source: PDouble; target: pointer; frames: longint); overload;
 begin
- move(source^, target^, frames*sizeOf(Double));
+ move(source^, target^, frames * SizeOf(Double));
 end;
 
 procedure SingleToInt32LSB16_FPU(source: PSingle; target: pointer; frames: longint); overload;
 asm
   fld      MaxSmall
 @Start:
-  fld      [eax+4*ecx-4].Single
-  fmul     st(0),st(1)
-  fistp    [edx+4*ecx-4].DWord
+  fld      [eax + 4 * ecx - 4].Single
+  fmul     st(0), st(1)
+  fistp    [edx + 4 * ecx - 4].DWord
   loop @Start
   ffree    st(0)
 end;
 
 procedure SingleToInt32LSB16_UDF_FPU(source: PSingle; target: pointer; frames: longint); overload;
-const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
+const
+  Scaler: Double = ((1.0 / $10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
  fld    MaxSmall               // move to register for speed
  @Start:                       // Samplecount already in ecx!
-  fld      [eax+4*ecx-4].Single
-  fmul     st(0),st(1)
+  fld     [eax + 4 * ecx - 4].Single
+  fmul    st(0),st(1)
 
-  imul  ebx,RandSeed,$08088405
-  inc   ebx
-  mov RandSeed,ebx
-  fild  RandSeed
-  fmul st(0),st(3)
+  imul    ebx, RandSeed, $08088405
+  inc     ebx
+  mov     RandSeed, ebx
+  fild    RandSeed
+  fmul    st(0),st(3)
   faddp
 
   fistp   [edx+4*ecx-4].DWord

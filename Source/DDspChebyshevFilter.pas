@@ -63,16 +63,22 @@ type
 
 implementation
 
-uses Math, SysUtils;
+{$IFDEF FPC}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
+uses
+  Math, SysUtils;
 
 constructor TChebyshev1Filter.Create;
 begin
- fDownsamplePow:=0;
- fDownsampleFak:=1;
- fFrequency:=0;
- fGain:=0; fRipple:=1;
- fOrder:=10;
- SampleRate:=44100;
+ fDownsamplePow := 0;
+ fDownsampleFak := 1;
+ fFrequency := 0;
+ fGain := 0;
+ fRipple := 1;
+ fOrder := 10;
+ SampleRate := 44100;
 end;
 
 function TChebyshev1Filter.GetOrder: Integer;

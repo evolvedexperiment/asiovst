@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.inc}
 
-uses Classes, DAVDCommon, DDspVoice;
+uses
+  Classes, DAVDCommon, DDspVoice;
 
 type
   TDspVoiceList = class(TList)
@@ -34,9 +35,7 @@ type
     property PlayingVoiceCount: Integer read GetPlayingVoiceCount;
   end;
 
-
 implementation
-
 
 { TDspVoiceList }
 

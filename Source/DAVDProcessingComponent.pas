@@ -2,7 +2,10 @@ unit DAVDProcessingComponent;
 
 interface
 
-uses Classes, DAVDCommon;
+{$I ASIOVST.INC}
+
+uses
+  Classes, DAVDCommon;
 
 type
   TDspBaseProcessFuncS   = procedure(var Data: Single; const channel: integer) of object;
@@ -106,7 +109,8 @@ type
 
 implementation
 
-uses Math;
+uses
+  Math;
 
 { TAVDProcessingComponentList }
 

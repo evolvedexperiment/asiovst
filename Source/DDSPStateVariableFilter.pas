@@ -2,6 +2,8 @@ unit DDSPStateVariableFilter;
 
 interface
 
+{$I ASIOVST.INC}
+
 uses
   DAVDCommon;
 

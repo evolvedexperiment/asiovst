@@ -6,7 +6,7 @@ interface
 
 {$I ASIOVST.INC}
 
-uses classes, DVSTEffect;
+uses Classes, DVSTEffect;
 
 type
   TBasicVSTModule = class({$IFDEF UseDelphi}TDataModule{$ELSE}TComponent{$ENDIF})
@@ -185,7 +185,8 @@ type
 
 implementation
 
-uses Sysutils, DVSTEffectFunctions;
+uses
+  Sysutils, DVSTEffectFunctions;
 
 { TBasicVSTModule }
 constructor TBasicVSTModule.Create(AOwner: TComponent);

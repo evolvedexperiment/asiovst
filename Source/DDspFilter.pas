@@ -57,7 +57,7 @@ type
     property Order: Integer read GetOrder write SetOrder;
   end;
 
-  TIIRFilter=class(TFilter)
+  TIIRFilter = class(TFilter)
   private
   protected
     fBandWidth   : Double;
@@ -73,7 +73,7 @@ type
     property Bandwidth: Double read fBandWidth write SetBW;
   end;
 
-  TBiquadIIRFilter=class(TIIRFilter)
+  TBiquadIIRFilter = class(TIIRFilter)
   protected
     fDenominator  : array[1..2] of Double;
     fNominator    : array[0..2] of Double;
@@ -108,7 +108,7 @@ type
   published
   end;
 
-  TSimpleGainFilter=class(TBiquadIIRFilter)
+  TSimpleGainFilter = class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   public
@@ -116,40 +116,45 @@ type
     function ProcessSampleASM: Double; override;
   end;
 
-  TSimplePeakFilter=class(TBiquadIIRFilter)
+  TSimplePeakFilter = class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TSimpleLowShelfFilter=class(TBiquadIIRFilter)
+  TSimpleAllpassFilter = class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TSimpleHighShelfFilter=class(TBiquadIIRFilter)
+  TSimpleLowShelfFilter = class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TSimpleHighcutFilter=class(TBiquadIIRFilter)
+  TSimpleHighShelfFilter = class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TSimpleLowcutFilter=class(TBiquadIIRFilter)
+  TSimpleHighcutFilter = class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TSimpleLowpassFilter=class(TSimpleHighcutFilter);
-  TSimpleHighpassFilter=class(TSimpleLowcutFilter);
-
-  TSimpleBandpass=class(TBiquadIIRFilter)
+  TSimpleLowcutFilter = class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TSimpleNotch=class(TBiquadIIRFilter)
+  TSimpleLowpassFilter = class(TSimpleHighcutFilter);
+  TSimpleHighpassFilter = class(TSimpleLowcutFilter);
+
+  TSimpleBandpass = class(TBiquadIIRFilter)
+  protected
+    procedure CalculateCoefficients; override;
+  end;
+
+  TSimpleNotch = class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
   end;
@@ -173,6 +178,10 @@ type
   end;
 
 implementation
+
+{$IFDEF FPC}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
 
 uses Math;
 
@@ -250,7 +259,7 @@ end;
 procedure TIIRFilter.GetIR(ImpulseResonse: TAVDSingleDynArray);
 var i : Integer;
 begin
- if Length(ImpulseResonse)=0 then Exit;
+ if Length(ImpulseResonse) = 0 then Exit;
  PushStates;
  ImpulseResonse[0] := ProcessSample(1.0);
  for i := 1 to Length(ImpulseResonse)-1
@@ -261,7 +270,7 @@ end;
 procedure TIIRFilter.GetIR(ImpulseResonse: TAVDDoubleDynArray);
 var i : Integer;
 begin
- if Length(ImpulseResonse)=0 then Exit;
+ if Length(ImpulseResonse) = 0 then Exit;
  PushStates;
  ImpulseResonse[0] := ProcessSample(1.0);
  for i := 1 to Length(ImpulseResonse)-1
@@ -271,14 +280,14 @@ end;
 
 procedure TIIRFilter.SetAlpha;
 begin
- if (fSinW0=0)
+ if (fSinW0 = 0)
   then fAlpha := fSinW0 /( 2 * fBandWidth)
   else fAlpha := Sinh(ln22 * cos(fW0 * 0.5) * fBandWidth * (fW0 / fSinW0)) * fSinW0;
 end;
 
 procedure TIIRFilter.SetBW(const Value: Double);
 begin
- if Value<=0
+ if Value <= 0
   then fBandWidth := 0.01
   else fBandWidth := Value;
  SetAlpha;
@@ -487,7 +496,7 @@ end;
 asm
  fld st(0)                           // s, s
  fmul [self.fNominator].Double       // a0*s, s
- fadd [self.fState].Double           // r=d0+a0*s, s
+ fadd [self.fState].Double           // r = d0+a0*s, s
  fld st(0)                           // r, r, s
  fld st(0)                           // r, r, r, s
  fmul [self.fDenominator].Double     // b0*r, r, r, s
@@ -562,6 +571,20 @@ begin
  fNominator[0] := (1 + fAlpha * fGainSpeed) * t;
  fNominator[2] := (1 - fAlpha * fGainSpeed) * t;
  CalcPolesZeros;
+end;
+
+{ TSimpleAllpassFilter }
+
+procedure TSimpleAllpassFilter.CalculateCoefficients;
+var t, a : Double;
+begin
+ t               := 1 / (1 + fAlpha);
+ a               := fGainSpeed * fGainSpeed;
+ fDenominator[1] := 2 * cos(fW0) * t;
+ fDenominator[2] := (fAlpha - 1) * t;
+ fNominator[1]   := -fDenominator[1] * a;
+ fNominator[0]   := -fDenominator[2] * a;
+ fNominator[2]   := a;
 end;
 
 { TSimpleLowShelfFilter }

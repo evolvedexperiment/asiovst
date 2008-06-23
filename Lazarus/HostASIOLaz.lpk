@@ -46,6 +46,7 @@
       <Item7>
         <Filename Value="..\Source\DASIORegister.pas"/>
         <HasRegisterProc Value="True"/>
+        <UnitName Value="DASIORegister"/>
       </Item7>
     </Files>
     <Type Value="RunAndDesignTime"/>

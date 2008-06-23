@@ -233,9 +233,6 @@ end;
 
 
 
-
-
-
 procedure AddArrays(const {eax}   input1: TAVDSingleDynArray;
                     const {stack} input2: single;
                     const {edx}   output: TAVDSingleDynArray;

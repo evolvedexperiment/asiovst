@@ -7,9 +7,14 @@
       <Version Value="5"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="C:\Code\VSTPack\Source\"/>
+        <OtherUnitFiles Value="C:\Users\Christian Budde\Projects\VSTPack\Source\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <DelphiCompat Value="True"/>
+        </SyntaxOptions>
+      </Parsing>
       <CodeGeneration>
         <Generate Value="Faster"/>
       </CodeGeneration>
@@ -97,13 +102,16 @@
       </Item19>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="AVDCommonLaz"/>
+        <PackageName Value="IDEIntf"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="AVDCommonLaz"/>
       </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)\;\Source\"/>

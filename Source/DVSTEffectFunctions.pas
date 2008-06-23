@@ -2,18 +2,22 @@ unit DVSTEffectFunctions;
 
 interface
 
-uses DVSTEffect;
+{$I ASIOVST.INC}
 
-  function  DispatchEffectFunc(Effect: PVSTEffect; opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
-  function  GetParameterFunc(Effect: PVSTEffect; Index: Integer): Single; cdecl;
-  procedure SetParameterFunc(Effect: PVSTEffect; Index: Integer; Value: Single); cdecl;
-  procedure ProcessFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
-  procedure ProcessReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
-  procedure ProcessDoubleReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPDouble; SampleFrames: Integer); cdecl;
+uses
+  DVSTEffect;
+
+function  DispatchEffectFunc(Effect: PVSTEffect; opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
+function  GetParameterFunc(Effect: PVSTEffect; Index: Integer): Single; cdecl;
+procedure SetParameterFunc(Effect: PVSTEffect; Index: Integer; Value: Single); cdecl;
+procedure ProcessFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
+procedure ProcessReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
+procedure ProcessDoubleReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPDouble; SampleFrames: Integer); cdecl;
 
 implementation
 
-uses SysUtils, DVSTBasicModule;
+uses
+  SysUtils, DVSTBasicModule;
 
 function DispatchEffectFunc(Effect: PVSTEffect; opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
 begin

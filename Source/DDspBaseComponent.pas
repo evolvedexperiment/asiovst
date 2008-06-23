@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.inc}
 
-uses Classes, DAVDCommon, Contnrs, DAVDProcessingComponent;
+uses
+  Classes, DAVDCommon, Contnrs, DAVDProcessingComponent;
 
 type
   TDspQueueList = TComponentList;
@@ -115,7 +116,12 @@ type
 
 implementation
 
-uses Sysutils, Math, DVSTModuleWithDsp, DDspVoice
+{$IFDEF FPC}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
+uses
+  Sysutils, Math, DVSTModuleWithDsp, DDspVoice
   {$IFDEF PUREPASCAL},DAVDBufferMathPascal{$ELSE},DAVDBufferMathAsm{$ENDIF};
 
 constructor TDspBaseComponent.Create(AOwner: TComponent);

@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.inc}
 
-uses DDspBaseComponent, DAVDCommon, DDspVoiceList, DDspVoice;
+uses
+  DDspBaseComponent, DAVDCommon, DDspVoiceList, DDspVoice;
 
 type
   TDspVoiceController = class;
@@ -73,7 +74,12 @@ type
   
 implementation
 
-uses SysUtils
+{$IFDEF FPC}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
+uses
+  SysUtils
   {$IFDEF PUREPASCAL},DAVDBufferMathPascal{$ELSE},DAVDBufferMathAsm{$ENDIF},
   DAVDProcessingComponent;
 
