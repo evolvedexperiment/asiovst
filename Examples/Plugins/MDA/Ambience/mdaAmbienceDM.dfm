@@ -3,7 +3,7 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'mda Ambience'
   ProductName = 'Ambience'
   VendorName = 'mda'

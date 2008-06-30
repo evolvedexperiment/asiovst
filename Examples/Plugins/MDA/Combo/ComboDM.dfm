@@ -3,7 +3,7 @@ object ComboDataModule: TComboDataModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'mda Combo'
   ProductName = 'Combo'
   VendorName = 'mda'
