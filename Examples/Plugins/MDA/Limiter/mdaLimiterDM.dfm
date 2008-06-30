@@ -15,6 +15,7 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
   ParameterProperties = <
     item
       Min = -40.000000000000000000
+      Max = 1.000000000000000000
       Curve = ctLinear
       DisplayName = 'Threshold'
       Units = 'dB'
@@ -28,6 +29,7 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
     end
     item
       Min = -40.000000000000000000
+      Max = 1.000000000000000000
       Curve = ctLinear
       DisplayName = 'Output'
       Units = 'dB'
@@ -46,8 +48,11 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       Units = #181's'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      MaxInteger = 1
       ShortLabel = 'Att'
       VSTModule = Owner
+      OnParameterChange = AttackChange
+      OnCustomParameterDisplay = AttackDisplay
     end
     item
       Max = 1.000000000000000000
@@ -56,8 +61,11 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       Units = 'ms'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      MaxInteger = 1
       ShortLabel = 'Rel'
       VSTModule = Owner
+      OnParameterChange = ReleaseChange
+      OnCustomParameterDisplay = ReleaseDisplay
     end
     item
       Max = 1.000000000000000000
@@ -67,7 +75,8 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'Knee'
       VSTModule = Owner
-      OnCustomParameterDisplay = mdaLimiterDataModuleParameterProperties4CustomParameterDisplay
+      OnParameterChange = KneeChange
+      OnCustomParameterDisplay = KneeDisplay
     end>
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
