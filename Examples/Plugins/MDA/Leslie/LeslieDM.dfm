@@ -1,5 +1,7 @@
 object LeslieDataModule: TLeslieDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = []
   Version = '1.0'
   EffectName = 'mda Leslie'
