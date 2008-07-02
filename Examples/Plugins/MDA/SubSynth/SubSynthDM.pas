@@ -3,16 +3,13 @@ unit SubSynthDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 
 type
   TSubSynthDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray;
-      const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
-    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer;
-      var Value: Single);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleOpen(Sender: TObject);
   private
   public

@@ -1,18 +1,45 @@
 object RoundPanDataModule: TRoundPanDataModule
   OldCreateOrder = False
-  Flags = []
+  Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda RoundPan'
   ProductName = 'RoundPan'
   VendorName = 'mda'
   PlugCategory = vpcEffect
-  CanDos = []
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Round Panner'
   UniqueID = 'mdaP'
   ShellPlugins = <>
-  Programs = <>
-  ParameterProperties = <>
+  Programs = <
+    item
+      DisplayName = 'Round Panner'
+      VSTModule = Owner
+    end>
+  ParameterProperties = <
+    item
+      Max = 1.000000000000000000
+      Curve = ctLinear
+      DisplayName = 'Pan'
+      Units = 'deg'
+      CurveFactor = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'Pan'
+      VSTModule = Owner
+    end
+    item
+      Max = 1.000000000000000000
+      Curve = ctLinear
+      DisplayName = 'Auto'
+      Units = 'deg/sec'
+      CurveFactor = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'Auto'
+      VSTModule = Owner
+    end>
+  OnProcess = VSTModuleProcess
+  OnProcessReplacing = VSTModuleProcess
   Left = 188
   Top = 77
   Height = 150
