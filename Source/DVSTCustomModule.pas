@@ -121,16 +121,16 @@ type
     FOnProcessDoublesEx     : TProcessDoubleEvent;
 
 
+    function GetPluginFlags: TEffFlags; virtual;
+    function GetUniqueID:string; virtual;
     procedure SetAudioMaster(const AM :TAudioMasterCallbackFunc); override;
+    procedure SetBlockSize(newValue: Integer); virtual;
+    procedure SetInitialDelay(delay: Integer); virtual;
     procedure SetNumInputs(Inputs: Integer); virtual;
     procedure SetNumOutputs(Outputs: Integer); virtual;
-    procedure SetSampleRate(newValue: Single); virtual;
-    procedure SetBlockSize(newValue: Integer); virtual;
-    function GetUniqueID:string; virtual;
-    procedure SetUniqueID(fID:string); virtual;
     procedure SetPluginFlags(newFlags : TEffFlags); virtual;
-    function GetPluginFlags: TEffFlags; virtual;
-    procedure SetInitialDelay(delay: Integer); virtual;
+    procedure SetSampleRate(newValue: Single); virtual;
+    procedure SetUniqueID(fID:string); virtual;
     {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
     {$ENDIF}
@@ -210,7 +210,7 @@ type
     property EditorForm: TForm read FEditorForm;
     property EditorNeedUpdate: Boolean read FEditorNeedUpdate write FEditorNeedUpdate;
 
-    property Flags: TEffFlags read GetPluginFlags write SetPluginFlags;
+    property Flags: TEffFlags read GetPluginFlags write SetPluginFlags default [effFlagsCanReplacing];
 
     property SampleRate: Single read fSampleRate write SetSampleRate;
     property numInputs: Integer read FEffect.numInputs write SetNumInputs default 2;
@@ -235,7 +235,7 @@ type
     property Tempo: Single read fTempo;
     property ShellPlugins: TCustomVstShellPlugins read FVstShellPlugins write SetVstShellPlugins;
     property TailSize: Integer read FTailSize write FTailSize default 0;
-    property CanDos: TVstCanDos read fCanDos write fCanDos;
+    property CanDos: TVstCanDos read fCanDos write fCanDos default [];
     property HostProduct: string read GetHostProduct stored false;
     property HostVendor: string read GetHostVendor stored false;
     property HostVersion: Integer read GetHostVendorVersion stored false;
@@ -309,7 +309,6 @@ begin
  FVersionRelease := 0;
  UpdateVersion;
  FEditorForm := nil;
-
 
  FSampleRate := 44100;
  FBlockSize := 1024;

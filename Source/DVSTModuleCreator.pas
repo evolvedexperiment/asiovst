@@ -73,6 +73,7 @@ begin
     VersionMajor   := FConfig.VersionMajor;
     VersionMinor   := FConfig.VersionMinor;
     VersionRelease := FConfig.VersionRelease;
+    Version        := IntToStr(VersionMajor) + '.' + IntToStr(VersionMinor);
     VendorName     := FConfig.VendorName;
     ProductName    := FConfig.ProductName;
 
@@ -89,6 +90,30 @@ begin
       NumInputs    := NUM_INPUTS_EFFECT;
       NumOutputs   := NUM_OUTPUTS_EFFECT;
       PlugCategory := vpcEffect;
+      if (NumInputs = 1) then
+      begin
+        if (NumOutputs = 1) then CanDos := CanDos + [vcd1in1out] else
+        if (NumOutputs = 2) then CanDos := CanDos + [vcd1in2out];
+      end else
+      if (NumInputs = 2) then
+      begin
+        if (NumOutputs = 1) then CanDos := CanDos + [vcd2in1out] else
+        if (NumOutputs = 2) then CanDos := CanDos + [vcd2in2out] else
+        if (NumOutputs = 4) then CanDos := CanDos + [vcd2in4out];
+      end else
+      if (NumInputs = 4) then
+      begin
+        if (NumOutputs = 2) then CanDos := CanDos + [vcd4in2out] else
+        if (NumOutputs = 4) then CanDos := CanDos + [vcd4in4out] else
+        if (NumOutputs = 8) then CanDos := CanDos + [vcd4in8out];
+      end else
+      if (NumInputs = 8) then
+      begin
+        if (NumOutputs = 4) then CanDos := CanDos + [vcd8in4out] else
+        if (NumOutputs = 8) then CanDos := CanDos + [vcd8in8out];
+      end else
+      if (NumInputs = 0) then PlugCategory := vpcGenerator;
+      if (NumOutputs = 0) then PlugCategory := vpcAnalysis;
     end;
 
     if FConfig.UseEditor then

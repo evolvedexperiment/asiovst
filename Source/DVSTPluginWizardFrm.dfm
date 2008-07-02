@@ -337,7 +337,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     Top = 44
     Width = 452
     Height = 262
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     Style = tsFlatButtons
     TabOrder = 1

@@ -13,7 +13,6 @@ type
   TCustomParameterLabelEvent   = procedure(Sender: TObject; const Index: Integer; var PreDefined: string) of object;
   TCustomParameterDisplayEvent = procedure(Sender: TObject; const Index: Integer; var PreDefined: string) of object;
 
-
   TCustomVstParameterProperty = class(TCollectionItem)
   private
     FSmoothStates     : T2SingleArray;
@@ -44,6 +43,7 @@ type
     
     function GetShortLabel: string;
     procedure SetShortLabel(const Value: string);
+    procedure SetCurve(const Value: TCurveType);
   protected
     procedure AssignTo(Dest: TPersistent); override;
 
@@ -62,7 +62,7 @@ type
     property Min: Single read FMin write FMin;
     property Max: Single read FMax write FMax;
     property CC: Integer read FCC write FCC default -1;
-    property Curve: TCurveType read FCurve write FCurve;
+    property Curve: TCurveType read FCurve write SetCurve;
     property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
     property Units: string read FUnits write SetUnits;
     property CurveFactor: Single read FCurveFactor write FCurveFactor;
@@ -131,7 +131,7 @@ begin
   FSmoothingFactor  := 1;
   FCanBeAutomated   := True;
   FV2Properties     := False;
-  FDisplayName := 'Parameter '+IntTostr(Collection.Count);
+  FDisplayName := 'Parameter ' + IntTostr(Collection.Count);
 
   FVSTModule := (Collection As TCustomVstParameterProperties).VSTModule;
   with FVSTModule as TVSTModuleWithPrograms do
@@ -147,7 +147,8 @@ begin
 end;
 
 destructor TCustomVstParameterProperty.Destroy;
-var i: Integer;
+var
+  i: Integer;
 begin
   try
     if assigned(VSTModule) then
@@ -159,7 +160,9 @@ begin
               Programs[i].SetParameterCount(Collection.Count - 1)
           else SetParameterCount(Collection.Count - 1);
 
-        if (HostProduct <> 'Cubase VST') and (HostProduct <> 'Unknown') and (HostProduct <> '') then
+        if (HostProduct <> 'Cubase VST') and
+           (HostProduct <> 'Unknown') and
+           (HostProduct <> '') then
           Effect^.numParams := Collection.Count - 1;
     end;
   except
@@ -188,9 +191,29 @@ begin
   else inherited;
 end;
 
-procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string);
+procedure TCustomVstParameterProperty.SetCurve(const Value: TCurveType);
 begin
-  FDisplayName := Copy(AValue,1,Math.Min(30,Length(AValue)));
+ if FCurve <> Value then
+  begin
+   FCurve := Value;
+   case FCurve of
+    ctLogarithmic : if fMin <> 0
+                     then FCurveFactor := fMax / fMin;
+   end;
+  end;
+end;
+
+procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string);
+var
+  NewDisplayName : string;
+begin
+ NewDisplayName := Copy(AValue, 1, Math.Min(30, Length(AValue)));
+ if NewDisplayName <> FDisplayName then
+  begin
+   if (ShortLabel = '') or (ShortLabel = FDisplayName)
+    then ShortLabel := NewDisplayName;
+   FDisplayName := NewDisplayName;
+  end;
 end;
 
 function TCustomVstParameterProperty.GetDisplayName: string;
@@ -252,15 +275,15 @@ begin
     Add('<!-- =========================================================== -->');
     Add('<VSTPluginProperties>');
     Add('');
-    Add(#9+'<VSTParametersStructure>');
-    Add(#9+#9+'<!--  Create Global Params================================== -->');
+    Add(#9 + '<VSTParametersStructure>');
+    Add(#9 + #9 + '<!--  Create Global Params================================== -->');
     for i := 0 to Count-1 do
     begin
-      Add(#9+#9+'<Param name="'+Items[i].FDisplayName+'"'+#9+
-                 'shortName="'+Items[i].fShortLabel+'"'+#9+
-                 'id="'+IntToStr(i)+'"/>');
+      Add(#9 + #9 + '<Param name="' + Items[i].FDisplayName + '"' + #9 + 
+                    'shortName="' + Items[i].fShortLabel + '"' + #9 +
+                    'id="' + IntToStr(i)+'"/>');
     end;
-    Add(#9+'</VSTParametersStructure>');
+    Add(#9 + '</VSTParametersStructure>');
     Add('</VSTPluginProperties>');
   finally
     Free;

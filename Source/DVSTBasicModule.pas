@@ -196,7 +196,7 @@ begin
   begin
    vObject         := Self;
    magic           := 'PtsV';
-   EffectFlags     := [];
+   EffectFlags     := [effFlagsCanReplacing];
    reservedForHost := nil;
    resvd2          := 0;
    user            := nil;

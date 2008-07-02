@@ -218,11 +218,11 @@ begin
     if (effFlagsProgramChunks in FEffect.EffectFlags) then
       str := FloatToStr(FOnGetChunkParamEvent(Self,Index))
     else if (numPrograms>0) then
-      str := FloatToStrF(Programs[FCurProgram].Parameter[Index],ffGeneral,4,4)
-    else str := FloatToStrF(FParameter[Index],ffGeneral,4,4);
+      str := FloatToStrF(Programs[FCurProgram].Parameter[Index], ffGeneral, 4, 4)
+    else str := FloatToStrF(FParameter[Index], ffGeneral, 4, 4);
 
     if Assigned(FParameterProperties[Index].OnCustomParameterDisplay) then
-      FParameterProperties[Index].OnCustomParameterDisplay(Self,Index,str);
+      FParameterProperties[Index].OnCustomParameterDisplay(Self, Index, str);
   end;
 
   StrPCopy(ptr, str);
@@ -503,28 +503,40 @@ end;
 
 function TVSTModuleWithPrograms.Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
 begin
- if (Index>=numParams) or (Index>=FParameterProperties.Count) then begin Result := 0; Exit; end;
- Result := (Value - FParameterProperties[Index].min) / (FParameterProperties[Index].max - FParameterProperties[Index].min);
- case FParameterProperties[Index].curve of
-  ctLogarithmic: Result := ln(FParameterProperties[Index].curveFactor * Result + 1) / ln(FParameterProperties[Index].curveFactor + 1);
-  ctExponential: Result := exp(Result * ln(FParameterProperties[Index].curveFactor + 1)) - 1;
-  ctFrequencyScale: if FParameterProperties[Index].min<>0
-                     then Result := ln((FParameterProperties[Index].max/FParameterProperties[Index].min)*Result+1)/ln((FParameterProperties[Index].max/FParameterProperties[Index].min))
-                     else Result := ln((FParameterProperties[Index].max)*Result+1)/ln((FParameterProperties[Index].max));
-  else
- end;
+ if (Index >= numParams) or
+    (Index >= FParameterProperties.Count) then
+  begin
+   Result := 0;
+   Exit;
+  end;
+ with FParameterProperties[Index] do
+  begin
+   Result := (Value - Min) / (Max - Min);
+   case FParameterProperties[Index].Curve of
+    ctLogarithmic: Result := log2(CurveFactor * Result + 1) / log2(CurveFactor + 1);
+    ctExponential: Result := exp(Result * ln(CurveFactor + 1)) - 1;
+    ctFrequencyScale: if min <> 0
+                       then Result := log2(Max / Min * Result + 1) / log2(Max / Min)
+                       else Result := log2(Max * Result + 1) / log2(Max);
+    else
+   end;
+  end;
  Result := f_limit(Result, 0, 1);
 end;
 
 function TVSTModuleWithPrograms.VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
 begin
  Result := Value;
- case FParameterProperties[Index].curve of
-  ctLogarithmic: Result := (exp(Result * ln(FParameterProperties[Index].curveFactor + 1)) - 1) / FParameterProperties[Index].curveFactor;
-  ctExponential: Result := ln(FParameterProperties[Index].curveFactor * Result + 1) / ln(FParameterProperties[Index].curveFactor + 1);
- else
- end;
- Result := FParameterProperties[Index].Smooth(Result * (FParameterProperties[Index].max - FParameterProperties[Index].min) + FParameterProperties[Index].min);
+ with FParameterProperties[Index] do
+  begin
+   case Curve of
+    ctLogarithmic: Result := (exp(Result * ln(curveFactor + 1)) - 1) / curveFactor;
+    ctExponential: Result := log2(curveFactor * Result + 1) / log2(curveFactor + 1);
+    ctFrequencyScale: Result := (exp(Result * ln((Max / Min) + 1)) - 1) / (Max / Min);
+   else
+   end;
+   Result := Smooth(Result * (Max - Min) + Min);
+  end;
 end;
 
 procedure TVSTModuleWithPrograms.SetParameterAutomated(Index: Integer; Value: Single);
