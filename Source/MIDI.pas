@@ -182,15 +182,18 @@ begin
 end;
 
 procedure TMidiInput.Close(const aDeviceIndex: integer);
+var
+  DeviceHandle : THandle;
 begin
- if GetHandle(aDeviceIndex) = 0 then Exit else
- begin
-  MidiResult := midiInStop(GetHandle(aDeviceIndex));
-  MidiResult := midiInReset(GetHandle(aDeviceIndex));
-  MidiResult := midiInUnprepareHeader(GetHandle(aDeviceIndex), @TSysExData(fSysExData[aDeviceIndex]).SysExHeader, SizeOf(TMidiHdr));
-  MidiResult := midiInClose(GetHandle(aDeviceIndex));
-  fDevices.Objects[aDeviceIndex] := nil;
- end;
+ DeviceHandle := GetHandle(aDeviceIndex); 
+ if DeviceHandle = 0 then Exit else
+  begin
+   MidiResult := midiInStop(DeviceHandle);
+   MidiResult := midiInReset(DeviceHandle);
+   MidiResult := midiInUnprepareHeader(DeviceHandle, @TSysExData(fSysExData[aDeviceIndex]).SysExHeader, SizeOf(TMidiHdr));
+   MidiResult := midiInClose(DeviceHandle);
+   fDevices.Objects[aDeviceIndex] := nil;
+  end;
 end;
 
 procedure TMidiDevices.CloseAll;
@@ -307,7 +310,8 @@ begin
 end;
 
 procedure TMidiDevices.SetMidiResult(const Value: MMResult);
-var lError: array[0..MAXERRORLENGTH] of char;
+var 
+  lError: array[0..MAXERRORLENGTH] of char;
 begin
  fMidiResult := Value;
  if fMidiResult <> MMSYSERR_NOERROR then
@@ -317,9 +321,13 @@ end;
 
 function TMidiDevices.GetHandle(const aDeviceIndex: integer): THandle;
 begin
- if not ((aDeviceIndex >= 0) and (aDeviceIndex <= (fDevices.Count - 1))) then
-  raise EMidiDevices.CreateFmt('%s: Device index out of bounds! (%d)', [ClassName,aDeviceIndex]);
- Result := THandle(fDevices.Objects[aDeviceIndex]);
+ try
+  if not ((aDeviceIndex >= 0) and (aDeviceIndex <= (fDevices.Count - 1))) then
+   raise EMidiDevices.CreateFmt('%s: Device index out of bounds! (%d)', [ClassName,aDeviceIndex]);
+  Result := THandle(fDevices.Objects[aDeviceIndex]);
+ except
+  Result := 0;
+ end; 
 end;
 
 function TMidiDevices.IsOpen(aDeviceIndex: integer): boolean;
