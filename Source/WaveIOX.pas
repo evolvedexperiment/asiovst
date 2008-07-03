@@ -144,21 +144,21 @@ implementation
 
 function mmioFourCC(Chr1: Char; Chr2: Char; Chr3: Char; Chr4: Char): DWord;
 begin
-  Result:=Integer(Chr1)+(Integer(Chr2) shl 8)+(Integer(Chr3) shl 16)
+  Result := Integer(Chr1)+(Integer(Chr2) shl 8)+(Integer(Chr3) shl 16)
    +(Integer(Chr4) shl 24);
 end;
 
 constructor TWaveStream.Create(mmIO: hmmIO; WriteFormat: PWaveFormatEx);
 begin
   inherited Create;
-  filemode:=0;
-  mm:=mmIO;
+  filemode := 0;
+  mm := mmIO;
 
   if(WriteFormat<>nil) then
   begin
     // Create the output file RIFF chunk of form type 'WAVE'.
-    pckRIFF.fccType:=mmioFOURCC('W','A','V','E');
-    pckRIFF.cksize:=0;
+    pckRIFF.fccType := mmioFOURCC('W','A','V','E');
+    pckRIFF.cksize := 0;
     if(mmioCreateChunk(mm,@pckRIFF,MMIO_CREATERIFF)<>0) then
       raise EWaveIOError.Create('Error 01: Cannot create chunk.');
 
@@ -167,8 +167,8 @@ begin
     // specify it in the MMCKINFO structure so MMIO doesn't have to seek
     // back and set the chunk size after ascending from the chunk.
     //
-    pck.ckid:=mmioFOURCC('f','m','t',' ');
-    pck.cksize:=sizeof(WriteFormat^)+WriteFormat^.cbSize;
+    pck.ckid := mmioFOURCC('f','m','t',' ');
+    pck.cksize := sizeof(WriteFormat^)+WriteFormat^.cbSize;
     if(mmioCreateChunk(mm,@pck,0)<>0) then
       raise EWaveIOError.Create('Error 02: Cannot create chunk.');
 
@@ -186,8 +186,8 @@ begin
 
     // We are now descended into the 'RIFF' chunk we just created.
     // * Now create the 'data' chunk.
-    pck.ckid:=mmioFOURCC('d','a','t','a');
-    pck.cksize:=0;
+    pck.ckid := mmioFOURCC('d','a','t','a');
+    pck.cksize := 0;
     if(mmioCreateChunk(mm,@pck,0)<>0) then
       raise EWaveIOError.Create('Error 05: Cannot create chunk.');
   end
@@ -223,7 +223,7 @@ end;
 
 function TWaveStream.GetPosition: Longint;
 begin
-  Result:=Seek(0,SEEK_CUR);
+  Result := Seek(0,SEEK_CUR);
 end;
 
 procedure TWaveStream.SetPosition(Pos: Longint);
@@ -235,22 +235,22 @@ function TWaveStream.Read(var Buffer; Count: Longint): Longint;
 var
   p: Pointer;
 begin
-  p:=@Buffer;
+  p := @Buffer;
 
-  Result:=mmioRead(mm,p,Count * FFormat^.nBlockAlign);
+  Result := mmioRead(mm,p,Count * FFormat^.nBlockAlign);
   if(Result=-1) then
     raise EWaveIOError.Create('Error 09: Cannot read from file.')
   else
-    Result:=Result div FFormat^.nBlockAlign;
+    Result := Result div FFormat^.nBlockAlign;
 end;
 
 function TWaveStream.Seek(Offset: Longint; Origin: Word): Longint;
 begin
   if(Origin=SEEK_SET) then
-    Result :=(mmioSeek(mm,Offset * FFormat^.nBlockAlign+FDataOffset,
+    Result  := (mmioSeek(mm,Offset * FFormat^.nBlockAlign+FDataOffset,
       Origin)-FDataOffset) div FFormat^.nBlockAlign
   else
-    Result :=(mmioSeek(mm,Offset * FFormat^.nBlockAlign,
+    Result  := (mmioSeek(mm,Offset * FFormat^.nBlockAlign,
       Origin)-FDataOffset) div FFormat^.nBlockAlign;
 
   if(Result<0) then
@@ -259,11 +259,11 @@ end;
 
 function TWaveStream.Write(var Buffer; Count: Longint): Longint;
 begin
-  Result:=mmioWrite(mm,@Buffer,Count * FFormat^.nBlockAlign);
+  Result := mmioWrite(mm,@Buffer,Count * FFormat^.nBlockAlign);
   if(Result=-1) then
     raise EWaveIOError.Create('Error 11: Cannot write to file.')
   else
-    Result:=Result div FFormat^.nBlockAlign;
+    Result := Result div FFormat^.nBlockAlign;
 end;
 
 procedure TWaveStream.CheckMMIOWave;
@@ -280,7 +280,7 @@ begin
     raise EWaveIOError.Create('Error 13: Not a wave file!');
 
   // Search the input file for for the 'fmt ' chunk.     */
-  pck.ckid:=mmioFOURCC('f','m','t',' ');
+  pck.ckid := mmioFOURCC('f','m','t',' ');
   if(mmioDescend(mm,@pck,@pckRIFF,MMIO_FINDCHUNK)<>0) then
     raise EWaveIOError.Create('Error 14: Cannot find ''fmt'' chunk!');
 
@@ -298,7 +298,7 @@ begin
   // bytes to allocate.
   if(FormatTmp.wFormatTag=WAVE_FORMAT_PCM) or
     (FormatTmp.wFormatTag=3) then
-    ExtraAlloc:=0
+    ExtraAlloc := 0
   else
     // Read in length of extra bytes.
     if(mmioRead(mm,@ExtraAlloc,sizeof(ExtraAlloc)) <>
@@ -307,7 +307,7 @@ begin
 
   GetMem(FFormat,sizeof(FFormat^)+ExtraAlloc);
   CopyMemory(FFormat,@FormatTmp,sizeof(FFormat^));
-  FFormat^.cbSize:=ExtraAlloc;
+  FFormat^.cbSize := ExtraAlloc;
   if(ExtraAlloc<>0) then
     if(mmioRead(mm,PChar(FFormat)+sizeof(FFormat^),ExtraAlloc) <>
       ExtraAlloc) then
@@ -325,15 +325,15 @@ begin
     raise EWaveIOError.Create('Error 21: Cannot seek to data!');
 
   //      Search the input file for the 'data' chunk.
-  pck.ckid:=mmioFOURCC('d','a','t','a');
+  pck.ckid := mmioFOURCC('d','a','t','a');
   mmioDescend(mm,@pck,@pckRIFF,MMIO_FINDCHUNK);
 
   if(mmioGetInfo(mm,@mmioInfo,0)<>0) then
     raise EWaveIOError.Create('Error 22: Cannot get info!');
 
-  FDataOffset:=pck.dwDataOffset;
-  FSize:=pck.cksize div FFormat^.nBlockAlign;
-  FlSize:=FSize;
+  FDataOffset := pck.dwDataOffset;
+  FSize := pck.cksize div FFormat^.nBlockAlign;
+  FlSize := FSize;
 end;
 
 
@@ -349,13 +349,13 @@ begin
   ZeroMemory(@info,sizeof(info));
   with info do
   begin
-    pchBuffer:=Memory;
-    fccIOProc:=FOURCC_MEM;
-    cchBuffer:=Size;
+    pchBuffer := Memory;
+    fccIOProc := FOURCC_MEM;
+    cchBuffer := Size;
   end;
 
   // Initialization...
-  mmIO:=mmioOpen(nil, @info,MMIO_READ);
+  mmIO := mmioOpen(nil, @info,MMIO_READ);
   if(mmIO=0) then
     raise EWaveIOError.Create('Error 23: Cannot open memory stream.');
 
@@ -387,13 +387,13 @@ begin
     raise EWaveIOError.Create('Error 24: Cannot open file.')
    else
    begin
-    fullsize:=filesize(f);
+    fullsize := filesize(f);
     closefile(f);
     end;
-    mmIO:=mmioOpen(Pointer(FileName), nil,MMIO_READ or MMIO_ALLOCBUF)
+    mmIO := mmioOpen(Pointer(FileName), nil,MMIO_READ or MMIO_ALLOCBUF)
   end
   else
-    mmIO:=mmioOpen(Pointer(FileName), nil,MMIO_CREATE or MMIO_READWRITE
+    mmIO := mmioOpen(Pointer(FileName), nil,MMIO_CREATE or MMIO_READWRITE
       or MMIO_ALLOCBUF);
 
   if(mmIO=0) then
@@ -417,18 +417,18 @@ constructor TPCMWaveReader.Create(Stream: TWaveStream);
 begin
   inherited Create;
 
-  FStream:=Stream;
+  FStream := Stream;
   GetMem(dstwfx,sizeof(dstwfx^));
 
-//  FBufferLength:=4096;
-  FBufferLength:=20000;
+//  FBufferLength := 4096;
+  FBufferLength := 20000;
 
   if(FStream.Format^.wFormatTag<>WAVE_FORMAT_PCM)
   and(FStream.Format^.wFormatTag<>3) then
   begin
     // prepare acm stream converter
     ZeroMemory(dstwfx,sizeof(dstwfx^));
-    dstwfx^.wFormatTag:=WAVE_FORMAT_PCM;
+    dstwfx^.wFormatTag := WAVE_FORMAT_PCM;
     if(acmFormatSuggest(0,FStream.FFormat,dstwfx,sizeof(dstwfx^),
       ACM_FORMATSUGGESTF_WFORMATTAG)<>0) then
       raise EWaveIOError.Create('Error 26: Cannot suggest pcm format.');
@@ -443,29 +443,29 @@ begin
     ZeroMemory(@ash,sizeof(ash));
     with ash do
     begin
-      cbStruct:=sizeof(ash);
-      pbSrc:=Pointer(RawBuffer);
-      cbSrcLength:=RawBufferByteSize;
-      dwSrcUser:=cbSrcLength;
-      pbDst:=Pointer(PCMBuffer);
-      cbDstLength:=PCMBufferByteSize;
-      dwDstUser:=cbDstLength;
+      cbStruct := sizeof(ash);
+      pbSrc := Pointer(RawBuffer);
+      cbSrcLength := RawBufferByteSize;
+      dwSrcUser := cbSrcLength;
+      pbDst := Pointer(PCMBuffer);
+      cbDstLength := PCMBufferByteSize;
+      dwDstUser := cbDstLength;
     end;
 
     if(acmStreamPrepareHeader(acmStream,ash,0)<>0) then
       raise EWaveIOError.Create('Error 28: Cannot prepare headers.');
   end
   else
-    dstwfx^:=FStream.Format^;
+    dstwfx^ := FStream.Format^;
 
   if(FStream.Format^.wFormatTag<>WAVE_FORMAT_PCM) and
     (FStream.Format^.wFormatTag<>3) then
-    PCMSamplesperSample :=(PCMBufferByteSize * FStream.Format^.nBlockAlign)
+    PCMSamplesperSample  := (PCMBufferByteSize * FStream.Format^.nBlockAlign)
       div(RawBufferByteSize * dstwfx^.nBlockAlign)
   else
-    PCMSamplesPerSample:=1;
-  FSize:=PCMSamplesPerSample * FStream.Size;
-  PCMBufferSampleSize:=0;
+    PCMSamplesPerSample := 1;
+  FSize := PCMSamplesPerSample * FStream.Size;
+  PCMBufferSampleSize := 0;
 end;
 
 
@@ -473,7 +473,7 @@ destructor TPCMWaveReader.Destroy;
 begin
   if(acmStream<>0) then
   begin
-    ash.cbSrcLength:=RawBufferByteSize;
+    ash.cbSrcLength := RawBufferByteSize;
     acmStreamUnprepareHeader(acmStream,ash,0);
     acmStreamClose(acmStream,0);
   end;
@@ -503,9 +503,9 @@ begin
     raise EWaveIOError.Create('Error 30: Cannot recommend an acm stream size.');
 
   // alloc source buffer(raw)
-  RawBufferSampleSize:=FBufferLength div dd;
-  if(RawBufferSampleSize=0) then RawBufferSampleSize:=1;
-  RawBufferByteSize:=RawBufferSampleSize * ss;
+  RawBufferSampleSize := FBufferLength div dd;
+  if(RawBufferSampleSize=0) then RawBufferSampleSize := 1;
+  RawBufferByteSize := RawBufferSampleSize * ss;
   GetMem(RawBuffer,RawBufferByteSize);
 
   // Alloc destination buffer(decompressed)
@@ -518,22 +518,22 @@ end;
 
 procedure TPCMWaveReader.DestroyBuffers;
 begin
-  PCMBufferSampleSize:=0;
+  PCMBufferSampleSize := 0;
 
   if(PCMBuffer<>nil) then
     FreeMem(PCMBuffer);
-  PCMBuffer:=nil;
+  PCMBuffer := nil;
 
   if(RawBuffer<>nil) then
     FreeMem(RawBuffer);
-  RawBuffer:=nil;
+  RawBuffer := nil;
 end;
 
 procedure TPCMWaveReader.SetBufferLength(Value: Longint);
 begin
   if(Value<>FBufferLength) and(Value>=1024) then
   begin
-    FBufferLength:=Value;
+    FBufferLength := Value;
     if(PCMBuffer<>nil) then
       AllocBuffers;
   end;
@@ -543,7 +543,7 @@ procedure TPCMWaveReader.SetPosition(Value: Longint);
 begin
   if(Value<>FPosition) then
     if(Value>=0) and(Value<FSize) then
-      FPosition:=Value
+      FPosition := Value
     else
       raise EWaveIOError.Create('Error 32: Position out of bounds.');
 end;
@@ -553,54 +553,54 @@ var
   pos,len: Longint;
   posi,posf: Longint;
 begin
- if Count<1 then begin Result:=0; Exit; end;
+ if Count<1 then begin Result := 0; Exit; end;
 
  if(FStream.Format^.wFormatTag=WAVE_FORMAT_PCM) or(FStream.Format^.wFormatTag=3)
   then
    begin
-    FStream.Position:=FPosition;
-    Result:=FStream.Read(Buffer,Count);
-    FPosition:=FPosition+Result;
+    FStream.Position := FPosition;
+    Result := FStream.Read(Buffer,Count);
+    FPosition := FPosition+Result;
    end
   else
    begin
-    if(Count+FPosition>=FSize) then Count:=FSize-FPosition;                                 // limit to wave size
+    if(Count+FPosition>=FSize) then Count := FSize-FPosition;                                 // limit to wave size
     if(FPosition>=PCMBufferSamplePos) and(FPosition<PCMBufferSamplePos+PCMBufferSampleSize) // use current buffer data if possible
      then
       begin
-       len:=PCMBufferSamplePos+PCMBufferSampleSize-FPosition;
-       if(len>Count) then len:=Count;
+       len := PCMBufferSamplePos+PCMBufferSampleSize-FPosition;
+       if(len>Count) then len := Count;
        CopyMemory(PChar(@Buffer), PChar(PCMBuffer)+(FPosition-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
-       pos:=len;
+       pos := len;
       end
-     else pos:=0;
+     else pos := 0;
     while(pos<Count) do // put next data
      begin
       ReadSamples((FPosition+pos) div PCMSamplesPerSample); // calc. range of current pcm buffer that can be used to fill request
-      posi:=FPosition+pos;
+      posi := FPosition+pos;
       if(FPosition+pos<PCMBufferSamplePos)
        then raise EWaveIOError.Create('Error 33: Position smaller than PCMBufferSamplePos');
       if(FPosition+Count>PCMBufferSamplePos+PCMBufferSampleSize)
-       then posf:=PCMBufferSamplePos+PCMBufferSampleSize
-       else posf:=FPosition+Count;
-      len:=posf-posi;
+       then posf := PCMBufferSamplePos+PCMBufferSampleSize
+       else posf := FPosition+Count;
+      len := posf-posi;
       // put pcm buffer data into target
       CopyMemory(PChar(@Buffer)+(posi-FPosition)*dstwfx^.nBlockAlign, PChar(PCMBuffer)+(posi-PCMBufferSamplePos)*dstwfx^.nBlockAlign, len*dstwfx^.nBlockAlign);
-      pos:=pos+len;
+      pos := pos+len;
      end;
-    FPosition:=FPosition+Count;
-    Result:=Count;
+    FPosition := FPosition+Count;
+    Result := Count;
    end;
 end;
 
 procedure TPCMWaveReader.ReadSamples(Index: Longint);
 begin
- FStream.Position:=Index;
- ash.cbSrcLength:=FStream.Read(RawBuffer^,RawBufferSampleSize)*FStream.Format^.nBlockAlign;
+ FStream.Position := Index;
+ ash.cbSrcLength := FStream.Read(RawBuffer^,RawBufferSampleSize)*FStream.Format^.nBlockAlign;
  if(acmStreamConvert(acmStream,ash,ACM_STREAMCONVERTF_BLOCKALIGN)<>0) then
   raise EWaveIOError.Create('Error 34: Unable to convert sample.');
- PCMBufferSampleSize:=ash.cbDstLengthUsed div dstwfx^.nBlockAlign;
- PCMBufferSamplePos:=Index * PCMSamplesPerSample;
+ PCMBufferSampleSize := ash.cbDstLengthUsed div dstwfx^.nBlockAlign;
+ PCMBufferSamplePos := Index * PCMSamplesPerSample;
 end;
 
 function TPCMWaveReader.BufferToFloat(makemono:boolean):pointer;
@@ -617,26 +617,26 @@ var
  y,y2,y3:byte;
  by:byte;
 begin
- cnt:=0;
+ cnt := 0;
  while(cnt<=format.nChannels*(n-1)) do
  begin
  if(format.wBitsPerSample=8) then
  begin
-  for cc:=1 to format.nChannels do
+  for cc := 1 to format.nChannels do
   begin
-  by:=p2^;
+  by := p2^;
   inc(p2);
-  s:=((2*by/(1 shl 8-1))-1);
+  s := ((2*by/(1 shl 8-1))-1);
   if(not makemono) then
   begin
-   pf^:=s;
+   pf^ := s;
    inc(pf);
   end else
   begin
-   pf^:=pf^+s;
+   pf^ := pf^+s;
    if cc=format.nChannels then
    begin
-    pf^:=pf^/format.nChannels;
+    pf^ := pf^/format.nChannels;
     inc(pf);
    end;
   end;
@@ -645,25 +645,25 @@ begin
  end else
  if(format.wBitsPerSample=16) then
  begin
-  for cc:=1 to format.nChannels do
+  for cc := 1 to format.nChannels do
   begin
-  y:=p^;
+  y := p^;
   inc(p);
-  y2:=p^;
+  y2 := p^;
   inc(p);
-  v2:=y+y2*(1 shl 8);
-  s:=v2;
-  if s>0 then s:=s/(1 shl 15-1) else s:=s/(1 shl 15);
+  v2 := y+y2*(1 shl 8);
+  s := v2;
+  if s>0 then s := s/(1 shl 15-1) else s := s/(1 shl 15);
   if(not makemono) then
   begin
-   pf^:=s;
+   pf^ := s;
    inc(pf);
   end else
   begin
-   pf^:=pf^+s;
+   pf^ := pf^+s;
    if cc=format.nChannels then
    begin
-    pf^:=pf^/format.nChannels;
+    pf^ := pf^/format.nChannels;
     inc(pf);
    end;
   end;
@@ -672,29 +672,29 @@ begin
  end else
  if(format.wBitsPerSample=20) then
  begin
-  for cc:=1 to format.nChannels do
+  for cc := 1 to format.nChannels do
   begin
-  y:=p^;
+  y := p^;
   inc(p);
-  y2:=p^;
+  y2 := p^;
   inc(p);
-  y3:=p^;
+  y3 := p^;
   inc(p);
   if not(format.nBlockAlign mod 3=0) then inc(p);
-  v:=(y+y2*(1 shl 8)+y3*(1 shl 16))shr 4;
-  if v>=1 shl 19 then v:=v-1 shl 20;
-  s:=v;
-  if s>0 then s:=s/(1 shl 19-1) else s:=s/(1 shl 19);
+  v := (y+y2*(1 shl 8)+y3*(1 shl 16))shr 4;
+  if v>=1 shl 19 then v := v-1 shl 20;
+  s := v;
+  if s>0 then s := s/(1 shl 19-1) else s := s/(1 shl 19);
   if(not makemono) then
   begin
-   pf^:=s;
+   pf^ := s;
    inc(pf);
   end else
   begin
-   pf^:=pf^+s;
+   pf^ := pf^+s;
    if cc=format.nChannels then
    begin
-    pf^:=pf^/format.nChannels;
+    pf^ := pf^/format.nChannels;
     inc(pf);
    end;
   end;
@@ -703,29 +703,29 @@ begin
  end else
  if(format.wBitsPerSample=24) then
  begin
-  for cc:=1 to format.nChannels do
+  for cc := 1 to format.nChannels do
   begin
-  y:=p^;
+  y := p^;
   inc(p);
-  y2:=p^;
+  y2 := p^;
   inc(p);
-  y3:=p^;
+  y3 := p^;
   inc(p);
   if not(format.nBlockAlign mod 3=0) then inc(p);
-  v:=y+y2*(1 shl 8)+y3*(1 shl 16);
-  if v>=(1 shl 23) then v:=v-(1 shl 24);
-  s:=v;
-  if s>0 then s:=s/(1 shl 23-1) else s:=s/(1 shl 23);
+  v := y+y2*(1 shl 8)+y3*(1 shl 16);
+  if v>=(1 shl 23) then v := v-(1 shl 24);
+  s := v;
+  if s>0 then s := s/(1 shl 23-1) else s := s/(1 shl 23);
   if(not makemono) then
   begin
-   pf^:=s;
+   pf^ := s;
    inc(pf);
   end else
   begin
-   pf^:=pf^+s;
+   pf^ := pf^+s;
    if cc=format.nChannels then
    begin
-    pf^:=pf^/format.nChannels;
+    pf^ := pf^/format.nChannels;
     inc(pf);
    end;
   end;
@@ -734,20 +734,20 @@ begin
  end else
  if(format.wBitsPerSample=32) then
  begin
-  for cc:=1 to format.nChannels do
+  for cc := 1 to format.nChannels do
   begin
-  s:=ps^;
+  s := ps^;
   inc(ps);
   if(not makemono) then
   begin
-   pf^:=s;
+   pf^ := s;
    inc(pf);
   end else
   begin
-   pf^:=pf^+s;
+   pf^ := pf^+s;
    if cc=format.nChannels then
    begin
-    pf^:=pf^/format.nChannels;
+    pf^ := pf^/format.nChannels;
     inc(pf);
    end;
   end;
@@ -758,28 +758,28 @@ begin
 end;
 
 begin
- if pfullsize>pflsize then pflsize:=pfullsize;
- l:=format.nChannels*pflsize*sizeof(single);
- if makemono then l:=l div format.nChannels;
+ if pfullsize>pflsize then pflsize := pfullsize;
+ l := format.nChannels*pflsize*sizeof(single);
+ if makemono then l := l div format.nChannels;
  getmem(FBuffer,l);
  getmem(buffer,buffer_size*sizeof(smallint)*4);
  fillchar(fbuffer^,l,0);
- p:=buffer;
- p2:=buffer;
- pf:=fbuffer;
- l:=Read(buffer^,BUFFER_SIZE);
+ p := buffer;
+ p2 := buffer;
+ pf := fbuffer;
+ l := Read(buffer^,BUFFER_SIZE);
  while(l>0) do
  begin
- p:=buffer;
- p2:=buffer;
- ps:=buffer;
+ p := buffer;
+ p2 := buffer;
+ ps := buffer;
  convert(l);
- l:=Read(buffer^,BUFFER_SIZE);
+ l := Read(buffer^,BUFFER_SIZE);
  end;
- if makemono then pflsize:=fsize
- else pflsize:=format.nChannels*fsize;
+ if makemono then pflsize := fsize
+ else pflsize := format.nChannels*fsize;
  freemem(buffer);
- result:=fbuffer;
+ result := fbuffer;
 end;
 
 { TWavWriter }
@@ -787,24 +787,24 @@ end;
 constructor TWavWriter.Create(fn: string; sr,ch,bits: Integer);
 var p:pwaveformatex;
 begin
- Format.nChannels:=ch;
- Format.nSamplesPerSec:=sr;
- if bits>32 then bits:=32;
- Format.wBitsPerSample:=bits;
+ Format.nChannels := ch;
+ Format.nSamplesPerSec := sr;
+ if bits>32 then bits := 32;
+ Format.wBitsPerSample := bits;
  case bits of
- 20,24:begin Format.nBlockAlign:=3;Format.wFormatTag:=WAVE_FORMAT_PCM end;
- 32:begin Format.nBlockAlign:=4;Format.wFormatTag:=3 end;
+ 20,24:begin Format.nBlockAlign := 3;Format.wFormatTag := WAVE_FORMAT_PCM end;
+ 32:begin Format.nBlockAlign := 4;Format.wFormatTag := 3 end;
  else begin
-  if bits<=8 then Format.nBlockAlign:=1
-  else if bits<=16 then Format.nBlockAlign:=2
-  else if bits<=24 then Format.nBlockAlign:=3
-  else if bits<32 then Format.nBlockAlign:=4;
-  Format.wFormatTag:=WAVE_FORMAT_PCM;
+  if bits<=8 then Format.nBlockAlign := 1
+  else if bits<=16 then Format.nBlockAlign := 2
+  else if bits<=24 then Format.nBlockAlign := 3
+  else if bits<32 then Format.nBlockAlign := 4;
+  Format.wFormatTag := WAVE_FORMAT_PCM;
  end;
  end;
- Format.nAvgBytesPerSec:=sr*ch*Format.nBlockAlign;
- p:=@format;
- stream:=TFileWaveStream.Create(fn,p);
+ Format.nAvgBytesPerSec := sr*ch*Format.nBlockAlign;
+ p := @format;
+ stream := TFileWaveStream.Create(fn,p);
 end;
 
 destructor TWavWriter.Destroy;
@@ -820,36 +820,36 @@ var
   l,li:longint;
   x:single;
 begin
- ps:=p;
- for l:=0 to size-1 do
+ ps := p;
+ for l := 0 to size-1 do
  begin
   if Format.wBitsPerSample=32 then
-  begin x:=ps^;li:=longint((@x)^); end
-  else li:=round(ps^*(1 shl(Format.wBitsPerSample-1)));
+  begin x := ps^;li := longint((@x)^); end
+  else li := round(ps^*(1 shl(Format.wBitsPerSample-1)));
   stream.write(li,1);
   inc(ps);
  end;
 end;
 
 
-procedure TWavWriter.WriteFloatDataSeparateStereo(p1,p2: pointer;
+procedure TWavWriter.WriteFloatDataSeparateStereo(p1, p2: Pointer;
   size: Integer);
 var
   ps,ps2:psingle;
   l,li:longint;
   x:single;
 begin
- ps:=p1;ps2:=p2;
- for l:=0 to size-1 do
+ ps := p1;ps2 := p2;
+ for l := 0 to size-1 do
  begin
   if Format.wBitsPerSample=32 then
-  begin x:=ps^;li:=longint((@x)^); end
-  else li:=round(ps^*(1 shl(Format.wBitsPerSample-1)));
+  begin x := ps^;li := longint((@x)^); end
+  else li := round(ps^*(1 shl(Format.wBitsPerSample-1)));
   stream.write(li,1);
   inc(ps);
   if Format.wBitsPerSample=32 then
-  begin x:=ps2^;li:=longint((@x)^); end
-  else li:=round(ps2^*(1 shl(Format.wBitsPerSample-1)));
+  begin x := ps2^;li := longint((@x)^); end
+  else li := round(ps2^*(1 shl(Format.wBitsPerSample-1)));
   stream.write(li,1);
   inc(ps2);
  end;
@@ -857,28 +857,30 @@ end;
 
 { High-Level functions }
 
-function LoadWAVFile(fn:string;var sr,ch,size:longint):pointer;
-var wave:TfilewaveStream;
-    pcmw: TPCMWaveReader;
+function LoadWAVFile(fn: string; var sr, ch, size: Longint): Pointer;
+var 
+  wave: TFileWaveStream;
+  pcmw: TPCMWaveReader;
 begin
- wave:=TfilewaveStream.Create(fn,nil);
- pcmw:=TPCMWaveReader.Create(wave);
- sr:=wave.format.nSamplesPerSec;
- ch:=wave.format.nChannels;
- pcmw.pfullsize:=wave.FullSize;
- result:=pcmw.buffertofloat(false);
- size:=pcmw.pFlSize;
+ wave := TFileWaveStream.Create(fn,nil);
+ pcmw := TPCMWaveReader.Create(wave);
+ sr   := wave.format.nSamplesPerSec;
+ ch   := wave.format.nChannels;
+ pcmw.pfullsize := wave.FullSize;
+ result := pcmw.BufferToFloat(False);
+ size := pcmw.pFlSize;
  wave.Free;
  pcmw.Free;
 end;
 
-procedure GetWAVFileInfo(fn:string;var sr,ch,size:longint);
-var wave:TfilewaveStream;
+procedure GetWAVFileInfo(fn: string; var sr, ch, size: Longint);
+var 
+  wave: TFileWaveStream;
 begin
- wave:=TfilewaveStream.Create(fn,nil);
- sr:=wave.format.nSamplesPerSec;
- ch:=wave.format.nChannels;
- size:=wave.Size;
+ wave := TFileWaveStream.Create(fn,nil);
+ sr   := wave.format.nSamplesPerSec;
+ ch   := wave.format.nChannels;
+ size := wave.Size;
  wave.Free;
 end;
 
@@ -891,31 +893,31 @@ var
   p:pwaveformatex;
   x:single;
 begin
- t.nChannels:=ch;
- t.nSamplesPerSec:=sr;
- if bits>32 then bits:=32;
- t.wBitsPerSample:=bits;
+ t.nChannels := ch;
+ t.nSamplesPerSec := sr;
+ if bits>32 then bits := 32;
+ t.wBitsPerSample := bits;
  case bits of
- 20,24:begin t.nBlockAlign:=3;t.wFormatTag:=WAVE_FORMAT_PCM end;
- 32:begin t.nBlockAlign:=4;t.wFormatTag:=3 end;
+ 20,24:begin t.nBlockAlign := 3;t.wFormatTag := WAVE_FORMAT_PCM end;
+ 32:begin t.nBlockAlign := 4;t.wFormatTag := 3 end;
  else begin
-  if bits<=8 then t.nBlockAlign:=1
-  else if bits<=16 then t.nBlockAlign:=2
-  else if bits<=24 then t.nBlockAlign:=3
-  else if bits<32 then t.nBlockAlign:=4;
-  t.wFormatTag:=WAVE_FORMAT_PCM;
+  if bits<=8 then t.nBlockAlign := 1
+  else if bits<=16 then t.nBlockAlign := 2
+  else if bits<=24 then t.nBlockAlign := 3
+  else if bits<32 then t.nBlockAlign := 4;
+  t.wFormatTag := WAVE_FORMAT_PCM;
  end;
  end;
- t.nAvgBytesPerSec:=sr*ch*t.nBlockAlign;
- p:=@t;
+ t.nAvgBytesPerSec := sr*ch*t.nBlockAlign;
+ p := @t;
 
- w:=TFileWaveStream.Create(fn,p);
- ps:=fdata;
- for l:=0 to size-1 do
+ w := TFileWaveStream.Create(fn,p);
+ ps := fdata;
+ for l := 0 to size-1 do
  begin
   if t.wBitsPerSample=32 then
-  begin x:=ps^;li:=longint((@x)^); end
-  else li:=round(ps^*(1 shl(bits-1)));
+  begin x := ps^;li := longint((@x)^); end
+  else li := round(ps^*(1 shl(bits-1)));
   w.write(li,1);
   inc(ps);
  end;
@@ -931,54 +933,55 @@ var
   p:pwaveformatex;
   x:single;
 begin
- t.nChannels:=ch;
- t.nSamplesPerSec:=sr;
- if bits>32 then bits:=32;
- t.wBitsPerSample:=bits;
+ t.nChannels := ch;
+ t.nSamplesPerSec := sr;
+ if bits>32 then bits := 32;
+ t.wBitsPerSample := bits;
  case bits of
- 20,24:begin t.nBlockAlign:=3;t.wFormatTag:=WAVE_FORMAT_PCM end;
- 32:begin t.nBlockAlign:=4;t.wFormatTag:=3 end;
+ 20,24:begin t.nBlockAlign := 3;t.wFormatTag := WAVE_FORMAT_PCM end;
+ 32:begin t.nBlockAlign := 4;t.wFormatTag := 3 end;
  else begin
-  if bits<=8 then t.nBlockAlign:=1
-  else if bits<=16 then t.nBlockAlign:=2
-  else if bits<=24 then t.nBlockAlign:=3
-  else if bits<32 then t.nBlockAlign:=4;
-  t.wFormatTag:=WAVE_FORMAT_PCM;
+  if bits<=8 then t.nBlockAlign := 1
+  else if bits<=16 then t.nBlockAlign := 2
+  else if bits<=24 then t.nBlockAlign := 3
+  else if bits<32 then t.nBlockAlign := 4;
+  t.wFormatTag := WAVE_FORMAT_PCM;
  end;
  end;
- t.nAvgBytesPerSec:=sr*ch*t.nBlockAlign;
- p:=@t;
+ t.nAvgBytesPerSec := sr*ch*t.nBlockAlign;
+ p := @t;
 
- w:=TFileWaveStream.Create(fn,p);
- ps:=fdata1;
- ps2:=fdata2;
- for l:=0 to size-1 do
+ w := TFileWaveStream.Create(fn,p);
+ ps := fdata1;
+ ps2 := fdata2;
+ for l := 0 to size-1 do
  begin
   if t.wBitsPerSample=32 then
-  begin x:=ps^;li:=longint((@x)^); end
-  else li:=round(ps^*(1 shl(bits-1)));
+  begin x := ps^;li := longint((@x)^); end
+  else li := round(ps^*(1 shl(bits-1)));
   w.write(li,1);
   inc(ps);
   if t.wBitsPerSample=32 then
-  begin x:=ps2^;li:=longint((@x)^); end
-  else li:=round(ps2^*(1 shl(bits-1)));
+  begin x := ps2^;li := longint((@x)^); end
+  else li := round(ps2^*(1 shl(bits-1)));
   w.write(li,1);
   inc(ps2);
  end;
  w.Free;
 end;
 
-function LoadWAVFileMono(fn:string;var sr,ch,size:longint):pointer;
-var wave:TfilewaveStream;
-    pcmw: TPCMWaveReader;
+function LoadWAVFileMono(fn: string; var sr, ch, size: Longint): Pointer;
+var 
+  wave: TFileWaveStream;
+  pcmw: TPCMWaveReader;
 begin
- wave:=TfilewaveStream.Create(fn,nil);
- pcmw:=TPCMWaveReader.Create(wave);
- sr:=wave.format.nSamplesPerSec;
- pcmw.pfullsize:=wave.FullSize;
- ch:=1;
- result:=pcmw.buffertofloat(true);
- size:=pcmw.pFlSize;
+ wave := TfilewaveStream.Create(fn,nil);
+ pcmw := TPCMWaveReader.Create(wave);
+ sr := wave.format.nSamplesPerSec;
+ pcmw.pfullsize := wave.FullSize;
+ ch := 1;
+ result := pcmw.buffertofloat(true);
+ size := pcmw.pFlSize;
  wave.Free;
  pcmw.Free;
 end;
