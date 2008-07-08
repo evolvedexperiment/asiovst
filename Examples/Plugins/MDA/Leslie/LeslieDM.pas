@@ -3,19 +3,23 @@ unit LeslieDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TLeslieDataModule = class(TVSTModule)
-    procedure ParamSpeedDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray;
-      const SampleFrames: Integer);
-    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer;
-      var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamSpeedDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterLowThrobChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterHighThrobChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterHighDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterHighWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterXOverChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterLowWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     fGain : Single;
     fFilo : Single;
@@ -36,6 +40,7 @@ type
     fHBuf : PAVDSingleFixedArray;
     fBuf  : Array [0..1] of Single;
     fHBufferSize : Integer;
+    procedure GainChanged;
   public
   end;
 
@@ -45,6 +50,55 @@ implementation
 
 uses
   Math;
+
+procedure TLeslieDataModule.ParameterHighWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fHWid := sqr(Parameter[3]);
+end;
+
+procedure TLeslieDataModule.ParameterXOverChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fGain := 0.4 * Power(10, 2 * Parameter[6] - 1);
+ GainChanged;
+end;
+
+procedure TLeslieDataModule.ParameterLowWidthChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fLWid := sqr(Parameter[6]);
+end;
+
+procedure TLeslieDataModule.GainChanged;
+begin
+ fLLev := fGain * 0.9 * sqr(Parameter[7]);
+end;
+
+procedure TLeslieDataModule.ParameterSpeedChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ GainChanged;
+end;
+
+procedure TLeslieDataModule.ParameterOutputChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ GainChanged;
+end;
+
+procedure TLeslieDataModule.ParameterHighDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fHDep := sqr(Parameter[4]) * SampleRate / 760;
+end;
+
+procedure TLeslieDataModule.ParameterHighThrobChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fHLev := fGain * 0.9 * sqr(Parameter[5]);
+end;
+
+procedure TLeslieDataModule.ParameterLowThrobChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fFilo := 1 - Power(10, Value * (0.0227 - 0.000054 * Value) - 1.92);
+end;
 
 procedure TLeslieDataModule.ParamSpeedDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -75,17 +129,15 @@ end;
 procedure TLeslieDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  ifs, spd : Single;
+  spd : Single;
 begin
  //calcs here!
- fFilo := 1 - Power(10, 0.01 * Parameter[2] * (2.27 - 0.54 * 0.01 * Parameter[2]) - 1.92);
-
  if (Parameter[0] < 0.5) then
   begin
    if (Parameter[0] < 0.1) then //stop
     begin
-     fLSet := 0.00; fHSet := 0.00;
-     fLMom := 0.12; fHMom := 0.10;
+     fLSet := 0.00; fHSet := 0.0;
+     fLMom := 0.12; fHMom := 0.1;
     end
    else //low speed
     begin
@@ -99,20 +151,12 @@ begin
     fLMom := 0.14; fHMom := 0.09;
   end;
 
- ifs   := 1 / SampleRate;
- spd   := 4 * Pi * ifs * Parameter[7];
+ spd   := 4 * Pi * Parameter[8] / SampleRate;
 
- fHMom := Power(10, -ifs / fHMom);
- fLMom := Power(10, -ifs / fLMom);
+ fHMom := Power(10, -1 / (SampleRate * fHMom));
+ fLMom := Power(10, -1 / (SampleRate * fLMom));
  fHSet := fHSet * spd;
  fLSet := fLSet * spd;
-
- fGain := 0.4 * Power(10, 2 * Parameter[1] - 1);
- fLWid := sqr(Parameter[6]);
- fLLev := fGain * 0.9 * sqr(Parameter[8]);
- fHWid := sqr(Parameter[3]);
- fHDep := sqr(Parameter[4]) * SampleRate / 760;
- fHLev := fGain * 0.9 * sqr(Parameter[5]);
 end;
 
 procedure TLeslieDataModule.VSTModuleProcess(const Inputs,

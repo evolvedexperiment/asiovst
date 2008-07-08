@@ -1,5 +1,6 @@
 object LoudnessDataModule: TLoudnessDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '0.0'
   EffectName = 'mda Loudness'
@@ -52,8 +53,12 @@ object LoudnessDataModule: TLoudnessDataModule
       LargeStepInteger = 1
       ShortLabel = 'Link'
       VSTModule = Owner
-      OnCustomParameterDisplay = LoudnessDataModuleParameterProperties2CustomParameterDisplay
+      OnCustomParameterDisplay = ParameterLinkDisplay
     end>
+  OnResume = VSTModuleResume
+  OnSuspend = VSTModuleSuspend
+  OnProcess = VSTModuleProcess
+  OnProcessReplacing = VSTModuleProcess
   Left = 188
   Top = 77
   Height = 150

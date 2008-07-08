@@ -10,8 +10,23 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleCreate(Sender: TObject);
   private
+    fFilt  : Array [0..3] of Single;
+    fFilti : Single;
+    fFilto : Single;
+
+    fPhi   : Single;
+    fEnv   : Single;
+    fDvd   : Single;
+    fPhs   : Single;
+    fOsc   : Single;
+    fTyp   : Single;
+    fWet   : Single;
+    fDry   : Single;
+    fThr   : Single;
+    fRls   : Single;
+    fDPhi  : Single;
   public
   end;
 
@@ -22,149 +37,122 @@ implementation
 uses
   Math;
 
-procedure TSubSynthDataModule.VSTModuleOpen(Sender: TObject);
+procedure TSubSynthDataModule.VSTModuleCreate(Sender: TObject);
 begin
- (*
  //inits here!
- fParam1 := 0.0; //type
- fParam2 := 0.3; //level
- fParam3 := 0.6; //tune
- fParam4 := 1.0; //dry mix
- fParam5 := 0.6; //thresh
- fParam6 := 0.65; //release
+ Parameter[0] := 0.0; //type
+ Parameter[1] := 0.3; //level
+ Parameter[2] := 0.6; //tune
+ Parameter[3] := 1.0; //fDry mix
+ Parameter[4] := 0.6; //thresh
+ Parameter[5] := 0.65; //release
 
- resume();
- *)
+ VSTModuleResume(Sender);
 end;
 
 procedure TSubSynthDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- (*
-  dvd = 1.0;
-  phs = 1.0;
-  osc = 0.0; //oscillator phase
-  typ = int(3.5 * fParam1);
-  filti = (typ == 3)? 0.018f : (float)pow(10.0,-3.0 + (2.0 * fParam3));
-  filto = 1.0f - filti;
-  wet = fParam2;
-  dry = fParam4;
-  thr = Power(10, -3.0 + (3.0 * fParam5));
-  rls = (float)(1.0 - Power(10.0, -2.0 - (3.0 * fParam6)));
-  dphi = (float)(0.456159 * Power(10.0,-2.5 + (1.5 * fParam3)));
- *)
+  fDvd   := 1;
+  fPhs   := 1;
+  fOsc   := 0; //oscillator phase
+  fTyp   := round(3.5 * Parameter[0]);
+  if fTyp = 3
+   then fFilti := 0.018
+   else Power(10, -3 + (2 * Parameter[2]));
+  fFilto := 1 - fFilti;
+  fWet   := Parameter[1];
+  fDry   := Parameter[3];
+  fThr   := Power(10, -3 + (3 * Parameter[4]));
+  fRls   := 1 - Power(10, -2 - (3 * Parameter[5]));
+  fDPhi  := 0.456159 * Power(10, -2.5 + (1.5 * Parameter[2]));
 end;
 
 procedure TSubSynthDataModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  a, b, c, d   : Single;
-  we, dr, fi   : Single;
-  fo, f1, f2   : Single;
+  fi, fo       : Single;
+  f1, f2       : Single;
   f3, f4, sub  : Single;
   rl, th, dv   : Single;
   ph, phii     : Single;
   dph, os, en  : Single;
+
+  Sample       : Integer;
 begin
-(*
- float *in1 = inputs[0];
- float *in2 = inputs[1];
- float *out1 = outputs[0];
- float *out2 = outputs[1];
+ dph  := fDPhi;
+ rl   := fRls;
+ phii := fPhi;
+ en   := fEnv;
+ os   := fOsc;
+ th   := fThr;
+ dv   := fDvd;
+ ph   := fPhs;
+ f1   := fFilt[0];
+ f2   := fFilt[1];
+ f3   := fFilt[2];
+ f4   := fFilt[3];
 
-  dph  := dphi;
-  rl   := rls;
-  phii := phi;
-  en   := env;
-  os   := osc;
-  th   := thr;
-  dv   := dvd;
-  ph   := phs;
-  we   := wet;
-  dr   := dry;
-  f1   := filt1;
-  f2   := filt2;
-  f3   := filt3;
-  f4   := filt4;
+ fi   := fFilti;
+ fo   := fFilto;
 
-  fi = filti;
-  fo = filto;
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   f1 := (fo * f1) + (fi * (Inputs[0, Sample] + Inputs[1, Sample]));
+   f2 := (fo * f2) + (fi * f1);
 
-  --in1;
- --in2;
- --out1;
- --out2;
- while(--sampleFrames >= 0)
- {
-  a = *++in1;  
-  b = *++in2; //process from here...
-  
-    f1 = (fo * f1) + (fi * (a + b));
-    f2 = (fo * f2) + (fi * f1);
+   sub := f2;
+   if (sub > th) then sub := 1 else
+    if(sub < -th) then sub := -1 else sub := 0;
 
-    sub = f2;
-    if (sub > th)
-    {
-      sub = 1.0;        
-    }
-    else
-    {
-      if(sub < -th)
-      {
-        sub = -1.0;
-      }
-      else
-      {
-        sub = 0.0;
-      }
-    }
-    
-    if((sub * dv) < 0) //octave divider
-    {
-      dv = -dv; if(dv < 0.) ph = -ph;
-    }
+   if (sub * dv) < 0 then //octave divider
+    begin
+     dv := -dv;
+     if (dv < 0) then ph := -ph;
+    end;
 
-    if(typ == 1) //divide
-    {
-      sub = ph * sub;
-    }
-    if(typ == 2) //invert
-    {
-      sub = (float)(ph * f2 * 2.0);
-    }
-    if(typ == 3) //osc
-    {
-      if (f2 > th) {en = 1.0; } 
-      else {en = en * rl;}
-      sub = (float)(en * sin(phii));
-      phii = (float)fmod( phii + dph, 6.283185f );
-    }
-    
-    f3 = (fo * f3) + (fi * sub);
-    f4 = (fo * f4) + (fi * f3);
+   if (fTyp = 1) //divide
+    then sub := ph * sub;
+   if(fTyp = 2) //invert
+    then sub := (ph * f2 * 2);
+   if(fTyp = 3) then //fOsc
+    begin
+     if (f2 > th)
+      then en := 1
+      else en := en * rl;
+     sub := (en * sin(phii));
+//     phii := fmod( phii + dph, 6.283185f );
+    end;
 
-  c = (a * dr) + (f4 * we); // output
-  d = (b * dr) + (f4 * we);
+   f3 := (fo * f3) + (fi * sub);
+   f4 := (fo * f4) + (fi * f3);
 
-    *++out1 = c;
-  *++out2 = d;
- }
-  if (abs(f1) <1E-10) then filt1 := 0 else filt1 := f1;
-  if (abs(f2) <1E-10) then filt2 := 0 else filt2 := f2;
-  if (abs(f3) <1E-10) then filt3 := 0 else filt3 := f3;
-  if (abs(f4) <1E-10) then filt4 := 0 else filt4 := f4;
+  Outputs[0, Sample] :=  (Inputs[0, Sample] * fDry) + (f4 * fWet); // output
+  Outputs[1, Sample] :=  (Inputs[1, Sample] * fDry) + (f4 * fWet);
+  end;
 
-  dvd := dv;
-  phs := ph;
-  osc := os;
-  phi := phii;
-  env := en;
-*)
+ if (abs(f1) < 1E-10) then fFilt[0] := 0 else fFilt[0] := f1;
+ if (abs(f2) < 1E-10) then fFilt[1] := 0 else fFilt[1] := f2;
+ if (abs(f3) < 1E-10) then fFilt[2] := 0 else fFilt[2] := f3;
+ if (abs(f4) < 1E-10) then fFilt[3] := 0 else fFilt[3] := f4;
+
+ fDvd := dv;
+ fPhs := ph;
+ fOsc := os;
+ fPhi := phii;
+ fEnv := en;
 end;
 
 procedure TSubSynthDataModule.VSTModuleResume(Sender: TObject);
 begin
-//  phi = env = filt1 = filt2 = filt3 = filt4 = filti = filto = 0.0f;
+ fPhi     := 0;
+ fEnv     := 0;
+ fFilt[0] := 0;
+ fFilt[1] := 0;
+ fFilt[2] := 0;
+ fFilt[3] := 0;
+ fFilti   := 0;
+ fFilto   := 0;
 end;
 
 end.

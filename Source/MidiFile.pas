@@ -93,17 +93,17 @@
 
 unit MidiFile;
 
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ELSE}
+{$I ASIOVST.INC}
+
+{$IFNDEF FPC}
   {$R MidiFile.res}
 {$ENDIF}
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  stdctrls, ExtCtrls;
+  {$IFDEF FPC}LCLIntf, LMessages, {$ELSE}Windows, Messages, {$ENDIF}
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Stdctrls, ExtCtrls;
 
 type
   TChunkType = (illegal, header, track);

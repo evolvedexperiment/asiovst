@@ -1,4 +1,4 @@
-object mdaLimiterDataModule: TmdaLimiterDataModule
+object LimiterDataModule: TLimiterDataModule
   OldCreateOrder = False
   Flags = [effFlagsCanMono]
   Version = '0.0'

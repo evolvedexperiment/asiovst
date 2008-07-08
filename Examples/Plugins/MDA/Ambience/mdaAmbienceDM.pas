@@ -14,13 +14,12 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParamSizeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHFDampChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs,
-      Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
   private
     fBuffers      : Array [0..3] of PAVDSingleFixedArray;
     fPos          : Integer;

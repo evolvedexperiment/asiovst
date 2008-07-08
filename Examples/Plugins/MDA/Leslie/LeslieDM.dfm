@@ -8,7 +8,6 @@ object LeslieDataModule: TLeslieDataModule
   ProductName = 'Leslie'
   VendorName = 'mda'
   PlugCategory = vpcEffect
-  CanDos = []
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Leslie Simulator'
@@ -40,6 +39,7 @@ object LeslieDataModule: TLeslieDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'LoWidth'
       VSTModule = Owner
+      OnParameterChange = ParameterLowWidthChange
     end
     item
       Max = 100.000000000000000000
@@ -50,6 +50,7 @@ object LeslieDataModule: TLeslieDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'LoThrob'
       VSTModule = Owner
+      OnParameterChange = ParameterLowThrobChange
     end
     item
       Max = 100.000000000000000000
@@ -60,6 +61,7 @@ object LeslieDataModule: TLeslieDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'HiWidth'
       VSTModule = Owner
+      OnParameterChange = ParameterHighWidthChange
     end
     item
       Max = 100.000000000000000000
@@ -70,6 +72,7 @@ object LeslieDataModule: TLeslieDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'HiDepth'
       VSTModule = Owner
+      OnParameterChange = ParameterHighDepthChange
     end
     item
       Max = 100.000000000000000000
@@ -80,6 +83,7 @@ object LeslieDataModule: TLeslieDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'HiThrob'
       VSTModule = Owner
+      OnParameterChange = ParameterHighThrobChange
     end
     item
       Max = 1.000000000000000000
@@ -90,6 +94,7 @@ object LeslieDataModule: TLeslieDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'X-Over'
       VSTModule = Owner
+      OnParameterChange = ParameterXOverChange
     end
     item
       Min = -20.000000000000000000
@@ -103,6 +108,7 @@ object LeslieDataModule: TLeslieDataModule
       MaxInteger = 20
       ShortLabel = 'Output'
       VSTModule = Owner
+      OnParameterChange = ParameterOutputChange
     end
     item
       Max = 200.000000000000000000
@@ -114,6 +120,7 @@ object LeslieDataModule: TLeslieDataModule
       MaxInteger = 200
       ShortLabel = 'Speed'
       VSTModule = Owner
+      OnParameterChange = ParameterSpeedChange
     end>
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess

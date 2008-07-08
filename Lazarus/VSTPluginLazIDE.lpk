@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="2">
+  <Package Version="3">
     <PathDelim Value="\"/>
     <Name Value="VSTPluginLazIDE"/>
     <CompilerOptions>
@@ -13,6 +13,9 @@
       </SearchPaths>
       <Parsing>
         <Style Value="1"/>
+        <SyntaxOptions>
+          <DelphiCompat Value="True"/>
+        </SyntaxOptions>
       </Parsing>
       <CodeGeneration>
         <Generate Value="Faster"/>

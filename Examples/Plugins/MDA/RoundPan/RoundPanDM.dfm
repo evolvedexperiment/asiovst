@@ -1,5 +1,7 @@
 object RoundPanDataModule: TRoundPanDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda RoundPan'
@@ -27,6 +29,7 @@ object RoundPanDataModule: TRoundPanDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'Pan'
       VSTModule = Owner
+      OnParameterChange = ParameterRateChange
     end
     item
       Max = 1.000000000000000000
@@ -37,7 +40,9 @@ object RoundPanDataModule: TRoundPanDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'Auto'
       VSTModule = Owner
+      OnParameterChange = ParameterAutoChange
     end>
+  OnSuspend = VSTModuleSuspend
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   Left = 188

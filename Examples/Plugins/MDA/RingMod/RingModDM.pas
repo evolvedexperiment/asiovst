@@ -2,19 +2,18 @@ unit RingModDM;
 
 interface
 
-uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
-  DAVDCommon, DVSTModule;
+uses
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 
 type
   TRingModDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer;
-      var Value: Single);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     fPhi      : Single;
-    fdPhi     : Single;
+    fDeltaPhi : Single;
     fFeedBack : Single;
     fPrev     : Single;
   public
@@ -27,7 +26,7 @@ implementation
 procedure TRingModDataModule.VSTModuleCreate(Sender: TObject);
 begin
  fPhi      := 0.0;
- fdPhi     := (2 * Pi * 1000) / SampleRate;
+ fDeltaPhi := (2 * Pi * 1000) / SampleRate;
  fFeedBack := 0;
  fPrev     := 0;
 
@@ -39,8 +38,7 @@ end;
 procedure TRingModDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- fdPhi := (2 * Pi * 100.0 * (Parameter[1] + (160.0 * Parameter[0])) / SampleRate);
- fFeedBack := 0.95 * 0.01 * Parameter[2];
+ fDeltaPhi := (2 * Pi * 100.0 * (Parameter[1] + (160.0 * Parameter[0])) / SampleRate);
 end;
 
 procedure TRingModDataModule.VSTModuleProcess(const Inputs,
@@ -49,13 +47,13 @@ var
   Sample : Integer;
   g, fb  : Single;
   p, dp  : Single;
-  fp     : Array [0..1] of Single;
+  fp     : array [0..1] of Single;
 const
   cTwoPi  : Double = 2 * Pi;
   cTwoPiX : Double = 1 / (2 * Pi);
 begin
  p     := fPhi;
- dp    := fdPhi;
+ dp    := fDeltaPhi;
  fb    := fFeedBack;
  fp[0] := fPrev;
  fp[1] := fPrev;
@@ -75,6 +73,11 @@ begin
 
  fPhi  := p;
  fPrev := fp[0];
+end;
+
+procedure TRingModDataModule.ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fFeedBack := 0.95 * 0.01 * Value;
 end;
 
 end.

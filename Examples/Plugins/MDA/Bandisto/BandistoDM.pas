@@ -20,7 +20,14 @@ implementation
 
 procedure TBandistoDataModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample: Integer;
 begin
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   Outputs[0, Sample] := Inputs[0, Sample];
+   Outputs[1, Sample] := Inputs[1, Sample];
+  end;
 (*
   float *in1 = inputs[0];
   float *in2 = inputs[1];

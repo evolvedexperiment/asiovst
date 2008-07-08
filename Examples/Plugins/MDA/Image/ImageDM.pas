@@ -3,15 +3,13 @@ unit ImageDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TImageDataModule = class(TVSTModule)
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure ParamModeDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fLL, fLR,
     fRL, fRR  : Single;

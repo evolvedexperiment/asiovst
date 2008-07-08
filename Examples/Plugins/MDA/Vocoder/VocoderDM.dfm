@@ -1,5 +1,6 @@
 object VocoderDataModule: TVocoderDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Vocoder'
@@ -31,6 +32,7 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       Curve = ctLinear
       DisplayName = 'Output'
+      Units = 'dB'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'Output'
@@ -40,6 +42,7 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       Curve = ctLinear
       DisplayName = 'Hi Thru'
+      Units = '%'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'Hi Thru'
@@ -49,6 +52,7 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       Curve = ctLinear
       DisplayName = 'Hi Band'
+      Units = '%'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'Hi Band'
@@ -58,6 +62,7 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       Curve = ctLinear
       DisplayName = 'Envelope'
+      Units = 'ms'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'Envelop'
@@ -67,6 +72,7 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       Curve = ctLinear
       DisplayName = 'Filter Q'
+      Units = '%'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'Filter '
@@ -76,6 +82,7 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       Curve = ctLinear
       DisplayName = 'Mid Freq'
+      Units = 'Hz'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'Mid Fre'
@@ -90,6 +97,10 @@ object VocoderDataModule: TVocoderDataModule
       ShortLabel = 'Quality'
       VSTModule = Owner
     end>
+  OnResume = VSTModuleResume
+  OnSuspend = VSTModuleSuspend
+  OnProcess = VSTModuleProcess
+  OnProcessReplacing = VSTModuleProcess
   Left = 188
   Top = 77
   Height = 150

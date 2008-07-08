@@ -8,9 +8,17 @@ uses
 
 type
   TRoundPanDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray;
-      const SampleFrames: Integer);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSuspend(Sender: TObject);
+    procedure ParameterAutoChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
+    fBuffer  : Array [0..1] of PAVDSingleFixedArray;
+    fSize    : Integer;
+    fPhi     : Single;
+    fDPhi    : Single;
   public
   end;
 
@@ -18,39 +26,78 @@ implementation
 
 {$R *.DFM}
 
-procedure TRoundPanDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TRoundPanDataModule.ParameterAutoChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+  if (Parameter[1] > 0.55)
+   then fDPhi := 20 * (Parameter[1] - 0.55) / SampleRate else
+  if (Parameter[1] < 0.45)
+   then fDPhi := -20 * (0.45 - Parameter[1]) / SampleRate
+   else fDPhi := 0;
+end;
+
+procedure TRoundPanDataModule.ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fPhi := (6.2831853 * (Parameter[0] - 0.5));
+end;
+
+procedure TRoundPanDataModule.VSTModuleCreate(Sender: TObject);
 begin
 (*
-  float *in1 = inputs[0];
-  float *in2 = inputs[1];
-  float *out1 = outputs[0];
-  float *out2 = outputs[1];
-  float a, c, d, x=0.5, y=(float)0.7854;  
-  float ph, dph, fourpi=(float)12.566371;
-  
-  ph = phi;
-  dph = dphi;
-  
-  --in1;  
-  --in2;  
-  --out1;
-  --out2;
-  while(--sampleFrames >= 0)
-  {
-    a = x * (*++in1 + *++in2); //process from here...
-        
-    c = (float)(a * -sin((x * ph) - y)); // output
-    d = (float)(a * sin((x * ph) + y));
-        
-    ph = ph + dph;
-
-    *++out1 = c;
-    *++out2 = d;
-  }
-  if(ph<0.0) ph = ph + fourpi; else if(ph>fourpi) ph = ph - fourpi;
-  phi = ph;
+  //inits here!
+  Parameter[0] = 0.5; //pan
+  Parameter[1] = 0.8; //auto
 *)
+
+{
+  fSize   := 1500;
+  fBufpos := 0;
+  GetMem(fBuffer[0], fSize * SizeOf(Single));
+  GetMem(fBuffer[1], fSize * SizeOf(Single));
+}
+
+ VSTModuleSuspend(Sender);
+
+ //calcs here!
+ fPhi  := 0;
+ fDPhi := (5 / SampleRate);
+end;
+
+procedure TRoundPanDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ // if assigned(fBuffer[0]) then Dispose(fBuffer[0]);
+ // if assigned(fBuffer[1]) then Dispose(fBuffer[1]);
+end;
+
+procedure TRoundPanDataModule.VSTModuleProcess(const Inputs,
+  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample     : Integer;
+  a, ph, dph : Double;
+const
+  cHalf : Single = 0.5;
+  cRoot : Single = 0.7854;
+begin
+ ph  := fPhi;
+ dph := fDPhi;
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   a := cHalf * (Inputs[0, Sample] + Inputs[1, Sample]); //process from here...
+
+   Outputs[0, Sample] := (a * -sin((cHalf * ph) - cRoot)); // output
+   Outputs[1, Sample] := (a *  sin((cHalf * ph) + cRoot));
+
+   ph := ph + dph;
+  end;
+ if (ph < 0.0)
+  then ph := ph + 4 * Pi else
+ if (ph > 4 * Pi) then ph := ph - 4 * Pi;
+ fPhi := ph;
+end;
+
+procedure TRoundPanDataModule.VSTModuleSuspend(Sender: TObject);
+begin
+ // FillChar(fBuffer[0], fSize * SizeOf(Single), 0);
+ // FillChar(fBuffer[1], fSize * SizeOf(Single), 0);
 end;
 
 end.
@@ -59,89 +106,12 @@ end.
 
 C Source:
 
-mdaRoundPan::mdaRoundPan(audioMasterCallback audioMaster)  : AudioEffectX(audioMaster, 1, 2)  // programs, parameters
-{
-  //inits here!
-  fParam1 = (float)0.5; //pan
-  fParam2 = (float)0.8; //auto
-
-  //size = 1500;
-  //bufpos = 0;
-  //buffer = new float[size];
-  //buffer2 = new float[size];
-
-  suspend();    // flush buffer
-
-  //calcs here!
-  phi = 0.0;
-  dphi = (float)(5.0 / getSampleRate());
-}
-
-void mdaRoundPan::setParameter(VstInt32 index, float value)
-{
-  switch(index)
-  {
-    case 0: fParam1 = value; phi = (float)(6.2831853 * (fParam1 - 0.5)); break;
-    case 1: fParam2 = value; break;
-  }
-  //calcs here
-  if (fParam2>0.55)
-  {
-    dphi = (float)(20.0 * (fParam2 - 0.55) / getSampleRate());
-  }
-  else
-  {
-    if (fParam2<0.45)
-    {
-      dphi = (float)(-20.0 * (0.45 - fParam2) / getSampleRate());
-    }
-    else
-    {
-      dphi = 0.0;
-    }
-  }
-}
-
-mdaRoundPan::~mdaRoundPan()
-{
-  //if(buffer) delete buffer;
-  //if(buffer2) delete buffer2;
-}
-
-void mdaRoundPan::suspend()
-{
-  //memset(buffer, 0, size * sizeof(float));
-  //memset(buffer2, 0, size * sizeof(float));
-}
-
-void mdaRoundPan::setProgramName(char *name)
-{
-  strcpy(programName, name);
-}
-
-void mdaRoundPan::getProgramName(char *name)
-{
-  strcpy(name, programName);
-}
-
-float mdaRoundPan::getParameter(VstInt32 index)
-{
-  float v=0;
-
-  switch(index)
-  {
-    case 0: v = fParam1; break;
-    case 1: v = fParam2; break;
-  }
-  return v;
-}
-
 void mdaRoundPan::getParameterDisplay(VstInt32 index, char *text)
 {
   switch(index)
   {
-    case 0: long2string((long)(360.0 * (fParam1 - 0.5)), text); break;
-    case 1: long2string((long)(57.296 * dphi * getSampleRate()), text); break;
+    case 0: long2string((long)(360.0 * (Parameter[0] - 0.5)), text); break;
+    case 1: long2string((long)(57.296 * dphi * SampleRate()), text); break;
   }
 }
 

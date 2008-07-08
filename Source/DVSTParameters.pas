@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.INC}
 
-uses classes, sysutils, Windows, Forms, DVSTEffect, DAVDCommon, DVSTBasicModule;
+uses
+  Classes, SysUtils, Windows, Forms, DVSTEffect, DAVDCommon, DVSTBasicModule;
 
 type
   TCurveType = (ctLinear, ctLogarithmic, ctExponential, ctFrequencyScale);
@@ -40,7 +41,6 @@ type
     FOnCPL            : TCustomParameterLabelEvent;
     FOnCPD            : TCustomParameterDisplayEvent;
 
-    
     function GetShortLabel: string;
     procedure SetShortLabel(const Value: string);
     procedure SetCurve(const Value: TCurveType);
@@ -59,25 +59,25 @@ type
     destructor Destroy; override;
     function Smooth(i: Single): Single;
   published
-    property Min: Single read FMin write FMin;
-    property Max: Single read FMax write FMax;
+    property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated default true;
     property CC: Integer read FCC write FCC default -1;
     property Curve: TCurveType read FCurve write SetCurve;
-    property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
-    property Units: string read FUnits write SetUnits;
     property CurveFactor: Single read FCurveFactor write FCurveFactor;
-    property SmoothingFactor: Single read FSmoothingFactor write FSmoothingFactor;
-    property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated default true;
-    property ReportVST2Properties: Boolean read FV2Properties write FV2Properties default false;
-    property StepFloat: Single read FStepFloat write FStepFloat;
-    property SmallStepFloat: Single read FSmallStepFloat write FSmallStepFloat;
-    property LargeStepFloat: Single read FLargeStepFloat write FLargeStepFloat;
+    property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
     property Flags: TVstParameterPropertiesFlags read FFlags write FFlags default [];
-    property MinInteger: Integer read FMinInteger write FMinInteger default 0;
-    property MaxInteger: Integer read FMaxInteger write FMaxInteger default 100;
-    property StepInteger: Integer read FStepInteger write FStepInteger default 1;
+    property LargeStepFloat: Single read FLargeStepFloat write FLargeStepFloat;
     property LargeStepInteger: Integer read FLargeStepInteger write FLargeStepInteger default 10;
+    property Max: Single read FMax write FMax;
+    property MaxInteger: Integer read FMaxInteger write FMaxInteger default 100;
+    property Min: Single read FMin write FMin;
+    property MinInteger: Integer read FMinInteger write FMinInteger default 0;
+    property ReportVST2Properties: Boolean read FV2Properties write FV2Properties default false;
     property ShortLabel: string read GetShortLabel write SetShortLabel;
+    property SmallStepFloat: Single read FSmallStepFloat write FSmallStepFloat;
+    property SmoothingFactor: Single read FSmoothingFactor write FSmoothingFactor;
+    property StepFloat: Single read FStepFloat write FStepFloat;
+    property StepInteger: Integer read FStepInteger write FStepInteger default 1;
+    property Units: string read FUnits write SetUnits;
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
     property OnParameterChange: TParameterChangeEvent read FOnSPC write FOnSPC;
     property OnCustomParameterLabel: TCustomParameterLabelEvent read FOnCPL write FOnCPL;
@@ -135,15 +135,15 @@ begin
 
   FVSTModule := (Collection As TCustomVstParameterProperties).VSTModule;
   with FVSTModule as TVSTModuleWithPrograms do
-  try
+   try
     Effect^.numParams := Collection.Count;
-    if not (effFlagsProgramChunks in Effect^.EffectFlags) then
-      if (Effect^.numPrograms>0) then
-        for i := 0 to Effect^.numPrograms-1 do
-          Programs[i].SetParameterCount(Collection.Count)
+     if not (effFlagsProgramChunks in Effect^.EffectFlags) then
+      if (Effect^.numPrograms > 0) then
+       for i := 0 to Effect^.numPrograms - 1
+        do Programs[i].SetParameterCount(Collection.Count)
       else SetParameterCount(Collection.Count);
-  except
-  end;
+   except
+   end;
 end;
 
 destructor TCustomVstParameterProperty.Destroy;
@@ -180,14 +180,14 @@ end;
 
 procedure TCustomVstParameterProperty.AssignTo(Dest: TPersistent);
 begin
-  if Dest is TCustomVstParameterProperty then
-    with TCustomVstParameterProperty(Dest) do
-    try
-      Units := Self.Units;
-      DisplayName := Self.DisplayName;
-    except
-      inherited;
-    end
+ if Dest is TCustomVstParameterProperty then
+  with TCustomVstParameterProperty(Dest) do
+   try
+    Units := Self.Units;
+    DisplayName := Self.DisplayName;
+   except
+    inherited;
+   end
   else inherited;
 end;
 
@@ -246,7 +246,7 @@ end;
 
 destructor TCustomVstParameterProperties.Destroy;
 begin
-  while Count>0 do Delete(0);
+  while Count > 0 do Delete(0);
   inherited;
 end;
 
@@ -257,8 +257,11 @@ var s : string;
 {$ENDIF}
 begin
   {$IFNDEF FPC}
-  GetMem(b,255); GetModuleFileName(Application.Handle,b,255); FreeMem(b);
-  s := b; WriteVSTXML(Copy(s,1,Pos('.dll',s)-1)+'.VSTXML');
+  GetMem(b, 255);
+  GetModuleFileName(Application.Handle, b, 255);
+  FreeMem(b);
+  s := b;
+  WriteVSTXML(Copy(s, 1, Pos('.dll', s) - 1) + '.VSTXML');
   {$ENDIF}
 end;
 

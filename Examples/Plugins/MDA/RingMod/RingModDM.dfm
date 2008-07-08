@@ -26,6 +26,7 @@ object RingModDataModule: TRingModDataModule
       Units = 'Hz'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'Freq'
       VSTModule = Owner
     end
     item
@@ -35,6 +36,7 @@ object RingModDataModule: TRingModDataModule
       Units = 'Hz'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'Fine'
       VSTModule = Owner
     end
     item
@@ -48,7 +50,9 @@ object RingModDataModule: TRingModDataModule
       SmallStepFloat = 0.500000000000000000
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
+      ShortLabel = 'Feedbac'
       VSTModule = Owner
+      OnParameterChange = ParameterFeedbackChange
     end>
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess

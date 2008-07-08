@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.INC}
 
-uses classes, DVSTBasicModule;
+uses
+  Classes, DVSTBasicModule;
 
 type
   TChunkEvent = procedure(Sender: TObject; const Index : Integer; const isPreset : Boolean) of object;
@@ -66,7 +67,8 @@ type
 
 implementation
 
-uses SysUtils, DVSTEffect, DVSTModuleWithPrograms;
+uses
+  SysUtils, DVSTEffect, DVSTModuleWithPrograms;
 
 {$IFDEF FPC}
 constructor TCustomVstProgram.Create(ACollection: TCollection);
@@ -78,16 +80,19 @@ begin
  FDisplayName := 'Init';
  fVSTModule := (Collection As TCustomVstPrograms).VSTModule;
  VSTModule.Effect^.numPrograms := Collection.Count;
- if not (effFlagsProgramChunks in VSTModule.Effect^.EffectFlags)
-  then SetLength(FParameter, TVSTModuleWithPrograms(VSTModule).numParams)
-  else fChunkData := TMemoryStream.Create;
- if TVSTModuleWithPrograms(VSTModule).CurrentProgram < 0 then TVSTModuleWithPrograms(VSTModule).CurrentProgram := 0;
+ with TVSTModuleWithPrograms(VSTModule) do
+  begin
+   if not (effFlagsProgramChunks in VSTModule.Effect^.EffectFlags)
+    then SetLength(FParameter, numParams)
+    else fChunkData := TMemoryStream.Create;
+   if CurrentProgram < 0 then CurrentProgram := 0;
+  end;
 end;
 
 destructor TCustomVstProgram.Destroy;
 begin
  try
-  SetLength(FParameter,0);
+  SetLength(FParameter, 0);
   FreeAndNil(fChunkData);
  finally
   inherited;
@@ -101,7 +106,7 @@ end;
 
 procedure TCustomVstProgram.SetDisplayName(const AValue: string);
 begin
- FDisplayName := copy(AValue,0,50);
+ FDisplayName := Copy(AValue, 0, 50);
 end;
 
 procedure TCustomVstProgram.AssignTo(Dest: TPersistent);
@@ -110,10 +115,11 @@ begin
  if Dest is TCustomVstProgram then
   with TCustomVstProgram(Dest) do
    begin
-    if Length(Self.FParameter)>0 then
+    if Length(Self.FParameter) > 0 then
      begin
-      SetLength(TCustomVstProgram(Dest).FParameter,Length(Self.FParameter));
-      for i := 0 to Length(Self.FParameter) - 1 do Parameter[i] := Self.Parameter[i];
+      SetLength(FParameter, Length(Self.FParameter));
+      for i := 0 to Length(Self.FParameter) - 1
+       do Parameter[i] := Self.Parameter[i];
      end;
     DisplayName := Self.DisplayName;
    end
@@ -122,15 +128,18 @@ end;
 
 procedure TCustomVstProgram.SetParameter(AIndex: Integer; s: Single);
 begin
- if effFlagsProgramChunks in TVSTModuleWithPrograms(fVSTModule).Flags then exit;
- if (AIndex >= 0) and (AIndex < TVSTModuleWithPrograms(fVSTModule).numParams)
-  then FParameter[AIndex] := s
- // else raise exception.Create('Index out of bounds');
+ with TVSTModuleWithPrograms(fVSTModule) do
+  begin
+   if effFlagsProgramChunks in Flags then exit;
+   if (AIndex >= 0) and (AIndex < numParams)
+    then FParameter[AIndex] := s
+   // else raise exception.Create('Index out of bounds');
+  end;
 end;
 
 function TCustomVstProgram.GetParameter(AIndex: Integer): Single;
 begin
- if (AIndex>=0) and (AIndex<TVSTModuleWithPrograms(fVSTModule).numParams)
+ if (AIndex>=0) and (AIndex < TVSTModuleWithPrograms(fVSTModule).numParams)
   then Result := FParameter[AIndex] else
    begin
     Result := 0;
@@ -138,15 +147,14 @@ begin
    end;
 end;
 
-
 procedure TCustomVstProgram.SetParameterCount(cnt: integer);
 begin
-  setlength(fParameter, cnt);
+ SetLength(fParameter, cnt);
 end;
 
 function TCustomVstProgram.ParameterCount: integer;
 begin
-  result:=length(FParameter);
+  result := Length(FParameter);
 end;
 
 
@@ -160,7 +168,7 @@ end;
 
 destructor TCustomVstPrograms.Destroy;
 begin
- while Count>0 do Delete(0);
+ while Count > 0 do Delete(0);
  inherited;
 end;
 

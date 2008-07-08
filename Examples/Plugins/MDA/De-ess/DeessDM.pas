@@ -3,17 +3,16 @@ unit DeessDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Forms, DAVDCommon, DVSTModule;
 
 type
   TDeessDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure ParamEnvelopeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHFDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs,
-      Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
   private
     fThreshold : Single;
     fEnvelope  : Single;
@@ -32,20 +31,17 @@ implementation
 uses
   Math;
 
-procedure TDeessDataModule.ParamHFDriveChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TDeessDataModule.ParamHFDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fGain := dB_to_Amp(Value);
 end;
 
-procedure TDeessDataModule.ParamEnvelopeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TDeessDataModule.ParamEnvelopeChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fThreshold := dB_to_Amp(Value);
 end;
 
-procedure TDeessDataModule.ParamFilterChange(Sender: TObject;
-  const Index: Integer; var Value: Single);
+procedure TDeessDataModule.ParamFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
   Exp2Lin : Double;
 begin

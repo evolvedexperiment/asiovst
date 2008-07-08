@@ -5,7 +5,8 @@ uses
   Forms,
   DVSTEffect,
   DVSTModule,
-  PianoDM in 'PianoDM.pas' {PianoDataModule: TVSTModule};
+  PianoDM in 'PianoDM.pas' {PianoDataModule: TVSTModule},
+  PianoData in 'PianoData.pas';
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var

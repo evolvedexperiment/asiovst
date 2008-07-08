@@ -464,7 +464,7 @@ begin
     if Assigned(FOnSuspend) then FOnSuspend(Self);
   end else begin
     if Assigned(FOnResume) then FOnResume(Self);
-    wantEvents(1);;
+    wantEvents(1);
   end;
 
   Result := 0;

@@ -1,6 +1,6 @@
 object BandistoDataModule: TBandistoDataModule
   OldCreateOrder = False
-  Flags = []
+  Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Bandisto'
   ProductName = 'Bandisto'
@@ -24,6 +24,7 @@ object BandistoDataModule: TBandistoDataModule
       DisplayName = 'Listen'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'Listen'
       VSTModule = Owner
     end
     item
@@ -33,6 +34,7 @@ object BandistoDataModule: TBandistoDataModule
       Units = 'Hz'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'L <> M'
       VSTModule = Owner
     end
     item
@@ -42,6 +44,7 @@ object BandistoDataModule: TBandistoDataModule
       Units = 'Hz'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'M <> H'
       VSTModule = Owner
     end
     item
@@ -51,6 +54,7 @@ object BandistoDataModule: TBandistoDataModule
       Units = 'dB'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'L Dist'
       VSTModule = Owner
     end
     item
@@ -60,6 +64,7 @@ object BandistoDataModule: TBandistoDataModule
       Units = 'dB'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'M Dist'
       VSTModule = Owner
     end
     item
@@ -69,6 +74,7 @@ object BandistoDataModule: TBandistoDataModule
       Units = 'dB'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'H Dist'
       VSTModule = Owner
     end
     item
@@ -78,6 +84,7 @@ object BandistoDataModule: TBandistoDataModule
       Units = 'dB'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'L Out'
       VSTModule = Owner
     end
     item
@@ -87,6 +94,7 @@ object BandistoDataModule: TBandistoDataModule
       Units = 'dB'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'M Out'
       VSTModule = Owner
     end
     item
@@ -96,6 +104,7 @@ object BandistoDataModule: TBandistoDataModule
       Units = 'dB'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'H Out'
       VSTModule = Owner
     end
     item
@@ -104,6 +113,7 @@ object BandistoDataModule: TBandistoDataModule
       DisplayName = 'Mode'
       CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      ShortLabel = 'Mode'
       VSTModule = Owner
     end>
   OnProcess = VSTModuleProcess

@@ -2,8 +2,8 @@ unit ThruZeroDM;
 
 interface
 
-uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
+uses
+  Windows, Messages, SysUtils, Classes, Forms,
   DAVDCommon, DVSTModule;
 
 type
@@ -12,6 +12,7 @@ type
       const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
     fBuffer : array [0..1] of TAVDSingleFixedArray;
   public
@@ -19,34 +20,40 @@ type
 
 implementation
 
-{$R *.DFM}
+{$R *.DFM};
+
+procedure TThruZeroDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ if fBuffer[0] then Dispose(fBuffer[0]);
+ if fBuffer[1] then Dispose(fBuffer[1]);
+end;
 
 procedure TThruZeroDataModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample: Integer;
 begin
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   Outputs[0, Sample] := Inputs[0, Sample];
+   Outputs[1, Sample] := Inputs[1, Sample];
+  end;
 (*
-  float *in1 = inputs[0];
-  float *in2 = inputs[1];
-  float *out1 = outputs[0];
-  float *out2 = outputs[1];
   float a, b, f=fb, f1=fb1, f2=fb2, ph=phi;
   float ra=rat, de=dep, we=wet, dr=dry, ds=deps, dm=dem;
   long  tmp, tmpi, bp=bufpos;
   float tmpf, dpt;
 
-  --in1;
-  --in2;
-  --out1;
-  --out2;
   while(--sampleFrames >= 0)
   {
     a = *++in1;    
     b = *++in2; 
     
-    ph += ra; 
-    if(ph>1.0f) ph -= 2.0f;
-    
-    bp--; bp &= 0x7FF;
+    ph := ph + ra; 
+    if ph > 1
+     then ph := ph - 2;
+
+    bp--; bp := bp and $7FF;
     *(buffer  + bp) := a + f * f1;
     *(buffer2 + bp) := b + f * f2;
 
@@ -67,7 +74,7 @@ begin
 
     *++out1 = a;
     *++out2 = b;
-  }
+  end;
   if (abs(f1) > 1E-10) then
    begin
     fb1 = f1;
@@ -110,3 +117,68 @@ begin
 end;
 
 end.
+
+(*
+mdaThruZeroProgram::mdaThruZeroProgram() ///default program settings
+begin
+  param[0] = 0.30f;  //rate
+  param[1] = 0.43f;  //depth
+  param[2] = 0.47f;  //mix
+  param[3] = 0.30f;  //feedback
+  param[4] = 1.00f;  //minimum delay to stop LF buildup with feedback
+end;
+
+mdaThruZero::mdaThruZero(audioMasterCallback audioMaster): AudioEffectX(audioMaster, NPROGS, NPARAMS)
+begin
+  programs = new mdaThruZeroProgram[numPrograms];
+  setProgram(0);
+  
+  ///differences from default program...
+  programs[1].param[0] = 0.50f;
+  programs[1].param[1] = 0.20f;
+  programs[1].param[2] = 0.47f;
+  strcpy(programs[1].name,"Phase Canceller");
+  programs[2].param[0] = 0.60f;
+  programs[2].param[1] = 0.60f;
+  programs[2].param[2] = 0.35f;
+  programs[2].param[4] = 0.70f;
+  strcpy(programs[2].name,"Chorus Doubler");
+  programs[3].param[0] = 0.75f;
+  programs[3].param[1] = 1.00f;
+  programs[3].param[2] = 0.50f;
+  programs[3].param[3] = 0.75f;
+  programs[3].param[4] = 1.00f;
+  strcpy(programs[3].name,"Mad Modulator");
+
+  ///initialise...
+  bufpos  = 0;
+  buffer  = new float[BUFMAX];
+  buffer2 = new float[BUFMAX];
+  phi = fb = fb1 = fb2 = deps = 0.0f;
+
+  suspend();
+end;
+
+void  mdaThruZero::setParameter(VstInt32 index, float value)
+begin 
+  if(index==3) phi=0.0f; //reset cycle
+  param[index] = value; resume(); 
+end;
+
+void mdaThruZero::getParameterDisplay(VstInt32 index, char *text)
+begin
+   char string[16];
+
+  switch(index)
+  begin
+    case  0: if(param[0]<0.01f) strcpy (string, "-");
+             else sprintf(string, "%.2f", (float)pow(10.0f ,2.0f - 3.0f * param[index])); break;
+    case  1: sprintf(string, "%.2f", 1000.f * dep / getSampleRate()); break;
+    case  3: sprintf(string, "%.0f", 200.0f * param[index] - 100.0f); break;
+    default: sprintf(string, "%.0f", 100.0f * param[index]);
+  end;
+  string[8] = 0;
+  strcpy(text, (char * )string);
+end;
+
+*)

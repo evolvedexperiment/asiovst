@@ -5,7 +5,8 @@ uses
   Forms,
   DVSTEffect,
   DVSTModule,
-  EPianoDM in 'EPianoDM.pas' {EPianoDataModule: TVSTModule};
+  EPianoDM in 'EPianoDM.pas' {EPianoDataModule: TVSTModule},
+  EPianoData in 'EPianoData.pas';
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var

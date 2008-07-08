@@ -1,5 +1,6 @@
 object DegradeDataModule: TDegradeDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '0.0'
   EffectName = 'mda Degrade'
@@ -8,70 +9,78 @@ object DegradeDataModule: TDegradeDataModule
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Degrade'
   UniqueID = 'mdaC'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Degrade'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Headroom'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Headroo'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Quantize'
-      Units = 'bits'
-      CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Quantiz'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Rate'
-      Units = 'S<>S&&H'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Rate'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'PostFilter'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'PstFilt'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Non-Linear'
-      Units = 'Odd<>Even'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Non-Lin'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Output'
       Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Output'
       VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Quantize'
+      Max = 1.000000000000000000
+      ShortLabel = 'Quantiz'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'bits'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Rate'
+      Max = 1.000000000000000000
+      ShortLabel = 'Rate'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'S<>S&&H'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'PostFilter'
+      Max = 1.000000000000000000
+      ShortLabel = 'PstFilt'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterPostFilterChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Non-Linear'
+      Max = 1.000000000000000000
+      ShortLabel = 'Non-Lin'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'Odd<>Even'
+      VSTModule = Owner
+      OnParameterChange = ParameterNonLinearChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Output'
+      Max = 1.000000000000000000
+      ShortLabel = 'Output'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterOutputChange
     end>
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
