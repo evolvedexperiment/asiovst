@@ -3,111 +3,218 @@ unit ThruZeroDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+
+const
+  BUFMAX = 512;
 
 type
   TThruZeroDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray;
-      const SampleFrames: Integer);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject;const SampleRate: Single);
+    procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterDepthModChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterRateDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    fBuffer : array [0..1] of TAVDSingleFixedArray;
+    fBuffer    : array [0..1] of PAVDSingleFixedArray;
+    fRate      : Single;
+    fPhi, fDem : Single;
+    fDeps      : Single;
+    fDepth     : Single;
+    fWet, fDry : Single;
+    fBufPos    : Integer;
+    fFeedback  : array [0..2] of Single;
+    procedure RateChanged;
   public
   end;
 
 implementation
 
-{$R *.DFM};
+{$R *.DFM}
+
+uses
+  Math;
+
+procedure TThruZeroDataModule.VSTModuleCreate(Sender: TObject);
+begin
+  Parameter[0] := 0.30;  // Rate
+  Parameter[1] := 0.43;  // Depth
+  Parameter[2] :=  47;   // Mix
+  Parameter[3] := -40;   // Feedback
+  Parameter[4] := 100;   // Minimum delay to stop LF buildup with feedback
+
+  ///differences from default program...
+  with Programs[1] do
+   begin
+    Parameter[0] := 0.50;
+    Parameter[1] := 0.20;
+    Parameter[2] :=   47;
+    Parameter[3] :=  -40;
+    Parameter[4] :=  100;
+   end;
+
+  with Programs[2] do
+   begin
+    Parameter[0] := 0.60;
+    Parameter[1] := 0.60;
+    Parameter[2] :=   35;
+    Parameter[3] :=  -40;
+    Parameter[4] :=   70;
+   end;
+
+  with Programs[3] do
+   begin
+    Parameter[0] := 0.75;
+    Parameter[1] := 1.00;
+    Parameter[2] :=   50;
+    Parameter[3] :=   50;
+    Parameter[4] :=  100;
+   end;
+
+ ///initialise...
+ fBufPos := 0;
+ GetMem(fBuffer[0], BUFMAX * SizeOf(Single));
+ GetMem(fBuffer[1], BUFMAX * SizeOf(Single));
+ fPhi         := 0;
+ fFeedback[0] := 0;
+ fFeedback[1] := 0;
+ fFeedback[2] := 0;
+ fDeps        := 0;
+
+ VSTModuleSuspend(Sender);
+end;
 
 procedure TThruZeroDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- if fBuffer[0] then Dispose(fBuffer[0]);
- if fBuffer[1] then Dispose(fBuffer[1]);
+ if assigned(fBuffer[0]) then Dispose(fBuffer[0]);
+ if assigned(fBuffer[1]) then Dispose(fBuffer[1]);
 end;
 
-procedure TThruZeroDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TThruZeroDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample: Integer;
+  Sample                  : Integer;
+  a, b, f, f1, f2, ph     : Single;
+  ra, de, we, dr, ds, dm  : Single;
+  tmp, tmpi, bp           : Integer;
+  tmpf, dpt               : Single;
 begin
+ f  := fFeedback[0];
+ f1 := fFeedback[1];
+ f2 := fFeedback[2];
+ ph := fPhi;
+ ra := fRate;
+ de := fDepth;
+ we := fWet;
+ dr := fDry;
+ ds := fDeps;
+ dm := fDem;
+ bp := fBufPos;
+
+
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := Inputs[0, Sample];
-   Outputs[1, Sample] := Inputs[1, Sample];
-  end;
-(*
-  float a, b, f=fb, f1=fb1, f2=fb2, ph=phi;
-  float ra=rat, de=dep, we=wet, dr=dry, ds=deps, dm=dem;
-  long  tmp, tmpi, bp=bufpos;
-  float tmpf, dpt;
+    a := Inputs[0, Sample];
+    b := Inputs[1, Sample];
 
-  while(--sampleFrames >= 0)
-  {
-    a = *++in1;    
-    b = *++in2; 
-    
-    ph := ph + ra; 
+    ph := ph + ra;
     if ph > 1
      then ph := ph - 2;
 
-    bp--; bp := bp and $7FF;
-    *(buffer  + bp) := a + f * f1;
-    *(buffer2 + bp) := b + f * f2;
+    dec(bp);
+    bp := bp and $7FF;
+    fBuffer[0, bp] := a + f * f1;
+    fBuffer[1, bp] := b + f * f2;
 
-    //ds := 0.995f * (ds - de) + de;          //smoothed depth change ...try inc not mult
-    dpt  := tmpf = dm + de * (1.0f - ph * ph); //delay mod shape
-    tmp  := int(tmpf);
+    //ds := 0.995 * (ds - de) + de;          //smoothed depth change ...try inc not mult
+    dpt  := dm + de * (1 - sqr(ph)); //delay mod shape
+    tmpf := dpt;
+    tmp  := round(tmpf);
     tmpf := tmpf - tmp;
-    tmp  := (tmp + bp) & 0x7FF;
-    tmpi := (tmp + 1) & 0x7FF;
+    tmp  := (tmp + bp) and $7FF;
+    tmpi := (tmp + 1) and $7FF;
 
-    f1 := *(buffer  + tmp);  //try adding a constant to reduce denormalling
-    f2 := *(buffer2 + tmp);
-    f1 := tmpf * (*(buffer  + tmpi) - f1) + f1; //linear interpolation
-    f2 := tmpf * (*(buffer2 + tmpi) - f2) + f2;
+    f1 := fBuffer[0, tmp];  //try adding a constant to reduce denormalling
+    f2 := fBuffer[1, tmp];
+    f1 := tmpf * (fBuffer[0, tmpi] - f1) + f1; //linear interpolation
+    f2 := tmpf * (fBuffer[1, tmpi] - f2) + f2;
 
     a := a * dr - f1 * we;
     b := b * dr - f2 * we;
 
-    *++out1 = a;
-    *++out2 = b;
+    Outputs[0, Sample] := a;
+    Outputs[1, Sample] := b;
   end;
-  if (abs(f1) > 1E-10) then
-   begin
-    fb1 = f1;
-    fb2 = f2;
-   end
-  else
-   begin
-    fb1 = 0.0f;
-    fb2 = 0.0f; //catch denormals
-   end;
-  phi = ph;
-  deps = ds;
-  bufpos = bp;
-*)
+
+ if abs(f1) > 1E-10 then
+  begin
+   fFeedback[1] := f1;
+   fFeedback[2] := f2;
+  end
+ else
+  begin
+   fFeedback[1] := 0;
+   fFeedback[2] := 0; //catch denormals
+  end;
+ fPhi    := ph;
+ fDeps   := ds;
+ fBufPos := bp;
 end;
 
 procedure TThruZeroDataModule.VSTModuleResume(Sender: TObject);
 begin
-(*
-  rat := Power(10, 3 * Parameter[0] - 2) * 2 / SampleRate;
-  dep := 2000.0 * sqr(Parameter[1]);
-  dem := dep - dep * Parameter[4];
-  dep := dep - dem;
-  
-  wet := Parameter[2];
-  dry := 1 - wet;
-  if Parameter[0] < 0.01f then
-   begin
-    rat := 0;
-    phi := 0;
-   end; 
-  fb := 1.9 * Parameter[3] - 0.95;
-*)
+ fDepth := 2000 * sqr(Parameter[1]);
+ fDem := sqr(fDepth) * 0.01 * Parameter[4];
+ fDepth := fDepth - fDem;
+end;
+
+procedure TThruZeroDataModule.ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fWet := 0.01 * Value;
+ fDry := 1 - fWet;
+end;
+
+procedure TThruZeroDataModule.ParameterDepthModChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fFeedback[0] := 0.0095 * Value;
+ fPhi         := 0.0;             //reset cycle
+end;
+
+procedure TThruZeroDataModule.ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ RateChanged;
+ if Value < 0.01 then
+  begin
+   fRate := 0;
+   fPhi  := 0;
+  end;
+end;
+
+procedure TThruZeroDataModule.RateChanged;
+begin
+ fRate := Power(10, 3 * Parameter[0] - 2) * 2 / SampleRate;
+end;
+
+procedure TThruZeroDataModule.ParameterRateDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[0] < 0.01
+  then PreDefined := '-'
+  else PreDefined := FloatToStrF(Power(10, 2 - 3 * Parameter[index]), ffGeneral, 2, 2);
+end;
+
+procedure TThruZeroDataModule.ParameterDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF(1000 * fDepth / SampleRate, ffGeneral, 2, 2);
+end;
+
+procedure TThruZeroDataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+begin
+ RateChanged;
 end;
 
 procedure TThruZeroDataModule.VSTModuleSuspend(Sender: TObject);
@@ -117,68 +224,3 @@ begin
 end;
 
 end.
-
-(*
-mdaThruZeroProgram::mdaThruZeroProgram() ///default program settings
-begin
-  param[0] = 0.30f;  //rate
-  param[1] = 0.43f;  //depth
-  param[2] = 0.47f;  //mix
-  param[3] = 0.30f;  //feedback
-  param[4] = 1.00f;  //minimum delay to stop LF buildup with feedback
-end;
-
-mdaThruZero::mdaThruZero(audioMasterCallback audioMaster): AudioEffectX(audioMaster, NPROGS, NPARAMS)
-begin
-  programs = new mdaThruZeroProgram[numPrograms];
-  setProgram(0);
-  
-  ///differences from default program...
-  programs[1].param[0] = 0.50f;
-  programs[1].param[1] = 0.20f;
-  programs[1].param[2] = 0.47f;
-  strcpy(programs[1].name,"Phase Canceller");
-  programs[2].param[0] = 0.60f;
-  programs[2].param[1] = 0.60f;
-  programs[2].param[2] = 0.35f;
-  programs[2].param[4] = 0.70f;
-  strcpy(programs[2].name,"Chorus Doubler");
-  programs[3].param[0] = 0.75f;
-  programs[3].param[1] = 1.00f;
-  programs[3].param[2] = 0.50f;
-  programs[3].param[3] = 0.75f;
-  programs[3].param[4] = 1.00f;
-  strcpy(programs[3].name,"Mad Modulator");
-
-  ///initialise...
-  bufpos  = 0;
-  buffer  = new float[BUFMAX];
-  buffer2 = new float[BUFMAX];
-  phi = fb = fb1 = fb2 = deps = 0.0f;
-
-  suspend();
-end;
-
-void  mdaThruZero::setParameter(VstInt32 index, float value)
-begin 
-  if(index==3) phi=0.0f; //reset cycle
-  param[index] = value; resume(); 
-end;
-
-void mdaThruZero::getParameterDisplay(VstInt32 index, char *text)
-begin
-   char string[16];
-
-  switch(index)
-  begin
-    case  0: if(param[0]<0.01f) strcpy (string, "-");
-             else sprintf(string, "%.2f", (float)pow(10.0f ,2.0f - 3.0f * param[index])); break;
-    case  1: sprintf(string, "%.2f", 1000.f * dep / getSampleRate()); break;
-    case  3: sprintf(string, "%.0f", 200.0f * param[index] - 100.0f); break;
-    default: sprintf(string, "%.0f", 100.0f * param[index]);
-  end;
-  string[8] = 0;
-  strcpy(text, (char * )string);
-end;
-
-*)

@@ -17,84 +17,103 @@ object VocoderDataModule: TVocoderDataModule
     item
       DisplayName = 'Vocoder'
       VSTModule = Owner
+    end
+    item
+      DisplayName = '16 Band Vocoder'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Old Vocoder'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Choral Vocoder'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Pad Vocoder'
+      VSTModule = Owner
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Mod In'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Mod In'
+      SmoothingFactor = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParameterModInChange
+      OnCustomParameterDisplay = ParameterModInDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Output'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Hi Thru'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Hi Thru'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Hi Band'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Hi Band'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Envelope'
-      Units = 'ms'
-      CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Envelop'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Filter Q'
       Units = '%'
+      VSTModule = Owner
+      OnParameterChange = ParameterHiBandChange
+    end
+    item
+      Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Envelope'
+      Max = 1.000000000000000000
+      ShortLabel = 'Envelop'
       SmoothingFactor = 1.000000000000000000
+      Units = 'ms'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Filter Q'
+      Max = 1.000000000000000000
       ShortLabel = 'Filter '
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Mid Freq'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Mid Fre'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'Hz'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Quality'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Quality'
+      Max = 1.000000000000000000
       ShortLabel = 'Quality'
+      SmoothingFactor = 1.000000000000000000
       VSTModule = Owner
     end>
   OnResume = VSTModuleResume

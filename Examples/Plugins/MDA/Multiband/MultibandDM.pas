@@ -26,6 +26,10 @@ type
     fAttackH   : Single;
     fReleaseH  : Single;
     fSLev      : Single;
+    fGainL     : Single;
+    fGainM     : Single;
+    fGainH     : Single;
+    fFeedback  : Array [0..2] of Single;
     fFi        : Array [0..1, 0..1] of Single;
     fMSwap     : Boolean;
   public
@@ -115,16 +119,16 @@ var
   g1, d1, t1, a1, r1  : Single;
   g2, d2, t2, a2, r2  : Single;
   g3, d3, t3, a3, r3  : Single;
+  ms                  : Boolean;
 begin
-(*
- l   := fb3;
+ l   := fFeedback[2];
  sl  := fSLev;
  f1i := fFi[0,0];
  f1o := fFi[1,0];
  f2i := fFi[0,1];
  f2o := fFi[1,1];
- b1  := fb1;
- b2  := fb2;
+ b1  := fFeedback[0];
+ b2  := fFeedback[1];
  g1  := fGainL;
  d1  := fDriveL;
  t1  := fTrimL;
@@ -147,15 +151,17 @@ begin
    a := Inputs[0, Sample];
    b := Inputs[1, Sample]; //process from here...
 
-   b := (ms)? -b : b;
+   if ms
+    then b := -b
+    else b := b;
 
-   s := (a - b) * sl; //keep stereo component for later
-   a := a + b;
+   s  := (a - b) * sl; //keep stereo component for later
+   a  := a + b;
    b2 := (f2i * a) + (f2o * b2); //crossovers
    b1 := (f1i * b2) + (f1o * b1);
-   l := (f1i * b1) + (f1o * l);
-   m := b2 - l;
-   h := a - b2;
+   l  := (f1i * b1) + (f1o * l);
+   m  := b2 - l;
+   h  := a - b2;
 
    tmp1 := abs(l);  //l
    if (tmp1 > g1)
@@ -191,22 +197,21 @@ begin
 
   if (abs(b1) < 1E-10) then
    begin
-    fb1 := 0;
-    fb2 := 0;
-    fb3 := 0;
+    fFeedback[0] := 0;
+    fFeedback[1] := 0;
+    fFeedback[2] := 0;
    end
   else
    begin
-    fb1 := b1;
-    fb2 := b2;
-    fb3 := l;
+    fFeedback[0] := b1;
+    fFeedback[1] := b2;
+    fFeedback[2] := l;
    end;
-}
-*)
 
 (*
- g := (1 / (1 + d1 * abs(l)) ); //VCAs
- if (g1 > g)
+ // do not use this code, it's just an example on how a VCA would look like
+ fGain := (1 / (1 + d1 * abs(l)) ); //VCAs
+ if (g1 > fGain)
   then g1 := g1 - a1 * (g1 - g)
   else g1 := g1 + r1 * (g - g1);
 *)

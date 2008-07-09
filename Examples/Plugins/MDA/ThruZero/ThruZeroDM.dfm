@@ -1,5 +1,6 @@
 object ThruZeroDataModule: TThruZeroDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
@@ -17,60 +18,89 @@ object ThruZeroDataModule: TThruZeroDataModule
     item
       DisplayName = 'Thru-Zero Flanger'
       VSTModule = Owner
+    end
+    item
+      DisplayName = 'Phase Canceller'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Chorus Doubler'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Mad Modulator'
+      VSTModule = Owner
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Rate'
-      Units = 's'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Rate'
+      SmoothingFactor = 1.000000000000000000
+      Units = 's'
       VSTModule = Owner
+      OnParameterChange = ParameterRateChange
+      OnCustomParameterDisplay = ParameterRateDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Depth'
-      Units = 'ms'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Depth'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'ms'
       VSTModule = Owner
+      OnCustomParameterDisplay = ParameterDepthDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'Mix'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParameterMixChange
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'DepthMod'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      Min = -100.000000000000000000
+      MinInteger = -100
       ShortLabel = 'DepthMd'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParameterDepthModChange
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Feedback'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Feedback'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'Feedbck'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end>
   OnResume = VSTModuleResume
   OnSuspend = VSTModuleSuspend
+  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   Left = 188

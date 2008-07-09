@@ -14,13 +14,28 @@ type
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    fBuffer : array [0..1, 0..1] of Single;
+    fBuffer    : array [0..1, 0..1] of Single;
+    fFreq, ff  : Single;
+    fFreqDisp  : Single;
+    fLevel, ll : Single;
+    fLevelDisp : Single;
+    fEnv, pp   : Single;
+    fAttack    : Single;
+    fRelease   : Single;
+    i2l        : Single;
+    i2r        : Single;
+    o2l        : Single;
+    o2r        : Single;
+    fMode      : Integer;
   public
   end;
 
 implementation
 
 {$R *.DFM}
+
+uses
+  Math;
 
 procedure TSplitterDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
@@ -54,13 +69,13 @@ begin
   programs[2].Parameter[0] = 0.60;
   strcpy(programs[2].name,"Stereo Crossover");
   
-  Parameter[0] := 0.10;  // Mode
-  Parameter[1] := 0.50;  // Freq
+  Parameter[0] := 0.1;   // Mode
+  Parameter[1] := 0.5;   // Freq
   Parameter[2] := 0.25;  // Freq Mode
-  Parameter[3] := 0.50;  // Level (was 2)
-  Parameter[4] := 0.50;  // Level Mode
-  Parameter[5] := 0.50;  // Envelope
-  Parameter[6] := 0.50;  // Gain
+  Parameter[3] := 0.5;   // Level (was 2)
+  Parameter[4] := 0.5;   // Level Mode
+  Parameter[5] := 0.5;   // Envelope
+  Parameter[6] := 0.5;   // Gain
 *)
  VSTModuleSuspend(Sender);
 end;
@@ -74,59 +89,61 @@ var
   b0, b1       : Single;
   aa, bb, ee,
   e, at, re,
-  l, lx, px    : Single;
-  il, ir,
-  ol, or_      : Single;
+  lv, lx, px   : Single;
+  il, ir, fx,
+  l, r         : Single;
 begin
   a0 := fBuffer[0, 0];
   a1 := fBuffer[0, 1];
   b0 := fBuffer[1, 0];
   b1 := fBuffer[1, 1];
-(*
+  e  := fEnv;
+  at := fAttack;
+  re := fRelease;
   fx := ff;
-  float aa, bb, ee, e = env, at = fAttack, re = fRelease, l = fLevel, lx = ll, px = pp;
-  float il = i2l, ir = i2r, ol = o2l, or_ = o2r;
-*)
+  lv := fLevel;
+  lx := ll;
+  px := pp;
+  il := i2l;
+  ir := i2r;
+  l  := o2l;
+  r  := o2r;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
     a := Inputs[0, Sample];
     b := Inputs[1, Sample];
 
-(*
-    a0 := a0 + f * (a - a0 - a1);  //frequency split
-    a1 := a1 + f * a0;
+    a0 := a0 + fFreq * (a - a0 - a1);  //frequency split
+    a1 := a1 + fFreq * a0;
     aa := a1 + fx * a;
 
-    b0 := b0 + f * (b - b0 - b1);
-    b1 := b1 + f * b0;
+    b0 := b0 + fFreq * (b - b0 - b1);
+    b1 := b1 + fFreq * b0;
     bb := b1 + fx * b;
 
     ee := -(aa + bb);
 
-    if (ee > l)
+    if (ee > lv)
      then e := e + at * (px - e);  //fLevel split
     e := e * re;
 
-    a := il * a + ol  * aa * (e + lx);
-    b := ir * b + or_ * bb * (e + lx);
-*)
+    a := il * a + l * aa * (e + lx);
+    b := ir * b + r * bb * (e + lx);
 
    Outputs[0, Sample] := a;
    Outputs[1, Sample] := b;
   end;
 
-(*
   fEnv := e;
   if (abs(e) < 1E-10)
    then fEnv := 0.0;
-  fBufer[0, 0] := a0;
-  fBufer[0, 1] := a1;
-  fBufer[1, 0] := b0;
-  fBufer[1, 1] := b1;
+  fBuffer[0, 0] := a0;
+  fBuffer[0, 1] := a1;
+  fBuffer[1, 0] := b0;
+  fBuffer[1, 1] := b1;
 
   if (abs(a0) < 1E-10) then
-*)
    begin
     fBuffer[0, 0] := 0;
     fBuffer[0, 1] := 0;
@@ -139,59 +156,55 @@ procedure TSplitterDataModule.VSTModuleResume(Sender: TObject);
 var
   tmp : Integer;
 begin
-(*
   fFreq     := Parameter[1];
-  fFreqDisp := Power(10, 2 + 2 * fFreq);     // frequency
+  fFreqDisp := Power(10, 2 + 2 * fFreq);      // Frequency
   fFreq     := 5.5 * fFreqDisp / SampleRate;
   if (fFreq > 1) then fFreq := 1;
 
-  ff  := -1;                                 // above
-  tmp := round(2.9 * Parameter[2]);          // frequency switching
-  if(tmp==0) ff = 0.0;     //below
-  if(tmp==1) fFreq = 0.001; //all
+  ff  := -1;                                  // Above
+  tmp := round(2.9 * Parameter[2]);           // Frequency Switching
+  if tmp = 0 then ff := 0.0;                  // Below
+  if tmp = 1 then fFreq := 0.001;             // All
 
-  fLevelDisp := 40 * Parameter[3] - 40;      // Level
+  fLevelDisp := 40 * Parameter[3] - 40;       // Level
   fLevel := Power(10.0, 0.05 * fLevelDisp + 0.3);
 
-  ll = 0.0;                                  // above
-  tmp = (long)(2.9 * Parameter[4]);          // Level switching
-  if (tmp = 0) then ll := -1;                // below
-  if (tmp = 1) then fLevel := 0;             // all
+  ll := 0.0;                                  // Above
+  tmp := round(2.9 * Parameter[4]);           // Level Switching
+  if (tmp = 0) then ll := -1;                 // Below
+  if (tmp = 1) then fLevel := 0;              // All
 
-  pp := -1;  //phase correction
-  if (ff = ll) then pp = 1.0;
+  pp := -1;                                   // Phase Correction
+  if (ff = ll) then pp := 1;
   if (ff = 0) and (ll = -1)
    then ll := -ll;
 
-  fAttack = 0.05 - 0.05 * Parameter[5];
-  fRelease = 1.0 - (float)exp(-6.0 - 4.0 * Parameter[5]); //envelope
+  fAttack  := 0.05 - 0.05 * Parameter[5];
+  fRelease := 1 - exp(-6 - 4 * Parameter[5]); // Envelope
   if (fAttack  > 0.02)   then fAttack  := 0.02;
   if (fRelease < 0.9995) then fRelease := 0.9995;
 
-  i2l := Power(10, 2 * Parameter[6] - 1);  //gain 
-  i2r := Power(10, 2 * Parameter[6] - 1);  //gain
-  o2l := Power(10, 2 * Parameter[6] - 1);  //gain
-  o2r := Power(10, 2 * Parameter[6] - 1);  //gain
+  i2l := Power(10, 2 * Parameter[6] - 1);     // Gain
+  i2r := i2l;
+  o2l := i2l;
+  o2r := i2l;
 
-  fMode = (long)(3.9 * Parameter[0]);  //output routing
+  fMode := round(3.9 * Parameter[0]);         // Output Routing
   case round(fMode) of
-     0: i2l  =  0.0;  i2r  =  0.0;  break;
-     1: o2l *= -1.0;  o2r *= -1.0;  break;
-     2: i2l  =  0.0;  o2r *= -1.0;  break;
-   else o2l *= -1.0;  i2r  =  0.0;  break;
+     0: begin i2l :=   0 ;  i2r :=   0 ; end;
+     1: begin o2l := -o2l;  o2r := -o2r; end;
+     2: begin i2l :=   0 ;  o2r := -o2r; end;
+   else begin o2l := -o2l;  i2r :=   0 ; end;
   end;
-*)
 end;
 
 procedure TSplitterDataModule.VSTModuleSuspend(Sender: TObject);
 begin
-(*
  fEnv := 0;
- fBufer[0, 0] := 0;
- fBufer[0, 1] := 0;
- fBufer[1, 0] := 0;
- fBufer[1, 1] := 0;
-*)
+ fBuffer[0, 0] := 0;
+ fBuffer[0, 1] := 0;
+ fBuffer[1, 0] := 0;
+ fBuffer[1, 1] := 0;
 end;
 
 end.

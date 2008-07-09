@@ -3,7 +3,7 @@ unit SubSynthDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TSubSynthDataModule = class(TVSTModule)
