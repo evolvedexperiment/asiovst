@@ -3,11 +3,11 @@ unit mdaAmbienceDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 
 const
-  FeedBack = 0.8;
+  cBufferSize = 1024;
+  cFeedBack = 0.8;
 
 type
   TmdaAmbienceDataModule = class(TVSTModule)
@@ -41,27 +41,20 @@ uses
 
 procedure TmdaAmbienceDataModule.ParamHFDampChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Parameter[Index] <> Value then
-  begin
-   fDamp := 0.05 + 0.9 * 0.01 * Value;
-  end;
+ fDamp := 0.05 + 0.9 * 0.01 * Value;
 end;
 
 procedure TmdaAmbienceDataModule.ParamMixChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if Parameter[Index] <> Value
-  then CalculateDryWet;
+ CalculateDryWet;
 end;
 
 procedure TmdaAmbienceDataModule.ParamOutputChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if Parameter[Index] <> Value then
-  begin
-   fOutputFactor := Power(10.0, Parameter[3] * 0.05);
-   CalculateDryWet;
-  end;
+ fOutputFactor := Power(10.0, Parameter[3] * 0.05);
+ CalculateDryWet;
 end;
 
 procedure TmdaAmbienceDataModule.CalculateDryWet;
@@ -74,32 +67,29 @@ procedure TmdaAmbienceDataModule.ParamSizeChange(Sender: TObject; const Index: I
 var
   temp : Double;
 begin
- if Parameter[Index] <> Value then
-  begin
-   temp := 0.025 + 0.2665 * Value;
-   if (fRoomSize <> temp)
-    then fReady := False;  //need to flush buffer
-   fRoomSize := temp;
-  end;
+ temp := 0.025 + 0.2665 * Value;
+ if (fRoomSize <> temp)
+  then fReady := False;  // need to flush buffer
+ fRoomSize := temp;
 end;
 
 procedure TmdaAmbienceDataModule.VSTModuleCreate(Sender: TObject);
 begin
- GetMem(fBuffers[0], 1024);
- GetMem(fBuffers[1], 1024);
- GetMem(fBuffers[2], 1024);
- GetMem(fBuffers[3], 1024);
+ GetMem(fBuffers[0], cBufferSize * SizeOf(Single));
+ GetMem(fBuffers[1], cBufferSize * SizeOf(Single));
+ GetMem(fBuffers[2], cBufferSize * SizeOf(Single));
+ GetMem(fBuffers[3], cBufferSize * SizeOf(Single));
 
  fFil := 0.0;
  fDen := fPos = 0;
 
- VSTModuleSuspend(Sender);  // flush buffer
+ VSTModuleSuspend(Sender);  // Flush buffer
 
  //inits here!
- Parameter[0] := 0.7; //size
- Parameter[1] := 0.7; //hf
- Parameter[2] := 0.9; //mix
- Parameter[3] := 0.5; //output
+ Parameter[0] := 0.7; // Size
+ Parameter[1] := 0.7; // HF
+ Parameter[2] := 0.9; // Mix
+ Parameter[3] := 0.5; // Output
 end;
 
 procedure TmdaAmbienceDataModule.VSTModuleDestroy(Sender: TObject);
@@ -136,30 +126,30 @@ begin
 
  for i := 0 to SampleFrames - 1 do
   begin
-   f := f + dmp * (w * (inputs[0, i] + inputs[1, i]) - f);  //HF damping
+   f := f + dmp * (w * (Inputs[0, i] + Inputs[1, i]) - f);  // HF damping
    r := f;
 
    t := fBuffers[0]^[p];
-   r := r - FeedBack * t;
-   fBuffers[0]^[d[0]] := r; //allpass
+   r := r - cFeedBack * t;
+   fBuffers[0]^[d[0]] := r; // Allpass
    r := r + t;
 
    t := fBuffers[1]^[p];
-   r := r - FeedBack * t;
-   fBuffers[0]^[d[1]] := r; //allpass
+   r := r - cFeedBack * t;
+   fBuffers[0]^[d[1]] := r; // Allpass
    r := r + t;
 
    t := fBuffers[2]^[p];
-   r := r - FeedBack * t;
-   fBuffers[2]^[d[2]] := r; //allpass
+   r := r - cFeedBack * t;
+   fBuffers[2]^[d[2]] := r; // Allpass
    r := r + t;
-   Outputs[0, i] := y * Inputs[0, i] + r - f; //left output
+   Outputs[0, i] := y * Inputs[0, i] + r - f; // Left Output
 
    t := fBuffers[3]^[p];
-   r := r - FeedBack * t;
-   fBuffers[3]^[d[3]] := r; //allpass
+   r := r - cFeedBack * t;
+   fBuffers[3]^[d[3]] := r; // Allpass
    r := r + t;
-   Outputs[1, i] := y * Inputs[1, i] + r - f; //right output
+   Outputs[1, i] := y * Inputs[1, i] + r - f; // Right Output
 
    p    := (p    + 1) and 1023;
    d[0] := (d[0] + 1) and 1023;
@@ -170,7 +160,7 @@ begin
 
  fPos := p;
  if (abs(f) > 1E-10) then
-  begin   //catch denormals
+  begin   // Catch Denormals
    fFil := f;
    fDen := False;
   end
@@ -211,30 +201,30 @@ begin
 
  for i := 0 to SampleFrames - 1 do
   begin
-   f := f + dmp * (w * (inputs[0, i] + inputs[1, i]) - f);  //HF damping
+   f := f + dmp * (w * (Inputs[0, i] + Inputs[1, i]) - f);  //HF Damping
    r := f;
 
    t := fBuffers[0]^[p];
-   r := r - FeedBack * t;
-   fBuffers[0]^[d[0]] := r; //allpass
+   r := r - cFeedBack * t;
+   fBuffers[0]^[d[0]] := r; // Allpass
    r := r + t;
 
    t := fBuffers[1]^[p];
-   r := r - FeedBack * t;
-   fBuffers[0]^[d[1]] := r; //allpass
+   r := r - cFeedBack * t;
+   fBuffers[0]^[d[1]] := r; // Allpass
    r := r + t;
 
    t := fBuffers[2]^[p];
-   r := r - FeedBack * t;
-   fBuffers[2]^[d[2]] := r; //allpass
+   r := r - cFeedBack * t;
+   fBuffers[2]^[d[2]] := r; // Allpass
    r := r + t;
-   Outputs[0, i] := y * Inputs[0, i] + r - f; //left output
+   Outputs[0, i] := y * Inputs[0, i] + r - f; // Left Output
 
    t := fBuffers[3]^[p];
-   r := r - FeedBack * t;
-   fBuffers[3]^[d[3]] := r; //allpass
+   r := r - cFeedBack * t;
+   fBuffers[3]^[d[3]] := r; // Allpass
    r := r + t;
-   Outputs[1, i] := y * Inputs[1, i] + r - f; //right output
+   Outputs[1, i] := y * Inputs[1, i] + r - f; // Right Output
 
    p    := (p    + 1) and 1023;
    d[0] := (d[0] + 1) and 1023;
@@ -262,10 +252,10 @@ end;
 
 procedure TmdaAmbienceDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- FillChar(fBuffers[0], 1024, 0);
- FillChar(fBuffers[1], 1024, 0);
- FillChar(fBuffers[2], 1024, 0);
- FillChar(fBuffers[3], 1024, 0);
+ FillChar(fBuffers[0]^[0], cBufferSize * SizeOf(Single), 0);
+ FillChar(fBuffers[1]^[0], cBufferSize * SizeOf(Single), 0);
+ FillChar(fBuffers[2]^[0], cBufferSize * SizeOf(Single), 0);
+ FillChar(fBuffers[3]^[0], cBufferSize * SizeOf(Single), 0);
  fReady := True;
 end;
 
