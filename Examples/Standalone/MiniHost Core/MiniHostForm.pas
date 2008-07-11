@@ -824,8 +824,8 @@ begin
    Flags := 0;
    dumpBytes := aStream.Size;
    sysexDump := aStream.Memory;
-   resvd1 := 0;
-   resvd2 := 0;
+   resvd1 := nil;
+   resvd2 := nil;
   end;
 end;
 
@@ -1425,10 +1425,11 @@ begin
 end;
 
 procedure TFmMiniHost.ProcessEvents(Sender: TObject; ev: PVstEvents);
-var i: Integer;
-    event: PVstMidiEvent;
-    Sysex : PVstMidiSysexEvent;
-    aStream: TMemoryStream;
+var
+  i: Integer;
+  event: PVstMidiEvent;
+  Sysex : PVstMidiSysexEvent;
+  aStream: TMemoryStream;
 begin
  if fCurrentMidiOut = 0 then exit;
  for i := 0 to ev^.numEvents - 1 do
@@ -1447,16 +1448,17 @@ begin
       aStream.Size := Sysex.dumpBytes;
       aStream.Position := 0;
       Move(Sysex.SysexDump^, pchar(aStream.Memory)[0], Sysex.dumpBytes);
-      MidiOutput.SendSysEx(fCurrentMidiOut - 1,aStream);
+      MidiOutput.SendSysEx(fCurrentMidiOut - 1, aStream);
       aStream.Free;
      end;
    end;
 end;
 
-procedure TFmMiniHost.wmdropfiles(var msg: tmessage);
-var size: Integer;
-    name: pchar;
-    fn,s :string;
+procedure TFmMiniHost.WMDropFiles(var msg: TMessage);
+var
+  size  : Integer;
+  name  : PChar;
+  fn, s : string;
 begin
  inherited;
  size := DragQueryFile(msg.wparam, 0, nil, 0) + 1;
@@ -1500,7 +1502,8 @@ begin
 end;
 
 procedure TFmMiniHost.MIRenamePresetClick(Sender: TObject);
-var s2, s: string;
+var
+  s2, s: string;
 begin
  s := inputbox('Rename Preset', 'New name:', VSTHost[0].GetProgramName);
  VSTHost[0].SetProgramName(s);
@@ -1515,31 +1518,26 @@ begin
 end;
 
 procedure TFmMiniHost.LoadMIDIFile1Click(Sender: TObject);
-var OD: TOpenDialog;
 begin
- OD := TOpenDialog.Create(Self);
- try
- with OD do
- begin
-  Name := 'OD' + inttostr(random(25555));
-  DefaultExt := '.mid';
-  InitialDir := fDirMidi;
-  Options := [ofFileMustExist, ofForceShowHidden];
-  Ctl3D := False;
-  //c
-  filename := '*.mid;*.mpl';
-  Filter := 'MIDI files and playlists (*.mid;*.mpl)|*.mid;*.mpl|MIDI files (*.mid)|*.mid|MIDI playlists (*.mpl)|*.mpl';
-  FilterIndex := 0;
-  Title := 'Select a MIDI file';
-  if Execute then
-  begin
-   fDirMidi := ExtractFileDir(Filename);
-   AddMID(Filename);
+ with TOpenDialog.Create(Self) do
+  try
+   DefaultExt := '.mid';
+   InitialDir := fDirMidi;
+   Options := [ofFileMustExist, ofForceShowHidden];
+   Ctl3D := False;
+
+   Filename := '*.mid;*.mpl';
+   Filter := 'MIDI files and playlists (*.mid;*.mpl)|*.mid;*.mpl|MIDI files (*.mid)|*.mid|MIDI playlists (*.mpl)|*.mpl';
+   FilterIndex := 0;
+   Title := 'Select a MIDI file';
+   if Execute then
+    begin
+     fDirMidi := ExtractFileDir(Filename);
+     AddMID(Filename);
+    end;
+  finally
+   Free;
   end;
- end;
- finally
- OD.Free;
- end;
 end;
 
 procedure TFmMiniHost.MISettingsClick(Sender: TObject);
@@ -1548,26 +1546,27 @@ begin
 end;
 
 procedure TFmMiniHost.SetChannelI(Sender: TObject);
-var f: boolean;
+var
+  f : Boolean;
 begin
  (Sender as TMenuItem).checked := True;
- fCurrentInputChannel := (Sender as TMenuItem).tag;
+ fCurrentInputChannel := (Sender as TMenuItem).Tag;
  f := ASIOHost.Active;
- if fCurrentInputChannel = 0 then
-  ASIOHost.InputChannelOffset := 0
- else
-  ASIOHost.InputChannelOffset := (fCurrentInputChannel - 1) * 2;
+ if fCurrentInputChannel = 0
+  then ASIOHost.InputChannelOffset := 0
+  else ASIOHost.InputChannelOffset := (fCurrentInputChannel - 1) * 2;
  if f then StartAudio;
  FmOptions.LbInputs.Caption := 'Inputs: ' + MIASIOInputChannel.Items[fCurrentInputChannel].Caption;
 end;
 
 procedure TFmMiniHost.ASIOHostReset(Sender: TObject);
-var i: Integer;
+var
+  i : Integer;
 begin
- for i := 0 to length(fVSTBufOut) - 1 do
-  SetLength(fVSTBufOut[i], ASIOHost.BufferSize);
- for i := 0 to length(fVSTBufIn) - 1 do
-  SetLength(fVSTBufIn[i], ASIOHost.BufferSize);
+ for i := 0 to length(fVSTBufOut) - 1
+  do SetLength(fVSTBufOut[i], ASIOHost.BufferSize);
+ for i := 0 to length(fVSTBufIn) - 1
+  do SetLength(fVSTBufIn[i], ASIOHost.BufferSize);
  SetLength(fInBufL, ASIOHost.BufferSize);
  SetLength(fInBufR, ASIOHost.BufferSize);
  SetLength(fWavBufL, ASIOHost.BufferSize);
@@ -1576,7 +1575,8 @@ begin
 end;
 
 procedure TFmMiniHost.ASIOHostDestroy(Sender: TObject);
-var i: Integer;
+var
+  i : Integer;
 begin
  fProcessing := False;
  SetLength(fInBufL, 0);
@@ -1609,15 +1609,13 @@ end;
 procedure TFmMiniHost.NoteOn(ch, note, v: byte);
 begin
  if v = 0 then
- begin
-  ch := ch - $10;
-  NoteOff(ch, note);
-  exit;
- end;
- begin
-  if (note <= 127) then
-   ProcessNoteOnOff(ch, note, v);
- end;
+  begin
+   ch := ch - $10;
+   NoteOff(ch, note);
+   exit;
+  end;
+ if (note <= 127)
+  then ProcessNoteOnOff(ch, note, v);
 end;
 
 procedure TFmMiniHost.NoteOff(ch, note: byte);
@@ -1663,16 +1661,16 @@ begin
 end;
 
 procedure TFmMiniHost.MIShowPresetClick(Sender: TObject);
-var s: string;
+var
+  s: string;
 begin
  MIShowPreset.Checked := not MIShowPreset.Checked;
  s := inttostr(fCurProg);
  if fCurProg < 10 then s := '00' + s else
  if fCurProg < 100 then s := '0' + s;
- if MIShowPreset.Checked then
-  caption := fTitle + ' - ' + s + ': ' + fCurProgName
- else
-  caption := fTitle;
+ if MIShowPreset.Checked
+  then Caption := fTitle + ' - ' + s + ': ' + fCurProgName
+  else Caption := fTitle;
 end;
 
 procedure TFmMiniHost.StopPlayback1Click(Sender: TObject);
@@ -1709,16 +1707,17 @@ begin
   Player.LbMidiFile.Caption := MidiBox.items[MidiBox.itemindex];
   
  if MidiPlaying then
- begin
-  MidiFile.StopPlaying;
-  MidiPlaying := False;
-  MIPanicClick(nil);
- end else
- begin
-  MIPanicClick(nil);
-  MIDIFile.StartPlaying;
-  MidiPlaying := True;
- end;
+  begin
+   MidiFile.StopPlaying;
+   MidiPlaying := False;
+   MIPanicClick(nil);
+  end
+ else
+  begin
+   MIPanicClick(nil);
+   MIDIFile.StartPlaying;
+   MidiPlaying := True;
+  end;
 end;
 
 procedure TFmMiniHost.F4PlayStopWAV1Click(Sender: TObject);
@@ -1726,12 +1725,12 @@ begin
  with Player do
  if WavBox.Items.Count > 0 then
  if WavBox.ItemIndex >= 0 then
- begin
-  Player.LbWaveFile.Caption := WavBox.items[WavBox.itemindex];
-  if Wavefile.fPMode = wpmPlay
-   then StopPlayback2Click(nil)
-   else StartPlayback2Click(nil);
- end;
+  begin
+   Player.LbWaveFile.Caption := WavBox.items[WavBox.itemindex];
+   if Wavefile.fPMode = wpmPlay
+    then StopPlayback2Click(nil)
+    else StartPlayback2Click(nil);
+  end;
 end;
 
 procedure TFmMiniHost.F5RecStopWAV1Click(Sender: TObject);
@@ -1770,15 +1769,15 @@ procedure TWavPlayer.Load(s: TFileName);
 begin
  fPMode := wpmPause;
  if assigned(pbuf) then
- begin
-  freemem(pbuf);
-  pbuf := nil;
- end;
+  begin
+   freemem(pbuf);
+   pbuf := nil;
+  end;
  Filemode := 0;
  if s <> '' then
- begin
-//  pbuf := LoadWAVFile(s,sr,ch,size);
- end;
+  begin
+ //  pbuf := LoadWAVFile(s,sr,ch,size);
+  end;
  pf := pbuf;
  fCnt := 0;
  fCnt2 := 0;
@@ -1796,7 +1795,8 @@ begin
 end;
 
 procedure TWavPlayer.process(var o1, o2: single);
-var next, next2, pp: psingle;
+var
+  next, next2, pp: PSingle;
 begin
  if (not assigned(pf))   // if buffer is empty (no file loaded)
   or (fPmode = wpmPause) // or "play" not activated
@@ -1807,48 +1807,49 @@ begin
  begin
   o1 := pf^;
   if fCh = 2 then // stereo?
-  begin
-   pp := psingle(longint(pf) + 4);
-   o2 := pp^;
-   next := psingle(longint(pf) + 8);
-   next2 := psingle(longint(pf) + 12);
-   o2 := o2 * (1 - fCnt) + fCnt * next2^;
-  end else
-  begin
-   next := psingle(longint(pf) + 4);
-   o2 := o1;
-  end;
+   begin
+    pp := psingle(longint(pf) + 4);
+    o2 := pp^;
+    next := psingle(longint(pf) + 8);
+    next2 := psingle(longint(pf) + 12);
+    o2 := o2 * (1 - fCnt) + fCnt * next2^;
+   end
+  else
+   begin
+    next := psingle(longint(pf) + 4);
+    o2 := o1;
+   end;
   if (fCnt <1 ) and (fInterpol) then // interpolation?
    o1 := o1 * (1 - fCnt) + fCnt * next^; // get next sample
 
   fCnt := fCnt + speed * (fSR / samplerate);
   while (fCnt >= 1) do
-  begin
-   inc(pf, fCh);
-   fCnt := fCnt - 1;
-   inc(fCnt2, fCh);
-  end;
-  if (fCnt2 >= fSize - 1) then
-  begin
-   if not looped then
    begin
-    fPMode := wpmPause;
-    Player.SbWavPosition.position := 0;
-    if (Player.CBWavPlayMode.ItemIndex = 2) and (Player.WavBox.Items.Count > 0) then
-    begin
-     Player.WavBox.ItemIndex := (Player.WavBox.ItemIndex + 1) mod Player.WavBox.Items.Count;
-     Player.BtWavPlayClick(nil);
-    end else
-    if (Player.CBWavPlayMode.ItemIndex = 3) and (Player.WavBox.Items.Count > 0) then
-    begin
-     Player.WavBox.itemindex := random(Player.WavBox.Items.Count);
-     Player.BtWavPlayClick(nil);
-    end;
+    inc(pf, fCh);
+    fCnt := fCnt - 1;
+    inc(fCnt2, fCh);
    end;
-   fCnt2 := 0;
-   fCnt := 0;
-   pf := pbuf;
-  end;
+  if (fCnt2 >= fSize - 1) then
+   begin
+    if not looped then
+     begin
+      fPMode := wpmPause;
+      Player.SbWavPosition.position := 0;
+      if (Player.CBWavPlayMode.ItemIndex = 2) and (Player.WavBox.Items.Count > 0) then
+       begin
+        Player.WavBox.ItemIndex := (Player.WavBox.ItemIndex + 1) mod Player.WavBox.Items.Count;
+        Player.BtWavPlayClick(nil);
+       end else
+      if (Player.CBWavPlayMode.ItemIndex = 3) and (Player.WavBox.Items.Count > 0) then
+       begin
+        Player.WavBox.itemindex := random(Player.WavBox.Items.Count);
+        Player.BtWavPlayClick(nil);
+       end;
+     end;
+    fCnt2 := 0;
+    fCnt := 0;
+    pf := pbuf;
+   end;
  end;
 
  if fCh = 2 then // stereo output
@@ -1981,7 +1982,7 @@ end;
 procedure TFmMiniHost.IQuickSettingsMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- with FmOptions do if Showing then Hide else Show; 
+ with FmOptions do if Showing then Hide else Show;
 end;
 
 procedure TFmMiniHost.IQuickMidPlayMouseUp(Sender: TObject; Button: TMouseButton;
@@ -2003,28 +2004,29 @@ begin
 end;
 
 procedure TFmMiniHost.AddMID(s:string);
-var j, i : Integer;
-    ms   : PShortStr;
+var
+  j, i : Integer;
+  ms   : PShortStr;
 begin
  if UpperCase(ExtractFileExt(s)) = '.MPL' then
- begin
-  {$IFDEF FPC}
-  for I := 0 to Player.MidiBox.Items.Count - 1
-   do Player.MidiBox.Selected[I] := True;
-  {$ELSE}
-  Player.MidiBox.SelectAll;
-  {$ENDIF}
-  Player.BtMidiAddClick(nil);
-  with TStringList.Create do
-   try
-    LoadFromFile(s);
-    for i := 0 to Count - 1 do AddMID(Strings[i]);
-    if (Count > 0) and (uppercase(Strings[0]) = 'RANDOM') then
-     Player.CBMidiPlayMode.ItemIndex := 3;
-   finally
-    Free
-   end;
- end;
+  begin
+   {$IFDEF FPC}
+   for I := 0 to Player.MidiBox.Items.Count - 1
+    do Player.MidiBox.Selected[I] := True;
+   {$ELSE}
+   Player.MidiBox.SelectAll;
+   {$ENDIF}
+   Player.BtMidiAddClick(nil);
+   with TStringList.Create do
+    try
+     LoadFromFile(s);
+     for i := 0 to Count - 1 do AddMID(Strings[i]);
+     if (Count > 0) and (uppercase(Strings[0]) = 'RANDOM') then
+      Player.CBMidiPlayMode.ItemIndex := 3;
+    finally
+     Free
+    end;
+  end;
  if UpperCase(ExtractFileExt(s)) <> '.MID' then Exit;
  if not FileExists(s) then Exit;
  j := -1;
@@ -2039,8 +2041,9 @@ begin
 end;
 
 procedure TFmMiniHost.AddWAV(s:string);
-var j, i : Integer;
-    ms   : PShortStr;
+var
+  j, i : Integer;
+  ms   : PShortStr;
 begin
  if UpperCase(ExtractFileExt(s))='.WPL' then
   begin
@@ -2108,8 +2111,9 @@ end;
 
 procedure TFmMiniHost.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
   OutBuffer: TAVDArrayOfSingleDynArray);
-var j, i: Integer;
-    bs, ChOfs: Integer;
+var
+  j, i: Integer;
+  bs, ChOfs: Integer;
 begin
  bs := ASIOHost.BufferSize;
  if (bs <= 0) or (not fAllowed) or (VSTHost = nil)
