@@ -2,7 +2,7 @@ object ComboDataModule: TComboDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsCanMono, effFlagsCanReplacing]
+  Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'mda Combo'
   ProductName = 'Combo'
@@ -111,6 +111,7 @@ object ComboDataModule: TComboDataModule
   OnSuspend = VSTModuleSuspend
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   Left = 218
   Top = 81
   Height = 150
