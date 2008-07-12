@@ -43,10 +43,14 @@ end;
 
 procedure TDeessDataModule.ParamFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Exp2Lin : Double;
+  RangeRatio : Double;
+  Exp2Lin    : Double;
 begin
- with ParameterProperties[Index]
-  do Exp2Lin := (exp(Value * ln((Max / Min) + 1)) - 1) / (Max / Min);
+ with ParameterProperties[Index] do
+  begin
+   RangeRatio := Max / Min;
+   Exp2Lin := (exp(((Value - Min) / (Max - Min)) * ln(RangeRatio + 1)) - 1);
+  end;
  fFilter := 0.05 + 0.94 * sqr(Exp2Lin);
 end;
 

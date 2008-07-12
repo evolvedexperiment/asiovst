@@ -3,8 +3,7 @@ unit LoudnessDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TLoudnessDataModule = class(TVSTModule)
@@ -13,6 +12,8 @@ type
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure ParameterLinkDisplay( Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer;
+      var Value: Single);
   private
     fIsBoost : Boolean;
     fGain    : Single;
@@ -63,6 +64,12 @@ begin
  if Parameter[Index] > 0.5
   then PreDefined := 'ON'
   else PreDefined := 'OFF';
+end;
+
+procedure TLoudnessDataModule.VSTModuleParameterChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+begin
+ VSTModuleResume(Sender);
 end;
 
 procedure TLoudnessDataModule.VSTModuleProcess(const Inputs,

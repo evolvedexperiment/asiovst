@@ -20,7 +20,7 @@ object MultibandDataModule: TMultibandDataModule
     end>
   ParameterProperties = <
     item
-      Max = 4.000000000000000000
+      Max = 3.000000000000000000
       Curve = ctLinear
       DisplayName = 'Listen'
       CurveFactor = 1.000000000000000000
@@ -28,7 +28,7 @@ object MultibandDataModule: TMultibandDataModule
       StepFloat = 1.000000000000000000
       SmallStepFloat = 1.000000000000000000
       LargeStepFloat = 1.000000000000000000
-      MaxInteger = 4
+      MaxInteger = 3
       LargeStepInteger = 1
       ShortLabel = 'Listen'
       VSTModule = Owner
@@ -93,6 +93,7 @@ object MultibandDataModule: TMultibandDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'L Out'
       VSTModule = Owner
+      OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
       Max = 1.000000000000000000
@@ -103,6 +104,7 @@ object MultibandDataModule: TMultibandDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'M Out'
       VSTModule = Owner
+      OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
       Max = 1.000000000000000000
@@ -113,6 +115,7 @@ object MultibandDataModule: TMultibandDataModule
       SmoothingFactor = 1.000000000000000000
       ShortLabel = 'H Out'
       VSTModule = Owner
+      OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
       Max = 1.000000000000000000

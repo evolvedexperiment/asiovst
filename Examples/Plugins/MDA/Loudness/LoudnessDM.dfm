@@ -55,6 +55,7 @@ object LoudnessDataModule: TLoudnessDataModule
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterLinkDisplay
     end>
+  OnParameterChange = VSTModuleParameterChange
   OnResume = VSTModuleResume
   OnSuspend = VSTModuleSuspend
   OnProcess = VSTModuleProcess

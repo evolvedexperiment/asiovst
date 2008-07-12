@@ -3,8 +3,7 @@ unit MultibandDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TMultibandDataModule = class(TVSTModule)
@@ -12,6 +11,8 @@ type
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
     procedure ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterGainDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fDriveL    : Single;
     fTrimL     : Single;
@@ -42,6 +43,11 @@ implementation
 uses
   Math;
 
+procedure TMultibandDataModule.ParameterGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF(40 * Parameter[Index] - 20, ffGeneral, 2, 2);
+end;
+
 procedure TMultibandDataModule.ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
@@ -54,6 +60,9 @@ end;
 
 procedure TMultibandDataModule.VSTModuleCreate(Sender: TObject);
 begin
+ Parameter[ 6] := 0.5;   // L trim   (2)
+ Parameter[ 7] := 0.5;   // M trim
+ Parameter[ 8] := 0.5;   // H trim
 {
  //inits here!
  Parameter[ 0] := 1.00;  // Listen: L/M/H/out
@@ -62,9 +71,6 @@ begin
  Parameter[ 3] := 0.45;  // L drive  (1)
  Parameter[ 4] := 0.45;  // M drive
  Parameter[ 5] := 0.45;  // H drive
- Parameter[ 6] := 0.50;  // L trim   (2)
- Parameter[ 7] := 0.50;  // M trim
- Parameter[ 8] := 0.50;  // H trim
  Parameter[ 9] := 0.22;  // attack   (3)
  Parameter[10] := 0.60;  // release  (4)
  Parameter[11] := 0.50;  // width
@@ -78,19 +84,19 @@ begin
  //calcs here
  fDriveL   := Power(10, (2.5 * Parameter[3]) - 1);
  fTrimL    := 0.5 + (4 - 2 * Parameter[9]) * (sqr(Parameter[3]) * Parameter[3]);
- fTrimL    := fTrimL * Power(10, 2.0 * Parameter[6] - 1.0);
+ fTrimL    := fTrimL * Power(10, 2.0 * Parameter[6] - 1);
  fAttackL  := Power(10, -0.05 -(2.5 * Parameter[9]));
  fReleaseL := Power(10, -2 - (3.5 * Parameter[10]));
 
- fDriveM   := Power(10, (2.5 * Parameter[4]) - 1.0);
+ fDriveM   := Power(10, (2.5 * Parameter[4]) - 1);
  fTrimM    := 0.5 + (4 - 2 * Parameter[9]) * (sqr(Parameter[4]) * Parameter[4]);
- fTrimM    := fTrimM * Power(10, 2 * Parameter[7] - 1.0);
+ fTrimM    := fTrimM * Power(10, 2 * Parameter[7] - 1);
  fAttackM  := Power(10, -0.05 -(2 * Parameter[9]));
  fReleaseM := Power(10, -2 - (3 * Parameter[10]));
 
- fDriveH   := Power(10, (2.5 * Parameter[5]) - 1.0);
+ fDriveH   := Power(10, (2.5 * Parameter[5]) - 1);
  fTrimH    := 0.5 + (4 - 2 * Parameter[9]) * (sqr(Parameter[5]) * Parameter[5]);
- fTrimH    := fTrimH * Power(10, 2 * Parameter[8] - 1.0);
+ fTrimH    := fTrimH * Power(10, 2 * Parameter[8] - 1);
  fAttackH  := Power(10, -0.05 -(1.5 * Parameter[9]));
  fReleaseH := Power(10, -2 - (2.5 * Parameter[10]));
 
@@ -123,10 +129,10 @@ var
 begin
  l   := fFeedback[2];
  sl  := fSLev;
- f1i := fFi[0,0];
- f1o := fFi[1,0];
- f2i := fFi[0,1];
- f2o := fFi[1,1];
+ f1i := fFi[0, 0];
+ f1o := fFi[1, 0];
+ f2i := fFi[0, 1];
+ f2o := fFi[1, 1];
  b1  := fFeedback[0];
  b2  := fFeedback[1];
  g1  := fGainL;
@@ -181,7 +187,7 @@ begin
     else g3 := g3 * r3;
    tmp3 := 1 / (1 + d3 * g3);
 
-   a := (l * tmp3 * t1) + (m * tmp2 * t2) + (h * tmp3 * t3);
+   a := (l * tmp1 * t1) + (m * tmp2 * t2) + (h * tmp3 * t3);
    c := a + s; // output
    if ms
     then d := s - a
