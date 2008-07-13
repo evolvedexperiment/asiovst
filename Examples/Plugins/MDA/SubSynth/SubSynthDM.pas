@@ -2,17 +2,24 @@ unit SubSynthDM;
 
 interface
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
+  TProcessType = (ptDistort, ptDivide, ptInvert, ptKeyOsc);
+
   TSubSynthDataModule = class(TVSTModule)
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
+    procedure ParameterLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fFilt  : Array [0..3] of Single;
+    fFilt  : array [0..3] of Single;
     fFilti : Single;
     fFilto : Single;
 
@@ -21,7 +28,7 @@ type
     fDvd   : Single;
     fPhs   : Single;
     fOsc   : Single;
-    fTyp   : Single;
+    fTyp   : TProcessType;
     fWet   : Single;
     fDry   : Single;
     fThr   : Single;
@@ -37,15 +44,44 @@ implementation
 uses
   Math;
 
+procedure TSubSynthDataModule.ParameterLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fWet := 0.01 * Value;
+end;
+
+procedure TSubSynthDataModule.ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fThr := dB_to_Amp(Parameter[4]);
+end;
+
+procedure TSubSynthDataModule.ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fRls := 1 - Power(10, -2 - (3 * Parameter[5]));
+end;
+
+procedure TSubSynthDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ case round(Parameter[Index]) of 
+  0: PreDefined := 'Distort';
+  1: PreDefined := 'Divide';
+  2: PreDefined := 'Invert';
+  3: PreDefined := 'Key Osc.';
+ end;
+end;
+
+procedure TSubSynthDataModule.ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fDry := 0.01 * Value;
+end;
+
 procedure TSubSynthDataModule.VSTModuleCreate(Sender: TObject);
 begin
- //inits here!
- Parameter[0] := 0.0; //type
- Parameter[1] := 0.3; //level
- Parameter[2] := 0.6; //tune
- Parameter[3] := 1.0; //fDry mix
- Parameter[4] := 0.6; //thresh
- Parameter[5] := 0.65; //release
+ Parameter[0] :=  0;    // Type
+ Parameter[1] := 30;    // Level
+ Parameter[2] := 0.6;   // Tune
+ Parameter[3] := 10;    // Dry Mix
+ Parameter[4] := -24;   // Threshold
+ Parameter[5] := 0.65;  // Release
 
  VSTModuleResume(Sender);
 end;
@@ -55,16 +91,12 @@ procedure TSubSynthDataModule.VSTModuleParameterChange(Sender: TObject;
 begin
   fDvd   := 1;
   fPhs   := 1;
-  fOsc   := 0; //oscillator phase
-  fTyp   := round(3.5 * Parameter[0]);
-  if fTyp = 3
+  fOsc   := 0; // Oscillator phase
+  fTyp   := TProcessType(round(Parameter[0]));
+  if fTyp = ptKeyOsc
    then fFilti := 0.018
-   else Power(10, -3 + (2 * Parameter[2]));
+   else fFilti := Power(10, -3 + (2 * Parameter[2]));
   fFilto := 1 - fFilti;
-  fWet   := Parameter[1];
-  fDry   := Parameter[3];
-  fThr   := Power(10, -3 + (3 * Parameter[4]));
-  fRls   := 1 - Power(10, -2 - (3 * Parameter[5]));
   fDPhi  := 0.456159 * Power(10, -2.5 + (1.5 * Parameter[2]));
 end;
 
@@ -98,37 +130,36 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   f1 := (fo * f1) + (fi * (Inputs[0, Sample] + Inputs[1, Sample]));
-   f2 := (fo * f2) + (fi * f1);
+   f1 := fo * f1 + fi * (Inputs[0, Sample] + Inputs[1, Sample]);
+   f2 := fo * f2 + fi * f1;
 
    sub := f2;
-   if (sub > th) then sub := 1 else
-    if(sub < -th) then sub := -1 else sub := 0;
+   if sub > th then sub := 1 else
+    if sub < -th then sub := -1 else sub := 0;
 
-   if (sub * dv) < 0 then //octave divider
+   if sub * dv < 0 then     // Octave Divider
     begin
      dv := -dv;
-     if (dv < 0) then ph := -ph;
+     if dv < 0 then ph := -ph;
     end;
 
-   if (fTyp = 1) //divide
-    then sub := ph * sub;
-   if(fTyp = 2) //invert
-    then sub := (ph * f2 * 2);
-   if(fTyp = 3) then //fOsc
-    begin
-     if (f2 > th)
-      then en := 1
-      else en := en * rl;
-     sub := (en * sin(phii));
-//     phii := fmod( phii + dph, 6.283185f );
-    end;
+   case fTyp of
+    ptDivide : sub := ph * sub;     // Divide
+    ptInvert : sub := ph * f2 * 2;  // Invert
+    ptKeyOsc : begin                // Osc
+                if (f2 > th)
+                 then en := 1
+                 else en := en * rl;
+                sub  := (en * sin(phii));
+                phii := f_mod(phii + dph, 6.283185);
+               end;
+   end;
 
    f3 := (fo * f3) + (fi * sub);
    f4 := (fo * f4) + (fi * f3);
 
-  Outputs[0, Sample] :=  (Inputs[0, Sample] * fDry) + (f4 * fWet); // output
-  Outputs[1, Sample] :=  (Inputs[1, Sample] * fDry) + (f4 * fWet);
+  Outputs[0, Sample] := Inputs[0, Sample] * fDry + f4 * fWet; // output
+  Outputs[1, Sample] := Inputs[1, Sample] * fDry + f4 * fWet;
   end;
 
  if (abs(f1) < 1E-10) then fFilt[0] := 0 else fFilt[0] := f1;
@@ -156,3 +187,13 @@ begin
 end;
 
 end.
+
+(*
+void mdaSubSynth::getParameterDisplay(VstInt32 index, char *text)
+{
+ {
+  case 2: sprintf(string, "%ld", (long)(0.0726 * SampleRate * Power(10.0,-2.5 + (1.5 * fParam3)))); break;
+  case 5: sprintf(string, "%ld", (long)(-301.03 / (SampleRate * log10(rls)))); break;
+ }
+}
+*)

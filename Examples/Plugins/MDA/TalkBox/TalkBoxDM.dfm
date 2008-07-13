@@ -21,45 +21,55 @@ object TalkBoxDataModule: TTalkBoxDataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Wet'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      Max = 200.000000000000000000
+      MaxInteger = 200
       ShortLabel = 'Wet'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Dry'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Dry'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Carrier'
-      CurveFactor = 1.000000000000000000
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
+      Units = '%'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Dry'
+      LargeStepFloat = 2.000000000000000000
+      Max = 200.000000000000000000
+      MaxInteger = 200
+      ShortLabel = 'Dry'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Carrier'
       LargeStepFloat = 1.000000000000000000
-      MaxInteger = 1
       LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
       ShortLabel = 'Carrier'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterCarrierDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Quality'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Quality'
+      Max = 1.000000000000000000
       ShortLabel = 'Quality'
+      SmoothingFactor = 1.000000000000000000
       VSTModule = Owner
     end>
   OnResume = VSTModuleResume

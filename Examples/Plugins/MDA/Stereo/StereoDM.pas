@@ -3,8 +3,7 @@ unit StereoDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TStereoDataModule = class(TVSTModule)
@@ -19,10 +18,12 @@ type
     procedure ParameterDelayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterModDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fPhi, fDel : Single;
     fDeltaPhi  : Single;
-    fMode      : Single;
+    fMod       : Single;
     fSize      : Integer;
     fBufferPos : Integer;
     fDelay     : Integer;
@@ -81,19 +82,11 @@ begin
  fLd := fLd * abs(Parameter[0]);
 end;
 
-function fmod(Arg1, Arg2: Single): Single;
-var
-  Norm : Single;
-begin
- Norm := Arg1 / Arg2;
- result := (Norm - round(Norm - 0.5)) * Arg2
-end;
-
 procedure TStereoDataModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample  : Integer;
-  a       : Double;
+  a, b    : Double;
   li, ld,
   ri, rd,
   del, ph : Double;
@@ -110,14 +103,14 @@ begin
  rd  := fRd;
  del := fDel;
 
- if (fMode > 0) then //modulated delay
+ if fMod > 0 then //modulated delay
   for Sample := 0 to SampleFrames - 1 do
    begin
     a := Inputs[0, Sample] + Inputs[1, Sample]; //sum to mono
 
     fBuffer[bp] := a; //write
-//    tmp := bp[round(del + abs(mo * sin(ph)))] mod 4410;
-//    b   := fBuffer[tmp];
+    tmp := (bp + round(del + abs(fMod * sin(ph)))) mod 4410;
+    b   := fBuffer[tmp];
 
     Outputs[0, Sample] := (Inputs[0, Sample] * li) - (Inputs[1, Sample] * ld); // output
     Outputs[1, Sample] := (Inputs[0, Sample] * ri) - (Inputs[1, Sample] * rd);
@@ -134,8 +127,8 @@ begin
     a := Inputs[0, Sample] + Inputs[1, Sample]; //sum to mono
 
     fBuffer[bp] := a; //write
-//    tmp := bp[round(del)] mod 4410;
-//    b   := fBuffer[tmp];
+    tmp := (bp + round(del)) mod 4410;
+    b   := fBuffer[tmp];
 
     Outputs[0, Sample] := (Inputs[0, Sample] * li) - (Inputs[1, Sample] * ld); // output
     Outputs[1, Sample] := (Inputs[0, Sample] * ri) - (Inputs[1, Sample] * rd);
@@ -147,7 +140,7 @@ begin
     ph := ph + dph;
    end;
  fBufferPos := bp;
- fPhi       := fmod(ph, 2 * Pi);
+ fPhi       := f_mod(ph, 2 * Pi);
 end;
 
 procedure TStereoDataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -160,8 +153,7 @@ begin
  FillChar(fBuffer, fSize * SizeOf(Single), 0);
 end;
 
-procedure TStereoDataModule.ParameterWidthChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TStereoDataModule.ParameterWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if (Parameter[0] < 0.5) then
   begin
@@ -186,9 +178,16 @@ begin
   else Predefined := 'Comb';
 end;
 
+procedure TStereoDataModule.ParameterModDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if fMod > 0
+  then PreDefined := FloatToStrF(1000 * fMod / SampleRate, ffGeneral, 2, 2)
+  else PreDefined := 'OFF';
+end;
+
 procedure TStereoDataModule.ParameterModChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fMode := (2100 * Power(Value, 2));
+ fMod := (2100 * Power(Value, 2));
 end;
 
 procedure TStereoDataModule.ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -213,12 +212,10 @@ void mdaStereo::getParameterDisplay(VstInt32 index, char *text)
 begin
   switch(index)
   begin
-    case 0: long2string((long)(200.0 * abs(Parameter[0] - 0.5)), text);break;
-    case 1: float2strng((1000.0 * fdel / SampleRate), text); break;
-    case 2: long2string((long)(200.0 * (Parameter[2] - 0.5)), text); break;
-    case 3: if(mod > 0) float2strng((1000.0 * mod / SampleRate), text);
-            else strcpy(text, "OFF"); break;
-    case 4: float2strng(Power(10.0,2.0 - 3.0 * Parameter[4]), text); break;
+    case 0: long2string(round(200 * abs(Parameter[0] - 0.5)), text);break;
+    case 1: float2strng((1000 * fdel / SampleRate), text); break;
+    case 2: long2string(round(200 * (Parameter[2] - 0.5)), text); break;
+    case 4: float2strng(Power(10, 2 - 3 * Parameter[4]), text); break;
   end;
 end;
 *)

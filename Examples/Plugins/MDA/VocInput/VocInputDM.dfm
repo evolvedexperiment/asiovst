@@ -20,71 +20,71 @@ object VocInputDataModule: TVocInputDataModule
     end>
   ParameterProperties = <
     item
-      Max = 2.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Tracking'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Tracking'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 2.000000000000000000
+      MaxInteger = 2
+      ShortLabel = 'Trackin'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 1.000000000000000000
-      MaxInteger = 2
-      LargeStepInteger = 1
-      ShortLabel = 'Trackin'
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterTrackingDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Pitch'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Pitch'
+      SmoothingFactor = 1.000000000000000000
       VSTModule = Owner
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Breath'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.100000001490116100
       LargeStepFloat = 10.000000000000000000
-      ShortLabel = 'Breath'
-      VSTModule = Owner
-    end
-    item
       Max = 100.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'S Thresh'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
+      ShortLabel = 'Breath'
+      SmallStepFloat = 0.100000001490116100
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.100000001490116100
-      LargeStepFloat = 10.000000000000000000
-      ShortLabel = 'SThresh'
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Min = 45.000000000000000000
-      Max = 93.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Max Freq'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'S Thresh'
+      LargeStepFloat = 10.000000000000000000
+      Max = 100.000000000000000000
+      ShortLabel = 'SThresh'
+      SmallStepFloat = 0.100000001490116100
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 1.000000000000000000
-      MinInteger = 45
-      MaxInteger = 93
-      LargeStepInteger = 1
-      ShortLabel = 'MaxFreq'
+      Units = '%'
       VSTModule = Owner
-      OnCustomParameterDisplay = VocInputDataModuleParameterProperties4CustomParameterDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Max Freq'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 93.000000000000000000
+      MaxInteger = 93
+      Min = 45.000000000000000000
+      MinInteger = 45
+      ShortLabel = 'MaxFreq'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnCustomParameterDisplay = ParameterMaxFrequencyDisplay
     end>
   OnResume = VSTModuleResume
   OnSuspend = VSTModuleSuspend

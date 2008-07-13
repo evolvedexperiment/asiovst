@@ -50,10 +50,10 @@ end;
 
 procedure TTalkBoxDataModule.VSTModuleCreate(Sender: TObject);
 begin
+ Parameter[0] := 100; // Wet  [%]
+ Parameter[1] := 0;   // Dry  [%]
  Parameter[2] := 0;   // Swap
 (*
- Parameter[0] := 0.5; // Wet
- Parameter[1] := 0;   // Dry
  Parameter[3] := 1;   // Quality
 *)
 
@@ -288,8 +288,8 @@ begin
     end;
   end;
 
- fWet := 0.5 * Sqr(Parameter[0]);
- fDry := 2   * Sqr(Parameter[1]);
+ fWet := 0.5 * Sqr(0.01 * Parameter[0]);
+ fDry := 2   * Sqr(0.01 * Parameter[1]);
 end;
 
 procedure TTalkBoxDataModule.VSTModuleSuspend(Sender: TObject);

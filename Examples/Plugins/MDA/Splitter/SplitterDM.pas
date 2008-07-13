@@ -3,7 +3,7 @@ unit SplitterDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TSplitterDataModule = class(TVSTModule)
@@ -11,8 +11,11 @@ type
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray;const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterEnvelopeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterEnvelopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fBuffer    : array [0..1, 0..1] of Single;
     fFreq, ff  : Single;
@@ -47,6 +50,24 @@ begin
  end;
 end;
 
+procedure TSplitterDataModule.ParameterEnvelopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF(Power(10, 1 + 2 * Parameter[index]), ffGeneral, 2, 2);
+end;
+
+procedure TSplitterDataModule.ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF(fFreqDisp, ffGeneral, 5, 5); 
+end;
+
+procedure TSplitterDataModule.ParameterEnvelopeChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+  fAttack  := 0.05 * (1 - Value);
+  fRelease := 1 - exp(-6 - 4 * Value);             // Envelope
+  if (fAttack  > 0.02)   then fAttack  := 0.02;
+  if (fRelease < 0.9995) then fRelease := 0.9995;
+end;
+
 procedure TSplitterDataModule.ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
@@ -58,25 +79,36 @@ end;
 
 procedure TSplitterDataModule.VSTModuleCreate(Sender: TObject);
 begin
-(*
-  programs = new mdaSplitterProgram[numPrograms];
-  setProgram(0);
-  
-  ///differences from default program...
-  programs[1].Parameter[2] = 0.50;
-  programs[1].Parameter[4] = 0.25;
-  strcpy(programs[1].name,"Pass Peaks Only");
-  programs[2].Parameter[0] = 0.60;
-  strcpy(programs[2].name,"Stereo Crossover");
-  
-  Parameter[0] := 0.1;   // Mode
-  Parameter[1] := 0.5;   // Freq
-  Parameter[2] := 0.25;  // Freq Mode
-  Parameter[3] := 0.5;   // Level (was 2)
-  Parameter[4] := 0.5;   // Level Mode
-  Parameter[5] := 0.5;   // Envelope
-  Parameter[6] := 0.5;   // Gain
-*)
+ Parameter[0] := 0.3;     // Mode
+ Parameter[1] := 0.5;     // Freq
+ Parameter[2] := 0.5;     // Freq Mode
+ Parameter[3] := -20;     // Level [dB] (was 2)
+ Parameter[4] := 1;       // Level Mode
+ Parameter[5] := 0.5;     // Envelope
+ Parameter[6] := 0;       // Gain
+
+ with Programs[1] do
+  begin
+   Parameter[0] := 0.3;   // Mode
+   Parameter[1] := 0.5;   // Freq
+   Parameter[2] := 1;     // Freq Mode
+   Parameter[3] := -20;   // Level [dB] (was 2)
+   Parameter[4] := 0.5;   // Level Mode
+   Parameter[5] := 0.5;   // Envelope
+   Parameter[6] := 0;     // Gain
+  end;
+
+ with Programs[2] do
+  begin
+   Parameter[0] := 2;
+   Parameter[1] := 0.5;   // Freq
+   Parameter[2] := 1;     // Freq Mode
+   Parameter[3] := -20;   // Level [dB] (was 2)
+   Parameter[4] := 0.5;   // Level Mode
+   Parameter[5] := 0.5;   // Envelope
+   Parameter[6] := 0;     // Gain
+  end;
+
  VSTModuleSuspend(Sender);
 end;
 
@@ -124,7 +156,7 @@ begin
 
     ee := -(aa + bb);
 
-    if (ee > lv)
+    if ee > lv
      then e := e + at * (px - e);  //fLevel split
     e := e * re;
 
@@ -136,8 +168,7 @@ begin
   end;
 
   fEnv := e;
-  if (abs(e) < 1E-10)
-   then fEnv := 0.0;
+  if abs(e) < 1E-10 then fEnv := 0;
   fBuffer[0, 0] := a0;
   fBuffer[0, 1] := a1;
   fBuffer[1, 0] := b0;
@@ -156,40 +187,33 @@ procedure TSplitterDataModule.VSTModuleResume(Sender: TObject);
 var
   tmp : Integer;
 begin
-  fFreq     := Parameter[1];
-  fFreqDisp := Power(10, 2 + 2 * fFreq);      // Frequency
+  fFreqDisp := Power(10, 2 + 2 * Parameter[1]);   // Frequency
   fFreq     := 5.5 * fFreqDisp / SampleRate;
-  if (fFreq > 1) then fFreq := 1;
+  if fFreq > 1 then fFreq := 1;
 
-  ff  := -1;                                  // Above
-  tmp := round(2.9 * Parameter[2]);           // Frequency Switching
-  if tmp = 0 then ff := 0.0;                  // Below
-  if tmp = 1 then fFreq := 0.001;             // All
+  ff  := -1;                                      // Above
+  tmp := round(2.9 * Parameter[2]);               // Frequency Switching
+  if tmp = 0 then ff := 0.0;                      // Below
+  if tmp = 1 then fFreq := 0.001;                 // All
 
-  fLevelDisp := 40 * Parameter[3] - 40;       // Level
-  fLevel := Power(10.0, 0.05 * fLevelDisp + 0.3);
+  fLevel := Power(10, 0.05 * Parameter[3] + 0.3); // Level
 
-  ll := 0.0;                                  // Above
-  tmp := round(2.9 * Parameter[4]);           // Level Switching
-  if (tmp = 0) then ll := -1;                 // Below
-  if (tmp = 1) then fLevel := 0;              // All
+  ll := 0.0;                                      // Above
+  tmp := round(2.9 * Parameter[4]);               // Level Switching
+  if (tmp = 0) then ll := -1;                     // Below
+  if (tmp = 1) then fLevel := 0;                  // All
 
-  pp := -1;                                   // Phase Correction
+  pp := -1;                                       // Phase Correction
   if (ff = ll) then pp := 1;
   if (ff = 0) and (ll = -1)
    then ll := -ll;
 
-  fAttack  := 0.05 - 0.05 * Parameter[5];
-  fRelease := 1 - exp(-6 - 4 * Parameter[5]); // Envelope
-  if (fAttack  > 0.02)   then fAttack  := 0.02;
-  if (fRelease < 0.9995) then fRelease := 0.9995;
-
-  i2l := Power(10, 2 * Parameter[6] - 1);     // Gain
+  i2l := dB_to_Amp(Parameter[6]);                 // Gain
   i2r := i2l;
   o2l := i2l;
   o2r := i2l;
 
-  fMode := round(3.9 * Parameter[0]);         // Output Routing
+  fMode := round(Parameter[0]);                   // Output Routing
   case round(fMode) of
      0: begin i2l :=   0 ;  i2r :=   0 ; end;
      1: begin o2l := -o2l;  o2r := -o2r; end;
@@ -208,27 +232,3 @@ begin
 end;
 
 end.
-
-(*
-void mdaSplitter::getParameterDisplay(VstInt32 index, char *text)
-{
-   char string[16];
-
-  switch(index)
-  {
-    case  1: sprintf(string, "%.0f", fFreqDisp); break;
-    case  3: sprintf(string, "%.0f", fLevelDisp); break;
-    case  5: sprintf(string, "%.0f", (float)Power(10.0, 1.0 + 2.0 * Parameter[index])); break;
-    case  6: sprintf(string, "%.1f", 40.0 * Parameter[index] - 20.0); break;
-    default: switch((long)(2.9 * Parameter[index]))
-             {
-                case  0: strcpy (string, "BELOW"); break;
-                case  1: strcpy (string, "ALL"); break;
-                default: strcpy (string, "ABOVE"); break;
-             } break;
-  }
-  string[8] = 0;
-  strcpy(text, (char * )string);
-}
-
-*)

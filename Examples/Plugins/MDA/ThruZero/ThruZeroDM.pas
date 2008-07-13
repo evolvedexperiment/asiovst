@@ -3,7 +3,7 @@ unit ThruZeroDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 const
   BUFMAX = 512;

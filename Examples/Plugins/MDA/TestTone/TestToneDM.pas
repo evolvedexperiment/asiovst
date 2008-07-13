@@ -3,7 +3,7 @@ unit TestToneDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TTestToneDataModule = class(TVSTModule)
@@ -147,9 +147,9 @@ begin
 
  updateTx := updateRx;
  
- suspend();
  setParameter(6, 0);
 *)
+ VSTModuleSuspend(Sender);
 end;
 
 procedure TTestToneDataModule.VSTModuleProcess(const Inputs,
@@ -303,42 +303,42 @@ const
   TwoPi : Single = 2 * Pi;  
 begin
 (*
- updateRx = updateTx;
+ updateRx := updateTx;
 
- //calcs here! 
- fMode = int(8.9 * Parameter[0]);
- fLeft = 0.05 * int(60.*Parameter[1]);
- fLeft = Power(10.0, fLeft - 3.);
- if(fMode==2) fLeft*=0.0000610; //scale white for RAND_MAX = 32767
- if(fMode==3) fLeft*=0.0000243; //scale pink for RAND_MAX = 32767
- if(Parameter[2]<0.3) fRight=0.; else fRight=fLeft;
- if(Parameter[2]>0.6) fLeft=0.;
- fLengh = 1. + 0.5*int(62*Parameter[6]);
- fSwt=(long)(fLengh*SampleRate();
+ //calcs here!
+ fMode := round(8.9 * Parameter[0]);
+ fLeft := 0.05 * round(60.*Parameter[1]);
+ fLeft := Power(10, fLeft - 3);
+ if (fMode = 2) then fLeft := fLeft * 0.0000610; //scale white for RAND_MAX = 32767
+ if (fMode = 3) then fLeft := fLeft * 0.0000243; //scale pink for RAND_MAX = 32767
+ if(Parameter[2] < 0.3) then fRight := 0 else fRight := fLeft;
+ if(Parameter[2] > 0.6) then fLeft  := 0;
+ fLengh := 1 + 0.5 * round(62 * Parameter[6]);
+ fSwt := round(fLengh * SampleRate);
 
- if (Parameter[7] > 0.8) //output level trim
+ if (Parameter[7] > 0.8) then //output level trim
   begin
-   if (Parameter[7] > 0.96) cal = 0.;
-   else if(Parameter[7] > 0.92) cal = -0.01000001;
-   else if(Parameter[7] > 0.88) cal = -0.02000001;
-   else if(Parameter[7] > 0.84) cal = -0.1;
-   else cal = -0.2;
-  
-   calx = Power(10.0, 0.05*cal); 
-   fLeft := fLeft * calx;
+   if (Parameter[7] > 0.96)     then cal := 0;
+   else if(Parameter[7] > 0.92) then cal := -0.01000001;
+   else if(Parameter[7] > 0.88) then cal := -0.02000001;
+   else if(Parameter[7] > 0.84) then cal := -0.1;
+   else cal := -0.2;
+
+   calx   := Power(10, 0.05 * cal);
+   fLeft  := fLeft * calx;
    fRight := fRight * calx; 
-   calx = 0.;
+   calx   := 0;
   end;
  else //output level calibrate
   begin
-   cal = int(25.*Parameter[7] - 21.1);
-   calx = cal;
+   cal    := round(25 * Parameter[7] - 21.1);
+   calx   := cal;
   end;
+*)
 
  df := 0;
  if Parameter[4] > 0.6 then df := 1.25 * Parameter[4] - 0.75;
  if Parameter[4] < 0.4 then df := 1.25 * Parameter[4] - 0.50;
-*)
 
  case fMode of
   0: begin //MIDI note
@@ -351,44 +351,51 @@ begin
       fDeltaPhi := 51.37006 * Power(1.0594631, f + df) / SampleRate;
      end;
 
+    1, 2, 3, 4:  begin //no frequency display
 (*
-    case 1: //no frequency display
-    case 2:
-    case 3:
-    case 4: strcpy(disp1, "--");
-            strcpy(disp2, "--"); break;
-
-    case 5: //sine
-        f := 13. + Trunc(30.*Parameter[3]);
-        iso2string(, disp1); //iso band freq
-        f := Power(10.0, 0.1*(+df));
-        float2strng(, disp2); //Hz
-        fDeltaPhi=twopi*/SampleRate();
-        break;
-    
-    case 6: //log sweep & step    
-    case 7: fSw = 13. + Trunc(30.*Parameter[3]);
-        fSwx = 13. + Trunc(30.*Parameter[4]);
-        iso2string(fSw, disp1); //start freq
-        iso2string(fSwx, disp2); //end freq
-        if(fSw>fSwx) begin fSwd=fSwx; fSwx=fSw; fSw=fSwd; end; //only sweep up
-        if(fMode==7) fSwx += 1.;
-        fSwd = (fSwx-sw) / (fLengh*SampleRate());
-        fSwt= 2 * (long)SampleRate();
-        break;
-
+                  strcpy(disp1, "--");
+                  strcpy(disp2, "--"); break;
 *)
+                 end;
+    5: begin // Sine
+        f := 13 + Trunc(30 * Parameter[3]);
+(*
+        iso2string(, disp1); //iso band freq
+        f := Power(10, 0.1 * (f + df));
+        float2strng(, disp2); //Hz
+*)
+        fDeltaPhi := 2 * Pi * f / SampleRate;
+       end;
+
+    6, 7: begin //log sweep & step
+(*
+           fSw  := 13 + Trunc(30 * Parameter[3]);
+           fSwx := 13 + Trunc(30 * Parameter[4]);
+           iso2string(fSw, disp1); //start freq
+           iso2string(fSwx, disp2); //end freq
+           if fSw > fSwx then
+            begin
+             fSwd := fSwx;
+             fSwx := fSw;
+             fSw  := fSwd;
+            end; //only sweep up
+           if fMode = 7 then fSwx := fSwx + 1;
+           fSwd := (fSwx - sw) / (fLengh * SampleRate);
+           fSwt := 2 * round SampleRate;
+*)
+          end;
+
    8: begin//lin sweep
 (*
        fSw  := 200 * Trunc(100 * Parameter[3]);
        fSwx := 200 * Trunc(100 * Parameter[4]);
-       long2string((long)fSw, disp1); //start freq
-       long2string((long)fSwx, disp2); //end freq
+       long2string(round(fSw), disp1); //start freq
+       long2string(round(fSwx), disp2); //end freq
        if (fSw > fSwx) then
         begin
-         fSwd=fSwx;
-         fSwx=fSw;
-         fSw=fSwd;
+         fSwd := fSwx;
+         fSwx := fSw;
+         fSw  := fSwd;
         end; //only sweep up
        fSw  := twopi*fSw/SampleRate();
        fSwx := twopi*fSwx/SampleRate();
@@ -407,16 +414,18 @@ end.
 
 (*
 void mdaTestTone::setParameter(VstInt32 index, float value)
+var
+  f, df : Single;
 begin
  //just update display text...
- int fMode := int(8.9 * Parameter[0]);
- float , df=0.0;
+ int fMode := round(8.9 * Parameter[0]);
+ df := 0.0;
  if (Parameter[4] > 0.6) then df := 1.25 * Parameter[4] - 0.75;
  if (Parameter[4] < 0.4) then df := 1.25 * Parameter[4] - 0.50;
  switch(fMode)
  begin
   case 0: //MIDI note
-       = Trunc(128.*Parameter[3]);
+      f := Trunc(128.*Parameter[3]);
       //long2string((long), disp1); //Semi
       midi2string(, disp1); //Semitones
       long2string((long)(100.*df), disp2); //Cents
@@ -429,9 +438,9 @@ begin
           strcpy(disp2, "--"); break;
   
   case 5: //sine
-       = 13. + Trunc(30.*Parameter[3]);
+      f := 13. + Trunc(30.*Parameter[3]);
       iso2string(, disp1); //iso band freq
-      =Power(10.0, 0.1*(+df));
+      f := Power(10.0, 0.1*(+df));
       float2strng(, disp2); //Hz
       break;
   

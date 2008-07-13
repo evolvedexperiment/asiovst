@@ -3,8 +3,7 @@ unit TransientDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TTransientDataModule = class(TVSTModule)

@@ -3,19 +3,16 @@ unit VocInputDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TVocInputDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray;
-      const SampleFrames: Integer);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure ParameterTrackingDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VocInputDataModuleParameterProperties4CustomParameterDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterTrackingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterMaxFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fLowBuffer : Array [0..3] of Single;
     fPStep     : Single;
@@ -50,7 +47,7 @@ begin
  end;
 end;
 
-procedure TVocInputDataModule.VocInputDataModuleParameterProperties4CustomParameterDisplay(
+procedure TVocInputDataModule.ParameterMaxFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := midi2string(Parameter[4]);
@@ -178,7 +175,7 @@ begin
    Outputs[1, Sample] := Outputs[1, Sample] + s;
    s := s + ds;
    if (s > 0.5)
-    then s := s - 1;              // badly aliased sawtooth!
+    then s := s - 1;                      // badly aliased sawtooth!
 
    Outputs[0, Sample] := Inputs[0, Sample];
   end;
@@ -186,7 +183,7 @@ begin
 
   if (abs(he) > 1E-10)
    then fHighEnv := he
-   else fHighEnv := 0; //catch denormals
+   else fHighEnv := 0;                    // catch denormals
   if (abs(l1) > 1E-10) then
    begin
     fLowBuffer[0] := l0;

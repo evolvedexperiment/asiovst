@@ -7,6 +7,9 @@ uses
 
 type
   TDX10DataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleResume(Sender: TObject);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
   private
   public
   end;
@@ -15,465 +18,356 @@ implementation
 
 {$R *.DFM}
 
+procedure TDX10DataModule.VSTModuleCreate(Sender: TObject);
+var
+  i : Integer;
+begin
+ i  := 0;
+
+(*
+ programs = new mdaDX10Program[NPROGS];
+ if(programs)
+  begin                                //Att     Dec     Rel   | Rat C   Rat    Att     Dec     Sus     Rel     Vel   | Vib     Oct     Fine    fRich    Thru    LFO
+    fillpatch(i++, "Bright E.Piano", 0.000, 0.650, 0.441, 0.842, 0.329, 0.230, 0.800, 0.050, 0.800, 0.900, 0.000, 0.500, 0.500, 0.447, 0.000, 0.414);
+    fillpatch(i++, "Jazz E.Piano",   0.000, 0.500, 0.100, 0.671, 0.000, 0.441, 0.336, 0.243, 0.800, 0.500, 0.000, 0.500, 0.500, 0.178, 0.000, 0.500);
+    fillpatch(i++, "E.Piano Pad",    0.000, 0.700, 0.400, 0.230, 0.184, 0.270, 0.474, 0.224, 0.800, 0.974, 0.250, 0.500, 0.500, 0.428, 0.836, 0.500);
+    fillpatch(i++, "Fuzzy E.Piano",  0.000, 0.700, 0.400, 0.320, 0.217, 0.599, 0.670, 0.309, 0.800, 0.500, 0.263, 0.507, 0.500, 0.276, 0.638, 0.526);
+    fillpatch(i++, "Soft Chimes",    0.400, 0.600, 0.650, 0.760, 0.000, 0.390, 0.250, 0.160, 0.900, 0.500, 0.362, 0.500, 0.500, 0.401, 0.296, 0.493);
+    fillpatch(i++, "Harpsichord",    0.000, 0.342, 0.000, 0.280, 0.000, 0.880, 0.100, 0.408, 0.740, 0.000, 0.000, 0.600, 0.500, 0.842, 0.651, 0.500);
+    fillpatch(i++, "Funk Clav",      0.000, 0.400, 0.100, 0.360, 0.000, 0.875, 0.160, 0.592, 0.800, 0.500, 0.000, 0.500, 0.500, 0.303, 0.868, 0.500);
+    fillpatch(i++, "Sitar",          0.000, 0.500, 0.704, 0.230, 0.000, 0.151, 0.750, 0.493, 0.770, 0.500, 0.000, 0.400, 0.500, 0.421, 0.632, 0.500);
+    fillpatch(i++, "Chiff Organ",    0.600, 0.990, 0.400, 0.320, 0.283, 0.570, 0.300, 0.050, 0.240, 0.500, 0.138, 0.500, 0.500, 0.283, 0.822, 0.500);
+    fillpatch(i++, "Tinkle",         0.000, 0.500, 0.650, 0.368, 0.651, 0.395, 0.550, 0.257, 0.900, 0.500, 0.300, 0.800, 0.500, 0.000, 0.414, 0.500);
+    fillpatch(i++, "Space Pad",      0.000, 0.700, 0.520, 0.230, 0.197, 0.520, 0.720, 0.280, 0.730, 0.500, 0.250, 0.500, 0.500, 0.336, 0.428, 0.500);
+    fillpatch(i++, "Koto",           0.000, 0.240, 0.000, 0.390, 0.000, 0.880, 0.100, 0.600, 0.740, 0.500, 0.000, 0.500, 0.500, 0.526, 0.480, 0.500);
+    fillpatch(i++, "Harp",           0.000, 0.500, 0.700, 0.160, 0.000, 0.158, 0.349, 0.000, 0.280, 0.900, 0.000, 0.618, 0.500, 0.401, 0.000, 0.500);
+    fillpatch(i++, "Jazz Guitar",    0.000, 0.500, 0.100, 0.390, 0.000, 0.490, 0.250, 0.250, 0.800, 0.500, 0.000, 0.500, 0.500, 0.263, 0.145, 0.500);
+    fillpatch(i++, "Steel Drum",     0.000, 0.300, 0.507, 0.480, 0.730, 0.000, 0.100, 0.303, 0.730, 1.000, 0.000, 0.600, 0.500, 0.579, 0.000, 0.500);
+    fillpatch(i++, "Log Drum",       0.000, 0.300, 0.500, 0.320, 0.000, 0.467, 0.079, 0.158, 0.500, 0.500, 0.000, 0.400, 0.500, 0.151, 0.020, 0.500);
+    fillpatch(i++, "Trumpet",        0.000, 0.990, 0.100, 0.230, 0.000, 0.000, 0.200, 0.450, 0.800, 0.000, 0.112, 0.600, 0.500, 0.711, 0.000, 0.401);
+    fillpatch(i++, "Horn",           0.280, 0.990, 0.280, 0.230, 0.000, 0.180, 0.400, 0.300, 0.800, 0.500, 0.000, 0.400, 0.500, 0.217, 0.480, 0.500);
+    fillpatch(i++, "Reed 1",         0.220, 0.990, 0.250, 0.170, 0.000, 0.240, 0.310, 0.257, 0.900, 0.757, 0.000, 0.500, 0.500, 0.697, 0.803, 0.500);
+    fillpatch(i++, "Reed 2",         0.220, 0.990, 0.250, 0.450, 0.070, 0.240, 0.310, 0.360, 0.900, 0.500, 0.211, 0.500, 0.500, 0.184, 0.000, 0.414);
+    fillpatch(i++, "Violin",         0.697, 0.990, 0.421, 0.230, 0.138, 0.750, 0.390, 0.513, 0.800, 0.316, 0.467, 0.678, 0.500, 0.743, 0.757, 0.487);
+    fillpatch(i++, "Chunky Bass",    0.000, 0.400, 0.000, 0.280, 0.125, 0.474, 0.250, 0.100, 0.500, 0.500, 0.000, 0.400, 0.500, 0.579, 0.592, 0.500);
+    fillpatch(i++, "E.Bass",         0.230, 0.500, 0.100, 0.395, 0.000, 0.388, 0.092, 0.250, 0.150, 0.500, 0.200, 0.200, 0.500, 0.178, 0.822, 0.500);
+    fillpatch(i++, "Clunk Bass",     0.000, 0.600, 0.400, 0.230, 0.000, 0.450, 0.320, 0.050, 0.900, 0.500, 0.000, 0.200, 0.500, 0.520, 0.105, 0.500);
+    fillpatch(i++, "Thick Bass",     0.000, 0.600, 0.400, 0.170, 0.145, 0.290, 0.350, 0.100, 0.900, 0.500, 0.000, 0.400, 0.500, 0.441, 0.309, 0.500);
+    fillpatch(i++, "Sine Bass",      0.000, 0.600, 0.490, 0.170, 0.151, 0.099, 0.400, 0.000, 0.900, 0.500, 0.000, 0.400, 0.500, 0.118, 0.013, 0.500);
+    fillpatch(i++, "Square Bass",    0.000, 0.600, 0.100, 0.320, 0.000, 0.350, 0.670, 0.100, 0.150, 0.500, 0.000, 0.200, 0.500, 0.303, 0.730, 0.500);
+    fillpatch(i++, "Upright Bass 1", 0.300, 0.500, 0.400, 0.280, 0.000, 0.180, 0.540, 0.000, 0.700, 0.500, 0.000, 0.400, 0.500, 0.296, 0.033, 0.500);
+    fillpatch(i++, "Upright Bass 2", 0.300, 0.500, 0.400, 0.360, 0.000, 0.461, 0.070, 0.070, 0.700, 0.500, 0.000, 0.400, 0.500, 0.546, 0.467, 0.500);
+    fillpatch(i++, "Harmonics",      0.000, 0.500, 0.500, 0.280, 0.000, 0.330, 0.200, 0.000, 0.700, 0.500, 0.000, 0.500, 0.500, 0.151, 0.079, 0.500);
+    fillpatch(i++, "Scratch",        0.000, 0.500, 0.000, 0.000, 0.240, 0.580, 0.630, 0.000, 0.000, 0.500, 0.000, 0.600, 0.500, 0.816, 0.243, 0.500);
+    fillpatch(i++, "Syn Tom",        0.000, 0.355, 0.350, 0.000, 0.105, 0.000, 0.000, 0.200, 0.500, 0.500, 0.000, 0.645, 0.500, 1.000, 0.296, 0.500);
+
+    setProgram(0);
+  end;
+
+   //initialise...
+  for (i = 0; i < NVOICES; i++)
+  begin
+    voice[i].env = 0.0;
+    voice[i].car = voice[i].dcar = 0.0;
+    voice[i].mod0 = voice[i].mod1 = voice[i].dmod = 0.0;
+    voice[i].fCDec = 0.99; //all notes off
+  end;
+  notes[0] = EVENTS_DONE;
+  fLFO0         := 0;
+  fDeltaLFO         := 0;
+  fModWheel       := 0;
+  fLFO1         := 0;
+  fPitchBend        := 1;
+  fVolume       := 0.0035;
+  fSustain      := 0
+  fActiveVoices := 0;
+  K            := 0;
+
+  Update;
+  Suspend;
+*)
+end;
+
+procedure TDX10DataModule.Update;
+var
+  ifs : Single;
+begin
+  ifs := 1 / SampleRate;
+(*
+
+ fTune := (8.175798915644 * ifs * Power(2, trunc(Parameter[11] * 6.9) - 2.0));
+
+ fRati := Parameter[3];
+ fRati := trunc(40.1 * sqr(fRati));
+ if (Parameter[4] < 0.5)
+  then fRatF := 0.2 * sqr(Parameter[4]);
+ else
+  case round(8.9 * Parameter[4]) of
+     4: fRatF := 0.25;       break;
+     5: fRatF := 0.33333333; break;
+     6: fRatF := 0.50;       break;
+     7: fRatF := 0.66666667; break;
+   else fRatF := 0.75;
+  end;
+ fRatio = 1.570796326795 * (fRati + fRatF);
+
+ fDepth[0] := 0.0002 * sqr(Parameter[5]);
+ fDepth[1] := 0.0002 * sqr(Parameter[7]);
+
+ fVelSens := Parameter[9];
+ fVibrato := 0.001 * sqr(Parameter[10]);
+
+ fCAtt := 1 - exp(-ifs * exp(8 - 8 * Parameter[0]));
+ if Parameter[1] > 0.98
+  then fCDec := 1.0; else
+ fCDec :=       exp(-ifs * exp(5 - 8 * Parameter[1]));
+ fCRel :=       exp(-ifs * exp(5 - 5 * Parameter[2]));
+ fMDec := 1.0 - exp(-ifs * exp(6 - 7 * Parameter[6]));
+ fMRel := 1.0 - exp(-ifs * exp(5 - 8 * Parameter[8]));
+
+ fRich     := 0.5 - 3 * sqr(Parameter[13]);  // -1.0 + 2 * Parameter[13];
+ fModMix   := 0.25 * sqr(Parameter[14]);
+ fDeltaLFO := 628.3 * ifs * 25 * sqr(Parameter[15]); // these params not in original DX10
+*)
+end;
+
+procedure TDX10DataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+begin
+(*
+ float* out1 = outputs[0];
+ float* out2 = outputs[1];
+ long event=0, frame=0, frames, v;
+ float o, x, e, mw=MW, w=fRich, m=fModMix;
+ long k=K;
+
+ if (fActiveVoices > 0) or (notes[event] < sampleFrames) then //detect & bypass completely empty blocks
+  begin
+    while(frame<sampleFrames)
+    begin
+      frames = notes[event++];
+      if(frames>sampleFrames) frames = sampleFrames;
+      frames -= frame;
+      frame += frames;
+
+      while(--frames>=0)  //would be faster with voice loop outside frame loop!
+      begin                   //but then each voice would need it's own LFO...
+        VOICE *V = voice;
+        o = 0.0;
+
+        if(--k<0)
+        begin
+          fLFO0 += fDeltaLFO * fLFO1; //sine LFO
+          fLFO1 -= fDeltaLFO * fLFO0;
+          mw = fLFO1 * (fModWheel + fVibrato);
+          k=100;
+        end;
+
+        for (v=0; v<NVOICES; v++) //for each voice
+        begin
+          e := V->env;
+          if (e > SILENCE) then //**** this is the synth ****
+          begin
+            V->env  := e * V->fCDec; //decay & release
+            V->cenv := V->cenv + V->fCAtt * (e - V->cenv); //attack
+
+            x = V->dmod * V->mod0 - V->mod1; //could add more modulator blocks like
+            V->mod1 := V->mod0;               //this for a wider range of FM sounds
+            V->mod0 := x;
+            V->menv := V->menv + V->fMDec * (V->mlev - V->menv);
+
+            x := V->car + V->dcar + x * V->menv + mw; //carrier phase
+            while(x >  1.0) x -= 2.0;  //wrap phase
+            while(x < -1.0) x += 2.0;
+            V->car = x;
+            o := o + V->cenv * (m * V->mod1 + (x + x * x * x * (w * x * x - 1.0 - w))); 
+          end;      //amp env //mod thru-mix //5th-order sine approximation
+
+         ///  xx = x * x;
+         ///  x + x + x * xx * (xx - 3.0);
+
+          V++;
+        end;
+        *out1++ = o;
+        *out2++ = o;
+      end;
+
+      if(frame<sampleFrames) //next note on/off
+      begin
+        long note = notes[event++];
+        long vel  = notes[event++];
+        noteOn(note, vel);
+      end;
+    end;
+  
+    fActiveVoices = NVOICES;
+    for(v=0; v<NVOICES; v++)
+    begin
+      if(voice[v].env < SILENCE)  //choke voices that have finished
+      begin
+        voice[v].env = voice[v].cenv = 0.0;
+        fActiveVoices--;
+      end;
+      if(voice[v].menv < SILENCE) voice[v].menv = voice[v].mlev = 0.0;
+    end;
+  end;
+  else //completely empty block
+  begin
+    while(--sampleFrames >= 0)
+    begin
+      *out1++ = 0.0;
+      *out2++ = 0.0;
+    end;
+  end;
+  K=k; MW=mw; //remember these so fVibrato speed not buffer size dependant!
+  notes[0] = EVENTS_DONE;
+*)
+end;
+
+procedure TDX10DataModule.VSTModuleResume(Sender: TObject);
+begin
+(*
+  DECLARE_VST_DEPRECATED (wantEvents) ();
+  fLFO0 = 0;
+  fLFO1 = 1; //reset LFO phase
+*)
+end;
+
 end.
 
 (*
-
-mdaDX10::mdaDX10(audioMasterCallback audioMaster) : AudioEffectX(audioMaster, NPROGS, NPARAMS)
-{
-  long i=0;
-  Fs = 44100.0f;
-  
-  programs = new mdaDX10Program[NPROGS];
-  if(programs)
-  {                                //Att     Dec     Rel   | Rat C   Rat F   Att     Dec     Sus     Rel     Vel   | Vib     Oct     Fine    Rich    Thru    LFO
-    fillpatch(i++, "Bright E.Piano", 0.000f, 0.650f, 0.441f, 0.842f, 0.329f, 0.230f, 0.800f, 0.050f, 0.800f, 0.900f, 0.000f, 0.500f, 0.500f, 0.447f, 0.000f, 0.414f);
-    fillpatch(i++, "Jazz E.Piano",   0.000f, 0.500f, 0.100f, 0.671f, 0.000f, 0.441f, 0.336f, 0.243f, 0.800f, 0.500f, 0.000f, 0.500f, 0.500f, 0.178f, 0.000f, 0.500f);
-    fillpatch(i++, "E.Piano Pad",    0.000f, 0.700f, 0.400f, 0.230f, 0.184f, 0.270f, 0.474f, 0.224f, 0.800f, 0.974f, 0.250f, 0.500f, 0.500f, 0.428f, 0.836f, 0.500f);
-    fillpatch(i++, "Fuzzy E.Piano",  0.000f, 0.700f, 0.400f, 0.320f, 0.217f, 0.599f, 0.670f, 0.309f, 0.800f, 0.500f, 0.263f, 0.507f, 0.500f, 0.276f, 0.638f, 0.526f);
-    fillpatch(i++, "Soft Chimes",    0.400f, 0.600f, 0.650f, 0.760f, 0.000f, 0.390f, 0.250f, 0.160f, 0.900f, 0.500f, 0.362f, 0.500f, 0.500f, 0.401f, 0.296f, 0.493f);
-    fillpatch(i++, "Harpsichord",    0.000f, 0.342f, 0.000f, 0.280f, 0.000f, 0.880f, 0.100f, 0.408f, 0.740f, 0.000f, 0.000f, 0.600f, 0.500f, 0.842f, 0.651f, 0.500f);
-    fillpatch(i++, "Funk Clav",      0.000f, 0.400f, 0.100f, 0.360f, 0.000f, 0.875f, 0.160f, 0.592f, 0.800f, 0.500f, 0.000f, 0.500f, 0.500f, 0.303f, 0.868f, 0.500f);
-    fillpatch(i++, "Sitar",          0.000f, 0.500f, 0.704f, 0.230f, 0.000f, 0.151f, 0.750f, 0.493f, 0.770f, 0.500f, 0.000f, 0.400f, 0.500f, 0.421f, 0.632f, 0.500f);
-    fillpatch(i++, "Chiff Organ",    0.600f, 0.990f, 0.400f, 0.320f, 0.283f, 0.570f, 0.300f, 0.050f, 0.240f, 0.500f, 0.138f, 0.500f, 0.500f, 0.283f, 0.822f, 0.500f);
-    fillpatch(i++, "Tinkle",         0.000f, 0.500f, 0.650f, 0.368f, 0.651f, 0.395f, 0.550f, 0.257f, 0.900f, 0.500f, 0.300f, 0.800f, 0.500f, 0.000f, 0.414f, 0.500f);
-    fillpatch(i++, "Space Pad",      0.000f, 0.700f, 0.520f, 0.230f, 0.197f, 0.520f, 0.720f, 0.280f, 0.730f, 0.500f, 0.250f, 0.500f, 0.500f, 0.336f, 0.428f, 0.500f);
-    fillpatch(i++, "Koto",           0.000f, 0.240f, 0.000f, 0.390f, 0.000f, 0.880f, 0.100f, 0.600f, 0.740f, 0.500f, 0.000f, 0.500f, 0.500f, 0.526f, 0.480f, 0.500f);
-    fillpatch(i++, "Harp",           0.000f, 0.500f, 0.700f, 0.160f, 0.000f, 0.158f, 0.349f, 0.000f, 0.280f, 0.900f, 0.000f, 0.618f, 0.500f, 0.401f, 0.000f, 0.500f);
-    fillpatch(i++, "Jazz Guitar",    0.000f, 0.500f, 0.100f, 0.390f, 0.000f, 0.490f, 0.250f, 0.250f, 0.800f, 0.500f, 0.000f, 0.500f, 0.500f, 0.263f, 0.145f, 0.500f);
-    fillpatch(i++, "Steel Drum",     0.000f, 0.300f, 0.507f, 0.480f, 0.730f, 0.000f, 0.100f, 0.303f, 0.730f, 1.000f, 0.000f, 0.600f, 0.500f, 0.579f, 0.000f, 0.500f);
-    fillpatch(i++, "Log Drum",       0.000f, 0.300f, 0.500f, 0.320f, 0.000f, 0.467f, 0.079f, 0.158f, 0.500f, 0.500f, 0.000f, 0.400f, 0.500f, 0.151f, 0.020f, 0.500f);
-    fillpatch(i++, "Trumpet",        0.000f, 0.990f, 0.100f, 0.230f, 0.000f, 0.000f, 0.200f, 0.450f, 0.800f, 0.000f, 0.112f, 0.600f, 0.500f, 0.711f, 0.000f, 0.401f);
-    fillpatch(i++, "Horn",           0.280f, 0.990f, 0.280f, 0.230f, 0.000f, 0.180f, 0.400f, 0.300f, 0.800f, 0.500f, 0.000f, 0.400f, 0.500f, 0.217f, 0.480f, 0.500f);
-    fillpatch(i++, "Reed 1",         0.220f, 0.990f, 0.250f, 0.170f, 0.000f, 0.240f, 0.310f, 0.257f, 0.900f, 0.757f, 0.000f, 0.500f, 0.500f, 0.697f, 0.803f, 0.500f);
-    fillpatch(i++, "Reed 2",         0.220f, 0.990f, 0.250f, 0.450f, 0.070f, 0.240f, 0.310f, 0.360f, 0.900f, 0.500f, 0.211f, 0.500f, 0.500f, 0.184f, 0.000f, 0.414f);
-    fillpatch(i++, "Violin",         0.697f, 0.990f, 0.421f, 0.230f, 0.138f, 0.750f, 0.390f, 0.513f, 0.800f, 0.316f, 0.467f, 0.678f, 0.500f, 0.743f, 0.757f, 0.487f);
-    fillpatch(i++, "Chunky Bass",    0.000f, 0.400f, 0.000f, 0.280f, 0.125f, 0.474f, 0.250f, 0.100f, 0.500f, 0.500f, 0.000f, 0.400f, 0.500f, 0.579f, 0.592f, 0.500f);
-    fillpatch(i++, "E.Bass",         0.230f, 0.500f, 0.100f, 0.395f, 0.000f, 0.388f, 0.092f, 0.250f, 0.150f, 0.500f, 0.200f, 0.200f, 0.500f, 0.178f, 0.822f, 0.500f);
-    fillpatch(i++, "Clunk Bass",     0.000f, 0.600f, 0.400f, 0.230f, 0.000f, 0.450f, 0.320f, 0.050f, 0.900f, 0.500f, 0.000f, 0.200f, 0.500f, 0.520f, 0.105f, 0.500f);
-    fillpatch(i++, "Thick Bass",     0.000f, 0.600f, 0.400f, 0.170f, 0.145f, 0.290f, 0.350f, 0.100f, 0.900f, 0.500f, 0.000f, 0.400f, 0.500f, 0.441f, 0.309f, 0.500f);
-    fillpatch(i++, "Sine Bass",      0.000f, 0.600f, 0.490f, 0.170f, 0.151f, 0.099f, 0.400f, 0.000f, 0.900f, 0.500f, 0.000f, 0.400f, 0.500f, 0.118f, 0.013f, 0.500f);
-    fillpatch(i++, "Square Bass",    0.000f, 0.600f, 0.100f, 0.320f, 0.000f, 0.350f, 0.670f, 0.100f, 0.150f, 0.500f, 0.000f, 0.200f, 0.500f, 0.303f, 0.730f, 0.500f);
-    fillpatch(i++, "Upright Bass 1", 0.300f, 0.500f, 0.400f, 0.280f, 0.000f, 0.180f, 0.540f, 0.000f, 0.700f, 0.500f, 0.000f, 0.400f, 0.500f, 0.296f, 0.033f, 0.500f);
-    fillpatch(i++, "Upright Bass 2", 0.300f, 0.500f, 0.400f, 0.360f, 0.000f, 0.461f, 0.070f, 0.070f, 0.700f, 0.500f, 0.000f, 0.400f, 0.500f, 0.546f, 0.467f, 0.500f);
-    fillpatch(i++, "Harmonics",      0.000f, 0.500f, 0.500f, 0.280f, 0.000f, 0.330f, 0.200f, 0.000f, 0.700f, 0.500f, 0.000f, 0.500f, 0.500f, 0.151f, 0.079f, 0.500f);
-    fillpatch(i++, "Scratch",        0.000f, 0.500f, 0.000f, 0.000f, 0.240f, 0.580f, 0.630f, 0.000f, 0.000f, 0.500f, 0.000f, 0.600f, 0.500f, 0.816f, 0.243f, 0.500f);
-    fillpatch(i++, "Syn Tom",        0.000f, 0.355f, 0.350f, 0.000f, 0.105f, 0.000f, 0.000f, 0.200f, 0.500f, 0.500f, 0.000f, 0.645f, 0.500f, 1.000f, 0.296f, 0.500f);
-  
-    setProgram(0);
-  }
-
-   //initialise...
-  for(i=0; i<NVOICES; i++) 
-  {
-    voice[i].env = 0.0f;
-    voice[i].car = voice[i].dcar = 0.0f;
-    voice[i].mod0 = voice[i].mod1 = voice[i].dmod = 0.0f;
-    voice[i].cdec = 0.99f; //all notes off
-  }
-  notes[0] = EVENTS_DONE;
-  lfo0 = dlfo = modwhl = 0.0f;
-  lfo1 = pbend = 1.0f;
-  volume = 0.0035f;
-  sustain = activevoices = 0;
-  K = 0;
-
-  update();
-  suspend();
-}
-
-
-void mdaDX10::update()  //parameter change //if multitimbral would have to move all this...
-{
-  float ifs = 1.0f / Fs;
-
-  tune = (float)(8.175798915644 * ifs * pow(2.0, floor(param[11] * 6.9) - 2.0));
-
-  rati = param[3];
-  rati = (float)floor(40.1f * rati * rati);
-  if(param[4]<0.5f) 
-    ratf = 0.2f * param[4] * param[4];
-  else 
-    switch((long)(8.9f * param[4]))
-    {
-      case  4: ratf = 0.25f;       break;
-      case  5: ratf = 0.33333333f; break;
-      case  6: ratf = 0.50f;       break;
-      case  7: ratf = 0.66666667f; break;
-      default: ratf = 0.75f;
-    }
-  ratio = 1.570796326795f * (rati + ratf);
-
-  depth = 0.0002f * param[5] * param[5];
-  dept2 = 0.0002f * param[7] * param[7];
-
-  velsens = param[9];
-  vibrato = 0.001f * param[10] * param[10];
-
-  catt = 1.0f - (float)exp(-ifs * exp(8.0 - 8.0 * param[0]));
-  if(param[1]>0.98f) cdec = 1.0f; else 
-  cdec =        (float)exp(-ifs * exp(5.0 - 8.0 * param[1]));
-  crel =        (float)exp(-ifs * exp(5.0 - 5.0 * param[2]));
-  mdec = 1.0f - (float)exp(-ifs * exp(6.0 - 7.0 * param[6]));
-  mrel = 1.0f - (float)exp(-ifs * exp(5.0 - 8.0 * param[8]));
-
-  rich = 0.50f - 3.0f * param[13] * param[13];
-  //rich = -1.0f + 2 * param[13];
-  modmix = 0.25f * param[14] * param[14];
-  dlfo = 628.3f * ifs * 25.0f * param[15] * param[15]; //these params not in original DX10
-}
-
-
-void mdaDX10::setSampleRate(float sampleRate)
-{
-  AudioEffectX::setSampleRate(sampleRate);
-  Fs = sampleRate;
-}
-
-
-void mdaDX10::resume()
-{  
-  DECLARE_VST_DEPRECATED (wantEvents) ();
-  lfo0 = 0.0f;
-  lfo1 = 1.0f; //reset LFO phase
-}
-
-
-mdaDX10::~mdaDX10 ()  //destroy any buffers...
-{
-  if(programs) delete [] programs;
-}
-
-
-void mdaDX10::setProgram(VstInt32 program)
-{
-  long i;
-
-  mdaDX10Program *p = &programs[program];
-  curProgram = program;
-  for(i=0; i<NPARAMS; i++) param[i] = p->param[i];
-  update();
-}
-
-
-void mdaDX10::setParameter(VstInt32 index, float value)
-{
-  mdaDX10Program *p = &programs[curProgram];
-  param[index] = p->param[index] = value;
-  update();
-}
-
-
-void mdaDX10::fillpatch(long p, char *name, 
+void mdaDX10::fillpatch(long Power, char *name, 
                      float p0,  float p1,  float p2,  float p3,  float p4,  float p5, 
                      float p6,  float p7,  float p8,  float p9,  float p10, float p11, 
                      float p12, float p13, float p14, float p15)
-{
-  strcpy(programs[p].name, name);
-  programs[p].param[0] = p0;    programs[p].param[1] = p1;
-  programs[p].param[2] = p2;    programs[p].param[3] = p3;
-  programs[p].param[4] = p4;    programs[p].param[5] = p5;
-  programs[p].param[6] = p6;    programs[p].param[7] = p7;
-  programs[p].param[8] = p8;    programs[p].param[9] = p9;
-  programs[p].param[10] = p10;  programs[p].param[11] = p11;
-  programs[p].param[12] = p12;  programs[p].param[13] = p13;
-  programs[p].param[14] = p14;  programs[p].param[15] = p15;
-}
+begin
+  strcpy(programs[Power].name, name);
+  programs[Power].Parameter[0] = p0;    programs[Power].Parameter[1] = p1;
+  programs[Power].Parameter[2] = p2;    programs[Power].Parameter[3] = p3;
+  programs[Power].Parameter[4] = p4;    programs[Power].Parameter[5] = p5;
+  programs[Power].Parameter[6] = p6;    programs[Power].Parameter[7] = p7;
+  programs[Power].Parameter[8] = p8;    programs[Power].Parameter[9] = p9;
+  programs[Power].Parameter[10] = p10;  programs[Power].Parameter[11] = p11;
+  programs[Power].Parameter[12] = p12;  programs[Power].Parameter[13] = p13;
+  programs[Power].Parameter[14] = p14;  programs[Power].Parameter[15] = p15;
+end;
 
 bool mdaDX10::getOutputProperties(VstInt32 index, VstPinProperties* properties)
-{
-  if(index<NOUTS)
-  {
+begin
+  if(index < NOUTS)
+  begin
     sprintf(properties->label, "DX10");
     properties->flags = kVstPinIsActive;
     if(index<2) properties->flags |= kVstPinIsStereo; //make channel 1+2 stereo
     return true;
-  }
+  end;
   return false;
-}
+end;
 
 bool mdaDX10::getProgramNameIndexed(VstInt32 category, VstInt32 index, char* text)
-{
-  if(index<NPROGS)
-  {
+begin
+  if(index < NPROGS)
+  begin
     strcpy(text, programs[index].name);
     return true;
-  }
+  end;
   return false;
-}
+end;
 
 
 bool mdaDX10::copyProgram(VstInt32 destination)
-{
+begin
   if(destination<NPROGS)
-  {
+  begin
     programs[destination] = programs[curProgram];
     return true;
-  }
+  end;
   return false;
-}
-
-
-VstInt32 mdaDX10::canDo(char* text)
-{
-  if(strcmp(text, "receiveVstEvents") == 0) return 1;
-  if(strcmp(text, "receiveVstMidiEvent") == 0) return 1;
-  return -1;
-}
-
+end;
 
 void mdaDX10::getParameterDisplay(VstInt32 index, char *text)
-{
+begin
   char string[16];
   
   switch(index)
-  {
-    case  3: sprintf(string, "%.0f", rati); break;
-    case  4: sprintf(string, "%.3f", ratf); break;
-    case 11: sprintf(string, "%ld", (long)(param[index] * 6.9f) - 3); break;
-    case 12: sprintf(string, "%.0f", 200.0f * param[index] - 100.0f); break;
-    case 15: sprintf(string, "%.2f", 25.0f * param[index] * param[index]); break;
-    default: sprintf(string, "%.0f", 100.0f * param[index]);
-  }
+  begin
+    case  3: sprintf(string, "%.0f", fRati); break;
+    case  4: sprintf(string, "%.3f", fRatF); break;
+    case 11: sprintf(string, "%ld", (long)(Parameter[index] * 6.9) - 3); break;
+    case 12: sprintf(string, "%.0f", 200.0 * Parameter[index] - 100.0); break;
+    case 15: sprintf(string, "%.2f", 25.0 * Parameter[index] * Parameter[index]); break;
+    default: sprintf(string, "%.0f", 100.0 * Parameter[index]);
+  end;
   string[8] = 0;
   strcpy(text, (char * )string);
-}
-
-
-void mdaDX10::process(float **inputs, float **outputs, VstInt32 sampleFrames)
-{
-  float* out1 = outputs[0];
-  float* out2 = outputs[1];
-  long event=0, frame=0, frames, v;
-  float o, x, e, mw=MW, w=rich, m=modmix;
-  long k=K;
-  
-  if(activevoices>0 || notes[event]<sampleFrames) //detect & bypass completely empty blocks
-  {    
-    while(frame<sampleFrames)  
-    {
-      frames = notes[event++];
-      if(frames>sampleFrames) frames = sampleFrames;
-      frames -= frame;
-      frame += frames;
-
-      while(--frames>=0)  //would be faster with voice loop outside frame loop!
-      {                   //but then each voice would need it's own LFO...
-        VOICE *V = voice;
-        o = 0.0f;
-
-        if(--k<0)
-        {
-          lfo0 += dlfo * lfo1; //sine LFO
-          lfo1 -= dlfo * lfo0;
-          mw = lfo1 * (modwhl + vibrato);
-          k=100;
-        }
-
-        for(v=0; v<NVOICES; v++) //for each voice
-        {
-          e = V->env;
-          if(e > SILENCE) //**** this is the synth ****
-          {
-            V->env = e * V->cdec; //decay & release
-            V->cenv += V->catt * (e - V->cenv); //attack
-
-            x = V->dmod * V->mod0 - V->mod1; //could add more modulator blocks like
-            V->mod1 = V->mod0;               //this for a wider range of FM sounds
-            V->mod0 = x;    
-            V->menv += V->mdec * (V->mlev - V->menv);
-
-            x = V->car + V->dcar + x * V->menv + mw; //carrier phase
-            while(x >  1.0f) x -= 2.0f;  //wrap phase
-            while(x < -1.0f) x += 2.0f;
-            V->car = x;
-            o += V->cenv * (m * V->mod1 + (x + x * x * x * (w * x * x - 1.0f - w))); 
-          }      //amp env //mod thru-mix //5th-order sine approximation
-          V++;
-        }
-        *out1++ += o;
-        *out2++ += o;
-      }
-
-      if(frame<sampleFrames) //next note on/off
-      {
-        long note = notes[event++];
-        long vel  = notes[event++];
-        noteOn(note, vel);
-      }
-    }
-  
-    activevoices = NVOICES;
-    for(v=0; v<NVOICES; v++)
-    {
-      if(voice[v].env < SILENCE)  //choke voices that have finished
-      {
-        voice[v].env = voice[v].cenv = 0.0f;
-        activevoices--;
-      }
-      if(voice[v].menv < SILENCE) voice[v].menv = voice[v].mlev = 0.0f;
-    }
-  }
-
-  K=k; MW=mw; //remember these so vibrato speed not buffer size dependant!
-  notes[0] = EVENTS_DONE;
-}
-
-
-void mdaDX10::processReplacing(float **inputs, float **outputs, VstInt32 sampleFrames)
-{
-  float* out1 = outputs[0];
-  float* out2 = outputs[1];
-  long event=0, frame=0, frames, v;
-  float o, x, e, mw=MW, w=rich, m=modmix;
-  long k=K;
-  
-  if(activevoices>0 || notes[event]<sampleFrames) //detect & bypass completely empty blocks
-  {    
-    while(frame<sampleFrames)  
-    {
-      frames = notes[event++];
-      if(frames>sampleFrames) frames = sampleFrames;
-      frames -= frame;
-      frame += frames;
-
-      while(--frames>=0)  //would be faster with voice loop outside frame loop!
-      {                   //but then each voice would need it's own LFO...
-        VOICE *V = voice;
-        o = 0.0f;
-
-        if(--k<0)
-        {
-          lfo0 += dlfo * lfo1; //sine LFO
-          lfo1 -= dlfo * lfo0;
-          mw = lfo1 * (modwhl + vibrato);
-          k=100;
-        }
-
-        for(v=0; v<NVOICES; v++) //for each voice
-        {
-          e = V->env;
-          if(e > SILENCE) //**** this is the synth ****
-          {
-            V->env = e * V->cdec; //decay & release
-            V->cenv += V->catt * (e - V->cenv); //attack
-
-            x = V->dmod * V->mod0 - V->mod1; //could add more modulator blocks like
-            V->mod1 = V->mod0;               //this for a wider range of FM sounds
-            V->mod0 = x;    
-            V->menv += V->mdec * (V->mlev - V->menv);
-
-            x = V->car + V->dcar + x * V->menv + mw; //carrier phase
-            while(x >  1.0f) x -= 2.0f;  //wrap phase
-            while(x < -1.0f) x += 2.0f;
-            V->car = x;
-            o += V->cenv * (m * V->mod1 + (x + x * x * x * (w * x * x - 1.0f - w))); 
-          }      //amp env //mod thru-mix //5th-order sine approximation
-
-         ///  xx = x * x;
-         ///  x + x + x * xx * (xx - 3.0f);
-              
-          V++;
-        }
-        *out1++ = o;
-        *out2++ = o;
-      }
-
-      if(frame<sampleFrames) //next note on/off
-      {
-        long note = notes[event++];
-        long vel  = notes[event++];
-        noteOn(note, vel);
-      }
-    }
-  
-    activevoices = NVOICES;
-    for(v=0; v<NVOICES; v++)
-    {
-      if(voice[v].env < SILENCE)  //choke voices that have finished
-      {
-        voice[v].env = voice[v].cenv = 0.0f;
-        activevoices--;
-      }
-      if(voice[v].menv < SILENCE) voice[v].menv = voice[v].mlev = 0.0f;
-    }
-  }
-  else //completely empty block
-  {
-    while(--sampleFrames >= 0)
-    {
-      *out1++ = 0.0f;
-      *out2++ = 0.0f;
-    }
-  }
-  K=k; MW=mw; //remember these so vibrato speed not buffer size dependant!
-  notes[0] = EVENTS_DONE;
-}
-
+end;
 
 void mdaDX10::noteOn(long note, long velocity)
-{
-  float l = 1.0f;
+begin
+  float l = 1.0;
   long  v, vl=0;
 
-  if(velocity>0) 
-  {
-    for(v=0; v<NVOICES; v++)  //find quietest voice
-    {
-      if(voice[v].env<l) { l=voice[v].env;  vl=v; }
-    }
+  if (velocity > 0) 
+  begin
+   for(v=0; v<NVOICES; v++)  //find quietest voice
+    begin
+     if (voice[v].env < l) then
+      begin
+       l := voice[v].env;
+       vl := v;
+      end;
+    end;
 
-    l = (float)exp(0.05776226505f * ((float)note + param[12] + param[12] - 1.0f));
-    voice[vl].note = note;                         //fine tuning
-    voice[vl].car  = 0.0f;
-    voice[vl].dcar = tune * pbend * l; //pitch bend not updated during note as a bit tricky...
+    l := exp(0.05776226505 * ((float)note + Parameter[12] + Parameter[12] - 1.0));
+    voice[vl].note := note;                         //fine tuning
+    voice[vl].car  := 0.0;
+    voice[vl].dcar := fTune * fPitchBend * l; //pitch bend not updated during note as a bit tricky...
 
-    if(l>50.0f) l = 50.0f; //key tracking
-    l *= (64.0f + velsens * (velocity - 64)); //vel sens
-    voice[vl].menv = depth * l;
-    voice[vl].mlev = dept2 * l;
-    voice[vl].mdec = mdec;
+    if(l>50.0) l = 50.0; //key tracking
+    l := l * (64 + fVelSens * (velocity - 64)); //vel sens
+    voice[vl].menv := fDepth[0] * l;
+    voice[vl].mlev := fDepth[1] * l;
+    voice[vl].fMDec := fMDec;
 
-    voice[vl].dmod = ratio * voice[vl].dcar; //sine oscillator
-    voice[vl].mod0 = 0.0f;
-    voice[vl].mod1 = (float)sin(voice[vl].dmod); 
-    voice[vl].dmod = 2.0f * (float)cos(voice[vl].dmod);
-                     //scale volume with richness
-    voice[vl].env  = (1.5f - param[13]) * volume * (velocity + 10);
-    voice[vl].catt = catt;
-    voice[vl].cenv = 0.0f;
-    voice[vl].cdec = cdec;
-  }
+    voice[vl].dmod := fRatio * voice[vl].dcar; //sine oscillator
+    voice[vl].mod0 := 0.0;
+    voice[vl].mod1 := (float)sin(voice[vl].dmod);
+    voice[vl].dmod := 2.0 * (float)cos(voice[vl].dmod);
+                     //scale fVolume with richness
+    voice[vl].env  := (1.5 - Parameter[13]) * fVolume * (velocity + 10);
+    voice[vl].fCAtt := fCAtt;
+    voice[vl].cenv := 0.0;
+    voice[vl].fCDec := fCDec;
+  end;
   else //note off
-  {
+  begin
     for(v=0; v<NVOICES; v++) if(voice[v].note==note) //any voices playing that note?
-    {
-      if(sustain==0)
-      {
-        voice[v].cdec = crel; //release phase
+    begin
+      if(fSustain==0)
+      begin
+        voice[v].fCDec = fCRel; //release phase
         voice[v].env  = voice[v].cenv;
-        voice[v].catt = 1.0f;
-        voice[v].mlev = 0.0f;
-        voice[v].mdec = mrel;
-      }
-      else voice[v].note = SUSTAIN;
-    }
-  }
-}
+        voice[v].fCAtt = 1.0;
+        voice[v].mlev = 0.0;
+        voice[v].fMDec = fMRel;
+      end;
+      else voice[v].note = fSustain;
+    end;
+  end;
+end;
 
 
 VstInt32 mdaDX10::processEvents(VstEvents* ev)
-{
+begin
   long npos=0;
   
   for (long i=0; i<ev->numEvents; i++)
-  {
+  begin
     if((ev->events[i])->type != kVstMidiType) continue;
     VstMidiEvent* event = (VstMidiEvent* )ev->events[i];
     char* midiData = event->midiData;
     
     switch(midiData[0] & 0xf0) //status byte (all channels)
-    {
+    begin
       case 0x80: //note off
         notes[npos++] = event->deltaFrames; //delta
         notes[npos++] = midiData[1] & 0x7F; //note
@@ -488,33 +382,33 @@ VstInt32 mdaDX10::processEvents(VstEvents* ev)
 
       case 0xB0: //controller
         switch(midiData[1])
-        {
+        begin
           case 0x01:  //mod wheel
-            modwhl = 0.00000005f * (float)(midiData[2] * midiData[2]);
+            fModWheel = 0.00000005 * (float)(midiData[2] * midiData[2]);
             break;
           
-          case 0x07:  //volume
-            volume = 0.00000035f * (float)(midiData[2] * midiData[2]);
+          case 0x07:  //fVolume
+            fVolume = 0.00000035 * (float)(midiData[2] * midiData[2]);
             break;
          
-          case 0x40:  //sustain
-            sustain = midiData[2] & 0x40;
-            if(sustain==0)
-            {
+          case 0x40:  //fSustain
+            fSustain = midiData[2] & 0x40;
+            if(fSustain==0)
+            begin
               notes[npos++] = event->deltaFrames;
-              notes[npos++] = SUSTAIN; //end all sustained notes
+              notes[npos++] = fSustain; //end all sustained notes
               notes[npos++] = 0;
-            }
+            end;
             break;
 
           default:  //all notes off
             if(midiData[1]>0x7A) 
-            {  
-              for(long v=0; v<NVOICES; v++) voice[v].cdec=0.99f;
-              sustain = 0;
-            }
+            begin
+              for(long v=0; v<NVOICES; v++) voice[v].fCDec=0.99;
+              fSustain = 0;
+            end;
             break;
-        }
+        end;
         break;
 
       case 0xC0: //program change
@@ -522,18 +416,18 @@ VstInt32 mdaDX10::processEvents(VstEvents* ev)
         break;
       
       case 0xE0: //pitch bend
-        pbend = (float)(midiData[1] + 128 * midiData[2] - 8192);
-        if(pbend>0.0f) pbend = 1.0f + 0.000014951f * pbend; 
-                  else pbend = 1.0f + 0.000013318f * pbend; 
+        fPitchBend = (float)(midiData[1] + 128 * midiData[2] - 8192);
+        if(fPitchBend>0.0) fPitchBend = 1.0 + 0.000014951 * fPitchBend; 
+                  else fPitchBend = 1.0 + 0.000013318 * fPitchBend; 
         break;
       
       default: break;
-    }
+    end;
 
     if(npos>EVENTBUFFER) npos -= 3; //discard events if buffer full!!
     event++;
-  }
+  end;
   notes[npos] = EVENTS_DONE;
   return 1;
-}
+end;
 *)

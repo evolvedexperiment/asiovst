@@ -61,6 +61,7 @@ object StereoDataModule: TStereoDataModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterModChange
+      OnCustomParameterDisplay = ParameterModDisplay
     end
     item
       Curve = ctLinear

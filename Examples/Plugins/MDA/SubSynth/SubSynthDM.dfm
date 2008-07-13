@@ -20,63 +20,84 @@ object SubSynthDataModule: TSubSynthDataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Type'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 3.000000000000000000
+      MaxInteger = 3
       ShortLabel = 'Type'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnCustomParameterDisplay = ParameterModeDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Level'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'Level'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Tune'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Tune'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Dry Mix'
+      StepFloat = 1.000000000000000000
       Units = '%'
+      VSTModule = Owner
+      OnParameterChange = ParameterLevelChange
+    end
+    item
+      Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Tune'
+      Max = 1.000000000000000000
+      ShortLabel = 'Tune'
       SmoothingFactor = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Dry Mix'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'Dry Mix'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParameterDryChange
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Thresh'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      MaxInteger = 0
+      Min = -60.000000000000000000
+      MinInteger = -60
       ShortLabel = 'Thresh'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
+      OnParameterChange = ParameterThresholdChange
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Release'
-      Units = 'ms'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Release'
+      Max = 1.000000000000000000
       ShortLabel = 'Release'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'ms'
       VSTModule = Owner
+      OnParameterChange = ParameterReleaseChange
     end>
   OnParameterChange = VSTModuleParameterChange
   OnResume = VSTModuleResume

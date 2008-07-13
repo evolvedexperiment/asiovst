@@ -1,5 +1,6 @@
 object DX10DataModule: TDX10DataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
   Version = '0.0'
   EffectName = 'mda DX10'
@@ -144,164 +145,167 @@ object DX10DataModule: TDX10DataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Attack'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Decay'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Decay'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Release'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Coarse'
-      Units = 'ratio'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Coarse'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Fine'
+      SmoothingFactor = 1.000000000000000000
       Units = 'ratio'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Fine'
+      Max = 1.000000000000000000
       ShortLabel = 'Fine'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'ratio'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Init'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Mod Ini'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Dec'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Mod Dec'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Sus'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Mod Sus'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Rel'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Mod Rel'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Vel'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Mod Vel'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Vibrato'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Vibrato'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Octave'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Octave'
+      SmoothingFactor = 1.000000000000000000
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'FineTune'
-      Units = 'cents'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'FineTun'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'cents'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Waveform'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Wavefrm'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Mod Thru'
+      SmoothingFactor = 1.000000000000000000
       Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'ModThru'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'LFO Rate'
-      Units = 'Hz'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Mod Thru'
+      Max = 1.000000000000000000
+      ShortLabel = 'ModThru'
       SmoothingFactor = 1.000000000000000000
+      Units = '%'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'LFO Rate'
+      Max = 1.000000000000000000
       ShortLabel = 'LFORate'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'Hz'
       VSTModule = Owner
     end>
+  OnResume = VSTModuleResume
+  OnProcess = VSTModuleProcess
+  OnProcessReplacing = VSTModuleProcess
   Left = 218
   Top = 81
   Height = 150

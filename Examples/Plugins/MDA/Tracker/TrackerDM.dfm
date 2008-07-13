@@ -20,97 +20,97 @@ object TrackerDataModule: TTrackerDataModule
     end>
   ParameterProperties = <
     item
-      Max = 4.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Mode'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
       LargeStepFloat = 1.000000000000000000
-      MaxInteger = 4
       LargeStepInteger = 1
+      Max = 4.000000000000000000
+      MaxInteger = 4
       ShortLabel = 'Mode'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnCustomParameterDisplay = TrackerDataModuleParameterProperties0CustomParameterDisplay
+      OnCustomParameterDisplay = ParameterModeDisplay
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Dynamics'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.100000001490116100
       LargeStepFloat = 10.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'Dynamic'
+      SmallStepFloat = 0.100000001490116100
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.100000001490116100
       LargeStepFloat = 10.000000000000000000
-      ShortLabel = 'Mix'
-      VSTModule = Owner
-    end
-    item
       Max = 100.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Glide'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
+      ShortLabel = 'Mix'
+      SmallStepFloat = 0.100000001490116100
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.100000001490116100
+      Units = '%'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Glide'
       LargeStepFloat = 10.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'Glide'
+      SmallStepFloat = 0.100000001490116100
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Transpose'
-      Units = 'semi'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Transpo'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'semi'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Maximum'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Maximum'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'Hz'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Trigger'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Trigger'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Output'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Output'
+      Max = 1.000000000000000000
       ShortLabel = 'Output'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end>
   OnParameterChange = VSTModuleParameterChange
