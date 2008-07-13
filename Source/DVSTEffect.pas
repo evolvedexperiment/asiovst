@@ -316,8 +316,8 @@ type
   PVstEvents = ^TVstEvents;
   TVstEvents = packed record  // a block of events for the current audio block
     numEvents : LongInt;
-    Reserved  : LongInt;                   // zero
-    Events    : array[0..2047] of PVstEvent;  // variable
+    Reserved  : LongInt;                     // zero
+    Events    : array[0..2047] of PVstEvent; // variable
   end;
 
   // VstMidiEventFlag //////////////////////////////////////////////////////////

@@ -3,11 +3,29 @@ unit JX10;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTEffect,
+  DVSTCustomModule, DVSTModule;
 
 type
   TJX10DataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure VSTModuleResume(Sender: TObject);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    function VSTModuleOutputProperties(Sender: TObject; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TChannelPropertyFlags): Integer;
   private
+    fMode     : Single;
+    fNoiseMix : Single;
+    fVolTrim  : Single;
+    fSemi     : Single;
+    fCent     : Single;
+    fOscMix   : Single;
+    fDetune   : Single;
+    fTune     : Single;
+    fVibrato  : Single;
+    fPWDepth  : Single;
+    fLFOHz    : Single;
+    fDeltaLFO : Single;
     procedure Update;
   public
   end;
@@ -16,57 +34,60 @@ implementation
 
 {$R *.DFM}
 
+uses
+  Math;
+
 procedure TJX10DataModule.Update;  // Parameter Change
 var
   ifs : Double;
 begin
-(*
- ifs := 1 / Fs;
+ ifs := 1 / SampleRate;
+ fMode     := round(7.9 * Parameter[3]);
+ fNoiseMix := sqr(Parameter[21]);
+ fVolTrim  := (3.2 - Parameter[0] - 1.5 * fNoiseMix) * (1.5 - 0.5 * Parameter[7]);
+ fNoiseMix := fNoiseMix * 0.06;
+ fOscMix   := Parameter[0];
 
- fMode = (long)(7.9 * Parameter[3]);
- fNoiseMix = Parameter[21] * Parameter[21];
- fVolTrim = (3.2 - Parameter[0] - 1.5 * fNoiseMix) * (1.5 - 0.5 * Parameter[7]);
- fNoiseMix *= 0.06;
- fOscMix = Parameter[0];
+ fSemi     := trunc(48 * Parameter[1]) - 24;
+ fCent     := 15.876 * Parameter[2] - 7.938;
+ fCent     := 0.1 * trunc(sqr(fCent) * fCent);
+ fDetune   := Power(1.059463094359, - fSemi - 0.01 * fCent);
+ fTune     := -23.376 - 2 * Parameter[23] - 12 * trunc(Parameter[22] * 4.9);
+ fTune     := SampleRate * Power(1.059463094359, fTune);
 
- fSemi = (float)floor(48.0 * Parameter[1]) - 24.0;
- fCent = 15.876 * Parameter[2] - 7.938;
- fCent = 0.1 * (float)floor(fCent * fCent * fCent);
- fDetune = (float)pow(1.059463094359, - fSemi - 0.01 * fCent);
- fTune = -23.376 - 2.0 * Parameter[23] - 12.0 * (float)floor(Parameter[22] * 4.9);
- fTune = Fs * (float)pow(1.059463094359, fTune);
-
- fVibrato = pwmdep = 0.2 * (Parameter[20] - 0.5) * (Parameter[20] - 0.5);
+ fVibrato  := 0.2 * (Parameter[20] - 0.5) * (Parameter[20] - 0.5);
+ fPWDepth    := fVibrato;
  if Parameter[20] < 0.5 then fVibrato := 0;
 
+(*
  fLFOHz    := exp(7.0 * Parameter[19] - 4.0);
  fDeltaLFO := fLFOHz * (ifs * TWOPI * KMAX);
 
- fFilterFreq := 8.0 * Parameter[6] - 1.5;
- fFilterQ    := (1.0 - Parameter[7]) * (1.0 - Parameter[7]); ////// + 0.02;
- fFilterLFO  := 2.5 * Parameter[9] * Parameter[9];
- fFilterEnv  := 12.0 * Parameter[8] - 6.0;
+ fFilterFreq := 8 * Parameter[6] - 1.5;
+ fFilterQ    := sqr(1 - Parameter[7]);        ////// + 0.02;
+ fFilterLFO  := 2.5 * sqr(Parameter[9]);
+ fFilterEnv  := 12 * Parameter[8] - 6;
  fFilterVel  := 0.1 * Parameter[10] - 0.05;
  if (Parameter[10] < 0.05) then
    begin
-    veloff := 1;
+    fVelOff := 1;
     fFilterVel := 0;
    end
-  else veloff := 0;
+  else fVelOff := 0;
 
  fAttack  := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[15]));
  fDecay   := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[16]));
  fSustain := Parameter[17];
- fRelease := 1.0 - (float)exp(-ifs * exp(5.5 - 7.5 * Parameter[18]));
+ fRelease := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[18]));
  if (Parameter[18] < 0.01
-  then fRelease = 0.1; //extra fast release
+  then fRelease := 0.1; //extra fast release
 
  ifs := ifs * KMAX; //lower update rate...
 
- fatt := 1.0 - exp(-ifs * exp(5.5 - 7.5 * Parameter[11]));
- fdec := 1.0 - exp(-ifs * exp(5.5 - 7.5 * Parameter[12]));
- fsus := sqr(Parameter[13]);
- frel := 1.0 - exp(-ifs * exp(5.5 - 7.5 * Parameter[14]));
+ fAtt := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[11]));
+ fDec := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[12]));
+ fSus := sqr(Parameter[13]);
+ fRel := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[14]));
 
  if(Parameter[4]<0.02) fGlide = 1.0; else
  fGlide     := 1 - exp(-ifs * exp(6.0 - 7.0 * Parameter[4]));
@@ -76,52 +97,12 @@ begin
 end;
 
 
-end.
-
+procedure TJX10DataModule.VSTModuleCreate(Sender: TObject);
+var
+  i : Integer;
+begin
+ i := 0;
 (*
-mdaJX10Program::mdaJX10Program()
-begin
-  Parameter[0]  = 0.00; //OSC Mix
-  Parameter[1]  = 0.25; //OSC fTune
-  Parameter[2]  = 0.50; //OSC Fine
-
-  Parameter[3]  = 0.00; //OSC fMode
-  Parameter[4]  = 0.35; //OSC Rate
-  Parameter[5]  = 0.50; //OSC Bend
-
-  Parameter[6]  = 1.00; //VCF Freq
-  Parameter[7]  = 0.15; //VCF Reso
-  Parameter[8]  = 0.75; //VCF <Env
-
-  Parameter[9]  = 0.00; //VCF <LFO
-  Parameter[10] = 0.50; //VCF <Vel
-  Parameter[11] = 0.00; //VCF fAttack
-
-  Parameter[12] = 0.30; //VCF fDecay
-  Parameter[13] = 0.00; //VCF fSustain
-  Parameter[14] = 0.25; //VCF fRelease
-
-  Parameter[15] = 0.00; //ENV fAttack
-  Parameter[16] = 0.50; //ENV fDecay
-  Parameter[17] = 1.00; //ENV fSustain
-  
-  Parameter[18] = 0.30; //ENV fRelease
-  Parameter[19] = 0.81; //LFO Rate
-  Parameter[20] = 0.50; //fVibrato
-  
-  Parameter[21] = 0.00; //Noise   - not present in original patches
-  Parameter[22] = 0.50; //Octave
-  Parameter[23] = 0.50; //Tuning
-  strcpy (name, "Empty Patch");  
-end;
-
-
-mdaJX10::mdaJX10(audioMasterCallback audioMaster) : AudioEffectX(audioMaster, NPROGS, NPARAMS)
-begin
-  long i=0;
-  Fs = 44100.0;
-
-  programs = new mdaJX10Program[NPROGS];
   if(programs)
   begin
     fillpatch(i++, "5th Sweep Pad", 1.0, 0.37, 0.25, 0.3, 0.32, 0.5, 0.9, 0.6, 0.12, 0.0, 0.5, 0.9, 0.89, 0.9, 0.73, 0.0, 0.5, 1.0, 0.71, 0.81, 0.65, 0.0, 0.5, 0.5);
@@ -169,15 +150,15 @@ begin
     fillpatch(i++, "Ghost [SA]", 0.75, 0.51, 0.24, 0.45, 0.16, 0.48, 0.38, 0.58, 0.75, 0.16, 0.81, 0.0, 0.3, 0.4, 0.31, 0.37, 0.5, 1.0, 0.54, 0.85, 0.83, 0.43, 0.46, 0.5);
     fillpatch(i++, "Soft E.Piano", 0.31, 0.51, 0.43, 0.0, 0.35, 0.5, 0.34, 0.26, 0.53, 0.0, 0.63, 0.0, 0.22, 0.0, 0.39, 0.0, 0.8, 0.0, 0.44, 0.81, 0.51, 0.0, 0.5, 0.5);
     fillpatch(i++, "Thumb Piano", 0.72, 0.82, 1.0, 0.0, 0.35, 0.5, 0.37, 0.47, 0.54, 0.0, 0.5, 0.0, 0.45, 0.0, 0.39, 0.0, 0.39, 0.0, 0.48, 0.81, 0.6, 0.0, 0.71, 0.5);
-    fillpatch(i++, "Steel Drums [ZF]", 0.81, 0.76, 0.19, 0.0, 0.18, 0.7, 0.4, 0.3, 0.54, 0.17, 0.4, 0.0, 0.42, 0.23, 0.47, 0.12, 0.48, 0.0, 0.49, 0.53, 0.36, 0.34, 0.56, 0.5);       
-    
+    fillpatch(i++, "Steel Drums [ZF]", 0.81, 0.76, 0.19, 0.0, 0.18, 0.7, 0.4, 0.3, 0.54, 0.17, 0.4, 0.0, 0.42, 0.23, 0.47, 0.12, 0.48, 0.0, 0.49, 0.53, 0.36, 0.34, 0.56, 0.5);
+
     fillpatch(58,  "Car Horn", 0.57, 0.49, 0.31, 0.0, 0.35, 0.5, 0.46, 0.0, 0.68, 0.0, 0.5, 0.46, 0.3, 1.0, 0.23, 0.3, 0.5, 1.0, 0.31, 1.0, 0.38, 0.0, 0.5, 0.5);
     fillpatch(59,  "Helicopter", 0.0, 0.25, 0.5, 0.0, 0.35, 0.5, 0.08, 0.36, 0.69, 1.0, 0.5, 1.0, 1.0, 0.0, 1.0, 0.96, 0.5, 1.0, 0.92, 0.97, 0.5, 1.0, 0.0, 0.5);
     fillpatch(60,  "Arctic Wind", 0.0, 0.25, 0.5, 0.0, 0.35, 0.5, 0.16, 0.85, 0.5, 0.28, 0.5, 0.37, 0.3, 0.0, 0.25, 0.89, 0.5, 1.0, 0.89, 0.24, 0.5, 1.0, 1.0, 0.5);
     fillpatch(61,  "Thip", 1.0, 0.37, 0.51, 0.0, 0.35, 0.5, 0.0, 1.0, 0.97, 0.0, 0.5, 0.02, 0.2, 0.0, 0.2, 0.0, 0.46, 0.0, 0.3, 0.81, 0.5, 0.78, 0.48, 0.5);
     fillpatch(62,  "Synth Tom", 0.0, 0.25, 0.5, 0.0, 0.76, 0.94, 0.3, 0.33, 0.76, 0.0, 0.68, 0.0, 0.59, 0.0, 0.59, 0.1, 0.5, 0.0, 0.5, 0.81, 0.5, 0.7, 0.0, 0.5);
     fillpatch(63,  "Squelchy Frog", 0.5, 0.41, 0.23, 0.45, 0.77, 0.0, 0.4, 0.65, 0.95, 0.0, 0.5, 0.33, 0.5, 0.0, 0.25, 0.0, 0.7, 0.65, 0.18, 0.32, 1.0, 0.0, 0.06, 0.5);
-    
+
     //for testing...
     //fillpatch(0, "Monosynth", 0.62, 0.26, 0.51, 0.79, 0.35, 0.54, 0.64, 0.39, 0.51, 0.65, 0.0, 0.07, 0.52, 0.24, 0.84, 0.13, 0.3, 0.76, 0.21, 0.58, 0.3, 0.0, 0.36, 0.5);
 
@@ -186,7 +167,7 @@ begin
 
   if(audioMaster)
   begin
-    setNumInputs(0);        
+    setNumInputs(0);
     setNumOutputs(NOUTS);
     canProcessReplacing();
     isSynth();
@@ -194,7 +175,7 @@ begin
   end;
 
   //initialise...
-  for(long v=0; v<NVOICES; v++) 
+  for(long v=0; v<NVOICES; v++)
   begin
     voice[v].dp   = voice[v].dp2   = 1.0;
     voice[v].saw  = voice[v].p     = voice[v].p2    = 0.0;
@@ -204,7 +185,7 @@ begin
     voice[v].note = 0;
   end;
   notes[0] = EVENTS_DONE;
-  lfo = modwhl = filtwhl = press = fzip = 0.0; 
+  lfo = modwhl = filtwhl = press = fzip = 0.0;
   rezwhl = pbend = ipbend = 1.0;
   volume = 0.0005;
   K = fMode = lastnote = sustain = activevoices = 0;
@@ -212,23 +193,264 @@ begin
 
   update();
   suspend();
+*)
 end;
 
-
-void mdaJX10::setSampleRate(float sampleRate)
+function TJX10DataModule.VSTModuleOutputProperties(Sender: TObject; var vLabel,
+  shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType;
+  var Flags: TChannelPropertyFlags): Integer;
 begin
-  AudioEffectX::setSampleRate(sampleRate);
-  Fs = sampleRate;
+(*
+ if (index < NOUTS) then
+  begin
+    sprintf(properties->label, "JX10", index + 1);
+    properties->flags = kVstPinIsActive;
+    if(index<2) properties->flags |= kVstPinIsStereo; //make channel 1+2 stereo
+    return true;
+  end;
+ result := False;
+*)
+end;
+
+procedure TJX10DataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  event, frame, frames, v     : Integer;
+  o, e, vib, pwm, pb, ipb, gl : Single;
+  x, y, hpf, min, w, ww       : Single;
+  ff, fe, fq, fx, fz          : Single;
+  k                           : Integer;
+  r                           : Cardinal;
+begin
+(*
+  float* out1 = outputs[0];
+  float* out2 = outputs[1];
+  long event=0, frame=0, frames, v;
+  pb   := pbend;
+  ipb  := ipbend;
+  gl   := fGlide;
+  hpf  := 0.997;
+  min  := 1;
+  w    := 0;
+  ww   := fNoiseMix;
+  fe   := fFilterEnv;
+  fq   := fFilterQ * rezwhl;
+  fx   := 1.97 - 0.85 * fq;
+  fz   := fzip;
+  k    := K;
+
+  vib := sin(lfo);
+  ff  := fFilterFreq + filtwhl + (fFilterLFO + press) * vib; //have to do again here as way that
+  pwm := 1 + vib * (modwhl + fPWDepth);           //below triggers on k was too cheap!
+  vib := 1 + vib * (modwhl + fVibrato);
+
+  if ((fActiveVoices > 0) or (notes[event] < sampleFrames))
+   begin
+    while (frame < sampleFrames) do
+     begin
+      frames := notes[event++];
+      if (frames > sampleFrames)
+       then frames := sampleFrames;
+      frames := frames - frame;
+      frame  := frame + frames;
+
+      while (--frames >= 0) do
+       begin
+        VOICE *V = voice;
+        o = 0.0;
+        
+        noise = (noise * 196314165) + 907633515;
+        r = (noise & 0x7FFFFF) + 0x40000000; //generate noise + fast convert to float
+        w = *(float * )&r;
+        w = ww * (w - 3.0);
+
+        if(--k<0) then
+         begin
+          lfo += fDeltaLFO;
+          if(lfo>PI) lfo -= TWOPI;
+          vib = (float)sin(lfo);
+          ff = fFilterFreq + filtwhl + (fFilterLFO + press) * vib;
+          pwm = 1.0 + vib * (modwhl + fPWDepth);
+          vib = 1.0 + vib * (modwhl + fVibrato);
+          k = KMAX;
+         end;
+
+        for(v=0; v<NVOICES; v++)  //for each voice
+        begin 
+          e = V->env;
+          if(e > SILENCE)
+          begin //Sinc-Loop Oscillator
+            x = V->p + V->dp;
+            if(x > min) 
+            begin
+              if(x > V->pmax) 
+              begin 
+                x = V->pmax + V->pmax - x;  
+                V->dp = -V->dp; 
+              end;
+              V->p = x;
+              x = V->sin0 * V->sinx - V->sin1; //sine osc
+              V->sin1 = V->sin0;
+              V->sin0 = x;
+              x = x / V->p;
+            end;
+            else
+            begin 
+              V->p = x = - x;  
+              V->dp = V->period * vib * pb; //set period for next cycle
+              V->pmax = (float)trunc(0.5 + V->dp) - 0.5;
+              V->dc = -0.5 * V->lev / V->pmax;
+              V->pmax *= PI;
+              V->dp = V->pmax / V->dp;
+              V->sin0 = V->lev * (float)sin(x);
+              V->sin1 = V->lev * (float)sin(x - V->dp);
+              V->sinx = 2.0 * (float)cos(V->dp);
+              if(x*x > .1) x = V->sin0 / x; else x = V->lev; //was 0.01;
+            end;
+            
+            y = V->p2 + V->dp2; //osc2
+            if(y > min) 
+            begin 
+              if(y > V->pmax2) 
+              begin 
+                y = V->pmax2 + V->pmax2 - y;
+                V->dp2 = -V->dp2; 
+              end;
+              V->p2 = y;
+              y = V->sin02 * V->sinx2 - V->sin12;
+              V->sin12 = V->sin02;
+              V->sin02 = y;
+              y = y / V->p2;
+            end;
+            else
+            begin
+              V->p2 = y = - y;  
+              V->dp2 = V->period * V->fDetune * pwm * pb;
+              V->pmax2 = (float)trunc(0.5 + V->dp2) - 0.5;
+              V->dc2 = -0.5 * V->lev2 / V->pmax2;
+              V->pmax2 *= PI;
+              V->dp2 = V->pmax2 / V->dp2;
+              V->sin02 = V->lev2 * (float)sin(y);
+              V->sin12 = V->lev2 * (float)sin(y - V->dp2);
+              V->sinx2 = 2.0 * (float)cos(V->dp2);
+              if(y*y > .1) y = V->sin02 / y; else y = V->lev2;
+            end;
+            V->saw = V->saw * hpf + V->dc + x - V->dc2 - y;  //integrated sinc = saw
+            x = V->saw + w;
+            V->env += V->envd * (V->envl - V->env);
+
+            if(k==KMAX) //filter freq update at LFO rate
+            begin
+              if((V->env+V->envl)>3.0) begin V->envd=fDecay; V->envl=fSustain; end; //envelopes
+              V->fenv += V->fenvd * (V->fenvl - V->fenv);
+              if((V->fenv+V->fenvl)>3.0) begin V->fenvd=fdec; V->fenvl=fsus; end;
+
+              fz += 0.005 * (ff - fz); //filter zipper noise filter
+              y = V->fc * (float)exp(fz + fe * V->fenv) * ipb; //filter cutoff
+              if(y<0.005) y=0.005;
+              V->ff = y;
  
-  fDeltaLFO = fLFOHz * (float)(TWOPI * KMAX) / Fs; 
+              V->period += gl * (V->target - V->period); //fGlide
+              if(V->target < V->period) V->period += gl * (V->target - V->period);
+            end;
+
+            if(V->ff > fx) V->ff = fx; //stability limit
+            
+            V->f0 += V->ff * V->f1; //state-variable filter
+            V->f1 -= V->ff * (V->f0 + fq * V->f1 - x - V->f2);
+            V->f1 -= 0.2 * V->f1 * V->f1 * V->f1; //soft limit
+
+            V->f2 = x;
+            
+            o += V->env * V->f0;
+          end;
+          V++;
+        end;
+
+        *out1++ = o;
+        *out2++ = o;
+      end;
+
+      if (frame < sampleFrames)
+      begin
+        long note = notes[event++];
+        long vel  = notes[event++];
+        noteOn(note, vel);
+      end;
+    end;
+  
+    activevoices = NVOICES;
+    for(v=0; v<NVOICES; v++)
+    begin
+      if(voice[v].env<SILENCE)  //choke voices
+      begin
+        voice[v].env = voice[v].envl = 0.0;
+        voice[v].f0 = voice[v].f1 = voice[v].f2 = 0.0;
+        activevoices--;
+      end;
+    end;
+  end;
+  else //empty block
+  begin
+    while(--sampleFrames >= 0)
+    begin
+      *out1++ = 0.0;
+      *out2++ = 0.0;
+    end;
+  end;
+  notes[0] = EVENTS_DONE;  //mark events buffer as done
+  fzip = fz;
+  K = k;
+*)
 end;
 
-
-void mdaJX10::resume()
-begin  
-  DECLARE_VST_DEPRECATED (wantEvents) ();
+procedure TJX10DataModule.VSTModuleResume(Sender: TObject);
+begin
+ // DECLARE_VST_DEPRECATED (wantEvents) ();
 end;
 
+procedure TJX10DataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+begin
+// fDeltaLFO = fLFOHz * (TWOPI * KMAX) / SampleRate;
+end;
+
+end.
+
+(*
+mdaJX10Program::mdaJX10Program()
+begin
+  Parameter[0] := 0.00; //OSC Mix
+  Parameter[1] := 0.25; //OSC fTune
+  Parameter[2] := 0.50; //OSC Fine
+
+  Parameter[3] := 0.00; //OSC fMode
+  Parameter[4] := 0.35; //OSC Rate
+  Parameter[5] := 0.50; //OSC Bend
+
+  Parameter[6] := 1.00; //VCF Freq
+  Parameter[7] := 0.15; //VCF Reso
+  Parameter[8] := 0.75; //VCF <Env
+
+  Parameter[9] := 0.00; //VCF <LFO
+  Parameter[10] = 0.50; //VCF <Vel
+  Parameter[11] = 0.00; //VCF fAttack
+
+  Parameter[12] = 0.30; //VCF fDecay
+  Parameter[13] = 0.00; //VCF fSustain
+  Parameter[14] = 0.25; //VCF fRelease
+
+  Parameter[15] = 0.00; //ENV fAttack
+  Parameter[16] = 0.50; //ENV fDecay
+  Parameter[17] = 1.00; //ENV fSustain
+  
+  Parameter[18] = 0.30; //ENV fRelease
+  Parameter[19] = 0.81; //LFO Rate
+  Parameter[20] = 0.50; //fVibrato
+
+  Parameter[21] = 0.00; //Noise   - not present in original patches
+  Parameter[22] = 0.50; //Octave
+  Parameter[23] = 0.50; //Tuning
+  strcpy (name, "Empty Patch");
+end;
 
 void mdaJX10::suspend() //Used by Logic (have note off code in 3 places now...)
 begin
@@ -240,13 +462,6 @@ begin
     voice[v].f0 = voice[v].f1 = voice[v].f2 = 0.0;
   end;
 end;
-
-
-mdaJX10::~mdaJX10()  //destroy any buffers...
-begin
-  if(programs) delete[] programs;
-end;
-
 
 void mdaJX10::setProgram(VstInt32 program)
 begin
@@ -276,11 +491,11 @@ void mdaJX10::fillpatch(long p, char *name,
                       float p18, float p19, float p20, float p21, float p22, float p23)
 begin
   strcpy(programs[p].name, name);
-  programs[p].Parameter[0]  = p0;   programs[p].Parameter[1]  = p1;
-  programs[p].Parameter[2]  = p2;   programs[p].Parameter[3]  = p3;
-  programs[p].Parameter[4]  = p4;   programs[p].Parameter[5]  = p5;
-  programs[p].Parameter[6]  = p6;   programs[p].Parameter[7]  = p7;
-  programs[p].Parameter[8]  = p8;   programs[p].Parameter[9]  = p9;
+  programs[p].Parameter[0] := p0;   programs[p].Parameter[1] := p1;
+  programs[p].Parameter[2] := p2;   programs[p].Parameter[3] := p3;
+  programs[p].Parameter[4] := p4;   programs[p].Parameter[5] := p5;
+  programs[p].Parameter[6] := p6;   programs[p].Parameter[7] := p7;
+  programs[p].Parameter[8] := p8;   programs[p].Parameter[9] := p9;
   programs[p].Parameter[10] = p10;  programs[p].Parameter[11] = p11;
   programs[p].Parameter[12] = p12;  programs[p].Parameter[13] = p13;
   programs[p].Parameter[14] = p14;  programs[p].Parameter[15] = p15;
@@ -295,23 +510,6 @@ float mdaJX10::getParameter(VstInt32 index)     begin return Parameter[index]; e
 void  mdaJX10::setProgramName(char *name)   begin strcpy(programs[curProgram].name, name); end;
 void  mdaJX10::getProgramName(char *name)   begin strcpy(name, programs[curProgram].name); end;
 void  mdaJX10::setBlockSize(VstInt32 blockSize) begin  AudioEffectX::setBlockSize(blockSize); end;
-bool  mdaJX10::getEffectName(char* name)    begin strcpy(name, "mda JX10 Synth"); return true; end;
-bool  mdaJX10::getVendorString(char* text)  begin  strcpy(text, "maxim digital audio"); return true; end;
-bool  mdaJX10::getProductString(char* text) begin strcpy(text, "mda JX10 Synth"); return true; end;
-
-
-bool mdaJX10::getOutputProperties(VstInt32 index, VstPinProperties* properties)
-begin
-  if(index<NOUTS)
-  begin
-    sprintf(properties->label, "JX10", index + 1);
-    properties->flags = kVstPinIsActive;
-    if(index<2) properties->flags |= kVstPinIsStereo; //make channel 1+2 stereo
-    return true;
-  end;
-  return false;
-end;
-
 
 bool mdaJX10::getProgramNameIndexed(VstInt32 category, VstInt32 index, char* text)
 begin
@@ -332,53 +530,6 @@ begin
     return true;
   end;
   return false;
-end;
-
-
-VstInt32 mdaJX10::canDo(char* text)
-begin
-  if(!strcmp (text, "receiveVstEvents")) return 1;
-  if(!strcmp (text, "receiveVstMidiEvent"))  return 1;
-  return -1;
-end;
-
-
-void mdaJX10::getParameterName(VstInt32 index, char *label)
-begin
-  switch (index)
-  begin
-    case  0: strcpy(label, "OSC Mix "); break;
-    case  1: strcpy(label, "OSC Tune"); break;
-    case  2: strcpy(label, "OSC Fine"); break;
-    
-    case  3: strcpy(label, "Glide   "); break;
-    case  4: strcpy(label, "Gld Rate"); break;
-    case  5: strcpy(label, "Gld Bend"); break;
-    
-    case  6: strcpy(label, "VCF Freq"); break;
-    case  7: strcpy(label, "VCF Reso"); break;
-    case  8: strcpy(label, "VCF Env "); break;
-    
-    case  9: strcpy(label, "VCF LFO "); break;
-     case 10: strcpy(label, "VCF Vel "); break;
-     case 11: strcpy(label, "VCF Att "); break;
-
-    case 12: strcpy(label, "VCF Dec "); break;
-    case 13: strcpy(label, "VCF Sus "); break;
-     case 14: strcpy(label, "VCF Rel "); break;
-     
-    case 15: strcpy(label, "ENV Att "); break;
-    case 16: strcpy(label, "ENV Dec "); break;
-    case 17: strcpy(label, "ENV Sus "); break;
-
-    case 18: strcpy(label, "ENV Rel "); break;
-    case 19: strcpy(label, "LFO Rate"); break;
-    case 20: strcpy(label, "Vibrato "); break;
-
-    case 21: strcpy(label, "Noise   "); break;
-    case 22: strcpy(label, "Octave  "); break;
-    default: strcpy(label, "Tuning  ");
-  end;
 end;
 
 
@@ -432,348 +583,6 @@ begin
   end;
 end;
 
-
-void mdaJX10::process(float **inputs, float **outputs, VstInt32 sampleFrames)
-begin
-  float* out1 = outputs[0];
-  float* out2 = outputs[1];
-  long event=0, frame=0, frames, v;
-  float o, e, vib, pwm, pb=pbend, ipb=ipbend, gl=fGlide;
-  float x, y, hpf=0.997, min=1.0, w=0.0, ww=fNoiseMix;
-  float ff, fe=fFilterEnv, fq=fFilterQ * rezwhl, fx=1.97-0.85*fq, fz=fzip;
-  long k=K;
-  unsigned long r;
-
-  vib = (float)sin(lfo);
-  ff = fFilterFreq + filtwhl + (fFilterLFO + press) * vib; //have to do again here as way that
-  pwm = 1.0 + vib * (modwhl + pwmdep);           //below triggers on k was too cheap!
-  vib = 1.0 + vib * (modwhl + fVibrato);
-
-  if(activevoices>0 || notes[event]<sampleFrames)
-  begin    
-    while(frame<sampleFrames)
-    begin
-      frames = notes[event++];
-      if(frames>sampleFrames) frames = sampleFrames;
-      frames -= frame;
-      frame += frames;
-
-      while(--frames>=0)
-      begin
-        VOICE *V = voice;
-        o = 0.0;
-        
-        noise = (noise * 196314165) + 907633515;
-        r = (noise & 0x7FFFFF) + 0x40000000; //generate noise + fast convert to float
-        w = *(float * )&r;
-        w = ww * (w - 3.0);
-
-        if(--k<0)
-        begin
-          lfo += fDeltaLFO;
-          if(lfo>PI) lfo -= TWOPI;
-          vib = (float)sin(lfo);
-          ff = fFilterFreq + filtwhl + (fFilterLFO + press) * vib;
-          pwm = 1.0 + vib * (modwhl + pwmdep);
-          vib = 1.0 + vib * (modwhl + fVibrato);
-          k = KMAX;
-        end;
-
-        for(v=0; v<NVOICES; v++)  //for each voice
-        begin 
-          e = V->env;
-          if(e > SILENCE)
-          begin //Sinc-Loop Oscillator
-            x = V->p + V->dp;
-            if(x > min) 
-            begin
-              if(x > V->pmax) 
-              begin 
-                x = V->pmax + V->pmax - x;  
-                V->dp = -V->dp; 
-              end;
-              V->p = x;
-              x = V->sin0 * V->sinx - V->sin1; //sine osc
-              V->sin1 = V->sin0;
-              V->sin0 = x;
-              x = x / V->p;
-            end;
-            else
-            begin 
-              V->p = x = - x;  
-              V->dp = V->period * vib * pb; //set period for next cycle
-              V->pmax = (float)floor(0.5 + V->dp) - 0.5;
-              V->dc = -0.5 * V->lev / V->pmax;
-              V->pmax *= PI;
-              V->dp = V->pmax / V->dp;
-              V->sin0 = V->lev * (float)sin(x);
-              V->sin1 = V->lev * (float)sin(x - V->dp);
-              V->sinx = 2.0 * (float)cos(V->dp);
-              if(x*x > .1) x = V->sin0 / x; else x = V->lev; //was 0.01;
-            end;
-            
-            y = V->p2 + V->dp2; //osc2
-            if(y > min) 
-            begin 
-              if(y > V->pmax2) 
-              begin 
-                y = V->pmax2 + V->pmax2 - y;  
-                V->dp2 = -V->dp2; 
-              end;
-              V->p2 = y;
-              y = V->sin02 * V->sinx2 - V->sin12;
-              V->sin12 = V->sin02;
-              V->sin02 = y;
-              y = y / V->p2;
-            end;
-            else
-            begin
-              V->p2 = y = - y;  
-              V->dp2 = V->period * V->fDetune * pwm * pb;
-              V->pmax2 = (float)floor(0.5 + V->dp2) - 0.5;
-              V->dc2 = -0.5 * V->lev2 / V->pmax2;
-              V->pmax2 *= PI;
-              V->dp2 = V->pmax2 / V->dp2;
-              V->sin02 = V->lev2 * (float)sin(y);
-              V->sin12 = V->lev2 * (float)sin(y - V->dp2);
-              V->sinx2 = 2.0 * (float)cos(V->dp2);
-              if(y*y > .1) y = V->sin02 / y; else y = V->lev2;
-            end;
-            V->saw = V->saw * hpf + V->dc + x - V->dc2 - y;  //integrated sinc = saw
-            x = V->saw + w;
-            V->env += V->envd * (V->envl - V->env);
-
-            if(k==KMAX) //filter freq update at LFO rate
-            begin
-              if((V->env+V->envl)>3.0) begin V->envd=fDecay; V->envl=fSustain; end; //envelopes
-              V->fenv += V->fenvd * (V->fenvl - V->fenv);
-              if((V->fenv+V->fenvl)>3.0) begin V->fenvd=fdec; V->fenvl=fsus; end;
-
-              fz += 0.005 * (ff - fz); //filter zipper noise filter
-              y = V->fc * (float)exp(fz + fe * V->fenv) * ipb; //filter cutoff
-              if(y<0.005) y=0.005;
-              V->ff = y;
- 
-              V->period += gl * (V->target - V->period); //fGlide
-              if(V->target < V->period) V->period += gl * (V->target - V->period);
-            end;
-
-            if(V->ff > fx) V->ff = fx; //stability limit
-
-            V->f0 += V->ff * V->f1; //state-variable filter
-            V->f1 -= V->ff * (V->f0 + fq * V->f1 - x - V->f2);
-            V->f1 -= 0.2 * V->f1 * V->f1 * V->f1; //soft limit  //was 0.08
-            V->f2 = x;
-            
-            o += V->env * V->f0;
-          end;
-          V++;
-        end;
-
-        *out1++ += o;
-        *out2++ += o;
-      end;
-
-      if(frame<sampleFrames)
-      begin
-        long note = notes[event++];
-        long vel  = notes[event++];
-        noteOn(note, vel);
-      end;
-    end;
-  
-    activevoices = NVOICES;
-    for(v=0; v<NVOICES; v++)
-    begin
-      if(voice[v].env<SILENCE)  //choke voices
-      begin
-        voice[v].env = voice[v].envl = 0.0;
-        voice[v].f0 = voice[v].f1 = voice[v].f2 = 0.0;
-        activevoices--;
-      end;
-    end;
-  end;
-  notes[0] = EVENTS_DONE;  //mark events buffer as done
-  fzip = fz;
-  K = k;
-end;
-
-
-void mdaJX10::processReplacing(float **inputs, float **outputs, VstInt32 sampleFrames)
-begin
-  float* out1 = outputs[0];
-  float* out2 = outputs[1];
-  long event=0, frame=0, frames, v;
-  float o, e, vib, pwm, pb=pbend, ipb=ipbend, gl=fGlide;
-  float x, y, hpf=0.997, min=1.0, w=0.0, ww=fNoiseMix;
-  float ff, fe=fFilterEnv, fq=fFilterQ * rezwhl, fx=1.97-0.85*fq, fz=fzip;
-  long k=K;
-  unsigned long r;
-
-  vib = (float)sin(lfo);
-  ff = fFilterFreq + filtwhl + (fFilterLFO + press) * vib; //have to do again here as way that
-  pwm = 1.0 + vib * (modwhl + pwmdep);           //below triggers on k was too cheap!
-  vib = 1.0 + vib * (modwhl + fVibrato);
-
-  if(activevoices>0 || notes[event]<sampleFrames)
-  begin    
-    while(frame<sampleFrames)
-    begin
-      frames = notes[event++];
-      if(frames>sampleFrames) frames = sampleFrames;
-      frames -= frame;
-      frame += frames;
-
-      while(--frames>=0)
-      begin
-        VOICE *V = voice;
-        o = 0.0;
-        
-        noise = (noise * 196314165) + 907633515;
-        r = (noise & 0x7FFFFF) + 0x40000000; //generate noise + fast convert to float
-        w = *(float * )&r;
-        w = ww * (w - 3.0);
-
-        if(--k<0)
-        begin
-          lfo += fDeltaLFO;
-          if(lfo>PI) lfo -= TWOPI;
-          vib = (float)sin(lfo);
-          ff = fFilterFreq + filtwhl + (fFilterLFO + press) * vib;
-          pwm = 1.0 + vib * (modwhl + pwmdep);
-          vib = 1.0 + vib * (modwhl + fVibrato);
-          k = KMAX;
-        end;
-
-        for(v=0; v<NVOICES; v++)  //for each voice
-        begin 
-          e = V->env;
-          if(e > SILENCE)
-          begin //Sinc-Loop Oscillator
-            x = V->p + V->dp;
-            if(x > min) 
-            begin
-              if(x > V->pmax) 
-              begin 
-                x = V->pmax + V->pmax - x;  
-                V->dp = -V->dp; 
-              end;
-              V->p = x;
-              x = V->sin0 * V->sinx - V->sin1; //sine osc
-              V->sin1 = V->sin0;
-              V->sin0 = x;
-              x = x / V->p;
-            end;
-            else
-            begin 
-              V->p = x = - x;  
-              V->dp = V->period * vib * pb; //set period for next cycle
-              V->pmax = (float)floor(0.5 + V->dp) - 0.5;
-              V->dc = -0.5 * V->lev / V->pmax;
-              V->pmax *= PI;
-              V->dp = V->pmax / V->dp;
-              V->sin0 = V->lev * (float)sin(x);
-              V->sin1 = V->lev * (float)sin(x - V->dp);
-              V->sinx = 2.0 * (float)cos(V->dp);
-              if(x*x > .1) x = V->sin0 / x; else x = V->lev; //was 0.01;
-            end;
-            
-            y = V->p2 + V->dp2; //osc2
-            if(y > min) 
-            begin 
-              if(y > V->pmax2) 
-              begin 
-                y = V->pmax2 + V->pmax2 - y;  
-                V->dp2 = -V->dp2; 
-              end;
-              V->p2 = y;
-              y = V->sin02 * V->sinx2 - V->sin12;
-              V->sin12 = V->sin02;
-              V->sin02 = y;
-              y = y / V->p2;
-            end;
-            else
-            begin
-              V->p2 = y = - y;  
-              V->dp2 = V->period * V->fDetune * pwm * pb;
-              V->pmax2 = (float)floor(0.5 + V->dp2) - 0.5;
-              V->dc2 = -0.5 * V->lev2 / V->pmax2;
-              V->pmax2 *= PI;
-              V->dp2 = V->pmax2 / V->dp2;
-              V->sin02 = V->lev2 * (float)sin(y);
-              V->sin12 = V->lev2 * (float)sin(y - V->dp2);
-              V->sinx2 = 2.0 * (float)cos(V->dp2);
-              if(y*y > .1) y = V->sin02 / y; else y = V->lev2;
-            end;
-            V->saw = V->saw * hpf + V->dc + x - V->dc2 - y;  //integrated sinc = saw
-            x = V->saw + w;
-            V->env += V->envd * (V->envl - V->env);
-
-            if(k==KMAX) //filter freq update at LFO rate
-            begin
-              if((V->env+V->envl)>3.0) begin V->envd=fDecay; V->envl=fSustain; end; //envelopes
-              V->fenv += V->fenvd * (V->fenvl - V->fenv);
-              if((V->fenv+V->fenvl)>3.0) begin V->fenvd=fdec; V->fenvl=fsus; end;
-
-              fz += 0.005 * (ff - fz); //filter zipper noise filter
-              y = V->fc * (float)exp(fz + fe * V->fenv) * ipb; //filter cutoff
-              if(y<0.005) y=0.005;
-              V->ff = y;
- 
-              V->period += gl * (V->target - V->period); //fGlide
-              if(V->target < V->period) V->period += gl * (V->target - V->period);
-            end;
-
-            if(V->ff > fx) V->ff = fx; //stability limit
-            
-            V->f0 += V->ff * V->f1; //state-variable filter
-            V->f1 -= V->ff * (V->f0 + fq * V->f1 - x - V->f2);
-            V->f1 -= 0.2 * V->f1 * V->f1 * V->f1; //soft limit
-
-            V->f2 = x;
-            
-            o += V->env * V->f0;
-          end;
-          V++;
-        end;
-
-        *out1++ = o;
-        *out2++ = o;
-      end;
-
-      if(frame<sampleFrames)
-      begin
-        long note = notes[event++];
-        long vel  = notes[event++];
-        noteOn(note, vel);
-      end;
-    end;
-  
-    activevoices = NVOICES;
-    for(v=0; v<NVOICES; v++)
-    begin
-      if(voice[v].env<SILENCE)  //choke voices
-      begin
-        voice[v].env = voice[v].envl = 0.0;
-        voice[v].f0 = voice[v].f1 = voice[v].f2 = 0.0;
-        activevoices--;
-      end;
-    end;
-  end;
-  else //empty block
-  begin
-    while(--sampleFrames >= 0)
-    begin
-      *out1++ = 0.0;
-      *out2++ = 0.0;
-    end;
-  end;
-  notes[0] = EVENTS_DONE;  //mark events buffer as done
-  fzip = fz;
-  K = k;
-end;
-
-
 void mdaJX10::noteOn(long note, long velocity)
 begin
   float p, l=100.0; //louder than any envelope!
@@ -781,7 +590,7 @@ begin
   
   if(velocity>0) //note on
   begin
-    if(veloff) velocity = 80;
+    if(fVelOff) velocity = 80;
     
     if(fMode & 4) //monophonic
     begin
@@ -862,10 +671,10 @@ begin
       //else 
         voice[v].env += SILENCE + SILENCE; //anti-glitching trick
     end;
-    voice[v].envl  = 2.0;
-    voice[v].envd  = fAttack;
-    voice[v].fenvl = 2.0;
-    voice[v].fenvd = fatt;
+    voice[v].envl  := 2;
+    voice[v].envd  := fAttack;
+    voice[v].fenvl := 2;
+    voice[v].fenvd := fatt;
   end;
   else //note off
   begin
