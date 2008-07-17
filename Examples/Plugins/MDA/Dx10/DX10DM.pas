@@ -11,12 +11,32 @@ type
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
   private
+    fTune     : Single;
+    fRatF     : Single;
+    fRati     : Integer;
+    fRatio    : Single;
+    fDepth    : Array [0..1] of Single;
+    fVelSens  : Single;
+    fVibrato  : Single;
+    fCAtt     : Single;
+    fCDec     : Single;
+    fCRel     : Single;
+    fLFO      : Array [0..1] of Single;
+    fMDec     : Single;
+    fMRel     : Single;
+    fRich     : Single;
+    fModMix   : Single;
+    fDeltaLFO : Single;
+    procedure Update;
   public
   end;
 
 implementation
 
 {$R *.DFM}
+
+uses
+  Math;
 
 procedure TDX10DataModule.VSTModuleCreate(Sender: TObject);
 var
@@ -63,25 +83,32 @@ begin
 
     setProgram(0);
   end;
+*)
 
-   //initialise...
-  for (i = 0; i < NVOICES; i++)
+ //initialise...
+(*
+ for i := 0 to NVOICES - 1 do
   begin
-    voice[i].env = 0.0;
-    voice[i].car = voice[i].dcar = 0.0;
-    voice[i].mod0 = voice[i].mod1 = voice[i].dmod = 0.0;
-    voice[i].fCDec = 0.99; //all notes off
+   voice[i].env   := 0;
+   voice[i].car   := 0;
+   voice[i].dcar  := 0;
+   voice[i].mod0  := 0;
+   voice[i].mod1  := 0;
+   voice[i].dmod  := 0;
+   voice[i].fCDec := 0.99; //all notes off
   end;
-  notes[0] = EVENTS_DONE;
-  fLFO0         := 0;
-  fDeltaLFO         := 0;
-  fModWheel       := 0;
-  fLFO1         := 0;
-  fPitchBend        := 1;
-  fVolume       := 0.0035;
-  fSustain      := 0
-  fActiveVoices := 0;
-  K            := 0;
+ notes[0] = EVENTS_DONE;
+*)
+ fLFO[0]       := 0;
+ fLFO[1]       := 0;
+ fDeltaLFO     := 0;
+(*
+ fModWheel     := 0;
+ fPitchBend    := 1;
+ fVolume       := 0.0035;
+ fSustain      := 0
+ fActiveVoices := 0;
+ K             := 0;
 
   Update;
   Suspend;
@@ -92,24 +119,22 @@ procedure TDX10DataModule.Update;
 var
   ifs : Single;
 begin
-  ifs := 1 / SampleRate;
-(*
+ ifs := 1 / SampleRate;
 
  fTune := (8.175798915644 * ifs * Power(2, trunc(Parameter[11] * 6.9) - 2.0));
 
- fRati := Parameter[3];
- fRati := trunc(40.1 * sqr(fRati));
+ fRati := trunc(40.1 * sqr(Parameter[3]));
  if (Parameter[4] < 0.5)
-  then fRatF := 0.2 * sqr(Parameter[4]);
- else
-  case round(8.9 * Parameter[4]) of
-     4: fRatF := 0.25;       break;
-     5: fRatF := 0.33333333; break;
-     6: fRatF := 0.50;       break;
-     7: fRatF := 0.66666667; break;
-   else fRatF := 0.75;
-  end;
- fRatio = 1.570796326795 * (fRati + fRatF);
+  then fRatF := 0.2 * sqr(Parameter[4])
+  else
+   case round(8.9 * Parameter[4]) of
+      4: fRatF := 0.25;
+      5: fRatF := 0.33333333;
+      6: fRatF := 0.50;
+      7: fRatF := 0.66666667; 
+    else fRatF := 0.75;
+   end;
+ fRatio := 1.570796326795 * (fRati + fRatF);
 
  fDepth[0] := 0.0002 * sqr(Parameter[5]);
  fDepth[1] := 0.0002 * sqr(Parameter[7]);
@@ -119,8 +144,8 @@ begin
 
  fCAtt := 1 - exp(-ifs * exp(8 - 8 * Parameter[0]));
  if Parameter[1] > 0.98
-  then fCDec := 1.0; else
- fCDec :=       exp(-ifs * exp(5 - 8 * Parameter[1]));
+  then fCDec := 1
+  else fCDec := exp(-ifs * exp(5 - 8 * Parameter[1]));
  fCRel :=       exp(-ifs * exp(5 - 5 * Parameter[2]));
  fMDec := 1.0 - exp(-ifs * exp(6 - 7 * Parameter[6]));
  fMRel := 1.0 - exp(-ifs * exp(5 - 8 * Parameter[8]));
@@ -128,17 +153,23 @@ begin
  fRich     := 0.5 - 3 * sqr(Parameter[13]);  // -1.0 + 2 * Parameter[13];
  fModMix   := 0.25 * sqr(Parameter[14]);
  fDeltaLFO := 628.3 * ifs * 25 * sqr(Parameter[15]); // these params not in original DX10
-*)
 end;
 
 procedure TDX10DataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  event, frame, frames, v : Integer;
+  o, x, e, mw, w, m       : Single;
+  k, note, vel            : Integer;
 begin
 (*
  float* out1 = outputs[0];
  float* out2 = outputs[1];
- long event=0, frame=0, frames, v;
- float o, x, e, mw=MW, w=fRich, m=fModMix;
- long k=K;
+ event := 0;
+ frame := 0;
+ mw    := MW;
+ w     := fRich;
+ m     := fModMix;
+ k     := K;
 
  if (fActiveVoices > 0) or (notes[event] < sampleFrames) then //detect & bypass completely empty blocks
   begin
@@ -156,9 +187,9 @@ begin
 
         if(--k<0)
         begin
-          fLFO0 += fDeltaLFO * fLFO1; //sine LFO
-          fLFO1 -= fDeltaLFO * fLFO0;
-          mw = fLFO1 * (fModWheel + fVibrato);
+          fLFO[0] += fDeltaLFO * fLFO[1]; //sine LFO
+          fLFO[1] -= fDeltaLFO * fLFO[0];
+          mw = fLFO[1] * (fModWheel + fVibrato);
           k=100;
         end;
 
@@ -176,8 +207,8 @@ begin
             V->menv := V->menv + V->fMDec * (V->mlev - V->menv);
 
             x := V->car + V->dcar + x * V->menv + mw; //carrier phase
-            while(x >  1.0) x -= 2.0;  //wrap phase
-            while(x < -1.0) x += 2.0;
+            while (x >  1) do x := x - 2;  //wrap phase
+            while (x < -1) do x := x + 2;
             V->car = x;
             o := o + V->cenv * (m * V->mod1 + (x + x * x * x * (w * x * x - 1.0 - w))); 
           end;      //amp env //mod thru-mix //5th-order sine approximation
@@ -193,8 +224,8 @@ begin
 
       if(frame<sampleFrames) //next note on/off
       begin
-        long note = notes[event++];
-        long vel  = notes[event++];
+        long note := notes[event++];
+        long vel  := notes[event++];
         noteOn(note, vel);
       end;
     end;
@@ -218,7 +249,8 @@ begin
       *out2++ = 0.0;
     end;
   end;
-  K=k; MW=mw; //remember these so fVibrato speed not buffer size dependant!
+  K  := k;
+  MW := mw; //remember these so vibrato speed not buffer size dependant!
   notes[0] = EVENTS_DONE;
 *)
 end;
@@ -227,8 +259,8 @@ procedure TDX10DataModule.VSTModuleResume(Sender: TObject);
 begin
 (*
   DECLARE_VST_DEPRECATED (wantEvents) ();
-  fLFO0 = 0;
-  fLFO1 = 1; //reset LFO phase
+  fLFO[0] = 0;
+  fLFO[1] = 1; //reset LFO phase
 *)
 end;
 
