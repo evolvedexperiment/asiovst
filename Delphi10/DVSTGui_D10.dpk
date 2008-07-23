@@ -28,7 +28,8 @@ package DVSTGui_D10;
 requires
   rtl,
   vcl,
-  AVDCommon_D10;
+  AVDCommon_D10,
+  VSTPlugin_D10;
 
 contains
   DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',

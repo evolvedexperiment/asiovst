@@ -3,31 +3,39 @@ unit DX10DM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTEffect, DVSTModule,
+  DVSTCustomModule;
 
 type
   TDX10DataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    function VSTModuleOutputProperties(Sender: TObject; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TChannelPropertyFlags): Integer;
+    procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
   private
-    fTune     : Single;
-    fRatF     : Single;
-    fRati     : Integer;
-    fRatio    : Single;
-    fDepth    : Array [0..1] of Single;
-    fVelSens  : Single;
-    fVibrato  : Single;
-    fCAtt     : Single;
-    fCDec     : Single;
-    fCRel     : Single;
-    fLFO      : Array [0..1] of Single;
-    fMDec     : Single;
-    fMRel     : Single;
-    fRich     : Single;
-    fModMix   : Single;
-    fDeltaLFO : Single;
+    fTune      : Single;
+    fRatF      : Single;
+    fRati      : Integer;
+    fRatio     : Single;
+    fDepth     : Array [0..1] of Single;
+    fVelSens   : Single;
+    fVibrato   : Single;
+    fCAtt      : Single;
+    fCDec      : Single;
+    fCRel      : Single;
+    fLFO       : Array [0..1] of Single;
+    fMDec      : Single;
+    fMRel      : Single;
+    fRich      : Single;
+    fModMix    : Single;
+    fModWheel  : Single;
+    fVolume    : Single;
+    fSustain   : Single;
+    fPitchBend : Single;
+    fDeltaLFO  : Single;
     procedure Update;
+    procedure noteOn(Note, Velocity: Integer);
   public
   end;
 
@@ -115,6 +123,23 @@ begin
 *)
 end;
 
+function TDX10DataModule.VSTModuleOutputProperties(Sender: TObject; var vLabel,
+  shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType;
+  var Flags: TChannelPropertyFlags): Integer;
+begin
+(*
+ result := 0;
+ if(index < NOUTS)
+  begin
+   vLabel := 'DX10'
+   Flags := [kVstPinIsActive];
+   if (index < 2)
+    then Flags := Flags + [kVstPinIsStereo]; //make channel 1+2 stereo
+   resulte := 1;
+  end;
+*)
+end;
+
 procedure TDX10DataModule.Update;
 var
   ifs : Single;
@@ -161,97 +186,167 @@ var
   o, x, e, mw, w, m       : Single;
   k, note, vel            : Integer;
 begin
-(*
- float* out1 = outputs[0];
- float* out2 = outputs[1];
  event := 0;
  frame := 0;
- mw    := MW;
  w     := fRich;
  m     := fModMix;
+(*
+ mw    := MW;
  k     := K;
+
+ float* out1 = outputs[0];
+ float* out2 = outputs[1];
 
  if (fActiveVoices > 0) or (notes[event] < sampleFrames) then //detect & bypass completely empty blocks
   begin
-    while(frame<sampleFrames)
+   while (frame < sampleFrames) do
     begin
-      frames = notes[event++];
-      if(frames>sampleFrames) frames = sampleFrames;
-      frames -= frame;
-      frame += frames;
+     frames := notes[event++];
+     if frames > sampleFrames
+      then frames := sampleFrames;
+     frames := frames - frame;
+     frame  := frame + frames;
 
-      while(--frames>=0)  //would be faster with voice loop outside frame loop!
+     while(--frames>=0)  //would be faster with voice loop outside frame loop!
       begin                   //but then each voice would need it's own LFO...
-        VOICE *V = voice;
-        o = 0.0;
+       VOICE *V = voice;
+       o := 0.0;
 
-        if(--k<0)
+       dec(k);
+       if (k < 0) then
         begin
-          fLFO[0] += fDeltaLFO * fLFO[1]; //sine LFO
-          fLFO[1] -= fDeltaLFO * fLFO[0];
-          mw = fLFO[1] * (fModWheel + fVibrato);
-          k=100;
+         fLFO[0] := fLFO[0] + fDeltaLFO * fLFO[1]; //sine LFO
+         fLFO[1] := fLFO[1] - fDeltaLFO * fLFO[0];
+         mw := fLFO[1] * (fModWheel + fVibrato);
+         k  :=100;
         end;
 
-        for (v=0; v<NVOICES; v++) //for each voice
+       for (v=0; v<NVOICES; v++) //for each voice
         begin
-          e := V->env;
-          if (e > SILENCE) then //**** this is the synth ****
+         e := V->env;
+         if (e > SILENCE) then //**** this is the synth ****
           begin
-            V->env  := e * V->fCDec; //decay & release
-            V->cenv := V->cenv + V->fCAtt * (e - V->cenv); //attack
+           V->env  := e * V->fCDec; //decay & release
+           V->cenv := V->cenv + V->fCAtt * (e - V->cenv); //attack
 
-            x = V->dmod * V->mod0 - V->mod1; //could add more modulator blocks like
-            V->mod1 := V->mod0;               //this for a wider range of FM sounds
-            V->mod0 := x;
-            V->menv := V->menv + V->fMDec * (V->mlev - V->menv);
+           x = V->dmod * V->mod0 - V->mod1;  // could add more modulator blocks like
+           V->mod1 := V->mod0;               // this for a wider range of FM sounds
+           V->mod0 := x;
+           V->menv := V->menv + V->fMDec * (V->mlev - V->menv);
 
-            x := V->car + V->dcar + x * V->menv + mw; //carrier phase
-            while (x >  1) do x := x - 2;  //wrap phase
-            while (x < -1) do x := x + 2;
-            V->car = x;
-            o := o + V->cenv * (m * V->mod1 + (x + x * x * x * (w * x * x - 1.0 - w))); 
+           x := V->car + V->dcar + x * V->menv + mw; //carrier phase
+           while (x >  1) do x := x - 2;  //wrap phase
+           while (x < -1) do x := x + 2;
+           V->car = x;
+           o := o + V->cenv * (m * V->mod1 + (x + x * x * x * (w * x * x - 1.0 - w)));
           end;      //amp env //mod thru-mix //5th-order sine approximation
 
-         ///  xx = x * x;
-         ///  x + x + x * xx * (xx - 3.0);
+        ///  xx = x * x;
+        ///  x + x + x * xx * (xx - 3.0);
 
-          V++;
+         V++;
         end;
-        *out1++ = o;
-        *out2++ = o;
+       *out1++ := o;
+       *out2++ := o;
       end;
 
-      if(frame<sampleFrames) //next note on/off
-      begin
+      if (frame < sampleFrames) then   // Next note on/off
+       begin
         long note := notes[event++];
         long vel  := notes[event++];
         noteOn(note, vel);
-      end;
-    end;
-  
-    fActiveVoices = NVOICES;
-    for(v=0; v<NVOICES; v++)
+       end;
+     end;
+
+   fActiveVoices := NVOICES;
+   for v := 0 to NVOICES - 1 do
     begin
-      if(voice[v].env < SILENCE)  //choke voices that have finished
+     if (voice[v].env < SILENCE) then //choke voices that have finished
       begin
-        voice[v].env = voice[v].cenv = 0.0;
-        fActiveVoices--;
+       voice[v].env  := 0.0;
+       voice[v].cenv := 0.0;
+       fActiveVoices--;
       end;
-      if(voice[v].menv < SILENCE) voice[v].menv = voice[v].mlev = 0.0;
+     if(voice[v].menv < SILENCE) then
+      begin
+       voice[v].menv := 0.0;
+       voice[v].mlev := 0.0;
+      end;
     end;
-  end;
-  else //completely empty block
+  end
+ else //completely empty block
   begin
-    while(--sampleFrames >= 0)
-    begin
-      *out1++ = 0.0;
-      *out2++ = 0.0;
-    end;
+   FillChar(Outputs[0, 0], sampleFrames, 0);
+   FillChar(Outputs[1, 0], sampleFrames, 0);
   end;
-  K  := k;
-  MW := mw; //remember these so vibrato speed not buffer size dependant!
-  notes[0] = EVENTS_DONE;
+ K  := k;
+ MW := mw; //remember these so vibrato speed not buffer size dependant!
+ notes[0] := EVENTS_DONE;
+*)
+end;
+
+procedure TDX10DataModule.VSTModuleProcessMidi(Sender: TObject;
+  MidiEvent: TVstMidiEvent);
+begin
+ case (MidiEvent.MidiData[0] and $F) of      // Status Byte (all channels)
+  $80: begin                                 // Note Off
+(*
+        notes[npos++] := event->deltaFrames;  // Delta
+        notes[npos++] := midiData[1] & 0x7F;  // Note
+        notes[npos++] := 0;                   // Vel
+*)
+       end;
+
+  $90: begin // Note on
+(*
+        notes[npos++] := event->deltaFrames; //delta
+        notes[npos++] := midiData[1] & 0x7F; //note
+        notes[npos++] := midiData[2] & 0x7F; //vel
+*)
+       end;
+
+  $B0: case MidiEvent.MidiData[1] of                               // Controller
+        $01: fModWheel := 0.00000005 * sqr(MidiEvent.midiData[2]); // Mod Wheel
+        $07: fVolume   := 0.00000035 * sqr(MidiEvent.midiData[2]); // Volume
+        $40: begin                                                 // Sustain
+              fSustain := MidiEvent.MidiData[2] and $40;
+              if (fSustain = 0) then 
+               begin
+//                inc(npos);
+//                notes[npos] := event.deltaFrames;
+//                inc(npos);
+//                notes[npos] := fSustain; //end all sustained notes
+//                inc(npos);
+//                notes[npos] := 0;
+               end;
+             end;
+        else
+         if (MidiEvent.midiData[1] > $7A) then //all notes off
+          begin
+//           for v := 0 to NVOICES - 1 do voice[v].fCDec := 0.99;
+           fSustain := 0;
+          end;
+       end;
+
+  $C0: if (MidiEvent.midiData[1] < numPrograms)
+        then setProgram(MidiEvent.midiData[1]); // Program Change
+
+  $E0: begin // Pitch Bend
+        fPitchBend := (MidiEvent.midiData[1] + 128 *
+                       MidiEvent.midiData[2] - 8192);
+        if (fPitchBend > 0)
+         then fPitchBend := 1 + 0.000014951 * fPitchBend
+         else fPitchBend := 1 + 0.000013318 * fPitchBend;
+       end;
+
+ end;
+
+(*
+    if(npos>EVENTBUFFER) npos -= 3; //discard events if buffer full!!
+    event++;
+  end;
+  notes[npos] = EVENTS_DONE;
+  return 1;
 *)
 end;
 
@@ -259,9 +354,68 @@ procedure TDX10DataModule.VSTModuleResume(Sender: TObject);
 begin
 (*
   DECLARE_VST_DEPRECATED (wantEvents) ();
-  fLFO[0] = 0;
-  fLFO[1] = 1; //reset LFO phase
 *)
+  fLFO[0] := 0;
+  fLFO[1] := 1; //reset LFO phase
+end;
+
+procedure TDX10DataModule.noteOn(Note, Velocity : Integer);
+var
+  l     : Single;
+  v, vl : Integer;
+begin
+ l  := 1;
+ vl := 0;
+
+ if (velocity > 0) then
+  begin
+(*
+   for v := 0 to NVOICES - 1 do  //find quietest voice
+    begin
+     if (Voice[v].env < l) then
+      begin
+       l := voice[v].env;
+       vl := v;
+      end;
+    end;
+
+    l := exp(0.05776226505 * (note + 2 * Parameter[12] - 1));
+    voice[vl].note := note;                         //fine tuning
+    voice[vl].car  := 0.0;
+    voice[vl].dcar := fTune * fPitchBend * l; //pitch bend not updated during note as a bit tricky...
+
+    if (l > 50.0) then l := 50.0; //key tracking
+    l               := l * (64 + fVelSens * (velocity - 64)); //vel sens
+    voice[vl].menv  := fDepth[0] * l;
+    voice[vl].mlev  := fDepth[1] * l;
+    voice[vl].MDec  := fMDec;
+
+    voice[vl].dmod  := fRatio * voice[vl].dcar; //sine oscillator
+    voice[vl].mod0  := 0.0;
+    voice[vl].mod1  := sin(voice[vl].dmod);
+    voice[vl].dmod  := cos(voice[vl].dmod) * 2;
+    voice[vl].env   := (1.5 - Parameter[13]) * fVolume * (Velocity + 10); // scale Volume with richness
+    voice[vl].cAtt  := fCAtt;
+    voice[vl].cenv  := 0;
+    voice[vl].cDec  := fCDec;
+*)
+  end
+ else //note off
+  begin
+(*
+   for v := 0 to NVOICES - 1 do      // find quietest voice
+    if (voice[v].note = Note) then   // any voices playing that note?
+     if(fSustain = 0)
+      begin
+       voice[v].fCDec := fCRel;     // release phase
+       voice[v].env   := voice[v].cenv;
+       voice[v].fCAtt := 1.0;
+       voice[v].mlev  := 0.0;
+       voice[v].fMDec := fMRel;
+      end
+     else voice[v].note := fSustain;
+*)
+  end;
 end;
 
 end.
@@ -273,53 +427,20 @@ void mdaDX10::fillpatch(long Power, char *name,
                      float p12, float p13, float p14, float p15)
 begin
   strcpy(programs[Power].name, name);
-  programs[Power].Parameter[0] = p0;    programs[Power].Parameter[1] = p1;
-  programs[Power].Parameter[2] = p2;    programs[Power].Parameter[3] = p3;
-  programs[Power].Parameter[4] = p4;    programs[Power].Parameter[5] = p5;
-  programs[Power].Parameter[6] = p6;    programs[Power].Parameter[7] = p7;
-  programs[Power].Parameter[8] = p8;    programs[Power].Parameter[9] = p9;
-  programs[Power].Parameter[10] = p10;  programs[Power].Parameter[11] = p11;
-  programs[Power].Parameter[12] = p12;  programs[Power].Parameter[13] = p13;
-  programs[Power].Parameter[14] = p14;  programs[Power].Parameter[15] = p15;
-end;
-
-bool mdaDX10::getOutputProperties(VstInt32 index, VstPinProperties* properties)
-begin
-  if(index < NOUTS)
-  begin
-    sprintf(properties->label, "DX10");
-    properties->flags = kVstPinIsActive;
-    if(index<2) properties->flags |= kVstPinIsStereo; //make channel 1+2 stereo
-    return true;
-  end;
-  return false;
-end;
-
-bool mdaDX10::getProgramNameIndexed(VstInt32 category, VstInt32 index, char* text)
-begin
-  if(index < NPROGS)
-  begin
-    strcpy(text, programs[index].name);
-    return true;
-  end;
-  return false;
-end;
-
-
-bool mdaDX10::copyProgram(VstInt32 destination)
-begin
-  if(destination<NPROGS)
-  begin
-    programs[destination] = programs[curProgram];
-    return true;
-  end;
-  return false;
+  programs[Power].Parameter[ 0] := p0;   programs[Power].Parameter[ 1] := p1;
+  programs[Power].Parameter[ 2] := p2;   programs[Power].Parameter[ 3] := p3;
+  programs[Power].Parameter[ 4] := p4;   programs[Power].Parameter[ 5] := p5;
+  programs[Power].Parameter[ 6] := p6;   programs[Power].Parameter[ 7] := p7;
+  programs[Power].Parameter[ 8] := p8;   programs[Power].Parameter[ 9] := p9;
+  programs[Power].Parameter[10] := p10;  programs[Power].Parameter[11] := p11;
+  programs[Power].Parameter[12] := p12;  programs[Power].Parameter[13] := p13;
+  programs[Power].Parameter[14] := p14;  programs[Power].Parameter[15] := p15;
 end;
 
 void mdaDX10::getParameterDisplay(VstInt32 index, char *text)
 begin
   char string[16];
-  
+
   switch(index)
   begin
     case  3: sprintf(string, "%.0f", fRati); break;
@@ -331,135 +452,5 @@ begin
   end;
   string[8] = 0;
   strcpy(text, (char * )string);
-end;
-
-void mdaDX10::noteOn(long note, long velocity)
-begin
-  float l = 1.0;
-  long  v, vl=0;
-
-  if (velocity > 0) 
-  begin
-   for(v=0; v<NVOICES; v++)  //find quietest voice
-    begin
-     if (voice[v].env < l) then
-      begin
-       l := voice[v].env;
-       vl := v;
-      end;
-    end;
-
-    l := exp(0.05776226505 * ((float)note + Parameter[12] + Parameter[12] - 1.0));
-    voice[vl].note := note;                         //fine tuning
-    voice[vl].car  := 0.0;
-    voice[vl].dcar := fTune * fPitchBend * l; //pitch bend not updated during note as a bit tricky...
-
-    if(l>50.0) l = 50.0; //key tracking
-    l := l * (64 + fVelSens * (velocity - 64)); //vel sens
-    voice[vl].menv := fDepth[0] * l;
-    voice[vl].mlev := fDepth[1] * l;
-    voice[vl].fMDec := fMDec;
-
-    voice[vl].dmod := fRatio * voice[vl].dcar; //sine oscillator
-    voice[vl].mod0 := 0.0;
-    voice[vl].mod1 := (float)sin(voice[vl].dmod);
-    voice[vl].dmod := 2.0 * (float)cos(voice[vl].dmod);
-                     //scale fVolume with richness
-    voice[vl].env  := (1.5 - Parameter[13]) * fVolume * (velocity + 10);
-    voice[vl].fCAtt := fCAtt;
-    voice[vl].cenv := 0.0;
-    voice[vl].fCDec := fCDec;
-  end;
-  else //note off
-  begin
-    for(v=0; v<NVOICES; v++) if(voice[v].note==note) //any voices playing that note?
-    begin
-      if(fSustain==0)
-      begin
-        voice[v].fCDec = fCRel; //release phase
-        voice[v].env  = voice[v].cenv;
-        voice[v].fCAtt = 1.0;
-        voice[v].mlev = 0.0;
-        voice[v].fMDec = fMRel;
-      end;
-      else voice[v].note = fSustain;
-    end;
-  end;
-end;
-
-
-VstInt32 mdaDX10::processEvents(VstEvents* ev)
-begin
-  long npos=0;
-  
-  for (long i=0; i<ev->numEvents; i++)
-  begin
-    if((ev->events[i])->type != kVstMidiType) continue;
-    VstMidiEvent* event = (VstMidiEvent* )ev->events[i];
-    char* midiData = event->midiData;
-    
-    switch(midiData[0] & 0xf0) //status byte (all channels)
-    begin
-      case 0x80: //note off
-        notes[npos++] = event->deltaFrames; //delta
-        notes[npos++] = midiData[1] & 0x7F; //note
-        notes[npos++] = 0;                  //vel
-        break;
-
-      case 0x90: //note on
-        notes[npos++] = event->deltaFrames; //delta
-        notes[npos++] = midiData[1] & 0x7F; //note
-        notes[npos++] = midiData[2] & 0x7F; //vel
-        break;
-
-      case 0xB0: //controller
-        switch(midiData[1])
-        begin
-          case 0x01:  //mod wheel
-            fModWheel = 0.00000005 * (float)(midiData[2] * midiData[2]);
-            break;
-          
-          case 0x07:  //fVolume
-            fVolume = 0.00000035 * (float)(midiData[2] * midiData[2]);
-            break;
-         
-          case 0x40:  //fSustain
-            fSustain = midiData[2] & 0x40;
-            if(fSustain==0)
-            begin
-              notes[npos++] = event->deltaFrames;
-              notes[npos++] = fSustain; //end all sustained notes
-              notes[npos++] = 0;
-            end;
-            break;
-
-          default:  //all notes off
-            if(midiData[1]>0x7A) 
-            begin
-              for(long v=0; v<NVOICES; v++) voice[v].fCDec=0.99;
-              fSustain = 0;
-            end;
-            break;
-        end;
-        break;
-
-      case 0xC0: //program change
-        if(midiData[1]<NPROGS) setProgram(midiData[1]);
-        break;
-      
-      case 0xE0: //pitch bend
-        fPitchBend = (float)(midiData[1] + 128 * midiData[2] - 8192);
-        if(fPitchBend>0.0) fPitchBend = 1.0 + 0.000014951 * fPitchBend; 
-                  else fPitchBend = 1.0 + 0.000013318 * fPitchBend; 
-        break;
-      
-      default: break;
-    end;
-
-    if(npos>EVENTBUFFER) npos -= 3; //discard events if buffer full!!
-    event++;
-  end;
-  notes[npos] = EVENTS_DONE;
-  return 1;
 end;
 *)

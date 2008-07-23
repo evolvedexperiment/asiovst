@@ -615,13 +615,10 @@ end;
 
 
 
-
-
-
-
 // ------------------------------------------------------------------
 // Calls from the host
 // ------------------------------------------------------------------
+
 function TBasicVSTModule.HostCallOpen(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin Result := 0; end;
 

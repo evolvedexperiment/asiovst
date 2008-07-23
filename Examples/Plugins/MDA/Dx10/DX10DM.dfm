@@ -306,6 +306,8 @@ object DX10DataModule: TDX10DataModule
   OnResume = VSTModuleResume
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnProcessMidi = VSTModuleProcessMidi
+  OnOutputProperties = VSTModuleOutputProperties
   Left = 218
   Top = 81
   Height = 150

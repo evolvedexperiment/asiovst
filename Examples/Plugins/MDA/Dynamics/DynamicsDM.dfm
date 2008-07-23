@@ -1,5 +1,6 @@
 object DynamicsDataModule: TDynamicsDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Dynamics'
@@ -19,103 +20,103 @@ object DynamicsDataModule: TDynamicsDataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Thresho'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Ratio'
-      Units = ':1'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Ratio'
+      SmoothingFactor = 1.000000000000000000
+      Units = ':1'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Output'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
-      Units = #181's'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Attack'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Release'
-      Units = 'ms'
-      CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Release'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Limiter'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Limiter'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Gate Threshold'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'GateThr'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Gate Attack'
       Units = #181's'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'GateAtt'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Gate Release'
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Release'
+      Max = 1.000000000000000000
+      ShortLabel = 'Release'
+      SmoothingFactor = 1.000000000000000000
       Units = 'ms'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'GateRel'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Mix'
-      Units = '%'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Limiter'
+      Max = 1.000000000000000000
+      ShortLabel = 'Limiter'
       SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Gate Threshold'
+      Max = 1.000000000000000000
+      ShortLabel = 'GateThr'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Gate Attack'
+      Max = 1.000000000000000000
+      ShortLabel = 'GateAtt'
+      SmoothingFactor = 1.000000000000000000
+      Units = #181's'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Gate Release'
+      Max = 1.000000000000000000
+      ShortLabel = 'GateRel'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'ms'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Mix'
+      Max = 1.000000000000000000
       ShortLabel = 'Mix'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end>
   OnParameterChange = VSTModuleParameterChange

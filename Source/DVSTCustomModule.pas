@@ -6,7 +6,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LMessages, Controls, {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Forms, DVSTEffect, DVSTShellPlugins, DVSTBasicModule, DAVDCommon;
+  Classes, Forms, DVSTEffect, DVSTShellPlugins, DVSTBasicModule, DAVDCommon,
+  DVSTChannels;
 
 type
   TVstCanDo = (vcdSendVstEvents,      vcdSendVstMidiEvent,      vcdSendVstTimeInfo,
@@ -21,7 +22,7 @@ type
                
   TVstCanDos = set of TVstCanDo;
 
-  TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
+//  TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
 
   TProcessAudioEvent     = procedure(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer) of object;
   TProcessDoubleEvent    = procedure(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer) of object;
@@ -44,7 +45,7 @@ type
   TOnCheckKey            = function(Sender: TObject; Key: Char): Boolean of object;
   TOnEditClose           = procedure(Sender: TObject; var DestroyForm: Boolean) of object;
 
-  TOnGetChannelPropertiesEvent = function(Sender: TObject; var vLabel: ShortString; var shortLabel: ShortString; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags:TChannelPropertyFlags): Integer of object;
+  TOnGetChannelPropertiesEvent = function(Sender: TObject; const Index: Integer; var vLabel: ShortString; var shortLabel: ShortString; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean of object;
 
   TCustomVSTModule = class(TBasicVSTModule)
   private
@@ -570,54 +571,59 @@ begin
 end;
 
 function TCustomVSTModule.HostCallGetInputProperties(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
-var str1  : string[63];
-    str2  : string[7];
-    sat   : TVstSpeakerArrangementType;
-    cpf   : TChannelPropertyFlags;
+var
+  str1  : string[63];
+  str2  : string[7];
+  sat   : TVstSpeakerArrangementType;
+  cpf   : TVstPinPropertiesFlags;
 begin
-  Result := 0;
-  if (Index < FEffect.numInputs) then
-  begin
+ Result := 0;
+ if (Index < FEffect.numInputs) then
+  with PVstPinProperties(ptr)^ do
+   begin
     str1 := 'Input #' + IntToStr(Index + 1);
     str2 := 'In' + IntToStr(Index + 1);
     sat := satStereo;
-    cpf := [cpfIsActive,cpfIsStereo];
+    cpf := [vppIsActive, vppIsStereo];
 
-    if Assigned(FOnGetInputProperties) then FOnGetInputProperties(Self,str1,str2,sat,cpf);
+    if Assigned(FOnGetInputProperties)
+     then Result := Integer(FOnGetInputProperties(Self, Index, str1, str2, sat, cpf))
+     else Result := 1;
 
-    StrPCopy(PVstPinProperties(ptr)^.Caption, str1); // set name of input channel:
-    StrPCopy(PVstPinProperties(ptr)^.ShortLabel, str2); // set name of input channel:
-    if cpfIsActive in cpf then PVstPinProperties(ptr)^.Flags := [vppIsActive] else PVstPinProperties(ptr)^.Flags := [];
-    if cpfIsStereo in cpf then PVstPinProperties(ptr)^.Flags := PVstPinProperties(ptr)^.Flags + [vppIsStereo];
-    if cpfUseSpeaker in cpf then PVstPinProperties(ptr)^.Flags := PVstPinProperties(ptr)^.Flags + [vppUseSpeaker];
-
-  Result := 1;
- end;
+    StrPCopy(Caption, str1); // set name of input channel:
+    StrPCopy(ShortLabel, str2); // set name of input channel:
+    if vppIsActive in cpf then Flags := [vppIsActive] else Flags := [];
+    if vppIsStereo in cpf then Flags := Flags + [vppIsStereo];
+    if vppUseSpeaker in cpf then Flags := Flags + [vppUseSpeaker];
+  end;
 end;
 
 function TCustomVSTModule.HostCallGetOutputProperties(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
-var str1  : string[63];
-    str2  : string[7];
-    sat   : TVSTSpeakerArrangementType;
-    cpf   : TChannelPropertyFlags;
+var
+  str1  : string[63];
+  str2  : string[7];
+  sat   : TVSTSpeakerArrangementType;
+  cpf   : TVstPinPropertiesFlags;
 begin
-  Result := 0;
-  if (Index < FEffect.numOutputs) then
-  begin
+ Result := 0;
+ if (Index < FEffect.numOutputs) then
+  with PVstPinProperties(ptr)^ do
+   begin
     str1 := 'Output #' + IntToStr(Index + 1);
     str2 := 'Out' + IntToStr(Index + 1);
     sat := satStereo;
-    cpf := [cpfIsActive,cpfIsStereo];
+    cpf := [vppIsActive, vppIsStereo];
 
-    if Assigned(FOnGetOutputProperties) then FOnGetOutputProperties(Self,str1,str2,sat,cpf);
+    if Assigned(FOnGetOutputProperties)
+     then Result := Integer(FOnGetOutputProperties(Self, index, str1, str2, sat, cpf))
+     else Result := 1;
 
-    StrPCopy(PVstPinProperties(ptr)^.Caption, str1); // set name of input channel:
-    StrPCopy(PVstPinProperties(ptr)^.shortLabel, str2); // set name of input channel:
-    if cpfIsActive in cpf then PVstPinProperties(ptr)^.Flags := [vppIsActive] else PVstPinProperties(ptr)^.Flags := [];
-    if cpfIsStereo in cpf then PVstPinProperties(ptr)^.Flags := PVstPinProperties(ptr)^.Flags + [vppIsStereo];
-    if cpfUseSpeaker in cpf then PVstPinProperties(ptr)^.Flags := PVstPinProperties(ptr)^.Flags + [vppUseSpeaker];
-    Result := 1;
-  end;
+    StrPCopy(Caption, str1); // set name of input channel:
+    StrPCopy(shortLabel, str2); // set name of input channel:
+    if vppIsActive in cpf then Flags := [vppIsActive] else Flags := [];
+    if vppIsStereo in cpf then Flags := Flags + [vppIsStereo];
+    if vppUseSpeaker in cpf then Flags := Flags + [vppUseSpeaker];
+   end;
 end;
 
 function TCustomVSTModule.HostCallGetPlugCategory(Index, Value: Integer; ptr: pointer; opt: Single): Integer;

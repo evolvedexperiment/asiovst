@@ -6,7 +6,8 @@ uses
   DVSTEffect,
   DVSTModule,
   PianoDM in 'PianoDM.pas' {PianoDataModule: TVSTModule},
-  PianoData in 'PianoData.pas';
+  PianoData in 'PianoData.pas',
+  DVSTChannels in '..\..\..\..\Source\DVSTChannels.pas';
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var

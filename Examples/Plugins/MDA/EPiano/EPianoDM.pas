@@ -2,13 +2,79 @@ unit EPianoDM;
 
 interface
 
-uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
-  DAVDCommon, DVSTModule;
+uses
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTEffect, DVSTModule,
+  DVSTCustomModule;
+
+const
+  cNumParams  =     12;  // Number of Parameters
+  cNumProgs   =      8;  // Number of Programs
+  cNumOuts    =      2;  // Number of Outputs
+  cNumVoices  =     32;  // Max Polyphony
+  cSustain    =    128;
+  cSilence    = 0.0001;  // Voice Choking
+  cWaveLength = 422414;  // Wave Data Bytes
 
 type
+  TVoice = record  //voice state
+    delta : Integer;  //sample playback
+    frac  : Integer;
+    pos   : Integer;
+    stop  : Integer;
+    loop  : Integer;
+
+    env   : Single;  //envelope
+    dec   : Single;
+
+    f0    : Single;   //first-order LPF
+    f1    : Single;
+    ff    : Single;
+
+    outl  : Single;
+    outr  : Single;
+    note  : Integer; //remember what note triggered this
+  end;
+
+  TKeyGroup = record  // keygroup
+    root : Integer;   // MIDI Root Note
+    high : Integer;   // Highest Note
+    pos  : Integer;
+    stop : Integer;
+    loop : Integer;
+  end;
+
   TEPianoDataModule = class(TVSTModule)
+    procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
+    procedure VSTModuleCreate(Sender: TObject);
+    function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
+    fVoices          : array [0..cNumVoices - 1] of TVoice;
+    fKeyGroup        : array [0..33] of TKeyGroup;
+    fInvSampleRate   : Double;
+    fSize            : Integer;
+    fSizeVelocity    : Single;
+    fTreble          : Single;
+    fTrebleFrequency : Single;
+    fDeltaLFO        : Single;
+    fVelSens         : Single;
+    fWidth           : Single;
+    fPoly            : Integer;
+    fFine            : Single;
+    fRandom          : Single;
+    fStretch         : Single;
+    fOverdrive       : Single;
+    fVolume          : Single;
+    fMuffle          : Single;
+    fMuffleVelocity  : Single;
+    fLFO             : array [0..1] of Single;
+    fSustain         : Integer;
+    fActiveVoices    : Integer;
+    fWaves           : PAVDSingleFixedArray;
+    procedure Resume;
+    procedure Update;
+    procedure NoteOn(Note, Velocity: Integer);
   public
   end;
 
@@ -17,18 +83,19 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, EPianoData;
+  Math, EPianoData, DVSTBasicModule;
 
-end.
-
+procedure TEPianoDataModule.VSTModuleCreate(Sender: TObject);
+var
+  k, v    : Integer;
+  p       : array [0..1] of Integer;
+  xf, dxf : Single;
+begin
+ fInvSampleRate := 1 / SampleRate;
 (*
-mdaEPiano::mdaEPiano(audioMasterCallback audioMaster) : AudioEffectX(audioMaster, NPROGS, NPARAMS)
-{
-  Fs = 44100.0;  iFs = 1.0/Fs;  //just in case...
-
   programs = new mdaEPianoProgram[NPROGS];
   if(programs)
-  {
+  begin
     //fill patches...
     long i=0;
     fillpatch(i++, "Default", 0.500, 0.500, 0.500, 0.500, 0.500, 0.650, 0.250, 0.500, 0.50, 0.500, 0.146, 0.000);
@@ -42,159 +109,411 @@ mdaEPiano::mdaEPiano(audioMasterCallback audioMaster) : AudioEffectX(audioMaster
     setProgram(0);
   }
 
-  waves = epianoData;
+  waves = cEPianoData;
+*)
 
   //Waveform data and keymapping
-  kgrp[ 0].root = 36;  kgrp[ 0].high = 39; //C1
-  kgrp[ 3].root = 43;  kgrp[ 3].high = 45; //G1
-  kgrp[ 6].root = 48;  kgrp[ 6].high = 51; //C2
-  kgrp[ 9].root = 55;  kgrp[ 9].high = 57; //G2
-  kgrp[12].root = 60;  kgrp[12].high = 63; //C3
-  kgrp[15].root = 67;  kgrp[15].high = 69; //G3
-  kgrp[18].root = 72;  kgrp[18].high = 75; //C4
-  kgrp[21].root = 79;  kgrp[21].high = 81; //G4
-  kgrp[24].root = 84;  kgrp[24].high = 87; //C5
-  kgrp[27].root = 91;  kgrp[27].high = 93; //G5
-  kgrp[30].root = 96;  kgrp[30].high =999; //C6
+  fKeyGroup[ 0].root := 36;     fKeyGroup[ 0].high :=  39; // C1
+  fKeyGroup[ 3].root := 43;     fKeyGroup[ 3].high :=  45; // G1
+  fKeyGroup[ 6].root := 48;     fKeyGroup[ 6].high :=  51; // C2
+  fKeyGroup[ 9].root := 55;     fKeyGroup[ 9].high :=  57; // G2
+  fKeyGroup[12].root := 60;     fKeyGroup[12].high :=  63; // C3
+  fKeyGroup[15].root := 67;     fKeyGroup[15].high :=  69; // G3
+  fKeyGroup[18].root := 72;     fKeyGroup[18].high :=  75; // C4
+  fKeyGroup[21].root := 79;     fKeyGroup[21].high :=  81; // G4
+  fKeyGroup[24].root := 84;     fKeyGroup[24].high :=  87; // C5
+  fKeyGroup[27].root := 91;     fKeyGroup[27].high :=  93; // G5
+  fKeyGroup[30].root := 96;     fKeyGroup[30].high := 999; // C6
 
-  kgrp[0].pos = 0;        kgrp[0].end = 8476;     kgrp[0].loop = 4400;  
-  kgrp[1].pos = 8477;     kgrp[1].end = 16248;    kgrp[1].loop = 4903;  
-  kgrp[2].pos = 16249;    kgrp[2].end = 34565;    kgrp[2].loop = 6398;  
-  kgrp[3].pos = 34566;    kgrp[3].end = 41384;    kgrp[3].loop = 3938;  
-  kgrp[4].pos = 41385;    kgrp[4].end = 45760;    kgrp[4].loop = 1633; //was 1636;  
-  kgrp[5].pos = 45761;    kgrp[5].end = 65211;    kgrp[5].loop = 5245;  
-  kgrp[6].pos = 65212;    kgrp[6].end = 72897;    kgrp[6].loop = 2937;  
-  kgrp[7].pos = 72898;    kgrp[7].end = 78626;    kgrp[7].loop = 2203; //was 2204;  
-  kgrp[8].pos = 78627;    kgrp[8].end = 100387;   kgrp[8].loop = 6368;  
-  kgrp[9].pos = 100388;   kgrp[9].end = 116297;   kgrp[9].loop = 10452;  
-  kgrp[10].pos = 116298;  kgrp[10].end = 127661;  kgrp[10].loop = 5217; //was 5220; 
-  kgrp[11].pos = 127662;  kgrp[11].end = 144113;  kgrp[11].loop = 3099;  
-  kgrp[12].pos = 144114;  kgrp[12].end = 152863;  kgrp[12].loop = 4284;  
-  kgrp[13].pos = 152864;  kgrp[13].end = 173107;  kgrp[13].loop = 3916;  
-  kgrp[14].pos = 173108;  kgrp[14].end = 192734;  kgrp[14].loop = 2937;  
-  kgrp[15].pos = 192735;  kgrp[15].end = 204598;  kgrp[15].loop = 4732;  
-  kgrp[16].pos = 204599;  kgrp[16].end = 218995;  kgrp[16].loop = 4733;  
-  kgrp[17].pos = 218996;  kgrp[17].end = 233801;  kgrp[17].loop = 2285;  
-  kgrp[18].pos = 233802;  kgrp[18].end = 248011;  kgrp[18].loop = 4098;  
-  kgrp[19].pos = 248012;  kgrp[19].end = 265287;  kgrp[19].loop = 4099;  
-  kgrp[20].pos = 265288;  kgrp[20].end = 282255;  kgrp[20].loop = 3609;  
-  kgrp[21].pos = 282256;  kgrp[21].end = 293776;  kgrp[21].loop = 2446;  
-  kgrp[22].pos = 293777;  kgrp[22].end = 312566;  kgrp[22].loop = 6278;  
-  kgrp[23].pos = 312567;  kgrp[23].end = 330200;  kgrp[23].loop = 2283;  
-  kgrp[24].pos = 330201;  kgrp[24].end = 348889;  kgrp[24].loop = 2689;  
-  kgrp[25].pos = 348890;  kgrp[25].end = 365675;  kgrp[25].loop = 4370;
-  kgrp[26].pos = 365676;  kgrp[26].end = 383661;  kgrp[26].loop = 5225;  
-  kgrp[27].pos = 383662;  kgrp[27].end = 393372;  kgrp[27].loop = 2811;  
-  kgrp[28].pos = 383662;  kgrp[28].end = 393372;  kgrp[28].loop = 2811; //ghost
-  kgrp[29].pos = 393373;  kgrp[29].end = 406045;  kgrp[29].loop = 4522;  
-  kgrp[30].pos = 406046;  kgrp[30].end = 414486;  kgrp[30].loop = 2306;  
-  kgrp[31].pos = 406046;  kgrp[31].end = 414486;  kgrp[31].loop = 2306; //ghost
-  kgrp[32].pos = 414487;  kgrp[32].end = 422408;  kgrp[32].loop = 2169;  
+  with fKeyGroup[ 0] do begin pos := 0;      stop := 8476;   loop :=  4400; end;
+  with fKeyGroup[ 1] do begin pos := 8477;   stop := 16248;  loop :=  4903; end;
+  with fKeyGroup[ 2] do begin pos := 16249;  stop := 34565;  loop :=  6398; end;
+  with fKeyGroup[ 3] do begin pos := 34566;  stop := 41384;  loop :=  3938; end;
+  with fKeyGroup[ 4] do begin pos := 41385;  stop := 45760;  loop :=  1633; end; // was 1636;
+  with fKeyGroup[ 5] do begin pos := 45761;  stop := 65211;  loop :=  5245; end;
+  with fKeyGroup[ 6] do begin pos := 65212;  stop := 72897;  loop :=  2937; end;
+  with fKeyGroup[ 7] do begin pos := 72898;  stop := 78626;  loop :=  2203; end; // was 2204;
+  with fKeyGroup[ 8] do begin pos := 78627;  stop := 100387; loop :=  6368; end;
+  with fKeyGroup[ 9] do begin pos := 100388; stop := 116297; loop := 10452; end;
+  with fKeyGroup[10] do begin pos := 116298; stop := 127661; loop :=  5217; end; // was 5220;
+  with fKeyGroup[11] do begin pos := 127662; stop := 144113; loop :=  3099; end;
+  with fKeyGroup[12] do begin pos := 144114; stop := 152863; loop :=  4284; end;
+  with fKeyGroup[13] do begin pos := 152864; stop := 173107; loop :=  3916; end;
+  with fKeyGroup[14] do begin pos := 173108; stop := 192734; loop :=  2937; end;
+  with fKeyGroup[15] do begin pos := 192735; stop := 204598; loop :=  4732; end;
+  with fKeyGroup[16] do begin pos := 204599; stop := 218995; loop :=  4733; end;
+  with fKeyGroup[17] do begin pos := 218996; stop := 233801; loop :=  2285; end;
+  with fKeyGroup[18] do begin pos := 233802; stop := 248011; loop :=  4098; end;
+  with fKeyGroup[19] do begin pos := 248012; stop := 265287; loop :=  4099; end;
+  with fKeyGroup[20] do begin pos := 265288; stop := 282255; loop :=  3609; end;
+  with fKeyGroup[21] do begin pos := 282256; stop := 293776; loop :=  2446; end;
+  with fKeyGroup[22] do begin pos := 293777; stop := 312566; loop :=  6278; end;
+  with fKeyGroup[23] do begin pos := 312567; stop := 330200; loop :=  2283; end;
+  with fKeyGroup[24] do begin pos := 330201; stop := 348889; loop :=  2689; end;
+  with fKeyGroup[25] do begin pos := 348890; stop := 365675; loop :=  4370; end;
+  with fKeyGroup[26] do begin pos := 365676; stop := 383661; loop :=  5225; end;
+  with fKeyGroup[27] do begin pos := 383662; stop := 393372; loop :=  2811; end;
+  with fKeyGroup[28] do begin pos := 383662; stop := 393372; loop :=  2811; end; //ghost
+  with fKeyGroup[29] do begin pos := 393373; stop := 406045; loop :=  4522; end;
+  with fKeyGroup[30] do begin pos := 406046; stop := 414486; loop :=  2306; end;
+  with fKeyGroup[31] do begin pos := 406046; stop := 414486; loop :=  2306; end; //ghost
+  with fKeyGroup[32] do begin pos := 414487; stop := 422408; loop :=  2169; end;
 
   //extra xfade looping...
-  for(long k=0; k<28; k++)
-  {
-    long p0 = kgrp[k].end;
-    long p1 = kgrp[k].end - kgrp[k].loop;
+  for k := 0 to 27 do
+   begin
+    p[0] := fKeyGroup[k].stop;
+    p[1] := fKeyGroup[k].stop - fKeyGroup[k].loop;
 
-    float xf = 1.0;
-    float dxf = -0.02;
+    xf   := 1;
+    dxf  := -0.02;
 
-    while(xf > 0.0)
-    {
-      waves[p0] = (short)((1.0 - xf) * (float)waves[p0] + xf * (float)waves[p1]);
-      p0--;
-      p1--;
-      xf += dxf;
-    }
-  }
+    while xf > 0 do
+     begin
+      fWaves[p[0]] := round((1 - xf) * fWaves[p[0]] + xf * fWaves[p[1]]);
+      dec(p[0]);
+      dec(p[1]);
+      xf := xf + dxf;
+     end;
+   end;
 
   //initialise...
-  for(long v=0; v<NVOICES; v++) 
-  {
-    voice[v].env = 0.0;
-    voice[v].dec = 0.99; //all notes off
-  }
+  for v := 0 to cNumVoices - 1 do
+   begin
+    fVoices[v].Env := 0.0;
+    fVoices[v].Dec := 0.99; //all notes off
+   end;
+
+ fVolume       := 0.2;
+ fMuffle       := 160.0;
+ fSustain      := 0;
+ fActivevoices := 0;
+
+(*
   notes[0] = EVENTS_DONE;
-  volume = 0.2;
-  muff = 160.0;
-  sustain = activevoices = 0;
-  tl = tr = lfo0 = dlfo = 0.0;
-  lfo1 = 1.0;
+  tl         := 0.0;
+  tr         := 0.0;
 
   guiUpdate = 0;
 
-  update();
   suspend();
-}
+*)
+ fLFO[0]    := 0.0;
+ fLFO[1]    := 1.0;
+ fDeltaLFO  := 0.0;
 
-void mdaEPiano::update()  //parameter change
-{
-  size = (long)(12.0 * Parameter[2] - 6.0);
-  
-  fTreble = 4.0 * Parameter[3] * Parameter[3] - 1.0; //treble gain
-  if(Parameter[3] > 0.5) fTrebleFrequency = 14000.0; else fTrebleFrequency = 5000.0; //treble freq
-  fTrebleFrequency = 1.0 - (float)exp(-iFs * fTrebleFrequency);
+ Update;
+end;
 
-  rmod = lmod = Parameter[4] + Parameter[4] - 1.0; //lfo depth
-  if(Parameter[4] < 0.5) rmod = -rmod;
+procedure TEPianoDataModule.VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
+var
+  npos : Integer;
+begin
+(*
+  long npos=0;
 
-  dlfo = 6.283 * iFs * (float)exp(6.22 * Parameter[5] - 2.61); //lfo rate
+  for (long i=0; i<ev.numEvents; i++)
+  begin
+    if((ev.events[i]).type != kVstMidiType) continue;
+    VstMidiEvent* event = (VstMidiEvent* )ev.events[i];
+    char* midiData = event.midiData;
 
-  fVelSens = 1.0 + Parameter[6] + Parameter[6];
-  if(Parameter[6] < 0.25) fVelSens -= 0.75 - 3.0 * Parameter[6];
-  
-  fWidth = 0.03 * Parameter[7];
-  fPoly = 1 + (long)(31.9 * Parameter[8]);
-  fFine = Parameter[9] - 0.5;
-  fRandom = 0.077 * Parameter[10] * Parameter[10];
-  fStretch = 0.0; //0.000434 * (Parameter[11] - 0.5); parameter re-used for fOverdrive!
-  fOverdrive = 1.8 * Parameter[11];
-}
+    case MidiEvent.midiData[0] and $F0 of //status byte (all channels)
+     $80: begin // Note off
+           notes[npos++] = event.deltaFrames;  // Delta
+           notes[npos++] = midiData[1] and $7F; // Note
+           notes[npos++] = 0;                   // Vel
+          end;
 
+     $90: begin // Note on
+           notes[npos++] = event.deltaFrames;  // Delta
+           notes[npos++] = midiData[1] & $7F;   // Note
+           notes[npos++] = midiData[2] & $7F;   // Vel
+          end;
 
-void mdaEPiano::resume()
-{  
-  Fs = getSampleRate();
-  iFs = 1.0 / Fs;
-  dlfo = 6.283 * iFs * (float)exp(6.22 * Parameter[5] - 2.61); //lfo rate
+     $B0: case MidiEvent.midiData[1] of         // Controller
+           $01: begin //mod wheel
+                 modwhl := 0.0078 * MidiEvent.midiData[2];
+                 if (modwhl > 0.05) then //over-ride pan/trem depth
+                  begin
+                   rmod := modwhl;
+                   lmod := modwhl; // LFO depth
+                   if (Parameter[4] < 0.5)
+                    then rmod = -rmod;
+                  end;
+                end;
 
-  DECLARE_VST_DEPRECATED (wantEvents) ();
-}
+           $07: volume := 0.00002 * sqr(MidiEvent.midiData[2]); // Volume
 
+           $40,           // Sustain Pedal
+           $42: begin     // Sustenuto Pedal
+                 fSustain := MidiEvent.midiData[2] and $40;
+                 if (sustain = 0) then
+                  begin
+                   notes[npos++] = event.deltaFrames;
+                   notes[npos++] = SUSTAIN; //end all sustained notes
+                   notes[npos++] = 0;
+                  end;
+                end;
 
-mdaEPiano::~mdaEPiano ()  //destroy any buffers...
-{
-  if(programs) delete [] programs;
-}
+            else  //all notes off
+             begin
+              if MidiEvent.midiData[1] > $7A then
+               begin
+                for v := 0 to cNumVoices - 1
+                 do fVoices[v].dec := 0.99;
+                fSustain := 0;
+                fMuffle  := 160;
+               end;
+             end;
+          end;
 
+     $C0: if (MidiEvent.midiData[1] < NPROGS)              //program change
+           then setProgram(MidiEvent.midiData[1]);
+    end;
 
-void mdaEPiano::setProgram(VstInt32 program)
-{
-  long i;
+    if (npos>EVENTBUFFER) npos -= 3; //discard events if buffer full!!
+    event++; //?
+  end;
+  notes[npos] = EVENTS_DONE;
+  return 1;
+*)
+end;
 
-  mdaEPianoProgram *p = &programs[program];
-  curProgram = program;
-  for(i=0; i<NPARAMS; i++) Parameter[i] = p->Parameter[i];
-  update();
-}
+procedure TEPianoDataModule.Update;  //parameter change
+begin
+ fSize   := round(12 * Parameter[2] - 6);
 
+ fTreble := 4 * sqr(Parameter[3]) - 1.0; // Treble Gain
+ if (Parameter[3] > 0.5)
+  then fTrebleFrequency := 14000
+  else fTrebleFrequency := 5000;         // Treble Frequency
+ fTrebleFrequency := 1.0 - exp(-fInvSampleRate * fTrebleFrequency);
 
-void mdaEPiano::setParameter(VstInt32 index, float value)
-{
-  mdaEPianoProgram *p = &programs[curProgram];
-  Parameter[index] = p->Parameter[index] = value;
-  update();
+(*
+ rmod := 2 * Parameter[4] - 1.0; // LFO depth
+ lmod := rmod;
+ if (Parameter[4] < 0.5) then rmod := -rmod;
+*)
 
-  //if(editor) editor->postUpdate(); ///For GUI
+ fDeltaLFO := 6.283 * fInvSampleRate * Exp(6.22 * Parameter[5] - 2.61); // LFO rate
 
-  guiUpdate = index + 0x100 + (guiUpdate & 0xFFFF00);
-}
+ fVelSens := 1 + 2 * Parameter[6];
+ if (Parameter[6] < 0.25)
+  then fVelSens := fVelSens - (0.75 - 3.0 * Parameter[6]);
 
+ fWidth     := 0.03 * Parameter[7];
+ fPoly      := 1 + round(31.9 * Parameter[8]);
+ fFine      := Parameter[9] - 0.5;
+ fRandom    := 0.077 * sqr(Parameter[10]);
+ fStretch   := 0.0; //0.000434 * (Parameter[11] - 0.5); parameter re-used for fOverdrive!
+ fOverdrive := 1.8 * Parameter[11];
+end;
 
+procedure TEPianoDataModule.Resume;
+begin
+ fInvSampleRate := 1 / SampleRate;
+ fDeltaLFO := 6.283 * fInvSampleRate * exp(6.22 * Parameter[5] - 2.61); // LFO rate
+ WantEvents(1);
+end;
+
+function TEPianoDataModule.VSTModuleOutputProperties(Sender: TObject;
+  const Index: Integer;
+  var vLabel, shortLabel: string;
+  var SpeakerArrangement: TVstSpeakerArrangementType;
+  var Flags: TVstPinPropertiesFlags): Boolean;
+begin
+ vLabel := 'ePiano';
+ Flags := [vppIsStereo];
+end;
+
+procedure TEPianoDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  i, event, frame, frames, v : Integer;
+  x, l, r, od                : Single;
+  note, vel                  : Integer;
+begin
+  event := 0;
+  frame := 0;
+  od    := fOverdrive;
+ (*
+  float* out0 = outputs[0];
+  float* out1 = outputs[1];
+
+  while (frame < sampleFrames) do
+   begin
+    frames = notes[event++];
+    if (frames > sampleFrames)
+     then frames := sampleFrames;
+    frames := frames - frame;
+    frame  := frame + frames;
+
+    while (--frames >= 0) do
+     begin
+      VOICE *V = voice;
+      l := 0.0;
+      r := 0.0;
+
+      for v :=0 to fActiveVoices - 1 do
+       begin
+        V.frac := V.frac + V.delta;  //integer-based linear interpolation
+        V.pos  := V.pos  + (V.frac shr 16);
+        V.frac := V.frac and $FFFF;
+        if(V.pos > V.end) V.pos -= V.loop;
+        //i = waves[V.pos];
+        //i = (i << 7) + (V.frac >> 9) * (waves[V.pos + 1] - i) + $40400000;  //not working on intel mac !?!
+    //x = V.env * (*(float * )&i - 3.0);  //fast int.float
+  //x = V.env * (float)i / 32768.0;
+  i = waves[V.pos] + ((V.frac * (waves[V.pos + 1] - waves[V.pos])) >> 16);
+  x = V.env * (float)i / 32768.0;
+
+    V.env = V.env * V.dec;  //envelope
+
+        if(x>0.0) begin x -= od * x * x;  if(x < -V.env) x = -V.env; end; //+= 0.5 * x * x; end; //fOverdrive
+
+        l += V.outl * x;
+        r += V.outr * x;
+
+        V++;
+       end;
+      tl := tl + fTrebleFrequency * (l - tl);  // Treble Boost
+      tr := tr + fTrebleFrequency * (r - tr);
+      r  := r + fTreble * (r - tr);
+      l  := l + fTreble * (l - tl);
+
+      fLFO[0] := fLFO[0] + fDeltaLFO * fLFO[1];   // LFO for tremolo and autopan
+      fLFO[1] := fLFO[1] - fDeltaLFO * fLFO[0];
+      l       := l + l * lmod * fLFO[1];
+      r       := r + r * rmod * fLFO[1];  // worth making all these local variables?
+
+      *out0++ = l;
+      *out1++ = r;
+    end;
+*)
+    if (frame < sampleFrames) then
+     begin
+      if (fActiveVoices = 0) and (Parameter[4] > 0.5) then
+       begin
+        fLFO[0] := -0.7071;
+        fLFO[1] :=  0.7071;
+       end;              // reset LFO phase - good idea?
+(*
+      note := notes[event++];
+      vel  := notes[event++];
+*)
+      noteOn(note, vel);
+     end;
+
+(*
+ if (abs(tl) < 1E-10) then tl := 0; //anti-denormal
+ if (abs(tr) < 1E-10) then tr := 0;
+*)
+
+ for v := 0 to fActiveVoices - 1 do
+  if (fVoices[v].env < cSilence) then
+   begin
+    dec(fActiveVoices);
+    fVoices[v] := fVoices[fActiveVoices];
+   end;
+(*
+ notes[0] := EVENTS_DONE;  //mark events buffer as done
+*)
+end;
+
+procedure TEPianoDataModule.NoteOn(Note, Velocity : Integer);
+var
+  l           : Single;
+  v, vl, k, s : Integer;
+begin
+ l  := 99.0;
+ vl :=0;
+ if (Velocity > 0) then
+   begin
+    if (fActiveVoices < fPoly) then //add a note
+     begin
+      vl := fActiveVoices;
+      inc(fActiveVoices);
+      fVoices[vl].f0 := 0;
+      fVoices[vl].f1 := 0;
+     end
+    else //steal a note
+     begin
+      for v := 0 to fPoly - 1 do  //find quietest voice
+       begin
+        if (fVoices[v].env < l) then
+         begin
+          l  := fVoices[v].env;
+          vl := v;
+         end;
+       end;
+     end;
+
+    k := sqr(note - 60);
+    l := fFine + fRandom * ((k mod 13) - 6.5);  // Random & Fine tune
+    if (note > 60)
+     then l := l + fStretch * k;                      // Stretch
+
+    s := fSize;
+    if (velocity > 40)
+     then s := s + round(fSizeVelocity * (velocity - 40));
+
+    k := 0;
+    while (note > (fKeyGroup[k].high + s)) do k := k + 3;  //find keygroup
+    l := l + (note - fKeyGroup[k].root); // Pitch
+    l := 32000 * fInvSampleRate * exp(0.05776226505 * l);
+    fVoices[vl].delta := round(65536.0 * l);
+    fVoices[vl].frac  := 0;
+
+    if (velocity > 48) then Inc(k); // Mid Velocity Sample
+    if (velocity > 80) then Inc(k); // High Velocity Sample
+    fVoices[vl].pos  := fKeyGroup[k].pos;
+    fVoices[vl].stop := fKeyGroup[k].stop - 1;
+    fVoices[vl].loop := fKeyGroup[k].loop;
+
+    fVoices[vl].env  := (3 + 2 * fVelSens) * Power(0.0078 * velocity, fVelSens); //velocity
+
+    if (note > 60)
+     then fVoices[vl].env := fVoices[vl].env * exp(0.01 * (60 - note));   // new! high notes quieter
+
+    l := 50.0 + sqr(Parameter[4]) * fMuffle + fMuffleVelocity * (velocity - 64); // Muffle
+    if (l < (55.0 + 0.4 * note)) then l := 55.0 + 0.4 * note;
+    if (l > 210.0) then l := 210.0;
+    fVoices[vl].ff := sqr(l) * fInvSampleRate;
+    fVoices[vl].note := note; //note.pan
+    if (note <  12) then note := 12;
+    if (note > 108) then note := 108;
+    l := fVolume;
+
+    fVoices[vl].outr := l + l * fWidth * (note - 60);
+    fVoices[vl].outl := l + l - fVoices[vl].outr;
+
+    if (Note < 44) then Note := 44; // limit max decay length
+    fVoices[vl].dec := exp(-fInvSampleRate * exp(-1 + 0.03 * note - 2 * Parameter[0]));
+   end
+  else //note off
+   begin
+    for v := 0 to cNumVoices - 1 do
+     if (fVoices[v].note = note) then // any voices playing that note?
+      begin
+       if (fSustain = 0)
+        then fVoices[v].dec  := exp(-fInvSampleRate * exp(6 + 0.01 * note - 5 * Parameter[1]))
+        else fVoices[v].note := cSustain;
+     end;
+   end;
+end;
+
+procedure TEPianoDataModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+begin
+ fInvSampleRate := 1 / SampleRate;
+end;
+
+end.
+
+(*
 void mdaEPiano::fillpatch(long p, char *name, float p0, float p1, float p2, float p3, float p4,
                       float p5, float p6, float p7, float p8, float p9, float p10,float p11)
-{
+begin
   strcpy(programs[p].name, name);
   programs[p].Parameter[0] = p0;  programs[p].Parameter[1] = p1;
   programs[p].Parameter[2] = p2;  programs[p].Parameter[3] = p3;
@@ -202,67 +521,15 @@ void mdaEPiano::fillpatch(long p, char *name, float p0, float p1, float p2, floa
   programs[p].Parameter[6] = p6;  programs[p].Parameter[7] = p7;
   programs[p].Parameter[8] = p8;  programs[p].Parameter[9] = p9;
   programs[p].Parameter[10]= p10; programs[p].Parameter[11] = p11;
-}
+end;
 
-
-float mdaEPiano::getParameter(VstInt32 index)     { return Parameter[index]; }
-void  mdaEPiano::setProgramName(char *name)   { strcpy(programs[curProgram].name, name); }
-void  mdaEPiano::getProgramName(char *name)   { strcpy(name, programs[curProgram].name); }
-void  mdaEPiano::setBlockSize(VstInt32 blockSize) {  AudioEffectX::setBlockSize(blockSize); }
-bool  mdaEPiano::getEffectName(char* name)    { strcpy(name, "ePiano"); return true; }
-bool  mdaEPiano::getVendorString(char* text)  {  strcpy(text, "mda"); return true; }
-bool  mdaEPiano::getProductString(char* text) { strcpy(text, "mda ePiano"); return true; }
-
-
-bool mdaEPiano::getOutputProperties(VstInt32 index, VstPinProperties* properties)
-{
-  if(index<NOUTS)
-  {
-    if(index) sprintf(properties->label, "ePiano");
-         else sprintf(properties->label, "ePiano");
-    properties->flags = kVstPinIsActive;
-    if(index<2) properties->flags |= kVstPinIsStereo; //make channel 1+2 stereo
-    return true;
-  }
-  return false;
-}
-
-
-bool mdaEPiano::getProgramNameIndexed(VstInt32 category, VstInt32 index, char* text)
-{
-  if(index<NPROGS)
-  {
-    strcpy(text, programs[index].name);
-    return true;
-  }
-  return false;
-}
-
-
-bool mdaEPiano::copyProgram(VstInt32 destination)
-{
-  if(destination<NPROGS)
-  {
-    programs[destination] = programs[curProgram];
-    return true;
-  }
-  return false;
-}
-
-
-VstInt32 mdaEPiano::canDo(char* text)
-{
-  if(strcmp(text, "receiveVstEvents") == 0) return 1;
-  if(strcmp(text, "receiveVstMidiEvent") == 0) return 1;
-  return -1;
-}
 
 void mdaEPiano::getParameterDisplay(VstInt32 index, char *text)
-{
+begin
   char string[16];
   
   switch(index)
-  {
+  begin
     case  2:
     case  3: 
     case  9: sprintf(string, "%.0f", 100.0 * Parameter[index] - 50.0); break;
@@ -278,311 +545,17 @@ void mdaEPiano::getParameterDisplay(VstInt32 index, char *text)
     case 10: sprintf(string, "%.1f",  50.0 * Parameter[index] * Parameter[index]); break;
     case 11: sprintf(string, "%.1f", 100.0 * Parameter[index]); break;
     default: sprintf(string, "%.0f", 100.0 * Parameter[index]);
-  }
+  end;
   string[8] = 0;
   strcpy(text, (char * )string);
-}
+end;
 
 
 void mdaEPiano::guiGetDisplay(VstInt32 index, char *label)
-{
+begin
   getParameterName(index,  label);
   strcat(label, " = ");
   getParameterDisplay(index, label + strlen(label));
   getParameterLabel(index, label + strlen(label));
-}
-
-
-void mdaEPiano::process(float **inputs, float **outputs, VstInt32 sampleFrames)
-{
-  float* out0 = outputs[0];
-  float* out1 = outputs[1];
-  long event=0, frame=0, frames, v;
-  float x, l, r, od=fOverdrive;
-  long i;
-
-  while(frame<sampleFrames)
-  {
-    frames = notes[event++];
-    if(frames>sampleFrames) frames = sampleFrames;
-    frames -= frame;
-    frame += frames;
-
-    while(--frames>=0)
-    {
-      VOICE *V = voice;
-      l = r = 0.0;
-
-      for(v=0; v<activevoices; v++)
-      {
-        V->frac += V->delta;  //integer-based linear interpolation
-        V->pos += V->frac >> 16;
-        V->frac &= 0xFFFF;
-        if(V->pos > V->end) V->pos -= V->loop;
-        i = waves[V->pos];
-        i = (i << 7) + (V->frac >> 9) * (waves[V->pos + 1] - i) + 0x40400000;
-        x = V->env * (*(float * )&i - 3.0);  //fast int->float
-        V->env = V->env * V->dec;  //envelope
-
-        if(x>0.0) { x -= od * x * x;  if(x < -V->env) x = -V->env; } //+= 0.5 * x * x; } //fOverdrive
-
-        l += V->outl * x;
-        r += V->outr * x;
- 
-        V++;
-      }
-      tl += fTrebleFrequency * (l - tl);  //treble boost
-      tr += fTrebleFrequency * (r - tr);
-      r  += fTreble * (r - tr);
-      l  += fTreble * (l - tl);
-      
-      lfo0 += dlfo * lfo1;  //LFO for tremolo and autopan
-      lfo1 -= dlfo * lfo0;
-      l += l * lmod * lfo1;
-      r += r * rmod * lfo1;  //worth making all these local variables?
-
-      *out0++ += l;
-      *out1++ += r;
-    }
-
-    if(frame<sampleFrames)
-    {
-      if(activevoices == 0 && Parameter[4] > 0.5) 
-        { lfo0 = -0.7071;  lfo1 = 0.7071; } //reset LFO phase - good idea?
-      long note = notes[event++];
-      long vel  = notes[event++];
-      noteOn(note, vel);
-    }
-  }
-  if(fabs(tl)<1.0e-10) tl = 0.0; //anti-denormal
-  if(fabs(tr)<1.0e-10) tr = 0.0;
-  
-  for(v=0; v<activevoices; v++) if(voice[v].env < SILENCE) voice[v] = voice[--activevoices];
-  notes[0] = EVENTS_DONE;  //mark events buffer as done
-}
-
-
-void mdaEPiano::processReplacing(float **inputs, float **outputs, VstInt32 sampleFrames)
-{
-  float* out0 = outputs[0];
-  float* out1 = outputs[1];
-  long event=0, frame=0, frames, v;
-  float x, l, r, od=fOverdrive;
-  long i;
-
-  while(frame<sampleFrames)
-  {
-    frames = notes[event++];
-    if(frames>sampleFrames) frames = sampleFrames;
-    frames -= frame;
-    frame += frames;
-
-    while(--frames>=0)
-    {
-      VOICE *V = voice;
-      l = r = 0.0;
-
-      for(v=0; v<activevoices; v++)
-      {
-        V->frac += V->delta;  //integer-based linear interpolation
-        V->pos += V->frac >> 16;
-        V->frac &= 0xFFFF;
-        if(V->pos > V->end) V->pos -= V->loop;
-        //i = waves[V->pos];
-        //i = (i << 7) + (V->frac >> 9) * (waves[V->pos + 1] - i) + 0x40400000;  //not working on intel mac !?!
-    //x = V->env * (*(float * )&i - 3.0);  //fast int->float
-  //x = V->env * (float)i / 32768.0;      
-  i = waves[V->pos] + ((V->frac * (waves[V->pos + 1] - waves[V->pos])) >> 16);
-  x = V->env * (float)i / 32768.0;
-
-    V->env = V->env * V->dec;  //envelope
-
-        if(x>0.0) { x -= od * x * x;  if(x < -V->env) x = -V->env; } //+= 0.5 * x * x; } //fOverdrive
-
-        l += V->outl * x;
-        r += V->outr * x;
- 
-        V++;
-      }
-      tl += fTrebleFrequency * (l - tl);  //treble boost
-      tr += fTrebleFrequency * (r - tr);
-      r  += fTreble * (r - tr);
-      l  += fTreble * (l - tl);
-      
-      lfo0 += dlfo * lfo1;  //LFO for tremolo and autopan
-      lfo1 -= dlfo * lfo0;
-      l += l * lmod * lfo1;
-      r += r * rmod * lfo1;  //worth making all these local variables?
-
-      *out0++ = l;
-      *out1++ = r;
-    }
-
-    if(frame<sampleFrames)
-    {
-      if(activevoices == 0 && Parameter[4] > 0.5)
-        { lfo0 = -0.7071;  lfo1 = 0.7071; } //reset LFO phase - good idea?
-      long note = notes[event++];
-      long vel  = notes[event++];
-      noteOn(note, vel);
-    }
-  }
-  if(fabs(tl)<1.0e-10) tl = 0.0; //anti-denormal
-  if(fabs(tr)<1.0e-10) tr = 0.0;
-  
-  for(v=0; v<activevoices; v++) if(voice[v].env < SILENCE) voice[v] = voice[--activevoices];
-  notes[0] = EVENTS_DONE;  //mark events buffer as done
-}
-
-
-void mdaEPiano::noteOn(long note, long velocity)
-{
-  float l=99.0;
-  long  v, vl=0, k, s;
-  
-  if(velocity > 0) 
-  {
-    if(activevoices < fPoly) //add a note
-    {
-      vl = activevoices;
-      activevoices++;
-      voice[vl].f0 = voice[vl].f1 = 0.0;
-    }
-    else //steal a note
-    {
-      for(v=0; v<fPoly; v++)  //find quietest voice
-      {
-        if(voice[v].env < l) { l = voice[v].env;  vl = v; }
-      }
-    }
-
-    k = (note - 60) * (note - 60);
-    l = fFine + fRandom * ((float)(k % 13) - 6.5);  //fRandom & fFine tune
-    if(note > 60) l += fStretch * (float)k; //fStretch
-
-    s = size;
-    if(velocity > 40) s += (long)(sizevel * (float)(velocity - 40));  
-
-    k = 0;
-    while(note > (kgrp[k].high + s)) k += 3;  //find keygroup
-    l += (float)(note - kgrp[k].root); //pitch
-    l = 32000.0 * iFs * (float)exp(0.05776226505 * l);
-    voice[vl].delta = (long)(65536.0 * l);
-    voice[vl].frac = 0;
-
-    if(velocity > 48) k++; //mid velocity sample
-    if(velocity > 80) k++; //high velocity sample
-    voice[vl].pos = kgrp[k].pos;
-    voice[vl].end = kgrp[k].end - 1;
-    voice[vl].loop = kgrp[k].loop;
-
-    voice[vl].env = (3.0 + 2.0 * fVelSens) * (float)pow(0.0078 * velocity, fVelSens); //velocity
-    
-    if(note > 60) voice[vl].env *= (float)exp(0.01 * (float)(60 - note)); //new! high notes quieter
-
-    l = 50.0 + Parameter[4] * Parameter[4] * muff + muffvel * (float)(velocity - 64); //muffle
-    if(l < (55.0 + 0.4 * (float)note)) l = 55.0 + 0.4 * (float)note;
-    if(l > 210.0) l = 210.0;
-    voice[vl].ff = l * l * iFs;
-
-    voice[vl].note = note; //note->pan
-    if(note <  12) note = 12;
-    if(note > 108) note = 108;
-    l = volume;
-    voice[vl].outr = l + l * fWidth * (float)(note - 60);
-    voice[vl].outl = l + l - voice[vl].outr;
-
-    if(note < 44) note = 44; //limit max decay length
-    voice[vl].dec = (float)exp(-iFs * exp(-1.0 + 0.03 * (double)note - 2.0 * Parameter[0]));
-  }
-  else //note off
-  {
-    for(v=0; v<NVOICES; v++) if(voice[v].note==note) //any voices playing that note?
-    {
-      if(sustain==0)
-      {
-        voice[v].dec = (float)exp(-iFs * exp(6.0 + 0.01 * (double)note - 5.0 * Parameter[1]));
-      }
-      else voice[v].note = SUSTAIN;
-    }
-  }
-}
-
-
-VstInt32 mdaEPiano::processEvents(VstEvents* ev)
-{
-  long npos=0;
-  
-  for (long i=0; i<ev->numEvents; i++)
-  {
-    if((ev->events[i])->type != kVstMidiType) continue;
-    VstMidiEvent* event = (VstMidiEvent* )ev->events[i];
-    char* midiData = event->midiData;
-
-    switch(midiData[0] & 0xf0) //status byte (all channels)
-    {
-      case 0x80: //note off
-        notes[npos++] = event->deltaFrames; //delta
-        notes[npos++] = midiData[1] & 0x7F; //note
-        notes[npos++] = 0;                  //vel
-        break;
-
-      case 0x90: //note on
-        notes[npos++] = event->deltaFrames; //delta
-        notes[npos++] = midiData[1] & 0x7F; //note
-        notes[npos++] = midiData[2] & 0x7F; //vel
-        break;
-
-      case 0xB0: //controller
-        switch(midiData[1])
-        {
-          case 0x01:  //mod wheel
-            modwhl = 0.0078 * (float)(midiData[2]);
-            if(modwhl > 0.05) //over-ride pan/trem depth
-            {
-              rmod = lmod = modwhl; //lfo depth
-              if(Parameter[4] < 0.5) rmod = -rmod;
-            }
-            break;
-
-          
-          case 0x07:  //volume
-            volume = 0.00002 * (float)(midiData[2] * midiData[2]);
-            break;
-         
-          case 0x40:  //sustain pedal
-          case 0x42:  //sustenuto pedal
-            sustain = midiData[2] & 0x40;
-            if(sustain==0)
-            {
-              notes[npos++] = event->deltaFrames;
-              notes[npos++] = SUSTAIN; //end all sustained notes
-              notes[npos++] = 0;
-            }
-            break;
-
-          default:  //all notes off
-            if(midiData[1]>0x7A) 
-            {  
-              for(long v=0; v<NVOICES; v++) voice[v].dec=0.99;
-              sustain = 0;
-              muff = 160.0;
-            }
-            break;
-        }
-        break;
-
-      case 0xC0: //program change
-        if(midiData[1]<NPROGS) setProgram(midiData[1]);
-        break;
-      
-      default: break;
-    }
-
-    if(npos>EVENTBUFFER) npos -= 3; //discard events if buffer full!!
-    event++; //?
-  }
-  notes[npos] = EVENTS_DONE;
-  return 1;
-}
+end;
 *)

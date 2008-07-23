@@ -9,9 +9,22 @@ type
   TDynamicsDataModule = class(TVSTModule)
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray;
       const SampleFrames: Integer);
-    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer;
-      var Value: Single);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleCreate(Sender: TObject);
   private
+    // calcs here
+    fMode              : Single;
+    fThreshold         : Single;
+    fRate              : Single;
+    fTrim              : Single;
+    fAttack            : Single;
+    fRelease           : Single;
+    fLimiterThreshold  : Single;
+    fExpanderThreshold : Single;
+    fExpanderRate      : Single;
+    fIntRelease        : Single;
+    fGateAttack        : Single;
+    fDry               : Single;
   public
   end;
 
@@ -19,147 +32,175 @@ implementation
 
 {$R *.DFM}
 
+uses
+  Math;
+
+procedure TDynamicsDataModule.VSTModuleCreate(Sender: TObject);
+begin
+(*
+ Parameter[0] := 0.60; // thresh     ///Note : special version for ardislarge
+ Parameter[1] := 0.40; // ratio
+ Parameter[2] := 0.10; // level      ///was 0.6
+ Parameter[3] := 0.18; // attack
+ Parameter[4] := 0.55; // release
+ Parameter[5] := 1.00; // Limiter
+ Parameter[6] := 0.00; // gate thresh
+ Parameter[7] := 0.10; // gate attack
+ Parameter[8] := 0.50; // gate decay
+ Parameter[9] := 1.00; // fx mix
+
+ setParameter(6, 0.f); //initial settings
+*)
+end;
+
 procedure TDynamicsDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
-(*
-  //calcs here
-  mode=0;
-  thr = (float)pow(10.f, 2.f * fParam1 - 2.f);
-  rat = 2.5f * fParam2 - 0.5f;
-  if(rat>1.0) { rat = 1.f + 16.f*(rat-1.f) * (rat - 1.f); mode = 1; }
-  if(rat<0.0) { rat = 0.6f*rat; mode=1; }
-  trim = (float)pow(10.f, 2.f * fParam3); //was  - 1.f);
-  att = (float)pow(10.f, -0.002f - 2.f * fParam4);
-  rel = (float)pow(10.f, -2.f - 3.f * fParam5);
+ // calcs here
+ fMode      := 0;
+ fThreshold := Power(10, 2 * Parameter[0] - 2);
+ fRate      := 2.5 * Parameter[1] - 0.5;
+ if (fRate > 1) then
+  begin
+   fRate := 1 + 16 * sqr(fRate - 1);
+   fMode := 1;
+  end else
+ if (fRate < 0) then
+  begin
+   fRate := 0.6 * fRate;
+   fMode := 1;
+  end;
+ fTrim    := Power(10, 2 * Parameter[2]); //was  - 1.f);
+ fAttack  := Power(10, -0.002 - 2 * Parameter[3]);
+ fRelease := Power(10, -2 - 3 * Parameter[4]);
 
-  if(fParam6>0.98) lthr=0.f; //limiter
-  else { lthr=0.99f*(float)pow(10.0f,int(30.0*fParam6 - 20.0)/20.f);
-         mode=1; }
+ if (Parameter[5] > 0.98)
+  then fLimiterThreshold := 0 // Limiter
+  else
+   begin
+    fLimiterThreshold  := 0.99 * Power(10, round(30 * Parameter[5] - 20) / 20);
+    fMode := 1;
+   end;
 
-  if(fParam7<0.02) { xthr=0.f; } //expander
-  else { xthr=(float)pow(10.f,3.f * fParam7 - 3.f); mode=1; }
-  xrat = 1.f - (float)pow(10.f, -2.f - 3.3f * fParam9);
-  irel = (float)pow(10.0,-2.0/getSampleRate());
-  gatt = (float)pow(10.f, -0.002f - 3.f * fParam8);
+ if (Parameter[6] < 0.02)
+  then fExpanderThreshold := 0 // Expander
+  else
+   begin
+    fExpanderThreshold  := Power(10, 3 * Parameter[6] - 3);
+    fMode := 1;
+   end;
+ fExpanderRate := 1 - Power(10, -2 - 3.3 * Parameter[8]);
+ fIntRelease := Power(10, -2 / SampleRate);
+ fGateAttack := Power(10, -0.002 - 3 * Parameter[7]);
 
-  if(rat<0.0f && thr<0.1f) rat *= thr*15.f;
+ if (fRate < 0.0) and (fThreshold < 0.1)
+  then fRate := fRate * fThreshold * 15;
 
-  dry = 1.0f - fParam10;  trim *= fParam10; //fx mix
-*)
+ fDry   := 1 - Parameter[9];
+ fTrim := fTrim * Parameter[9]; //fx mix
 end;
 
 procedure TDynamicsDataModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample: Integer;
+  a, b, i, j, g, e, e2, ra, re, at, ga : Single;
+  tr, th, lth, xth, ge, y : Single;
 begin
 (*
-  float a, b, i, j, g, e=env, e2=env2, ra=rat, re=(1.f-rel), at=att, ga=gatt;
-  float tr=trim, th=thr, lth=lthr, xth=xthr, ge=genv, y=dry;
+  e   := env;
+  e2  := env2;
+  ra  := fRate;
+  re  := (1 - fRelease);
+  at  := fAttack;
+  ga  := fGateAttack;
+  tr  := fTrim;
+  th  := fThreshold;
+  lth := fLimiterThreshold;
+  xth := fExpanderThreshold;
+  ge  := genv;
+  y   := fDry;
 *)
 
- for Sample := 0 to SampleFrames - 1 do
+ if fMode > 0 then //comp/gate/lim
   begin
-   Outputs[0, Sample] := Inputs[0, Sample];
-   Outputs[1, Sample] := Inputs[1, Sample];
+   if lth = 0 then lth := 1000;
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+     i := max(abs(Inputs[0, Sample]), abs(Inputs[1, Sample]));
+
+     if (i > e)
+      then e := e + at * (i - e)
+      else e := e * re;
+     if (i > e)
+      then e2 := i
+      else e2 := e2 * re; //ir;
+
+     if e > th
+      then g := tr / (1 + ra * ((e / th) - 1))
+      else g := tr;
+
+     if g < 0 then g := 0;
+     if g * e2 > lth then g := lth / e2; //limit
+
+     if e > xth
+      then ge := ge + ga - ga * ge
+      else ge := ge * fExpanderRate; //gate
+
+     Outputs[0, Sample] := Inputs[0, Sample] * (g * ge + y);
+     Outputs[1, Sample] := Inputs[1, Sample] * (g * ge + y);
+    end;
+  end
+ else //compressor only
+  begin
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+      i := max(abs(Inputs[0, Sample]), abs(Inputs[1, Sample])); //get peak level
+
+      if i > e
+       then e := e + at * (i - e)
+       else e := e * re;                            // Envelope
+      if e > th
+       then g := tr / (1 + ra * ((e / th) - 1))
+       else g := tr;                                // Gain
+
+      Outputs[0, Sample] := Inputs[0, Sample] * (g + y); //vca
+      Outputs[1, Sample] := Inputs[1, Sample] * (g + y);
+    end;
   end;
 
 (*
-  if(mode) //comp/gate/lim
-  {
-    if(lth==0.f) lth=1000.f;
-    while(--sampleFrames >= 0)
-    {
-      a = *++in1;
-      b = *++in2;
-  
-      i = (a<0.f)? -a : a;
-      j = (b<0.f)? -b : b;
-      i = (j>i)? j : i;
-        
-      e = (i>e)? e + at * (i - e) : e * re;
-      e2 = (i>e)? i : e2 * re; //ir;
-      
-      g = (e>th)? tr / (1.f + ra * ((e/th) - 1.f)) : tr;
-
-      if(g<0.f) g=0.f;
-      if(g*e2>lth) g = lth/e2; //limit
-
-      ge = (e>xth)? ge + ga - ga * ge : ge * xrat; //gate
-
-      *++out1 = a * (g * ge + y);  
-      *++out2 = b * (g * ge + y);  
-    }
-  }
-  else //compressor only
-  {
-    while(--sampleFrames >= 0)
-    {
-      a = *++in1;
-      b = *++in2;
-  
-      i = (a<0.f)? -a : a;
-      j = (b<0.f)? -b : b;
-      i = (j>i)? j : i; //get peak level
-        
-      e = (i>e)? e + at * (i - e) : e * re; //envelope
-      g = (e>th)? tr / (1.f + ra * ((e/th) - 1.f)) : tr; //gain
-
-      *++out1 = a * (g + y); //vca
-      *++out2 = b * (g + y);  
-    }
-  }
-*)
-
-(*
-  if(e <1.0e-10) env =0.f; else env =e;
-  if(e2<1.0e-10) env2=0.f; else env2=e2;
-  if(ge<1.0e-10) genv=0.f; else genv=ge;
-*)
+  if (e  < 1E-10) then env  := 0 else env  := e;
+  if (e2 < 1E-10) then env2 := 0 else env2 := e2;
+  if (ge < 1E-10) then genv := 0 else genv := ge;
+*)         
 end;
 
 end.
 
 (*
-mdaDynamics::mdaDynamics(audioMasterCallback audioMaster)	: AudioEffectX(audioMaster, 1, 10)	// 1 program, 4 parameters
-{
-  Parameter[0] := 0.60; //thresh     ///Note : special version for ardislarge
-  Parameter[1] := 0.40; //ratio
-  Parameter[2] := 0.10; //level      ///was 0.6
-  Parameter[3] := 0.18; //attack
-  Parameter[4] := 0.55; //release
-  Parameter[5] := 1.00; //Limiter
-  Parameter[6] := 0.00; //gate thresh
-  Parameter[7] := 0.10; //gate attack
-  Parameter[8] := 0.50; //gate decay
-  Parameter[9] := 1.00; //fx mix
-
-  setParameter(6, 0.f); //initial settings
-}
-
 void mdaDynamics::getParameterDisplay(VstInt32 index, char *text)
-{
+begin
   switch(index)
-  {
+  begin
     case 0: long2string((long)(40.0*Parameter[0] - 40.0),text); break;
     case 1: if(Parameter[1]>0.58) 
-            { if(Parameter[1]<0.62) strcpy(text, "Limit"); 
-              else float2strng(-rat,text); }
+            begin if(Parameter[1]<0.62) strcpy(text, "Limit"); 
+              else float2strng(-fRate,text); end;
             else 
-            { if(Parameter[1]<0.2) float2strng(0.5f+2.5f*Parameter[1],text); 
-              else float2strng(1.f/(1.f-rat),text); } break;
+            begin if(Parameter[1]<0.2) float2strng(0.5f+2.5f*Parameter[1],text);
+              else float2strng(1.f/(1.f-fRate),text); end; break;
     case 2: long2string((long)(40.0*Parameter[2] - 0.0),text); break; ///was -20.0
-    case 3: long2string((long)(-301030.1 / (getSampleRate() * log10(1.0 - att))),text); break;
-    case 4: long2string((long)(-301.0301 / (getSampleRate() * log10(1.0 - rel))),text); break;
-    case 5: if(lthr==0.f) strcpy(text, "OFF"); 
-            else long2string((long)(30.0*Parameter[5] - 20.0),text); break;
-    case 6: if(xthr==0.f) strcpy(text, "OFF"); 
-            else long2string((long)(60.0*Parameter[6] - 60.0),text); break;
-    case 7: long2string((long)(-301030.1 / (getSampleRate() * log10(1.0 - gatt))),text); break;
-    case 8: long2string((long)(-1806.0 / (getSampleRate() * log10(xrat))),text); break;
-    case 9: long2string((long)(100.0*Parameter[9]),text); break;
+    case 3: long2string((long)(-301030.1 / (SampleRate * log10(1.0 - fAttack))),text); break;
+    case 4: long2string((long)(-301.0301 / (SampleRate * log10(1.0 - fRelease))),text); break;
+    case 5: if(fLimiterThreshold==0.f) strcpy(text, "OFF");
+            else long2string((long)(30 * Parameter[5] - 20.0),text); break;
+    case 6: if(fExpanderThreshold==0.f) strcpy(text, "OFF");
+            else long2string((long)(60.0 * Parameter[6] - 60.0),text); break;
+    case 7: long2string((long)(-301030.1 / (SampleRate * log10(1.0 - fGateAttack))),text); break;
+    case 8: long2string((long)(-1806 / (SampleRate * log10(fExpanderRate))),text); break;
+    case 9: long2string((long)(100 * Parameter[9]),text); break;
 
-  }
-}
+  end;
+end;
 *)

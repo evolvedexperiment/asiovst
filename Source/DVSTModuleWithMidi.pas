@@ -11,7 +11,7 @@ type
 
   TVSTModuleWithMidi = class(TCustomVSTModule)
   protected
-    FMidiEvent    : TVstEvents;
+    fMidiEvent    : TVstEvents;
     fOnProcessMidi: TProcessMidiEvent;
     procedure ProcessMidiEvent(MidiEvent: TVstMidiEvent); virtual;
   public
@@ -25,10 +25,8 @@ type
     function HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
     function HostCallGetCurrentMidiProgram     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
 
-
-
-    procedure MIDI_Out(b1, b2, b3, b4: byte; offset: Integer = 0);
-    procedure MIDI_SendSysEx(Data: array of byte; offset: Integer = 0);
+    procedure MIDI_Out(b1, b2, b3, b4: Byte; offset: Integer = 0);
+    procedure MIDI_SendSysEx(Data: array of Byte; offset: Integer = 0);
     procedure MIDI_CC(ch, num, val: Integer; offset: Integer = 0);
     procedure MIDI_ChannelAftertouch(ch, val: Integer; offset: Integer = 0);
     procedure MIDI_NoteOff(ch, note, val: Integer; offset: Integer = 0);
@@ -120,7 +118,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_Out(b1, b2, b3, b4: byte; offset: Integer);
+procedure TVSTModuleWithMidi.MIDI_Out(b1, b2, b3, b4: Byte; offset: Integer);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
@@ -182,12 +180,14 @@ begin
    MidiData[1] := note;
    MidiData[2] := val;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < maxMidiEvents - 1
+    then inc(FMidiEvent.numEvents);
   end;
 end;
 
 procedure TVSTModuleWithMidi.MIDI_PitchBend(ch, val: Integer; offset: Integer = 0);
-var a, b: Integer;
+var
+  a, b: Integer;
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
@@ -242,7 +242,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_SendSysEx(Data: array of byte; offset: Integer);
+procedure TVSTModuleWithMidi.MIDI_SendSysEx(Data: array of Byte; offset: Integer);
 begin
  with PVstMidiSysexEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
@@ -254,6 +254,5 @@ begin
    if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
   end;
 end;
-
 
 end.

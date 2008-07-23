@@ -150,25 +150,24 @@ destructor TCustomVstParameterProperty.Destroy;
 var
   i: Integer;
 begin
-  try
-    if assigned(VSTModule) then
-      with FVSTModule as TVSTModuleWithPrograms do
-      begin
-        if not (effFlagsProgramChunks in Effect^.EffectFlags) then
-          if Effect^.numPrograms>0 then
-            for i := 0 to Effect^.numPrograms-1 do
-              Programs[i].SetParameterCount(Collection.Count - 1)
-          else SetParameterCount(Collection.Count - 1);
+ try
+  if assigned(VSTModule) then
+   with FVSTModule as TVSTModuleWithPrograms do
+    begin
+     if not (effFlagsProgramChunks in Effect^.EffectFlags) then
+      if Effect^.numPrograms > 0 then
+       for i := 0 to Effect^.numPrograms - 1
+        do Programs[i].SetParameterCount(Collection.Count - 1)
+      else SetParameterCount(Collection.Count - 1);
 
-        if (HostProduct <> 'Cubase VST') and
-           (HostProduct <> 'Unknown') and
-           (HostProduct <> '') then
-          Effect^.numParams := Collection.Count - 1;
+     if (HostProduct <> 'Cubase VST') and
+        (HostProduct <> 'Unknown') and
+        (HostProduct <> '') then Effect^.numParams := Collection.Count - 1;
     end;
-  except
-  end;
+ except
+ end;
 
-  inherited;
+ inherited;
 end;
 
 function TCustomVstParameterProperty.Smooth(i: Single): Single;
@@ -183,8 +182,26 @@ begin
  if Dest is TCustomVstParameterProperty then
   with TCustomVstParameterProperty(Dest) do
    try
-    Units := Self.Units;
-    DisplayName := Self.DisplayName;
+    CanBeAutomated       := Self.CanBeAutomated;
+    CC                   := Self.CC;
+    Curve                := Self.Curve;
+    CurveFactor          := Self.CurveFactor;
+    Flags                := Self.Flags;
+    FSmoothStates        := Self.FSmoothStates;
+    LargeStepFloat       := Self.LargeStepFloat;
+    LargeStepInteger     := Self.LargeStepInteger;
+    Max                  := Self.Max;
+    MaxInteger           := Self.MaxInteger;
+    Min                  := Self.Min;
+    MinInteger           := Self.MinInteger;
+    ReportVST2Properties := Self.ReportVST2Properties;
+    ShortLabel           := Self.ShortLabel;
+    SmallStepFloat       := Self.SmallStepFloat;
+    SmoothingFactor      := Self.SmoothingFactor;
+    StepFloat            := Self.StepFloat;
+    StepInteger          := Self.StepInteger;
+    Units                := Self.Units;
+    DisplayName          := Self.DisplayName;
    except
     inherited;
    end
@@ -282,7 +299,7 @@ begin
     Add(#9 + #9 + '<!--  Create Global Params================================== -->');
     for i := 0 to Count-1 do
     begin
-      Add(#9 + #9 + '<Param name="' + Items[i].FDisplayName + '"' + #9 + 
+      Add(#9 + #9 + '<Param name="' + Items[i].FDisplayName + '"' + #9 +
                     'shortName="' + Items[i].fShortLabel + '"' + #9 +
                     'id="' + IntToStr(i)+'"/>');
     end;

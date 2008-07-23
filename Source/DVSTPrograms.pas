@@ -110,7 +110,8 @@ begin
 end;
 
 procedure TCustomVstProgram.AssignTo(Dest: TPersistent);
-var i: Integer;
+var
+  i: Integer;
 begin
  if Dest is TCustomVstProgram then
   with TCustomVstProgram(Dest) do
@@ -121,7 +122,18 @@ begin
       for i := 0 to Length(Self.FParameter) - 1
        do Parameter[i] := Self.Parameter[i];
      end;
-    DisplayName := Self.DisplayName;
+
+    if Self.FChunkData.Size > 0 then
+     begin
+      FChunkData.Size := Self.FChunkData.Size;
+      Move(Self.FChunkData.Memory^, FChunkData.Memory^, FChunkData.Size);
+      FChunkData.Position := Self.FChunkData.Position;
+     end;
+
+    OnInitialize := Self.OnInitialize;
+    OnStoreChunk := Self.OnStoreChunk;
+    OnLoadChunk  := Self.OnLoadChunk;
+    DisplayName  := Self.DisplayName;
    end
   else inherited;
 end;

@@ -1,5 +1,6 @@
 object EPianoDataModule: TEPianoDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'mda E-Piano'
@@ -48,125 +49,130 @@ object EPianoDataModule: TEPianoDataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Envelope Decay'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Envelop'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Envelope Release'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Envelop'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Hardness'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Hardnes'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Treble Boost'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Treble '
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Modulation'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Modulat'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'LFO Rate'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'LFO Rat'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'Hz'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Velocity Sense'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Velocit'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Stereo Width'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Modulat'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Polyphony'
-      Units = 'voices'
-      CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Polypho'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Fine Tuning'
-      Units = 'cents'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Fine Tu'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Random Tuning'
-      Units = 'cents'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Random '
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Overdrive'
       Units = '%'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Polyphony'
+      Max = 1.000000000000000000
+      ShortLabel = 'Polypho'
       SmoothingFactor = 1.000000000000000000
+      Units = 'voices'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Fine Tuning'
+      Max = 1.000000000000000000
+      ShortLabel = 'Fine Tu'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'cents'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Random Tuning'
+      Max = 1.000000000000000000
+      ShortLabel = 'Random '
+      SmoothingFactor = 1.000000000000000000
+      Units = 'cents'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Overdrive'
+      Max = 1.000000000000000000
       ShortLabel = 'Overdri'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end>
+  OnSampleRateChange = VSTModuleSampleRateChange
+  OnProcess = VSTModuleProcess
+  OnProcessReplacing = VSTModuleProcess
+  OnProcessMidi = VSTModuleProcessMidi
+  OnOutputProperties = VSTModuleOutputProperties
   Left = 218
   Top = 81
   Height = 150
