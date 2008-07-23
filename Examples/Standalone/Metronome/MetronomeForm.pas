@@ -1,36 +1,35 @@
 unit MetronomeForm;
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ENDIF}
-
 interface
 
-uses {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
-     SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ComCtrls,
-     ExtCtrls, DAVDCommon, DAVDComplex, Spin, Buttons, DASIOHost;
+{$I ASIOVST.INC}
+
+uses
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
+  SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ComCtrls,
+  ExtCtrls, DAVDCommon, DAVDComplex, Spin, Buttons, DASIOHost;
 
 type
   TFmASIO = class(TForm)
+    ASIOHost: TASIOHost;
     Bt_CP: TButton;
     Bt_Play: TButton;
     DriverCombo: TComboBox;
-    ASIOHost: TASIOHost;
     Lb_Drivername: TLabel;
-    LbTempo: TLabel;
-    SETempo: TSpinEdit;
     LbBPM: TLabel;
+    LbTempo: TLabel;
     LbVolume: TLabel;
     SBVolume: TScrollBar;
+    SETempo: TSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure DriverComboChange(Sender: TObject);
+    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+    procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure Bt_PlayClick(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+    procedure DriverComboChange(Sender: TObject);
     procedure SBVolumeChange(Sender: TObject);
     procedure SETempoChange(Sender: TObject);
-    procedure ASIOHostSampleRateChanged(Sender: TObject);
   private
     fAngle     : TComplexDouble;
     fPosition  : TComplexDouble;
@@ -52,12 +51,13 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses inifiles, DASIOConvert;
+uses
+  Inifiles, DASIOConvert;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
  DriverCombo.Items := ASIOHost.DriverList;
- fSamplesPerBeat := 60 / SETempo.Value*ASIOHost.SampleRate;
+ fSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
  fSamplesCount := 0;
  fMetroVolume := 1;
  fVolume := 1;
@@ -101,16 +101,13 @@ begin
 end;
 
 procedure TFmASIO.CalculateSineAngles;
-var w0 : Single;
 begin
- w0:=2*Pi*1000/ASIOHost.SampleRate;
- fAngle.Re:=cos(w0);
- fAngle.Im:=sin(w0);
+ GetSinCos(2 * Pi * 1000 / ASIOHost.SampleRate, fAngle.Im, fAngle.Re);
 end;
 
 procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- fSamplesPerBeat:=60/SETempo.Value*ASIOHost.SampleRate;
+ fSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
  CalculateSineAngles;
 end;
 
@@ -133,12 +130,12 @@ end;
 
 procedure TFmASIO.SBVolumeChange(Sender: TObject);
 begin
- fVolume:=db_to_Amp(SBVolume.Position);
+ fVolume := db_to_Amp(SBVolume.Position);
 end;
 
 procedure TFmASIO.SETempoChange(Sender: TObject);
 begin
- fSamplesPerBeat:=60/SETempo.Value*ASIOHost.SampleRate;
+ fSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
 end;
 
 procedure TFmASIO.Bt_PlayClick(Sender: TObject);
@@ -147,10 +144,10 @@ begin
   begin
    ASIOHost.Active := True; // Start Audio
    Bt_Play.Caption := 'Stop Audio';
-   fMetroVolume:=1;
-   fSamplesCount:=0;
-   fPosition.Re:=1;
-   fPosition.Im:=0;
+   fMetroVolume    := 1;
+   fSamplesCount   := 0;
+   fPosition.Re    := 1;
+   fPosition.Im    := 0;
   end
  else
   begin
@@ -162,32 +159,33 @@ end;
 
 procedure TFmASIO.ASIOHostBufferSwitch(Sender: TObject; InBuffer,
   OutBuffer: TAVDArrayOfSingleDynArray);
-var i,j : Integer;
-    s   : Single;
+var
+  i, j : Integer;
+  s    : Single;
 begin
  for i := 0 to ASIOHost.BufferSize - 1 do
   begin
-   s:=fPosition.Re*fAngle.Re-fPosition.Im*fAngle.Im;
-   fPosition.Im:=fPosition.Im*fAngle.Re+fPosition.Re*fAngle.Im;
-   fPosition.Re:=s;
+   s := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
+   fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
+   fPosition.Re := s;
 
-   if fBeatPos=0
-    then s:=2*fPosition.Re*fPosition.Re-1;
+   if fBeatPos = 0
+    then s := 2 * fPosition.Re * fPosition.Re - 1;
 
-   s:=fVolume*s*fMetroVolume;
+   s := fVolume * s * fMetroVolume;
 
-   for j := 0 to ASIOHost.OutputChannelCount - 1 do OutBuffer[j,i] := s;
-   fMetroVolume:=0.995*fMetroVolume;
-   fSamplesCount:=fSamplesCount+1;
-   if fSamplesCount>fSamplesPerBeat then
+   for j := 0 to ASIOHost.OutputChannelCount - 1 do OutBuffer[j, i] := s;
+   fMetroVolume  := 0.995 * fMetroVolume;
+   fSamplesCount := fSamplesCount + 1;
+   if fSamplesCount > fSamplesPerBeat then
     begin
-     fMetroVolume:=1;
-     fSamplesCount:=fSamplesCount-fSamplesPerBeat;
-     fPosition.Re:=1;
-     fPosition.Im:=0;
-     if fBeatPos<3
+     fMetroVolume  := 1;
+     fSamplesCount := fSamplesCount - fSamplesPerBeat;
+     fPosition.Re  := 1;
+     fPosition.Im  := 0;
+     if fBeatPos < 3
       then inc(fBeatPos)
-      else fBeatPos:=0;
+      else fBeatPos := 0;
     end;
   end;
 end;

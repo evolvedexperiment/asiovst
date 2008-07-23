@@ -40,7 +40,6 @@ object FmLunchBox: TFmLunchBox
     Top = 0
     Width = 429
     Height = 24
-    ButtonHeight = 13
     Caption = 'ToolBar'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -51,7 +50,7 @@ object FmLunchBox: TFmLunchBox
     TabOrder = 0
     object ToolButton2: TToolButton
       Left = 0
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton2'
       ImageIndex = 0
@@ -59,15 +58,15 @@ object FmLunchBox: TFmLunchBox
     end
     object LbKit: TLabel
       Left = 8
-      Top = 2
+      Top = 0
       Width = 19
-      Height = 13
+      Height = 22
       Caption = 'kit:'
       Layout = tlCenter
     end
     object CBKit: TComboBox
       Left = 27
-      Top = 2
+      Top = 0
       Width = 84
       Height = 21
       Style = csDropDownList
@@ -88,22 +87,22 @@ object FmLunchBox: TFmLunchBox
     end
     object ToolButton1: TToolButton
       Left = 111
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton1'
       Style = tbsSeparator
     end
     object LbBPM: TLabel
       Left = 119
-      Top = 2
+      Top = 0
       Width = 29
-      Height = 13
+      Height = 22
       Caption = 'BPM:'
       Layout = tlCenter
     end
     object SETempo: TSpinEdit
       Left = 148
-      Top = 2
+      Top = 0
       Width = 53
       Height = 22
       MaxValue = 200
@@ -116,7 +115,7 @@ object FmLunchBox: TFmLunchBox
     end
     object ToolButton4: TToolButton
       Left = 201
-      Top = 2
+      Top = 0
       Width = 7
       Caption = 'ToolButton4'
       ImageIndex = 1
@@ -124,15 +123,15 @@ object FmLunchBox: TFmLunchBox
     end
     object LbBar: TLabel
       Left = 208
-      Top = 2
+      Top = 0
       Width = 25
-      Height = 13
+      Height = 22
       Caption = 'Bar:'
       Layout = tlCenter
     end
     object SEBar: TSpinEdit
       Left = 233
-      Top = 2
+      Top = 0
       Width = 41
       Height = 22
       MaxValue = 16
@@ -145,7 +144,7 @@ object FmLunchBox: TFmLunchBox
     end
     object ToolButton3: TToolButton
       Left = 274
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton3'
       ImageIndex = 1
@@ -153,15 +152,15 @@ object FmLunchBox: TFmLunchBox
     end
     object LbStyle: TLabel
       Left = 282
-      Top = 2
+      Top = 0
       Width = 34
-      Height = 13
+      Height = 22
       Caption = 'Style:'
       Layout = tlCenter
     end
     object CBStyle: TComboBox
       Left = 316
-      Top = 2
+      Top = 0
       Width = 68
       Height = 21
       Style = csDropDownList
@@ -494,6 +493,7 @@ object FmLunchBox: TFmLunchBox
     PreventClipping = pcAnalog
     PreFillOutBuffer = bpfZero
     ConvertOptimizations = [coSSE, co3DNow]
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     SampleRate = 44100.000000000000000000
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
