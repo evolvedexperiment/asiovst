@@ -8,10 +8,10 @@ uses
 
 type
   TPerformanceTestModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; SampleFrames: Integer);
-    procedure VSTModuleCreate(Sender: TObject);
   private
     function GetProcessorCycles: Double;
   public
@@ -84,7 +84,8 @@ begin
 end;
 
 procedure ProcessFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
-var Start,Stop    : Int64;
+var
+  Start, Stop    : Int64;
 begin
  with TPerformanceTestModule(Effect^.vObject) do
   begin
@@ -97,7 +98,8 @@ begin
 end;
 
 procedure ProcessReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
-var Start,Stop    : Int64;
+var
+  Start, Stop    : Int64;
 begin
  with TPerformanceTestModule(Effect^.vObject) do
   begin
@@ -110,7 +112,8 @@ begin
 end;
 
 procedure ProcessDoubleReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPDouble; SampleFrames: Integer); cdecl;
-var Start,Stop    : Int64;
+var
+  Start, Stop    : Int64;
 begin
  with TPerformanceTestModule(Effect^.vObject) do
   begin
@@ -136,8 +139,9 @@ begin
 end;
 
 procedure TPerformanceTestModule.VSTModuleCreate(Sender: TObject);
-var DataTest   : TAVDDoubleDynArray;
-    DataGetmem : PSingle;
+var
+  DataTest   : TAVDDoubleDynArray;
+  DataGetmem : PSingle;
 begin
  SetMinimumBlockAlignment(mba8Byte);
  DataGetmem := GetMemory(8192 * SizeOf(Single));
@@ -168,7 +172,7 @@ end;
 initialization
 
 if IsRDTSCPresent
- then StartStop:=RDTSC
- else StartStop:=NoRDTSC;
+ then StartStop := RDTSC
+ else StartStop := NoRDTSC;
 
 end.

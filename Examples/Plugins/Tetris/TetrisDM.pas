@@ -1,22 +1,18 @@
 unit TetrisDM;
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ENDIF}
+{$I ASIOVST.INC}
 
 interface
 
-uses 
+uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
   DAVDCommon, DVSTModule, DVSTEffect, SysUtils, Classes, Forms;
 
 type
-  { TTetrisModule }
   TTetrisModule = class(TVSTModule)
-    procedure VSTModuleEditorKeyDown(Sender: TObject; var keyCode: TVstKeyCode);
     function VSTModuleCheckKey(Sender: TObject; Key: Char): Boolean;
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: Cardinal);
+    procedure VSTModuleEditorKeyDown(Sender: TObject; var keyCode: TVstKeyCode);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
   public
   end;
@@ -31,7 +27,7 @@ uses TetrisEditor;
 
 function TTetrisModule.VSTModuleCheckKey(Sender: TObject; Key: Char): Boolean;
 begin
- result:=True;
+ result := True;
 end;
 
 procedure TTetrisModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;

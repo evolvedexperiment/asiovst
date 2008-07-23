@@ -1,14 +1,13 @@
 unit TetrisEditor;
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ENDIF}
+{$I ASIOVST.INC}
 
 interface
 
-uses {$IFDEF FPC}LCLIntf, LResources, LCLType, {$ELSE} Windows, Types, {$ENDIF}
-     SysUtils, Classes, Forms, TetrisUnit, Controls, StdCtrls, ExtCtrls,
-     Graphics, DAVDCommon, DVSTModule;
+uses
+  {$IFDEF FPC}LCLIntf, LResources, LCLType, {$ELSE} Windows, Types, {$ENDIF}
+  SysUtils, Classes, Forms, TetrisUnit, Controls, StdCtrls, ExtCtrls, Graphics,
+  DAVDCommon, DVSTModule;
 
 type
   TFmTetris = class(TForm)

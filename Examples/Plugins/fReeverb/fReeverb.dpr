@@ -13,8 +13,8 @@ var fReeverbVST : TfReeverbVST;
 begin
  try
   fReeverbVST:=TfReeverbVST.Create(Application);
-  fReeverbVST.Effect^.user:=fReeverbVST;
-  fReeverbVST.AudioMaster:=audioMaster;
+  fReeverbVST.Effect^.user := fReeverbVST;
+  fReeverbVST.AudioMaster := audioMaster;
   Result := fReeverbVST.Effect;
  except
   Result := nil;

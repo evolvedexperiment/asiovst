@@ -28,21 +28,21 @@ object WavedisplayGUI: TWavedisplayGUI
     RedrawInterval = 50
     InternalBufferSize = 1024
   end
-  object Label1: TLabel
+  object LbDrawMode: TLabel
     Left = 8
     Top = 12
     Width = 57
     Height = 13
     Caption = 'Draw mode:'
   end
-  object Label2: TLabel
+  object LbWaveSize: TLabel
     Left = 143
     Top = 12
     Width = 53
     Height = 13
     Caption = 'Wave size:'
   end
-  object Label3: TLabel
+  object LbProcessingMode: TLabel
     Left = 271
     Top = 12
     Width = 84
@@ -58,7 +58,7 @@ object WavedisplayGUI: TWavedisplayGUI
     RedrawInterval = 15
     ShowClipping = scBottomRight
     LevelRelease = 1.000000000000000000
-    BarWidthPercentage = 0.800000011920929000
+    BarWidthPercentage = 0.800000011920928900
     MaximumTimeFactor = 3.000000000000000000
   end
   object ddDrawMode: TComboBox

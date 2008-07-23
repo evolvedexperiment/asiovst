@@ -25,18 +25,16 @@ object VSTGUI: TVSTGUI
     Width = 365
     Height = 73
     Align = alBottom
-    ReleaseMouseBtnOnLeave = False
     KeyDownMode = kdmFlat
     Height3d = 0.200000002980232200
     BlackKeyHeight = 0.629999995231628400
     BaseOctave = 4
     KeyZones = <>
     ShowKeyZones = False
-    KeyZoneHeight = 10
     OnNoteOn = MidiKeysNoteOn
     OnNoteOff = MidiKeysNoteOff
   end
-  object Label1: TLabel
+  object LbSample: TLabel
     Left = 8
     Top = 8
     Width = 48

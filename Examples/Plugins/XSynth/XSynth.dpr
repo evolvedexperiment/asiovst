@@ -11,12 +11,13 @@ uses
   VoiceList in 'VoiceList.pas';
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var VSTSSModule : TVSTSSModule;
+var
+  VSTSSModule : TVSTSSModule;
 begin
  try
-  VSTSSModule:=TVSTSSModule.Create(Application);
-  VSTSSModule.Effect^.user:=VSTSSModule;
-  VSTSSModule.AudioMaster:=audioMaster;
+  VSTSSModule := TVSTSSModule.Create(Application);
+  VSTSSModule.Effect^.user := VSTSSModule;
+  VSTSSModule.AudioMaster := audioMaster;
   Result := VSTSSModule.Effect;
  except
   Result := nil;

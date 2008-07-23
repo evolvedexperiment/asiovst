@@ -43,8 +43,8 @@ begin
   begin
    Position := 0;
    if Size < 8 then exit;
-   Read(AtomName,4);
-   Read(AtomSize,4);
+   Read(AtomName, 4);
+   Read(AtomSize, 4);
    if AtomSize > 0 then
     begin
      SetLength(fScriptCode, AtomSize);

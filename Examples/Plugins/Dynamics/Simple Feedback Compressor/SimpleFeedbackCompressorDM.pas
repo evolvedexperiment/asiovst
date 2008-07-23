@@ -3,7 +3,8 @@ unit SimpleFeedbackCompressorDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, DDspDynamics;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
+  DDspDynamics;
 
 type
   TSimpleFeedbackCompressorDataModule = class(TVSTModule)
@@ -25,7 +26,8 @@ implementation
 
 {$R *.DFM}
 
-uses Math, EditorFrm;
+uses
+  Math, EditorFrm;
 
 procedure TSimpleFeedbackCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
@@ -105,8 +107,8 @@ var i : Integer;
 begin
  for i := 0 to sampleframes - 1 do
   begin
-    Outputs[0,i] := fSimpleFeedbackCompressors[0].ProcessSample(Inputs[0,i]);
-    Outputs[1,i] := fSimpleFeedbackCompressors[1].ProcessSample(Inputs[1,i]);
+    Outputs[0, i] := fSimpleFeedbackCompressors[0].ProcessSample(Inputs[0, i]);
+    Outputs[1, i] := fSimpleFeedbackCompressors[1].ProcessSample(Inputs[1, i]);
   end;
 end;
 

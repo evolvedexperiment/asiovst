@@ -10,9 +10,9 @@ uses
 type
   TWavedisplayGUI = class(TForm)
     Display: TGuiDynamicWaveform;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
+    LbDrawMode: TLabel;
+    LbWaveSize: TLabel;
+    LbProcessingMode: TLabel;
     ddWaveSize: TComboBox;
     ddDrawMode: TComboBox;
     ddProcessing: TComboBox;
@@ -28,32 +28,35 @@ implementation
 
 procedure TWavedisplayGUI.ddProcessingChange(Sender: TObject);
 begin
+ with Display do
   case ddProcessing.ItemIndex of
-    0: Display.WaveProcessMode := wpmScroll;
-    1: Display.WaveProcessMode := wpmReplace;
-    2: Display.WaveProcessMode := wpmStretch;
+   0: WaveProcessMode := wpmScroll;
+   1: WaveProcessMode := wpmReplace;
+   2: WaveProcessMode := wpmStretch;
   end;
 end;
 
 procedure TWavedisplayGUI.ddWaveSizeChange(Sender: TObject);
 begin
+ with Display do
   case ddWaveSize.ItemIndex of
-    0: Display.InternalBufferSize := 256;
-    1: Display.InternalBufferSize := 512;
-    2: Display.InternalBufferSize := 1024;
-    3: Display.InternalBufferSize := 2048;
-    4: Display.InternalBufferSize := 4096;
-    5: Display.InternalBufferSize := 8192;
+   0: InternalBufferSize := 256;
+   1: InternalBufferSize := 512;
+   2: InternalBufferSize := 1024;
+   3: InternalBufferSize := 2048;
+   4: InternalBufferSize := 4096;
+   5: InternalBufferSize := 8192;
   end;
 end;
 
 procedure TWavedisplayGUI.ddDrawModeChange(Sender: TObject);
 begin
+ with Display do
   case ddDrawMode.ItemIndex of
-    0: Display.WaveDrawMode := wdmSolid;
-    1: Display.WaveDrawMode := wdmOutline;
-    2: Display.WaveDrawMode := wdmPoints;
-    3: Display.WaveDrawMode := wdmSimple;
+   0: WaveDrawMode := wdmSolid;
+   1: WaveDrawMode := wdmOutline;
+   2: WaveDrawMode := wdmPoints;
+   3: WaveDrawMode := wdmSimple;
   end;
 end;
 

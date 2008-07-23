@@ -21,7 +21,7 @@ package AVDCommon_D10;
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
-{$IMAGEBASE $400000}
+{$IMAGEBASE $500000}
 {$DESCRIPTION 'ASIO/VST Base Package'}
 {$IMPLICITBUILD ON}
 
@@ -32,10 +32,10 @@ requires
 contains
   DAVDCommon in '..\Source\DAVDCommon.pas',
   CPUDetectionTool in '..\Source\CPUDetectionTool.pas',
-  DAVDComplex in '..\Source\DAVDComplex.pas',
-  MidiFile in '..\Source\MidiFile.pas',
   DAVDProcessingComponent in '..\Source\DAVDProcessingComponent.pas',
   DAVDBufferMathPascal in '..\Source\DAVDBufferMathPascal.pas',
-  DAVDBufferMathAsm in '..\Source\DAVDBufferMathAsm.pas';
+  DAVDBufferMathAsm in '..\Source\DAVDBufferMathAsm.pas',
+  DAVDComplex in '..\Source\DAVDComplex.pas',
+  MidiFile in '..\Source\MidiFile.pas';
 
 end.

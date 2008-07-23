@@ -8,15 +8,13 @@ uses
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VSTModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleInitialize(Sender: TObject);
-    procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs,
-      Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleEditClose(Sender: TObject;
-      var DestroyForm: Boolean);
+    procedure VSTModuleInitialize(Sender: TObject);
+    procedure VSTModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
   private
   public
     Voices : TVoiceList;
@@ -28,7 +26,8 @@ implementation
 
 {$R *.DFM}
 
-uses Math;
+uses
+  Math;
 
 procedure TVSTSSModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -64,47 +63,49 @@ procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
   ParentWindow: Cardinal);
 // Do not delete this if you are using the editor
 begin
-  GUI := MyGUI;
+ GUI := MyGUI;
 end;
 
 procedure TVSTSSModule.VSTModuleInitialize(Sender: TObject);
 begin
- Voices:=TVoiceList.Create(True);
- MyGUI := TVSTGUI.Create(Self);
+ Voices := TVoiceList.Create(True);
+ MyGUI  := TVSTGUI.Create(Self);
 end;
 
 procedure TVSTSSModule.VSTModuleProcessMidi(Sender: TObject;
   MidiEvent: TVstMidiEvent);
-var Status  : Byte;
-    i       : Integer;
-    newNote : TSimpleSamplerVoice;
-const VeloDiv : Single = 1/128;
+var
+  Status  : Byte;
+  i       : Integer;
+  newNote : TSimpleSamplerVoice;
+const
+  VeloDiv : Single = 1 / 128;
 begin
  Status:=MidiEvent.midiData[0] and $F0; // channel information is removed
- if (Status=$90) and (MidiEvent.mididata[2]>0) then // "note on" ?
+ if (Status = $90) and (MidiEvent.mididata[2] > 0) then // "note on" ?
   begin
-   if Voices.Count>7 then Voices.Remove(Voices.Items[0]);
+   if Voices.Count > 7 then Voices.Remove(Voices.Items[0]);
    newNote:=TSimpleSamplerVoice.Create(self);
    with newNote do
     begin
-     newNote.MidiKeyNr:=MidiEvent.midiData[1];
-     newNote.Velocity:=MidiEvent.midiData[2];
-     newNote.NoteOn(Midi2Pitch[MidiKeyNr],Velocity*VeloDiv);
+     MidiKeyNr := MidiEvent.midiData[1];
+     Velocity  := MidiEvent.midiData[2];
+     NoteOn(Midi2Pitch[MidiKeyNr], Velocity * VeloDiv);
     end;
    Voices.Add(newNote);
   end
- else if ((status=$90) and (MidiEvent.mididata[2]=0)) or (status=$80) then // "note off" ?
+ else if ((status = $90) and (MidiEvent.mididata[2] = 0)) or (status = $80) then // "note off" ?
   begin
-   for i:=0 to Voices.Count-1 do
+   for i := 0 to Voices.Count - 1 do
     begin
-     if (Voices.Items[i].MidiKeyNr=MidiEvent.midiData[1]) then
+     if (Voices.Items[i].MidiKeyNr = MidiEvent.midiData[1]) then
       begin
        Voices.Delete(i);
        Break;
       end;
     end;
   end
- else if ((status=$B0) and (MidiEvent.midiData[1]=$7e)) then
+ else if ((status = $B0) and (MidiEvent.midiData[1] = $7E)) then
   begin
    // all notes off
    Voices.Clear;
@@ -120,7 +121,7 @@ end;
 procedure TVSTSSModule.VSTModuleEditClose(Sender: TObject;
   var DestroyForm: Boolean);
 begin
-  DestroyForm:=false;
+ DestroyForm := False;
 end;
 
 end.

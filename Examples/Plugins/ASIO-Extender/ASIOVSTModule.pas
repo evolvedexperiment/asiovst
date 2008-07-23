@@ -9,15 +9,15 @@ uses Windows, Messages, SysUtils, Classes, Forms, DASIOHost,
 
 type
   TASIOVSTModule = class(TVSTModule)
-    procedure VSTModuleDestroy(Sender: TObject);
-    procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
     procedure AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
     procedure AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+    procedure ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
   private
     fASIOHost        : TASIOHost;
@@ -38,7 +38,8 @@ implementation
 
 {$R *.DFM}
 
-uses Math,ASIOVSTGUI;
+uses
+  Math, ASIOVSTGUI;
 
 procedure TASIOVSTModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -139,12 +140,12 @@ procedure TASIOVSTModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var i, j : Integer;
 begin
- for i := 0 to sampleFrames - 1 do
+ for i := 0 to SampleFrames - 1 do
   begin
-   fInBuffer[0,fIntWritePos] := inputs[0,i];
-   fInBuffer[1,fIntWritePos] := inputs[1,i];
-   outputs[0,i] := fOutBuffer[0,fIntWritePos];
-   outputs[1,i] := fOutBuffer[1,fIntWritePos];
+   fInBuffer[0, fIntWritePos] := inputs[0, i];
+   fInBuffer[1, fIntWritePos] := inputs[1, i];
+   outputs[0, i] := fOutBuffer[0, fIntWritePos];
+   outputs[1, i] := fOutBuffer[1, fIntWritePos];
    Inc(fIntWritePos);
    if fIntWritePos >= fIntBufSize then fIntWritePos := 0;
    j := 0;

@@ -16,118 +16,127 @@ object fReeverbVST: TfReeverbVST
   Programs = <>
   ParameterProperties = <
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Dry'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
       LargeStepInteger = 0
+      Max = 100.000000000000000000
+      MaxInteger = 0
+      ShortLabel = 'Dry'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      Units = '%'
       VSTModule = Owner
-      OnParameterChange = fReeverbVSTParameterProperties0ParameterChange
+      OnParameterChange = ParameterDryChange
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Wet'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
       LargeStepInteger = 0
+      Max = 100.000000000000000000
+      MaxInteger = 0
+      ShortLabel = 'Wet'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      Units = '%'
       VSTModule = Owner
-      OnParameterChange = fReeverbVSTParameterProperties1ParameterChange
+      OnParameterChange = ParameterWetChange
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Width'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
       LargeStepInteger = 0
-      VSTModule = Owner
-      OnParameterChange = fReeverbVSTParameterProperties2ParameterChange
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'RoomSize'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
-      LargeStepInteger = 0
-      VSTModule = Owner
-      OnParameterChange = fReeverbVSTParameterProperties3ParameterChange
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'FreeZe'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
-      LargeStepInteger = 0
-      VSTModule = Owner
-      OnParameterChange = fReeverbVSTParameterProperties4ParameterChange
-    end
-    item
-      Max = 20.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Stretch'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
-      LargeStepInteger = 0
-      VSTModule = Owner
-      OnParameterChange = fReeverbVSTParameterProperties5ParameterChange
-    end
-    item
       Max = 100.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Damp'
+      MaxInteger = 0
+      ShortLabel = 'Width'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
       Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
-      LargeStepInteger = 0
       VSTModule = Owner
-      OnParameterChange = fReeverbVSTParameterProperties6ParameterChange
+      OnParameterChange = ParameterWidthChange
     end
     item
-      Min = 1.000000000000000000
-      Max = 16.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'RoomSize'
+      LargeStepInteger = 0
+      Max = 1.000000000000000000
+      MaxInteger = 0
+      ShortLabel = 'RoomSiz'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      VSTModule = Owner
+      OnParameterChange = ParameterRoomSizeChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'FreeZe'
+      LargeStepInteger = 0
+      Max = 1.000000000000000000
+      MaxInteger = 0
+      ShortLabel = 'FreeZe'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      VSTModule = Owner
+      OnParameterChange = ParameterFreezeChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Stretch'
+      LargeStepInteger = 0
+      Max = 20.000000000000000000
+      MaxInteger = 0
+      ShortLabel = 'Stretch'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      VSTModule = Owner
+      OnParameterChange = ParameterStretchChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Damp'
+      LargeStepInteger = 0
+      Max = 100.000000000000000000
+      MaxInteger = 0
+      ShortLabel = 'Damp'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      Units = '%'
+      VSTModule = Owner
+      OnParameterChange = ParameterDampChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'NumAllPasses'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
       LargeStepInteger = 0
+      Max = 16.000000000000000000
+      MaxInteger = 0
+      Min = 1.000000000000000000
+      ShortLabel = 'NumAllP'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
       VSTModule = Owner
-      OnParameterChange = fReeverbVSTParameterProperties7ParameterChange
+      OnParameterChange = ParameterNumAllpassesChange
     end
     item
-      Min = 1.000000000000000000
-      Max = 16.000000000000000000
       Curve = ctLinear
-      DisplayName = 'NumCombs'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
+      DisplayName = 'NumCombs'
       LargeStepInteger = 0
+      Max = 16.000000000000000000
+      MaxInteger = 0
+      Min = 1.000000000000000000
+      ShortLabel = 'NumComb'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
       VSTModule = Owner
-      OnParameterChange = fReeverbVSTParameterProperties8ParameterChange
+      OnParameterChange = ParameterNumCombsChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnSampleRateChange = VSTModuleSampleRateChange

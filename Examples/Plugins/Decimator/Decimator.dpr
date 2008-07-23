@@ -9,13 +9,14 @@ uses
   DecimatorGUI in 'DecimatorGUI.pas' {VSTGUI};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var VSTModule1 : TVSTDecimator;
+var
+  VSTDecimator : TVSTDecimator;
 begin
  try
-  VSTModule1:=TVSTDecimator.Create(Application);
-  VSTModule1.Effect^.user:=VSTModule1;
-  VSTModule1.AudioMaster:=audioMaster;
-  Result := VSTModule1.Effect;
+  VSTDecimator := TVSTDecimator.Create(Application);
+  VSTDecimator.Effect^.user := VSTDecimator;
+  VSTDecimator.AudioMaster := audioMaster;
+  Result := VSTDecimator.Effect;
  except
   Result := nil;
  end;

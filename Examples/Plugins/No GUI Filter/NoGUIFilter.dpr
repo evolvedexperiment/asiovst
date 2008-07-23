@@ -11,9 +11,9 @@ function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var VSTModule1 : TVSTFilter;
 begin
  try
-  VSTModule1:=TVSTFilter.Create(Application);
-  VSTModule1.Effect^.user:=VSTModule1;
-  VSTModule1.AudioMaster:=audioMaster;
+  VSTModule1 := TVSTFilter.Create(Application);
+  VSTModule1.Effect^.user := VSTModule1;
+  VSTModule1.AudioMaster := audioMaster;
   Result := VSTModule1.Effect;
  except
   Result := nil;

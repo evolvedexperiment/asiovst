@@ -5,7 +5,8 @@ uses
   Forms,
   DVSTEffect,
   DVSTModule,
-  ComboDM in 'ComboDM.pas' {ComboDataModule: TVSTModule};
+  ComboDM in 'ComboDM.pas' {ComboDataModule: TVSTModule},
+  ComboGUI in 'ComboGUI.pas' {FmCombo};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var

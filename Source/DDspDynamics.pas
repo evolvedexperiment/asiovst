@@ -205,7 +205,8 @@ type
 
 implementation
 
-uses SysUtils, Math;
+uses
+  SysUtils, Math;
 
 { TDynamics }
 
@@ -301,7 +302,7 @@ end;
 
 function TSimpleGate.ProcessSample(Input: Double): Double;
 begin
-  if abs(Input)<fThreshold
+  if abs(Input) < fThreshold
    then Result := 0
    else Result := Input;
 end;
@@ -344,12 +345,12 @@ end;
 
 function TGate.ProcessSample(Input: Double): Double;
 begin
- if abs(fSideChain)>fPeak
+ if abs(fSideChain) > fPeak
   then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
   else fPeak := abs(fSideChain) + (fPeak - abs(fSideChain)) * fDecayFactor;
 
  if fPeak < fThreshold
-  then fGain := Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1) * (1-fRangeFactor) + fRangeFactor
+  then fGain := Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1) * (1 - fRangeFactor) + fRangeFactor
   else fGain := fRangeFactor + (1-fRangeFactor);
 
  result := Input * fGain;
@@ -428,7 +429,7 @@ end;
 
 function TSimpleCompressor.ProcessSample(Input: Double): Double;
 begin
- if abs(fSideChain)>fPeak
+ if abs(fSideChain) > fPeak
   then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
   else fPeak := abs(fSideChain) + (fPeak - abs(fSideChain)) * fDecayFactor;
 
@@ -472,7 +473,8 @@ begin
 end;
 
 procedure  TSimpleCompressor.RatioThresholdChanged;
-var dbl : Double;
+var
+  dbl : Double;
 begin
  dbl := Power(fThreshold, 1 - fRatio);
  if fAutoMakeUp
@@ -532,7 +534,7 @@ function TSoftKneeFeedbackCompressor.ProcessSample(Input: Double): Double;
 var a : Double;
 begin
  result := fGain * Input;
- if abs(result)>fPeak
+ if abs(result) > fPeak
   then fPeak := abs(result) + (fPeak - abs(result)) * fAttackFactor
   else fPeak := abs(result) + (fPeak - abs(result)) * fDecayFactor;
 
@@ -626,7 +628,7 @@ end;
 
 function TCompressor.ProcessSample(Input: Double): Double;
 begin
- if abs(fSideChain)>fPeak
+ if abs(fSideChain) > fPeak
   then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
   else fPeak := abs(fSideChain) + (fPeak - abs(fSideChain)) * fDecayFactor;
 
@@ -661,7 +663,7 @@ end;
 function TSimpleLimiter.ProcessSample(Input: Double): Double;
 {$IFNDEF PUREPASCAL}
 begin
- if abs(Input)>fPeak
+ if abs(Input) > fPeak
   then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
   else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
 
@@ -761,9 +763,10 @@ begin
 end;
 
 function TSoftKneeLimiter.ProcessSample(Input: Double): Double;
-var InternalRatio, Knee : Double;
+var
+  InternalRatio, Knee : Double;
 begin
- if abs(Input)>fPeak
+ if abs(Input) > fPeak
   then fPeak := fPeak + (abs(Input) - fPeak) * fAttackFactor
   else fPeak := abs(Input) + (fPeak - abs(Input)) * fDecayFactor;
  Knee := 0.5 *(1 + Tanh2c(fSoftKnee * log10(fPeak / fThreshold)));
@@ -816,8 +819,9 @@ begin
 end;
 
 function TSoftKneeFeedbackLimiter.ProcessSample(Input: Double): Double;
-var InternalRatio    : Double;
-    PeakdB           : Double;
+var
+  InternalRatio    : Double;
+  PeakdB           : Double;
 begin
  Input := fFilter.ProcessSample(Input);
 (*

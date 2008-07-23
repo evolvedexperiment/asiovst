@@ -13,8 +13,8 @@ var SimpleDelay : TSimpleDelayVST;
 begin
  try
   SimpleDelay:=TSimpleDelayVST.Create(Application);
-  SimpleDelay.Effect^.user:=SimpleDelay;
-  SimpleDelay.AudioMaster:=audioMaster;
+  SimpleDelay.Effect^.user := SimpleDelay;
+  SimpleDelay.AudioMaster := audioMaster;
   Result := SimpleDelay.Effect;
  except
   Result := nil;

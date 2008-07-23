@@ -41,7 +41,7 @@ constructor TDitherNoiseShaper.Create;
 begin
  inherited;
  SetLength(fHistory, 2 * fOrder);
- FillChar(fHistory, 2 * fOrder * sizeof(Double), 0);
+ FillChar(fHistory, 2 * fOrder * SizeOf(Double), 0);
  SetBitDepth(16);
  SetDitherType(dtor9Fc);
  fHistoryPos := 8;
@@ -93,42 +93,42 @@ begin
   dtor9Fc  : begin
               fOrder := 9;
               SetLength(fCoefficients, fOrder);
-              Move(or9Fc[0], fCoefficients[0], fOrder * sizeof(Double));
+              Move(or9Fc[0], fCoefficients[0], fOrder * SizeOf(Double));
              end;
   dtor3Fc  : begin
               fOrder := 3;
               SetLength(fCoefficients, fOrder);
-              Move(or3Fc[0], fCoefficients[0], fOrder * sizeof(Double));
+              Move(or3Fc[0], fCoefficients[0], fOrder * SizeOf(Double));
              end;
   dtor2MEc : begin
               fOrder := 2;
               SetLength(fCoefficients, fOrder);
-              Move(or2MEc[0], fCoefficients[0], fOrder * sizeof(Double));
+              Move(or2MEc[0], fCoefficients[0], fOrder * SizeOf(Double));
              end;
   dtor3MEc : begin
               fOrder := 3;
               SetLength(fCoefficients, fOrder);
-              Move(or3MEc[0], fCoefficients[0], fOrder * sizeof(Double));
+              Move(or3MEc[0], fCoefficients[0], fOrder * SizeOf(Double));
              end;
   dtor9MEc : begin
               fOrder := 9;
               SetLength(fCoefficients, fOrder);
-              Move(or9MEc[0], fCoefficients[0], fOrder * sizeof(Double));
+              Move(or9MEc[0], fCoefficients[0], fOrder * SizeOf(Double));
              end;
   dtor5IEc : begin
               fOrder := 5;
               SetLength(fCoefficients, fOrder);
-              Move(or5IEc[0], fCoefficients[0], fOrder * sizeof(Double));
+              Move(or5IEc[0], fCoefficients[0], fOrder * SizeOf(Double));
              end;
   dtor9IEc : begin
               fOrder := 9;
               SetLength(fCoefficients, fOrder);
-              Move(or9IEc[0], fCoefficients[0], fOrder * sizeof(Double));
+              Move(or9IEc[0], fCoefficients[0], fOrder * SizeOf(Double));
              end;
   dtor2Sc  : begin
               fOrder := 2;
               SetLength(fCoefficients, fOrder);
-              Move(or2Sc[0], fCoefficients[0], fOrder * sizeof(Double));
+              Move(or2Sc[0], fCoefficients[0], fOrder * SizeOf(Double));
              end;
  end;
  SetLength(fHistory, 2 * fOrder);
@@ -143,6 +143,7 @@ end;
 
 function TDitherNoiseShaper.ProcessInteger(Input: Double):Integer;
 begin
+ // scale input to bit range
  Input := fBitMul * Input;
 
  // Unrolled loop for faster execution
@@ -156,8 +157,9 @@ begin
                   fCoefficients[1] * fHistory[fHistoryPos + 1] +
                   fCoefficients[0] * fHistory[fHistoryPos];
 
+ // add triangular distributed noise
  result := round(Input + (random - random));
- fHistoryPos:= ((fHistoryPos + 8) mod fOrder);
+ fHistoryPos := ((fHistoryPos + 8) mod fOrder);
 
  // Update buffer (both copies)
  fHistory[fHistoryPos]     := Result - Input;

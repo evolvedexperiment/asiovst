@@ -2,14 +2,18 @@ unit ComboDM;
 
 interface
 
+{$DEFINE UseGUI}
+
 uses
-  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
 
 type
   TComboDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParamBiasChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -20,8 +24,6 @@ type
     procedure ParamOutputChanged(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs,
-      Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
   private
     fBufferSize     : Integer;
     fBufferPosition : Integer;
@@ -50,11 +52,19 @@ implementation
 {$R *.DFM}
 
 uses
-  Math;
+  Math, DVSTEffect, ComboGUI;
 
 procedure TComboDataModule.ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fStereo := Value > 0.5
+ fStereo := Value > 0.5;
+ {$IFDEF UseGUI}
+ if Assigned(EditorForm) then
+  with TFmCombo(EditorForm) do
+   begin
+    RBStereo.Checked := fStereo;
+    RBMono.Checked := not fStereo;
+   end;
+ {$ENDIF}
 end;
 
 procedure TComboDataModule.ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -62,16 +72,43 @@ begin
  TrimChanged;
  DriveChanged;
  BiasChanged;
+ {$IFDEF UseGUI}
+ if Assigned(EditorForm) then
+  with TFmCombo(EditorForm) do
+   begin
+    if SBDrive.Position <> Round(10 * Value)
+     then SBDrive.Position := Round(10 * Value);
+    LbDriveValue.Caption := FloatToStrF(Value, ffGeneral, 3, 3) + '%';
+   end;
+ {$ENDIF}
 end;
 
 procedure TComboDataModule.ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fHPFResonance := 1.1 - 0.01 * Parameter[6];
+ {$IFDEF UseGUI}
+ if Assigned(EditorForm) then
+  with TFmCombo(EditorForm) do
+   begin
+    if SBReso.Position <> Round(10 * Value)
+     then SBReso.Position := Round(10 * Value);
+    LbResonanceValue.Caption := FloatToStrF(Value, ffGeneral, 3, 3) + '%';
+   end;
+ {$ENDIF}
 end;
 
 procedure TComboDataModule.ParamBiasChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  BiasChanged;
+ {$IFDEF UseGUI}
+ if Assigned(EditorForm) then
+  with TFmCombo(EditorForm) do
+   begin
+    if SBBias.Position <> Round(10 * Value)
+     then SBBias.Position := Round(10 * Value);
+    LbBiasValue.Caption := FloatToStrF(Value, ffGeneral, 3, 3) + '%';
+   end;
+ {$ENDIF}
 end;
 
 function TComboDataModule.filterFreq(Frequency: Double): Double;
@@ -151,12 +188,27 @@ begin
      end;
  end;
  TrimChanged;
+ {$IFDEF UseGUI}
+ if Assigned(EditorForm) then
+  with TFmCombo(EditorForm) do
+   if CBModel.ItemIndex <> Round(Value)
+    then CBModel.ItemIndex := Round(Value);
+ {$ENDIF}
 end;
 
 procedure TComboDataModule.ParamHPFFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fHPFFrequency := 0.01 * Parameter[5];
  DriveChanged;
+ {$IFDEF UseGUI}
+ if Assigned(EditorForm) then
+  with TFmCombo(EditorForm) do
+   begin
+    if SBFreq.Position <> Round(10 * Value)
+     then SBFreq.Position := Round(10 * Value);
+    LbFrequencyValue.Caption := FloatToStrF(Value, ffGeneral, 3, 3) + '%';
+   end;
+ {$ENDIF}
 end;
 
 procedure TComboDataModule.DriveChanged;
@@ -164,8 +216,8 @@ begin
  fIsSoftClipping := Parameter[1] < 0;
 
  if fIsSoftClipping
-  then fDrive := Power(10, - 1 - 0.03 * Parameter[1])    // soft clipping
-  else                                              // hard clipping
+  then fDrive := Power(10, -(1 + 0.03 * Parameter[1]))  // soft clipping
+  else                                                 // hard clipping
    begin
     fDrive := 1;
     fClip  := 3.7 - 0.08 * Parameter[1];
@@ -221,6 +273,15 @@ procedure TComboDataModule.ParamOutputChanged(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
  TrimChanged;
+ {$IFDEF UseGUI}
+ if Assigned(EditorForm) then
+  with TFmCombo(EditorForm) do
+   begin
+    if SBOutput.Position <> Round(10 * Value)
+     then SBOutput.Position := Round(10 * Value);
+    LbOutputValue.Caption := FloatToStrF(Value, ffGeneral, 3, 3) + 'dB';
+   end;
+ {$ENDIF}
 end;
 
 procedure TComboDataModule.ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -234,18 +295,23 @@ procedure TComboDataModule.VSTModuleCreate(Sender: TObject);
 begin
 (*
  //inits here!
- fParam1 = 1.00f; //select
- fParam2 = 0.50f; //drive
- fParam3 = 0.50f; //bias
- fParam4 = 0.50f; //output
- fParam5 = 0.40f; //stereo
- fParam6 = 0.00f; //hpf freq
- fParam7 = 0.50f; //hpf reso
+ fParam1 = 1.0;  // Select
+ fParam2 = 0.5;  // Drive
+ fParam3 = 0.5;  // Bias
+ fParam4 = 0.5;  // Output
+ fParam5 = 0.4;  // Stereo
+ fParam6 = 0.0;  // HPF Frequency
+ fParam7 = 0.5;  // HPF Resonance
 *)
+
  fBufferSize := 1024;
  fBufferPosition := 0;
  GetMem(fBuffer[0], fBufferSize * SizeOf(Single));
  GetMem(fBuffer[1], fBufferSize * SizeOf(Single));
+
+ {$IFDEF UseGUI}
+ Flags := Flags + [effFlagsHasEditor];
+ {$ENDIF}
 
  // inits here
  Parameter[0] := 6;
@@ -255,6 +321,12 @@ procedure TComboDataModule.VSTModuleDestroy(Sender: TObject);
 begin
  Dispose(fBuffer[0]);
  Dispose(fBuffer[1]);
+end;
+
+procedure TComboDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TFmCombo.Create(Self);
 end;
 
 procedure TComboDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -275,7 +347,7 @@ begin
  clp  := fClip;
  LPF  := fLPF;
  HPF  := fHPF;
- bi   := fBias;
+ bi   := fBias - 0.0001;
  drv  := fDrive;
  FilterState[0, 0] := fFilterState[0, 0];
  FilterState[0, 1] := fFilterState[0, 1];
@@ -293,15 +365,15 @@ begin
  h[1] := fHPFState[1];
  d[0] := fDelay[0];
  d[1] := fDelay[1];
- bp  := fBufferPosition;
- trm := fTrim * sqr(sqr(1 - LPF));
+ bp   := fBufferPosition;
+ trm  := fTrim * sqr(sqr(1 - LPF));
 
  if fStereo then //stereo
   begin
    for  Sample := 0 to SampleFrames - 1 do
     begin
-     InP[0] := drv * (Inputs[0, Sample] + bi);
-     InP[1] := drv * (Inputs[1, Sample] + bi);
+     InP[0] := drv * (0.0002 * random + Inputs[0, Sample] + bi);
+     InP[1] := drv * (0.0002 * random + Inputs[1, Sample] + bi);
 
       if fIsSoftClipping then
        begin
@@ -354,7 +426,7 @@ begin
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi);
+       InP[0] := drv * (0.0002 * random + Inputs[0, Sample] + Inputs[1, Sample] + bi);
 
        h[0] := h[0] + hf * (h[1] + InP[0]);    //resonant highpass (Chamberlin SVF)
        h[1] := h[1] - hf * (h[0] + hq * h[1]);
@@ -472,8 +544,8 @@ begin
  h[1] := fHPFState[1];
  d[0] := fDelay[0];
  d[1] := fDelay[1];
- bp  := fBufferPosition;
- trm := fTrim * sqr(sqr(1 - LPF));
+ bp   := fBufferPosition;
+ trm  := fTrim * sqr(sqr(1 - LPF));
 
  if fStereo then //stereo
   begin

@@ -3,8 +3,8 @@ unit DitherNoiseshaperDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
-  DAVDCommon, DVSTModule, DDspDitherNoiseshaper;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
+  DDspDitherNoiseshaper;
 
 type
   TDitherNoiseshaperModule = class(TVSTModule)
@@ -16,8 +16,7 @@ type
     procedure DNBitDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
     fDitherNoiseshaper : array [0..1] of TDitherNoiseShaper;
   end;

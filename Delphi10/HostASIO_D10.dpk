@@ -21,7 +21,7 @@ package HostASIO_D10;
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST ON}
 {$MINENUMSIZE 1}
-{$IMAGEBASE $400000}
+{$IMAGEBASE $540000}
 {$DESCRIPTION 'ASIO/VST ASIO Host'}
 {$IMPLICITBUILD ON}
 
@@ -31,14 +31,14 @@ requires
   rtl;
 
 contains
-  DASIOHost in '..\Source\DASIOHost.pas',
-  OpenASIO in '..\Source\OpenASIO.pas',
   Asio in '..\Source\Asio.pas',
+  BeRoASIO in '..\Source\BeRoASIO.pas',
+  OpenASIO in '..\Source\OpenASIO.pas',
+  DASIOHost in '..\Source\DASIOHost.pas',
   DASIOConvert in '..\Source\DASIOConvert.pas',
   DASIOGenerator in '..\Source\DASIOGenerator.pas',
   ASIOChannelStrip in '..\Source\ASIOChannelStrip.pas',
   ASIOMixer in '..\Source\ASIOMixer.pas',
-  BeRoASIO in '..\Source\BeRoASIO.pas',
   DASIORegister in '..\Source\DASIORegister.pas';
 
 end.

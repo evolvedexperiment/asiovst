@@ -8,18 +8,18 @@ uses DAVDCommon, Classes;
 // Reverb fModel tuning values, taken from original algoritm by Jezar
 
 const
-  Kdenorm:single =1.0e-23;
+  Kdenorm : Single = 1E-23;
 
-  Muted = 0;
-  fixedGain = 0.015;
-  scaledamp = 0.4;
-  scaleroom = 0.28;
-  offsetroom = 0.7;
-  initialRoom = 0.5;
-  initialDamp = 0.5;
-  initialWidth = 1;
-  initialMode = 0;
-  freezeMode = 0.5;
+  cMuted           = 0.0;
+  cFixedGain       = 0.015;
+  cScaleDamp       = 0.4;
+  cScaleRoom       = 0.28;
+  cOffsetRoom      = 0.7;
+  cInitialRoom     = 0.5;
+  cInitialDamp     = 0.5;
+  cInitialWidth    = 1.0;
+  cInitialMode     = 0.0;
+  cFreezeMode      = 0.5;
 
   // Allpass filter class declaration
 type
@@ -67,25 +67,25 @@ implementation
 constructor TAllpass.Create(BS: Integer);
 begin
  inherited Create;
- Buffersize:=BS;
+ Buffersize := BS;
 end;
 
 destructor TAllpass.Destroy;
 begin
- SetLength(fBuffer,0);
+ SetLength(fBuffer, 0);
  inherited;
 end;
 
 procedure TAllpass.SetBufferSize(const Value: Integer);
 begin
  fBufferSize := Value;
- SetLength(fBuffer,fBuffersize);
+ SetLength(fBuffer, fBuffersize);
  fBufferIndex := 0;
 end;
 
 procedure TAllpass.Mute;
 begin
- Fillchar(fBuffer[0],fBufferSize*SizeOf(Single), 0);
+ Fillchar(fBuffer[0], fBufferSize * SizeOf(Single), 0);
 end;
 
 function TAllpass.Process(const input: Single): Single;
@@ -117,7 +117,7 @@ asm
   jb   @OK
   xor  edx, edx                           // if so, reset fBuffer index
 @OK:
-  mov  [eax].fBufferIndex, edx                  // and store new index,
+  mov  [eax].fBufferIndex, edx            // and store new index,
                                           // result already in st(0),
                                           // hence the fxch
 end;
@@ -125,7 +125,7 @@ end;
 constructor TComb.Create(BS: Integer);
 begin
  inherited Create;
- Buffersize:=BS;
+ Buffersize := BS;
  fFilterStore := 0;
 end;
 
@@ -150,7 +150,7 @@ end;
 
 procedure TComb.Mute;
 begin
- Fillchar(fBuffer[0],fBufferSize*SizeOf(Single), 0);
+ Fillchar(fBuffer[0], fBufferSize * SizeOf(Single), 0);
 end;
 
 { I really don't know if this is all as fast as can be,

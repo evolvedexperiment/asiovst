@@ -12,9 +12,9 @@ function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var VSTVUMeterModule : TVSTVUMeterModule;
 begin
  try
-  VSTVUMeterModule:=TVSTVUMeterModule.Create(Application);
-  VSTVUMeterModule.Effect^.user:=VSTVUMeterModule;
-  VSTVUMeterModule.AudioMaster:=audioMaster;
+  VSTVUMeterModule := TVSTVUMeterModule.Create(Application);
+  VSTVUMeterModule.Effect^.user := VSTVUMeterModule;
+  VSTVUMeterModule.AudioMaster := audioMaster;
   Result := VSTVUMeterModule.Effect;
  except
   Result := nil;
