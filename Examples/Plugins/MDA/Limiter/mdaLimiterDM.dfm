@@ -1,5 +1,6 @@
-object LimiterDataModule: TLimiterDataModule
+object mdaLimiterDataModule: TmdaLimiterDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono]
   Version = '0.0'
   EffectName = 'Limiter'
@@ -14,66 +15,66 @@ object LimiterDataModule: TLimiterDataModule
   Programs = <>
   ParameterProperties = <
     item
-      Min = -40.000000000000000000
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Threshold'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MinInteger = -40
+      DisplayName = 'Threshold'
+      Max = 1.000000000000000000
       MaxInteger = 0
+      Min = -40.000000000000000000
+      MinInteger = -40
       ShortLabel = 'Thres'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ThresholdChange
     end
     item
-      Min = -40.000000000000000000
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Output'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MinInteger = -40
+      DisplayName = 'Output'
+      Max = 1.000000000000000000
       MaxInteger = 0
+      Min = -40.000000000000000000
+      MinInteger = -40
       ShortLabel = 'Trim'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = OutputTrimChange
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Attack'
-      Units = #181's'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Attack'
+      Max = 1.000000000000000000
       MaxInteger = 1
       ShortLabel = 'Att'
+      SmoothingFactor = 1.000000000000000000
+      Units = #181's'
       VSTModule = Owner
       OnParameterChange = AttackChange
       OnCustomParameterDisplay = AttackDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Release'
-      Units = 'ms'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Release'
+      Max = 1.000000000000000000
       MaxInteger = 1
       ShortLabel = 'Rel'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ReleaseChange
       OnCustomParameterDisplay = ReleaseDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Knee'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Knee'
+      Max = 1.000000000000000000
       ShortLabel = 'Knee'
+      SmoothingFactor = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = KneeChange
       OnCustomParameterDisplay = KneeDisplay

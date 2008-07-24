@@ -84,6 +84,7 @@ object DegradeDataModule: TDegradeDataModule
     end>
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
+  OnProcessReplacing = VSTModuleProcess
   Left = 218
   Top = 81
   Height = 150

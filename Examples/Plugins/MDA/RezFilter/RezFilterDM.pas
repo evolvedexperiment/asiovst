@@ -7,24 +7,25 @@ uses
 
 type
   TRezFilterDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleCreate(Sender: TObject);
+    procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterLFORateDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterTriggerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fBuffer           : Array [0..2] of Single;
     fFrequency        : Single;
-    fQuality          : Single;
-    fGain             : Single;
+    fQuality, fGain   : Single;
     fFreqMax          : Single;
     fFreqEnv          : Single;
     fEnv, fEnv2       : Single;
-    fAtt              : Single;
-    fRel              : Single;
-    fPhi              : Single;
-    fState            : Single;
+    fAtt, fRel, fPhi  : Single;
     fLFOMode          : Integer;
-    fFreqLFO          : Single;
+    fState, fFreqLFO  : Single;
     fDeltaPhi         : Single;
     fTrigger          : Integer;
     fTriggerAttack    : Integer;
@@ -39,21 +40,51 @@ implementation
 uses
   Math;
 
+procedure TRezFilterDataModule.ParameterGainChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+begin
+ fGain  := 0.5 * dB_to_Amp(Value);
+end;
+
+procedure TRezFilterDataModule.ParameterReleaseDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF((-301.0301 / (SampleRate * log10(fRel))), ffGeneral, 3, 3);
+end;
+
+procedure TRezFilterDataModule.ParameterTriggerDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: string);
+begin
+ if (fTriggerThreshold = 0)
+  then PreDefined := 'FREE RUN'
+  else PreDefined := IntToStr(round(20 * log10(0.5 * fTriggerThreshold)));
+end;
+
+procedure TRezFilterDataModule.ParameterLFORateDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF(Power(10, 4 * Parameter[Index] - 2), ffGeneral, 3, 3);
+end;
+
+procedure TRezFilterDataModule.ParameterAttackDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF(-301.0301 / (SampleRate * log10(1 - fAtt)), ffGeneral, 3, 3);
+end;
+
 procedure TRezFilterDataModule.VSTModuleCreate(Sender: TObject);
 begin
-{
- //inits here!
- Parameter[0] := 0.33; // Frequency
- Parameter[1] := 0.70; // Quality
- Parameter[2] := 0.50; // Amplification
- Parameter[3] := 0.85; // Frequency Envelope
+ // inits here!
+ Parameter[0] := 33;   // Frequency [%]
+ Parameter[1] := 70;   // Quality [%]
+ Parameter[2] := 0;    // Amplification [dB]
+ Parameter[3] := 85;   // Frequency Envelope [%]
  Parameter[4] := 0.00; // Attack
  Parameter[5] := 0.50; // Release
- Parameter[6] := 0.70; // LFO
+ Parameter[6] := 70;   // LFO  [%]
  Parameter[7] := 0.40; // Rate
  Parameter[8] := 0.00; // Trigger
- Parameter[9] := 0.75; // Max. Frequency
-}
+ Parameter[9] := 75;   // Max. Frequency
 
  VSTModuleSuspend(Sender);
 end;
@@ -61,48 +92,42 @@ end;
 procedure TRezFilterDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
-  //calcs here
-  fFrequency := 1.5 * sqr(Parameter[0]) - 0.15;
-  fQuality  := 0.99 * Power(Parameter[1], 0.3); // was 0.99 *
-  fGain  := 0.5 * Power(10, 2 * Parameter[2] - 1);
+ fFrequency := 1.5 * sqr(0.01 * Parameter[0]) - 0.15;
+ fQuality  := 0.99 * Power(0.01 * Parameter[1], 0.3); // was 0.99 *
 
-  fFreqMax := 0.99 + 0.3 * Parameter[1];
-  if (fFreqMax > (1.3 * Parameter[9]))
-   then fFreqMax := 1.3 * Parameter[9];
-  // fFreqMax := 1;
-  // fQuality := fQuality * (1 + 0.2 * Parameter[9]);
+ fFreqMax := 0.99 + 0.3 * Parameter[1];
+ if fFreqMax > (0.013 * Parameter[9])
+  then fFreqMax := 0.013 * Parameter[9];
 
-  fFreqEnv := 2 * sqr(0.5 - Parameter[3]);
-  if (Parameter[3] > 0.5)
-   then fFreqEnv := fFreqEnv
-   else fFreqEnv := -fFreqEnv;
-  fAtt  := Power(10.0, -0.01 - 4.0 * Parameter[4]);
-  fRel  := 1 - Power(10.0, -2.00 - 4.0 * Parameter[5]);
+ fFreqEnv := abs(2 * sqr(0.005 * Parameter[3]));
+ fAtt     := Power(10, -0.01 - 4.0 * Parameter[4]);
+ fRel     := 1 - Power(10, -2.00 - 4.0 * Parameter[5]);
 
-  fLFOMode := 0;
-  fFreqLFO := 2 * sqr(Parameter[6] - 0.5);
-  fDeltaPhi := (6.2832 * Power(10, 3 * Parameter[7] - 1.5) / SampleRate);
-  if (Parameter[6] < 0.5) then
-   begin
-    fLFOMode := 1;
-    fDeltaPhi    := 0.15915 * fDeltaPhi;
-    fFreqLFO    := fFreqLFO * 0.001;
-   end; //S&H
+ fLFOMode := 0;
+ fFreqLFO := 2 * sqr(0.005 * Parameter[6]);
+ fDeltaPhi := (6.2832 * Power(10, 3 * Parameter[7] - 1.5) / SampleRate);
+ if (Parameter[6] < 0) then
+  begin
+   fLFOMode  := 1;
+   fDeltaPhi := 0.15915 * fDeltaPhi;
+   fFreqLFO  := fFreqLFO * 0.001;
+  end; //S&H
 
-  if (Parameter[8] < 0.1)
-   then fTriggerThreshold := 0
-   else fTriggerThreshold := 3 * sqr(Parameter[8]);
+ if (Parameter[8] < 0.1)
+  then fTriggerThreshold := 0
+  else fTriggerThreshold := 3 * sqr(Parameter[8]);
 end;
 
 procedure TRezFilterDataModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample: Integer;
-  a     : Single;
-  f, i, ff, fe, q, g, e, tmp : Single;
-  b0, b1, b2, at, re, fm     : Single;
-  fl, dph, ph, bl, th, e2    : Single;
-  lm, ta, tt                 : Integer;
+  a, f, i, ff, fe     : Single;
+  q, g, e, tmp        : Single;
+  b0, b1, b2          : Single;
+  at, re, fm, fl      : Single;
+  dph, ph, bl, th, e2 : Single;
+  lm, ta, tt          : Integer;
 begin
   ff  := fFrequency;
   fe  := fFreqEnv;
@@ -140,9 +165,7 @@ begin
        then bl := fl * sin(ph) else
       if (ph > 1) then
        begin
-(*
-        bl := fl * (random mod 2000 - 1000);
-*)
+        bl := fl * (random * 2000 - 1000);
         ph := 0;
        end;
       ph := ph + dph;
@@ -153,21 +176,11 @@ begin
       if f > fm
        then i := fm
        else i := f;
- //      o := 1 - i;
-
- //     tmp := g * a + q * (1 + (1/o)) * (b0 - b1);
- //     b0 := o * (b0 - tmp) + tmp;
- //     b1 := o * (b1 - b0) + b0;
 
       tmp := q + q * (1 + i * (1 + 1.1 * i));
-      //tmp := q + q / (1.0008 - i);
 
       b0 := b0 + i * (g * a - b0 + tmp * (b0 - b1));
       b1 := b1 + i * (b0 - b1);
-
-
-  //    b2 = o * (b2 - b1) + b1;
-
       Outputs[0, Sample] := b1;
       Outputs[1, Sample] := b1;
     end;
@@ -178,7 +191,7 @@ begin
      begin
       a := Inputs[0, Sample] + Inputs[1, Sample];
 
-      i := abs(a);  //envelope
+      i := abs(a);  // Envelope
 
       if i > e
        then e := i
@@ -202,33 +215,21 @@ begin
        end
       else e2 := e2 * re;
 
-      if (lm = 0) then bl := fl * sin(ph) //lfo
+      if (lm = 0) then bl := fl * sin(ph) // LFO
       else if (ph > 1) then
        begin
-(*
-        bl := fl * (random mod 2000 - 1000);
-*)
+        bl := fl * (random * 2000 - 1000);
         ph := 0;
        end;
       ph := ph + dph;
 
-      f := ff + fe * e + bl; //freq
+      f := ff + fe * e + bl;              // Freq
       if (f < 0) then i := 0 else
       if f > fm then i := fm else i := f;
 
-//      o = 1. - i;
-
       tmp := q + q * (1.0 + i * (1.0 + 1.1 * i));
-//      tmp := q + q/(1.0008 - i);
       b0 := b0 + i * (g * a - b0 + tmp * (b0 - b1));
       b1 := b1 + i * (b0 - b1);
-
-
-//      tmp := g*a + q*(1. + (1./o)) * (b0-b1);  //what about (q + q/)*
-//      b0 := o * (b0 - tmp) + tmp;                // ^ what about div0 ?
-//      b1 := o * (b1 - b0) + b0;
-//      b2 := o * (b2 - b1) + b1;
-
 
       Outputs[0, Sample] := b1;
       Outputs[1, Sample] := b1;
@@ -249,7 +250,7 @@ begin
    end;
 
  fState         := bl;
-// fPhi           := fmod(ph, 2 * Pi);
+ fPhi           := f_mod(ph, 2 * Pi);
  fEnv           := e;
  fEnv2          := e2;
  fTriggerAttack := ta;
@@ -264,24 +265,3 @@ begin
 end;
 
 end.
-
-(*
-void mdaRezFilter::getParameterDisplay(VstInt32 index, char *text)
-begin
-  switch(index)
-  begin
-    case 0: long2string((long)(100 * Parameter[0]), text); break;
-    case 1: long2string((long)(100 * Parameter[1]), text); break;
-    case 2: long2string((long)(40 * Parameter[2] - 20),text); break;
-    case 3: long2string((long)(200 * Parameter[3] - 100), text); break;
-    case 4: float2strng((float)(-301.0301 / (SampleRate * log10(1.0 - fAtt))),text); break;
-    case 5: float2strng((float)(-301.0301 / (SampleRate * log10(fRel))),text); break;
-    case 6: long2string((long)(200 * Parameter[6] - 100), text); break;
-    case 7: float2strng(Power(10, 4 * Parameter[7] - 2), text); break;
-    case 8: if (fTriggerThreshold = 0)
-             then strcpy(text, "FREE RUN");
-             else long2string((long) (20 * log10(0.5 * fTriggerThreshold)), text); break;
-    case 9: long2string((long)(100 * Parameter[9]), text); break;
-  end;
-end;
-*)

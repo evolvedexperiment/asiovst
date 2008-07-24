@@ -18,22 +18,24 @@ type
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    fFilt  : array [0..3] of Single;
-    fFilti : Single;
-    fFilto : Single;
+    fFilterState : array [0..3] of Single;
+    fFilterIn    : Single;
+    fFilterOut   : Single;
 
-    fPhi   : Single;
-    fEnv   : Single;
-    fDvd   : Single;
-    fPhs   : Single;
-    fOsc   : Single;
-    fTyp   : TProcessType;
-    fWet   : Single;
-    fDry   : Single;
-    fThr   : Single;
-    fRls   : Single;
-    fDPhi  : Single;
+    fPhi         : Single;
+    fEnv         : Single;
+    fDivide      : Single;
+    fPhase       : Single;
+    fOsc         : Single;
+    fType        : TProcessType;
+    fWet         : Single;
+    fDry         : Single;
+    fThreshold   : Single;
+    fRelease     : Single;
+    fDeltaPhi    : Single;
   public
   end;
 
@@ -51,12 +53,23 @@ end;
 
 procedure TSubSynthDataModule.ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fThr := dB_to_Amp(Parameter[4]);
+ fThreshold := dB_to_Amp(Parameter[4]);
+end;
+
+procedure TSubSynthDataModule.ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := IntToStr(round(0.0726 * SampleRate * Power(10, -2.5 + (1.5 * Parameter[index]))));
+end;
+
+procedure TSubSynthDataModule.ParameterReleaseDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := IntToStr(round(-301.03 / (SampleRate * log10(fRelease))));
 end;
 
 procedure TSubSynthDataModule.ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fRls := 1 - Power(10, -2 - (3 * Parameter[5]));
+ fRelease := 1 - Power(10, -2 - (3 * Parameter[5]));
 end;
 
 procedure TSubSynthDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -89,15 +102,15 @@ end;
 procedure TSubSynthDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
-  fDvd   := 1;
-  fPhs   := 1;
-  fOsc   := 0; // Oscillator phase
-  fTyp   := TProcessType(round(Parameter[0]));
-  if fTyp = ptKeyOsc
-   then fFilti := 0.018
-   else fFilti := Power(10, -3 + (2 * Parameter[2]));
-  fFilto := 1 - fFilti;
-  fDPhi  := 0.456159 * Power(10, -2.5 + (1.5 * Parameter[2]));
+  fDivide := 1;
+  fPhase  := 1;
+  fOsc    := 0; // Oscillator phase
+  fType   := TProcessType(round(Parameter[0]));
+  if fType = ptKeyOsc
+   then fFilterIn := 0.018
+   else fFilterIn := Power(10, -3 + (2 * Parameter[2]));
+  fFilterOut := 1 - fFilterIn;
+  fDeltaPhi  := 0.456159 * Power(10, -2.5 + (1.5 * Parameter[2]));
 end;
 
 procedure TSubSynthDataModule.VSTModuleProcess(const Inputs,
@@ -112,21 +125,21 @@ var
 
   Sample       : Integer;
 begin
- dph  := fDPhi;
- rl   := fRls;
+ dph  := fDeltaPhi;
+ rl   := fRelease;
  phii := fPhi;
  en   := fEnv;
  os   := fOsc;
- th   := fThr;
- dv   := fDvd;
- ph   := fPhs;
- f1   := fFilt[0];
- f2   := fFilt[1];
- f3   := fFilt[2];
- f4   := fFilt[3];
+ th   := fThreshold;
+ dv   := fDivide;
+ ph   := fPhase;
+ f1   := fFilterState[0];
+ f2   := fFilterState[1];
+ f3   := fFilterState[2];
+ f4   := fFilterState[3];
 
- fi   := fFilti;
- fo   := fFilto;
+ fi   := fFilterIn;
+ fo   := fFilterOut;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
@@ -143,7 +156,7 @@ begin
      if dv < 0 then ph := -ph;
     end;
 
-   case fTyp of
+   case fType of
     ptDivide : sub := ph * sub;     // Divide
     ptInvert : sub := ph * f2 * 2;  // Invert
     ptKeyOsc : begin                // Osc
@@ -162,38 +175,28 @@ begin
   Outputs[1, Sample] := Inputs[1, Sample] * fDry + f4 * fWet;
   end;
 
- if (abs(f1) < 1E-10) then fFilt[0] := 0 else fFilt[0] := f1;
- if (abs(f2) < 1E-10) then fFilt[1] := 0 else fFilt[1] := f2;
- if (abs(f3) < 1E-10) then fFilt[2] := 0 else fFilt[2] := f3;
- if (abs(f4) < 1E-10) then fFilt[3] := 0 else fFilt[3] := f4;
+ if (abs(f1) < 1E-10) then fFilterState[0] := 0 else fFilterState[0] := f1;
+ if (abs(f2) < 1E-10) then fFilterState[1] := 0 else fFilterState[1] := f2;
+ if (abs(f3) < 1E-10) then fFilterState[2] := 0 else fFilterState[2] := f3;
+ if (abs(f4) < 1E-10) then fFilterState[3] := 0 else fFilterState[3] := f4;
 
- fDvd := dv;
- fPhs := ph;
- fOsc := os;
- fPhi := phii;
- fEnv := en;
+ fDivide := dv;
+ fPhase  := ph;
+ fOsc    := os;
+ fPhi    := phii;
+ fEnv    := en;
 end;
 
 procedure TSubSynthDataModule.VSTModuleResume(Sender: TObject);
 begin
  fPhi     := 0;
  fEnv     := 0;
- fFilt[0] := 0;
- fFilt[1] := 0;
- fFilt[2] := 0;
- fFilt[3] := 0;
- fFilti   := 0;
- fFilto   := 0;
+ fFilterState[0] := 0;
+ fFilterState[1] := 0;
+ fFilterState[2] := 0;
+ fFilterState[3] := 0;
+ fFilterIn   := 0;
+ fFilterOut   := 0;
 end;
 
 end.
-
-(*
-void mdaSubSynth::getParameterDisplay(VstInt32 index, char *text)
-{
- {
-  case 2: sprintf(string, "%ld", (long)(0.0726 * SampleRate * Power(10.0,-2.5 + (1.5 * fParam3)))); break;
-  case 5: sprintf(string, "%ld", (long)(-301.03 / (SampleRate * log10(rls)))); break;
- }
-}
-*)

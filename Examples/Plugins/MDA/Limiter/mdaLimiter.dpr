@@ -5,7 +5,7 @@ uses
   Forms,
   DVSTEffect,
   DVSTModule,
-  mdaLimiterDM in 'mdaLimiterDM.pas' {LimiterDataModule: TVSTModule};
+  mdaLimiterDM in 'mdaLimiterDM.pas' {mdaLimiterDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var

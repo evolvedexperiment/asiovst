@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
-  TLimiterDataModule = class(TVSTModule)
+  TmdaLimiterDataModule = class(TVSTModule)
     procedure AttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure AttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure KneeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -17,6 +17,7 @@ type
     procedure ThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleCreate(Sender: TObject);
   private
     fThreshold_dB : Single;
     fThreshold    : Single;
@@ -35,8 +36,8 @@ uses
 
 {$R *.DFM}
 
-procedure TLimiterDataModule.ThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TmdaLimiterDataModule.ThresholdChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 begin
  if fThreshold_dB <> Value then
   begin
@@ -45,61 +46,57 @@ begin
   end;
 end;
 
-procedure TLimiterDataModule.OutputTrimChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TmdaLimiterDataModule.OutputTrimChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Parameter[index] <> Value then
-  begin
-   fTrim := Power(10.0, (2.0 * Value) - 1.0);
-  end;
+ fTrim := Power(10.0, (2.0 * Value) - 1.0);
 end;
 
-procedure TLimiterDataModule.CalculateThreshold;
+procedure TmdaLimiterDataModule.CalculateThreshold;
 begin
  if Parameter[4] > 0.5
   then fThreshold := Power(10, 1 - (2 * fThreshold_dB))  //soft knee
   else fThreshold := Power(10, (2 * fThreshold_dB) - 2); //hard knee
 end;
 
-procedure TLimiterDataModule.AttackChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TmdaLimiterDataModule.AttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Parameter[Index] <> Value then
-  begin
-   fAttack := Power(10, -2 * Value);
-  end;
+ fAttack := Power(10, -2 * Value);
 end;
 
-procedure TLimiterDataModule.KneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TmdaLimiterDataModule.KneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Parameter[Index] < 0.5
   then PreDefined := 'HARD'
   else PreDefined := 'SOFT';
 end;
 
-procedure TLimiterDataModule.AttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TmdaLimiterDataModule.AttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := FloatToStrF(-301030.1 / (SampleRate * log10(1.0 - fAttack)), ffGeneral, 4, 4);
+ PreDefined := FloatToStrF(-301030.1 / (SampleRate * log10(1 - fAttack)), ffGeneral, 4, 4);
 end;
 
-procedure TLimiterDataModule.ReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TmdaLimiterDataModule.ReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := FloatToStrF(-301.0301 / (SampleRate * log10(1.0 - fRelease)), ffGeneral, 4, 4);
+ PreDefined := FloatToStrF(-301.0301 / (SampleRate * log10(1 - fRelease)), ffGeneral, 4, 4);
 end;
 
-procedure TLimiterDataModule.ReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TmdaLimiterDataModule.ReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Parameter[Index] <> Value then
-  begin
-   fRelease := Power(10, -2 - (3 * Value));
-  end;
+ fRelease := Power(10, -2 - (3 * Value));
 end;
 
-procedure TLimiterDataModule.KneeChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TmdaLimiterDataModule.KneeChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Value <> Parameter[Index]
-  then CalculateThreshold;
+ CalculateThreshold;
 end;
 
-procedure TLimiterDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TmdaLimiterDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ fAttack  := 0.5;
+ fRelease := 0.5;
+end;
+
+procedure TmdaLimiterDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   smp      : Integer;
   g, at,
@@ -143,7 +140,7 @@ begin
  fGain := g;
 end;
 
-procedure TLimiterDataModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+procedure TmdaLimiterDataModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   smp      : Integer;
   g, at,

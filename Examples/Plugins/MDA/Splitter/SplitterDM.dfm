@@ -73,6 +73,7 @@ object SplitterDataModule: TSplitterDataModule
       CurveFactor = 1.000000000000000000
       DisplayName = 'Level'
       LargeStepFloat = 2.000000000000000000
+      Max = 1.000000000000000000
       MaxInteger = 0
       Min = -40.000000000000000000
       MinInteger = -40

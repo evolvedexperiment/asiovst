@@ -57,6 +57,7 @@ object SubSynthDataModule: TSubSynthDataModule
       SmoothingFactor = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
+      OnCustomParameterDisplay = ParameterTuneDisplay
     end
     item
       Curve = ctLinear
@@ -77,6 +78,7 @@ object SubSynthDataModule: TSubSynthDataModule
       CurveFactor = 1.000000000000000000
       DisplayName = 'Thresh'
       LargeStepFloat = 2.000000000000000000
+      Max = 1.000000000000000000
       MaxInteger = 0
       Min = -60.000000000000000000
       MinInteger = -60
@@ -98,6 +100,7 @@ object SubSynthDataModule: TSubSynthDataModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChange
+      OnCustomParameterDisplay = ParameterReleaseDisplay
     end>
   OnParameterChange = VSTModuleParameterChange
   OnResume = VSTModuleResume

@@ -3,7 +3,7 @@ unit DeessDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, DAVDCommon, DVSTModule;
 
 type
   TDeessDataModule = class(TVSTModule)
@@ -121,7 +121,6 @@ begin
     tmp  := tmp - f[0];
     f[1] := fo * f[1] + fi * tmp;
     tmp  := fGain * (tmp - f[1]);                            // extra HF gain
-    // brackets for full-band!!!
 
     if (tmp > en)                                            // envelope
      then en := en + fAttack * (tmp - en)

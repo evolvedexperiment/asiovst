@@ -3,18 +3,17 @@ unit ShepardDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TShepardDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure ParameterModeChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterModeChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     fMax    : Integer;
     fBuffer : Array [0..1] of PAVDSingleFixedArray;
@@ -57,14 +56,6 @@ begin
  fMode := round(Value);
 end;
 
-function fmod(Arg1, Arg2: Single): Single;
-var
-  Norm : Single;
-begin
- Norm := Arg1 / Arg2;
- result := (Norm - round(Norm - 0.5)) * Arg2
-end;
-
 procedure TShepardDataModule.VSTModuleCreate(Sender: TObject);
 var
   i, j : Integer;
@@ -74,9 +65,9 @@ const
 begin
 (*
  //inits here!
- Parameter[0] := 0.2; // fMode
- Parameter[1] := 0.7; // fRate
- Parameter[2] := 0.5; // fLevel
+ Parameter[0] := 0.2; // Mode
+ Parameter[1] := 0.7; // Rate
+ Parameter[2] := 0.5; // Level
 *)
 
  fMax := 512 * SizeOf(Single);
@@ -90,7 +81,7 @@ begin
    fBuffer[1, fMax] := sin(fPos);
    for j := 0 to 7 do
     begin
-     x   := x + a * sin(fmod(fPos, twopi));
+     x   := x + a * sin(f_mod(fPos, twopi));
      a   := a * 0.5;
      fPos := fPos * 2;
     end;
@@ -101,10 +92,6 @@ begin
  fBuffer[1, i] := 0; // wrap end for interpolation
  fPos  := 0;
  fRate := 1;
-
-(*
-  setParameter(0, 0.2); // go and set initial values!
-*)
 end;
 
 procedure TShepardDataModule.VSTModuleDestroy(Sender: TObject);

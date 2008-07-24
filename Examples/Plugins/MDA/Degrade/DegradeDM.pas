@@ -38,18 +38,15 @@ uses
 
 procedure TDegradeDataModule.VSTModuleCreate(Sender: TObject);
 begin
-(*
-  //inits here!
-  Parameter[0] := 0.8;  // Clip
-  Parameter[1] := 0.50; // Bits
-  Parameter[2] := 0.65; // Rate
-  Parameter[3] := 0.9;  // Postfilt
-  Parameter[4] := 0.58; // Non-lin
-  Parameter[5] := 0.5;  // Level
+ //inits here!
+ Parameter[0] := 0.8;  // Clip
+ Parameter[1] := 0.50; // Bits
+ Parameter[2] := 0.65; // Rate
+ Parameter[3] := 0.9;  // Postfilt
+ Parameter[4] := 0.58; // Non-lin
+ Parameter[5] := 0.5;  // Level
 
-  setParameter(5, 0.5);
-*)
-  FillChar(fBuffer[0], SizeOf(fBuffer), 0);
+ FillChar(fBuffer[0], SizeOf(fBuffer), 0);
 end;
 
 procedure TDegradeDataModule.ParameterNonLinearChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -89,7 +86,7 @@ end;
 
 procedure TDegradeDataModule.VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  _g1 : Single;
+  g1 : Single;
 begin
  //calcs here
  if (Parameter[2] > 0.5) then
@@ -101,21 +98,18 @@ begin
   begin
    fFreq := 0.5 - Parameter[2];
    fMode := 0;
-  end; 
+  end;
 
  tn := round(exp(18 * fFreq));
-
- //tn = (int)(18.0 * Parameter[2] - 8.0); fMode=1.f; end;
- //         else begin tn = (int)(10.0 - 18.0 * Parameter[2]); fMode=0.f; end;
 
  fTCount := 1;
  fClip   := Power(10, (-1.5 + 1.5 * Parameter[0]));
 
- _g1      := Power(2, 2 + round(Parameter[1] * 12));
- fGain[1] := 1 / (2 * _g1);
+ g1      := Power(2, 2 + round(Parameter[1] * 12));
+ fGain[1] := 1 / (2 * g1);
  if (Parameter[2] > 0.5)
-  then fGain[0] := -_g1 / tn
-  else fGain[0] := -_g1;
+  then fGain[0] := -g1 / tn
+  else fGain[0] := -g1;
 end;
 
 procedure TDegradeDataModule.VSTModuleProcess(const Inputs,

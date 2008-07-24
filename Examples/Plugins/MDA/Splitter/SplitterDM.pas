@@ -21,7 +21,6 @@ type
     fFreq, ff  : Single;
     fFreqDisp  : Single;
     fLevel, ll : Single;
-    fLevelDisp : Single;
     fEnv, pp   : Single;
     fAttack    : Single;
     fRelease   : Single;
@@ -146,7 +145,7 @@ begin
     a := Inputs[0, Sample];
     b := Inputs[1, Sample];
 
-    a0 := a0 + fFreq * (a - a0 - a1);  //frequency split
+    a0 := a0 + fFreq * (a - a0 - a1);  // Frequency Split
     a1 := a1 + fFreq * a0;
     aa := a1 + fx * a;
 
@@ -157,7 +156,7 @@ begin
     ee := -(aa + bb);
 
     if ee > lv
-     then e := e + at * (px - e);  //fLevel split
+     then e := e + at * (px - e);      // Level Split
     e := e * re;
 
     a := il * a + l * aa * (e + lx);
@@ -174,13 +173,13 @@ begin
   fBuffer[1, 0] := b0;
   fBuffer[1, 1] := b1;
 
-  if (abs(a0) < 1E-10) then
+  if (abs(a0) < 1E-10) then            // catch denormals
    begin
     fBuffer[0, 0] := 0;
     fBuffer[0, 1] := 0;
     fBuffer[1, 0] := 0;
     fBuffer[1, 1] := 0;
-   end;  //catch denormals
+   end;
 end;
 
 procedure TSplitterDataModule.VSTModuleResume(Sender: TObject);

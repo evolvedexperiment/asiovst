@@ -19,101 +19,101 @@ object BandistoDataModule: TBandistoDataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Listen'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Listen'
+      SmoothingFactor = 1.000000000000000000
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'L <> M'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'L <> M'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'M <> H'
+      SmoothingFactor = 1.000000000000000000
       Units = 'Hz'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'M <> H'
+      Max = 1.000000000000000000
       ShortLabel = 'M <> H'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'Hz'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'L Dist'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'L Dist'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'M Dist'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'M Dist'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'H Dist'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'H Dist'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'L Out'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'L Out'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'M Out'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'M Out'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'H Out'
+      SmoothingFactor = 1.000000000000000000
       Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'H Out'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Mode'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'H Out'
+      Max = 1.000000000000000000
+      ShortLabel = 'H Out'
       SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Mode'
+      Max = 1.000000000000000000
       ShortLabel = 'Mode'
+      SmoothingFactor = 1.000000000000000000
       VSTModule = Owner
     end>
   OnProcess = VSTModuleProcess

@@ -20,37 +20,37 @@ object RingModDataModule: TRingModDataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Freq'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Freq'
-      VSTModule = Owner
-    end
-    item
       Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Fine'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
+      ShortLabel = 'Freq'
       SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Fine'
+      Units = 'Hz'
       VSTModule = Owner
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Feedback'
-      Units = '%'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Fine'
+      Max = 1.000000000000000000
+      ShortLabel = 'Fine'
       SmoothingFactor = 1.000000000000000000
-      StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.500000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Feedback'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
+      Max = 100.000000000000000000
       ShortLabel = 'Feedbac'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterFeedbackChange
     end>

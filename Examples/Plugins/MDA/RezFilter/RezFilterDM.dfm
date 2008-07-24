@@ -20,103 +20,130 @@ object RezFilterDataModule: TRezFilterDataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'Frequen'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Resonance'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'Resonan'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      Max = 20.000000000000000000
+      MaxInteger = 20
+      Min = -20.000000000000000000
+      MinInteger = -20
       ShortLabel = 'Output'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Env->VCF'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Env->VC'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Attack'
-      Units = 'ms'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Attack'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Release'
-      Units = 'ms'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Release'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'LFO->VCF'
-      Units = 'S+H<>Sin'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'LFO->VC'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'LFO Rate'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'LFO Rat'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Trigger'
+      StepFloat = 1.000000000000000000
       Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterGainChange
+    end
+    item
+      Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Env->VCF'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      Min = -100.000000000000000000
+      MinInteger = -100
+      ShortLabel = 'Env->VC'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Trigger'
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Max. Frequency'
-      Units = '%'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Attack'
+      Max = 1.000000000000000000
+      ShortLabel = 'Attack'
       SmoothingFactor = 1.000000000000000000
+      Units = 'ms'
+      VSTModule = Owner
+      OnCustomParameterDisplay = ParameterAttackDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Release'
+      Max = 1.000000000000000000
+      ShortLabel = 'Release'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'ms'
+      VSTModule = Owner
+      OnCustomParameterDisplay = ParameterReleaseDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'LFO->VCF'
+      Max = 100.000000000000000000
+      Min = -100.000000000000000000
+      MinInteger = -100
+      ShortLabel = 'LFO->VC'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'S+H<>Sin'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'LFO Rate'
+      Max = 1.000000000000000000
+      ShortLabel = 'LFO Rat'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnCustomParameterDisplay = ParameterLFORateDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Trigger'
+      Max = 1.000000000000000000
+      ShortLabel = 'Trigger'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnCustomParameterDisplay = ParameterTriggerDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Max. Frequency'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'MaxFreq'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end>
   OnParameterChange = VSTModuleParameterChange

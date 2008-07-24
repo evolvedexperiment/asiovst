@@ -3,13 +3,11 @@ unit BandistoDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, 
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
 
 type
   TBandistoDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray;
-      const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
   private
   public
   end;
