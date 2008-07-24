@@ -6,27 +6,53 @@ uses
   Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTEffect,
   DVSTCustomModule, DVSTModule;
 
+const
+  cNumVoices = 32;
+
 type
   TJX10DataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    function VSTModuleOutputProperties(Sender: TObject; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TChannelPropertyFlags): Integer;
+    function VSTModuleOutputProperties(Sender: TObject; const index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
+    procedure VSTModuleSuspend(Sender: TObject);
+    procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fMode     : Single;
-    fNoiseMix : Single;
-    fVolTrim  : Single;
-    fSemi     : Single;
-    fCent     : Single;
-    fOscMix   : Single;
-    fDetune   : Single;
-    fTune     : Single;
-    fVibrato  : Single;
-    fPWDepth  : Single;
-    fLFOHz    : Single;
-    fDeltaLFO : Single;
+    fLFO            : Single;
+    fModWheel       : Single;
+    fFiltWheel      : Single;
+    fPress          : Single;
+    fMode           : Integer;
+    fInvSampleRate  : Single;
+    fNoiseMix       : Single;
+    fVolTrim        : Single;
+    fSemi           : Single;
+    fCent           : Single;
+    fOscMix         : Single;
+    fDetune         : Single;
+    fTune           : Single;
+    fVibrato        : Single;
+    fPWDepth        : Single;
+    fLFOHz          : Single;
+    fDeltaLFO       : Single;
+    fFilterFreq     : Single;
+    fFilterQ        : Single;
+    fFilterLFO      : Single;
+    fFilterEnv      : Single;
+    fFilterVel      : Single;
+    fVelOff         : Integer;
+    fVolume         : Single;
+    fResonanceWheel : Single;
+    fAttack         : Single;
+    fDecay          : Single;
+    fRelease        : Single;
+    fSustain        : Single;
+    fPitchBend      : Single;
+    fPitchBendInv   : Single;
     procedure Update;
+    procedure noteOn(Note, Velocity: Integer);
   public
   end;
 
@@ -38,10 +64,7 @@ uses
   Math;
 
 procedure TJX10DataModule.Update;  // Parameter Change
-var
-  ifs : Double;
 begin
- ifs := 1 / SampleRate;
  fMode     := round(7.9 * Parameter[3]);
  fNoiseMix := sqr(Parameter[21]);
  fVolTrim  := (3.2 - Parameter[0] - 1.5 * fNoiseMix) * (1.5 - 0.5 * Parameter[7]);
@@ -59,9 +82,10 @@ begin
  fPWDepth    := fVibrato;
  if Parameter[20] < 0.5 then fVibrato := 0;
 
+ fLFOHz    := exp(7 * Parameter[19] - 4);
 (*
- fLFOHz    := exp(7.0 * Parameter[19] - 4.0);
- fDeltaLFO := fLFOHz * (ifs * TWOPI * KMAX);
+ fDeltaLFO := fLFOHz * (fInvSampleRate * 2 * Pi * KMAX);
+*)
 
  fFilterFreq := 8 * Parameter[6] - 1.5;
  fFilterQ    := sqr(1 - Parameter[7]);        ////// + 0.02;
@@ -75,141 +99,673 @@ begin
    end
   else fVelOff := 0;
 
- fAttack  := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[15]));
- fDecay   := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[16]));
+ fAttack  := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[15]));
+ fDecay   := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[16]));
  fSustain := Parameter[17];
- fRelease := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[18]));
- if (Parameter[18] < 0.01
-  then fRelease := 0.1; //extra fast release
+ fRelease := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[18]));
+ if Parameter[18] < 0.01 then fRelease := 0.1; //extra fast release
 
- ifs := ifs * KMAX; //lower update rate...
+(*
+ fInvSampleRate := fInvSampleRate * KMAX; //lower update rate...
 
- fAtt := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[11]));
- fDec := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[12]));
+ fAtt := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[11]));
+ fDec := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[12]));
  fSus := sqr(Parameter[13]);
- fRel := 1 - exp(-ifs * exp(5.5 - 7.5 * Parameter[14]));
+ fRel := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[14]));
 
- if(Parameter[4]<0.02) fGlide = 1.0; else
- fGlide     := 1 - exp(-ifs * exp(6.0 - 7.0 * Parameter[4]));
- fGlidedisp := (6.604 * Parameter[5] - 3.302);
- fGlidedisp := fGlidedisp * sqr(fGlidedisp);
+ if (Parameter[4] < 0.02)
+  then fGlide := 1.0
+  else fGlide := 1 - exp(-fInvSampleRate * exp(6 - 7 * Parameter[4]));
+ fGlidedisp   := (6.604 * Parameter[5] - 3.302);
+ fGlidedisp   := fGlidedisp * sqr(fGlidedisp);
 *)
 end;
 
 
 procedure TJX10DataModule.VSTModuleCreate(Sender: TObject);
 var
-  i : Integer;
+  i, v : Integer;
 begin
  i := 0;
+ with Programs[0] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.37; Parameter[ 2] := 0.25;
+   Parameter[ 3] := 0.3;  Parameter[ 4] := 0.32; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.9;  Parameter[ 7] := 0.6;  Parameter[ 8] := 0.12;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.9;
+   Parameter[12] := 0.89; Parameter[13] := 0.9;  Parameter[14] := 0.73;
+   Parameter[15] := 0.0;  Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.71; Parameter[19] := 0.81; Parameter[20] := 0.65;
+   Parameter[21] := 0.0;  Parameter[22] := 0.5;  Parameter[23] := 0.5;
+  end;
+ with Programs[2] do
+  begin
+   Parameter[ 0] := 0.88; Parameter[ 1] := 0.51; Parameter[ 2] := 0.5;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.49; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.46; Parameter[ 7] := 0.76; Parameter[ 8] := 0.69;
+   Parameter[ 9] := 0.1;  Parameter[10] := 0.69; Parameter[11] := 1.0;
+   Parameter[12] := 0.86; Parameter[13] := 0.76; Parameter[14] := 0.57;
+   Parameter[15] := 0.3;  Parameter[16] := 0.8;  Parameter[17] := 0.68;
+   Parameter[18] := 0.66; Parameter[19] := 0.79; Parameter[20] := 0.13;
+   Parameter[21] := 0.25; Parameter[22] := 0.45; Parameter[23] := 0.5;
+  end;
+
+ with Programs[3] do
+  begin
+   Parameter[ 0] := 0.88; Parameter[ 1] := 0.51; Parameter[ 2] := 0.5;
+   Parameter[ 3] := 0.16; Parameter[ 4] := 0.49; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.49; Parameter[ 7] := 0.82; Parameter[ 8] := 0.66;
+   Parameter[ 9] := 0.08; Parameter[10] := 0.89; Parameter[11] := 0.85;
+   Parameter[12] := 0.69; Parameter[13] := 0.76; Parameter[14] := 0.47;
+   Parameter[15] := 0.12; Parameter[16] := 0.22; Parameter[17] := 0.55;
+   Parameter[18] := 0.66; Parameter[19] := 0.89; Parameter[20] := 0.34;
+   Parameter[21] := 0.0;  Parameter[22] := 1.0;  Parameter[23] := 0.5;
+  end;
+ with Programs[4] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.26; Parameter[ 2] := 0.14;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.3;  Parameter[ 7] := 0.25; Parameter[ 8] := 0.7;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.63; Parameter[11] := 0.0;
+   Parameter[12] := 0.35; Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.0;  Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.3;  Parameter[19] := 0.81; Parameter[20] := 0.5;
+   Parameter[21] := 0.5;  Parameter[22] := 0.5;  Parameter[23] := 0.5;
+  end;
+ with Programs[5] do
+  begin
+   Parameter[ 0] := 0.41; Parameter[ 1] := 0.5;  Parameter[ 2] := 0.79;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.08; Parameter[ 5] := 0.32;
+   Parameter[ 6] := 0.49; Parameter[ 7] := 0.01; Parameter[ 8] := 0.34;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.93; Parameter[11] := 0.61;
+   Parameter[12] := 0.87; Parameter[13] := 1.0;  Parameter[14] := 0.93;
+   Parameter[15] := 0.11; Parameter[16] := 0.48; Parameter[17] := 0.98;
+   Parameter[18] := 0.32; Parameter[19] := 0.81; Parameter[20] := 0.5;
+   Parameter[21] := 0.0;  Parameter[22] := 0.5;  Parameter[23] := 0.5;
+  end;
+ with Programs[6] do
+  begin
+   Parameter[ 0] := 0.29; Parameter[ 1] := 0.76; Parameter[ 2] := 0.26;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.18; Parameter[ 5] := 0.76;
+   Parameter[ 6] := 0.35; Parameter[ 7] := 0.15; Parameter[ 8] := 0.77;
+   Parameter[ 9] := 0.14; Parameter[10] := 0.54; Parameter[11] := 0.0;
+   Parameter[12] := 0.42; Parameter[13] := 0.13; Parameter[14] := 0.21;
+   Parameter[15] := 0.0;  Parameter[16] := 0.56; Parameter[17] := 0.0;
+   Parameter[18] := 0.32; Parameter[19] := 0.2;  Parameter[20] := 0.58;
+   Parameter[21] := 0.22; Parameter[22] := 0.53; Parameter[23] := 0.5;
+  end;
+ with Programs[7] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.65; Parameter[ 2] := 0.24;
+   Parameter[ 3] := 0.4;  Parameter[ 4] := 0.34; Parameter[ 5] := 0.85;
+   Parameter[ 6] := 0.65; Parameter[ 7] := 0.63; Parameter[ 8] := 0.75;
+   Parameter[ 9] := 0.16; Parameter[10] := 0.5;  Parameter[11] := 0.0;
+   Parameter[12] := 0.3;  Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.17; Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.03; Parameter[19] := 0.81; Parameter[20] := 0.5;
+   Parameter[21] := 0.0;  Parameter[22] := 0.68; Parameter[23] := 0.5;
+  end;
+ with Programs[8] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.25; Parameter[ 2] := 0.5;
+   Parameter[ 3] := 1.0;  Parameter[ 4] := 0.46; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.51; Parameter[ 7] := 0.0;  Parameter[ 8] := 0.5;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.0;  Parameter[11] := 0.0;
+   Parameter[12] := 0.3;  Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.37; Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.38; Parameter[19] := 0.81; Parameter[20] := 0.62;
+   Parameter[21] := 0.0;  Parameter[22] := 0.5;  Parameter[23] := 0.5;
+  end;
+ with Programs[9] do
+  begin
+   Parameter[ 0] := 0.84; Parameter[ 1] := 0.51; Parameter[ 2] := 0.15;
+   Parameter[ 3] := 0.45; Parameter[ 4] := 0.41; Parameter[ 5] := 0.42;
+   Parameter[ 6] := 0.54; Parameter[ 7] := 0.01; Parameter[ 8] := 0.58;
+   Parameter[ 9] := 0.21; Parameter[10] := 0.67; Parameter[11] := 0.0;
+   Parameter[12] := 0.09; Parameter[13] := 1.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.2;  Parameter[16] := 0.85; Parameter[17] := 1.0;
+   Parameter[18] := 0.3;  Parameter[19] := 0.83; Parameter[20] := 0.09;
+   Parameter[21] := 0.4;  Parameter[22] := 0.49; Parameter[23] := 0.5;
+  end;
+ with Programs[10] do
+  begin
+   Parameter[ 0] := 0.71; Parameter[ 1] := 0.75; Parameter[ 2] := 0.53;
+   Parameter[ 3] := 0.18; Parameter[ 4] := 0.24; Parameter[ 5] := 1.0;
+   Parameter[ 6] := 0.56; Parameter[ 7] := 0.52; Parameter[ 8] := 0.69;
+   Parameter[ 9] := 0.19; Parameter[10] := 0.7;  Parameter[11] := 1.0;
+   Parameter[12] := 0.14; Parameter[13] := 0.65; Parameter[14] := 0.95;
+   Parameter[15] := 0.07; Parameter[16] := 0.91; Parameter[17] := 1.0;
+   Parameter[18] := 0.15; Parameter[19] := 0.84; Parameter[20] := 0.33;
+   Parameter[21] := 0.0;  Parameter[22] := 0.49; Parameter[23] := 0.5;
+  end;
+ with Programs[11] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.25; Parameter[ 2] := 0.43;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.71; Parameter[ 5] := 0.48;
+   Parameter[ 6] := 0.23; Parameter[ 7] := 0.77; Parameter[ 8] := 0.8;
+   Parameter[ 9] := 0.32; Parameter[10] := 0.63; Parameter[11] := 0.4;
+   Parameter[12] := 0.18; Parameter[13] := 0.66; Parameter[14] := 0.14;
+   Parameter[15] := 0.0;  Parameter[16] := 0.38; Parameter[17] := 0.65;
+   Parameter[18] := 0.16; Parameter[19] := 0.48; Parameter[20] := 0.5;
+   Parameter[21] := 0.0;  Parameter[22] := 0.67; Parameter[23] := 0.5;
+  end;
+ with Programs[12] do
+  begin
+   Parameter[ 0] := 0.62; Parameter[ 1] := 0.26; Parameter[ 2] := 0.51;
+   Parameter[ 3] := 0.79; Parameter[ 4] := 0.35; Parameter[ 5] := 0.54;
+   Parameter[ 6] := 0.64; Parameter[ 7] := 0.39; Parameter[ 8] := 0.51;
+   Parameter[ 9] := 0.65; Parameter[10] := 0.0;  Parameter[11] := 0.07;
+   Parameter[12] := 0.52; Parameter[13] := 0.24; Parameter[14] := 0.84;
+   Parameter[15] := 0.13; Parameter[16] := 0.3;  Parameter[17] := 0.76;
+   Parameter[18] := 0.21; Parameter[19] := 0.58; Parameter[20] := 0.3;
+   Parameter[21] := 0.0;  Parameter[22] := 0.36; Parameter[23] := 0.5;
+  end;
+ with Programs[13] do
+  begin
+   Parameter[ 0] := 0.81; Parameter[ 1] := 1.0;  Parameter[ 2] := 0.21;
+   Parameter[ 3] := 0.78; Parameter[ 4] := 0.15; Parameter[ 5] := 0.35;
+   Parameter[ 6] := 0.39; Parameter[ 7] := 0.17; Parameter[ 8] := 0.69;
+   Parameter[ 9] := 0.4;  Parameter[10] := 0.62; Parameter[11] := 0.0;
+   Parameter[12] := 0.47; Parameter[13] := 0.19; Parameter[14] := 0.37;
+   Parameter[15] := 0.0;  Parameter[16] := 0.5;  Parameter[17] := 0.2;
+   Parameter[18] := 0.33; Parameter[19] := 0.38; Parameter[20] := 0.53;
+   Parameter[21] := 0.0;  Parameter[22] := 0.12; Parameter[23] := 0.5;
+  end;
+ with Programs[14] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.51; Parameter[ 2] := 0.52;
+   Parameter[ 3] := 0.96; Parameter[ 4] := 0.44; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.41; Parameter[ 7] := 0.46; Parameter[ 8] := 0.5;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.0;  Parameter[11] := 0.0;
+   Parameter[12] := 0.0;  Parameter[13] := 1.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.15; Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.32; Parameter[19] := 0.81; Parameter[20] := 0.49;
+   Parameter[21] := 0.0;  Parameter[22] := 0.83; Parameter[23] := 0.5;
+  end;
+ with Programs[15] do
+  begin
+   Parameter[ 0] := 0.48; Parameter[ 1] := 0.51; Parameter[ 2] := 0.22;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.0;  Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.5;  Parameter[ 7] := 0.47; Parameter[ 8] := 0.73;
+   Parameter[ 9] := 0.3;  Parameter[10] := 0.8;  Parameter[11] := 0.0;
+   Parameter[12] := 0.1;  Parameter[13] := 0.0;  Parameter[14] := 0.07;
+   Parameter[15] := 0.0;  Parameter[16] := 0.42; Parameter[17] := 0.0;
+   Parameter[18] := 0.22; Parameter[19] := 0.21; Parameter[20] := 0.59;
+   Parameter[21] := 0.16; Parameter[22] := 0.98; Parameter[23] := 0.5;
+  end;
+ with Programs[16] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.51; Parameter[ 2] := 0.5;
+   Parameter[ 3] := 0.83; Parameter[ 4] := 0.49; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.55; Parameter[ 7] := 0.75; Parameter[ 8] := 0.69;
+   Parameter[ 9] := 0.35; Parameter[10] := 0.5;  Parameter[11] := 0.0;
+   Parameter[12] := 0.56; Parameter[13] := 0.0;  Parameter[14] := 0.56;
+   Parameter[15] := 0.0;  Parameter[16] := 0.8;  Parameter[17] := 1.0;
+   Parameter[18] := 0.24; Parameter[19] := 0.26; Parameter[20] := 0.49;
+   Parameter[21] := 0.0;  Parameter[22] := 0.07; Parameter[23] := 0.5;
+  end;
+ with Programs[17] do
+  begin
+   Parameter[ 0] := 0.75; Parameter[ 1] := 0.51; Parameter[ 2] := 0.5;
+   Parameter[ 3] := 0.83; Parameter[ 4] := 0.49; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.55; Parameter[ 7] := 0.75; Parameter[ 8] := 0.69;
+   Parameter[ 9] := 0.35; Parameter[10] := 0.5;  Parameter[11] := 0.14;
+   Parameter[12] := 0.49; Parameter[13] := 0.0;  Parameter[14] := 0.39;
+   Parameter[15] := 0.0;  Parameter[16] := 0.8;  Parameter[17] := 1.0;
+   Parameter[18] := 0.24; Parameter[19] := 0.26; Parameter[20] := 0.49;
+   Parameter[21] := 0.0;  Parameter[22] := 0.07; Parameter[23] := 0.5;
+  end;
+ with Programs[18] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.25; Parameter[ 2] := 0.2;
+   Parameter[ 3] := 0.81; Parameter[ 4] := 0.19; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.3;  Parameter[ 7] := 0.51; Parameter[ 8] := 0.85;
+   Parameter[ 9] := 0.09; Parameter[10] := 0.0;  Parameter[11] := 0.0;
+   Parameter[12] := 0.88; Parameter[13] := 0.0;  Parameter[14] := 0.21;
+   Parameter[15] := 0.0;  Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.46; Parameter[19] := 0.81; Parameter[20] := 0.5;
+   Parameter[21] := 0.0;  Parameter[22] := 0.27; Parameter[23] := 0.5;
+  end;
+ with Programs[19] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.25; Parameter[ 2] := 0.2;
+   Parameter[ 3] := 0.72; Parameter[ 4] := 0.19; Parameter[ 5] := 0.86;
+   Parameter[ 6] := 0.48; Parameter[ 7] := 0.43; Parameter[ 8] := 0.94;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.8;  Parameter[11] := 0.0;
+   Parameter[12] := 0.0;  Parameter[13] := 0.0;  Parameter[14] := 0.0;
+   Parameter[15] := 0.0;  Parameter[16] := 0.61; Parameter[17] := 1.0;
+   Parameter[18] := 0.32; Parameter[19] := 0.81; Parameter[20] := 0.5;
+   Parameter[21] := 0.0;  Parameter[22] := 0.27; Parameter[23] := 0.5;
+  end;
+ with Programs[20] do
+  begin
+   Parameter[ 0] := 0.97; Parameter[ 1] := 0.26; Parameter[ 2] := 0.3;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.8;  Parameter[ 7] := 0.4;  Parameter[ 8] := 0.52;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.0;
+   Parameter[12] := 0.77; Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.0;  Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.3;  Parameter[19] := 0.81; Parameter[20] := 0.16;
+   Parameter[21] := 0.0;  Parameter[22] := 0.0;  Parameter[23] := 0.5;
+  end;
+ with Programs[21] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.25; Parameter[ 2] := 0.5;
+   Parameter[ 3] := 0.65; Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.33; Parameter[ 7] := 0.76; Parameter[ 8] := 0.53;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.0;
+   Parameter[12] := 0.3;  Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.0;  Parameter[16] := 0.55; Parameter[17] := 0.25;
+   Parameter[18] := 0.3;  Parameter[19] := 0.81; Parameter[20] := 0.52;
+   Parameter[21] := 0.0;  Parameter[22] := 0.14; Parameter[23] := 0.5;
+  end;
+ with Programs[22] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.26; Parameter[ 2] := 0.22;
+   Parameter[ 3] := 0.64; Parameter[ 4] := 0.82; Parameter[ 5] := 0.59;
+   Parameter[ 6] := 0.72; Parameter[ 7] := 0.47; Parameter[ 8] := 0.34;
+   Parameter[ 9] := 0.34; Parameter[10] := 0.82; Parameter[11] := 0.2;
+   Parameter[12] := 0.69; Parameter[13] := 1.0;  Parameter[14] := 0.15;
+   Parameter[15] := 0.09; Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.07; Parameter[19] := 0.81; Parameter[20] := 0.46;
+   Parameter[21] := 0.0;  Parameter[22] := 0.24; Parameter[23] := 0.5;
+  end;
+ with Programs[23] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.26; Parameter[ 2] := 0.22;
+   Parameter[ 3] := 0.71; Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.67; Parameter[ 7] := 0.7;  Parameter[ 8] := 0.26;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.48;
+   Parameter[12] := 0.69; Parameter[13] := 1.0;  Parameter[14] := 0.15;
+   Parameter[15] := 0.0;  Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.07; Parameter[19] := 0.81; Parameter[20] := 0.46;
+   Parameter[21] := 0.0;  Parameter[22] := 0.24; Parameter[23] := 0.5;
+  end;
+ with Programs[24] do
+  begin
+   Parameter[ 0] := 0.49; Parameter[ 1] := 0.25; Parameter[ 2] := 0.66;
+   Parameter[ 3] := 0.81; Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.36; Parameter[ 7] := 0.15; Parameter[ 8] := 0.75;
+   Parameter[ 9] := 0.2;  Parameter[10] := 0.5;  Parameter[11] := 0.0;
+   Parameter[12] := 0.38; Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.0;  Parameter[16] := 0.6;  Parameter[17] := 1.0;
+   Parameter[18] := 0.22; Parameter[19] := 0.19; Parameter[20] := 0.5;
+   Parameter[21] := 0.0;  Parameter[22] := 0.17; Parameter[23] := 0.5;
+  end;
+ with Programs[25] do
+  begin
+   Parameter[ 0] := 0.37; Parameter[ 1] := 0.51; Parameter[ 2] := 0.77;
+   Parameter[ 3] := 0.71; Parameter[ 4] := 0.22; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.33; Parameter[ 7] := 0.47; Parameter[ 8] := 0.71;
+   Parameter[ 9] := 0.16; Parameter[10] := 0.59; Parameter[11] := 0.0;
+   Parameter[12] := 0.0;  Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.04; Parameter[16] := 0.58; Parameter[17] := 0.0;
+   Parameter[18] := 0.22; Parameter[19] := 0.15; Parameter[20] := 0.44;
+   Parameter[21] := 0.33; Parameter[22] := 0.15; Parameter[23] := 0.5;
+  end;
+ with Programs[26] do
+  begin
+   Parameter[ 0] := 0.5;  Parameter[ 1] := 0.51; Parameter[ 2] := 0.17;
+   Parameter[ 3] := 0.8;  Parameter[ 4] := 0.34; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.51; Parameter[ 7] := 0.0;  Parameter[ 8] := 0.58;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.67; Parameter[11] := 0.0;
+   Parameter[12] := 0.09; Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.2;  Parameter[16] := 0.85; Parameter[17] := 0.0;
+   Parameter[18] := 0.3;  Parameter[19] := 0.81; Parameter[20] := 0.7;
+   Parameter[21] := 0.0;  Parameter[22] := 0.0;  Parameter[23] := 0.5;
+  end;
+ with Programs[27] do
+  begin
+   Parameter[ 0] := 0.23; Parameter[ 1] := 0.51; Parameter[ 2] := 0.38;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.33; Parameter[ 7] := 1.0;  Parameter[ 8] := 0.5;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.0;
+   Parameter[12] := 0.29; Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.68; Parameter[16] := 0.39; Parameter[17] := 0.58;
+   Parameter[18] := 0.36; Parameter[19] := 0.81; Parameter[20] := 0.64;
+   Parameter[21] := 0.38; Parameter[22] := 0.92; Parameter[23] := 0.5;
+  end;
+ with Programs[28] do
+  begin
+   Parameter[ 0] := 0.39; Parameter[ 1] := 0.51; Parameter[ 2] := 0.27;
+   Parameter[ 3] := 0.38; Parameter[ 4] := 0.12; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.35; Parameter[ 7] := 0.78; Parameter[ 8] := 0.5;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.0;
+   Parameter[12] := 0.3;  Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.35; Parameter[16] := 0.5;  Parameter[17] := 0.8;
+   Parameter[18] := 0.7;  Parameter[19] := 0.81; Parameter[20] := 0.5;
+   Parameter[21] := 0.0;  Parameter[22] := 0.5;  Parameter[23] := 0.5;
+  end;
+ with Programs[29] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.25; Parameter[ 2] := 0.5;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.23; Parameter[ 7] := 0.2;  Parameter[ 8] := 0.75;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.0;
+   Parameter[12] := 0.22; Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.0;  Parameter[16] := 0.47; Parameter[17] := 0.0;
+   Parameter[18] := 0.3;  Parameter[19] := 0.81; Parameter[20] := 0.5;
+   Parameter[21] := 0.8;  Parameter[22] := 0.5;  Parameter[23] := 0.5;
+  end;
+ with Programs[30] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.51; Parameter[ 2] := 0.24;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.0;  Parameter[ 5] := 0.35;
+   Parameter[ 6] := 0.42; Parameter[ 7] := 0.26; Parameter[ 8] := 0.75;
+   Parameter[ 9] := 0.14; Parameter[10] := 0.69; Parameter[11] := 0.0;
+   Parameter[12] := 0.67; Parameter[13] := 0.55; Parameter[14] := 0.97;
+   Parameter[15] := 0.82; Parameter[16] := 0.7;  Parameter[17] := 1.0;
+   Parameter[18] := 0.42; Parameter[19] := 0.84; Parameter[20] := 0.67;
+   Parameter[21] := 0.3;  Parameter[22] := 0.47; Parameter[23] := 0.5;
+  end;
+ with Programs[31] do
+  begin
+   Parameter[ 0] := 0.75; Parameter[ 1] := 0.51; Parameter[ 2] := 0.29;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.49; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.55; Parameter[ 7] := 0.16; Parameter[ 8] := 0.69;
+   Parameter[ 9] := 0.08; Parameter[10] := 0.2;  Parameter[11] := 0.76;
+   Parameter[12] := 0.29; Parameter[13] := 0.76; Parameter[14] := 1.0;
+   Parameter[15] := 0.46; Parameter[16] := 0.8;  Parameter[17] := 1.0;
+   Parameter[18] := 0.39; Parameter[19] := 0.79; Parameter[20] := 0.27;
+   Parameter[21] := 0.0;  Parameter[22] := 0.68; Parameter[23] := 0.5;
+  end;
+ with Programs[32] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.5;  Parameter[ 2] := 0.53;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.13; Parameter[ 5] := 0.39;
+   Parameter[ 6] := 0.38; Parameter[ 7] := 0.74; Parameter[ 8] := 0.54;
+   Parameter[ 9] := 0.2;  Parameter[10] := 0.0;  Parameter[11] := 0.0;
+   Parameter[12] := 0.55; Parameter[13] := 0.52; Parameter[14] := 0.31;
+   Parameter[15] := 0.0;  Parameter[16] := 0.17; Parameter[17] := 0.73;
+   Parameter[18] := 0.28; Parameter[19] := 0.87; Parameter[20] := 0.24;
+   Parameter[21] := 0.0;  Parameter[22] := 0.29; Parameter[23] := 0.5;
+  end;
+ with Programs[33] do
+  begin
+   Parameter[ 0] := 0.5;  Parameter[ 1] := 0.77; Parameter[ 2] := 0.52;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.44; Parameter[ 7] := 0.5;  Parameter[ 8] := 0.65;
+   Parameter[ 9] := 0.16; Parameter[10] := 0.0;  Parameter[11] := 0.0;
+   Parameter[12] := 0.0;  Parameter[13] := 0.18; Parameter[14] := 0.0;
+   Parameter[15] := 0.0;  Parameter[16] := 0.75; Parameter[17] := 0.8;
+   Parameter[18] := 0.0;  Parameter[19] := 0.81; Parameter[20] := 0.49;
+   Parameter[21] := 0.0;  Parameter[22] := 0.44; Parameter[23] := 0.5;
+  end;
+ with Programs[34] do
+  begin
+   Parameter[ 0] := 0.89; Parameter[ 1] := 0.91; Parameter[ 2] := 0.37;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.51; Parameter[ 7] := 0.62; Parameter[ 8] := 0.54;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.0;  Parameter[11] := 0.0;
+   Parameter[12] := 0.37; Parameter[13] := 0.0;  Parameter[14] := 1.0;
+   Parameter[15] := 0.04; Parameter[16] := 0.08; Parameter[17] := 0.72;
+   Parameter[18] := 0.04; Parameter[19] := 0.77; Parameter[20] := 0.49;
+   Parameter[21] := 0.0;  Parameter[22] := 0.58; Parameter[23] := 0.5;
+  end;
+ with Programs[35] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.51; Parameter[ 2] := 0.51;
+   Parameter[ 3] := 0.37; Parameter[ 4] := 0.0;  Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.51; Parameter[ 7] := 0.1;  Parameter[ 8] := 0.5;
+   Parameter[ 9] := 0.11; Parameter[10] := 0.5;  Parameter[11] := 0.0;
+   Parameter[12] := 0.0;  Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.35; Parameter[16] := 0.65; Parameter[17] := 0.65;
+   Parameter[18] := 0.32; Parameter[19] := 0.79; Parameter[20] := 0.49;
+   Parameter[21] := 0.2;  Parameter[22] := 0.35; Parameter[23] := 0.5;
+  end;
+ with Programs[36] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.51; Parameter[ 2] := 0.51;
+   Parameter[ 3] := 0.82; Parameter[ 4] := 0.06; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.57; Parameter[ 7] := 0.0;  Parameter[ 8] := 0.32;
+   Parameter[ 9] := 0.15; Parameter[10] := 0.5;  Parameter[11] := 0.21;
+   Parameter[12] := 0.15; Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.24; Parameter[16] := 0.6;  Parameter[17] := 0.8;
+   Parameter[18] := 0.1;  Parameter[19] := 0.75; Parameter[20] := 0.55;
+   Parameter[21] := 0.25; Parameter[22] := 0.69; Parameter[23] := 0.5;
+  end;
+ with Programs[37] do
+  begin
+   Parameter[ 0] := 0.12; Parameter[ 1] := 0.9;  Parameter[ 2] := 0.67;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.5;  Parameter[ 7] := 0.21; Parameter[ 8] := 0.29;
+   Parameter[ 9] := 0.12; Parameter[10] := 0.6;  Parameter[11] := 0.0;
+   Parameter[12] := 0.35; Parameter[13] := 0.36; Parameter[14] := 0.25;
+   Parameter[15] := 0.08; Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.27; Parameter[19] := 0.83; Parameter[20] := 0.51;
+   Parameter[21] := 0.1;  Parameter[22] := 0.25; Parameter[23] := 0.5;
+  end;
+ with Programs[38] do
+  begin
+   Parameter[ 0] := 0.43; Parameter[ 1] := 0.76; Parameter[ 2] := 0.23;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.28; Parameter[ 5] := 0.36;
+   Parameter[ 6] := 0.5;  Parameter[ 7] := 0.0;  Parameter[ 8] := 0.59;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.24;
+   Parameter[12] := 0.16; Parameter[13] := 0.91; Parameter[14] := 0.08;
+   Parameter[15] := 0.17; Parameter[16] := 0.5;  Parameter[17] := 0.8;
+   Parameter[18] := 0.45; Parameter[19] := 0.81; Parameter[20] := 0.5;
+   Parameter[21] := 0.0;  Parameter[22] := 0.58; Parameter[23] := 0.5;
+  end;
+ with Programs[39] do
+  begin
+   Parameter[ 0] := 0.4;  Parameter[ 1] := 0.51; Parameter[ 2] := 0.25;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.3;  Parameter[ 5] := 0.28;
+   Parameter[ 6] := 0.39; Parameter[ 7] := 0.15; Parameter[ 8] := 0.75;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.39;
+   Parameter[12] := 0.3;  Parameter[13] := 0.82; Parameter[14] := 0.25;
+   Parameter[15] := 0.33; Parameter[16] := 0.74; Parameter[17] := 0.76;
+   Parameter[18] := 0.41; Parameter[19] := 0.81; Parameter[20] := 0.47;
+   Parameter[21] := 0.23; Parameter[22] := 0.5;  Parameter[23] := 0.5;
+  end;
+ with Programs[40] do
+  begin
+   Parameter[ 0] := 0.68; Parameter[ 1] := 0.5;  Parameter[ 2] := 0.93;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.31; Parameter[ 5] := 0.62;
+   Parameter[ 6] := 0.26; Parameter[ 7] := 0.07; Parameter[ 8] := 0.85;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.66; Parameter[11] := 0.0;
+   Parameter[12] := 0.83; Parameter[13] := 0.0;  Parameter[14] := 0.05;
+   Parameter[15] := 0.0;  Parameter[16] := 0.75; Parameter[17] := 0.54;
+   Parameter[18] := 0.32; Parameter[19] := 0.76; Parameter[20] := 0.37;
+   Parameter[21] := 0.29; Parameter[22] := 0.56; Parameter[23] := 0.5;
+  end;
+ with Programs[41] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.27; Parameter[ 2] := 0.22;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.82; Parameter[ 7] := 0.13; Parameter[ 8] := 0.75;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.0;  Parameter[11] := 0.24;
+   Parameter[12] := 0.3;  Parameter[13] := 0.88; Parameter[14] := 0.34;
+   Parameter[15] := 0.0;  Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.48; Parameter[19] := 0.71; Parameter[20] := 0.37;
+   Parameter[21] := 0.0;  Parameter[22] := 0.35; Parameter[23] := 0.5;
+  end;
+ with Programs[42] do
+  begin
+   Parameter[ 0] := 0.76; Parameter[ 1] := 0.51; Parameter[ 2] := 0.35;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.49; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.87; Parameter[ 7] := 0.67; Parameter[ 8] := 1.0;
+   Parameter[ 9] := 0.32; Parameter[10] := 0.09; Parameter[11] := 0.95;
+   Parameter[12] := 0.56; Parameter[13] := 0.72; Parameter[14] := 1.0;
+   Parameter[15] := 0.04; Parameter[16] := 0.76; Parameter[17] := 0.11;
+   Parameter[18] := 0.46; Parameter[19] := 0.88; Parameter[20] := 0.72;
+   Parameter[21] := 0.0;  Parameter[22] := 0.38; Parameter[23] := 0.5;
+  end;
+ with Programs[43] do
+  begin
+   Parameter[ 0] := 0.75; Parameter[ 1] := 0.51; Parameter[ 2] := 0.24;
+   Parameter[ 3] := 0.45; Parameter[ 4] := 0.16; Parameter[ 5] := 0.48;
+   Parameter[ 6] := 0.38; Parameter[ 7] := 0.58; Parameter[ 8] := 0.75;
+   Parameter[ 9] := 0.16; Parameter[10] := 0.81; Parameter[11] := 0.0;
+   Parameter[12] := 0.3;  Parameter[13] := 0.4;  Parameter[14] := 0.31;
+   Parameter[15] := 0.37; Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.54; Parameter[19] := 0.85; Parameter[20] := 0.83;
+   Parameter[21] := 0.43; Parameter[22] := 0.46; Parameter[23] := 0.5;
+  end;
+ with Programs[44] do
+  begin
+   Parameter[ 0] := 0.31; Parameter[ 1] := 0.51; Parameter[ 2] := 0.43;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.34; Parameter[ 7] := 0.26; Parameter[ 8] := 0.53;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.63; Parameter[11] := 0.0;
+   Parameter[12] := 0.22; Parameter[13] := 0.0;  Parameter[14] := 0.39;
+   Parameter[15] := 0.0;  Parameter[16] := 0.8;  Parameter[17] := 0.0;
+   Parameter[18] := 0.44; Parameter[19] := 0.81; Parameter[20] := 0.51;
+   Parameter[21] := 0.0;  Parameter[22] := 0.5;  Parameter[23] := 0.5;
+  end;
+ with Programs[45] do
+  begin
+   Parameter[ 0] := 0.72; Parameter[ 1] := 0.82; Parameter[ 2] := 1.0;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.37; Parameter[ 7] := 0.47; Parameter[ 8] := 0.54;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.0;
+   Parameter[12] := 0.45; Parameter[13] := 0.0;  Parameter[14] := 0.39;
+   Parameter[15] := 0.0;  Parameter[16] := 0.39; Parameter[17] := 0.0;
+   Parameter[18] := 0.48; Parameter[19] := 0.81; Parameter[20] := 0.6;
+   Parameter[21] := 0.0;  Parameter[22] := 0.71; Parameter[23] := 0.5;
+  end;
+ with Programs[46] do
+  begin
+   Parameter[ 0] := 0.81; Parameter[ 1] := 0.76; Parameter[ 2] := 0.19;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.18; Parameter[ 5] := 0.7;
+   Parameter[ 6] := 0.4;  Parameter[ 7] := 0.3;  Parameter[ 8] := 0.54;
+   Parameter[ 9] := 0.17; Parameter[10] := 0.4;  Parameter[11] := 0.0;
+   Parameter[12] := 0.42; Parameter[13] := 0.23; Parameter[14] := 0.47;
+   Parameter[15] := 0.12; Parameter[16] := 0.48; Parameter[17] := 0.0;
+   Parameter[18] := 0.49; Parameter[19] := 0.53; Parameter[20] := 0.36;
+   Parameter[21] := 0.34; Parameter[22] := 0.56; Parameter[23] := 0.5;
+  end;
+ with Programs[58] do
+  begin
+   Parameter[ 0] := 0.57; Parameter[ 1] := 0.49; Parameter[ 2] := 0.31;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.46; Parameter[ 7] := 0.0;  Parameter[ 8] := 0.68;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.46;
+   Parameter[12] := 0.3;  Parameter[13] := 1.0;  Parameter[14] := 0.23;
+   Parameter[15] := 0.3;  Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.31; Parameter[19] := 1.0;  Parameter[20] := 0.38;
+   Parameter[21] := 0.0;  Parameter[22] := 0.5;  Parameter[23] := 0.5;
+  end;
+ with Programs[59] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.25; Parameter[ 2] := 0.5;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.08; Parameter[ 7] := 0.36; Parameter[ 8] := 0.69;
+   Parameter[ 9] := 1.0;  Parameter[10] := 0.5;  Parameter[11] := 1.0;
+   Parameter[12] := 1.0;  Parameter[13] := 0.0;  Parameter[14] := 1.0;
+   Parameter[15] := 0.96; Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.92; Parameter[19] := 0.97; Parameter[20] := 0.5;
+   Parameter[21] := 1.0;  Parameter[22] := 0.0;  Parameter[23] := 0.5;
+  end;
+ with Programs[60] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.25; Parameter[ 2] := 0.5;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.16; Parameter[ 7] := 0.85; Parameter[ 8] := 0.5;
+   Parameter[ 9] := 0.28; Parameter[10] := 0.5;  Parameter[11] := 0.37;
+   Parameter[12] := 0.3;  Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.89; Parameter[16] := 0.5;  Parameter[17] := 1.0;
+   Parameter[18] := 0.89; Parameter[19] := 0.24; Parameter[20] := 0.5;
+   Parameter[21] := 1.0;  Parameter[22] := 1.0;  Parameter[23] := 0.5;
+  end;
+ with Programs[61] do
+  begin
+   Parameter[ 0] := 1.0;  Parameter[ 1] := 0.37; Parameter[ 2] := 0.51;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.35; Parameter[ 5] := 0.5;
+   Parameter[ 6] := 0.0;  Parameter[ 7] := 1.0;  Parameter[ 8] := 0.97;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.02;
+   Parameter[12] := 0.2;  Parameter[13] := 0.0;  Parameter[14] := 0.2;
+   Parameter[15] := 0.0;  Parameter[16] := 0.46; Parameter[17] := 0.0;
+   Parameter[18] := 0.3;  Parameter[19] := 0.81; Parameter[20] := 0.5;
+   Parameter[21] := 0.78; Parameter[22] := 0.48; Parameter[23] := 0.5;
+  end;
+ with Programs[62] do
+  begin
+   Parameter[ 0] := 0.0;  Parameter[ 1] := 0.25; Parameter[ 2] := 0.5;
+   Parameter[ 3] := 0.0;  Parameter[ 4] := 0.76; Parameter[ 5] := 0.94;
+   Parameter[ 6] := 0.3;  Parameter[ 7] := 0.33; Parameter[ 8] := 0.76;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.68; Parameter[11] := 0.0;
+   Parameter[12] := 0.59; Parameter[13] := 0.0;  Parameter[14] := 0.59;
+   Parameter[15] := 0.1;  Parameter[16] := 0.5;  Parameter[17] := 0.0;
+   Parameter[18] := 0.5;  Parameter[19] := 0.81; Parameter[20] := 0.5;
+   Parameter[21] := 0.7;  Parameter[22] := 0.0;  Parameter[23] := 0.5;
+  end;
+ with Programs[63] do
+  begin
+   Parameter[ 0] := 0.5;  Parameter[ 1] := 0.41; Parameter[ 2] := 0.23;
+   Parameter[ 3] := 0.45; Parameter[ 4] := 0.77; Parameter[ 5] := 0.0;
+   Parameter[ 6] := 0.4;  Parameter[ 7] := 0.65; Parameter[ 8] := 0.95;
+   Parameter[ 9] := 0.0;  Parameter[10] := 0.5;  Parameter[11] := 0.33;
+   Parameter[12] := 0.5;  Parameter[13] := 0.0;  Parameter[14] := 0.25;
+   Parameter[15] := 0.0;  Parameter[16] := 0.7;  Parameter[17] := 0.65;
+   Parameter[18] := 0.18; Parameter[19] := 0.32; Parameter[20] := 1.0;
+   Parameter[21] := 0.0;  Parameter[22] := 0.06; Parameter[23] := 0.5;
+  end;
+
+ //initialise...
+ for v := 0 to cNumVoices - 1 do
+  begin
 (*
-  if(programs)
-  begin
-    fillpatch(i++, "5th Sweep Pad", 1.0, 0.37, 0.25, 0.3, 0.32, 0.5, 0.9, 0.6, 0.12, 0.0, 0.5, 0.9, 0.89, 0.9, 0.73, 0.0, 0.5, 1.0, 0.71, 0.81, 0.65, 0.0, 0.5, 0.5);
-    fillpatch(i++, "Echo Pad [SA]", 0.88, 0.51, 0.5, 0.0, 0.49, 0.5, 0.46, 0.76, 0.69, 0.1, 0.69, 1.0, 0.86, 0.76, 0.57, 0.3, 0.8, 0.68, 0.66, 0.79, 0.13, 0.25, 0.45, 0.5);
-    fillpatch(i++, "Space Chimes [SA]", 0.88, 0.51, 0.5, 0.16, 0.49, 0.5, 0.49, 0.82, 0.66, 0.08, 0.89, 0.85, 0.69, 0.76, 0.47, 0.12, 0.22, 0.55, 0.66, 0.89, 0.34, 0.0, 1.0, 0.5);
-    fillpatch(i++, "Solid Backing", 1.0, 0.26, 0.14, 0.0, 0.35, 0.5, 0.3, 0.25, 0.7, 0.0, 0.63, 0.0, 0.35, 0.0, 0.25, 0.0, 0.5, 1.0, 0.3, 0.81, 0.5, 0.5, 0.5, 0.5);
-    fillpatch(i++, "Velocity Backing [SA]", 0.41, 0.5, 0.79, 0.0, 0.08, 0.32, 0.49, 0.01, 0.34, 0.0, 0.93, 0.61, 0.87, 1.0, 0.93, 0.11, 0.48, 0.98, 0.32, 0.81, 0.5, 0.0, 0.5, 0.5);
-    fillpatch(i++, "Rubber Backing [ZF]", 0.29, 0.76, 0.26, 0.0, 0.18, 0.76, 0.35, 0.15, 0.77, 0.14, 0.54, 0.0, 0.42, 0.13, 0.21, 0.0, 0.56, 0.0, 0.32, 0.2, 0.58, 0.22, 0.53, 0.5);
-    fillpatch(i++, "808 State Lead", 1.0, 0.65, 0.24, 0.4, 0.34, 0.85, 0.65, 0.63, 0.75, 0.16, 0.5, 0.0, 0.3, 0.0, 0.25, 0.17, 0.5, 1.0, 0.03, 0.81, 0.5, 0.0, 0.68, 0.5);
-    fillpatch(i++, "Mono Glide", 0.0, 0.25, 0.5, 1.0, 0.46, 0.5, 0.51, 0.0, 0.5, 0.0, 0.0, 0.0, 0.3, 0.0, 0.25, 0.37, 0.5, 1.0, 0.38, 0.81, 0.62, 0.0, 0.5, 0.5);
-    fillpatch(i++, "Detuned Techno Lead", 0.84, 0.51, 0.15, 0.45, 0.41, 0.42, 0.54, 0.01, 0.58, 0.21, 0.67, 0.0, 0.09, 1.0, 0.25, 0.2, 0.85, 1.0, 0.3, 0.83, 0.09, 0.4, 0.49, 0.5);
-    fillpatch(i++, "Hard Lead [SA]", 0.71, 0.75, 0.53, 0.18, 0.24, 1.0, 0.56, 0.52, 0.69, 0.19, 0.7, 1.0, 0.14, 0.65, 0.95, 0.07, 0.91, 1.0, 0.15, 0.84, 0.33, 0.0, 0.49, 0.5);
-    fillpatch(i++, "Bubble", 0.0, 0.25, 0.43, 0.0, 0.71, 0.48, 0.23, 0.77, 0.8, 0.32, 0.63, 0.4, 0.18, 0.66, 0.14, 0.0, 0.38, 0.65, 0.16, 0.48, 0.5, 0.0, 0.67, 0.5);
-    fillpatch(i++, "Monosynth", 0.62, 0.26, 0.51, 0.79, 0.35, 0.54, 0.64, 0.39, 0.51, 0.65, 0.0, 0.07, 0.52, 0.24, 0.84, 0.13, 0.3, 0.76, 0.21, 0.58, 0.3, 0.0, 0.36, 0.5);
-    fillpatch(i++, "Moogcury Lite", 0.81, 1.0, 0.21, 0.78, 0.15, 0.35, 0.39, 0.17, 0.69, 0.4, 0.62, 0.0, 0.47, 0.19, 0.37, 0.0, 0.5, 0.2, 0.33, 0.38, 0.53, 0.0, 0.12, 0.5);
-    fillpatch(i++, "Gangsta Whine", 0.0, 0.51, 0.52, 0.96, 0.44, 0.5, 0.41, 0.46, 0.5, 0.0, 0.0, 0.0, 0.0, 1.0, 0.25, 0.15, 0.5, 1.0, 0.32, 0.81, 0.49, 0.0, 0.83, 0.5);
-    fillpatch(i++, "Higher Synth [ZF]", 0.48, 0.51, 0.22, 0.0, 0.0, 0.5, 0.5, 0.47, 0.73, 0.3, 0.8, 0.0, 0.1, 0.0, 0.07, 0.0, 0.42, 0.0, 0.22, 0.21, 0.59, 0.16, 0.98, 0.5);
-    fillpatch(i++, "303 Saw Bass", 0.0, 0.51, 0.5, 0.83, 0.49, 0.5, 0.55, 0.75, 0.69, 0.35, 0.5, 0.0, 0.56, 0.0, 0.56, 0.0, 0.8, 1.0, 0.24, 0.26, 0.49, 0.0, 0.07, 0.5);
-    fillpatch(i++, "303 Square Bass", 0.75, 0.51, 0.5, 0.83, 0.49, 0.5, 0.55, 0.75, 0.69, 0.35, 0.5, 0.14, 0.49, 0.0, 0.39, 0.0, 0.8, 1.0, 0.24, 0.26, 0.49, 0.0, 0.07, 0.5);
-    fillpatch(i++, "Analog Bass", 1.0, 0.25, 0.2, 0.81, 0.19, 0.5, 0.3, 0.51, 0.85, 0.09, 0.0, 0.0, 0.88, 0.0, 0.21, 0.0, 0.5, 1.0, 0.46, 0.81, 0.5, 0.0, 0.27, 0.5);
-    fillpatch(i++, "Analog Bass 2", 1.0, 0.25, 0.2, 0.72, 0.19, 0.86, 0.48, 0.43, 0.94, 0.0, 0.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.61, 1.0, 0.32, 0.81, 0.5, 0.0, 0.27, 0.5);
-    fillpatch(i++, "Low Pulses", 0.97, 0.26, 0.3, 0.0, 0.35, 0.5, 0.8, 0.4, 0.52, 0.0, 0.5, 0.0, 0.77, 0.0, 0.25, 0.0, 0.5, 1.0, 0.3, 0.81, 0.16, 0.0, 0.0, 0.5);
-    fillpatch(i++, "Sine Infra-Bass", 0.0, 0.25, 0.5, 0.65, 0.35, 0.5, 0.33, 0.76, 0.53, 0.0, 0.5, 0.0, 0.3, 0.0, 0.25, 0.0, 0.55, 0.25, 0.3, 0.81, 0.52, 0.0, 0.14, 0.5);
-    fillpatch(i++, "Wobble Bass [SA]", 1.0, 0.26, 0.22, 0.64, 0.82, 0.59, 0.72, 0.47, 0.34, 0.34, 0.82, 0.2, 0.69, 1.0, 0.15, 0.09, 0.5, 1.0, 0.07, 0.81, 0.46, 0.0, 0.24, 0.5);
-    fillpatch(i++, "Squelch Bass", 1.0, 0.26, 0.22, 0.71, 0.35, 0.5, 0.67, 0.7, 0.26, 0.0, 0.5, 0.48, 0.69, 1.0, 0.15, 0.0, 0.5, 1.0, 0.07, 0.81, 0.46, 0.0, 0.24, 0.5);
-    fillpatch(i++, "Rubber Bass [ZF]", 0.49, 0.25, 0.66, 0.81, 0.35, 0.5, 0.36, 0.15, 0.75, 0.2, 0.5, 0.0, 0.38, 0.0, 0.25, 0.0, 0.6, 1.0, 0.22, 0.19, 0.5, 0.0, 0.17, 0.5);
-    fillpatch(i++, "Soft Pick Bass", 0.37, 0.51, 0.77, 0.71, 0.22, 0.5, 0.33, 0.47, 0.71, 0.16, 0.59, 0.0, 0.0, 0.0, 0.25, 0.04, 0.58, 0.0, 0.22, 0.15, 0.44, 0.33, 0.15, 0.5);
-    fillpatch(i++, "Fretless Bass", 0.5, 0.51, 0.17, 0.8, 0.34, 0.5, 0.51, 0.0, 0.58, 0.0, 0.67, 0.0, 0.09, 0.0, 0.25, 0.2, 0.85, 0.0, 0.3, 0.81, 0.7, 0.0, 0.0, 0.5);
-    fillpatch(i++, "Whistler", 0.23, 0.51, 0.38, 0.0, 0.35, 0.5, 0.33, 1.0, 0.5, 0.0, 0.5, 0.0, 0.29, 0.0, 0.25, 0.68, 0.39, 0.58, 0.36, 0.81, 0.64, 0.38, 0.92, 0.5);
-    fillpatch(i++, "Very Soft Pad", 0.39, 0.51, 0.27, 0.38, 0.12, 0.5, 0.35, 0.78, 0.5, 0.0, 0.5, 0.0, 0.3, 0.0, 0.25, 0.35, 0.5, 0.8, 0.7, 0.81, 0.5, 0.0, 0.5, 0.5);
-    fillpatch(i++, "Pizzicato", 0.0, 0.25, 0.5, 0.0, 0.35, 0.5, 0.23, 0.2, 0.75, 0.0, 0.5, 0.0, 0.22, 0.0, 0.25, 0.0, 0.47, 0.0, 0.3, 0.81, 0.5, 0.8, 0.5, 0.5);
-    fillpatch(i++, "Synth Strings", 1.0, 0.51, 0.24, 0.0, 0.0, 0.35, 0.42, 0.26, 0.75, 0.14, 0.69, 0.0, 0.67, 0.55, 0.97, 0.82, 0.7, 1.0, 0.42, 0.84, 0.67, 0.3, 0.47, 0.5);
-    fillpatch(i++, "Synth Strings 2", 0.75, 0.51, 0.29, 0.0, 0.49, 0.5, 0.55, 0.16, 0.69, 0.08, 0.2, 0.76, 0.29, 0.76, 1.0, 0.46, 0.8, 1.0, 0.39, 0.79, 0.27, 0.0, 0.68, 0.5);
-    fillpatch(i++, "Leslie Organ", 0.0, 0.5, 0.53, 0.0, 0.13, 0.39, 0.38, 0.74, 0.54, 0.2, 0.0, 0.0, 0.55, 0.52, 0.31, 0.0, 0.17, 0.73, 0.28, 0.87, 0.24, 0.0, 0.29, 0.5);
-    fillpatch(i++, "Click Organ", 0.5, 0.77, 0.52, 0.0, 0.35, 0.5, 0.44, 0.5, 0.65, 0.16, 0.0, 0.0, 0.0, 0.18, 0.0, 0.0, 0.75, 0.8, 0.0, 0.81, 0.49, 0.0, 0.44, 0.5);
-    fillpatch(i++, "Hard Organ", 0.89, 0.91, 0.37, 0.0, 0.35, 0.5, 0.51, 0.62, 0.54, 0.0, 0.0, 0.0, 0.37, 0.0, 1.0, 0.04, 0.08, 0.72, 0.04, 0.77, 0.49, 0.0, 0.58, 0.5);
-    fillpatch(i++, "Bass Clarinet", 1.0, 0.51, 0.51, 0.37, 0.0, 0.5, 0.51, 0.1, 0.5, 0.11, 0.5, 0.0, 0.0, 0.0, 0.25, 0.35, 0.65, 0.65, 0.32, 0.79, 0.49, 0.2, 0.35, 0.5);
-    fillpatch(i++, "Trumpet", 0.0, 0.51, 0.51, 0.82, 0.06, 0.5, 0.57, 0.0, 0.32, 0.15, 0.5, 0.21, 0.15, 0.0, 0.25, 0.24, 0.6, 0.8, 0.1, 0.75, 0.55, 0.25, 0.69, 0.5);
-    fillpatch(i++, "Soft Horn", 0.12, 0.9, 0.67, 0.0, 0.35, 0.5, 0.5, 0.21, 0.29, 0.12, 0.6, 0.0, 0.35, 0.36, 0.25, 0.08, 0.5, 1.0, 0.27, 0.83, 0.51, 0.1, 0.25, 0.5);
-    fillpatch(i++, "Brass Section", 0.43, 0.76, 0.23, 0.0, 0.28, 0.36, 0.5, 0.0, 0.59, 0.0, 0.5, 0.24, 0.16, 0.91, 0.08, 0.17, 0.5, 0.8, 0.45, 0.81, 0.5, 0.0, 0.58, 0.5);
-    fillpatch(i++, "Synth Brass", 0.4, 0.51, 0.25, 0.0, 0.3, 0.28, 0.39, 0.15, 0.75, 0.0, 0.5, 0.39, 0.3, 0.82, 0.25, 0.33, 0.74, 0.76, 0.41, 0.81, 0.47, 0.23, 0.5, 0.5);
-    fillpatch(i++, "Detuned Syn Brass [ZF]", 0.68, 0.5, 0.93, 0.0, 0.31, 0.62, 0.26, 0.07, 0.85, 0.0, 0.66, 0.0, 0.83, 0.0, 0.05, 0.0, 0.75, 0.54, 0.32, 0.76, 0.37, 0.29, 0.56, 0.5);
-    fillpatch(i++, "Power PWM", 1.0, 0.27, 0.22, 0.0, 0.35, 0.5, 0.82, 0.13, 0.75, 0.0, 0.0, 0.24, 0.3, 0.88, 0.34, 0.0, 0.5, 1.0, 0.48, 0.71, 0.37, 0.0, 0.35, 0.5);
-    fillpatch(i++, "Water Velocity [SA]", 0.76, 0.51, 0.35, 0.0, 0.49, 0.5, 0.87, 0.67, 1.0, 0.32, 0.09, 0.95, 0.56, 0.72, 1.0, 0.04, 0.76, 0.11, 0.46, 0.88, 0.72, 0.0, 0.38, 0.5);
-    fillpatch(i++, "Ghost [SA]", 0.75, 0.51, 0.24, 0.45, 0.16, 0.48, 0.38, 0.58, 0.75, 0.16, 0.81, 0.0, 0.3, 0.4, 0.31, 0.37, 0.5, 1.0, 0.54, 0.85, 0.83, 0.43, 0.46, 0.5);
-    fillpatch(i++, "Soft E.Piano", 0.31, 0.51, 0.43, 0.0, 0.35, 0.5, 0.34, 0.26, 0.53, 0.0, 0.63, 0.0, 0.22, 0.0, 0.39, 0.0, 0.8, 0.0, 0.44, 0.81, 0.51, 0.0, 0.5, 0.5);
-    fillpatch(i++, "Thumb Piano", 0.72, 0.82, 1.0, 0.0, 0.35, 0.5, 0.37, 0.47, 0.54, 0.0, 0.5, 0.0, 0.45, 0.0, 0.39, 0.0, 0.39, 0.0, 0.48, 0.81, 0.6, 0.0, 0.71, 0.5);
-    fillpatch(i++, "Steel Drums [ZF]", 0.81, 0.76, 0.19, 0.0, 0.18, 0.7, 0.4, 0.3, 0.54, 0.17, 0.4, 0.0, 0.42, 0.23, 0.47, 0.12, 0.48, 0.0, 0.49, 0.53, 0.36, 0.34, 0.56, 0.5);
-
-    fillpatch(58,  "Car Horn", 0.57, 0.49, 0.31, 0.0, 0.35, 0.5, 0.46, 0.0, 0.68, 0.0, 0.5, 0.46, 0.3, 1.0, 0.23, 0.3, 0.5, 1.0, 0.31, 1.0, 0.38, 0.0, 0.5, 0.5);
-    fillpatch(59,  "Helicopter", 0.0, 0.25, 0.5, 0.0, 0.35, 0.5, 0.08, 0.36, 0.69, 1.0, 0.5, 1.0, 1.0, 0.0, 1.0, 0.96, 0.5, 1.0, 0.92, 0.97, 0.5, 1.0, 0.0, 0.5);
-    fillpatch(60,  "Arctic Wind", 0.0, 0.25, 0.5, 0.0, 0.35, 0.5, 0.16, 0.85, 0.5, 0.28, 0.5, 0.37, 0.3, 0.0, 0.25, 0.89, 0.5, 1.0, 0.89, 0.24, 0.5, 1.0, 1.0, 0.5);
-    fillpatch(61,  "Thip", 1.0, 0.37, 0.51, 0.0, 0.35, 0.5, 0.0, 1.0, 0.97, 0.0, 0.5, 0.02, 0.2, 0.0, 0.2, 0.0, 0.46, 0.0, 0.3, 0.81, 0.5, 0.78, 0.48, 0.5);
-    fillpatch(62,  "Synth Tom", 0.0, 0.25, 0.5, 0.0, 0.76, 0.94, 0.3, 0.33, 0.76, 0.0, 0.68, 0.0, 0.59, 0.0, 0.59, 0.1, 0.5, 0.0, 0.5, 0.81, 0.5, 0.7, 0.0, 0.5);
-    fillpatch(63,  "Squelchy Frog", 0.5, 0.41, 0.23, 0.45, 0.77, 0.0, 0.4, 0.65, 0.95, 0.0, 0.5, 0.33, 0.5, 0.0, 0.25, 0.0, 0.7, 0.65, 0.18, 0.32, 1.0, 0.0, 0.06, 0.5);
-
-    //for testing...
-    //fillpatch(0, "Monosynth", 0.62, 0.26, 0.51, 0.79, 0.35, 0.54, 0.64, 0.39, 0.51, 0.65, 0.0, 0.07, 0.52, 0.24, 0.84, 0.13, 0.3, 0.76, 0.21, 0.58, 0.3, 0.0, 0.36, 0.5);
-
-    setProgram(0);
-  end;
-
-  if(audioMaster)
-  begin
-    setNumInputs(0);
-    setNumOutputs(NOUTS);
-    canProcessReplacing();
-    isSynth();
-    setUniqueID('MDAj');  ///
-  end;
-
-  //initialise...
-  for(long v=0; v<NVOICES; v++)
-  begin
-    voice[v].dp   = voice[v].dp2   = 1.0;
-    voice[v].saw  = voice[v].p     = voice[v].p2    = 0.0;
-    voice[v].env  = voice[v].envd  = voice[v].envl  = 0.0;
-    voice[v].fenv = voice[v].fenvd = voice[v].fenvl = 0.0;
-    voice[v].f0   = voice[v].f1    = voice[v].f2    = 0.0;
-    voice[v].note = 0;
-  end;
-  notes[0] = EVENTS_DONE;
-  lfo = modwhl = filtwhl = press = fzip = 0.0;
-  rezwhl = pbend = ipbend = 1.0;
-  volume = 0.0005;
-  K = fMode = lastnote = sustain = activevoices = 0;
-  noise = 22222;
-
-  update();
-  suspend();
+   fVoices[v].dp    := 1;
+   fVoices[v].dp2   := 1;
+   fVoices[v].saw   := 0;
+   fVoices[v].p     := 0;
+   fVoices[v].p2    := 0;
+   fVoices[v].env   := 0;
+   fVoices[v].envd  := 0;
+   fVoices[v].envl  := 0;
+   fVoices[v].fenv  := 0;
+   fVoices[v].fenvd := 0;
+   fVoices[v].fenvl := 0;
+   fVoices[v].f0    := 0;
+   fVoices[v].f1    := 0;
+   fVoices[v].f2    := 0;
+   fVoices[v].note  := 0;
 *)
+  end;
+(*
+  notes[0] := EVENTS_DONE;
+*)
+  fLFO          := 0;
+  fModWheel     := 0;
+  fFiltWheel    := 0;
+  fPress        := 0;
+(*
+  fzip          := 0;
+  fRezWheel     := 1;
+  fPitchBend    := 1;
+  ipbend        := 1;
+  fVolume       := 0.0005;
+  K             := 0;
+  fMode         := 0;
+  fLastNote     := 0;
+  fSustain      := 0;
+  fActiveVoices := 0;
+  fNoise        := 22222;
+*)
+
+ Update;
+ VSTModuleSuspend(Sender);
 end;
 
-function TJX10DataModule.VSTModuleOutputProperties(Sender: TObject; var vLabel,
-  shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType;
-  var Flags: TChannelPropertyFlags): Integer;
+function TJX10DataModule.VSTModuleOutputProperties(Sender: TObject;
+  const Index : Integer; var vLabel, shortLabel: string;
+  var SpeakerArrangement: TVstSpeakerArrangementType;
+  var Flags: TVstPinPropertiesFlags): Boolean;
 begin
-(*
- if (index < NOUTS) then
-  begin
-    sprintf(properties->label, "JX10", index + 1);
-    properties->flags = kVstPinIsActive;
-    if(index<2) properties->flags |= kVstPinIsStereo; //make channel 1+2 stereo
-    return true;
-  end;
  result := False;
-*)
+ if (index < numOutputs) then
+  begin
+    vLabel := 'JX10 Channel ' + IntToStr(Index + 1);
+    Flags  := [vppIsActive];
+    if index < 2 then Flags := Flags + [vppIsStereo]; //make channel 1+2 stereo
+    result := True;
+  end;
+end;
+
+procedure TJX10DataModule.VSTModuleParameterChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+begin
+ Update;
 end;
 
 procedure TJX10DataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -225,7 +781,7 @@ begin
   float* out1 = outputs[0];
   float* out2 = outputs[1];
   long event=0, frame=0, frames, v;
-  pb   := pbend;
+  pb   := fPitchBend;
   ipb  := ipbend;
   gl   := fGlide;
   hpf  := 0.997;
@@ -233,16 +789,17 @@ begin
   w    := 0;
   ww   := fNoiseMix;
   fe   := fFilterEnv;
-  fq   := fFilterQ * rezwhl;
+  fq   := fFilterQ * fRezWheel;
   fx   := 1.97 - 0.85 * fq;
   fz   := fzip;
   k    := K;
+*)
+  vib := sin(fLFO);
+  ff  := fFilterFreq + fFiltWheel + (fFilterLFO + fPress) * vib; //have to do again here as way that
+  pwm := 1 + vib * (fModWheel + fPWDepth);           //below triggers on k was too cheap!
+  vib := 1 + vib * (fModWheel + fVibrato);
 
-  vib := sin(lfo);
-  ff  := fFilterFreq + filtwhl + (fFilterLFO + press) * vib; //have to do again here as way that
-  pwm := 1 + vib * (modwhl + fPWDepth);           //below triggers on k was too cheap!
-  vib := 1 + vib * (modwhl + fVibrato);
-
+(*
   if ((fActiveVoices > 0) or (notes[event] < sampleFrames))
    begin
     while (frame < sampleFrames) do
@@ -255,162 +812,419 @@ begin
 
       while (--frames >= 0) do
        begin
-        VOICE *V = voice;
-        o = 0.0;
-        
-        noise = (noise * 196314165) + 907633515;
-        r = (noise & 0x7FFFFF) + 0x40000000; //generate noise + fast convert to float
-        w = *(float * )&r;
-        w = ww * (w - 3.0);
+        fVoices *V = fVoices;
+        o := 0.0;
 
-        if(--k<0) then
+        fNoise := (fNoise * 196314165) + 907633515;
+        r := (fNoise and 0x7FFFFF) + 0x40000000; //generate fNoise + fast convert to float
+        w := *(float * )&r;
+        w := ww * (w - 3);
+
+        dec(k);
+        if (k < 0) then
          begin
-          lfo += fDeltaLFO;
-          if(lfo>PI) lfo -= TWOPI;
-          vib = (float)sin(lfo);
-          ff = fFilterFreq + filtwhl + (fFilterLFO + press) * vib;
-          pwm = 1.0 + vib * (modwhl + fPWDepth);
-          vib = 1.0 + vib * (modwhl + fVibrato);
-          k = KMAX;
+          fLFO := fLFO + fDeltaLFO;
+          if fLFO > PI then fLFO := fLFO - 2 * Pi;
+          vib := sin(fLFO);
+          ff  := fFilterFreq + fFiltWheel + (fFilterLFO + fPress) * vib;
+          pwm := 1 + vib * (fModWheel + fPWDepth);
+          vib := 1 + vib * (fModWheel + fVibrato);
+          k   := KMAX;
          end;
 
-        for(v=0; v<NVOICES; v++)  //for each voice
-        begin 
-          e = V->env;
-          if(e > SILENCE)
-          begin //Sinc-Loop Oscillator
-            x = V->p + V->dp;
-            if(x > min) 
-            begin
-              if(x > V->pmax) 
-              begin 
-                x = V->pmax + V->pmax - x;  
-                V->dp = -V->dp; 
-              end;
-              V->p = x;
-              x = V->sin0 * V->sinx - V->sin1; //sine osc
-              V->sin1 = V->sin0;
-              V->sin0 = x;
-              x = x / V->p;
-            end;
+        for v := 0 to cNumVoices - 1 do  //for each voices
+         begin
+          e := V.env;
+          if (e > cSilence)
+          begin // Sinc-Loop Oscillator
+            x := V.p + V.dp;
+            if (x > min) then
+             begin
+              if(x > V.pmax) then
+               begin
+                x := V.pmax + V.pmax - x;
+                V.dp := -V.dp;
+               end;
+              V.p := x;
+              x   := V.sin0 * V.sinx - V.sin1; //sine osc
+              V.sin1 := V.sin0;
+              V.sin0 := x;
+              x := x / V.p;
+             end;
             else
-            begin 
-              V->p = x = - x;  
-              V->dp = V->period * vib * pb; //set period for next cycle
-              V->pmax = (float)trunc(0.5 + V->dp) - 0.5;
-              V->dc = -0.5 * V->lev / V->pmax;
-              V->pmax *= PI;
-              V->dp = V->pmax / V->dp;
-              V->sin0 = V->lev * (float)sin(x);
-              V->sin1 = V->lev * (float)sin(x - V->dp);
-              V->sinx = 2.0 * (float)cos(V->dp);
-              if(x*x > .1) x = V->sin0 / x; else x = V->lev; //was 0.01;
-            end;
-            
-            y = V->p2 + V->dp2; //osc2
-            if(y > min) 
-            begin 
-              if(y > V->pmax2) 
-              begin 
-                y = V->pmax2 + V->pmax2 - y;
-                V->dp2 = -V->dp2; 
-              end;
-              V->p2 = y;
-              y = V->sin02 * V->sinx2 - V->sin12;
-              V->sin12 = V->sin02;
-              V->sin02 = y;
-              y = y / V->p2;
-            end;
+             begin
+              x      := - x;
+              V.p    := x;
+              V.dp   := V.period * vib * pb; //set period for next cycle
+              V.pmax := trunc(0.5 + V.dp) - 0.5;
+              V.dc   := -0.5 * V.lev / V.pmax;
+              V.pmax := V.pmax * PI;
+              V.dp   := V.pmax / V.dp;
+              V.sin0 := V.lev * sin(x);
+              V.sin1 := V.lev * sin(x - V.dp);
+              V.sinx := 2 * cos(V.dp);
+              if (x * x > 0.1)                     // was 0.01;
+               then x := V.sin0 / x
+               else x := V.lev;
+             end;
+
+            y := V.p2 + V.dp2; //osc2
+            if (y > min) then
+             begin
+              if (y > V.pmax2) then
+               begin
+                y := V.pmax2 + V.pmax2 - y;
+                V.dp2 := -V.dp2;
+               end;
+              V.p2 := y;
+              y := V.sin02 * V.sinx2 - V.sin12;
+              V.sin12 := V.sin02;
+              V.sin02 := y;
+              y := y / V.p2;
+             end
             else
-            begin
-              V->p2 = y = - y;  
-              V->dp2 = V->period * V->fDetune * pwm * pb;
-              V->pmax2 = (float)trunc(0.5 + V->dp2) - 0.5;
-              V->dc2 = -0.5 * V->lev2 / V->pmax2;
-              V->pmax2 *= PI;
-              V->dp2 = V->pmax2 / V->dp2;
-              V->sin02 = V->lev2 * (float)sin(y);
-              V->sin12 = V->lev2 * (float)sin(y - V->dp2);
-              V->sinx2 = 2.0 * (float)cos(V->dp2);
-              if(y*y > .1) y = V->sin02 / y; else y = V->lev2;
-            end;
-            V->saw = V->saw * hpf + V->dc + x - V->dc2 - y;  //integrated sinc = saw
-            x = V->saw + w;
-            V->env += V->envd * (V->envl - V->env);
+             begin
+              y       := - y;
+              V.p2    := y;
+              V.dp2   := V.period * V.fDetune * pwm * pb;
+              V.pmax2 := trunc(0.5 + V.dp2) - 0.5;
+              V.dc2   := -0.5 * V.lev2 / V.pmax2;
+              V.pmax2 := V.pmax2 * PI;
+              V.dp2   := V.pmax2 / V.dp2;
+              V.sin02 := V.lev2 * sin(y);
+              V.sin12 := V.lev2 * sin(y - V.dp2);
+              V.sinx2 := 2 * cos(V.dp2);
+              if (y * y > 0.1)
+               then y := V.sin02 / y
+               else y := V.lev2;
+             end;
+            V.saw := V.saw * hpf + V.dc + x - V.dc2 - y;  //integrated sinc = saw
+            x := V.saw + w;
+            V.env := V.env + V.envd * (V.envl - V.env);
 
-            if(k==KMAX) //filter freq update at LFO rate
-            begin
-              if((V->env+V->envl)>3.0) begin V->envd=fDecay; V->envl=fSustain; end; //envelopes
-              V->fenv += V->fenvd * (V->fenvl - V->fenv);
-              if((V->fenv+V->fenvl)>3.0) begin V->fenvd=fdec; V->fenvl=fsus; end;
+            if (k = KMAX) then //filter freq update at fLFO rate
+             begin
+              if V.env + V.envl > 3 then
+               begin
+                V.envd := fDecay;
+                V.envl := fSustain;
+               end; //envelopes
+              V.fenv := V.fenv + V.fenvd * (V.fenvl - V.fenv);
+             if V.fenv + V.fenvl > 3 then
+              begin
+               V.fenvd := fdec;
+               V.fenvl := fsus;
+              end;
 
-              fz += 0.005 * (ff - fz); //filter zipper noise filter
-              y = V->fc * (float)exp(fz + fe * V->fenv) * ipb; //filter cutoff
-              if(y<0.005) y=0.005;
-              V->ff = y;
+             fz := fz + 0.005 * (ff - fz); // Filter zipper fNoise filter
+             y := V.fc * exp(fz + fe * V.fenv) * ipb; // Filter cutoff
+             if (y < 0.005) then y := 0.005;
+             V.ff := y;
  
-              V->period += gl * (V->target - V->period); //fGlide
-              if(V->target < V->period) V->period += gl * (V->target - V->period);
+             V.period := V.period + gl * (V.target - V.period); // Glide
+             if V.target < V.period
+              then V.period := V.period + gl * (V.target - V.period);
             end;
 
-            if(V->ff > fx) V->ff = fx; //stability limit
-            
-            V->f0 += V->ff * V->f1; //state-variable filter
-            V->f1 -= V->ff * (V->f0 + fq * V->f1 - x - V->f2);
-            V->f1 -= 0.2 * V->f1 * V->f1 * V->f1; //soft limit
+            if V.ff > fx then V.ff := fx; // stability limit
 
-            V->f2 = x;
-            
-            o += V->env * V->f0;
+            V.f0 := V.f0 + V.ff * V.f1; //state-variable filter
+            V.f1 := V.f1 - V.ff * (V.f0 + fq * V.f1 - x - V.f2);
+            V.f1 := V.f1 - 0.2 * sqr(V.f1) * V.f1; //soft limit
+
+            V.f2 := x;
+
+            o := o + V.env * V.f0;
           end;
-          V++;
+         inc(V);
         end;
 
         *out1++ = o;
         *out2++ = o;
       end;
 
-      if (frame < sampleFrames)
-      begin
+      if (frame < sampleFrames) then
+       begin
         long note = notes[event++];
         long vel  = notes[event++];
         noteOn(note, vel);
-      end;
+       end;
     end;
   
-    activevoices = NVOICES;
-    for(v=0; v<NVOICES; v++)
-    begin
-      if(voice[v].env<SILENCE)  //choke voices
-      begin
-        voice[v].env = voice[v].envl = 0.0;
-        voice[v].f0 = voice[v].f1 = voice[v].f2 = 0.0;
-        activevoices--;
-      end;
-    end;
-  end;
+    fActiveVoices := cNumVoices;
+    for v := 0 to cNumVoices - 1 do
+     begin
+      if fVoices[v].env < cSilence then  // choke voices
+       begin
+        fVoices[v].env  := 0;
+        fVoices[v].envl := 0;
+        fVoices[v].f0   := 0;
+        fVoices[v].f1   := 0;
+        fVoices[v].f2   := 0;
+        dec(fActiveVoices);
+       end;
+     end;
+   end
   else //empty block
-  begin
-    while(--sampleFrames >= 0)
-    begin
+   begin
+    while (--sampleFrames >= 0) do
+     begin
       *out1++ = 0.0;
       *out2++ = 0.0;
-    end;
-  end;
+     end;
+   end;
   notes[0] = EVENTS_DONE;  //mark events buffer as done
   fzip = fz;
   K = k;
 *)
 end;
 
+procedure TJX10DataModule.VSTModuleProcessMidi(Sender: TObject;
+  MidiEvent: TVstMidiEvent);
+begin
+ with MidiEvent do
+  case MidiData[0] and $F0 of     // status byte (all channels)
+   $80: begin  // Note off
+(*
+         notes[npos++] = event.deltaFrames; //delta
+         notes[npos++] = midiData[1] & $7F; //note
+         notes[npos++] = 0;                  //vel
+*)
+        end;
+
+   $90: begin // Note on
+(*
+         notes[npos++] = event.deltaFrames; //delta
+         notes[npos++] = midiData[1] & $7F; //note
+         notes[npos++] = midiData[2] & $7F; //vel
+*)
+        end;
+
+   $B0: case midiData[1] of  // Controller
+         $01: fModWheel := 0.000005 * sqr(midiData[2]);         // Mod Wheel
+         $02,
+         $4A: fFiltWheel :=  0.02 * (midiData[2]);              // Filter +
+         $03: fFiltWheel := -0.03 * (midiData[2]);              // Filter -
+         $07: fVolume    := 0.00000005 * sqr(midiData[2]);      // Volume
+         $10,
+         $47: fResonanceWheel  := 0.0065 * (154 - midiData[2]); // Resonance
+         $40: begin // Sustain
+               fSustain := midiData[2] and $40;
+               if (fSustain = 0) then
+                begin
+(*
+                 notes[npos++] = event.deltaFrames;
+                 notes[npos++] = fSustain; //end all sustained notes
+                 notes[npos++] = 0;
+*)               end;
+              end;
+
+         else  //all notes off
+          if (midiData[1] > $7A) then
+           begin
+(*
+            for(long v=0; v<NVOICES; v++)
+             begin
+              fVoices[v].envl = fVoices[v].env = 0.0;
+              fVoices[v].envd = 0.99;
+              fVoices[v].note = 0;
+              //could probably reset some more stuff here for safety!
+             end;
+*)
+            fSustain := 0;
+           end;
+        end;
+
+   $C0: if (midiData[1] < NumPrograms)
+         then setProgram(midiData[1]);        // Program Change
+
+   $D0: fPress := 0.00001 * sqr(midiData[1]); // Channel Aftertouch
+   $E0: begin //pitch bend
+         fPitchBendInv := exp(0.000014102 * (midiData[1] + 128 * midiData[2] - 8192));
+         fPitchBend := 1 / fPitchBendInv;
+        end;
+  end;
+end;
+
 procedure TJX10DataModule.VSTModuleResume(Sender: TObject);
 begin
- // DECLARE_VST_DEPRECATED (wantEvents) ();
+ wantEvents(1);
 end;
 
 procedure TJX10DataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
-// fDeltaLFO = fLFOHz * (TWOPI * KMAX) / SampleRate;
+// fDeltaLFO := fLFOHz * (2 * Pi * KMAX) / SampleRate;
+end;
+
+procedure TJX10DataModule.VSTModuleSuspend(Sender: TObject);
+var
+  v : Integer;
+begin
+ for v := 0 to cNumVoices - 1 do
+  begin
+(*
+   fVoices[v].envl := 0;
+   fVoices[v].env  := 0;
+   fVoices[v].envd := 0.99;
+   fVoices[v].note := 0;
+   fVoices[v].f0   := 0;
+   fVoices[v].f1   := 0;
+   fVoices[v].f2   := 0;
+*)
+  end;
+end;
+
+procedure TJX10DataModule.noteOn(Note, Velocity: Integer);
+var
+  p, l         : Single;
+  v, tmp, held : Integer;
+begin
+ l    := 100; //louder than any envelope!
+ v    := 0;
+ held := 0;
+
+ if (velocity > 0) then // Note on
+  begin
+    if fVelOff > 0 then Velocity := 80;
+
+    if (fMode and 4) > 0 then // Monophonic
+     begin
+(*      if (fVoices[0].note > 0) // Legato Pitch Change
+       begin
+        for tmp := (cNumVoices - 1) downto 0   // queue any held notes
+         do fVoices[tmp].note := fVoices[tmp - 1].note;
+        p := fTune * exp(-0.05776226505 * (note + ANALOG * v));
+        while (p < 3) or ((p * fDetune)<3) do p := p + p;
+        fVoices[v].target := p;
+        if (fMode and 2) = 0 then fVoices[v].period := p;
+        fVoices[v].fc   := exp(fFilterVel * (velocity - 64)) / p;
+        fVoices[v].env  := fVoices[v].env + 2 * cSilence; ///was missed out below if returned?
+        fVoices[v].note := note;
+        exit;
+       end;
+*)
+     end
+    else //polyphonic
+     for tmp := 0 to cNumVoices - 1 do  //replace quietest fVoices not in attack
+      begin
+(*
+       if (fVoices[tmp].note > 0) then inc(held);
+       if (fVoices[tmp].env  < l) and (fVoices[tmp].envl < 2) then
+        begin
+         l := fVoices[tmp].env;
+         v := tmp;
+        end;
+*)
+      end;
+(*
+    p := fTune * exp(-0.05776226505 * (note + ANALOG * v));
+    while (p < 3) or ((p * fDetune) < 3) do p := p + p;
+    fVoices[v].target  := p;
+    fVoices[v].fDetune := fDetune;
+
+    tmp := 0;
+    if (fMode and 2) > 0 then
+     if ((fMode and 1 > 0) or (held > 0)) then tmp := note - fLastNote; // Glide
+    fVoices[v].period := p * Power(1.059463094359, tmp - fGlidedisp);
+    if fVoices[v].period < 3
+     then fVoices[v].period := 3.0; //limit min period
+
+    fVoices[v].note := note;
+    fLastNote       := note;
+
+    fVoices[v].fc   := exp(fFilterVel * (velocity - 64)) / p;  // filter tracking
+
+    fVoices[v].lev  := fVolTrim * fVolume * (0.004 * sqr(velocity + 64) - 8);
+    fVoices[v].lev2 := fVoices[v].lev * fOscMix;
+*)
+
+    if (Parameter[20] < 0.5) then //force 180 deg phase difference for PWM
+     begin
+(*
+      if fVoices[v].dp > 0 then
+       begin
+        p := fVoices[v].pmax + fVoices[v].pmax - fVoices[v].p;
+        fVoices[v].dp2 := -fVoices[v].dp;
+       end
+      else
+       begin
+        p := fVoices[v].p;
+        fVoices[v].dp2 := fVoices[v].dp;
+       end;
+      fVoices[v].p2    := p + PI * fVoices[v].period;
+      fVoices[v].pmax2 := fVoices[v].p2;
+
+      fVoices[v].dc2   := 0;
+      fVoices[v].sin02 := 0
+      fVoices[v].sinx2 := 0
+      fVoices[v].sin12 := 0;
+*)
+     end;
+
+(*
+    if (fMode and 4) > 0    // monophonic retriggering
+     then fVoices[v].env := fVoices[v].env + 2 * cSilence
+     else
+      begin
+       //if(Parameter[15] < 0.28)
+       //begin
+       //  fVoices[v].f0 = fVoices[v].f1 = fVoices[v].f2 = 0.0; //reset filter
+       //  fVoices[v].env = cSilence + cSilence;
+       //  fVoices[v].fenv = 0.0;
+       //end;
+       //else
+         fVoices[v].env := fVoices[v].env + 2 * cSilence; //anti-glitching trick
+      end;
+    fVoices[v].envl  := 2;
+    fVoices[v].envd  := fAttack;
+    fVoices[v].fenvl := 2;
+    fVoices[v].fenvd := fatt;
+*)
+  end
+ else //note off
+  begin
+(*
+   if (fMode and 4 > 0) and (fVoices[0].note = Note) then //monophonic (and current note)
+    begin
+      for v := cNumVoices - 1 downto 0 do
+       if fVoices[v].Note > 0 then held := v; //any other notes queued?
+      if held > 0 then
+       begin
+        fVoices[v].note    := fVoices[held].note;
+        fVoices[held].note := 0;
+
+        p := fTune * exp(-0.05776226505 * (fVoices[v].note + ANALOG * (double)v));
+        while (p < 3) or ((p * fDetune) < 3) do p := p + p;
+        fVoices[v].target := p;
+        if (fMode and 2) = 0
+         then fVoices[v].period := p;
+        fVoices[v].fc := 1 / p;
+       end
+      else
+       begin
+        fVoices[v].envl  := 0.0;
+        fVoices[v].envd  := fRelease;
+        fVoices[v].fenvl := 0.0;
+        fVoices[v].fenvd := frel;
+        fVoices[v].note  := 0;
+       end;
+    end
+   else //polyphonic
+    begin
+     for v := 0 to cNumVoices - 1 do
+      if fVoices[v].note = Note then //any voices playing that note?
+       if fSustain = 0 then
+        begin
+         fVoices[v].envl  := 0.0;
+         fVoices[v].envd  := fRelease;
+         fVoices[v].fenvl := 0.0;
+         fVoices[v].fenvd := frel;
+         fVoices[v].note  := 0;
+        end
+       else fVoices[v].note := fSustain;
+    end;
+*)
+  end;
 end;
 
 end.
@@ -418,404 +1232,70 @@ end.
 (*
 mdaJX10Program::mdaJX10Program()
 begin
-  Parameter[0] := 0.00; //OSC Mix
-  Parameter[1] := 0.25; //OSC fTune
-  Parameter[2] := 0.50; //OSC Fine
+  Parameter[0] := 0.00; // OSC Mix
+  Parameter[1] := 0.25; // OSC fTune
+  Parameter[2] := 0.50; // OSC Fine
 
-  Parameter[3] := 0.00; //OSC fMode
-  Parameter[4] := 0.35; //OSC Rate
-  Parameter[5] := 0.50; //OSC Bend
+  Parameter[3] := 0.00; // OSC fMode
+  Parameter[4] := 0.35; // OSC Rate
+  Parameter[5] := 0.50; // OSC Bend
 
-  Parameter[6] := 1.00; //VCF Freq
-  Parameter[7] := 0.15; //VCF Reso
-  Parameter[8] := 0.75; //VCF <Env
+  Parameter[6] := 1.00; // VCF Freq
+  Parameter[7] := 0.15; // VCF Reso
+  Parameter[8] := 0.75; // VCF <Env
 
-  Parameter[9] := 0.00; //VCF <LFO
-  Parameter[10] = 0.50; //VCF <Vel
-  Parameter[11] = 0.00; //VCF fAttack
+  Parameter[9] := 0.00; // VCF <fLFO
+  Parameter[10] = 0.50; // VCF <Vel
+  Parameter[11] = 0.00; // VCF fAttack
 
-  Parameter[12] = 0.30; //VCF fDecay
-  Parameter[13] = 0.00; //VCF fSustain
-  Parameter[14] = 0.25; //VCF fRelease
+  Parameter[12] = 0.30; // VCF fDecay
+  Parameter[13] = 0.00; // VCF fSustain
+  Parameter[14] = 0.25; // VCF fRelease
 
-  Parameter[15] = 0.00; //ENV fAttack
-  Parameter[16] = 0.50; //ENV fDecay
-  Parameter[17] = 1.00; //ENV fSustain
-  
-  Parameter[18] = 0.30; //ENV fRelease
-  Parameter[19] = 0.81; //LFO Rate
-  Parameter[20] = 0.50; //fVibrato
+  Parameter[15] = 0.00; // ENV fAttack
+  Parameter[16] = 0.50; // ENV fDecay
+  Parameter[17] = 1.00; // ENV fSustain
 
-  Parameter[21] = 0.00; //Noise   - not present in original patches
-  Parameter[22] = 0.50; //Octave
-  Parameter[23] = 0.50; //Tuning
+  Parameter[18] = 0.30; // ENV fRelease
+  Parameter[19] = 0.81; // LFO Rate
+  Parameter[20] = 0.50; // Vibrato
+
+  Parameter[21] = 0.00; // Noise   - not present in original patches
+  Parameter[22] = 0.50; // Octave
+  Parameter[23] = 0.50; // Tuning
   strcpy (name, "Empty Patch");
-end;
-
-void mdaJX10::suspend() //Used by Logic (have note off code in 3 places now...)
-begin
-  for(long v=0; v<NVOICES; v++)
-  begin
-    voice[v].envl = voice[v].env = 0.0; 
-    voice[v].envd = 0.99;
-    voice[v].note = 0;
-    voice[v].f0 = voice[v].f1 = voice[v].f2 = 0.0;
-  end;
-end;
-
-void mdaJX10::setProgram(VstInt32 program)
-begin
-  long i;
-
-  mdaJX10Program *p = &programs[program];
-  curProgram = program;
-  for(i=0; i<NPARAMS; i++) Parameter[i] = p->Parameter[i];
-  update();
-end; //may want all notes off here - but this stops use of patches as snapshots!
-
-
-void mdaJX10::setParameter(VstInt32 index, float value)
-begin
-  mdaJX10Program *p = &programs[curProgram];
-  Parameter[index] = p->Parameter[index] = value;
-  update();
-
-  ///if(editor) editor->postUpdate();
-end;
-
-
-void mdaJX10::fillpatch(long p, char *name,
-                      float p0,  float p1,  float p2,  float p3,  float p4,  float p5, 
-                      float p6,  float p7,  float p8,  float p9,  float p10, float p11,
-                      float p12, float p13, float p14, float p15, float p16, float p17, 
-                      float p18, float p19, float p20, float p21, float p22, float p23)
-begin
-  strcpy(programs[p].name, name);
-  programs[p].Parameter[0] := p0;   programs[p].Parameter[1] := p1;
-  programs[p].Parameter[2] := p2;   programs[p].Parameter[3] := p3;
-  programs[p].Parameter[4] := p4;   programs[p].Parameter[5] := p5;
-  programs[p].Parameter[6] := p6;   programs[p].Parameter[7] := p7;
-  programs[p].Parameter[8] := p8;   programs[p].Parameter[9] := p9;
-  programs[p].Parameter[10] = p10;  programs[p].Parameter[11] = p11;
-  programs[p].Parameter[12] = p12;  programs[p].Parameter[13] = p13;
-  programs[p].Parameter[14] = p14;  programs[p].Parameter[15] = p15;
-  programs[p].Parameter[16] = p16;  programs[p].Parameter[17] = p17;
-  programs[p].Parameter[18] = p18;  programs[p].Parameter[19] = p19;
-  programs[p].Parameter[20] = p20;  programs[p].Parameter[21] = p21;
-  programs[p].Parameter[22] = p22;  programs[p].Parameter[23] = p23;  
-end;
-
-
-float mdaJX10::getParameter(VstInt32 index)     begin return Parameter[index]; end;
-void  mdaJX10::setProgramName(char *name)   begin strcpy(programs[curProgram].name, name); end;
-void  mdaJX10::getProgramName(char *name)   begin strcpy(name, programs[curProgram].name); end;
-void  mdaJX10::setBlockSize(VstInt32 blockSize) begin  AudioEffectX::setBlockSize(blockSize); end;
-
-bool mdaJX10::getProgramNameIndexed(VstInt32 category, VstInt32 index, char* text)
-begin
-  if(index<NPROGS)
-  begin
-    strcpy(text, programs[index].name);
-    return true;
-  end;
-  return false;
-end;
-
-
-bool mdaJX10::copyProgram(VstInt32 destination)
-begin
-  if(destination<NPROGS)
-  begin
-    programs[destination] = programs[curProgram];
-    return true;
-  end;
-  return false;
 end;
 
 
 void mdaJX10::getParameterDisplay(VstInt32 index, char *text)
 begin
-  char string[16];
-  
-  switch(index)
-  begin
-    case  0: sprintf(string, "%4.0f:%2.0f", 100.0-50.0*Parameter[index], 50.0*Parameter[index]); break;
-    case  1: sprintf(string, "%.0f", fSemi); break;
-    case  2: sprintf(string, "%.1f", fCent); break; 
-    case  3: switch(fMode)
-             begin case  0:
-               case  1: strcpy(string, "POLY    "); break;
-               case  2: strcpy(string, "P-LEGATO"); break;
-               case  3: strcpy(string, "P-GLIDE "); break;
-               case  4:
-               case  5: strcpy(string, "MONO    "); break;
-               case  6: strcpy(string, "M-LEGATO"); break;
-               default: strcpy(string, "M-GLIDE "); break; end; break;
-    case  5: sprintf(string, "%.2f", fGlidedisp); break;
-    case  6: sprintf(string, "%.1f", 100.0 * Parameter[index]); break;
-    case  8:
-    case 23: sprintf(string, "%.1f", 200.0 * Parameter[index] - 100.0); break;
-    case 10: if(Parameter[index]<0.05) strcpy(string, "   OFF  ");
-               else sprintf(string, "%.0f", 200.0 * Parameter[index] - 100.0); break;
-    case 19: sprintf(string, "%.3f", fLFOHz); break;
-    case 20: if(Parameter[index]<0.5) sprintf(string, "PWM %3.0f", 100.0 - 200.0 * Parameter[index]);
-               else sprintf(string, "%7.0f", 200.0 * Parameter[index] - 100.0); break;
-    case 22: sprintf(string, "%d", (long)(Parameter[index] * 4.9) - 2); break;
-    default: sprintf(string, "%.0f", 100.0 * Parameter[index]);
-  end;
-  string[8] = 0;
-  strcpy(text, (char * )string);
+ case index of
+   0: sprintf(string, "%4.0f:%2.0f", 100.0-50.0*Parameter[index], 50.0*Parameter[index]); break;
+   1: sprintf(string, "%.0f", fSemi); break;
+   2: sprintf(string, "%.1f", fCent); break;
+   3: switch(fMode)
+              begin case  0:
+              1: strcpy(string, "POLY    "); break;
+              2: strcpy(string, "P-LEGATO"); break;
+              3: strcpy(string, "P-GLIDE "); break;
+              4:
+              5: strcpy(string, "MONO    "); break;
+              6: strcpy(string, "M-LEGATO"); break;
+                default: strcpy(string, "M-GLIDE "); break; end; break;
+   5: sprintf(string, "%.2f", fGlidedisp); break;
+   6: sprintf(string, "%.1f", 100.0 * Parameter[index]); break;
+   8:
+  23: sprintf(string, "%.1f", 200.0 * Parameter[index] - 100.0); break;
+  10: if(Parameter[index]<0.05) strcpy(string, "   OFF  ");
+                else sprintf(string, "%.0f", 200.0 * Parameter[index] - 100.0); break;
+  19: sprintf(string, "%.3f", fLFOHz); break;
+  20: if(Parameter[index]<0.5) sprintf(string, "PWM %3.0f", 100.0 - 200.0 * Parameter[index]);
+                else sprintf(string, "%7.0f", 200.0 * Parameter[index] - 100.0); break;
+  22: sprintf(string, "%d", (long)(Parameter[index] * 4.9) - 2); break;
+  else sprintf(string, "%.0f", 100.0 * Parameter[index]);
+ end;
+ string[8] := 0;
+ strcpy(text, (char * )string);
 end;
 
-
-void mdaJX10::getParameterLabel(VstInt32 index, char *label)
-begin
-  switch(index)
-  begin
-    case  1: 
-    case  5: strcpy(label, "   semi "); break;
-    case  2:
-    case 23: strcpy(label, "   cent "); break;
-    case  3: 
-    case 22: strcpy(label, "        "); break;
-    case 19: strcpy(label, "     Hz "); break;
-    default: strcpy(label, "      % ");
-  end;
-end;
-
-void mdaJX10::noteOn(long note, long velocity)
-begin
-  float p, l=100.0; //louder than any envelope!
-  long  v=0, tmp, held=0;
-  
-  if(velocity>0) //note on
-  begin
-    if(fVelOff) velocity = 80;
-    
-    if(fMode & 4) //monophonic
-    begin
-      if(voice[0].note > 0) //legato pitch change
-      begin
-        for(tmp=(NVOICES-1); tmp>0; tmp--)  //queue any held notes
-        begin
-          voice[tmp].note = voice[tmp - 1].note;
-        end;
-        p = fTune * (float)exp(-0.05776226505 * ((double)note + ANALOG * (double)v));
-        while(p<3.0 || (p * fDetune)<3.0) p += p;
-        voice[v].target = p;
-        if((fMode & 2)==0) voice[v].period = p;
-        voice[v].fc = (float)exp(fFilterVel * (float)(velocity - 64)) / p;
-        voice[v].env += SILENCE + SILENCE; ///was missed out below if returned?
-        voice[v].note = note;
-        return;
-      end;
-    end;
-    else //polyphonic 
-    begin
-      for(tmp=0; tmp<NVOICES; tmp++)  //replace quietest voice not in attack
-      begin
-        if(voice[tmp].note > 0) held++;
-        if(voice[tmp].env<l && voice[tmp].envl<2.0) begin l=voice[tmp].env;  v=tmp; end;
-      end;
-    end;  
-    p = fTune * (float)exp(-0.05776226505 * ((double)note + ANALOG * (double)v));
-    while(p<3.0 || (p * fDetune)<3.0) p += p;
-    voice[v].target = p;
-    voice[v].fDetune = fDetune;
-  
-    tmp = 0;
-    if(fMode & 2)
-    begin
-      if((fMode & 1) || held) tmp = note - lastnote; //fGlide
-    end;
-    voice[v].period = p * (float)pow(1.059463094359, (double)tmp - fGlidedisp);
-    if(voice[v].period<3.0) voice[v].period = 3.0; //limit min period
-
-    voice[v].note = lastnote = note;
-
-    voice[v].fc = (float)exp(fFilterVel * (float)(velocity - 64)) / p; //filter tracking
-
-    voice[v].lev = fVolTrim * volume * (0.004 * (float)((velocity + 64) * (velocity + 64)) - 8.0);
-    voice[v].lev2 = voice[v].lev * fOscMix;
-
-    if(Parameter[20]<0.5) //force 180 deg phase difference for PWM
-    begin
-      if(voice[v].dp>0.0)
-      begin
-        p = voice[v].pmax + voice[v].pmax - voice[v].p;
-        voice[v].dp2 = -voice[v].dp;
-      end;
-      else
-      begin
-        p = voice[v].p;
-        voice[v].dp2 = voice[v].dp;
-      end;
-      voice[v].p2 = voice[v].pmax2 = p + PI * voice[v].period;
-
-      voice[v].dc2 = 0.0;
-      voice[v].sin02 = voice[v].sin12 = voice[v].sinx2 = 0.0;
-    end;
-
-    if(fMode & 4) //monophonic retriggering
-    begin
-      voice[v].env += SILENCE + SILENCE;
-    end;
-    else
-    begin
-      //if(Parameter[15] < 0.28) 
-      //begin
-      //  voice[v].f0 = voice[v].f1 = voice[v].f2 = 0.0; //reset filter
-      //  voice[v].env = SILENCE + SILENCE;
-      //  voice[v].fenv = 0.0;
-      //end;
-      //else 
-        voice[v].env += SILENCE + SILENCE; //anti-glitching trick
-    end;
-    voice[v].envl  := 2;
-    voice[v].envd  := fAttack;
-    voice[v].fenvl := 2;
-    voice[v].fenvd := fatt;
-  end;
-  else //note off
-  begin
-    if((fMode & 4) && (voice[0].note==note)) //monophonic (and current note)
-    begin
-      for(v=(NVOICES-1); v>0; v--)
-      begin
-        if(voice[v].note>0) held = v; //any other notes queued?
-      end;
-      if(held>0)
-      begin
-        voice[v].note = voice[held].note;
-        voice[held].note = 0;
-        
-        p = fTune * (float)exp(-0.05776226505 * ((double)voice[v].note + ANALOG * (double)v));
-        while(p<3.0 || (p * fDetune)<3.0) p += p;
-        voice[v].target = p;
-        if((fMode & 2)==0) voice[v].period = p;
-        voice[v].fc = 1.0 / p;
-      end;
-      else
-      begin
-        voice[v].envl  = 0.0;
-        voice[v].envd  = fRelease;
-        voice[v].fenvl = 0.0;
-        voice[v].fenvd = frel;
-        voice[v].note  = 0;
-      end;
-    end;
-    else //polyphonic
-    begin
-      for(v=0; v<NVOICES; v++) if(voice[v].note==note) //any voices playing that note?
-      begin
-        if(sustain==0)
-        begin
-          voice[v].envl  = 0.0;
-          voice[v].envd  = fRelease;
-          voice[v].fenvl = 0.0;
-          voice[v].fenvd = frel;
-          voice[v].note  = 0;
-        end;
-        else voice[v].note = SUSTAIN;
-      end;
-    end;
-  end;
-end;
-
-
-VstInt32 mdaJX10::processEvents(VstEvents* ev)
-begin
-  long npos=0;
-
-  for (long i=0; i<ev->numEvents; i++)
-  begin
-    if((ev->events[i])->type != kVstMidiType) continue;
-    VstMidiEvent* event = (VstMidiEvent* )ev->events[i];
-    char* midiData = event->midiData;
-    
-    switch(midiData[0] & 0xf0) //status byte (all channels)
-    begin
-      case 0x80: //note off
-        notes[npos++] = event->deltaFrames; //delta
-        notes[npos++] = midiData[1] & 0x7F; //note
-        notes[npos++] = 0;                  //vel
-        break;
-
-      case 0x90: //note on
-        notes[npos++] = event->deltaFrames; //delta
-        notes[npos++] = midiData[1] & 0x7F; //note
-        notes[npos++] = midiData[2] & 0x7F; //vel
-        break;
-
-      case 0xB0: //controller
-        switch(midiData[1])
-        begin
-          case 0x01:  //mod wheel
-            modwhl = 0.000005 * (float)(midiData[2] * midiData[2]);
-            break;
-          case 0x02:  //filter +
-          case 0x4A:
-            filtwhl = 0.02 * (float)(midiData[2]);
-            break;
-          case 0x03:  //filter -
-            filtwhl = -0.03 * (float)(midiData[2]);
-            break;
-
-          case 0x07:  //volume
-            volume = 0.00000005 * (float)(midiData[2] * midiData[2]);
-            break;
-
-          case 0x10:  //resonance
-          case 0x47:
-            rezwhl = 0.0065 * (float)(154 - midiData[2]);
-            break;
-
-          case 0x40:  //sustain
-            sustain = midiData[2] & 0x40;
-            if(sustain==0)
-            begin
-              notes[npos++] = event->deltaFrames;
-              notes[npos++] = SUSTAIN; //end all sustained notes
-              notes[npos++] = 0;
-            end;
-            break;
-
-          default:  //all notes off
-            if(midiData[1]>0x7A) 
-            begin  
-              for(long v=0; v<NVOICES; v++) 
-              begin
-                voice[v].envl = voice[v].env = 0.0; 
-                voice[v].envd = 0.99;
-                voice[v].note = 0;
-                //could probably reset some more stuff here for safety!
-              end;
-              sustain = 0;
-            end;
-            break;
-        end;
-        break;
-
-      case 0xC0: //program change
-        if(midiData[1]<NPROGS) setProgram(midiData[1]);
-        break;
-
-      case 0xD0: //channel aftertouch
-        press = 0.00001 * (float)(midiData[1] * midiData[1]);
-        break;
-      
-      case 0xE0: //pitch bend
-        ipbend = (float)exp(0.000014102 * (double)(midiData[1] + 128 * midiData[2] - 8192));
-        pbend = 1.0 / ipbend;
-        break;
-      
-      default: break;
-    end;
-
-    if(npos>EVENTBUFFER) npos -= 3; //discard events if buffer full!!
-    event++;
-  end;
-  notes[npos] = EVENTS_DONE;
-  return 1;
-end;
 *)

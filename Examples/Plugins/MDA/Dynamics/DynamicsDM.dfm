@@ -28,6 +28,7 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
+      OnCustomParameterDisplay = Parameter0Display
     end
     item
       Curve = ctLinear
@@ -38,6 +39,7 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = ':1'
       VSTModule = Owner
+      OnCustomParameterDisplay = Parameter1Display
     end
     item
       Curve = ctLinear
@@ -48,6 +50,7 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
+      OnCustomParameterDisplay = Parameter2Display
     end
     item
       Curve = ctLinear
@@ -58,6 +61,8 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = #181's'
       VSTModule = Owner
+      OnParameterChange = ParameterAttackChange
+      OnCustomParameterDisplay = Parameter3Display
     end
     item
       Curve = ctLinear
@@ -68,6 +73,8 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
+      OnParameterChange = ParameterReleaseChange
+      OnCustomParameterDisplay = Parameter4Display
     end
     item
       Curve = ctLinear
@@ -78,6 +85,7 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
+      OnCustomParameterDisplay = Parameter5Display
     end
     item
       Curve = ctLinear
@@ -88,6 +96,7 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
+      OnCustomParameterDisplay = Parameter6Display
     end
     item
       Curve = ctLinear
@@ -98,6 +107,8 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = #181's'
       VSTModule = Owner
+      OnParameterChange = ParameterGateChange
+      OnCustomParameterDisplay = Parameter7Display
     end
     item
       Curve = ctLinear
@@ -108,6 +119,8 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
+      OnParameterChange = ParameterGateChangeRelease
+      OnCustomParameterDisplay = Parameter8Display
     end
     item
       Curve = ctLinear
@@ -118,6 +131,7 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
+      OnCustomParameterDisplay = Parameter9Display
     end>
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
