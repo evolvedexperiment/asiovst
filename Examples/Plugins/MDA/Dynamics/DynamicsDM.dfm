@@ -23,12 +23,16 @@ object DynamicsDataModule: TDynamicsDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
-      Max = 1.000000000000000000
-      ShortLabel = 'Thresho'
+      LargeStepFloat = 2.000000000000000000
+      MaxInteger = 0
+      Min = -40.000000000000000000
+      MinInteger = -40
+      ShortLabel = 'Thrshld'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
-      OnCustomParameterDisplay = Parameter0Display
     end
     item
       Curve = ctLinear
@@ -39,18 +43,21 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = ':1'
       VSTModule = Owner
-      OnCustomParameterDisplay = Parameter1Display
+      OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
-      Max = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      Max = 40.000000000000000000
+      MaxInteger = 40
       ShortLabel = 'Output'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
-      OnCustomParameterDisplay = Parameter2Display
     end
     item
       Curve = ctLinear
@@ -62,7 +69,7 @@ object DynamicsDataModule: TDynamicsDataModule
       Units = #181's'
       VSTModule = Owner
       OnParameterChange = ParameterAttackChange
-      OnCustomParameterDisplay = Parameter3Display
+      OnCustomParameterDisplay = ParameterAttackDisplay
     end
     item
       Curve = ctLinear
@@ -74,29 +81,45 @@ object DynamicsDataModule: TDynamicsDataModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChange
-      OnCustomParameterDisplay = Parameter4Display
+      OnCustomParameterDisplay = ParameterReleaseDisplay
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Limiter'
-      Max = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      Max = 0.000000009999999939
+      MaxInteger = 0
+      Min = -20.000000000000000000
+      MinInteger = -20
       ShortLabel = 'Limiter'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
-      OnCustomParameterDisplay = Parameter5Display
+      OnParameterChange = ParameterLimiterChange
+      OnCustomParameterLabel = ParameterLimiterLabel
+      OnCustomParameterDisplay = ParameterLimiterDisplay
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gate Threshold'
-      Max = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      Max = 0.000000009999999939
+      MaxInteger = 0
+      Min = -61.000000000000000000
+      MinInteger = -61
       ShortLabel = 'GateThr'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
-      OnCustomParameterDisplay = Parameter6Display
+      OnParameterChange = ParameterGateThresholdChange
+      OnCustomParameterLabel = ParameterGateThresholdLabel
+      OnCustomParameterDisplay = ParameterGateThresholdDisplay
     end
     item
       Curve = ctLinear
@@ -108,7 +131,7 @@ object DynamicsDataModule: TDynamicsDataModule
       Units = #181's'
       VSTModule = Owner
       OnParameterChange = ParameterGateChange
-      OnCustomParameterDisplay = Parameter7Display
+      OnCustomParameterDisplay = ParameterGateAttackDisplay
     end
     item
       Curve = ctLinear
@@ -120,7 +143,7 @@ object DynamicsDataModule: TDynamicsDataModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterGateChangeRelease
-      OnCustomParameterDisplay = Parameter8Display
+      OnCustomParameterDisplay = ParameterGateReleaseDisplay
     end
     item
       Curve = ctLinear
@@ -131,7 +154,7 @@ object DynamicsDataModule: TDynamicsDataModule
       SmoothingFactor = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
-      OnCustomParameterDisplay = Parameter9Display
+      OnCustomParameterDisplay = ParameterMixDisplay
     end>
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess

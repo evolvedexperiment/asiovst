@@ -9,23 +9,25 @@ type
   TDynamicsDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessCompressor(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGateChangeRelease(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure Parameter0Display(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure Parameter1Display(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure Parameter2Display(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure Parameter3Display(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure Parameter4Display(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure Parameter5Display(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure Parameter6Display(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure Parameter7Display(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure Parameter8Display(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure Parameter9Display(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterLimiterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterGateThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterGateAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterGateReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterMixDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterLimiterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterLimiterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterGateThresholdLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterGateThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fMode              : Single;
     fThreshold         : Single;
     fRatio             : Single;
     fTrim              : Single;
@@ -33,11 +35,12 @@ type
     fRelease           : Single;
     fLimiterThreshold  : Single;
     fExpanderThreshold : Single;
-    fExpanderRatio     : Single;
+    fGateRelease     : Single;
     fIntRelease        : Single;
     fGateAttack        : Single;
     fDry               : Single;
     fEnv               : Array [0..2] of Single;
+    procedure CheckProcessChanged;
   public
   end;
 
@@ -48,6 +51,20 @@ implementation
 uses
   Math;
 
+procedure TDynamicsDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ Parameter[0] := -20;  // Threshold [dB]
+ Parameter[1] := 0.40; // Ratio
+ Parameter[2] := 4;    // Level [dB]
+ Parameter[3] := 0.18; // Attack
+ Parameter[4] := 0.55; // Release
+ Parameter[5] := 0;    // Limiter [dB]
+ Parameter[6] := -61;  // Gate Threshold [dB]
+ Parameter[7] := 0.10; // Gate Attack
+ Parameter[8] := 0.50; // Gate Decay
+ Parameter[9] := 1.00; // FX Mix
+end;
+
 procedure TDynamicsDataModule.ParameterGateChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
@@ -57,78 +74,91 @@ end;
 procedure TDynamicsDataModule.ParameterGateChangeRelease(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- fExpanderRatio := 1 - Power(10, -2 - 3.3 * Value);
+ fGateRelease := 1 - Power(10, -2 - 3.3 * Value);
 end;
 
-procedure TDynamicsDataModule.Parameter0Display(Sender: TObject;
+procedure TDynamicsDataModule.ParameterRatioDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(40 * Parameter[0] - 40));
-end;
-
-procedure TDynamicsDataModule.Parameter1Display(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
-begin
- if Parameter[1] > 0.58 then
-  if Parameter[1] < 0.62
+ if Parameter[Index] > 0.58 then
+  if Parameter[Index] < 0.62
    then PreDefined := 'Limit'
-   else PreDefined := FloatToStr(-fRatio)
+   else PreDefined := FloatToStrF(-fRatio, ffGeneral, 2, 2)
  else
-  if(Parameter[1] < 0.2)
-   then PreDefined := FloatToStr(0.5 + 2.5 * Parameter[1])
-   else PreDefined := FloatToStr(1 / (1 - fRatio));
+  if(Parameter[Index] < 0.2)
+   then PreDefined := FloatToStrF(0.5 + 2.5 * Parameter[Index], ffGeneral, 2, 2)
+   else PreDefined := FloatToStrF(1 / (1 - fRatio), ffGeneral, 2, 2);
 end;
 
-procedure TDynamicsDataModule.Parameter2Display(Sender: TObject;
+procedure TDynamicsDataModule.ParameterAttackDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(40 * Parameter[2] - 0)); ///was -20.0
+ PreDefined := IntToStr(round(-301030.1 / (SampleRate * log10(1 - fAttack))));
 end;
 
-procedure TDynamicsDataModule.Parameter3Display(Sender: TObject;
+procedure TDynamicsDataModule.ParameterReleaseDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(-301030.1 / (SampleRate * log10(1.0 - fAttack))));
+ PreDefined := IntToStr(round(-301.0301 / (SampleRate * log10(1 - fRelease))));
 end;
 
-procedure TDynamicsDataModule.Parameter4Display(Sender: TObject;
+procedure TDynamicsDataModule.ParameterLimiterDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(-301.0301 / (SampleRate * log10(1.0 - fRelease))));
+ if fLimiterThreshold = 0 then PreDefined := 'OFF';
 end;
 
-procedure TDynamicsDataModule.Parameter5Display(Sender: TObject;
+procedure TDynamicsDataModule.ParameterLimiterLabel(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- if fLimiterThreshold = 0
-  then PreDefined := 'OFF'
-  else IntToStr(round(30 * Parameter[5] - 20.0));
+ if fLimiterThreshold = 0 then PreDefined := '';
 end;
 
-procedure TDynamicsDataModule.Parameter6Display(Sender: TObject;
+procedure TDynamicsDataModule.ParameterGateThresholdChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+begin
+ if (Value < -60)
+  then fExpanderThreshold := 0 // Expander
+  else fExpanderThreshold := dB_to_Amp(Value);
+end;
+
+procedure TDynamicsDataModule.ParameterGateThresholdDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- if fExpanderThreshold = 0
-  then PreDefined := 'OFF'
-  else PreDefined := IntToStr(round(60 * Parameter[6] - 60.0));
+ if fExpanderThreshold = 0 then PreDefined := 'OFF';
 end;
 
-procedure TDynamicsDataModule.Parameter7Display(Sender: TObject;
+procedure TDynamicsDataModule.ParameterGateThresholdLabel(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(-301030.1 / (SampleRate * log10(1.0 - fGateAttack))));
+ if fExpanderThreshold = 0 then PreDefined := '';
 end;
 
-procedure TDynamicsDataModule.Parameter8Display(Sender: TObject;
+procedure TDynamicsDataModule.ParameterGateAttackDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(-1806 / (SampleRate * log10(fExpanderRatio))));
+ PreDefined := IntToStr(round(-301030.1 / (SampleRate * log10(1 - fGateAttack))));
 end;
 
-procedure TDynamicsDataModule.Parameter9Display(Sender: TObject;
+procedure TDynamicsDataModule.ParameterGateReleaseDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := IntToStr(round(-1806 / (SampleRate * log10(fGateRelease))));
+end;
+
+procedure TDynamicsDataModule.ParameterMixDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
  PreDefined := IntToStr(round(100 * Parameter[9]));
+end;
+
+procedure TDynamicsDataModule.ParameterLimiterChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+begin
+ if Value >= 0
+  then fLimiterThreshold := 0                    // Limiter
+  else fLimiterThreshold  := dB_to_Amp(Value);
+ CheckProcessChanged;
 end;
 
 procedure TDynamicsDataModule.ParameterAttackChange(Sender: TObject;
@@ -143,133 +173,119 @@ begin
  fRelease := Power(10, -2 - 3 * Value);
 end;
 
-procedure TDynamicsDataModule.VSTModuleCreate(Sender: TObject);
+procedure TDynamicsDataModule.CheckProcessChanged;
 begin
- Parameter[0] := 0.60; // Threshold   ///Note : special version for ardislarge
- Parameter[1] := 0.40; // Ratio
- Parameter[2] := 0.10; // Level      ///was 0.6
- Parameter[3] := 0.18; // Attack
- Parameter[4] := 0.55; // Release
- Parameter[5] := 1.00; // Limiter
- Parameter[6] := 0.00; // Gate Threshold
- Parameter[7] := 0.10; // Gate Attack
- Parameter[8] := 0.50; // Gate Decay
- Parameter[9] := 1.00; // FX Mix
+ if (fRatio > 1) or (Parameter[5] < 0) or (Parameter[6] > -60)
+  then OnProcess := VSTModuleProcess
+  else OnProcess := VSTModuleProcessCompressor;
+ OnProcessReplacing := OnProcess;
 end;
 
 procedure TDynamicsDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- // calcs here
- fMode      := 0;
- fThreshold := Power(10, 2 * Parameter[0] - 2);
- fRatio      := 2.5 * Parameter[1] - 0.5;
- if (fRatio > 1) then
-  begin
-   fRatio := 1 + 16 * sqr(fRatio - 1);
-   fMode := 1;
-  end else
- if (fRatio < 0) then
-  begin
-   fRatio := 0.6 * fRatio;
-   fMode := 1;
-  end;
- fTrim   := Power(10, 2 * Parameter[2]); //was - 1);
+ fThreshold := dB_to_Amp(Parameter[0]);
+ fRatio     := 2.5 * Parameter[1] - 0.5;
+ if (fRatio > 1) then fRatio := 1 + 16 * sqr(fRatio - 1) else
+ if (fRatio < 0) then fRatio := 0.6 * fRatio;
 
- if (Parameter[5] > 0.98)
-  then fLimiterThreshold := 0 // Limiter
-  else
-   begin
-    fLimiterThreshold  := 0.99 * Power(10, round(30 * Parameter[5] - 20) / 20);
-    fMode := 1;
-   end;
+ fTrim   := dB_to_Amp(Parameter[2]);
 
- if (Parameter[6] < 0.02)
-  then fExpanderThreshold := 0 // Expander
-  else
-   begin
-    fExpanderThreshold  := Power(10, 3 * Parameter[6] - 3);
-    fMode := 1;
-   end;
  fIntRelease := Power(10, -2 / SampleRate);
 
  if (fRatio < 0) and (fThreshold < 0.1)
   then fRatio := fRatio * fThreshold * 15;
 
  fDry   := 1 - Parameter[9];
- fTrim := fTrim * Parameter[9]; //fx mix
+ fTrim := fTrim * Parameter[9];                // FX Mix
+ CheckProcessChanged;
 end;
 
 procedure TDynamicsDataModule.VSTModuleProcess(const Inputs,
   Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample: Integer;
-  a, b, i, j, g, e, e2, ra, re, at, ga : Single;
-  tr, th, lth, xth, ge, y : Single;
+  Sample : Integer;
+  env    : Array [0..2] of Single;
+  i, g, ra, re, at, ga : Single;
+  tr, th, lth, xth, gr, y : Single;
 begin
-  e   := fEnv[0];
-  e2  := fEnv[1];
-  ge  := fEnv[2];
-  ra  := fRatio;
-  re  := (1 - fRelease);
-  at  := fAttack;
-  ga  := fGateAttack;
-  tr  := fTrim;
-  th  := fThreshold;
-  lth := fLimiterThreshold;
-  xth := fExpanderThreshold;
-  y   := fDry;
+ env[0] := fEnv[0];
+ env[1] := fEnv[1];
+ env[2] := fEnv[2];
+ ra     := fRatio;
+ re     := (1 - fRelease);
+ at     := fAttack;
+ ga     := fGateAttack;
+ gr     := (1 - fGateRelease);
+ tr     := fTrim;
+ th     := fThreshold;
+ lth    := fLimiterThreshold;
+ xth    := fExpanderThreshold;
+ y      := fDry;
 
- if fMode > 0 then // Comp / Gate / Limiter
+ if lth = 0 then lth := 1000;
+ for Sample := 0 to SampleFrames - 1 do
   begin
-   if lth = 0 then lth := 1000;
-   for Sample := 0 to SampleFrames - 1 do
-    begin
-     i := max(abs(Inputs[0, Sample]), abs(Inputs[1, Sample]));
+   i := max(abs(Inputs[0, Sample]), abs(Inputs[1, Sample]));
 
-     if (i > e)
-      then e := e + at * (i - e)
-      else e := e * re;
-     if (i > e)
-      then e2 := i
-      else e2 := e2 * re; //ir;
+   if (i > env[0])
+    then env[0] := env[0] + at * (i - env[0])
+    else env[0] := env[0] * re;
+   if (i > env[0])
+    then env[1] := i
+    else env[1] := env[1] * re;
 
-     if e > th
-      then g := tr / (1 + ra * ((e / th) - 1))
-      else g := tr;
+   if env[0] > th
+    then g := tr / (1 + ra * ((env[0] / th) - 1))
+    else g := tr;
 
-     if g < 0 then g := 0;
-     if g * e2 > lth then g := lth / e2; // Limit
+   if g < 0 then g := 0;
+   if g * env[1] > lth then g := lth / env[1];      // Limit
 
-     if e > xth
-      then ge := ge + ga - ga * ge
-      else ge := ge * fExpanderRatio; // Gate
+   if env[0] > xth
+    then env[2] := env[2] + ga - ga * env[2]
+    else env[2] := gr + env[2] * gr;                // Gate
 
-     Outputs[0, Sample] := Inputs[0, Sample] * (g * ge + y);
-     Outputs[1, Sample] := Inputs[1, Sample] * (g * ge + y);
-    end;
-  end
- else // Compressor only
-  begin
-   for Sample := 0 to SampleFrames - 1 do
-    begin
-     i := max(abs(Inputs[0, Sample]), abs(Inputs[1, Sample])); // Get peak level
-
-     if i > e
-      then e := e + at * (i - e)
-      else e := e * re;                            // Envelope
-     if e > th
-      then g := tr / (1 + ra * ((e / th) - 1))
-      else g := tr;                                // Gain
-
-     Outputs[0, Sample] := Inputs[0, Sample] * (g + y); // VCA
-     Outputs[1, Sample] := Inputs[1, Sample] * (g + y);
-    end;
+   Outputs[0, Sample] := Inputs[0, Sample] * (g * env[2] + y);
+   Outputs[1, Sample] := Inputs[1, Sample] * (g * env[2] + y);
   end;
 
-  if (e  < 1E-10) then fEnv[0] := 0 else fEnv[0] := e;
-  if (e2 < 1E-10) then fEnv[1] := 0 else fEnv[1] := e2;
-  if (ge < 1E-10) then fEnv[2] := 0 else fEnv[2] := ge;
+ if (env[0] < 1E-10) then fEnv[0] := 0 else fEnv[0] := env[0];
+ if (env[1] < 1E-10) then fEnv[1] := 0 else fEnv[1] := env[1];
+ if (env[2] < 1E-10) then fEnv[2] := 0 else fEnv[2] := env[2];
+end;
+
+procedure TDynamicsDataModule.VSTModuleProcessCompressor(const Inputs,
+  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample : Integer;
+  env    : Single;
+  tr, th, y, i, g, ra, re, at : Single;
+begin
+ env := fEnv[0];
+ ra  := fRatio;
+ re  := (1 - fRelease);
+ at  := fAttack;
+ tr  := fTrim;
+ th  := fThreshold;
+ y   := fDry;
+
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   i := max(abs(Inputs[0, Sample]), abs(Inputs[1, Sample])); // Get peak level
+
+   if i > env
+    then env := env + at * (i - env)
+    else env := env * re;                                        // Envelope
+   if env > th
+    then g := tr / (1 + ra * ((env / th) - 1))
+    else g := tr;                                            // Gain
+
+   Outputs[0, Sample] := Inputs[0, Sample] * (g + y);        // VCA
+   Outputs[1, Sample] := Inputs[1, Sample] * (g + y);
+  end;
+
+ if (env  < 1E-10) then fEnv[0] := 0 else fEnv[0] := env;
 end;
 
 end.
