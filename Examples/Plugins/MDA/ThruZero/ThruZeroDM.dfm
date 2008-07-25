@@ -53,6 +53,7 @@ object ThruZeroDataModule: TThruZeroDataModule
       SmoothingFactor = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
+      OnParameterChange = ParameterDepthChange
       OnCustomParameterDisplay = ParameterDepthDisplay
     end
     item
@@ -97,6 +98,7 @@ object ThruZeroDataModule: TThruZeroDataModule
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParameterFeedbackChange
     end>
   OnResume = VSTModuleResume
   OnSuspend = VSTModuleSuspend

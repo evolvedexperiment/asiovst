@@ -20,74 +20,86 @@ object TransientDataModule: TTransientDataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Attack'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Attack'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'Attack'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterAttackChange
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Release'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Release'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'Release'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChange
     end
     item
-      Min = -20.000000000000000000
-      Max = 20.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Output'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Output'
+      LargeStepFloat = 10.000000000000000000
+      Max = 20.000000000000000000
+      MaxInteger = 20
+      Min = -20.000000000000000000
+      MinInteger = -20
+      ShortLabel = 'Output'
+      SmallStepFloat = 0.100000001490116100
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.100000001490116100
-      LargeStepFloat = 10.000000000000000000
-      MinInteger = -20
-      MaxInteger = 20
-      ShortLabel = 'Output'
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Filter'
-      Units = 'Lo <> Hi'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Filter'
+      Max = 1.000000000000000000
       ShortLabel = 'Filter'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'Lo <> Hi'
       VSTModule = Owner
       OnParameterChange = ParameterFilterChange
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Attack Hold'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Attack Hold'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'AttHold'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterAttackChangeHold
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Release Hold'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Release Hold'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'RelHold'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChangeHold
     end>
