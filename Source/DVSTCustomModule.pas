@@ -679,13 +679,17 @@ end;
 
 function TCustomVSTModule.HostCallSetBypass(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  {$IFDEF Debug} if Value <> 0 then FLog.Add('SoftBypass: On') else FLog.Add('SoftBypass: Off'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+  {$IFDEF Debug}
+  if Value <> 0
+   then FLog.Add('SoftBypass: On')
+   else FLog.Add('SoftBypass: Off');
+  FLog.SaveToFile('Debug.log');
+  {$ENDIF}
   if Assigned(FOnSoftBypass) then
-  begin
+   begin
     FOnSoftBypass(Self, Value <> 0);
     Result := 1;
-  end else
-    Result := 0;
+   end else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallGetEffectName(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
