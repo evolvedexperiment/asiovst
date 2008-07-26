@@ -129,6 +129,7 @@ type
     GUIForm             : TForm;
   protected
     procedure AssignTo(Dest: TPersistent); override;
+    procedure EditClose;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
@@ -150,7 +151,6 @@ type
     procedure ShowEdit; overload;
     function EditGetRect: ERect;
     function EditOpen(Handle: THandle): Integer;
-    procedure EditClose;
     procedure CloseEdit;
     procedure MainsChanged(bOn: Boolean);
     procedure SetParameter(index: Integer; parameter: Single); virtual;
@@ -1084,15 +1084,16 @@ end;
 
 procedure TVstPlugin.Activate(b: Boolean);
 begin
-  if FActive<>b then
+  if FActive <> b then
   if b then Open else Close;
 end;
 
 procedure TVstPlugin.Open;
-var i      : Integer;
-    loadOK : Boolean;
-    tmp    : string;
-    sl     : TStringList;
+var
+  i      : Integer;
+  loadOK : Boolean;
+  tmp    : string;
+  sl     : TStringList;
 begin
  loadOK := True;
  if not Assigned(PVstEffect)
@@ -1576,7 +1577,7 @@ var i: Integer;
 begin
  if not Assigned(PVstEffect) then Exit;
  if assigned(FOnCloseEdit) then FOnCloseEdit(Self);
- if (effFlagsHasEditor in PVstEffect.EffectFlags) and (FGUIStyle=gsDefault)
+ if (effFlagsHasEditor in PVstEffect.EffectFlags) and (FGUIStyle = gsDefault)
   then EditClose else
   if Assigned(GUIForm) then
    case fGUIStyle of
