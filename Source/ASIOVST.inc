@@ -1,6 +1,6 @@
 {$DEFINE CONVERT_TO_DYNARRAY}
 {$DEFINE UseNativeTypes}
-{.$DEFINE UseDelphi}
+{$DEFINE UseDelphi}
 {-$DEFINE Debug}
 
 {$DEFINE BORLAND}
