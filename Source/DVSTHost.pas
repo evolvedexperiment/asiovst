@@ -1377,9 +1377,10 @@ begin
 end;
 
 procedure TVstPlugin.ShowEdit(Form: TForm);
-var param: string;
-    i,wxw: Integer;
-    theRect: ERect;
+var
+  param   : string;
+  i,wxw   : Integer;
+  theRect : ERect;
 begin
  if (effFlagsHasEditor in PVstEffect.EffectFlags) and (fGUIStyle = gsDefault) then
   begin
@@ -2588,7 +2589,7 @@ end;
 
 initialization
  {$IFDEF FPC}
- {$i TVSTHost.lrs}
+ {.$i TVSTHost.lrs}
  {$ENDIF}
  audioMaster := AudioMasterCallback;
  HostWindows := TObjectList.Create;

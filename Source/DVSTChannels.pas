@@ -58,11 +58,19 @@ implementation
 
 { TCustomVstChannel }
 
+{$IFDEF FPC}
+constructor TCustomVstChannel.Create(ACollection: TCollection);
+begin
+ inherited;
+ FVSTModule := (ACollection as TCustomVstChannels).VSTModule;
+end;
+{$ELSE}
 constructor TCustomVstChannel.Create(Collection: TCollection);
 begin
  inherited;
  FVSTModule := (Collection as TCustomVstChannels).VSTModule;
 end;
+{$ENDIF}
 
 destructor TCustomVstChannel.Destroy;
 begin

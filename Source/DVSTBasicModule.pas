@@ -191,8 +191,8 @@ uses
 { TBasicVSTModule }
 constructor TBasicVSTModule.Create(AOwner: TComponent);
 begin
-  {$IFDEF UseDelphi} inherited CreateNew(AOwner); {$ENDIF}
-  with FEffect do
+ {$IFDEF UseDelphi} inherited CreateNew(AOwner); {$ENDIF}
+ with FEffect do
   begin
    vObject         := Self;
    magic           := 'PtsV';

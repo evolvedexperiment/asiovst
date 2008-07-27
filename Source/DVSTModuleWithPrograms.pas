@@ -96,7 +96,6 @@ type
     property OnGetChunkParameter: TGetChunkParameterEvent read FOnGetChunkParamEvent write FOnGetChunkParamEvent;
   end;
 
-
 implementation
 
 uses
@@ -544,13 +543,11 @@ end;
 
 procedure TVSTModuleWithPrograms.SetParameterAutomated(Index: Integer; Value: Single);
 begin
-  if (Index >= numParams) or (Index >= FParameterProperties.Count) then Exit;
-
-  setParameter(Index, Value);
-
-  if Assigned(FParameterProperties[Index]) then
-    if FParameterProperties[Index].CanBeAutomated and not FIsHostAutomation then
-      inherited SetParameterAutomated(Index, Parameter2VSTParameter(Value, Index));
+ if (Index >= numParams) or (Index >= FParameterProperties.Count) then Exit;
+ setParameter(Index, Value);
+ if Assigned(FParameterProperties[Index]) then
+  if FParameterProperties[Index].CanBeAutomated and not FIsHostAutomation then
+   inherited SetParameterAutomated(Index, Parameter2VSTParameter(Value, Index));
 end;
 
 

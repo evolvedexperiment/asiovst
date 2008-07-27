@@ -13,19 +13,19 @@ type
 
   TDspVSTModule = class(TVSTModuleWithPrograms)
   protected
-    FBlockModeSize     : Integer;
-    FBlockModeOverlap  : Integer;
-    FProcessingMode    : TProcessingMode;
-    FBlockPosition     : Integer;
-    FDspQueueList      : TAVDProcessingComponentList;
-    FBlockInBuffer32   : TAVDArrayOfSingleDynArray;
-    FBlockOutBuffer32  : TAVDArrayOfSingleDynArray;
-    FBlockInBuffer64   : TAVDArrayOfDoubleDynArray;
-    FBlockOutBuffer64  : TAVDArrayOfDoubleDynArray;
-    FOnProcess         : TProcessAudioEvent;
-    FOnProcessReplacing: TProcessAudioEvent;
-    FOnProcessDoubles  : TProcessDoubleEvent;
-    FDspDirectProcessItem: TAVDProcessingComponent;
+    FBlockModeSize        : Integer;
+    FBlockModeOverlap     : Integer;
+    FProcessingMode       : TProcessingMode;
+    FBlockPosition        : Integer;
+    FDspQueueList         : TAVDProcessingComponentList;
+    FBlockInBuffer32      : TAVDArrayOfSingleDynArray;
+    FBlockOutBuffer32     : TAVDArrayOfSingleDynArray;
+    FBlockInBuffer64      : TAVDArrayOfDoubleDynArray;
+    FBlockOutBuffer64     : TAVDArrayOfDoubleDynArray;
+    FOnProcess            : TProcessAudioEvent;
+    FOnProcessReplacing   : TProcessAudioEvent;
+    FOnProcessDoubles     : TProcessDoubleEvent;
+    FDspDirectProcessItem : TAVDProcessingComponent;
 
     function IOChanged: Boolean; override;
     procedure SampleRateChanged; override;
@@ -495,13 +495,13 @@ end;
 
 procedure TDspVSTModule.SetDspDirectProcessItem(v: TAVDProcessingComponent);
 begin
-  if v<>FDspDirectProcessItem then
+  if v <> FDspDirectProcessItem then
   begin
-    if v=nil then
-      FDspDirectProcessItem:=v
-    else if FDspQueueList.IndexOf(v)>=0 then
+    if v = nil then
+      FDspDirectProcessItem := v
+    else if FDspQueueList.IndexOf(v) >= 0 then
     begin
-      FDspDirectProcessItem:=v;
+      FDspDirectProcessItem := v;
       SetProcessingMode(pmDspQueue);
     end else
       raise Exception.Create('DspDirectProcessItem has to be the first item of a queue');

@@ -1222,7 +1222,7 @@ begin
   effSetProcessPrecision            : Result := 'effSetProcessPrecision';
   effGetNumMidiInputChannels        : Result := 'effGetNumMidiInputChannels';
   effGetNumMidiOutputChannels       : Result := 'effGetNumMidiOutputChannels';
-  else Result := 'unkown opcode: ' +IntToStr(Integer(Opcode));
+  else Result := 'unkown opcode: '  + IntToStr(Integer(Opcode));
  end;
 end;
 

@@ -41,10 +41,12 @@ type
   
 implementation
 
-const maxMidiEvents = 256;
+const
+  maxMidiEvents = 256;
 
 constructor TVSTModuleWithMidi.Create(AOwner: TComponent);
-var i:integer;
+var
+  i: Integer;
 begin
   inherited;
   FMidiEvent.numEvents := 0;
@@ -59,10 +61,11 @@ begin
 end;
 
 destructor TVSTModuleWithMidi.Destroy;
-var i : Integer;
+var
+  i : Integer;
 begin
-  for i := 0 to maxMidiEvents - 1 do FreeMem(FMidiEvent.events[i]);
-
+  for i := 0 to maxMidiEvents - 1
+   do FreeMem(FMidiEvent.events[i]);
   inherited;
 end;
 

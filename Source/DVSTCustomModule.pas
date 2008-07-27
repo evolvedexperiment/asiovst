@@ -319,10 +319,11 @@ begin
 end;
 
 procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
-var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
-    Outs : TAVDArrayOfSingleDynArray absolute Outputs;
-    OutsTmp : TAVDArrayOfSingleDynArray;
-    i, j    : Integer;
+var
+  Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
+  Outs : TAVDArrayOfSingleDynArray absolute Outputs;
+  OutsTmp : TAVDArrayOfSingleDynArray;
+  i, j    : Integer;
 begin
  if Assigned(FOnProcessEx)
   then FOnProcessEx(Ins, Outs, SampleFrames)
@@ -338,16 +339,18 @@ begin
 end;
 
 procedure TCustomVSTModule.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
-var Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
-    Outs : TAVDArrayOfSingleDynArray absolute Outputs;
+var
+  Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
+  Outs : TAVDArrayOfSingleDynArray absolute Outputs;
 begin
   if Assigned(FOnProcessReplacingEx)
    then FOnProcessReplacingEx(Ins, Outs, SampleFrames);
 end;
 
 procedure TCustomVSTModule.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
-var Ins  : TAVDArrayOfDoubleDynArray absolute Inputs;
-    Outs : TAVDArrayOfDoubleDynArray absolute Outputs;
+var
+  Ins  : TAVDArrayOfDoubleDynArray absolute Inputs;
+  Outs : TAVDArrayOfDoubleDynArray absolute Outputs;
 begin
   if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins, Outs,SampleFrames);
 end;
@@ -365,61 +368,62 @@ begin
 end;
 
 Procedure TCustomVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
-var rUID : Integer;
-    i,j  : Integer;
-    sUID : string;
-    hv   : boolean;
+var
+  rUID : Integer;
+  i, j : Integer;
+  sUID : string;
+  hv   : boolean;
 begin
  inherited;
- hv := (HostProduct<>'WaveLab') {or (shortstring(temp)<>'energyXT')};
- if hv then hv := (canHostDo('shellCategory')=1);
+ hv := (HostProduct <> 'WaveLab') {or (shortstring(temp)<>'energyXT')};
+ if hv then hv := (canHostDo('shellCategory') = 1);
 
- if (PlugCategory=vpcShell) and hv then
+ if (PlugCategory = vpcShell) and hv then
   begin
    rUID := getCurrentUniqueId;
-   if (rUID>0) then
+   if (rUID > 0) then
     begin
-     for i := 0 to ShellPlugins.Count-1 do
+     for i := 0 to ShellPlugins.Count - 1 do
       if rUID=ShellPlugins[i].UID then Break;
-     if i<ShellPlugins.Count then
-      if (rUID=ShellPlugins[i].UID) then
-       begin
-        FEffect.uniqueID := rUID;
-        if ShellPlugins[i].NumInputs>=0 then FEffect.numInputs := ShellPlugins[i].NumInputs;
-        if ShellPlugins[i].NumOutputs>=0 then FEffect.numOutputs := ShellPlugins[i].NumOutputs;
-        if ShellPlugins[i].NumPrograms>=0 then FEffect.numPrograms := ShellPlugins[i].NumPrograms;
-        if ShellPlugins[i].NumParams>=0 then FEffect.numParams := ShellPlugins[i].NumParams;
-        fPlugCategory := ShellPlugins[i].PlugCategory;
-        if Assigned(ShellPlugins[i].OnInstanciate) then
-         begin
-          sUID := '';
-          for j := 3 downto 0 do sUID := sUID + char(rUID shr (j * 8));
-          ShellPlugins[i].OnInstanciate(Self,sUID);
-         end;
-        IOChanged;
-       end;
+     if i < ShellPlugins.Count then
+      with ShellPlugins[i] do
+       if (rUID = UID) then
+        begin
+         FEffect.uniqueID := rUID;
+         if NumInputs   >= 0 then FEffect.numInputs := NumInputs;
+         if NumOutputs  >= 0 then FEffect.numOutputs := NumOutputs;
+         if NumPrograms >= 0 then FEffect.numPrograms := NumPrograms;
+         if NumParams   >= 0 then FEffect.numParams := NumParams;
+         fPlugCategory := PlugCategory;
+         if Assigned(OnInstanciate) then
+          begin
+           sUID := '';
+           for j := 3 downto 0 do sUID := sUID + char(rUID shr (j * 8));
+           OnInstanciate(Self,sUID);
+          end;
+         IOChanged;
+        end;
     end;
   end
  else
-  if (PlugCategory=vpcShell)
+  if (PlugCategory = vpcShell)
    then PlugCategory := vpcUnknown;
 end;
 
 procedure TCustomVSTModule.HostCallDispatchEffect(opcode: TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single);
 begin
- if Assigned(FOnDispatcher) then FOnDispatcher(Self,opcode);
+ if Assigned(FOnDispatcher) then FOnDispatcher(Self, Opcode);
 
  {$IFDEF Debug}
- if not (opcode in [effIdle, effEditIdle]) then
-  FLog.Add(TimeToStr(Now - fTmStmp)+' Opcode: '+opcode2String(opcode)+' Value: '+IntToStr(Value));
+ if not (opcode in [effIdle, effEditIdle])
+  then FLog.Add(TimeToStr(Now - fTmStmp) +
+                ' Opcode: ' + opcode2String(opcode) +
+                ' Value: ' + IntToStr(Value));
  FLog.SaveToFile('Debug.log');
  {$ENDIF}
 end;
 
-procedure TCustomVSTModule.ReadOnlyString(s: string);
-begin end;
-
-
+procedure TCustomVSTModule.ReadOnlyString(s: string); begin end;
 
 function TCustomVSTModule.HostCallOpen(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
@@ -460,7 +464,7 @@ end;
 
 function TCustomVSTModule.HostCallMainsChanged(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if (Value = 0) then
+ if (Value = 0) then
   begin
     if Assigned(FOnSuspend) then FOnSuspend(Self);
   end else begin
@@ -473,65 +477,63 @@ end;
 
 function TCustomVSTModule.HostCallEditGetRect(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  PPERect(ptr)^ := @FEditorRect;
-  FEditorRect.top := 0;
-  FEditorRect.left := 0;
+ PPERect(ptr)^ := @FEditorRect;
+ FEditorRect.top := 0;
+ FEditorRect.left := 0;
 
-  if Assigned(FEditorForm) then
+ if Assigned(FEditorForm) then
   begin
-    FEditorRect.bottom := FEditorForm.ClientHeight;
-    FEditorRect.right := FEditorForm.ClientWidth;
-    Result := 1;
-  end else
-    Result := 0;
+   FEditorRect.bottom := FEditorForm.ClientHeight;
+   FEditorRect.right := FEditorForm.ClientWidth;
+   Result := 1;
+  end else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallEditOpen(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := 0;
-  if (effFlagsHasEditor in FEffect.EffectFlags) then
+ Result := 0;
+ if (effFlagsHasEditor in FEffect.EffectFlags) then
   begin
-
-    if Assigned(FOnEditOpen) then FOnEditOpen(Self, FEditorForm, THandle(ptr));
-    if Assigned(FEditorForm) then
-    try
-      Result := 1;
-      with FEditorForm do
-      begin
-        {$IFNDEF FPC}
-          ParentWindow := HWnd(ptr);
-        {$ELSE}
-          Parent := FindOwnerControl(THandle(ptr));
-        {$ENDIF}
-        Visible := True;
-        BorderStyle := bsNone;
-        SetBounds(0, 0, Width, Height);
-        Invalidate;
-      end;
-    except
-    end;
+   if Assigned(FOnEditOpen) then FOnEditOpen(Self, FEditorForm, THandle(ptr));
+   if Assigned(FEditorForm) then
+   try
+    Result := 1;
+    with FEditorForm do
+     begin
+      {$IFNDEF FPC}
+      ParentWindow := HWnd(ptr);
+      {$ELSE}
+      Parent := FindOwnerControl(THandle(ptr));
+      {$ENDIF}
+      Visible := True;
+      BorderStyle := bsNone;
+      SetBounds(0, 0, Width, Height);
+      Invalidate;
+     end;
+   except
+   end;
   end;
 end;
 
 function TCustomVSTModule.HostCallEditClose(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 var DestroyForm: Boolean;
 begin
-  if (effFlagsHasEditor in FEffect.EffectFlags) then
+ if (effFlagsHasEditor in FEffect.EffectFlags) then
   begin
-    DestroyForm := true;
-    if Assigned(FOnEditClose) then FOnEditClose(Self, DestroyForm);
-    if DestroyForm and Assigned(FEditorForm) then FreeAndNil(FEditorForm);
+   DestroyForm := true;
+   if Assigned(FOnEditClose) then FOnEditClose(Self, DestroyForm);
+   if DestroyForm and Assigned(FEditorForm) then FreeAndNil(FEditorForm);
   end;
 
-  Result := 0;
+ Result := 0;
 end;
 
 function TCustomVSTModule.HostCallEditIdle(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if (effFlagsHasEditor in FEffect.EffectFlags) and FEditorNeedUpdate and Assigned(FEditorForm)then
+ if (effFlagsHasEditor in FEffect.EffectFlags) and FEditorNeedUpdate and Assigned(FEditorForm)then
   begin
-    if Assigned(FOnEditIdle) then FOnEditIdle(Self);
-    FEditorNeedUpdate := False;
+   if Assigned(FOnEditIdle) then FOnEditIdle(Self);
+   FEditorNeedUpdate := False;
   end;
 
   Result := 0;
@@ -549,14 +551,10 @@ begin
   Result := 0;
 end;
 
-
-
 function TCustomVSTModule.HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
   Result := 1;
 end;
-
-
 
 function TCustomVSTModule.HostCallConnectInput(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
@@ -1043,7 +1041,7 @@ end;
 function TCustomVSTModule.UpdateBlockSize: Integer;
 begin
   Result := inherited UpdateBlockSize;
-  if (Result>0) and (Result<>FBlockSize) then
+  if (Result > 0) and (Result <> FBlockSize) then
   begin
     FBlockSize := Result;
     BlockSizeChanged;
@@ -1058,7 +1056,7 @@ begin
    fSampleRate := aSampleRate;
    SampleRateChanged;
   end;
- if fBlockSize<>aBlockSize then
+ if fBlockSize <> aBlockSize then
   begin
    fBlockSize := aBlockSize;
    BlockSizeChanged;
@@ -1066,7 +1064,8 @@ begin
 end;
 
 function TCustomVSTModule.AllocateArrangement(var Arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean;
-var size : Integer;
+var
+  size : Integer;
 begin
  if Assigned(Arrangement) then
   begin
@@ -1171,7 +1170,8 @@ begin
 end;
 
 function TCustomVSTModule.GetHostProduct: string;
-var Text : pchar;
+var
+  Text : pchar;
 begin
  if (FHostProduct = '') or (FHostProduct = 'Unknown') then
   begin
@@ -1195,7 +1195,8 @@ begin
 end;
 
 function TCustomVSTModule.GetHostVendor: string;
-var Text : pchar;
+var
+  Text : pchar;
 begin
  Getmem(Text, 64);
  try
