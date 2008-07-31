@@ -51,7 +51,6 @@ type
   private
     FAbout                  : string;
     FVersion                : string;
-    FEditorRect             : ERect;
 
     FOnEditClose            : TOnEditClose;
     FOnEditIdle             : TNotifyEvent;
@@ -101,6 +100,7 @@ type
     function GetHostProduct: string;
     function GetHostVendor: string;
   protected
+    FEditorRect             : ERect;
     FNumCategories          : Integer;
     FEditorNeedUpdate       : Boolean;
     FEditorForm             : TForm;
@@ -301,6 +301,7 @@ begin
  {$ENDIF}
  Randomize;
  FVersion := '0.0';
+ FHostProduct := '';
  FAbout := 'VST Plugin Template by Christian Budde, Tobybear & MyCo';
  FProcessPrecisition := pp32;
  FKeysRequired := False;
@@ -360,9 +361,9 @@ begin
  try
   if Assigned(FEditorForm) then FreeAndNil(FEditorForm);
   if Assigned(FVstShellPlugins) then FreeAndNil(FVstShellPlugins);
-  {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
+  {$IFDEF Debug} if assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
  finally
-  {$IFDEF Debug} FLog.Free; {$ENDIF}
+  {$IFDEF Debug} if assigned(FLog) then FLog.Free; {$ENDIF}
   inherited;
  end;
 end;
@@ -427,56 +428,62 @@ procedure TCustomVSTModule.ReadOnlyString(s: string); begin end;
 
 function TCustomVSTModule.HostCallOpen(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  {$IFDEF Debug} FLog.Add('Host: ' + HostProduct); {$ENDIF}
-  if Assigned(FOnOpen) then FOnOpen(Self);  
-  Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallOpen'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnOpen) then FOnOpen(Self);
+ Result := 0;
 end;
 
 function TCustomVSTModule.HostCallClose(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnClose) then FOnClose(Self);
-  Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallClose'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnClose) then FOnClose(Self);
+ Result := 0;
 end;
 
 function TCustomVSTModule.HostCallGetVu(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 var s: single;
 begin
-  if Assigned(FOnGetVUEvent) then
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetVu'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnGetVUEvent) then
   begin
-    s := 0;
-    FOnGetVUEvent(s);
-    Result := round(s * 32767);
-  end else
-    Result := 0;
+   s := 0;
+   FOnGetVUEvent(s);
+   Result := round(s * 32767);
+  end else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallSetSampleRate(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  setSampleRate(opt);
-  Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetSampleRate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ setSampleRate(opt);
+ Result := 1;
 end;
 
 function TCustomVSTModule.HostCallSetBlockSize(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  setBlockSize(Value);
-  Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetBlockSize'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ setBlockSize(Value);
+ Result := 0;
 end;
 
 function TCustomVSTModule.HostCallMainsChanged(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallMainsChanged'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if (Value = 0) then
-  begin
-    if Assigned(FOnSuspend) then FOnSuspend(Self);
-  end else begin
-    if Assigned(FOnResume) then FOnResume(Self);
-    wantEvents(1);
-  end;
+  if Assigned(FOnSuspend)
+   then FOnSuspend(Self)
+   else
+    begin
+     if Assigned(FOnResume) then FOnResume(Self);
+     wantEvents(1);
+    end;
 
   Result := 0;
 end;
 
 function TCustomVSTModule.HostCallEditGetRect(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditGetRect'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  PPERect(ptr)^ := @FEditorRect;
  FEditorRect.top := 0;
  FEditorRect.left := 0;
@@ -491,6 +498,7 @@ end;
 
 function TCustomVSTModule.HostCallEditOpen(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditOpen'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  Result := 0;
  if (effFlagsHasEditor in FEffect.EffectFlags) then
   begin
@@ -516,11 +524,13 @@ begin
 end;
 
 function TCustomVSTModule.HostCallEditClose(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
-var DestroyForm: Boolean;
+var
+  DestroyForm: Boolean;
 begin
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditClose'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if (effFlagsHasEditor in FEffect.EffectFlags) then
   begin
-   DestroyForm := true;
+   DestroyForm := True;
    if Assigned(FOnEditClose) then FOnEditClose(Self, DestroyForm);
    if DestroyForm and Assigned(FEditorForm) then FreeAndNil(FEditorForm);
   end;
@@ -536,36 +546,41 @@ begin
    FEditorNeedUpdate := False;
   end;
 
-  Result := 0;
+ Result := 0;
 end;
 
 function TCustomVSTModule.HostCallEditTop(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnEditTop) then FOnEditTop(Self);
-  Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditTop'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnEditTop) then FOnEditTop(Self);
+ Result := 0;
 end;
 
 function TCustomVSTModule.HostCallEditSleep(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnEditSleep) then FOnEditSleep(Self);
-  Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditSleep'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnEditSleep) then FOnEditSleep(Self);
+ Result := 0;
 end;
 
 function TCustomVSTModule.HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallProcessEvents'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ Result := 1;
 end;
 
 function TCustomVSTModule.HostCallConnectInput(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnInConnected) then FOnInConnected(Self,Index,(Value <> 0));
-  Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallConnectInput'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnInConnected) then FOnInConnected(Self,Index,(Value <> 0));
+ Result := 1;
 end;
 
 function TCustomVSTModule.HostCallConnectOutput(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnOutConnected) then FOnOutConnected(Self,Index,(Value <> 0));
-  Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallConnectOutput'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnOutConnected) then FOnOutConnected(Self,Index,(Value <> 0));
+ Result := 1;
 end;
 
 function TCustomVSTModule.HostCallGetInputProperties(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
@@ -576,6 +591,7 @@ var
   cpf   : TVstPinPropertiesFlags;
 begin
  Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetInputProperties'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if (Index < FEffect.numInputs) then
   with PVstPinProperties(ptr)^ do
    begin
@@ -604,6 +620,7 @@ var
   cpf   : TVstPinPropertiesFlags;
 begin
  Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetOutputProperties'); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if (Index < FEffect.numOutputs) then
   with PVstPinProperties(ptr)^ do
    begin
@@ -626,53 +643,55 @@ end;
 
 function TCustomVSTModule.HostCallGetPlugCategory(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := Integer(FPlugCategory);
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetPlugCategory'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ Result := Integer(FPlugCategory);
 end;
 
 function TCustomVSTModule.HostCallOfflineNotify(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnOfflineNotify) then
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallOfflineNotify'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnOfflineNotify) then
   begin
-    FOnOfflineNotify(Self, PVstAudioFile(ptr)^, Value, (Index <> 0));
-    Result := 1;
-  end else
-    Result := 0;
+   FOnOfflineNotify(Self, PVstAudioFile(ptr)^, Value, (Index <> 0));
+   Result := 1;
+  end else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallOfflinePrepare(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnOfflinePrepare) then
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallOfflinePrepare'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnOfflinePrepare) then
   begin
-    FOnOfflinePrepare(Self, PVstOfflineTask(vcdOffline)^, Value);
-    Result := 1;
-  end else
-    Result := 0;
+   FOnOfflinePrepare(Self, PVstOfflineTask(vcdOffline)^, Value);
+   Result := 1;
+  end else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallOfflineRun(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnOfflineRun) then
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallOfflineRun'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnOfflineRun) then
   begin
-    FOnOfflineRun(Self, PVstOfflineTask(vcdOffline)^, Value);
-    Result := 1;
-  end else
-    Result := 0;
+   FOnOfflineRun(Self, PVstOfflineTask(vcdOffline)^, Value);
+   Result := 1;
+  end else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallProcessVarIo(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnProcessVarIO) then
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallProcessVarIo'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnProcessVarIO) then
   begin
-    FOnProcessVarIO(Self, PVstVariableIo(ptr)^);
-    Result := 1;
-  end else
-    Result := 0;
+   FOnProcessVarIO(Self, PVstVariableIo(ptr)^);
+   Result := 1;
+  end else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallSetBlockSizeAndSampleRate(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  SetBlockSizeAndSampleRate(Value, opt);
-  Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetBlockSizeAndSampleRate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ SetBlockSizeAndSampleRate(Value, opt);
+ Result := 1;
 end;
 
 function TCustomVSTModule.HostCallSetBypass(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
@@ -692,254 +711,263 @@ end;
 
 function TCustomVSTModule.HostCallGetEffectName(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  StrPCopy(ptr, FEffectName);
-  Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetEffectName'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ StrPCopy(ptr, FEffectName);
+ Result := 1;
 end;
 
 function TCustomVSTModule.HostCallGetVendorString(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  StrPCopy(ptr, fVendorName);
-  Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetVendorString'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ StrPCopy(ptr, fVendorName);
+ Result := 1;
 end;
 
 function TCustomVSTModule.HostCallGetProductString(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if fProductName <> '' then
-    StrPCopy(ptr, fProductName)
-  else
-    StrPCopy(ptr, FEffectName);
-
-  Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetProductString'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if fProductName <> ''
+  then StrPCopy(ptr, fProductName)
+  else StrPCopy(ptr, FEffectName);
+ Result := 1;
 end;
 
 function TCustomVSTModule.HostCallGetVendorVersion(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := FEffect.Version;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetVendorVersion'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ Result := FEffect.Version;
 end;
 
 function TCustomVSTModule.HostCallVendorSpecific(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnVendorSpecific) then
-    Result := FOnVendorSpecific(Self, Index, Value, ptr, opt)
-  else
-    Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallVendorSpecific'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnVendorSpecific)
+  then Result := FOnVendorSpecific(Self, Index, Value, ptr, opt)
+  else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallCanDo(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := 0;
-  if StrComp(ptr, 'receiveVstEvents')      = 0 then Result := 2 * Integer(vcdReceiveVstEvents      in fCanDos)-1 else
-  if StrComp(ptr, 'receiveVstMidiEvent')   = 0 then Result := 2 * Integer(vcdReceiveVstMidiEvent   in fCanDos)-1 else
-  if StrComp(ptr, 'receiveVstTimeInfo')    = 0 then Result := 2 * Integer(vcdReceiveVstTimeInfo    in fCanDos)-1 else
-  if StrComp(ptr, 'sendVstEvents')         = 0 then Result := 2 * Integer(vcdSendVstEvents         in fCanDos)-1 else
-  if StrComp(ptr, 'sendVstMidiEvent')      = 0 then Result := 2 * Integer(vcdSendVstMidiEvent      in fCanDos)-1 else
-  if StrComp(ptr, 'sendVstTimeInfo')       = 0 then Result := 2 * Integer(vcdSendVstTimeInfo       in fCanDos)-1 else
-  if StrComp(ptr, 'offline')               = 0 then Result := 2 * Integer(vcdOffline               in fCanDos)-1 else
-  if StrComp(ptr, 'plugAsChannelInsert')   = 0 then Result := 2 * Integer(vcdPlugAsChannelInsert   in fCanDos)-1 else
-  if StrComp(ptr, 'plugAsSend')            = 0 then Result := 2 * Integer(vcdPlugAsSend            in fCanDos)-1 else
-  if StrComp(ptr, 'mixDryWet')             = 0 then Result := 2 * Integer(vcdMixDryWet             in fCanDos)-1 else
-  if StrComp(ptr, 'noRealTime')            = 0 then Result := 2 * Integer(vcdNoRealTime            in fCanDos)-1 else
-  if StrComp(ptr, 'multipass')             = 0 then Result := 2 * Integer(vcdMultipass             in fCanDos)-1 else
-  if StrComp(ptr, 'metapass')              = 0 then Result := 2 * Integer(vcdMetapass              in fCanDos)-1 else
-  if StrComp(ptr, '1in1out')               = 0 then Result := 2 * Integer(vcd1in1out               in fCanDos)-1 else
-  if StrComp(ptr, '1in2out')               = 0 then Result := 2 * Integer(vcd1in2out               in fCanDos)-1 else
-  if StrComp(ptr, '2in1out')               = 0 then Result := 2 * Integer(vcd2in1out               in fCanDos)-1 else
-  if StrComp(ptr, '2in2out')               = 0 then Result := 2 * Integer(vcd2in2out               in fCanDos)-1 else
-  if StrComp(ptr, '2in4out')               = 0 then Result := 2 * Integer(vcd2in4out               in fCanDos)-1 else
-  if StrComp(ptr, '4in2out')               = 0 then Result := 2 * Integer(vcd4in2out               in fCanDos)-1 else
-  if StrComp(ptr, '4in4out')               = 0 then Result := 2 * Integer(vcd4in4out               in fCanDos)-1 else
-  if StrComp(ptr, '4in8out')               = 0 then Result := 2 * Integer(vcd4in8out               in fCanDos)-1 else
-  if StrComp(ptr, '8in4out')               = 0 then Result := 2 * Integer(vcd8in4out               in fCanDos)-1 else
-  if StrComp(ptr, '8in8out')               = 0 then Result := 2 * Integer(vcd8in8out               in fCanDos)-1 else
-  if StrComp(ptr, 'midiProgramNames')      = 0 then Result := 2 * Integer(vcdMidiProgramNames      in fCanDos)-1 else
-  if StrComp(ptr, 'conformsToWindowRules') = 0 then Result := 2 * Integer(vcdConformsToWindowRules in fCanDos)-1 else
-  if StrComp(ptr, 'LiveWithoutToolbar')    = 0 then Result := 2 * Integer(vcdLiveWithoutToolbar    in fCanDos)-1 else
-  if StrComp(ptr, 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in fCanDos)-1;
-  if Assigned(FOnCanDo) then FOnCanDo(Self,pchar(ptr));
+ Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallCanDo'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if StrComp(ptr, 'receiveVstEvents')      = 0 then Result := 2 * Integer(vcdReceiveVstEvents      in fCanDos)-1 else
+ if StrComp(ptr, 'receiveVstMidiEvent')   = 0 then Result := 2 * Integer(vcdReceiveVstMidiEvent   in fCanDos)-1 else
+ if StrComp(ptr, 'receiveVstTimeInfo')    = 0 then Result := 2 * Integer(vcdReceiveVstTimeInfo    in fCanDos)-1 else
+ if StrComp(ptr, 'sendVstEvents')         = 0 then Result := 2 * Integer(vcdSendVstEvents         in fCanDos)-1 else
+ if StrComp(ptr, 'sendVstMidiEvent')      = 0 then Result := 2 * Integer(vcdSendVstMidiEvent      in fCanDos)-1 else
+ if StrComp(ptr, 'sendVstTimeInfo')       = 0 then Result := 2 * Integer(vcdSendVstTimeInfo       in fCanDos)-1 else
+ if StrComp(ptr, 'offline')               = 0 then Result := 2 * Integer(vcdOffline               in fCanDos)-1 else
+ if StrComp(ptr, 'plugAsChannelInsert')   = 0 then Result := 2 * Integer(vcdPlugAsChannelInsert   in fCanDos)-1 else
+ if StrComp(ptr, 'plugAsSend')            = 0 then Result := 2 * Integer(vcdPlugAsSend            in fCanDos)-1 else
+ if StrComp(ptr, 'mixDryWet')             = 0 then Result := 2 * Integer(vcdMixDryWet             in fCanDos)-1 else
+ if StrComp(ptr, 'noRealTime')            = 0 then Result := 2 * Integer(vcdNoRealTime            in fCanDos)-1 else
+ if StrComp(ptr, 'multipass')             = 0 then Result := 2 * Integer(vcdMultipass             in fCanDos)-1 else
+ if StrComp(ptr, 'metapass')              = 0 then Result := 2 * Integer(vcdMetapass              in fCanDos)-1 else
+ if StrComp(ptr, '1in1out')               = 0 then Result := 2 * Integer(vcd1in1out               in fCanDos)-1 else
+ if StrComp(ptr, '1in2out')               = 0 then Result := 2 * Integer(vcd1in2out               in fCanDos)-1 else
+ if StrComp(ptr, '2in1out')               = 0 then Result := 2 * Integer(vcd2in1out               in fCanDos)-1 else
+ if StrComp(ptr, '2in2out')               = 0 then Result := 2 * Integer(vcd2in2out               in fCanDos)-1 else
+ if StrComp(ptr, '2in4out')               = 0 then Result := 2 * Integer(vcd2in4out               in fCanDos)-1 else
+ if StrComp(ptr, '4in2out')               = 0 then Result := 2 * Integer(vcd4in2out               in fCanDos)-1 else
+ if StrComp(ptr, '4in4out')               = 0 then Result := 2 * Integer(vcd4in4out               in fCanDos)-1 else
+ if StrComp(ptr, '4in8out')               = 0 then Result := 2 * Integer(vcd4in8out               in fCanDos)-1 else
+ if StrComp(ptr, '8in4out')               = 0 then Result := 2 * Integer(vcd8in4out               in fCanDos)-1 else
+ if StrComp(ptr, '8in8out')               = 0 then Result := 2 * Integer(vcd8in8out               in fCanDos)-1 else
+ if StrComp(ptr, 'midiProgramNames')      = 0 then Result := 2 * Integer(vcdMidiProgramNames      in fCanDos)-1 else
+ if StrComp(ptr, 'conformsToWindowRules') = 0 then Result := 2 * Integer(vcdConformsToWindowRules in fCanDos)-1 else
+ if StrComp(ptr, 'LiveWithoutToolbar')    = 0 then Result := 2 * Integer(vcdLiveWithoutToolbar    in fCanDos)-1 else
+ if StrComp(ptr, 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in fCanDos)-1;
+ if Assigned(FOnCanDo) then FOnCanDo(Self,pchar(ptr));
 end;
 
 function TCustomVSTModule.HostCallGetTailSize(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := fTailSize;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetTailSize'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ Result := fTailSize;
 end;
 
 
 
 function TCustomVSTModule.HostCallKeysRequired(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := Integer(not fKeysRequired); // reversed to keep v1 compatibility
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallKeysRequired'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ Result := Integer(not fKeysRequired); // reversed to keep v1 compatibility
 end;
 
 function TCustomVSTModule.HostCallGetVstVersion(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := 2400;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetVstVersion'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ Result := 2400;
 end;
 
 function TCustomVSTModule.HostCallEditKeyDown(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 var keyCode : TVstKeyCode;
-    a,b: integer;
+    a,b: Integer;
     Hndl: THandle;
 begin
-  Result := 0;
-  if fKeysRequired then
+ Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditKeyDown'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if fKeysRequired then
   try
-    keyCode.character := Index;
-    keyCode.virt := Value;
-    keyCode.modifier := Round(opt);
-    if Assigned(EditorForm) then
+   keyCode.character := Index;
+   keyCode.virt := Value;
+   keyCode.modifier := Round(opt);
+   if Assigned(EditorForm) then
     begin
-      a := KeyCodeToInteger(keyCode);
-      if Assigned(EditorForm.ActiveControl) then
-        Hndl := EditorForm.ActiveControl.Handle
-      else
-        Hndl := EditorForm.Handle;
+     a := KeyCodeToInteger(keyCode);
+     if Assigned(EditorForm.ActiveControl)
+      then Hndl := EditorForm.ActiveControl.Handle
+      else Hndl := EditorForm.Handle;
 
-      {$IFNDEF FPC}
-      if keyCode.virt=0 then b := 0 else b := KF_EXTENDED;
-      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
-        SendMessage(Hndl, WM_KEYDOWN, a,b)
-      else
-        SendMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
-      SendMessage(Hndl,WM_CHAR, a, b);
-      {$ELSE}
-      if keyCode.virt=0 then b := 0 else b := $100;
-      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
-        SendMessage(Hndl, LM_KEYDOWN, a,b)
-      else
-        SendMessage(Hndl, LM_SYSKEYDOWN, a, $2000);
-      SendMessage(Hndl,LM_CHAR, a, b);
-      {$ENDIF}
+     {$IFNDEF FPC}
+     if keyCode.virt = 0 then b := 0 else b := KF_EXTENDED;
+     if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
+       SendMessage(Hndl, WM_KEYDOWN, a,b)
+     else
+       SendMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
+     SendMessage(Hndl,WM_CHAR, a, b);
+     {$ELSE}
+     if keyCode.virt = 0 then b := 0 else b := $100;
+     if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
+       SendMessage(Hndl, LM_KEYDOWN, a,b)
+     else
+       SendMessage(Hndl, LM_SYSKEYDOWN, a, $2000);
+     SendMessage(Hndl,LM_CHAR, a, b);
+     {$ENDIF}
 
-      if Assigned(FOnKeyDown) then FOnKeyDown(Self, keyCode);
-      if Assigned(FOnCheckKey) then
-        if FOnCheckKey(Self, Char(a)) then
-          Result := 1
-        else
-          Result := -1
-      else
-        Result := -1;
+     if Assigned(FOnKeyDown) then FOnKeyDown(Self, keyCode);
+     if Assigned(FOnCheckKey) then
+       if FOnCheckKey(Self, Char(a)) then
+         Result := 1
+       else
+         Result := -1
+     else
+       Result := -1;
     end;
   except
-    Result := -1;
-  end else
-    Result := -1;
+   Result := -1;
+  end
+ else Result := -1;
 end;
 
 function TCustomVSTModule.HostCallEditKeyUp(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
-var keyCode : TVstKeyCode;
-    a,b: integer;
-    Hndl: THandle;
+var
+  keyCode : TVstKeyCode;
+  a, b    : Integer;
+  Hndl    : THandle;
 begin
-  Result := 0;
-  if fKeysRequired then
+ Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditKeyDown'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if fKeysRequired then
   try
-    keyCode.character := Index;
-    keyCode.virt := Value;
-    keyCode.modifier := Round(opt);
+   keyCode.character := Index;
+   keyCode.virt := Value;
+   keyCode.modifier := Round(opt);
 
-    if Assigned(EditorForm) then
+   if Assigned(EditorForm) then
     begin
-      a := KeyCodeToInteger(keyCode);
-      if Assigned(EditorForm.ActiveControl) then
-        Hndl := EditorForm.ActiveControl.Handle
-      else
-        Hndl := EditorForm.Handle;
-      {$IFNDEF FPC}
-      if keyCode.virt=0 then b := 0 else b := KF_EXTENDED;
-      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
-        SendMessage(Hndl, WM_KEYUP, a, b)
-      else
-        SendMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
-      {$ELSE}
-      if keyCode.virt=0 then b := 0 else b := $100;
-      if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
-        SendMessage(Hndl, LM_KEYUP, a,b)
-      else
-        SendMessage(Hndl, LM_SYSKEYUP, a, $2000);
+     a := KeyCodeToInteger(keyCode);
+     if Assigned(EditorForm.ActiveControl)
+      then Hndl := EditorForm.ActiveControl.Handle
+      else Hndl := EditorForm.Handle;
 
-      SendMessage(Hndl,LM_CHAR, a, b);
-      {$ENDIF}
+     {$IFNDEF FPC}
+     if keyCode.virt=0 then b := 0 else b := KF_EXTENDED;
+     if (keyCode.modifier and MODIFIER_ALTERNATE) <> 0
+      then SendMessage(Hndl, WM_KEYUP, a, b)
+      else SendMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
+     {$ELSE}
+     if keyCode.virt = 0 then b := 0 else b := $100;
+     if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
+      then SendMessage(Hndl, LM_KEYUP, a,b)
+      else SendMessage(Hndl, LM_SYSKEYUP, a, $2000);
 
-      if Assigned(FOnKeyUp) then FOnKeyUp(Self, keyCode);
-      if Assigned(FOnCheckKey) then
-        if FOnCheckKey(Self, Char(a)) then
-          Result := 1
-        else
-          Result := -1
-      else
-        Result := -1;
+     SendMessage(Hndl,LM_CHAR, a, b);
+     {$ENDIF}
+
+     if Assigned(FOnKeyUp) then FOnKeyUp(Self, keyCode);
+     if Assigned(FOnCheckKey) then
+      if FOnCheckKey(Self, Char(a))
+       then Result := 1
+       else Result := -1
+      else Result := -1;
     end;
   except
-    Result := -1;
-  end else
-    Result := -1;
+   Result := -1;
+  end else Result := -1;
 end;
 
 function TCustomVSTModule.HostCallSetEditKnobMode(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if Assigned(FOnSetKnobMode) then
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetEditKnobMode'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnSetKnobMode) then
   begin
-    FOnSetKnobMode(Self, Value);
-    Result := 1;
-  end else
-    Result := 0;
+   FOnSetKnobMode(Self, Value);
+   Result := 1;
+  end else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallGetSpeakerArrangement(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  PVstSpeakerArrangement(Value) := nil;
-  PVstSpeakerArrangement(ptr) := nil;
-  Result := 0;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetSpeakerArrangement'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ PVstSpeakerArrangement(Value) := nil;
+ PVstSpeakerArrangement(ptr) := nil;
+ Result := 0;
 end;
 
 function TCustomVSTModule.HostCallShellGetNextPlugin(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if FCurrentVstShellPlugin<FVstShellPlugins.Count then
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallShellGetNextPlugin'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if FCurrentVstShellPlugin < FVstShellPlugins.Count then
   begin
-    StrPCopy(pchar(ptr),FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
-    Result := FVstShellPlugins[FCurrentVstShellPlugin].UID;
-    Inc(FCurrentVstShellPlugin);
-  end else begin
-    Result := 0;
-    FCurrentVstShellPlugin := 0;
+   StrPCopy(pchar(ptr),FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
+   Result := FVstShellPlugins[FCurrentVstShellPlugin].UID;
+   Inc(FCurrentVstShellPlugin);
+  end
+ else
+  begin
+   Result := 0;
+   FCurrentVstShellPlugin := 0;
   end;
 end;
 
 function TCustomVSTModule.HostCallStartProcess(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := 1;
-  if Assigned(FOnStartProcess) then
-    FOnStartProcess(Self)
-  else
-    Result := 0;
+ Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallStartProcess'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnStartProcess)
+  then FOnStartProcess(Self)
+  else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallStopProcess(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := 1;
-  if Assigned(FOnStopProcess) then
-    FOnStopProcess(Self)
-  else
-    Result := 0;
+ Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallStopProcess'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnStopProcess)
+  then FOnStopProcess(Self)
+  else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallSetTotalSampleToProcess(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := Value;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetTotalSampleToProcess'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ Result := Value;
 end;
 
 function TCustomVSTModule.HostCallSetPanLaw(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := 1;
-  if Assigned(FOnSetPanLaw) then
-    FOnSetPanLaw(Self, Value, opt)
-  else
-    Result := 0;
+ Result := 1;
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetPanLaw'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if Assigned(FOnSetPanLaw)
+  then FOnSetPanLaw(Self, Value, opt)
+  else Result := 0;
 end;
 
 function TCustomVSTModule.HostCallSetProcessPrecision(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := Integer(fProcessPrecisition); //< [value]: @see VstProcessPrecision  @see AudioEffectX::setProcessPrecision
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetProcessPrecision'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ Result := Integer(fProcessPrecisition); // [value]: @see VstProcessPrecision  @see AudioEffectX::setProcessPrecision
 end;
 
 function TCustomVSTModule.GetUniqueID:string;
@@ -957,7 +985,7 @@ end;
 
 procedure TCustomVSTModule.SetSampleRate(newValue: Single);
 begin
- if fSampleRate<>newValue then
+ if fSampleRate <> newValue then
   begin
    fSampleRate := newValue;
    SampleRateChanged;
@@ -966,7 +994,7 @@ end;
 
 procedure TCustomVSTModule.SetBlockSize(newValue: Integer);
 begin
- if fBlockSize<>newValue then
+ if fBlockSize <> newValue then
   begin
    fBlockSize := newValue;
    BlockSizeChanged;
@@ -997,12 +1025,12 @@ end;
 
 procedure TCustomVSTModule.SetInitialDelay(delay: Integer);
 begin
-  if FInitialDelay <> delay then
+ if FInitialDelay <> delay then
   begin
-    FInitialDelay := delay;
-    FEffect.initialDelay := FInitialDelay;
+   FInitialDelay := delay;
+   FEffect.initialDelay := FInitialDelay;
 
-    if HostProduct <> 'energyXT' then IOChanged;
+   if HostProduct <> 'energyXT' then IOChanged;
   end;
 end;
 
@@ -1014,21 +1042,21 @@ end;
 {$IFDEF UseDelphi}
 procedure TCustomVSTModule.ReadState(Reader: TReader);
 begin
- {$IFDEF Debug} FLog.Add('Before ReadState'); {$ENDIF}
- {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('Before ReadState'); {$ENDIF}
+ {$IFDEF Debug} if assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
  inherited;
- {$IFDEF Debug} FLog.Add('After ReadState'); {$ENDIF}
- {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('After ReadState'); {$ENDIF}
+ {$IFDEF Debug} if assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
 
  if Assigned(FOnInitialize) then FOnInitialize(Self);
- {$IFDEF Debug} FLog.Add('End ReadState'); {$ENDIF}
- {$IFDEF Debug} FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('End ReadState'); {$ENDIF}
+ {$IFDEF Debug} if assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
 end;
 {$ENDIF}
 
 function TCustomVSTModule.UpdateSampleRate: Double;
 begin
-  {$IFDEF Debug} FLog.Add('Update Samplerate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+  {$IFDEF Debug} if assigned(FLog) then FLog.Add('Update Samplerate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
 
   Result := inherited UpdateSampleRate;
   if (Result>0) and (Result<>FSampleRate) then
@@ -1040,17 +1068,18 @@ end;
 
 function TCustomVSTModule.UpdateBlockSize: Integer;
 begin
-  Result := inherited UpdateBlockSize;
-  if (Result > 0) and (Result <> FBlockSize) then
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('UpdateBlockSize'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ Result := inherited UpdateBlockSize;
+ if (Result > 0) and (Result <> FBlockSize) then
   begin
-    FBlockSize := Result;
-    BlockSizeChanged;
+   FBlockSize := Result;
+   BlockSizeChanged;
   end;
 end;
 
 procedure TCustomVSTModule.SetBlockSizeAndSampleRate(aBlockSize: Integer; aSampleRate: Single);
 begin
- {$IFDEF Debug} FLog.Add('Set BlockSize/Samplerate: Blocksize ' + IntToStr(aBlockSize) + ' Samplerate ' + FloatToStr(aSampleRate)); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('Set BlockSize/Samplerate: Blocksize ' + IntToStr(aBlockSize) + ' Samplerate ' + FloatToStr(aSampleRate)); FLog.SaveToFile('Debug.log'); {$ENDIF}
  if fSampleRate<>aSampleRate then
   begin
    fSampleRate := aSampleRate;
@@ -1177,18 +1206,16 @@ begin
   begin
    Getmem(Text, 64);
    try
-    if GetHostProductString(Text)
-     then Result := shortstring(Text)
+    if GetHostProductString(Text) then
+      begin
+       SetLength(Result, StrLen(Text));
+       StrCopy(@Result[1], Text);
+      end
      else Result := 'Unknown';
     if Result = 'Unknown' then
-    try
-     Result := shortstring(Text);
-    except
-     Result := 'Unknown';
-    end;  
    finally
-    FreeMem(Text);
     FHostProduct := Result;
+    Dispose(Text);
    end
   end
  else Result := FHostProduct;
@@ -1204,7 +1231,7 @@ begin
    then Result := 'Unknown'
    else Result := shortstring(Text);
  finally
-  FreeMem(Text);
+  Dispose(Text);
  end;
 end;
 

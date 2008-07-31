@@ -565,7 +565,7 @@ begin
    then
     begin
      if Assigned(ParameterProperties[Index].OnParameterChange)
-      then FParameterProperties[Index].OnParameterChange(Self,Index,Value);
+      then FParameterProperties[Index].OnParameterChange(Self, Index, Value);
      if Assigned(OnParameterChange)
       then OnParameterChange(Self, Index, Value);
     end

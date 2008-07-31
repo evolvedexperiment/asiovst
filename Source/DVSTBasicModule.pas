@@ -6,7 +6,8 @@ interface
 
 {$I ASIOVST.INC}
 
-uses Classes, DVSTEffect;
+uses
+  Classes, DVSTEffect;
 
 type
   TBasicVSTModule = class({$IFDEF UseDelphi}TDataModule{$ELSE}TComponent{$ENDIF})
@@ -324,8 +325,8 @@ end;
 
 procedure TBasicVSTModule.SetParameterAutomated(Index: Integer; Value: Single);
 begin
-  if Assigned(FAudioMaster) then
-    FAudioMaster(@FEffect, audioMasterAutomate, Index, 0, nil, Value);
+  if Assigned(FAudioMaster)
+   then FAudioMaster(@FEffect, audioMasterAutomate, Index, 0, nil, Value);
 end;
 
 function TBasicVSTModule.GetParameterQuantization: Integer;

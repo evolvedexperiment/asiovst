@@ -414,13 +414,14 @@ begin
 end;
 
 function AudioMasterCallback(effect: PVSTEffect; opcode : TAudioMasterOpcode; index,value: longint; ptr: pointer; opt: Single): longint; cdecl;
-var thePlug  : TVstPlugin;
-    PlugNr,i : Integer;
+var
+  thePlug   : TVstPlugin;
+  PlugNr, i : Integer;
 begin
  try
    thePlug := nil;
    for PlugNr := 0 to theHost.VstPlugIns.Count - 1 do
-    if theHost.VstPlugIns[PlugNr].PVstEffect = effect then
+    if theHost.VstPlugIns[PlugNr].PVstEffect = Effect then
      begin
       thePlug := theHost.VstPlugIns[PlugNr];
       Break;
@@ -1104,9 +1105,9 @@ begin
   fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
  end;
  Randomize;
- FEditOpen := false;
- FNeedIdle := false;
- FWantMidi := false;
+ FEditOpen := False;
+ FNeedIdle := False;
+ FWantMidi := False;
  if PVstEffect = nil then
   try
    if not loadOK then

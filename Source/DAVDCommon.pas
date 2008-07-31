@@ -83,6 +83,11 @@ type
   procedure SetMatrixLength(Matrix : TAVDDoubleDynMatrix; Size : TPoint); overload;
   procedure SetMatrixLength(Matrix : TAVDSingleDynMatrix; Size : TPoint); overload;
   {$ENDIF}
+
+  function SWAP_32(value: LongInt): LongInt;
+  function SWAP_16(value: SmallInt): SmallInt;
+  function SWAP_64(value: Int64): Int64;
+
   function ms2smp(ms, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function smp2ms(smp, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -1021,6 +1026,76 @@ begin
  Result := smp * 1000 / SampleRate;
 end;
 
+type
+  T16Bit = record
+    case integer of
+      0 :  (v: SmallInt);
+      1 :  (b: array[0..1] of byte);
+  end;
+
+  T32Bit = record
+    case integer of
+      0 :  (v: LongInt);
+      1 :  (b: array[0..3] of byte);
+  end;
+
+  T64Bit = record
+    case integer of
+      0 :  (v: Int64);
+      1 :  (b: array[0..7] of byte);
+  end;
+
+function SWAP_16(Value: SmallInt): SmallInt;
+var
+  t: byte;
+begin
+  with T16Bit(value) do
+   begin
+    t := b[0];
+    b[0] := b[1];
+    b[1] := t;
+    Result := v;
+   end;
+end;
+
+function SWAP_32(Value: LongInt): LongInt;
+var
+  t: byte;
+begin
+ with T32Bit(value) do
+  begin
+   t := b[0];
+   b[0] := b[3];
+   b[3] := t;
+   t := b[1];
+   b[1] := b[2];
+   b[2] := t;
+   Result := v;
+  end;
+end;
+
+function SWAP_64(Value: Int64): Int64;
+var
+   t: byte;
+begin
+ with T64Bit(value) do
+  begin
+   t := b[0];
+   b[0] := b[7];
+   b[7] := t;
+   t := b[1];
+   b[1] := b[6];
+   b[6] := t;
+   t := b[2];
+   b[2] := b[5];
+   b[5] := t;
+   t := b[3];
+   b[3] := b[4];
+   b[4] := t;
+   Result := v;
+  end;
+end;
+
 function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single;
 begin
  Result := base_factor;
@@ -1085,7 +1160,7 @@ asm
 {$ENDIF}
 end;
 
-function Tanh2d(x:Single):Single;
+function Tanh2d(x: Single):Single;
 {$IFDEF PUREPASCAL}
 begin
  Result := x / (abs(x) + 3);
