@@ -100,7 +100,6 @@ type
     function GetHostProduct: string;
     function GetHostVendor: string;
   protected
-    FEditorRect             : ERect;
     FNumCategories          : Integer;
     FEditorNeedUpdate       : Boolean;
     FEditorForm             : TForm;
