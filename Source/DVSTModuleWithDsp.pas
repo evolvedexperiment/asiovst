@@ -250,7 +250,7 @@ begin
     for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], fBlockInBuffer32[i, FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
     for i := 0 to numOutputs - 1 do move(fBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i, CurrentPosition])^, (SampleFrames - CurrentPosition) * Sizeof(Single));
 
-    FBlockPosition := FBlockPosition+(SampleFrames-CurrentPosition);
+    FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
     CurrentPosition := SampleFrames;
    end
   else

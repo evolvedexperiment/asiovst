@@ -361,7 +361,7 @@ begin
  while Result >= 360 do Result := Result - 360;
 end;
 
-function Amp_to_dB(v:Single):Single;
+function Amp_to_dB(v: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  result := Twenty * Log10(v);

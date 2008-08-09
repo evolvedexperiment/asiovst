@@ -26,7 +26,7 @@ type
 
   TProcessAudioEvent     = procedure(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer) of object;
   TProcessDoubleEvent    = procedure(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer) of object;
-  TGetVUEvent            = procedure(var VU:Single) of object;
+  TGetVUEvent            = procedure(var VU: Single) of object;
   TBlockSizeChangeEvent  = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
   TOnDispatcherEvent     = procedure(Sender: TObject; opCode: TDispatcherOpcode) of object;
@@ -104,6 +104,7 @@ type
     FNumCategories          : Integer;
     FEditorNeedUpdate       : Boolean;
     FEditorForm             : TForm;
+    FEditorRect             : ERect;
     FSampleRate             : Single;
     FBlockSize              : Integer;
     FEffectName             : string;
@@ -124,7 +125,7 @@ type
 
     function GetPluginFlags: TEffFlags; virtual;
     function GetUniqueID:string; virtual;
-    procedure SetAudioMaster(const AM :TAudioMasterCallbackFunc); override;
+    procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); override;
     procedure SetBlockSize(newValue: Integer); virtual;
     procedure SetInitialDelay(delay: Integer); virtual;
     procedure SetNumInputs(Inputs: Integer); virtual;

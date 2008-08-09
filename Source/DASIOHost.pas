@@ -211,70 +211,70 @@ type
     procedure GetOutputGain(Channel, Gain: Integer); virtual;
     procedure SetInputGain(Channel, Gain: Integer); virtual;
 
-    property InputMeter[Channel:Integer]: Integer read GetInputMeter;
-    property OutputMeter[Channel:Integer]: Integer read GetOutputMeter;
     property Active: Boolean read FActive write SetActive default false;
+    property ASIOTime: TASIOTimeSub read FASIOTime Write FASIOTime;
+    property BufferGranularity: Integer read Fgran stored false;
+    property BufferMaximum: Integer read Fmax stored false;
+    property BufferMinimum: Integer read Fmin stored false;
+    property BufferPreferredSize: Integer read Fpref stored false;
+    property BufferSize: Cardinal read fBufferSize stored false default 1;
     property CanDos : TASIOCanDos read fASIOCanDos write SetASIOCanDos;
+    property DriverIndex: Integer read FDriverIndex Write SetDriverIndex default -1;
+    property DriverList: TStrings read FDriverList;
     property DriverName: string read FDriverName write SetDriverName;
     property DriverVersion: integer read FDriverVersion;
-    property DriverIndex: Integer read FDriverIndex Write SetDriverIndex default -1;
-    property BufferSize: Cardinal read fBufferSize stored false default 1;
-    property BufferMinimum: Integer read Fmin stored false;
-    property BufferMaximum: Integer read Fmax stored false;
-    property BufferPreferredSize: Integer read Fpref stored false;
-    property BufferGranularity: Integer read Fgran stored false;
-    property InputLatency: Integer read FInputLatency stored false default 0;
     property InputChannelCount: Integer read FInputChannelCount stored false default 0;
-    property OutputLatency: Integer read FOutputLatency stored false default 0;
-    property OutputChannelCount: Integer read FOutputChannelCount stored false default 0;
-    property SampleRate: Double read fSampleRate write SetSampleRate;
-    property ASIOTime: TASIOTimeSub read FASIOTime Write FASIOTime;
-    property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
-    property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
-    property OnUpdateSamplePos: TSamplePositionUpdateEvent read FOnUpdateSamplePos write FOnUpdateSamplePos;
-    property OnReset: TNotifyEvent read FOnReset write FOnReset;
-    property OnDriverChanged: TNotifyEvent read FOnDriverChanged write FOnDriverChanged;
-    property OnLatencyChanged: TNotifyEvent read FOnLatencyChanged write FOnLatencyChanged;
-    property OnSampleRateChanged: TNotifyEvent read FOnSampleRateChanged write FOnSampleRateChanged;
-    property OnBufferSwitch: TBufferSwitchEventNative read FOnBufferSwitchNative write FOnBufferSwitchNative;
+    property InputChannelInfos[index : Integer] : TASIOChannelInfo read GetInputChannelInfo;
+    property InputLatency: Integer read FInputLatency stored false default 0;
+    property InputMeter[Channel:Integer]: Integer read GetInputMeter;
     property OnBuffersCreate: TNotifyEvent read FOnBuffersCreate write FOnBuffersCreate;
     property OnBuffersDestroy: TNotifyEvent read FOnBuffersDestroy write FOnBuffersDestroy;
-    property DriverList: TStrings read FDriverList;
-    property SelectorSupport : TASIOSelectorSupports read FASIOSelectorSupport write FASIOSelectorSupport;
-    property InputChannelInfos[index : Integer] : TASIOChannelInfo read GetInputChannelInfo;
+    property OnBufferSwitch: TBufferSwitchEventNative read FOnBufferSwitchNative write FOnBufferSwitchNative;
+    property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
+    property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
+    property OnDriverChanged: TNotifyEvent read FOnDriverChanged write FOnDriverChanged;
+    property OnLatencyChanged: TNotifyEvent read FOnLatencyChanged write FOnLatencyChanged;
+    property OnReset: TNotifyEvent read FOnReset write FOnReset;
+    property OnSampleRateChanged: TNotifyEvent read FOnSampleRateChanged write FOnSampleRateChanged;
+    property OnUpdateSamplePos: TSamplePositionUpdateEvent read FOnUpdateSamplePos write FOnUpdateSamplePos;
+    property OutputChannelCount: Integer read FOutputChannelCount stored false default 0;
     property OutputChannelInfos[index : Integer] : TASIOChannelInfo read GetOutputChannelInfo;
+    property OutputLatency: Integer read FOutputLatency stored false default 0;
+    property OutputMeter[Channel:Integer]: Integer read GetOutputMeter;
+    property SampleRate: Double read fSampleRate write SetSampleRate;
+    property SelectorSupport : TASIOSelectorSupports read FASIOSelectorSupport write FASIOSelectorSupport;
   end;
 
   TASIOHostBasic = class(TCustomASIOHostBasic)
   published
     property Active;
+    property ASIOTime;
+    property BufferGranularity;
+    property BufferMaximum;
+    property BufferMinimum;
+    property BufferPreferredSize;
+    property BufferSize;
     property CanDos;
+    property DriverIndex;
+    property DriverList;
     property DriverName;
     property DriverVersion;
-    property DriverIndex;
-    property BufferSize;
-    property BufferMinimum;
-    property BufferMaximum;
-    property BufferPreferredSize;
-    property BufferGranularity;
-    property InputLatency;
     property InputChannelCount;
-    property OutputLatency;
+    property InputLatency;
     property OutputChannelCount;
-    property SelectorSupport;
+    property OutputLatency;
     property SampleRate;
-    property ASIOTime;
-    property OnCreate;
-    property OnDestroy;
-    property OnUpdateSamplePos;
-    property OnReset;
-    property OnDriverChanged;
-    property OnLatencyChanged;
-    property OnSampleRateChanged;
-    property OnBufferSwitch;
+    property SelectorSupport;
     property OnBuffersCreate;
     property OnBuffersDestroy;
-    property DriverList;
+    property OnBufferSwitch;
+    property OnCreate;
+    property OnDestroy;
+    property OnDriverChanged;
+    property OnLatencyChanged;
+    property OnReset;
+    property OnSampleRateChanged;
+    property OnUpdateSamplePos;
   end;
 
   TCustomASIOHost = class(TCustomASIOHostBasic)
@@ -330,142 +330,144 @@ type
     {$IFDEF ASIOMixer}
     procedure Mixer;
     {$ENDIF}
-    property PreventClipping: TPreventClipping read FPreventClipping write SetPreventClipping default pcNone;
-    property PreFillInBuffer: TBufferPreFill read FInBufferPreFill write FInBufferPreFill default bpfNone;
-    property PreFillOutBuffer: TBufferPreFill read FOutBufferPreFill write FOutBufferPreFill default bpfNone;
+    property ConvertOptimizations: TConvertOptimizations read FConvertOptimizations write SetConvertOptimizations;
     property CustomGenerator: TASIOGenerator read FASIOGenerator Write SetASIOGenerator;
     property InputChannelOffset : Word read FInputChannelOffset write SetInputChannelOffset default 0;
-    property OutputDither: TASIOOutputDither read FOutputDither write SetOutputDither default odNone;
-    property OutputChannelOffset: Word read FOutputChannelOffset write SetOutputChannelOffset default 0;
-    property ConvertOptimizations: TConvertOptimizations read FConvertOptimizations write SetConvertOptimizations;
-    property OnInput2Sample: TSample2Event read FOnInput2Sample write FOnInput2Sample;
-    property OnSample2Output: TSample2Event read FOnSample2Output write FOnSample2Output;
+    property InputMonitor: TInputMonitor read FInputMonitor write FInputMonitor default imDisabled;
     property OnBufferSwitch32: TBufferSwitchEvent32 read FOnBufferSwitch32 write SetOnBufferSwitch32;
     property OnBufferSwitch64: TBufferSwitchEvent64 read FOnBufferSwitch64 write SetOnBufferSwitch64;
     property OnBufferSwitchNative: TBufferSwitchEventNative read FOnBufferSwitchNative write FOnBufferSwitchNative;
-    property InputMonitor: TInputMonitor read FInputMonitor write FInputMonitor default imDisabled;
+    property OnInput2Sample: TSample2Event read FOnInput2Sample write FOnInput2Sample;
+    property OnSample2Output: TSample2Event read FOnSample2Output write FOnSample2Output;
+    property OutputChannelOffset: Word read FOutputChannelOffset write SetOutputChannelOffset default 0;
+    property OutputDither: TASIOOutputDither read FOutputDither write SetOutputDither default odNone;
+    property PreFillInBuffer: TBufferPreFill read FInBufferPreFill write FInBufferPreFill default bpfNone;
+    property PreFillOutBuffer: TBufferPreFill read FOutBufferPreFill write FOutBufferPreFill default bpfNone;
+    property PreventClipping: TPreventClipping read FPreventClipping write SetPreventClipping default pcNone;
   end;
 
   TASIOHost = class(TCustomASIOHost)
   published
     property Active;
+    property ASIOTime;
+    property BufferGranularity;
+    property BufferMaximum;
+    property BufferMinimum;
+    property BufferPreferredSize;
+    property BufferSize;
     property CanDos;
-    property PreventClipping;
-    property PreFillInBuffer;
-    property PreFillOutBuffer;
+    property ConvertOptimizations;
+    property CustomGenerator;
+    property DriverIndex;
+    property DriverList;
     property DriverName;
     property DriverVersion;
-    property DriverIndex;
-    property BufferSize;
-    property BufferMinimum;
-    property BufferMaximum;
-    property BufferPreferredSize;
-    property BufferGranularity;
-    property CustomGenerator;
-    property InputLatency;
     property InputChannelCount;
     property InputChannelOffset;
-    property OutputLatency;
-    property OutputDither;
+    property InputLatency;
+    property InputMonitor;
     property OutputChannelCount;
     property OutputChannelOffset;
-    property ConvertOptimizations;
-    property SelectorSupport;
+    property OutputDither;
+    property OutputLatency;
+    property PreFillInBuffer;
+    property PreFillOutBuffer;
+    property PreventClipping;
     property SampleRate;
-    property ASIOTime;
-    property OnCreate;
-    property OnDestroy;
-    property OnUpdateSamplePos;
-    property OnReset;
-    property OnDriverChanged;
-    property OnLatencyChanged;
-    property OnInput2Sample;
-    property OnSample2Output;
-    property OnSampleRateChanged;
+    property SelectorSupport;
+    property OnBuffersCreate;
+    property OnBuffersDestroy;
     property OnBufferSwitch32;
     property OnBufferSwitch64;
     property OnBufferSwitchNative;
-    property OnBuffersCreate;
-    property OnBuffersDestroy;
-    property InputMonitor;
-    property DriverList;
+    property OnCreate;
+    property OnDestroy;
+    property OnDriverChanged;
+    property OnInput2Sample;
+    property OnLatencyChanged;
+    property OnReset;
+    property OnSample2Output;
+    property OnSampleRateChanged;
+    property OnUpdateSamplePos;
   end;
 
-var theHost             : TCustomASIOHostBasic;
-    {$IFDEF FPC}
-    PMUpdSamplePos      : TLMessage;
-    PMBufSwitch         : TLMessage;
-    PMBufSwitchTimeInfo : TLMessage;
-    PMReset             : TLMessage;
-    {$ELSE}
-    PMUpdSamplePos      : TMessage;
-    PMBufSwitch         : TMessage;
-    PMBufSwitchTimeInfo : TMessage;
-    PMReset             : TMessage;
-    {$ENDIF}
+var
+  theHost             : TCustomASIOHostBasic;
+  {$IFDEF FPC}
+  PMUpdSamplePos      : TLMessage;
+  PMBufSwitch         : TLMessage;
+  PMBufSwitchTimeInfo : TLMessage;
+  PMReset             : TLMessage;
+  {$ELSE}
+  PMUpdSamplePos      : TMessage;
+  PMBufSwitch         : TMessage;
+  PMBufSwitchTimeInfo : TMessage;
+  PMReset             : TMessage;
+  {$ENDIF}
 
 function ChannelTypeToString(vType: TASIOSampleType): string;
 procedure ListAsioDrivers(var List: TAsioDriverList);
 
 implementation
 
-uses Registry, ComObj, Math {$IFDEF ASIOMixer}, ASIOChannelStrip {$ENDIF};
+uses
+  Registry, ComObj, Math {$IFDEF ASIOMixer}, ASIOChannelStrip {$ENDIF};
 
-const ASIODRV_DESC  = 'description';
-      INPROC_SERVER = 'InprocServer32';
-      ASIO_PATH     = 'software\asio';
-      COM_CLSID     = 'clsid';
+const
+  ASIODRV_DESC  = 'description';
+  INPROC_SERVER = 'InprocServer32';
+  ASIO_PATH     = 'software\asio';
+  COM_CLSID     = 'clsid';
 
 function findDrvPath(const clsidstr: string; var dllpath: string): longint;
 var
-   reg     : TRegistry;
-   success : boolean;
-   {$IFNDEF FPC}
-   buf     : array[0..1024] of char;
-   s       : string;
-   temps   : string;
-   {$ENDIF}
+  reg     : TRegistry;
+  success : boolean;
+  {$IFNDEF FPC}
+  buf     : array[0..1024] of char;
+  s       : string;
+  temps   : string;
+  {$ENDIF}
 begin
-  Result := -1;
+ Result := -1;
 
-  //CharLowerBuff(clsidstr,strlen(clsidstr));
-  reg := TRegistry.Create;
-  try
-    reg.RootKey := HKEY_CLASSES_ROOT;
-    success := reg.OpenKeyReadOnly(COM_CLSID + '\' + clsidstr + '\' + INPROC_SERVER);
-    if success then
-    begin
-      dllpath := reg.ReadString('');
-      if (ExtractFilePath(dllpath) = '') and (dllpath <> '') then
-      begin
-        {$IFNDEF FPC}
+ //CharLowerBuff(clsidstr,strlen(clsidstr));
+ reg := TRegistry.Create;
+ try
+  reg.RootKey := HKEY_CLASSES_ROOT;
+  success := reg.OpenKeyReadOnly(COM_CLSID + '\' + clsidstr + '\' + INPROC_SERVER);
+  if success then
+   begin
+    dllpath := reg.ReadString('');
+    if (ExtractFilePath(dllpath) = '') and (dllpath <> '') then
+     begin
+      {$IFNDEF FPC}
+      buf[0] := #0;
+      temps := dllpath;   // backup the value
+      if GetSystemDirectory(buf, 1023) <> 0 then   // try the system directory first
+       begin
+        s := buf;
+        dllpath := s + '\' + temps;
+       end;
+
+      if not FileExists(dllpath) then              // try the windows dir if necessary
+       begin
         buf[0] := #0;
-        temps := dllpath;   // backup the value
-        if GetSystemDirectory(buf, 1023) <> 0 then   // try the system directory first
-        begin
+        if GetWindowsDirectory(buf, 1023) <> 0 then   // try the system directory first
+         begin
           s := buf;
           dllpath := s + '\' + temps;
-        end;
-
-        if not FileExists(dllpath) then              // try the windows dir if necessary
-        begin
-          buf[0] := #0;
-          if GetWindowsDirectory(buf, 1023) <> 0 then   // try the system directory first
-          begin
-            s := buf;
-            dllpath := s + '\' + temps;
-          end;
-        end;
-       {$ENDIF}
+         end;
+       end;
+      {$ENDIF}
       end;
 
-      if FileExists(dllpath) then
-        Result := 0;
+      if FileExists(dllpath) then Result := 0;
       reg.CloseKey;
-    end;
-  finally
-    reg.Free;
-  end;
+   end;
+ finally
+  reg.Free;
+ end;
 end;
 
 procedure ListAsioDrivers(var List: TAsioDriverList);
@@ -478,40 +480,40 @@ var
    dllpath : string;
    count   : integer;
 begin
-  SetLength(List, 0);
+ SetLength(List, 0);
 
-  keys := TStringList.Create;
-  r := TRegistry.Create;
-  try
-    r.RootKey := HKEY_LOCAL_MACHINE;
-    success := r.OpenKeyReadOnly(ASIO_PATH);
+ keys := TStringList.Create;
+ r := TRegistry.Create;
+ try
+  r.RootKey := HKEY_LOCAL_MACHINE;
+  success := r.OpenKeyReadOnly(ASIO_PATH);
+  if success then
+   begin
+    r.GetKeyNames(keys);
+    r.CloseKey;
+   end;
+  count := 0;
+  for i := 0 to keys.Count - 1 do
+   begin
+    success := r.OpenKeyReadOnly(ASIO_PATH + '\' + keys[i]);
     if success then
-    begin
-     r.GetKeyNames(keys);
-     r.CloseKey;
-    end;
-    count := 0;
-    for i := 0 to keys.Count - 1 do
-    begin
-      success := r.OpenKeyReadOnly(ASIO_PATH + '\' + keys[i]);
-      if success then
-      begin
-        id := r.ReadString(COM_CLSID);
-        if findDrvPath(id, dllpath) = 0 then  // check if the dll exists
-        begin
-          SetLength(List, count+1);
-          List[count].id := StringToGUID(id);
-          StrPLCopy(List[count].name, keys[i], 512);
-          StrPLCopy(List[count].path, dllpath, 512);
-          inc(count);
-        end;
-        r.CloseKey;
-      end;
-    end;
-  finally
-    keys.Free;
-    r.Free;
-  end;
+     begin
+      id := r.ReadString(COM_CLSID);
+      if findDrvPath(id, dllpath) = 0 then  // check if the dll exists
+       begin
+        SetLength(List, count+1);
+        List[count].id := StringToGUID(id);
+        StrPLCopy(List[count].name, keys[i], 512);
+        StrPLCopy(List[count].path, dllpath, 512);
+        inc(count);
+       end;
+      r.CloseKey;
+     end;
+   end;
+ finally
+  keys.Free;
+  r.Free;
+ end;
 end;
 
 {$IFDEF DELPHI5}
@@ -530,15 +532,14 @@ end;
 
 function TASIOControlPanel.GetVerbCount: Integer;
 begin
- if (Component as TCustomASIOHost).DriverIndex >= 0 then
-  Result := 1 else Result := 0;
+ Result := Integer((Component as TCustomASIOHost).DriverIndex >= 0);
 end;
 
 procedure TASIOControlPanel.ExecuteVerb(Index: Integer);
 begin
  case Index of
- 0: if (Component as TCustomASIOHost).DriverIndex >= 0 then
-  (Component as TCustomASIOHost).ControlPanel;
+ 0: if (Component as TCustomASIOHost).DriverIndex >= 0
+  then (Component as TCustomASIOHost).ControlPanel;
  end;
 end;
 {$ENDIF}
@@ -546,9 +547,12 @@ end;
 
 constructor TASIOTimeSub.Create;
 begin
- FBufferTime.timeInfo.speed := 1;
- FBufferTime.timeInfo.sampleRate := 44100;
- FBufferTime.timeInfo.samplePosition := Int64ToASIOSamples(0);
+ with FBufferTime.timeInfo do
+  begin
+   Speed := 1;
+   SampleRate := 44100;
+   SamplePosition := Int64ToASIOSamples(0);
+  end;
  Flags := [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid];
 end;
 
@@ -560,38 +564,40 @@ end;
 procedure TASIOTimeSub.AssignTo(Dest: TPersistent);
 begin
  if Dest is TASIOTimeSub then
- with TASIOTimeSub(Dest) do
- begin
-  FBufferTime := Self.FBufferTime;
-  Change;
- end else inherited AssignTo(Dest);
+  with TASIOTimeSub(Dest) do
+   begin
+    FBufferTime := Self.FBufferTime;
+    Change;
+   end
+ else inherited AssignTo(Dest);
 end;
 
 function TASIOTimeSub.GetATflags: TATFlags;
 begin
  result := [];
- if (FBufferTime.timeInfo.flags and kSystemTimeValid) <> 0 then
-  result := result + [atSystemTimeValid] else
-  result := result - [atSystemTimeValid];
- if (FBufferTime.timeInfo.flags and kSamplePositionValid) <> 0 then
-  result := result + [atSamplePositionValid] else
-  result := result - [atSamplePositionValid];
- if (FBufferTime.timeInfo.flags and kSampleRateValid) <> 0 then
-  result := result + [atSampleRateValid] else
-  result := result - [atSampleRateValid];
- if (FBufferTime.timeInfo.flags and kSpeedValid) <> 0 then
-  result := result + [atSpeedValid] else
-  result := result - [atSpeedValid];
- if (FBufferTime.timeInfo.flags and kSampleRateChanged) <> 0 then
-  result := result + [atSampleRateChanged] else
-  result := result - [atSampleRateChanged];
- if (FBufferTime.timeInfo.flags and kClockSourceChanged) <> 0 then
-  result := result + [atClockSourceChanged] else
-  result := result - [atClockSourceChanged];
+ if (FBufferTime.timeInfo.flags and kSystemTimeValid) <> 0
+  then result := result + [atSystemTimeValid]
+  else result := result - [atSystemTimeValid];
+ if (FBufferTime.timeInfo.flags and kSamplePositionValid) <> 0
+  then result := result + [atSamplePositionValid]
+  else result := result - [atSamplePositionValid];
+ if (FBufferTime.timeInfo.flags and kSampleRateValid) <> 0
+  then result := result + [atSampleRateValid]
+  else result := result - [atSampleRateValid];
+ if (FBufferTime.timeInfo.flags and kSpeedValid) <> 0
+  then result := result + [atSpeedValid]
+  else result := result - [atSpeedValid];
+ if (FBufferTime.timeInfo.flags and kSampleRateChanged) <> 0
+  then result := result + [atSampleRateChanged]
+  else result := result - [atSampleRateChanged];
+ if (FBufferTime.timeInfo.flags and kClockSourceChanged) <> 0
+  then result := result + [atClockSourceChanged]
+  else result := result - [atClockSourceChanged];
 end;
 
 procedure TASIOTimeSub.SetATflags(Flags: TATFlags);
-var temp: Integer;
+var
+  temp: Integer;
 begin
  temp := 0;
  if (atSystemTimeValid in Flags) then temp := temp + kSystemTimeValid;
@@ -617,12 +623,12 @@ begin
  case Index of
   0: if Value <> FBufferTime.timeInfo.speed then
   begin
-   FBufferTime.timeInfo.speed:=Value;
+   FBufferTime.timeInfo.speed := Value;
    Change;
   end;
   1: if Value <> FBufferTime.timeInfo.sampleRate then
   begin
-   FBufferTime.timeInfo.sampleRate:=Value;
+   FBufferTime.timeInfo.sampleRate := Value;
    Change;
   end;
  end;
@@ -641,7 +647,7 @@ begin
  case Index of
   0: if Value <> ASIOSamplesToInt64(FBufferTime.timeInfo.samplePosition) then
        begin
-        FBufferTime.timeInfo.SamplePosition:=Int64ToASIOSamples(Value);
+        FBufferTime.timeInfo.SamplePosition := Int64ToASIOSamples(Value);
         Change;
        end;
  end;
@@ -778,10 +784,10 @@ end;
 constructor TCustomASIOHostBasic.Create(AOwner: TComponent);
 begin
 //  if AOwner is TForm then Handy := TForm(AOwner).Handle else Handy := Application.Handle;
-  fHandle:=AllocateHWnd(WndProc);
+  fHandle := AllocateHWnd(WndProc);
   //if theHost<>nil then
   theHost := Self;
-  FUnAlignedBuffer:=nil;
+  FUnAlignedBuffer := nil;
   FInputBuffer := nil;
   FOutputBuffer := nil;
   FSampleRate := 44100;
@@ -839,13 +845,14 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 function TCustomASIOHostBasic.GetDriverList: TStrings;
-var i : Integer;
+var
+  i : Integer;
 begin
  Result := TStringList.Create;
  SetLength(FASIOdriverlist, 0);
  ListASIODrivers(FASIOdriverlist);
- for i := Low(FASIOdriverlist) to High(FASIOdriverlist) do
-  Result.Add(FASIOdriverlist[i].name);
+ for i := Low(FASIOdriverlist) to High(FASIOdriverlist)
+  do Result.Add(FASIOdriverlist[i].name);
 end;
 
 procedure TCustomASIOHostBasic.SetDriverName(const s:String);
@@ -1231,7 +1238,7 @@ begin
      if FInputChannelInfos[i].vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz := 3 else
      if FInputChannelInfos[i].vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
      if FInputChannelInfos[i].vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
-      else sz:=SizeOf(Integer);
+      else sz := SizeOf(Integer);
      FillChar(currentbuffer^.buffers[0]^, FBufferSize * sz, 0);
      FillChar(currentbuffer^.buffers[1]^, FBufferSize * sz, 0);
      inc(currentbuffer);
@@ -1288,25 +1295,25 @@ function TCustomASIOHostBasic.GetInputMeter(Channel:Integer): Integer;
 var ACC : TASIOChannelControls;
 begin
  if FDriver = nil then begin result := -1; Exit; end;
- ACC.isInput:=1; ACC.Channel:=Channel;
+ ACC.isInput := 1; ACC.Channel := Channel;
  FDriver.Future(kAsioGetInputMeter,@ACC);
- Result:=ACC.meter;
+ Result := ACC.meter;
 end;
 
 function TCustomASIOHostBasic.GetOutputMeter(Channel:Integer): Integer;
 var ACC : TASIOChannelControls;
 begin
  if FDriver = nil then begin result := -1; Exit; end;
- ACC.isInput:=0; ACC.Channel:=Channel;
+ ACC.isInput := 0; ACC.Channel := Channel;
  FDriver.Future(kAsioGetOutputMeter,@ACC);
- Result:=ACC.meter;
+ Result := ACC.meter;
 end;
 
 procedure TCustomASIOHostBasic.SetInputGain(Channel:Integer; Gain: Integer);
 var ACC : TASIOChannelControls;
 begin
  if FDriver = nil then Exit;
- ACC.isInput:=1; ACC.Channel:=Channel; ACC.Gain:=Gain;
+ ACC.isInput := 1; ACC.Channel := Channel; ACC.Gain := Gain;
  FDriver.Future(kAsioSetInputGain,@ACC);
 end;
 
@@ -1314,64 +1321,64 @@ procedure TCustomASIOHostBasic.GetOutputGain(Channel:Integer; Gain: Integer);
 var ACC : TASIOChannelControls;
 begin
  if FDriver = nil then Exit;
- ACC.isInput:=0; ACC.Channel:=Channel; ACC.Gain:=Gain;
+ ACC.isInput := 0; ACC.Channel := Channel; ACC.Gain := Gain;
  FDriver.Future(kAsioSetOutputGain,@ACC);
 end;
 
 function TCustomASIOHostBasic.CanTimeInfo: Boolean;
 begin
  if FDriver = nil
-  then Result:=False
-  else Result:=FDriver.Future(kAsioCanTimeInfo,nil)=ASE_SUCCESS;
- fASIOCanDos:=fASIOCanDos+[acdTimeInfo];
+  then Result := False
+  else Result := FDriver.Future(kAsioCanTimeInfo,nil)=ASE_SUCCESS;
+ fASIOCanDos := fASIOCanDos+[acdTimeInfo];
 end;
 
 function TCustomASIOHostBasic.CanTimeCode: Boolean;
 begin
  if FDriver = nil
-  then Result:=False
-  else Result:=FDriver.Future(kAsioCanTimeCode,nil)=ASE_SUCCESS;
- fASIOCanDos:=fASIOCanDos+[acdTimeCode];
+  then Result := False
+  else Result := FDriver.Future(kAsioCanTimeCode,nil)=ASE_SUCCESS;
+ fASIOCanDos := fASIOCanDos+[acdTimeCode];
 end;
 
 function TCustomASIOHostBasic.CanTransport: Boolean;
 begin
  if FDriver = nil
-  then Result:=False
-  else Result:=FDriver.Future(kAsioCanTransport,nil)=ASE_SUCCESS;
- fASIOCanDos:=fASIOCanDos+[acdTransport];
+  then Result := False
+  else Result := FDriver.Future(kAsioCanTransport,nil)=ASE_SUCCESS;
+ fASIOCanDos := fASIOCanDos+[acdTransport];
 end;
 
 function TCustomASIOHostBasic.CanInputGain: Boolean;
 begin
  if FDriver = nil
-  then Result:=False
-  else Result:=FDriver.Future(kAsioCanInputGain,nil)=ASE_SUCCESS;
- fASIOCanDos:=fASIOCanDos+[acdInputGain];
+  then Result := False
+  else Result := FDriver.Future(kAsioCanInputGain,nil)=ASE_SUCCESS;
+ fASIOCanDos := fASIOCanDos+[acdInputGain];
 end;
 
 function TCustomASIOHostBasic.CanInputMeter: Boolean;
 begin
  if FDriver = nil
-  then Result:=False
-  else Result:=FDriver.Future(kAsioCanInputMeter,nil)=ASE_SUCCESS;
- fASIOCanDos:=fASIOCanDos+[acdInputMeter];
+  then Result := False
+  else Result := FDriver.Future(kAsioCanInputMeter,nil)=ASE_SUCCESS;
+ fASIOCanDos := fASIOCanDos+[acdInputMeter];
 end;
 
 function TCustomASIOHostBasic.CanOutputGain: Boolean;
 begin
  if FDriver = nil
-  then Result:=False
-  else Result:=FDriver.Future(kAsioCanOutputGain,nil)=ASE_SUCCESS;
- fASIOCanDos:=fASIOCanDos+[acdOutputGain];
+  then Result := False
+  else Result := FDriver.Future(kAsioCanOutputGain,nil)=ASE_SUCCESS;
+ fASIOCanDos := fASIOCanDos+[acdOutputGain];
 end;
 
 function TCustomASIOHostBasic.CanOutputMeter: Boolean;
 begin
  if FDriver = nil
-  then Result:=False
-  else Result:=FDriver.Future(kAsioCanOutputMeter,nil)=ASE_SUCCESS;
- fASIOCanDos:=fASIOCanDos+[acdOutputMeter];
+  then Result := False
+  else Result := FDriver.Future(kAsioCanOutputMeter,nil)=ASE_SUCCESS;
+ fASIOCanDos := fASIOCanDos+[acdOutputMeter];
 end;
 
 procedure TCustomASIOHostBasic.SetASIOCanDos(const Value: TASIOCanDos); begin end;
@@ -1382,9 +1389,9 @@ procedure TCustomASIOHostBasic.SetASIOCanDos(const Value: TASIOCanDos); begin en
 
 constructor TCustomASIOHost.Create(AOwner: TComponent);
 begin
-  fClipPrevent:=ClipDigital;
+  fClipPrevent := ClipDigital;
   FConvertOptimizations := [coSSE, co3DNow];
-  FOutputDither:=odNone;
+  FOutputDither := odNone;
   FInputMonitor := imDisabled;
 
   {$IFDEF ASIOMixer} FASIOMixer := TFmASIOMixer.Create(nil); {$ENDIF}
@@ -1417,17 +1424,17 @@ end;
 procedure TCustomASIOHost.SetOnBufferSwitch32(const Value: TBufferSwitchEvent32);
 begin
  FOnBufferSwitch32 := Value;
- if assigned(FOnBufferSwitch64) then FConvertMethod:=cm64 else
- if assigned(FOnBufferSwitch32) then FConvertMethod:=cm32
-  else FConvertMethod:=cmNone;
+ if assigned(FOnBufferSwitch64) then FConvertMethod := cm64 else
+ if assigned(FOnBufferSwitch32) then FConvertMethod := cm32
+  else FConvertMethod := cmNone;
 end;
 
 procedure TCustomASIOHost.SetOnBufferSwitch64(const Value: TBufferSwitchEvent64);
 begin
  FOnBufferSwitch64 := Value;
- if assigned(FOnBufferSwitch64) then FConvertMethod:=cm64 else
- if assigned(FOnBufferSwitch32) then FConvertMethod:=cm32
-  else FConvertMethod:=cmNone;
+ if assigned(FOnBufferSwitch64) then FConvertMethod := cm64 else
+ if assigned(FOnBufferSwitch32) then FConvertMethod := cm32
+  else FConvertMethod := cmNone;
 end;
 
 procedure TCustomASIOHost.SetOutputChannelOffset(const w: Word);
@@ -1461,10 +1468,10 @@ end;
 
 procedure TCustomASIOHost.SetPreventClipping(v : TPreventClipping);
 begin
- fPreventClipping:=v;
+ fPreventClipping := v;
  case fPreventClipping of
-  pcDigital: fClipPrevent:=ClipDigital;
-  pcAnalog: fClipPrevent:=ClipAnalog;
+  pcDigital: fClipPrevent := ClipDigital;
+  pcAnalog: fClipPrevent := ClipAnalog;
  end;
 end;
 
