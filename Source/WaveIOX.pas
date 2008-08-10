@@ -812,11 +812,12 @@ begin
      Format.nBlockAlign := 4;
      Format.wFormatTag := 3
     end;
-  else
-   begin
-    Format.nBlockAlign := (bits + 7) div 8;
-    Format.wFormatTag := WAVE_FORMAT_PCM;
-   end;
+   else
+    begin
+     Format.nBlockAlign := (bits + 7) div 8;
+     Format.wFormatTag := WAVE_FORMAT_PCM;
+    end;
+  end;
   Format.nAvgBytesPerSec := sr * ch * Format.nBlockAlign;
   p := @format;
   stream := TFilewaveStream.Create(fn, p);

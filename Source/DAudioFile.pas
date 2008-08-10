@@ -6,8 +6,8 @@ uses
   Classes, SysUtils, DAVDCommon;
 
 type
-  TOnLoadSaveData32 = procedure(const Buffer: PAVDSingleDynArray; const BufferSize: Cardinal) of object;
-  TOnLoadSaveData64 = procedure(const Buffer: PAVDDoubleDynArray; const BufferSize: Cardinal) of object;
+  TOnLoadSaveData32 = procedure(const Buffer: array of PAVDSingleDynArray; const BufferSize: Cardinal) of object;
+  TOnLoadSaveData64 = procedure(const Buffer: array of PAVDDoubleDynArray; const BufferSize: Cardinal) of object;
 
   TAudioEncoding = (aeUndefined = -1, aeInteger = 0, aeFloat = 1, aeMP3 = 2,
                     aeACM = 3, aeADPCM = 4, aeMSADPCM = 5, aeDVIADPCM = 6,
@@ -15,18 +15,20 @@ type
 
   TMFCustomAudioFile = class(TComponent, IStreamPersist)
   private
-    fOnSaveData64 : TOnLoadSaveData64;
-    fOnLoadData32 : TOnLoadSaveData32;
-    fOnLoadData64 : TOnLoadSaveData64;
-    fOnSaveData32 : TOnLoadSaveData32;
-    fReadHeaderOnly: Boolean;
+    fOnSaveData64    : TOnLoadSaveData64;
+    fOnLoadData32    : TOnLoadSaveData32;
+    fOnLoadData64    : TOnLoadSaveData64;
+    fOnSaveData32    : TOnLoadSaveData32;
+    fReadHeaderOnly  : Boolean;
+    fRWBufferSize    : Integer;
+    fRWBuffer        : PByteArray;
+    procedure SetRWBufferSize(const Value: Integer);
   protected
-    function GetBufferSize: Integer; virtual; abstract;
     function GetChannels: Integer; virtual; abstract;
     function GetSampleCount: Integer; virtual; abstract;
     function GetSampleRate: Double; virtual; abstract;
     function GetTotalTime: Double; virtual;
-    procedure SetBufferSize(const Value: Integer); virtual; abstract;
+    procedure RWBufferSizeChanged; virtual;
     procedure SetChannels(const Value: Integer); virtual; abstract;
     procedure SetSampleCount(const Value: Integer); virtual; abstract;
     procedure SetSampleRate(const Value: Double); virtual; abstract;
@@ -44,7 +46,7 @@ type
     property SampleRate: Double read GetSampleRate write SetSampleRate;
     property ChannelCount: Integer read GetChannels write SetChannels;
     property SampleCount: Integer read GetSampleCount write SetSampleCount;
-    property BufferSize: Integer read GetBufferSize write SetBufferSize;
+    property ReadWriteBufferSize: Integer read fRWBufferSize write SetRWBufferSize default 16384;
     property TotalTime: Double read GetTotalTime; // = SampleCount / SampleRate
     property OnLoadData32: TOnLoadSaveData32 read fOnLoadData32 write fOnLoadData32;
     property OnLoadData64: TOnLoadSaveData64 read fOnLoadData64 write fOnLoadData64;
@@ -59,11 +61,29 @@ implementation
 constructor TMFCustomAudioFile.Create(AOwner: TComponent);
 begin
  inherited;
+ // default read/write buffer size: 16 kB
+ fRWBufferSize := 16384;
+ GetMem(fRWBuffer, fRWBufferSize);
 end;
 
 destructor TMFCustomAudioFile.Destroy;
 begin
+ Dispose(fRWBuffer);
  inherited;
+end;
+
+procedure TMFCustomAudioFile.SetRWBufferSize(const Value: Integer);
+begin
+ if fRWBufferSize <> Value then
+  begin
+   fRWBufferSize := Value;
+   RWBufferSizeChanged;
+  end;
+end;
+
+procedure TMFCustomAudioFile.RWBufferSizeChanged;
+begin
+ ReallocMem(fRWBuffer, fRWBufferSize);
 end;
 
 function TMFCustomAudioFile.GetTotalTime: Double;

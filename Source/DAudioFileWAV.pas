@@ -103,7 +103,6 @@ type
     property SampleRate;
     property ChannelCount;
     property SampleCount;
-    property BufferSize;
     property TotalTime;
     property OnLoadData32;
     property OnLoadData64;
@@ -529,12 +528,16 @@ end;
 
 procedure TMFCustomAudioFileWAV.SaveToStream(Stream: TStream);
 var
-  ChunkName : TChunkName;
-  ChunkSize : Cardinal;
+  ChunkName  : TChunkName;
+  ChunkStart : Cardinal;
+  ChunkSize  : Cardinal;
 begin
  inherited;
  with Stream do
   begin
+   // Store chunk start position, just in case the stream position is not 0;
+   ChunkStart := Position;
+
    // first write 'RIFF' (resource interchange file format)
    ChunkName := 'RIFF';
    Write(ChunkName, 4);
@@ -547,6 +550,28 @@ begin
    ChunkName := 'WAVE';
    Write(ChunkName, 4);
 
+   // write format chunk
+   fFormatChunk.SaveToStream(Stream);
+
+   // if exists, write the fact chunk
+   if assigned(fFactChunk)
+    then fFactChunk.SaveToStream(Stream);
+
+
+   // ToDo: write data here!
+
+(*
+   BufferSize
+   OnLoadData32
+*)
+
+   // finally write filesize
+   ChunkSize := Position - ChunkStart;
+   Position  := ChunkStart + 4;
+   Write(ChunkSize, 4);
+
+   // Reset Position to end of Stream;
+   Position := ChunkStart + ChunkSize;
   end;
 end;
 

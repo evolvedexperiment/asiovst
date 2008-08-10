@@ -5,7 +5,8 @@ uses
   AEmain in 'AEmain.pas' {FmAudioEditor},
   DChunkWaveFile in '..\..\..\Source\DChunkWaveFile.pas',
   DWaveFileTypes in '..\..\..\Source\DWaveFileTypes.pas',
-  DChunkClasses in '..\..\..\Source\DChunkClasses.pas';
+  DChunkClasses in '..\..\..\Source\DChunkClasses.pas',
+  DChunkAIFFFile in '..\..\..\Source\DChunkAIFFFile.pas';
 
 {$R *.res}
 
