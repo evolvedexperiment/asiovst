@@ -1,94 +1,41 @@
-unit DAudioChunks;
+unit DChunkWaveFile;
 
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, DChunkClasses, DWaveFileTypes;
 
 type
-  TChunkName = array [0..3] of Char;
+  ////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////// Format Chunk ///////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
 
-  TCustomChunk = class(TInterfacedPersistent, IStreamPersist)
-  protected
-    fChunkName : TChunkName;
-    fChunkSize : Integer;
-    function GetChunkName: string; virtual;
-    procedure SetChunkName(const Value: string); virtual;
-    function GetChunkSize: Integer; virtual;
-    procedure AssignTo(Dest: TPersistent); override;
-  public
-    constructor Create; virtual;
-    procedure LoadFromStream(Stream : TStream); virtual;
-    procedure SaveToStream(Stream : TStream); virtual;
-    procedure LoadFromFile(FileName : TFileName); virtual;
-    procedure SaveToFile(FileName : TFileName); virtual;
-    property ChunkName : string read GetChunkName write SetChunkName;
-    property ChunkSize : Integer read GetChunkSize;
-  end;
-
-  TUnknownChunk = class(TCustomChunk)
+  TFormatChunk = class(TDefinedChunk)
   private
-    function GetData(index: Integer): Byte;
-    procedure SetData(index: Integer; const Value: Byte);
+    function GetFormatTag: TWavEncoding;
+    procedure CalculateChunkSize;
+    procedure SetBitsPerSample(const Value: Word);
+    procedure SetBlockAlign(const Value: Word);
+    procedure SetBytesPerSecond(const Value: Cardinal);
+    procedure SetChannels(const Value: Word);
+    procedure SetFormatTag(const Value: TWavEncoding);
+    procedure SetSampleRate(const Value: Cardinal);
   protected
-    fData : array of Byte;
+    fFormatSpecific: array of Byte;
     procedure AssignTo(Dest: TPersistent); override;
   public
-    procedure LoadFromStream(Stream : TStream); override;
-    procedure SaveToStream(Stream : TStream); override;
-  published
-  public
-    property Data[index : Integer]: Byte read GetData write SetData;
-  end;
-
-  TDefinedChunk = class(TCustomChunk)
-  protected
-    fFilePosition : Cardinal;
-    procedure SetChunkName(const Value: string); override;
-    procedure AssignTo(Dest: TPersistent); override;
-  public
-    constructor Create; override;
-    procedure LoadFromStream(Stream : TStream); override;
-    class function GetClassChunkName : TChunkName; virtual; abstract;
-  published
-    property FilePosition : Cardinal read fFilePosition;
-  end;
-
-  TDefinedChunkClass = class of TDefinedChunk;
-
-  TFixedDefinedChunk = class(TDefinedChunk)
-  private
-    function GetStartAddress: Pointer;
-    procedure SetStartAddress(const Value: Pointer);
-  protected
-    fStartAddresses : array of Pointer;
-    procedure AssignTo(Dest: TPersistent); override;
-    function GetChunkSize: Integer; override;
-    property StartAddress: Pointer read GetStartAddress write SetStartAddress;
-  public
-    class function GetClassChunkSize : Integer; virtual; abstract;
+    WaveFormatRecord : TWavFormatRecord;
     constructor Create; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
-  end;
-
-  TCustomBinaryChunk = class(TDefinedChunk)
-  protected
-    fBinaryData : Array of Byte;
-    procedure AssignTo(Dest: TPersistent); override;
-  public
-    procedure LoadFromStream(Stream : TStream); override;
-    procedure SaveToStream(Stream : TStream); override;
-  end;
-
-  TCustomTextChunk = class(TDefinedChunk)
-  protected
-    fText  : string;
-    procedure SetText(const Value: string);
-    procedure AssignTo(Dest: TPersistent); override;
-  public
-    procedure LoadFromStream(Stream : TStream); override;
-    procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property FormatTag: TWavEncoding read GetFormatTag write SetFormatTag;
+    property Channels: Word read WaveFormatRecord.Channels write SetChannels;
+    property SampleRate: Cardinal read WaveFormatRecord.SampleRate write SetSampleRate;
+    property BytesPerSecond: Cardinal read WaveFormatRecord.BytesPerSecond write SetBytesPerSecond;
+    property BlockAlign: Word read WaveFormatRecord.BlockAlign write SetBlockAlign;
+    property BitsPerSample: Word read WaveFormatRecord.BitsPerSample write SetBitsPerSample;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -717,289 +664,145 @@ type
 
 implementation
 
-{ TCustomChunk }
+{ TFormatChunk }
 
-constructor TCustomChunk.Create;
+constructor TFormatChunk.Create;
 begin
- fChunkName := '';
- fChunkSize := 0;
-end;
-
-procedure TCustomChunk.AssignTo(Dest: TPersistent);
-begin
- if Dest is TCustomChunk then
+ inherited;
+ with WaveFormatRecord do
   begin
-   TCustomChunk(Dest).fChunkName := fChunkName;
-   TCustomChunk(Dest).fChunkSize := fChunkSize;
-  end
- else inherited;
+   FormatTag      := 1;     // PCM encoding by default
+   Channels       := 1;     // one channel
+   SampleRate     := 44100; // 44.1 kHz (CD quality)
+   BitsPerSample  := 16;    // 16bit    (CD quality)
+   BlockAlign     := (BitsPerSample + 7) div 8 * Channels;
+   BytesPerSecond := Channels * BlockAlign * SampleRate;
+  end;
+ SetLength(fFormatSpecific, 0);
 end;
 
-function TCustomChunk.GetChunkName: string;
+procedure TFormatChunk.AssignTo(Dest: TPersistent);
 begin
- result := fChunkName;
+ inherited;
+ if Dest is TFormatChunk then
+  begin
+   TFormatChunk(Dest).WaveFormatRecord := WaveFormatRecord;
+   SetLength(TFormatChunk(Dest).fFormatSpecific, Length(fFormatSpecific));
+   Move(fFormatSpecific[0], TFormatChunk(Dest).fFormatSpecific[0], Length(fFormatSpecific));
+  end;
 end;
 
-function TCustomChunk.GetChunkSize: Integer;
+procedure TFormatChunk.CalculateChunkSize;
 begin
- result := fChunkSize;
+ fChunkSize := SizeOf(TWavFormatRecord) + SizeOf(Word) + Length(fFormatSpecific);
 end;
 
-procedure TCustomChunk.LoadFromFile(FileName: TFileName);
+procedure TFormatChunk.LoadFromStream(Stream: TStream);
 var
-  FileStream : TFileStream;
-begin
- FileStream := TFileStream.Create(FileName, fmOpenRead);
- with FileStream do
-  try
-   LoadFromStream(FileStream);
-  finally
-   Free;
-  end;
-end;
-
-procedure TCustomChunk.SaveToFile(FileName: TFileName);
-var
-  FileStream : TFileStream;
-begin
- FileStream := TFileStream.Create(FileName, fmCreate);
- with FileStream do
-  try
-   SaveToStream(FileStream);
-  finally
-   Free;
-  end;
-end;
-
-procedure TCustomChunk.LoadFromStream(Stream: TStream);
-begin
- Stream.Read(fChunkSize, 4);
-end;
-
-procedure TCustomChunk.SaveToStream(Stream: TStream);
-begin
- with Stream do
-  begin
-   Write(fChunkName[0], 4);
-   Write(fChunkSize, 4);
-  end;
-end;
-
-procedure TCustomChunk.SetChunkName(const Value: string);
-var
-  ChunkNameSize : Integer;
-begin
- ChunkNameSize := Length(Value);
- if ChunkNameSize > 3 then ChunkNameSize := 4;
- Move(Value[1], fChunkName[0], ChunkNameSize);
-end;
-
-{ TUnknownChunk }
-
-procedure TUnknownChunk.AssignTo(Dest: TPersistent);
-begin
- inherited;
- if Dest is TUnknownChunk then
-  begin
-   SetLength(TUnknownChunk(Dest).fData, Length(fData));
-   Move(fData[0], TUnknownChunk(Dest).fData[0], Length(fData));
-  end;
-end;
-
-function TUnknownChunk.GetData(index: Integer): Byte;
-begin
- if (index >= 0) and (index < Length(fData))
-  then result := fData[index]
-  else result := 0;
-end;
-
-procedure TUnknownChunk.LoadFromStream(Stream: TStream);
-begin
- with Stream do
-  begin
-   Position := Position - 4;
-   Read(fChunkName, 4);
-   inherited;
-   assert(fChunkSize < Size);
-   SetLength(fData, fChunkSize);
-   Read(fData[0], fChunkSize);
-  end;
-end;
-
-procedure TUnknownChunk.SaveToStream(Stream: TStream);
-begin
- with Stream do
-  begin
-   fChunkSize := Length(fData);
-   inherited;
-   Write(fData[0], fChunkSize);
-  end;
-end;
-
-procedure TUnknownChunk.SetData(index: Integer; const Value: Byte);
-begin
- if (index >= 0) and (index < Length(fData))
-  then fData[index] := Value;
-end;
-
-{ TDefinedChunk }
-
-constructor TDefinedChunk.Create;
-begin
- inherited;
- fFilePosition := 0;
- fChunkName := GetClassChunkName;
-end;
-
-procedure TDefinedChunk.AssignTo(Dest: TPersistent);
-begin
- inherited;
- if Dest is TDefinedChunk
-  then TDefinedChunk(Dest).fFilePosition := fFilePosition;
-end;
-
-procedure TDefinedChunk.LoadFromStream(Stream: TStream);
-var
-  TempChunkName : TChunkName;
-begin
- with Stream do
-  begin
-   // Assume chunk name fits the defined one
-   Position := Position - 4;
-   Read(TempChunkName, 4);
-   assert(TempChunkName = fChunkName);
-   inherited;
-  end;
-end;
-
-procedure TDefinedChunk.SetChunkName(const Value: string);
-begin
- inherited;
- if Value <> fChunkName
-  then raise Exception.Create('Chunk name must always be ''' + fChunkName + '''');
-end;
-
-{ TFixedDefinedChunk }
-
-constructor TFixedDefinedChunk.Create;
-begin
- inherited;
- SetLength(fStartAddresses, 1);
- fChunkSize := GetClassChunkSize;
-end;
-
-procedure TFixedDefinedChunk.AssignTo(Dest: TPersistent);
-begin
- inherited;
- if Dest is TFixedDefinedChunk then
-  begin
-   SetLength(TFixedDefinedChunk(Dest).fStartAddresses, Length(fStartAddresses));
-   Move(fStartAddresses[0], TFixedDefinedChunk(Dest).fStartAddresses[0], Length(fStartAddresses) * SizeOf(Pointer));
-  end;
-end;
-
-function TFixedDefinedChunk.GetChunkSize: Integer;
-begin
- result := GetClassChunkSize;
-end;
-
-function TFixedDefinedChunk.GetStartAddress: Pointer;
-begin
- result := fStartAddresses[0];
-end;
-
-procedure TFixedDefinedChunk.SetStartAddress(const Value: Pointer);
-begin
- fStartAddresses[0] := Value;
-end;
-
-procedure TFixedDefinedChunk.LoadFromStream(Stream: TStream);
-var
-  BytesReaded : Integer;
+  FormatSpecificBytes : Word;
 begin
  inherited;
  with Stream do
-  if fChunkSize <= GetClassChunkSize
-   then Read(fStartAddresses[0]^, fChunkSize)
-   else
-    begin
-     BytesReaded := Read(fStartAddresses[0]^, GetClassChunkSize);
-     assert(BytesReaded = GetClassChunkSize);
-     Position := Position + fChunkSize - GetClassChunkSize;
-    end;
+  begin
+   // make sure the chunk size is at least the header size
+   assert(fChunkSize >= SizeOf(TWavFormatRecord));
+   Read(WaveFormatRecord, SizeOf(TWavFormatRecord));
+
+   // check whether format specific data can be found
+   if fChunkSize <= SizeOf(TWavFormatRecord) then exit;
+   Read(FormatSpecificBytes, SizeOf(Word));
+
+   // read format specific bytes
+   assert(fChunkSize >= SizeOf(TWavFormatRecord) + SizeOf(Word) + FormatSpecificBytes);
+   SetLength(fFormatSpecific, FormatSpecificBytes);
+   Read(fFormatSpecific[0], FormatSpecificBytes);
+
+   // move position to the end of this chunk
+   Position := Position + fChunkSize - SizeOf(TWavFormatRecord) - SizeOf(Word) - FormatSpecificBytes;
+  end;
 end;
 
-procedure TFixedDefinedChunk.SaveToStream(Stream: TStream);
+procedure TFormatChunk.SaveToStream(Stream: TStream);
 var
-  BytesWritten: Integer;
+  FormatSpecificBytes : Word;
 begin
- fChunkSize := GetClassChunkSize;
+ CalculateChunkSize;
  inherited;
- try
-  BytesWritten := Stream.Write(fStartAddresses[0]^, GetClassChunkSize);
-  assert(BytesWritten = fChunkSize);
- except
-  raise Exception.Create('Wrong Start Addess of Chunk: ' + ChunkName);
- end;
-end;
-
-{ TCustomBinaryChunk }
-
-procedure TCustomBinaryChunk.AssignTo(Dest: TPersistent);
-begin
- inherited;
- if Dest is TCustomBinaryChunk then
+ with Stream do
   begin
-   SetLength(TCustomBinaryChunk(Dest).fBinaryData, Length(fBinaryData));
-   Move(fBinaryData, TCustomBinaryChunk(Dest).fBinaryData, SizeOf(fBinaryData));
+   // write header
+   Write(WaveFormatRecord, SizeOf(TWavFormatRecord));
+
+   // write format specific bytes
+   FormatSpecificBytes := Length(fFormatSpecific);
+   Write(FormatSpecificBytes, SizeOf(Word));
+   if FormatSpecificBytes > 0
+    then Write(fFormatSpecific[0], FormatSpecificBytes);
   end;
 end;
 
-procedure TCustomBinaryChunk.LoadFromStream(Stream: TStream);
+class function TFormatChunk.GetClassChunkName: TChunkName;
 begin
- inherited;
- SetLength(fBinaryData, fChunkSize);
- Stream.Read(fBinaryData[0], Length(fBinaryData));
+ result := 'fmt ';
 end;
 
-procedure TCustomBinaryChunk.SaveToStream(Stream: TStream);
+function TFormatChunk.GetFormatTag: TWavEncoding;
 begin
- fChunkSize := Length(fBinaryData);
- inherited;
- Stream.Write(fBinaryData[0], fChunkSize);
+ result := TWavEncoding(WaveFormatRecord.FormatTag);
 end;
 
-{ TCustomTextChunk }
-
-procedure TCustomTextChunk.AssignTo(Dest: TPersistent);
+procedure TFormatChunk.SetBitsPerSample(const Value: Word);
 begin
- inherited;
- if Dest is TCustomTextChunk then
+ if WaveFormatRecord.BitsPerSample <> Value then
   begin
-   TCustomTextChunk(Dest).fText  := fText;
+   if Value < 2
+    then raise Exception.Create('Value must be greater then 1!');
+   WaveFormatRecord.BitsPerSample := Value;
   end;
 end;
 
-procedure TCustomTextChunk.LoadFromStream(Stream: TStream);
+procedure TFormatChunk.SetBlockAlign(const Value: Word);
 begin
- inherited;
- SetLength(fText, fChunkSize);
- Stream.Read(fText[1], Length(fText));
-end;
-
-procedure TCustomTextChunk.SaveToStream(Stream: TStream);
-begin
- fChunkSize := Length(fText);
- inherited;
- Stream.Write(fText[1], fChunkSize);
-end;
-
-procedure TCustomTextChunk.SetText(const Value: string);
-begin
- if fText <> Value then
+ if WaveFormatRecord.BlockAlign <> Value then
   begin
-   fText := Value;
-   fChunkSize := Length(fText);
+   if Value < 1
+    then raise Exception.Create('Value must be greater then 0!');
+   WaveFormatRecord.BlockAlign := Value;
+  end;
+end;
+
+procedure TFormatChunk.SetBytesPerSecond(const Value: Cardinal);
+begin
+ if WaveFormatRecord.BytesPerSecond <> Value then
+  begin
+   if Value < 1
+    then raise Exception.Create('Value must be greater then 0!');
+   WaveFormatRecord.BytesPerSecond := Value;
+  end;
+end;
+
+procedure TFormatChunk.SetChannels(const Value: Word);
+begin
+ if WaveFormatRecord.Channels <> Value then
+  begin
+   if Value < 1
+    then raise Exception.Create('Value must be greater then 0!');
+   WaveFormatRecord.Channels := Value;
+  end;
+end;
+
+procedure TFormatChunk.SetFormatTag(const Value: TWavEncoding);
+begin
+ WaveFormatRecord.FormatTag := Word(Value);
+end;
+
+procedure TFormatChunk.SetSampleRate(const Value: Cardinal);
+begin
+ if WaveFormatRecord.SampleRate <> Value then
+  begin
+   if Value < 1
+    then raise Exception.Create('Value must be greater then 0!');
+   WaveFormatRecord.SampleRate := Value;
   end;
 end;
 

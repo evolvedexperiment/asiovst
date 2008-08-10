@@ -1,4 +1,4 @@
-unit ASIOChannelStrip;
+unit DASIOChannelStrip;
 
 {If this file makes troubles, delete the DEFINE ASIOMixer in DASIOHost}
 
@@ -15,21 +15,21 @@ type
     procedure TrackBarChange(Sender: TObject);
     procedure CBMuteClick(Sender: TObject);
   private
-    fChannel: Integer;
-    fVolume: Single;
-    fMute: Boolean;
-    fSolo: Boolean;
-    fOnVolumeChange: TNotifyEvent;
-    fOnMuteChange: TNotifyEvent;
-    fOnSoloChange: TNotifyEvent;
+    fChannel        : Integer;
+    fMute           : Boolean;
+    fOnMuteChange   : TNotifyEvent;
+    fOnSoloChange   : TNotifyEvent;
+    fOnVolumeChange : TNotifyEvent;
+    fSolo           : Boolean;
+    fVolume         : Single;
   public
     property Channel: Integer read fChannel write fChannel default -1;
     property Mute: Boolean read fMute Write fMute;
-    property Solo: Boolean read fSolo Write fSolo;
-    property Volume: Single read fVolume Write fVolume;
-    property OnVolumeChange: TNotifyEvent read fOnVolumeChange write fOnVolumeChange;
     property OnMuteChange: TNotifyEvent read fOnMuteChange write fOnMuteChange;
     property OnSoloChange: TNotifyEvent read fOnSoloChange write fOnSoloChange;
+    property OnVolumeChange: TNotifyEvent read fOnVolumeChange write fOnVolumeChange;
+    property Solo: Boolean read fSolo Write fSolo;
+    property Volume: Single read fVolume Write fVolume;
   end;
 
 implementation
@@ -40,18 +40,18 @@ implementation
 
 procedure TFrChannelStrip.TrackBarChange(Sender: TObject);
 begin
- fVolume:=(TrackBar.Max-TrackBar.Position)/TrackBar.Max;
+ fVolume := (TrackBar.Max - TrackBar.Position) / TrackBar.Max;
  if Assigned(fOnVolumeChange) then fOnVolumeChange(Self);
- TrackBar.Hint:=IntToStr(round(fVolume*100))+'%';
+ TrackBar.Hint := IntToStr(round(fVolume * 100)) + '%';
 end;
 
 procedure TFrChannelStrip.CBMuteClick(Sender: TObject);
 begin
- fMute:=CBMute.Checked;
+ fMute := CBMute.Checked;
  if Assigned(fOnMuteChange) then fOnMuteChange(Self);
  if fMute
-  then CBMute.Hint:='Mute'
-  else CBMute.Hint:='';
+  then CBMute.Hint := 'Mute'
+  else CBMute.Hint := '';
 end;
 
 end.

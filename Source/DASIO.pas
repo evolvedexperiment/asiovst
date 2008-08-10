@@ -1,29 +1,29 @@
 (*******************************************************************************
 
-	Steinberg Audio Stream I/O API
-	(c) 1997 - 1999, Steinberg Soft- und Hardware GmbH
+  Steinberg Audio Stream I/O API
+  (c) 1997 - 1999, Steinberg Soft- und Hardware GmbH
 
-	ASIO Interface Specification v 2.0
+  ASIO Interface Specification v 2.0
 
-	basic concept is an i/o synchronous double-buffer scheme:
+  basic concept is an i/o synchronous double-buffer scheme:
 
-	on bufferSwitch(index == 0), host will read/write:
+  on bufferSwitch(index == 0), host will read/write:
 
-		after ASIOStart(), the
+    after ASIOStart(), the
   read  first input buffer A (index 0)
-	|   will be invalid (empty)
-	*   ------------------------
-	|------------------------|-----------------------|
-	|                        |                       |
-	|  Input Buffer A (0)    |   Input Buffer B (1)  |
-	|                        |                       |
-	|------------------------|-----------------------|
-	|                        |                       |
-	|  Output Buffer A (0)   |   Output Buffer B (1) |
-	|                        |                       |
-	|------------------------|-----------------------|
-	*                        -------------------------
-	|                        before calling ASIOStart(),
+  |   will be invalid (empty)
+  *   ------------------------
+  |------------------------|-----------------------|
+  |                        |                       |
+  |  Input Buffer A (0)    |   Input Buffer B (1)  |
+  |                        |                       |
+  |------------------------|-----------------------|
+  |                        |                       |
+  |  Output Buffer A (0)   |   Output Buffer B (1) |
+  |                        |                       |
+  |------------------------|-----------------------|
+  *                        -------------------------
+  |                        before calling ASIOStart(),
   write                      host will have filled output
                              buffer B (index 1) already
 
@@ -32,7 +32,7 @@
   control sequencer sync accuracy
 
 *******************************************************************************)
-unit ASIO;
+unit DASIO;
 
 interface
 
@@ -44,9 +44,9 @@ const
   ASIOFalse = 0;
   ASIOTrue  = 1;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - -
+//-------------------------
 // Type definitions
-//- - - - - - - - - - - - - - - - - - - - - - - - -
+//-------------------------
 
 type
   // use the function ASIOSamplesToInt64 to convert to an Int64
@@ -78,35 +78,35 @@ function Int64ToASIOSamples(const value: Int64): TASIOInt64;
 
 const
   ASIOSTInt16MSB   = 0;
-  ASIOSTInt24MSB   = 1;		   // used for 20 bits as well
+  ASIOSTInt24MSB   = 1;       // used for 20 bits as well
   ASIOSTInt32MSB   = 2;
-  ASIOSTFloat32MSB = 3;		   // IEEE 754 32 bit float
-  ASIOSTFloat64MSB = 4;		   // IEEE 754 64 bit double float
+  ASIOSTFloat32MSB = 3;       // IEEE 754 32 bit float
+  ASIOSTFloat64MSB = 4;       // IEEE 754 64 bit double float
 
   // these are used for 32 bit data buffer, with different alignment of the data inside
   // 32 bit PCI bus systems can be more easily used with these
-  ASIOSTInt32MSB16 = 8;		   // 32 bit data with 18 bit alignment
-  ASIOSTInt32MSB18 = 9;		   // 32 bit data with 18 bit alignment
-  ASIOSTInt32MSB20 = 10;		  // 32 bit data with 20 bit alignment
-  ASIOSTInt32MSB24 = 11;		  // 32 bit data with 24 bit alignment
+  ASIOSTInt32MSB16 = 8;       // 32 bit data with 18 bit alignment
+  ASIOSTInt32MSB18 = 9;       // 32 bit data with 18 bit alignment
+  ASIOSTInt32MSB20 = 10;      // 32 bit data with 20 bit alignment
+  ASIOSTInt32MSB24 = 11;      // 32 bit data with 24 bit alignment
 
   ASIOSTInt16LSB   = 16;
-  ASIOSTInt24LSB   = 17;		  // used for 20 bits as well
+  ASIOSTInt24LSB   = 17;      // used for 20 bits as well
   ASIOSTInt32LSB   = 18;
-  ASIOSTFloat32LSB = 19;		 // IEEE 754 32 bit float, as found on Intel x86 architecture
-  ASIOSTFloat64LSB = 20; 		// IEEE 754 64 bit double float, as found on Intel x86 architecture
+  ASIOSTFloat32LSB = 19;      // IEEE 754 32 bit float, as found on Intel x86 architecture
+  ASIOSTFloat64LSB = 20;      // IEEE 754 64 bit double float, as found on Intel x86 architecture
 
   // these are used for 32 bit data buffer, with different alignment of the data inside
   // 32 bit PCI bus systems can more easily used with these
-  ASIOSTInt32LSB16 = 24;		 // 32 bit data with 16 bit alignment
-  ASIOSTInt32LSB18 = 25;		 // 32 bit data with 18 bit alignment
-  ASIOSTInt32LSB20 = 26;		 // 32 bit data with 20 bit alignment
-  ASIOSTInt32LSB24 = 27;   // 32 bit data with 24 bit alignment
+  ASIOSTInt32LSB16 = 24;      // 32 bit data with 16 bit alignment
+  ASIOSTInt32LSB18 = 25;      // 32 bit data with 18 bit alignment
+  ASIOSTInt32LSB20 = 26;      // 32 bit data with 20 bit alignment
+  ASIOSTInt32LSB24 = 27;      // 32 bit data with 24 bit alignment
 
   // ASIO DSD format.
-  ASIOSTDSDInt8LSB1 = 32;  // DSD 1 bit data, 8 samples per byte. First sample in Least significant bit.
-  ASIOSTDSDInt8MSB1 = 33;  // DSD 1 bit data, 8 samples per byte. First sample in Most significant bit.
-  ASIOSTDSDInt8NER8 = 40;  // DSD 8 bit data, 1 sample per byte. No Endianness required.
+  ASIOSTDSDInt8LSB1 = 32;     // DSD 1 bit data, 8 samples per byte. First sample in Least significant bit.
+  ASIOSTDSDInt8MSB1 = 33;     // DSD 1 bit data, 8 samples per byte. First sample in Most significant bit.
+  ASIOSTDSDInt8NER8 = 40;     // DSD 8 bit data, 1 sample per byte. No Endianness required.
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -153,18 +153,18 @@ const
 /////////////////
 
 type
-  TASIOError = longint;
+  TASIOError = LongInt;
 
 const
-     ASE_OK               = 0;                 // This value will be returned whenever the call succeeded
-     ASE_SUCCESS          = $3F4847A0;         // unique success return value for ASIOFuture calls
-     ASE_NotPresent       = -1000;             // hardware input or output is not present or available
-     ASE_HWMalfunction    = ASE_NotPresent+1;  // hardware is malfunctioning (can be returned by any ASIO function)
-     ASE_InvalidParameter = ASE_NotPresent+2;  // input parameter invalid
-     ASE_InvalidMode      = ASE_NotPresent+3;  // hardware is in a bad mode or used in a bad mode
-     ASE_SPNotAdvancing   = ASE_NotPresent+4;  // hardware is not running when sample position is inquired
-     ASE_NoClock          = ASE_NotPresent+5;  // sample clock or rate cannot be determined or is not present
-     ASE_NoMemory         = ASE_NotPresent+6;  // not enough memory for completing the request
+  ASE_OK               = 0;                   // This value will be returned whenever the call succeeded
+  ASE_SUCCESS          = $3F4847A0;           // unique success return value for ASIOFuture calls
+  ASE_NotPresent       = -1000;               // hardware input or output is not present or available
+  ASE_HWMalfunction    = ASE_NotPresent + 1;  // hardware is malfunctioning (can be returned by any ASIO function)
+  ASE_InvalidParameter = ASE_NotPresent + 2;  // input parameter invalid
+  ASE_InvalidMode      = ASE_NotPresent + 3;  // hardware is in a bad mode or used in a bad mode
+  ASE_SPNotAdvancing   = ASE_NotPresent + 4;  // hardware is not running when sample position is inquired
+  ASE_NoClock          = ASE_NotPresent + 5;  // sample clock or rate cannot be determined or is not present
+  ASE_NoMemory         = ASE_NotPresent + 6;  // not enough memory for completing the request
 
 
 ///////////////////////
@@ -173,15 +173,15 @@ const
 
 type
   TASIOTimeCode = packed record
-    speed           : Double;        // speed relation (fraction of nominal speed)
-	                                    // optional; set to 0. or 1. if not supported
-    timecodeSamples : TASIOSamples;  // time in samples
-    flags           : Longword;      // some information flags (see below)
-    future          : array[0..63] of Char;
+    Speed           : Double;        // speed relation (fraction of nominal speed)
+                                     // optional; set to 0. or 1. if not supported
+    TimecodeSamples : TASIOSamples;  // time in samples
+    Flags           : Longword;      // some information flags (see below)
+    Future          : array[0..63] of Char;
   end;
 
 type
-  ASIOTimeCodeFlags = longint;
+  ASIOTimeCodeFlags = LongInt;
 
 const
   kTcValid      = 1;
@@ -195,14 +195,14 @@ type
   TAsioTimeInfo = packed record
     speed          : Double;           // absolute speed (1. = nominal)
     systemTime     : TASIOTimeStamp;   // system time related to samplePosition, in nanoseconds
-	                                      // on mac, must be derived from Microseconds() (not UpTime()!)
-	                                      // on windows, must be derived from timeGetTime()
+                                       // on mac, must be derived from Microseconds() (not UpTime()!)
+                                       // on windows, must be derived from timeGetTime()
     samplePosition : TASIOSamples;
     sampleRate     : TASIOSampleRate;  // current rate
     flags          : Longword;         // (see below)
-    reserved       : array[0..11] of char;
+    reserved       : array[0..11] of Char;
   end;
-  TAsioTimeInfoFlags = Longint;
+  TAsioTimeInfoFlags = LongInt;
 
 const
   kSystemTimeValid     = 1;            // must always be valid
@@ -215,7 +215,7 @@ const
 type
   PASIOTime = ^TASIOTime;
   TASIOTime = packed record            // both input/output
-    reserved : array[0..3] of longint; // must be 0
+    reserved : array[0..3] of LongInt; // must be 0
     timeInfo : TASIOTimeInfo;          // required
     timeCode : TASIOTimeCode;          // optional, evaluated if (timeCode.flags & kTcValid)
   end;
@@ -252,8 +252,8 @@ type
 // position counter and the time code at buffer switch time is
 // (ignoring offset between tc and sample pos when tc is running):
 //
-// on input:	sample 0 -> input  buffer sample 0 -> time code 0
-// on output:	sample 0 -> output buffer sample 0 -> time code 0
+// on input:  sample 0 -> input  buffer sample 0 -> time code 0
+// on output:  sample 0 -> output buffer sample 0 -> time code 0
 //
 // this means that for 'real' calculations, one has to take into account
 // the according latencies.
@@ -264,69 +264,69 @@ type
 //
 // in createBuffers()
 // {
-// 	memset(&asioTime, 0, sizeof(ASIOTime));
-// // 	AsioTimeInfo* ti = &asioTime.timeInfo;
-// 	ti->sampleRate = theSampleRate;
-// 	ASIOTimeCode* tc = &asioTime.timeCode;
-// 	tc->speed = 1.;
-// 	timeInfoMode = false;
-// 	canTimeCode = false;
-// 	if(callbacks->asioMessage(kAsioSupportsTimeInfo, 0, 0, 0) == 1)
-// 	{
-// 		timeInfoMode = true;
+//   memset(&asioTime, 0, SizeOf(ASIOTime));
+// //   AsioTimeInfo* ti = &asioTime.timeInfo;
+//   ti->sampleRate = theSampleRate;
+//   ASIOTimeCode* tc = &asioTime.timeCode;
+//   tc->speed = 1.;
+//   timeInfoMode = false;
+//   canTimeCode = false;
+//   if(callbacks->asioMessage(kAsioSupportsTimeInfo, 0, 0, 0) == 1)
+//   {
+//     timeInfoMode = true;
 // #if kCanTimeCode
-// 		if(callbacks->asioMessage(kAsioSupportsTimeCode, 0, 0, 0) == 1)
-// 			canTimeCode = true;
+//     if(callbacks->asioMessage(kAsioSupportsTimeCode, 0, 0, 0) == 1)
+//       canTimeCode = true;
 // #endif
-// 	}
+//   }
 // }
 //
 // void switchBuffers(long doubleBufferIndex, bool processNow)
 // {
-// 	if(timeInfoMode)
-// 	{
-// 		AsioTimeInfo* ti = &asioTime.timeInfo;
-// 		ti->flags =	kSystemTimeValid | kSamplePositionValid | kSampleRateValid;
-// 		ti->systemTime = theNanoSeconds;
-// 		ti->samplePosition = theSamplePosition;
-// 		if(ti->sampleRate != theSampleRate)
-// 			ti->flags |= kSampleRateChanged;
-// 		ti->sampleRate = theSampleRate;
+//   if(timeInfoMode)
+//   {
+//     AsioTimeInfo* ti = &asioTime.timeInfo;
+//     ti->flags =  kSystemTimeValid | kSamplePositionValid | kSampleRateValid;
+//     ti->systemTime = theNanoSeconds;
+//     ti->samplePosition = theSamplePosition;
+//     if(ti->sampleRate != theSampleRate)
+//       ti->flags |= kSampleRateChanged;
+//     ti->sampleRate = theSampleRate;
 //
 // #if kCanTimeCode
-// 		if(canTimeCode && timeCodeEnabled)
-// 		{
-// 			ASIOTimeCode* tc = &asioTime.timeCode;
-// 			tc->timeCodeSamples = tcSamples;						// tc in samples
-// 			tc->flags = kTcValid | kTcRunning | kTcOnspeed;			// if so...
-// 		}
-// 		ASIOTime* bb = callbacks->bufferSwitchTimeInfo(&asioTime, doubleBufferIndex, processNow ? ASIOTrue : ASIOFalse);
+//     if(canTimeCode && timeCodeEnabled)
+//     {
+//       ASIOTimeCode* tc = &asioTime.timeCode;
+//       tc->timeCodeSamples = tcSamples;            // tc in samples
+//       tc->flags = kTcValid | kTcRunning | kTcOnspeed;      // if so...
+//     }
+//     ASIOTime* bb = callbacks->bufferSwitchTimeInfo(&asioTime, doubleBufferIndex, processNow ? ASIOTrue : ASIOFalse);
 // #else
-// 		callbacks->bufferSwitchTimeInfo(&asioTime, doubleBufferIndex, processNow ? ASIOTrue : ASIOFalse);
+//     callbacks->bufferSwitchTimeInfo(&asioTime, doubleBufferIndex, processNow ? ASIOTrue : ASIOFalse);
 // #endif
-// 	}
-// 	else
-// 		callbacks->bufferSwitch(doubleBufferIndex, ASIOFalse);
+//   }
+//   else
+//     callbacks->bufferSwitch(doubleBufferIndex, ASIOFalse);
 // }
 //
 // ASIOError ASIOFuture(long selector, void *params)
 // {
-// 	switch(selector)
-// 	{
-// 		case kAsioEnableTimeCodeRead:
-// 			timeCodeEnabled = true;
-// 			return ASE_SUCCESS;
-// 		case kAsioDisableTimeCodeRead:
-// 			timeCodeEnabled = false;
-// 			return ASE_SUCCESS;
-// 		case kAsioCanTimeInfo:
-// 			return ASE_SUCCESS;
-// 		#if kCanTimeCode
-// 		case kAsioCanTimeCode:
-// 			return ASE_SUCCESS;
-// 		#endif
-// 	}
-// 	return ASE_NotPresent;
+//   switch(selector)
+//   {
+//     case kAsioEnableTimeCodeRead:
+//       timeCodeEnabled = true;
+//       return ASE_SUCCESS;
+//     case kAsioDisableTimeCodeRead:
+//       timeCodeEnabled = false;
+//       return ASE_SUCCESS;
+//     case kAsioCanTimeInfo:
+//       return ASE_SUCCESS;
+//     #if kCanTimeCode
+//     case kAsioCanTimeCode:
+//       return ASE_SUCCESS;
+//     #endif
+//   }
+//   return ASE_NotPresent;
 // };
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -336,10 +336,10 @@ type
 //////////////////////////////////////////////////
 
 type
-  TASIOBufferSwitchProc = procedure(doubleBufferIndex: longint; directProcess: TASIOBool); cdecl;
+  TASIOBufferSwitchProc = procedure(doubleBufferIndex: LongInt; directProcess: TASIOBool); cdecl;
   TASIOSampleRateDidChangeProc = procedure(sRate: TASIOSampleRate); cdecl;
-  TASIOMessageFunc = function(selector, value: longint; message: pointer; opt: pdouble): longint; cdecl;
-  TASIOBufferSwitchTimeInfoFunc = function(var params: TASIOTime; doubleBufferIndex: longint; directProcess: TASIOBool): PASIOTime; cdecl;
+  TASIOMessageFunc = function(selector, value: LongInt; message: pointer; opt: pdouble): LongInt; cdecl;
+  TASIOBufferSwitchTimeInfoFunc = function(var params: TASIOTime; doubleBufferIndex: LongInt; directProcess: TASIOBool): PASIOTime; cdecl;
 
   TASIOCallbacks = packed record
     bufferSwitch : TASIOBufferSwitchProc;
@@ -382,9 +382,9 @@ const                                // asioMessage selectors
   kAsioEngineVersion        = 2;     // returns engine (host) asio implementation version,
                                      //   2 or higher
   kAsioResetRequest         = 3;     // request driver reset. if accepted, this
-		                                			//   will close the driver (ASIO_Exit() ) and
-                                					//   re-open it again (ASIO_Init() etc). some
-                                					//   drivers need to reconfigure for instance
+                                     //   will close the driver (ASIO_Exit() ) and
+                                     //   re-open it again (ASIO_Init() etc). some
+                                     //   drivers need to reconfigure for instance
                                      //   when the sample rate changes, or some basic
                                      //   changes have been made in ASIO_ControlPanel().
                                      //   returns 1L; note the request is merely passed
@@ -413,49 +413,49 @@ const                                // asioMessage selectors
 
 type
   TASIODriverInfo = packed record
-    asioVersion   : longint;     // currently, 2
-    driverVersion : longint;     // driver specific
-    name          : array[0..31] of char;
-    errorMessage  : array[0..123] of char;
-    sysRef        : pointer;     // on input: system reference
-                                 // (Windows: application main window handle, Mac & SGI: 0)
+    asioVersion   : LongInt;        // currently, 2
+    driverVersion : LongInt;        // driver specific
+    name          : array[0..31] of Char;
+    errorMessage  : array[0..123] of Char;
+    sysRef        : pointer;        // on input: system reference
+                                    // (Windows: application main window handle, Mac & SGI: 0)
   end;
 
   PASIOClockSource = ^TASIOClockSource;
   TASIOClockSource = packed record
-    index             : longint;    // as used for ASIOSetClockSource()
-    associatedChannel : longint;    // for instance, S/PDIF or AES/EBU
-    associatedGroup   : longint;    // see channel groups (ASIOGetChannelInfo())
+    index             : LongInt;    // as used for ASIOSetClockSource()
+    associatedChannel : LongInt;    // for instance, S/PDIF or AES/EBU
+    associatedGroup   : LongInt;    // see channel groups (ASIOGetChannelInfo())
     isCurrentSource   : TASIOBool;  // ASIOTrue if this is the current clock source
-    name              : array[0..31] of char;   // for user selection
+    name              : array[0..31] of Char;   // for user selection
   end;
 
   TASIOChannelInfo = packed record
-    channel      : longint;                // on input, channel index
+    channel      : LongInt;                // on input, channel index
     isInput      : TASIOBool;              // on input
     isActive     : TASIOBool;              // on exit
-    channelGroup : longint;                // dto
+    channelGroup : LongInt;                // dto
     vType        : TASIOSampleType;        // dto
-    name         : array[0..31] of char;   // dto
+    name         : array[0..31] of Char;   // dto
   end;
 
   PASIOBufferInfo = ^TASIOBufferInfo;
   TASIOBufferInfo = packed record
     isInput    : TASIOBool;               // on input:  ASIOTrue: input, else output
-    channelNum : longint;                 // on input:  channel index
+    channelNum : LongInt;                 // on input:  channel index
     buffers    : array[0..1] of pointer;  // on output: double buffer addresses
   end;
 
 const
   kAsioEnableTimeCodeRead  =  1;    // no arguments
-  kAsioDisableTimeCodeRead =	2;    // no arguments
-  kAsioSetInputMonitor     =	3;    // ASIOInputMonitor* in params
-  kAsioTransport           =	4;    // ASIOTransportParameters* in params
-  kAsioSetInputGain        =	5;    // ASIOChannelControls* in params, apply gain
-  kAsioGetInputMeter       =	6;    // ASIOChannelControls* in params, fill meter
-  kAsioSetOutputGain       =	7;    // ASIOChannelControls* in params, apply gain
-  kAsioGetOutputMeter      =	8;    // ASIOChannelControls* in params, fill meter
-  kAsioCanInputMonitor     =	9;    // no arguments for kAsioCanXXX selectors
+  kAsioDisableTimeCodeRead =  2;    // no arguments
+  kAsioSetInputMonitor     =  3;    // ASIOInputMonitor* in params
+  kAsioTransport           =  4;    // ASIOTransportParameters* in params
+  kAsioSetInputGain        =  5;    // ASIOChannelControls* in params, apply gain
+  kAsioGetInputMeter       =  6;    // ASIOChannelControls* in params, fill meter
+  kAsioSetOutputGain       =  7;    // ASIOChannelControls* in params, apply gain
+  kAsioGetOutputMeter      =  8;    // ASIOChannelControls* in params, fill meter
+  kAsioCanInputMonitor     =  9;    // no arguments for kAsioCanXXX selectors
   kAsioCanTimeInfo         = 10;
   kAsioCanTimeCode         = 11;
   kAsioCanTransport        = 12;
@@ -467,52 +467,52 @@ const
   // DSD support
   // The following extensions are required to allow switching
   // and control of the DSD subsystem.
-  kAsioSetIoFormat	       = $23111961; // ASIOIoFormat * in params.
-  kAsioGetIoFormat	       = $23111983; // ASIOIoFormat * in params.
+  kAsioSetIoFormat         = $23111961; // ASIOIoFormat * in params.
+  kAsioGetIoFormat         = $23111983; // ASIOIoFormat * in params.
   kAsioCanDoIoFormat       = $23112004; // ASIOIoFormat * in params.
 
 type
   TASIOInputMonitor = packed record
-    input     : longint;   // this input was set to monitor (or off), -1: all
-    output    : longint;   // suggested output for monitoring the input (if so)
-    gain      : longint;   // suggested gain, ranging 0 - 0x7fffffffL (-inf to +12 dB)
+    input     : LongInt;   // this input was set to monitor (or off), -1: all
+    output    : LongInt;   // suggested output for monitoring the input (if so)
+    gain      : LongInt;   // suggested gain, ranging 0 - 0x7fffffffL (-inf to +12 dB)
     state     : TASIOBool; // ASIOTrue => on, ASIOFalse => off
-    pan       : longint;   // suggested pan, 0 => all left, 0x7fffffff => right
+    pan       : LongInt;   // suggested pan, 0 => all left, 0x7fffffff => right
   end;
 
   TASIOChannelControls = packed record
-    channel   : longint;        // on input, channel index
+    channel   : LongInt;        // on input, channel index
     isInput   : TASIOBool;      // on input
-    gain      : longint;        // on input,  ranges 0 thru 0x7fffffff
-    meter     : longint;        // on return, ranges 0 thru 0x7fffffff
-    future    : array[0..31] of char;
+    gain      : LongInt;        // on input,  ranges 0 thru 0x7fffffff
+    meter     : LongInt;        // on return, ranges 0 thru 0x7fffffff
+    future    : array[0..31] of Char;
   end;
 
   TASIOTransportParameters = packed record
-    command        : longint;                   // see enum below
+    command        : LongInt;                   // see enum below
     samplePosition : TASIOSamples;
-    track          : longint;
-    trackSwitches  : array[0..15] of longint;   // 512 tracks on/off
-    future         : array[0..63] of char;
+    track          : LongInt;
+    trackSwitches  : array[0..15] of LongInt;   // 512 tracks on/off
+    future         : array[0..63] of Char;
   end;
 
 // DSD support
-//	Some notes on how to use ASIOIoFormatType.
+//  Some notes on how to use ASIOIoFormatType.
 //
-//	The caller will fill the format with the request types.
-//	If the board can do the request then it will leave the
-//	values unchanged. If the board does not support the
-//	request then it will change that entry to Invalid (-1)
+//  The caller will fill the format with the request types.
+//  If the board can do the request then it will leave the
+//  values unchanged. If the board does not support the
+//  request then it will change that entry to Invalid (-1)
 //
-//	So to request DSD then
+//  So to request DSD then
 //
-//	ASIOIoFormat NeedThis={kASIODSDFormat};
+//  ASIOIoFormat NeedThis={kASIODSDFormat};
 //
-//	if(ASE_SUCCESS != ASIOFuture(kAsioSetIoFormat,&NeedThis) ){
-//		// If the board did not accept one of the parameters then the
-//		// whole call will fail and the failing parameter will
-//		// have had its value changes to -1.
-//	}
+//  if(ASE_SUCCESS != ASIOFuture(kAsioSetIoFormat,&NeedThis) ){
+//    // If the board did not accept one of the parameters then the
+//    // whole call will fail and the failing parameter will
+//    // have had its value changes to -1.
+//  }
 //
 // Note: Switching between the formats need to be done before the "prepared"
 // state (see ASIO 2 documentation) is entered.
@@ -521,7 +521,7 @@ type
 
   TASIOIoFormat_s = packed record
     FormatType : TASIOIoFormatType;
-    future     : array [0..512-sizeof(TASIOIoFormatType)] of char;
+    future     : array [0..512 - SizeOf(TASIOIoFormatType)] of Char;
   end;
 
 const

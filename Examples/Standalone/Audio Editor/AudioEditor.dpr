@@ -3,7 +3,9 @@ program AudioEditor;
 uses
   Forms,
   AEmain in 'AEmain.pas' {FmAudioEditor},
-  DAudioChunks in '..\..\..\Source\DAudioChunks.pas';
+  DChunkWaveFile in '..\..\..\Source\DChunkWaveFile.pas',
+  DWaveFileTypes in '..\..\..\Source\DWaveFileTypes.pas',
+  DChunkClasses in '..\..\..\Source\DChunkClasses.pas';
 
 {$R *.res}
 

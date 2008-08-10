@@ -12,6 +12,9 @@ object FmASIOMixer: TFmASIOMixer
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  DesignSize = (
+    410
+    349)
   PixelsPerInch = 96
   TextHeight = 13
   object MixerPanel: TPanel

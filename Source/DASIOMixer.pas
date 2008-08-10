@@ -1,4 +1,4 @@
-unit ASIOMixer;
+unit DASIOMixer;
 
 {If this file makes troubles, delete the DEFINE ASIOMixer in DASIOHost}
 
