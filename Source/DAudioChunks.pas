@@ -72,6 +72,25 @@ type
     procedure SaveToStream(Stream : TStream); override;
   end;
 
+  TCustomBinaryChunk = class(TDefinedChunk)
+  protected
+    fBinaryData : Array of Byte;
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+  end;
+
+  TCustomTextChunk = class(TDefinedChunk)
+  protected
+    fText  : string;
+    procedure SetText(const Value: string);
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+  end;
+
   ////////////////////////////////////////////////////////////////////////////
   //////////////////////////////// Fact Chunk ////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
@@ -90,6 +109,58 @@ type
     class function GetClassChunkName : TChunkName; override;
   published
     property FileSize: Cardinal read FactRecord.FileSize write FactRecord.FileSize;
+  end;
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////// Quality Chunk ///////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+
+  // -> see: http://www.ebu.ch/CMSimages/en/tec_doc_t3285_s2_tcm6-10482.pdf
+
+  TQualityChunkRecord = packed record
+    FileSecurityReport : Cardinal; // FileSecurityCode of quality report
+    FileSecurityWave   : Cardinal; // FileSecurityCode of BWF wave data
+(*
+    CHAR BasicData[ ];             // ASCII: << Basic data >>
+    CHAR StartModulation[];        // ASCII: << Start modulation data >>
+    CHAR QualityEvent[ ];          // ASCII: << Quality event data >>
+    CHAR QualityParameter[ ];      // ASCII: << Quality parameter data >>
+    CHAR EndModulation[];          // ASCII: << End modulation data >>
+    CHAR QualityParameter[ ];      // ASCII: << Quality parameter data >>
+    CHAR OperatorComment[ ];       // ASCII: << Comments of operator >>
+    CHAR CueSheet[ ];              // ASCII: << Cue sheet data >>
+*)
+  end;
+
+  TQualityChunk = class(TCustomBinaryChunk)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  end;
+
+  ////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////// Link Chunk ////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+
+  // -> see: http://www.ebu.ch/CMSimages/en/tec_doc_t3285_s4_tcm6-10484.pdf
+
+  TBWFLinkChunk = class(TCustomTextChunk)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property XMLData: string read fText write fText;
+  end;
+
+  ////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////// AXML Chunk ////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+
+  // -> see: http://www.ebu.ch/CMSimages/en/tec_doc_t3285_s5_tcm6-10485.pdf
+
+  TBWFAXMLChunk = class(TCustomTextChunk)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property XMLData: string read fText write fText;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -168,20 +239,32 @@ type
   end;
 
   ////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////// Playlist Chunk //////////////////////////////
+  ///////////////////////////// Cued File Chunk //////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
+  TCuedFileChunk = class(TDefinedChunk)
+  private
+    procedure CalculateChunkSize;
+  protected
+    fCueID      : Cardinal;
+    fMediaType  : Cardinal;
+    fBinaryData : array of Byte;
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+  end;
 
 (*
   ////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////// Text List Chunk //////////////////////////////
+  /////////////////////// Associated Data List Chunk /////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TTextListRecord = packed record
+  TAssociatedDataListRecord = packed record
     TypeID : TChunkName;
   end;
 
-  TTextListChunk = class(TDefinedChunk)
+  TAssociatedDataListChunk = class(TDefinedChunk)
   private
     procedure CalculateChunkSize;
   protected
@@ -194,6 +277,42 @@ type
     property TypeID: string read GetTypeID write SetTypeID;
   end;
 *)
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////// Playlist Chunk //////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+
+  TPlaylistSegmentRecord = packed record
+    CuePointID      : Cardinal;
+    LengthInSamples : Cardinal;
+    NumberOfRepeats : Cardinal;
+  end;
+
+  TPlaylistSegmentItem = class(TCollectionItem)
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    PlaylistSegment : TPlaylistSegmentRecord;
+  published
+    property CuePointID: Cardinal read PlaylistSegment.CuePointID write PlaylistSegment.CuePointID;
+    property LengthInSamples: Cardinal read PlaylistSegment.LengthInSamples write PlaylistSegment.LengthInSamples;
+    property NumberOfRepeats: Cardinal read PlaylistSegment.NumberOfRepeats write PlaylistSegment.NumberOfRepeats;
+  end;
+
+  TPlaylistChunk = class(TDefinedChunk)
+  private
+    fCount            : Cardinal; 
+    fPlaylistSegments : TOwnedCollection;
+    procedure CalculateChunkSize;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+  published
+  end;
 
   ////////////////////////////////////////////////////////////////////////////
   /////////////////////////////// Silent Chunk ///////////////////////////////
@@ -235,6 +354,7 @@ type
   published
     property NumberOfSilentSamples: Cardinal read SilentRecord.NumberOfSilentSamples write SilentRecord.NumberOfSilentSamples;
   end;
+*)
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////// Cue Chunk ////////////////////////////////
@@ -249,15 +369,11 @@ type
     SampleOffset   : Cardinal;
   end;
 
-  TCuePointChunk = class(TFixedDefinedChunk)
+  TCueItem = class(TCollectionItem)
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
     CuePointRecord: TCuePointRecord;
-    constructor Create; override;
-    class function GetClassChunkSize: Integer; override;
-    class function GetClassChunkName : TChunkName; override;
-    property CuePointChunk: TChunkName read CuePointRecord.CuePointChunk write CuePointRecord.CuePointChunk;
   published
     property CuePointName: Cardinal read CuePointRecord.CuePointName write CuePointRecord.CuePointName;
     property CuePointSamplePosition: Cardinal read CuePointRecord.CuePointPos write CuePointRecord.CuePointPos;
@@ -266,7 +382,20 @@ type
     property RelativeBlockSampleOffset: Cardinal read CuePointRecord.SampleOffset write CuePointRecord.SampleOffset;
   end;
 
-*)
+  TCueChunk = class(TDefinedChunk)
+  private
+    fCount         : Cardinal;
+    fCueCollection : TOwnedCollection;
+    procedure CalculateChunkSize;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+  published
+  end;
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////////// Sampler Chunk /////////////////////////////
@@ -352,6 +481,8 @@ type
   end;
 
   TLoopItem = class(TCollectionItem)
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
   public
     LoopRecord : TLoopRecord;
   published
@@ -424,6 +555,31 @@ type
   end;
 
   ////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////// Level Chunk ///////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+
+  TLevelChunkRecord = packed record
+    dwVersion        : Cardinal; // version information
+    dwFormat         : Cardinal; // format of a peak point
+                                 //   1 = unsigned char
+                                 //   2 = unsigned short
+    dwPointsPerValue : Cardinal; // 1 = only positive peak point
+                                 // 2 = positive AND negative peak point
+    dwBlockSize      : Cardinal; // frames per value
+    dwPeakChannels   : Cardinal; // number of channels
+    dwNumPeakFrames  : Cardinal; // number of peak frames
+    dwPosPeakOfPeaks : Cardinal; // audio sample frame index or 0xFFFFFFFF if unknown
+    dwOffsetToPeaks  : Cardinal; // should usually be equal to the size of this header, but could also be higher
+    strTimestamp     : array [0..27] of char; // ASCII: time stamp of the peak data
+    reserved         : array [0..59] of char; // reserved set to 0x00
+    // CHAR peak_envelope_data[] // the peak point data
+  end;
+
+  // chunk not yet created...
+  // see: http://www.ebu.ch/CMSimages/en/tec_doc_t3285_s3_tcm6-10483.pdf
+
+
+  ////////////////////////////////////////////////////////////////////////////
   //////////////////////////////// Bext Chunk ////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
@@ -439,7 +595,7 @@ type
   end;
   PBextRecord = ^TBextRecord;
 
-  TBextChunk = class(TFixedDefinedChunk)
+  TCustomBextChunk = class(TFixedDefinedChunk)
   private
     function GetDescription: string;
     function GetOriginationDate: string;
@@ -457,7 +613,6 @@ type
     BextRecord : TBextRecord;
     constructor Create; override;
     class function GetClassChunkSize: Integer; override;
-    class function GetClassChunkName : TChunkName; override;
   published
     property Description: string read GetDescription write SetDescription;
     property Originator: string read GetOriginator write SetOriginator;
@@ -467,6 +622,17 @@ type
     property TimeRefLow: Integer read BextRecord.TimeRefLow write BextRecord.TimeRefLow;
     property TimeRefHigh: Integer read BextRecord.TimeRefHigh write BextRecord.TimeRefHigh;
     property Version: Word read BextRecord.Version write BextRecord.Version;
+  end;
+
+  TBextChunk = class(TCustomBextChunk)
+  public
+    class function GetClassChunkName : TChunkName; override;
+  end;
+
+  TBextChunkOld = class(TCustomBextChunk)
+  public
+    class function GetClassChunkName : TChunkName; override;
+    procedure SaveToStream(Stream: TStream); override;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -777,6 +943,66 @@ begin
  end;
 end;
 
+{ TCustomBinaryChunk }
+
+procedure TCustomBinaryChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomBinaryChunk then
+  begin
+   SetLength(TCustomBinaryChunk(Dest).fBinaryData, Length(fBinaryData));
+   Move(fBinaryData, TCustomBinaryChunk(Dest).fBinaryData, SizeOf(fBinaryData));
+  end;
+end;
+
+procedure TCustomBinaryChunk.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+ SetLength(fBinaryData, fChunkSize);
+ Stream.Read(fBinaryData[0], Length(fBinaryData));
+end;
+
+procedure TCustomBinaryChunk.SaveToStream(Stream: TStream);
+begin
+ fChunkSize := Length(fBinaryData);
+ inherited;
+ Stream.Write(fBinaryData[0], fChunkSize);
+end;
+
+{ TCustomTextChunk }
+
+procedure TCustomTextChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomTextChunk then
+  begin
+   TCustomTextChunk(Dest).fText  := fText;
+  end;
+end;
+
+procedure TCustomTextChunk.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+ SetLength(fText, fChunkSize);
+ Stream.Read(fText[1], Length(fText));
+end;
+
+procedure TCustomTextChunk.SaveToStream(Stream: TStream);
+begin
+ fChunkSize := Length(fText);
+ inherited;
+ Stream.Write(fText[1], fChunkSize);
+end;
+
+procedure TCustomTextChunk.SetText(const Value: string);
+begin
+ if fText <> Value then
+  begin
+   fText := Value;
+   fChunkSize := Length(fText);
+  end;
+end;
+
 { TFactChunk }
 
 constructor TFactChunk.Create;
@@ -800,6 +1026,27 @@ end;
 class function TFactChunk.GetClassChunkSize: Integer;
 begin
  result := SizeOf(TFactRecord);
+end;
+
+{ TBWFLinkChunk }
+
+class function TBWFLinkChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'link';
+end;
+
+{ TBWFAXMLChunk }
+
+class function TBWFAXMLChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'axml';
+end;
+
+{ TQualityChunk }
+
+class function TQualityChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'qlty';
 end;
 
 { TSilentChunk }
@@ -931,33 +1178,228 @@ begin
  CalculateChunkSize;
 end;
 
+{ TCuedFileChunk }
 
-(*
-{ TCuePointChunk }
-
-constructor TCuePointChunk.Create;
+procedure TCuedFileChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- StartAddress := @CuePointRecord;
+ if Dest is TCuedFileChunk then
+  begin
+   TCuedFileChunk(Dest).fCueID            := fCueID;
+   TCuedFileChunk(Dest).fMediaType        := fMediaType;
+
+   // copy binary data:
+   SetLength(TCuedFileChunk(Dest).fBinaryData, Length(fBinaryData));
+   Move(fBinaryData[0], TCuedFileChunk(Dest).fBinaryData[0], Length(fBinaryData));
+  end;
 end;
 
-procedure TCuePointChunk.AssignTo(Dest: TPersistent);
+procedure TCuedFileChunk.CalculateChunkSize;
+begin
+ fChunkSize := SizeOf(fCueID) +  SizeOf(fMediaType) + Length(fBinaryData);
+end;
+
+procedure TCuedFileChunk.LoadFromStream(Stream: TStream);
 begin
  inherited;
- if Dest is TCuePointChunk
-  then TCuePointChunk(Dest).CuePointRecord := CuePointRecord;
+ with Stream do
+  begin
+   Read(fCueID, SizeOf(fCueID));
+   Read(fMediaType, SizeOf(fMediaType));
+
+   // read binary data:
+   SetLength(fBinaryData, fChunkSize - SizeOf(fCueID) - SizeOf(fMediaType));
+   Read(fBinaryData[0], Length(fBinaryData));
+  end;
 end;
 
-class function TCuePointChunk.GetClassChunkName: TChunkName;
+procedure TCuedFileChunk.SaveToStream(Stream: TStream);
 begin
- result := 'cue ';
+ CalculateChunkSize;
+ inherited;
+ with Stream do
+  begin
+   Write(fCueID, SizeOf(fCueID));
+   Write(fMediaType, SizeOf(fMediaType));
+
+   // write binary data:
+   Write(fBinaryData[0], Length(fBinaryData));
+  end;
 end;
 
-class function TCuePointChunk.GetClassChunkSize: Integer;
+{ TPlaylistSegmentItem }
+
+procedure TPlaylistSegmentItem.AssignTo(Dest: TPersistent);
 begin
- result := SizeOf(TCuePointRecord);
+ if Dest is TPlaylistSegmentItem
+  then TPlaylistSegmentItem(Dest).PlaylistSegment := PlaylistSegment
+  else inherited;
 end;
-*)
+
+{ TPlaylistChunk }
+
+constructor TPlaylistChunk.Create;
+begin
+ inherited;
+ fPlaylistSegments := TOwnedCollection.Create(Self, TPlaylistSegmentItem);
+end;
+
+destructor TPlaylistChunk.Destroy;
+begin
+ FreeAndNil(fPlaylistSegments);
+ inherited;
+end;
+
+procedure TPlaylistChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TPlaylistChunk then
+  begin
+   TPlaylistChunk(Dest).fCount := fCount;
+   TPlaylistChunk(Dest).fPlaylistSegments.Assign(fPlaylistSegments);
+  end;
+end;
+
+procedure TPlaylistChunk.CalculateChunkSize;
+begin
+ fChunkSize := SizeOf(Cardinal) + fCount * SizeOf(TPlaylistSegmentRecord);
+end;
+
+procedure TPlaylistChunk.LoadFromStream(Stream: TStream);
+var
+  l : Integer;
+begin
+ inherited;
+ with Stream do
+  begin
+   Read(fCount, SizeOf(Cardinal));
+
+   // clear all eventually existing playlist segments
+   fPlaylistSegments.Clear;
+
+   // load every single playlist segment and add to playlist collection
+   for l := 0 to fCount - 1 do
+    with TPlaylistSegmentItem(fPlaylistSegments.Add)
+     do Read(PlaylistSegment, SizeOf(TPlaylistSegmentRecord));
+
+  end;
+end;
+
+procedure TPlaylistChunk.SaveToStream(Stream: TStream);
+var
+  l : Integer;
+begin
+ // update fCount:
+ fCount := fPlaylistSegments.Count;
+
+ // now recalculate the chunk size:
+ CalculateChunkSize;
+
+ // write chunk name & size
+ inherited;
+
+ with Stream do
+  begin
+   // write sampler header
+   Write(fCount, SizeOf(Cardinal));
+
+   // write every single playlist segment and add to playlist collection
+   for l := 0 to fCount - 1 do
+    with TPlaylistSegmentItem(fPlaylistSegments.Items[l])
+     do Write(PlaylistSegment, SizeOf(TPlaylistSegmentRecord));
+  end;
+end;
+
+{ TCueItem }
+
+procedure TCueItem.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCueItem
+  then TCueItem(Dest).CuePointRecord := CuePointRecord
+  else inherited;
+end;
+
+{ TCueChunk }
+
+constructor TCueChunk.Create;
+begin
+ inherited;
+ fCueCollection := TOwnedCollection.Create(Self, TCueItem);
+end;
+
+destructor TCueChunk.Destroy;
+begin
+ FreeAndNil(fCueCollection);
+ inherited;
+end;
+
+procedure TCueChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCueChunk then
+  begin
+   TCueChunk(Dest).fCount := fCount;
+   TCueChunk(Dest).fCueCollection.Assign(fCueCollection);
+  end;
+end;
+
+procedure TCueChunk.CalculateChunkSize;
+begin
+ fChunkSize := SizeOf(Cardinal) + fCount * SizeOf(TCuePointRecord);
+end;
+
+procedure TCueChunk.LoadFromStream(Stream: TStream);
+var
+  l : Integer;
+begin
+ inherited;
+ with Stream do
+  begin
+   Read(fCount, SizeOf(Cardinal));
+
+   // clear all eventually existing cues
+   fCueCollection.Clear;
+
+   // load every single playlist segment and add to playlist collection
+   for l := 0 to fCount - 1 do
+    with TCueItem(fCueCollection.Add)
+     do Read(CuePointRecord, SizeOf(TCuePointRecord));
+  end;
+end;
+
+procedure TCueChunk.SaveToStream(Stream: TStream);
+var
+  l : Integer;
+begin
+ // update fCount:
+ fCount := fCueCollection.Count;
+
+ // now recalculate the chunk size:
+ CalculateChunkSize;
+
+ // write chunk name & size
+ inherited;
+
+ with Stream do
+  begin
+   // write sampler header
+   Write(fCount, SizeOf(Cardinal));
+
+   // write every single playlist segment and add to playlist collection
+   for l := 0 to fCount - 1 do
+    with TCueItem(fCueCollection.Items[l])
+     do Write(CuePointRecord, SizeOf(TCuePointRecord));
+  end;
+end;
+
+{ TLoopItem }
+
+procedure TLoopItem.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TLoopItem
+  then TLoopItem(Dest).LoopRecord := LoopRecord
+  else inherited;
+end;
 
 { TSamplerChunk }
 
@@ -979,6 +1421,7 @@ begin
  if Dest is TSamplerChunk then
   begin
    TSamplerChunk(Dest).SamplerRecord := SamplerRecord;
+   TSamplerChunk(Dest).fLoopCollection.Assign(fLoopCollection);
   end;
 end;
 
@@ -1083,39 +1526,34 @@ begin
  result := SizeOf(TInstrumentRecord);
 end;
 
-{ TBextChunk }
+{ TCustomBextChunk }
 
-constructor TBextChunk.Create;
+constructor TCustomBextChunk.Create;
 begin
  inherited;
  StartAddress := @BextRecord;
 end;
 
-procedure TBextChunk.AssignTo(Dest: TPersistent);
+procedure TCustomBextChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TBextChunk
-  then TBextChunk(Dest).BextRecord := BextRecord;
+ if Dest is TCustomBextChunk
+  then TCustomBextChunk(Dest).BextRecord := BextRecord;
 end;
 
-class function TBextChunk.GetClassChunkName: TChunkName;
-begin
- result := 'bext';
-end;
-
-class function TBextChunk.GetClassChunkSize: Integer;
+class function TCustomBextChunk.GetClassChunkSize: Integer;
 begin
  result := SizeOf(TBextRecord);
 end;
 
 // Some Wrapper Functions
-function TBextChunk.GetDescription: string; begin result := BextRecord.Description; end;
-function TBextChunk.GetOriginationDate: string; begin result := BextRecord.OriginationDate; end;
-function TBextChunk.GetOriginationTime: string; begin result := BextRecord.OriginationTime; end;
-function TBextChunk.GetOriginator: string; begin result := BextRecord.Originator; end;
-function TBextChunk.GetOriginatorRef: string; begin result := BextRecord.OriginatorRef; end;
+function TCustomBextChunk.GetDescription: string; begin result := BextRecord.Description; end;
+function TCustomBextChunk.GetOriginationDate: string; begin result := BextRecord.OriginationDate; end;
+function TCustomBextChunk.GetOriginationTime: string; begin result := BextRecord.OriginationTime; end;
+function TCustomBextChunk.GetOriginator: string; begin result := BextRecord.Originator; end;
+function TCustomBextChunk.GetOriginatorRef: string; begin result := BextRecord.OriginatorRef; end;
 
-procedure TBextChunk.SetDescription(const Value: string);
+procedure TCustomBextChunk.SetDescription(const Value: string);
 begin
  with BextRecord do
   if Length(Value) < SizeOf(Description)
@@ -1123,7 +1561,7 @@ begin
    else Move(Value[1], Description, SizeOf(Description));
 end;
 
-procedure TBextChunk.SetOriginationDate(const Value: string);
+procedure TCustomBextChunk.SetOriginationDate(const Value: string);
 begin
  with BextRecord do
   if Length(Value) < SizeOf(OriginationDate)
@@ -1131,7 +1569,7 @@ begin
    else Move(Value[1], OriginationDate, SizeOf(OriginationDate));
 end;
 
-procedure TBextChunk.SetOriginationTime(const Value: string);
+procedure TCustomBextChunk.SetOriginationTime(const Value: string);
 begin
  with BextRecord do
   if Length(Value) < SizeOf(OriginationTime)
@@ -1139,7 +1577,7 @@ begin
    else Move(Value[1], OriginationTime, SizeOf(OriginationTime));
 end;
 
-procedure TBextChunk.SetOriginator(const Value: string);
+procedure TCustomBextChunk.SetOriginator(const Value: string);
 begin
  with BextRecord do
   if Length(Value) < SizeOf(Originator)
@@ -1147,12 +1585,31 @@ begin
    else Move(Value[1], Originator, SizeOf(Originator));
 end;
 
-procedure TBextChunk.SetOriginatorRef(const Value: string);
+procedure TCustomBextChunk.SetOriginatorRef(const Value: string);
 begin
  with BextRecord do
   if Length(Value) < SizeOf(OriginatorRef)
    then Move(Value[1], OriginatorRef, Length(Value))
    else Move(Value[1], OriginatorRef, SizeOf(OriginatorRef));
+end;
+
+{ TBextChunk }
+
+class function TBextChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'bext';
+end;
+
+{ TBextChunkOld }
+
+class function TBextChunkOld.GetClassChunkName: TChunkName;
+begin
+ result := 'BEXT';
+end;
+
+procedure TBextChunkOld.SaveToStream(Stream: TStream);
+begin
+ raise Exception.Create('the uppercase version of the bext chunk should not be written anymore!'#10#13'Please use the TBextChunk version');
 end;
 
 { TCartChunkTag }

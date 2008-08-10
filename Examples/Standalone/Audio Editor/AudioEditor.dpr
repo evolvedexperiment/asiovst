@@ -2,7 +2,8 @@ program AudioEditor;
 
 uses
   Forms,
-  AEmain in 'AEmain.pas' {FmAudioEditor};
+  AEmain in 'AEmain.pas' {FmAudioEditor},
+  DAudioChunks in '..\..\..\Source\DAudioChunks.pas';
 
 {$R *.res}
 
