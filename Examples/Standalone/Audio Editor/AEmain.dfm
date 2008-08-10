@@ -2,7 +2,7 @@ object FmAudioEditor: TFmAudioEditor
   Left = 286
   Top = 92
   Caption = 'Simple Audio Editor'
-  ClientHeight = 376
+  ClientHeight = 396
   ClientWidth = 654
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,17 +18,18 @@ object FmAudioEditor: TFmAudioEditor
     Left = 592
     Top = 21
     Width = 62
-    Height = 355
+    Height = 375
     Align = alRight
     RedrawInterval = 30
     BarWidthPercentage = 0.800000011920929000
     MaximumTimeFactor = 3.000000000000000000
+    ExplicitHeight = 355
   end
   object GuiStaticWaveform: TGuiStaticWaveform
     Left = 0
     Top = 21
     Width = 592
-    Height = 355
+    Height = 375
     Align = alClient
     ExplicitLeft = 96
     ExplicitTop = 80
@@ -94,9 +95,9 @@ object FmAudioEditor: TFmAudioEditor
     end
     object MIGenerate: TMenuItem
       Caption = '&Generate'
-      object Noise1: TMenuItem
+      object MINoise: TMenuItem
         Caption = '&Noise'
-        OnClick = Noise1Click
+        OnClick = MINoiseClick
       end
     end
     object MIProcess: TMenuItem
@@ -104,6 +105,18 @@ object FmAudioEditor: TFmAudioEditor
       object MINormalize: TMenuItem
         Caption = '&Normalize'
         OnClick = MINormalizeClick
+      end
+      object MIRectify: TMenuItem
+        Caption = '&Rectify'
+        OnClick = MIRectifyClick
+      end
+      object MIRemoveDC: TMenuItem
+        Caption = 'Remove &DC'
+        OnClick = MIRemoveDCClick
+      end
+      object MIInvert: TMenuItem
+        Caption = '&Invert'
+        OnClick = MIInvertClick
       end
     end
   end

@@ -708,7 +708,7 @@ begin
    assert(fChunkSize >= SizeOf(TWavFormatRecord));
    Read(WaveFormatRecord, SizeOf(TWavFormatRecord));
 
-   // check whether format specific data can be found
+   // check whether format specific data can be found:
    if fChunkSize <= SizeOf(TWavFormatRecord) then exit;
    Read(FormatSpecificBytes, SizeOf(Word));
 

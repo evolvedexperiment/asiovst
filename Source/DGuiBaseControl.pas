@@ -2,48 +2,51 @@ unit DGuiBaseControl;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
+uses
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
   Messages, Graphics, Classes, Controls, ExtCtrls;
 
 type
-  TGuiOnDragMouseMove = procedure(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer) of object;
+  TGuiOnDragMouseMove = procedure(Sender: TObject; Button: TMouseButton;
+    Shift: TShiftState; X, Y: Integer) of object;
 
   TGuiMouseButtonState = record
-    ButtonDown: boolean;
-    EventX, EventY: Integer;
-    ShiftState:  TShiftState;
+    ButtonDown     : Boolean;
+    EventX, EventY : Integer;
+    ShiftState     : TShiftState;
   end;
 
   TGuiMouseState = class
     LeftBtn,
     MiddleBtn,
-    RightBtn: TGuiMouseButtonState;
-    LastEventX, LastEventY: Integer;
+    RightBtn     : TGuiMouseButtonState;
+    LastEventX,
+    LastEventY   : Integer;
   end;
 
   TGuiMouseStateClass = class of TGuiMouseState;
 
   TGuiBaseControl = class(TGraphicControl)
   protected
-    fBuffer:          TBitmap;
-    fOnPaint:         TNotifyEvent;
-    fLineColor:       TColor;
-    fLineWidth:       Integer;
-    fRedrawTimer:     TTimer;
-    fTimerMustRedraw: Boolean;
-    fReleaseMouseBtnOnLeave: Boolean;
-    fOnMouseLeave:    TNotifyEvent;
-    fOnMouseEnter:    TNotifyEvent;
-    fOnDragMouseMove: TGuiOnDragMouseMove;
+    fBuffer                 : TBitmap;
+    fOnPaint                : TNotifyEvent;
+    fLineColor              : TColor;
+    fLineWidth              : Integer;
+    fRedrawTimer            : TTimer;
+    fTimerMustRedraw        : Boolean;
+    fReleaseMouseBtnOnLeave : Boolean;
+    fOnMouseLeave           : TNotifyEvent;
+    fOnMouseEnter           : TNotifyEvent;
+    fOnDragMouseMove        : TGuiOnDragMouseMove;
     {$IFNDEF FPC}
-    fTransparent: Boolean;
+    fTransparent            : Boolean;
     procedure DrawParentImage(Dest: TCanvas); virtual;
     procedure SetTransparent(Value: Boolean); virtual;
     {$ENDIF}
 
     procedure SetLineWidth(Value: Integer); virtual;
     procedure SetLineColor(Value: TColor); virtual;
-    procedure RedrawBuffer(doBufferFlip: Boolean = false); dynamic; abstract;
+    procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
     procedure ResizeBuffer; dynamic;
     procedure MouseEnter; dynamic;
     procedure MouseLeave; dynamic;
@@ -83,7 +86,7 @@ type
     property Transparent: Boolean read fTransparent write SetTransparent default False;
     {$ENDIF}   
     property RedrawInterval: Integer read GetRedrawInterval write SetRedrawInterval default 0;
-    property ReleaseMouseBtnOnLeave: Boolean read fReleaseMouseBtnOnLeave write fReleaseMouseBtnOnLeave default false;
+    property ReleaseMouseBtnOnLeave: Boolean read fReleaseMouseBtnOnLeave write fReleaseMouseBtnOnLeave default False;
   published
 
     property Enabled;
@@ -123,20 +126,23 @@ type
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TGuiBaseControl.Create(AOwner: TComponent);
 begin
   inherited;
 
-  fLineWidth := 1;
-  fLineColor := clBlack;
+  fLineWidth   := 1;
+  fLineColor   := clBlack;
   fTransparent := False;
-  fBuffer := TBitmap.Create;
+  fBuffer      := TBitmap.Create;
 
-  fReleaseMouseBtnOnLeave := false;
-  fRedrawTimer          := TTimer.Create(self);
-  fRedrawTimer.Interval := 0;
-  fRedrawTimer.OnTimer  := UpdateGuiTimer;
-  fTimerMustRedraw      := false;
+  fReleaseMouseBtnOnLeave := False;
+  fRedrawTimer            := TTimer.Create(self);
+  fRedrawTimer.Interval   := 0;
+  fRedrawTimer.OnTimer    := UpdateGuiTimer;
+  fTimerMustRedraw        := False;
 
   ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
                    csDoubleClicks, csReplicatable, csOpaque];
@@ -156,37 +162,41 @@ destructor TGuiBaseControl.Destroy;
 begin
   fRedrawTimer.Free;
   fBuffer.Free;
+  if assigned(MouseState) then FreeAndNil(MouseState);
   inherited;
 end;
 
 procedure TGuiBaseControl.CreateMouseClass(MouseStateClass: TGuiMouseStateClass);
 begin
-  MouseState:=MouseStateClass.Create;
-  MouseState.LeftBtn.ButtonDown := false;
-  MouseState.MiddleBtn.ButtonDown := false;
-  MouseState.RightBtn.ButtonDown := false;
-  MouseState.LastEventX:=0;
-  MouseState.LastEventY:=0;
+  MouseState := MouseStateClass.Create;
+  with MouseState do
+   begin
+    LeftBtn.ButtonDown   := False;
+    MiddleBtn.ButtonDown := False;
+    RightBtn.ButtonDown  := False;
+    LastEventX := 0;
+    LastEventY := 0;
+   end;
 end;
 
 procedure TGuiBaseControl.Paint;
 begin
   with Canvas do
-  begin
+   begin
     CopyMode := cmSrcCopy;
     Draw(0, 0, fBuffer);
-  end;   
-   if Assigned(fOnPaint) then fOnPaint(Self);
+   end;   
+  if Assigned(fOnPaint) then fOnPaint(Self);
 end;
 
 procedure TGuiBaseControl.ResizeBuffer;
 begin
-  if (Width>0) and (Height>0) then
-  begin
+  if (Width > 0) and (Height > 0) then
+   begin
     fBuffer.Width := Width;
     fBuffer.Height := Height;
-    RedrawBuffer(true);
-  end;
+    RedrawBuffer(True);
+   end;
 end;
 
 procedure TGuiBaseControl.Resize;
@@ -203,19 +213,19 @@ end;
 
 procedure TGuiBaseControl.SetLineColor(Value: TColor);
 begin
-  if fLineColor<>Value then
-  begin
+  if fLineColor <> Value then
+   begin
     fLineColor := Value;
-    RedrawBuffer(true);
-  end;
+    RedrawBuffer(True);
+   end;
 end;
 
 procedure TGuiBaseControl.SetLinewidth(Value: Integer);
 begin
-  if (Value>0) and (Value<200) and (fLineWidth<>Value) then
+  if (Value > 0) and (Value < 200) and (fLineWidth <> Value) then
   begin
     fLineWidth := Value;
-    RedrawBuffer(true);
+    RedrawBuffer(True);
   end;
 end;
 
@@ -226,18 +236,18 @@ end;
 
 function TGuiBaseControl.GetRedrawInterval: Integer;
 begin
-  Result:=fRedrawTimer.Interval;
+  Result := fRedrawTimer.Interval;
 end;
 
 procedure TGuiBaseControl.UpdateGuiTimer(Sender: TObject);
 begin
   if not fTimerMustRedraw then exit;
   
-  fRedrawTimer.Enabled:=false;
-  RedrawBuffer(true);
-  fRedrawTimer.Enabled:=true;
+  fRedrawTimer.Enabled := False;
+  RedrawBuffer(True);
+  fRedrawTimer.Enabled := True;
 
-  fTimerMustRedraw:=false;
+  fTimerMustRedraw := False;
 end;
 
 {$IFNDEF FPC}  
@@ -246,7 +256,7 @@ begin
   if fTransparent<>Value then
   begin
     fTransparent := Value;
-    RedrawBuffer(true);
+    RedrawBuffer(True);
   end;
 end;
 
@@ -324,22 +334,22 @@ begin
 
     case Button of
       mbLeft:   with MouseState.LeftBtn do begin
-                  ButtonDown := true;
-                  EventX:=X;
-                  EventY:=Y;
-                  ShiftState:=Shift;
+                  ButtonDown := True;
+                  EventX := X;
+                  EventY := Y;
+                  ShiftState := Shift;
                 end;
       mbMiddle: with MouseState.MiddleBtn do begin
-                  ButtonDown := true;
-                  EventX:=X;
-                  EventY:=Y;
-                  ShiftState:=Shift;
+                  ButtonDown := True;
+                  EventX := X;
+                  EventY := Y;
+                  ShiftState := Shift;
                 end;
       mbRight:  with MouseState.RightBtn do begin
-                  ButtonDown := true;
-                  EventX:=X;
-                  EventY:=Y;
-                  ShiftState:=Shift;
+                  ButtonDown := True;
+                  EventX := X;
+                  EventY := Y;
+                  ShiftState := Shift;
                 end;
     end;
 
@@ -357,22 +367,22 @@ begin
 
     case Button of
       mbLeft:   with MouseState.LeftBtn do begin
-                  ButtonDown := false;
-                  EventX:=X;
-                  EventY:=Y;
-                  ShiftState:=Shift;
+                  ButtonDown := False;
+                  EventX := X;
+                  EventY := Y;
+                  ShiftState := Shift;
                 end;
       mbMiddle: with MouseState.MiddleBtn do begin
-                  ButtonDown := false;
-                  EventX:=X;
-                  EventY:=Y;
-                  ShiftState:=Shift;
+                  ButtonDown := False;
+                  EventX := X;
+                  EventY := Y;
+                  ShiftState := Shift;
                 end;
       mbRight:  with MouseState.RightBtn do begin
-                  ButtonDown := false;
-                  EventX:=X;
-                  EventY:=Y;
-                  ShiftState:=Shift;
+                  ButtonDown := False;
+                  EventX := X;
+                  EventY := Y;
+                  ShiftState := Shift;
                 end;
     end;
 
