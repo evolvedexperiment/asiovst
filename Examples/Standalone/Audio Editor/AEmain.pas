@@ -168,7 +168,7 @@ begin
    if Execute then
     begin
      fFileName := FileName;
-     with TMFCustomAudioFileWAV.Create(Self) do
+     with TCustomAudioFileWAV.Create(Self) do
       try
        LoadFromFile(FileName);
       finally
@@ -191,7 +191,7 @@ begin
    if Execute then
     begin
      fFileName := FileName;
-     with TMFCustomAudioFileWAV.Create(Self) do
+     with TCustomAudioFileWAV.Create(Self) do
       try
        SaveToFile(FileName);
       finally

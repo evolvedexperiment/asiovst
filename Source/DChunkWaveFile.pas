@@ -43,7 +43,7 @@ type
   ////////////////////////////////////////////////////////////////////////////
 
   TFactRecord = packed record
-    FileSize : Cardinal;
+    SampleCount : Cardinal;
   end;
 
   TFactChunk = class(TFixedDefinedChunk)
@@ -55,7 +55,7 @@ type
     class function GetClassChunkSize: Integer; override;
     class function GetClassChunkName : TChunkName; override;
   published
-    property FileSize: Cardinal read FactRecord.FileSize write FactRecord.FileSize;
+    property SampleCount: Cardinal read FactRecord.SampleCount write FactRecord.SampleCount;
   end;
 
   ////////////////////////////////////////////////////////////////////////////

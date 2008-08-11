@@ -69,13 +69,13 @@ type
     property Items[Index: Integer]: TWaveChunkCollectionItem read GetItem write SetItem; default;
   end;
 
-  TMFCustomAudioFileWAV = class(TMFCustomAudioFile)
+  TCustomAudioFileWAV = class(TCustomAudioFile)
   private
+    fTotalNrOfSamples : Cardinal;
     fFormatChunk      : TFormatChunk;
-    fFactChunk        : TFactChunk;
 //    fBextChunk        : PBextRecord;
 //    fCartChunk        : PCartRecord;
-    fFileTags         : TObjectList;
+//    fFileTags         : TObjectList;
     fBytesPerSample   : Integer;
   protected
     function GetBitsPerSample: Integer; virtual;
@@ -98,7 +98,7 @@ type
     property Encoding : TAudioEncoding read GetEncoding write SetEncoding;
   end;
 
-  TMFAudioFileWAV  = class(TMFCustomAudioFileWAV)
+  TAudioFileWAV  = class(TCustomAudioFileWAV)
   published
     property SampleRate;
     property ChannelCount;
@@ -124,6 +124,7 @@ resourcestring
   rcWAVEChunkNotFound  = 'This is not a WAVE file!';
   rcFMTChunkDublicate  = 'One format chunk has already been found!';
   rcFACTChunkDublicate = 'One fact chunk has already been found!';
+  rcDATAChunkDublicate = 'Only one data chunk supported!';
 
 function WaveChunkClassByName(Value: string): TWaveChunkClass;
 var
@@ -371,42 +372,41 @@ begin
  inherited SetItem(Index, Value);
 end;
 
-{ TMFCustomAudioFileWAV }
+{ TCustomAudioFileWAV }
 
-constructor TMFCustomAudioFileWAV.Create(AOwner: TComponent);
+constructor TCustomAudioFileWAV.Create(AOwner: TComponent);
 begin
  inherited;
  fFormatChunk := TFormatChunk.Create;
 end;
 
-destructor TMFCustomAudioFileWAV.Destroy;
+destructor TCustomAudioFileWAV.Destroy;
 begin
  FreeAndNil(fFormatChunk);
- if assigned(fFactChunk) then FreeAndNil(fFactChunk);
  inherited;
 end;
 
-function TMFCustomAudioFileWAV.GetChannels: Integer;
+function TCustomAudioFileWAV.GetChannels: Integer;
 begin
  result := fFormatChunk.Channels;
 end;
 
-function TMFCustomAudioFileWAV.GetSampleCount: Integer;
+function TCustomAudioFileWAV.GetSampleCount: Integer;
 begin
 
 end;
 
-function TMFCustomAudioFileWAV.GetSampleRate: Double;
+function TCustomAudioFileWAV.GetSampleRate: Double;
 begin
  result := fFormatChunk.SampleRate;
 end;
 
-function TMFCustomAudioFileWAV.GetBitsPerSample: Integer;
+function TCustomAudioFileWAV.GetBitsPerSample: Integer;
 begin
  result := fFormatChunk.BitsPerSample;
 end;
 
-function TMFCustomAudioFileWAV.GetEncoding: TAudioEncoding;
+function TCustomAudioFileWAV.GetEncoding: TAudioEncoding;
 begin
  case fFormatChunk.FormatTag of
              etPCM : result := aeInteger;
@@ -418,7 +418,7 @@ begin
  end;
 end;
 
-procedure TMFCustomAudioFileWAV.SetBitsPerSample(const Value: Integer);
+procedure TCustomAudioFileWAV.SetBitsPerSample(const Value: Integer);
 begin
  with fFormatChunk do
   if BitsPerSample <> Value then
@@ -431,7 +431,7 @@ begin
    end;
 end;
 
-procedure TMFCustomAudioFileWAV.SetChannels(const Value: Integer);
+procedure TCustomAudioFileWAV.SetChannels(const Value: Integer);
 begin
  inherited;
  with fFormatChunk do
@@ -443,12 +443,12 @@ begin
    end;
 end;
 
-procedure TMFCustomAudioFileWAV.SetEncoding(const Value: TAudioEncoding);
+procedure TCustomAudioFileWAV.SetEncoding(const Value: TAudioEncoding);
 begin
 
 end;
 
-procedure TMFCustomAudioFileWAV.SetSampleRate(const Value: Double);
+procedure TCustomAudioFileWAV.SetSampleRate(const Value: Double);
 begin
  inherited;
  with fFormatChunk do
@@ -461,11 +461,12 @@ end;
 
 // Load/Save
 
-procedure TMFCustomAudioFileWAV.LoadFromStream(Stream: TStream);
+procedure TCustomAudioFileWAV.LoadFromStream(Stream: TStream);
 var
   ChunkName    : TChunkName;
   ChunkSize    : Cardinal;
   ChunkEnd     : Cardinal;
+  DataSize     : Cardinal;
   ChunksReaded : TWaveChunkTypes;
 begin
  inherited;
@@ -507,11 +508,25 @@ begin
        else
         begin
          // check whether fact chunk has already been created
-         if not assigned(fFactChunk) then fFactChunk := TFactChunk.Create;
+         with TFactChunk.Create do
+          try
+           // now load fact chunk
+           LoadFromStream(Stream);
 
-         // now load fact chunk
-         fFactChunk.LoadFromStream(Stream);
+           // now only use the sample count information
+           fTotalNrOfSamples := SampleCount;
+          finally
+           Free;
+          end;
          ChunksReaded := ChunksReaded + [ctFact];
+        end else
+     if ChunkName = 'data' then
+      if ctData in ChunksReaded
+       then raise Exception.Create(rcDATAChunkDublicate)
+       else
+        begin
+         Read(DataSize, 4);
+         Position := Position + DataSize;
         end
      else
       begin
@@ -526,7 +541,7 @@ begin
   end;
 end;
 
-procedure TMFCustomAudioFileWAV.SaveToStream(Stream: TStream);
+procedure TCustomAudioFileWAV.SaveToStream(Stream: TStream);
 var
   ChunkName  : TChunkName;
   ChunkStart : Cardinal;
@@ -554,8 +569,14 @@ begin
    fFormatChunk.SaveToStream(Stream);
 
    // if exists, write the fact chunk
-   if assigned(fFactChunk)
-    then fFactChunk.SaveToStream(Stream);
+   if fFormatChunk.FormatTag <> etPCM then
+    with TFactChunk.Create do
+     try
+      SampleCount := fTotalNrOfSamples;
+      SaveToStream(Stream);
+     finally
+      Free;
+     end;
 
 
    // ToDo: write data here!
