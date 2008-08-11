@@ -19,31 +19,31 @@ type
     Channels   : Integer;       // the number of interleaved Channels (e.g., 1 for mono, 2 for stereo)
   end;
 
-  TCustomAudioFileAIFF = class(TCustomAudioFile)
+  TCustomAudioFileAU = class(TCustomAudioFile)
   private
     fAUHeader       : TAUHeader;
     fBytesPerSample : Byte;
   protected
-    function GetBitsPerSample: Integer; virtual;
+    function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
-    function GetChannels: Integer; override;
+    function GetChannels: Cardinal; override;
     function GetSampleRate: Double; override;
-    function GetSampleCount: Integer; override;
+    function GetSampleCount: Cardinal; override;
 
-    procedure SetBitsPerSample(const Value: Integer); virtual;
+    procedure SetBitsPerSample(const Value: Byte); virtual;
     procedure SetEncoding(const Value: TAudioEncoding); virtual;
-    procedure SetChannels(const Value: Integer); override;
+    procedure SetChannels(const Value: Cardinal); override;
     procedure SetSampleRate(const Value: Double); override;
-    procedure SetSampleCount(const Value: Integer); override;
+    procedure SetSampleCount(const Value: Cardinal); override;
   public
     constructor Create(AOwner: TComponent); override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
-    property BitsPerSample : Integer read GetBitsPerSample write SetBitsPerSample;
-    property Encoding : TAudioEncoding read GetEncoding write SetEncoding;
+    property BitsPerSample: Byte read GetBitsPerSample write SetBitsPerSample;
+    property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
   end;
 
-  TAudioFileAIFF  = class(TCustomAudioFileAIFF)
+  TAudioFileAU  = class(TCustomAudioFileAU)
   published
     property SampleRate;
     property ChannelCount;
@@ -60,9 +60,9 @@ type
 
 implementation
 
-{ TCustomAudioFileAIFF }
+{ TCustomAudioFileAU }
 
-constructor TCustomAudioFileAIFF.Create(AOwner: TComponent);
+constructor TCustomAudioFileAU.Create(AOwner: TComponent);
 begin
  inherited;
  with fAUHeader do
@@ -76,7 +76,7 @@ begin
   end;
 end;
 
-function TCustomAudioFileAIFF.GetBitsPerSample: Integer;
+function TCustomAudioFileAU.GetBitsPerSample: Byte;
 begin
  case fAUHeader.encoding of
     aueISDN : result := 8;
@@ -92,12 +92,12 @@ begin
  end;
 end;
 
-function TCustomAudioFileAIFF.GetChannels: Integer;
+function TCustomAudioFileAU.GetChannels: Cardinal;
 begin
  result := fAUHeader.Channels;
 end;
 
-function TCustomAudioFileAIFF.GetEncoding: TAudioEncoding;
+function TCustomAudioFileAU.GetEncoding: TAudioEncoding;
 begin
  case fAUHeader.Encoding of
     aueISDN  : Result := aeMuLaw;
@@ -113,17 +113,17 @@ begin
  end;
 end;
 
-function TCustomAudioFileAIFF.GetSampleCount: Integer;
+function TCustomAudioFileAU.GetSampleCount: Cardinal;
 begin
  result := fAUHeader.DataSize;
 end;
 
-function TCustomAudioFileAIFF.GetSampleRate: Double;
+function TCustomAudioFileAU.GetSampleRate: Double;
 begin
  result := fAUHeader.SampleRate;
 end;
 
-procedure TCustomAudioFileAIFF.SetBitsPerSample(const Value: Integer);
+procedure TCustomAudioFileAU.SetBitsPerSample(const Value: Byte);
 begin
  with fAUHeader do
   begin
@@ -139,7 +139,7 @@ begin
   end;
 end;
 
-procedure TCustomAudioFileAIFF.SetSampleCount(const Value: Integer);
+procedure TCustomAudioFileAU.SetSampleCount(const Value: Cardinal);
 begin
  inherited;
  with fAUHeader do
@@ -149,7 +149,7 @@ begin
    end;
 end;
 
-procedure TCustomAudioFileAIFF.SetSampleRate(const Value: Double);
+procedure TCustomAudioFileAU.SetSampleRate(const Value: Double);
 begin
  with fAUHeader do
   if Value <> SampleRate then
@@ -159,7 +159,7 @@ begin
    end;
 end;
 
-procedure TCustomAudioFileAIFF.SetChannels(const Value: Integer);
+procedure TCustomAudioFileAU.SetChannels(const Value: Cardinal);
 begin
  with fAUHeader do
   if Value <> Channels then
@@ -169,7 +169,7 @@ begin
    end;
 end;
 
-procedure TCustomAudioFileAIFF.SetEncoding(const Value: TAudioEncoding);
+procedure TCustomAudioFileAU.SetEncoding(const Value: TAudioEncoding);
 begin
  with fAUHeader do
   case Value of
@@ -193,7 +193,7 @@ begin
   end;
 end;
 
-procedure TCustomAudioFileAIFF.LoadFromStream(Stream: TStream);
+procedure TCustomAudioFileAU.LoadFromStream(Stream: TStream);
 begin
  inherited;
  with Stream do
@@ -221,7 +221,7 @@ begin
   end;
 end;
 
-procedure TCustomAudioFileAIFF.SaveToStream(Stream: TStream);
+procedure TCustomAudioFileAU.SaveToStream(Stream: TStream);
 var
   FlippedHeader : TAUHeader;
 begin

@@ -20,17 +20,17 @@ type
     fOnLoadData64    : TOnLoadSaveData64;
     fOnSaveData32    : TOnLoadSaveData32;
     fReadHeaderOnly  : Boolean;
-    fRWBufferSize    : Integer;
+    fRWBufferSize    : Cardinal;
     fRWBuffer        : PByteArray;
-    procedure SetRWBufferSize(const Value: Integer);
+    procedure SetRWBufferSize(const Value: Cardinal);
   protected
-    function GetChannels: Integer; virtual; abstract;
-    function GetSampleCount: Integer; virtual; abstract;
+    function GetChannels: Cardinal; virtual; abstract;
+    function GetSampleCount: Cardinal; virtual; abstract;
     function GetSampleRate: Double; virtual; abstract;
     function GetTotalTime: Double; virtual;
     procedure RWBufferSizeChanged; virtual;
-    procedure SetChannels(const Value: Integer); virtual; abstract;
-    procedure SetSampleCount(const Value: Integer); virtual; abstract;
+    procedure SetChannels(const Value: Cardinal); virtual; abstract;
+    procedure SetSampleCount(const Value: Cardinal); virtual; abstract;
     procedure SetSampleRate(const Value: Double); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
@@ -44,9 +44,9 @@ type
 
     property ReadHeaderOnly: Boolean read fReadHeaderOnly write fReadHeaderOnly;
     property SampleRate: Double read GetSampleRate write SetSampleRate;
-    property ChannelCount: Integer read GetChannels write SetChannels;
-    property SampleCount: Integer read GetSampleCount write SetSampleCount;
-    property ReadWriteBufferSize: Integer read fRWBufferSize write SetRWBufferSize default 16384;
+    property ChannelCount: Cardinal read GetChannels write SetChannels;
+    property SampleCount: Cardinal read GetSampleCount write SetSampleCount;
+    property ReadWriteBufferSize: Cardinal read fRWBufferSize write SetRWBufferSize default 16384;
     property TotalTime: Double read GetTotalTime; // = SampleCount / SampleRate
     property OnLoadData32: TOnLoadSaveData32 read fOnLoadData32 write fOnLoadData32;
     property OnLoadData64: TOnLoadSaveData64 read fOnLoadData64 write fOnLoadData64;
@@ -111,7 +111,7 @@ begin
  inherited;
 end;
 
-procedure TCustomAudioFile.SetRWBufferSize(const Value: Integer);
+procedure TCustomAudioFile.SetRWBufferSize(const Value: Cardinal);
 begin
  if fRWBufferSize <> Value then
   begin

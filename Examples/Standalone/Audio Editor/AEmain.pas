@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Menus, ToolWin, ComCtrls, ExtCtrls, DAVDCommon, DGuiStaticWaveform,
-  DGuiBaseControl, DGuiLevelMeter, DAudioFile, DAudioFileWav, DASIOHost;
+  DGuiBaseControl, DGuiLevelMeter, DAudioFile, DAudioFileWav, DAudioFileAIFF,
+  DAudioFileAU, DASIOHost;
 
 type
   TFmAudioEditor = class(TForm)
@@ -158,22 +159,37 @@ begin
 end;
 
 procedure TFmAudioEditor.MIOpenClick(Sender: TObject);
+var
+  AudioFile : TCustomAudioFile;
 begin
  with TOpenDialog.Create(Self) do
   try
    DefaultExt := 'wav';
-   Filter := 'Wave File (*.wav)|*.wav';
+   Filter := 'Wave File (*.wav)|*.wav|' +
+             'AIFF File (*.aif)|*.aif*|' +
+             'AU File (*.au)|*.au';
    Options := [ofHideReadOnly, ofFileMustExist, ofEnableSizing];
    Title := 'Load Audio File';
    if Execute then
     begin
      fFileName := FileName;
-     with TCustomAudioFileWAV.Create(Self) do
+
+     // select file format
+     case FilterIndex of
+       1 : AudioFile := TCustomAudioFileWAV.Create(Self);
+       2 : AudioFile := TCustomAudioFileAIFF.Create(Self);
+       3 : AudioFile := TCustomAudioFileAU.Create(Self);
+      else raise Exception.Create('file format unknown');
+     end;
+
+     // if file format selected, load file
+     with AudioFile do
       try
        LoadFromFile(FileName);
       finally
        Free;
       end;
+      
     end;
   finally
    Free;

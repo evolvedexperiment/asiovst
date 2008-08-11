@@ -78,24 +78,25 @@ type
 //    fFileTags         : TObjectList;
     fBytesPerSample   : Integer;
   protected
-    function GetBitsPerSample: Integer; virtual;
+    function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
-    function GetChannels: Integer; override;
+    function GetChannels: Cardinal; override;
     function GetSampleRate: Double; override;
-    function GetSampleCount: Integer; override;
+    function GetSampleCount: Cardinal; override;
 
-    procedure SetBitsPerSample(const Value: Integer); virtual;
+    procedure SetBitsPerSample(const Value: Byte); virtual;
     procedure SetEncoding(const Value: TAudioEncoding); virtual;
-    procedure SetChannels(const Value: Integer); override;
+    procedure SetChannels(const Value: Cardinal); override;
     procedure SetSampleRate(const Value: Double); override;
+    procedure SetSampleCount(const Value: Cardinal); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
-    property BitsPerSample : Integer read GetBitsPerSample write SetBitsPerSample;
-    property BytesPerSample : Integer read fBytesPerSample;
-    property Encoding : TAudioEncoding read GetEncoding write SetEncoding;
+    property BitsPerSample: Byte read GetBitsPerSample write SetBitsPerSample;
+    property BytesPerSample: Integer read fBytesPerSample;
+    property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
   end;
 
   TAudioFileWAV  = class(TCustomAudioFileWAV)
@@ -386,14 +387,14 @@ begin
  inherited;
 end;
 
-function TCustomAudioFileWAV.GetChannels: Integer;
+function TCustomAudioFileWAV.GetChannels: Cardinal;
 begin
  result := fFormatChunk.Channels;
 end;
 
-function TCustomAudioFileWAV.GetSampleCount: Integer;
+function TCustomAudioFileWAV.GetSampleCount: Cardinal;
 begin
-
+ result := fTotalNrOfSamples;
 end;
 
 function TCustomAudioFileWAV.GetSampleRate: Double;
@@ -401,7 +402,7 @@ begin
  result := fFormatChunk.SampleRate;
 end;
 
-function TCustomAudioFileWAV.GetBitsPerSample: Integer;
+function TCustomAudioFileWAV.GetBitsPerSample: Byte;
 begin
  result := fFormatChunk.BitsPerSample;
 end;
@@ -418,7 +419,7 @@ begin
  end;
 end;
 
-procedure TCustomAudioFileWAV.SetBitsPerSample(const Value: Integer);
+procedure TCustomAudioFileWAV.SetBitsPerSample(const Value: Byte);
 begin
  with fFormatChunk do
   if BitsPerSample <> Value then
@@ -431,14 +432,14 @@ begin
    end;
 end;
 
-procedure TCustomAudioFileWAV.SetChannels(const Value: Integer);
+procedure TCustomAudioFileWAV.SetChannels(const Value: Cardinal);
 begin
  inherited;
  with fFormatChunk do
   if Channels <> Value then
    begin
-    Channels := Value;
-    BlockAlign := fBytesPerSample * Value;
+    Channels       := Value;
+    BlockAlign     := fBytesPerSample * Value;
     BytesPerSecond := BlockAlign * SampleRate;
    end;
 end;
@@ -446,6 +447,15 @@ end;
 procedure TCustomAudioFileWAV.SetEncoding(const Value: TAudioEncoding);
 begin
 
+end;
+
+procedure TCustomAudioFileWAV.SetSampleCount(const Value: Cardinal);
+begin
+ if fTotalNrOfSamples <> Value then
+  begin
+   inherited;
+   fTotalNrOfSamples := Value;
+  end;
 end;
 
 procedure TCustomAudioFileWAV.SetSampleRate(const Value: Double);

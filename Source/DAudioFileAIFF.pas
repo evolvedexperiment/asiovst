@@ -11,23 +11,24 @@ type
   private
     fCommonChunk      : TAIFFCommonChunk;
   protected
-    function GetBitsPerSample: Integer; virtual;
+    function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
-    function GetChannels: Integer; override;
+    function GetChannels: Cardinal; override;
     function GetSampleRate: Double; override;
-    function GetSampleCount: Integer; override;
+    function GetSampleCount: Cardinal; override;
 
-    procedure SetBitsPerSample(const Value: Integer); virtual;
+    procedure SetBitsPerSample(const Value: Byte); virtual;
     procedure SetEncoding(const Value: TAudioEncoding); virtual;
-    procedure SetChannels(const Value: Integer); override;
+    procedure SetChannels(const Value: Cardinal); override;
     procedure SetSampleRate(const Value: Double); override;
+    procedure SetSampleCount(const Value: Cardinal); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
-    property BitsPerSample : Integer read GetBitsPerSample write SetBitsPerSample;
-    property Encoding : TAudioEncoding read GetEncoding write SetEncoding;
+    property BitsPerSample: Byte read GetBitsPerSample write SetBitsPerSample;
+    property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
   end;
 
   TAudioFileAIFF  = class(TCustomAudioFileAIFF)
@@ -68,12 +69,12 @@ begin
  inherited;
 end;
 
-function TCustomAudioFileAIFF.GetBitsPerSample: Integer;
+function TCustomAudioFileAIFF.GetBitsPerSample: Byte;
 begin
  result := fCommonChunk.SampleSize;
 end;
 
-function TCustomAudioFileAIFF.GetChannels: Integer;
+function TCustomAudioFileAIFF.GetChannels: Cardinal;
 begin
  result := fCommonChunk.Channels;
 end;
@@ -83,7 +84,7 @@ begin
  result := aeInteger;
 end;
 
-function TCustomAudioFileAIFF.GetSampleCount: Integer;
+function TCustomAudioFileAIFF.GetSampleCount: Cardinal;
 begin
  result := fCommonChunk.SampleFrames;
 end;
@@ -93,7 +94,7 @@ begin
  result := fCommonChunk.SampleRate;
 end;
 
-procedure TCustomAudioFileAIFF.SetBitsPerSample(const Value: Integer);
+procedure TCustomAudioFileAIFF.SetBitsPerSample(const Value: Byte);
 begin
  with fCommonChunk do
   if SampleSize <> Value then
@@ -102,7 +103,7 @@ begin
    end;
 end;
 
-procedure TCustomAudioFileAIFF.SetChannels(const Value: Integer);
+procedure TCustomAudioFileAIFF.SetChannels(const Value: Cardinal);
 begin
  with fCommonChunk do
   if Channels <> Value then
@@ -116,6 +117,16 @@ procedure TCustomAudioFileAIFF.SetEncoding(const Value: TAudioEncoding);
 begin
  if Value <> aeInteger
   then raise Exception.Create('Audio encoding for AIFF is aeInteger only');
+end;
+
+procedure TCustomAudioFileAIFF.SetSampleCount(const Value: Cardinal);
+begin
+ with fCommonChunk do
+  if SampleFrames <> Value then
+   begin
+    inherited;
+    SampleFrames := Value;
+   end;
 end;
 
 procedure TCustomAudioFileAIFF.SetSampleRate(const Value: Double);
