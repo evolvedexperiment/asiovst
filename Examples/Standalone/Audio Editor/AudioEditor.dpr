@@ -8,7 +8,8 @@ uses
   DChunkClasses in '..\..\..\Source\DChunkClasses.pas',
   DChunkAIFFFile in '..\..\..\Source\DChunkAIFFFile.pas',
   DAudioFileAIFF in '..\..\..\Source\DAudioFileAIFF.pas',
-  DAudioFileAU in '..\..\..\Source\DAudioFileAU.pas';
+  DAudioFileAU in '..\..\..\Source\DAudioFileAU.pas',
+  DAudioData in '..\..\..\Source\DAudioData.pas';
 
 {$R *.res}
 

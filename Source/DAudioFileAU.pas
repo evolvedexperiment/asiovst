@@ -6,9 +6,14 @@ uses
   Classes, SysUtils, DAVDCommon, DAudioFile;
 
 type
-  TAUEncoding = (aueISDN = 1, auePCM8 = 2, auePCM16 = 3, auePCM24 = 4,
-                 auePCM32 = 5, aueIEEE32 = 6, aueIEEE64 = 7, aueADPCM = 23,
-                 aueALaw = 27);
+  TAUEncoding = (
+    aueISDN = 1, auePCM8 = 2, auePCM16 = 3, auePCM24 = 4, auePCM32 = 5,
+    aueIEEE32 = 6, aueIEEE64 = 7, aueFragmented = 8, aueDSPprogram = 9,
+    aue8bitFixedPoint = 10, aue16bitFixedPoint = 11, aue24bitFixedPoint = 12,
+    aue32bitFixedPoint = 13, aue16bitLinearEmphasis = 18,
+    aue16bitLinearCompressed = 19, aue16bitLinearCompEmp = 20,
+    aueMusicKitDSPCommands = 21, aueADPCM = 23, aueG722ADPCM = 24,
+    aueG723_3bitADPCM = 25, aueG723_5bitADPCM = 26, aueALaw = 27);
 
   TAUHeader = record
     Magic      : Integer;       // = $2E736E64 = '.snd'
@@ -180,8 +185,8 @@ begin
                 4 : Encoding := auePCM32;
                end;
    aeFloat   : case fBytesPerSample of
-                4 : Encoding := aueIEEE32;
-                8 : Encoding := aueIEEE64;
+                 4 : Encoding := aueIEEE32;
+                 8 : Encoding := aueIEEE64;
                 else Encoding := aueIEEE32;
                end;
    aeDVIADPCM,

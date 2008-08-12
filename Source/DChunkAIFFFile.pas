@@ -16,14 +16,14 @@ type
   /////////////////////////////// Common Chunk ///////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TAIFFCommonRecord = packed record // 'COMM'
+  TAIFFCommonRecord = packed record
     Channels        : SmallInt;
     SampleFrames    : Cardinal;
     SampleSize      : SmallInt;
     SampleRate      : Extended;
   end;
 
-  TAIFFCommonChunk = class(TDefinedChunk)
+  TAIFFCommonChunk = class(TDefinedChunk) // 'COMM'
   private
     fCompressionType: TAIFFCompressionType;
     fCompressionName: string;
@@ -39,6 +39,7 @@ type
     constructor Create; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
   published
     property Channels: SmallInt read AIFFCommonRecord.Channels write SetChannels;
     property SampleFrames: Cardinal read AIFFCommonRecord.SampleFrames write AIFFCommonRecord.SampleFrames;
@@ -97,12 +98,12 @@ type
   //////////////////////////// Sound Data Chunk //////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TAIFFSoundDataRecord = packed record // 'SSND'
+  TAIFFSoundDataRecord = packed record
     Offset    : Cardinal;
     BlockSize : Cardinal;
   end;
 
-  TAIFFSoundDataChunk = class(TDefinedChunk)
+  TAIFFSoundDataChunk = class(TDefinedChunk) // 'SSND'
   private
     procedure CalculateChunkSize;
   protected
@@ -121,29 +122,34 @@ type
   ////////////////////////////// Marker Chunk ////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TAIFFMarkerRecord = packed record // 'MARK'
-    MarkerID   : Byte;
+  TMarkerID = Byte;
+
+  TAIFFMarkerRecord = packed record
+    MarkerID   : TMarkerID;
     Position   : Cardinal;
   end;
 
   TAIFFMarkerItem = class(TCollectionItem)
   private
     fMarkerName : string;
-    procedure SetMarkerID(const Value: Byte);
+    procedure SetMarkerID(const Value: TMarkerID);
   protected
+    function GetDisplayName: string; override;
     procedure AssignTo(Dest: TPersistent); override;
+    procedure SetDisplayName(const Value: string); override;
   public
     MarkerRecord : TAIFFMarkerRecord;
     function GetSize: Cardinal;
     procedure LoadFromStream(Stream: TStream);
     procedure SaveToStream(Stream: TStream);
+    property DisplayName;
   published
-    property MarkerID: Byte read MarkerRecord.MarkerID write SetMarkerID;
+    property MarkerID: TMarkerID read MarkerRecord.MarkerID write SetMarkerID;
     property Position: Cardinal read MarkerRecord.Position write MarkerRecord.Position;
     property MarkerName: string read fMarkerName write fMarkerName;
   end;
 
-  TAIFFMarkerChunk = class(TDefinedChunk)
+  TAIFFMarkerChunk = class(TDefinedChunk) // 'MARK'
   private
     fMarkers : TOwnedCollection;
     procedure CalculateChunkSize;
@@ -155,16 +161,55 @@ type
     destructor Destroy; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
   published
     property MarkerCount: Byte read GetMarkerCount;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////// MIDI Chunk /////////////////////////////////
+  ///////////////////////////// Comments Chunk ///////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TAIFFMIDIRecord = packed record // 'MIDI'
-    // DATA...
+  TAIFFCommentRecord = packed record
+    TimeStamp  : Cardinal;
+    MarkerID   : TMarkerID;
+  end;
+
+  TAIFFCommentItem = class(TCollectionItem)
+  private
+    fComment : string;
+    procedure SetMarkerID(const Value: TMarkerID);
+  protected
+    function GetDisplayName: string; override;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure SetDisplayName(const Value: string); override;
+  public
+    CommentRecord : TAIFFCommentRecord;
+    function GetSize: Cardinal;
+    procedure LoadFromStream(Stream: TStream);
+    procedure SaveToStream(Stream: TStream);
+    property DisplayName;
+  published
+    property MarkerID: TMarkerID read CommentRecord.MarkerID write SetMarkerID;
+    property TimeStamp: Cardinal read CommentRecord.TimeStamp write CommentRecord.TimeStamp;
+    property Comment: string read fComment write fComment;
+  end;
+
+  TAIFFCommentChunk = class(TDefinedChunk) // 'COMT'
+  private
+    fComments : TOwnedCollection;
+    procedure CalculateChunkSize;
+    function GetCommentCount: Byte;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property CommentCount: Byte read GetCommentCount;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -172,42 +217,137 @@ type
   ////////////////////////////////////////////////////////////////////////////
 
   TAIFFInstrumentRecord = packed record // 'INST'
-    BaseNote : char;
-    Detune : char;
-    LowNote : char;
-    HighNote : char;
-    LowVelocity : char;
-    HighVelocity : char;
-    Gain : Byte;
-    // Loopdata...
+    BaseNote     : Byte;
+    Detune       : ShortInt;
+    LowNote      : Byte;
+    HighNote     : Byte;
+    LowVelocity  : Byte;
+    HighVelocity : Byte;
+    Gain         : ShortInt;
+    SustainLoop  : TMarkerID;
+    ReleaseLoop  : TMarkerID;
+  end;
+
+  TAIFFInstrumentChunk = class(TFixedDefinedChunk)
+  private
+    procedure SetDetune(Value: ShortInt);
+    procedure SetHighVelocity(const Value: Byte);
+    procedure SetLowVelocity(const Value: Byte);
+    procedure SetBaseNote(const Value: Byte);
+    procedure SetHighNote(const Value: Byte);
+    procedure SetLowNote(const Value: Byte);
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+  published
+  public
+    AIFFInstrumentRecord : TAIFFInstrumentRecord;
+    constructor Create; override;
+    class function GetClassChunkSize: Integer; override;
+    class function GetClassChunkName : TChunkName; override;
+  published
+    property BaseNote: Byte read AIFFInstrumentRecord.BaseNote write SetBaseNote;
+    property Detune: ShortInt read AIFFInstrumentRecord.Detune write SetDetune;
+    property LowNote: Byte read AIFFInstrumentRecord.LowNote write SetLowNote;
+    property HighNote: Byte read AIFFInstrumentRecord.HighNote write SetHighNote;
+    property LowVelocity: Byte read AIFFInstrumentRecord.LowVelocity write SetLowVelocity;
+    property HighVelocity: Byte read AIFFInstrumentRecord.HighVelocity write SetHighVelocity;
+    property Gain: ShortInt read AIFFInstrumentRecord.Gain write AIFFInstrumentRecord.Gain;
+    property SustainLoop: TMarkerID read AIFFInstrumentRecord.SustainLoop write AIFFInstrumentRecord.SustainLoop;
+    property ReleaseLoop: TMarkerID read AIFFInstrumentRecord.ReleaseLoop write AIFFInstrumentRecord.ReleaseLoop;
+  end;
+
+  ////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////// MIDI Chunk /////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+
+  TAIFFMIDIChunk = class(TDefinedChunk)
+  private
+    function GetMIDIData(index: Integer): Byte;
+    procedure SetMIDIData(index: Integer; const Value: Byte);
+  protected
+    fMIDIData : array of Byte;
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+  public
+    class function GetClassChunkName: TChunkName; override;
+    property MIDIData[index : Integer]: Byte read GetMIDIData write SetMIDIData;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// Audio Recording Chunk ////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TAIFFAudioRecordingRecord = packed record // 'AESD'
-    AESChannelStatusData : Array [0..23] of char;
+  TAIFFAudioRecordingRecord = packed record 
+    AESChannelStatusData : array [0..23] of char;
+  end;
+
+  TAIFFAudioRecordingChunk = class(TFixedDefinedChunk) // 'AESD'
+  private
+    function GetAESChannelStatusData: string;
+    procedure SetAESChannelStatusData(const Value: string);
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    AudioRecordingRecord : TAIFFAudioRecordingRecord;
+    constructor Create; override;
+    class function GetClassChunkSize: Integer; override;
+    class function GetClassChunkName : TChunkName; override;
+  published
+    property AESChannelStatusData: string read GetAESChannelStatusData write SetAESChannelStatusData;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
   ////////////////////// Application Specific Chunk //////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TAIFFApplicationSpecificIDRecord = packed record // 'APPL'
-    ApplicationSignature : Array [0..3] of char;
-    ApplicationText : Array [0..255] of char;
-    // comming soon..
+  TAIFFApplicationSpecificChunk = class(TDefinedChunk) // 'APPL'
+  private
+    function GetApplicationSignature: string;
+    function GetData(index: Integer): Byte;
+    procedure CalculateChunkSize;
+    procedure SetApplicationSignature(const Value: string);
+    procedure SetData(index: Integer; const Value: Byte);
+  protected
+    fApplicationSignature : TChunkName;
+    fApplicationData      : string;
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create; override;
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
+    property ApplicationData[index : Integer]: Byte read GetData write SetData;
+  published
+    property ApplicationSignature: string read GetApplicationSignature write SetApplicationSignature;
+    property ApplicationDataAsString: string read fApplicationData write fApplicationData;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////// Comments Chunk ///////////////////////////////
+  ////////////////////////////// Text Chunks /////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TAIFFCommentsRecord = packed record // 'COMT'
-    numComments : Byte;
-    // Comments...
+  TAIFFNameChunk = class(TCustomTextChunk)
+  public
+    class function GetClassChunkName: TChunkName; override;
   end;
+
+  TAIFFAuthorChunk = class(TCustomTextChunk)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  end;
+
+  TAIFFCopyrightChunk = class(TCustomTextChunk)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  end;
+
+  TAIFFAnnotationChunk = class(TCustomTextChunk)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  end;
+
 
 implementation
 
@@ -221,8 +361,6 @@ begin
  inherited;
 
  // set defaults
- fChunkName       := 'COMM';
- fCompressionType := ctNotAvailable;
 
  with AIFFCommonRecord do
   begin
@@ -231,8 +369,14 @@ begin
    SampleSize     := 16;      // 16bit
    SampleFrames   := 0;       // no data yet
   end;
+ fCompressionType := ctNotAvailable;
 
  CalculateChunkSize; 
+end;
+
+class function TAIFFCommonChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'COMM';
 end;
 
 procedure TAIFFCommonChunk.AssignTo(Dest: TPersistent);
@@ -530,6 +674,11 @@ begin
   then TAIFFMarkerItem(Dest).MarkerRecord := MarkerRecord;
 end;
 
+function TAIFFMarkerItem.GetDisplayName: string;
+begin
+ result := fMarkerName;
+end;
+
 function TAIFFMarkerItem.GetSize: Cardinal;
 begin
  result := SizeOf(TAIFFMarkerRecord) + Length(fMarkerName) + 1;
@@ -567,7 +716,13 @@ begin
   end;
 end;
 
-procedure TAIFFMarkerItem.SetMarkerID(const Value: Byte);
+procedure TAIFFMarkerItem.SetDisplayName(const Value: string);
+begin
+ fMarkerName := Value;
+ inherited;
+end;
+
+procedure TAIFFMarkerItem.SetMarkerID(const Value: TMarkerID);
 begin
  with MarkerRecord do
   if Value <> MarkerID then
@@ -590,6 +745,11 @@ destructor TAIFFMarkerChunk.Destroy;
 begin
  FreeAndNil(fMarkers);
  inherited;
+end;
+
+class function TAIFFMarkerChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'MARK';
 end;
 
 function TAIFFMarkerChunk.GetMarkerCount: Byte;
@@ -651,6 +811,456 @@ begin
    for i := 0 to fMarkers.Count - 1
     do TAIFFMarkerItem(fMarkers.Items[i]).SaveToStream(Stream);
   end;
+end;
+
+{ TAIFFCommentItem }
+
+procedure TAIFFCommentItem.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TAIFFCommentItem
+  then TAIFFCommentItem(Dest).CommentRecord := CommentRecord;
+end;
+
+function TAIFFCommentItem.GetDisplayName: string;
+begin
+ result := fComment;
+end;
+
+function TAIFFCommentItem.GetSize: Cardinal;
+begin
+ result := SizeOf(TAIFFCommentRecord) + Length(fComment) + 1;
+end;
+
+procedure TAIFFCommentItem.LoadFromStream(Stream: TStream);
+var
+  StringSize : Integer;
+begin
+ with Stream do
+  begin
+   // read comment header
+   Read(CommentRecord, SizeOf(TAIFFCommentRecord));
+
+   // now read the comment string
+   Read(StringSize, SizeOf(Byte));
+   SetLength(fComment, StringSize);
+   Read(fComment[1], StringSize);
+  end;
+end;
+
+procedure TAIFFCommentItem.SaveToStream(Stream: TStream);
+var
+  StringSize : Integer;
+begin
+ with Stream do
+  begin
+   // write comment header
+   Write(CommentRecord, SizeOf(TAIFFCommentRecord));
+
+   // now write the comment string
+   StringSize := Length(fComment);
+   Write(StringSize, SizeOf(Byte));
+   Write(fComment[1], StringSize);
+  end;
+end;
+
+procedure TAIFFCommentItem.SetDisplayName(const Value: string);
+begin
+ fComment := Value;
+ inherited;
+end;
+
+procedure TAIFFCommentItem.SetMarkerID(const Value: TMarkerID);
+begin
+ with CommentRecord do
+  if Value <> MarkerID then
+   begin
+    if Value = 0 then raise Exception.Create('MarkerID must be > 0');
+    MarkerID := Value;
+   end;
+end;
+
+{ TAIFFCommentChunk }
+
+constructor TAIFFCommentChunk.Create;
+begin
+ inherited;
+ fComments := TOwnedCollection.Create(Self, TAIFFCommentItem);
+ CalculateChunkSize;
+end;
+
+destructor TAIFFCommentChunk.Destroy;
+begin
+ FreeAndNil(fComments);
+ inherited;
+end;
+
+procedure TAIFFCommentChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TAIFFCommentChunk
+  then TAIFFCommentChunk(Dest).fComments.Assign(fComments);
+end;
+
+procedure TAIFFCommentChunk.CalculateChunkSize;
+var
+  i : Integer;
+begin
+ fChunkSize := SizeOf(Byte);
+ for i := 0 to fComments.Count - 1
+  do fChunkSize := fChunkSize + TAIFFCommentItem(fComments.Items[i]).GetSize;
+end;
+
+class function TAIFFCommentChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'COMT';
+end;
+
+function TAIFFCommentChunk.GetCommentCount: Byte;
+begin
+ result := fComments.Count;
+end;
+
+procedure TAIFFCommentChunk.LoadFromStream(Stream: TStream);
+var
+  CommentCount, i : Integer;
+begin
+ inherited;
+ with Stream do
+  begin
+   // load number of comments
+   Read(CommentCount, SizeOf(Byte));
+
+   // clear existing comments
+   fComments.Clear;
+
+   // load every single comment
+   for i := 0 to CommentCount - 1 do
+    with TAIFFCommentItem(fComments.Add)
+     do LoadFromStream(Stream);
+
+   // set position to end of chunk
+   Position := Position + fChunkSize - SizeOf(Byte);
+  end;
+end;
+
+procedure TAIFFCommentChunk.SaveToStream(Stream: TStream);
+var
+  CommentCount, i : Integer;
+begin
+ CalculateChunkSize;
+ inherited;
+ with Stream do
+  begin
+   // store number of comments
+   CommentCount := fComments.Count;
+   Write(CommentCount, SizeOf(Byte));
+
+   for i := 0 to fComments.Count - 1
+    do TAIFFCommentItem(fComments.Items[i]).SaveToStream(Stream);
+  end;
+end;
+
+{ TAIFFInstrumentChunk }
+
+constructor TAIFFInstrumentChunk.Create;
+begin
+ inherited;
+ with AIFFInstrumentRecord do
+  begin
+   BaseNote     := 60;
+   Detune       := 0;
+   LowNote      := 0;
+   HighNote     := 127;
+   LowVelocity  := 1;
+   HighVelocity := 127;
+   Gain         := 0;
+  end;
+end;
+
+procedure TAIFFInstrumentChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TAIFFInstrumentChunk
+  then TAIFFInstrumentChunk(Dest).AIFFInstrumentRecord := AIFFInstrumentRecord; 
+end;
+
+class function TAIFFInstrumentChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'INST';
+end;
+
+class function TAIFFInstrumentChunk.GetClassChunkSize: Integer;
+begin
+ result := SizeOf(TAIFFInstrumentRecord); 
+end;
+
+procedure TAIFFInstrumentChunk.SetBaseNote(const Value: Byte);
+begin
+ if Value > 127 then raise Exception.Create('Note must be smaller then 127');
+ with AIFFInstrumentRecord do
+  if Value <> BaseNote then
+   begin
+    BaseNote := Value;
+   end;
+end;
+
+procedure TAIFFInstrumentChunk.SetDetune(Value: ShortInt);
+begin
+ // range check (-50..50 cents)
+ if Value >  50 then Value :=  50 else
+ if Value < -50 then Value := -50;
+
+ with AIFFInstrumentRecord do
+  if Value <> Detune then
+   begin
+    Detune := Value;
+   end;
+end;
+
+procedure TAIFFInstrumentChunk.SetHighNote(const Value: Byte);
+begin
+ if Value > 127 then raise Exception.Create('Note must be smaller then 127');
+ with AIFFInstrumentRecord do
+  if Value <> HighNote then
+   begin
+    HighNote := Value;
+   end;
+end;
+
+procedure TAIFFInstrumentChunk.SetHighVelocity(const Value: Byte);
+begin
+ if Value = 0   then raise Exception.Create('Velocity must be larger than 0');
+ if Value > 127 then raise Exception.Create('Velocity must be smaller than 127');
+ with AIFFInstrumentRecord do
+  if Value <> Detune then
+   begin
+    HighVelocity := Value;
+   end;
+end;
+
+procedure TAIFFInstrumentChunk.SetLowNote(const Value: Byte);
+begin
+ if Value > 127 then raise Exception.Create('Note must be smaller then 127');
+ with AIFFInstrumentRecord do
+  if Value <> LowNote then
+   begin
+    LowNote := Value;
+   end;
+end;
+
+procedure TAIFFInstrumentChunk.SetLowVelocity(const Value: Byte);
+begin
+ if Value = 0   then raise Exception.Create('Velocity must be larger than 0');
+ if Value > 127 then raise Exception.Create('Velocity must be smaller than 127');
+ with AIFFInstrumentRecord do
+  if Value <> Detune then
+   begin
+    LowVelocity := Value;
+   end;
+end;
+
+{ TAIFFMIDIChunk }
+
+procedure TAIFFMIDIChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TAIFFMIDIChunk then
+  begin
+   SetLength(TAIFFMIDIChunk(Dest).fMidiData, Length(fMidiData));
+   Move(fMidiData[0], TAIFFMIDIChunk(Dest).fMidiData[0], Length(fMidiData));
+  end;
+end;
+
+class function TAIFFMIDIChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'MIDI';
+end;
+
+function TAIFFMIDIChunk.GetMIDIData(index: Integer): Byte;
+begin
+ if (index >= 0) and (index < Length(fMidiData))
+  then result := fMidiData[index]
+  else result := 0;
+end;
+
+procedure TAIFFMIDIChunk.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+ with Stream do
+  begin
+   SetLength(fMidiData, fChunkSize);
+   Read(fMidiData[0], fChunkSize);
+  end;
+end;
+
+procedure TAIFFMIDIChunk.SaveToStream(Stream: TStream);
+begin
+ fChunkSize := Length(fMidiData);
+ inherited;
+ with Stream do
+  begin
+   Write(fMidiData[0], fChunkSize);
+  end;
+end;
+
+procedure TAIFFMIDIChunk.SetMIDIData(index: Integer; const Value: Byte);
+begin
+ if (index >= 0) and (index < Length(fMidiData))
+  then fMidiData[index] := Value;
+end;
+
+{ TAIFFAudioRecordingChunk }
+
+constructor TAIFFAudioRecordingChunk.Create;
+begin
+ inherited;
+ StartAddress := @AudioRecordingRecord;
+ AudioRecordingRecord.AESChannelStatusData  := '';
+end;
+
+procedure TAIFFAudioRecordingChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TAIFFAudioRecordingChunk then
+  begin
+   TAIFFAudioRecordingChunk(Dest).AESChannelStatusData := AESChannelStatusData;
+  end;
+end;
+
+function TAIFFAudioRecordingChunk.GetAESChannelStatusData: string;
+begin
+ SetLength(result, 24);
+ Move(AudioRecordingRecord.AESChannelStatusData[0], result[1], 24);
+end;
+
+class function TAIFFAudioRecordingChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'AESD';
+end;
+
+class function TAIFFAudioRecordingChunk.GetClassChunkSize: Integer;
+begin
+ result := SizeOf(TAIFFAudioRecordingRecord); 
+end;
+
+procedure TAIFFAudioRecordingChunk.SetAESChannelStatusData(const Value: string);
+begin
+ Move(Value[1], AudioRecordingRecord.AESChannelStatusData[0], Length(Value));
+end;
+
+{ TAIFFApplicationSpecificChunk }
+
+constructor TAIFFApplicationSpecificChunk.Create;
+begin
+ inherited;
+ // default the signature assotiated with this project
+ fApplicationSignature := 'DAVD';
+end;
+
+procedure TAIFFApplicationSpecificChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TAIFFApplicationSpecificChunk then
+  begin
+   TAIFFApplicationSpecificChunk(Dest).fApplicationSignature := fApplicationSignature;
+   SetLength(TAIFFApplicationSpecificChunk(Dest).fApplicationData, Length(fApplicationData));
+   Move(fApplicationData[1], TAIFFApplicationSpecificChunk(Dest).fApplicationData[1], Length(fApplicationData));
+  end;
+end;
+
+procedure TAIFFApplicationSpecificChunk.CalculateChunkSize;
+begin
+ fChunkSize := Length(fApplicationData) + SizeOf(TChunkName);
+end;
+
+function TAIFFApplicationSpecificChunk.GetApplicationSignature: string;
+begin
+ result := fApplicationSignature;
+end;
+
+class function TAIFFApplicationSpecificChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'APPL';
+end;
+
+function TAIFFApplicationSpecificChunk.GetData(index: Integer): Byte;
+begin
+ if (index >= 0) and (index < Length(fApplicationData))
+  then result := Byte(fApplicationData[index + 1])
+  else result := 0;
+end;
+
+procedure TAIFFApplicationSpecificChunk.SetApplicationSignature(const Value: string);
+var
+  ApplicationSignatureSize : Integer;
+begin
+ ApplicationSignatureSize := Length(Value);
+ if ApplicationSignatureSize > 3 then ApplicationSignatureSize := 4;
+ Move(Value[1], fApplicationSignature[0], ApplicationSignatureSize);
+end;
+
+procedure TAIFFApplicationSpecificChunk.SetData(index: Integer;
+  const Value: Byte);
+begin
+ if (index >= 0) and (index < Length(fApplicationSignature))
+  then fApplicationSignature[index + 1] := Char(Value);
+end;
+
+procedure TAIFFApplicationSpecificChunk.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+ with Stream do
+  begin
+   // read application signature
+   Read(fApplicationSignature, SizeOf(TChunkName));
+
+   // read application data
+   SetLength(fApplicationData, fChunkSize - SizeOf(TChunkName));
+   Read(fApplicationData[1], fChunkSize);
+  end;
+end;
+
+procedure TAIFFApplicationSpecificChunk.SaveToStream(Stream: TStream);
+begin
+ CalculateChunkSize;
+ inherited;
+ with Stream do
+  begin
+   // write application signature
+   Write(fApplicationSignature, SizeOf(TChunkName));
+
+   // write application data
+   Write(fApplicationData[1], fChunkSize - SizeOf(TChunkName));
+  end;
+end;
+
+{ TAIFFNameChunk }
+
+class function TAIFFNameChunk.GetClassChunkName: TChunkName;
+begin
+  result := 'NAME';
+end;
+
+{ TAIFFAuthorChunk }
+
+class function TAIFFAuthorChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'AUTH';
+end;
+
+{ TAIFFCopyrightChunk }
+
+class function TAIFFCopyrightChunk.GetClassChunkName: TChunkName;
+begin
+ result := '[c] ';
+end;
+
+{ TAIFFAnnotationChunk }
+
+class function TAIFFAnnotationChunk.GetClassChunkName: TChunkName;
+begin
+ result := 'ANNO';
 end;
 
 end.

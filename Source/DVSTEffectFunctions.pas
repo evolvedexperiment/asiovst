@@ -121,7 +121,8 @@ begin
          Result := 0;
        end;
      end;
-   end;
+   end
+ else Result := 0;
 end;
 
 function GetParameterFunc(Effect: PVSTEffect; Index: Integer): Single; cdecl;

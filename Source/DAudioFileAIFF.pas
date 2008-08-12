@@ -9,7 +9,10 @@ uses
 type
   TCustomAudioFileAIFF = class(TCustomAudioFile)
   private
-    fCommonChunk      : TAIFFCommonChunk;
+    fCommonChunk     : TAIFFCommonChunk;
+    fCommentChunk    : TAIFFCommentChunk;
+    fMarkerChunk     : TAIFFMarkerChunk;
+    fInstrumentChunk : TAIFFInstrumentChunk;
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
@@ -66,6 +69,9 @@ end;
 destructor TCustomAudioFileAIFF.Destroy;
 begin
  FreeAndNil(fCommonChunk);
+ if assigned(fCommentChunk)    then FreeAndNil(fCommentChunk);
+ if assigned(fMarkerChunk)     then FreeAndNil(fMarkerChunk);
+ if assigned(fInstrumentChunk) then FreeAndNil(fInstrumentChunk);
  inherited;
 end;
 
@@ -167,6 +173,11 @@ begin
    if ChunkName <> 'AIFF'
     then raise Exception.Create(rcAIFFChunkNotFound);
 
+   // Remove existing optional chunk
+   FreeAndNil(fCommentChunk);
+   FreeAndNil(fMarkerChunk);
+   FreeAndNil(fInstrumentChunk);
+
    // start parsing here
    ChunkEnd := Position + ChunkSize - 4;
    while Position < ChunkEnd do
@@ -183,6 +194,33 @@ begin
        Read(DataSize, 4);
        FlipLong(DataSize);
        Position := Position + DataSize;
+      end else
+     if ChunkName = 'MARK' then
+      begin
+       if assigned(fMarkerChunk)
+        then raise Exception.Create('Only one marker chunk allowed');
+
+       // load marker chunk
+       fMarkerChunk := TAIFFMArkerChunk.Create;
+       fMarkerChunk.LoadFromStream(Stream);
+      end else
+     if ChunkName = 'COMT' then
+      begin
+       if assigned(fCommentChunk)
+        then raise Exception.Create('Only one comment chunk allowed');
+
+       // load comment chunk
+       fCommentChunk := TAIFFCommentChunk.Create;
+       fCommentChunk.LoadFromStream(Stream);
+      end else
+     if ChunkName = 'COMT' then
+      begin
+       if assigned(fInstrumentChunk)
+        then raise Exception.Create('Only one instrument chunk allowed');
+
+       // load comment chunk
+       fInstrumentChunk := TAIFFInstrumentChunk.Create;
+       fInstrumentChunk.LoadFromStream(Stream);
       end
      else
       begin

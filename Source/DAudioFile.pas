@@ -54,46 +54,7 @@ type
     property OnSaveData64: TOnLoadSaveData64 read fOnSaveData64 write fOnSaveData64;
   end;
 
-procedure FlipWord(var Value); overload;
-procedure FlipLong(var Value); overload;
-procedure FlipExtended(var Value : Extended); overload;
-
 implementation
-
-procedure FlipLong(var Value); overload;
-var
-  VA   : array [0..3] of Byte absolute Value;
-  temp : Byte;
-begin
-  temp  := VA[0];
-  VA[0] := VA[3];
-  VA[3] := temp;
-  temp  := VA[1];
-  VA[1] := VA[2];
-  VA[2] := temp;
-end;
-
-procedure FlipWord(var Value);
-var
-  VA   : array [0..1] of Byte absolute Value;
-  temp : Byte;
-begin
-  temp  := VA[0];
-  VA[0] := VA[1];
-  VA[1] := temp;
-end;
-
-procedure FlipExtended(var Value : Extended); overload;
-var
-  VA   : array [0..9] of Byte absolute Value;
-  temp : Byte;
-begin
- temp := VA[0]; VA[0] := VA[9]; VA[9] := temp;
- temp := VA[1]; VA[1] := VA[8]; VA[8] := temp;
- temp := VA[2]; VA[2] := VA[7]; VA[7] := temp;
- temp := VA[3]; VA[3] := VA[6]; VA[6] := temp;
- temp := VA[4]; VA[4] := VA[5]; VA[5] := temp;
-end;
 
 { TCustomAudioFile }
 
