@@ -88,7 +88,6 @@ object FmASIO: TFmASIO
     Position = 100000
     TabOrder = 2
     OnChange = SbVolumeChange
-    ExplicitTop = 80
   end
   object SbPan: TScrollBar
     Left = 8
@@ -100,7 +99,6 @@ object FmASIO: TFmASIO
     Position = 50
     TabOrder = 3
     OnChange = SbPanChange
-    ExplicitTop = 120
   end
   object ASIOHost: TASIOHost
     CanDos = []

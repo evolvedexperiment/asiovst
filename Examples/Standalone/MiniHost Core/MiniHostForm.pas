@@ -9,7 +9,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types, Messages,
   Forms, SysUtils, Classes, Graphics, Controls, StdCtrls, ExtCtrls, ComCtrls,
-  Menus, DAVDCommon, DVstEffect, WaveIOX, MIDIFile, MIDI, DVSTHost, DASIOHost;
+  Menus, DAVDCommon, DVstEffect, WaveIOX, DMIDIFile, MIDI, DVSTHost, DASIOHost;
 
 type
   ShortStr = string[255];

@@ -67,7 +67,6 @@ begin
 end;
 
 procedure TFmASIO.DriverComboChange(Sender: TObject);
-var i : Integer;
 begin
  Bt_Play.Enabled := False;
  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);

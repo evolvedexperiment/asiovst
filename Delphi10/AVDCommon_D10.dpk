@@ -1,6 +1,6 @@
 package AVDCommon_D10;
 
-{$R *.res}
+{$R 'DMidiFile.res'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -36,6 +36,7 @@ contains
   DAVDBufferMathPascal in '..\Source\DAVDBufferMathPascal.pas',
   DAVDBufferMathAsm in '..\Source\DAVDBufferMathAsm.pas',
   DAVDComplex in '..\Source\DAVDComplex.pas',
-  MidiFile in '..\Source\MidiFile.pas';
+  DMidiFile in '..\Source\DMidiFile.pas',
+  DAudioData in '..\Source\DAudioData.pas';
 
 end.

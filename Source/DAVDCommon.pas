@@ -770,7 +770,8 @@ function FreqLinearToLog(Value: Single): Single;
 begin
  Result := (Twenty * Exp(value * 6.907755279));
 {$ELSE}
-const fltl2:Double=6.907755279;
+const
+  fltl2: Double = 6.907755279;
 asm
  FLD Value.Single
  FMUL fltl2

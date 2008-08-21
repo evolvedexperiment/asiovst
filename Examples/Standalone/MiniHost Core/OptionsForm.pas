@@ -50,7 +50,8 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses SysUtils, DVSTEffect, DASIOHost, ASIO;
+uses
+  SysUtils, DVSTEffect, DASIOHost, DASIO;
 
 procedure TFmOptions.FormCreate(Sender: TObject);
 begin

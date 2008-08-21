@@ -423,7 +423,10 @@ asm
  pop ecx
  fstp Result.Im.Single             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
  fstp Result.Re.Single             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- finit                             // (cleared)
+ fstp st(0)                        // (cleared)
+ fstp st(0)                        // (cleared)
+ fstp st(0)                        // (cleared)
+ fstp st(0)                        // (cleared)
 end;
 {$ENDIF}
 

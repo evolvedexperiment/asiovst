@@ -1,5 +1,6 @@
 package AVDCommon_D6;
 
+{$R 'DMidiFile.res'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -20,7 +21,7 @@ package AVDCommon_D6;
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
-{$IMAGEBASE $400000}
+{$IMAGEBASE $500000}
 {$DESCRIPTION 'ASIO/VST Base Package'}
 {$IMPLICITBUILD OFF}
 
@@ -31,7 +32,8 @@ contains
   DAVDCommon in '..\Source\DAVDCommon.pas',
   CPUDetectionTool in '..\Source\CPUDetectionTool.pas',
   DAVDComplex in '..\Source\DAVDComplex.pas',
-  MidiFile in '..\Source\MidiFile.pas',
+  DMidiFile in '..\Source\SMidiFile.pas',
+  DAudioData in '..\Source\DAudioData.pas',
   DAVDProcessingComponent in '..\Source\DAVDProcessingComponent.pas',
   DAVDBufferMathPascal in '..\Source\DAVDBufferMathPascal.pas',
   DAVDBufferMathAsm in '..\Source\DAVDBufferMathAsm.pas';

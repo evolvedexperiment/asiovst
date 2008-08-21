@@ -182,8 +182,8 @@ type
     procedure PMBufferSwitch(var Message: TMessage); message PM_BufferSwitch;
     procedure PMBufferSwitchTimeInfo(var Message: TMessage); message PM_BufferSwitchTimeInfo;
     {$ENDIF}
-    function GetInputMeter(Channel:Integer): Integer; virtual;
-    function GetOutputMeter(Channel:Integer): Integer; virtual;
+    function GetInputMeter(Channel: Integer): Integer; virtual;
+    function GetOutputMeter(Channel: Integer): Integer; virtual;
     function CanInputGain: Boolean; virtual;
     function CanInputMeter: Boolean; virtual;
     function CanOutputGain: Boolean; virtual;
@@ -685,8 +685,7 @@ begin
  end;
 end;
 
-procedure ASIOBufferSwitch(doubleBufferIndex: longint;
- directProcess: TASIOBool); cdecl;
+procedure ASIOBufferSwitch(doubleBufferIndex: longint; directProcess: TASIOBool); cdecl;
 begin
   directProcess := ASIOFalse;
   case directProcess of
@@ -1193,58 +1192,74 @@ begin
 end;
 
 procedure TCustomASIOHostBasic.SetActive(Value: Boolean);
-var currentbuffer : PASIOBufferInfo;
-    i             : Integer;
-    sz            : Word;
+var
+  currentbuffer : PASIOBufferInfo;
+  i             : Integer;
+  sz            : Word;
 begin
  if FDriver = nil then exit;
  if FActive = Value then exit;
  if Value = True then
- begin
-  try
-   FActive := (FDriver.Start = ASE_OK);
-  except
-   FBufferSize := 2048;
-   FSampleRate := 44100;
-  end;
-  if FActive = False then FDriver.Stop;
- end else
- begin
-  FActive := False;
-//  if GetCurrentThreadID = MainThreadID then
-  try
-   FDriver.Stop;
-  except
-  end;
-  if FBuffersCreated then
   begin
-   currentbuffer := FOutputBuffer;
-   for i := 0 to FOutputChannelCount - 1 do
-    with FOutputChannelInfos[i] do
-     begin
-      if vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz := SizeOf(Word) else
-      if vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz := 3 else
-      if vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
-      if vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
-       else sz := SizeOf(Integer);
-      FillChar(currentbuffer^.buffers[0]^, FBufferSize * sz, 0);
-      FillChar(currentbuffer^.buffers[1]^, FBufferSize * sz, 0);
-      inc(currentbuffer);
-     end;
-   currentbuffer := FInputBuffer;
-   for i := 0 to FInputChannelCount - 1 do
-    begin
-     if FInputChannelInfos[i].vType in [ASIOSTInt16MSB,ASIOSTInt16LSB] then sz := SizeOf(Word) else
-     if FInputChannelInfos[i].vType in [ASIOSTInt24MSB,ASIOSTInt24LSB] then sz := 3 else
-     if FInputChannelInfos[i].vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
-     if FInputChannelInfos[i].vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
-      else sz := SizeOf(Integer);
-     FillChar(currentbuffer^.buffers[0]^, FBufferSize * sz, 0);
-     FillChar(currentbuffer^.buffers[1]^, FBufferSize * sz, 0);
-     inc(currentbuffer);
+   try
+    FActive := (FDriver.Start = ASE_OK);
+   except
+    FBufferSize := 2048;
+    FSampleRate := 44100;
+   end;
+   if FActive = False then FDriver.Stop;
+  end
+ else
+  begin
+   FActive := False;
+//  if GetCurrentThreadID = MainThreadID then
+   try
+    FDriver.Stop;
+   except
+   end;
+   if FBuffersCreated then
+    try
+     currentbuffer := FOutputBuffer;
+     if assigned(currentbuffer) then
+      for i := 0 to FOutputChannelCount - 1 do
+       with FOutputChannelInfos[i] do
+        begin
+         if vType in [ASIOSTInt16MSB,ASIOSTInt16LSB]     then sz := SizeOf(Word) else
+         if vType in [ASIOSTInt24MSB,ASIOSTInt24LSB]     then sz := 3 else
+         if vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
+         if vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
+          else sz := SizeOf(Integer);
+
+         assert(assigned(currentbuffer));
+         with currentbuffer^ do
+          begin
+           if assigned(buffers[0]) then FillChar(buffers[0]^, FBufferSize * sz, 0);
+           if assigned(buffers[1]) then FillChar(buffers[1]^, FBufferSize * sz, 0);
+          end;
+         inc(currentbuffer);
+        end;
+     currentbuffer := FInputBuffer;
+     if assigned(currentbuffer) then
+      for i := 0 to FInputChannelCount - 1 do
+       with FInputChannelInfos[i] do
+        begin
+         if vType in [ASIOSTInt16MSB,ASIOSTInt16LSB]     then sz := SizeOf(Word) else
+         if vType in [ASIOSTInt24MSB,ASIOSTInt24LSB]     then sz := 3 else
+         if vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
+         if vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
+          else sz := SizeOf(Integer);
+
+         assert(assigned(currentbuffer));
+         with currentbuffer^ do
+          begin
+           if assigned(buffers[0]) then FillChar(buffers[0]^, FBufferSize * sz, 0);
+           if assigned(buffers[1]) then FillChar(buffers[1]^, FBufferSize * sz, 0);
+          end;
+         inc(currentbuffer);
+        end;
+    except
     end;
   end;
- end;
 end;
 
 function TCustomASIOHostBasic.GetNumDrivers: integer;
