@@ -1,6 +1,6 @@
 package AVDCommon_D10;
 
-{$R 'DMidiFile.res'}
+{$R 'DAVDCommon.res'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -37,6 +37,13 @@ contains
   DAVDBufferMathAsm in '..\Source\DAVDBufferMathAsm.pas',
   DAVDComplex in '..\Source\DAVDComplex.pas',
   DMidiFile in '..\Source\DMidiFile.pas',
-  DAudioData in '..\Source\DAudioData.pas';
+  DAudioData in '..\Source\DAudioData.pas',
+  DChunkClasses in '..\Source\DChunkClasses.pas',
+  DChunkWaveFile in '..\Source\DChunkWaveFile.pas',
+  DChunkAIFFFile in '..\Source\DChunkAIFFFile.pas',
+  DWaveFileTypes in '..\Source\DWaveFileTypes.pas',
+  DAudioFile in '..\Source\DAudioFile.pas',
+  DAudioFileWAV in '..\Source\DAudioFileWAV.pas',
+  DAudioFileAIFF in '..\Source\DAudioFileAIFF.pas';
 
 end.

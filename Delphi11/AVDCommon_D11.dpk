@@ -1,6 +1,6 @@
 package AVDCommon_D11;
 
-{$R *.res}
+{$R 'DAVDCommon.res'}
 {$M+}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -34,7 +34,7 @@ contains
   DAVDCommon in '..\Source\DAVDCommon.pas',
   CPUDetectionTool in '..\Source\CPUDetectionTool.pas',
   DAVDComplex in '..\Source\DAVDComplex.pas',
-  MidiFile in '..\Source\MidiFile.pas',
+  DMidiFile in '..\Source\DMidiFile.pas',
   DAVDProcessingComponent in '..\Source\DAVDProcessingComponent.pas',
   DAVDBufferMathPascal in '..\Source\DAVDBufferMathPascal.pas',
   DAVDBufferMathAsm in '..\Source\DAVDBufferMathAsm.pas';

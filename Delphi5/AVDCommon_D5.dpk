@@ -1,6 +1,6 @@
 package AVDCommon_D5;
 
-{$R 'DMidiFile.res'}
+{$R 'DAVDCommon.res'}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
