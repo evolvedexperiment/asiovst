@@ -6,7 +6,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ASIOChannelStrip, ExtCtrls;
+  ExtCtrls, DASIOChannelStrip;
 
 type
   TFmASIOMixer = class(TForm)

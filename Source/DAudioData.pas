@@ -46,32 +46,111 @@ type
     property SampleRateSource;
   end;
 
-  TAudioChannels = class(TCollectionItem)
+  TCustomAudioData = class;
+  TCustomAudioChannels = class(TOwnedCollection);
+  TAudioChannels32 = class(TCustomAudioChannels);
+  TAudioChannels64 = class(TCustomAudioChannels);
+
+  TCustomAudioChannel = class(TCollectionItem)
   private
     fDisplayName : string;
-    fChannelData : PAVDSingleFixedArray;
+    fChannelData : TCustomAudioChannels;
+    function GetAudioData: TCustomAudioData;
   protected
     function GetDisplayName: string; override;
+    function GetSum: Double; virtual; abstract;
+    function GetRMS: Double; virtual; abstract;
+    function GetPeak: Double; virtual; abstract;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SetDisplayName(const Value: string); override;
+    property AudioData: TCustomAudioData read GetAudioData;
+  public
+    // some processing functions
+    procedure Clear; virtual; abstract;
+    procedure Multiply(Factor: Double); virtual; abstract;
+    procedure Rectify; virtual; abstract;
+    procedure RemoveDC; virtual; abstract;
+
+    property Sum: Double read GetSum;
+    property RMS: Double read GetRMS;
+    property Peak: Double read GetPeak;
   published
     property DisplayName;
+  end;
+
+  TAudioChannel32 = class(TCustomAudioChannel)
+  private
+    fChannelData : PAVDSingleFixedArray;
+    function GetChannelData(Sample: Int64): Single;
+    procedure SetChannelData(Sample: Int64; const Value: Single);
+  protected
+    function GetSum: Double; override;
+    function GetRMS: Double; override;
+    function GetPeak: Double; override;
+  public
+    // some processing functions
+    procedure Clear; override;
+    procedure Multiply(Factor: Double); override;
+    procedure Rectify; override;
+    procedure RemoveDC; override;
+
+    // data acces properties
+    property ChannelData[Sample: Int64]: Single read GetChannelData write SetChannelData;
+    property ChannelDataPointer: PAVDSingleFixedArray read fChannelData;
+  end;
+
+  TAudioChannel64 = class(TCustomAudioChannel)
+  private
+    fChannelData : PAVDDoubleFixedArray;
+    function GetChannelData(Sample: Int64): Double;
+    procedure SetChannelData(Sample: Int64; const Value: Double);
+  protected
+    function GetSum: Double; override;
+    function GetRMS: Double; override;
+    function GetPeak: Double; override;
+  public
+    // some processing functions
+    procedure Multiply(Factor: Double); override;
+    procedure Rectify; override;
+    procedure RemoveDC; override;
+    procedure Clear; override;
+
+    // data acces properties
+    property ChannelData[Sample: Int64]: Double read GetChannelData write SetChannelData;
+    property ChannelDataPointer: PAVDDoubleFixedArray read fChannelData;
   end;
 
   TCustomAudioData = class(TAudioObject)
   private
     fSampleFrames : Cardinal;
-    fChannels     : TOwnedCollection;
     procedure SetSampleFrames(const Value: Cardinal);
   protected
+    fChannels : TCustomAudioChannels;
     procedure SampleFramesChanged; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     property SampleFrames: Cardinal read fSampleFrames write SetSampleFrames;
-    property Channels: TOwnedCollection read fChannels write fChannels;
+    property Channels: TCustomAudioChannels read fChannels write fChannels;
   end;
+
+  TAudioData32 = class(TCustomAudioData)
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property Channels;
+    property SampleFrames;
+  end;
+
+  TAudioData64 = class(TCustomAudioData)
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property Channels;
+    property SampleFrames;
+  end;
+
+procedure Register;
 
 implementation
 
@@ -176,27 +255,221 @@ begin
   end;
 end;
 
-{ TAudioChannels }
+{ TCustomAudioChannel }
 
-procedure TAudioChannels.AssignTo(Dest: TPersistent);
+procedure TCustomAudioChannel.AssignTo(Dest: TPersistent);
 begin
- if Dest is TAudioChannels then
+ if Dest is TCustomAudioChannel then
   begin
-   TAudioChannels(Dest).fDisplayName := fDisplayName;
-   TAudioChannels(Dest).fChannelData := fChannelData; 
+   TCustomAudioChannel(Dest).fDisplayName := fDisplayName;
+   TCustomAudioChannel(Dest).fChannelData := fChannelData;
   end
  else inherited;
 end;
 
-function TAudioChannels.GetDisplayName: string;
+function TCustomAudioChannel.GetAudioData: TCustomAudioData;
+begin
+ assert(GetOwner <> nil);
+ result := TCustomAudioData(GetOwner);
+end;
+
+function TCustomAudioChannel.GetDisplayName: string;
 begin
  result := fDisplayName;
 end;
 
-procedure TAudioChannels.SetDisplayName(const Value: string);
+procedure TCustomAudioChannel.SetDisplayName(const Value: string);
 begin
  fDisplayName := Value;
  inherited;
+end;
+
+{ TAudioChannel32 }
+
+procedure TAudioChannel32.Clear;
+begin
+ FillChar(fChannelData, AudioData.SampleFrames * SizeOf(Single), 0);
+end;
+
+function TAudioChannel32.GetChannelData(Sample: Int64): Single;
+begin
+ if (Sample >= 0) and (Sample < AudioData.SampleFrames)
+  then result := fChannelData[Sample]
+  else raise Exception.Create('Sample out of range');
+end;
+
+function TAudioChannel32.GetPeak: Double;
+var
+  Sample       : Integer;
+  SampleFrames : Integer;
+begin
+ result := 0;
+ SampleFrames := AudioData.SampleFrames;
+ if SampleFrames = 0 then exit;
+
+ for Sample := 0 to SampleFrames - 1 do
+  if abs(fChannelData^[Sample]) > result
+   then result := abs(fChannelData^[Sample]);
+end;
+
+function TAudioChannel32.GetRMS: Double;
+var
+  Sample       : Integer;
+  SampleFrames : Integer;
+  SquaredSum   : Double;
+begin
+ result := 0;
+ SampleFrames := AudioData.SampleFrames;
+ if SampleFrames = 0 then exit;
+
+ SquaredSum := 0;
+ for Sample := 0 to SampleFrames - 1
+  do SquaredSum := SquaredSum + sqr(fChannelData^[Sample]);
+ result := sqrt(SquaredSum / SampleFrames);              
+end;
+
+function TAudioChannel32.GetSum: Double;
+var
+  Sample       : Integer;
+  SampleFrames : Integer;
+begin
+ result       := 0;
+ SampleFrames := AudioData.SampleFrames;
+ if SampleFrames = 0 then exit;
+
+ for Sample := 0 to SampleFrames - 1
+  do result := result + fChannelData^[Sample];
+end;
+
+procedure TAudioChannel32.Multiply(Factor: Double);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to AudioData.SampleFrames - 1
+  do fChannelData^[Sample] := fChannelData^[Sample] * Factor;
+end;
+
+procedure TAudioChannel32.Rectify;
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to AudioData.SampleFrames - 1
+  do fChannelData^[Sample] := Abs(fChannelData^[Sample]);
+end;
+
+procedure TAudioChannel32.RemoveDC;
+var
+  Sample       : Integer;
+  SampleFrames : Integer;
+  DC           : Double;
+begin
+ SampleFrames := AudioData.SampleFrames;
+ if SampleFrames = 0 then exit;
+
+ DC := Sum / SampleFrames;
+ for Sample := 0 to SampleFrames - 1
+  do fChannelData^[Sample] := fChannelData^[Sample] - DC;
+end;
+
+procedure TAudioChannel32.SetChannelData(Sample: Int64; const Value: Single);
+begin
+ if (Sample >= 0) and (Sample < AudioData.SampleFrames)
+  then fChannelData[Sample] := Value
+  else raise Exception.Create('Sample out of range');
+end;
+
+{ TAudioChannel64 }
+
+procedure TAudioChannel64.Clear;
+begin
+ FillChar(fChannelData, AudioData.SampleFrames * SizeOf(Double), 0);
+end;
+
+function TAudioChannel64.GetChannelData(Sample: Int64): Double;
+begin
+ if (Sample >= 0) and (Sample < AudioData.SampleFrames)
+  then result := fChannelData[Sample]
+  else raise Exception.Create('Sample out of range');
+end;
+
+function TAudioChannel64.GetPeak: Double;
+var
+  Sample       : Integer;
+  SampleFrames : Integer;
+begin
+ result := 0;
+ SampleFrames := AudioData.SampleFrames;
+ if SampleFrames = 0 then exit;
+
+ for Sample := 0 to SampleFrames - 1 do
+  if abs(fChannelData^[Sample]) > result
+   then result := abs(fChannelData^[Sample]);
+end;
+
+function TAudioChannel64.GetRMS: Double;
+var
+  Sample       : Integer;
+  SampleFrames : Integer;
+  SquaredSum   : Double;
+begin
+ result := 0;
+ SampleFrames := AudioData.SampleFrames;
+ if SampleFrames = 0 then exit;
+
+ SquaredSum := 0;
+ for Sample := 0 to SampleFrames - 1
+  do SquaredSum := SquaredSum + sqr(fChannelData^[Sample]);
+ result := sqrt(SquaredSum / SampleFrames);
+end;
+
+function TAudioChannel64.GetSum: Double;
+var
+  Sample       : Integer;
+  SampleFrames : Integer;
+begin
+ result       := 0;
+ SampleFrames := AudioData.SampleFrames;
+ if SampleFrames = 0 then exit;
+
+ for Sample := 0 to SampleFrames - 1
+  do result := result + fChannelData^[Sample];
+end;
+
+procedure TAudioChannel64.Multiply(Factor: Double);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to AudioData.SampleFrames - 1
+  do fChannelData^[Sample] := fChannelData^[Sample] * Factor;
+end;
+
+procedure TAudioChannel64.Rectify;
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to AudioData.SampleFrames - 1
+  do fChannelData^[Sample] := Abs(fChannelData^[Sample]);
+end;
+
+procedure TAudioChannel64.RemoveDC;
+var
+  Sample       : Integer;
+  SampleFrames : Integer;
+  DC           : Double;
+begin
+ SampleFrames := AudioData.SampleFrames;
+ if SampleFrames = 0 then exit;
+
+ DC := Sum / SampleFrames;
+ for Sample := 0 to SampleFrames - 1
+  do fChannelData^[Sample] := fChannelData^[Sample] - DC;
+end;
+
+procedure TAudioChannel64.SetChannelData(Sample: Int64; const Value: Double);
+begin
+ if (Sample >= 0) and (Sample < AudioData.SampleFrames)
+  then fChannelData[Sample] := Value
+  else raise Exception.Create('Sample out of range');
 end;
 
 { TCustomAudioData }
@@ -204,12 +477,11 @@ end;
 constructor TCustomAudioData.Create(AOwner: TComponent);
 begin
  inherited;
- fChannels := TOwnedCollection.Create(Self, TAudioChannels);
 end;
 
 destructor TCustomAudioData.Destroy;
 begin
- FreeAndNil(fChannels);
+ if assigned(fChannels) then FreeAndNil(fChannels);
  inherited;
 end;
 
@@ -225,6 +497,29 @@ begin
    fSampleFrames := Value;
    SampleFramesChanged;
   end;
+end;
+
+{ TAudioData32 }
+
+constructor TAudioData32.Create(AOwner: TComponent);
+begin
+ inherited;
+ fChannels := TCustomAudioChannels.Create(Self, TAudioChannel32);
+end;
+
+{ TAudioData64 }
+
+constructor TAudioData64.Create(AOwner: TComponent);
+begin
+ inherited;
+ fChannels := TCustomAudioChannels.Create(Self, TAudioChannel64);
+end;
+
+procedure Register;
+begin
+  RegisterComponents('ASIO/VST Basics', [TSampleRateSource]);
+  RegisterComponents('ASIO/VST Basics', [TAudioData32]);
+  RegisterComponents('ASIO/VST Basics', [TAudioData64]);
 end;
 
 end.

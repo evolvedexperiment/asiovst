@@ -26,7 +26,8 @@ unit OpenASIO;
 
 interface
 
-uses Windows, ActiveX, ASIO, dialogs;
+uses
+  Windows, ActiveX, DASIO, Dialogs;
 
 type
   IOpenASIO = interface(IUnknown)
