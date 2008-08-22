@@ -30,11 +30,11 @@ const
 
 type
   TProcessorType = (ptFPU, ptSSE, pt3DNow);
-  TInConvertor = record
+  TInConverter = record
                   ic32 : procedure(source: pointer; target: PSingle; frames: longint);
                   ic64 : procedure(source: pointer; target: PDouble; frames: longint);
                  end;
-  TOutConvertor = record
+  TOutConverter = record
                    oc32 : procedure(source: PSingle; target: pointer; frames: longint);
                    oc64 : procedure(source: PDouble; target: pointer; frames: longint);
                   end;
@@ -67,42 +67,42 @@ procedure Use_FPU_TDF;
 
 var
   ProcessorType       : TProcessorType;
-  FromInt16MSB        : TInConvertor;
-  FromInt24MSB        : TInConvertor;  // used for 20 bits as well
-  FromInt32MSB        : TInConvertor;
-  FromSingleMSB       : TInConvertor;  // IEEE 754 32 bit float
-  FromDoubleMSB       : TInConvertor;  // IEEE 754 64 bit Double float
-  FromInt32MSB16      : TInConvertor;  // 32 bit data with 16 bit alignment
-  FromInt32MSB18      : TInConvertor;  // 32 bit data with 18 bit alignment
-  FromInt32MSB20      : TInConvertor;  // 32 bit data with 20 bit alignment
-  FromInt32MSB24      : TInConvertor;  // 32 bit data with 24 bit alignment
-  FromInt16LSB        : TInConvertor;
-  FromInt24LSB        : TInConvertor;
-  FromInt32LSB        : TInConvertor;
-  FromSingleLSB       : TInConvertor;  // IEEE 754 32 bit float
-  FromDoubleLSB       : TInConvertor;  // IEEE 754 64 bit Double float
-  FromInt32LSB16      : TInConvertor;  // 32 bit data with 16 bit alignment
-  FromInt32LSB18      : TInConvertor;  // 32 bit data with 18 bit alignment
-  FromInt32LSB20      : TInConvertor;  // 32 bit data with 20 bit alignment
-  FromInt32LSB24      : TInConvertor;  // 32 bit data with 24 bit alignment
-  ToInt16MSB          : TOutConvertor;
-  ToInt24MSB          : TOutConvertor;  // used for 20 bits as well
-  ToInt32MSB          : TOutConvertor;
-  ToSingleMSB         : TOutConvertor;  // IEEE 754 32 bit float
-  ToDoubleMSB         : TOutConvertor;  // IEEE 754 64 bit Double float
-  ToInt32MSB16        : TOutConvertor;  // 32 bit data with 16 bit alignment
-  ToInt32MSB18        : TOutConvertor;  // 32 bit data with 18 bit alignment
-  ToInt32MSB20        : TOutConvertor;  // 32 bit data with 20 bit alignment
-  ToInt32MSB24        : TOutConvertor;  // 32 bit data with 24 bit alignment
-  ToInt16LSB          : TOutConvertor;
-  ToInt24LSB          : TOutConvertor;
-  ToInt32LSB          : TOutConvertor;
-  ToSingleLSB         : TOutConvertor;  // IEEE 754 32 bit float
-  ToDoubleLSB         : TOutConvertor;  // IEEE 754 64 bit Double float
-  ToInt32LSB16        : TOutConvertor;  // 32 bit data with 16 bit alignment
-  ToInt32LSB18        : TOutConvertor;  // 32 bit data with 18 bit alignment
-  ToInt32LSB20        : TOutConvertor;  // 32 bit data with 20 bit alignment
-  ToInt32LSB24        : TOutConvertor;  // 32 bit data with 24 bit alignment
+  FromInt16MSB        : TInConverter;
+  FromInt24MSB        : TInConverter;  // used for 20 bits as well
+  FromInt32MSB        : TInConverter;
+  FromSingleMSB       : TInConverter;  // IEEE 754 32 bit float
+  FromDoubleMSB       : TInConverter;  // IEEE 754 64 bit Double float
+  FromInt32MSB16      : TInConverter;  // 32 bit data with 16 bit alignment
+  FromInt32MSB18      : TInConverter;  // 32 bit data with 18 bit alignment
+  FromInt32MSB20      : TInConverter;  // 32 bit data with 20 bit alignment
+  FromInt32MSB24      : TInConverter;  // 32 bit data with 24 bit alignment
+  FromInt16LSB        : TInConverter;
+  FromInt24LSB        : TInConverter;
+  FromInt32LSB        : TInConverter;
+  FromSingleLSB       : TInConverter;  // IEEE 754 32 bit float
+  FromDoubleLSB       : TInConverter;  // IEEE 754 64 bit Double float
+  FromInt32LSB16      : TInConverter;  // 32 bit data with 16 bit alignment
+  FromInt32LSB18      : TInConverter;  // 32 bit data with 18 bit alignment
+  FromInt32LSB20      : TInConverter;  // 32 bit data with 20 bit alignment
+  FromInt32LSB24      : TInConverter;  // 32 bit data with 24 bit alignment
+  ToInt16MSB          : TOutConverter;
+  ToInt24MSB          : TOutConverter;  // used for 20 bits as well
+  ToInt32MSB          : TOutConverter;
+  ToSingleMSB         : TOutConverter;  // IEEE 754 32 bit float
+  ToDoubleMSB         : TOutConverter;  // IEEE 754 64 bit Double float
+  ToInt32MSB16        : TOutConverter;  // 32 bit data with 16 bit alignment
+  ToInt32MSB18        : TOutConverter;  // 32 bit data with 18 bit alignment
+  ToInt32MSB20        : TOutConverter;  // 32 bit data with 20 bit alignment
+  ToInt32MSB24        : TOutConverter;  // 32 bit data with 24 bit alignment
+  ToInt16LSB          : TOutConverter;
+  ToInt24LSB          : TOutConverter;
+  ToInt32LSB          : TOutConverter;
+  ToSingleLSB         : TOutConverter;  // IEEE 754 32 bit float
+  ToDoubleLSB         : TOutConverter;  // IEEE 754 64 bit Double float
+  ToInt32LSB16        : TOutConverter;  // 32 bit data with 16 bit alignment
+  ToInt32LSB18        : TOutConverter;  // 32 bit data with 18 bit alignment
+  ToInt32LSB20        : TOutConverter;  // 32 bit data with 20 bit alignment
+  ToInt32LSB24        : TOutConverter;  // 32 bit data with 24 bit alignment
 
   ClipCheckInt16MSB   : TClipCheckFunction;
   ClipCheckInt24MSB   : TClipCheckFunction;  // used for 20 bits as well

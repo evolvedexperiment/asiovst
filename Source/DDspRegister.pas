@@ -8,7 +8,6 @@ procedure Register;
 
 implementation
 
-{$IFNDEF FPC}{$R DDspRegister.res}{$ENDIF}
 uses
   Classes, DDspEnvelopeFollower, DDSPRemez, DDspFilter, DDspVoiceController,
   DDspOscSine, DDspOscSaw, DDspOscRamp, DDspOscSquare, DDspOscNoise,
