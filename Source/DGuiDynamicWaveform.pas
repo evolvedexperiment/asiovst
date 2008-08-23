@@ -7,7 +7,7 @@ uses DGuiStaticWaveform, DAVDCommon, Classes, Controls;
 type
   TGuiWaveProcessMode = (wpmScroll, wpmReplace, wpmStretch);
 
-  TGuiDynamicWaveform = class(TGuiStaticWaveform)
+  TCustomGuiDynamicWaveform = class(TCustomGuiStaticWaveform)
   private
     fWaveProcessMode: TGuiWaveProcessMode;
     fInternalBufferSize: Integer;
@@ -34,11 +34,63 @@ type
     property WaveProcessMode: TGuiWaveProcessMode read fWaveProcessMode write fWaveProcessMode default wpmScroll;
   end;
 
+  TGuiDynamicWaveform = class(TCustomGuiDynamicWaveform)
+  published
+    property Align;
+    property Anchors;
+    property Color;
+    property Constraints;
+    property DisplayChannels;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
+    property Enabled;
+    property InternalBufferChannels;
+    property InternalBufferSize;
+    property LineColor;
+    property LineWidth;
+    property MedianColor;
+    property MedianLineWidth;
+    property MedianVisible;
+    property NormalizationType;
+    property PopupMenu;
+    property RedrawInterval;
+    property ShowHint;
+    property Transparent;
+    property Visible;
+    property WaveDrawMode;
+    property WaveProcessMode;
+    property WaveVPadding;
+
+    property OnCanResize;
+    property OnClick;
+    property OnConstrainedResize;
+    property OnContextPopup;
+    property OnDblClick;
+    property OnDragDrop;
+    property OnDragOver;
+    property OnEndDock;
+    property OnEndDrag;
+    property OnMouseDown;
+    property OnMouseMove;
+    property OnMouseUp;
+    property OnMouseWheel;
+    property OnMouseWheelDown;
+    property OnMouseWheelUp;
+    property OnResize;
+    property OnStartDock;
+    property OnStartDrag;
+    property OnPaint;
+    property OnMouseEnter;
+    property OnMouseLeave;
+    property OnDragMouseMove;
+  end;
+
 implementation
 
 uses SysUtils, Math, dialogs, DGuiBaseControl;
 
-constructor TGuiDynamicWaveform.Create(AOwner: TComponent);
+constructor TCustomGuiDynamicWaveform.Create(AOwner: TComponent);
 begin
   inherited;
 
@@ -49,7 +101,7 @@ begin
   UpdateInternalBuffer;
 end;
 
-destructor TGuiDynamicWaveform.Destroy;
+destructor TCustomGuiDynamicWaveform.Destroy;
 begin
   fInternalBufferChannels := 0;
   fInternalBufferSize     := 0;
@@ -57,135 +109,143 @@ begin
   inherited;
 end;
 
-procedure TGuiDynamicWaveform.ProcessBufferIndirect(NewWaveData: TAVDArrayOfSingleDynArray; Channels, SampleFrames: Integer);
-var tmp: TAVDArrayOfSingleDynArray; i: integer;
+procedure TCustomGuiDynamicWaveform.ProcessBufferIndirect(NewWaveData: TAVDArrayOfSingleDynArray; Channels, SampleFrames: Integer);
+var
+  tmp : TAVDArrayOfSingleDynArray;
+  i   : Integer;
 begin
   SetLength(tmp,Channels, SampleFrames);
-  for i:=0 to Channels-1 do
-    move(NewWaveData[i,0], tmp[i,0], SampleFrames*SizeOf(Single));
+  for i := 0 to Channels - 1
+   do Move(NewWaveData[i, 0], tmp[i, 0], SampleFrames * SizeOf(Single));
 
   ProcessBuffer(tmp, SampleFrames);
 end;
 
-procedure TGuiDynamicWaveform.ProcessBuffer(NewWaveData: TAVDSingleDynArray; InpLen: Integer);
-var tmp: TAVDArrayOfSingleDynArray;
+procedure TCustomGuiDynamicWaveform.ProcessBuffer(NewWaveData: TAVDSingleDynArray; InpLen: Integer);
+var
+  tmp: TAVDArrayOfSingleDynArray;
 begin
-  SetLength(tmp,1);
+  SetLength(tmp, 1);
   tmp[0] := NewWaveData;
   ProcessBuffer(tmp, InpLen);
 end;
 
-procedure TGuiDynamicWaveform.ProcessBuffer(NewWaveData: TAVDArrayOfSingleDynArray; InpLen: Integer);
-var nOffset, Amount, i, tmpLen: integer;
-    stepw,pos, frac: single;
-    InputBuffer: TAVDSingleDynArray;
-begin 
+procedure TCustomGuiDynamicWaveform.ProcessBuffer(NewWaveData: TAVDArrayOfSingleDynArray; InpLen: Integer);
+var
+  nOffset,
+  Amount, i,
+  tmpLen      : Integer;
+  stepw,pos,
+  frac        : Single;
+  InputBuffer : TAVDSingleDynArray;
+begin
   if InpLen<1 then
   begin
-    for i:=0 to fInternalBufferChannels-1 do
+    for i := 0 to fInternalBufferChannels-1 do
       if i < Length(NewWaveData) then
         InpLen := max(Length(NewWaveData[i]), InpLen);
 
     if InpLen<1 then exit;
   end;
 
-  for i:=0 to fInternalBufferChannels-1 do
+  for i := 0 to fInternalBufferChannels-1 do
   begin
     tmpLen := 0;
     if i < Length(NewWaveData) then
     begin
-      InputBuffer:=NewWaveData[i];
-      tmpLen:=length(InputBuffer);
+      InputBuffer := NewWaveData[i];
+      tmpLen := length(InputBuffer);
     end;
-    
-    setlength(InputBuffer, InpLen);
-    if tmpLen<InpLen then
-      FillChar(InputBuffer[tmpLen], (InpLen-tmpLen)*SizeOf(single), 0);
+
+    SetLength(InputBuffer, InpLen);
+    if tmpLen < InpLen then
+      FillChar(InputBuffer[tmpLen], (InpLen - tmpLen) * SizeOf(Single), 0);
 
     case fWaveProcessMode of
       wpmScroll:
-        if InpLen>=fInternalBufferSize then
+        if InpLen >= fInternalBufferSize then
         begin
 
           // copy part of input into full working buffer
           nOffset := InpLen - fInternalBufferSize;
-          move(InputBuffer[nOffset],fInternalBuffer[i,0],fInternalBufferSize * SizeOf(Single));
+          Move(InputBuffer[nOffset], fInternalBuffer[i, 0], fInternalBufferSize * SizeOf(Single));
         end else begin
-          
+
           // copy full input buffer into part of working buffer
-          nOffset := fInternalBufferSize-InpLen;
-          move(fInternalBuffer[i,InpLen],fInternalBuffer[i,0],nOffset * SizeOf(Single));
-          move(InputBuffer[0],fInternalBuffer[i,nOffset],InpLen * SizeOf(Single));
+          nOffset := fInternalBufferSize - InpLen;
+          Move(fInternalBuffer[i, InpLen], fInternalBuffer[i, 0], nOffset * SizeOf(Single));
+          Move(InputBuffer[0], fInternalBuffer[i, nOffset], InpLen * SizeOf(Single));
         end;
       wpmReplace:
         begin
           Amount := min(InpLen, fInternalBufferSize);
-          move(InputBuffer[0],fInternalBuffer[i,0],Amount * SizeOf(Single));
+          Move(InputBuffer[0], fInternalBuffer[i, 0], Amount * SizeOf(Single));
 
           if Amount < fInternalBufferSize then
           begin
-            fillchar(fInternalBuffer[i,Amount], (fInternalBufferSize-Amount) * SizeOf(Single), 0);
+            fillchar(fInternalBuffer[i, Amount], (fInternalBufferSize - Amount) * SizeOf(Single), 0);
           end;
         end; 
 
       wpmStretch:
         begin
-          stepw:=(InpLen-1)/(fInternalBufferSize-1);
-          fInternalBuffer[i,0] := InputBuffer[0];
+          stepw := (InpLen - 1) / (fInternalBufferSize - 1);
+          fInternalBuffer[i, 0] := InputBuffer[0];
 
-          for nOffset:=1 to fInternalBufferSize-1 do
-          begin
-            pos := stepw*nOffset;
+          for nOffset := 1 to fInternalBufferSize - 1 do
+           begin
+            pos := stepw * nOffset;
             frac := pos - trunc(pos);
 
-            fInternalBuffer[i,nOffset] := InputBuffer[floor(pos)]*frac+InputBuffer[ceil(pos)]*(1-frac);
-          end;
+            fInternalBuffer[i, nOffset] := InputBuffer[floor(pos)] * frac + InputBuffer[ceil(pos)] * (1 - frac);
+           end;
         end;
     end;
   end;
   if not fTimerMustRedraw then SetWaveForm(fInternalBuffer);
-  fTimerMustRedraw:=true;
+  fTimerMustRedraw := true;
 end;
 
-procedure TGuiDynamicWaveform.UpdateInternalBuffer;
-var i: integer;
+procedure TCustomGuiDynamicWaveform.UpdateInternalBuffer;
+var
+  i : Integer;
 begin
-  for i:=fInternalBufferChannels to Length(fInternalBuffer)-1 do SetLength(fInternalBuffer[i],0);
+  for i := fInternalBufferChannels to Length(fInternalBuffer) - 1
+   do SetLength(fInternalBuffer[i], 0);
   SetLength(fInternalBuffer, fInternalBufferChannels, fInternalBufferSize);
 
-  if fInternalBufferChannels>0 then
-    for i:=0 to Length(fInternalBuffer)-1 do
-      FillChar(fInternalBuffer[i][0],SizeOf(single)*fInternalBufferSize,0);
+  if fInternalBufferChannels > 0 then
+   for i := 0 to Length(fInternalBuffer) - 1 do
+      FillChar(fInternalBuffer[i][0], SizeOf(Single) * fInternalBufferSize, 0);
 end;
 
-procedure TGuiDynamicWaveform.SetInternalBufferChannels(const Value: Integer);
+procedure TCustomGuiDynamicWaveform.SetInternalBufferChannels(const Value: Integer);
 begin
-  if Value<1 then
-    raise Exception.Create('InternalBufferChannels must greater than 0')
+  if Value < 1
+   then raise Exception.Create('InternalBufferChannels must greater than 0');
 
-  else if fInternalBufferChannels<>Value then
+ if fInternalBufferChannels <> Value then
   begin
-    fInternalBufferChannels := Value;
-    UpdateInternalBuffer;
+   fInternalBufferChannels := Value;
+   UpdateInternalBuffer;
   end;
 end;
 
-procedure TGuiDynamicWaveform.SetInternalBufferSize(const Value: Integer);
+procedure TCustomGuiDynamicWaveform.SetInternalBufferSize(const Value: Integer);
 begin
-  if Value<1 then
-    raise Exception.Create('InternalBufferSize must greater than 0')
-
-  else if fInternalBufferSize<>Value then
-  begin
+  if Value < 1
+   then raise Exception.Create('InternalBufferSize must greater than 0');
+  if fInternalBufferSize <> Value then
+   begin
     fInternalBufferSize := Value;
     UpdateInternalBuffer;
-  end;
+   end;
 end;
 
-procedure TGuiDynamicWaveform.SetRedrawInterval(Value: Integer);
+procedure TCustomGuiDynamicWaveform.SetRedrawInterval(Value: Integer);
 begin
-  if Value<1 then
-    raise Exception.Create('RedrawInterval must greater than 0');
+  if Value < 1
+   then raise Exception.Create('RedrawInterval must greater than 0');
 
   inherited;
 end;

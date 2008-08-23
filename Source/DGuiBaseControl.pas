@@ -26,10 +26,33 @@ type
 
   TGuiMouseStateClass = class of TGuiMouseState;
 
-  TGuiBaseControl = class(TGraphicControl)
+  TBufferedGraphicControl = class(TGraphicControl)
   protected
-    fBuffer                 : TBitmap;
-    fOnPaint                : TNotifyEvent;
+    fBuffer   : TBitmap;
+    fOnPaint  : TNotifyEvent;
+
+    {$IFNDEF FPC}
+    procedure DrawParentImage(Dest: TCanvas); virtual;
+    {$ENDIF}
+
+    procedure Resize; override;
+    procedure ResizeBuffer; dynamic;
+    procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
+
+    procedure WMEraseBkgnd(var m: TWMEraseBkgnd); message WM_ERASEBKGND;
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
+    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    procedure Loaded; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure Paint; override;
+    property OnPaint: TNotifyEvent read fOnPaint write fOnPaint;
+  end;
+
+  TCustomGuiBaseControl = class(TBufferedGraphicControl)
+  protected
     fLineColor              : TColor;
     fLineWidth              : Integer;
     fRedrawTimer            : TTimer;
@@ -40,20 +63,15 @@ type
     fOnDragMouseMove        : TGuiOnDragMouseMove;
     {$IFNDEF FPC}
     fTransparent            : Boolean;
-    procedure DrawParentImage(Dest: TCanvas); virtual;
     procedure SetTransparent(Value: Boolean); virtual;
     {$ENDIF}
 
     procedure SetLineWidth(Value: Integer); virtual;
     procedure SetLineColor(Value: TColor); virtual;
-    procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
-    procedure ResizeBuffer; dynamic;
     procedure MouseEnter; dynamic;
     procedure MouseLeave; dynamic;
     procedure CreateMouseClass(MouseStateClass: TGuiMouseStateClass); dynamic;
     
-    procedure Resize; override;
-    procedure ReadState(Reader: TReader); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
@@ -62,10 +80,6 @@ type
     procedure DragMouseMoveMiddle(Shift: TShiftState; X, Y: Integer); dynamic;
     procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); dynamic;
 
-    procedure WMEraseBkgnd(var m: TWMEraseBkgnd); message WM_ERASEBKGND;
-    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
-    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
-    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     
@@ -76,7 +90,6 @@ type
     constructor Create(AOwner: TComponent); overload; override;
     constructor Create(AOwner: TComponent; MouseStateClass: TGuiMouseStateClass); reintroduce; overload;
     destructor Destroy; override;
-    procedure Paint; override;
 
     procedure UpdateGuiTimer(Sender: TObject); virtual;
 
@@ -84,11 +97,16 @@ type
     property LineColor: TColor read fLineColor write SetLineColor default clBlack;
     {$IFNDEF FPC}
     property Transparent: Boolean read fTransparent write SetTransparent default False;
-    {$ENDIF}   
+    {$ENDIF}
     property RedrawInterval: Integer read GetRedrawInterval write SetRedrawInterval default 0;
     property ReleaseMouseBtnOnLeave: Boolean read fReleaseMouseBtnOnLeave write fReleaseMouseBtnOnLeave default False;
-  published
+    property OnMouseEnter: TNotifyEvent read fOnMouseEnter write fOnMouseEnter;
+    property OnMouseLeave: TNotifyEvent read fOnMouseLeave write fOnMouseLeave;
+    property OnDragMouseMove: TGuiOnDragMouseMove read fOnDragMouseMove write fOnDragMouseMove;
+  end;
 
+  TGuiBaseControl = class(TCustomGuiBaseControl)
+  published
     property Enabled;
     property Align;
     property Anchors;
@@ -117,11 +135,11 @@ type
     property OnMouseWheelUp;
     property OnResize;
     property OnStartDock;
-    property OnStartDrag; 
-    property OnPaint: TNotifyEvent read fOnPaint write fOnPaint;  
-    property OnMouseEnter: TNotifyEvent read fOnMouseEnter write fOnMouseEnter;
-    property OnMouseLeave: TNotifyEvent read fOnMouseLeave write fOnMouseLeave;
-    property OnDragMouseMove: TGuiOnDragMouseMove read fOnDragMouseMove write fOnDragMouseMove;
+    property OnStartDrag;
+    property OnPaint;
+    property OnMouseEnter;
+    property OnMouseLeave;
+    property OnDragMouseMove;
   end;
 
 implementation
@@ -129,67 +147,61 @@ implementation
 uses
   SysUtils;
 
-constructor TGuiBaseControl.Create(AOwner: TComponent);
+{ TCustomGuiBaseControl }
+
+constructor TBufferedGraphicControl.Create(AOwner: TComponent);
 begin
   inherited;
-
-  fLineWidth   := 1;
-  fLineColor   := clBlack;
-  fTransparent := False;
   fBuffer      := TBitmap.Create;
-
-  fReleaseMouseBtnOnLeave := False;
-  fRedrawTimer            := TTimer.Create(self);
-  fRedrawTimer.Interval   := 0;
-  fRedrawTimer.OnTimer    := UpdateGuiTimer;
-  fTimerMustRedraw        := False;
-
   ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
                    csDoubleClicks, csReplicatable, csOpaque];
-
-  CreateMouseClass(TGuiMouseState);
 end;
 
-
-constructor TGuiBaseControl.Create(AOwner: TComponent; MouseStateClass: TGuiMouseStateClass);
+destructor TBufferedGraphicControl.Destroy;
 begin
-  Create(AOwner);
-
-  CreateMouseClass(MouseStateClass);
+ FreeAndNil(fBuffer);
+ inherited;
 end;
 
-destructor TGuiBaseControl.Destroy;
+procedure TBufferedGraphicControl.DrawParentImage(Dest: TCanvas);
+var
+  SaveIndex: Integer;
+  DC: THandle;
+  Position: TPoint;
 begin
-  fRedrawTimer.Free;
-  fBuffer.Free;
-  if assigned(MouseState) then FreeAndNil(MouseState);
-  inherited;
+  if Parent = nil then Exit;
+  DC := Dest.Handle;
+  SaveIndex := SaveDC(DC);
+  GetViewportOrgEx(DC, Position);
+  SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
+  IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
+  Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
+  Parent.Perform(WM_PAINT, Longint(DC), 0);
+  RestoreDC(DC, SaveIndex);
 end;
 
-procedure TGuiBaseControl.CreateMouseClass(MouseStateClass: TGuiMouseStateClass);
+procedure TBufferedGraphicControl.Loaded;
 begin
-  MouseState := MouseStateClass.Create;
-  with MouseState do
-   begin
-    LeftBtn.ButtonDown   := False;
-    MiddleBtn.ButtonDown := False;
-    RightBtn.ButtonDown  := False;
-    LastEventX := 0;
-    LastEventY := 0;
-   end;
-end;
+ inherited;
+ ResizeBuffer;
+end;
 
-procedure TGuiBaseControl.Paint;
+procedure TBufferedGraphicControl.Paint;
 begin
   with Canvas do
    begin
     CopyMode := cmSrcCopy;
     Draw(0, 0, fBuffer);
-   end;   
+   end;
   if Assigned(fOnPaint) then fOnPaint(Self);
 end;
 
-procedure TGuiBaseControl.ResizeBuffer;
+procedure TBufferedGraphicControl.WMEraseBkgnd(var m: TWMEraseBkgnd);
+begin
+  m.Result := 0;
+end;
+
+procedure TBufferedGraphicControl.ResizeBuffer;
 begin
   if (Width > 0) and (Height > 0) then
    begin
@@ -199,19 +211,74 @@ begin
    end;
 end;
 
-procedure TGuiBaseControl.Resize;
+procedure TBufferedGraphicControl.Resize;
 begin
   inherited Resize;
   ResizeBuffer;
 end;
 
-procedure TGuiBaseControl.ReadState(Reader: TReader);
+procedure TBufferedGraphicControl.CMColorchanged(var Message: TMessage);
 begin
-  inherited ReadState(Reader);
-  ResizeBuffer;
+  RedrawBuffer(True);
 end;
 
-procedure TGuiBaseControl.SetLineColor(Value: TColor);
+procedure TBufferedGraphicControl.CMEnabledChanged(var Message: TMessage);
+begin
+  RedrawBuffer(True);
+end;
+
+procedure TBufferedGraphicControl.CMFontChanged(var Message: TMessage);
+begin
+  RedrawBuffer(True);
+end;
+
+{ TCustomGuiBaseControl }
+
+constructor TCustomGuiBaseControl.Create(AOwner: TComponent);
+begin
+  inherited;
+  fLineWidth   := 1;
+  fLineColor   := clBlack;
+  fTransparent := False;
+
+  fReleaseMouseBtnOnLeave := False;
+  fRedrawTimer            := TTimer.Create(self);
+  fRedrawTimer.Interval   := 0;
+  fRedrawTimer.OnTimer    := UpdateGuiTimer;
+  fTimerMustRedraw        := False;
+
+  CreateMouseClass(TGuiMouseState);
+end;
+
+
+constructor TCustomGuiBaseControl.Create(AOwner: TComponent; MouseStateClass: TGuiMouseStateClass);
+begin
+  Create(AOwner);
+
+  CreateMouseClass(MouseStateClass);
+end;
+
+destructor TCustomGuiBaseControl.Destroy;
+begin
+  FreeAndNil(fRedrawTimer);
+  if assigned(MouseState) then FreeAndNil(MouseState);
+  inherited;
+end;
+
+procedure TCustomGuiBaseControl.CreateMouseClass(MouseStateClass: TGuiMouseStateClass);
+begin
+ MouseState := MouseStateClass.Create;
+ with MouseState do
+  begin
+   LeftBtn.ButtonDown   := False;
+   MiddleBtn.ButtonDown := False;
+   RightBtn.ButtonDown  := False;
+   LastEventX := 0;
+   LastEventY := 0;
+  end;
+end;
+
+procedure TCustomGuiBaseControl.SetLineColor(Value: TColor);
 begin
   if fLineColor <> Value then
    begin
@@ -220,7 +287,7 @@ begin
    end;
 end;
 
-procedure TGuiBaseControl.SetLinewidth(Value: Integer);
+procedure TCustomGuiBaseControl.SetLinewidth(Value: Integer);
 begin
   if (Value > 0) and (Value < 200) and (fLineWidth <> Value) then
   begin
@@ -229,17 +296,17 @@ begin
   end;
 end;
 
-procedure TGuiBaseControl.SetRedrawInterval(Value: Integer);
+procedure TCustomGuiBaseControl.SetRedrawInterval(Value: Integer);
 begin
   fRedrawTimer.Interval := Value;
 end;
 
-function TGuiBaseControl.GetRedrawInterval: Integer;
+function TCustomGuiBaseControl.GetRedrawInterval: Integer;
 begin
   Result := fRedrawTimer.Interval;
 end;
 
-procedure TGuiBaseControl.UpdateGuiTimer(Sender: TObject);
+procedure TCustomGuiBaseControl.UpdateGuiTimer(Sender: TObject);
 begin
   if not fTimerMustRedraw then exit;
   
@@ -251,69 +318,32 @@ begin
 end;
 
 {$IFNDEF FPC}  
-procedure TGuiBaseControl.SetTransparent(Value: Boolean);
+procedure TCustomGuiBaseControl.SetTransparent(Value: Boolean);
 begin
-  if fTransparent<>Value then
+ if fTransparent <> Value then
   begin
-    fTransparent := Value;
-    RedrawBuffer(True);
+   fTransparent := Value;
+   RedrawBuffer(True);
   end;
-end;
-
-procedure TGuiBaseControl.DrawParentImage(Dest: TCanvas);
-var
-  SaveIndex: Integer;
-  DC: THandle;
-  Position: TPoint;
-begin
-   if Parent = nil then Exit;
-   DC := Dest.Handle;
-   SaveIndex := SaveDC(DC);
-   GetViewportOrgEx(DC, Position);
-   SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-   IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-   Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
-   Parent.Perform(WM_PAINT, Longint(DC), 0);
-   RestoreDC(DC, SaveIndex);
 end;
 {$ENDIF}
 
-procedure TGuiBaseControl.WMEraseBkgnd(var m: TWMEraseBkgnd);
-begin
-  m.Result := 0;
-end;
-
-procedure TGuiBaseControl.CMColorchanged(var Message: TMessage);
-begin
-  RedrawBuffer(True);
-end;
-
-procedure TGuiBaseControl.CMEnabledChanged(var Message: TMessage);
-begin
-  RedrawBuffer(True);
-end;
-
-procedure TGuiBaseControl.CMFontChanged(var Message: TMessage);
-begin
-  RedrawBuffer(True);
-end;
-
-procedure TGuiBaseControl.CMMouseEnter(var Message: TMessage);
+procedure TCustomGuiBaseControl.CMMouseEnter(var Message: TMessage);
 begin
   MouseEnter;
 end;
 
-procedure TGuiBaseControl.CMMouseLeave(var Message: TMessage);
+procedure TCustomGuiBaseControl.CMMouseLeave(var Message: TMessage);
 begin
   MouseLeave;
 end;
 
-procedure TGuiBaseControl.MouseEnter;
+procedure TCustomGuiBaseControl.MouseEnter;
 begin
   if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
 end;
 
-procedure TGuiBaseControl.MouseLeave;
+procedure TCustomGuiBaseControl.MouseLeave;
 begin
   if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
   if fReleaseMouseBtnOnLeave then
@@ -324,7 +354,7 @@ begin
   end;
 end;
 
-procedure TGuiBaseControl.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiBaseControl.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if Enabled then
   begin
@@ -359,7 +389,7 @@ begin
 end;
 
 
-procedure TGuiBaseControl.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiBaseControl.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if Enabled then
   begin
@@ -393,23 +423,23 @@ begin
   end;
 end;
 
-procedure TGuiBaseControl.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiBaseControl.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
 begin
   if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbLeft, Shift, X, Y);
 end;
 
-procedure TGuiBaseControl.DragMouseMoveMiddle(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiBaseControl.DragMouseMoveMiddle(Shift: TShiftState; X, Y: Integer);
 begin
   if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbMiddle, Shift, X, Y);
 end;
 
-procedure TGuiBaseControl.DragMouseMoveRight(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiBaseControl.DragMouseMoveRight(Shift: TShiftState; X, Y: Integer);
 begin
   if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbRight, Shift, X, Y);
 end;
 
 
-procedure TGuiBaseControl.MouseMove(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiBaseControl.MouseMove(Shift: TShiftState; X, Y: Integer);
 begin
   if Enabled then
   begin

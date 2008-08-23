@@ -12,7 +12,7 @@ type
   TGuiNormalizationType = (ntNone, ntPerChannel, ntOverallChannels);
   TGuiWaveDrawMode = (wdmSolid, wdmPoints, wdmOutline, wdmSimple);
 
-  TGuiStaticWaveform = class(TGuiBaseControl)
+  TCustomGuiStaticWaveform = class(TCustomGuiBaseControl)
   private
     fNormalizationType    : TGuiNormalizationType;
     fNormalizationFactors : TAVDSingleDynArray;
@@ -46,8 +46,8 @@ type
     function  GetMaxAmp(Channel: Integer): single;
   public
     constructor Create(AOwner: TComponent); override;
-    destructor  Destroy; override;
-    procedure   RedrawBuffer(doBufferFlip: Boolean); override;
+    destructor Destroy; override;
+    procedure RedrawBuffer(doBufferFlip: Boolean); override;
 
     procedure SetWaveForm(NewWaveData: TAVDSingleDynArray;  DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False); overload;
     procedure SetWaveForm(NewWaveData: TAVDArrayOfSingleDynArray; DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False);overload;
@@ -56,12 +56,6 @@ type
     property Wavedata: TAVDArrayOfSingleDynArray read fWaveData;
     property WaveLength: Integer read GetWaveLength write SetWaveLength;
     property WaveChannels: Integer read GetWaveChannels write SetWaveChannels;
-  published
-    property Transparent;
-    property LineWidth;
-    property LineColor; 
-    property Color;
-    
     property DisplayChannels: Integer read fDisplayChannels write SetDisplayChannels default 2;
     property WaveVPadding: Integer read fWaveVPadding write SetWaveVPadding default 3;
 
@@ -72,11 +66,59 @@ type
     property WaveDrawMode: TGuiWaveDrawMode read fWaveDrawMode write SetWaveDrawMode default wdmSolid;
   end;
 
+  TGuiStaticWaveform = class(TCustomGuiStaticWaveform)
+  published
+    property Align;
+    property Anchors;
+    property Color;
+    property Constraints;
+    property DisplayChannels;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
+    property Enabled;
+    property LineColor;
+    property LineWidth;
+    property MedianColor;
+    property MedianLineWidth;
+    property MedianVisible;
+    property NormalizationType;
+    property PopupMenu;
+    property ShowHint;
+    property Transparent;
+    property Visible;
+    property WaveDrawMode;
+    property WaveVPadding;
+
+    property OnCanResize;
+    property OnClick;
+    property OnConstrainedResize;
+    property OnContextPopup;
+    property OnDblClick;
+    property OnDragDrop;
+    property OnDragOver;
+    property OnEndDock;
+    property OnEndDrag;
+    property OnMouseDown;
+    property OnMouseMove;
+    property OnMouseUp;
+    property OnMouseWheel;
+    property OnMouseWheelDown;
+    property OnMouseWheelUp;
+    property OnResize;
+    property OnStartDock;
+    property OnStartDrag;
+    property OnPaint;
+    property OnMouseEnter;
+    property OnMouseLeave;
+    property OnDragMouseMove;
+  end;
+
 implementation
 
 uses Math;
 
-constructor TGuiStaticWaveform.Create(AOwner: TComponent);
+constructor TCustomGuiStaticWaveform.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   fNormalizationType := ntNone;
@@ -92,20 +134,20 @@ begin
   ClearWaveForm;
 end;
 
-destructor TGuiStaticWaveform.Destroy;
+destructor TCustomGuiStaticWaveform.Destroy;
 begin
   ClearWaveForm;
   inherited;
 end;
 
-procedure TGuiStaticWaveform.ClearWaveForm(DoRedrawBuffer, DoFlipBuffer: Boolean);
+procedure TCustomGuiStaticWaveform.ClearWaveForm(DoRedrawBuffer, DoFlipBuffer: Boolean);
 begin
   SetLength(fWaveData, 0, 0);
 
   if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
 end;
 
-function TGuiStaticWaveform.GetWaveLength: Integer;
+function TCustomGuiStaticWaveform.GetWaveLength: Integer;
 var
   i: Integer;
 begin
@@ -114,12 +156,12 @@ begin
    do result := Max(result, Length(fWavedata[i]));
 end;
 
-function TGuiStaticWaveform.GetWaveChannels: Integer;
+function TCustomGuiStaticWaveform.GetWaveChannels: Integer;
 begin
   result := Length(fWavedata);
 end;
 
-procedure TGuiStaticWaveform.SetDisplayChannels(Value: Integer);
+procedure TCustomGuiStaticWaveform.SetDisplayChannels(Value: Integer);
 begin
   if Value < 1 then Value := 1;
   if fDisplayChannels <> Value then
@@ -130,7 +172,7 @@ begin
 end;
 
 
-procedure TGuiStaticWaveform.SetMedianVisible(Value: Boolean);
+procedure TCustomGuiStaticWaveform.SetMedianVisible(Value: Boolean);
 begin
   if fMedianVisible <> Value then
   begin
@@ -139,7 +181,7 @@ begin
   end;
 end;
 
-procedure TGuiStaticWaveform.SetMedianColor(Value: TColor);
+procedure TCustomGuiStaticWaveform.SetMedianColor(Value: TColor);
 begin
   if fMedianColor <> Value then
   begin
@@ -148,7 +190,7 @@ begin
   end;
 end;
 
-procedure TGuiStaticWaveform.SetMedianLineWidth(Value: Integer);
+procedure TCustomGuiStaticWaveform.SetMedianLineWidth(Value: Integer);
 begin
   if fMedianLineWidth <> Value then
   begin
@@ -157,7 +199,7 @@ begin
   end;
 end;
 
-procedure TGuiStaticWaveform.SetWaveVPadding(Value: Integer);
+procedure TCustomGuiStaticWaveform.SetWaveVPadding(Value: Integer);
 begin
   if fWaveVPadding <> Value then
   begin
@@ -166,7 +208,7 @@ begin
   end;
 end;
 
-procedure TGuiStaticWaveform.SetNormalizationType(Value: TGuiNormalizationType);
+procedure TCustomGuiStaticWaveform.SetNormalizationType(Value: TGuiNormalizationType);
 begin
   if fNormalizationType <> Value then
   begin
@@ -175,7 +217,7 @@ begin
   end;
 end;
 
-procedure TGuiStaticWaveform.SetWaveChannels(const Value: Integer);
+procedure TCustomGuiStaticWaveform.SetWaveChannels(const Value: Integer);
 begin
  if Value <> WaveChannels then
   begin
@@ -183,7 +225,7 @@ begin
   end;
 end;
 
-procedure TGuiStaticWaveform.SetWaveDrawMode(Value: TGuiWaveDrawMode);
+procedure TCustomGuiStaticWaveform.SetWaveDrawMode(Value: TGuiWaveDrawMode);
 begin
   if fWaveDrawMode <> Value then
    begin
@@ -192,7 +234,7 @@ begin
    end;
 end;
 
-procedure TGuiStaticWaveform.ResizeBuffer;
+procedure TCustomGuiStaticWaveform.ResizeBuffer;
 begin
   fWaveHalfHeight := Height div (2 * fDisplayChannels) - fWaveVPadding;
   SetLength(fNormalizationFactors, fDisplayChannels);
@@ -200,7 +242,7 @@ begin
   inherited;
 end;
 
-procedure TGuiStaticWaveform.SetWaveForm(NewWaveData: TAVDSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
+procedure TCustomGuiStaticWaveform.SetWaveForm(NewWaveData: TAVDSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
 begin
   ClearWaveForm;
   SetLength(fWaveData, 1);
@@ -210,7 +252,7 @@ begin
 end;
 
 
-procedure TGuiStaticWaveform.SetWaveForm(NewWaveData: TAVDArrayOfSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
+procedure TCustomGuiStaticWaveform.SetWaveForm(NewWaveData: TAVDArrayOfSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
 var
   i, len: Integer;
 begin
@@ -231,7 +273,7 @@ begin
     end;
 end;
 
-procedure TGuiStaticWaveform.SetWaveLength(const Value: Integer);
+procedure TCustomGuiStaticWaveform.SetWaveLength(const Value: Integer);
 var
   ch : Integer;
 begin
@@ -242,16 +284,16 @@ begin
   end;
 end;
 
-function TGuiStaticWaveform.GetMaxAmp(Channel: Integer):single;
+function TCustomGuiStaticWaveform.GetMaxAmp(Channel: Integer):single;
 var
   i: Integer;
 begin
   Result := 0;
-  for i := 0 to length(fWaveData[Channel]) - 1
+  for i := 0 to Length(fWaveData[Channel]) - 1
    do Result := max(Result, abs(fWaveData[Channel][i]));
 end;
 
-procedure TGuiStaticWaveform.DrawMedian(YOffset: Integer);
+procedure TCustomGuiStaticWaveform.DrawMedian(YOffset: Integer);
 begin
   with fBuffer.Canvas do
    begin
@@ -263,7 +305,7 @@ begin
    end;
 end;
 
-procedure TGuiStaticWaveform.DrawSamples(var OldMaxPos, OldMinPos: TPoint; NewMax, NewMin: TPoint);
+procedure TCustomGuiStaticWaveform.DrawSamples(var OldMaxPos, OldMinPos: TPoint; NewMax, NewMin: TPoint);
 var
   LastCenter: Integer;
 begin
@@ -316,7 +358,7 @@ begin
   OldMinPos := NewMin;
 end;
 
-procedure TGuiStaticWaveform.DrawSingleWave(YOffset, HalfHeight, Channel: Integer);
+procedure TCustomGuiStaticWaveform.DrawSingleWave(YOffset, HalfHeight, Channel: Integer);
 var
   SampleWidth, COffset  : Single;
   MinSample, MaxSample  : Single;
@@ -372,7 +414,7 @@ begin
   end;
 end;
 
-procedure TGuiStaticWaveform.DrawGraphs;
+procedure TCustomGuiStaticWaveform.DrawGraphs;
 var
   YOffset, i: Integer;
 begin
@@ -388,7 +430,7 @@ begin
     end;
 end;
 
-procedure TGuiStaticWaveform.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiStaticWaveform.RedrawBuffer(doBufferFlip: Boolean);
 var
   i           : Integer;
   MaxAmp, Amp : Single;
@@ -397,16 +439,18 @@ begin
    begin
     fBuffer.Canvas.Lock;
     fBuffer.Canvas.Brush.Color := Self.Color;
- 
-    {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
-        fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
+
+    {$IFNDEF FPC}
+    if fTransparent
+     then DrawParentImage(fBuffer.Canvas)
+     else {$ENDIF} fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
 
     MaxAmp := 0;
     if fDisplayChannels < 1 then exit;
     for i := 0 to fDisplayChannels - 1 do
-      if i >= length(fWaveData)
+      if i >= Length(fWaveData)
        then fNormalizationFactors[i] := 0 else
-      if length(fWaveData[i]) < 1 then fNormalizationFactors[i] := 0 else
+      if Length(fWaveData[i]) < 1 then fNormalizationFactors[i] := 0 else
        begin
         Amp := GetMaxAmp(i);
         MaxAmp := Max(MaxAmp, Amp);
@@ -418,7 +462,7 @@ begin
     if fNormalizationType = ntNone then
      begin
       for i := 0 to fDisplayChannels - 1 do
-        if fNormalizationFactors[i]>0 then
+        if fNormalizationFactors[i] > 0 then
           fNormalizationFactors[i] := 1;
 
      end
