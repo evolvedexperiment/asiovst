@@ -1,9 +1,9 @@
 object KbDemoForm: TKbDemoForm
   Left = 227
   Top = 126
-  Width = 794
-  Height = 328
   Caption = 'TGuiMidiKeys Demonstration'
+  ClientHeight = 301
+  ClientWidth = 786
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,11 +16,10 @@ object KbDemoForm: TKbDemoForm
   TextHeight = 13
   object MainKb: TGuiMidiKeys
     Left = 0
-    Top = 192
+    Top = 199
     Width = 786
     Height = 102
     Align = alBottom
-    ReleaseMouseBtnOnLeave = False
     KeyDownMode = kdmFlat
     Height3d = 0.200000002980232200
     BlackKeyHeight = 0.629999995231628400
@@ -29,13 +28,12 @@ object KbDemoForm: TKbDemoForm
         DisplayName = 'TestZone'
         Tag = 0
       end>
-    ShowKeyZones = True
-    KeyZoneHeight = 10
     OnZoneSelectionChanged = MainKbZoneSelectionChanged
     OnStartZoneBarDragging = MainKbStartZoneBarDragging
     OnMoveZoneBarDragging = MainKbMoveZoneBarDragging
+    ExplicitTop = 192
   end
-  object Panel1: TPanel
+  object PnRemoteControl: TPanel
     Left = 8
     Top = 8
     Width = 353
@@ -50,17 +48,15 @@ object KbDemoForm: TKbDemoForm
       Width = 336
       Height = 41
       Anchors = [akLeft, akTop, akRight, akBottom]
-      ReleaseMouseBtnOnLeave = False
       KeyDownMode = kdmFlat
       Height3d = 0.200000002980232200
       BlackKeyHeight = 0.629999995231628400
       KeyZones = <>
       ShowKeyZones = False
-      KeyZoneHeight = 10
       OnNoteOn = RemoteKeyboardNoteOn
       OnNoteOff = RemoteKeyboardNoteOff
     end
-    object Label1: TLabel
+    object LbRemoteCOntrol: TLabel
       Left = 8
       Top = 8
       Width = 337
@@ -75,7 +71,7 @@ object KbDemoForm: TKbDemoForm
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object Label2: TLabel
+    object LbRemoteControlInfo: TLabel
       Left = 8
       Top = 72
       Width = 337
@@ -88,13 +84,13 @@ object KbDemoForm: TKbDemoForm
       WordWrap = True
     end
   end
-  object Panel2: TPanel
+  object PnColorizeKeys: TPanel
     Left = 368
     Top = 8
     Width = 129
     Height = 177
     TabOrder = 1
-    object Bevel1: TBevel
+    object Bevel: TBevel
       Left = 0
       Top = 128
       Width = 129
@@ -153,13 +149,13 @@ object KbDemoForm: TKbDemoForm
       OnClick = ColorizeBlackBtnClick
     end
   end
-  object Panel3: TPanel
+  object PnZoneOptions: TPanel
     Left = 8
     Top = 120
     Width = 353
     Height = 65
     TabOrder = 2
-    object Label3: TLabel
+    object LbZoneOptions: TLabel
       Left = 8
       Top = 8
       Width = 81

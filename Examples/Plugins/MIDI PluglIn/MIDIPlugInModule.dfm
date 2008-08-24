@@ -13,18 +13,19 @@ object MIDIModule: TMIDIModule
   Programs = <>
   ParameterProperties = <
     item
-      Min = -24.000000000000000000
-      Max = 24.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Transpose'
-      Units = 'semitone'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
+      DisplayName = 'Transpose'
       LargeStepInteger = 0
+      Max = 24.000000000000000000
+      MaxInteger = 0
+      Min = -24.000000000000000000
+      ShortLabel = 'Transpo'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      Units = 'semitone'
       VSTModule = Owner
-      OnParameterChange = MIDIModuleParameterProperties0ParameterChange
+      OnParameterChange = ParamTransposeChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnProcessMidi = VSTModuleProcessMidi

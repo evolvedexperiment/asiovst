@@ -1,7 +1,7 @@
 object FmVSTEditor: TFmVSTEditor
   Left = 281
   Top = 224
-  BorderStyle = bsToolWindow
+  BorderStyle = bsDialog
   Caption = 'VST Plugin Editor'
   ClientHeight = 228
   ClientWidth = 329
@@ -144,17 +144,17 @@ object FmVSTEditor: TFmVSTEditor
     Top = 75
   end
   object ASIOHost: TASIOHost
-    CanDos = []
-    PreventClipping = pcAnalog
-    ConvertOptimizations = [coSSE, co3DNow]
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
-    SampleRate = 44100.000000000000000000
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    OnReset = ASIOHostReset
-    OnLatencyChanged = ASIOHostReset
+    CanDos = []
+    ConvertOptimizations = [coSSE, co3DNow]
+    PreventClipping = pcAnalog
+    SampleRate = 44100.000000000000000000
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch32
+    OnLatencyChanged = ASIOHostReset
+    OnReset = ASIOHostReset
     Left = 124
     Top = 75
   end

@@ -27,111 +27,112 @@ object VSTDecimator: TVSTDecimator
     end>
   ParameterProperties = <
     item
-      Min = 20.000000000000000000
-      Max = 44100.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Samplerate'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      StepFloat = 100.000000000000000000
-      SmallStepFloat = 100.000000000000000000
       LargeStepFloat = 1000.000000000000000000
-      MinInteger = 20
+      LargeStepInteger = 1000
+      Max = 44100.000000000000000000
       MaxInteger = 44100
-      StepInteger = 100
-      LargeStepInteger = 1000
-      ShortLabel = 'rate'
-      VSTModule = Owner
-    end
-    item
-      Min = 1.000000000000000000
-      Max = 24.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Bits'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 2.000000000000000000
-      MinInteger = 1
-      MaxInteger = 24
-      LargeStepInteger = 2
-      ShortLabel = 'bits'
-      VSTModule = Owner
-    end
-    item
       Min = 20.000000000000000000
-      Max = 20000.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Cutoff Frequency'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
+      MinInteger = 20
+      ShortLabel = 'rate'
+      SmallStepFloat = 100.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 100.000000000000000000
-      SmallStepFloat = 100.000000000000000000
-      LargeStepFloat = 1000.000000000000000000
-      MinInteger = 20
-      MaxInteger = 20000
       StepInteger = 100
-      LargeStepInteger = 1000
-      ShortLabel = 'cut'
+      Units = 'Hz'
       VSTModule = Owner
     end
     item
-      Min = 0.100000001490116100
-      Max = 8.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Resonance'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 8
-      StepInteger = 0
-      LargeStepInteger = 0
-      ShortLabel = 'res'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'FilterType'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      Flags = [kVstParameterIsSwitch]
-      MaxInteger = 0
-      StepInteger = 0
-      LargeStepInteger = 0
-      VSTModule = Owner
-    end
-    item
-      Max = 100.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Wet/Dry Mix'
-      Units = '&'
-      CurveFactor = 1.000000000000000000
+      DisplayName = 'Bits'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 24.000000000000000000
+      MaxInteger = 24
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ShortLabel = 'bits'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Cutoff Frequency'
+      LargeStepFloat = 1000.000000000000000000
+      LargeStepInteger = 1000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ShortLabel = 'cut'
+      SmallStepFloat = 100.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 100.000000000000000000
+      StepInteger = 100
+      Units = 'Hz'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Resonance'
+      LargeStepInteger = 0
+      Max = 8.000000000000000000
+      MaxInteger = 8
+      Min = 0.100000001490116100
+      ShortLabel = 'res'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'FilterType'
+      Flags = [kVstParameterIsSwitch]
+      LargeStepInteger = 0
+      Max = 1.000000000000000000
+      MaxInteger = 0
+      ShortLabel = 'FilterT'
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Wet/Dry Mix'
       LargeStepFloat = 10.000000000000000000
+      Max = 100.000000000000000000
       MaxInteger = 0
       ShortLabel = 'mix'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '&'
       VSTModule = Owner
     end
     item
-      Min = -24.000000000000000000
-      Max = 6.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Output Volume'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Output Volume'
+      LargeStepFloat = 3.000000000000000000
+      LargeStepInteger = 3
+      Max = 6.000000000000000000
+      MaxInteger = 6
+      Min = -24.000000000000000000
+      MinInteger = -24
+      ShortLabel = 'vol'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 3.000000000000000000
-      MinInteger = -24
-      MaxInteger = 6
-      LargeStepInteger = 3
-      ShortLabel = 'vol'
+      Units = 'dB'
       VSTModule = Owner
     end>
   OnEditOpen = VSTModuleEditOpen

@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages, XPMan,
   {$ENDIF}SysUtils, Classes, Graphics, Controls, Forms, ComCtrls, ExtCtrls,
-  StdCtrls, DAVDCommon, DVSTHost, DASIOHost, ToolWin;
+  StdCtrls, DAVDCommon, DVSTHost, DASIOHost, ToolWin, Dialogs;
 
 type
   TFmVSTEditor = class(TForm)
@@ -80,6 +80,17 @@ begin
    if ParamCount > 0
     then DLLFileName := ParamStr(1)
     else DLLFileName := 'SimpleFilter.DLL';
+   if not FileExists(DLLFileName) then
+    with TOpenDialog.Create(Self) do
+     try
+      DefaultExt := 'dll';
+      Filter := 'VST Plugin (*.dll)|*.dll';
+      Options := Options + [ofFileMustExist];
+      if Execute then DLLFileName := FileName;
+     finally
+      Free;
+     end;
+
    Active := True;
    Idle;
    ShowEdit(TForm(VSTPanel));

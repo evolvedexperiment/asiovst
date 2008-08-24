@@ -24,4 +24,4 @@ exports Main name 'main';
 exports Main name 'VSTPluginMain';
 
 begin
-end.
+end.                                                    

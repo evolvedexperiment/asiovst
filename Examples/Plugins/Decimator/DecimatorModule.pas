@@ -136,10 +136,10 @@ begin
   3 : begin
        fResonance := Value * 0.1;
        if fResonance > 0.8 then fResonance := 0.8;
-       fFC := fResonance (1 + 1 / (1 - fCutoffFreqNorm));
+       fFC := fResonance * (1 + 1 / (1 - fCutoffFreqNorm));
        if Assigned(EditorForm) then
         with TVSTGUI(EditorForm) do
-         if ShRes.Top<>Round((1 - 1.25 * fResonance) * ShResBg.Height + ShResBg.Top) then
+         if ShRes.Top <> Round((1 - 1.25 * fResonance) * ShResBg.Height + ShResBg.Top) then
           begin
            ShRes.Top := Round((1 - 1.25 * fResonance) * ShResBg.Height + ShResBg.Top);
            ShRes.Height := ShResBg.Height - ShRes.Top + ShResBg.Top;
