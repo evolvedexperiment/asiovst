@@ -1,6 +1,8 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library EnhancedGate;
 
+{$R 'Knob3D.res' 'Knob3D.rc'}
+
 uses
   FastMM4,
   Forms,

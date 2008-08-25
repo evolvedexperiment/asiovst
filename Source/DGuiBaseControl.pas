@@ -2,6 +2,8 @@ unit DGuiBaseControl;
 
 interface
 
+{$I ASIOVST.INC}
+
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
   Messages, Graphics, Classes, Controls, ExtCtrls;
@@ -55,12 +57,6 @@ type
   protected
     fLineColor              : TColor;
     fLineWidth              : Integer;
-    fRedrawTimer            : TTimer;
-    fTimerMustRedraw        : Boolean;
-    fReleaseMouseBtnOnLeave : Boolean;
-    fOnMouseLeave           : TNotifyEvent;
-    fOnMouseEnter           : TNotifyEvent;
-    fOnDragMouseMove        : TGuiOnDragMouseMove;
     {$IFNDEF FPC}
     fTransparent            : Boolean;
     procedure SetTransparent(Value: Boolean); virtual;
@@ -68,10 +64,27 @@ type
 
     procedure SetLineWidth(Value: Integer); virtual;
     procedure SetLineColor(Value: TColor); virtual;
+  public
+    constructor Create(AOwner: TComponent); overload; override;
+    property LineWidth: Integer read fLineWidth write SetLineWidth default 1;
+    property LineColor: TColor read fLineColor write SetLineColor default clBlack;
+    {$IFNDEF FPC}
+    property Transparent: Boolean read fTransparent write SetTransparent default False;
+    {$ENDIF}
+  end;
+
+  TCustomGuiBaseMouseControl = class(TCustomGuiBaseControl)
+  protected
+    fRedrawTimer            : TTimer;
+    fTimerMustRedraw        : Boolean;
+    fReleaseMouseBtnOnLeave : Boolean;
+    fOnMouseLeave           : TNotifyEvent;
+    fOnMouseEnter           : TNotifyEvent;
+    fOnDragMouseMove        : TGuiOnDragMouseMove;
     procedure MouseEnter; dynamic;
     procedure MouseLeave; dynamic;
     procedure CreateMouseClass(MouseStateClass: TGuiMouseStateClass); dynamic;
-    
+
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
@@ -82,7 +95,7 @@ type
 
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
-    
+
     procedure SetRedrawInterval(Value: Integer); virtual;
     function  GetRedrawInterval: Integer; virtual;
   public
@@ -93,11 +106,6 @@ type
 
     procedure UpdateGuiTimer(Sender: TObject); virtual;
 
-    property LineWidth: Integer read fLineWidth write SetLineWidth default 1;
-    property LineColor: TColor read fLineColor write SetLineColor default clBlack;
-    {$IFNDEF FPC}
-    property Transparent: Boolean read fTransparent write SetTransparent default False;
-    {$ENDIF}
     property RedrawInterval: Integer read GetRedrawInterval write SetRedrawInterval default 0;
     property ReleaseMouseBtnOnLeave: Boolean read fReleaseMouseBtnOnLeave write fReleaseMouseBtnOnLeave default False;
     property OnMouseEnter: TNotifyEvent read fOnMouseEnter write fOnMouseEnter;
@@ -105,7 +113,7 @@ type
     property OnDragMouseMove: TGuiOnDragMouseMove read fOnDragMouseMove write fOnDragMouseMove;
   end;
 
-  TGuiBaseControl = class(TCustomGuiBaseControl)
+  TGuiBaseControl = class(TCustomGuiBaseMouseControl)
   published
     property Enabled;
     property Align;
@@ -240,43 +248,7 @@ begin
   fLineWidth   := 1;
   fLineColor   := clBlack;
   fTransparent := False;
-
-  fReleaseMouseBtnOnLeave := False;
-  fRedrawTimer            := TTimer.Create(self);
-  fRedrawTimer.Interval   := 0;
-  fRedrawTimer.OnTimer    := UpdateGuiTimer;
-  fTimerMustRedraw        := False;
-
-  CreateMouseClass(TGuiMouseState);
 end;
-
-
-constructor TCustomGuiBaseControl.Create(AOwner: TComponent; MouseStateClass: TGuiMouseStateClass);
-begin
-  Create(AOwner);
-
-  CreateMouseClass(MouseStateClass);
-end;
-
-destructor TCustomGuiBaseControl.Destroy;
-begin
-  FreeAndNil(fRedrawTimer);
-  if assigned(MouseState) then FreeAndNil(MouseState);
-  inherited;
-end;
-
-procedure TCustomGuiBaseControl.CreateMouseClass(MouseStateClass: TGuiMouseStateClass);
-begin
- MouseState := MouseStateClass.Create;
- with MouseState do
-  begin
-   LeftBtn.ButtonDown   := False;
-   MiddleBtn.ButtonDown := False;
-   RightBtn.ButtonDown  := False;
-   LastEventX := 0;
-   LastEventY := 0;
-  end;
-end;
 
 procedure TCustomGuiBaseControl.SetLineColor(Value: TColor);
 begin
@@ -296,28 +268,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiBaseControl.SetRedrawInterval(Value: Integer);
-begin
-  fRedrawTimer.Interval := Value;
-end;
-
-function TCustomGuiBaseControl.GetRedrawInterval: Integer;
-begin
-  Result := fRedrawTimer.Interval;
-end;
-
-procedure TCustomGuiBaseControl.UpdateGuiTimer(Sender: TObject);
-begin
-  if not fTimerMustRedraw then exit;
-  
-  fRedrawTimer.Enabled := False;
-  RedrawBuffer(True);
-  fRedrawTimer.Enabled := True;
-
-  fTimerMustRedraw := False;
-end;
-
-{$IFNDEF FPC}  
+{$IFNDEF FPC}
 procedure TCustomGuiBaseControl.SetTransparent(Value: Boolean);
 begin
  if fTransparent <> Value then
@@ -328,33 +279,83 @@ begin
 end;
 {$ENDIF}
 
-procedure TCustomGuiBaseControl.CMMouseEnter(var Message: TMessage);
+{ TCustomGuiBaseMouseControl }
+
+constructor TCustomGuiBaseMouseControl.Create(AOwner: TComponent);
+begin
+  inherited;
+  fReleaseMouseBtnOnLeave := False;
+  fRedrawTimer            := TTimer.Create(self);
+  fRedrawTimer.Interval   := 0;
+  fRedrawTimer.OnTimer    := UpdateGuiTimer;
+  fTimerMustRedraw        := False;
+
+  CreateMouseClass(TGuiMouseState);
+end;
+
+constructor TCustomGuiBaseMouseControl.Create(AOwner: TComponent;
+  MouseStateClass: TGuiMouseStateClass);
+begin
+  Create(AOwner);
+
+  CreateMouseClass(MouseStateClass);
+end;
+
+destructor TCustomGuiBaseMouseControl.Destroy;
+begin
+  FreeAndNil(fRedrawTimer);
+  if assigned(MouseState) then FreeAndNil(MouseState);
+  inherited;
+end;
+
+procedure TCustomGuiBaseMouseControl.CreateMouseClass(MouseStateClass: TGuiMouseStateClass);
+begin
+ MouseState := MouseStateClass.Create;
+ with MouseState do
+  begin
+   LeftBtn.ButtonDown   := False;
+   MiddleBtn.ButtonDown := False;
+   RightBtn.ButtonDown  := False;
+   LastEventX := 0;
+   LastEventY := 0;
+  end;
+end;
+
+procedure TCustomGuiBaseMouseControl.CMMouseEnter(var Message: TMessage);
 begin
   MouseEnter;
 end;
 
-procedure TCustomGuiBaseControl.CMMouseLeave(var Message: TMessage);
+procedure TCustomGuiBaseMouseControl.CMMouseLeave(var Message: TMessage);
 begin
   MouseLeave;
 end;
 
-procedure TCustomGuiBaseControl.MouseEnter;
+procedure TCustomGuiBaseMouseControl.DragMouseMoveLeft(Shift: TShiftState; X,
+  Y: Integer);
 begin
-  if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
+  if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbLeft, Shift, X, Y);
 end;
 
-procedure TCustomGuiBaseControl.MouseLeave;
+procedure TCustomGuiBaseMouseControl.DragMouseMoveMiddle(Shift: TShiftState; X,
+  Y: Integer);
 begin
-  if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
-  if fReleaseMouseBtnOnLeave then
-  begin
-    with MouseState.LeftBtn   do if ButtonDown then MouseUp(mbLeft, ShiftState, EventX, EventY);
-    with MouseState.MiddleBtn do if ButtonDown then MouseUp(mbLeft, ShiftState, EventX, EventY);
-    with MouseState.RightBtn  do if ButtonDown then MouseUp(mbLeft, ShiftState, EventX, EventY);
-  end;
+  if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbMiddle, Shift, X, Y);
 end;
 
-procedure TCustomGuiBaseControl.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiBaseMouseControl.DragMouseMoveRight(Shift: TShiftState; X,
+  Y: Integer);
+begin
+  if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbRight, Shift, X, Y);
+end;
+
+function TCustomGuiBaseMouseControl.GetRedrawInterval: Integer;
+begin
+  Result := fRedrawTimer.Interval;
+end;
+
+procedure TCustomGuiBaseMouseControl.MouseDown(Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
 begin
   if Enabled then
   begin
@@ -388,8 +389,40 @@ begin
   end;
 end;
 
+procedure TCustomGuiBaseMouseControl.MouseEnter;
+begin
+ if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
+end;
 
-procedure TCustomGuiBaseControl.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiBaseMouseControl.MouseLeave;
+begin
+  if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
+  if fReleaseMouseBtnOnLeave then
+  begin
+    with MouseState.LeftBtn   do if ButtonDown then MouseUp(mbLeft, ShiftState, EventX, EventY);
+    with MouseState.MiddleBtn do if ButtonDown then MouseUp(mbLeft, ShiftState, EventX, EventY);
+    with MouseState.RightBtn  do if ButtonDown then MouseUp(mbLeft, ShiftState, EventX, EventY);
+  end;
+end;
+
+procedure TCustomGuiBaseMouseControl.MouseMove(Shift: TShiftState; X,
+  Y: Integer);
+begin
+  if Enabled then
+  begin
+    inherited;
+
+    with MouseState.LeftBtn   do if ButtonDown then DragMouseMoveLeft(Shift, X, Y);
+    with MouseState.MiddleBtn do if ButtonDown then DragMouseMoveMiddle(Shift, X, Y);
+    with MouseState.RightBtn  do if ButtonDown then DragMouseMoveRight(Shift, X, Y);
+
+    MouseState.LastEventX := X;
+    MouseState.LastEventY := Y;
+  end;
+end;
+
+procedure TCustomGuiBaseMouseControl.MouseUp(Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
 begin
   if Enabled then
   begin
@@ -423,35 +456,20 @@ begin
   end;
 end;
 
-procedure TCustomGuiBaseControl.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiBaseMouseControl.SetRedrawInterval(Value: Integer);
 begin
-  if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbLeft, Shift, X, Y);
+  fRedrawTimer.Interval := Value;
 end;
 
-procedure TCustomGuiBaseControl.DragMouseMoveMiddle(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiBaseMouseControl.UpdateGuiTimer(Sender: TObject);
 begin
-  if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbMiddle, Shift, X, Y);
-end;
+  if not fTimerMustRedraw then exit;
+  
+  fRedrawTimer.Enabled := False;
+  RedrawBuffer(True);
+  fRedrawTimer.Enabled := True;
 
-procedure TCustomGuiBaseControl.DragMouseMoveRight(Shift: TShiftState; X, Y: Integer);
-begin
-  if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbRight, Shift, X, Y);
-end;
-
-
-procedure TCustomGuiBaseControl.MouseMove(Shift: TShiftState; X, Y: Integer);
-begin
-  if Enabled then
-  begin
-    inherited;
-
-    with MouseState.LeftBtn   do if ButtonDown then DragMouseMoveLeft(Shift, X, Y);
-    with MouseState.MiddleBtn do if ButtonDown then DragMouseMoveMiddle(Shift, X, Y);
-    with MouseState.RightBtn  do if ButtonDown then DragMouseMoveRight(Shift, X, Y);
-
-    MouseState.LastEventX := X;
-    MouseState.LastEventY := Y;
-  end;
+  fTimerMustRedraw := False;
 end;
 
 end.

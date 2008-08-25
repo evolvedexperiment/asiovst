@@ -121,11 +121,36 @@ implementation
 
 {$R *.DFM}
 
-uses Math, MBCDM;
+uses
+  Math, MBCDM;
 
 procedure TFmMBC.FormCreate(Sender: TObject);
+var
+  RS  : TResourceStream;
 begin
  fBackground := TBitmap.Create;
+ RS := TResourceStream.Create(hInstance, 'SlimSlowKnob', 'BMP');
+ try
+  DlLowThreshold.DialBitmap.LoadFromStream(RS); RS.Position := 0;
+  DlLowRatio.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
+  DlLowAttack.DialBitmap.LoadFromStream(RS);    RS.Position := 0;
+  DlLowRelease.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
+  DlLowGain.DialBitmap.LoadFromStream(RS);      RS.Position := 0;
+
+  DlMidThreshold.DialBitmap.LoadFromStream(RS); RS.Position := 0;
+  DlMidRatio.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
+  DlMidAttack.DialBitmap.LoadFromStream(RS);    RS.Position := 0;
+  DlMidRelease.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
+  DlMidGain.DialBitmap.LoadFromStream(RS);      RS.Position := 0;
+
+  DlHighThreshold.DialBitmap.LoadFromStream(RS); RS.Position := 0;
+  DlHighRatio.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
+  DlHighAttack.DialBitmap.LoadFromStream(RS);    RS.Position := 0;
+  DlHighRelease.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
+  DlHighGain.DialBitmap.LoadFromStream(RS);      RS.Position := 0;
+ finally
+  RS.Free;
+ end;
 end;
 
 procedure TFmMBC.FormDestroy(Sender: TObject);
@@ -139,7 +164,8 @@ begin
 end;
 
 procedure TFmMBC.FormResize(Sender: TObject);
-var x, y : Integer;
+var
+  x, y : Integer;
 begin
  with fBackground do
   begin

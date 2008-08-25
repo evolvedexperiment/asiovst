@@ -1,6 +1,8 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library MultibandCompressor;
 
+{$R 'SlimSlowKnob.res' 'SlimSlowKnob.rc'}
+
 uses
   Forms,
   DVSTEffect,

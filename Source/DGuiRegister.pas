@@ -10,13 +10,14 @@ implementation
 
 uses
   Classes, DGuiStaticWaveform, DGuiDynamicWaveform, DGuiDial, DGuiMidiKeys,
-  DGuiADSRGraph, DGuiLevelMeter, DGuiAudioDataDisplay;
+  DGuiGroup, DGuiADSRGraph, DGuiLevelMeter, DGuiAudioDataDisplay;
 
 procedure Register;
 begin
   RegisterComponents('ASIO/VST GUI', [TGuiDynamicWaveform,
                                       TGuiStaticWaveform,
                                       TGuiDial,
+                                      TGuiGroup,
                                       TGuiMidiKeys,
                                       TGuiADSRGraph,
                                       TGuiLevelMeter,

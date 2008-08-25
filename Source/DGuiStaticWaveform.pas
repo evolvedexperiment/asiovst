@@ -12,7 +12,7 @@ type
   TGuiNormalizationType = (ntNone, ntPerChannel, ntOverallChannels);
   TGuiWaveDrawMode = (wdmSolid, wdmPoints, wdmOutline, wdmSimple);
 
-  TCustomGuiStaticWaveform = class(TCustomGuiBaseControl)
+  TCustomGuiStaticWaveform = class(TCustomGuiBaseMouseControl)
   private
     fNormalizationType    : TGuiNormalizationType;
     fNormalizationFactors : TAVDSingleDynArray;
@@ -97,6 +97,7 @@ type
     property OnDblClick;
     property OnDragDrop;
     property OnDragOver;
+    property OnDragMouseMove;
     property OnEndDock;
     property OnEndDrag;
     property OnMouseDown;
@@ -111,7 +112,6 @@ type
     property OnPaint;
     property OnMouseEnter;
     property OnMouseLeave;
-    property OnDragMouseMove;
   end;
 
 implementation

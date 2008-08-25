@@ -3,17 +3,18 @@ unit EnhancedGateDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule, DDspDynamics;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
+  DDspDynamics;
 
-const NrChannels = 2;
+const
+  NrChannels = 2;
 
 type
   TEnhancedGateDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
-    procedure VSTModuleProcessBypass(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessBypass(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure EAGThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure EAGOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -30,11 +31,13 @@ type
     procedure EAGRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGRangeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
-    fEnhancedGates : Array [0..NrChannels-1] of TGate;
+    fEnhancedGates : Array [0..NrChannels - 1] of TGate;
+    fLevels        : Array [0..NrChannels - 1] of Single;
   public
+    property LevelLeft: Single read fLevels[0];
+    property LevelRight: Single read fLevels[1];
   end;
 
 implementation
@@ -44,7 +47,8 @@ implementation
 uses Math, EditorFrm;
 
 procedure TEnhancedGateDataModule.VSTModuleCreate(Sender: TObject);
-var i : Integer;
+var
+  i : Integer;
 begin
  for i := 0 to NrChannels - 1
   do fEnhancedGates[i] := TGate.Create;
@@ -64,7 +68,8 @@ begin
 end;
 
 procedure TEnhancedGateDataModule.VSTModuleDestroy(Sender: TObject);
-var i : Integer;
+var
+  i : Integer;
 begin
  for i := 0 to NrChannels - 1
   do FreeAndNil(fEnhancedGates[i]);
@@ -76,7 +81,7 @@ begin
  GUI := TEditorForm.Create(Self);
  with (GUI as TEditorForm) do
   begin
-   CBOnOff.Checked:=Boolean(Round(Parameter[0]));
+   CBOnOff.Checked := Boolean(Round(Parameter[0]));
    UpdateThreshold;
    UpdateAttack;
    UpdateHold;
@@ -105,14 +110,14 @@ begin
  if assigned(EditorForm) then
   with TEditorForm(EditorForm) do
    if CBOnOff.Checked <> Boolean(Round(Value))
-    then CBOnOff.Checked:=Boolean(Round(Value));
+    then CBOnOff.Checked := Boolean(Round(Value));
 end;
 
 procedure TEnhancedGateDataModule.EAGOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Boolean(Round(Parameter[index]))
-  then PreDefined:='On'
-  else PreDefined:='Off';
+  then PreDefined := 'On'
+  else PreDefined := 'Off';
 end;
 
 procedure TEnhancedGateDataModule.EAGThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -155,8 +160,8 @@ procedure TEnhancedGateDataModule.EAGSideChainSourceDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
  if Boolean(Round(Parameter[index]))
-  then PreDefined:='Ext'
-  else PreDefined:='Int';
+  then PreDefined := 'Ext'
+  else PreDefined := 'Int';
 end;
 
 procedure TEnhancedGateDataModule.EAGLoCutChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -218,7 +223,7 @@ begin
  if assigned(EditorForm) then
   with TEditorForm(EditorForm) do
    if CBDuck.Checked <> Boolean(Round(Value))
-    then CBDuck.Checked:=Boolean(Round(Value));
+    then CBDuck.Checked := Boolean(Round(Value));
 end;
 
 procedure TEnhancedGateDataModule.EAGStereoLinkChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -226,32 +231,40 @@ begin
  if assigned(EditorForm) then
   with TEditorForm(EditorForm) do
    if CBStereoLink.Checked <> Boolean(Round(Value))
-    then CBStereoLink.Checked:=Boolean(Round(Value));
+    then CBStereoLink.Checked := Boolean(Round(Value));
 end;
 
 procedure TEnhancedGateDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
-var i,j : Integer;
+  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  i, j : Integer;
 begin
  for j := 0 to NrChannels - 1 do
-  for i := 0 to sampleframes - 1 do
+  for i := 0 to SampleFrames - 1 do
    begin
     fEnhancedGates[j].InputSideChain(Inputs[j,i]);
-    Outputs[j,i] := fEnhancedGates[j].ProcessSample(Inputs[j,i]);
+    Outputs[j,i] := fEnhancedGates[j].ProcessSample(Inputs[j, i]);
+    fLevels[j] := 0.99 * fLevels[j];
+    if abs(Inputs[j, i]) > fLevels[j]
+     then fLevels[j] := abs(Inputs[j, i]);
    end;
 end;
 
 procedure TEnhancedGateDataModule.VSTModuleProcessBypass(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
-var j : Integer;
+  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  j : Integer;
 begin
+ fLevels[0] := 0;
+ fLevels[1] := 0;
  for j := 0 to NrChannels - 1
-  do Move(Inputs[j,0], Outputs[j,0], sampleframes * SizeOf(Single));
+  do Move(Inputs[j,0], Outputs[j,0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TEnhancedGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
-var j : Integer;
+var
+  j : Integer;
 begin
  for j := 0 to NrChannels - 1
   do fEnhancedGates[j].SampleRate := SampleRate;

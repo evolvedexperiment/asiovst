@@ -66,6 +66,7 @@ type
     fKnee        : Double;
     fRange       : Double;
     fRangeFactor : Double;
+    fHoldSmplCnt : Integer;
     fHoldSamples : Double;
     fSideChain   : Double;
     fDuck        : Boolean;
@@ -312,11 +313,12 @@ end;
 constructor TGate.Create;
 begin
   inherited;
-  fGain := 1;
-  fHold := 0.01;
-  fLowCut  := TButterworthHP.Create;
-  fHighCut := TButterworthLP.Create;
-  fLowCut.Frequency := 20;
+  fGain              := 1;
+  fHold              := 0.01;
+  fHoldSmplCnt       := 0;
+  fLowCut            := TButterworthHP.Create;
+  fHighCut           := TButterworthLP.Create;
+  fLowCut.Frequency  := 20;
   fHighCut.Frequency := 20000;
   CalculateHoldSamples;
 end;
@@ -345,20 +347,32 @@ end;
 
 function TGate.ProcessSample(Input: Double): Double;
 begin
+ // old algorithm:
+ /////////////////
+
  if abs(fSideChain) > fPeak
   then fPeak := fPeak + (abs(fSideChain) - fPeak) * fAttackFactor
   else fPeak := abs(fSideChain) + (fPeak - abs(fSideChain)) * fDecayFactor;
 
- if fPeak < fThreshold
-  then fGain := Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1) * (1 - fRangeFactor) + fRangeFactor
-  else fGain := fRangeFactor + (1-fRangeFactor);
+ if fPeak < fThreshold then
+  begin
+   if fHoldSmplCnt > fHoldSamples
+    then fGain := Power(fThreshold, 1 - fRatio) * Power(fPeak, fRatio - 1) * (1 - fRangeFactor) + fRangeFactor
+    else inc(fHoldSmplCnt);
+  end
+ else
+  begin
+   // start hold phase
+   fHoldSmplCnt := 0;
+   fGain := fRangeFactor + (1 - fRangeFactor);
+  end;
 
  result := Input * fGain;
 end;
 
 procedure TGate.CalculateHoldSamples;
 begin
-  fHoldSamples := fHold * fSampleRate;
+  fHoldSamples := 0; //fHold * fSampleRate;
 end;
 
 procedure TGate.SetHighCut(const Value: Double);

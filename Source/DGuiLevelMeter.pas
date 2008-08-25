@@ -12,7 +12,6 @@ type
   TGuiLevelDirection = (ldirHorizontal, ldirHorizontalInverted, ldmVertical, ldmVerticalInverted);
   TGuiShowClipping = (scNo, scTopLeft, scBottomRight);
 
-
   TCustomGuiLevelMeter = class(TGuiBaseControl)
   private
     FBarWidthPercentage : Single;
