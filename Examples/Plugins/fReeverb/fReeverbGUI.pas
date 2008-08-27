@@ -4,7 +4,7 @@ interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
   Controls, StdCtrls, XPStyleActnCtrls, ActnList, ActnMan, ToolWin,
-  ActnCtrls, ActnMenus, DGuiBaseControl, DGuiDial, DGuiLabel;
+  ActnCtrls, ActnMenus, DGuiBaseControl, DGuiDial, DGuiLabel, DGuiPanel;
 
 type
 
@@ -22,6 +22,7 @@ type
     LbSize: TGuiLabel;
     LbStretch: TGuiLabel;
     LbDamp: TGuiLabel;
+    PnLabel: TGuiPanel;
     procedure CBFreezeClick(Sender: TObject);
     procedure DialWetChange(Sender: TObject);
     procedure DialDryChange(Sender: TObject);

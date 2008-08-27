@@ -10,10 +10,15 @@ object fReeverbVST: TfReeverbVST
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Random 23'
   UniqueID = 'fRee'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Random 23'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear

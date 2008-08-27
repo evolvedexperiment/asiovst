@@ -3,8 +3,8 @@ object FmReverb: TFmReverb
   Top = 252
   BorderStyle = bsNone
   Caption = 'fReeverb'
-  ClientHeight = 85
-  ClientWidth = 336
+  ClientHeight = 94
+  ClientWidth = 350
   Color = 14803425
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,8 +15,17 @@ object FmReverb: TFmReverb
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
+  object PnLabel: TGuiPanel
+    Left = 10
+    Top = 62
+    Width = 331
+    Height = 25
+    AntiAlias = gaaLinear4x
+    LineColor = clWhite
+    Radius = 9
+  end
   object DialDry: TGuiDial
-    Left = 8
+    Left = 16
     Top = 8
     Width = 48
     Height = 48
@@ -29,7 +38,7 @@ object FmReverb: TFmReverb
     OnChange = DialDryChange
   end
   object DialWet: TGuiDial
-    Left = 62
+    Left = 70
     Top = 8
     Width = 48
     Height = 48
@@ -42,7 +51,7 @@ object FmReverb: TFmReverb
     OnChange = DialWetChange
   end
   object DialWidth: TGuiDial
-    Left = 116
+    Left = 124
     Top = 8
     Width = 48
     Height = 48
@@ -55,7 +64,7 @@ object FmReverb: TFmReverb
     OnChange = DialWidthChange
   end
   object DialDamp: TGuiDial
-    Left = 170
+    Left = 178
     Top = 8
     Width = 48
     Height = 48
@@ -68,7 +77,7 @@ object FmReverb: TFmReverb
     OnChange = DialDampChange
   end
   object DialRoomSize: TGuiDial
-    Left = 224
+    Left = 232
     Top = 8
     Width = 48
     Height = 48
@@ -81,7 +90,7 @@ object FmReverb: TFmReverb
     OnChange = DialRoomSizeChange
   end
   object DialStretch: TGuiDial
-    Left = 278
+    Left = 286
     Top = 8
     Width = 48
     Height = 48
@@ -94,99 +103,105 @@ object FmReverb: TFmReverb
     OnChange = DialStretchChange
   end
   object LbDry: TGuiLabel
-    Left = 8
-    Top = 62
+    Left = 16
+    Top = 66
     Width = 48
-    Height = 13
+    Height = 17
     Margins.Bottom = 0
-    Caption = 'Dry'
+    Caption = 'dry'
+    Color = clWhite
     AntiAlias = gaaLinear4x
     Alignment = taCenter
     AutoSize = True
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Verdana'
+    Font.Color = 5855577
+    Font.Height = -13
+    Font.Name = 'Tahoma'
     Font.Style = []
   end
   object LbWet: TGuiLabel
-    Left = 62
-    Top = 62
+    Left = 70
+    Top = 66
     Width = 48
-    Height = 13
+    Height = 17
     Margins.Bottom = 0
-    Caption = 'Wet'
+    Caption = 'wet'
+    Color = clWhite
     AntiAlias = gaaLinear4x
     Alignment = taCenter
     AutoSize = True
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Verdana'
+    Font.Color = 5855577
+    Font.Height = -13
+    Font.Name = 'Tahoma'
     Font.Style = []
   end
   object Label1: TGuiLabel
-    Left = 116
-    Top = 62
+    Left = 124
+    Top = 66
     Width = 48
-    Height = 13
+    Height = 17
     Margins.Bottom = 0
-    Caption = 'Width'
+    Caption = 'width'
+    Color = clWhite
     AntiAlias = gaaLinear4x
     Alignment = taCenter
     AutoSize = True
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Verdana'
+    Font.Color = 5855577
+    Font.Height = -13
+    Font.Name = 'Tahoma'
     Font.Style = []
   end
   object LbSize: TGuiLabel
-    Left = 224
-    Top = 62
+    Left = 232
+    Top = 66
     Width = 48
-    Height = 13
+    Height = 17
     Margins.Bottom = 0
-    Caption = 'Size'
+    Caption = 'size'
+    Color = clWhite
     AntiAlias = gaaLinear4x
     Alignment = taCenter
     AutoSize = True
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Verdana'
+    Font.Color = 5855577
+    Font.Height = -13
+    Font.Name = 'Tahoma'
     Font.Style = []
   end
   object LbStretch: TGuiLabel
-    Left = 278
-    Top = 62
+    Left = 286
+    Top = 66
     Width = 48
-    Height = 13
+    Height = 17
     Margins.Bottom = 0
-    Caption = 'Stretch'
+    Caption = 'stretch'
+    Color = clWhite
     AntiAlias = gaaLinear4x
     Alignment = taCenter
     AutoSize = True
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Verdana'
+    Font.Color = 5855577
+    Font.Height = -13
+    Font.Name = 'Tahoma'
     Font.Style = []
   end
   object LbDamp: TGuiLabel
-    Left = 170
-    Top = 62
+    Left = 178
+    Top = 66
     Width = 48
-    Height = 13
+    Height = 17
     Margins.Bottom = 0
-    Caption = 'Damp'
+    Caption = 'damp'
+    Color = clWhite
     AntiAlias = gaaLinear4x
     Alignment = taCenter
     AutoSize = True
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Verdana'
+    Font.Color = 5855577
+    Font.Height = -13
+    Font.Name = 'Tahoma'
     Font.Style = []
   end
   object CBFreeze: TCheckBox
