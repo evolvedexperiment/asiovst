@@ -15,17 +15,11 @@ uses
 
 procedure Register;
 begin
-  RegisterComponents('ASIO/VST GUI', [TGuiDynamicWaveform,
-                                      TGuiStaticWaveform,
-                                      TGuiDial,
-                                      TGuiDialEx,
-                                      TGuiGroup,
-                                      TGuiPanel,
-                                      TGuiLabel,
-                                      TGuiMidiKeys,
-                                      TGuiADSRGraph,
-                                      TGuiLevelMeter,
-                                      TGuiAudioDataDisplay]);
+  RegisterComponents('ASIO/VST GUI', [TGuiDynamicWaveform, TGuiStaticWaveform,
+                                      TGuiDial, TGuiDialMetal, TGuiDialEx,
+                                      TGuiGroup, TGuiPanel, TGuiLabel,
+                                      TGuiMidiKeys, TGuiADSRGraph,
+                                      TGuiLevelMeter, TGuiAudioDataDisplay]);
 end;
 
 end.

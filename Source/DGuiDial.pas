@@ -55,6 +55,7 @@ type
     fDefaultPosition  : Single;
     fRightMouseButton : TGuiDialRMBFunc;
     fAntiAlias        : TGuiAntiAlias;
+    fOSValue          : Integer;      
     function  CircularMouseToPosition(X, Y: Integer): Single;
     function  PositionToAngle: Single;
     procedure DoAutoSize;
@@ -105,23 +106,50 @@ type
 
   TGuiDial = class(TCustomGuiDial)
   published
-    property Color;
-    property LineWidth;
-    property LineColor;
-    property CircleColor;
     property AntiAlias;
-    property AutoSize;
     property AutoColor;
-    property Position;
+    property AutoSize;
+    property CircleColor;
+    property Color;
     property DefaultPosition;
-    property Min;
-    property Max;
-    property RightMouseButton;
-    property NumGlyphs;
     property DialBitmap;
-    property StitchKind;
-    property PointerAngles;
+    property LineColor;
+    property LineWidth;
+    property Max;
+    property Min;
+    property NumGlyphs;
     property OnChange;
+    property PointerAngles;
+    property Position;
+    property RightMouseButton;
+    property StitchKind;
+  end;
+
+  TCustomGuiDialMetal = class(TCustomGuiDial)
+  protected
+    procedure RenderKnobToBitmap(Bitmap: TBitmap); override;
+  end;
+
+  TGuiDialMetal = class(TCustomGuiDialMetal)
+  published
+    property AntiAlias;
+    property AutoColor;
+    property AutoSize;
+    property CircleColor;
+    property Color;
+    property DefaultPosition;
+    property DialBitmap;
+    property LineColor;
+    property LineWidth;
+    property Max;
+    property Min;
+    property NumGlyphs;
+    property OnChange;
+    property PointerAngles;
+    property Position;
+    property RightMouseButton;
+    property StitchKind;
+    property Transparent;
   end;
 
   TCustomGuiDialEx = class(TCustomGuiDial)
@@ -132,29 +160,30 @@ type
     procedure RenderKnobToBitmap(Bitmap: TBitmap); override;
   public
     constructor Create(AOwner: TComponent); override;
-  published
-    property IndicatorLineLength_Percent: Single read fIndLineLength write SetIndLineLength;  
+    property IndicatorLineLength_Percent: Single read fIndLineLength write SetIndLineLength;
   end;
 
   TGuiDialEx = class(TCustomGuiDialEx)
   published
-    property Color;
-    property LineWidth;
-    property LineColor;
-    property CircleColor;
     property AntiAlias;
-    property AutoSize;
     property AutoColor;
-    property Position;
+    property AutoSize;
+    property CircleColor;
+    property Color;
     property DefaultPosition;
-    property Min;
-    property Max;
-    property RightMouseButton;
-    property NumGlyphs;
     property DialBitmap;
-    property StitchKind;
-    property PointerAngles;
+    property IndicatorLineLength_Percent;
+    property LineColor;
+    property LineWidth;
+    property Max;
+    property Min;
+    property NumGlyphs;
     property OnChange;
+    property PointerAngles;
+    property Position;
+    property RightMouseButton;
+    property StitchKind;
+    property Transparent;
   end;
 
 implementation
@@ -268,6 +297,8 @@ begin
   fCircleColor            := clBlack;
   fLineColor              := clRed;
   fLineWidth              := 2;
+  fAntiAlias              := gaaNone;
+  fOSValue                := 1;
   fRightMouseButton       := rmbfCircular;
   fMin                    := 0;
   fMax                    := 100;
@@ -313,21 +344,23 @@ begin
   begin
    Brush.Color := Self.Color;
 
+   // draw background
    {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
    FillRect(ClipRect);
 
+   // draw circle
    Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
    if Rad < 0 then exit;
    Steps := Round(2 / arcsin(1 / Rad)) + 1;
    if Steps > 1 then
-   begin
+    begin
      SetLength(PtsArray, Steps);
      GetSinCos(PositionToAngle - (PI * 0.5), Val.Im, Val.Re);
      Val.Re := Val.Re * Rad; Val.Im := Val.Im * Rad;
      GetSinCos(2 * Pi / (Steps - 1), Off.Im, Off.Re);
      PtsArray[0] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
 
-     for i:=1 to Steps - 1 do
+     for i := 1 to Steps - 1 do
       begin
        tmp := Val.Re * Off.Re - Val.Im * Off.Im;
        Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
@@ -344,8 +377,9 @@ begin
      Pen.Color := fLineColor;
      Brush.Color := fCircleColor;
      Polygon(PtsArray);
-   end;
+    end;
 
+   // draw position line
    MoveTo(PtsArray[0].X, PtsArray[0].Y);
    LineTo(Round(0.5 * Width), Round(0.5 * Height));
   end;
@@ -550,9 +584,9 @@ var Range: Single;
 begin
   Range := Max - (Min - 1);
   if ssShift in Shift then
-    Position := Position + (MouseState.LastEventY - Y)*0.001*Range
+    Position := Position + (MouseState.LastEventY - Y) * 0.001 * Range
   else
-    Position := Position + (MouseState.LastEventY - Y)*0.005*Range;
+    Position := Position + (MouseState.LastEventY - Y) * 0.005 * Range;
 
   inherited;
 end;
@@ -582,6 +616,11 @@ begin
  if fAntiAlias <> Value then
   begin
    fAntiAlias := Value;
+   case fAntiAlias of
+        gaaNone : fOSValue := 1;
+    gaaLinear2x : fOSValue := 2;
+    gaaLinear4x : fOSValue := 4;
+   end;
    RedrawBuffer(True);
   end;
 end;
@@ -597,6 +636,71 @@ begin
   begin
     fCircleColor:=Value;
     RedrawBuffer(True);
+  end;
+end;
+
+{ TCustomGuiDialMetal }
+
+procedure TCustomGuiDialMetal.RenderKnobToBitmap(Bitmap: TBitmap);
+var
+  Steps, i : Integer;
+  Val      : Single;
+  Rad      : Single;
+  Cmplx    : TComplexSingle;
+  Pnt      : TPoint;
+  XStart   : Single;
+  LineFrac : Single;
+  BW       : Single;
+  Center   : record
+              x, y : Single;
+             end;
+  Line     : PRGB32Array;
+begin
+ with Bitmap, Canvas do
+  begin
+   Brush.Color := Self.Color;
+
+   // draw background
+   {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+   FillRect(ClipRect);
+
+   // draw circle
+   Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
+   BW := 1 - fOSValue / Rad; // border width = 1 pixel
+   if Rad < 0 then exit;
+
+   Center.x := 0.5 * Width;
+   Center.y := 0.5 * Height;
+   Pen.Color := fLineColor;
+   Brush.Color := fCircleColor;
+
+   for i := 0 to round(2 * Rad) do
+    begin
+     XStart := sqrt(abs(sqr(rad) - sqr(Rad - i)));
+     Line := Scanline[round(Center.y - (Rad - i))];
+     for steps := round(Center.x - XStart) to round(Center.x + XStart) do
+      begin
+       val := 2.9999 * abs(ArcTan2(steps - Center.x, (Rad - i)) / Pi);
+       if round(1.5 + val) mod 3 = 0
+        then val := val * 50 - 99.5
+        else val := -Round(99.5 + val * 50) mod 100;
+       if sqr(steps - Center.x) + sqr(Rad - i) > sqr(BW * Rad) then val := -$90;
+
+       Line[steps].B := round(Line[steps].B + val);
+       Line[steps].G := round(Line[steps].G + val);
+       Line[steps].R := round(Line[steps].R + val);
+      end;
+
+     GetSinCos(PositionToAngle - (PI * 0.5), Cmplx.Im, Cmplx.Re);
+     Pnt := Point(Round(Center.x + Cmplx.Re * BW * Rad), Round(Center.y + Cmplx.Im * BW * Rad));
+
+     //LineFrac := 0.01 * fIndLineLength;
+     LineFrac := 0.5;
+     Pen.Width := 3 * fOSValue;
+     MoveTo(Pnt.X, Pnt.Y);
+     LineTo(Round((1 - LineFrac) * Pnt.X + LineFrac * Center.x),
+            Round((1 - LineFrac) * Pnt.Y + LineFrac * Center.y));
+    end;
   end;
 end;
 
@@ -627,7 +731,7 @@ begin
    if Rad < 0 then exit;
    Steps := Round(2 / arcsin(1 / Rad)) + 1;
    if Steps > 1 then
-   begin
+    begin
      SetLength(PtsArray, Steps);
      GetSinCos(PositionToAngle - (PI * 0.5), Val.Im, Val.Re);
      Val.Re := Val.Re * Rad; Val.Im := Val.Im * Rad;
@@ -646,9 +750,9 @@ begin
      Pen.Color := fLineColor;
      Brush.Color := fCircleColor;
      Polygon(PtsArray);
-   end;
+    end;
 
-   LineFrac := 0.01 * fIndLineLength; 
+   LineFrac := 0.01 * fIndLineLength;
    MoveTo(PtsArray[0].X, PtsArray[0].Y);
    LineTo(Round((1 - LineFrac) * PtsArray[0].X + LineFrac * 0.5 * Width),
           Round((1 - LineFrac) * PtsArray[0].Y + LineFrac * 0.5 * Height));
