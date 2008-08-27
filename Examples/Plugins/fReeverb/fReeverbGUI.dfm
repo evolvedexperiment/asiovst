@@ -3,128 +3,199 @@ object FmReverb: TFmReverb
   Top = 252
   BorderStyle = bsNone
   Caption = 'fReeverb'
-  ClientHeight = 211
-  ClientWidth = 189
-  Color = clBtnFace
+  ClientHeight = 85
+  ClientWidth = 336
+  Color = 14803425
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object LbDry: TLabel
+  object DialDry: TGuiDial
     Left = 8
-    Top = 192
-    Width = 16
+    Top = 8
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clWhite
+    CircleColor = clSilver
+    Max = 100.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialDryChange
+  end
+  object DialWet: TGuiDial
+    Left = 62
+    Top = 8
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clWhite
+    CircleColor = clSilver
+    Max = 100.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialWetChange
+  end
+  object DialWidth: TGuiDial
+    Left = 116
+    Top = 8
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clWhite
+    CircleColor = clSilver
+    Max = 100.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialWidthChange
+  end
+  object DialDamp: TGuiDial
+    Left = 170
+    Top = 8
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clWhite
+    CircleColor = clSilver
+    Max = 100.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialDampChange
+  end
+  object DialRoomSize: TGuiDial
+    Left = 224
+    Top = 8
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clWhite
+    CircleColor = clSilver
+    Max = 100.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialRoomSizeChange
+  end
+  object DialStretch: TGuiDial
+    Left = 278
+    Top = 8
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clWhite
+    CircleColor = clSilver
+    Max = 100.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialStretchChange
+  end
+  object LbDry: TGuiLabel
+    Left = 8
+    Top = 62
+    Width = 48
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Dry'
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    AutoSize = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = []
   end
-  object LbWet: TLabel
-    Left = 32
-    Top = 192
-    Width = 20
+  object LbWet: TGuiLabel
+    Left = 62
+    Top = 62
+    Width = 48
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Wet'
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    AutoSize = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = []
   end
-  object Label1: TLabel
-    Left = 60
-    Top = 192
-    Width = 28
+  object Label1: TGuiLabel
+    Left = 116
+    Top = 62
+    Width = 48
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Width'
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    AutoSize = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = []
   end
-  object LbSize: TLabel
-    Left = 124
-    Top = 192
-    Width = 20
+  object LbSize: TGuiLabel
+    Left = 224
+    Top = 62
+    Width = 48
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Size'
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    AutoSize = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = []
   end
-  object LbStretch: TLabel
-    Left = 150
-    Top = 192
-    Width = 34
+  object LbStretch: TGuiLabel
+    Left = 278
+    Top = 62
+    Width = 48
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Stretch'
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    AutoSize = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = []
   end
-  object LbDamp: TLabel
-    Left = 92
-    Top = 192
-    Width = 28
+  object LbDamp: TGuiLabel
+    Left = 170
+    Top = 62
+    Width = 48
     Height = 13
+    Margins.Bottom = 0
     Caption = 'Damp'
-  end
-  object SDry: TScrollBar
-    Left = 8
-    Top = 8
-    Width = 16
-    Height = 177
-    Kind = sbVertical
-    PageSize = 0
-    TabOrder = 0
-    OnChange = SDryChange
-  end
-  object SWet: TScrollBar
-    Left = 33
-    Top = 8
-    Width = 16
-    Height = 177
-    Kind = sbVertical
-    PageSize = 0
-    TabOrder = 1
-    OnChange = SWetChange
-  end
-  object SWidth: TScrollBar
-    Left = 65
-    Top = 8
-    Width = 16
-    Height = 177
-    Kind = sbVertical
-    PageSize = 0
-    TabOrder = 2
-    OnChange = SWidthChange
-  end
-  object SRoomSize: TScrollBar
-    Left = 129
-    Top = 8
-    Width = 16
-    Height = 177
-    Kind = sbVertical
-    PageSize = 0
-    TabOrder = 3
-    OnChange = SRoomSizeChange
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    AutoSize = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = []
   end
   object CBFreeze: TCheckBox
-    Left = 64
-    Top = 234
+    Left = 116
+    Top = 106
     Width = 57
     Height = 17
     Caption = 'FreeZe'
-    TabOrder = 4
+    TabOrder = 0
     OnClick = CBFreezeClick
-  end
-  object SStretch: TScrollBar
-    Left = 158
-    Top = 8
-    Width = 16
-    Height = 177
-    Kind = sbVertical
-    Max = 20
-    PageSize = 0
-    Position = 20
-    TabOrder = 5
-    OnChange = SStretchChange
-  end
-  object SDamp: TScrollBar
-    Left = 97
-    Top = 8
-    Width = 16
-    Height = 177
-    Kind = sbVertical
-    PageSize = 0
-    TabOrder = 6
-    OnChange = SDampChange
   end
 end

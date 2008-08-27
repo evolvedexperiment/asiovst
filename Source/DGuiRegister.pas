@@ -10,7 +10,8 @@ implementation
 
 uses
   Classes, DGuiStaticWaveform, DGuiDynamicWaveform, DGuiDial, DGuiMidiKeys,
-  DGuiGroup, DGuiADSRGraph, DGuiLevelMeter, DGuiAudioDataDisplay;
+  DGuiGroup, DGuiADSRGraph, DGuiLevelMeter, DGuiAudioDataDisplay,
+  DGuiLabel;
 
 procedure Register;
 begin
@@ -19,6 +20,7 @@ begin
                                       TGuiDial,
                                       TGuiDialEx,
                                       TGuiGroup,
+                                      TGuiLabel,
                                       TGuiMidiKeys,
                                       TGuiADSRGraph,
                                       TGuiLevelMeter,

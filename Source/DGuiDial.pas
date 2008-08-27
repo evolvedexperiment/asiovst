@@ -372,7 +372,7 @@ begin
          Width       := 2 * fBuffer.Width;
          Height      := 2 * fBuffer.Height;
          RenderKnobToBitmap(Bmp);
-         DownsampleBitmap(Bmp);
+         Downsample2xBitmap(Bmp);
          fBuffer.Canvas.Draw(0, 0, Bmp);
         finally
          Free;
@@ -387,8 +387,8 @@ begin
          Width       := 4 * fBuffer.Width;
          Height      := 4 * fBuffer.Height;
          RenderKnobToBitmap(Bmp);
-         DownsampleBitmap(Bmp);
-         DownsampleBitmap(Bmp);
+         Downsample2xBitmap(Bmp);
+         Downsample2xBitmap(Bmp);
          fBuffer.Canvas.Draw(0, 0, Bmp);
         finally
          Free;

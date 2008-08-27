@@ -34,10 +34,10 @@ begin
  fSoftKneeFeedbackCompressors[1].Threshold := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
-   if SBThreshold.Position <> Round(Value) then
+   if DialThreshold.Position <> Value then
     begin
-     SBThreshold.Position := Round(Value);
-     LbThresholdValue.Caption := IntToStr(SBThreshold.Position) + ' dB';
+     DialThreshold.Position := Value;
+     LbThresholdValue.Caption := FloatToStrF(DialThreshold.Position, ffFixed, 3, 1) + ' dB';
     end;
 end;
 
@@ -48,10 +48,10 @@ begin
  fSoftKneeFeedbackCompressors[1].Ratio := 1 / Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
-   if SBRatio.Position <> Round(100 * Log10(Value)) then
+   if DialRatio.Position <> Round(100 * Log10(Value)) then
     begin
-     SBRatio.Position := Round(100 * Log10(Value));
-     LbRatioValue.Caption := '1 : ' + FloatToStrF(Value, ffGeneral, 4, 4);
+     DialRatio.Position := Round(100 * Log10(Value));
+     LbRatioValue.Caption := '1 : ' + FloatToStrF(Value, ffFixed, 3, 1);
     end;
 end;
 
@@ -61,9 +61,9 @@ begin
  fSoftKneeFeedbackCompressors[1].Decay := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
-   if SBRelease.Position <> Round(Value) then
+   if DialRelease.Position <> Round(Value) then
     begin
-     SBRelease.Position := Round(1000 * Log10(Value));
+     DialRelease.Position := Round(1000 * Log10(Value));
      LbReleaseValue.Caption := FloatToStrF(Value, ffGeneral, 4, 5) + ' ms';
     end;
 end;
@@ -74,9 +74,9 @@ begin
  fSoftKneeFeedbackCompressors[1].Attack := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
-   if SBAttack.Position <> Round(100 * Log10(Value)) then
+   if DialAttack.Position <> Round(100 * Log10(Value)) then
     begin
-     SBAttack.Position := Round(100 * Log10(Value));
+     DialAttack.Position := Round(100 * Log10(Value));
      LbAttackValue.Caption := FloatToStrF(Value, ffGeneral, 4, 2) + ' ms';
     end;
 end;

@@ -45,7 +45,8 @@ type
     procedure DrawParentImage(Dest: TCanvas); virtual;
     {$ENDIF}
 
-    procedure DownsampleBitmap(var Bitmap: TBitmap);
+    procedure Downsample2xBitmap(var Bitmap: TBitmap);
+    procedure Upsample2xBitmap(var Bitmap: TBitmap);
     procedure Resize; override;
     procedure ResizeBuffer; dynamic;
     procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
@@ -197,7 +198,7 @@ begin
   RestoreDC(DC, SaveIndex);
 end;
 
-procedure TBufferedGraphicControl.DownsampleBitmap(var Bitmap: TBitmap);
+procedure TBufferedGraphicControl.Downsample2xBitmap(var Bitmap: TBitmap);
 var
   x, y : Integer;
   Line : Array [0..2] of PRGB32Array;
@@ -216,6 +217,42 @@ begin
        Line[0, x].G := (Line[1, 2 * x].G + Line[2, 2 * x].G + Line[1, 2 * x + 1].G + Line[2, 2 * x + 1].G) div 4;
        Line[0, x].R := (Line[1, 2 * x].R + Line[2, 2 * x].R + Line[1, 2 * x + 1].R + Line[2, 2 * x + 1].R) div 4;
        Line[0, x].A := (Line[1, 2 * x].A + Line[2, 2 * x].A + Line[1, 2 * x + 1].A + Line[2, 2 * x + 1].A) div 4;
+      end;
+    end;
+  end;
+end;
+
+procedure TBufferedGraphicControl.Upsample2xBitmap(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  Line : Array [0..2] of PRGB32Array;
+begin
+ with Bitmap do
+  begin
+   // first stage
+   for y := 0 to (Height div 2) - 1 do
+    begin
+     Line[0] := Scanline[y];
+     Line[1] := Scanline[y * 2];
+     Line[2] := Scanline[y * 2 + 1];
+     for x := 0 to (Width  div 2) - 1 do
+      begin
+       Line[1, 2 * x].B     := Line[0, x].B;
+       Line[2, 2 * x].B     := Line[0, x].B;
+       Line[1, 2 * x + 1].B := Line[0, x].B;
+       Line[2, 2 * x + 1].B := Line[0, x].B;
+       Line[1, 2 * x].G     := Line[0, x].G;
+       Line[2, 2 * x].G     := Line[0, x].G;
+       Line[1, 2 * x + 1].G := Line[0, x].G;
+       Line[2, 2 * x + 1].G := Line[0, x].G;
+       Line[1, 2 * x].R     := Line[0, x].R;
+       Line[2, 2 * x].R     := Line[0, x].R;
+       Line[1, 2 * x + 1].R := Line[0, x].R;
+       Line[2, 2 * x + 1].R := Line[0, x].R;
+       Line[1, 2 * x].A     := Line[0, x].A;
+       Line[2, 2 * x].A     := Line[0, x].A;
+       Line[1, 2 * x + 1].A := Line[0, x].A;
+       Line[2, 2 * x + 1].A := Line[0, x].A;
       end;
     end;
   end;

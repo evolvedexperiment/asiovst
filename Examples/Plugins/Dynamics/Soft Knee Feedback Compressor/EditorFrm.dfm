@@ -3,9 +3,9 @@ object EditorForm: TEditorForm
   Top = 81
   BorderStyle = bsNone
   Caption = 'EditorForm'
-  ClientHeight = 160
-  ClientWidth = 252
-  Color = clBtnFace
+  ClientHeight = 128
+  ClientWidth = 323
+  Color = clSilver
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,125 +13,167 @@ object EditorForm: TEditorForm
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
-  DesignSize = (
-    252
-    160)
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object LbThreshold: TLabel
-    Left = 8
-    Top = 8
-    Width = 51
-    Height = 13
-    Caption = 'Threshold:'
-  end
   object LbThresholdValue: TLabel
-    Left = 160
-    Top = 8
-    Width = 84
+    Left = 8
+    Top = 102
+    Width = 64
     Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
+    Alignment = taCenter
     AutoSize = False
     Caption = 'dB'
-  end
-  object LbRatio: TLabel
-    Left = 8
-    Top = 46
-    Width = 29
-    Height = 13
-    Caption = 'Ratio:'
+    Transparent = False
   end
   object LbRatioValue: TLabel
-    Left = 160
-    Top = 46
-    Width = 84
+    Left = 88
+    Top = 102
+    Width = 64
     Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
+    Alignment = taCenter
     AutoSize = False
-  end
-  object LbAttack: TLabel
-    Left = 8
-    Top = 84
-    Width = 35
-    Height = 13
-    Caption = 'Attack:'
+    Transparent = False
   end
   object LbAttackValue: TLabel
-    Left = 168
-    Top = 84
-    Width = 76
+    Left = 166
+    Top = 102
+    Width = 64
     Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
+    Alignment = taCenter
     AutoSize = False
-  end
-  object LbRelease: TLabel
-    Left = 8
-    Top = 122
-    Width = 42
-    Height = 13
-    Caption = 'Release:'
+    Transparent = False
   end
   object LbReleaseValue: TLabel
-    Left = 160
-    Top = 122
-    Width = 84
+    Left = 246
+    Top = 102
+    Width = 64
     Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
+    Alignment = taCenter
     AutoSize = False
+    Transparent = False
   end
-  object SBThreshold: TScrollBar
+  object DialThreshold: TGuiDial
     Left = 8
-    Top = 24
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    Max = 0
-    Min = -96
-    PageSize = 0
-    Position = -80
-    TabOrder = 0
-    OnChange = SBThresholdChange
+    Top = 32
+    Width = 64
+    Height = 64
+    LineWidth = 2
+    LineColor = clGray
+    CircleColor = clSilver
+    Position = -0.000000000100000001
+    DefaultPosition = -0.000000000100000001
+    Min = -96.000000000000000000
+    Max = -0.000000000100000001
+    NumGlyphs = 31
+    StitchKind = skVertical
+    OnChange = DialThresholdChange
   end
-  object SBRatio: TScrollBar
-    Left = 8
-    Top = 62
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    Max = 200
-    PageSize = 0
-    TabOrder = 1
-    OnChange = SBRatioChange
+  object DialRatio: TGuiDial
+    Left = 88
+    Top = 32
+    Width = 64
+    Height = 64
+    LineWidth = 2
+    LineColor = clGray
+    CircleColor = clSilver
+    Max = 200.000000000000000000
+    NumGlyphs = 31
+    StitchKind = skVertical
+    OnChange = DialRatioChange
   end
-  object SBAttack: TScrollBar
-    Left = 8
-    Top = 100
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    Max = 300
-    Min = -200
-    PageSize = 0
-    TabOrder = 2
-    OnChange = SBAttackChange
+  object DialAttack: TGuiDial
+    Left = 166
+    Top = 32
+    Width = 64
+    Height = 64
+    LineWidth = 2
+    LineColor = clGray
+    CircleColor = clSilver
+    Min = -200.000000000000000000
+    Max = 300.000000000000000000
+    NumGlyphs = 31
+    StitchKind = skVertical
+    OnChange = DialAttackChange
   end
-  object SBRelease: TScrollBar
+  object DialRelease: TGuiDial
+    Left = 246
+    Top = 32
+    Width = 64
+    Height = 64
+    LineWidth = 2
+    LineColor = clGray
+    CircleColor = clSilver
+    Position = 699.000000000000000000
+    DefaultPosition = 699.000000000000000000
+    Min = 699.000000000000000000
+    Max = 3699.000000000000000000
+    NumGlyphs = 31
+    StitchKind = skVertical
+    OnChange = DialReleaseChange
+  end
+  object LbRatio: TGuiLabel
+    Left = 88
+    Top = 8
+    Width = 64
+    Height = 13
+    Margins.Bottom = 0
+    Caption = 'Ratio'
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    AutoSize = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
+  end
+  object LbAttack: TGuiLabel
+    Left = 166
+    Top = 8
+    Width = 64
+    Height = 13
+    Margins.Bottom = 0
+    Caption = 'Attack'
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    AutoSize = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
+  end
+  object LbRelease: TGuiLabel
+    Left = 246
+    Top = 8
+    Width = 64
+    Height = 13
+    Margins.Bottom = 0
+    Caption = 'Release'
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    AutoSize = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
+  end
+  object LbThreshold: TGuiLabel
     Left = 8
-    Top = 138
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    LargeChange = 100
-    Max = 3699
-    Min = 699
-    PageSize = 0
-    Position = 700
-    SmallChange = 10
-    TabOrder = 3
-    OnChange = SBReleaseChange
+    Top = 8
+    Width = 64
+    Height = 13
+    Margins.Bottom = 0
+    Caption = 'Threshold'
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    AutoSize = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
   end
 end

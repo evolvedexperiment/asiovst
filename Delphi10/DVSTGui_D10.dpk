@@ -42,6 +42,7 @@ contains
   DGuiMidiKeyZones in '..\Source\DGuiMidiKeyZones.pas',
   DGuiLevelMeter in '..\Source\DGuiLevelMeter.pas',
   DGuiAudioDataDisplay in '..\Source\DGuiAudioDataDisplay.pas',
-  DGuiGroup in '..\Source\DGuiGroup.pas';
+  DGuiGroup in '..\Source\DGuiGroup.pas',
+  DGuiLabel in '..\Source\DGuiLabel.pas';
 
 end.
