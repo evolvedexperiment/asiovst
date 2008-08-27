@@ -9,12 +9,6 @@ uses
   DGuiBaseControl;
 
 type
-  TRGB32 = packed record
-    B, G, R, A: Byte;
-  end;
-  TRGB32Array = packed array[0..MaxInt div SizeOf(TRGB32) - 1] of TRGB32;
-  PRGB32Array = ^TRGB32Array;
-
   TGuiDialStitchKind = (skHorizontal, skVertical);
   TGuiDialRMBFunc = (rmbfReset,rmbfCircular);
 
@@ -46,8 +40,7 @@ type
     property Resolution: Extended read FResolution write SetResolution;
   end;
 
-  TGuiDialAntiAlias = (gdaaNone, gdaaLinear2x, gdaaLinear4x);
-  TGuiDial = class(TGuiBaseControl)
+  TCustomGuiDial = class(TGuiBaseControl)
   private
     fAutoSize         : Boolean;
     fDialBitmap       : TBitmap;
@@ -61,12 +54,11 @@ type
     fPointerAngles    : TGuiDialPointerAngles;
     fDefaultPosition  : Single;
     fRightMouseButton : TGuiDialRMBFunc;
-    fAntiAlias        : TGuiDialAntiAlias;
+    fAntiAlias        : TGuiAntiAlias;
     function  CircularMouseToPosition(X, Y: Integer): Single;
     function  PositionToAngle: Single;
     procedure DoAutoSize;
-    procedure RenderKnobToBitmap(Bitmap: TBitmap);
-    procedure SetAntiAlias(const Value: TGuiDialAntiAlias);
+    procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetAutoColor(const Value: Boolean);
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetCircleColor(const Value: TColor);
@@ -78,11 +70,11 @@ type
     procedure SetPointerAngles(const Value: TGuiDialPointerAngles);
     procedure SetPosition(Value: Single);
     procedure SetStitchKind(const Value: TGuiDialStitchKind);
-    procedure DownsampleBitmap(var Bitmap: TBitmap);
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure CalcColorCircle;
     procedure RedrawBuffer(doBufferFlip: Boolean); override;
+    procedure RenderKnobToBitmap(Bitmap: TBitmap); virtual;
 
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
@@ -96,9 +88,9 @@ type
     property LineColor;
     property CircleColor : TColor read fCircleColor write SetCircleColor default clBlack;
 
-    property AntiAlias: TGuiDialAntiAlias read fAntiAlias write SetAntiAlias default gdaaNone;
-    property AutoSize: Boolean read fAutoSize write SetAutoSize default false;
-    property AutoColor: Boolean read fAutoColor write SetAutoColor default false;
+    property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
+    property AutoSize: Boolean read fAutoSize write SetAutoSize default False;
+    property AutoColor: Boolean read fAutoColor write SetAutoColor default False;
     property Position: Single read FPosition write SetPosition;
     property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
     property Min: Single read FMin write SetMin;
@@ -109,6 +101,60 @@ type
     property StitchKind: TGuiDialStitchKind read fStitchKind write SetStitchKind;
     property PointerAngles: TGuiDialPointerAngles read fPointerAngles write SetPointerAngles;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
+  end;
+
+  TGuiDial = class(TCustomGuiDial)
+  published
+    property Color;
+    property LineWidth;
+    property LineColor;
+    property CircleColor;
+    property AntiAlias;
+    property AutoSize;
+    property AutoColor;
+    property Position;
+    property DefaultPosition;
+    property Min;
+    property Max;
+    property RightMouseButton;
+    property NumGlyphs;
+    property DialBitmap;
+    property StitchKind;
+    property PointerAngles;
+    property OnChange;
+  end;
+
+  TCustomGuiDialEx = class(TCustomGuiDial)
+  private
+    fIndLineLength : Single;
+    procedure SetIndLineLength(const Value: Single);
+  protected
+    procedure RenderKnobToBitmap(Bitmap: TBitmap); override;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property IndicatorLineLength_Percent: Single read fIndLineLength write SetIndLineLength;  
+  end;
+
+  TGuiDialEx = class(TCustomGuiDialEx)
+  published
+    property Color;
+    property LineWidth;
+    property LineColor;
+    property CircleColor;
+    property AntiAlias;
+    property AutoSize;
+    property AutoColor;
+    property Position;
+    property DefaultPosition;
+    property Min;
+    property Max;
+    property RightMouseButton;
+    property NumGlyphs;
+    property DialBitmap;
+    property StitchKind;
+    property PointerAngles;
+    property OnChange;
   end;
 
 implementation
@@ -214,7 +260,7 @@ end;
 
 
 
-constructor TGuiDial.Create(AOwner: TComponent);
+constructor TCustomGuiDial.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   fPointerAngles          := TGuiDialPointerAngles.Create;
@@ -233,19 +279,19 @@ begin
   fDialBitmap.OnChange    := SettingsChanged;
 end;
 
-destructor TGuiDial.Destroy;
+destructor TCustomGuiDial.Destroy;
 begin
   FreeAndNil(fDialBitmap);
   FreeAndNil(fPointerAngles);
   inherited Destroy;
 end;
 
-procedure TGuiDial.SettingsChanged(Sender: TObject);
+procedure TCustomGuiDial.SettingsChanged(Sender: TObject);
 begin
   RedrawBuffer(True);
 end;
 
-function TGuiDial.PositionToAngle: Single;
+function TCustomGuiDial.PositionToAngle: Single;
 var
   Percircle: Single; Range: Single;
 const
@@ -256,7 +302,7 @@ begin
   Result := SafeAngle(PointerAngles.Start + (PointerAngles.Range * Percircle / 360))* Pi180;
 end;
 
-procedure TGuiDial.RenderKnobToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiDial.RenderKnobToBitmap(Bitmap: TBitmap);
 var
   Steps, i : Integer;
   Val, Off : TComplexDouble;
@@ -289,7 +335,12 @@ begin
        PtsArray[i] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
       end;
 
-     Pen.Width := fLineWidth;
+     case fAntiAlias of
+          gaaNone : Pen.Width := fLineWidth;
+      gaaLinear2x : Pen.Width := 2 * fLineWidth;
+      gaaLinear4x : Pen.Width := 4 * fLineWidth;
+     end;
+
      Pen.Color := fLineColor;
      Brush.Color := fCircleColor;
      Polygon(PtsArray);
@@ -300,31 +351,7 @@ begin
   end;
 end;
 
-procedure TGuiDial.DownsampleBitmap(var Bitmap: TBitmap);
-var
-  x, y : Integer;
-  Line : Array [0..2] of PRGB32Array;
-begin
- with Bitmap do
-  begin
-   // first stage
-   for y := 0 to (Height div 2) - 1 do
-    begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[y * 2];
-     Line[2] := Scanline[y * 2 + 1];
-     for x := 0 to (Width  div 2) - 1 do
-      begin
-       Line[0, x].B := (Line[1, 2 * x].B + Line[2, 2 * x].B + Line[1, 2 * x + 1].B + Line[2, 2 * x + 1].B) div 4;
-       Line[0, x].G := (Line[1, 2 * x].G + Line[2, 2 * x].G + Line[1, 2 * x + 1].G + Line[2, 2 * x + 1].G) div 4;
-       Line[0, x].R := (Line[1, 2 * x].R + Line[2, 2 * x].R + Line[1, 2 * x + 1].R + Line[2, 2 * x + 1].R) div 4;
-       Line[0, x].A := (Line[1, 2 * x].A + Line[2, 2 * x].A + Line[1, 2 * x + 1].A + Line[2, 2 * x + 1].A) div 4;
-      end;
-    end;
-  end;
-end;
-
-procedure TGuiDial.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiDial.RedrawBuffer(doBufferFlip: Boolean);
 var
   theRect    : TRect;
   GlyphNr    : Integer;
@@ -335,8 +362,8 @@ begin
    Lock;
    if fDialBitmap.Empty then
     case fAntiAlias of
-     gdaaNone     : RenderKnobToBitmap(fBuffer);
-     gdaaLinear2x :
+     gaaNone     : RenderKnobToBitmap(fBuffer);
+     gaaLinear2x :
       begin
        Bmp := TBitmap.Create;
        with Bmp do
@@ -351,7 +378,7 @@ begin
          Free;
         end;
       end;
-     gdaaLinear4x :
+     gaaLinear4x :
       begin
        Bmp := TBitmap.Create;
        with Bmp do
@@ -393,7 +420,7 @@ begin
  if doBufferFlip then Invalidate;
 end;
 
-procedure TGuiDial.DoAutoSize;
+procedure TCustomGuiDial.DoAutoSize;
 begin
  if fDialBitmap.Empty or (fNumGlyphs = 0) then Exit;
 
@@ -409,7 +436,7 @@ begin
   end;
 end;
 
-procedure TGuiDial.SetAutoSize(const Value: boolean);
+procedure TCustomGuiDial.SetAutoSize(const Value: boolean);
 begin
   if fAutoSize<>Value then
   begin
@@ -418,7 +445,7 @@ begin
   end;
 end;
 
-procedure TGuiDial.SetMax(const Value: Single);
+procedure TCustomGuiDial.SetMax(const Value: Single);
 begin
   if Value <> FMax then
   begin
@@ -432,7 +459,7 @@ begin
   end;
 end;
 
-procedure TGuiDial.SetMin(const Value: Single);
+procedure TCustomGuiDial.SetMin(const Value: Single);
 begin
   if Value <> FMin then
   begin
@@ -446,7 +473,7 @@ begin
   end;
 end;
 
-procedure TGuiDial.SetNumGlyphs(const Value: Integer);
+procedure TCustomGuiDial.SetNumGlyphs(const Value: Integer);
 begin
   if fNumGlyphs <> Value then
   begin
@@ -455,7 +482,7 @@ begin
   end;
 end;
 
-procedure TGuiDial.SetPosition(Value: Single);
+procedure TCustomGuiDial.SetPosition(Value: Single);
 begin
   if Value < FMin then Value := FMin else
   if Value > FMax then Value := FMax;
@@ -468,7 +495,7 @@ begin
   end;
 end;
 
-procedure TGuiDial.SetDefaultPosition(Value: Single);
+procedure TCustomGuiDial.SetDefaultPosition(Value: Single);
 begin
   if Value < FMin then Value := FMin else
   if Value > FMax then Value := FMax;
@@ -476,13 +503,13 @@ begin
   fDefaultPosition := Value;
 end;
 
-procedure TGuiDial.SetDialBitmap(const Value: TBitmap);
+procedure TCustomGuiDial.SetDialBitmap(const Value: TBitmap);
 begin
   fDialBitmap.Assign(Value);
   DoAutoSize;
 end;
 
-procedure TGuiDial.SetStitchKind(const Value: TGuiDialStitchKind);
+procedure TCustomGuiDial.SetStitchKind(const Value: TGuiDialStitchKind);
 begin
   if fStitchKind <> Value then
   begin
@@ -491,7 +518,7 @@ begin
   end;
 end;
 
-function TGuiDial.CircularMouseToPosition(X, Y: Integer): Single;
+function TCustomGuiDial.CircularMouseToPosition(X, Y: Integer): Single;
 var
   Range: Single;
   Angle: Single;
@@ -506,7 +533,7 @@ begin
   if Result < Min then Result := fPosition;
 end;
 
-procedure TGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
+procedure TCustomGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
   if Enabled then
@@ -518,7 +545,7 @@ begin
   inherited;
 end;
 
-procedure TGuiDial.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiDial.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
 var Range: Single;
 begin
   Range := Max - (Min - 1);
@@ -530,18 +557,18 @@ begin
   inherited;
 end;
 
-procedure TGuiDial.DragMouseMoveRight(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiDial.DragMouseMoveRight(Shift: TShiftState; X, Y: Integer);
 begin
   if fRightMouseButton=rmbfCircular then position := CircularMouseToPosition(x,y);
   inherited;
 end;
 
-procedure TGuiDial.SetPointerAngles(const Value: TGuiDialPointerAngles);
+procedure TCustomGuiDial.SetPointerAngles(const Value: TGuiDialPointerAngles);
 begin
   fPointerAngles.Assign(Value);
 end;
 
-procedure TGuiDial.CalcColorCircle;
+procedure TCustomGuiDial.CalcColorCircle;
 begin
   if (Color and $000000FF) < $80
    then if (((Color and $0000FF00) shr 8) <$80) or (((Color and $00FF0000) shr 16)<$80) then fCircleColor:=$FFFFFF
@@ -550,7 +577,7 @@ begin
   RedrawBuffer(True);
 end;
 
-procedure TGuiDial.SetAntiAlias(const Value: TGuiDialAntiAlias);
+procedure TCustomGuiDial.SetAntiAlias(const Value: TGuiAntiAlias);
 begin
  if fAntiAlias <> Value then
   begin
@@ -559,17 +586,81 @@ begin
   end;
 end;
 
-procedure TGuiDial.SetAutoColor(const Value: Boolean);
+procedure TCustomGuiDial.SetAutoColor(const Value: Boolean);
 begin
   CalcColorCircle;
 end;
 
-procedure TGuiDial.SetCircleColor(const Value: TColor);
+procedure TCustomGuiDial.SetCircleColor(const Value: TColor);
 begin
   if not fAutoColor and (Value <> fCircleColor) then
   begin
     fCircleColor:=Value;
     RedrawBuffer(True);
+  end;
+end;
+
+{ TCustomGuiDialEx }
+
+constructor TCustomGuiDialEx.Create(AOwner: TComponent);
+begin
+ inherited;
+ fIndLineLength := 100;
+end;
+
+procedure TCustomGuiDialEx.RenderKnobToBitmap(Bitmap: TBitmap);
+var
+  Steps, i  : Integer;
+  Val, Off  : TComplexDouble;
+  Rad, tmp  : Single;
+  PtsArray  : Array of TPoint;
+  LineFrac  : Single;
+begin
+ with Bitmap, Canvas do
+  begin
+   Brush.Color := Self.Color;
+
+   {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+   FillRect(ClipRect);
+
+   Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
+   if Rad < 0 then exit;
+   Steps := Round(2 / arcsin(1 / Rad)) + 1;
+   if Steps > 1 then
+   begin
+     SetLength(PtsArray, Steps);
+     GetSinCos(PositionToAngle - (PI * 0.5), Val.Im, Val.Re);
+     Val.Re := Val.Re * Rad; Val.Im := Val.Im * Rad;
+     GetSinCos(2 * Pi / (Steps - 1), Off.Im, Off.Re);
+     PtsArray[0] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
+
+     for i:=1 to Steps - 1 do
+      begin
+       tmp := Val.Re * Off.Re - Val.Im * Off.Im;
+       Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
+       Val.Re := tmp;
+       PtsArray[i] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
+      end;
+
+     Pen.Width := fLineWidth;
+     Pen.Color := fLineColor;
+     Brush.Color := fCircleColor;
+     Polygon(PtsArray);
+   end;
+
+   LineFrac := 0.01 * fIndLineLength; 
+   MoveTo(PtsArray[0].X, PtsArray[0].Y);
+   LineTo(Round((1 - LineFrac) * PtsArray[0].X + LineFrac * 0.5 * Width),
+          Round((1 - LineFrac) * PtsArray[0].Y + LineFrac * 0.5 * Height));
+  end;
+end;
+
+procedure TCustomGuiDialEx.SetIndLineLength(const Value: Single);
+begin
+ if fIndLineLength <> Value then
+  begin
+   fIndLineLength := Value;
+   RedrawBuffer(True);
   end;
 end;
 

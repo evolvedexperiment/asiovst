@@ -54,10 +54,10 @@ type
 
   TGate = class(TDynamics)
   private
-    procedure SetHold(const Value: Double);
-    procedure SetRange(const Value: Double);
     function GetHighCut: Double;
     function GetLowCut: Double;
+    procedure SetHold(const Value: Double);
+    procedure SetRange(const Value: Double);
     procedure SetHighCut(const Value: Double);
     procedure SetLowCut(const Value: Double);
     procedure SetKnee(const Value: Double);

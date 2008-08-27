@@ -17,6 +17,7 @@ begin
   RegisterComponents('ASIO/VST GUI', [TGuiDynamicWaveform,
                                       TGuiStaticWaveform,
                                       TGuiDial,
+                                      TGuiDialEx,
                                       TGuiGroup,
                                       TGuiMidiKeys,
                                       TGuiADSRGraph,

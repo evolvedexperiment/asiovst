@@ -124,113 +124,113 @@ type
     procedure SetGUIStyle(const Value: TGUIStyle);
     procedure ListParamChange(Sender: TObject);
     {$ENDIF}
-  public
-    PVstEffect          : PVSTEffect;
-    GUIForm             : TForm;
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure EditClose;
   public
+    PVstEffect          : PVSTEffect;
+    GUIForm             : TForm;
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-    function GetDisplayName: string; override;
-    function GetFriendlyNameString(const StringLength: Integer): string;
-    function GetVendorString: string;
-    function GetProductString: string;
-    function GetVendorVersion: Integer;
-    function GetProgram: Integer;
-    procedure SetProgram(lValue: Integer);
-    function GetProgramName: string;
-    procedure SetProgramName(newName: string);
-    procedure SetSampleRate(fSR: double);
-    procedure Open;
-    procedure Close;
-    function Load(PluginDll: TFilename): Boolean;
-    procedure UnLoad;
-    procedure ShowEdit(Form: TForm); overload;
-    procedure ShowEdit; overload;
-    function EditGetRect: ERect;
-    function EditOpen(Handle: THandle): Integer;
-    procedure CloseEdit;
-    procedure MainsChanged(bOn: Boolean);
-    procedure SetParameter(index: Integer; parameter: Single); virtual;
-    function GetParameter(index: Integer): Single; virtual;
-    function GetParamLabel(index: Integer): string;
-    function GetParamDisplay(index: Integer): string;
-    function GetParamName(index: Integer): string;
-    function GetVu: Single;
-    function Identify: Integer;
-    procedure Process(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
-    procedure ProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
-    procedure ProcessDoubleReplacing(Inputs, Outputs: ppDouble; SampleFrames: Integer); virtual;
-    procedure ProcessAudio(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-    function GetChunk(pntr: pointer; isPreset: Boolean = false): Integer;
-    function SetChunk(data: pointer; ByteSize: Integer; isPreset: Boolean = false): Integer;
-    function ProcessEvents(pntr: PVstEvents): Integer;
+    function BeginLoadBank(PatchChunkInfo : PVstPatchChunkInfo): integer;
     function CanBeAutomated(index: Integer): Integer;
-    function String2Parameter(ParameterName: string): Integer;
-    function GetNumProgramCategories: Integer;
-    function GetProgramNameIndexed(category, index: Integer; ProgramName: PChar): Integer;
-    function CopyCurrentProgramTo(Destination: Integer): Boolean;
+    function CanDo(pntr: pchar): Integer;
     function ConnectInput(InputNr: Integer; state: Boolean): Integer;
     function ConnectOutput(OutputNr: Integer; state: Boolean): Integer;
-    function GetInputProperties(InputNr: Integer): TVstPinProperties;
-    function GetOutputProperties(OutputNr: Integer): TVstPinProperties;
-    function GetPlugCategory: TVstPluginCategory;
+    function CopyCurrentProgramTo(Destination: Integer): Boolean;
+    function EditGetRect: ERect;
+    function EditIdle: Integer;
+    function EditKeyDown(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
+    function EditKeyUp(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
+    function EditOpen(Handle: THandle): Integer;
+    function GetChunk(pntr: pointer; isPreset: Boolean = False): Integer;
+    function GetCurrentMidiProgram(MidiProgramNamePointer : PMidiProgramName): Integer;
     function GetCurrentPosition: Integer;
     function GetDestinationBuffer: Integer;
+    function GetDisplayName: string; override;
+    function GetEffectName: string;
+    function GetErrorText: string;
+    function GetFriendlyNameString(const StringLength: Integer): string;
+    function GetIcon: Integer;
+    function GetInputProperties(InputNr: Integer): TVstPinProperties;
+    function GetMidiKeyName(MidiKeyNamePointer: PMidiKeyName): Integer;
+    function GetMidiProgramCategory(MidiProgramCategoryPointer : PMidiProgramCategory): Integer;
+    function GetMidiProgramName(MidiProgramNamePointer : PMidiProgramName): Integer;
+    function GetNumProgramCategories: Integer;
+    function GetOutputProperties(OutputNr: Integer): TVstPinProperties;
+    function GetParamDisplay(index: Integer): string;
+    function GetParameter(index: Integer): Single; virtual;
+    function GetParameterProperties(Parameter: Integer): TVstParameterProperties;
+    function GetParamLabel(index: Integer): string;
+    function GetParamName(index: Integer): string;
+    function GetPlugCategory: TVstPluginCategory;
+    function GetProductString: string;
+    function GetProgram: Integer;
+    function GetProgramName: string;
+    function GetProgramNameIndexed(category, index: Integer; ProgramName: PChar): Integer;
+    function GetRect: TRect;
+    function GetSpeakerArrangement(SpeakerIn, SpeakerOut:PVstSpeakerArrangement): Integer;
+    function GetTailSize: Integer;
+    function GetVendorString: string;
+    function GetVendorVersion: Integer;
+    function GetVstVersion: Integer;
+    function GetVu: Single;
+    function HasMidiProgramsChanged: Integer;
+    function Identify: Integer;
+    function Idle: Integer;
+    function KeysRequired: Integer;
+    function Load(PluginDll: TFilename): Boolean;
     function OfflineNotify(pntr: PVstAudioFile; numAudioFiles: Integer; start: Boolean): Integer;
     function OfflinePrepare(pntr: PVstOfflineTask; count: Integer): Integer;
     function OfflineRun(pntr: PVstOfflineTask; count :Integer): Integer;
+    function ProcessEvents(pntr: PVstEvents): Integer;
     function ProcessVarIo(varIo: PVstVariableIo): Integer;
-    function SetSpeakerArrangement(pluginInput: PVstSpeakerArrangement; pluginOutput: PVstSpeakerArrangement): Boolean;
     function SetBlockSizeAndSampleRate(blockSize: Integer; sampleRate: Single): Integer;
     function SetBypass(onOff: Boolean): Integer;
-    function GetEffectName: string;
-    function GetErrorText: string;
-    function GetTailSize: Integer;
-    function GetIcon: Integer;
-    function GetVstVersion: Integer;
-    function GetSpeakerArrangement(SpeakerIn, SpeakerOut:PVstSpeakerArrangement): Integer;
+    function SetChunk(data: pointer; ByteSize: Integer; isPreset: Boolean = False): Integer;
+    function SetSpeakerArrangement(pluginInput: PVstSpeakerArrangement; pluginOutput: PVstSpeakerArrangement): Boolean;
     function ShellGetNextPlugin(var PluginName:String): Integer;
-    function EditKeyDown(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
-    function EditKeyUp(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
-    procedure SetEditKnobMode(Mode : TKnobMode);
-    procedure StartProcess;
-    procedure StopProcess;
-    procedure SetTotalSampleToProcess;
-    procedure BeginSetProgram;
-    procedure EndSetProgram;
-    procedure SetPanLaw(PanLaw: TVstPanLawType; Gain: Single);
-    function GetMidiProgramName(MidiProgramNamePointer : PMidiProgramName): Integer;
-    function GetCurrentMidiProgram(MidiProgramNamePointer : PMidiProgramName): Integer;
-    function GetMidiProgramCategory(MidiProgramCategoryPointer : PMidiProgramCategory): Integer;
-    function HasMidiProgramsChanged: Integer;
-    function GetMidiKeyName(MidiKeyNamePointer: PMidiKeyName): Integer;
-    function BeginLoadBank(PatchChunkInfo : PVstPatchChunkInfo): integer;
-    procedure BeginLoadProgram(PatchChunkInfo : PVstPatchChunkInfo);
-    function GetRect: TRect;
-    function GetParameterProperties(Parameter: Integer): TVstParameterProperties;
+    function String2Parameter(ParameterName: string): Integer;
     function VendorSpecific(index, value:Integer; pntr: pointer; opt: Single): Integer;
-    function CanDo(pntr: pchar): Integer;
-    function Idle: Integer;
-    function EditIdle: Integer;
+    procedure BeginLoadProgram(PatchChunkInfo : PVstPatchChunkInfo);
+    procedure BeginSetProgram;
+    procedure Close;
+    procedure CloseEdit;
     procedure EditActivate;
     procedure EditDeactivate;
-    procedure SetViewPosition(x, y: Integer);
-    function KeysRequired: Integer;
-    procedure SavePreset(FileName: TFileName); overload;
-    procedure SavePreset(Stream: TStream); overload;
-    procedure LoadPreset(FileName: TFileName); overload;
-    procedure LoadPreset(Stream: TStream); overload;
-    procedure SaveBank(FileName: TFileName); overload;
-    procedure SaveBank(Stream: TStream); overload;
+    procedure EndSetProgram;
     procedure LoadBank(FileName: TFileName); overload;
     procedure LoadBank(Stream: TStream); overload;
+    procedure LoadPreset(FileName: TFileName); overload;
+    procedure LoadPreset(Stream: TStream); overload;
+    procedure LoadVSTDLL;
+    procedure MainsChanged(bOn: Boolean);
+    procedure Open;
+    procedure Process(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
+    procedure ProcessAudio(Inputs, Outputs: PPSingle; SampleFrames: Integer);
+    procedure ProcessDoubleReplacing(Inputs, Outputs: ppDouble; SampleFrames: Integer); virtual;
+    procedure ProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
+    procedure SaveBank(FileName: TFileName); overload;
+    procedure SaveBank(Stream: TStream); overload;
+    procedure SavePreset(FileName: TFileName); overload;
+    procedure SavePreset(Stream: TStream); overload;
+    procedure SetEditKnobMode(Mode : TKnobMode);
+    procedure SetPanLaw(PanLaw: TVstPanLawType; Gain: Single);
+    procedure SetParameter(index: Integer; parameter: Single); virtual;
+    procedure SetProgram(lValue: Integer);
+    procedure SetProgramName(newName: string);
+    procedure SetSampleRate(fSR: double);
+    procedure SetTotalSampleToProcess;
+    procedure SetViewPosition(x, y: Integer);
+    procedure ShowEdit(Form: TForm); overload;
+    procedure ShowEdit; overload;
+    procedure StartProcess;
+    procedure StopProcess;
+    procedure UnLoad;
     property Parameters[Index: Integer]:Single read GetParameter write SetParameter;
     property VstOfflineTask : TVstOfflineTask read FVstOfflineTask;
   published
-    property Active: Boolean read FActive write Activate default false;
+    property Active: Boolean read FActive write Activate default False;
     property DisplayName: string read GetDisplayName write FDisplayName;
     property numInputs: Integer read GetnumInputs stored False default -1 ;
     property numOutputs: Integer read GetnumOutputs stored False default -1 ;
@@ -1057,9 +1057,9 @@ begin
  FDisplayName    := inherited GetDisplayName;
  FMainFunction   := nil;
  PVstEffect      := nil;
- FEditOpen       := false;
- FNeedIdle       := false;
- FWantMidi       := false;
+ FEditOpen       := False;
+ FNeedIdle       := False;
+ FWantMidi       := False;
  FVstVersion     := -1;
  FPlugCategory   := vpcUnknown;
  FDLLFileName    := '';
@@ -1089,12 +1089,9 @@ begin
   if b then Open else Close;
 end;
 
-procedure TVstPlugin.Open;
+procedure TVstPlugin.LoadVSTDLL;
 var
-  i      : Integer;
   loadOK : Boolean;
-  tmp    : string;
-  sl     : TStringList;
 begin
  loadOK := True;
  if not Assigned(PVstEffect)
@@ -1104,10 +1101,6 @@ begin
   fnclex                  // Don't raise pending exceptions enabled by the new flags
   fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
  end;
- Randomize;
- FEditOpen := False;
- FNeedIdle := False;
- FWantMidi := False;
  if PVstEffect = nil then
   try
    if not loadOK then
@@ -1117,6 +1110,17 @@ begin
   except
    raise;
   end;
+end;
+
+procedure TVstPlugin.Open;
+var
+  i      : Integer;
+  loadOK : Boolean;
+  tmp    : string;
+  sl     : TStringList;
+begin
+ LoadVSTDLL;
+
  if Longint(PVstEffect.Magic)<>FourCharToLong('V','s','t','P')
   then raise Exception.Create('There is no magic in it... failed!');
  if PVstEffect.uniqueID = 0 then
@@ -1126,6 +1130,11 @@ begin
    sl.Add(tmp);
    sl.Free;
   end;
+
+ Randomize;
+ FEditOpen := False;
+ FNeedIdle := False;
+ FWantMidi := False;
 
  VstDispatch(effOpen);
  CanDo('bypass');
@@ -1154,13 +1163,13 @@ begin
    VstDispatch(effClose);
    PVstEffect := nil;
   end;
- FActive := false;
- FVersion := 0;
+ FActive       := False;
+ FVersion      := 0;
  FPlugCategory := vpcUnknown;
- FnumInputs := 0;
- FnumOutputs := 0;
- FnumPrograms := 0;
- FnumParams := 0;
+ FnumInputs    := 0;
+ FnumOutputs   := 0;
+ FnumPrograms  := 0;
+ FnumParams    := 0;
 end;
 
 function TVstPlugin.VstDispatch(opCode : TDispatcherOpcode; Index, Value: Integer; Pntr: pointer; opt: double): Integer;
@@ -1335,7 +1344,7 @@ begin
   i := VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
  finally
   if i > 0 then FEditOpen := true
-  else FEditOpen := false;
+  else FEditOpen := False;
   result := i;
  end;
 end;
@@ -1600,7 +1609,7 @@ begin
        if GUIForm.FindComponent('LbV'+IntToStr(i))=nil then Break;
        GUIForm.FindComponent('LbV'+IntToStr(i)).Free;
        inc(i);
-      until false;
+      until False;
      end;
    end;
  if (GUIForm <> nil) and fGUIFormCreated then //and (not FExternalForm) then
@@ -1609,7 +1618,7 @@ begin
   finally
    GUIForm := nil;
   end;
- FEditOpen := false;
+ FEditOpen := False;
 end;
 
 procedure TVstPlugin.onFormClose(Sender: TObject; var Action: TCloseAction);
@@ -1642,12 +1651,12 @@ begin
  result := VstDispatch(effIdentify);
 end;
 
-function TVstPlugin.GetChunk(pntr: pointer; isPreset: Boolean = false): Integer;
+function TVstPlugin.GetChunk(pntr: pointer; isPreset: Boolean = False): Integer;
 begin
  result := VstDispatch(effGetChunk, integer(isPreset), 0, pntr);
 end;
 
-function TVstPlugin.SetChunk(data: pointer; ByteSize: Integer; isPreset: Boolean = false): Integer;
+function TVstPlugin.SetChunk(data: pointer; ByteSize: Integer; isPreset: Boolean = False): Integer;
 begin
  result := VstDispatch(effSetChunk, integer(isPreset), ByteSize, data);
 end;
@@ -1695,7 +1704,7 @@ function TVstPlugin.CopyCurrentProgramTo(Destination: Integer): Boolean;
 begin
  if FActive then
   result := Boolean(VstDispatch(effCopyProgram, Destination))
- else result := false;
+ else result := False;
 end;
 
 function TVstPlugin.ConnectInput(InputNr: Integer; state: Boolean): Integer;
@@ -1925,18 +1934,18 @@ end;
 
 function TVstPlugin.EditKeyDown(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
 begin
- Result := false;
+ Result := False;
  if FActive then
   Result := (VstDispatch(effEditKeyDown, Integer(Key), VirtualKeycode, nil, Modifier) = 1);
-  // character in <index>, virtual in <value>, modifiers in <opt>, return true if used, else false
+  // character in <index>, virtual in <value>, modifiers in <opt>, return true if used, else False
 end;
 
 function TVstPlugin.EditKeyUp(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
 begin
- Result := false;
+ Result := False;
  if FActive then
   Result := (VstDispatch(effEditKeyUp, Integer(Key), VirtualKeycode, nil, Modifier) = 1);
- // character in <index>, virtual in <value>, modifiers in <opt>, return true if used, else false
+ // character in <index>, virtual in <value>, modifiers in <opt>, return true if used, else False
 end;
 
 procedure TVstPlugin.SetEditKnobMode(Mode : TKnobMode);
@@ -2140,7 +2149,7 @@ end;
 
 function TVstPlugin.Load(PluginDll: TFilename):Boolean;
 begin
- result := false;
+ result := False;
  try
    Unload;  // make sure nothing else is loaded
    FMainFunction := nil;
@@ -2159,7 +2168,7 @@ begin
    result := true;
   end else raise exception.Create('PlugIn ' + PluginDll + ' could not be loaded');
  except
-  result := false;
+  result := False;
   Unload;
   exit;
  end;
@@ -2358,7 +2367,7 @@ begin
   x := Stream.Size - Stream.Position;
   GetMem(pb2, x + 1);
   j := Stream.Read(pb2^, x);
-  SetChunk(pb2, j, false);
+  SetChunk(pb2, j, False);
   FreeMem(pb2);
  end else
  begin
@@ -2477,7 +2486,7 @@ begin
   SwapLong(p2.fxID);
   SwapLong(p2.fxVersion);
   SwapLong(p2.numPrograms);
-  x := GetChunk(@PBuffer, false);
+  x := GetChunk(@PBuffer, False);
   p2.chunkSize := x;
   p2.ByteSize := SizeOf(p2) - SizeOf(longint) * 3 + p2.chunkSize + 8;
   SwapLong(p2.ByteSize);

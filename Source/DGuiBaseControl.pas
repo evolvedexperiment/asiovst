@@ -9,6 +9,12 @@ uses
   Messages, Graphics, Classes, Controls, ExtCtrls;
 
 type
+  TRGB32 = packed record
+    B, G, R, A: Byte;
+  end;
+  TRGB32Array = packed array[0..MaxInt div SizeOf(TRGB32) - 1] of TRGB32;
+  PRGB32Array = ^TRGB32Array;
+
   TGuiOnDragMouseMove = procedure(Sender: TObject; Button: TMouseButton;
     Shift: TShiftState; X, Y: Integer) of object;
 
@@ -28,6 +34,8 @@ type
 
   TGuiMouseStateClass = class of TGuiMouseState;
 
+  TGuiAntiAlias = (gaaNone, gaaLinear2x, gaaLinear4x);
+
   TBufferedGraphicControl = class(TGraphicControl)
   protected
     fBuffer   : TBitmap;
@@ -37,6 +45,7 @@ type
     procedure DrawParentImage(Dest: TCanvas); virtual;
     {$ENDIF}
 
+    procedure DownsampleBitmap(var Bitmap: TBitmap);
     procedure Resize; override;
     procedure ResizeBuffer; dynamic;
     procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
@@ -186,6 +195,30 @@ begin
   Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
   Parent.Perform(WM_PAINT, Longint(DC), 0);
   RestoreDC(DC, SaveIndex);
+end;
+
+procedure TBufferedGraphicControl.DownsampleBitmap(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  Line : Array [0..2] of PRGB32Array;
+begin
+ with Bitmap do
+  begin
+   // first stage
+   for y := 0 to (Height div 2) - 1 do
+    begin
+     Line[0] := Scanline[y];
+     Line[1] := Scanline[y * 2];
+     Line[2] := Scanline[y * 2 + 1];
+     for x := 0 to (Width  div 2) - 1 do
+      begin
+       Line[0, x].B := (Line[1, 2 * x].B + Line[2, 2 * x].B + Line[1, 2 * x + 1].B + Line[2, 2 * x + 1].B) div 4;
+       Line[0, x].G := (Line[1, 2 * x].G + Line[2, 2 * x].G + Line[1, 2 * x + 1].G + Line[2, 2 * x + 1].G) div 4;
+       Line[0, x].R := (Line[1, 2 * x].R + Line[2, 2 * x].R + Line[1, 2 * x + 1].R + Line[2, 2 * x + 1].R) div 4;
+       Line[0, x].A := (Line[1, 2 * x].A + Line[2, 2 * x].A + Line[1, 2 * x + 1].A + Line[2, 2 * x + 1].A) div 4;
+      end;
+    end;
+  end;
 end;
 
 procedure TBufferedGraphicControl.Loaded;

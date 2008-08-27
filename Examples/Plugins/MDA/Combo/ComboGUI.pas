@@ -8,25 +8,25 @@ uses
 
 type
   TFmCombo = class(TForm)
-    LbModel: TLabel;
     CBModel: TComboBox;
-    LbDrive: TLabel;
     LbBias: TLabel;
-    SBDrive: TScrollBar;
-    SBBias: TScrollBar;
+    LbBiasValue: TLabel;
+    LbDrive: TLabel;
+    LbDriveValue: TLabel;
+    LbFreq: TLabel;
+    LbFrequencyValue: TLabel;
+    LbModel: TLabel;
+    LbOutput: TLabel;
+    LbOutputValue: TLabel;
+    LbReso: TLabel;
+    LbResonanceValue: TLabel;
     RBMono: TRadioButton;
     RBStereo: TRadioButton;
-    SBOutput: TScrollBar;
-    LbOutput: TLabel;
-    LbFreq: TLabel;
+    SBBias: TScrollBar;
+    SBDrive: TScrollBar;
     SBFreq: TScrollBar;
-    LbReso: TLabel;
+    SBOutput: TScrollBar;
     SBReso: TScrollBar;
-    LbResonanceValue: TLabel;
-    LbFrequencyValue: TLabel;
-    LbOutputValue: TLabel;
-    LbBiasValue: TLabel;
-    LbDriveValue: TLabel;
     procedure SBDriveChange(Sender: TObject);
     procedure SBBiasChange(Sender: TObject);
     procedure SBOutputChange(Sender: TObject);
@@ -35,10 +35,6 @@ type
     procedure RBMonoClick(Sender: TObject);
     procedure RBStereoClick(Sender: TObject);
     procedure CBModelChange(Sender: TObject);
-  private
-    { Private-Deklarationen }
-  public
-    { Public-Deklarationen }
   end;
 
 var
