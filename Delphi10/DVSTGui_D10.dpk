@@ -43,6 +43,7 @@ contains
   DGuiLevelMeter in '..\Source\DGuiLevelMeter.pas',
   DGuiAudioDataDisplay in '..\Source\DGuiAudioDataDisplay.pas',
   DGuiGroup in '..\Source\DGuiGroup.pas',
-  DGuiLabel in '..\Source\DGuiLabel.pas';
+  DGuiLabel in '..\Source\DGuiLabel.pas',
+  DGuiPanel in '..\Source\DGuiPanel.pas';
 
 end.
