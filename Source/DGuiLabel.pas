@@ -37,22 +37,23 @@ type
 
   TGuiLabel = class(TCustomGuiLabel)
   published
+    property Align;
+    property Alignment;
+    property Anchors;
+    property AntiAlias;
+    property AutoSize;
     property Caption;
     property Color;
-    property AntiAlias;
-    property Alignment;
-    property AutoSize;
+    property Constraints;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
     property Enabled;
     property Font;
-    property Align;
-    property Anchors;
-    property Constraints;
-    property ShowHint;
-    property Visible;
     property PopupMenu;
-    property DragKind;
-    property DragCursor;
-    property DragMode;
+    property ShowHint;
+    property Transparent;
+    property Visible;
 
     property OnCanResize;
     property OnClick;

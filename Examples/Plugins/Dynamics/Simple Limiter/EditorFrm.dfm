@@ -1,11 +1,11 @@
 object EditorForm: TEditorForm
-  Left = 218
-  Top = 81
+  Left = 355
+  Top = 328
   BorderStyle = bsNone
   Caption = 'EditorForm'
-  ClientHeight = 160
-  ClientWidth = 252
-  Color = clBtnFace
+  ClientHeight = 88
+  ClientWidth = 272
+  Color = 16114402
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,125 +13,183 @@ object EditorForm: TEditorForm
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
-  DesignSize = (
-    252
-    160)
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object LbThreshold: TLabel
+  object DialThreshold: TGuiDial
     Left = 8
     Top = 8
-    Width = 51
-    Height = 13
-    Caption = 'Threshold:'
+    Width = 64
+    Height = 64
+    LineWidth = 2
+    LineColor = 15652795
+    Position = -0.000000000100000001
+    DefaultPosition = -0.000000000100000001
+    Min = -96.000000000000000000
+    Max = -0.000000000100000001
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialThresholdChange
   end
-  object LbThresholdValue: TLabel
-    Left = 160
+  object LbThreshold: TGuiLabel
+    Left = 8
+    Top = 71
+    Width = 64
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'THRESHOLD'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 11173988
+    Font.Height = -9
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
+  end
+  object DialRatio: TGuiDial
+    Left = 72
     Top = 8
-    Width = 84
-    Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
-    AutoSize = False
-    Caption = 'dB'
+    Width = 64
+    Height = 64
+    LineWidth = 2
+    LineColor = 15652795
+    Max = 200.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialRatioChange
   end
-  object LbRatio: TLabel
-    Left = 8
-    Top = 46
-    Width = 29
+  object LbRatio: TGuiLabel
+    Left = 72
+    Top = 71
+    Width = 64
     Height = 13
-    Caption = 'Ratio:'
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'RATIO'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 11173988
+    Font.Height = -9
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
   end
-  object LbRatioValue: TLabel
-    Left = 160
-    Top = 46
-    Width = 84
-    Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
-    AutoSize = False
+  object DialAttack: TGuiDial
+    Left = 136
+    Top = 8
+    Width = 64
+    Height = 64
+    LineWidth = 2
+    LineColor = 15652795
+    Min = -200.000000000000000000
+    Max = 300.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialAttackChange
   end
-  object LbAttack: TLabel
-    Left = 8
-    Top = 84
-    Width = 35
+  object LbAttack: TGuiLabel
+    Left = 136
+    Top = 71
+    Width = 64
     Height = 13
-    Caption = 'Attack:'
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'ATTACK'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 11173988
+    Font.Height = -9
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
+  end
+  object DialRelease: TGuiDial
+    Left = 200
+    Top = 8
+    Width = 64
+    Height = 64
+    LineWidth = 2
+    LineColor = 15652795
+    Position = 699.000000000000000000
+    DefaultPosition = 699.000000000000000000
+    Min = 699.000000000000000000
+    Max = 3699.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialReleaseChange
+  end
+  object LbRelease: TGuiLabel
+    Left = 200
+    Top = 71
+    Width = 64
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'RELEASE'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 11173988
+    Font.Height = -9
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
   end
   object LbAttackValue: TLabel
-    Left = 168
-    Top = 84
-    Width = 76
+    Left = 136
+    Top = 55
+    Width = 64
     Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
+    Alignment = taCenter
     AutoSize = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 15652795
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
   end
-  object LbRelease: TLabel
-    Left = 8
-    Top = 122
-    Width = 42
+  object LbRatioValue: TLabel
+    Left = 72
+    Top = 55
+    Width = 64
     Height = 13
-    Caption = 'Release:'
+    Alignment = taCenter
+    AutoSize = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 15652795
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
   end
   object LbReleaseValue: TLabel
-    Left = 160
-    Top = 122
-    Width = 84
+    Left = 200
+    Top = 55
+    Width = 64
     Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
+    Alignment = taCenter
     AutoSize = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 15652795
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
   end
-  object SBThreshold: TScrollBar
+  object LbThresholdValue: TLabel
     Left = 8
-    Top = 24
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    Max = 0
-    Min = -96
-    PageSize = 0
-    Position = -80
-    TabOrder = 0
-    OnChange = SBThresholdChange
-  end
-  object SBRatio: TScrollBar
-    Left = 8
-    Top = 62
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    Max = 200
-    PageSize = 0
-    TabOrder = 1
-    OnChange = SBRatioChange
-  end
-  object SBAttack: TScrollBar
-    Left = 8
-    Top = 100
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    Max = 300
-    Min = -200
-    PageSize = 0
-    TabOrder = 2
-    OnChange = SBAttackChange
-  end
-  object SBRelease: TScrollBar
-    Left = 8
-    Top = 138
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    LargeChange = 100
-    Max = 3699
-    Min = 699
-    PageSize = 0
-    Position = 700
-    SmallChange = 10
-    TabOrder = 3
-    OnChange = SBReleaseChange
+    Top = 55
+    Width = 64
+    Height = 13
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'dB'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 15652795
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
   end
 end
