@@ -9,15 +9,16 @@ type
   TSoftKneeLimiterDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
-    procedure SKLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const sampleframes: Integer);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure SKLSoftKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure SKLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure VSTModuleOpen(Sender: TObject);
   private
     fSoftKneeLimiters : Array [0..1] of TSoftKneeLimiter;
   public
@@ -27,7 +28,8 @@ implementation
 
 {$R *.DFM}
 
-uses Math, EditorFrm;
+uses
+  Math, EditorFrm;
 
 procedure TSoftKneeLimiterDataModule.SKLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
@@ -35,25 +37,25 @@ begin
  fSoftKneeLimiters[0].Threshold := Value;
  fSoftKneeLimiters[1].Threshold := Value;
  if Assigned(EditorForm) then
-  with EditorForm As TEditorForm do
-   if SBThreshold.Position <> Round(Value) then
+  with EditorForm as TEditorForm do
+   if DialThreshold.Position <> Value then
     begin
-     SBThreshold.Position := Round(Value);
-     LbThresholdValue.Caption := IntToStr(SBThreshold.Position) + ' dB';
+     DialThreshold.Position := Value;
+     UpdateThreshold;
     end;
 end;
 
 procedure TSoftKneeLimiterDataModule.SKLSoftKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fSoftKneeLimiters[0].SoftKnee := 20 - Value;
- fSoftKneeLimiters[1].SoftKnee := 20 - Value;
+ fSoftKneeLimiters[0].SoftKnee := 2 * (20 - Value);
+ fSoftKneeLimiters[1].SoftKnee := 2 * (20 - Value);
  if Assigned(EditorForm) then
-  with EditorForm As TEditorForm do
-   if SBSoftKnee.Position <> Round(10 * Value) then
+  with EditorForm as TEditorForm do
+   if DialSoftKnee.Position <> Value then
     begin
-     SBSoftKnee.Position := Round(10 * Value);
-     LbSoftKneeValue.Caption := FloatToStrF(Parameter[4], ffGeneral, 4, 5);
+     DialSoftKnee.Position := Value;
+     UpdateSoftKnee;
     end;
 end;
 
@@ -63,11 +65,11 @@ begin
  fSoftKneeLimiters[0].Ratio := 1 / Value;
  fSoftKneeLimiters[1].Ratio := 1 / Value;
  if Assigned(EditorForm) then
-  with EditorForm As TEditorForm do
-   if SBRatio.Position <> Round(100 * Log10(Value)) then
+  with EditorForm as TEditorForm do
+   if DialRatio.Position <> Log10(Value) then
     begin
-     SBRatio.Position := Round(100 * Log10(Value));
-     LbRatioValue.Caption := '1 : ' + FloatToStrF(Value, ffGeneral, 4, 4);
+     DialRatio.Position := Log10(Value);
+     UpdateRatio;
     end;
 end;
 
@@ -77,11 +79,11 @@ begin
  fSoftKneeLimiters[0].Decay := Value;
  fSoftKneeLimiters[1].Decay := Value;
  if Assigned(EditorForm) then
-  with EditorForm As TEditorForm do
-   if SBRelease.Position <> Round(Value) then
+  with EditorForm as TEditorForm do
+   if DialRelease.Position <> Log10(Value) then
     begin
-     SBRelease.Position := Round(1000 * Log10(Value));
-     LbReleaseValue.Caption := FloatToStrF(Value, ffGeneral, 4, 5) + ' ms';
+     DialRelease.Position := Log10(Value);
+     UpdateRelease;
     end;
 end;
 
@@ -91,11 +93,11 @@ begin
  fSoftKneeLimiters[0].Attack := Value;
  fSoftKneeLimiters[1].Attack := Value;
  if Assigned(EditorForm) then
-  with EditorForm As TEditorForm do
-   if SBAttack.Position <> Round(100 * Log10(Value)) then
+  with EditorForm as TEditorForm do
+   if DialAttack.Position <> Log10(Value) then
     begin
-     SBAttack.Position := Round(100 * Log10(Value));
-     LbAttackValue.Caption := FloatToStrF(Value, ffGeneral, 4, 2) + ' ms';
+     DialAttack.Position := Log10(Value);
+     UpdateAttack;
     end;
 end;
 
@@ -117,20 +119,31 @@ begin
  GUI := TEditorForm.Create(Self);
 end;
 
-procedure TSoftKneeLimiterDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+procedure TSoftKneeLimiterDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ Parameter[0] := 0;
+ Parameter[1] := 1;
+ Parameter[2] := 5;
+ Parameter[3] := 40;
+ Parameter[4] := 6;
+end;
+
+procedure TSoftKneeLimiterDataModule.VSTModuleProcess(const Inputs, Outputs:
+  TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var i : Integer;
 begin
- for i := 0 to sampleframes - 1 do
+ for i := 0 to SampleFrames - 1 do
   begin
    Outputs[0,i] := fSoftKneeLimiters[0].ProcessSample(Inputs[0,i]);
    Outputs[1,i] := fSoftKneeLimiters[1].ProcessSample(Inputs[1,i]);
   end;
 end;
 
-procedure TSoftKneeLimiterDataModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const sampleframes: Integer);
+procedure TSoftKneeLimiterDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
+  Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
 var i : Integer;
 begin
- for i := 0 to sampleframes - 1 do
+ for i := 0 to SampleFrames - 1 do
   begin
    Outputs[0,i] := fSoftKneeLimiters[0].ProcessSample(Inputs[0,i]);
    Outputs[1,i] := fSoftKneeLimiters[1].ProcessSample(Inputs[1,i]);

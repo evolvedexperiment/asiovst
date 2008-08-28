@@ -431,6 +431,11 @@ begin
     end
    else
     begin
+     // draw background
+     Brush.Color := Self.Color; 
+     {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+     FillRect(ClipRect);
+
      GlyphNr := Trunc((fPosition - fMin) / (fMax - fMin) * fNumGlyphs);
      if (GlyphNr >= fNumGlyphs) then GlyphNr := fNumGlyphs - 1 else
      if (GlyphNr < 0) then GlyphNr := 0;

@@ -165,6 +165,8 @@ begin
      end;
    end;
  end;
+ if doBufferFlip then Invalidate;
+ inherited;
 end;
 
 procedure TCustomGuiLabel.RenderLabelToBitmap(Bitmap: TBitmap);

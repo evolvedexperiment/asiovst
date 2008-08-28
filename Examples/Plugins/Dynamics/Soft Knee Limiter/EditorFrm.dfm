@@ -3,9 +3,9 @@ object EditorForm: TEditorForm
   Top = 81
   BorderStyle = bsNone
   Caption = 'EditorForm'
-  ClientHeight = 196
-  ClientWidth = 252
-  Color = clBtnFace
+  ClientHeight = 101
+  ClientWidth = 318
+  Color = clGray
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,155 +13,203 @@ object EditorForm: TEditorForm
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
-  DesignSize = (
-    252
-    196)
+  OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object LbThreshold: TLabel
+  object DialThreshold: TGuiDial
     Left = 8
+    Top = 26
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clSilver
+    CircleColor = clGray
+    Position = -0.000000000100000001
+    DefaultPosition = -0.000000000100000001
+    Min = -96.000000000000000000
+    Max = -0.000000000100000001
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialThresholdChange
+  end
+  object DialRatio: TGuiDial
+    Left = 70
+    Top = 26
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clSilver
+    CircleColor = clGray
+    Max = 2.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialRatioChange
+  end
+  object DialAttack: TGuiDial
+    Left = 132
+    Top = 26
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clSilver
+    CircleColor = clGray
+    Min = -2.000000000000000000
+    Max = 3.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialAttackChange
+  end
+  object DialRelease: TGuiDial
+    Left = 194
+    Top = 26
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clSilver
+    CircleColor = clGray
+    Position = 3.698999881744385000
+    DefaultPosition = 3.698999881744385000
+    Min = 0.699000000953674300
+    Max = 3.698999881744385000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialReleaseChange
+  end
+  object DialSoftKnee: TGuiDial
+    Left = 256
+    Top = 26
+    Width = 48
+    Height = 48
+    LineWidth = 2
+    LineColor = clSilver
+    CircleColor = clGray
+    Position = 20.000000000000000000
+    DefaultPosition = 20.000000000000000000
+    Max = 20.000000000000000000
+    NumGlyphs = 64
+    StitchKind = skVertical
+    OnChange = DialSoftKneeChange
+  end
+  object LbThreshold: TGuiLabel
+    Left = 3
     Top = 8
-    Width = 51
+    Width = 58
     Height = 13
-    Caption = 'Threshold:'
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Threshold'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 2105376
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
   end
-  object LbThresholdValue: TLabel
-    Left = 160
+  object LbRatio: TGuiLabel
+    Left = 77
     Top = 8
-    Width = 84
+    Width = 34
     Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
-    AutoSize = False
-    Caption = 'dB'
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Ratio'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 2105376
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
   end
-  object LbRatio: TLabel
-    Left = 8
-    Top = 46
-    Width = 29
-    Height = 13
-    Caption = 'Ratio:'
-  end
-  object LbRatioValue: TLabel
-    Left = 160
-    Top = 46
-    Width = 84
-    Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
-    AutoSize = False
-  end
-  object LbAttack: TLabel
-    Left = 8
-    Top = 84
-    Width = 35
-    Height = 13
-    Caption = 'Attack:'
-  end
-  object LbAttackValue: TLabel
-    Left = 168
-    Top = 84
-    Width = 76
-    Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
-    AutoSize = False
-  end
-  object LbRelease: TLabel
-    Left = 8
-    Top = 122
+  object LbAttack: TGuiLabel
+    Left = 135
+    Top = 8
     Width = 42
     Height = 13
-    Caption = 'Release:'
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Attack'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 2105376
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
   end
-  object LbReleaseValue: TLabel
-    Left = 160
-    Top = 122
-    Width = 84
+  object LbRelease: TGuiLabel
+    Left = 194
+    Top = 8
+    Width = 48
     Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
-    AutoSize = False
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Release'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 2105376
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
   end
-  object LbSoftKnee: TLabel
-    Left = 8
-    Top = 160
-    Width = 51
+  object LbSoftKnee: TGuiLabel
+    Left = 252
+    Top = 8
+    Width = 56
     Height = 13
-    Caption = 'Soft Knee:'
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Soft Knee'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 2105376
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
   end
-  object LbSoftKneeValue: TLabel
-    Left = 160
-    Top = 160
-    Width = 84
+  object LbThresholdValue: TGuiLabel
+    Left = 8
+    Top = 79
+    Width = 48
     Height = 13
-    Alignment = taRightJustify
-    Anchors = [akTop, akRight]
-    AutoSize = False
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'dB'
   end
-  object SBThreshold: TScrollBar
-    Left = 8
-    Top = 24
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    Max = 0
-    Min = -96
-    PageSize = 0
-    Position = -80
-    TabOrder = 0
-    OnChange = SBThresholdChange
+  object LbRatioValue: TGuiLabel
+    Left = 70
+    Top = 79
+    Width = 48
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
   end
-  object SBRatio: TScrollBar
-    Left = 8
-    Top = 62
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    Max = 200
-    PageSize = 0
-    TabOrder = 1
-    OnChange = SBRatioChange
+  object LbAttackValue: TGuiLabel
+    Left = 132
+    Top = 79
+    Width = 48
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
   end
-  object SBAttack: TScrollBar
-    Left = 8
-    Top = 100
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    Max = 300
-    Min = -200
-    PageSize = 0
-    TabOrder = 2
-    OnChange = SBAttackChange
+  object LbReleaseValue: TGuiLabel
+    Left = 194
+    Top = 79
+    Width = 48
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
   end
-  object SBRelease: TScrollBar
-    Left = 8
-    Top = 138
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    LargeChange = 100
-    Max = 3699
-    Min = 699
-    PageSize = 0
-    Position = 700
-    SmallChange = 10
-    TabOrder = 3
-    OnChange = SBReleaseChange
-  end
-  object SBSoftKnee: TScrollBar
-    Left = 8
-    Top = 176
-    Width = 236
-    Height = 16
-    Anchors = [akLeft, akTop, akRight]
-    LargeChange = 100
-    Max = 200
-    PageSize = 0
-    Position = 100
-    SmallChange = 10
-    TabOrder = 4
-    OnChange = SBSoftKneeChange
+  object LbSoftKneeValue: TGuiLabel
+    Left = 256
+    Top = 79
+    Width = 48
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
   end
 end

@@ -1,81 +1,210 @@
-unit EditorFrm;
+﻿unit EditorFrm;
 
 interface
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, Controls,
-  StdCtrls;
+  StdCtrls, DGuiBaseControl, DGuiDial, PNGImage, DGuiLabel;
 
 type
   TEditorForm = class(TForm)
-    LbThreshold: TLabel;
-    SBThreshold: TScrollBar;
-    LbThresholdValue: TLabel;
-    LbRatio: TLabel;
-    LbRatioValue: TLabel;
-    SBRatio: TScrollBar;
-    LbAttack: TLabel;
-    LbAttackValue: TLabel;
-    SBAttack: TScrollBar;
-    LbRelease: TLabel;
-    LbReleaseValue: TLabel;
-    SBRelease: TScrollBar;
-    LbSoftKnee: TLabel;
-    LbSoftKneeValue: TLabel;
-    SBSoftKnee: TScrollBar;
-    procedure SBThresholdChange(Sender: TObject);
-    procedure SBRatioChange(Sender: TObject);
-    procedure SBAttackChange(Sender: TObject);
-    procedure SBReleaseChange(Sender: TObject);
-    procedure SBSoftKneeChange(Sender: TObject);
+    DialAttack: TGuiDial;
+    DialRatio: TGuiDial;
+    DialRelease: TGuiDial;
+    DialSoftKnee: TGuiDial;
+    DialThreshold: TGuiDial;
+    LbThreshold: TGuiLabel;
+    LbRatio: TGuiLabel;
+    LbAttack: TGuiLabel;
+    LbRelease: TGuiLabel;
+    LbSoftKnee: TGuiLabel;
+    LbThresholdValue: TGuiLabel;
+    LbRatioValue: TGuiLabel;
+    LbAttackValue: TGuiLabel;
+    LbReleaseValue: TGuiLabel;
+    LbSoftKneeValue: TGuiLabel;
+    procedure DialThresholdChange(Sender: TObject);
+    procedure DialRatioChange(Sender: TObject);
+    procedure DialAttackChange(Sender: TObject);
+    procedure DialReleaseChange(Sender: TObject);
+    procedure DialSoftKneeChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   public
+    procedure UpdateAttack;
+    procedure UpdateRatio;
+    procedure UpdateRelease;
+    procedure UpdateSoftKnee;
+    procedure UpdateThreshold;
   end;
 
 implementation
 
 {$R *.DFM}
 
-uses Math, SKLDM;
+uses
+  Math, Graphics, SKLDM;
 
-procedure TEditorForm.SBThresholdChange(Sender: TObject);
+procedure TEditorForm.FormCreate(Sender: TObject);
+var
+  RS  : TResourceStream;
+  PNG : TPNGObject;
 begin
- TSoftKneeLimiterDataModule(Owner).Parameter[0] := SBThreshold.Position;
- LbThresholdValue.Caption := IntToStr(SBThreshold.Position) + ' dB';
+ RS := TResourceStream.Create(hInstance, 'NuNop', 'PNG');
+ try
+  PNG := TPNGObject.Create;
+  with PNG do
+   try
+    LoadFromStream(RS);
+    with DialThreshold.DialBitmap do
+     begin
+(*
+      PixelFormat := pf32bit;
+      Transparent := True;
+      TransparentMode := tmFixed;
+      TransparentColor := clGray;
+      DialThreshold.DialBitmap.Assign(Png);
+*)
+      SetSize(PNG.Width, PNG.Height);
+      Canvas.Brush.Color := Self.Color;
+      Canvas.FillRect(Canvas.ClipRect);
+      Canvas.Draw(0, 0, PNG);
+     end;
+
+    with DialRatio.DialBitmap do
+     begin
+      SetSize(PNG.Width, PNG.Height);
+      Canvas.Brush.Color := Self.Color;
+      Canvas.FillRect(Canvas.ClipRect);
+      Canvas.Draw(0, 0, PNG);
+     end;
+
+    with DialAttack.DialBitmap do
+     begin
+      SetSize(PNG.Width, PNG.Height);
+      Canvas.Brush.Color := Self.Color;
+      Canvas.FillRect(Canvas.ClipRect);
+      Canvas.Draw(0, 0, PNG);
+     end;
+
+    with DialRelease.DialBitmap do
+     begin
+      SetSize(PNG.Width, PNG.Height);
+      Canvas.Brush.Color := Self.Color;
+      Canvas.FillRect(Canvas.ClipRect);
+      Canvas.Draw(0, 0, PNG);
+     end;
+
+    with DialSoftKnee.DialBitmap do
+     begin
+      SetSize(PNG.Width, PNG.Height);
+      Canvas.Brush.Color := Self.Color;
+      Canvas.FillRect(Canvas.ClipRect);
+      Canvas.Draw(0, 0, PNG);
+     end;
+   finally
+    FreeAndNil(PNG);
+   end;
+ finally
+  RS.Free;
+ end;
 end;
 
-procedure TEditorForm.SBRatioChange(Sender: TObject);
+procedure TEditorForm.FormShow(Sender: TObject);
+begin
+ UpdateAttack;
+ UpdateRatio;
+ UpdateRelease;
+ UpdateSoftKnee;
+ UpdateThreshold;
+end;
+
+procedure TEditorForm.UpdateRatio;
 begin
  with TSoftKneeLimiterDataModule(Owner) do
   begin
-   Parameter[1] := Power(10, 0.01*SBRatio.Position);
-   LbRatioValue.Caption := '1 : ' + FloatToStrF(Parameter[1], ffGeneral, 4, 4);
+   LbRatioValue.Caption := '1 : ' + FloatToStrF(Parameter[1], ffGeneral, 3, 2);
   end;
 end;
 
-procedure TEditorForm.SBAttackChange(Sender: TObject);
+procedure TEditorForm.UpdateAttack;
 begin
  with TSoftKneeLimiterDataModule(Owner) do
   begin
-   Parameter[2] := Power(10, 0.01*SBAttack.Position);
-   LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
+   if Parameter[2] < 1
+    then LbAttackValue.Caption := FloatToStrF(Parameter[2] * 1E3, ffGeneral, 4, 2) + ' μs'
+    else LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
   end;
 end;
 
-procedure TEditorForm.SBReleaseChange(Sender: TObject);
+procedure TEditorForm.UpdateRelease;
 begin
  with TSoftKneeLimiterDataModule(Owner) do
   begin
-   Parameter[3] := Power(10, 0.001*SBRelease.Position);
-   LbReleaseValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 5) + ' ms';
+   if Parameter[3] >= 1000
+    then LbReleaseValue.Caption := FloatToStrF(Parameter[3] * 1E-3, ffGeneral, 3, 2) + ' s'
+    else LbReleaseValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 3, 2) + ' ms';
   end;
 end;
 
-procedure TEditorForm.SBSoftKneeChange(Sender: TObject);
+procedure TEditorForm.UpdateSoftKnee;
 begin
  with TSoftKneeLimiterDataModule(Owner) do
   begin
-   Parameter[4] := 0.1 * SBSoftKnee.Position;
    LbSoftKneeValue.Caption := FloatToStrF(Parameter[4], ffGeneral, 4, 5);
+  end;
+end;
+
+procedure TEditorForm.UpdateThreshold;
+begin
+ with TSoftKneeLimiterDataModule(Owner) do
+  begin
+   LbThresholdValue.Caption := FloatToStrF(DialThreshold.Position, ffFixed, 3, 1) + ' dB';
+  end;
+end;
+
+procedure TEditorForm.DialThresholdChange(Sender: TObject);
+begin
+ with TSoftKneeLimiterDataModule(Owner) do
+  begin
+   Parameter[0] := DialThreshold.Position;
+   UpdateThreshold;
+  end;
+end;
+
+procedure TEditorForm.DialRatioChange(Sender: TObject);
+begin
+ with TSoftKneeLimiterDataModule(Owner) do
+  begin
+   Parameter[1] := Power(10, DialRatio.Position);
+   UpdateRatio;
+  end;
+end;
+
+procedure TEditorForm.DialAttackChange(Sender: TObject);
+begin
+ with TSoftKneeLimiterDataModule(Owner) do
+  begin
+   Parameter[2] := Power(10, DialAttack.Position);
+   UpdateAttack;
+  end;
+end;
+
+procedure TEditorForm.DialReleaseChange(Sender: TObject);
+begin
+ with TSoftKneeLimiterDataModule(Owner) do
+  begin
+   Parameter[3] := Power(10, DialRelease.Position);
+   UpdateRelease;
+  end;
+end;
+
+procedure TEditorForm.DialSoftKneeChange(Sender: TObject);
+begin
+ with TSoftKneeLimiterDataModule(Owner) do
+  begin
+   Parameter[4] := DialSoftKnee.Position;
+   UpdateSoftKnee;
   end;
 end;
 
