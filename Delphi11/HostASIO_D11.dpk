@@ -33,11 +33,11 @@ requires
 contains
   DASIOHost in '..\Source\DASIOHost.pas',
   OpenASIO in '..\Source\OpenASIO.pas',
-  Asio in '..\Source\Asio.pas',
+  DAsio in '..\Source\DAsio.pas',
   DASIOConvert in '..\Source\DASIOConvert.pas',
   DASIOGenerator in '..\Source\DASIOGenerator.pas',
-  ASIOChannelStrip in '..\Source\ASIOChannelStrip.pas',
-  ASIOMixer in '..\Source\ASIOMixer.pas',
+  DASIOChannelStrip in '..\Source\DASIOChannelStrip.pas',
+  DASIOMixer in '..\Source\DASIOMixer.pas',
   BeRoASIO in '..\Source\BeRoASIO.pas',
   DASIORegister in '..\Source\DASIORegister.pas';
 
