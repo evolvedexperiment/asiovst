@@ -80,7 +80,6 @@ procedure TCustomGuiPanel.RenderPanelToBitmap(Bitmap: TBitmap);
 var
   Val, Off : TComplexDouble;
   Steps, i : Integer;
-  rct      : TRect;
   tmp      : Single;
   rad      : Integer;
   TextSize : TSize;

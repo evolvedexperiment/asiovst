@@ -4,65 +4,126 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, Controls,
-  StdCtrls;
+  StdCtrls, DGuiLabel, DGuiPanel, DGuiBaseControl, DGuiDial;
 
 type
   TEditorForm = class(TForm)
-    LbThreshold: TLabel;
-    SBThreshold: TScrollBar;
     LbThresholdValue: TLabel;
-    LbRatio: TLabel;
     LbRatioValue: TLabel;
-    SBRatio: TScrollBar;
-    LbAttack: TLabel;
-    LbAttackValue: TLabel;
-    SBAttack: TScrollBar;
-    LbRelease: TLabel;
     LbReleaseValue: TLabel;
-    SBRelease: TScrollBar;
-    procedure SBThresholdChange(Sender: TObject);
-    procedure SBRatioChange(Sender: TObject);
-    procedure SBAttackChange(Sender: TObject);
-    procedure SBReleaseChange(Sender: TObject);
+    DialThreshold: TGuiDial;
+    DialRatio: TGuiDial;
+    DialRelease: TGuiDial;
+    Panel: TGuiPanel;
+    LbRatio: TGuiLabel;
+    LbRelease: TGuiLabel;
+    LbThreshold: TGuiLabel;
+    LbAttack: TGuiLabel;
+    LbAttackValue: TLabel;
+    DialAttack: TGuiDial;
+    procedure DialThresholdChange(Sender: TObject);
+    procedure DialRatioChange(Sender: TObject);
+    procedure DialAttackChange(Sender: TObject);
+    procedure DialReleaseChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   public
+    procedure UpdateThreshold;
+    procedure UpdateAttack;
+    procedure UpdateRatio;
+    procedure UpdateRelease;
   end;
 
 implementation
 
 {$R *.DFM}
 
-uses Math, SimpleFeedbackCompressorDM;
+uses
+  Math, SimpleFeedbackCompressorDM;
 
-procedure TEditorForm.SBThresholdChange(Sender: TObject);
+procedure TEditorForm.FormCreate(Sender: TObject);
+var
+  RS  : TResourceStream;
 begin
- TSimpleFeedbackCompressorDataModule(Owner).Parameter[0] := SBThreshold.Position;
- LbThresholdValue.Caption := IntToStr(SBThreshold.Position) + ' dB';
+ RS := TResourceStream.Create(hInstance, 'SimpleFeedbackCompressor', 'BMP');
+ try
+  DialThreshold.DialBitmap.LoadFromStream(RS); RS.Position := 0;
+  DialRatio.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
+  DialAttack.DialBitmap.LoadFromStream(RS);    RS.Position := 0;
+  DialRelease.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
+ finally
+  RS.Free;
+ end;
 end;
 
-procedure TEditorForm.SBRatioChange(Sender: TObject);
+procedure TEditorForm.FormShow(Sender: TObject);
+begin
+ UpdateThreshold;
+ UpdateAttack;
+ UpdateRatio;
+ UpdateRelease;
+end;
+
+procedure TEditorForm.UpdateThreshold;
+begin
+ LbThresholdValue.Caption := FloatToStrF(DialThreshold.Position, ffFixed, 3, 1) + ' dB';
+end;
+
+procedure TEditorForm.UpdateRatio;
+begin
+ with TSimpleFeedbackCompressorDataModule(Owner)
+  do LbRatioValue.Caption := '1 : ' + FloatToStrF(Parameter[1], ffFixed, 3, 1);
+end;
+
+procedure TEditorForm.UpdateAttack;
+begin
+ with TSimpleFeedbackCompressorDataModule(Owner) do
+  if Parameter[2] < 1
+   then LbAttackValue.Caption := FloatToStrF(1000 * Parameter[2], ffGeneral, 4, 2) + ' µs'
+   else LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
+end;
+
+procedure TEditorForm.UpdateRelease;
+begin
+ with TSimpleFeedbackCompressorDataModule(Owner) do
+ if Parameter[3] < 1000
+   then LbReleaseValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 5) + ' ms'
+   else LbReleaseValue.Caption := FloatToStrF(0.001 * Parameter[3], ffGeneral, 4, 5) + ' s'
+end;
+
+procedure TEditorForm.DialThresholdChange(Sender: TObject);
 begin
  with TSimpleFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[1] := Power(10, 0.01*SBRatio.Position);
-   LbRatioValue.Caption := '1 : ' + FloatToStrF(Parameter[1], ffGeneral, 4, 4);
+   Parameter[0] := DialThreshold.Position;
+   UpdateThreshold;
   end;
 end;
 
-procedure TEditorForm.SBAttackChange(Sender: TObject);
+procedure TEditorForm.DialRatioChange(Sender: TObject);
 begin
  with TSimpleFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[2] := Power(10, 0.01*SBAttack.Position);
-   LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
+   Parameter[1] := Power(10, 0.01 * DialRatio.Position);
+   UpdateRatio;
   end;
 end;
 
-procedure TEditorForm.SBReleaseChange(Sender: TObject);
+procedure TEditorForm.DialAttackChange(Sender: TObject);
 begin
  with TSimpleFeedbackCompressorDataModule(Owner) do
   begin
-   Parameter[3] := Power(10, 0.001*SBRelease.Position);
-   LbReleaseValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 5) + ' ms';
+   Parameter[2] := Power(10, 0.01 * DialAttack.Position);
+   UpdateAttack;
+  end;
+end;
+
+procedure TEditorForm.DialReleaseChange(Sender: TObject);
+begin
+ with TSimpleFeedbackCompressorDataModule(Owner) do
+  begin
+   Parameter[3] := Power(10, 0.001 * DialRelease.Position);
+   UpdateRelease;
   end;
 end;
 

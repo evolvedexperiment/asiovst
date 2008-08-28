@@ -17,6 +17,7 @@ type
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
       ParentWindow: Cardinal);
+    procedure VSTModuleOpen(Sender: TObject);
   private
     fSimpleFeedbackCompressors : Array [0..1] of TSimpleCompressor;
   public
@@ -36,10 +37,10 @@ begin
  fSimpleFeedbackCompressors[1].Threshold := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
-   if SBThreshold.Position <> Round(Value) then
+   if DialThreshold.Position <> Round(Value) then
     begin
-     SBThreshold.Position := Round(Value);
-     LbThresholdValue.Caption := IntToStr(SBThreshold.Position) + ' dB';
+     DialThreshold.Position := Round(Value);
+     UpdateThreshold;
     end;
 end;
 
@@ -50,10 +51,10 @@ begin
  fSimpleFeedbackCompressors[1].Ratio := 1 / Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
-   if SBRatio.Position <> Round(100 * Log10(Value)) then
+   if DialRatio.Position <> Round(100 * Log10(Value)) then
     begin
-     SBRatio.Position := Round(100 * Log10(Value));
-     LbRatioValue.Caption := '1 : ' + FloatToStrF(Value, ffGeneral, 4, 4);
+     DialRatio.Position := Round(100 * Log10(Value));
+     UpdateRatio;
     end;
 end;
 
@@ -63,10 +64,10 @@ begin
  fSimpleFeedbackCompressors[1].Decay := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
-   if SBRelease.Position <> Round(Value) then
+   if DialRelease.Position <> Round(Value) then
     begin
-     SBRelease.Position := Round(1000 * Log10(Value));
-     LbReleaseValue.Caption := FloatToStrF(Value, ffGeneral, 4, 5) + ' ms';
+     DialRelease.Position := Round(1000 * Log10(Value));
+     UpdateRelease;
     end;
 end;
 
@@ -76,10 +77,10 @@ begin
  fSimpleFeedbackCompressors[1].Attack := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
-   if SBAttack.Position <> Round(100 * Log10(Value)) then
+   if DialAttack.Position <> Round(100 * Log10(Value)) then
     begin
-     SBAttack.Position := Round(100 * Log10(Value));
-     LbAttackValue.Caption := FloatToStrF(Value, ffGeneral, 4, 2) + ' ms';
+     DialAttack.Position := Round(100 * Log10(Value));
+     UpdateAttack;
     end;
 end;
 
@@ -99,6 +100,14 @@ procedure TSimpleFeedbackCompressorDataModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
   GUI := TEditorForm.Create(Self);
+end;
+
+procedure TSimpleFeedbackCompressorDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ Parameter[0] := 0;
+ Parameter[1] := 1;
+ Parameter[2] := 5;
+ Parameter[3] := 40;
 end;
 
 procedure TSimpleFeedbackCompressorDataModule.VSTModuleProcess(const Inputs,

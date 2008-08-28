@@ -8,18 +8,18 @@ uses
 
 type
   TEditorForm = class(TForm)
-    LbThresholdValue: TLabel;
-    LbRatioValue: TLabel;
-    LbAttackValue: TLabel;
-    LbReleaseValue: TLabel;
-    DialThreshold: TGuiDial;
-    DialRatio: TGuiDial;
     DialAttack: TGuiDial;
+    DialRatio: TGuiDial;
     DialRelease: TGuiDial;
-    LbRatio: TGuiLabel;
+    DialThreshold: TGuiDial;
     LbAttack: TGuiLabel;
+    LbAttackValue: TLabel;
+    LbRatio: TGuiLabel;
+    LbRatioValue: TLabel;
     LbRelease: TGuiLabel;
+    LbReleaseValue: TLabel;
     LbThreshold: TGuiLabel;
+    LbThresholdValue: TLabel;
     procedure DialThresholdChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
