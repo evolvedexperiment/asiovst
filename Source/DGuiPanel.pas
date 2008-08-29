@@ -13,16 +13,19 @@ type
     fRoundRadius    : Integer;
     fAntiAlias      : TGuiAntiAlias;
     fOSFactor       : Integer;
+    fPanelColor: TColor;
     procedure SetRoundRadius(Value: Integer);
     procedure RenderPanelToBitmap(Bitmap: TBitmap);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
+    procedure SetPanelColor(const Value: TColor);
   protected
     procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
   public
     constructor Create(AOwner: TComponent); override;
     property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
+    property PanelColor: TColor read fPanelColor write SetPanelColor default clBtnShadow;
     property Radius: Integer read fRoundRadius write SetRoundRadius default 2;
-    property LineColor default clBtnShadow;
+    property LineColor default clBtnHighlight;
   end;
 
   TGuiPanel = class(TCustomGuiPanel)
@@ -39,6 +42,7 @@ type
     property Font;
     property LineColor;
     property LineWidth;
+    property PanelColor;
     property PopupMenu;
     property Radius;
     property ShowHint;
@@ -70,10 +74,11 @@ uses
 constructor TCustomGuiPanel.Create(AOwner: TComponent);
 begin
  inherited;
- ControlStyle    := ControlStyle + [csFramed, csOpaque, csReplicatable,
-                                    csAcceptsControls];
- fRoundRadius    := 2;
- fLineColor      := clBtnShadow;
+ ControlStyle  := ControlStyle + [csFramed, csOpaque, csReplicatable,
+                                  csAcceptsControls];
+ fRoundRadius  := 2;
+ fLineColor    := clBtnHighlight;
+ fPanelColor   := clBtnShadow;
 end;
 
 procedure TCustomGuiPanel.RenderPanelToBitmap(Bitmap: TBitmap);
@@ -88,10 +93,6 @@ begin
  with Bitmap.Canvas do
   begin
    Lock;
-   Brush.Style := bsClear;
-   Brush.Color := fLineColor;
-   Pen.Width   := fOSFactor * fLineWidth;
-   Pen.Color   := fLineColor;
    Font.Assign(Self.Font);
    Font.Size := fOSFactor * Font.Size;
 
@@ -159,7 +160,13 @@ begin
          end;
         PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
 
+        Brush.Style := bsClear;
+        Brush.Color := fPanelColor;
+        Pen.Width   := fOSFactor * fLineWidth;
+        Pen.Color   := fLineColor;
         PolyGon(PtsArray);
+        if fLineColor <> fPanelColor
+         then PolyLine(PtsArray);
        end;
      end;
    end;
@@ -252,6 +259,15 @@ begin
     gaaLinear2x : fOSFactor := 2;
     gaaLinear4x : fOSFactor := 4;
    end;
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiPanel.SetPanelColor(const Value: TColor);
+begin
+ if fPanelColor <> Value then
+  begin
+   fPanelColor := Value;
    RedrawBuffer(True);
   end;
 end;
