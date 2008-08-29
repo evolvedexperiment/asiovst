@@ -19,7 +19,8 @@ implementation
 
 {$R *.DFM}
 
-uses SimpleGateDM;
+uses
+  SimpleGateDM;
 
 procedure TEditorForm.ScrollBarChange(Sender: TObject);
 begin
