@@ -44,6 +44,7 @@ contains
   DGuiAudioDataDisplay in '..\Source\DGuiAudioDataDisplay.pas',
   DGuiGroup in '..\Source\DGuiGroup.pas',
   DGuiLabel in '..\Source\DGuiLabel.pas',
-  DGuiPanel in '..\Source\DGuiPanel.pas';
+  DGuiPanel in '..\Source\DGuiPanel.pas',
+  DGuiLED in '..\Source\DGuiLED.pas';
 
 end.

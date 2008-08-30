@@ -431,7 +431,7 @@ begin
   begin
     inherited;
     MouseCapture := True;
-    Click;
+//    Click;
 
     case Button of
       mbLeft:   with MouseState.LeftBtn do begin
