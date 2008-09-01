@@ -81,7 +81,9 @@ begin
  GUI := TEditorForm.Create(Self);
  with (GUI as TEditorForm) do
   begin
-   CBOnOff.Checked := Boolean(Round(Parameter[0]));
+   if Boolean(Round(Parameter[0]))
+    then CBOnOff.Brightness_Percent := 100
+    else CBOnOff.Brightness_Percent := 20;
    UpdateThreshold;
    UpdateAttack;
    UpdateHold;
@@ -109,8 +111,10 @@ begin
   end;
  if assigned(EditorForm) then
   with TEditorForm(EditorForm) do
-   if CBOnOff.Checked <> Boolean(Round(Value))
-    then CBOnOff.Checked := Boolean(Round(Value));
+   if CBOnOff.Brightness_Percent > 90 <> Boolean(Round(Value)) then
+    if Boolean(Round(Value))
+     then CBOnOff.Brightness_Percent := 100
+     else CBOnOff.Brightness_Percent := 20;
 end;
 
 procedure TEnhancedGateDataModule.EAGOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);

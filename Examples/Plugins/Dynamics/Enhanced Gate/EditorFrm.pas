@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon,
   DVSTModule, Controls,
-  StdCtrls, Graphics, DGuiDial, Gauges, DGuiBaseControl, ExtCtrls, DGuiGroup;
+  StdCtrls, Graphics, DGuiDial, Gauges, DGuiBaseControl, ExtCtrls, DGuiGroup,
+  DGuiLED;
 
 type
   TRGB32 = packed record
@@ -16,7 +17,6 @@ type
 
   TEditorForm = class(TForm)
     CBDuck: TCheckBox;
-    CBOnOff: TCheckBox;
     CBSideChain: TComboBox;
     CBStereoLink: TCheckBox;
     DialAttack: TGuiDial;
@@ -55,6 +55,7 @@ type
     LbSource: TLabel;
     LbThreshold: TLabel;
     VUTimer: TTimer;
+    CBOnOff: TGuiLED;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -94,7 +95,7 @@ uses
 procedure TEditorForm.CBOnOffClick(Sender: TObject);
 begin
   with TEnhancedGateDataModule(Owner)
-   do Parameter[0] := Integer(CBOnOff.Checked);
+   do Parameter[0] := Integer(CBOnOff.Brightness_Percent > 90);
 end;
 
 procedure TEditorForm.DialThresholdChange(Sender: TObject);

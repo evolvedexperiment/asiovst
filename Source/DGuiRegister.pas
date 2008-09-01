@@ -11,15 +11,16 @@ implementation
 uses
   Classes, DGuiStaticWaveform, DGuiDynamicWaveform, DGuiDial, DGuiMidiKeys,
   DGuiGroup, DGuiPanel, DGuiADSRGraph, DGuiLevelMeter, DGuiAudioDataDisplay,
-  DGuiLabel, DGuiLED;
+  DGuiLabel, DGuiSelectBox, DGuiLED;
 
 procedure Register;
 begin
   RegisterComponents('ASIO/VST GUI', [TGuiDynamicWaveform, TGuiStaticWaveform,
+                                      TGuiADSRGraph, TGuiAudioDataDisplay,
+                                      TGuiLabel, TGuiGroup, TGuiPanel, TGuiLED,
                                       TGuiDial, TGuiDialMetal, TGuiDialEx,
-                                      TGuiGroup, TGuiPanel, TGuiLabel,
-                                      TGuiLED, TGuiMidiKeys, TGuiADSRGraph,
-                                      TGuiLevelMeter, TGuiAudioDataDisplay]);
+                                      TGuiSelectBox, TGuiMidiKeys,
+                                      TGuiLevelMeter]);
 end;
 
 end.
