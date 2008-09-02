@@ -374,12 +374,7 @@ begin
        PtsArray[i] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
       end;
 
-     case FAntiAlias of
-          gaaNone : Pen.Width := fLineWidth;
-      gaaLinear2x : Pen.Width := 2 * fLineWidth;
-      gaaLinear4x : Pen.Width := 4 * fLineWidth;
-     end;
-
+     Pen.Width := FOSValue * fLineWidth;
      Pen.Color := fLineColor;
      Brush.Color := FCircleColor;
      Polygon(PtsArray);
@@ -409,8 +404,18 @@ begin
        with Bmp do
         try
          PixelFormat := pf32bit;
-         Width       := 2 * fBuffer.Width;
-         Height      := 2 * fBuffer.Height;
+         Width       := FOSValue * fBuffer.Width;
+         Height      := FOSValue * fBuffer.Height;
+         Canvas.Brush.Style := bsSolid;
+         Canvas.Brush.Color := Self.Color;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           DrawParentImage(Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+          end else
+         {$ENDIF}
+         Canvas.FillRect(Canvas.ClipRect);
          RenderKnobToBitmap(Bmp);
          Downsample2xBitmap(Bmp);
          fBuffer.Canvas.Draw(0, 0, Bmp);
@@ -424,11 +429,74 @@ begin
        with Bmp do
         try
          PixelFormat := pf32bit;
-         Width       := 4 * fBuffer.Width;
-         Height      := 4 * fBuffer.Height;
+         Width       := FOSValue * fBuffer.Width;
+         Height      := FOSValue * fBuffer.Height;
+         Canvas.Brush.Style := bsSolid;
+         Canvas.Brush.Color := Self.Color;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           DrawParentImage(Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+          end else
+         {$ENDIF}
+         Canvas.FillRect(Canvas.ClipRect);
          RenderKnobToBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
+         fBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         Free;
+        end;
+      end;
+     gaaLinear8x :
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := FOSValue * fBuffer.Width;
+         Height      := FOSValue * fBuffer.Height;
+         Canvas.Brush.Style := bsSolid;
+         Canvas.Brush.Color := Self.Color;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           DrawParentImage(Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+           Upsample2xBitmap(Bmp);
+          end else
+         {$ENDIF}
+         Canvas.FillRect(Canvas.ClipRect);
+         RenderKnobToBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
          Downsample2xBitmap(Bmp);
-         Downsample2xBitmap(Bmp);
+         fBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         Free;
+        end;
+      end;
+     gaaLinear16x :
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := FOSValue * fBuffer.Width;
+         Height      := FOSValue * fBuffer.Height;
+         Canvas.Brush.Style := bsSolid;
+         Canvas.Brush.Color := Self.Color;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           DrawParentImage(Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+           Upsample4xBitmap(Bmp);
+          end else
+         {$ENDIF}
+         Canvas.FillRect(Canvas.ClipRect);
+         RenderKnobToBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
          fBuffer.Canvas.Draw(0, 0, Bmp);
         finally
          Free;
@@ -648,9 +716,11 @@ begin
   begin
    FAntiAlias := Value;
    case FAntiAlias of
-        gaaNone : FOSValue := 1;
-    gaaLinear2x : FOSValue := 2;
-    gaaLinear4x : FOSValue := 4;
+         gaaNone : FOSValue :=  1;
+     gaaLinear2x : FOSValue :=  2;
+     gaaLinear4x : FOSValue :=  4;
+     gaaLinear8x : FOSValue :=  8;
+    gaaLinear16x : FOSValue := 16;
    end;
    RedrawBuffer(True);
   end;

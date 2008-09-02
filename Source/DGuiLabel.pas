@@ -151,14 +151,68 @@ begin
       if fTransparent then
        begin
         DrawParentImage(Bmp.Canvas);
-        Upsample2xBitmap(Bmp);
+        Upsample4xBitmap(Bmp);
+       end else
+      {$ENDIF}
+      Bmp.Canvas.FillRect(Bmp.Canvas.ClipRect);
+      RenderLabelToBitmap(Bmp);
+      Downsample4xBitmap(Bmp);
+      fBuffer.Canvas.Draw(0, 0, Bmp);
+     finally
+      Free;
+     end;
+   end;
+  gaaLinear8x :
+   begin
+    Bmp := TBitmap.Create;
+    with Bmp do
+     try
+      PixelFormat := pf32bit;
+      Width       := fOSFactor * fBuffer.Width;
+      Height      := fOSFactor * fBuffer.Height;
+      Canvas.Font.Assign(fBuffer.Canvas.Font);
+      Canvas.Brush.Assign(fBuffer.Canvas.Brush);
+      Canvas.Pen.Assign(fBuffer.Canvas.Pen);
+      {$IFNDEF FPC}
+      if fTransparent then
+       begin
+        DrawParentImage(Bmp.Canvas);
+        Upsample4xBitmap(Bmp);
         Upsample2xBitmap(Bmp);
        end else
       {$ENDIF}
       Bmp.Canvas.FillRect(Bmp.Canvas.ClipRect);
       RenderLabelToBitmap(Bmp);
+      Downsample4xBitmap(Bmp);
       Downsample2xBitmap(Bmp);
-      Downsample2xBitmap(Bmp);
+      fBuffer.Canvas.Draw(0, 0, Bmp);
+     finally
+      Free;
+     end;
+   end;
+  gaaLinear16x :
+   begin
+    Bmp := TBitmap.Create;
+    with Bmp do
+     try
+      PixelFormat := pf32bit;
+      Width       := fOSFactor * fBuffer.Width;
+      Height      := fOSFactor * fBuffer.Height;
+      Canvas.Font.Assign(fBuffer.Canvas.Font);
+      Canvas.Brush.Assign(fBuffer.Canvas.Brush);
+      Canvas.Pen.Assign(fBuffer.Canvas.Pen);
+      {$IFNDEF FPC}
+      if fTransparent then
+       begin
+        DrawParentImage(Bmp.Canvas);
+        Upsample4xBitmap(Bmp);
+        Upsample4xBitmap(Bmp);
+       end else
+      {$ENDIF}
+      Bmp.Canvas.FillRect(Bmp.Canvas.ClipRect);
+      RenderLabelToBitmap(Bmp);
+      Downsample4xBitmap(Bmp);
+      Downsample4xBitmap(Bmp);
       fBuffer.Canvas.Draw(0, 0, Bmp);
      finally
       Free;
@@ -173,12 +227,15 @@ procedure TCustomGuiLabel.RenderLabelToBitmap(Bitmap: TBitmap);
 var
   TextSize : TSize;
 begin
- TextSize := Bitmap.Canvas.TextExtent(fCaption);
- case fAlignment of
-   taLeftJustify : Bitmap.Canvas.TextOut(0, 0, fCaption);
-  taRightJustify : Bitmap.Canvas.TextOut(Bitmap.Width - TextSize.cx, 0, fCaption);
-        taCenter : Bitmap.Canvas.TextOut((Bitmap.Width - TextSize.cx) div 2, 0, fCaption);
- end;
+ with Bitmap.Canvas do
+  begin
+   TextSize := TextExtent(fCaption);
+   case fAlignment of
+     taLeftJustify : TextOut(0, 0, fCaption);
+    taRightJustify : TextOut(Bitmap.Width - TextSize.cx, 0, fCaption);
+          taCenter : TextOut((Bitmap.Width - TextSize.cx) div 2, 0, fCaption);
+   end;
+  end;
 end;
 
 procedure TCustomGuiLabel.SetAlignment(const Value: TAlignment);
@@ -196,9 +253,11 @@ begin
   begin
    fAntiAlias := Value;
    case fAntiAlias of
-        gaaNone : fOSFactor := 1;
-    gaaLinear2x : fOSFactor := 2;
-    gaaLinear4x : fOSFactor := 4;
+         gaaNone : fOSFactor :=  1;
+     gaaLinear2x : fOSFactor :=  2;
+     gaaLinear4x : fOSFactor :=  4;
+     gaaLinear8x : fOSFactor :=  8;
+    gaaLinear16x : fOSFactor := 16;
    end;
    RedrawBuffer(True);
   end;

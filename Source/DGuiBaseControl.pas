@@ -34,7 +34,7 @@ type
 
   TGuiMouseStateClass = class of TGuiMouseState;
 
-  TGuiAntiAlias = (gaaNone, gaaLinear2x, gaaLinear4x);
+  TGuiAntiAlias = (gaaNone, gaaLinear2x, gaaLinear4x, gaaLinear8x, gaaLinear16x);
 
   TBufferedGraphicControl = class(TGraphicControl)
   protected
@@ -46,7 +46,9 @@ type
     {$ENDIF}
 
     procedure Downsample2xBitmap(var Bitmap: TBitmap);
+    procedure Downsample4xBitmap(var Bitmap: TBitmap);
     procedure Upsample2xBitmap(var Bitmap: TBitmap);
+    procedure Upsample4xBitmap(var Bitmap: TBitmap);
     procedure Resize; override;
     procedure ResizeBuffer; dynamic;
     procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
@@ -222,6 +224,44 @@ begin
   end;
 end;
 
+procedure TBufferedGraphicControl.Downsample4xBitmap(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  Line : Array [0..4] of PRGB32Array;
+begin
+ with Bitmap do
+  begin
+   // first stage
+   for y := 0 to (Height div 4) - 1 do
+    begin
+     Line[0] := Scanline[y];
+     Line[1] := Scanline[y * 4];
+     Line[2] := Scanline[y * 4 + 1];
+     Line[3] := Scanline[y * 4 + 2];
+     Line[4] := Scanline[y * 4 + 3];
+     for x := 0 to (Width  div 4) - 1 do
+      begin
+       Line[0, x].B := (Line[1, 4 * x].B + Line[1, 4 * x + 1].B + Line[1, 4 * x + 2].B + Line[1, 4 * x + 3].B +
+                        Line[2, 4 * x].B + Line[2, 4 * x + 1].B + Line[2, 4 * x + 2].B + Line[2, 4 * x + 3].B +
+                        Line[3, 4 * x].B + Line[3, 4 * x + 1].B + Line[3, 4 * x + 2].B + Line[3, 4 * x + 3].B +
+                        Line[4, 4 * x].B + Line[4, 4 * x + 1].B + Line[4, 4 * x + 2].B + Line[4, 4 * x + 3].B) div 16;
+       Line[0, x].G := (Line[1, 4 * x].G + Line[1, 4 * x + 1].G + Line[1, 4 * x + 2].G + Line[1, 4 * x + 3].G +
+                        Line[2, 4 * x].G + Line[2, 4 * x + 1].G + Line[2, 4 * x + 2].G + Line[2, 4 * x + 3].G +
+                        Line[3, 4 * x].G + Line[3, 4 * x + 1].G + Line[3, 4 * x + 2].G + Line[3, 4 * x + 3].G +
+                        Line[4, 4 * x].G + Line[4, 4 * x + 1].G + Line[4, 4 * x + 2].G + Line[4, 4 * x + 3].G) div 16;
+       Line[0, x].R := (Line[1, 4 * x].R + Line[1, 4 * x + 1].R + Line[1, 4 * x + 2].R + Line[1, 4 * x + 3].G +
+                        Line[2, 4 * x].R + Line[2, 4 * x + 1].R + Line[2, 4 * x + 2].R + Line[2, 4 * x + 3].G +
+                        Line[3, 4 * x].R + Line[3, 4 * x + 1].R + Line[3, 4 * x + 2].R + Line[3, 4 * x + 3].G +
+                        Line[4, 4 * x].R + Line[4, 4 * x + 1].R + Line[4, 4 * x + 2].R + Line[4, 4 * x + 3].G) div 16;
+       Line[0, x].A := (Line[1, 4 * x].A + Line[1, 4 * x + 1].A + Line[1, 4 * x + 2].A + Line[1, 4 * x + 3].A +
+                        Line[2, 4 * x].A + Line[2, 4 * x + 1].A + Line[2, 4 * x + 2].A + Line[2, 4 * x + 3].A +
+                        Line[3, 4 * x].A + Line[3, 4 * x + 1].A + Line[3, 4 * x + 2].A + Line[3, 4 * x + 3].A +
+                        Line[4, 4 * x].A + Line[4, 4 * x + 1].A + Line[4, 4 * x + 2].A + Line[4, 4 * x + 3].A) div 16;
+      end;
+    end;
+  end;
+end;
+
 procedure TBufferedGraphicControl.Upsample2xBitmap(var Bitmap: TBitmap);
 var
   x, y : Integer;
@@ -256,6 +296,32 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TBufferedGraphicControl.Upsample4xBitmap(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  i, j : Integer;
+  Line : Array [0..4] of PRGB32Array;
+begin
+ with Bitmap do
+  for y := 0 to (Height div 4) - 1 do
+   begin
+    Line[0] := Scanline[y];
+    Line[1] := Scanline[y * 4];
+    Line[2] := Scanline[y * 4 + 1];
+    Line[3] := Scanline[y * 4 + 2];
+    Line[4] := Scanline[y * 4 + 3];
+    for x := 0 to (Width  div 4) - 1 do
+     for i := 1 to 4 do
+      for j := 0 to 3 do
+       begin
+        Line[i, 4 * x + j].B := Line[0, x].B;
+        Line[i, 4 * x + j].G := Line[0, x].G;
+        Line[i, 4 * x + j].R := Line[0, x].R;
+        Line[i, 4 * x + j].A := Line[0, x].A;
+       end;
+   end;
 end;
 
 procedure TBufferedGraphicControl.Loaded;

@@ -46,6 +46,7 @@ contains
   DGuiLabel in '..\Source\DGuiLabel.pas',
   DGuiPanel in '..\Source\DGuiPanel.pas',
   DGuiLED in '..\Source\DGuiLED.pas',
-  DGuiSelectBox in '..\Source\DGuiSelectBox.pas';
+  DGuiSelectBox in '..\Source\DGuiSelectBox.pas',
+  DGuiButton in '..\Source\DGuiButton.pas';
 
 end.

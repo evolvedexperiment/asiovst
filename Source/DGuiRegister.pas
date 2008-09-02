@@ -11,7 +11,7 @@ implementation
 uses
   Classes, DGuiStaticWaveform, DGuiDynamicWaveform, DGuiDial, DGuiMidiKeys,
   DGuiGroup, DGuiPanel, DGuiADSRGraph, DGuiLevelMeter, DGuiAudioDataDisplay,
-  DGuiLabel, DGuiSelectBox, DGuiLED;
+  DGuiLabel, DGuiSelectBox, DGuiLED, DGuiButton;
 
 procedure Register;
 begin
@@ -19,7 +19,7 @@ begin
                                       TGuiADSRGraph, TGuiAudioDataDisplay,
                                       TGuiLabel, TGuiGroup, TGuiPanel, TGuiLED,
                                       TGuiDial, TGuiDialMetal, TGuiDialEx,
-                                      TGuiSelectBox, TGuiMidiKeys,
+                                      TGuiSelectBox, TGuiMidiKeys, TGuiButton,
                                       TGuiLevelMeter]);
 end;
 

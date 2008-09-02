@@ -15,10 +15,10 @@ type
     fHeaderMinWidth : Integer;
     fAntiAlias      : TGuiAntiAlias;
     fOSFactor       : Integer;
+    procedure RenderGroupToBitmap(Bitmap: TBitmap);
     procedure SetCaption(const Value: string);
     procedure SetRoundRadius(Value: Integer);
     procedure SetHeaderMinWidth(const Value: Integer);
-    procedure RenderGroupToBitmap(Bitmap: TBitmap);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
   protected
     procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
@@ -250,8 +250,8 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := 2 * fBuffer.Width;
-        Height := 2 * fBuffer.Height;
+        Width  := fOSFactor * fBuffer.Width;
+        Height := fOSFactor * fBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         Canvas.FillRect(Canvas.ClipRect);
@@ -276,8 +276,33 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := 4 * fBuffer.Width;
-        Height := 4 * fBuffer.Height;
+        Width  := fOSFactor * fBuffer.Width;
+        Height := fOSFactor * fBuffer.Height;
+        Canvas.Brush.Style := bsSolid;
+        Canvas.Brush.Color := Self.Color;
+        Canvas.FillRect(Canvas.ClipRect);
+        {$IFNDEF FPC}
+        if fTransparent then
+         begin
+          DrawParentImage(Bmp.Canvas);
+          Upsample4xBitmap(Bmp);
+         end else
+        {$ENDIF}
+        RenderGroupToBitmap(Bmp);
+        Downsample4xBitmap(Bmp);
+        Draw(0, 0, Bmp);
+       finally
+        Free;
+       end;
+     end;
+    gaaLinear8x :
+     begin
+      Bmp := TBitmap.Create;
+      with Bmp do
+       try
+        PixelFormat := pf32bit;
+        Width  := fOSFactor * fBuffer.Width;
+        Height := fOSFactor * fBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         Canvas.FillRect(Canvas.ClipRect);
@@ -286,12 +311,39 @@ begin
          begin
           DrawParentImage(Bmp.Canvas);
           Upsample2xBitmap(Bmp);
-          Upsample2xBitmap(Bmp);
+          Upsample4xBitmap(Bmp);
          end else
         {$ENDIF}
         RenderGroupToBitmap(Bmp);
         Downsample2xBitmap(Bmp);
-        Downsample2xBitmap(Bmp);
+        Downsample4xBitmap(Bmp);
+        Draw(0, 0, Bmp);
+       finally
+        Free;
+       end;
+     end;
+    gaaLinear16x :
+     begin
+      Bmp := TBitmap.Create;
+      with Bmp do
+       try
+        PixelFormat := pf32bit;
+        Width  := fOSFactor * fBuffer.Width;
+        Height := fOSFactor * fBuffer.Height;
+        Canvas.Brush.Style := bsSolid;
+        Canvas.Brush.Color := Self.Color;
+        Canvas.FillRect(Canvas.ClipRect);
+        {$IFNDEF FPC}
+        if fTransparent then
+         begin
+          DrawParentImage(Bmp.Canvas);
+          Upsample4xBitmap(Bmp);
+          Upsample4xBitmap(Bmp);
+         end else
+        {$ENDIF}
+        RenderGroupToBitmap(Bmp);
+        Downsample4xBitmap(Bmp);
+        Downsample4xBitmap(Bmp);
         Draw(0, 0, Bmp);
        finally
         Free;
@@ -309,9 +361,11 @@ begin
   begin
    fAntiAlias := Value;
    case fAntiAlias of
-        gaaNone : fOSFactor := 1;
-    gaaLinear2x : fOSFactor := 2;
-    gaaLinear4x : fOSFactor := 4;
+         gaaNone : fOSFactor :=  1;
+     gaaLinear2x : fOSFactor :=  2;
+     gaaLinear4x : fOSFactor :=  4;
+     gaaLinear8x : fOSFactor :=  8;
+    gaaLinear16x : fOSFactor := 16;
    end;
    RedrawBuffer(True);
   end;

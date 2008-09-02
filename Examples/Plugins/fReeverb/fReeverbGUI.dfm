@@ -3,30 +3,32 @@ object FmReverb: TFmReverb
   Top = 252
   BorderStyle = bsNone
   Caption = 'fReeverb'
-  ClientHeight = 94
-  ClientWidth = 350
+  ClientHeight = 120
+  ClientWidth = 349
   Color = 14803425
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
+  Font.Color = 5855577
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object PnLabel: TGuiPanel
     Left = 10
-    Top = 62
+    Top = 88
     Width = 331
     Height = 25
     AntiAlias = gaaLinear4x
     LineColor = clWhite
+    PanelColor = clWhite
     Radius = 9
   end
   object DialDry: TGuiDial
     Left = 16
-    Top = 8
+    Top = 34
     Width = 48
     Height = 48
     LineWidth = 2
@@ -39,7 +41,7 @@ object FmReverb: TFmReverb
   end
   object DialWet: TGuiDial
     Left = 70
-    Top = 8
+    Top = 34
     Width = 48
     Height = 48
     LineWidth = 2
@@ -52,7 +54,7 @@ object FmReverb: TFmReverb
   end
   object DialWidth: TGuiDial
     Left = 124
-    Top = 8
+    Top = 34
     Width = 48
     Height = 48
     LineWidth = 2
@@ -65,7 +67,7 @@ object FmReverb: TFmReverb
   end
   object DialDamp: TGuiDial
     Left = 178
-    Top = 8
+    Top = 34
     Width = 48
     Height = 48
     LineWidth = 2
@@ -78,7 +80,7 @@ object FmReverb: TFmReverb
   end
   object DialRoomSize: TGuiDial
     Left = 232
-    Top = 8
+    Top = 34
     Width = 48
     Height = 48
     LineWidth = 2
@@ -91,7 +93,7 @@ object FmReverb: TFmReverb
   end
   object DialStretch: TGuiDial
     Left = 286
-    Top = 8
+    Top = 34
     Width = 48
     Height = 48
     LineWidth = 2
@@ -104,15 +106,15 @@ object FmReverb: TFmReverb
   end
   object LbDry: TGuiLabel
     Left = 16
-    Top = 66
+    Top = 92
     Width = 48
     Height = 17
     Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    AutoSize = True
     Caption = 'dry'
     Color = clWhite
-    AntiAlias = gaaLinear4x
-    Alignment = taCenter
-    AutoSize = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5855577
     Font.Height = -13
@@ -121,32 +123,32 @@ object FmReverb: TFmReverb
   end
   object LbWet: TGuiLabel
     Left = 70
-    Top = 66
+    Top = 92
     Width = 48
     Height = 17
     Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    AutoSize = True
     Caption = 'wet'
     Color = clWhite
-    AntiAlias = gaaLinear4x
-    Alignment = taCenter
-    AutoSize = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5855577
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = []
   end
-  object Label1: TGuiLabel
+  object LbWidth: TGuiLabel
     Left = 124
-    Top = 66
+    Top = 92
     Width = 48
     Height = 17
     Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    AutoSize = True
     Caption = 'width'
     Color = clWhite
-    AntiAlias = gaaLinear4x
-    Alignment = taCenter
-    AutoSize = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5855577
     Font.Height = -13
@@ -155,15 +157,15 @@ object FmReverb: TFmReverb
   end
   object LbSize: TGuiLabel
     Left = 232
-    Top = 66
+    Top = 92
     Width = 48
     Height = 17
     Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    AutoSize = True
     Caption = 'size'
     Color = clWhite
-    AntiAlias = gaaLinear4x
-    Alignment = taCenter
-    AutoSize = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5855577
     Font.Height = -13
@@ -172,15 +174,15 @@ object FmReverb: TFmReverb
   end
   object LbStretch: TGuiLabel
     Left = 286
-    Top = 66
+    Top = 92
     Width = 48
     Height = 17
     Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    AutoSize = True
     Caption = 'stretch'
     Color = clWhite
-    AntiAlias = gaaLinear4x
-    Alignment = taCenter
-    AutoSize = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5855577
     Font.Height = -13
@@ -189,15 +191,15 @@ object FmReverb: TFmReverb
   end
   object LbDamp: TGuiLabel
     Left = 178
-    Top = 66
+    Top = 92
     Width = 48
     Height = 17
     Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    AutoSize = True
     Caption = 'damp'
     Color = clWhite
-    AntiAlias = gaaLinear4x
-    Alignment = taCenter
-    AutoSize = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5855577
     Font.Height = -13
@@ -206,11 +208,91 @@ object FmReverb: TFmReverb
   end
   object CBFreeze: TCheckBox
     Left = 116
-    Top = 106
+    Top = 152
     Width = 57
     Height = 17
     Caption = 'FreeZe'
     TabOrder = 0
     OnClick = CBFreezeClick
+  end
+  object PnToolbar: TPanel
+    Left = 0
+    Top = 0
+    Width = 349
+    Height = 24
+    Align = alTop
+    BevelOuter = bvNone
+    Color = clWhite
+    TabOrder = 1
+    ExplicitTop = 4
+    object SBPreset: TGuiSelectBox
+      Left = 51
+      Top = 2
+      Width = 156
+      Height = 19
+      Alignment = taLeftJustify
+      AntiAlias = gaaLinear2x
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ItemIndex = -1
+      Items.Strings = (
+        'Random 23')
+      LineColor = clSilver
+      SelectBoxColor = 2960685
+      Radius = 4
+    end
+    object LbPreset: TGuiLabel
+      Left = 8
+      Top = 2
+      Width = 39
+      Height = 17
+      Margins.Bottom = 0
+      AntiAlias = gaaLinear4x
+      AutoSize = True
+      Caption = 'preset'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5855577
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+    end
+    object BtAB: TGuiButton
+      Left = 213
+      Top = 2
+      Width = 61
+      Height = 19
+      AntiAlias = gaaLinear4x
+      Alignment = taCenter
+      Caption = 'a <> b'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5855577
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      LineColor = 5855577
+      ButtonColor = 14803425
+      Radius = 4
+    end
+    object BtAbout: TGuiButton
+      Left = 280
+      Top = 2
+      Width = 61
+      Height = 19
+      AntiAlias = gaaLinear4x
+      Alignment = taCenter
+      Caption = 'about'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5855577
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      LineColor = 5855577
+      ButtonColor = 14803425
+      Radius = 4
+      OnClick = BtAboutClick
+    end
   end
 end

@@ -4,25 +4,34 @@ interface
 
 uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
   Controls, StdCtrls, XPStyleActnCtrls, ActnList, ActnMan, ToolWin,
-  ActnCtrls, ActnMenus, DGuiBaseControl, DGuiDial, DGuiLabel, DGuiPanel;
+  ActnCtrls, ActnMenus, DGuiBaseControl, DGuiDial, DGuiLabel, DGuiPanel,
+  DGuiSelectBox, ExtCtrls, DGuiButton;
 
 type
 
   TFmReverb = class(TForm)
+    BtAB: TGuiButton;
+    BtAbout: TGuiButton;
     CBFreeze: TCheckBox;
-    DialDry: TGuiDial;
-    DialWet: TGuiDial;
-    DialWidth: TGuiDial;
     DialDamp: TGuiDial;
+    DialDry: TGuiDial;
     DialRoomSize: TGuiDial;
     DialStretch: TGuiDial;
+    DialWet: TGuiDial;
+    DialWidth: TGuiDial;
+    LbDamp: TGuiLabel;
     LbDry: TGuiLabel;
-    LbWet: TGuiLabel;
-    Label1: TGuiLabel;
+    LbPreset: TGuiLabel;
     LbSize: TGuiLabel;
     LbStretch: TGuiLabel;
-    LbDamp: TGuiLabel;
+    LbWet: TGuiLabel;
+    LbWidth: TGuiLabel;
     PnLabel: TGuiPanel;
+    PnToolbar: TPanel;
+    SBPreset: TGuiSelectBox;
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure BtAboutClick(Sender: TObject);
     procedure CBFreezeClick(Sender: TObject);
     procedure DialWetChange(Sender: TObject);
     procedure DialDryChange(Sender: TObject);
@@ -30,9 +39,6 @@ type
     procedure DialRoomSizeChange(Sender: TObject);
     procedure DialStretchChange(Sender: TObject);
     procedure DialDampChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-  private
-  public
   end;
 
 implementation
@@ -40,22 +46,7 @@ implementation
 {$R *.DFM}
 
 uses
-  fReeverbModule;
-
-procedure TFmReverb.DialDryChange(Sender: TObject);
-begin
-  TfReeverbVST(Owner).Parameter[0] := DialDry.Max - DialDry.Position;
-end;
-
-procedure TFmReverb.DialWetChange(Sender: TObject);
-begin
-  TfReeverbVST(Owner).Parameter[1] := DialWet.Max - DialWet.Position;
-end;
-
-procedure TFmReverb.DialWidthChange(Sender: TObject);
-begin
-  TfReeverbVST(Owner).Parameter[2] := DialWidth.Max - DialWidth.Position;
-end;
+  Dialogs, fReeverbModule;
 
 procedure TFmReverb.FormCreate(Sender: TObject);
 var
@@ -74,10 +65,45 @@ begin
  end;
 end;
 
+procedure TFmReverb.FormShow(Sender: TObject);
+var
+  i : Integer;
+begin
+ with TfReeverbVST(Owner) do
+  begin
+   SBPreset.Items.Clear;
+   for i := 0 to numPrograms - 1
+    do SBPreset.Items.Add(Programs[i].DisplayName);
+   SBPreset.ItemIndex := CurrentProgram; 
+  end;
+end;
+
+procedure TFmReverb.DialDryChange(Sender: TObject);
+begin
+  TfReeverbVST(Owner).Parameter[0] := DialDry.Max - DialDry.Position;
+end;
+
+procedure TFmReverb.DialWetChange(Sender: TObject);
+begin
+  TfReeverbVST(Owner).Parameter[1] := DialWet.Max - DialWet.Position;
+end;
+
+procedure TFmReverb.DialWidthChange(Sender: TObject);
+begin
+  TfReeverbVST(Owner).Parameter[2] := DialWidth.Max - DialWidth.Position;
+end;
+
 procedure TFmReverb.DialRoomSizeChange(Sender: TObject);
 begin
   TfReeverbVST(Owner).Parameter[3] :=
     (DialRoomSize.Max - DialRoomSize.Position) / DialRoomSize.Max;
+end;
+
+procedure TFmReverb.BtAboutClick(Sender: TObject);
+begin
+ MessageDlg('fReeverb example plugin written by Christian Budde' + #13#10 +
+            'based on algorithm by Jezar at Dreampoint' + #13#10 +
+            'based on GUI by thcilnnahoj', mtInformation, [mbOK], 0);
 end;
 
 procedure TFmReverb.CBFreezeClick(Sender: TObject);

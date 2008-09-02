@@ -1,4 +1,4 @@
-unit DGuiPanel;
+unit DGuiButton;
 
 interface
 
@@ -8,31 +8,39 @@ uses
   Windows, Classes, Controls, DGuiBaseControl, Graphics;
 
 type
-  TCustomGuiPanel = class(TCustomGuiBaseControl)
+  TCustomGuiButton = class(TCustomGuiBaseControl)
   private
     fRoundRadius  : Integer;
+    fAlignment    : TAlignment;
     fAntiAlias    : TGuiAntiAlias;
+    fCaption      : string;
     fOSFactor     : Integer;
-    fPanelColor   : TColor;
+    fButtonColor  : TColor;
     procedure SetRoundRadius(Value: Integer);
-    procedure RenderPanelToBitmap(Bitmap: TBitmap);
+    procedure RenderButtonToBitmap(Bitmap: TBitmap);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
-    procedure SetPanelColor(const Value: TColor);
+    procedure SetButtonColor(const Value: TColor);
+    procedure SetCaption(const Value: string);
+    procedure SetAlignment(const Value: TAlignment);
   protected
     procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
   public
     constructor Create(AOwner: TComponent); override;
     property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
-    property PanelColor: TColor read fPanelColor write SetPanelColor default clBtnShadow;
+    property Alignment: TAlignment read fAlignment write SetAlignment;
+    property Caption: string read fCaption write SetCaption;
+    property ButtonColor: TColor read fButtonColor write SetButtonColor default clBtnShadow;
     property Radius: Integer read fRoundRadius write SetRoundRadius default 2;
     property LineColor default clBtnHighlight;
   end;
 
-  TGuiPanel = class(TCustomGuiPanel)
+  TGuiButton = class(TCustomGuiButton)
   published
     property Align;
     property Anchors;
     property AntiAlias;
+    property Alignment;
+    property Caption;
     property Color;
     property Constraints;
     property DragCursor;
@@ -42,7 +50,7 @@ type
     property Font;
     property LineColor;
     property LineWidth;
-    property PanelColor;
+    property ButtonColor;
     property PopupMenu;
     property Radius;
     property ShowHint;
@@ -58,10 +66,15 @@ type
     property OnDragOver;
     property OnEndDock;
     property OnEndDrag;
+    property OnMouseDown;
+    property OnMouseEnter;
+    property OnMouseLeave;
+    property OnMouseMove;
+    property OnMouseUp;
+    property OnPaint;
     property OnResize;
     property OnStartDock;
     property OnStartDrag;
-    property OnPaint;
   end;
 
 implementation
@@ -69,24 +82,27 @@ implementation
 uses
   Math, DAVDCommon, DAVDComplex;
 
-{ TCustomGuiPanel }
+{ TCustomGuiButton }
 
-constructor TCustomGuiPanel.Create(AOwner: TComponent);
+constructor TCustomGuiButton.Create(AOwner: TComponent);
 begin
  inherited;
  ControlStyle  := ControlStyle + [csFramed, csOpaque, csReplicatable,
                                   csAcceptsControls];
+ fAlignment    := taCenter;
+ fCaption      := 'empty';
  fRoundRadius  := 2;
  fLineColor    := clBtnHighlight;
- fPanelColor   := clBtnShadow;
+ fButtonColor  := clBtnShadow;
 end;
 
-procedure TCustomGuiPanel.RenderPanelToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiButton.RenderButtonToBitmap(Bitmap: TBitmap);
 var
   Val, Off : TComplexDouble;
   Steps, i : Integer;
   tmp      : Single;
   rad      : Integer;
+  TextSize : TSize;
   PtsArray : Array of TPoint;
 begin
  with Bitmap.Canvas do
@@ -160,20 +176,28 @@ begin
         PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
 
         Brush.Style := bsClear;
-        Brush.Color := fPanelColor;
+        Brush.Color := fButtonColor;
         Pen.Width   := fOSFactor * fLineWidth;
         Pen.Color   := fLineColor;
         PolyGon(PtsArray);
-        if fLineColor <> fPanelColor
+        if fLineColor <> fButtonColor
          then PolyLine(PtsArray);
        end;
      end;
    end;
+
+   TextSize := TextExtent(fCaption);
+   case fAlignment of
+     taLeftJustify : TextOut(0, (Bitmap.Height - TextSize.cy) div 2, fCaption);
+    taRightJustify : TextOut(Bitmap.Width - TextSize.cx, (Bitmap.Height - TextSize.cy) div 2, fCaption);
+          taCenter : TextOut((Bitmap.Width - TextSize.cx) div 2, (Bitmap.Height - TextSize.cy) div 2, fCaption);
+   end;
+
    Unlock;
   end;
 end;
 
-procedure TCustomGuiPanel.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiButton.RedrawBuffer(doBufferFlip: Boolean);
 var
   Bmp : TBitmap;
 begin
@@ -187,7 +211,7 @@ begin
      begin
       {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else {$ENDIF}
       FillRect(ClipRect);
-      RenderPanelToBitmap(fBuffer);
+      RenderButtonToBitmap(fBuffer);
      end;
     gaaLinear2x :
      begin
@@ -208,7 +232,7 @@ begin
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
         FillRect(ClipRect);
-        RenderPanelToBitmap(Bmp);
+        RenderButtonToBitmap(Bmp);
         Downsample2xBitmap(Bmp);
         Draw(0, 0, Bmp);
        finally
@@ -233,7 +257,7 @@ begin
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(Bmp);
+        RenderButtonToBitmap(Bmp);
         Downsample4xBitmap(Bmp);
         Draw(0, 0, Bmp);
        finally
@@ -259,7 +283,7 @@ begin
           Upsample2xBitmap(Bmp);
          end else
         {$ENDIF}
-        RenderPanelToBitmap(Bmp);
+        RenderButtonToBitmap(Bmp);
         Downsample4xBitmap(Bmp);
         Downsample2xBitmap(Bmp);
         Draw(0, 0, Bmp);
@@ -286,7 +310,7 @@ begin
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(Bmp);
+        RenderButtonToBitmap(Bmp);
         Downsample4xBitmap(Bmp);
         Downsample4xBitmap(Bmp);
         Draw(0, 0, Bmp);
@@ -300,7 +324,16 @@ begin
  if doBufferFlip then Invalidate;
 end;
 
-procedure TCustomGuiPanel.SetAntiAlias(const Value: TGuiAntiAlias);
+procedure TCustomGuiButton.SetAlignment(const Value: TAlignment);
+begin
+ if fAlignment <> Value then
+  begin
+   fAlignment := Value;
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiButton.SetAntiAlias(const Value: TGuiAntiAlias);
 begin
  if fAntiAlias <> Value then
   begin
@@ -316,16 +349,25 @@ begin
   end;
 end;
 
-procedure TCustomGuiPanel.SetPanelColor(const Value: TColor);
+procedure TCustomGuiButton.SetButtonColor(const Value: TColor);
 begin
- if fPanelColor <> Value then
+ if fButtonColor <> Value then
   begin
-   fPanelColor := Value;
+   fButtonColor := Value;
    RedrawBuffer(True);
   end;
 end;
 
-procedure TCustomGuiPanel.SetRoundRadius(Value: Integer);
+procedure TCustomGuiButton.SetCaption(const Value: string);
+begin
+ if fCaption <> Value then
+  begin
+   fCaption := Value;
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiButton.SetRoundRadius(Value: Integer);
 begin
  if Value < 0 then Value := 0;
  if fRoundRadius <> Value then
