@@ -32,21 +32,21 @@ requires
   VSTPlugin_D10;
 
 contains
-  DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
-  DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
-  DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas',
-  DGuiDynamicWaveform in '..\Source\DGuiDynamicWaveform.pas',
-  DGuiDial in '..\Source\DGuiDial.pas',
-  DGuiBaseControl in '..\Source\DGuiBaseControl.pas',
   DGuiRegister in '..\Source\DGuiRegister.pas',
-  DGuiMidiKeyZones in '..\Source\DGuiMidiKeyZones.pas',
-  DGuiLevelMeter in '..\Source\DGuiLevelMeter.pas',
+  DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
   DGuiAudioDataDisplay in '..\Source\DGuiAudioDataDisplay.pas',
+  DGuiBaseControl in '..\Source\DGuiBaseControl.pas',
+  DGuiButton in '..\Source\DGuiButton.pas',
+  DGuiDial in '..\Source\DGuiDial.pas',
+  DGuiDynamicWaveform in '..\Source\DGuiDynamicWaveform.pas',
   DGuiGroup in '..\Source\DGuiGroup.pas',
   DGuiLabel in '..\Source\DGuiLabel.pas',
-  DGuiPanel in '..\Source\DGuiPanel.pas',
   DGuiLED in '..\Source\DGuiLED.pas',
+  DGuiLevelMeter in '..\Source\DGuiLevelMeter.pas',
+  DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
+  DGuiMidiKeyZones in '..\Source\DGuiMidiKeyZones.pas',
+  DGuiPanel in '..\Source\DGuiPanel.pas',
   DGuiSelectBox in '..\Source\DGuiSelectBox.pas',
-  DGuiButton in '..\Source\DGuiButton.pas';
+  DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas';
 
 end.

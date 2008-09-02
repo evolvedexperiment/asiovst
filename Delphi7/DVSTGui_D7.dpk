@@ -21,7 +21,7 @@ package DVSTGui_D7;
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
-{$IMAGEBASE $400000}
+{$IMAGEBASE $520000}
 {$DESCRIPTION 'ASIO/VST GUI Components'}
 {$IMPLICITBUILD ON}
 
@@ -33,14 +33,21 @@ requires
   AVDDSP_D7;
 
 contains
-  DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
-  DGuiBaseControl in '..\Source\DGuiBaseControl.pas',
   DGuiRegister in '..\Source\DGuiRegister.pas',
-  DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
+  DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
+  DGuiAudioDataDisplay in '..\Source\DGuiAudioDataDisplay.pas',
+  DGuiBaseControl in '..\Source\DGuiBaseControl.pas',
+  DGuiButton in '..\Source\DGuiButton.pas',
   DGuiDial in '..\Source\DGuiDial.pas',
-  DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas',
   DGuiDynamicWaveform in '..\Source\DGuiDynamicWaveform.pas',
+  DGuiGroup in '..\Source\DGuiGroup.pas',
+  DGuiLabel in '..\Source\DGuiLabel.pas',
+  DGuiLED in '..\Source\DGuiLED.pas',
+  DGuiLevelMeter in '..\Source\DGuiLevelMeter.pas',
+  DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
   DGuiMidiKeyZones in '..\Source\DGuiMidiKeyZones.pas',
-  DGuiLevelMeter in '..\Source\DGuiLevelMeter.pas';
+  DGuiPanel in '..\Source\DGuiPanel.pas',
+  DGuiSelectBox in '..\Source\DGuiSelectBox.pas',
+  DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas';
 
 end.
