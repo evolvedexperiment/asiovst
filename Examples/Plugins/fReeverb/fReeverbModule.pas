@@ -6,6 +6,25 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
   fReeverbFilter;
 
+const
+  CStereoSpread = 23;
+  // These values assume 44.1KHz sample rate
+  // they will probably be OK for 48KHz sample rate
+  // but would need scaling for 96KHz (or other) sample rates.
+  // The values were obtained by listening tests.
+  CCombTuningL1 = 1116;
+  CCombTuningL2 = 1188;
+  CCombTuningL3 = 1277;
+  CCombTuningL4 = 1356;
+  CCombTuningL5 = 1422;
+  CCombTuningL6 = 1491;
+  CCombTuningL7 = 1557;
+  CCombTuningL8 = 1617;
+  CAllpassTuningL1 = 556;
+  CAllpassTuningL2 = 441;
+  CAllpassTuningL3 = 341;
+  CAllpassTuningL4 = 225;
+
 type
   TCombArray    = array [0..1] of TComb;
   TAllpassArray = array [0..1] of TAllpass;
@@ -70,7 +89,7 @@ implementation
 {$R *.DFM}
 
 uses
-  fReeverbGUI;
+  Math, fReeverbGUI;
 
 function TfReeverbVST.GetDamp: Single;
 begin
@@ -96,13 +115,13 @@ begin
  if fMode >= cFreezeMode then Exit;
  for i := 0 to Length(fComb) - 1 do
   begin
-   fComb[i,0].Mute;
-   fComb[i,1].Mute;
+   fComb[i, 0].Mute;
+   fComb[i, 1].Mute;
   end;
  for i := 0 to Length(fAllpass) - 1 do
   begin
-   fAllpass[i,0].Mute;
-   fAllpass[i,1].Mute;
+   fAllpass[i, 0].Mute;
+   fAllpass[i, 1].Mute;
   end;
 end;
 
@@ -144,7 +163,8 @@ begin
 end;
 
 procedure TfReeverbVST.Update;
-var i: integer;
+var
+  i: integer;
 begin
  // Recalculate internal values after parameter change
  if fMode >= cFreezeMode then
@@ -159,12 +179,12 @@ begin
    fDampA := fDamp;
    fGain := cFixedGain;
   end;
- for i := 0 to Length(fComb)-1 do
+ for i := 0 to Length(fComb) - 1 do
   begin
-   fComb[i,0].Feedback := fRoomSizeI;
-   fComb[i,1].Feedback := fRoomSizeI;
-   fComb[i,0].Damp := fDampA;
-   fComb[i,1].Damp := fDampA;
+   fComb[i, 0].Feedback := fRoomSizeI;
+   fComb[i, 1].Feedback := fRoomSizeI;
+   fComb[i, 0].Damp := fDampA;
+   fComb[i, 1].Damp := fDampA;
   end;
 end;
 
@@ -174,8 +194,8 @@ var
 begin
  for i := 0 to Length(fAllpass) - 1 do
   begin
-   fAllpass[i,0].Feedback := 0.5 + 0.4 * Random;
-   fAllpass[i,1].Feedback := 0.5 + 0.4 * Random;
+   fAllpass[i, 0].Feedback := 0.5 + 0.4 * Random;
+   fAllpass[i, 1].Feedback := 0.5 + 0.4 * Random;
   end;
 end;
 
@@ -226,8 +246,8 @@ begin
    // Feed through allpasses in series
    for j := 0 to Length(fAllpass) - 1 do
     begin
-     outL := fAllpass[j,0].Process(OutL);
-     outR := fAllpass[j,1].Process(OutR);
+     outL := fAllpass[j, 0].Process(OutL);
+     outR := fAllpass[j, 1].Process(OutR);
     end;
    // Calculate output REPLACING anything already there
    Outputs[0,i] := OutL * fWet1 + OutR * fWet2 + Inputs[0, i] * fDry;
@@ -237,17 +257,17 @@ end;
 
 procedure TfReeverbVST.ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- Dry := Value * 0.01;
+ Dry := Value;
 end;
 
 procedure TfReeverbVST.ParameterWetChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- Wet := Value * 0.01;
+ Wet := Value;
 end;
 
 procedure TfReeverbVST.ParameterWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- Width := Value * 0.01;
+ Width := Value;
 end;
 
 procedure TfReeverbVST.ParameterRoomSizeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -262,52 +282,35 @@ begin
 end;
 
 procedure TfReeverbVST.BufferRezize;
-var s : Single;
-const
-  stereoSpread = 23;
-  // These values assume 44.1KHz sample rate
-  // they will probably be OK for 48KHz sample rate
-  // but would need scaling for 96KHz (or other) sample rates.
-  // The values were obtained by listening tests.
-  CombTuningL1 = 1116;
-  CombTuningL2 = 1188;
-  CombTuningL3 = 1277;
-  CombTuningL4 = 1356;
-  CombTuningL5 = 1422;
-  CombTuningL6 = 1491;
-  CombTuningL7 = 1557;
-  CombTuningL8 = 1617;
-  AllpassTuningL1 = 556;
-  AllpassTuningL2 = 441;
-  AllpassTuningL3 = 341;
-  AllpassTuningL4 = 225;
+var
+  s : Single;
 begin
  s := SampleRate / 44100 * fStretch;
 
- fComb[0, 0].BufferSize := round(CombTuningL1 * s);
- fComb[0, 1].BufferSize := round((CombTuningL1 + stereoSpread) * s);
- fComb[1, 0].BufferSize := round(CombTuningL2 * s);
- fComb[1, 1].BufferSize := round((CombTuningL2 + stereoSpread) * s);
- fComb[2, 0].BufferSize := round(CombTuningL3 * s);
- fComb[2, 1].BufferSize := round((CombTuningL3 + stereoSpread) * s);
- fComb[3, 0].BufferSize := round(CombTuningL4 * s);
- fComb[3, 1].BufferSize := round((CombTuningL4 + stereoSpread) * s);
- fComb[4, 0].BufferSize := round(CombTuningL5 * s);
- fComb[4, 1].BufferSize := round((CombTuningL5 + stereoSpread) * s);
- fComb[5, 0].BufferSize := round(CombTuningL6 * s);
- fComb[5, 1].BufferSize := round((CombTuningL6 + stereoSpread) * s);
- fComb[6, 0].BufferSize := round(CombTuningL7 * s);
- fComb[6, 1].BufferSize := round((CombTuningL7 + stereoSpread) * s);
- fComb[7, 0].BufferSize := round(CombTuningL8 * s);
- fComb[7, 1].BufferSize := round((CombTuningL8 + stereoSpread) * s);
- fAllpass[0, 0].BufferSize := round(AllpassTuningL1 * s);
- fAllpass[0, 1].BufferSize := round((AllpassTuningL1 + stereoSpread) * s);
- fAllpass[1, 0].BufferSize := round(AllpassTuningL2 * s);
- fAllpass[1, 1].BufferSize := round((AllpassTuningL2 + stereoSpread) * s);
- fAllpass[2, 0].BufferSize := round(AllpassTuningL3 * s);
- fAllpass[2, 1].BufferSize := round((AllpassTuningL3 + stereoSpread) * s);
- fAllpass[3, 0].BufferSize := round(AllpassTuningL4 * s);
- fAllpass[3, 1].BufferSize := round((AllpassTuningL4 + stereoSpread) * s);
+ fComb[0, 0].BufferSize := round(CCombTuningL1 * s);
+ fComb[0, 1].BufferSize := round((CCombTuningL1 + CStereoSpread) * s);
+ fComb[1, 0].BufferSize := round(CCombTuningL2 * s);
+ fComb[1, 1].BufferSize := round((CCombTuningL2 + CStereoSpread) * s);
+ fComb[2, 0].BufferSize := round(CCombTuningL3 * s);
+ fComb[2, 1].BufferSize := round((CCombTuningL3 + CStereoSpread) * s);
+ fComb[3, 0].BufferSize := round(CCombTuningL4 * s);
+ fComb[3, 1].BufferSize := round((CCombTuningL4 + CStereoSpread) * s);
+ fComb[4, 0].BufferSize := round(CCombTuningL5 * s);
+ fComb[4, 1].BufferSize := round((CCombTuningL5 + CStereoSpread) * s);
+ fComb[5, 0].BufferSize := round(CCombTuningL6 * s);
+ fComb[5, 1].BufferSize := round((CCombTuningL6 + CStereoSpread) * s);
+ fComb[6, 0].BufferSize := round(CCombTuningL7 * s);
+ fComb[6, 1].BufferSize := round((CCombTuningL7 + CStereoSpread) * s);
+ fComb[7, 0].BufferSize := round(CCombTuningL8 * s);
+ fComb[7, 1].BufferSize := round((CCombTuningL8 + CStereoSpread) * s);
+ fAllpass[0, 0].BufferSize := round(CAllpassTuningL1 * s);
+ fAllpass[0, 1].BufferSize := round((CAllpassTuningL1 + CStereoSpread) * s);
+ fAllpass[1, 0].BufferSize := round(CAllpassTuningL2 * s);
+ fAllpass[1, 1].BufferSize := round((CAllpassTuningL2 + CStereoSpread) * s);
+ fAllpass[2, 0].BufferSize := round(CAllpassTuningL3 * s);
+ fAllpass[2, 1].BufferSize := round((CAllpassTuningL3 + CStereoSpread) * s);
+ fAllpass[3, 0].BufferSize := round(CAllpassTuningL4 * s);
+ fAllpass[3, 1].BufferSize := round((CAllpassTuningL4 + CStereoSpread) * s);
 end;
 
 procedure TfReeverbVST.ParameterFreezeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -318,14 +321,13 @@ end;
 procedure TfReeverbVST.ParameterStretchChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fStretch := Value;
+ fStretch := 1 + 9 * Value;
  BufferRezize;
 end;
 
-procedure TfReeverbVST.ParameterDampChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TfReeverbVST.ParameterDampChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- Damp := Value * 0.01;
+ Damp := Value;
 end;
 
 procedure TfReeverbVST.ParameterNumAllpassesChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -356,13 +358,13 @@ begin
  if (Value < 1) or (oldLength = Round(Value))
   then exit;
 
- if (oldLength<Round(Value)) then
+ if (oldLength < Round(Value)) then
   begin
-   SetLength(fComb,Round(Value));
+   SetLength(fComb, Round(Value));
    for i := oldLength to Length(fComb) - 1 do
     begin
-     fComb[i,0] := TComb.Create(1000);
-     fComb[i,1] := TComb.Create(1023);
+     fComb[i, 0] := TComb.Create(1000);
+     fComb[i, 1] := TComb.Create(1023);
     end;
   end
  else
@@ -379,54 +381,37 @@ end;
 procedure TfReeverbVST.VSTModuleCreate(Sender: TObject);
 var
   i : Integer;
-const
-  stereoSpread = 23;
-  // These values assume 44.1KHz sample rate
-  // they will probably be OK for 48KHz sample rate
-  // but would need scaling for 96KHz (or other) sample rates.
-  // The values were obtained by listening tests.
-  CombTuningL1 = 1116;
-  CombTuningL2 = 1188;
-  CombTuningL3 = 1277;
-  CombTuningL4 = 1356;
-  CombTuningL5 = 1422;
-  CombTuningL6 = 1491;
-  CombTuningL7 = 1557;
-  CombTuningL8 = 1617;
-  AllpassTuningL1 = 556;
-  AllpassTuningL2 = 441;
-  AllpassTuningL3 = 341;
-  AllpassTuningL4 = 225;
 begin
  fStretch := 1;
  SetLength(fComb, 8);
  SetLength(fAllpass, 4);
 
- fComb[0, 0] := TComb.Create(CombTuningL1);
- fComb[0, 1] := TComb.Create(CombTuningL1 + stereoSpread);
- fComb[1, 0] := TComb.Create(CombTuningL2);
- fComb[1, 1] := TComb.Create(CombTuningL2 + stereoSpread);
- fComb[2, 0] := TComb.Create(CombTuningL3);
- fComb[2, 1] := TComb.Create(CombTuningL3 + stereoSpread);
- fComb[3, 0] := TComb.Create(CombTuningL4);
- fComb[3, 1] := TComb.Create(CombTuningL4 + stereoSpread);
- fComb[4, 0] := TComb.Create(CombTuningL5);
- fComb[4, 1] := TComb.Create(CombTuningL5 + stereoSpread);
- fComb[5, 0] := TComb.Create(CombTuningL6);
- fComb[5, 1] := TComb.Create(CombTuningL6 + stereoSpread);
- fComb[6, 0] := TComb.Create(CombTuningL7);
- fComb[6, 1] := TComb.Create(CombTuningL7 + stereoSpread);
- fComb[7, 0] := TComb.Create(CombTuningL8);
- fComb[7, 1] := TComb.Create(CombTuningL8 + stereoSpread);
- fAllpass[0, 0] := TAllpass.Create(AllpassTuningL1);
- fAllpass[0, 1] := TAllpass.Create(AllpassTuningL1 + stereoSpread);
- fAllpass[1, 0] := TAllpass.Create(AllpassTuningL2);
- fAllpass[1, 1] := TAllpass.Create(AllpassTuningL2 + stereoSpread);
- fAllpass[2, 0] := TAllpass.Create(AllpassTuningL3);
- fAllpass[2, 1] := TAllpass.Create(AllpassTuningL3 + stereoSpread);
- fAllpass[3, 0] := TAllpass.Create(AllpassTuningL4);
- fAllpass[3, 1] := TAllpass.Create(AllpassTuningL4 + stereoSpread);
-  // Set default values
+ fComb[0, 0] := TComb.Create(CCombTuningL1);
+ fComb[0, 1] := TComb.Create(CCombTuningL1 + CStereoSpread);
+ fComb[1, 0] := TComb.Create(CCombTuningL2);
+ fComb[1, 1] := TComb.Create(CCombTuningL2 + CStereoSpread);
+ fComb[2, 0] := TComb.Create(CCombTuningL3);
+ fComb[2, 1] := TComb.Create(CCombTuningL3 + CStereoSpread);
+ fComb[3, 0] := TComb.Create(CCombTuningL4);
+ fComb[3, 1] := TComb.Create(CCombTuningL4 + CStereoSpread);
+ fComb[4, 0] := TComb.Create(CCombTuningL5);
+ fComb[4, 1] := TComb.Create(CCombTuningL5 + CStereoSpread);
+ fComb[5, 0] := TComb.Create(CCombTuningL6);
+ fComb[5, 1] := TComb.Create(CCombTuningL6 + CStereoSpread);
+ fComb[6, 0] := TComb.Create(CCombTuningL7);
+ fComb[6, 1] := TComb.Create(CCombTuningL7 + CStereoSpread);
+ fComb[7, 0] := TComb.Create(CCombTuningL8);
+ fComb[7, 1] := TComb.Create(CCombTuningL8 + CStereoSpread);
+ fAllpass[0, 0] := TAllpass.Create(CAllpassTuningL1);
+ fAllpass[0, 1] := TAllpass.Create(CAllpassTuningL1 + CStereoSpread);
+ fAllpass[1, 0] := TAllpass.Create(CAllpassTuningL2);
+ fAllpass[1, 1] := TAllpass.Create(CAllpassTuningL2 + CStereoSpread);
+ fAllpass[2, 0] := TAllpass.Create(CAllpassTuningL3);
+ fAllpass[2, 1] := TAllpass.Create(CAllpassTuningL3 + CStereoSpread);
+ fAllpass[3, 0] := TAllpass.Create(CAllpassTuningL4);
+ fAllpass[3, 1] := TAllpass.Create(CAllpassTuningL4 + CStereoSpread);
+
+ // Set default values
  for i := 0 to Length(fAllpass)-1 do
   begin
    fAllpass[i,0].Feedback := 0.5;
@@ -439,6 +424,44 @@ begin
  Width := cInitialWidth;
  Mode := cInitialMode;
  Mute;
+
+ Parameter[0] := 0.5;
+ Parameter[1] := 0.5;
+ Parameter[2] := 0.5;
+ Parameter[3] := 0.5;
+ Parameter[4] := 0;
+ Parameter[5] := 0;
+ Parameter[6] := 0.5;
+ with programs[1] do
+  begin
+   Parameter[0] := 0.5;
+   Parameter[1] := 0.6;
+   Parameter[2] := 0.4;
+   Parameter[3] := 0.5;
+   Parameter[4] := 0;
+   Parameter[5] := 0;
+   Parameter[6] := 1;
+  end;
+ with programs[2] do
+  begin
+   Parameter[0] := 0.2;
+   Parameter[1] := 0.6;
+   Parameter[2] := 0.8;
+   Parameter[3] := 1;
+   Parameter[4] := 0;
+   Parameter[5] := 1;
+   Parameter[6] := 1;
+  end;
+ with programs[3] do
+  begin
+   Parameter[0] := random;
+   Parameter[1] := random;
+   Parameter[2] := random;
+   Parameter[3] := random;
+   Parameter[4] := 0;
+   Parameter[5] := random;
+   Parameter[6] := random;
+  end;
 end;
 
 procedure TfReeverbVST.VSTModuleDestroy(Sender: TObject);

@@ -131,7 +131,7 @@ end;
 
 destructor TComb.Destroy;
 begin
- SetLength(fBuffer,0);
+ SetLength(fBuffer, 0);
  inherited;
 end;
 

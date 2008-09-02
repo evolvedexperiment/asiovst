@@ -34,7 +34,7 @@ object FmReverb: TFmReverb
     LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
-    Max = 100.000000000000000000
+    Max = 1.000000000000000000
     NumGlyphs = 64
     StitchKind = skVertical
     OnChange = DialDryChange
@@ -47,7 +47,7 @@ object FmReverb: TFmReverb
     LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
-    Max = 100.000000000000000000
+    Max = 1.000000000000000000
     NumGlyphs = 64
     StitchKind = skVertical
     OnChange = DialWetChange
@@ -60,7 +60,7 @@ object FmReverb: TFmReverb
     LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
-    Max = 100.000000000000000000
+    Max = 1.000000000000000000
     NumGlyphs = 64
     StitchKind = skVertical
     OnChange = DialWidthChange
@@ -73,7 +73,7 @@ object FmReverb: TFmReverb
     LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
-    Max = 100.000000000000000000
+    Max = 1.000000000000000000
     NumGlyphs = 64
     StitchKind = skVertical
     OnChange = DialDampChange
@@ -86,7 +86,7 @@ object FmReverb: TFmReverb
     LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
-    Max = 100.000000000000000000
+    Max = 1.000000000000000000
     NumGlyphs = 64
     StitchKind = skVertical
     OnChange = DialRoomSizeChange
@@ -99,7 +99,7 @@ object FmReverb: TFmReverb
     LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
-    Max = 100.000000000000000000
+    Max = 1.000000000000000000
     NumGlyphs = 64
     StitchKind = skVertical
     OnChange = DialStretchChange
@@ -224,7 +224,6 @@ object FmReverb: TFmReverb
     BevelOuter = bvNone
     Color = clWhite
     TabOrder = 1
-    ExplicitTop = 4
     object SBPreset: TGuiSelectBox
       Left = 51
       Top = 2
@@ -243,6 +242,7 @@ object FmReverb: TFmReverb
       LineColor = clSilver
       SelectBoxColor = 2960685
       Radius = 4
+      OnChange = SBPresetChange
     end
     object LbPreset: TGuiLabel
       Left = 8

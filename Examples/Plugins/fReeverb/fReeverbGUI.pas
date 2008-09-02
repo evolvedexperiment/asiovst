@@ -39,6 +39,14 @@ type
     procedure DialRoomSizeChange(Sender: TObject);
     procedure DialStretchChange(Sender: TObject);
     procedure DialDampChange(Sender: TObject);
+    procedure SBPresetChange(Sender: TObject);
+  public
+    procedure UpdateDry;
+    procedure UpdateWet;
+    procedure UpdateWidth;
+    procedure UpdateDamp;
+    procedure UpdateSize;
+    procedure UpdateStretch;
   end;
 
 implementation
@@ -78,25 +86,108 @@ begin
   end;
 end;
 
+procedure TFmReverb.SBPresetChange(Sender: TObject);
+begin
+ with TfReeverbVST(Owner) do
+  begin
+   CurrentProgram := SBPreset.ItemIndex;
+   UpdateDry;
+   UpdateWet;
+   UpdateWidth;
+   UpdateDamp;
+   UpdateSize;
+   UpdateStretch;
+  end;
+end;
+
+procedure TFmReverb.UpdateDamp;
+begin
+ with TfReeverbVST(Owner) do
+  if DialDamp.Position <> Parameter[6] then
+   begin
+    DialDamp.Position := Parameter[6];
+   end;
+end;
+
+procedure TFmReverb.UpdateDry;
+begin
+ with TfReeverbVST(Owner) do
+  if DialDry.Position <> Parameter[0]  then
+   begin
+    DialDry.Position := Parameter[0];
+   end;
+end;
+
+procedure TFmReverb.UpdateSize;
+begin
+ with TfReeverbVST(Owner) do
+  if DialRoomSize.Position <> Parameter[3] then
+   begin
+    DialRoomSize.Position := Parameter[3];
+   end;
+end;
+
+procedure TFmReverb.UpdateStretch;
+begin
+ with TfReeverbVST(Owner) do
+  if DialStretch.Position <> Parameter[5] then
+   begin
+    DialStretch.Position := Parameter[5];
+   end;
+end;
+
+procedure TFmReverb.UpdateWet;
+begin
+ with TfReeverbVST(Owner) do
+  if DialWet.Position <> Parameter[1]  then
+   begin
+    DialWet.Position := Parameter[1];
+   end;
+end;
+
+procedure TFmReverb.UpdateWidth;
+begin
+ with TfReeverbVST(Owner) do
+  if DialWidth.Position <> Parameter[2]  then
+   begin
+    DialWidth.Position := Parameter[2];
+   end;
+end;
+
 procedure TFmReverb.DialDryChange(Sender: TObject);
 begin
-  TfReeverbVST(Owner).Parameter[0] := DialDry.Max - DialDry.Position;
+ with TfReeverbVST(Owner) do
+  if Parameter[0] <> DialDry.Position then
+   begin
+    Parameter[0] := DialDry.Position;
+   end;
 end;
 
 procedure TFmReverb.DialWetChange(Sender: TObject);
 begin
-  TfReeverbVST(Owner).Parameter[1] := DialWet.Max - DialWet.Position;
+ with TfReeverbVST(Owner) do
+  if Parameter[1] <> DialWet.Position then
+   begin
+    Parameter[1] := DialWet.Position;
+   end;
 end;
 
 procedure TFmReverb.DialWidthChange(Sender: TObject);
 begin
-  TfReeverbVST(Owner).Parameter[2] := DialWidth.Max - DialWidth.Position;
+ with TfReeverbVST(Owner) do
+  if Parameter[2] <> DialWidth.Position then
+   begin
+    Parameter[2] := DialWidth.Position;
+   end;
 end;
 
 procedure TFmReverb.DialRoomSizeChange(Sender: TObject);
 begin
-  TfReeverbVST(Owner).Parameter[3] :=
-    (DialRoomSize.Max - DialRoomSize.Position) / DialRoomSize.Max;
+ with TfReeverbVST(Owner) do
+  if Parameter[3] <> DialRoomSize.Position then
+   begin
+    Parameter[3] := DialRoomSize.Position;
+   end;
 end;
 
 procedure TFmReverb.BtAboutClick(Sender: TObject);
@@ -113,12 +204,20 @@ end;
 
 procedure TFmReverb.DialStretchChange(Sender: TObject);
 begin
-  TfReeverbVST(Owner).Parameter[5] := (DialStretch.Max - DialStretch.Position);
+ with TfReeverbVST(Owner) do
+  if Parameter[5] <> DialStretch.Position then
+   begin
+    Parameter[5] := DialStretch.Position;
+   end;
 end;
 
 procedure TFmReverb.DialDampChange(Sender: TObject);
 begin
-  TfReeverbVST(Owner).Parameter[6] := DialDamp.Max - DialDamp.Position;
+ with TfReeverbVST(Owner) do
+  if Parameter[6] <> DialDamp.Position then
+   begin
+    Parameter[6] := DialDamp.Position;
+   end;
 end;
 
 end.

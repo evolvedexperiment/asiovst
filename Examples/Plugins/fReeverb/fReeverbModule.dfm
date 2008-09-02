@@ -11,12 +11,20 @@ object fReeverbVST: TfReeverbVST
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
-  CurrentProgramName = 'Init'
+  CurrentProgramName = 'Default'
   UniqueID = 'fRee'
   ShellPlugins = <>
   Programs = <
     item
-      DisplayName = 'Init'
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Small Room'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Large Hall'
       VSTModule = Owner
     end
     item
