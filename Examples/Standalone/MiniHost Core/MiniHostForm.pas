@@ -61,6 +61,18 @@ type
     pos: Integer;
   end;
 
+  TRGB32 = packed record
+    B, G, R, A: Byte;
+  end;
+  TRGB32Array = packed array[0..MaxInt div SizeOf(TRGB32) - 1] of TRGB32;
+  PRGB32Array = ^TRGB32Array;
+
+  TRGB24 = packed record
+    B, G, R: Byte;
+  end;
+  TRGB24Array = packed array[0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
+  PRGB24Array = ^TRGB24Array;
+
   { TFmMiniHost }
 
   TRecordState = (rsStop, rsRecord, rsPause);
@@ -108,22 +120,18 @@ type
     N6: TMenuItem;
     PnStatus: TPanel;
     PresetBox: TComboBox;
-    Panel1: TPanel;
     ToolBarBackground: TImage;
-    IOnOff: TImage;
     IBtLeftRight: TImage;
     IBtDropDown: TImage;
     IQuickSettings: TImage;
     IQuickMidPlay: TImage;
     IQuickWavPlay: TImage;
     IQuickWavRec: TImage;
-    bord0: TImage;
-    bord2: TImage;
-    bord3: TImage;
-    bord4: TImage;
-    bord1: TImage;
-    Shape1: TShape;
-    Shape2: TShape;
+    BorderPlayMIDI: TImage;
+    BorderPlayWave: TImage;
+    BorderRecordWave: TImage;
+    BorderOnOff: TImage;
+    BorderOptions: TImage;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -173,7 +181,7 @@ type
     procedure PresetBoxChange(Sender: TObject);
     procedure PresetBoxKeyPress(Sender: TObject; var Key: Char);
     procedure PresetBoxDrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
-    procedure bord2MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure BorderPlayMIDIMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure IdleTimerTimer(Sender: TObject);
     procedure IBtLeftRightMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure IBtDropDownMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -277,26 +285,70 @@ uses
 
 procedure TFmMiniHost.FormCreate(Sender: TObject);
 var
-  i: Integer;
-  m: TMenuItem;
-  tlist: TStringList;
-  slist: TStrings;
-  s: string;
-  Settings: TIniFile;
-  p: PVstMidiEvent;
-  mi: Integer;
+  i        : Integer;
+  m        : TMenuItem;
+  tlist    : TStringList;
+  slist    : TStrings;
+  s        : string;
+  Settings : TIniFile;
+  p        : PVstMidiEvent;
+  mi       : Integer;
+(*
+  b        : Byte;
+  flt      : array [0..1] of Single;
+  x, y     : Integer;
+  Line24   : PRGB24Array;
+  Line32   : PRGB32Array;
+*)
 begin
  fAllowed := False;
- ToolBarBackground.picture.Bitmap.TransparentColor := $A8A8A8;
- ToolBarBackground.picture.Bitmap.Transparent := True;
+ with ToolBarBackground.Picture do
+  begin
+   Bitmap.TransparentColor := $A8A8A8;
+(*
+   // not working yet!!!
+   case Bitmap.PixelFormat of
+    pf24bit:
+     for y := 0 to Bitmap.Height - 1 do
+      begin
+       Line24 := Bitmap.Scanline[y];
+       for x := 0 to Bitmap.Width - 1 do
+        begin
+         flt[1] := 0.9 * flt[0] + 0.1 * (2 * random - 1);
+         b := round($F * flt[1]);
+         flt[0] := flt[1];
+         Line24[x].B := $A8 + b;
+         Line24[x].G := $A8 + b;
+         Line24[x].R := $A8 + b;
+        end;
+      end;
+    pf32bit:
+     for y := 0 to Bitmap.Height - 1 do
+      begin
+       Line32 := Bitmap.Scanline[y];
+       for x := 0 to Bitmap.Width - 1 do
+        begin
+         flt[1] := 0.9 * flt[0] + 0.1 * (2 * random - 1);
+         b := round($F * flt[1]);
+         flt[0] := flt[1];
+         Line32[x].B := $A8 + b;
+         Line32[x].G := $A8 + b;
+         Line32[x].R := $A8 + b;
+         Line32[x].A := $FF;
+        end;
+      end;
+   end;
+(*
+*)
+  end;
  IBtDropDown.picture.Bitmap.TransparentColor := $A8A8A8;
  IBtDropDown.picture.Bitmap.Transparent := True;
- bord0.picture.Bitmap.TransparentColor := clblack;
- bord0.picture.Bitmap.Transparent := True;
- bord1.Picture.Assign(bord0.Picture);
- bord2.Picture.Assign(bord0.Picture);
- bord3.Picture.Assign(bord0.Picture);
- bord4.Picture.Assign(bord0.Picture);
+ BorderOnOff.picture.Bitmap.TransparentColor := clBlack;
+ BorderOnOff.picture.Bitmap.Transparent := False;
+ BorderOptions.Picture.Assign(BorderOnOff.Picture);
+ BorderPlayMIDI.Picture.Assign(BorderOnOff.Picture);
+ BorderPlayWave.Picture.Assign(BorderOnOff.Picture);
+ BorderRecordWave.Picture.Assign(BorderOnOff.Picture);
 
  Assert(SizeOf(TVSTMidiEvent) = SizeOf(TVstMidiSysexEvent));
 
@@ -333,7 +385,7 @@ begin
  DragAcceptFiles(self.handle, True);
 
 {$IFNDEF FPC}
- ININame := GetApplicationDirectory + ChangeFileExt(GetApplicationFilename, '.ini');
+ ININame := GetApplicationDirectory + '\' + ChangeFileExt(GetApplicationFilename, '.ini');
 {$ENDIF}
 
  MidiFile := TMidiFile.create(nil);
@@ -391,14 +443,14 @@ begin
 
  if slist <> nil then
   for i := 0 to slist.Count - 1 do
-  begin
-   m := TMenuItem.Create(self);
-   m.RadioItem := True;
-   m.tag := i;
-   m.Caption := slist.Strings[i];
-   m.OnClick := ASIOChange;
-   MIAsioDriver.Add(m);
-  end;
+   begin
+    m := TMenuItem.Create(self);
+    m.RadioItem := True;
+    m.Tag := i;
+    m.Caption := slist.Strings[i];
+    m.OnClick := ASIOChange;
+    MIAsioDriver.Add(m);
+   end;
  if slist.Count = 0 then
  begin
   MessageDlg('No ASIO Driver present! Application Terminated!', mtError, [mbOK], 0);
@@ -409,7 +461,9 @@ begin
  MidiInput.OnSysExData := SysExData;
 
  Settings := TIniFile.Create(ININame);
- i := Settings.ReadInteger('Audio', 'ASIO Driver', 0);
+ i := Settings.ReadInteger('Audio', 'ASIO Driver', -1);
+ if i = -1 then i := slist.IndexOf('ASIO4ALL v2');
+ if i = -1 then i := slist.IndexOf('ASIO4ALL');
  if (i < 0) or (i >= slist.count) then i := 0;
  MIAsioDriver.Items[i].Checked := True;
  try
@@ -871,7 +925,8 @@ procedure TFmMiniHost.ASIOChange(Sender: TObject);
 var i, j: Integer;
     m: TMenuItem;
 begin
- (Sender as TMenuItem).checked := True;
+ assert(Sender is TMenuItem);
+ (Sender as TMenuItem).Checked := True;
  fProcessing := False;
  MIPanicClick(nil);
  MidiFile.StopPlaying;
@@ -1337,11 +1392,11 @@ begin
   Player.SbWavPosition.position := i;
  end;
 
- bord0.Visible := fProcessing;
- bord1.Visible := FmOptions.Showing;
- bord2.Visible := midiplaying;
- bord3.Visible := not (WaveFile.fPMode = wpmPause);
- bord4.Visible := (fRecordState = rsRecord);
+ BorderOnOff.Visible := fProcessing;
+ BorderOptions.Visible := FmOptions.Showing;
+ BorderPlayMIDI.Visible := midiplaying;
+ BorderPlayWave.Visible := not (WaveFile.fPMode = wpmPause);
+ BorderRecordWave.Visible := (fRecordState = rsRecord);
 
  case fRecordState of
   rsRecord: Player.LbStatus.caption := 'status: recording';
@@ -1703,8 +1758,9 @@ end;
 procedure TFmMiniHost.F3PlayStopMIDI1Click(Sender: TObject);
 begin
  with Player do
- if MidiBox.ItemIndex >= 0 then
-  Player.LbMidiFile.Caption := MidiBox.items[MidiBox.itemindex];
+ if MidiBox.ItemIndex >= 0
+  then Player.LbMidiFile.Caption := MidiBox.items[MidiBox.itemindex]
+  else Exit;
   
  if MidiPlaying then
   begin
@@ -2077,7 +2133,7 @@ begin
   end;
 end;
 
-procedure TFmMiniHost.bord2MouseDown(Sender: TObject; Button: TMouseButton;
+procedure TFmMiniHost.BorderPlayMIDIMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
  if Shift = [ssRight] then Player.Show;

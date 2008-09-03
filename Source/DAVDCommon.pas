@@ -963,25 +963,25 @@ procedure Msg(m: string; i:Integer);
 begin MessageBox(0, PChar(m + ' ' + inttostr(i)), '', MB_OK); end;
 {$WARNINGS ON}
 
-function GetApplicationFilename:string;
+function GetApplicationFilename: string;
 var
   s : array[0..1500] of char;
 begin
- GetModuleFilename(hinstance, s, sizeof(s));
+ GetModuleFilename(hinstance, s, SizeOf(s));
  Result := strpas(s);
  Result := ExtractFilename(Result);
 end;
 
-function GetApplicationDirectory:string;
+function GetApplicationDirectory: string;
 var
   s : array[0..1500] of char;
 begin
- GetModuleFilename(hinstance, s, sizeof(s));
- Result := strpas(s);
+ GetModuleFilename(hinstance, s, SizeOf(s));
+ Result := StrPas(s);
  Result := ExtractFileDir(Result);
 end;
 
-function FloatWithUnit(f: Double):string;
+function FloatWithUnit(f: Double): string;
 begin
  if f > 1 then result := FloatToStrF(f, ffFixed, 6, 3)+ 's' else
  if f > 1E-3 then result:=FloatToStrF(1E3 * f, ffFixed, 6, 3)+ 'ms' else

@@ -39,22 +39,6 @@ object FmMiniHost: TFmMiniHost
     ParentColor = True
     ParentCtl3D = False
     TabOrder = 0
-    object Shape2: TShape
-      Left = 79
-      Top = 6
-      Width = 12
-      Height = 21
-      Brush.Color = 11053224
-      Pen.Style = psClear
-    end
-    object Shape1: TShape
-      Left = 34
-      Top = 6
-      Width = 39
-      Height = 21
-      Brush.Color = 11053224
-      Pen.Style = psClear
-    end
     object ToolBarBackground: TImage
       Left = 0
       Top = 0
@@ -1779,7 +1763,6 @@ object FmMiniHost: TFmMiniHost
       Hint = 'start/stop MIDI playback'
       ParentShowHint = False
       ShowHint = True
-      OnMouseDown = bord2MouseDown
       OnMouseUp = IQuickMidPlayMouseUp
     end
     object IQuickWavPlay: TImage
@@ -1791,7 +1774,6 @@ object FmMiniHost: TFmMiniHost
       Hint = 'start/stop WAV playback'
       ParentShowHint = False
       ShowHint = True
-      OnMouseDown = bord2MouseDown
       OnMouseUp = IQuickWavPlayMouseUp
     end
     object IQuickWavRec: TImage
@@ -1803,10 +1785,9 @@ object FmMiniHost: TFmMiniHost
       Hint = 'start/stop WAV recording'
       ParentShowHint = False
       ShowHint = True
-      OnMouseDown = bord2MouseDown
       OnMouseUp = IQuickWavRecMouseUp
     end
-    object bord0: TImage
+    object BorderOnOff: TImage
       Left = 3
       Top = 3
       Width = 25
@@ -1883,7 +1864,7 @@ object FmMiniHost: TFmMiniHost
       Transparent = True
       OnMouseUp = IOnOffMouseUp
     end
-    object bord2: TImage
+    object BorderPlayMIDI: TImage
       Left = 331
       Top = 3
       Width = 25
@@ -1893,10 +1874,9 @@ object FmMiniHost: TFmMiniHost
       ParentShowHint = False
       ShowHint = True
       Transparent = True
-      OnMouseDown = bord2MouseDown
       OnMouseUp = IQuickMidPlayMouseUp
     end
-    object bord3: TImage
+    object BorderPlayWave: TImage
       Left = 358
       Top = 3
       Width = 25
@@ -1906,10 +1886,9 @@ object FmMiniHost: TFmMiniHost
       ParentShowHint = False
       ShowHint = True
       Transparent = True
-      OnMouseDown = bord2MouseDown
       OnMouseUp = IQuickWavPlayMouseUp
     end
-    object bord4: TImage
+    object BorderRecordWave: TImage
       Left = 385
       Top = 3
       Width = 25
@@ -1919,10 +1898,9 @@ object FmMiniHost: TFmMiniHost
       ParentShowHint = False
       ShowHint = True
       Transparent = True
-      OnMouseDown = bord2MouseDown
       OnMouseUp = IQuickWavRecMouseUp
     end
-    object bord1: TImage
+    object BorderOptions: TImage
       Left = 304
       Top = 3
       Width = 25
@@ -1967,7 +1945,7 @@ object FmMiniHost: TFmMiniHost
         'presets')
     end
   end
-  object Panel1: TPanel
+  object PnNavigatePresets: TPanel
     Left = 273
     Top = 4
     Width = 22
@@ -2218,20 +2196,20 @@ object FmMiniHost: TFmMiniHost
     Top = 72
   end
   object ASIOHost: TASIOHost
-    CanDos = []
-    PreFillOutBuffer = bpfZero
-    ConvertOptimizations = [coSSE, co3DNow]
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
-    SampleRate = 44100.000000000000000000
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    OnDestroy = ASIOHostDestroy
-    OnUpdateSamplePos = ASIOHostUpdateSamplePos
-    OnReset = ASIOHostReset
-    OnLatencyChanged = ASIOHostLatencyChanged
-    OnSampleRateChanged = ASIOHostSampleRateChanged
+    CanDos = []
+    ConvertOptimizations = [coSSE, co3DNow]
+    PreFillOutBuffer = bpfZero
+    SampleRate = 44100.000000000000000000
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch32
+    OnDestroy = ASIOHostDestroy
+    OnLatencyChanged = ASIOHostLatencyChanged
+    OnReset = ASIOHostReset
+    OnSampleRateChanged = ASIOHostSampleRateChanged
+    OnUpdateSamplePos = ASIOHostUpdateSamplePos
     Left = 120
     Top = 72
   end

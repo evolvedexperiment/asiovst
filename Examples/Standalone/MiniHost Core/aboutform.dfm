@@ -13,8 +13,11 @@ object FmAbout: TFmAbout
   Font.Name = 'Arial'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   OnShow = FormShow
+  DesignSize = (
+    225
+    314)
   PixelsPerInch = 96
   TextHeight = 14
   object LbTitle: TLabel
@@ -22,6 +25,7 @@ object FmAbout: TFmAbout
     Top = 16
     Width = 121
     Height = 14
+    Anchors = [akLeft, akTop, akRight]
     Caption = 'Tobybear MiniHost 1.0'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
@@ -31,14 +35,15 @@ object FmAbout: TFmAbout
     ParentFont = False
   end
   object LbCopyright: TLabel
-    Left = 15
+    Left = 4
     Top = 184
-    Width = 189
+    Width = 217
     Height = 42
     Alignment = taCenter
+    Anchors = [akLeft, akTop, akRight]
     Caption = 
-      '(C)opyright in 2004 by Tobias Fleischer'#13#10'based on the Delphi VST' +
-      ' and ASIO '#13#10'host code by Christian Budde'
+      '(C)opyright in 2004-2008 by Tobias Fleischer'#13#10'based on the Delph' +
+      'i VST and ASIO '#13#10'host code by Christian Budde'
   end
   object LbMail: TLabel
     Left = 40
@@ -46,6 +51,7 @@ object FmAbout: TFmAbout
     Width = 101
     Height = 14
     Cursor = crHandPoint
+    Anchors = [akLeft, akTop, akRight]
     Caption = 'tobybear@web.de'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
@@ -61,6 +67,7 @@ object FmAbout: TFmAbout
     Width = 130
     Height = 14
     Cursor = crHandPoint
+    Anchors = [akLeft, akTop, akRight]
     Caption = 'http://www.tobybear.de'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
@@ -76,6 +83,7 @@ object FmAbout: TFmAbout
     Width = 175
     Height = 14
     Cursor = crHandPoint
+    Anchors = [akLeft, akTop, akRight]
     Caption = '[Click here to donate via PayPal]'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
@@ -90,6 +98,7 @@ object FmAbout: TFmAbout
     Top = 160
     Width = 27
     Height = 14
+    Anchors = [akLeft, akTop, akRight]
     Caption = 'email:'
   end
   object LbTrademarks: TLabel
@@ -98,6 +107,7 @@ object FmAbout: TFmAbout
     Width = 150
     Height = 28
     Alignment = taCenter
+    Anchors = [akLeft, akTop, akRight]
     Caption = 'VST and ASIO are registered '#13#10'trademarks by Steinberg GmbH'
   end
   object LbHours: TLabel
@@ -106,6 +116,7 @@ object FmAbout: TFmAbout
     Width = 203
     Height = 42
     Alignment = taCenter
+    Anchors = [akLeft, akTop, akRight]
     Caption = 
       'Countless hours of coding were needed'#13#10'to make this little appli' +
       'cation, so please '#13#10'donate some money if you use it regularly!'
@@ -115,6 +126,7 @@ object FmAbout: TFmAbout
     Top = 36
     Width = 203
     Height = 14
+    Anchors = [akLeft, akTop, akRight]
     Caption = 'Read the included manual for detailed help'
   end
   object LbWb: TLabel
@@ -122,6 +134,7 @@ object FmAbout: TFmAbout
     Top = 144
     Width = 25
     Height = 14
+    Anchors = [akLeft, akTop, akRight]
     Caption = 'web:'
   end
   object BtOK: TButton

@@ -30,7 +30,8 @@ type
     procedure LbDonateClick(Sender: TObject);
   end;
 
-var FmAbout: TFmAbout;
+var
+  FmAbout: TFmAbout;
 
 implementation
 
