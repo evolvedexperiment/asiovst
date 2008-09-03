@@ -41,6 +41,14 @@ type
     fBuffer   : TBitmap;
     fOnPaint  : TNotifyEvent;
 
+    {$IFNDEF COMPILER10_UP}
+    FOnMouseLeave: TNotifyEvent;
+    FOnMouseEnter: TNotifyEvent;
+
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    {$ENDIF}
+    
     {$IFNDEF FPC}
     procedure DrawParentImage(Dest: TCanvas); virtual;
     {$ENDIF}
@@ -63,6 +71,11 @@ type
     destructor Destroy; override;
     procedure Paint; override;
     property OnPaint: TNotifyEvent read fOnPaint write fOnPaint;
+
+    {$IFNDEF COMPILER10_UP}
+    property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    {$ENDIF}
   end;
 
   TCustomGuiBaseControl = class(TBufferedGraphicControl)
@@ -344,6 +357,18 @@ procedure TBufferedGraphicControl.WMEraseBkgnd(var m: TWMEraseBkgnd);
 begin
   m.Result := 0;
 end;
+
+{$IFNDEF COMPILER10_UP}
+procedure TBufferedGraphicControl.CMMouseLeave(var Message: TMessage);
+begin
+  if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
+end;
+
+procedure TBufferedGraphicControl.CMMouseEnter(var Message: TMessage);
+begin
+  if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
+end;
+{$ENDIF}
 
 procedure TBufferedGraphicControl.ResizeBuffer;
 begin
