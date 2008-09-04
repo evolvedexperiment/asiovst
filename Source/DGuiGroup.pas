@@ -201,7 +201,7 @@ begin
           Val.Re := tmp;
           PtsArray[i] := Point(Round(rct.Left + rad + Val.Re), Round(rct.Top + rad + Val.Im));
          end;
-        PtsArray[Steps div 4] := Point(rct.Left + rad, rct.Top);
+        PtsArray[Steps div 4      ] := Point(rct.Left + rad, rct.Top);
         PtsArray[Steps div 4  + 1 ] := Point(rct.Right, rct.Top);
         PtsArray[Steps div 4  + 2 ] := Point(rct.Right, rct.Bottom - rad);
 
