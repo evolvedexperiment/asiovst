@@ -3,8 +3,7 @@ unit BMTestDoubleU;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls;
+  Windows, Messages, SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls;
 
 type
   TBufferMathForm = class(TForm)
@@ -33,16 +32,12 @@ type
     procedure TestAddModulatedBtnClick(Sender: TObject);
     procedure TestFindPeaksBtnClick(Sender: TObject);
     procedure TestBufferSumsBtnClick(Sender: TObject);
-  private
-    { Private declarations }
-  public
-    { Public declarations }
   end;
 
-
-const TEST_DIM_1 = 20;
-      TEST_DIM_2 = 512;
-      TEST_RUNS  = 10000;
+const
+  TEST_DIM_1 = 20;
+  TEST_DIM_2 = 512;
+  TEST_RUNS = 10000;
 
 var
   BufferMathForm: TBufferMathForm;
@@ -51,709 +46,799 @@ implementation
 
 {$R *.dfm}
 
-uses DAVDCommon, DAVDBufferMathAsm, DAVDBufferMathPascal, DVSTEffect;
+uses
+  DAVDCommon, DAVDBufferMathAsm, DAVDBufferMathPascal, DVSTEffect;
 
-procedure GenerateTestBuffers(var input1,input2,input3, output: TAVDArrayOfDoubleDynArray);
-var i,j: integer;
+resourcestring
+  RCDone = 'DONE';
+
+const
+  CHorizontalRule = '---------------------------------------------------------------------------';
+  CVerticalRule   = ' | ';
+
+procedure GenerateTestBuffers(var Input1, Input2, Input3, Output: TAVDArrayOfDoubleDynArray);
+var
+  i, j : Integer;
 begin
-  setlength(input1, TEST_DIM_1, TEST_DIM_2);
-  setlength(input2, TEST_DIM_1, TEST_DIM_2);
-  setlength(input3, TEST_DIM_1, TEST_DIM_2);
-  setlength(output, TEST_DIM_1, TEST_DIM_2);
-  for i:=0 to TEST_DIM_1-1 do for j:=0 to TEST_DIM_2-1 do
-  begin
-    input1[i,j] := j+1;
-    input2[i,j] := i+1;
-    input3[i,j] := 15;
-    output[i,j] := 5;
-  end;
+  SetLength(Input1, TEST_DIM_1, TEST_DIM_2);
+  SetLength(Input2, TEST_DIM_1, TEST_DIM_2);
+  SetLength(Input3, TEST_DIM_1, TEST_DIM_2);
+  SetLength(Output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_DIM_1 - 1 do
+   for j := 0 to TEST_DIM_2 - 1 do
+    begin
+     Input1[i, j] := j + 1;
+     Input2[i, j] := i + 1;
+     Input3[i, j] := 15;
+     Output[i, j] := 5;
+    end;
 end;
-
-
-
-
-
-
-
 
 
 
 procedure TBufferMathForm.TestCopyBtnClick(Sender: TObject);
-var x: PPDouble; i,j: integer; n: TAVDArrayOfDoubleDynArray;
+var
+  x    : PPDouble;
+  i, j : Integer;
+  n    : TAVDArrayOfDoubleDynArray;
 begin
-  getmem(x, 2*sizeof(PDouble));
-  for j:=0 to 1 do
-  begin
-    getmem(x^, 200*sizeof(Double));
-    for i:=0 to 199 do begin x^^:=i+(j*200); inc(x^); end;
-    for i:=0 to 199 do dec(x^);
-    inc(x);
-  end;
-  for j:=0 to 1 do dec(x);
+ GetMem(x, 2 * SizeOf(PDouble));
+ try
+  for j := 0 to 1 do
+   begin
+    GetMem(x^, 200 * SizeOf(Double));
+    try
+     for i := 0 to 199 do
+      begin
+       x^^ := i + (j * 200);
+       Inc(x^);
+      end;
+     for i := 0 to 199 do Dec(x^);
+    finally
+     Dispose(x^);
+    end;
+    Inc(x);
+   end;
+  for j := 0 to 1 do Dec(x);
+ finally
+  Dispose(x);
+ end;
 
-  setlength(n,2);
-  setlength(n[0],200);
-  setlength(n[1],200);
+ SetLength(n, 2);
+ SetLength(n[0], 200);
+ SetLength(n[1], 200);
 
-  move(x^^,n[0,0],200*sizeof(double));
-  inc(x);
-  move(x^^,n[1,0],200*sizeof(double));
-//  showmessage(floattostr(x^^));
-  showmessage(floattostr(n[0,0]));
-  showmessage(floattostr(n[1,45]));
+ Move(x^^, n[0, 0], 200 * SizeOf(Double));
+ Inc(x);
+ Move(x^^, n[1, 0], 200 * SizeOf(Double));
+// ShowMessage(FloatToStr(x^^));
+ ShowMessage(FloatToStr(n[0, 0]));
+ ShowMessage(FloatToStr(n[1, 45]));
 end;
 
 
 procedure TBufferMathForm.TestAddBtnClick(Sender: TObject);
-var input1,input2,dummy, output: TAVDArrayOfDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
-begin       
-  ResultMemo.clear; refresh;
-  GenerateTestBuffers(input1,input2, dummy, output);
+var
+  Input1, Input2,
+  dummy, Output   : TAVDArrayOfDoubleDynArray;
+  i               : Integer;
+  A, B, freq      : Int64;
+begin
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddArrays(input1, input2, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS
+   do DAVDBufferMathPascal.AddArrays(Input1, Input2, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms adding with pure Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms adding with pure Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, dummy, output);
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddArrays(input1, input2, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.AddArrays(Input1, Input2, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms adding with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms adding with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, dummy, output);
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddArrays(input1, 5,output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.AddArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms adding double value with Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms adding Double value with Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, dummy, output);
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddArrays(input1, 5,output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.AddArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms adding double value with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));    
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms adding Double value with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
+
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
 end;
 
 procedure TBufferMathForm.TestSubBtnClick(Sender: TObject);
-var input1,input2,dummy, output: TAVDArrayOfDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
-begin   
-  ResultMemo.clear; Refresh;
-  GenerateTestBuffers(input1,input2, dummy, output);
+var
+  Input1, Input2, dummy, Output: TAVDArrayOfDoubleDynArray;
+  i: Integer;
+  A, B, freq: Int64;
+begin
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.SubArrays(input1, input2, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.SubArrays(Input1, Input2, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms subtracting with pure Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms subtracting with pure Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, dummy, output);
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.SubArrays(input1, input2, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.SubArrays(Input1, Input2, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms subtracting with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms subtracting with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, dummy, output);
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.SubArrays(input1, 5,output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.SubArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms subtracting double value with Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms subtracting Double value with Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, dummy, output);
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.SubArrays(input1, 5,output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.SubArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms subtracting double value with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1])); 
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');    
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms subtracting Double value with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
+
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
 end;
 
 procedure TBufferMathForm.TestMulBtnClick(Sender: TObject);
-var input1,input2,dummy, output: TAVDArrayOfDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
-begin     
-  ResultMemo.clear; Refresh;
-  GenerateTestBuffers(input1,input2, dummy, output);
+var
+  Input1, Input2,
+  dummy, Output   : TAVDArrayOfDoubleDynArray;
+  i               : Integer;
+  A, B, freq      : Int64;
+begin
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulArrays(input1, input2, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.MulArrays(Input1, Input2, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply with pure Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply with pure Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, dummy, output);
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulArrays(input1, input2, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.MulArrays(Input1, Input2, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));  
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, dummy, output);
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulArrays(input1, 5,output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.MulArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply double value with Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply Double value with Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, dummy, output);
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulArrays(input1, 5,output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.MulArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply double value with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1])); 
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');  
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply Double value with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
+
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
 end;
 
 procedure TBufferMathForm.TestClearBtnClick(Sender: TObject);
-var dummy, output: TAVDArrayOfDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
-begin  
-  ResultMemo.clear; Refresh;
-  GenerateTestBuffers(dummy, dummy, dummy, output);
+var
+  dummy, Output : TAVDArrayOfDoubleDynArray;
+  i             : Integer;
+  A, B, freq    : Int64;
+begin
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(dummy, dummy, dummy, Output);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.ClearArrays(output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.ClearArrays(Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms clear with pure Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms clear with pure Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
 
-  GenerateTestBuffers(dummy, dummy, dummy, output);
+  GenerateTestBuffers(dummy, dummy, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.ClearArrays(output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.ClearArrays(Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms clear with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1])); 
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE'); 
-end;  
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms clear with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
+
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
+end;
 
 procedure TBufferMathForm.TestCopyBufBtnClick(Sender: TObject);
-var input, dummy, output: TAVDArrayOfDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
-begin     
-  ResultMemo.clear; Refresh;
-  GenerateTestBuffers(input, dummy, dummy, output);
+var
+  Input, dummy,
+  Output        : TAVDArrayOfDoubleDynArray;
+  i             : Integer;
+  A, B, freq    : Int64;
+begin
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(Input, dummy, dummy, Output);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.CopyArrays(input, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.CopyArrays(Input, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms copy with pure Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms copy with pure Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input, dummy, dummy, output);
+  GenerateTestBuffers(Input, dummy, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathASM.CopyArrays(input, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathASM.CopyArrays(Input, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms copy with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE'); 
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms copy with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
+
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
 end;
 
 
 procedure TBufferMathForm.TestMulAddBtnClick(Sender: TObject);
-var input1,input2,input3, output: TAVDArrayOfDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
-begin     
-  ResultMemo.clear; Refresh;
-  GenerateTestBuffers(input1,input2, input3, output);
+var
+  Input1, Input2,
+  Input3, Output : TAVDArrayOfDoubleDynArray;
+  i              : Integer;
+  A, B, freq     : Int64;
+begin
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulAddArrays(input1, input2, input3, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.MulAddArrays(Input1, Input2, Input3,
+      Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply then add with pure Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply then add with pure Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulAddArrays(input1, input2, input3, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.MulAddArrays(Input1, Input2, Input3, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply then add with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply then add with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulAddArrays(input1, 5, input3, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.MulAddArrays(Input1, 5, Input3, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply double value then add with Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply Double value then add with Pascal,  Testvals: '
+    + FloatToStr(Output[0, 0]) +
+    CVerticalRule + FloatToStr(Output[0, TEST_DIM_2 - 1]) +
+    CVerticalRule + FloatToStr(Output[TEST_DIM_1 - 1, 0]) +
+    CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulAddArrays(input1, 5, input3, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.MulAddArrays(Input1, 5, Input3, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply double value then add with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply Double value then add with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulAddArrays(input1, input2, 5, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.MulAddArrays(Input1, Input2, 5, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply then add double value with Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply then add Double value with Pascal,  Testvals: '
+    + FloatToStr(Output[0, 0]) +
+    CVerticalRule + FloatToStr(Output[0, TEST_DIM_2 - 1]) +
+    CVerticalRule + FloatToStr(Output[TEST_DIM_1 - 1, 0]) +
+    CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulAddArrays(input1, input2, 5, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.MulAddArrays(Input1, Input2, 5, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply then add double value with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply then add Double value with ASM,  Testvals: '
+    +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulAddArrays(input1, 5, 5, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.MulAddArrays(Input1, 5, 5, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply double value then add double value with Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply Double value then add Double value with Pascal,  Testvals: '
+    + FloatToStr(Output[0, 0]) +
+    CVerticalRule + FloatToStr(Output[0, TEST_DIM_2 - 1]) +
+    CVerticalRule + FloatToStr(Output[TEST_DIM_1 - 1, 0]) +
+    CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulAddArrays(input1, 5, 5, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.MulAddArrays(Input1, 5, 5, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms multiply double value then add double value with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));   
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');   
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply Double value then add Double value with ASM,  Testvals: '
+    + FloatToStr(Output[0, 0]) +
+    CVerticalRule + FloatToStr(Output[0, TEST_DIM_2 - 1]) +
+    CVerticalRule + FloatToStr(Output[TEST_DIM_1 - 1, 0]) +
+    CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
+
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
 end;
 
 procedure TBufferMathForm.TestAddMulBtnClick(Sender: TObject);
-var input1,input2,input3, output: TAVDArrayOfDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
+var
+  Input1, Input2,
+  Input3, Output : TAVDArrayOfDoubleDynArray;
+  i              : Integer;
+  A, B, freq     : Int64;
 begin
-  ResultMemo.clear; Refresh;
-  GenerateTestBuffers(input1,input2, input3, output);
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddMulArrays(input1, input2, input3, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.AddMulArrays(Input1, Input2, Input3,
+      Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add then multiply with pure Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add then multiply with pure Pascal,  Testvals: '
+    +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddMulArrays(input1, input2, input3, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.AddMulArrays(Input1, Input2, Input3, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add then multiply with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add then multiply with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddMulArrays(input1, 5, input3, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.AddMulArrays(Input1, 5, Input3, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add double value then multiply with Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add Double value then multiply with Pascal,  Testvals: '
+    + FloatToStr(Output[0, 0]) +
+    CVerticalRule + FloatToStr(Output[0, TEST_DIM_2 - 1]) +
+    CVerticalRule + FloatToStr(Output[TEST_DIM_1 - 1, 0]) +
+    CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddMulArrays(input1, 5, input3, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.AddMulArrays(Input1, 5, Input3, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add double value then multiply with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add Double value then multiply with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddMulArrays(input1, input2, 5, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.AddMulArrays(Input1, Input2, 5, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add then multiply double value with Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add then multiply Double value with Pascal,  Testvals: '
+    + FloatToStr(Output[0, 0]) +
+    CVerticalRule + FloatToStr(Output[0, TEST_DIM_2 - 1]) +
+    CVerticalRule + FloatToStr(Output[TEST_DIM_1 - 1, 0]) +
+    CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddMulArrays(input1, input2, 5, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.AddMulArrays(Input1, Input2, 5, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add then multiply double value with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add then multiply Double value with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddMulArrays(input1, 5, 5, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.AddMulArrays(Input1, 5, 5, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add double value then multiply double value with Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add Double value then multiply Double value with Pascal,  Testvals: '
+    + FloatToStr(Output[0, 0]) +
+    CVerticalRule + FloatToStr(Output[0, TEST_DIM_2 - 1]) +
+    CVerticalRule + FloatToStr(Output[TEST_DIM_1 - 1, 0]) +
+    CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddMulArrays(input1, 5, 5, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.AddMulArrays(Input1, 5, 5, Output,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add double value then multiply double value with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add Double value then multiply Double value with ASM,  Testvals: '
+    + FloatToStr(Output[0, 0]) +
+    CVerticalRule + FloatToStr(Output[0, TEST_DIM_2 - 1]) +
+    CVerticalRule + FloatToStr(Output[TEST_DIM_1 - 1, 0]) +
+    CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
+
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
 end;
 
 
 
 procedure TBufferMathForm.TestAddScaledBtnClick(Sender: TObject);
-var input1,input2,dummy, output: TAVDArrayOfDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
+var
+  Input1, Input2, dummy, Output: TAVDArrayOfDoubleDynArray;
+  i: Integer;
+  A, B, freq: Int64;
 begin
-  ResultMemo.clear; Refresh;
-  GenerateTestBuffers(input1,input2, dummy, output);
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddScaledArrays(input1, input2, 5, 5, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.AddScaledArrays(Input1, Input2, 5, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add scaled with pure Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add scaled with pure Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, dummy, output);
+  GenerateTestBuffers(Input1, Input2, dummy, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddScaledArrays(input1, input2, 5, 5, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.AddScaledArrays(Input1, Input2, 5, 5,
+      Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add scaled with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add scaled with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');   
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
 end;
 
 procedure TBufferMathForm.TestAddModulatedBtnClick(Sender: TObject);
-var input1,input2,input3, output: TAVDArrayOfDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
+var
+  Input1, Input2, Input3, Output: TAVDArrayOfDoubleDynArray;
+  i: Integer;
+  A, B, freq: Int64;
 begin
-  ResultMemo.clear; Refresh;
-  GenerateTestBuffers(input1,input2, input3, output);
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddModulatedArrays(input1, input2, input3, input3, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.AddModulatedArrays(Input1, Input2,
+      Input3, Input3, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add modulated with pure Pascal,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add modulated with pure Pascal,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddModulatedArrays(input1, input2, input3, input3, output, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathAsm.AddModulatedArrays(Input1, Input2, Input3,
+      Input3, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms add modulated with ASM,  Testvals: '
-                           + floattostr(output[0,0]) + ' | '
-                           + floattostr(output[0,TEST_DIM_2-1]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,0]) + ' | '
-                           + floattostr(output[TEST_DIM_1-1,TEST_DIM_2-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms add modulated with ASM,  Testvals: ' +
+    FloatToStr(Output[0, 0]) + CVerticalRule +
+    FloatToStr(Output[0, TEST_DIM_2 - 1]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, 0]) + CVerticalRule +
+    FloatToStr(Output[TEST_DIM_1 - 1, TEST_DIM_2 - 1]));
 
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
 end;
 
 procedure TBufferMathForm.TestFindPeaksBtnClick(Sender: TObject);
-var input1,input2,input3, output: TAVDArrayOfDoubleDynArray;
-    minpeaks, maxpeaks: TAVDDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
+var
+  Input1, Input2,
+  Input3, Output     : TAVDArrayOfDoubleDynArray;
+  MinPeaks, MaxPeaks : TAVDDoubleDynArray;
+  i                  : Integer;
+  A, B, freq         : Int64;
 begin
-  ResultMemo.clear; Refresh;
-  GenerateTestBuffers(input1,input2, input3, output);
-  setlength(minpeaks, TEST_DIM_1);
-  setlength(maxpeaks, TEST_DIM_1);
-  fillchar(minpeaks[0], TEST_DIM_1*sizeof(double), 0);
-  fillchar(maxpeaks[0], TEST_DIM_1*sizeof(double), 0);
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
+  SetLength(MinPeaks, TEST_DIM_1);
+  SetLength(MaxPeaks, TEST_DIM_1);
+  FillChar(MinPeaks[0], TEST_DIM_1 * SizeOf(Double), 0);
+  FillChar(MaxPeaks[0], TEST_DIM_1 * SizeOf(Double), 0);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.GetPeaks(input1, minpeaks, maxpeaks, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.GetPeaks(Input1, MinPeaks, MaxPeaks,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms find peaks with pure Pascal,  Testvals: '
-                           + floattostr(minpeaks[0]) + ' | '
-                           + floattostr(maxpeaks[0]) + ' | '
-                           + floattostr(minpeaks[TEST_DIM_1-1]) + ' | '
-                           + floattostr(maxpeaks[TEST_DIM_1-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms find peaks with pure Pascal,  Testvals: ' +
+    FloatToStr(MinPeaks[0]) + CVerticalRule +
+    FloatToStr(MaxPeaks[0]) + CVerticalRule +
+    FloatToStr(MinPeaks[TEST_DIM_1 - 1]) + CVerticalRule +
+    FloatToStr(MaxPeaks[TEST_DIM_1 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
-  fillchar(minpeaks[0], TEST_DIM_1*sizeof(double), 0);
-  fillchar(maxpeaks[0], TEST_DIM_1*sizeof(double), 0);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
+  FillChar(MinPeaks[0], TEST_DIM_1 * SizeOf(Double), 0);
+  FillChar(MaxPeaks[0], TEST_DIM_1 * SizeOf(Double), 0);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.GetPeaks(input1, minpeaks, maxpeaks, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS
+   do DAVDBufferMathAsm.GetPeaks(Input1, MinPeaks, MaxPeaks, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms find peaks ASM,  Testvals: '
-                           + floattostr(minpeaks[0]) + ' | '
-                           + floattostr(maxpeaks[0]) + ' | '
-                           + floattostr(minpeaks[TEST_DIM_1-1]) + ' | '
-                           + floattostr(maxpeaks[TEST_DIM_1-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms find peaks ASM,  Testvals: ' +
+    FloatToStr(MinPeaks[0]) + CVerticalRule +
+    FloatToStr(MaxPeaks[0]) + CVerticalRule +
+    FloatToStr(MinPeaks[TEST_DIM_1 - 1]) + CVerticalRule +
+    FloatToStr(MaxPeaks[TEST_DIM_1 - 1]));
 
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
 end;
 
 procedure TBufferMathForm.TestBufferSumsBtnClick(Sender: TObject);
-var input1,input2,input3, output: TAVDArrayOfDoubleDynArray;
-    minsums, maxsums: TAVDDoubleDynArray;
-    i: integer;
-    A,B, freq: Int64;
+var
+  Input1, Input2,
+  Input3, Output   : TAVDArrayOfDoubleDynArray;
+  MinSums, MaxSums : TAVDDoubleDynArray;
+  i                : Integer;
+  A, B, freq       : Int64;
 begin
-  ResultMemo.clear; Refresh;
-  GenerateTestBuffers(input1,input2, input3, output);
-  setlength(minsums, TEST_DIM_1);
-  setlength(maxsums, TEST_DIM_1);
-  fillchar(minsums[0], TEST_DIM_1*sizeof(double), 0);
-  fillchar(maxsums[0], TEST_DIM_1*sizeof(double), 0);
+  ResultMemo.Clear;
+  Refresh;
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
+  SetLength(MinSums, TEST_DIM_1);
+  SetLength(MaxSums, TEST_DIM_1);
+  FillChar(MinSums[0], TEST_DIM_1 * SizeOf(Double), 0);
+  FillChar(MaxSums[0], TEST_DIM_1 * SizeOf(Double), 0);
 
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathPascal.GetSums(input1, minsums, maxsums, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS do
+    DAVDBufferMathPascal.GetSums(Input1, MinSums, MaxSums,
+      TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms find sums with pure Pascal,  Testvals: '
-                           + floattostr(minsums[0]) + ' | '
-                           + floattostr(maxsums[0]) + ' | '
-                           + floattostr(minsums[TEST_DIM_1-1]) + ' | '
-                           + floattostr(maxsums[TEST_DIM_1-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms find sums with pure Pascal,  Testvals: ' +
+    FloatToStr(MinSums[0]) + CVerticalRule +
+    FloatToStr(MaxSums[0]) + CVerticalRule +
+    FloatToStr(MinSums[TEST_DIM_1 - 1]) + CVerticalRule +
+    FloatToStr(MaxSums[TEST_DIM_1 - 1]));
 
-  GenerateTestBuffers(input1,input2, input3, output);
-  fillchar(minsums[0], TEST_DIM_1*sizeof(double), 0);
-  fillchar(maxsums[0], TEST_DIM_1*sizeof(double), 0);
+  GenerateTestBuffers(Input1, Input2, Input3, Output);
+  FillChar(MinSums[0], TEST_DIM_1 * SizeOf(Double), 0);
+  FillChar(MaxSums[0], TEST_DIM_1 * SizeOf(Double), 0);
 
   QueryPerformanceCounter(A);
-  for i:=0 to TEST_RUNS do
-    DAVDBufferMathAsm.GetSums(input1, minsums, maxsums, TEST_DIM_1, TEST_DIM_2);
+  for i := 0 to TEST_RUNS
+   do DAVDBufferMathAsm.GetSums(Input1, MinSums, MaxSums, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
-  ResultMemo.Lines.Add(FloatToStrF(((B-A)*1000)/freq, ffFixed,15,2)+ ' ms find sums ASM,  Testvals: '
-                           + floattostr(minsums[0]) + ' | '
-                           + floattostr(maxsums[0]) + ' | '
-                           + floattostr(minsums[TEST_DIM_1-1]) + ' | '
-                           + floattostr(maxsums[TEST_DIM_1-1]));
+  ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms find sums ASM,  Testvals: ' +
+    FloatToStr(MinSums[0]) + CVerticalRule +
+    FloatToStr(MaxSums[0]) + CVerticalRule +
+    FloatToStr(MinSums[TEST_DIM_1 - 1]) + CVerticalRule +
+    FloatToStr(MaxSums[TEST_DIM_1 - 1]));
 
-  ResultMemo.Lines.Add('---------------------------------------------------------------------------');
-  ResultMemo.Lines.Add('DONE');
+  ResultMemo.Lines.Add(CHorizontalRule);
+  ResultMemo.Lines.Add(RCDone);
 end;
 
 end.

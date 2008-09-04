@@ -7,7 +7,6 @@ object PerformanceTestModule: TPerformanceTestModule
   ProductName = 'Delphi ASIO & VST Project'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  CanDos = []
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
   UniqueID = 'DVPT'

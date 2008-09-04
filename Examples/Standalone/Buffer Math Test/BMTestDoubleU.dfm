@@ -1,9 +1,9 @@
 object BufferMathForm: TBufferMathForm
   Left = 158
   Top = 277
-  Width = 981
-  Height = 366
   Caption = 'Buffer-Math Test'
+  ClientHeight = 339
+  ClientWidth = 973
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,7 +11,7 @@ object BufferMathForm: TBufferMathForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
   object TestCopyBtn: TButton

@@ -1,9 +1,9 @@
 object BufferMathForm: TBufferMathForm
   Left = 161
   Top = 126
-  Width = 981
-  Height = 366
   Caption = 'Buffer-Math Test'
+  ClientHeight = 339
+  ClientWidth = 973
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

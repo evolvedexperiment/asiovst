@@ -1112,7 +1112,8 @@ begin
  end;
  if fDriver = nil then raise Exception.Create('ASIO Driver Failed!');
  FBuffersCreated := CreateBuffers;
- if tmpActive then Active := True;
+ if tmpActive and FBuffersCreated
+  then Active := True;
 end;
 
 procedure TCustomASIOHostBasic.CloseDriver;
@@ -1713,16 +1714,23 @@ begin
      end;
    end;
 
-   if fPreventClipping<>pcNone
+   if fPreventClipping <> pcNone
     then for j := 0 to FInputChannelCount - 1 do fClipPrevent.cb32(@FSingleInBuffer[j,0], FBufferSize);
 
    case FOutBufferPreFill of
-    bpfZero : for j := 0 to FOutputChannelCount - 1
-               do FillChar(FSingleOutBuffer[j,0], FBufferSize * SizeOf(Single), 0);
+    bpfZero : for j := 0 to FOutputChannelCount - 1 do
+               begin
+                assert(FSingleOutBuffer[j] <> nil);
+                FillChar(FSingleOutBuffer[j, 0], FBufferSize * SizeOf(Single), 0);
+               end;
     bpfNoise: for j := 0 to FOutputChannelCount - 1 do
-               for i := 0 to FBufferSize - 1
-                do FSingleOutBuffer[j,i] := 2 * Random - 1;
-    bpfCustom: if Assigned(FASIOGenerator) then FASIOGenerator.ProcessBlock(FSingleOutBuffer, true);
+               begin
+                assert(FSingleOutBuffer[j] <> nil);
+                for i := 0 to FBufferSize - 1
+                 do FSingleOutBuffer[j, i] := 2 * Random - 1;
+               end;
+    bpfCustom: if Assigned(FASIOGenerator)
+                then FASIOGenerator.ProcessBlock(FSingleOutBuffer, true);
    end;
 
    case FInputMonitor of
