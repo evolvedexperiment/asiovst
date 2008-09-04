@@ -189,7 +189,7 @@ begin
         SetLength(PtsArray, Steps div 2 + 5);
         Val.Re := -rad; Val.Im := 0;
 
-        GetSinCos(2 * Pi / (Steps - 1), Off.Im, Off.Re);
+        GetSinCos(2 * Pi / (Steps div 2 - 1), Off.Im, Off.Re);
         rct := Rect(Linewidth div 2, Linewidth div 2, max(TextSize.cx + 10, fOSFactor * fHeaderMinWidth) - (Linewidth + 1) div 2, TextSize.cy + 5 - (Linewidth + 1) div 2);
         PtsArray[0] := Point(Round(rct.Left), Round(rct.Top + rad));
 
@@ -223,6 +223,7 @@ begin
      end;
    end;
 
+   Brush.Style := bsClear;
    TextOut(6, 2, fCaption);
    Unlock;
   end;

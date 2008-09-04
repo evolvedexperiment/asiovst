@@ -9,7 +9,8 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types, Messages,
   Forms, SysUtils, Classes, Graphics, Controls, StdCtrls, ExtCtrls, ComCtrls,
-  Menus, DAVDCommon, DVstEffect, WaveIOX, DMidiFile, DMidiIO, DVSTHost, DASIOHost;
+  Menus, DAVDCommon, DVstEffect, WaveIOX, DMidiFile, DMidiIO, DVSTHost,
+  DASIOHost;
 
 type
   ShortStr = string[255];
@@ -542,7 +543,8 @@ begin
 end;
 
 procedure TFmMiniHost.FormDestroy(Sender: TObject);
-var i: Integer;
+var
+  i : Integer;
 begin
  fProcessing := False;
  fAllowed := False;
@@ -631,7 +633,8 @@ begin
 end;
 
 procedure TFmMiniHost.StartAudio;
-var i: Integer;
+var
+  i : Integer;
 begin
  if ASIOHost.Active then exit;
  ASIOHost.Active := False;
@@ -665,7 +668,8 @@ begin
 end;
 
 procedure TFmMiniHost.ClosePlugin;
-var i: Integer;
+var
+  i : Integer;
 begin
  MidiFile.StopPlaying;
  MidiPlaying := False;
@@ -709,10 +713,11 @@ begin
 end;
 
 procedure TFmMiniHost.BuildPresetList;
-var m: TMenuItem;
-    n, i: Integer;
-    p: Array[0..100] of char;
-    s: string;
+var
+  m    : TMenuItem;
+  n, i : Integer;
+  p    : Array[0..100] of char;
+  s    : string;
 begin
  PresetBox.clear;
  n := VSTHost[0].numPrograms;
@@ -739,8 +744,9 @@ begin
 end;
 
 procedure TFmMiniHost.LoadPlugin(s: string; prog: Integer = 0);
-var r: ERect;
-    i: Integer;
+var
+  r : ERect;
+  i : Integer;
 begin
  if not FileExists(s) then exit;
  WaveTimer.enabled := False;
@@ -2168,8 +2174,8 @@ end;
 procedure TFmMiniHost.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
   OutBuffer: TAVDArrayOfSingleDynArray);
 var
-  j, i: Integer;
-  bs, ChOfs: Integer;
+  j, i      : Integer;
+  bs, ChOfs : Integer;
 begin
  bs := ASIOHost.BufferSize;
  if (bs <= 0) or (not fAllowed) or (VSTHost = nil)
@@ -2219,6 +2225,8 @@ begin
   end
  else
   begin
+   assert(Length(fWavBufL) >= bs);
+   assert(Length(fWavBufR) >= bs);
    FillChar(fWavBufL[0], bs * SizeOf(Single), 0);
    FillChar(fWavBufR[0], bs * SizeOf(Single), 0);
   end;

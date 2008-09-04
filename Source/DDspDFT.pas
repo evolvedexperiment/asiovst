@@ -268,7 +268,6 @@ asm
  mov eax, TimeSignal               // eax = TimeSignal
  mov ecx, [TimeSignal - 4].Integer // ecx = Length(TimeSignal)
  dec ecx                           // ecx = Length(TimeSignal) - 1
- dec ecx                           // ecx = Length(TimeSignal) - 2
 
 @calcloop:
   add eax, 4                       // next timesignal
@@ -330,7 +329,6 @@ asm
  mov eax, TimeSignal               // eax = TimeSignal
  mov ecx, [TimeSignal - 4].Integer // ecx = Length(TimeSignal)
  dec ecx                           // ecx = Length(TimeSignal) - 1
- dec ecx                           // ecx = Length(TimeSignal) - 2
 
 @calcloop:
   add eax, 8                       // next timesignal
@@ -393,7 +391,6 @@ asm
  push ecx
  mov ecx, edx                      // ecx = Length
  dec ecx                           // ecx = Length(TimeSignal) - 1
- dec ecx                           // ecx = Length(TimeSignal) - 2
 
 @calcloop:
   add eax, 4                       // next timesignal
@@ -457,9 +454,9 @@ asm
  fld [TimeSignal].Double           // Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
  fldz                              // Result.Re, Result.Im, Pos.Re, Pos.Im, Angle.Re, Angle.Im
  mov eax, TimeSignal               // eax = TimeSignal
+ push ecx
  mov ecx, edx                      // ecx = Length(TimeSignal)
  dec ecx                           // ecx = Length(TimeSignal) - 1
- dec ecx                           // ecx = Length(TimeSignal) - 2
 
 @calcloop:
   add eax, 8                       // next timesignal
@@ -486,9 +483,13 @@ asm
 
  loop @calcloop
 
- fstp Result.Im.Double             // Result.Im.Double := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- fstp Result.Re.Double             // Result.Re.Double := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
- finit                             // (cleared)
+ pop ecx
+ fstp Result.Im.Double             // Result.Im.Single := Result.Im, Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+ fstp Result.Re.Double             // Result.Re.Single := Result.Re, Pos.Re, Pos.Im, Angle.Re, Angle.Im
+ fstp st(0)                        // (cleared)
+ fstp st(0)                        // (cleared)
+ fstp st(0)                        // (cleared)
+ fstp st(0)                        // (cleared)
 end;
 {$ENDIF}
 

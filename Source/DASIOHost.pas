@@ -1201,7 +1201,7 @@ begin
  // get the time stamp of the buffer, not necessary if no
  // synchronization to other media is required
  if FDriver.GetSamplePosition(ASIOTime.FBufferTime.timeInfo.samplePosition,
-  ASIOTime.FBufferTime.timeInfo.systemTime) = ASE_OK then
+   ASIOTime.FBufferTime.timeInfo.systemTime) = ASE_OK then
    ASIOTime.Flags := ASIOTime.Flags + [atSystemTimeValid,atSamplePositionValid];
  BufferSwitchTimeInfo(index, ASIOTime.FBufferTime);
 end;

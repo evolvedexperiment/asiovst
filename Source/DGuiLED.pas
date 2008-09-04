@@ -15,7 +15,7 @@ type
     FLEDColor   : TColor;
     FOnChange   : TNotifyEvent;
     FOSValue    : Integer;
-    fBrightness : Single;
+    FBrightness : Single;
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetLEDColor(const Value: TColor);
     procedure SetBrightness(const Value: Single);
@@ -150,7 +150,7 @@ begin
      Line := Scanline[round(Center.y - (Rad - i))];
      for steps := round(Center.x - XStart) to round(Center.x + XStart) do
       begin
-       Scale := Bright * (1 - 0.8 * Math.Max(0, ((sqr(steps - Center.x) + sqr(Rad - i)) / sqr(rad))));
+       Scale := Bright * (1 - 0.8 * Math.Max(0, (sqr(steps - Center.x) + sqr(Rad - i)) / sqr(rad)) / FOSValue);
 
        if sqr(steps - Center.x) + sqr(Rad - i) > sqr(BW * Rad)
         then Scale := 0.4 * Scale;
