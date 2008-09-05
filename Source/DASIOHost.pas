@@ -717,7 +717,7 @@ begin
      PMBufSwitchTimeInfo.WParam := AM_BufferSwitchTimeInfo;
      PMBufSwitchTimeInfo.LParam := doublebufferindex;
      theHost.Dispatch(PMBufSwitchTimeInfo);
-      end;
+    end;
     ASIOTrue:  theHost.BufferSwitchTimeInfo(doubleBufferIndex, params);
   end;
   Result := nil;
@@ -725,7 +725,7 @@ end;
 
 procedure ASIOSampleRateDidChange(sRate: TASIOSampleRate); cdecl;
 begin
- if Assigned(theHost.FOnSampleRateChanged)
+ if Assigned(theHost) and Assigned(theHost.FOnSampleRateChanged)
   then theHost.FOnSampleRateChanged(theHost);
 end;
 
@@ -748,30 +748,33 @@ begin
    end;
   kASIOEngineVersion        :  Result := 2;   // ASIO 2 is supported
   kASIOResetRequest         :
-   begin
-    PMReset.Msg := PM_ASIO;
-    PMReset.WParam := AM_ResetRequest;
-    PMReset.LParam := 0;
-    theHost.Dispatch(PMReset);
-    Result := 1;
-   end;
+   if assigned(theHost) then
+    begin
+     PMReset.Msg := PM_ASIO;
+     PMReset.WParam := AM_ResetRequest;
+     PMReset.LParam := 0;
+     theHost.Dispatch(PMReset);
+     Result := 1;
+    end;
   kASIOBufferSizeChange     :
-   begin
-    PMReset.Msg := PM_ASIO;
-    PMReset.WParam := AM_ResetRequest;
-    PMReset.LParam := 0;
-    theHost.Dispatch(PMReset);
-    Result := 1;
-   end;
+   if assigned(theHost) then
+    begin
+     PMReset.Msg := PM_ASIO;
+     PMReset.WParam := AM_ResetRequest;
+     PMReset.LParam := 0;
+     theHost.Dispatch(PMReset);
+     Result := 1;
+    end;
   kASIOResyncRequest        :  ;
   kASIOLatenciesChanged     :
-   begin
-    PMReset.Msg := PM_ASIO;
-    PMReset.WParam := AM_LatencyChanged;
-    PMReset.LParam := 0;
-    theHost.Dispatch(PMReset);
-    Result := 1;
-   end;
+   if assigned(theHost) then
+    begin
+     PMReset.Msg := PM_ASIO;
+     PMReset.WParam := AM_LatencyChanged;
+     PMReset.LParam := 0;
+     theHost.Dispatch(PMReset);
+     Result := 1;
+    end;
   kASIOSupportsTimeInfo     :  Result := 1;
   kASIOSupportsTimeCode     :
    begin
@@ -835,6 +838,7 @@ begin
   FreeAndNil(FASIOTime);
  finally
   inherited;
+  theHost := nil;
  end;
 end;
 
@@ -1053,7 +1057,7 @@ begin
   begin
    if Assigned (FOnBuffersDestroy)
     then FOnBuffersDestroy(Self);
-   FreeMem(FUnAlignedBuffer);
+   Dispose(FUnAlignedBuffer);
    FUnAlignedBuffer := nil;
    FInputBuffer := nil;
    FOutputBuffer := nil;
@@ -1068,7 +1072,8 @@ begin
 end;
 
 procedure TCustomASIOHostBasic.OpenDriver;
-var tmpActive: Boolean;
+var
+  tmpActive: Boolean;
 
   function Succeeded(Res: HResult): Boolean;
   begin Result := Res and $80000000 = 0; end;
@@ -1163,7 +1168,8 @@ procedure TCustomASIOHostBasic.PMASIO(var Message: TLMessage);
 {$ELSE}
 procedure TCustomASIOHostBasic.PMASIO(var Message: TMessage);
 {$ENDIF}
-var inp, outp: integer;
+var
+  inp, outp: integer;
 begin
  if FDriver = nil then exit;
  case Message.WParam of
@@ -1599,7 +1605,7 @@ begin
 
  SetLength(FSingleOutBuffer, FOutputChannelCount);
  SetLength(FDoubleOutBuffer, FOutputChannelCount);
- for i := 0 to FInputChannelCount - 1 do
+ for i := 0 to FOutputChannelCount - 1 do
   begin
    SetLength(FSingleOutBuffer[i], FBufferSize);
    SetLength(FDoubleOutBuffer[i], FBufferSize);
