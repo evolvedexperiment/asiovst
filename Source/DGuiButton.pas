@@ -111,6 +111,11 @@ begin
    Font.Assign(Self.Font);
    Font.Size := fOSFactor * Font.Size;
 
+   Brush.Style := bsClear;
+   Brush.Color := fButtonColor;
+   Pen.Width   := fOSFactor * fLineWidth;
+   Pen.Color   := fLineColor;
+   
    case fRoundRadius of
     0, 1 : FillRect(ClipRect);
        2 : begin
@@ -175,10 +180,6 @@ begin
          end;
         PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
 
-        Brush.Style := bsClear;
-        Brush.Color := fButtonColor;
-        Pen.Width   := fOSFactor * fLineWidth;
-        Pen.Color   := fLineColor;
         PolyGon(PtsArray);
         if fLineColor <> fButtonColor
          then PolyLine(PtsArray);

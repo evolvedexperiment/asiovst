@@ -22,6 +22,7 @@ type
     procedure ParamHigh(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
   private
     fFade   : array [0..1] of Single;
     fVolume : Single;
@@ -93,6 +94,17 @@ end;
 procedure TUniQuEDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
  GUI := TFmUniQuE.Create(Self);
+end;
+
+procedure TUniQuEDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ Parameter[0] := 1;
+ Parameter[1] := 0;
+ Parameter[2] := 0;
+ Parameter[3] := 0;
+ Parameter[4] := 0;
+ Parameter[5] := 0;
+ Parameter[6] := 0;
 end;
 
 procedure TUniQuEDataModule.VSTModuleProcess(const Inputs,

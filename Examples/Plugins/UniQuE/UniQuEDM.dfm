@@ -137,6 +137,7 @@ object UniQuEDataModule: TUniQuEDataModule
       VSTModule = Owner
       OnParameterChange = ParamHigh
     end>
+  OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
