@@ -182,7 +182,7 @@ begin
  fHigh[0].Gain := Gain;
  fHigh[1].Gain := Gain;
 
- Freq := 4340 + 300 * Value / 15;
+ Freq := 4340 - 300 * Value / 15;
 
  fHigh[0].Frequency := Freq;
  fHigh[1].Frequency := Freq;
