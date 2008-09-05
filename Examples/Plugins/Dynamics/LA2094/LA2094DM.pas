@@ -4,7 +4,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  DDSPDynamics;
+  DDSPDynamics, DDSPLevelingAmplifier;
 
 type
   TLA2094DataModule = class(TVSTModule)
@@ -21,7 +21,7 @@ type
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
-    fLA2094s : Array [0..1] of TSoftKneeFeedbackLimiter;
+    fLA2094s : Array [0..1] of TLevelingAmplifier;
   end;
 
 implementation
@@ -33,8 +33,8 @@ uses
 
 procedure TLA2094DataModule.VSTModuleCreate(Sender: TObject);
 begin
- fLA2094s[0] := TSoftKneeFeedbackLimiter.Create;
- fLA2094s[1] := TSoftKneeFeedbackLimiter.Create;
+ fLA2094s[0] := TLevelingAmplifier.Create;
+ fLA2094s[1] := TLevelingAmplifier.Create;
 end;
 
 procedure TLA2094DataModule.VSTModuleDestroy(Sender: TObject);
@@ -50,8 +50,8 @@ end;
 
 procedure TLA2094DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA2094s[0].Threshold := Value;
- fLA2094s[1].Threshold := Value;
+ fLA2094s[0].Input_dB := Value;
+ fLA2094s[1].Input_dB := Value;
  if Assigned(EditorForm) then
   with EditorForm as TEditorForm do
    if DialInput.Position <> Value then
@@ -64,10 +64,9 @@ end;
 procedure TLA2094DataModule.SKLOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
-(*
- fLA2094s[0].Threshold := Value;
- fLA2094s[1].Threshold := Value;
-*)
+ fLA2094s[0].Output_dB := Value;
+ fLA2094s[1].Output_dB := Value;
+
  if Assigned(EditorForm) then
   with EditorForm as TEditorForm do
    if DialOutput.Position <> Value then

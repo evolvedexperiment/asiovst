@@ -1,6 +1,6 @@
 object EditorForm: TEditorForm
   Left = 218
-  Top = 64
+  Top = 51
   BorderStyle = bsNone
   Caption = 'EditorForm'
   ClientHeight = 163
@@ -336,6 +336,7 @@ object EditorForm: TEditorForm
     LineWidth = 2
     LEDColor = clRed
     AntiAlias = gaaLinear4x
+    LineColor = clRed
   end
   object LbOnOff: TGuiLabel
     Left = 265

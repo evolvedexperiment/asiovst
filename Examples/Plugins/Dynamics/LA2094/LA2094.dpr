@@ -9,7 +9,8 @@ uses
   DVSTEffect,
   DVSTModule,
   LA2094DM in 'LA2094DM.pas' {LA2094DataModule: TVSTModule},
-  EditorFrm in 'EditorFrm.pas' {EditorForm};
+  EditorFrm in 'EditorFrm.pas' {EditorForm},
+  DDSPLevelingAmplifier in 'DDSPLevelingAmplifier.pas';
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var

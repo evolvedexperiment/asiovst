@@ -21,7 +21,7 @@ uses
 
 function DispatchEffectFunc(Effect: PVSTEffect; OpCode : TDispatcherOpCode; Index, Value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
 begin
- if TObject(Effect^.vObject) is TBasicVSTModule then
+ if assigned(Effect) and (TObject(Effect^.vObject) is TBasicVSTModule) then
   with TBasicVSTModule(Effect^.vObject) do
    begin
     HostCallDispatchEffect(OpCode, Index, Value, ptr, opt);
@@ -30,8 +30,8 @@ begin
      effOpen:                      Result := HostCallOpen(Index, Value, ptr, opt);
      effClose:                     try
                                     HostCallClose(Index, Value, ptr, opt);
-                                    Free;
                                     Effect^.vObject := nil;
+                                    Free;
                                     Result := 1;
                                    except
                                     Result := 0;

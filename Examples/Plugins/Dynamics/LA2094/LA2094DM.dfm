@@ -121,7 +121,7 @@ object LA2094DataModule: TLA2094DataModule
   OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   Left = 645
-  Top = 83
+  Top = 66
   Height = 150
   Width = 215
 end

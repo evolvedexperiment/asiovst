@@ -96,7 +96,7 @@ end;
 
 destructor TDspVSTModule.Destroy;
 begin
-  FDspQueueList.Free;
+  if Assigned(FDspQueueList) then FreeAndNil(FDspQueueList);
   inherited;
 end;
 

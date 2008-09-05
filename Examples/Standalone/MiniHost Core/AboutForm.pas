@@ -1,8 +1,6 @@
 unit AboutForm;
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ENDIF}
+{$I ASIOVST.INC}
 
 interface
 

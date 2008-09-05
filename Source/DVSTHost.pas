@@ -1103,10 +1103,9 @@ begin
  end;
  if PVstEffect = nil then
   try
-   if not loadOK then
-    raise Exception.Create('This is not a valid Vst Plugin!')
-   else
-    raise Exception.Create('Loading failed!');
+   if not loadOK
+    then raise Exception.Create('This is not a valid Vst Plugin!')
+    else raise Exception.Create('Loading failed!');
   except
    raise;
   end;
@@ -1115,7 +1114,6 @@ end;
 procedure TVstPlugin.Open;
 var
   i      : Integer;
-  loadOK : Boolean;
   tmp    : string;
   sl     : TStringList;
 begin
@@ -1126,7 +1124,7 @@ begin
  if PVstEffect.uniqueID = 0 then
   begin
    sl :=  TStringList.Create;
-   while ShellGetNextPlugin(tmp)<>0 do
+   while ShellGetNextPlugin(tmp) <> 0 do
    sl.Add(tmp);
    sl.Free;
   end;

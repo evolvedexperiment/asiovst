@@ -155,7 +155,7 @@ object Player: TPlayer
     object SbTempo: TScrollBar
       Left = 8
       Top = 344
-      Width = 177
+      Width = 185
       Height = 16
       Max = 240
       Min = 20
@@ -167,7 +167,7 @@ object Player: TPlayer
     object SbMidiPosition: TScrollBar
       Left = 8
       Top = 384
-      Width = 177
+      Width = 185
       Height = 16
       PageSize = 0
       TabOrder = 8
@@ -304,7 +304,7 @@ object Player: TPlayer
     object SbPitch: TScrollBar
       Left = 8
       Top = 344
-      Width = 177
+      Width = 185
       Height = 16
       Max = 341
       Min = 1
@@ -316,7 +316,7 @@ object Player: TPlayer
     object SbWavPosition: TScrollBar
       Left = 8
       Top = 384
-      Width = 177
+      Width = 185
       Height = 16
       PageSize = 0
       TabOrder = 7

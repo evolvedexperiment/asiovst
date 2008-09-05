@@ -64,9 +64,13 @@ destructor TVSTModuleWithMidi.Destroy;
 var
   i : Integer;
 begin
-  for i := 0 to maxMidiEvents - 1
-   do FreeMem(FMidiEvent.events[i]);
+ try
+  for i := 0 to maxMidiEvents - 1 do
+   if assigned(FMidiEvent.events[i])
+    then FreeMem(FMidiEvent.events[i]);
+ finally
   inherited;
+ end;
 end;
 
 procedure TVSTModuleWithMidi.ProcessMidiEvent(MidiEvent: TVstMidiEvent);

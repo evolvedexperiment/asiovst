@@ -99,7 +99,7 @@ begin
     HostCallProcess(Inputs, Outputs, SampleFrames);
     Stop := StartStop;
     Cycles := CycleCounter / (CycleCounter + 1) * Cycles +
-      (Stop - Start) / (CycleCounter + 1);
+      (Stop - Start) / ((CycleCounter + 1) * SampleFrames);
     Inc(CycleCounter);
    end;
 end;
@@ -115,7 +115,7 @@ begin
     HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
     Stop := StartStop;
     Cycles := CycleCounter / (CycleCounter + 1) * Cycles +
-      (Stop - Start) / (CycleCounter + 1);
+      (Stop - Start) / ((CycleCounter + 1) * SampleFrames);
     Inc(CycleCounter);
    end;
 end;
@@ -131,7 +131,7 @@ begin
     HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
     Stop := StartStop;
     Cycles := CycleCounter / (CycleCounter + 1) * Cycles +
-      (Stop - Start) / (CycleCounter + 1);
+      (Stop - Start) / ((CycleCounter + 1) * SampleFrames);
     Inc(CycleCounter);
    end;
 end;
@@ -144,6 +144,7 @@ end;
 procedure TPerformanceTestModule.PatchProcessCalls;
 begin
   CycleCounter := 0;
+  Cycles := 0;
   FEffect.Process := ProcessFunc;
   FEffect.ProcessReplacing := ProcessReplacingFunc;
   FEffect.ProcessDoubleReplacing := ProcessDoubleReplacingFunc;
@@ -179,8 +180,8 @@ end;
 procedure TPerformanceTestModule.VSTModuleProcessDoubleReplacing(
   const Inputs, Outputs: TAVDArrayOfDoubleDynArray; SampleFrames: Integer);
 begin
-  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
-  Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
+  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Double));
+  Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Double));
 end;
 
 initialization
