@@ -4,7 +4,7 @@ object EditorForm: TEditorForm
   BorderStyle = bsNone
   Caption = 'EditorForm'
   ClientHeight = 163
-  ClientWidth = 399
+  ClientWidth = 400
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -105,8 +105,8 @@ object EditorForm: TEditorForm
     LineColor = clSilver
     CircleColor = 2105376
     Inertia = 50.000000000000000000
-    Min = -36.000000000000000000
-    Max = 36.000000000000000000
+    Min = -24.000000000000000000
+    Max = 24.000000000000000000
     NumGlyphs = 65
     StitchKind = skVertical
     OnChange = DialInputChange
@@ -154,8 +154,8 @@ object EditorForm: TEditorForm
     LineColor = clSilver
     CircleColor = 2105376
     Inertia = 50.000000000000000000
-    Min = -36.000000000000000000
-    Max = 36.000000000000000000
+    Min = -24.000000000000000000
+    Max = 24.000000000000000000
     NumGlyphs = 65
     StitchKind = skVertical
     OnChange = DialOutputChange

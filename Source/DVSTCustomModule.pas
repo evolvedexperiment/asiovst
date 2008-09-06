@@ -121,7 +121,6 @@ type
     FOnProcessReplacingEx   : TProcessAudioEvent;
     FOnProcessDoublesEx     : TProcessDoubleEvent;
 
-
     function GetPluginFlags: TEffFlags; virtual;
     function GetUniqueID:string; virtual;
     procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); override;
@@ -206,6 +205,7 @@ type
     function UpdateSampleRate: Double; override;
     function UpdateBlockSize: Integer; override;
 
+    {$IFDEF Debug} property DebugLog: TStringList read fLog; {$ENDIF} 
 
     // Properties
     property EditorForm: TForm read FEditorForm;

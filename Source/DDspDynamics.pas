@@ -545,7 +545,8 @@ begin
 end;
 
 function TSoftKneeFeedbackCompressor.ProcessSample(Input: Double): Double;
-var a : Double;
+var
+  a : Double;
 begin
  result := fGain * Input;
  if abs(result) > fPeak

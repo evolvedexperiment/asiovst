@@ -21,7 +21,7 @@ type
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
-    fLA2094s : Array [0..1] of TLevelingAmplifier;
+    fLA2094s : TLevelingAmplifier;
   end;
 
 implementation
@@ -33,14 +33,12 @@ uses
 
 procedure TLA2094DataModule.VSTModuleCreate(Sender: TObject);
 begin
- fLA2094s[0] := TLevelingAmplifier.Create;
- fLA2094s[1] := TLevelingAmplifier.Create;
+ fLA2094s := TLevelingAmplifier.Create;
 end;
 
 procedure TLA2094DataModule.VSTModuleDestroy(Sender: TObject);
 begin
- FreeAndNil(fLA2094s[0]);
- FreeAndNil(fLA2094s[1]);
+ FreeAndNil(fLA2094s);
 end;
 
 procedure TLA2094DataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -50,8 +48,8 @@ end;
 
 procedure TLA2094DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA2094s[0].Input_dB := Value;
- fLA2094s[1].Input_dB := Value;
+ fLA2094s.Input_dB := Value;
+
  if Assigned(EditorForm) then
   with EditorForm as TEditorForm do
    if DialInput.Position <> Value then
@@ -64,8 +62,7 @@ end;
 procedure TLA2094DataModule.SKLOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA2094s[0].Output_dB := Value;
- fLA2094s[1].Output_dB := Value;
+ fLA2094s.Output_dB := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TEditorForm do
@@ -78,8 +75,8 @@ end;
 
 procedure TLA2094DataModule.SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA2094s[0].SoftKnee := Value / 20;
- fLA2094s[1].SoftKnee := Value / 20;
+ fLA2094s.Knee := Value / 20;
+
  if Assigned(EditorForm) then
   with EditorForm as TEditorForm do
    if DialKnee.Position <> Value then
@@ -91,8 +88,8 @@ end;
 
 procedure TLA2094DataModule.SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA2094s[0].Ratio := 1 / Value;
- fLA2094s[1].Ratio := 1 / Value;
+ fLA2094s.Ratio := 1 / Value;
+
  if Assigned(EditorForm) then
   with EditorForm as TEditorForm do
    if DialRatio.Position <> Log10(Value) then
@@ -104,8 +101,8 @@ end;
 
 procedure TLA2094DataModule.SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA2094s[0].Decay := Value;
- fLA2094s[1].Decay := Value;
+ fLA2094s.Release_ms := Value;
+
  if Assigned(EditorForm) then
   with EditorForm as TEditorForm do
    if DialRelease.Position <> Log10(Value) then
@@ -117,8 +114,8 @@ end;
 
 procedure TLA2094DataModule.SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA2094s[0].Attack := Value;
- fLA2094s[1].Attack := Value;
+ fLA2094s.Attack_ms := Value;
+
  if Assigned(EditorForm) then
   with EditorForm as TEditorForm do
    if DialAttack.Position <> Log10(Value) then
@@ -134,8 +131,10 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0,i] := fLA2094s[0].ProcessSample(Inputs[0, i]);
-   Outputs[1,i] := fLA2094s[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := fLA2094s.ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := fLA2094s.ProcessSample(Inputs[1, i]);
+
+   fLA2094s.Sidechain(0.5 * (Inputs[0, i] + Inputs[1, i]));
   end;
 end;
 
@@ -145,18 +144,18 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := fLA2094s[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := fLA2094s[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := fLA2094s.ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := fLA2094s.ProcessSample(Inputs[1, i]);
+
+   fLA2094s.Sidechain(0.5 * (Inputs[0, i] + Inputs[1, i]));
   end;
 end;
 
 procedure TLA2094DataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Assigned(fLA2094s[0])
-  then fLA2094s[0].SampleRate := SampleRate;
- if Assigned(fLA2094s[1])
-  then fLA2094s[1].SampleRate := SampleRate;
+ if Assigned(fLA2094s)
+  then fLA2094s.SampleRate := SampleRate;
 end;
 
 end.
