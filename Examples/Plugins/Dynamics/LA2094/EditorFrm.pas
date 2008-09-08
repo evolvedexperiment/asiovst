@@ -16,17 +16,19 @@ type
     DialAttack: TGuiDial;
     DialInput: TGuiDial;
     DialKnee: TGuiDial;
+    DialMix: TGuiDial;
     DialOutput: TGuiDial;
     DialRatio: TGuiDial;
     DialRelease: TGuiDial;
+    LbLevelingAmplifier: TLabel;
     LbAttack: TGuiLabel;
     LbFast: TGuiLabel;
     LbInput: TGuiLabel;
     LbInputValue: TLabel;
     LbKnee: TGuiLabel;
     LbKneeValue: TLabel;
-    LbLevelingAmplifier: TLabel;
-    LbManufacturer: TLabel;
+    LbMix: TGuiLabel;
+    LbMixValue: TLabel;
     LbOnOff: TGuiLabel;
     LbOutput: TGuiLabel;
     LbOutputValue: TLabel;
@@ -35,35 +37,41 @@ type
     LbRelease: TGuiLabel;
     LbSlow: TGuiLabel;
     LbTitle: TGuiLabel;
+    LbVUMeterDisplay: TLabel;
     LEDOnOff: TGuiLED;
-    PnInputValue: TGuiPanel;
-    PnKnee: TGuiPanel;
-    PnOutputValue: TGuiPanel;
-    PnRatio: TGuiPanel;
-    VUMeter: TGuiVUMeter;
-    VUMeterTimer: TTimer;
-    PopupVUMeterSpeed: TPopupMenu;
     MIFast: TMenuItem;
     MIMedium: TMenuItem;
     MISlow: TMenuItem;
-    LbVUMeterDisplay: TLabel;
-    procedure DialInputChange(Sender: TObject);
-    procedure DialRatioChange(Sender: TObject);
+    PnInputValue: TGuiPanel;
+    PnKnee: TGuiPanel;
+    PnMix: TGuiPanel;
+    PnOutputValue: TGuiPanel;
+    PnRatio: TGuiPanel;
+    PopupVUMeterSpeed: TPopupMenu;
+    SpDivide1: TShape;
+    SpDivide2: TShape;
+    VUMeter: TGuiVUMeter;
+    VUMeterTimer: TTimer;
+    GuiPanel1: TGuiPanel;
+    GuiPanel2: TGuiPanel;
+    procedure BtGRClick(Sender: TObject);
+    procedure BtInClick(Sender: TObject);
+    procedure BtOutClick(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
-    procedure DialReleaseChange(Sender: TObject);
+    procedure DialInputChange(Sender: TObject);
     procedure DialKneeChange(Sender: TObject);
     procedure DialOutputChange(Sender: TObject);
+    procedure DialRatioChange(Sender: TObject);
+    procedure DialReleaseChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LEDOnOffClick(Sender: TObject);
-    procedure VUMeterTimerTimer(Sender: TObject);
-    procedure BtInClick(Sender: TObject);
-    procedure BtGRClick(Sender: TObject);
-    procedure BtOutClick(Sender: TObject);
     procedure MIFastClick(Sender: TObject);
     procedure MIMediumClick(Sender: TObject);
     procedure MISlowClick(Sender: TObject);
     procedure PopupVUMeterSpeedPopup(Sender: TObject);
+    procedure VUMeterTimerTimer(Sender: TObject);
+    procedure DialMixChange(Sender: TObject);
   private
     procedure SetLevelState(const Value: TLevelState);
     function GetLevelState: TLevelState;
@@ -76,6 +84,7 @@ type
     procedure UpdateRelease;
     procedure UpdateRatio;
     procedure UpdateKnee;
+    procedure UpdateMix;
     procedure UpdateLevelState;
   published
     property LevelState: TLevelState read GetLevelState write SetLevelState;
@@ -101,8 +110,9 @@ begin
  end;
  RS := TResourceStream.Create(hInstance, 'RatioKnob', 'BMP');
  try
-  DialRatio.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
+  DialRatio.DialBitmap.LoadFromStream(RS); RS.Position := 0;
   DialKnee.DialBitmap.LoadFromStream(RS);  RS.Position := 0;
+  DialMix.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
  finally
   RS.Free;
  end;
@@ -127,7 +137,11 @@ begin
 end;
 
 procedure TEditorForm.FormShow(Sender: TObject);
+var
+  ClrBt : Byte;
 begin
+ ClrBt := random($40);
+ Color := RGB(ClrBt, ClrBt, ClrBt);
  UpdateOnOff;
  UpdateInput;
  UpdateOutput;
@@ -135,18 +149,19 @@ begin
  UpdateRelease;
  UpdateRatio;
  UpdateKnee;
+ UpdateMix;
  UpdateLevelState;
 end;
 
 function TEditorForm.GetLevelState: TLevelState;
 begin
- with TLA2094DataModule(Owner)
+ with TLA4029DataModule(Owner)
   do result := TLevelState(round(Parameter[8]));
 end;
 
 procedure TEditorForm.LEDOnOffClick(Sender: TObject);
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    Parameter[0] := 1 - Parameter[0];
    UpdateOnOff;
@@ -155,25 +170,25 @@ end;
 
 procedure TEditorForm.MIFastClick(Sender: TObject);
 begin
- with TLA2094DataModule(Owner)
+ with TLA4029DataModule(Owner)
   do Parameter[9] := 5;
 end;
 
 procedure TEditorForm.MIMediumClick(Sender: TObject);
 begin
- with TLA2094DataModule(Owner)
+ with TLA4029DataModule(Owner)
   do Parameter[9] := 50;
 end;
 
 procedure TEditorForm.MISlowClick(Sender: TObject);
 begin
- with TLA2094DataModule(Owner)
+ with TLA4029DataModule(Owner)
   do Parameter[9] := 500;
 end;
 
 procedure TEditorForm.PopupVUMeterSpeedPopup(Sender: TObject);
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    MIFast.Checked   := Parameter[9] < 20;
    MISlow.Checked   := Parameter[9] > 200;
@@ -183,7 +198,7 @@ end;
 
 procedure TEditorForm.SetLevelState(const Value: TLevelState);
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   if LevelState <> Value then
    begin
     Parameter[8] := Integer(Value);
@@ -193,7 +208,7 @@ end;
 
 procedure TEditorForm.UpdateOnOff;
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    if Parameter[0] < 0.5
     then LEDOnOff.Brightness_Percent := 100
@@ -203,7 +218,7 @@ end;
 
 procedure TEditorForm.UpdateInput;
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    if DialInput.Position <> Parameter[1]
     then DialInput.Position := Parameter[1];
@@ -213,11 +228,21 @@ end;
 
 procedure TEditorForm.UpdateKnee;
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    if DialKnee.Position <> Parameter[6]
     then DialKnee.Position := Parameter[6];
    LbKneeValue.Caption := FloatToStrF(DialKnee.Position, ffFixed, 3, 1);
+  end;
+end;
+
+procedure TEditorForm.UpdateMix;
+begin
+ with TLA4029DataModule(Owner) do
+  begin
+   if DialMix.Position <> Parameter[7]
+    then DialMix.Position := Parameter[7];
+   LbMixValue.Caption := FloatToStrF(DialMix.Position, ffFixed, 3, 1) + '%';
   end;
 end;
 
@@ -265,7 +290,7 @@ end;
 
 procedure TEditorForm.UpdateOutput;
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    if DialOutput.Position <> Parameter[2]
     then DialOutput.Position := Parameter[2];
@@ -277,7 +302,7 @@ procedure TEditorForm.UpdateAttack;
 var
   s : Single;
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    s := Log10(Parameter[3]);
    if DialAttack.Position <> s
@@ -290,7 +315,7 @@ procedure TEditorForm.UpdateRelease;
 var
   s : Single;
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    s := Log10(Parameter[4]);
    if DialRelease.Position <> s
@@ -315,7 +340,7 @@ end;
 
 procedure TEditorForm.VUMeterTimerTimer(Sender: TObject);
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   case LevelState of
     lsIn : VUMeter.Position := VUMeterValueToPos(InLevel_dB);
     lsGR : VUMeter.Position := VUMeterValueToPos(GRReduction_dB);
@@ -327,7 +352,7 @@ procedure TEditorForm.UpdateRatio;
 var
   s : Single;
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    s := Log10(Parameter[5]);
    if DialRatio.Position <> s
@@ -338,7 +363,7 @@ end;
 
 procedure TEditorForm.DialInputChange(Sender: TObject);
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    if Parameter[1] <> DialInput.Position
     then Parameter[1] := DialInput.Position;
@@ -348,7 +373,7 @@ end;
 
 procedure TEditorForm.DialOutputChange(Sender: TObject);
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    if Parameter[2] <> DialOutput.Position
     then Parameter[2] := DialOutput.Position;
@@ -375,7 +400,7 @@ procedure TEditorForm.DialAttackChange(Sender: TObject);
 var
   s : Single;
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    s := Power(10, DialAttack.Position);
    Parameter[3] := s;
@@ -386,7 +411,7 @@ procedure TEditorForm.DialReleaseChange(Sender: TObject);
 var
   s : Single;
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    s := Power(10, DialRelease.Position);
    Parameter[4] := s;
@@ -397,7 +422,7 @@ procedure TEditorForm.DialRatioChange(Sender: TObject);
 var
   s : Single;
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    s := Power(10, DialRatio.Position);
    if abs (Parameter[5] - s) > 1E-3
@@ -408,10 +433,19 @@ end;
 
 procedure TEditorForm.DialKneeChange(Sender: TObject);
 begin
- with TLA2094DataModule(Owner) do
+ with TLA4029DataModule(Owner) do
   begin
    Parameter[6] := DialKnee.Position;
    UpdateKnee;
+  end;
+end;
+
+procedure TEditorForm.DialMixChange(Sender: TObject);
+begin
+ with TLA4029DataModule(Owner) do
+  begin
+   Parameter[7] := DialMix.Position;
+   UpdateMix;
   end;
 end;
 

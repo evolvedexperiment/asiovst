@@ -7,7 +7,18 @@ uses
   DDSPDynamics, DDSPLevelingAmplifier, DDspButterworthFilter;
 
 type
-  TLA2094DataModule = class(TVSTModule)
+  TLA4029DataModule = class(TVSTModule)
+    procedure ParamAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamVUSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -18,23 +29,13 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessBypass(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacingBypass(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure ParamRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamVUSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSoftBypass(Sender: TObject; isBypass: Boolean);
-    procedure ParamOnOffDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure LA2094DataModuleParameterProperties8ParameterChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
     fLA2094s            : TLevelingAmplifier;
     fOutLevel           : Double;
@@ -66,7 +67,7 @@ implementation
 uses
   Math, EditorFrm, DDspFilter;
 
-procedure TLA2094DataModule.VSTModuleCreate(Sender: TObject);
+procedure TLA4029DataModule.VSTModuleCreate(Sender: TObject);
 begin
  fLA2094s  := TLevelingAmplifier.Create;
  fHighpass := TButterworthHP.Create;
@@ -85,25 +86,25 @@ begin
  Parameter[ 4] := 100;
  Parameter[ 5] :=  10;
  Parameter[ 6] :=   5;
- Parameter[ 7] :=   0;
- Parameter[ 8] := 100;
+ Parameter[ 7] := 100;
+ Parameter[ 8] :=   0;
  Parameter[ 9] :=  50;
  Parameter[10] :=  10;
  Parameter[11] :=   1;
 end;
 
-procedure TLA2094DataModule.VSTModuleDestroy(Sender: TObject);
+procedure TLA4029DataModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(fLA2094s);
  FreeAndNil(fHighpass);
 end;
 
-procedure TLA2094DataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TLA4029DataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
  GUI := TEditorForm.Create(Self);
 end;
 
-procedure TLA2094DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fLA2094s.Input_dB := Value;
 
@@ -116,7 +117,7 @@ begin
     end;
 end;
 
-procedure TLA2094DataModule.SKLOutputChange(
+procedure TLA4029DataModule.SKLOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fLA2094s.Output_dB := Value;
@@ -130,7 +131,7 @@ begin
     end;
 end;
 
-procedure TLA2094DataModule.SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fLA2094s.Knee := 0.1 * Value;
 
@@ -143,7 +144,7 @@ begin
     end;
 end;
 
-procedure TLA2094DataModule.SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fLA2094s.Ratio := 1 / Value;
 
@@ -156,7 +157,7 @@ begin
     end;
 end;
 
-procedure TLA2094DataModule.SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fLA2094s.Release_ms := Value;
 
@@ -169,7 +170,7 @@ begin
     end;
 end;
 
-procedure TLA2094DataModule.ParamOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if Value < 0.5 then
   begin
@@ -185,41 +186,51 @@ begin
   end;
 end;
 
-procedure TLA2094DataModule.ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TLA4029DataModule.ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Parameter[Index] < 1 then PreDefined := 'μs';
 end;
 
-procedure TLA2094DataModule.CalculateLevelFallOff;
+procedure TLA4029DataModule.CalculateLevelFallOff;
 begin
  fLevelFallOffFactor := exp(-ln2 / (fLevelFallOff_ms * 0.001 * SampleRate));
 end;
 
-function TLA2094DataModule.GetGRReduction: Double;
+function TLA4029DataModule.GetGRReduction: Double;
 begin
  if assigned(fLA2094s)
   then result := fLA2094s.GainReductionFactor
   else result := 1;
 end;
 
-function TLA2094DataModule.GetGRReduction_dB: Double;
+function TLA4029DataModule.GetGRReduction_dB: Double;
 begin
  if assigned(fLA2094s)
   then result := fLA2094s.GainReduction_dB
   else result := 0;
 end;
 
-function TLA2094DataModule.GetInLevel_dB: Double;
+function TLA4029DataModule.GetInLevel_dB: Double;
 begin
  result := Amp_to_dB(fInLevel);
 end;
 
-function TLA2094DataModule.GetOutLevel_dB: Double;
+function TLA4029DataModule.GetOutLevel_dB: Double;
 begin
  result := Amp_to_dB(fOutLevel);
 end;
 
-procedure TLA2094DataModule.ParamOnOffDisplay(
+procedure TLA4029DataModule.LA2094DataModuleParameterProperties8ParameterChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if Assigned(EditorForm) then
+  with EditorForm as TEditorForm do
+   begin
+    UpdateLevelState;
+   end;
+end;
+
+procedure TLA4029DataModule.ParamOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Parameter[Index] < 0.5
@@ -227,30 +238,30 @@ begin
   else PreDefined := 'Off';
 end;
 
-procedure TLA2094DataModule.ParamVUSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamVUSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  LevelFallOff_ms := Value;
 end;
 
-procedure TLA2094DataModule.ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  assert(round(Value) >= 0);
  if assigned(fHighpass)
   then fHighpass.Order := round(Value);
 end;
 
-procedure TLA2094DataModule.ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TLA4029DataModule.ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := IntToStr(round(Parameter[Index]));
 end;
 
-procedure TLA2094DataModule.ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(fHighpass)
   then fHighpass.Frequency := Value;
 end;
 
-procedure TLA2094DataModule.ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TLA4029DataModule.ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
   0: Predefined := 'Input';
@@ -259,13 +270,13 @@ begin
  end;
 end;
 
-procedure TLA2094DataModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fMix[0] := 0.01 * Value;
  fMix[1] := 1 - fMix[0];
 end;
 
-procedure TLA2094DataModule.ParamAttackDisplay(
+procedure TLA4029DataModule.ParamAttackDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Parameter[Index] < 1
@@ -273,13 +284,13 @@ begin
   else PreDefined := FloatToStrF(      Parameter[Index], ffFixed, 3, 1);
 end;
 
-procedure TLA2094DataModule.ParamRatioDisplay(Sender: TObject;
+procedure TLA4029DataModule.ParamRatioDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
  PreDefined := '1:' + PreDefined;
 end;
 
-procedure TLA2094DataModule.SetLevelFallOff_ms(const Value: Double);
+procedure TLA4029DataModule.SetLevelFallOff_ms(const Value: Double);
 begin
  if fLevelFallOff_ms <> Value then
   begin
@@ -288,7 +299,7 @@ begin
   end;
 end;
 
-procedure TLA2094DataModule.SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TLA4029DataModule.SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fLA2094s.Attack_ms := Value;
 
@@ -306,7 +317,7 @@ begin
  Result := 0.5 * (abs(x) + x);
 end;
 
-procedure TLA2094DataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TLA4029DataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i : Integer;
   d : Double;
@@ -325,7 +336,7 @@ begin
   end;
 end;
 
-procedure TLA2094DataModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+procedure TLA4029DataModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   i : Integer;
   d : Double;
@@ -344,20 +355,20 @@ begin
   end;
 end;
 
-procedure TLA2094DataModule.VSTModuleProcessBypass(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TLA4029DataModule.VSTModuleProcessBypass(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
 begin
  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
  Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
-procedure TLA2094DataModule.VSTModuleProcessDoubleReplacingBypass(const Inputs,
+procedure TLA4029DataModule.VSTModuleProcessDoubleReplacingBypass(const Inputs,
   Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
 begin
  Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Double));
  Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Double));
 end;
 
-procedure TLA2094DataModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TLA4029DataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
  if Assigned(fLA2094s)
@@ -367,7 +378,7 @@ begin
  CalculateLevelFallOff;
 end;
 
-procedure TLA2094DataModule.VSTModuleSoftBypass(Sender: TObject;
+procedure TLA4029DataModule.VSTModuleSoftBypass(Sender: TObject;
   isBypass: Boolean);
 begin
  Parameter[0] := Integer(isBypass);

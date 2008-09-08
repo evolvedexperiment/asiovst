@@ -3,9 +3,9 @@ object EditorForm: TEditorForm
   Top = 77
   BorderStyle = bsNone
   Caption = 'EditorForm'
-  ClientHeight = 163
-  ClientWidth = 585
-  Color = clBlack
+  ClientHeight = 318
+  ClientWidth = 336
+  Color = 4210752
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -17,45 +17,65 @@ object EditorForm: TEditorForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object GuiPanel2: TGuiPanel
+    Left = 8
+    Top = 143
+    Width = 321
+    Height = 168
+    LineColor = clGray
+    PanelColor = clBlack
+  end
+  object GuiPanel1: TGuiPanel
+    Left = 8
+    Top = 8
+    Width = 321
+    Height = 129
+    Color = 4210752
+    LineColor = clGray
+    PanelColor = clBlack
+  end
   object PnKnee: TGuiPanel
-    Left = 328
-    Top = 140
+    Left = 256
+    Top = 110
     Width = 64
     Height = 17
     AntiAlias = gaaLinear4x
+    Color = clBlack
     LineColor = 3355443
     PanelColor = 1118481
     Radius = 5
   end
   object PnInputValue: TGuiPanel
-    Left = 8
-    Top = 140
+    Left = 16
+    Top = 110
     Width = 64
     Height = 17
     AntiAlias = gaaLinear4x
+    Color = clBlack
     LineColor = 3355443
     PanelColor = 1118481
     Radius = 5
   end
   object PnRatio: TGuiPanel
-    Left = 248
-    Top = 140
+    Left = 176
+    Top = 110
     Width = 64
     Height = 17
     AntiAlias = gaaLinear4x
+    Color = clBlack
     LineColor = 3355443
     PanelColor = 1118481
     Radius = 5
   end
   object LbInputValue: TLabel
-    Left = 11
-    Top = 142
+    Left = 19
+    Top = 112
     Width = 58
     Height = 13
     Alignment = taCenter
     AutoSize = False
     Caption = 'dB'
-    Color = 1118481
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clSilver
     Font.Height = -11
@@ -65,13 +85,13 @@ object EditorForm: TEditorForm
     ParentFont = False
   end
   object LbRatioValue: TLabel
-    Left = 251
-    Top = 142
+    Left = 179
+    Top = 112
     Width = 58
     Height = 13
     Alignment = taCenter
     AutoSize = False
-    Color = 1118481
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clSilver
     Font.Height = -11
@@ -81,13 +101,13 @@ object EditorForm: TEditorForm
     ParentFont = False
   end
   object LbKneeValue: TLabel
-    Left = 331
-    Top = 142
+    Left = 259
+    Top = 112
     Width = 58
     Height = 13
     Alignment = taCenter
     AutoSize = False
-    Color = 1118481
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clSilver
     Font.Height = -11
@@ -97,10 +117,11 @@ object EditorForm: TEditorForm
     ParentFont = False
   end
   object DialInput: TGuiDial
-    Left = 8
+    Left = 16
     Top = 40
     Width = 64
     Height = 64
+    Color = clBlack
     LineWidth = 2
     LineColor = clSilver
     CircleColor = 2105376
@@ -112,10 +133,11 @@ object EditorForm: TEditorForm
     OnChange = DialInputChange
   end
   object DialAttack: TGuiDial
-    Left = 174
-    Top = 32
+    Left = 16
+    Top = 178
     Width = 48
     Height = 48
+    Color = clBlack
     LineWidth = 2
     LineColor = clSilver
     CircleColor = 2105376
@@ -127,10 +149,11 @@ object EditorForm: TEditorForm
     OnChange = DialAttackChange
   end
   object DialRelease: TGuiDial
-    Left = 174
-    Top = 86
+    Left = 16
+    Top = 232
     Width = 48
     Height = 48
+    Color = clBlack
     LineWidth = 2
     LineColor = clSilver
     CircleColor = 2105376
@@ -144,10 +167,11 @@ object EditorForm: TEditorForm
     OnChange = DialReleaseChange
   end
   object DialOutput: TGuiDial
-    Left = 88
+    Left = 96
     Top = 40
     Width = 64
     Height = 64
+    Color = clBlack
     LineWidth = 2
     LineColor = clSilver
     CircleColor = 2105376
@@ -159,13 +183,14 @@ object EditorForm: TEditorForm
     OnChange = DialOutputChange
   end
   object LbInput: TGuiLabel
-    Left = 8
-    Top = 116
+    Left = 16
+    Top = 16
     Width = 64
     Height = 18
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Input'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -16
@@ -173,50 +198,40 @@ object EditorForm: TEditorForm
     Font.Style = []
   end
   object LbOutput: TGuiLabel
-    Left = 88
-    Top = 116
+    Left = 96
+    Top = 16
     Width = 64
     Height = 18
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Output'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = []
   end
-  object LbManufacturer: TLabel
-    Left = 8
-    Top = 11
-    Width = 121
-    Height = 11
-    Caption = 'Delphi ASIO && VST Projects'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clSilver
-    Font.Height = -9
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-  end
   object PnOutputValue: TGuiPanel
-    Left = 88
-    Top = 140
+    Left = 96
+    Top = 110
     Width = 64
     Height = 17
     AntiAlias = gaaLinear4x
+    Color = clBlack
     LineColor = 3355443
     PanelColor = 1118481
     Radius = 5
   end
   object LbRelease: TGuiLabel
-    Left = 174
-    Top = 140
+    Left = 16
+    Top = 286
     Width = 48
     Height = 17
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Release'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -16
@@ -224,13 +239,14 @@ object EditorForm: TEditorForm
     Font.Style = []
   end
   object LbAttack: TGuiLabel
-    Left = 174
-    Top = 8
+    Left = 16
+    Top = 154
     Width = 48
     Height = 18
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Attack'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -16
@@ -238,10 +254,11 @@ object EditorForm: TEditorForm
     Font.Style = []
   end
   object DialRatio: TGuiDial
-    Left = 248
+    Left = 176
     Top = 40
     Width = 64
     Height = 64
+    Color = clBlack
     LineWidth = 2
     LineColor = clSilver
     CircleColor = 2105376
@@ -252,13 +269,14 @@ object EditorForm: TEditorForm
     OnChange = DialRatioChange
   end
   object LbRatioX: TGuiLabel
-    Left = 248
-    Top = 116
+    Left = 176
+    Top = 16
     Width = 64
     Height = 18
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Ratio'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -16
@@ -266,13 +284,14 @@ object EditorForm: TEditorForm
     Font.Style = []
   end
   object LbTitle: TGuiLabel
-    Left = 328
-    Top = 8
+    Left = 157
+    Top = 154
     Width = 64
     Height = 18
     Alignment = taCenter
     AntiAlias = gaaLinear4x
-    Caption = 'LA-2094'
+    Caption = 'LA-4029'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -15
@@ -280,14 +299,14 @@ object EditorForm: TEditorForm
     Font.Style = [fsBold]
   end
   object LbOutputValue: TLabel
-    Left = 91
-    Top = 142
+    Left = 99
+    Top = 112
     Width = 58
     Height = 13
     Alignment = taCenter
     AutoSize = False
     Caption = 'dB'
-    Color = 1118481
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clSilver
     Font.Height = -11
@@ -297,10 +316,11 @@ object EditorForm: TEditorForm
     ParentFont = False
   end
   object DialKnee: TGuiDial
-    Left = 328
+    Left = 256
     Top = 40
     Width = 64
     Height = 64
+    Color = clBlack
     LineWidth = 2
     LineColor = clSilver
     CircleColor = 2105376
@@ -311,13 +331,14 @@ object EditorForm: TEditorForm
     OnChange = DialKneeChange
   end
   object LbKnee: TGuiLabel
-    Left = 328
-    Top = 114
+    Left = 256
+    Top = 14
     Width = 64
     Height = 18
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Knee'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -16
@@ -325,25 +346,27 @@ object EditorForm: TEditorForm
     Font.Style = []
   end
   object LEDOnOff: TGuiLED
-    Left = 248
-    Top = 8
+    Left = 77
+    Top = 155
     Width = 16
     Height = 16
     OnClick = LEDOnOffClick
     Brightness_Percent = 100.000000000000000000
+    Color = clBlack
     LineWidth = 2
     LEDColor = clRed
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end
   object LbOnOff: TGuiLabel
-    Left = 265
-    Top = 9
+    Left = 94
+    Top = 156
     Width = 44
     Height = 15
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'On/Off'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -13
@@ -352,13 +375,14 @@ object EditorForm: TEditorForm
     OnClick = LEDOnOffClick
   end
   object LbSlow: TGuiLabel
-    Left = 199
-    Top = 76
+    Left = 41
+    Top = 222
     Width = 22
     Height = 12
     Alignment = taCenter
     AntiAlias = gaaLinear2x
     Caption = 'slow'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -11
@@ -366,13 +390,14 @@ object EditorForm: TEditorForm
     Font.Style = []
   end
   object LbFast: TGuiLabel
-    Left = 174
-    Top = 76
+    Left = 16
+    Top = 222
     Width = 19
     Height = 12
     Alignment = taCenter
     AntiAlias = gaaLinear2x
     Caption = 'fast'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -11
@@ -380,38 +405,25 @@ object EditorForm: TEditorForm
     Font.Style = []
   end
   object VUMeter: TGuiVUMeter
-    Left = 409
-    Top = 32
+    Left = 80
+    Top = 191
     Width = 168
     Height = 72
+    Color = clBlack
     Position = 0
     NumGlyphs = 65
     StitchKind = skVertical
     PopupMenu = PopupVUMeterSpeed
   end
-  object LbLevelingAmplifier: TLabel
-    Left = 408
-    Top = 11
-    Width = 168
-    Height = 11
-    Alignment = taRightJustify
-    AutoSize = False
-    Caption = 'Open Source Optical Leveling Amplifier'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clSilver
-    Font.Height = -9
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-  end
   object BtIn: TGuiButton
-    Left = 408
-    Top = 123
+    Left = 80
+    Top = 278
     Width = 52
     Height = 25
     AntiAlias = gaaLinear4x
     Alignment = taCenter
     Caption = 'In'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14869218
     Font.Height = -16
@@ -424,13 +436,14 @@ object EditorForm: TEditorForm
     OnClick = BtInClick
   end
   object BtGR: TGuiButton
-    Left = 466
-    Top = 123
+    Left = 138
+    Top = 278
     Width = 52
     Height = 25
     AntiAlias = gaaLinear4x
     Alignment = taCenter
     Caption = 'GR'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clGray
     Font.Height = -16
@@ -443,13 +456,14 @@ object EditorForm: TEditorForm
     OnClick = BtGRClick
   end
   object BtOut: TGuiButton
-    Left = 524
-    Top = 123
+    Left = 196
+    Top = 278
     Width = 52
     Height = 25
     AntiAlias = gaaLinear4x
     Alignment = taCenter
     Caption = 'Out'
+    Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clGray
     Font.Height = -16
@@ -462,8 +476,8 @@ object EditorForm: TEditorForm
     OnClick = BtOutClick
   end
   object LbVUMeterDisplay: TLabel
-    Left = 424
-    Top = 78
+    Left = 95
+    Top = 237
     Width = 105
     Height = 12
     Alignment = taCenter
@@ -479,16 +493,102 @@ object EditorForm: TEditorForm
     ParentFont = False
     Transparent = True
   end
+  object PnMix: TGuiPanel
+    Left = 256
+    Top = 286
+    Width = 64
+    Height = 17
+    AntiAlias = gaaLinear4x
+    LineColor = 3355443
+    PanelColor = 1118481
+    Radius = 5
+  end
+  object LbMixValue: TLabel
+    Left = 259
+    Top = 288
+    Width = 58
+    Height = 13
+    Alignment = taCenter
+    AutoSize = False
+    Color = 1118481
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+  end
+  object DialMix: TGuiDial
+    Left = 256
+    Top = 216
+    Width = 64
+    Height = 64
+    Color = clBlack
+    LineWidth = 2
+    LineColor = clSilver
+    CircleColor = 2105376
+    Inertia = 50.000000000000000000
+    Max = 100.000000000000000000
+    NumGlyphs = 65
+    StitchKind = skVertical
+    OnChange = DialMixChange
+  end
+  object LbMix: TGuiLabel
+    Left = 256
+    Top = 190
+    Width = 64
+    Height = 18
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Mix'
+    Color = clBlack
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14869218
+    Font.Height = -16
+    Font.Name = 'Times New Roman'
+    Font.Style = []
+  end
+  object LbLevelingAmplifier: TLabel
+    Left = 227
+    Top = 158
+    Width = 90
+    Height = 12
+    Caption = 'Leveling Amplifier'
+    Color = clBlack
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clGray
+    Font.Height = -9
+    Font.Name = 'Verdana'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    Transparent = True
+  end
+  object SpDivide1: TShape
+    Left = 80
+    Top = 177
+    Width = 241
+    Height = 3
+    Brush.Color = 3355443
+  end
+  object SpDivide2: TShape
+    Left = 80
+    Top = 179
+    Width = 241
+    Height = 3
+    Brush.Color = 3355443
+  end
   object VUMeterTimer: TTimer
     Interval = 30
     OnTimer = VUMeterTimerTimer
-    Left = 336
+    Left = 264
     Top = 56
   end
   object PopupVUMeterSpeed: TPopupMenu
     OnPopup = PopupVUMeterSpeedPopup
-    Left = 424
-    Top = 47
+    Left = 95
+    Top = 206
     object MIFast: TMenuItem
       Caption = '&Fast'
       RadioItem = True

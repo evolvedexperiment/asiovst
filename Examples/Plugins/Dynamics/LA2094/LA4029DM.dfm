@@ -1,17 +1,17 @@
-object LA2094DataModule: TLA2094DataModule
+object LA4029DataModule: TLA4029DataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanDoubleReplacing]
   Version = '1.0'
-  EffectName = 'Soft Knee Limiter'
-  ProductName = 'Soft Knee Limiter'
+  EffectName = 'LA-4029 Leveling Amplifier'
+  ProductName = 'LA-4029 Leveling Amplifier'
   VendorName = 'ASIO-VST Delphi Project'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out, vcdBypass]
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
-  UniqueID = '2094'
+  UniqueID = '4029'
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <
@@ -163,6 +163,7 @@ object LA2094DataModule: TLA2094DataModule
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = LA2094DataModuleParameterProperties8ParameterChange
       OnCustomParameterDisplay = ParamVUMeterDisplay
     end
     item
