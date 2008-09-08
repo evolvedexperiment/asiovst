@@ -119,11 +119,9 @@ object EditorForm: TEditorForm
     LineWidth = 2
     LineColor = clSilver
     CircleColor = 2105376
-    Position = -0.000000000100000001
-    DefaultPosition = -0.000000000100000001
     Inertia = 50.000000000000000000
-    Min = -1.699000000953674000
-    Max = -0.000000000100000001
+    Min = -0.699000000953674300
+    Max = 1.301030039787292000
     NumGlyphs = 31
     StitchKind = skVertical
     OnChange = DialAttackChange
@@ -139,7 +137,7 @@ object EditorForm: TEditorForm
     Position = 1.398000001907349000
     DefaultPosition = 1.398000001907349000
     Inertia = 50.000000000000000000
-    Min = 1.398000001907349000
+    Min = 1.000000000000000000
     Max = 2.698999881744385000
     NumGlyphs = 31
     StitchKind = skVertical

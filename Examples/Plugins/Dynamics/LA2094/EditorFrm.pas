@@ -43,7 +43,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LEDOnOffClick(Sender: TObject);
+  private
   public
+    procedure UpdateOnOff;
     procedure UpdateInput;
     procedure UpdateOutput;
     procedure UpdateAttack;
@@ -93,6 +95,7 @@ end;
 
 procedure TEditorForm.FormShow(Sender: TObject);
 begin
+ UpdateOnOff;
  UpdateInput;
  UpdateOutput;
  UpdateAttack;
@@ -103,17 +106,29 @@ end;
 
 procedure TEditorForm.LEDOnOffClick(Sender: TObject);
 begin
- if LEDOnOff.Brightness_Percent > 55
-  then LEDOnOff.Brightness_Percent := 10
-  else LEDOnOff.Brightness_Percent := 100;
+ with TLA2094DataModule(Owner) do
+  begin
+   Parameter[0] := 1 - Parameter[0];
+   UpdateOnOff;
+  end;
+end;
+
+procedure TEditorForm.UpdateOnOff;
+begin
+ with TLA2094DataModule(Owner) do
+  begin
+   if Parameter[0] < 0.5
+    then LEDOnOff.Brightness_Percent := 100
+    else LEDOnOff.Brightness_Percent := 10;
+  end;
 end;
 
 procedure TEditorForm.UpdateInput;
 begin
  with TLA2094DataModule(Owner) do
   begin
-   if DialInput.Position <> Parameter[0]
-    then DialInput.Position := Parameter[0];
+   if DialInput.Position <> Parameter[1]
+    then DialInput.Position := Parameter[1];
    LbInputValue.Caption := FloatToStrF(DialInput.Position, ffFixed, 3, 1) + ' dB';
   end;
 end;
@@ -122,8 +137,8 @@ procedure TEditorForm.UpdateKnee;
 begin
  with TLA2094DataModule(Owner) do
   begin
-   if DialKnee.Position <> Parameter[5]
-    then DialKnee.Position := Parameter[5];
+   if DialKnee.Position <> Parameter[6]
+    then DialKnee.Position := Parameter[6];
    LbKneeValue.Caption := FloatToStrF(DialKnee.Position, ffFixed, 3, 1);
   end;
 end;
@@ -132,8 +147,8 @@ procedure TEditorForm.UpdateOutput;
 begin
  with TLA2094DataModule(Owner) do
   begin
-   if DialOutput.Position <> Parameter[1]
-    then DialOutput.Position := Parameter[1];
+   if DialOutput.Position <> Parameter[2]
+    then DialOutput.Position := Parameter[2];
    LbOutputValue.Caption := FloatToStrF(DialOutput.Position, ffFixed, 3, 1) + ' dB';
   end;
 end;
@@ -144,10 +159,10 @@ var
 begin
  with TLA2094DataModule(Owner) do
   begin
-   s := Log10(Parameter[2]);
+   s := Log10(Parameter[3]);
    if DialAttack.Position <> s
     then DialAttack.Position := s;
-//   LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
+//   LbAttackValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 2) + ' ms';
   end;
 end;
 
@@ -157,10 +172,10 @@ var
 begin
  with TLA2094DataModule(Owner) do
   begin
-   s := Log10(Parameter[3]);
+   s := Log10(Parameter[4]);
    if DialRelease.Position <> s
     then DialRelease.Position := s;
-//   LbReleaseValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 4, 5) + ' ms';
+//   LbReleaseValue.Caption := FloatToStrF(Parameter[4], ffGeneral, 4, 5) + ' ms';
   end;
 end;
 
@@ -170,10 +185,10 @@ var
 begin
  with TLA2094DataModule(Owner) do
   begin
-   s := Log10(Parameter[4]);
+   s := Log10(Parameter[5]);
    if DialRatio.Position <> s
     then DialRatio.Position := s;
-   LbRatioValue.Caption := '1 : ' + FloatToStrF(Parameter[4], ffFixed, 3, 1);
+   LbRatioValue.Caption := '1 : ' + FloatToStrF(Parameter[5], ffFixed, 3, 1);
   end;
 end;
 
@@ -181,8 +196,8 @@ procedure TEditorForm.DialInputChange(Sender: TObject);
 begin
  with TLA2094DataModule(Owner) do
   begin
-   if Parameter[0] <> DialInput.Position
-    then Parameter[0] := DialInput.Position;
+   if Parameter[1] <> DialInput.Position
+    then Parameter[1] := DialInput.Position;
    UpdateInput;
   end;
 end;
@@ -191,8 +206,8 @@ procedure TEditorForm.DialOutputChange(Sender: TObject);
 begin
  with TLA2094DataModule(Owner) do
   begin
-   if Parameter[1] <> DialOutput.Position
-    then Parameter[1] := DialOutput.Position;
+   if Parameter[2] <> DialOutput.Position
+    then Parameter[2] := DialOutput.Position;
    UpdateOutput;
   end;
 end;
@@ -204,8 +219,7 @@ begin
  with TLA2094DataModule(Owner) do
   begin
    s := Power(10, DialAttack.Position);
-   if (Parameter[2] - s) > 1E-5
-    then Parameter[2] := s;
+   Parameter[3] := s;
   end;
 end;
 
@@ -216,8 +230,7 @@ begin
  with TLA2094DataModule(Owner) do
   begin
    s := Power(10, DialRelease.Position);
-   if abs(Parameter[3] - s) > 1E-5
-    then Parameter[3] := s;
+   Parameter[4] := s;
   end;
 end;
 
@@ -228,8 +241,8 @@ begin
  with TLA2094DataModule(Owner) do
   begin
    s := Power(10, DialRatio.Position);
-   if abs (Parameter[4] - s) > 1E-3
-    then Parameter[4] := s;
+   if abs (Parameter[5] - s) > 1E-3
+    then Parameter[5] := s;
    UpdateRatio;
   end;
 end;
@@ -238,7 +251,7 @@ procedure TEditorForm.DialKneeChange(Sender: TObject);
 begin
  with TLA2094DataModule(Owner) do
   begin
-   Parameter[5] := DialKnee.Position;
+   Parameter[6] := DialKnee.Position;
    UpdateKnee;
   end;
 end;

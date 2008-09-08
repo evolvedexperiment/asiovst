@@ -17,6 +17,21 @@ object LA2094DataModule: TLA2094DataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      DisplayName = 'On/Off'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'On/Off'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParamOnOffChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Input'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -56,9 +71,9 @@ object LA2094DataModule: TLA2094DataModule
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep]
       LargeStepInteger = 0
-      Max = 1.000000000000000000
-      MaxInteger = 1
-      Min = 0.019999999552965160
+      Max = 20.000000000000000000
+      MaxInteger = 20
+      Min = 0.200000002980232200
       ShortLabel = 'Attack'
       SmallStepFloat = 0.100000001490116100
       SmoothingFactor = 1.000000000000000000
@@ -66,6 +81,8 @@ object LA2094DataModule: TLA2094DataModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = SKLAttackChange
+      OnCustomParameterLabel = ParamAttackLabel
+      OnCustomParameterDisplay = ParamAttackDisplay
     end
     item
       Curve = ctLogarithmic
@@ -75,8 +92,8 @@ object LA2094DataModule: TLA2094DataModule
       LargeStepInteger = 5
       Max = 500.000000000000000000
       MaxInteger = 500
-      Min = 25.000000000000000000
-      MinInteger = 25
+      Min = 10.000000000000000000
+      MinInteger = 10
       ShortLabel = 'Release'
       SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
@@ -99,6 +116,7 @@ object LA2094DataModule: TLA2094DataModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = SKLRatioChange
+      OnCustomParameterDisplay = ParamRatioDisplay
     end
     item
       Curve = ctLinear
@@ -121,7 +139,7 @@ object LA2094DataModule: TLA2094DataModule
   OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   Left = 645
-  Top = 66
+  Top = 53
   Height = 150
   Width = 215
 end
