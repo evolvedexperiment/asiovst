@@ -3,8 +3,8 @@ object EditorForm: TEditorForm
   Top = 77
   BorderStyle = bsNone
   Caption = 'EditorForm'
-  ClientHeight = 318
-  ClientWidth = 336
+  ClientHeight = 319
+  ClientWidth = 337
   Color = 4210752
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,6 +14,8 @@ object EditorForm: TEditorForm
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnPaint = FormPaint
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -30,7 +32,6 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 321
     Height = 129
-    Color = 4210752
     LineColor = clGray
     PanelColor = clBlack
   end

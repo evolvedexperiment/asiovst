@@ -72,7 +72,10 @@ type
     procedure PopupVUMeterSpeedPopup(Sender: TObject);
     procedure VUMeterTimerTimer(Sender: TObject);
     procedure DialMixChange(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
+    fBackgrounBitmap : TBitmap;
     procedure SetLevelState(const Value: TLevelState);
     function GetLevelState: TLevelState;
     function VUMeterValueToPos(Value: Double): Integer;
@@ -99,7 +102,13 @@ uses
 
 procedure TEditorForm.FormCreate(Sender: TObject);
 var
-  RS  : TResourceStream;
+  RS    : TResourceStream;
+  ClrBt : Byte;
+  x, y  : Integer;
+  s     : array[0..1] of Single;
+  b     : ShortInt;
+  Line  : PRGB32Array;
+
 begin
  RS := TResourceStream.Create(hInstance, 'PanKnob', 'BMP');
  try
@@ -134,14 +143,47 @@ begin
  finally
   RS.Free;
  end;
+ fBackgrounBitmap := TBitmap.Create;
+
+ ClrBt := $F + random($40);
+
+ with fBackgrounBitmap do
+  begin
+   PixelFormat := pf32bit;
+   Width := Self.Width;
+   Height := Self.Height;
+   s[0] := 0;
+   s[1] := 0;
+   for y := 0 to Height - 1 do
+    begin
+     Line := Scanline[y];
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.9 * s[0] + 0.1 * (2 * random - 1);
+       b := round($F * s[1]);
+       s[0] := s[1];
+       Line[x].B := ClrBt + b;
+       Line[x].G := ClrBt + b;
+       Line[x].R := ClrBt + b;
+       Line[x].A := 0;
+      end;
+    end;
+  end;
+end;
+
+procedure TEditorForm.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(fBackgrounBitmap);
+end;
+
+procedure TEditorForm.FormPaint(Sender: TObject);
+begin
+ if assigned(fBackgrounBitmap)
+  then Self.Canvas.Draw(0, 0, fBackgrounBitmap);
 end;
 
 procedure TEditorForm.FormShow(Sender: TObject);
-var
-  ClrBt : Byte;
 begin
- ClrBt := random($40);
- Color := RGB(ClrBt, ClrBt, ClrBt);
  UpdateOnOff;
  UpdateInput;
  UpdateOutput;

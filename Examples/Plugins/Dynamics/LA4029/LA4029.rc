@@ -1,5 +1,5 @@
-PanKnob BMP ..\..\..\..\Resources\LA4029PanKnob.bmp
-RatioKnob BMP ..\..\..\..\Resources\LA4029RatioKnob.bmp
-AttackKnob BMP ..\..\..\..\Resources\LA4029AttackKnob.bmp
-ReleaseKnob BMP ..\..\..\..\Resources\LA4029ReleaseKnob.bmp
-VUMeter BMP ..\..\..\..\Resources\LA4029VUMeter.bmp
+PanKnob PNG ..\..\..\..\Resources\LA4029PanKnob.png
+RatioKnob PNG ..\..\..\..\Resources\LA4029RatioKnob.png
+AttackKnob PNG ..\..\..\..\Resources\LA4029AttackKnob.png
+ReleaseKnob PNG ..\..\..\..\Resources\LA4029ReleaseKnob.png
+VUMeter PNG ..\..\..\..\Resources\LA4029VUMeter.png
