@@ -1,10 +1,10 @@
 object EditorForm: TEditorForm
-  Left = 218
-  Top = 51
+  Left = 220
+  Top = 77
   BorderStyle = bsNone
   Caption = 'EditorForm'
   ClientHeight = 163
-  ClientWidth = 400
+  ClientWidth = 585
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -188,7 +188,7 @@ object EditorForm: TEditorForm
   end
   object LbManufacturer: TLabel
     Left = 8
-    Top = 8
+    Top = 11
     Width = 121
     Height = 11
     Caption = 'Delphi ASIO && VST Projects'
@@ -298,7 +298,7 @@ object EditorForm: TEditorForm
   end
   object DialKnee: TGuiDial
     Left = 328
-    Top = 38
+    Top = 40
     Width = 64
     Height = 64
     LineWidth = 2
@@ -378,5 +378,132 @@ object EditorForm: TEditorForm
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+  end
+  object VUMeter: TGuiVUMeter
+    Left = 409
+    Top = 32
+    Width = 168
+    Height = 72
+    Position = 0
+    NumGlyphs = 65
+    StitchKind = skVertical
+    PopupMenu = PopupVUMeterSpeed
+  end
+  object LbLevelingAmplifier: TLabel
+    Left = 408
+    Top = 11
+    Width = 168
+    Height = 11
+    Alignment = taRightJustify
+    AutoSize = False
+    Caption = 'Open Source Optical Leveling Amplifier'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtIn: TGuiButton
+    Left = 408
+    Top = 123
+    Width = 52
+    Height = 25
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    Caption = 'In'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14869218
+    Font.Height = -16
+    Font.Name = 'Times New Roman'
+    Font.Style = [fsBold]
+    LineColor = clSilver
+    LineWidth = 2
+    ButtonColor = 2105376
+    Radius = 5
+    OnClick = BtInClick
+  end
+  object BtGR: TGuiButton
+    Left = 466
+    Top = 123
+    Width = 52
+    Height = 25
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    Caption = 'GR'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clGray
+    Font.Height = -16
+    Font.Name = 'Times New Roman'
+    Font.Style = [fsBold]
+    LineColor = 3355443
+    LineWidth = 2
+    ButtonColor = clBlack
+    Radius = 5
+    OnClick = BtGRClick
+  end
+  object BtOut: TGuiButton
+    Left = 524
+    Top = 123
+    Width = 52
+    Height = 25
+    AntiAlias = gaaLinear4x
+    Alignment = taCenter
+    Caption = 'Out'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clGray
+    Font.Height = -16
+    Font.Name = 'Times New Roman'
+    Font.Style = [fsBold]
+    LineColor = 3355443
+    LineWidth = 2
+    ButtonColor = clBlack
+    Radius = 5
+    OnClick = BtOutClick
+  end
+  object LbVUMeterDisplay: TLabel
+    Left = 424
+    Top = 78
+    Width = 105
+    Height = 12
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Input'
+    Color = 15461355
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clGray
+    Font.Height = -9
+    Font.Name = 'Verdana'
+    Font.Style = []
+    ParentColor = False
+    ParentFont = False
+    Transparent = True
+  end
+  object VUMeterTimer: TTimer
+    Interval = 30
+    OnTimer = VUMeterTimerTimer
+    Left = 336
+    Top = 56
+  end
+  object PopupVUMeterSpeed: TPopupMenu
+    OnPopup = PopupVUMeterSpeedPopup
+    Left = 424
+    Top = 47
+    object MIFast: TMenuItem
+      Caption = '&Fast'
+      RadioItem = True
+      OnClick = MIFastClick
+    end
+    object MIMedium: TMenuItem
+      Caption = '&Medium'
+      Checked = True
+      RadioItem = True
+      OnClick = MIMediumClick
+    end
+    object MISlow: TMenuItem
+      Caption = '&Slow'
+      RadioItem = True
+      OnClick = MISlowClick
+    end
   end
 end

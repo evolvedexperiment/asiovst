@@ -132,14 +132,94 @@ object LA2094DataModule: TLA2094DataModule
       StepFloat = 0.100000001490116100
       VSTModule = Owner
       OnParameterChange = SKLSKFBChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Mix'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 100.000000000000000000
+      ShortLabel = 'Mix'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
+      VSTModule = Owner
+      OnParameterChange = ParamMixChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'VUMeterDisplay'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 2.000000000000000000
+      MaxInteger = 2
+      ShortLabel = 'VUMeter'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnCustomParameterDisplay = ParamVUMeterDisplay
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
+      DisplayName = 'VUMeterSpeed'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 1000.000000000000000000
+      MaxInteger = 1000
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ShortLabel = 'FallOff'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'ms'
+      VSTModule = Owner
+      OnParameterChange = ParamVUSpeedChange
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 20.000000000000000000
+      DisplayName = 'Highpass Frequency'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 20.000000000000000000
+      MaxInteger = 20
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ShortLabel = 'HP Freq'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParamHPFreqChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Highpass Order'
+      Max = 4.000000000000000000
+      MaxInteger = 4
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ShortLabel = 'HP Ord.'
+      SmoothingFactor = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParamHPOrderChange
+      OnCustomParameterDisplay = ParamHPOrderDisplay
     end>
   OnEditOpen = VSTModuleEditOpen
   OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  Left = 645
-  Top = 53
+  Left = 739
+  Top = 81
   Height = 150
   Width = 215
 end

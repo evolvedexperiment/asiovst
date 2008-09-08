@@ -12,7 +12,6 @@ type
     FAutoSize         : Boolean;
     FVUMeterBitmap    : TBitmap;
     FNumGlyphs        : Integer;
-    FOnChange         : TNotifyEvent;
     FPosition         : Integer;
     FStitchKind       : TGuiStitchKind;
     procedure DoAutoSize;
@@ -35,18 +34,17 @@ type
     property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
     property VUMeterBitmap: TBitmap read FVUMeterBitmap write SetVUMeterBitmap;
     property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
-    property OnChange: TNotifyEvent read fOnChange write fOnChange;
   end;
 
   TGuiVUMeter = class(TCustomGuiVUMeter)
   published
     property AutoSize;
     property Color;
-    property VUMeterBitmap;
     property NumGlyphs;
-    property OnChange;
+    property PopupMenu;
     property Position;
     property StitchKind;
+    property VUMeterBitmap;
   end;
 
 implementation
@@ -154,7 +152,6 @@ begin
   if FPosition <> Value then
   begin
     FPosition := Value;
-    if not (csLoading in ComponentState) and Assigned(FOnChange) then FOnChange(Self);
     RedrawBuffer(True);
   end;
 end;

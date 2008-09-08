@@ -4,10 +4,15 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, Controls,
-  StdCtrls, DGuiPanel, DGuiLabel, DGuiBaseControl, DGuiDial, DGuiLED;
+  Graphics, StdCtrls, ExtCtrls, DGuiPanel, DGuiLabel, DGuiBaseControl,
+  DGuiDial, DGuiLED, DGuiVUMeter, DGuiButton, Menus;
 
 type
+  TLevelState = (lsIn, lsGR, lsOut);
   TEditorForm = class(TForm)
+    BtGR: TGuiButton;
+    BtIn: TGuiButton;
+    BtOut: TGuiButton;
     DialAttack: TGuiDial;
     DialInput: TGuiDial;
     DialKnee: TGuiDial;
@@ -20,6 +25,7 @@ type
     LbInputValue: TLabel;
     LbKnee: TGuiLabel;
     LbKneeValue: TLabel;
+    LbLevelingAmplifier: TLabel;
     LbManufacturer: TLabel;
     LbOnOff: TGuiLabel;
     LbOutput: TGuiLabel;
@@ -34,6 +40,13 @@ type
     PnKnee: TGuiPanel;
     PnOutputValue: TGuiPanel;
     PnRatio: TGuiPanel;
+    VUMeter: TGuiVUMeter;
+    VUMeterTimer: TTimer;
+    PopupVUMeterSpeed: TPopupMenu;
+    MIFast: TMenuItem;
+    MIMedium: TMenuItem;
+    MISlow: TMenuItem;
+    LbVUMeterDisplay: TLabel;
     procedure DialInputChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
@@ -43,7 +56,18 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LEDOnOffClick(Sender: TObject);
+    procedure VUMeterTimerTimer(Sender: TObject);
+    procedure BtInClick(Sender: TObject);
+    procedure BtGRClick(Sender: TObject);
+    procedure BtOutClick(Sender: TObject);
+    procedure MIFastClick(Sender: TObject);
+    procedure MIMediumClick(Sender: TObject);
+    procedure MISlowClick(Sender: TObject);
+    procedure PopupVUMeterSpeedPopup(Sender: TObject);
   private
+    procedure SetLevelState(const Value: TLevelState);
+    function GetLevelState: TLevelState;
+    function VUMeterValueToPos(Value: Double): Integer;
   public
     procedure UpdateOnOff;
     procedure UpdateInput;
@@ -52,6 +76,9 @@ type
     procedure UpdateRelease;
     procedure UpdateRatio;
     procedure UpdateKnee;
+    procedure UpdateLevelState;
+  published
+    property LevelState: TLevelState read GetLevelState write SetLevelState;
   end;
 
 implementation
@@ -91,6 +118,12 @@ begin
  finally
   RS.Free;
  end;
+ RS := TResourceStream.Create(hInstance, 'VUMeter', 'BMP');
+ try
+  VUMeter.VUMeterBitmap.LoadFromStream(RS);
+ finally
+  RS.Free;
+ end;
 end;
 
 procedure TEditorForm.FormShow(Sender: TObject);
@@ -102,6 +135,13 @@ begin
  UpdateRelease;
  UpdateRatio;
  UpdateKnee;
+ UpdateLevelState;
+end;
+
+function TEditorForm.GetLevelState: TLevelState;
+begin
+ with TLA2094DataModule(Owner)
+  do result := TLevelState(round(Parameter[8]));
 end;
 
 procedure TEditorForm.LEDOnOffClick(Sender: TObject);
@@ -111,6 +151,44 @@ begin
    Parameter[0] := 1 - Parameter[0];
    UpdateOnOff;
   end;
+end;
+
+procedure TEditorForm.MIFastClick(Sender: TObject);
+begin
+ with TLA2094DataModule(Owner)
+  do Parameter[9] := 5;
+end;
+
+procedure TEditorForm.MIMediumClick(Sender: TObject);
+begin
+ with TLA2094DataModule(Owner)
+  do Parameter[9] := 50;
+end;
+
+procedure TEditorForm.MISlowClick(Sender: TObject);
+begin
+ with TLA2094DataModule(Owner)
+  do Parameter[9] := 500;
+end;
+
+procedure TEditorForm.PopupVUMeterSpeedPopup(Sender: TObject);
+begin
+ with TLA2094DataModule(Owner) do
+  begin
+   MIFast.Checked   := Parameter[9] < 20;
+   MISlow.Checked   := Parameter[9] > 200;
+   MIMedium.Checked := not (MIFast.Checked or MISlow.Checked);
+  end;
+end;
+
+procedure TEditorForm.SetLevelState(const Value: TLevelState);
+begin
+ with TLA2094DataModule(Owner) do
+  if LevelState <> Value then
+   begin
+    Parameter[8] := Integer(Value);
+    UpdateLevelState;
+   end;
 end;
 
 procedure TEditorForm.UpdateOnOff;
@@ -141,6 +219,48 @@ begin
     then DialKnee.Position := Parameter[6];
    LbKneeValue.Caption := FloatToStrF(DialKnee.Position, ffFixed, 3, 1);
   end;
+end;
+
+procedure TEditorForm.UpdateLevelState;
+begin
+ case LevelState of
+   lsIn : begin
+           BtIn.ButtonColor  := $00202020;
+           BtIn.Font.Color   := $00E2E2E2;
+           BtIn.LineColor    := clSilver;
+           BtGR.ButtonColor  := $00000000;
+           BtGR.Font.Color   := clGray;
+           BtGR.LineColor    := $00333333;
+           BtOut.ButtonColor := $00000000;
+           BtOut.Font.Color  := clGray;
+           BtOut.LineColor   := $00333333;
+           LbVUMeterDisplay.Caption := 'Input';
+          end;
+   lsGR : begin
+           BtIn.ButtonColor  := $00000000;
+           BtIn.Font.Color   := clGray;
+           BtIn.LineColor    := $00333333;
+           BtGR.ButtonColor  := $00202020;
+           BtGR.Font.Color   := $00E2E2E2;
+           BtGR.LineColor    := clSilver;
+           BtOut.ButtonColor := $00000000;
+           BtOut.Font.Color  := clGray;
+           BtOut.LineColor   := $00333333;
+           LbVUMeterDisplay.Caption := 'Gain Reduction';
+          end;
+  lsOut : begin
+           BtIn.ButtonColor  := $00000000;
+           BtIn.Font.Color   := clGray;
+           BtIn.LineColor    := $00333333;
+           BtGR.ButtonColor  := $00000000;
+           BtGR.Font.Color   := clGray;
+           BtGR.LineColor    := $00333333;
+           BtOut.ButtonColor := $00202020;
+           BtOut.Font.Color  := $00E2E2E2;
+           BtOut.LineColor   := clSilver;
+           LbVUMeterDisplay.Caption := 'Output';
+          end;
+ end;
 end;
 
 procedure TEditorForm.UpdateOutput;
@@ -179,6 +299,30 @@ begin
   end;
 end;
 
+function TEditorForm.VUMeterValueToPos(Value: Double): Integer;
+begin
+ // ToDo: Create a true mapping
+ if Value < -40 then result := 0 else
+ if Value >   3 then result := VUMeter.NumGlyphs - 1 else
+ if Value < -10 then result := round(((40 + Value) / 30) * 22) else
+ if Value <  -7 then result := round(22 + (10 + Value) * 1.66) else
+ if Value <  -5 then result := round(28 + (7 + Value) * 2.5) else
+ if Value <  -3 then result := round(33 + (5 + Value) * 2.5) else
+ if Value <  -1 then result := round(38 + (3 + Value) * 2.5) else
+ if Value <   0 then result := round(43 + (1 + Value) * 5)
+  else result := round(48 + Value / 3 * (VUMeter.NumGlyphs - 49));
+end;
+
+procedure TEditorForm.VUMeterTimerTimer(Sender: TObject);
+begin
+ with TLA2094DataModule(Owner) do
+  case LevelState of
+    lsIn : VUMeter.Position := VUMeterValueToPos(InLevel_dB);
+    lsGR : VUMeter.Position := VUMeterValueToPos(GRReduction_dB);
+   lsOut : VUMeter.Position := VUMeterValueToPos(OutLevel_dB);
+  end;
+end;
+
 procedure TEditorForm.UpdateRatio;
 var
   s : Single;
@@ -210,6 +354,21 @@ begin
     then Parameter[2] := DialOutput.Position;
    UpdateOutput;
   end;
+end;
+
+procedure TEditorForm.BtGRClick(Sender: TObject);
+begin
+ LevelState := lsGR;
+end;
+
+procedure TEditorForm.BtInClick(Sender: TObject);
+begin
+ LevelState := lsIn;
+end;
+
+procedure TEditorForm.BtOutClick(Sender: TObject);
+begin
+ LevelState := lsOut;
 end;
 
 procedure TEditorForm.DialAttackChange(Sender: TObject);
