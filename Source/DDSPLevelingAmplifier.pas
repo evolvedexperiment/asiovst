@@ -216,8 +216,6 @@ begin
 end;
 
 function SimpleDiode(x: Single): Single;
-var
-  a, b : Double;
 begin
  Result := 0.5 * (abs(x) + x);
 end;
@@ -258,7 +256,7 @@ begin
  Input  := FInputLevel * Input;
  result := Harms[0] + Input * (1 + Input * (Harms[1] + sqr(Input) *
            (Harms[2] + sqr(Input) * Harms[3])));
- result := FOutputLevel * fGain * Input;
+ result := FOutputLevel * fGain * result;
 end;
 
 end.

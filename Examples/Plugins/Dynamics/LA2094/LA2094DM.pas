@@ -32,6 +32,9 @@ type
     procedure ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamVUSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleSoftBypass(Sender: TObject; isBypass: Boolean);
+    procedure ParamOnOffDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fLA2094s            : TLevelingAmplifier;
     fOutLevel           : Double;
@@ -216,6 +219,14 @@ begin
  result := Amp_to_dB(fOutLevel);
 end;
 
+procedure TLA2094DataModule.ParamOnOffDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 0.5
+  then PreDefined := 'On'
+  else PreDefined := 'Off';
+end;
+
 procedure TLA2094DataModule.ParamVUSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  LevelFallOff_ms := Value;
@@ -354,6 +365,12 @@ begin
  if Assigned(fHighpass)
   then fHighpass.SampleRate := SampleRate;
  CalculateLevelFallOff;
+end;
+
+procedure TLA2094DataModule.VSTModuleSoftBypass(Sender: TObject;
+  isBypass: Boolean);
+begin
+ Parameter[0] := Integer(isBypass);
 end;
 
 end.

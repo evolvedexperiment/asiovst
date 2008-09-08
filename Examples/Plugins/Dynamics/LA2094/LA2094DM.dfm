@@ -2,12 +2,13 @@ object LA2094DataModule: TLA2094DataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
+  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Soft Knee Limiter'
   ProductName = 'Soft Knee Limiter'
   VendorName = 'ASIO-VST Delphi Project'
   PlugCategory = vpcEffect
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out, vcdBypass]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
   UniqueID = '2094'
@@ -28,6 +29,7 @@ object LA2094DataModule: TLA2094DataModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOnOffChange
+      OnCustomParameterDisplay = ParamOnOffDisplay
     end
     item
       Curve = ctLinear
@@ -218,6 +220,7 @@ object LA2094DataModule: TLA2094DataModule
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnSoftBypass = VSTModuleSoftBypass
   Left = 739
   Top = 81
   Height = 150
