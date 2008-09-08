@@ -36,6 +36,8 @@ type
 
   TGuiAntiAlias = (gaaNone, gaaLinear2x, gaaLinear4x, gaaLinear8x, gaaLinear16x);
 
+  TGuiStitchKind = (skHorizontal, skVertical);
+
   TBufferedGraphicControl = class(TGraphicControl)
   protected
     fBuffer   : TBitmap;

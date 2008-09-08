@@ -18,9 +18,6 @@ unit DVSTHost;
 
 {$I ASIOVST.INC}
 {-$DEFINE SB}
-{$IFNDEF FPC}
-{$R DVstHost.res}
-{$ENDIF}
 
 interface
 

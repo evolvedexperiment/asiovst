@@ -9,7 +9,6 @@ uses
   DGuiBaseControl;
 
 type
-  TGuiDialStitchKind = (skHorizontal, skVertical);
   TGuiDialRMBFunc = (rmbfReset,rmbfCircular);
 
   TGuiDialSettings = class(TPersistent)
@@ -56,7 +55,7 @@ type
     FPointerAngles    : TGuiDialPointerAngles;
     FPosition         : Single;
     FRightMouseButton : TGuiDialRMBFunc;
-    FStitchKind       : TGuiDialStitchKind;
+    FStitchKind       : TGuiStitchKind;
     function  CircularMouseToPosition(X, Y: Integer): Single;
     function  PositionToAngle: Single;
     function GetInertia: Single;
@@ -73,7 +72,7 @@ type
     procedure SetNumGlyphs(const Value: Integer);
     procedure SetPointerAngles(const Value: TGuiDialPointerAngles);
     procedure SetPosition(Value: Single);
-    procedure SetStitchKind(const Value: TGuiDialStitchKind);
+    procedure SetStitchKind(const Value: TGuiStitchKind);
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure CalcColorCircle;
@@ -103,7 +102,7 @@ type
     property RightMouseButton: TGuiDialRMBFunc read FRightMouseButton write FRightMouseButton default rmbfCircular;
     property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
     property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
-    property StitchKind: TGuiDialStitchKind read FStitchKind write SetStitchKind;
+    property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
     property PointerAngles: TGuiDialPointerAngles read FPointerAngles write SetPointerAngles;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
   end;
@@ -632,7 +631,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiDial.SetStitchKind(const Value: TGuiDialStitchKind);
+procedure TCustomGuiDial.SetStitchKind(const Value: TGuiStitchKind);
 begin
   if FStitchKind <> Value then
   begin

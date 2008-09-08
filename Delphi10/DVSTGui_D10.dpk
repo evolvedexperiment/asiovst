@@ -47,6 +47,7 @@ contains
   DGuiMidiKeyZones in '..\Source\DGuiMidiKeyZones.pas',
   DGuiPanel in '..\Source\DGuiPanel.pas',
   DGuiSelectBox in '..\Source\DGuiSelectBox.pas',
-  DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas';
+  DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas',
+  DGuiVUMeter in '..\Source\DGuiVUMeter.pas';
 
 end.
