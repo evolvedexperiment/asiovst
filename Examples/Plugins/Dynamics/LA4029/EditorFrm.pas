@@ -9,51 +9,51 @@ uses
 
 type
   TLevelState = (lsIn, lsGR, lsOut);
-  TEditorForm = class(TForm)
-    BtGR: TGuiButton;
-    BtIn: TGuiButton;
-    BtOut: TGuiButton;
-    DialAttack: TGuiDial;
+  TFmLA4029 = class(TForm)
+    GuiPanel1: TGuiPanel;
+    GuiPanel2: TGuiPanel;
+    PnKnee: TGuiPanel;
+    PnInputValue: TGuiPanel;
+    PnRatio: TGuiPanel;
     DialInput: TGuiDial;
-    DialKnee: TGuiDial;
-    DialMix: TGuiDial;
     DialOutput: TGuiDial;
-    DialRatio: TGuiDial;
-    DialRelease: TGuiDial;
-    LbLevelingAmplifier: TLabel;
-    LbAttack: TGuiLabel;
-    LbFast: TGuiLabel;
     LbInput: TGuiLabel;
-    LbInputValue: TLabel;
-    LbKnee: TGuiLabel;
-    LbKneeValue: TLabel;
-    LbMix: TGuiLabel;
-    LbMixValue: TLabel;
-    LbOnOff: TGuiLabel;
     LbOutput: TGuiLabel;
-    LbOutputValue: TLabel;
-    LbRatioValue: TLabel;
+    PnOutputValue: TGuiPanel;
+    DialRatio: TGuiDial;
     LbRatioX: TGuiLabel;
+    DialKnee: TGuiDial;
+    LbKnee: TGuiLabel;
+    Timer1: TTimer;
+    DialAttack: TGuiDial;
+    DialRelease: TGuiDial;
     LbRelease: TGuiLabel;
-    LbSlow: TGuiLabel;
+    LbAttack: TGuiLabel;
     LbTitle: TGuiLabel;
-    LbVUMeterDisplay: TLabel;
     LEDOnOff: TGuiLED;
+    LbOnOff: TGuiLabel;
+    LbSlow: TGuiLabel;
+    LbFast: TGuiLabel;
+    VUMeter: TGuiVUMeter;
+    BtIn: TGuiButton;
+    BtGR: TGuiButton;
+    BtOut: TGuiButton;
+    LbVUMeterDisplay: TLabel;
+    PnMix: TGuiPanel;
+    LbMix: TGuiLabel;
+    LbLevelingAmplifier: TLabel;
+    SpDivide1: TShape;
+    SpDivide2: TShape;
+    DialMix: TGuiDial;
+    PopupVUMeterSpeed: TPopupMenu;
     MIFast: TMenuItem;
     MIMedium: TMenuItem;
     MISlow: TMenuItem;
-    PnInputValue: TGuiPanel;
-    PnKnee: TGuiPanel;
-    PnMix: TGuiPanel;
-    PnOutputValue: TGuiPanel;
-    PnRatio: TGuiPanel;
-    PopupVUMeterSpeed: TPopupMenu;
-    SpDivide1: TShape;
-    SpDivide2: TShape;
-    VUMeter: TGuiVUMeter;
-    VUMeterTimer: TTimer;
-    GuiPanel1: TGuiPanel;
-    GuiPanel2: TGuiPanel;
+    LbInputValue: TLabel;
+    LbOutputValue: TLabel;
+    LbRatioValue: TLabel;
+    LbKneeValue: TLabel;
+    LbMixValue: TLabel;
     procedure BtGRClick(Sender: TObject);
     procedure BtInClick(Sender: TObject);
     procedure BtOutClick(Sender: TObject);
@@ -98,55 +98,22 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, LA4029DM;
+  Math, PngImage, LA4029DM;
 
-procedure TEditorForm.FormCreate(Sender: TObject);
+procedure TFmLA4029.FormCreate(Sender: TObject);
 var
-  RS    : TResourceStream;
-  ClrBt : Byte;
-  x, y  : Integer;
-  s     : array[0..1] of Single;
-  b     : ShortInt;
-  Line  : PRGB32Array;
+  RS     : TResourceStream;
+  ClrBt  : Byte;
+  x, y   : Integer;
+  s      : array[0..1] of Single;
+  b      : ShortInt;
+  Line   : PRGB32Array;
+  PngBmp : TPngObject;
 
 begin
- RS := TResourceStream.Create(hInstance, 'PanKnob', 'BMP');
- try
-  DialInput.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
-  DialOutput.DialBitmap.LoadFromStream(RS);  RS.Position := 0;
- finally
-  RS.Free;
- end;
- RS := TResourceStream.Create(hInstance, 'RatioKnob', 'BMP');
- try
-  DialRatio.DialBitmap.LoadFromStream(RS); RS.Position := 0;
-  DialKnee.DialBitmap.LoadFromStream(RS);  RS.Position := 0;
-  DialMix.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
- finally
-  RS.Free;
- end;
- RS := TResourceStream.Create(hInstance, 'AttackKnob', 'BMP');
- try
-  DialAttack.DialBitmap.LoadFromStream(RS);
- finally
-  RS.Free;
- end;
- RS := TResourceStream.Create(hInstance, 'ReleaseKnob', 'BMP');
- try
-  DialRelease.DialBitmap.LoadFromStream(RS);
- finally
-  RS.Free;
- end;
- RS := TResourceStream.Create(hInstance, 'VUMeter', 'BMP');
- try
-  VUMeter.VUMeterBitmap.LoadFromStream(RS);
- finally
-  RS.Free;
- end;
+ // Create Background Image
  fBackgrounBitmap := TBitmap.Create;
-
  ClrBt := $F + random($40);
-
  with fBackgrounBitmap do
   begin
    PixelFormat := pf32bit;
@@ -169,20 +136,64 @@ begin
       end;
     end;
   end;
+
+ PngBmp := TPngObject.Create;
+ try
+  RS := TResourceStream.Create(hInstance, 'PanKnob', 'PNG');
+  try
+   PngBmp.LoadFromStream(RS);
+   DialInput.DialBitmap.Assign(PngBmp);
+   DialOutput.DialBitmap.Assign(PngBmp);
+  finally
+   RS.Free;
+  end;
+  RS := TResourceStream.Create(hInstance, 'RatioKnob', 'PNG');
+  try
+   PngBmp.LoadFromStream(RS);
+   DialRatio.DialBitmap.Assign(PngBmp);
+   DialKnee.DialBitmap.Assign(PngBmp);
+   DialMix.DialBitmap.Assign(PngBmp);
+  finally
+   RS.Free;
+  end;
+  RS := TResourceStream.Create(hInstance, 'AttackKnob', 'PNG');
+  try
+   PngBmp.LoadFromStream(RS);
+   DialAttack.DialBitmap.Assign(PngBmp);
+  finally
+   RS.Free;
+  end;
+  RS := TResourceStream.Create(hInstance, 'ReleaseKnob', 'PNG');
+  try
+   PngBmp.LoadFromStream(RS);
+   DialRelease.DialBitmap.Assign(PngBmp);
+  finally
+   RS.Free;
+  end;
+  RS := TResourceStream.Create(hInstance, 'VUMeter', 'PNG');
+  try
+   PngBmp.LoadFromStream(RS);
+   VUMeter.VUMeterBitmap.Assign(PngBmp);
+  finally
+   RS.Free;
+  end;
+ finally
+  FreeAndNil(PngBmp);
+ end;
 end;
 
-procedure TEditorForm.FormDestroy(Sender: TObject);
+procedure TFmLA4029.FormDestroy(Sender: TObject);
 begin
  FreeAndNil(fBackgrounBitmap);
 end;
 
-procedure TEditorForm.FormPaint(Sender: TObject);
+procedure TFmLA4029.FormPaint(Sender: TObject);
 begin
  if assigned(fBackgrounBitmap)
   then Self.Canvas.Draw(0, 0, fBackgrounBitmap);
 end;
 
-procedure TEditorForm.FormShow(Sender: TObject);
+procedure TFmLA4029.FormShow(Sender: TObject);
 begin
  UpdateOnOff;
  UpdateInput;
@@ -195,13 +206,13 @@ begin
  UpdateLevelState;
 end;
 
-function TEditorForm.GetLevelState: TLevelState;
+function TFmLA4029.GetLevelState: TLevelState;
 begin
  with TLA4029DataModule(Owner)
   do result := TLevelState(round(Parameter[8]));
 end;
 
-procedure TEditorForm.LEDOnOffClick(Sender: TObject);
+procedure TFmLA4029.LEDOnOffClick(Sender: TObject);
 begin
  with TLA4029DataModule(Owner) do
   begin
@@ -210,25 +221,25 @@ begin
   end;
 end;
 
-procedure TEditorForm.MIFastClick(Sender: TObject);
+procedure TFmLA4029.MIFastClick(Sender: TObject);
 begin
  with TLA4029DataModule(Owner)
   do Parameter[9] := 5;
 end;
 
-procedure TEditorForm.MIMediumClick(Sender: TObject);
+procedure TFmLA4029.MIMediumClick(Sender: TObject);
 begin
  with TLA4029DataModule(Owner)
   do Parameter[9] := 50;
 end;
 
-procedure TEditorForm.MISlowClick(Sender: TObject);
+procedure TFmLA4029.MISlowClick(Sender: TObject);
 begin
  with TLA4029DataModule(Owner)
   do Parameter[9] := 500;
 end;
 
-procedure TEditorForm.PopupVUMeterSpeedPopup(Sender: TObject);
+procedure TFmLA4029.PopupVUMeterSpeedPopup(Sender: TObject);
 begin
  with TLA4029DataModule(Owner) do
   begin
@@ -238,7 +249,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.SetLevelState(const Value: TLevelState);
+procedure TFmLA4029.SetLevelState(const Value: TLevelState);
 begin
  with TLA4029DataModule(Owner) do
   if LevelState <> Value then
@@ -248,7 +259,7 @@ begin
    end;
 end;
 
-procedure TEditorForm.UpdateOnOff;
+procedure TFmLA4029.UpdateOnOff;
 begin
  with TLA4029DataModule(Owner) do
   begin
@@ -258,7 +269,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateInput;
+procedure TFmLA4029.UpdateInput;
 begin
  with TLA4029DataModule(Owner) do
   begin
@@ -268,7 +279,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateKnee;
+procedure TFmLA4029.UpdateKnee;
 begin
  with TLA4029DataModule(Owner) do
   begin
@@ -278,7 +289,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateMix;
+procedure TFmLA4029.UpdateMix;
 begin
  with TLA4029DataModule(Owner) do
   begin
@@ -288,7 +299,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateLevelState;
+procedure TFmLA4029.UpdateLevelState;
 begin
  case LevelState of
    lsIn : begin
@@ -330,7 +341,7 @@ begin
  end;
 end;
 
-procedure TEditorForm.UpdateOutput;
+procedure TFmLA4029.UpdateOutput;
 begin
  with TLA4029DataModule(Owner) do
   begin
@@ -340,7 +351,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateAttack;
+procedure TFmLA4029.UpdateAttack;
 var
   s : Single;
 begin
@@ -353,7 +364,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateRelease;
+procedure TFmLA4029.UpdateRelease;
 var
   s : Single;
 begin
@@ -366,7 +377,7 @@ begin
   end;
 end;
 
-function TEditorForm.VUMeterValueToPos(Value: Double): Integer;
+function TFmLA4029.VUMeterValueToPos(Value: Double): Integer;
 begin
  // ToDo: Create a true mapping
  if Value < -40 then result := 0 else
@@ -380,7 +391,7 @@ begin
   else result := round(48 + Value / 3 * (VUMeter.NumGlyphs - 49));
 end;
 
-procedure TEditorForm.VUMeterTimerTimer(Sender: TObject);
+procedure TFmLA4029.VUMeterTimerTimer(Sender: TObject);
 begin
  with TLA4029DataModule(Owner) do
   case LevelState of
@@ -390,7 +401,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateRatio;
+procedure TFmLA4029.UpdateRatio;
 var
   s : Single;
 begin
@@ -403,7 +414,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.DialInputChange(Sender: TObject);
+procedure TFmLA4029.DialInputChange(Sender: TObject);
 begin
  with TLA4029DataModule(Owner) do
   begin
@@ -413,7 +424,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.DialOutputChange(Sender: TObject);
+procedure TFmLA4029.DialOutputChange(Sender: TObject);
 begin
  with TLA4029DataModule(Owner) do
   begin
@@ -423,22 +434,22 @@ begin
   end;
 end;
 
-procedure TEditorForm.BtGRClick(Sender: TObject);
+procedure TFmLA4029.BtGRClick(Sender: TObject);
 begin
  LevelState := lsGR;
 end;
 
-procedure TEditorForm.BtInClick(Sender: TObject);
+procedure TFmLA4029.BtInClick(Sender: TObject);
 begin
  LevelState := lsIn;
 end;
 
-procedure TEditorForm.BtOutClick(Sender: TObject);
+procedure TFmLA4029.BtOutClick(Sender: TObject);
 begin
  LevelState := lsOut;
 end;
 
-procedure TEditorForm.DialAttackChange(Sender: TObject);
+procedure TFmLA4029.DialAttackChange(Sender: TObject);
 var
   s : Single;
 begin
@@ -449,7 +460,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.DialReleaseChange(Sender: TObject);
+procedure TFmLA4029.DialReleaseChange(Sender: TObject);
 var
   s : Single;
 begin
@@ -460,7 +471,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.DialRatioChange(Sender: TObject);
+procedure TFmLA4029.DialRatioChange(Sender: TObject);
 var
   s : Single;
 begin
@@ -473,7 +484,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.DialKneeChange(Sender: TObject);
+procedure TFmLA4029.DialKneeChange(Sender: TObject);
 begin
  with TLA4029DataModule(Owner) do
   begin
@@ -482,7 +493,7 @@ begin
   end;
 end;
 
-procedure TEditorForm.DialMixChange(Sender: TObject);
+procedure TFmLA4029.DialMixChange(Sender: TObject);
 begin
  with TLA4029DataModule(Owner) do
   begin

@@ -46,8 +46,8 @@ type
     function TranslatePeakToGain(PeakLevel: Double): Double; virtual;
     function CharacteristicCurve(InputLevel: Double): Double; virtual;
     function CharacteristicCurve_dB(InputLevel_dB: Double): Double; virtual;
-    function ProcessSample(Input : Double): Double; virtual;
-    procedure Sidechain(Input : Double); virtual;
+    function ProcessSample(const Input : Double): Double; virtual;
+    procedure Sidechain(const Input : Double); virtual;
 
     property GainReductionFactor : Double read FGain;            // in dB
     property GainReduction_dB : Double read GetGainReductiondB;  // in dB
@@ -220,24 +220,24 @@ begin
  Result := 0.5 * (abs(x) + x);
 end;
 
-procedure TCustomLevelingAmplifier.Sidechain(Input: Double);
+procedure TCustomLevelingAmplifier.Sidechain(const Input: Double);
 var
-  a : Double;
+  Value : Double;
 begin
  // apply feedback gain and input level gain
- Input := Input * FInputLevel;
+ Value := Input * FInputLevel;
 
  // smooth input by attack
- fOldInput := abs(Input) + (fOldInput - abs(Input)) * fAttackFactor;
+ fOldInput := abs(Value) + (fOldInput - abs(Value)) * fAttackFactor;
 
  // add fall off (released) caused by electroluminicence effect of an LED
  fPeak := fPeak * fReleaseFactor;
 
  // calculate difference to current peak level
- a := SimpleDiode(fOldInput - fPeak);
+ Value := SimpleDiode(fOldInput - fPeak);
 
  // apply release phase
- fPeak := fPeak + a;
+ fPeak := fPeak + Value;
 
  fGain := TranslatePeakToGain(fPeak);
 end;
@@ -246,16 +246,17 @@ function TCustomLevelingAmplifier.TranslatePeakToGain(PeakLevel: Double): Double
 var
   d : Double;
 begin
- d := SimpleDiode(PeakLevel * FThresholdReci - sqr(1 - Knee));
- d := (d - sqr(Knee) * FastTanhOpt3(d));
- result := Power(1 + d, fRatio * (1 - fRatioReciprocal));
+  begin
+   d := SimpleDiode(PeakLevel * FThresholdReci - sqr(1 - Knee));
+   d := (d - sqr(Knee) * FastTanhOpt3(d));
+   result := Power(1 + d, fRatio * (1 - fRatioReciprocal));
+  end;
 end;
 
-function TCustomLevelingAmplifier.ProcessSample(Input: Double): Double;
+function TCustomLevelingAmplifier.ProcessSample(const Input: Double): Double;
 begin
- Input  := FInputLevel * Input;
- result := Harms[0] + Input * (1 + Input * (Harms[1] + sqr(Input) *
-           (Harms[2] + sqr(Input) * Harms[3])));
+ result := FInputLevel * (Harms[0] + Input * (1 + Input *
+           (Harms[1] + sqr(Input) * (Harms[2] + sqr(Input) * Harms[3]))));
  result := FOutputLevel * fGain * result;
 end;
 

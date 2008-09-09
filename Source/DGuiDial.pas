@@ -324,6 +324,7 @@ end;
 
 procedure TCustomGuiDial.SettingsChanged(Sender: TObject);
 begin
+  FDialBitmap.Canvas.Brush.Color := Self.Color;
   RedrawBuffer(True);
 end;
 

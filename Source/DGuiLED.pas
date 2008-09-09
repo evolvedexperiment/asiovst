@@ -109,12 +109,8 @@ end;
 procedure TCustomGuiLED.RenderLEDToBitmap(Bitmap: TBitmap);
 var
   Steps, i : Integer;
-  Val      : Single;
   Rad      : Single;
-  Cmplx    : TComplexSingle;
-  Pnt      : TPoint;
   XStart   : Single;
-  LineFrac : Single;
   BW       : Single;
   Center   : record
               x, y : Single;
@@ -173,8 +169,6 @@ end;
 
 procedure TCustomGuiLED.RedrawBuffer(doBufferFlip: Boolean);
 var
-  theRect    : TRect;
-  GlyphNr    : Integer;
   Bmp        : TBitmap;
 begin
  if (Width > 0) and (Height > 0) then with fBuffer.Canvas do

@@ -1,4 +1,4 @@
-unit LA4029DM;
+﻿unit LA4029DM;
 
 interface
 
@@ -65,7 +65,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, EditorFrm, DDspFilter;
+  Dialogs, Math, EditorFrm, DDspFilter;
 
 procedure TLA4029DataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -101,7 +101,7 @@ end;
 
 procedure TLA4029DataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
- GUI := TEditorForm.Create(Self);
+ GUI := TFmLA4029.Create(Self);
 end;
 
 procedure TLA4029DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -109,7 +109,7 @@ begin
  fLA4029s.Input_dB := Value;
 
  if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
+  with EditorForm as TFmLA4029 do
    if DialInput.Position <> Value then
     begin
      DialInput.Position := Value;
@@ -123,7 +123,7 @@ begin
  fLA4029s.Output_dB := Value;
 
  if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
+  with EditorForm as TFmLA4029 do
    if DialOutput.Position <> Value then
     begin
      DialOutput.Position := Value;
@@ -136,7 +136,7 @@ begin
  fLA4029s.Knee := 0.1 * Value;
 
  if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
+  with EditorForm as TFmLA4029 do
    if DialKnee.Position <> Value then
     begin
      DialKnee.Position := Value;
@@ -149,7 +149,7 @@ begin
  fLA4029s.Ratio := 1 / Value;
 
  if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
+  with EditorForm as TFmLA4029 do
    if DialRatio.Position <> Log10(Value) then
     begin
      DialRatio.Position := Log10(Value);
@@ -162,7 +162,7 @@ begin
  fLA4029s.Release_ms := Value;
 
  if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
+  with EditorForm as TFmLA4029 do
    if DialRelease.Position <> Log10(Value) then
     begin
      DialRelease.Position := Log10(Value);
@@ -224,7 +224,7 @@ procedure TLA4029DataModule.LA4029DataModuleParameterProperties8ParameterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
+  with EditorForm as TFmLA4029 do
    begin
     UpdateLevelState;
    end;
@@ -304,7 +304,7 @@ begin
  fLA4029s.Attack_ms := Value;
 
  if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
+  with EditorForm as TFmLA4029 do
    if DialAttack.Position <> Log10(Value) then
     begin
      DialAttack.Position := Log10(Value);
@@ -381,7 +381,7 @@ end;
 procedure TLA4029DataModule.VSTModuleSoftBypass(Sender: TObject;
   isBypass: Boolean);
 begin
- Parameter[0] := Integer(isBypass);
+// Parameter[0] := Integer(isBypass);
 end;
 
 end.

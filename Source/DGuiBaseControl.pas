@@ -63,10 +63,10 @@ type
     procedure ResizeBuffer; dynamic;
     procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
 
-    procedure WMEraseBkgnd(var m: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
     procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
     procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
     procedure Loaded; override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -79,6 +79,50 @@ type
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
     {$ENDIF}
   end;
+
+(*
+  TBufferedWinControl = class(TWinControl)
+  protected
+    fBuffer   : TBitmap;
+    fOnPaint  : TNotifyEvent;
+
+    {$IFNDEF COMPILER10_UP}
+    FOnMouseLeave: TNotifyEvent;
+    FOnMouseEnter: TNotifyEvent;
+
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    {$ENDIF}
+    
+    {$IFNDEF FPC}
+    procedure DrawParentImage(Dest: TCanvas); virtual;
+    {$ENDIF}
+
+    procedure Downsample2xBitmap(var Bitmap: TBitmap);
+    procedure Downsample4xBitmap(var Bitmap: TBitmap);
+    procedure Upsample2xBitmap(var Bitmap: TBitmap);
+    procedure Upsample4xBitmap(var Bitmap: TBitmap);
+    procedure Resize; override;
+    procedure ResizeBuffer; dynamic;
+    procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
+
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
+    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
+    procedure Loaded; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure Paint; override;
+    property OnPaint: TNotifyEvent read fOnPaint write fOnPaint;
+
+    {$IFNDEF COMPILER10_UP}
+    property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    {$ENDIF}
+  end;
+*)
 
   TCustomGuiBaseControl = class(TBufferedGraphicControl)
   protected
@@ -177,45 +221,17 @@ type
     property OnDragMouseMove;
   end;
 
+procedure DownsampleBitmap2x(var Bitmap: TBitmap);
+procedure DownsampleBitmap4x(var Bitmap: TBitmap);
+procedure UpsampleBitmap2x(var Bitmap: TBitmap);
+procedure UpsampleBitmap4x(var Bitmap: TBitmap);
+
 implementation
 
 uses
   SysUtils;
 
-{ TCustomGuiBaseControl }
-
-constructor TBufferedGraphicControl.Create(AOwner: TComponent);
-begin
-  inherited;
-  fBuffer      := TBitmap.Create;
-  ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
-                   csDoubleClicks, csReplicatable, csOpaque];
-end;
-
-destructor TBufferedGraphicControl.Destroy;
-begin
- FreeAndNil(fBuffer);
- inherited;
-end;
-
-procedure TBufferedGraphicControl.DrawParentImage(Dest: TCanvas);
-var
-  SaveIndex: Integer;
-  DC: THandle;
-  Position: TPoint;
-begin
-  if Parent = nil then Exit;
-  DC := Dest.Handle;
-  SaveIndex := SaveDC(DC);
-  GetViewportOrgEx(DC, Position);
-  SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-  IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-  Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
-  Parent.Perform(WM_PAINT, Longint(DC), 0);
-  RestoreDC(DC, SaveIndex);
-end;
-
-procedure TBufferedGraphicControl.Downsample2xBitmap(var Bitmap: TBitmap);
+procedure DownsampleBitmap2x(var Bitmap: TBitmap);
 var
   x, y : Integer;
   Line : Array [0..2] of PRGB32Array;
@@ -239,7 +255,7 @@ begin
   end;
 end;
 
-procedure TBufferedGraphicControl.Downsample4xBitmap(var Bitmap: TBitmap);
+procedure DownsampleBitmap4x(var Bitmap: TBitmap);
 var
   x, y : Integer;
   Line : Array [0..4] of PRGB32Array;
@@ -277,7 +293,7 @@ begin
   end;
 end;
 
-procedure TBufferedGraphicControl.Upsample2xBitmap(var Bitmap: TBitmap);
+procedure UpsampleBitmap2x(var Bitmap: TBitmap);
 var
   x, y : Integer;
   Line : Array [0..2] of PRGB32Array;
@@ -313,7 +329,7 @@ begin
   end;
 end;
 
-procedure TBufferedGraphicControl.Upsample4xBitmap(var Bitmap: TBitmap);
+procedure UpsampleBitmap4x(var Bitmap: TBitmap);
 var
   x, y : Integer;
   i, j : Integer;
@@ -339,6 +355,59 @@ begin
    end;
 end;
 
+{ TCustomGuiBaseControl }
+
+constructor TBufferedGraphicControl.Create(AOwner: TComponent);
+begin
+  inherited;
+  fBuffer      := TBitmap.Create;
+  ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
+                   csDoubleClicks, csReplicatable, csOpaque];
+end;
+
+destructor TBufferedGraphicControl.Destroy;
+begin
+ FreeAndNil(fBuffer);
+ inherited;
+end;
+
+procedure TBufferedGraphicControl.DrawParentImage(Dest: TCanvas);
+var
+  SaveIndex: Integer;
+  DC: THandle;
+  Position: TPoint;
+begin
+  if Parent = nil then Exit;
+  DC := Dest.Handle;
+  SaveIndex := SaveDC(DC);
+  GetViewportOrgEx(DC, Position);
+  SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
+  IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
+  Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
+  Parent.Perform(WM_PAINT, Longint(DC), 0);
+  RestoreDC(DC, SaveIndex);
+end;
+
+procedure TBufferedGraphicControl.Downsample2xBitmap(var Bitmap: TBitmap);
+begin
+ DownsampleBitmap2x(Bitmap);
+end;
+
+procedure TBufferedGraphicControl.Downsample4xBitmap(var Bitmap: TBitmap);
+begin
+ DownsampleBitmap4x(Bitmap);
+end;
+
+procedure TBufferedGraphicControl.Upsample2xBitmap(var Bitmap: TBitmap);
+begin
+ UpsampleBitmap2x(Bitmap);
+end;
+
+procedure TBufferedGraphicControl.Upsample4xBitmap(var Bitmap: TBitmap);
+begin
+ UpsampleBitmap4x(Bitmap);
+end;
+
 procedure TBufferedGraphicControl.Loaded;
 begin
  inherited;
@@ -355,9 +424,9 @@ begin
   if Assigned(fOnPaint) then fOnPaint(Self);
 end;
 
-procedure TBufferedGraphicControl.WMEraseBkgnd(var m: TWMEraseBkgnd);
+procedure TBufferedGraphicControl.WMEraseBkgnd(var Message: TWmEraseBkgnd);
 begin
-  m.Result := 0;
+  Message.Result := 0;
 end;
 
 {$IFNDEF COMPILER10_UP}

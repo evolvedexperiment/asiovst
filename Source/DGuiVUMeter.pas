@@ -12,6 +12,7 @@ type
     FAutoSize         : Boolean;
     FVUMeterBitmap    : TBitmap;
     FNumGlyphs        : Integer;
+    FLastGlyph        : Integer;
     FPosition         : Integer;
     FStitchKind       : TGuiStitchKind;
     procedure DoAutoSize;
@@ -54,9 +55,10 @@ implementation
 constructor TCustomGuiVUMeter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FPosition               := 0;
-  FNumGlyphs              := 1;
-  FStitchKind             := skHorizontal;
+  FPosition                  := 0;
+  FNumGlyphs                 := 1;
+  FLastGlyph                 := -1;
+  FStitchKind                := skHorizontal;
   FVUMeterBitmap             := TBitmap.Create;
   FVUMeterBitmap.OnChange    := SettingsChanged;
 end;
@@ -90,17 +92,12 @@ var
 begin
  if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
   begin
-   Lock;
-
-   // draw background
-   Brush.Color := Self.Color;
-//   {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
-   FillRect(ClipRect);
-
    GlyphNr := fPosition;
    if (GlyphNr >= FNumGlyphs) then GlyphNr := FNumGlyphs - 1 else
    if (GlyphNr < 0) then GlyphNr := 0;
+   if GlyphNr = FLastGlyph then Exit;
    theRect := ClientRect;
+
    if FStitchKind = skVertical then
     begin
      theRect.Top    := FVUMeterBitmap.Height * GlyphNr div FNumGlyphs;
@@ -112,9 +109,10 @@ begin
      theRect.Right := FVUMeterBitmap.Width * (GlyphNr + 1) div FNumGlyphs;
     end;
 
+   Lock;
    CopyRect(Clientrect, FVUMeterBitmap.Canvas, theRect);
-
    Unlock;
+   FLastGlyph := GlyphNr;
   end;
 
  if doBufferFlip then Invalidate;
@@ -140,6 +138,7 @@ begin
   if FNumGlyphs <> Value then
   begin
     FNumGlyphs := Value;
+    FLastGlyph := -1;
     DoAutoSize;
   end;
 end;
@@ -161,13 +160,15 @@ begin
   if FStitchKind <> Value then
   begin
     FStitchKind := Value;
-    DoAutoSize; 
+    FLastGlyph := -1;
+    DoAutoSize;
   end;
 end;
 
 procedure TCustomGuiVUMeter.SettingsChanged(Sender: TObject);
 begin
   RedrawBuffer(True);
+  FLastGlyph := -1;
 end;
 
 end.
