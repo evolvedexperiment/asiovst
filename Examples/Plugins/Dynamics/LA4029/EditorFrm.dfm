@@ -2,7 +2,7 @@ object FmLA4029: TFmLA4029
   Left = 220
   Top = 77
   BorderStyle = bsNone
-  Caption = 'FmLA4029'
+  Caption = 'LA-4029'
   ClientHeight = 323
   ClientWidth = 338
   Color = 4210752
@@ -19,7 +19,7 @@ object FmLA4029: TFmLA4029
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object GuiPanel2: TGuiPanel
+  object PnB: TGuiPanel
     Left = 8
     Top = 143
     Width = 321
@@ -349,15 +349,15 @@ object FmLA4029: TFmLA4029
       end
     end
   end
-  object GuiPanel1: TGuiPanel
+  object PnA: TGuiPanel
     Left = 8
     Top = 8
     Width = 321
     Height = 129
-    Color = 4210752
     LineColor = clGray
     Linewidth = 1
     PanelColor = clBlack
+    ParentColor = True
     Radius = 4
     TabOrder = 1
     Transparent = True

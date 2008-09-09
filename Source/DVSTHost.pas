@@ -28,7 +28,7 @@ uses
   {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
 type
-  TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: longint; ptr: pointer; opt: Single): integer of object;
+  TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: longint; ptr: Pointer; opt: Single): Integer of object;
   TVstShowEditEvent = procedure(Sender: TObject; Form: TForm) of object;
   TVstAutomateEvent = procedure(Sender: TObject; ParamIndex, ParamValue: LongInt) of object;
   TVstProcessEventsEvent = procedure(Sender: TObject; p: PVstEvents) of object;
@@ -98,7 +98,7 @@ type
     FOnVendorSpecific   : TVendorSpecificEvent;
     FGUIFormCreated     : Boolean;
     FGUIStyle           : TGUIStyle;
-    function VstDispatch(opCode : TDispatcherOpcode; Index: Integer = 0; value: Integer = 0; pntr: pointer = nil; opt: double = 0): Integer; {overload;} //virtual;
+    function VstDispatch(opCode : TDispatcherOpcode; Index: Integer = 0; value: Integer = 0; pntr: Pointer = nil; opt: double = 0): Integer; {overload;} //virtual;
     procedure Activate(b: Boolean);
     procedure onFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ParamChange(Sender: TObject);
@@ -106,8 +106,8 @@ type
     procedure onEditDeactivate(Sender: TObject);
     procedure SetBlockSize(value: Integer);
     procedure SetDLLFileName(VstFilename: TFilename);
-    function GetEntryPoints(theDll: TFileName): integer;
-    function GetPreset(i: integer): TFXPreset;
+    function GetEntryPoints(theDll: TFileName): Integer;
+    function GetPreset(i: Integer): TFXPreset;
     function GetInitialDelay: Integer;
     function GetEffOptions: TEffFlags;
     function GetnumInputs: Integer;
@@ -129,7 +129,7 @@ type
     GUIForm             : TForm;
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-    function BeginLoadBank(PatchChunkInfo : PVstPatchChunkInfo): integer;
+    function BeginLoadBank(PatchChunkInfo : PVstPatchChunkInfo): Integer;
     function CanBeAutomated(index: Integer): Integer;
     function CanDo(pntr: pchar): Integer;
     function ConnectInput(InputNr: Integer; state: Boolean): Integer;
@@ -140,7 +140,7 @@ type
     function EditKeyDown(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
     function EditKeyUp(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
     function EditOpen(Handle: THandle): Integer;
-    function GetChunk(pntr: pointer; isPreset: Boolean = False): Integer;
+    function GetChunk(pntr: Pointer; isPreset: Boolean = False): Integer;
     function GetCurrentMidiProgram(MidiProgramNamePointer : PMidiProgramName): Integer;
     function GetCurrentPosition: Integer;
     function GetDestinationBuffer: Integer;
@@ -184,11 +184,11 @@ type
     function ProcessVarIo(varIo: PVstVariableIo): Integer;
     function SetBlockSizeAndSampleRate(blockSize: Integer; sampleRate: Single): Integer;
     function SetBypass(onOff: Boolean): Integer;
-    function SetChunk(data: pointer; ByteSize: Integer; isPreset: Boolean = False): Integer;
+    function SetChunk(data: Pointer; ByteSize: Integer; isPreset: Boolean = False): Integer;
     function SetSpeakerArrangement(pluginInput: PVstSpeakerArrangement; pluginOutput: PVstSpeakerArrangement): Boolean;
     function ShellGetNextPlugin(var PluginName:String): Integer;
     function String2Parameter(ParameterName: string): Integer;
-    function VendorSpecific(index, value:Integer; pntr: pointer; opt: Single): Integer;
+    function VendorSpecific(index, value:Integer; pntr: Pointer; opt: Single): Integer;
     procedure BeginLoadProgram(PatchChunkInfo : PVstPatchChunkInfo);
     procedure BeginSetProgram;
     procedure Close;
@@ -323,31 +323,31 @@ type
 
   TVstHost = class(TComponent)
   private
-    FInputLatency: Integer;
-    FOutputLatency: Integer;
-    FVstPlugIns: TVstPlugIns;
-    FLanguage: TVstHostLanguage;
-    FnumAutomatable: Integer;
-    FParamQuan: Integer;
-    FVendorString: string;
-    FVendorVersion: Integer;
-    FProductString: string;
-    FPlugInDir: string;
-    FVTI: TVstTimeInformation;
-    FAutoIdle: Boolean;
-    FOnCreate: TNotifyEvent;
-    FOnDestroy: TNotifyEvent;
-    procedure VstTimeInfoChanged(Sender: TObject);
-    function GetItem(Index: Integer): TVstPlugIn;
-    procedure SetVstPlugIns(const Value: TVstPlugIns);
-    function getHostVersion: Integer;
-    procedure setHostVersion(hv: Integer);
-    function getHostCanDos: THostCanDos;
-    procedure setHostCanDos(hcd: THostCanDos);
-    function getHostTempo: Single;
-    procedure setHostTempo(Tempo: Single);
+    FInputLatency   : Integer;
+    FOutputLatency  : Integer;
+    FVstPlugIns     : TVstPlugIns;
+    FLanguage       : TVstHostLanguage;
+    FnumAutomatable : Integer;
+    FParamQuan      : Integer;
+    FVendorString   : string;
+    FVendorVersion  : Integer;
+    FProductString  : string;
+    FPlugInDir      : string;
+    FVTI            : TVstTimeInformation;
+    FAutoIdle       : Boolean;
+    FOnCreate       : TNotifyEvent;
+    FOnDestroy      : TNotifyEvent;
     function getBlockSize : Integer;
-    procedure setBlockSize(bs: Integer);
+    function getHostCanDos: THostCanDos;
+    function getHostTempo: Single;
+    function getHostVersion: Integer;
+    function GetItem(Index: Integer): TVstPlugIn;
+    procedure SetBlockSize(bs: Integer);
+    procedure SetHostCanDos(hcd: THostCanDos);
+    procedure SetHostTempo(Tempo: Single);
+    procedure SetHostVersion(hv: Integer);
+    procedure SetVstPlugIns(const Value: TVstPlugIns);
+    procedure VstTimeInfoChanged(Sender: TObject);
   protected
     property Items[Index: Integer]: TVstPlugIn read GetItem; default;
   public
@@ -356,24 +356,24 @@ type
     procedure UpdateVstTimeInfo(samples: word = 1);
     procedure ResetVstTimeInformation;
   published
-    property LatencyInput: Integer read FInputLatency write FInputLatency default 0;
-    property LatencyOutput: Integer read FOutputLatency write FOutputLatency default 0;
-    property VstPlugIns: TVstPlugIns read FVstPlugIns write SetVstPlugIns;
-    property Language: TVstHostLanguage read FLanguage write FLanguage default kVstLangEnglish;
-    property NumAutomatableParameters : Integer read FnumAutomatable write FnumAutomatable default 0;
-    property ParameterQuantization : Integer read FParamQuan write FParamQuan default MAXINT;
     property BlockSize: Integer read getBlockSize write setBlocksize default 2048;
     property CanDos: THostCanDos read getHostCanDos write setHostCanDos;
+    property Language: TVstHostLanguage read FLanguage write FLanguage default kVstLangEnglish;
+    property LatencyInput: Integer read FInputLatency write FInputLatency default 0;
+    property LatencyOutput: Integer read FOutputLatency write FOutputLatency default 0;
     property ManageIdleAutomaticly : Boolean read FautoIdle write FautoIdle;
-    property Tempo: Single read getHostTempo write SetHostTempo;
-    property VstVersion: Integer read getHostVersion write setHostVersion;
-    property VendorString: string read FVendorString write FVendorString;
-    property VendorVersion: Integer read FVendorVersion write FVendorVersion;
-    property ProductString: string read FProductString write FProductString;
-    property PlugInDir: string read FPlugInDir write FPlugInDir;
-    property VstTimeInfo : TVstTimeInformation read FVTI write FVTI;
+    property NumAutomatableParameters : Integer read FnumAutomatable write FnumAutomatable default 0;
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
+    property ParameterQuantization : Integer read FParamQuan write FParamQuan default MAXINT;
+    property PlugInDir: string read FPlugInDir write FPlugInDir;
+    property ProductString: string read FProductString write FProductString;
+    property Tempo: Single read getHostTempo write SetHostTempo;
+    property VendorString: string read FVendorString write FVendorString;
+    property VendorVersion: Integer read FVendorVersion write FVendorVersion;
+    property VstPlugIns: TVstPlugIns read FVstPlugIns write SetVstPlugIns;
+    property VstTimeInfo : TVstTimeInformation read FVTI write FVTI;
+    property VstVersion: Integer read getHostVersion write setHostVersion;
   end;
 
 var audioMaster : TAudioMasterCallbackFunc;
@@ -410,7 +410,7 @@ begin
  result := 1;
 end;
 
-function AudioMasterCallback(effect: PVSTEffect; opcode : TAudioMasterOpcode; index,value: longint; ptr: pointer; opt: Single): longint; cdecl;
+function AudioMasterCallback(effect: PVSTEffect; opcode : TAudioMasterOpcode; index,value: longint; ptr: Pointer; opt: Single): longint; cdecl;
 var
   thePlug   : TVstPlugin;
   PlugNr, i : Integer;
@@ -475,7 +475,7 @@ begin
     audioMasterGetNumAutomatableParameters : result := theHost.FnumAutomatable;
     audioMasterGetParameterQuantization    : if Value=-1
                                               then result := theHost.FParamQuan
-                                              else {$IFDEF Debug} Exception.Create('TODO: audioMasterGetParameterQuantization, returns the integer value for +1.0 representation') {$ENDIF Debug};
+                                              else {$IFDEF Debug} Exception.Create('TODO: audioMasterGetParameterQuantization, returns the Integer value for +1.0 representation') {$ENDIF Debug};
                                               // or 1 if full Single float precision is maintained
                                               // in automation. parameter index in <value> (-1: all, any)
     audioMasterIOChanged                   : if Assigned(thePlug) then
@@ -1006,7 +1006,7 @@ end;
 { TVstPlugIn }
 
 procedure TVstPlugin.AssignTo(Dest: TPersistent);
-var p: pointer;
+var p: Pointer;
     i: Integer;
 begin
  if Dest is TVstPlugin then with TVstPlugin(Dest) do
@@ -1167,7 +1167,7 @@ begin
  FnumParams    := 0;
 end;
 
-function TVstPlugin.VstDispatch(opCode : TDispatcherOpcode; Index, Value: Integer; Pntr: pointer; opt: double): Integer;
+function TVstPlugin.VstDispatch(opCode : TDispatcherOpcode; Index, Value: Integer; Pntr: Pointer; opt: double): Integer;
 begin
  try
   asm
@@ -1300,7 +1300,7 @@ end;
 
 procedure TVstPlugin.MainsChanged(bOn: Boolean);
 begin
- VstDispatch(effMainsChanged, 0, integer(bOn));
+ VstDispatch(effMainsChanged, 0, Integer(bOn));
 end;
 
 function TVstPlugin.GetVu: Single;
@@ -1331,7 +1331,7 @@ begin
 end;
 
 function TVstPlugin.EditOpen(Handle: THandle): Integer;
-var i: integer;
+var i: Integer;
 begin
  i := 0;
  try
@@ -1549,7 +1549,7 @@ end;
 
 {$IFDEF SB}
 procedure TVstPlugIn.ScrollChange(Sender: TObject; ScrollPos: Integer);
-var nr: integer;
+var nr: Integer;
 begin
  nr := (Sender as TFlatScrollBar).tag;
  SetParameter(nr, (Sender as TFlatScrollBar).Position * 0.01);
@@ -1558,7 +1558,7 @@ begin
 end;
 {$ELSE}
 procedure TVstPlugin.TrackChange(Sender: TObject);
-var nr: integer;
+var nr: Integer;
 begin
  with (GUIForm.FindComponent('ParamBar') As TTrackBar) do
   begin
@@ -1626,7 +1626,7 @@ begin
  end;
 end;
 
-function TVstPlugin.EditIdle: integer;
+function TVstPlugin.EditIdle: Integer;
 begin
  if FEditOpen then result := VstDispatch(effEditIdle) else result := 0;
 end;
@@ -1646,14 +1646,14 @@ begin
  result := VstDispatch(effIdentify);
 end;
 
-function TVstPlugin.GetChunk(pntr: pointer; isPreset: Boolean = False): Integer;
+function TVstPlugin.GetChunk(pntr: Pointer; isPreset: Boolean = False): Integer;
 begin
- result := VstDispatch(effGetChunk, integer(isPreset), 0, pntr);
+ result := VstDispatch(effGetChunk, Integer(isPreset), 0, pntr);
 end;
 
-function TVstPlugin.SetChunk(data: pointer; ByteSize: Integer; isPreset: Boolean = False): Integer;
+function TVstPlugin.SetChunk(data: Pointer; ByteSize: Integer; isPreset: Boolean = False): Integer;
 begin
- result := VstDispatch(effSetChunk, integer(isPreset), ByteSize, data);
+ result := VstDispatch(effSetChunk, Integer(isPreset), ByteSize, data);
 end;
 
 function TVstPlugin.ProcessEvents(pntr: PVstEvents):Integer;
@@ -1705,14 +1705,14 @@ end;
 function TVstPlugin.ConnectInput(InputNr: Integer; state: Boolean): Integer;
 begin
  if FActive then
-  result := VstDispatch(effConnectInput, InputNr, integer(state))
+  result := VstDispatch(effConnectInput, InputNr, Integer(state))
  else result := -1;
 end;
 
 function TVstPlugin.ConnectOutput(OutputNr: Integer; state: Boolean): Integer;
 begin
  if FActive then
-  result := VstDispatch(effConnectOutput, OutputNr, integer(state))
+  result := VstDispatch(effConnectOutput, OutputNr, Integer(state))
  else result := -1;
 end;
 
@@ -1753,7 +1753,7 @@ end;
 
 function TVstPlugin.OfflineNotify(pntr: PVstAudioFile; numAudioFiles: Integer; start: Boolean):Integer;
 begin
- result := VstDispatch(effOfflineNotify, integer(start), numAudioFiles, pntr);
+ result := VstDispatch(effOfflineNotify, Integer(start), numAudioFiles, pntr);
 end;
 
 function TVstPlugin.OfflinePrepare(pntr: PVstOfflineTask; count: Integer):Integer;
@@ -2081,7 +2081,7 @@ begin
  if FActive then VstDispatch(effSetPanLaw, 0, Integer(PanLaw), nil, Gain); // PanLaw : Type (Linear, Equal Power,.. see enum PanLaw Type) in <value>,                                                                // Gain in <opt>: for Linear : [1.0 => 0dB PanLaw], [~0.58 => -4.5dB], [0.5 => -6.02dB]
 end;
 
-function TVstPlugin.BeginLoadBank(PatchChunkInfo : PVstPatchChunkInfo): integer;
+function TVstPlugin.BeginLoadBank(PatchChunkInfo : PVstPatchChunkInfo): Integer;
 begin
  if FActive then VstDispatch(effBeginLoadBank);
  Result := 0;
@@ -2095,7 +2095,7 @@ begin
  // Called before a Program is loaded, <ptr> points to VstPatchChunkInfo structure
 end;
 
-function TVstPlugin.GetEntryPoints(theDll: TFileName): integer;
+function TVstPlugin.GetEntryPoints(theDll: TFileName): Integer;
     {$IFNDEF FPC}
 var Buf : Array[0..511] of char;
     LE  : Integer;
@@ -2198,8 +2198,10 @@ begin
 end;
 
 function SwapLong(var l: longint): longint;
-var t:longint;
-type X = array [0..1] of word;
+var
+  t : Integer;
+type
+  X = array [0..1] of word;
 begin
  T := Swap(X(L)[1]);
  X(L)[1] := Swap(X(L)[0]);
@@ -2220,7 +2222,8 @@ begin
 end;
 
 procedure TVstPlugIn.LoadPreset(FileName: TFileName);
-var chnk: TFileStream;
+var
+  chnk: TFileStream;
 begin
  if not FileExists(FileName) then raise Exception.Create('preset file does not exist');
  chnk := TFileStream.Create(FileName, fmOpenRead);
@@ -2231,11 +2234,12 @@ begin
  end; 
 end;
 
-function TVstPlugIn.GetPreset(i: integer): TFXPreset;
-var s: string;
-    pc: plongint;
-    x: integer;
-    si: Single;
+function TVstPlugIn.GetPreset(i: Integer): TFXPreset;
+var
+  s  : string;
+  pc : plongint;
+  x  : Integer;
+  si : Single;
 begin
  SetProgram(i);
  result.chunkMagic := FourCharToLong('C','c','n','K');
@@ -2289,11 +2293,12 @@ begin
 end;
 
 procedure TVstPlugIn.SavePreset(Stream: TStream);
-var p2: TFXChunkSet;
-    s: string;
-    x: integer;
-    PBuffer: Pointer;
-    pp: TFXPreset;
+var
+  p2      : TFXChunkSet;
+  s       : string;
+  x       : Integer;
+  PBuffer : Pointer;
+  pp      : TFXPreset;
 begin
  Stream.Seek(0, 0);
  if not assigned(PVstEffect) then exit;
@@ -2318,7 +2323,7 @@ begin
    p2.ByteSize := SizeOf(p2) - SizeOf(longint) * 2 + p2.chunkSize - 8;
    SwapLong(p2.ByteSize);
    SwapLong(p2.chunkSize);
-   Stream.WriteBuffer(p2, SizeOf(p2) - SizeOf(pointer));
+   Stream.WriteBuffer(p2, SizeOf(p2) - SizeOf(Pointer));
    Stream.WriteBuffer(PBuffer^, x);
   end
  else
@@ -2331,17 +2336,18 @@ begin
 end;
 
 procedure TVstPlugIn.LoadBank(Stream: TStream);
-var i: Integer;
-    p: TFXSet;
-    p2: TFXChunkBank;
-    pp: TFXPreset;
-    s: Single;
-    j, x: integer;
-    ptr: pointer;
-    pb2: pointer;
-    pci: TVstPatchChunkInfo;
-    b: Byte;
-    usechunk: Boolean;
+var
+  i        : Integer;
+  p        : TFXSet;
+  p2       : TFXChunkBank;
+  pp       : TFXPreset;
+  s        : Single;
+  j, x     : Integer;
+  ptr      : Pointer;
+  pb2      : Pointer;
+  pci      : TVstPatchChunkInfo;
+  b        : Byte;
+  usechunk : Boolean;
 begin
  if not assigned(PVstEffect) then exit;
  Stream.Seek(9, 0);
@@ -2353,7 +2359,7 @@ begin
  if usechunk then
  begin
   ptr := @p2;
-  Stream.Read(ptr^, SizeOf(TFXChunkBank) - SizeOf(pointer));
+  Stream.Read(ptr^, SizeOf(TFXChunkBank) - SizeOf(Pointer));
 
   x := FourCharToLong(uid[1], uid[2], uid[3], uid[4]);
   SwapLong(x);
@@ -2367,7 +2373,7 @@ begin
  end else
  begin
   ptr := @p;
-  Stream.Read(ptr^, SizeOf(TFXSet) - SizeOf(pointer));
+  Stream.Read(ptr^, SizeOf(TFXSet) - SizeOf(Pointer));
   x := FourCharToLong(uid[1], uid[2], uid[3], uid[4]);
   SwapLong(x);
   if p.fxId <> x then raise Exception.Create('bank file not for this plugin!');
@@ -2382,7 +2388,7 @@ begin
   for j := 0 to p.numPrograms - 1 do
   begin
    ptr := @pp;
-   Stream.Read(ptr^, SizeOf(TFXPreset) - SizeOf(pointer));
+   Stream.Read(ptr^, SizeOf(TFXPreset) - SizeOf(Pointer));
    SetProgram(j);
    SetProgramName(pp.prgName);
    SwapLong(pp.numParams);
@@ -2400,16 +2406,16 @@ end;
 
 procedure TVstPlugIn.LoadPreset(Stream: TStream);
 var
-  i: Integer;
-  p: TFXPreset;
-  p2: TFXChunkset;
-  s: Single;
-  j, x: integer;
-  ptr: pointer;
-  pb2: pointer;
-  pci: TVstPatchChunkInfo;
-  b: Byte;
-  usechunk: Boolean;
+  i        : Integer;
+  p        : TFXPreset;
+  p2       : TFXChunkset;
+  s        : Single;
+  j, x     : Integer;
+  ptr      : Pointer;
+  pb2      : Pointer;
+  pci      : TVstPatchChunkInfo;
+  b        : Byte;
+  usechunk : Boolean;
 begin
  if not assigned(PVstEffect) then exit;
  Stream.Seek(9, 0);
@@ -2419,51 +2425,54 @@ begin
 
 // if eoProgramChunks in EffectOptions then
  if usechunk then
- begin
-  ptr := @p2;
-  Stream.Read(ptr^, SizeOf(TFXChunkset) - SizeOf(pointer));
-  x := FourCharToLong(uid[1], uid[2], uid[3], uid[4]);
-  SwapLong(x);
-  if p2.fxId <> x then raise Exception.Create('preset file not for this plugin!');
-  SetProgramName(p2.prgName);
-
-  x := Stream.Size - Stream.Position;
-  GetMem(pb2, x + 1);
-  j := Stream.Read(pb2^, x);
-  SetChunk(pb2, j, true);
-  FreeMem(pb2);
- end else
- begin
-  ptr := @p;
-  Stream.Read(ptr^, SizeOf(TFXPreset) - SizeOf(pointer));
-  x := FourCharToLong(uid[1], uid[2], uid[3], uid[4]);
-  SwapLong(x);
-  if p.fxId <> x then raise Exception.Create('preset file not for this plugin!');
-  pci.version := 1;
-  pci.pluginUniqueID := PVstEffect.uniqueID;
-  pci.pluginVersion := PVstEffect.version;
-  pci.numElements := PVstEffect.numParams; // Number of Programs (Bank)
-  BeginLoadProgram(@pci);
-
-  SetProgramName(p.prgName);
-  SwapLong(p.numParams);
-  ptr := @x;
-  for i := 0 to p.numParams - 1 do
   begin
-   Stream.Read(ptr^, SizeOf(Single));
+   ptr := @p2;
+   Stream.Read(ptr^, SizeOf(TFXChunkset) - SizeOf(Pointer));
+   x := FourCharToLong(uid[1], uid[2], uid[3], uid[4]);
    SwapLong(x);
-   s := pSingle(ptr)^;
-   SetParameter(i, s);
+   if p2.fxId <> x
+    then raise Exception.Create('preset file not for this plugin!');
+   SetProgramName(p2.prgName);
+
+   x := Stream.Size - Stream.Position;
+   GetMem(pb2, x + 1);
+   j := Stream.Read(pb2^, x);
+   SetChunk(pb2, j, true);
+   FreeMem(pb2);
+  end
+ else
+  begin
+   ptr := @p;
+   Stream.Read(ptr^, SizeOf(TFXPreset) - SizeOf(Pointer));
+   x := FourCharToLong(uid[1], uid[2], uid[3], uid[4]);
+   SwapLong(x);
+   if p.fxId <> x then raise Exception.Create('preset file not for this plugin!');
+   pci.version := 1;
+   pci.pluginUniqueID := PVstEffect.uniqueID;
+   pci.pluginVersion := PVstEffect.version;
+   pci.numElements := PVstEffect.numParams; // Number of Programs (Bank)
+   BeginLoadProgram(@pci);
+
+   SetProgramName(p.prgName);
+   SwapLong(p.numParams);
+   ptr := @x;
+   for i := 0 to p.numParams - 1 do
+    begin
+     Stream.Read(ptr^, SizeOf(Single));
+     SwapLong(x);
+     s := pSingle(ptr)^;
+     SetParameter(i, s);
+    end;
   end;
- end;
 end;
 
 procedure TVstPlugIn.SaveBank(Stream: TStream);
-var p: TFXSet;
-    p2: TFXChunkBank;
-    j, x: integer;
-    PBuffer: Pointer;
-    pp: TFXPreset;
+var
+  p       : TFXSet;
+  p2      : TFXChunkBank;
+  j, x    : Integer;
+  PBuffer : Pointer;
+  pp      : TFXPreset;
 begin
  if not assigned(PVstEffect) then exit;
  Stream.Seek(0, 0);
@@ -2486,7 +2495,7 @@ begin
   p2.ByteSize := SizeOf(p2) - SizeOf(longint) * 3 + p2.chunkSize + 8;
   SwapLong(p2.ByteSize);
   SwapLong(p2.chunkSize);
-  Stream.WriteBuffer(p2, SizeOf(p2) - SizeOf(pointer));
+  Stream.WriteBuffer(p2, SizeOf(p2) - SizeOf(Pointer));
   Stream.WriteBuffer(PBuffer^, x);
  end else
  begin

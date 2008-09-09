@@ -113,6 +113,7 @@ begin
  fSelectBoxColor   := clBtnShadow;
  fItemIndex        := -1;
  fOSFactor         := 1;
+ fAlignment        := taCenter;
  fItems            := TStringList.Create;
  ButtonWidthChanged;
 end;

@@ -274,6 +274,11 @@ procedure TLA4029DataModule.ParamMixChange(Sender: TObject; const Index: Integer
 begin
  fMix[0] := 0.01 * Value;
  fMix[1] := 1 - fMix[0];
+ if Assigned(EditorForm) then
+  with EditorForm as TFmLA4029 do
+   begin
+    UpdateMix;
+   end;
 end;
 
 procedure TLA4029DataModule.ParamAttackDisplay(
