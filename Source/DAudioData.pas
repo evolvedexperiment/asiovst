@@ -146,7 +146,10 @@ type
   end;
 
   TAudioData32 = class(TCustomAudioData)
+  private
+    function GetAudioChannel(index: Integer): TAudioChannel32; virtual;
   protected
+    property ChannelList[index: Integer]: TAudioChannel32 read GetAudioChannel; default;
   public
     constructor Create(AOwner: TComponent); override;
   published
@@ -157,7 +160,10 @@ type
   end;
 
   TAudioData64 = class(TCustomAudioData)
+  private
+    function GetAudioChannel(index: Integer): TAudioChannel64; virtual;
   protected
+    property ChannelList[index: Integer]: TAudioChannel64 read GetAudioChannel; default;
   public
     constructor Create(AOwner: TComponent); override;
   published
@@ -318,7 +324,7 @@ end;
 
 procedure TAudioChannel32.Clear;
 begin
- FillChar(fChannelData, SampleCount * SizeOf(Single), 0);
+ FillChar(fChannelData^, SampleCount * SizeOf(Single), 0);
 end;
 
 destructor TAudioChannel32.Destroy;
@@ -409,7 +415,7 @@ begin
 
  // check if new length is longer than the old length and fill with zeroes if necessary
  if AudioData.SampleFrames > SampleCount
-  then FillChar(fChannelData[SampleCount], (AudioData.SampleFrames - SampleCount) * SizeOf(Single), 0);
+  then FillChar(fChannelData^[SampleCount], (AudioData.SampleFrames - SampleCount) * SizeOf(Single), 0);
 
  inherited;
 end;
@@ -425,7 +431,7 @@ end;
 
 procedure TAudioChannel64.Clear;
 begin
- FillChar(fChannelData, AudioData.SampleFrames * SizeOf(Double), 0);
+ FillChar(fChannelData^, AudioData.SampleFrames * SizeOf(Double), 0);
 end;
 
 destructor TAudioChannel64.Destroy;
@@ -524,7 +530,7 @@ begin
 
  // check if new length is longer than the old length and fill with zeroes if necessary
  if AudioData.SampleFrames > SampleCount
-  then FillChar(fChannelData[SampleCount], (AudioData.SampleFrames - SampleCount) * SizeOf(Single), 0);
+  then FillChar(fChannelData^[SampleCount], (AudioData.SampleFrames - SampleCount) * SizeOf(Double), 0);
 
  inherited;
 end;
@@ -578,12 +584,26 @@ begin
  fChannels := TCustomAudioChannels.Create(Self, TAudioChannel32);
 end;
 
+function TAudioData32.GetAudioChannel(index: Integer): TAudioChannel32;
+begin
+ if (Index < 0) or (Index >= fChannels.Count)
+  then raise Exception.Create('Index out of bounds')
+  else result := TAudioChannel32(fChannels.Items[index]);
+end;
+
 { TAudioData64 }
 
 constructor TAudioData64.Create(AOwner: TComponent);
 begin
  inherited;
  fChannels := TCustomAudioChannels.Create(Self, TAudioChannel64);
+end;
+
+function TAudioData64.GetAudioChannel(index: Integer): TAudioChannel64;
+begin
+ if (Index < 0) or (Index >= fChannels.Count)
+  then raise Exception.Create('Index out of bounds')
+  else result := TAudioChannel64(fChannels.Items[index]);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
