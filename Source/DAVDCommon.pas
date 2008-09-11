@@ -1679,7 +1679,7 @@ asm
 end;
 {$ENDIF}
 
-procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TAVDMinMaxSingle);
+procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax: TAVDMinMaxSingle);
 var
   i : Integer;
 begin
@@ -1694,7 +1694,7 @@ begin
   end;
 end;
 
-procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TAVDMinMaxDouble);
+procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax: TAVDMinMaxDouble);
 var
   i : Integer;
 begin
@@ -1795,7 +1795,7 @@ asm
 {$ENDIF}
 end;
 
-procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
+procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames: Integer);
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin
@@ -1814,7 +1814,7 @@ asm
 {$ENDIF}
 end;
 
-procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames:Integer);
+procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames: Integer);
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin

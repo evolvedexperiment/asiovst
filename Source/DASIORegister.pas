@@ -13,7 +13,8 @@ uses
 
 procedure Register;
 begin
- RegisterComponents('ASIO/VST Basics', [TASIOHost, TASIOHostBasic,TASIOGeneratorNoise,TASIOGeneratorTone]);
+ RegisterComponents('ASIO/VST Basics', [TASIOHost, TASIOHostBasic,
+   TASIOHostAudioData, TASIOGeneratorNoise, TASIOGeneratorTone]);
  {$IFDEF DELPHI5}
  {$IFDEF D5CP}
  RegisterComponentEditor(TASIOHost, TASIOControlPanel);

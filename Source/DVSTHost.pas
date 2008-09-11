@@ -45,13 +45,14 @@ type
                 hcdOffline, hcdSupplyIdle, hcdSupportShell, // 'shell' handling via uniqueID as suggested by Waves
                 hcdOpenFileSelector, hcdCloseFileSelector, hcdEditFile,
                 hcdShellCategory, hcdStartStopProcess);
+  THostCanDos = set of THostCanDo;
+
   TKnobMode = (knCircular, knCircularRelativ, knLinear);
 
   TReplaceOrAccumulate = (roa0NotSupported, roa1Replace, roa2Accumulate);
   TCurrentProcessLevel = (cpl0NotSupported, cpl1UserThread, cpl2AudioThread,
    cpl3Sequencer, cpl4OfflineProcessing);
   TAutomationState = (as0NotSupported, as1Off, as2Read, as3Write, as4ReadWrite);
-  THostCanDos = set of THostCanDo;
 
   TVstPlugIn = class(TCollectionItem)
   private

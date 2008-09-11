@@ -929,7 +929,7 @@ var
   i           : Integer;
 begin
  for i := 0 to frames - 1
-  do TargetArray[i] := SourceArray[i]*minlong;
+  do TargetArray[i] := SourceArray[i] * minlong;
 end;
 {$ELSE}
 asm

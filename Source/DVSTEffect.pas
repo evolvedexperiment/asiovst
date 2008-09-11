@@ -269,6 +269,18 @@ type
 
   TEffFlags = set of TEffFlag;
 
+  TVstCanDo = (vcdSendVstEvents,      vcdSendVstMidiEvent,      vcdSendVstTimeInfo,
+               vcdReceiveVstEvents,   vcdReceiveVstMidiEvent,   vcdReceiveVstTimeInfo,
+               vcdOffline,            vcdPlugAsChannelInsert,   vcdPlugAsSend,
+               vcdMixDryWet,          vcdNoRealTime,            vcdMultipass,
+               vcdMetapass,           vcd1in1out,               vcd1in2out,
+               vcd2in1out,            vcd2in2out,               vcd2in4out,
+               vcd4in2out,            vcd4in4out,               vcd4in8out,
+               vcd8in4out,            vcd8in8out,               vcdMidiProgramNames,
+               vcdLiveWithoutToolbar, vcdConformsToWindowRules, vcdBypass);
+
+  TVstCanDos = set of TVstCanDo;
+
   TVSTEffect = record
     Magic            : array [0..3] of char; // must be kEffectMagic ('VstP')
     Dispatcher       : TDispatcherFunc;
