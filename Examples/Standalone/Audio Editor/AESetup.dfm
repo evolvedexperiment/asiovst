@@ -25,7 +25,7 @@ object FmSetup: TFmSetup
     Caption = 'ASIO Driver:'
     Layout = tlCenter
   end
-  object LbIn: TLabel
+  object LbInput: TLabel
     Left = 4
     Top = 34
     Width = 37
@@ -34,7 +34,7 @@ object FmSetup: TFmSetup
     Caption = 'Input:'
     Layout = tlCenter
   end
-  object Label1: TLabel
+  object LbOutput: TLabel
     Left = 4
     Top = 58
     Width = 47

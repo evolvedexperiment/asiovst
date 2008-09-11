@@ -14,7 +14,8 @@ type
 
   TCustomGuiAudioDataDisplay = class(TBufferedGraphicControl)
   private
-    fAudioData            : TCustomAudioData;
+    fAntiAlias            : TGuiAntiAlias;
+    fAudioData            : TCustomAudioDataCollection;
     fDisplayedChannel     : Integer;
     fLineColor            : TColor;
     fLineWidth            : Integer;
@@ -22,15 +23,16 @@ type
     fMedianLineWidth      : Integer;
     fMedianVisible        : Boolean;
     fNormalizationType    : TGuiNormalizationType;
+    fOSFactor             : Integer;
     fWaveDrawMode         : TGuiWaveDrawMode;
     fHalfHeight           : Integer;
-    fWaveVPadding         : Integer;
     fTransparent          : Boolean;
+    fWaveVPadding         : Integer;
 
     function  GetChannelCount: Integer;
     function  GetSampleFrames: Integer;
-    procedure DrawChannelData(Channel: Integer);
-    procedure SetAudioData(const Value: TCustomAudioData);
+    procedure DrawChannelData(Bitmap: TBitmap; Channel: Integer);
+    procedure SetAudioData(const Value: TCustomAudioDataCollection);
     procedure SetDisplayedChannel(Value: Integer);
     procedure SetLineColor(const Value: TColor);
     procedure SetLineWidth(const Value: Integer);
@@ -41,9 +43,12 @@ type
     procedure SetTransparent(const Value: Boolean);
     procedure SetWaveDrawMode(Value: TGuiWaveDrawMode);
     procedure SetWaveVPadding(Value: Integer);
+    procedure SetAntiAlias(const Value: TGuiAntiAlias);
+    procedure RenderDisplayToBitmap(Bitmap: TBitmap);
   protected
     procedure Resize; override;
     procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
+    procedure Loaded; override;
 (*
     procedure DrawSamples(var OldMaxPos, OldMinPos: TPoint; NewMax, NewMin: TPoint);
     procedure DrawMedian(YOffset: Integer);
@@ -58,7 +63,8 @@ type
     destructor Destroy; override;
     procedure Paint; override;
 
-    property AudioData: TCustomAudioData read fAudioData write SetAudioData;
+    property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
+    property AudioData: TCustomAudioDataCollection read fAudioData write SetAudioData;
     property DisplayedChannel: Integer read fDisplayedChannel write SetDisplayedChannel default -1;
     property WaveVPadding: Integer read fWaveVPadding write SetWaveVPadding default 3;
 
@@ -78,6 +84,7 @@ type
   published
     property Align;
     property Anchors;
+    property AntiAlias;
     property AudioData;
     property Color;
     property Constraints;
@@ -134,6 +141,7 @@ begin
   fMedianVisible     := True;
   fMedianColor       := clRed;
   fMedianLineWidth   := 1;
+  fOSFactor          :=  1; 
   fWaveDrawMode      := wdmSolid;
 end;
 
@@ -149,6 +157,12 @@ begin
   else result := 0;
 end;
 
+procedure TCustomGuiAudioDataDisplay.Loaded;
+begin
+ inherited;
+ fHalfHeight := Height div 2;
+end;
+
 function TCustomGuiAudioDataDisplay.GetChannelCount: Integer;
 begin
  if assigned(fAudioData)
@@ -156,7 +170,23 @@ begin
   else result := 0;
 end;
 
-procedure TCustomGuiAudioDataDisplay.SetAudioData(const Value: TCustomAudioData);
+procedure TCustomGuiAudioDataDisplay.SetAntiAlias(const Value: TGuiAntiAlias);
+begin
+ if fAntiAlias <> Value then
+  begin
+   fAntiAlias := Value;
+   case fAntiAlias of
+         gaaNone : fOSFactor :=  1;
+     gaaLinear2x : fOSFactor :=  2;
+     gaaLinear4x : fOSFactor :=  4;
+     gaaLinear8x : fOSFactor :=  8;
+    gaaLinear16x : fOSFactor := 16;
+   end;
+   Invalidate;
+  end;
+end;
+
+procedure TCustomGuiAudioDataDisplay.SetAudioData(const Value: TCustomAudioDataCollection);
 begin
  if fAudioData <> Value then
   begin
@@ -272,49 +302,187 @@ end;
 
 procedure TCustomGuiAudioDataDisplay.Paint;
 var
-  ch: Integer;
+  Bmp: TBitmap;
 begin
  if (Width > 0) and (Height > 0) then
-  begin
-   fBuffer.Canvas.Lock;
-   fBuffer.Canvas.Brush.Assign(Canvas.Brush);
+  with fBuffer.Canvas do
+   begin
+    Lock;
+    Brush.Assign(Canvas.Brush);
 
-   {$IFNDEF FPC}
-   if fTransparent
-    then DrawParentImage(fBuffer.Canvas)
-    else {$ENDIF} fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
+    case FAntiAlias of
+     gaaNone     :
+      begin
+       // draw background
+       {$IFNDEF FPC}
+       if fTransparent
+        then DrawParentImage(fBuffer.Canvas)
+        else
+       {$ENDIF}
+        begin
+         Brush.Color := Self.Color;
+         FillRect(ClipRect);
+        end;
+       RenderDisplayToBitmap(fBuffer);
+      end;
+     gaaLinear2x :
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := FOSFactor * fBuffer.Width;
+         Height      := FOSFactor * fBuffer.Height;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           DrawParentImage(Bmp.Canvas);
+           Upsample2xBitmap(Bmp);
+          end
+         else
+         {$ENDIF}
+          with Bmp.Canvas do
+           begin
+            Brush.Color := Self.Color;
+            FillRect(ClipRect);
+           end;
+         Bmp.Canvas.FillRect(ClipRect);
+         RenderDisplayToBitmap(Bmp);
+         Downsample2xBitmap(Bmp);
+         fBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         Free;
+        end;
+      end;
+     gaaLinear4x :
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := FOSFactor * fBuffer.Width;
+         Height      := FOSFactor * fBuffer.Height;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           DrawParentImage(Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+          end
+         else
+         {$ENDIF}
+          with Bmp.Canvas do
+           begin
+            Brush.Color := Self.Color;
+            FillRect(ClipRect);
+           end;
+         RenderDisplayToBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
+         fBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         Free;
+        end;
+      end;
+     gaaLinear8x :
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := FOSFactor * fBuffer.Width;
+         Height      := FOSFactor * fBuffer.Height;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           DrawParentImage(Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+           Upsample2xBitmap(Bmp);
+          end
+         else
+         {$ENDIF}
+          with Bmp.Canvas do
+           begin
+            Brush.Color := Self.Color;
+            FillRect(ClipRect);
+           end;
+         RenderDisplayToBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
+         Downsample2xBitmap(Bmp);
+         fBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         Free;
+        end;
+      end;
+     gaaLinear16x :
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := FOSFactor * fBuffer.Width;
+         Height      := FOSFactor * fBuffer.Height;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           DrawParentImage(Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+           Upsample4xBitmap(Bmp);
+          end
+         else
+         {$ENDIF}
+          with Bmp.Canvas do
+           begin
+            Brush.Color := Self.Color;
+            FillRect(ClipRect);
+           end;
+         RenderDisplayToBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
+         fBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         Free;
+        end;
+      end;
+    end;
 
-   if (ChannelCount > 0) and (ChannelCount > fDisplayedChannel) then
-    if fDisplayedChannel >= 0 then DrawChannelData(fDisplayedChannel) else
-     for ch := 0 to ChannelCount - 1 do DrawChannelData(ch);
-
-   fBuffer.Canvas.Unlock;
-  end;
+    Unlock;
+   end;
  inherited;
 end;
 
+procedure TCustomGuiAudioDataDisplay.RenderDisplayToBitmap(Bitmap: TBitmap);
+var
+  ch: Integer;
+begin
+ if (ChannelCount > 0) and (ChannelCount > fDisplayedChannel) then
+  if fDisplayedChannel >= 0 then DrawChannelData(Bitmap, fDisplayedChannel) else
+   for ch := 0 to ChannelCount - 1 do DrawChannelData(Bitmap, ch);
+end;
 
-procedure TCustomGuiAudioDataDisplay.DrawChannelData(Channel: Integer);
+procedure TCustomGuiAudioDataDisplay.DrawChannelData(Bitmap: TBitmap; Channel: Integer);
 var
   PixelPerSample     : Single;
   MinVal, MaxVal     : Single;
   Sample             : Cardinal;
+  HlfHght            : Integer;
   XPixelPosAsSingle  : Single;
   XPixelPosAsInt, o  : Integer;
 begin
- with fBuffer.Canvas do
+ with Bitmap.Canvas do
   begin
-   Pen.Width := fLineWidth;
+   if SampleFrames = 0 then exit;
+   HlfHght := fOSFactor * fHalfHeight;
+   PixelPerSample := fOSFactor * Self.Width / SampleFrames;
+   Pen.Width := fOSFactor * fLineWidth;
    Pen.Color := fLineColor;
-   PixelPerSample := Self.Width / SampleFrames;
 
    if (fAudioData.Channels.Items[Channel] is TAudioChannel32) then
     with TAudioChannel32(fAudioData.Channels.Items[Channel]) do
      begin
+      if SampleCount = 0 then Exit;
       MinVal := ChannelDataPointer^[0];
       MaxVal := MinVal;
 
-      MoveTo(0, Round(MinVal * fHalfHeight + fHalfHeight));
+      MoveTo(0, Round(MinVal * HlfHght + HlfHght));
       Sample            := 1;
       XPixelPosAsInt    := 0;
       XPixelPosAsSingle := 0;
@@ -329,19 +497,19 @@ begin
         if XPixelPosAsSingle > XPixelPosAsInt then
          begin
           XPixelPosAsInt := Round(XPixelPosAsSingle);
-          if MinVal = MaxVal then LineTo(XPixelPosAsInt, Round((1 + MinVal) * fHalfHeight)) else
+          if MinVal = MaxVal then LineTo(XPixelPosAsInt, HlfHght * Round((1 + MinVal))) else
            begin
-            o := fBuffer.Canvas.PenPos.Y - fHalfHeight;
-            if abs(o - MinVal * fHalfHeight) < abs(o - MaxVal * fHalfHeight)
+            o := PenPos.Y - HlfHght;
+            if abs(o - MinVal * HlfHght) < abs(o - MaxVal * HlfHght)
              then
               begin
-               LineTo(XPixelPosAsInt, Round((1 + MinVal) * fHalfHeight));
-               LineTo(XPixelPosAsInt, Round((1 + MaxVal) * fHalfHeight));
+               LineTo(XPixelPosAsInt, Round((1 + MinVal) * HlfHght));
+               LineTo(XPixelPosAsInt, Round((1 + MaxVal) * HlfHght));
               end
              else
               begin
-               LineTo(XPixelPosAsInt, Round((1 + MaxVal) * fHalfHeight));
-               LineTo(XPixelPosAsInt, Round((1 + MinVal) * fHalfHeight));
+               LineTo(XPixelPosAsInt, Round((1 + MaxVal) * HlfHght));
+               LineTo(XPixelPosAsInt, Round((1 + MinVal) * HlfHght));
               end;
            end;
           MinVal := ChannelDataPointer^[Sample];
@@ -350,21 +518,24 @@ begin
         inc(Sample);
        end;
 
-      if MinVal = MaxVal then LineTo(Self.Width, Round((1 + MinVal) * fHalfHeight)) else
+(*
+      // I have no idea what this was for ?!
+      if MinVal = MaxVal then LineTo(Self.Width, HlfHght * Round((1 + MinVal))) else
        begin
-        o := fBuffer.Canvas.PenPos.Y - fHalfHeight;
-        if abs(o - MinVal * fHalfHeight) < abs(o - MaxVal * fHalfHeight)
+        o := PenPos.Y - HlfHght;
+        if abs(o - MinVal * HlfHght) < abs(o - MaxVal * HlfHght)
          then
           begin
-           LineTo(Self.Width, Round((1 + MinVal) * fHalfHeight));
-           LineTo(Self.Width, Round((1 + MaxVal) * fHalfHeight));
+           LineTo(Self.Width, Round((1 + MinVal) * HlfHght));
+           LineTo(Self.Width, Round((1 + MaxVal) * HlfHght));
           end
          else
           begin
-           LineTo(Self.Width, Round((1 + MaxVal) * fHalfHeight));
-           LineTo(Self.Width, Round((1 + MinVal) * fHalfHeight));
+           LineTo(Self.Width, Round((1 + MaxVal) * HlfHght));
+           LineTo(Self.Width, Round((1 + MinVal) * HlfHght));
           end;
        end;
+*)
      end;
   end;
 end;
@@ -515,56 +686,6 @@ begin
 
      if fMedianVisible then DrawMedian(YOffset);
     end;
-end;
-
-procedure TCustomGuiAudioDataDisplay.RedrawBuffer(doBufferFlip: Boolean);
-var
-  i           : Integer;
-  MaxAmp, Amp : Single;
-begin
-  if (Width > 0) and (Height > 0) then
-   begin
-    fBuffer.Canvas.Lock;
-    fBuffer.Canvas.Brush.Color := Self.Color;
-
-    {$IFNDEF FPC}
-    if fTransparent
-     then DrawParentImage(fBuffer.Canvas)
-     else {$ENDIF} fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
-
-    MaxAmp := 0;
-    if fDisplayChannels < 1 then exit;
-    for i := 0 to fDisplayChannels - 1 do
-      if i >= Length(fWaveData)
-       then fNormalizationFactors[i] := 0 else
-      if Length(fWaveData[i]) < 1 then fNormalizationFactors[i] := 0 else
-       begin
-        Amp := GetMaxAmp(i);
-        MaxAmp := Max(MaxAmp, Amp);
-        if Amp = 0
-         then fNormalizationFactors[i] := 0
-         else fNormalizationFactors[i] := 1 / Amp;
-      end;
-
-    if fNormalizationType = ntNone then
-     begin
-      for i := 0 to fDisplayChannels - 1 do
-        if fNormalizationFactors[i] > 0 then
-          fNormalizationFactors[i] := 1;
-
-     end
-    else if (fNormalizationType = ntOverallChannels) and (MaxAmp > 0) then
-     begin
-      for i := 0 to fDisplayChannels - 1 do
-        if fNormalizationFactors[i] > 0 then
-          fNormalizationFactors[i] := 1 / MaxAmp;
-     end;
-
-    DrawGraphs;
-    fBuffer.Canvas.UnLock;
-   end;
-
-  if doBufferFlip then Invalidate;
 end;
 *)
 

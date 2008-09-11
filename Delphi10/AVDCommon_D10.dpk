@@ -48,6 +48,7 @@ contains
   DAudioFileAIFF in '..\Source\DAudioFileAIFF.pas',
   DAudioFileFLAC in '..\Source\DAudioFileFLAC.pas',
   DAudioFileWavePack in '..\Source\DAudioFileWavePack.pas',
-  DAudioFileMonkeyAudio in '..\Source\DAudioFileMonkeyAudio.pas';
+  DAudioFileMonkeyAudio in '..\Source\DAudioFileMonkeyAudio.pas',
+  DComplexData in '..\Source\DComplexData.pas';
 
 end.

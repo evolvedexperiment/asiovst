@@ -12,6 +12,7 @@ object FmAudioEditor: TFmAudioEditor
   Font.Style = []
   Menu = MainMenu
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GuiLevelMeter: TGuiLevelMeter
@@ -20,21 +21,20 @@ object FmAudioEditor: TFmAudioEditor
     Width = 62
     Height = 375
     Align = alRight
-    RedrawInterval = 30
-    BarWidthPercentage = 0.800000011920929000
+    BarWidthPercentage = 0.800000011920928900
     MaximumTimeFactor = 3.000000000000000000
+    RedrawInterval = 30
     ExplicitHeight = 355
   end
-  object GuiStaticWaveform: TGuiStaticWaveform
+  object GuiAudioDataDisplay: TGuiAudioDataDisplay
     Left = 0
     Top = 21
     Width = 592
     Height = 375
     Align = alClient
-    ExplicitLeft = 96
-    ExplicitTop = 80
-    ExplicitWidth = 377
-    ExplicitHeight = 193
+    AntiAlias = gaaLinear2x
+    AudioData = AudioDataCollection32
+    ExplicitLeft = -6
   end
   object ToolBar: TToolBar
     Left = 0
@@ -121,14 +121,24 @@ object FmAudioEditor: TFmAudioEditor
     end
   end
   object ASIOHost: TASIOHost
-    CanDos = []
-    ConvertOptimizations = [coSSE, co3DNow]
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
-    SampleRate = 44100.000000000000000000
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+    CanDos = []
+    ConvertOptimizations = [coSSE, co3DNow]
+    SampleRate = 44100.000000000000000000
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     Left = 40
+    Top = 32
+  end
+  object AudioDataCollection32: TAudioDataCollection32
+    Channels = <
+      item
+        DisplayName = 'Channel 1'
+      end>
+    SampleFrames = 8192
+    SampleRate = 44100.000000000000000000
+    Left = 72
     Top = 32
   end
 end

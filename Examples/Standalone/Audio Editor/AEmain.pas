@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Menus, ToolWin, ComCtrls, ExtCtrls, DAVDCommon, DGuiStaticWaveform,
   DGuiBaseControl, DGuiLevelMeter, DAudioFile, DAudioFileWav, DAudioFileAIFF,
-  DAudioFileAU, DASIOHost;
+  DAudioFileAU, DASIOHost, DAudioData, DGuiAudioDataDisplay;
 
 type
   TFmAudioEditor = class(TForm)
@@ -14,7 +14,6 @@ type
     BtPause: TToolButton;
     BtPlay: TToolButton;
     GuiLevelMeter: TGuiLevelMeter;
-    GuiStaticWaveform: TGuiStaticWaveform;
     MainMenu: TMainMenu;
     MIExit: TMenuItem;
     MIFile: TMenuItem;
@@ -32,6 +31,9 @@ type
     N1: TMenuItem;
     N2: TMenuItem;
     ToolBar: TToolBar;
+    GuiAudioDataDisplay: TGuiAudioDataDisplay;
+    AudioDataCollection32: TAudioDataCollection32;
+    procedure FormCreate(Sender: TObject);
     procedure MIExitClick(Sender: TObject);
     procedure MISetupClick(Sender: TObject);
     procedure MIOpenClick(Sender: TObject);
@@ -57,6 +59,16 @@ implementation
 uses
   WaveIOX, AESetup;
 
+procedure TFmAudioEditor.FormCreate(Sender: TObject);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to AudioDataCollection32.SampleFrames - 1 do
+  begin
+   AudioDataCollection32[0].ChannelData[Sample] := 2 * random - 1;
+  end;
+end;
+
 procedure TFmAudioEditor.MIExitClick(Sender: TObject);
 begin
  Close;
@@ -64,46 +76,55 @@ end;
 
 procedure TFmAudioEditor.MINormalizeClick(Sender: TObject);
 var
-  ch, i : Integer;
-  max   : Double;
+  ch, i  : Integer;
+  max    : Double;
+  chdata : PAVDSingleFixedArray;
 begin
- with GuiStaticWaveform do
+ with AudioDataCollection32 do
   begin
    max := 0;
 
    // scan for maximum
-   for ch := 0 to WaveChannels - 1 do
-    for i := 0 to WaveLength - 1 do
-     if abs(Wavedata[ch, i]) > max
-      then max := abs(Wavedata[ch, i]);
+   for ch := 0 to ChannelCount - 1 do
+    begin
+     chdata := ChannelDataPointerList[ch];
+     for i := 0 to SampleFrames - 1 do
+      if abs(chdata^[i]) > max
+       then max := abs(chdata^[i]);
+    end;
 
    // actually normalize
    if max > 0 then
     begin
      max := 1 / max;
-     for ch := 0 to WaveChannels - 1 do
-      for i := 0 to WaveLength - 1 do
-       begin
-        Wavedata[ch, i] := max * Wavedata[ch, i];
-       end;
+     for ch := 0 to ChannelCount - 1 do
+      begin
+       chdata := ChannelDataPointerList[ch];
+       for i := 0 to SampleFrames - 1
+        do chdata^[i] := max * chdata^[i];
+      end;
     end;
 
-   // Redraw data
-   RedrawBuffer(True);
+   Invalidate
   end;
 end;
 
 procedure TFmAudioEditor.MIRectifyClick(Sender: TObject);
 var
-  ch, i : Integer;
+  ch, i  : Integer;
+  chdata : PAVDSingleFixedArray;
 begin
- with GuiStaticWaveform do
+ with AudioDataCollection32 do
   begin
    // rectify every sample
-   for ch := 0 to WaveChannels - 1 do
-    for i := 0 to WaveLength - 1
-     do Wavedata[ch, i] := abs(Wavedata[ch, i]);
-   RedrawBuffer(True);
+   for ch := 0 to ChannelCount - 1 do
+    begin
+     chdata := ChannelDataPointerList[ch];
+     for i := 0 to SampleFrames - 1
+      do chdata^[i] := abs(chdata^[i]);
+    end;
+
+   Invalidate
   end;
 end;
 
@@ -111,50 +132,64 @@ procedure TFmAudioEditor.MIRemoveDCClick(Sender: TObject);
 var
   ch, i   : Integer;
   Sum, DC : Double;
+  chdata  : PAVDSingleFixedArray;
 begin
- with GuiStaticWaveform do
+ with AudioDataCollection32 do
   begin
-   for ch := 0 to WaveChannels - 1 do
+   for ch := 0 to ChannelCount - 1 do
     begin
+     chdata := ChannelDataPointerList[ch];
+
      // build sum of
      Sum := 0;
-     for i := 0 to WaveLength - 1
-      do Sum := Sum + Wavedata[ch, i];
+     for i := 0 to SampleFrames - 1
+      do Sum := Sum + chdata^[i];
 
-     DC := Sum / WaveLength;
-     for i := 0 to WaveLength - 1
-      do Wavedata[ch, i] := Wavedata[ch, i] - DC;
+     DC := Sum / SampleFrames;
+     for i := 0 to SampleFrames - 1
+      do chdata^[i] := chdata^[i] - DC;
     end;
-   RedrawBuffer(True);  
+
+   Invalidate
   end;
 end;
 
 procedure TFmAudioEditor.MIInvertClick(Sender: TObject);
 var
-  ch, i : Integer;
+  ch, i  : Integer;
+  chdata : PAVDSingleFixedArray;
 begin
- with GuiStaticWaveform do
+ with AudioDataCollection32 do
   begin
    // rectify every sample
-   for ch := 0 to WaveChannels - 1 do
-    for i := 0 to WaveLength - 1
-     do Wavedata[ch, i] := -Wavedata[ch, i];
-   RedrawBuffer(True);
+   for ch := 0 to ChannelCount - 1 do
+    begin
+     chdata := ChannelDataPointerList[ch];
+     for i := 0 to SampleFrames - 1
+      do chdata^[i] := -chdata^[i];
+    end;
+
+   Invalidate
   end;
 end;
 
 procedure TFmAudioEditor.MINoiseClick(Sender: TObject);
 var
-  ch, i : Integer;
+  ch, i  : Integer;
+  chdata : PAVDSingleFixedArray;
 begin
- with GuiStaticWaveform do
+ with AudioDataCollection32 do
   begin
-   WaveChannels := 2;
-   WaveLength   := round(ASIOHost.SampleRate);
-   for ch := 0 to WaveChannels - 1 do
-    for i := 0 to WaveLength - 1
-     do Wavedata[ch, i] := 2 * random - 1;
-   RedrawBuffer(True);
+//   ChannelCount := 2;
+   SampleFrames   := round(ASIOHost.SampleRate);
+   for ch := 0 to ChannelCount - 1 do
+    begin
+     chdata := ChannelDataPointerList[ch];
+     for i := 0 to SampleFrames - 1
+      do chdata^[i] := 2 * random - 1;
+    end;
+
+   Invalidate
   end;
 end;
 
