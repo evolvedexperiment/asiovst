@@ -1135,7 +1135,8 @@ begin
 end;
 
 function invGapSmallValue(value, maxValue: double): double;
-var r: Double;
+var
+  r : Double;
 begin
  r := 0;
  if (value <> 0)
@@ -1145,10 +1146,10 @@ end;
 
 function Rect(Left, Top, Right, Bottom : Smallint):ERect;
 begin
- Result.Left:=Left;
- Result.Top:=Top;
- Result.Right:=Right;
- Result.Bottom:=Bottom;
+ Result.Left   := Left;
+ Result.Top    := Top;
+ Result.Right  := Right;
+ Result.Bottom := Bottom;
 end;
 
 function opcode2String(Opcode: TDispatcherOpcode): string;
