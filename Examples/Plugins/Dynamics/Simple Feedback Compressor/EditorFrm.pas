@@ -4,23 +4,23 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, Controls,
-  StdCtrls, DGuiLabel, DGuiPanel, DGuiBaseControl, DGuiDial;
+  StdCtrls, DGuiLabel, DGuiPanel, DGuiBaseControl, DGuiDial, ExtCtrls;
 
 type
   TEditorForm = class(TForm)
-    LbThresholdValue: TLabel;
-    LbRatioValue: TLabel;
-    LbReleaseValue: TLabel;
-    DialThreshold: TGuiDial;
+    DialAttack: TGuiDial;
     DialRatio: TGuiDial;
     DialRelease: TGuiDial;
-    Panel: TGuiPanel;
-    LbRatio: TGuiLabel;
-    LbRelease: TGuiLabel;
-    LbThreshold: TGuiLabel;
+    DialThreshold: TGuiDial;
     LbAttack: TGuiLabel;
     LbAttackValue: TLabel;
-    DialAttack: TGuiDial;
+    LbRatio: TGuiLabel;
+    LbRatioValue: TLabel;
+    LbRelease: TGuiLabel;
+    LbReleaseValue: TLabel;
+    LbThreshold: TGuiLabel;
+    LbThresholdValue: TLabel;
+    Panel: TGuiPanel;
     procedure DialThresholdChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);

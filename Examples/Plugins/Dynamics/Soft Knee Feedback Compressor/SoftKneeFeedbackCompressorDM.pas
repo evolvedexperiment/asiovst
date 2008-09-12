@@ -3,7 +3,8 @@ unit SoftKneeFeedbackCompressorDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, DDspDynamics;
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
+  DDspDynamics;
 
 type
   TSoftKneeFeedbackCompressorDataModule = class(TVSTModule)
@@ -14,8 +15,7 @@ type
     procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
     fSoftKneeFeedbackCompressors : Array [0..1] of TSimpleCompressor;
   public
@@ -25,7 +25,8 @@ implementation
 
 {$R *.DFM}
 
-uses Math, EditorFrm;
+uses
+  Math, EditorFrm;
 
 procedure TSoftKneeFeedbackCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);

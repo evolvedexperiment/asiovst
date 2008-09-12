@@ -42,10 +42,10 @@ object FmLA4029: TFmLA4029
       LineColor = clSilver
       CircleColor = 2105376
       Inertia = 50.000000000000000000
-      Min = -0.699000000953674400
+      Min = -0.699000000953674300
       Max = 1.301030039787292000
-      NumGlyphs = 31
-      StitchKind = skVertical
+      NumGlyphs = 65
+      StitchKind = skHorizontal
       OnChange = DialAttackChange
     end
     object DialRelease: TGuiDial
@@ -62,8 +62,8 @@ object FmLA4029: TFmLA4029
       Inertia = 50.000000000000000000
       Min = 1.000000000000000000
       Max = 2.698999881744385000
-      NumGlyphs = 31
-      StitchKind = skVertical
+      NumGlyphs = 65
+      StitchKind = skHorizontal
       OnChange = DialReleaseChange
     end
     object LbRelease: TGuiLabel
@@ -178,7 +178,7 @@ object FmLA4029: TFmLA4029
       Color = clBlack
       Position = 0
       NumGlyphs = 65
-      StitchKind = skVertical
+      StitchKind = skHorizontal
       PopupMenu = PopupVUMeterSpeed
     end
     object BtIn: TGuiButton
@@ -316,7 +316,7 @@ object FmLA4029: TFmLA4029
       Inertia = 50.000000000000000000
       Max = 100.000000000000000000
       NumGlyphs = 65
-      StitchKind = skVertical
+      StitchKind = skHorizontal
       OnChange = DialMixChange
     end
     object PnMix: TGuiPanel
@@ -375,7 +375,7 @@ object FmLA4029: TFmLA4029
       Min = -24.000000000000000000
       Max = 24.000000000000000000
       NumGlyphs = 65
-      StitchKind = skVertical
+      StitchKind = skHorizontal
       OnChange = DialInputChange
     end
     object DialOutput: TGuiDial
@@ -391,7 +391,7 @@ object FmLA4029: TFmLA4029
       Min = -24.000000000000000000
       Max = 24.000000000000000000
       NumGlyphs = 65
-      StitchKind = skVertical
+      StitchKind = skHorizontal
       OnChange = DialOutputChange
     end
     object LbInput: TGuiLabel
@@ -436,7 +436,7 @@ object FmLA4029: TFmLA4029
       Inertia = 50.000000000000000000
       Max = 2.000000000000000000
       NumGlyphs = 65
-      StitchKind = skVertical
+      StitchKind = skHorizontal
       OnChange = DialRatioChange
     end
     object LbRatioX: TGuiLabel
@@ -466,7 +466,7 @@ object FmLA4029: TFmLA4029
       Inertia = 50.000000000000000000
       Max = 10.000000000000000000
       NumGlyphs = 65
-      StitchKind = skVertical
+      StitchKind = skHorizontal
       OnChange = DialKneeChange
     end
     object LbKnee: TGuiLabel

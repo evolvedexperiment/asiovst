@@ -3,8 +3,8 @@ object EditorForm: TEditorForm
   Top = 330
   BorderStyle = bsNone
   Caption = 'EditorForm'
-  ClientHeight = 145
-  ClientWidth = 353
+  ClientHeight = 150
+  ClientWidth = 344
   Color = 5983816
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,204 +18,209 @@ object EditorForm: TEditorForm
   PixelsPerInch = 96
   TextHeight = 13
   object Panel: TGuiPanel
-    Left = 10
+    Left = 8
     Top = 8
-    Width = 335
-    Height = 129
-    AntiAlias = gaaLinear2x
+    Width = 328
+    Height = 133
+    AntiAlias = gaaLinear4x
     LineColor = 14602441
-    Radius = 9
-  end
-  object LbRatioValue: TLabel
-    Left = 73
-    Top = 102
-    Width = 96
-    Height = 13
-    Alignment = taRightJustify
-    AutoSize = False
-    Color = 14602441
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 5983816
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentColor = False
-    ParentFont = False
-  end
-  object LbReleaseValue: TLabel
-    Left = 231
-    Top = 102
-    Width = 100
-    Height = 13
-    Alignment = taRightJustify
-    AutoSize = False
-    Color = 14602441
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 5983816
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentColor = False
-    ParentFont = False
-  end
-  object DialRatio: TGuiDial
-    Left = 19
-    Top = 83
-    Width = 48
-    Height = 48
-    Color = 14602441
-    LineWidth = 2
-    LineColor = 12097673
-    CircleColor = 5983816
-    Max = 200.000000000000000000
-    NumGlyphs = 31
-    StitchKind = skVertical
-    OnChange = DialRatioChange
-  end
-  object DialRelease: TGuiDial
-    Left = 177
-    Top = 83
-    Width = 48
-    Height = 48
-    Color = 14602441
-    LineWidth = 2
-    LineColor = 12097673
-    CircleColor = 5983816
-    Position = 699.000000000000000000
-    DefaultPosition = 699.000000000000000000
-    Min = 699.000000000000000000
-    Max = 3699.000000000000000000
-    NumGlyphs = 31
-    StitchKind = skVertical
-    OnChange = DialReleaseChange
-  end
-  object LbThresholdValue: TLabel
-    Left = 73
-    Top = 40
-    Width = 96
-    Height = 13
-    Alignment = taRightJustify
-    AutoSize = False
-    Caption = 'dB'
-    Color = 14602441
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 5983816
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentColor = False
-    ParentFont = False
-  end
-  object DialThreshold: TGuiDial
-    Left = 19
-    Top = 21
-    Width = 48
-    Height = 48
-    Color = 14602441
-    LineWidth = 2
-    LineColor = 12097673
-    CircleColor = 5983816
-    Position = -0.000000000100000001
-    DefaultPosition = -0.000000000100000001
-    Min = -96.000000000000000000
-    Max = -0.000000000100000001
-    NumGlyphs = 31
-    StitchKind = skVertical
-    OnChange = DialThresholdChange
-  end
-  object LbRatio: TGuiLabel
-    Left = 73
-    Top = 83
-    Width = 41
-    Height = 16
-    Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
-    AutoSize = True
-    Caption = 'Ratio'
-    Color = 14602441
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 5983816
-    Font.Height = -13
-    Font.Name = 'Verdana'
-    Font.Style = [fsBold, fsUnderline]
-  end
-  object LbRelease: TGuiLabel
-    Left = 231
-    Top = 83
-    Width = 58
-    Height = 16
-    Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
-    AutoSize = True
-    Caption = 'Release'
-    Color = 14602441
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 5983816
-    Font.Height = -13
-    Font.Name = 'Verdana'
-    Font.Style = [fsBold, fsUnderline]
-  end
-  object LbThreshold: TGuiLabel
-    Left = 73
-    Top = 21
-    Width = 75
-    Height = 16
-    Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
-    AutoSize = True
-    Caption = 'Threshold'
-    Color = 14602441
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 5983816
-    Font.Height = -13
-    Font.Name = 'Verdana'
-    Font.Style = [fsBold, fsUnderline]
-  end
-  object LbAttack: TGuiLabel
-    Left = 231
-    Top = 21
-    Width = 48
-    Height = 16
-    Margins.Bottom = 0
-    AntiAlias = gaaLinear4x
-    AutoSize = True
-    Caption = 'Attack'
-    Color = 14602441
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 5983816
-    Font.Height = -13
-    Font.Name = 'Verdana'
-    Font.Style = [fsBold, fsUnderline]
-  end
-  object LbAttackValue: TLabel
-    Left = 231
-    Top = 40
-    Width = 96
-    Height = 13
-    Alignment = taRightJustify
-    AutoSize = False
-    Color = 14602441
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 5983816
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentColor = False
-    ParentFont = False
-  end
-  object DialAttack: TGuiDial
-    Left = 177
-    Top = 21
-    Width = 48
-    Height = 48
-    Color = 14602441
-    LineWidth = 2
-    LineColor = 12097673
-    CircleColor = 5983816
-    Min = -200.000000000000000000
-    Max = 300.000000000000000000
-    NumGlyphs = 31
-    StitchKind = skVertical
-    OnChange = DialAttackChange
+    PanelColor = 14602441
+    ParentColor = True
+    Radius = 15
+    TabOrder = 0
+    Transparent = True
+    UseDockManager = True
+    object LbRatioValue: TLabel
+      Left = 65
+      Top = 94
+      Width = 96
+      Height = 13
+      Alignment = taRightJustify
+      AutoSize = False
+      Color = 14602441
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5983816
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+    end
+    object LbReleaseValue: TLabel
+      Left = 223
+      Top = 94
+      Width = 100
+      Height = 13
+      Alignment = taRightJustify
+      AutoSize = False
+      Color = 14602441
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5983816
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+    end
+    object DialRatio: TGuiDial
+      Left = 11
+      Top = 75
+      Width = 48
+      Height = 48
+      Color = 14602441
+      LineWidth = 2
+      LineColor = 12097673
+      CircleColor = 5983816
+      Max = 200.000000000000000000
+      NumGlyphs = 31
+      StitchKind = skVertical
+      OnChange = DialRatioChange
+    end
+    object DialRelease: TGuiDial
+      Left = 169
+      Top = 75
+      Width = 48
+      Height = 48
+      Color = 14602441
+      LineWidth = 2
+      LineColor = 12097673
+      CircleColor = 5983816
+      Position = 699.000000000000000000
+      DefaultPosition = 699.000000000000000000
+      Min = 699.000000000000000000
+      Max = 3699.000000000000000000
+      NumGlyphs = 31
+      StitchKind = skVertical
+      OnChange = DialReleaseChange
+    end
+    object LbThresholdValue: TLabel
+      Left = 65
+      Top = 32
+      Width = 96
+      Height = 13
+      Alignment = taRightJustify
+      AutoSize = False
+      Caption = 'dB'
+      Color = 14602441
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5983816
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+    end
+    object DialThreshold: TGuiDial
+      Left = 11
+      Top = 13
+      Width = 48
+      Height = 48
+      Color = 14602441
+      LineWidth = 2
+      LineColor = 12097673
+      CircleColor = 5983816
+      Position = -0.000000000100000001
+      DefaultPosition = -0.000000000100000001
+      Min = -96.000000000000000000
+      Max = -0.000000000100000001
+      NumGlyphs = 31
+      StitchKind = skVertical
+      OnChange = DialThresholdChange
+    end
+    object LbRatio: TGuiLabel
+      Left = 65
+      Top = 75
+      Width = 41
+      Height = 16
+      Margins.Bottom = 0
+      AntiAlias = gaaLinear4x
+      AutoSize = True
+      Caption = 'Ratio'
+      Color = 14602441
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5983816
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold, fsUnderline]
+    end
+    object LbRelease: TGuiLabel
+      Left = 223
+      Top = 75
+      Width = 58
+      Height = 16
+      Margins.Bottom = 0
+      AntiAlias = gaaLinear4x
+      AutoSize = True
+      Caption = 'Release'
+      Color = 14602441
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5983816
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold, fsUnderline]
+    end
+    object LbThreshold: TGuiLabel
+      Left = 65
+      Top = 13
+      Width = 75
+      Height = 16
+      Margins.Bottom = 0
+      AntiAlias = gaaLinear4x
+      AutoSize = True
+      Caption = 'Threshold'
+      Color = 14602441
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5983816
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold, fsUnderline]
+    end
+    object LbAttack: TGuiLabel
+      Left = 223
+      Top = 13
+      Width = 48
+      Height = 16
+      Margins.Bottom = 0
+      AntiAlias = gaaLinear4x
+      AutoSize = True
+      Caption = 'Attack'
+      Color = 14602441
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5983816
+      Font.Height = -13
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold, fsUnderline]
+    end
+    object LbAttackValue: TLabel
+      Left = 223
+      Top = 32
+      Width = 96
+      Height = 13
+      Alignment = taRightJustify
+      AutoSize = False
+      Color = 14602441
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 5983816
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentColor = False
+      ParentFont = False
+    end
+    object DialAttack: TGuiDial
+      Left = 169
+      Top = 13
+      Width = 48
+      Height = 48
+      Color = 14602441
+      LineWidth = 2
+      LineColor = 12097673
+      CircleColor = 5983816
+      Min = -200.000000000000000000
+      Max = 300.000000000000000000
+      NumGlyphs = 31
+      StitchKind = skVertical
+      OnChange = DialAttackChange
+    end
   end
 end
