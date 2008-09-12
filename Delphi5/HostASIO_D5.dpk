@@ -29,14 +29,14 @@ requires
   AVDCommon_D5;
 
 contains
-  DASIOHost in '..\Source\DASIOHost.pas',
-  OpenASIO in '..\Source\OpenASIO.pas',
-  DAsio in '..\Source\DAsio.pas',
-  DASIOConvert in '..\Source\DASIOConvert.pas',
-  DASIOGenerator in '..\Source\DASIOGenerator.pas',
-  DASIOChannelStrip in '..\Source\DASIOChannelStrip.pas',
-  DASIOMixer in '..\Source\DASIOMixer.pas',
-  BeRoASIO in '..\Source\BeRoASIO.pas',
-  DASIORegister in '..\Source\DASIORegister.pas';
+  DASIOHost in '..\Source\ASIO\DASIOHost.pas',
+  OpenASIO in '..\Source\ASIO\OpenASIO.pas',
+  DAsio in '..\Source\ASIO\DAsio.pas',
+  DASIOConvert in '..\Source\ASIO\DASIOConvert.pas',
+  DASIOGenerator in '..\Source\ASIO\DASIOGenerator.pas',
+  DASIOChannelStrip in '..\Source\ASIO\DASIOChannelStrip.pas',
+  DASIOMixer in '..\Source\ASIO\DASIOMixer.pas',
+  BeRoASIO in '..\Source\ASIO\BeRoASIO.pas',
+  DASIORegister in '..\Source\ASIO\DASIORegister.pas';
 
 end.

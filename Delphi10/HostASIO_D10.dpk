@@ -31,14 +31,14 @@ requires
   rtl;
 
 contains
-  DASIO in '..\Source\DASIO.pas',
-  BeRoASIO in '..\Source\BeRoASIO.pas',
-  OpenASIO in '..\Source\OpenASIO.pas',
-  DASIOHost in '..\Source\DASIOHost.pas',
-  DASIOConvert in '..\Source\DASIOConvert.pas',
-  DASIOGenerator in '..\Source\DASIOGenerator.pas',
-  DASIOChannelStrip in '..\Source\DASIOChannelStrip.pas',
-  DASIOMixer in '..\Source\DASIOMixer.pas',
-  DASIORegister in '..\Source\DASIORegister.pas';
+  DASIO in '..\Source\ASIO\DASIO.pas',
+  BeRoASIO in '..\Source\ASIO\BeRoASIO.pas',
+  OpenASIO in '..\Source\ASIO\OpenASIO.pas',
+  DASIOHost in '..\Source\ASIO\DASIOHost.pas',
+  DASIOConvert in '..\Source\ASIO\DASIOConvert.pas',
+  DASIOGenerator in '..\Source\ASIO\DASIOGenerator.pas',
+  DASIOChannelStrip in '..\Source\ASIO\DASIOChannelStrip.pas',
+  DASIOMixer in '..\Source\ASIO\DASIOMixer.pas',
+  DASIORegister in '..\Source\ASIO\DASIORegister.pas';
 
 end.
