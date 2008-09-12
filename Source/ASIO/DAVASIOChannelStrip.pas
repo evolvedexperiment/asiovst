@@ -1,4 +1,4 @@
-unit DASIOChannelStrip;
+unit DAVASIOChannelStrip;
 
 {If this file makes troubles, delete the DEFINE ASIOMixer in DASIOHost}
 

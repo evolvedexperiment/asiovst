@@ -1,4 +1,4 @@
-unit DASIOHost;
+unit DAVASIOHost;
 // This unit allows you to open an ASIO audio driver and access
 // its inputs and outputs. The component was written by
 // Christian Budde and Tobias Fleischer, with an extension by
@@ -19,10 +19,10 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LclType, LMessages, LResources,
   {$ELSE}Windows, Messages,{$ENDIF}
-  {$IFDEF OpenASIO} OpenAsio {$ELSE} BeroASIO {$ENDIF},
-  {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls, DASIOMixer,{$ENDIF}
-  {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF} SysUtils, Classes, DASIO,
-  DASIOConvert, DASIOGenerator, DAVDCommon, DAudioData;
+  {$IFDEF OpenASIO} DAVOpenAsio {$ELSE} DAVBeroASIO {$ENDIF},
+  {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls, DAVASIOMixer,{$ENDIF}
+  {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF} SysUtils, Classes, DAVASIO,
+  DAVASIOConvert, DAVASIOGenerator, DAVDCommon, DAudioData;
 
 const
   // private message
@@ -523,7 +523,7 @@ procedure ListAsioDrivers(var List: TAsioDriverList);
 implementation
 
 uses
-  Registry, ComObj, Math {$IFDEF ASIOMixer}, DASIOChannelStrip {$ENDIF};
+  Registry, ComObj, Math {$IFDEF ASIOMixer}, DAVASIOChannelStrip {$ENDIF};
 
 const
   ASIODRV_DESC  = 'description';

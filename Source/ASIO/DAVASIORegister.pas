@@ -1,4 +1,4 @@
-unit DASIORegister;
+unit DAVASIORegister;
 
 interface
 
@@ -6,10 +6,10 @@ procedure Register;
 
 implementation
 
-{$IFNDEF FPC}{$R DASIOHost.res}{$ENDIF}
+{$IFNDEF FPC}{$R DAVASIOHost.res}{$ENDIF}
 
 uses
-  {$IFDEF FPC} LResources, {$ENDIF} Classes, DASIOHOST, DASIOGenerator;
+  {$IFDEF FPC} LResources, {$ENDIF} Classes, DAVASIOHOST, DAVASIOGenerator;
 
 procedure Register;
 begin

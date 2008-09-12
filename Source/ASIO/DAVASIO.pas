@@ -32,7 +32,7 @@
   control sequencer sync accuracy
 
 *******************************************************************************)
-unit DASIO;
+unit DAVASIO;
 
 interface
 

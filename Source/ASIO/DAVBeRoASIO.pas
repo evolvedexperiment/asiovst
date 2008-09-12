@@ -1,6 +1,6 @@
 // BeRoASIO - A ASIO interface wrapper for Delphi & FreePascal
 // Copyright (C) 2005-2006, Benjamin Rosseaux ( http://bero.0ok.de/ )
-unit BeRoASIO;
+unit DAVBeRoASIO;
 
 {$I ASIOVST.inc}
 
@@ -8,7 +8,7 @@ interface
 
 {$IFDEF WIN32}
 uses
-  Windows, ActiveX, DASIO;
+  Windows, ActiveX, DAVASIO;
 
 type
   IBeRoASIO = interface(IUnknown)

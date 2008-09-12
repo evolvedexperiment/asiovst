@@ -1,4 +1,4 @@
-unit DASIOGenerator;
+unit DAVASIOGenerator;
 
 interface
 
@@ -50,7 +50,8 @@ type
 
 implementation
 
-uses Math, DASIOHost;
+uses
+  Math, DAVASIOHost;
 
 constructor TASIOGenerator.Create(AOwner: TComponent);
 begin

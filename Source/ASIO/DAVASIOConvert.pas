@@ -1,4 +1,4 @@
-unit DASIOConvert;
+unit DAVASIOConvert;
 
 {$I ASIOVST.INC}
 {$IFDEF DELPHI6_UP}

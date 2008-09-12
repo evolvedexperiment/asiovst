@@ -1,4 +1,4 @@
-unit DASIOMixer;
+unit DAVASIOMixer;
 
 {If this file makes troubles, delete the DEFINE ASIOMixer in DASIOHost}
 
@@ -6,7 +6,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, DASIOChannelStrip;
+  ExtCtrls, DAVASIOChannelStrip;
 
 type
   TFmASIOMixer = class(TForm)
