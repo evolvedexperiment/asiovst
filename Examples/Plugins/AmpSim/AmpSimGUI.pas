@@ -27,6 +27,7 @@ type
     RBMono: TRadioButton;
     RBStereo: TRadioButton;
     SBModel: TGuiSelectBox;
+    procedure FormShow(Sender: TObject);
     procedure DialDriveChange(Sender: TObject);
     procedure DialBiasChange(Sender: TObject);
     procedure DialOutputChange(Sender: TObject);
@@ -35,7 +36,7 @@ type
     procedure RBMonoClick(Sender: TObject);
     procedure RBStereoClick(Sender: TObject);
     procedure SBModelChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   end;
 
 var
@@ -47,6 +48,22 @@ implementation
 
 uses
   AmpSimDM;
+
+procedure TFmCombo.FormCreate(Sender: TObject);
+var
+  RS  : TResourceStream;
+begin
+ RS := TResourceStream.Create(hInstance, 'AmpKnob', 'BMP');
+ try
+  DialDrive.DialBitmap.LoadFromStream(RS); RS.Position := 0;
+  DialBias.DialBitmap.Assign(DialDrive.DialBitmap);
+  DialOutput.DialBitmap.Assign(DialDrive.DialBitmap);
+  DialFrequency.DialBitmap.Assign(DialDrive.DialBitmap);
+  DialResonance.DialBitmap.Assign(DialDrive.DialBitmap);
+ finally
+  RS.Free;
+ end;
+end;
 
 procedure TFmCombo.SBModelChange(Sender: TObject);
 begin
