@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ComCtrls,
-  ExtCtrls, DAVDCommon, DAVDComplex, Spin, Buttons, DASIOHost;
+  ExtCtrls, DAVDCommon, DAVDComplex, Spin, Buttons, DAVASIOHost;
 
 type
   TFmASIO = class(TForm)
@@ -52,7 +52,7 @@ implementation
 {$ENDIF}
 
 uses
-  Inifiles, DASIOConvert;
+  Inifiles;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin

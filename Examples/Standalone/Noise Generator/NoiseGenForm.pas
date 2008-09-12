@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Forms, Classes, Controls, StdCtrls, DASIOHost, DAVDCommon;
+  Forms, Classes, Controls, StdCtrls, DAVASIOHost, DAVDCommon;
 
 type
   TFmASIO = class(TForm)

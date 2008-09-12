@@ -22,12 +22,12 @@
 // - Refer to ASIO2 documentation for usage of the interface functions
 //-----------------------------------------------------------------------------------------------------------
 
-unit OpenASIO;
+unit DAVOpenASIO;
 
 interface
 
 uses
-  Windows, ActiveX, DASIO, Dialogs;
+  Windows, ActiveX, DAVASIO, Dialogs;
 
 type
   IOpenASIO = interface(IUnknown)

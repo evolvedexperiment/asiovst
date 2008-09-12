@@ -1,4 +1,4 @@
-package HostASIO_D10;
+package DAVASIOHost_D10;
 
 {$R *.res}
 {$ALIGN 8}
@@ -31,14 +31,14 @@ requires
   rtl;
 
 contains
-  DASIO in '..\Source\ASIO\DASIO.pas',
-  BeRoASIO in '..\Source\ASIO\BeRoASIO.pas',
-  OpenASIO in '..\Source\ASIO\OpenASIO.pas',
-  DASIOHost in '..\Source\ASIO\DASIOHost.pas',
-  DASIOConvert in '..\Source\ASIO\DASIOConvert.pas',
-  DASIOGenerator in '..\Source\ASIO\DASIOGenerator.pas',
-  DASIOChannelStrip in '..\Source\ASIO\DASIOChannelStrip.pas',
-  DASIOMixer in '..\Source\ASIO\DASIOMixer.pas',
-  DASIORegister in '..\Source\ASIO\DASIORegister.pas';
+  DAVASIO in '..\Source\ASIO\DAVASIO.pas',
+  DAVBeRoASIO in '..\Source\ASIO\DAVBeRoASIO.pas',
+  DAVOpenASIO in '..\Source\ASIO\DAVOpenASIO.pas',
+  DAVASIOHost in '..\Source\ASIO\DAVASIOHost.pas',
+  DAVASIOConvert in '..\Source\ASIO\DAVASIOConvert.pas',
+  DAVASIOGenerator in '..\Source\ASIO\DAVASIOGenerator.pas',
+  DAVASIOChannelStrip in '..\Source\ASIO\DAVASIOChannelStrip.pas',
+  DAVASIOMixer in '..\Source\ASIO\DAVASIOMixer.pas',
+  DAVASIORegister in '..\Source\ASIO\DAVASIORegister.pas';
 
 end.

@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Forms, Classes, Controls, StdCtrls, DASIOHost, DAVDComplex, DAVDCommon,
+  Forms, Classes, Controls, StdCtrls, DAVASIOHost, DAVDComplex, DAVDCommon,
   DAudioData;
 
 type
@@ -36,9 +36,9 @@ type
     procedure SbVolumeChange(Sender: TObject);
     procedure SbPanChange(Sender: TObject);
     procedure ASIOHostAudioDataBufferSwitch32(Sender: TObject; const InBuffer,
-      OutBuffer: TAudioDataCollection32);
+      OutBuffer: TASIOAudioDataCollection32);
     procedure ASIOHostAudioDataBufferSwitch64(Sender: TObject; const InBuffer,
-      OutBuffer: TAudioDataCollection64);
+      OutBuffer: TASIOAudioDataCollection64);
   private
     procedure SetFrequency(const Value: Double);
   public
@@ -173,7 +173,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostAudioDataBufferSwitch32(Sender: TObject;
-  const InBuffer, OutBuffer: TAudioDataCollection32);
+  const InBuffer, OutBuffer: TASIOAudioDataCollection32);
 var
   sample, ch : Integer;
   value      : Double;
@@ -189,7 +189,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostAudioDataBufferSwitch64(Sender: TObject;
-  const InBuffer, OutBuffer: TAudioDataCollection64);
+  const InBuffer, OutBuffer: TASIOAudioDataCollection64);
 var
   sample, ch : Integer;
   value      : Double;

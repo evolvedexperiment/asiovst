@@ -9,7 +9,7 @@ uses
   {$ELSE} Windows, Messages, XPMan,{$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, ToolWin,
   ExtCtrls, StdCtrls, DAVDCommon, DAVDComplex, Menus, Types, Spin, LunchBoxEvent,
-  LunchBoxEventList, LunchBoxInputFilter, DVSTHost, DASIOHost;
+  LunchBoxEventList, LunchBoxInputFilter, DVSTHost, DAVASIOHost;
 
 type
   TSampleRec = record

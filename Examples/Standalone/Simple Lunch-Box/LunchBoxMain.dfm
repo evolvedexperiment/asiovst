@@ -40,6 +40,7 @@ object FmLunchBox: TFmLunchBox
     Top = 0
     Width = 429
     Height = 24
+    ButtonHeight = 13
     Caption = 'ToolBar'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -60,7 +61,7 @@ object FmLunchBox: TFmLunchBox
       Left = 8
       Top = 0
       Width = 19
-      Height = 22
+      Height = 13
       Caption = 'kit:'
       Layout = tlCenter
     end
@@ -96,7 +97,7 @@ object FmLunchBox: TFmLunchBox
       Left = 119
       Top = 0
       Width = 29
-      Height = 22
+      Height = 13
       Caption = 'BPM:'
       Layout = tlCenter
     end
@@ -125,7 +126,7 @@ object FmLunchBox: TFmLunchBox
       Left = 208
       Top = 0
       Width = 25
-      Height = 22
+      Height = 13
       Caption = 'Bar:'
       Layout = tlCenter
     end
@@ -154,7 +155,7 @@ object FmLunchBox: TFmLunchBox
       Left = 282
       Top = 0
       Width = 34
-      Height = 22
+      Height = 13
       Caption = 'Style:'
       Layout = tlCenter
     end
@@ -468,6 +469,12 @@ object FmLunchBox: TFmLunchBox
       '16th')
   end
   object VstHost: TVstHost
+    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
+    ManageIdleAutomaticly = False
+    ParameterQuantization = 0
+    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
+    Tempo = 120.000000000000000000
+    VendorVersion = 0
     VstPlugIns = <
       item
         DisplayName = 'Realtime'
@@ -475,33 +482,27 @@ object FmLunchBox: TFmLunchBox
       item
         DisplayName = 'Output'
       end>
-    ParameterQuantization = 0
-    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
-    ManageIdleAutomaticly = False
-    Tempo = 120.000000000000000000
-    VstVersion = 2300
-    VendorVersion = 0
-    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
+    VstVersion = 2300
     Left = 72
     Top = 89
   end
   object ASIOHost: TASIOHost
-    CanDos = []
-    PreventClipping = pcAnalog
-    PreFillOutBuffer = bpfZero
-    ConvertOptimizations = [coSSE, co3DNow]
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
-    SampleRate = 44100.000000000000000000
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    OnReset = ASIOHostReset
-    OnLatencyChanged = ASIOHostReset
-    OnSampleRateChanged = ASIOHostSampleRateChanged
+    CanDos = []
+    ConvertOptimizations = [coSSE, co3DNow]
+    PreFillOutBuffer = bpfZero
+    PreventClipping = pcAnalog
+    SampleRate = 44100.000000000000000000
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch32
+    OnLatencyChanged = ASIOHostReset
+    OnReset = ASIOHostReset
+    OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 104
     Top = 89
   end

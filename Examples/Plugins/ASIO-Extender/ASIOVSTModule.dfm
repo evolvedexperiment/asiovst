@@ -20,16 +20,17 @@ object ASIOVSTModule: TASIOVSTModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'ASIO Driver'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'ASIO Driver'
+      LargeStepFloat = 0.500000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'ASIO Dr'
+      SmallStepFloat = 0.009999999776482582
       SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
-      SmallStepFloat = 0.009999999776482582
-      LargeStepFloat = 0.500000000000000000
-      MaxInteger = 1
-      LargeStepInteger = 1
       VSTModule = Owner
       OnParameterChange = ASIODriverChange
       OnCustomParameterDisplay = ASIODriverDisplay

@@ -404,7 +404,7 @@ type
     FVendorVersion  : Integer;
     FProductString  : string;
     FPlugInDir      : string;
-    FVTI            : TCustomVstTimeInformation;
+    FVTI            : TVstTimeInformation;
     FAutoIdle       : Boolean;
     FOnCreate       : TNotifyEvent;
     FOnDestroy      : TNotifyEvent;
@@ -443,7 +443,7 @@ type
     property VendorString: string read FVendorString write FVendorString;
     property VendorVersion: Integer read FVendorVersion write FVendorVersion;
     property VstPlugIns: TVstPlugIns read FVstPlugIns write SetVstPlugIns;
-    property VstTimeInfo: TCustomVstTimeInformation read FVTI write FVTI;
+    property VstTimeInfo: TVstTimeInformation read FVTI write FVTI;
     property VstVersion: Integer read getHostVersion write setHostVersion;
   end;
 
@@ -1039,7 +1039,7 @@ begin
  {$ENDIF}
  try
   FVstPlugIns := TVstPlugIns.Create(Self);
-  FVTI := TCustomVstTimeInformation.Create;
+  FVTI := TVstTimeInformation.Create;
   FVTI.OnChanged := VstTimeInfoChanged;
  finally
   if Assigned(FOnCreate) then FOnCreate(Self);

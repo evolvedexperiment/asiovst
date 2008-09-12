@@ -137,16 +137,16 @@ object FmASIO: TFmASIO
     OnChange = SbPanChange
   end
   object ASIOHost: TASIOHost
-    CanDos = []
-    PreventClipping = pcDigital
-    ConvertOptimizations = [coSSE]
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
-    SampleRate = 44100.000000000000000000
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    OnSampleRateChanged = ASIOHostSampleRateChanged
+    CanDos = []
+    ConvertOptimizations = [coSSE]
+    PreventClipping = pcDigital
+    SampleRate = 44100.000000000000000000
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch32
+    OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 308
     Top = 32
   end

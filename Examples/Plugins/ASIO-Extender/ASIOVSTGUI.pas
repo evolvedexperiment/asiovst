@@ -4,8 +4,9 @@ unit ASIOVSTGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-     DASIOHost, Controls, StdCtrls;
+uses
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
+  DAVASIOHost, Controls, StdCtrls;
 
 type
   TFmASIOVST = class(TForm)

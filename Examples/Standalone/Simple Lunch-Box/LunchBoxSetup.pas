@@ -36,7 +36,7 @@ var
 
 implementation
 
-uses IniFiles, DASIOHost, LunchBoxMain;
+uses IniFiles, DAVASIOHost, LunchBoxMain;
 
 {$IFNDEF FPC}
 {$R *.dfm}

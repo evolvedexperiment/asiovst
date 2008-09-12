@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Menus, ToolWin, ComCtrls, ExtCtrls, DAVDCommon, DGuiStaticWaveform,
   DGuiBaseControl, DGuiLevelMeter, DAudioFile, DAudioFileWav, DAudioFileAIFF,
-  DAudioFileAU, DASIOHost, DAudioData, DGuiAudioDataDisplay;
+  DAudioFileAU, DAVASIOHost, DAudioData, DGuiAudioDataDisplay;
 
 type
   TFmAudioEditor = class(TForm)

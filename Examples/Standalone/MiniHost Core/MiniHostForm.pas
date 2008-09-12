@@ -8,7 +8,7 @@ uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types, Messages,
   Forms, SysUtils, Classes, Graphics, Controls, StdCtrls, ExtCtrls, ComCtrls,
   Menus, DAVDCommon, DVstEffect, WaveIOX, DMidiFile, DMidiIO, DVSTHost,
-  DASIOHost;
+  DAVASIOHost;
 
 type
   ShortStr = string[255];
