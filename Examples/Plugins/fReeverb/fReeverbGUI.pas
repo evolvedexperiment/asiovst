@@ -2,7 +2,8 @@ unit fReeverbGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
+uses
+  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
   Controls, StdCtrls, XPStyleActnCtrls, ActnList, ActnMan, ToolWin,
   ActnCtrls, ActnMenus, DGuiBaseControl, DGuiDial, DGuiLabel, DGuiPanel,
   DGuiSelectBox, ExtCtrls, DGuiButton;
@@ -19,16 +20,16 @@ type
     DialStretch: TGuiDial;
     DialWet: TGuiDial;
     DialWidth: TGuiDial;
-    LbDamp: TGuiLabel;
-    LbDry: TGuiLabel;
     LbPreset: TGuiLabel;
-    LbSize: TGuiLabel;
-    LbStretch: TGuiLabel;
-    LbWet: TGuiLabel;
-    LbWidth: TGuiLabel;
     PnLabel: TGuiPanel;
     PnToolbar: TPanel;
     SBPreset: TGuiSelectBox;
+    LbDry: TGuiLabel;
+    LbWet: TGuiLabel;
+    LbWidth: TGuiLabel;
+    LbSize: TGuiLabel;
+    LbStretch: TGuiLabel;
+    LbDamp: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure BtAboutClick(Sender: TObject);
