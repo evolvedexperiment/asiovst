@@ -1,4 +1,4 @@
-package HostVST_D10;
+ package HostVST_D10;
 
 {$R DVSTHost.res}
 {$ALIGN 8}

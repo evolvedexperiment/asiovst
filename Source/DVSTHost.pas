@@ -481,6 +481,30 @@ implementation
 uses
   contnrs;
 
+resourcestring
+  RStrUnknown                    = 'Unknown';
+  RStrEffect                     = 'Effect';
+  RStrSynth                      = 'Synth';
+  RStrAnalysis                   = 'Analysis';
+  RStrMastering                  = 'Mastering';
+  RStrSpacializer                = 'Spacializer';
+  RStrRoomFx                     = 'RoomFx';
+  RStrSurroundFx                 = 'SurroundFx';
+  RStrRestoration                = 'Restoration';
+  RStrOfflineProcess             = 'OfflineProcess';
+  RStrShell                      = 'Shell';
+  RStrGenerator                  = 'Generator';
+  RStrVSTPluginNotValid          = 'This is not a valid Vst Plugin!';
+  RStrLoadingFailed              = 'Loading failed!';
+  RStrFileDoesNotExist           = 'File %d does not exists';
+  RStrPlugInCouldNotBeLoaded     = 'PlugIn %d could not be loaded';
+  RStrBankFileDoesNotExist       = 'Bank file does not exist';
+  StrPresetFileDoesNotExist      = 'Preset file does not exist';
+  RStrBankFileNotForThisPlugin   = 'Bank file not for this plugin!';
+  RStrPresetFileNotForThisPlugin = 'Preset file not for this plugin!';
+  RStrCloseEditorFirst           = 'Close editor first!';
+  RStrPluginNotValid             = 'This is not a valid Vst Plugin!';
+
 var
   FBlockSize     : Integer = 2048;
   FHostVersion   : Integer = 2300;
@@ -501,7 +525,7 @@ const
 
 function WhatIfNoEntry: Integer;
 begin
- raise Exception.Create('This is not a valid Vst Plugin!');
+ raise Exception.Create(RStrPluginNotValid);
  result := 1;
 end;
 
@@ -516,25 +540,25 @@ begin
  else Result := kVstLangEnglish
 end;
 
-function PlugCategory2String(Category:TVstPluginCategory):string;
+function PlugCategory2String(Category: TVstPluginCategory): string;
 begin
   case Category of
-    vpcUnknown        : Result := 'Unknown';
-    vpcEffect         : Result := 'Effect';
-    vpcSynth          : Result := 'Synth';
-    vpcAnalysis       : Result := 'Analysis';
-    vpcMastering      : Result := 'Mastering';
-    vpcSpacializer    : Result := 'Spacializer';
-    vpcRoomFx         : Result := 'RoomFx';
-    vpcSurroundFx     : Result := 'SurroundFx';
-    vpcRestoration    : Result := 'Restoration';
-    vpcOfflineProcess : Result := 'OfflineProcess';
-    vpcShell          : Result := 'Shell';
-    vpcGenerator      : Result := 'Generator';
+    vpcUnknown        : Result := RStrUnknown;
+    vpcEffect         : Result := RStrEffect;
+    vpcSynth          : Result := RStrSynth;
+    vpcAnalysis       : Result := RStrAnalysis;
+    vpcMastering      : Result := RStrMastering;
+    vpcSpacializer    : Result := RStrSpacializer;
+    vpcRoomFx         : Result := RStrRoomFx;
+    vpcSurroundFx     : Result := RStrSurroundFx;
+    vpcRestoration    : Result := RStrRestoration;
+    vpcOfflineProcess : Result := RStrOfflineProcess;
+    vpcShell          : Result := RStrShell;
+    vpcGenerator      : Result := RStrGenerator;
   end;
 end;
 
-function EffOptions2String(EffOpts: TEffFlags):string;
+function EffOptions2String(EffOpts: TEffFlags): string;
 begin
  Result := '';
  if effFlagsHasEditor     in EffOpts then Result := Result + 'HasEditor, ';
@@ -860,7 +884,10 @@ begin
      audioMasterGetChunkFile               : {$IFDEF Debug} raise Exception.Create('TODO: get the native path of currently loading bank or project') {$ENDIF Debug};
     else
      try
-       raise Exception.Create('Check: '+inttostr(Integer(opcode))+' - '+inttostr(index)+' - '+inttostr(value)+' - '+floattostr(opt));
+       raise Exception.Create('Check: ' + IntToStr(Integer(opcode)) + ' - ' +
+                                          IntToStr(index) + ' - ' +
+                                          IntToStr(value) + ' - ' +
+                                          FloatToStr(opt));
      except
        result := 0;
      end;
@@ -1272,8 +1299,8 @@ begin
  if PVstEffect = nil then
   try
    if not loadOK
-    then raise Exception.Create('This is not a valid Vst Plugin!')
-    else raise Exception.Create('Loading failed!');
+    then raise Exception.Create(RStrVSTPluginNotValid)
+    else raise Exception.Create(RStrLoadingFailed);
   except
    raise;
   end;
@@ -1638,18 +1665,18 @@ begin
       begin
        with TLabel.Create(Form) do
         begin
-         Name := 'LbL'+IntToStr(i); Parent := Form; Caption := GetParamName(i)+':';
+         Name := 'LbL' + IntToStr(i); Parent := Form; Caption := GetParamName(i)+':';
          Height := 16; Alignment := taCenter; Left := 2; Top := 2+i*Height;
         end;
        with TLabel.Create(Form) do
         begin
-         Name := 'LbV'+IntToStr(i); Parent := Form; Alignment := taCenter;
+         Name := 'LbV' + IntToStr(i); Parent := Form; Alignment := taCenter;
          Height := 16; Left := Form.Width-Left-72; AutoSize := False;
          Alignment := taCenter; Width := 65; Top := 2+i*Height;
         end;
        with TScrollBar.Create(Form) do
         begin
-         Name := 'ParamBar'+IntToStr(i); Parent := Form;
+         Name := 'ParamBar' + IntToStr(i); Parent := Form;
          Anchors := [akLeft, akTop, akRight];
          Kind := sbHorizontal; LargeChange := 10;
          Height := 16; Top := 2+i*Height; Tag := i;
@@ -1982,7 +2009,7 @@ begin
   end;
 end;
 
-function TCustomVstPlugIn.GetErrorText:string;
+function TCustomVstPlugIn.GetErrorText: string;
 var
   temp: PChar;
 begin
@@ -2344,7 +2371,7 @@ begin
    Unload;  // make sure nothing else is loaded
    FMainFunction := nil;
    if not FileExists(PluginDll)
-    then raise Exception.Create('File ' + PluginDll + ' does not exists');
+    then raise Exception.CreateFmt(RStrFileDoesNotExist, [PluginDll]);
    if GetEntryPoints(PluginDll) <> 0 then
     begin
      Unload;
@@ -2357,7 +2384,7 @@ begin
   begin
    if Assigned(FOnAfterLoad) then FOnAfterLoad(Self);
    result := True;
-  end else raise Exception.Create('PlugIn ' + PluginDll + ' could not be loaded');
+  end else raise Exception.CreateFmt(RStrPlugInCouldNotBeLoaded, [PluginDll]);
  except
   result := False;
   Unload;
@@ -2410,7 +2437,7 @@ var
   chnk: TFileStream;
 begin
  if not FileExists(FileName)
-  then raise Exception.Create('bank file does not exist');
+  then raise Exception.Create(RStrBankFileDoesNotExist);
  chnk := TFileStream.Create(FileName, fmOpenRead);
  try
   LoadBank(chnk);
@@ -2424,7 +2451,7 @@ var
   chnk: TFileStream;
 begin
  if not FileExists(FileName)
-  then raise Exception.Create('preset file does not exist');
+  then raise Exception.Create(StrPresetFileDoesNotExist);
  chnk := TFileStream.Create(FileName, fmOpenRead);
  try
   LoadPreset(chnk);
@@ -2568,7 +2595,7 @@ begin
 
    x := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
    SwapLong(x);
-   if FXChunkBank.fxId <> x then raise Exception.Create('bank file not for this plugin!');
+   if FXChunkBank.fxId <> x then raise Exception.Create(RStrBankFileNotForThisPlugin);
 
    x := Stream.Size - Stream.Position;
    GetMem(pb2, x + 1);
@@ -2582,7 +2609,7 @@ begin
    Stream.Read(ptr^, SizeOf(TFXSet) - SizeOf(Pointer));
    x := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
    SwapLong(x);
-   if FXSet.fxId <> x then raise Exception.Create('bank file not for this plugin!');
+   if FXSet.fxId <> x then raise Exception.Create(RStrBankFileNotForThisPlugin);
 
    PatchChunkInfo.version := 1;
    PatchChunkInfo.pluginUniqueID := PVstEffect.uniqueID;
@@ -2637,7 +2664,7 @@ begin
    x := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
    SwapLong(x);
    if FXChunkset.fxId <> x
-    then raise Exception.Create('preset file not for this plugin!');
+    then raise Exception.Create(RStrPresetFileNotForThisPlugin);
    SetProgramName(FXChunkset.prgName);
 
    x := Stream.Size - Stream.Position;
@@ -2652,7 +2679,8 @@ begin
    Stream.Read(ptr^, SizeOf(TFXPreset) - SizeOf(Pointer));
    x := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
    SwapLong(x);
-   if FXPreset.fxId <> x then raise Exception.Create('preset file not for this plugin!');
+   if FXPreset.fxId <> x
+    then raise Exception.Create(RStrPresetFileNotForThisPlugin);
    PatchChunkInfo.version := 1;
    PatchChunkInfo.pluginUniqueID := PVstEffect.uniqueID;
    PatchChunkInfo.pluginVersion := PVstEffect.version;
@@ -2829,7 +2857,7 @@ end;
 procedure TCustomVstPlugIn.SetGUIStyle(const Value: TGUIStyle);
 begin
  if FEditOpen
-  then raise Exception.Create('Close Editor first!')
+  then raise Exception.Create(RStrCloseEditorFirst)
   else fGUIStyle := Value;
 end;
 {$ENDREGION}

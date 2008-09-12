@@ -993,32 +993,33 @@ begin
     if Value >= FDriverList.Count then FDriverIndex := FDriverList.Count - 1
      else FDriverIndex := Value;
    if FDriverIndex = -1 then
-   begin
-    FDriverName := '';
-    FInputLatency := 0;
-    FOutputLatency := 0;
-    FInputChannelCount := 0;
-    FOutputChannelCount := 0;
-    FBufferSize := 0;
-    CloseDriver;
-   end else
-   begin
-    try
-     CloseDriver;
-     FDriverName := FDriverList[FDriverIndex];
-     OpenDriver;
-    except 
-     exit;
-    end;
-    if assigned(FDriver) then
     begin
-     FDriver.GetDriverName(DrName);
-     FDriverVersion := FDriver.GetDriverVersion;
-     CanTimeCode;   CanTimeInfo;    CanTransport;
-     CanInputGain;  CanInputMeter;
-     CanOutputGain; CanOutputMeter;
+     FDriverName := '';
+     FInputLatency := 0;
+     FOutputLatency := 0;
+     FInputChannelCount := 0;
+     FOutputChannelCount := 0;
+     FBufferSize := 0;
+     CloseDriver;
+    end
+   else
+    begin
+     try
+      CloseDriver;
+      FDriverName := FDriverList[FDriverIndex];
+      OpenDriver;
+     except
+      exit;
+     end;
+     if assigned(FDriver) then
+      begin
+       FDriver.GetDriverName(DrName);
+       FDriverVersion := FDriver.GetDriverVersion;
+       CanTimeCode;   CanTimeInfo;    CanTransport;
+       CanInputGain;  CanInputMeter;
+       CanOutputGain; CanOutputMeter;
+      end;
     end;
-   end;
    if assigned(fOnDriverChanged) then OnDriverChanged(self);
    Active := tmpActive;
   end;

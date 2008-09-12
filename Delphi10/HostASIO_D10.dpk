@@ -31,7 +31,7 @@ requires
   rtl;
 
 contains
-  DAsio in '..\Source\DAsio.pas',
+  DASIO in '..\Source\DASIO.pas',
   BeRoASIO in '..\Source\BeRoASIO.pas',
   OpenASIO in '..\Source\OpenASIO.pas',
   DASIOHost in '..\Source\DASIOHost.pas',
