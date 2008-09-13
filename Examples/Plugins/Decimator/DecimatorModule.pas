@@ -2,7 +2,8 @@ unit DecimatorModule;
 
 interface
 
-uses Windows, DAVDCommon, Forms, DVSTEffect, DVSTModule;
+uses
+  Windows, DAV_Common, Forms, DAV_VSTEffect, DAV_VSTModule;
 
 type
   TVSTDecimator = class(TVSTModule)
@@ -29,9 +30,11 @@ implementation
 
 {$R *.DFM}
 
-uses Math, DecimatorGUI;
+uses
+  Math, DecimatorGUI;
 
-const kDenorm = 1E-24;
+const
+  kDenorm = 1E-24;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize

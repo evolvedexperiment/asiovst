@@ -3,8 +3,8 @@ library DitherNoiseshaper;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   DitherNoiseshaperDM in 'DitherNoiseshaperDM.pas' {DitherNoiseshaperModule: TVSTModule},
   DitherNoiseshaperGUI in 'DitherNoiseshaperGUI.pas' {FmDitherNoiseshaper};
 

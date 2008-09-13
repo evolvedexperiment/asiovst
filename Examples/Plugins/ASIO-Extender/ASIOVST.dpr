@@ -3,8 +3,8 @@ library ASIOVST;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   ASIOVSTModule in 'ASIOVSTModule.pas' {ASIOVSTModule: TVSTModule},
   ASIOVSTGUI in 'ASIOVSTGUI.pas' {FmASIOVST};
 

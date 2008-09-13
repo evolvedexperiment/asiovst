@@ -6,8 +6,8 @@ library EnhancedGate;
 uses
   FastMM4,
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   EnhancedGateDM in 'EnhancedGateDM.pas' {EnhancedGateDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 

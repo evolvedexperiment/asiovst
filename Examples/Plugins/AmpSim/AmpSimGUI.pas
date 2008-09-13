@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, 
-  StdCtrls, DGuiLabel, DGuiBaseControl, DGuiDial, DGuiSelectBox;
+  StdCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiSelectBox;
 
 type
   TFmCombo = class(TForm)

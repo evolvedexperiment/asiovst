@@ -3,8 +3,8 @@ unit DitherNoiseshaperDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  DDspDitherNoiseshaper;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_DspDitherNoiseshaper;
 
 type
   TDitherNoiseshaperModule = class(TVSTModule)

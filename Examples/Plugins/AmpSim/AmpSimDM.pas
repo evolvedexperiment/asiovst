@@ -5,8 +5,8 @@ interface
 {$DEFINE UseGUI}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  DDSPFilter;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_DSPFilter;
 
 type
   TComboDataModule = class(TVSTModule)
@@ -52,7 +52,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DVSTEffect, AmpSimGUI;
+  Math, DAV_VSTEffect, AmpSimGUI;
 
 procedure TComboDataModule.ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin

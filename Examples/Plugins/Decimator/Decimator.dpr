@@ -3,8 +3,8 @@ library Decimator;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   DecimatorModule in 'DecimatorModule.pas' {VSTDecimator: TVSTModule},
   DecimatorGUI in 'DecimatorGUI.pas' {VSTGUI};
 

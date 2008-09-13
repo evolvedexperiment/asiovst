@@ -5,8 +5,8 @@ library AmpSim;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   AmpSimDM in 'AmpSimDM.pas' {ComboDataModule: TVSTModule},
   AmpSimGUI in 'AmpSimGUI.pas' {FmCombo};
 

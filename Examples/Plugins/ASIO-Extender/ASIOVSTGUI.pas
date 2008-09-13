@@ -5,8 +5,8 @@ unit ASIOVSTGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  DAVASIOHost, Controls, StdCtrls;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Common,
+  DAV_VSTModule, DAV_ASIOHost;
 
 type
   TFmASIOVST = class(TForm)
@@ -25,7 +25,8 @@ implementation
 
 {$R *.DFM}
 
-uses ASIOVSTModule;
+uses
+  ASIOVSTModule;
 
 procedure TFmASIOVST.CBShortCircuitClick(Sender: TObject);
 begin
@@ -48,18 +49,18 @@ end;
 
 procedure TFmASIOVST.DisplayASIOInformation;
 begin
- with TASIOVSTModule(Owner) do
+ with TASIOVSTModule(Owner), AsioHost, Memo do
   begin
-   Memo.Clear;
-   Memo.Lines.Add('Driver: ' + AsioHost.DriverName);
-   Memo.Lines.Add('Buffersize: ' + IntToStr(AsioHost.BufferSize));
-   Memo.Lines.Add('Latency: ' + IntToStr(AsioHost.InputLatency + AsioHost.OutputLatency + integer(AsioHost.BufferSize)));
-   Memo.Lines.Add('Channel 1: ' + AsioHost.OutputChannelInfos[0].name);
-   Memo.Lines.Add('Channel 2: ' + AsioHost.OutputChannelInfos[1].name);
-   Memo.Lines.Add('Format In 1: ' + ChannelTypeToString(AsioHost.OutputChannelInfos[0].vType));
-   Memo.Lines.Add('Format In 2: ' + ChannelTypeToString(AsioHost.OutputChannelInfos[1].vType));
-   Memo.Lines.Add('Format Out 1: ' + ChannelTypeToString(AsioHost.OutputChannelInfos[0].vType));
-   Memo.Lines.Add('Format Out 2: ' + ChannelTypeToString(AsioHost.OutputChannelInfos[1].vType));
+   Clear;
+   Lines.Add('Driver: ' + DriverName);
+   Lines.Add('Buffersize: ' + IntToStr(BufferSize));
+   Lines.Add('Latency: ' + IntToStr(InputLatency + OutputLatency + Integer(BufferSize)));
+   Lines.Add('Channel 1: ' + OutputChannelInfos[0].name);
+   Lines.Add('Channel 2: ' + OutputChannelInfos[1].name);
+   Lines.Add('Format In 1: ' + ChannelTypeToString(OutputChannelInfos[0].vType));
+   Lines.Add('Format In 2: ' + ChannelTypeToString(OutputChannelInfos[1].vType));
+   Lines.Add('Format Out 1: ' + ChannelTypeToString(OutputChannelInfos[0].vType));
+   Lines.Add('Format Out 2: ' + ChannelTypeToString(OutputChannelInfos[1].vType));
   end;
 end;
 

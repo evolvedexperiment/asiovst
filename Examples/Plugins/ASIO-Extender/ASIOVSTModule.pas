@@ -5,8 +5,8 @@ unit ASIOVSTModule;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVASIOHost, DAVDCommon,
-  DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_ASIOHost, DAV_Common,
+  DAV_VSTModule;
 
 type
   TASIOVSTModule = class(TVSTModule)

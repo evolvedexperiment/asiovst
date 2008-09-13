@@ -2,8 +2,9 @@ unit DecimatorGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  ExtCtrls, Controls, Gauges, StdCtrls, Graphics;
+uses
+  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, Gauges,
+  StdCtrls, Graphics, DAV_Common, DAV_VSTModule;
 
 type
   TMouseContext = (mcNone, mcSHRate, mcBits, mcCut, mcRes, mcMix, mcVol);

@@ -3,10 +3,9 @@ unit EditorFrm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon,
-  DVSTModule, Controls,
-  StdCtrls, Graphics, DGuiDial, Gauges, DGuiBaseControl, ExtCtrls, DGuiGroup,
-  DGuiLED;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
+  Gauges, ExtCtrls, DAV_Common, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLED,
+  DAV_GuiGroup;
 
 type
   TRGB32 = packed record
