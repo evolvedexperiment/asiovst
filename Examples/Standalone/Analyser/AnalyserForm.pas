@@ -7,7 +7,7 @@ interface
 uses {$IFDEF FPC} LCLIntf, LResources, TAGraph,
      {$ELSE} Windows, TeeProcs, TeEngine, Series, {$ENDIF}
      SysUtils, Classes, Controls, Forms, StdCtrls, ComCtrls, DAVDCommon,
-     DDspFilter, Chart, Spin, Buttons, DASIOHost, ExtCtrls;
+     DDspFilter, Chart, Spin, Buttons, DAVASIOHost, ExtCtrls;
 
 const
   cNumFrequencies = 32;
