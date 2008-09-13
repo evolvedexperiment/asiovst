@@ -29,9 +29,6 @@ requires
   rtl,
   vcl,
   designide,
-  vclactnband,
-  vclx,
-  xmlrtl,
   DAV_Common_D10;
 
 contains

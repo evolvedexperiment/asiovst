@@ -9,7 +9,7 @@ procedure Register;
 implementation
 
 uses
-  Classes, DAV_DspEnvelopeFollower, DAVDspRemez, DAVDspFilter,
+  Classes, DAV_DspEnvelopeFollower, DAV_DspRemez, DAV_DspFilter,
   DAV_DspVoiceController, DAV_DspOscSine, DAV_DspOscSaw, DAV_DspOscRamp,
   DAV_DspOscSquare, DAV_DspOscNoise, DAV_DspOscAbsSine, DAV_DspEnvelope,
   {$IFNDEF FPC}

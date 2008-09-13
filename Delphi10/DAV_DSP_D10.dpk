@@ -1,6 +1,5 @@
 package DAV_DSP_D10;
 
-{$R *.res}
 {$R 'DAV_DspRegister.res'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -28,27 +27,29 @@ package DAV_DSP_D10;
 
 requires
   vcl,
-  rtl;
+  rtl,
+  designide,
+  DAV_Common_D10;
 
 contains
   DAV_DspBaseComponent in '..\Source\DAV_DspBaseComponent.pas',
   DAV_DspRegister in '..\Source\DSP\DAV_DspRegister.pas',
   DAV_DspEnvelopeFollower in '..\Source\DAV_DspEnvelopeFollower.pas',
-  DAVDspBesselFilter in '..\Source\DSP\DAVDspBesselFilter.pas',
-  DAVDspButterworthFilter in '..\Source\DSP\DAVDspButterworthFilter.pas',
-  DAVDspChebyshevFilter in '..\Source\DSP\DAVDspChebyshevFilter.pas',
-  DAVDspDynamics in '..\Source\DSP\DAVDspDynamics.pas',
-  DAVDspMinBlep in '..\Source\DSP\DAVDspMinBlep.pas',
-  DAVDspPhaser in '..\Source\DSP\DAVDspPhaser.pas',
-  DAVDspFilter in '..\Source\DSP\DAVDspFilter.pas',
-  DAVDspWaveshaper in '..\Source\DSP\DAVDspWaveshaper.pas',
-  DAVDspInterpolation in '..\Source\DSP\DAVDspInterpolation.pas',
-  DAVDspWindowing in '..\Source\DSP\DAVDspWindowing.pas',
-  DAVDspFFT in '..\Source\DSP\DAVDspFFT.pas',
-  DAVDspDFT in '..\Source\DSP\DAVDspDFT.pas',
-  DAVDspDitherNoiseShaper in '..\Source\DSP\DAVDspDitherNoiseShaper.pas',
-  DAVDspMetronome in '..\Source\DSP\DAVDspMetronome.pas',
-  DAVDspRemez in '..\Source\DSP\DAVDspRemez.pas',
+  DAV_DspBesselFilter in '..\Source\DSP\DAV_DspBesselFilter.pas',
+  DAV_DspButterworthFilter in '..\Source\DSP\DAV_DspButterworthFilter.pas',
+  DAV_DspChebyshevFilter in '..\Source\DSP\DAV_DspChebyshevFilter.pas',
+  DAV_DspDynamics in '..\Source\DSP\DAV_DspDynamics.pas',
+  DAV_DspMinBlep in '..\Source\DSP\DAV_DspMinBlep.pas',
+  DAV_DspPhaser in '..\Source\DSP\DAV_DspPhaser.pas',
+  DAV_DspFilter in '..\Source\DSP\DAV_DspFilter.pas',
+  DAV_DspWaveshaper in '..\Source\DSP\DAV_DspWaveshaper.pas',
+  DAV_DspInterpolation in '..\Source\DSP\DAV_DspInterpolation.pas',
+  DAV_DspWindowing in '..\Source\DSP\DAV_DspWindowing.pas',
+  DAV_DspFFT in '..\Source\DSP\DAV_DspFFT.pas',
+  DAV_DspDFT in '..\Source\DSP\DAV_DspDFT.pas',
+  DAV_DspDitherNoiseShaper in '..\Source\DSP\DAV_DspDitherNoiseShaper.pas',
+  DAV_DspMetronome in '..\Source\DSP\DAV_DspMetronome.pas',
+  DAV_DspRemez in '..\Source\DSP\DAV_DspRemez.pas',
   DAV_DspStateVariableFilter in '..\Source\DSP\DAV_DspStateVariableFilter.pas',
   DAV_DspVoice in '..\Source\DAV_DspVoice.pas',
   DAV_DspOscSine in '..\Source\DAV_DspOscSine.pas',
