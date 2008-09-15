@@ -3,8 +3,8 @@ library mdaLoopEx;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   LoopExDM in 'LoopExDM.pas' {LoopExDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

@@ -3,8 +3,7 @@ unit RoundPanDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
 
 type
   TRoundPanDataModule = class(TVSTModule)

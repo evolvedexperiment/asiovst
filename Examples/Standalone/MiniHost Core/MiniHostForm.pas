@@ -7,8 +7,8 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types, Messages,
   Forms, SysUtils, Classes, Graphics, Controls, StdCtrls, ExtCtrls, ComCtrls,
-  Menus, DAVDCommon, DVstEffect, WaveIOX, DMidiFile, DMidiIO, DVSTHost,
-  DAVASIOHost;
+  Menus, DAV_Common, DAV_VstEffect, WaveIOX, DAV_MidiFile, DAV_MidiIO,
+  DAV_ASIOHost, DAV_VSTHost;
 
 type
   ShortStr = string[255];
@@ -1534,7 +1534,7 @@ begin
    VSTHost[0].LoadPreset(s);
   except
 {$IFNDEF FPC}
-   DAVDCommon.msg('Preset file not for this plugin (or file is corrupted)!');
+   DAV_Common.msg('Preset file not for this plugin (or file is corrupted)!');
 {$ENDIF}
    exit;
   end;
@@ -1545,7 +1545,7 @@ begin
    VSTHost[0].LoadBank(s);
   except
 {$IFNDEF FPC}
-   DAVDCommon.msg('Bank file not for this plugin (or file is corrupted)!');
+   DAV_Common.msg('Bank file not for this plugin (or file is corrupted)!');
 {$ENDIF}
    exit;
   end;

@@ -3,8 +3,8 @@ library mdaBandisto;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   BandistoDM in 'BandistoDM.pas' {BandistoDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

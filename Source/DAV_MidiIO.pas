@@ -1,4 +1,4 @@
-unit DMidiIO;
+unit DAV_MidiIO;
 
 //****************************************************************************/
 //* MIDI device classes by Adrian Meyer

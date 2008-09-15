@@ -3,7 +3,7 @@ unit BeatBoxDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
 
 type
   TBeatBoxDataModule = class(TVSTModule)

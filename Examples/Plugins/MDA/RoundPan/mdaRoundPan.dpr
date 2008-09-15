@@ -3,8 +3,8 @@ library mdaRoundPan;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   RoundPanDM in 'RoundPanDM.pas' {RoundPanDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

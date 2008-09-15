@@ -8,8 +8,9 @@ uses
   {$IFDEF FPC}LCLIntf, LMessages, LResources, Buttons,
   {$ELSE} Windows, Messages, XPMan,{$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, ToolWin,
-  ExtCtrls, StdCtrls, DAVDCommon, DAVDComplex, Menus, Types, Spin, LunchBoxEvent,
-  LunchBoxEventList, LunchBoxInputFilter, DVSTHost, DAVASIOHost;
+  ExtCtrls, StdCtrls, Menus, Types, Spin, DAV_Common, DAV_Complex, DAV_VSTHost,
+  DAV_ASIOHost, LunchBoxEvent, LunchBoxEventList,
+  LunchBoxInputFilter;
 
 type
   TSampleRec = record

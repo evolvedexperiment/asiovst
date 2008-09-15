@@ -3,8 +3,8 @@ library mdaDubDelay;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   DubDelayDM in 'DubDelayDM.pas' {DubDelayDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

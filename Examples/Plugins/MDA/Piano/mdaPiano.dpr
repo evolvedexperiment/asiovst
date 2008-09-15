@@ -3,11 +3,10 @@ library mdaPiano;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   PianoDM in 'PianoDM.pas' {PianoDataModule: TVSTModule},
-  PianoData in 'PianoData.pas',
-  DVSTChannels in '..\..\..\..\Source\DVSTChannels.pas';
+  PianoData in 'PianoData.pas';
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var

@@ -3,8 +3,8 @@ library mdaThruZero;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   ThruZeroDM in 'ThruZeroDM.pas' {ThruZeroDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

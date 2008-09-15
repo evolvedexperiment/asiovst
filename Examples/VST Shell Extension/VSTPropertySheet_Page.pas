@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  StdCtrls, DVSTHost;
+  StdCtrls, DAV_VSTHost;
 
 type
   TFmPage = class(TForm)
@@ -26,7 +26,7 @@ implementation
 
 {$R *.dfm}
 
-uses DVSTEffect;
+uses DAV_VSTEffect;
 
 { TFmPage }
 
@@ -85,7 +85,7 @@ begin
           StretchBlt(FGUIBitmap.Canvas.Handle, 0, 0, FGUIBitmap.Width, FGUIBitmap.Height,
                      Canvas.Handle, r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top, cmSrcCopy);
          finally
-          EditClose;
+          CloseEdit;
          end;
         fm.Free;
        end;

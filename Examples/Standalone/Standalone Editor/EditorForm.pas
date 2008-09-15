@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages, XPMan,
   {$ENDIF}SysUtils, Classes, Graphics, Controls, Forms, ComCtrls, ExtCtrls,
-  StdCtrls, DAVDCommon, DVSTHost, DAVASIOHost, ToolWin, Dialogs;
+  StdCtrls, ToolWin, Dialogs, DAV_Common, DAV_ASIOHost, DAV_VSTHost;
 
 type
   TFmVSTEditor = class(TForm)
@@ -51,7 +51,7 @@ implementation
 {$ENDIF}
 
 uses
-  IniFiles, DVSTEffect, EditorSetup;
+  IniFiles, DAV_VSTEffect, EditorSetup;
 
 procedure TFmVSTEditor.CBPresetChange(Sender: TObject);
 begin

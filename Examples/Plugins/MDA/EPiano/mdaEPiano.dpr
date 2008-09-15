@@ -3,8 +3,8 @@ library mdaEPiano;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   EPianoDM in 'EPianoDM.pas' {EPianoDataModule: TVSTModule},
   EPianoData in 'EPianoData.pas';
 

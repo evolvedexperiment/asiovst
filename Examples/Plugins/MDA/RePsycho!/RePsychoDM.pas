@@ -3,7 +3,7 @@ unit RePsychoDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
 
 type
   TRePsychoDataModule = class(TVSTModule)
@@ -40,7 +40,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DVSTCustomModule;
+  Math, DAV_VSTCustomModule;
 
 procedure TRePsychoDataModule.ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin

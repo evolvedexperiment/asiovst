@@ -3,8 +3,8 @@ unit PianoDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTEffect, DVSTModule,
-  DVSTCustomModule;
+  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTEffect,
+  DAV_VSTModule, DAV_VSTCustomModule;
 
 const
   cNumVoices  =     32;  // Max Polyphony

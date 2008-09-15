@@ -20,7 +20,7 @@ package VSTPlugin_D9;
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
-{$IMAGEBASE $400000}
+{$IMAGEBASE $560000}
 {$DESCRIPTION 'ASIO/VST VST Plugin Project Wizard (design-time)'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
@@ -29,30 +29,28 @@ requires
   rtl,
   vcl,
   designide,
-  vclactnband,
-  vclx,
-  xmlrtl,
-  AVDCommon_D9;
+  DAV_Common_D9;
 
 contains
   Config in '..\Source\Config.pas',
   OpenToolsUtils in '..\Source\OpenToolsUtils.pas',
-  DVSTEditorCreator in '..\Source\DVSTEditorCreator.pas',
-  DVSTModule in '..\Source\DVSTModule.pas',
-  DVSTModuleCreator in '..\Source\DVSTModuleCreator.pas',
-  DVSTPluginWizard in '..\Source\DVSTPluginWizard.pas',
-  DVSTPluginWizardFrm in '..\Source\DVSTPluginWizardFrm.pas' {VSTPluginWizardForm},
-  DVSTPluginWizardReg in '..\Source\DVSTPluginWizardReg.pas',
-  DVSTProjectCreator in '..\Source\DVSTProjectCreator.pas',
-  DVSTEffect in '..\Source\DVSTEffect.pas',
-  DVSTBasicModule in '..\Source\DVSTBasicModule.pas',
-  DVSTEffectFunctions in '..\Source\DVSTEffectFunctions.pas',
-  DVSTShellPlugins in '..\Source\DVSTShellPlugins.pas',
-  DVSTParameters in '..\Source\DVSTParameters.pas',
-  DVSTPrograms in '..\Source\DVSTPrograms.pas',
-  DVSTCustomModule in '..\Source\DVSTCustomModule.pas',
-  DVSTModuleWithPrograms in '..\Source\DVSTModuleWithPrograms.pas',
-  DVSTModuleWithMidi in '..\Source\DVSTModuleWithMidi.pas',
-  DVSTModuleWithDsp in '..\Source\DVSTModuleWithDsp.pas';
+  DAV_VSTEditorCreator in '..\Source\VST\DAV_VSTEditorCreator.pas',
+  DAV_VSTModule in '..\Source\VST\DAV_VSTModule.pas',
+  DAV_VSTModuleCreator in '..\Source\VST\DAV_VSTModuleCreator.pas',
+  DAV_VSTPluginWizard in '..\Source\VST\DAV_VSTPluginWizard.pas',
+  DAV_VSTPluginWizardFrm in '..\Source\VST\DAV_VSTPluginWizardFrm.pas' {VSTPluginWizardForm},
+  DAV_VSTPluginWizardReg in '..\Source\VST\DAV_VSTPluginWizardReg.pas',
+  DAV_VSTProjectCreator in '..\Source\VST\DAV_VSTProjectCreator.pas',
+  DAV_VSTBasicModule in '..\Source\VST\DAV_VSTBasicModule.pas',
+  DAV_VSTChannels in '..\Source\VST\DAV_VSTChannels.pas',
+  DAV_VSTModuleWithDsp in '..\Source\VST\DAV_VSTModuleWithDsp.pas',
+  DAV_VSTModuleWithMidi in '..\Source\VST\DAV_VSTModuleWithMidi.pas',
+  DAV_VSTModuleWithPrograms in '..\Source\VST\DAV_VSTModuleWithPrograms.pas',
+  DAV_VSTPrograms in '..\Source\VST\DAV_VSTPrograms.pas',
+  DAV_VSTShellPlugins in '..\Source\VST\DAV_VSTShellPlugins.pas',
+  DAV_VSTCustomModule in '..\Source\VST\DAV_VSTCustomModule.pas',
+  DAV_VSTEffect in '..\Source\VST\DAV_VSTEffect.pas',
+  DAV_VSTEffectFunctions in '..\Source\VST\DAV_VSTEffectFunctions.pas',
+  DAV_VSTParameters in '..\Source\VST\DAV_VSTParameters.pas';
 
 end.

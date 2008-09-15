@@ -1,6 +1,6 @@
-package HostVST_D5;
+package DAV_VSTHost_D5;
 
-{$R DVSTHost.res}
+{$R DAV_VSTHost.res}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -27,10 +27,10 @@ package HostVST_D5;
 
 requires
   vcl50,
-  AVDCommon_D5,
-  VstPlugin_D5;
+  DAV_Common_D5,
+  DAV_VstPlugin_D5;
 
 contains
-  DVstHost in '..\Source\DVstHost.pas';
+  DAV_VstHost in '..\Source\VST\DAV_VstHost.pas';
 
 end.

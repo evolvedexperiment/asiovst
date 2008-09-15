@@ -3,8 +3,8 @@ library mdaTalkBox;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   TalkBoxDM in 'TalkBoxDM.pas' {TalkBoxDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

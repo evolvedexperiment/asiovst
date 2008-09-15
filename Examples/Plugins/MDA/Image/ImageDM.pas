@@ -3,7 +3,7 @@ unit ImageDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule;
 
 type
   TImageDataModule = class(TVSTModule)
@@ -23,7 +23,7 @@ implementation
 procedure TImageDataModule.ParamModeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[0] of
+ case round(Parameter[0]) of
   0: PreDefined := 'SM->LR';
   1: PreDefined := 'MS->LR';
   2: PreDefined := 'LR->LR';
@@ -34,7 +34,7 @@ end;
 procedure TImageDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  w, k, c, b : Single;
+  w, k, c, b, g : Single;
 begin
 
  //calcs here

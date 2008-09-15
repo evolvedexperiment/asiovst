@@ -48,7 +48,7 @@ implementation
 {$R *.dfm}
 
 uses
-  DAVDCommon, DAVDBufferMathAsm, DAVDBufferMathPascal, DVSTEffect;
+  DAV_Common, DAV_BufferMathAsm, DAV_BufferMathPascal, DAV_VSTEffect;
 
 resourcestring
   RCDone = 'DONE';
@@ -136,7 +136,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddArrays(Input1, Input2, Output,
+    DAV_BufferMathPascal.AddArrays(Input1, Input2, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -150,7 +150,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddArrays(Input1, Input2, Output,
+    DAV_BufferMathAsm.AddArrays(Input1, Input2, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -164,7 +164,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
+    DAV_BufferMathPascal.AddArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
   ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms adding Single value with Pascal,  Testvals: ' +
@@ -177,7 +177,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
+    DAV_BufferMathAsm.AddArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
   ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms adding Single value with ASM,  Testvals: ' +
@@ -204,7 +204,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.SubArrays(Input1, Input2, Output,
+    DAV_BufferMathPascal.SubArrays(Input1, Input2, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -218,7 +218,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.SubArrays(Input1, Input2, Output,
+    DAV_BufferMathAsm.SubArrays(Input1, Input2, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -232,7 +232,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.SubArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
+    DAV_BufferMathPascal.SubArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
   ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms subtracting Single value with Pascal,  Testvals: ' +
@@ -245,7 +245,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.SubArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
+    DAV_BufferMathAsm.SubArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
   ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms subtracting Single value with ASM,  Testvals: ' +
@@ -272,7 +272,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulArrays(Input1, Input2, Output,
+    DAV_BufferMathPascal.MulArrays(Input1, Input2, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -286,7 +286,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulArrays(Input1, Input2, Output,
+    DAV_BufferMathAsm.MulArrays(Input1, Input2, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -300,7 +300,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
+    DAV_BufferMathPascal.MulArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
   ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply Single value with Pascal,  Testvals: '
@@ -314,7 +314,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
+    DAV_BufferMathAsm.MulArrays(Input1, 5, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
   ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms multiply Single value with ASM,  Testvals: ' +
@@ -340,7 +340,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.ClearArrays(Output, TEST_DIM_1, TEST_DIM_2);
+    DAV_BufferMathPascal.ClearArrays(Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
   ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms clear with pure Pascal,  Testvals: ' +
@@ -354,7 +354,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.ClearArrays(Output, TEST_DIM_1, TEST_DIM_2);
+    DAV_BufferMathAsm.ClearArrays(Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
   ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms clear with ASM,  Testvals: ' +
@@ -381,7 +381,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.CopyArrays(Input, Output, TEST_DIM_1, TEST_DIM_2);
+    DAV_BufferMathPascal.CopyArrays(Input, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
   ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms copy with pure Pascal,  Testvals: ' +
@@ -394,7 +394,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathASM.CopyArrays(Input, Output, TEST_DIM_1, TEST_DIM_2);
+    DAV_BufferMathASM.CopyArrays(Input, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
   ResultMemo.Lines.Add(FloatToStrF(((B - A) * 1000) / freq, ffFixed, 15, 2) + ' ms copy with ASM,  Testvals: ' +
@@ -422,7 +422,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulAddArrays(Input1, Input2, Input3,
+    DAV_BufferMathPascal.MulAddArrays(Input1, Input2, Input3,
       Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -436,7 +436,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulAddArrays(Input1, Input2, Input3, Output,
+    DAV_BufferMathAsm.MulAddArrays(Input1, Input2, Input3, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -450,7 +450,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulAddArrays(Input1, 5, Input3, Output,
+    DAV_BufferMathPascal.MulAddArrays(Input1, 5, Input3, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -465,7 +465,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulAddArrays(Input1, 5, Input3, Output,
+    DAV_BufferMathAsm.MulAddArrays(Input1, 5, Input3, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -480,7 +480,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulAddArrays(Input1, Input2, 5, Output,
+    DAV_BufferMathPascal.MulAddArrays(Input1, Input2, 5, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -495,7 +495,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulAddArrays(Input1, Input2, 5, Output,
+    DAV_BufferMathAsm.MulAddArrays(Input1, Input2, 5, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -509,7 +509,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.MulAddArrays(Input1, 5, 5, Output,
+    DAV_BufferMathPascal.MulAddArrays(Input1, 5, 5, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -524,7 +524,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.MulAddArrays(Input1, 5, 5, Output,
+    DAV_BufferMathAsm.MulAddArrays(Input1, 5, 5, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -553,7 +553,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddMulArrays(Input1, Input2, Input3,
+    DAV_BufferMathPascal.AddMulArrays(Input1, Input2, Input3,
       Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -567,7 +567,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddMulArrays(Input1, Input2, Input3, Output,
+    DAV_BufferMathAsm.AddMulArrays(Input1, Input2, Input3, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -581,7 +581,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddMulArrays(Input1, 5, Input3, Output,
+    DAV_BufferMathPascal.AddMulArrays(Input1, 5, Input3, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -596,7 +596,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddMulArrays(Input1, 5, Input3, Output,
+    DAV_BufferMathAsm.AddMulArrays(Input1, 5, Input3, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -611,7 +611,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddMulArrays(Input1, Input2, 5, Output,
+    DAV_BufferMathPascal.AddMulArrays(Input1, Input2, 5, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -626,7 +626,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddMulArrays(Input1, Input2, 5, Output,
+    DAV_BufferMathAsm.AddMulArrays(Input1, Input2, 5, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -641,7 +641,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddMulArrays(Input1, 5, 5, Output,
+    DAV_BufferMathPascal.AddMulArrays(Input1, 5, 5, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -656,7 +656,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddMulArrays(Input1, 5, 5, Output,
+    DAV_BufferMathAsm.AddMulArrays(Input1, 5, 5, Output,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -687,7 +687,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddScaledArrays(Input1, Input2, 5, 5,
+    DAV_BufferMathPascal.AddScaledArrays(Input1, Input2, 5, 5,
       Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -701,7 +701,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddScaledArrays(Input1, Input2, 5, 5,
+    DAV_BufferMathAsm.AddScaledArrays(Input1, Input2, 5, 5,
       Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -729,7 +729,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.AddModulatedArrays(Input1, Input2,
+    DAV_BufferMathPascal.AddModulatedArrays(Input1, Input2,
       Input3, Input3, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -743,7 +743,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.AddModulatedArrays(Input1, Input2, Input3,
+    DAV_BufferMathAsm.AddModulatedArrays(Input1, Input2, Input3,
       Input3, Output, TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -776,7 +776,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.GetPeaks(Input1, MinPeaks, MaxPeaks,
+    DAV_BufferMathPascal.GetPeaks(Input1, MinPeaks, MaxPeaks,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -792,7 +792,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.GetPeaks(Input1, MinPeaks, MaxPeaks,
+    DAV_BufferMathAsm.GetPeaks(Input1, MinPeaks, MaxPeaks,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -825,7 +825,7 @@ begin
   QueryPerformanceFrequency(freq);
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathPascal.GetSums(Input1, MinSums, MaxSums,
+    DAV_BufferMathPascal.GetSums(Input1, MinSums, MaxSums,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);
@@ -841,7 +841,7 @@ begin
 
   QueryPerformanceCounter(A);
   for i := 0 to TEST_RUNS do
-    DAVDBufferMathAsm.GetSums(Input1, MinSums, MaxSums,
+    DAV_BufferMathAsm.GetSums(Input1, MinSums, MaxSums,
       TEST_DIM_1, TEST_DIM_2);
 
   QueryPerformanceCounter(B);

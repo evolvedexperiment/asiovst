@@ -3,8 +3,8 @@ library mdaSubSynth;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   SubSynthDM in 'SubSynthDM.pas' {SubSynthDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

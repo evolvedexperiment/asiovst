@@ -3,16 +3,19 @@ unit DX10DM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTEffect, DVSTModule,
-  DVSTCustomModule;
+  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTEffect, DAV_VSTModule,
+  DAV_VSTCustomModule;
 
 type
   TDX10DataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    function VSTModuleOutputProperties(Sender: TObject; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TChannelPropertyFlags): Integer;
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
+    function VSTModuleOutputProperties(Sender: TObject; const Index: Integer;
+      var vLabel, shortLabel: string;
+      var SpeakerArrangement: TVstSpeakerArrangementType;
+      var Flags: TVstPinPropertiesFlags): Boolean;
   private
     fTune      : Single;
     fRatF      : Single;
@@ -123,9 +126,10 @@ begin
 *)
 end;
 
-function TDX10DataModule.VSTModuleOutputProperties(Sender: TObject; var vLabel,
-  shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType;
-  var Flags: TChannelPropertyFlags): Integer;
+function TDX10DataModule.VSTModuleOutputProperties(Sender: TObject;
+  const Index: Integer; var vLabel, shortLabel: string;
+  var SpeakerArrangement: TVstSpeakerArrangementType;
+  var Flags: TVstPinPropertiesFlags): Boolean;
 begin
 (*
  result := 0;

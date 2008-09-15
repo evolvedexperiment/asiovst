@@ -20,140 +20,140 @@ object MultibandDataModule: TMultibandDataModule
     end>
   ParameterProperties = <
     item
-      Max = 3.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Listen'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Listen'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 3.000000000000000000
+      MaxInteger = 3
+      ShortLabel = 'Listen'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 1.000000000000000000
-      MaxInteger = 3
-      LargeStepInteger = 1
-      ShortLabel = 'Listen'
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterOutputDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'L <> M'
-      Units = 'Hz'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'L <> M'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'M <> H'
+      SmoothingFactor = 1.000000000000000000
       Units = 'Hz'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'M <> H'
+      Max = 1.000000000000000000
       ShortLabel = 'M <> H'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'Hz'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'L Comp'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'L Comp'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'M Comp'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'M Comp'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'H Comp'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'H Comp'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'L Out'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'L Out'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'M Out'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'M Out'
-      VSTModule = Owner
-      OnCustomParameterDisplay = ParameterGainDisplay
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'H Out'
+      SmoothingFactor = 1.000000000000000000
       Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'H Out'
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'H Out'
+      Max = 1.000000000000000000
+      ShortLabel = 'H Out'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnCustomParameterDisplay = ParameterGainDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
-      Units = #181's'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Attack'
+      SmoothingFactor = 1.000000000000000000
+      Units = #181's'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
-      Units = 'ms'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Release'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'ms'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Stereo'
-      Units = '%'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Stereo'
+      SmoothingFactor = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Process'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Process'
+      Max = 1.000000000000000000
       ShortLabel = 'Process'
+      SmoothingFactor = 1.000000000000000000
       VSTModule = Owner
     end>
   OnParameterChange = VSTModuleParameterChange

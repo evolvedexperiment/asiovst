@@ -3,8 +3,8 @@ library mdaCombo;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   ComboDM in 'ComboDM.pas' {ComboDataModule: TVSTModule},
   ComboGUI in 'ComboGUI.pas' {FmCombo};
 

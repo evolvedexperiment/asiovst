@@ -3,8 +3,8 @@ library mdaLoudness;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   LoudnessDM in 'LoudnessDM.pas' {LoudnessDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

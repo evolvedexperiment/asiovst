@@ -3,8 +3,8 @@ library mdaRezFilter;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   RezFilterDM in 'RezFilterDM.pas' {RezFilterDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

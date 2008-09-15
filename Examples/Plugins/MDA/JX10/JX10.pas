@@ -3,8 +3,8 @@ unit JX10;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTEffect,
-  DVSTCustomModule, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTEffect,
+  DAV_VSTCustomModule, DAV_VSTModule;
 
 const
   cNumVoices = 32;

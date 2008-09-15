@@ -6,8 +6,8 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, Windows, {$ELSE} Windows, Messages, {$ENDIF}
-  Forms, SysUtils, Registry, Menus, ExtCtrls, DVstHost, Graphics, Dialogs,
-  StdCtrls, Controls, DAVDCommon, Classes;
+  Classes, Forms, SysUtils, Registry, Menus, ExtCtrls, Graphics, Dialogs,
+  StdCtrls, Controls, DAV_Common, DAV_VstHost;
 
 type
   TSmallIntArray = array [0..20000] of Smallint;
@@ -105,7 +105,7 @@ procedure Quit(This_Mod : PWinAmpDSPModule); cdecl;
 implementation
 
 uses
-  DVSTEffect, Math, SyncObjs;
+  Math, SyncObjs, DAV_VSTEffect;
 
 var
   WADSPHeader      : TWinAmpDSPheader =

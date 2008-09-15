@@ -20,38 +20,38 @@ object LoudnessDataModule: TLoudnessDataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
+      CurveFactor = 1.000000000000000000
       DisplayName = 'Loudness'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'Loudnes'
-      VSTModule = Owner
-    end
-    item
-      Max = 1.000000000000000000
-      Curve = ctLinear
-      DisplayName = 'Output'
-      Units = 'dB'
-      CurveFactor = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
-      ShortLabel = 'Output'
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Link'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Output'
+      Max = 1.000000000000000000
+      ShortLabel = 'Output'
+      SmoothingFactor = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Link'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'Link'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 1.000000000000000000
-      MaxInteger = 1
       StepInteger = 11
-      LargeStepInteger = 1
-      ShortLabel = 'Link'
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterLinkDisplay
     end>

@@ -4,7 +4,8 @@ unit LunchBoxInputFilter;
 
 interface
 
-uses DAVDCommon;
+uses
+  DAV_Common;
 
 type
   TInputFilter = class(TObject)

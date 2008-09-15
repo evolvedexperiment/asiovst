@@ -3,7 +3,7 @@ unit BandistoDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule;
 
 type
   TBandistoDataModule = class(TVSTModule)

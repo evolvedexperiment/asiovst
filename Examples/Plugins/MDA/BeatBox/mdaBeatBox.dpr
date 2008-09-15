@@ -3,8 +3,8 @@ library mdaBeatBox;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   BeatBoxDM in 'BeatBoxDM.pas' {BeatBoxDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

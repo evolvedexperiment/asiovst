@@ -3,9 +3,9 @@ unit MidiGuiU;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, DGuiBaseControl, DGuiMidiKeys, DGuiMidiKeyZones,
-  Buttons;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Buttons, StdCtrls, ExtCtrls, DAV_GuiBaseControl, DAV_GuiMidiKeys,
+  DAV_GuiMidiKeyZones;
 
 type
   TKbDemoForm = class(TForm)

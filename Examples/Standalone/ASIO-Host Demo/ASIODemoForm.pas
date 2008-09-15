@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Forms, Classes, Controls, StdCtrls, DAVASIOHost, DAVDComplex, DAVDCommon;
+  Forms, Classes, Controls, StdCtrls, DAV_Complex, DAV_Common, DAV_ASIOHost;
 
 type
   TFmASIO = class(TForm)
@@ -26,14 +26,14 @@ type
     Lb_Copyright: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure DriverComboChange(Sender: TObject);
-    procedure ChannelBoxChange(Sender: TObject);
+    procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure Bt_PlayClick(Sender: TObject);
+    procedure ChannelBoxChange(Sender: TObject);
+    procedure DriverComboChange(Sender: TObject);
     procedure SbFreqChange(Sender: TObject);
-    procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure SbVolumeChange(Sender: TObject);
     procedure SbPanChange(Sender: TObject);
+    procedure SbVolumeChange(Sender: TObject);
     procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfDoubleDynArray);
     procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
   private

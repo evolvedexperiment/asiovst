@@ -1,6 +1,6 @@
-package HostVST_D7;
+package DAV_VSTHost_D7;
 
-{$R DVSTHost.res}
+{$R DAV_VSTHost.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -29,9 +29,9 @@ requires
   vcl,
   rtl,
   designide,
-  VstPlugin_D7;
+  DAV_VstPlugin_D7;
 
 contains
-  DVSTHost in '..\Source\DVSTHost.pas';
+  DAV_VSTHost in '..\Source\VST\DAV_VSTHost.pas';
 
 end.

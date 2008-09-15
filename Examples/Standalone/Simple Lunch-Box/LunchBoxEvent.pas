@@ -6,7 +6,7 @@ unit LunchBoxEvent;
 
 interface
 
-uses DAVDComplex;
+uses DAV_Complex;
 
 type
   TLunchBoxSample = class(TObject)
@@ -47,7 +47,8 @@ type
 
 implementation
 
-uses DAVDCommon, LunchBoxMain, DDspInterpolation;
+uses
+  DAV_Common, LunchBoxMain, DAV_DspInterpolation;
 
 { TLunchBoxSample }
 

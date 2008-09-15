@@ -4,8 +4,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages,{$ENDIF}
-  SysUtils, Classes, Graphics, Controls, Forms, DGuiStaticWaveform, Menus,
-  DGuiBaseControl;
+  SysUtils, Classes, Graphics, Controls, Forms, Menus,
+  DAV_GuiBaseControl, DAV_GuiStaticWaveform;
 
 type
   TFmPlotIR = class(TForm)

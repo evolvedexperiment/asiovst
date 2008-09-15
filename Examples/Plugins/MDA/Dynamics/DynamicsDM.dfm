@@ -24,6 +24,7 @@ object DynamicsDataModule: TDynamicsDataModule
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       LargeStepFloat = 2.000000000000000000
+      Max = 1.000000000000000000
       MaxInteger = 0
       Min = -40.000000000000000000
       MinInteger = -40

@@ -1,4 +1,4 @@
-package DVSTGui_D9;
+package DAV_Gui_D9;
 
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,24 +26,26 @@ package DVSTGui_D9;
 
 requires
   rtl,
-  vcl;
+  vcl,
+  DAV_Common_D10;
 
 contains
-  DGuiRegister in '..\Source\DGuiRegister.pas',
-  DGuiADSRGraph in '..\Source\DGuiADSRGraph.pas',
-  DGuiAudioDataDisplay in '..\Source\DGuiAudioDataDisplay.pas',
-  DGuiBaseControl in '..\Source\DGuiBaseControl.pas',
-  DGuiButton in '..\Source\DGuiButton.pas',
-  DGuiDial in '..\Source\DGuiDial.pas',
-  DGuiDynamicWaveform in '..\Source\DGuiDynamicWaveform.pas',
-  DGuiGroup in '..\Source\DGuiGroup.pas',
-  DGuiLabel in '..\Source\DGuiLabel.pas',
-  DGuiLED in '..\Source\DGuiLED.pas',
-  DGuiLevelMeter in '..\Source\DGuiLevelMeter.pas',
-  DGuiMidiKeys in '..\Source\DGuiMidiKeys.pas',
-  DGuiMidiKeyZones in '..\Source\DGuiMidiKeyZones.pas',
-  DGuiPanel in '..\Source\DGuiPanel.pas',
-  DGuiSelectBox in '..\Source\DGuiSelectBox.pas',
-  DGuiStaticWaveform in '..\Source\DGuiStaticWaveform.pas';
+  DAV_GuiRegister in '..\Source\GUI\DAV_GuiRegister.pas',
+  DAV_GuiADSRGraph in '..\Source\GUI\DAV_GuiADSRGraph.pas',
+  DAV_GuiAudioDataDisplay in '..\Source\GUI\DAV_GuiAudioDataDisplay.pas',
+  DAV_GuiBaseControl in '..\Source\GUI\DAV_GuiBaseControl.pas',
+  DAV_GuiButton in '..\Source\GUI\DAV_GuiButton.pas',
+  DAV_GuiDial in '..\Source\GUI\DAV_GuiDial.pas',
+  DAV_GuiDynamicWaveform in '..\Source\GUI\DAV_GuiDynamicWaveform.pas',
+  DAV_GuiGroup in '..\Source\GUI\DAV_GuiGroup.pas',
+  DAV_GuiLabel in '..\Source\GUI\DAV_GuiLabel.pas',
+  DAV_GuiLED in '..\Source\GUI\DAV_GuiLED.pas',
+  DAV_GuiLevelMeter in '..\Source\GUI\DAV_GuiLevelMeter.pas',
+  DAV_GuiMidiKeys in '..\Source\GUI\DAV_GuiMidiKeys.pas',
+  DAV_GuiMidiKeyZones in '..\Source\GUI\DAV_GuiMidiKeyZones.pas',
+  DAV_GuiPanel in '..\Source\GUI\DAV_GuiPanel.pas',
+  DAV_GuiSelectBox in '..\Source\GUI\DAV_GuiSelectBox.pas',
+  DAV_GuiStaticWaveform in '..\Source\GUI\DAV_GuiStaticWaveform.pas',
+  DAV_GuiVUMeter in '..\Source\GUI\DAV_GuiVUMeter.pas';
 
 end.

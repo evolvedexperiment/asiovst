@@ -3,7 +3,7 @@ unit ThruZeroDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule;
 
 const
   cBUFMAX = $7FF;
@@ -21,10 +21,8 @@ type
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterDepthChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFeedbackChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     fBuffer    : array [0..1] of PAVDSingleFixedArray;
     fRate      : Single;

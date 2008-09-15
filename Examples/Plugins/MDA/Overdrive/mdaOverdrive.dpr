@@ -3,8 +3,8 @@ library mdaOverdrive;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   OverdriveDM in 'OverdriveDM.pas' {OverdriveDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

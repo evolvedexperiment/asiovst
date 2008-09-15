@@ -3,8 +3,8 @@ library mdaRePsycho;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   RePsychoDM in 'RePsychoDM.pas' {RePsychoDataModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;

@@ -4,9 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, ToolWin, ComCtrls, ExtCtrls, DAVDCommon, DGuiStaticWaveform,
-  DGuiBaseControl, DGuiLevelMeter, DAudioFile, DAudioFileWav, DAudioFileAIFF,
-  DAudioFileAU, DAVASIOHost, DAudioData, DGuiAudioDataDisplay;
+  Menus, ToolWin, ComCtrls, ExtCtrls, DAV_Common, DAV_GuiStaticWaveform,
+  DAV_GuiBaseControl, DAV_GuiLevelMeter, DAV_AudioFile, DAV_AudioFileWav,
+  DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_ASIOHost, DAV_AudioData,
+  DAV_GuiAudioDataDisplay;
 
 type
   TFmAudioEditor = class(TForm)

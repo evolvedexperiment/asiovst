@@ -49,7 +49,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, DVSTEffect, DAVASIOHost, DAVASIO;
+  SysUtils, DAV_VSTEffect, DAV_ASIOHost, DAV_ASIO;
 
 procedure TFmOptions.FormCreate(Sender: TObject);
 begin

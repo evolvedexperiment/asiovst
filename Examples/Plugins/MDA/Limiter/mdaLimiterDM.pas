@@ -3,7 +3,7 @@ unit mdaLimiterDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule;
 
 type
   TmdaLimiterDataModule = class(TVSTModule)
@@ -32,7 +32,7 @@ type
 implementation
 
 uses
-  Math, DVSTModuleWithPrograms;
+  Math, DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}
 

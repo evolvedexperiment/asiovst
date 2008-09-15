@@ -3,7 +3,7 @@ unit StereoDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule;
 
 type
   TStereoDataModule = class(TVSTModule)
@@ -18,8 +18,7 @@ type
     procedure ParameterDelayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterModDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterModDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fPhi, fDel : Single;
     fDeltaPhi  : Single;
