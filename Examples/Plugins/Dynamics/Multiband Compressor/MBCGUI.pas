@@ -3,8 +3,8 @@ unit MBCGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, Graphics, DVSTModule,
-  Controls, StdCtrls, DGuiDial, ExtCtrls, DGuiBaseControl;
+  Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
+  ExtCtrls, DAV_Common, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial;
 
 type
   TFmMBC = class(TForm)

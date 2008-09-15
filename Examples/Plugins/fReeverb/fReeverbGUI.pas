@@ -3,10 +3,9 @@ unit fReeverbGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  Controls, StdCtrls, XPStyleActnCtrls, ActnList, ActnMan, ToolWin,
-  ActnCtrls, ActnMenus, DGuiBaseControl, DGuiDial, DGuiLabel, DGuiPanel,
-  DGuiSelectBox, ExtCtrls, DGuiButton;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
+  DAV_Common, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel,
+  DAV_GuiPanel, DAV_GuiSelectBox, DAV_GuiButton;
 
 type
 

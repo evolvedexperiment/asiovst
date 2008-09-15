@@ -5,8 +5,8 @@ library fReeverb;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   fReeverbModule in 'fReeverbModule.pas' {fReeverbVST: TVSTModule},
   fReeverbGUI in 'fReeverbGUI.pas' {FmReverb};
 

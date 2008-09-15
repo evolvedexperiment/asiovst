@@ -2,7 +2,8 @@ unit SimpleSamplerVoice;
 
 interface
 
-uses DVSTModule, DAVDComplex;
+uses
+  DAV_VSTModule, DAV_Complex;
 
 {$i Consts.inc}
 
@@ -40,7 +41,8 @@ type
 
 implementation
 
-uses DAVDCommon, SimpleSamplerModule, DDspInterpolation;
+uses
+  DAV_Common, SimpleSamplerModule, DAV_DspInterpolation;
 
 { TSimpleSamplerVoice }
 

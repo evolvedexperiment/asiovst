@@ -58,7 +58,6 @@ object FmPascalScript: TFmPascalScript
       ' Data := 0.1 * Data + 0.9 * Temp[Channel];'
       ' Temp[Channel] := Data;'
       'end;')
-    ExplicitHeight = 259
   end
   object DebugBox: TListBox
     Left = 0

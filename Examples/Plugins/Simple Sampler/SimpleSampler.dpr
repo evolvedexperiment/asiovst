@@ -3,8 +3,8 @@ library SimpleSampler;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   SimpleSamplerModule in 'SimpleSamplerModule.pas' {VSTSSModule: TVSTModule},
   SimpleSamplerGUI in 'SimpleSamplerGUI.pas' {VSTGUI},
   SimpleSamplerVoice in 'SimpleSamplerVoice.pas',

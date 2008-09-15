@@ -3,8 +3,8 @@ unit VocoderModule;
 interface
 
 uses
-  Windows, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect, DVSTModule,
-  VocoderVoice, VoiceList, DDspChebyshevFilter, DDspFilter;
+  Windows, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTModule,
+  VocoderVoice, VoiceList, DAV_DspChebyshevFilter, DAV_DspFilter;
 
 const
   cNumFrequencies = 32;

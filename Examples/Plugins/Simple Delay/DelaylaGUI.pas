@@ -3,7 +3,8 @@ unit DelaylaGUI;
 interface
 
 uses
-  Windows, SysUtils, Classes, Forms, Controls, StdCtrls, DVSTModule, DAVDCommon;
+  Windows, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_VSTModule,
+  DAV_Common;
 
 type
   TVSTGUI = class(TForm)
@@ -18,12 +19,13 @@ implementation
 
 {$R *.DFM}
 
-uses DelaylaModule;
+uses
+  DelaylaModule;
 
 procedure TVSTGUI.SampleBarChange(Sender: TObject);
 begin
- LbSamples.Caption:=IntToStr(SampleBar.Position);
- TSimpleDelayVST(Owner).Parameter[0]:=SampleBar.Position;
+ LbSamples.Caption := IntToStr(SampleBar.Position);
+ TSimpleDelayVST(Owner).Parameter[0] := SampleBar.Position;
 end;
 
 end.

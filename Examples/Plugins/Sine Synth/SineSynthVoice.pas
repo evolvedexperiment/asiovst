@@ -3,7 +3,7 @@ unit SineSynthVoice;
 interface
 
 uses
-  DVSTModule, DAVDComplex;
+  DAV_VSTModule, DAV_Complex;
 
 {$i Consts.inc}
 
@@ -37,7 +37,7 @@ type
 implementation
 
 uses
-  DAVDCommon, SineSynthModule;
+  DAV_Common, SineSynthModule;
 
 { TSineSynthVoice }
 

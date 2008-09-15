@@ -4,8 +4,8 @@ library SimpleGate;
 uses
   FastMM4,
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   SimpleGateDM in 'SimpleGateDM.pas' {SimpleGateDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 

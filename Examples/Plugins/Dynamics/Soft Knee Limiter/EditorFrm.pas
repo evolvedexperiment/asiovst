@@ -3,8 +3,8 @@
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, Controls,
-  StdCtrls, DGuiBaseControl, DGuiDial, PNGImage, DGuiLabel;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, PNGImage,
+  DAV_Common, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel;
 
 type
   TEditorForm = class(TForm)

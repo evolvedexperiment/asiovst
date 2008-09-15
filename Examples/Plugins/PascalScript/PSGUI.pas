@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
-  ActnList, ComCtrls, ToolWin, Dialogs, DAVDCommon, DVSTModule, SynEdit,
+  ActnList, ComCtrls, ToolWin, Dialogs, DAV_Common, DAV_VSTModule, SynEdit,
   SynEditHighlighter, SynHighlighterPas, uPSCompiler, uPSUtils;
 
 type

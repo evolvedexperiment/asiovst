@@ -46,9 +46,9 @@ object VSTGUI: TVSTGUI
     Top = 32
     Width = 349
     Height = 121
-    Transparent = True
     DisplayChannels = 1
     NormalizationType = ntOverallChannels
+    Transparent = True
     WaveDrawMode = wdmOutline
   end
   object EditSample: TEdit

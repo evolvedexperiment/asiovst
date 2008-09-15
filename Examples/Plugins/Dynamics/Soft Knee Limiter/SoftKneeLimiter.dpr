@@ -5,8 +5,8 @@ library SoftKneeLimiter;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   SKLDM in 'SKLDM.pas' {SoftKneeLimiterDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 

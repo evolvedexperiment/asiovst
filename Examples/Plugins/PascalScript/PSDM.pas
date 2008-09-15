@@ -3,8 +3,8 @@ unit PSDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  DVSTPrograms, uPSRuntime;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_VSTPrograms, uPSRuntime;
 
 type
   TVSTProcessSample = procedure (Channel : Integer; var Data : Double) of object;
@@ -32,7 +32,7 @@ implementation
 
 {$R *.DFM}
 
-uses PSGUI, DVSTCustomModule;
+uses PSGUI, DAV_VSTCustomModule;
 
 procedure TPascalScriptDataModule.VPSLoadChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
 var

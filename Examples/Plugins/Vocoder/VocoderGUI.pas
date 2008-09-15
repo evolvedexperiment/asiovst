@@ -3,8 +3,8 @@ unit VocoderGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  Controls, StdCtrls, DGuiMidiKeys, Graphics, DGuiBaseControl;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
+  DAV_Common, DAV_VSTModule, DAV_GuiMidiKeys, DAV_GuiBaseControl;
 
 type
   TVSTGUI = class(TForm)
@@ -20,8 +20,7 @@ type
     procedure SBInputLevelChange(Sender: TObject);
     procedure SBSynthLevelChange(Sender: TObject);
     procedure SBVocoderLevelChange(Sender: TObject);
-    procedure MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
-      Velocity: Single);
+    procedure MidiKeysNoteOn(Sender: TObject; KeyNr: Byte; Velocity: Single);
     procedure MidiKeysNoteOff(Sender: TObject; KeyNr: Byte);
   end;
 

@@ -5,8 +5,8 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect,
-  DVSTModule, XSynthVoice, VoiceList;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect,
+  DAV_VSTModule, XSynthVoice, VoiceList;
 
 type
   TVSTSSModule = class(TVSTModule)

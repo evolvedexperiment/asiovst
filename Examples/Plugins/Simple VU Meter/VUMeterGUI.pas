@@ -2,8 +2,9 @@ unit VUMeterGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  Controls, StdCtrls, ExtCtrls;
+uses
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
+  DAV_Common, DAV_VSTModule;
 
 type
   TVSTVUMeterGUI = class(TForm)
@@ -24,7 +25,8 @@ implementation
 
 {$R *.DFM}
 
-uses VUMeterModule, dialogs;
+uses
+  VUMeterModule, Dialogs;
 
 procedure TVSTVUMeterGUI.ParameterChange(Sender: TObject);
 begin

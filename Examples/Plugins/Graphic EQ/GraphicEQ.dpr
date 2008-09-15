@@ -3,8 +3,8 @@ library GraphicEQ;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   PluginDM in 'PluginDM.pas' {PluginDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 

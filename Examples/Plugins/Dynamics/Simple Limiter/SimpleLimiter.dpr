@@ -6,8 +6,8 @@ library SimpleLimiter;
 uses
   FastMM4,
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   SimpleLimiterDM in 'SimpleLimiterDM.pas' {SimpleLimiterDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 

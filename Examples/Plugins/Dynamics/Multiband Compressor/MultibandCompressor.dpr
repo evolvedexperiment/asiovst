@@ -5,8 +5,8 @@ library MultibandCompressor;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   MBCDM in 'MBCDM.pas' {MBCDataModule: TVSTModule},
   MBCGUI in 'MBCGUI.pas' {FmMBC};
 

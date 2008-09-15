@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, LCLType, {$ELSE} Windows, Types, {$ENDIF}
   SysUtils, Classes, Forms, TetrisUnit, Controls, StdCtrls, ExtCtrls, Graphics,
-  DAVDCommon, DVSTModule;
+  DAV_Common, DAV_VSTModule;
 
 type
   TFmTetris = class(TForm)

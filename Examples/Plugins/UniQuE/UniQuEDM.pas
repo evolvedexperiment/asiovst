@@ -3,8 +3,8 @@ unit UniQuEDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  DDSPFilter;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_DSPFilter;
 
 type
   TUniQuEDataModule = class(TVSTModule)
@@ -39,7 +39,7 @@ implementation
 {$R *.DFM}
 
 uses
-  UniQuEGUI, DVSTCustomModule;
+  UniQuEGUI, DAV_VSTCustomModule;
 
 procedure TUniQuEDataModule.VSTModuleCreate(Sender: TObject);
 var

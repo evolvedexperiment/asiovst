@@ -5,8 +5,8 @@ unit PTDM;
 interface
 
 uses
-  FastMove, Windows, Messages, SysUtils, Classes, Forms, DAVDCommon,
-  DVSTEffect, DVSTEffectFunctions, DVSTModule;
+  FastMove, Windows, Messages, SysUtils, Classes, Forms, DAV_Common,
+  DAV_VSTEffect, DAV_VSTEffectFunctions, DAV_VSTModule;
 
 type
   TPerformanceTestModule = class(TVSTModule)
@@ -28,7 +28,7 @@ implementation
 {$R *.DFM}
 
 uses
-  PTGUI, DVSTBasicModule;
+  PTGUI, DAV_VSTBasicModule;
 
 var
   StartStop: function: Int64;

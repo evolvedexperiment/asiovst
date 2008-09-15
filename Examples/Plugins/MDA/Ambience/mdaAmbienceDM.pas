@@ -3,7 +3,7 @@ unit mdaAmbienceDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
 
 const
   cBufferSize = 1024;

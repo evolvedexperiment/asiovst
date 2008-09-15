@@ -2,8 +2,9 @@ unit LoadVSTModule;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-     DVstHost;
+uses
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_VstHost;
 
 type
   TPlugInPlugModule = class(TVSTModule)
@@ -34,7 +35,8 @@ implementation
 
 {$R *.DFM}
 
-uses Dialogs;
+uses
+  Dialogs;
 
 procedure TPlugInPlugModule.VST2ModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
 begin
@@ -64,12 +66,12 @@ end;
 
 procedure TPlugInPlugModule.VST2ModuleOpen(Sender: TObject);
 begin
- VstHost[0].Active:=True;
+ VstHost[0].Active := True;
 end;
 
 procedure TPlugInPlugModule.VST2ModuleClose(Sender: TObject);
 begin
- VstHost[0].Active:=False;
+ VstHost[0].Active := False;
 end;                          
 
 procedure TPlugInPlugModule.VST2ModuleEditIdle(Sender: TObject);
@@ -89,7 +91,7 @@ end;
 
 function TPlugInPlugModule.VST2ModuleCanDo(Sender: TObject; CanDoText: String): Integer;
 begin
- result:=VstHost[0].CanDo(@CanDoText);
+ result := VstHost[0].CanDo(@CanDoText);
 end;
 
 procedure TPlugInPlugModule.VST2ModuleEditTop(Sender: TObject);
@@ -104,13 +106,13 @@ end;
 
 procedure TPlugInPlugModule.VST2ModuleGetVU(var VU: Single);
 begin
- VU:=VstHost[0].GetVu;
+ VU := VstHost[0].GetVu;
 end;
 
 procedure TPlugInPlugModule.VST2ModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- VstHost[0].Parameters[Index]:=Value;
+ VstHost[0].Parameters[Index] := Value;
 end;
 
 procedure TPlugInPlugModule.VST2ModuleSampleRateChange(Sender: TObject;

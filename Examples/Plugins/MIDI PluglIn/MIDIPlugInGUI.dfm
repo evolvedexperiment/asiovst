@@ -18,7 +18,7 @@ object VSTGUI: TVSTGUI
     174)
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
+  object LbInstructions: TLabel
     Left = 48
     Top = 56
     Width = 321
@@ -29,14 +29,14 @@ object VSTGUI: TVSTGUI
       'otes!'#13#10' '#13#10'This is only a demonstration plugin!'#13#10' '#13#10'(C)opyright i' +
       'n 2004/2005 by Tobias Fleischer (www.tobybear.de)'
   end
-  object Label2: TLabel
+  object LbVSTTrademark: TLabel
     Left = 64
     Top = 152
     Width = 282
     Height = 13
     Caption = 'VST is a trademark of Steinberg Media Technologies GmbH'
   end
-  object Label3: TLabel
+  object LbTranspose: TLabel
     Left = 8
     Top = 8
     Width = 58

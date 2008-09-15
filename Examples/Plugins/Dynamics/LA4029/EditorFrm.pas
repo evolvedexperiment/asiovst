@@ -3,9 +3,9 @@ unit EditorFrm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, Controls,
-  Graphics, StdCtrls, ExtCtrls, DGuiPanel, DGuiLabel, DGuiBaseControl,
-  DGuiDial, DGuiLED, DGuiVUMeter, DGuiButton, Menus;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, StdCtrls,
+  ExtCtrls, Menus, DAV_Common, DAV_VSTModule, DAV_GuiButton, DAV_GuiVUMeter,
+  DAV_GuiLED, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiPanel;
 
 type
   TLevelState = (lsIn, lsGR, lsOut);

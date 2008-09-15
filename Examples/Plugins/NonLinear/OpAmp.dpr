@@ -3,18 +3,19 @@ library OpAmp;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   OpAmpModule in 'OpAmpModule.pas' {VSTOpAmp: TVSTModule},
   OpAmpGUI in 'OpAmpGUI.pas' {VSTGUI};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var VSTOpAmp : TVSTOpAmp;
+var
+  VSTOpAmp : TVSTOpAmp;
 begin
  try
-  VSTOpAmp:=TVSTOpAmp.Create(Application);
-  VSTOpAmp.Effect^.user:=VSTOpAmp;
-  VSTOpAmp.AudioMaster:=audioMaster;
+  VSTOpAmp := TVSTOpAmp.Create(Application);
+  VSTOpAmp.Effect^.user := VSTOpAmp;
+  VSTOpAmp.AudioMaster := audioMaster;
   Result := VSTOpAmp.Effect;
  except
   Result := nil;

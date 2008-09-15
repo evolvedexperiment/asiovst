@@ -6,8 +6,8 @@ library SoftKneeFeedbackCompressor;
 uses
   FastMM4,
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   SoftKneeFeedbackCompressorDM in 'SoftKneeFeedbackCompressorDM.pas' {SoftKneeFeedbackCompressorDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 

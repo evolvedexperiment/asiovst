@@ -2,14 +2,15 @@ unit MIDIPlugInGUI;
 
 interface
 
-uses Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  ExtCtrls, Controls, StdCtrls;
+uses
+  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
+  DAV_Common, DAV_VSTModule;
 
 type
   TVSTGUI = class(TForm)
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
+    LbInstructions: TLabel;
+    LbVSTTrademark: TLabel;
+    LbTranspose: TLabel;
     par0: TScrollBar;
     procedure par0Change(Sender: TObject);
   private

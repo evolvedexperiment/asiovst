@@ -64,14 +64,14 @@ object VSTGUI: TVSTGUI
       EnvVPadding = 3
       EnvHPadding = 10
     end
-    object Label1: TLabel
+    object LbOsc1ADSR: TLabel
       Left = 9
       Top = 53
       Width = 38
       Height = 13
       Caption = 'ADSR:'
     end
-    object Label5: TLabel
+    object LbOsc1Level: TLabel
       Left = 9
       Top = 81
       Width = 35
@@ -134,14 +134,14 @@ object VSTGUI: TVSTGUI
       OnSustainChange = Osc2ADSRSustainChange
       OnReleaseChange = Osc2ADSRReleaseChange
     end
-    object Label2: TLabel
+    object LbOsc2ADSR: TLabel
       Left = 9
       Top = 53
       Width = 38
       Height = 13
       Caption = 'ADSR:'
     end
-    object Label6: TLabel
+    object LbOsc2Level: TLabel
       Left = 9
       Top = 81
       Width = 35
@@ -196,14 +196,14 @@ object VSTGUI: TVSTGUI
       Height = 13
       Caption = 'Drive:'
     end
-    object Label3: TLabel
+    object LbCutOff: TLabel
       Left = 16
       Top = 38
       Width = 40
       Height = 13
       Caption = 'Cutoff:'
     end
-    object Label4: TLabel
+    object LbResonance: TLabel
       Left = 16
       Top = 57
       Width = 30

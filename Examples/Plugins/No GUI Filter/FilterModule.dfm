@@ -27,37 +27,37 @@ object VSTFilter: TVSTFilter
     end>
   ParameterProperties = <
     item
-      Min = 20.000000000000000000
-      Max = 20000.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Cutoff Frequency'
-      Units = 'Hz'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Cutoff Frequency'
+      LargeStepFloat = 1000.000000000000000000
+      LargeStepInteger = 1000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ShortLabel = 'Cutoff'
+      SmallStepFloat = 100.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 100.000000000000000000
-      SmallStepFloat = 100.000000000000000000
-      LargeStepFloat = 1000.000000000000000000
-      MinInteger = 20
-      MaxInteger = 20000
       StepInteger = 100
-      LargeStepInteger = 1000
-      ShortLabel = 'Cutoff'
+      Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = VSTFilterParameterProperties0ParameterChange
     end
     item
-      Min = 0.009999999776482582
-      Max = 10.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Resonance'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Resonance'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      Min = 0.009999999776482582
+      ShortLabel = 'Res'
+      SmallStepFloat = 0.100000001490116100
       SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
-      SmallStepFloat = 0.100000001490116100
-      LargeStepFloat = 1.000000000000000000
-      MaxInteger = 10
-      LargeStepInteger = 1
-      ShortLabel = 'Res'
       VSTModule = Owner
     end>
   OnProcess = VSTModuleProcess

@@ -5,8 +5,8 @@ library UniQuE;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   UniQuEDM in 'UniQuEDM.pas' {UniQuEDataModule: TVSTModule},
   UniQuEGUI in 'UniQuEGUI.pas' {FmUniQuE};
 

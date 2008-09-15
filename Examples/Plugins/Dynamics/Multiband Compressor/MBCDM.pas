@@ -3,8 +3,8 @@ unit MBCDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms,
-  DAVDCommon, DVSTModule, DDspFilter, DDspButterworthFilter, DDspDynamics;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_DspFilter, DAV_DspButterworthFilter, DAV_DspDynamics;
 
 type
   TMultiband = record

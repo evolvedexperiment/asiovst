@@ -2,7 +2,8 @@ unit fReeverbFilter;
 
 interface
 
-uses DAVDCommon, Classes;
+uses
+  Classes, DAV_Common;
 {$ALIGN 8}
 
 // Reverb fModel tuning values, taken from original algoritm by Jezar

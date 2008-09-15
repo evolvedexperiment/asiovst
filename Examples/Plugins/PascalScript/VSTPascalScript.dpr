@@ -3,8 +3,8 @@ library VSTPascalScript;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   PSDM in 'PSDM.pas' {PascalScriptDataModule: TVSTModule},
   PSGUI in 'PSGUI.pas' {FmPascalScript};
 

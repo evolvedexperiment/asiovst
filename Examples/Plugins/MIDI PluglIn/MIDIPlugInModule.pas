@@ -3,8 +3,8 @@ unit MIDIPlugInModule;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect,
-  DVSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect,
+  DAV_VSTModule;
 
 type
   TMIDIModule = class(TVSTModule)
@@ -25,7 +25,7 @@ procedure TMIDIModule.ParamTransposeChange(
 begin
   with (EditorForm As TVSTGUI) do
    begin
-    Label3.Caption := 'transpose: ' + IntToStr(round(Value));
+    LbTranspose.Caption := 'transpose: ' + IntToStr(round(Value));
 
    // Update Scrollbar, if necessary
     if par0.Position <> round(Value)

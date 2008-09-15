@@ -3,8 +3,8 @@ library VUMeter;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   VUMeterModule in 'VUMeterModule.pas' {VSTVUMeterModule: TVSTModule},
   VUMeterGUI in 'VUMeterGUI.pas' {VSTVUMeterGUI};
 

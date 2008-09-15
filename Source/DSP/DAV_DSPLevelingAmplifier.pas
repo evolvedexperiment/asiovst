@@ -1,9 +1,9 @@
-unit DDSPLevelingAmplifier;
+unit DAV_DSPLevelingAmplifier;
 
 interface
 
 uses
-  DDSPDynamics;
+  DAV_DSPDynamics;
 
 type
   TCustomLevelingAmplifier = class
@@ -75,7 +75,7 @@ type
 implementation
 
 uses
-  Math, DAVDCommon;
+  Math, DAV_Common;
 
 const 
   Harms : array [0..3] of Single = (1.4092750123e-07, -7.5166615806e-07,

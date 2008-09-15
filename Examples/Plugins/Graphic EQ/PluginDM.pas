@@ -3,8 +3,8 @@ unit PluginDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  DDspFilter;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_DspFilter;
 
 type
   TPluginDataModule = class(TVSTModule)

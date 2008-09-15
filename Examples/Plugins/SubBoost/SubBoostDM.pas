@@ -3,7 +3,7 @@ unit SubBoostDM;
 interface
 
 uses
-  Windows, Forms, Messages, SysUtils, Classes, DAVDCommon, DVSTModule;
+  Windows, Forms, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule;
 
 type
   TProcessType = (ptDistort, ptDivide, ptInvert, ptKeyOsc);

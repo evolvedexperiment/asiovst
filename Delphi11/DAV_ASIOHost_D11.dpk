@@ -20,24 +20,24 @@ package HostASIO_D11;
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST ON}
 {$MINENUMSIZE 1}
-{$IMAGEBASE $400000}
+{$IMAGEBASE $540000}
 {$DESCRIPTION 'ASIO/VST ASIO Host'}
 {$IMPLICITBUILD ON}
 
 requires
-  AVDCommon_D11,
   vcl,
-  rtl;
+  rtl,
+  DAV_Common_D10;
 
 contains
-  DAVASIO in '..\Source\ASIO\DAVASIO.pas',
-  DAVBeRoASIO in '..\Source\ASIO\DAVBeRoASIO.pas',
-  DAVOpenASIO in '..\Source\ASIO\DAVOpenASIO.pas',
-  DAVASIOHost in '..\Source\ASIO\DAVASIOHost.pas',
-  DAVASIOConvert in '..\Source\ASIO\DAVASIOConvert.pas',
-  DAVASIOGenerator in '..\Source\ASIO\DAVASIOGenerator.pas',
-  DAVASIOChannelStrip in '..\Source\ASIO\DAVASIOChannelStrip.pas',
-  DAVASIOMixer in '..\Source\ASIO\DAVASIOMixer.pas',
-  DAVASIORegister in '..\Source\ASIO\DAVASIORegister.pas';
+  DAV_ASIO in '..\Source\ASIO\DAV_ASIO.pas',
+  DAV_BeRoASIO in '..\Source\ASIO\DAV_BeRoASIO.pas',
+  DAV_OpenASIO in '..\Source\ASIO\DAV_OpenASIO.pas',
+  DAV_ASIOHost in '..\Source\ASIO\DAV_ASIOHost.pas',
+  DAV_ASIOConvert in '..\Source\ASIO\DAV_ASIOConvert.pas',
+  DAV_ASIOGenerator in '..\Source\ASIO\DAV_ASIOGenerator.pas',
+  DAV_ASIOChannelStrip in '..\Source\ASIO\DAV_ASIOChannelStrip.pas',
+  DAV_ASIOMixer in '..\Source\ASIO\DAV_ASIOMixer.pas',
+  DAV_ASIORegister in '..\Source\ASIO\DAV_ASIORegister.pas';
 
 end.

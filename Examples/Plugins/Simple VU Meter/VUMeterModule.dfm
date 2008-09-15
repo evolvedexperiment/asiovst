@@ -14,29 +14,31 @@ object VSTVUMeterModule: TVSTVUMeterModule
   Programs = <>
   ParameterProperties = <
     item
-      Min = -90.000000000000000000
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Volume Left'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
+      DisplayName = 'Volume Left'
       LargeStepInteger = 0
+      Max = 1.000000000000000000
+      MaxInteger = 0
+      Min = -90.000000000000000000
+      ShortLabel = 'Volume '
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      Units = 'dB'
       VSTModule = Owner
     end
     item
-      Min = -90.000000000000000000
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Volume Right'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MaxInteger = 0
-      StepInteger = 0
+      DisplayName = 'Volume Right'
       LargeStepInteger = 0
+      Max = 1.000000000000000000
+      MaxInteger = 0
+      Min = -90.000000000000000000
+      ShortLabel = 'Volume '
+      SmoothingFactor = 1.000000000000000000
+      StepInteger = 0
+      Units = 'dB'
       VSTModule = Owner
     end>
   OnEditOpen = VSTModuleEditOpen

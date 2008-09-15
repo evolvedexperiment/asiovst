@@ -1,6 +1,6 @@
-package HostVST_D11;
+ package DAV_VSTHost_D11;
 
-{$R DVSTHost.res}
+{$R 'DAV_VSTHost.res'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -26,13 +26,13 @@ package HostVST_D11;
 {$IMPLICITBUILD ON}
 
 requires
-  AVDCommon_D11,
   vcl,
   rtl,
   designide,
-  VstPlugin_D11;
+  DAV_Common_D11,
+  DAV_VstPlugin_D11;
 
 contains
-  DVSTHost in '..\Source\DVSTHost.pas';
+  DAV_VSTHost in '..\Source\VST\DAV_VSTHost.pas';
 
 end.

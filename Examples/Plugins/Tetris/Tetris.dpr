@@ -3,8 +3,8 @@ library Tetris;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   TetrisDM in 'TetrisDM.pas' {TetrisModule: TVSTModule},
   TetrisEditor in 'TetrisEditor.pas' {FmTetris},
   TetrisUnit in 'TetrisUnit.pas';

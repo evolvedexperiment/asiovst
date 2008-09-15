@@ -1,4 +1,4 @@
-package DAV_GUI_D11;
+package DAV_GUI_D10;
 
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -27,8 +27,8 @@ package DAV_GUI_D11;
 requires
   rtl,
   vcl,
-  DAV_Common_D11,
-  DAV_VSTPlugin_D11;
+  DAV_Common_D10,
+  DAV_VSTPlugin_D10;
 
 contains
   DAV_GuiRegister in '..\Source\GUI\DAV_GuiRegister.pas',

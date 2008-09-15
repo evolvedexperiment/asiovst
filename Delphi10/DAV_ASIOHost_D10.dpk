@@ -25,9 +25,9 @@ package DAVASIOHost_D10;
 {$IMPLICITBUILD ON}
 
 requires
-  DAV_Common_D10,
   vcl,
-  rtl;
+  rtl,
+  DAV_Common_D10;
 
 contains
   DAV_ASIO in '..\Source\ASIO\DAV_ASIO.pas',

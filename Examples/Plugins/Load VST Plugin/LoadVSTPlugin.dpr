@@ -3,15 +3,16 @@ library LoadVSTPlugin;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   LoadVSTModule in 'LoadVSTModule.pas' {PlugInPlugModule: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var PlugInPlugModule : TPlugInPlugModule;
+var
+  PlugInPlugModule : TPlugInPlugModule;
 begin
  try
-  PlugInPlugModule:=TPlugInPlugModule.Create(Application);
+  PlugInPlugModule := TPlugInPlugModule.Create(Application);
   PlugInPlugModule.Effect^.user:=PlugInPlugModule;
   PlugInPlugModule.AudioMaster:=audioMaster;
   Result := PlugInPlugModule.Effect;

@@ -3,8 +3,8 @@ unit SineSynthGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  Controls, StdCtrls, DGuiMidiKeys, Graphics, DGuiBaseControl;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
+  DAV_Common, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiMidiKeys;
 
 type
   TVSTGUI = class(TForm)
@@ -20,8 +20,8 @@ implementation
 
 {$R *.DFM}
 
-uses SineSynthModule, SineSynthVoice, VoiceList;
-
+uses
+  SineSynthModule, SineSynthVoice, VoiceList;
 
 procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
   Velocity: Single);

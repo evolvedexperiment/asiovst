@@ -20,56 +20,56 @@ object VSTSSModule: TVSTSSModule
     end>
   ParameterProperties = <
     item
-      Min = -80.000000000000000000
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Input Volume'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Input Volume'
+      LargeStepFloat = 5.000000000000000000
+      Max = 1.000000000000000000
+      MaxInteger = 0
+      Min = -80.000000000000000000
+      MinInteger = -80
+      ShortLabel = 'vol in'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.500000000000000000
-      LargeStepFloat = 5.000000000000000000
-      MinInteger = -80
-      MaxInteger = 0
       StepInteger = 3
-      ShortLabel = 'vol in'
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = VocInputVolumeChange
     end
     item
-      Min = -80.000000000000000000
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Synth Volume'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Synth Volume'
+      LargeStepFloat = 5.000000000000000000
+      Max = 1.000000000000000000
+      MaxInteger = 0
+      Min = -80.000000000000000000
+      MinInteger = -80
+      ShortLabel = 'vol syn'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.500000000000000000
-      LargeStepFloat = 5.000000000000000000
-      MinInteger = -80
-      MaxInteger = 0
       StepInteger = 3
-      ShortLabel = 'vol syn'
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = VocSynthVolumeChange
     end
     item
-      Min = -80.000000000000000000
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Vocoder Volume'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Vocoder Volume'
+      LargeStepFloat = 5.000000000000000000
+      Max = 1.000000000000000000
+      MaxInteger = 0
+      Min = -80.000000000000000000
+      MinInteger = -80
+      ShortLabel = 'vol voc'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.500000000000000000
-      LargeStepFloat = 5.000000000000000000
-      MinInteger = -80
-      MaxInteger = 0
       StepInteger = 3
-      ShortLabel = 'vol voc'
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = VocVocoderVolumeChange
     end>

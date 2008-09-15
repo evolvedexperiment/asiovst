@@ -23,10 +23,10 @@ object WavedisplayGUI: TWavedisplayGUI
     Top = 33
     Width = 491
     Height = 197
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    Color = clWhite
     RedrawInterval = 50
     InternalBufferSize = 1024
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Color = clWhite
   end
   object LbDrawMode: TLabel
     Left = 8
@@ -55,11 +55,11 @@ object WavedisplayGUI: TWavedisplayGUI
     Width = 34
     Height = 197
     Anchors = [akTop, akRight, akBottom]
+    BarWidthPercentage = 0.800000011920929000
+    LevelRelease = 1.000000000000000000
+    MaximumTimeFactor = 3.000000000000000000
     RedrawInterval = 15
     ShowClipping = scBottomRight
-    LevelRelease = 1.000000000000000000
-    BarWidthPercentage = 0.800000011920928900
-    MaximumTimeFactor = 3.000000000000000000
   end
   object ddDrawMode: TComboBox
     Left = 68

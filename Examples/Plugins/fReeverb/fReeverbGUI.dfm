@@ -228,7 +228,6 @@ object FmReverb: TFmReverb
     BevelOuter = bvNone
     Color = clWhite
     TabOrder = 1
-    ExplicitWidth = 349
     object SBPreset: TGuiSelectBox
       Left = 51
       Top = 2

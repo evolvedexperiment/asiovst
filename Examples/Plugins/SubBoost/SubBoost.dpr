@@ -3,8 +3,8 @@ library SubBoost;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   SubBoostDM in 'SubBoostDM.pas' {SubBoostDataModule: TVSTModule},
   SubBoostGUI in 'SubBoostGUI.pas' {FmSubBoost};
 

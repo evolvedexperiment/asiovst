@@ -19,20 +19,20 @@ object VSTOpAmp: TVSTOpAmp
     end>
   ParameterProperties = <
     item
-      Min = -40.000000000000000000
-      Max = 20.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Gain'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Gain'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 20.000000000000000000
+      MaxInteger = 20
+      Min = -40.000000000000000000
+      MinInteger = -40
+      ShortLabel = 'Gain'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 2.000000000000000000
-      MinInteger = -40
-      MaxInteger = 20
-      LargeStepInteger = 2
-      ShortLabel = 'Gain'
+      Units = 'dB'
       VSTModule = Owner
     end>
   OnEditOpen = VSTModuleEditOpen

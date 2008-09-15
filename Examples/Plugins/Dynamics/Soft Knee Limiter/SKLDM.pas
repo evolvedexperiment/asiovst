@@ -3,7 +3,8 @@ unit SKLDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, DDspDynamics;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_DspDynamics;
 
 type
   TSoftKneeLimiterDataModule = class(TVSTModule)

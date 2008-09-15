@@ -8,7 +8,6 @@ object SimpleGateDataModule: TSimpleGateDataModule
   ProductName = 'Simple Gate'
   VendorName = 'ASIO-VST Delphi Project'
   PlugCategory = vpcEffect
-  CanDos = []
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
   UniqueID = 'SiGa'
@@ -16,20 +15,20 @@ object SimpleGateDataModule: TSimpleGateDataModule
   Programs = <>
   ParameterProperties = <
     item
-      Min = -96.000000000000000000
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Threshold'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Threshold'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 0
+      Min = -96.000000000000000000
+      MinInteger = -96
+      ShortLabel = 'thrshld'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 1.000000000000000000
-      MinInteger = -96
-      MaxInteger = 0
-      LargeStepInteger = 1
-      ShortLabel = 'thrshld'
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = SGDMThresholdChange
     end>

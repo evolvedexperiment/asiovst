@@ -26,10 +26,10 @@
 {$IMPLICITBUILD ON}
 
 requires
-  DAV_Common_D10,
   vcl,
   rtl,
   designide,
+  DAV_Common_D10,
   DAV_VstPlugin_D10;
 
 contains

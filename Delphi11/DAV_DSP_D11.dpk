@@ -1,6 +1,6 @@
-package AVDDSP_D11;
+package DAV_DSP_D11;
 
-{$R DDspRegister.res}
+{$R DAV_DspRegister.res}
 {$M+}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -29,39 +29,39 @@ package AVDDSP_D11;
 requires
   vcl,
   rtl,
-  VstPlugin_D11,
-  AVDCommon_D11;
+  designide,
+  DAV_Common_D11;
 
 contains
-  DDspBaseComponent in '..\Source\DDspBaseComponent.pas',
-  DDspRegister in '..\Source\DDspRegister.pas',
-  DDspEnvelopeFollower in '..\Source\DDspEnvelopeFollower.pas',
-  DDspBesselFilter in '..\Source\DDspBesselFilter.pas',
-  DDspButterworthFilter in '..\Source\DDspButterworthFilter.pas',
-  DDspChebyshevFilter in '..\Source\DDspChebyshevFilter.pas',
-  DDspDynamics in '..\Source\DDspDynamics.pas',
-  DDspMinBlep in '..\Source\DDspMinBlep.pas',
-  DDspPhaser in '..\Source\DDspPhaser.pas',
-  DDspFilter in '..\Source\DDspFilter.pas',
-  DDspWaveshaper in '..\Source\DDspWaveshaper.pas',
-  DDspInterpolation in '..\Source\DDspInterpolation.pas',
-  DDspWindowing in '..\Source\DDspWindowing.pas',
-  DDspFFT in '..\Source\DDspFFT.pas',
-  DDspDFT in '..\Source\DDspDFT.pas',
-  DDspDitherNoiseShaper in '..\Source\DDspDitherNoiseShaper.pas',
-  DDspMetronome in '..\Source\DDspMetronome.pas',
-  DDSPRemez in '..\Source\DDSPRemez.pas',
-  DDSPStateVariableFilter in '..\Source\DDSPStateVariableFilter.pas',
-  DDspVoice in '..\Source\DDspVoice.pas',
-  DDSPOscSine in '..\Source\DDSPOscSine.pas',
-  DDSPOscSaw in '..\Source\DDSPOscSaw.pas',
-  DDSPOscRamp in '..\Source\DDSPOscRamp.pas',
-  DDSPOscSquare in '..\Source\DDSPOscSquare.pas',
-  DDSPOscNoise in '..\Source\DDSPOscNoise.pas',
-  DDSPOscAbsSine in '..\Source\DDSPOscAbsSine.pas',
-  DDSPBaseOsc in '..\Source\DDSPBaseOsc.pas',
-  DDspVoiceController in '..\Source\DDspVoiceController.pas',
-  DDspVoiceList in '..\Source\DDspVoiceList.pas',
-  DDspEnvelope in '..\Source\DDspEnvelope.pas';
+  DAV_DspBaseComponent in '..\Source\DAV_DspBaseComponent.pas',
+  DAV_DspRegister in '..\Source\DSP\DAV_DspRegister.pas',
+  DAV_DspEnvelopeFollower in '..\Source\DAV_DspEnvelopeFollower.pas',
+  DAV_DspBesselFilter in '..\Source\DSP\DAV_DspBesselFilter.pas',
+  DAV_DspButterworthFilter in '..\Source\DSP\DAV_DspButterworthFilter.pas',
+  DAV_DspChebyshevFilter in '..\Source\DSP\DAV_DspChebyshevFilter.pas',
+  DAV_DspDynamics in '..\Source\DSP\DAV_DspDynamics.pas',
+  DAV_DspMinBlep in '..\Source\DSP\DAV_DspMinBlep.pas',
+  DAV_DspPhaser in '..\Source\DSP\DAV_DspPhaser.pas',
+  DAV_DspFilter in '..\Source\DSP\DAV_DspFilter.pas',
+  DAV_DspWaveshaper in '..\Source\DSP\DAV_DspWaveshaper.pas',
+  DAV_DspInterpolation in '..\Source\DSP\DAV_DspInterpolation.pas',
+  DAV_DspWindowing in '..\Source\DSP\DAV_DspWindowing.pas',
+  DAV_DspFFT in '..\Source\DSP\DAV_DspFFT.pas',
+  DAV_DspDFT in '..\Source\DSP\DAV_DspDFT.pas',
+  DAV_DspDitherNoiseShaper in '..\Source\DSP\DAV_DspDitherNoiseShaper.pas',
+  DAV_DspMetronome in '..\Source\DSP\DAV_DspMetronome.pas',
+  DAV_DspRemez in '..\Source\DSP\DAV_DspRemez.pas',
+  DAV_DspStateVariableFilter in '..\Source\DSP\DAV_DspStateVariableFilter.pas',
+  DAV_DspVoice in '..\Source\DAV_DspVoice.pas',
+  DAV_DspOscSine in '..\Source\DAV_DspOscSine.pas',
+  DAV_DspOscSaw in '..\Source\DAV_DspOscSaw.pas',
+  DAV_DspOscRamp in '..\Source\DAV_DspOscRamp.pas',
+  DAV_DspOscSquare in '..\Source\DAV_DspOscSquare.pas',
+  DAV_DspOscNoise in '..\Source\DAV_DspOscNoise.pas',
+  DAV_DspOscAbsSine in '..\Source\DAV_DspOscAbsSine.pas',
+  DAV_DspBaseOsc in '..\Source\DAV_DspBaseOsc.pas',
+  DAV_DspVoiceController in '..\Source\DAV_DspVoiceController.pas',
+  DAV_DspVoiceList in '..\Source\DAV_DspVoiceList.pas',
+  DAV_DspEnvelope in '..\Source\DSP\DAV_DspEnvelope.pas';
 
 end.

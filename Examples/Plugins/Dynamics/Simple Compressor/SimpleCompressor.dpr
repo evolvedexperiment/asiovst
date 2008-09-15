@@ -4,8 +4,8 @@ library SimpleCompressor;
 uses
   FastMM4,
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   SimpleCompressorDM in 'SimpleCompressorDM.pas' {SimpleCompressorDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 

@@ -3,8 +3,8 @@ library Vocoder;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   VocoderModule in 'VocoderModule.pas' {VSTSSModule: TVSTModule},
   VocoderGUI in 'VocoderGUI.pas' {VSTGUI},
   VocoderVoice in 'VocoderVoice.pas',

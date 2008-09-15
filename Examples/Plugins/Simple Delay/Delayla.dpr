@@ -3,13 +3,14 @@ library Delayla;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   DelaylaModule in 'DelaylaModule.pas' {SimpleDelayVST: TVST2Module},
   DelaylaGUI in 'DelaylaGUI.pas' {VSTGUI};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var SimpleDelay : TSimpleDelayVST;
+var
+  SimpleDelay : TSimpleDelayVST;
 begin
  try
   SimpleDelay:=TSimpleDelayVST.Create(Application);

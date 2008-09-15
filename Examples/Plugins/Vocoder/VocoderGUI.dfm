@@ -24,14 +24,12 @@ object VSTGUI: TVSTGUI
     Width = 262
     Height = 73
     Align = alBottom
-    ReleaseMouseBtnOnLeave = False
     KeyDownMode = kdmFlat
     Height3d = 0.200000002980232200
     BlackKeyHeight = 0.629999995231628400
     NumOctaves = 2
     KeyZones = <>
     ShowKeyZones = False
-    KeyZoneHeight = 10
     OnNoteOn = MidiKeysNoteOn
     OnNoteOff = MidiKeysNoteOff
   end

@@ -2,7 +2,8 @@ unit VocoderVoice;
 
 interface
 
-uses DVSTModule, DAVDComplex;
+uses
+  DAV_VSTModule, DAV_Complex;
 
 {$i Consts.inc}
 
@@ -35,7 +36,8 @@ type
 
 implementation
 
-uses DAVDCommon, VocoderModule;
+uses
+  DAV_Common, VocoderModule;
 
 { TVocoderVoice }
 

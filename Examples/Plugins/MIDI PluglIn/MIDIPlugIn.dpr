@@ -3,8 +3,8 @@ library MIDIPlugIn;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   MIDIPlugInModule in 'MIDIPlugInModule.pas' {MIDIModule: TVSTModule},
   MIDIPlugInGUI in 'MIDIPlugInGUI.pas' {VSTGUI};
 

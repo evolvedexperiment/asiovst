@@ -20,20 +20,20 @@ object VSTSSModule: TVSTSSModule
     end>
   ParameterProperties = <
     item
-      Min = 2.000000000000000000
-      Max = 32.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Order'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Order'
+      Flags = [kVstParameterUsesIntStep]
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 32.000000000000000000
+      MaxInteger = 32
+      Min = 2.000000000000000000
+      MinInteger = 2
+      ShortLabel = 'Order'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 2.000000000000000000
-      Flags = [kVstParameterUsesIntStep]
-      MinInteger = 2
-      MaxInteger = 32
-      LargeStepInteger = 2
-      ShortLabel = 'Order'
       VSTModule = Owner
     end>
   OnEditOpen = VSTModuleEditOpen

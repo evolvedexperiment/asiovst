@@ -3,7 +3,7 @@ unit DelaylaModule;
 interface
 
 uses
-  Windows, Types, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, Types, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
 
 type
   TSimpleDelayVST = class(TVSTModule)
@@ -21,7 +21,8 @@ implementation
 
 {$R *.DFM}
 
-uses DelaylaGUI;
+uses
+  DelaylaGUI;
 
 procedure TSimpleDelayVST.VSTModuleCreate(Sender: TObject);
 begin

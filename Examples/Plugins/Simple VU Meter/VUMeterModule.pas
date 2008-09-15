@@ -3,7 +3,7 @@ unit VUMeterModule;
 interface
 
 uses
-  Windows, SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  Windows, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
 
 type
   TVSTVUMeterModule = class(TVSTModule)

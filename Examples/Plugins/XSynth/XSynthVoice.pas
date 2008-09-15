@@ -5,7 +5,7 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  DVSTModule, DAVDComplex;
+  DAV_VSTModule, DAV_Complex;
 
 {$i Consts.inc}
 
@@ -121,7 +121,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAVDCommon, XSynthModule;
+  Math, SysUtils, DAV_Common, XSynthModule;
 
 { TOscilator }
 

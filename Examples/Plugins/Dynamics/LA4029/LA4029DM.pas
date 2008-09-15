@@ -3,8 +3,8 @@
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  DDSPDynamics, DDSPLevelingAmplifier, DDspButterworthFilter;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_DSPDynamics, DAV_DSPLevelingAmplifier, DAV_DspButterworthFilter;
 
 type
   TLA4029DataModule = class(TVSTModule)
@@ -65,7 +65,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Dialogs, Math, EditorFrm, DDspFilter;
+  Dialogs, Math, EditorFrm, DAV_DspFilter;
 
 procedure TLA4029DataModule.VSTModuleCreate(Sender: TObject);
 begin

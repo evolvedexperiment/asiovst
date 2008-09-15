@@ -3,8 +3,9 @@ unit UniQuEGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, DGuiLED,
-  DGuiLabel, DGuiGroup, Controls, DGuiBaseControl, DGuiDial;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Common,
+  DAV_VSTModule, DAV_GuiLED, DAV_GuiLabel, DAV_GuiGroup, DAV_GuiBaseControl,
+  DAV_GuiDial;
 
 type
   TFmUniQuE = class(TForm)

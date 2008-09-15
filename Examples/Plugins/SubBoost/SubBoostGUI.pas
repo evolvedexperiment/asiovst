@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  DGuiBaseControl, DGuiDial, DGuiLabel, DGuiSelectBox;
+  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel, DAV_GuiSelectBox;
 
 type
   TFmSubBoost = class(TForm)

@@ -3,35 +3,35 @@ unit XSynthGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule,
-  Controls, StdCtrls, DGuiMidiKeys, DGuiADSRGraph, DGuiBaseControl;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Common,
+  DAV_VSTModule, DAV_GuiADSRGraph, DAV_GuiBaseControl, DAV_GuiMidiKeys;
 
 type
   TVSTGUI = class(TForm)
-    MidiKeys: TGuiMidiKeys;
-    GBOSC1: TGroupBox;
     CBOsc1Type: TComboBox;
-    LbOsc1Type: TLabel;
-    GBOsc2: TGroupBox;
-    LbOsc2Type: TLabel;
     CBOsc2Type: TComboBox;
+    GBOSC1: TGroupBox;
+    GBOsc2: TGroupBox;
     GBOutput: TGroupBox;
-    LbLevel: TLabel;
-    SBLevel: TScrollBar;
-    Osc1ADSR: TGuiADSRGraph;
-    Osc2ADSR: TGuiADSRGraph;
-    Label1: TLabel;
-    Label2: TLabel;
+    LbOsc1ADSR: TLabel;
+    LbOsc2ADSR: TLabel;
+    LbCutOff: TLabel;
+    LbResonance: TLabel;
+    LbOsc1Level: TLabel;
+    LbOsc2Level: TLabel;
     LbDrive: TLabel;
-    SBDrive: TScrollBar;
-    Label3: TLabel;
-    SBCutoff: TScrollBar;
-    Label4: TLabel;
-    SBResonance: TScrollBar;
+    LbLevel: TLabel;
+    LbOsc1Type: TLabel;
+    LbOsc2Type: TLabel;
+    MidiKeys: TGuiMidiKeys;
+    Osc1ADSR: TGuiADSRGraph;
     Osc1Level: TScrollBar;
-    Label5: TLabel;
+    Osc2ADSR: TGuiADSRGraph;
     Osc2Level: TScrollBar;
-    Label6: TLabel;
+    SBCutoff: TScrollBar;
+    SBDrive: TScrollBar;
+    SBLevel: TScrollBar;
+    SBResonance: TScrollBar;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SBLevelChange(Sender: TObject);

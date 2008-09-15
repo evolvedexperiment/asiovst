@@ -3,7 +3,7 @@ unit SineSynthModule;
 interface
 
 uses
-  Windows, SysUtils, Classes, Forms, DAVDCommon, DVSTEffect, DVSTModule,
+  Windows, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTModule,
   SineSynthVoice, VoiceList;
 
 type

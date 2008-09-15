@@ -3,8 +3,8 @@ library Phaser;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   PhaserDM in 'PhaserDM.pas' {PhaserModule: TPhaserModule},
   PhaserFrm in 'PhaserFrm.pas' {PhaserForm};
 

@@ -4,8 +4,8 @@ library PerformanceTest;
 uses
   FastMM4,
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   PTDM in 'PTDM.pas' {PerformanceTestModule: TVSTModule},
   PTGUI in 'PTGUI.pas' {FmPerformanceTest};
 

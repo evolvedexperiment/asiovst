@@ -3,8 +3,8 @@ library Wavedisplay;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   WavedisplayModule in 'WavedisplayModule.pas' {WavedisplayModule: TVSTModule},
   WavedisplayGUI in 'WavedisplayGUI.pas' {WavedisplayGUI};
 

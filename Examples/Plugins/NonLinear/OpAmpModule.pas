@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
-  SysUtils, Classes, Forms, DAVDCommon, DVSTModule;
+  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
 
 type
   TVSTOpAmp = class(TVSTModule)

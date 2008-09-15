@@ -3,8 +3,8 @@ library SineSynth;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   SineSynthModule in 'SineSynthModule.pas' {VSTSSModule: TVSTModule},
   SineSynthGUI in 'SineSynthGUI.pas' {VSTGUI},
   SineSynthVoice in 'SineSynthVoice.pas',

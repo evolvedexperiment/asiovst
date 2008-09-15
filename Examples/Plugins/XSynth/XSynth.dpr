@@ -3,8 +3,8 @@ library XSynth;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   XSynthModule in 'XSynthModule.pas' {VSTSSModule: TVSTModule},
   XSynthGUI in 'XSynthGUI.pas' {VSTGUI},
   XSynthVoice in 'XSynthVoice.pas',

@@ -3,8 +3,8 @@ library NoGUIFilter;
 
 uses
   Forms,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
   FilterModule in 'FilterModule.pas' {VSTFilter: TVSTModule};
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
