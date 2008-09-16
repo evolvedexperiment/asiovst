@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
-  Gauges, ExtCtrls, DAV_Common, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLED,
-  DAV_GuiGroup;
+  Gauges, ExtCtrls, DAV_Common, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial,
+  DAV_GuiLED, DAV_GuiGroup;
 
 type
   TRGB32 = packed record
@@ -16,6 +16,7 @@ type
 
   TEditorForm = class(TForm)
     CBDuck: TCheckBox;
+    CBOnOff: TGuiLED;
     CBSideChain: TComboBox;
     CBStereoLink: TCheckBox;
     DialAttack: TGuiDial;
@@ -54,7 +55,6 @@ type
     LbSource: TLabel;
     LbThreshold: TLabel;
     VUTimer: TTimer;
-    CBOnOff: TGuiLED;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);

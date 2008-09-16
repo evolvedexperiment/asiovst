@@ -5,30 +5,54 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Windows, Classes, Controls, DAV_GuiBaseControl, Graphics;
+  Windows, Messages, SysUtils, Forms, Classes, Graphics, Controls, StdCtrls,
+  DAV_GuiBaseControl;
 
 type
-  TCustomGuiGroup = class(TCustomGuiBaseControl)
+  TCustomGuiGroup = class(TCustomGroupBox)
   private
-    fCaption        : string;
-    fRoundRadius    : Integer;
-    fHeaderMinWidth : Integer;
-    fAntiAlias      : TGuiAntiAlias;
-    fOSFactor       : Integer;
+    fAntiAlias              : TGuiAntiAlias;
+    fAutoFocus              : Boolean;
+    fBorderColor            : TColor;
+    fCaption                : string;
+    fLineColor              : TColor;
+    fHeaderMinWidth         : Integer;
+    fOwnerDraw              : Boolean;
+    fOSFactor               : Integer;
+    fRoundRadius            : Integer;
+    fTransparent            : Boolean;
+    fLineWidth              : Integer;
+    procedure CMDialogChar(var Message: TCMDialogChar); message CM_DIALOGCHAR;
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    procedure CMParentColorChanged(var Message: TWMNoParams); message CM_PARENTCOLORCHANGED;
+    procedure CMSysColorChange(var Message: TMessage); message CM_SYSCOLORCHANGE;
+    procedure DrawParentImage(Dest: TCanvas);
     procedure RenderGroupToBitmap(Bitmap: TBitmap);
-    procedure SetCaption(const Value: string);
-    procedure SetRoundRadius(Value: Integer);
-    procedure SetHeaderMinWidth(const Value: Integer);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
+    procedure SetCaption(const Value: string);
+    procedure SetHeaderMinWidth(const Value: Integer);
+    procedure SetLineColor(const Value: TColor);
+    procedure SetLineWidth(const Value: Integer);
+    procedure SetOwnerDraw(const Value: Boolean);
+    procedure SetRoundRadius(Value: Integer);
+    procedure SetTransparent (const Value: Boolean);
+    procedure WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF}); message WM_MOVE;
   protected
-    procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
+//    procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
+
+    procedure Paint; override;
+    procedure Click; override;
   public
     constructor Create(AOwner: TComponent); override;
     property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
+    property AutoFocus: Boolean read fAutoFocus write fAutoFocus default True;
     property Caption: string read fCaption write SetCaption;
-    property Radius: Integer read fRoundRadius write SetRoundRadius default 2;
+    property OwnerDraw: Boolean read fOwnerDraw write SetOwnerDraw default True;
     property HeaderMinWidth: Integer read fHeaderMinWidth write SetHeaderMinWidth default 32;
-    property LineColor default clBtnShadow;
+    property LineColor: TColor read fLineColor write SetLineColor default clBtnShadow;
+    property LineWidth: Integer read fLineWidth write SetLineWidth default 1;
+    property Radius: Integer read fRoundRadius write SetRoundRadius default 2;
+    property Transparent: Boolean read fTransparent write SetTransparent default False;
   end;
 
   TGuiGroup = class(TCustomGuiGroup)
@@ -39,17 +63,27 @@ type
     property Caption;
     property Color;
     property Constraints;
+    property Cursor;
+    property DockSite;
     property DragCursor;
     property DragKind;
     property DragMode;
     property Enabled;
+    property OwnerDraw;
     property Font;
     property HeaderMinWidth;
+    property HelpContext;
+    property Hint;
     property LineColor;
     property LineWidth;
+    property ParentColor;
+    property ParentFont;
+    property ParentShowHint;
     property PopupMenu;
     property Radius;
     property ShowHint;
+    property TabOrder;
+    property TabStop;
     property Transparent;
     property Visible;
 
@@ -58,14 +92,23 @@ type
     property OnConstrainedResize;
     property OnContextPopup;
     property OnDblClick;
+    property OnDockDrop;
+    property OnDockOver;
     property OnDragDrop;
     property OnDragOver;
     property OnEndDock;
     property OnEndDrag;
+    property OnEnter;
+    property OnExit;
+    property OnGetSiteInfo;
+    property OnMouseDown;
+    property OnMouseMove;
+    property OnMouseUp;
+//    property OnPaint;
     property OnResize;
     property OnStartDock;
     property OnStartDrag;
-    property OnPaint;
+    property OnUnDock;
   end;
 
 implementation
@@ -78,27 +121,32 @@ uses
 constructor TCustomGuiGroup.Create(AOwner: TComponent);
 begin
  inherited;
- ControlStyle    := ControlStyle + [csFramed, csOpaque, csReplicatable,
+ ControlStyle    := ControlStyle + [csOpaque, //csReplicatable,
                                     csAcceptsControls];
+ fOwnerDraw      := True;
+ fOSFactor       := 1;
  fRoundRadius    := 2;
  fHeaderMinWidth := 32;
  fCaption        := 'Group'; //Name;
  fLineColor      := clBtnShadow;
+ fLineWidth      := 1;
 end;
 
 procedure TCustomGuiGroup.RenderGroupToBitmap(Bitmap: TBitmap);
 var
   Val, Off : TComplexDouble;
   Steps, i : Integer;
+  LineOffs : array[0..1] of Integer;
   rct      : TRect;
   tmp      : Single;
   rad      : Integer;
   TextSize : TSize;
-  PtsArray : Array of TPoint;
+  PtsArray : array of TPoint;
 begin
  with Bitmap.Canvas do
   begin
    Lock;
+
    Brush.Style := bsClear;
    Brush.Color := fLineColor;
    Pen.Width   := fOSFactor * fLineWidth;
@@ -115,13 +163,21 @@ begin
             LineTo(TextSize.cx + 11, TextSize.cy + 4);
            end;
        2 : begin
+            LineOffs[0] := Round(Linewidth div 2);
+            LineOffs[1] := Round((Linewidth + 1) div 2);
             with ClipRect do
-             PolyLine([Point(Left  + 1, Bottom - 2), Point(Left     , Bottom - 3),
-                       Point(Left     , Top    + 2), Point(Left  + 2, Top       ),
-                       Point(Right - 3, Top       ), Point(Right - 1, Top    + 2),
-                       Point(Right - 2, Top    + 1), Point(Right - 1, Top    + 2),
-                       Point(Right - 1, Bottom - 2), Point(Right - 3, Bottom - 1),
-                       Point(Left  + 2, Bottom - 1), Point(Left,      Bottom - 3)]);
+             PolyLine([Point(Left  + 1 + LineOffs[0], Bottom - 1 - LineOffs[1]),
+                       Point(Left      + LineOffs[0], Bottom - 2 - LineOffs[1]),
+                       Point(Left      + LineOffs[0], Top    + 2 + LineOffs[0]),
+                       Point(Left  + 2 + LineOffs[0], Top        + LineOffs[0]),
+                       Point(Right - 2 - LineOffs[1], Top        + LineOffs[0]),
+                       Point(Right     - LineOffs[1], Top    + 2 + LineOffs[0]),
+                       Point(Right - 1 - LineOffs[1], Top    + 1 + LineOffs[0]),
+                       Point(Right     - LineOffs[1], Top    + 2 + LineOffs[0]),
+                       Point(Right     - LineOffs[1], Bottom - 2 - LineOffs[1]),
+                       Point(Right - 2 - LineOffs[1], Bottom     - LineOffs[1]),
+                       Point(Left  + 2 + LineOffs[0], Bottom     - LineOffs[1]),
+                       Point(Left      + LineOffs[0], Bottom - 2 - LineOffs[1])]);
             FillRect(Rect(1, 1, TextSize.cx + 12, TextSize.cy + 4));
             MoveTo(1, TextSize.cy + 4);
             LineTo(TextSize.cx + 11, TextSize.cy + 4);
@@ -229,133 +285,6 @@ begin
   end;
 end;
 
-procedure TCustomGuiGroup.RedrawBuffer(doBufferFlip: Boolean);
-var
-  Bmp : TBitmap;
-begin
- if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
-  begin
-   Lock;
-   Brush.Style := bsSolid;
-   Brush.Color := Self.Color;
-   case fAntiAlias of
-    gaaNone     :
-     begin
-      {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else {$ENDIF}
-      FillRect(ClipRect);
-      RenderGroupToBitmap(fBuffer);
-     end;
-    gaaLinear2x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
-        Canvas.Brush.Style := bsSolid;
-        Canvas.Brush.Color := Self.Color;
-        Canvas.FillRect(Canvas.ClipRect);
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample2xBitmap(Bmp);
-         end else
-        {$ENDIF}
-        FillRect(ClipRect);
-        RenderGroupToBitmap(Bmp);
-        Downsample2xBitmap(Bmp);
-        Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear4x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
-        Canvas.Brush.Style := bsSolid;
-        Canvas.Brush.Color := Self.Color;
-        Canvas.FillRect(Canvas.ClipRect);
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-         end else
-        {$ENDIF}
-        RenderGroupToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear8x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
-        Canvas.Brush.Style := bsSolid;
-        Canvas.Brush.Color := Self.Color;
-        Canvas.FillRect(Canvas.ClipRect);
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample2xBitmap(Bmp);
-          Upsample4xBitmap(Bmp);
-         end else
-        {$ENDIF}
-        RenderGroupToBitmap(Bmp);
-        Downsample2xBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear16x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
-        Canvas.Brush.Style := bsSolid;
-        Canvas.Brush.Color := Self.Color;
-        Canvas.FillRect(Canvas.ClipRect);
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-          Upsample4xBitmap(Bmp);
-         end else
-        {$ENDIF}
-        RenderGroupToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-   end;
-  end;
-
- if doBufferFlip then Invalidate;
-end;
-
 procedure TCustomGuiGroup.SetAntiAlias(const Value: TGuiAntiAlias);
 begin
  if fAntiAlias <> Value then
@@ -368,7 +297,7 @@ begin
      gaaLinear8x : fOSFactor :=  8;
     gaaLinear16x : fOSFactor := 16;
    end;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
@@ -377,7 +306,7 @@ begin
  if fCaption <> Value then
   begin
    fCaption := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
@@ -386,7 +315,25 @@ begin
  if fHeaderMinWidth <> Value then
   begin
    fHeaderMinWidth := Value;
-   RedrawBuffer(True);
+   Invalidate;
+  end;
+end;
+
+procedure TCustomGuiGroup.SetLineColor(const Value: TColor);
+begin
+ if fLineColor <> Value then
+  begin
+   fLineColor := Value;
+   Invalidate;
+  end;
+end;
+
+procedure TCustomGuiGroup.SetLineWidth(const Value: Integer);
+begin
+ if fLineWidth <> Value then
+  begin
+   fLineWidth := Value;
+   Invalidate;
   end;
 end;
 
@@ -396,8 +343,448 @@ begin
  if fRoundRadius <> Value then
   begin
    fRoundRadius := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
+
+
+procedure TCustomGuiGroup.Click;
+begin
+ if fAutoFocus then SetFocus;
+ inherited;
+end;
+
+procedure TCustomGuiGroup.CMDialogChar(var Message: TCMDialogChar);
+begin
+ with Message do
+  if IsAccel(Message.CharCode, Caption) and CanFocus then
+   begin
+    SetFocus;
+    Result := 1;
+   end;
+end;
+
+procedure TCustomGuiGroup.CMEnabledChanged(var Message: TMessage);
+begin
+ inherited;
+ Invalidate;
+end;
+
+procedure TCustomGuiGroup.CMParentColorChanged(var Message: TWMNoParams);
+begin
+ inherited;
+ Invalidate;
+end;
+
+procedure TCustomGuiGroup.CMSysColorChange(var Message: TMessage);
+begin
+ inherited;
+ Invalidate;
+end;
+
+procedure TCustomGuiGroup.DrawParentImage(Dest: TCanvas);
+var
+  SaveIndex: Integer;
+  DC: THandle;
+  Position: TPoint;
+begin
+  if Parent = nil then Exit;
+  DC := Dest.Handle;
+  SaveIndex := SaveDC(DC);
+  GetViewportOrgEx(DC, Position);
+  SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
+  IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
+  Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
+  Parent.Perform(WM_PAINT, Longint(DC), 0);
+  RestoreDC(DC, SaveIndex);
+end;
+
+procedure TCustomGuiGroup.Paint;
+var
+  BorderRect,
+  TextBounds     : TRect;
+  Format         : UINT;
+  Buffer         : TBitmap;
+begin
+
+ BorderRect := ClientRect;
+ if BidiMode = bdRightToLeft
+  then Format := DT_Top or DT_Right or DT_SINGLELINE
+  else Format := DT_Top or DT_Left or DT_SINGLELINE;
+ Format := DT_Top or DT_Left or DT_SINGLELINE;
+
+ if not fOwnerDraw or (Width <= 0) or (Height <= 0) then
+  begin
+   inherited;
+   Exit;
+  end;
+
+ Buffer := TBitmap.Create;
+ try
+  with Buffer, Canvas do
+   begin
+    Lock;
+    PixelFormat := pf32bit;
+    Width  := fOSFactor * Self.Width;
+    Height := fOSFactor * Self.Height;
+    Brush.Style := bsSolid;
+    Brush.Color := Self.Color;
+
+    case fAntiAlias of
+     gaaNone     :
+      begin
+       {$IFNDEF FPC}if fTransparent then DrawParentImage(Buffer.Canvas) else {$ENDIF}
+       FillRect(ClipRect);
+       RenderGroupToBitmap(Buffer);
+      end;
+     gaaLinear2x :
+      begin
+       {$IFNDEF FPC}
+       if fTransparent then
+        begin
+         DrawParentImage(Buffer.Canvas);
+         UpsampleBitmap2x(Buffer);
+        end else
+       {$ENDIF}
+       FillRect(ClipRect);
+       RenderGroupToBitmap(Buffer);
+       DownsampleBitmap2x(Buffer);
+      end;
+     gaaLinear4x :
+      begin
+       {$IFNDEF FPC}
+       if fTransparent then
+        begin
+         DrawParentImage(Buffer.Canvas);
+         UpsampleBitmap4x(Buffer);
+        end else
+       {$ENDIF}
+       FillRect(ClipRect);
+       RenderGroupToBitmap(Buffer);
+       DownsampleBitmap4x(Buffer);
+      end;
+     gaaLinear8x :
+      begin
+       {$IFNDEF FPC}
+       if fTransparent then
+        begin
+         DrawParentImage(Buffer.Canvas);
+         UpsampleBitmap2x(Buffer);
+         UpsampleBitmap4x(Buffer);
+        end else
+       {$ENDIF}
+       FillRect(ClipRect);
+       RenderGroupToBitmap(Buffer);
+       DownsampleBitmap2x(Buffer);
+       DownsampleBitmap4x(Buffer);
+      end;
+     gaaLinear16x :
+      begin
+       {$IFNDEF FPC}
+       if fTransparent then
+        begin
+         DrawParentImage(Buffer.Canvas);
+         UpsampleBitmap4x(Buffer);
+         UpsampleBitmap4x(Buffer);
+        end else
+       {$ENDIF}
+       FillRect(ClipRect);
+       RenderGroupToBitmap(Buffer);
+       DownsampleBitmap4x(Buffer);
+       DownsampleBitmap4x(Buffer);
+      end;
+    end;
+   end;
+  Self.Canvas.Draw(0, 0, Buffer);
+ finally
+  FreeAndNil(Buffer);
+ end;
+end;
+
+procedure TCustomGuiGroup.SetOwnerDraw(const Value: Boolean);
+begin
+ if fOwnerDraw <> Value then
+  begin
+   fOwnerDraw := Value;
+   RecreateWnd;
+   Invalidate;
+  end;
+end;
+
+procedure TCustomGuiGroup.SetTransparent(const Value: Boolean);
+begin
+ fTransparent := Value;
+ Invalidate;
+end;
+
+procedure TCustomGuiGroup.WMMove(var Message: TWMMove);
+begin
+ inherited;
+ if fTransparent then Invalidate;
+end;
+
+(*
+
+{ TMFControlsCustomGroupBox }
+
+procedure TMFControlsCustomGroupBox.Paint;
+var
+  memoryBitmap   : TBitmap;
+  borderRect,
+  textBounds     : TRect;
+  textSize       : TSize;
+  textHeightHalf : Integer;
+  format         : UINT;
+begin
+
+ memoryBitmap := TBitmap.Create; // create memory-bitmap to draw flicker-free
+ try
+  with memoryBitmap do
+   begin
+    Height           := ClientRect.Bottom;
+    Width            := ClientRect.Right;
+    Canvas.Font      := Self.Font;
+
+    if Caption = '' then
+     begin
+      textSize.cx    := 0;
+      textSize.cy    := Canvas.TextHeight('J');
+      textHeightHalf := (textSize.cy div 2);
+     end
+    else
+     begin
+      textSize       := Canvas.TextExtent(Caption);
+      textHeightHalf := (textSize.cy div 2);
+     end;
+   end;
+
+  with ClientRect do
+   if not (fBorder = brMFStyle) then
+    begin
+     {$IFDEF MFC_COMPILER_4_UP}
+     if BidiMode = bdRightToLeft
+      then textBounds := Rect(Right - 10 - textSize.cx, Top, Right - 10 , Top + textSize.cy)
+      else textBounds := Rect(Left + 10, Top, Left + 10 + textSize.cx, Top + textSize.cy);
+     {$ELSE}
+     textBounds := Rect(Left + 10, Top, Left + 10 + textSize.cx, Top + textSize.cy);
+    {$ENDIF}
+     textBounds := Rect(Left + 10, Top, Right - 10, Top + textSize.cy);
+    end
+   else
+    textBounds := Rect((Left + Right - textSize.cx) div 2, Top,
+                       (Left + Right + textSize.cx) div 2, ClientRect.Top + textSize.cy);
+
+  // Draw Background
+  if fTransparent //or (Border=brFullRound)
+   then DrawParentImage(Self, memoryBitmap.Canvas)
+   else
+    begin
+     memoryBitmap.Canvas.Brush.Color := Self.Color;
+     memoryBitmap.Canvas.FillRect(ClientRect);
+    end;
+
+  // Draw Border
+  memoryBitmap.Canvas.Pen.Color := fBorderColor;
+  case fBorder of
+    brFull:
+      {$IFDEF MFC_COMPILER_4_UP}
+      if BidiMode = bdRightToLeft then
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right - 15 - textSize.cx, ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Left, ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Left, ClientRect.Bottom-1), Point(ClientRect.Right-1, ClientRect.Bottom-1),
+          Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Right - 7 , ClientRect.Top + textHeightHalf)])
+      else
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Left, ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Left, ClientRect.Bottom-1), Point(ClientRect.Right-1, ClientRect.Bottom-1),
+          Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
+      {$ELSE}
+      memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf),
+        Point(ClientRect.Left, ClientRect.Top + textHeightHalf),
+        Point(ClientRect.Left, ClientRect.Bottom-1), Point(ClientRect.Right-1, ClientRect.Bottom-1),
+        Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf),
+        Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
+      {$ENDIF}
+    brFullRound:
+     with memoryBitmap do
+      {$IFDEF MFC_COMPILER_4_UP}
+      if BidiMode = bdRightToLeft then
+        Canvas.Polyline([
+          Point(ClientRect.Right - 15 - textSize.cx, ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Left  +  2, ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Left  +  1, ClientRect.Top + textHeightHalf + 1),
+          Point(ClientRect.Left      , ClientRect.Top + textHeightHalf + 2),
+          Point(ClientRect.Left      , ClientRect.Bottom - 3), Point(ClientRect.Left  + 1, ClientRect.Bottom - 2),
+          Point(ClientRect.Left  +  2, ClientRect.Bottom - 1), Point(ClientRect.Right - 3, ClientRect.Bottom - 1),
+          Point(ClientRect.Right -  2, ClientRect.Bottom - 2), Point(ClientRect.Right - 1, ClientRect.Bottom - 3),
+          Point(ClientRect.Right -  1, ClientRect.Top + textHeightHalf + 2),
+          Point(ClientRect.Right -  2, ClientRect.Top + textHeightHalf + 1),
+          Point(ClientRect.Right -  3, ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Right -  7, ClientRect.Top + textHeightHalf)])
+      else
+        Canvas.Polyline([
+          Point(ClientRect.Left + 5 , ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Left + 2 , ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Left + 1 , ClientRect.Top + textHeightHalf + 1),
+          Point(ClientRect.Left     , ClientRect.Top + textHeightHalf + 2),
+          Point(ClientRect.Left     , ClientRect.Bottom - 3), Point(ClientRect.Left + 1, ClientRect.Bottom-2),
+          Point(ClientRect.Left  + 2, ClientRect.Bottom - 1), Point(ClientRect.Right-3, ClientRect.Bottom-1),
+          Point(ClientRect.Right - 2, ClientRect.Bottom  - 2),  Point(ClientRect.Right-1, ClientRect.Bottom-3),
+          Point(ClientRect.Right - 1, ClientRect.Top + textHeightHalf+2),
+          Point(ClientRect.Right - 2, ClientRect.Top + textHeightHalf+1),
+          Point(ClientRect.Right - 3, ClientRect.Top + textHeightHalf),
+          Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
+      {$ELSE}
+      Canvas.Polyline([
+        Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf),
+        Point(ClientRect.Left, ClientRect.Top + textHeightHalf),
+        Point(ClientRect.Left, ClientRect.Bottom-1), Point(ClientRect.Right-1, ClientRect.Bottom-1),
+        Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf),
+        Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
+{
+       Canvas.Brush.Color := Self.Color;
+       Canvas.Pen.Color := Self.Color;
+       Canvas.FillRect(Rect(ClientRect.Left+1,ClientRect.Top + textHeightHalf+2,ClientRect.Right-1,ClientRect.Bottom-2));
+       Canvas.MoveTo(ClientRect.Left+2,ClientRect.Top + textHeightHalf+1);
+       Canvas.LineTo(ClientRect.Right-2,ClientRect.Top + textHeightHalf+1);
+       Canvas.MoveTo(ClientRect.Left+2,ClientRect.Bottom-2);
+       Canvas.LineTo(ClientRect.Right-2,ClientRect.Bottom-2);
+}
+     {$ENDIF}
+    brOnlyTopLine:
+      {$IFDEF MFC_COMPILER_4_UP}
+      if BidiMode = bdRightToLeft then
+       begin
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right - 5, ClientRect.Top + textHeightHalf), Point(ClientRect.Right, ClientRect.Top + textHeightHalf)]);
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left  + 1, ClientRect.Top + textHeightHalf), Point(ClientRect.Right - 12 - textSize.cx, ClientRect.Top + textHeightHalf)]);
+       end
+      else
+       begin
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left  + 5, ClientRect.Top + textHeightHalf), Point(ClientRect.Left, ClientRect.Top + textHeightHalf)]);
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right - 1, ClientRect.Top + textHeightHalf), Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
+       end;
+      {$ELSE}
+       begin
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf), Point(ClientRect.Left, ClientRect.Top + textHeightHalf)]);
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf), Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
+       end;
+      {$ENDIF}
+    brASCII:
+      {$IFDEF MFC_COMPILER_4_UP}
+      if BidiMode = bdRightToLeft then
+       begin
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right - 15 - textSize.cx, ClientRect.Top + textHeightHalf - 1),
+          Point(ClientRect.Left, ClientRect.Top + textHeightHalf - 1),
+          Point(ClientRect.Left, ClientRect.Bottom - 1),
+          Point(ClientRect.Right - 1, ClientRect.Bottom - 1),
+          Point(ClientRect.Right - 1, ClientRect.Top + textHeightHalf - 1),
+          Point(ClientRect.Right - 9 , ClientRect.Top + textHeightHalf - 1)]);
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Right - 15 - textSize.cx, ClientRect.Top + textHeightHalf + 1),
+          Point(ClientRect.Left + 2, ClientRect.Top + textHeightHalf + 1),
+          Point(ClientRect.Left + 2, ClientRect.Bottom - 3),
+          Point(ClientRect.Right - 3, ClientRect.Bottom - 3),
+          Point(ClientRect.Right - 3, ClientRect.Top + textHeightHalf + 1),
+          Point(ClientRect.Right - 9 , ClientRect.Top + textHeightHalf + 1)]);
+        memoryBitmap.Canvas.MoveTo(ClientRect.Left + 3, ClientRect.Top + textHeightHalf + 1);
+        memoryBitmap.Canvas.LineTo(ClientRect.Left + 3, ClientRect.Bottom - 2);
+        memoryBitmap.Canvas.MoveTo(ClientRect.Left + 1, ClientRect.Top + textHeightHalf);
+        memoryBitmap.Canvas.LineTo(ClientRect.Left + 1, ClientRect.Bottom - 1);
+        memoryBitmap.Canvas.MoveTo(ClientRect.Right - 4, ClientRect.Top + textHeightHalf + 1);
+        memoryBitmap.Canvas.LineTo(ClientRect.Right - 4, ClientRect.Bottom - 2);
+        memoryBitmap.Canvas.MoveTo(ClientRect.Right - 2, ClientRect.Top + textHeightHalf);
+        memoryBitmap.Canvas.LineTo(ClientRect.Right - 2, ClientRect.Bottom - 1);
+       end
+      else
+       begin
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf - 1),
+          Point(ClientRect.Left, ClientRect.Top + textHeightHalf - 1),
+          Point(ClientRect.Left, ClientRect.Bottom - 1),
+          Point(ClientRect.Right - 1, ClientRect.Bottom - 1),
+          Point(ClientRect.Right - 1, ClientRect.Top + textHeightHalf - 1),
+          Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf - 1)]);
+        memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf + 1),
+          Point(ClientRect.Left + 4, ClientRect.Top + textHeightHalf + 1),
+          Point(ClientRect.Left + 4, ClientRect.Bottom - 3),
+          Point(ClientRect.Right - 5, ClientRect.Bottom - 3),
+          Point(ClientRect.Right - 5, ClientRect.Top + textHeightHalf + 1),
+          Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf + 1)]);
+        memoryBitmap.Canvas.MoveTo(ClientRect.Left + 3, ClientRect.Top + textHeightHalf + 1);
+        memoryBitmap.Canvas.LineTo(ClientRect.Left + 3, ClientRect.Bottom - 2);
+        memoryBitmap.Canvas.MoveTo(ClientRect.Left + 1, ClientRect.Top + textHeightHalf);
+        memoryBitmap.Canvas.LineTo(ClientRect.Left + 1, ClientRect.Bottom - 1);
+        memoryBitmap.Canvas.MoveTo(ClientRect.Right - 4, ClientRect.Top + textHeightHalf + 1);
+        memoryBitmap.Canvas.LineTo(ClientRect.Right - 4, ClientRect.Bottom - 2);
+        memoryBitmap.Canvas.MoveTo(ClientRect.Right - 2, ClientRect.Top + textHeightHalf);
+        memoryBitmap.Canvas.LineTo(ClientRect.Right - 2, ClientRect.Bottom - 1);
+       end;
+      {$ELSE}
+      memoryBitmap.Canvas.Polyline([Point(ClientRect.Left + 5, ClientRect.Top + textHeightHalf),
+        Point(ClientRect.Left, ClientRect.Top + textHeightHalf),
+        Point(ClientRect.Left, ClientRect.Bottom-1), Point(ClientRect.Right-1, ClientRect.Bottom-1),
+        Point(ClientRect.Right-1, ClientRect.Top + textHeightHalf),
+        Point(ClientRect.Left + 12 + textSize.cx, ClientRect.Top + textHeightHalf)]);
+      {$ENDIF}
+    brMFStyle:
+      begin
+       with memoryBitmap do
+        begin
+         Canvas.Polyline([Point((ClientRect.Left + ClientRect.Right - textSize.cx) div 2, ClientRect.Top + textHeightHalf - 1),
+           Point(ClientRect.Left, ClientRect.Top + textHeightHalf - 1),
+           Point(ClientRect.Left, ClientRect.Bottom - 1),
+           Point(ClientRect.Right - 1, ClientRect.Bottom - 1),
+           Point(ClientRect.Right - 1, ClientRect.Top + textHeightHalf - 1),
+           Point((ClientRect.Left + ClientRect.Right + textSize.cx) div 2 - 1, ClientRect.Top + textHeightHalf - 1)]);
+         Canvas.Polyline([Point((ClientRect.Left + ClientRect.Right - textSize.cx) div 2, ClientRect.Top + textHeightHalf + 1),
+           Point(ClientRect.Left + 4, ClientRect.Top + textHeightHalf + 1),
+           Point(ClientRect.Left + 4, ClientRect.Bottom - 3),
+           Point(ClientRect.Right - 5, ClientRect.Bottom - 3),
+           Point(ClientRect.Right - 5, ClientRect.Top + textHeightHalf + 1),
+           Point((ClientRect.Left + ClientRect.Right + textSize.cx) div 2 - 1, ClientRect.Top + textHeightHalf + 1)]);
+         Canvas.MoveTo(ClientRect.Left + 3, ClientRect.Top + textHeightHalf + 1);
+         Canvas.LineTo(ClientRect.Left + 3, ClientRect.Bottom - 2);
+         Canvas.MoveTo(ClientRect.Left + 1, ClientRect.Top + textHeightHalf);
+         Canvas.LineTo(ClientRect.Left + 1, ClientRect.Bottom - 1);
+         Canvas.MoveTo(ClientRect.Right - 4, ClientRect.Top + textHeightHalf + 1);
+         Canvas.LineTo(ClientRect.Right - 4, ClientRect.Bottom - 2);
+         Canvas.MoveTo(ClientRect.Right - 2, ClientRect.Top + textHeightHalf);
+         Canvas.LineTo(ClientRect.Right - 2, ClientRect.Bottom - 1);
+
+         // Draw Text
+         Canvas.Brush.Style := bsSolid;
+         Canvas.Font.Color  := Canvas.Brush.Color;
+         Canvas.Brush.Color := fBorderColor;
+         DrawText(Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
+         // Copy memoryBitmap to screen
+        end;
+       canvas.CopyRect(ClientRect, memoryBitmap.Canvas, ClientRect);
+       Exit;
+      end;
+     brNone : Exit;
+  end;
+
+    // Draw Text
+  memoryBitmap.Canvas.Brush.Style := bsClear;
+  if not Enabled then
+   begin
+    OffsetRect(textBounds, 1, 1);
+    memoryBitmap.Canvas.Font.Color := fDisabledHighlightColor;
+    DrawText(memoryBitmap.Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
+    OffsetRect(textBounds, -1, -1);
+    memoryBitmap.Canvas.Font.Color := fDisabledShadowColor;
+    DrawText(memoryBitmap.Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
+   end else
+  if fMFStyle
+   then DrawTextMF(memoryBitmap.Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format)
+   else DrawText(memoryBitmap.Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
+
+  // Copy memoryBitmap to screen
+  canvas.CopyRect(ClientRect, memoryBitmap.canvas, ClientRect);
+ finally
+  memoryBitmap.free; // delete the bitmap
+ end;
+end;
+*)
 
 end.
