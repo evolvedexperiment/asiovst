@@ -9,8 +9,8 @@ uses
 
 type
   TVSTFilter = class(TVSTModule)
-    procedure VSTModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTFilterParameterProperties0ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleInitialize(Sender: TObject);
   private
@@ -55,7 +55,7 @@ end;
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTFilter.VSTModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TVSTFilter.VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var i         : Integer;
     cut, res  : Single;
     fb        : Single;
@@ -80,7 +80,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TVSTFilter.VSTModuleProcessDoubleReplacing(const inputs,
-  outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+  outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var i         : Integer;
     cut, res  : Double;
     fb        : Double;

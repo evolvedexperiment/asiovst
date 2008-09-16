@@ -13,17 +13,17 @@ function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
   SimpleCompressorDataModule: TSimpleCompressorDataModule;
 begin
-  try
-    SimpleCompressorDataModule := TSimpleCompressorDataModule.Create(Application);
-    SimpleCompressorDataModule.AudioMaster := audioMaster;
-    with SimpleCompressorDataModule do
-    begin
-      Effect^.user := SimpleCompressorDataModule;
-      Result := Effect;
-    end;
-  except
-    Result := nil;
-  end;
+ try
+  SimpleCompressorDataModule := TSimpleCompressorDataModule.Create(Application);
+  SimpleCompressorDataModule.AudioMaster := audioMaster;
+  with SimpleCompressorDataModule do
+   begin
+    Effect^.user := SimpleCompressorDataModule;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

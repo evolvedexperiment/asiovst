@@ -8,7 +8,7 @@ uses
 type
   TTransientDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackChangeHold(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -114,7 +114,7 @@ begin
 end;
 
 procedure TTransientDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample: Integer;
   a, b, e, f, g, i         : Single;

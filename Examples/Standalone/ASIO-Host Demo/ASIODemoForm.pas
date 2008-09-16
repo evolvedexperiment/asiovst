@@ -34,8 +34,8 @@ type
     procedure SbFreqChange(Sender: TObject);
     procedure SbPanChange(Sender: TObject);
     procedure SbVolumeChange(Sender: TObject);
-    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfDoubleDynArray);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
   private
     procedure SetFrequency(const Value: Double);
   public
@@ -170,7 +170,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TAVDArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleDynArray);
 var i, j : integer;
     d    : Double;
 begin
@@ -185,7 +185,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
-  OutBuffer: TAVDArrayOfDoubleDynArray);
+  OutBuffer: TDAVArrayOfDoubleDynArray);
 var i, j : integer;
     d    : Double;
 begin

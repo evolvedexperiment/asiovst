@@ -26,10 +26,10 @@ const
 type
   TAllpass = class(TObject)
   private
-    fFeedback: Single;
-    fBuffer: TAVDSingleDynArray;
+    fFeedback    : Single;
+    fBuffer      : TDAVSingleDynArray;
     fBufferSize,
-    fBufferIndex: Integer;
+    fBufferIndex : Integer;
     procedure SetBufferSize(const Value: Integer);
   public
     constructor Create(BS: Integer); virtual;
@@ -47,7 +47,7 @@ type
     fFilterStore,
     fDampA,
     fDampB: Single;
-    fBuffer: TAVDSingleDynArray;
+    fBuffer: TDAVSingleDynArray;
     fBufferSize,
     fBufferIndex: Integer;
     fDamp: Single;

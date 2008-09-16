@@ -47,7 +47,7 @@ type
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleCreate(Sender: TObject);
     function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     fVoices          : array [0..cNumVoices - 1] of TVoice;
@@ -71,7 +71,7 @@ type
     fLFO             : array [0..1] of Single;
     fSustain         : Integer;
     fActiveVoices    : Integer;
-    fWaves           : PAVDSingleFixedArray;
+    fWaves           : PDAVSingleFixedArray;
     procedure Resume;
     procedure Update;
     procedure NoteOn(Note, Velocity: Integer);
@@ -327,7 +327,7 @@ begin
  Flags := [vppIsStereo];
 end;
 
-procedure TEPianoDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TEPianoDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i, event, frame, frames, v : Integer;
   x, l, r, od                : Single;

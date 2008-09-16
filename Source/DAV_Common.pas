@@ -12,40 +12,40 @@ uses LCLIntf; {$DEFINE PUREPASCAL}
 
 type
   {$IFNDEF DELPHI7_UP}
-    TAVDSingleDynArray = Array of Single;
-    TAVDDoubleDynArray = Array of Double;
+    TDAVSingleDynArray = Array of Single;
+    TDAVDoubleDynArray = Array of Double;
   {$ELSE}
     {$IFDEF UseNativeTypes}
-      TAVDSingleDynArray = Types.TSingleDynArray;
-      TAVDDoubleDynArray = Types.TDoubleDynArray;
+      TDAVSingleDynArray = Types.TSingleDynArray;
+      TDAVDoubleDynArray = Types.TDoubleDynArray;
     {$ELSE}
-      TAVDSingleDynArray = Array of Single;
-      TAVDDoubleDynArray = Array of Double;
+      TDAVSingleDynArray = Array of Single;
+      TDAVDoubleDynArray = Array of Double;
     {$ENDIF}
   {$ENDIF}
 
-  PAVDSingleDynArray = ^TAVDSingleDynArray;
-  PAVDDoubleDynArray = ^TAVDDoubleDynArray;
+  PDAVSingleDynArray = ^TDAVSingleDynArray;
+  PDAVDoubleDynArray = ^TDAVDoubleDynArray;
 
-  TAVDSingleFixedArray = Array [0..0] of Single;
-  PAVDSingleFixedArray = ^TAVDSingleFixedArray;
-  TAVDDoubleFixedArray = Array [0..0] of Double;
-  PAVDDoubleFixedArray = ^TAVDDoubleFixedArray;
+  TDAVSingleFixedArray = Array [0..0] of Single;
+  PDAVSingleFixedArray = ^TDAVSingleFixedArray;
+  TDAVDoubleFixedArray = Array [0..0] of Double;
+  PDAVDoubleFixedArray = ^TDAVDoubleFixedArray;
 
-  TAVDArrayOfSingleDynArray = array of TAVDSingleDynArray;
-  PAVDArrayOfSingleDynArray = ^TAVDArrayOfSingleDynArray;
-  TAVDArrayOfDoubleDynArray = array of TAVDDoubleDynArray;
-  PAVDArrayOfDoubleDynArray = ^TAVDArrayOfDoubleDynArray;
+  TDAVArrayOfSingleDynArray = array of TDAVSingleDynArray;
+  PDAVArrayOfSingleDynArray = ^TDAVArrayOfSingleDynArray;
+  TDAVArrayOfDoubleDynArray = array of TDAVDoubleDynArray;
+  PDAVArrayOfDoubleDynArray = ^TDAVArrayOfDoubleDynArray;
 
-  TAVDArrayOfSingleFixedArray = array [0..0] of TAVDSingleFixedArray;
-  PAVDArrayOfSingleFixedArray = ^TAVDArrayOfSingleFixedArray;
-  TAVDArrayOfDoubleFixedArray = array [0..0] of TAVDDoubleFixedArray;
-  PAVDArrayOfDoubleFixedArray = ^TAVDArrayOfDoubleFixedArray;
+  TDAVArrayOfSingleFixedArray = array [0..0] of TDAVSingleFixedArray;
+  PDAVArrayOfSingleFixedArray = ^TDAVArrayOfSingleFixedArray;
+  TDAVArrayOfDoubleFixedArray = array [0..0] of TDAVDoubleFixedArray;
+  PDAVArrayOfDoubleFixedArray = ^TDAVArrayOfDoubleFixedArray;
 
-  TAVDSingleDynMatrix = TAVDArrayOfSingleDynArray;
-  PAVDSingleDynMatrix = ^TAVDSingleDynMatrix;
-  TAVDDoubleDynMatrix = TAVDArrayOfDoubleDynArray;
-  PAVDDoubleDynMatrix = ^TAVDDoubleDynMatrix;
+  TDAVSingleDynMatrix = TDAVArrayOfSingleDynArray;
+  PDAVSingleDynMatrix = ^TDAVSingleDynMatrix;
+  TDAVDoubleDynMatrix = TDAVArrayOfDoubleDynArray;
+  PDAVDoubleDynMatrix = ^TDAVDoubleDynMatrix;
 
   T4SingleArray = array[0..3] of Single;
   P4SingleArray = ^T4SingleArray;
@@ -57,18 +57,18 @@ type
   T2DoubleArray = array [0..1] of Double;
   P2DoubleArray = ^T2SingleArray;
 
-  TAVDMinMaxSingle = record
+  TDAVMinMaxSingle = record
     min : Single;
     max : Single;
   end;
-  TAVDMinMaxDouble = record
+  TDAVMinMaxDouble = record
     min : Double;
     max : Double;
   end;
 
   TStrArray = array of string;
 
-  TAVDMidiEvent = record
+  TDAVMidiEvent = record
     MidiData        : array[0..3] of Byte;  // 1 thru 3 midi Bytes; midiData[3] is reserved (zero)
     DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
     NoteOffset      : LongInt;              // offset into note from note start if available, else 0
@@ -80,8 +80,8 @@ type
   {$IFNDEF FPC}
   function GetApplicationFilename: string; {$IFDEF useinlining} inline; {$ENDIF}
   function GetApplicationDirectory: string; {$IFDEF useinlining} inline; {$ENDIF}
-  procedure SetMatrixLength(Matrix : TAVDDoubleDynMatrix; Size : TPoint); overload;
-  procedure SetMatrixLength(Matrix : TAVDSingleDynMatrix; Size : TPoint); overload;
+  procedure SetMatrixLength(Matrix : TDAVDoubleDynMatrix; Size : TPoint); overload;
+  procedure SetMatrixLength(Matrix : TDAVSingleDynMatrix; Size : TPoint); overload;
   {$ENDIF}
 
   procedure FlipWord(var Value); overload;
@@ -211,8 +211,8 @@ type
 
   function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
   function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
-  procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TAVDMinMaxSingle); overload;
-  procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TAVDMinMaxDouble); overload;
+  procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TDAVMinMaxSingle); overload;
+  procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TDAVMinMaxDouble); overload;
   procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload;
   procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
   procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
@@ -239,7 +239,7 @@ const
   Twenty        : Double = 20;
 
 {$IFNDEF FPC}
-procedure SetMatrixLength(Matrix : TAVDDoubleDynMatrix; Size : TPoint);
+procedure SetMatrixLength(Matrix : TDAVDoubleDynMatrix; Size : TPoint);
 var i : Integer;
 begin
  SetLength(Matrix,Size.X);
@@ -247,7 +247,7 @@ begin
   do SetLength(Matrix[i],Size.Y);
 end;
 
-procedure SetMatrixLength(Matrix : TAVDSingleDynMatrix; Size : TPoint);
+procedure SetMatrixLength(Matrix : TDAVSingleDynMatrix; Size : TPoint);
 var i : Integer;
 begin
  SetLength(Matrix,Size.X);
@@ -1679,7 +1679,7 @@ asm
 end;
 {$ENDIF}
 
-procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax: TAVDMinMaxSingle);
+procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax: TDAVMinMaxSingle);
 var
   i : Integer;
 begin
@@ -1694,7 +1694,7 @@ begin
   end;
 end;
 
-procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax: TAVDMinMaxDouble);
+procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax: TDAVMinMaxDouble);
 var
   i : Integer;
 begin

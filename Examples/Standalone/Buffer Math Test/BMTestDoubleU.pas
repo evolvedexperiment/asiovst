@@ -56,7 +56,7 @@ const
   CHorizontalRule = '---------------------------------------------------------------------------';
   CVerticalRule   = ' | ';
 
-procedure GenerateTestBuffers(var Input1, Input2, Input3, Output: TAVDArrayOfDoubleDynArray);
+procedure GenerateTestBuffers(var Input1, Input2, Input3, Output: TDAVArrayOfDoubleDynArray);
 var
   i, j : Integer;
 begin
@@ -80,7 +80,7 @@ procedure TBufferMathForm.TestCopyBtnClick(Sender: TObject);
 var
   x    : PPDouble;
   i, j : Integer;
-  n    : TAVDArrayOfDoubleDynArray;
+  n    : TDAVArrayOfDoubleDynArray;
 begin
  GetMem(x, 2 * SizeOf(PDouble));
  try
@@ -120,7 +120,7 @@ end;
 procedure TBufferMathForm.TestAddBtnClick(Sender: TObject);
 var
   Input1, Input2,
-  dummy, Output   : TAVDArrayOfDoubleDynArray;
+  dummy, Output   : TDAVArrayOfDoubleDynArray;
   i               : Integer;
   A, B, freq      : Int64;
 begin
@@ -186,7 +186,7 @@ end;
 
 procedure TBufferMathForm.TestSubBtnClick(Sender: TObject);
 var
-  Input1, Input2, dummy, Output: TAVDArrayOfDoubleDynArray;
+  Input1, Input2, dummy, Output: TDAVArrayOfDoubleDynArray;
   i: Integer;
   A, B, freq: Int64;
 begin
@@ -254,7 +254,7 @@ end;
 procedure TBufferMathForm.TestMulBtnClick(Sender: TObject);
 var
   Input1, Input2,
-  dummy, Output   : TAVDArrayOfDoubleDynArray;
+  dummy, Output   : TDAVArrayOfDoubleDynArray;
   i               : Integer;
   A, B, freq      : Int64;
 begin
@@ -321,7 +321,7 @@ end;
 
 procedure TBufferMathForm.TestClearBtnClick(Sender: TObject);
 var
-  dummy, Output : TAVDArrayOfDoubleDynArray;
+  dummy, Output : TDAVArrayOfDoubleDynArray;
   i             : Integer;
   A, B, freq    : Int64;
 begin
@@ -362,7 +362,7 @@ end;
 procedure TBufferMathForm.TestCopyBufBtnClick(Sender: TObject);
 var
   Input, dummy,
-  Output        : TAVDArrayOfDoubleDynArray;
+  Output        : TDAVArrayOfDoubleDynArray;
   i             : Integer;
   A, B, freq    : Int64;
 begin
@@ -403,7 +403,7 @@ end;
 procedure TBufferMathForm.TestMulAddBtnClick(Sender: TObject);
 var
   Input1, Input2,
-  Input3, Output : TAVDArrayOfDoubleDynArray;
+  Input3, Output : TDAVArrayOfDoubleDynArray;
   i              : Integer;
   A, B, freq     : Int64;
 begin
@@ -534,7 +534,7 @@ end;
 procedure TBufferMathForm.TestAddMulBtnClick(Sender: TObject);
 var
   Input1, Input2,
-  Input3, Output : TAVDArrayOfDoubleDynArray;
+  Input3, Output : TDAVArrayOfDoubleDynArray;
   i              : Integer;
   A, B, freq     : Int64;
 begin
@@ -666,7 +666,7 @@ end;
 
 procedure TBufferMathForm.TestAddScaledBtnClick(Sender: TObject);
 var
-  Input1, Input2, dummy, Output: TAVDArrayOfDoubleDynArray;
+  Input1, Input2, dummy, Output: TDAVArrayOfDoubleDynArray;
   i: Integer;
   A, B, freq: Int64;
 begin
@@ -706,7 +706,7 @@ end;
 
 procedure TBufferMathForm.TestAddModulatedBtnClick(Sender: TObject);
 var
-  Input1, Input2, Input3, Output: TAVDArrayOfDoubleDynArray;
+  Input1, Input2, Input3, Output: TDAVArrayOfDoubleDynArray;
   i: Integer;
   A, B, freq: Int64;
 begin
@@ -748,8 +748,8 @@ end;
 procedure TBufferMathForm.TestFindPeaksBtnClick(Sender: TObject);
 var
   Input1, Input2,
-  Input3, Output     : TAVDArrayOfDoubleDynArray;
-  MinPeaks, MaxPeaks : TAVDDoubleDynArray;
+  Input3, Output     : TDAVArrayOfDoubleDynArray;
+  MinPeaks, MaxPeaks : TDAVDoubleDynArray;
   i                  : Integer;
   A, B, freq         : Int64;
 begin
@@ -796,8 +796,8 @@ end;
 procedure TBufferMathForm.TestBufferSumsBtnClick(Sender: TObject);
 var
   Input1, Input2,
-  Input3, Output   : TAVDArrayOfDoubleDynArray;
-  MinSums, MaxSums : TAVDDoubleDynArray;
+  Input3, Output   : TDAVArrayOfDoubleDynArray;
+  MinSums, MaxSums : TDAVDoubleDynArray;
   i                : Integer;
   A, B, freq       : Int64;
 begin

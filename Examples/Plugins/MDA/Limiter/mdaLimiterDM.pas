@@ -15,8 +15,8 @@ type
     procedure ReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleCreate(Sender: TObject);
   private
     fThreshold_dB : Single;
@@ -96,7 +96,7 @@ begin
  fRelease := 0.5;
 end;
 
-procedure TmdaLimiterDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TmdaLimiterDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   smp      : Integer;
   g, at,
@@ -140,7 +140,7 @@ begin
  fGain := g;
 end;
 
-procedure TmdaLimiterDataModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+procedure TmdaLimiterDataModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   smp      : Integer;
   g, at,

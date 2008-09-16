@@ -10,7 +10,7 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterQualityDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -23,7 +23,7 @@ type
     fDry       : Single;
     fEnvelope  : Single;
     fSize      : Integer;
-    fBuffer    : Array [0..1] of PAVDSingleFixedArray;
+    fBuffer    : Array [0..1] of PDAVSingleFixedArray;
     fState     : Array [0..1] of Single;
     fDelayTime : Integer;
     fGain      : Single;
@@ -138,7 +138,7 @@ begin
  if assigned(fBuffer[1]) then Dispose(fBuffer[1]);
 end;
 
-procedure TRePsychoDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TRePsychoDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample            : Integer;
   a, b, c, d        : Single;

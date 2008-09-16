@@ -8,7 +8,7 @@ uses
 type
   TRezFilterDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -119,7 +119,7 @@ begin
 end;
 
 procedure TRezFilterDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample: Integer;
   a, f, i, ff, fe     : Single;

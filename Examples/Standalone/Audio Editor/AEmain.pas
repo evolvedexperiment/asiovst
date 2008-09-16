@@ -79,7 +79,7 @@ procedure TFmAudioEditor.MINormalizeClick(Sender: TObject);
 var
   ch, i  : Integer;
   max    : Double;
-  chdata : PAVDSingleFixedArray;
+  chdata : PDAVSingleFixedArray;
 begin
  with AudioDataCollection32 do
   begin
@@ -113,7 +113,7 @@ end;
 procedure TFmAudioEditor.MIRectifyClick(Sender: TObject);
 var
   ch, i  : Integer;
-  chdata : PAVDSingleFixedArray;
+  chdata : PDAVSingleFixedArray;
 begin
  with AudioDataCollection32 do
   begin
@@ -133,7 +133,7 @@ procedure TFmAudioEditor.MIRemoveDCClick(Sender: TObject);
 var
   ch, i   : Integer;
   Sum, DC : Double;
-  chdata  : PAVDSingleFixedArray;
+  chdata  : PDAVSingleFixedArray;
 begin
  with AudioDataCollection32 do
   begin
@@ -158,7 +158,7 @@ end;
 procedure TFmAudioEditor.MIInvertClick(Sender: TObject);
 var
   ch, i  : Integer;
-  chdata : PAVDSingleFixedArray;
+  chdata : PDAVSingleFixedArray;
 begin
  with AudioDataCollection32 do
   begin
@@ -177,7 +177,7 @@ end;
 procedure TFmAudioEditor.MINoiseClick(Sender: TObject);
 var
   ch, i  : Integer;
-  chdata : PAVDSingleFixedArray;
+  chdata : PDAVSingleFixedArray;
 begin
  with AudioDataCollection32 do
   begin

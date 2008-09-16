@@ -10,12 +10,12 @@ uses
 type
   TDspBaseProcessFuncS   = procedure(var Data: Single; const channel: integer) of object;
   TDspBaseProcessFuncD   = procedure(var Data: Double; const channel: integer) of object;
-  TDspBaseProcessFuncSA  = procedure(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer) of object;
-  TDspBaseProcessFuncDA  = procedure(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer) of object;
-  TDspBaseProcessFuncSAA = procedure(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer) of object;
-  TDspBaseProcessFuncDAA = procedure(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer) of object;
+  TDspBaseProcessFuncSA  = procedure(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer) of object;
+  TDspBaseProcessFuncDA  = procedure(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer) of object;
+  TDspBaseProcessFuncSAA = procedure(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer) of object;
+  TDspBaseProcessFuncDAA = procedure(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer) of object;
 
-  TAVDProcessingComponent = class(TComponent)
+  TDAVProcessingComponent = class(TComponent)
   protected
     fBypass:     Boolean;
     fEnabled:    Boolean;
@@ -53,8 +53,8 @@ type
     procedure NoteOff; virtual; abstract;
     procedure NoteOffQueue; virtual; abstract;
 
-    procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); virtual; abstract;
-    procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); virtual; abstract;
+    procedure ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean); virtual; abstract;
+    procedure ProcessMidiEventQueue(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean); virtual; abstract;
 
     
     property Enabled: Boolean   read fEnabled    write SetEnabled    default true;
@@ -80,31 +80,31 @@ type
     property ProcessQueueDAA: TDspBaseProcessFuncDAA read fProcessQueueDAA;
   end;
 
-  TAVDProcessingComponentList = class(TList)
+  TDAVProcessingComponentList = class(TList)
   protected
-    function Get(Index: Integer): TAVDProcessingComponent;
-    procedure Put(Index: Integer; Item: TAVDProcessingComponent);
+    function Get(Index: Integer): TDAVProcessingComponent;
+    procedure Put(Index: Integer; Item: TDAVProcessingComponent);
 
     function GetTrailingSamplesQueue: integer;
   public
-    function Add(Item: TAVDProcessingComponent): Integer;
-    function Extract(Item: TAVDProcessingComponent): TAVDProcessingComponent;
-    function First: TAVDProcessingComponent;
-    function IndexOf(Item: TAVDProcessingComponent): Integer;
-    function Last: TAVDProcessingComponent;
-    function Remove(Item: TAVDProcessingComponent): Integer;
-    procedure Insert(Index: Integer; Item: TAVDProcessingComponent);
+    function Add(Item: TDAVProcessingComponent): Integer;
+    function Extract(Item: TDAVProcessingComponent): TDAVProcessingComponent;
+    function First: TDAVProcessingComponent;
+    function IndexOf(Item: TDAVProcessingComponent): Integer;
+    function Last: TDAVProcessingComponent;
+    function Remove(Item: TDAVProcessingComponent): Integer;
+    procedure Insert(Index: Integer; Item: TDAVProcessingComponent);
 
     procedure SetSampleRate(Value: Single);
     procedure SetChannels(Value: Integer);
     procedure SetEnabled(Value: Boolean);
     procedure SetBypass(Value: Boolean);
 
-    procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+    procedure ProcessMidiEventQueue(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean);
     procedure NoteOffQueue;
 
     property TrailingSamplesQueue: integer read GetTrailingSamplesQueue;
-    property Items[Index: Integer]: TAVDProcessingComponent read Get write Put;
+    property Items[Index: Integer]: TDAVProcessingComponent read Get write Put;
   end;
 
 implementation
@@ -112,82 +112,82 @@ implementation
 uses
   Math;
 
-{ TAVDProcessingComponentList }
+{ TDAVProcessingComponentList }
 
-procedure TAVDProcessingComponentList.Insert(Index: Integer; Item: TAVDProcessingComponent);
+procedure TDAVProcessingComponentList.Insert(Index: Integer; Item: TDAVProcessingComponent);
 begin
   inherited Insert(Index, Item);
 end;
 
-procedure TAVDProcessingComponentList.Put(Index: Integer; Item: TAVDProcessingComponent);
+procedure TDAVProcessingComponentList.Put(Index: Integer; Item: TDAVProcessingComponent);
 begin
    inherited Put(Index, Item);
 end;
 
-function TAVDProcessingComponentList.Add(Item: TAVDProcessingComponent): Integer;
+function TDAVProcessingComponentList.Add(Item: TDAVProcessingComponent): Integer;
 begin
   Result := inherited Add(Item);
 end;
 
-function TAVDProcessingComponentList.Extract(Item: TAVDProcessingComponent): TAVDProcessingComponent;
+function TDAVProcessingComponentList.Extract(Item: TDAVProcessingComponent): TDAVProcessingComponent;
 begin
-  Result := TAVDProcessingComponent(inherited Extract(Item));
+  Result := TDAVProcessingComponent(inherited Extract(Item));
 end;
 
-function TAVDProcessingComponentList.First: TAVDProcessingComponent;
+function TDAVProcessingComponentList.First: TDAVProcessingComponent;
 begin
-  Result := TAVDProcessingComponent(inherited First);
+  Result := TDAVProcessingComponent(inherited First);
 end;
 
-function TAVDProcessingComponentList.Get(Index: Integer): TAVDProcessingComponent;
+function TDAVProcessingComponentList.Get(Index: Integer): TDAVProcessingComponent;
 begin
-  Result := TAVDProcessingComponent(inherited Get(Index));
+  Result := TDAVProcessingComponent(inherited Get(Index));
 end;
 
-function TAVDProcessingComponentList.IndexOf(Item: TAVDProcessingComponent): Integer;
+function TDAVProcessingComponentList.IndexOf(Item: TDAVProcessingComponent): Integer;
 begin
   Result := inherited IndexOf(Item);
 end;
 
-function TAVDProcessingComponentList.Last: TAVDProcessingComponent;
+function TDAVProcessingComponentList.Last: TDAVProcessingComponent;
 begin
-  Result := TAVDProcessingComponent(inherited Last);
+  Result := TDAVProcessingComponent(inherited Last);
 end;
 
-function TAVDProcessingComponentList.Remove(Item: TAVDProcessingComponent): Integer;
+function TDAVProcessingComponentList.Remove(Item: TDAVProcessingComponent): Integer;
 begin
   Result := inherited Remove(Item);
 end;
 
-procedure TAVDProcessingComponentList.SetSampleRate(Value: Single);
+procedure TDAVProcessingComponentList.SetSampleRate(Value: Single);
 var i: integer;
 begin
   for i := Count - 1 downto 0 do
     Items[i].SampleRate := Value;
 end;
 
-procedure TAVDProcessingComponentList.SetChannels(Value: Integer);
+procedure TDAVProcessingComponentList.SetChannels(Value: Integer);
 var i: integer;
 begin
   for i := Count - 1 downto 0 do
     Items[i].Channels := Value;
 end;
 
-procedure TAVDProcessingComponentList.SetEnabled(Value: Boolean);
+procedure TDAVProcessingComponentList.SetEnabled(Value: Boolean);
 var i: integer;
 begin
   for i := Count - 1 downto 0 do
     Items[i].Enabled := Value;
 end;
 
-procedure TAVDProcessingComponentList.SetBypass(Value: Boolean);
+procedure TDAVProcessingComponentList.SetBypass(Value: Boolean);
 var i: integer;
 begin
   for i := Count-1 downto 0 do
     Items[i].Bypass := Value;
 end;
 
-procedure TAVDProcessingComponentList.ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+procedure TDAVProcessingComponentList.ProcessMidiEventQueue(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean);
 var i: integer; filter: boolean;
 begin
   FilterEvent:=false;
@@ -199,14 +199,14 @@ begin
   end;
 end;
 
-procedure TAVDProcessingComponentList.NoteOffQueue;
+procedure TDAVProcessingComponentList.NoteOffQueue;
 var i: integer;
 begin
   for i := Count-1 downto 0 do
     Items[i].NoteOffQueue;
 end;
 
-function TAVDProcessingComponentList.GetTrailingSamplesQueue: integer;
+function TDAVProcessingComponentList.GetTrailingSamplesQueue: integer;
 var i: integer;
 begin
   result:=0;

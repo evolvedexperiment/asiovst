@@ -30,14 +30,14 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
     procedure ASIOHostReset(Sender: TObject);
     procedure BtSetupClick(Sender: TObject);
     procedure BtExitClick(Sender: TObject);
     procedure CBPresetChange(Sender: TObject);
   private
-    VSTInBuffer: TAVDArrayOfSingleDynArray;
-    VSTOutBuffer: TAVDArrayOfSingleDynArray;
+    VSTInBuffer: TDAVArrayOfSingleDynArray;
+    VSTOutBuffer: TDAVArrayOfSingleDynArray;
   public
   end;
 
@@ -159,7 +159,7 @@ begin
 end;
 
 procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TAVDArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleDynArray);
 begin
  VSTHost[0].ProcessReplacing(@InBuffer[ASIOHost.InputChannelOffset],
                              @OutBuffer[ASIOHost.OutputChannelOffset],

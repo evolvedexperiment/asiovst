@@ -8,8 +8,8 @@ uses
 type
   TVSTDecimator = class(TVSTModule)
     procedure VSTModuleInitialize(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -177,7 +177,7 @@ end;
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTDecimator.VSTModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TVSTDecimator.VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i :Integer;
 begin
@@ -246,7 +246,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TVSTDecimator.VSTModuleProcessDoubleReplacing(const inputs,
-  outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+  outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   i : Integer;
 begin

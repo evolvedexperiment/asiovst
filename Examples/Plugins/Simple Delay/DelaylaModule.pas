@@ -8,11 +8,11 @@ uses
 type
   TSimpleDelayVST = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fBuffer     : array[0..1] of TAVDSingleDynArray;
+    fBuffer     : array[0..1] of TDAVSingleDynArray;
     fBufferSize : Integer;
     fBufferPos  : Integer;
   end;
@@ -30,7 +30,7 @@ begin
  fBufferPos := 0;
 end;
 
-procedure TSimpleDelayVST.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TSimpleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   j : Integer;
 begin

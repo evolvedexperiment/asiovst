@@ -21,8 +21,8 @@ type
     SbVolume: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
-    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfDoubleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleDynArray);
     procedure Bt_CPClick(Sender: TObject);
     procedure Bt_PlayClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
@@ -115,7 +115,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TAVDArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleDynArray);
 var
   i, j : integer;
 begin
@@ -127,7 +127,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
-  OutBuffer: TAVDArrayOfDoubleDynArray);
+  OutBuffer: TDAVArrayOfDoubleDynArray);
 var
   i, j : integer;
 begin

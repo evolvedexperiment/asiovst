@@ -24,8 +24,8 @@ type
     FClippingLineWidth  : Integer;
     FFillColor          : TColor;
     FFillStyle          : TBrushStyle;
-    FLastMaxPeaks       : TAVDSingleDynArray;
-    FLastMinPeaks       : TAVDSingleDynArray;
+    FLastMaxPeaks       : TDAVSingleDynArray;
+    FLastMinPeaks       : TDAVSingleDynArray;
     FLevelDirection     : TGuiLevelDirection;
     FLineStyle          : TPenStyle;
     FMaximumTimeFactor  : Single;
@@ -78,9 +78,9 @@ type
     procedure RedrawBuffer(doBufferFlip: Boolean); override;
     procedure ResetPeaks;
 
-    procedure ProcessBufferIndirect(NewWaveData: TAVDArrayOfSingleDynArray; Channels, SampleFrames: Integer);
-    procedure ProcessBuffer(NewWaveData: TAVDSingleDynArray; InpLen: Integer = -1); overload;
-    procedure ProcessBuffer(NewWaveData: TAVDArrayOfSingleDynArray; InpLen: Integer = -1); overload;
+    procedure ProcessBufferIndirect(NewWaveData: TDAVArrayOfSingleDynArray; Channels, SampleFrames: Integer);
+    procedure ProcessBuffer(NewWaveData: TDAVSingleDynArray; InpLen: Integer = -1); overload;
+    procedure ProcessBuffer(NewWaveData: TDAVArrayOfSingleDynArray; InpLen: Integer = -1); overload;
 
     property FillColor: TColor read FFillColor write SetFillColor default clGreen;
     property FillStyle: TBrushStyle read FFillStyle write SetFillStyle default bsSolid;
@@ -614,9 +614,9 @@ begin
    end;
 end;
 
-procedure TCustomGuiLevelMeter.ProcessBufferIndirect(NewWaveData: TAVDArrayOfSingleDynArray; Channels, SampleFrames: Integer);
+procedure TCustomGuiLevelMeter.ProcessBufferIndirect(NewWaveData: TDAVArrayOfSingleDynArray; Channels, SampleFrames: Integer);
 var
-  tmp : TAVDArrayOfSingleDynArray;
+  tmp : TDAVArrayOfSingleDynArray;
   i   : Integer;
 begin
   SetLength(tmp, Channels, SampleFrames);
@@ -626,19 +626,19 @@ begin
   ProcessBuffer(tmp, SampleFrames);
 end;
 
-procedure TCustomGuiLevelMeter.ProcessBuffer(NewWaveData: TAVDSingleDynArray; InpLen: Integer);
+procedure TCustomGuiLevelMeter.ProcessBuffer(NewWaveData: TDAVSingleDynArray; InpLen: Integer);
 var
-  tmp: TAVDArrayOfSingleDynArray;
+  tmp: TDAVArrayOfSingleDynArray;
 begin
   SetLength(tmp, 1);
   tmp[0] := NewWaveData;
   ProcessBuffer(tmp, InpLen);
 end;
 
-procedure TCustomGuiLevelMeter.ProcessBuffer(NewWaveData: TAVDArrayOfSingleDynArray; InpLen: Integer);
+procedure TCustomGuiLevelMeter.ProcessBuffer(NewWaveData: TDAVArrayOfSingleDynArray; InpLen: Integer);
 var
-  minPeak  : TAVDSingleDynArray;
-  maxPeak  : TAVDSingleDynArray;
+  minPeak  : TDAVSingleDynArray;
+  maxPeak  : TDAVSingleDynArray;
   i        : Integer;
 begin
   SetLength(minPeak, FPeakEnvFollower.Channels);

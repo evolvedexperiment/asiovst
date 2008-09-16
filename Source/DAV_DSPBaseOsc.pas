@@ -8,11 +8,11 @@ uses
 type
   TDspBaseOsc = class(TDspBaseComponent)
   protected
-    FDCOffset:  Single;
-    FFrequency: Single;
-    FAmplitude: Single;
-    FAngle:     TComplexDouble;
-    FPosition:  TAVDComplexDoubleDynArray;
+    FDCOffset  : Single;
+    FFrequency : Single;
+    FAmplitude : Single;
+    FAngle     : TComplexDouble;
+    FPosition  : TDAVComplexDoubleDynArray;
 
     procedure SetAmplitude(const Value: Single); virtual;
     procedure SetDCOffset(const Value: Single);  virtual;
@@ -73,7 +73,8 @@ begin
 end;
 
 procedure TDspBaseOsc.ChannelsChanged;
-var i: integer;
+var
+  i: Integer;
 begin
   SetLength(FPosition, FChannels);
 

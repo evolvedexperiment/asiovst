@@ -11,8 +11,8 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleInitialize(Sender: TObject);
-    procedure VSTModuleProcess(inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
   public
     Voices      : TVoiceList;
@@ -26,7 +26,7 @@ uses
   SineSynthGUI, Math;
 
 procedure TVSTSSModule.VSTModuleProcess(inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i, j : Integer;
 begin
@@ -42,7 +42,7 @@ begin
 end;
 
 procedure TVSTSSModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   i, j : Integer;
 begin

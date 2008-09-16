@@ -10,8 +10,8 @@ uses
 
 type
   TASIOVSTModule = class(TVSTModule)
-    procedure AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
-    procedure AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+    procedure AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
     procedure ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
     procedure VSTModuleCreate(Sender: TObject);
@@ -19,11 +19,11 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
   private
     fASIOHost        : TASIOHost;
-    fInBuffer        : TAVDArrayOfSingleDynArray;
-    fOutBuffer       : TAVDArrayOfSingleDynArray;
+    fInBuffer        : TDAVArrayOfSingleDynArray;
+    fOutBuffer       : TDAVArrayOfSingleDynArray;
     fIntBufSize,
     fIntWritePos,
     fIntReadPos      : Integer;
@@ -106,7 +106,7 @@ begin
   then fASIOHost.Active := False;
 end;
 
-procedure TASIOVSTModule.AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+procedure TASIOVSTModule.AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
 begin
  if (fIntWritePos > fIntReadPos) and (fIntWritePos < fIntReadPos + fASIOHost.BufferSize)
   then inc(fBufferUnderruns);
@@ -117,7 +117,7 @@ begin
  fIntReadPos := (fIntReadPos + fASIOHost.BufferSize) mod (fNrOfBuffers * fASIOHost.BufferSize);
 end;
 
-procedure TASIOVSTModule.AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+procedure TASIOVSTModule.AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
 begin
  if (fIntWritePos > fIntReadPos) and (fIntWritePos < fIntReadPos + fASIOHost.BufferSize)
   then inc(fBufferUnderruns);
@@ -138,7 +138,7 @@ begin
 end;
 
 procedure TASIOVSTModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var i, j : Integer;
 begin
  for i := 0 to SampleFrames - 1 do

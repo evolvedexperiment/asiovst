@@ -9,7 +9,7 @@ type
   TStereoDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -28,7 +28,7 @@ type
     fDelay     : Integer;
     fRi, fRd   : Single;
     fLi, fLd   : Single;
-    fBuffer    : PAVDSingleFixedArray;
+    fBuffer    : PDAVSingleFixedArray;
     procedure DeltaPhiChanged;
   public
   end;
@@ -82,7 +82,7 @@ begin
 end;
 
 procedure TStereoDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample  : Integer;
   a, b    : Double;

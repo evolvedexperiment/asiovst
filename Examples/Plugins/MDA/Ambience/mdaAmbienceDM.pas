@@ -13,15 +13,15 @@ type
   TmdaAmbienceDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParamSizeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHFDampChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fBuffers      : Array [0..3] of PAVDSingleFixedArray;
+    fBuffers      : Array [0..3] of PDAVSingleFixedArray;
     fPos          : Integer;
     fFil, fDamp   : Single;
     fOutputFactor : Single;
@@ -101,7 +101,7 @@ begin
 end;
 
 procedure TmdaAmbienceDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   r    : Double;
   t, f,
@@ -176,7 +176,7 @@ begin
 end;
 
 procedure TmdaAmbienceDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   r    : Double;
   t, f,

@@ -16,8 +16,8 @@ type
     fSampleRate: Double;
   protected
     procedure SetSampleRate(const Value: Double); virtual;
-    procedure CalculateFilterKernel(var Data : TAVDSingleDynArray); overload; virtual;
-    procedure CalculateFilterKernel(var Data : TAVDDoubleDynArray); overload; virtual; abstract;
+    procedure CalculateFilterKernel(var Data : TDAVSingleDynArray); overload; virtual;
+    procedure CalculateFilterKernel(var Data : TDAVDoubleDynArray); overload; virtual; abstract;
     property FilterTyp : TFilterKind read fFilterTyp write fFilterTyp;
   public
     constructor Create(AOwner: TComponent); override;
@@ -32,7 +32,7 @@ type
     procedure SetCutoffFrequency(const Value: Double);
   protected
   public
-    procedure CalculateFilterKernel(var Data : TAVDDoubleDynArray); override;
+    procedure CalculateFilterKernel(var Data : TDAVDoubleDynArray); override;
     constructor Create(AOwner: TComponent); override;
   published
     property CutoffFrequency : Double read fCutoffFrequency write SetCutoffFrequency;
@@ -46,7 +46,7 @@ type
     procedure SetCutoffFrequency(const Value: Double);
   protected
   public
-    procedure CalculateFilterKernel(var Data : TAVDDoubleDynArray); override;
+    procedure CalculateFilterKernel(var Data : TDAVDoubleDynArray); override;
     constructor Create(AOwner: TComponent); override;
   published
     property CutoffFrequency : Double read fCutoffFrequency write SetCutoffFrequency;
@@ -62,7 +62,7 @@ type
     procedure SetHighFrequency(const Value: Double);
   protected
   public
-    procedure CalculateFilterKernel(var Data : TAVDDoubleDynArray); override;
+    procedure CalculateFilterKernel(var Data : TDAVDoubleDynArray); override;
     constructor Create(AOwner: TComponent); override;
   published
     property LowFrequency : Double read fLowFrequency write SetLowFrequency;
@@ -79,7 +79,7 @@ type
     procedure SetHighFrequency(const Value: Double);
   protected
   public
-    procedure CalculateFilterKernel(var Data : TAVDDoubleDynArray); override;
+    procedure CalculateFilterKernel(var Data : TDAVDoubleDynArray); override;
     constructor Create(AOwner: TComponent); override;
   published
     property LowFrequency : Double read fLowFrequency write SetLowFrequency;
@@ -87,7 +87,7 @@ type
     property RippleRatio : Double read fRippleRatio write fRippleRatio;
   end;
 
-procedure Remez(var h : TAVDDoubleDynArray; const bands, des, weight: TAVDDoubleDynArray; FilterTyp:TFilterKind);
+procedure Remez(var h : TDAVDoubleDynArray; const bands, des, weight: TDAVDoubleDynArray; FilterTyp:TFilterKind);
 
 implementation
 
@@ -128,9 +128,9 @@ type
 }
 
 procedure CreateDenseGrid(r, numtaps, numband:Integer;
-                          bands, des, weight: TAVDDoubleDynArray;
+                          bands, des, weight: TDAVDoubleDynArray;
                           gridsize : Integer;
-                          Grid, D, W : TAVDDoubleDynArray; symmetry:TSymmetryKind);
+                          Grid, D, W : TDAVDoubleDynArray; symmetry:TSymmetryKind);
 var i,j,k,band:Integer;
     delf,lowf,Highf:Double;
 begin
@@ -208,7 +208,7 @@ end;
  Double y[]     - 'C' in Oppenheim & Schafer [r + 1]
 }
 
-procedure CalcParms(r:Integer; Ext:TIntegerArray; Grid, D, W, ad, x, y : TAVDDoubleDynArray);
+procedure CalcParms(r:Integer; Ext:TIntegerArray; Grid, D, W, ad, x, y : TDAVDoubleDynArray);
 var i,j,k,ld:Integer;
     sign,xi,delta,denom,numer : Double;
 begin
@@ -279,7 +279,7 @@ end;
  Returns Double value of A[freq]
 }
 
-function ComputeA(freq: Double; r: Integer; ad, x, y: TAVDDoubleDynArray) : Double;
+function ComputeA(freq: Double; r: Integer; ad, x, y: TDAVDoubleDynArray) : Double;
 var i:Integer;
     xc,c,denom,numer:Double;
 begin
@@ -325,8 +325,8 @@ end;
  Double     E[]       - Error function on dense grid [gridsize]
 }
 
-procedure CalcError(r:Integer; ad,x,y:TAVDDoubleDynArray; gridsize:Integer;
-                    Grid,D,W,E:TAVDDoubleDynArray);
+procedure CalcError(r:Integer; ad,x,y:TDAVDoubleDynArray; gridsize:Integer;
+                    Grid,D,W,E:TDAVDoubleDynArray);
 var i:Integer;
     A:Double;
 begin
@@ -362,7 +362,7 @@ end;
  Integer     Ext[]    - New indexes to extremal frequencies [r + 1]
 }
 
-procedure  Search(r:Integer; Ext: TIntegerArray; gridsize:Integer; E:TAVDDoubleDynArray);
+procedure  Search(r:Integer; Ext: TIntegerArray; gridsize:Integer; E:TDAVDoubleDynArray);
 var i,j,k,l,extra:Integer;   { Counters }
     alt,up: Boolean;
     foundExt:TIntegerArray; { Array of found extremals }
@@ -458,7 +458,7 @@ end;
  Double h[]         - Impulse Response of final filter [N]
 }
 
-procedure FreqSample(N:Integer; A,h:TAVDDoubleDynArray; symm:TSymmetryKind);
+procedure FreqSample(N:Integer; A,h:TDAVDoubleDynArray; symm:TSymmetryKind);
 var i,k: Integer;
     x,val,M: Double;
 begin
@@ -533,7 +533,7 @@ end;
  Returns 0 if the result has not converged
 }
 
-function IsDone(r:Integer; Ext:TIntegerArray; E:TAVDDoubleDynArray):Boolean;
+function IsDone(r:Integer; Ext:TIntegerArray; E:TDAVDoubleDynArray):Boolean;
 var i: Integer;
     min,max,current:Double;
 begin
@@ -570,11 +570,11 @@ end;
  Double h[]        - Impulse response of final filter [numtaps]
 }
 
-procedure remez(var h:TAVDDoubleDynArray; const bands,des,weight:TAVDDoubleDynArray; FilterTyp:TFilterKind);
+procedure remez(var h:TDAVDoubleDynArray; const bands,des,weight:TDAVDoubleDynArray; FilterTyp:TFilterKind);
 var i, iter, gridsize, r: Integer;
     symmetry: TSymmetryKind;
-    Grid,W,D,E,taps: TAVDDoubleDynArray;
-    x, y, ad: TAVDDoubleDynArray;
+    Grid,W,D,E,taps: TDAVDoubleDynArray;
+    x, y, ad: TDAVDoubleDynArray;
     c: Double;
     Ext: TIntegerArray;
     numtaps, numband: Integer;
@@ -694,10 +694,10 @@ end;
 
 { TRemezFilterDesigner }
 
-procedure TRemezFilterDesigner.CalculateFilterKernel(var Data: TAVDSingleDynArray);
+procedure TRemezFilterDesigner.CalculateFilterKernel(var Data: TDAVSingleDynArray);
 var
   i        : Integer;
-  DblArray : TAVDDoubleDynArray;
+  DblArray : TDAVDoubleDynArray;
 begin
  SetLength(DblArray, Length(Data));
  CalculateFilterKernel(DblArray);
@@ -716,9 +716,9 @@ begin
   fSampleRate := Value;
 end;
 
-procedure TRemezLowpassFilterDesigner.CalculateFilterKernel(var Data: TAVDDoubleDynArray);
+procedure TRemezLowpassFilterDesigner.CalculateFilterKernel(var Data: TDAVDoubleDynArray);
 var
-  bands, weights, desired : TAVDDoubleDynArray;
+  bands, weights, desired : TDAVDoubleDynArray;
 begin
  SetLength(bands, 4);
  SetLength(weights, 2);
@@ -751,9 +751,9 @@ end;
 
 { TRemezHighpassFilterDesigner }
 
-procedure TRemezHighpassFilterDesigner.CalculateFilterKernel(var Data: TAVDDoubleDynArray);
+procedure TRemezHighpassFilterDesigner.CalculateFilterKernel(var Data: TDAVDoubleDynArray);
 var
-  bands, weights, desired : TAVDDoubleDynArray;
+  bands, weights, desired : TDAVDoubleDynArray;
 begin
  SetLength(bands, 4);
  SetLength(weights, 2);
@@ -786,9 +786,9 @@ end;
 
 { TRemezBandpassFilterDesigner }
 
-procedure TRemezBandpassFilterDesigner.CalculateFilterKernel(var Data: TAVDDoubleDynArray);
+procedure TRemezBandpassFilterDesigner.CalculateFilterKernel(var Data: TDAVDoubleDynArray);
 var
-  bands, weights, desired : TAVDDoubleDynArray;
+  bands, weights, desired : TDAVDoubleDynArray;
 begin
  SetLength(bands, 6);
  SetLength(weights, 3);
@@ -834,9 +834,9 @@ end;
 
 { TRemezBandstopFilterDesigner }
 
-procedure TRemezBandstopFilterDesigner.CalculateFilterKernel(var Data: TAVDDoubleDynArray);
+procedure TRemezBandstopFilterDesigner.CalculateFilterKernel(var Data: TDAVDoubleDynArray);
 var
-  bands, weights, desired : TAVDDoubleDynArray;
+  bands, weights, desired : TDAVDoubleDynArray;
 begin
  SetLength(bands, 6);
  SetLength(weights, 3);

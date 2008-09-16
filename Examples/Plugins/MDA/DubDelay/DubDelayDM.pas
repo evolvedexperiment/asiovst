@@ -8,7 +8,7 @@ uses
 type
   TDubDelayDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGateAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -158,7 +158,7 @@ begin
  fIRelease := Power(10, -2 / SampleRate);
 end;
 
-procedure TDubDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TDubDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample                         : Integer;
   i, j, g, e, e2, ra, re, at, ga : Single;

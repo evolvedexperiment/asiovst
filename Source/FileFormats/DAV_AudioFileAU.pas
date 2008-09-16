@@ -1,9 +1,9 @@
-unit DAudioFileAU;
+unit DAV_AudioFileAU;
 
 interface
 
 uses
-  Classes, SysUtils, DAVDCommon, DAudioFile;
+  Classes, SysUtils, DAV_Common, DAV_AudioFile;
 
 type
   TAUEncoding = (

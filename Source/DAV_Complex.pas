@@ -17,17 +17,17 @@ type
                     Im : Double;
                    end;
 
-  PAVDComplexSingleDynArray = ^TAVDComplexSingleDynArray;
-  TAVDComplexSingleDynArray = array of TComplexSingle;
+  PDAVComplexSingleDynArray = ^TDAVComplexSingleDynArray;
+  TDAVComplexSingleDynArray = array of TComplexSingle;
 
-  PAVDComplexDoubleDynArray = ^TAVDComplexDoubleDynArray;
-  TAVDComplexDoubleDynArray = array of TComplexDouble;
+  PDAVComplexDoubleDynArray = ^TDAVComplexDoubleDynArray;
+  TDAVComplexDoubleDynArray = array of TComplexDouble;
 
-  PAVDComplexSingleFixedArray = ^TAVDComplexSingleFixedArray;
-  TAVDComplexSingleFixedArray = array [0..0] of TComplexSingle;
+  PDAVComplexSingleFixedArray = ^TDAVComplexSingleFixedArray;
+  TDAVComplexSingleFixedArray = array [0..0] of TComplexSingle;
 
-  PAVDComplexDoubleFixedArray = ^TAVDComplexDoubleFixedArray;
-  TAVDComplexDoubleFixedArray = array [0..0] of TComplexDouble;
+  PDAVComplexDoubleFixedArray = ^TDAVComplexDoubleFixedArray;
+  TDAVComplexDoubleFixedArray = array [0..0] of TComplexDouble;
 
   function Complex(Re, Im : Double):TComplexDouble; overload;
   function Complex(Re, Im : Single):TComplexSingle; overload;

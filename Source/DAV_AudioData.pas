@@ -129,7 +129,7 @@ type
 
   TAudioData32 = class(TCustomAudioData)
   private
-    fChannelData : PAVDSingleFixedArray;
+    fChannelData : PDAVSingleFixedArray;
     function GetChannelData(Sample: Int64): Single;
     procedure SetChannelData(Sample: Int64; const Value: Single);
   protected
@@ -153,7 +153,7 @@ type
 
     // data access properties
     property ChannelData[Sample: Int64]: Single read GetChannelData write SetChannelData;
-    property ChannelDataPointer: PAVDSingleFixedArray read fChannelData;
+    property ChannelDataPointer: PDAVSingleFixedArray read fChannelData;
 
     property SampleRate;
     property SampleRateSource;
@@ -161,7 +161,7 @@ type
 
   TAudioData64 = class(TCustomAudioData)
   private
-    fChannelData  : PAVDDoubleFixedArray;
+    fChannelData  : PDAVDoubleFixedArray;
     function GetChannelData(Sample: Int64): Double;
     procedure SetChannelData(Sample: Int64; const Value: Double);
   protected
@@ -185,7 +185,7 @@ type
 
     // data access properties
     property ChannelData[Sample: Int64]: Double read GetChannelData write SetChannelData;
-    property ChannelDataPointer: PAVDDoubleFixedArray read fChannelData;
+    property ChannelDataPointer: PDAVDoubleFixedArray read fChannelData;
 
     property SampleRate;
     property SampleRateSource;
@@ -245,7 +245,7 @@ type
     fChannelData: TAudioData32;
     function GetChannelData(Sample: Int64): Single;
     procedure SetChannelData(Sample: Int64; const Value: Single);
-    function GetChannelDataPointer: PAVDSingleFixedArray;
+    function GetChannelDataPointer: PDAVSingleFixedArray;
   protected
     function GetSum: Double; override;
     function GetRMS: Double; override;
@@ -267,7 +267,7 @@ type
 
     // data access properties
     property ChannelData[Sample: Int64]: Single read GetChannelData write SetChannelData;
-    property ChannelDataPointer: PAVDSingleFixedArray read GetChannelDataPointer;
+    property ChannelDataPointer: PDAVSingleFixedArray read GetChannelDataPointer;
   end;
 
   TAudioChannel64 = class(TCustomAudioChannel)
@@ -275,7 +275,7 @@ type
     fChannelData: TAudioData64;
     function GetChannelData(Sample: Int64): Double;
     procedure SetChannelData(Sample: Int64; const Value: Double);
-    function GetChannelDataPointer: PAVDDoubleFixedArray;
+    function GetChannelDataPointer: PDAVDoubleFixedArray;
   protected
     function GetSum: Double; override;
     function GetRMS: Double; override;
@@ -297,7 +297,7 @@ type
 
     // data access properties
     property ChannelData[Sample: Int64]: Double read GetChannelData write SetChannelData;
-    property ChannelDataPointer: PAVDDoubleFixedArray read GetChannelDataPointer;
+    property ChannelDataPointer: PDAVDoubleFixedArray read GetChannelDataPointer;
   end;
   {$ENDREGION}
 
@@ -335,15 +335,15 @@ type
 
   TCustomAudioDataCollection32 = class(TCustomAudioDataCollection)
   private
-//    fChannelDataPointerList : array of PAVDSingleFixedArray;
+//    fChannelDataPointerList : array of PDAVSingleFixedArray;
     function GetAudioChannel(index: Integer): TAudioChannel32; virtual;
-    function GetChannelDataPointerList(Channel: Integer): PAVDSingleFixedArray;
+    function GetChannelDataPointerList(Channel: Integer): PDAVSingleFixedArray;
   protected
     procedure CreateChannels; override;
     property ChannelList[index: Integer]: TAudioChannel32 read GetAudioChannel; default;
   public
     constructor Create(AOwner: TComponent; AChannels: Integer; ASampleFrames: Int64); override;
-    property ChannelDataPointerList[Channel: Integer]: PAVDSingleFixedArray read GetChannelDataPointerList;
+    property ChannelDataPointerList[Channel: Integer]: PDAVSingleFixedArray read GetChannelDataPointerList;
   end;
 
   TAudioDataCollection32 = class(TCustomAudioDataCollection32)
@@ -356,16 +356,16 @@ type
 
   TCustomAudioDataCollection64 = class(TCustomAudioDataCollection)
   private
-//    fChannelDataPointerList : array of PAVDDoubleFixedArray;
+//    fChannelDataPointerList : array of PDAVDoubleFixedArray;
     function GetAudioChannel(index: Integer): TAudioChannel64; virtual;
-    function GetChannelDataPointerList(Channel: Integer): PAVDDoubleFixedArray;
+    function GetChannelDataPointerList(Channel: Integer): PDAVDoubleFixedArray;
   protected
     procedure CreateChannels; override;
     property ChannelList[index: Integer]: TAudioChannel64 read GetAudioChannel; default;
   public
     constructor Create(AOwner: TComponent); overload; override;
     constructor Create(AOwner: TComponent; AChannels: Integer; ASampleFrames: Int64); overload; override;
-    property ChannelDataPointerList[Channel: Integer]: PAVDDoubleFixedArray read GetChannelDataPointerList;
+    property ChannelDataPointerList[Channel: Integer]: PDAVDoubleFixedArray read GetChannelDataPointerList;
   end;
 
   TAudioDataCollection64 = class(TCustomAudioDataCollection64)
@@ -947,7 +947,7 @@ begin
  result := fChannelData.ChannelData[Sample];
 end;
 
-function TAudioChannel32.GetChannelDataPointer: PAVDSingleFixedArray;
+function TAudioChannel32.GetChannelDataPointer: PDAVSingleFixedArray;
 begin
  result := fChannelData.ChannelDataPointer;
 end;
@@ -1045,7 +1045,7 @@ begin
  result := fChannelData.ChannelData[Sample];
 end;
 
-function TAudioChannel64.GetChannelDataPointer: PAVDDoubleFixedArray;
+function TAudioChannel64.GetChannelDataPointer: PDAVDoubleFixedArray;
 begin
  result := fChannelData.ChannelDataPointer;
 end;
@@ -1238,7 +1238,7 @@ begin
 end;
 
 function TCustomAudioDataCollection32.GetChannelDataPointerList(
-  Channel: Integer): PAVDSingleFixedArray;
+  Channel: Integer): PDAVSingleFixedArray;
 begin
  result := ChannelList[Channel].ChannelDataPointer;
 end;
@@ -1272,7 +1272,7 @@ begin
 end;
 
 function TCustomAudioDataCollection64.GetChannelDataPointerList(
-  Channel: Integer): PAVDDoubleFixedArray;
+  Channel: Integer): PDAVDoubleFixedArray;
 begin
  result := ChannelList[Channel].ChannelDataPointer;
 end;

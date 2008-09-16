@@ -16,8 +16,8 @@ type
     procedure SKLSoftKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleOpen(Sender: TObject);
   private
@@ -130,24 +130,26 @@ begin
 end;
 
 procedure TSoftKneeLimiterDataModule.VSTModuleProcess(const Inputs, Outputs:
-  TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-var i : Integer;
+  TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  i : Integer;
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0,i] := fSoftKneeLimiters[0].ProcessSample(Inputs[0,i]);
-   Outputs[1,i] := fSoftKneeLimiters[1].ProcessSample(Inputs[1,i]);
+   Outputs[0, i] := fSoftKneeLimiters[0].ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := fSoftKneeLimiters[1].ProcessSample(Inputs[1, i]);
   end;
 end;
 
 procedure TSoftKneeLimiterDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
-var i : Integer;
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  i : Integer;
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0,i] := fSoftKneeLimiters[0].ProcessSample(Inputs[0,i]);
-   Outputs[1,i] := fSoftKneeLimiters[1].ProcessSample(Inputs[1,i]);
+   Outputs[0, i] := fSoftKneeLimiters[0].ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := fSoftKneeLimiters[1].ProcessSample(Inputs[1, i]);
   end;
 end;
 

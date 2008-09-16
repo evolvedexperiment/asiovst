@@ -41,8 +41,8 @@ type
     procedure ResetStates; virtual; abstract;
     procedure ResetStatesInt64; virtual; abstract;
     procedure Reset; virtual; abstract;
-    procedure GetIR(ImpulseResonse : TAVDSingleDynArray); overload; virtual; abstract;
-    procedure GetIR(ImpulseResonse : TAVDDoubleDynArray); overload; virtual; abstract;
+    procedure GetIR(ImpulseResonse : TDAVSingleDynArray); overload; virtual; abstract;
+    procedure GetIR(ImpulseResonse : TDAVDoubleDynArray); overload; virtual; abstract;
     procedure PushStates; virtual; abstract;
     procedure PopStates; virtual; abstract;
 
@@ -67,8 +67,8 @@ type
     procedure SetAlpha; virtual;
   public
     constructor Create; override;
-    procedure GetIR(ImpulseResonse : TAVDSingleDynArray); overload; override;
-    procedure GetIR(ImpulseResonse : TAVDDoubleDynArray); overload; override;
+    procedure GetIR(ImpulseResonse : TDAVSingleDynArray); overload; override;
+    procedure GetIR(ImpulseResonse : TDAVDoubleDynArray); overload; override;
   published
     property Bandwidth: Double read fBandWidth write SetBW;
   end;
@@ -204,10 +204,10 @@ asm
  push eax
  push ecx
  push edx
- fstp [esp-4].Single
- push dword ptr [esp-4]
- mov edx,[eax]
- call dword ptr [edx+$24] // ProcessSample
+ fstp [esp - 4].Single
+ push dword ptr [esp - 4]
+ mov edx, [eax]
+ call dword ptr [edx + $24] // ProcessSample
  pop edx
  pop ecx
  pop eax
@@ -218,7 +218,7 @@ procedure TFilter.SetFrequency(const Value:Double);
 begin
  if fFrequency <> Value then
   begin
-   if Value>0
+   if Value > 0
     then fFrequency := Value
     else fFrequency := 1;
   end;
@@ -241,9 +241,9 @@ end;
 
 procedure TFilter.SetW0;
 begin
- fW0 := 2*Pi*fFrequency*fSRR;
+ fW0 := 2 * Pi * fFrequency * fSRR;
  fSinW0 := sin(fW0);
- if fW0>3.1
+ if fW0 > 3.1
   then fW0 := 3.1;
 end;
 
@@ -256,18 +256,18 @@ begin
  inherited;
 end;
 
-procedure TIIRFilter.GetIR(ImpulseResonse: TAVDSingleDynArray);
+procedure TIIRFilter.GetIR(ImpulseResonse: TDAVSingleDynArray);
 var i : Integer;
 begin
  if Length(ImpulseResonse) = 0 then Exit;
  PushStates;
  ImpulseResonse[0] := ProcessSample(1.0);
- for i := 1 to Length(ImpulseResonse)-1
+ for i := 1 to Length(ImpulseResonse) - 1
   do ImpulseResonse[i] := ProcessSample(0.0);
  PopStates;
 end;
 
-procedure TIIRFilter.GetIR(ImpulseResonse: TAVDDoubleDynArray);
+procedure TIIRFilter.GetIR(ImpulseResonse: TDAVDoubleDynArray);
 var i : Integer;
 begin
  if Length(ImpulseResonse) = 0 then Exit;
@@ -309,22 +309,22 @@ begin
  fFrequency := 1000;
  fBandWidth := 1;
  fSampleRate := 44100;
- fSRR := 1/44100;
+ fSRR := 1 / 44100;
  ResetStates;
 end;
 
 function TBiquadIIRFilter.MagnitudeSquared(Frequency:Double):Double;
 var cw : Double;
 begin
- cw := 2*cos(2 * Frequency*pi*fSRR);
- Result := sqrt((sqr(fNominator[0]-fNominator[2])+sqr(fNominator[1])+(fNominator[1]*(fNominator[0]+fNominator[2])+fNominator[0]*fNominator[2]*cw)*cw)
+ cw := 2 * cos(2 * Frequency * Pi * fSRR);
+ Result := sqrt((sqr(fNominator[0] - fNominator[2])+sqr(fNominator[1]) + (fNominator[1]*(fNominator[0]+fNominator[2])+fNominator[0]*fNominator[2]*cw)*cw)
              /(sqr(1-fDenominator[2])+sqr(fDenominator[1])+(fDenominator[1]*(fDenominator[2]+1)+cw*fDenominator[2])*cw ));
 end;
 
 function TBiquadIIRFilter.MagnitudeLog10(Frequency: Double): Double;
 var cw : Double;
 begin
- cw := 2*cos(2 * Frequency*pi*fSRR);
+ cw := 2 * cos(2 * Frequency * Pi * fSRR);
  Result := 10*log10((sqr(fNominator[0]-fNominator[2])+sqr(fNominator[1])+(fNominator[1]*(fNominator[0]+fNominator[2])+fNominator[0]*fNominator[2]*cw)*cw)
                  /(sqr(1-fDenominator[2])+sqr(fDenominator[1])+(fDenominator[1]*(fDenominator[2]+1)+cw*fDenominator[2])*cw ));
 end;

@@ -8,13 +8,13 @@ uses
 type
   TRoundPanDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParameterAutoChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleDestroy(Sender: TObject);
   private
-    fBuffer  : Array [0..1] of PAVDSingleFixedArray;
+    fBuffer  : Array [0..1] of PDAVSingleFixedArray;
     fSize    : Integer;
     fPhi     : Single;
     fDPhi    : Single;
@@ -68,7 +68,7 @@ begin
 end;
 
 procedure TRoundPanDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample     : Integer;
   a, ph, dph : Double;

@@ -8,8 +8,8 @@ uses
 type
   TDeessDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure ParamEnvelopeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHFDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -66,7 +66,7 @@ begin
 end;
 
 procedure TDeessDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample      : Integer;
   f           : Array [0..1] of Single;
@@ -102,7 +102,7 @@ begin
 end;
 
 procedure TDeessDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   Sample      : Integer;
   f           : Array [0..1] of Double;

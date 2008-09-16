@@ -12,8 +12,8 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcessLR(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessMS(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessLR(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessMS(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     fEQs : Array [0..1, 0..10] of TSimplePeakFilter;
@@ -103,7 +103,7 @@ begin
 end;
 
 procedure TPluginDataModule.VSTModuleProcessLR(const inputs,
-  outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+  outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
 var i : Integer;
 begin
  for i := 0 to sampleframes - 1 do
@@ -124,7 +124,7 @@ begin
 end;
 
 procedure TPluginDataModule.VSTModuleProcessMS(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i : Integer;
   d : Double; 

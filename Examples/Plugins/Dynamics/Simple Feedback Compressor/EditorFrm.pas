@@ -3,8 +3,9 @@ unit EditorFrm;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAVDCommon, DVSTModule, Controls,
-  StdCtrls, DGuiLabel, DGuiPanel, DGuiBaseControl, DGuiDial, ExtCtrls;
+  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
+  DAV_Common, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiBaseControl,
+  DAV_GuiDial;
 
 type
   TEditorForm = class(TForm)

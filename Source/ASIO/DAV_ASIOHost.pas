@@ -69,8 +69,8 @@ type
 
   TSamplePositionUpdateEvent = procedure(Sender: TObject; SamplePosition: Int64) of object;
   TSample2Event = procedure(Sender: TObject; Sample: array of Single) of object;
-  TBufferSwitchEvent32 = procedure(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray) of object;
-  TBufferSwitchEvent64 = procedure(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfDoubleDynArray) of object;
+  TBufferSwitchEvent32 = procedure(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray) of object;
+  TBufferSwitchEvent64 = procedure(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleDynArray) of object;
   TBufferSwitchEventNative = procedure(Sender: TObject; const BufferInfo: PASIOBufferList; const BufferIndex : Integer) of object;
 
   TBufferPreFill = (bpfNone, bpfZero, bpfNoise, bpfCustom);
@@ -297,13 +297,13 @@ type
     FInputChannelOffset   : Word;
     FOutputChannelOffset  : Word;
     FASIOGenerator        : TASIOGenerator;
-    FSingleInBuffer       : TAVDArrayOfSingleDynArray;
-    FSingleOutBuffer      : TAVDArrayOfSingleDynArray;
-    FDoubleInBuffer       : TAVDArrayOfDoubleDynArray;
-    FDoubleOutBuffer      : TAVDArrayOfDoubleDynArray;
+    FSingleInBuffer       : TDAVArrayOfSingleDynArray;
+    FSingleOutBuffer      : TDAVArrayOfSingleDynArray;
+    FDoubleInBuffer       : TDAVArrayOfDoubleDynArray;
+    FDoubleOutBuffer      : TDAVArrayOfDoubleDynArray;
     FInputMonitor         : TInputMonitor;
     FConvertOptimizations : TConvertOptimizations;
-    FOutputVolume         : TAVDSingleDynArray;
+    FOutputVolume         : TDAVSingleDynArray;
     FClipPrevent          : TClipBuffer;
     FConvertMethod        : TConvertMethod;
     FOutputDither         : TASIOOutputDither;
@@ -424,7 +424,7 @@ type
     FOnBufferSwitch64     : TBufferSwitchAudioData64Event;
 
     FConvertOptimizations : TConvertOptimizations;
-    FOutputVolume         : TAVDSingleDynArray;
+    FOutputVolume         : TDAVSingleDynArray;
     FClipPrevent          : TClipBuffer;
     FConvertMethod        : TConvertMethod;
     FOutputDither         : TASIOOutputDither;

@@ -14,8 +14,8 @@ type
   private
     fOrder        : Integer;
     fHistoryPos   : Integer;
-    fCoefficients : TAVDDoubleDynArray; // Coeffs
-    fHistory      : TAVDDoubleDynArray; // Error History
+    fCoefficients : TDAVDoubleDynArray; // Coeffs
+    fHistory      : TDAVDoubleDynArray; // Error History
     fDitherType   : TDitherType;
     fBitDepth     : Byte;
     fBitMul       : Double;

@@ -10,7 +10,7 @@ uses
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VSTModuleProcess(inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcess(inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleDestroy(Sender: TObject);
@@ -53,7 +53,7 @@ implementation
 uses
   XSynthGUI, Math;
 
-procedure TVSTSSModule.VSTModuleProcess(inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+procedure TVSTSSModule.VSTModuleProcess(inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
 var
   i, j : Integer;
   fb   : single;

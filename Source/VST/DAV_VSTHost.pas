@@ -2778,7 +2778,7 @@ procedure TCustomVstPlugIn.ProcessAudioDataCollection(Inputs,
 var
   Channel : Integer;
   InList,
-  OutList : array of PAVDSingleFixedArray;
+  OutList : array of PDAVSingleFixedArray;
 begin
  assert(Inputs.SampleFrames = Outputs.SampleFrames);
  assert(Inputs.ChannelCount >= numInputs);
@@ -2799,7 +2799,7 @@ procedure TCustomVstPlugIn.ProcessAudioDataCollection(Inputs,
 var
   Channel : Integer;
   InList,
-  OutList : array of PAVDDoubleFixedArray;
+  OutList : array of PDAVDoubleFixedArray;
 begin
  assert(Inputs.SampleFrames = Outputs.SampleFrames);
  assert(Inputs.ChannelCount >= numInputs);
@@ -2819,7 +2819,7 @@ procedure TCustomVstPlugIn.ProcessAudioDataCollectionInplace(
   AudioData: TAudioDataCollection32);
 var
   Channel  : Integer;
-  DataList : array of PAVDSingleFixedArray;
+  DataList : array of PDAVSingleFixedArray;
 begin
  assert(AudioData.ChannelCount >= numInputs);
  assert(AudioData.ChannelCount >= numOutputs);
@@ -2835,7 +2835,7 @@ procedure TCustomVstPlugIn.ProcessAudioDataCollectionInplace(
   AudioData: TAudioDataCollection64);
 var
   Channel  : Integer;
-  DataList : array of PAVDDoubleFixedArray;
+  DataList : array of PDAVDoubleFixedArray;
 begin
  assert(AudioData.ChannelCount >= numInputs);
  assert(AudioData.ChannelCount >= numOutputs);

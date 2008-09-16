@@ -7,7 +7,7 @@ implementation
 uses
   Math, DAV_Common;
 
-procedure FFT(Buffer: PAVDSingleFixedArray; FFTSize: Integer);
+procedure FFT(Buffer: PDAVSingleFixedArray; FFTSize: Integer);
 (*
  FFT routine, (C)1996 S.M.Bernsee. Sign = -1 is FFT, 1 is iFFT (inverse)
  Fills fftBuffer[0...2*fftFrameSize-1] with the Fourier transform of the time
@@ -21,7 +21,7 @@ procedure FFT(Buffer: PAVDSingleFixedArray; FFTSize: Integer);
 *)
 var
   wr, wi, arg, temp  : Single;
-  p1, p2             : PAVDSingleFixedArray;
+  p1, p2             : PDAVSingleFixedArray;
   tr, ti, ur, ui     : Single;
   p1r, p1i, p2r, p2i : PSingle;
   i, bitm, j, le,

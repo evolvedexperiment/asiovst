@@ -8,7 +8,7 @@ uses
 type
   TImageDataModule = class(TVSTModule)
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParamModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fLL, fLR,
@@ -78,7 +78,7 @@ begin
 end;
 
 procedure TImageDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin

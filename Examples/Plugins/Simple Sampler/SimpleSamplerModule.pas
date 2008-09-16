@@ -12,13 +12,13 @@ type
     procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleInitialize(Sender: TObject);
-    procedure VSTModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
   private
   public
     Voices : TVoiceList;
-    Sample : TAVDSingleDynArray;
+    Sample : TDAVSingleDynArray;
     MyGUI  : TVSTGUI;
   end;
 
@@ -30,8 +30,9 @@ uses
   Math;
 
 procedure TVSTSSModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-var i,j : Integer;
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  i, j : Integer;
 begin
  FillChar(outputs[0,0], sampleframes * SizeOf(Single), 0);
  FillChar(outputs[1,0], sampleframes * SizeOf(Single), 0);
@@ -45,7 +46,7 @@ begin
 end;
 
 procedure TVSTSSModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var i,j : Integer;
 begin
  FillChar(outputs[0, 0], sampleframes * SizeOf(Double), 0);

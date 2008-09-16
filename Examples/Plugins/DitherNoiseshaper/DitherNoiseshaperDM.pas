@@ -10,8 +10,8 @@ type
   TDitherNoiseshaperModule = class(TVSTModule)
     procedure DNTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure DNTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure DNBitDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure DNBitDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleCreate(Sender: TObject);
@@ -51,7 +51,7 @@ begin
 end;
 
 procedure TDitherNoiseshaperModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var i : Integer;
 begin
  for i := 0 to SampleFrames - 1 do
@@ -62,7 +62,7 @@ begin
 end;
 
 procedure TDitherNoiseshaperModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var i : Integer;
 begin
  for i := 0 to SampleFrames - 1 do

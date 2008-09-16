@@ -12,7 +12,7 @@ type
   private
     fWaveProcessMode: TGuiWaveProcessMode;
     fInternalBufferSize: Integer;
-    fInternalBuffer: TAVDArrayOfSingleDynArray;
+    fInternalBuffer: TDAVArrayOfSingleDynArray;
     fInternalBufferChannels: Integer;
 
     procedure SetInternalBufferSize(const Value: Integer);
@@ -24,9 +24,9 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure ProcessBufferIndirect(NewWaveData: TAVDArrayOfSingleDynArray; Channels, SampleFrames: Integer);
-    procedure ProcessBuffer(NewWaveData: TAVDSingleDynArray; InpLen: Integer = -1); overload;
-    procedure ProcessBuffer(NewWaveData: TAVDArrayOfSingleDynArray; InpLen: Integer = -1); overload;
+    procedure ProcessBufferIndirect(NewWaveData: TDAVArrayOfSingleDynArray; Channels, SampleFrames: Integer);
+    procedure ProcessBuffer(NewWaveData: TDAVSingleDynArray; InpLen: Integer = -1); overload;
+    procedure ProcessBuffer(NewWaveData: TDAVArrayOfSingleDynArray; InpLen: Integer = -1); overload;
   published
     property RedrawInterval;
 
@@ -110,9 +110,9 @@ begin
   inherited;
 end;
 
-procedure TCustomGuiDynamicWaveform.ProcessBufferIndirect(NewWaveData: TAVDArrayOfSingleDynArray; Channels, SampleFrames: Integer);
+procedure TCustomGuiDynamicWaveform.ProcessBufferIndirect(NewWaveData: TDAVArrayOfSingleDynArray; Channels, SampleFrames: Integer);
 var
-  tmp : TAVDArrayOfSingleDynArray;
+  tmp : TDAVArrayOfSingleDynArray;
   i   : Integer;
 begin
   SetLength(tmp,Channels, SampleFrames);
@@ -122,23 +122,23 @@ begin
   ProcessBuffer(tmp, SampleFrames);
 end;
 
-procedure TCustomGuiDynamicWaveform.ProcessBuffer(NewWaveData: TAVDSingleDynArray; InpLen: Integer);
+procedure TCustomGuiDynamicWaveform.ProcessBuffer(NewWaveData: TDAVSingleDynArray; InpLen: Integer);
 var
-  tmp: TAVDArrayOfSingleDynArray;
+  tmp: TDAVArrayOfSingleDynArray;
 begin
   SetLength(tmp, 1);
   tmp[0] := NewWaveData;
   ProcessBuffer(tmp, InpLen);
 end;
 
-procedure TCustomGuiDynamicWaveform.ProcessBuffer(NewWaveData: TAVDArrayOfSingleDynArray; InpLen: Integer);
+procedure TCustomGuiDynamicWaveform.ProcessBuffer(NewWaveData: TDAVArrayOfSingleDynArray; InpLen: Integer);
 var
   nOffset,
   Amount, i,
   tmpLen      : Integer;
   stepw,pos,
   frac        : Single;
-  InputBuffer : TAVDSingleDynArray;
+  InputBuffer : TDAVSingleDynArray;
 begin
   if InpLen<1 then
   begin

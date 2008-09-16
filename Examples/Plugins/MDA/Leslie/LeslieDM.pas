@@ -9,7 +9,7 @@ type
   TLeslieDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamSpeedDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterLowThrobChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -37,7 +37,7 @@ type
     fLPhi : Single;
     fHPhi : Single;
     fHPos : Integer;
-    fHBuf : PAVDSingleFixedArray;
+    fHBuf : PDAVSingleFixedArray;
     fBuf  : Array [0..1] of Single;
     fHBufferSize : Integer;
     procedure GainChanged;
@@ -160,7 +160,7 @@ begin
 end;
 
 procedure TLeslieDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   a, c, d, g, h, l           : Single;
   fo, fb1, fb2               : Single;

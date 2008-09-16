@@ -13,8 +13,8 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParamBiasChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -29,7 +29,7 @@ type
   private
     fBufferSize     : Integer;
     fBufferPosition : Integer;
-    fBuffer         : array [0..1] of PAVDSingleFixedArray;
+    fBuffer         : array [0..1] of PDAVSingleFixedArray;
     fMix            : array [0..1] of Double;
     fDelay          : array [0..1] of Integer;
     fHighPass       : array [0..1] of TSimpleHighpassFilter;
@@ -345,7 +345,7 @@ begin
  Parameter[5] := 0;
 end;
 
-procedure TComboDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TComboDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
  InP, OutP    : Array [0..1] of Double;
  trm, clp     : Single;
@@ -502,7 +502,7 @@ begin
 end;
 
 procedure TComboDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
  InP, OutP    : Array [0..1] of Double;
  trm, clp     : Double;

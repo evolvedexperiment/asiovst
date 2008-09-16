@@ -14,16 +14,16 @@ const
 
 type
   TTalkBoxDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    fBuf       : array [0..1] of PAVDSingleFixedArray;
-    fCar       : array [0..1] of PAVDSingleFixedArray;
-    fWindow    : PAVDSingleFixedArray;
+    fBuf       : array [0..1] of PDAVSingleFixedArray;
+    fCar       : array [0..1] of PDAVSingleFixedArray;
+    fWindow    : PDAVSingleFixedArray;
     fWinSize   : Integer;
     fEmphasis  : Single;
     fFX        : Single;
@@ -32,8 +32,8 @@ type
     fSwap      : Integer;
     fK, fO     : Integer;
     fD, fU     : Array [0..4] of Single;
-    procedure LPC(buf, car: PAVDSingleFixedArray; n, o: Integer);
-    procedure LPC_Durbin(r : PAVDSingleFixedArray; p : Integer; k : PAVDSingleFixedArray; var g: Single);
+    procedure LPC(buf, car: PDAVSingleFixedArray; n, o: Integer);
+    procedure LPC_Durbin(r : PDAVSingleFixedArray; p : Integer; k : PDAVSingleFixedArray; var g: Single);
   public
   end;
 
@@ -77,7 +77,7 @@ begin
  if assigned(fCar[1]) then Dispose(fCar[1]);
 end;
 
-procedure TTalkBoxDataModule.LPC(buf, car : PAVDSingleFixedArray; n, o : Integer);
+procedure TTalkBoxDataModule.LPC(buf, car : PDAVSingleFixedArray; n, o : Integer);
 var
   z, r, k  : array [0..ORD_MAX - 1] of Single;
   G, x     : Single;
@@ -127,7 +127,7 @@ begin
 end;
 
 
-procedure TTalkBoxDataModule.LPC_Durbin(r : PAVDSingleFixedArray; p : Integer; k : PAVDSingleFixedArray; var g: Single);
+procedure TTalkBoxDataModule.LPC_Durbin(r : PDAVSingleFixedArray; p : Integer; k : PDAVSingleFixedArray; var g: Single);
 var
   i, j  : Integer;
   a, at : array [0..ORD_MAX - 1] of Single;
@@ -169,7 +169,7 @@ begin
  g := sqrt(e);
 end;
 
-procedure TTalkBoxDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TTalkBoxDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample        : Integer;
   p, q, dr, FX  : Single;

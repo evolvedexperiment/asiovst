@@ -12,8 +12,8 @@ type
   TPerformanceTestModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; SampleFrames: Integer);
   private
     function GetProcessorCycles: Double;
   public
@@ -152,7 +152,7 @@ end;
 
 procedure TPerformanceTestModule.VSTModuleCreate(Sender: TObject);
 var
-  DataTest   : TAVDDoubleDynArray;
+  DataTest   : TDAVDoubleDynArray;
   DataGetmem : PSingle;
 begin
  {$IFDEF Delphi10_UP}
@@ -171,14 +171,14 @@ begin
 end;
 
 procedure TPerformanceTestModule.VSTModuleProcess(
-  const Inputs, Outputs: TAVDArrayOfSingleDynArray; SampleFrames: Integer);
+  const Inputs, Outputs: TDAVArrayOfSingleDynArray; SampleFrames: Integer);
 begin
   Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
   Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TPerformanceTestModule.VSTModuleProcessDoubleReplacing(
-  const Inputs, Outputs: TAVDArrayOfDoubleDynArray; SampleFrames: Integer);
+  const Inputs, Outputs: TDAVArrayOfDoubleDynArray; SampleFrames: Integer);
 begin
   Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Double));
   Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Double));

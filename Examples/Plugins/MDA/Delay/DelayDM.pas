@@ -7,13 +7,13 @@ uses
 
 type
   TDelayDataModule = class(TVSTModule)
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleDestroy(Sender: TObject);
   private
-    fBuffer    : PAVDSingleFixedArray;
+    fBuffer    : PDAVSingleFixedArray;
     fSize      : Integer;
     fWet       : Single;
     fDry       : Single;
@@ -110,7 +110,7 @@ begin
  //if(Parameter[2] > 0.99) { fbk=0.5; fWet=0.0; } //freeze
 end;
 
-procedure TDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample      : Integer;
   i, l, r, s  : Integer;

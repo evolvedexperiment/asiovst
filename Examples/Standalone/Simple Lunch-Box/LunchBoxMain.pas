@@ -14,7 +14,7 @@ uses
 
 type
   TSampleRec = record
-                Data       : TAVDSingleDynArray;
+                Data       : TDAVSingleDynArray;
                 SampleRate : Double;
                end;
   TFmLunchBox = class(TForm)
@@ -65,7 +65,7 @@ type
     N4: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveMIDIDialog: TSaveDialog;
-    SaveWAVDialog: TSaveDialog;
+    SaveWDAVialog: TSaveDialog;
     SEBar: TSpinEdit;
     SETempo: TSpinEdit;
     TBVolume: TTrackBar;
@@ -83,7 +83,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
     procedure ASIOHostReset(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure BtClearClick(Sender: TObject);
@@ -127,11 +127,11 @@ type
     fSamplesPerBeat : Single;
     fSamplesCount   : Single;
     fMetroVolume    : T2SingleArray;
-    fFlangeBuffer   : TAVDArrayOfSingleDynArray;
-    fRobotBuffer    : TAVDArrayOfSingleDynArray;
-    fRecRevBuffer   : TAVDArrayOfSingleDynArray;
+    fFlangeBuffer   : TDAVArrayOfSingleDynArray;
+    fRobotBuffer    : TDAVArrayOfSingleDynArray;
+    fRecRevBuffer   : TDAVArrayOfSingleDynArray;
     fRobotPos       : Integer;
-    fDelayBuffer    : TAVDArrayOfSingleDynArray;
+    fDelayBuffer    : TDAVArrayOfSingleDynArray;
     fDelayPos       : array of Integer;
     fDelayLength    : array of Integer;
     fDelayVolume    : T2SingleArray;
@@ -142,13 +142,13 @@ type
     fInputDCs       : T2DoubleArray;
     fInputFilter    : Array [0..1] of TInputFilter;
 
-    VSTInBuffer     : TAVDArrayOfSingleDynArray;
-    VSTOutBuffer    : TAVDArrayOfSingleDynArray;
+    VSTInBuffer     : TDAVArrayOfSingleDynArray;
+    VSTOutBuffer    : TDAVArrayOfSingleDynArray;
     procedure CalculateSineAngles;
     procedure CreateSample(Index: Integer; Amplitude : Double = 1);
     procedure Requantize;
     procedure AdjustDelayLength;
-    procedure RenderOutput(Buffer: TAVDArrayOfSingleDynArray; BufferLength: Integer; Loop: Boolean);
+    procedure RenderOutput(Buffer: TDAVArrayOfSingleDynArray; BufferLength: Integer; Loop: Boolean);
   public
     property PatternPosition : Integer read fPatPos write fPatPos;
     property EventList : TLunchBoxEventList read fEventList;
@@ -220,10 +220,10 @@ end;
 
 procedure TFmLunchBox.MIExportWAVClick(Sender: TObject);
 var
-  Buffer : TAVDArrayOfSingleDynArray;
+  Buffer : TDAVArrayOfSingleDynArray;
   i      : Integer;
 begin
- if SaveWAVDialog.Execute then
+ if SaveWDAVialog.Execute then
   begin
    ASIOHost.Active := False;
    SetLength(Buffer, 2);
@@ -236,7 +236,7 @@ begin
    for i := 0 to Length(fRecRevBuffer) - 1 do FillChar(fRecRevBuffer[i, 0],Length(fRecRevBuffer[i])*SizeOf(Single),0);
    for i := 0 to fEventList.Count - 1 do fEventList.Items[i].NoteOff;
    RenderOutput(Buffer, 2 * fMaxPatSamples,false);
-   SaveWAVFileSeparateStereo(SaveWAVDialog.FileName, @Buffer[0,0], @Buffer[1,0],Round(ASIOHost.SampleRate),2,16,2*fMaxPatSamples);
+   SaveWAVFileSeparateStereo(SaveWDAVialog.FileName, @Buffer[0,0], @Buffer[1,0],Round(ASIOHost.SampleRate),2,16,2*fMaxPatSamples);
    fSamplesCount := 0; fPatPos := 0;
    ASIOHost.Active := True;
   end;
@@ -551,7 +551,7 @@ begin
    end;
 end;
 
-procedure TFmLunchBox.RenderOutput(Buffer: TAVDArrayOfSingleDynArray; BufferLength : Integer; Loop: Boolean);
+procedure TFmLunchBox.RenderOutput(Buffer: TDAVArrayOfSingleDynArray; BufferLength : Integer; Loop: Boolean);
 var
   i, j : Integer;
   tmp  : Single;
@@ -675,7 +675,7 @@ begin
 end;
 
 procedure TFmLunchBox.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TAVDArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleDynArray);
 var
   i    : Integer;
   d, t : Double;

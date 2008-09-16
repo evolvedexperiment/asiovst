@@ -10,7 +10,7 @@ uses
 type
   TDspQueueList = TComponentList;
 
-  TDspBaseComponent = class(TAVDProcessingComponent)
+  TDspBaseComponent = class(TDAVProcessingComponent)
   protected
     fNextDspQueueItem: TDspBaseComponent;
     fPrevDspQueueItem: TDspBaseComponent;
@@ -61,29 +61,29 @@ type
     procedure ProcessQueueBasic (var Data: Double; const channel: integer); overload; virtual;
     procedure ProcessQueueBypass(var Data: Double; const channel: integer); overload; virtual;
 
-    procedure ProcessSilence    (var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessBypass     (var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessBasic      (var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessQueueBasic (var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessQueueBypass(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessSilence    (var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessBypass     (var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessBasic      (var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessQueueBasic (var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessQueueBypass(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
 
-    procedure ProcessSilence    (var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessBypass     (var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessBasic      (var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessQueueBasic (var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessQueueBypass(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessSilence    (var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessBypass     (var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessBasic      (var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessQueueBasic (var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessQueueBypass(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
 
-    procedure ProcessSilence    (var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessBypass     (var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessBasic      (var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessQueueBasic (var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessQueueBypass(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessSilence    (var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessBypass     (var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessBasic      (var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessQueueBasic (var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessQueueBypass(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
 
-    procedure ProcessSilence    (var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessBypass     (var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessBasic      (var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessQueueBasic (var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessQueueBypass(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessSilence    (var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessBypass     (var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessBasic      (var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessQueueBasic (var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessQueueBypass(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
   public
     constructor Create(AOwner: TComponent); overload; override;
     constructor Create(AOwner: TComponent; UseSampleRate: Integer); reintroduce; overload;
@@ -102,8 +102,8 @@ type
 
     
     
-    procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); override;
-    procedure ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); override;
+    procedure ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean); override;
+    procedure ProcessMidiEventQueue(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean); override;
 
     property PrevDspQueueItem: TDspBaseComponent read fPrevDspQueueItem write fPrevDspQueueItem;
   published
@@ -448,22 +448,22 @@ begin
   Data := 0;
 end;
 
-procedure TDspBaseComponent.ProcessSilence(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
+procedure TDspBaseComponent.ProcessSilence(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer);
 begin
  FillChar(ProcessBuffer[0], SampleFrames * SizeOf(Single), 0);
 end;
 
-procedure TDspBaseComponent.ProcessSilence(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
+procedure TDspBaseComponent.ProcessSilence(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 begin
  FillChar(ProcessBuffer[0], SampleFrames * SizeOf(Double), 0);
 end;
 
-procedure TDspBaseComponent.ProcessSilence(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
+procedure TDspBaseComponent.ProcessSilence(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 begin
   ClearArrays(ProcessBuffer, fChannels, SampleFrames);
 end;
 
-procedure TDspBaseComponent.ProcessSilence(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
+procedure TDspBaseComponent.ProcessSilence(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
   ClearArrays(ProcessBuffer, fChannels, SampleFrames);
 end;
@@ -484,25 +484,25 @@ begin
  IncProcessSampleCount(1, channel);
 end;
 
-procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
+procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer);
 begin
  // Do nothing with the buffer
  IncProcessSampleCount(SampleFrames, channel);
 end;
 
-procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
+procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 begin
  // Do nothing with the buffer
  IncProcessSampleCount(SampleFrames, channel);
 end;
 
-procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
+procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 begin
  // Do nothing with the buffer
  IncProcessSampleCount(SampleFrames);
 end;
 
-procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
+procedure TDspBaseComponent.ProcessBypass(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
  // Do nothing with the buffer 
  IncProcessSampleCount(SampleFrames);
@@ -521,28 +521,28 @@ begin
   Data := tmp;
 end;
 
-procedure TDspBaseComponent.ProcessBasic(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
+procedure TDspBaseComponent.ProcessBasic(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer);
 var i: integer;
 begin
  for i := 0 to SampleFrames - 1
   do fProcessS(ProcessBuffer[i], channel);
 end;
 
-procedure TDspBaseComponent.ProcessBasic(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
+procedure TDspBaseComponent.ProcessBasic(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 var i: integer;
 begin
  for i := 0 to SampleFrames - 1
   do fProcessD(ProcessBuffer[i], channel);
 end;
 
-procedure TDspBaseComponent.ProcessBasic(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
+procedure TDspBaseComponent.ProcessBasic(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 var i: integer;
 begin
  for i := 0 to fChannels - 1
   do fProcessSA(ProcessBuffer[i], i, SampleFrames);
 end;
 
-procedure TDspBaseComponent.ProcessBasic(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
+procedure TDspBaseComponent.ProcessBasic(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 var i: integer;
 begin
  for i := 0 to fChannels - 1
@@ -564,25 +564,25 @@ begin
  fNextDspQueueItem.ProcessQueueD(Data, channel);
 end;
 
-procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
+procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer);
 begin
  fProcessSA(ProcessBuffer, channel, SampleFrames);
  fNextDspQueueItem.ProcessQueueSA(ProcessBuffer, channel, SampleFrames);
 end;
 
-procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
+procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 begin
  fProcessDA(ProcessBuffer, channel, SampleFrames);
  fNextDspQueueItem.ProcessQueueDA(ProcessBuffer, channel, SampleFrames);
 end;
 
-procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
+procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 begin
  fProcessSAA(ProcessBuffer, SampleFrames);
  fNextDspQueueItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
 end;
 
-procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
+procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
  fProcessDAA(ProcessBuffer, SampleFrames);
  fNextDspQueueItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
@@ -601,30 +601,30 @@ begin
  fNextDspQueueItem.ProcessQueueD(Data, channel);
 end;
 
-procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
+procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer);
 begin
  fNextDspQueueItem.ProcessQueueSA(ProcessBuffer, channel, SampleFrames);
 end;
 
-procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
+procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 begin
  fNextDspQueueItem.ProcessQueueDA(ProcessBuffer, channel, SampleFrames);
 end;
 
-procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
+procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 begin
  fNextDspQueueItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
 end;
 
-procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
+procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
  fNextDspQueueItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
 end;
 
-procedure TDspBaseComponent.ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+procedure TDspBaseComponent.ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean);
 begin end;
 
-procedure TDspBaseComponent.ProcessMidiEventQueue(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+procedure TDspBaseComponent.ProcessMidiEventQueue(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean);
 begin
   FilterEvent:=false;
   ProcessMidiEvent(MidiEvent, FilterEvent);

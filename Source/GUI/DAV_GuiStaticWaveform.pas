@@ -15,9 +15,9 @@ type
   TCustomGuiStaticWaveform = class(TCustomGuiBaseMouseControl)
   private
     fNormalizationType    : TGuiNormalizationType;
-    fNormalizationFactors : TAVDSingleDynArray;
+    fNormalizationFactors : TDAVSingleDynArray;
     fWaveHalfHeight       : Integer;
-    fWaveData             : TAVDArrayOfSingleDynArray;
+    fWaveData             : TDAVArrayOfSingleDynArray;
     fWaveVPadding         : Integer;
     fDisplayChannels      : Integer;
     fMedianVisible        : Boolean;
@@ -49,11 +49,11 @@ type
     destructor Destroy; override;
     procedure RedrawBuffer(doBufferFlip: Boolean); override;
 
-    procedure SetWaveForm(NewWaveData: TAVDSingleDynArray;  DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False); overload;
-    procedure SetWaveForm(NewWaveData: TAVDArrayOfSingleDynArray; DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False);overload;
+    procedure SetWaveForm(NewWaveData: TDAVSingleDynArray;  DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False); overload;
+    procedure SetWaveForm(NewWaveData: TDAVArrayOfSingleDynArray; DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False);overload;
     procedure ClearWaveForm(DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False);
 
-    property Wavedata: TAVDArrayOfSingleDynArray read fWaveData;
+    property Wavedata: TDAVArrayOfSingleDynArray read fWaveData;
     property WaveLength: Integer read GetWaveLength write SetWaveLength;
     property WaveChannels: Integer read GetWaveChannels write SetWaveChannels;
     property DisplayChannels: Integer read fDisplayChannels write SetDisplayChannels default 2;
@@ -242,7 +242,7 @@ begin
   inherited;
 end;
 
-procedure TCustomGuiStaticWaveform.SetWaveForm(NewWaveData: TAVDSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
+procedure TCustomGuiStaticWaveform.SetWaveForm(NewWaveData: TDAVSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
 begin
   ClearWaveForm;
   SetLength(fWaveData, 1);
@@ -252,7 +252,7 @@ begin
 end;
 
 
-procedure TCustomGuiStaticWaveform.SetWaveForm(NewWaveData: TAVDArrayOfSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
+procedure TCustomGuiStaticWaveform.SetWaveForm(NewWaveData: TDAVArrayOfSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
 var
   i, len: Integer;
 begin

@@ -10,12 +10,12 @@ uses
 type
   TDspEnvelopeFollower = class(TDspBaseComponent)
   protected
-    fLastOutputSingle: TAVDSingleDynArray;
-    fLastOutputDouble: TAVDDoubleDynArray;
-    fInternalAttack: Single;
-    fInternalRelease: Single;
-    fAttack: Single;
-    fRelease: Single;
+    fLastOutputSingle : TDAVSingleDynArray;
+    fLastOutputDouble : TDAVDoubleDynArray;
+    fInternalAttack   : Single;
+    fInternalRelease  : Single;
+    fAttack           : Single;
+    fRelease          : Single;
     procedure SetAttack(const Value: single);
     procedure SetRelease(const Value: single);
     procedure BeforeDestroy; override;

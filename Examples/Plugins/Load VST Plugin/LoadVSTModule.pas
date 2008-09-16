@@ -9,24 +9,23 @@ uses
 type
   TPlugInPlugModule = class(TVSTModule)
     VstHost: TVstHost;
-    procedure VST2ModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
-    procedure VST2ModuleProcessReplacing(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
-    procedure VST2ModuleCreate(Sender: TObject);
-    procedure VST2ModuleOpen(Sender: TObject);
-    procedure VST2ModuleClose(Sender: TObject);
-    procedure VST2ModuleEditIdle(Sender: TObject);
+    function VST2ModuleCanDo(Sender: TObject; CanDoText: String): Integer;
     procedure VST2ModuleBeforeProgramChange(Sender: TObject);
     procedure VST2ModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
-    function VST2ModuleCanDo(Sender: TObject; CanDoText: String): Integer;
-    procedure VST2ModuleEditTop(Sender: TObject);
+    procedure VST2ModuleClose(Sender: TObject);
+    procedure VST2ModuleCreate(Sender: TObject);
+    procedure VST2ModuleEditIdle(Sender: TObject);
     procedure VST2ModuleEditSleep(Sender: TObject);
+    procedure VST2ModuleEditTop(Sender: TObject);
     procedure VST2ModuleGetVU(var VU: Single);
+    procedure VST2ModuleOpen(Sender: TObject);
     procedure VST2ModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VST2ModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VST2ModuleProcessReplacing(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
     procedure VST2ModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VST2ModuleStartProcess(Sender: TObject);
     procedure VST2ModuleStopProcess(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
   public
   end;
@@ -38,12 +37,12 @@ implementation
 uses
   Dialogs;
 
-procedure TPlugInPlugModule.VST2ModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+procedure TPlugInPlugModule.VST2ModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
 begin
  VstHost[0].Process(@inputs[0], @outputs[0], sampleframes);
 end;
 
-procedure TPlugInPlugModule.VST2ModuleProcessReplacing(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+procedure TPlugInPlugModule.VST2ModuleProcessReplacing(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
 begin
  VstHost[0].ProcessReplacing(@inputs[0], @outputs[0], sampleframes);
 end;

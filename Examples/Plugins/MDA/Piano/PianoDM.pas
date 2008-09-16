@@ -47,7 +47,7 @@ type
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
   private
     fInvSampleRate   : Double;
     fSize            : Integer;
@@ -72,7 +72,7 @@ type
     fNotes           : array [0..128, 0..2] of Byte;
     fVoices          : array [0..cNumVoices - 1] of TVoice;
     fKeyGroup        : array [0..33] of TKeyGroup;
-    fCombFilter      : PAVDSingleFixedArray;
+    fCombFilter      : PDAVSingleFixedArray;
     procedure Update;
     procedure noteOn(Note, Velocity: Integer);
   public
@@ -307,7 +307,7 @@ begin
 end;
 
 procedure TPianoDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   event, frame, frames, v : Integer;
   x, l, r : Single;

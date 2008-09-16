@@ -13,9 +13,9 @@ interface
 uses
   DAV_DspWindowing, DAV_Common;
 
-procedure RealCepstrum(signal, realCepstrum : TAVDSingleDynArray);
-procedure MinimumPhase(realCepstrum, minimumPhase : TAVDSingleDynArray);
-function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TAVDSingleDynArray;
+procedure RealCepstrum(signal, realCepstrum : TDAVSingleDynArray);
+procedure MinimumPhase(realCepstrum, minimumPhase : TDAVSingleDynArray);
+function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TDAVSingleDynArray;
 
 implementation
 
@@ -31,11 +31,11 @@ begin
 end;
 
 // Compute Real Cepstrum Of Signal
-procedure RealCepstrum(signal, realCepstrum : TAVDSingleDynArray);
-var realTime, imagTime, realFreq, imagFreq : TAVDSingleDynArray;
+procedure RealCepstrum(signal, realCepstrum : TDAVSingleDynArray);
+var realTime, imagTime, realFreq, imagFreq : TDAVSingleDynArray;
     i,sz  : Integer;
 begin
- sz:=Length(signal);
+ sz := Length(signal);
  Assert(Length(realCepstrum)=sz);
 
  SetLength(realTime, sz);
@@ -44,7 +44,7 @@ begin
  SetLength(imagFreq, sz);
 
  // Compose Complex FFT Input
- for i:=0 to sz-1 do
+ for i := 0 to sz-1 do
   begin
    realTime[i] := signal[i];
    imagTime[i] := 0;
@@ -54,29 +54,29 @@ begin
  DFT(realTime, imagTime, realFreq, imagFreq);
 
  // Calculate Log Of Absolute Value
- for i:=0 to sz-1 do
+ for i := 0 to sz-1 do
   begin
-   realFreq[i]:=log10(ComplexMagnitude(realFreq[i], imagFreq[i]));
-   imagFreq[i]:=0;
+   realFreq[i] := log10(ComplexMagnitude(realFreq[i], imagFreq[i]));
+   imagFreq[i] := 0;
   end;
 
  // Perform Inverse FFT
  InverseDFT(realTime, imagTime, realFreq, imagFreq);
 
  // Output Real Part Of FFT
- for i:=0 to sz-1
-  do realCepstrum[i]:=realTime[i];
+ for i := 0 to sz-1
+  do realCepstrum[i] := realTime[i];
 end;
 
 // Compute Minimum Phase Reconstruction Of Signal
-procedure MinimumPhase(realCepstrum, minimumPhase : TAVDSingleDynArray);
-var realTime, imagTime, realFreq, imagFreq : TAVDSingleDynArray;
+procedure MinimumPhase(realCepstrum, minimumPhase : TDAVSingleDynArray);
+var realTime, imagTime, realFreq, imagFreq : TDAVSingleDynArray;
     n, i, nd2 : Integer;
 begin
- n:=Length(realCepstrum);
+ n := Length(realCepstrum);
  Assert(Length(minimumPhase)=n);
 
- nd2:=n div 2;
+ nd2 := n div 2;
  SetLength(realTime, n);
  SetLength(imagTime, n);
  SetLength(realFreq, n);
@@ -84,32 +84,32 @@ begin
 
  if ((n mod 2) = 1) then
   begin
-   realTime[0]:= realCepstrum[0];
-   for i:= 1 to nd2-1 do realTime[i]:= 2.0 * realCepstrum[i];
-   for i:= nd2 to n-1 do realTime[i]:= 0.0;
+   realTime[0] :=  realCepstrum[0];
+   for i :=  1 to nd2-1 do realTime[i] :=  2.0 * realCepstrum[i];
+   for i :=  nd2 to n-1 do realTime[i] :=  0.0;
   end
  else
   begin
-   realTime[0]:= realCepstrum[0];
-   for i:= 1 to nd2-1 do realTime[i]:= 2.0 * realCepstrum[i];
-   realTime[nd2]:=realCepstrum[nd2];
-   for i:= nd2+1 to n-1 do realTime[i]:= 0.0;
+   realTime[0] :=  realCepstrum[0];
+   for i :=  1 to nd2-1 do realTime[i] :=  2.0 * realCepstrum[i];
+   realTime[nd2] := realCepstrum[nd2];
+   for i :=  nd2+1 to n-1 do realTime[i] :=  0.0;
   end;
 
- for i:= 1 to n-1 do imagTime[i] := 0;
+ for i := 1 to n-1 do imagTime[i] := 0;
  DFT(realTime, imagTime, realFreq, imagFreq);
 
- for i:=0 to n-1 do ComplexExponential(realFreq[i], imagFreq[i], @realFreq[i], @imagFreq[i]);
+ for i := 0 to n-1 do ComplexExponential(realFreq[i], imagFreq[i], @realFreq[i], @imagFreq[i]);
  InverseDFT(realTime, imagTime, realFreq, imagFreq);
 
- for i:=0 to n-1 do minimumPhase[i]:=realTime[i];
+ for i := 0 to n-1 do minimumPhase[i] := realTime[i];
 end;
 
 // Generate MinBLEP And Return It In An Array Of Floating Point Values
-function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TAVDSingleDynArray;
+function GenerateMinBLEP(zeroCrossings, overSampling : Integer) : TDAVSingleDynArray;
 var i, n     : Integer;
     r, a, b  : Double;
-    buffer1, buffer2 : TAVDSingleDynArray;
+    buffer1, buffer2 : TDAVSingleDynArray;
 begin
  n := (2 * zeroCrossings * overSampling) + 1;
  SetLength(buffer1,n);

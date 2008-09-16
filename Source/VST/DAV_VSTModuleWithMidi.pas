@@ -115,8 +115,9 @@ begin
 end;
 
 procedure TVSTModuleWithMidi.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
-var Ins  : TAVDArrayOfDoubleDynArray absolute Inputs;
-    Outs : TAVDArrayOfDoubleDynArray absolute Outputs;
+var
+  Ins  : TDAVArrayOfDoubleDynArray absolute Inputs;
+  Outs : TDAVArrayOfDoubleDynArray absolute Outputs;
 begin
   inherited;
   if FMidiEvent.numEvents > 0 then

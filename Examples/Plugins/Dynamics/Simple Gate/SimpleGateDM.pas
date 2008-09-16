@@ -10,7 +10,7 @@ type
   TSimpleGateDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
     procedure SGDMThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
@@ -58,13 +58,14 @@ begin
 end;
 
 procedure TSimpleGateDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
-var i : Integer;
+  Outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+var
+  i : Integer;
 begin
- for i := 0 to sampleframes - 1 do
+ for i := 0 to SampleFrames - 1 do
   begin
-    Outputs[0,i] := fSimpleGates[0].ProcessSample(Inputs[0,i]);
-    Outputs[1,i] := fSimpleGates[0].ProcessSample(Inputs[1,i]);
+   Outputs[0,i] := fSimpleGates[0].ProcessSample(Inputs[0, i]);
+   Outputs[1,i] := fSimpleGates[0].ProcessSample(Inputs[1, i]);
   end;
 end;
 

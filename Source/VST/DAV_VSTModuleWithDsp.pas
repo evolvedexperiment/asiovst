@@ -17,29 +17,29 @@ type
     FBlockModeOverlap     : Integer;
     FProcessingMode       : TProcessingMode;
     FBlockPosition        : Integer;
-    FDspQueueList         : TAVDProcessingComponentList;
-    FBlockInBuffer32      : TAVDArrayOfSingleDynArray;
-    FBlockOutBuffer32     : TAVDArrayOfSingleDynArray;
-    FBlockInBuffer64      : TAVDArrayOfDoubleDynArray;
-    FBlockOutBuffer64     : TAVDArrayOfDoubleDynArray;
+    FDspQueueList         : TDAVProcessingComponentList;
+    FBlockInBuffer32      : TDAVArrayOfSingleDynArray;
+    FBlockOutBuffer32     : TDAVArrayOfSingleDynArray;
+    FBlockInBuffer64      : TDAVArrayOfDoubleDynArray;
+    FBlockOutBuffer64     : TDAVArrayOfDoubleDynArray;
     FOnProcess            : TProcessAudioEvent;
     FOnProcessReplacing   : TProcessAudioEvent;
     FOnProcessDoubles     : TProcessDoubleEvent;
-    FDspDirectProcessItem : TAVDProcessingComponent;
+    FDspDirectProcessItem : TDAVProcessingComponent;
 
     function IOChanged: Boolean; override;
     procedure SampleRateChanged; override;
 
-    procedure DoProcessCopy(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
-    procedure DoProcessCopy(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
-    procedure DoProcessMute(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
-    procedure DoProcessMute(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcess(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcessReplacing(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
-    procedure DoBlockSaveProcessReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
-    procedure DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer); overload;
-    procedure DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessCopy(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessCopy(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessMute(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessMute(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
+    procedure DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer); overload;
+    procedure DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
+    procedure DoBlockSaveProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer); overload;
+    procedure DoBlockSaveProcessReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer); overload;
+    procedure DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
 
     procedure ProcessMidiEvent(MidiEvent: TVstMidiEvent); override;
 
@@ -54,13 +54,13 @@ type
     procedure PrepareBlockProcessing; virtual;
     procedure SetBlockForcedSize(v: Integer); virtual;
     procedure SetBlockOverlapSize(v: Integer); virtual;
-    procedure SetDspDirectProcessItem(v: TAVDProcessingComponent); virtual;
+    procedure SetDspDirectProcessItem(v: TDAVProcessingComponent); virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure RegisterDSPItem(item: TAVDProcessingComponent);
-    procedure UnRegisterDSPItem(item: TAVDProcessingComponent);
+    procedure RegisterDSPItem(item: TDAVProcessingComponent);
+    procedure UnRegisterDSPItem(item: TDAVProcessingComponent);
 
     property BlockSize: Integer read fBlockSize write SetBlockSize default 1024;
     property BlockModeSize: Integer read FBlockModeSize write SetBlockForcedSize default 1024;
@@ -71,7 +71,7 @@ type
     property OnProcessReplacing: TProcessAudioEvent read FOnProcessReplacing write SetOnProcessReplacing;
     property OnProcessDoubleReplacing: TProcessDoubleEvent read FOnProcessDoubles write SetOnProcessDoubleReplacing;
   published
-    property DspDirectProcessItem: TAVDProcessingComponent read fDspDirectProcessItem write SetDspDirectProcessItem default nil;
+    property DspDirectProcessItem: TDAVProcessingComponent read fDspDirectProcessItem write SetDspDirectProcessItem default nil;
   end;
 
 implementation
@@ -91,7 +91,7 @@ begin
   FBlockModeSize := 1024;  
   FBlockModeOverlap := 0;
   FDspDirectProcessItem:=nil;
-  FDspQueueList := TAVDProcessingComponentList.Create;
+  FDspQueueList := TDAVProcessingComponentList.Create;
 end;
 
 destructor TDspVSTModule.Destroy;
@@ -100,7 +100,7 @@ begin
   inherited;
 end;
 
-procedure TDspVSTModule.RegisterDSPItem(item: TAVDProcessingComponent);
+procedure TDspVSTModule.RegisterDSPItem(item: TDAVProcessingComponent);
 begin
  with FDspQueueList do
   begin
@@ -115,7 +115,7 @@ begin
   end;
 end;
 
-procedure TDspVSTModule.UnRegisterDSPItem(item: TAVDProcessingComponent);
+procedure TDspVSTModule.UnRegisterDSPItem(item: TDAVProcessingComponent);
 begin
  with FDspQueueList do
   if IndexOf(item) >= 0
@@ -184,7 +184,7 @@ end;
 
 procedure TDspVSTModule.ProcessMidiEvent(MidiEvent: TVstMidiEvent);
 var
-  tmp    : TAVDMidiEvent;
+  tmp    : TDAVMidiEvent;
   filter : Boolean;
 begin
  with MidiEvent do
@@ -206,7 +206,7 @@ begin
 end;
 
 
-procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i : integer;
 begin
@@ -214,7 +214,7 @@ begin
   do move(Inputs[i, 0], PSingle(@Outputs[i, 0])^, SampleFrames * SizeOf(Single));
 end;
 
-procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   i : integer;
 begin
@@ -222,7 +222,7 @@ begin
   do move(Inputs[i, 0], PDouble(@Outputs[i, 0])^, SampleFrames * SizeOf(Double));
 end;
 
-procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i : integer;
 begin
@@ -230,7 +230,7 @@ begin
   do FillChar(PSingle(@Outputs[i, 0])^, SampleFrames * SizeOf(Single), 0);
 end;
 
-procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   i : integer;
 begin
@@ -238,7 +238,7 @@ begin
   do FillChar(PDouble(@Outputs[i, 0])^, SampleFrames * SizeOf(Single), 0);
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   CurrentPosition : Integer;
   i               : Integer;
@@ -268,7 +268,7 @@ begin
   until CurrentPosition >= SampleFrames;
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   CurrentPosition : Integer;
   i               : Integer;
@@ -297,7 +297,7 @@ begin
   until CurrentPosition >= SampleFrames;
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcessReplacing(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   CurrentPosition : Integer;
   i               : Integer;
@@ -328,7 +328,7 @@ begin
   until CurrentPosition>=SampleFrames;
 end;
 
-procedure TDspVSTModule.DoBlockSaveProcessReplacing(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+procedure TDspVSTModule.DoBlockSaveProcessReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var CurrentPosition : Integer;
     i               : Integer;
 begin
@@ -378,8 +378,8 @@ begin
   end;
 end;
 
-procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
-var ProcessBuffer : TAVDArrayOfSingleDynArray;
+procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var ProcessBuffer : TDAVArrayOfSingleDynArray;
     i: Integer;
 begin
  SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
@@ -389,8 +389,8 @@ begin
  for i := 0 to numOutputs - 1 do Move(ProcessBuffer[i, 0], Outputs[i, 0], SampleFrames * SizeOf(Single));
 end;
 
-procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
-var ProcessBuffer : TAVDArrayOfDoubleDynArray;
+procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var ProcessBuffer : TDAVArrayOfDoubleDynArray;
     i: Integer;
 begin
  SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
@@ -493,7 +493,7 @@ begin
   end;
 end;
 
-procedure TDspVSTModule.SetDspDirectProcessItem(v: TAVDProcessingComponent);
+procedure TDspVSTModule.SetDspDirectProcessItem(v: TDAVProcessingComponent);
 begin
   if v <> FDspDirectProcessItem then
   begin

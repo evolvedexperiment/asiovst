@@ -12,7 +12,7 @@ type
   TThruZeroDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject;const SampleRate: Single);
@@ -24,7 +24,7 @@ type
     procedure ParameterDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fBuffer    : array [0..1] of PAVDSingleFixedArray;
+    fBuffer    : array [0..1] of PDAVSingleFixedArray;
     fRate      : Single;
     fPhi, fDem : Single;
     fDeps      : Single;
@@ -99,7 +99,7 @@ begin
  if assigned(fBuffer[1]) then Dispose(fBuffer[1]);
 end;
 
-procedure TThruZeroDataModule.VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TThruZeroDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample                  : Integer;
   a, b, f, f1, f2, ph     : Single;

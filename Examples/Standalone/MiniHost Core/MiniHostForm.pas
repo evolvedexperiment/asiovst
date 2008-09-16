@@ -144,7 +144,7 @@ type
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure ASIOHostReset(Sender: TObject);
     procedure ASIOHostDestroy(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
     procedure MIPanicClick(Sender: TObject);
     procedure MILoadPresetClick(Sender: TObject);
     procedure MISavePresetClick(Sender: TObject);
@@ -207,9 +207,9 @@ type
     fWavBufL,
     fWavBufR,
     fInBufL,
-    fInBufR         : TAVDSingleDynArray;
+    fInBufR         : TDAVSingleDynArray;
     fVSTBufIn,
-    fVSTBufOut      : TAVDArrayOfSingleDynArray;
+    fVSTBufOut      : TDAVArrayOfSingleDynArray;
     fMIDIPlaying    : Boolean;
     fMyEvents       : TVstEvents;
     fOverallVol     : Single;
@@ -2170,7 +2170,7 @@ begin
 end;
 
 procedure TFmMiniHost.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TAVDArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleDynArray);
 var
   j, i      : Integer;
   bs, ChOfs : Integer;

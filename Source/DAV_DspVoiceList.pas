@@ -29,7 +29,7 @@ type
     procedure SetSampleRate(Value: Single);
     procedure SetChannels(Value: Integer);
 
-    procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+    procedure ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean);
 
     property Items[Index: Integer]: TDspVoice read Get write Put;
     property PlayingVoiceCount: Integer read GetPlayingVoiceCount;
@@ -85,49 +85,54 @@ begin
 end;
 
 procedure TDspVoiceList.SetSampleRate(Value: Single);
-var i: integer;
+var
+  i: Integer;
 begin
   for i := Count - 1 downto 0 do
     Items[i].SampleRate := Value;
 end;
 
 procedure TDspVoiceList.SetChannels(Value: Integer);
-var i: integer;
+var
+  i: Integer;
 begin
   for i := Count - 1 downto 0 do
     Items[i].Channels := Value;
 end;
 
 function TDspVoiceList.GetOldestVoice(OnlyNoteOnVoices: Boolean): TDspVoice;
-var i: integer;
+var
+  i: Integer;
 begin
-  Result:=nil;
+  Result := nil;
 
-  for i:=0 to Count-1 do
+  for i := 0 to Count - 1 do
     if (not OnlyNoteOnVoices or Items[i].IsVoiceNoteOn) then
     begin
-      Result:=Items[i];
+      Result := Items[i];
       exit;
     end;
 end;
 
 function TDspVoiceList.GetNearestVoice(KeyNr: Byte; OnlyNoteOnVoices: Boolean): TDspVoice;
-var i: integer;
+var
+  i: Integer;
 begin
-  Result:=nil;
-  for i:=Count-1 downto 0 do
+  Result := nil;
+  for i := Count - 1 downto 0 do
     if (not OnlyNoteOnVoices or Items[i].IsVoiceNoteOn) then
     begin
-      if Result=nil then Result:=Items[i]
+      if Result=nil then Result := Items[i]
       else if abs(Result.VoiceInfo.NoteNr-KeyNr)>abs(Items[i].VoiceInfo.NoteNr-KeyNr) then Result := Items[i];
     end;
 end;
 
 function TDspVoiceList.GetVoiceByKey(KeyNr: Byte; OnlyNoteOnVoices: Boolean): TDspVoice;
-var i: integer;
+var
+  i: Integer;
 begin
-  Result:=nil;
-  for i:=Count-1 downto 0 do
+  Result := nil;
+  for i := Count - 1 downto 0 do
     if (Items[i].VoiceInfo.NoteNr = KeyNr) and (not OnlyNoteOnVoices or Items[i].IsVoiceNoteOn) then
     begin
       Result := Items[i];
@@ -136,23 +141,26 @@ begin
 end;
 
 function TDspVoiceList.GetPlayingVoiceCount: Integer;
-var i: integer;
+var
+  i: Integer;
 begin
-  Result:=0;
-  for i:=Count-1 downto 0 do
+  Result := 0;
+  for i := Count - 1 downto 0 do
     if Items[i].IsVoiceNoteOn then inc(Result);
 end;
 
-procedure TDspVoiceList.ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
-var i: integer; filter: boolean;
+procedure TDspVoiceList.ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean);
+var
+  i      : Integer;
+  filter : Boolean;
 begin
   FilterEvent := false;
-  for i := Count-1 downto 0 do
-  begin
+  for i := Count - 1 downto 0 do
+   begin
     filter := false;
     Items[i].ProcessMidiEvent(MidiEvent, filter);
     FilterEvent := FilterEvent or filter;
-  end;
+   end;
 end;
 
 end.

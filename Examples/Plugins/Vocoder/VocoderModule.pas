@@ -15,7 +15,7 @@ const
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VSTModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleDestroy(Sender: TObject);
@@ -101,7 +101,7 @@ begin
 end;
 
 procedure TVSTSSModule.VSTModuleProcess(const inputs,
-  outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i, j    : Integer;
   d, z, s : Double;

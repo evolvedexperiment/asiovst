@@ -9,14 +9,14 @@ type
   TShepardDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModeChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     fMax    : Integer;
-    fBuffer : Array [0..1] of PAVDSingleFixedArray;
+    fBuffer : Array [0..1] of PDAVSingleFixedArray;
     fOut    : Single;
     fPos    : Single;
     fRate   : Single;
@@ -101,7 +101,7 @@ begin
 end;
 
 procedure TShepardDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample       : Integer;
   a, b         : Single;

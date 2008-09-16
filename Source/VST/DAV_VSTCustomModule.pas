@@ -12,8 +12,8 @@ uses
 type
 //  TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
 
-  TProcessAudioEvent     = procedure(const Inputs, Outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer) of object;
-  TProcessDoubleEvent    = procedure(const Inputs, Outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer) of object;
+  TProcessAudioEvent     = procedure(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer) of object;
+  TProcessDoubleEvent    = procedure(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer) of object;
   TGetVUEvent            = procedure(var VU: Single) of object;
   TBlockSizeChangeEvent  = procedure(Sender: TObject; const BlockSize: Integer) of object;
   TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
@@ -309,9 +309,9 @@ end;
 
 procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 var
-  Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
-  Outs : TAVDArrayOfSingleDynArray absolute Outputs;
-  OutsTmp : TAVDArrayOfSingleDynArray;
+  Ins  : TDAVArrayOfSingleDynArray absolute Inputs;
+  Outs : TDAVArrayOfSingleDynArray absolute Outputs;
+  OutsTmp : TDAVArrayOfSingleDynArray;
   i, j    : Integer;
 begin
  if Assigned(FOnProcessEx)
@@ -329,8 +329,8 @@ end;
 
 procedure TCustomVSTModule.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 var
-  Ins  : TAVDArrayOfSingleDynArray absolute Inputs;
-  Outs : TAVDArrayOfSingleDynArray absolute Outputs;
+  Ins  : TDAVArrayOfSingleDynArray absolute Inputs;
+  Outs : TDAVArrayOfSingleDynArray absolute Outputs;
 begin
   if Assigned(FOnProcessReplacingEx)
    then FOnProcessReplacingEx(Ins, Outs, SampleFrames);
@@ -338,8 +338,8 @@ end;
 
 procedure TCustomVSTModule.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
 var
-  Ins  : TAVDArrayOfDoubleDynArray absolute Inputs;
-  Outs : TAVDArrayOfDoubleDynArray absolute Outputs;
+  Ins  : TDAVArrayOfDoubleDynArray absolute Inputs;
+  Outs : TDAVArrayOfDoubleDynArray absolute Outputs;
 begin
   if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins, Outs,SampleFrames);
 end;

@@ -10,8 +10,8 @@ uses
 
 type
   TVSTOpAmp = class(TVSTModule)
-    procedure VSTModuleProcess(const inputs, outputs: TAVDArrayOfSingleDynArray; const sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TAVDArrayOfDoubleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const inputs, outputs: TDAVArrayOfDoubleDynArray; const sampleframes: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -30,7 +30,7 @@ uses
   Math, OpAmpGUI;
 
 procedure TVSTOpAmp.VSTModuleProcess(const inputs,
-  outputs: TAVDArrayOfSingleDynArray; const SampleFrames: Integer);
+  outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i, j : Integer;
 begin
@@ -40,7 +40,7 @@ begin
 end;
 
 procedure TVSTOpAmp.VSTModuleProcessDoubleReplacing(const inputs,
-  outputs: TAVDArrayOfDoubleDynArray; const SampleFrames: Integer);
+  outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   i, j : Integer;
 begin

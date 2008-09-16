@@ -16,12 +16,12 @@ type
 
   TDspVoiceInfo = class(TObject)
   public
-    InitialMidiEvent: TAVDMidiEvent;
+    InitialMidiEvent: TDAVMidiEvent;
     NoteNr: Byte;
     Velocity: single;
     Offset: LongInt;
 
-    constructor Create(MidiEvent: TAVDMidiEvent);
+    constructor Create(MidiEvent: TDAVMidiEvent);
   end;
 
   TDspVoiceTrailingType = (vttAutomatic, vttManually);
@@ -38,8 +38,8 @@ type
     fOffTrailingCounter: array of Integer;
 
     fVoiceInfo:       TDspVoiceInfo;
-    FDspQueueList:    TAVDProcessingComponentList;
-    FDspDirectProcessItem: TAVDProcessingComponent;
+    FDspQueueList:    TDAVProcessingComponentList;
+    FDspDirectProcessItem: TDAVProcessingComponent;
 
     fProcessS:   TDspBaseProcessFuncS;
     fProcessD:   TDspBaseProcessFuncD;
@@ -75,26 +75,26 @@ type
 
     // placeholders for unset processing procedures
     procedure ProcessBasic      (var Data: Double; const channel: integer); overload; virtual;
-    procedure ProcessBasic      (var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessBasic      (var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessBasic      (var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessBasic      (var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessBasic      (var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessBasic      (var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessBasic      (var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessBasic      (var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
 
     // for enabled = false
     procedure ProcessSilence    (var Data: Single; const channel: integer); overload; virtual;
     procedure ProcessSilence    (var Data: Double; const channel: integer); overload; virtual;
-    procedure ProcessSilence    (var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessSilence    (var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessSilence    (var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessSilence    (var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessSilence    (var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessSilence    (var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessSilence    (var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessSilence    (var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
 
     // for dsp direct processing mode
     procedure ProcessDspItem    (var Data: Single; const channel: integer); overload; virtual;
     procedure ProcessDspItem    (var Data: Double; const channel: integer); overload; virtual;
-    procedure ProcessDspItem    (var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessDspItem    (var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
-    procedure ProcessDspItem    (var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
-    procedure ProcessDspItem    (var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessDspItem    (var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessDspItem    (var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer); overload; virtual;
+    procedure ProcessDspItem    (var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer); overload; virtual;
+    procedure ProcessDspItem    (var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer); overload; virtual;
 
     procedure SetUserProcessD   (const Value: TDspBaseProcessFuncD);
     procedure SetUserProcessDA  (const Value: TDspBaseProcessFuncDA);
@@ -103,7 +103,7 @@ type
     procedure SetUserProcessSA  (const Value: TDspBaseProcessFuncSA);
     procedure SetUserProcessSAA (const Value: TDspBaseProcessFuncSAA);
 
-    procedure SetDspDirectProcessItem(v: TAVDProcessingComponent); virtual;
+    procedure SetDspDirectProcessItem(v: TDAVProcessingComponent); virtual;
 
     procedure SetVoiceProcessingMode(const Value: TDspVoiceProcessingMode);
 
@@ -116,13 +116,13 @@ type
     constructor Create(AOwner: TComponent; VoiceInfo: TDspVoiceInfo); reintroduce; overload;
     destructor Destroy; override;
 
-    procedure RegisterDSPItem(item: TAVDProcessingComponent);
-    procedure UnRegisterDSPItem(item: TAVDProcessingComponent);
+    procedure RegisterDSPItem(item: TDAVProcessingComponent);
+    procedure UnRegisterDSPItem(item: TDAVProcessingComponent);
 
     procedure Init;  virtual;
     procedure Reset; virtual;
 
-    procedure ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean); virtual;
+    procedure ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean); virtual;
 
     procedure VoiceNoteOff; virtual;
     procedure DecrementTrailing(DecrementTrailing: Integer = 0; Channel: integer = -1);
@@ -146,7 +146,7 @@ type
   published
     property Enabled: Boolean read fEnabled write SetEnabled default true;
 
-    property DspDirectProcessItem: TAVDProcessingComponent read fDspDirectProcessItem write SetDspDirectProcessItem default nil;
+    property DspDirectProcessItem: TDAVProcessingComponent read fDspDirectProcessItem write SetDspDirectProcessItem default nil;
 
     property VoiceProcessingMode: TDspVoiceProcessingMode read FVoiceProcessingMode write SetVoiceProcessingMode;
 
@@ -173,7 +173,7 @@ uses
   Forms, SysUtils
   {$IFDEF PUREPASCAL},DAV_BufferMathPascal{$ELSE},DAV_BufferMathAsm{$ENDIF};
 
-constructor TDspVoiceInfo.Create(MidiEvent: TAVDMidiEvent);
+constructor TDspVoiceInfo.Create(MidiEvent: TDAVMidiEvent);
 begin
   inherited Create;
   NoteNr := MidiEvent.MidiData[1];
@@ -203,7 +203,7 @@ begin
   fUserProcessSAA := nil;
   fUserProcessDAA := nil;
 
-  FDspQueueList   := TAVDProcessingComponentList.Create;
+  FDspQueueList   := TDAVProcessingComponentList.Create;
   fVoiceInfo      := nil;
   fEnabled        := true;
   fIsVoiceNoteOn  := true;
@@ -242,7 +242,7 @@ begin
     FDspDirectProcessItem.ResetQueue;
 end;
 
-procedure TDspVoice.RegisterDSPItem(item: TAVDProcessingComponent);
+procedure TDspVoice.RegisterDSPItem(item: TDAVProcessingComponent);
 begin
   with FDspQueueList do
   begin
@@ -260,7 +260,7 @@ begin
   end;
 end;
 
-procedure TDspVoice.UnRegisterDSPItem(item: TAVDProcessingComponent);
+procedure TDspVoice.UnRegisterDSPItem(item: TDAVProcessingComponent);
 begin
  with FDspQueueList do
   if IndexOf(item)>=0
@@ -354,7 +354,7 @@ begin
   UpdateProcessingFunctions;
 end;
 
-procedure TDspVoice.SetDspDirectProcessItem(v: TAVDProcessingComponent);
+procedure TDspVoice.SetDspDirectProcessItem(v: TDAVProcessingComponent);
 begin
   if v<>FDspDirectProcessItem then
   begin
@@ -458,22 +458,22 @@ begin
   Data := 0;
 end;
 
-procedure TDspVoice.ProcessSilence(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
+procedure TDspVoice.ProcessSilence(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer);
 begin
  FillChar(ProcessBuffer[0], SampleFrames * SizeOf(Single), 0);
 end;
 
-procedure TDspVoice.ProcessSilence(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
+procedure TDspVoice.ProcessSilence(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 begin
  FillChar(ProcessBuffer[0], SampleFrames * SizeOf(Double), 0);
 end;
 
-procedure TDspVoice.ProcessSilence(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
+procedure TDspVoice.ProcessSilence(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 begin
   ClearArrays(ProcessBuffer, fChannels, SampleFrames);
 end;
 
-procedure TDspVoice.ProcessSilence(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
+procedure TDspVoice.ProcessSilence(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
   ClearArrays(ProcessBuffer, fChannels, SampleFrames);
 end;
@@ -489,28 +489,28 @@ begin
   Data := tmp;
 end;
 
-procedure TDspVoice.ProcessBasic(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
+procedure TDspVoice.ProcessBasic(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer);
 var i: integer;
 begin
  for i := 0 to SampleFrames - 1
   do fProcessS(ProcessBuffer[i], channel);
 end;
 
-procedure TDspVoice.ProcessBasic(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
+procedure TDspVoice.ProcessBasic(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 var i: integer;
 begin
  for i := 0 to SampleFrames - 1
   do fProcessD(ProcessBuffer[i], channel);
 end;
 
-procedure TDspVoice.ProcessBasic(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
+procedure TDspVoice.ProcessBasic(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 var i: integer;
 begin
  for i := 0 to fChannels - 1
   do fProcessSA(ProcessBuffer[i], i, SampleFrames);
 end;
 
-procedure TDspVoice.ProcessBasic(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
+procedure TDspVoice.ProcessBasic(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 var i: integer;
 begin
  for i := 0 to fChannels - 1
@@ -531,22 +531,22 @@ begin
   FDspDirectProcessItem.ProcessQueueD(Data, channel);
 end;
 
-procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TAVDSingleDynArray; const channel, SampleFrames: integer);
+procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer);
 begin
   FDspDirectProcessItem.ProcessQueueSA(ProcessBuffer, channel, SampleFrames);
 end;
 
-procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TAVDDoubleDynArray; const channel, SampleFrames: integer);
+procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 begin
   FDspDirectProcessItem.ProcessQueueDA(ProcessBuffer, channel, SampleFrames);
 end;
 
-procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TAVDArrayOfSingleDynArray; const SampleFrames: integer);
+procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 begin
   FDspDirectProcessItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
 end;
 
-procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TAVDArrayOfDoubleDynArray; const SampleFrames: integer);
+procedure TDspVoice.ProcessDspItem(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
   FDspDirectProcessItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
 end;
@@ -555,12 +555,12 @@ end;
 
 procedure TDspVoice.UpdateTrailingSamples;
 begin
-  if fTrailingType=vttManually then exit;
+  if fTrailingType = vttManually then exit;
 
   fTrailingSamples := FDspQueueList.TrailingSamplesQueue;
 end;
 
-procedure TDspVoice.ProcessMidiEvent(MidiEvent: TAVDMidiEvent; var FilterEvent: Boolean);
+procedure TDspVoice.ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean);
 begin
   FDspQueueList.ProcessMidiEventQueue(MidiEvent, FilterEvent);
 end;

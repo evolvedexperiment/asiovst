@@ -7,15 +7,15 @@ interface
 uses
   DAV_Common;
 
-procedure ApplyBlackmanWindow(var Data : TAVDSingleDynArray);
-procedure ApplyGaussianWindow(var Data : TAVDSingleDynArray);
-procedure ApplyBlackmanHarrisWindow(var Data : TAVDSingleDynArray);
-procedure ApplyHanningWindow(var Data : TAVDSingleDynArray);
-procedure ApplyHammingWindow(var Data : TAVDSingleDynArray);
+procedure ApplyBlackmanWindow(var Data : TDAVSingleDynArray);
+procedure ApplyGaussianWindow(var Data : TDAVSingleDynArray);
+procedure ApplyBlackmanHarrisWindow(var Data : TDAVSingleDynArray);
+procedure ApplyHanningWindow(var Data : TDAVSingleDynArray);
+procedure ApplyHammingWindow(var Data : TDAVSingleDynArray);
 
 implementation
 
-procedure ApplyBlackmanWindow(var Data : TAVDSingleDynArray);
+procedure ApplyBlackmanWindow(var Data : TDAVSingleDynArray);
 var
   l, i  : Integer;
   f, fm : Double;
@@ -32,7 +32,7 @@ begin
 end;
 
 // Generate window function (Gaussian)
-procedure ApplyGaussianWindow(var Data : TAVDSingleDynArray);
+procedure ApplyGaussianWindow(var Data : TDAVSingleDynArray);
 var
   i, j : Integer;
 begin
@@ -42,7 +42,7 @@ begin
 end;
 
 // Generate window function (Blackman-Harris)
-procedure ApplyBlackmanHarrisWindow(var Data : TAVDSingleDynArray);
+procedure ApplyBlackmanHarrisWindow(var Data : TDAVSingleDynArray);
 var
   i, j : Integer;
   k    : Double;
@@ -56,7 +56,7 @@ begin
 end;
 
 // Generate window function (Hanning)
-procedure ApplyHanningWindow(var Data : TAVDSingleDynArray);
+procedure ApplyHanningWindow(var Data : TDAVSingleDynArray);
 var
   i, j : Integer;
   k    : Double;
@@ -68,7 +68,7 @@ begin
 end;
 
 // Generate window function (Hamming)
-procedure ApplyHammingWindow(var Data : TAVDSingleDynArray);
+procedure ApplyHammingWindow(var Data : TDAVSingleDynArray);
 var
   i, j : Integer;
   k    : Double;

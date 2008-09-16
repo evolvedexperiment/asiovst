@@ -6,8 +6,8 @@ uses
   Classes, SysUtils, DAV_Common;
 
 type
-  TOnLoadSaveData32 = procedure(const Buffer: array of PAVDSingleDynArray; const BufferSize: Cardinal) of object;
-  TOnLoadSaveData64 = procedure(const Buffer: array of PAVDDoubleDynArray; const BufferSize: Cardinal) of object;
+  TOnLoadSaveData32 = procedure(const Buffer: array of PDAVSingleDynArray; const BufferSize: Cardinal) of object;
+  TOnLoadSaveData64 = procedure(const Buffer: array of PDAVDoubleDynArray; const BufferSize: Cardinal) of object;
 
   TAudioEncoding = (aeUndefined = -1, aeInteger = 0, aeFloat = 1, aeMP3 = 2,
                     aeACM = 3, aeADPCM = 4, aeMSADPCM = 5, aeDVIADPCM = 6,

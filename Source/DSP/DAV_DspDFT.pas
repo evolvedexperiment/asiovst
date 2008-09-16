@@ -7,24 +7,24 @@ interface
 uses
   DAV_Common, DAV_Complex;
 
-procedure DFT(realTime, imagTime, realFreq, imagFreq : TAVDSingleDynArray); overload;
-procedure DFT(realTime, imagTime, realFreq, imagFreq : TAVDDoubleDynArray); overload;
-procedure InverseDFT(realTime, imagTime, realFreq, imagFreq : TAVDSingleDynArray); overload;
-procedure InverseDFT(realTime, imagTime, realFreq, imagFreq : TAVDDoubleDynArray); overload;
+procedure DFT(realTime, imagTime, realFreq, imagFreq : TDAVSingleDynArray); overload;
+procedure DFT(realTime, imagTime, realFreq, imagFreq : TDAVDoubleDynArray); overload;
+procedure InverseDFT(realTime, imagTime, realFreq, imagFreq : TDAVSingleDynArray); overload;
+procedure InverseDFT(realTime, imagTime, realFreq, imagFreq : TDAVDoubleDynArray); overload;
 
-procedure DFT(realTime, realFreq, imagFreq : TAVDSingleDynArray); overload;
-procedure DFT(realTime, realFreq, imagFreq : TAVDDoubleDynArray); overload;
-procedure InverseDFT(realTime, realFreq, imagFreq : TAVDSingleDynArray); overload;
-procedure InverseDFT(realTime, realFreq, imagFreq : TAVDDoubleDynArray); overload;
+procedure DFT(realTime, realFreq, imagFreq : TDAVSingleDynArray); overload;
+procedure DFT(realTime, realFreq, imagFreq : TDAVDoubleDynArray); overload;
+procedure InverseDFT(realTime, realFreq, imagFreq : TDAVSingleDynArray); overload;
+procedure InverseDFT(realTime, realFreq, imagFreq : TDAVDoubleDynArray); overload;
 
-function Goertzel(TimeSignal: TAVDSingleDynArray; const NormFrequency: Double): TComplexSingle; overload;
-function Goertzel(TimeSignal: TAVDDoubleDynArray; const NormFrequency: Double): TComplexDouble; overload;
-function Goertzel(TimeSignal: PAVDSingleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexSingle; overload;
-function Goertzel(TimeSignal: PAVDDoubleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexDouble; overload;
+function Goertzel(TimeSignal: TDAVSingleDynArray; const NormFrequency: Double): TComplexSingle; overload;
+function Goertzel(TimeSignal: TDAVDoubleDynArray; const NormFrequency: Double): TComplexDouble; overload;
+function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexSingle; overload;
+function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexDouble; overload;
 
 implementation
 
-procedure DFT(realTime, imagTime, realFreq, imagFreq : TAVDSingleDynArray);
+procedure DFT(realTime, imagTime, realFreq, imagFreq : TDAVSingleDynArray);
 var
   k, i, sz       : Integer;
   sr, si, sd, kc : Extended;
@@ -50,7 +50,7 @@ begin
   end;
 end;
 
-procedure InverseDFT(realTime, imagTime, realFreq, imagFreq : TAVDSingleDynArray);
+procedure InverseDFT(realTime, imagTime, realFreq, imagFreq : TDAVSingleDynArray);
 var
   k, i, sz       : Integer;
   sr, si, sd, kc : Extended;
@@ -79,7 +79,7 @@ begin
   end;
 end;
 
-procedure DFT(realTime, imagTime, realFreq, imagFreq : TAVDDoubleDynArray);
+procedure DFT(realTime, imagTime, realFreq, imagFreq : TDAVDoubleDynArray);
 var
   k, i, sz       : Integer;
   sr, si, sd, kc : Extended;
@@ -105,7 +105,7 @@ begin
   end;
 end;
 
-procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TAVDDoubleDynArray);
+procedure InverseDFT(realTime,imagTime,realFreq,imagFreq : TDAVDoubleDynArray);
 var
   k, i, sz       : Integer;
   sr, si, sd, kc : Extended;
@@ -137,31 +137,32 @@ end;
 
 
 
-procedure DFT(realTime,realFreq,imagFreq : TAVDSingleDynArray);
-var k, i, sz       : Integer;
-    sr, si, sd, kc : Extended;
+procedure DFT(realTime,realFreq,imagFreq : TDAVSingleDynArray);
+var
+  k, i, sz       : Integer;
+  sr, si, sd, kc : Extended;
 begin
  sz := Length(realTime);
- Assert(sz=Length(realFreq));
- Assert(sz=Length(imagFreq));
+ Assert(sz = Length(realFreq));
+ Assert(sz = Length(imagFreq));
 
  sd := 1/sz;
  FillChar(realFreq[0],sz*SizeOf(Single),0);
- FillChar(imagFreq[0],sz*SizeOf(Single),0);
+ FillChar(imagFreq[0], sz * SizeOf(Single), 0);
 
- for k := 0 to sz-1 do
+ for k := 0 to sz - 1 do
   begin
-   kc := 2*PI*k*sd;
+   kc := 2 * PI * k * sd;
    for i := 0 to sz-1 do
     begin
-     GetSinCos(kc*i, sr, si);
+     GetSinCos(kc * i, sr, si);
      realFreq[k] := realFreq[k] + (realTime[i] * sr);
      imagFreq[k] := imagFreq[k] - (realTime[i] * si);
     end;
   end;
 end;
 
-procedure InverseDFT(realTime,realFreq,imagFreq : TAVDSingleDynArray);
+procedure InverseDFT(realTime,realFreq,imagFreq : TDAVSingleDynArray);
 var
   k, i, sz       : Integer;
   sr, si, sd, kc : Extended;
@@ -178,7 +179,7 @@ begin
    kc := 2 * PI * k * sd;
    for i := 0 to sz - 1 do
     begin
-     GetSinCos(kc*i, sr, si);
+     GetSinCos(kc * i, sr, si);
      realTime[k] := realTime[k] + (realFreq[i] * sr) + (imagFreq[i] * si);
      realTime[k] := realTime[k] - (realFreq[i] * si) + (imagFreq[i] * sr);
     end;
@@ -187,7 +188,7 @@ begin
   end;
 end;
 
-procedure DFT(realTime,realFreq,imagFreq : TAVDDoubleDynArray);
+procedure DFT(realTime,realFreq,imagFreq : TDAVDoubleDynArray);
 var
   k, i, sz       : Integer;
   sr, si, sd, kc : Extended;
@@ -212,7 +213,7 @@ begin
   end;
 end;
 
-procedure InverseDFT(realTime,realFreq,imagFreq : TAVDDoubleDynArray);
+procedure InverseDFT(realTime,realFreq,imagFreq : TDAVDoubleDynArray);
 var
   k, i, sz       : Integer;
   sr, si, sd, kc : Extended;
@@ -238,7 +239,7 @@ begin
   end;
 end;
 
-function Goertzel(TimeSignal: TAVDSingleDynArray; const NormFrequency: Double): TComplexSingle;
+function Goertzel(TimeSignal: TDAVSingleDynArray; const NormFrequency: Double): TComplexSingle;
 {$IFDEF PUREPASCAL}
 var
   Pos, Angle : TComplexDouble;
@@ -300,7 +301,7 @@ asm
 end;
 {$ENDIF}
 
-function Goertzel(TimeSignal: TAVDDoubleDynArray; const NormFrequency: Double): TComplexDouble;
+function Goertzel(TimeSignal: TDAVDoubleDynArray; const NormFrequency: Double): TComplexDouble;
 {$IFDEF PUREPASCAL}
 var
   Pos, Angle : TComplexDouble;
@@ -361,7 +362,7 @@ asm
 end;
 {$ENDIF}
 
-function Goertzel(TimeSignal: PAVDSingleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexSingle; overload;
+function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexSingle; overload;
 {$IFDEF PUREPASCAL}
 var
   Pos, Angle : TComplexDouble;
@@ -427,7 +428,7 @@ asm
 end;
 {$ENDIF}
 
-function Goertzel(TimeSignal: PAVDDoubleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexDouble; overload;
+function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const NormFrequency: Double): TComplexDouble; overload;
 {$IFDEF PUREPASCAL}
 var
   Pos, Angle : TComplexDouble;

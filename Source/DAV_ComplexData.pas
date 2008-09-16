@@ -36,7 +36,7 @@ type
 
   TComplexChannel32 = class(TCustomComplexChannel)
   private
-    fChannelData  : PAVDComplexSingleFixedArray;
+    fChannelData  : PDAVComplexSingleFixedArray;
     function GetChannelDataImaginary(Bin: Int64): Single;
     function GetChannelDataMagnitude(Bin: Int64): Single;
     function GetChannelDataPhase(Bin: Int64): Single;
@@ -58,12 +58,12 @@ type
     property ChannelDataImaginary[Sample: Int64]: Single read GetChannelDataImaginary write SetChannelDataImaginary;
     property ChannelDataMagnitude[Sample: Int64]: Single read GetChannelDataMagnitude write SetChannelDataMagnitude;
     property ChannelDataPhase[Sample: Int64]: Single read GetChannelDataPhase write SetChannelDataPhase;
-    property ChannelDataPointer: PAVDComplexSingleFixedArray read fChannelData;
+    property ChannelDataPointer: PDAVComplexSingleFixedArray read fChannelData;
   end;
 
   TComplexChannel64 = class(TCustomComplexChannel)
   private
-    fChannelData : PAVDComplexDoubleFixedArray;
+    fChannelData : PDAVComplexDoubleFixedArray;
     function GetChannelDataImaginary(Bin: Int64): Double;
     function GetChannelDataMagnitude(Bin: Int64): Double;
     function GetChannelDataPhase(Bin: Int64): Double;
@@ -85,7 +85,7 @@ type
     property ChannelDataImaginary[Sample: Int64]: Double read GetChannelDataImaginary write SetChannelDataImaginary;
     property ChannelDataMagnitude[Sample: Int64]: Double read GetChannelDataMagnitude write SetChannelDataMagnitude;
     property ChannelDataPhase[Sample: Int64]: Double read GetChannelDataPhase write SetChannelDataPhase;
-    property ChannelDataPointer: PAVDComplexDoubleFixedArray read fChannelData;
+    property ChannelDataPointer: PDAVComplexDoubleFixedArray read fChannelData;
   end;
 
   TCustomComplexData = class(TAudioObject)
