@@ -149,6 +149,7 @@ begin
   begin
    if Parameter[2] <> DialTune.Position
     then Parameter[2] := DialTune.Position;
+   LbTune.Caption := FloatToStrF(Parameter[2], ffGeneral, 3, 3);
   end;
 end;
 

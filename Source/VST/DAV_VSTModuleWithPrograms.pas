@@ -15,9 +15,12 @@ type
 
   TVSTModuleWithPrograms = class(TVSTModuleWithMidi)
   private
-    function GetParameterByName(ParameterName: string): Single;
-    procedure SetParameterByName(ParameterName: string; const Value: Single);
     function TranslateParameterNameToIndex(ParameterName: string): Integer;
+    function TranslateProgramNameToIndex(ProgramName: string): Integer;
+    function GetParameterByName(ParameterName: string): Single;
+    function GetVstProgramByName(ProgramName: string): TVstProgram;
+    procedure SetParameterByName(ParameterName: string; const Value: Single);
+    procedure SetVstProgramByName(ProgramName: string; const Value: TVstProgram);
   protected
     FParameterUpdate        : Boolean;
     FCurProgram             : Integer;
@@ -87,7 +90,8 @@ type
     property CurrentProgram: Integer read FCurProgram write SetProgram;
     property CurrentProgramName: string read GetCurrentProgramName write SetCurrentProgramName;
     property Chunk: TMemoryStream read fChunkData write fChunkData;
-    property Programs: TCustomVstPrograms read FVstPrograms write SetVstPrograms;
+    property Programs: TVstPrograms read FVstPrograms write SetVstPrograms;
+    property ProgramByName[ProgramName: string]: TVstProgram read GetVstProgramByName write SetVstProgramByName;
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
     property Parameter[Index: Integer]: Single read getParameter write setParameterAutomated;
     property ParameterByName[ParameterName: string]: Single read GetParameterByName write SetParameterByName;
@@ -112,6 +116,8 @@ resourcestring
   RStrUndefined = 'undefined';
   RStrNoParameterAvailable = 'No parameter available!';
   RStrUnknownParameterName = 'Unknown parameter name';
+  RStrNoProgramAvailable = 'No program available!';
+  RStrUnknownProgramName = 'Unknown program name';
   StrIndexOutOfBounds = 'Index out of bounds';
 
 constructor TVSTModuleWithPrograms.Create(AOwner: TComponent);
@@ -502,9 +508,15 @@ end;
 
 procedure TVSTModuleWithPrograms.SetParameterCount(cnt: Integer);
 begin
-  setlength(fParameter, cnt);
+ SetLength(fParameter, cnt);
 end;
 
+
+procedure TVSTModuleWithPrograms.SetVstProgramByName(ProgramName: string;
+  const Value: TVstProgram);
+begin
+ Programs[TranslateProgramNameToIndex(ProgramName)] := Value;
+end;
 
 procedure TVSTModuleWithPrograms.SetVstPrograms(const Value: TCustomVstPrograms);
 begin
@@ -576,6 +588,19 @@ begin
   then raise Exception.Create(RStrUnknownParameterName);
 end;
 
+function TVSTModuleWithPrograms.TranslateProgramNameToIndex(ProgramName: string): Integer;
+begin
+ if FVstPrograms.Count = 0
+  then raise Exception.Create(RStrNoProgramAvailable);
+ result := 0;
+ while result < FVstPrograms.Count do
+  if ProgramName = FVstPrograms[result].DisplayName
+   then break
+   else inc(result);
+ if result = FVstPrograms.Count
+  then raise Exception.Create(RStrUnknownProgramName);
+end;
+
 procedure TVSTModuleWithPrograms.SetParameterByName(ParameterName: string; const Value: Single);
 begin
  Parameter[TranslateParameterNameToIndex(ParameterName)] := Value;
@@ -643,6 +668,11 @@ end;
 function TVSTModuleWithPrograms.GetParameterByName(ParameterName: string): Single;
 begin
  result := Parameter[TranslateParameterNameToIndex(ParameterName)];
+end;
+
+function TVSTModuleWithPrograms.GetVstProgramByName(ProgramName: string): TVstProgram;
+begin
+ result := Programs[TranslateProgramNameToIndex(ProgramName)];
 end;
 
 end.

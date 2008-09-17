@@ -37,7 +37,6 @@ type
     procedure SetParameterCount(cnt: integer);
     property Parameter[AIndex: Integer]: Single read GetParameter write SetParameter;
     property Chunk: TMemoryStream read fChunkData write fChunkData;
-  published
     property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
     property OnInitialize: TNotifyEvent read FOnInitialize write FOnInitialize;
@@ -45,25 +44,32 @@ type
     property OnStoreChunk: TChunkEvent read FOnStoreChunk write FOnStoreChunk;
   end;
 
+  TVstProgram = class(TCustomVstProgram)
+    property DisplayName;
+    property VSTModule;
+    property OnInitialize;
+    property OnLoadChunk;
+    property OnStoreChunk;
+  end;
+
   TCustomVstPrograms = class(TOwnedCollection)
   private
     FVSTModule: TBasicVSTModule;
   protected
-    function GetItem(Index: Integer): TCustomVstProgram;
-    procedure SetItem(Index: Integer; const Value: TCustomVstProgram);
-    property Items[Index: Integer]: TCustomVstProgram read GetItem write SetItem; default;
+    function GetItem(Index: Integer): TVstProgram;
+    procedure SetItem(Index: Integer; const Value: TVstProgram);
+    property Items[Index: Integer]: TVstProgram read GetItem write SetItem; default;
   public
     constructor Create(AOwner: TComponent);
     destructor Destroy; override;
-    function Add: TCustomVstProgram;
-    function Insert(Index: Integer): TCustomVstProgram;
+    function Add: TVstProgram;
+    function Insert(Index: Integer): TVstProgram;
     procedure Delete(Index: Integer);
     property Count;
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
   end;
-  
-  TVstProgram = TCustomVstProgram;
-  TVstPrograms = TCustomVstPrograms;
+
+  TVSTPrograms = TCustomVstPrograms;
 
 implementation
 
@@ -151,7 +157,7 @@ end;
 
 function TCustomVstProgram.GetParameter(AIndex: Integer): Single;
 begin
- if (AIndex>=0) and (AIndex < TVSTModuleWithPrograms(fVSTModule).numParams)
+ if (AIndex >= 0) and (AIndex < TVSTModuleWithPrograms(fVSTModule).numParams)
   then Result := FParameter[AIndex] else
    begin
     Result := 0;
@@ -159,22 +165,22 @@ begin
    end;
 end;
 
-procedure TCustomVstProgram.SetParameterCount(cnt: integer);
+procedure TCustomVstProgram.SetParameterCount(cnt: Integer);
 begin
  SetLength(fParameter, cnt);
 end;
 
-function TCustomVstProgram.ParameterCount: integer;
+function TCustomVstProgram.ParameterCount: Integer;
 begin
   result := Length(FParameter);
 end;
 
 
-{ TVstPrograms }
+{ TCustomVstPrograms }
 
 constructor TCustomVstPrograms.Create(AOwner: TComponent);
 begin
- inherited Create(AOwner, TCustomVstProgram);
+ inherited Create(AOwner, TVstProgram);
  FVSTModule := TVSTModuleWithPrograms(AOwner);
 end;
 
@@ -184,19 +190,19 @@ begin
  inherited;
 end;
 
-function TCustomVstPrograms.Add: TCustomVstProgram;
+function TCustomVstPrograms.Add: TVstProgram;
 begin
-  Result := TCustomVstProgram(inherited Add);
+  Result := TVstProgram(inherited Add);
 end;
 
-function TCustomVstPrograms.GetItem(Index: Integer): TCustomVstProgram;
+function TCustomVstPrograms.GetItem(Index: Integer): TVstProgram;
 begin
- Result := TCustomVstProgram(inherited GetItem(Index));
+ Result := TVstProgram(inherited GetItem(Index));
 end;
 
-function TCustomVstPrograms.Insert(Index: Integer): TCustomVstProgram;
+function TCustomVstPrograms.Insert(Index: Integer): TVstProgram;
 begin
- Result := TCustomVstProgram(inherited Insert(Index));
+ Result := TVstProgram(inherited Insert(Index));
 end;
 
 procedure TCustomVstPrograms.Delete(Index: Integer);
@@ -204,7 +210,7 @@ begin
  inherited Delete(Index);
 end;
 
-procedure TCustomVstPrograms.SetItem(Index: Integer; const Value: TCustomVstProgram);
+procedure TCustomVstPrograms.SetItem(Index: Integer; const Value: TVstProgram);
 begin
  inherited SetItem(Index, Value);
 end;

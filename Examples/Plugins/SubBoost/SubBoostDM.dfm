@@ -1,6 +1,7 @@
 object SubBoostDataModule: TSubBoostDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'SubBoost'
@@ -52,11 +53,19 @@ object SubBoostDataModule: TSubBoostDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Tune'
-      Max = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 400.000000000000000000
+      MaxInteger = 400
+      Min = 10.000000000000000000
+      MinInteger = 10
       ShortLabel = 'Tune'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
+      OnParameterChange = ParameterTuneChange
       OnCustomParameterDisplay = ParameterTuneDisplay
     end
     item
@@ -78,7 +87,7 @@ object SubBoostDataModule: TSubBoostDataModule
       CurveFactor = 1.000000000000000000
       DisplayName = 'Thresh'
       LargeStepFloat = 2.000000000000000000
-      Max = 1.000000000000000000
+      Max = -0.000000000100000001
       MaxInteger = 0
       Min = -60.000000000000000000
       MinInteger = -60
@@ -105,6 +114,7 @@ object SubBoostDataModule: TSubBoostDataModule
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnResume = VSTModuleResume
+  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   Left = 223

@@ -48,6 +48,8 @@ type
     FDefaultPosition  : Single;
     FDialBitmap       : TBitmap;
     FInertia          : Single;
+    FInertiaExp       : Single;
+    FInertiaScale     : Single;
     FMin, FMax        : Single;
     FNumGlyphs        : Integer;
     FOnChange         : TNotifyEvent;
@@ -56,9 +58,15 @@ type
     FPosition         : Single;
     FRightMouseButton : TGuiDialRMBFunc;
     FStitchKind       : TGuiStitchKind;
-    function  CircularMouseToPosition(X, Y: Integer): Single;
-    function  PositionToAngle: Single;
-    function GetInertia: Single;
+    FCurveMapping     : Single;
+    FCurveMappingExp  : Single;
+    fScrollRange      : Single;
+    function CircularMouseToPosition(X, Y: Integer): Single;
+    function GetNormalizedPosition: Single;
+    function PositionToAngle: Single;
+    function GetMappedPosition: Single;
+    function MapValue(Value: Single): Single;
+    function UnmapValue(Value: Single): Single;
     procedure DoAutoSize;
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetAutoColor(const Value: Boolean);
@@ -73,6 +81,8 @@ type
     procedure SetPointerAngles(const Value: TGuiDialPointerAngles);
     procedure SetPosition(Value: Single);
     procedure SetStitchKind(const Value: TGuiStitchKind);
+    procedure SetCurveMapping(const Value: Single);
+    procedure SetNormalizedPosition(const Value: Single);
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure CalcColorCircle;
@@ -82,10 +92,12 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); override;
+    property NormalizedPosition: Single read GetNormalizedPosition write SetNormalizedPosition;
+    property MappedPosition: Single read GetMappedPosition;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-  published  
+  published
     property Color;
     property LineWidth;
     property LineColor;
@@ -94,15 +106,17 @@ type
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
     property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
+    property CurveMapping: Single read FCurveMapping write SetCurveMapping;
     property Position: Single read FPosition write SetPosition;
     property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
-    property Inertia: Single read GetInertia write SetInertia;
+    property Inertia: Single read fInertia write SetInertia;
     property Min: Single read FMin write SetMin;
     property Max: Single read FMax write SetMax;
     property RightMouseButton: TGuiDialRMBFunc read FRightMouseButton write FRightMouseButton default rmbfCircular;
     property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
     property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
     property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
+    property ScrollRange_Pixel: Single read fScrollRange write fScrollRange;
     property PointerAngles: TGuiDialPointerAngles read FPointerAngles write SetPointerAngles;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
   end;
@@ -114,6 +128,7 @@ type
     property AutoSize;
     property CircleColor;
     property Color;
+    property CurveMapping;
     property DefaultPosition;
     property DialBitmap;
     property Inertia;
@@ -126,6 +141,7 @@ type
     property PointerAngles;
     property Position;
     property RightMouseButton;
+    property ScrollRange_Pixel;
     property StitchKind;
   end;
 
@@ -141,6 +157,7 @@ type
     property AutoSize;
     property CircleColor;
     property Color;
+    property CurveMapping;
     property DefaultPosition;
     property DialBitmap;
     property LineColor;
@@ -152,6 +169,7 @@ type
     property PointerAngles;
     property Position;
     property RightMouseButton;
+    property ScrollRange_Pixel;
     property StitchKind;
     property Transparent;
   end;
@@ -174,6 +192,7 @@ type
     property AutoSize;
     property CircleColor;
     property Color;
+    property CurveMapping;
     property DefaultPosition;
     property DialBitmap;
     property IndicatorLineLength_Percent;
@@ -186,6 +205,7 @@ type
     property PointerAngles;
     property Position;
     property RightMouseButton;
+    property ScrollRange_Pixel;
     property StitchKind;
     property Transparent;
   end;
@@ -306,10 +326,15 @@ begin
   FRightMouseButton       := rmbfCircular;
   FMin                    := 0;
   FMax                    := 100;
+  FCurveMapping           := 0;
+  FCurveMappingExp        := 1;
   FPosition               := 0;
   FDefaultPosition        := 0;
   FNumGlyphs              := 1;
-  FInertia                := 1;
+  FScrollRange            := 400;
+  FInertia                := 0;
+  FInertiaExp             := 1;
+  FInertiaScale           := 1;
   FStitchKind             := skHorizontal;
   FDialBitmap             := TBitmap.Create;
   FDialBitmap.OnChange    := SettingsChanged;
@@ -329,14 +354,10 @@ begin
 end;
 
 function TCustomGuiDial.PositionToAngle: Single;
-var
-  Percircle: Single; Range: Single;
 const
   Pi180 : Double = PI / 180;
 begin
-  Range := Max - Min;
-  Percircle := (FPosition - Min) * 360 / Range;
-  Result := SafeAngle(PointerAngles.Start + (PointerAngles.Range * Percircle / 360))* Pi180;
+ Result := SafeAngle(PointerAngles.Start + (PointerAngles.Range * MapValue(NormalizedPosition))) * Pi180;
 end;
 
 procedure TCustomGuiDial.RenderKnobToBitmap(Bitmap: TBitmap);
@@ -510,7 +531,7 @@ begin
      {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
      FillRect(ClipRect);
 
-     GlyphNr := Trunc((FPosition - FMin) / (FMax - FMin) * FNumGlyphs);
+     GlyphNr := Trunc(MapValue(NormalizedPosition) * FNumGlyphs);
      if (GlyphNr >= FNumGlyphs) then GlyphNr := FNumGlyphs - 1 else
      if (GlyphNr < 0) then GlyphNr := 0;
      theRect := ClientRect;
@@ -531,6 +552,21 @@ begin
   end;
 
  if doBufferFlip then Invalidate;
+end;
+
+function TCustomGuiDial.GetNormalizedPosition: Single;
+begin
+ result := (FPosition - Min) / (Max - Min);
+end;
+
+function TCustomGuiDial.GetMappedPosition: Single;
+begin
+ result := MapValue(NormalizedPosition) * (Max - Min) + Min;
+end;
+
+function TCustomGuiDial.UnmapValue(Value: Single): Single;
+begin
+ result := sign(Value) * Power(abs(Value), 1 / FCurveMappingExp);
 end;
 
 procedure TCustomGuiDial.DoAutoSize;
@@ -586,6 +622,11 @@ begin
   end;
 end;
 
+procedure TCustomGuiDial.SetNormalizedPosition(const Value: Single);
+begin
+ Position := Min + Value * (Max - Min);
+end;
+
 procedure TCustomGuiDial.SetNumGlyphs(const Value: Integer);
 begin
   if FNumGlyphs <> Value then
@@ -624,10 +665,12 @@ end;
 
 procedure TCustomGuiDial.SetInertia(Value: Single);
 begin
- Value := f_Limit(Value, 0, 100);
+ if Value < 0 then Value := 0;
  if FInertia <> Value then
   begin
-   FInertia := 1 - 0.01 * Value;
+   FInertia      := Value;
+   FInertiaExp   := Power(2, -Value);
+   FInertiaScale := 0.01 * Power(0.01, -FInertiaExp);
    RedrawBuffer(True);
   end;
 end;
@@ -656,6 +699,11 @@ begin
   if Result < Min then Result := FPosition;
 end;
 
+function TCustomGuiDial.MapValue(Value: Single): Single;
+begin
+ result := Sign(Value) * Power(abs(Value), FCurveMappingExp);
+end;
+
 procedure TCustomGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
@@ -670,17 +718,16 @@ end;
 
 procedure TCustomGuiDial.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
 var
-  Range      : Single;
   Difference : Single;
 begin
-  Range := Max - (Min - 1);
-  Difference := Range * (MouseState.LastEventY - Y);
-  if abs(Difference) > 0.02 * Range
-   then Difference := 0.02 * Range + FInertia * Difference - 0.02 * Range;
+  Difference := (MouseState.LastEventY - Y) / fScrollRange;
+
+  // apply inertia function
+  Difference := sign(Difference) * Power(abs(Difference), fInertiaExp) * FInertiaScale;
 
   if ssShift in Shift
-   then Position := Position + Difference * 0.001
-   else Position := Position + Difference * 0.005;
+   then NormalizedPosition := UnmapValue(MapValue(NormalizedPosition) + Difference * 0.1)
+   else NormalizedPosition := UnMapValue(MapValue(NormalizedPosition) + Difference);
   inherited;
 end;
 
@@ -689,11 +736,6 @@ begin
   if FRightMouseButton = rmbfCircular
    then Position := CircularMouseToPosition(x,y);
   inherited;
-end;
-
-function TCustomGuiDial.GetInertia: Single;
-begin
- result := 100 * (1 - FInertia);
 end;
 
 procedure TCustomGuiDial.SetPointerAngles(const Value: TGuiDialPointerAngles);
@@ -737,6 +779,16 @@ begin
   begin
     FCircleColor:=Value;
     RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiDial.SetCurveMapping(const Value: Single);
+begin
+ if FCurveMapping <> Value then
+  begin
+   FCurveMapping := Value;
+   FCurveMappingExp := Power(2, Value);
+   RedrawBuffer(True);
   end;
 end;
 

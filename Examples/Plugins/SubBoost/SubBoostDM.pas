@@ -3,7 +3,8 @@ unit SubBoostDM;
 interface
 
 uses
-  Windows, Forms, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule;
+  Windows, Forms, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule,
+  DAV_DSPButterworthFilter;
 
 type
   TProcessType = (ptDistort, ptDivide, ptInvert, ptKeyOsc);
@@ -13,6 +14,7 @@ type
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
+
     procedure ParameterLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -21,22 +23,27 @@ type
     procedure ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleDestroy(Sender: TObject);
+    procedure ParameterTuneChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject;
+      const SampleRate: Single);
   private
-    fFilterState : array [0..3] of Single;
-    fFilterIn    : Single;
-    fFilterOut   : Single;
+    fInputFilter  : TButterworthLP;
+    fOutputFilter : TButterworthLP;
+    fFilterState  : array [2..3] of Single;
 
-    fPhi         : Single;
-    fEnv         : Single;
-    fDivide      : Single;
-    fPhase       : Single;
-    fOsc         : Single;
-    fType        : TProcessType;
-    fWet         : Single;
-    fDry         : Single;
-    fThreshold   : Single;
-    fRelease     : Single;
-    fDeltaPhi    : Single;
+    fPhi          : Single;
+    fEnv          : Single;
+    fDivide       : Single;
+    fPhase        : Single;
+    fOsc          : Single;
+    fType         : TProcessType;
+    fWet          : Single;
+    fDry          : Single;
+    fThreshold    : Single;
+    fRelease      : Single;
+    fDeltaPhi     : Single;
   public
   end;
 
@@ -45,7 +52,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, SubBoostGUI;
+  Math, SubBoostGUI, DAV_VSTCustomModule;
 
 procedure TSubBoostDataModule.ParameterLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
@@ -59,11 +66,22 @@ end;
 
 procedure TSubBoostDataModule.ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(0.0726 * SampleRate * Power(10, -2.5 + (1.5 * Parameter[index]))));
+// PreDefined := IntToStr(round(0.0726 * SampleRate * Power(10, -2.5 + (1.5 * Parameter[index]))));
+ PreDefined := FloatToStrF(fInputFilter.Frequency, ffGeneral, 3, 3);
 end;
 
-procedure TSubBoostDataModule.ParameterReleaseDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+procedure TSubBoostDataModule.ParameterTuneChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fInputFilter.Frequency := Value;
+ fOutputFilter.Frequency := Value;
+ if assigned(EditorForm) then
+  with TFmSubBoost(EditorForm) do
+   begin
+    UpdateTune;
+   end;
+end;
+
+procedure TSubBoostDataModule.ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := IntToStr(round(-301.03 / (SampleRate * log10(fRelease))));
 end;
@@ -90,6 +108,10 @@ end;
 
 procedure TSubBoostDataModule.VSTModuleCreate(Sender: TObject);
 begin
+ fInputFilter  := TButterworthLP.Create;
+ fOutputFilter := TButterworthLP.Create;
+ fOutputFilter.Order := 1;
+
  Parameter[0] :=  0;    // Type
  Parameter[1] := 30;    // Level
  Parameter[2] := 0.6;   // Tune
@@ -98,6 +120,12 @@ begin
  Parameter[5] := 0.65;  // Release
 
  VSTModuleResume(Sender);
+end;
+
+procedure TSubBoostDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(fInputFilter);
+ FreeAndNil(fOutputFilter);
 end;
 
 procedure TSubBoostDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
@@ -113,24 +141,28 @@ begin
   fPhase  := 1;
   fOsc    := 0; // Oscillator phase
   fType   := TProcessType(round(Parameter[0]));
+(*
   if fType = ptKeyOsc
    then fFilterIn := 0.018
    else fFilterIn := Power(10, -3 + (2 * Parameter[2]));
   fFilterOut := 1 - fFilterIn;
+*)
   fDeltaPhi  := 0.456159 * Power(10, -2.5 + (1.5 * Parameter[2]));
 end;
 
 procedure TSubBoostDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  fi, fo       : Single;
-  f1, f2       : Single;
-  f3, f4, sub  : Single;
+  FilteredIn   : Single;
+  SubBass      : Single;
   rl, th, dv   : Single;
   ph, phii     : Single;
   dph, os, en  : Single;
 
   Sample       : Integer;
+
+const
+  CDenormalThreshold: Single = 1E-16;  
 begin
  dph  := fDeltaPhi;
  rl   := fRelease;
@@ -140,52 +172,45 @@ begin
  th   := fThreshold;
  dv   := fDivide;
  ph   := fPhase;
- f1   := fFilterState[0];
- f2   := fFilterState[1];
- f3   := fFilterState[2];
- f4   := fFilterState[3];
-
- fi   := fFilterIn;
- fo   := fFilterOut;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   f1 := fo * f1 + fi * (Inputs[0, Sample] + Inputs[1, Sample]);
-   f2 := fo * f2 + fi * f1;
+   // Input Filter
+   FilteredIn := fInputFilter.ProcessSample(Inputs[0, Sample] + Inputs[1, Sample]);
 
-   sub := f2;
-   if sub > th then sub := 1 else
-    if sub < -th then sub := -1 else sub := 0;
 
-   if sub * dv < 0 then     // Octave Divider
+   if FilteredIn * dv < 0 then     // Octave Divider
     begin
      dv := -dv;
      if dv < 0 then ph := -ph;
     end;
 
    case fType of
-    ptDivide : sub := ph * sub;     // Divide
-    ptInvert : sub := ph * f2 * 2;  // Invert
-    ptKeyOsc : begin                // Osc
-                if (f2 > th)
-                 then en := 1
-                 else en := en * rl;
-                sub  := (en * sin(phii));
-                phii := f_mod(phii + dph, 6.283185);
-               end;
+    ptDistort : if FilteredIn > th then SubBass := 1 else
+                 if FilteredIn < -th
+                  then SubBass := -1
+                  else SubBass := 0;
+    ptDivide  : if FilteredIn > th then SubBass := ph else
+                 if FilteredIn < -th
+                  then SubBass := ph
+                  else SubBass := 0;
+    ptInvert  : SubBass := ph * FilteredIn * 2;  // Invert
+    ptKeyOsc  : begin                    // Osc
+                 if (FilteredIn > th)
+                  then en := 1
+                  else en := en * rl;
+                 SubBass  := (en * sin(phii));
+                 phii     := f_mod(phii + dph, 2 * Pi);
+                end;
    end;
 
-   f3 := (fo * f3) + (fi * sub);
-   f4 := (fo * f4) + (fi * f3);
+   // Output Filter
+   SubBass := fOutputFilter.ProcessSample(SubBass);
 
-  Outputs[0, Sample] := Inputs[0, Sample] * fDry + f4 * fWet; // output
-  Outputs[1, Sample] := Inputs[1, Sample] * fDry + f4 * fWet;
+   // Output
+   Outputs[0, Sample] := Inputs[0, Sample] * fDry + SubBass * fWet;
+   Outputs[1, Sample] := Inputs[1, Sample] * fDry + SubBass * fWet;
   end;
-
- if (abs(f1) < 1E-10) then fFilterState[0] := 0 else fFilterState[0] := f1;
- if (abs(f2) < 1E-10) then fFilterState[1] := 0 else fFilterState[1] := f2;
- if (abs(f3) < 1E-10) then fFilterState[2] := 0 else fFilterState[2] := f3;
- if (abs(f4) < 1E-10) then fFilterState[3] := 0 else fFilterState[3] := f4;
 
  fDivide := dv;
  fPhase  := ph;
@@ -198,12 +223,23 @@ procedure TSubBoostDataModule.VSTModuleResume(Sender: TObject);
 begin
  fPhi     := 0;
  fEnv     := 0;
+(*
  fFilterState[0] := 0;
  fFilterState[1] := 0;
+*)
  fFilterState[2] := 0;
  fFilterState[3] := 0;
+(*
  fFilterIn   := 0;
- fFilterOut   := 0;
+ fFilterOut  := 0;
+*)
+end;
+
+procedure TSubBoostDataModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+begin
+ fInputFilter.SampleRate := SampleRate;
+ fOutputFilter.SampleRate := SampleRate;
 end;
 
 end.
