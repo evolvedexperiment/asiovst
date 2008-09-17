@@ -13,7 +13,7 @@ interface
 
 uses
   ToolsAPI,
-  Config;
+  DAV_VSTPluginConfig;
 
 type
   TVSTModuleCreator = class(TInterfacedObject, IOTACreator, IOTAModuleCreator)
@@ -47,7 +47,7 @@ implementation
 
 uses
   SysUtils,
-  DAV_VSTCustomModule, DAV_VSTModule, DAV_VSTEffect, OpenToolsUtils;
+  DAV_VSTCustomModule, DAV_VSTModule, DAV_VSTEffect, DAV_OpenToolsUtils;
 
 const
   CRLF               = #13#10;

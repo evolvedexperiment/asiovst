@@ -31,7 +31,7 @@ requires
 
 contains
   DAV_Common in '..\Source\DAV_Common.pas',
-  CPUDetectionTool in '..\Source\CPUDetectionTool.pas',
+  DAV_CPUDetectionTool in '..\Source\DAV_CPUDetectionTool.pas',
   DAV_ProcessingComponent in '..\Source\DAV_ProcessingComponent.pas',
   DAV_BufferMathPascal in '..\Source\Math\DAV_BufferMathPascal.pas',
   DAV_BufferMathAsm in '..\Source\Math\DAV_BufferMathAsm.pas',

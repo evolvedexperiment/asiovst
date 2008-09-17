@@ -137,6 +137,9 @@ implementation
 uses
   SysUtils, Math;
 
+resourcestring
+  RStrChannel = 'Channel';
+
 { TCustomComplexChannel }
 
 procedure TCustomComplexChannel.AssignTo(Dest: TPersistent);
@@ -152,7 +155,7 @@ end;
 constructor TCustomComplexChannel.Create(Collection: TCollection);
 begin
  inherited;
- fDisplayName := 'Channel ' + IntToStr(Collection.Count);
+ fDisplayName := RStrChannel + ' ' + IntToStr(Collection.Count);
  BinCountChanged;
 end;
 

@@ -5,7 +5,8 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Classes, DAV_VSTModuleWithMidi, DAV_VSTParameters, DAV_VSTPrograms, DAV_VSTEffect;
+  Classes, DAV_VSTModuleWithMidi, DAV_VSTParameters, DAV_VSTPrograms,
+  DAV_VSTEffect;
 
 type
   TGetChunkParameterEvent = function(Sender: TObject; const Index: Integer): Single of object;
@@ -13,6 +14,10 @@ type
   TOnBeginLoadProgramEvent = procedure (Sender: TObject; PatchChunkInfo: TVstPatchChunkInfo) of object;
 
   TVSTModuleWithPrograms = class(TVSTModuleWithMidi)
+  private
+    function GetParameterByName(ParameterName: string): Single;
+    procedure SetParameterByName(ParameterName: string; const Value: Single);
+    function TranslateParameterNameToIndex(ParameterName: string): Integer;
   protected
     FParameterUpdate        : Boolean;
     FCurProgram             : Integer;
@@ -47,11 +52,12 @@ type
     procedure SetParameterProperties(const Value : TCustomVstParameterProperties);
     procedure SetProgram(aProgram: Integer); virtual;
     procedure SetVstPrograms(const Value: TCustomVstPrograms);
+  published
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure SetParameterCount(cnt: integer);
+    procedure SetParameterCount(cnt: Integer);
 
     function  HostCallGetParameter(Index: Integer): Single; override;
     procedure HostCallSetParameter(Index: Integer; Value: Single); override;
@@ -84,6 +90,7 @@ type
     property Programs: TCustomVstPrograms read FVstPrograms write SetVstPrograms;
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
     property Parameter[Index: Integer]: Single read getParameter write setParameterAutomated;
+    property ParameterByName[ParameterName: string]: Single read GetParameterByName write SetParameterByName;
 
     property OnParameterChange: TParameterChangeEvent read FOnParameterChangeEvent write FOnParameterChangeEvent;
     property OnBeginSetProgram: TNotifyEvent read FOnBeginSetProgram write FOnBeginSetProgram;
@@ -100,6 +107,12 @@ implementation
 
 uses
   SysUtils, Math, DAV_Common;
+
+resourcestring
+  RStrUndefined = 'undefined';
+  RStrNoParameterAvailable = 'No parameter available!';
+  RStrUnknownParameterName = 'Unknown parameter name';
+  StrIndexOutOfBounds = 'Index out of bounds';
 
 constructor TVSTModuleWithPrograms.Create(AOwner: TComponent);
 begin
@@ -193,7 +206,7 @@ var
   str : string;
 begin
  if (Index >= FEffect.numParams) or (Index>=FParameterProperties.Count)
-  then str := 'undefined'
+  then str := RStrUndefined
   else
    begin
     str := FParameterProperties[Index].Units;
@@ -210,7 +223,7 @@ var
   str : string;
 begin
  if (Index >= FEffect.numParams) or (Index>=FParameterProperties.Count)
-  then str := 'undefined'
+  then str := RStrUndefined
   else
    begin
     if (effFlagsProgramChunks in FEffect.EffectFlags)
@@ -230,7 +243,7 @@ end;
 function TVSTModuleWithPrograms.HostCallGetParamName(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
  if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
-  then StrPCopy(ptr, 'undefined')
+  then StrPCopy(ptr, RStrUndefined)
   else StrPCopy(ptr, FParameterProperties[Index].DisplayName);
 
   Result := 0;
@@ -487,7 +500,7 @@ begin
   else Result := '';
 end;
 
-procedure TVSTModuleWithPrograms.SetParameterCount(cnt: integer);
+procedure TVSTModuleWithPrograms.SetParameterCount(cnt: Integer);
 begin
   setlength(fParameter, cnt);
 end;
@@ -550,6 +563,23 @@ begin
    inherited SetParameterAutomated(Index, Parameter2VSTParameter(Value, Index));
 end;
 
+function TVSTModuleWithPrograms.TranslateParameterNameToIndex(ParameterName: string): Integer;
+begin
+ if FParameterProperties.Count = 0
+  then raise Exception.Create(RStrNoParameterAvailable);
+ result := 0;
+ while result < FParameterProperties.Count do
+  if ParameterName = FParameterProperties[result].DisplayName
+   then break
+   else inc(result);
+ if result = FParameterProperties.Count
+  then raise Exception.Create(RStrUnknownParameterName);
+end;
+
+procedure TVSTModuleWithPrograms.SetParameterByName(ParameterName: string; const Value: Single);
+begin
+ Parameter[TranslateParameterNameToIndex(ParameterName)] := Value;
+end;
 
 procedure TVSTModuleWithPrograms.SetParameter(const Index: Integer; Value: Single);
 var
@@ -560,7 +590,7 @@ begin
  try
   if (Index >= FEffect.numParams) or (Index < 0) or
      (Index >= FParameterProperties.Count)
-   then raise Exception.Create('Index out of bounds');
+   then raise Exception.Create(StrIndexOutOfBounds);
   if (effFlagsProgramChunks in FEffect.EffectFlags)
    then
     begin
@@ -608,6 +638,11 @@ begin
    if numPrograms > 0
     then Result := Programs[FCurProgram].Parameter[Index]
     else Result := FParameter[Index];
+end;
+
+function TVSTModuleWithPrograms.GetParameterByName(ParameterName: string): Single;
+begin
+ result := Parameter[TranslateParameterNameToIndex(ParameterName)];
 end;
 
 end.

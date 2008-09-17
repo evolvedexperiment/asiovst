@@ -25,34 +25,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     Height = 13
     Caption = 'Plugin unit name:'
   end
-  object Image1: TImage
-    Left = 5
-    Top = 5
-    Width = 32
-    Height = 32
-    AutoSize = True
-  end
-  object Label7: TLabel
-    Left = 43
-    Top = 5
-    Width = 229
-    Height = 13
-    Caption = 'RemObjects'#39' Hydra - New Project Wizard'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
-  object Label8: TLabel
-    Left = 45
-    Top = 21
-    Width = 48
-    Height = 13
-    Caption = 'Bla Bla Bla'
-  end
-  object Bevel1: TBevel
+  object BlSeparator: TBevel
     Left = 0
     Top = 42
     Width = 452
@@ -60,7 +33,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     Align = alTop
     Shape = bsBottomLine
   end
-  object Panel1: TPanel
+  object PnHeader: TPanel
     Left = 0
     Top = 0
     Width = 452
@@ -69,7 +42,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     BevelOuter = bvNone
     Color = clWhite
     TabOrder = 0
-    object Image2: TImage
+    object ImageVST: TImage
       Left = 5
       Top = 5
       Width = 32
@@ -246,7 +219,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000}
     end
-    object Label9: TLabel
+    object LbHeading: TLabel
       Left = 45
       Top = 5
       Width = 170
@@ -259,7 +232,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object Label10: TLabel
+    object LbSubHeading: TLabel
       Left = 45
       Top = 21
       Width = 235
@@ -267,7 +240,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
       Caption = 'Create a new project for developing a VST plugin'
     end
   end
-  object Panel2: TPanel
+  object PnControl: TPanel
     Left = 0
     Top = 306
     Width = 452
@@ -337,17 +310,13 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     Top = 44
     Width = 452
     Height = 262
-    ActivePage = TabSheet1
+    ActivePage = TSModule
     Align = alClient
     Style = tsFlatButtons
     TabOrder = 1
-    object ts_Welcome: TTabSheet
+    object TSWelcome: TTabSheet
       Caption = 'Welcome'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object Label11: TLabel
+      object LbWelcomeTitle: TLabel
         Left = 24
         Top = 13
         Width = 236
@@ -360,14 +329,14 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object Label12: TLabel
+      object LbWelcomeInstructions4: TLabel
         Left = 24
         Top = 136
         Width = 217
         Height = 13
         Caption = 'Click "Next" to start creating your VST plugin.'
       end
-      object Label15: TLabel
+      object LbWelcomeInstructions3: TLabel
         Left = 24
         Top = 104
         Width = 387
@@ -377,7 +346,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
           'ost application such as Steinberg Cubase.'
         WordWrap = True
       end
-      object Label16: TLabel
+      object LbWelcomeInstructions2: TLabel
         Left = 24
         Top = 72
         Width = 386
@@ -388,7 +357,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
           'r form.'
         WordWrap = True
       end
-      object Label17: TLabel
+      object LbWelcomeInstructions1: TLabel
         Left = 24
         Top = 40
         Width = 362
@@ -399,14 +368,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         WordWrap = True
       end
     end
-    object TabSheet3: TTabSheet
+    object TSDestination: TTabSheet
       Caption = 'Dest'
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object Label6: TLabel
+      object LbDestinationTitle: TLabel
         Left = 24
         Top = 13
         Width = 254
@@ -419,7 +384,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object Label19: TLabel
+      object LBDesinationSelect: TLabel
         Left = 24
         Top = 40
         Width = 310
@@ -428,14 +393,14 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
           'Select the folder where you would like the project to be created' +
           ':'
       end
-      object Label20: TLabel
+      object LBProjectName: TLabel
         Left = 24
         Top = 93
         Width = 141
         Height = 13
         Caption = 'Enter a name for the project:'
       end
-      object Label21: TLabel
+      object LbDpr: TLabel
         Left = 229
         Top = 115
         Width = 20
@@ -466,10 +431,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         OnClick = btnBrowseClick
       end
     end
-    object TabSheet1: TTabSheet
+    object TSPluginType: TTabSheet
       Caption = 'Plugin Type'
       ImageIndex = 2
-      object Label23: TLabel
+      object LbPluginType: TLabel
         Left = 24
         Top = 13
         Width = 65
@@ -482,7 +447,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object Label26: TLabel
+      object LbSelectVSTTypeInstruction: TLabel
         Left = 24
         Top = 40
         Width = 259
@@ -509,14 +474,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         TabStop = True
       end
     end
-    object TabSheet4: TTabSheet
+    object TSModule: TTabSheet
       Caption = 'Module'
       ImageIndex = 5
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object Label22: TLabel
+      object LbModuleTitle: TLabel
         Left = 24
         Top = 13
         Width = 167
@@ -529,7 +490,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object Label24: TLabel
+      object LbModuleInstructions: TLabel
         Left = 24
         Top = 40
         Width = 362
@@ -540,21 +501,21 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
           'lugin.'
         WordWrap = True
       end
-      object Label25: TLabel
+      object LbModuleName: TLabel
         Left = 24
         Top = 85
         Width = 284
         Height = 13
         Caption = 'Please enter a name for your VSTModule descendant class:'
       end
-      object Label27: TLabel
+      object LbModuleUnit: TLabel
         Left = 24
         Top = 139
         Width = 257
         Height = 13
         Caption = 'Please enter a name for the unit containing this class:'
       end
-      object Label28: TLabel
+      object LbPas: TLabel
         Left = 303
         Top = 161
         Width = 21
@@ -576,14 +537,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         TabOrder = 1
       end
     end
-    object TabSheet2: TTabSheet
+    object TSEditor: TTabSheet
       Caption = 'Editor'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object Label1: TLabel
+      object LbGUIFormTitle: TLabel
         Left = 24
         Top = 13
         Width = 124
@@ -596,7 +553,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object Label29: TLabel
+      object LbGUIFormInstructions: TLabel
         Left = 24
         Top = 40
         Width = 382
@@ -613,14 +570,14 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         Height = 105
         BevelOuter = bvNone
         TabOrder = 1
-        object Label32: TLabel
+        object LbPasDfm: TLabel
           Left = 302
           Top = 81
           Width = 47
           Height = 13
           Caption = '.pas/.dfm'
         end
-        object Label31: TLabel
+        object LbGUIFormUnit: TLabel
           Left = 24
           Top = 58
           Width = 255
@@ -661,14 +618,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         OnClick = chkUseEditorClick
       end
     end
-    object TabSheet5: TTabSheet
+    object TSNames: TTabSheet
       Caption = 'Names'
       ImageIndex = 6
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object Label2: TLabel
+      object LbNameTitle: TLabel
         Left = 24
         Top = 13
         Width = 108
@@ -681,7 +634,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object Label3: TLabel
+      object LbNameInstructions: TLabel
         Left = 24
         Top = 40
         Width = 393
@@ -691,14 +644,14 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
           'enerally make this name visible to the end-user.'
         WordWrap = True
       end
-      object Label34: TLabel
+      object LbVSTPluginName: TLabel
         Left = 24
         Top = 79
         Width = 190
         Height = 13
         Caption = 'Please enter a name for the VST plugin:'
       end
-      object Label4: TLabel
+      object LbProductName: TLabel
         Left = 24
         Top = 127
         Width = 315
@@ -707,7 +660,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
           'Please enter a name for the overall product your plugin is part ' +
           'of:'
       end
-      object Label37: TLabel
+      object LBCompanyName: TLabel
         Left = 24
         Top = 175
         Width = 164
@@ -736,14 +689,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         TabOrder = 2
       end
     end
-    object TabSheet6: TTabSheet
+    object TSVersionID: TTabSheet
       Caption = 'VersionAndID'
       ImageIndex = 7
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object Label33: TLabel
+      object LbVersionID: TLabel
         Left = 24
         Top = 13
         Width = 119
@@ -756,7 +705,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object Label36: TLabel
+      object LbVersionIDInstructions: TLabel
         Left = 24
         Top = 40
         Width = 350
@@ -766,28 +715,28 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
           ' unique 4-character ID.'
         WordWrap = True
       end
-      object Label35: TLabel
+      object LbMajorVersion: TLabel
         Left = 24
         Top = 81
         Width = 69
         Height = 13
         Caption = 'Major version:'
       end
-      object Label5: TLabel
+      object LbUniqueID: TLabel
         Left = 24
         Top = 137
         Width = 51
         Height = 13
         Caption = 'Unique ID:'
       end
-      object Label30: TLabel
+      object LbMinorVersion: TLabel
         Left = 104
         Top = 81
         Width = 68
         Height = 13
         Caption = 'Minor version:'
       end
-      object Label38: TLabel
+      object LbRelease: TLabel
         Left = 186
         Top = 81
         Width = 42
@@ -830,14 +779,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         OnKeyPress = edtVersionMajorKeyPress
       end
     end
-    object ts_Finish: TTabSheet
+    object TSFinish: TTabSheet
       Caption = 'Finish'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object Label13: TLabel
+      object LbDone: TLabel
         Left = 24
         Top = 13
         Width = 32
@@ -850,7 +795,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
         Font.Style = [fsBold]
         ParentFont = False
       end
-      object Label14: TLabel
+      object LbDoneInstruction: TLabel
         Left = 24
         Top = 40
         Width = 383
@@ -860,7 +805,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
           'he options you have selected.'
         WordWrap = True
       end
-      object Label18: TLabel
+      object LbClickFinish: TLabel
         Left = 24
         Top = 95
         Width = 278

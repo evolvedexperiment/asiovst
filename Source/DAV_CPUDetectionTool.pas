@@ -1,4 +1,4 @@
-unit CPUDetectionTool;
+unit DAV_CPUDetectionTool;
 
 interface
 

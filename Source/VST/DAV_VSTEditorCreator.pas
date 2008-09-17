@@ -12,7 +12,7 @@ interface
 
 uses
   ToolsAPI,
-  Config;
+  DAV_VSTPluginConfig;
 
 type
   TVSTEditorCreator = class(TInterfacedObject, IOTACreator, IOTAModuleCreator)
@@ -46,7 +46,7 @@ implementation
 
 uses
   Forms, SysUtils,
-  OpenToolsUtils;
+  DAV_OpenToolsUtils;
 
 const
   CRLF          = #13#10;

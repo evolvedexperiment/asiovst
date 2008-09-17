@@ -270,10 +270,6 @@ type
 
 implementation
 
-{$IFDEF FPC}
-{$DEFINE PUREPASCAL}
-{$ENDIF}
-
 uses
   SysUtils, Math,
   {$IFDEF PUREPASCAL}DAV_BufferMathPascal{$ELSE}DAV_BufferMathAsm{$ENDIF};

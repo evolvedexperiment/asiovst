@@ -7,31 +7,31 @@
 {                                                                              }
 {******************************************************************************}
 
-unit Config;
+unit DAV_VSTPluginConfig;
 
 interface
 
 type
   TConfig = class(TObject)
   private
-    function RandomLetter: char;
+    function RandomLetter: Char;
     function RandomUniqueID: string;
   public
-    ProjectPath: string;
-    ProjectName: string;
-    PluginUnitName: string;
-    PluginFormName: string;
-    EditorUnitName: string;
-    EditorFormName: string;
-    UseEditor: boolean;
-    UniqueID: string;
-    EffectName: string;
-    IsSynth: boolean;
-    VersionMajor: integer;
-    VersionMinor: integer;
-    VersionRelease: integer;
-    VendorName: string;
-    ProductName: string;
+    ProjectPath    : string;
+    ProjectName    : string;
+    PluginUnitName : string;
+    PluginFormName : string;
+    EditorUnitName : string;
+    EditorFormName : string;
+    UseEditor      : Boolean;
+    UniqueID       : string;
+    EffectName     : string;
+    IsSynth        : Boolean;
+    VersionMajor   : Integer;
+    VersionMinor   : Integer;
+    VersionRelease : Integer;
+    VendorName     : string;
+    ProductName    : string;
     constructor Create;
   end;
 
@@ -39,7 +39,7 @@ implementation
 
 uses
   Math, SysUtils,
-  OpenToolsUtils;
+  DAV_OpenToolsUtils;
 
 const
   DEFAULT_PLUGIN_UNIT_NAME = 'PluginDM';
@@ -74,12 +74,9 @@ begin
   ProductName    := DEFAULT_PRODUCT_NAME;
 end;
 
-function TConfig.RandomLetter: char;
+function TConfig.RandomLetter: Char;
 begin
-  if Random < 0.5 then
-    Result := char(RandomRange(Ord('A'), Ord('Z')))
-  else
-    Result := char(RandomRange(Ord('a'), Ord('z')));
+ Result := Char(RandomRange(Ord('A'), Ord('Z')) + Random(1) * 32);
 end;
 
 function TConfig.RandomUniqueID: string;

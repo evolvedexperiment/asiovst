@@ -1,6 +1,8 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library SubBoost;
 
+{$R 'SubBoost.res' 'SubBoost.rc'}
+
 uses
   Forms,
   DAV_VSTEffect,

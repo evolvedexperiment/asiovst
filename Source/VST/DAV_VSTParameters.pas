@@ -45,10 +45,9 @@ type
     procedure SetShortLabel(const Value: string);
     procedure SetCurve(const Value: TCurveType);
   protected
-    procedure AssignTo(Dest: TPersistent); override;
-
-    procedure SetDisplayName(const AValue: string); override;
     function GetDisplayName: string; override;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure SetDisplayName(const AValue: string); override;
     procedure SetUnits(AUnits: string);
   public
     {$IFDEF FPC}
@@ -94,11 +93,11 @@ type
   public
     constructor Create(AOwner: TComponent);
     destructor Destroy; override;
-    procedure WriteVSTXML; overload;
-    procedure WriteVSTXML(FileName : TFileName); overload;
     function Add: TCustomVstParameterProperty;
     function Insert(Index: Integer): TCustomVstParameterProperty;
     procedure Delete(Index: Integer);
+    procedure WriteVSTXML(FileName : TFileName); overload;
+    procedure WriteVSTXML; overload;
     property Count;
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
   end;
@@ -270,8 +269,9 @@ end;
 
 procedure TCustomVstParameterProperties.WriteVSTXML;
 {$IFNDEF FPC}
-var s : string;
-    b : PChar;
+var
+  s : string;
+  b : PChar;
 {$ENDIF}
 begin
   {$IFNDEF FPC}

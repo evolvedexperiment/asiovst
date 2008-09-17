@@ -38,6 +38,34 @@ type
 
   TGuiStitchKind = (skHorizontal, skVertical);
 
+  TGUIShadow = class(TPersistent)
+  private
+    fBlur         : Byte;
+    fOffset       : TPoint;
+    fTransparency : Byte;
+    fVisible      : Boolean;
+    fOnChange     : TNotifyEvent;
+    function GetOffsetX: Integer;
+    function GetOffsetY: Integer;
+    procedure SetBlur(const Value: Byte);
+    procedure SetOffsetX(const Value: Integer);
+    procedure SetOffsetY(const Value: Integer);
+    procedure SetTransparency(const Value: Byte);
+    procedure SetVisible(const Value: Boolean);
+    procedure SetOffset(const Value: TPoint);
+    procedure Changed;
+  public
+    constructor Create; virtual;
+    property Offset : TPoint read fOffset write SetOffset;
+  published
+    property Blur : Byte read fBlur write SetBlur default 4;
+    property OffsetX : Integer read GetOffsetX write SetOffsetX default 1;
+    property OffsetY : Integer read GetOffsetY write SetOffsetY default 1;
+    property Transparency : Byte read fTransparency write SetTransparency default $FF;
+    property Visible : Boolean read fVisible write SetVisible default False;
+    property OnChange : TNotifyEvent read fOnChange write fOnChange;
+  end;
+
   TBufferedGraphicControl = class(TGraphicControl)
   protected
     fBuffer   : TBitmap;
@@ -221,17 +249,17 @@ type
     property OnDragMouseMove;
   end;
 
-procedure DownsampleBitmap2x(var Bitmap: TBitmap);
-procedure DownsampleBitmap4x(var Bitmap: TBitmap);
-procedure UpsampleBitmap2x(var Bitmap: TBitmap);
-procedure UpsampleBitmap4x(var Bitmap: TBitmap);
+procedure Downsample2xBitmap32(var Bitmap: TBitmap);
+procedure Downsample4xBitmap32(var Bitmap: TBitmap);
+procedure Upsample2xBitmap32(var Bitmap: TBitmap);
+procedure Upsample4xBitmap32(var Bitmap: TBitmap);
 
 implementation
 
 uses
   SysUtils;
 
-procedure DownsampleBitmap2x(var Bitmap: TBitmap);
+procedure Downsample2xBitmap32(var Bitmap: TBitmap);
 var
   x, y : Integer;
   Line : Array [0..2] of PRGB32Array;
@@ -255,7 +283,7 @@ begin
   end;
 end;
 
-procedure DownsampleBitmap4x(var Bitmap: TBitmap);
+procedure Downsample4xBitmap32(var Bitmap: TBitmap);
 var
   x, y : Integer;
   Line : Array [0..4] of PRGB32Array;
@@ -293,20 +321,22 @@ begin
   end;
 end;
 
-procedure UpsampleBitmap2x(var Bitmap: TBitmap);
+procedure Upsample2xBitmap32(var Bitmap: TBitmap);
 var
   x, y : Integer;
   Line : Array [0..2] of PRGB32Array;
 begin
  with Bitmap do
   begin
+   assert(PixelFormat = pf32bit);
+
    // first stage
-   for y := 0 to (Height div 2) - 1 do
+   for y := (Height div 2) - 1 downto 0 do
     begin
      Line[0] := Scanline[y];
      Line[1] := Scanline[y * 2];
      Line[2] := Scanline[y * 2 + 1];
-     for x := 0 to (Width  div 2) - 1 do
+     for x := (Width  div 2) - 1 downto 0 do
       begin
        Line[1, 2 * x].B     := Line[0, x].B;
        Line[2, 2 * x].B     := Line[0, x].B;
@@ -329,21 +359,23 @@ begin
   end;
 end;
 
-procedure UpsampleBitmap4x(var Bitmap: TBitmap);
+procedure Upsample4xBitmap32(var Bitmap: TBitmap);
 var
   x, y : Integer;
   i, j : Integer;
   Line : Array [0..4] of PRGB32Array;
 begin
  with Bitmap do
-  for y := 0 to (Height div 4) - 1 do
+  for y := (Height div 4) - 1 downto 0 do
    begin
+    assert(PixelFormat = pf32bit);
+
     Line[0] := Scanline[y];
     Line[1] := Scanline[y * 4];
     Line[2] := Scanline[y * 4 + 1];
     Line[3] := Scanline[y * 4 + 2];
     Line[4] := Scanline[y * 4 + 3];
-    for x := 0 to (Width  div 4) - 1 do
+    for x := (Width  div 4) - 1 downto 0 do
      for i := 1 to 4 do
       for j := 0 to 3 do
        begin
@@ -373,9 +405,9 @@ end;
 
 procedure TBufferedGraphicControl.DrawParentImage(Dest: TCanvas);
 var
-  SaveIndex: Integer;
-  DC: THandle;
-  Position: TPoint;
+  SaveIndex : Integer;
+  DC        : THandle;
+  Position  : TPoint;
 begin
   if Parent = nil then Exit;
   DC := Dest.Handle;
@@ -390,22 +422,22 @@ end;
 
 procedure TBufferedGraphicControl.Downsample2xBitmap(var Bitmap: TBitmap);
 begin
- DownsampleBitmap2x(Bitmap);
+ Downsample2xBitmap32(Bitmap);
 end;
 
 procedure TBufferedGraphicControl.Downsample4xBitmap(var Bitmap: TBitmap);
 begin
- DownsampleBitmap4x(Bitmap);
+ Downsample4xBitmap32(Bitmap);
 end;
 
 procedure TBufferedGraphicControl.Upsample2xBitmap(var Bitmap: TBitmap);
 begin
- UpsampleBitmap2x(Bitmap);
+ Upsample2xBitmap32(Bitmap);
 end;
 
 procedure TBufferedGraphicControl.Upsample4xBitmap(var Bitmap: TBitmap);
 begin
- UpsampleBitmap4x(Bitmap);
+ Upsample4xBitmap32(Bitmap);
 end;
 
 procedure TBufferedGraphicControl.Loaded;
@@ -702,6 +734,87 @@ begin
   fRedrawTimer.Enabled := True;
 
   fTimerMustRedraw := False;
+end;
+
+{ TGUIShadow }
+
+constructor TGUIShadow.Create;
+begin
+ fBlur         := 4;
+ fOffset.X     := 1;
+ fOffset.Y     := 1;
+ fTransparency := $FF;
+ fVisible      := False;
+end;
+
+procedure TGUIShadow.Changed;
+begin
+ if assigned(fOnChange)
+  then fOnChange(Self);
+end;
+
+function TGUIShadow.GetOffsetX: Integer;
+begin
+ result := fOffset.X;
+end;
+
+function TGUIShadow.GetOffsetY: Integer;
+begin
+ result := fOffset.Y;
+end;
+
+procedure TGUIShadow.SetBlur(const Value: Byte);
+begin
+ if fBlur <> Value then
+  begin
+   fBlur := Value;
+   Changed;
+  end;
+end;
+
+procedure TGUIShadow.SetOffset(const Value: TPoint);
+begin
+ if (fOffset.X <> Value.X) or (fOffset.Y <> Value.Y) then
+  begin
+   fOffset := Value;
+   Changed;
+  end;
+end;
+
+procedure TGUIShadow.SetOffsetX(const Value: Integer);
+begin
+ if fOffset.X <> Value then
+  begin
+   fOffset.X := Value;
+   Changed;
+  end;
+end;
+
+procedure TGUIShadow.SetOffsetY(const Value: Integer);
+begin
+ if fOffset.Y <> Value then
+  begin
+   fOffset.Y := Value;
+   Changed;
+  end;
+end;
+
+procedure TGUIShadow.SetTransparency(const Value: Byte);
+begin
+ if fTransparency <> Value then
+  begin
+   fTransparency := Value;
+   Changed;
+  end;
+end;
+
+procedure TGUIShadow.SetVisible(const Value: Boolean);
+begin
+ if fVisible <> Value then
+  begin
+   fVisible := Value;
+   Changed;
+  end;
 end;
 
 end.

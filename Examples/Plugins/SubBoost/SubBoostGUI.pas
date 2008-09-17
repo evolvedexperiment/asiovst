@@ -4,30 +4,37 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel, DAV_GuiSelectBox;
+  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel, DAV_GuiSelectBox, ExtCtrls,
+  DAV_GuiPanel;
 
 type
   TFmSubBoost = class(TForm)
-    DialLevel: TGuiDial;
-    SBType: TGuiSelectBox;
-    LbType: TGuiLabel;
-    DialTune: TGuiDial;
     DialDryMix: TGuiDial;
+    DialLevel: TGuiDial;
+    DialRelease: TGuiDial;
     DialThreshold: TGuiDial;
-    LbLevel: TGuiLabel;
-    LbTune: TGuiLabel;
+    DialTune: TGuiDial;
+    GuiPanel1: TGuiPanel;
     LbDryMix: TGuiLabel;
+    LbLevel: TGuiLabel;
+    LbRelease: TGuiLabel;
     LbThreshold: TGuiLabel;
     LbTitle: TGuiLabel;
-    DialRelease: TGuiDial;
-    LbRelease: TGuiLabel;
-    procedure DialLevelChange(Sender: TObject);
-    procedure SBTypeChange(Sender: TObject);
-    procedure DialTuneChange(Sender: TObject);
+    LbTune: TGuiLabel;
+    LbType: TGuiLabel;
+    SBType: TGuiSelectBox;
+    LbTitleShadow: TGuiLabel;
     procedure DialDryMixChange(Sender: TObject);
-    procedure DialThresholdChange(Sender: TObject);
+    procedure DialLevelChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
+    procedure DialThresholdChange(Sender: TObject);
+    procedure DialTuneChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure SBTypeChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+  private
+    fBackgrounBitmap : TBitmap;
   public
     procedure UpdateType;
     procedure UpdateLevel;
@@ -45,7 +52,65 @@ implementation
 {$R *.dfm}
 
 uses
-  SubBoostDM;
+  PngImage, SubBoostDM;
+
+procedure TFmSubBoost.FormCreate(Sender: TObject);
+var
+  RS     : TResourceStream;
+  x, y   : Integer;
+  s      : array[0..1] of Single;
+  b      : ShortInt;
+  Line   : PRGB32Array;
+  PngBmp : TPngObject;
+
+begin
+ // Create Background Image
+ fBackgrounBitmap := TBitmap.Create;
+ with fBackgrounBitmap do
+  begin
+   PixelFormat := pf32bit;
+   Width := Self.Width;
+   Height := Self.Height;
+   s[0] := 0;
+   s[1] := 0;
+   for y := 0 to Height - 1 do
+    begin
+     Line := Scanline[y];
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.9 * s[0] + 0.1 * random;
+       b := round($3F * s[1]);
+       s[0] := s[1];
+       Line[x].B := b;
+       Line[x].G := b;
+       Line[x].R := b;
+       Line[x].A := 0;
+      end;
+    end;
+  end;
+
+ PngBmp := TPngObject.Create;
+ try
+  RS := TResourceStream.Create(hInstance, 'SubBoostKnob', 'PNG');
+  try
+   PngBmp.LoadFromStream(RS);
+   DialLevel.DialBitmap.Assign(PngBmp);
+   DialTune.DialBitmap.Assign(PngBmp);
+   DialDryMix.DialBitmap.Assign(PngBmp);
+   DialThreshold.DialBitmap.Assign(PngBmp);
+   DialRelease.DialBitmap.Assign(PngBmp);
+  finally
+   RS.Free;
+  end;
+ finally
+  FreeAndNil(PngBmp);
+ end;
+end;
+
+procedure TFmSubBoost.FormPaint(Sender: TObject);
+begin
+ Canvas.Draw(0, 0, fBackgrounBitmap);
+end;
 
 procedure TFmSubBoost.FormShow(Sender: TObject);
 begin
@@ -55,6 +120,9 @@ begin
  UpdateDryMix;
  UpdateThreshold;
  UpdateRelease;
+ LbTitleShadow.Transparent := True;
+ LbTitle.Transparent := True;
+ LbType.Transparent := True;
 end;
 
 procedure TFmSubBoost.SBTypeChange(Sender: TObject);

@@ -14,7 +14,7 @@ interface
 
 uses
   ToolsAPI,
-  Config;
+  DAV_VSTPluginConfig;
 
 type
   TVSTProjectCreator = class(TInterfacedObject,
@@ -51,7 +51,7 @@ implementation
 
 uses
   SysUtils,
-  OpenToolsUtils;
+  DAV_OpenToolsUtils;
 
 const
   CRLF = #13#10;

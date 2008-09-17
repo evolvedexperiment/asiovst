@@ -443,12 +443,12 @@ begin
        if fTransparent then
         begin
          DrawParentImage(Buffer.Canvas);
-         UpsampleBitmap2x(Buffer);
+         Upsample2xBitmap32(Buffer);
         end else
        {$ENDIF}
        FillRect(ClipRect);
        RenderGroupToBitmap(Buffer);
-       DownsampleBitmap2x(Buffer);
+       Downsample2xBitmap32(Buffer);
       end;
      gaaLinear4x :
       begin
@@ -456,12 +456,12 @@ begin
        if fTransparent then
         begin
          DrawParentImage(Buffer.Canvas);
-         UpsampleBitmap4x(Buffer);
+         Upsample4xBitmap32(Buffer);
         end else
        {$ENDIF}
        FillRect(ClipRect);
        RenderGroupToBitmap(Buffer);
-       DownsampleBitmap4x(Buffer);
+       Downsample4xBitmap32(Buffer);
       end;
      gaaLinear8x :
       begin
@@ -469,14 +469,14 @@ begin
        if fTransparent then
         begin
          DrawParentImage(Buffer.Canvas);
-         UpsampleBitmap2x(Buffer);
-         UpsampleBitmap4x(Buffer);
+         Upsample2xBitmap32(Buffer);
+         Upsample4xBitmap32(Buffer);
         end else
        {$ENDIF}
        FillRect(ClipRect);
        RenderGroupToBitmap(Buffer);
-       DownsampleBitmap2x(Buffer);
-       DownsampleBitmap4x(Buffer);
+       Downsample2xBitmap32(Buffer);
+       Downsample4xBitmap32(Buffer);
       end;
      gaaLinear16x :
       begin
@@ -484,14 +484,14 @@ begin
        if fTransparent then
         begin
          DrawParentImage(Buffer.Canvas);
-         UpsampleBitmap4x(Buffer);
-         UpsampleBitmap4x(Buffer);
+         Upsample4xBitmap32(Buffer);
+         Upsample4xBitmap32(Buffer);
         end else
        {$ENDIF}
        FillRect(ClipRect);
        RenderGroupToBitmap(Buffer);
-       DownsampleBitmap4x(Buffer);
-       DownsampleBitmap4x(Buffer);
+       Downsample4xBitmap32(Buffer);
+       Downsample4xBitmap32(Buffer);
       end;
     end;
    end;

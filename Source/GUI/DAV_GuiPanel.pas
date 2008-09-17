@@ -238,12 +238,12 @@ begin
         if fTransparent then
          begin
           DrawParentImage(Bmp.Canvas);
-          UpsampleBitmap2x(Bmp);
+          Upsample2xBitmap32(Bmp);
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
         RenderPanelToBitmap(Bmp);
-        DownsampleBitmap2x(Bmp);
+        Downsample2xBitmap32(Bmp);
        end;
       gaaLinear4x :
        begin
@@ -251,12 +251,12 @@ begin
         if fTransparent then
          begin
           DrawParentImage(Bmp.Canvas);
-          UpsampleBitmap4x(Bmp);
+          Upsample4xBitmap32(Bmp);
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
         RenderPanelToBitmap(Bmp);
-        DownsampleBitmap4x(Bmp);
+        Downsample4xBitmap32(Bmp);
        end;
       gaaLinear8x :
        begin
@@ -264,14 +264,14 @@ begin
         if fTransparent then
          begin
           DrawParentImage(Bmp.Canvas);
-          UpsampleBitmap4x(Bmp);
-          UpsampleBitmap2x(Bmp);
+          Upsample4xBitmap32(Bmp);
+          Upsample2xBitmap32(Bmp);
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
         RenderPanelToBitmap(Bmp);
-        DownsampleBitmap4x(Bmp);
-        DownsampleBitmap2x(Bmp);
+        Downsample4xBitmap32(Bmp);
+        Downsample2xBitmap32(Bmp);
        end;
       gaaLinear16x :
        begin
@@ -279,14 +279,14 @@ begin
         if fTransparent then
          begin
           DrawParentImage(Bmp.Canvas);
-          UpsampleBitmap4x(Bmp);
-          UpsampleBitmap4x(Bmp);
+          Upsample4xBitmap32(Bmp);
+          Upsample4xBitmap32(Bmp);
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
         RenderPanelToBitmap(Bmp);
-        DownsampleBitmap4x(Bmp);
-        DownsampleBitmap4x(Bmp);
+        Downsample4xBitmap32(Bmp);
+        Downsample4xBitmap32(Bmp);
        end;
      end;
     finally

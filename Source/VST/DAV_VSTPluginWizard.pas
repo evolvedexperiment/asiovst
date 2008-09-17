@@ -14,7 +14,7 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Windows, ToolsAPI, Config;
+  Windows, ToolsAPI, DAV_VSTPluginConfig;
 
 type
   TVSTPluginWizard = class(TNotifierObject, IOTAWizard, IOTARepositoryWizard,
