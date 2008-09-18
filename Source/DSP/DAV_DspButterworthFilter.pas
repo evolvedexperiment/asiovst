@@ -346,12 +346,12 @@ begin
    fState[2*i  ] := fAB[4*i+1]*x + fAB[4*i+2]*Result + fState[2*i+1];
    fState[2*i+1] := fAB[4*i+0]*x + fAB[4*i+3]*Result;
   end;
- if (fOrder mod 2)=1 then
+ if (fOrder mod 2) = 1 then
   begin
    i:=((fOrder+1) div 2) - 1;
-   x           := fAB[4*i]*Result;
-   Result      := x + fState[2*i];
-   fState[2*i] := x + fAB[4*i+2]*Result;
+   x             := fAB[4 * i]*Result;
+   Result        := x + fState[2 * i];
+   fState[2 * i] := x + fAB[4 * i + 2]*Result;
   end;
 {$ELSE}
 asm
@@ -364,22 +364,22 @@ asm
  @FilterLoop:
   sub ecx,4
   fld st(0)
-  fmul [self.fAB+ecx*8].Double
-  fadd [self.fState+ecx*4].Double
+  fmul [self.fAB + ecx * 8].Double
+  fadd [self.fState + ecx * 4].Double
   fld st(0)
   fld st(0)
-  fmul [self.fAB+ecx*8+16].Double
-  fadd [self.fState+ecx*4+8].Double
+  fmul [self.fAB + ecx * 8 + 16].Double
+  fadd [self.fState + ecx * 4 + 8].Double
   fld st(3)
-  fmul [self.fAB+ecx*8+8].Double
+  fmul [self.fAB + ecx * 8 + 8].Double
   faddp
-  fstp [self.fState+ecx*4].Double
-  fmul [self.fAB+ecx*8+24].Double
+  fstp [self.fState + ecx * 4].Double
+  fmul [self.fAB + ecx * 8 + 24].Double
   fxch
   fxch st(2)
-  fmul [self.fAB+ecx*8].Double
+  fmul [self.fAB + ecx * 8].Double
   faddp
-  fstp [self.fState+ecx*4+8].Double
+  fstp [self.fState + ecx * 4 + 8].Double
  ja @FilterLoop
 
  @SingleStage:

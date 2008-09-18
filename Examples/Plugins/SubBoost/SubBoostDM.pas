@@ -28,10 +28,11 @@ type
       Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject;
       const SampleRate: Single);
+    procedure SubBoostDataModuleParameterProperties6ParameterChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
     fInputFilter  : TButterworthLP;
     fOutputFilter : TButterworthLP;
-    fFilterState  : array [2..3] of Single;
 
     fPhi          : Single;
     fEnv          : Single;
@@ -68,6 +69,12 @@ procedure TSubBoostDataModule.ParameterTuneDisplay(Sender: TObject; const Index:
 begin
 // PreDefined := IntToStr(round(0.0726 * SampleRate * Power(10, -2.5 + (1.5 * Parameter[index]))));
  PreDefined := FloatToStrF(fInputFilter.Frequency, ffGeneral, 3, 3);
+end;
+
+procedure TSubBoostDataModule.SubBoostDataModuleParameterProperties6ParameterChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fInputFilter.Order := round(Value);
 end;
 
 procedure TSubBoostDataModule.ParameterTuneChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -223,16 +230,6 @@ procedure TSubBoostDataModule.VSTModuleResume(Sender: TObject);
 begin
  fPhi     := 0;
  fEnv     := 0;
-(*
- fFilterState[0] := 0;
- fFilterState[1] := 0;
-*)
- fFilterState[2] := 0;
- fFilterState[3] := 0;
-(*
- fFilterIn   := 0;
- fFilterOut  := 0;
-*)
 end;
 
 procedure TSubBoostDataModule.VSTModuleSampleRateChange(Sender: TObject;

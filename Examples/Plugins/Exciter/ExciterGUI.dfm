@@ -46,7 +46,7 @@ object FmExciter: TFmExciter
       LineColor = 116222
       CurveMapping = -1.200000047683716000
       Position = 4000.000000000000000000
-      DefaultPosition = 1000.000000000000000000
+      DefaultPosition = 4000.000000000000000000
       Min = 1000.000000000000000000
       Max = 16000.000000000000000000
       NumGlyphs = 65
@@ -96,6 +96,7 @@ object FmExciter: TFmExciter
       LineWidth = 2
       LineColor = 116222
       Position = 50.000000000000000000
+      DefaultPosition = 50.000000000000000000
       Max = 100.000000000000000000
       NumGlyphs = 65
       StitchKind = skHorizontal
@@ -159,6 +160,7 @@ object FmExciter: TFmExciter
       LineWidth = 2
       LineColor = 116222
       Position = 50.000000000000000000
+      DefaultPosition = 50.000000000000000000
       Max = 100.000000000000000000
       NumGlyphs = 65
       StitchKind = skHorizontal
@@ -193,7 +195,7 @@ object FmExciter: TFmExciter
       LineColor = 116222
       CurveMapping = -0.660000026226043700
       Position = 4.000000000000000000
-      DefaultPosition = 8.000000000000000000
+      DefaultPosition = 4.000000000000000000
       Min = 2.000000000000000000
       Max = 8.000000000000000000
       NumGlyphs = 65

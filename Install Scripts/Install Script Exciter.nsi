@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;OpAmp Installer
+;Exciter Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -7,15 +7,14 @@ SetCompressor lzma
 ;--------------------------------
 ;Include Modern UI
 ;  !include "Sections.nsh"
-  !define SF_SELECTED   1
   !include "MUI.nsh"
 
 ;--------------------------------
 ;General
 
   ;Name and file
-  Name "OpAmp Installer"
-  OutFile "OpAmp.exe"
+  Name "Exciter Installer"
+  OutFile "Exciter_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -23,7 +22,7 @@ SetCompressor lzma
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
-  BrandingText "OpAmp VST Plugin"
+  BrandingText "Delphi ASIO & VST Package"
 
   ; Turn on the xp style of drawing
   XPStyle ON
@@ -31,6 +30,14 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
+  !define PRODUCT_NAME "Exciter"
+  !define PRODUCT_VERSION "1.0.0"
+  !define PRODUCT_PUBLISHER "Christian Budde"
+  !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
+  !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
+  !define PRODUCT_DIR_ROOT_KEY "HKLM"
+  !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Packages\Uninstall\${PRODUCT_NAME}"
+  !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
 
 ;--------------------------------
@@ -38,7 +45,7 @@ SetCompressor lzma
 
   ;Remember the installer language
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
-  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\Non Linear"
+  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 ;--------------------------------
@@ -62,17 +69,17 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "OpAmp VST-Plugin" SecProgramFiles
+Section "Exciter VST-Plugin" SecProgramFiles
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\OpAmp.dll"
+  File "..\Bin\Exciter.dll"
 
   ;Store installation folder
-  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\OpAmp" "" $INSTDIR
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallOpAmp.exe"
+  WriteUninstaller "$INSTDIR\UninstallExciter.exe"
 
 
 SectionEnd
@@ -81,13 +88,13 @@ SectionEnd
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "OpAmp VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Exciter VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "OpAmp VST Plugin"
+  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Exciter VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -100,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\OpAmp.dll"
-  DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\OpAmp"
+  Delete "$INSTDIR\Exciter.dll"
+  DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

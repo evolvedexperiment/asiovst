@@ -1760,12 +1760,12 @@ begin
      end;
    end;
 
-   if fPreventClipping<>pcNone
+   if fPreventClipping <> pcNone
     then for j := 0 to FInputChannelCount - 1 do fClipPrevent.cb64(@FDoubleInBuffer[j,0], FBufferSize);
 
    case FOutBufferPreFill of
     bpfZero : for j := 0 to FOutputChannelCount - 1
-               do FillChar(FDoubleOutBuffer[j,0], FBufferSize * SizeOf(Double), 0);
+               do FillChar(FDoubleOutBuffer[j, 0], FBufferSize * SizeOf(Double), 0);
     bpfNoise: for j := 0 to FOutputChannelCount - 1 do
                for i := 0 to FBufferSize - 1
                 do FDoubleOutBuffer[j,i] := 2 * Random - 1;
@@ -1819,6 +1819,8 @@ begin
       for j := 0 to FInputChannelCount - 1 do
        begin
         PChannelArray := currentbuffer^.buffers[Index];
+        assert(PChannelArray <> nil);
+        assert(FSingleInBuffer[j] <> nil);
         if Assigned(PChannelArray) then
           FInConverters[j].ic32(PChannelArray, PSingle(FSingleInBuffer[j]), FBufferSize);
         inc(currentbuffer);

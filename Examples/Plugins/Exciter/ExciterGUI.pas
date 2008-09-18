@@ -9,18 +9,18 @@ uses
 
 type
   TFmExciter = class(TForm)
-    DialTune: TGuiDial;
     DialMix: TGuiDial;
-    DialShape: TGuiDial;
     DialOrder: TGuiDial;
+    DialShape: TGuiDial;
+    DialTune: TGuiDial;
     LbFreq: TGuiLabel;
     LbFreqValue: TGuiLabel;
     LbMix: TGuiLabel;
     LbMixValue: TGuiLabel;
-    LbShape: TGuiLabel;
-    LbShapeValue: TGuiLabel;
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
+    LbShape: TGuiLabel;
+    LbShapeValue: TGuiLabel;
     PnControl: TGuiPanel;
     procedure DialTuneChange(Sender: TObject);
     procedure DialShapeChange(Sender: TObject);

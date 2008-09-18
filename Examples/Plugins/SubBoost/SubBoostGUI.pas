@@ -24,6 +24,11 @@ type
     LbType: TGuiLabel;
     SBType: TGuiSelectBox;
     LbTitleShadow: TGuiLabel;
+    GuiPanel2: TGuiPanel;
+    DialInputFilter: TGuiDial;
+    DialFilterOrder: TGuiDial;
+    GuiLabel2: TGuiLabel;
+    LbFilterOrder: TGuiLabel;
     procedure DialDryMixChange(Sender: TObject);
     procedure DialLevelChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
@@ -33,6 +38,7 @@ type
     procedure SBTypeChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure DialFilterOrderChange(Sender: TObject);
   private
     fBackgrounBitmap : TBitmap;
   public
@@ -131,6 +137,16 @@ begin
   begin
    if Parameter[0] <> SBType.ItemIndex
     then Parameter[0] := SBType.ItemIndex;
+  end;
+end;
+
+procedure TFmSubBoost.DialFilterOrderChange(Sender: TObject);
+begin
+ with TSubBoostDataModule(Owner) do
+  begin
+   if Parameter[6] <> DialFilterOrder.Position
+    then Parameter[6] := DialFilterOrder.Position;
+   LbFilterOrder.Caption := IntToStr(round(DialFilterOrder.Position));
   end;
 end;
 

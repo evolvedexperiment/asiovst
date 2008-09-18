@@ -110,6 +110,21 @@ object SubBoostDataModule: TSubBoostDataModule
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChange
       OnCustomParameterDisplay = ParameterReleaseDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Order'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 64.000000000000000000
+      MaxInteger = 64
+      ShortLabel = 'Order'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = SubBoostDataModuleParameterProperties6ParameterChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange

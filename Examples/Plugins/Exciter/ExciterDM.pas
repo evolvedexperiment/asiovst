@@ -21,9 +21,9 @@ type
   private
     fSourceLowpassFilter    : array [0..1, 0..1] of TButterworthLP;
     fSourceHighpassFilter   : array [0..1, 0..1] of TButterworthHP;
-    fSplitterLowpassFilter  : array [0..1, 0..1] of TButterworthLP;
     fSplitterHighpassFilter : array [0..1, 0..1] of TButterworthHP;
     fMix                    : array [0..1] of Single;
+    fOverdriveGain          : Single;
     fChebyshevWaveshaper    : TChebyshevWaveshaperSquarelShape;
     procedure InvertMix;
   public
@@ -45,7 +45,6 @@ begin
    begin
     fSourceLowpassFilter[ch, i]    := TButterworthLP.Create;
     fSourceHighpassFilter[ch, i]   := TButterworthHP.Create;
-    fSplitterLowpassFilter[ch, i]  := TButterworthLP.Create;
     fSplitterHighpassFilter[ch, i] := TButterworthHP.Create;
    end;
  fChebyshevWaveshaper := TChebyshevWaveshaperSquarelShape.Create;
@@ -65,7 +64,6 @@ begin
    begin
     FreeAndNil(fSourceLowpassFilter[ch, i]);
     FreeAndNil(fSourceHighpassFilter[ch, i]);
-    FreeAndNil(fSplitterLowpassFilter[ch, i]);
     FreeAndNil(fSplitterHighpassFilter[ch, i]);
    end;
  FreeAndNil(fChebyshevWaveshaper);
@@ -80,22 +78,24 @@ procedure TExciterDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   sample, ch : Integer;
+  Input      : Double;
   Source     : Double;
   Low, High  : Double;
+const
+  cDenorm = 1E-31;
 begin
  for sample := 0 to SampleFrames - 1 do
   for ch := 0 to 1 do
    begin
-    Source := fSourceLowpassFilter[ch, 1].ProcessSample(
-              fSourceLowpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
-    Source := fChebyshevWaveshaper.ProcessSample(Source);
+    Input  := cDenorm + Inputs[ch, sample];
+    Low    := fSourceLowpassFilter[ch, 1].ProcessSample(
+              fSourceLowpassFilter[ch, 0].ProcessSample(Input));
+    Source := fChebyshevWaveshaper.ProcessSample(fOverdriveGain * Low);
     Source := fSourceHighpassFilter[ch, 1].ProcessSample(
               fSourceHighpassFilter[ch, 0].ProcessSample(Source));
 
-    Low   := fSplitterLowpassFilter[ch, 1].ProcessSample(
-             fSplitterLowpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
     High  := fSplitterHighpassFilter[ch, 1].ProcessSample(
-             fSplitterHighpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
+             fSplitterHighpassFilter[ch, 0].ProcessSample(Input));
 
     Outputs[ch, sample] := Low + fMix[0] * High + fMix[1] * Source;
   end;
@@ -106,22 +106,24 @@ procedure TExciterDataModule.VSTModuleProcessDoubleReplacing(
   const SampleFrames: Integer);
 var
   sample, ch : Integer;
+  Input      : Double;
   Source     : Double;
   Low, High  : Double;
+const
+  cDenorm = 1E-31;
 begin
  for sample := 0 to SampleFrames - 1 do
   for ch := 0 to 1 do
    begin
-    Source := fSourceLowpassFilter[ch, 1].ProcessSample(
-              fSourceLowpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
-    Source := fChebyshevWaveshaper.ProcessSample(Source);
+    Input  := cDenorm + Inputs[ch, sample];
+    Low    := fSourceLowpassFilter[ch, 1].ProcessSample(
+              fSourceLowpassFilter[ch, 0].ProcessSample(Input));
+    Source := fChebyshevWaveshaper.ProcessSample(fOverdriveGain * Low);
     Source := fSourceHighpassFilter[ch, 1].ProcessSample(
-              fSourceHighpassFilter[ch, 0].ProcessSample(Source));
+              fSourceHighpassFilter[ch, 0].ProcessSample(cDenorm + Source));
 
-    Low   := fSplitterLowpassFilter[ch, 1].ProcessSample(
-             fSplitterLowpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
     High  := fSplitterHighpassFilter[ch, 1].ProcessSample(
-             fSplitterHighpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
+             fSplitterHighpassFilter[ch, 0].ProcessSample(Input));
 
     Outputs[ch, sample] := Low + fMix[0] * High + fMix[1] * Source;
   end;
@@ -137,10 +139,9 @@ begin
    begin
     fSourceLowpassFilter[ch, i].SampleRate    := SampleRate;
     fSourceHighpassFilter[ch, i].SampleRate   := SampleRate;
-    fSplitterLowpassFilter[ch, i].SampleRate  := SampleRate;
     fSplitterHighpassFilter[ch, i].SampleRate := SampleRate;
    end;
- fChebyshevWaveshaper.Order := round(min(22000, 0.48 * SampleRate) / ParameterByName['Tune'] - 0.5);
+ fChebyshevWaveshaper.Order := round(min(22000, 0.48 * SampleRate) / ParameterByName['Tune'] + 0.5);
 end;
 
 procedure TExciterDataModule.InvertMix;
@@ -169,6 +170,7 @@ procedure TExciterDataModule.ParamShapeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fChebyshevWaveshaper.Shape := 2 - (0.01 * Value);
+ fOverdriveGain := 1.4 - 0.4 * (0.01 * Value);
 
  if EditorForm is TFmExciter then
   with TFmExciter(EditorForm) do
@@ -187,7 +189,6 @@ begin
    begin
     fSourceLowpassFilter[ch, i].Order    := round(Value);
     fSourceHighpassFilter[ch, i].Order   := round(Value);
-    fSplitterLowpassFilter[ch, i].Order  := round(Value);
     fSplitterHighpassFilter[ch, i].Order := round(Value);
    end;
 
@@ -211,10 +212,9 @@ begin
    begin
     fSourceLowpassFilter[ch, i].Frequency    := Value;
     fSourceHighpassFilter[ch, i].Frequency   := Value;
-    fSplitterLowpassFilter[ch, i].Frequency  := Value;
     fSplitterHighpassFilter[ch, i].Frequency := Value;
    end;
- fChebyshevWaveshaper.Order := round(min(22000, 0.48 * SampleRate) / Value - 0.5);
+ fChebyshevWaveshaper.Order := round(min(22000, 0.48 * SampleRate) / Value + 0.5);
  if EditorForm is TFmExciter then
   with TFmExciter(EditorForm) do
    begin

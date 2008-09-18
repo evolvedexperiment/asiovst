@@ -745,8 +745,10 @@ procedure TCustomGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
 begin
   if Enabled then
   begin
-    if ssCtrl in Shift then position := FDefaultPosition;
-    if (Button = mbRight) and (FRightMouseButton=rmbfReset) then position := FDefaultPosition;
+    if ssCtrl in Shift then Position := FDefaultPosition;
+    if (Button = mbRight) and
+       (FRightMouseButton = rmbfReset)
+     then position := FDefaultPosition;
   end;
 
   inherited;

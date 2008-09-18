@@ -1,10 +1,10 @@
 object FmSubBoost: TFmSubBoost
-  Left = 536
-  Top = 110
+  Left = 327
+  Top = 244
   BorderStyle = bsNone
   Caption = 'SubBoost'
-  ClientHeight = 131
-  ClientWidth = 337
+  ClientHeight = 229
+  ClientWidth = 339
   Color = 1052688
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -272,6 +272,97 @@ object FmSubBoost: TFmSubBoost
       AntiAlias = gaaLinear4x
       AutoSize = True
       Caption = 'release'
+      Color = 2105376
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 13948116
+      Font.Height = -16
+      Font.Name = 'Verdana'
+      Font.Style = []
+    end
+  end
+  object GuiPanel2: TGuiPanel
+    Left = 8
+    Top = 133
+    Width = 129
+    Height = 84
+    AntiAlias = gaaLinear4x
+    Caption = 'GuiPanel1'
+    LineColor = 13948116
+    PanelColor = 2105376
+    ParentColor = True
+    Radius = 7
+    TabOrder = 1
+    UseDockManager = True
+    object DialInputFilter: TGuiDial
+      Left = 7
+      Top = 8
+      Width = 48
+      Height = 48
+      Color = 2105376
+      LineWidth = 2
+      LineColor = 13948116
+      CurveMapping = -1.000000000000000000
+      Position = 10.000000000000000000
+      DefaultPosition = 10.000000000000000000
+      Inertia = 0.100000001490116100
+      Min = 10.000000000000000000
+      Max = 400.000000000000000000
+      NumGlyphs = 65
+      StitchKind = skHorizontal
+      ScrollRange_Pixel = 200.000000000000000000
+      PointerAngles.Start = 225
+      PointerAngles.Range = 270
+      PointerAngles.Resolution = 270.000000000000000000
+    end
+    object DialFilterOrder: TGuiDial
+      Left = 69
+      Top = 8
+      Width = 48
+      Height = 48
+      Color = 2105376
+      LineWidth = 2
+      LineColor = 13948116
+      CurveMapping = -1.000000000000000000
+      Position = 1.000000000000000000
+      DefaultPosition = 1.000000000000000000
+      Inertia = 0.100000001490116100
+      Min = 1.000000000000000000
+      Max = 64.000000000000000000
+      NumGlyphs = 65
+      StitchKind = skHorizontal
+      ScrollRange_Pixel = 400.000000000000000000
+      PointerAngles.Start = 225
+      PointerAngles.Range = 270
+      PointerAngles.Resolution = 270.000000000000000000
+      OnChange = DialFilterOrderChange
+    end
+    object GuiLabel2: TGuiLabel
+      Left = 7
+      Top = 54
+      Width = 48
+      Height = 22
+      Margins.Bottom = 0
+      Alignment = taCenter
+      AntiAlias = gaaLinear4x
+      AutoSize = True
+      Caption = 'freq'
+      Color = 2105376
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 13948116
+      Font.Height = -16
+      Font.Name = 'Verdana'
+      Font.Style = []
+    end
+    object LbFilterOrder: TGuiLabel
+      Left = 61
+      Top = 54
+      Width = 64
+      Height = 22
+      Margins.Bottom = 0
+      Alignment = taCenter
+      AntiAlias = gaaLinear4x
+      AutoSize = True
+      Caption = 'order'
       Color = 2105376
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 13948116
