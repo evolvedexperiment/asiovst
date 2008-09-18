@@ -50,6 +50,8 @@ type
     FInertia          : Single;
     FInertiaExp       : Single;
     FInertiaScale     : Single;
+    FImageList        : TImageList;
+    FImageIndex       : Integer;
     FMin, FMax        : Single;
     FNumGlyphs        : Integer;
     FOnChange         : TNotifyEvent;
@@ -60,7 +62,7 @@ type
     FStitchKind       : TGuiStitchKind;
     FCurveMapping     : Single;
     FCurveMappingExp  : Single;
-    fScrollRange      : Single;
+    FScrollRange      : Single;
     function CircularMouseToPosition(X, Y: Integer): Single;
     function GetNormalizedPosition: Single;
     function PositionToAngle: Single;
@@ -83,6 +85,8 @@ type
     procedure SetStitchKind(const Value: TGuiStitchKind);
     procedure SetCurveMapping(const Value: Single);
     procedure SetNormalizedPosition(const Value: Single);
+    procedure SetImageList(const Value: TImageList);
+    procedure SetImageIndex(Value: Integer);
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure CalcColorCircle;
@@ -104,20 +108,22 @@ type
     property CircleColor : TColor read FCircleColor write SetCircleColor default clBlack;
 
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
-    property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
     property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
+    property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
     property CurveMapping: Single read FCurveMapping write SetCurveMapping;
-    property Position: Single read FPosition write SetPosition;
     property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
-    property Inertia: Single read fInertia write SetInertia;
-    property Min: Single read FMin write SetMin;
-    property Max: Single read FMax write SetMax;
-    property RightMouseButton: TGuiDialRMBFunc read FRightMouseButton write FRightMouseButton default rmbfCircular;
-    property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
     property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
-    property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
-    property ScrollRange_Pixel: Single read fScrollRange write fScrollRange;
+    property ImageIndex: Integer read FImageIndex write SetImageIndex default -1;
+    property ImageList: TImageList read FImageList write SetImageList;
+    property Inertia: Single read fInertia write SetInertia;
+    property Max: Single read FMax write SetMax;
+    property Min: Single read FMin write SetMin;
+    property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
     property PointerAngles: TGuiDialPointerAngles read FPointerAngles write SetPointerAngles;
+    property Position: Single read FPosition write SetPosition;
+    property RightMouseButton: TGuiDialRMBFunc read FRightMouseButton write FRightMouseButton default rmbfCircular;
+    property ScrollRange_Pixel: Single read fScrollRange write fScrollRange;
+    property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
   end;
 
@@ -132,6 +138,8 @@ type
     property DefaultPosition;
     property DialBitmap;
     property Inertia;
+    property ImageList;
+    property ImageIndex;
     property LineColor;
     property LineWidth;
     property Max;
@@ -319,8 +327,9 @@ begin
   FPointerAngles          := TGuiDialPointerAngles.Create;
   FPointerAngles.OnChange := SettingsChanged;
   FCircleColor            := clBlack;
-  fLineColor              := clRed;
-  fLineWidth              := 2;
+  FLineColor              := clRed;
+  FLineWidth              := 2;
+  FImageIndex             := -1;
   FAntiAlias              := gaaNone;
   FOSValue                := 1;
   FRightMouseButton       := rmbfCircular;
@@ -416,7 +425,7 @@ begin
  if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
   begin
    Lock;
-   if FDialBitmap.Empty then
+   if FDialBitmap.Empty and (FImageIndex < 0) then
     case FAntiAlias of
      gaaNone     : RenderKnobToBitmap(fBuffer);
      gaaLinear2x :
@@ -535,18 +544,23 @@ begin
      if (GlyphNr >= FNumGlyphs) then GlyphNr := FNumGlyphs - 1 else
      if (GlyphNr < 0) then GlyphNr := 0;
      theRect := ClientRect;
+
+     if not DialBitmap.Empty
+      then Bmp := DialBitmap
+      else raise Exception.Create('Yet todo!');
+
      if FStitchKind = skVertical then
       begin
-       theRect.Top    := FDialBitmap.Height * GlyphNr div FNumGlyphs;
-       theRect.Bottom := FDialBitmap.Height * (GlyphNr + 1) div FNumGlyphs;
+       theRect.Top    := Bmp.Height * GlyphNr div FNumGlyphs;
+       theRect.Bottom := Bmp.Height * (GlyphNr + 1) div FNumGlyphs;
       end
      else
       begin
-       theRect.Left  := FDialBitmap.Width * GlyphNr div FNumGlyphs;
-       theRect.Right := FDialBitmap.Width * (GlyphNr + 1) div FNumGlyphs;
+       theRect.Left  := Bmp.Width * GlyphNr div FNumGlyphs;
+       theRect.Right := Bmp.Width * (GlyphNr + 1) div FNumGlyphs;
       end;
 
-     CopyRect(Clientrect, FDialBitmap.Canvas, theRect);
+     CopyRect(Clientrect, Bmp.Canvas, theRect);
     end;
    Unlock;
   end;
@@ -661,6 +675,28 @@ procedure TCustomGuiDial.SetDialBitmap(const Value: TBitmap);
 begin
   FDialBitmap.Assign(Value);
   DoAutoSize;
+end;
+
+procedure TCustomGuiDial.SetImageIndex(Value: Integer);
+begin
+ if not assigned(FImageList)
+  then Value := -1;
+ if FImageIndex <> Value then
+  begin
+   FImageIndex := Value;
+   if (FImageIndex < 0) or FDialBitmap.Empty
+    then RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiDial.SetImageList(const Value: TImageList);
+begin
+ if FImageList <> Value then
+  begin
+   FImageList := Value;
+   if not assigned(FImageList)
+    then ImageIndex := -1;
+  end;
 end;
 
 procedure TCustomGuiDial.SetInertia(Value: Single);

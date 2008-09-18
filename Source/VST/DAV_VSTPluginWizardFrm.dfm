@@ -14,7 +14,7 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -316,6 +316,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     TabOrder = 1
     object TSWelcome: TTabSheet
       Caption = 'Welcome'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LbWelcomeTitle: TLabel
         Left = 24
         Top = 13
@@ -371,6 +375,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     object TSDestination: TTabSheet
       Caption = 'Dest'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LbDestinationTitle: TLabel
         Left = 24
         Top = 13
@@ -434,6 +442,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     object TSPluginType: TTabSheet
       Caption = 'Plugin Type'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LbPluginType: TLabel
         Left = 24
         Top = 13
@@ -540,6 +552,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     object TSEditor: TTabSheet
       Caption = 'Editor'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LbGUIFormTitle: TLabel
         Left = 24
         Top = 13
@@ -621,6 +637,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     object TSNames: TTabSheet
       Caption = 'Names'
       ImageIndex = 6
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LbNameTitle: TLabel
         Left = 24
         Top = 13
@@ -692,6 +712,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     object TSVersionID: TTabSheet
       Caption = 'VersionAndID'
       ImageIndex = 7
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LbVersionID: TLabel
         Left = 24
         Top = 13
@@ -782,6 +806,10 @@ object VSTPluginWizardForm: TVSTPluginWizardForm
     object TSFinish: TTabSheet
       Caption = 'Finish'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LbDone: TLabel
         Left = 24
         Top = 13
