@@ -8,10 +8,19 @@ object ExciterDataModule: TExciterDataModule
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   UniqueID = 'eXtR'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'High Life'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLogarithmic

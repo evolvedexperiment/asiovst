@@ -49,10 +49,25 @@ begin
    end;
  fChebyshevWaveshaper := TChebyshevWaveshaperSquarelShape.Create;
 
- Parameter[0] := 4000;
+ Parameter[0] := 8000;
  Parameter[1] := 4;
  Parameter[2] := 50;
  Parameter[3] := 50;
+
+ with Programs[0] do
+  begin
+   Parameter[0] := 8000;
+   Parameter[1] := 4;
+   Parameter[2] := 50;
+   Parameter[3] := 50;
+  end;
+ with Programs[1] do
+  begin
+   Parameter[0] := 10000;
+   Parameter[1] := 2;
+   Parameter[2] := 80;
+   Parameter[3] := 70;
+  end;
 end;
 
 procedure TExciterDataModule.VSTModuleClose(Sender: TObject);

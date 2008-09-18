@@ -46,6 +46,7 @@ object FmLA4029: TFmLA4029
       Max = 1.301030039787292000
       NumGlyphs = 65
       StitchKind = skHorizontal
+      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialAttackChange
     end
     object DialRelease: TGuiDial
@@ -64,6 +65,7 @@ object FmLA4029: TFmLA4029
       Max = 2.698999881744385000
       NumGlyphs = 65
       StitchKind = skHorizontal
+      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialReleaseChange
     end
     object LbRelease: TGuiLabel
@@ -317,6 +319,7 @@ object FmLA4029: TFmLA4029
       Max = 100.000000000000000000
       NumGlyphs = 65
       StitchKind = skHorizontal
+      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialMixChange
     end
     object PnMix: TGuiPanel
@@ -376,6 +379,7 @@ object FmLA4029: TFmLA4029
       Max = 24.000000000000000000
       NumGlyphs = 65
       StitchKind = skHorizontal
+      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialInputChange
     end
     object DialOutput: TGuiDial
@@ -392,6 +396,7 @@ object FmLA4029: TFmLA4029
       Max = 24.000000000000000000
       NumGlyphs = 65
       StitchKind = skHorizontal
+      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialOutputChange
     end
     object LbInput: TGuiLabel
@@ -437,6 +442,7 @@ object FmLA4029: TFmLA4029
       Max = 2.000000000000000000
       NumGlyphs = 65
       StitchKind = skHorizontal
+      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialRatioChange
     end
     object LbRatioX: TGuiLabel
@@ -467,6 +473,7 @@ object FmLA4029: TFmLA4029
       Max = 10.000000000000000000
       NumGlyphs = 65
       StitchKind = skHorizontal
+      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialKneeChange
     end
     object LbKnee: TGuiLabel

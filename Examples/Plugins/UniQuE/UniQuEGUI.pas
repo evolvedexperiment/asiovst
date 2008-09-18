@@ -5,25 +5,25 @@ interface
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Common,
   DAV_VSTModule, DAV_GuiLED, DAV_GuiLabel, DAV_GuiGroup, DAV_GuiBaseControl,
-  DAV_GuiDial;
+  DAV_GuiDial, StdCtrls;
 
 type
   TFmUniQuE = class(TForm)
+    GpUnique: TGuiGroup;
     DialLow: TGuiDial;
     DialMid: TGuiDial;
     DialPresence: TGuiDial;
     DialHigh: TGuiDial;
-    GpUnique: TGuiGroup;
-    LbLow: TGuiLabel;
-    LbMid: TGuiLabel;
-    LbPRes: TGuiLabel;
-    LbHigh: TGuiLabel;
     LEDOnOff: TGuiLED;
     LbOnOff: TGuiLabel;
     LbPad: TGuiLabel;
     LEDPad: TGuiLED;
     LbInvert: TGuiLabel;
     LEDInvert: TGuiLED;
+    LbLow: TGuiLabel;
+    LbMid: TGuiLabel;
+    LbPRes: TGuiLabel;
+    LbHigh: TGuiLabel;
     procedure OnOffClick(Sender: TObject);
     procedure DialLowChange(Sender: TObject);
     procedure DialMidChange(Sender: TObject);
