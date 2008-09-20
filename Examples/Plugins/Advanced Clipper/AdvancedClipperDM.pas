@@ -22,6 +22,8 @@ type
     procedure ParamOutputGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamBW2Change(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamBW1Change(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamRoundDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fUpDownSampling : array [0..3] of TDAVUpDownsampling;
     fInputGain      : Single;
@@ -40,8 +42,9 @@ procedure TAdvancedClipperDataModule.ParaOSFactor1Change(Sender: TObject; const 
 var
   ch : Integer;
 begin
- for ch := 0 to 1
-  do fUpDownSampling[ch].Factor := round(Value);
+ for ch := 0 to 1 do
+  if assigned(fUpDownSampling[ch])
+   then fUpDownSampling[ch].Factor := round(Value);
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -53,8 +56,9 @@ procedure TAdvancedClipperDataModule.ParamOSFactor2Change(Sender: TObject; const
 var
   ch : Integer;
 begin
- for ch := 2 to 3
-  do fUpDownSampling[ch].Factor := round(Value);
+ for ch := 2 to 3 do
+  if assigned(fUpDownSampling[ch])
+   then fUpDownSampling[ch].Factor := round(Value);
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -73,13 +77,20 @@ begin
    end;
 end;
 
+procedure TAdvancedClipperDataModule.ParamRoundDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := IntToStr(round(Parameter[Index]));
+end;
+
 procedure TAdvancedClipperDataModule.ParamBW1Change(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
   ch : Integer;
 begin
- for ch := 0 to 1
-  do fUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+ for ch := 0 to 1 do
+  if assigned(fUpDownSampling[ch])
+   then fUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
 end;
 
 procedure TAdvancedClipperDataModule.ParamBW2Change(
@@ -87,8 +98,9 @@ procedure TAdvancedClipperDataModule.ParamBW2Change(
 var
   ch : Integer;
 begin
- for ch := 0 to 1
-  do fUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+ for ch := 2 to 3 do
+  if assigned(fUpDownSampling[ch])
+   then fUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
 end;
 
 procedure TAdvancedClipperDataModule.ParamOutputGainChange(
@@ -107,8 +119,9 @@ procedure TAdvancedClipperDataModule.ParamFilterOrder1Change(
 var
   ch : Integer;
 begin
- for ch := 0 to 1
-  do fUpDownSampling[ch].Order := round(Value);
+ for ch := 0 to 1 do
+  if assigned(fUpDownSampling[ch])
+   then fUpDownSampling[ch].Order := round(Value);
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -121,8 +134,9 @@ procedure TAdvancedClipperDataModule.ParamFilterOrder2Change(Sender: TObject;
 var
   ch : Integer;
 begin
- for ch := 2 to 3
-  do fUpDownSampling[ch].Order := round(Value);
+ for ch := 2 to 3 do
+  if assigned(fUpDownSampling[ch])
+   then fUpDownSampling[ch].Order := round(Value);
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -312,8 +326,9 @@ procedure TAdvancedClipperDataModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   ch : Integer;
 begin
- for ch := 0 to 1
-  do fUpDownSampling[ch].SampleRate := SampleRate;
+ for ch := 0 to 3 do
+  if assigned(fUpDownSampling[ch])
+   then fUpDownSampling[ch].SampleRate := SampleRate;
 end;
 
 end.

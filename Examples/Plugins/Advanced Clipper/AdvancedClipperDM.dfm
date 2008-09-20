@@ -54,9 +54,17 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Input Gain'
-      Max = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 6.000000000000000000
+      MaxInteger = 6
+      Min = -6.000000000000000000
+      MinInteger = -6
       ShortLabel = 'InGain'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParamInputGainChange
     end
@@ -77,6 +85,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParaOSFactor1Change
+      OnCustomParameterDisplay = ParamRoundDisplay
     end
     item
       Curve = ctLinear
@@ -93,6 +102,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamFilterOrder1Change
+      OnCustomParameterDisplay = ParamRoundDisplay
     end
     item
       Curve = ctLinear
@@ -126,6 +136,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOSFactor2Change
+      OnCustomParameterDisplay = ParamRoundDisplay
     end
     item
       Curve = ctLinear
@@ -142,6 +153,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamFilterOrder2Change
+      OnCustomParameterDisplay = ParamRoundDisplay
     end
     item
       Curve = ctLinear
@@ -162,9 +174,17 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output Gain'
-      Max = 1.000000000000000000
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 6.000000000000000000
+      MaxInteger = 6
+      Min = -6.000000000000000000
+      MinInteger = -6
       ShortLabel = 'OutGain'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParamOutputGainChange
     end>
