@@ -1,5 +1,6 @@
 package DAV_DSP_D10;
 
+{$R *.res}
 {$R 'DAV_DspRegister.res'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -62,6 +63,7 @@ contains
   DAV_DspBaseOsc in '..\Source\DAV_DspBaseOsc.pas',
   DAV_DspVoiceController in '..\Source\DAV_DspVoiceController.pas',
   DAV_DspVoiceList in '..\Source\DAV_DspVoiceList.pas',
-  DAV_DspEnvelope in '..\Source\DSP\DAV_DspEnvelope.pas';
+  DAV_DspEnvelope in '..\Source\DSP\DAV_DspEnvelope.pas',
+  DAV_DSPUpDownSampling in '..\Source\DSP\DAV_DSPUpDownSampling.pas';
 
 end.

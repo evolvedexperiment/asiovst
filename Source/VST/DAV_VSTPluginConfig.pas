@@ -76,7 +76,7 @@ end;
 
 function TConfig.RandomLetter: Char;
 begin
- Result := Char(RandomRange(Ord('A'), Ord('Z')) + Random(1) * 32);
+ Result := Char(RandomRange(Ord('A'), Ord('Z')) + Random(2) * 32);
 end;
 
 function TConfig.RandomUniqueID: string;

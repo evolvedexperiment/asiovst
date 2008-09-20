@@ -223,7 +223,7 @@ object LA1701DataModule: TLA1701DataModule
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnSoftBypass = VSTModuleSoftBypass
   Left = 739
-  Top = 81
+  Top = 64
   Height = 150
   Width = 215
 end

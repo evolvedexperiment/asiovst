@@ -41,6 +41,7 @@ type
     procedure SetRatio(const Value: Double); virtual;
     procedure CalculateAttackFactor; virtual;
     procedure CalculateReleaseFactor; virtual;
+    procedure SampleRateChanged; virtual;
   public
     constructor Create; virtual;
     function TranslatePeakToGain(PeakLevel: Double): Double; virtual;
@@ -67,6 +68,28 @@ type
     property Output_dB;
     property Attack_ms;
     property Release_ms;
+    property Ratio;
+    property SampleRate;
+    property Knee;
+  end;
+
+  TLevelingAmplifierProgramDependentRelease = class(TCustomLevelingAmplifier)
+  private
+    FMinReleaseFactor : Double;
+    FMaxReleaseFactor : Double;
+    fProgramDependency: Double;
+    procedure SetProgramDependency(const Value: Double);
+  protected
+    procedure CalculateReleaseFactor; override;
+  public
+    constructor Create; override;
+    procedure Sidechain(const Input : Double); override;
+  published
+    property Input_dB;
+    property Output_dB;
+    property Attack_ms;
+    property Release_ms;
+    property ProgramDependency: Double read fProgramDependency write SetProgramDependency;
     property Ratio;
     property SampleRate;
     property Knee;
@@ -190,9 +213,14 @@ begin
   begin
    fSampleRate := Value;
    fSampleRateRez := 1 / fSampleRate;
-   CalculateAttackFactor;
-   CalculateReleaseFactor;
+   SampleRateChanged;
   end;
+end;
+
+procedure TCustomLevelingAmplifier.SampleRateChanged;
+begin
+ CalculateAttackFactor;
+ CalculateReleaseFactor;
 end;
 
 procedure TCustomLevelingAmplifier.SetThreshold(const Value: Double);
@@ -258,6 +286,54 @@ begin
  result := FInputLevel * (Harms[0] + Input * (1 + Input *
            (Harms[1] + sqr(Input) * (Harms[2] + sqr(Input) * Harms[3]))));
  result := FOutputLevel * fGain * result;
+end;
+
+{ TLevelingAmplifierProgramDependentRelease }
+
+procedure TLevelingAmplifierProgramDependentRelease.CalculateReleaseFactor;
+begin
+ inherited;
+ FMinReleaseFactor := Power(FReleaseFactor,     fProgramDependency);
+ FMaxReleaseFactor := Power(FReleaseFactor, 1 / fProgramDependency);
+end;
+
+constructor TLevelingAmplifierProgramDependentRelease.Create;
+begin
+ inherited;
+ fProgramDependency := 2;
+end;
+
+procedure TLevelingAmplifierProgramDependentRelease.SetProgramDependency(
+  const Value: Double);
+begin
+ if fProgramDependency <> Value then
+  begin
+   fProgramDependency := Value;
+   CalculateReleaseFactor;
+  end;
+end;
+
+procedure TLevelingAmplifierProgramDependentRelease.Sidechain(
+  const Input: Double);
+var
+  Value : Double;
+begin
+ // apply feedback gain and input level gain
+ Value := Input * FInputLevel;
+
+ // smooth input by attack
+ fOldInput := abs(Value) + (fOldInput - abs(Value)) * fAttackFactor;
+
+ // add fall off (released) caused by electroluminicence effect of an LED
+ fPeak := fPeak * fReleaseFactor;
+
+ // calculate difference to current peak level
+ Value := SimpleDiode(fOldInput - fPeak);
+
+ // apply release phase
+ fPeak := fPeak + Value;
+
+ fGain := TranslatePeakToGain(fPeak);
 end;
 
 end.
