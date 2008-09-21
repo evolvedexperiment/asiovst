@@ -106,7 +106,7 @@ begin
    DialThreshold.DialBitmap.Assign(PngBmp);
    DialRelease.DialBitmap.Assign(PngBmp);
   finally
-   RS.Free;
+   FreeAndNil(RS);
   end;
  finally
   FreeAndNil(PngBmp);

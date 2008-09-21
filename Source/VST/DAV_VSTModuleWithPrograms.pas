@@ -395,11 +395,12 @@ end;
 
 
 function TVSTModuleWithPrograms.HostCallGetParameterProperties(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
-var str: string;
+var
+  str: string;
 begin
   Result := Integer(ParameterProperties[Index].ReportVST2Properties);
   if Result > 0 then
-   with PVstParameterProperties(ptr)^ do
+   with PVstParameterPropertyRecord(ptr)^ do
     begin
       StrCopy(Caption, @ParameterProperties[Index].DisplayName[1]);
       str := ParameterProperties[Index].ShortLabel;

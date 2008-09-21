@@ -24,8 +24,8 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
   {$IFDEF MSWINDOWS} Registry, {$ENDIF} SysUtils, Classes, Graphics, Controls,
-  Forms, StdCtrls, ComCtrls, Dialogs, DAV_Common, DAV_AudioData, DAV_VSTEffect 
-  {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
+  Forms, StdCtrls, ComCtrls, Dialogs, DAV_Common, DAV_AudioData, DAV_VSTEffect, 
+  DAV_DLLLoader {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
 type
   TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): Integer of object;
@@ -99,6 +99,7 @@ type
     FOnVendorSpecific              : TVendorSpecificEvent;
     FGUIFormCreated                : Boolean;
     FGUIStyle                      : TGUIStyle;
+    FInternalDLLLoader             : TDLLLoader;
     function GetEffOptions: TEffFlags;
     function GetEntryPoints(theDll: TFileName): Integer;
     function GetInitialDelay: Integer;
@@ -158,7 +159,7 @@ type
     function GetOutputProperties(OutputNr: Integer): TVstPinProperties;
     function GetParamDisplay(index: Integer): string;
     function GetParameter(index: Integer): Single; virtual;
-    function GetParameterProperties(Parameter: Integer): TVstParameterProperties;
+    function GetParameterProperties(Parameter: Integer): TVstParameterPropertyRecord;
     function GetParamLabel(index: Integer): string;
     function GetParamName(index: Integer): string;
     function GetPlugCategory: TVstPluginCategory;
@@ -177,7 +178,8 @@ type
     function Identify: Integer;
     function Idle: Integer;
     function KeysRequired: Integer;
-    function Load(PluginDll: TFilename): Boolean;
+    function LoadFromFile(PluginDll: TFilename): Boolean;
+    function LoadFromStream(Stream: TStream): Boolean;
     function OfflineNotify(pntr: PVstAudioFile; numAudioFiles: Integer; start: Boolean): Integer;
     function OfflinePrepare(pntr: PVstOfflineTask; count: Integer): Integer;
     function OfflineRun(pntr: PVstOfflineTask; count :Integer): Integer;
@@ -498,6 +500,7 @@ resourcestring
   RStrLoadingFailed              = 'Loading failed!';
   RStrFileDoesNotExist           = 'File %d does not exists';
   RStrPlugInCouldNotBeLoaded     = 'PlugIn %d could not be loaded';
+  RStrPlugInStreamError          = 'PlugIn could not be loaded from stream';
   RStrBankFileDoesNotExist       = 'Bank file does not exist';
   StrPresetFileDoesNotExist      = 'Preset file does not exist';
   RStrBankFileNotForThisPlugin   = 'Bank file not for this plugin!';
@@ -516,10 +519,10 @@ var
   HostWindows    : TObjectList;
 
 const
- SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
- SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
- SCRoundDown8087CW : Word = $173F; // exceptions disabled
- SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
+  SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
+  SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
+  SCRoundDown8087CW : Word = $173F; // exceptions disabled
+  SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1273,6 +1276,8 @@ begin
     if (GUIForm <> nil) and fGUIFormCreated
      then FreeAndNil(GUIForm);
    end;
+  if assigned(FInternalDLLLoader)
+   then FreeAndNil(FInternalDLLLoader)
  finally
   inherited;
  end;
@@ -1289,8 +1294,8 @@ var
   loadOK : Boolean;
 begin
  loadOK := True;
- if not Assigned(PVstEffect)
-  then loadOK := Load(FDLLFileName)
+ if not Assigned(PVstEffect) and FileExists(FDLLFileName)
+  then loadOK := LoadFromFile(FDLLFileName)
   else FDLLFileName := '';
  asm
   fnclex                  // Don't raise pending exceptions enabled by the new flags
@@ -2118,15 +2123,10 @@ begin
  VstDispatch(effSetViewPosition, x, y);
 end;
 
-function TCustomVstPlugIn.GetParameterProperties(Parameter: Integer):TVstParameterProperties;
-var
-  temp: PVstParameterProperties;
+function TCustomVstPlugIn.GetParameterProperties(Parameter: Integer): TVstParameterPropertyRecord;
 begin
- GetMem(temp, SizeOf(TVstParameterProperties));
  if FActive
-  then VstDispatch(effGetParameterProperties, Parameter, 0, temp);
- result := temp^;
- FreeMem(temp);
+  then VstDispatch(effGetParameterProperties, Parameter, 0, @result);
 end;
 
 function TCustomVstPlugIn.KeysRequired: Integer;
@@ -2364,7 +2364,7 @@ begin
  FDLLFileName := VstFilename;
 end;
 
-function TCustomVstPlugIn.Load(PluginDll: TFilename):Boolean;
+function TCustomVstPlugIn.LoadFromFile(PluginDll: TFilename): Boolean;
 begin
  result := False;
  try
@@ -2394,6 +2394,29 @@ begin
   fActive := True;
   FDLLFileName := PluginDLL;
  except
+ end;
+end;
+
+function TCustomVstPlugIn.LoadFromStream(Stream: TStream): Boolean;
+begin
+ if not assigned(FInternalDLLLoader)
+  then FInternalDLLLoader := TDLLLoader.Create;
+ try
+  FMainFunction := nil;
+  FInternalDLLLoader.Load(Stream);
+  FMainFunction := FInternalDLLLoader.FindExport('main');
+  if assigned(FMainFunction)
+   then PVstEffect := FMainFunction(@audioMaster)
+   else PVstEffect := nil;
+  if PVstEffect <> nil then
+   begin
+    if Assigned(FOnAfterLoad) then FOnAfterLoad(Self);
+    result := True;
+   end else raise Exception.Create(RStrPlugInStreamError);
+ except
+  result := False;
+  FreeAndNil(FInternalDLLLoader);
+  raise;
  end;
 end;
 

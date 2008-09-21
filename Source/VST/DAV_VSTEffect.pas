@@ -102,7 +102,7 @@ type
     effSetViewPosition,           // 55: NOT USED IN 2.4 - set view position (in window) to x <index> y <value>
 
     // and...
-    effGetParameterProperties,    // 56: of param <index>, VstParameterProperties* in <ptr>
+    effGetParameterProperties,    // 56: of param <index>, TVstParameterProperties* in <ptr>
     effKeysRequired,              // 57: NOT USED IN 2.4 - returns 0: needs keys (default for 1.0 plugs), 1: don't need
     effGetVstVersion,             // 58: returns 2; older versions return 0
 
@@ -441,8 +441,8 @@ type
     kVstParameterCanRamp);
   TVstParameterPropertiesFlags = set of TVstParameterPropertiesFlag;
 
-  PVstParameterProperties = ^TVstParameterProperties;
-  TVstParameterProperties = packed record
+  PVstParameterPropertyRecord = ^TVstParameterPropertyRecord;
+  TVstParameterPropertyRecord = packed record
     StepFloat        : Single;
     SmallStepFloat   : Single;
     LargeStepFloat   : Single;

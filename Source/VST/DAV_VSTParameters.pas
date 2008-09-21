@@ -5,7 +5,8 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Classes, SysUtils, Windows, Forms, DAV_VSTEffect, DAV_Common, DAV_VSTBasicModule;
+  Classes, SysUtils, Windows, Forms, DAV_VSTEffect, DAV_Common,
+  DAV_VSTBasicModule;
 
 type
   TCurveType = (ctLinear, ctLogarithmic, ctExponential, ctFrequencyScale);
