@@ -415,6 +415,7 @@ type
     function getHostTempo: Single;
     function getHostVersion: Integer;
     function GetItem(Index: Integer): TCustomVstPlugIn;
+    function GetPluginCount: Integer;
     procedure SetBlockSize(bs: Integer);
     procedure SetHostCanDos(hcd: THostCanDos);
     procedure SetHostTempo(Tempo: Single);
@@ -431,6 +432,7 @@ type
 
     property BlockSize: Integer read getBlockSize write setBlocksize default 2048;
     property CanDos: THostCanDos read getHostCanDos write setHostCanDos;
+    property Count: Integer read GetPluginCount;
     property Language: TVstHostLanguage read FLanguage write FLanguage default kVstLangEnglish;
     property LatencyInput: Integer read FInputLatency write FInputLatency default 0;
     property LatencyOutput: Integer read FOutputLatency write FOutputLatency default 0;
@@ -1076,6 +1078,11 @@ end;
 function TCustomVstHost.GetItem(Index: Integer): TCustomVstPlugIn;
 begin
  Result := FVstPlugIns[Index];
+end;
+
+function TCustomVstHost.GetPluginCount: Integer;
+begin
+ result := FVstPlugIns.Count;
 end;
 
 procedure TCustomVstHost.SetVstPlugIns(const Value: TVstPlugIns);
