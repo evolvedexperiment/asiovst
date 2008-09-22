@@ -2,7 +2,7 @@ unit DAV_AudioData;
 
 interface
 
-{$REGION 'Documentation'}
+{$region 'Documentation'}
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  TAudioDataCollection
@@ -33,13 +33,13 @@ interface
 //  +----------------------------------------+
 //
 ////////////////////////////////////////////////////////////////////////////////
-{$ENDREGION}
+{$endregion}
 
 uses
   Windows, Classes, DAV_Common;
 
 type
-  {$REGION 'SampleRateSource classes'}
+  {$region 'SampleRateSource classes'}
   TCustomSampleRateSource = class(TComponent)
   private
     procedure SetSampleRate(const Value: Double);
@@ -57,9 +57,9 @@ type
   published
     property SampleRate;
   end;
-  {$ENDREGION}
+  {$endregion}
 
-  {$REGION 'AudioObject classes'}
+  {$region 'AudioObject classes'}
   TCustomAudioObject = class(TComponent)
   private
     fInternalSampleRateSource : TSampleRateSource;
@@ -83,9 +83,9 @@ type
     property SampleRate;
     property SampleRateSource;
   end;
-  {$ENDREGION}
+  {$endregion}
 
-  {$REGION 'AudioData classes'}
+  {$region 'AudioData classes'}
 
   ////////////////////////
   // TAudioData classes //
@@ -190,9 +190,9 @@ type
     property SampleRate;
     property SampleRateSource;
   end;
-  {$ENDREGION}
+  {$endregion}
 
-  {$REGION 'AudioChannel classes'}
+  {$region 'AudioChannel classes'}
 
   //////////////////////////////////
   // TAudioDataCollection classes //
@@ -299,9 +299,9 @@ type
     property ChannelData[Sample: Int64]: Double read GetChannelData write SetChannelData;
     property ChannelDataPointer: PDAVDoubleFixedArray read GetChannelDataPointer;
   end;
-  {$ENDREGION}
+  {$endregion}
 
-  {$REGION 'AudioDataCollection classes'}
+  {$region 'AudioDataCollection classes'}
   TAudioDataCollectionClass = class of TCustomAudioDataCollection;
   TCustomAudioDataCollection = class(TCustomAudioObject)
   private
@@ -375,7 +375,7 @@ type
     property SampleRate;
     property SampleRateSource;
   end;
-  {$ENDREGION}
+  {$endregion}
 
 procedure Register;
 
@@ -384,7 +384,7 @@ implementation
 uses
   SysUtils, Math;
 
-{$REGION 'SampleRateSource implementation'}
+{$region 'SampleRateSource implementation'}
 
 { TCustomSampleRateSource }
 
@@ -414,9 +414,9 @@ begin
    fSampleRateReci := 1 / fSampleRate;
   end;
 end;
-{$ENDREGION}
+{$endregion}
 
-{$REGION 'AudioObject implementation'}
+{$region 'AudioObject implementation'}
 
 { TCustomAudioObject }
 
@@ -496,9 +496,9 @@ begin
     end;
   end;
 end;
-{$ENDREGION}
+{$endregion}
 
-{$REGION 'AudioData implementation'}
+{$region 'AudioData implementation'}
 { TCustomAudioData }
 
 constructor TCustomAudioData.Create(AOwner: TComponent);
@@ -531,9 +531,9 @@ begin
    SampleFramesChanged(Value);
   end;
 end;
-{$ENDREGION}
+{$endregion}
 
-{$REGION 'AudioData implementation'}
+{$region 'AudioData implementation'}
 
 { TAudioData32 }
 
@@ -856,9 +856,9 @@ begin
   then fChannelData[Sample] := Value
   else raise Exception.Create('Sample out of range');
 end;
-{$ENDREGION}
+{$endregion}
 
-{$REGION 'AudioChannel implementation'}
+{$region 'AudioChannel implementation'}
 
 { TCustomAudioChannel }
 
@@ -917,7 +917,7 @@ begin
  inherited;
 end;
 
-{$REGION 'TAudioChannel32 Wrapper'}
+{$region 'TAudioChannel32 Wrapper'}
 procedure TAudioChannel32.Add(Constant: Double);
 begin
  fChannelData.Add(Constant);
@@ -986,7 +986,7 @@ procedure TAudioChannel32.RemoveDC;
 begin
  fChannelData.RemoveDC;
 end;
-{$ENDREGION}
+{$endregion}
 
 procedure TAudioChannel32.SampleFramesChanged;
 begin
@@ -1015,7 +1015,7 @@ begin
  inherited;
 end;
 
-{$REGION 'TAudioChannel64 Wrapper'}
+{$region 'TAudioChannel64 Wrapper'}
 procedure TAudioChannel64.Add(Constant: Double);
 begin
  fChannelData.Add(Constant);
@@ -1084,7 +1084,7 @@ procedure TAudioChannel64.RemoveDC;
 begin
  fChannelData.RemoveDC;
 end;
-{$ENDREGION}
+{$endregion}
 
 procedure TAudioChannel64.SampleFramesChanged;
 begin
@@ -1097,9 +1097,9 @@ procedure TAudioChannel64.SetChannelData(Sample: Int64; const Value: Double);
 begin
  fChannelData.ChannelData[Sample] := Value;
 end;
-{$ENDREGION}
+{$endregion}
 
-{$REGION 'AudioDataCollection implementation'}
+{$region 'AudioDataCollection implementation'}
 { TCustomAudioDataCollection }
 
 constructor TCustomAudioDataCollection.Create(AOwner: TComponent);
@@ -1276,7 +1276,7 @@ function TCustomAudioDataCollection64.GetChannelDataPointerList(
 begin
  result := ChannelList[Channel].ChannelDataPointer;
 end;
-{$ENDREGION}
+{$endregion}
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -103,8 +103,8 @@ type
     destructor Destroy; override;
   published
     property Color;
-    property LineWidth;
-    property LineColor;
+    property LineWidth default 2;
+    property LineColor default clRed;
     property CircleColor : TColor read FCircleColor write SetCircleColor default clBlack;
 
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
@@ -386,7 +386,7 @@ begin
 
    // draw circle
    Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
-   if Rad < 0 then exit;
+   if Rad <= 0 then exit;
    Steps := Round(2 / arcsin(1 / Rad)) + 1;
    if Steps > 1 then
     begin
