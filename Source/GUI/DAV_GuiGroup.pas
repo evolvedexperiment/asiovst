@@ -147,8 +147,8 @@ begin
   begin
    Lock;
 
-   Brush.Style := bsClear;
-   Brush.Color := fLineColor;
+   Brush.Style := bsSolid;
+   Brush.Color := Color;
    Pen.Width   := fOSFactor * fLineWidth;
    Pen.Color   := fLineColor;
    Font.Assign(Self.Font);
@@ -237,11 +237,12 @@ begin
          end;
         PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
 
-        PolyLine(PtsArray);
+        PolyGon(PtsArray);
 
         // Draw inner text
         //////////////////
 
+        Brush.Color   := fLineColor;
         SetLength(PtsArray, Steps div 2 + 5);
         Val.Re := -rad; Val.Im := 0;
 
@@ -250,27 +251,28 @@ begin
         PtsArray[0] := Point(Round(rct.Left), Round(rct.Top + rad));
 
         // upper left corner
-        for i := 1 to Steps div 4 - 1 do
+        for i := 1 to (Steps div 4) - 1 do
          begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
           PtsArray[i] := Point(Round(rct.Left + rad + Val.Re), Round(rct.Top + rad + Val.Im));
          end;
-        PtsArray[Steps div 4      ] := Point(rct.Left + rad, rct.Top);
-        PtsArray[Steps div 4  + 1 ] := Point(rct.Right, rct.Top);
-        PtsArray[Steps div 4  + 2 ] := Point(rct.Right, rct.Bottom - rad);
+        PtsArray[Steps div 4    ] := Point(rct.Left + rad, rct.Top);
+        PtsArray[Steps div 4 + 1] := Point(rct.Right, rct.Top);
+        PtsArray[Steps div 4 + 2] := Point(rct.Right, rct.Bottom - rad);
 
         Val.Re := rad; Val.Im := 0;
 
         // lower right corner
-        for i := Steps div 4 to Steps div 2 - 1 do
+        for i := (Steps div 4) to (Steps div 2) - 1 do
          begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
           PtsArray[i + 3] := Point(Round(rct.Right - rad + Val.Re), Round(rct.Bottom - rad + Val.Im));
          end;
+
         PtsArray[Steps div 2 + 3] := Point(rct.Right - rad, rct.Bottom);
         PtsArray[Steps div 2 + 4] := Point(rct.Left, rct.Bottom);
 

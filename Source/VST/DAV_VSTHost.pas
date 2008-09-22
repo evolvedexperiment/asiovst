@@ -234,7 +234,7 @@ type
 
     property Parameters[Index: Integer]:Single read GetParameter write SetParameter;
     property VstOfflineTask : TVstOfflineTask read FVstOfflineTask;
-  published
+
     property Active: Boolean read FActive write Activate default False;
     property AutomationState: TAutomationState read FAutomationState Write FAutomationState default as0NotSupported;
     property CurrentProcessLevel: TCurrentProcessLevel read FProcessLevel write FProcessLevel default cpl0NotSupported;
@@ -281,7 +281,7 @@ type
   end;
 
   TVstPlugIn = class(TCustomVstPlugIn)
-  private
+  published
     property Active;
     property AutomationState;
     property CurrentProcessLevel;
@@ -330,15 +330,15 @@ type
   TVstPlugIns = class(TOwnedCollection)
   private
     FOwner: TComponent;
-    function GetItem(Index: Integer): TCustomVstPlugIn;
-    procedure SetItem(Index: Integer; const Value: TCustomVstPlugIn);
+    function GetItem(Index: Integer): TVstPlugIn;
+    procedure SetItem(Index: Integer; const Value: TVstPlugIn);
   protected
-    property Items[Index: Integer]: TCustomVstPlugIn read GetItem write SetItem; default;
+    property Items[Index: Integer]: TVstPlugIn read GetItem write SetItem; default;
   public
     constructor Create(AOwner: TComponent);
-    function Add: TCustomVstPlugIn;
-    function CloneAdd(Source: TCustomVstPlugIn): TCustomVstPlugIn;
-    function Insert(Index: Integer): TCustomVstPlugIn;
+    function Add: TVstPlugIn;
+    function CloneAdd(Source: TVstPlugIn): TVstPlugIn;
+    function Insert(Index: Integer): TVstPlugIn;
     procedure Delete(Index: Integer);
     property Count;
   end;
@@ -1169,31 +1169,31 @@ end;
 
 { TVstPlugIns }
 
-function TVstPlugIns.Add: TCustomVstPlugIn;
+function TVstPlugIns.Add: TVstPlugIn;
 begin
-  Result := TCustomVstPlugIn(inherited Add);
+  Result := TVstPlugIn(inherited Add);
 end;
 
-function TVstPlugIns.CloneAdd(Source: TCustomVstPlugIn): TCustomVstPlugIn;
+function TVstPlugIns.CloneAdd(Source: TVstPlugIn): TVstPlugIn;
 begin
- Result := TCustomVstPlugIn(inherited Add);
+ Result := TVstPlugIn(inherited Add);
  Source.AssignTo(Result);
 end;
 
 constructor TVstPlugIns.Create(AOwner: TComponent);
 begin
- inherited Create(AOwner, TCustomVstPlugIn);
+ inherited Create(AOwner, TVstPlugIn);
  FOwner := AOwner;
 end;
 
-function TVstPlugIns.GetItem(Index: Integer): TCustomVstPlugIn;
+function TVstPlugIns.GetItem(Index: Integer): TVstPlugIn;
 begin
- Result := TCustomVstPlugIn(inherited GetItem(Index));
+ Result := TVstPlugIn(inherited GetItem(Index));
 end;
 
-function TVstPlugIns.Insert(Index: Integer): TCustomVstPlugIn;
+function TVstPlugIns.Insert(Index: Integer): TVstPlugIn;
 begin
- Result := TCustomVstPlugIn(inherited Insert(Index));
+ Result := TVstPlugIn(inherited Insert(Index));
 end;
 
 procedure TVstPlugIns.Delete(Index: Integer);
@@ -1201,7 +1201,7 @@ begin
  inherited Delete(Index);
 end;
 
-procedure TVstPlugIns.SetItem(Index: Integer; const Value: TCustomVstPlugIn);
+procedure TVstPlugIns.SetItem(Index: Integer; const Value: TVstPlugIn);
 begin
   inherited SetItem(Index, Value);
 end;
@@ -2423,7 +2423,6 @@ begin
  except
   result := False;
   FreeAndNil(FInternalDLLLoader);
-  raise;
  end;
 end;
 

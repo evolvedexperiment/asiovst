@@ -1,0 +1,16 @@
+program PluginMerger;
+
+{$R 'CustomWrapper.res' 'CustomWrapper.rc'}
+
+uses
+  Forms,
+  PMmain in 'PMmain.pas' {FmPluginMerger},
+  DAV_ChunkPluginGUI in '..\..\..\Source\DAV_ChunkPluginGUI.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TFmPluginMerger, FmPluginMerger);
+  Application.Run;
+end.

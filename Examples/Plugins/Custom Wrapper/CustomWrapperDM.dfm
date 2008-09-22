@@ -1,6 +1,7 @@
 object CustomWrapperDataModule: TCustomWrapperDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'CustomWrapper'
@@ -25,8 +26,8 @@ object CustomWrapperDataModule: TCustomWrapperDataModule
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnStartProcess = VSTModuleStartProcess
   OnStopProcess = VSTModuleStopProcess
-  Left = 218
-  Top = 81
+  Left = 215
+  Top = 113
   Height = 150
   Width = 215
   object VstHost: TVstHost
