@@ -2,6 +2,13 @@
 library CustomWrapper;
 
 uses
+  FastMM4,
+  madExcept,
+  madLinkDisAsm,
+  madListHardware,
+  madListProcesses,
+  madListModules,
+  RTLVCLOptimize,
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,

@@ -48,7 +48,7 @@ begin
  inherited;
  fFilter[0]           := TButterworthLP.Create;
  fFilter[1]           := TButterworthLP.Create;
- fTransitionBandwidth := 0.499;
+ fTransitionBandwidth := 0.99;
  fSampleRate          := 44100;
  Order                := 2;
 end;
