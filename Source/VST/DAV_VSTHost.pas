@@ -241,6 +241,7 @@ type
     property DisplayName: string read GetDisplayName write FDisplayName;
     property DLLFileName: TFileName read FDLLFileName write SetDLLFileName;
     property EditVisible: Boolean read FEditOpen;
+    property EffectName: string read GetEffectName;
     property EffectOptions: TEffFlags read GetEffOptions stored False;
     property GUIStyle : TGUIStyle read fGUIStyle write SetGUIStyle default gsDefault;
     property InitialDelay: Integer read GetInitialDelay stored False;
@@ -1394,13 +1395,13 @@ begin
  end;
 end;
 
-procedure TCustomVstPlugIn.Process(Inputs, Outputs: PPSingle; SampleFrames:Integer);
+procedure TCustomVstPlugIn.Process(Inputs, Outputs: PPSingle; SampleFrames: Integer);
 begin
  if PVstEffect <> nil
   then PVstEffect.Process(PVstEffect, Inputs, Outputs, SampleFrames);
 end;
 
-procedure TCustomVstPlugIn.ProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames:Integer);
+procedure TCustomVstPlugIn.ProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
 begin
  if PVstEffect <> nil
   then PVstEffect.ProcessReplacing(PVstEffect, Inputs, Outputs, SampleFrames);
@@ -2439,13 +2440,15 @@ begin
  FVersion := -1;
  FUniqueID := '';
  if FDLLHandle > 0 then
- begin
-  try
-   FreeLibrary(FDLLHandle);
-  except
+  begin
+   try
+    FreeLibrary(FDLLHandle);
+   except
+   end;
+   FDLLHandle := 0;
   end;
-  FDLLHandle := 0;
- end;
+ if assigned(FInternalDLLLoader)
+  then FInternalDLLLoader.Unload;
  PVstEffect := nil;
 end;
 

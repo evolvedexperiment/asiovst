@@ -12,6 +12,8 @@ object FmSplitter: TFmSplitter
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
+  OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnResize = FormResize
   OnShow = FormShow
@@ -95,9 +97,9 @@ object FmSplitter: TFmSplitter
       OnChange = DialSplitOrderChange
     end
     object LbSplitOrder: TGuiLabel
-      Left = 218
+      Left = 219
       Top = 9
-      Width = 40
+      Width = 39
       Height = 20
       AntiAlias = gaaLinear2x
       Caption = '4x'
@@ -134,9 +136,9 @@ object FmSplitter: TFmSplitter
       OnClick = GuiLEDOversamplingClick
     end
     object LbOversamplingFactor: TGuiLabel
-      Left = 410
+      Left = 411
       Top = 9
-      Width = 40
+      Width = 33
       Height = 20
       AntiAlias = gaaLinear2x
       Caption = '4x'

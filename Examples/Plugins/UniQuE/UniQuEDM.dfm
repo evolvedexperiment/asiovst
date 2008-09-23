@@ -139,6 +139,7 @@ object UniQuEDataModule: TUniQuEDataModule
     end>
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
+  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   Left = 218

@@ -23,6 +23,8 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject;
+      const SampleRate: Single);
   private
     fFade   : array [0..1] of Single;
     fVolume : Single;
@@ -122,6 +124,20 @@ begin
                            fHigh[ch].ProcessSample(Inputs[ch, sample])))) +
                            fFade[1] * Inputs[ch, sample];
    end;
+end;
+
+procedure TUniQuEDataModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+var
+  ch : Integer;
+begin
+ for ch := 0 to 1 do
+  begin
+   fLow[Ch].SampleRate  := SampleRate;
+   fMid[Ch].SampleRate  := SampleRate;
+   fPres[Ch].SampleRate := SampleRate;
+   fHigh[Ch].SampleRate := SampleRate;
+  end;
 end;
 
 procedure TUniQuEDataModule.ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);

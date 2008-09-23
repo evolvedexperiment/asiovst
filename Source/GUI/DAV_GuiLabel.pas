@@ -26,7 +26,7 @@ type
     procedure ShadowChangedHandler(Sender: TObject);
     procedure ShadowChanged;
   protected
-    procedure RenderLabelToBitmap(Bitmap: TBitmap); virtual;
+    procedure RenderLabelToBitmap(const Bitmap: TBitmap); virtual;
     procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
   public
     constructor Create(AOwner: TComponent); overload; override;
@@ -242,7 +242,7 @@ begin
       Downsample2xBitmap(Bmp);
       fBuffer.Canvas.Draw(0, 0, Bmp);
      finally
-      Free;
+       FreeAndNil(Bmp);
      end;
    end;
   gaaLinear4x :
@@ -269,7 +269,7 @@ begin
       Downsample4xBitmap(Bmp);
       fBuffer.Canvas.Draw(0, 0, Bmp);
      finally
-      Free;
+      FreeAndNil(Bmp);
      end;
    end;
   gaaLinear8x :
@@ -298,7 +298,7 @@ begin
       Downsample2xBitmap(Bmp);
       fBuffer.Canvas.Draw(0, 0, Bmp);
      finally
-      Free;
+      FreeAndNil(Bmp);
      end;
    end;
   gaaLinear16x :
@@ -327,7 +327,7 @@ begin
       Downsample4xBitmap(Bmp);
       fBuffer.Canvas.Draw(0, 0, Bmp);
      finally
-      Free;
+      FreeAndNil(Bmp);
      end;
    end;
  end;
@@ -335,7 +335,7 @@ begin
  inherited;
 end;
 
-procedure TCustomGuiLabel.RenderLabelToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiLabel.RenderLabelToBitmap(const Bitmap: TBitmap);
 var
   TextSize : TSize;
 begin

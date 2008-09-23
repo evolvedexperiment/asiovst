@@ -33,6 +33,8 @@ type
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure SBModeChange(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormDestroy(Sender: TObject);
   private
     fBackground : TBitmap;  
   public
@@ -107,6 +109,22 @@ begin
   end;
 end;
 
+procedure TFmSplitter.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+ with TSplitTemplateDataModule(Owner) do
+  try
+   if VstHost[0].EditVisible then VstHost[0].CloseEdit;
+   if VstHost[1].EditVisible then VstHost[1].CloseEdit;
+  except 
+  end;
+end;
+
+procedure TFmSplitter.FormDestroy(Sender: TObject);
+begin
+ if assigned(fBackground)
+  then FreeAndNil(fBackground); 
+end;
+
 procedure TFmSplitter.FormPaint(Sender: TObject);
 begin
  if assigned(fBackground)
@@ -118,7 +136,6 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   Line   : PRGB32Array;
-
 begin
  // Create Background Image (if not already done
  if not assigned(fBackground)

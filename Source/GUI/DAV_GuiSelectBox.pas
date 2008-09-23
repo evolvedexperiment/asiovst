@@ -22,7 +22,7 @@ type
     fOSFactor         : Integer;
     fRoundRadius      : Integer;
     fSelectBoxColor   : TColor;
-    procedure RenderSelectBoxToBitmap(Bitmap: TBitmap);
+    procedure RenderSelectBoxToBitmap(const Bitmap: TBitmap);
     procedure SetAlignment(const Value: TAlignment);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetArrowColor(const Value: TColor);
@@ -182,7 +182,7 @@ begin
  inherited;
 end;
 
-procedure TCustomGuiSelectBox.RenderSelectBoxToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiSelectBox.RenderSelectBoxToBitmap(const Bitmap: TBitmap);
 var
   Val, Off : TComplexDouble;
   Steps, i : Integer;

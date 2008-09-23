@@ -9,11 +9,13 @@ uses
 
 type
   TProcessMidiEvent = procedure(Sender: TObject; MidiEvent: TVstMidiEvent) of object;
+  TProcessEvents = procedure(Sender: TObject; Events: PVstEvents) of object;
 
   TVSTModuleWithMidi = class(TCustomVSTModule)
   protected
-    fMidiEvent    : TVstEvents;
-    fOnProcessMidi: TProcessMidiEvent;
+    fMidiEvent       : TVstEvents;
+    fOnProcessMidi   : TProcessMidiEvent;
+    fOnProcessEvents : TProcessEvents;
     procedure ProcessMidiEvent(MidiEvent: TVstMidiEvent); virtual;
   public
     constructor Create(AOwner: TComponent); override;
@@ -24,7 +26,7 @@ type
     procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
 
     function HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetCurrentMidiProgram     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallGetCurrentMidiProgram(Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
 
     procedure MIDI_Out(b1, b2, b3, b4: Byte; offset: Integer = 0);
     procedure MIDI_SendSysEx(Data: array of Byte; offset: Integer = 0);
@@ -38,6 +40,7 @@ type
     procedure MIDI_ProgramChange(ch, val: Integer; offset: Integer = 0);
 
     property OnProcessMidi: TProcessMidiEvent read fOnProcessMidi write fOnProcessMidi;
+    property OnProcessEvents: TProcessEvents read fOnProcessEvents write fOnProcessEvents;
   end;
   
 implementation
@@ -53,12 +56,12 @@ begin
   FMidiEvent.numEvents := 0;
 
   for i := 0 to maxMidiEvents - 1 do
-  begin
-   GetMem(FMidiEvent.events[i], sizeof(TVstMidiEvent));
-   FillChar(FMidiEvent.events[i]^, sizeof(TVstMidiEvent), 0);
-   PVstMidiEvent(FMidiEvent.events[i])^.EventType := etMidi;
-   PVstMidiEvent(FMidiEvent.events[i])^.ByteSize := 24;
-  end;
+   begin
+    GetMem(FMidiEvent.events[i], SizeOf(TVstMidiEvent));
+    FillChar(FMidiEvent.events[i]^, SizeOf(TVstMidiEvent), 0);
+    PVstMidiEvent(FMidiEvent.events[i])^.EventType := etMidi;
+    PVstMidiEvent(FMidiEvent.events[i])^.ByteSize := 24;
+   end;
 end;
 
 destructor TVSTModuleWithMidi.Destroy;
@@ -80,9 +83,12 @@ begin
 end;
 
 function TVSTModuleWithMidi.HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
-var i: Integer;
+var
+  i: Integer;
 begin
   Result:= inherited HostCallProcessEvents(Index, Value, ptr, opt);
+  if assigned(fOnProcessEvents)
+   then fOnProcessEvents(Self, PVstEvents(ptr));
   for i := 0 to PVstEvents(ptr)^.numEvents - 1 do
     if (PVstEvents(ptr)^.events[i]^.EventType = etMidi) then
       ProcessMidiEvent(PVstMidiEvent(PVstEvents(ptr)^.events[i])^);

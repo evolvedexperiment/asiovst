@@ -17,7 +17,7 @@ type
     fOSFactor     : Integer;
     fButtonColor  : TColor;
     procedure SetRoundRadius(Value: Integer);
-    procedure RenderButtonToBitmap(Bitmap: TBitmap);
+    procedure RenderButtonToBitmap(const Bitmap: TBitmap);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetButtonColor(const Value: TColor);
     procedure SetCaption(const Value: string);
@@ -96,7 +96,7 @@ begin
  fButtonColor  := clBtnShadow;
 end;
 
-procedure TCustomGuiButton.RenderButtonToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiButton.RenderButtonToBitmap(const Bitmap: TBitmap);
 var
   Val, Off : TComplexDouble;
   Steps, i : Integer;

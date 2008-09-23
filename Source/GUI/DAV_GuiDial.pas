@@ -91,7 +91,7 @@ type
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure CalcColorCircle;
     procedure RedrawBuffer(doBufferFlip: Boolean); override;
-    procedure RenderKnobToBitmap(Bitmap: TBitmap); virtual;
+    procedure RenderKnobToBitmap(const Bitmap: TBitmap); virtual;
 
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
@@ -155,7 +155,7 @@ type
 
   TCustomGuiDialMetal = class(TCustomGuiDial)
   protected
-    procedure RenderKnobToBitmap(Bitmap: TBitmap); override;
+    procedure RenderKnobToBitmap(const Bitmap: TBitmap); override;
   end;
 
   TGuiDialMetal = class(TCustomGuiDialMetal)
@@ -187,7 +187,7 @@ type
     fIndLineLength : Single;
     procedure SetIndLineLength(const Value: Single);
   protected
-    procedure RenderKnobToBitmap(Bitmap: TBitmap); override;
+    procedure RenderKnobToBitmap(const Bitmap: TBitmap); override;
   public
     constructor Create(AOwner: TComponent); override;
     property IndicatorLineLength_Percent: Single read fIndLineLength write SetIndLineLength;
@@ -369,7 +369,7 @@ begin
  Result := SafeAngle(PointerAngles.Start + (PointerAngles.Range * MapValue(NormalizedPosition))) * Pi180;
 end;
 
-procedure TCustomGuiDial.RenderKnobToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiDial.RenderKnobToBitmap(const Bitmap: TBitmap);
 var
   Steps, i : Integer;
   Val, Off : TComplexDouble;
@@ -450,7 +450,7 @@ begin
          Downsample2xBitmap(Bmp);
          fBuffer.Canvas.Draw(0, 0, Bmp);
         finally
-         Free;
+         FreeAndNil(Bmp);
         end;
       end;
      gaaLinear4x :
@@ -475,7 +475,7 @@ begin
          Downsample4xBitmap(Bmp);
          fBuffer.Canvas.Draw(0, 0, Bmp);
         finally
-         Free;
+         FreeAndNil(Bmp);
         end;
       end;
      gaaLinear8x :
@@ -502,7 +502,7 @@ begin
          Downsample2xBitmap(Bmp);
          fBuffer.Canvas.Draw(0, 0, Bmp);
         finally
-         Free;
+         FreeAndNil(Bmp);
         end;
       end;
      gaaLinear16x :
@@ -529,14 +529,14 @@ begin
          Downsample4xBitmap(Bmp);
          fBuffer.Canvas.Draw(0, 0, Bmp);
         finally
-         Free;
+         FreeAndNil(Bmp);
         end;
       end;
     end
    else
     begin
      // draw background
-     Brush.Color := Self.Color; 
+     Brush.Color := Self.Color;
      {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
      FillRect(ClipRect);
 
@@ -832,7 +832,7 @@ end;
 
 { TCustomGuiDialMetal }
 
-procedure TCustomGuiDialMetal.RenderKnobToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiDialMetal.RenderKnobToBitmap(const Bitmap: TBitmap);
 var
   Steps, i : Integer;
   Val      : Single;
@@ -903,7 +903,7 @@ begin
  fIndLineLength := 100;
 end;
 
-procedure TCustomGuiDialEx.RenderKnobToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiDialEx.RenderKnobToBitmap(const Bitmap: TBitmap);
 var
   Steps, i  : Integer;
   Val, Off  : TComplexDouble;

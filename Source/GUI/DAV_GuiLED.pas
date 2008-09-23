@@ -22,7 +22,7 @@ type
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure RedrawBuffer(doBufferFlip: Boolean); override;
-    procedure RenderLEDToBitmap(Bitmap: TBitmap); virtual;
+    procedure RenderLEDToBitmap(const Bitmap: TBitmap); virtual;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -106,7 +106,7 @@ begin
   RedrawBuffer(True);
 end;
 
-procedure TCustomGuiLED.RenderLEDToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiLED.RenderLEDToBitmap(const Bitmap: TBitmap);
 var
   Steps, i : Integer;
   Rad      : Single;
