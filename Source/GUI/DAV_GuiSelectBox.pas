@@ -12,8 +12,10 @@ type
   private
     fAlignment        : TAlignment;
     fAntiAlias        : TGuiAntiAlias;
-    fArrowButtonColor : TColor;
+    fArrowColor       : TColor;
+    fArrowWidth       : Integer;
     fArrowButtonWidth : Integer;
+    fButtonColor      : TColor;
     fItemIndex        : Integer;
     fItems            : TStringList;
     fOnChange         : TNotifyEvent;
@@ -23,12 +25,14 @@ type
     procedure RenderSelectBoxToBitmap(Bitmap: TBitmap);
     procedure SetAlignment(const Value: TAlignment);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
-    procedure SetArrowButtonColor(const Value: TColor);
+    procedure SetArrowColor(const Value: TColor);
     procedure SetItemIndex(Value: Integer);
     procedure SetItems(const Value: TStringList);
     procedure SetRoundRadius(Value: Integer);
     procedure SetSelectBoxColor(const Value: TColor);
     procedure ButtonWidthChanged;
+    procedure SetArrowWidth(const Value: Integer);
+    procedure SetButtonColor(const Value: TColor);
   protected
     procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
@@ -38,7 +42,9 @@ type
     procedure Clear;
     property Alignment: TAlignment read fAlignment write SetAlignment default taCenter;
     property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
-    property ArrowButtonColor: TColor read fArrowButtonColor write SetArrowButtonColor default clBtnHighlight;
+    property ArrowColor: TColor read fArrowColor write SetArrowColor default clBtnHighlight;
+    property ArrowWidth: Integer read fArrowWidth write SetArrowWidth default 2;
+    property ButtonColor: TColor read fButtonColor write SetButtonColor default clBtnShadow;
     property ItemIndex: Integer read fItemIndex write SetItemIndex;
     property Items: TStringList read fItems write SetItems;
     property LineColor default clBtnHighlight;
@@ -53,7 +59,9 @@ type
     property Alignment;
     property Anchors;
     property AntiAlias;
-    property ArrowButtonColor;
+    property ArrowColor;
+    property ArrowWidth;
+    property ButtonColor;
     property Color;
     property Constraints;
     property DragCursor;
@@ -109,8 +117,10 @@ begin
  fRoundRadius      := 2;
  fLineColor        := clBtnHighlight;
  fSelectBoxColor   := clBtnHighlight;
- fArrowButtonColor := clBtnHighlight;
+ fArrowColor       := clBtnHighlight;
  fSelectBoxColor   := clBtnShadow;
+ fButtonColor      := clBtnShadow;
+ fArrowWidth       := 2;
  fItemIndex        := -1;
  fOSFactor         := 1;
  fAlignment        := taCenter;
@@ -268,10 +278,10 @@ begin
      begin
       rad := fArrowButtonWidth * fOSFactor;
 
-      Brush.Color := fArrowButtonColor;
+      Brush.Color := fArrowColor;
       with ArrowPos do
        begin
-
+        Pen.Width := fOSFactor * fArrowWidth;
         y := Bitmap.Height div 2;
         x := Bitmap.Width - rad;
         Polygon([Point(x, y - fOSFactor * 4),
@@ -282,7 +292,6 @@ begin
         Polygon([Point(x + 8 * fOSFactor, y - fOSFactor * 4),
                  Point(x + 8 * fOSFactor, y + fOSFactor * 4),
                  Point(x, y)]);
-
        end;
 
       if fItemIndex >= 0 then
@@ -301,11 +310,12 @@ begin
       MoveTo(Bitmap.Width - 1 - rad, 0);
       LineTo(Bitmap.Width - 1 - rad, Bitmap.Height);
 
-      Brush.Color := fArrowButtonColor;
+      Brush.Color := fArrowColor;
       with ArrowPos do
        begin
         x := rad div 2;
         y := Bitmap.Height div 2;
+        Pen.Width := fOSFactor * fArrowWidth;
         Polygon([Point(x + 2 * fOSFactor, y - fOSFactor * 4),
                  Point(x + 2 * fOSFactor, y + fOSFactor * 4),
                  Point(x - 2 * fOSFactor, y)]);
@@ -328,10 +338,10 @@ begin
      begin
       rad := fArrowButtonWidth * fOSFactor;
 
-      Brush.Color := fArrowButtonColor;
+      Brush.Color := fArrowColor;
       with ArrowPos do
        begin
-
+        Pen.Width := fOSFactor * fArrowWidth;
         y := Bitmap.Height div 2;
         x := rad;
         Polygon([Point(x, y - fOSFactor * 4),
@@ -523,11 +533,29 @@ begin
   end;
 end;
 
-procedure TCustomGuiSelectBox.SetArrowButtonColor(const Value: TColor);
+procedure TCustomGuiSelectBox.SetArrowColor(const Value: TColor);
 begin
- if fArrowButtonColor <> Value then
+ if fArrowColor <> Value then
   begin
-   fArrowButtonColor := Value;
+   fArrowColor := Value;
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiSelectBox.SetArrowWidth(const Value: Integer);
+begin
+ if fArrowWidth <> Value then
+  begin
+   fArrowWidth := Value;
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiSelectBox.SetButtonColor(const Value: TColor);
+begin
+ if fButtonColor <> Value then
+  begin
+   fButtonColor := Value;
    RedrawBuffer(True);
   end;
 end;

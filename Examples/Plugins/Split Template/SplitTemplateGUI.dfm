@@ -1,10 +1,10 @@
-object FmFrequencySplitter: TFmFrequencySplitter
+object FmSplitter: TFmSplitter
   Left = 277
   Top = 185
   BorderStyle = bsNone
   Caption = 'Frequency Splitter'
   ClientHeight = 65
-  ClientWidth = 557
+  ClientWidth = 588
   Color = 2830643
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -27,7 +27,7 @@ object FmFrequencySplitter: TFmFrequencySplitter
   object PnControl: TGuiPanel
     Left = 0
     Top = 0
-    Width = 557
+    Width = 588
     Height = 37
     Align = alTop
     BorderVisible = False
@@ -39,23 +39,8 @@ object FmFrequencySplitter: TFmFrequencySplitter
     Radius = 0
     TabOrder = 0
     UseDockManager = True
-    object LbLeftRight: TGuiLabel
-      Left = 75
-      Top = 9
-      Width = 82
-      Height = 20
-      AntiAlias = gaaLinear2x
-      Caption = 'Left / Right'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -16
-      Font.Name = 'Times New Roman'
-      Font.Style = [fsBold]
-      Visible = False
-      OnClick = LbLeftRightClick
-    end
     object DialSplitFrequency: TGuiDial
-      Left = 72
+      Left = 105
       Top = 9
       Width = 20
       Height = 20
@@ -75,22 +60,8 @@ object FmFrequencySplitter: TFmFrequencySplitter
       StitchKind = skHorizontal
       OnChange = DialSplitFrequencyChange
     end
-    object LbSplit: TGuiLabel
-      Left = 28
-      Top = 9
-      Width = 41
-      Height = 20
-      AntiAlias = gaaLinear4x
-      Caption = 'Split:'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -16
-      Font.Name = 'Times New Roman'
-      Font.Style = [fsBold]
-      OnClick = GuiLEDSplitClick
-    end
     object LbSplitFrequency: TGuiLabel
-      Left = 96
+      Left = 129
       Top = 9
       Width = 59
       Height = 20
@@ -102,20 +73,8 @@ object FmFrequencySplitter: TFmFrequencySplitter
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
     end
-    object GuiLEDSplit: TGuiLED
-      Left = 7
-      Top = 9
-      Width = 20
-      Height = 20
-      OnClick = GuiLEDSplitClick
-      Brightness_Percent = 80.000000000000000000
-      LineWidth = 2
-      LEDColor = clLime
-      AntiAlias = gaaLinear4x
-      LineColor = clLime
-    end
     object DialSplitOrder: TGuiDial
-      Left = 161
+      Left = 194
       Top = 9
       Width = 20
       Height = 20
@@ -136,7 +95,7 @@ object FmFrequencySplitter: TFmFrequencySplitter
       OnChange = DialSplitOrderChange
     end
     object LbSplitOrder: TGuiLabel
-      Left = 185
+      Left = 218
       Top = 9
       Width = 40
       Height = 20
@@ -149,7 +108,7 @@ object FmFrequencySplitter: TFmFrequencySplitter
       Font.Style = [fsBold]
     end
     object GuiLEDOversampling: TGuiLED
-      Left = 224
+      Left = 257
       Top = 9
       Width = 20
       Height = 20
@@ -161,7 +120,7 @@ object FmFrequencySplitter: TFmFrequencySplitter
       LineColor = clLime
     end
     object LbOversampling: TGuiLabel
-      Left = 246
+      Left = 279
       Top = 9
       Width = 97
       Height = 20
@@ -175,7 +134,7 @@ object FmFrequencySplitter: TFmFrequencySplitter
       OnClick = GuiLEDOversamplingClick
     end
     object LbOversamplingFactor: TGuiLabel
-      Left = 377
+      Left = 410
       Top = 9
       Width = 40
       Height = 20
@@ -189,7 +148,7 @@ object FmFrequencySplitter: TFmFrequencySplitter
       Visible = False
     end
     object DialOversampling: TGuiDial
-      Left = 353
+      Left = 386
       Top = 9
       Width = 20
       Height = 20
@@ -211,7 +170,7 @@ object FmFrequencySplitter: TFmFrequencySplitter
       OnChange = DialOversamplingChange
     end
     object BtLow: TGuiButton
-      Left = 414
+      Left = 447
       Top = 6
       Width = 65
       Height = 26
@@ -230,7 +189,7 @@ object FmFrequencySplitter: TFmFrequencySplitter
       OnClick = BtLowClick
     end
     object BtHigh: TGuiButton
-      Left = 485
+      Left = 518
       Top = 6
       Width = 65
       Height = 26
@@ -247,6 +206,33 @@ object FmFrequencySplitter: TFmFrequencySplitter
       ButtonColor = 6450289
       Radius = 4
       OnClick = BtHighClick
+    end
+    object SBMode: TGuiSelectBox
+      Left = 8
+      Top = 6
+      Width = 89
+      Height = 26
+      AntiAlias = gaaLinear4x
+      ArrowColor = 6450289
+      ArrowWidth = 1
+      ButtonColor = 6450289
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Times New Roman'
+      Font.Style = [fsBold]
+      ItemIndex = -1
+      Items.Strings = (
+        'Split A'
+        'Split B'
+        'Dyn'
+        'L/R'
+        'M/S')
+      LineColor = clBlack
+      LineWidth = 2
+      SelectBoxColor = 7701642
+      Radius = 4
+      OnChange = SBModeChange
     end
   end
   object PnGui: TPanel

@@ -30,7 +30,7 @@ uses
 type
   TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): Integer of object;
   TVstShowEditEvent = procedure(Sender: TObject; Form: TForm) of object;
-  TVstAutomateEvent = procedure(Sender: TObject; ParamIndex, ParamValue: LongInt) of object;
+  TVstAutomateEvent = procedure(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single) of object;
   TVstProcessEventsEvent = procedure(Sender: TObject; p: PVstEvents) of object;
   TVstAutomationNotifyEvent = procedure(Sender: TObject; ParameterIndex: Integer) of object;
   TVstSampleRateChangedEvent = procedure(Sender: TObject; SampleRate: Single) of object;
@@ -580,7 +580,7 @@ begin
  if Length(Result) > 2 then Result := Copy(Result, 0, Length(Result) - 2)
 end;
 
-function AudioMasterCallback(effect: PVSTEffect; opcode : TAudioMasterOpcode; index,value: LongInt; ptr: Pointer; opt: Single): LongInt; cdecl;
+function AudioMasterCallback(effect: PVSTEffect; opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): LongInt; cdecl;
 var
   thePlug   : TCustomVstPlugIn;
   PlugNr, i : Integer;
@@ -603,7 +603,7 @@ begin
     audioMasterAutomate                    : begin
                                               if Assigned(thePlug) then
                                                if Assigned(thePlug.FOnAMAutomate)
-                                                then thePlug.FOnAMAutomate(thePlug, Index, Value);
+                                                then thePlug.FOnAMAutomate(thePlug, Index, Value, opt);
                                               result := 0;
                                              end;
     audioMasterVersion                     : result := FHostVersion;

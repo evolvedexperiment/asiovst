@@ -1,4 +1,4 @@
-unit FrequencySplitTemplateDM;
+unit SplitTemplateDM;
 
 interface
 
@@ -11,8 +11,8 @@ uses
 type
   TJoiner = function (const Input1, Input2: Double): Double of object;
 
-  TSplitType = (stSimple, stLinkwitzRiley, stLeftRight, stMS);
-  TFrequencySplitTemplateDataModule = class(TVSTModule)
+  TSplitType = (stSimple, stLinkwitzRiley, stDyn, stLeftRight, stMS);
+  TSplitTemplateDataModule = class(TVSTModule)
     VstHost: TVstHost;
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure VSTModuleClose(Sender: TObject);
@@ -34,13 +34,11 @@ type
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOSFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure LowParameterAutomate(Sender: TObject; ParamIndex, ParamValue: Integer);
-    procedure HighParameterAutomate(Sender: TObject; ParamIndex, ParamValue: Integer);
+    procedure LowParameterAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
+    procedure HighParameterAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
     procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOrderDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOSFactorDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fLowpass          : array[0..1, 0..1] of TButterworthLP;
     fHighpass         : array[0..1, 0..1] of TButterworthHP;
@@ -49,6 +47,8 @@ type
     fTmpOutput64      : array of PDAVDoubleFixedArray;
     fLow32, fHigh32   : array of PDAVSingleFixedArray;
     fTmpOutput32      : array of PDAVSingleFixedArray;
+    fEnvelope         : array[0..1] of Single;
+    fLiRiSign         : Single;
     fSplitType        : TSplitType;
     fOSActive         : Boolean;
     fOSFactor         : Integer;
@@ -61,6 +61,8 @@ type
     function JoinMid(const Input1, Input2: Double): Double;
     function JoinSide(const Input1, Input2: Double): Double;
     function JoinAdd(const Input1, Input2: Double): Double;
+    function JoinDynamicLeft(const Input1, Input2: Double): Double;
+    function JoinDynamicRight(const Input1, Input2: Double): Double;
     procedure SetTempBufferSize(const Value: Integer);
     procedure VSTBuffersChanged;
   published
@@ -76,7 +78,7 @@ implementation
 
 uses
   Math, Dialogs, Controls, PNGImage, DAV_VSTEffect, DAV_VSTParameters,
-  DAV_VSTModuleWithPrograms, FrequencySplitTemplateGUI, DAV_VSTCustomModule,
+  DAV_VSTModuleWithPrograms, SplitTemplateGUI, DAV_VSTCustomModule,
   Types;
 
 function EnumNamesFunc(hModule:THandle; lpType, lpName:PChar; lParam: DWORD): Boolean; stdcall;
@@ -98,7 +100,7 @@ begin
 //  ShowMessage(lpType);
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleCreate(Sender: TObject);
+procedure TSplitTemplateDataModule.VSTModuleCreate(Sender: TObject);
 var
   RN   : TStringList;
   RS   : TResourceStream;
@@ -109,41 +111,40 @@ begin
  try
   EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, DWord(RN));
 
-  for n := 0 to 1 do
-   begin
-    PI := VstHost.VstPlugIns[n];
+  if RN.Count > 0 then
+   for n := 0 to 1 do
+    begin
+     PI := VstHost.VstPlugIns[n];
 
-    // load plugin from resource
-    RS := TResourceStream.Create(hInstance, RN[n mod RN.Count], 'DLL');
-    try
-     PI.LoadFromStream(RS);
-    finally
-     FreeAndNil(RS);
+     // load plugin from resource
+     RS := TResourceStream.Create(hInstance, RN[n mod RN.Count], 'DLL');
+     try
+      PI.LoadFromStream(RS);
+     finally
+      FreeAndNil(RS);
+     end;
+
+     PI.Active := True;
+     for i := 0 to VstHost[n].numParams - 1 do
+      with ParameterProperties.Add do
+       begin
+        OnParameterChange        := VSTModuleParameterChange;
+        OnCustomParameterLabel   := CustomParameterLabel;
+        OnCustomParameterDisplay := CustomParameterDisplay;
+        DisplayName              := VstHost[n].GetParamName(i);
+       end;
     end;
-
-    PI.Active := True;
-    for i := 0 to VstHost[n].numParams - 1 do
-     with ParameterProperties.Add do
-      begin
-       OnParameterChange        := VSTModuleParameterChange;
-       OnCustomParameterLabel   := CustomParameterLabel;
-       OnCustomParameterDisplay := CustomParameterDisplay;
-       DisplayName              := VstHost[n].GetParamName(i);
-      end;
-   end;
  finally
   FreeAndNil(RN);
  end;
 
  for i := 0 to 1 do
-  begin
-   for n := 0 to 1 do
-    begin
-     fLowpass[i, n]     := TButterworthLP.Create;
-     fHighpass[i, n]    := TButterworthHP.Create;
-     fOversampler[i, n] := TDAVUpDownsampling.Create(Self);
-    end;
-  end;
+  for n := 0 to 1 do
+   begin
+    fLowpass[i, n]     := TButterworthLP.Create;
+    fHighpass[i, n]    := TButterworthHP.Create;
+    fOversampler[i, n] := TDAVUpDownsampling.Create(Self);
+   end;
 
  fOSFactor   := 1;
  fOSActive   := False;
@@ -159,7 +160,7 @@ begin
  SetLength(fTmpOutput64, numInputs);
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TSplitTemplateDataModule.VSTModuleDestroy(Sender: TObject);
 var
   i, n : Integer;
 begin
@@ -173,86 +174,95 @@ begin
  VSTHost.VstPlugIns.Clear;
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleEditOpen(Sender: TObject;
+procedure TSplitTemplateDataModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 var
   R        : TRect;
   Oversize : Integer;
 begin
- GUI := TFmFrequencySplitter.Create(Self);
+ GUI := TFmSplitter.Create(Self);
 
  // set plugin GUI size
  if assigned(VstHost[0]) and VstHost[0].Active then
- with TFmFrequencySplitter(GUI) do
-  begin
-   if not VstHost[0].EditVisible
-    then VstHost[0].ShowEdit(TForm(PnGui));
-   R        := VstHost[0].GetRect;
-   Oversize := PnControl.Width - (R.Right - R.Left);
-   if Oversize < 0 then
-    begin
-     // current editor is too small, enlarge!
-     PnGui.Align := alClient;
-     ClientWidth := (R.Right - R.Left);
-     ClientHeight := PnControl.Height + (R.Bottom - R.Top);
-     ShBorder.Visible := False;
-    end
-   else
-    begin
-     PnGui.Align  := alNone;
-     PnGui.Left   := Oversize div 2;
-     PnGui.Width  := (R.Right - R.Left);
+  with TFmSplitter(GUI) do
+   begin
+    PnGui.Visible    := True;
+    ShBorder.Visible := True;
 
-     // calculate new height and y position
-     PnGui.Height := (R.Bottom - R.Top);
-     Oversize     := round(Oversize * (PnGui.Height) / PnGui.Width);
-     PnGui.Top    := PnControl.Height + Oversize div 2;
-     ClientHeight := PnControl.Height + PnGui.Height + Oversize;
+    if not VstHost[0].EditVisible
+     then VstHost[0].ShowEdit(TForm(PnGui));
+    R        := VstHost[0].GetRect;
+    Oversize := PnControl.Width - (R.Right - R.Left);
+    if Oversize < 0 then
+     begin
+      // current editor is too small, enlarge!
+      PnGui.Align := alClient;
+      ClientWidth := (R.Right - R.Left);
+      ClientHeight := PnControl.Height + (R.Bottom - R.Top);
+      ShBorder.Visible := False;
+     end
+    else
+     begin
+      PnGui.Align  := alNone;
+      PnGui.Left   := Oversize div 2;
+      PnGui.Width  := (R.Right - R.Left);
 
-     // Show border
-     ShBorder.Visible := True;
-     ShBorder.SetBounds(PnGui.Left - ShBorder.Pen.Width,
-                        PnGui.Top - ShBorder.Pen.Width,
-                        PnGui.Width + 2 * ShBorder.Pen.Width,
-                        PnGui.Height + 2 * ShBorder.Pen.Width);
-    end;
-   if VstHost[0].EditVisible then VstHost[0].CloseEdit;
-  end;
+      // calculate new height and y position
+      PnGui.Height := (R.Bottom - R.Top);
+      Oversize     := round(Oversize * (PnGui.Height) / PnGui.Width);
+      PnGui.Top    := PnControl.Height + Oversize div 2;
+      ClientHeight := PnControl.Height + PnGui.Height + Oversize;
+
+      // Show border
+      ShBorder.Visible := True;
+      ShBorder.SetBounds(PnGui.Left - ShBorder.Pen.Width,
+                         PnGui.Top - ShBorder.Pen.Width,
+                         PnGui.Width + 2 * ShBorder.Pen.Width,
+                         PnGui.Height + 2 * ShBorder.Pen.Width);
+     end;
+    if VstHost[0].EditVisible then VstHost[0].CloseEdit;
+   end
+ else
+  with TFmSplitter(GUI) do
+   begin
+    PnGui.Visible    := False;
+    ShBorder.Visible := False;
+   end;
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleOpen(Sender: TObject);
+procedure TSplitTemplateDataModule.VSTModuleOpen(Sender: TObject);
 begin
- // Todo
+ Parameter[0] := 0;
+ Parameter[1] := 2000;
+ Parameter[2] := 4;
+ Parameter[3] := 0;
+ Parameter[4] := 2;
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleClose(Sender: TObject);
-var
-  n : Integer;
+procedure TSplitTemplateDataModule.VSTModuleClose(Sender: TObject);
 begin
  VstHost[0].Active := False;
  VstHost[1].Active := False;
 end;
 
-procedure TFrequencySplitTemplateDataModule.LowParameterAutomate(
-  Sender: TObject; ParamIndex, ParamValue: Integer);
+procedure TSplitTemplateDataModule.LowParameterAutomate(
+  Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
 begin
- if ParamValue <> 0
-  then Parameter[5 + ParamIndex] := ParamValue;
+ Parameter[5 + Index] := ParamValue;
 end;
 
-procedure TFrequencySplitTemplateDataModule.HighParameterAutomate(
-  Sender: TObject; ParamIndex, ParamValue: Integer);
+procedure TSplitTemplateDataModule.HighParameterAutomate(
+  Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
 begin
- if ParamValue <> 0
-  then Parameter[5 + VstHost[0].numParams + ParamIndex] := ParamValue;
+ Parameter[5 + VstHost[0].numParams + Index] := ParamValue;
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
+procedure TSplitTemplateDataModule.VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
 begin
  VSTBuffersChanged;
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTBuffersChanged;
+procedure TSplitTemplateDataModule.VSTBuffersChanged;
 begin
  VstHost[0].SetBlockSizeAndSampleRate(BlockSize * fOSFactor, SampleRate);
  VstHost[1].SetBlockSizeAndSampleRate(BlockSize * fOSFactor, SampleRate);
@@ -260,26 +270,26 @@ begin
  TempBufferSize := fMaximumBlockSize * fOSFactor;
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TSplitTemplateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- VstHost[0].SetSampleRate(SampleRate);
- VstHost[1].SetSampleRate(SampleRate);
+ if VstHost[0].Active then VstHost[0].SetSampleRate(SampleRate);
+ if VstHost[1].Active then VstHost[1].SetSampleRate(SampleRate);
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleStartProcess(Sender: TObject);
+procedure TSplitTemplateDataModule.VSTModuleStartProcess(Sender: TObject);
 begin
  VstHost[0].StartProcess;
  VstHost[1].StartProcess;
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleStopProcess(Sender: TObject);
+procedure TSplitTemplateDataModule.VSTModuleStopProcess(Sender: TObject);
 begin
  VstHost[0].StopProcess;
  VstHost[1].StopProcess;
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleParameterChange(Sender: TObject;
+procedure TSplitTemplateDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
   n, pnr : Integer;
@@ -294,7 +304,7 @@ begin
  VstHost[n].Parameters[Index - pnr] := Value;
 end;
 
-procedure TFrequencySplitTemplateDataModule.CustomParameterDisplay(
+procedure TSplitTemplateDataModule.CustomParameterDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   n, pnr : Integer;
@@ -309,7 +319,7 @@ begin
  PreDefined := VstHost[n].GetParamDisplay(Index - pnr);
 end;
 
-procedure TFrequencySplitTemplateDataModule.CustomParameterLabel(
+procedure TSplitTemplateDataModule.CustomParameterLabel(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   n, pnr : Integer;
@@ -324,7 +334,7 @@ begin
  PreDefined := VstHost[n].GetParamLabel(Index - pnr);
 end;
 
-procedure TFrequencySplitTemplateDataModule.ParamOSFactorDisplay(
+procedure TSplitTemplateDataModule.ParamOSFactorDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := IntToStr(round(Parameter[Index])) + 'x';
@@ -340,15 +350,15 @@ begin
  end;
 end;
 
-procedure TFrequencySplitTemplateDataModule.ParamOrderDisplay(
+procedure TSplitTemplateDataModule.ParamOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
-var
-  Order: Integer;
 begin
- PreDefined := ConvertOrderToString(2 * round(Parameter[Index]));
+ if SplitType = stLinkwitzRiley
+  then PreDefined := ConvertOrderToString(2 * round(Parameter[Index]))
+  else PreDefined := ConvertOrderToString(round(Parameter[Index]))
 end;
 
-procedure TFrequencySplitTemplateDataModule.ParamOversamplingDisplay(
+procedure TSplitTemplateDataModule.ParamOversamplingDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Boolean(round(Parameter[Index]))
@@ -356,29 +366,29 @@ begin
   else PreDefined := 'Off';
 end;
 
-procedure TFrequencySplitTemplateDataModule.ParamOversamplingChange(
+procedure TSplitTemplateDataModule.ParamOversamplingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fOSActive := Boolean(round(Value));
  if fOSActive = True
   then SetOSFactor(round(ParameterByName['OS Factor']))
   else SetOSFactor(1);
- if EditorForm is TFmFrequencySplitter
-  then TFmFrequencySplitter(EditorForm).UpdateOverSampling;
+ if EditorForm is TFmSplitter
+  then TFmSplitter(EditorForm).UpdateOverSampling;
 end;
 
-procedure TFrequencySplitTemplateDataModule.ParamOSFactorChange(
+procedure TSplitTemplateDataModule.ParamOSFactorChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if fOSActive = True
   then SetOSFactor(round(Value))
   else SetOSFactor(1);
 
- if EditorForm is TFmFrequencySplitter
-  then TFmFrequencySplitter(EditorForm).UpdateOSFactor;
+ if EditorForm is TFmSplitter
+  then TFmSplitter(EditorForm).UpdateOSFactor;
 end;
 
-procedure TFrequencySplitTemplateDataModule.SetOSFactor(NewOSFactor: Integer);
+procedure TSplitTemplateDataModule.SetOSFactor(NewOSFactor: Integer);
 var
   i, n : Integer;
 begin
@@ -389,7 +399,7 @@ begin
  TempBufferSize := fMaximumBlockSize * fOSFactor;
 end;
 
-procedure TFrequencySplitTemplateDataModule.SetTempBufferSize(
+procedure TSplitTemplateDataModule.SetTempBufferSize(
   const Value: Integer);
 var
   i : Integer;
@@ -412,22 +422,23 @@ begin
   end;
 end;
 
-procedure TFrequencySplitTemplateDataModule.ParamOrderChange(
+procedure TSplitTemplateDataModule.ParamOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   i, n : Integer;
 begin
+ fLiRiSign := 1 - 2 * (round(Value) mod 2);
  for i := 0 to 1 do
   for n := 0 to 1 do
    begin
     fLowpass[i, n].Order  := round(Value);
     fHighpass[i, n].Order := round(Value);
    end;
- if EditorForm is TFmFrequencySplitter
-  then TFmFrequencySplitter(EditorForm).UpdateOrder;
+ if EditorForm is TFmSplitter
+  then TFmSplitter(EditorForm).UpdateOrder;
 end;
 
-procedure TFrequencySplitTemplateDataModule.ParamFreqChange(
+procedure TSplitTemplateDataModule.ParamFreqChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   i, n : Integer;
@@ -438,11 +449,11 @@ begin
     fLowpass[i, n].Frequency  := Value;
     fHighpass[i, n].Frequency := Value;
    end;
- if EditorForm is TFmFrequencySplitter
-  then TFmFrequencySplitter(EditorForm).UpdateFrequency;
+ if EditorForm is TFmSplitter
+  then TFmSplitter(EditorForm).UpdateFrequency;
 end;
 
-procedure TFrequencySplitTemplateDataModule.ParamModeChange(
+procedure TSplitTemplateDataModule.ParamModeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fSplitType := TSplitType(round(Value));
@@ -451,6 +462,10 @@ begin
   stLinkwitzRiley : begin
                      fJoiners[0] := JoinAdd;
                      fJoiners[1] := JoinAdd;
+                    end;
+            stDyn : begin
+                     fJoiners[0] := JoinDynamicLeft;
+                     fJoiners[1] := JoinDynamicRight;
                     end;
       stLeftRight : begin
                      fJoiners[0] := JoinInput1;
@@ -462,11 +477,15 @@ begin
                     end;
  end;
 
- if EditorForm is TFmFrequencySplitter
-  then TFmFrequencySplitter(EditorForm).UpdateMode;
+ if EditorForm is TFmSplitter then
+  with TFmSplitter(EditorForm) do
+   begin
+    UpdateMode;
+    UpdateOrder;
+   end;
 end;
 
-procedure TFrequencySplitTemplateDataModule.ParamModeDisplay(
+procedure TSplitTemplateDataModule.ParamModeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
@@ -477,38 +496,48 @@ begin
  end;
 end;
 
-function TFrequencySplitTemplateDataModule.JoinMid(const Input1, Input2: Double): Double;
+function TSplitTemplateDataModule.JoinMid(const Input1, Input2: Double): Double;
 begin
  result := 0.5 * (Input1 + Input2);
 end;
 
-function TFrequencySplitTemplateDataModule.JoinSide(const Input1, Input2: Double): Double;
+function TSplitTemplateDataModule.JoinSide(const Input1, Input2: Double): Double;
 begin
  result := 0.5 * (Input1 - Input2);
 end;
 
-function TFrequencySplitTemplateDataModule.JoinAdd(const Input1, Input2: Double): Double;
+function TSplitTemplateDataModule.JoinAdd(const Input1, Input2: Double): Double;
 begin
  result := Input1 + Input2;
 end;
 
-function TFrequencySplitTemplateDataModule.JoinInput1(const Input1,
+function TSplitTemplateDataModule.JoinDynamicLeft(const Input1, Input2: Double): Double;
+begin
+ result := fEnvelope[0] * Input1 + (1 - fEnvelope[0]) * Input2;
+end;
+
+function TSplitTemplateDataModule.JoinDynamicRight(const Input1,
+  Input2: Double): Double;
+begin
+ result := fEnvelope[1] * Input1 + (1 - fEnvelope[1]) * Input2;
+end;
+
+function TSplitTemplateDataModule.JoinInput1(const Input1,
   Input2: Double): Double;
 begin
  result := Input1;
 end;
 
-function TFrequencySplitTemplateDataModule.JoinInput2(const Input1,
+function TSplitTemplateDataModule.JoinInput2(const Input1,
   Input2: Double): Double;
 begin
  result := Input2;
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  chcnt     : Integer;
-  L, H      : Double;
-  ch, i, n  : Integer;
+  L, H   : Double;
+  ch, i  : Integer;
 begin
  if SampleFrames > fMaximumBlockSize then
   begin
@@ -522,15 +551,18 @@ begin
    begin
     case fSplitType of
      stSimple        : begin
-                        L := fLowpass[ch, 1].ProcessSample(
-                             fLowpass[ch, 0].ProcessSample(Inputs[ch, i]));
+                        L := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
                         H := Inputs[ch, i] - L;
                        end;
      stLinkwitzRiley : begin
                         L := fLowpass[ch, 1].ProcessSample(
-                             fLowpass[ch, 0].ProcessSample(Inputs[ch, i]));
+                             fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i]));
                         H := fHighpass[ch, 0].ProcessSample(
                              fHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
+                       end;
+     stDyn           : begin
+                        L := Inputs[ch, i]; H := L;
+                        fEnvelope[ch] := fLowpass[ch, 0].ProcessSample(abs(L));
                        end;
      stLeftRight     : begin
                         L := Inputs[0, i];
@@ -540,6 +572,11 @@ begin
                         L := Inputs[0, i] + Inputs[1, i];
                         H := Inputs[0, i] - Inputs[1, i];
                        end;
+     else
+      begin
+       L := Inputs[0, i];
+       H := Inputs[1, i];
+      end;
     end;
     if fOSActive then
      begin
@@ -581,12 +618,11 @@ begin
     do Outputs[ch, i] := fJoiners[ch](fLow32[ch, i], fHigh32[ch, i]);
 end;
 
-procedure TFrequencySplitTemplateDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
+procedure TSplitTemplateDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  chcnt     : Integer;
-  L, H      : Double;
-  ch, i, n  : Integer;
+  L, H   : Double;
+  ch, i  : Integer;
 begin
  if SampleFrames > fMaximumBlockSize then
   begin
@@ -600,8 +636,7 @@ begin
    begin
     case fSplitType of
      stSimple        : begin
-                        L := fLowpass[ch, 1].ProcessSample(
-                             fLowpass[ch, 0].ProcessSample(Inputs[ch, i]));
+                        L := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
                         H := Inputs[ch, i] - L;
                        end;
      stLinkwitzRiley : begin
@@ -609,6 +644,10 @@ begin
                              fLowpass[ch, 0].ProcessSample(Inputs[ch, i]));
                         H := fHighpass[ch, 0].ProcessSample(
                              fHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
+                       end;
+     stDyn           : begin
+                        L := Inputs[ch, i]; H := L;
+                        fEnvelope[ch] := fLowpass[ch, 0].ProcessSample(abs(L));
                        end;
      stLeftRight     : begin
                         L := Inputs[0, i];
@@ -618,6 +657,11 @@ begin
                         L := Inputs[0, i] + Inputs[1, i];
                         H := Inputs[0, i] - Inputs[1, i];
                        end;
+     else
+      begin
+       L := Inputs[ch, i];
+       H := Inputs[ch, i];
+      end;
     end;
     if fOSActive then
      begin

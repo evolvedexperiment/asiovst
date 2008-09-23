@@ -1,33 +1,30 @@
-unit FrequencySplitTemplateGUI;
+unit SplitTemplateGUI;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, DAV_Common, DAV_GuiBaseControl, DAV_GuiButton, DAV_GuiLabel,
-  DAV_GuiLED, DAV_GuiDial, DAV_GuiPanel;
+  DAV_GuiLED, DAV_GuiDial, DAV_GuiPanel, DAV_GuiSelectBox;
 
 type
-  TFmFrequencySplitter = class(TForm)
+  TFmSplitter = class(TForm)
     BtHigh: TGuiButton;
     BtLow: TGuiButton;
     DialOversampling: TGuiDial;
     DialSplitFrequency: TGuiDial;
     DialSplitOrder: TGuiDial;
     GuiLEDOversampling: TGuiLED;
-    GuiLEDSplit: TGuiLED;
     PnControl: TGuiPanel;
     LbOversampling: TGuiLabel;
     LbOversamplingFactor: TGuiLabel;
-    LbSplit: TGuiLabel;
     LbSplitFrequency: TGuiLabel;
     LbSplitOrder: TGuiLabel;
     PnGui: TPanel;
-    LbLeftRight: TGuiLabel;
     ShBorder: TShape;
+    SBMode: TGuiSelectBox;
     procedure BtLowClick(Sender: TObject);
     procedure BtHighClick(Sender: TObject);
-    procedure GuiLEDSplitClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialSplitFrequencyChange(Sender: TObject);
     procedure DialSplitOrderChange(Sender: TObject);
@@ -35,7 +32,7 @@ type
     procedure GuiLEDOversamplingClick(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure LbLeftRightClick(Sender: TObject);
+    procedure SBModeChange(Sender: TObject);
   private
     fBackground : TBitmap;  
   public
@@ -52,25 +49,33 @@ implementation
 {$R *.dfm}
 
 uses
-  FrequencySplitTemplateDM, DAV_VSTModuleWithPrograms;
+  SplitTemplateDM, DAV_VSTModuleWithPrograms;
 
-procedure TFmFrequencySplitter.BtLowClick(Sender: TObject);
+procedure TFmSplitter.BtLowClick(Sender: TObject);
 begin
  BtLow.ButtonColor  := $0018CF1D;
  BtHigh.ButtonColor := $00626C71;
  ShowPlugin(0);
 end;
 
-procedure TFmFrequencySplitter.BtHighClick(Sender: TObject);
+procedure TFmSplitter.BtHighClick(Sender: TObject);
 begin
  BtLow.ButtonColor  := $00626C71;
  BtHigh.ButtonColor := $0018CF1D;
  ShowPlugin(1);
 end;
 
-procedure TFmFrequencySplitter.ShowPlugin(Index: Integer);
+procedure TFmSplitter.SBModeChange(Sender: TObject);
 begin
- with TFrequencySplitTemplateDataModule(Owner) do
+ with TSplitTemplateDataModule(Owner) do
+  begin
+   ParameterByName['Mode'] := SBMode.ItemIndex;
+  end;
+end;
+
+procedure TFmSplitter.ShowPlugin(Index: Integer);
+begin
+ with TSplitTemplateDataModule(Owner) do
   begin
    if VstHost[Index].Active and not VstHost[Index].EditVisible
     then VstHost[Index].ShowEdit(TForm(PnGui));
@@ -78,37 +83,37 @@ begin
   end;
 end;
 
-procedure TFmFrequencySplitter.DialOversamplingChange(Sender: TObject);
+procedure TFmSplitter.DialOversamplingChange(Sender: TObject);
 begin
- with TFrequencySplitTemplateDataModule(Owner) do
+ with TSplitTemplateDataModule(Owner) do
   begin
    ParameterByName['OS Factor'] := DialOversampling.Position;
   end;
 end;
 
-procedure TFmFrequencySplitter.DialSplitFrequencyChange(Sender: TObject);
+procedure TFmSplitter.DialSplitFrequencyChange(Sender: TObject);
 begin
- with TFrequencySplitTemplateDataModule(Owner) do
+ with TSplitTemplateDataModule(Owner) do
   begin
    ParameterByName['Frequency'] := DialSplitFrequency.Position;
   end;
 end;
 
-procedure TFmFrequencySplitter.DialSplitOrderChange(Sender: TObject);
+procedure TFmSplitter.DialSplitOrderChange(Sender: TObject);
 begin
- with TFrequencySplitTemplateDataModule(Owner) do
+ with TSplitTemplateDataModule(Owner) do
   begin
    ParameterByName['Order'] := DialSplitOrder.Position;
   end;
 end;
 
-procedure TFmFrequencySplitter.FormPaint(Sender: TObject);
+procedure TFmSplitter.FormPaint(Sender: TObject);
 begin
  if assigned(fBackground)
   then Canvas.Draw(0, PnControl.Height, fBackground);
 end;
 
-procedure TFmFrequencySplitter.FormResize(Sender: TObject);
+procedure TFmSplitter.FormResize(Sender: TObject);
 var
   x, y   : Integer;
   s      : array[0..1] of Single;
@@ -155,7 +160,7 @@ begin
   end;
 end;
 
-procedure TFmFrequencySplitter.FormShow(Sender: TObject);
+procedure TFmSplitter.FormShow(Sender: TObject);
 begin
  UpdateMode;
  UpdateFrequency;
@@ -164,56 +169,33 @@ begin
  ShowPlugin(0);
 end;
 
-procedure TFmFrequencySplitter.GuiLEDOversamplingClick(Sender: TObject);
+procedure TFmSplitter.GuiLEDOversamplingClick(Sender: TObject);
 begin
- with TFrequencySplitTemplateDataModule(Owner) do
+ with TSplitTemplateDataModule(Owner) do
   begin
    ParameterByName['Oversampling'] := f_Limit(1 - ParameterByName['Oversampling'], 0, 1);
   end;
 end;
 
-procedure TFmFrequencySplitter.GuiLEDSplitClick(Sender: TObject);
+procedure TFmSplitter.UpdateMode;
 begin
- with TFrequencySplitTemplateDataModule(Owner) do
+ with TSplitTemplateDataModule(Owner) do
   begin
-   ParameterByName['Mode'] := f_Limit(2 - ParameterByName['Mode'], 0, 2);
-  end;
-end;
-
-procedure TFmFrequencySplitter.LbLeftRightClick(Sender: TObject);
-begin
- with TFrequencySplitTemplateDataModule(Owner), LbLeftRight do
-  begin
-   Tag := 1 - Tag;
-   if Tag = 0 then
-    begin
-     Caption := 'Left / Right';
-     ParameterByName['Mode'] := 2;
-    end
-   else
-    begin
-     Caption := 'Mid / Side';
-     ParameterByName['Mode'] := 3;
-    end;
-   UpdateMode;
-  end;
-end;
-
-procedure TFmFrequencySplitter.UpdateMode;
-begin
- with TFrequencySplitTemplateDataModule(Owner) do
-  begin
-   GuiLEDSplit.Brightness_Percent := 20 + 60 * (1 - f_Limit(0.5 * ParameterByName['Mode'], 0, 1));
-   DialSplitFrequency.Visible := round(ParameterByName['Mode']) = 0;
+   SBMode.ItemIndex := round(ParameterByName['Mode']);
+//   GuiLEDSplit.Brightness_Percent := 20 + 60 * (1 - f_Limit(0.5 * ParameterByName['Mode'], 0, 1));
+   DialSplitFrequency.Visible := round(ParameterByName['Mode']) < 3;
    LbSplitFrequency.Visible   := DialSplitFrequency.Visible;
    DialSplitOrder.Visible     := DialSplitFrequency.Visible;
    LbSplitOrder.Visible       := DialSplitFrequency.Visible;
-   LbLeftRight.Visible        := not DialSplitFrequency.Visible;
    case SplitType of
     stSimple,
     stLinkwitzRiley : begin
                        BtLow.Caption := 'Low';
                        BtHigh.Caption := 'High';
+                      end;
+              stDyn : begin
+                       BtLow.Caption  := 'Loud';
+                       BtHigh.Caption := 'Quiet';
                       end;
         stLeftRight : begin
                        BtLow.Caption  := 'Left';
@@ -227,11 +209,11 @@ begin
   end;
 end;
 
-procedure TFmFrequencySplitter.UpdateFrequency;
+procedure TFmSplitter.UpdateFrequency;
 var
   Freq : Single;
 begin
- with TFrequencySplitTemplateDataModule(Owner) do
+ with TSplitTemplateDataModule(Owner) do
   begin
    Freq := ParameterByName['Frequency'];
    if DialSplitFrequency.Position <> Freq
@@ -242,22 +224,24 @@ begin
   end;
 end;
 
-procedure TFmFrequencySplitter.UpdateOrder;
+procedure TFmSplitter.UpdateOrder;
 var
   Order : Single;
 begin
- with TFrequencySplitTemplateDataModule(Owner) do
+ with TSplitTemplateDataModule(Owner) do
   begin
    Order := ParameterByName['Order'];
    if DialSplitOrder.Position <> Order
     then DialSplitOrder.Position := Order;
-   LbSplitOrder.Caption := ConvertOrderToString(2 * round(Order));
+   if SplitType = stLinkwitzRiley
+    then LbSplitOrder.Caption := ConvertOrderToString(2 * round(Order))
+    else LbSplitOrder.Caption := ConvertOrderToString(round(Order));
   end;
 end;
 
-procedure TFmFrequencySplitter.UpdateOverSampling;
+procedure TFmSplitter.UpdateOverSampling;
 begin
- with TFrequencySplitTemplateDataModule(Owner) do
+ with TSplitTemplateDataModule(Owner) do
   begin
    GuiLEDOversampling.Brightness_Percent := 20 + 60 * (f_Limit(ParameterByName['Oversampling'], 0, 1));
 
@@ -267,11 +251,11 @@ begin
   end;
 end;
 
-procedure TFmFrequencySplitter.UpdateOSFactor;
+procedure TFmSplitter.UpdateOSFactor;
 var
   OSFactor : Single;
 begin
- with TFrequencySplitTemplateDataModule(Owner) do
+ with TSplitTemplateDataModule(Owner) do
   begin
    OSFactor := ParameterByName['OS Factor'];
    if DialOversampling.Position <> OSFactor

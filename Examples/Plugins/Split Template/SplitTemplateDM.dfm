@@ -1,11 +1,11 @@
-object FrequencySplitTemplateDataModule: TFrequencySplitTemplateDataModule
+object SplitTemplateDataModule: TSplitTemplateDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
-  EffectName = 'FrequencySplitTemplate'
-  ProductName = 'FrequencySplitTemplate'
+  EffectName = 'SplitTemplate'
+  ProductName = 'SplitTemplate'
   VendorName = 'Delphi ASIO & VST Packages'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
@@ -22,8 +22,8 @@ object FrequencySplitTemplateDataModule: TFrequencySplitTemplateDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 3.000000000000000000
-      MaxInteger = 3
+      Max = 4.000000000000000000
+      MaxInteger = 4
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
