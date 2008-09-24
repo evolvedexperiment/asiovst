@@ -1,6 +1,6 @@
 package DAV_VSTHost_D7;
 
-{$R DAV_VSTHost.res}
+{$R VST\DAV_VSTHost.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}

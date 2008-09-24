@@ -9,26 +9,26 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = AVDCommon_D7.bpl VSTPlugin_D7.bpl HostASIO_D7.bpl HostVST_D7.bpl \
-  DVSTGui_D7.bpl AVDDSP_D7.bpl
+PROJECTS = DAV_Common_D7.bpl DAV_VSTPlugin_D7.bpl DAV_ASIOHost_D7.bpl DAV_VSTHost_D7.bpl \
+  DAV_GUI_D7.bpl DAV_DSP_D7.bpl
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
 
-AVDCommon_D7.bpl: AVDCommon_D7.dpk
+DAV_Common_D7.bpl: DAV_Common_D7.dpk
   $(DCC)
 
-VSTPlugin_D7.bpl: VSTPlugin_D7.dpk
+DAV_VSTPlugin_D7.bpl: DAV_VSTPlugin_D7.dpk
   $(DCC)
 
-HostASIO_D7.bpl: HostASIO_D7.dpk
+DAV_ASIOHost_D7.bpl: DAV_ASIOHost_D7.dpk
   $(DCC)
 
-HostVST_D7.bpl: HostVST_D7.dpk
+DAV_VSTHost_D7.bpl: DAV_VSTHost_D7.dpk
   $(DCC)
 
-DVSTGui_D7.bpl: DVSTGui_D7.dpk
+DAV_GUI_D7.bpl: DAV_GUI_D7.dpk
   $(DCC)
 
-AVDDSP_D7.bpl: AVDDSP_D7.dpk
+DAV_DSP_D7.bpl: DAV_DSP_D7.dpk
   $(DCC)

@@ -2,7 +2,8 @@ unit DAV_AudioData;
 
 interface
 
-{$region 'Documentation'}
+{$I ASIOVST.INC}
+{$IFDEF DELPHI10_UP} {$region 'Documentation'} {$ENDIF}
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  TAudioDataCollection
@@ -33,13 +34,13 @@ interface
 //  +----------------------------------------+
 //
 ////////////////////////////////////////////////////////////////////////////////
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 uses
   Windows, Classes, DAV_Common;
 
 type
-  {$region 'SampleRateSource classes'}
+  {$IFDEF DELPHI10_UP} {$region 'SampleRateSource classes'} {$ENDIF}
   TCustomSampleRateSource = class(TComponent)
   private
     procedure SetSampleRate(const Value: Double);
@@ -57,9 +58,9 @@ type
   published
     property SampleRate;
   end;
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-  {$region 'AudioObject classes'}
+  {$IFDEF DELPHI10_UP} {$region 'AudioObject classes'} {$ENDIF}
   TCustomAudioObject = class(TComponent)
   private
     fInternalSampleRateSource : TSampleRateSource;
@@ -83,9 +84,9 @@ type
     property SampleRate;
     property SampleRateSource;
   end;
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-  {$region 'AudioData classes'}
+  {$IFDEF DELPHI10_UP} {$region 'AudioData classes'} {$ENDIF}
 
   ////////////////////////
   // TAudioData classes //
@@ -190,9 +191,9 @@ type
     property SampleRate;
     property SampleRateSource;
   end;
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-  {$region 'AudioChannel classes'}
+  {$IFDEF DELPHI10_UP} {$region 'AudioChannel classes'} {$ENDIF}
 
   //////////////////////////////////
   // TAudioDataCollection classes //
@@ -299,9 +300,9 @@ type
     property ChannelData[Sample: Int64]: Double read GetChannelData write SetChannelData;
     property ChannelDataPointer: PDAVDoubleFixedArray read GetChannelDataPointer;
   end;
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-  {$region 'AudioDataCollection classes'}
+  {$IFDEF DELPHI10_UP} {$region 'AudioDataCollection classes'} {$ENDIF}
   TAudioDataCollectionClass = class of TCustomAudioDataCollection;
   TCustomAudioDataCollection = class(TCustomAudioObject)
   private
@@ -375,7 +376,7 @@ type
     property SampleRate;
     property SampleRateSource;
   end;
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 procedure Register;
 
@@ -384,7 +385,7 @@ implementation
 uses
   SysUtils, Math;
 
-{$region 'SampleRateSource implementation'}
+{$IFDEF DELPHI10_UP} {$region 'SampleRateSource implementation'} {$ENDIF}
 
 { TCustomSampleRateSource }
 
@@ -414,9 +415,9 @@ begin
    fSampleRateReci := 1 / fSampleRate;
   end;
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'AudioObject implementation'}
+{$IFDEF DELPHI10_UP} {$region 'AudioObject implementation'} {$ENDIF}
 
 { TCustomAudioObject }
 
@@ -496,9 +497,9 @@ begin
     end;
   end;
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'AudioData implementation'}
+{$IFDEF DELPHI10_UP} {$region 'AudioData implementation'} {$ENDIF}
 { TCustomAudioData }
 
 constructor TCustomAudioData.Create(AOwner: TComponent);
@@ -531,9 +532,9 @@ begin
    SampleFramesChanged(Value);
   end;
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'AudioData implementation'}
+{$IFDEF DELPHI10_UP} {$region 'AudioData implementation'} {$ENDIF}
 
 { TAudioData32 }
 
@@ -856,9 +857,9 @@ begin
   then fChannelData[Sample] := Value
   else raise Exception.Create('Sample out of range');
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'AudioChannel implementation'}
+{$IFDEF DELPHI10_UP} {$region 'AudioChannel implementation'} {$ENDIF}
 
 { TCustomAudioChannel }
 
@@ -917,7 +918,7 @@ begin
  inherited;
 end;
 
-{$region 'TAudioChannel32 Wrapper'}
+{$IFDEF DELPHI10_UP} {$region 'TAudioChannel32 Wrapper'} {$ENDIF}
 procedure TAudioChannel32.Add(Constant: Double);
 begin
  fChannelData.Add(Constant);
@@ -986,7 +987,7 @@ procedure TAudioChannel32.RemoveDC;
 begin
  fChannelData.RemoveDC;
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 procedure TAudioChannel32.SampleFramesChanged;
 begin
@@ -1015,7 +1016,7 @@ begin
  inherited;
 end;
 
-{$region 'TAudioChannel64 Wrapper'}
+{$IFDEF DELPHI10_UP} {$region 'TAudioChannel64 Wrapper'} {$ENDIF}
 procedure TAudioChannel64.Add(Constant: Double);
 begin
  fChannelData.Add(Constant);
@@ -1084,7 +1085,7 @@ procedure TAudioChannel64.RemoveDC;
 begin
  fChannelData.RemoveDC;
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 procedure TAudioChannel64.SampleFramesChanged;
 begin
@@ -1097,9 +1098,9 @@ procedure TAudioChannel64.SetChannelData(Sample: Int64; const Value: Double);
 begin
  fChannelData.ChannelData[Sample] := Value;
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'AudioDataCollection implementation'}
+{$IFDEF DELPHI10_UP} {$region 'AudioDataCollection implementation'} {$ENDIF}
 { TCustomAudioDataCollection }
 
 constructor TCustomAudioDataCollection.Create(AOwner: TComponent);
@@ -1276,7 +1277,7 @@ function TCustomAudioDataCollection64.GetChannelDataPointerList(
 begin
  result := ChannelList[Channel].ChannelDataPointer;
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 

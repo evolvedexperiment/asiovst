@@ -1,6 +1,6 @@
 package DAV_DSP_D7;
 
-{$R DAV_DspRegister.res}
+{$R DSP\DAV_DspRegister.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}

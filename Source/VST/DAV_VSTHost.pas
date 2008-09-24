@@ -906,7 +906,7 @@ end;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-{$REGION 'TCustomVstTimeInformation implementation'}
+{$IFDEF DELPHI10_UP} {$region 'TCustomVstTimeInformation implementation'} {$ENDIF}
 
 constructor TCustomVstTimeInformation.Create;
 begin
@@ -1006,11 +1006,11 @@ begin
  fVstTimeInfo.Flags := Flags;
 end;
 
-{$ENDREGION}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-{$REGION 'TCustomVstHost implementation'}
+{$IFDEF DELPHI10_UP} {$region 'TCustomVstHost implementation'} {$ENDIF}
 
 { TCustomVstHost }
 
@@ -1160,11 +1160,11 @@ begin
    end;
 end;
 
-{$ENDREGION}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 
-{$REGION 'TVstPlugIns implementation'}
+{$IFDEF DELPHI10_UP} {$region 'TVstPlugIns implementation'} {$ENDIF}
 
 { TVstPlugIns }
 
@@ -1204,11 +1204,11 @@ procedure TVstPlugIns.SetItem(Index: Integer; const Value: TVstPlugIn);
 begin
   inherited SetItem(Index, Value);
 end;
-{$ENDREGION}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 
-{$REGION 'TCustomVstPlugIn implementation'}
+{$IFDEF DELPHI10_UP} {$region 'TCustomVstPlugIn implementation'} {$ENDIF}
 
 { TCustomVstPlugIn }
 
@@ -2911,7 +2911,7 @@ begin
   then raise Exception.Create(RStrCloseEditorFirst)
   else fGUIStyle := Value;
 end;
-{$ENDREGION}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 
