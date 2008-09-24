@@ -1,7 +1,7 @@
 package DAV_DSP_D10;
 
 {$R *.res}
-{$R 'DAV_DspRegister.res'}
+{$R '..\Source\DSP\DAV_DspRegister.res'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}

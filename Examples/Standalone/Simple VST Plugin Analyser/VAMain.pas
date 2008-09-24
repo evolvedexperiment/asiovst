@@ -119,7 +119,7 @@ procedure TFmVSTAnalyser.LoadVSTPlugin(DLLName : TFileName);
 var
   i        : integer;
   s        : string;
-  temp     : pchar;
+  temp     : string;
   MenuItem : TMenuItem;
 begin
   with VstHost[0] do
@@ -139,14 +139,13 @@ begin
    end;
 
  while MIPrograms.Count > 3 do MIPrograms.Delete(3);
- getmem(temp, 25);
  for i := 0 to VstHost[0].numPrograms - 1 do
   begin
    VstHost[0].GetProgramNameIndexed(-1, i, temp);
-   s := inttostr(i);
+   s := IntToStr(i);
    if i < 10 then s := '00' + s else
    if i < 100 then s := '0' + s;
-   s := s + ' - ' + StrPas(temp);
+   s := s + ' - ' + temp;
    MenuItem := TMenuItem.Create(MIPrograms);
    with MenuItem do
     begin
@@ -156,7 +155,6 @@ begin
     end;
    MIPrograms.Add(MenuItem);
   end;
- Freemem(temp);
 
  with VstHost[0].GetRect do
   begin

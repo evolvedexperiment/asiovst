@@ -714,29 +714,28 @@ procedure TFmMiniHost.BuildPresetList;
 var
   m    : TMenuItem;
   n, i : Integer;
-  p    : Array[0..100] of char;
+  p    : string;
   s    : string;
 begin
  PresetBox.clear;
  n := VSTHost[0].numPrograms;
 
  for i := 0 to n - 1 do
- begin
-  VSTHost[0].GetProgramNameIndexed(-1, i, p);
-
-  m := TMenuItem.Create(self);
-  m.Caption := StrPas(p);
-  m.OnClick := SetPreset;
-  m.tag := i;
-{$IFNDEF FPC}
-  if (i > 0) and (i mod 256 <> 0) and (i mod 32 = 0) then
-   m.break := mbBarBreak;
-{$ENDIF}
-  s := inttostr(i);
-  if i < 10 then s := '00' + s else
-  if i < 100 then s := '0' + s;
-  PresetBox.AddItem(s + ': ' + m.caption, nil);
- end;
+  begin
+   VSTHost[0].GetProgramNameIndexed(-1, i, s);
+   m := TMenuItem.Create(self);
+   m.Caption := s;
+   m.OnClick := SetPreset;
+   m.Tag := i;
+  {$IFNDEF FPC}
+   if (i > 0) and (i mod 256 <> 0) and (i mod 32 = 0)
+    then m.break := mbBarBreak;
+  {$ENDIF}
+   s := IntToStr(i);
+   if i < 10 then s := '00' + s else
+   if i < 100 then s := '0' + s;
+   PresetBox.AddItem(s + ': ' + M.caption, nil);
+  end;
 
  if n >= 0 then PresetBox.ItemIndex := fCurProg;
 end;
@@ -796,8 +795,7 @@ begin
 
  with VSTHost[0] do
   begin
-   GUIForm := TForm(fPanel);
-   ShowEdit(TForm(fPanel));
+   ShowEdit(fPanel);
 
    fTitle := GetVendorString + ' ' +  GetEffectName;
    BuildPresetList;

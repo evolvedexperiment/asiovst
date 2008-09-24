@@ -72,8 +72,7 @@ procedure TFmVSTEditor.FormCreate(Sender: TObject);
 var
   theRect  : TRect;
   i        : Integer;
-  s        : string;
-  temp     : pchar;
+  s, p     : string;
 begin
  with VstHost[0] do
   begin
@@ -99,18 +98,17 @@ begin
    Caption :=  GetVendorString + ' ' + GetEffectName;
   end;
  CBPreset.Clear;
- getmem(temp, 25);
+
  for i := 0 to VstHost[0].numPrograms - 1 do
   begin
-   VstHost[0].GetProgramNameIndexed(-1, i, temp);
+   VstHost[0].GetProgramNameIndexed(-1, i, p);
    s := IntToStr(i);
    if i < 10 then s := '00' + s else
    if i < 100 then s := '0' + s;
-   s := s + ' - ' + StrPas(temp);
+   s := s + ' - ' + p;
    CBPreset.Items.Add(s)
   end;
  CBPreset.ItemIndex := 0;
- Freemem(temp);
 
  s := VstHost[0].GetProgramName;
  s := IntToStr(CBPreset.ItemIndex) + ' - ' + s;
