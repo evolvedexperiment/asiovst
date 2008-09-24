@@ -47,7 +47,7 @@ type
   end;
 
 var
-  FmASIO        : TFmASIO;
+  FmASIO : TFmASIO;
 
 implementation
 
@@ -161,7 +161,7 @@ end;
 
 procedure TFmASIO.SetFrequency(const Value: Double);
 begin
- if fFreq<>Value then
+ if fFreq <> Value then
   begin
    fFreq := Value;
    LbFreq.Caption := 'Frequency: ' + FloatTostrF(fFreq, ffGeneral, 5, 5) + ' Hz';
@@ -171,31 +171,39 @@ end;
 
 procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
   OutBuffer: TDAVArrayOfSingleDynArray);
-var i, j : integer;
-    d    : Double;
+var
+  i    : Integer;
+  d    : Double;
+  L, R : Integer;
 begin
+ L := fChannelOffset;
+ R := L + 1;
  for i := 0 to ASIOHost.BufferSize - 1 do
   begin
    d := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
    fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
    fPosition.Re := d; d := d * fVol;
-   for j := 0 to ASIOHost.OutputChannelCount - 1
-    do OutBuffer[j, i] := d;
+   OutBuffer[L, i] := (1 - fPan) * d;
+   OutBuffer[R, i] := fPan * d;
   end;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
   OutBuffer: TDAVArrayOfDoubleDynArray);
-var i, j : integer;
-    d    : Double;
+var
+  i    : Integer;
+  d    : Double;
+  L, R : Integer;
 begin
+ L := fChannelOffset;
+ R := L + 1;
  for i := 0 to ASIOHost.BufferSize - 1 do
   begin
    d := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
    fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
    fPosition.Re := d; d := d * fVol;
-   for j := 0 to ASIOHost.OutputChannelCount - 1
-    do OutBuffer[j, i] := d;
+   OutBuffer[L, i] := (1 - fPan) * d;
+   OutBuffer[R, i] := fPan * d;
   end;
 end;
 
@@ -207,7 +215,7 @@ end;
 procedure TFmASIO.SbVolumeChange(Sender: TObject);
 begin
  fVol := SbVolume.position * 0.00001;
- if fVol=0
+ if fVol = 0
   then LbVolume.Caption := 'Volume: 0 equals -oo dB'
   else LbVolume.Caption := 'Volume: ' +
                            FloattostrF(fVol, ffFixed, 2, 2) + ' equals ' +

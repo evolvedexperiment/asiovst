@@ -20,19 +20,19 @@ type
     function Stop: TASIOError; stdcall;
     function GetChannels(out NumInputChannels, NumoutputChannels: LongInt): TASIOError; stdcall;
     function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
-    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt):TASIOError; stdcall;
+    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function GetSampleRate(out SampleRate: TASIOSampleRate):TASIOError; stdcall;
-    function SetSampleRate(SampleRate: TASIOSampleRate):TASIOError; stdcall;
-    function GetClockSources(Clocks: PASIOClockSource;out NumSources: LongInt):TASIOError; stdcall;
+    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function GetClockSources(Clocks: PASIOClockSource;out NumSources: LongInt): TASIOError; stdcall;
     function SetClockSource(Reference: LongInt): Hresult; stdcall;
-    function GetSamplePosition(out SamplePosition: TASIOSamples;out TimeStamp: TASIOTimeStamp):TASIOError; stdcall;
-    function GetChannelInfo(out Info: TASIOChannelInfo):TASIOError; stdcall;
-    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt;const Callbacks:TASIOCallbacks):TASIOError; stdcall;
-    function DisposeBuffers:TASIOError; stdcall;
-    function ControlPanel:TASIOError; stdcall;
-    function Future(Selector:LongInt; Opt:pointer):TASIOError; stdcall;
-    function outputReady:TASIOError; stdcall;
+    function GetSamplePosition(out SamplePosition: TASIOSamples;out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
+    function GetChannelInfo(out Info: TASIOChannelInfo): TASIOError; stdcall;
+    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
+    function DisposeBuffers: TASIOError; stdcall;
+    function ControlPanel: TASIOError; stdcall;
+    function Future(Selector: LongInt; Opt: Pointer):TASIOError; stdcall;
+    function OutputReady: TASIOError; stdcall;
   end;
 
   TBeRoASIO = class(TInterfacedObject, IBeRoASIO)
@@ -61,7 +61,7 @@ type
     function DisposeBuffers: TASIOError; stdcall;
     function ControlPanel: TASIOError; stdcall;
     function Future(Selector: LongInt; Opt: Pointer): TASIOError; stdcall;
-    function outputReady: TASIOError; stdcall;
+    function OutputReady: TASIOError; stdcall;
   end;
 
 function CreateBeRoASIO(const AsioCLSID: TClsId;var ASIODriver: IBeRoASIO): Boolean; overload;
@@ -95,7 +95,7 @@ const
   baDisposeBuffers    = 80;
   baControlPanel      = 84;
   baFuture            = 88;
-  baoutputReady       = 92;
+  baOutputReady       = 92;
 
 constructor TBeRoASIO.Create(AsioCLSID: TClsID; var Okay: Boolean);
 begin
@@ -476,16 +476,16 @@ end;
 function TBeRoASIO.ControlPanel: TASIOError; assembler;
 {$IFDEF FPC}
 asm
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baControlPanel]
 end;
 {$ELSE}
 asm
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baControlPanel]
 end;
 {$endif}
@@ -532,22 +532,30 @@ function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver: IBeRoASIO): Boo
 var
   BeRoASIO: TBeRoASIO;
 begin
- BeRoASIO := TBeRoASIO.Create(AsioCLSID,result);
- if result
-  then ASIODriver := BeRoASIO
-  else ASIODriver := nil;
- result := assigned(ASIODriver);
+ try
+  BeRoASIO := TBeRoASIO.Create(AsioCLSID, result);
+  if result
+   then ASIODriver := BeRoASIO
+   else ASIODriver := nil;
+  result := assigned(ASIODriver);
+ except
+  result := False;
+ end;
 end;
 
-function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver:TBeRoASIO): Boolean; overload;
+function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver: TBeRoASIO): Boolean; overload;
 begin
- ASIODriver := TBeRoASIO.Create(AsioCLSID, result);
- if not result then
-  begin
-   ASIODriver.Destroy;
-   ASIODriver := nil;
-  end;
- result := assigned(ASIODriver);
+ try
+  ASIODriver := TBeRoASIO.Create(AsioCLSID, result);
+  if not result then
+   begin
+    ASIODriver.Destroy;
+    ASIODriver := nil;
+   end;
+  result := assigned(ASIODriver);
+ except
+  result := False;
+ end;
 end;
 
 initialization
