@@ -23,18 +23,18 @@ type
     PnGui: TPanel;
     ShBorder: TShape;
     SBMode: TGuiSelectBox;
-    procedure BtLowClick(Sender: TObject);
-    procedure BtHighClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure DialSplitFrequencyChange(Sender: TObject);
-    procedure DialSplitOrderChange(Sender: TObject);
-    procedure DialOversamplingChange(Sender: TObject);
-    procedure GuiLEDOversamplingClick(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure SBModeChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
+    procedure BtHighClick(Sender: TObject);
+    procedure BtLowClick(Sender: TObject);
+    procedure DialOversamplingChange(Sender: TObject);
+    procedure DialSplitFrequencyChange(Sender: TObject);
+    procedure DialSplitOrderChange(Sender: TObject);
+    procedure GuiLEDOversamplingClick(Sender: TObject);
+    procedure SBModeChange(Sender: TObject);
   private
     fBackground : TBitmap;  
   public
@@ -80,7 +80,7 @@ begin
  with TSplitTemplateDataModule(Owner) do
   begin
    if VstHost[Index].Active and not VstHost[Index].EditVisible
-    then VstHost[Index].ShowEdit(TForm(PnGui));
+    then VstHost[Index].ShowEdit(PnGui);
    if VstHost[1 - Index].EditVisible then VstHost[1 - Index].CloseEdit;
   end;
 end;
@@ -205,23 +205,27 @@ begin
    DialSplitOrder.Visible     := DialSplitFrequency.Visible;
    LbSplitOrder.Visible       := DialSplitFrequency.Visible;
    case SplitType of
-    stSimple,
-    stLinkwitzRiley : begin
-                       BtLow.Caption := 'Low';
-                       BtHigh.Caption := 'High';
-                      end;
-              stDyn : begin
-                       BtLow.Caption  := 'Loud';
-                       BtHigh.Caption := 'Quiet';
-                      end;
-        stLeftRight : begin
-                       BtLow.Caption  := 'Left';
-                       BtHigh.Caption := 'Right';
-                      end;
-               stMS : begin
-                       BtLow.Caption  := 'Mid';
-                       BtHigh.Caption := 'Side';
-                      end;
+      stSimple,
+         stLiRi : begin
+                   BtLow.Caption := 'Low';
+                   BtHigh.Caption := 'High';
+                  end;
+          stDyn : begin
+                   BtLow.Caption  := 'Quiet';
+                   BtHigh.Caption := 'Loud';
+                  end;
+    stLeftRight : begin
+                   BtLow.Caption  := 'Left';
+                   BtHigh.Caption := 'Right';
+                  end;
+           stMS : begin
+                   BtLow.Caption  := 'Mid';
+                   BtHigh.Caption := 'Side';
+                  end;
+       stSerial : begin
+                   BtLow.Caption  := 'Stage 1';
+                   BtHigh.Caption := 'Stage 2';
+                  end;
    end;
   end;
 end;
@@ -250,7 +254,7 @@ begin
    Order := ParameterByName['Order'];
    if DialSplitOrder.Position <> Order
     then DialSplitOrder.Position := Order;
-   if SplitType = stLinkwitzRiley
+   if SplitType = stLiRi
     then LbSplitOrder.Caption := ConvertOrderToString(2 * round(Order))
     else LbSplitOrder.Caption := ConvertOrderToString(round(Order));
   end;

@@ -83,6 +83,7 @@ begin
        AddResource(RD);
 *)
        SaveToFile(FileName);
+        ShowMessage('Plugin successfully created!');
       finally
        FreeAndNil(RM);
       end;
@@ -90,7 +91,6 @@ begin
   finally
    Free;
   end;
- ShowMessage('Plugin successfully created!');
 end;
 
 procedure TFmSplitPluginCreator.EdPluginAChange(Sender: TObject);

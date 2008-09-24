@@ -29,7 +29,7 @@ uses
 
 type
   TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): Integer of object;
-  TVstShowEditEvent = procedure(Sender: TObject; Form: TForm) of object;
+  TVstShowEditEvent = procedure(Sender: TObject; Control: TWinControl) of object;
   TVstAutomateEvent = procedure(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single) of object;
   TVstProcessEventsEvent = procedure(Sender: TObject; p: PVstEvents) of object;
   TVstAutomationNotifyEvent = procedure(Sender: TObject; ParameterIndex: Integer) of object;
@@ -97,7 +97,7 @@ type
     FOnAMEndEdit                   : TVstAutomationNotifyEvent;
     FOnAMPinConnected              : TVstPinConnectedEvent;
     FOnVendorSpecific              : TVendorSpecificEvent;
-    FGUIFormCreated                : Boolean;
+    FGUIControlCreated             : Boolean;
     FGUIStyle                      : TGUIStyle;
     FInternalDLLLoader             : TDLLLoader;
     function GetEffOptions: TEffFlags;
@@ -124,11 +124,11 @@ type
     procedure ListParamChange(Sender: TObject);
     {$ENDIF}
   protected
+    FGUIControl : TWinControl;
     procedure AssignTo(Dest: TPersistent); override;
     procedure EditClose;
   public
-    PVstEffect          : PVSTEffect;
-    GUIForm             : TForm;
+    PVstEffect : PVSTEffect;
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     function BeginLoadBank(PatchChunkInfo : PVstPatchChunkInfo): Integer;
@@ -166,7 +166,7 @@ type
     function GetProductString: string;
     function GetProgram: Integer;
     function GetProgramName: string;
-    function GetProgramNameIndexed(Category, index: Integer; ProgramName: PChar): Integer;
+    function GetProgramNameIndexed(Category, index: Integer; var ProgramName: string): Integer;
     function GetRect: TRect;
     function GetSpeakerArrangement(SpeakerIn, SpeakerOut:PVstSpeakerArrangement): Integer;
     function GetTailSize: Integer;
@@ -226,7 +226,7 @@ type
     procedure SetSampleRate(fSR: Double);
     procedure SetTotalSampleToProcess;
     procedure SetViewPosition(x, y: Integer);
-    procedure ShowEdit(Form: TForm); overload;
+    procedure ShowEdit(Control: TWinControl); overload;
     procedure ShowEdit; overload;
     procedure StartProcess;
     procedure StopProcess;
@@ -243,6 +243,7 @@ type
     property EditVisible: Boolean read FEditOpen;
     property EffectName: string read GetEffectName;
     property EffectOptions: TEffFlags read GetEffOptions stored False;
+    property GUIControl: TWinControl read FGUIControl;
     property GUIStyle : TGUIStyle read fGUIStyle write SetGUIStyle default gsDefault;
     property InitialDelay: Integer read GetInitialDelay stored False;
     property numInputs: Integer read GetnumInputs stored False default -1 ;
@@ -665,19 +666,16 @@ begin
                                               end;
     audioMasterSizeWindow                  : begin
                                               if Assigned(thePlug) then
-                                               if assigned(thePlug.GUIForm) then
-                                               begin
-                                                if pos('DASH', uppercase(thePlug.VendorString)) > 0 then
-                                                 result := 0
-                                                else if pos('WUSIK', uppercase(thePlug.VendorString)) > 0 then
-                                                 result := 0
-                                                else
+                                               if pos('DASH', uppercase(thePlug.VendorString)) > 0
+                                                then result := 0
+                                               else if pos('WUSIK', uppercase(thePlug.VendorString)) > 0
+                                                then result := 0 else
+                                               if assigned(thePlug.GUIControl) then
                                                 begin
-                                                 thePlug.GUIForm.ClientWidth := index;
-                                                 thePlug.GUIForm.ClientHeight := value;
+                                                 thePlug.GUIControl.ClientWidth := index;
+                                                 thePlug.GUIControl.ClientHeight := value;
                                                  Result := 1;
                                                 end;
-                                               end;
                                              end;
     audioMasterGetSampleRate               : result := round(FSampleRate);
     audioMasterGetBlockSize                : result := FBlockSize;
@@ -1261,17 +1259,17 @@ end;
 constructor TCustomVstPlugIn.Create(Collection: TCollection);
 begin
  inherited;
- FDisplayName    := inherited GetDisplayName;
- FMainFunction   := nil;
- PVstEffect      := nil;
- FEditOpen       := False;
- FNeedIdle       := False;
- FWantMidi       := False;
- FVstVersion     := -1;
- FPlugCategory   := vpcUnknown;
- FDLLFileName    := '';
- FGUIStyle       := gsDefault;
- fGUIFormCreated := False;
+ FDisplayName       := inherited GetDisplayName;
+ FMainFunction      := nil;
+ PVstEffect         := nil;
+ FEditOpen          := False;
+ FNeedIdle          := False;
+ FWantMidi          := False;
+ FVstVersion        := -1;
+ FPlugCategory      := vpcUnknown;
+ FDLLFileName       := '';
+ FGUIStyle          := gsDefault;
+ FGUIControlCreated := False;
 end;
 
 destructor TCustomVstPlugIn.Destroy;
@@ -1281,11 +1279,16 @@ begin
    begin
     if EditVisible then CloseEdit;
     Unload;
-    if (GUIForm <> nil) and fGUIFormCreated
-     then FreeAndNil(GUIForm);
+    if assigned(GUIControl) and FGUIControlCreated
+     then FreeAndNil(FGUIControl);
    end;
-  if assigned(FInternalDLLLoader)
-   then FreeAndNil(FInternalDLLLoader)
+  if assigned(FInternalDLLLoader) then
+   begin
+    if EditVisible then CloseEdit;
+    if assigned(GUIControl) and FGUIControlCreated
+     then FreeAndNil(FGUIControl);
+    FreeAndNil(FInternalDLLLoader)
+   end;
  finally
   inherited;
  end;
@@ -1547,7 +1550,8 @@ begin
 end;
 
 function TCustomVstPlugIn.EditOpen(Handle: THandle): Integer;
-var i: Integer;
+var
+  i : Integer;
 begin
  i := 0;
  try
@@ -1571,12 +1575,13 @@ begin
 end;
 
 procedure TCustomVstPlugIn.ShowEdit;
-var theRect: ERect;
+var
+  theRect: ERect;
 begin
- if GUIForm = nil then
+ if not assigned(GUIControl) then
   begin
-   GUIForm := TForm.Create(nil);
-   with GUIForm do
+   FGUIControl := TForm.Create(nil);
+   with TForm(FGUIControl) do
     begin
      Caption := VendorString + ' - ' + ProductString;
      BorderStyle := bsToolWindow;
@@ -1586,18 +1591,18 @@ begin
      OnDeActivate := EditDeactivateHandler;
      if Caption=' - ' then Caption := GetEffectName;
     end;
-   fGUIFormCreated := True;
-   ShowEdit(GUIForm);
+   FGUIControlCreated := True;
+   ShowEdit(GUIControl);
    if (effFlagsHasEditor in PVstEffect.EffectFlags)
     then theRect := EditGetRect
     else theRect := Rect(0, 200, 0, 80);
-   GUIForm.ClientWidth := theRect.right - theRect.left;
-   GUIForm.ClientHeight := theRect.Bottom - theRect.Top;
+   GUIControl.ClientWidth := theRect.right - theRect.left;
+   GUIControl.ClientHeight := theRect.Bottom - theRect.Top;
   end;
- GUIForm.Visible := True;
+ GUIControl.Visible := True;
 end;
 
-procedure TCustomVstPlugIn.ShowEdit(Form: TForm);
+procedure TCustomVstPlugIn.ShowEdit(Control: TWinControl);
 var
   param   : string;
   i,wxw   : Integer;
@@ -1607,7 +1612,8 @@ begin
   begin
    if not FEditOpen then
    begin
-    EditOpen(Form.Handle);
+    EditOpen(Control.Handle);
+    FGUIControl := Control;
     EditIdle;
    end;
 //  else raise Exception.Create('Editor is already open!');
@@ -1616,42 +1622,42 @@ begin
   case fGUIStyle of
    gsOld:
     begin
-     GUIForm := Form;
+     FGUIControl := Control;
      FEditOpen := True;
-     with TLabel.Create(Form) do
+     with TLabel.Create(Control) do
       begin
-       Name := 'LbL'; Parent := Form; Caption := '';
+       Name := 'LbL'; Parent := Control; Caption := '';
        Alignment := taCenter; Left := 10; Top := 64;
       end;
      {$IFDEF SB}
-     with TFlatScrollBar.Create(Form) do
+     with TFlatScrollBar.Create(Control) do
       begin
        Name := 'SBox'; ClientWidth := 560;
        BevelInner := bvNone; BevelOuter := bvNone;
-       Color := clGray; Parent := Form; Align := alClient;
+       Color := clGray; Parent := Control; Align := alClient;
        Left := 0; Top := 0; Width := 560;
        VertScrollBar.Smooth := True; VertScrollBar.Tracking := True;
        HorzScrollBar.Smooth := True; HorzScrollBar.Tracking := True;
       end;
      {$ELSE}
-     with TTrackBar.Create(Form) do
+     with TTrackBar.Create(Control) do
       begin
-       Name := 'ParamBar'; Parent := Form;
+       Name := 'ParamBar'; Parent := Control;
        Anchors := [akLeft, akTop, akRight];
        Left := 5; Top := 33; Orientation := trHorizontal;
-       Width := Form.Width - 4 * Left; Height := 32;
+       Width := Control.Width - 4 * Left; Height := 32;
        Frequency := 1; Position := 0; {$IFNDEF FPC} SelEnd := 0; SelStart := 0; {$ENDIF}
        TabOrder := 3; Min := 0; Max := 100; OnChange := TrackChange;
        TickMarks := tmBottomRight; TickStyle := tsNone;//Auto;
       end;
      {$ENDIF}
-     with TComboBox.Create(Form) do
+     with TComboBox.Create(Control) do
       begin
-       Name := 'ParamBox'; Parent := Form; param := '';
+       Name := 'ParamBox'; Parent := Control; param := '';
        for i := 0 to FnumParams - 1
         do begin param := GetParamName(i); Items.Add(param); end;
        Anchors := [akLeft, akTop, akRight]; Left := 4; Top := 5;
-       Width := Form.Width - 4 * Left; Height := 21; ItemHeight := 13;
+       Width := Control.Width - 4 * Left; Height := 21; ItemHeight := 13;
        TabOrder := 2; OnChange := ParamChange; Text := ''; itemindex := 0;
        Font.Color := clWindowText;
        OnChange(nil);
@@ -1659,14 +1665,14 @@ begin
     end;
    gsDefault, gsList:
     begin
-     theRect := Rect(0,0,Form.Width,4 + numParams * 16);
-     GUIForm := Form; wxw := 0;
-     GUIForm.Visible := False;
-     GUIForm.ClientWidth := theRect.right - theRect.left;
-     GUIForm.ClientHeight := theRect.Bottom - theRect.Top;
-     with TLabel.Create(Form) do
+     theRect := Rect(0, 0, Control.Width, 4 + numParams * 16);
+     FGUIControl := Control; wxw := 0;
+     GUIControl.Visible := False;
+     GUIControl.ClientWidth := theRect.right - theRect.left;
+     GUIControl.ClientHeight := theRect.Bottom - theRect.Top;
+     with TLabel.Create(Control) do
       try
-       Parent := Form; Alignment := taCenter;
+       Parent := Control; Alignment := taCenter;
        for i := 0 to FnumParams - 1 do
         if Canvas.TextWidth(GetParamName(i)+':_')>wxw
          then wxw := Canvas.TextWidth(GetParamName(i)+':_');
@@ -1676,36 +1682,36 @@ begin
 
      for i := 0 to numParams - 1 do
       begin
-       with TLabel.Create(Form) do
+       with TLabel.Create(Control) do
         begin
-         Name := 'LbL' + IntToStr(i); Parent := Form; Caption := GetParamName(i)+':';
+         Name := 'LbL' + IntToStr(i); Parent := Control; Caption := GetParamName(i)+':';
          Height := 16; Alignment := taCenter; Left := 2; Top := 2+i*Height;
         end;
-       with TLabel.Create(Form) do
+       with TLabel.Create(Control) do
         begin
-         Name := 'LbV' + IntToStr(i); Parent := Form; Alignment := taCenter;
-         Height := 16; Left := Form.Width-Left-72; AutoSize := False;
+         Name := 'LbV' + IntToStr(i); Parent := Control; Alignment := taCenter;
+         Height := 16; Left := Control.Width-Left-72; AutoSize := False;
          Alignment := taCenter; Width := 65; Top := 2+i*Height;
         end;
-       with TScrollBar.Create(Form) do
+       with TScrollBar.Create(Control) do
         begin
-         Name := 'ParamBar' + IntToStr(i); Parent := Form;
+         Name := 'ParamBar' + IntToStr(i); Parent := Control;
          Anchors := [akLeft, akTop, akRight];
          Kind := sbHorizontal; LargeChange := 10;
          Height := 16; Top := 2+i*Height; Tag := i;
-         Left := wxw+2; Width := Form.Width-Left-72;
+         Left := wxw+2; Width := Control.Width-Left-72;
          Min := 0; Max := 1000; TabOrder := 3+i;
          Position := Round(1000 * Parameters[i]);
          OnChange := ListParamChange;
-         ListParamChange(GUIForm.FindComponent('ParamBar'+IntToStr(i)));
+         ListParamChange(GUIControl.FindComponent('ParamBar'+IntToStr(i)));
         end;
       end;
-     GUIForm.Visible := True;
-     GUIForm.Invalidate;
+     GUIControl.Visible := True;
+     GUIControl.Invalidate;
      FEditOpen := True;
     end;
   end;
- if assigned(FOnShowEdit) then FOnShowEdit(Self, GUIForm);
+ if assigned(FOnShowEdit) then FOnShowEdit(Self, GUIControl);
 end;
 
 procedure TCustomVstPlugIn.ListParamChange(Sender: TObject);
@@ -1717,10 +1723,10 @@ begin
  with (Sender as TScrollBar) do
   try
    Parameters[Tag] := Position * 0.001;
-   lb := TLabel(GUIForm.FindComponent('LbV'+IntToStr(Tag)));
+   lb := TLabel(GUIControl.FindComponent('LbV' + IntToStr(Tag)));
    if Assigned(lb) then
     begin
-     if GetParamLabel(Tag)<>''
+     if GetParamLabel(Tag) <> ''
       then str := GetParamDisplay(Tag) + ' ' + GetParamLabel(Tag)
       else str := GetParamDisplay(Tag);
      if Length(str) < 9
@@ -1728,7 +1734,7 @@ begin
       else
        begin
         str := GetParamDisplay(Tag);
-        if Pos('.', str)>0 then
+        if Pos('.', str) > 0 then
          begin
           i := Length(str) - 1;
           while str[i] = '0' do
@@ -1748,16 +1754,17 @@ begin
 end;
 
 procedure TCustomVstPlugIn.ParamChange(Sender: TObject);
-var nr: Integer;
+var
+ nr: Integer;
 begin
- if GUIForm.FindComponent('ParamBar') <> nil then
+ if GUIControl.FindComponent('ParamBar') <> nil then
  {$IFDEF SB}
-  with (GUIForm.FindComponent('ParamBar') as TFlatScrollBar) do
+  with (GUIControl.FindComponent('ParamBar') as TFlatScrollBar) do
   {$ELSE}
-  with (GUIForm.FindComponent('ParamBar') as TTrackBar) do
+  with (GUIControl.FindComponent('ParamBar') as TTrackBar) do
   {$ENDIF}
    try
-    nr := (GUIForm.FindComponent('ParamBox') as TComboBox).ItemIndex;
+    nr := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
     if (nr >= 0) and (nr < numParams) then
      Position := round(GetParameter(nr) * 100);
    except
@@ -1775,13 +1782,14 @@ begin
 end;
 {$ELSE}
 procedure TCustomVstPlugIn.TrackChange(Sender: TObject);
-var nr: Integer;
+var
+  nr: Integer;
 begin
- with (GUIForm.FindComponent('ParamBar') as TTrackBar) do
+ with (GUIControl.FindComponent('ParamBar') as TTrackBar) do
   begin
-   nr := (GUIForm.FindComponent('ParamBox') as TComboBox).ItemIndex;
+   nr := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
    SetParameter(nr, Position * 0.01);
-   (GUIForm.FindComponent('LbL') as TLabel).Caption  :=
+   (GUIControl.FindComponent('LbL') as TLabel).Caption  :=
     'Value: ' + GetParamDisplay(nr) + GetParamLabel(nr);
   end;
 end;
@@ -1803,38 +1811,38 @@ begin
  if assigned(FOnCloseEdit) then FOnCloseEdit(Self);
  if (effFlagsHasEditor in PVstEffect.EffectFlags) and (FGUIStyle = gsDefault)
   then EditClose else
-  if Assigned(GUIForm) then
+  if Assigned(GUIControl) then
    case fGUIStyle of
     gsOld:
      begin
-      GUIForm.FindComponent('ParamBox').Free;
-      GUIForm.FindComponent('ParamBar').Free;
-      GUIForm.FindComponent('LbL').Free;
+      GUIControl.FindComponent('ParamBox').Free;
+      GUIControl.FindComponent('ParamBar').Free;
+      GUIControl.FindComponent('LbL').Free;
      end;
     gsDefault, gsList:
      begin
       i := 0;
       repeat
-       if GUIForm.FindComponent('ParamBar' + IntToStr(i)) = nil then Break;
-       GUIForm.FindComponent('ParamBar' + IntToStr(i)).Free;
-       if GUIForm.FindComponent('LbL' + IntToStr(i)) = nil then Break;
-       GUIForm.FindComponent('LbL' + IntToStr(i)).Free;
-       if GUIForm.FindComponent('LbV' + IntToStr(i)) = nil then Break;
-       GUIForm.FindComponent('LbV' + IntToStr(i)).Free;
+       if GUIControl.FindComponent('ParamBar' + IntToStr(i)) = nil then Break;
+       GUIControl.FindComponent('ParamBar' + IntToStr(i)).Free;
+       if GUIControl.FindComponent('LbL' + IntToStr(i)) = nil then Break;
+       GUIControl.FindComponent('LbL' + IntToStr(i)).Free;
+       if GUIControl.FindComponent('LbV' + IntToStr(i)) = nil then Break;
+       GUIControl.FindComponent('LbV' + IntToStr(i)).Free;
        inc(i);
       until False;
      end;
    end;
- if (GUIForm <> nil) and fGUIFormCreated
-  then FreeAndNil(GUIForm); //and (not FExternalForm) then
+ if assigned(GUIControl) and FGUIControlCreated
+  then FreeAndNil(FGUIControl); //and (not FExternalForm) then
  FEditOpen := False;
 end;
 
 procedure TCustomVstPlugIn.FormCloseHandler(Sender: TObject; var Action: TCloseAction);
 begin
  CloseEdit;
- if GUIForm <> nil
-  then FreeAndNil(GUIForm);
+ if assigned(GUIControl)
+  then FreeAndNil(FGUIControl);
 end;
 
 function TCustomVstPlugIn.EditIdle: Integer;
@@ -1902,10 +1910,21 @@ begin
   else result := FnumPrograms;
 end;
 
-function TCustomVstPlugIn.GetProgramNameIndexed(Category, Index: Integer; ProgramName: PChar): Integer;
+function TCustomVstPlugIn.GetProgramNameIndexed(Category, Index: Integer; var ProgramName: string): Integer;
+var
+  TempName : PChar;
 begin
  if FActive
-  then result := VstDispatch(effGetProgramNameIndexed, Index, Category, ProgramName)
+  then
+   begin
+    GetMem(TempName, 255);
+    try
+     result := VstDispatch(effGetProgramNameIndexed, Index, Category, TempName);
+     ProgramName := StrPas(TempName);
+    finally
+     Dispose(TempName);
+    end;
+   end
   else result := -1;
 end;
 

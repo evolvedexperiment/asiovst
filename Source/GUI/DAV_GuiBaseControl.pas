@@ -15,6 +15,12 @@ type
   TRGB32Array = packed array[0..MaxInt div SizeOf(TRGB32) - 1] of TRGB32;
   PRGB32Array = ^TRGB32Array;
 
+  TRGB24 = packed record
+    B, G, R: Byte;
+  end;
+  TRGB24Array = packed array[0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
+  PRGB24Array = ^TRGB24Array;
+
   TGuiOnDragMouseMove = procedure(Sender: TObject; Button: TMouseButton;
     Shift: TShiftState; X, Y: Integer) of object;
 

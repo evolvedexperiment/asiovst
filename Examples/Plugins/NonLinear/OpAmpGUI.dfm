@@ -21,6 +21,7 @@ object VSTGUI: TVSTGUI
     Width = 72
     Height = 13
     Caption = 'OpAmp Gain'
+    OnClick = LbGainClick
   end
   object SBGain: TScrollBar
     Left = 8

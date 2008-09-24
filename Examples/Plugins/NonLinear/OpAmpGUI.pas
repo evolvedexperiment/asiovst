@@ -4,14 +4,16 @@ unit OpAmpGUI;
 
 interface
 
-uses {$IFDEF FPC}LCLIntf, LResources, {$ENDIF} Messages, SysUtils, Classes,
-     Forms, Controls, StdCtrls, DAV_Common, DAV_VSTModule;
+uses
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes, Messages,
+  Forms, Controls, StdCtrls, DAV_Common, DAV_VSTModule;
 
 type
   TVSTGUI = class(TForm)
     SBGain: TScrollBar;
     LbGain: TLabel;
     procedure SBGainChange(Sender: TObject);
+    procedure LbGainClick(Sender: TObject);
   private
   public
     theModule: TVSTModule;
@@ -23,7 +25,24 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses OpAmpModule;
+uses
+  Dialogs, SysUtils, OpAmpModule;
+
+procedure TVSTGUI.LbGainClick(Sender: TObject);
+var
+  b : PChar;
+begin
+ // Example on how to query the DLL name of the plugin 
+ GetMem(b, 255);
+ FillChar(b^, 255, 0);
+ try
+  ShowMessage('Instance: ' + IntToStr(hInstance));
+  GetModuleFileName(hInstance, b, 255);
+  ShowMessage(StrPas(b));
+ finally
+  Dispose(b);
+ end;
+end;
 
 procedure TVSTGUI.SBGainChange(Sender: TObject);
 begin

@@ -223,13 +223,14 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
-      ItemIndex = -1
+      ItemIndex = 0
       Items.Strings = (
         'Split A'
         'Split B'
         'Dyn'
         'L/R'
-        'M/S')
+        'M/S'
+        'Serial')
       LineColor = clBlack
       LineWidth = 2
       SelectBoxColor = 7701642

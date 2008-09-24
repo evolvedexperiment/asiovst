@@ -10,10 +10,39 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
   PlugCategory = vpcEffect
   CanDos = [vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   UniqueID = 'Spli'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Simple Split'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Linkwitz-Riley'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Dynamic Duo'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Left/Right'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Mid/Side'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Serialized'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear
@@ -22,8 +51,8 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 4.000000000000000000
-      MaxInteger = 4
+      Max = 5.000000000000000000
+      MaxInteger = 5
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
@@ -117,10 +146,7 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
   OnOfflinePrepare = VSTModuleOfflinePrepare
   OnOfflineRun = VSTModuleOfflineRun
   OnOutputProperties = VSTModuleOutputProperties
-  OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessEvents = VSTModuleProcessEvents
-  OnProcessReplacing = VSTModuleProcess
   OnProcessVarIO = VSTModuleProcessVarIO
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange

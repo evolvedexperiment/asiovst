@@ -1,6 +1,8 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library SplitTemplate;
 
+{$R 'Test.res' 'Test.rc'}
+
 uses
   FastMM4,
   madExcept,
@@ -8,6 +10,8 @@ uses
   madListHardware,
   madListProcesses,
   madListModules,
+  FastMove,
+  RTLVCLOptimize,
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,

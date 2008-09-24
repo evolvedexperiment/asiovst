@@ -14,9 +14,8 @@ type
   TLowPassArray = array [0..1] of TButterworthLP;
   THighPassArray = array [0..1] of TButterworthHP;
   TUpDownsampling = array [0..1] of TDAVUpDownsampling;
-  TJoiner = function (const Input1, Input2: Double): Double of object;
 
-  TSplitType = (stSimple, stLinkwitzRiley, stDyn, stLeftRight, stMS);
+  TSplitType = (stSimple, stLiRi, stDyn, stLeftRight, stMS, stSerial, stBypass);
   TSplitTemplateDataModule = class(TVSTModule)
     VstHost: TVstHost;
     function VSTModuleInputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
@@ -50,8 +49,26 @@ type
     procedure VSTModuleOfflineRun(Sender: TObject; const OfflineTask: TVstOfflineTask; const count: Integer);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+
+    procedure VSTModuleProcess32SplitVST(const SampleFrames: Integer);
+    procedure VSTModuleProcess64SplitVST(const SampleFrames: Integer);
+
+    // 32 bit stuff
+    procedure VSTModuleProcess32SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32SplitDynamic(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32SplitLeftRight(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32SplitMidSide(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32Serial(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+
+    // 64 bit stuff
+    procedure VSTModuleProcess64Serial(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64SplitDynamic(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64SplitLeftRight(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64SplitMidSide(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+
     procedure VSTModuleProcessEvents(Sender: TObject; Events: PVstEvents);
     procedure VSTModuleProcessVarIO(Sender: TObject; const varIo: TVstVariableIo);
     procedure VSTModuleResume(Sender: TObject);
@@ -67,7 +84,7 @@ type
     fTmpOutput64      : array of PDAVDoubleFixedArray;
     fLow32, fHigh32   : array of PDAVSingleFixedArray;
     fTmpOutput32      : array of PDAVSingleFixedArray;
-    fEnvelope         : array[0..1] of Single;
+    fEnvelope         : array of Single;
     fLiRiSign         : Single;
     fMaxChannels      : Integer;
     fMinChannels      : Integer;
@@ -76,18 +93,11 @@ type
     fOSFactor         : Integer;
     fMaximumBlockSize : Integer;
     fTempBufferSize   : Integer;
-    fJoiners          : array of TJoiner;
     procedure SetOSFactor(NewOSFactor: Integer);
-    function JoinInput1(const Input1, Input2: Double): Double;
-    function JoinInput2(const Input1, Input2: Double): Double;
-    function JoinMid(const Input1, Input2: Double): Double;
-    function JoinSide(const Input1, Input2: Double): Double;
-    function JoinAdd(const Input1, Input2: Double): Double;
-    function JoinDynamicLeft(const Input1, Input2: Double): Double;
-    function JoinDynamicRight(const Input1, Input2: Double): Double;
     procedure SetTempBufferSize(const Value: Integer);
     procedure VSTBuffersChanged;
     procedure PluginSampleRateChanged;
+    procedure CheckSampleFrames(const SampleFrames: Integer);
   published
     property SplitType: TSplitType read fSplitType;
     property TempBufferSize: Integer read fTempBufferSize write SetTempBufferSize default 0;
@@ -100,7 +110,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, Dialogs, Controls, Types, PNGImage, SplitTemplateGUI;
+  Math, Dialogs, Controls, Types, PNGImage, SplitTemplateGUI, DAV_VSTPrograms;
 
 function EnumNamesFunc(hModule:THandle; lpType, lpName:PChar; lParam: DWORD): Boolean; stdcall;
 begin
@@ -127,6 +137,7 @@ var
   RS       : TResourceStream;
   PI       : TCustomVstPlugIn;
   ch, i, n : Integer;
+//  str      : string;
 begin
  RN          := TStringList.Create;
  try
@@ -160,6 +171,18 @@ begin
     EffectName  := 'Splitted ' + VstHost[0].EffectName;
     ProductName := 'Splitted ' + VstHost[0].ProductString;
     VendorName  := 'Delphi ASIO & VST Packages and ' + VstHost[0].VendorString;
+
+(*
+    // program replication
+    for i := 0 to VstHost[0].numPrograms - 1 do
+     with Programs.Add do
+      begin
+       VstHost[0].GetProgramNameIndexed(0, i, str);
+       VstHost[0].SetProgram(i);
+       DisplayName := str;
+      end;
+*)
+
     if (effFlagsCanDoubleReplacing in VstHost[0].EffectOptions) and
        (effFlagsCanDoubleReplacing in VstHost[1].EffectOptions)
      then
@@ -175,7 +198,7 @@ begin
     if VstHost[0].numInputs = VstHost[1].numInputs then
      begin
       numInputs  := VstHost[0].numInputs;
-      numOutputs := VstHost[0].numInputs;
+      numOutputs := max(2, VstHost[0].numOutputs);
       case numInputs of
        1 : CanDos := CanDos - [vcd2in2out] + [vcd1in1out];
        2 : CanDos := CanDos - [vcd1in1out] + [vcd2in2out];
@@ -215,14 +238,13 @@ begin
 
  fOSFactor   := 1;
  fOSActive   := False;
- SetLength(fJoiners, numOutputs);
- for ch := 0 to numOutputs - 1 do
-  begin
-   fJoiners[ch] := JoinAdd;
-   fJoiners[ch] := JoinAdd;
-  end;
+
+ OnProcess := VSTModuleProcess32SplitFrequencySimple;
+ OnProcessReplacing := VSTModuleProcess32SplitFrequencySimple;
+ OnProcessDoubleReplacing := VSTModuleProcess64SplitFrequencySimple;
  fTempBufferSize := 0;
  fMaximumBlockSize := VstHost.BlockSize;
+ SetLength(fEnvelope, fMaxChannels);
  SetLength(fLow32, fMaxChannels);
  SetLength(fLow64, fMaxChannels);
  SetLength(fHigh32, fMaxChannels);
@@ -236,9 +258,6 @@ procedure TSplitTemplateDataModule.VSTModuleDestroy(Sender: TObject);
 var
   ch, n : Integer;
 begin
- VstHost[0].UnLoad;
- VstHost[1].UnLoad;
-
  for ch := 0 to fMaxChannels - 1 do Dispose(fLow64[ch]);
  for ch := 0 to fMaxChannels - 1 do Dispose(fHigh64[ch]);
  for ch := 0 to numOutputs - 1   do Dispose(fTmpOutput64[ch]);
@@ -307,7 +326,7 @@ begin
       PnGui.Top    := PnControl.Height + Oversize div 2;
       ClientHeight := PnControl.Height + PnGui.Height + Oversize;
 
-      // Show border
+      // show border
       ShBorder.Visible := True;
       ShBorder.SetBounds(PnGui.Left - ShBorder.Pen.Width,
                          PnGui.Top - ShBorder.Pen.Width,
@@ -385,6 +404,63 @@ begin
  Parameter[2] := 4;
  Parameter[3] := 0;
  Parameter[4] := 2;
+
+ with Programs[0] do
+  begin
+   Parameter[0] := 0;
+   Parameter[1] := 2000;
+   Parameter[2] := 4;
+   Parameter[3] := 0;
+   Parameter[4] := 2;
+  end;
+ with Programs[1] do
+  begin
+   Parameter[0] := 0;
+   Parameter[1] := 3000;
+   Parameter[2] := 4;
+   Parameter[3] := 1;
+   Parameter[4] := 2;
+  end;
+ with Programs[2] do
+  begin
+   Parameter[0] := 1;
+   Parameter[1] := 1300;
+   Parameter[2] := 4;
+   Parameter[3] := 0;
+   Parameter[4] := 2;
+  end;
+ with Programs[3] do
+  begin
+   Parameter[0] := 2;
+   Parameter[1] := 1300;
+   Parameter[2] := 4;
+   Parameter[3] := 0;
+   Parameter[4] := 2;
+  end;
+ with Programs[4] do
+  begin
+   Parameter[0] := 3;
+   Parameter[1] := 200;
+   Parameter[2] := 4;
+   Parameter[3] := 0;
+   Parameter[4] := 2;
+  end;
+ with Programs[5] do
+  begin
+   Parameter[0] := 4;
+   Parameter[1] := 400;
+   Parameter[2] := 4;
+   Parameter[3] := 0;
+   Parameter[4] := 2;
+  end;
+ with Programs[6] do
+  begin
+   Parameter[0] := 5;
+   Parameter[1] := 800;
+   Parameter[2] := 4;
+   Parameter[3] := 0;
+   Parameter[4] := 2;
+  end;
 end;
 
 function TSplitTemplateDataModule.VSTModuleOutputProperties(Sender: TObject;
@@ -548,7 +624,7 @@ end;
 procedure TSplitTemplateDataModule.ParamOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- if SplitType = stLinkwitzRiley
+ if SplitType = stLiRi
   then PreDefined := ConvertOrderToString(2 * round(Parameter[Index]))
   else PreDefined := ConvertOrderToString(round(Parameter[Index]))
 end;
@@ -654,23 +730,36 @@ procedure TSplitTemplateDataModule.ParamModeChange(
 begin
  fSplitType := TSplitType(round(Value));
  case fSplitType of
-  stSimple,
-  stLinkwitzRiley : begin
-                     fJoiners[0] := JoinAdd;
-                     fJoiners[1] := JoinAdd;
-                    end;
-            stDyn : begin
-                     fJoiners[0] := JoinDynamicLeft;
-                     fJoiners[1] := JoinDynamicRight;
-                    end;
-      stLeftRight : begin
-                     fJoiners[0] := JoinInput1;
-                     fJoiners[1] := JoinInput2;
-                    end;
-             stMS : begin
-                     fJoiners[0] := JoinMid;
-                     fJoiners[1] := JoinSide;
-                    end;
+     stSimple : begin
+                 OnProcess := VSTModuleProcess32SplitFrequencySimple;
+                 OnProcessReplacing := VSTModuleProcess32SplitFrequencySimple;
+                 OnProcessDoubleReplacing := VSTModuleProcess64SplitFrequencySimple;
+                end;
+       stLiRi : begin
+                 OnProcess := VSTModuleProcess32SplitFrequencyLiRi;
+                 OnProcessReplacing := VSTModuleProcess32SplitFrequencyLiRi;
+                 OnProcessDoubleReplacing := VSTModuleProcess64SplitFrequencyLiRi;
+                end;
+        stDyn : begin
+                 OnProcess := VSTModuleProcess32SplitDynamic;
+                 OnProcessReplacing := VSTModuleProcess32SplitDynamic;
+                 OnProcessDoubleReplacing := VSTModuleProcess64SplitDynamic;
+                end;
+  stLeftRight : begin
+                 OnProcess := VSTModuleProcess32SplitLeftRight;
+                 OnProcessReplacing := VSTModuleProcess32SplitLeftRight;
+                 OnProcessDoubleReplacing := VSTModuleProcess64SplitLeftRight;
+                end;
+         stMS : begin
+                 OnProcess := VSTModuleProcess32SplitMidSide;
+                 OnProcessReplacing := VSTModuleProcess32SplitMidSide;
+                 OnProcessDoubleReplacing := VSTModuleProcess64SplitMidSide;
+                end;
+     stSerial : begin
+                 OnProcess := VSTModuleProcess32Serial;
+                 OnProcessReplacing := VSTModuleProcess32Serial;
+                 OnProcessDoubleReplacing := VSTModuleProcess64Serial;
+                end;
  end;
 
  if EditorForm is TFmSplitter then
@@ -692,44 +781,6 @@ begin
  end;
 end;
 
-function TSplitTemplateDataModule.JoinMid(const Input1, Input2: Double): Double;
-begin
- result := 0.5 * (Input1 + Input2);
-end;
-
-function TSplitTemplateDataModule.JoinSide(const Input1, Input2: Double): Double;
-begin
- result := 0.5 * (Input1 - Input2);
-end;
-
-function TSplitTemplateDataModule.JoinAdd(const Input1, Input2: Double): Double;
-begin
- result := Input1 + Input2;
-end;
-
-function TSplitTemplateDataModule.JoinDynamicLeft(const Input1, Input2: Double): Double;
-begin
- result := fEnvelope[0] * Input1 + (1 - fEnvelope[0]) * Input2;
-end;
-
-function TSplitTemplateDataModule.JoinDynamicRight(const Input1,
-  Input2: Double): Double;
-begin
- result := fEnvelope[1] * Input1 + (1 - fEnvelope[1]) * Input2;
-end;
-
-function TSplitTemplateDataModule.JoinInput1(const Input1,
-  Input2: Double): Double;
-begin
- result := Input1;
-end;
-
-function TSplitTemplateDataModule.JoinInput2(const Input1,
-  Input2: Double): Double;
-begin
- result := Input2;
-end;
-
 procedure TSplitTemplateDataModule.VSTModuleProcessEvents(Sender: TObject;
   Events: PVstEvents);
 begin
@@ -737,10 +788,7 @@ begin
  if VstHost[1].Active then VstHost[1].ProcessEvents(Events);
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  L, H   : Double;
-  ch, i  : Integer;
+procedure TSplitTemplateDataModule.CheckSampleFrames(const SampleFrames: Integer);
 begin
  if SampleFrames > fMaximumBlockSize then
   begin
@@ -748,51 +796,12 @@ begin
    if TempBufferSize < fMaximumBlockSize * fOSFactor
     then TempBufferSize := fMaximumBlockSize * fOSFactor;
   end;
+end;
 
- for ch := 0 to numInputs - 1 do
-  for i := 0 to SampleFrames - 1 do
-   begin
-    case fSplitType of
-     stSimple        : begin
-                        L := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
-                        H := Inputs[ch, i] - L;
-                       end;
-     stLinkwitzRiley : begin
-                        L := fLowpass[ch, 1].ProcessSample(
-                             fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i]));
-                        H := fHighpass[ch, 0].ProcessSample(
-                             fHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
-                       end;
-     stDyn           : begin
-                        L := Inputs[ch, i]; H := L;
-                        fEnvelope[ch] := fLowpass[ch, 0].ProcessSample(abs(L));
-                       end;
-     stLeftRight     : begin
-                        L := Inputs[0, i];
-                        H := Inputs[1, i];
-                       end;
-     stMS            : begin
-                        L := Inputs[0, i] + Inputs[1, i];
-                        H := Inputs[0, i] - Inputs[1, i];
-                       end;
-     else
-      begin
-       L := Inputs[0, i];
-       H := Inputs[1, i];
-      end;
-    end;
-    if fOSActive then
-     begin
-      fOversampler[ch, 0].Upsample32(L, @fLow32[ch, i * fOSFactor]);
-      fOversampler[ch, 1].Upsample32(H, @fHigh32[ch, i * fOSFactor]);
-     end
-    else
-     begin
-      fLow32[ch, i]  := L;
-      fHigh32[ch, i] := H;
-     end;
-   end;
-
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitVST(const SampleFrames: Integer);
+var
+  ch : Integer;
+begin
  if VstHost[0].Active then
   begin
    VstHost[0].ProcessReplacing(@fLow32[0], @fTmpOutput32[0], SampleFrames * fOSFactor);
@@ -805,79 +814,12 @@ begin
    for ch := 0 to numOutputs - 1
     do Move(fTmpOutput32[ch, 0], fHigh32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
   end;
-
- if fOSActive then
-  for ch := 0 to numOutputs - 1 do
-   for i := 0 to SampleFrames - 1 do
-    begin
-     L := fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]);
-     H := fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]);
-
-     Outputs[ch, i] := fJoiners[ch](L, H);
-    end
- else
-  for ch := 0 to numOutputs - 1 do
-   for i := 0 to SampleFrames - 1
-    do Outputs[ch, i] := fJoiners[ch](fLow32[ch, i], fHigh32[ch, i]);
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitVST(const SampleFrames: Integer);
 var
-  L, H   : Double;
-  ch, i  : Integer;
+  ch : Integer;
 begin
- if SampleFrames > fMaximumBlockSize then
-  begin
-   fMaximumBlockSize := SampleFrames;
-   if TempBufferSize < fMaximumBlockSize * fOSFactor
-    then TempBufferSize := fMaximumBlockSize * fOSFactor;
-  end;
-
- for ch := 0 to numInputs - 1 do
-  for i := 0 to SampleFrames - 1 do
-   begin
-    case fSplitType of
-     stSimple        : begin
-                        L := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
-                        H := Inputs[ch, i] - L;
-                       end;
-     stLinkwitzRiley : begin
-                        L := fLowpass[ch, 1].ProcessSample(
-                             fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i]));
-                        H := fHighpass[ch, 0].ProcessSample(
-                             fHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
-                       end;
-     stDyn           : begin
-                        L := Inputs[ch, i]; H := L;
-                        fEnvelope[ch] := fLowpass[ch, 0].ProcessSample(abs(L));
-                       end;
-     stLeftRight     : begin
-                        L := Inputs[0, i];
-                        H := Inputs[1, i];
-                       end;
-     stMS            : begin
-                        L := Inputs[0, i] + Inputs[1, i];
-                        H := Inputs[0, i] - Inputs[1, i];
-                       end;
-     else
-      begin
-       L := Inputs[0, i];
-       H := Inputs[1, i];
-      end;
-    end;
-    if fOSActive then
-     begin
-      fOversampler[ch, 0].Upsample64(L, @fLow64[ch, i * fOSFactor]);
-      fOversampler[ch, 1].Upsample64(H, @fHigh64[ch, i * fOSFactor]);
-     end
-    else
-     begin
-      fLow64[ch, i]  := L;
-      fHigh64[ch, i] := H;
-     end;
-   end;
-
  if VstHost[0].Active then
   begin
    VstHost[0].ProcessDoubleReplacing(@fLow64[0], @fTmpOutput64[0], SampleFrames * fOSFactor);
@@ -890,20 +832,658 @@ begin
    for ch := 0 to numOutputs - 1
     do Move(fTmpOutput64[ch, 0], fHigh64[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
   end;
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  L     : Double;
+  ch, i : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if fOSActive then
+  for ch := 0 to numInputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     L := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
+     fOversampler[ch, 0].Upsample32(L, @fLow32[ch, i * fOSFactor]);
+     fOversampler[ch, 1].Upsample32(Inputs[ch, i] - L, @fHigh32[ch, i * fOSFactor]);
+    end
+ else
+  for ch := 0 to numInputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     fLow32[ch, i]  := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
+     fHigh32[ch, i] := Inputs[ch, i] - fLow32[ch, i];
+    end;
+
+ VSTModuleProcess32SplitVST(SampleFrames);
 
  if fOSActive then
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     L := fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]);
-     H := fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]);
-
-     Outputs[ch, i] := fJoiners[ch](L, H);
+     Outputs[ch, i] := fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]) +
+                       fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]);
     end
  else
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1
-    do Outputs[ch, i] := fJoiners[ch](fLow64[ch, i], fHigh64[ch, i]);
+    do Outputs[ch, i] := fLow32[ch, i] + fHigh32[ch, i];
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  ch, i  : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if fOSActive then
+  for ch := 0 to numInputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     fOversampler[ch, 0].Upsample32(
+       fLowpass[ch, 1].ProcessSample(
+       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i])), @fLow32[ch, i * fOSFactor]);
+     fOversampler[ch, 1].Upsample32(
+       fHighpass[ch, 0].ProcessSample(
+       fHighpass[ch, 1].ProcessSample(Inputs[ch, i])), @fHigh32[ch, i * fOSFactor]);
+    end
+ else
+  for ch := 0 to numInputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     fLow32[ch, i]  := fLowpass[ch, 1].ProcessSample(
+                       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i]));;
+     fHigh32[ch, i] := fHighpass[ch, 0].ProcessSample(
+                       fHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
+    end;
+
+ VSTModuleProcess32SplitVST(SampleFrames);
+
+ if fOSActive then
+  for ch := 0 to numOutputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     Outputs[ch, i] := fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]) +
+                       fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]);
+    end
+ else
+  for ch := 0 to numOutputs - 1 do
+   for i := 0 to SampleFrames - 1
+    do Outputs[ch, i] := fLow32[ch, i] + fHigh32[ch, i];
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitDynamic(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  L, H  : Double;
+  ch, i : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if fOSActive then
+  begin
+   // upsample
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1
+     do fOversampler[ch, 0].Upsample32(Inputs[ch, i], @fTmpOutput32[ch, i * fOSFactor]);
+
+   // process
+   with VstHost[0] do
+    if Active then ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+   with VstHost[1] do
+    if Active then ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+
+   for ch := 0 to numOutputs - 1 do
+    for i := 0 to SampleFrames - 1 do
+     begin
+      L := fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]);
+      H := fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]);
+      fEnvelope[ch]  := fLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
+      Outputs[ch, i] := fEnvelope[ch] * H + (1 - fEnvelope[ch]) * L;
+     end;
+  end
+ else
+  begin
+   // directly process both VSTs to the low/high buffers
+   with VstHost[0] do
+    if Active then ProcessReplacing(@Inputs[0], @fLow32[0], SampleFrames);
+   with VstHost[1] do
+    if Active then ProcessReplacing(@Inputs[0], @fHigh32[0], SampleFrames);
+
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1 do
+     begin
+      fEnvelope[ch]  := fLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
+      Outputs[ch, i] := fEnvelope[ch] * fHigh32[ch, i] + (1 - fEnvelope[ch]) * fLow32[ch, i];
+     end;
+  end;
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess32Serial(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  ch, i  : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if fOSActive then
+  begin
+   // upsample
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1
+     do fOversampler[ch, 0].Upsample32(Inputs[ch, i], @fTmpOutput32[ch, i * fOSFactor]);
+
+   // process serial chain
+   if VstHost[0].Active then
+    begin
+     VstHost[0].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+     for ch := 0 to numOutputs - 1
+      do Move(fLow32[ch, 0], fTmpOutput32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+    end;
+   if VstHost[1].Active then
+    begin
+     VstHost[1].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+     for ch := 0 to numOutputs - 1
+      do Move(fLow32[ch, 0], fTmpOutput32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+    end;
+
+   // downsample 
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1
+     do Outputs[ch, i] := fOversampler[ch, 0].Downsample32(@fTmpOutput32[ch, i * fOSFactor]);
+  end
+ else
+  begin
+   if VstHost[0].Active then
+    begin
+     VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor);
+
+     // move output to input to prepare for the next stage
+     if VstHost[1].Active then
+      for ch := 0 to fMinChannels - 1
+       do Move(Outputs[ch, 0], Inputs[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+    end;
+   if VstHost[1].Active
+    then VstHost[1].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor);
+  end;
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitLeftRight(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  i  : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if numInputs = 1 then
+  begin
+   if fOSActive then
+    begin
+     for i := 0 to SampleFrames - 1
+      do fOversampler[0, 0].Upsample32(Inputs[0, i], @fTmpOutput32[0, i * fOSFactor]);
+
+     if VstHost[0].Active
+      then VstHost[0].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+     if VstHost[1].Active
+      then VstHost[1].ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+
+     for i := 0 to SampleFrames - 1 do
+      begin
+       Outputs[0, i] := fOversampler[0, 0].DownSample32(@fLow32[0, i * fOSFactor]);
+       Outputs[1, i] := fOversampler[1, 0].DownSample32(@fHigh32[0, i * fOSFactor]);
+      end
+    end
+   else
+    begin
+     if VstHost[0].Active
+      then VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames);
+     if VstHost[1].Active
+      then VstHost[1].ProcessReplacing(@Inputs[0], @Outputs[1], SampleFrames);
+    end;
+  end
+ else
+  begin
+   if fOSActive then
+    begin
+     // upsample left channel
+     for i := 0 to SampleFrames - 1
+      do fOversampler[0, 0].Upsample32(Inputs[0, i], @fTmpOutput32[0, i * fOSFactor]);
+     move(fTmpOutput32[0, 0], fTmpOutput32[1, 0], SampleFrames * fOSFactor * SizeOf(Single));
+
+     if VstHost[0].Active
+      then VstHost[0].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+
+     // upsample right channel
+     for i := 0 to SampleFrames - 1
+      do fOversampler[1, 0].Upsample32(Inputs[1, i], @fTmpOutput32[0, i * fOSFactor]);
+     move(fTmpOutput32[0, 0], fTmpOutput32[1, 0], SampleFrames * fOSFactor * SizeOf(Single));
+
+     if VstHost[1].Active
+      then VstHost[1].ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+
+     for i := 0 to SampleFrames - 1 do
+      begin
+       Outputs[0, i] := fOversampler[0, 0].DownSample32(@fLow32[0, i * fOSFactor]);
+       Outputs[1, i] := fOversampler[1, 0].DownSample32(@fHigh32[0, i * fOSFactor]);
+      end
+    end
+   else
+    begin
+     // move left channel
+     move(Inputs[0, 0], fTmpOutput32[0, 0], SampleFrames * SizeOf(Single));
+     move(Inputs[0, 0], fTmpOutput32[1, 0], SampleFrames * SizeOf(Single));
+
+     if VstHost[0].Active
+      then VstHost[0].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames);
+
+     // move right channel
+     move(Inputs[1, 0], fTmpOutput32[0, 0], SampleFrames * SizeOf(Single));
+     move(Inputs[1, 0], fTmpOutput32[1, 0], SampleFrames * SizeOf(Single));
+
+     if VstHost[1].Active
+      then VstHost[1].ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames);
+
+     move(fLow32[0, 0],  Outputs[0, 0], SampleFrames * SizeOf(Single));
+     move(fHigh32[0, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
+    end;
+  end;
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitMidSide(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  L, H : Double;
+  i    : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if numInputs = 1 then // process mono here
+  begin
+   if fOSActive then
+    begin
+     for i := 0 to SampleFrames - 1
+      do fOversampler[0, 0].Upsample32(Inputs[0, i], @fTmpOutput32[0, i * fOSFactor]);
+
+     if VstHost[0].Active
+      then VstHost[0].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+     if VstHost[1].Active
+      then VstHost[1].ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+
+     for i := 0 to SampleFrames - 1 do
+      begin
+       Outputs[0, i] := fOversampler[0, 0].DownSample32(@fLow32[0, i * fOSFactor]);
+       Outputs[1, i] := fOversampler[1, 0].DownSample32(@fHigh32[0, i * fOSFactor]);
+      end
+    end
+   else
+    begin
+     if VstHost[0].Active
+      then VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames);
+     if VstHost[1].Active
+      then VstHost[1].ProcessReplacing(@Inputs[0], @Outputs[1], SampleFrames);
+    end;
+  end
+ else
+  begin
+   // upsample or move channels
+   if fOSActive then
+    for i := 0 to SampleFrames - 1 do
+     begin
+      fOversampler[0, 0].Upsample32(Inputs[0, i] + Inputs[1, i], @fLow32[0, i * fOSFactor]);
+      fOversampler[0, 1].Upsample32(Inputs[0, i] - Inputs[1, i], @fHigh32[0, i * fOSFactor]);
+     end
+   else
+    for i := 0 to SampleFrames - 1 do
+     begin
+      fLow32[0, i]  := Inputs[0, i] + Inputs[1, i];
+      fHigh32[0, i] := Inputs[0, i] - Inputs[1, i];
+     end;
+   // dublicate internal channels
+   Move(fLow32[0, 0], fLow32[1, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+   Move(fHigh32[0, 0], fHigh32[1, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+
+   VSTModuleProcess32SplitVST(SampleFrames);
+
+   // downsample or move channels
+   if fOSActive then
+    for i := 0 to SampleFrames - 1 do
+     begin
+      L := fOversampler[0, 0].Downsample32(@fLow32[0, i * fOSFactor]);
+      H := fOversampler[0, 1].Downsample32(@fHigh32[0, i * fOSFactor]);
+      Outputs[0, i] := L + H;
+      Outputs[1, i] := L - H;
+     end
+   else
+    for i := 0 to SampleFrames - 1 do
+     begin
+      Outputs[0, i] := fLow32[0, i] + fHigh32[0, i];
+      Outputs[1, i] := fLow32[0, i] - fHigh32[0, i];
+     end;
+  end;
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitFrequencySimple(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  L     : Double;
+  ch, i : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if fOSActive then
+  for ch := 0 to numInputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     L := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
+     fOversampler[ch, 0].Upsample64(L, @fLow64[ch, i * fOSFactor]);
+     fOversampler[ch, 1].Upsample64(Inputs[ch, i] - L, @fHigh64[ch, i * fOSFactor]);
+    end
+ else
+  for ch := 0 to numInputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     fLow64[ch, i]  := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
+     fHigh64[ch, i] := Inputs[ch, i] - fLow64[ch, i];
+    end;
+
+ VSTModuleProcess64SplitVST(SampleFrames);
+
+ if fOSActive then
+  for ch := 0 to numOutputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     Outputs[ch, i] := fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]) +
+                       fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]);
+    end
+ else
+  for ch := 0 to numOutputs - 1 do
+   for i := 0 to SampleFrames - 1
+    do Outputs[ch, i] := fLow64[ch, i] + fHigh64[ch, i];
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  ch, i  : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if fOSActive then
+  for ch := 0 to numInputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     fOversampler[ch, 0].Upsample64(
+       fLowpass[ch, 1].ProcessSample(
+       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i])), @fLow64[ch, i * fOSFactor]);
+     fOversampler[ch, 1].Upsample64(
+       fHighpass[ch, 0].ProcessSample(
+       fHighpass[ch, 1].ProcessSample(Inputs[ch, i])), @fHigh64[ch, i * fOSFactor]);
+    end
+ else
+  for ch := 0 to numInputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     fLow64[ch, i]  := fLowpass[ch, 1].ProcessSample(
+                       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i]));;
+     fHigh64[ch, i] := fHighpass[ch, 0].ProcessSample(
+                       fHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
+    end;
+
+ VSTModuleProcess64SplitVST(SampleFrames);
+
+ if fOSActive then
+  for ch := 0 to numOutputs - 1 do
+   for i := 0 to SampleFrames - 1 do
+    begin
+     Outputs[ch, i] := fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]) +
+                       fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]);
+    end
+ else
+  for ch := 0 to numOutputs - 1 do
+   for i := 0 to SampleFrames - 1
+    do Outputs[ch, i] := fLow64[ch, i] + fHigh64[ch, i];
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitDynamic(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  L, H  : Double;
+  ch, i : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if fOSActive then
+  begin
+   // upsample
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1
+     do fOversampler[ch, 0].Upsample64(Inputs[ch, i], @fTmpOutput64[ch, i * fOSFactor]);
+
+   // process
+   with VstHost[0] do
+    if Active then ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+   with VstHost[1] do
+    if Active then ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+
+   for ch := 0 to numOutputs - 1 do
+    for i := 0 to SampleFrames - 1 do
+     begin
+      L := fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]);
+      H := fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]);
+      fEnvelope[ch]  := fLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
+      Outputs[ch, i] := fEnvelope[ch] * H + (1 - fEnvelope[ch]) * L;
+     end;
+  end
+ else
+  begin
+   // directly process both VSTs to the low/high buffers
+   with VstHost[0] do
+    if Active then ProcessDoubleReplacing(@Inputs[0], @fLow64[0], SampleFrames);
+   with VstHost[1] do
+    if Active then ProcessDoubleReplacing(@Inputs[0], @fHigh64[0], SampleFrames);
+
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1 do
+     begin
+      fEnvelope[ch]  := fLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
+      Outputs[ch, i] := fEnvelope[ch] * fHigh64[ch, i] + (1 - fEnvelope[ch]) * fLow64[ch, i];
+     end;
+  end;
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess64Serial(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  ch, i  : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if fOSActive then
+  begin
+   // upsample
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1
+     do fOversampler[ch, 0].Upsample64(Inputs[ch, i], @fTmpOutput64[ch, i * fOSFactor]);
+
+   // process serial chain
+   if VstHost[0].Active then
+    begin
+     VstHost[0].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+     for ch := 0 to numOutputs - 1
+      do Move(fLow64[ch, 0], fTmpOutput64[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+    end;
+   if VstHost[1].Active then
+    begin
+     VstHost[1].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+     for ch := 0 to numOutputs - 1
+      do Move(fLow64[ch, 0], fTmpOutput64[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+    end;
+
+   // downsample
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1
+     do Outputs[ch, i] := fOversampler[ch, 0].Downsample64(@fTmpOutput64[ch, i * fOSFactor]);
+  end
+ else
+  begin
+   if VstHost[0].Active then
+    begin
+     VstHost[0].ProcessDoubleReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor);
+
+     // move output to input to prepare for the next stage
+     if VstHost[1].Active then
+      for ch := 0 to fMinChannels - 1
+       do Move(Outputs[ch, 0], Inputs[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+    end;
+   if VstHost[1].Active
+    then VstHost[1].ProcessDoubleReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor);
+  end;
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitLeftRight(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  i  : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if numInputs = 1 then
+  begin
+   if fOSActive then
+    begin
+     for i := 0 to SampleFrames - 1
+      do fOversampler[0, 0].Upsample64(Inputs[0, i], @fTmpOutput64[0, i * fOSFactor]);
+
+     if VstHost[0].Active
+      then VstHost[0].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+     if VstHost[1].Active
+      then VstHost[1].ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+
+     for i := 0 to SampleFrames - 1 do
+      begin
+       Outputs[0, i] := fOversampler[0, 0].DownSample64(@fLow64[0, i * fOSFactor]);
+       Outputs[1, i] := fOversampler[1, 0].DownSample64(@fHigh64[0, i * fOSFactor]);
+      end
+    end
+   else
+    begin
+     if VstHost[0].Active
+      then VstHost[0].ProcessDoubleReplacing(@Inputs[0], @Outputs[0], SampleFrames);
+     if VstHost[1].Active
+      then VstHost[1].ProcessDoubleReplacing(@Inputs[0], @Outputs[1], SampleFrames);
+    end;
+  end
+ else
+  begin
+   if fOSActive then
+    begin
+     // upsample left channel
+     for i := 0 to SampleFrames - 1
+      do fOversampler[0, 0].Upsample64(Inputs[0, i], @fTmpOutput64[0, i * fOSFactor]);
+     move(fTmpOutput64[0, 0], fTmpOutput64[1, 0], SampleFrames * fOSFactor * SizeOf(Double));
+
+     if VstHost[0].Active
+      then VstHost[0].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+
+     // upsample right channel
+     for i := 0 to SampleFrames - 1
+      do fOversampler[1, 0].Upsample64(Inputs[1, i], @fTmpOutput64[0, i * fOSFactor]);
+     move(fTmpOutput64[0, 0], fTmpOutput64[1, 0], SampleFrames * fOSFactor * SizeOf(Double));
+
+     if VstHost[1].Active
+      then VstHost[1].ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+
+     for i := 0 to SampleFrames - 1 do
+      begin
+       Outputs[0, i] := fOversampler[0, 0].DownSample64(@fLow64[0, i * fOSFactor]);
+       Outputs[1, i] := fOversampler[1, 0].DownSample64(@fHigh64[0, i * fOSFactor]);
+      end
+    end
+   else
+    begin
+     // move left channel
+     move(Inputs[0, 0], fTmpOutput64[0, 0], SampleFrames * SizeOf(Double));
+     move(Inputs[0, 0], fTmpOutput64[1, 0], SampleFrames * SizeOf(Double));
+
+     if VstHost[0].Active
+      then VstHost[0].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames);
+
+     // move right channel
+     move(Inputs[1, 0], fTmpOutput64[0, 0], SampleFrames * SizeOf(Double));
+     move(Inputs[1, 0], fTmpOutput64[1, 0], SampleFrames * SizeOf(Double));
+
+     if VstHost[1].Active
+      then VstHost[1].ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames);
+
+     move(fLow64[0, 0],  Outputs[0, 0], SampleFrames * SizeOf(Double));
+     move(fHigh64[0, 0], Outputs[1, 0], SampleFrames * SizeOf(Double));
+    end;
+  end;
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitMidSide(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  L, H : Double;
+  i    : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if numInputs = 1 then // process mono here
+  begin
+   if fOSActive then
+    begin
+     for i := 0 to SampleFrames - 1
+      do fOversampler[0, 0].Upsample64(Inputs[0, i], @fTmpOutput64[0, i * fOSFactor]);
+
+     if VstHost[0].Active
+      then VstHost[0].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+     if VstHost[1].Active
+      then VstHost[1].ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+
+     for i := 0 to SampleFrames - 1 do
+      begin
+       Outputs[0, i] := fOversampler[0, 0].DownSample64(@fLow64[0, i * fOSFactor]);
+       Outputs[1, i] := fOversampler[1, 0].DownSample64(@fHigh64[0, i * fOSFactor]);
+      end
+    end
+   else
+    begin
+     if VstHost[0].Active
+      then VstHost[0].ProcessDoubleReplacing(@Inputs[0], @Outputs[0], SampleFrames);
+     if VstHost[1].Active
+      then VstHost[1].ProcessDoubleReplacing(@Inputs[0], @Outputs[1], SampleFrames);
+    end;
+  end
+ else
+  begin
+   // upsample or move channels
+   if fOSActive then
+    for i := 0 to SampleFrames - 1 do
+     begin
+      fOversampler[0, 0].Upsample64(Inputs[0, i] + Inputs[1, i], @fLow64[0, i * fOSFactor]);
+      fOversampler[0, 1].Upsample64(Inputs[0, i] - Inputs[1, i], @fHigh64[0, i * fOSFactor]);
+     end
+   else
+    for i := 0 to SampleFrames - 1 do
+     begin
+      fLow64[0, i]  := Inputs[0, i] + Inputs[1, i];
+      fHigh64[0, i] := Inputs[0, i] - Inputs[1, i];
+     end;
+   // dublicate internal channels
+   Move(fLow64[0, 0], fLow64[1, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+   Move(fHigh64[0, 0], fHigh64[1, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+
+   VSTModuleProcess64SplitVST(SampleFrames);
+
+   // downsample or move channels
+   if fOSActive then
+    for i := 0 to SampleFrames - 1 do
+     begin
+      L := fOversampler[0, 0].Downsample64(@fLow64[0, i * fOSFactor]);
+      H := fOversampler[0, 1].Downsample64(@fHigh64[0, i * fOSFactor]);
+      Outputs[0, i] := L + H;
+      Outputs[1, i] := L - H;
+     end
+   else
+    for i := 0 to SampleFrames - 1 do
+     begin
+      Outputs[0, i] := fLow64[0, i] + fHigh64[0, i];
+      Outputs[1, i] := fLow64[0, i] - fHigh64[0, i];
+     end;
+  end;
 end;
 
 end.

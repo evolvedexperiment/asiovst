@@ -967,8 +967,8 @@ function GetApplicationFilename: string;
 var
   s : array[0..1500] of char;
 begin
- GetModuleFilename(hinstance, s, SizeOf(s));
- Result := strpas(s);
+ GetModuleFilename(hInstance, s, SizeOf(s));
+ Result := StrPas(s);
  Result := ExtractFilename(Result);
 end;
 
