@@ -51,7 +51,8 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   b      : ShortInt;
-  Line   : PRGB32Array;
+  Line   : PRGB24Array;
+  h, hr  : Single;
   PngBmp : TPngObject;
 
 begin
@@ -59,23 +60,24 @@ begin
  fBackgrounBitmap := TBitmap.Create;
  with fBackgrounBitmap do
   begin
-   PixelFormat := pf32bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
+   PixelFormat := pf24bit;
+   Width       := Self.Width;
+   Height      := Self.Height;
+   hr          := 1 / Height;
+   s[0]        := 0;
+   s[1]        := 0;
    for y := 0 to Height - 1 do
     begin
      Line := Scanline[y];
+     h    := 0.6 * (1 - sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
-       b := round($3F + $1A * s[1]);
+       b := round($3F + $1A * (h + s[1]));
        s[0] := s[1];
        Line[x].B := b;
        Line[x].G := b;
        Line[x].R := b;
-       Line[x].A := 0;
       end;
     end;
   end;
@@ -85,8 +87,8 @@ begin
   RS := TResourceStream.Create(hInstance, 'ExciterKnob', 'PNG');
   try
    PngBmp.LoadFromStream(RS);
-   DialTune.DialBitmap.Assign(PngBmp);
-   DialOrder.DialBitmap.Assign(PngBmp);
+   PngBmp.AssignTo(DialTune.DialBitmap);
+   PngBmp.AssignTo(DialOrder.DialBitmap);
    DialShape.DialBitmap.Assign(PngBmp);
    DialMix.DialBitmap.Assign(PngBmp);
   finally

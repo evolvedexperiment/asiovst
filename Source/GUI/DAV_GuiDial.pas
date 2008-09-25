@@ -151,6 +151,7 @@ type
     property RightMouseButton;
     property ScrollRange_Pixel;
     property StitchKind;
+    property Transparent;
   end;
 
   TCustomGuiDialMetal = class(TCustomGuiDial)
@@ -380,10 +381,6 @@ begin
   begin
    Brush.Color := Self.Color;
 
-   // draw background
-   {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
-   FillRect(ClipRect);
-
    // draw circle
    Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
    if Rad <= 0 then exit;
@@ -427,7 +424,14 @@ begin
    Lock;
    if FDialBitmap.Empty and (FImageIndex < 0) then
     case FAntiAlias of
-     gaaNone     : RenderKnobToBitmap(fBuffer);
+     gaaNone     :
+      begin
+       // draw background
+       {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+       FillRect(ClipRect);
+
+       RenderKnobToBitmap(fBuffer);
+      end;
      gaaLinear2x :
       begin
        Bmp := TBitmap.Create;
@@ -441,7 +445,7 @@ begin
          {$IFNDEF FPC}
          if fTransparent then
           begin
-           DrawParentImage(Bmp.Canvas);
+           CopyParentImage(Self, Bmp.Canvas);
            Upsample4xBitmap(Bmp);
           end else
          {$ENDIF}
@@ -466,7 +470,7 @@ begin
          {$IFNDEF FPC}
          if fTransparent then
           begin
-           DrawParentImage(Bmp.Canvas);
+           CopyParentImage(Self, Bmp.Canvas);
            Upsample4xBitmap(Bmp);
           end else
          {$ENDIF}
@@ -491,7 +495,7 @@ begin
          {$IFNDEF FPC}
          if fTransparent then
           begin
-           DrawParentImage(Bmp.Canvas);
+           CopyParentImage(Self, Bmp.Canvas);
            Upsample4xBitmap(Bmp);
            Upsample2xBitmap(Bmp);
           end else
@@ -518,7 +522,7 @@ begin
          {$IFNDEF FPC}
          if fTransparent then
           begin
-           DrawParentImage(Bmp.Canvas);
+           CopyParentImage(Self, Bmp.Canvas);
            Upsample4xBitmap(Bmp);
            Upsample4xBitmap(Bmp);
           end else
@@ -537,7 +541,7 @@ begin
     begin
      // draw background
      Brush.Color := Self.Color;
-     {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+     {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
      FillRect(ClipRect);
 
      GlyphNr := Trunc(MapValue(NormalizedPosition) * FNumGlyphs);
@@ -560,7 +564,14 @@ begin
        theRect.Right := Bmp.Width * (GlyphNr + 1) div FNumGlyphs;
       end;
 
-     CopyRect(Clientrect, Bmp.Canvas, theRect);
+//     CopyRect(Clientrect, Bmp.Canvas, theRect);
+
+     with ClientRect do
+      begin
+       BitBlt(Handle, Left, Top, Right - Left, Bottom - Top,
+         Bmp.Canvas.Handle, theRect.Left, theRect.Top, CopyMode);
+      end;
+
     end;
    Unlock;
   end;
@@ -852,7 +863,7 @@ begin
    Brush.Color := Self.Color;
 
    // draw background
-   {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+   {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
    FillRect(ClipRect);
 
    // draw circle
@@ -915,7 +926,7 @@ begin
   begin
    Brush.Color := Self.Color;
 
-   {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+   {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
    FillRect(ClipRect);
 
    Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;

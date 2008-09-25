@@ -51,8 +51,8 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 5.000000000000000000
-      MaxInteger = 5
+      Max = 9.000000000000000000
+      MaxInteger = 9
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
@@ -78,6 +78,8 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParamFreqChange
+      OnCustomParameterLabel = ParamFreqLabel
+      OnCustomParameterDisplay = ParamFreqDisplay
     end
     item
       Curve = ctLinear
@@ -95,7 +97,26 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange
+      OnCustomParameterLabel = ParamOrderLabel
       OnCustomParameterDisplay = ParamOrderDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Volume'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 6.000000000000000000
+      MaxInteger = 6
+      Min = -90.000000000000000000
+      MinInteger = -90
+      ShortLabel = 'Volume'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParamVolumeChange
     end
     item
       Curve = ctLinear

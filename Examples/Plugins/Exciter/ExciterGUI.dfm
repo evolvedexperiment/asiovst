@@ -2,7 +2,7 @@ object FmExciter: TFmExciter
   Left = 392
   Top = 203
   BorderStyle = bsNone
-  Caption = 'FmExciter'
+  Caption = 'Exciter'
   ClientHeight = 129
   ClientWidth = 319
   Color = 4144959
@@ -42,19 +42,18 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 64
       Color = 6908265
-      LineWidth = 2
       LineColor = 116222
       CurveMapping = -1.200000047683716000
-      Position = 4000.000000000000000000
-      DefaultPosition = 4000.000000000000000000
-      Min = 1000.000000000000000000
+      DefaultPosition = 1000.000000000000000000
       Max = 16000.000000000000000000
+      Min = 1000.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
+      Position = 1000.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
       OnChange = DialTuneChange
     end
     object LbFreq: TGuiLabel
@@ -93,17 +92,16 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 64
       Color = 6908265
-      LineWidth = 2
       LineColor = 116222
-      Position = 50.000000000000000000
       DefaultPosition = 50.000000000000000000
       Max = 100.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
+      Position = 50.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
       OnChange = DialShapeChange
     end
     object LbShape: TGuiLabel
@@ -157,17 +155,16 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 64
       Color = 6908265
-      LineWidth = 2
       LineColor = 116222
-      Position = 50.000000000000000000
       DefaultPosition = 50.000000000000000000
       Max = 100.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
+      Position = 50.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
       OnChange = DialMixChange
     end
     object LbMixValue: TGuiLabel
@@ -191,19 +188,18 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 64
       Color = 6908265
-      LineWidth = 2
       LineColor = 116222
       CurveMapping = -0.660000026226043700
-      Position = 4.000000000000000000
       DefaultPosition = 4.000000000000000000
-      Min = 2.000000000000000000
       Max = 8.000000000000000000
+      Min = 2.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
+      Position = 4.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
       OnChange = DialOrderChange
     end
     object LbOrderValue: TGuiLabel

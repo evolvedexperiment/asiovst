@@ -435,7 +435,7 @@ begin
     case fAntiAlias of
      gaaNone     :
       begin
-       {$IFNDEF FPC}if fTransparent then DrawParentImage(Buffer.Canvas) else {$ENDIF}
+       {$IFNDEF FPC}if fTransparent then DrawParentImage(Canvas) else {$ENDIF}
        FillRect(ClipRect);
        RenderGroupToBitmap(Buffer);
       end;
@@ -444,7 +444,7 @@ begin
        {$IFNDEF FPC}
        if fTransparent then
         begin
-         DrawParentImage(Buffer.Canvas);
+         DrawParentImage(Canvas);
          Upsample2xBitmap32(Buffer);
         end else
        {$ENDIF}
@@ -457,7 +457,7 @@ begin
        {$IFNDEF FPC}
        if fTransparent then
         begin
-         DrawParentImage(Buffer.Canvas);
+         DrawParentImage(Canvas);
          Upsample4xBitmap32(Buffer);
         end else
        {$ENDIF}
@@ -470,7 +470,7 @@ begin
        {$IFNDEF FPC}
        if fTransparent then
         begin
-         DrawParentImage(Buffer.Canvas);
+         DrawParentImage(Canvas);
          Upsample2xBitmap32(Buffer);
          Upsample4xBitmap32(Buffer);
         end else
@@ -485,7 +485,7 @@ begin
        {$IFNDEF FPC}
        if fTransparent then
         begin
-         DrawParentImage(Buffer.Canvas);
+         DrawParentImage(Canvas);
          Upsample4xBitmap32(Buffer);
          Upsample4xBitmap32(Buffer);
         end else

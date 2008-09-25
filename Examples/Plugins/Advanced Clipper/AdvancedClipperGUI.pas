@@ -5,7 +5,7 @@ interface
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
   ExtCtrls, DAV_Common, DAV_VSTModule, DAV_GuiGroup, DAV_GuiPanel, DAV_GuiLabel,
-  DAV_GuiBaseControl, DAV_GuiDial;
+  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLED;
 
 type
   TFmAdvancedClipper = class(TForm)
@@ -17,16 +17,17 @@ type
     LbInputGain: TGuiLabel;
     LbOSFactor: TGuiLabel;
     LbFilterOrder: TGuiLabel;
-    PnDisplay1: TGuiPanel;
-    LbDisplay1: TGuiLabel;
-    PnDisplay2: TGuiPanel;
-    LbDisplay2: TGuiLabel;
+    PnDisplay: TGuiPanel;
+    LbDisplay: TGuiLabel;
     DialOSFactor2: TGuiDial;
     LbOSFactor2: TGuiLabel;
     LbFilterOrder2: TGuiLabel;
     DialFilterOrder2: TGuiDial;
     DialOutputGain: TGuiDial;
     LbOutputGain: TGuiLabel;
+    GuiPanel1: TGuiPanel;
+    LbHardClip: TGuiLabel;
+    LEDHardClip: TGuiLED;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure DialInputGainChange(Sender: TObject);
@@ -36,6 +37,7 @@ type
     procedure DialOSFactor2Change(Sender: TObject);
     procedure DialFilterOrder2Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure LbHardClipClick(Sender: TObject);
   private
     fBackgrounBitmap : TBitmap;
   public
@@ -45,6 +47,7 @@ type
     procedure UpdateOrder1;
     procedure UpdateOrder2;
     procedure UpdateOutputGain;
+    procedure UpdateHardClip;
   end;
 
 implementation
@@ -107,7 +110,8 @@ var
   RS     : TResourceStream;
   x, y   : Integer;
   s      : array[0..1] of Single;
-  Line   : PRGB32Array;
+  h, hr  : Single;
+  Line   : PRGB24Array;
   PngBmp : TPngObject;
 
 begin
@@ -115,23 +119,24 @@ begin
  fBackgrounBitmap := TBitmap.Create;
  with fBackgrounBitmap do
   begin
-   PixelFormat := pf32bit;
+   PixelFormat := pf24bit;
    Width := Self.Width;
    Height := Self.Height;
    s[0] := 0;
    s[1] := 0;
+   hr   := 1 / Height;
    for y := 0 to Height - 1 do
     begin
      Line := Scanline[y];
+     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * random;
        s[0] := s[1];
 
-       Line[x].B := round($70 - $34 * s[1]);
-       Line[x].G := round($84 - $48 * s[1]);
-       Line[x].R := round($8D - $50 * s[1]);
-       Line[x].A := 0;
+       Line[x].B := round($70 - $34 * (s[1] - h));
+       Line[x].G := round($84 - $48 * (s[1] - h));
+       Line[x].R := round($8D - $50 * (s[1] - h));
       end;
     end;
   end;
@@ -168,8 +173,24 @@ begin
  UpdateOrder1;
  UpdateOrder2;
  UpdateOutputGain;
- LbDisplay1.Caption := 'Advanced Clipper';
- LbDisplay2.Caption := 'Advanced Clipper';
+ UpdateHardClip;
+ LbDisplay.Caption := 'Advanced Clipper';
+end;
+
+procedure TFmAdvancedClipper.LbHardClipClick(Sender: TObject);
+begin
+ with Owner as TAdvancedClipperDataModule do
+  begin
+   ParameterByName['Hard Clip'] := 1 - ParameterByName['Hard Clip'];
+  end;
+end;
+
+procedure TFmAdvancedClipper.UpdateHardClip;
+begin
+ with Owner as TAdvancedClipperDataModule do
+  begin
+   LEDHardClip.Brightness_Percent := 10 + 80 * ParameterByName['Hard Clip'];
+  end;
 end;
 
 procedure TFmAdvancedClipper.UpdateInputGain;
@@ -181,7 +202,7 @@ begin
    Value := ParameterByName['Input Gain'];
    if DialInputGain.Position <> Value
     then DialInputGain.Position := Value;
-   LbDisplay1.Caption := 'Input Gain: ' + FloatToStrF(Value, ffGeneral, 2, 2) + 'dB';
+   LbDisplay.Caption := 'Input Gain: ' + FloatToStrF(Value, ffGeneral, 2, 2) + 'dB';
   end;
 end;
 
@@ -194,7 +215,7 @@ begin
    Value := ParameterByName['Stage 1: Filter Order'];
    if DialFilterOrder1.Position <> Value
     then DialFilterOrder1.Position := Value;
-   LbDisplay1.Caption := 'Filter Order: ' + IntToStr(round(Value));
+   LbDisplay.Caption := 'Filter Order: ' + IntToStr(round(Value));
   end;
 end;
 
@@ -207,7 +228,7 @@ begin
    Value := ParameterByName['Stage 2: Filter Order'];
    if DialFilterOrder2.Position <> Value
     then DialFilterOrder2.Position := Value;
-   LbDisplay2.Caption := 'Filter Order: ' + IntToStr(round(Value));
+   LbDisplay.Caption := 'Filter Order: ' + IntToStr(round(Value));
   end;
 end;
 
@@ -220,7 +241,7 @@ begin
    Value := ParameterByName['Stage 1: Oversampling Factor'];
    if DialOSFactor1.Position <> Value
     then DialOSFactor1.Position := Value;
-   LbDisplay1.Caption := 'Oversampling: ' + IntToStr(round(Value)) + 'x';
+   LbDisplay.Caption := 'Oversampling: ' + IntToStr(round(Value)) + 'x';
   end;
 end;
 
@@ -233,7 +254,7 @@ begin
    Value := ParameterByName['Stage 2: Oversampling Factor'];
    if DialOSFactor2.Position <> Value
     then DialOSFactor2.Position := Value;
-   LbDisplay2.Caption := 'Oversampling: ' + IntToStr(round(Value)) + 'x';
+   LbDisplay.Caption := 'Oversampling: ' + IntToStr(round(Value)) + 'x';
   end;
 end;
 
@@ -246,7 +267,7 @@ begin
    Value := ParameterByName['Output Gain'];
    if DialOutputGain.Position <> Value
     then DialOutputGain.Position := Value;
-   LbDisplay2.Caption := 'Output Gain: ' + FloatToStrF(Value, ffGeneral, 2, 2) + 'dB';
+   LbDisplay.Caption := 'Output Gain: ' + FloatToStrF(Value, ffGeneral, 2, 2) + 'dB';
   end;
 end;
 

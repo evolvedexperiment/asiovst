@@ -1,6 +1,6 @@
 object FmSplitPluginCreator: TFmSplitPluginCreator
   Left = 291
-  Top = 303
+  Top = 238
   BorderStyle = bsDialog
   Caption = 'Split Plugin Creator'
   ClientHeight = 93
@@ -30,25 +30,24 @@ object FmSplitPluginCreator: TFmSplitPluginCreator
     Width = 41
     Height = 13
     Caption = 'Plugin B:'
-    Enabled = False
   end
   object EdPluginA: TEdit
     Left = 56
     Top = 8
-    Width = 273
+    Width = 230
     Height = 21
     TabOrder = 0
-    OnChange = EdPluginAChange
-    OnClick = EdPluginAClick
+    OnChange = EdPluginChange
   end
   object EdPluginB: TEdit
-    Left = 56
+    Left = 55
     Top = 35
-    Width = 273
+    Width = 231
     Height = 21
     Enabled = False
     TabOrder = 1
-    Text = 'not supported yet (please donate to add this feature)'
+    Text = 'please donate to unlock this feature'
+    OnChange = EdPluginChange
   end
   object BtCreate: TButton
     Left = 120
@@ -59,5 +58,41 @@ object FmSplitPluginCreator: TFmSplitPluginCreator
     Enabled = False
     TabOrder = 2
     OnClick = BtCreateClick
+  end
+  object BtOpenA: TButton
+    Left = 286
+    Top = 8
+    Width = 21
+    Height = 21
+    Caption = '...'
+    TabOrder = 3
+    OnClick = BtOpenAClick
+  end
+  object BtClearA: TButton
+    Left = 307
+    Top = 8
+    Width = 21
+    Height = 21
+    Caption = 'C'
+    TabOrder = 4
+    OnClick = BtClearAClick
+  end
+  object BtOpenB: TButton
+    Left = 286
+    Top = 35
+    Width = 21
+    Height = 21
+    Caption = '...'
+    TabOrder = 5
+    OnClick = BtOpenBClick
+  end
+  object BtClearB: TButton
+    Left = 307
+    Top = 35
+    Width = 21
+    Height = 21
+    Caption = 'C'
+    TabOrder = 6
+    OnClick = BtClearBClick
   end
 end

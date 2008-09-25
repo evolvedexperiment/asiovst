@@ -22,12 +22,14 @@ type
     procedure ParamOutputGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamBW2Change(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamBW1Change(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamRoundDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamRoundDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamHardClipDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamHardClipChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     fUpDownSampling : array [0..3] of TDAVUpDownsampling;
     fInputGain      : Single;
     fOutputGain     : Single;
+    fHardClip       : Boolean;
   public
   end;
 
@@ -81,6 +83,25 @@ procedure TAdvancedClipperDataModule.ParamRoundDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := IntToStr(round(Parameter[Index]));
+end;
+
+procedure TAdvancedClipperDataModule.ParamHardClipDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Boolean(round(Parameter[Index]))
+  then PreDefined := 'On'
+  else PreDefined := 'Off';
+end;
+
+procedure TAdvancedClipperDataModule.ParamHardClipChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fHardClip := Boolean(round(Value));
+ if EditorForm is TFmAdvancedClipper then
+  with TFmAdvancedClipper(EditorForm) do
+   begin
+    UpdateHardClip;
+   end;
 end;
 
 procedure TAdvancedClipperDataModule.ParamBW1Change(Sender: TObject;
@@ -148,6 +169,7 @@ procedure TAdvancedClipperDataModule.VSTModuleOpen(Sender: TObject);
 var
   ch : Integer;
 begin
+ fHardClip   := False;
  fInputGain  := 1;
  fOutputGain := 1;
  for ch := 0 to 3
@@ -294,7 +316,10 @@ begin
     fUpDownSampling[ch + 2].Upsample64(InterStage, @d);
     for j := 0 to fUpDownSampling[ch + 2].Factor - 1
      do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
-    Outputs[ch, i] := fOutputGain * fUpDownSampling[ch + 2].Downsample64(@d)
+    d[0] := fUpDownSampling[ch + 2].Downsample64(@d);
+    if fHardClip
+     then d[0] := (abs(d[0] + 1) - abs(d[0] - 1)) * 0.5;
+    Outputs[ch, i] := fOutputGain * d[0];
    end;
 end;
 
@@ -317,7 +342,10 @@ begin
     fUpDownSampling[ch + 2].Upsample64(InterStage, @d);
     for j := 0 to fUpDownSampling[ch + 2].Factor - 1
      do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
-    Outputs[ch, i] := fOutputGain * fUpDownSampling[ch + 2].Downsample64(@d)
+    d[0] := fUpDownSampling[ch + 2].Downsample64(@d);
+    if fHardClip
+     then d[0] := (abs(d[0] + 1) - abs(d[0] - 1)) * 0.5;
+    Outputs[ch, i] := fOutputGain * d[0];
    end;
 end;
 

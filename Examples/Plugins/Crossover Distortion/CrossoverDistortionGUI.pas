@@ -22,13 +22,13 @@ type
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
     PnControl: TGuiPanel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
     procedure DialFreqChange(Sender: TObject);
     procedure DialLowDistChange(Sender: TObject);
     procedure DialHighDistChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
   private
     fBackgrounBitmap : TBitmap;
   public
@@ -51,7 +51,7 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   b      : ShortInt;
-  Line   : PRGB32Array;
+  Line   : PRGB24Array;
   PngBmp : TPngObject;
 
 begin
@@ -59,7 +59,7 @@ begin
  fBackgrounBitmap := TBitmap.Create;
  with fBackgrounBitmap do
   begin
-   PixelFormat := pf32bit;
+   PixelFormat := pf24bit;
    Width := Self.Width;
    Height := Self.Height;
    s[0] := 0;
@@ -75,7 +75,6 @@ begin
        Line[x].B := b;
        Line[x].G := b;
        Line[x].R := b;
-       Line[x].A := 0;
       end;
     end;
   end;

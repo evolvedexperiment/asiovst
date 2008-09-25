@@ -21,7 +21,6 @@ type
     fLineColor              : TColor;
     procedure CMEnabledChanged (var Message: TMessage); message CM_ENABLEDCHANGED;
     procedure CMTextChanged (var Message: TWmNoParams); message CM_TEXTCHANGED;
-    procedure DrawParentImage(Dest: TCanvas);
     procedure RenderPanelToBitmap(Bitmap: TBitmap);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetBorderVisible(const Value: Boolean);
@@ -112,7 +111,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Common, DAV_Complex, Types;
+  SysUtils, Math, DAV_Common, DAV_Complex, Types, StdCtrls;
 
 { TCustomGuiPanel }
 
@@ -174,23 +173,6 @@ begin
   end;
 end;
 
-procedure TCustomGuiPanel.DrawParentImage(Dest: TCanvas);
-var
-  SaveIndex: Integer;
-  DC: THandle;
-  Position: TPoint;
-begin
-  if Parent = nil then Exit;
-  DC := Dest.Handle;
-  SaveIndex := SaveDC(DC);
-  GetViewportOrgEx(DC, Position);
-  SetViewportOrgEx(DC, Position.X - Left, Position.Y - Top, nil);
-  IntersectClipRect(DC, 0, 0, Parent.ClientWidth, Parent.ClientHeight);
-  Parent.Perform(WM_ERASEBKGND, Longint(DC), 0);
-  Parent.Perform(WM_PAINT, Longint(DC), 0);
-  RestoreDC(DC, SaveIndex);
-end;
-
 procedure TCustomGuiPanel.Paint;
 var
 (*
@@ -228,7 +210,7 @@ begin
      case fAntiAlias of
       gaaNone     :
        begin
-        {$IFNDEF FPC}if fTransparent then DrawParentImage(Canvas) else {$ENDIF}
+        {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, Canvas) else {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
         RenderPanelToBitmap(Bmp);
        end;
@@ -237,7 +219,7 @@ begin
         {$IFNDEF FPC}
         if fTransparent then
          begin
-          DrawParentImage(Bmp.Canvas);
+          CopyParentImage(Self, Bmp.Canvas);
           Upsample2xBitmap32(Bmp);
          end else
         {$ENDIF}
@@ -250,7 +232,7 @@ begin
         {$IFNDEF FPC}
         if fTransparent then
          begin
-          DrawParentImage(Bmp.Canvas);
+          CopyParentImage(Self, Bmp.Canvas);
           Upsample4xBitmap32(Bmp);
          end else
         {$ENDIF}
@@ -263,7 +245,7 @@ begin
         {$IFNDEF FPC}
         if fTransparent then
          begin
-          DrawParentImage(Bmp.Canvas);
+          CopyParentImage(Self, Bmp.Canvas);
           Upsample4xBitmap32(Bmp);
           Upsample2xBitmap32(Bmp);
          end else
@@ -278,7 +260,7 @@ begin
         {$IFNDEF FPC}
         if fTransparent then
          begin
-          DrawParentImage(Bmp.Canvas);
+          CopyParentImage(Self, Bmp.Canvas);
           Upsample4xBitmap32(Bmp);
           Upsample4xBitmap32(Bmp);
          end else

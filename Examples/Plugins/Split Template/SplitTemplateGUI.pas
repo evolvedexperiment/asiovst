@@ -76,12 +76,51 @@ begin
 end;
 
 procedure TFmSplitter.ShowPlugin(Index: Integer);
+var
+  R        : TRect;
+  Oversize : Integer;
 begin
  with TSplitTemplateDataModule(Owner) do
   begin
    if VstHost[Index].Active and not VstHost[Index].EditVisible
     then VstHost[Index].ShowEdit(PnGui);
    if VstHost[1 - Index].EditVisible then VstHost[1 - Index].CloseEdit;
+
+   PnGui.Visible    := assigned(VstHost[Index]) and VstHost[Index].Active;
+   ShBorder.Visible := PnGui.Visible;
+
+   // set plugin GUI size
+   if PnGui.Visible then
+    begin
+     PnGui.Visible    := True;
+     ShBorder.Visible := True;
+
+     R        := VstHost[Index].GetRect;
+     Oversize := PnControl.Width - (R.Right - R.Left);
+     if Oversize < 0 then
+      begin
+       // current editor is too small, enlarge!
+       PnGui.Align := alClient;
+       ShBorder.Visible := False;
+      end
+     else
+      begin
+       PnGui.Align  := alNone;
+       PnGui.Left   := Oversize div 2;
+       PnGui.Width  := (R.Right - R.Left);
+
+       // calculate new height and y position
+       PnGui.Height := (R.Bottom - R.Top);
+       PnGui.Top    := PnControl.Height + (ClientHeight - PnControl.Height - PnGui.Height) div 2;
+
+       // show border
+       ShBorder.Visible := True;
+       ShBorder.SetBounds(PnGui.Left - ShBorder.Pen.Width,
+                          PnGui.Top - ShBorder.Pen.Width,
+                          PnGui.Width + 2 * ShBorder.Pen.Width,
+                          PnGui.Height + 2 * ShBorder.Pen.Width);
+      end;
+    end;
   end;
 end;
 
@@ -131,23 +170,33 @@ begin
   then Canvas.Draw(0, PnControl.Height, fBackground);
 end;
 
+procedure Lighten(var Pixel: TRGB24; Amount: Byte);
+begin
+ Pixel.B := round($2B - Amount);
+ Pixel.G := round($31 - Amount);
+ Pixel.R := round($33 - Amount);
+end;
+
 procedure TFmSplitter.FormResize(Sender: TObject);
 var
   x, y   : Integer;
   s      : array[0..1] of Single;
-  Line   : PRGB32Array;
+  h, hr  : Single;
+  Line   : PRGB24Array;
+  b      : Byte;
 begin
  // Create Background Image (if not already done
  if not assigned(fBackground)
   then fBackground := TBitmap.Create;
  with fBackground do
   begin
-   PixelFormat := pf32bit;
+   PixelFormat := pf24bit;
    Width := Self.Width;
    Height := Self.Height - PnControl.Height;
    if Height < 2 then exit;
    s[0] := 0;
    s[1] := 0;
+   hr   := 1 / Height;
 
    // start with separator
    Line := Scanline[0];
@@ -155,23 +204,24 @@ begin
     begin
      s[1] := 0.97 * s[0] + 0.03 * random;
      s[0] := s[1];
-     Line[x].B := round($2B - $2A * s[1]);
-     Line[x].G := round($31 - $2A * s[1]);
-     Line[x].R := round($33 - $2A * s[1]);
-     Line[x].A := 0;
+     b    := round(-$2A * s[1]);
+     Line[x].B := $2B + b;
+     Line[x].G := $31 + b;
+     Line[x].R := $33 + b;
     end;
 
    for y := 1 to Height - 1 do
     begin
      Line := Scanline[y];
+     h    := 0.4 * (1 - sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * random;
        s[0] := s[1];
-       Line[x].B := round($2B + $2A * s[1]);
-       Line[x].G := round($31 + $2A * s[1]);
-       Line[x].R := round($33 + $2A * s[1]);
-       Line[x].A := 0;
+       b    := round($2A * (s[1] + h));
+       Line[x].B := $2B + b;
+       Line[x].G := $31 + b;
+       Line[x].R := $33 + b;
       end;
     end;
   end;
@@ -225,6 +275,22 @@ begin
        stSerial : begin
                    BtLow.Caption  := 'Stage 1';
                    BtHigh.Caption := 'Stage 2';
+                  end;
+    stTransient : begin
+                   BtLow.Caption  := 'Trans.';
+                   BtHigh.Caption := 'Resid.';
+                  end;
+          stLFO : begin
+                   BtLow.Caption  := 'A';
+                   BtHigh.Caption := 'B';
+                  end;
+         stSpin : begin
+                   BtLow.Caption  := 'Front';
+                   BtHigh.Caption := 'Back';
+                  end;
+       stBypass : begin
+                   BtLow.Caption  := 'A';
+                   BtHigh.Caption := 'B';
                   end;
    end;
   end;

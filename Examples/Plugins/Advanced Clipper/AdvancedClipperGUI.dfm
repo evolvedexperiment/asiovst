@@ -41,17 +41,16 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
-      LineWidth = 2
       LineColor = 15659506
       CircleColor = 3226174
-      Min = -6.000000000000000000
       Max = 6.000000000000000000
+      Min = -6.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 200.000000000000000000
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
+      ScrollRange_Pixel = 200.000000000000000000
+      StitchKind = skHorizontal
       OnChange = DialInputGainChange
     end
     object DialOSFactor1: TGuiDial
@@ -59,19 +58,18 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
-      LineWidth = 2
       LineColor = 15659506
       CircleColor = 3226174
-      Position = 1.000000000000000000
       DefaultPosition = 1.000000000000000000
-      Min = 1.000000000000000000
       Max = 16.000000000000000000
+      Min = 1.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 200.000000000000000000
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
+      Position = 1.000000000000000000
+      ScrollRange_Pixel = 200.000000000000000000
+      StitchKind = skHorizontal
       OnChange = DialOSFactor1Change
     end
     object DialFilterOrder1: TGuiDial
@@ -79,19 +77,18 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
-      LineWidth = 2
       LineColor = 15659506
       CircleColor = 3226174
       CurveMapping = -1.000000000000000000
-      Position = 2.000000000000000000
       DefaultPosition = 1.000000000000000000
       Max = 64.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 200.000000000000000000
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
+      Position = 2.000000000000000000
+      ScrollRange_Pixel = 200.000000000000000000
+      StitchKind = skHorizontal
       OnChange = DialFilterOrder1Change
     end
     object LbInputGain: TGuiLabel
@@ -136,13 +133,13 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
     end
-    object PnDisplay1: TGuiPanel
+    object PnDisplay: TGuiPanel
       Left = 75
       Top = 7
       Width = 114
       Height = 17
       AntiAlias = gaaLinear4x
-      Caption = 'PnDisplay1'
+      Caption = 'PnDisplay'
       LineColor = 5398887
       Linewidth = 1
       PanelColor = 3226174
@@ -151,7 +148,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       TabOrder = 0
       Transparent = True
       UseDockManager = True
-      object LbDisplay1: TGuiLabel
+      object LbDisplay: TGuiLabel
         Left = 5
         Top = 2
         Width = 105
@@ -191,19 +188,18 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
-      LineWidth = 2
       LineColor = 15659506
       CircleColor = 3226174
-      Position = 1.000000000000000000
       DefaultPosition = 1.000000000000000000
-      Min = 1.000000000000000000
       Max = 16.000000000000000000
+      Min = 1.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 200.000000000000000000
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
+      Position = 1.000000000000000000
+      ScrollRange_Pixel = 200.000000000000000000
+      StitchKind = skHorizontal
       OnChange = DialOSFactor2Change
     end
     object LbOSFactor2: TGuiLabel
@@ -239,19 +235,18 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
-      LineWidth = 2
       LineColor = 15659506
       CircleColor = 3226174
       CurveMapping = -1.000000000000000000
-      Position = 2.000000000000000000
       DefaultPosition = 1.000000000000000000
       Max = 64.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 200.000000000000000000
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
+      Position = 2.000000000000000000
+      ScrollRange_Pixel = 200.000000000000000000
+      StitchKind = skHorizontal
       OnChange = DialFilterOrder2Change
     end
     object DialOutputGain: TGuiDial
@@ -259,17 +254,16 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Top = 33
       Width = 48
       Height = 48
-      LineWidth = 2
       LineColor = 15659506
       CircleColor = 3226174
-      Min = -6.000000000000000000
       Max = 6.000000000000000000
+      Min = -6.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 200.000000000000000000
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
+      ScrollRange_Pixel = 200.000000000000000000
+      StitchKind = skHorizontal
       OnChange = DialOutputGainChange
     end
     object LbOutputGain: TGuiLabel
@@ -286,35 +280,49 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
     end
-    object PnDisplay2: TGuiPanel
-      Left = 75
+    object GuiPanel1: TGuiPanel
+      Left = 80
       Top = 7
-      Width = 114
-      Height = 17
+      Width = 100
+      Height = 19
       AntiAlias = gaaLinear4x
-      Caption = 'GuiPanel1'
-      LineColor = 5398887
+      Caption = 'PnDisplay'
+      Color = 7373965
+      LineColor = 5925488
       Linewidth = 1
-      PanelColor = 3226174
-      ParentColor = True
+      PanelColor = 4938079
       Radius = 5
       TabOrder = 0
       Transparent = True
       UseDockManager = True
-      object LbDisplay2: TGuiLabel
-        Left = 5
-        Top = 2
-        Width = 105
-        Height = 12
+      object LbHardClip: TGuiLabel
+        Left = 26
+        Top = 3
+        Width = 68
+        Height = 14
         Alignment = taCenter
         AntiAlias = gaaLinear4x
-        Caption = 'Advanced Clipper'
-        Color = 3226174
-        Font.Charset = ANSI_CHARSET
+        Caption = 'hard clip output'
+        Color = 4938079
+        Font.Charset = DEFAULT_CHARSET
         Font.Color = 15659506
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        OnClick = LbHardClipClick
+      end
+      object LEDHardClip: TGuiLED
+        Left = 5
+        Top = 2
+        Width = 15
+        Height = 15
+        OnClick = LbHardClipClick
+        Brightness_Percent = 90.000000000000000000
+        Color = 4938079
+        LineWidth = 2
+        LEDColor = 14870505
+        AntiAlias = gaaLinear4x
+        LineColor = 3226174
       end
     end
   end

@@ -14,11 +14,19 @@ type
     LbPluginB: TLabel;
     EdPluginB: TEdit;
     BtCreate: TButton;
-    procedure EdPluginAClick(Sender: TObject);
+    BtOpenA: TButton;
+    BtClearA: TButton;
+    BtOpenB: TButton;
+    BtClearB: TButton;
+    procedure EdPluginClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure EdPluginAChange(Sender: TObject);
+    procedure EdPluginChange(Sender: TObject);
     procedure BtCreateClick(Sender: TObject);
+    procedure BtOpenAClick(Sender: TObject);
+    procedure BtOpenBClick(Sender: TObject);
+    procedure BtClearAClick(Sender: TObject);
+    procedure BtClearBClick(Sender: TObject);
   end;
 
 var
@@ -27,7 +35,7 @@ var
 implementation
 
 uses
-  Graphics, IniFiles, PNGImage, DAV_DLLResources;
+  Graphics, IniFiles, PNGImage, DAV_DLLResources, ShellAPI;
 
 {$R *.dfm}
 
@@ -65,25 +73,25 @@ begin
         try
          LoadFromFile(EdPluginA.Text);
          RD := TResourceDetails.CreateResourceDetails(RM, 0, 'VST1', 'DLL', Size, Memory);
+         AddResource(RD);
         finally
          Free;
         end;
-       AddResource(RD);
-       SortResources;
 
-(*
        // store VST Plugins
-       with TMemoryStream.Create do
-        try
-         LoadFromFile(EdPluginB.Text);
-         RD := TResourceDetails.CreateResourceDetails(RM, 0, 'VST2', 'DLL', Size, Memory);
-        finally
-         Free;
-        end;
-       AddResource(RD);
-*)
+       if EdPluginB.Enabled and FileExists(EdPluginB.Text) then
+        with TMemoryStream.Create do
+         try
+          LoadFromFile(EdPluginB.Text);
+          RD := TResourceDetails.CreateResourceDetails(RM, 0, 'VST2', 'DLL', Size, Memory);
+          AddResource(RD);
+         finally
+          Free;
+         end;
+
+       SortResources;
        SaveToFile(FileName);
-        ShowMessage('Plugin successfully created!');
+       ShowMessage('Plugin successfully created!');
       finally
        FreeAndNil(RM);
       end;
@@ -93,12 +101,35 @@ begin
   end;
 end;
 
-procedure TFmSplitPluginCreator.EdPluginAChange(Sender: TObject);
+procedure TFmSplitPluginCreator.BtClearAClick(Sender: TObject);
+begin
+ EdPluginA.Text := '';
+end;
+
+procedure TFmSplitPluginCreator.BtClearBClick(Sender: TObject);
+begin
+ if EdPluginB.Enabled
+  then EdPluginB.Text := '';
+end;
+
+procedure TFmSplitPluginCreator.BtOpenAClick(Sender: TObject);
+begin
+ EdPluginClick(EdPluginA);
+end;
+
+procedure TFmSplitPluginCreator.BtOpenBClick(Sender: TObject);
+begin
+ if EdPluginB.Enabled
+  then EdPluginClick(EdPluginB)
+  else ShellExecute(Handle, 'open', PChar('http://delphiasiovst.sourceforge.net'), nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TFmSplitPluginCreator.EdPluginChange(Sender: TObject);
 begin
  BtCreate.Enabled := FileExists(EdPluginA.Text);
 end;
 
-procedure TFmSplitPluginCreator.EdPluginAClick(Sender: TObject);
+procedure TFmSplitPluginCreator.EdPluginClick(Sender: TObject);
 begin
  with TOpenDialog.Create(Self) do
   try
@@ -106,8 +137,9 @@ begin
    Filter := 'VST Plugin (*.dll)|*.dll';
    Title := 'Choose a plugin that should be used for splitting';
    Options := Options + [ofFileMustExist];
-   if Execute
-    then EdPluginA.Text := FileName;
+   if Execute then
+    with Sender as TEdit
+     do Text := FileName;
   finally
    Free;
   end;
@@ -118,7 +150,9 @@ begin
  with TIniFile.Create('SplitPluginCreator.ini') do
   try
    EdPluginA.Text := ReadString('Last State','Plugin A', EdPluginA.Text);
-   EdPluginB.Text := ReadString('Last State','Plugin B', EdPluginB.Text);
+   if EdPluginB.Enabled
+    then EdPluginB.Text := ReadString('Last State','Plugin B', EdPluginB.Text)
+    else EdPluginB.Text := 'please donate to unlock this feature';
   finally
    Free;
   end;
@@ -129,6 +163,7 @@ begin
  with TIniFile.Create('SplitPluginCreator.ini') do
   try
    WriteString('Last State','Plugin A', EdPluginA.Text);
+   WriteString('Last State','Plugin B', EdPluginB.Text);
   finally
    Free;
   end;

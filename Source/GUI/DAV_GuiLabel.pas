@@ -115,81 +115,6 @@ begin
  ShadowChanged;
 end;
 
-type
-  TParentControl = class(TWinControl);
-
-procedure CopyParentImage(Control: TControl; Dest: TCanvas);
-var
-  I, Count,
-  SaveIndex  : Integer;
-  DC         : HDC;
-  Pnt        : TPoint;
-  R, SelfR,
-  CtlR       : TRect;
-begin
- if (Control = nil) or (Control.Parent = nil) then Exit;
- Count := Control.Parent.ControlCount;
- DC := Dest.Handle;
-{$IFDEF WIN32}
- with Control.Parent do ControlState := ControlState + [csPaintCopy];
- try
-{$ENDIF}
-   with Control do
-    begin
-     SelfR := Bounds(Left, Top, Width, Height);
-     Pnt.X := -Left; Pnt.Y := -Top;
-    end;
-   { Copy parent control image }
-   SaveIndex := SaveDC(DC);
-   try
-    SetViewportOrgEx(DC, Pnt.X, Pnt.Y, nil);
-    IntersectClipRect(DC, 0, 0, Control.Parent.ClientWidth,
-       Control.Parent.ClientHeight);
-    with TParentControl(Control.Parent) do
-     begin
-      Perform(WM_ERASEBKGND, DC, 0);
-      PaintWindow(DC);
-     end;
-   finally
-    RestoreDC(DC, SaveIndex);
-   end;
-   { Copy images of graphic controls }
-   for I := 0 to Count - 1 do
-    begin
-     if Control.Parent.Controls[I] = Control then Break else
-      if (Control.Parent.Controls[I] <> nil) and
-         (Control.Parent.Controls[I] is TGraphicControl)
-       then
-        with TGraphicControl(Control.Parent.Controls[I]) do
-         begin
-          CtlR := Bounds(Left, Top, Width, Height);
-          if Bool(IntersectRect(R, SelfR, CtlR)) and Visible then
-           begin
-            {$IFDEF WIN32}
-            ControlState := ControlState + [csPaintCopy];
-            {$ENDIF}
-            SaveIndex := SaveDC(DC);
-            try
-             SaveIndex := SaveDC(DC);
-             SetViewportOrgEx(DC, Left + Pnt.X, Top + Pnt.Y, nil);
-             IntersectClipRect(DC, 0, 0, Width, Height);
-             Perform(WM_PAINT, DC, 0);
-            finally
-             RestoreDC(DC, SaveIndex);
-             {$IFDEF WIN32}
-             ControlState := ControlState - [csPaintCopy];
-             {$ENDIF}
-            end;
-           end;
-         end;
-    end;
-{$IFDEF WIN32}
- finally
-   with Control.Parent do ControlState := ControlState - [csPaintCopy];
- end;
-{$ENDIF}
-end;
-
 procedure TCustomGuiLabel.RedrawBuffer(doBufferFlip: Boolean);
 var
   Bmp : TBitmap;
@@ -207,7 +132,7 @@ begin
  case fAntiAlias of
   gaaNone     :
    begin
-    {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else{$ENDIF}
+    {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
     fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
     RenderLabelToBitmap(fBuffer);
    end;

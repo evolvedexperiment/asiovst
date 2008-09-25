@@ -187,14 +187,31 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParamOutputGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Hard Clip'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'Hrd Clp'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParamHardClipChange
+      OnCustomParameterDisplay = ParamHardClipDisplay
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
-  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81
   Height = 150

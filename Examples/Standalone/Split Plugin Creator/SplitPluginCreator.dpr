@@ -9,6 +9,7 @@ uses
   madListHardware,
   madListProcesses,
   madListModules,
+  FastMove,
   RTLVCLOptimize,
   Forms,
   SPCmain in 'SPCmain.pas' {FmSplitPluginCreator},
