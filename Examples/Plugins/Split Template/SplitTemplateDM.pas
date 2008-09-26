@@ -130,7 +130,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, Dialogs, Controls, Types, PNGImage, SplitTemplateGUI, DAV_VSTPrograms;
+  Math, Dialogs, Controls, Types, SplitTemplateGUI, DAV_VSTPrograms;
 
 function EnumNamesFunc(hModule:THandle; lpType, lpName:PChar; lParam: DWORD): Boolean; stdcall;
 begin
