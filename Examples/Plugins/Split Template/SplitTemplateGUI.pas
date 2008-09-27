@@ -86,6 +86,7 @@ begin
     then VstHost[Index].ShowEdit(PnGui);
    if VstHost[1 - Index].EditVisible then VstHost[1 - Index].CloseEdit;
 
+   PluginVisible    := Index;
    PnGui.Visible    := assigned(VstHost[Index]) and VstHost[Index].Active;
    ShBorder.Visible := PnGui.Visible;
 
@@ -213,7 +214,7 @@ begin
    for y := 1 to Height - 1 do
     begin
      Line := Scanline[y];
-     h    := 0.4 * (1 - sqr(2 * (y - Height div 2) * hr));
+     h    := 0.3 * (1 - sqr(2 * (y - Height div 2) * hr));
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * random;

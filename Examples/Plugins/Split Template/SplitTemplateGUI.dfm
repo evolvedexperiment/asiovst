@@ -234,6 +234,7 @@ object FmSplitter: TFmSplitter
         'Trans.'
         'LFO'
         'Spin'
+        'Single'
         'Bypass')
       LineColor = clBlack
       LineWidth = 2

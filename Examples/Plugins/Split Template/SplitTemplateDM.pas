@@ -16,7 +16,7 @@ type
   TUpDownsampling = array [0..1] of TDAVUpDownsampling;
 
   TSplitType = (stSimple, stLiRi, stDyn, stLeftRight, stMS, stSerial,
-    stTransient, stLFO, stSpin, stBypass);
+    stTransient, stLFO, stSpin, stSingle, stBypass);
   TSplitTemplateDataModule = class(TVSTModule)
     VstHost: TVstHost;
     function VSTModuleInputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
@@ -63,6 +63,7 @@ type
     procedure VSTModuleProcess32Serial(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess32Bypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess32SplitTransient(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32SplitSingle(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess32SplitLFO(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess32SplitSpin(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 
@@ -75,6 +76,7 @@ type
     procedure VSTModuleProcess64SplitMidSide(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess64Bypass(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess64SplitTransient(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64SplitSingle(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess64SplitLFO(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess64SplitSpin(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 
@@ -86,12 +88,9 @@ type
     procedure VSTModuleStopProcess(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParamVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamFreqDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamFreqLabel(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOrderLabel(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamFreqDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamFreqLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOrderLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     fLowpass          : array of TLowPassArray;
     fHighpass         : array of THighPassArray;
@@ -113,6 +112,8 @@ type
     fTempBufferSize   : Integer;
     fSineLFO          : TSineLFO;
     fVolumeFactor     : Double;
+    fPlugNr           : Integer;
+    fDifferentPlugins : Boolean;
     procedure SetOSFactor(NewOSFactor: Integer);
     procedure SetTempBufferSize(const Value: Integer);
     procedure VSTBuffersChanged;
@@ -120,6 +121,7 @@ type
     procedure CheckSampleFrames(const SampleFrames: Integer);
   published
     property SplitType: TSplitType read fSplitType;
+    property PluginVisible: Integer read fPlugNr write fPlugNr default 0;
     property TempBufferSize: Integer read fTempBufferSize write SetTempBufferSize default 0;
   end;
 
@@ -157,11 +159,11 @@ var
   RS       : TResourceStream;
   PI       : TCustomVstPlugIn;
   ch, i, n : Integer;
-//  str      : string;
 begin
- RN          := TStringList.Create;
+ RN := TStringList.Create;
  try
   EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, DWord(RN));
+  fDifferentPlugins := RN.Count > 1;
 
   if RN.Count > 0 then
    begin
@@ -186,6 +188,8 @@ begin
          OnCustomParameterDisplay := CustomParameterDisplay;
          DisplayName              := VstHost[n].GetParamName(i);
         end;
+      if PI.numPrograms > 0
+       then PI.SetProgram(0);
      end;
     UniqueID    := 'S' + VstHost[0].UniqueID[1] + VstHost[0].UniqueID[2] + '2';
     EffectName  := 'Splitted ' + VstHost[0].EffectName;
@@ -272,6 +276,7 @@ begin
  OnProcessDoubleReplacing := VSTModuleProcess64SplitFrequencySimple;
  fTempBufferSize := 0;
  fMaximumBlockSize := VstHost.BlockSize;
+ fPlugNr := 0;
  SetLength(fEnvelope, fMaxChannels);
  SetLength(fLow32, fMaxChannels);
  SetLength(fLow64, fMaxChannels);
@@ -280,8 +285,8 @@ begin
  SetLength(fTmpOutput32, numOutputs);
  SetLength(fTmpOutput64, numOutputs);
 
- fAttackFactor[0] := 0.01;
- fAttackFactor[1] := 0.001;
+ fAttackFactor[0]  := 0.01;
+ fAttackFactor[1]  := 0.001;
  fReleaseFactor[0] := 0.9999;
  fReleaseFactor[1] := 0.9999;
 
@@ -331,11 +336,12 @@ end;
 procedure TSplitTemplateDataModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 var
-  R        : TRect;
+  Rct      : array [0..1] of TRect;
   Oversize : Integer;
 begin
  GUI := TFmSplitter.Create(Self);
-// set plugin GUI size
+
+ // set plugin GUI size
  if assigned(VstHost[0]) and VstHost[0].Active then
   with TFmSplitter(GUI) do
    begin
@@ -344,24 +350,39 @@ begin
 
     if not VstHost[0].EditVisible
      then VstHost[0].ShowEdit(TForm(PnGui));
-    R        := VstHost[0].GetRect;
-    Oversize := PnControl.Width - (R.Right - R.Left);
+    Rct[0]   := VstHost[0].GetRect;
+    if fDifferentPlugins then
+     if assigned(VstHost[1]) and VstHost[1].Active then
+      begin
+       Rct[1] := VstHost[1].GetRect;
+       if Rct[1].Right - Rct[1].Left > Rct[0].Right - Rct[0].Left then
+        begin
+         Rct[0].Right := Rct[1].Right;
+         Rct[0].Left  := Rct[1].Left;
+        end;
+       if Rct[1].Bottom - Rct[1].Top > Rct[0].Bottom - Rct[0].Top then
+        begin
+         Rct[0].Bottom := Rct[1].Bottom;
+         Rct[0].Top    := Rct[1].Top;
+        end;
+      end;
+    Oversize := PnControl.Width - (Rct[0].Right - Rct[0].Left);
     if Oversize < 0 then
      begin
       // current editor is too small, enlarge!
       PnGui.Align := alClient;
-      ClientWidth := (R.Right - R.Left);
-      ClientHeight := PnControl.Height + (R.Bottom - R.Top);
+      ClientWidth := (Rct[0].Right - Rct[0].Left);
+      ClientHeight := PnControl.Height + (Rct[0].Bottom - Rct[0].Top);
       ShBorder.Visible := False;
      end
     else
      begin
       PnGui.Align  := alNone;
       PnGui.Left   := Oversize div 2;
-      PnGui.Width  := (R.Right - R.Left);
+      PnGui.Width  := (Rct[0].Right - Rct[0].Left);
 
       // calculate new height and y position
-      PnGui.Height := (R.Bottom - R.Top);
+      PnGui.Height := (Rct[0].Bottom - Rct[0].Top);
       Oversize     := round(Oversize * (PnGui.Height) / PnGui.Width);
       PnGui.Top    := PnControl.Height + Oversize div 2;
       ClientHeight := PnControl.Height + PnGui.Height + Oversize;
@@ -461,7 +482,7 @@ begin
    Parameter[0] := 0;
    Parameter[1] := 2000;
    Parameter[2] := 4;
-   Parameter[3] := 1;
+   Parameter[3] := 0;
    Parameter[4] := 0;
    Parameter[5] := 2;
   end;
@@ -470,7 +491,7 @@ begin
    Parameter[0] := 0;
    Parameter[1] := 3000;
    Parameter[2] := 4;
-   Parameter[3] := 1;
+   Parameter[3] := 0;
    Parameter[4] := 1;
    Parameter[5] := 2;
   end;
@@ -479,7 +500,7 @@ begin
    Parameter[0] := 1;
    Parameter[1] := 1300;
    Parameter[2] := 4;
-   Parameter[3] := 1;
+   Parameter[3] := 0;
    Parameter[4] := 0;
    Parameter[5] := 2;
   end;
@@ -488,7 +509,7 @@ begin
    Parameter[0] := 2;
    Parameter[1] := 1300;
    Parameter[2] := 4;
-   Parameter[3] := 1;
+   Parameter[3] := 0;
    Parameter[4] := 0;
    Parameter[5] := 2;
   end;
@@ -497,7 +518,7 @@ begin
    Parameter[0] := 3;
    Parameter[1] := 200;
    Parameter[2] := 4;
-   Parameter[3] := 1;
+   Parameter[3] := 0;
    Parameter[4] := 0;
    Parameter[5] := 2;
   end;
@@ -506,7 +527,7 @@ begin
    Parameter[0] := 4;
    Parameter[1] := 400;
    Parameter[2] := 4;
-   Parameter[3] := 1;
+   Parameter[3] := 0;
    Parameter[4] := 0;
    Parameter[5] := 2;
   end;
@@ -515,7 +536,7 @@ begin
    Parameter[0] := 5;
    Parameter[1] := 800;
    Parameter[2] := 4;
-   Parameter[3] := 1;
+   Parameter[3] := 0;
    Parameter[4] := 0;
    Parameter[5] := 2;
   end;
@@ -657,8 +678,10 @@ begin
   begin
    Inc(pnr, VstHost[n].numParams);
    Inc(n);
+   if n >= VstHost.Count then break;
   end;
- VstHost[n].Parameters[Index - pnr] := Value;
+ if (n < VstHost.Count) and VstHost[n].Active
+  then VstHost[n].Parameters[Index - pnr] := Value;
 end;
 
 procedure TSplitTemplateDataModule.CustomParameterDisplay(
@@ -672,8 +695,10 @@ begin
   begin
    Inc(pnr, VstHost[n].numParams);
    Inc(n);
+   if n >= VstHost.Count then break;
   end;
- PreDefined := VstHost[n].GetParamDisplay(Index - pnr);
+ if (n < VstHost.Count) and VstHost[n].Active
+  then PreDefined := VstHost[n].GetParamDisplay(Index - pnr);
 end;
 
 procedure TSplitTemplateDataModule.CustomParameterLabel(
@@ -687,8 +712,10 @@ begin
   begin
    Inc(pnr, VstHost[n].numParams);
    Inc(n);
+   if n >= VstHost.Count then break;
   end;
- PreDefined := VstHost[n].GetParamLabel(Index - pnr);
+ if (n < VstHost.Count) and VstHost[n].Active
+  then PreDefined := VstHost[n].GetParamLabel(Index - pnr);
 end;
 
 procedure TSplitTemplateDataModule.ParamOSFactorDisplay(
@@ -896,6 +923,11 @@ begin
                  OnProcessReplacing := VSTModuleProcess32SplitSpin;
                  OnProcessDoubleReplacing := VSTModuleProcess64SplitSpin;
                 end;
+     stSingle : begin
+                 OnProcess := VSTModuleProcess32SplitSingle;
+                 OnProcessReplacing := VSTModuleProcess32SplitSingle;
+                 OnProcessDoubleReplacing := VSTModuleProcess64SplitSingle;
+                end;
      stBypass : begin
                  OnProcess := VSTModuleProcess32Bypass;
                  OnProcessReplacing := VSTModuleProcess32Bypass;
@@ -914,16 +946,17 @@ end;
 procedure TSplitTemplateDataModule.ParamModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
-  0 : Predefined := 'Split';
-  1 : Predefined := 'Linkwitz-Riley';
-  2 : Predefined := 'Dyn';
-  3 : Predefined := 'L/R';
-  4 : Predefined := 'M/S';
-  5 : Predefined := 'Serial';
-  6 : Predefined := 'Transient';
-  7 : Predefined := 'LFO';
-  8 : Predefined := 'Spin';
-  9 : Predefined := 'Bypass';
+   0 : Predefined := 'Split';
+   1 : Predefined := 'Linkwitz-Riley';
+   2 : Predefined := 'Dyn';
+   3 : Predefined := 'L/R';
+   4 : Predefined := 'M/S';
+   5 : Predefined := 'Serial';
+   6 : Predefined := 'Transient';
+   7 : Predefined := 'LFO';
+   8 : Predefined := 'Spin';
+   9 : Predefined := 'Single';
+  10 : Predefined := 'Bypass';
  end;
 end;
 
@@ -1146,7 +1179,7 @@ begin
       do Move(fLow32[ch, 0], fTmpOutput32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
     end;
 
-   // downsample 
+   // downsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
      do Outputs[ch, i] := fVolumeFactor * fOversampler[ch, 0].Downsample32(@fTmpOutput32[ch, i * fOSFactor]);
@@ -1375,6 +1408,43 @@ begin
       Outputs[0, i] := fVolumeFactor * (fLow32[0, i] + fHigh32[0, i]);
       Outputs[1, i] := fVolumeFactor * (fLow32[0, i] - fHigh32[0, i]);
      end;
+  end;
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess32SplitSingle(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  ch, i  : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if fOSActive then
+  begin
+   // upsample
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1
+     do fOversampler[ch, 0].Upsample32(Inputs[ch, i], @fTmpOutput32[ch, i * fOSFactor]);
+
+   // process serial chain
+   if VstHost[fPlugNr].Active then
+    begin
+     VstHost[fPlugNr].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+     for ch := 0 to numOutputs - 1
+      do Move(fLow32[ch, 0], fTmpOutput32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+    end;
+
+   // downsample
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1
+     do Outputs[ch, i] := fVolumeFactor * fOversampler[ch, 0].Downsample32(@fTmpOutput32[ch, i * fOSFactor]);
+  end
+ else
+  begin
+   if VstHost[fPlugNr].Active
+    then VstHost[fPlugNr].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor)
+    else
+     for ch := 0 to fMinChannels - 1
+      do Move(Inputs[ch, 0], Outputs[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
   end;
 end;
 
@@ -1910,6 +1980,41 @@ begin
       Outputs[1, i] := fVolumeFactor * (fLow64[0, i] - fHigh64[0, i]);
      end;
   end;
+end;
+
+procedure TSplitTemplateDataModule.VSTModuleProcess64SplitSingle(const Inputs,
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  ch, i  : Integer;
+begin
+ CheckSampleFrames(SampleFrames);
+
+ if fOSActive then
+  begin
+   // upsample
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1
+     do fOversampler[ch, 0].Upsample64(Inputs[ch, i], @fTmpOutput64[ch, i * fOSFactor]);
+
+   // process serial chain
+   if VstHost[fPlugNr].Active then
+    begin
+     VstHost[fPlugNr].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+     for ch := 0 to numOutputs - 1
+      do Move(fLow64[ch, 0], fTmpOutput64[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+    end;
+
+   // downsample
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames - 1
+     do Outputs[ch, i] := fVolumeFactor * fOversampler[ch, 0].Downsample64(@fTmpOutput64[ch, i * fOSFactor]);
+  end
+ else
+  if VstHost[fPlugNr].Active
+   then VstHost[fPlugNr].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor)
+   else
+    for ch := 0 to fMinChannels - 1
+     do Move(Inputs[ch, 0], Outputs[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess64SplitSpin(const Inputs,

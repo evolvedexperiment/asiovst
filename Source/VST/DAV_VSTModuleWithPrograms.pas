@@ -632,7 +632,7 @@ begin
        begin
         Programs[FCurProgram].Parameter[Index] := Value;
 
-        tmp:=Programs[FCurProgram].Parameter[Index];
+        tmp := Programs[FCurProgram].Parameter[Index];
 
         if Assigned(ParameterProperties[Index].OnParameterChange)
          then FParameterProperties[Index].OnParameterChange(Self, Index, tmp);
