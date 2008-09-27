@@ -8,6 +8,7 @@ uses
   madListHardware,
   madListProcesses,
   madListModules,
+  FastMove,
   RTLVCLOptimize,
   Forms,
   DAV_VSTEffect,

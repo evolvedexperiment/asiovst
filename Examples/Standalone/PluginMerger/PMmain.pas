@@ -5,20 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls,
   Menus, Spin, ExtCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiGroup, DAV_ChunkClasses, DAV_ChunkPluginGUI;
+  DAV_GuiGroup, DAV_ChunkClasses, DAV_ChunkPluginGUI, ComCtrls;
 
 type
   TFmPluginMerger = class(TForm)
-    CBAntialiasedFont: TCheckBox;
-    DialPreview: TGuiDial;
-    EdKnob: TEdit;
-    GBPreview: TGuiGroup;
-    LbBackgroundColor: TLabel;
-    LbKnob: TLabel;
-    LbKnobsPerRow: TLabel;
-    LbMergedVSTPlugins: TLabel;
-    LBPlugins: TListBox;
-    LbTest: TGuiLabel;
     MainMenu1: TMainMenu;
     MIAdd: TMenuItem;
     MIClear: TMenuItem;
@@ -26,8 +16,28 @@ type
     MIFile: TMenuItem;
     MIPlugin: TMenuItem;
     MISaveasVST: TMenuItem;
-    SEKnobsPerRow: TSpinEdit;
+    PageControl1: TPageControl;
+    TSMergedPlugins: TTabSheet;
+    TabSheet1: TTabSheet;
+    LbKnob: TLabel;
+    LbBackgroundColor: TLabel;
     ShBackgroundColor: TShape;
+    LbKnobsPerRow: TLabel;
+    EdKnob: TEdit;
+    SEKnobsPerRow: TSpinEdit;
+    GBPreview: TGuiGroup;
+    DialPreview: TGuiDial;
+    LbTest: TGuiLabel;
+    LBFont: TLabel;
+    ShFontColor: TShape;
+    LbFontSize: TLabel;
+    SEFontSize: TSpinEdit;
+    LbFontAA: TLabel;
+    RBAAnone: TRadioButton;
+    RBAA4: TRadioButton;
+    LBPlugins: TListBox;
+    RBAA2: TRadioButton;
+    RBAA8: TRadioButton;
     procedure MIExitClick(Sender: TObject);
     procedure MIAddClick(Sender: TObject);
     procedure MISaveasVSTClick(Sender: TObject);
@@ -35,10 +45,14 @@ type
     procedure EdKnobClick(Sender: TObject);
     procedure LBPluginsClick(Sender: TObject);
     procedure ShBackgroundColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure CBAntialiasedFontClick(Sender: TObject);
     procedure EdKnobChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure RBAAnoneClick(Sender: TObject);
+    procedure RBAA2Click(Sender: TObject);
+    procedure RBAA4Click(Sender: TObject);
+    procedure RBAA8Click(Sender: TObject);
+    procedure SEFontSizeChange(Sender: TObject);
   end;
 
 var
@@ -50,13 +64,6 @@ uses
   Graphics, IniFiles, PNGImage, DAV_DLLResources;
 
 {$R *.dfm}
-
-procedure TFmPluginMerger.CBAntialiasedFontClick(Sender: TObject);
-begin
- if CBAntialiasedFont.Checked
-  then LbTest.AntiAlias := gaaLinear4x
-  else LbTest.AntiAlias := gaaNone;
-end;
 
 procedure TFmPluginMerger.EdKnobChange(Sender: TObject);
 var
@@ -205,6 +212,7 @@ end;
 
 procedure TFmPluginMerger.MISaveasVSTClick(Sender: TObject);
 var
+  RS  : TResourceStream;
   RM  : TPEResourceModule;
   RD  : TResourceDetails;
   i   : Integer;
@@ -217,73 +225,100 @@ begin
    Title := 'Save As VST DLL';
    if Execute then
     begin
-     with TResourceStream.Create(HInstance, 'CustomWrapper', 'DLL') do
-      try
-       SaveToFile(FileName);
-      finally
-       Free;
-      end;
+     RS := TResourceStream.Create(HInstance, 'CustomWrapper', 'DLL');
+     try
+      RM := TPEResourceModule.Create;
+      with RM do
+       try
+        LoadFromStream(RS);
 
-     RM := TPEResourceModule.Create;
-     with RM do
-      try
-       LoadFromFile(FileName);
+        // store VST Plugins
+        for i := 0 to LBPlugins.Count - 1 do
+         begin
+          with TMemoryStream.Create do
+           try
+            LoadFromFile(LBPlugins.Items[i]);
+            RD := TResourceDetails.CreateResourceDetails(RM, 0, 'VST' + IntToStr(i + 1), 'DLL', Size, Memory);
+           finally
+            Free;
+           end;
+          AddResource(RD);
+         end;
 
-       // store VST Plugins
-       for i := 0 to LBPlugins.Count - 1 do
-        begin
+        // store knob image
+        if FileExists(EdKnob.Text) then
          with TMemoryStream.Create do
           try
-           LoadFromFile(LBPlugins.Items[i]);
-           RD := TResourceDetails.CreateResourceDetails(RM, 0, 'VST' + IntToStr(i + 1), 'DLL', Size, Memory);
+           LoadFromFile(EdKnob.Text);
+           RD := TResourceDetails.CreateResourceDetails(RM, 0, 'KNOB', 'PNG', Size, Memory);
+           AddResource(RD);
           finally
            Free;
           end;
-         AddResource(RD);
-        end;
 
-       // store knob image
-       if FileExists(EdKnob.Text) then
-        with TMemoryStream.Create do
+        // store gui information
+        with TDAVPluginGuiChunk.Create do
          try
-          LoadFromFile(EdKnob.Text);
-          RD := TResourceDetails.CreateResourceDetails(RM, 0, 'KNOB', 'PNG', Size, Memory);
-          AddResource(RD);
+          BackgroundColor := ShBackgroundColor.Brush.Color;
+          KnobsPerRow     := SEKnobsPerRow.Value;
+          FontSize        := SEFontSize.Value;
+          FontColor       := ShFontColor.Brush.Color;
+          if RBAAnone.Checked then FontAntiAliasing := gaaNone else
+          if RBAA2.Checked then FontAntiAliasing := gaaLinear2x else
+          if RBAA4.Checked then FontAntiAliasing := gaaLinear4x else
+          if RBAA8.Checked then FontAntiAliasing := gaaLinear8x
+           else FontAntiAliasing := gaaLinear16x;
+          FontSize := LbTest.Font.Size;
+          MS := TMemoryStream.Create;
+          try
+           SaveToStream(MS);
+           MS.Position := 0;
+           RD := TResourceDetails.CreateResourceDetails(RM, 0, 'PLUGINGUI', '10', MS.Size, MS.Memory);
+           AddResource(RD);
+          finally
+           FreeAndNil(MS);
+          end;
          finally
           Free;
          end;
 
-       // store gui information
-       with TDAVPluginGuiChunk.Create do
-        try
-         BackgroundColor := ShBackgroundColor.Brush.Color;
-         KnobsPerRow     := SEKnobsPerRow.Value;
-         if CBAntialiasedFont.Checked
-          then FontAntiAliasing := gaaLinear4x
-          else FontAntiAliasing := gaaNone;
-         FontSize := LbTest.Font.Size;
-         MS := TMemoryStream.Create;
-         try
-          SaveToStream(MS);
-          MS.Position := 0;
-          RD := TResourceDetails.CreateResourceDetails(RM, 0, 'PLUGINGUI', '10', MS.Size, MS.Memory);
-          AddResource(RD);
-         finally
-          FreeAndNil(MS);
-         end;
-        finally
-         Free;
-        end;
-
-       SortResources;
-       SaveToFile(FileName);
-      finally
-       FreeAndNil(RM);
-      end;
+        SortResources;
+        SaveToFile(FileName);
+       finally
+        FreeAndNil(RM);
+       end;
+     finally
+      FreeAndNil(RS);
+     end;
     end;
   finally
    Free;
   end;
+end;
+
+procedure TFmPluginMerger.RBAA2Click(Sender: TObject);
+begin
+ LbTest.AntiAlias := gaaLinear2x;
+end;
+
+procedure TFmPluginMerger.RBAA4Click(Sender: TObject);
+begin
+ LbTest.AntiAlias := gaaLinear4x;
+end;
+
+procedure TFmPluginMerger.RBAA8Click(Sender: TObject);
+begin
+ LbTest.AntiAlias := gaaLinear8x;
+end;
+
+procedure TFmPluginMerger.RBAAnoneClick(Sender: TObject);
+begin
+ LbTest.AntiAlias := gaaNone;
+end;
+
+procedure TFmPluginMerger.SEFontSizeChange(Sender: TObject);
+begin
+ LbTest.Font.Size := SEFontSize.Value;
 end;
 
 procedure TFmPluginMerger.ShBackgroundColorMouseDown(Sender: TObject; Button: TMouseButton;

@@ -27,6 +27,8 @@ type
     procedure BtOpenBClick(Sender: TObject);
     procedure BtClearAClick(Sender: TObject);
     procedure BtClearBClick(Sender: TObject);
+  private
+    procedure SavePlugin(FileName: TFileName);
   end;
 
 var
@@ -39,11 +41,53 @@ uses
 
 {$R *.dfm}
 
-procedure TFmSplitPluginCreator.BtCreateClick(Sender: TObject);
+procedure TFmSplitPluginCreator.SavePlugin(FileName: TFileName);
 var
   RS  : TResourceStream;
   RM  : TPEResourceModule;
   RD  : TResourceDetails;
+begin
+ RM := TPEResourceModule.Create;
+ with RM do
+  try
+   RS := TResourceStream.Create(HInstance, 'SplitTemplate', 'DLL');
+   try
+    LoadFromStream(RS);
+   finally
+    FreeAndNil(RS);
+   end;
+//       LoadFromFile(FileName);
+
+   // store VST Plugins
+   with TMemoryStream.Create do
+    try
+     LoadFromFile(EdPluginA.Text);
+     RD := TResourceDetails.CreateResourceDetails(RM, 0, 'VST1', 'DLL', Size, Memory);
+     AddResource(RD);
+    finally
+     Free;
+    end;
+
+   // store VST Plugins
+   if EdPluginB.Enabled and FileExists(EdPluginB.Text) then
+    with TMemoryStream.Create do
+     try
+      LoadFromFile(EdPluginB.Text);
+      RD := TResourceDetails.CreateResourceDetails(RM, 0, 'VST2', 'DLL', Size, Memory);
+      AddResource(RD);
+     finally
+      Free;
+     end;
+
+   SortResources;
+   SaveToFile(FileName);
+   ShowMessage('Plugin successfully created!');
+  finally
+   FreeAndNil(RM);
+  end;
+end;
+
+procedure TFmSplitPluginCreator.BtCreateClick(Sender: TObject);
 begin
  if not FileExists(EdPluginA.Text) then
   begin
@@ -55,47 +99,7 @@ begin
    DefaultExt := 'dll';
    Filter := 'VST Plugin (*.dll)|*.dll';
    Title := 'Save As VST DLL';
-   if Execute then
-    begin
-     RM := TPEResourceModule.Create;
-     with RM do
-      try
-       RS := TResourceStream.Create(HInstance, 'SplitTemplate', 'DLL');
-       try
-        LoadFromStream(RS);
-       finally
-        FreeAndNil(RS);
-       end;
-//       LoadFromFile(FileName);
-
-       // store VST Plugins
-       with TMemoryStream.Create do
-        try
-         LoadFromFile(EdPluginA.Text);
-         RD := TResourceDetails.CreateResourceDetails(RM, 0, 'VST1', 'DLL', Size, Memory);
-         AddResource(RD);
-        finally
-         Free;
-        end;
-
-       // store VST Plugins
-       if EdPluginB.Enabled and FileExists(EdPluginB.Text) then
-        with TMemoryStream.Create do
-         try
-          LoadFromFile(EdPluginB.Text);
-          RD := TResourceDetails.CreateResourceDetails(RM, 0, 'VST2', 'DLL', Size, Memory);
-          AddResource(RD);
-         finally
-          Free;
-         end;
-
-       SortResources;
-       SaveToFile(FileName);
-       ShowMessage('Plugin successfully created!');
-      finally
-       FreeAndNil(RM);
-      end;
-    end;
+   if Execute then SavePlugin(FileName);
   finally
    Free;
   end;

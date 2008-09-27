@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Forms, DAV_Common,
   DAV_VSTModule, DAV_VstHost, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel,
-  DAV_ChunkPluginGUI;
+  DAV_VSTEffect, DAV_ChunkPluginGUI;
 
 type
   TCustomWrapperDataModule = class(TVSTModule)
@@ -26,6 +26,12 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleProcessEvents(Sender: TObject; Events: PVstEvents);
+    procedure VSTModuleResume(Sender: TObject);
+    procedure VSTModuleSuspend(Sender: TObject);
+    procedure VSTModuleSoftBypass(Sender: TObject; const isBypass: Boolean);
+    procedure VSTModuleProcessVarIO(Sender: TObject;
+      const varIo: TVstVariableIo);
   private
     fDials      : array of TGuiDial;
     fLabels     : array of TGuiLabel;
@@ -42,7 +48,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, Dialogs, Controls, PNGImage, DAV_VSTEffect, DAV_VSTParameters,
+  Math, Dialogs, Controls, PNGImage, DAV_VSTParameters,
   DAV_VSTModuleWithPrograms;
 
 function EnumNamesFunc(hModule:THandle; lpType, lpName:PChar; lParam: DWORD): Boolean; stdcall;
@@ -100,6 +106,7 @@ begin
       end;
     if PI.numInputs  > fMaxInputs  then fMaxInputs  := PI.numInputs;
     if PI.numOutputs > fMaxOutputs then fMaxOutputs := PI.numOutputs;
+    if PI.numPrograms > 0 then PI.SetProgram(0); 
    end;
  finally
   FreeAndNil(RN);
@@ -349,6 +356,15 @@ begin
   do VstHost[n].SetSampleRate(SampleRate);
 end;
 
+procedure TCustomWrapperDataModule.VSTModuleSoftBypass(Sender: TObject;
+  const isBypass: Boolean);
+var
+  n : Integer;
+begin
+ for n := 0 to VstHost.Count - 1
+  do VstHost[n].SetBypass(isBypass);
+end;
+
 procedure TCustomWrapperDataModule.VSTModuleStartProcess(Sender: TObject);
 var
   n : Integer;
@@ -363,6 +379,14 @@ var
 begin
  for n := 0 to VstHost.Count - 1
   do VstHost[n].StopProcess;
+end;
+
+procedure TCustomWrapperDataModule.VSTModuleSuspend(Sender: TObject);
+var
+  n : Integer;
+begin
+ for n := 0 to VstHost.Count - 1
+  do VstHost[n].MainsChanged(False);
 end;
 
 procedure TCustomWrapperDataModule.CustomParameterDisplay(
@@ -416,6 +440,17 @@ begin
   end;
 end;
 
+procedure TCustomWrapperDataModule.VSTModuleProcessEvents(Sender: TObject;
+  Events: PVstEvents);
+var
+  n : Integer;
+begin
+ for n := 0 to VstHost.Count - 1 do
+  begin
+   VstHost[n].ProcessEvents(Events);
+  end;
+end;
+
 procedure TCustomWrapperDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   chcnt : Integer;
@@ -454,6 +489,23 @@ begin
    VstHost[n].ProcessReplacing(@Temp[0], @Outputs[0], SampleFrames);
    InOut := Outputs;
   end;
+end;
+
+procedure TCustomWrapperDataModule.VSTModuleProcessVarIO(Sender: TObject;
+  const varIo: TVstVariableIo);
+var
+  n : Integer;
+begin
+ for n := 0 to VstHost.Count - 1
+  do VstHost[n].ProcessVarIo(@varIO);
+end;
+
+procedure TCustomWrapperDataModule.VSTModuleResume(Sender: TObject);
+var
+  n : Integer;
+begin
+ for n := 0 to VstHost.Count - 1
+  do VstHost[n].MainsChanged(True);
 end;
 
 end.

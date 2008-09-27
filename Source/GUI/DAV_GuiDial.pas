@@ -422,6 +422,7 @@ begin
  if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
   begin
    Lock;
+   Brush.Color := Self.Color;
    if FDialBitmap.Empty and (FImageIndex < 0) then
     case FAntiAlias of
      gaaNone     :

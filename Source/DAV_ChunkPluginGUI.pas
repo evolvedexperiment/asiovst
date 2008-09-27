@@ -11,7 +11,7 @@ type
     KnobsPerRow      : Byte;
     FontAntiAliasing : Byte;
     FontSize         : Byte;
-    AllZero          : Array [0..16] of Byte;
+    FontColor        : TColor;
   end;
 
   TDAVPluginGuiChunk = class(TFixedDefinedChunk)
@@ -30,7 +30,7 @@ type
     property KnobsPerRow: Byte read fPluginGuiChunkRecord.KnobsPerRow write fPluginGuiChunkRecord.KnobsPerRow;
     property FontAntiAliasing: TGuiAntiAlias read GetKnobsPerRow write SetFontAntiAliasing;
     property FontSize: Byte read fPluginGuiChunkRecord.FontSize write fPluginGuiChunkRecord.FontSize;
-
+    property FontColor: TColor read fPluginGuiChunkRecord.FontColor write fPluginGuiChunkRecord.FontColor;
   end;
 
 implementation

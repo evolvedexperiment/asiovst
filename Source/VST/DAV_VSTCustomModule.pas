@@ -110,7 +110,7 @@ type
     FOnProcessDoublesEx     : TProcessDoubleEvent;
 
     function GetPluginFlags: TEffFlags; virtual;
-    function GetUniqueID:string; virtual;
+    function GetUniqueID: string; virtual;
     procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); override;
     procedure SetBlockSize(newValue: Integer); virtual;
     procedure SetInitialDelay(delay: Integer); virtual;
@@ -118,7 +118,7 @@ type
     procedure SetNumOutputs(Outputs: Integer); virtual;
     procedure SetPluginFlags(newFlags : TEffFlags); virtual;
     procedure SetSampleRate(newValue: Single); virtual;
-    procedure SetUniqueID(fID:string); virtual;
+    procedure SetUniqueID(fID: string); virtual;
     {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
     {$ENDIF}
