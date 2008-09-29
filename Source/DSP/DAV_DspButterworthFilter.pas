@@ -358,13 +358,14 @@ begin
 asm
  fld Input.Double;
  mov ecx, [self.fOrder]
+ test ecx, ecx
  jz @End
  shr ecx, 1
  shl ecx, 2
  push ecx
  jz @SingleStage
  @FilterLoop:
-  sub ecx,4
+  sub ecx, 4
   fld st(0)
   fmul [self.fAB + ecx * 8].Double
   fadd [self.fState + ecx * 4].Double
@@ -392,14 +393,14 @@ asm
   mov ecx, [self.fOrder]
   dec ecx
   shl ecx, 1
-  fmul [self.fAB+ecx*8].Double
+  fmul [self.fAB + ecx * 8].Double
   fld st(0)
-  fadd [self.fState+ecx*4].Double
+  fadd [self.fState + ecx * 4].Double
   fld st(0)
-  fmul [self.fAB+ecx*8+16].Double
+  fmul [self.fAB + ecx * 8 + 16].Double
   faddp st(2), st(0)
   fxch
-  fstp [self.fState+ecx*4].Double
+  fstp [self.fState + ecx * 4].Double
  @End:
  {$ENDIF}
 end;
@@ -481,6 +482,7 @@ begin
 asm
  fld Input.Double;
  mov ecx, [self.fOrder]
+ test ecx, ecx
  jz @End
  shr ecx, 1
  shl ecx, 2
