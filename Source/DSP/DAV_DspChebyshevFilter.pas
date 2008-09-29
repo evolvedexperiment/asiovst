@@ -41,8 +41,6 @@ type
   end;
 
   TChebyshev1LP = class(TChebyshev1Filter)
-  private
-  protected
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;
@@ -52,8 +50,6 @@ type
   end;
 
   TChebyshev1HP = class(TChebyshev1Filter)
-  private
-  protected
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;

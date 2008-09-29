@@ -2,7 +2,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
-  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
+  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Oversample Template'
   ProductName = 'Oversample Template'
@@ -10,15 +10,10 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   PlugCategory = vpcEffect
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdReceiveVstTimeInfo, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
-  CurrentProgramName = 'Default'
+  CurrentProgram = -1
   UniqueID = 'Spli'
   ShellPlugins = <>
-  Programs = <
-    item
-      DisplayName = 'Default'
-      VSTModule = Owner
-    end>
+  Programs = <>
   ParameterProperties = <
     item
       Curve = ctLinear
@@ -58,14 +53,12 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'OS Filter Order'
+      DisplayName = 'OS Pre-Filter Order'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
       MaxInteger = 16
-      Min = 1.000000000000000000
-      MinInteger = 1
-      ShortLabel = 'OS Filt'
+      ShortLabel = 'Pre-Ord'
       SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -76,17 +69,77 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'OS Transition BW'
+      DisplayName = 'OS Pre-Filter Transition Bandw'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
-      ShortLabel = 'OS Tran'
+      ShortLabel = 'Pre-BW'
       SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
-      OnParameterChange = ParamTransBWChange
+      OnParameterChange = ParamPreTransBWChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'OS Pre-Filter Characteristic'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 6.000000000000000000
+      MaxInteger = 6
+      ShortLabel = 'Pre-Chr'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParamCharChange
+      OnCustomParameterDisplay = ParamCharacterDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'OS Post-Filter Order'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 16.000000000000000000
+      MaxInteger = 16
+      ShortLabel = 'Pst-Ord'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnCustomParameterDisplay = ParamOrderDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'OS Post-Filter Transition'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 100.000000000000000000
+      ShortLabel = 'Pst-BW'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
+      VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'OS Post-Filter Characteristic'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 6.000000000000000000
+      MaxInteger = 6
+      ShortLabel = 'Pst-Chr'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnCustomParameterDisplay = ParamCharacterDisplay
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
@@ -97,6 +150,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   OnEditSleep = VSTModuleEditSleep
   OnEditorKeyUp = VSTModuleEditorKeyUp
   OnEditorKeyDown = VSTModuleEditorKeyDown
+  OnAfterProgramChange = VSTModuleAfterProgramChange
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnGetVU = VSTModuleGetVU
   OnInputProperties = VSTModuleInputProperties

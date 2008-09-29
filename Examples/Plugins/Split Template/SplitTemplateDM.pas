@@ -673,7 +673,7 @@ var
   n, pnr : Integer;
 begin
  n   := 0;
- pnr := 5;
+ pnr := 6;
  while (Index >= pnr + VstHost[n].numParams) do
   begin
    Inc(pnr, VstHost[n].numParams);
@@ -690,7 +690,7 @@ var
   n, pnr : Integer;
 begin
  n   := 0;
- pnr := 5;
+ pnr := 6;
  while (Index >= pnr + VstHost[n].numParams) do
   begin
    Inc(pnr, VstHost[n].numParams);
@@ -707,7 +707,7 @@ var
   n, pnr : Integer;
 begin
  n   := 0;
- pnr := 5;
+ pnr := 6;
  while (Index >= pnr + VstHost[n].numParams) do
   begin
    Inc(pnr, VstHost[n].numParams);

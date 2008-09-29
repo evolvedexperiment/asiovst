@@ -28,8 +28,8 @@ type
   public
     constructor Create; override;
     procedure SetFilterValues(const AFrequency, AGain : Single); virtual;
-    function MagnitudeSquared(Frequency:Double):Double; override;
-    function MagnitudeLog10(Frequency:Double):Double; override;
+    function MagnitudeSquared(Frequency: Double): Double; override;
+    function MagnitudeLog10(Frequency: Double): Double; override;
     procedure ResetStates; override;
     procedure Reset; override;
     procedure PushStates; override;
@@ -48,8 +48,8 @@ type
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;
-    function ProcessSample(const Input:Double):Double; override;
-    function MagnitudeSquared(Frequency:Double):Double; override;
+    function ProcessSample(const Input: Double): Double; override;
+    function MagnitudeSquared(Frequency: Double): Double; override;
     function Phase(Frequency: Double): Double; override;
   end;
   TBesselHighCut = TBesselLP;
@@ -58,8 +58,8 @@ type
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;
-    function ProcessSample(const Input:Double):Double; override;
-    function MagnitudeSquared(Frequency:Double):Double; override;
+    function ProcessSample(const Input:Double): Double; override;
+    function MagnitudeSquared(Frequency:Double): Double; override;
   end;
   TBesselLowCut = TBesselHP;
 

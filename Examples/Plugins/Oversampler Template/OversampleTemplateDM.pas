@@ -7,8 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Forms, DAV_Common,
   DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VSTModuleWithPrograms,
-  DAV_VSTCustomModule, DAV_DspButterworthFilter, DAV_DspUpDownsampling,
-  DAV_VstHost, DAV_DSPSineLFO;
+  DAV_VSTCustomModule, DAV_DspUpDownsampling, DAV_VstHost;
 
 type
   TOversampleTemplateDataModule = class(TVSTModule)
@@ -36,7 +35,6 @@ type
     procedure VSTModuleOfflineNotify(Sender: TObject; const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean);
     procedure VSTModuleOfflinePrepare(Sender: TObject; const OfflineTask: TVstOfflineTask; const count: Integer);
     procedure VSTModuleOfflineRun(Sender: TObject; const OfflineTask: TVstOfflineTask; const count: Integer);
-    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
 
     procedure VSTModuleProcess32OversampleSingle(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -51,13 +49,18 @@ type
     procedure VSTModuleSuspend(Sender: TObject);
     procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamOrderValue(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamTransBWChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamPreTransBWChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditorKeyDown(Sender: TObject; var keyCode: TVstKeyCode);
     procedure VSTModuleEditorKeyUp(Sender: TObject; var keyCode: TVstKeyCode);
+    procedure VSTModuleAfterProgramChange(Sender: TObject);
+    procedure ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamCharChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleOpen(Sender: TObject);
   private
     fOversample       : array of TDAVUpDownsampling;
     fIn64, fOut64     : array of PDAVDoubleFixedArray;
     fIn32, fOut32     : array of PDAVSingleFixedArray;
+    fBaseParCount     : Integer;
     fOSActive         : Boolean;
     fOSFactor         : Integer;
     fMaximumBlockSize : Integer;
@@ -68,6 +71,9 @@ type
     procedure VSTBuffersChanged;
     procedure PluginSampleRateChanged;
     procedure CheckSampleFrames(const SampleFrames: Integer);
+  public
+    function HostCallIdle(Index: Integer; Value: Integer; ptr: Pointer; opt: Single): Integer; override;
+    function HostCallGetTailSize(Index: Integer; Value: Integer; ptr: Pointer; opt: Single): Integer; override;
   published
     property TempBufferSize: Integer read fTempBufferSize write SetTempBufferSize default 0;
   end;
@@ -79,7 +85,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, Dialogs, Controls, Types, OversampleTemplateGUI, DAV_VSTPrograms;
+  Math, Dialogs, Controls, Types, OversampleTemplateGUI, DAV_VSTPrograms,
+  DAV_VSTModuleWithDsp;
 
 function EnumNamesFunc(hModule:THandle; lpType, lpName:PChar; lParam: DWORD): Boolean; stdcall;
 begin
@@ -102,12 +109,13 @@ end;
 
 procedure TOversampleTemplateDataModule.VSTModuleCreate(Sender: TObject);
 var
-  RN    : TStringList;
-  RS    : TResourceStream;
-  PI    : TCustomVstPlugIn;
-  ch, i : Integer;
-  str   : string;
+  RN       : TStringList;
+  RS       : TResourceStream;
+  PI       : TCustomVstPlugIn;
+  ch, i, j : Integer;
+  str      : string;
 begin
+ fBaseParCount := numParams;
  RN := TStringList.Create;
  try
   EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, DWord(RN));
@@ -133,9 +141,6 @@ begin
        OnCustomParameterDisplay := CustomParameterDisplay;
        DisplayName              := VstHost[0].GetParamName(i);
       end;
-    if PI.numPrograms > 0
-     then PI.SetProgram(0);
-
     UniqueID    := VstHost[0].UniqueID[1] +
                    VstHost[0].UniqueID[2] +
                    VstHost[0].UniqueID[3] + '²';
@@ -144,11 +149,44 @@ begin
     VendorName  := VstHost[0].VendorString + ' (powered by Delphi ASIO & VST Packages)';
 
     // program replication
+    Parameter[0] := 0;
+    Parameter[1] := 1;
+    Parameter[2] := 4;
+    Parameter[3] := 99;
+
     for i := 0 to VstHost[0].numPrograms - 1 do
      with Programs.Add do
       begin
-       VstHost[0].GetProgramNameIndexed(0, i, str);
+       PI.GetProgramNameIndexed(0, i, str);
+       PI.SetProgram(i);
+       Parameter[0] := 0;
+       Parameter[1] := 2;
+       Parameter[2] := 4;
+       Parameter[3] := 99;
+       Parameter[4] := 2;
+       Parameter[5] := 4;
+       Parameter[6] := 99;
        DisplayName := str;
+       for j := 0 to PI.numParams - 1
+        do Parameter[fBaseParCount + j] := PI.GetParameter(j);
+      end;
+    if numPrograms > 0 then
+     begin
+      PI.SetProgram(0);
+      for j := 0 to PI.numParams - 1
+       do Parameter[fBaseParCount + j] := PI.GetParameter(j);
+     end
+    else
+     with Programs.Add do
+      begin
+       DisplayName := 'Default';
+       Parameter[0] := 0;
+       Parameter[1] := 2;
+       Parameter[2] := 4;
+       Parameter[3] := 99;
+       Parameter[4] := 2;
+       Parameter[5] := 4;
+       Parameter[6] := 99;
       end;
 
     // enable 64bit processing if supported by both plugins
@@ -237,7 +275,7 @@ begin
 
     if not VstHost[0].EditVisible
      then VstHost[0].ShowEdit(TForm(PnGui));
-    Rct[0]   := VstHost[0].GetRect;
+    Rct[0] := VstHost[0].GetRect;
 
     Oversize := PnControl.Width - (Rct[0].Right - Rct[0].Left);
     if Oversize < 0 then
@@ -339,18 +377,12 @@ begin
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleOpen(Sender: TObject);
+var
+  j : Integer;
 begin
- Parameter[0] := 0;
- Parameter[1] := 1;
- Parameter[2] := 4;
- Parameter[3] := 99;
- with Programs[0] do
-  begin
-   Parameter[0] := 0;
-   Parameter[1] := 1;
-   Parameter[2] := 4;
-   Parameter[3] := 99;
-  end;
+ if VstHost[0].Active then
+  for j := 0 to VstHost[0].numParams - 1
+   do Parameter[fBaseParCount + j] := VstHost[0].GetParameter(j);
 end;
 
 function TOversampleTemplateDataModule.VSTModuleOutputProperties(Sender: TObject;
@@ -375,16 +407,17 @@ end;
 procedure TOversampleTemplateDataModule.ParamAutomate(
   Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
 begin
- Parameter[4 + Index] := ParamValue;
+ Parameter[fBaseParCount + Index] := ParamValue;
 end;
 
-procedure TOversampleTemplateDataModule.ParamTransBWChange(
+procedure TOversampleTemplateDataModule.ParamPreTransBWChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   ch : Integer;
 begin
  for ch := 0 to Length(fOversample) - 1
   do fOversample[ch].TransitionBandwidth := 0.01 * Value;
+ Parameter[Index + 3] := Value;
 end;
 
 procedure TOversampleTemplateDataModule.ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -399,6 +432,20 @@ var
 begin
  for ch := 0 to Length(fOversample) - 1
   do fOversample[ch].Order := round(Value);
+ Parameter[Index + 3] := Value;
+end;
+
+procedure TOversampleTemplateDataModule.VSTModuleAfterProgramChange(Sender: TObject);
+begin
+(*
+ with VstHost[0] do if Active then
+  begin
+   SetProgram(CurrentProgram);
+   EditIdle;
+   if EditorForm is TFmOversampler
+    then TFmOversampler(EditorForm).PnGui.Invalidate;
+  end;
+*)
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
@@ -469,7 +516,7 @@ var
   n, pnr : Integer;
 begin
  n   := 0;
- pnr := 4;
+ pnr := fBaseParCount;
  while (Index >= pnr + VstHost[n].numParams) do
   begin
    Inc(pnr, VstHost[n].numParams);
@@ -486,7 +533,7 @@ var
   n, pnr : Integer;
 begin
  n   := 0;
- pnr := 4;
+ pnr := fBaseParCount;
  while (Index >= pnr + VstHost[n].numParams) do
   begin
    Inc(pnr, VstHost[n].numParams);
@@ -503,7 +550,7 @@ var
   n, pnr : Integer;
 begin
  n   := 0;
- pnr := 4;
+ pnr := fBaseParCount;
  while (Index >= pnr + VstHost[n].numParams) do
   begin
    Inc(pnr, VstHost[n].numParams);
@@ -514,8 +561,36 @@ begin
   then PreDefined := VstHost[n].GetParamLabel(Index - pnr);
 end;
 
-procedure TOversampleTemplateDataModule.ParamOSFactorDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+function TOversampleTemplateDataModule.HostCallGetTailSize(Index,
+  Value: Integer; ptr: Pointer; opt: Single): Integer;
+begin
+ with VstHost[0] do
+  if Active
+   then result := VstHost[0].GetTailSize
+   else result := -1;
+end;
+
+function TOversampleTemplateDataModule.HostCallIdle(Index, Value: Integer;
+  ptr: Pointer; opt: Single): Integer;
+begin
+ with VstHost[0] do if Active then
+  begin
+   Idle;
+   result := 0;
+  end else result := -1;
+end;
+
+procedure TOversampleTemplateDataModule.ParamCharChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ Parameter[Index + 3] := Value;
+end;
+
+procedure TOversampleTemplateDataModule.ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := 'Butterworth';
+end;
+
+procedure TOversampleTemplateDataModule.ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := IntToStr(round(Parameter[Index])) + 'x';
 end;
@@ -523,6 +598,7 @@ end;
 function ConvertOrderToString(Order: Integer): string;
 begin
  case Order of
+   0 : result := 'Off';
    1 : result := IntToStr(Order) + 'st';
    2 : result := IntToStr(Order) + 'nd';
    3 : result := IntToStr(Order) + 'rd';
