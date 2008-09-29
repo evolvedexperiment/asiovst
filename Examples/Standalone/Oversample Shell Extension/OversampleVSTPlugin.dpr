@@ -10,6 +10,7 @@ uses
   madListProcesses,
   madListModules,
   FastMove,
+  RTLVCLOptimize,
   ComServ,
   SysUtils,
   Classes,

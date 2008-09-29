@@ -1,14 +1,14 @@
-object OversamplerTemplateDataModule: TOversamplerTemplateDataModule
+object OversampleTemplateDataModule: TOversampleTemplateDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
-  EffectName = 'Oversampler Template'
-  ProductName = 'Oversampler Template'
+  EffectName = 'Oversample Template'
+  ProductName = 'Oversample Template'
   VendorName = 'Delphi ASIO & VST Packages'
   PlugCategory = vpcEffect
-  CanDos = [vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
+  CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdReceiveVstTimeInfo, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
@@ -70,6 +70,8 @@ object OversamplerTemplateDataModule: TOversamplerTemplateDataModule
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParamOrderValue
+      OnCustomParameterDisplay = ParamOrderDisplay
     end
     item
       Curve = ctLinear
@@ -84,6 +86,7 @@ object OversamplerTemplateDataModule: TOversamplerTemplateDataModule
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParamTransBWChange
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
@@ -92,6 +95,8 @@ object OversamplerTemplateDataModule: TOversamplerTemplateDataModule
   OnEditIdle = VSTModuleEditIdle
   OnEditTop = VSTModuleEditTop
   OnEditSleep = VSTModuleEditSleep
+  OnEditorKeyUp = VSTModuleEditorKeyUp
+  OnEditorKeyDown = VSTModuleEditorKeyDown
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnGetVU = VSTModuleGetVU
   OnInputProperties = VSTModuleInputProperties
@@ -99,7 +104,10 @@ object OversamplerTemplateDataModule: TOversamplerTemplateDataModule
   OnOfflinePrepare = VSTModuleOfflinePrepare
   OnOfflineRun = VSTModuleOfflineRun
   OnOutputProperties = VSTModuleOutputProperties
+  OnProcess = VSTModuleProcess32OversampleSingle
+  OnProcessDoubleReplacing = VSTModuleProcess64OversampleSingle
   OnProcessEvents = VSTModuleProcessEvents
+  OnProcessReplacing = VSTModuleProcess32OversampleSingle
   OnProcessVarIO = VSTModuleProcessVarIO
   OnResume = VSTModuleResume
   OnSampleRateChange = VSTModuleSampleRateChange
@@ -121,7 +129,7 @@ object OversamplerTemplateDataModule: TOversamplerTemplateDataModule
     VstPlugIns = <
       item
         DisplayName = 'Wrapped Plugin'
-        OnAudioMasterAutomate = LowParameterAutomate
+        OnAudioMasterAutomate = ParamAutomate
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000

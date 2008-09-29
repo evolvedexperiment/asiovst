@@ -1,4 +1,4 @@
-unit OversamplerTemplateGUI;
+unit OversampleTemplateGUI;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   DAV_GuiLED, DAV_GuiDial, DAV_GuiPanel, DAV_GuiSelectBox;
 
 type
-  TFmOversamplerter = class(TForm)
+  TFmOversampler = class(TForm)
     DialOversampling: TGuiDial;
     GuiLEDOversampling: TGuiLED;
     PnControl: TGuiPanel;
@@ -28,7 +28,7 @@ type
   public
     procedure UpdateOSFactor;
     procedure UpdateOverSampling;
-    procedure ShowPlugin(Index: Integer);
+    procedure ShowPlugin;
   end;
 
 implementation
@@ -36,20 +36,19 @@ implementation
 {$R *.dfm}
 
 uses
-  OversamplerTemplateDM, DAV_VSTModuleWithPrograms;
+  OversampleTemplateDM, DAV_VSTModuleWithPrograms;
 
-procedure TFmOversamplerter.ShowPlugin(Index: Integer);
+procedure TFmOversampler.ShowPlugin;
 var
   R        : TRect;
   Oversize : Integer;
 begin
- with TOversamplerTemplateDataModule(Owner) do
+ with TOversampleTemplateDataModule(Owner) do
   begin
-   if VstHost[Index].Active and not VstHost[Index].EditVisible
-    then VstHost[Index].ShowEdit(PnGui);
-   if VstHost[1 - Index].EditVisible then VstHost[1 - Index].CloseEdit;
+   if VstHost[0].Active and not VstHost[0].EditVisible
+    then VstHost[0].ShowEdit(PnGui);
 
-   PnGui.Visible    := assigned(VstHost[Index]) and VstHost[Index].Active;
+   PnGui.Visible    := assigned(VstHost[0]) and VstHost[0].Active;
    ShBorder.Visible := PnGui.Visible;
 
    // set plugin GUI size
@@ -58,7 +57,7 @@ begin
      PnGui.Visible    := True;
      ShBorder.Visible := True;
 
-     R        := VstHost[Index].GetRect;
+     R        := VstHost[0].GetRect;
      Oversize := PnControl.Width - (R.Right - R.Left);
      if Oversize < 0 then
       begin
@@ -87,17 +86,17 @@ begin
   end;
 end;
 
-procedure TFmOversamplerter.DialOversamplingChange(Sender: TObject);
+procedure TFmOversampler.DialOversamplingChange(Sender: TObject);
 begin
- with TOversamplerTemplateDataModule(Owner) do
+ with TOversampleTemplateDataModule(Owner) do
   begin
    ParameterByName['OS Factor'] := DialOversampling.Position;
   end;
 end;
 
-procedure TFmOversamplerter.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFmOversampler.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
- with TOversamplerTemplateDataModule(Owner) do
+ with TOversampleTemplateDataModule(Owner) do
   try
    if VstHost[0].EditVisible then VstHost[0].CloseEdit;
    if VstHost[1].EditVisible then VstHost[1].CloseEdit;
@@ -105,13 +104,13 @@ begin
   end;
 end;
 
-procedure TFmOversamplerter.FormDestroy(Sender: TObject);
+procedure TFmOversampler.FormDestroy(Sender: TObject);
 begin
  if assigned(fBackground)
   then FreeAndNil(fBackground); 
 end;
 
-procedure TFmOversamplerter.FormPaint(Sender: TObject);
+procedure TFmOversampler.FormPaint(Sender: TObject);
 begin
  if assigned(fBackground)
   then Canvas.Draw(0, PnControl.Height, fBackground);
@@ -124,7 +123,7 @@ begin
  Pixel.R := round($33 - Amount);
 end;
 
-procedure TFmOversamplerter.FormResize(Sender: TObject);
+procedure TFmOversampler.FormResize(Sender: TObject);
 var
   x, y   : Integer;
   s      : array[0..1] of Single;
@@ -174,37 +173,38 @@ begin
   end;
 end;
 
-procedure TFmOversamplerter.FormShow(Sender: TObject);
+procedure TFmOversampler.FormShow(Sender: TObject);
 begin
  UpdateOSFactor;
- ShowPlugin(0);
+ UpdateOverSampling;
+ ShowPlugin;
 end;
 
-procedure TFmOversamplerter.GuiLEDOversamplingClick(Sender: TObject);
+procedure TFmOversampler.GuiLEDOversamplingClick(Sender: TObject);
 begin
- with TOversamplerTemplateDataModule(Owner) do
+ with TOversampleTemplateDataModule(Owner) do
   begin
    ParameterByName['Oversampling'] := f_Limit(1 - ParameterByName['Oversampling'], 0, 1);
   end;
 end;
 
-procedure TFmOversamplerter.UpdateOverSampling;
+procedure TFmOversampler.UpdateOverSampling;
 begin
- with TOversamplerTemplateDataModule(Owner) do
+ with TOversampleTemplateDataModule(Owner) do
   begin
    GuiLEDOversampling.Brightness_Percent := 20 + 60 * (f_Limit(ParameterByName['Oversampling'], 0, 1));
 
    DialOversampling.Visible     := round(ParameterByName['Oversampling']) = 1;
    LbOversamplingFactor.Visible := DialOversampling.Visible;
-   LbOversampling.Width         := 97 + 5 * round(ParameterByName['Oversampling']);
+   LbOversampling.Width         := 80 + 5 * round(ParameterByName['Oversampling']);
   end;
 end;
 
-procedure TFmOversamplerter.UpdateOSFactor;
+procedure TFmOversampler.UpdateOSFactor;
 var
   OSFactor : Single;
 begin
- with TOversamplerTemplateDataModule(Owner) do
+ with TOversampleTemplateDataModule(Owner) do
   begin
    OSFactor := ParameterByName['OS Factor'];
    if DialOversampling.Position <> OSFactor

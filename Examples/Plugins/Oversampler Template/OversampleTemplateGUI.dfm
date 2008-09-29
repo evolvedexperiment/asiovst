@@ -1,8 +1,8 @@
-object FmOversamplerter: TFmOversamplerter
+object FmOversampler: TFmOversampler
   Left = 277
   Top = 185
   BorderStyle = bsNone
-  Caption = 'Frequency Oversamplerter'
+  Caption = 'Frequency Oversampler'
   ClientHeight = 54
   ClientWidth = 187
   Color = 2830643
@@ -41,7 +41,6 @@ object FmOversamplerter: TFmOversamplerter
     Radius = 0
     TabOrder = 0
     UseDockManager = True
-    ExplicitWidth = 588
     object GuiLEDOversampling: TGuiLED
       Left = 4
       Top = 4
@@ -57,7 +56,7 @@ object FmOversamplerter: TFmOversamplerter
     object LbOversampling: TGuiLabel
       Left = 26
       Top = 4
-      Width = 97
+      Width = 80
       Height = 16
       AntiAlias = gaaLinear4x
       Caption = 'Oversampling:'

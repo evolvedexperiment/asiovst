@@ -1,4 +1,4 @@
-unit OversamplerTemplateDM;
+unit OversampleTemplateDM;
 
 interface
 
@@ -11,15 +11,14 @@ uses
   DAV_VstHost, DAV_DSPSineLFO;
 
 type
-  TOversamplerTemplateDataModule = class(TVSTModule)
+  TOversampleTemplateDataModule = class(TVSTModule)
     VstHost: TVstHost;
     function VSTModuleInputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     function VSTModuleVendorSpecific(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
     procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure HighParameterAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
-    procedure LowParameterAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
+    procedure ParamAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
     procedure ParamOSFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -40,8 +39,8 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
 
-    procedure VSTModuleProcess32OversamplerSingle(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcess64OversamplerSingle(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess32OversampleSingle(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess64OversampleSingle(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 
     procedure VSTModuleProcessEvents(Sender: TObject; Events: PVstEvents);
     procedure VSTModuleProcessVarIO(Sender: TObject; const varIo: TVstVariableIo);
@@ -50,15 +49,21 @@ type
     procedure VSTModuleStartProcess(Sender: TObject);
     procedure VSTModuleStopProcess(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
+    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOrderValue(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamTransBWChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditorKeyDown(Sender: TObject; var keyCode: TVstKeyCode);
+    procedure VSTModuleEditorKeyUp(Sender: TObject; var keyCode: TVstKeyCode);
   private
-    fOversampler      : array of TDAVUpDownsampling;
+    fOversample       : array of TDAVUpDownsampling;
     fIn64, fOut64     : array of PDAVDoubleFixedArray;
     fIn32, fOut32     : array of PDAVSingleFixedArray;
     fOSActive         : Boolean;
     fOSFactor         : Integer;
     fMaximumBlockSize : Integer;
     fTempBufferSize   : Integer;
-    procedure SetOSFactor(NewOSFactor: Integer);
+    fSemaphore        : Integer;
+    procedure SetOSFactor(const NewOSFactor: Integer);
     procedure SetTempBufferSize(const Value: Integer);
     procedure VSTBuffersChanged;
     procedure PluginSampleRateChanged;
@@ -74,7 +79,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, Dialogs, Controls, Types, OversamplerTemplateGUI, DAV_VSTPrograms;
+  Math, Dialogs, Controls, Types, OversampleTemplateGUI, DAV_VSTPrograms;
 
 function EnumNamesFunc(hModule:THandle; lpType, lpName:PChar; lParam: DWORD): Boolean; stdcall;
 begin
@@ -95,7 +100,7 @@ begin
 //  ShowMessage(lpType);
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleCreate(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleCreate(Sender: TObject);
 var
   RN    : TStringList;
   RS    : TResourceStream;
@@ -167,18 +172,19 @@ begin
   FreeAndNil(RN);
  end;
 
- SetLength(fOversampler, max(numInputs, numOutputs));
- for ch := 0 to Length(fOversampler) - 1
-  do fOversampler[ch] := TDAVUpDownsampling.Create(Self);
+ SetLength(fOversample, max(numInputs, numOutputs));
+ for ch := 0 to Length(fOversample) - 1
+  do fOversample[ch] := TDAVUpDownsampling.Create(Self);
 
  fOSFactor     := 1;
  fOSActive     := False;
 
- OnProcess := VSTModuleProcess32OversamplerSingle;
- OnProcessReplacing := VSTModuleProcess32OversamplerSingle;
- OnProcessDoubleReplacing := VSTModuleProcess64OversamplerSingle;
+ OnProcess := VSTModuleProcess32OversampleSingle;
+ OnProcessReplacing := VSTModuleProcess32OversampleSingle;
+ OnProcessDoubleReplacing := VSTModuleProcess64OversampleSingle;
 
  fTempBufferSize := 0;
+ fSemaphore := 0;
  fMaximumBlockSize := VstHost.BlockSize;
 
  SetLength(fIn32, numInputs);
@@ -189,41 +195,42 @@ begin
  VSTBuffersChanged;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleDestroy(Sender: TObject);
 var
-  ch, n : Integer;
+  ch : Integer;
 begin
+ fSemaphore := 0;
  for ch := 0 to Length(fIn64) - 1 do Dispose(fIn64[ch]);
  for ch := 0 to Length(fOut64) - 1 do Dispose(fOut64[ch]);
 
- for ch := 0 to Length(fOversampler) - 1
-  do FreeAndNil(fOversampler[ch]);
+ for ch := 0 to Length(fOversample) - 1
+  do FreeAndNil(fOversample[ch]);
 
  VSTHost.VstPlugIns.Clear;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleEditClose(Sender: TObject;
+procedure TOversampleTemplateDataModule.VSTModuleEditClose(Sender: TObject;
   var DestroyForm: Boolean);
 begin
  with VstHost[0] do if EditVisible then CloseEdit;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleEditIdle(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleEditIdle(Sender: TObject);
 begin
  with VstHost[0] do if EditVisible then EditIdle;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleEditOpen(Sender: TObject;
+procedure TOversampleTemplateDataModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 var
   Rct      : array [0..1] of TRect;
   Oversize : Integer;
 begin
- GUI := TFmOversamplerter.Create(Self);
+ GUI := TFmOversampler.Create(Self);
 
  // set plugin GUI size
  if assigned(VstHost[0]) and VstHost[0].Active then
-  with TFmOversamplerter(GUI) do
+  with TFmOversampler(GUI) do
    begin
     PnGui.Visible    := True;
     ShBorder.Visible := True;
@@ -263,29 +270,43 @@ begin
     if VstHost[0].EditVisible then VstHost[0].CloseEdit;
    end
  else
-  with TFmOversamplerter(GUI) do
+  with TFmOversampler(GUI) do
    begin
     PnGui.Visible    := False;
     ShBorder.Visible := False;
    end;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleEditSleep(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleEditorKeyDown(Sender: TObject;
+  var keyCode: TVstKeyCode);
+begin
+ with VstHost[0] do if EditVisible
+  then EditKeyDown(Char(keyCode.Character), keyCode.Virt, keyCode.Modifier); 
+end;
+
+procedure TOversampleTemplateDataModule.VSTModuleEditorKeyUp(Sender: TObject;
+  var keyCode: TVstKeyCode);
+begin
+ with VstHost[0] do if EditVisible
+  then EditKeyUp(Char(keyCode.Character), keyCode.Virt, keyCode.Modifier)
+end;
+
+procedure TOversampleTemplateDataModule.VSTModuleEditSleep(Sender: TObject);
 begin
  with VstHost[0] do if EditVisible then EditDeactivate;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleEditTop(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleEditTop(Sender: TObject);
 begin
  with VstHost[0] do if EditVisible then EditActivate;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleGetVU(var VU: Single);
+procedure TOversampleTemplateDataModule.VSTModuleGetVU(var VU: Single);
 begin
  if VstHost[0].Active then VU := VstHost[0].GetVu;
 end;
 
-function TOversamplerTemplateDataModule.VSTModuleInputProperties(Sender: TObject;
+function TOversampleTemplateDataModule.VSTModuleInputProperties(Sender: TObject;
   const Index: Integer; var vLabel, shortLabel: string;
   var SpeakerArrangement: TVstSpeakerArrangementType;
   var Flags: TVstPinPropertiesFlags): Boolean;
@@ -299,25 +320,25 @@ begin
  Result := False;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleOfflineNotify(Sender: TObject;
+procedure TOversampleTemplateDataModule.VSTModuleOfflineNotify(Sender: TObject;
   const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean);
 begin
  if VstHost[0].Active then VstHost[0].OfflineNotify(@AudioFile, numAudioFiles, start);
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleOfflinePrepare(Sender: TObject;
+procedure TOversampleTemplateDataModule.VSTModuleOfflinePrepare(Sender: TObject;
   const OfflineTask: TVstOfflineTask; const count: Integer);
 begin
  if VstHost[0].Active then VstHost[0].OfflinePrepare(@OfflineTask, count);
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleOfflineRun(Sender: TObject;
+procedure TOversampleTemplateDataModule.VSTModuleOfflineRun(Sender: TObject;
   const OfflineTask: TVstOfflineTask; const count: Integer);
 begin
  if VstHost[0].Active then VstHost[0].OfflineRun(@OfflineTask, count);
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleOpen(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleOpen(Sender: TObject);
 begin
  Parameter[0] := 0;
  Parameter[1] := 1;
@@ -332,7 +353,7 @@ begin
   end;
 end;
 
-function TOversamplerTemplateDataModule.VSTModuleOutputProperties(Sender: TObject;
+function TOversampleTemplateDataModule.VSTModuleOutputProperties(Sender: TObject;
   const Index: Integer; var vLabel, shortLabel: string;
   var SpeakerArrangement: TVstSpeakerArrangementType;
   var Flags: TVstPinPropertiesFlags): Boolean;
@@ -346,29 +367,46 @@ begin
  Result        := False;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleClose(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleClose(Sender: TObject);
 begin
  VstHost[0].Active := False;
 end;
 
-procedure TOversamplerTemplateDataModule.LowParameterAutomate(
+procedure TOversampleTemplateDataModule.ParamAutomate(
   Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
 begin
- Parameter[3 + Index] := ParamValue;
+ Parameter[4 + Index] := ParamValue;
 end;
 
-procedure TOversamplerTemplateDataModule.HighParameterAutomate(
-  Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
+procedure TOversampleTemplateDataModule.ParamTransBWChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ch : Integer;
 begin
- Parameter[3 + VstHost[0].numParams + Index] := ParamValue;
+ for ch := 0 to Length(fOversample) - 1
+  do fOversample[ch].TransitionBandwidth := 0.01 * Value;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
+procedure TOversampleTemplateDataModule.ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := ConvertOrderToString(round(Parameter[Index]));
+end;
+
+procedure TOversampleTemplateDataModule.ParamOrderValue(Sender: TObject;
+  const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 0 to Length(fOversample) - 1
+  do fOversample[ch].Order := round(Value);
+end;
+
+procedure TOversampleTemplateDataModule.VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
 begin
  VSTBuffersChanged;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTBuffersChanged;
+procedure TOversampleTemplateDataModule.VSTBuffersChanged;
 begin
  VstHost.BlockSize := BlockSize * fOSFactor;
  with VstHost[0] do if Active then SetBlockSizeAndSampleRate(BlockSize * fOSFactor, SampleRate * fOSFactor);
@@ -376,62 +414,62 @@ begin
  TempBufferSize := fMaximumBlockSize * fOSFactor;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TOversampleTemplateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
   ch : Integer;
 begin
- for ch := 0 to Length(fOversampler) - 1
-  do fOversampler[ch].SampleRate := SampleRate;
+ for ch := 0 to Length(fOversample) - 1
+  do fOversample[ch].SampleRate := SampleRate;
 
  PluginSampleRateChanged;
 end;
 
-procedure TOversamplerTemplateDataModule.PluginSampleRateChanged;
+procedure TOversampleTemplateDataModule.PluginSampleRateChanged;
 begin
  with VstHost[0] do if Active then SetSampleRate(fOSFactor * SampleRate);
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleStartProcess(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleStartProcess(Sender: TObject);
 begin
  with VstHost[0] do if Active then StartProcess;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleStopProcess(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleStopProcess(Sender: TObject);
 begin
  with VstHost[0] do if Active then StopProcess;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleSuspend(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleSuspend(Sender: TObject);
 begin
  with VstHost[0] do if Active then MainsChanged(False);
 end;
 
-function TOversamplerTemplateDataModule.VSTModuleVendorSpecific(Sender: TObject;
+function TOversampleTemplateDataModule.VSTModuleVendorSpecific(Sender: TObject;
   const lArg1, lArg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
 begin
  result := 0;
  with VstHost[0] do if Active then result := VendorSpecific(lArg1, lArg2, ptrArg, floatArg);
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleProcessVarIO(Sender: TObject;
+procedure TOversampleTemplateDataModule.VSTModuleProcessVarIO(Sender: TObject;
   const varIo: TVstVariableIo);
 begin
  with VstHost[0] do if Active then ProcessVarIo(@varIo);
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleResume(Sender: TObject);
+procedure TOversampleTemplateDataModule.VSTModuleResume(Sender: TObject);
 begin
  with VstHost[0] do if Active then MainsChanged(True);
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleParameterChange(Sender: TObject;
+procedure TOversampleTemplateDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
   n, pnr : Integer;
 begin
  n   := 0;
- pnr := 3;
+ pnr := 4;
  while (Index >= pnr + VstHost[n].numParams) do
   begin
    Inc(pnr, VstHost[n].numParams);
@@ -442,13 +480,13 @@ begin
   then VstHost[n].Parameters[Index - pnr] := Value;
 end;
 
-procedure TOversamplerTemplateDataModule.CustomParameterDisplay(
+procedure TOversampleTemplateDataModule.CustomParameterDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   n, pnr : Integer;
 begin
  n   := 0;
- pnr := 3;
+ pnr := 4;
  while (Index >= pnr + VstHost[n].numParams) do
   begin
    Inc(pnr, VstHost[n].numParams);
@@ -459,13 +497,13 @@ begin
   then PreDefined := VstHost[n].GetParamDisplay(Index - pnr);
 end;
 
-procedure TOversamplerTemplateDataModule.CustomParameterLabel(
+procedure TOversampleTemplateDataModule.CustomParameterLabel(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   n, pnr : Integer;
 begin
  n   := 0;
- pnr := 3;
+ pnr := 4;
  while (Index >= pnr + VstHost[n].numParams) do
   begin
    Inc(pnr, VstHost[n].numParams);
@@ -476,7 +514,7 @@ begin
   then PreDefined := VstHost[n].GetParamLabel(Index - pnr);
 end;
 
-procedure TOversamplerTemplateDataModule.ParamOSFactorDisplay(
+procedure TOversampleTemplateDataModule.ParamOSFactorDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := IntToStr(round(Parameter[Index])) + 'x';
@@ -492,7 +530,7 @@ begin
  end;
 end;
 
-procedure TOversamplerTemplateDataModule.ParamOversamplingDisplay(
+procedure TOversampleTemplateDataModule.ParamOversamplingDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Boolean(round(Parameter[Index]))
@@ -500,41 +538,43 @@ begin
   else PreDefined := 'Off';
 end;
 
-procedure TOversamplerTemplateDataModule.ParamOversamplingChange(
+procedure TOversampleTemplateDataModule.ParamOversamplingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fOSActive := Boolean(round(Value));
  if fOSActive = True
   then SetOSFactor(round(ParameterByName['OS Factor']))
   else SetOSFactor(1);
- if EditorForm is TFmOversamplerter
-  then TFmOversamplerter(EditorForm).UpdateOverSampling;
+ if EditorForm is TFmOversampler
+  then TFmOversampler(EditorForm).UpdateOverSampling;
 end;
 
-procedure TOversamplerTemplateDataModule.ParamOSFactorChange(
+procedure TOversampleTemplateDataModule.ParamOSFactorChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if fOSActive = True
   then SetOSFactor(round(Value))
   else SetOSFactor(1);
 
- if EditorForm is TFmOversamplerter
-  then TFmOversamplerter(EditorForm).UpdateOSFactor;
+ if EditorForm is TFmOversampler
+  then TFmOversampler(EditorForm).UpdateOSFactor;
 end;
 
-procedure TOversamplerTemplateDataModule.SetOSFactor(NewOSFactor: Integer);
+procedure TOversampleTemplateDataModule.SetOSFactor(const NewOSFactor: Integer);
 var
-  ch, n : Integer;
+  ch : Integer;
 begin
+ while fSemaphore > 0 do sleep(1);
+ inc(fSemaphore);
  fOSFactor := NewOSFactor;
- for ch := 0 to Length(fOversampler) - 1
-  do fOversampler[ch].Factor := fOSFactor;
+ for ch := 0 to Length(fOversample) - 1
+  do fOversample[ch].Factor := fOSFactor;
  TempBufferSize := fMaximumBlockSize * fOSFactor;
  PluginSampleRateChanged;
+ dec(fSemaphore);
 end;
 
-procedure TOversamplerTemplateDataModule.SetTempBufferSize(
-  const Value: Integer);
+procedure TOversampleTemplateDataModule.SetTempBufferSize(const Value: Integer);
 var
   i : Integer;
 begin
@@ -554,13 +594,13 @@ begin
   end;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleProcessEvents(Sender: TObject;
+procedure TOversampleTemplateDataModule.VSTModuleProcessEvents(Sender: TObject;
   Events: PVstEvents);
 begin
  if VstHost[0].Active then VstHost[0].ProcessEvents(Events);
 end;
 
-procedure TOversamplerTemplateDataModule.CheckSampleFrames(const SampleFrames: Integer);
+procedure TOversampleTemplateDataModule.CheckSampleFrames(const SampleFrames: Integer);
 begin
  if SampleFrames > fMaximumBlockSize then
   begin
@@ -570,19 +610,21 @@ begin
   end;
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleProcess32OversamplerSingle(const Inputs,
+procedure TOversampleTemplateDataModule.VSTModuleProcess32OversampleSingle(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   ch, i  : Integer;
 begin
  CheckSampleFrames(SampleFrames);
 
+ while fSemaphore > 0 do;
+ inc(fSemaphore);
  if fOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch].Upsample32(Inputs[ch, i], @fIn32[ch, i * fOSFactor]);
+     do fOversample[ch].Upsample32(Inputs[ch, i], @fIn32[ch, i * fOSFactor]);
 
    // process serial chain
    if VstHost[0].Active
@@ -592,9 +634,9 @@ begin
       do Move(fIn32[ch, 0], fOut32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
 
    // downsample
-   for ch := 0 to numInputs - 1 do
+   for ch := 0 to numOutputs - 1 do
     for i := 0 to SampleFrames - 1
-     do Outputs[ch, i] := fOversampler[ch].Downsample32(@fOut32[ch, i * fOSFactor]);
+     do Outputs[ch, i] := fOversample[ch].Downsample32(@fOut32[ch, i * fOSFactor]);
   end
  else
   begin
@@ -604,21 +646,24 @@ begin
      for ch := 0 to min(numInputs, numOutputs) - 1
       do Move(Inputs[ch, 0], Outputs[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
   end;
+ dec(fSemaphore);
 end;
 
-procedure TOversamplerTemplateDataModule.VSTModuleProcess64OversamplerSingle(const Inputs,
+procedure TOversampleTemplateDataModule.VSTModuleProcess64OversampleSingle(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   ch, i  : Integer;
 begin
  CheckSampleFrames(SampleFrames);
 
+ while fSemaphore > 0 do;
+ inc(fSemaphore);
  if fOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch].Upsample64(Inputs[ch, i], @fIn64[ch, i * fOSFactor]);
+     do fOversample[ch].Upsample64(Inputs[ch, i], @fIn64[ch, i * fOSFactor]);
 
    // process serial chain
    if VstHost[0].Active
@@ -628,9 +673,9 @@ begin
       do Move(fIn64[ch, 0], fOut64[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
 
    // downsample
-   for ch := 0 to numInputs - 1 do
+   for ch := 0 to numOutputs - 1 do
     for i := 0 to SampleFrames - 1
-     do Outputs[ch, i] := fOversampler[ch].Downsample64(@fOut64[ch, i * fOSFactor]);
+     do Outputs[ch, i] := fOversample[ch].Downsample64(@fOut64[ch, i * fOSFactor]);
   end
  else
   if VstHost[0].Active
@@ -638,6 +683,7 @@ begin
    else
     for ch := 0 to min(numInputs, numOutputs) - 1
      do Move(Inputs[ch], Outputs[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+ dec(fSemaphore);
 end;
 
 end.

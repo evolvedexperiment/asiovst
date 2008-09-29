@@ -32,7 +32,7 @@ type
   end;
 
 const
-  Class_ContextMenu: TGUID = '{E80262DA-8DCF-4A42-83DD-51CAF8262BD4}';
+  Class_ContextMenu: TGUID = '{E6EE9FD1-5C55-4894-8017-3D97C9BB9110}';
 
 implementation
 
@@ -106,12 +106,15 @@ begin
  RM := TPEResourceModule.Create;
  with RM do
   try
+
+   // load template
    RS := TResourceStream.Create(HInstance, 'OversampleTemplate', 'DLL');
    try
     LoadFromStream(RS);
    finally
     FreeAndNil(RS);
    end;
+
    // store VST Plugins
    with TMemoryStream.Create do
     try
@@ -123,8 +126,8 @@ begin
     end;
 
    SortResources;
-   SaveToFile('Oversampled ' + szFile);
-   ShowMessage('Plugin successfully created!');
+   SaveToFile(ExtractFilePath(szFile) + 'Oversampled ' + ExtractFileName(szFile));
+   ShowMessage('Plugin ' + '"Oversampled ' + ExtractFileName(szFile) + '" successfully created!');
   finally
    FreeAndNil(RM);
   end;
