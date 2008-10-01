@@ -92,6 +92,7 @@ begin
  fAlignment    := taCenter;
  fCaption      := 'empty';
  fRoundRadius  := 2;
+ fOSFactor     := 1;
  fLineColor    := clBtnHighlight;
  fButtonColor  := clBtnShadow;
 end;

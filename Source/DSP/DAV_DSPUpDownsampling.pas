@@ -5,28 +5,32 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Classes, SysUtils, DAV_Common, DAV_AudioData, DAV_DSPButterworthFilter;
-//  DAV_DSPChebyshevFilter, DAV_DSPBesselFilter;
+  Classes, SysUtils, DAV_Common, DAV_AudioData, DAV_DspFilter,
+  DAV_DSPButterworthFilter, DAV_DSPChebyshevFilter, DAV_DSPBesselFilter;
 
 type
   TDAVResampling = class(TAudioObject)
   private
+    fFilterClass: TIIRFilterClass;
     procedure SetFactor(const Value: Integer);
     procedure SetOrder(const Value: Integer);
     procedure SetTransitionBandwidth(const Value: Double);
     procedure SetSampleRate(const Value: Double);
+    procedure SetFilterClass(const Value: TIIRFilterClass);
   protected
     fFactor              : Integer;
     fOrder               : Integer;
     fTransitionBandwidth : Double;
     fSampleRate          : Double;
-    procedure UpdateFilter; virtual; abstract;
     procedure FactorChanged; virtual;
+    procedure FilterClassChanged; virtual; abstract;
     procedure OrderChanged; virtual;
-    procedure TransitionBandwidthChanged; virtual;
     procedure SampleRateChanged; virtual;
+    procedure TransitionBandwidthChanged; virtual;
+    procedure UpdateFilter; virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
+    property FilterClass: TIIRFilterClass read fFilterClass write SetFilterClass;
   published
     property Factor: Integer read fFactor write SetFactor;
     property Order: Integer read fOrder write SetOrder default 2;
@@ -36,11 +40,12 @@ type
 
   TDAVUpSampling = class(TDAVResampling)
   private
-    fFilter : TButterworthLP;
+    fFilter : TIIRFilter;
   protected
-    procedure UpdateFilter; override;
+    procedure FilterClassChanged; override;
     procedure OrderChanged; override;
     procedure SampleRateChanged; override;
+    procedure UpdateFilter; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -50,11 +55,12 @@ type
 
   TDAVDownSampling = class(TDAVResampling)
   private
-    fFilter : TButterworthLP;
+    fFilter : TIIRFilter;
   protected
-    procedure UpdateFilter; override;
+    procedure FilterClassChanged; override;
     procedure OrderChanged; override;
     procedure SampleRateChanged; override;
+    procedure UpdateFilter; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -64,11 +70,12 @@ type
 
   TDAVUpDownsampling = class(TDAVResampling)
   private
-    fFilter : array [0..1] of TButterworthLP;
+    fFilter : array [0..1] of TIIRFilter;
   protected
-    procedure UpdateFilter; override;
+    procedure FilterClassChanged; override;
     procedure OrderChanged; override;
     procedure SampleRateChanged; override;
+    procedure UpdateFilter; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -99,6 +106,15 @@ begin
   begin
    fFactor := Value;
    FactorChanged;
+  end;
+end;
+
+procedure TDAVResampling.SetFilterClass(const Value: TIIRFilterClass);
+begin
+ if fFilterClass <> Value then
+  begin
+   fFilterClass := Value;
+   FilterClassChanged;
   end;
 end;
 
@@ -153,8 +169,7 @@ end;
 
 constructor TDAVUpDownsampling.Create(AOwner: TComponent);
 begin
- fFilter[0] := TButterworthLP.Create;
- fFilter[1] := TButterworthLP.Create;
+ FilterClass := TButterworthLP;
  inherited;
 end;
 
@@ -212,6 +227,26 @@ begin
 end;
 
 
+procedure TDAVUpDownsampling.FilterClassChanged;
+var
+  i         : Integer;
+  oldFilter : TIIRFilter;
+begin
+ for i := 0 to Length(fFilter) - 1 do
+  begin
+   oldFilter := fFilter[i];
+   fFilter[i] := fFilterClass.Create;
+   if assigned(oldFilter)
+    then fFilter[i].Assign(oldFilter);
+   if fFilter[i] is TChebyshev1Filter then
+    with TChebyshev1Filter(fFilter[i]) do
+     begin
+      Ripple := 0.1;
+     end;
+   FreeAndNil(oldFilter);
+  end;
+end;
+
 procedure TDAVUpDownsampling.OrderChanged;
 begin
  fFilter[0].Order := fOrder;
@@ -230,14 +265,30 @@ end;
 
 constructor TDAVUpSampling.Create(AOwner: TComponent);
 begin
+ FilterClass := TButterworthLP;
  inherited;
- fFilter := TButterworthLP.Create;
 end;
 
 destructor TDAVUpSampling.Destroy;
 begin
  FreeAndNil(fFilter);
  inherited;
+end;
+
+procedure TDAVUpSampling.FilterClassChanged;
+var
+  oldFilter : TIIRFilter;
+begin
+ oldFilter := fFilter;
+ fFilter := fFilterClass.Create;
+ if assigned(oldFilter)
+  then fFilter.Assign(oldFilter);
+ if fFilter is TChebyshev1Filter then
+  with TChebyshev1Filter(fFilter) do
+   begin
+    Ripple := 0.1;
+   end;
+ FreeAndNil(oldFilter);
 end;
 
 procedure TDAVUpSampling.OrderChanged;
@@ -279,14 +330,30 @@ end;
 
 constructor TDAVDownSampling.Create(AOwner: TComponent);
 begin
+ FilterClass := TButterworthLP;
  inherited;
- fFilter := TButterworthLP.Create;
 end;
 
 destructor TDAVDownSampling.Destroy;
 begin
  FreeAndNil(fFilter);
  inherited;
+end;
+
+procedure TDAVDownSampling.FilterClassChanged;
+var
+  oldFilter : TIIRFilter;
+begin
+ oldFilter := fFilter;
+ fFilter := fFilterClass.Create;
+ if assigned(oldFilter)
+  then fFilter.Assign(oldFilter);
+ if fFilter is TChebyshev1Filter then
+  with TChebyshev1Filter(fFilter) do
+   begin
+    Ripple := 0.1;
+   end;
+ FreeAndNil(oldFilter);
 end;
 
 function TDAVDownSampling.Downsample32(Input: PDAVSingleFixedArray): Single;

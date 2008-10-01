@@ -26,6 +26,7 @@ type
     procedure SetOrder(Value: Integer); virtual; abstract;
     function GetOrder: Integer; virtual; abstract;
     procedure CalculateCoefficients; virtual; abstract;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
     function ProcessSample(const Input:Double):Double; overload; virtual; abstract;
@@ -57,6 +58,7 @@ type
     property Order: Integer read GetOrder write SetOrder;
   end;
 
+  TIIRFilterClass = class of TIIRFilter;
   TIIRFilter = class(TFilter)
   private
   protected
@@ -65,6 +67,7 @@ type
     procedure SetW0; override;
     procedure SetBW(const value:Double); virtual;
     procedure SetAlpha; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     procedure GetIR(ImpulseResonse : TDAVSingleDynArray); overload; override;
@@ -187,6 +190,18 @@ uses Math;
 
 { TFilter }
 
+procedure TFilter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TFilter then
+  begin
+   TFilter(Dest).Frequency  := Frequency;
+   TFilter(Dest).Gain       := Gain;
+   TFilter(Dest).SampleRate := SampleRate;
+   TFilter(Dest).Order      := Order;
+  end
+ else inherited;
+end;
+
 constructor TFilter.Create;
 begin
  fGain := 0; fGainSpeed := 1;
@@ -248,6 +263,15 @@ begin
 end;
 
 { TIIRFilter }
+
+procedure TIIRFilter.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TIIRFilter then
+  begin
+   TIIRFilter(Dest).BandWidth := Bandwidth;
+  end;
+end;
 
 constructor TIIRFilter.Create;
 begin

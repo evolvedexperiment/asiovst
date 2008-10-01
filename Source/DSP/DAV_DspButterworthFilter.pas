@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.INC}
 
-uses DAV_DspFilter, DAV_Common;
+uses
+  DAV_DspFilter, DAV_Common;
 
 type
   TButterworthFilter = class(TIIRFilter)

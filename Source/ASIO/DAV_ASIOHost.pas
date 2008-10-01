@@ -525,6 +525,11 @@ implementation
 uses
   Registry, ComObj, Math {$IFDEF ASIOMixer}, DAVASIOChannelStrip {$ENDIF};
 
+resourcestring
+  RStrASIODriverFailed = 'ASIO driver failed!';
+  RStrASIONoBuffersCreated = 'ASIO buffers could not be created!';
+  RStrConverterTypeUnknown = 'Converter type unknown';
+
 const
   ASIODRV_DESC  = 'description';
   INPROC_SERVER = 'InprocServer32';
@@ -915,9 +920,10 @@ begin
    begin
     bufferSwitch := ASIOBufferSwitch;
     sampleRateDidChange := ASIOSampleRateDidChange;
-    ASIOMessage := ASIOMessage;
     bufferSwitchTimeInfo := ASIOBufferSwitchTimeInfo;
    end;
+  // do not add this to the above with statement!
+  FCallbacks.ASIOMessage := ASIOMessage;
 
   // set the driver itself to nil for now
   FDriver := nil;
@@ -974,7 +980,7 @@ begin
   do Result.Add(FASIOdriverlist[i].name);
 end;
 
-procedure TCustomASIOHostBasic.SetDriverName(const s:String);
+procedure TCustomASIOHostBasic.SetDriverName(const s: string);
 begin
  if FDriverList.IndexOf(s) > -1
   then DriverIndex := FDriverList.IndexOf(s);
@@ -1061,7 +1067,7 @@ begin
   ASIOSTInt32LSB18 : result := FromInt32LSB18;
   ASIOSTInt32LSB20 : result := FromInt32LSB20;
   ASIOSTInt32LSB24 : result := FromInt32LSB24;
-  else raise Exception.Create('Converter type unknown');
+  else raise Exception.Create(RStrConverterTypeUnknown);
  end;
 end;
 
@@ -1086,7 +1092,7 @@ begin
   ASIOSTInt32LSB18 : result := ToInt32LSB18;
   ASIOSTInt32LSB20 : result := ToInt32LSB20;
   ASIOSTInt32LSB24 : result := ToInt32LSB24;
-  else raise Exception.Create('Converter type unknown');
+  else raise Exception.Create(RStrConverterTypeUnknown);
  end;
 end;
 
@@ -1221,8 +1227,11 @@ begin
   end;
 {$ENDIF}
  end;
- if fDriver = nil then raise Exception.Create('ASIO Driver Failed!');
+ if fDriver = nil
+  then raise Exception.Create(RStrASIODriverFailed);
  FBuffersCreated := CreateBuffers;
+ if not FBuffersCreated
+  then raise Exception.Create(RStrASIONoBuffersCreated);
  if tmpActive and FBuffersCreated
   then Active := True;
 end;
@@ -2078,14 +2087,17 @@ var
 begin
  result := inherited CreateBuffers;
 
- SetLength(FOutputVolume, FOutputChannelCount);
- for i := 0 to FOutputChannelCount - 1 do FOutputVolume[i] := 1;
- {$IFDEF ASIOMixer} SetupMixer; {$ENDIF}
+ if result then
+  begin
+   SetLength(FOutputVolume, FOutputChannelCount);
+   for i := 0 to FOutputChannelCount - 1 do FOutputVolume[i] := 1;
+   {$IFDEF ASIOMixer} SetupMixer; {$ENDIF}
 
- if assigned(FAudioDataInput)
-  then FAudioDataInput.ChannelCount := FInputChannelCount;
- if assigned(FAudioDataOutput)
-  then FAudioDataOutput.ChannelCount := FOutputChannelCount;
+   if assigned(FAudioDataInput)
+    then FAudioDataInput.ChannelCount := FInputChannelCount;
+   if assigned(FAudioDataOutput)
+    then FAudioDataOutput.ChannelCount := FOutputChannelCount;
+  end;
 end;
 
 {$IFDEF ASIOMixer}

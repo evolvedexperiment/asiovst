@@ -22,6 +22,15 @@ type
     procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamPreFilterOrderValue(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamPreTransBWChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamCharChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamPostOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamPostFilterBWChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamPostCharChange(Sender: TObject; const Index: Integer; var Value: Single);
+
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleCreate(Sender: TObject);
@@ -47,17 +56,13 @@ type
     procedure VSTModuleStartProcess(Sender: TObject);
     procedure VSTModuleStopProcess(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOrderValue(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamPreTransBWChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditorKeyDown(Sender: TObject; var keyCode: TVstKeyCode);
     procedure VSTModuleEditorKeyUp(Sender: TObject; var keyCode: TVstKeyCode);
     procedure VSTModuleAfterProgramChange(Sender: TObject);
-    procedure ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamCharChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleOpen(Sender: TObject);
   private
-    fOversample       : array of TDAVUpDownsampling;
+    fUpsampler        : array of TDAVUpsampling;
+    fDownsampler      : array of TDAVDownsampling;
     fIn64, fOut64     : array of PDAVDoubleFixedArray;
     fIn32, fOut32     : array of PDAVSingleFixedArray;
     fBaseParCount     : Integer;
@@ -86,15 +91,16 @@ implementation
 
 uses
   Math, Dialogs, Controls, Types, OversampleTemplateGUI, DAV_VSTPrograms,
-  DAV_VSTModuleWithDsp;
+  DAV_VSTModuleWithDsp, DAV_DSPButterworthFilter, DAV_DSPChebyshevFilter,
+  DAV_DSPBesselFilter;
 
-function EnumNamesFunc(hModule:THandle; lpType, lpName:PChar; lParam: DWORD): Boolean; stdcall;
+function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
   Result := True;
   TStringList(lParam).Add(lpName);
 end;
 
-function EnumRCDATANamesFunc(hModule:THandle; lpType, lpName:PChar; lParam: DWORD): Boolean; stdcall;
+function EnumRCDATANamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
   Result := True;
   ShowMessage(lpName);
@@ -153,6 +159,9 @@ begin
     Parameter[1] := 1;
     Parameter[2] := 4;
     Parameter[3] := 99;
+    Parameter[4] := 1;
+    Parameter[5] := 4;
+    Parameter[6] := 99;
 
     for i := 0 to VstHost[0].numPrograms - 1 do
      with Programs.Add do
@@ -204,15 +213,28 @@ begin
     numInputs  := VstHost[0].numInputs;
     numOutputs := VstHost[0].numOutputs;
     PlugCategory := VstHost[0].PlugCategory;
+   end
+  else
+   begin
+    Parameter[0] := 0;
+    Parameter[1] := 1;
+    Parameter[2] := 4;
+    Parameter[3] := 99;
+    Parameter[4] := 1;
+    Parameter[5] := 4;
+    Parameter[6] := 99;
    end;
 
  finally
   FreeAndNil(RN);
  end;
 
- SetLength(fOversample, max(numInputs, numOutputs));
- for ch := 0 to Length(fOversample) - 1
-  do fOversample[ch] := TDAVUpDownsampling.Create(Self);
+ SetLength(fUpsampler, numInputs);
+ for ch := 0 to Length(fUpsampler) - 1
+  do fUpsampler[ch] := TDAVUpsampling.Create(Self);
+ SetLength(fDownsampler, numOutputs);
+ for ch := 0 to Length(fDownsampler) - 1
+  do fDownsampler[ch] := TDAVDownsampling.Create(Self);
 
  fOSFactor     := 1;
  fOSActive     := False;
@@ -241,8 +263,10 @@ begin
  for ch := 0 to Length(fIn64) - 1 do Dispose(fIn64[ch]);
  for ch := 0 to Length(fOut64) - 1 do Dispose(fOut64[ch]);
 
- for ch := 0 to Length(fOversample) - 1
-  do FreeAndNil(fOversample[ch]);
+ for ch := 0 to Length(fUpsampler) - 1
+  do FreeAndNil(fUpsampler[ch]);
+ for ch := 0 to Length(fDownsampler) - 1
+  do FreeAndNil(fDownsampler[ch]);
 
  VSTHost.VstPlugIns.Clear;
 end;
@@ -415,9 +439,8 @@ procedure TOversampleTemplateDataModule.ParamPreTransBWChange(
 var
   ch : Integer;
 begin
- for ch := 0 to Length(fOversample) - 1
-  do fOversample[ch].TransitionBandwidth := 0.01 * Value;
- Parameter[Index + 3] := Value;
+ for ch := 0 to Length(fUpsampler) - 1
+  do fUpsampler[ch].TransitionBandwidth := 0.01 * Value;
 end;
 
 procedure TOversampleTemplateDataModule.ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -425,14 +448,13 @@ begin
  PreDefined := ConvertOrderToString(round(Parameter[Index]));
 end;
 
-procedure TOversampleTemplateDataModule.ParamOrderValue(Sender: TObject;
+procedure TOversampleTemplateDataModule.ParamPreFilterOrderValue(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
   ch : Integer;
 begin
- for ch := 0 to Length(fOversample) - 1
-  do fOversample[ch].Order := round(Value);
- Parameter[Index + 3] := Value;
+ for ch := 0 to Length(fUpsampler) - 1
+  do fUpsampler[ch].Order := round(Value);
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleAfterProgramChange(Sender: TObject);
@@ -466,8 +488,10 @@ procedure TOversampleTemplateDataModule.VSTModuleSampleRateChange(Sender: TObjec
 var
   ch : Integer;
 begin
- for ch := 0 to Length(fOversample) - 1
-  do fOversample[ch].SampleRate := SampleRate;
+ for ch := 0 to Length(fUpsampler) - 1
+  do fUpsampler[ch].SampleRate := SampleRate;
+ for ch := 0 to Length(fDownsampler) - 1
+  do fDownsampler[ch].SampleRate := SampleRate;
 
  PluginSampleRateChanged;
 end;
@@ -580,14 +604,52 @@ begin
   end else result := -1;
 end;
 
-procedure TOversampleTemplateDataModule.ParamCharChange(Sender: TObject; const Index: Integer; var Value: Single);
+procedure TOversampleTemplateDataModule.ParamPostCharChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ch : Integer;
 begin
- Parameter[Index + 3] := Value;
+ for ch := 0 to Length(fUpsampler) - 1 do
+  case round(Value) of
+   4, 5, 6 : fUpsampler[ch].FilterClass := TChebyshev1LP;
+   else fUpsampler[ch].FilterClass := TButterworthLP;
+  end;
+end;
+
+procedure TOversampleTemplateDataModule.ParamPostFilterBWChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 0 to Length(fDownsampler) - 1
+  do fDownsampler[ch].TransitionBandwidth := 0.01 * Value;
+end;
+
+procedure TOversampleTemplateDataModule.ParamPostOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 0 to Length(fDownsampler) - 1
+  do fDownsampler[ch].Order := round(Value);
+end;
+
+procedure TOversampleTemplateDataModule.ParamCharChange(Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 0 to Length(fUpsampler) - 1 do
+  case round(Value) of
+   4, 5, 6 : fUpsampler[ch].FilterClass := TChebyshev1LP;
+   else fUpsampler[ch].FilterClass := TButterworthLP;
+  end;
 end;
 
 procedure TOversampleTemplateDataModule.ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := 'Butterworth';
+ case round(Parameter[Index]) of
+  4, 5, 6 : PreDefined := 'Chebyshev';
+  else PreDefined := 'Butterworth';
+ end;
 end;
 
 procedure TOversampleTemplateDataModule.ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -643,8 +705,10 @@ begin
  while fSemaphore > 0 do sleep(1);
  inc(fSemaphore);
  fOSFactor := NewOSFactor;
- for ch := 0 to Length(fOversample) - 1
-  do fOversample[ch].Factor := fOSFactor;
+ for ch := 0 to Length(fDownsampler) - 1
+  do fDownsampler[ch].Factor := fOSFactor;
+ for ch := 0 to Length(fUpsampler) - 1
+  do fUpsampler[ch].Factor := fOSFactor;
  TempBufferSize := fMaximumBlockSize * fOSFactor;
  PluginSampleRateChanged;
  dec(fSemaphore);
@@ -700,7 +764,7 @@ begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversample[ch].Upsample32(Inputs[ch, i], @fIn32[ch, i * fOSFactor]);
+     do fUpsampler[ch].Upsample32(Inputs[ch, i], @fIn32[ch, i * fOSFactor]);
 
    // process serial chain
    if VstHost[0].Active
@@ -712,7 +776,7 @@ begin
    // downsample
    for ch := 0 to numOutputs - 1 do
     for i := 0 to SampleFrames - 1
-     do Outputs[ch, i] := fOversample[ch].Downsample32(@fOut32[ch, i * fOSFactor]);
+     do Outputs[ch, i] := fDownsampler[ch].Downsample32(@fOut32[ch, i * fOSFactor]);
   end
  else
   begin
@@ -739,7 +803,7 @@ begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversample[ch].Upsample64(Inputs[ch, i], @fIn64[ch, i * fOSFactor]);
+     do fUpsampler[ch].Upsample64(Inputs[ch, i], @fIn64[ch, i * fOSFactor]);
 
    // process serial chain
    if VstHost[0].Active
@@ -751,7 +815,7 @@ begin
    // downsample
    for ch := 0 to numOutputs - 1 do
     for i := 0 to SampleFrames - 1
-     do Outputs[ch, i] := fOversample[ch].Downsample64(@fOut64[ch, i * fOSFactor]);
+     do Outputs[ch, i] := fDownsampler[ch].Downsample64(@fOut64[ch, i * fOSFactor]);
   end
  else
   if VstHost[0].Active

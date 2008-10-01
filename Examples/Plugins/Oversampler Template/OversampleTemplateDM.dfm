@@ -63,7 +63,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParamOrderValue
+      OnParameterChange = ParamPreFilterOrderValue
       OnCustomParameterDisplay = ParamOrderDisplay
     end
     item
@@ -110,6 +110,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParamPostOrderChange
       OnCustomParameterDisplay = ParamOrderDisplay
     end
     item
@@ -125,6 +126,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParamPostFilterBWChange
     end
     item
       Curve = ctLinear
@@ -139,6 +141,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParamPostCharChange
       OnCustomParameterDisplay = ParamCharacterDisplay
     end>
   OnOpen = VSTModuleOpen
@@ -170,7 +173,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   OnSuspend = VSTModuleSuspend
   OnVendorSpecific = VSTModuleVendorSpecific
   Left = 215
-  Top = 113
+  Top = 89
   Height = 150
   Width = 215
   object VstHost: TVstHost

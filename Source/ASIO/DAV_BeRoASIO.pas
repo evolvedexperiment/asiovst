@@ -66,7 +66,7 @@ type
 
 function CreateBeRoASIO(const AsioCLSID: TClsId;var ASIODriver: IBeRoASIO): Boolean; overload;
 function CreateBeRoASIO(const AsioCLSID: TClsId;var ASIODriver: TBeRoASIO): Boolean; overload;
-{$endif}
+{$ENDIF}
 
 IMPLEMENTATION
 
@@ -129,7 +129,7 @@ asm
  MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baInit]
 end;
-{$endif}
+{$ENDIF}
 
 procedure TBeRoASIO.GetDriverName(Name: PCHAR); assembler;
 {$IFDEF FPC}
@@ -148,7 +148,7 @@ asm
  MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetDriverName]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.GetDriverVersion: LongInt; assembler;
 {$IFDEF FPC}
@@ -165,7 +165,7 @@ asm
  MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetDriverVersion]
 end;
-{$endif}
+{$ENDIF}
 
 procedure TBeRoASIO.GetErrorMessage(ErrorString: PCHAR); assembler;
 {$IFDEF FPC}
@@ -184,7 +184,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetErrorMessage]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.Start: TASIOError; assembler;
 {$IFDEF FPC}
@@ -201,7 +201,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baStart]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.Stop: TASIOError; assembler;
 {$IFDEF FPC}
@@ -218,7 +218,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baStop]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.GetChannels(out NumInputChannels, NumoutputChannels: LongInt): TASIOError; assembler;
 {$IFDEF FPC}
@@ -239,7 +239,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetChannels]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.GetLatencies(out InputLatency, outputLatency:LongInt): TASIOError; assembler;
 {$IFDEF FPC}
@@ -260,7 +260,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetLatencies]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; assembler;
 {$IFDEF FPC}
@@ -285,7 +285,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetBufferSize]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; assembler;
 {$IFDEF FPC}
@@ -306,7 +306,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baCanSampleRate]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; assembler;
 {$IFDEF FPC}
@@ -325,7 +325,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetSampleRate]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; assembler;
 {$IFDEF FPC}
@@ -346,7 +346,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baSetSampleRate]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.GetClockSources(Clocks: PASIOClockSource;
   out NumSources: LongInt): TASIOError; assembler;
@@ -368,7 +368,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetClockSources]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.SetClockSource(Reference: LongInt): Hresult; assembler;
 {$IFDEF FPC}
@@ -387,7 +387,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baSetClockSource]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.GetSamplePosition(out SamplePosition: TASIOSamples;
   out TimeStamp: TASIOTimeStamp): TASIOError; assembler;
@@ -409,7 +409,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetSamplePosition]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.GetChannelInfo(out Info: TASIOChannelInfo): TASIOError; assembler;
 {$IFDEF FPC}
@@ -428,7 +428,7 @@ asm
  MOV EAX,DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetChannelInfo]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels,
   BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; assembler;
@@ -438,9 +438,9 @@ asm
  PUSH DWORD PTR BufferSize
  PUSH DWORD PTR NumChannels
  PUSH DWORD PTR BufferInfos
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baCreateBuffers]
 end;
 {$ELSE}
@@ -449,29 +449,29 @@ asm
  PUSH DWORD PTR BufferSize
  PUSH DWORD PTR NumChannels
  PUSH DWORD PTR BufferInfos
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baCreateBuffers]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.DisposeBuffers: TASIOError; assembler;
 {$IFDEF FPC}
 asm
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baDisposeBuffers]
 end;
 {$ELSE}
 asm
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baDisposeBuffers]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.ControlPanel: TASIOError; assembler;
 {$IFDEF FPC}
@@ -488,45 +488,45 @@ asm
  MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baControlPanel]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.Future(Selector: LongInt; Opt: Pointer): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Opt
  PUSH DWORD PTR Selector
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baFuture]
 end;
 {$ELSE}
 asm
  PUSH DWORD PTR Opt
  PUSH DWORD PTR Selector
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baFuture]
 end;
-{$endif}
+{$ENDIF}
 
 function TBeRoASIO.OutputReady: TASIOError; assembler;
 {$IFDEF FPC}
 asm
- MOV ECX,DWORD PTR SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baOutputReady]
 end;
 {$ELSE}
 asm
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baOutputReady]
 end;
-{$endif}
+{$ENDIF}
 
 function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver: IBeRoASIO): Boolean; overload;
 var
@@ -561,6 +561,6 @@ end;
 initialization
 
 finalization
-{$endif}
+{$ENDIF}
 
 end.
