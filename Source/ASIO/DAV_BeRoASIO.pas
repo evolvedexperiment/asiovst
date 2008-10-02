@@ -12,7 +12,7 @@ uses
 
 type
   IBeRoASIO = interface(IUnknown)
-    function Init(SysHandle: HWND): TASIOBool; stdcall;
+    function Init(SysHandle: HWND): TASIOError; stdcall;
     procedure GetDriverName(Name: PCHAR); stdcall;
     function GetDriverVersion: LongInt; stdcall;
     procedure GetErrorMessage(ErrorString: PCHAR); stdcall;
@@ -31,7 +31,7 @@ type
     function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
     function DisposeBuffers: TASIOError; stdcall;
     function ControlPanel: TASIOError; stdcall;
-    function Future(Selector: LongInt; Opt: Pointer):TASIOError; stdcall;
+    function Future(Selector: LongInt; Opt: Pointer): TASIOError; stdcall;
     function OutputReady: TASIOError; stdcall;
   end;
 
@@ -41,7 +41,7 @@ type
   public
     constructor Create(AsioCLSID: TClsID; var Okay: Boolean);
     destructor Destroy; override;
-    function Init(SysHandle: HWND): TASIOBool; stdcall;
+    function Init(SysHandle: HWND): TASIOError; stdcall;
     procedure GetDriverName(Name: PCHAR); stdcall;
     function GetDriverVersion: LongInt; stdcall;
     procedure GetErrorMessage(ErrorString: PCHAR); stdcall;
@@ -112,7 +112,7 @@ begin
  inherited Destroy;
 end;
 
-function TBeRoASIO.Init(SysHandle: HWND): TASIOBool; assembler;
+function TBeRoASIO.Init(SysHandle: HWND): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR SysHandle

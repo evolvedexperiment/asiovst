@@ -31,10 +31,10 @@ uses
 
 type
   IOpenASIO = interface(IUnknown)
-    function Init(sysHandle: HWnd): TASIOBool; stdcall;
+    function Init(sysHandle: HWnd): TASIOError; stdcall;
     procedure GetDriverName(name: PChar); stdcall;
     function GetDriverVersion: longint; stdcall;
-    procedure GetErrorMessage(errorString: PChar); stdcall;	
+    procedure GetErrorMessage(errorString: PChar); stdcall;
     function Start: TASIOError; stdcall;
     function Stop: TASIOError; stdcall;
     function GetChannels(out numInputChannels, numOutputChannels: longint): TASIOError; stdcall;
@@ -50,7 +50,7 @@ type
     function CreateBuffers(bufferInfos: PASIOBufferInfo; numChannels, bufferSize: longint; const callbacks: TASIOCallbacks): TASIOError; stdcall;
     function DisposeBuffers: TASIOError; stdcall;
     function ControlPanel: TASIOError; stdcall;
-    function Future(selector: longint; opt: pointer): TASIOError; stdcall;
+    function Future(Selector: longint; Optional: Pointer): TASIOError; stdcall;
     function OutputReady: TASIOError; stdcall;
   end;
 
@@ -64,7 +64,7 @@ implementation
 var CreateOpenAsio: function(const AsioCLSID: TClsId;
 var OpenASIODriver: IOpenASIO): HResult; stdcall;
 
-function OpenAsioLoaded: boolean;
+function OpenAsioLoaded: Boolean;
 begin
   Result := (OpenAsioDll <> 0);
 end;

@@ -19,7 +19,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LclType, LMessages, LResources,
   {$ELSE}Windows, Messages,{$ENDIF}
-  {$IFDEF OpenASIO} DAVOpenAsio {$ELSE} DAV_BeroASIO {$ENDIF},
+  {$IFDEF OpenASIO} DAV_OpenAsio {$ELSE} DAV_BeroASIO {$ENDIF},
   {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls, DAVASIOMixer,{$ENDIF}
   {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF} SysUtils, Classes, DAV_ASIO,
   DAV_ASIOConvert, DAV_ASIOGenerator, DAV_Common, DAV_AudioData;
@@ -1202,31 +1202,30 @@ begin
   end;
  end;
  if FDriverIndex >= 0 then
- begin
- {$IFDEF OpenASIO}
- try
-  if OpenASIOCreate(FASIOdriverlist[FDriverIndex].id, FDriver) then
-  begin
-   if assigned(FDriver) then
-    if not Succeeded(FDriver.Init(fHandle)) then
-     FDriver := nil;
-  end;
- except
- end;
-{$ELSE}
   try
-  if CreateBeRoASIO(FASIOdriverlist[FDriverIndex].id, FDriver) then
-  begin
-   {$IFNDEF FPC}
-   {$ENDIF}
-   if assigned(FDriver) then
-    if not Succeeded(FDriver.Init(fHandle)) then FDriver := nil;
-  end;
+   {$IFDEF OpenASIO}
+   if OpenASIOCreate(FASIOdriverlist[FDriverIndex].id, FDriver) then
+   {$ELSE}
+   if CreateBeRoASIO(FASIOdriverlist[FDriverIndex].id, FDriver) then
+    {$ENDIF}
+    try
+     if assigned(FDriver) then
+      case FDriver.Init(fHandle) of
+       ASE_NotPresent       : raise Exception.Create('Driver not present');
+       ASE_HWMalfunction    : raise Exception.Create('Hardware malfunctioning');
+       ASE_InvalidParameter : raise Exception.Create('input parameter invalid');
+       ASE_InvalidMode      : raise Exception.Create('hardware is in a bad mode or used in a bad mode');
+       ASE_SPNotAdvancing   : raise Exception.Create('hardware is not running when sample position is inquired');
+       ASE_NoClock          : raise Exception.Create('sample clock or rate cannot be determined or is not present');
+       ASE_NoMemory         : raise Exception.Create('not enough memory for completing the request');
+      end;
+    except
+     FDriver := nil;
+    end;
   except
    FDriver := nil;
   end;
-{$ENDIF}
- end;
+
  if fDriver = nil
   then raise Exception.Create(RStrASIODriverFailed);
  FBuffersCreated := CreateBuffers;
