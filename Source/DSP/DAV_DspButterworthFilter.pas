@@ -261,10 +261,10 @@ end;
 
 procedure TButterworthFilter.PushStates;
 begin
- SetLength(fStateStack,Length(fStateStack)+1);
- if Length(fStateStack)>1
-  then Move(fStateStack[0,0],fStateStack[1,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
- Move(fState[0],fStateStack[0,0],Length(fStateStack[0])*SizeOf(Double));
+ SetLength(fStateStack, Length(fStateStack) + 1);
+ if Length(fStateStack) > 1
+  then Move(fStateStack[0, 0], fStateStack[1, 0], (Length(fStateStack) - 1) * Length(fStateStack[0]) * SizeOf(Double));
+ Move(fState[0], fStateStack[0, 0], Length(fStateStack[0]) * SizeOf(Double));
 end;
 
 { TButterworthFilterLP }

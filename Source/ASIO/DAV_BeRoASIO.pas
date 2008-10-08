@@ -12,27 +12,27 @@ uses
 
 type
   IBeRoASIO = interface(IUnknown)
-    function Init(SysHandle: HWND): TASIOError; stdcall;
-    procedure GetDriverName(Name: PCHAR); stdcall;
-    function GetDriverVersion: LongInt; stdcall;
-    procedure GetErrorMessage(ErrorString: PCHAR); stdcall;
-    function Start: TASIOError; stdcall;
-    function Stop: TASIOError; stdcall;
-    function GetChannels(out NumInputChannels, NumoutputChannels: LongInt): TASIOError; stdcall;
-    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
-    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function GetClockSources(Clocks: PASIOClockSource;out NumSources: LongInt): TASIOError; stdcall;
-    function SetClockSource(Reference: LongInt): Hresult; stdcall;
-    function GetSamplePosition(out SamplePosition: TASIOSamples;out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
-    function GetChannelInfo(out Info: TASIOChannelInfo): TASIOError; stdcall;
+    function ControlPanel: TASIOError; stdcall;
     function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
     function DisposeBuffers: TASIOError; stdcall;
-    function ControlPanel: TASIOError; stdcall;
     function Future(Selector: LongInt; Opt: Pointer): TASIOError; stdcall;
+    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
+    function GetChannelInfo(out Info: TASIOChannelInfo): TASIOError; stdcall;
+    function GetChannels(out NumInputChannels, NumoutputChannels: LongInt): TASIOError; stdcall;
+    function GetClockSources(Clocks: PASIOClockSource;out NumSources: LongInt): TASIOError; stdcall;
+    function GetDriverVersion: LongInt; stdcall;
+    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
+    function GetSamplePosition(out SamplePosition: TASIOSamples;out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
+    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function Init(SysHandle: HWND): TASIOError; stdcall;
     function OutputReady: TASIOError; stdcall;
+    function SetClockSource(Reference: LongInt): Hresult; stdcall;
+    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function Start: TASIOError; stdcall;
+    function Stop: TASIOError; stdcall;
+    procedure GetDriverName(Name: PCHAR); stdcall;
+    procedure GetErrorMessage(ErrorString: PCHAR); stdcall;
   end;
 
   TBeRoASIO = class(TInterfacedObject, IBeRoASIO)
@@ -41,27 +41,27 @@ type
   public
     constructor Create(AsioCLSID: TClsID; var Okay: Boolean);
     destructor Destroy; override;
-    function Init(SysHandle: HWND): TASIOError; stdcall;
-    procedure GetDriverName(Name: PCHAR); stdcall;
-    function GetDriverVersion: LongInt; stdcall;
-    procedure GetErrorMessage(ErrorString: PCHAR); stdcall;
-    function Start: TASIOError; stdcall;
-    function Stop: TASIOError; stdcall;
-    function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; stdcall;
-    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
-    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; stdcall;
-    function SetClockSource(Reference: LongInt): Hresult; stdcall;
-    function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
-    function GetChannelInfo(out Info: TASIOChannelInfo): TASIOError; stdcall;
+    function ControlPanel: TASIOError; stdcall;
     function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
     function DisposeBuffers: TASIOError; stdcall;
-    function ControlPanel: TASIOError; stdcall;
     function Future(Selector: LongInt; Opt: Pointer): TASIOError; stdcall;
+    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
+    function GetChannelInfo(out Info: TASIOChannelInfo): TASIOError; stdcall;
+    function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; stdcall;
+    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; stdcall;
+    function GetDriverVersion: LongInt; stdcall;
+    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
+    function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
+    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function Init(SysHandle: HWND): TASIOError; stdcall;
     function OutputReady: TASIOError; stdcall;
+    function SetClockSource(Reference: LongInt): Hresult; stdcall;
+    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function Start: TASIOError; stdcall;
+    function Stop: TASIOError; stdcall;
+    procedure GetDriverName(Name: PCHAR); stdcall;
+    procedure GetErrorMessage(ErrorString: PCHAR); stdcall;
   end;
 
 function CreateBeRoASIO(const AsioCLSID: TClsId;var ASIODriver: IBeRoASIO): Boolean; overload;

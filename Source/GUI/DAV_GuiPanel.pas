@@ -298,7 +298,10 @@ begin
    Pen.Color   := fLineColor;
 
    case fRoundRadius of
-    0, 1 : FillRect(ClipRect);
+    0, 1 : begin
+            Brush.Color := fLineColor;
+            FrameRect(ClipRect);
+           end;
        2 : begin
             with ClipRect do
              Polygon([Point(Left  + 1, Bottom - 2), Point(Left     , Bottom - 3),

@@ -305,7 +305,8 @@ end;
 
 procedure TDAVUpSampling.UpdateFilter;
 begin
- fFilter.Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
+ if assigned(fFilter)
+  then fFilter.Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
 end;
 
 procedure TDAVUpSampling.Upsample32(Input: Single; Output: PDAVSingleFixedArray);

@@ -20,9 +20,9 @@ uses
   {$IFDEF FPC}LCLIntf, LclType, LMessages, LResources,
   {$ELSE}Windows, Messages,{$ENDIF}
   {$IFDEF OpenASIO} DAV_OpenAsio {$ELSE} DAV_BeroASIO {$ENDIF},
-  {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, Controls, DAVASIOMixer,{$ENDIF}
-  {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF} SysUtils, Classes, DAV_ASIO,
-  DAV_ASIOConvert, DAV_ASIOGenerator, DAV_Common, DAV_AudioData;
+  {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, DAVASIOMixer,{$ENDIF}
+  {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF} SysUtils, Classes, Controls,
+  DAV_ASIO, DAV_ASIOConvert, DAV_ASIOGenerator, DAV_Common, DAV_AudioData;
 
 const
   // private message
@@ -128,6 +128,7 @@ type
     function GetOutConverter(ConverterType: TASIOSampleType): TOutConverter;
   protected
     FHandle               : THandle;
+    FHandleOwned          : Boolean;
     FASIOTime             : TASIOTimeSub;
     FBuffersCreated       : Boolean;
     FOnCreate             : TNotifyEvent;
@@ -901,16 +902,23 @@ end;
 
 constructor TCustomASIOHostBasic.Create(AOwner: TComponent);
 begin
-//  if AOwner is TForm then Handy := TForm(AOwner).Handle else Handy := Application.Handle;
-  fHandle := AllocateHWnd(WndProc);
+  FHandleOwned := False;
+  if AOwner is TWinControl
+   then fHandle := TWinControl(AOwner).Handle
+   else
+    begin
+     fHandle := AllocateHWnd(WndProc);
+     FHandleOwned := True;
+    end;
+
   //if theHost <> nil then
-  theHost := Self;
-  FUnAlignedBuffer := nil;
-  FInputBuffer := nil;
-  FOutputBuffer := nil;
-  FSampleRate := 44100;
-  FASIOTime := TASIOTimeSub.Create;
-  FDriverList := GetDriverList;
+  theHost              := Self;
+  FUnAlignedBuffer     := nil;
+  FInputBuffer         := nil;
+  FOutputBuffer        := nil;
+  FSampleRate          := 44100;
+  FASIOTime            := TASIOTimeSub.Create;
+  FDriverList          := GetDriverList;
   FASIOSelectorSupport := [assEngineVersion, assResetRequest,
                            assBufferSizeChange, assResyncRequest,
                            assLatenciesChanged];
@@ -941,7 +949,8 @@ begin
   FCallbacks.bufferSwitchTimeInfo := nil;
   if Active then Active := False;
   CloseDriver;
-  DeallocateHWnd(fHandle);
+  if FHandleOwned
+   then DeallocateHWnd(fHandle);
   SetLength(FASIOdriverlist, 0);
   SetLength(FInConverters, 0);
   SetLength(FOutConverters, 0);
@@ -1211,6 +1220,7 @@ begin
     try
      if assigned(FDriver) then
       case FDriver.Init(fHandle) of
+       0                    : FDriver := nil; // equals to false here
        ASE_NotPresent       : raise Exception.Create('Driver not present');
        ASE_HWMalfunction    : raise Exception.Create('Hardware malfunctioning');
        ASE_InvalidParameter : raise Exception.Create('input parameter invalid');

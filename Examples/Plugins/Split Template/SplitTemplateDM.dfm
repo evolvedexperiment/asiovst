@@ -51,8 +51,8 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 10.000000000000000000
-      MaxInteger = 10
+      Max = 12.000000000000000000
+      MaxInteger = 12
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000

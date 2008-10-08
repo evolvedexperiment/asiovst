@@ -200,6 +200,7 @@ type
     property EditorNeedUpdate: Boolean read FEditorNeedUpdate write FEditorNeedUpdate;
 
     property Flags: TEffFlags read GetPluginFlags write SetPluginFlags default [effFlagsCanReplacing];
+    property CanDo[canDo: string]: Integer read GetCanHostDo;
 
     property SampleRate: Single read fSampleRate write SetSampleRate;
     property numInputs: Integer read FEffect.numInputs write SetNumInputs default 2;
@@ -361,7 +362,7 @@ var
 begin
  inherited;
  hv := (HostProduct <> 'WaveLab') {or (shortstring(temp)<>'energyXT')};
- if hv then hv := (canHostDo('shellCategory') = 1);
+ if hv then hv := (CanDo['shellCategory'] = 1);
 
  if (PlugCategory = vpcShell) and hv then
   begin
@@ -1191,12 +1192,11 @@ begin
    Getmem(Text, 64);
    try
     if GetHostProductString(Text) then
-      begin
-       SetLength(Result, StrLen(Text));
-       StrCopy(@Result[1], Text);
-      end
-     else Result := 'Unknown';
-    if Result = 'Unknown' then
+     begin
+      SetLength(Result, StrLen(Text));
+      StrCopy(@Result[1], Text);
+     end
+    else Result := 'Unknown';
    finally
     FHostProduct := Result;
     Dispose(Text);

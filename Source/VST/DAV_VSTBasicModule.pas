@@ -60,7 +60,7 @@ type
     function  GetHostProductString(Text: pchar): Boolean; virtual; // fills <Text> with a string with product name (max 64 char)
     function  GetHostVendorVersion: Integer; virtual;  // returns vendor-specific version
     function  HostVendorSpecific(lArg1, lArg2: Integer; ptrArg: pointer; floatArg: Single): Integer; virtual;  // no definition
-    function  CanHostDo(Text: pchar): Integer; virtual;  // see 'hostCanDos' in audioeffectx.cpp returns 0: don't know (default), 1: yes, -1: no
+    function  GetCanHostDo(Text: string): Integer; virtual;  // see 'hostCanDos' in audioeffectx.cpp returns 0: don't know (default), 1: yes, -1: no
     function  GetHostLanguage: Integer; virtual;   // returns VstHostLanguage
     function  OpenWindow(aWindow: PVstWindow): pointer; virtual;  // create new window
     function  CloseWindow(aWindow: PVstWindow): Boolean; virtual; // close a newly created window
@@ -470,11 +470,12 @@ begin
     Result := FAudioMaster(@FEffect, audioMasterVendorSpecific, lArg1, lArg2, ptrArg, floatArg);
 end;
 
-function TBasicVSTModule.CanHostDo(Text: pchar): Integer;
+function TBasicVSTModule.GetCanHostDo(Text: string): Integer;
 begin
   Result := 0;
+  Text := Text + '#0';
   if Assigned(FAudioMaster) then
-    Result := FAudioMaster(@FEffect, audioMasterCanDo, 0, 0, Text, 0);
+    Result := FAudioMaster(@FEffect, audioMasterCanDo, 0, 0, @Text[1], 0);
 end;
 
 function TBasicVSTModule.GetHostLanguage: Integer;
