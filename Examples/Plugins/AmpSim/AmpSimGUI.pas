@@ -4,39 +4,43 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, 
-  StdCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiSelectBox;
+  StdCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiSelectBox,
+  DAV_GuiLED, ExtCtrls, DAV_GuiPanel;
 
 type
   TFmCombo = class(TForm)
-    DialBias: TGuiDial;
-    DialDrive: TGuiDial;
-    DialFrequency: TGuiDial;
-    DialOutput: TGuiDial;
-    DialResonance: TGuiDial;
-    LbBias: TGuiLabel;
-    LbBiasValue: TLabel;
-    LbDrive: TGuiLabel;
-    LbDriveValue: TLabel;
-    LbFrequency: TGuiLabel;
-    LbFrequencyValue: TLabel;
     LbModel: TGuiLabel;
-    LbOutput: TGuiLabel;
-    LbOutputValue: TLabel;
-    LbResonance: TGuiLabel;
-    LbResonanceValue: TLabel;
-    RBMono: TRadioButton;
-    RBStereo: TRadioButton;
     SBModel: TGuiSelectBox;
+    GuiLED: TGuiLED;
+    LbStereo: TGuiLabel;
+    GuiPanel1: TGuiPanel;
+    LbResonanceValue: TLabel;
+    LbFrequencyValue: TLabel;
+    LbOutputValue: TLabel;
+    LbBiasValue: TLabel;
+    LbDriveValue: TLabel;
+    DialDrive: TGuiDial;
+    LbDrive: TGuiLabel;
+    DialBias: TGuiDial;
+    LbBias: TGuiLabel;
+    DialOutput: TGuiDial;
+    DialFrequency: TGuiDial;
+    DialResonance: TGuiDial;
+    LbOutput: TGuiLabel;
+    LbFrequency: TGuiLabel;
+    LbResonance: TGuiLabel;
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialDriveChange(Sender: TObject);
     procedure DialBiasChange(Sender: TObject);
     procedure DialOutputChange(Sender: TObject);
     procedure DialFreqChange(Sender: TObject);
     procedure DialResoChange(Sender: TObject);
-    procedure RBMonoClick(Sender: TObject);
-    procedure RBStereoClick(Sender: TObject);
     procedure SBModelChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure LbStereoClick(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+  private
+    FBackground : TBitmap
   end;
 
 var
@@ -51,7 +55,12 @@ uses
 
 procedure TFmCombo.FormCreate(Sender: TObject);
 var
-  RS  : TResourceStream;
+  RS     : TResourceStream;
+  x, y   : Integer;
+  s      : array[0..1] of Single;
+  h, hr  : Single;
+  Line   : PRGB24Array;
+
 begin
  RS := TResourceStream.Create(hInstance, 'AmpKnob', 'BMP');
  try
@@ -63,24 +72,43 @@ begin
  finally
   RS.Free;
  end;
+
+ // Create Background Image
+ FBackground := TBitmap.Create;
+ with FBackground do
+  begin
+   PixelFormat := pf24bit;
+   Width := Self.Width;
+   Height := Self.Height;
+   s[0] := 0;
+   s[1] := 0;
+   hr   := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     Line := Scanline[y];
+     h    := 0.1 * (1 - sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.06 * random - 0.03;
+       s[0] := s[1];
+
+       Line[x].B := round($40 - $10 * (s[1] - h));
+       Line[x].G := round($80 - $20 * (s[1] - h));
+       Line[x].R := round($80 - $20 * (s[1] - h));
+      end;
+    end;
+  end;
+end;
+
+procedure TFmCombo.FormPaint(Sender: TObject);
+begin
+ Canvas.Draw(0, 0, FBackground);
 end;
 
 procedure TFmCombo.SBModelChange(Sender: TObject);
 begin
  Assert(Owner is TComboDataModule);
  TComboDataModule(Owner).Parameter[0] := SBModel.ItemIndex;
-end;
-
-procedure TFmCombo.RBMonoClick(Sender: TObject);
-begin
- Assert(Owner is TComboDataModule);
- TComboDataModule(Owner).Parameter[4] := 0;
-end;
-
-procedure TFmCombo.RBStereoClick(Sender: TObject);
-begin
- Assert(Owner is TComboDataModule);
- TComboDataModule(Owner).Parameter[4] := 1;
 end;
 
 procedure TFmCombo.DialBiasChange(Sender: TObject);
@@ -119,6 +147,15 @@ begin
  with TComboDataModule(Owner) do
   begin
    SBModel.ItemIndex := round(Parameter[0]);
+  end;
+end;
+
+procedure TFmCombo.LbStereoClick(Sender: TObject);
+begin
+ Assert(Owner is TComboDataModule);
+ with TComboDataModule(Owner) do
+  begin
+   Parameter[4] := 1 - Parameter[4];
   end;
 end;
 

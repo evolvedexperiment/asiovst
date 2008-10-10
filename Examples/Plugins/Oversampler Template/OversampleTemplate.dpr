@@ -1,8 +1,6 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library OversampleTemplate;
 
-{$R 'Test.res' 'Test.rc'}
-
 uses
   FastMM4,
   madExcept,

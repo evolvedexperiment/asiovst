@@ -159,18 +159,23 @@ begin
   // Render the data referenced by the IDataObject pointer to an HGLOBAL
   // storage medium in CF_HDROP format.
   Result := lpdobj.GetData(fe, medium);
-  if Failed(Result) then
-    Exit;
+  try
+   if Failed(Result) then
+     Exit;
 
-  // If only one file is selected, retrieve the file name and store it in
-  // szFile. Otherwise fail the call.
-  if DragQueryFile(medium.hGlobal, $FFFFFFFF, nil, 0) = 1 then
-   begin
-    DragQueryFile(medium.hGlobal, 0, szFile, SizeOf(szFile));
-    Result := NOERROR;
-   end
-  else Result := E_FAIL;
-  ReleaseStgMedium(medium);
+   // If only one file is selected, retrieve the file name and store it in
+   // szFile. Otherwise fail the call.
+   if DragQueryFile(medium.hGlobal, $FFFFFFFF, nil, 0) = 1 then
+    try
+     DragQueryFile(medium.hGlobal, 0, szFile, SizeOf(szFile));
+     Result := NOERROR;
+    except
+     Result := E_FAIL;
+    end
+   else Result := E_FAIL;
+  finally
+   ReleaseStgMedium(medium);
+  end;
 end;
 
 { IContextMenu }

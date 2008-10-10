@@ -421,7 +421,9 @@ end;
 
 procedure TChebyshevWaveshaper.SetLevel(Harmonic: Integer; const Value: Double);
 begin
- fGains[Harmonic] := sign(fGains[Harmonic]) * dB_to_Amp(Value);
+ if fGains[Harmonic] < 0
+  then Gain[Harmonic] := -dB_to_Amp(Value)
+  else Gain[Harmonic] :=  dB_to_Amp(Value);
 end;
 
 procedure TChebyshevWaveshaper.SetOrder(Value: Integer);

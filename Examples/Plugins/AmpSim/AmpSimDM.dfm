@@ -92,9 +92,9 @@ object ComboDataModule: TComboDataModule
       DisplayName = 'HPF Frequency'
       LargeStepFloat = 10.000000000000000000
       Max = 20000.000000000000000000
-      MaxInteger = 200000
-      Min = 20.000000000000000000
-      MinInteger = 20
+      MaxInteger = 20000
+      Min = 2.000000000000000000
+      MinInteger = 2
       ShortLabel = 'hpfFreq'
       SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
@@ -116,10 +116,10 @@ object ComboDataModule: TComboDataModule
     end>
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
-  OnSuspend = VSTModuleSuspend
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
+  OnSuspend = VSTModuleSuspend
   Left = 218
   Top = 81
   Height = 150

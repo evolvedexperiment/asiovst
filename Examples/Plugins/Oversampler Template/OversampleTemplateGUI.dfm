@@ -17,6 +17,9 @@ object FmOversampler: TFmOversampler
   OnPaint = FormPaint
   OnResize = FormResize
   OnShow = FormShow
+  DesignSize = (
+    187
+    54)
   PixelsPerInch = 96
   TextHeight = 13
   object ShBorder: TShape
@@ -24,6 +27,7 @@ object FmOversampler: TFmOversampler
     Top = 30
     Width = 33
     Height = 16
+    Anchors = []
     Brush.Style = bsClear
   end
   object PnControl: TGuiPanel
@@ -32,12 +36,14 @@ object FmOversampler: TFmOversampler
     Width = 187
     Height = 24
     Align = alTop
+    Anchors = []
     BorderVisible = False
     Caption = 'PnControl'
     Color = 7701642
     LineColor = clBlack
     Linewidth = 0
     PanelColor = 7701642
+    PopupMenu = PUSettings
     Radius = 0
     TabOrder = 0
     UseDockManager = True
@@ -112,5 +118,13 @@ object FmOversampler: TFmOversampler
     BevelOuter = bvNone
     Color = 2830643
     TabOrder = 1
+  end
+  object PUSettings: TPopupMenu
+    Left = 120
+    Top = 8
+    object MIAllowResizing: TMenuItem
+      Caption = 'Allow Resizing'
+      OnClick = MIAllowResizingClick
+    end
   end
 end

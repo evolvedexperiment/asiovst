@@ -83,9 +83,11 @@ type
 
   THostApp = (haUnknown, haSONAR, haEnergyXT, haProject5,
     haFruityLoops, haCantabile, haSaviHost, haMelodyne, haCubase,
-    haTracktion, haVSTPluginAnalyzer);
+    haTracktion, haSamplitude, haVSTPluginAnalyzer);
 
   TVstWindowSizer = class(TObject)
+  private
+    procedure ConstraintsChanged(Sender: TObject);
   protected
     FAnchoredWindows     : TObjectList; // AnchoredWindow
     FEditorInfo          : TWindowInfo;
@@ -93,8 +95,6 @@ type
     FFrameHwnd           : HWND;
     FHostApp             : THostApp;
     FHostCanResize       : Boolean;
-    FMaxSize             : TSize;
-    FMinSize             : TSize;
     FPreventChildSIze    : Integer;
     FRect                : TRect;
     FResizeFlags         : TResizeFlags;
@@ -103,8 +103,7 @@ type
     FStartMouseOffset    : TPoint;
     FTrackingInitialized : Boolean;
     FWindowsAdjust       : TObjectList; // WindowInfo
-    function GetMaxSize: TSize;
-    function GetMinSize: TSize;
+    FConstraints         : TSizeConstraints;
     function HitTest: Integer;
     function OnButtonDown: Boolean;
     function OnButtonUp: Boolean;
@@ -116,8 +115,6 @@ type
     procedure FixupWindowSize;
     procedure ScreenRectToClient(hWindow: HWND; var Rect: TRect);
     procedure SetEffect(Effect: TCustomVSTModule);
-    procedure SetMaxSizeInt(const Value: TSize);
-    procedure SetMinSizeInt(const Value: TSize);
     procedure SetupTracking;
     procedure TrackParentWindowSize(parentFrame: HWND);
     procedure UpdateAnchoredWindow(Anchored: TAnchoredWindow);
@@ -128,13 +125,10 @@ type
     function GetCurrentSize: TSize;
     procedure SetAnchoredWindow(hWindow: HWND; Anchor: TAnchors);
     procedure SetCurrentSize(Width, Height: Integer);
-    procedure SetMaxSize(maxWidth, maxHeight: Integer);
-    procedure SetMinSize(minWidth, minHeight: Integer);
     procedure SetEditorHwnd(HwndEditor: HWND);
   published
-    property MaxSize: TSize read GetMaxSize write SetMaxSizeInt;
-    property MinSize: TSize read GetMinSize write SetMinSizeInt;
     property Effect: TCustomVSTModule read FEffect write SetEffect;
+    property Constraints: TSizeConstraints read FConstraints;
   end;
 
 function GetSizer(hWindow: HWND): TVstWindowSizer;
@@ -161,6 +155,7 @@ begin
   // replacement for the vector in the original c++ code
   FWindowsAdjust := TObjectList.Create(True); // WindowInfo
   FAnchoredWindows := TObjectList.Create(True); // AnchoredWindow
+  FConstraints := TSizeConstraints.Create(nil);
 
   FFrameHwnd := 0;
   FEditorInfo := nil;
@@ -187,15 +182,13 @@ begin
     bottom := 600;
    end;
 
-  with FMinSize do
+  with FConstraints do
    begin
-    cx := 200;
-    cy := 100;
-   end;
-  with FMaxSize do
-   begin
-    cx := 1600;
-    cy := 1200;
+    MinWidth  := 200;
+    MinHeight := 100;
+    MaxWidth  := 1600;
+    MaxHeight := 1200;
+    OnChange := ConstraintsChanged;
    end;
 end;
 
@@ -206,11 +199,20 @@ end;
 destructor TVstWindowSizer.Destroy;
 begin
  EndTracking(0, True);
+ FreeAndNil(FConstraints);
  FreeAndNil(FWindowsAdjust);
  FreeAndNil(FAnchoredWindows);
  inherited;
 end;
 
+
+//----------------------------------------------------------------------
+// This must be called before anything else is called
+//----------------------------------------------------------------------
+procedure TVstWindowSizer.ConstraintsChanged(Sender: TObject);
+begin
+ // nothing here to do yet...
+end;
 
 //----------------------------------------------------------------------
 // This must be called before anything else is called
@@ -269,35 +271,6 @@ end;
 
 
 //----------------------------------------------------------------------
-// Specify the minimum size that the window can be sized to
-//----------------------------------------------------------------------
-procedure TVstWindowSizer.SetMinSize(minWidth, minHeight: Integer);
-begin
-  FMinSize.cx := minWidth;
-  FMinSize.cy := minHeight;
-end;
-
-procedure TVstWindowSizer.SetMinSizeInt(const Value: TSize);
-begin
-  FMinSize := Value;
-end;
-
-//----------------------------------------------------------------------
-// Specify the maximum size that the window can be sized to
-//----------------------------------------------------------------------
-procedure TVstWindowSizer.SetMaxSize(maxWidth, maxHeight: Integer);
-begin
-  FMaxSize.cx := maxWidth;
-  FMaxSize.cy := maxHeight;
-end;
-
-procedure TVstWindowSizer.SetMaxSizeInt(const Value: TSize);
-begin
-  FMaxSize := Value;
-end;
-
-
-//----------------------------------------------------------------------
 // Get the current size
 //----------------------------------------------------------------------
 function TVstWindowSizer.GetCurrentSize: TSize;
@@ -338,23 +311,6 @@ begin
    end;
 end;
 
-
-//----------------------------------------------------------------------
-// Get the min size
-//----------------------------------------------------------------------
-function TVstWindowSizer.GetMinSize: TSize;
-begin
-  Result := FMinSize;
-end;
-
-//----------------------------------------------------------------------
-// Get the max size
-//----------------------------------------------------------------------
-
-function TVstWindowSizer.GetMaxSize: TSize;
-begin
-  Result := FMaxSize;
-end;
 
 //----------------------------------------------------------------------
 // Add a child window that will be automatically moved/sized during the
@@ -558,18 +514,16 @@ begin
   if all then
    begin
     if FEditorInfo <> nil then
-      if (IsWindow(FEditorInfo.hWindow)) and (FEditorInfo.prevProc <> nil) then
-        SetWindowLong(FEditorInfo.hWindow, GWL_WNDPROC,
-          Integer(FEditorInfo.prevProc)); // Restore the previous window proc
+     if (IsWindow(FEditorInfo.hWindow)) and (FEditorInfo.prevProc <> nil)
+      then SetWindowLong(FEditorInfo.hWindow, GWL_WNDPROC, Integer(FEditorInfo.prevProc)); // Restore the previous window proc
 
     for idx := 0 to FWindowsAdjust.Count - 1 do
       if (IsWindow(TWindowInfo(FWindowsAdjust.Items[idx]).hWindow)) and
-        (TWindowInfo(FWindowsAdjust.items[idx]).prevProc <> nil) then
-        SetWindowLong(TWindowInfo(FWindowsAdjust.Items[idx]).hWindow,
-          GWL_WNDPROC, Integer(TWindowInfo(FWindowsAdjust.Items[idx]).prevProc));
-// Restore the previous window proc
+        (TWindowInfo(FWindowsAdjust.items[idx]).prevProc <> nil)
+       then SetWindowLong(TWindowInfo(FWindowsAdjust.Items[idx]).hWindow, GWL_WNDPROC, Integer(TWindowInfo(FWindowsAdjust.Items[idx]).prevProc));
+    // Restore the previous window proc
 
-      // We no longer need to resize anything
+    // We no longer need to resize anything
     FWindowsAdjust.Clear;
     FAnchoredWindows.Clear;
 
@@ -598,7 +552,7 @@ begin
    begin
     if (FEditorInfo <> nil) and (FEditorInfo.hWindow = hWindow) then
      begin
-          // Restore the previous window proc
+      // Restore the previous window proc
       if (IsWindow(FEditorInfo.hWindow)) and
         (FEditorInfo.prevProc <> nil) then
         SetWindowLong(FEditorInfo.hWindow, GWL_WNDPROC,
@@ -609,9 +563,9 @@ begin
           (TWindowInfo(FWindowsAdjust.items[idx]).prevProc <> nil) then
           SetWindowLong(TWindowInfo(FWindowsAdjust.Items[idx]).hWindow,
             GWL_WNDPROC, Integer(TWindowInfo(FWindowsAdjust.Items[idx]).prevProc));
-// Restore the previous window proc
+      // Restore the previous window proc
 
-          // We no longer need to resize anything
+      // We no longer need to resize anything
       FWindowsAdjust.Clear;
       FAnchoredWindows.Clear;
 
@@ -624,18 +578,17 @@ begin
           break;
          end;
 
-          // Ensure we do a re-initialize the next time around
+      // Ensure we do a re-initialize the next time around
       FTrackingInitialized := False;
      end;
 
     for idx := 0 to GFramesTrack.Count - 1 do
       if TWindowInfo(GFramesTrack.items[idx]).hWindow = hWindow then
        begin
-              // Restore the previous window proc, if any
+        // Restore the previous window proc, if any
         if (IsWindow(TWindowInfo(GFramesTrack.items[idx]).hWindow)) and
-          (TWindowInfo(GFramesTrack.items[idx]).prevProc <> nil) then
-          SetWindowLong(hWindow, GWL_WNDPROC,
-            Integer(TWindowInfo(GFramesTrack.items[idx]).prevProc));
+          (TWindowInfo(GFramesTrack.items[idx]).prevProc <> nil)
+         then SetWindowLong(hWindow, GWL_WNDPROC, Integer(TWindowInfo(GFramesTrack.items[idx]).prevProc));
         GFramesTrack.Delete(idx);
         break;
        end;
@@ -716,32 +669,32 @@ var
 begin
   GetWindowRect(FFrameHwnd, curRect);
 
-  newWidth := NewRect.right - NewRect.left;
+  newWidth  := NewRect.right - NewRect.left;
   newHeight := NewRect.bottom - NewRect.top;
 
-  if newWidth > FMaxSize.cx then
+  if newWidth > FConstraints.MaxWidth then
    begin
     if (NewRect.left <> curRect.left) then
-      NewRect.left := NewRect.right - FMaxSize.cx
+      NewRect.left := NewRect.right - FConstraints.MaxWidth
     else
-      NewRect.right := NewRect.left + FMaxSize.cx;
+      NewRect.right := NewRect.left + FConstraints.MaxWidth;
    end
-  else if newWidth < FMinSize.cx then
+  else if newWidth < FConstraints.MinWidth then
     if NewRect.left <> curRect.left then
-      NewRect.left := NewRect.right - FMinSize.cx
+      NewRect.left := NewRect.right - FConstraints.MinWidth
     else
-      NewRect.right := NewRect.left + FMinSize.cx;
+      NewRect.right := NewRect.left + FConstraints.MinWidth;
 
-  if newHeight > FMaxSize.cy then
+  if newHeight > FConstraints.MaxHeight then
    begin
     if NewRect.top <> curRect.top
-     then NewRect.top := NewRect.bottom - FMaxSize.cy
-     else NewRect.bottom := NewRect.top + FMaxSize.cy;
+     then NewRect.top := NewRect.bottom - FConstraints.MaxHeight
+     else NewRect.bottom := NewRect.top + FConstraints.MaxHeight;
    end
-  else if newHeight < FMinSize.cy then
+  else if newHeight < FConstraints.MinHeight then
    if NewRect.top <> curRect.top
-    then NewRect.top := NewRect.bottom - FMinSize.cy
-    else NewRect.bottom := NewRect.top + FMinSize.cy;
+    then NewRect.top := NewRect.bottom - FConstraints.MinHeight
+    else NewRect.bottom := NewRect.top + FConstraints.MinHeight;
 end;
 
 
@@ -809,7 +762,7 @@ begin
   if FEditorInfo = nil then exit;
 
   FHostApp := haUnknown;
-  assert(assigned(FEffect)); 
+  assert(assigned(FEffect));
   ProductName := FEffect.HostProduct;
 
   // Some hosts return a string that clearly identifies them...
@@ -819,6 +772,7 @@ begin
   if pos('Melodyne', ProductName) > 0 then FHostApp := haMelodyne else
   if pos('Cubase', ProductName) > 0 then FHostApp := haCubase else
   if pos('Tracktion', ProductName) > 0 then FHostApp := haTracktion else
+  if pos('Samplitude', ProductName) > 0 then FHostApp := haSamplitude else
   if pos('VST Plugin Analyser', ProductName) > 0 then FHostApp := haVSTPluginAnalyzer
    else
     begin
@@ -877,6 +831,9 @@ begin
       FResizeFlags := [rfTrackParentSize, rfSimulateDragEdge];
 
     haCantabile :
+      FResizeFlags := [rfTrackParentSize, rfSimulateDragEdge];
+
+    haSamplitude :
       FResizeFlags := [rfTrackParentSize, rfSimulateDragEdge];
 
     haSaviHost :

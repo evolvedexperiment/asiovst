@@ -61,8 +61,16 @@ begin
  if Assigned(EditorForm) then
   with TFmCombo(EditorForm) do
    begin
-    RBStereo.Checked := fStereo;
-    RBMono.Checked := not fStereo;
+    if fStereo then
+     begin
+      LbStereo.Caption := 'Stereo';
+      GuiLED.Brightness_Percent := 100;
+     end
+    else
+     begin
+      LbStereo.Caption := 'Mono';
+      GuiLED.Brightness_Percent := 20;
+     end;
    end;
  {$ENDIF}
 end;
@@ -85,8 +93,8 @@ end;
 
 procedure TComboDataModule.ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fHighPass[0].Bandwidth := Parameter[6];
- fHighPass[0].Bandwidth := fHighPass[1].Bandwidth;
+ fHighPass[0].Bandwidth := 1.1 - 0.01 * Parameter[6];
+ fHighPass[1].Bandwidth := fHighPass[0].Bandwidth;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
   with TFmCombo(EditorForm) do
@@ -200,7 +208,7 @@ end;
 procedure TComboDataModule.ParamHPFFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fHighPass[0].Frequency := Value;
- fHighPass[1].Frequency := fHighPass[1].Frequency;
+ fHighPass[1].Frequency := fHighPass[0].Frequency;
  DriveChanged;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
@@ -347,14 +355,16 @@ end;
 
 procedure TComboDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
- InP, OutP    : Array [0..1] of Double;
- trm, clp     : Single;
- LPF, bi      : Single;
- HPF, drv     : Single;
- FilterState  : Array [0..1, 0..4] of Double;
- d            : Array [0..1] of Integer;
- m            : Array [0..1] of Single;
- bp, Sample   : Integer;
+  InP, OutP    : Array [0..1] of Double;
+  trm, clp     : Single;
+  LPF, bi      : Single;
+  HPF, drv     : Single;
+  FilterState  : Array [0..1, 0..4] of Double;
+  d            : Array [0..1] of Integer;
+  m            : Array [0..1] of Single;
+  bp, Sample   : Integer;
+const
+  RndAmt : Single = 0.0002;
 begin
  m[0] := fMix[0];
  m[1] := fMix[1];
@@ -382,52 +392,52 @@ begin
   begin
    for  Sample := 0 to SampleFrames - 1 do
     begin
-     InP[0] := drv * (0.0002 * random + Inputs[0, Sample] + bi);
-     InP[1] := drv * (0.0002 * random + Inputs[1, Sample] + bi);
+     InP[0] := fHighPass[0].ProcessSample(drv * (RndAmt * random + Inputs[0, Sample] + bi));
+     InP[1] := fHighPass[1].ProcessSample(drv * (RndAmt * random + Inputs[1, Sample] + bi));
 
-      if fIsSoftClipping then
-       begin
-        OutP[0] := InP[0] / (1 + abs(InP[0]));
-        OutP[1] := InP[1] / (1 + abs(InP[1]));
-       end
-      else
-       begin
-        if InP[0] > clp        then OutP[0] := clp
-         else if InP[0] < -clp then OutP[0] := -clp
-         else OutP[0] := InP[0];
-        if InP[1] > clp        then OutP[1] := clp
-         else if InP[1] < -clp then OutP[1] := -clp
-         else OutP[1] := InP[1];
-       end;
+     if fIsSoftClipping then
+      begin
+       OutP[0] := InP[0] / (1 + abs(InP[0]));
+       OutP[1] := InP[1] / (1 + abs(InP[1]));
+      end
+     else
+      begin
+       if InP[0] > clp        then OutP[0] := clp
+        else if InP[0] < -clp then OutP[0] := -clp
+        else OutP[0] := InP[0];
+       if InP[1] > clp        then OutP[1] := clp
+        else if InP[1] < -clp then OutP[1] := -clp
+        else OutP[1] := InP[1];
+      end;
 
-      fBuffer[0]^[bp] := OutP[0];
-      fBuffer[1]^[bp] := OutP[1];
-      OutP[0] := OutP[0] + (m[0] * fBuffer[0]^[(bp + d[0]) mod 1000]) +
-                           (m[1] * fBuffer[0]^[(bp + d[1]) mod 1000]);
-      OutP[1] := OutP[1] + (m[0] * fBuffer[1]^[(bp + d[0]) mod 1000]) +
-                           (m[1] * fBuffer[1]^[(bp + d[1]) mod 1000]);
+     fBuffer[0]^[bp] := OutP[0];
+     fBuffer[1]^[bp] := OutP[1];
+     OutP[0] := OutP[0] + (m[0] * fBuffer[0]^[(bp + d[0]) mod 1000]) +
+                          (m[1] * fBuffer[0]^[(bp + d[1]) mod 1000]);
+     OutP[1] := OutP[1] + (m[0] * fBuffer[1]^[(bp + d[0]) mod 1000]) +
+                          (m[1] * fBuffer[1]^[(bp + d[1]) mod 1000]);
 
-      FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
-      FilterState[1, 0] := LPF * FilterState[1, 0] + trm * OutP[1];
-      FilterState[0, 1] := LPF * FilterState[0, 1] + FilterState[0, 0];
-      FilterState[1, 1] := LPF * FilterState[1, 1] + FilterState[1, 0];
-      FilterState[0, 2] := LPF * FilterState[0, 2] + FilterState[0, 1];
-      FilterState[1, 2] := LPF * FilterState[1, 2] + FilterState[1, 1];
-      FilterState[0, 3] := LPF * FilterState[0, 3] + FilterState[0, 2];
-      FilterState[1, 3] := LPF * FilterState[1, 3] + FilterState[1, 2];  //-24dB/oct filter
+     FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
+     FilterState[1, 0] := LPF * FilterState[1, 0] + trm * OutP[1];
+     FilterState[0, 1] := LPF * FilterState[0, 1] + FilterState[0, 0];
+     FilterState[1, 1] := LPF * FilterState[1, 1] + FilterState[1, 0];
+     FilterState[0, 2] := LPF * FilterState[0, 2] + FilterState[0, 1];
+     FilterState[1, 2] := LPF * FilterState[1, 2] + FilterState[1, 1];
+     FilterState[0, 3] := LPF * FilterState[0, 3] + FilterState[0, 2];
+     FilterState[1, 3] := LPF * FilterState[1, 3] + FilterState[1, 2];  //-24dB/oct filter
 
-      FilterState[0, 4] := HPF * (FilterState[0, 4] - FilterState[0, 3]) + FilterState[0, 3];
-      FilterState[1, 4] := HPF * (FilterState[1, 4] - FilterState[1, 3]) + FilterState[1, 3];  //high pass
+     FilterState[0, 4] := HPF * (FilterState[0, 4] - FilterState[0, 3]) + FilterState[0, 3];
+     FilterState[1, 4] := HPF * (FilterState[1, 4] - FilterState[1, 3]) + FilterState[1, 3];  //high pass
 
-      OutP[0] := FilterState[0, 3] - FilterState[0, 4];
-      OutP[1] := FilterState[1, 3] - FilterState[0, 4];
+     OutP[0] := FilterState[0, 3] - FilterState[0, 4];
+     OutP[1] := FilterState[1, 3] - FilterState[1, 4];
 
-      if (bp = 0)
-       then bp := 999
-       else bp := bp - 1;
+     if (bp = 0)
+      then bp := 999
+      else bp := bp - 1;
 
-      Outputs[0, Sample] := Outp[0];
-      Outputs[1, Sample] := Outp[1];
+     Outputs[0, Sample] := Outp[0];
+     Outputs[1, Sample] := Outp[1];
     end;
   end
  else //mono
@@ -436,7 +446,7 @@ begin
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := fHighPass[0].ProcessSample(drv * (0.0002 * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := fHighPass[0].ProcessSample(drv * (RndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        OutP[0] := InP[0] / (1 + abs(InP[0]));
 
@@ -457,14 +467,14 @@ begin
         else bp := bp - 1; //buffer position
 
        Outputs[0, Sample] := Outp[0];
-       Outputs[1, Sample] := Outp[1];
+       Outputs[1, Sample] := Outp[0];
       end;
     end
    else //hard clip
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := fHighPass[0].ProcessSample(drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := fHighPass[0].ProcessSample(drv * (RndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        if InP[0] > clp        then OutP[0] :=  clp
         else if InP[0] < -clp then OutP[0] := -clp
@@ -487,7 +497,7 @@ begin
         else bp := bp - 1; //buffer position
 
        Outputs[0, Sample] := Outp[0];
-       Outputs[1, Sample] := Outp[1];
+       Outputs[1, Sample] := Outp[0];
       end;
     end;
   end;

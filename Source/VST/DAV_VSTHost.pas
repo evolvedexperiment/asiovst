@@ -2526,27 +2526,29 @@ begin
    version    := 1;
    fxID       := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
    fxVersion  := PVstEffect^.version;
-   numParams  := numParams;
+   numParams  := Self.numParams;
+   s := GetProgramName + #0;
+   StrLCopy(prgName, PChar(s), 26);
+   GetMem(params, numParams * SizeOf(Single));
+   pc := pLongInt(params);
+   for i := 0 to numParams - 1 do
+    begin
+     si := GetParameter(i);
+     x := pLongInt(@si)^;
+     SwapLong(x);
+     pc^ := x;
+     inc(pc);
+    end;
+   result.ByteSize := SizeOf(result) - SizeOf(LongInt) * 2 + (numParams - 1) * SizeOf(Single);
+
+   // swap
+   SwapLong(ByteSize);
    SwapLong(chunkMagic);
    SwapLong(fxMagic);
    SwapLong(version);
    SwapLong(fxID);
    SwapLong(fxVersion);
    SwapLong(numParams);
-   s := GetProgramName + #0;
-   StrLCopy(prgName, PChar(s), 26);
-   GetMem(params, numParams * SizeOf(Single));
-   pc := pLongInt(params);
-   for i := 0 to numParams - 1 do
-   begin
-    si := GetParameter(i);
-    x := pLongInt(@si)^;
-    SwapLong(x);
-    pc^ := x;
-    inc(pc);
-   end;
-   result.ByteSize := SizeOf(result) - SizeOf(LongInt) * 2 + (numParams - 1) * SizeOf(Single);
-   SwapLong(ByteSize);
   end;
 end;
 

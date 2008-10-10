@@ -419,6 +419,8 @@ var
   GlyphNr    : Integer;
   Bmp        : TBitmap;
 begin
+ if [csLoading..csDestroying] * ComponentState <> [] then exit;
+
  if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
   begin
    Lock;
@@ -613,7 +615,7 @@ end;
 
 procedure TCustomGuiDial.SetAutoSize(const Value: boolean);
 begin
-  if FAutoSize<>Value then
+  if FAutoSize <> Value then
   begin
     FAutoSize := Value;
     if Autosize then DoAutoSize;

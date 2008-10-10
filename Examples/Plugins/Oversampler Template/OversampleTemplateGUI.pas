@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, DAV_Common, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiLED,
-  DAV_GuiDial, DAV_GuiPanel;
+  DAV_GuiDial, DAV_GuiPanel, DAV_VSTWindowSizer, Menus;
 
 type
   TFmOversampler = class(TForm)
@@ -16,6 +16,8 @@ type
     LbOversamplingFactor: TGuiLabel;
     PnGui: TPanel;
     ShBorder: TShape;
+    PUSettings: TPopupMenu;
+    MIAllowResizing: TMenuItem;
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -23,8 +25,10 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure DialOversamplingChange(Sender: TObject);
     procedure GuiLEDOversamplingClick(Sender: TObject);
+    procedure MIAllowResizingClick(Sender: TObject);
   private
-    fBackground : TBitmap;  
+    fBackground : TBitmap;
+    fWinSizer   : TVstWindowSizer;
   public
     procedure UpdateOSFactor;
     procedure UpdateOverSampling;
@@ -59,11 +63,12 @@ begin
 
      R        := VstHost[0].GetRect;
      Oversize := PnControl.Width - (R.Right - R.Left);
-     if Oversize < 0 then
+     if Oversize <= 0 then
       begin
        // current editor is too small, enlarge!
        PnGui.Align := alClient;
        ShBorder.Visible := False;
+       MIAllowResizing.Enabled := False;
       end
      else
       begin
@@ -81,6 +86,7 @@ begin
                           PnGui.Top - ShBorder.Pen.Width,
                           PnGui.Width + 2 * ShBorder.Pen.Width,
                           PnGui.Height + 2 * ShBorder.Pen.Width);
+       MIAllowResizing.Enabled := True;
       end;
     end;
   end;
@@ -100,14 +106,19 @@ begin
   try
    if VstHost[0].EditVisible then VstHost[0].CloseEdit;
    if VstHost[1].EditVisible then VstHost[1].CloseEdit;
-  except 
+   if assigned(fWinSizer)
+    then FreeAndNil(fWinSizer);
+   MIAllowResizing.Checked := False; 
+  except
   end;
 end;
 
 procedure TFmOversampler.FormDestroy(Sender: TObject);
 begin
  if assigned(fBackground)
-  then FreeAndNil(fBackground); 
+  then FreeAndNil(fBackground);
+ if assigned(fWinSizer)
+  then FreeAndNil(fWinSizer);
 end;
 
 procedure TFmOversampler.FormPaint(Sender: TObject);
@@ -185,6 +196,23 @@ begin
  with TOversampleTemplateDataModule(Owner) do
   begin
    ParameterByName['Oversampling'] := f_Limit(1 - ParameterByName['Oversampling'], 0, 1);
+  end;
+end;
+
+procedure TFmOversampler.MIAllowResizingClick(Sender: TObject);
+begin
+ MIAllowResizing.Checked := not MIAllowResizing.Checked;
+ if MIAllowResizing.Checked then
+  begin
+   if not assigned(fWinSizer)
+    then fWinSizer := TVstWindowSizer.Create;
+   fWinSizer.Effect := TOversampleTemplateDataModule(Owner);
+   fWinSizer.SetEditorHwnd(Self.Handle);
+  end
+ else
+  begin
+   if assigned(fWinSizer)
+    then FreeAndNil(fWinSizer);
   end;
 end;
 
