@@ -121,7 +121,16 @@ var
   ch, i, j : Integer;
   str      : string;
 begin
- fBaseParCount := numParams;
+ fBaseParCount            := numParams;
+ fOSFactor                := 1;
+ fOSActive                := False;
+ fTempBufferSize          := 0;
+ fSemaphore               := 0;
+ fMaximumBlockSize        := VstHost.BlockSize;
+ OnProcess                := VSTModuleProcess32OversampleSingle;
+ OnProcessReplacing       := VSTModuleProcess32OversampleSingle;
+ OnProcessDoubleReplacing := VSTModuleProcess64OversampleSingle;
+
  RN := TStringList.Create;
  try
   EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, DWord(RN));
@@ -242,17 +251,6 @@ begin
  SetLength(fDownsampler, numOutputs);
  for ch := 0 to Length(fDownsampler) - 1
   do fDownsampler[ch] := TDAVDownsampling.Create(Self);
-
- fOSFactor := 1;
- fOSActive := False;
-
- OnProcess := VSTModuleProcess32OversampleSingle;
- OnProcessReplacing := VSTModuleProcess32OversampleSingle;
- OnProcessDoubleReplacing := VSTModuleProcess64OversampleSingle;
-
- fTempBufferSize := 0;
- fSemaphore := 0;
- fMaximumBlockSize := VstHost.BlockSize;
 
  SetLength(fIn32, numInputs);
  SetLength(fIn64, numInputs);
@@ -386,9 +384,9 @@ begin
  if VstHost[0].Active then
   try
    PinProperties := VstHost[0].GetInputProperties(Index);
-   vLabel        := PinProperties.Caption;
-   shortLabel    := PinProperties.ShortLabel;
    Flags         := PinProperties.Flags;
+   vLabel        := StrPas(@PinProperties.Caption[0]);
+   shortLabel    := StrPas(@PinProperties.ShortLabel[0]);
   except
    Result        := False;
   end;
@@ -432,9 +430,9 @@ begin
  if VstHost[0].Active then
   try
    PinProperties := VstHost[0].GetOutputProperties(Index);
-   vLabel        := PinProperties.Caption;
-   shortLabel    := PinProperties.ShortLabel;
    Flags         := PinProperties.Flags;
+   vLabel        := StrPas(@PinProperties.Caption[0]);
+   shortLabel    := StrPas(@PinProperties.ShortLabel[0]);
   except
    Result        := False;
   end;
@@ -548,6 +546,7 @@ end;
 
 procedure TOversampleTemplateDataModule.VSTModuleResume(Sender: TObject);
 begin
+ VSTModuleSampleRateChange(Sender, SampleRate);
  with VstHost[0] do if Active then MainsChanged(True);
 end;
 
@@ -744,14 +743,15 @@ procedure TOversampleTemplateDataModule.SetTempBufferSize(const Value: Integer);
 var
   i : Integer;
 begin
- if fTempBufferSize <> Value then
+ if (fTempBufferSize <> Value) and
+   ((Length(fIn64) > 0) or (Length(fOut64) > 0)) then
   begin
    fTempBufferSize := Value;
+   {$IFDEF DELPHI10}
+   SetMinimumBlockAlignment(mba16Byte);
+   {$ENDIF}
    for i := 0 to numInputs - 1 do
     begin
-     {$IFDEF DELPHI10}
-     SetMinimumBlockAlignment(mba16Byte);
-     {$ENDIF}
      ReallocMem(fIn64[i], fTempBufferSize * SizeOf(Double));
      fIn32[i] := PDAVSingleFixedArray(fIn64[i]);
      ReallocMem(fOut64[i], fTempBufferSize * SizeOf(Double));
@@ -776,6 +776,14 @@ begin
   end;
 end;
 
+procedure DontRaiseExceptionsAndSetFPUcodeword;
+const
+  SCRound8087CW : Word = $133F; // round FPU codeword, with exceptions disabled
+asm
+ fnclex                  // Don't raise pending exceptions enabled by the new flags
+ fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
+end;
+
 procedure TOversampleTemplateDataModule.VSTModuleProcess32OversampleSingle(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
@@ -792,12 +800,25 @@ begin
     for i := 0 to SampleFrames - 1
      do fUpsampler[ch].Upsample32(Inputs[ch, i], @fIn32[ch, i * fOSFactor]);
 
+(*
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames * fOSFactor - 1
+     do assert(not IsNaN(fIn32[ch, i]));
+
+   DontRaiseExceptionsAndSetFPUcodeword;
+*)
    // process serial chain
    if VstHost[0].Active
     then VstHost[0].ProcessReplacing(@fIn32[0], @fOut32[0], SampleFrames * fOSFactor)
     else
      for ch := 0 to min(numInputs, numOutputs) - 1
       do Move(fIn32[ch, 0], fOut32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+
+(*
+   for ch := 0 to numInputs - 1 do
+    for i := 0 to SampleFrames * fOSFactor - 1
+     do assert(not IsNaN(fOut32[ch, i]));
+*)
 
    // downsample
    for ch := 0 to numOutputs - 1 do

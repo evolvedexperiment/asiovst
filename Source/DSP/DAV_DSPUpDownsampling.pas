@@ -87,9 +87,6 @@ type
 
 implementation
 
-const
-  cDenorm = 1E-32;
-
 { TDAVResampling }
 
 constructor TDAVResampling.Create(AOwner: TComponent);
@@ -199,25 +196,25 @@ procedure TDAVUpDownsampling.Upsample32(Input: Single;
 var
   i : Integer;
 begin
- Output[0] := fFilter[0].ProcessSample(Factor * Input + cDenorm);
+ Output[0] := fFilter[0].ProcessSample(Factor * Input + cDenorm32);
  for i := 1 to Factor - 1
-  do Output[i] := fFilter[0].ProcessSample(-cDenorm);
+  do Output[i] := fFilter[0].ProcessSample(-cDenorm32);
 end;
 
 procedure TDAVUpDownsampling.Upsample64(Input: Double; Output: PDAVDoubleFixedArray);
 var
   i : Integer;
 begin
- Output[0] := fFilter[0].ProcessSample(Factor * Input + cDenorm);
+ Output[0] := fFilter[0].ProcessSample(Factor * Input + cDenorm64);
  for i := 1 to Factor - 1
-  do Output[i] := fFilter[0].ProcessSample(-cDenorm);
+  do Output[i] := fFilter[0].ProcessSample(-cDenorm64);
 end;
 
 function TDAVUpDownsampling.Downsample32(Input: PDAVSingleFixedArray): Single;
 var
   i : Integer;
 begin
- result := fFilter[1].ProcessSample(Input[0] + cDenorm);
+ result := fFilter[1].ProcessSample(Input[0] + cDenorm32);
  for i := 1 to Factor - 1
   do fFilter[1].ProcessSample(Input[i]);
 end;
@@ -226,9 +223,9 @@ function TDAVUpDownsampling.Downsample64(Input: PDAVDoubleFixedArray): Double;
 var
   i : Integer;
 begin
- result := fFilter[1].ProcessSample(Input[0] + cDenorm);
+ result := fFilter[1].ProcessSample(Input[0] + cDenorm64);
  for i := 1 to Factor - 1
-  do fFilter[1].ProcessSample(Input[i] - cDenorm);
+  do fFilter[1].ProcessSample(Input[i] - cDenorm64);
 end;
 
 
@@ -322,18 +319,18 @@ procedure TDAVUpSampling.Upsample32(Input: Single; Output: PDAVSingleFixedArray)
 var
   i : Integer;
 begin
- Output[0] := fFilter.ProcessSample(Factor * Input + cDenorm);
+ Output[0] := fFilter.ProcessSample(Factor * Input + cDenorm32);
  for i := 1 to Factor - 1
-  do Output[i] := fFilter.ProcessSample(-cDenorm);
+  do Output[i] := fFilter.ProcessSample(-cDenorm32);
 end;
 
 procedure TDAVUpSampling.Upsample64(Input: Double; Output: PDAVDoubleFixedArray);
 var
   i : Integer;
 begin
- Output[0] := fFilter.ProcessSample(Factor * Input + cDenorm);
+ Output[0] := fFilter.ProcessSample(Factor * Input + cDenorm64);
  for i := 1 to Factor - 1
-  do Output[i] := fFilter.ProcessSample(-cDenorm);
+  do Output[i] := fFilter.ProcessSample(-cDenorm64);
 end;
 
 { TDAVDownSampling }
@@ -370,7 +367,7 @@ function TDAVDownSampling.Downsample32(Input: PDAVSingleFixedArray): Single;
 var
   i : Integer;
 begin
- result := fFilter.ProcessSample(Input[0] + cDenorm);
+ result := fFilter.ProcessSample(Input[0] + cDenorm32);
  for i := 1 to Factor - 1
   do fFilter.ProcessSample(Input[i]);
 end;
@@ -379,7 +376,7 @@ function TDAVDownSampling.Downsample64(Input: PDAVDoubleFixedArray): Double;
 var
   i : Integer;
 begin
- result := fFilter.ProcessSample(Input[0] + cDenorm);
+ result := fFilter.ProcessSample(Input[0] + cDenorm64);
  for i := 1 to Factor - 1
   do fFilter.ProcessSample(Input[i]);
 end;

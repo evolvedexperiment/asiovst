@@ -130,8 +130,6 @@ type
     procedure SampleRateChanged; virtual;
     procedure BlockSizeChanged; virtual;
 
-    procedure SetBlockSizeAndSampleRate(aBlockSize: Integer; aSampleRate: Single); virtual;
-
     function AllocateArrangement(var Arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean; virtual;   // Allocate memory for a VstSpeakerArrangement containing the given number of channels
     function DeallocateArrangement(var Arrangement: PVstSpeakerArrangement): Boolean; virtual;                      // Delete/free memory for a speaker Arrangement
     function CopySpeaker(copyTo, copyFrom: PVstSpeakerProperties): Boolean; virtual;    // Feed the "to" speaker Properties with the same Values than "from"'s ones. It is assumed here that "to" exists yet, ie this function won't allocate memory for the speaker (this will prevent from having a difference between an Arrangement's number of channels and its actual speakers...)
@@ -674,8 +672,17 @@ end;
 
 function TCustomVSTModule.HostCallSetBlockSizeAndSampleRate(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetBlockSizeAndSampleRate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
- SetBlockSizeAndSampleRate(Value, opt);
+ {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetBlockSizeAndSampleRate: Blocksize ' + IntToStr(Value) + ' Samplerate ' + FloatToStr(opt)); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ if fSampleRate <> opt then
+  begin
+   fSampleRate := opt;
+   SampleRateChanged;
+  end;
+ if fBlockSize <> Value then
+  begin
+   fBlockSize := Value;
+   BlockSizeChanged;
+  end;
  Result := 1;
 end;
 
@@ -1062,21 +1069,6 @@ begin
   end;
 end;
 
-procedure TCustomVSTModule.SetBlockSizeAndSampleRate(aBlockSize: Integer; aSampleRate: Single);
-begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('Set BlockSize/Samplerate: Blocksize ' + IntToStr(aBlockSize) + ' Samplerate ' + FloatToStr(aSampleRate)); FLog.SaveToFile('Debug.log'); {$ENDIF}
- if fSampleRate<>aSampleRate then
-  begin
-   fSampleRate := aSampleRate;
-   SampleRateChanged;
-  end;
- if fBlockSize <> aBlockSize then
-  begin
-   fBlockSize := aBlockSize;
-   BlockSizeChanged;
-  end;
-end;
-
 function TCustomVSTModule.AllocateArrangement(var Arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean;
 var
   size : Integer;
@@ -1157,12 +1149,12 @@ end;
 
 procedure TCustomVSTModule.BlockSizeChanged;
 begin
-  if Assigned(fSampleRateChangeEvent) then fSampleRateChangeEvent(Self,fSampleRate);
+  if Assigned(FBlockSizeChangeEvent) then FBlockSizeChangeEvent(Self, FBlockSize);
 end;
 
 procedure TCustomVSTModule.SampleRateChanged;
 begin
-  if Assigned(fSampleRateChangeEvent) then fSampleRateChangeEvent(Self,fSampleRate);
+  if Assigned(FSampleRateChangeEvent) then FSampleRateChangeEvent(Self,fSampleRate);
 end;
 
 {$WARNINGS ON}

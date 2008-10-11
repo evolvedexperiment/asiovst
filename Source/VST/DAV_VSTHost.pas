@@ -475,7 +475,8 @@ type
     property VstVersion;
   end;
 
-var audioMaster : TAudioMasterCallbackFunc;
+var
+  audioMaster : TAudioMasterCallbackFunc;
 
 procedure Register;
 function string2Language(LanguageString: string): TVstHostLanguage;
@@ -518,7 +519,7 @@ var
   FHostCanDos    : THostCanDos;
   FHostTempo     : Single = 120;
   FSampleRate    : Single  = 44100;
-  theHost        : TCustomVstHost;
+  HostList       : TObjectList;
   HostDialog     : TCommonDialog;
   HostWindows    : TObjectList;
 
@@ -582,23 +583,35 @@ begin
  if Length(Result) > 2 then Result := Copy(Result, 0, Length(Result) - 2)
 end;
 
+procedure DontRaiseExceptionsAndSetFPUcodeword;
+asm
+ fnclex                  // Don't raise pending exceptions enabled by the new flags
+ fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
+end;
+
 function AudioMasterCallback(effect: PVSTEffect; opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): LongInt; cdecl;
 var
   thePlug   : TCustomVstPlugIn;
+  theHost   : TCustomVstHost;
   PlugNr, i : Integer;
 begin
  try
+   // find plugin in host list
    thePlug := nil;
-   for PlugNr := 0 to theHost.VstPlugIns.Count - 1 do
-    if theHost.VstPlugIns[PlugNr].PVstEffect = Effect then
+   theHost := nil; 
+   for i := 0 to HostList.Count - 1 do
+    with TCustomVstHost(HostList[i]) do
      begin
-      thePlug := theHost.VstPlugIns[PlugNr];
-      Break;
+      for PlugNr := 0 to VstPlugIns.Count - 1 do
+       if VstPlugIns[PlugNr].PVstEffect = Effect then
+        begin
+         thePlug := VstPlugIns[PlugNr];
+         theHost := TCustomVstHost(HostList[i]);
+         Break;
+        end;
+      if assigned(thePlug) then break;   
      end;
-   asm
-    fnclex                  // Don't raise pending exceptions enabled by the new flags
-    fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
-   end;
+   DontRaiseExceptionsAndSetFPUcodeword;
 
    result := 0;
    case TAudiomasterOpcode(opcode) of
@@ -614,7 +627,7 @@ begin
                                                thePlug.FNeedIdle := True;
                                                if Assigned(thePlug.FOnAMIdle)
                                                 then thePlug.FOnAMIdle(thePlug);
-                                               if theHost.FautoIdle then
+                                               if assigned(theHost) and theHost.FautoIdle then
                                                 begin
                                                  if thePlug.EditVisible then thePlug.EditIdle;
                                                  for i := 0 to theHost.VstPlugIns.Count - 1 do // Norm-Konform!
@@ -682,7 +695,7 @@ begin
     audioMasterGetInputLatency             : if theHost <> nil then result := theHost.FInputLatency else result := 0;
     audioMasterGetOutputLatency            : if theHost <> nil then result := theHost.FOutputLatency else result := 0;
     audioMasterGetPreviousPlug             : begin
-                                              if PlugNr = 0 then Result := 0;
+//                                              if PlugNr = 0 then Result := 0;
                                               {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
                                              end;
     audioMasterGetNextPlug                 : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetNextPlug, output pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
@@ -1018,7 +1031,7 @@ constructor TCustomVstHost.Create(AOwner: TComponent);
 begin
  inherited;
 // if AOwner <> nil then
- theHost     := Self;
+ HostList.Add(Self);
  FSampleRate := 44100;
  FBlocksize  := 2048;
  FLanguage   := kVstLangEnglish;
@@ -1056,9 +1069,10 @@ begin
  if Assigned(FVstPlugIns) then
   begin
    while FVstPlugIns.Count > 0 do FVstPlugIns[0].Free;
-   FVstPlugIns.Free;
+   FreeAndNil(FVstPlugIns);
   end;
  if Assigned(FVTI) then FreeAndNil(FVTI);
+ HostList.Remove(Self);
  inherited;
 end;
 
@@ -1308,10 +1322,7 @@ begin
  if not Assigned(PVstEffect) and FileExists(FDLLFileName)
   then loadOK := LoadFromFile(FDLLFileName)
   else FDLLFileName := '';
- asm
-  fnclex                  // Don't raise pending exceptions enabled by the new flags
-  fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
- end;
+ DontRaiseExceptionsAndSetFPUcodeword;
  if PVstEffect = nil then
   try
    if not loadOK
@@ -1344,24 +1355,28 @@ begin
  FEditOpen := False;
  FNeedIdle := False;
  FWantMidi := False;
+ FActive   := True;
 
- VstDispatch(effOpen);
- CanDo('bypass');
- //setPanLaw(0,0.707107)
- SetSampleRate(FSampleRate);
- SetBlockSize(FBlocksize);
- SetBypass(False);
- FActive := True;
- FUniqueID := ''; for i := 3 downto 0 do FUniqueID := FUniqueID + char(PVstEffect.uniqueID shr (i * 8));
+ try
+  VstDispatch(effOpen);
+  CanDo('bypass');
+  //setPanLaw(0,0.707107)
+  SetSampleRate(FSampleRate);
+  SetBlockSize(FBlocksize);
+  SetBypass(False);
+  FUniqueID := ''; for i := 3 downto 0 do FUniqueID := FUniqueID + char(PVstEffect.uniqueID shr (i * 8));
 
- Fversion      := PVstEffect.version;
- FVstVersion   := GetVstVersion;
- FPlugCategory := GetPlugCategory;
- FnumInputs    := PVstEffect.numInputs;
- FnumOutputs   := PVstEffect.numOutputs;
- FnumPrograms  := PVstEffect.numPrograms;
- FnumParams    := PVstEffect.numParams;
- MainsChanged(True);
+  Fversion      := PVstEffect.version;
+  FVstVersion   := GetVstVersion;
+  FPlugCategory := GetPlugCategory;
+  FnumInputs    := PVstEffect.numInputs;
+  FnumOutputs   := PVstEffect.numOutputs;
+  FnumPrograms  := PVstEffect.numPrograms;
+  FnumParams    := PVstEffect.numParams;
+  MainsChanged(True);
+ except
+  FActive := False;
+ end;
 end;
 
 procedure TCustomVstPlugIn.Close;
@@ -1384,10 +1399,7 @@ end;
 function TCustomVstPlugIn.VstDispatch(opCode : TDispatcherOpcode; Index, Value: Integer; Pntr: Pointer; opt: Double): Integer;
 begin
  try
-  asm
-   fnclex                  // Don't raise pending exceptions enabled by the new flags
-   fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
-  end;
+  DontRaiseExceptionsAndSetFPUcodeword;
   if not assigned(PVstEffect) then
    result := 0
   else
@@ -2922,8 +2934,10 @@ initialization
  {$ENDIF}
  audioMaster := AudioMasterCallback;
  HostWindows := TObjectList.Create;
+ HostList    := TObjectList.Create;
 
 finalization
- HostWindows.Free;
+  FreeAndNil(HostWindows);
+  FreeAndNil(HostList);
 
 end.

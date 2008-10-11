@@ -674,7 +674,6 @@ begin
  if (abs(FilterState[1, 0]) < 1E-10) or (not fStereo)
   then FillChar(fFilterState[1, 0], 5 * SizeOf(Double), 0)
   else Move(FilterState[1, 0], fFilterState[1, 0], 5 * SizeOf(Double));
-
 end;
 
 procedure TComboDataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);

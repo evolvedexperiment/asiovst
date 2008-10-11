@@ -225,7 +225,8 @@ const
   MinusOneThird : Double = -1/3;
   Two           : Double = 2;
   MinusTwoThird : Double = -2/3;
-
+  cDenorm32     : Single = 1E-24;
+  cDenorm64     : Single = 1E-34;
 
 implementation
 

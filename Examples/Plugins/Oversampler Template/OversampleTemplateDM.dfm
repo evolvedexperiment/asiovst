@@ -156,11 +156,9 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   OnAfterProgramChange = VSTModuleAfterProgramChange
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnGetVU = VSTModuleGetVU
-  OnInputProperties = VSTModuleInputProperties
   OnOfflineNotify = VSTModuleOfflineNotify
   OnOfflinePrepare = VSTModuleOfflinePrepare
   OnOfflineRun = VSTModuleOfflineRun
-  OnOutputProperties = VSTModuleOutputProperties
   OnProcess = VSTModuleProcess32OversampleSingle
   OnProcessDoubleReplacing = VSTModuleProcess64OversampleSingle
   OnProcessEvents = VSTModuleProcessEvents
