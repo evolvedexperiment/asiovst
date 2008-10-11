@@ -27,6 +27,7 @@ type
     function GetOrder: Integer; virtual; abstract;
     procedure CalculateCoefficients; virtual; abstract;
     procedure AssignTo(Dest: TPersistent); override;
+    procedure SampleRateChanged; virtual;
   public
     constructor Create; virtual;
     function ProcessSample(const Input:Double):Double; overload; virtual; abstract;
@@ -250,8 +251,18 @@ end;
 
 procedure TFilter.SetSampleRate(const Value: Double);
 begin
- fSampleRate := Value;
- fSRR :=  1 / fSampleRate;
+ if fSampleRate <> Value then
+  begin
+   fSampleRate := Value;
+   fSRR :=  1 / fSampleRate;
+   SampleRateChanged;
+  end;
+end;
+
+procedure TFilter.SampleRateChanged;
+begin
+ SetW0;
+ CalculateCoefficients;
 end;
 
 procedure TFilter.SetW0;

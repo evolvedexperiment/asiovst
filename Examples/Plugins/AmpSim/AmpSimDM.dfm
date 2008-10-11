@@ -18,6 +18,10 @@ object ComboDataModule: TComboDataModule
     item
       DisplayName = 'Amp & Speaker Simulator'
       VSTModule = Owner
+    end
+    item
+      DisplayName = 'Mesa-Boogie'
+      VSTModule = Owner
     end>
   ParameterProperties = <
     item
@@ -40,11 +44,15 @@ object ComboDataModule: TComboDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Drive'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       MinInteger = -100
       ShortLabel = 'drive'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'S <> H'
       VSTModule = Owner
       OnParameterChange = ParamDriveChange
@@ -53,11 +61,15 @@ object ComboDataModule: TComboDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Bias'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       MinInteger = -100
       ShortLabel = 'bias'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamBiasChange
     end
@@ -65,12 +77,16 @@ object ComboDataModule: TComboDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
       Max = 20.000000000000000000
       MaxInteger = 20
       Min = -20.000000000000000000
       MinInteger = -20
       ShortLabel = 'output'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParamOutputChanged
@@ -79,9 +95,14 @@ object ComboDataModule: TComboDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Process'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
       Max = 1.000000000000000000
+      MaxInteger = 1
       ShortLabel = 'stereo'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamProcessChange
       OnCustomParameterDisplay = ParamProcessDisplay
@@ -107,21 +128,45 @@ object ComboDataModule: TComboDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'HPF Resonance'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
       Max = 100.000000000000000000
       ShortLabel = 'hpfReso'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
       OnParameterChange = ParamHPFResonanceChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Noise'
+      Flags = [kVstParameterUsesFloatStep]
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = -20.000000000000000000
+      MaxInteger = -20
+      Min = -120.000000000000000000
+      MinInteger = -120
+      ShortLabel = 'Noise'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParamNoiseChange
     end>
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
-  Left = 218
-  Top = 81
+  Left = 864
+  Top = 84
   Height = 150
   Width = 215
 end

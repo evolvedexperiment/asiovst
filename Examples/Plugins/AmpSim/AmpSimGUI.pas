@@ -9,28 +9,29 @@ uses
 
 type
   TFmCombo = class(TForm)
-    LbModel: TGuiLabel;
-    SBModel: TGuiSelectBox;
-    GuiLED: TGuiLED;
-    LbStereo: TGuiLabel;
-    GuiPanel1: TGuiPanel;
-    LbResonanceValue: TLabel;
-    LbFrequencyValue: TLabel;
-    LbOutputValue: TLabel;
-    LbBiasValue: TLabel;
-    LbDriveValue: TLabel;
-    DialDrive: TGuiDial;
-    LbDrive: TGuiLabel;
     DialBias: TGuiDial;
-    LbBias: TGuiLabel;
-    DialOutput: TGuiDial;
+    DialDrive: TGuiDial;
     DialFrequency: TGuiDial;
+    DialOutput: TGuiDial;
     DialResonance: TGuiDial;
-    LbOutput: TGuiLabel;
+    GuiLED: TGuiLED;
+    GuiPanel1: TGuiPanel;
+    LbBias: TGuiLabel;
+    LbBiasValue: TLabel;
+    LbDrive: TGuiLabel;
+    LbDriveValue: TLabel;
     LbFrequency: TGuiLabel;
+    LbFrequencyValue: TLabel;
+    LbModel: TGuiLabel;
+    LbOutput: TGuiLabel;
+    LbOutputValue: TLabel;
     LbResonance: TGuiLabel;
+    LbResonanceValue: TLabel;
+    LbStereo: TGuiLabel;
+    SBModel: TGuiSelectBox;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
     procedure DialDriveChange(Sender: TObject);
     procedure DialBiasChange(Sender: TObject);
     procedure DialOutputChange(Sender: TObject);
@@ -38,9 +39,17 @@ type
     procedure DialResoChange(Sender: TObject);
     procedure SBModelChange(Sender: TObject);
     procedure LbStereoClick(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
   private
-    FBackground : TBitmap
+    FBackground : TBitmap;
+  public
+    procedure UpdateBias;
+    procedure UpdateDrive;
+    procedure UpdateFreq;
+    procedure UpdateModel;
+    procedure UpdateNoise;
+    procedure UpdateOutput;
+    procedure UpdateProcess;
+    procedure UpdateReso;
   end;
 
 var
@@ -108,46 +117,172 @@ end;
 procedure TFmCombo.SBModelChange(Sender: TObject);
 begin
  Assert(Owner is TComboDataModule);
- TComboDataModule(Owner).Parameter[0] := SBModel.ItemIndex;
+ with TComboDataModule(Owner) do
+  begin
+   if Parameter[0] <> SBModel.ItemIndex
+    then Parameter[0] := SBModel.ItemIndex;
+  end;
+end;
+
+procedure TFmCombo.UpdateDrive;
+var
+  Drive : Single;
+begin
+ with TComboDataModule(Owner) do
+  begin
+   Drive := ParameterByName['Drive'];
+   if DialDrive.Position <> Drive
+    then DialDrive.Position := Drive;
+   LbDriveValue.Caption := FloatToStrF(Drive, ffGeneral, 3, 3) + '%';
+  end;
+end;
+
+procedure TFmCombo.UpdateBias;
+var
+  Bias : Single;
+begin
+ with TComboDataModule(Owner) do
+  begin
+   Bias := ParameterByName['Bias'];
+   if DialBias.Position <> Bias
+    then DialBias.Position := Bias;
+   LbBiasValue.Caption := FloatToStrF(Bias, ffGeneral, 3, 3) + '%';
+  end;
+end;
+
+procedure TFmCombo.UpdateFreq;
+var
+  Frequency : Single;
+begin
+ with TComboDataModule(Owner) do
+  begin
+   Frequency := ParameterByName['HPF Frequency'];
+   if DialFrequency.Position <> Frequency
+    then DialFrequency.Position := Frequency;
+   LbFrequencyValue.Caption := FloatToStrF(Frequency, ffGeneral, 5, 5) + 'Hz';
+  end;
+end;
+
+procedure TFmCombo.UpdateProcess;
+begin
+ with TComboDataModule(Owner) do
+  begin
+   if Stereo then
+    begin
+     LbStereo.Caption := 'Stereo';
+     GuiLED.Brightness_Percent := 100;
+    end
+   else
+    begin
+     LbStereo.Caption := 'Mono';
+     GuiLED.Brightness_Percent := 20;
+    end;
+  end;
+end;
+
+procedure TFmCombo.UpdateModel;
+var
+  Model : Integer;
+begin
+ with TComboDataModule(Owner) do
+  begin
+   Model := Round(ParameterByName['Model']);
+   if SBModel.ItemIndex <> Model
+    then SBModel.ItemIndex := Model;
+  end;
+end;
+
+procedure TFmCombo.UpdateNoise;
+begin
+
+end;
+
+procedure TFmCombo.UpdateOutput;
+var
+  Output : Single;
+begin
+ with TComboDataModule(Owner) do
+  begin
+   Output := ParameterByName['Output'];
+   if DialOutput.Position <> Output
+    then DialOutput.Position := Output;
+   LbOutputValue.Caption := FloatToStrF(Output, ffGeneral, 3, 3) + 'dB';
+  end;
+end;
+
+procedure TFmCombo.UpdateReso;
+var
+  Reso : Single;
+begin
+ with TComboDataModule(Owner) do
+  begin
+   Reso := ParameterByName['HPF Resonance'];
+   if DialResonance.Position <> Reso
+    then DialResonance.Position := Reso;
+   LbResonanceValue.Caption := FloatToStrF(Reso, ffGeneral, 3, 3) + '%';
+  end;
 end;
 
 procedure TFmCombo.DialBiasChange(Sender: TObject);
 begin
  Assert(Owner is TComboDataModule);
- TComboDataModule(Owner).Parameter[2] := DialBias.Position;
+ with TComboDataModule(Owner) do
+  begin
+   if Parameter[2] <> DialBias.Position
+    then Parameter[2] := DialBias.Position;
+  end;
 end;
 
 procedure TFmCombo.DialDriveChange(Sender: TObject);
 begin
  Assert(Owner is TComboDataModule);
- TComboDataModule(Owner).Parameter[1] := DialDrive.Position;
+ with TComboDataModule(Owner) do
+  begin
+   if Parameter[1] <> DialDrive.Position
+    then Parameter[1] := DialDrive.Position;
+  end;
 end;
 
 procedure TFmCombo.DialOutputChange(Sender: TObject);
 begin
  Assert(Owner is TComboDataModule);
- TComboDataModule(Owner).Parameter[3] := DialOutput.Position;
+ with TComboDataModule(Owner) do
+  begin
+   if Parameter[3] <> DialOutput.Position
+    then Parameter[3] := DialOutput.Position;
+  end;
 end;
 
 procedure TFmCombo.DialFreqChange(Sender: TObject);
 begin
  Assert(Owner is TComboDataModule);
- TComboDataModule(Owner).Parameter[5] := DialFrequency.Position;
+ with TComboDataModule(Owner) do
+  begin
+   if Parameter[5] <> DialFrequency.Position
+    then Parameter[5] := DialFrequency.Position;
+  end;
 end;
 
 procedure TFmCombo.DialResoChange(Sender: TObject);
 begin
  Assert(Owner is TComboDataModule);
- TComboDataModule(Owner).Parameter[6] := DialResonance.Position;
+ with TComboDataModule(Owner) do
+  begin
+   if Parameter[6] <> DialResonance.Position
+    then Parameter[6] := DialResonance.Position;
+  end;
 end;
 
 procedure TFmCombo.FormShow(Sender: TObject);
 begin
- Assert(Owner is TComboDataModule);
- with TComboDataModule(Owner) do
-  begin
-   SBModel.ItemIndex := round(Parameter[0]);
-  end;
+ UpdateModel;
+ UpdateDrive;
+ UpdateBias;
+ UpdateOutput;
+ UpdateFreq;
+ UpdateReso;
+ UpdateProcess;
+ UpdateNoise;
 end;
 
 procedure TFmCombo.LbStereoClick(Sender: TObject);

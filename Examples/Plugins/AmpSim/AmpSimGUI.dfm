@@ -235,7 +235,7 @@ object FmCombo: TFmCombo
       Height = 64
       LineColor = clMaroon
       CurveMapping = -1.750000000000000000
-      DefaultPosition = 1000.000000000000000000
+      DefaultPosition = 100.000000000000000000
       Max = 10000.000000000000000000
       Min = 10.000000000000000000
       NumGlyphs = 65

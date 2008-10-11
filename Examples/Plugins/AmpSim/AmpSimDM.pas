@@ -9,6 +9,8 @@ uses
   DAV_DSPFilter;
 
 type
+  TModelType = (mtDI, mtSpeakerSim, mtRadio, mtMesaBoogie1, mtMesaBoogie8,
+    mtMarshall4x12, mtScoopedOutMetal);
   TComboDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
@@ -16,16 +18,18 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamBiasChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHPFFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamModelChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamNoiseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOutputChanged(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleOpen(Sender: TObject);
   private
     fBufferSize     : Integer;
     fBufferPosition : Integer;
@@ -34,17 +38,23 @@ type
     fDelay          : array [0..1] of Integer;
     fHighPass       : array [0..1] of TSimpleHighpassFilter;
     fFilterState    : array [0..1, 0..4] of Double;
+    fRndAmt         : Double;
     fLPF, fHPF      : Double;
     fTrim           : Double;
     fDrive, fClip   : Double;
     fBias           : Double;
     fStereo         : Boolean;
     fIsSoftClipping : Boolean;
-    function filterFreq(Frequency: Double): Double;
+    function FilterFreq(Frequency: Double): Double;
+    function GetModelType: TModelType;
+    procedure SetModelType(const Value: TModelType);
+  protected
     procedure DriveChanged;
     procedure BiasChanged;
     procedure TrimChanged;
   public
+    property ModelType: TModelType read GetModelType write SetModelType;
+    property Stereo: Boolean read fStereo;
   end;
 
 implementation
@@ -52,26 +62,37 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_VSTEffect, AmpSimGUI;
+  Math, DAV_VSTEffect, AmpSimGUI, Controls;
+
+procedure TComboDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ fBufferSize := 1024;
+ fBufferPosition := 0;
+ GetMem(fBuffer[0], fBufferSize * SizeOf(Single));
+ GetMem(fBuffer[1], fBufferSize * SizeOf(Single));
+ fHighPass[0] := TSimpleHighpassFilter.Create;
+ fHighPass[1] := TSimpleHighpassFilter.Create;
+
+ {$IFDEF UseGUI}
+ Flags := Flags + [effFlagsHasEditor];
+ {$ENDIF}
+end;
+
+procedure TComboDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ Dispose(fBuffer[0]);
+ Dispose(fBuffer[1]);
+ FreeAndNil(fHighPass[0]);
+ FreeAndNil(fHighPass[1]);
+end;
 
 procedure TComboDataModule.ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fStereo := Value > 0.5;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
-  with TFmCombo(EditorForm) do
-   begin
-    if fStereo then
-     begin
-      LbStereo.Caption := 'Stereo';
-      GuiLED.Brightness_Percent := 100;
-     end
-    else
-     begin
-      LbStereo.Caption := 'Mono';
-      GuiLED.Brightness_Percent := 20;
-     end;
-   end;
+  with TFmCombo(EditorForm)
+   do UpdateProcess;
  {$ENDIF}
 end;
 
@@ -82,12 +103,8 @@ begin
  BiasChanged;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
-  with TFmCombo(EditorForm) do
-   begin
-    if DialDrive.Position <> Value
-     then DialDrive.Position := Value;
-    LbDriveValue.Caption := FloatToStrF(Value, ffGeneral, 3, 3) + '%';
-   end;
+  with TFmCombo(EditorForm)
+   do UpdateDrive;
  {$ENDIF}
 end;
 
@@ -97,12 +114,8 @@ begin
  fHighPass[1].Bandwidth := fHighPass[0].Bandwidth;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
-  with TFmCombo(EditorForm) do
-   begin
-    if DialResonance.Position <> Value
-     then DialResonance.Position := Value;
-    LbResonanceValue.Caption := FloatToStrF(Value, ffGeneral, 3, 3) + '%';
-   end;
+  with TFmCombo(EditorForm)
+   do UpdateReso;
  {$ENDIF}
 end;
 
@@ -111,16 +124,12 @@ begin
  BiasChanged;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
-  with TFmCombo(EditorForm) do
-   begin
-    if DialBias.Position <> Value
-     then DialBias.Position := Value;
-    LbBiasValue.Caption := FloatToStrF(Value, ffGeneral, 3, 3) + '%';
-   end;
+  with TFmCombo(EditorForm)
+   do UpdateBias;
  {$ENDIF}
 end;
 
-function TComboDataModule.filterFreq(Frequency: Double): Double;
+function TComboDataModule.FilterFreq(Frequency: Double): Double;
 var
   j, k, r : Double;
 begin
@@ -130,78 +139,94 @@ begin
  result := (sqrt(sqr(k) - 4 * sqr(j)) - k) / (2 * j);
 end;
 
+function TComboDataModule.GetModelType: TModelType;
+begin
+ result := TModelType(round(ParameterByName['Model']));
+end;
+
+procedure TComboDataModule.SetModelType(const Value: TModelType);
+begin
+ case Value of
+  mtDI:
+    begin
+     fLPF      := 0;
+     fMix[0]   := 0;
+     fMix[1]   := 0;
+     fDelay[0] := 0;
+     fDelay[1] := 0;
+     fHPF      := filterFreq(25);
+    end;
+
+  mtSpeakerSim:
+    begin
+     fLPF      := filterFreq(2700);
+     fMix[0]   := 0;
+     fMix[1]   := 0;
+     fDelay[0] := 0;
+     fDelay[1] := 0;
+     fHPF      := filterFreq(382);
+    end;
+
+  mtRadio:
+    begin
+     fLPF      := filterFreq(1685);
+     fMix[0]   := -1.7;
+     fMix[1]   := 0.82;
+     fDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
+     fDelay[1] := round(SampleRate * 2.3174971031286210892236384704519E-4);
+     fHPF      := filterFreq(25);
+    end;
+
+  mtMesaBoogie1:
+    begin
+     fLPF      := filterFreq(1385);
+     fMix[0]   := -0.53;
+     fMix[1]   := 0.21;
+     fDelay[0] := round(SampleRate * 1.361470388019060585432266848196E-4);
+     fDelay[1] := round(SampleRate * 8.382229673093042749371332774518E-4);
+     fHPF      := filterFreq(25);
+    end;
+
+  mtMesaBoogie8:
+    begin
+     fLPF      := filterFreq(1685);
+     fMix[0]   := -0.85;
+     fMix[1]   := 0.41;
+     fDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
+     fDelay[1] := round(SampleRate * 3.0165912518853695324283559577677E-4);
+     fHPF      := filterFreq(25);
+    end;
+
+  mtMarshall4x12:
+    begin
+     fLPF      := filterFreq(2795);
+     fMix[0]   := -0.29;
+     fMix[1]   := 0.38;
+     fDelay[0] := round(SampleRate * 1.0183299389002036659877800407332E-3);
+     fDelay[1] := round(SampleRate * 4.1631973355537052456286427976686E-4);
+     fHPF      := filterFreq(459);
+    end;
+
+  mtScoopedOutMetal:
+    begin
+     fLPF      := filterFreq(1744);
+     fMix[0]   := -0.96;
+     fMix[1]   := 1.6;
+     fDelay[0] := round(SampleRate * 2.8089887640449438202247191011236E-3);
+     fDelay[1] := round(SampleRate * 7.9176563737133808392715756136184E-4);
+     fHPF      := filterFreq(382);
+    end;
+ end;
+end;
+
 procedure TComboDataModule.ParamModelChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- case round(Value) of
-  0: begin                         // DI
-      fLPF      := 0;
-      fMix[0]   := 0;
-      fMix[1]   := 0;
-      fDelay[0] := 0;
-      fDelay[1] := 0;
-      fHPF      := filterFreq(25);
-     end;
-
-  1: begin                         // speaker sim
-      fLPF      := filterFreq(2700);
-      fMix[0]   := 0;
-      fMix[1]   := 0;
-      fDelay[0] := 0;
-      fDelay[1] := 0;
-      fHPF      := filterFreq(382);
-     end;
-
-  2: begin                        // radio
-      fLPF      := filterFreq(1685);
-      fMix[0]   := -1.7;
-      fMix[1]   := 0.82;
-      fDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
-      fDelay[1] := round(SampleRate * 2.3174971031286210892236384704519E-4);
-      fHPF      := filterFreq(25);
-     end;
-
-  3: begin                        // mesa boogie 1"
-      fLPF      := filterFreq(1385);
-      fMix[0]   := -0.53;
-      fMix[1]   := 0.21;
-      fDelay[0] := round(SampleRate * 1.3614703880190605854322668481961E-4);
-      fDelay[1] := round(SampleRate * 0.0008382229673093042749371332774518);
-      fHPF      := filterFreq(25);
-     end;
-
-  4: begin                        // mesa boogie 8"
-      fLPF      := filterFreq(1685);
-      fMix[0]   := -0.85;
-      fMix[1]   := 0.41;
-      fDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
-      fDelay[1] := round(SampleRate * 3.0165912518853695324283559577677E-4);
-      fHPF      := filterFreq(25);
-     end;
-
-  5: begin                        // Marshall 4x12" celestion
-      fLPF      := filterFreq(2795);
-      fMix[0]   := -0.29;
-      fMix[1]   := 0.38;
-      fDelay[0] := round(SampleRate * 0.0010183299389002036659877800407332);
-      fDelay[1] := round(SampleRate * 4.1631973355537052456286427976686E-4);
-      fHPF      := filterFreq(459);
-     end;
-
-  6: begin                        // scooped-out metal
-      fLPF      := filterFreq(1744);
-      fMix[0]   := -0.96;
-      fMix[1]   := 1.6;
-      fDelay[0] := round(SampleRate * 0.0028089887640449438202247191011236);
-      fDelay[1] := round(SampleRate * 7.9176563737133808392715756136184E-4);
-      fHPF      := filterFreq(382);
-     end;
- end;
+ SetModelType(TModelType(round(Value)));
  TrimChanged;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
-  with TFmCombo(EditorForm) do
-   if SBModel.ItemIndex <> Round(Value)
-    then SBModel.ItemIndex := Round(Value);
+  with TFmCombo(EditorForm)
+   do UpdateModel;
  {$ENDIF}
 end;
 
@@ -212,13 +237,14 @@ begin
  DriveChanged;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
-  with TFmCombo(EditorForm) do
-   begin
-    if DialFrequency.Position <> Value
-     then DialFrequency.Position := Value;
-    LbFrequencyValue.Caption := FloatToStrF(Value, ffGeneral, 5, 5) + 'Hz';
-   end;
+  with TFmCombo(EditorForm)
+   do UpdateFreq;
  {$ENDIF}
+end;
+
+procedure TComboDataModule.ParamNoiseChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fRndAmt := dB_to_Amp(Value);
 end;
 
 procedure TComboDataModule.DriveChanged;
@@ -285,12 +311,8 @@ begin
  TrimChanged;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
-  with TFmCombo(EditorForm) do
-   begin
-    if DialOutput.Position <> Value
-     then DialOutput.Position := Value;
-    LbOutputValue.Caption := FloatToStrF(Value, ffGeneral, 3, 3) + 'dB';
-   end;
+  with TFmCombo(EditorForm)
+   do UpdateOutput;
  {$ENDIF}
 end;
 
@@ -299,42 +321,6 @@ begin
  if Parameter[Index] > 0.5
   then PreDefined := 'STEREO'
   else PreDefined := 'MONO';
-end;
-
-procedure TComboDataModule.VSTModuleCreate(Sender: TObject);
-begin
-(*
- //inits here!
- fParam1 = 1.0;  // Select
- fParam2 = 0.5;  // Drive
- fParam3 = 0.5;  // Bias
- fParam4 = 0.5;  // Output
- fParam5 = 0.4;  // Stereo
- fParam6 = 0.0;  // HPF Frequency
- fParam7 = 0.5;  // HPF Resonance
-*)
-
- fBufferSize := 1024;
- fBufferPosition := 0;
- GetMem(fBuffer[0], fBufferSize * SizeOf(Single));
- GetMem(fBuffer[1], fBufferSize * SizeOf(Single));
- fHighPass[0] := TSimpleHighpassFilter.Create;
- fHighPass[1] := TSimpleHighpassFilter.Create;
-
- {$IFDEF UseGUI}
- Flags := Flags + [effFlagsHasEditor];
- {$ENDIF}
-
- // inits here
- Parameter[0] := 6;
-end;
-
-procedure TComboDataModule.VSTModuleDestroy(Sender: TObject);
-begin
- Dispose(fBuffer[0]);
- Dispose(fBuffer[1]);
- FreeAndNil(fHighPass[0]);
- FreeAndNil(fHighPass[1]);
 end;
 
 procedure TComboDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
@@ -350,7 +336,31 @@ begin
  Parameter[2] := 0;
  Parameter[3] := 0;
  Parameter[4] := 0;
- Parameter[5] := 0;
+ Parameter[5] := 100;
+ Parameter[6] := 0;
+ Parameter[7] := -75;
+ with Programs[0] do
+  begin
+   Parameter[0] := 0;
+   Parameter[1] := 0;
+   Parameter[2] := 0;
+   Parameter[3] := 0;
+   Parameter[4] := 0;
+   Parameter[5] := 100;
+   Parameter[6] := 0;
+   Parameter[7] := -75;
+  end;
+ with Programs[1] do
+  begin
+   Parameter[0] := 3;
+   Parameter[1] := 43.5;
+   Parameter[2] := 41;
+   Parameter[3] := 3.9;
+   Parameter[4] := 0;
+   Parameter[5] := 565;
+   Parameter[6] := 9;
+   Parameter[7] := -75;
+  end;
 end;
 
 procedure TComboDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -363,8 +373,6 @@ var
   d            : Array [0..1] of Integer;
   m            : Array [0..1] of Single;
   bp, Sample   : Integer;
-const
-  RndAmt : Single = 0.0002;
 begin
  m[0] := fMix[0];
  m[1] := fMix[1];
@@ -392,8 +400,8 @@ begin
   begin
    for  Sample := 0 to SampleFrames - 1 do
     begin
-     InP[0] := fHighPass[0].ProcessSample(drv * (RndAmt * random + Inputs[0, Sample] + bi));
-     InP[1] := fHighPass[1].ProcessSample(drv * (RndAmt * random + Inputs[1, Sample] + bi));
+     InP[0] := fHighPass[0].ProcessSample(drv * (fRndAmt * random + Inputs[0, Sample] + bi));
+     InP[1] := fHighPass[1].ProcessSample(drv * (fRndAmt * random + Inputs[1, Sample] + bi));
 
      if fIsSoftClipping then
       begin
@@ -446,7 +454,7 @@ begin
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := fHighPass[0].ProcessSample(drv * (RndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := fHighPass[0].ProcessSample(drv * (fRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        OutP[0] := InP[0] / (1 + abs(InP[0]));
 
@@ -474,7 +482,7 @@ begin
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := fHighPass[0].ProcessSample(drv * (RndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := fHighPass[0].ProcessSample(drv * (fRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        if InP[0] > clp        then OutP[0] :=  clp
         else if InP[0] < -clp then OutP[0] := -clp
@@ -514,14 +522,14 @@ end;
 procedure TComboDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
- InP, OutP    : Array [0..1] of Double;
- trm, clp     : Double;
- LPF, bi      : Double;
- HPF, drv     : Double;
- FilterState  : Array [0..1, 0..4] of Double;
- d            : Array [0..1] of Integer;
- m            : Array [0..1] of Single;
- bp, Sample   : Integer;
+  InP, OutP    : Array [0..1] of Double;
+  trm, clp     : Double;
+  LPF, bi      : Double;
+  HPF, drv     : Double;
+  FilterState  : Array [0..1, 0..4] of Double;
+  d            : Array [0..1] of Integer;
+  m            : Array [0..1] of Single;
+  bp, Sample   : Integer;
 begin
  m[0] := fMix[0];
  m[1] := fMix[1];
@@ -667,6 +675,13 @@ begin
   then FillChar(fFilterState[1, 0], 5 * SizeOf(Double), 0)
   else Move(FilterState[1, 0], fFilterState[1, 0], 5 * SizeOf(Double));
 
+end;
+
+procedure TComboDataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+begin
+ fHighPass[0].SampleRate := SampleRate;
+ fHighPass[1].SampleRate := SampleRate;
+ ModelType := ModelType;
 end;
 
 procedure TComboDataModule.VSTModuleSuspend(Sender: TObject);

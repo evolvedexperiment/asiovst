@@ -126,20 +126,20 @@ object FmVSTEditor: TFmVSTEditor
     TabOrder = 1
   end
   object VstHost: TVstHost
+    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
+    ManageIdleAutomaticly = False
+    ParameterQuantization = 0
+    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
+    Tempo = 120.000000000000000000
+    VendorVersion = 0
     VstPlugIns = <
       item
         DisplayName = 'Plugin'
       end>
-    ParameterQuantization = 0
-    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
-    ManageIdleAutomaticly = False
-    Tempo = 120.000000000000000000
-    VstVersion = 2300
-    VendorVersion = 0
-    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
+    VstVersion = 2300
     Left = 96
     Top = 75
   end
@@ -158,7 +158,7 @@ object FmVSTEditor: TFmVSTEditor
     Left = 124
     Top = 75
   end
-  object XPManifest1: TXPManifest
+  object XPManifest: TXPManifest
     Left = 152
     Top = 75
   end

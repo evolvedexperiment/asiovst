@@ -138,15 +138,23 @@ begin
      FreeAndNil(RS);
     end;
 
-    PI.Active := True;
+    // set parameter count
     for i := 0 to VstHost[0].numParams - 1 do
      with ParameterProperties.Add do
       begin
        OnParameterChange        := VSTModuleParameterChange;
        OnCustomParameterLabel   := CustomParameterLabel;
        OnCustomParameterDisplay := CustomParameterDisplay;
-       DisplayName              := VstHost[0].GetParamName(i);
       end;
+
+    // activate plugin
+    PI.Active := True;
+
+    // scan and rename parameters
+    for i := 0 to VstHost[0].numParams - 1 do
+     with ParameterProperties[fBaseParCount + i]
+      do DisplayName := VstHost[0].GetParamName(i);
+
     UniqueID    := VstHost[0].UniqueID[1] +
                    VstHost[0].UniqueID[2] +
                    VstHost[0].UniqueID[3] + '²';
@@ -224,7 +232,6 @@ begin
     Parameter[5] := 4;
     Parameter[6] := 99;
    end;
-
  finally
   FreeAndNil(RN);
  end;
@@ -236,8 +243,8 @@ begin
  for ch := 0 to Length(fDownsampler) - 1
   do fDownsampler[ch] := TDAVDownsampling.Create(Self);
 
- fOSFactor     := 1;
- fOSActive     := False;
+ fOSFactor := 1;
+ fOSActive := False;
 
  OnProcess := VSTModuleProcess32OversampleSingle;
  OnProcessReplacing := VSTModuleProcess32OversampleSingle;
@@ -375,11 +382,16 @@ function TOversampleTemplateDataModule.VSTModuleInputProperties(Sender: TObject;
 var
   PinProperties : TVstPinProperties;
 begin
- PinProperties := VstHost[0].GetInputProperties(Index);
- vLabel := PinProperties.Caption;
- shortLabel := PinProperties.ShortLabel;
- Flags := PinProperties.Flags;
  Result := False;
+ if VstHost[0].Active then
+  try
+   PinProperties := VstHost[0].GetInputProperties(Index);
+   vLabel        := PinProperties.Caption;
+   shortLabel    := PinProperties.ShortLabel;
+   Flags         := PinProperties.Flags;
+  except
+   Result        := False;
+  end;
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleOfflineNotify(Sender: TObject;
@@ -416,11 +428,16 @@ function TOversampleTemplateDataModule.VSTModuleOutputProperties(Sender: TObject
 var
   PinProperties : TVstPinProperties;
 begin
- PinProperties := VstHost[0].GetOutputProperties(Index);
- vLabel        := PinProperties.Caption;
- shortLabel    := PinProperties.ShortLabel;
- Flags         := PinProperties.Flags;
- Result        := False;
+ Result := False;
+ if VstHost[0].Active then
+  try
+   PinProperties := VstHost[0].GetOutputProperties(Index);
+   vLabel        := PinProperties.Caption;
+   shortLabel    := PinProperties.ShortLabel;
+   Flags         := PinProperties.Flags;
+  except
+   Result        := False;
+  end;
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleClose(Sender: TObject);
@@ -679,10 +696,16 @@ end;
 procedure TOversampleTemplateDataModule.ParamOversamplingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fOSActive := Boolean(round(Value));
- if fOSActive = True
-  then SetOSFactor(round(ParameterByName['OS Factor']))
-  else SetOSFactor(1);
+ while fSemaphore > 0 do sleep(1);
+ inc(fSemaphore);
+ try
+  fOSActive := Boolean(round(Value));
+  if fOSActive = True
+   then SetOSFactor(round(ParameterByName['OS Factor']))
+   else SetOSFactor(1);
+ finally
+  dec(fSemaphore);
+ end;
  if EditorForm is TFmOversampler
   then TFmOversampler(EditorForm).UpdateOverSampling;
 end;
@@ -690,9 +713,15 @@ end;
 procedure TOversampleTemplateDataModule.ParamOSFactorChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if fOSActive = True
-  then SetOSFactor(round(Value))
-  else SetOSFactor(1);
+ while fSemaphore > 0 do sleep(1);
+ inc(fSemaphore);
+ try
+  if fOSActive = True
+   then SetOSFactor(round(Value))
+   else SetOSFactor(1);
+ finally
+  dec(fSemaphore);
+ end;
 
  if EditorForm is TFmOversampler
   then TFmOversampler(EditorForm).UpdateOSFactor;
@@ -702,8 +731,6 @@ procedure TOversampleTemplateDataModule.SetOSFactor(const NewOSFactor: Integer);
 var
   ch : Integer;
 begin
- while fSemaphore > 0 do sleep(1);
- inc(fSemaphore);
  fOSFactor := NewOSFactor;
  for ch := 0 to Length(fDownsampler) - 1
   do fDownsampler[ch].Factor := fOSFactor;
@@ -711,7 +738,6 @@ begin
   do fUpsampler[ch].Factor := fOSFactor;
  TempBufferSize := fMaximumBlockSize * fOSFactor;
  PluginSampleRateChanged;
- dec(fSemaphore);
 end;
 
 procedure TOversampleTemplateDataModule.SetTempBufferSize(const Value: Integer);

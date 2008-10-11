@@ -4,6 +4,7 @@ library AmpSim;
 {$R 'AmpKnob.res' 'AmpKnob.rc'}
 
 uses
+  RTLVCLOptimize,
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,

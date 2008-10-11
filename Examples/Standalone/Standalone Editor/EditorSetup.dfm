@@ -28,7 +28,7 @@ object FmSetup: TFmSetup
   object LbIn: TLabel
     Left = 4
     Top = 34
-    Width = 37
+    Width = 46
     Height = 21
     AutoSize = False
     Caption = 'Input:'
@@ -37,7 +37,7 @@ object FmSetup: TFmSetup
   object Label1: TLabel
     Left = 4
     Top = 58
-    Width = 37
+    Width = 48
     Height = 21
     AutoSize = False
     Caption = 'Output:'
@@ -55,9 +55,9 @@ object FmSetup: TFmSetup
     OnChange = CBDriversChange
   end
   object CBInput: TComboBox
-    Left = 48
+    Left = 56
     Top = 34
-    Width = 172
+    Width = 164
     Height = 21
     Style = csDropDownList
     Color = clBtnFace
@@ -66,9 +66,9 @@ object FmSetup: TFmSetup
     OnChange = CBInputChange
   end
   object CBOutput: TComboBox
-    Left = 48
+    Left = 56
     Top = 58
-    Width = 172
+    Width = 164
     Height = 21
     Style = csDropDownList
     Color = clBtnFace

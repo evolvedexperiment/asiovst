@@ -4,11 +4,6 @@ library OversampleVSTPlugin;
 
 uses
   FastMM4,
-  madExcept,
-  madLinkDisAsm,
-  madListHardware,
-  madListProcesses,
-  madListModules,
   FastMove,
   RTLVCLOptimize,
   ComServ,

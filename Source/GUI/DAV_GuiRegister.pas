@@ -12,7 +12,7 @@ uses
   Classes, DAV_GuiStaticWaveform, DAV_GuiDynamicWaveform, DAV_GuiDial, DAV_GuiLED,
   DAV_GuiGroup, DAV_GuiMidiKeys, DAV_GuiPanel, DAV_GuiADSRGraph, DAV_GuiLevelMeter,
   DAV_GuiAudioDataDisplay, DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiVUMeter,
-  DAV_GuiButton;
+  DAV_GuiButton, DAV_CorrelationMeter;
 
 procedure Register;
 begin
@@ -21,7 +21,8 @@ begin
                                       TGuiLabel, TGuiGroup, TGuiPanel, TGuiLED,
                                       TGuiDial, TGuiDialMetal, TGuiDialEx,
                                       TGuiSelectBox, TGuiMidiKeys, TGuiButton,
-                                      TGuiVUMeter, TGuiLevelMeter]);
+                                      TGuiVUMeter, TGuiLevelMeter,
+                                      TGuiCorrelationMeter]);
 end;
 
 end.

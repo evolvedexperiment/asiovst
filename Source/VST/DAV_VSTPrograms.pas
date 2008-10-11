@@ -18,7 +18,7 @@ type
     FOnStoreChunk     : TChunkEvent;
     FOnLoadChunk      : TChunkEvent;
 
-    procedure SetParameter(AIndex: Integer; s: Single);
+    procedure SetParameter(AIndex: Integer; AValue: Single);
     function GetParameter(AIndex: Integer): Single;
   protected
     FParameter        : array of Single;
@@ -144,19 +144,21 @@ begin
   else inherited;
 end;
 
-procedure TCustomVstProgram.SetParameter(AIndex: Integer; s: Single);
+procedure TCustomVstProgram.SetParameter(AIndex: Integer; AValue: Single);
 begin
+ assert(fVSTModule is TVSTModuleWithPrograms);
  with TVSTModuleWithPrograms(fVSTModule) do
   begin
    if effFlagsProgramChunks in Flags then exit;
    if (AIndex >= 0) and (AIndex < numParams)
-    then FParameter[AIndex] := s
+    then FParameter[AIndex] := AValue
    // else raise exception.Create('Index out of bounds');
   end;
 end;
 
 function TCustomVstProgram.GetParameter(AIndex: Integer): Single;
 begin
+ assert(fVSTModule is TVSTModuleWithPrograms);
  if (AIndex >= 0) and (AIndex < TVSTModuleWithPrograms(fVSTModule).numParams)
   then Result := FParameter[AIndex] else
    begin

@@ -95,6 +95,7 @@ const
 constructor TDAVResampling.Create(AOwner: TComponent);
 begin
  inherited;
+ fFactor              := 1;
  fTransitionBandwidth := 0.99;
  fSampleRate          := 44100;
  Order                := 2;
@@ -185,8 +186,12 @@ var
   Frequency : Double;
 begin
  Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
+ assert(assigned(fFilter[0]));
+ assert(assigned(fFilter[1]));
  fFilter[0].Frequency := Frequency;
  fFilter[1].Frequency := Frequency;
+ fFilter[0].ResetStates;
+ fFilter[1].ResetStates;
 end;
 
 procedure TDAVUpDownsampling.Upsample32(Input: Single;
@@ -251,6 +256,8 @@ procedure TDAVUpDownsampling.OrderChanged;
 begin
  fFilter[0].Order := fOrder;
  fFilter[1].Order := fOrder;
+ fFilter[0].ResetStates;
+ fFilter[1].ResetStates;
  inherited;
 end;
 
@@ -294,6 +301,7 @@ end;
 procedure TDAVUpSampling.OrderChanged;
 begin
  fFilter.Order := fOrder;
+ fFilter.ResetStates;
  inherited;
 end;
 
@@ -305,8 +313,9 @@ end;
 
 procedure TDAVUpSampling.UpdateFilter;
 begin
- if assigned(fFilter)
-  then fFilter.Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
+ assert(assigned(fFilter));
+ fFilter.Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
+ fFilter.ResetStates;
 end;
 
 procedure TDAVUpSampling.Upsample32(Input: Single; Output: PDAVSingleFixedArray);
@@ -378,6 +387,7 @@ end;
 procedure TDAVDownSampling.OrderChanged;
 begin
  fFilter.Order := fOrder;
+ fFilter.ResetStates;
  inherited;
 end;
 
@@ -389,7 +399,9 @@ end;
 
 procedure TDAVDownSampling.UpdateFilter;
 begin
+ assert(assigned(fFilter));
  fFilter.Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
+ fFilter.ResetStates;
 end;
 
 end.

@@ -24,7 +24,7 @@ type
     VSTPanel: TPanel;
     VstHost: TVstHost;
     {$IFNDEF FPC}
-    XPManifest1: TXPManifest;
+    XPManifest: TXPManifest;
     {$ENDIF}
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -73,6 +73,7 @@ var
   theRect  : TRect;
   i        : Integer;
   s, p     : string;
+  PinProps : TVstPinProperties;
 begin
  with VstHost[0] do
   begin

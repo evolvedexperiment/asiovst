@@ -1416,20 +1416,20 @@ begin
   then PVstEffect.ProcessDoubleReplacing(PVstEffect, Inputs, Outputs, SampleFrames);
 end;
 
-procedure TCustomVstPlugIn.SetParameter(index:Integer; parameter:Single);
+procedure TCustomVstPlugIn.SetParameter(Index:Integer; Parameter: Single);
 begin
  if PVstEffect <> nil
   then PVstEffect.setParameter(PVstEffect, Index, Parameter);
 end;
 
-function TCustomVstPlugIn.GetParameter(Index:Integer):Single;
+function TCustomVstPlugIn.GetParameter(Index: Integer): Single;
 begin
  if PVstEffect = nil
   then result := 0
   else result := PVstEffect.getParameter(PVstEffect, Index);
 end;
 
-procedure TCustomVstPlugIn.SetProgram(lValue:Integer);
+procedure TCustomVstPlugIn.SetProgram(lValue: Integer);
 begin
  if FActive then
   begin
@@ -1950,25 +1950,17 @@ begin
 end;
 
 function TCustomVstPlugIn.GetInputProperties(InputNr: Integer): TVstPinProperties;
-var
-  temp: PVstPinProperties;
 begin
- new(temp);
+ FillChar(result, SizeOf(TVstPinProperties), 0);
  if FActive
-  then VstDispatch(effGetInputProperties, InputNr, 0, temp);
- result := temp^;
- Dispose(temp);
+  then VstDispatch(effGetInputProperties, InputNr, 0, @result);
 end;
 
 function TCustomVstPlugIn.GetOutputProperties(OutputNr: Integer): TVstPinProperties;
-var
-  temp: PVstPinProperties;
 begin
- new(temp);
+ FillChar(result, SizeOf(TVstPinProperties), 0);
  if FActive
-  then VstDispatch(effGetOutputProperties, OutputNr, 0, temp);
- result := temp^;
- Dispose(temp);
+  then VstDispatch(effGetOutputProperties, OutputNr, 0, @result);
 end;
 
 function TCustomVstPlugIn.GetPlugCategory:TVstPluginCategory;
