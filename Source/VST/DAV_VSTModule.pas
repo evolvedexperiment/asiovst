@@ -167,7 +167,7 @@ end;
 
 initialization
 //  Set8087CW(Default8087CW or $3F);
-  RegisterInitComponentHandler(TVSTModule,@InitResourceComponent);
+  RegisterInitComponentHandler(TVSTModule, @InitResourceComponent);
 {$ENDIF}
 
 end.

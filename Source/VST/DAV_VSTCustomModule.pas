@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LMessages, Controls, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTChannels, DAV_VSTShellPlugins,
-  DAV_VSTBasicModule;
+  DAV_VSTBasicModule, DAV_VSTOfflineTask;
 
 type
 //  TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
@@ -19,8 +19,8 @@ type
   TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
   TOnDispatcherEvent     = procedure(Sender: TObject; const opCode: TDispatcherOpcode) of object;
   TOfflineNotifyEvent    = procedure(Sender: TObject; const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean) of object;
-  TOfflinePrepareEvent   = procedure(Sender: TObject; const OfflineTask: TVstOfflineTask; const count: Integer) of object;
-  TOfflineRunEvent       = procedure(Sender: TObject; const OfflineTask: TVstOfflineTask; const count: Integer) of object;
+  TOfflinePrepareEvent   = procedure(Sender: TObject; const OfflineTasks: array of TVstOfflineTask) of object;
+  TOfflineRunEvent       = procedure(Sender: TObject; const OfflineTasks: array of TVstOfflineTask) of object;
   TVSTKeyEvent           = procedure(Sender: TObject; var keyCode : TVstKeyCode) of object;
   TProcessVarIOEvent     = procedure(Sender: TObject; const varIo: TVstVariableIo) of object;
   TInOutConnectedEvent   = procedure(Sender: TObject; const Index: Integer; const State: Boolean) of object;
@@ -111,6 +111,8 @@ type
 
     function GetPluginFlags: TEffFlags; virtual;
     function GetUniqueID: string; virtual;
+    function OfflinePrepare(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual;
+    function OfflineRun(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual; 
     procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); override;
     procedure SetBlockSize(newValue: Integer); virtual;
     procedure SetInitialDelay(delay: Integer); virtual;
@@ -130,20 +132,13 @@ type
     procedure SampleRateChanged; virtual;
     procedure BlockSizeChanged; virtual;
 
-    function AllocateArrangement(var Arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean; virtual;   // Allocate memory for a VstSpeakerArrangement containing the given number of channels
-    function DeallocateArrangement(var Arrangement: PVstSpeakerArrangement): Boolean; virtual;                      // Delete/free memory for a speaker Arrangement
-    function CopySpeaker(copyTo, copyFrom: PVstSpeakerProperties): Boolean; virtual;    // Feed the "to" speaker Properties with the same Values than "from"'s ones. It is assumed here that "to" exists yet, ie this function won't allocate memory for the speaker (this will prevent from having a difference between an Arrangement's number of channels and its actual speakers...)
-    function MatchArrangement(var matchTo: PVstSpeakerArrangement; matchFrom: PVstSpeakerArrangement): Boolean; virtual;    // "to" is deleted, then created and initialized with the same Values as "from" ones ("from" must exist).
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor  Destroy; override;
-    procedure   EditorPostUpdate; virtual;
-
     procedure HostCallDispatchEffect(opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single); override;
     procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
 
+    // HostCalls, protected methods that can be overwritten, but shall remain
+    // hidden, since the user should not be able to call them directly!
     function HostCallOpen                      (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
     function HostCallClose                     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
     function HostCallGetVu                     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
@@ -188,10 +183,19 @@ type
     function HostCallSetPanLaw                 (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
     function HostCallSetProcessPrecision       (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
 
+    function AllocateArrangement(var Arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean; virtual;   // Allocate memory for a VstSpeakerArrangement containing the given number of channels
+    function DeallocateArrangement(var Arrangement: PVstSpeakerArrangement): Boolean; virtual;                      // Delete/free memory for a speaker Arrangement
+    function CopySpeaker(copyTo, copyFrom: PVstSpeakerProperties): Boolean; virtual;    // Feed the "to" speaker Properties with the same Values than "from"'s ones. It is assumed here that "to" exists yet, ie this function won't allocate memory for the speaker (this will prevent from having a difference between an Arrangement's number of channels and its actual speakers...)
+    function MatchArrangement(var matchTo: PVstSpeakerArrangement; matchFrom: PVstSpeakerArrangement): Boolean; virtual;    // "to" is deleted, then created and initialized with the same Values as "from" ones ("from" must exist).
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor  Destroy; override;
+    procedure   EditorPostUpdate; virtual;
+
     function UpdateSampleRate: Double; override;
     function UpdateBlockSize: Integer; override;
 
-    {$IFDEF Debug} property DebugLog: TStringList read fLog; {$ENDIF} 
+    {$IFDEF Debug} property DebugLog: TStringList read fLog; {$ENDIF}
 
     // Properties
     property EditorForm: TForm read FEditorForm;
@@ -304,8 +308,8 @@ end;
 
 procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 var
-  Ins  : TDAVArrayOfSingleDynArray absolute Inputs;
-  Outs : TDAVArrayOfSingleDynArray absolute Outputs;
+  Ins     : TDAVArrayOfSingleDynArray absolute Inputs;
+  Outs    : TDAVArrayOfSingleDynArray absolute Outputs;
   OutsTmp : TDAVArrayOfSingleDynArray;
   i, j    : Integer;
 begin
@@ -640,24 +644,54 @@ begin
   end else Result := 0;
 end;
 
+function TCustomVSTModule.OfflinePrepare(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer;
+var
+  VSTOfflineTasks : array of TVstOfflineTask;
+  i               : Integer;
+begin
+ if Assigned(FOnOfflinePrepare) then
+  begin
+   SetLength(VSTOfflineTasks, Count);
+   for i := 0 to Count - 1 do
+    begin
+     VSTOfflineTasks[i] := TVstOfflineTask.Create(OfflineTaskStartPointer);
+     inc(OfflineTaskStartPointer);
+    end;
+   FOnOfflinePrepare(Self, VSTOfflineTasks);
+   for i := 0 to Count - 1 do FreeAndNil(VSTOfflineTasks[i]);
+   Result := 1;
+  end else Result := 0;
+end;
+
+function TCustomVSTModule.OfflineRun(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer;
+var
+  VSTOfflineTasks : array of TVstOfflineTask;
+  i               : Integer;
+begin
+ if Assigned(FOnOfflinePrepare) then
+  begin
+   SetLength(VSTOfflineTasks, Count);
+   for i := 0 to Count - 1 do
+    begin
+     VSTOfflineTasks[i] := TVstOfflineTask.Create(OfflineTaskStartPointer);
+     inc(OfflineTaskStartPointer);
+    end;
+   FOnOfflineRun(Self, VSTOfflineTasks);
+   for i := 0 to Count - 1 do FreeAndNil(VSTOfflineTasks[i]);
+   Result := 1;
+  end else Result := 0;
+end;
+
 function TCustomVSTModule.HostCallOfflinePrepare(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
  {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallOfflinePrepare'); FLog.SaveToFile('Debug.log'); {$ENDIF}
- if Assigned(FOnOfflinePrepare) then
-  begin
-   FOnOfflinePrepare(Self, PVstOfflineTask(vcdOffline)^, Value);
-   Result := 1;
-  end else Result := 0;
+ Result := OfflinePrepare(PVstOfflineTaskRecord(ptr), Value);
 end;
 
 function TCustomVSTModule.HostCallOfflineRun(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
  {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallOfflineRun'); FLog.SaveToFile('Debug.log'); {$ENDIF}
- if Assigned(FOnOfflineRun) then
-  begin
-   FOnOfflineRun(Self, PVstOfflineTask(vcdOffline)^, Value);
-   Result := 1;
-  end else Result := 0;
+ Result := OfflineRun(PVstOfflineTaskRecord(ptr), Value);
 end;
 
 function TCustomVSTModule.HostCallProcessVarIo(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
@@ -813,28 +847,24 @@ begin
 
      {$IFNDEF FPC}
      if keyCode.virt = 0 then b := 0 else b := KF_EXTENDED;
-     if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
-       SendMessage(Hndl, WM_KEYDOWN, a,b)
-     else
-       SendMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
+     if mkAlternate in TVSTModifierKeys(keyCode.modifier)
+      then SendMessage(Hndl, WM_KEYDOWN, a,b)
+      else SendMessage(Hndl, WM_SYSKEYDOWN, a,KF_ALTDOWN);
      SendMessage(Hndl,WM_CHAR, a, b);
      {$ELSE}
      if keyCode.virt = 0 then b := 0 else b := $100;
-     if (keyCode.modifier and MODIFIER_ALTERNATE)<>0 then
-       SendMessage(Hndl, LM_KEYDOWN, a,b)
-     else
-       SendMessage(Hndl, LM_SYSKEYDOWN, a, $2000);
+     if mkAlternate in TVSTModifierKeys(keyCode.modifier)
+      then SendMessage(Hndl, LM_KEYDOWN, a,b)
+      else SendMessage(Hndl, LM_SYSKEYDOWN, a, $2000);
      SendMessage(Hndl,LM_CHAR, a, b);
      {$ENDIF}
 
      if Assigned(FOnKeyDown) then FOnKeyDown(Self, keyCode);
      if Assigned(FOnCheckKey) then
-       if FOnCheckKey(Self, Char(a)) then
-         Result := 1
-       else
-         Result := -1
-     else
-       Result := -1;
+      if FOnCheckKey(Self, Char(a))
+       then Result := 1
+       else Result := -1
+      else Result := -1;
     end;
   except
    Result := -1;
@@ -865,12 +895,12 @@ begin
 
      {$IFNDEF FPC}
      if keyCode.virt=0 then b := 0 else b := KF_EXTENDED;
-     if (keyCode.modifier and MODIFIER_ALTERNATE) <> 0
+     if mkAlternate in TVSTModifierKeys(keyCode.modifier)
       then SendMessage(Hndl, WM_KEYUP, a, b)
       else SendMessage(Hndl, WM_SYSKEYUP, a, KF_ALTDOWN);
      {$ELSE}
      if keyCode.virt = 0 then b := 0 else b := $100;
-     if (keyCode.modifier and MODIFIER_ALTERNATE)<>0
+     if mkAlternate in TVSTModifierKeys(keyCode.modifier)
       then SendMessage(Hndl, LM_KEYUP, a,b)
       else SendMessage(Hndl, LM_SYSKEYUP, a, $2000);
 

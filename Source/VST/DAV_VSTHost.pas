@@ -25,7 +25,7 @@ uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
   {$IFDEF MSWINDOWS} Registry, {$ENDIF} SysUtils, Classes, Graphics, Controls,
   Forms, StdCtrls, ComCtrls, Dialogs, DAV_Common, DAV_AudioData, DAV_VSTEffect, 
-  DAV_DLLLoader {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
+  DAV_VSTOfflineTask, DAV_DLLLoader {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
 type
   TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): Integer of object;
@@ -34,8 +34,8 @@ type
   TVstProcessEventsEvent = procedure(Sender: TObject; p: PVstEvents) of object;
   TVstAutomationNotifyEvent = procedure(Sender: TObject; ParameterIndex: Integer) of object;
   TVstSampleRateChangedEvent = procedure(Sender: TObject; SampleRate: Single) of object;
-  TVstPinConnectedEvent = function(Sender: TObject; PinNr: Integer; isInput: Boolean):Boolean of object;
-  TVstOfflineEvent = procedure(Sender: TObject; VstOfflineTaskPointer: PVstOfflineTask) of object;
+  TVstPinConnectedEvent = function(Sender: TObject; PinNr: Integer; isInput: Boolean): Boolean of object;
+  TVstOfflineEvent = procedure(Sender: TObject; VstOfflineTaskPointer: PVstOfflineTaskRecord) of object;
   TGUIStyle = (gsDefault, gsOld, gsList);
 
   THostCanDo = (hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo,
@@ -73,7 +73,7 @@ type
     FVstVersion                    : Integer;
     FPlugCategory                  : TVstPluginCategory;
     FDLLFileName                   : TFileName;
-    FVstOfflineTask                : TVstOfflineTask;
+    FVstOfflineTasks               : TOwnedCollection;
     FReplaceOrAccumulate           : TReplaceOrAccumulate;
     FProcessLevel                  : TCurrentProcessLevel;
     FAutomationState               : TAutomationState;
@@ -159,7 +159,7 @@ type
     function GetOutputProperties(OutputNr: Integer): TVstPinProperties;
     function GetParamDisplay(index: Integer): string;
     function GetParameter(index: Integer): Single; virtual;
-    function GetParameterProperties(Parameter: Integer): TVstParameterPropertyRecord;
+    function GetParameterProperties(const Parameter: Integer): TVstParameterPropertyRecord;
     function GetParamLabel(index: Integer): string;
     function GetParamName(index: Integer): string;
     function GetPlugCategory: TVstPluginCategory;
@@ -181,8 +181,8 @@ type
     function LoadFromFile(PluginDll: TFilename): Boolean;
     function LoadFromStream(Stream: TStream): Boolean;
     function OfflineNotify(pntr: PVstAudioFile; numAudioFiles: Integer; start: Boolean): Integer;
-    function OfflinePrepare(pntr: PVstOfflineTask; count: Integer): Integer;
-    function OfflineRun(pntr: PVstOfflineTask; count :Integer): Integer;
+    function OfflinePrepare(pntr: PVstOfflineTaskRecord; count: Integer): Integer;
+    function OfflineRun(pntr: PVstOfflineTaskRecord; count :Integer): Integer;
     function ProcessEvents(pntr: PVstEvents): Integer;
     function ProcessVarIo(varIo: PVstVariableIo): Integer;
     function SetBlockSizeAndSampleRate(blockSize: Integer; sampleRate: Single): Integer;
@@ -204,7 +204,7 @@ type
     procedure LoadPreset(FileName: TFileName); overload;
     procedure LoadPreset(Stream: TStream); overload;
     procedure LoadVSTDLL;
-    procedure MainsChanged(bOn: Boolean);
+    procedure MainsChanged(IsOn: Boolean);
     procedure Open;
     procedure Process(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
     procedure ProcessAudio(Inputs, Outputs: PPSingle; SampleFrames: Integer);
@@ -221,9 +221,9 @@ type
     procedure SetEditKnobMode(Mode : TKnobMode);
     procedure SetPanLaw(PanLaw: TVstPanLawType; Gain: Single);
     procedure SetParameter(index: Integer; parameter: Single); virtual;
-    procedure SetProgram(lValue: Integer);
-    procedure SetProgramName(newName: string);
-    procedure SetSampleRate(fSR: Double);
+    procedure SetProgram(const lValue: Integer);
+    procedure SetProgramName(const newName: string);
+    procedure SetSampleRate(Value: Double);
     procedure SetTotalSampleToProcess;
     procedure SetViewPosition(x, y: Integer);
     procedure ShowEdit(Control: TWinControl); overload;
@@ -232,8 +232,11 @@ type
     procedure StopProcess;
     procedure UnLoad;
 
-    property Parameters[Index: Integer]:Single read GetParameter write SetParameter;
-    property VstOfflineTask : TVstOfflineTask read FVstOfflineTask;
+    property Parameter[Index: Integer]: Single read GetParameter write SetParameter;
+    property ParameterName[Index: Integer]: string read GetParamName;
+    property ParameterDisplay[Index: Integer]: string read GetParamDisplay;
+    property ParameterLabel[Index: Integer]: string read GetParamLabel;
+    property VstOfflineTasks: TOwnedCollection read FVstOfflineTasks write FVstOfflineTasks;
 
     property Active: Boolean read FActive write Activate default False;
     property AutomationState: TAutomationState read FAutomationState Write FAutomationState default as0NotSupported;
@@ -307,6 +310,7 @@ type
     property VendorString;
     property VendorVersion;
     property Version;
+    property VstOfflineTasks;
     property OnAfterLoad;
     property OnAudioMasterAutomate;
     property OnAudioMasterBeginEdit;
@@ -412,10 +416,10 @@ type
     FAutoIdle       : Boolean;
     FOnCreate       : TNotifyEvent;
     FOnDestroy      : TNotifyEvent;
-    function getBlockSize : Integer;
-    function getHostCanDos: THostCanDos;
-    function getHostTempo: Single;
-    function getHostVersion: Integer;
+    function GetBlockSize : Integer;
+    function GetHostCanDos: THostCanDos;
+    function GetHostTempo: Single;
+    function GetHostVersion: Integer;
     function GetItem(Index: Integer): TCustomVstPlugIn;
     function GetPluginCount: Integer;
     procedure SetBlockSize(bs: Integer);
@@ -602,6 +606,7 @@ begin
    for i := 0 to HostList.Count - 1 do
     with TCustomVstHost(HostList[i]) do
      begin
+      assert(assigned(VstPlugIns));
       for PlugNr := 0 to VstPlugIns.Count - 1 do
        if VstPlugIns[PlugNr].PVstEffect = Effect then
         begin
@@ -855,11 +860,8 @@ begin
                                                   end;
                                                  kVstDirectorySelect: {$IFDEF Debug} ShowMessage('TODO: Not implemented!') {$ENDIF Debug};
                                                 end;
-                                                if PVstFileSelect(ptr).returnPath = nil then
-                                                 begin
-                                                  HostDialog.Free;
-                                                  HostDialog := nil;
-                                                 end;
+                                                if PVstFileSelect(ptr).returnPath = nil
+                                                 then FreeAndNil(HostDialog);
                                                 Result := Integer(True);
                                                end;
                                              end;
@@ -867,29 +869,14 @@ begin
                                               if assigned(HostDialog) then
                                                case PVstFileSelect(ptr).Command of
                                                 kVstFileLoad:
-                                                 begin
-                                                  if TOpenDialog(HostDialog).Title = PVstFileSelect(ptr).title then
-                                                  begin
-                                                   HostDialog.Free;
-                                                   HostDialog := nil;
-                                                  end;
-                                                 end;
+                                                 if TOpenDialog(HostDialog).Title = PVstFileSelect(ptr).title
+                                                  then FreeAndNil(HostDialog);
                                                 kVstFileSave:
-                                                 begin
-                                                  if TSaveDialog(HostDialog).Title = PVstFileSelect(ptr).title then
-                                                  begin
-                                                   HostDialog.Free;
-                                                   HostDialog := nil;
-                                                  end;
-                                                 end;
+                                                 if TSaveDialog(HostDialog).Title = PVstFileSelect(ptr).title
+                                                  then FreeAndNil(HostDialog);
                                                 kVstMultipleFilesLoad:
-                                                 begin
-                                                  if TOpenDialog(HostDialog).Title = PVstFileSelect(ptr).title then
-                                                  begin
-                                                   HostDialog.Free;
-                                                   HostDialog := nil;
-                                                  end;
-                                                 end;
+                                                 if TOpenDialog(HostDialog).Title = PVstFileSelect(ptr).title
+                                                  then FreeAndNil(HostDialog);
                                                 kVstDirectorySelect:
                                                  begin
                                                  end;
@@ -1065,15 +1052,20 @@ end;
 
 destructor TCustomVstHost.Destroy;
 begin
- if Assigned(FOnDestroy) then FOnDestroy(Self);
- if Assigned(FVstPlugIns) then
-  begin
-   while FVstPlugIns.Count > 0 do FVstPlugIns[0].Free;
-   FreeAndNil(FVstPlugIns);
-  end;
- if Assigned(FVTI) then FreeAndNil(FVTI);
- HostList.Remove(Self);
- inherited;
+ try
+  if Assigned(FOnDestroy) then FOnDestroy(Self);
+  if Assigned(FVstPlugIns) then
+   begin
+    while FVstPlugIns.Count > 0 do FVstPlugIns[0].Free;
+ //   FreeAndNil(FVstPlugIns); do not use this or it will bite!!!
+    FreeAndNil(FVstPlugIns);
+   end;
+  if Assigned(FVTI) then FreeAndNil(FVTI);
+  assert(assigned(HostList));
+  HostList.Remove(Self);
+ finally
+  inherited;
+ end;
 end;
 
 procedure TCustomVstHost.VstTimeInfoChanged(Sender: TObject);
@@ -1090,16 +1082,19 @@ end;
 
 function TCustomVstHost.GetItem(Index: Integer): TCustomVstPlugIn;
 begin
+ assert(assigned(FVstPlugIns));
  Result := FVstPlugIns[Index];
 end;
 
 function TCustomVstHost.GetPluginCount: Integer;
 begin
+ assert(assigned(FVstPlugIns));
  result := FVstPlugIns.Count;
 end;
 
 procedure TCustomVstHost.SetVstPlugIns(const Value: TVstPlugIns);
 begin
+ assert(assigned(FVstPlugIns));
  FVstPlugIns.Assign(Value);
 end;
 
@@ -1125,26 +1120,27 @@ begin
  FHostCanDos := hcd;
 end;
 
-function TCustomVstHost.getHostVersion: Integer;
+function TCustomVstHost.GetHostVersion: Integer;
 begin
  Result := FHostVersion;
 end;
 
-procedure TCustomVstHost.setHostVersion(hv: Integer);
+procedure TCustomVstHost.SetHostVersion(hv: Integer);
 begin
  FHostVersion := hv;
 end;
 
-function TCustomVstHost.getBlockSize: Integer;
+function TCustomVstHost.GetBlockSize: Integer;
 begin
  Result := FBlockSize;
 end;
 
-procedure TCustomVstHost.setBlockSize(bs: Integer);
+procedure TCustomVstHost.SetBlockSize(bs: Integer);
 var
   i : Integer;
 begin
  FBlockSize := bs;
+ assert(assigned(VstPlugIns));
  for i := 0 to VstPlugIns.Count - 1 do
   if assigned( VstPlugIns[i].PVstEffect) then
    VstPlugIns[i].SetBlockSize(FBlockSize);
@@ -1233,34 +1229,38 @@ var
 begin
  if Dest is TCustomVstPlugIn then with TCustomVstPlugIn(Dest) do
  begin
-  DisplayName := Self.DisplayName;
-  ReplaceOrAccumulate := Self.ReplaceOrAccumulate;
-  CurrentProcessLevel := Self.CurrentProcessLevel;
-  AutomationState := Self.AutomationState;
-  OnAudioMasterAutomate := Self.OnAudioMasterAutomate;
-  OnAudioMasterIdle := Self.OnAudioMasterIdle;
-  OnAudioMasterNeedIdle := Self.OnAudioMasterNeedIdle;
-  OnAudioMasterIOChanged := Self.OnAudioMasterIOChanged;
-  OnAudioMasterWantMidi := Self.OnAudioMasterWantMidi;
-  OnAudioMasterOfflineStart := Self.OnAudioMasterOfflineStart;
-  OnAudioMasterOfflineRead := Self.OnAudioMasterOfflineRead;
-  OnAudioMasterOfflineWrite := Self.OnAudioMasterOfflineWrite;
-  OnAudioMasterOfflineGetCurrentPass := Self.OnAudioMasterOfflineGetCurrentPass;
+  DisplayName                            := Self.DisplayName;
+  ReplaceOrAccumulate                    := Self.ReplaceOrAccumulate;
+  CurrentProcessLevel                    := Self.CurrentProcessLevel;
+  AutomationState                        := Self.AutomationState;
+  OnAudioMasterAutomate                  := Self.OnAudioMasterAutomate;
+  OnAudioMasterIdle                      := Self.OnAudioMasterIdle;
+  OnAudioMasterNeedIdle                  := Self.OnAudioMasterNeedIdle;
+  OnAudioMasterIOChanged                 := Self.OnAudioMasterIOChanged;
+  OnAudioMasterWantMidi                  := Self.OnAudioMasterWantMidi;
+  OnAudioMasterOfflineStart              := Self.OnAudioMasterOfflineStart;
+  OnAudioMasterOfflineRead               := Self.OnAudioMasterOfflineRead;
+  OnAudioMasterOfflineWrite              := Self.OnAudioMasterOfflineWrite;
+  OnAudioMasterOfflineGetCurrentPass     := Self.OnAudioMasterOfflineGetCurrentPass;
   OnAudioMasterOfflineGetCurrentMetaPass := Self.OnAudioMasterOfflineGetCurrentMetaPass;
-  OnAudioMasterSetOutputsampleRate := Self.OnAudioMasterSetOutputsampleRate;
-  OnAudioMasterUpdateDisplay := Self.OnAudioMasterUpdateDisplay;
-  OnAudioMasterBeginEdit := Self.OnAudioMasterBeginEdit;
-  OnAudioMasterEndEdit := Self.OnAudioMasterEndEdit;
-  OnAudioMasterPinConnected := Self.OnAudioMasterPinConnected;
-  OnShowEdit := Self.OnShowEdit;
-  OnCloseEdit := Self.OnCloseEdit;
-  OnAfterLoad := Self.OnAfterLoad;
-  OnProcessEvents := Self.OnProcessEvents;
-  DLLFileName := Self.DLLFileName;
-  Active := Self.Active;
-  FProgramNr := Self.ProgramNr;
+  OnAudioMasterSetOutputsampleRate       := Self.OnAudioMasterSetOutputsampleRate;
+  OnAudioMasterUpdateDisplay             := Self.OnAudioMasterUpdateDisplay;
+  OnAudioMasterBeginEdit                 := Self.OnAudioMasterBeginEdit;
+  OnAudioMasterEndEdit                   := Self.OnAudioMasterEndEdit;
+  OnAudioMasterPinConnected              := Self.OnAudioMasterPinConnected;
+  OnShowEdit                             := Self.OnShowEdit;
+  OnCloseEdit                            := Self.OnCloseEdit;
+  OnAfterLoad                            := Self.OnAfterLoad;
+  OnProcessEvents                        := Self.OnProcessEvents;
+  OnVendorSpecific                       := Self.OnVendorSpecific;
+  DLLFileName                            := Self.DLLFileName;
+  Active                                 := Self.Active;
+  GUIStyle                               := Self.GUIStyle;
+  FProgramNr                             := Self.ProgramNr;
+
+  // copy chunk
   i := Self.GetChunk(@p);
-  TCustomVstPlugIn(Dest).SetChunk(p,i)
+  TCustomVstPlugIn(Dest).SetChunk(p, i)
  end else
   inherited;
 end;
@@ -1284,11 +1284,14 @@ begin
  FDLLFileName       := '';
  FGUIStyle          := gsDefault;
  FGUIControlCreated := False;
+ FVstOfflineTasks   := TOwnedCollection.Create(Self, TVstOfflineTaskCollectionItem);
 end;
 
 destructor TCustomVstPlugIn.Destroy;
 begin
  try
+  if assigned(FVstOfflineTasks)
+   then FreeAndNil(FVstOfflineTasks);
   if FDLLFilename <> '' then
    begin
     if EditVisible then CloseEdit;
@@ -1335,21 +1338,20 @@ end;
 
 procedure TCustomVstPlugIn.Open;
 var
-  i      : Integer;
-  tmp    : string;
-  sl     : TStringList;
+  i   : Integer;
+  tmp : string;
 begin
  LoadVSTDLL;
 
  if LongInt(PVstEffect.Magic)<>FourCharToLong('V','s','t','P')
   then raise Exception.Create('There is no magic in it... failed!');
  if PVstEffect.uniqueID = 0 then
-  begin
-   sl :=  TStringList.Create;
-   while ShellGetNextPlugin(tmp) <> 0 do
-   sl.Add(tmp);
-   sl.Free;
-  end;
+  with TStringList.Create do
+   try
+    while ShellGetNextPlugin(tmp) <> 0 do Add(tmp);
+   finally
+    Free;
+   end;
 
  Randomize;
  FEditOpen := False;
@@ -1441,9 +1443,9 @@ begin
   else result := PVstEffect.getParameter(PVstEffect, Index);
 end;
 
-procedure TCustomVstPlugIn.SetProgram(lValue: Integer);
+procedure TCustomVstPlugIn.SetProgram(const lValue: Integer);
 begin
- if FActive then
+ if FActive and (FProgramNr <> lValue) then
   begin
    FProgramNr := lValue;
    VstDispatch(effSetProgram, 0, FProgramNr);
@@ -1458,69 +1460,59 @@ begin
  FProgramNr := result;
 end;
 
-procedure TCustomVstPlugIn.SetProgramName(NewName:string);
+procedure TCustomVstPlugIn.SetProgramName(const NewName: string);
 begin
- if FActive then
-  VstDispatch(effSetProgramName, 0, 0, PChar(NewName));
+ if FActive
+  then VstDispatch(effSetProgramName, 0, 0, PChar(NewName));
 end;
 
-function TCustomVstPlugIn.GetProgramName:string;
-var temp: PChar;
-begin
- result := '';
- if FActive then
-  begin
-   GetMem(temp, 255);
-   if VstDispatch(effGetProgramName, 0, 0, temp)= 0 then
-    result := ShortString(temp);
-   FreeMem(temp);
-  end;
-end;
-
-function TCustomVstPlugIn.GetParamLabel(index:Integer): string;
-var temp: PChar;
-begin
- result := '';
- if FActive then
-  begin
-   GetMem(temp, 255);
-   if VstDispatch(effGetParamLabel, index, 0, temp)= 0 then
-    result := ShortString(temp);
-   FreeMem(temp);
-  end;
-end;
-
-function TCustomVstPlugIn.GetParamDisplay(index:Integer): string;
+function TCustomVstPlugIn.GetProgramName: string;
 var
-  temp: PChar;
+  temp: array [0..255] of Char;
 begin
  result := '';
+ FillChar(temp[0], 256, 0);
  if FActive then
-  begin
-   GetMem(temp, 255);
-   if VstDispatch(effGetParamDisplay, index, 0, temp) = 0
-    then result := ShortString(temp);
-   FreeMem(temp);
-  end;
+  if VstDispatch(effGetProgramName, 0, 0, @temp[0]) = 0
+   then result := StrPas(@temp[0]);
 end;
 
-function TCustomVstPlugIn.GetParamName(index:Integer): string;
+function TCustomVstPlugIn.GetParamLabel(index: Integer): string;
 var
-  temp: PChar;
+  temp: array [0..255] of Char;
 begin
  result := '';
+ FillChar(temp[0], 256, 0);
  if FActive then
-  begin
-   GetMem(temp, 255);
-   if VstDispatch(effGetParamName, index, 0, temp) = 0
-    then result := ShortString(temp);
-   FreeMem(temp);
-  end;
+  if VstDispatch(effGetParamLabel, index, 0, @temp[0]) = 0
+   then result := StrPas(@temp[0]);
 end;
 
-procedure TCustomVstPlugIn.SetSampleRate(fSR: Double);
+function TCustomVstPlugIn.GetParamDisplay(index: Integer): string;
+var
+  temp: array [0..255] of Char;
 begin
- VstDispatch(effSetSampleRate, 0, 0, nil, fSR);
+ result := '';
+ FillChar(temp[0], 256, 0);
+ if FActive then
+  if VstDispatch(effGetParamDisplay, index, 0, @temp[0]) = 0
+   then result := StrPas(@temp[0]);
+end;
+
+function TCustomVstPlugIn.GetParamName(index: Integer): string;
+var
+  temp: array [0..255] of Char;
+begin
+ result := '';
+ FillChar(temp[0], 256, 0);
+ if FActive then
+  if VstDispatch(effGetParamName, index, 0, @temp[0]) = 0
+   then result := StrPas(@temp[0]);
+end;
+
+procedure TCustomVstPlugIn.SetSampleRate(Value: Double);
+begin
+ VstDispatch(effSetSampleRate, 0, 0, nil, Value);
 end;
 
 procedure TCustomVstPlugIn.SetBlockSize(value: Integer);
@@ -1528,9 +1520,9 @@ begin
  VstDispatch(effSetBlockSize, 0, value);
 end;
 
-procedure TCustomVstPlugIn.MainsChanged(bOn: Boolean);
+procedure TCustomVstPlugIn.MainsChanged(IsOn: Boolean);
 begin
- VstDispatch(effMainsChanged, 0, Integer(bOn));
+ VstDispatch(effMainsChanged, 0, Integer(IsOn));
 end;
 
 function TCustomVstPlugIn.GetVu: Single;
@@ -1538,7 +1530,8 @@ const
   Divisor : Double = 1 / 32767;
 begin
  if FActive
-  then result := VstDispatch(effGetVu) * Divisor else result := -1;
+  then result := VstDispatch(effGetVu) * Divisor
+  else result := -1;
 end;
 
 function TCustomVstPlugIn.GetRect: TRect;
@@ -1554,11 +1547,14 @@ var
   temp: PPERect;
 begin
  GetMem(temp, SizeOf(PPERect));
- if fActive then VstDispatch(effEditGetRect, 0, 0, temp);
- if Assigned(temp) then
-  if Assigned(temp^)
-   then result := temp^^;
- FreeMem(temp);
+ try
+  if fActive then VstDispatch(effEditGetRect, 0, 0, temp);
+  if Assigned(temp) then
+   if Assigned(temp^)
+    then result := temp^^;
+ finally
+  Dispose(temp);
+ end;
 end;
 
 function TCustomVstPlugIn.EditOpen(Handle: THandle): Integer;
@@ -1696,24 +1692,24 @@ begin
       begin
        with TLabel.Create(Control) do
         begin
-         Name := 'LbL' + IntToStr(i); Parent := Control; Caption := GetParamName(i)+':';
-         Height := 16; Alignment := taCenter; Left := 2; Top := 2+i*Height;
+         Name := 'LbL' + IntToStr(i); Parent := Control; Caption := GetParamName(i) + ':'; 
+         Height := 16; Alignment := taCenter; Left := 2; Top := 2 + i * Height;
         end;
        with TLabel.Create(Control) do
         begin
          Name := 'LbV' + IntToStr(i); Parent := Control; Alignment := taCenter;
-         Height := 16; Left := Control.Width-Left-72; AutoSize := False;
-         Alignment := taCenter; Width := 65; Top := 2+i*Height;
+         Height := 16; Left := Control.Width - Left - 72; AutoSize := False;
+         Alignment := taCenter; Width := 65; Top := 2 + i * Height;
         end;
        with TScrollBar.Create(Control) do
         begin
          Name := 'ParamBar' + IntToStr(i); Parent := Control;
          Anchors := [akLeft, akTop, akRight];
          Kind := sbHorizontal; LargeChange := 10;
-         Height := 16; Top := 2+i*Height; Tag := i;
+         Height := 16; Top := 2 + i * Height; Tag := i;
          Left := wxw+2; Width := Control.Width-Left-72;
-         Min := 0; Max := 1000; TabOrder := 3+i;
-         Position := Round(1000 * Parameters[i]);
+         Min := 0; Max := 1000; TabOrder := 3 + i;
+         Position := Round(1000 * Parameter[i]);
          OnChange := ListParamChange;
          ListParamChange(GUIControl.FindComponent('ParamBar'+IntToStr(i)));
         end;
@@ -1734,7 +1730,7 @@ var
 begin
  with (Sender as TScrollBar) do
   try
-   Parameters[Tag] := Position * 0.001;
+   Parameter[Tag] := Position * 0.001;
    lb := TLabel(GUIControl.FindComponent('LbV' + IntToStr(Tag)));
    if Assigned(lb) then
     begin
@@ -1924,18 +1920,14 @@ end;
 
 function TCustomVstPlugIn.GetProgramNameIndexed(Category, Index: Integer; var ProgramName: string): Integer;
 var
-  TempName : PChar;
+  TempName : array [0..255] of char;
 begin
  if FActive
   then
    begin
-    GetMem(TempName, 255);
-    try
-     result := VstDispatch(effGetProgramNameIndexed, Index, Category, TempName);
-     ProgramName := StrPas(TempName);
-    finally
-     Dispose(TempName);
-    end;
+    result := VstDispatch(effGetProgramNameIndexed, Index, Category, @TempName[0]);
+    if result > 0
+     then ProgramName := StrPas(@TempName[0]);
    end
   else result := -1;
 end;
@@ -2001,12 +1993,12 @@ begin
  result := VstDispatch(effOfflineNotify, Integer(start), numAudioFiles, pntr);
 end;
 
-function TCustomVstPlugIn.OfflinePrepare(pntr: PVstOfflineTask; count: Integer): Integer;
+function TCustomVstPlugIn.OfflinePrepare(pntr: PVstOfflineTaskRecord; count: Integer): Integer;
 begin
  result := VstDispatch(effOfflinePrepare, 0, count, pntr);
 end;
 
-function TCustomVstPlugIn.OfflineRun(pntr: PVstOfflineTask; count: Integer): Integer;
+function TCustomVstPlugIn.OfflineRun(pntr: PVstOfflineTaskRecord; count: Integer): Integer;
 begin
  result := VstDispatch(effOfflineRun, 0, count, pntr);
 end;
@@ -2033,30 +2025,24 @@ end;
 
 function TCustomVstPlugIn.GetEffectName: string;
 var
-  temp: PChar;
+  temp: array [0..255] of Char;
 begin
  result := '';
+ FillChar(temp[0], 256, 0);
  if FActive then
-  begin
-   GetMem(temp, 255);
-   if VstDispatch(effGetEffectName, 0, 0, temp) <> 0
-    then result := ShortString(temp);
-   FreeMem(temp);
-  end;
+  if VstDispatch(effGetEffectName, 0, 0, @temp[0]) <> 0
+   then result := StrPas(@temp[0]);
 end;
 
 function TCustomVstPlugIn.GetErrorText: string;
 var
-  temp: PChar;
+  temp: Array [0..257] of Char;
 begin
  result := '';
+ FillChar(temp[0], 258, 0);
  if FActive then
-  begin
-   GetMem(temp, 258);
-   if VstDispatch(effGetErrorText, 0, 0, temp) = 0
-    then result := ShortString(temp);
-   FreeMem(temp);
-  end;
+  if VstDispatch(effGetErrorText, 0, 0, @temp[0]) <> 0
+   then result := StrPas(@temp[0]);
 end;
 
 function TCustomVstPlugIn.GetFriendlyNameString(const StringLength: Integer): string;
@@ -2087,30 +2073,24 @@ end;
 
 function TCustomVstPlugIn.GetVendorString: string;
 var
-  temp: PChar;
+  temp: Array [0..255] of Char;
 begin
  result := '';
+ FillChar(temp[0], 256, 0);
  if FActive then
-  begin
-   GetMem(temp, 255);
-   if VstDispatch(effGetVendorString, 0, 0, temp) <> 0
-    then result := ShortString(temp);
-   FreeMem(temp);
-  end;
+  if VstDispatch(effGetVendorString, 0, 0, @temp[0]) <> 0
+   then result := StrPas(@temp[0]);
 end;
 
 function TCustomVstPlugIn.GetProductString: string;
 var
-  temp: PChar;
+  temp: Array [0..255] of Char;
 begin
  result := '';
+ FillChar(temp[0], 256, 0);
  if FActive then
-  begin
-   GetMem(temp, 255);
-   if VstDispatch(effGetProductString, 0, 0, temp) <> 0
-    then result := ShortString(temp);
-   FreeMem(temp);
-  end;
+  if VstDispatch(effGetProductString, 0, 0, @temp[0]) <> 0
+   then result := StrPas(@temp[0]);
 end;
 
 function TCustomVstPlugIn.GetVendorVersion: Integer;
@@ -2154,7 +2134,7 @@ begin
  VstDispatch(effSetViewPosition, x, y);
 end;
 
-function TCustomVstPlugIn.GetParameterProperties(Parameter: Integer): TVstParameterPropertyRecord;
+function TCustomVstPlugIn.GetParameterProperties(const Parameter: Integer): TVstParameterPropertyRecord;
 begin
  if FActive
   then VstDispatch(effGetParameterProperties, Parameter, 0, @result);
@@ -2293,16 +2273,15 @@ end;
 
 function TCustomVstPlugIn.ShellGetNextPlugin(var PluginName:String): Integer;
 var
-  temp: PChar;
+  temp: array [0..255] of Char;
 begin
- Result := 0; 
+ Result := 0;
  if FActive then
- begin
-  GetMem(temp, 255);
-  Result := VstDispatch(effShellGetNextPlugin, 0, 0, temp); // returns the next plugin's uniqueID.
-  if Result <> 0 then PluginName := ShortString(temp);
-  FreeMem(temp);
- end;
+  begin
+   FillChar(temp[0], 256, 0);
+   result := VstDispatch(effShellGetNextPlugin, 0, 0, @temp[0]); // returns the next plugin's uniqueID.
+   if result <> 0 then PluginName := StrPas(@temp[0]);
+  end;
 end;
 
 procedure TCustomVstPlugIn.StartProcess;
@@ -2934,7 +2913,7 @@ initialization
  {$ENDIF}
  audioMaster := AudioMasterCallback;
  HostWindows := TObjectList.Create;
- HostList    := TObjectList.Create;
+ HostList    := TObjectList.Create(False);
 
 finalization
   FreeAndNil(HostWindows);

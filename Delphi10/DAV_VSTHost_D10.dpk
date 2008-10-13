@@ -30,7 +30,10 @@ requires
   rtl,
   designide,
   DAV_Common_D10,
-  DAV_VstPlugin_D10;
+  DAV_VstPlugin_D10,
+  xmlrtl,
+  vclactnband,
+  vclx;
 
 contains
   DAV_VSTHost in '..\Source\VST\DAV_VSTHost.pas';

@@ -21,7 +21,7 @@ type
 
     function GetEffect: PVSTEffect; virtual;
 
-    procedure SetAudioMaster(const AM :TAudioMasterCallbackFunc); virtual;
+    procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); virtual;
 
     function  GetMasterVersion: Integer; virtual;
     function  GetCurrentUniqueID: Integer; virtual;
@@ -48,8 +48,8 @@ type
     function  GetCurrentProcessLevel: Integer; virtual;  // returns: 0: not supported, 1: currently in user thread (gui) 2: currently in audio thread or irq (where Process is called) 3: currently in 'sequencer' thread or irq (midi, timer etc) 4: currently offline Processing and thus in user thread other: not defined, but probably pre-empting user thread.
     function  GetAutomationState: Integer; virtual;  // returns 0: not supported, 1: off, 2:read, 3:write, 4:read/write
 
-    function  OfflineRead(offline: PVstOfflineTask; option: TVstOfflineOption; readSource: Boolean): Boolean; virtual;
-    function  OfflineWrite(offline: PVstOfflineTask; option: TVstOfflineOption): Boolean; virtual;
+    function  OfflineRead(offline: PVstOfflineTaskRecord; option: TVstOfflineOption; readSource: Boolean): Boolean; virtual;
+    function  OfflineWrite(offline: PVstOfflineTaskRecord; option: TVstOfflineOption): Boolean; virtual;
     function  OfflineStart(ptr: PVstAudioFile; numAudioFiles: Integer; numNewAudioFiles: Integer): Boolean; virtual;
     function  OfflineGetCurrentPass: Integer; virtual;
     function  OfflineGetCurrentMetaPass: Integer; virtual;
@@ -73,28 +73,13 @@ type
 
     function  BeginEdit(Index: Integer): Boolean; virtual;  // to be called before a setParameterAutomated with mouse move (one per Mouse Down)
     function  EndEdit(Index: Integer): Boolean; virtual;    // to be called after a setParameterAutomated (on Mouse Up)
-    
+
     function  OpenFileSelector(ptr: PVstFileSelect): Boolean; virtual;
     function  CloseFileSelector(ptr: PVstFileSelect): Boolean;
     function  GetChunkFile(nativePath: pointer): Boolean;
 
-    function  UpdateSampleRate: Double; virtual;  // gets and returns sample rate from host (may issue setSampleRate() )
-    function  UpdateBlockSize: Integer; virtual;  // same for block size
-
-    function  GetInputSpeakerArrangement: PVstSpeakerArrangement; virtual;
-    function  GetOutputSpeakerArrangement: PVstSpeakerArrangement; virtual;
-  public
-    constructor Create(AOwner: TComponent); override;
-
-    procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
-    procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
-    procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); virtual; abstract;
-
-    function  HostCallGetParameter(Index: Integer): Single; virtual; abstract;
-    procedure HostCallSetParameter(Index: Integer; Value: Single); virtual; abstract;
-
-    procedure HostCallDispatchEffect(opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single); virtual; abstract;
-
+    // HostCalls, protected methods that can be overwritten, but shall remain
+    // hidden, since the user should not be able to call them directly!
     function HostCallOpen                      (Index, Value: Integer; ptr: pointer; opt: Single): Integer; virtual;
     function HostCallClose                     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; virtual;
     function HostCallSetProgramm               (Index, Value: Integer; ptr: pointer; opt: Single): Integer; virtual;
@@ -176,6 +161,23 @@ type
     function HostCallGetNumMidiInputChannels   (Index, Value: Integer; ptr: pointer; opt: Single): Integer; virtual;
     function HostCallGetNumMidiOutputChannels  (Index, Value: Integer; ptr: pointer; opt: Single): Integer; virtual;
 
+    procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); virtual; abstract;
+
+    procedure HostCallDispatchEffect(opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single); virtual; abstract;
+
+    function  UpdateSampleRate: Double; virtual;  // gets and returns sample rate from host (may issue setSampleRate() )
+    function  UpdateBlockSize: Integer; virtual;  // same for block size
+
+    function  GetInputSpeakerArrangement: PVstSpeakerArrangement; virtual;
+    function  GetOutputSpeakerArrangement: PVstSpeakerArrangement; virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+
+    function  HostCallGetParameter(Index: Integer): Single; virtual; abstract;
+    procedure HostCallSetParameter(Index: Integer; Value: Single); virtual; abstract;
+
     property Effect: PVSTEffect read GetEffect;
     property AudioMaster: TAudioMasterCallbackFunc read FAudioMaster write SetAudioMaster;
     {$IFNDEF UseDelphi}
@@ -184,10 +186,17 @@ type
     {$ENDIF}
   end;
 
+function  DispatchEffectFunc(Effect: PVSTEffect; OpCode : TDispatcherOpCode; Index, Value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
+function  GetParameterFunc(Effect: PVSTEffect; Index: Integer): Single; cdecl;
+procedure SetParameterFunc(Effect: PVSTEffect; Index: Integer; Value: Single); cdecl;
+procedure ProcessFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
+procedure ProcessReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
+procedure ProcessDoubleReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPDouble; SampleFrames: Integer); cdecl;
+
 implementation
 
 uses
-  Sysutils, DAV_VSTEffectFunctions;
+  Sysutils;
 
 { TBasicVSTModule }
 constructor TBasicVSTModule.Create(AOwner: TComponent);
@@ -226,7 +235,7 @@ procedure TBasicVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
 begin
   FAudioMaster := AM;
   if FAudioMaster(nil, audioMasterVersion, 0, 0, nil, 0) = 0 then
-    raise exception.Create('AudioMaster Error');
+    raise Exception.Create('AudioMaster Error');
 end;
 
 
@@ -235,76 +244,77 @@ end;
 // Calls to the Host
 // ------------------------------------------------------------------
 function TBasicVSTModule.GetMasterVersion: Integer;
-var vers: Integer;
+var
+  vers: Integer;
 begin
-  vers := 1;
-  if Assigned(FAudioMaster) then
+ vers := 1;
+ if Assigned(FAudioMaster) then
   begin
-    vers := FAudioMaster(@FEffect, audioMasterVersion, 0, 0, nil, 0);
-    if vers = 0 then vers := 1;
+   vers := FAudioMaster(@FEffect, audioMasterVersion, 0, 0, nil, 0);
+   if vers = 0 then vers := 1;
   end;
 
-  Result := vers;
+ Result := vers;
 end;
 
 function TBasicVSTModule.GetCurrentUniqueId: Integer;
 begin
-  if Assigned(FAudioMaster) then
-    Result := FAudioMaster(@FEffect, audioMasterCurrentId, 0, 0, nil, 0)
-  else
-    Result := 0;
+ if Assigned(FAudioMaster)
+  then Result := FAudioMaster(@FEffect, audioMasterCurrentId, 0, 0, nil, 0)
+  else Result := 0;
 end;
 
 procedure TBasicVSTModule.MasterIdle;
 begin
-  if Assigned(FAudioMaster) then FAudioMaster(@FEffect, audioMasterIdle, 0, 0, nil, 0);
+ if Assigned(FAudioMaster) then FAudioMaster(@FEffect, audioMasterIdle, 0, 0, nil, 0);
 end;
 
 function TBasicVSTModule.IsInputConnected(input: Integer): Boolean;
-var ret: Integer;
+var
+  ret: Integer;
 begin
-  ret := 0;
-  if Assigned(FAudioMaster) then ret := FAudioMaster(@FEffect, audioMasterPinConnected, input, 0, nil, 0);
+ ret := 0;
+ if Assigned(FAudioMaster)
+  then ret := FAudioMaster(@FEffect, audioMasterPinConnected, input, 0, nil, 0);
 
-  Result := (ret = 0);
+ Result := (ret = 0);
 end;
 
 function TBasicVSTModule.IsOutputConnected(output: Integer): Boolean;
-var ret: Integer;
+var
+  ret: Integer;
 begin
-  ret := 0;
-  if Assigned(FAudioMaster) then
-    ret := FAudioMaster(@FEffect, audioMasterPinConnected, output, 1, nil, 0);
+ ret := 0;
+ if Assigned(FAudioMaster)
+  then ret := FAudioMaster(@FEffect, audioMasterPinConnected, output, 1, nil, 0);
 
-  Result := (ret = 0);
+ Result := (ret = 0);
 end;
 
 procedure TBasicVSTModule.WantEvents(filter: Integer);
 begin
-  if Assigned(FAudioMaster) then
-    FAudioMaster(@FEffect, audioMasterWantMidi, 0, filter, nil, 0);
+ if Assigned(FAudioMaster)
+  then FAudioMaster(@FEffect, audioMasterWantMidi, 0, filter, nil, 0);
 end;
 
 function TBasicVSTModule.GetTimeInfo(filter: Integer): PVstTimeInfo;
 begin
-  if Assigned(FAudioMaster) then
-    Result := PVstTimeInfo(FAudioMaster (@FEffect, audioMasterGetTime, 0, filter, nil, 0))
-  else
-    Result := nil;
+ if Assigned(FAudioMaster)
+  then Result := PVstTimeInfo(FAudioMaster (@FEffect, audioMasterGetTime, 0, filter, nil, 0))
+  else Result := nil;
 end;
 
 procedure TBasicVSTModule.SetTimeInfo(filter: Integer; ti: PVstTimeInfo);
 begin
-  if Assigned(FAudioMaster) then
-    FAudioMaster(@FEffect, audioMasterSetTime, 0, filter, ti, 0);
+ if Assigned(FAudioMaster)
+  then FAudioMaster(@FEffect, audioMasterSetTime, 0, filter, ti, 0);
 end;
 
 function TBasicVSTModule.TempoAt(pos: Integer): Integer;
 begin
-  if Assigned(FAudioMaster) then
-    Result := FAudioMaster(@FEffect, audioMasterTempoAt, 0, pos, nil, 0)
-  else
-    Result := 0;
+ if Assigned(FAudioMaster)
+  then Result := FAudioMaster(@FEffect, audioMasterTempoAt, 0, pos, nil, 0)
+  else Result := 0;
 end;
 
 function TBasicVSTModule.SendVstEventsToHost(events: PVstEvents): Boolean;
@@ -393,7 +403,7 @@ begin
     Result := 0;
 end;
 
-function TBasicVSTModule.OfflineRead(Offline: PVstOfflineTask; Option: TVstOfflineOption; readSource: Boolean): Boolean;
+function TBasicVSTModule.OfflineRead(Offline: PVstOfflineTaskRecord; Option: TVstOfflineOption; readSource: Boolean): Boolean;
 begin
   if Assigned(FAudioMaster) then
     Result := (FAudioMaster(@FEffect, audioMasterOfflineRead, Integer(readSource), Integer(option), offline, 0) <> 0)
@@ -401,7 +411,7 @@ begin
     Result := False;
 end;
 
-function TBasicVSTModule.OfflineWrite(offline: PVstOfflineTask; option: TVstOfflineOption): Boolean;
+function TBasicVSTModule.OfflineWrite(offline: PVstOfflineTaskRecord; option: TVstOfflineOption): Boolean;
 begin
   if Assigned(FAudioMaster) then
     Result := (FAudioMaster(@FEffect, audioMasterOfflineWrite, 0, Integer(option), offline, 0) <> 0)
@@ -861,5 +871,143 @@ begin Result := 0; end;
 function TBasicVSTModule.HostCallGetNumMidiOutputChannels(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin Result := 0; end;
 
+
+// effect functions
+
+function DispatchEffectFunc(Effect: PVSTEffect; OpCode : TDispatcherOpCode; Index, Value: Integer; ptr: pointer; opt: Single): Integer; cdecl;
+begin
+ if assigned(Effect) and (TObject(Effect^.vObject) is TBasicVSTModule) then
+  with TBasicVSTModule(Effect^.vObject) do
+   begin
+    HostCallDispatchEffect(OpCode, Index, Value, ptr, opt);
+
+    case OpCode of
+     effOpen:                      Result := HostCallOpen(Index, Value, ptr, opt);
+     effClose:                     try
+                                    HostCallClose(Index, Value, ptr, opt);
+                                    Effect^.vObject := nil;
+                                    Free;
+                                    Result := 1;
+                                   except
+                                    Result := 0;
+                                   end;
+     effSetProgram:                Result := HostCallSetProgramm(Index, Value, ptr, opt);
+     effGetProgram:                Result := HostCallGetProgramm(Index, Value, ptr, opt);
+     effSetProgramName:            Result := HostCallSetProgramName(Index, Value, ptr, opt);
+     effGetProgramName:            Result := HostCallGetProgramName(Index, Value, ptr, opt);
+     effGetParamLabel:             Result := HostCallGetParamLabel(Index, Value, ptr, opt);
+     effGetParamDisplay:           Result := HostCallGetParamDisplay(Index, Value, ptr, opt);
+     effGetParamName:              Result := HostCallGetParamName(Index, Value, ptr, opt);
+     effGetVu:                     Result := HostCallGetVu(Index, Value, ptr, opt);
+     effSetSampleRate:             Result := HostCallSetSampleRate(Index, Value, ptr, opt);
+     effSetBlockSize:              Result := HostCallSetBlockSize(Index, Value, ptr, opt);
+     effMainsChanged:              Result := HostCallMainsChanged(Index, Value, ptr, opt);
+     effEditGetRect:               Result := HostCallEditGetRect(Index, Value, ptr, opt);
+     effEditOpen:                  Result := HostCallEditOpen(Index, Value, ptr, opt);
+     effEditClose:                 Result := HostCallEditClose(Index, Value, ptr, opt);
+     effEditDraw:                  Result := HostCallEditDraw(Index, Value, ptr, opt);
+     effEditMouse:                 Result := HostCallEditMouse(Index, Value, ptr, opt);
+     effEditKey:                   Result := HostCallEditKey(Index, Value, ptr, opt);
+     effEditIdle:                  Result := HostCallEditIdle(Index, Value, ptr, opt);
+     effEditTop:                   Result := HostCallEditTop(Index, Value, ptr, opt);
+     effEditSleep:                 Result := HostCallEditSleep(Index, Value, ptr, opt);
+     effIdentify:                  Result := HostCallIdentify(Index, Value, ptr, opt);
+     effGetChunk:                  Result := HostCallGetChunk(Index, Value, ptr, opt);
+     effSetChunk:                  Result := HostCallSetChunk(Index, Value, ptr, opt);
+     effProcessEvents:             Result := HostCallProcessEvents(Index, Value, ptr, opt);
+     effCanBeAutomated:            Result := HostCallCanBeAutomated(Index, Value, ptr, opt);
+     effString2Parameter:          Result := HostCallString2Parameter(Index, Value, ptr, opt);
+     effGetNumProgramCategories:   Result := HostCallGetNumProgramCategories(Index, Value, ptr, opt);
+     effGetProgramNameIndexed:     Result := HostCallGetProgramNameIndexed(Index, Value, ptr, opt);
+     effCopyProgram:               Result := HostCallCopyProgram(Index, Value, ptr, opt);
+     effConnectInput:              Result := HostCallConnectInput(Index, Value, ptr, opt);
+     effConnectOutput:             Result := HostCallConnectOutput(Index, Value, ptr, opt);
+     effGetInputProperties:        Result := HostCallGetInputProperties(Index, Value, ptr, opt);
+     effGetOutputProperties:       Result := HostCallGetOutputProperties(Index, Value, ptr, opt);
+     effGetPlugCategory:           Result := HostCallGetPlugCategory(Index, Value, ptr, opt);
+     effGetCurrentPosition:        Result := HostCallGetCurrentPosition(Index, Value, ptr, opt);
+     effGetDestinationBuffer:      Result := HostCallGetDestinationBuffer(Index, Value, ptr, opt);
+     effOfflineNotify:             Result := HostCallOfflineNotify(Index, Value, ptr, opt);
+     effOfflinePrepare:            Result := HostCallOfflinePrepare(Index, Value, ptr, opt);
+     effOfflineRun:                Result := HostCallOfflineRun(Index, Value, ptr, opt);
+     effProcessVarIo:              Result := HostCallProcessVarIo(Index, Value, ptr, opt);
+     effSetSpeakerArrangement:     Result := HostCallSetSpeakerArrangement(Index, Value, ptr, opt);
+     effSetBlockSizeAndSampleRate: Result := HostCallSetBlockSizeAndSampleRate(Index, Value, ptr, opt);
+     effSetBypass:                 Result := HostCallSetBypass(Index, Value, ptr, opt);
+     effGetEffectName:             Result := HostCallGetEffectName(Index, Value, ptr, opt);
+     effGetErrorText:              Result := HostCallGetErrorText(Index, Value, ptr, opt);
+     effGetVendorString:           Result := HostCallGetVendorString(Index, Value, ptr, opt);
+     effGetProductString:          Result := HostCallGetProductString(Index, Value, ptr, opt);
+     effGetVendorVersion:          Result := HostCallGetVendorVersion(Index, Value, ptr, opt);
+     effVendorSpecific:            Result := HostCallVendorSpecific(Index, Value, ptr, opt);
+     effCanDo:                     Result := HostCallCanDo(Index, Value, ptr, opt);
+     effGetTailSize:               Result := HostCallGetTailSize(Index, Value, ptr, opt);
+     effIdle:                      Result := HostCallIdle(Index, Value, ptr, opt);
+     effGetIcon:                   Result := HostCallGetIcon(Index, Value, ptr, opt);
+     effSetViewPosition:           Result := HostCallSetViewPosition(Index, Value, ptr, opt);
+     effGetParameterProperties:    Result := HostCallGetParameterProperties(Index, Value, ptr, opt);
+     effKeysRequired:              Result := HostCallKeysRequired(Index, Value, ptr, opt);
+     effGetVstVersion:             Result := HostCallGetVstVersion(Index, Value, ptr, opt);
+     effEditKeyDown:               Result := HostCallEditKeyDown(Index, Value, ptr, opt);
+     effEditKeyUp:                 Result := HostCallEditKeyUp(Index, Value, ptr, opt);
+     effSetEditKnobMode:           Result := HostCallSetEditKnobMode(Index, Value, ptr, opt);
+     effGetMidiProgramName:        Result := HostCallGetMidiProgramName(Index, Value, ptr, opt);
+     effGetCurrentMidiProgram:     Result := HostCallGetCurrentMidiProgram(Index, Value, ptr, opt);
+     effGetMidiProgramCategory:    Result := HostCallGetMidiProgramCategory(Index, Value, ptr, opt);
+     effHasMidiProgramsChanged:    Result := HostCallHasMidiProgramsChanged(Index, Value, ptr, opt);
+     effGetMidiKeyName:            Result := HostCallGetMidiKeyName(Index, Value, ptr, opt);
+     effBeginSetProgram:           Result := HostCallBeginSetProgram(Index, Value, ptr, opt);
+     effEndSetProgram:             Result := HostCallEndSetProgram(Index, Value, ptr, opt);
+     effGetSpeakerArrangement:     Result := HostCallGetSpeakerArrangement(Index, Value, ptr, opt);
+     effShellGetNextPlugin:        Result := HostCallShellGetNextPlugin(Index, Value, ptr, opt);
+     effStartProcess:              Result := HostCallStartProcess(Index, Value, ptr, opt);
+     effStopProcess:               Result := HostCallStopProcess(Index, Value, ptr, opt);
+     effSetTotalSampleToProcess:   Result := HostCallSetTotalSampleToProcess(Index, Value, ptr, opt);
+     effSetPanLaw:                 Result := HostCallSetPanLaw(Index, Value, ptr, opt);
+     effBeginLoadBank:             Result := HostCallBeginLoadBank(Index, Value, ptr, opt);
+     effBeginLoadProgram:          Result := HostCallBeginLoadProgram(Index, Value, ptr, opt);
+     effSetProcessPrecision:       Result := HostCallSetProcessPrecision(Index, Value, ptr, opt);
+     effGetNumMidiInputChannels:   Result := HostCallGetNumMidiInputChannels(Index, Value, ptr, opt);
+     effGetNumMidiOutputChannels:  Result := HostCallGetNumMidiOutputChannels(Index, Value, ptr, opt);
+     else
+       try
+         raise Exception.Create('Unknown OpCode');
+       except
+         Result := 0;
+       end;
+     end;
+   end
+ else Result := 0;
+end;
+
+function GetParameterFunc(Effect: PVSTEffect; Index: Integer): Single; cdecl;
+begin
+ assert(TObject(Effect^.vObject) is TBasicVSTModule);
+ Result := TBasicVSTModule(Effect^.vObject).HostCallGetParameter(Index);
+end;
+
+procedure SetParameterFunc(Effect: PVSTEffect; Index: Integer; Value: Single); cdecl;
+begin
+ assert(TObject(Effect^.vObject) is TBasicVSTModule);
+ TBasicVSTModule(Effect^.vObject).HostCallSetParameter(Index,Value);
+end;
+
+procedure ProcessFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
+begin
+ assert(TObject(Effect^.vObject) is TBasicVSTModule);
+ TBasicVSTModule(Effect^.vObject).HostCallProcess(Inputs, Outputs, SampleFrames);
+end;
+
+procedure ProcessReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
+begin
+ assert(TObject(Effect^.vObject) is TBasicVSTModule);
+ TBasicVSTModule(Effect^.vObject).HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
+end;
+
+procedure ProcessDoubleReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPDouble; SampleFrames: Integer); cdecl;
+begin
+ assert(TObject(Effect^.vObject) is TBasicVSTModule);
+ TBasicVSTModule(Effect^.vObject).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
+end;
 
 end.

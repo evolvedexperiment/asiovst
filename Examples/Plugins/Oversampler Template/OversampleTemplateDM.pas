@@ -7,34 +7,15 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Forms, DAV_Common,
   DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VSTModuleWithPrograms,
-  DAV_VSTCustomModule, DAV_DspUpDownsampling, DAV_VstHost;
+  DAV_VSTCustomModule, DAV_DspUpDownsampling, DAV_VstHost, DAV_VstOfflineTask;
 
 type
   TOversampleTemplateDataModule = class(TVSTModule)
     VstHost: TVstHost;
-    function VSTModuleInputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
-    function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
-    function VSTModuleVendorSpecific(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
-    procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
-    procedure ParamOSFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamPreFilterOrderValue(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamPreTransBWChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamCharChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamPostOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamPostFilterBWChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamPostCharChange(Sender: TObject; const Index: Integer; var Value: Single);
-
-    procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
-    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
     procedure VSTModuleEditIdle(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -42,8 +23,6 @@ type
     procedure VSTModuleEditTop(Sender: TObject);
     procedure VSTModuleGetVU(var VU: Single);
     procedure VSTModuleOfflineNotify(Sender: TObject; const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean);
-    procedure VSTModuleOfflinePrepare(Sender: TObject; const OfflineTask: TVstOfflineTask; const count: Integer);
-    procedure VSTModuleOfflineRun(Sender: TObject; const OfflineTask: TVstOfflineTask; const count: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
 
     procedure VSTModuleProcess32OversampleSingle(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -59,7 +38,28 @@ type
     procedure VSTModuleEditorKeyDown(Sender: TObject; var keyCode: TVstKeyCode);
     procedure VSTModuleEditorKeyUp(Sender: TObject; var keyCode: TVstKeyCode);
     procedure VSTModuleAfterProgramChange(Sender: TObject);
-    procedure VSTModuleOpen(Sender: TObject);
+
+    function VSTModuleInputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
+    function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
+    function VSTModuleVendorSpecific(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
+
+    procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
+    procedure ParamOSFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamPreFilterOrderValue(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamPreTransBWChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamCharacterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamCharChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamPostOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamPostFilterBWChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamPostCharChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleOfflinePrepare(Sender: TObject; const OfflineTasks: array of TVstOfflineTask);
+    procedure VSTModuleOfflineRun(Sender: TObject; const OfflineTasks: array of TVstOfflineTask);
   private
     fUpsampler        : array of TDAVUpsampling;
     fDownsampler      : array of TDAVDownsampling;
@@ -184,7 +184,8 @@ begin
      with Programs.Add do
       begin
        PI.GetProgramNameIndexed(0, i, str);
-       PI.SetProgram(i);
+       if PI.ProgramNr <> i
+        then PI.ProgramNr := i;
        Parameter[0] := 0;
        Parameter[1] := 2;
        Parameter[2] := 4;
@@ -194,13 +195,13 @@ begin
        Parameter[6] := 99;
        DisplayName := str;
        for j := 0 to PI.numParams - 1
-        do Parameter[fBaseParCount + j] := PI.GetParameter(j);
+        do Parameter[fBaseParCount + j] := PI.Parameter[j];
       end;
     if numPrograms > 0 then
      begin
-      PI.SetProgram(0);
+      PI.ProgramNr := 0;
       for j := 0 to PI.numParams - 1
-       do Parameter[fBaseParCount + j] := PI.GetParameter(j);
+       do Parameter[fBaseParCount + j] := PI.Parameter[j];
      end
     else
      with Programs.Add do
@@ -399,24 +400,33 @@ begin
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleOfflinePrepare(Sender: TObject;
-  const OfflineTask: TVstOfflineTask; const count: Integer);
+  const OfflineTasks: array of TVstOfflineTask);
+var
+  VstOfflineTaskRecords : array of TVstOfflineTaskRecord;
+  i                     : Integer;
 begin
- if VstHost[0].Active then VstHost[0].OfflinePrepare(@OfflineTask, count);
+ if VstHost[0].Active and (Length(OfflineTasks) > 0) then
+  begin
+   SetLength(VstOfflineTaskRecords, Length(OfflineTasks));
+   for i := 0 to Length(OfflineTasks) - 1
+    do VstOfflineTaskRecords[i] := OfflineTasks[i].VstOfflineTaskRecord;
+   VstHost[0].OfflinePrepare(@VstOfflineTaskRecords[0], Length(OfflineTasks));
+  end;
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleOfflineRun(Sender: TObject;
-  const OfflineTask: TVstOfflineTask; const count: Integer);
-begin
- if VstHost[0].Active then VstHost[0].OfflineRun(@OfflineTask, count);
-end;
-
-procedure TOversampleTemplateDataModule.VSTModuleOpen(Sender: TObject);
+  const OfflineTasks: array of TVstOfflineTask);
 var
-  j : Integer;
+  VstOfflineTaskRecords : array of TVstOfflineTaskRecord;
+  i                     : Integer;
 begin
- if VstHost[0].Active then
-  for j := 0 to VstHost[0].numParams - 1
-   do Parameter[fBaseParCount + j] := VstHost[0].GetParameter(j);
+ if VstHost[0].Active and (Length(OfflineTasks) > 0) then
+  begin
+   SetLength(VstOfflineTaskRecords, Length(OfflineTasks));
+   for i := 0 to Length(OfflineTasks) - 1
+    do VstOfflineTaskRecords[i] := OfflineTasks[i].VstOfflineTaskRecord;
+   VstHost[0].OfflineRun(@VstOfflineTaskRecords[0], Length(OfflineTasks));
+  end;
 end;
 
 function TOversampleTemplateDataModule.VSTModuleOutputProperties(Sender: TObject;
@@ -564,7 +574,7 @@ begin
    if n >= VstHost.Count then break;
   end;
  if (n < VstHost.Count) and VstHost[n].Active
-  then VstHost[n].Parameters[Index - pnr] := Value;
+  then VstHost[n].Parameter[Index - pnr] := Value;
 end;
 
 procedure TOversampleTemplateDataModule.CustomParameterDisplay(

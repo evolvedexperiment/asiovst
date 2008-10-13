@@ -79,7 +79,7 @@ type
     // offline
     effOfflineNotify,           // 38: ptr = VstAudioFile array, value = count, index = start flag
     effOfflinePrepare,          // 39: ptr = VstOfflineTask array, value = count
-    effOfflineRun,              // 40: dto
+    effOfflineRun,              // 40: ptr = VstOfflineTask array, value = count
 
     // other
     effProcessVarIo,              // 41: VstVariableIo* in <ptr>
@@ -680,49 +680,49 @@ type
   );
   TVstOfflineTaskFlags = set of TVstOfflineTaskFlag;
 
-  PVstOfflineTask = ^TVstOfflineTask;
-  TVstOfflineTask = packed record
-    processName: array[0..95] of char;  // set by plug
+  PVstOfflineTaskRecord = ^TVstOfflineTaskRecord;
+  TVstOfflineTaskRecord = packed record
+    ProcessName            : array[0..95] of char;  // set by plug
 
     // audio access
-    ReadPosition: Double;               // set by plug/host
-    WritePosition: Double;              // set by plug/host
-    ReadCount: LongInt;                 // set by plug/host
-    WriteCount: LongInt;                // set by plug
-    SizeInputBuffer: LongInt;           // set by host
-    SizeOutputBuffer: LongInt;          // set by host
-    InputBuffer: Pointer;               // set by host
-    OutputBuffer: Pointer;              // set by host
-    PositionToProcessFrom: Double;      // set by host
-    NumFramesToProcess: Double;         // set by host
-    MaxFramesToWrite: Double;           // set by plug
+    ReadPosition           : Double;                // set by plug/host
+    WritePosition          : Double;                // set by plug/host
+    ReadCount              : LongInt;               // set by plug/host
+    WriteCount             : LongInt;               // set by plug
+    SizeInputBuffer        : LongInt;               // set by host
+    SizeOutputBuffer       : LongInt;               // set by host
+    InputBuffer            : Pointer;               // set by host
+    OutputBuffer           : Pointer;               // set by host
+    PositionToProcessFrom  : Double;                // set by host
+    NumFramesToProcess     : Double;                // set by host
+    MaxFramesToWrite       : Double;                // set by plug
 
     // other data access
-    ExtraBuffer: Pointer;               // set by plug
-    Value: LongInt;                     // set by host or plug
-    Index: LongInt;                     // set by host or plug
+    ExtraBuffer            : Pointer;               // set by plug
+    Value                  : LongInt;               // set by host or plug
+    Index                  : LongInt;               // set by host or plug
 
     // file attributes
-    NumFramesInSourceFile: Double;      // set by host
-    SourceSampleRate: Double;           // set by host or plug
-    DestinationSampleRate: Double;      // set by host or plug
-    NumSourceChannels: LongInt;         // set by host or plug
-    NumDestinationChannels: LongInt;    // set by host or plug
-    SourceFormat: LongInt;              // set by host
-    DestinationFormat: LongInt;         // set by plug
-    OutputText: array[0..511] of char;  // set by plug or host
+    NumFramesInSourceFile  : Double;                // set by host
+    SourceSampleRate       : Double;                // set by host or plug
+    DestinationSampleRate  : Double;                // set by host or plug
+    NumSourceChannels      : LongInt;               // set by host or plug
+    NumDestinationChannels : LongInt;               // set by host or plug
+    SourceFormat           : LongInt;               // set by host
+    DestinationFormat      : LongInt;               // set by plug
+    OutputText             : array[0..511] of Char; // set by plug or host
 
     // progress notification
-    Progress: Double;                   // set by plug
-    ProgressMode: LongInt;              // reserved for future
-    ProgressText: array[0..99] of char; // set by plug
+    Progress               : Double;                // set by plug
+    ProgressMode           : LongInt;               // reserved for future
+    ProgressText           : array[0..99] of Char;  // set by plug
 
-    Flags: TVstOfflineTaskFlags;        // set by host and plug; see TVstOfflineTaskFlags
-    ReturnValue: LongInt;               // reserved for future
-    HostOwned: Pointer;                 // set by host
-    PlugOwned: Pointer;                 // set by plug
+    Flags                  : TVstOfflineTaskFlags;  // set by host and plug; see TVstOfflineTaskFlags
+    ReturnValue            : LongInt;               // reserved for future
+    HostOwned              : Pointer;               // set by host
+    PlugOwned              : Pointer;               // set by plug
 
-    Future: array[0..1023] of Byte;
+    Future                 : array[0..1023] of Byte;
   end;
 
   TVstOfflineOption = (
@@ -761,53 +761,53 @@ type
 
   PVstAudioFile = ^TVstAudioFile;
   TVstAudioFile = packed record
-    Flags: TVstAudioFileFlags;     // see enum TVstAudioFileFlags
-    HostOwned: Pointer;            // any data private to host
-    PlugOwned: Pointer;            // any data private to plugin
-    Name: array[0..99] of char;    // file title
-    UniqueId: LongInt;             // uniquely identify a file during a session
-    SampleRate: Double;            // file sample rate
-    NumChannels: LongInt;          // number of channels (1 for mono, 2 for stereo...)
-    NumFrames: Double;             // number of frames in the audio file
-    Format: LongInt;               // reserved for future
-    EditCursorPosition: Double;    // -1 if no such cursor
-    SelectionStart: Double;        // frame index of first selected frame, or -1
-    SelectionSize: Double;         // number of frames in selection, or 0
-    SelectedChannelsMask: LongInt; // 1 bit per channel
-    NumMarkers: LongInt;           // number of markers in the file
-    TimeRulerUnit: LongInt;        // see doc for possible values
-    TimeRulerOffset: Double;       // offset in time ruler (positive or negative)
-    Tempo: Double;                 // as bpm
-    TimeSigNumerator: LongInt;     // time signature numerator
-    TimeSigDenominator: LongInt;   // time signature denominator
-    TicksPerBlackNote: LongInt;    // resolution
-    SmpteFrameRate: LongInt;       // smpte rate (set as in TVstTimeInfo)
-    Future: array[0..63] of Byte;
+    Flags                : TVstAudioFileFlags;     // see enum TVstAudioFileFlags
+    HostOwned            : Pointer;                // any data private to host
+    PlugOwned            : Pointer;                // any data private to plugin
+    Name                 : array[0..99] of char;   // file title
+    UniqueId             : LongInt;                // uniquely identify a file during a session
+    SampleRate           : Double;                 // file sample rate
+    NumChannels          : LongInt;                // number of channels (1 for mono, 2 for stereo...)
+    NumFrames            : Double;                 // number of frames in the audio file
+    Format               : LongInt;                // reserved for future
+    EditCursorPosition   : Double;                 // -1 if no such cursor
+    SelectionStart       : Double;                 // frame index of first selected frame, or -1
+    SelectionSize        : Double;                 // number of frames in selection, or 0
+    SelectedChannelsMask : LongInt;                // 1 bit per channel
+    NumMarkers           : LongInt;                // number of markers in the file
+    TimeRulerUnit        : LongInt;                // see doc for possible values
+    TimeRulerOffset      : Double;                 // offset in time ruler (positive or negative)
+    Tempo                : Double;                 // as bpm
+    TimeSigNumerator     : LongInt;                // time signature numerator
+    TimeSigDenominator   : LongInt;                // time signature denominator
+    TicksPerBlackNote    : LongInt;                // resolution
+    SmpteFrameRate       : LongInt;                // smpte rate (set as in TVstTimeInfo)
+    Future               : array[0..63] of Byte;
   end;
 
   PVstAudioFileMarker = ^TVstAudioFileMarker;
   TVstAudioFileMarker = packed record
-    Position: Double;
-    Name: array[0..31] of char;
-    vType: LongInt;
-    ID: LongInt;
-    Reserved: LongInt;
+    Position : Double;
+    Name     : array[0..31] of char;
+    vType    : LongInt;
+    ID       : LongInt;
+    Reserved : LongInt;
   end;
 
   PVstWindow = ^TVstWindow;
   TVstWindow = packed record
-    Title: array[0..127] of char;    // title
-    xPos: SmallInt;                  // position and size
-    yPos: SmallInt;
-    Width: SmallInt;
-    Height: SmallInt;
-    Style: LongInt;                  // 0: with title, 1: without title
+    Title      : array[0..127] of Char; // Title
+    xPos       : SmallInt;              // Position and Size
+    yPos       : SmallInt;
+    Width      : SmallInt;
+    Height     : SmallInt;
+    Style      : LongInt;               // 0: with title, 1: without title
 
-    Parent: Pointer;                 // parent of this window
-    userHandle: Pointer;             // reserved
-    winHandle: Pointer;              // reserved
+    Parent     : Pointer;               // Parent of this Window
+    userHandle : Pointer;               // Reserved
+    winHandle  : Pointer;               // Reserved
 
-    Future: array[0..103] of Byte;
+    Future     : array[0..103] of Byte;
   end;
 
   PVstKeyCode = ^TVstKeyCode;
@@ -886,24 +886,19 @@ const
 
 // Used by member modifier of VstKeyCode /////////////////////////////////////
 type
-  TVstModifierKeys = LongInt;
-
-const
-  MODIFIER_SHIFT = 1;
-  MODIFIER_ALTERNATE = 2;
-  MODIFIER_COMMAND = 4;
-  MODIFIER_CONTROL = 8;
+  TVstModifierKey = (mkShift, mkAlternate, mkCommand, mkControl);
+  TVstModifierKeys = set of TVstModifierKey;
 
 // Used by audioMasterOpenFileSelector ///////////////////////////////////////
 type
   PVstFileType = ^TVstFileType;
   TVstFileType = packed record
-    name      : array[0..127] of char;
-    macType   : array[0..7] of char;
-    dosType   : array[0..7] of char;
-    unixType  : array[0..7] of char;
-    mimeType1 : array[0..127] of char;
-    mimeType2 : array[0..127] of char;
+    name      : array[0..127] of Char;
+    macType   : array[0..7] of Char;
+    dosType   : array[0..7] of Char;
+    unixType  : array[0..7] of Char;
+    mimeType1 : array[0..127] of Char;
+    mimeType2 : array[0..127] of Char;
   end;
 
   TVstFileCommand = (
@@ -1309,8 +1304,8 @@ begin
  else
   begin
    Result := VKC.character;
-   if ((VKC.modifier and MODIFIER_SHIFT)<>0)
-    then Dec(Result,32);
+   if mkShift in TVstModifierKeys(VKC.modifier)
+    then Dec(Result, 32);
   end;
 end;
 

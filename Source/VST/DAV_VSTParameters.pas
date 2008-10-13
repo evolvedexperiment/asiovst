@@ -57,7 +57,7 @@ type
     constructor Create(Collection: TCollection); override;
     {$ENDIF}
     destructor Destroy; override;
-    function Smooth(i: Single): Single;
+    function Smooth(const Value: Single): Single;
   published
     property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated default true;
     property CC: Integer read FCC write FCC default -1;
@@ -171,11 +171,12 @@ begin
  inherited;
 end;
 
-function TCustomVstParameterProperty.Smooth(i: Single): Single;
+function TCustomVstParameterProperty.Smooth(const Value: Single): Single;
 begin
-  FSmoothStates[0] := FSmoothStates[0] + SmoothingFactor * (i - FSmoothStates[0]);
-  FSmoothStates[1] := FSmoothStates[1] + SmoothingFactor * (FSmoothStates[0] - FSmoothStates[1]);
-  Result := FSmoothStates[1];
+ // simple second order lowpass
+ FSmoothStates[0] := FSmoothStates[0] + SmoothingFactor * (Value - FSmoothStates[0]);
+ FSmoothStates[1] := FSmoothStates[1] + SmoothingFactor * (FSmoothStates[0] - FSmoothStates[1]);
+ Result := FSmoothStates[1];
 end;
 
 procedure TCustomVstParameterProperty.AssignTo(Dest: TPersistent);

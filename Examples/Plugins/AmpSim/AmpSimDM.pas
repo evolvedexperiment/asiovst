@@ -49,7 +49,7 @@ type
     function GetModelType: TModelType;
     procedure SetModelType(const Value: TModelType);
   protected
-    procedure DriveChanged;
+    procedure DriveChanged(const Value: Single);
     procedure BiasChanged;
     procedure TrimChanged;
   public
@@ -99,7 +99,7 @@ end;
 procedure TComboDataModule.ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  TrimChanged;
- DriveChanged;
+ DriveChanged(Value);
  BiasChanged;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
@@ -110,7 +110,7 @@ end;
 
 procedure TComboDataModule.ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fHighPass[0].Bandwidth := 1.1 - 0.01 * Parameter[6];
+ fHighPass[0].Bandwidth := 1.1 - 0.01 * Value;
  fHighPass[1].Bandwidth := fHighPass[0].Bandwidth;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
@@ -234,7 +234,7 @@ procedure TComboDataModule.ParamHPFFreqChange(Sender: TObject; const Index: Inte
 begin
  fHighPass[0].Frequency := Value;
  fHighPass[1].Frequency := fHighPass[0].Frequency;
- DriveChanged;
+ DriveChanged(Parameter[1]);
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
   with TFmCombo(EditorForm)
@@ -247,24 +247,24 @@ begin
  fRndAmt := dB_to_Amp(Value);
 end;
 
-procedure TComboDataModule.DriveChanged;
+procedure TComboDataModule.DriveChanged(const Value: Single);
 begin
- fIsSoftClipping := Parameter[1] < 0;
+ fIsSoftClipping := Value < 0;
 
  if fIsSoftClipping
-  then fDrive := Power(10, -(1 + 0.03 * Parameter[1]))  // soft clipping
+  then fDrive := Power(10, -(1 + 0.03 * Value))  // soft clipping
   else                                                  // hard clipping
    begin
     fDrive := 1;
-    fClip  := 3.7 - 0.08 * Parameter[1];
-    if Parameter[1] > 40 then
+    fClip  := 3.7 - 0.08 * Value;
+    if Value > 40 then
      begin
-      fDrive := Power(10, 0.035 * Parameter[1] - 1.4);
+      fDrive := Power(10, 0.035 * Value - 1.4);
       fClip  := 0.5;
      end;
    end;
 
- if (Parameter[5] > 0.05)
+ if (Parameter[5] > 100)
   then fDrive := fDrive * (1 + 0.1 * fDrive);
 end;
 
@@ -365,13 +365,13 @@ end;
 
 procedure TComboDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  InP, OutP    : Array [0..1] of Double;
+  InP, OutP    : array [0..1] of Double;
   trm, clp     : Single;
   LPF, bi      : Single;
   HPF, drv     : Single;
-  FilterState  : Array [0..1, 0..4] of Double;
-  d            : Array [0..1] of Integer;
-  m            : Array [0..1] of Single;
+  FilterState  : array [0..1, 0..4] of Double;
+  d            : array [0..1] of Integer;
+  m            : array [0..1] of Single;
   bp, Sample   : Integer;
 begin
  m[0] := fMix[0];

@@ -49,8 +49,8 @@ contains
   DAV_VSTPrograms in '..\Source\VST\DAV_VSTPrograms.pas',
   DAV_VSTShellPlugins in '..\Source\VST\DAV_VSTShellPlugins.pas',
   DAV_VSTCustomModule in '..\Source\VST\DAV_VSTCustomModule.pas',
+  DAV_VSTOfflineTask in '..\Source\VST\DAV_VSTOfflineTask.pas',
   DAV_VSTEffect in '..\Source\VST\DAV_VSTEffect.pas',
-  DAV_VSTEffectFunctions in '..\Source\VST\DAV_VSTEffectFunctions.pas',
   DAV_VSTParameters in '..\Source\VST\DAV_VSTParameters.pas';
 
 end.

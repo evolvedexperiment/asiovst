@@ -258,7 +258,7 @@ end;
 function TVSTModuleWithPrograms.HostCallEditOpen(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 var
   i, pr : Integer;
-  tmp   : single;
+  tmp   : Single;
 begin
  Result := inherited HostCallEditOpen(Index, Value, ptr, opt);
 
@@ -371,7 +371,7 @@ begin
  Result := 0;
  if ptr <> nil then
   try
-   tmp := pchar(ptr);
+   tmp := StrPas(pchar(ptr));
    Parameter[Index] := StrtoFloat(tmp);
    Result := 1;
   except
@@ -482,7 +482,7 @@ begin
 //   if (effFlagsProgramChunks in FEffect.EffectFlags) then
     try
      for i := 0 to Programs[FCurProgram].ParameterCount - 1
-      do setParameter(i, Programs[FCurProgram].Parameter[i]);
+      do SetParameter(i, Programs[FCurProgram].Parameter[i]);
     except
     end;
    FEditorNeedUpdate := True;
@@ -500,7 +500,7 @@ begin
  updateDisplay;
 end;
 
-function TVSTModuleWithPrograms.GetCurrentProgramName:string;
+function TVSTModuleWithPrograms.GetCurrentProgramName: string;
 begin
  if (FCurProgram<numPrograms) and (numPrograms > 0) and (FCurProgram >= 0)
   then Result := Programs[FCurProgram].DisplayName
@@ -664,6 +664,7 @@ begin
    if numPrograms > 0
     then Result := Programs[FCurProgram].Parameter[Index]
     else Result := FParameter[Index];
+// ShowMessage('Parameter: ' + IntToStr(Index) + ': ' + FloatToStr(Result));   
 end;
 
 function TVSTModuleWithPrograms.GetParameterByName(ParameterName: string): Single;

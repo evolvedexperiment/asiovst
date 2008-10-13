@@ -144,7 +144,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       OnParameterChange = ParamPostCharChange
       OnCustomParameterDisplay = ParamCharacterDisplay
     end>
-  OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnEditClose = VSTModuleEditClose
@@ -184,6 +183,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     VstPlugIns = <
       item
         DisplayName = 'Wrapped Plugin'
+        VstOfflineTasks = <>
         OnAudioMasterAutomate = ParamAutomate
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
