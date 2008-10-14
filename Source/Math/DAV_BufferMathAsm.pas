@@ -7,6 +7,8 @@ well, I did my best... but ASM is not my world...
 
 *)
 
+{$I ASIOVST.inc}
+
 interface
 
 uses

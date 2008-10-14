@@ -2,6 +2,8 @@ unit DAV_ChunkAIFFFile;
 
 interface
 
+{$I ASIOVST.inc}
+
 uses
   Classes, SysUtils, DAV_Common, DAV_ChunkClasses;
 

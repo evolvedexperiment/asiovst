@@ -70,7 +70,8 @@ type
 
   TChunkName = array [0..3] of Char;
 
-  {$IFDEF DELPHI5}
+  {$IFDEF Delphi5}
+  PCardinal = ^Cardinal;
 //  TValueSign = set of (-1, 0, 1);
   {$ENDIF}
 

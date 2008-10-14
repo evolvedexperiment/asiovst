@@ -2,6 +2,8 @@ unit DAV_ChunkWaveFile;
 
 interface
 
+{$I ASIOVST.inc}
+
 uses
   Classes, SysUtils, DAV_Common, DAV_ChunkClasses, DAV_WaveFileTypes;
 
@@ -349,10 +351,13 @@ type
   ////////////////////////////////////////////////////////////////////////////
 
   {$IFDEF Delphi5}
+  TMidiManufacturer = (mmUnknown, mmSequentialCircuits, mmBigBriar,
+    mmOctavePlateau, mmMoog, mmPassportDesigns, mmLexicon, mmKurzweil,
+    mmFender, mmGulbransen, mmDeltaLabs, mmSoundComp, mmGeneralElectro,
+    mmTechmar, mmMatthewsResearch);
   TSMPTEFormat = (soZero, so24, so25, so30Drop, so30);
   {$ELSE}
   TSMPTEFormat = (soZero = 0, so24 = 24, so25 = 25, so30Drop = 29, so30 = 30);
-  {$ENDIF}
 
   TMidiManufacturer = (mmUnknown            = $00,
                        mmSequentialCircuits = $01,
@@ -409,6 +414,7 @@ type
                        mmSuzuki             = $55,
                        mmFujiSound          = $56,
                        mmAcousticTecLab     = $57);
+  {$ENDIF}
 
   TSamplerRecord = packed record
     Manufacturer       : Cardinal;

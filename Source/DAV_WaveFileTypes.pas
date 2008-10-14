@@ -8,7 +8,7 @@ type
 {$IFDEF Delphi5}
   TWavEncoding = (etUnknown, etPCM, etMSADPCM, etPCMFLOAT, etCompaqVSELP,
     etIBMCVSD, etALAW, etMuLAW, etMicrosoftDTS, etDRM, etWMA9Speech,
-    etWMRTVoice);
+    etWMRTVoice, etDVIADPCM);
 {$ELSE}
   TWavEncoding = (
     etUnknown              =  $0,

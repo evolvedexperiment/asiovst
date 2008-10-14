@@ -162,7 +162,7 @@ end;
 function TCustomComplexChannel.GetComplexData: TCustomComplexData;
 begin
  assert(Collection is TCustomComplexChannels);
- assert(TCustomComplexChannels(Collection).Owner is TCustomComplexData);
+ assert(TCustomComplexChannels(Collection).GetOwner is TCustomComplexData);
  result := TCustomComplexData(TCustomComplexChannels(GetOwner).GetOwner);
 end;
 

@@ -2,6 +2,8 @@ unit DAV_AudioFile;
 
 interface
 
+{$I ASIOVST.inc}
+
 uses
   Classes, SysUtils, DAV_Common;
 
@@ -9,11 +11,16 @@ type
   TOnLoadSaveData32 = procedure(const Buffer: array of PDAVSingleDynArray; const BufferSize: Cardinal) of object;
   TOnLoadSaveData64 = procedure(const Buffer: array of PDAVDoubleDynArray; const BufferSize: Cardinal) of object;
 
+  {$IFDEF Delphi5}
+  TAudioEncoding = (aeUndefined, aeInteger, aeFloat, aeMP3, aeACM, aeADPCM,
+    aeMSADPCM, aeDVIADPCM, aeMuLaw, aeALaw, aeOther);
+  {$ELSE}
   TAudioEncoding = (aeUndefined = -1, aeInteger = 0, aeFloat = 1, aeMP3 = 2,
                     aeACM = 3, aeADPCM = 4, aeMSADPCM = 5, aeDVIADPCM = 6,
                     aeMuLaw = 7, aeALaw = 8, aeOther = 9);
+  {$ENDIF}
 
-  TCustomAudioFile = class(TComponent, IStreamPersist)
+  TCustomAudioFile = class(TComponent{$IFDEF Delphi6_Up}, IStreamPersist{$ENDIF})
   private
     fOnSaveData64    : TOnLoadSaveData64;
     fOnLoadData32    : TOnLoadSaveData32;
