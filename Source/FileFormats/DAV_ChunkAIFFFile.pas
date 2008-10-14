@@ -3,7 +3,7 @@ unit DAV_ChunkAIFFFile;
 interface
 
 uses
-  Classes, SysUtils, DAV_ChunkClasses;
+  Classes, SysUtils, DAV_Common, DAV_ChunkClasses;
 
 const
   AIFCVersion1 = $A2805140;
@@ -350,9 +350,6 @@ type
 
 
 implementation
-
-uses
-  DAV_Common;
 
 { TAIFFCommonChunk }
 

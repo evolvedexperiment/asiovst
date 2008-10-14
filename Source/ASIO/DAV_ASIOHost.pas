@@ -629,8 +629,8 @@ begin
      end;
    end;
  finally
-  keys.Free;
-  r.Free;
+  FreeAndNil(keys);
+  FreeAndNil(r);
  end;
 end;
 

@@ -586,7 +586,7 @@ begin
    then break
    else inc(result);
  if result = FParameterProperties.Count
-  then raise Exception.Create(RStrUnknownParameterName);
+  then raise Exception.Create(RStrUnknownParameterName + ': ' + ParameterName);
 end;
 
 function TVSTModuleWithPrograms.TranslateProgramNameToIndex(ProgramName: string): Integer;

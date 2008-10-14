@@ -21,11 +21,11 @@ object FmReverb: TFmReverb
     Top = 34
     Width = 48
     Height = 48
-    LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
     Max = 1.000000000000000000
     NumGlyphs = 64
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialDryChange
   end
@@ -34,11 +34,11 @@ object FmReverb: TFmReverb
     Top = 34
     Width = 48
     Height = 48
-    LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
     Max = 1.000000000000000000
     NumGlyphs = 64
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialWetChange
   end
@@ -47,11 +47,11 @@ object FmReverb: TFmReverb
     Top = 34
     Width = 48
     Height = 48
-    LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
     Max = 1.000000000000000000
     NumGlyphs = 64
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialWidthChange
   end
@@ -60,11 +60,11 @@ object FmReverb: TFmReverb
     Top = 34
     Width = 48
     Height = 48
-    LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
     Max = 1.000000000000000000
     NumGlyphs = 64
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialDampChange
   end
@@ -73,11 +73,11 @@ object FmReverb: TFmReverb
     Top = 34
     Width = 48
     Height = 48
-    LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
     Max = 1.000000000000000000
     NumGlyphs = 64
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialRoomSizeChange
   end
@@ -86,11 +86,11 @@ object FmReverb: TFmReverb
     Top = 34
     Width = 48
     Height = 48
-    LineWidth = 2
     LineColor = clWhite
     CircleColor = clSilver
     Max = 1.000000000000000000
     NumGlyphs = 64
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialStretchChange
   end

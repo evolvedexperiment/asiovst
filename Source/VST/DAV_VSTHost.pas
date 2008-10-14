@@ -23,9 +23,10 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
-  {$IFDEF MSWINDOWS} Registry, {$ENDIF} SysUtils, Classes, Graphics, Controls,
-  Forms, StdCtrls, ComCtrls, Dialogs, DAV_Common, DAV_AudioData, DAV_VSTEffect, 
-  DAV_VSTOfflineTask, DAV_DLLLoader {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
+  {$IFDEF MSWINDOWS} Registry, {$ENDIF} Contnrs, SysUtils, Classes, Graphics,
+  Controls, Forms, StdCtrls, ComCtrls, Dialogs, DAV_Common, DAV_AudioData,
+  DAV_VSTEffect, DAV_ChunkClasses, DAV_VSTOfflineTask, DAV_DLLLoader
+  {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
 type
   TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): Integer of object;
@@ -54,79 +55,81 @@ type
    cpl3Sequencer, cpl4OfflineProcessing);
   TAutomationState = (as0NotSupported, as1Off, as2Read, as3Write, as4ReadWrite);
 
+  TCustomVstHost = class;
+
   TCustomVstPlugIn = class(TCollectionItem)
   private
-    FDLLHandle                     : THandle;
-    FDisplayName                   : string;
-    FMainFunction                  : TMainProc;
-    FEditOpen                      : Boolean;
-    FWantMidi                      : Boolean;
-    FNeedIdle                      : Boolean;
     FActive                        : Boolean;
-    FnumInputs                     : Integer;
-    FnumOutputs                    : Integer;
-    FnumPrograms                   : Integer;
-    FnumParams                     : Integer;
-    Fversion                       : Integer;
-    FProgramNr                     : Integer;
-    FUniqueID                      : string;
-    FVstVersion                    : Integer;
-    FPlugCategory                  : TVstPluginCategory;
-    FDLLFileName                   : TFileName;
-    FVstOfflineTasks               : TOwnedCollection;
-    FReplaceOrAccumulate           : TReplaceOrAccumulate;
-    FProcessLevel                  : TCurrentProcessLevel;
     FAutomationState               : TAutomationState;
-    FOnAfterLoad                   : TNotifyEvent;
-    FOnShowEdit                    : TVstShowEditEvent;
-    FOnCloseEdit                   : TNotifyEvent;
-    FOnProcessEvents               : TVstProcessEventsEvent;
-    FOnAMAutomate                  : TVstAutomateEvent;
-    FOnAMIdle                      : TNotifyEvent;
-    FOnAMNeedIdle                  : TNotifyEvent;
-    FOnAMWantMidi                  : TNotifyEvent;
-    FOnAMIOChanged                 : TNotifyEvent;
-    FOnAMOfflineStart              : TNotifyEvent;
-    FOnAMOfflineRead               : TVstOfflineEvent;
-    FOnAMOfflineWrite              : TVstOfflineEvent;
-    FOnAMOfflineGetCurrentPass     : TNotifyEvent;
-    FOnAMOfflineGetCurrentMetaPass : TNotifyEvent;
-    FOnAMSetOutputsampleRate       : TVstSampleRateChangedEvent;
-    FOnAMUpdateDisplay             : TNotifyEvent;
-    FOnAMBeginEdit                 : TVstAutomationNotifyEvent;
-    FOnAMEndEdit                   : TVstAutomationNotifyEvent;
-    FOnAMPinConnected              : TVstPinConnectedEvent;
-    FOnVendorSpecific              : TVendorSpecificEvent;
+    FDisplayName                   : string;
+    FDLLFileName                   : TFileName;
+    FDLLHandle                     : THandle;
+    FEditOpen                      : Boolean;
     FGUIControlCreated             : Boolean;
     FGUIStyle                      : TGUIStyle;
     FInternalDLLLoader             : TDLLLoader;
+    FMainFunction                  : TMainProc;
+    FNeedIdle                      : Boolean;
+    FOnAfterLoad                   : TNotifyEvent;
+    FOnAMAutomate                  : TVstAutomateEvent;
+    FOnAMBeginEdit                 : TVstAutomationNotifyEvent;
+    FOnAMEndEdit                   : TVstAutomationNotifyEvent;
+    FOnAMIdle                      : TNotifyEvent;
+    FOnAMIOChanged                 : TNotifyEvent;
+    FOnAMNeedIdle                  : TNotifyEvent;
+    FOnAMOfflineGetCurrentMetaPass : TNotifyEvent;
+    FOnAMOfflineGetCurrentPass     : TNotifyEvent;
+    FOnAMOfflineRead               : TVstOfflineEvent;
+    FOnAMOfflineStart              : TNotifyEvent;
+    FOnAMOfflineWrite              : TVstOfflineEvent;
+    FOnAMPinConnected              : TVstPinConnectedEvent;
+    FOnAMSetOutputsampleRate       : TVstSampleRateChangedEvent;
+    FOnAMUpdateDisplay             : TNotifyEvent;
+    FOnAMWantMidi                  : TNotifyEvent;
+    FOnCloseEdit                   : TNotifyEvent;
+    FOnProcessEvents               : TVstProcessEventsEvent;
+    FOnShowEdit                    : TVstShowEditEvent;
+    FOnVendorSpecific              : TVendorSpecificEvent;
+    FPlugCategory                  : TVstPluginCategory;
+    FProcessLevel                  : TCurrentProcessLevel;
+    FProgramNr                     : Integer;
+    FReplaceOrAccumulate           : TReplaceOrAccumulate;
+    FVstOfflineTasks               : TOwnedCollection;
+    FVstVersion                    : Integer;
+    FWantMidi                      : Boolean;
     function GetEffOptions: TEffFlags;
-    function GetEntryPoints(theDll: TFileName): Integer;
+    function GetEntryPoints(DLLFileName: TFileName): Integer;
     function GetInitialDelay: Integer;
-    function GetnumInputs: Integer;
-    function GetnumOutputs: Integer;
-    function GetnumParams: Integer;
-    function GetnumPrograms: Integer;
-    function GetPreset(i: Integer): TFXPreset;
+    function GetNumInputs: Integer;
+    function GetNumOutputs: Integer;
+    function GetNumParams: Integer;
+    function GetNumPrograms: Integer;
+    function GetPreset(ProgramNo: Integer): TFXPreset;
     function VstDispatch(opCode : TDispatcherOpcode; Index: Integer = 0; value: Integer = 0; pntr: Pointer = nil; opt: Double = 0): Integer; {overload;} //virtual;
-    procedure Activate(b: Boolean);
+    procedure Activate(Value: Boolean);
     procedure EditActivateHandler(Sender: TObject);
     procedure EditDeactivateHandler(Sender: TObject);
     procedure FormCloseHandler(Sender: TObject; var Action: TCloseAction);
     procedure ParamChange(Sender: TObject);
-    procedure SetBlockSize(value: Integer);
+    procedure SetBlockSize(Value: Integer);
     procedure SetDLLFileName(VstFilename: TFilename);
     {$IFDEF SB}
     procedure ScrollChange(Sender: TObject; ScrollPos: Integer);
     {$ELSE}
     procedure TrackChange(Sender: TObject);
+    {$ENDIF}
     procedure SetGUIStyle(const Value: TGUIStyle);
     procedure ListParamChange(Sender: TObject);
-    {$ENDIF}
+    function GetUniqueID: string;
+    function GetVersion: Integer;
+    procedure InitializeVstEffect;
   protected
-    FGUIControl : TWinControl;
+    FGUIControl  : TWinControl;
+    FGUIElements : TObjectList;
     procedure AssignTo(Dest: TPersistent); override;
     procedure EditClose;
+    procedure IOchanged;
+    procedure NeedIdle;
   public
     PVstEffect : PVSTEffect;
     constructor Create(Collection: TCollection); override;
@@ -209,7 +212,7 @@ type
     procedure Process(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
     procedure ProcessAudio(Inputs, Outputs: PPSingle; SampleFrames: Integer);
     procedure ProcessAudioDataCollection(Inputs, Outputs: TAudioDataCollection32); overload; virtual;
-    procedure ProcessAudioDataCollection(Inputs, Outputs: TAudioDataCollection64); overload; virtual; 
+    procedure ProcessAudioDataCollection(Inputs, Outputs: TAudioDataCollection64); overload; virtual;
     procedure ProcessAudioDataCollectionInplace(AudioData: TAudioDataCollection32); overload; virtual;
     procedure ProcessAudioDataCollectionInplace(AudioData: TAudioDataCollection64); overload; virtual;
     procedure ProcessDoubleReplacing(Inputs, Outputs: ppDouble; SampleFrames: Integer); virtual;
@@ -259,10 +262,10 @@ type
     property ProgramName: string read GetProgramName write SetProgramName;
     property ProgramNr: Integer read GetProgram write SetProgram default -1;
     property ReplaceOrAccumulate: TReplaceOrAccumulate read FReplaceOrAccumulate write FReplaceOrAccumulate default roa0NotSupported;
-    property UniqueID: string read FUniqueID stored False;
+    property UniqueID: string read GetUniqueID stored False;
     property VendorString: string read GetVendorString stored False;
     property VendorVersion: Integer read GetVendorVersion stored False default -1;
-    property Version: Integer read Fversion stored False default -1;
+    property Version: Integer read GetVersion stored False default -1;
     property OnAfterLoad: TNotifyEvent read FOnAfterLoad write FOnAfterLoad;
     property OnAudioMasterAutomate: TVstAutomateEvent read FOnAMAutomate write FOnAMAutomate;
     property OnAudioMasterBeginEdit: TVstAutomationNotifyEvent read FOnAMBeginEdit write FOnAMBeginEdit;
@@ -336,10 +339,12 @@ type
   TVstPlugIns = class(TOwnedCollection)
   private
     FOwner: TComponent;
+    function GetVSTHost: TCustomVstHost;
     function GetItem(Index: Integer): TVstPlugIn;
     procedure SetItem(Index: Integer; const Value: TVstPlugIn);
   protected
     property Items[Index: Integer]: TVstPlugIn read GetItem write SetItem; default;
+    property VstHost: TCustomVstHost read GetVSTHost; 
   public
     constructor Create(AOwner: TComponent);
     function Add: TVstPlugIn;
@@ -489,9 +494,6 @@ function EffOptions2String(EffOpts: TEffFlags):string;
 
 implementation
 
-uses
-  contnrs;
-
 resourcestring
   RStrUnknown                    = 'Unknown';
   RStrEffect                     = 'Effect';
@@ -516,6 +518,9 @@ resourcestring
   RStrPresetFileNotForThisPlugin = 'Preset file not for this plugin!';
   RStrCloseEditorFirst           = 'Close editor first!';
   RStrPluginNotValid             = 'This is not a valid Vst Plugin!';
+  RStrNoEntryPoint               = 'VST entry point could not be detected';
+  RStrVSTMagicNotFound = 'There is no magic in it... failed!';
+  RStrValue = 'Value';
 
 var
   FBlockSize     : Integer = 2048;
@@ -666,21 +671,13 @@ begin
                                               else {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetParameterQuantization, returns the Integer value for +1.0 representation') {$ENDIF Debug};
                                               // or 1 if full Single float precision is maintained
                                               // in automation. parameter index in <value> (-1: all, any)
-    audioMasterIOChanged                   : if Assigned(thePlug) then
-                                              begin
-                                               thePlug.FnumInputs := effect.numInputs;
-                                               thePlug.FnumOutputs := effect.numOutputs;
-                                               thePlug.FnumPrograms := effect.numPrograms;
-                                               thePlug.FnumParams := effect.numParams;
-                                               if Assigned(thePlug.FOnAMIOChanged)
-                                                then thePlug.FOnAMIOChanged(thePlug);
-                                              end;
+    audioMasterIOChanged                   : if Assigned(thePlug)
+                                              then thePlug.IOChanged;
     audioMasterNeedIdle                    : if Assigned(thePlug) then
                                               begin
-                                               thePlug.FNeedIdle := True;
-                                               if Assigned(thePlug.FOnAMNeedIdle)
-                                                then thePlug.FOnAMNeedIdle(thePlug);
-                                               if theHost.FAutoIdle then thePlug.Idle;
+                                               thePlug.NeedIdle;
+                                               if theHost.FAutoIdle
+                                                then thePlug.Idle;
                                               end;
     audioMasterSizeWindow                  : begin
                                               if Assigned(thePlug) then
@@ -1073,13 +1070,6 @@ begin
  //
 end;
 
-function TCustomVstPlugIn.GetEffOptions: TEffFlags;
-begin
- if Assigned(PVstEffect)
-  then Result := PVstEffect.EffectFlags
-  else Result := [];
-end;
-
 function TCustomVstHost.GetItem(Index: Integer): TCustomVstPlugIn;
 begin
  assert(assigned(FVstPlugIns));
@@ -1200,6 +1190,11 @@ begin
  Result := TVstPlugIn(inherited GetItem(Index));
 end;
 
+function TVstPlugIns.GetVSTHost: TCustomVstHost;
+begin
+ result := TCustomVstHost(FOwner);
+end;
+
 function TVstPlugIns.Insert(Index: Integer): TVstPlugIn;
 begin
  Result := TVstPlugIn(inherited Insert(Index));
@@ -1221,6 +1216,47 @@ end;
 {$IFDEF DELPHI10_UP} {$region 'TCustomVstPlugIn implementation'} {$ENDIF}
 
 { TCustomVstPlugIn }
+
+constructor TCustomVstPlugIn.Create(Collection: TCollection);
+begin
+ inherited;
+ FDisplayName       := inherited GetDisplayName;
+ FMainFunction      := nil;
+ PVstEffect         := nil;
+ FEditOpen          := False;
+ FNeedIdle          := False;
+ FWantMidi          := False;
+ FVstVersion        := -1;
+ FPlugCategory      := vpcUnknown;
+ FDLLFileName       := '';
+ FGUIStyle          := gsDefault;
+ FGUIControlCreated := False;
+ FVstOfflineTasks   := TOwnedCollection.Create(Self, TVstOfflineTaskCollectionItem);
+end;
+
+destructor TCustomVstPlugIn.Destroy;
+begin
+ try
+  if assigned(FVstOfflineTasks)
+   then FreeAndNil(FVstOfflineTasks);
+  if FDLLFilename <> '' then
+   begin
+    if EditVisible then CloseEdit;
+    Unload;
+    if assigned(GUIControl) and FGUIControlCreated
+     then FreeAndNil(FGUIControl);
+   end;
+  if assigned(FInternalDLLLoader) then
+   begin
+    if EditVisible then CloseEdit;
+    if assigned(GUIControl) and FGUIControlCreated
+     then FreeAndNil(FGUIControl);
+    FreeAndNil(FInternalDLLLoader)
+   end;
+ finally
+  inherited;
+ end;
+end;
 
 procedure TCustomVstPlugIn.AssignTo(Dest: TPersistent);
 var
@@ -1270,51 +1306,17 @@ begin
  Result := FDisplayName;
 end;
 
-constructor TCustomVstPlugIn.Create(Collection: TCollection);
+function TCustomVstPlugIn.GetEffOptions: TEffFlags;
 begin
- inherited;
- FDisplayName       := inherited GetDisplayName;
- FMainFunction      := nil;
- PVstEffect         := nil;
- FEditOpen          := False;
- FNeedIdle          := False;
- FWantMidi          := False;
- FVstVersion        := -1;
- FPlugCategory      := vpcUnknown;
- FDLLFileName       := '';
- FGUIStyle          := gsDefault;
- FGUIControlCreated := False;
- FVstOfflineTasks   := TOwnedCollection.Create(Self, TVstOfflineTaskCollectionItem);
+ if Assigned(PVstEffect)
+  then Result := PVstEffect.EffectFlags
+  else Result := [];
 end;
 
-destructor TCustomVstPlugIn.Destroy;
+procedure TCustomVstPlugIn.Activate(Value: Boolean);
 begin
- try
-  if assigned(FVstOfflineTasks)
-   then FreeAndNil(FVstOfflineTasks);
-  if FDLLFilename <> '' then
-   begin
-    if EditVisible then CloseEdit;
-    Unload;
-    if assigned(GUIControl) and FGUIControlCreated
-     then FreeAndNil(FGUIControl);
-   end;
-  if assigned(FInternalDLLLoader) then
-   begin
-    if EditVisible then CloseEdit;
-    if assigned(GUIControl) and FGUIControlCreated
-     then FreeAndNil(FGUIControl);
-    FreeAndNil(FInternalDLLLoader)
-   end;
- finally
-  inherited;
- end;
-end;
-
-procedure TCustomVstPlugIn.Activate(b: Boolean);
-begin
-  if FActive <> b then
-  if b then Open else Close;
+  if FActive <> Value then
+  if Value then Open else Close;
 end;
 
 procedure TCustomVstPlugIn.LoadVSTDLL;
@@ -1338,14 +1340,13 @@ end;
 
 procedure TCustomVstPlugIn.Open;
 var
-  i   : Integer;
   tmp : string;
 begin
  LoadVSTDLL;
 
- if LongInt(PVstEffect.Magic)<>FourCharToLong('V','s','t','P')
-  then raise Exception.Create('There is no magic in it... failed!');
- if PVstEffect.uniqueID = 0 then
+ if LongInt(PVstEffect.Magic) <> FourCharToLong('V','s','t','P')
+  then raise Exception.Create(RStrVSTMagicNotFound);
+ if Integer(PVstEffect.uniqueID) = 0 then
   with TStringList.Create do
    try
     while ShellGetNextPlugin(tmp) <> 0 do Add(tmp);
@@ -1366,15 +1367,8 @@ begin
   SetSampleRate(FSampleRate);
   SetBlockSize(FBlocksize);
   SetBypass(False);
-  FUniqueID := ''; for i := 3 downto 0 do FUniqueID := FUniqueID + char(PVstEffect.uniqueID shr (i * 8));
-
-  Fversion      := PVstEffect.version;
   FVstVersion   := GetVstVersion;
   FPlugCategory := GetPlugCategory;
-  FnumInputs    := PVstEffect.numInputs;
-  FnumOutputs   := PVstEffect.numOutputs;
-  FnumPrograms  := PVstEffect.numPrograms;
-  FnumParams    := PVstEffect.numParams;
   MainsChanged(True);
  except
   FActive := False;
@@ -1390,12 +1384,7 @@ begin
    PVstEffect := nil;
   end;
  FActive       := False;
- FVersion      := 0;
  FPlugCategory := vpcUnknown;
- FnumInputs    := 0;
- FnumOutputs   := 0;
- FnumPrograms  := 0;
- FnumParams    := 0;
 end;
 
 function TCustomVstPlugIn.VstDispatch(opCode : TDispatcherOpcode; Index, Value: Integer; Pntr: Pointer; opt: Double): Integer;
@@ -1525,6 +1514,13 @@ begin
  VstDispatch(effMainsChanged, 0, Integer(IsOn));
 end;
 
+procedure TCustomVstPlugIn.NeedIdle;
+begin
+ FNeedIdle := True;
+ if Assigned(FOnAMNeedIdle)
+  then FOnAMNeedIdle(Self);
+end;
+
 function TCustomVstPlugIn.GetVu: Single;
 const
   Divisor : Double = 1 / 32767;
@@ -1612,9 +1608,10 @@ end;
 
 procedure TCustomVstPlugIn.ShowEdit(Control: TWinControl);
 var
-  param   : string;
-  i,wxw   : Integer;
-  theRect : ERect;
+  param         : string;
+  i, j          : Integer;
+  MaxParamWidth : Integer;
+  theRect       : ERect;
 begin
  if (effFlagsHasEditor in PVstEffect.EffectFlags) and (fGUIStyle = gsDefault) then
   begin
@@ -1632,15 +1629,19 @@ begin
     begin
      FGUIControl := Control;
      FEditOpen := True;
-     with TLabel.Create(Control) do
+     if not assigned(FGUIElements)
+      then FGUIElements := TObjectList.Create;
+
+     with TLabel(FGUIElements[FGUIElements.Add(TLabel.Create(Control))]) do
       begin
        Name := 'LbL'; Parent := Control; Caption := '';
        Alignment := taCenter; Left := 10; Top := 64;
       end;
      {$IFDEF SB}
-     with TFlatScrollBar.Create(Control) do
+     with TFlatScrollBar(FGUIElements[FGUIElements.Add(TFlatScrollBar.Create(Control))]) do
       begin
-       Name := 'SBox'; ClientWidth := 560;
+       Name := 'ParamBar'; ClientWidth := 560;
+       Anchors := [akLeft, akTop, akRight];
        BevelInner := bvNone; BevelOuter := bvNone;
        Color := clGray; Parent := Control; Align := alClient;
        Left := 0; Top := 0; Width := 560;
@@ -1648,7 +1649,7 @@ begin
        HorzScrollBar.Smooth := True; HorzScrollBar.Tracking := True;
       end;
      {$ELSE}
-     with TTrackBar.Create(Control) do
+     with TTrackBar(FGUIElements[FGUIElements.Add(TTrackBar.Create(Control))]) do
       begin
        Name := 'ParamBar'; Parent := Control;
        Anchors := [akLeft, akTop, akRight];
@@ -1659,10 +1660,10 @@ begin
        TickMarks := tmBottomRight; TickStyle := tsNone;//Auto;
       end;
      {$ENDIF}
-     with TComboBox.Create(Control) do
+     with TComboBox(FGUIElements[FGUIElements.Add(TComboBox.Create(Control))]) do
       begin
        Name := 'ParamBox'; Parent := Control; param := '';
-       for i := 0 to FnumParams - 1
+       for i := 0 to numParams - 1
         do begin param := GetParamName(i); Items.Add(param); end;
        Anchors := [akLeft, akTop, akRight]; Left := 4; Top := 5;
        Width := Control.Width - 4 * Left; Height := 21; ItemHeight := 13;
@@ -1674,44 +1675,49 @@ begin
    gsDefault, gsList:
     begin
      theRect := Rect(0, 0, Control.Width, 4 + numParams * 16);
-     FGUIControl := Control; wxw := 0;
+     FGUIControl := Control;
      GUIControl.Visible := False;
      GUIControl.ClientWidth := theRect.right - theRect.left;
      GUIControl.ClientHeight := theRect.Bottom - theRect.Top;
-     with TLabel.Create(Control) do
+
+     // scan maximum parameter name length
+     MaxParamWidth := 0;
+     with TLabel(FGUIElements[FGUIElements.Add(TLabel.Create(Control))]) do
       try
-       Parent := Control; Alignment := taCenter;
-       for i := 0 to FnumParams - 1 do
-        if Canvas.TextWidth(GetParamName(i)+':_')>wxw
-         then wxw := Canvas.TextWidth(GetParamName(i)+':_');
+       Parent := Control;
+       Alignment := taCenter;
+       for i := 0 to numParams - 1 do
+        if Canvas.TextWidth(GetParamName(i) + ':_') > MaxParamWidth
+         then MaxParamWidth := Canvas.TextWidth(GetParamName(i) + ':_');
       finally
        Free;
       end;
 
      for i := 0 to numParams - 1 do
       begin
-       with TLabel.Create(Control) do
+       with TLabel(FGUIElements[FGUIElements.Add(TLabel.Create(Control))]) do
         begin
-         Name := 'LbL' + IntToStr(i); Parent := Control; Caption := GetParamName(i) + ':'; 
+         Parent := Control; Caption := GetParamName(i) + ':'; Tag := i;
          Height := 16; Alignment := taCenter; Left := 2; Top := 2 + i * Height;
         end;
-       with TLabel.Create(Control) do
+       with TLabel(FGUIElements[FGUIElements.Add(TLabel.Create(Control))]) do
         begin
-         Name := 'LbV' + IntToStr(i); Parent := Control; Alignment := taCenter;
-         Height := 16; Left := Control.Width - Left - 72; AutoSize := False;
+         Caption := 'LbV' + IntToStr(I); Tag := i;
+         Parent  := Control; Alignment := taCenter; AutoSize := False;
+         Height  := 16; Left := Control.Width - Left - 72;
          Alignment := taCenter; Width := 65; Top := 2 + i * Height;
         end;
-       with TScrollBar.Create(Control) do
+       j := FGUIElements.Add(TScrollBar.Create(Control));
+       with TScrollBar(FGUIElements[j]) do
         begin
-         Name := 'ParamBar' + IntToStr(i); Parent := Control;
-         Anchors := [akLeft, akTop, akRight];
+         Parent := Control; Anchors := [akLeft, akTop, akRight];
          Kind := sbHorizontal; LargeChange := 10;
          Height := 16; Top := 2 + i * Height; Tag := i;
-         Left := wxw+2; Width := Control.Width-Left-72;
+         Left := MaxParamWidth + 2; Width := Control.Width - Left - 72;
          Min := 0; Max := 1000; TabOrder := 3 + i;
          Position := Round(1000 * Parameter[i]);
          OnChange := ListParamChange;
-         ListParamChange(GUIControl.FindComponent('ParamBar'+IntToStr(i)));
+         ListParamChange(FGUIElements[j]);
         end;
       end;
      GUIControl.Visible := True;
@@ -1728,7 +1734,8 @@ var
   str : string;
   i   : Integer;
 begin
- with (Sender as TScrollBar) do
+ assert(Sender is TScrollBar);
+ with TScrollBar(Sender) do
   try
    Parameter[Tag] := Position * 0.001;
    lb := TLabel(GUIControl.FindComponent('LbV' + IntToStr(Tag)));
@@ -1751,7 +1758,7 @@ begin
             dec(i);
            end;
          end;
-        if GetParamLabel(Tag)<>''
+        if GetParamLabel(Tag) <> ''
          then lb.Caption := str + ' ' + GetParamLabel(Tag)
          else lb.Caption := str;
         if Length(lb.Caption) > 9 then lb.Caption := str
@@ -1763,30 +1770,33 @@ end;
 
 procedure TCustomVstPlugIn.ParamChange(Sender: TObject);
 var
- nr: Integer;
+  nr : Integer;
+  wc : TComponent;
 begin
- if GUIControl.FindComponent('ParamBar') <> nil then
- {$IFDEF SB}
-  with (GUIControl.FindComponent('ParamBar') as TFlatScrollBar) do
-  {$ELSE}
-  with (GUIControl.FindComponent('ParamBar') as TTrackBar) do
-  {$ENDIF}
+ wc := GUIControl.FindComponent('ParamBar');
+
+ if wc <> nil then
+  with wc as {$IFDEF SB}TFlatScrollBar{$ELSE}TTrackBar{$ENDIF} do
    try
     nr := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
-    if (nr >= 0) and (nr < numParams) then
-     Position := round(GetParameter(nr) * 100);
+    if (nr >= 0) and (nr < numParams)
+     then Position := round(Parameter[nr] * 100);
    except
    end;
 end;
 
 {$IFDEF SB}
 procedure TCustomVstPlugIn.ScrollChange(Sender: TObject; ScrollPos: Integer);
-var nr: Integer;
+var
+  nr: Integer;
 begin
- nr := (Sender as TFlatScrollBar).tag;
- SetParameter(nr, (Sender as TFlatScrollBar).Position * 0.01);
- (GUIForm.FindComponent('LbL' + inttostr(nr)) as TLabel).Caption  := 
-  'Value: ' + GetParamDisplay(nr) + GetParamLabel(nr);
+ with (GUIControl.FindComponent('ParamBar') as TFlatScrollBar) do
+  begin
+   nr := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
+   Parameter[nr] := Position * 0.01;
+   (GUIControl.FindComponent('LbL') as TLabel).Caption  :=
+     RStrValue + ': ' + GetParamDisplay(nr) + GetParamLabel(nr);
+  end;
 end;
 {$ELSE}
 procedure TCustomVstPlugIn.TrackChange(Sender: TObject);
@@ -1796,9 +1806,9 @@ begin
  with (GUIControl.FindComponent('ParamBar') as TTrackBar) do
   begin
    nr := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
-   SetParameter(nr, Position * 0.01);
+   Parameter[nr] := Position * 0.01;
    (GUIControl.FindComponent('LbL') as TLabel).Caption  :=
-    'Value: ' + GetParamDisplay(nr) + GetParamLabel(nr);
+     RStrValue + ': ' + GetParamDisplay(nr) + GetParamLabel(nr);
   end;
 end;
 {$ENDIF}
@@ -1812,35 +1822,13 @@ begin
 end;
 
 procedure TCustomVstPlugIn.CloseEdit;
-var
-  i: Integer;
 begin
  if not Assigned(PVstEffect) then Exit;
  if assigned(FOnCloseEdit) then FOnCloseEdit(Self);
  if (effFlagsHasEditor in PVstEffect.EffectFlags) and (FGUIStyle = gsDefault)
   then EditClose else
-  if Assigned(GUIControl) then
-   case fGUIStyle of
-    gsOld:
-     begin
-      GUIControl.FindComponent('ParamBox').Free;
-      GUIControl.FindComponent('ParamBar').Free;
-      GUIControl.FindComponent('LbL').Free;
-     end;
-    gsDefault, gsList:
-     begin
-      i := 0;
-      repeat
-       if GUIControl.FindComponent('ParamBar' + IntToStr(i)) = nil then Break;
-       GUIControl.FindComponent('ParamBar' + IntToStr(i)).Free;
-       if GUIControl.FindComponent('LbL' + IntToStr(i)) = nil then Break;
-       GUIControl.FindComponent('LbL' + IntToStr(i)).Free;
-       if GUIControl.FindComponent('LbV' + IntToStr(i)) = nil then Break;
-       GUIControl.FindComponent('LbV' + IntToStr(i)).Free;
-       inc(i);
-      until False;
-     end;
-   end;
+  if Assigned(GUIControl)
+   then FreeAndNil(FGUIElements);
  if assigned(GUIControl) and FGUIControlCreated
   then FreeAndNil(FGUIControl); //and (not FExternalForm) then
  FEditOpen := False;
@@ -1915,7 +1903,7 @@ function TCustomVstPlugIn.GetnumPrograms: Integer;
 begin
  if Assigned(PVstEffect)
   then result := PVstEffect^.numPrograms
-  else result := FnumPrograms;
+  else result := 0;
 end;
 
 function TCustomVstPlugIn.GetProgramNameIndexed(Category, Index: Integer; var ProgramName: string): Integer;
@@ -2051,10 +2039,10 @@ var
   i, j, v    : Integer;
 begin
  Variations[0] := GetEffectName;
- Variations[1] := GetVendorString + ' - ' + GetProductString;
- Variations[2] := GetVendorString + ' - ' + GetProductString + ' - ' + GetEffectName;
+ Variations[1] := GetVendorString  + ' - ' + GetProductString;
+ Variations[2] := GetVendorString  + ' - ' + GetProductString + ' - ' + GetEffectName;
  Variations[3] := GetProductString + ' - ' + GetEffectName;
- Variations[4] := GetVendorString + ' - ' + GetEffectName;
+ Variations[4] := GetVendorString  + ' - ' + GetEffectName;
  Variations[5] := GetProductString + ' - ' + GetEffectName;
  Variations[6] := GetProductString;
  v := 0;
@@ -2100,6 +2088,13 @@ begin
   else result := -1;
 end;
 
+function TCustomVstPlugIn.GetVersion: Integer;
+begin
+ if assigned(PVSTEffect)
+  then result := PVSTEffect.Version
+  else result := 0;
+end;
+
 function TCustomVstPlugIn.VendorSpecific(index, value: Integer; pntr: Pointer; opt :Single):Integer;
 begin
  result := VstDispatch(effVendorSpecific, index, value, pntr, opt);
@@ -2115,11 +2110,24 @@ begin
  if FActive then result := VstDispatch(effGetTailSize) else result := -1;
 end;
 
+function TCustomVstPlugIn.GetUniqueID: string;
+begin
+ if assigned(PVstEffect)
+  then result := PVstEffect.uniqueID
+  else result := '';
+end;
+
 function TCustomVstPlugIn.Idle: Integer;
 begin
  if FNeedIdle
   then result := VstDispatch(effIdle)
   else result := 0;
+end;
+
+procedure TCustomVstPlugIn.IOchanged;
+begin
+ if Assigned(FOnAMIOChanged)
+  then FOnAMIOChanged(Self);
 end;
 
 function TCustomVstPlugIn.GetIcon: Integer;
@@ -2157,8 +2165,8 @@ function TCustomVstPlugIn.EditKeyDown(Key : Char; VirtualKeycode : Integer; Modi
 begin
  // character in <index>, virtual in <value>, modifiers in <opt>, return True if used, else False
  Result := False;
- if FActive then
-  Result := (VstDispatch(effEditKeyDown, Integer(Key), VirtualKeycode, nil, Modifier) = 1);
+ if FActive
+  then Result := (VstDispatch(effEditKeyDown, Integer(Key), VirtualKeycode, nil, Modifier) = 1);
 end;
 
 function TCustomVstPlugIn.EditKeyUp(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
@@ -2171,7 +2179,7 @@ end;
 
 procedure TCustomVstPlugIn.SetEditKnobMode(Mode : TKnobMode);
 begin
- if FActive then VstDispatch(effSetEditKnobMode,0,Integer(Mode));
+ if FActive then VstDispatch(effSetEditKnobMode, 0, Integer(Mode));
 end;
 
 // midi plugins channel dependent programs
@@ -2186,25 +2194,25 @@ begin
   else Result := 0;
 end;
 
-function TCustomVstPlugIn.GetnumInputs: Integer;
+function TCustomVstPlugIn.GetNumInputs: Integer;
 begin
  if Assigned(PVstEffect)
   then result := PVstEffect^.numInputs
-  else result := FnumInputs;
+  else result := 0;
 end;
 
-function TCustomVstPlugIn.GetnumOutputs: Integer;
+function TCustomVstPlugIn.GetNumOutputs: Integer;
 begin
  if Assigned(PVstEffect)
   then result := PVstEffect^.numOutputs
-  else result := FnumOutputs;
+  else result := 0;
 end;
 
-function TCustomVstPlugIn.GetnumParams: Integer;
+function TCustomVstPlugIn.GetNumParams: Integer;
 begin
  if Assigned(PVstEffect)
   then result := PVstEffect^.numParams
-  else result := FnumParams;
+  else result := 0;
 end;
 
 function TCustomVstPlugIn.GetCurrentMidiProgram(MidiProgramNamePointer : PMidiProgramName): Integer;
@@ -2326,47 +2334,44 @@ begin
  if FActive then VstDispatch(effBeginLoadProgram, 0, 0, PatchChunkInfo);
 end;
 
-function TCustomVstPlugIn.GetEntryPoints(theDll: TFileName): Integer;
+function TCustomVstPlugIn.GetEntryPoints(DLLFileName: TFileName): Integer;
 {$IFNDEF FPC}
 var
-  Buf : Array[0..511] of char;
+  Buf : array[0..255] of Char;
   LE  : Integer;
   str : string;
 {$ENDIF}
 begin
  result := 0;
- FDLLHandle := SafeLoadLibrary(PChar(theDll),7);
-// FDLLHandle := LoadLibraryEx(PChar(theDll), 0, DONT_RESOLVE_DLL_REFERENCES);
+ FDLLHandle := SafeLoadLibrary(PChar(DLLFileName),7);
+// FDLLHandle := LoadLibraryEx(PChar(DLLFileName), 0, DONT_RESOLVE_DLL_REFERENCES);
 
- case FDLLHandle = 0 of
-   True:
-   try
-    {$IFNDEF FPC}
-    LE := GetLastError;
-    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NIL, LE, 0, @Buf[0], 256, NIL);
-    if Buf='' then
-     begin
-      str := IntToStr(LE);
-      StrCopy(@Buf[0], @str[1]);
-      raise Exception.Create(str);
-     end else raise Exception.Create(buf);
-    {$ENDIF}
-   finally
-    result := 1;
-   end
-   else
+ if FDLLHandle = 0 then
+  try
+   {$IFNDEF FPC}
+   LE := GetLastError;
+   FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nil, LE, 0, @Buf[0], SizeOf(Buf), nil);
+   if Buf = '' then
     begin
-     if Lowercase(ExtractFileExt(theDll)) = '.vst3'
-      then @FMainFunction := GetProcAddress(FDLLHandle, 'GetPluginFactory')
-      else @FMainFunction := GetProcAddress(FDLLHandle, 'main');
-     if not Assigned(FMainFunction) then @FMainFunction := GetProcAddress(FDLLHandle, 'VSTPluginMain');
-     if not Assigned(FMainFunction) then
-      begin
-       @FMainFunction := @whatifnoentry;
-       result := 1;
-      end;
+     str := IntToStr(LE) + StrPas(Buf);
+     raise Exception.Create(str);
+    end else raise Exception.Create(StrPas(Buf));
+   {$ENDIF}
+  finally
+   result := 1;
+  end
+ else
+  begin
+   if Lowercase(ExtractFileExt(DLLFileName)) = '.vst3'
+    then @FMainFunction := GetProcAddress(FDLLHandle, 'GetPluginFactory')
+    else @FMainFunction := GetProcAddress(FDLLHandle, 'main');
+   if not Assigned(FMainFunction) then @FMainFunction := GetProcAddress(FDLLHandle, 'VSTPluginMain');
+   if not Assigned(FMainFunction) then
+    begin
+     @FMainFunction := @whatifnoentry;
+     result := 1;
     end;
- end;
+  end;
 end;
 
 procedure TCustomVstPlugIn.SetDLLFileName(VstFilename:TFilename);
@@ -2374,27 +2379,38 @@ begin
  FDLLFileName := VstFilename;
 end;
 
+procedure TCustomVstPlugIn.InitializeVstEffect;
+begin
+ if assigned(FMainFunction)
+  then PVstEffect := FMainFunction(@audioMaster)
+  else PVstEffect := nil;
+
+ if PVstEffect <> nil then
+  begin
+   PVstEffect.reservedForHost := Self;
+   if assigned(Collection)
+    then PVstEffect.resvd2    := Collection.Owner
+    else PVstEffect.resvd2    := nil;
+   if Assigned(FOnAfterLoad) then FOnAfterLoad(Self);
+  end;
+end;
+
 function TCustomVstPlugIn.LoadFromFile(PluginDll: TFilename): Boolean;
 begin
- result := False;
  try
-   Unload;  // make sure nothing else is loaded
-   FMainFunction := nil;
-   if not FileExists(PluginDll)
-    then raise Exception.CreateFmt(RStrFileDoesNotExist, [PluginDll]);
-   if GetEntryPoints(PluginDll) <> 0 then
-    begin
-     Unload;
-     exit;
-    end;
-   if assigned(FMainFunction)
-    then PVstEffect := FMainFunction(@audioMaster)
-    else PVstEffect := nil;
-  if PVstEffect <> nil then
-  begin
-   if Assigned(FOnAfterLoad) then FOnAfterLoad(Self);
-   result := True;
-  end else raise Exception.CreateFmt(RStrPlugInCouldNotBeLoaded, [PluginDll]);
+  Unload;  // make sure nothing else is loaded
+  FMainFunction := nil;
+  if not FileExists(PluginDll)
+   then raise Exception.CreateFmt(RStrFileDoesNotExist, [PluginDll]);
+  if GetEntryPoints(PluginDll) <> 0 then
+   begin
+    Unload;
+    raise Exception.Create(RStrNoEntryPoint);
+   end;
+  InitializeVstEffect;
+  if PVstEffect <> nil
+   then result := True
+   else raise Exception.CreateFmt(RStrPlugInCouldNotBeLoaded, [PluginDll]);
  except
   result := False;
   Unload;
@@ -2414,17 +2430,16 @@ begin
  try
   FMainFunction := nil;
   FInternalDLLLoader.Load(Stream);
-  FMainFunction := FInternalDLLLoader.FindExport('main');
-  if assigned(FMainFunction)
-   then PVstEffect := FMainFunction(@audioMaster)
-   else PVstEffect := nil;
-  if PVstEffect <> nil then
-   begin
-    if Assigned(FOnAfterLoad) then FOnAfterLoad(Self);
-    result := True;
-   end else raise Exception.Create(RStrPlugInStreamError);
+  FMainFunction := FInternalDLLLoader.FindExport('VSTPluginMain');
+  if not Assigned(FMainFunction)
+   then FMainFunction := FInternalDLLLoader.FindExport('main');
+  InitializeVstEffect;
+  if PVstEffect <> nil
+   then result := True
+   else raise Exception.Create(RStrPlugInStreamError);
  except
   result := False;
+  PVstEffect := nil;
   FreeAndNil(FInternalDLLLoader);
  end;
 end;
@@ -2436,11 +2451,6 @@ begin
   Close;
  except
  end;
- FnumInputs := -1;
- FnumOutputs := -1;
- FnumPrograms := -1;
- FVersion := -1;
- FUniqueID := '';
  if FDLLHandle > 0 then
   begin
    try
@@ -2452,18 +2462,6 @@ begin
  if assigned(FInternalDLLLoader)
   then FInternalDLLLoader.Unload;
  PVstEffect := nil;
-end;
-
-function SwapLong(var l: LongInt): LongInt;
-var
-  t : Integer;
-type
-  X = array [0..1] of word;
-begin
- T := Swap(X(L)[1]);
- X(L)[1] := Swap(X(L)[0]);
- X(L)[0] := T;
- result := t;
 end;
 
 procedure TCustomVstPlugIn.LoadBank(FileName: TFileName);
@@ -2494,44 +2492,40 @@ begin
  end; 
 end;
 
-function TCustomVstPlugIn.GetPreset(i: Integer): TFXPreset;
+function TCustomVstPlugIn.GetPreset(ProgramNo: Integer): TFXPreset;
 var
-  s  : string;
-  pc : pLongInt;
-  x  : Integer;
-  si : Single;
+  str : string;
+  i   : Integer;
 begin
- SetProgram(i);
+ SetProgram(ProgramNo);
  with result do
   begin
-   chunkMagic := FourCharToLong('C','c','n','K');
-   fxMagic    := FourCharToLong('F','x','C','k');
-   version    := 1;
-   fxID       := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
-   fxVersion  := PVstEffect^.version;
-   numParams  := Self.numParams;
-   s := GetProgramName + #0;
-   StrLCopy(prgName, PChar(s), 26);
-   GetMem(params, numParams * SizeOf(Single));
-   pc := pLongInt(params);
+   ChunkMagic := 'CcnK';
+   FXMagic    := 'FxCk';
+   Version    := 1;
+   FXID       := PVstEffect^.UniqueID;
+   FXVersion  := PVstEffect^.version;
+   NumParams  := Self.numParams;
+   str        := GetProgramName + #0;
+   StrLCopy(prgName, PChar(str), 26);
+
+   GetMem(Params, numParams * SizeOf(Single));
    for i := 0 to numParams - 1 do
     begin
-     si := GetParameter(i);
-     x := pLongInt(@si)^;
-     SwapLong(x);
-     pc^ := x;
-     inc(pc);
+     PDAVSingleFixedArray(params)^[i] := Parameter[i];
+     SwapLong(PDAVSingleFixedArray(params)^[i]);
     end;
-   result.ByteSize := SizeOf(result) - SizeOf(LongInt) * 2 + (numParams - 1) * SizeOf(Single);
+   // set bytesize excl. ChunkMagic, ByteSize & Params (not part of the spec)
+   result.ByteSize := SizeOf(result) - SizeOf(LongInt) * 3 + numParams * SizeOf(Single);
 
    // swap
    SwapLong(ByteSize);
-   SwapLong(chunkMagic);
-   SwapLong(fxMagic);
-   SwapLong(version);
-   SwapLong(fxID);
-   SwapLong(fxVersion);
-   SwapLong(numParams);
+   SwapLong(ChunkMagic);
+   SwapLong(FXMagic);
+   SwapLong(Version);
+   SwapLong(FXID);
+   SwapLong(FXVersion);
+   SwapLong(NumParams);
   end;
 end;
 
@@ -2562,9 +2556,9 @@ end;
 procedure TCustomVstPlugIn.SavePreset(Stream: TStream);
 var
   FXChunkSet : TFXChunkSet;
-  s          : string;
-  x          : Integer;
-  PBuffer    : Pointer;
+  str        : string;
+  IntChkSize : Integer;
+  ChunkData  : Pointer;
   FXPreset   : TFXPreset;
 begin
  Stream.Seek(0, 0);
@@ -2572,47 +2566,55 @@ begin
  if effFlagsProgramChunks in EffectOptions then
   with FXChunkSet do
    begin
-    chunkMagic := FourCharToLong('C','c','n','K');
-    fxMagic := FourCharToLong('F','P','C','h');
-    version := 1;
-    fxID := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
-    fxVersion := PVstEffect^.version;
-    numPrograms := numPrograms;
+    ChunkMagic  := 'CcnK';
+    FXMagic     := 'FPCh';
+    Version     := 1;
+    FXID        := PVstEffect^.UniqueID;
+    FXVersion   := PVstEffect^.version;
+    NumPrograms := PVstEffect^.numPrograms;
+
+    str := GetProgramName + #0;
+    StrLCopy(prgName, PChar(str), 26);
+
+    IntChkSize := GetChunk(@ChunkData, True);
+    chunkSize := IntChkSize;
+    ByteSize := SizeOf(FXChunkSet) - SizeOf(LongInt) * 2 + chunkSize - 8;
+
+    // swap-o-matic
     SwapLong(chunkMagic);
     SwapLong(fxMagic);
     SwapLong(version);
     SwapLong(fxID);
     SwapLong(fxVersion);
     SwapLong(numPrograms);
-    s := GetProgramName + #0;
-    StrLCopy(prgName, PChar(s), 26);
-    x := GetChunk(@PBuffer, True);
-    chunkSize := x;
-    ByteSize := SizeOf(FXChunkSet) - SizeOf(LongInt) * 2 + chunkSize - 8;
     SwapLong(ByteSize);
     SwapLong(chunkSize);
+
+    // write data to stream 
     Stream.WriteBuffer(FXChunkSet, SizeOf(FXChunkSet) - SizeOf(Pointer));
-    Stream.WriteBuffer(PBuffer^, x);
+    Stream.WriteBuffer(ChunkData^, IntChkSize);
    end
   else
    begin
     FXPreset := GetPreset(GetProgram);
-    Stream.WriteBuffer(FXPreset, SizeOf(FXPreset) - SizeOf(Single));
-    Stream.WriteBuffer(FXPreset.params^, SizeOf(Single) * numParams);
-    FreeMem(FXPreset.params);
+    try
+     Stream.WriteBuffer(FXPreset, SizeOf(FXPreset) - SizeOf(Single));
+     Stream.WriteBuffer(FXPreset.params^, SizeOf(Single) * numParams);
+    finally
+     Dispose(FXPreset.params);
+    end;
    end;
 end;
 
 procedure TCustomVstPlugIn.LoadBank(Stream: TStream);
 var
-  i              : Integer;
+  i, j           : Integer;
   FXSet          : TFXSet;
   FXChunkBank    : TFXChunkBank;
-  pp             : TFXPreset;
-  s              : Single;
-  j, x           : Integer;
-  ptr            : Pointer;
-  pb2            : Pointer;
+  FXPreset       : TFXPreset;
+  Param          : Single;
+  ChunkData      : Pointer;
+  ChunkDataSize  : Integer;
   PatchChunkInfo : TVstPatchChunkInfo;
   b              : Byte;
   UseChunk       : Boolean;
@@ -2623,51 +2625,65 @@ begin
  UseChunk := (b <> $78);
  Stream.Seek(0, 0);
 
-// if eoProgramChunks in EffectOptions then
  if UseChunk then
   begin
-   ptr := @FXChunkBank;
-   Stream.Read(ptr^, SizeOf(TFXChunkBank) - SizeOf(Pointer));
+   assert(effFlagsProgramChunks in EffectOptions);
+   Stream.Read(FXChunkBank, SizeOf(TFXChunkBank) - SizeOf(Pointer));
+   SwapLong(FXChunkBank.chunkMagic);
+   SwapLong(FXChunkBank.fxMagic);
+   assert(FXChunkBank.chunkMagic = 'CcnK');
+   assert(FXChunkBank.fxMagic = 'FxCk');
 
-   x := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
-   SwapLong(x);
-   if FXChunkBank.fxId <> x then raise Exception.Create(RStrBankFileNotForThisPlugin);
+   // swap unique ID
+   SwapLong(FXChunkBank.fxId);
+   if FXChunkBank.fxId <> PVstEffect^.UniqueID
+    then raise Exception.Create(RStrBankFileNotForThisPlugin);
 
-   x := Stream.Size - Stream.Position;
-   GetMem(pb2, x + 1);
-   j := Stream.Read(pb2^, x);
-   SetChunk(pb2, j, False);
-   FreeMem(pb2);
+   // allocate chunk data memory
+   ChunkDataSize := Stream.Size - Stream.Position;
+   GetMem(ChunkData, ChunkDataSize);
+   try
+    if Stream.Read(ChunkData^, ChunkDataSize) <> ChunkDataSize
+     then raise Exception.Create('chunk error, actual stream smaller than chunk');
+    SetChunk(ChunkData, ChunkDataSize, False);
+   finally
+    Dispose(ChunkData);
+   end;
   end
  else
   begin
-   ptr := @FXSet;
-   Stream.Read(ptr^, SizeOf(TFXSet) - SizeOf(Pointer));
-   x := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
-   SwapLong(x);
-   if FXSet.fxId <> x then raise Exception.Create(RStrBankFileNotForThisPlugin);
+   Stream.Read(FXSet, SizeOf(TFXSet) - SizeOf(Pointer));
+   SwapLong(FXSet.chunkMagic);
+   SwapLong(FXSet.fxMagic);
+   assert(FXSet.chunkMagic = 'CcnK');
+   assert(FXSet.fxMagic = 'FxCk');
 
-   PatchChunkInfo.version := 1;
-   PatchChunkInfo.pluginUniqueID := PVstEffect.uniqueID;
-   PatchChunkInfo.pluginVersion := PVstEffect.version;
-   PatchChunkInfo.numElements := PVstEffect.numPrograms; // Number of Programs (Bank)
-   BeginLoadBank(@PatchChunkInfo);
+   // swap
+   SwapLong(FXSet.fxId);
+   if FXChunkBank.fxId <> PVstEffect^.UniqueID
+    then raise Exception.Create(RStrBankFileNotForThisPlugin);
+
+   with PatchChunkInfo do
+    begin
+     version        := 1;
+     pluginUniqueID := PVstEffect.uniqueID;
+     pluginVersion  := PVstEffect.version;
+     numElements    := PVstEffect.numPrograms; // Number of Programs (Bank)
+     BeginLoadBank(@PatchChunkInfo);
+    end;
 
    SwapLong(FXSet.numPrograms);
-   for j := 0 to FXSet.numPrograms - 1 do
+   for i := 0 to FXSet.numPrograms - 1 do
     begin
-     ptr := @pp;
-     Stream.Read(ptr^, SizeOf(TFXPreset) - SizeOf(Pointer));
-     SetProgram(j);
-     SetProgramName(pp.prgName);
-     SwapLong(pp.numParams);
-     ptr := @x;
-     for i := 0 to pp.numParams - 1 do
+     Stream.Read(FXPreset, SizeOf(TFXPreset) - SizeOf(Pointer));
+     SetProgram(i);
+     SetProgramName(FXPreset.prgName);
+     SwapLong(FXPreset.numParams);
+     for j := 0 to FXPreset.numParams - 1 do
       begin
-       Stream.Read(ptr^, SizeOf(Single));
-       SwapLong(x);
-       s := pSingle(ptr)^;
-       SetParameter(i, s);
+       Stream.Read(Param, SizeOf(Single));
+       SwapLong(Param);
+       SetParameter(j, Param);
       end;
     end;
   end;
@@ -2675,18 +2691,19 @@ end;
 
 procedure TCustomVstPlugIn.LoadPreset(Stream: TStream);
 var
-  i              : Integer;
   FXPreset       : TFXPreset;
   FXChunkset     : TFXChunkset;
-  s              : Single;
-  j, x           : Integer;
-  ptr            : Pointer;
-  pb2            : Pointer;
+  Param          : Single;
+  ParamNo        : Integer;
+  ChunkData      : Pointer;
+  ChunkDataSize  : Integer;
   PatchChunkInfo : TVstPatchChunkInfo;
   b              : Byte;
   UseChunk       : Boolean;
 begin
  if not assigned(PVstEffect) then exit;
+
+ // read nineth byte to check, whether chunk are used here 
  Stream.Seek(9, 0);
  Stream.Read(b, 1);
  UseChunk := (b <> $78);
@@ -2695,106 +2712,126 @@ begin
 // if eoProgramChunks in EffectOptions then
  if UseChunk then
   begin
-   ptr := @FXChunkset;
-   Stream.Read(ptr^, SizeOf(TFXChunkset) - SizeOf(Pointer));
-   x := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
-   SwapLong(x);
-   if FXChunkset.fxId <> x
+   assert(effFlagsProgramChunks in EffectOptions);
+   Stream.Read(FXChunkset, SizeOf(TFXChunkset) - SizeOf(Pointer));
+
+   // check unique ID
+   SwapLong(FXChunkset.fxId);
+   if PVstEffect^.UniqueID <> FXChunkset.fxId
     then raise Exception.Create(RStrPresetFileNotForThisPlugin);
+
+   // set program name
    SetProgramName(FXChunkset.prgName);
 
-   x := Stream.Size - Stream.Position;
-   GetMem(pb2, x + 1);
-   j := Stream.Read(pb2^, x);
-   SetChunk(pb2, j, True);
-   FreeMem(pb2);
+   // allocate chunk data memory
+   ChunkDataSize := Stream.Size - Stream.Position;
+   GetMem(ChunkData, ChunkDataSize);
+   try
+    if Stream.Read(ChunkData^, ChunkDataSize) <> ChunkDataSize
+     then raise Exception.Create('chunk error, actual stream smaller than chunk');
+    SetChunk(ChunkData, ChunkDataSize, True);
+   finally
+    Dispose(ChunkData);
+   end;
   end
  else
   begin
-   ptr := @FXPreset;
-   Stream.Read(ptr^, SizeOf(TFXPreset) - SizeOf(Pointer));
-   x := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
-   SwapLong(x);
-   if FXPreset.fxId <> x
+   Stream.Read(FXPreset, SizeOf(TFXPreset) - SizeOf(Pointer));
+
+   // check unique ID
+   SwapLong(FXPreset.fxId);
+   if PVstEffect^.UniqueID <> FXPreset.fxId
     then raise Exception.Create(RStrPresetFileNotForThisPlugin);
-   PatchChunkInfo.version := 1;
-   PatchChunkInfo.pluginUniqueID := PVstEffect.uniqueID;
-   PatchChunkInfo.pluginVersion := PVstEffect.version;
-   PatchChunkInfo.numElements := PVstEffect.numParams; // Number of Programs (Bank)
+
+   with PatchChunkInfo do
+    begin
+     version := 1;
+     pluginUniqueID := PVstEffect.uniqueID;
+     pluginVersion  := PVstEffect.version;
+     numElements    := PVstEffect.numParams; // Number of Programs (Bank)
+    end; 
    BeginLoadProgram(@PatchChunkInfo);
 
    SetProgramName(FXPreset.prgName);
    SwapLong(FXPreset.numParams);
-   ptr := @x;
-   for i := 0 to FXPreset.numParams - 1 do
+   for ParamNo := 0 to FXPreset.numParams - 1 do
     begin
-     Stream.Read(ptr^, SizeOf(Single));
-     SwapLong(x);
-     s := pSingle(ptr)^;
-     SetParameter(i, s);
+     Stream.Read(Param, SizeOf(Single));
+     SwapLong(Param);
+     SetParameter(ParamNo, Param);
     end;
   end;
 end;
 
 procedure TCustomVstPlugIn.SaveBank(Stream: TStream);
 var
-  FXSet       : TFXSet;
-  FXChunkBank : TFXChunkBank;
-  j, x        : Integer;
-  PBuffer     : Pointer;
-  FXPreset    : TFXPreset;
+  FXSet         : TFXSet;
+  FXChunkBank   : TFXChunkBank;
+  PrgNo         : Integer;
+  ChunkDataSize : Integer;
+  ChunkData     : Pointer;
+  FXPreset      : TFXPreset;
 begin
  if not assigned(PVstEffect) then exit;
  Stream.Seek(0, 0);
  if effFlagsProgramChunks in EffectOptions then
   with FXChunkBank do
    begin
-    chunkMagic := FourCharToLong('C','c','n','K');
-    fxMagic := FourCharToLong('F','B','C','h');
-    version := 1;
-    fxID := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
-    fxVersion := PVstEffect^.version;
-    numPrograms := numPrograms;
+    chunkMagic    := 'CcnK';
+    fxMagic       := 'FBCh';
+    version       := 1;
+    fxID          := PVstEffect^.UniqueID;
+    fxVersion     := PVstEffect^.version;
+    numPrograms   := PVstEffect^.numPrograms;
+
+    ChunkDataSize := GetChunk(@ChunkData, False);
+    ChunkSize     := ChunkDataSize;
+    ByteSize      := SizeOf(FXChunkBank) - SizeOf(LongInt) * 3 + chunkSize + 8;
+
+    // swap-o-matic
     SwapLong(chunkMagic);
     SwapLong(fxMagic);
     SwapLong(version);
     SwapLong(fxID);
     SwapLong(fxVersion);
     SwapLong(numPrograms);
-    x := GetChunk(@PBuffer, False);
-    chunkSize := x;
-    ByteSize := SizeOf(FXChunkBank) - SizeOf(LongInt) * 3 + chunkSize + 8;
     SwapLong(ByteSize);
     SwapLong(chunkSize);
+
+    // write data to stream
     Stream.WriteBuffer(FXChunkBank, SizeOf(FXChunkBank) - SizeOf(Pointer));
-    Stream.WriteBuffer(PBuffer^, x);
+    Stream.WriteBuffer(ChunkData^, ChunkDataSize);
    end
  else
   with FXSet do
    begin
-    chunkMagic := FourCharToLong('C','c','n','K');
-    fxMagic := FourCharToLong('F','x','B','k');
-    version := 1;
-    fxID := FourCharToLong(UniqueID[1], UniqueID[2], UniqueID[3], UniqueID[4]);
-    fxVersion := PVstEffect^.version;
-    numPrograms := numPrograms;
+    chunkMagic    := 'CcnK';
+    fxMagic       := 'FBCh';
+    version       := 1;
+    fxID          := PVstEffect^.UniqueID;
+    fxVersion     := PVstEffect^.version;
+    numPrograms   := PVstEffect^.numPrograms;
+    ByteSize      := SizeOf(FXSet) - SizeOf(LongInt) + (SizeOf(TFXPreset) + (numParams - 1) * SizeOf(Single)) * numPrograms;
+
+    // swap-o-matic
     SwapLong(chunkMagic);
     SwapLong(fxMagic);
     SwapLong(version);
     SwapLong(fxID);
     SwapLong(fxVersion);
     SwapLong(numPrograms);
-
-    ByteSize := SizeOf(FXSet) - SizeOf(LongInt) +
-     (SizeOf(TFXPreset) + (numParams - 1) * SizeOf(Single)) * numPrograms;
     SwapLong(ByteSize);
+
     Stream.WriteBuffer(FXSet, SizeOf(FXSet) - SizeOf(Single));
-    for j := 0 to numPrograms - 1 do
+    for PrgNo := 0 to numPrograms - 1 do
      begin
-      FXPreset := GetPreset(j);
-      Stream.WriteBuffer(FXPreset, SizeOf(FXPreset) - SizeOf(Single));
-      Stream.WriteBuffer(FXPreset.params^, SizeOf(Single) * numParams);
-      FreeMem(FXPreset.params);
+      FXPreset := GetPreset(PrgNo);
+      try
+       Stream.WriteBuffer(FXPreset, SizeOf(FXPreset) - SizeOf(Single));
+       Stream.WriteBuffer(FXPreset.params^, SizeOf(Single) * numParams);
+      finally
+       Dispose(FXPreset.params);
+      end;
      end;
    end;
 end;

@@ -3,7 +3,7 @@ unit DAV_ChunkWaveFile;
 interface
 
 uses
-  Classes, SysUtils, DAV_ChunkClasses, DAV_WaveFileTypes;
+  Classes, SysUtils, DAV_Common, DAV_ChunkClasses, DAV_WaveFileTypes;
 
 type
   ////////////////////////////////////////////////////////////////////////////
@@ -348,7 +348,11 @@ type
   ///////////////////////////// Sampler Chunk /////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
+  {$IFDEF Delphi5}
+  TSMPTEFormat = (soZero, so24, so25, so30Drop, so30);
+  {$ELSE}
   TSMPTEFormat = (soZero = 0, so24 = 24, so25 = 25, so30Drop = 29, so30 = 30);
+  {$ENDIF}
 
   TMidiManufacturer = (mmUnknown            = $00,
                        mmSequentialCircuits = $01,

@@ -157,8 +157,6 @@ begin
  inherited;
 end;
 
-
-
 {$IFDEF FPC}
 function InitResourceComponent(Instance: TComponent; RootAncestor: TClass): Boolean;
 begin

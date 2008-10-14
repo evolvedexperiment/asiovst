@@ -118,17 +118,7 @@ type
 implementation
 
 uses
-  Math;
-
-{$IFDEF DELPHI5}
-function Sign(const AValue: Double): TValueSign;
-begin
- if ((PInt64(@AValue)^ and $7FFFFFFFFFFFFFFF) = $0000000000000000)
-  then Result := 0 else
- if ((PInt64(@AValue)^ and $8000000000000000) = $8000000000000000)
-  then Result := -1 else Result := 1;
-end;
-{$ENDIF}
+  Math {$IFDEF Delphi5}, DAV_Common{$ENDIF};
 
 function Complex(Re, Im : Double):TComplexDouble;
 begin

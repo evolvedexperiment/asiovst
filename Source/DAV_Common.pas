@@ -4,10 +4,10 @@ interface
 
 {$I ASIOVST.inc}
 
-{$IFDEF DELPHI5_UP}
-uses Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};
-{$ELSE}
+{$IFDEF FPC}
 uses LCLIntf; {$DEFINE PUREPASCAL}
+{$ELSE}
+uses Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};
 {$ENDIF}
 
 type
@@ -68,6 +68,12 @@ type
 
   TStrArray = array of string;
 
+  TChunkName = array [0..3] of Char;
+
+  {$IFDEF DELPHI5}
+//  TValueSign = set of (-1, 0, 1);
+  {$ENDIF}
+
   TDAVMidiEvent = record
     MidiData        : array[0..3] of Byte;  // 1 thru 3 midi Bytes; midiData[3] is reserved (zero)
     DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
@@ -84,6 +90,7 @@ type
   procedure SetMatrixLength(Matrix : TDAVSingleDynMatrix; Size : TPoint); overload;
   {$ENDIF}
 
+  function SwapLong(var Value): LongInt;
   procedure FlipWord(var Value); overload;
   procedure FlipLong(var Value); overload;
   procedure FlipExtended(var Value : Extended); overload;
@@ -217,6 +224,10 @@ type
   procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
   procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
   procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames:Integer);
+
+  {$IFDEF DELPHI5}
+  function Sign(const AValue: Double): Double;
+  {$ENDIF}
 
 var
   ln10, ln2, ln22, ln2Rez : Double;
@@ -1102,6 +1113,18 @@ begin
   end;
 end;
 
+function SwapLong(var Value): LongInt;
+var
+  t : Integer;
+type
+  X = array [0..1] of word;
+begin
+ T := Swap(X(Value)[1]);
+ X(Value)[1] := Swap(X(Value)[0]);
+ X(Value)[0] := T;
+ result := t;
+end;
+
 procedure FlipLong(var Value); overload;
 var
   VA   : array [0..3] of Byte absolute Value;
@@ -1646,13 +1669,25 @@ begin
     else Result:= 1;
 end;
 
+{$IFDEF DELPHI5}
+{$DEFINE PUREPASCAL}
+
+function Sign(const AValue: Double): Double;//TValueSign;
+begin
+ if ((PInt64(@AValue)^ and $7FFFFFFFFFFFFFFF) = $0000000000000000)
+  then Result := 0 else
+ if ((PInt64(@AValue)^ and $8000000000000000) = $8000000000000000)
+  then Result := -1 else Result := 1;
+end;
+{$ENDIF}
+
 {$IFNDEF FPC}
 function f_Min(const A, B: Single) : Single;
 {$IFDEF PUREPASCAL}
 begin
- if A>B
-  then result:=B
-  else result:=A
+ if A > B
+  then result := B
+  else result := A
 {$ELSE}
 asm
  fld     DWORD PTR [EBP + $08]

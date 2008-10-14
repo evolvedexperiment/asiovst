@@ -40,7 +40,7 @@ procedure DoCreateMethod(FormDesigner: FormDesignerInterface;
 implementation
 
 uses
-  SysUtils, StrUtils;
+  SysUtils {$IFDEF DELPHI6_UP}, StrUtils{$ENDIF};
 
 function GetCurrentProjectGroup: IOTAProjectGroup;
 var

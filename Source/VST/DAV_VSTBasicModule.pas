@@ -7,7 +7,7 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Classes, DAV_VSTEffect;
+  Classes, DAV_Common, DAV_VSTEffect, DAV_ChunkClasses;
 
 type
   TBasicVSTModule = class({$IFDEF UseDelphi}TDataModule{$ELSE}TComponent{$ENDIF})
@@ -24,7 +24,7 @@ type
     procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); virtual;
 
     function  GetMasterVersion: Integer; virtual;
-    function  GetCurrentUniqueID: Integer; virtual;
+    function  GetCurrentUniqueID: TChunkName; virtual;
     procedure MasterIdle; virtual;
     function  IsInputConnected(input: Integer): Boolean; virtual;
     function  IsOutputConnected(output: Integer): Boolean; virtual;
@@ -210,7 +210,7 @@ begin
    reservedForHost := nil;
    resvd2          := 0;
    user            := nil;
-   uniqueID        := FourCharToLong('N', 'o', 'E', 'f');
+   uniqueID        := 'NoEf';
    ioRatio         := 1;
    numParams       := 0;
    numPrograms     := 0;
@@ -257,11 +257,11 @@ begin
  Result := vers;
 end;
 
-function TBasicVSTModule.GetCurrentUniqueId: Integer;
+function TBasicVSTModule.GetCurrentUniqueId: TChunkName;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterCurrentId, 0, 0, nil, 0)
-  else Result := 0;
+  then Result := TChunkName(FAudioMaster(@FEffect, audioMasterCurrentId, 0, 0, nil, 0))
+  else Result := #0#0#0#0;
 end;
 
 procedure TBasicVSTModule.MasterIdle;
@@ -698,7 +698,12 @@ function TBasicVSTModule.HostCallEditSleep(Index, Value: Integer; ptr: pointer; 
 begin Result := 0; end;
 
 function TBasicVSTModule.HostCallIdentify(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
-begin Result := FourCharToLong('N', 'v', 'E', 'f'); end;
+var
+  ChunkName : TChunkName;
+begin
+ ChunkName := 'NvEf';
+ Result := Integer(ChunkName);
+end;
 
 function TBasicVSTModule.HostCallGetChunk(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin Result := 0; end;

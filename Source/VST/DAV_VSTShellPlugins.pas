@@ -5,7 +5,7 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Classes, DAV_VSTEffect, DAV_VSTBasicModule;
+  Classes, DAV_Common, DAV_VSTEffect, DAV_VSTBasicModule;
 
 type
   TUIDInstantiateEvent = procedure(Sender: TObject; UID: string) of object;
@@ -18,6 +18,7 @@ type
     FNumParams        : Integer;
     FNumPrograms      : Integer;
     FPlugCategory     : TVstPluginCategory;
+    FUniqueID         : TChunkName;
     FVSTModule        : TBasicVSTModule;
     FOnInstanciate    : TUIDInstantiateEvent;
     procedure SetUniqueID(fID: String);
@@ -27,7 +28,6 @@ type
     procedure SetDisplayName(const AValue: string); override;
     function GetDisplayName: string; override;
   public
-    UID  : Integer;
     {$IFDEF FPC}
     constructor Create(ACollection: TCollection); override;
     {$ELSE}
@@ -65,7 +65,6 @@ type
 
 implementation
 
-
 {$IFDEF FPC}
 constructor TCustomVstShellPlugin.Create(ACollection: TCollection);
 {$ELSE}
@@ -95,17 +94,16 @@ begin
   else inherited;
 end;
 
-function TCustomVstShellPlugin.GetUniqueID:string;
-var i : Integer;
+function TCustomVstShellPlugin.GetUniqueID: string;
 begin
-  Result := '';
-  for i := 3 downto 0 do
-    Result := Result + char(UID shr (i * 8));
+ Result := FUniqueID;
 end;
 
-procedure TCustomVstShellPlugin.SetUniqueID(fID:string);
+procedure TCustomVstShellPlugin.SetUniqueID(fID: string);
 begin
-  UID := FourCharToLong(fID[1], fID[2], fID[3], fID[4])
+ if Length(fID) < 4
+  then move(fID[1], FUniqueID[0], Length(fID))
+  else move(fID[1], FUniqueID[0], 4);
 end;
 
 procedure TCustomVstShellPlugin.SetDisplayName(const AValue: string);
@@ -128,7 +126,7 @@ end;
 
 destructor TCustomVstShellPlugins.Destroy;
 begin
-  while Count>0 do Delete(0);
+  while Count > 0 do Delete(0);
   inherited;
 end;
 

@@ -2,13 +2,17 @@ unit DAV_ChunkClasses;
 
 interface
 
+{$I ASIOVST.inc}
+
 uses
-  Classes, Contnrs, SysUtils;
+  Classes, Contnrs, SysUtils, DAV_Common;
 
 type
-  TChunkName = array [0..3] of Char;
-
+  {$IFDEF DELPHI5}
+  TCustomChunk = class(TPersistent)
+  {$ELSE}
   TCustomChunk = class(TInterfacedPersistent, IStreamPersist)
+  {$ENDIF}
   protected
     fChunkName : TChunkName;
     fChunkSize : Integer;
@@ -411,13 +415,22 @@ end;
 { TChunkContainer }
 
 procedure TChunkContainer.AssignTo(Dest: TPersistent);
+{$IFDEF DELPHI5}
+var
+  i : Integer;
+{$ENDIF}  
 begin
  inherited;
  if Dest is TChunkContainer then
   begin
    SetLength(TChunkContainer(Dest).fRegisteredChunks, Length(fRegisteredChunks));
    Move(fRegisteredChunks, TChunkContainer(Dest).fRegisteredChunks, Length(fRegisteredChunks) * SizeOf(TCustomChunkClass));
+   {$IFDEF DELPHI5}
+   for i := 0 to TChunkContainer(Dest).fChunkList.Count - 1
+    do TCustomChunk(TChunkContainer(Dest).fChunkList[i]).Assign(TCustomChunk(fChunkList[i]));
+   {$ELSE}
    TChunkContainer(Dest).fChunkList.Assign(fChunkList);
+   {$ENDIF}
   end;
 end;
 

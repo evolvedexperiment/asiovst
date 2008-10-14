@@ -2,7 +2,14 @@ unit DAV_WaveFileTypes;
 
 interface
 
+{$I ASIOVST.INC}
+
 type
+{$IFDEF Delphi5}
+  TWavEncoding = (etUnknown, etPCM, etMSADPCM, etPCMFLOAT, etCompaqVSELP,
+    etIBMCVSD, etALAW, etMuLAW, etMicrosoftDTS, etDRM, etWMA9Speech,
+    etWMRTVoice);
+{$ELSE}
   TWavEncoding = (
     etUnknown              =  $0,
     etPCM                  =  $1,
@@ -247,6 +254,7 @@ type
     etFLAC                 = $F1AC,
     etExtensible           = $FFFE,
     etExperimental         = $FFFF);
+{$ENDIF}
 
   TWavFormatRecord = packed record
     FormatTag       : Word;     // format type

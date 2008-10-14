@@ -4,7 +4,8 @@ interface
 
 {$I ASIOVST.INC}
 
-{$IFDEF FPC}uses LCLIntf;{$ELSE}uses Windows;{$ENDIF}
+uses
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_Common;
 
 const
   kEffectMagic = 'VstP';
@@ -292,15 +293,15 @@ type
     numInputs        : LongInt;              //
     numOutputs       : LongInt;              //
     EffectFlags      : TEffFlags;            // see constants
-    reservedForHost  : Pointer;              // reserved for Host, must be 0 (Dont use it)
-    resvd2           : LongInt;              // reserved for Host, must be 0 (Dont use it)
+    ReservedForHost  : Pointer;              // reserved for Host, must be 0 (Dont use it)
+    Resvd2           : Pointer;              // reserved for Host, must be 0 (Dont use it)
     InitialDelay     : LongInt;              // for algorithms which need input in the first place
     RealQualities    : LongInt;              // number of realtime qualities (0: realtime)
     OffQualities     : LongInt;              // number of offline qualities (0: realtime only)
     IORatio          : LongInt;              // input samplerate to output samplerate ratio, not used yet
     vObject          : Pointer;              // for class access (see AudioEffect.hpp), MUST be 0 else!
     User             : Pointer;              // user access
-    UniqueID         : LongInt;              // pls choose 4 character as unique as possible. This is used to identify an effect for save+load
+    UniqueID         : TChunkName;           // pls choose 4 character as unique as possible. This is used to identify an effect for save+load
     Version          : LongInt;              // (example 1100 for version 1.1.0.0)
     ProcessReplacing : TProcessProc;
     ProcessDoubleReplacing: TProcessDoubleProc;
@@ -765,7 +766,7 @@ type
     HostOwned            : Pointer;                // any data private to host
     PlugOwned            : Pointer;                // any data private to plugin
     Name                 : array[0..99] of char;   // file title
-    UniqueId             : LongInt;                // uniquely identify a file during a session
+    UniqueId             : TChunkName;             // uniquely identify a file during a session
     SampleRate           : Double;                 // file sample rate
     NumChannels          : LongInt;                // number of channels (1 for mono, 2 for stereo...)
     NumFrames            : Double;                 // number of frames in the audio file
@@ -933,7 +934,7 @@ type
   PVstPatchChunkInfo = ^TVstPatchChunkInfo;
   TVstPatchChunkInfo = packed record
     version        : LongInt;               // Format Version (should be 1)
-    pluginUniqueID : LongInt;               // UniqueID of the plugin
+    pluginUniqueID : TChunkName;            // UniqueID of the plugin
     pluginVersion  : LongInt;               // Plugin Version
     numElements    : LongInt;               // Number of Programs (Bank) or Parameters (Program)
     future         : array[0..47] of char;
@@ -957,73 +958,73 @@ type
   // For Preset (Program) (.fxp) without chunk (magic = 'FxCk')
   //--------------------------------------------------------------------
   TFXPreset = packed record
-    chunkMagic : LongInt;   // 'CcnK'
-    ByteSize   : LongInt;   // of this chunk, excl. magic + ByteSize
+    ChunkMagic : TChunkName; // 'CcnK'
+    ByteSize   : LongInt;    // of this chunk, excl. ChunkMagic + ByteSize
 
-    fxMagic    : LongInt;   // 'FxCk'
-    version    : LongInt;
-    fxID       : LongInt;   // fx unique id
-    fxVersion  : LongInt;
+    FXMagic    : TChunkName; // 'FxCk'
+    Version    : LongInt;
+    FXID       : TChunkName; // fx unique id
+    FXVersion  : LongInt;
 
-    numParams  : LongInt;
-    prgName    : array[0..27] of Char;
-    params     : Pointer; //array[0..0] of Single;    // variable no. of parameters
+    NumParams  : LongInt;
+    PrgName    : array[0..27] of Char;
+    Params     : PSingle;    // variable no. of parameters
   end;
 
   //--------------------------------------------------------------------
   // For Preset (Program) (.fxp) with chunk (magic = 'FPCh')
   //--------------------------------------------------------------------
   TFXChunkSet = packed record
-    chunkMagic  : LongInt;                // 'CcnK'
-    ByteSize    : LongInt;                // of this chunk, excl. magic + ByteSize
+    ChunkMagic  : TChunkName;  // 'CcnK'
+    ByteSize    : LongInt;     // of this chunk, excl. ChunkMagic + ByteSize
 
-    fxMagic     : LongInt;                // 'FPCh'
-    version     : LongInt;
-    fxID        : LongInt;                // fx unique id
-    fxVersion   : LongInt;
+    FXMagic     : TChunkName;  // 'FPCh'
+    Version     : LongInt;
+    FXID        : TChunkName;  // fx unique id
+    FXVersion   : LongInt;
 
-    numPrograms : LongInt;
-    prgName     : array[0..27] of Char;
+    NumPrograms : LongInt;
+    PrgName     : array[0..27] of Char;
 
-    chunkSize   : LongInt;
-    chunk       : Pointer; //array[0..7] of char;    // variable
+    ChunkSize   : LongInt;
+    Chunk       : Pointer;     // variable
   end;
 
   //--------------------------------------------------------------------
   // For Bank (.fxb) without chunk (magic = 'FxBk')
   //--------------------------------------------------------------------
   TFXSet = packed record
-    chunkMagic  : LongInt;                   // 'CcnK'
-    ByteSize    : LongInt;                   // of this chunk, excl. magic + ByteSize
+    chunkMagic  : TChunkName; // 'CcnK'
+    ByteSize    : LongInt;    // of this chunk, excl. magic + ByteSize
 
-    fxMagic     : LongInt;                   // 'FxBk'
+    fxMagic     : TChunkName; // 'FxBk'
     version     : LongInt;
-    fxID        : LongInt;                   // fx unique id
+    fxID        : TChunkName; // fx unique id
     fxVersion   : LongInt;
 
     numPrograms : LongInt;
-    future      : array[0..127] of Byte;
+    future      : array [0..127] of Byte;
 
-    programs    : Pointer;//array[0..0] of fxPreset;  // variable no. of programs
+    programs    : Pointer;    // variable no. of programs
   end;
 
   //--------------------------------------------------------------------
   // For Bank (.fxb) with chunk (magic = 'FBCh')
   //--------------------------------------------------------------------
   TFXChunkBank = packed record
-    chunkMagic  : LongInt;                // 'CcnK'
-    ByteSize    : LongInt;                // of this chunk, excl. magic + ByteSize
+    chunkMagic  : TChunkName; // 'CcnK'
+    ByteSize    : LongInt;    // of this chunk, excl. magic + ByteSize
 
-    fxMagic     : LongInt;                // 'FBCh'
+    fxMagic     : TChunkName; // 'FBCh'
     version     : LongInt;
-    fxID        : LongInt;                // fx unique id
+    fxID        : TChunkName; // fx unique id
     fxVersion   : LongInt;
 
     numPrograms : LongInt;
     future      : array[0..127] of Byte;
 
     chunkSize   : LongInt;
-    chunk       : Pointer; //array[0..7] of char;    // variable
+    chunk       : Pointer;    // variable
   end;
 
   PPERect = ^PERect;
@@ -1049,11 +1050,12 @@ function gapSmallValue(value, maxValue: Double): Double;
 function invGapSmallValue(value, maxValue: Double): Double;
 
 function Opcode2String(opcode: TDispatcherOpcode): string;
-function KeyCodeToInteger(VKC:TVstKeyCode):Integer;
+function KeyCodeToInteger(VKC: TVstKeyCode): Integer;
 
 implementation
 
-uses Math, SysUtils;
+uses
+  Math, SysUtils;
 
 { this function converts four char variables to one LongInt. }
 function FourCharToLong(C1, C2, C3, C4: Char): Longint;
@@ -1065,12 +1067,12 @@ function FMod(d1, d2: Double): Double;
 var
    i: Integer;
 begin
-  try
-    i := Trunc(d1 / d2);
-  except
-    on EInvalidOp do i := High(Longint);
-  end;
-  Result := d1 - (i * d2);
+ try
+  i := Trunc(d1 / d2);
+ except
+  on EInvalidOp do i := High(Longint);
+ end;
+ Result := d1 - (i * d2);
 end;
 
 procedure dB2string(value: Single; text: PChar);
@@ -1124,12 +1126,12 @@ begin
  float2string(samples * 1000 / sampleRate, text);
 end;
 
-function gapSmallValue(value, maxValue: double): double;
+function gapSmallValue(value, maxValue: double): Double;
 begin
  Result := Power(maxValue, value);
 end;
 
-function invGapSmallValue(value, maxValue: double): double;
+function invGapSmallValue(value, maxValue: double): Double;
 var
   r : Double;
 begin
@@ -1139,7 +1141,7 @@ begin
  Result :=  r;
 end;
 
-function Rect(Left, Top, Right, Bottom : Smallint):ERect;
+function Rect(Left, Top, Right, Bottom : Smallint): ERect;
 begin
  Result.Left   := Left;
  Result.Top    := Top;
@@ -1234,69 +1236,69 @@ begin
  end;
 end;
 
-function KeyCodeToInteger(VKC:TVstKeyCode):Integer;
+function KeyCodeToInteger(VKC: TVstKeyCode): Integer;
 begin
- if (VKC.character=0) then
+ if (VKC.character = 0) then
   begin
 {$IFNDEF FPC}
    case VKC.virt of
-    VKEY_BACK: Result := VK_BACK;
-    VKEY_TAB: Result := VK_TAB;
-    VKEY_CLEAR: Result := VK_CLEAR;
-    VKEY_RETURN: Result := VK_RETURN;
-    VKEY_PAUSE: Result := VK_PAUSE;
-    VKEY_ESCAPE: Result := VK_ESCAPE;
-    VKEY_SPACE: Result := VK_SPACE;
-    VKEY_NEXT: Result := VK_NEXT;
-    VKEY_END: Result := VK_END;
-    VKEY_HOME: Result := VK_HOME;
-    VKEY_LEFT: Result := VK_LEFT;
-    VKEY_UP: Result := VK_UP;
-    VKEY_RIGHT: Result := VK_RIGHT;
-    VKEY_DOWN: Result := VK_DOWN;
-    VKEY_PAGEUP: Result := VK_UP;
-    VKEY_PAGEDOWN: Result := VK_DOWN;
-    VKEY_SELECT: Result := VK_SELECT;
-    VKEY_PRINT: Result := VK_PRINT;
-    VKEY_ENTER: Result := VK_RETURN;
-    VKEY_SNAPSHOT: Result := VK_SNAPSHOT;
-    VKEY_INSERT: Result := VK_INSERT;
-    VKEY_DELETE: Result := VK_DELETE;
-    VKEY_HELP: Result := VK_HELP;
-    VKEY_NUMPAD0: Result := 48; //VK_NUMPAD0;
-    VKEY_NUMPAD1: Result := 49; //VK_NUMPAD1;
-    VKEY_NUMPAD2: Result := 50; //VK_NUMPAD2;
-    VKEY_NUMPAD3: Result := 51; //VK_NUMPAD3;
-    VKEY_NUMPAD4: Result := 52; //VK_NUMPAD4;
-    VKEY_NUMPAD5: Result := 53; //VK_NUMPAD5;
-    VKEY_NUMPAD6: Result := 54; //VK_NUMPAD6;
-    VKEY_NUMPAD7: Result := 55; //VK_NUMPAD7;
-    VKEY_NUMPAD8: Result := 56; //VK_NUMPAD8;
-    VKEY_NUMPAD9: Result := 57; //VK_NUMPAD9;
-    VKEY_MULTIPLY: Result := VK_MULTIPLY;
-    VKEY_ADD: Result := VK_ADD;
-    VKEY_SEPARATOR: Result := VK_SEPARATOR;
-    VKEY_SUBTRACT: Result := VK_SUBTRACT;
-    VKEY_DECIMAL: Result := VK_DECIMAL;
-    VKEY_DIVIDE: Result := VK_DIVIDE;
-    VKEY_F1: Result := VK_F1;
-    VKEY_F2: Result := VK_F2;
-    VKEY_F3: Result := VK_F3;
-    VKEY_F4: Result := VK_F4;
-    VKEY_F5: Result := VK_F5;
-    VKEY_F6: Result := VK_F6;
-    VKEY_F7: Result := VK_F7;
-    VKEY_F8: Result := VK_F8;
-    VKEY_F9: Result := VK_F9;
-    VKEY_F10: Result := VK_F10;
-    VKEY_F11: Result := VK_F11;
-    VKEY_F12: Result := VK_F12;
-    VKEY_NUMLOCK: Result := VK_NUMLOCK;
-    VKEY_SCROLL: Result := VK_SCROLL;
-    VKEY_SHIFT: Result := VK_SHIFT;
-    VKEY_CONTROL: Result := VK_CONTROL;
-    VKEY_ALT: Result := VK_MENU;
-    VKEY_EQUALS: Result := $5D;
+    VKEY_BACK      : Result := VK_BACK;
+    VKEY_TAB       : Result := VK_TAB;
+    VKEY_CLEAR     : Result := VK_CLEAR;
+    VKEY_RETURN    : Result := VK_RETURN;
+    VKEY_PAUSE     : Result := VK_PAUSE;
+    VKEY_ESCAPE    : Result := VK_ESCAPE;
+    VKEY_SPACE     : Result := VK_SPACE;
+    VKEY_NEXT      : Result := VK_NEXT;
+    VKEY_END       : Result := VK_END;
+    VKEY_HOME      : Result := VK_HOME;
+    VKEY_LEFT      : Result := VK_LEFT;
+    VKEY_UP        : Result := VK_UP;
+    VKEY_RIGHT     : Result := VK_RIGHT;
+    VKEY_DOWN      : Result := VK_DOWN;
+    VKEY_PAGEUP    : Result := VK_UP;
+    VKEY_PAGEDOWN  : Result := VK_DOWN;
+    VKEY_SELECT    : Result := VK_SELECT;
+    VKEY_PRINT     : Result := VK_PRINT;
+    VKEY_ENTER     : Result := VK_RETURN;
+    VKEY_SNAPSHOT  : Result := VK_SNAPSHOT;
+    VKEY_INSERT    : Result := VK_INSERT;
+    VKEY_DELETE    : Result := VK_DELETE;
+    VKEY_HELP      : Result := VK_HELP;
+    VKEY_NUMPAD0   : Result := 48; //VK_NUMPAD0;
+    VKEY_NUMPAD1   : Result := 49; //VK_NUMPAD1;
+    VKEY_NUMPAD2   : Result := 50; //VK_NUMPAD2;
+    VKEY_NUMPAD3   : Result := 51; //VK_NUMPAD3;
+    VKEY_NUMPAD4   : Result := 52; //VK_NUMPAD4;
+    VKEY_NUMPAD5   : Result := 53; //VK_NUMPAD5;
+    VKEY_NUMPAD6   : Result := 54; //VK_NUMPAD6;
+    VKEY_NUMPAD7   : Result := 55; //VK_NUMPAD7;
+    VKEY_NUMPAD8   : Result := 56; //VK_NUMPAD8;
+    VKEY_NUMPAD9   : Result := 57; //VK_NUMPAD9;
+    VKEY_MULTIPLY  : Result := VK_MULTIPLY;
+    VKEY_ADD       : Result := VK_ADD;
+    VKEY_SEPARATOR : Result := VK_SEPARATOR;
+    VKEY_SUBTRACT  : Result := VK_SUBTRACT;
+    VKEY_DECIMAL   : Result := VK_DECIMAL;
+    VKEY_DIVIDE    : Result := VK_DIVIDE;
+    VKEY_F1        : Result := VK_F1;
+    VKEY_F2        : Result := VK_F2;
+    VKEY_F3        : Result := VK_F3;
+    VKEY_F4        : Result := VK_F4;
+    VKEY_F5        : Result := VK_F5;
+    VKEY_F6        : Result := VK_F6;
+    VKEY_F7        : Result := VK_F7;
+    VKEY_F8        : Result := VK_F8;
+    VKEY_F9        : Result := VK_F9;
+    VKEY_F10       : Result := VK_F10;
+    VKEY_F11       : Result := VK_F11;
+    VKEY_F12       : Result := VK_F12;
+    VKEY_NUMLOCK   : Result := VK_NUMLOCK;
+    VKEY_SCROLL    : Result := VK_SCROLL;
+    VKEY_SHIFT     : Result := VK_SHIFT;
+    VKEY_CONTROL   : Result := VK_CONTROL;
+    VKEY_ALT       : Result := VK_MENU;
+    VKEY_EQUALS    : Result := $5D;
     else Result := VKC.character;
    end;
 {$ENDIF}

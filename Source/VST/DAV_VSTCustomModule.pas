@@ -6,8 +6,9 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LMessages, Controls, {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTChannels, DAV_VSTShellPlugins,
-  DAV_VSTBasicModule, DAV_VSTOfflineTask;
+  Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTChannels,
+  DAV_VSTBasicModule, DAV_VSTShellPlugins, DAV_VSTOfflineTask,
+  DAV_ChunkClasses;
 
 type
 //  TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
@@ -120,7 +121,7 @@ type
     procedure SetNumOutputs(Outputs: Integer); virtual;
     procedure SetPluginFlags(newFlags : TEffFlags); virtual;
     procedure SetSampleRate(newValue: Single); virtual;
-    procedure SetUniqueID(fID: string); virtual;
+    procedure SetUniqueID(Value: string); virtual;
     {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
     {$ENDIF}
@@ -213,7 +214,7 @@ type
     property IORatio: Integer read FEffect.ioRatio write FEffect.ioRatio default 1;
     property About: string read FAbout write ReadOnlyString stored False;
     property Version: string read FVersion write FVersion;
-    property UniqueID: string read GetUniqueID write setUniqueID;
+    property UniqueID: string read GetUniqueID write SetUniqueID;
     property numCategories: Integer read fNumCategories write fNumCategories default 1;
     property EffectName: string read FEffectName write SetEffectName;
     property ProductName: string read fProductName write fProductName;
@@ -357,7 +358,7 @@ end;
 
 Procedure TCustomVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
 var
-  rUID : Integer;
+  rUID : TChunkName;
   i, j : Integer;
   sUID : string;
   hv   : boolean;
@@ -369,13 +370,13 @@ begin
  if (PlugCategory = vpcShell) and hv then
   begin
    rUID := getCurrentUniqueId;
-   if (rUID > 0) then
+   if (Integer(rUID) > 0) then
     begin
      for i := 0 to ShellPlugins.Count - 1 do
-      if rUID=ShellPlugins[i].UID then Break;
+      if rUID = ShellPlugins[i].UniqueID then Break;
      if i < ShellPlugins.Count then
       with ShellPlugins[i] do
-       if (rUID = UID) then
+       if (rUID = UniqueID) then
         begin
          FEffect.uniqueID := rUID;
          if NumInputs   >= 0 then FEffect.numInputs := NumInputs;
@@ -385,9 +386,8 @@ begin
          fPlugCategory := PlugCategory;
          if Assigned(OnInstanciate) then
           begin
-           sUID := '';
-           for j := 3 downto 0 do sUID := sUID + char(rUID shr (j * 8));
-           OnInstanciate(Self,sUID);
+           sUID := UniqueID;
+           OnInstanciate(Self, sUID);
           end;
          IOChanged;
         end;
@@ -943,7 +943,7 @@ begin
  if FCurrentVstShellPlugin < FVstShellPlugins.Count then
   begin
    StrPCopy(pchar(ptr),FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
-   Result := FVstShellPlugins[FCurrentVstShellPlugin].UID;
+   Result := Integer(FVstShellPlugins[FCurrentVstShellPlugin].UniqueID);
    Inc(FCurrentVstShellPlugin);
   end
  else
@@ -992,17 +992,20 @@ begin
  Result := Integer(fProcessPrecisition); // [value]: @see VstProcessPrecision  @see AudioEffectX::setProcessPrecision
 end;
 
-function TCustomVSTModule.GetUniqueID:string;
-var i : Integer;
+function TCustomVSTModule.GetUniqueID: string;
 begin
- Result := '';
- for i := 3 downto 0
-  do Result := Result + char(FEffect.uniqueID shr (i * 8));
+ Result := FEffect.UniqueID;
 end;
 
-procedure TCustomVSTModule.SetUniqueID(fID:string);
+procedure TCustomVSTModule.SetUniqueID(Value: string);
 begin
- FEffect.uniqueID := FourCharToLong(fID[1], fID[2], fID[3], fID[4])
+ if Length(Value) > 4
+  then Move(Value[1], FEffect.uniqueID, 4)
+  else
+   begin
+    Move(Value[1], FEffect.uniqueID, Length(Value));
+    FillChar(Value[Length(Value)], 4 - Length(Value), 0);
+   end;
 end;
 
 procedure TCustomVSTModule.SetSampleRate(newValue: Single);
