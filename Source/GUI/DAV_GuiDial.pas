@@ -23,9 +23,9 @@ type
 
   TGuiDialPointerAngles = class(TGuiDialSettings)
   private
-    FResolution: Extended;
-    FStart: Integer;
-    FRange: Integer;
+    FResolution : Extended;
+    FStart      : Integer;
+    FRange      : Integer;
     procedure SetRange(const Value: Integer);
     procedure SetResolution(const Value: Extended);
     procedure SetStart(const Value: Integer);
@@ -185,7 +185,7 @@ type
 
   TCustomGuiDialEx = class(TCustomGuiDial)
   private
-    fIndLineLength : Single;
+    FIndLineLength : Single;
     procedure SetIndLineLength(const Value: Single);
   protected
     procedure RenderKnobToBitmap(const Bitmap: TBitmap); override;

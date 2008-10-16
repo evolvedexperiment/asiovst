@@ -123,11 +123,11 @@ resourcestring
 constructor TVSTModuleWithPrograms.Create(AOwner: TComponent);
 begin
  inherited;
- FCurProgram := -1;
+ FCurProgram          := -1;
  FParameterProperties := TCustomVstParameterProperties.Create(Self);
- FVstPrograms := TCustomVstPrograms.Create(Self);
- FParameterUpdate := False;
- FChunkData := TMemoryStream.Create;
+ FVstPrograms         := TCustomVstPrograms.Create(Self);
+ FParameterUpdate     := False;
+ FChunkData           := TMemoryStream.Create;
 end;
 
 destructor TVSTModuleWithPrograms.Destroy;
@@ -199,11 +199,16 @@ begin
 end;
 
 function TVSTModuleWithPrograms.HostCallGetProgramName(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+var
+  str : string;
 begin
  if numPrograms > 0
-  then StrPCopy(ptr, Programs[FCurProgram].DisplayName)
-  else StrPCopy(ptr, '');
+  then str := Programs[FCurProgram].DisplayName
+  else str := '';
 
+ if FTruncateStrings and (Length(str) > 24)
+  then SetLength(str, 24);
+ StrPCopy(ptr, str);
  Result := 0;
 end;
 
@@ -211,14 +216,16 @@ function TVSTModuleWithPrograms.HostCallGetParamLabel(Index, Value: Integer; ptr
 var
   str : string;
 begin
- if (Index >= FEffect.numParams) or (Index>=FParameterProperties.Count)
+ if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
   then str := RStrUndefined
   else
    begin
     str := FParameterProperties[Index].Units;
     if Assigned(FParameterProperties[Index].OnCustomParameterLabel)
-     then FParameterProperties[Index].OnCustomParameterLabel(Self,Index,str);
+     then FParameterProperties[Index].OnCustomParameterLabel(Self, Index, str);
    end;
+ if FTruncateStrings and (Length(str) > 8)
+  then SetLength(str, 8);
  StrPCopy(ptr, str);
 
  Result := 0;
@@ -228,7 +235,7 @@ function TVSTModuleWithPrograms.HostCallGetParamDisplay(Index, Value: Integer; p
 var
   str : string;
 begin
- if (Index >= FEffect.numParams) or (Index>=FParameterProperties.Count)
+ if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
   then str := RStrUndefined
   else
    begin
@@ -242,17 +249,24 @@ begin
      then FParameterProperties[Index].OnCustomParameterDisplay(Self, Index, str);
    end;
 
+ if FTruncateStrings and (Length(str) > 8)
+  then SetLength(str, 8);
  StrPCopy(ptr, str);
  Result := 0;
 end;
 
 function TVSTModuleWithPrograms.HostCallGetParamName(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+var
+  str : string;
 begin
  if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
-  then StrPCopy(ptr, RStrUndefined)
-  else StrPCopy(ptr, FParameterProperties[Index].DisplayName);
+  then str := RStrUndefined
+  else str := FParameterProperties[Index].DisplayName;
 
-  Result := 0;
+ if FTruncateStrings and (Length(str) > 8)
+  then SetLength(str, 8);
+ StrPCopy(ptr, str);
+ Result := 0;
 end;
 
 function TVSTModuleWithPrograms.HostCallEditOpen(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
@@ -384,11 +398,16 @@ begin
 end;
 
 function TVSTModuleWithPrograms.HostCallGetProgramNameIndexed(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+var
+  str : string;
 begin
  Result := 0;
  if (Index < FEffect.numPrograms) and not (Index < 0) then
   begin
-   StrPCopy(ptr, Programs[Index].DisplayName);
+   str := Programs[Index].DisplayName;
+   if FTruncateStrings and (Length(str) > 24)
+    then SetLength(str, 24);
+   StrPCopy(ptr, str);
    Result := 1;
   end;
 end;

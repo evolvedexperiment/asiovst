@@ -258,8 +258,8 @@ type
     effFlagsCanMono,             // NOT USED SINCE 2.4 - if numInputs == 2, makes sense to be used for mono in
     effFlagsCanReplacing,        // MUST BE SET! supports in place output (processReplacing() exsists)
     effFlagsProgramChunks,       // program data are handled in formatless chunks
-    effFlagsUnused1,             // Unused
-    effFlagsUnused2,             // Unused
+    effFlagsUnused1,             // unused
+    effFlagsUnused2,             // unused
     effFlagsIsSynth,             // host may assign mixer channels for its outputs
     effFlagsNoSoundInStop,       // does not produce sound when input is all silence
     effFlagsExtIsAsync,          // NOT USED IN 2.4! - for external dsp; plug returns immedeately from process()
@@ -283,7 +283,7 @@ type
   TVstCanDos = set of TVstCanDo;
 
   TVSTEffect = record
-    Magic            : array [0..3] of char; // must be kEffectMagic ('VstP')
+    Magic            : TChunkName;           // must be kEffectMagic ('VstP')
     Dispatcher       : TDispatcherFunc;
     Process          : TProcessProc;         // Not used since 2.4, use ProcessReplacing instead!
     SetParameter     : TSetParameterProc;
@@ -305,7 +305,7 @@ type
     Version          : LongInt;              // (example 1100 for version 1.1.0.0)
     ProcessReplacing : TProcessProc;
     ProcessDoubleReplacing: TProcessDoubleProc;
-    Future           : array[0..55] of Byte;            // pls zero
+    Future           : array[0..55] of Byte; // pls zero
   end;
 
   TVSTEventType = ( etNone,
@@ -359,10 +359,10 @@ type
     ByteSize        : LongInt;              // 24
     DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
     Flags           : LongInt;              // not defined yet
-    dumpBytes       : LongInt;          		// byte size of sysexDump
+    dumpBytes       : LongInt;              // byte size of sysexDump
     resvd1          : Pointer;              // zero (Reserved for future use)
     sysexDump       : PChar;                // sysex dump
-    resvd2          : Pointer;              //< zero (Reserved for future use)
+    resvd2          : Pointer;              // zero (Reserved for future use)
   end;
 
 // VstTimeInfo ///////////////////////////////////////////////////////////////
@@ -1152,86 +1152,86 @@ end;
 function opcode2String(Opcode: TDispatcherOpcode): string;
 begin
  case Opcode of
-  effOpen                           : Result := 'effOpen';
-  effClose                          : Result := 'effClose';
-  effSetProgram                     : Result := 'effSetProgram';
-  effGetProgram                     : Result := 'effGetProgram';
-  effSetProgramName                 : Result := 'effSetProgramName';
-  effGetProgramName                 : Result := 'effGetProgramName';
-  effGetParamLabel                  : Result := 'effGetParamLabel';
-  effGetParamDisplay                : Result := 'effGetParamDisplay';
-  effGetParamName                   : Result := 'effGetParamName';
-  effGetVu                          : Result := 'effGetVu';
-  effSetSampleRate                  : Result := 'effSetSampleRate';
-  effSetBlockSize                   : Result := 'effSetBlockSize';
-  effMainsChanged                   : Result := 'effMainsChanged';
-  effEditGetRect                    : Result := 'effEditGetRect';
-  effEditOpen                       : Result := 'effEditOpen';
-  effEditClose                      : Result := 'effEditClose';
-  effEditDraw                       : Result := 'effEditDraw';
-  effEditMouse                      : Result := 'effEditMouse';
-  effEditKey                        : Result := 'effEditKey';
-  effEditIdle                       : Result := 'effEditIdle';
-  effEditTop                        : Result := 'effEditTop';
-  effEditSleep                      : Result := 'effEditSleep';
-  effIdentify                       : Result := 'effIdentify';
-  effGetChunk                       : Result := 'effGetChunk';
-  effSetChunk                       : Result := 'effSetChunk';
-  effProcessEvents                  : Result := 'effProcessEvents';
-  effCanBeAutomated                 : Result := 'effCanBeAutomated';
-  effString2Parameter               : Result := 'effString2Parameter';
-  effGetNumProgramCategories        : Result := 'effGetNumProgramCategories';
-  effGetProgramNameIndexed          : Result := 'effGetProgramNameIndexed';
-  effCopyProgram                    : Result := 'effCopyProgram';
-  effConnectInput                   : Result := 'effConnectInput';
-  effConnectOutput                  : Result := 'effConnectOutput';
-  effGetInputProperties             : Result := 'effGetInputProperties';
-  effGetOutputProperties            : Result := 'effGetOutputProperties';
-  effGetPlugCategory                : Result := 'effGetPlugCategory';
-  effGetCurrentPosition             : Result := 'effGetCurrentPosition';
-  effGetDestinationBuffer           : Result := 'effGetDestinationBuffer';
-  effOfflineNotify                  : Result := 'effOfflineNotify';
-  effOfflinePrepare                 : Result := 'effOfflinePrepare';
-  effOfflineRun                     : Result := 'effOfflineRun';
-  effProcessVarIo                   : Result := 'effProcessVarIo';
-  effSetSpeakerArrangement          : Result := 'effSetSpeakerArrangement';
-  effSetBlockSizeAndSampleRate      : Result := 'effSetBlockSizeAndSampleRate';
-  effSetBypass                      : Result := 'effSetBypass';
-  effGetEffectName                  : Result := 'effGetEffectName';
-  effGetErrorText                   : Result := 'effGetErrorText';
-  effGetVendorString                : Result := 'effGetVendorString';
-  effGetProductString               : Result := 'effGetProductString';
-  effGetVendorVersion               : Result := 'effGetVendorVersion';
-  effVendorSpecific                 : Result := 'effVendorSpecific';
-  effCanDo                          : Result := 'effCanDo';
-  effGetTailSize                    : Result := 'effGetTailSize';
-  effIdle                           : Result := 'effIdle';
-  effGetIcon                        : Result := 'effGetIcon';
-  effSetViewPosition                : Result := 'effSetViewPosition';
-  effGetParameterProperties         : Result := 'effGetParameterProperties';
-  effKeysRequired                   : Result := 'effKeysRequired';
-  effGetVstVersion                  : Result := 'effGetVstVersion';
-  effEditKeyDown                    : Result := 'effEditKeyDown';
-  effEditKeyUp                      : Result := 'effEditKeyUp';
-  effSetEditKnobMode                : Result := 'effSetEditKnobMode';
-  effGetMidiProgramName             : Result := 'effGetMidiProgramName';
-  effGetCurrentMidiProgram          : Result := 'effGetCurrentMidiProgram';
-  effGetMidiProgramCategory         : Result := 'effGetMidiProgramCategory';
-  effHasMidiProgramsChanged         : Result := 'effHasMidiProgramsChanged';
-  effGetMidiKeyName                 : Result := 'effGetMidiKeyName';
-  effBeginSetProgram                : Result := 'effBeginSetProgram';
-  effEndSetProgram                  : Result := 'effEndSetProgram';
-  effGetSpeakerArrangement          : Result := 'effGetSpeakerArrangement';
-  effShellGetNextPlugin             : Result := 'effShellGetNextPlugin';
-  effStartProcess                   : Result := 'effStartProcess';
-  effStopProcess                    : Result := 'effStopProcess';
-  effSetTotalSampleToProcess        : Result := 'effSetTotalSampleToProcess';
-  effSetPanLaw                      : Result := 'effSetPanLaw';
-  effBeginLoadBank                  : Result := 'effBeginLoadBank';
-  effBeginLoadProgram               : Result := 'effBeginLoadProgram';
-  effSetProcessPrecision            : Result := 'effSetProcessPrecision';
-  effGetNumMidiInputChannels        : Result := 'effGetNumMidiInputChannels';
-  effGetNumMidiOutputChannels       : Result := 'effGetNumMidiOutputChannels';
+  effOpen                      : Result := 'effOpen';
+  effClose                     : Result := 'effClose';
+  effSetProgram                : Result := 'effSetProgram';
+  effGetProgram                : Result := 'effGetProgram';
+  effSetProgramName            : Result := 'effSetProgramName';
+  effGetProgramName            : Result := 'effGetProgramName';
+  effGetParamLabel             : Result := 'effGetParamLabel';
+  effGetParamDisplay           : Result := 'effGetParamDisplay';
+  effGetParamName              : Result := 'effGetParamName';
+  effGetVu                     : Result := 'effGetVu';
+  effSetSampleRate             : Result := 'effSetSampleRate';
+  effSetBlockSize              : Result := 'effSetBlockSize';
+  effMainsChanged              : Result := 'effMainsChanged';
+  effEditGetRect               : Result := 'effEditGetRect';
+  effEditOpen                  : Result := 'effEditOpen';
+  effEditClose                 : Result := 'effEditClose';
+  effEditDraw                  : Result := 'effEditDraw';
+  effEditMouse                 : Result := 'effEditMouse';
+  effEditKey                   : Result := 'effEditKey';
+  effEditIdle                  : Result := 'effEditIdle';
+  effEditTop                   : Result := 'effEditTop';
+  effEditSleep                 : Result := 'effEditSleep';
+  effIdentify                  : Result := 'effIdentify';
+  effGetChunk                  : Result := 'effGetChunk';
+  effSetChunk                  : Result := 'effSetChunk';
+  effProcessEvents             : Result := 'effProcessEvents';
+  effCanBeAutomated            : Result := 'effCanBeAutomated';
+  effString2Parameter          : Result := 'effString2Parameter';
+  effGetNumProgramCategories   : Result := 'effGetNumProgramCategories';
+  effGetProgramNameIndexed     : Result := 'effGetProgramNameIndexed';
+  effCopyProgram               : Result := 'effCopyProgram';
+  effConnectInput              : Result := 'effConnectInput';
+  effConnectOutput             : Result := 'effConnectOutput';
+  effGetInputProperties        : Result := 'effGetInputProperties';     
+  effGetOutputProperties       : Result := 'effGetOutputProperties';
+  effGetPlugCategory           : Result := 'effGetPlugCategory';
+  effGetCurrentPosition        : Result := 'effGetCurrentPosition';
+  effGetDestinationBuffer      : Result := 'effGetDestinationBuffer';
+  effOfflineNotify             : Result := 'effOfflineNotify';
+  effOfflinePrepare            : Result := 'effOfflinePrepare';
+  effOfflineRun                : Result := 'effOfflineRun';
+  effProcessVarIo              : Result := 'effProcessVarIo';
+  effSetSpeakerArrangement     : Result := 'effSetSpeakerArrangement';
+  effSetBlockSizeAndSampleRate : Result := 'effSetBlockSizeAndSampleRate';
+  effSetBypass                 : Result := 'effSetBypass';
+  effGetEffectName             : Result := 'effGetEffectName';
+  effGetErrorText              : Result := 'effGetErrorText';
+  effGetVendorString           : Result := 'effGetVendorString';
+  effGetProductString          : Result := 'effGetProductString';
+  effGetVendorVersion          : Result := 'effGetVendorVersion';
+  effVendorSpecific            : Result := 'effVendorSpecific';
+  effCanDo                     : Result := 'effCanDo';
+  effGetTailSize               : Result := 'effGetTailSize';
+  effIdle                      : Result := 'effIdle';
+  effGetIcon                   : Result := 'effGetIcon';
+  effSetViewPosition           : Result := 'effSetViewPosition';
+  effGetParameterProperties    : Result := 'effGetParameterProperties';
+  effKeysRequired              : Result := 'effKeysRequired';
+  effGetVstVersion             : Result := 'effGetVstVersion';
+  effEditKeyDown               : Result := 'effEditKeyDown';
+  effEditKeyUp                 : Result := 'effEditKeyUp';
+  effSetEditKnobMode           : Result := 'effSetEditKnobMode';
+  effGetMidiProgramName        : Result := 'effGetMidiProgramName';
+  effGetCurrentMidiProgram     : Result := 'effGetCurrentMidiProgram';
+  effGetMidiProgramCategory    : Result := 'effGetMidiProgramCategory';
+  effHasMidiProgramsChanged    : Result := 'effHasMidiProgramsChanged';
+  effGetMidiKeyName            : Result := 'effGetMidiKeyName';
+  effBeginSetProgram           : Result := 'effBeginSetProgram';
+  effEndSetProgram             : Result := 'effEndSetProgram';
+  effGetSpeakerArrangement     : Result := 'effGetSpeakerArrangement';
+  effShellGetNextPlugin        : Result := 'effShellGetNextPlugin';
+  effStartProcess              : Result := 'effStartProcess';
+  effStopProcess               : Result := 'effStopProcess';
+  effSetTotalSampleToProcess   : Result := 'effSetTotalSampleToProcess';
+  effSetPanLaw                 : Result := 'effSetPanLaw';
+  effBeginLoadBank             : Result := 'effBeginLoadBank';
+  effBeginLoadProgram          : Result := 'effBeginLoadProgram';
+  effSetProcessPrecision       : Result := 'effSetProcessPrecision';
+  effGetNumMidiInputChannels   : Result := 'effGetNumMidiInputChannels';
+  effGetNumMidiOutputChannels  : Result := 'effGetNumMidiOutputChannels';
   else Result := 'unkown opcode: '  + IntToStr(Integer(Opcode));
  end;
 end;

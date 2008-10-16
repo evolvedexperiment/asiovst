@@ -13,9 +13,9 @@ type
 
   TVSTModuleWithMidi = class(TCustomVSTModule)
   protected
-    fMidiEvent       : TVstEvents;
-    fOnProcessMidi   : TProcessMidiEvent;
-    fOnProcessEvents : TProcessEvents;
+    FMidiEvent       : TVstEvents;
+    FOnProcessMidi   : TProcessMidiEvent;
+    FOnProcessEvents : TProcessEvents;
     procedure ProcessMidiEvent(MidiEvent: TVstMidiEvent); virtual;
   public
     constructor Create(AOwner: TComponent); override;
@@ -29,7 +29,7 @@ type
     function HostCallGetCurrentMidiProgram(Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
 
     procedure MIDI_Out(b1, b2, b3, b4: Byte; offset: Integer = 0);
-    procedure MIDI_SendSysEx(Data: array of Byte; offset: Integer = 0);
+    procedure MIDI_SendSysEx(Data: array of Byte; Offset: Integer = 0);
     procedure MIDI_CC(ch, num, val: Integer; offset: Integer = 0);
     procedure MIDI_ChannelAftertouch(ch, val: Integer; offset: Integer = 0);
     procedure MIDI_NoteOff(ch, note, val: Integer; offset: Integer = 0);
@@ -39,8 +39,8 @@ type
     procedure MIDI_PolyAftertouch(ch, note, val: Integer; offset: Integer = 0);
     procedure MIDI_ProgramChange(ch, val: Integer; offset: Integer = 0);
 
-    property OnProcessMidi: TProcessMidiEvent read fOnProcessMidi write fOnProcessMidi;
-    property OnProcessEvents: TProcessEvents read fOnProcessEvents write fOnProcessEvents;
+    property OnProcessMidi: TProcessMidiEvent read FOnProcessMidi write FOnProcessMidi;
+    property OnProcessEvents: TProcessEvents read FOnProcessEvents write FOnProcessEvents;
   end;
   
 implementation
@@ -79,7 +79,7 @@ end;
 
 procedure TVSTModuleWithMidi.ProcessMidiEvent(MidiEvent: TVstMidiEvent);
 begin
-  if Assigned(fOnProcessMidi) then fOnProcessMidi(Self, MidiEvent);
+  if Assigned(FOnProcessMidi) then FOnProcessMidi(Self, MidiEvent);
 end;
 
 function TVSTModuleWithMidi.HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
@@ -87,8 +87,8 @@ var
   i: Integer;
 begin
   Result:= inherited HostCallProcessEvents(Index, Value, ptr, opt);
-  if assigned(fOnProcessEvents)
-   then fOnProcessEvents(Self, PVstEvents(ptr));
+  if assigned(FOnProcessEvents)
+   then FOnProcessEvents(Self, PVstEvents(ptr));
   for i := 0 to PVstEvents(ptr)^.numEvents - 1 do
     if (PVstEvents(ptr)^.events[i]^.EventType = etMidi) then
       ProcessMidiEvent(PVstMidiEvent(PVstEvents(ptr)^.events[i])^);
@@ -257,16 +257,19 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_SendSysEx(Data: array of Byte; offset: Integer);
+procedure TVSTModuleWithMidi.MIDI_SendSysEx(Data: array of Byte; Offset: Integer);
 begin
  with PVstMidiSysexEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
-   EventType := etSysEx;
-   DeltaFrames := offset;
    dumpBytes := Length(Data);
-   GetMem(sysexDump, dumpBytes);
+   if EventType = etSysEx
+    then ReallocMem(sysexDump, dumpBytes)
+    else GetMem(sysexDump, dumpBytes);
+   EventType := etSysEx;
+   DeltaFrames := Offset;
    Move(Data[0], sysexDump^, dumpBytes);
-   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < maxMidiEvents - 1
+    then inc(FMidiEvent.numEvents);
   end;
 end;
 

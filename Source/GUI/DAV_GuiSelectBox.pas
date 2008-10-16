@@ -5,34 +5,36 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Windows, Classes, Controls, DAV_GuiBaseControl, Graphics;
+  Windows, Classes, Controls, Graphics, Menus, DAV_GuiBaseControl;
 
 type
   TCustomGuiSelectBox = class(TCustomGuiBaseControl)
   private
-    fAlignment        : TAlignment;
-    fAntiAlias        : TGuiAntiAlias;
-    fArrowColor       : TColor;
-    fArrowWidth       : Integer;
-    fArrowButtonWidth : Integer;
-    fButtonColor      : TColor;
-    fItemIndex        : Integer;
-    fItems            : TStringList;
-    fOnChange         : TNotifyEvent;
-    fOSFactor         : Integer;
-    fRoundRadius      : Integer;
-    fSelectBoxColor   : TColor;
+    FAlignment        : TAlignment;
+    FAntiAlias        : TGuiAntiAlias;
+    FArrowColor       : TColor;
+    FArrowWidth       : Integer;
+    FArrowButtonWidth : Integer;
+    FButtonColor      : TColor;
+    FItemIndex        : Integer;
+    FItems            : TStringList;
+    FOnChange         : TNotifyEvent;
+    FOSFactor         : Integer;
+    FRoundRadius      : Integer;
+    FPopupMenu        : TPopupMenu;
+    FSelectBoxColor   : TColor;
+    procedure ButtonWidthChanged;
     procedure RenderSelectBoxToBitmap(const Bitmap: TBitmap);
     procedure SetAlignment(const Value: TAlignment);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetArrowColor(const Value: TColor);
+    procedure SetArrowWidth(const Value: Integer);
+    procedure SetButtonColor(const Value: TColor);
     procedure SetItemIndex(Value: Integer);
     procedure SetItems(const Value: TStringList);
     procedure SetRoundRadius(Value: Integer);
     procedure SetSelectBoxColor(const Value: TColor);
-    procedure ButtonWidthChanged;
-    procedure SetArrowWidth(const Value: Integer);
-    procedure SetButtonColor(const Value: TColor);
+    procedure MenuItemClick(Sender: TObject);
   protected
     procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
@@ -40,17 +42,17 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Clear;
-    property Alignment: TAlignment read fAlignment write SetAlignment default taCenter;
-    property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
-    property ArrowColor: TColor read fArrowColor write SetArrowColor default clBtnHighlight;
-    property ArrowWidth: Integer read fArrowWidth write SetArrowWidth default 2;
-    property ButtonColor: TColor read fButtonColor write SetButtonColor default clBtnShadow;
-    property ItemIndex: Integer read fItemIndex write SetItemIndex;
-    property Items: TStringList read fItems write SetItems;
+    property Alignment: TAlignment read FAlignment write SetAlignment default taCenter;
+    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+    property ArrowColor: TColor read FArrowColor write SetArrowColor default clBtnHighlight;
+    property ArrowWidth: Integer read FArrowWidth write SetArrowWidth default 2;
+    property ButtonColor: TColor read FButtonColor write SetButtonColor default clBtnShadow;
+    property ItemIndex: Integer read FItemIndex write SetItemIndex;
+    property Items: TStringList read FItems write SetItems;
     property LineColor default clBtnHighlight;
-    property OnChange: TNotifyEvent read fOnChange write fOnChange;
-    property Radius: Integer read fRoundRadius write SetRoundRadius default 2;
-    property SelectBoxColor: TColor read fSelectBoxColor write SetSelectBoxColor default clBtnShadow;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+    property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
+    property SelectBoxColor: TColor read FSelectBoxColor write SetSelectBoxColor default clBtnShadow;
   end;
 
   TGuiSelectBox = class(TCustomGuiSelectBox)
@@ -74,7 +76,6 @@ type
     property LineColor;
     property LineWidth;
     property SelectBoxColor;
-    property PopupMenu;
     property Radius;
     property ShowHint;
     property Transparent;
@@ -105,8 +106,8 @@ uses
 
 procedure TCustomGuiSelectBox.Clear;
 begin
- fItems.Clear;
- fItemIndex := -1;
+ FItems.Clear;
+ FItemIndex := -1;
 end;
 
 constructor TCustomGuiSelectBox.Create(AOwner: TComponent);
@@ -114,72 +115,103 @@ begin
  inherited;
  ControlStyle      := ControlStyle + [csFramed, csOpaque, csReplicatable,
                                       csAcceptsControls];
- fRoundRadius      := 2;
- fLineColor        := clBtnHighlight;
- fSelectBoxColor   := clBtnHighlight;
- fArrowColor       := clBtnHighlight;
- fSelectBoxColor   := clBtnShadow;
- fButtonColor      := clBtnShadow;
- fArrowWidth       := 2;
- fItemIndex        := -1;
- fOSFactor         := 1;
- fAlignment        := taCenter;
- fItems            := TStringList.Create;
+ FRoundRadius      := 2;
+ FLineColor        := clBtnHighlight;
+ FSelectBoxColor   := clBtnHighlight;
+ FArrowColor       := clBtnHighlight;
+ FSelectBoxColor   := clBtnShadow;
+ FButtonColor      := clBtnShadow;
+ FArrowWidth       := 2;
+ FItemIndex        := -1;
+ FOSFactor         := 1;
+ FAlignment        := taCenter;
+ FItems            := TStringList.Create;
  ButtonWidthChanged;
 end;
 
 destructor TCustomGuiSelectBox.Destroy;
 begin
- FreeAndNil(fItems);
+ FreeAndNil(FItems);
+ if assigned(FPopupMenu)
+  then FreeAndNil(FPopupMenu);
  inherited;
 end;
 
 procedure TCustomGuiSelectBox.MouseDown(Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
+var
+  i  : Integer;
+  MI : TMenuItem;
 begin
  if Button = mbLeft then
-  case fAlignment of
+  case FAlignment of
    taLeftJustify :
     begin
-     if (x > Width - fArrowButtonWidth) then
+     if (x > Width - FArrowButtonWidth) then
       begin
-       if fItemIndex < fItems.Count - 1 then ItemIndex := ItemIndex + 1 else
-       if fItemIndex >= fItems.Count - 1 then ItemIndex := 0;
+       if FItemIndex < FItems.Count - 1 then ItemIndex := ItemIndex + 1 else
+       if FItemIndex >= FItems.Count - 1 then ItemIndex := 0;
       end else
-     if (x > Width - 2 * fArrowButtonWidth) then
+     if (x > Width - 2 * FArrowButtonWidth) then
       begin
-       if fItemIndex > 0 then ItemIndex := ItemIndex - 1 else
-       if fItemIndex = 0 then ItemIndex := fItems.Count - 1;
+       if FItemIndex > 0 then ItemIndex := ItemIndex - 1 else
+       if FItemIndex = 0 then ItemIndex := FItems.Count - 1;
       end;
     end;
    taCenter :
     begin
-     if (x < fArrowButtonWidth) then
+     if (x < FArrowButtonWidth) then
       begin
-       if fItemIndex > 0 then ItemIndex := ItemIndex - 1 else
-       if fItemIndex = 0 then ItemIndex := fItems.Count - 1;
+       if FItemIndex > 0 then ItemIndex := ItemIndex - 1 else
+       if FItemIndex = 0 then ItemIndex := FItems.Count - 1;
       end else
-     if (x > Width - fArrowButtonWidth) then
+     if (x > Width - FArrowButtonWidth) then
       begin
-       if fItemIndex < fItems.Count - 1 then ItemIndex := ItemIndex + 1 else
-       if fItemIndex >= fItems.Count - 1 then ItemIndex := 0;
+       if FItemIndex < FItems.Count - 1 then ItemIndex := ItemIndex + 1 else
+       if FItemIndex >= FItems.Count - 1 then ItemIndex := 0;
       end;
     end;
    taRightJustify :
     begin
-     if (x < fArrowButtonWidth) then
+     if (x < FArrowButtonWidth) then
       begin
-       if fItemIndex > 0 then ItemIndex := ItemIndex - 1 else
-       if fItemIndex = 0 then ItemIndex := fItems.Count - 1;
+       if FItemIndex > 0 then ItemIndex := ItemIndex - 1 else
+       if FItemIndex = 0 then ItemIndex := FItems.Count - 1;
       end else
-     if (x < 2 * fArrowButtonWidth) then
+     if (x < 2 * FArrowButtonWidth) then
       begin
-       if fItemIndex < fItems.Count - 1 then ItemIndex := ItemIndex + 1 else
-       if fItemIndex >= fItems.Count - 1 then ItemIndex := 0;
+       if FItemIndex < FItems.Count - 1 then ItemIndex := ItemIndex + 1 else
+       if FItemIndex >= FItems.Count - 1 then ItemIndex := 0;
       end;
     end;
+  end else
+ if Button = mbRight then
+  begin
+   if assigned(FPopupMenu)
+    then FPopupMenu.Items.Clear
+    else FPopupMenu := TPopupMenu.Create(Self);
+   for i := 0 to FItems.Count - 1 do
+    begin
+     MI := TMenuItem.Create(FPopupMenu);
+     MI.Caption   := FItems[i];
+     MI.RadioItem := True;
+     MI.Checked   := i = ItemIndex;
+     MI.OnClick   := MenuItemClick;
+     MI.Tag       := i;
+     FPopupMenu.Items.Add(MI);
+    end;
+   FPopupMenu.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
   end;
  inherited;
+end;
+
+procedure TCustomGuiSelectBox.MenuItemClick(Sender: TObject);
+begin
+ assert(Sender is TMenuItem);
+ with TMenuItem(Sender) do
+  begin
+   ItemIndex := Tag;
+  end;
 end;
 
 procedure TCustomGuiSelectBox.RenderSelectBoxToBitmap(const Bitmap: TBitmap);
@@ -196,13 +228,13 @@ begin
   begin
    Lock;
    Font.Assign(Self.Font);
-   Font.Size   := fOSFactor * Font.Size;
+   Font.Size   := FOSFactor * Font.Size;
    Brush.Style := bsClear;
-   Brush.Color := fSelectBoxColor;
-   Pen.Width   := fOSFactor * fLineWidth;
-   Pen.Color   := fLineColor;
+   Brush.Color := FSelectBoxColor;
+   Pen.Width   := FOSFactor * fLineWidth;
+   Pen.Color   := FLineColor;
 
-   case fRoundRadius of
+   case FRoundRadius of
     0, 1 : FillRect(ClipRect);
        2 : begin
             with ClipRect do
@@ -215,8 +247,8 @@ begin
            end;
     else
      begin
-      rad := fOSFactor * fRoundRadius;
-      Steps := Round(2 / arcsin(1 / fRoundRadius)) + 1;
+      rad := FOSFactor * FRoundRadius;
+      Steps := Round(2 / arcsin(1 / FRoundRadius)) + 1;
       if Steps > 1 then
        begin
         SetLength(PtsArray, Steps + 4);
@@ -267,98 +299,98 @@ begin
         PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
 
         PolyGon(PtsArray);
-        if fLineColor <> fSelectBoxColor
+        if FLineColor <> FSelectBoxColor
          then PolyLine(PtsArray);
        end;
      end;
    end;
 
-   case fAlignment of
+   case FAlignment of
     taLeftJustify :
      begin
-      rad := fArrowButtonWidth * fOSFactor;
+      rad := FArrowButtonWidth * FOSFactor;
 
-      Brush.Color := fArrowColor;
+      Brush.Color := FArrowColor;
       with ArrowPos do
        begin
-        Pen.Width := fOSFactor * fArrowWidth;
+        Pen.Width := FOSFactor * FArrowWidth;
         y := Bitmap.Height div 2;
         x := Bitmap.Width - rad;
-        Polygon([Point(x, y - fOSFactor * 4),
-                 Point(x, y + fOSFactor * 4),
-                 Point(x + 8 * fOSFactor, y)]);
+        Polygon([Point(x, y - FOSFactor * 4),
+                 Point(x, y + FOSFactor * 4),
+                 Point(x + 8 * FOSFactor, y)]);
 
         x := x - rad;
-        Polygon([Point(x + 8 * fOSFactor, y - fOSFactor * 4),
-                 Point(x + 8 * fOSFactor, y + fOSFactor * 4),
+        Polygon([Point(x + 8 * FOSFactor, y - FOSFactor * 4),
+                 Point(x + 8 * FOSFactor, y + FOSFactor * 4),
                  Point(x, y)]);
        end;
 
-      if fItemIndex >= 0 then
+      if FItemIndex >= 0 then
        begin
         Brush.Style := bsClear;
-        TextSize := TextExtent(fItems[fItemIndex]);
-        TextOut(rad, (Bitmap.Height - TextSize.cy) div 2, fItems[fItemIndex]);
+        TextSize := TextExtent(FItems[FItemIndex]);
+        TextOut(rad, (Bitmap.Height - TextSize.cy) div 2, FItems[FItemIndex]);
        end;
 
      end;
     taCenter :
      begin
-      rad := fArrowButtonWidth * fOSFactor;
+      rad := FArrowButtonWidth * FOSFactor;
       MoveTo(rad, 0);
       LineTo(rad, Bitmap.Height);
       MoveTo(Bitmap.Width - 1 - rad, 0);
       LineTo(Bitmap.Width - 1 - rad, Bitmap.Height);
 
-      Brush.Color := fArrowColor;
+      Brush.Color := FArrowColor;
       with ArrowPos do
        begin
         x := rad div 2;
         y := Bitmap.Height div 2;
-        Pen.Width := fOSFactor * fArrowWidth;
-        Polygon([Point(x + 2 * fOSFactor, y - fOSFactor * 4),
-                 Point(x + 2 * fOSFactor, y + fOSFactor * 4),
-                 Point(x - 2 * fOSFactor, y)]);
+        Pen.Width := FOSFactor * FArrowWidth;
+        Polygon([Point(x + 2 * FOSFactor, y - FOSFactor * 4),
+                 Point(x + 2 * FOSFactor, y + FOSFactor * 4),
+                 Point(x - 2 * FOSFactor, y)]);
 
         x := Bitmap.Width - 1 - rad div 2;
-        Polygon([Point(x - 2 * fOSFactor, y - fOSFactor * 4),
-                 Point(x - 2 * fOSFactor, y + fOSFactor * 4),
-                 Point(x + 2 * fOSFactor, y)]);
+        Polygon([Point(x - 2 * FOSFactor, y - FOSFactor * 4),
+                 Point(x - 2 * FOSFactor, y + FOSFactor * 4),
+                 Point(x + 2 * FOSFactor, y)]);
        end;
 
-      if fItemIndex >= 0 then
+      if FItemIndex >= 0 then
        begin
         Brush.Style := bsClear;
-        TextSize := TextExtent(fItems[fItemIndex]);
+        TextSize := TextExtent(FItems[FItemIndex]);
         TextOut((Bitmap.Width - TextSize.cx) div 2,
-                (Bitmap.Height - TextSize.cy) div 2, fItems[fItemIndex]);
+                (Bitmap.Height - TextSize.cy) div 2, FItems[FItemIndex]);
        end;
      end;
     taRightJustify :
      begin
-      rad := fArrowButtonWidth * fOSFactor;
+      rad := FArrowButtonWidth * FOSFactor;
 
-      Brush.Color := fArrowColor;
+      Brush.Color := FArrowColor;
       with ArrowPos do
        begin
-        Pen.Width := fOSFactor * fArrowWidth;
+        Pen.Width := FOSFactor * FArrowWidth;
         y := Bitmap.Height div 2;
         x := rad;
-        Polygon([Point(x, y - fOSFactor * 4),
-                 Point(x, y + fOSFactor * 4),
-                 Point(x - 8 * fOSFactor, y)]);
+        Polygon([Point(x, y - FOSFactor * 4),
+                 Point(x, y + FOSFactor * 4),
+                 Point(x - 8 * FOSFactor, y)]);
 
         x := x + rad;
-        Polygon([Point(x - 8 * fOSFactor, y - fOSFactor * 4),
-                 Point(x - 8 * fOSFactor, y + fOSFactor * 4),
+        Polygon([Point(x - 8 * FOSFactor, y - FOSFactor * 4),
+                 Point(x - 8 * FOSFactor, y + FOSFactor * 4),
                  Point(x, y)]);
        end;
 
-      if fItemIndex >= 0 then
+      if FItemIndex >= 0 then
        begin
         Brush.Style := bsClear;
-        TextSize := TextExtent(fItems[fItemIndex]);
-        TextOut(Bitmap.Width - rad - TextSize.cx, (Bitmap.Height - TextSize.cy) div 2, fItems[fItemIndex]);
+        TextSize := TextExtent(FItems[FItemIndex]);
+        TextOut(Bitmap.Width - rad - TextSize.cx, (Bitmap.Height - TextSize.cy) div 2, FItems[FItemIndex]);
        end;
 
      end;
@@ -376,7 +408,7 @@ begin
    Lock;
    Brush.Style := bsSolid;
    Brush.Color := Self.Color;
-   case fAntiAlias of
+   case FAntiAlias of
     gaaNone     :
      begin
       {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else {$ENDIF}
@@ -389,8 +421,8 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
+        Width  := FOSFactor * fBuffer.Width;
+        Height := FOSFactor * fBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         {$IFNDEF FPC}
@@ -414,8 +446,8 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
+        Width  := FOSFactor * fBuffer.Width;
+        Height := FOSFactor * fBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         Canvas.FillRect(Canvas.ClipRect);
@@ -441,8 +473,8 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
+        Width  := FOSFactor * fBuffer.Width;
+        Height := FOSFactor * fBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         Canvas.FillRect(Canvas.ClipRect);
@@ -469,8 +501,8 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
+        Width  := FOSFactor * fBuffer.Width;
+        Height := FOSFactor * fBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         Canvas.FillRect(Canvas.ClipRect);
@@ -499,9 +531,9 @@ end;
 
 procedure TCustomGuiSelectBox.SetAlignment(const Value: TAlignment);
 begin
- if fAlignment <> Value then
+ if FAlignment <> Value then
   begin
-   fAlignment := Value;
+   FAlignment := Value;
    ButtonWidthChanged;
    RedrawBuffer(True);
   end;
@@ -509,24 +541,24 @@ end;
 
 procedure TCustomGuiSelectBox.ButtonWidthChanged;
 begin
- case fAlignment of
-   taLeftJustify : fArrowButtonWidth := 12 + (fLineWidth div 2);
-        taCenter : fArrowButtonWidth := Max((fRoundRadius + 2), abs(Font.Height)) + fLineWidth div 2;
-  taRightJustify : fArrowButtonWidth := 12 + (fLineWidth div 2);
+ case FAlignment of
+   taLeftJustify : FArrowButtonWidth := 12 + (fLineWidth div 2);
+        taCenter : FArrowButtonWidth := Max((FRoundRadius + 2), abs(Font.Height)) + fLineWidth div 2;
+  taRightJustify : FArrowButtonWidth := 12 + (fLineWidth div 2);
  end;
 end;
 
 procedure TCustomGuiSelectBox.SetAntiAlias(const Value: TGuiAntiAlias);
 begin
- if fAntiAlias <> Value then
+ if FAntiAlias <> Value then
   begin
-   fAntiAlias := Value;
-   case fAntiAlias of
-         gaaNone : fOSFactor :=  1;
-     gaaLinear2x : fOSFactor :=  2;
-     gaaLinear4x : fOSFactor :=  4;
-     gaaLinear8x : fOSFactor :=  8;
-    gaaLinear16x : fOSFactor := 16;
+   FAntiAlias := Value;
+   case FAntiAlias of
+         gaaNone : FOSFactor :=  1;
+     gaaLinear2x : FOSFactor :=  2;
+     gaaLinear4x : FOSFactor :=  4;
+     gaaLinear8x : FOSFactor :=  8;
+    gaaLinear16x : FOSFactor := 16;
    end;
    ButtonWidthChanged;
    RedrawBuffer(True);
@@ -535,27 +567,27 @@ end;
 
 procedure TCustomGuiSelectBox.SetArrowColor(const Value: TColor);
 begin
- if fArrowColor <> Value then
+ if FArrowColor <> Value then
   begin
-   fArrowColor := Value;
+   FArrowColor := Value;
    RedrawBuffer(True);
   end;
 end;
 
 procedure TCustomGuiSelectBox.SetArrowWidth(const Value: Integer);
 begin
- if fArrowWidth <> Value then
+ if FArrowWidth <> Value then
   begin
-   fArrowWidth := Value;
+   FArrowWidth := Value;
    RedrawBuffer(True);
   end;
 end;
 
 procedure TCustomGuiSelectBox.SetButtonColor(const Value: TColor);
 begin
- if fButtonColor <> Value then
+ if FButtonColor <> Value then
   begin
-   fButtonColor := Value;
+   FButtonColor := Value;
    RedrawBuffer(True);
   end;
 end;
@@ -563,12 +595,12 @@ end;
 procedure TCustomGuiSelectBox.SetItemIndex(Value: Integer);
 begin
  if Value < -1 then Value := -1 else
- if Value >= fItems.Count then Value := fItems.Count - 1;
- if fItemIndex <> Value then
+ if Value >= FItems.Count then Value := FItems.Count - 1;
+ if FItemIndex <> Value then
   begin
-   fItemIndex := Value;
-   if assigned(fOnChange)
-    then fOnChange(Self);
+   FItemIndex := Value;
+   if assigned(FOnChange)
+    then FOnChange(Self);
    RedrawBuffer(True);
   end;
 end;
@@ -578,15 +610,15 @@ begin
  if Assigned(FItems)
   then FItems.Assign(Value)
   else FItems := Value;
- fItemIndex := - 1;
+ FItemIndex := - 1;
  RedrawBuffer(True);
 end;
 
 procedure TCustomGuiSelectBox.SetSelectBoxColor(const Value: TColor);
 begin
- if fSelectBoxColor <> Value then
+ if FSelectBoxColor <> Value then
   begin
-   fSelectBoxColor := Value;
+   FSelectBoxColor := Value;
    RedrawBuffer(True);
   end;
 end;
@@ -594,9 +626,9 @@ end;
 procedure TCustomGuiSelectBox.SetRoundRadius(Value: Integer);
 begin
  if Value < 0 then Value := 0;
- if fRoundRadius <> Value then
+ if FRoundRadius <> Value then
   begin
-   fRoundRadius := Value;
+   FRoundRadius := Value;
    ButtonWidthChanged;
    RedrawBuffer(True);
   end;

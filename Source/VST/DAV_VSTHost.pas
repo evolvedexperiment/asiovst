@@ -192,7 +192,7 @@ type
     function SetBypass(onOff: Boolean): Integer;
     function SetChunk(data: Pointer; ByteSize: Integer; isPreset: Boolean = False): Integer;
     function SetSpeakerArrangement(pluginInput: PVstSpeakerArrangement; pluginOutput: PVstSpeakerArrangement): Boolean;
-    function ShellGetNextPlugin(var PluginName:String): Integer;
+    function ShellGetNextPlugin(var PluginName: string): Integer;
     function String2Parameter(ParameterName: string): Integer;
     function VendorSpecific(index, value:Integer; pntr: Pointer; opt: Single): Integer;
     procedure BeginLoadProgram(PatchChunkInfo : PVstPatchChunkInfo);
@@ -407,20 +407,21 @@ type
 
   TCustomVstHost = class(TComponent)
   private
-    FInputLatency   : Integer;
-    FOutputLatency  : Integer;
-    FVstPlugIns     : TVstPlugIns;
-    FLanguage       : TVstHostLanguage;
-    FnumAutomatable : Integer;
-    FParamQuan      : Integer;
-    FVendorString   : string;
-    FVendorVersion  : Integer;
-    FProductString  : string;
-    FPlugInDir      : string;
-    FVTI            : TVstTimeInformation;
-    FAutoIdle       : Boolean;
-    FOnCreate       : TNotifyEvent;
-    FOnDestroy      : TNotifyEvent;
+    FAutoIdle           : Boolean;
+    FCheckStringLengths : Boolean;
+    FInputLatency       : Integer;
+    FLanguage           : TVstHostLanguage;
+    FnumAutomatable     : Integer;
+    FOnCreate           : TNotifyEvent;
+    FOnDestroy          : TNotifyEvent;
+    FOutputLatency      : Integer;
+    FParamQuan          : Integer;
+    FPlugInDir          : string;
+    FProductString      : string;
+    FVendorString       : string;
+    FVendorVersion      : Integer;
+    FVstPlugIns         : TVstPlugIns;
+    FVTI                : TVstTimeInformation;
     function GetBlockSize : Integer;
     function GetHostCanDos: THostCanDos;
     function GetHostTempo: Single;
@@ -444,6 +445,7 @@ type
     property BlockSize: Integer read getBlockSize write setBlocksize default 2048;
     property CanDos: THostCanDos read getHostCanDos write setHostCanDos;
     property Count: Integer read GetPluginCount;
+    property CheckStringLengths: Boolean read FCheckStringLengths write FCheckStringLengths default false;
     property Language: TVstHostLanguage read FLanguage write FLanguage default kVstLangEnglish;
     property LatencyInput: Integer read FInputLatency write FInputLatency default 0;
     property LatencyOutput: Integer read FOutputLatency write FOutputLatency default 0;
@@ -519,8 +521,8 @@ resourcestring
   RStrCloseEditorFirst           = 'Close editor first!';
   RStrPluginNotValid             = 'This is not a valid Vst Plugin!';
   RStrNoEntryPoint               = 'VST entry point could not be detected';
-  RStrVSTMagicNotFound = 'There is no magic in it... failed!';
-  RStrValue = 'Value';
+  RStrVSTMagicNotFound           = 'There is no magic in it... failed!';
+  RStrValue                      = 'Value';
 
 var
   FBlockSize     : Integer = 2048;
@@ -606,8 +608,12 @@ var
 begin
  try
    // find plugin in host list
-   thePlug := nil;
-   theHost := nil; 
+   if assigned(effect)
+    then thePlug := effect.ReservedForHost
+    else thePlug := nil;
+   if assigned(effect)
+    then theHost := effect.Resvd2
+    else theHost := nil;
    for i := 0 to HostList.Count - 1 do
     with TCustomVstHost(HostList[i]) do
      begin
@@ -694,8 +700,12 @@ begin
                                              end;
     audioMasterGetSampleRate               : result := round(FSampleRate);
     audioMasterGetBlockSize                : result := FBlockSize;
-    audioMasterGetInputLatency             : if theHost <> nil then result := theHost.FInputLatency else result := 0;
-    audioMasterGetOutputLatency            : if theHost <> nil then result := theHost.FOutputLatency else result := 0;
+    audioMasterGetInputLatency             : if assigned(theHost)
+                                              then result := theHost.FInputLatency
+                                              else result := 0;
+    audioMasterGetOutputLatency            : if assigned(theHost)
+                                              then result := theHost.FOutputLatency
+                                              else result := 0;
     audioMasterGetPreviousPlug             : begin
 //                                              if PlugNr = 0 then Result := 0;
                                               {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
@@ -726,8 +736,12 @@ begin
                                               FSampleRate := opt; // raise Exception.Create('audioMasterSetOutputsampleRate, for variable i/o, sample rate in <opt>');
                                              end;
     audioMasterGetOutputspeakerArrangement : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetSpeakerArrangement, (long)input in <value>, output in <ptr>') {$ENDIF Debug};
-    audioMasterGetVendorString             : StrCopy(PChar(ptr), PChar(theHost.VendorString));
-    audioMasterGetProductString            : StrCopy(PChar(ptr), PChar(theHost.ProductString));
+    audioMasterGetVendorString             : if theHost <> nil
+                                              then StrCopy(PChar(ptr), PChar(theHost.VendorString))
+                                              else;
+    audioMasterGetProductString            : if theHost <> nil
+                                              then StrCopy(PChar(ptr), PChar(theHost.ProductString))
+                                              else;
     audioMasterGetVendorVersion            : if theHost <> nil
                                               then result := theHost.FVendorVersion
                                               else result := 0;
@@ -1025,6 +1039,7 @@ begin
                  hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing,
                  hcdOffline, hcdSupplyIdle, hcdStartStopProcess];
 
+ FCheckStringLengths := False;
  {$IFDEF MSWINDOWS}
  with TRegistry.Create do
   try
@@ -1457,46 +1472,112 @@ end;
 
 function TCustomVstPlugIn.GetProgramName: string;
 var
-  temp: array [0..255] of Char;
+  Temp : PChar;
+const
+  Lngth = 256;
 begin
  result := '';
- FillChar(temp[0], 256, 0);
- if FActive then
-  if VstDispatch(effGetProgramName, 0, 0, @temp[0]) = 0
-   then result := StrPas(@temp[0]);
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+  if FActive then
+   if VstDispatch(effGetProgramName, 0, 0, Temp) = 0
+    then result := StrPas(Temp);
+
+  // check whether the result string accords to the specs
+  if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
+    then assert(Length(result) <= 24);
+ finally
+  // dispose memory
+  Dispose(Temp);
+ end;
 end;
 
 function TCustomVstPlugIn.GetParamLabel(index: Integer): string;
 var
-  temp: array [0..255] of Char;
+  Temp : PChar;
+const
+  Lngth = 256;
 begin
  result := '';
- FillChar(temp[0], 256, 0);
- if FActive then
-  if VstDispatch(effGetParamLabel, index, 0, @temp[0]) = 0
-   then result := StrPas(@temp[0]);
+
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+  if FActive then
+   if VstDispatch(effGetParamLabel, index, 0, Temp) = 0
+    then result := StrPas(Temp);
+
+  // check whether the result string accords to the specs
+  if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
+    then assert(Length(result) <= 8);
+ finally
+
+  // dispose memory
+  Dispose(Temp);
+ end;
 end;
 
 function TCustomVstPlugIn.GetParamDisplay(index: Integer): string;
 var
-  temp: array [0..255] of Char;
+  Temp : PChar;
+const
+  Lngth = 256;
 begin
  result := '';
- FillChar(temp[0], 256, 0);
- if FActive then
-  if VstDispatch(effGetParamDisplay, index, 0, @temp[0]) = 0
-   then result := StrPas(@temp[0]);
+
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+  if FActive then
+   if VstDispatch(effGetParamDisplay, index, 0, Temp) = 0
+    then result := StrPas(Temp);
+
+  // check whether the result string accords to the specs
+  if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
+    then assert(Length(result) <= 8);
+ finally
+
+  // dispose memory
+  Dispose(Temp);
+ end;
 end;
 
 function TCustomVstPlugIn.GetParamName(index: Integer): string;
 var
-  temp: array [0..255] of Char;
+  Temp : PChar;
+const
+  Lngth = 256;
 begin
  result := '';
- FillChar(temp[0], 256, 0);
- if FActive then
-  if VstDispatch(effGetParamName, index, 0, @temp[0]) = 0
-   then result := StrPas(@temp[0]);
+
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+  if FActive then
+   if VstDispatch(effGetParamName, index, 0, Temp) = 0
+    then result := StrPas(Temp);
+
+  // check whether the result string accords to the specs
+  if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
+    then assert(Length(result) <= 8);
+ finally
+
+  // dispose memory
+  Dispose(Temp);
+ end;
 end;
 
 procedure TCustomVstPlugIn.SetSampleRate(Value: Double);
@@ -1908,16 +1989,29 @@ end;
 
 function TCustomVstPlugIn.GetProgramNameIndexed(Category, Index: Integer; var ProgramName: string): Integer;
 var
-  TempName : array [0..255] of char;
+  Temp : PChar;
+const
+  Lngth = 256;
 begin
- if FActive
-  then
-   begin
-    result := VstDispatch(effGetProgramNameIndexed, Index, Category, @TempName[0]);
-    if result > 0
-     then ProgramName := StrPas(@TempName[0]);
-   end
-  else result := -1;
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+
+  if FActive
+   then
+    begin
+     result := VstDispatch(effGetProgramNameIndexed, Index, Category, Temp);
+     if result > 0
+      then ProgramName := StrPas(Temp);
+    end
+   else result := -1;
+
+ finally
+  // dispose memory
+  Dispose(Temp);
+ end;
 end;
 
 function TCustomVstPlugIn.CopyCurrentProgramTo(Destination: Integer): Boolean;
@@ -2013,24 +2107,54 @@ end;
 
 function TCustomVstPlugIn.GetEffectName: string;
 var
-  temp: array [0..255] of Char;
+  Temp : PChar;
+const
+  Lngth = 256;
 begin
  result := '';
- FillChar(temp[0], 256, 0);
- if FActive then
-  if VstDispatch(effGetEffectName, 0, 0, @temp[0]) <> 0
-   then result := StrPas(@temp[0]);
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+  if FActive then
+   if VstDispatch(effGetEffectName, 0, 0, Temp) = 0
+    then result := StrPas(Temp);
+
+  // check whether the result string accords to the specs
+  if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
+    then assert(Length(result) <= 32);
+ finally
+  // dispose memory
+  Dispose(Temp);
+ end;
 end;
 
 function TCustomVstPlugIn.GetErrorText: string;
 var
-  temp: Array [0..257] of Char;
+  Temp : PChar;
+const
+  Lngth = 512;
 begin
  result := '';
- FillChar(temp[0], 258, 0);
- if FActive then
-  if VstDispatch(effGetErrorText, 0, 0, @temp[0]) <> 0
-   then result := StrPas(@temp[0]);
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+  if FActive then
+   if VstDispatch(effGetErrorText, 0, 0, Temp) = 0
+    then result := StrPas(Temp);
+
+  // check whether the result string accords to the specs
+  if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
+    then assert(Length(result) <= 256);
+ finally
+  // dispose memory
+  Dispose(Temp);
+ end;
 end;
 
 function TCustomVstPlugIn.GetFriendlyNameString(const StringLength: Integer): string;
@@ -2061,24 +2185,54 @@ end;
 
 function TCustomVstPlugIn.GetVendorString: string;
 var
-  temp: Array [0..255] of Char;
+  Temp : PChar;
+const
+  Lngth = 256;
 begin
  result := '';
- FillChar(temp[0], 256, 0);
- if FActive then
-  if VstDispatch(effGetVendorString, 0, 0, @temp[0]) <> 0
-   then result := StrPas(@temp[0]);
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+  if FActive then
+   if VstDispatch(effGetVendorString, 0, 0, Temp) = 0
+    then result := StrPas(Temp);
+
+  // check whether the result string accords to the specs
+  if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
+    then assert(Length(result) <= 64);
+ finally
+  // dispose memory
+  Dispose(Temp);
+ end;
 end;
 
 function TCustomVstPlugIn.GetProductString: string;
 var
-  temp: Array [0..255] of Char;
+  Temp : PChar;
+const
+  Lngth = 256;
 begin
  result := '';
- FillChar(temp[0], 256, 0);
- if FActive then
-  if VstDispatch(effGetProductString, 0, 0, @temp[0]) <> 0
-   then result := StrPas(@temp[0]);
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+  if FActive then
+   if VstDispatch(effGetProductString, 0, 0, Temp) = 0
+    then result := StrPas(Temp);
+
+  // check whether the result string accords to the specs
+  if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
+    then assert(Length(result) <= 64);
+ finally
+  // dispose memory
+  Dispose(Temp);
+ end;
 end;
 
 function TCustomVstPlugIn.GetVendorVersion: Integer;
@@ -2279,17 +2433,34 @@ begin
   then VstDispatch(effGetSpeakerArrangement, 0, Integer(@SpeakerOut), @SpeakerOut);
 end;
 
-function TCustomVstPlugIn.ShellGetNextPlugin(var PluginName:String): Integer;
+function TCustomVstPlugIn.ShellGetNextPlugin(var PluginName: string): Integer;
 var
-  temp: array [0..255] of Char;
+  Temp : PChar;
+const
+  Lngth = 256;
 begin
- Result := 0;
- if FActive then
-  begin
-   FillChar(temp[0], 256, 0);
-   result := VstDispatch(effShellGetNextPlugin, 0, 0, @temp[0]); // returns the next plugin's uniqueID.
-   if result <> 0 then PluginName := StrPas(@temp[0]);
-  end;
+ PluginName := '';
+ result := 0;
+
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+  if FActive then
+   begin
+    result := VstDispatch(effShellGetNextPlugin, 0, 0, Temp);
+    if result <> 0 then PluginName := StrPas(temp);
+   end;
+
+  // check whether the result string accords to the specs
+  if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
+    then assert(Length(PluginName) <= 64);
+ finally
+  // dispose memory
+  Dispose(Temp);
+ end;
 end;
 
 procedure TCustomVstPlugIn.StartProcess;

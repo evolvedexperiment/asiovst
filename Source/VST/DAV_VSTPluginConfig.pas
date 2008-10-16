@@ -11,6 +11,8 @@ unit DAV_VSTPluginConfig;
 
 interface
 
+{$I ASIOVST.INC}
+
 type
   TConfig = class(TObject)
   private
@@ -76,7 +78,11 @@ end;
 
 function TConfig.RandomLetter: Char;
 begin
+ {$IFDEF Delphi5}
+ Result := Char(Ord('A') + Random(Ord('Z') - Ord('A')) + Random(2) * 32);
+ {$ELSE}
  Result := Char(RandomRange(Ord('A'), Ord('Z')) + Random(2) * 32);
+ {$ENDIF}
 end;
 
 function TConfig.RandomUniqueID: string;

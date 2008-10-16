@@ -89,6 +89,7 @@ type
     function GetHostProduct: string;
     function GetHostVendor: string;
   protected
+    FTruncateStrings        : Boolean;
     FNumCategories          : Integer;
     FEditorNeedUpdate       : Boolean;
     FEditorForm             : TForm;
@@ -102,6 +103,7 @@ type
     FVersionRelease         : Integer;
     FProductName            : string;
     FHostProduct            : string;
+    FHostVendor             : string;
     FInitialDelay           : Integer;
     FOnOpen                 : TNotifyEvent;
     FOnClose                : TNotifyEvent;
@@ -126,6 +128,8 @@ type
     procedure ReadState(Reader: TReader); override;
     {$ENDIF}
     procedure SetEffectName(const Value: string);
+    procedure SetProductName(const Value: string);
+    procedure SetVendorName(const Value: string);
     procedure SetVersionMajor(Value: Integer);
     procedure SetVersionMinor(Value: Integer);
     procedure SetVersionRelease(Value: Integer);
@@ -205,33 +209,34 @@ type
     property Flags: TEffFlags read GetPluginFlags write SetPluginFlags default [effFlagsCanReplacing];
     property CanDo[canDo: string]: Integer read GetCanHostDo;
 
-    property SampleRate: Single read fSampleRate write SetSampleRate;
-    property numInputs: Integer read FEffect.numInputs write SetNumInputs default 2;
-    property numOutputs: Integer read FEffect.numOutputs write SetNumOutputs default 2;
-    property InitialDelay: Integer read FEffect.initialDelay write SetInitialDelay default 0;
-    property RealQualities: Integer read FEffect.realQualities write FEffect.realQualities default 0;
-    property OffQualities: Integer read FEffect.offQualities write FEffect.offQualities default 0;
-    property IORatio: Integer read FEffect.ioRatio write FEffect.ioRatio default 1;
     property About: string read FAbout write ReadOnlyString stored False;
-    property Version: string read FVersion write FVersion;
-    property UniqueID: string read GetUniqueID write SetUniqueID;
-    property numCategories: Integer read fNumCategories write fNumCategories default 1;
-    property EffectName: string read FEffectName write SetEffectName;
-    property ProductName: string read fProductName write fProductName;
-    property VendorName: string read fVendorName write fVendorName;
-    property VersionMajor: Integer read FVersionMajor write SetVersionMajor default 1;
-    property VersionMinor: Integer read FVersionMinor write SetVersionMinor default 0;
-    property VersionRelease: Integer read FVersionRelease write SetVersionRelease default 0;
-    property PlugCategory: TVstPluginCategory read fPlugCategory write fPlugCategory default vpcUnknown;
-    property ProcessPrecisition: TProcessPrecision read FProcessPrecisition write FProcessPrecisition default pp32;
-    property KeysRequired: Boolean read FKeysRequired write SetKeysRequired default False;
-    property Tempo: Single read fTempo;
-    property ShellPlugins: TCustomVstShellPlugins read FVstShellPlugins write SetVstShellPlugins;
-    property TailSize: Integer read FTailSize write FTailSize default 0;
     property CanDos: TVstCanDos read fCanDos write fCanDos default [];
+    property EffectName: string read FEffectName write SetEffectName;
     property HostProduct: string read GetHostProduct stored false;
     property HostVendor: string read GetHostVendor stored false;
     property HostVersion: Integer read GetHostVendorVersion stored false;
+    property InitialDelay: Integer read FEffect.initialDelay write SetInitialDelay default 0;
+    property IORatio: Integer read FEffect.ioRatio write FEffect.ioRatio default 1;
+    property KeysRequired: Boolean read FKeysRequired write SetKeysRequired default False;
+    property numCategories: Integer read fNumCategories write fNumCategories default 1;
+    property numInputs: Integer read FEffect.numInputs write SetNumInputs default 2;
+    property numOutputs: Integer read FEffect.numOutputs write SetNumOutputs default 2;
+    property OffQualities: Integer read FEffect.offQualities write FEffect.offQualities default 0;
+    property PlugCategory: TVstPluginCategory read fPlugCategory write fPlugCategory default vpcUnknown;
+    property ProcessPrecisition: TProcessPrecision read FProcessPrecisition write FProcessPrecisition default pp32;
+    property ProductName: string read fProductName write SetProductName;
+    property RealQualities: Integer read FEffect.realQualities write FEffect.realQualities default 0;
+    property SampleRate: Single read fSampleRate write SetSampleRate;
+    property ShellPlugins: TCustomVstShellPlugins read FVstShellPlugins write SetVstShellPlugins;
+    property TailSize: Integer read FTailSize write FTailSize default 0;
+    property Tempo: Single read fTempo;
+    property TruncateStrings: Boolean read FTruncateStrings write FTruncateStrings default False;
+    property UniqueID: string read GetUniqueID write SetUniqueID;
+    property VendorName: string read fVendorName write SetVendorName;
+    property Version: string read FVersion write FVersion;
+    property VersionMajor: Integer read FVersionMajor write SetVersionMajor default 1;
+    property VersionMinor: Integer read FVersionMinor write SetVersionMinor default 0;
+    property VersionRelease: Integer read FVersionRelease write SetVersionRelease default 0;
 
     property OnBlockSizeChange: TBlockSizeChangeEvent read fBlockSizeChangeEvent write fBlockSizeChangeEvent;
     property OnOpen: TNotifyEvent read FOnOpen write FOnOpen;
@@ -288,20 +293,21 @@ begin
  FLog.SaveToFile('Debug.log');
  {$ENDIF}
  Randomize;
- FVersion := '0.0';
- FHostProduct := '';
- FAbout := 'VST Plugin Template by Christian Budde, Tobybear & MyCo';
+ FTruncateStrings    := False;
+ FVersion            := '0.0';
+ FAbout              := 'VST Plugin Template by Christian Budde, Tobybear & MyCo';
+ FHostProduct        := '';
  FProcessPrecisition := pp32;
- FKeysRequired := False;
- FTailSize := 0;
- FVersionMajor := 1;
- FVersionMinor := 0;
- FVersionRelease := 0;
+ FKeysRequired       := False;
+ FSampleRate         := 44100;
+ FBlockSize          := 1024;
+ FEditorForm         := nil;
+ FTailSize           := 0;
+ FVersionMajor       := 1;
+ FVersionMinor       := 0;
+ FVersionRelease     := 0;
  UpdateVersion;
- FEditorForm := nil;
 
- FSampleRate := 44100;
- FBlockSize := 1024;
  FVstShellPlugins := TCustomVstShellPlugins.Create(Self);
  FCurrentVstShellPlugin := 0;
  FNumCategories := 1;
@@ -359,7 +365,7 @@ end;
 Procedure TCustomVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
 var
   rUID : TChunkName;
-  i, j : Integer;
+  i    : Integer;
   sUID : string;
   hv   : boolean;
 begin
@@ -1206,42 +1212,72 @@ end;
 procedure TCustomVSTModule.SetEffectName(const Value: string);
 begin
  FEffectName := Value;
+ if FTruncateStrings and (Length(FEffectName) > 32)
+  then SetLength(FEffectName, 32);
+end;
+
+procedure TCustomVSTModule.SetVendorName(const Value: string);
+begin
+ FVendorName := Value;
+ if FTruncateStrings and (Length(FVendorName) > 64)
+  then SetLength(FVendorName, 64);
+end;
+
+procedure TCustomVSTModule.SetProductName(const Value: string);
+begin
+ FProductName := Value;
+ if FTruncateStrings and (Length(FProductName) > 64)
+  then SetLength(FProductName, 64);
 end;
 
 function TCustomVSTModule.GetHostProduct: string;
 var
-  Text : pchar;
+  Text : PChar;
 begin
  if (FHostProduct = '') or (FHostProduct = 'Unknown') then
   begin
-   Getmem(Text, 64);
+   // allocate and zero memory (256 byte, which is more than necessary, but
+   // just to be sure and in case of host ignoring the specs)
+   GetMem(Text, 256);
+   FillChar(Text^, 256, 0);
    try
-    if GetHostProductString(Text) then
-     begin
-      SetLength(Result, StrLen(Text));
-      StrCopy(@Result[1], Text);
-     end
-    else Result := 'Unknown';
-   finally
+    if GetHostProductString(Text)
+     then Result := StrPas(Text)
+     else Result := 'Unknown';
+    if TruncateStrings and (Length(Result) > 64)
+     then SetLength(Result, 64);
     FHostProduct := Result;
+   finally
+    // dispose memory
     Dispose(Text);
-   end
+   end;
   end
  else Result := FHostProduct;
 end;
 
 function TCustomVSTModule.GetHostVendor: string;
 var
-  Text : pchar;
+  Text : PChar;
 begin
- Getmem(Text, 64);
- try
-  if GetHostVendorString(Text)
-   then Result := 'Unknown'
-   else Result := shortstring(Text);
- finally
-  Dispose(Text);
- end;
+ if (FHostVendor = '') or (FHostVendor = 'Unknown') then
+  begin
+   // allocate and zero memory (256 byte, which is more than necessary, but
+   // just to be sure and in case of host ignoring the specs)
+   GetMem(Text, 256);
+   FillChar(Text^, 256, 0);
+   try
+    if GetHostVendorString(Text)
+     then Result := StrPas(Text)
+     else Result := 'Unknown';
+    if TruncateStrings and (Length(Result) > 64)
+     then SetLength(Result, 64);
+    FHostVendor := Result;
+   finally
+    // dispose memory
+    Dispose(Text);
+   end;
+  end
+ else Result := FHostVendor;
 end;
 
 procedure TCustomVSTModule.SetVersionMajor(Value: Integer);

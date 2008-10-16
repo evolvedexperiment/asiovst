@@ -26,8 +26,7 @@ package DAV_DSP_D5;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
-  rtl,
+  vcl50,
   DAV_Common_D5;
 
 contains

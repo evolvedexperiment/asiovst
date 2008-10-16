@@ -49,6 +49,7 @@ contains
   DAV_VSTPluginWizardReg in '..\Source\VST\DAV_VSTPluginWizardReg.pas',
   DAV_VSTPrograms in '..\Source\VST\DAV_VSTPrograms.pas',
   DAV_VSTProjectCreator in '..\Source\VST\DAV_VSTProjectCreator.pas',
-  DAV_VSTShellPlugins in '..\Source\VST\DAV_VSTShellPlugins.pas';
+  DAV_VSTShellPlugins in '..\Source\VST\DAV_VSTShellPlugins.pas',
+  DAV_VSTOfflineTask in '..\Source\VST\DAV_VSTOfflineTask.pas';
 
 end.

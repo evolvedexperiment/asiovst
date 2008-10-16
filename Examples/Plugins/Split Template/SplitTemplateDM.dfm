@@ -164,8 +164,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
   OnGetVU = VSTModuleGetVU
   OnInputProperties = VSTModuleInputProperties
   OnOfflineNotify = VSTModuleOfflineNotify
-  OnOfflinePrepare = VSTModuleOfflinePrepare
-  OnOfflineRun = VSTModuleOfflineRun
   OnOutputProperties = VSTModuleOutputProperties
   OnProcessEvents = VSTModuleProcessEvents
   OnProcessVarIO = VSTModuleProcessVarIO
@@ -189,10 +187,12 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
     VstPlugIns = <
       item
         DisplayName = 'Low'
+        VstOfflineTasks = <>
         OnAudioMasterAutomate = LowParameterAutomate
       end
       item
         DisplayName = 'High'
+        VstOfflineTasks = <>
         OnAudioMasterAutomate = HighParameterAutomate
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000

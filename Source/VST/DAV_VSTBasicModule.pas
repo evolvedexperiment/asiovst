@@ -7,7 +7,8 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Classes, DAV_Common, DAV_VSTEffect, DAV_ChunkClasses;
+  Classes, {$IFDEF Delphi5} Forms, {$ENDIF} DAV_Common, DAV_VSTEffect,
+  DAV_ChunkClasses;
 
 type
   TBasicVSTModule = class({$IFDEF UseDelphi}TDataModule{$ELSE}TComponent{$ENDIF})
@@ -208,7 +209,7 @@ begin
    magic           := 'PtsV';
    EffectFlags     := [effFlagsCanReplacing];
    reservedForHost := nil;
-   resvd2          := 0;
+   resvd2          := nil;
    user            := nil;
    uniqueID        := 'NoEf';
    ioRatio         := 1;

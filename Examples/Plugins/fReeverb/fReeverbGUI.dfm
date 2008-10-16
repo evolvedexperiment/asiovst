@@ -4,7 +4,7 @@ object FmReverb: TFmReverb
   BorderStyle = bsNone
   Caption = 'fReeverb'
   ClientHeight = 120
-  ClientWidth = 355
+  ClientWidth = 353
   Color = 14803425
   Font.Charset = DEFAULT_CHARSET
   Font.Color = 5855577
@@ -95,9 +95,9 @@ object FmReverb: TFmReverb
     OnChange = DialStretchChange
   end
   object PnLabel: TGuiPanel
-    Left = 16
+    Left = 12
     Top = 88
-    Width = 325
+    Width = 329
     Height = 23
     AntiAlias = gaaLinear4x
     LineColor = clWhite
@@ -108,7 +108,7 @@ object FmReverb: TFmReverb
     Transparent = True
     UseDockManager = True
     object LbDry: TGuiLabel
-      Left = 0
+      Left = 4
       Top = 3
       Width = 48
       Height = 17
@@ -125,7 +125,7 @@ object FmReverb: TFmReverb
       Font.Style = []
     end
     object LbWet: TGuiLabel
-      Left = 54
+      Left = 58
       Top = 3
       Width = 48
       Height = 17
@@ -142,7 +142,7 @@ object FmReverb: TFmReverb
       Font.Style = []
     end
     object LbWidth: TGuiLabel
-      Left = 108
+      Left = 112
       Top = 3
       Width = 48
       Height = 17
@@ -159,7 +159,7 @@ object FmReverb: TFmReverb
       Font.Style = []
     end
     object LbSize: TGuiLabel
-      Left = 216
+      Left = 220
       Top = 3
       Width = 48
       Height = 17
@@ -176,7 +176,7 @@ object FmReverb: TFmReverb
       Font.Style = []
     end
     object LbStretch: TGuiLabel
-      Left = 270
+      Left = 274
       Top = 3
       Width = 48
       Height = 17
@@ -193,7 +193,7 @@ object FmReverb: TFmReverb
       Font.Style = []
     end
     object LbDamp: TGuiLabel
-      Left = 162
+      Left = 166
       Top = 3
       Width = 48
       Height = 17
@@ -222,12 +222,13 @@ object FmReverb: TFmReverb
   object PnToolbar: TPanel
     Left = 0
     Top = 0
-    Width = 355
+    Width = 353
     Height = 24
     Align = alTop
     BevelOuter = bvNone
     Color = clWhite
     TabOrder = 1
+    ExplicitWidth = 355
     object SBPreset: TGuiSelectBox
       Left = 51
       Top = 2
@@ -235,6 +236,7 @@ object FmReverb: TFmReverb
       Height = 19
       Alignment = taLeftJustify
       AntiAlias = gaaLinear2x
+      ArrowWidth = 1
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13

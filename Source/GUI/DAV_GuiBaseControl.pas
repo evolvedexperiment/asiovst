@@ -48,11 +48,11 @@ type
 
   TGUIShadow = class(TPersistent)
   private
-    fBlur         : Byte;
-    fOffset       : TPoint;
-    fTransparency : Byte;
-    fVisible      : Boolean;
-    fOnChange     : TNotifyEvent;
+    FBlur         : Byte;
+    FOffset       : TPoint;
+    FTransparency : Byte;
+    FVisible      : Boolean;
+    FOnChange     : TNotifyEvent;
     function GetOffsetX: Integer;
     function GetOffsetY: Integer;
     procedure SetBlur(const Value: Byte);
@@ -64,20 +64,20 @@ type
     procedure Changed;
   public
     constructor Create; virtual;
-    property Offset : TPoint read fOffset write SetOffset;
+    property Offset : TPoint read FOffset write SetOffset;
   published
-    property Blur : Byte read fBlur write SetBlur default 4;
+    property Blur : Byte read FBlur write SetBlur default 4;
     property OffsetX : Integer read GetOffsetX write SetOffsetX default 1;
     property OffsetY : Integer read GetOffsetY write SetOffsetY default 1;
-    property Transparency : Byte read fTransparency write SetTransparency default $FF;
-    property Visible : Boolean read fVisible write SetVisible default False;
-    property OnChange : TNotifyEvent read fOnChange write fOnChange;
+    property Transparency : Byte read FTransparency write SetTransparency default $FF;
+    property Visible : Boolean read FVisible write SetVisible default False;
+    property OnChange : TNotifyEvent read FOnChange write FOnChange;
   end;
 
   TBufferedGraphicControl = class(TGraphicControl)
   protected
-    fBuffer   : TBitmap;
-    fOnPaint  : TNotifyEvent;
+    FBuffer   : TBitmap;
+    FOnPaint  : TNotifyEvent;
 
     {$IFNDEF COMPILER10_UP}
     FOnMouseLeave: TNotifyEvent;
@@ -108,7 +108,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Paint; override;
-    property OnPaint: TNotifyEvent read fOnPaint write fOnPaint;
+    property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
 
     {$IFNDEF COMPILER10_UP}
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
@@ -119,8 +119,8 @@ type
 (*
   TBufferedWinControl = class(TWinControl)
   protected
-    fBuffer   : TBitmap;
-    fOnPaint  : TNotifyEvent;
+    FBuffer   : TBitmap;
+    FOnPaint  : TNotifyEvent;
 
     {$IFNDEF COMPILER10_UP}
     FOnMouseLeave: TNotifyEvent;
@@ -151,7 +151,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Paint; override;
-    property OnPaint: TNotifyEvent read fOnPaint write fOnPaint;
+    property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
 
     {$IFNDEF COMPILER10_UP}
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
@@ -162,10 +162,10 @@ type
 
   TCustomGuiBaseControl = class(TBufferedGraphicControl)
   protected
-    fLineColor              : TColor;
-    fLineWidth              : Integer;
+    FLineColor              : TColor;
+    FLineWidth              : Integer;
     {$IFNDEF FPC}
-    fTransparent            : Boolean;
+    FTransparent            : Boolean;
     procedure SetTransparent(Value: Boolean); virtual;
     {$ENDIF}
 
@@ -173,21 +173,21 @@ type
     procedure SetLineColor(Value: TColor); virtual;
   public
     constructor Create(AOwner: TComponent); overload; override;
-    property LineWidth: Integer read fLineWidth write SetLineWidth default 1;
-    property LineColor: TColor read fLineColor write SetLineColor default clBlack;
+    property LineWidth: Integer read FLineWidth write SetLineWidth default 1;
+    property LineColor: TColor read FLineColor write SetLineColor default clBlack;
     {$IFNDEF FPC}
-    property Transparent: Boolean read fTransparent write SetTransparent default False;
+    property Transparent: Boolean read FTransparent write SetTransparent default False;
     {$ENDIF}
   end;
 
   TCustomGuiBaseMouseControl = class(TCustomGuiBaseControl)
   protected
-    fRedrawTimer            : TTimer;
-    fTimerMustRedraw        : Boolean;
-    fReleaseMouseBtnOnLeave : Boolean;
-    fOnMouseLeave           : TNotifyEvent;
-    fOnMouseEnter           : TNotifyEvent;
-    fOnDragMouseMove        : TGuiOnDragMouseMove;
+    FRedrawTimer            : TTimer;
+    FTimerMustRedraw        : Boolean;
+    FReleaseMouseBtnOnLeave : Boolean;
+    FOnMouseLeave           : TNotifyEvent;
+    FOnMouseEnter           : TNotifyEvent;
+    FOnDragMouseMove        : TGuiOnDragMouseMove;
     procedure MouseEnter; dynamic;
     procedure MouseLeave; dynamic;
     procedure CreateMouseClass(MouseStateClass: TGuiMouseStateClass); dynamic;
@@ -214,10 +214,10 @@ type
     procedure UpdateGuiTimer(Sender: TObject); virtual;
 
     property RedrawInterval: Integer read GetRedrawInterval write SetRedrawInterval default 0;
-    property ReleaseMouseBtnOnLeave: Boolean read fReleaseMouseBtnOnLeave write fReleaseMouseBtnOnLeave default False;
-    property OnMouseEnter: TNotifyEvent read fOnMouseEnter write fOnMouseEnter;
-    property OnMouseLeave: TNotifyEvent read fOnMouseLeave write fOnMouseLeave;
-    property OnDragMouseMove: TGuiOnDragMouseMove read fOnDragMouseMove write fOnDragMouseMove;
+    property ReleaseMouseBtnOnLeave: Boolean read FReleaseMouseBtnOnLeave write FReleaseMouseBtnOnLeave default False;
+    property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnDragMouseMove: TGuiOnDragMouseMove read FOnDragMouseMove write FOnDragMouseMove;
   end;
 
   TGuiBaseControl = class(TCustomGuiBaseMouseControl)
@@ -245,9 +245,11 @@ type
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
+    {$IFDEF Delphi6_Up}
     property OnMouseWheel;
     property OnMouseWheelDown;
     property OnMouseWheelUp;
+    {$ENDIF}
     property OnResize;
     property OnStartDock;
     property OnStartDrag;
@@ -473,14 +475,14 @@ end;
 constructor TBufferedGraphicControl.Create(AOwner: TComponent);
 begin
   inherited;
-  fBuffer      := TBitmap.Create;
+  FBuffer      := TBitmap.Create;
   ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
                    csDoubleClicks, csReplicatable, csOpaque];
 end;
 
 destructor TBufferedGraphicControl.Destroy;
 begin
- FreeAndNil(fBuffer);
+ FreeAndNil(FBuffer);
  inherited;
 end;
 
@@ -532,9 +534,9 @@ begin
   with Canvas do
    begin
     CopyMode := cmSrcCopy;
-    Draw(0, 0, fBuffer);
+    Draw(0, 0, FBuffer);
    end;
-  if Assigned(fOnPaint) then fOnPaint(Self);
+  if Assigned(FOnPaint) then FOnPaint(Self);
 end;
 
 procedure TBufferedGraphicControl.WMEraseBkgnd(var Message: TWmEraseBkgnd);
@@ -558,8 +560,8 @@ procedure TBufferedGraphicControl.ResizeBuffer;
 begin
   if (Width > 0) and (Height > 0) then
    begin
-    fBuffer.Width := Width;
-    fBuffer.Height := Height;
+    FBuffer.Width := Width;
+    FBuffer.Height := Height;
     RedrawBuffer(True);
    end;
 end;
@@ -590,25 +592,25 @@ end;
 constructor TCustomGuiBaseControl.Create(AOwner: TComponent);
 begin
   inherited;
-  fLineWidth   := 1;
-  fLineColor   := clBlack;
-  fTransparent := False;
+  FLineWidth   := 1;
+  FLineColor   := clBlack;
+  FTransparent := False;
 end;
 
 procedure TCustomGuiBaseControl.SetLineColor(Value: TColor);
 begin
-  if fLineColor <> Value then
+  if FLineColor <> Value then
    begin
-    fLineColor := Value;
+    FLineColor := Value;
     RedrawBuffer(True);
    end;
 end;
 
 procedure TCustomGuiBaseControl.SetLinewidth(Value: Integer);
 begin
-  if (Value > 0) and (Value < 200) and (fLineWidth <> Value) then
+  if (Value > 0) and (Value < 200) and (FLineWidth <> Value) then
   begin
-    fLineWidth := Value;
+    FLineWidth := Value;
     RedrawBuffer(True);
   end;
 end;
@@ -616,9 +618,9 @@ end;
 {$IFNDEF FPC}
 procedure TCustomGuiBaseControl.SetTransparent(Value: Boolean);
 begin
- if fTransparent <> Value then
+ if FTransparent <> Value then
   begin
-   fTransparent := Value;
+   FTransparent := Value;
    RedrawBuffer(True);
   end;
 end;
@@ -629,11 +631,11 @@ end;
 constructor TCustomGuiBaseMouseControl.Create(AOwner: TComponent);
 begin
   inherited;
-  fReleaseMouseBtnOnLeave := False;
-  fRedrawTimer            := TTimer.Create(self);
-  fRedrawTimer.Interval   := 0;
-  fRedrawTimer.OnTimer    := UpdateGuiTimer;
-  fTimerMustRedraw        := False;
+  FReleaseMouseBtnOnLeave := False;
+  FRedrawTimer            := TTimer.Create(self);
+  FRedrawTimer.Interval   := 0;
+  FRedrawTimer.OnTimer    := UpdateGuiTimer;
+  FTimerMustRedraw        := False;
 
   CreateMouseClass(TGuiMouseState);
 end;
@@ -648,7 +650,7 @@ end;
 
 destructor TCustomGuiBaseMouseControl.Destroy;
 begin
-  FreeAndNil(fRedrawTimer);
+  FreeAndNil(FRedrawTimer);
   if assigned(MouseState) then FreeAndNil(MouseState);
   inherited;
 end;
@@ -679,24 +681,24 @@ end;
 procedure TCustomGuiBaseMouseControl.DragMouseMoveLeft(Shift: TShiftState; X,
   Y: Integer);
 begin
-  if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbLeft, Shift, X, Y);
+  if assigned(FOnDragMouseMove) then FOnDragMouseMove(self, mbLeft, Shift, X, Y);
 end;
 
 procedure TCustomGuiBaseMouseControl.DragMouseMoveMiddle(Shift: TShiftState; X,
   Y: Integer);
 begin
-  if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbMiddle, Shift, X, Y);
+  if assigned(FOnDragMouseMove) then FOnDragMouseMove(self, mbMiddle, Shift, X, Y);
 end;
 
 procedure TCustomGuiBaseMouseControl.DragMouseMoveRight(Shift: TShiftState; X,
   Y: Integer);
 begin
-  if assigned(fOnDragMouseMove) then fOnDragMouseMove(self, mbRight, Shift, X, Y);
+  if assigned(FOnDragMouseMove) then FOnDragMouseMove(self, mbRight, Shift, X, Y);
 end;
 
 function TCustomGuiBaseMouseControl.GetRedrawInterval: Integer;
 begin
-  Result := fRedrawTimer.Interval;
+  Result := FRedrawTimer.Interval;
 end;
 
 procedure TCustomGuiBaseMouseControl.MouseDown(Button: TMouseButton;
@@ -742,7 +744,7 @@ end;
 procedure TCustomGuiBaseMouseControl.MouseLeave;
 begin
   if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
-  if fReleaseMouseBtnOnLeave then
+  if FReleaseMouseBtnOnLeave then
   begin
     with MouseState.LeftBtn   do if ButtonDown then MouseUp(mbLeft, ShiftState, EventX, EventY);
     with MouseState.MiddleBtn do if ButtonDown then MouseUp(mbLeft, ShiftState, EventX, EventY);
@@ -803,97 +805,97 @@ end;
 
 procedure TCustomGuiBaseMouseControl.SetRedrawInterval(Value: Integer);
 begin
-  fRedrawTimer.Interval := Value;
+  FRedrawTimer.Interval := Value;
 end;
 
 procedure TCustomGuiBaseMouseControl.UpdateGuiTimer(Sender: TObject);
 begin
-  if not fTimerMustRedraw then exit;
+  if not FTimerMustRedraw then exit;
   
-  fRedrawTimer.Enabled := False;
+  FRedrawTimer.Enabled := False;
   RedrawBuffer(True);
-  fRedrawTimer.Enabled := True;
+  FRedrawTimer.Enabled := True;
 
-  fTimerMustRedraw := False;
+  FTimerMustRedraw := False;
 end;
 
 { TGUIShadow }
 
 constructor TGUIShadow.Create;
 begin
- fBlur         := 4;
- fOffset.X     := 1;
- fOffset.Y     := 1;
- fTransparency := $FF;
- fVisible      := False;
+ FBlur         := 4;
+ FOffset.X     := 1;
+ FOffset.Y     := 1;
+ FTransparency := $FF;
+ FVisible      := False;
 end;
 
 procedure TGUIShadow.Changed;
 begin
- if assigned(fOnChange)
-  then fOnChange(Self);
+ if assigned(FOnChange)
+  then FOnChange(Self);
 end;
 
 function TGUIShadow.GetOffsetX: Integer;
 begin
- result := fOffset.X;
+ result := FOffset.X;
 end;
 
 function TGUIShadow.GetOffsetY: Integer;
 begin
- result := fOffset.Y;
+ result := FOffset.Y;
 end;
 
 procedure TGUIShadow.SetBlur(const Value: Byte);
 begin
- if fBlur <> Value then
+ if FBlur <> Value then
   begin
-   fBlur := Value;
+   FBlur := Value;
    Changed;
   end;
 end;
 
 procedure TGUIShadow.SetOffset(const Value: TPoint);
 begin
- if (fOffset.X <> Value.X) or (fOffset.Y <> Value.Y) then
+ if (FOffset.X <> Value.X) or (FOffset.Y <> Value.Y) then
   begin
-   fOffset := Value;
+   FOffset := Value;
    Changed;
   end;
 end;
 
 procedure TGUIShadow.SetOffsetX(const Value: Integer);
 begin
- if fOffset.X <> Value then
+ if FOffset.X <> Value then
   begin
-   fOffset.X := Value;
+   FOffset.X := Value;
    Changed;
   end;
 end;
 
 procedure TGUIShadow.SetOffsetY(const Value: Integer);
 begin
- if fOffset.Y <> Value then
+ if FOffset.Y <> Value then
   begin
-   fOffset.Y := Value;
+   FOffset.Y := Value;
    Changed;
   end;
 end;
 
 procedure TGUIShadow.SetTransparency(const Value: Byte);
 begin
- if fTransparency <> Value then
+ if FTransparency <> Value then
   begin
-   fTransparency := Value;
+   FTransparency := Value;
    Changed;
   end;
 end;
 
 procedure TGUIShadow.SetVisible(const Value: Boolean);
 begin
- if fVisible <> Value then
+ if FVisible <> Value then
   begin
-   fVisible := Value;
+   FVisible := Value;
    Changed;
   end;
 end;

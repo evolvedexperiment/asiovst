@@ -46,8 +46,6 @@ type
     procedure VSTModuleEditTop(Sender: TObject);
     procedure VSTModuleGetVU(var VU: Single);
     procedure VSTModuleOfflineNotify(Sender: TObject; const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean);
-    procedure VSTModuleOfflinePrepare(Sender: TObject; const OfflineTask: TVstOfflineTask; const count: Integer);
-    procedure VSTModuleOfflineRun(Sender: TObject; const OfflineTask: TVstOfflineTask; const count: Integer);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
 
@@ -458,20 +456,6 @@ begin
  if VstHost[1].Active then VstHost[1].OfflineNotify(@AudioFile, numAudioFiles, start);
 end;
 
-procedure TSplitTemplateDataModule.VSTModuleOfflinePrepare(Sender: TObject;
-  const OfflineTask: TVstOfflineTask; const count: Integer);
-begin
- if VstHost[0].Active then VstHost[0].OfflinePrepare(@OfflineTask, count);
- if VstHost[1].Active then VstHost[1].OfflinePrepare(@OfflineTask, count);
-end;
-
-procedure TSplitTemplateDataModule.VSTModuleOfflineRun(Sender: TObject;
-  const OfflineTask: TVstOfflineTask; const count: Integer);
-begin
- if VstHost[0].Active then VstHost[0].OfflineRun(@OfflineTask, count);
- if VstHost[1].Active then VstHost[1].OfflineRun(@OfflineTask, count);
-end;
-
 procedure TSplitTemplateDataModule.VSTModuleOpen(Sender: TObject);
 begin
  Parameter[0] := 0;
@@ -685,7 +669,7 @@ begin
    if n >= VstHost.Count then break;
   end;
  if (n < VstHost.Count) and VstHost[n].Active
-  then VstHost[n].Parameters[Index - pnr] := Value;
+  then VstHost[n].Parameter[Index - pnr] := Value;
 end;
 
 procedure TSplitTemplateDataModule.CustomParameterDisplay(

@@ -11,17 +11,17 @@ uses
 type
   TCustomGuiGroup = class(TCustomGroupBox)
   private
-    fAntiAlias              : TGuiAntiAlias;
-    fAutoFocus              : Boolean;
-    fBorderColor            : TColor;
-    fCaption                : string;
-    fLineColor              : TColor;
-    fHeaderMinWidth         : Integer;
-    fOwnerDraw              : Boolean;
-    fOSFactor               : Integer;
-    fRoundRadius            : Integer;
-    fTransparent            : Boolean;
-    fLineWidth              : Integer;
+    FAntiAlias              : TGuiAntiAlias;
+    FAutoFocus              : Boolean;
+    FBorderColor            : TColor;
+    FCaption                : string;
+    FHeaderMinWidth         : Integer;
+    FLineColor              : TColor;
+    FLineWidth              : Integer;
+    FOSFactor               : Integer;
+    FOwnerDraw              : Boolean;
+    FRoundRadius            : Integer;
+    FTransparent            : Boolean;
     procedure CMDialogChar(var Message: TCMDialogChar); message CM_DIALOGCHAR;
     procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
     procedure CMParentColorChanged(var Message: TWMNoParams); message CM_PARENTCOLORCHANGED;
@@ -44,15 +44,15 @@ type
     procedure Click; override;
   public
     constructor Create(AOwner: TComponent); override;
-    property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
-    property AutoFocus: Boolean read fAutoFocus write fAutoFocus default True;
-    property Caption: string read fCaption write SetCaption;
-    property OwnerDraw: Boolean read fOwnerDraw write SetOwnerDraw default True;
-    property HeaderMinWidth: Integer read fHeaderMinWidth write SetHeaderMinWidth default 32;
-    property LineColor: TColor read fLineColor write SetLineColor default clBtnShadow;
-    property LineWidth: Integer read fLineWidth write SetLineWidth default 1;
-    property Radius: Integer read fRoundRadius write SetRoundRadius default 2;
-    property Transparent: Boolean read fTransparent write SetTransparent default False;
+    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+    property AutoFocus: Boolean read FAutoFocus write FAutoFocus default True;
+    property Caption: string read FCaption write SetCaption;
+    property OwnerDraw: Boolean read FOwnerDraw write SetOwnerDraw default True;
+    property HeaderMinWidth: Integer read FHeaderMinWidth write SetHeaderMinWidth default 32;
+    property LineColor: TColor read FLineColor write SetLineColor default clBtnShadow;
+    property LineWidth: Integer read FLineWidth write SetLineWidth default 1;
+    property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
+    property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
   TGuiGroup = class(TCustomGuiGroup)
@@ -123,13 +123,13 @@ begin
  inherited;
  ControlStyle    := ControlStyle + [csOpaque, //csReplicatable,
                                     csAcceptsControls];
- fOwnerDraw      := True;
- fOSFactor       := 1;
- fRoundRadius    := 2;
- fHeaderMinWidth := 32;
- fCaption        := 'Group'; //Name;
- fLineColor      := clBtnShadow;
- fLineWidth      := 1;
+ FOwnerDraw      := True;
+ FOSFactor       := 1;
+ FRoundRadius    := 2;
+ FHeaderMinWidth := 32;
+ FCaption        := 'Group'; //Name;
+ FLineColor      := clBtnShadow;
+ FLineWidth      := 1;
 end;
 
 procedure TCustomGuiGroup.RenderGroupToBitmap(Bitmap: TBitmap);
@@ -149,13 +149,13 @@ begin
 
    Brush.Style := bsSolid;
    Brush.Color := Color;
-   Pen.Width   := fOSFactor * fLineWidth;
-   Pen.Color   := fLineColor;
+   Pen.Width   := FOSFactor * FLineWidth;
+   Pen.Color   := FLineColor;
    Font.Assign(Self.Font);
-   Font.Size := fOSFactor * Font.Size;
-   TextSize := TextExtent(fCaption);
+   Font.Size := FOSFactor * Font.Size;
+   TextSize := TextExtent(FCaption);
 
-   case fRoundRadius of
+   case FRoundRadius of
     0, 1 : begin
             FrameRect(ClipRect);
             FillRect(Rect(1, 1, TextSize.cx + 12, TextSize.cy + 4));
@@ -186,7 +186,7 @@ begin
            end;
     else
      begin
-      rad := fOSFactor * fRoundRadius;
+      rad := FOSFactor * FRoundRadius;
       Steps := Round(2 / arcsin(1 / rad)) + 1;
       if Steps > 1 then
       begin
@@ -242,12 +242,12 @@ begin
         // Draw inner text
         //////////////////
 
-        Brush.Color   := fLineColor;
+        Brush.Color   := FLineColor;
         SetLength(PtsArray, Steps div 2 + 5);
         Val.Re := -rad; Val.Im := 0;
 
         GetSinCos(2 * Pi / (Steps div 2 - 1), Off.Im, Off.Re);
-        rct := Rect(Linewidth div 2, Linewidth div 2, max(TextSize.cx + 10, fOSFactor * fHeaderMinWidth) - (Linewidth + 1) div 2, TextSize.cy + 5 - (Linewidth + 1) div 2);
+        rct := Rect(Linewidth div 2, Linewidth div 2, max(TextSize.cx + 10, FOSFactor * FHeaderMinWidth) - (Linewidth + 1) div 2, TextSize.cy + 5 - (Linewidth + 1) div 2);
         PtsArray[0] := Point(Round(rct.Left), Round(rct.Top + rad));
 
         // upper left corner
@@ -282,22 +282,22 @@ begin
    end;
 
    Brush.Style := bsClear;
-   TextOut(6, 2, fCaption);
+   TextOut(6, 2, FCaption);
    Unlock;
   end;
 end;
 
 procedure TCustomGuiGroup.SetAntiAlias(const Value: TGuiAntiAlias);
 begin
- if fAntiAlias <> Value then
+ if FAntiAlias <> Value then
   begin
-   fAntiAlias := Value;
-   case fAntiAlias of
-         gaaNone : fOSFactor :=  1;
-     gaaLinear2x : fOSFactor :=  2;
-     gaaLinear4x : fOSFactor :=  4;
-     gaaLinear8x : fOSFactor :=  8;
-    gaaLinear16x : fOSFactor := 16;
+   FAntiAlias := Value;
+   case FAntiAlias of
+         gaaNone : FOSFactor :=  1;
+     gaaLinear2x : FOSFactor :=  2;
+     gaaLinear4x : FOSFactor :=  4;
+     gaaLinear8x : FOSFactor :=  8;
+    gaaLinear16x : FOSFactor := 16;
    end;
    Invalidate;
   end;
@@ -305,36 +305,36 @@ end;
 
 procedure TCustomGuiGroup.SetCaption(const Value: string);
 begin
- if fCaption <> Value then
+ if FCaption <> Value then
   begin
-   fCaption := Value;
+   FCaption := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiGroup.SetHeaderMinWidth(const Value: Integer);
 begin
- if fHeaderMinWidth <> Value then
+ if FHeaderMinWidth <> Value then
   begin
-   fHeaderMinWidth := Value;
+   FHeaderMinWidth := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiGroup.SetLineColor(const Value: TColor);
 begin
- if fLineColor <> Value then
+ if FLineColor <> Value then
   begin
-   fLineColor := Value;
+   FLineColor := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiGroup.SetLineWidth(const Value: Integer);
 begin
- if fLineWidth <> Value then
+ if FLineWidth <> Value then
   begin
-   fLineWidth := Value;
+   FLineWidth := Value;
    Invalidate;
   end;
 end;
@@ -342,9 +342,9 @@ end;
 procedure TCustomGuiGroup.SetRoundRadius(Value: Integer);
 begin
  if Value < 0 then Value := 0;
- if fRoundRadius <> Value then
+ if FRoundRadius <> Value then
   begin
-   fRoundRadius := Value;
+   FRoundRadius := Value;
    Invalidate;
   end;
 end;
@@ -352,7 +352,7 @@ end;
 
 procedure TCustomGuiGroup.Click;
 begin
- if fAutoFocus then SetFocus;
+ if FAutoFocus then SetFocus;
  inherited;
 end;
 
@@ -415,7 +415,7 @@ begin
   else Format := DT_Top or DT_Left or DT_SINGLELINE;
  Format := DT_Top or DT_Left or DT_SINGLELINE;
 
- if not fOwnerDraw or (Width <= 0) or (Height <= 0) then
+ if not FOwnerDraw or (Width <= 0) or (Height <= 0) then
   begin
    inherited;
    Exit;
@@ -427,22 +427,22 @@ begin
    begin
     Lock;
     PixelFormat := pf32bit;
-    Width  := fOSFactor * Self.Width;
-    Height := fOSFactor * Self.Height;
+    Width  := FOSFactor * Self.Width;
+    Height := FOSFactor * Self.Height;
     Brush.Style := bsSolid;
     Brush.Color := Self.Color;
 
-    case fAntiAlias of
+    case FAntiAlias of
      gaaNone     :
       begin
-       {$IFNDEF FPC}if fTransparent then DrawParentImage(Canvas) else {$ENDIF}
+       {$IFNDEF FPC}if FTransparent then DrawParentImage(Canvas) else {$ENDIF}
        FillRect(ClipRect);
        RenderGroupToBitmap(Buffer);
       end;
      gaaLinear2x :
       begin
        {$IFNDEF FPC}
-       if fTransparent then
+       if FTransparent then
         begin
          DrawParentImage(Canvas);
          Upsample2xBitmap32(Buffer);
@@ -455,7 +455,7 @@ begin
      gaaLinear4x :
       begin
        {$IFNDEF FPC}
-       if fTransparent then
+       if FTransparent then
         begin
          DrawParentImage(Canvas);
          Upsample4xBitmap32(Buffer);
@@ -468,7 +468,7 @@ begin
      gaaLinear8x :
       begin
        {$IFNDEF FPC}
-       if fTransparent then
+       if FTransparent then
         begin
          DrawParentImage(Canvas);
          Upsample2xBitmap32(Buffer);
@@ -483,7 +483,7 @@ begin
      gaaLinear16x :
       begin
        {$IFNDEF FPC}
-       if fTransparent then
+       if FTransparent then
         begin
          DrawParentImage(Canvas);
          Upsample4xBitmap32(Buffer);
@@ -505,9 +505,9 @@ end;
 
 procedure TCustomGuiGroup.SetOwnerDraw(const Value: Boolean);
 begin
- if fOwnerDraw <> Value then
+ if FOwnerDraw <> Value then
   begin
-   fOwnerDraw := Value;
+   FOwnerDraw := Value;
    RecreateWnd;
    Invalidate;
   end;
@@ -515,14 +515,14 @@ end;
 
 procedure TCustomGuiGroup.SetTransparent(const Value: Boolean);
 begin
- fTransparent := Value;
+ FTransparent := Value;
  Invalidate;
 end;
 
 procedure TCustomGuiGroup.WMMove(var Message: TWMMove);
 begin
  inherited;
- if fTransparent then Invalidate;
+ if FTransparent then Invalidate;
 end;
 
 (*
@@ -577,7 +577,7 @@ begin
                        (Left + Right + textSize.cx) div 2, ClientRect.Top + textSize.cy);
 
   // Draw Background
-  if fTransparent //or (Border=brFullRound)
+  if FTransparent //or (Border=brFullRound)
    then DrawParentImage(Self, memoryBitmap.Canvas)
    else
     begin
@@ -586,7 +586,7 @@ begin
     end;
 
   // Draw Border
-  memoryBitmap.Canvas.Pen.Color := fBorderColor;
+  memoryBitmap.Canvas.Pen.Color := FBorderColor;
   case fBorder of
     brFull:
       {$IFDEF MFC_COMPILER_4_UP}
@@ -756,7 +756,7 @@ begin
          // Draw Text
          Canvas.Brush.Style := bsSolid;
          Canvas.Font.Color  := Canvas.Brush.Color;
-         Canvas.Brush.Color := fBorderColor;
+         Canvas.Brush.Color := FBorderColor;
          DrawText(Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
          // Copy memoryBitmap to screen
         end;

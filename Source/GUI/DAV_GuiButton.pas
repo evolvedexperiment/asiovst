@@ -10,12 +10,12 @@ uses
 type
   TCustomGuiButton = class(TCustomGuiBaseControl)
   private
-    fRoundRadius  : Integer;
-    fAlignment    : TAlignment;
-    fAntiAlias    : TGuiAntiAlias;
-    fCaption      : string;
-    fOSFactor     : Integer;
-    fButtonColor  : TColor;
+    FRoundRadius  : Integer;
+    FAlignment    : TAlignment;
+    FAntiAlias    : TGuiAntiAlias;
+    FCaption      : string;
+    FOSFactor     : Integer;
+    FButtonColor  : TColor;
     procedure SetRoundRadius(Value: Integer);
     procedure RenderButtonToBitmap(const Bitmap: TBitmap);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
@@ -26,11 +26,11 @@ type
     procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
   public
     constructor Create(AOwner: TComponent); override;
-    property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
-    property Alignment: TAlignment read fAlignment write SetAlignment;
-    property Caption: string read fCaption write SetCaption;
-    property ButtonColor: TColor read fButtonColor write SetButtonColor default clBtnShadow;
-    property Radius: Integer read fRoundRadius write SetRoundRadius default 2;
+    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+    property Alignment: TAlignment read FAlignment write SetAlignment;
+    property Caption: string read FCaption write SetCaption;
+    property ButtonColor: TColor read FButtonColor write SetButtonColor default clBtnShadow;
+    property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
     property LineColor default clBtnHighlight;
   end;
 
@@ -89,12 +89,12 @@ begin
  inherited;
  ControlStyle  := ControlStyle + [csFramed, csOpaque, csReplicatable,
                                   csAcceptsControls];
- fAlignment    := taCenter;
- fCaption      := 'empty';
- fRoundRadius  := 2;
- fOSFactor     := 1;
+ FAlignment    := taCenter;
+ FCaption      := 'empty';
+ FRoundRadius  := 2;
+ FOSFactor     := 1;
  fLineColor    := clBtnHighlight;
- fButtonColor  := clBtnShadow;
+ FButtonColor  := clBtnShadow;
 end;
 
 procedure TCustomGuiButton.RenderButtonToBitmap(const Bitmap: TBitmap);
@@ -110,14 +110,14 @@ begin
   begin
    Lock;
    Font.Assign(Self.Font);
-   Font.Size := fOSFactor * Font.Size;
+   Font.Size := FOSFactor * Font.Size;
 
    Brush.Style := bsClear;
-   Brush.Color := fButtonColor;
-   Pen.Width   := fOSFactor * fLineWidth;
+   Brush.Color := FButtonColor;
+   Pen.Width   := FOSFactor * fLineWidth;
    Pen.Color   := fLineColor;
    
-   case fRoundRadius of
+   case FRoundRadius of
     0, 1 : FillRect(ClipRect);
        2 : begin
             with ClipRect do
@@ -130,8 +130,8 @@ begin
            end;
     else
      begin
-      rad := fOSFactor * fRoundRadius;
-      Steps := Round(2 / arcsin(1 / fRoundRadius)) + 1;
+      rad := FOSFactor * FRoundRadius;
+      Steps := Round(2 / arcsin(1 / FRoundRadius)) + 1;
       if Steps > 1 then
        begin
         SetLength(PtsArray, Steps + 4);
@@ -182,17 +182,17 @@ begin
         PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
 
         PolyGon(PtsArray);
-        if fLineColor <> fButtonColor
+        if fLineColor <> FButtonColor
          then PolyLine(PtsArray);
        end;
      end;
    end;
 
-   TextSize := TextExtent(fCaption);
-   case fAlignment of
-     taLeftJustify : TextOut(0, (Bitmap.Height - TextSize.cy) div 2, fCaption);
-    taRightJustify : TextOut(Bitmap.Width - TextSize.cx, (Bitmap.Height - TextSize.cy) div 2, fCaption);
-          taCenter : TextOut((Bitmap.Width - TextSize.cx) div 2, (Bitmap.Height - TextSize.cy) div 2, fCaption);
+   TextSize := TextExtent(FCaption);
+   case FAlignment of
+     taLeftJustify : TextOut(0, (Bitmap.Height - TextSize.cy) div 2, FCaption);
+    taRightJustify : TextOut(Bitmap.Width - TextSize.cx, (Bitmap.Height - TextSize.cy) div 2, FCaption);
+          taCenter : TextOut((Bitmap.Width - TextSize.cx) div 2, (Bitmap.Height - TextSize.cy) div 2, FCaption);
    end;
 
    Unlock;
@@ -208,7 +208,7 @@ begin
    Lock;
    Brush.Style := bsSolid;
    Brush.Color := Self.Color;
-   case fAntiAlias of
+   case FAntiAlias of
     gaaNone     :
      begin
       {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else {$ENDIF}
@@ -221,8 +221,8 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
+        Width  := FOSFactor * fBuffer.Width;
+        Height := FOSFactor * fBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         {$IFNDEF FPC}
@@ -247,8 +247,8 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
+        Width  := FOSFactor * fBuffer.Width;
+        Height := FOSFactor * fBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         {$IFNDEF FPC}
@@ -272,8 +272,8 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
+        Width  := FOSFactor * fBuffer.Width;
+        Height := FOSFactor * fBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         Canvas.FillRect(Canvas.ClipRect);
@@ -299,8 +299,8 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := fOSFactor * fBuffer.Width;
-        Height := fOSFactor * fBuffer.Height;
+        Width  := FOSFactor * fBuffer.Width;
+        Height := FOSFactor * fBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         {$IFNDEF FPC}
@@ -328,24 +328,24 @@ end;
 
 procedure TCustomGuiButton.SetAlignment(const Value: TAlignment);
 begin
- if fAlignment <> Value then
+ if FAlignment <> Value then
   begin
-   fAlignment := Value;
+   FAlignment := Value;
    RedrawBuffer(True);
   end;
 end;
 
 procedure TCustomGuiButton.SetAntiAlias(const Value: TGuiAntiAlias);
 begin
- if fAntiAlias <> Value then
+ if FAntiAlias <> Value then
   begin
-   fAntiAlias := Value;
-   case fAntiAlias of
-         gaaNone : fOSFactor :=  1;
-     gaaLinear2x : fOSFactor :=  2;
-     gaaLinear4x : fOSFactor :=  4;
-     gaaLinear8x : fOSFactor :=  8;
-    gaaLinear16x : fOSFactor := 16;
+   FAntiAlias := Value;
+   case FAntiAlias of
+         gaaNone : FOSFactor :=  1;
+     gaaLinear2x : FOSFactor :=  2;
+     gaaLinear4x : FOSFactor :=  4;
+     gaaLinear8x : FOSFactor :=  8;
+    gaaLinear16x : FOSFactor := 16;
    end;
    RedrawBuffer(True);
   end;
@@ -353,18 +353,18 @@ end;
 
 procedure TCustomGuiButton.SetButtonColor(const Value: TColor);
 begin
- if fButtonColor <> Value then
+ if FButtonColor <> Value then
   begin
-   fButtonColor := Value;
+   FButtonColor := Value;
    RedrawBuffer(True);
   end;
 end;
 
 procedure TCustomGuiButton.SetCaption(const Value: string);
 begin
- if fCaption <> Value then
+ if FCaption <> Value then
   begin
-   fCaption := Value;
+   FCaption := Value;
    RedrawBuffer(True);
   end;
 end;
@@ -372,9 +372,9 @@ end;
 procedure TCustomGuiButton.SetRoundRadius(Value: Integer);
 begin
  if Value < 0 then Value := 0;
- if fRoundRadius <> Value then
+ if FRoundRadius <> Value then
   begin
-   fRoundRadius := Value;
+   FRoundRadius := Value;
    RedrawBuffer(True);
   end;
 end;

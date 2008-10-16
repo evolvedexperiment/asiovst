@@ -45,6 +45,7 @@ type
     property IORatio;
     property UniqueID;
     property ShellPlugins;
+    property TruncateStrings;
     property Programs;
     property ParameterProperties;
     property ProcessPrecisition;

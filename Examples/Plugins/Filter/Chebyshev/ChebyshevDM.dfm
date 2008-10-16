@@ -23,7 +23,7 @@ object ChebyshevLPModule: TChebyshevLPModule
       MaxInteger = 20000
       Min = 20.000000000000000000
       MinInteger = 20
-      ShortLabel = 'Frequen'
+      ShortLabel = 'Freq'
       SmallStepFloat = 10.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 50.000000000000000000
