@@ -3,14 +3,15 @@ library SEGain;
 uses
   SysUtils,
   Classes,
-  SEModStruct,
+  SECommon,
+  SEDSP,
   SEGainModule in 'SEGainModule.pas';
 
 {$R *.res}
 
-function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Integer; cdecl; export;
+function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- Properties.SDKVersion = SDK_VERSION;
+ Properties.SDKVersion := SDK_VERSION;
  result := True;
 
  case Index of // !!TODO!! list your in / out plugs
@@ -19,7 +20,7 @@ begin
  end;;
 end;
 
-function makeModule(Index: Integer, ProcessType: Integer; SEAudioMaster: SEAudioMasterCallback2; p_resvd1: Pointer): Pointer; cdecl; export;
+function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; p_resvd1: Pointer): Pointer; cdecl; export;
 var
   Effect: TSEModuleBase;
 begin
@@ -30,11 +31,13 @@ begin
        begin
         Effect := TSEGainModule.Create(SEAudioMaster, p_resvd1);
         if assigned(Effect)
-         then result := Effect.getAeffect;
+         then result := Effect.getEffect;
        end;
      end;
  end;
 end;
 
-begin
+exports makeModule name 'makeModule';
+exports getModuleProperties name 'getModuleProperties';
+
 end.

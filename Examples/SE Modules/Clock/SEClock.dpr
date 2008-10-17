@@ -1,11 +1,11 @@
-library SEAverage;
+library SEClock;
 
 uses
   SysUtils,
   Classes,
   SECommon,
   SEDSP,
-  SEAverageModule in 'SEAverageModule.pas';
+  SEClockDSP in 'SEClockDSP.pas';
 
 {$R *.res}
 
@@ -15,7 +15,7 @@ begin
  result := True;
 
  case Index of // !!TODO!! list your in / out plugs
-  0: TSEAverageModule.GetModuleProperties(Properties);
+  0: TSEClockModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -29,7 +29,7 @@ begin
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        Effect := TSEAverageModule.Create(SEAudioMaster, p_resvd1);
+        Effect := TSEClockModule.Create(SEAudioMaster, p_resvd1);
         if assigned(Effect)
          then result := Effect.getEffect;
        end;
@@ -37,7 +37,7 @@ begin
  end;
 end;
 
-exports getModuleProperties name 'getModuleProperties';
 exports makeModule name 'makeModule';
+exports getModuleProperties name 'getModuleProperties';
 
 end.
