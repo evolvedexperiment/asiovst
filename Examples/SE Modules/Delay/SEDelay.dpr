@@ -1,13 +1,14 @@
-library SEClock;
+library SEDelay;
 
 uses
   SysUtils,
   Classes,
   SECommon,
   SEDSP,
-  SEClockDSP in 'SEClockDSP.pas';
+  SEDelayModule in 'SEDelayModule.pas';
 
 {$E sem}
+
 {$R *.res}
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
@@ -16,7 +17,7 @@ begin
  result := True;
 
  case Index of // !!TODO!! list your in / out plugs
-  0: TSEClockModule.GetModuleProperties(Properties);
+  0: TSEDelayModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -30,7 +31,7 @@ begin
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        Effect := TSEClockModule.Create(SEAudioMaster, p_resvd1);
+        Effect := TSEDelayModule.Create(SEAudioMaster, p_resvd1);
         if assigned(Effect)
          then result := Effect.getEffect;
        end;

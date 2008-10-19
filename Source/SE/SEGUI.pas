@@ -208,72 +208,90 @@ type
   private
     FIndex  : Integer;
     FModule : TSEGUIBase;
+  protected
+    property Module: TSEGUIBase read FModule;
   public
-    procedure Init(AIndex: Integer; AModule: TSEGUIBase);
-//    procedure setValueText(const SeSdkString &Value);
-//    function GetValueText: SeSdkString;
-    function GetValueInt: Integer; // int, bool, and list type values
-    procedure SetValueInt(Value: Integer);
-    function GetValueFloat: Single;
-    procedure SetValueFloat(Value: Single);
-//    function GetExtraData: SeSdkString2;
-    function GetModule: TSEGUIBase;
     function GetIndex: Integer;
+    function GetModule: TSEGUIBase;
+    function GetValueFloat: Single;
+    function GetValueInt: Integer; // int, bool, and list type values
+    procedure Init(AIndex: Integer; AModule: TSEGUIBase);
+    procedure SetValueFloat(Value: Single);
+    procedure SetValueInt(Value: Integer);
+    procedure SetValueText(var Value: TSeSdkString);
+    function GetValueText: TSeSdkString;
+    function GetExtraData: TSeSdkString2;
   end;
 
+  TSEGuiPins = array of TSeGuiPin;
+
+  TSEGuiPinEvent = procedure(Sender: TObject; Pin: TSeGuiPin) of object;
+  TSEGuiPinIndexEvent = procedure(Sender: TObject; PinIndex: Integer) of object;
   TSEGUIBase = class(TObject)
   private
-//    FPins: array of TSeGuiPin;
+    FOnIdle           : TNotifyEvent;
+    FOnPinValueChange : TSEGuiPinEvent;
+    FOnDisconnect     : TSEGuiPinIndexEvent;
+
+    FOnLButtonDown    : TNotifyEvent;
+    FOnLButtonUp      : TNotifyEvent;
+    FOnMouseMove      : TNotifyEvent;
+    FOnNewConnection  : TNotifyEvent;
+    FOnWindowClose    : TNotifyEvent;
+    FOnWindowOpen     : TNotifyEvent;
+    FOnPaint          : TNotifyEvent;
+
+//    FPins   : array of TSeGuiPin;
     procedure SetupPins;
   protected
     FAudioMaster : TSEGuiCallback;
     FEffect      : TSEGUIStructBase;
+    function GuiIdle: Boolean; virtual;
+    procedure GuiDisconnect(PinIndex: Integer); virtual;
+    procedure GuiPinValueChange(Pin: TSeGuiPin); virtual;
+    procedure GuiLButtonDown(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint); virtual;
+    procedure GuiLButtonUp(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint); virtual;
+    procedure GuiModuleMsg(UserMsg_id: Integer; MsgLength: Integer; MsgData: Pointer); virtual;
+    procedure GuiMouseMove(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint); virtual;
+    procedure GuiNewConnection(PinIndex: Integer); virtual;
+    procedure GuiWindowClose(WI: PSEWndInfo); virtual;
+    procedure GuiWindowOpen(WI: PSEWndInfo); virtual;
+    procedure GuiPaint(hDC: HDC; WI: PSEWndInfo); virtual;
   public
-// friend Integer dispatchEffectClass(SEGUI_struct_base *e, Integer Opcode, Integer Index, Integer Value, void *Ptr, float Opt);
-    Magic         : Integer;
-    constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
+    constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); virtual;
     destructor Destroy; override;
-    function GetAeffect: PSEGUIStructBase;
+    function GetEffect: PSEGUIStructBase;
 
     // called from audio master
     function CallHost(Opcode: TSEGuiHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
     function Dispatcher(Opcode: TSEGuiPluginOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; virtual;
     function GetCapture(WI: PSEWndInfo): Boolean;
-    function GetPin(Index: Integer): TSEGuiPin; //{ return &m_pins[Index];}
-    function OnIdle: Boolean; {return false;} virtual;
-    procedure AddGuiPlug(p_datatype: TSEPlugDataType; p_direction: TSEDirection; const p_name: PChar);
+    function GetPin(Index: Integer): TSEGuiPin;
+    procedure AddGuiPlug(ADatatype: TSEPlugDataType; ADirection: TSEDirection; const AName: Pchar);
     procedure Close; virtual;
     procedure Initialise(LoadedFromFile: Boolean); virtual;
-    procedure Paint(hDC: HDC; WI: PSEWndInfo); virtual;
     procedure ReleaseCapture(WI: PSEWndInfo);
     procedure SetCapture(WI: PSEWndInfo);
-    procedure OnDisconnect(PinIndex: Integer); virtual;
-    procedure OnGuiPinValueChange(Pin: TSeGuiPin); virtual;
-    procedure OnLButtonDown(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint); virtual;
-    procedure OnLButtonUp(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint); virtual;
-    procedure OnModuleMsg(UserMsg_id: Integer; MsgLength: Integer; MsgData: Pointer); virtual;
-    procedure OnMouseMove(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint); virtual;
-    procedure OnNewConnection(PinIndex: Integer); virtual;
-    procedure OnWindowClose(WI: PSEWndInfo); virtual;
-    procedure OnWindowOpen(WI: PSEWndInfo); virtual;
+  published
+    property OnIdle: TNotifyEvent read FOnIdle write FOnIdle;
+    property OnDisconnect: TSEGuiPinIndexEvent read FOnDisconnect write FOnDisconnect;
+    property OnPinValueChange: TSEGuiPinEvent read FOnPinValueChange write FOnPinValueChange;
   end;
 
 implementation
 
-(*
-procedure TSeGuiPin.setValueText(const Value: PSeSdkString);
+procedure TSeGuiPin.SetValueText(var Value: TSeSdkString);
 begin
- getModule.CallHost(seGuiHostPlugSetValText, getIndex, 0, Value.data);
+ getModule.CallHost(seGuiHostPlugSetValText, getIndex, 0, @Value);
 end;
 
-function TSeGuiPin.getValueText: SeSdkString;
+function TSeGuiPin.GetValueText: TSeSdkString;
 begin
  // warning, unstable over 2000 bytes  ( that's 1000 UNICODE characters )
- result := getModule.CallHost(seGuiHostPlugGetValText, getIndex, 0, 0);
+ result := TSeSdkString(getModule.CallHost(seGuiHostPlugGetValText, getIndex, 0, nil));
 end;
-*)
 
-function TSeGuiPin.getValueInt: Integer; // int, bool, and list type values
+function TSeGuiPin.GetValueInt: Integer; // int, bool, and list type values
 begin
  getModule.CallHost(seGuiHostPlugGetVal, getIndex, 0, @result);
 end;
@@ -290,56 +308,51 @@ end;
 
 procedure TSEGuiPin.Init(AIndex: Integer; AModule: TSEGUIBase);
 begin
-{
- m_index  := p_index;
- m_module :=p_module;
-}
+ FIndex  := AIndex;
+ FModule := AModule;
 end;
 
-function TSeGuiPin.getValueFloat: Single;
+function TSeGuiPin.GetValueFloat: Single;
 begin
- getModule.CallHost(seGuiHostPlugGetVal, getIndex, 0, @result);
+ GetModule.CallHost(seGuiHostPlugGetVal, getIndex, 0, @result);
 end;
 
 procedure TSeGuiPin.setValueFloat(Value: Single);
 begin
- getModule.CallHost(seGuiHostPlugSetVal, getIndex, 0, nil, Value);
+ GetModule.CallHost(seGuiHostPlugSetVal, getIndex, 0, nil, Value);
 end;
 
 procedure TSeGuiPin.setValueInt(Value: Integer);
 begin
- getModule.CallHost(seGuiHostPlugSetVal, getIndex, Value, nil);
+ GetModule.CallHost(seGuiHostPlugSetVal, getIndex, Value, nil);
 end;
 
-(*
-function TSeGuiPin.getExtraData: SeSdkString2;
-{
-ToDo
+function TSeGuiPin.getExtraData: TSeSdkString2;
 var
   StringLength : Integer;
-  temp         : Pwchar_t;
-}
+  Temp         : PWideChar;
 begin
-{
- StringLength := getModule.CallHost(seGuiHostPlugGetExtraData, getIndex, 0, 0);
-   *temp = new wchar_t[string_length];
-
-  getModule.CallHost(seGuiHostPlugGetExtraData, getIndex(), string_length, temp );
-  SeSdkString2 temp2(temp);
-  delete [] temp;
-  return temp2;
-}
+ StringLength := getModule.CallHost(seGuiHostPlugGetExtraData, getIndex, 0, nil);
+ GetMem(Temp, StringLength * 2);
+ try
+  getModule.CallHost(seGuiHostPlugGetExtraData, getIndex(), StringLength, temp);
+  result := temp;
+ finally
+  Dispose(temp);
+ end;
 end;
-*)
 
-function dispatchEffectClass(Effect: PSEGUIStructBase; Opcode: Integer; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer;
+function DispatchEffectClass(Effect: PSEGUIStructBase; Opcode: Integer; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
 begin
  if assigned(Effect) then
   begin
    assert(assigned(Effect.SEGUIBase));
    result := Effect.SEGUIBase.dispatcher(TSEGuiPluginOpcodes(Opcode), Index, Value, Ptr, Opt);
-  end;
+  end else result := 0;
 end;
+
+
+{ TSEGUIBase }
 
 constructor TSEGUIBase.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
 begin
@@ -348,7 +361,7 @@ begin
  with FEffect do
   begin
    Magic      := SepMagic2;
-   Dispatcher := @dispatchEffectClass;
+   Dispatcher := @DispatchEffectClass;
    SEGUIBase  := Self;
    HostPtr    := AHostPtr;
    Version    := 1;
@@ -357,10 +370,10 @@ end;
 
 destructor TSEGUIBase.Destroy;
 begin
- // do nothing yet
+ inherited;
 end;
 
-function TSEGUIBase.dispatcher(Opcode: TSEGuiPluginOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer;
+function TSEGUIBase.Dispatcher(Opcode: TSEGuiPluginOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer;
 var
   pnt : TSEPoint;
   pin : TSeGuiPin;
@@ -374,33 +387,33 @@ begin
     Free;
     result := 1; // this object now deleted, must do nothing more.
    end;
-  seGuiPaint: Paint(HDC(Index), PSEWndInfo(Ptr));
+  seGuiPaint: GuiPaint(HDC(Index), PSEWndInfo(Ptr));
   seGuiLButtonDown:
    begin
     pnt := Point(Index, Value);
-    OnLButtonDown(PSEWndInfo(Ptr), PCardinal(@Opt)^, pnt);
+    GuiLButtonDown(PSEWndInfo(Ptr), PCardinal(@Opt)^, pnt);
    end;
   seGuiLButtonUp:
    begin
     pnt := Point(Index, Value);
-    OnLButtonUp(PSEWndInfo(Ptr), PCardinal(@Opt)^, pnt);
+    GuiLButtonUp(PSEWndInfo(Ptr), PCardinal(@Opt)^, pnt);
    end;
   seGuiMouseMove:
    begin
     pnt := Point(Index, Value);
-    OnMouseMove(PSEWndInfo(Ptr), PCardinal(@Opt)^, pnt);
+    GuiMouseMove(PSEWndInfo(Ptr), PCardinal(@Opt)^, pnt);
    end;
-  seGuiOnModuleMessage: OnModuleMsg(Value, Index, Ptr);
+  seGuiOnModuleMessage: GuiModuleMsg(Value, Index, Ptr);
   seGuiOnGuiPlugValueChange:
    begin
-    pin.Init(Index, self);
-    OnGuiPinValueChange(@pin);
+    pin.Init(Index, Self);
+    GuiPinValueChange(@pin);
    end;
-  seGuiOnWindowOpen    : OnWindowOpen(PSEWndInfo(Ptr));
-  seGuiOnWindowClose   : OnWindowClose(PSEWndInfo(Ptr));
-  seGuiOnIdle          : result := Integer(OnIdle);
-  seGuiOnNewConnection : OnNewConnection(Index);
-  seGuiOnDisconnect    : OnDisconnect(Index);
+  seGuiOnWindowOpen    : GuiWindowOpen(PSEWndInfo(Ptr));
+  seGuiOnWindowClose   : GuiWindowClose(PSEWndInfo(Ptr));
+  seGuiOnIdle          : result := Integer(GuiIdle);
+  seGuiOnNewConnection : GuiNewConnection(Index);
+  seGuiOnDisconnect    : GuiDisconnect(Index);
  end;
 end;
 
@@ -420,70 +433,84 @@ begin
  SetupPins;
 end;
 
-procedure TSEGUIBase.OnDisconnect(PinIndex: Integer);
+procedure TSEGUIBase.GuiDisconnect(PinIndex: Integer);
 begin
- // do nothing yet
+ if assigned(FOnDisconnect)
+  then FOnDisconnect(Self, PinIndex);
 end;
 
-procedure TSEGUIBase.OnGuiPinValueChange(Pin: TSeGuiPin);
+procedure TSEGUIBase.GuiPinValueChange(Pin: TSeGuiPin);
 begin
- // do nothing yet
+ if assigned(FOnPinValueChange)
+  then FOnPinValueChange(Self, Pin);
 end;
 
-function TSEGUIBase.OnIdle: Boolean;
+function TSEGUIBase.GuiIdle: Boolean;
 begin
- // do nothing yet
+ if assigned(FOnIdle)
+  then FOnIdle(Self);
+ result := assigned(FOnIdle);
 end;
 
-procedure TSEGUIBase.OnLButtonDown(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint);
+procedure TSEGUIBase.GuiLButtonDown(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint);
 begin
- // do nothing yet
+ if assigned(FOnLButtonDown)
+  then FOnLButtonDown(Self);
 end;
 
-procedure TSEGUIBase.OnLButtonUp(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint);
+procedure TSEGUIBase.GuiLButtonUp(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint);
 begin
- // do nothing yet
+ if assigned(FOnLButtonUp)
+  then FOnLButtonUp(Self);
 end;
 
-procedure TSEGUIBase.OnModuleMsg(UserMsg_id, MsgLength: Integer; MsgData: Pointer);
+procedure TSEGUIBase.GuiModuleMsg(UserMsg_id, MsgLength: Integer; MsgData: Pointer);
 begin
- // do nothing yet
+ if assigned(FOnLButtonUp)
+  then FOnLButtonUp(Self);
 end;
 
-procedure TSEGUIBase.OnMouseMove(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint);
+procedure TSEGUIBase.GuiMouseMove(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint);
 begin
- // do nothing yet
+ if assigned(FOnMouseMove)
+  then FOnMouseMove(Self);
 end;
 
-procedure TSEGUIBase.OnNewConnection(PinIndex: Integer);
+procedure TSEGUIBase.GuiNewConnection(PinIndex: Integer);
 begin
- // do nothing yet
+ if assigned(FOnNewConnection)
+  then FOnNewConnection(Self);
 end;
 
-procedure TSEGUIBase.OnWindowClose(WI: PSEWndInfo);
+procedure TSEGUIBase.GuiWindowClose(WI: PSEWndInfo);
 begin
- // do nothing yet
+ if assigned(FOnWindowClose)
+  then FOnWindowClose(Self);
 end;
 
-procedure TSEGUIBase.OnWindowOpen(WI: PSEWndInfo);
+procedure TSEGUIBase.GuiWindowOpen(WI: PSEWndInfo);
 begin
- // do nothing yet
+ if assigned(FOnWindowOpen)
+  then FOnWindowOpen(Self);
 end;
 
-procedure TSEGUIBase.Paint(hDC: HDC; WI: PSEWndInfo);
+procedure TSEGUIBase.GuiPaint(hDC: HDC; WI: PSEWndInfo);
 begin
- // do nothing yet
+ if assigned(FOnPaint)
+  then FOnPaint(Self);
 end;
 
-procedure TSEGUIBase.AddGuiPlug(p_datatype: TSEPlugDataType; p_direction: TSEDirection; const p_name: Pchar);
+procedure TSEGUIBase.AddGuiPlug(ADatatype: TSEPlugDataType; ADirection: TSEDirection; const AName: Pchar);
 begin
-  CallHost(seGuiHostAddGuiPlug, Integer(p_datatype), Integer(p_direction), p_name);
+  CallHost(seGuiHostAddGuiPlug, Integer(ADatatype), Integer(ADirection), AName);
   SetupPins;
 end;
 
 procedure TSEGUIBase.SetupPins;
+(*
 var
   i, ActualPlugCount: Integer;
+*)
 begin
  // commented out, may need reinstating if pins ever gain state
 (*
@@ -499,12 +526,16 @@ end;
 
 function TSEGUIBase.getPin(Index: Integer): TSeGuiPin;
 var
-  pin : TSeGuiPin; // static
+  Pin : TSeGuiPin; // static
 begin
   // there are no pins.
-  // pins currently hold no state, implement them as a flyweight (saves having to track pin add/remove, we're not notified of autoduplicate add/remove anyhow)
-  pin.Init(Index, Self);
-  result := @pin;
+  // pins currently hold no state, implement them as a flyweight (saves having
+  // to track pin add/remove, we're not notified of autoduplicate add/remove anyhow)
+  Pin := TSEGuiPin.Create;
+  Pin.Init(Index, Self);
+  result := Pin;
+
+ //{ return &m_pins[Index];}
 end;
 
 // capture mouse movement
@@ -520,7 +551,7 @@ begin
 end;
 
 // query mouse capture state
-function TSEGUIBase.GetAeffect: PSEGUIStructBase;
+function TSEGUIBase.GetEffect: PSEGUIStructBase;
 begin
  result := @FEffect;
 end;

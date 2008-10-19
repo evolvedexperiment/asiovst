@@ -5,7 +5,8 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Classes, DAV_DspBaseComponent, DAV_Complex, DAV_Common;
+  Classes, DAV_Complex, DAV_Common;
+//  DAV_DspBaseComponent;
 
 type
   TPNType = array[0..1] of TComplexSingle;
@@ -163,6 +164,7 @@ type
     procedure CalculateCoefficients; override;
   end;
 
+(*
   TDspLowpassFilter = class(TDspBaseComponent)
   private
     fFrequency: Single;
@@ -180,6 +182,7 @@ type
   published
     property Frequency: Single read fFrequency write SetFrequency;  // 20..20000
   end;
+*)
 
 implementation
 
@@ -744,10 +747,12 @@ asm
  fmul [eax.fGainSpeed].Double
 end;
 
+(*
 { TDspLowpassFilter }
 
 procedure TDspLowpassFilter.ChannelsChanged;
-var i : Integer;
+var
+  i : Integer;
 begin
  inherited;
  for i := fChannels to Length(fFilter) - 1
@@ -799,5 +804,6 @@ begin
     do fFilter[i].Frequency := fFrequency;
   end;
 end;
+*)
 
 end.

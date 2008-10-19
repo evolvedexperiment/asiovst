@@ -19,7 +19,7 @@ type
     constructor Create(SEAudioMaster: TSE2AudioMasterCallback; HostPtr: Pointer); override;
     destructor Destroy; override;
 
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean;
+    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
     function GetPinProperties(Index: Integer; Properties : PSEPinProperties): Boolean; override;
     procedure SubProcess(BufferOffset, SampleFrames: Integer);
     procedure SubProcessStatic(BufferOffset, SampleFrames: Integer);
@@ -42,17 +42,18 @@ begin
  // This is where you free any memory/resources your module has created
  for i := 0 to Length(FDynamicPlugs) - 1
   do Dispose(FDynamicPlugs[i]);
+ inherited; 
 end;
 
 procedure TSEAverageModule.Open;
 var
   i : Integer;
 begin
- // choose which function is used to process audio
- OnProcess := SubProcess;
-
  // call the base class
  inherited Open;
+
+ // choose which function is used to process audio
+ OnProcess := SubProcess;
 
  // to work out how many 'dynamic' plugs the module has..
  // Ask host how many input plugs this module actually has,
@@ -132,7 +133,7 @@ begin
    pinInput: with Properties^ do
               begin
                Name            := 'Output';
-               VariableAddress := FOutput;
+               VariableAddress := @FOutput;
                Direction       := drOut;
                Datatype        := dtFSample;
               end;
@@ -176,10 +177,12 @@ begin
  // setup 'sleep mode' or not
  if (OutState < stRun) then
   begin
-   FStaticCount := getBlockSize;
+   FStaticCount := BlockSize;
    OnProcess := SubProcessStatic;
   end
  else OnProcess := SubProcess;
+
+ inherited;
 end;
 
 end.

@@ -61,7 +61,11 @@ type
     uetNoteOffHeld, uetHeldNotesOff, uetNull, uetGeneric1,
     uetSetOutputPin, uetRunFunction2);
 
-  TSEFloatSample = Double;
+  PSEFloatSample = ^TSEFloatSample;
+  TSEFloatSample = Single;
+
+  PSEFloatSampleFixedArray = ^TSEFloatSampleFixedArray;
+  TSEFloatSampleFixedArray = Array [0..0] of TSEFloatSample;
 
   ///////////////////////////
   // Plugin Module Opcodes //
@@ -179,16 +183,16 @@ type
   ////////////////////
 
   TSE1Dispatcher = function(Effect: PSE1ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
-  TSE2Dispatcher = function(Effect: PSE2ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Double): Integer; cdecl;
+  TSE2Dispatcher = function(Effect: PSE2ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
   TSE1Process = procedure(Effect: PSE1ModStructBase; inputs, outputs: PDAVArrayOfSingleFixedArray; SampleFrames: Integer); cdecl;
-  TSE2Process = procedure(Effect: PSE2ModStructBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
-  TSE2Event = function(Effect: PSE2ModStructBase; Event: PSEEvent): Pointer; cdecl;
+  TSE2Process = procedure(ModuleBase: TSEModuleBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
+  TSE2Event = function(ModuleBase: TSEModuleBase; Event: PSEEvent): Pointer; cdecl;
 
   TSESetParameter = procedure(Effect: PSE1ModStructBase; Index: Integer; Parameter: Single);
   TSEGetParameter = function(Effect: PSE1ModStructBase; Index: Integer): Single;
 
   TSE2EventEvent = function(Event: PSEEvent): Pointer of object;
-  TSE2DispatcherEvent = function(Opcode: Integer; Index, Value: Integer; Ptr: Pointer; Opt: Double): Integer of object;
+  TSE2DispatcherEvent = function(Opcode: Integer; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer of object;
   TSE2ProcessEvent = procedure(BufferOffset: Integer; SampleFrames: Integer) of object;
   TSEPlugStateChangeEvent = procedure (Sender: TObject; Pin: TSEPin) of object; 
 
@@ -198,6 +202,8 @@ type
   ////////////////
   // structures //
   ////////////////
+
+  {$A4} // align all records to 4 byte
 
   TSE1ModStructBase = record
     Magic            : Integer;              // the 'magic number' that identifies a SynthEdit module (spells SEPL)
@@ -223,14 +229,13 @@ type
     Future           : array[0..15] of Char; // pls zero
   end;
 
-
   // fill in this structure when using Opcode SEAudioMasterCallVstHost
   TSECallVstHostParams = record
     Opcode : Integer;
     Index  : Integer;
     Value  : Integer;
     Ptr    : Pointer;
-    Opt    : Double;
+    Opt    : Single;
   end;
 
   TSEEvent = record // a generic timestamped event
@@ -276,7 +281,6 @@ type
      5 : (IntValue   : Integer);
     end;
 
-  PSEPin = ^TSEPin;
   TSEPin = class
   private
     FModule               : TSEModuleBase;
@@ -307,8 +311,7 @@ type
     function GetVariableAddress: Pointer;
   end;
 
-  PSEPins = ^TSEPins;
-  TSEPins = array [0..0] of TSEPin;
+  TSEPins = array of TSEPin;
 
   TUgFunc = procedure of object;
 
@@ -325,14 +328,14 @@ type
     FEffect        : TSE2ModStructBase;
     FSampleRate    : Single;
     FBlockSize     : Integer;
-    FPins          : PSEPins;
+    FPins          : TSEPins;
 
     procedure PlugStateChange(Pin: TSEPin); virtual;
     procedure InputStatusChange(PlugIndex: Integer; NewState: TSEStateType); virtual;
     procedure MidiData(AClock, AMidiMsg: Cardinal; PinID: ShortInt); virtual;
     procedure GuiNotify(AUserMsgID: Integer; ASize: Integer; AData: Pointer); virtual;
   public
-    constructor Create(AudioMaster: TSE2AudioMasterCallback; HostPtr: Pointer); virtual;
+    constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); virtual;
     destructor Destroy; override;
 
     procedure AddEvent(ATimeStamp: Cardinal; AEventType: TUGEventType; AIntParamA: Integer = 0; AIntParamB: Integer = 0; APtrParam : Pointer = nil);
@@ -353,16 +356,15 @@ type
     procedure SetBlockSize(const Value: Integer); virtual;
 
     { inquiry }
-    function GetSampleRate: Single; virtual;
-    function GetBlockSize: Integer; virtual;
     function CallHost(opcode: TSEHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
 
-    function GetPin(Index: Integer): PSEPin;
+    function GetPin(Index: Integer): TSEPin;
     function SampleClock: Cardinal;
 (* not used anymore
 //    procedure SetSampleClock(AClock: Cardinal); {m_sample_clock = AClock;}
 //    function getModuleProperties(Properties: PSEModuleProperties): Boolean; virtual; { return false;}
 *)
+    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; virtual;
     function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; virtual;
     function GetPinPropertiesClean(Index: Integer; Properties: PSEPinProperties): Boolean;
 
@@ -372,6 +374,8 @@ type
     procedure Resume; virtual;
     procedure VoiceReset(Future: Integer); virtual;
   published
+    property SampleRate: Single read FSampleRate;
+    property BlockSize: Integer read FBlockSize;
     property OnProcess: TSE2ProcessEvent read FOnProcessEvent write SetProcess;
     property OnProcessEvent: TSE2EventEvent read FOnEventEvent write FOnEventEvent;
     property OnSampleRateChange: TNotifyEvent read FOnSampleRateChangeEvent write FOnSampleRateChangeEvent;
@@ -384,10 +388,13 @@ type
 //////////////////////
 
 function SE1Dispatcher(Effect: PSE1ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
-function SE2Dispatcher(Effect: PSE2ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Double): Integer; cdecl;
+function SE2Dispatcher(Effect: PSE2ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
 procedure SE1Process(Effect: PSE1ModStructBase; inputs, outputs: PDAVArrayOfSingleFixedArray; SampleFrames: Integer); cdecl;
-procedure SE2Process(Effect: PSE2ModStructBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
-function SE2Event(Effect: PSE2ModStructBase; Event: PSEEvent): Pointer; cdecl;
+procedure SE2Process(ModuleBase: TSEModuleBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
+function SE2Event(ModuleBase: TSEModuleBase; Event: PSEEvent): Pointer; cdecl;
+
+// handy function to fix denormals.
+procedure KillDenormal(var Sample: Single);
 
 implementation
 
@@ -415,7 +422,6 @@ end;
 
 destructor TSEPin.Destroy;
 begin
- // nothing in here yet!
  inherited;
 end;
 
@@ -536,7 +542,9 @@ begin
   FModule.CallHost(SEAudioMasterSendMIDI, FPinIndex, Msg, Pointer(SampleClock));
 end;
 
-constructor TSEModuleBase.Create(AudioMaster: TSE2AudioMasterCallback; HostPtr: Pointer);
+{ TSEModuleBase }
+
+constructor TSEModuleBase.Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  FPins := nil;
  FSEAudioMaster := AudioMaster;
@@ -550,7 +558,7 @@ begin
    SubProcessPtr   := SE2Process;
    EventHandlerPtr := SE2Event;
    Dispatcher      := SE2Dispatcher;
-   HostPtr         := HostPtr;
+   HostPtr         := Reserved;
    SEModule        := Self;
    Version         := 1;
   end;
@@ -560,8 +568,13 @@ begin
 end;
 
 destructor TSEModuleBase.Destroy;
+var
+  i : Integer;
 begin
-  Dispose(FPins);
+ for i := 0 to Length(FPins) - 1
+  do FPins[i].Free;
+ SetLength(FPins, 0); 
+ inherited;
 end;
 
 
@@ -583,8 +596,12 @@ begin
  // get actual number of pins used (may be more or less if auto-duplicating plugs used)
  ActualPlugCount := CallHost(SEAudioMasterGetTotalPinCount);
 
- if ActualPlugCount > 0
-  then GetMem(FPins, ActualPlugCount * SizeOf(PSEPin));
+ if ActualPlugCount > 0 then
+  begin
+   SetLength(FPins, ActualPlugCount);
+   for i := 0 to ActualPlugCount - 1
+    do FPins[i] := TSEPin.Create;
+  end;
 
  // Set up standard plugs
  PlugDescriptionIndex := 0;
@@ -595,7 +612,7 @@ begin
    if (not (iofUICommunication in Properties.Flags)) or
       (          iofUIDualFlag in Properties.Flags) then // skip GUI plugs
     begin
-     FPins[i].Init(Self, i, Properties.datatype, Properties.VariableAddress);
+     FPins[i].Init(Self, i, TSEPlugDataType(Properties.DataType), Properties.VariableAddress);
      inc(i);
     end;
    inc(PlugDescriptionIndex);
@@ -612,11 +629,10 @@ begin
    if (iofAutoDuplicate in Properties.Flags) then
     while (i < ActualPlugCount) do
      begin
-      FPins[i].Init(Self, i, Properties.datatype, nil);
+      FPins[i].Init(Self, i, TSEPlugDataType(Properties.DataType), nil);
       inc(i);
      end;
 end;
-
 
 
 function TSEModuleBase.Dispatcher(opCode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer;
@@ -704,16 +720,17 @@ begin
   end;
 end;
 
-function TSEModuleBase.GetPin(Index: Integer): PSEPin;
+function TSEModuleBase.GetPin(Index: Integer): TSEPin;
 begin
- assert(assigned(FPins));
- result := @FPins[Index];
+ if (Length(FPins) > Index) and (Index >= 0)
+  then result := FPins[Index]
+  else result := nil;
 end;
 
-function TSEModuleBase.CallHost(Opcode: TSEHostOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer;
+function TSEModuleBase.CallHost(Opcode: TSEHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
 begin
  if assigned(FSEAudioMaster)
-  then result := FSEAudioMaster(@FEffect, Integer(opcode), Index, Value, Ptr, Opt)
+  then result := FSEAudioMaster(@FEffect, Integer(Opcode), Index, Value, Ptr, Opt)
   else result := 0;
 end;
 
@@ -797,9 +814,26 @@ begin
  result := @FEffect;
 end;
 
-function TSEModuleBase.GetBlockSize: Integer;
+class function TSEModuleBase.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
 begin
- result := FBlockSize;
+ // describe the plugin, this is the name the end-user will see.
+ Properties.Name := 'Delphi ASIO & VST Packages';
+
+ // return a unique string 32 characters max
+ // if posible include manufacturer and plugin identity
+ // this is used internally by SE to identify the plug.
+ // No two plugs may have the same id.
+
+ // generates a random ID (will surely fail!!!)
+ GetMem(Properties.ID, 4);
+ Properties.ID[0] := Char(32 + random(64));
+ Properties.ID[1] := Char(32 + random(64));
+ Properties.ID[2] := Char(32 + random(64));
+ Properties.ID[3] := Char(32 + random(64));
+
+ // Info, may include Author, Web page whatever
+ Properties.About := 'Delphi ASIO & VST Packages';
+ result := True;
 end;
 
 function TSEModuleBase.GetName(name: PChar): Boolean;
@@ -814,15 +848,10 @@ begin
  result := False;
 end;
 
-function TSEModuleBase.GetPinPropertiesClean (Index: Integer; properties: PSEPinProperties): Boolean;
+function TSEModuleBase.GetPinPropertiesClean(Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- FillChar(Properties, SizeOf(TSEPinProperties), 0); // clear structure
+ FillChar(Properties^, SizeOf(TSEPinProperties), 0); // clear structure
  result := GetPinProperties(Index, Properties);
-end;
-
-function TSEModuleBase.GetSampleRate: Single;
-begin
- result := FsampleRate;
 end;
 
 function TSEModuleBase.GetUniqueId(name: PChar): Boolean;
@@ -1020,29 +1049,37 @@ begin
  result := Effect.SEModule.Dispatcher(opCode, Index, Value, Ptr, Opt);
 end;
 
-function SE2Dispatcher(Effect: PSE2ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Double): Integer; cdecl;
+function SE2Dispatcher(Effect: PSE2ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
 begin
  result := Effect.SEModule.Dispatcher(opCode, Index, Value, Ptr, Opt);
 end;
 
 procedure SE1Process(Effect: PSE1ModStructBase; inputs, outputs: PDAVArrayOfSingleFixedArray; SampleFrames: Integer); cdecl;
 begin
- // do nothing yet!
+ // not yet supported
 end;
 
-procedure SE2Process(Effect: PSE2ModStructBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
+procedure SE2Process(ModuleBase: TSEModuleBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
 begin
- with Effect.SEModule do
+ with ModuleBase do
   if assigned(OnProcess)
    then OnProcess(BufferOffset, SampleFrames);
 end;
 
-function SE2Event(Effect: PSE2ModStructBase; Event: PSEEvent): Pointer; cdecl;
+function SE2Event(ModuleBase: TSEModuleBase; Event: PSEEvent): Pointer; cdecl;
 begin
- with Effect.SEModule do
+ with ModuleBase do
   if assigned(OnProcessEvent)
    then result := OnProcessEvent(Event)
    else result := nil;
+end;
+
+procedure KillDenormal(var Sample: Single);
+const
+  CAntiDenormal: Single = 1E-18;
+begin
+ Sample := Sample + CAntiDenormal;
+ Sample := Sample - CAntiDenormal;
 end;
 
 end.

@@ -7,6 +7,7 @@ uses
   SEDSP,
   SEGainModule in 'SEGainModule.pas';
 
+{$E sem}
 {$R *.res}
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
@@ -20,7 +21,7 @@ begin
  end;;
 end;
 
-function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; p_resvd1: Pointer): Pointer; cdecl; export;
+function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 var
   Effect: TSEModuleBase;
 begin
@@ -29,7 +30,7 @@ begin
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        Effect := TSEGainModule.Create(SEAudioMaster, p_resvd1);
+        Effect := TSEGainModule.Create(SEAudioMaster, Reserved);
         if assigned(Effect)
          then result := Effect.getEffect;
        end;

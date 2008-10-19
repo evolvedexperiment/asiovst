@@ -1,11 +1,13 @@
-library SEClock;
+library SEScope;
 
 uses
   SysUtils,
   Classes,
   SECommon,
   SEDSP,
-  SEClockDSP in 'SEClockDSP.pas';
+  SEGUI,
+  SEScopeModule in 'SEScopeModule.pas',
+  SEScopeGUI in 'SEScopeGUI.pas';
 
 {$E sem}
 {$R *.res}
@@ -16,23 +18,30 @@ begin
  result := True;
 
  case Index of // !!TODO!! list your in / out plugs
-  0: TSEClockModule.GetModuleProperties(Properties);
+  0: TSEScopeModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
-function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; p_resvd1: Pointer): Pointer; cdecl; export;
+function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 var
-  Effect: TSEModuleBase;
+  Effect : TSEModuleBase;
+  GUI    : TSEGUIBase;
 begin
  result := nil;
  case Index of // !!TODO!! list your in / out plugs
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        Effect := TSEClockModule.Create(SEAudioMaster, p_resvd1);
+        Effect := TSEScopeModule.Create(SEAudioMaster, Reserved);
         if assigned(Effect)
          then result := Effect.getEffect;
+       end else
+      if (ProcessType = 2) then // GUI Object
+       begin
+        GUI := TSEScopeGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
+        if assigned(GUI)
+         then result := GUI.getEffect;
        end;
      end;
  end;

@@ -7,6 +7,7 @@ uses
   SEDSP,
   SEAverageModule in 'SEAverageModule.pas';
 
+{$E sem}
 {$R *.res}
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;

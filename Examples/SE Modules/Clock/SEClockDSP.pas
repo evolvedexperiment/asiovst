@@ -48,7 +48,7 @@ type
     destructor Destroy; override;
 
     procedure Open; override;
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean;
+    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
     function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(BufferOffset: Integer; SampleFrames: Integer);
   end;
@@ -56,7 +56,7 @@ type
 implementation
 
 uses
-  DAV_VSTEffect;
+  Math, DAV_VSTEffect;
 
 constructor TSmartOutput.Create(AModule: TSEModuleBase; APlugNumber: Integer);
 begin
@@ -103,7 +103,7 @@ procedure TSmartOutput.SetValue(SampleClock: Cardinal; Value: Single);
 begin
  if FCurrentOutputValue <> Value then
   begin
-   FStaticOutputCount := FModule.getBlockSize;
+   FStaticOutputCount := FModule.BlockSize;
    FCurrentOutputValue := Value;
    FModule.getPin(FPinNumber).TransmitStatusChange(SampleClock, stOneOff);
   end;
@@ -152,22 +152,29 @@ var
   SamplesAlreadyProcessed : Integer;
   CurSampleClock          : Cardinal;
   NewBarReset             : Single;
+  SamplesToBeats          : Double;
+  SamplesToClocks         : Double;
+  NewTransportRunning     : Single; 
+  ExtraSamples            : Double;
+  HostTotalBeats          : Double;
+  BeatFrac, HostBeatFrac  : Single;
+  Correction, NewTempo    : Single;
 begin
  ti := nil;
+ SamplesPerBeat := 0;
  SamplesRemain := SampleFrames;
  BufferPosition := BufferOffset;
-(*
 
- while(true)
+ while True do
   begin
    to_do := SamplesRemain;
-    if (FPulseCountInt < SamplesRemain)
-     then to_do := FPulseCountInt;
+   if (FPulseCountInt < SamplesRemain)
+    then to_do := FPulseCountInt;
 
-    FBMPOut.Process(BufferPosition, to_do);
-    FClockOut.Process(BufferPosition, to_do);
-    FBarResetOut.Process(BufferPosition, to_do);
-    FTransportOut.Process(BufferPosition, to_do);
+   FBMPOut.Process(BufferPosition, to_do);
+   FClockOut.Process(BufferPosition, to_do);
+   FBarResetOut.Process(BufferPosition, to_do);
+   FTransportOut.Process(BufferPosition, to_do);
 
     SamplesRemain := SamplesRemain - to_do;
     FPulseCountInt := FPulseCountInt - to_do;
@@ -204,72 +211,65 @@ begin
 
       FBarResetOut.SetValue(CurSampleClock, NewBarReset);
 
-      if (ti = 0) then // only do this a max of once per call
+      if (ti = nil) then // only do this a max of once per call
        begin
         // add on time since block start
-        ti := PVstTimeInfo(CallHost(seaudioMasterGetTime, 0, kVstTempoValid|kVstPpqPosValid, 0));
+        ti := PVstTimeInfo(CallHost(seaudioMasterGetTime, 0, 1536, nil
+        ));
         if (ti <> nil) then
          begin
           // calculate how many samples per beat/clock
-          double SamplesToBeats = ti.tempo / ( sampleRate * 60.0 ); // converts secs to beats (quarter notes)
-          double SamplesToClocks = SamplesToBeats * FPulsesPerBeat;
+          SamplesToBeats := ti.tempo / (sampleRate * 60.0); // converts secs to beats (quarter notes)
+          SamplesToClocks := SamplesToBeats * FPulsesPerBeat;
 
           //int SamplesAlreadyProcessed = sampleFrames - SamplesRemain;//s;
           // half a midi clock (for on/off transition)
-          SamplesPerBeat = 0.5f / (float)SamplesToClocks;
+          SamplesPerBeat := 0.5 / SamplesToClocks;
 
-          float NewTransportRunning = 0.f;
+          NewTransportRunning := 0;
 
           // lock to host if transport playing, else just freewheel
-          if( (ti.flags & kVstTransportPlaying) != 0 )
-          begin
-            NewTransportRunning = 1.f;
+          if not (vtiTransportPlaying in ti.Flags) then
+           begin
+            NewTransportRunning := 1;
 
-            double ExtraSamples = buffer_offset + (double) SamplesAlreadyProcessed;
-            double HostTotalBeats = ti.ppqPos + ExtraSamples * SamplesToBeats;
-            FQuarterNoteCount = (int) HostTotalBeats;
+            ExtraSamples := BufferOffset + SamplesAlreadyProcessed;
+            HostTotalBeats := ti.ppqPos + ExtraSamples * SamplesToBeats;
+            FQuarterNoteCount := round(HostTotalBeats);
 
-            float BeatFrac = (float) FMidiClock;
+            BeatFrac := FMidiClock;
 
             // this routine called twice per midi clock (leading edge/trailing edge)
             // on trailing edge, we're half way between midi clocks
-            if( FClockOut.GetValue() == 0.f )//outval == 0.f )
-            begin
-              BeatFrac += 0.5;
-            end;
+            if FClockOut.GetValue = 0 //outval == 0.f )
+             then BeatFrac := BeatFrac + 0.5;
 
             // add small fractional ammount due to pulse not always
             // falling on an exact sampleframe
-            BeatFrac -= 0.5f * FPulseCount/SamplesPerBeat;
+            BeatFrac := BeatFrac - 0.5 * FPulseCount / SamplesPerBeat;
 
             // convert from MIDI clocks to beats
-            BeatFrac = BeatFrac / (float) FPulsesPerBeat;
+            BeatFrac := BeatFrac / FPulsesPerBeat;
 
-            float HostBeatFrac = (float)(HostTotalBeats - floor( HostTotalBeats ));
+            HostBeatFrac := (HostTotalBeats - floor(HostTotalBeats));
             
             // calc FError as fraction of beat
-            FError = HostBeatFrac - BeatFrac;
-            if( FError < -0.5 )
-              FError += 1.0;
-            if( FError > 0.5 )
-              FError -= 1.0;
+            FError := HostBeatFrac - BeatFrac;
+            if FError < -0.5 then FError := FError + 1;
+            if FError >  0.5 then FError := FError - 1;
 
             // convert FError back to samples
-            float Correction = FError * 2.f * SamplesPerBeat * FPulsesPerBeat;
+            Correction := FError * 2 * SamplesPerBeat * FPulsesPerBeat;
 
             // jump count a fraction to catch up with host
-            FPulseCount -= Correction; //SamplesPerBeat * FError * 0.8f;
-
-//#ifdef _DEBUG
-//            getPin(PN_OUTPUT5).TransmitStatusChange( SampleClock() + SamplesAlreadyProcessed, ST_ONE_OFF );
-//#endif
+            FPulseCount := FPulseCount - Correction; //SamplesPerBeat * FError * 0.8f;
           end;
-          
-          float NewTempo = (float) ti.tempo * 0.1f;
+
+          NewTempo := ti.tempo * 0.1;
 
           // avoid divide-by-zero errors when host don't provide tempo info
-          if( NewTempo == 0.f )
-            NewTempo = CDefaultTempo;
+          if NewTempo = 0
+           then NewTempo := CDefaultTempo;
 
           // note: these are not sample-accurate. Being Polled, they always lag actual event.
           FBMPOut.SetValue      ( CurSampleClock, NewTempo  );
@@ -277,28 +277,20 @@ begin
         end;
       end;
 
+
       // reset pulse count
-      FPulseCount += SamplesPerBeat;
+      FPulseCount := FPulseCount + SamplesPerBeat;
 
       // can't skip a pulse completely, that would lose sync
-      if( FPulseCount < 2.f )
-      begin
-        FPulseCount = 2.f;
-      end;
+      if FPulseCount < 2
+       then FPulseCount := 2;
 
-      FPulseCountInt = (int) ceil(FPulseCount);
+      FPulseCountInt := ceil(FPulseCount);
 
       // pre-calculate pulse count at next clock
-      FPulseCount -= FPulseCountInt;
+      FPulseCount := FPulseCount - FPulseCountInt;
     end;
-/*
-#ifdef _DEBUG
-    *out4++ = FError;
-#endif
-*/
   end;
-end;
-*)
 end;
 
 // describe your module
@@ -311,7 +303,7 @@ begin
  // if posible include manufacturer and plugin identity
  // this is used internally by SE to identify the plug.
  // No two plugs may have the same id.
- Properties.ID := 'Synthedit BPM Clock V2';
+ Properties.ID := 'Synthedit BPM Clock (DAV)';
 
  // Info, may include Author, Web page whatever
  Properties.About := 'by Christian-W. Budde';
