@@ -3,7 +3,7 @@ unit SEScopeGUI;
 interface
 
 uses
-  Windows, SEDSP, SEGUI, SEScopeModule;
+  Windows, DAV_SEModule, DAV_SEGUI, SEScopeModule;
 
 const
   pinEnumOut = 2;

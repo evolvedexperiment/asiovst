@@ -3,9 +3,9 @@ library SEIntToList;
 uses
   SysUtils,
   Classes,
-  SECommon,
-  SEDSP,
-  SEGUI,
+  DAV_SECommon,
+  DAV_SEModule,
+  DAV_SEGUI,
   SEIntToListModule in 'SEIntToListModule.pas',
   SEIntToListGUI in 'SEIntToListGUI.pas';
 

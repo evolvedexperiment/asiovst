@@ -3,7 +3,7 @@ unit SEScopeModule;
 interface
 
 uses
-  DAV_Common, SECommon, SEDSP;
+  DAV_Common, DAV_SECommon, DAV_SEModule;
 
 const
   CScopeBufferSize = 100;

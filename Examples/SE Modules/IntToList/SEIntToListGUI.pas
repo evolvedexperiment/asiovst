@@ -3,7 +3,7 @@ unit SEIntToListGUI;
 interface
 
 uses
-  Windows, SECommon, SEDSP, SEGUI, SEIntToListModule;
+  Windows, DAV_SECommon, DAV_SEModule, DAV_SEGUI, SEIntToListModule;
 
 const
   pinIn   = 0;

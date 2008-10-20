@@ -3,8 +3,8 @@ library SEClock;
 uses
   SysUtils,
   Classes,
-  SECommon,
-  SEDSP,
+  DAV_SECommon,
+  DAV_SEModule,
   SEClockDSP in 'SEClockDSP.pas';
 
 {$E sem}

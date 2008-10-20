@@ -1,22 +1,24 @@
-unit SEButterworthLPModule;
+unit SEButterworthModule;
 
 interface
 
 uses
-  DAV_Common, DAV_DSPButterworthFilter, SECommon, SEDSP;
+  DAV_Common, DAV_DSPButterworthFilter, DAV_SECommon, DAV_SEModule;
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEButterworthLPPins = (pinInput, pinOutput, pinFrequency, pinOrder);
+  TSEButterworthPins = (pinInput, pinOutput, pinFrequency, pinOrder);
 
-  TSEButterworthLPModule = class(TSEModuleBase)
+  TSEButterworthModule = class(TSEModuleBase)
   private
+  protected
     FInput1Buffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FFrequency    : Single;
     FOrder        : Integer;
-    FFilter       : TButterworthLP;
-    procedure FilterChanged;
+    FFilter       : TButterworthFilter;
+    procedure FilterChanged; virtual;
+    procedure SampleRateChanged; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
@@ -24,10 +26,22 @@ type
     procedure Open; override;
     procedure Close; override;
 
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
     function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
     procedure SubProcess(BufferOffset: Integer; SampleFrames: Integer);
     procedure PlugStateChange(Pin: TSEPin); override;
+  end;
+
+  TSEButterworthLPModule = class(TSEButterworthModule)
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+  end;
+
+  TSEButterworthHPModule = class(TSEButterworthModule)
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
   end;
 
 implementation
@@ -35,24 +49,22 @@ implementation
 uses
   SysUtils;
 
-constructor TSEButterworthLPModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TSEButterworthModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
 
  FFrequency := 1000;
  FOrder := 4;
- FFilter := TButterworthLP.Create;
- FFilter.SetFilterValues(1000, 0);
 end;
 
-destructor TSEButterworthLPModule.Destroy;
+destructor TSEButterworthModule.Destroy;
 begin
  // This is where you free any memory/resources your module has created
  FreeAndNil(FFilter);
  inherited;
 end;
 
-procedure TSEButterworthLPModule.Open;
+procedure TSEButterworthModule.Open;
 begin
  inherited Open;
 
@@ -63,20 +75,26 @@ begin
  getPin(Integer(pinOutput)).TransmitStatusChange(SampleClock, stRun);
 end;
 
-procedure TSEButterworthLPModule.Close;
+procedure TSEButterworthModule.Close;
 begin
  // nothing here todo yet
  inherited;
 end;
 
-procedure TSEButterworthLPModule.FilterChanged;
+procedure TSEButterworthModule.FilterChanged;
 begin
  FFilter.Frequency := FFrequency;
  FFilter.Order     := FOrder;
 end;
 
 // The most important part, processing the audio
-procedure TSEButterworthLPModule.SubProcess(BufferOffset: Integer; SampleFrames: Integer);
+procedure TSEButterworthModule.SampleRateChanged;
+begin
+ inherited;
+ FFilter.SampleRate := SampleRate;
+end;
+
+procedure TSEButterworthModule.SubProcess(BufferOffset: Integer; SampleFrames: Integer);
 var
   Input  : PDAVSingleFixedArray;
   Output : PDAVSingleFixedArray;
@@ -94,27 +112,18 @@ begin
 end;
 
 // describe your module
-class function TSEButterworthLPModule.getModuleProperties(Properties : PSEModuleProperties): Boolean;
+class function TSEButterworthModule.getModuleProperties(Properties : PSEModuleProperties): Boolean;
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Butterworth Lowpass';
-
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'DAV Butterworth Lowpass';
-
  // Info, may include Author, Web page whatever
  Properties.About := 'by Christian-W. Budde';
  result := True;
 end;
 
 // describe the pins (plugs)
-function TSEButterworthLPModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEButterworthModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSEButterworthLPPins(index) of
+ case TSEButterworthPins(index) of
   // typical input plug (inputs are listed first)
   pinInput: with Properties^ do
              begin
@@ -148,6 +157,7 @@ begin
               Direction       := drParameter;
               DataType        := dtInteger;
               DefaultValue    := '4';
+              DatatypeExtra   := 'range -0,64';
              end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
@@ -156,13 +166,59 @@ end;
 // this routine is called whenever an input changes status.
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
-procedure TSEButterworthLPModule.PlugStateChange(Pin: TSEPin);
+procedure TSEButterworthModule.PlugStateChange(Pin: TSEPin);
 begin
- // has user altered ButterworthLP time parameter?
+ // has user altered Butterworth time parameter?
  if (pin.getPinID = Integer(pinFrequency)) or
     (pin.getPinID = Integer(pinOrder))
   then FilterChanged; // re-create the audio buffer
- inherited; 
+ inherited;
+end;
+
+{ TSEButterworthModule }
+
+constructor TSEButterworthLPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFilter := TButterworthLP.Create;
+ FFilter.SetFilterValues(1000, 0);
+ FilterChanged;
+end;
+
+class function TSEButterworthLPModule.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
+begin
+ // describe the plugin, this is the name the end-user will see.
+ Properties.Name := 'Butterworth Lowpass';
+
+ // return a unique string 32 characters max
+ // if posible include manufacturer and plugin identity
+ // this is used internally by SE to identify the plug.
+ // No two plugs may have the same id.
+ Properties.ID := 'DAV Butterworth Lowpass';
+ result := inherited GetModuleProperties(Properties);
+end;
+
+{ TSEButterworthHPModule }
+
+constructor TSEButterworthHPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFilter := TButterworthHP.Create;
+ FFilter.SetFilterValues(1000, 0);
+ FilterChanged;
+end;
+
+class function TSEButterworthHPModule.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
+begin
+ // describe the plugin, this is the name the end-user will see.
+ Properties.Name := 'Butterworth Highpass';
+
+ // return a unique string 32 characters max
+ // if posible include manufacturer and plugin identity
+ // this is used internally by SE to identify the plug.
+ // No two plugs may have the same id.
+ Properties.ID := 'DAV Butterworth Highpass';
+ result := inherited GetModuleProperties(Properties);
 end;
 
 end.

@@ -1,9 +1,9 @@
-unit SEGUI;
+unit DAV_SEGUI;
 
 interface
 
 uses
-  Windows, Classes, SECommon;
+  Windows, Classes, DAV_SECommon;
 
 type
   PSEGUIStructBase = ^TSEGUIStructBase;

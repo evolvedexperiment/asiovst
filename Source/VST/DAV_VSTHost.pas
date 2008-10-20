@@ -1222,7 +1222,7 @@ end;
 
 procedure TVstPlugIns.SetItem(Index: Integer; const Value: TVstPlugIn);
 begin
-  inherited SetItem(Index, Value);
+ inherited SetItem(Index, Value);
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
@@ -1279,41 +1279,41 @@ var
   i: Integer;
 begin
  if Dest is TCustomVstPlugIn then with TCustomVstPlugIn(Dest) do
- begin
-  DisplayName                            := Self.DisplayName;
-  ReplaceOrAccumulate                    := Self.ReplaceOrAccumulate;
-  CurrentProcessLevel                    := Self.CurrentProcessLevel;
-  AutomationState                        := Self.AutomationState;
-  OnAudioMasterAutomate                  := Self.OnAudioMasterAutomate;
-  OnAudioMasterIdle                      := Self.OnAudioMasterIdle;
-  OnAudioMasterNeedIdle                  := Self.OnAudioMasterNeedIdle;
-  OnAudioMasterIOChanged                 := Self.OnAudioMasterIOChanged;
-  OnAudioMasterWantMidi                  := Self.OnAudioMasterWantMidi;
-  OnAudioMasterOfflineStart              := Self.OnAudioMasterOfflineStart;
-  OnAudioMasterOfflineRead               := Self.OnAudioMasterOfflineRead;
-  OnAudioMasterOfflineWrite              := Self.OnAudioMasterOfflineWrite;
-  OnAudioMasterOfflineGetCurrentPass     := Self.OnAudioMasterOfflineGetCurrentPass;
-  OnAudioMasterOfflineGetCurrentMetaPass := Self.OnAudioMasterOfflineGetCurrentMetaPass;
-  OnAudioMasterSetOutputsampleRate       := Self.OnAudioMasterSetOutputsampleRate;
-  OnAudioMasterUpdateDisplay             := Self.OnAudioMasterUpdateDisplay;
-  OnAudioMasterBeginEdit                 := Self.OnAudioMasterBeginEdit;
-  OnAudioMasterEndEdit                   := Self.OnAudioMasterEndEdit;
-  OnAudioMasterPinConnected              := Self.OnAudioMasterPinConnected;
-  OnShowEdit                             := Self.OnShowEdit;
-  OnCloseEdit                            := Self.OnCloseEdit;
-  OnAfterLoad                            := Self.OnAfterLoad;
-  OnProcessEvents                        := Self.OnProcessEvents;
-  OnVendorSpecific                       := Self.OnVendorSpecific;
-  DLLFileName                            := Self.DLLFileName;
-  Active                                 := Self.Active;
-  GUIStyle                               := Self.GUIStyle;
-  FProgramNr                             := Self.ProgramNr;
+  begin
+   DisplayName                            := Self.DisplayName;
+   ReplaceOrAccumulate                    := Self.ReplaceOrAccumulate;
+   CurrentProcessLevel                    := Self.CurrentProcessLevel;
+   AutomationState                        := Self.AutomationState;
+   OnAudioMasterAutomate                  := Self.OnAudioMasterAutomate;
+   OnAudioMasterIdle                      := Self.OnAudioMasterIdle;
+   OnAudioMasterNeedIdle                  := Self.OnAudioMasterNeedIdle;
+   OnAudioMasterIOChanged                 := Self.OnAudioMasterIOChanged;
+   OnAudioMasterWantMidi                  := Self.OnAudioMasterWantMidi;
+   OnAudioMasterOfflineStart              := Self.OnAudioMasterOfflineStart;
+   OnAudioMasterOfflineRead               := Self.OnAudioMasterOfflineRead;
+   OnAudioMasterOfflineWrite              := Self.OnAudioMasterOfflineWrite;
+   OnAudioMasterOfflineGetCurrentPass     := Self.OnAudioMasterOfflineGetCurrentPass;
+   OnAudioMasterOfflineGetCurrentMetaPass := Self.OnAudioMasterOfflineGetCurrentMetaPass;
+   OnAudioMasterSetOutputsampleRate       := Self.OnAudioMasterSetOutputsampleRate;
+   OnAudioMasterUpdateDisplay             := Self.OnAudioMasterUpdateDisplay;
+   OnAudioMasterBeginEdit                 := Self.OnAudioMasterBeginEdit;
+   OnAudioMasterEndEdit                   := Self.OnAudioMasterEndEdit;
+   OnAudioMasterPinConnected              := Self.OnAudioMasterPinConnected;
+   OnShowEdit                             := Self.OnShowEdit;
+   OnCloseEdit                            := Self.OnCloseEdit;
+   OnAfterLoad                            := Self.OnAfterLoad;
+   OnProcessEvents                        := Self.OnProcessEvents;
+   OnVendorSpecific                       := Self.OnVendorSpecific;
+   DLLFileName                            := Self.DLLFileName;
+   Active                                 := Self.Active;
+   GUIStyle                               := Self.GUIStyle;
+   FProgramNr                             := Self.ProgramNr;
 
-  // copy chunk
-  i := Self.GetChunk(@p);
-  TCustomVstPlugIn(Dest).SetChunk(p, i)
- end else
-  inherited;
+   // copy chunk
+   i := Self.GetChunk(@p);
+   TCustomVstPlugIn(Dest).SetChunk(p, i)
+  end
+ else inherited;
 end;
 
 function TCustomVstPlugIn.GetDisplayName: string;
@@ -2587,6 +2587,8 @@ begin
   Unload;
   exit;
  end;
+
+ // ???????????
  try
   fActive := True;
   FDLLFileName := PluginDLL;

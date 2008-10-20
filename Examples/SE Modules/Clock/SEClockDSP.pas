@@ -3,7 +3,7 @@ unit SEClockDSP;
 interface
 
 uses
-  DAV_Common, SECommon, SEDSP;
+  DAV_Common, DAV_SECommon, DAV_SEModule;
 
 const
   CDefaultTempo = 10; // 100 BPM

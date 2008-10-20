@@ -3,8 +3,8 @@ library SEGain;
 uses
   SysUtils,
   Classes,
-  SECommon,
-  SEDSP,
+  DAV_SECommon,
+  DAV_SEModule,
   SEGainModule in 'SEGainModule.pas';
 
 {$E sem}

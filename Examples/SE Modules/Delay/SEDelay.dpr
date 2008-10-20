@@ -3,8 +3,8 @@ library SEDelay;
 uses
   SysUtils,
   Classes,
-  SECommon,
-  SEDSP,
+  DAV_SECommon,
+  DAV_SEModule,
   SEDelayModule in 'SEDelayModule.pas';
 
 {$E sem}

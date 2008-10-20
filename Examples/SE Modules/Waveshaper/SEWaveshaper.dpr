@@ -3,9 +3,9 @@ library SEWaveshaper;
 uses
   SysUtils,
   Classes,
-  SECommon,
-  SEDSP,
-  SEGUI,
+  DAV_SECommon,
+  DAV_SEModule,
+  DAV_SEGUI,
   SEWaveshaperModule in 'SEWaveshaperModule.pas',
   SEWaveshaperGUI in 'SEWaveshaperGUI.pas';
 

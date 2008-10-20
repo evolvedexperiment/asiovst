@@ -3,7 +3,7 @@ unit SEGainModule;
 interface
 
 uses
-  DAV_Common, SECommon, SEDSP;
+  DAV_Common, DAV_SECommon, DAV_SEModule;
 
 type
   // define some constants to make referencing in/outs clearer

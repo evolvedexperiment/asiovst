@@ -3,8 +3,8 @@ library SETransposer;
 uses
   SysUtils,
   Classes,
-  SECommon,
-  SEDSP,
+  DAV_SECommon,
+  DAV_SEModule,
   SETransposerModule in 'SETransposerModule.pas';
 
 {$E sem}

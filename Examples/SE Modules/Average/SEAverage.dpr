@@ -3,8 +3,8 @@ library SEAverage;
 uses
   SysUtils,
   Classes,
-  SECommon,
-  SEDSP,
+  DAV_SECommon,
+  DAV_SEModule,
   SEAverageModule in 'SEAverageModule.pas';
 
 {$E sem}

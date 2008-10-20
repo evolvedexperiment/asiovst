@@ -1,11 +1,11 @@
-library SEButterworthLP;
+library SEButterworth;
 
 uses
   SysUtils,
   Classes,
-  SECommon,
-  SEDSP,
-  SEButterworthLPModule in 'SEButterworthLPModule.pas';
+  DAV_SECommon,
+  DAV_SEModule,
+  SEButterworthModule in 'SEButterworthModule.pas';
 
 {$E sem}
 
@@ -18,11 +18,12 @@ begin
 
  case Index of // !!TODO!! list your in / out plugs
   0: TSEButterworthLPModule.GetModuleProperties(Properties);
+  1: TSEButterworthHPModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
-function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; p_resvd1: Pointer): Pointer; cdecl; export;
+function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 var
   Effect: TSEModuleBase;
 begin
@@ -31,7 +32,15 @@ begin
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        Effect := TSEButterworthLPModule.Create(SEAudioMaster, p_resvd1);
+        Effect := TSEButterworthLPModule.Create(SEAudioMaster, Reserved);
+        if assigned(Effect)
+         then result := Effect.getEffect;
+       end;
+     end;
+  1: begin
+      if (ProcessType = 1) then// Audio Processing Object
+       begin
+        Effect := TSEButterworthHPModule.Create(SEAudioMaster, Reserved);
         if assigned(Effect)
          then result := Effect.getEffect;
        end;

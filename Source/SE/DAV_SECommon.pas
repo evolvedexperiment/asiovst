@@ -1,9 +1,9 @@
-unit SECommon;
+unit DAV_SECommon;
 
 interface
 
 const
-  SDK_VERSION = 2230;
+  SDK_VERSION : Integer = 2230;
 
   // the 'magic number' that identifies a SynthEdit module (spells SEPL)
   SepMagic  = $5345504C;

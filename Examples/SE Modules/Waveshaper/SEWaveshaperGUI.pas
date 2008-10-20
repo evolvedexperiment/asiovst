@@ -3,7 +3,7 @@ unit SEWaveshaperGUI;
 interface
 
 uses
-  Windows, Classes, SECommon, SEDSP, SEGUI, SEWaveshaperModule;
+  Windows, Classes, DAV_SECommon, DAV_SEModule, DAV_SEGUI, SEWaveshaperModule;
 
 const
   pinShape     =  0;
@@ -387,9 +387,9 @@ begin
  SendStringToAudio(4, @Size);
  SendStringToAudio(Size, Msg);
  ///////////////////////////////////////
+*)
 
  InvalidateControl;
-*)
 end;
 
 procedure TSEWaveshaperGui.GuiLButtonDown(wi: PSEWndInfo; nFlags: Cardinal; Pnt: TSEPoint);

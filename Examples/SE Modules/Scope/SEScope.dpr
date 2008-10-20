@@ -3,9 +3,9 @@ library SEScope;
 uses
   SysUtils,
   Classes,
-  SECommon,
-  SEDSP,
-  SEGUI,
+  DAV_SECommon,
+  DAV_SEModule,
+  DAV_SEGUI,
   SEScopeModule in 'SEScopeModule.pas',
   SEScopeGUI in 'SEScopeGUI.pas';
 

@@ -3,7 +3,7 @@ unit SEIntToListModule;
 interface
 
 uses
-  DAV_Common, SECommon, SEDSP;
+  DAV_Common, DAV_SECommon, DAV_SEModule;
 
 type
   TSEIntToListModule = class(TSEModuleBase)
