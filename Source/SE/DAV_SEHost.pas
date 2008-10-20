@@ -23,6 +23,8 @@ type
     function GetName: string;
     procedure SetActive(const Value: Boolean);
     function GetActive: Boolean;
+    function GetMagic: Integer;
+    function GetVersion: Integer;
   protected
     function CallPlugin(Opcode: TSEPluginModuleOpcodes; Index: Integer = 0;
       Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer; virtual;
@@ -46,6 +48,8 @@ type
     property Active: Boolean read GetActive write SetActive;
     property Name: string read GetName;
     property ID: string read GetID;
+    property Magic: Integer read GetMagic;
+    property Version: Integer read GetVersion;
     property About: string read GetAbout;
   end;
 
@@ -287,6 +291,11 @@ begin
  result := Properties.ID;
 end;
 
+function TCustomSEHostedModulePart.GetMagic: Integer;
+begin
+ result := FSE2ModStructBase.Magic;
+end;
+
 function TCustomSEHostedModulePart.GetName: string;
 begin
  result := Properties.Name;
@@ -298,6 +307,11 @@ begin
  if Active
   then result := (CallPlugin(seffGetPinProperties, Index, 0, @Pin) <> 0)
   else result := False
+end;
+
+function TCustomSEHostedModulePart.GetVersion: Integer;
+begin
+ result := FSE2ModStructBase.Version;
 end;
 
 procedure TCustomSEHostedModulePart.GuiNotify(Value: Integer = 0; Index: Integer = 0; Ptr: Pointer = nil);

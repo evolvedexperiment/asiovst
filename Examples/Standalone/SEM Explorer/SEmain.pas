@@ -21,6 +21,7 @@ type
   private
     SEHost : TSEHost;
     procedure LoadSEModule(FileName: TFileName);
+    procedure SavePatchedModule;
   end;
 
 var
@@ -29,7 +30,7 @@ var
 implementation
 
 uses
-  DAV_SECommon;
+  DAV_DLLResources, DAV_SECommon;
 
 {$R *.dfm}
 
@@ -79,11 +80,6 @@ begin
   begin
    SEHost[0].Part[0].Instanciate;
 
-(*
-   if FSE2ModStructBase^.Magic <> SepMagic
-   then ShowMessage(TChunkName(FSE2ModStructBase^.Magic));
-*)
-
    PinNr := 0;
    FillChar(Pin, SizeOf(TSEPinProperties), 0);
    while SEHost[0].Part[0].GetPinProperties(PinNr, Pin) do
@@ -118,6 +114,11 @@ begin
      inc(PinNr);
     end;
 
+   if SEHost[0].Part[0].Magic <> SepMagic then
+    if (MessageBox(0, 'Module seems to be corrupted!' + #13#10 +
+          'Would you like to create a patched version?', 'Module corrupted!',
+          MB_ICONWARNING or MB_YESNO) = idYes) then SavePatchedModule;
+
 (*
    SEHost[0].Part[0].Open;
    try
@@ -126,6 +127,43 @@ begin
     SEHost[0].Part[0].Close;
    end;
 *)
+  end;
+end;
+
+procedure TFmSEModuleExplorer.SavePatchedModule;
+var
+  FN : TFileName;
+  RS : TResourceStream;
+  RM : TPEResourceModule;
+  RD : TResourceDetails;
+begin
+ RM := TPEResourceModule.Create;
+ with RM do
+  try
+   // load template
+   RS := TResourceStream.Create(HInstance, 'SEMagicHealer', 'SEM');
+   try
+    LoadFromStream(RS);
+   finally
+    FreeAndNil(RS);
+   end;
+   FN := SEHost[0].SEMFileName;
+
+   // store VST Plugins
+   with TMemoryStream.Create do
+    try
+     LoadFromFile(FN);
+     RD := TResourceDetails.CreateResourceDetails(RM, 0, 'SEM', 'SEM', Size, Memory);
+     AddResource(RD);
+    finally
+     Free;
+    end;
+
+   SortResources;
+   SaveToFile(ExtractFilePath(FN) + 'X' + ExtractFileName(FN));
+   ShowMessage('Patched SEM successfully created!');
+  finally
+   FreeAndNil(RM);
   end;
 end;
 

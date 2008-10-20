@@ -1,5 +1,6 @@
 package DAV_GUI_D10;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -47,6 +48,7 @@ contains
   DAV_GuiPanel in '..\Source\GUI\DAV_GuiPanel.pas',
   DAV_GuiSelectBox in '..\Source\GUI\DAV_GuiSelectBox.pas',
   DAV_GuiStaticWaveform in '..\Source\GUI\DAV_GuiStaticWaveform.pas',
-  DAV_GuiVUMeter in '..\Source\GUI\DAV_GuiVUMeter.pas';
+  DAV_GuiVUMeter in '..\Source\GUI\DAV_GuiVUMeter.pas',
+  DAV_CorrelationMeter in '..\Source\GUI\DAV_CorrelationMeter.pas';
 
 end.
