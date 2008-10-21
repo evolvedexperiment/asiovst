@@ -1,13 +1,14 @@
-library SEGain;
+library SEChebyshevFilter;
 
 uses
   SysUtils,
   Classes,
   DAV_SECommon,
   DAV_SEModule,
-  SEGainModule in 'SEGainModule.pas';
+  SEChebyshevFilterModule in 'SEChebyshevFilterModule.pas';
 
 {$E sem}
+
 {$R *.res}
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
@@ -16,7 +17,8 @@ begin
  result := True;
 
  case Index of // !!TODO!! list your in / out plugs
-  0: TSEGainModule.GetModuleProperties(Properties);
+  0: TSEChebyshevFilterLPModule.GetModuleProperties(Properties);
+  1: TSEChebyshevFilterHPModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -30,7 +32,15 @@ begin
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        SEModuleBase := TSEGainModule.Create(SEAudioMaster, Reserved);
+        SEModuleBase := TSEChebyshevFilterLPModule.Create(SEAudioMaster, Reserved);
+        if assigned(SEModuleBase)
+         then result := SEModuleBase.Effect;
+       end;
+     end;
+  1: begin
+      if (ProcessType = 1) then// Audio Processing Object
+       begin
+        SEModuleBase := TSEChebyshevFilterHPModule.Create(SEAudioMaster, Reserved);
         if assigned(SEModuleBase)
          then result := SEModuleBase.Effect;
        end;

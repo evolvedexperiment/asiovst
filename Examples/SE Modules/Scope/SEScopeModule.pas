@@ -33,22 +33,22 @@ type
     procedure SendStringToGui(AMsgID, ALength: Integer; AData: PChar);
     procedure ForceTrigger;
     procedure SendResultToGui;
+  protected
+    procedure Open; override;
+//    procedure PlugStateChange(Pin: TSEPin); override;
+    procedure GuiNotify(AUserMsgID: Integer; ASize: Integer; AData: Pointer); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
-    procedure Open; override;
     class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
 //    function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    function GetPinProperties(Index: Integer; Properties : PSEPinProperties): Boolean; override;
+    function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
 
-    procedure SubProcess(BufferOffset: Integer; SampleFrames: Integer);
-    procedure SubProcessCruise(BufferOffset: Integer; SampleFrames: Integer);
-    procedure WaitForTrigger1(BufferOffset: Integer; SampleFrames: Integer);
-    procedure WaitForTrigger2(BufferOffset: Integer; SampleFrames: Integer);
-
-//    procedure PlugStateChange(Pin: TSEPin); override;
-    procedure GuiNotify(AUserMsgID: Integer; ASize: Integer; AData: Pointer); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessCruise(const BufferOffset, SampleFrames: Integer);
+    procedure WaitForTrigger1(const BufferOffset, SampleFrames: Integer);
+    procedure WaitForTrigger2(const BufferOffset, SampleFrames: Integer);
   end;
 
 implementation
@@ -87,7 +87,7 @@ begin
 
   for ch := 0 to CScopeChannels - 1 do
    begin
-    FChannelActive[ch] := GetPin(ch).IsConnected;
+    FChannelActive[ch] := Pin[ch].IsConnected;
     if not FChannelActive[ch] then
      begin
       // if a channel is not active, don't want to draw it.
@@ -120,7 +120,7 @@ begin
  CallHost(seaudioMasterSendStringToGui, ALength, AMsgID, AData);
 end;
 
-procedure TSEScopeModule.SubProcess(BufferOffset: Integer; SampleFrames: Integer);
+procedure TSEScopeModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   Input    : PDAVSingleFixedArray;
   Count, c : Integer;
@@ -159,7 +159,7 @@ begin
 end;
 
 // same as sub process, but don't record samples (because UI redrawing)
-procedure TSEScopeModule.SubProcessCruise(BufferOffset, SampleFrames: Integer);
+procedure TSEScopeModule.SubProcessCruise(const BufferOffset, SampleFrames: Integer);
 var
   Count   : Integer;
   Remain  : Integer;
@@ -180,7 +180,7 @@ begin
   end;
 end;
 
-procedure TSEScopeModule.WaitForTrigger1(BufferOffset, SampleFrames: Integer);
+procedure TSEScopeModule.WaitForTrigger1(const BufferOffset, SampleFrames: Integer);
 var
   Input : PSingle;
   s     : Integer;
@@ -202,7 +202,7 @@ begin
   if FTimeOut < 0 then OnProcess := WaitForTrigger2
 end;
 
-procedure TSEScopeModule.WaitForTrigger2(BufferOffset, SampleFrames: Integer);
+procedure TSEScopeModule.WaitForTrigger2(const BufferOffset, SampleFrames: Integer);
 var
   Input : PSingle;
   s     : Integer;
@@ -251,7 +251,7 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEScopeModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEScopeModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case TSEScopePins(index) of

@@ -9,21 +9,21 @@ uses
 
 type
   TFmPascalScript = class(TForm)
-    SynEdit: TSynEdit;
-    DebugBox: TListBox;
-    Splitter: TSplitter;
-    SynPasSyn: TSynPasSyn;
-    ActionList: TActionList;
     ACCompile: TAction;
-    ToolBar1: TToolBar;
+    ActionList: TActionList;
     BtLoadScript: TButton;
-    BtSaveScript: TButton;
     BtRun: TButton;
+    BtSaveScript: TButton;
+    DebugBox: TListBox;
+    OpenDialog: TOpenDialog;
+    SaveDialog: TSaveDialog;
+    Splitter: TSplitter;
+    SynEdit: TSynEdit;
+    SynPasSyn: TSynPasSyn;
+    ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
-    OpenDialog: TOpenDialog;
-    SaveDialog: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ACCompileExecute(Sender: TObject);
@@ -38,7 +38,8 @@ implementation
 
 {$R *.DFM}
 
-uses PSDM;
+uses
+  PSDM;
 
 resourcestring
   STR_SUCCESSFULLY_COMPILED = 'Succesfully compiled';
@@ -101,7 +102,7 @@ end;
 
 procedure TFmPascalScript.FormDestroy(Sender: TObject);
 begin
- fCompiler.Free;
+ FreeAndNil(fCompiler);
 end;
 
 procedure TFmPascalScript.SynEditKeyDown(Sender: TObject; var Key: Word;

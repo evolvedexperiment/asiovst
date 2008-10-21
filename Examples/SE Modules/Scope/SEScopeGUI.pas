@@ -48,8 +48,8 @@ begin
    FValues[1][i] := 1000; // off-screen
   end;
 
- CallHost(seGuiHostSetWindowSize, 100, 100 );
- CallHost(seGuiHostSetWindowType, 0 ); // 0 = Draw on SE's window (default), 1 = HWND based
+ CallHost(seGuiHostSetWindowSize, 100, 100);
+ CallHost(seGuiHostSetWindowType, 0); // 0 = Draw on SE's window (default), 1 = HWND based
 
 // CallHost(seGuiHostSetWindowFlags, Integer(HWF_RESIZEABLE or HWF_NO_CUSTOM_GFX_ON_STRUCTURE));
  CallHost(seGuiHostSetWindowFlags, Integer(HWF_RESIZEABLE));

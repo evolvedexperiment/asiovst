@@ -32,7 +32,7 @@ begin
        begin
         Effect := TSEAverageModule.Create(SEAudioMaster, p_resvd1);
         if assigned(Effect)
-         then result := Effect.getEffect;
+         then result := Effect.Effect;
        end;
      end;
  end;

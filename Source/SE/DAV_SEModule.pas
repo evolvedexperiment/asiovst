@@ -32,7 +32,7 @@ type
      iofIgnorePatchChange,   // auto-rename on new connection
      iofRename,              // plugs which are automaticly duplicated (like a container's 'spare' plug)
      iofAutoDuplicate,
-     iofFilename,            // ALLOW User TO SET THE Value OF THIS OUTPUt eg on 'constant value' ug
+     iofFilename,            // ALLOW USER TO SET THE VALUE OF THIS OUTPUT eg on 'constant value' ug
      iofSetableOutput,       // plugs which can be duplicated/deleted by CUG
      iofCustomisable,        // plugs which handle multiple inputs, must belong to an Adder ug
      iofAdder,               // plugs which are private or obsolete, but are enabled on load if connected somewhere
@@ -45,7 +45,7 @@ type
      iofDoNotCheckEnum,
      iofUIDualFlag,          // don't use iofUIDualFlag by itself, use iofUICommunication
      iofPatchStore,          // Patch store is similar to dual but for DSP output plugs that appear as input plugs on UI (Output paramters) could consolodate?
-     iofParamPrivate,        // Private parameter (not exposed to User of VST plugin)
+     iofParamPrivate,        // Private parameter (not exposed to user of VST plugin)
      iofMinimized);          // minimised (not exposed on structure view (only properties window)
   TSEIOFlags = set of TSEIOFlag;
   //  iofCommunicationDual = iofUIDualFlag or iofUICommunication; // obsolete, use iofPatchStore instead
@@ -161,10 +161,11 @@ type
       Char ascii_filename[MAX_FILENAME_LENGTH];
       WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_filename, MAX_FILENAME_LENGTH, NULL, NULL);
     *)
-    SEAudioMasterGetSeVersion        // returns SE Version number times 100,000 ( e.g. 120000 is V 1.2 )
+    SEAudioMasterGetSeVersion,       // returns SE Version number times 100,000 ( e.g. 120000 is V 1.2 )
     (* EXAMPLE CALLING CODE
       int v = CallHost(SEAudioMasterGetSeVersion, 0, 0, 0);
     *)
+    SEAudioMasterIsInteger = $7FFFFFFF
   );
 
 
@@ -186,15 +187,15 @@ type
   TSE2Dispatcher = function(Effect: PSE2ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
   TSE1Process = procedure(Effect: PSE1ModStructBase; inputs, outputs: PDAVArrayOfSingleFixedArray; SampleFrames: Integer); cdecl;
   TSE2Process = procedure(ModuleBase: TSEModuleBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
-  TSE2Event = function(ModuleBase: TSEModuleBase; Event: PSEEvent): Pointer; cdecl;
+  TSE2Event = procedure(ModuleBase: TSEModuleBase; Event: PSEEvent); cdecl;
 
   TSESetParameter = procedure(Effect: PSE1ModStructBase; Index: Integer; Parameter: Single);
   TSEGetParameter = function(Effect: PSE1ModStructBase; Index: Integer): Single;
 
   TSE2EventEvent = function(Event: PSEEvent): Pointer of object;
   TSE2DispatcherEvent = function(Opcode: Integer; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer of object;
-  TSE2ProcessEvent = procedure(BufferOffset: Integer; SampleFrames: Integer) of object;
-  TSEPlugStateChangeEvent = procedure (Sender: TObject; Pin: TSEPin) of object; 
+  TSE2ProcessEvent = procedure(const BufferOffset, SampleFrames: Integer) of object;
+  TSEPlugStateChangeEvent = procedure(Pin: TSEPin) of object; 
 
   TSE1AudioMasterCallback = function (Effect: PSE1ModStructBase; Opcode: TSEHostOpcodes; Index, Value: Integer; Ptr : Pointer; Opt : Single): Integer; cdecl;
   TSE2AudioMasterCallback = function (Effect: PSE2ModStructBase; Opcode: TSEHostOpcodes; Index, Value: Integer; Ptr : Pointer; Opt : Single): Integer; cdecl;
@@ -281,6 +282,7 @@ type
      5 : (IntValue   : Integer);
     end;
 
+  TSEPinStatusUpdate = procedure(Sender: TObject; AStatus: TSEStateType) of object;
   TSEPin = class
   private
     FModule               : TSEModuleBase;
@@ -289,26 +291,31 @@ type
     FDataType             : TSEPlugDataType;
     FVariablePtr          : Pointer;
     FAutoDuplicatePlugVar : TAutoduplicatePlugData; // Holds pointer to buffer (auto duplicate plugs only)
+    FOnStatusupdate       : TSEPinStatusUpdate;
+    function GetIsConnected: Boolean;
+    function GetValue: Double;
+  protected
+    procedure StatusUpdate(AStatus: TSEStateType);
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Init(Module: TSEModuleBase; PinIndex: Integer; DataType: TSEPlugDataType; VariablePtr: Pointer);
-    function IsConnected: Boolean;
-
-    procedure OnStatusUpdate(AStatus: TSEStateType);
-    function GetStatus: TSEStateType;
-    function GetValue: Double;
-
-    // for audio plugs only
-    function getValueNonAudio: TAutoduplicatePlugData;
-
-    function GetDataType: TSEPlugDataType;
     procedure TransmitStatusChange(SampleClock: Cardinal; NewState: TSEStateType);
     procedure TransmitMIDI(SampleClock, Msg: Cardinal);
 
-    function GetModule: TSEModuleBase;
-    function GetPinID: Integer;
-    function GetVariableAddress: Pointer;
+    property IsConnected: Boolean read GetIsConnected;
+    property Module: TSEModuleBase read FModule;
+    property Value: Double read GetValue;
+    property VariableAddress: Pointer read FVariablePtr;
+  published
+    property DataType: TSEPlugDataType read FDataType;
+    property PinID: Integer read FPinIndex;
+    property Status: TSEStateType read FStatus;
+
+    // for audio plugs only
+    property ValueNonAudio: TAutoduplicatePlugData read FAutoDuplicatePlugVar;
+
+    property OnStatusupdate: TSEPinStatusUpdate read FOnStatusupdate write FOnStatusupdate;
   end;
 
   TSEPins = array of TSEPin;
@@ -317,14 +324,21 @@ type
 
   TSEModuleBase = class(TObject)
   private
+    FOnOpen                  : TNotifyEvent;
+    FOnClose                 : TNotifyEvent;
+    FOnResume                : TNotifyEvent;
     FOnSampleRateChangeEvent : TNotifyEvent;
     FOnBlockSizeChangeEvent  : TNotifyEvent;
     FOnPlugStateChangeEvent  : TSEPlugStateChangeEvent;
     FOnProcessEvent          : TSE2ProcessEvent;
     FOnEventEvent            : TSE2EventEvent;
+    function GetEffect: PSE2ModStructBase;
     procedure SetProcess(const Value: TSE2ProcessEvent);
     procedure SetSampleRate(const Value: Single);
     procedure SetBlockSize(const Value: Integer);
+    procedure ProcessIdle(const BufferPos, SampleFrames: Integer);
+    function GetSampleClock: Cardinal;
+    function GetPin(Index: Integer): TSEPin;
   protected
     FSEAudioMaster : TSE2AudioMasterCallback;
     FEffect        : TSE2ModStructBase;
@@ -332,9 +346,13 @@ type
     FBlockSize     : Integer;
     FPins          : TSEPins;
 
+    procedure Open; virtual;
+    procedure Close; virtual;
+    procedure Resume; virtual;
+    procedure VoiceReset(Future: Integer); virtual;
     procedure SampleRateChanged; virtual;
     procedure BlockSizeChanged; virtual;
-    procedure PlugStateChange(Pin: TSEPin); virtual;
+    procedure PlugStateChange(const CurrentPin: TSEPin); virtual;
     procedure InputStatusChange(PlugIndex: Integer; NewState: TSEStateType); virtual;
     procedure MidiData(AClock, AMidiMsg: Cardinal; PinID: ShortInt); virtual;
     procedure GuiNotify(AUserMsgID: Integer; ASize: Integer; AData: Pointer); virtual;
@@ -345,43 +363,33 @@ type
     procedure AddEvent(ATimeStamp: Cardinal; AEventType: TUGEventType; AIntParamA: Integer = 0; AIntParamB: Integer = 0; APtrParam : Pointer = nil);
     procedure RunDelayed(SampleClock: Cardinal; Func: TUgFunc);
 
-    function GetEffect: PSE2ModStructBase;
-
-    { called from audio master }
-    procedure ProcessIdle(StartPos, SampleFrames: Integer);
-//    procedure ProcessReplacing(BufferOffset, SampleFrames: Integer); not used anymore
-
     { divert to virtual function }
     procedure HandleEvent(Event: PSEEvent); virtual;
     function Dispatcher(Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; virtual;
-    procedure Open; virtual;
-    procedure Close; virtual;
 
     { inquiry }
-    function CallHost(opcode: TSEHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
+    function CallHost(Opcode: TSEHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
 
-    function GetPin(Index: Integer): TSEPin;
-    function SampleClock: Cardinal;
-(* not used anymore
-//    procedure SetSampleClock(AClock: Cardinal); {m_sample_clock = AClock;}
-//    function getModuleProperties(Properties: PSEModuleProperties): Boolean; virtual; { return false;}
-*)
     class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; virtual;
-    function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; virtual;
-    function GetPinPropertiesClean(Index: Integer; Properties: PSEPinProperties): Boolean;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; virtual;
+    function GetPinPropertiesClean(const Index: Integer; Properties: PSEPinProperties): Boolean;
 
     function GetName(name: PChar): Boolean; virtual;     // name max 32 Char
     function GetUniqueId(name: PChar): Boolean; virtual; // id max 32 Char
 
-    procedure Resume; virtual;
-    procedure VoiceReset(Future: Integer); virtual;
+    property Effect: PSE2ModStructBase read GetEffect;
+    property Pin[Index: Integer]: TSEPin read GetPin;
+    property SampleClock: Cardinal read GetSampleClock;
   published
     property SampleRate: Single read FSampleRate;
     property BlockSize: Integer read FBlockSize;
+
+    property OnOpen: TNotifyEvent read FOnOpen write FOnOpen;
+    property OnClose: TNotifyEvent read FOnClose write FOnClose;
     property OnProcess: TSE2ProcessEvent read FOnProcessEvent write SetProcess;
-    property OnProcessEvent: TSE2EventEvent read FOnEventEvent write FOnEventEvent;
+    property OnEvent: TSE2EventEvent read FOnEventEvent write FOnEventEvent;
     property OnSampleRateChange: TNotifyEvent read FOnSampleRateChangeEvent write FOnSampleRateChangeEvent;
-    property OnBlockSizeChangeEvent: TNotifyEvent read FOnBlockSizeChangeEvent write FOnBlockSizeChangeEvent;
+    property OnBlockSizeChange: TNotifyEvent read FOnBlockSizeChangeEvent write FOnBlockSizeChangeEvent;
     property OnPlugStateChange: TSEPlugStateChangeEvent read FOnPlugStateChangeEvent write FOnPlugStateChangeEvent;
   end;
 
@@ -393,7 +401,7 @@ function SE1Dispatcher(Effect: PSE1ModStructBase; Opcode: TSEPluginModuleOpcodes
 function SE2Dispatcher(Effect: PSE2ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
 procedure SE1Process(Effect: PSE1ModStructBase; inputs, outputs: PDAVArrayOfSingleFixedArray; SampleFrames: Integer); cdecl;
 procedure SE2Process(ModuleBase: TSEModuleBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
-function SE2Event(ModuleBase: TSEModuleBase; Event: PSEEvent): Pointer; cdecl;
+procedure SE2Event(ModuleBase: TSEModuleBase; Event: PSEEvent); cdecl;
 
 // handy function to fix denormals.
 procedure KillDenormal(var Sample: Single);
@@ -479,37 +487,17 @@ begin
  end else FAutoDuplicatePlugVar.FloatPtr := nil;
 end;
 
-function TSEPin.IsConnected: Boolean;
+function TSEPin.GetIsConnected: Boolean;
 begin
  result := FModule.CallHost(SEAudioMasterIsPinConnected, FPinIndex, 0, nil) <> 0;
 end;
 
-procedure TSEPin.OnStatusUpdate(AStatus: TSEStateType);
+procedure TSEPin.StatusUpdate(AStatus: TSEStateType);
 begin
  FStatus := AStatus;
- getModule.PlugStateChange(Self);
+ Module.PlugStateChange(Self);
  if AStatus = stOneOff // one-offs need re-set once processed
   then FStatus := stStop;
-end;
-
-function TSEPin.GetDataType: TSEPlugDataType;
-begin
- result := FDataType;
-end;
-
-function TSEPin.GetModule: TSEModuleBase;
-begin
- result := FModule;
-end;
-
-function TSEPin.GetPinID: Integer;
-begin
- result := FPinIndex;
-end;
-
-function TSEPin.GetStatus: TSEStateType;
-begin
- result := FStatus;
 end;
 
 function TSEPin.GetValue: Double;
@@ -519,32 +507,25 @@ var
   Buffer      : PDAVSingleFixedArray;
 begin
  assert(FDataType = dtFSample);
+ assert(assigned(FModule));
  BlockPos := FModule.CallHost(SEAudioMasterGetBlockStartClock, FPinIndex, 0, nil);
  SampleClock := FModule.SampleClock;
  Buffer := PDAVSingleFixedArray(FVariablePtr);
  result := Buffer[SampleClock - BlockPos];
 end;
 
-function TSEPin.getValueNonAudio: TAutoduplicatePlugData;
-begin
- result := FAutoDuplicatePlugVar;
-end;
-
-function TSEPin.GetVariableAddress: Pointer;
-begin
- result := FVariablePtr;
-end;
-
 procedure TSEPin.TransmitStatusChange(SampleClock: Cardinal; NewState: TSEStateType);
 begin
+ assert(assigned(FModule));
  FModule.CallHost(SEAudioMasterSetPinStatus, FPinIndex, Integer(NewState), Pointer(SampleClock));
 end;
 
 procedure TSEPin.TransmitMIDI(SampleClock: Cardinal; Msg: Cardinal);
 begin
-  // MIDI data must allways be timestamped at or after the current 'clock'.
-  assert(SampleClock >= FModule.SampleClock);
-  FModule.CallHost(SEAudioMasterSendMIDI, FPinIndex, Msg, Pointer(SampleClock));
+ // MIDI data must allways be timestamped at or after the current 'clock'.
+ assert(assigned(FModule));
+ assert(SampleClock >= FModule.SampleClock);
+ FModule.CallHost(SEAudioMasterSendMIDI, FPinIndex, Msg, Pointer(SampleClock));
 end;
 
 { TSEModuleBase }
@@ -555,17 +536,17 @@ begin
  FSEAudioMaster := AudioMaster;
 
  FillChar(FEffect, SizeOf(TSE2ModStructBase), 0);
- FEffect.Magic := SepMagic;
 
  FOnProcessEvent := ProcessIdle;
  with FEffect do
   begin
-   SubProcessPtr   := SE2Process;
-   EventHandlerPtr := SE2Event;
-   Dispatcher      := SE2Dispatcher;
+   Magic           := SepMagic;
+   Version         := 1;
    HostPtr         := Reserved;
    SEModule        := Self;
-   Version         := 1;
+   Dispatcher      := SE2Dispatcher;
+   EventHandlerPtr := SE2Event;
+   SubProcessPtr   := SE2Process;
   end;
 
  FSampleRate := 44100;
@@ -582,12 +563,6 @@ begin
  inherited;
 end;
 
-
-
-procedure TSEModuleBase.Close;
-begin
- // do nothing!
-end;
 
 procedure TSEModuleBase.Open;
 var
@@ -627,7 +602,7 @@ begin
  // Assumed they are the last plug described in GetPinProperties
 
  // Get the properites of last pin
- GetPinPropertiesClean(PlugDescriptionIndex - 1, @properties);
+ GetPinPropertiesClean(PlugDescriptionIndex - 1, @Properties);
 
  if (not (iofUICommunication in Properties.Flags)) or
     (          iofUIDualFlag in Properties.Flags) then // skip GUI plugs
@@ -637,6 +612,12 @@ begin
       FPins[i].Init(Self, i, TSEPlugDataType(Properties.DataType), nil);
       inc(i);
      end;
+ if assigned(FOnOpen) then FOnOpen(Self);
+end;
+
+procedure TSEModuleBase.Close;
+begin
+ if assigned(FOnClose) then FOnClose(Self);
 end;
 
 
@@ -647,7 +628,7 @@ begin
   seffOpen  : Open;
   seffClose : begin
                Close;
-               // delete this;
+               Free;
                result := 1;
               end;
   seffSetSampleRate: setSampleRate(Opt);
@@ -661,13 +642,13 @@ begin
       assert((not iofUICommunicationDual in SEPinProperties(Ptr).Flags) or
                (iofPrivate in PSEPinProperties(Ptr).Flags) or
                (PSEPinProperties(Ptr).direction = drOut);
+*)
 
       // 'Patch Store' Input plugs must be private, or GuiModule
-      assert((not iofPatchStore in PSEPinProperties(Ptr).Flags)
-             (iofPrivate in PSEPinProperties(Ptr).Flags) or
-             (PSEPinProperties(Ptr).Direction = drOut) or
-             (iofCommunication in PSEPinProperties(Ptr).Flags);
-*)
+      assert((not (iofPatchStore in PSEPinProperties(Ptr).Flags)) or
+                  (iofHidePin in PSEPinProperties(Ptr).Flags) or
+                  (PSEPinProperties(Ptr).Direction = drOut) or
+                  (iofUICommunication in PSEPinProperties(Ptr).Flags));
    end;
 (* obsolete
     case seffGetModuleProperties:
@@ -741,7 +722,7 @@ begin
   else result := 0;
 end;
 
-function TSEModuleBase.SampleClock: Cardinal;
+function TSEModuleBase.GetSampleClock: Cardinal;
 begin
   result := CallHost(SEAudioMasterGetSampleClock);
 end;
@@ -772,10 +753,10 @@ begin
 *)
 end;
 
-procedure TSEModuleBase.PlugStateChange(Pin: TSEPin);
+procedure TSEModuleBase.PlugStateChange(const CurrentPin: TSEPin);
 begin
  if assigned(FOnPlugStateChangeEvent)
-  then FOnPlugStateChangeEvent(Self, Pin);
+  then FOnPlugStateChangeEvent(CurrentPin);
 end;
 
 procedure TSEModuleBase.SetBlockSize(const Value: Integer);
@@ -812,11 +793,9 @@ procedure TSEModuleBase.SetProcess(const Value: TSE2ProcessEvent);
 begin
  if @FOnProcessEvent <> @Value then
   begin
-   FOnProcessEvent := Value;
-(*
-//   cEffect.sub_process_ptr := (long)m_process_function_pointer.RawPointer;
-//   CallHost(SEAudioMasterSetProcessFunction, 0, 0, 0);
-*)
+   if assigned(Value)
+    then FOnProcessEvent := Value
+    else FOnProcessEvent := ProcessIdle;
   end;
 end;
 
@@ -858,14 +837,13 @@ begin
  result := False;
 end;
 
-function TSEModuleBase.GetPinProperties(Index: Integer;
-  Properties: PSEPinProperties): Boolean;
+function TSEModuleBase.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  {return m_sample_clock;}
  result := False;
 end;
 
-function TSEModuleBase.GetPinPropertiesClean(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEModuleBase.GetPinPropertiesClean(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  FillChar(Properties^, SizeOf(TSEPinProperties), 0); // clear structure
  result := GetPinProperties(Index, Properties);
@@ -876,71 +854,11 @@ begin
  result := False;
 end;
 
-(* not used anymore!!!
-procedure TSEModuleBase.ProcessReplacing(BufferOffset, SampleFrames: Integer);
-var
-  CurrentSampleClock : Cardinal;
-  EndTime, DeltaTime : Cardinal;
-  e, NextEvent       : PSeEvent;
-begin
-  assert(SampleFrames > 0);
-
-  CurrentSampleClock := SampleClock;
-  EndTime := CurrentSampleClock + SampleFrames;
-
-  while false do
-   begin
-{
-    if (events = 0) // fast Version, when no events on list.
-     begin
-      assert(SampleFrames > 0 );
-      (Self.*(ProcessFunction))(BufferOffset, SampleFrames);
-      SetSampleClock(EndTime);
-      exit;
-     end;
-
-    DeltaTime := SampleFrames;
-
-    NextEvent := events;
-
-    assert(NextEvent.TimeStamp >= CurrentSampleClock );
-
-    if( NextEvent.TimeStamp < EndTime ) // will happen in this block
-     begin
-      DeltaTime = NextEvent.TimeStamp - CurrentSampleClock;
-      // no, sub_process needs to know if event pending
-      // events.RemoveHead;
-     end;
-
-    if( DeltaTime > 0 )
-     begin
-      //assert(DeltaTime > 0 ); // it's unsigned silly
-      (this.*(ProcessFunction))( BufferOffset, DeltaTime );
-      SampleFrames -= DeltaTime;
-      CurrentSampleClock += DeltaTime;
-      SetSampleClock( CurrentSampleClock );
-
-      if (SampleFrames == 0)
-       then exit;// done
-      BufferOffset := BufferOffset + DeltaTime;
-     end;
-
-    e = events;
-    events = events.Next;
-    HandleEvent(e);
-    delete e;
-}
-
-   exit; // emergency exit, pls remove if the above part has been completely translated
-  end;
-end;
-*)
-
 procedure TSEModuleBase.HandleEvent(Event: PSeEvent);
 begin
  assert(Event.TimeStamp = SampleClock);
  case Event.EventType of
-//  uetStatChange: GetPin(Integer(Event.PtrParam)).OnStatusUpdate((state_type) e.IntParamA );
+  uetStatChange: GetPin(Integer(Event.PtrParam)).StatusUpdate(TSEStateType(Event.IntParamA));
 (* not used anymore
     case UET_RUN_FUNCTION: // buggy ( dll can't allocate mem and attach to event, causes crash when SE trys to free it)
       begin
@@ -955,9 +873,9 @@ begin
       end;
       break;
 *)
-  uetRunFunction:
+  uetRunFunction2:
    begin
-(*
+(* TODO!!!
 //    ug_func Func = 0; // important to initialise (code below is a hack)
 //    *( (int* ) &Func) = *( (int* ) &(Event.PtrParam));
 //    (this.*(Func));
@@ -975,6 +893,8 @@ begin
   uetMIDI : MidiData(Event.TimeStamp, Event.IntParamA, Event.IntParamB);
   else; // assert(false); // un-handled event
  end;
+ if assigned(OnEvent)
+  then OnEvent(Event)
 end;
 
 procedure TSEModuleBase.RunDelayed(SampleClock: Cardinal; Func: TUgFunc);
@@ -1049,9 +969,10 @@ begin
    e = e.Next;
   end;
 *)
+ if assigned(FOnResume) then FOnResume(Self); 
 end;
 
-procedure TSEModuleBase.ProcessIdle(StartPos, SampleFrames: Integer);
+procedure TSEModuleBase.ProcessIdle(const BufferPos, SampleFrames: Integer);
 begin
  // do nothing here!
 end;
@@ -1083,12 +1004,9 @@ begin
    then OnProcess(BufferOffset, SampleFrames);
 end;
 
-function SE2Event(ModuleBase: TSEModuleBase; Event: PSEEvent): Pointer; cdecl;
+procedure SE2Event(ModuleBase: TSEModuleBase; Event: PSEEvent); cdecl;
 begin
- with ModuleBase do
-  if assigned(OnProcessEvent)
-   then result := OnProcessEvent(Event)
-   else result := nil;
+ with ModuleBase do HandleEvent(Event);
 end;
 
 procedure KillDenormal(var Sample: Single);

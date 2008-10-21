@@ -7,11 +7,12 @@ uses
 
 type
   TSEIntToListModule = class(TSEModuleBase)
+  protected
+    procedure Open; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
-    procedure Open; override;
-    function GetPinProperties(Index: Integer; Properties : PSEPinProperties): Boolean; override;
-    procedure SubProcessSleep(BufferOffset: Integer; SampleFrames: Integer);
+    function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
+    procedure SubProcessSleep(const BufferOffset, SampleFrames: Integer);
   end;
 
 implementation
@@ -29,13 +30,13 @@ begin
  OnProcess := SubProcessSleep;
 end;
 
-procedure TSEIntToListModule.SubProcessSleep(BufferOffset: Integer; SampleFrames: Integer);
+procedure TSEIntToListModule.SubProcessSleep(const BufferOffset, SampleFrames: Integer);
 begin
  CallHost(SEAudioMasterSleepMode);
 end;
 
 // describe the pins (plugs)
-function TSEIntToListModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEIntToListModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case index of

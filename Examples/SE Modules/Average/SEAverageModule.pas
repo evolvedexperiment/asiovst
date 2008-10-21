@@ -15,16 +15,17 @@ type
     FStaticCount       : Integer;
     FDynamicPlugsCount : Integer;
     FDynamicPlugs      : array of PDAVSingleFixedArray;
+  protected
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+    procedure Open; override;
   public
     constructor Create(SEAudioMaster: TSE2AudioMasterCallback; HostPtr: Pointer); override;
     destructor Destroy; override;
 
     class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
-    function GetPinProperties(Index: Integer; Properties : PSEPinProperties): Boolean; override;
-    procedure SubProcess(BufferOffset, SampleFrames: Integer);
-    procedure SubProcessStatic(BufferOffset, SampleFrames: Integer);
-    procedure PlugStateChange(Pin: TSEPin); override;
-    procedure Open; override;
+    function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   end;
 
 implementation
@@ -68,12 +69,12 @@ begin
    // ask the host for a pointer to each input buffer
    // store them in the array
    for i := 0 to FDynamicPlugsCount - 1
-    do FDynamicPlugs[i] := getPin(i + Integer(pinInput)).GetVariableAddress; //(float*)CallHost(SEAudioMasterGetPinVarAddress, i + PN_INPUT1);
+    do FDynamicPlugs[i] := Pin[i + Integer(pinInput)].VariableAddress; //(float*)CallHost(SEAudioMasterGetPinVarAddress, i + PN_INPUT1);
   end;
 end;
 
 // The most important part, processing the audio
-procedure TSEAverageModule.SubProcess(BufferOffset, SampleFrames: Integer);
+procedure TSEAverageModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   Total  : Single;
   Scaler : Single;
@@ -100,7 +101,7 @@ begin
   end; 
 end;
 
-procedure TSEAverageModule.SubProcessStatic(BufferOffset, SampleFrames: Integer);
+procedure TSEAverageModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
@@ -126,7 +127,7 @@ begin
 end;
 
 // describe the pins (plugs and parameters)
-function TSEAverageModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEAverageModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case TSEAveragePins(index) of                   // !!TODO!! list your in / out plugs
@@ -150,7 +151,7 @@ begin
 end;
 
 // An input plug has changed value
-procedure TSEAverageModule.PlugStateChange(Pin: TSEPin);
+procedure TSEAverageModule.PlugStateChange(const CurrentPin: TSEPin);
 var
   i        : Integer;
   InState  : TSEStateType;
@@ -166,13 +167,13 @@ begin
 
  for i := 0 to FDynamicPlugsCount - 1 do
   begin
-   InState := getPin(i).getStatus;
+   InState := Pin[i].Status;
    if InState > OutState
     then OutState := InState;
   end;
 
  // 'transmit' this modules new FOutput status to next module 'downstream'
- getPin(1).TransmitStatusChange(SampleClock, OutState);
+ Pin[1].TransmitStatusChange(SampleClock, OutState);
 
  // setup 'sleep mode' or not
  if (OutState < stRun) then

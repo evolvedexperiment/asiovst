@@ -15,7 +15,7 @@ type
        dtFSample, dtSingle, dtVstParam, dtInteger, dtBlob);
 
   // plug direction (use drNone in order to create a 32bit type)
-  TSEDirection = (drIn = 0, drOut, drContainer_IO, drParameter,
+  TSEDirection = (drIn = 0, drOut, drContainerIO, drParameter,
     drNone = $7FFFFFFF, drFeature = drIn, drCntrl = drOut);
 
   TSeSdkString = string;

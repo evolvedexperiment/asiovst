@@ -43,14 +43,15 @@ type
     FQuarterNoteCount  : Integer;
     FQuartersPerBar    : Integer;
     FPulsesPerBeat     : ShortInt;
+  protected  
+    procedure Open; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
-    procedure Open; override;
     class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
-    function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    procedure SubProcess(BufferOffset: Integer; SampleFrames: Integer);
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
 implementation
@@ -105,7 +106,7 @@ begin
   begin
    FStaticOutputCount := FModule.BlockSize;
    FCurrentOutputValue := Value;
-   FModule.getPin(FPinNumber).TransmitStatusChange(SampleClock, stOneOff);
+   FModule.Pin[FPinNumber].TransmitStatusChange(SampleClock, stOneOff);
   end;
 end;
 
@@ -142,7 +143,7 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSEClockModule.SubProcess(BufferOffset: Integer; SampleFrames: Integer);
+procedure TSEClockModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   SamplesPerBeat          : Single;
   ti                      : PVstTimeInfo;
@@ -311,7 +312,7 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEClockModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEClockModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case TSEClockPins(index) of

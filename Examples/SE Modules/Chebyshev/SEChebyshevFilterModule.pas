@@ -1,22 +1,24 @@
-unit SEButterworthModule;
+unit SEChebyshevFilterModule;
 
 interface
 
 uses
-  DAV_Common, DAV_DSPButterworthFilter, DAV_SECommon, DAV_SEModule;
+  DAV_Common, DAV_DSPChebyshevFilter, DAV_SECommon, DAV_SEModule;
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEButterworthPins = (pinInput, pinOutput, pinFrequency, pinOrder);
+  TSEChebyshevFilterPins = (pinInput, pinOutput, pinFrequency, pinOrder,
+    pinRipple);
 
-  TSEButterworthModule = class(TSEModuleBase)
+  TSEChebyshevFilterModule = class(TSEModuleBase)
   private
   protected
     FInput1Buffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FFrequency    : Single;
     FOrder        : Integer;
-    FFilter       : TButterworthFilter;
+    FRipple       : Single;
+    FFilter       : TChebyshev1Filter;
     procedure SampleRateChanged; override;
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
@@ -29,13 +31,13 @@ type
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
-  TSEButterworthLPModule = class(TSEButterworthModule)
+  TSEChebyshevFilterLPModule = class(TSEChebyshevFilterModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
   end;
 
-  TSEButterworthHPModule = class(TSEButterworthModule)
+  TSEChebyshevFilterHPModule = class(TSEChebyshevFilterModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
@@ -46,7 +48,7 @@ implementation
 uses
   SysUtils;
 
-constructor TSEButterworthModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TSEChebyshevFilterModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
 
@@ -54,14 +56,14 @@ begin
  FOrder := 4;
 end;
 
-destructor TSEButterworthModule.Destroy;
+destructor TSEChebyshevFilterModule.Destroy;
 begin
  // This is where you free any memory/resources your module has created
  FreeAndNil(FFilter);
  inherited;
 end;
 
-procedure TSEButterworthModule.Open;
+procedure TSEChebyshevFilterModule.Open;
 begin
  inherited Open;
 
@@ -73,13 +75,13 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSEButterworthModule.SampleRateChanged;
+procedure TSEChebyshevFilterModule.SampleRateChanged;
 begin
  inherited;
  FFilter.SampleRate := SampleRate;
 end;
 
-procedure TSEButterworthModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+procedure TSEChebyshevFilterModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   Input  : PDAVSingleFixedArray;
   Output : PDAVSingleFixedArray;
@@ -97,7 +99,7 @@ begin
 end;
 
 // describe your module
-class function TSEButterworthModule.getModuleProperties(Properties : PSEModuleProperties): Boolean;
+class function TSEChebyshevFilterModule.getModuleProperties(Properties : PSEModuleProperties): Boolean;
 begin
  // Info, may include Author, Web page whatever
  Properties.About := 'by Christian-W. Budde';
@@ -105,17 +107,17 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEButterworthModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEChebyshevFilterModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSEButterworthPins(index) of
+ case TSEChebyshevFilterPins(index) of
   // typical input plug (inputs are listed first)
   pinInput: with Properties^ do
              begin
               Name            := 'Input';
               VariableAddress := @FInput1Buffer;
               Direction       := drIn;
-              Datatype        := dtFSAMPLE;
+              Datatype        := dtFSample;
               DefaultValue    := '0';
              end;
 
@@ -142,8 +144,16 @@ begin
               Direction       := drParameter;
               DataType        := dtEnum;
               DefaultValue    := '4';
-              DatatypeExtra   := 'range -0,64';
+              DatatypeExtra   := 'range -0,32';
              end;
+  pinRipple: with Properties^ do
+              begin
+               Name            := 'Ripple';
+               VariableAddress := @FRipple;
+               Direction       := drParameter;
+               DataType        := dtSingle;
+               DefaultValue    := '1';
+              end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -151,59 +161,60 @@ end;
 // this routine is called whenever an input changes status.
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
-procedure TSEButterworthModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSEChebyshevFilterModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  // has user altered a filter parameter?
- case TSEButterworthPins(CurrentPin.PinID) of
+ case TSEChebyshevFilterPins(CurrentPin.PinID) of
   pinFrequency : FFilter.Frequency := FFrequency;
       pinOrder : FFilter.Order     := FOrder;
+     pinRipple : FFilter.Ripple    := FRipple;
  end;
  inherited;
 end;
 
-{ TSEButterworthModule }
+{ TSEChebyshevFilterModule }
 
-constructor TSEButterworthLPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEChebyshevFilterLPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TButterworthLP.Create;
- FFilter.SetFilterValues(FFrequency, 0);
+ FFilter := TChebyshev1LP.Create;
+ FFilter.SetFilterValues(FFrequency, 0, 0.1);
  FFilter.Order := FOrder;
 end;
 
-class function TSEButterworthLPModule.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
+class function TSEChebyshevFilterLPModule.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
 begin
  // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Butterworth Lowpass';
+ Properties.Name := 'Chebyshev Lowpass';
 
  // return a unique string 32 characters max
  // if posible include manufacturer and plugin identity
  // this is used internally by SE to identify the plug.
  // No two plugs may have the same id.
- Properties.ID := 'DAV Butterworth Lowpass';
+ Properties.ID := 'DAV Chebyshev Lowpass';
  result := inherited GetModuleProperties(Properties);
 end;
 
-{ TSEButterworthHPModule }
+{ TSEChebyshevFilterHPModule }
 
-constructor TSEButterworthHPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEChebyshevFilterHPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TButterworthHP.Create;
- FFilter.SetFilterValues(FFrequency, 0);
+ FFilter := TChebyshev1HP.Create;
+ FFilter.SetFilterValues(FFrequency, 0, 0.1);
  FFilter.Order := FOrder;
 end;
 
-class function TSEButterworthHPModule.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
+class function TSEChebyshevFilterHPModule.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
 begin
  // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Butterworth Highpass';
+ Properties.Name := 'Chebyshev Highpass';
 
  // return a unique string 32 characters max
  // if posible include manufacturer and plugin identity
  // this is used internally by SE to identify the plug.
  // No two plugs may have the same id.
- Properties.ID := 'DAV Butterworth Highpass';
+ Properties.ID := 'DAV Chebyshev Highpass';
  result := inherited GetModuleProperties(Properties);
 end;
 

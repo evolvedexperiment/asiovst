@@ -91,7 +91,7 @@ type
        // clean up
        Dispose(dest);
        Dispose(ascii_text);
-      end; 
+      end;
     *)
     seGuiHostSetCapture,          // see SEGUI_base::SetCapture(...)
     seGuiHostReleaseCapture,
@@ -113,7 +113,7 @@ type
        WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_text, MAX_STRING_LENGTH, nil, nil);
       end;
     *)
-    seGuiHostResolveFilename, // returns full module path
+    seGuiHostResolveFilename,     // returns full module path
     (* example code...
       const
         MAX_STRING_LENGTH : Integer = 300;
@@ -130,16 +130,16 @@ type
 
        // to convert to ascii
        WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_text, MAX_STRING_LENGTH, nil, nil);
-      end; 
+      end;
     *)
-    seGuiHostGetHostType, // return code 0 =unsuported, 1=module is running in SynthEdit, 2= Module is in a VST plugin (made with SE)
+    seGuiHostGetHostType,         // return code 0 = unsuported, 1 = module is running in SynthEdit, 2 = Module is in a VST plugin (made with SE)
     seGuiHostRemoveGuiPlug,
-    seGuiHostGetParentContext, // Get 'handle' of parent window.  This is an SE handle, not an HWND.  Use seGuiHostGetWindowHandle to convert.
-    seGuiHostMapWindowPoints, // map a point on one window to the co-ordinate system of a 2nd window
+    seGuiHostGetParentContext,    // Get 'handle' of parent window.  This is an SE handle, not an HWND. Use seGuiHostGetWindowHandle to convert.
+    seGuiHostMapWindowPoints,     // map a point on one window to the co-ordinate system of a 2nd window
     (*
       var
         parent_context : Integer;
-        h              : HWND; 
+        h              : HWND;
       begin
         // Example: getting parent HWND, and your position relative to it
         parent_context := WI.context_handle;
@@ -152,7 +152,7 @@ type
 
         sepoint offset(0,0);
         CallHost(seGuiHostMapWindowPoints, WI.context_handle, parent_context, @offset, 0);
-      end; 
+      end;
     *)
     seGuiHostMapClientPointToScreen, // maps a point on your gui to the system screen (absolute co-ords)
     (*
@@ -163,9 +163,9 @@ type
         offset.x := 0;
         offset.y := 0;
         CallHost(seGuiHostMapClientPointToScreen, WI.context_handle, 0, @offset, 0);
-      end;  
+      end;
     *)
-    seGuiHostInvalidateRect, // invlalidate (cause redraw) of any SE window
+    seGuiHostInvalidateRect,      // invlalidate (cause redraw) of any SE window
     (*
       var
         n: TRect;
@@ -177,7 +177,8 @@ type
         CallHost(seGuiHostInvalidateRect, WI.context_handle, 0, @n, 0);
       end;
     *)
-    seGuiHostIsGraphInitialsed); // test if pin updates are due to file loading, or from user.
+    seGuiHostIsGraphInitialsed,   // test if pin updates are due to file loading, or from user.
+    seGuiHostIsInteger = $7FFFFFFF);
 
 
   TSEHostWindowFlags = (HWF_RESIZEABLE = 1, HWF_NO_CUSTOM_GFX_ON_STRUCTURE = 2);

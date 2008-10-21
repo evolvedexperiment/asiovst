@@ -14,10 +14,13 @@ type
     MIExit: TMenuItem;
     Memo: TMemo;
     N1: TMenuItem;
+    MISettings: TMenuItem;
+    MIEnableWrapper: TMenuItem;
     procedure MIExitClick(Sender: TObject);
     procedure MIOpenClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure MIEnableWrapperClick(Sender: TObject);
   private
     SEHost : TSEHost;
     procedure LoadSEModule(FileName: TFileName);
@@ -30,7 +33,7 @@ var
 implementation
 
 uses
-  DAV_DLLResources, DAV_SECommon;
+  IniFiles, DAV_DLLResources, DAV_SECommon;
 
 {$R *.dfm}
 
@@ -50,10 +53,30 @@ procedure TFmSEModuleExplorer.FormCreate(Sender: TObject);
 begin
  SEHost := TSEHost.Create(Self);
  SEHost.HostedSEModules.Add;
+ with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'SEMExplorer.ini') do
+  try
+   MIEnableWrapper.Checked := ReadBool('Layout', 'Enable Wrapper', MIEnableWrapper.Checked);
+   Left := ReadInteger('Layout', 'Left', Left);
+   Top := ReadInteger('Layout', 'Top', Top);
+   Width := ReadInteger('Layout', 'Width', Width);
+   Height := ReadInteger('Layout', 'Height', Height);
+  finally
+   Free;
+  end;
 end;
 
 procedure TFmSEModuleExplorer.FormDestroy(Sender: TObject);
 begin
+ with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'SEMExplorer.ini') do
+  try
+   WriteBool('Layout', 'Enable Wrapper', MIEnableWrapper.Checked);
+   WriteInteger('Layout', 'Left', Left);
+   WriteInteger('Layout', 'Top', Top);
+   WriteInteger('Layout', 'Width', Width);
+   WriteInteger('Layout', 'Height', Height);
+  finally
+   Free;
+  end;
  FreeAndNil(SEHost);
 end;
 
@@ -115,9 +138,15 @@ begin
     end;
 
    if SEHost[0].Part[0].Magic <> SepMagic then
-    if (MessageBox(0, 'Module seems to be corrupted!' + #13#10 +
-          'Would you like to create a patched version?', 'Module corrupted!',
-          MB_ICONWARNING or MB_YESNO) = idYes) then SavePatchedModule;
+    if not MIEnableWrapper.Checked
+     then MessageBox(0, 'Magic number shreddered! It is likely that this SEM file is extracted from a VST plugin.' + #13#10#13#10 +
+           'A special wrapper can be created by this tool that restores the functionality of the SEM.' + #13#10#13#10 +
+           'However, this action is probably illegal depending on the SEM file and the laws in your country. ' + #13#10#13#10 +
+           'To enable this function and create the wrapped SEM file please contact the author of this tool and receive a passkey.',
+           'Magic number shreddered!', MB_ICONWARNING or MB_OK)
+     else if (MessageBox(0, 'Magic number shreddered!' + #13#10#13#10 +
+          'Create a wrapped SEM to enable the plugin to be used in SynthEdit again?',
+          'Magic number shreddered!', MB_ICONWARNING or MB_YESNO) = idYes) then SavePatchedModule;
 
 (*
    SEHost[0].Part[0].Open;
@@ -165,6 +194,12 @@ begin
   finally
    FreeAndNil(RM);
   end;
+end;
+
+procedure TFmSEModuleExplorer.MIEnableWrapperClick(Sender: TObject);
+begin
+ if InputBox('Enter PassKey', 'Enter PassKey', '') = 'SEM Explorer'
+  then MIEnableWrapper.Checked := not MIEnableWrapper.Checked;
 end;
 
 procedure TFmSEModuleExplorer.MIExitClick(Sender: TObject);

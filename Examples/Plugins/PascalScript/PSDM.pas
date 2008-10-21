@@ -32,7 +32,18 @@ implementation
 
 {$R *.DFM}
 
-uses PSGUI, DAV_VSTCustomModule;
+uses
+  PSGUI, DAV_VSTCustomModule;
+
+procedure TPascalScriptDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ fPascalScriptExecuter := TPSExec.Create;
+end;
+
+procedure TPascalScriptDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(fPascalScriptExecuter);
+end;
 
 procedure TPascalScriptDataModule.VPSLoadChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
 var
@@ -84,16 +95,6 @@ begin
     fVSTProcessSample := nil;
    end;
   end;
-end;
-
-procedure TPascalScriptDataModule.VSTModuleCreate(Sender: TObject);
-begin
- fPascalScriptExecuter := TPSExec.Create;
-end;
-
-procedure TPascalScriptDataModule.VSTModuleDestroy(Sender: TObject);
-begin
- fPascalScriptExecuter.Free;
 end;
 
 procedure TPascalScriptDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);

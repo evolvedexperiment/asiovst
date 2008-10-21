@@ -1,11 +1,11 @@
-library SEGain;
+library SEPascalScript;
 
 uses
   SysUtils,
   Classes,
   DAV_SECommon,
   DAV_SEModule,
-  SEGainModule in 'SEGainModule.pas';
+  SEPascalScriptModule in 'SEPascalScriptModule.pas';
 
 {$E sem}
 {$R *.res}
@@ -16,7 +16,7 @@ begin
  result := True;
 
  case Index of // !!TODO!! list your in / out plugs
-  0: TSEGainModule.GetModuleProperties(Properties);
+  0: TSEPascalScriptModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -30,7 +30,7 @@ begin
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        SEModuleBase := TSEGainModule.Create(SEAudioMaster, Reserved);
+        SEModuleBase := TSEPascalScriptModule.Create(SEAudioMaster, Reserved);
         if assigned(SEModuleBase)
          then result := SEModuleBase.Effect;
        end;

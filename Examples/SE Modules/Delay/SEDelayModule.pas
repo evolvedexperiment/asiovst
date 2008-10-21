@@ -18,15 +18,16 @@ type
     FCount        : Integer;
     FBufferSize   : Integer;
     FDelay_ms     : Single;
+  protected  
+    procedure Open; override;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
-    procedure Open; override;
     class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
-    function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    procedure SubProcess(BufferOffset: Integer; SampleFrames: Integer);
-    procedure PlugStateChange(Pin: TSEPin); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
     procedure CreateBuffer;
   end;
 
@@ -55,7 +56,7 @@ begin
  CreateBuffer;
 
  // let 'downstream' modules know audio data is coming
- getPin(Integer(pinOutput)).TransmitStatusChange(SampleClock, stRun);
+ Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
 end;
 
 procedure TSEDelayModule.CreateBuffer;
@@ -76,7 +77,7 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSEDelayModule.SubProcess(BufferOffset: Integer; SampleFrames: Integer);
+procedure TSEDelayModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   Inp    : PDAVSingleFixedArray;
   Fbk    : PDAVSingleFixedArray;
@@ -118,7 +119,7 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEDelayModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEDelayModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case TSEDelayPins(index) of
@@ -157,16 +158,16 @@ begin
                   DefaultValue    := '1000';
                  end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 // this routine is called whenever an input changes status.
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
-procedure TSEDelayModule.PlugStateChange(Pin: TSEPin);
+procedure TSEDelayModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  // has user altered delay time parameter?
- if (pin.getPinID = Integer(pinDelayTime))
+ if (CurrentPin.PinID = Integer(pinDelayTime))
   then CreateBuffer; // re-create the audio buffer
  inherited; 
 end;

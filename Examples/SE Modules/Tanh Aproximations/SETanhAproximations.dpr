@@ -1,13 +1,14 @@
-library SEGain;
+library SETanhAproximations;
 
 uses
   SysUtils,
   Classes,
   DAV_SECommon,
   DAV_SEModule,
-  SEGainModule in 'SEGainModule.pas';
+  SETanhAproximationsModule in 'SETanhAproximationsModule.pas';
 
 {$E sem}
+
 {$R *.res}
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
@@ -16,7 +17,9 @@ begin
  result := True;
 
  case Index of // !!TODO!! list your in / out plugs
-  0: TSEGainModule.GetModuleProperties(Properties);
+  0: TSETanhAproximationsModule.GetModuleProperties(Properties);
+  1: TSETanhAproxModule.GetModuleProperties(Properties);
+  2: TSETanhModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -30,7 +33,23 @@ begin
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        SEModuleBase := TSEGainModule.Create(SEAudioMaster, Reserved);
+        SEModuleBase := TSETanhAproximationsModule.Create(SEAudioMaster, Reserved);
+        if assigned(SEModuleBase)
+         then result := SEModuleBase.Effect;
+       end;
+     end;
+  1: begin
+      if (ProcessType = 1) then// Audio Processing Object
+       begin
+        SEModuleBase := TSETanhAproxModule.Create(SEAudioMaster, Reserved);
+        if assigned(SEModuleBase)
+         then result := SEModuleBase.Effect;
+       end;
+     end;
+  2: begin
+      if (ProcessType = 1) then// Audio Processing Object
+       begin
+        SEModuleBase := TSETanhModule.Create(SEAudioMaster, Reserved);
         if assigned(SEModuleBase)
          then result := SEModuleBase.Effect;
        end;

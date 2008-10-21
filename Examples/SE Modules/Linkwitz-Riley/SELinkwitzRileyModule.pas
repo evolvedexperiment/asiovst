@@ -18,21 +18,20 @@ type
     FOutHiBuffer : PDAVSingleFixedArray;
     FFrequency   : Single;
     FOrder       : Integer;
+    FHighSign    : Single; 
     FFilterLP    : array [0..1] of TButterworthLP;
     FFilterHP    : array [0..1] of TButterworthHP;
-    procedure FilterChanged; virtual;
     procedure SampleRateChanged; override;
+    procedure Open; override;
+    procedure Close; override;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
-    procedure Open; override;
-    procedure Close; override;
-
-    function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
-    procedure SubProcess(BufferOffset: Integer; SampleFrames: Integer);
-    procedure PlugStateChange(Pin: TSEPin); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
 implementation
@@ -50,7 +49,8 @@ begin
  FFilterHP[1] := TButterworthHP.Create;
 
  FFrequency := 1000;
- FOrder := 2;
+ FOrder     := 2;
+ FHighSign  := 1;
 end;
 
 destructor TSELinkwitzRileyModule.Destroy;
@@ -71,26 +71,14 @@ begin
  OnProcess := SubProcess;
 
  // let 'downstream' modules know audio data is coming
- getPin(Integer(pinOutputLow)).TransmitStatusChange(SampleClock, stRun);
- getPin(Integer(pinOutputHigh)).TransmitStatusChange(SampleClock, stRun);
+ Pin[Integer(pinOutputLow)].TransmitStatusChange(SampleClock, stRun);
+ Pin[Integer(pinOutputHigh)].TransmitStatusChange(SampleClock, stRun);
 end;
 
 procedure TSELinkwitzRileyModule.Close;
 begin
  // nothing here todo yet
  inherited;
-end;
-
-procedure TSELinkwitzRileyModule.FilterChanged;
-begin
- FFilterLP[0].Frequency := FFrequency;
- FFilterLP[0].Order     := FOrder;
- FFilterLP[1].Frequency := FFrequency;
- FFilterLP[1].Order     := FOrder;
- FFilterHP[0].Frequency := FFrequency;
- FFilterHP[0].Order     := FOrder;
- FFilterHP[1].Frequency := FFrequency;
- FFilterHP[1].Order     := FOrder;
 end;
 
 // The most important part, processing the audio
@@ -103,12 +91,13 @@ begin
  FFilterHP[1].SampleRate := SampleRate;
 end;
 
-procedure TSELinkwitzRileyModule.SubProcess(BufferOffset: Integer; SampleFrames: Integer);
+procedure TSELinkwitzRileyModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   Input  : PDAVSingleFixedArray;
   OutLo  : PDAVSingleFixedArray;
   OutHi  : PDAVSingleFixedArray;
   Sample : Integer;
+  Temp   : Double;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Input := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
@@ -118,10 +107,11 @@ begin
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
    // do the actual processing (multiplying the two input samples together)
+   Temp           := Input[Sample] + cDenorm64;
    OutLo^[Sample] := FFilterLP[0].ProcessSample(
-                     FFilterLP[1].ProcessSample(Input[Sample] + cDenorm64));
+                     FFilterLP[1].ProcessSample(Temp));
    OutHi^[Sample] := FFilterHP[0].ProcessSample(
-                     FFilterHP[1].ProcessSample(Input[Sample] + cDenorm64));
+                     FFilterHP[1].ProcessSample(Temp)) * FHighSign;
   end;
 end;
 
@@ -143,7 +133,7 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSELinkwitzRileyModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSELinkwitzRileyModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case TSELinkwitzRileyPins(index) of
@@ -155,6 +145,7 @@ begin
               Direction       := drIn;
               Datatype        := dtFSAMPLE;
               DefaultValue    := '0';
+              Flags           := [iofLinearInput];
              end;
 
   // typical output plug
@@ -185,9 +176,9 @@ begin
               Name            := 'Order';
               VariableAddress := @FOrder;
               Direction       := drParameter;
-              DataType        := dtInteger;
+              DataType        := dtEnum;
               DefaultValue    := '4';
-              DatatypeExtra   := 'range -0,64';
+              DatatypeExtra   := 'range 0,64';
              end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
@@ -196,12 +187,28 @@ end;
 // this routine is called whenever an input changes status.
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
-procedure TSELinkwitzRileyModule.PlugStateChange(Pin: TSEPin);
+procedure TSELinkwitzRileyModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  // has user altered LinkwitzRiley time parameter?
- if (pin.getPinID = Integer(pinFrequency)) or
-    (pin.getPinID = Integer(pinOrder))
-  then FilterChanged; // re-create the audio buffer
+ case TSELinkwitzRileyPins(CurrentPin.PinID) of
+  pinFrequency:
+   begin
+    FFilterLP[0].Frequency := FFrequency;
+    FFilterHP[0].Frequency := FFrequency;
+    FFilterLP[1].Frequency := FFrequency;
+    FFilterHP[1].Frequency := FFrequency;
+   end;
+  pinOrder :
+   begin
+    FFilterLP[0].Order := FOrder;
+    FFilterHP[0].Order := FOrder;
+    FFilterLP[1].Order := FOrder;
+    FFilterHP[1].Order := FOrder;
+    if FOrder mod 2 = 1
+     then FHighSign := -1
+     else FHighSign :=  1
+   end;
+ end;
  inherited;
 end;
 

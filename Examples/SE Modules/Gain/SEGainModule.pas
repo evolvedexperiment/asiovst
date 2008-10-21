@@ -14,16 +14,17 @@ type
     FInput1Buffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FInput2Buffer : PDAVSingleFixedArray;
     FOutputBuffer : PDAVSingleFixedArray;
+  protected
+    procedure Open; override;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
-    procedure Open; override;
     class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
-    function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    procedure SubProcess(BufferOffset: Integer; SampleFrames: Integer);
-    procedure PlugStateChange(Pin: TSEPin); override;
-  end; 
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+  end;
 
 implementation
 
@@ -47,7 +48,7 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSEGainModule.SubProcess(BufferOffset: Integer; SampleFrames: Integer);
+procedure TSEGainModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   In1    : PDAVSingleFixedArray;
   In2    : PDAVSingleFixedArray;
@@ -84,7 +85,7 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEGainModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEGainModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case TSEGainPins(index) of
@@ -119,7 +120,7 @@ begin
 end;
 
 // An input plug has changed value
-procedure TSEGainModule.PlugStateChange(Pin: TSEPin);
+procedure TSEGainModule.PlugStateChange(const CurrentPin: TSEPin);
 var
   InState  : array [0..1] of TSEStateType;
   OutState : TSEStateType;
@@ -127,8 +128,8 @@ begin
  // query the 'state of the input plugs...
  //   stRun    = Normal Streaming Audio        (e.g. from an oscillator)
  //   stStatic = Fixed, unchanging input value (e.g. a slider at rest)
- InState[0] := getPin(Integer(pinInput1)).getStatus;
- InState[1] := getPin(Integer(pinInput2)).getStatus;
+ InState[0] := Pin[Integer(pinInput1)].Status;
+ InState[1] := Pin[Integer(pinInput2)].Status;
 
  // we need to pass on the state of this module's output signal
  // it depends on the inputs...
@@ -137,14 +138,14 @@ begin
   then OutState := InState[1];
 
  // if either input zero, tell downstream modules audio has stopped
- if (InState[0] < stRun) and (getPin(Integer(pinInput1)).getValue = 0)
+ if (InState[0] < stRun) and (Pin[Integer(pinInput1)].Value = 0)
   then OutState := stStatic;
 
- if (InState[1] < stRun) and (getPin(Integer(pinInput2)).getValue = 0)
+ if (InState[1] < stRun) and (Pin[Integer(pinInput2)].Value = 0)
   then OutState := stStatic;
 
  // 'transmit' new output status to next module 'downstream'
- getPin(Integer(pinOutput)).TransmitStatusChange(SampleClock, OutState);
+ Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, OutState);
 
  inherited; 
 end;

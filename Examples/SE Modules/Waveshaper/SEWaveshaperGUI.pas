@@ -150,35 +150,39 @@ var
   LgFnt      : LOGFONT;
   Font       : HFONT;
   OldFont    : HGDIOBJ;
+  txt        : string;
+  fv         : Single;
+  orig_ta    : Integer;
 begin
  VertScale := wi.height / 2.15;
  HorzScale := wi.width / 2.15;
- Mid.x   := wi.width div 2;
- Mid.y   := wi.height div 2;
+ Mid.x     := wi.width div 2;
+ Mid.y     := wi.height div 2;
+ TickWidth := 2;
 
-  // create a green pen
-  pen := CreatePen(PS_SOLID, 1, RGB(0, 128, 0)); // dark green
+ // create a green pen
+ pen := CreatePen(PS_SOLID, 1, RGB(0, 128, 0)); // dark green
 
-  // 'select' it
-  OldPen := SelectObject(hDC, pen);
+ // 'select' it
+ OldPen := SelectObject(hDC, pen);
 
-  // BACKGROUND LINES
+ // BACKGROUND LINES
 
-  // horizontal line
-  MoveToEx(hDC, 0, Mid.y, nil);
-  LineTo(hDC, wi.width, Mid.y );
+ // horizontal line
+ MoveToEx(hDC, 0, Mid.y, nil);
+ LineTo(hDC, wi.width, Mid.y );
 
-  // horiz center line
-  MoveToEx(hDC, Mid.x, 0, nil);
-  LineTo(hDC, Mid.x, wi.height );
+ // horiz center line
+ MoveToEx(hDC, Mid.x, 0, nil);
+ LineTo(hDC, Mid.x, wi.height );
 
-  // vertical center line
-  MoveToEx(hDC, Mid.x,0, nil);
-  LineTo(hDC, Mid.x, wi.height);
+ // vertical center line
+ MoveToEx(hDC, Mid.x,0, nil);
+ LineTo(hDC, Mid.x, wi.height);
 
-  // diagonal
-  MoveToEx(hDC, 0, wi.height, nil);
-  LineTo(hDC, wi.width,0);
+ // diagonal
+ MoveToEx(hDC, 0, wi.height, nil);
+ LineTo(hDC, wi.width,0);
 
  v := -10;
  while v <= 10 do
@@ -224,37 +228,38 @@ begin
     SetBkMode( hDC, TRANSPARENT );
     SetTextAlign( hDC, TA_LEFT );
 
-(*
-    char txt[10];
     // Y-Axis text
-    for( Single fv = -5 ; fv < 5.1 ; fv += 2.0 )
+    fv := -5;
+    while fv < 5.1 do
      begin
-      Single y = fv * VertScale / 5.f;
-      if( fv != -1.f )
+      y := fv * VertScale / 5;
+      if fv <> -1 then
        begin
-        sprintf( txt, '%2.0f', fv );
-        TextOut( hDC, Mid.x + TickWidth, Mid.y - (Integer) y - FontHeight/2, txt, strlen(txt) );
+        txt := FloatToStrF(fv, ffGeneral, 2, 1) + #0;
+        TextOut(hDC, Mid.x + TickWidth, Mid.y - round(y - FontHeight * 0.5), PChar(txt), Length(txt));
        end;
+      fv := fv + 2;
      end;
 
-    Integer orig_ta = SetTextAlign( hDC, TA_CENTER );
+    orig_ta := SetTextAlign(hDC, TA_CENTER);
 
     // X-Axis text
-    for( Single fv = -4 ; fv < 4.1 ; fv += 2.0 )
+    fv := -4;
+    while fv < 4 do
      begin
-      Single y = fv * HorzScale / 5.f;
-      if( fv != -1.f )
+      y := fv * HorzScale / 5;
+      if fv <> -1 then
        begin
-        sprintf( txt, '%2.0f', fv );
-        TextOut( hDC, Mid.x + (Integer)y, Mid.y + TickWidth, txt, strlen(txt) );
+        txt := FloatToStrF(fv, ffGeneral, 2, 1) + #0;
+        TextOut(hDC, Mid.x + round(y), Mid.y + TickWidth, PChar(txt), Length(txt));
        end;
+      fv := fv + 2;
      end;
 
     // cleanup
-    SelectObject( hDC, OldFont );
+    SelectObject(hDC, OldFont);
     DeleteObject(Font);
-    SetTextAlign( hDC, orig_ta );
- *)
+    SetTextAlign(hDC, orig_ta);
   end;
 end;
 

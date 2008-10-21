@@ -33,12 +33,12 @@ type
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
 
     procedure Open; override;
-    function GetPinProperties(Index: Integer; Properties : PSEPinProperties): Boolean; override;
+    function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
 
-    procedure SubProcess(BufferOffset, SampleFrames: Integer);
-    procedure SubProcessStatic(BufferOffset, SampleFrames: Integer);
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 
-    procedure PlugStateChange(Pin: TSEPin); override;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
     procedure ChooseProcess;
   end;
 
@@ -75,7 +75,7 @@ end;
 
 procedure TSEWaveshaperModule.ChooseProcess;
 begin
- if getPin(pinInput).getStatus = stRun
+ if Pin[pinInput].Status = stRun
   then OnProcess := SubProcess
   else
    begin
@@ -89,11 +89,11 @@ begin
 //  _RPT1(_CRT_WARN, 'LookupTableChanged %x\n',this );
 
   ChooseProcess;
-  if getPin(pinInput).getStatus <> stRun then
+  if Pin[pinInput].Status <> stRun then
    begin
     // can't add event if sleeping
 //    OutputChange(SampleClock, GetPlug(pinOutput), stOneOff);
-    getPin(pinOutput).TransmitStatusChange(SampleClock, stOneOff);
+    Pin[pinOutput].TransmitStatusChange(SampleClock, stOneOff);
    end;
 end;
 
@@ -111,7 +111,7 @@ begin
  NeedInitialise := CreateSharedLookup(@TableName[1], @FLookupTable, -1, CTableSize + 2);
 end;
 
-procedure TSEWaveshaperModule.SubProcess(BufferOffset: Integer; SampleFrames: Integer);
+procedure TSEWaveshaperModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 const
   CHalf      : Single = 0.5;
   CTableSize : Single = 512;
@@ -210,8 +210,7 @@ begin
   end;
 end;
 
-procedure TSEWaveshaperModule.SubProcessStatic(BufferOffset,
-  SampleFrames: Integer);
+procedure TSEWaveshaperModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
@@ -293,7 +292,7 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEWaveshaperModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEWaveshaperModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
 (*
   LIST_PIN2('Signal In', FInputPtr, DR_IN, '0','', IO_POLYPHONIC_ACTIVE,'');
@@ -334,19 +333,21 @@ begin
 end;
 
 // An input plug has changed value
-procedure TSEWaveshaperModule.PlugStateChange(Pin: TSEPin);
+procedure TSEWaveshaperModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
-  if Pin.getPinID = pinPatchParam then
+ case CurrentPin.PinID of
+  pinPatchParam:
    begin
     FillLookupTable;
     LookupTableChanged;
    end;
 
-  if Pin.getPinID = pinInput then
+  pinInput:
    begin
     ChooseProcess;
-    getPin(pinOutput).TransmitStatusChange(SampleClock, getPin(pinInput).getStatus);
+    Pin[pinOutput].TransmitStatusChange(SampleClock, Pin[pinInput].Status);
    end;
+ end;
  inherited;
 end;
 

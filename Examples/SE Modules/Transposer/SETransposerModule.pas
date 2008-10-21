@@ -12,15 +12,16 @@ type
   TSETransposerModule = class(TSEModuleBase)
   private
     FTransposeAmount : ShortInt;
+  protected
+    procedure Open; override;
+    procedure MidiData(AClock, AMidiMsg: Cardinal; PinID: ShortInt); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
-    procedure Open; override;
     class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
-    function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    procedure SubProcess(BufferOffset: Integer; SampleFrames: Integer);
-    procedure MidiData(AClock, AMidiMsg: Cardinal; PinID: ShortInt); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
 implementation
@@ -45,7 +46,7 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSETransposerModule.SubProcess(BufferOffset: Integer; SampleFrames: Integer);
+procedure TSETransposerModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  CallHost(seaudioMasterSleepMode);
 end;
@@ -100,13 +101,13 @@ begin
   end;
 
  // send the MIDI
- getPin(Integer(pinMidiOut)).TransmitMIDI(AClock, AMidiMsg);
+ Pin[Integer(pinMidiOut)].TransmitMIDI(AClock, AMidiMsg);
 
  inherited;
 end;
 
 // describe the pins (plugs)
-function TSETransposerModule.GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSETransposerModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case TSETransposerPins(index) of

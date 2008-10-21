@@ -39,17 +39,17 @@ end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; p_resvd1: Pointer): Pointer; cdecl; export;
 var
-  Effect : TSEIntToListModule;
-  GUI    : TSEIntToListGui;
+  SEIntToListModule : TSEIntToListModule;
+  GUI               : TSEIntToListGui;
 begin
  result := nil;
  case Index of // !!TODO!! list your in / out plugs
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        Effect := TSEIntToListModule.Create(SEAudioMaster, p_resvd1);
-        if assigned(Effect)
-         then result := Effect.getEffect;
+        SEIntToListModule := TSEIntToListModule.Create(SEAudioMaster, p_resvd1);
+        if assigned(SEIntToListModule)
+         then result := SEIntToListModule.Effect;
        end else
       if (ProcessType = 1) then // GUI Object
        begin
