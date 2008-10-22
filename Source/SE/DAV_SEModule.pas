@@ -3,30 +3,33 @@ unit DAV_SEModule;
 interface
 
 uses
-  Classes, DAV_Common, DAV_SECommon;
-
-const
-  // module Flags, indicate special abilities
-  UGF_VOICE_MON_IGNORE = $0002;     // DON'T WANT VOICE HELD OPEN BECAUSE A SCOPE IS CONNECTED
-  UGF_POLYPHONIC_AGREGATOR = $0040; // A ug that always combines voices
-
-  // read only
-  UGF_SUSPENDED = $0080;
-  UGF_OPEN = $0100;
-
-  // normally when a voice has faded out, SE shuts all that voice's modules off
-  // in very special cases you can prevent SE from shutting off your module
-  UGF_NEVER_SUSPEND = $0200;
-
-  UGF_CLONE = $0800;
-  UGF_SEND_TIMEINFO_TO_HOST = $20000;
-
-  // visible on control panel (applys to GuiFlags member)
-  CF_CONTROL_VIEW = 128;
-  CF_STRUCTURE_VIEW = 256;
-////////////////////////////////////////////////////////////////////////////////
+  Windows, Classes, DAV_Common, DAV_SECommon;
 
 type
+  TUgFlag = (
+    ugfVoiceMonIgnore = 2,      // DON'T WANT VOICE HELD OPEN BECAUSE A SCOPE IS CONNECTED
+    ugfPolyphonicAgregator = 6, // A ug that always combines voices
+
+    // read only
+    ugfSuspend = 7,
+    ugfOpen = 8,
+
+    // normally when a voice has faded out, SE shuts all that voice's modules off
+    // in very special cases you can prevent SE from shutting off your module
+    ugfNeverSuspend = 9,
+    ugfClone = 11,
+    ugfSendTimeInfoToHost = 17,
+    ugfDoNeitherUseNorRemove = 31 // necessary so that TGuiFlags is an integer
+  );
+  TUgFlags = set of TUgFlag;
+
+  TGuiFlag = (
+    gfControlView = 7,            // visible in PanelEdit mode
+    gfStructureView = 8,          // visible in structure mode
+    gfDoNeitherUseNorRemove = 31  // necessary so that TGuiFlags is an integer
+  );
+  TGuiFlags = set of TGuiFlag;
+
   TSEIOFlag =
     (iofPolyphonicActive,    // midi channel selection etc should should ignore patch changes
      iofIgnorePatchChange,   // auto-rename on new connection
@@ -195,7 +198,12 @@ type
   TSE2EventEvent = function(Event: PSEEvent): Pointer of object;
   TSE2DispatcherEvent = function(Opcode: Integer; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer of object;
   TSE2ProcessEvent = procedure(const BufferOffset, SampleFrames: Integer) of object;
-  TSEPlugStateChangeEvent = procedure(Pin: TSEPin) of object; 
+  TSEPlugStateChangeEvent = procedure(Sender: TObject; Pin: TSEPin) of object;
+  TSEPinStatusUpdateEvent = procedure(Sender: TObject; AStatus: TSEStateType) of object;
+  TSEMidiDataEvent = procedure(Sender: TObject; AClock, AMidiMsg: Cardinal; PinID: Integer) of object;
+  TSEInputStateChangedEvent = procedure(Sender: TObject; PlugIndex: Integer; NewState: TSEStateType) of object;
+  TSEGuiNotifyEvent = procedure(Sender: TObject; AUserMsgID, ASize: Integer; AData: Pointer) of object;
+  TSEVoiceResetEvent = procedure(Sender: TObject; Future: Integer);
 
   TSE1AudioMasterCallback = function (Effect: PSE1ModStructBase; Opcode: TSEHostOpcodes; Index, Value: Integer; Ptr : Pointer; Opt : Single): Integer; cdecl;
   TSE2AudioMasterCallback = function (Effect: PSE2ModStructBase; Opcode: TSEHostOpcodes; Index, Value: Integer; Ptr : Pointer; Opt : Single): Integer; cdecl;
@@ -247,7 +255,6 @@ type
     IntParamB : Integer;
     PtrParam  : Pointer;
     Next      : PSEEvent; // Next in list (not used)
-    constructor Create(ATimeStamp: Cardinal; AEventType: TUGEventType; AIntParamA, AIntParamB: Integer; APtrParam: Pointer);
   end;
 
   PSEModuleProperties = ^TSEModuleProperties;
@@ -255,8 +262,8 @@ type
     Name       : PChar;
     ID         : PChar;
     About      : PChar;
-    Flags      : Integer;
-    GuiFlags   : Integer;
+    Flags      : TUgFlags;
+    GuiFlags   : TGuiFlags;
     SdkVersion : Integer;
   end;
 
@@ -282,7 +289,6 @@ type
      5 : (IntValue   : Integer);
     end;
 
-  TSEPinStatusUpdate = procedure(Sender: TObject; AStatus: TSEStateType) of object;
   TSEPin = class
   private
     FModule               : TSEModuleBase;
@@ -291,7 +297,7 @@ type
     FDataType             : TSEPlugDataType;
     FVariablePtr          : Pointer;
     FAutoDuplicatePlugVar : TAutoduplicatePlugData; // Holds pointer to buffer (auto duplicate plugs only)
-    FOnStatusupdate       : TSEPinStatusUpdate;
+    FOnStatusupdate       : TSEPinStatusUpdateEvent;
     function GetIsConnected: Boolean;
     function GetValue: Double;
   protected
@@ -315,7 +321,7 @@ type
     // for audio plugs only
     property ValueNonAudio: TAutoduplicatePlugData read FAutoDuplicatePlugVar;
 
-    property OnStatusupdate: TSEPinStatusUpdate read FOnStatusupdate write FOnStatusupdate;
+    property OnStatusupdate: TSEPinStatusUpdateEvent read FOnStatusupdate write FOnStatusupdate;
   end;
 
   TSEPins = array of TSEPin;
@@ -332,19 +338,30 @@ type
     FOnPlugStateChangeEvent  : TSEPlugStateChangeEvent;
     FOnProcessEvent          : TSE2ProcessEvent;
     FOnEventEvent            : TSE2EventEvent;
+    FOnMidiData              : TSEMidiDataEvent;
+    FOnInputStatusChange     : TSEInputStateChangedEvent;
+    FOnGuiNotify             : TSEGuiNotifyEvent;
+    FOnVoiceReset            : TSEVoiceResetEvent;
+
     function GetEffect: PSE2ModStructBase;
+    function GetSampleClock: Cardinal;
+    function GetPin(Index: Integer): TSEPin;
+    function GetPinPropertiesClean(const Index: Integer; Properties: PSEPinProperties): Boolean;
     procedure SetProcess(const Value: TSE2ProcessEvent);
     procedure SetSampleRate(const Value: Single);
     procedure SetBlockSize(const Value: Integer);
     procedure ProcessIdle(const BufferPos, SampleFrames: Integer);
-    function GetSampleClock: Cardinal;
-    function GetPin(Index: Integer): TSEPin;
   protected
     FSEAudioMaster : TSE2AudioMasterCallback;
     FEffect        : TSE2ModStructBase;
     FSampleRate    : Single;
     FBlockSize     : Integer;
     FPins          : TSEPins;
+
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); virtual;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; virtual;
+    function GetName(name: PChar): Boolean; virtual;     // name max 32 Char
+    function GetUniqueId(name: PChar): Boolean; virtual; // id max 32 Char
 
     procedure Open; virtual;
     procedure Close; virtual;
@@ -354,28 +371,21 @@ type
     procedure BlockSizeChanged; virtual;
     procedure PlugStateChange(const CurrentPin: TSEPin); virtual;
     procedure InputStatusChange(PlugIndex: Integer; NewState: TSEStateType); virtual;
-    procedure MidiData(AClock, AMidiMsg: Cardinal; PinID: ShortInt); virtual;
+    procedure MidiData(AClock, AMidiMsg: Cardinal; PinID: Integer); virtual;
     procedure GuiNotify(AUserMsgID: Integer; ASize: Integer; AData: Pointer); virtual;
-  public
-    constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); virtual;
-    destructor Destroy; override;
-
-    procedure AddEvent(ATimeStamp: Cardinal; AEventType: TUGEventType; AIntParamA: Integer = 0; AIntParamB: Integer = 0; APtrParam : Pointer = nil);
-    procedure RunDelayed(SampleClock: Cardinal; Func: TUgFunc);
 
     { divert to virtual function }
     procedure HandleEvent(Event: PSEEvent); virtual;
     function Dispatcher(Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; virtual;
+  public
+    constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); virtual;
+    destructor Destroy; override;
+
+    procedure AddEvent(Event: TSEEvent);
+    procedure RunDelayed(SampleClock: Cardinal; Func: TUgFunc);
 
     { inquiry }
     function CallHost(Opcode: TSEHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
-
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; virtual;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; virtual;
-    function GetPinPropertiesClean(const Index: Integer; Properties: PSEPinProperties): Boolean;
-
-    function GetName(name: PChar): Boolean; virtual;     // name max 32 Char
-    function GetUniqueId(name: PChar): Boolean; virtual; // id max 32 Char
 
     property Effect: PSE2ModStructBase read GetEffect;
     property Pin[Index: Integer]: TSEPin read GetPin;
@@ -388,9 +398,11 @@ type
     property OnClose: TNotifyEvent read FOnClose write FOnClose;
     property OnProcess: TSE2ProcessEvent read FOnProcessEvent write SetProcess;
     property OnEvent: TSE2EventEvent read FOnEventEvent write FOnEventEvent;
+    property OnMidiData: TSEMidiDataEvent read FOnMidiData write FOnMidiData;
     property OnSampleRateChange: TNotifyEvent read FOnSampleRateChangeEvent write FOnSampleRateChangeEvent;
     property OnBlockSizeChange: TNotifyEvent read FOnBlockSizeChangeEvent write FOnBlockSizeChangeEvent;
     property OnPlugStateChange: TSEPlugStateChangeEvent read FOnPlugStateChangeEvent write FOnPlugStateChangeEvent;
+    property OnInputStateChanged: TSEInputStateChangedEvent read FOnInputStatusChange write FOnInputStatusChange;
   end;
 
 //////////////////////
@@ -406,23 +418,13 @@ procedure SE2Event(ModuleBase: TSEModuleBase; Event: PSEEvent); cdecl;
 // handy function to fix denormals.
 procedure KillDenormal(var Sample: Single);
 function IOFlagToString(IOFlag: TSEIOFlag): string;
-function PropertyFlagsToString(Flags: Integer): string;
-function PropertyGUIFlagsToString(Flags: Integer): string;
+function PropertyFlagsToString(Flags: TUgFlags): string;
+function PropertyGUIFlagsToString(Flags: TGuiFlags): string;
 
 implementation
 
-{ TSEEvent }
-
-constructor TSEEvent.Create(ATimeStamp: Cardinal; AEventType: TUGEventType;
-  AIntParamA, AIntParamB: Integer; APtrParam: Pointer);
-begin
- TimeStamp := ATimeStamp;
- EventType := AEventType;
- IntParamA := AIntParamA;
- IntParamB := AIntParamB;
- PtrParam  := APtrParam;
- Next      := nil;
-end;
+uses
+  SysUtils;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -558,7 +560,7 @@ var
   i : Integer;
 begin
  for i := 0 to Length(FPins) - 1
-  do FPins[i].Free;
+  do FreeAndNil(FPins[i]);
  SetLength(FPins, 0); 
  inherited;
 end;
@@ -622,6 +624,8 @@ end;
 
 
 function TSEModuleBase.Dispatcher(opCode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer;
+var
+  Event : TSEEvent;
 begin
  result := 0;
  case opCode of
@@ -637,44 +641,41 @@ begin
    begin
     result := Integer(GetPinProperties(Index, PSEPinProperties(Ptr)));
 (*
-      // check for illegal flag combinations
-      // 'Dual' Input plugs must be private (GuiModule can set the Value, but User must not be able to)
-      assert((not iofUICommunicationDual in SEPinProperties(Ptr).Flags) or
+    // check for illegal flag combinations
+    // 'Dual' Input plugs must be private (GuiModule can set the Value, but User must not be able to)
+    assert((not iofUICommunicationDual in SEPinProperties(Ptr).Flags) or
                (iofPrivate in PSEPinProperties(Ptr).Flags) or
                (PSEPinProperties(Ptr).direction = drOut);
 *)
 
-      // 'Patch Store' Input plugs must be private, or GuiModule
-      assert((not (iofPatchStore in PSEPinProperties(Ptr).Flags)) or
-                  (iofHidePin in PSEPinProperties(Ptr).Flags) or
-                  (PSEPinProperties(Ptr).Direction = drOut) or
-                  (iofUICommunication in PSEPinProperties(Ptr).Flags));
+    // 'Patch Store' Input plugs must be private, or GuiModule
+    assert((not (iofPatchStore in PSEPinProperties(Ptr).Flags)) or
+                (iofHidePin in PSEPinProperties(Ptr).Flags) or
+                (PSEPinProperties(Ptr).Direction = drOut) or
+                (iofUICommunication in PSEPinProperties(Ptr).Flags));
    end;
-(* obsolete
-    case seffGetModuleProperties:
-      result := getModuleProperties ( (SEModuleProperties * )Ptr) ? 1 : 0;
-      break;
-//    case seffInputStatusChange:
-//      InputStatusChange(Index, (state_type) Value);
-//      result := 0;
-//      break;
-    case seffGetEffectName:
-      result := GetName ((Char * )Ptr) ? 1 : 0;
-      break;
-    case seffGetUniqueId:
-      result := GetUniqueId ((Char * )Ptr) ? 1 : 0;
-      break;
-*)
+  seffGetModuleProperties:
+   begin
+    // obsolete
+    // getModuleProperties ( (SEModuleProperties * )Ptr) ? 1 : 0;
+    result := 0;
+   end;
+  seffGetEffectName:
+   begin
+//    StrCopy(Ptr, PChar('obsolete'));
+
+    result := 0;
+   end;
+  seffGetUniqueId:
+   begin
+//    StrCopy(Ptr, PChar('obsolete'));
+    result := 0;
+   end;
   seffAddEvent:
    begin
     assert(False); // not used in SDK2
-(*
-    SeEvent *e = (SeEvent * )Ptr;
-
-    SeEvent *ne = new SeEvent(e.TimeStamp, e.EventType, e.IntParamA, e.IntParamB, e.PtrParam );
-    // can't directly use object allocated by host, make a copy
-    AddEvent( ne );
-*)
+    Event := PSEEvent(Ptr)^; // can't directly use object allocated by host, make a copy
+//    AddEvent(Event);
    end;
   seffResume:
    begin
@@ -685,14 +686,10 @@ begin
    end;
   seffIsEventListEmpty:
    begin
-      assert(false);  // not used in SDK2
+    assert(false);  // not used in SDK2
 //      return events == 0 ? 1 : 0;
    end;
-(* retired
-    case seffGetSdkVersion:
-      return SDK_VERSION;
-      break;
-*)
+  seffGetSdkVersion: result := CSeSdkVersion;
   seffGuiNotify: GuiNotify(Value, Index, Ptr);
   seffQueryDebugInfo:
    begin
@@ -727,36 +724,29 @@ begin
   result := CallHost(SEAudioMasterGetSampleClock);
 end;
 
-procedure TSEModuleBase.GuiNotify(AUserMsgID, ASize: Integer;
-  AData: Pointer);
+procedure TSEModuleBase.GuiNotify(AUserMsgID, ASize: Integer; AData: Pointer);
 begin
-(*
  if assigned(FOnGuiNotify)
   then FOnGuiNotify(Self, AUserMsgID, ASize, AData);
-*)
 end;
 
 procedure TSEModuleBase.InputStatusChange(PlugIndex: Integer;
   NewState: TSEStateType);
 begin
-(*
  if assigned(FOnInputStatusChange)
   then FOnInputStatusChange(Self, PlugIndex, NewState);
-*)
 end;
 
-procedure TSEModuleBase.MidiData(AClock, AMidiMsg: Cardinal; PinID: ShortInt);
+procedure TSEModuleBase.MidiData(AClock, AMidiMsg: Cardinal; PinID: Integer);
 begin
-(*
  if assigned(FOnMidiData)
   then FOnMidiData(Self, AClock, AMidiMsg, PinID);
-*)
 end;
 
 procedure TSEModuleBase.PlugStateChange(const CurrentPin: TSEPin);
 begin
  if assigned(FOnPlugStateChangeEvent)
-  then FOnPlugStateChangeEvent(CurrentPin);
+  then FOnPlugStateChangeEvent(Self, CurrentPin);
 end;
 
 procedure TSEModuleBase.SetBlockSize(const Value: Integer);
@@ -801,7 +791,8 @@ end;
 
 procedure TSEModuleBase.VoiceReset(Future: Integer);
 begin
- // do nothing!
+ if assigned(FOnVoiceReset)
+  then FOnVoiceReset(Self, Future);
 end;
 
 // gets a pins properties, after clearing the structure (prevents garbage getting in)
@@ -810,26 +801,30 @@ begin
  result := @FEffect;
 end;
 
-class function TSEModuleBase.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
+class procedure TSEModuleBase.GetModuleProperties(Properties: PSEModuleProperties);
+var
+  ModuleFileName : array[0..MAX_PATH] of Char;
 begin
  // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Delphi ASIO & VST Packages';
+ with Properties^ do
+  begin
+   Name := 'Delphi ASIO & VST Packages';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   try
+    GetModuleFileName(HInstance, ModuleFileName, SizeOf(ModuleFileName));
+//    FileName := ;
+    ID := PChar(ExtractFileName(ModuleFileName));
+   except
+    ID := 'Delphi ASIO & VST Packages';
+   end;
 
- // generates a random ID (will surely fail!!!)
- GetMem(Properties.ID, 4);
- Properties.ID[0] := Char(32 + random(64));
- Properties.ID[1] := Char(32 + random(64));
- Properties.ID[2] := Char(32 + random(64));
- Properties.ID[3] := Char(32 + random(64));
-
- // Info, may include Author, Web page whatever
- Properties.About := 'Delphi ASIO & VST Packages';
- result := True;
+   // Info, may include Author, Web page whatever
+   About := 'Delphi ASIO & VST Packages';
+  end;
 end;
 
 function TSEModuleBase.GetName(name: PChar): Boolean;
@@ -877,7 +872,7 @@ begin
    begin
 (* TODO!!!
 //    ug_func Func = 0; // important to initialise (code below is a hack)
-//    *( (int* ) &Func) = *( (int* ) &(Event.PtrParam));
+//    *(PInteger(@Func) = *(PInteger(@(Event.PtrParam));
 //    (this.*(Func));
         my_delegate<ug_func> temp_delegate(Event.PtrParam);
 //        temp_delegate.pointer.native = 0;
@@ -886,7 +881,7 @@ begin
 *)
    end;
 (*  case UET_UI _NOTIFY2:
-      OnGui Notify( Event.IntParamA, (void * ) Event.IntParamB );
+      GuiNotify( Event.IntParamA, (void * ) Event.IntParamB );
       free( (void * ) Event.IntParamB ); // free memory block
       break;*)
   uetProgChange: ; // do nothing
@@ -913,14 +908,10 @@ begin
 end;
 
 // insert event sorted.  Pass pointer to tempory event structure(event data will be copied by SE)
-procedure TSEModuleBase.AddEvent(ATimeStamp: Cardinal; AEventType: TUGEventType; AIntParamA, AIntParamB: Integer; APtrParam: Pointer);
-var
-  temp : TSeEvent;
+procedure TSEModuleBase.AddEvent(Event: TSEEvent);
 begin
-  assert(ATimeStamp >= SampleClock);
-
-  temp.Create(ATimeStamp, AEventType, AIntParamA, AIntParamB, APtrParam);
-  CallHost(SEAudioMasterAddEvent, 0, 0, @temp);
+ assert(Event.TimeStamp >= SampleClock);
+ CallHost(SEAudioMasterAddEvent, 0, 0, @Event);
 
 //  delete p_event;
 
@@ -969,7 +960,7 @@ begin
    e = e.Next;
   end;
 *)
- if assigned(FOnResume) then FOnResume(Self); 
+ if assigned(FOnResume) then FOnResume(Self);
 end;
 
 procedure TSEModuleBase.ProcessIdle(const BufferPos, SampleFrames: Integer);
@@ -1043,24 +1034,24 @@ begin
  end;
 end;
 
-function PropertyFlagsToString(Flags: Integer): string;
+function PropertyFlagsToString(Flags: TUgFlags): string;
 begin
  result := '';
- if (Flags and UGF_VOICE_MON_IGNORE) > 0 then result := result + 'Voice Monitor Ignore, ';
- if (Flags and UGF_POLYPHONIC_AGREGATOR) > 0 then result := result + 'Polyphonic Agregator, ';
- if (Flags and UGF_SUSPENDED) > 0 then result := result + 'Suspended, ';
- if (Flags and UGF_OPEN) > 0 then result := result + 'Open, ';
- if (Flags and UGF_NEVER_SUSPEND) > 0 then result := result + 'Never Suspend, ';
- if (Flags and UGF_CLONE) > 0 then result := result + 'Clone, ';
- if (Flags and UGF_SEND_TIMEINFO_TO_HOST) > 0 then result := result + 'Send TimeInfo to Host';
+ if ugfVoiceMonIgnore in Flags then result := result + 'Voice Monitor Ignore, ';
+ if ugfPolyphonicAgregator in Flags then result := result + 'Polyphonic Agregator, ';
+ if ugfSuspend in Flags then result := result + 'Suspended, ';
+ if ugfOpen in Flags then result := result + 'Open, ';
+ if ugfNeverSuspend in Flags then result := result + 'Never Suspend, ';
+ if ugfClone in Flags then result := result + 'Clone, ';
+ if ugfSendTimeinfoToHost in Flags then result := result + 'Send TimeInfo to Host';
  if result = '' then result := '-'
 end;
 
-function PropertyGUIFlagsToString(Flags: Integer): string;
+function PropertyGUIFlagsToString(Flags: TGuiFlags): string;
 begin
  result := '';
- if (Flags and CF_CONTROL_VIEW) > 0 then result := result + 'Control View, ';
- if (Flags and CF_STRUCTURE_VIEW) > 0 then result := result + 'Structure View';
+ if gfControlView in Flags then result := result + 'Control View, ';
+ if gfStructureView in Flags then result := result + 'Structure View';
  if result = '' then result := '-'
 end;
 

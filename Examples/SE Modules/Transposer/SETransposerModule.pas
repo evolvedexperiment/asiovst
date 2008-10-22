@@ -14,12 +14,12 @@ type
     FTransposeAmount : ShortInt;
   protected
     procedure Open; override;
-    procedure MidiData(AClock, AMidiMsg: Cardinal; PinID: ShortInt); override;
+    procedure MidiData(AClock, AMidiMsg: Cardinal; PinID: Integer); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
@@ -52,24 +52,28 @@ begin
 end;
 
 // describe your module
-class function TSETransposerModule.getModuleProperties(Properties : PSEModuleProperties): Boolean;
+class procedure TSETransposerModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'MIDI Transposer';
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'MIDI Transposer';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'Synthedit Transposer Example';
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'Synthedit Transposer Example';
 
- // Info, may include Author, Web page whatever
- Properties.About := 'by Christian-W. Budde';
- result := True;
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+
+   SdkVersion := CSeSdkVersion;
+  end;
 end;
 
 procedure TSETransposerModule.MidiData(AClock, AMidiMsg: Cardinal;
-  PinID: ShortInt);
+  PinID: Integer);
 var
   IsSystemMsg        : Boolean;
   Chan, Stat, b2, b3 : Integer;

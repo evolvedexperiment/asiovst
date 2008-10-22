@@ -49,7 +49,7 @@ type
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
@@ -295,20 +295,23 @@ begin
 end;
 
 // describe your module
-class function TSEClockModule.getModuleProperties(Properties : PSEModuleProperties): Boolean;
+class procedure TSEClockModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'BPM Clock2';
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'BPM Clock2';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'Synthedit BPM Clock (DAV)';
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'Synthedit BPM Clock (DAV)';
 
- // Info, may include Author, Web page whatever
- Properties.About := 'by Christian-W. Budde';
- result := True;
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+   SDKVersion := CSeSdkVersion;
+  end
 end;
 
 // describe the pins (plugs)

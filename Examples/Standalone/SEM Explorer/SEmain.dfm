@@ -2,7 +2,7 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
   Left = 188
   Top = 77
   Caption = 'SE Module Explorer'
-  ClientHeight = 420
+  ClientHeight = 439
   ClientWidth = 469
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,11 +20,11 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
     Left = 0
     Top = 0
     Width = 469
-    Height = 420
+    Height = 439
     Align = alClient
     ScrollBars = ssVertical
     TabOrder = 0
-    ExplicitHeight = 401
+    ExplicitHeight = 420
   end
   object MainMenu: TMainMenu
     Left = 8
@@ -44,10 +44,17 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
       end
     end
     object MISettings: TMenuItem
-      Caption = 'Settings'
+      Caption = '&Settings'
       object MIEnableWrapper: TMenuItem
         Caption = 'Enable fixing SEM'
         OnClick = MIEnableWrapperClick
+      end
+    end
+    object MIHelp: TMenuItem
+      Caption = '&Help'
+      object MIAbout: TMenuItem
+        Caption = '&About'
+        OnClick = MIAboutClick
       end
     end
   end

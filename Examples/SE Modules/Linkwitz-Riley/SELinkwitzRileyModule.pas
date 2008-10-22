@@ -30,7 +30,7 @@ type
     destructor Destroy; override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
@@ -116,20 +116,24 @@ begin
 end;
 
 // describe your module
-class function TSELinkwitzRileyModule.getModuleProperties(Properties : PSEModuleProperties): Boolean;
+class procedure TSELinkwitzRileyModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Linkwitz-Riley Splitter';
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Linkwitz-Riley Splitter';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'DAV Linkwitz-Riley Splitter';
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Linkwitz-Riley Splitter';
 
- // Info, may include Author, Web page whatever
- Properties.About := 'by Christian-W. Budde';
- result := True;
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+
+   SDKVersion := CSeSdkVersion;
+  end;
 end;
 
 // describe the pins (plugs)

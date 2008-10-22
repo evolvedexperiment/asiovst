@@ -17,7 +17,7 @@ type
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     procedure SubProcessOpt3asm(const BufferOffset, SampleFrames: Integer);
     procedure SubProcessOpt4asm(const BufferOffset, SampleFrames: Integer);
     procedure SubProcessOpt5asm(const BufferOffset, SampleFrames: Integer);
@@ -36,7 +36,7 @@ type
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     procedure SubProcess2a(const BufferOffset, SampleFrames: Integer);
     procedure SubProcess2b(const BufferOffset, SampleFrames: Integer);
     procedure SubProcess2c(const BufferOffset, SampleFrames: Integer);
@@ -50,7 +50,7 @@ type
     procedure Open; override;
   public
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
@@ -153,20 +153,24 @@ begin
 end;
 
 // describe your module
-class function TSETanhAproximationsModule.GetModuleProperties(Properties : PSEModuleProperties): Boolean;
+class procedure TSETanhAproximationsModule.GetModuleProperties(Properties : PSEModuleProperties);
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Tanh Aproximations';
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Tanh Aproximations';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'DAV Tanh Aproximations';
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Tanh Aproximations';
 
- // Info, may include Author, Web page whatever
- Properties.About := 'by Christian-W. Budde';
- result := True;
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+
+   SDKVersion := CSeSdkVersion;
+  end;
 end;
 
 // describe the pins (plugs)
@@ -226,20 +230,24 @@ begin
  Pin[1].TransmitStatusChange(SampleClock, stRun);
 end;
 
-class function TSETanhAproxModule.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
+class procedure TSETanhAproxModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Tanh Aprox.';
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Tanh Aprox.';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'DAV Tanh Aprox.';
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Tanh Aprox.';
 
- // Info, may include Author, Web page whatever
- Properties.About := 'by Christian-W. Budde';
- result := True;
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+
+   SDKVersion := CSeSdkVersion;
+  end;
 end;
 
 function TSETanhAproxModule.GetPinProperties(const Index: Integer;
@@ -354,20 +362,24 @@ begin
  Pin[1].TransmitStatusChange(SampleClock, stRun);
 end;
 
-class function TSETanhModule.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
+class procedure TSETanhModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Tanh';
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Tanh';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'DAV Tanh';
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Tanh';
 
- // Info, may include Author, Web page whatever
- Properties.About := 'by Christian-W. Budde';
- result := True;
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+
+   SDKVersion := CSeSdkVersion;
+  end;
 end;
 
 function TSETanhModule.GetPinProperties(const Index: Integer;

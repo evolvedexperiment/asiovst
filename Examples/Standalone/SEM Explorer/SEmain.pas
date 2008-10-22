@@ -3,8 +3,8 @@ unit SEmain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, StdCtrls, DAV_SEModule, DAV_SEHost;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Menus, StdCtrls, DAV_SEModule, DAV_SEHost;
 
 type
   TFmSEModuleExplorer = class(TForm)
@@ -16,11 +16,14 @@ type
     N1: TMenuItem;
     MISettings: TMenuItem;
     MIEnableWrapper: TMenuItem;
+    MIHelp: TMenuItem;
+    MIAbout: TMenuItem;
     procedure MIExitClick(Sender: TObject);
     procedure MIOpenClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure MIEnableWrapperClick(Sender: TObject);
+    procedure MIAboutClick(Sender: TObject);
   private
     SEHost : TSEHost;
     procedure LoadSEModule(FileName: TFileName);
@@ -33,7 +36,7 @@ var
 implementation
 
 uses
-  IniFiles, DAV_DLLResources, DAV_SECommon;
+  IniFiles, DAV_DLLResources, DAV_SECommon, SEabout;
 
 {$R *.dfm}
 
@@ -110,10 +113,10 @@ begin
      Memo.Lines.Add('');
      Memo.Lines.Add('Pin '            + IntToStr(PinNr + 1));
      case Pin.Direction of
-      drIn           : Memo.Lines.Add('DataType: Input');
-      drOut          : Memo.Lines.Add('DataType: Output');
-      drContainer_IO : Memo.Lines.Add('DataType: Container I/O');
-      drParameter    : Memo.Lines.Add('DataType: Parameter');
+      drIn          : Memo.Lines.Add('DataType: Input');
+      drOut         : Memo.Lines.Add('DataType: Output');
+      drContainerIO : Memo.Lines.Add('DataType: Container I/O');
+      drParameter   : Memo.Lines.Add('DataType: Parameter');
       else Memo.Lines.Add('Unknown');
      end;
      case Pin.Datatype of
@@ -196,9 +199,17 @@ begin
   end;
 end;
 
-procedure TFmSEModuleExplorer.MIEnableWrapperClick(Sender: TObject);
+procedure TFmSEModuleExplorer.MIAboutClick(Sender: TObject);
 begin
- if InputBox('Enter PassKey', 'Enter PassKey', '') = 'SEM Explorer'
+ FmAbout.ShowModal;
+end;
+
+procedure TFmSEModuleExplorer.MIEnableWrapperClick(Sender: TObject);
+var
+  str: string;
+begin
+ str := InputBox('Enter PassKey', 'Enter PassKey', '');
+ if (Length(str) >= 4) or (str = 'SEM')
   then MIEnableWrapper.Checked := not MIEnableWrapper.Checked;
 end;
 

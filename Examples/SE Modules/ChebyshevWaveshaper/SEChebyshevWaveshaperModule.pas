@@ -25,7 +25,7 @@ type
     destructor Destroy; override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   end;
@@ -93,20 +93,23 @@ begin
 end;
 
 // describe your module
-class function TSEChebyshevWaveshaperModule.getModuleProperties(Properties : PSEModuleProperties): Boolean;
+class procedure TSEChebyshevWaveshaperModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Chebyshev Waveshaper';
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Chebyshev Waveshaper';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'DAV Chebyshev Waveshaper';
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Chebyshev Waveshaper';
 
- // Info, may include Author, Web page whatever
- Properties.About := 'by Christian-W. Budde';
- result := True;
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+   SDKVersion := CSeSdkVersion;
+  end;
 end;
 
 // describe the pins (plugs)

@@ -336,7 +336,7 @@ begin
  StringLength := getModule.CallHost(seGuiHostPlugGetExtraData, getIndex, 0, nil);
  GetMem(Temp, StringLength * 2);
  try
-  getModule.CallHost(seGuiHostPlugGetExtraData, getIndex(), StringLength, temp);
+  getModule.CallHost(seGuiHostPlugGetExtraData, getIndex, StringLength, temp);
   result := temp;
  finally
   Dispose(temp);
@@ -348,7 +348,7 @@ begin
  if assigned(Effect) then
   begin
    assert(assigned(Effect.SEGUIBase));
-   result := Effect.SEGUIBase.dispatcher(TSEGuiPluginOpcodes(Opcode), Index, Value, Ptr, Opt);
+   result := Effect.SEGUIBase.Dispatcher(TSEGuiPluginOpcodes(Opcode), Index, Value, Ptr, Opt);
   end else result := 0;
 end;
 
@@ -503,8 +503,8 @@ end;
 
 procedure TSEGUIBase.AddGuiPlug(ADatatype: TSEPlugDataType; ADirection: TSEDirection; const AName: Pchar);
 begin
-  CallHost(seGuiHostAddGuiPlug, Integer(ADatatype), Integer(ADirection), AName);
-  SetupPins;
+ CallHost(seGuiHostAddGuiPlug, Integer(ADatatype), Integer(ADirection), AName);
+ SetupPins;
 end;
 
 procedure TSEGUIBase.SetupPins;

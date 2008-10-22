@@ -34,6 +34,7 @@ type
 
     procedure Open; override;
     function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
 
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
@@ -71,6 +72,27 @@ begin
  SetupLookupTable;
  OnProcess := SubProcess;
  inherited Open; // always call the base class
+end;
+
+class procedure TSEWaveshaperModule.GetModuleProperties(Properties: PSEModuleProperties);
+begin
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Waveshaper Example';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'Synthedit Waveshaper (DAV)';
+
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+
+   SDKVersion := CSeSdkVersion;
+   GuiFlags := [gfControlView, gfStructureView];
+  end;
 end;
 
 procedure TSEWaveshaperModule.ChooseProcess;

@@ -41,7 +41,7 @@ type
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
 //    function GetPinProperties(Index: Integer; Properties: PSEPinProperties): Boolean; override;
     function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
 
@@ -229,25 +229,27 @@ begin
 end;
 
 // describe your module
-class function TSEScopeModule.getModuleProperties(Properties : PSEModuleProperties): Boolean;
+class procedure TSEScopeModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Scope Example';
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Scope Example';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'Synthedit Scope Example';
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'Synthedit Scope Example';
 
- // Info, may include Author, Web page whatever
- Properties.About := 'by Christian-W. Budde';
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
 
- Properties.Flags := UGF_POLYPHONIC_AGREGATOR or UGF_VOICE_MON_IGNORE;
- Properties.GuiFlags := CF_CONTROL_VIEW or CF_STRUCTURE_VIEW;
- Properties.SdkVersion := SDK_VERSION;
+   Flags := [ugfPolyphonicAgregator, ugfVoiceMonIgnore];
+   GuiFlags := [gfControlView, gfStructureView];
 
- result := True;
+   SdkVersion := CSeSdkVersion;
+  end;
 end;
 
 // describe the pins (plugs)

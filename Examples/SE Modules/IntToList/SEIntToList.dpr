@@ -14,25 +14,9 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- Properties.SDKVersion := SDK_VERSION;
  result := True;
-
  case Index of // !!TODO!! list your in / out plugs
-  0: with Properties^ do
-      begin
-       // describe the plugin, this is the name the end-user will see.
-       Name := 'Int To List';
-
-       // return a unique string 32 characters max
-       // include manufacturer and plugin identity
-       // this is used internally by SE to identify the plug.
-       // No two plugs may have the same id.
-       ID := 'Synthedit Int To List';
-
-       // Info, may include Author, Web page whatever
-       About := 'by Christian-W. Budde';
-       GuiFlags := CF_STRUCTURE_VIEW;
-      end;
+  0: TSEIntToListModule.GetModuleProperties(Properties)
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;

@@ -6,11 +6,8 @@ uses
   Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule;
 
 const
-  NPARAMS =    4;  ///number of parameters
-  NPROGS  =    1;  ///number of programs
-  BUF_MAX = 1600;
-  ORD_MAX = 50;
-  TWO_PI  : Double  = 6.28318530717958647692528676655901;
+  CMaxBufferSize = 1600;
+  CMaxOrder      =   50;
 
 type
   TTalkBoxDataModule = class(TVSTModule)
@@ -33,7 +30,7 @@ type
     fK, fO     : Integer;
     fD, fU     : Array [0..4] of Single;
     procedure LPC(buf, car: PDAVSingleFixedArray; n, o: Integer);
-    procedure LPC_Durbin(r : PDAVSingleFixedArray; p : Integer; k : PDAVSingleFixedArray; var g: Single);
+    procedure LPCDurbin(r : PDAVSingleFixedArray; p : Integer; k : PDAVSingleFixedArray; var g: Single);
   public
   end;
 
@@ -44,8 +41,8 @@ implementation
 procedure TTalkBoxDataModule.ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Parameter[Index] < 0.5
-  then PreDefined := 'LEFT'
-  else PreDefined := 'RIGHT';
+  then PreDefined := 'Left'
+  else PreDefined := 'Right';
 end;
 
 procedure TTalkBoxDataModule.VSTModuleCreate(Sender: TObject);
@@ -58,11 +55,11 @@ begin
 *)
 
  ///initialise...
- GetMem(fBuf[0], BUF_MAX * SizeOf(Single));
- GetMem(fBuf[1], BUF_MAX * SizeOf(Single));
- GetMem(fWindow, BUF_MAX * SizeOf(Single));
- GetMem(fCar[0], BUF_MAX * SizeOf(Single));
- GetMem(fCar[1], BUF_MAX * SizeOf(Single));
+ GetMem(fBuf[0], CMaxBufferSize * SizeOf(Single));
+ GetMem(fBuf[1], CMaxBufferSize * SizeOf(Single));
+ GetMem(fWindow, CMaxBufferSize * SizeOf(Single));
+ GetMem(fCar[0], CMaxBufferSize * SizeOf(Single));
+ GetMem(fCar[1], CMaxBufferSize * SizeOf(Single));
  fWinSize := 1; //trigger window recalc
  fK := 0;
  VSTModuleSuspend(Sender);
@@ -79,7 +76,7 @@ end;
 
 procedure TTalkBoxDataModule.LPC(buf, car : PDAVSingleFixedArray; n, o : Integer);
 var
-  z, r, k  : array [0..ORD_MAX - 1] of Single;
+  z, r, k  : array [0..CMaxOrder - 1] of Single;
   G, x     : Single;
   i, j, nn : Integer;
   min      : Single;
@@ -104,7 +101,7 @@ begin
    exit;
   end;
 
- lpc_durbin(@r, o, @k, G);  //calc reflection coeffs
+ LPCDurbin(@r, o, @k, G);  //calc reflection coeffs
 
  for i := 0 to o do
   begin
@@ -127,10 +124,10 @@ begin
 end;
 
 
-procedure TTalkBoxDataModule.LPC_Durbin(r : PDAVSingleFixedArray; p : Integer; k : PDAVSingleFixedArray; var g: Single);
+procedure TTalkBoxDataModule.LPCDurbin(r : PDAVSingleFixedArray; p : Integer; k : PDAVSingleFixedArray; var g: Single);
 var
   i, j  : Integer;
-  a, at : array [0..ORD_MAX - 1] of Single;
+  a, at : array [0..CMaxOrder - 1] of Single;
   e     : Single;
 begin
  e := r[0];
@@ -270,8 +267,8 @@ begin
   else fSwap := 0;
 
  n := round(0.01633 * fs);
- if (n > BUF_MAX)
-  then n := BUF_MAX;
+ if (n > CMaxBufferSize)
+  then n := CMaxBufferSize;
 
  //fO = round(0.0005 * fs);
  fO := round((0.0001 + 0.0004 * Parameter[3]) * fs);
@@ -279,7 +276,7 @@ begin
  if (n <> fWinSize) then //recalc hanning window
   begin
    fWinSize := n;
-   dp := TWO_PI / fWinSize;
+   dp := 2 * Pi / fWinSize;
    p  := 0;
    for n := 0 to N - 1 do
     begin
@@ -310,10 +307,10 @@ begin
  fEmphasis := 0;
  fFX := 0;
 
- FillChar(fBuf[0], BUF_MAX * SizeOf(Single), 0);
- FillChar(fBuf[1], BUF_MAX * SizeOf(Single), 0);
- FillChar(fCar[0], BUF_MAX * SizeOf(Single), 0);
- FillChar(fCar[1], BUF_MAX * SizeOf(Single), 0);
+ FillChar(fBuf[0]^, CMaxBufferSize * SizeOf(Single), 0);
+ FillChar(fBuf[1]^, CMaxBufferSize * SizeOf(Single), 0);
+ FillChar(fCar[0]^, CMaxBufferSize * SizeOf(Single), 0);
+ FillChar(fCar[1]^, CMaxBufferSize * SizeOf(Single), 0);
 end;
 
 end.

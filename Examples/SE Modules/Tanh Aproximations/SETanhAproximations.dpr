@@ -13,9 +13,7 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- Properties.SDKVersion := SDK_VERSION;
  result := True;
-
  case Index of // !!TODO!! list your in / out plugs
   0: TSETanhAproximationsModule.GetModuleProperties(Properties);
   1: TSETanhAproxModule.GetModuleProperties(Properties);

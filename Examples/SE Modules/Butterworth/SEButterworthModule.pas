@@ -25,20 +25,20 @@ type
     destructor Destroy; override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
   TSEButterworthLPModule = class(TSEButterworthModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSEButterworthHPModule = class(TSEButterworthModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
-    class function GetModuleProperties(Properties : PSEModuleProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
 implementation
@@ -97,11 +97,15 @@ begin
 end;
 
 // describe your module
-class function TSEButterworthModule.getModuleProperties(Properties : PSEModuleProperties): Boolean;
+class procedure TSEButterworthModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
- // Info, may include Author, Web page whatever
- Properties.About := 'by Christian-W. Budde';
- result := True;
+ with Properties^ do
+  begin
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+
+   SdkVersion := CSeSdkVersion;
+  end;
 end;
 
 // describe the pins (plugs)
@@ -171,17 +175,20 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class function TSEButterworthLPModule.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
+class procedure TSEButterworthLPModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Butterworth Lowpass';
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Butterworth Lowpass';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'DAV Butterworth Lowpass';
- result := inherited GetModuleProperties(Properties);
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Butterworth Lowpass';
+  end; 
 end;
 
 { TSEButterworthHPModule }
@@ -194,17 +201,20 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class function TSEButterworthHPModule.GetModuleProperties(Properties: PSEModuleProperties): Boolean;
+class procedure TSEButterworthHPModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
- // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Butterworth Highpass';
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Butterworth Highpass';
 
- // return a unique string 32 characters max
- // if posible include manufacturer and plugin identity
- // this is used internally by SE to identify the plug.
- // No two plugs may have the same id.
- Properties.ID := 'DAV Butterworth Highpass';
- result := inherited GetModuleProperties(Properties);
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Butterworth Highpass';
+  end;
 end;
 
 end.

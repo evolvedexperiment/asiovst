@@ -12,6 +12,7 @@ type
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties: PSEModuleProperties); override;
     procedure SubProcessSleep(const BufferOffset, SampleFrames: Integer);
   end;
 
@@ -36,6 +37,29 @@ begin
 end;
 
 // describe the pins (plugs)
+class procedure TSEIntToListModule.GetModuleProperties(Properties: PSEModuleProperties);
+begin
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Int To List';
+
+   // return a unique string 32 characters max
+   // include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'Synthedit Int To List';
+
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+
+   // only show in structure view
+   GuiFlags := [gfStructureView];
+
+   SdkVersion := CSeSdkVersion;
+  end;
+end;
+
 function TSEIntToListModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
