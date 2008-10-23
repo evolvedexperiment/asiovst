@@ -35,11 +35,11 @@ type
      iofIgnorePatchChange,   // auto-rename on new connection
      iofRename,              // plugs which are automaticly duplicated (like a container's 'spare' plug)
      iofAutoDuplicate,
-     iofFilename,            // ALLOW USER TO SET THE VALUE OF THIS OUTPUT eg on 'constant value' ug
-     iofSetableOutput,       // plugs which can be duplicated/deleted by CUG
-     iofCustomisable,        // plugs which handle multiple inputs, must belong to an Adder ug
-     iofAdder,               // plugs which are private or obsolete, but are enabled on load if connected somewhere
-     iofHidePin,             // = iofDisableIfPos = iofPrivate;
+     iofFilename,
+     iofSetableOutput,       // ALLOW USER TO SET THE VALUE OF THIS OUTPUT eg on 'constant value' ug
+     iofCustomisable,        // plugs which can be duplicated/deleted by CUG
+     iofAdder,               // plugs which handle multiple inputs, must belong to an Adder ug
+     iofHidePin,             // plugs which are private or obsolete, but are enabled on load if connected somewhere
      iofLinearInput,         // set this if this input can handle more that one polyphonic voice
      iofUICommunication,
      iofAutoEnum,
@@ -49,7 +49,9 @@ type
      iofUIDualFlag,          // don't use iofUIDualFlag by itself, use iofUICommunication
      iofPatchStore,          // Patch store is similar to dual but for DSP output plugs that appear as input plugs on UI (Output paramters) could consolodate?
      iofParamPrivate,        // Private parameter (not exposed to user of VST plugin)
-     iofMinimized);          // minimised (not exposed on structure view (only properties window)
+     iofMinimized,           // minimised (not exposed on structure view (only properties window)
+     iofDisableIfPos = iofHidePin,
+     iofPrivate = iofHidePin);
   TSEIOFlags = set of TSEIOFlag;
   //  iofCommunicationDual = iofUIDualFlag or iofUICommunication; // obsolete, use iofPatchStore instead
 
@@ -418,6 +420,7 @@ procedure SE2Event(ModuleBase: TSEModuleBase; Event: PSEEvent); cdecl;
 // handy function to fix denormals.
 procedure KillDenormal(var Sample: Single);
 function IOFlagToString(IOFlag: TSEIOFlag): string;
+function IOFlagsToString(IOFlags: TSEIOFlags): string;
 function PropertyFlagsToString(Flags: TUgFlags): string;
 function PropertyGUIFlagsToString(Flags: TGuiFlags): string;
 
@@ -1032,6 +1035,31 @@ begin
   iofMinimized           : result := 'Minimized';
   else                     result := '';
  end;
+end;
+
+function IOFlagsToString(IOFlags: TSEIOFlags): string;
+begin
+ result := '';
+ if iofPolyphonicActive in IOFlags then result := 'Polyphonic Active';
+ if iofIgnorePatchChange in IOFlags then result := result + 'Ignore Patch Change,';
+ if iofRename in IOFlags then result := result + 'Rename,';
+ if iofAutoDuplicate in IOFlags then result := result + 'Auto Duplicate,';
+ if iofFilename in IOFlags then result := result + 'Filename,';
+ if iofSetableOutput in IOFlags then result := result + 'Setable Output,';
+ if iofCustomisable in IOFlags then result := result + 'Customisable,';
+ if iofAdder in IOFlags then result := result + 'Adder,';
+ if iofHidePin in IOFlags then result := result + 'Hide Pin,';
+ if iofLinearInput in IOFlags then result := result + 'Linear Input,';
+ if iofUICommunication in IOFlags then result := result + 'UI Communication,';
+ if iofAutoEnum in IOFlags then result := result + 'Auto Enum,';
+ if iofHideWhenLocked in IOFlags then result := result + 'Hide When Locked,';
+ if iofParameterScreenOnly in IOFlags then result := result + 'Parameter Screen Only,';
+ if iofDoNotCheckEnum in IOFlags then result := result + 'Do Not Check Enum,';
+ if iofUIDualFlag in IOFlags then result := result + 'UI Dual Flag,';
+ if iofPatchStore in IOFlags then result := result + 'Patch Store,';
+ if iofParamPrivate in IOFlags then result := result + 'Parameter Private,';
+ if iofMinimized in IOFlags then result := result + 'Minimized,';
+ if Length(result) > 0 then SetLength(result, Length(result) - 1); 
 end;
 
 function PropertyFlagsToString(Flags: TUgFlags): string;

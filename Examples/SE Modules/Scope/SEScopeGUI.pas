@@ -17,11 +17,12 @@ type
     function Handle: THandle;
     procedure SendStringToAudio(AMsgID, ALength: Integer; AData: Pointer);
     function InvalidateControl: Integer;
+  protected
+    procedure GuiPaint(hDC: HDC; wi: PSEWndInfo); override;
+    procedure GuiModuleMsg(AUserMsgID, ALength: Integer; AData: Pointer); override;
   public
     constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); override;
     destructor Destroy; override;
-    procedure GuiPaint(hDC: HDC; wi: PSEWndInfo); override;
-    procedure GuiModuleMsg(AUserMsgID, ALength: Integer; AData: Pointer); override;
 (*
     function GuiIdle: Boolean; virtual;
     procedure Initialise(LoadedFromFile): Boolean;

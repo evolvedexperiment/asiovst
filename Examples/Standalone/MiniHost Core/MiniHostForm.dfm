@@ -2028,25 +2028,27 @@ object FmMiniHost: TFmMiniHost
     end
   end
   object VSTHost: TVstHost
+    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
+    ManageIdleAutomaticly = False
+    ParameterQuantization = 0
+    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
+    ProductString = 'MiniHost'
+    Tempo = 120.000000000000000000
+    VendorString = 'Tobybear'
+    VendorVersion = 1
     VstPlugIns = <
       item
         DisplayName = 'Test'
+        VstOfflineTasks = <>
       end
       item
         DisplayName = 'Test2'
+        VstOfflineTasks = <>
       end>
-    ParameterQuantization = 0
-    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
-    ManageIdleAutomaticly = False
-    Tempo = 120.000000000000000000
-    VstVersion = 2300
-    VendorString = 'Tobybear'
-    VendorVersion = 1
-    ProductString = 'MiniHost'
-    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiPpqPosValid, vtiTempoValid, vtiTimeSigValid]
+    VstVersion = 2300
     Left = 88
     Top = 72
   end

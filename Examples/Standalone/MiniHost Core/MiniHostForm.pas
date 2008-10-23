@@ -794,16 +794,19 @@ begin
   do fVSTPinProps[i] := VSTHost[0].GetOutputProperties(i);
 
  with VSTHost[0] do
-  begin
+  try
    ShowEdit(fPanel);
 
    fTitle := GetVendorString + ' ' +  GetEffectName;
    BuildPresetList;
    r := EditGetRect;
+
+   fPanel.width  := r.right - r.left;
+   fPanel.height := r.bottom - r.top;
+   fPanel.top    := PnStatus.height;
+  except
+   raise;
   end;
- fPanel.width  := r.right - r.left;
- fPanel.height := r.bottom - r.top;
- fPanel.top    := PnStatus.height;
 
  MILoadPreset.Enabled := True;
  MILoadBank.Enabled   := True;

@@ -6,22 +6,6 @@ uses
   Windows, Classes, DAV_SECommon;
 
 type
-  PSEGUIStructBase = ^TSEGUIStructBase;
-  TSEGUIBase = class;
-
-  TSEGuiCallback = function(Effect: PSEGUIStructBase; Opcode: Integer; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
-  TSEGuiDispatcher = function(Effect: PSEGUIStructBase; Opcode: Integer; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
-
-  TSEGUIStructBase = record
-    Magic      : Integer;              // magic number
-    Version    : Integer;
-    Dispatcher : TSEGuiDispatcher;
-    HostPtr    : Pointer;              // reserved for host use, must be 0
-    SEGUIBase  : TSEGUIBase;           // for class access
-    User       : Pointer;              // user access
-    Future     : array[0..15] of Char; // pls zero
-  end;
-
   /////////////////////////////////
   // Plugin Module opCodes (GUI) //
   /////////////////////////////////
@@ -39,7 +23,9 @@ type
     seGuiOnWindowClose,
     seGuiOnIdle,
     seGuiOnNewConnection,
-    seGuiOnDisconnect);
+    seGuiOnDisconnect,
+    seGuiDoNotUseOrRemoveThis = $7FFFFFFF
+    );
 
   ////////////////////////
   // Host opCodes (GUI) //
@@ -180,6 +166,21 @@ type
     seGuiHostIsGraphInitialsed,   // test if pin updates are due to file loading, or from user.
     seGuiHostIsInteger = $7FFFFFFF);
 
+  PSEGUIStructBase = ^TSEGUIStructBase;
+  TSEGUIBase = class;
+
+  TSEGuiCallback = function(Effect: PSEGUIStructBase; Opcode: TSEGuiHostOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
+  TSEGuiDispatcher = function(Effect: PSEGUIStructBase; Opcode: TSEGuiPluginOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
+
+  TSEGUIStructBase = record
+    Magic      : Integer;              // magic number
+    Version    : Integer;
+    Dispatcher : TSEGuiDispatcher;
+    HostPtr    : Pointer;              // reserved for host use, must be 0
+    SEGUIBase  : TSEGUIBase;           // for class access
+    User       : Pointer;              // user access
+    Future     : array[0..15] of Char; // pls zero
+  end;
 
   TSEHostWindowFlags = (HWF_RESIZEABLE = 1, HWF_NO_CUSTOM_GFX_ON_STRUCTURE = 2);
 
@@ -209,19 +210,28 @@ type
   private
     FIndex  : Integer;
     FModule : TSEGUIBase;
+    function GetValueBool: Boolean;
+    function GetValueFloat: Single;
+    function GetValueInt: Integer;         // int, bool, and list type values
+    function GetValueText: TSeSdkString;
+    procedure SetValueBool(const Value: Boolean);
+    procedure SetValueFloat(Value: Single);
+    procedure SetValueInt(Value: Integer);
+    procedure SetValueAsString(const Value: TSeSdkString);
   protected
     property Module: TSEGUIBase read FModule;
   public
-    function GetIndex: Integer;
-    function GetModule: TSEGUIBase;
-    function GetValueFloat: Single;
-    function GetValueInt: Integer; // int, bool, and list type values
-    procedure Init(AIndex: Integer; AModule: TSEGUIBase);
-    procedure SetValueFloat(Value: Single);
-    procedure SetValueInt(Value: Integer);
-    procedure SetValueText(var Value: TSeSdkString);
-    function GetValueText: TSeSdkString;
+    constructor Create; overload; virtual;
+    constructor Create(const AIndex: Integer; const AModule: TSEGUIBase); overload; virtual;
+    procedure Init(const AIndex: Integer; const AModule: TSEGUIBase); virtual;
     function GetExtraData: TSeSdkString2;
+    procedure SetValueText(var Value: TSeSdkString);
+  published
+    property PinIndex: Integer read FIndex;
+    property ValueAsInteger: Integer read GetValueInt write SetValueInt;
+    property ValueAsBoolean: Boolean read GetValueBool write SetValueBool;
+    property ValueAsSingle: Single read GetValueFloat write SetValueFloat;
+    property ValueAsString: TSeSdkString read GetValueText write SetValueAsString;
   end;
 
   TSEGuiPins = array of TSeGuiPin;
@@ -244,12 +254,13 @@ type
 
 //    FPins   : array of TSeGuiPin;
     procedure SetupPins;
+    function GetPin(Index: Integer): TSEGuiPin;
   protected
     FAudioMaster : TSEGuiCallback;
     FEffect      : TSEGUIStructBase;
     function GuiIdle: Boolean; virtual;
     procedure GuiDisconnect(PinIndex: Integer); virtual;
-    procedure GuiPinValueChange(Pin: TSeGuiPin); virtual;
+    procedure GuiPinValueChange(CurrentPin: TSeGuiPin); virtual;
     procedure GuiLButtonDown(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint); virtual;
     procedure GuiLButtonUp(WI: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint); virtual;
     procedure GuiModuleMsg(UserMsg_id: Integer; MsgLength: Integer; MsgData: Pointer); virtual;
@@ -267,12 +278,13 @@ type
     function CallHost(Opcode: TSEGuiHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
     function Dispatcher(Opcode: TSEGuiPluginOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; virtual;
     function GetCapture(WI: PSEWndInfo): Boolean;
-    function GetPin(Index: Integer): TSEGuiPin;
     procedure AddGuiPlug(ADatatype: TSEPlugDataType; ADirection: TSEDirection; const AName: Pchar);
     procedure Close; virtual;
     procedure Initialise(LoadedFromFile: Boolean); virtual;
     procedure ReleaseCapture(WI: PSEWndInfo);
     procedure SetCapture(WI: PSEWndInfo);
+
+    property Pin[Index: Integer]: TSEGuiPin read GetPin;
   published
     property OnIdle: TNotifyEvent read FOnIdle write FOnIdle;
     property OnDisconnect: TSEGuiPinIndexEvent read FOnDisconnect write FOnDisconnect;
@@ -281,51 +293,75 @@ type
 
 implementation
 
+uses
+  SysUtils;
+
+var
+  StaticPin : TSEGuiPin;
+
+{ TSeGuiPin }
+
+constructor TSEGuiPin.Create;
+begin
+ inherited;
+end;
+
+constructor TSEGuiPin.Create(const AIndex: Integer; const AModule: TSEGUIBase);
+begin
+ Create;
+ Init(AIndex, AModule);
+end;
+
 procedure TSeGuiPin.SetValueText(var Value: TSeSdkString);
 begin
- getModule.CallHost(seGuiHostPlugSetValText, getIndex, 0, @Value);
+ FModule.CallHost(seGuiHostPlugSetValText, FIndex, 0, @Value);
 end;
 
 function TSeGuiPin.GetValueText: TSeSdkString;
 begin
  // warning, unstable over 2000 bytes  ( that's 1000 UNICODE characters )
- result := TSeSdkString(getModule.CallHost(seGuiHostPlugGetValText, getIndex, 0, nil));
+ result := TSeSdkString(FModule.CallHost(seGuiHostPlugGetValText, FIndex, 0, nil));
 end;
 
-function TSeGuiPin.GetValueInt: Integer; // int, bool, and list type values
-begin
- getModule.CallHost(seGuiHostPlugGetVal, getIndex, 0, @result);
-end;
-
-function TSEGuiPin.GetIndex: Integer;
-begin
- result := FIndex;
-end;
-
-function TSEGuiPin.GetModule: TSEGUIBase;
-begin
- result := FModule;
-end;
-
-procedure TSEGuiPin.Init(AIndex: Integer; AModule: TSEGUIBase);
+procedure TSEGuiPin.Init(const AIndex: Integer; const AModule: TSEGUIBase);
 begin
  FIndex  := AIndex;
  FModule := AModule;
 end;
 
+function TSeGuiPin.GetValueInt: Integer; // int, bool, and list type values
+begin
+ FModule.CallHost(seGuiHostPlugGetVal, FIndex, 0, @result);
+end;
+
+function TSEGuiPin.GetValueBool: Boolean;
+begin
+ FModule.CallHost(seGuiHostPlugGetVal, FIndex, 0, @result);
+end;
+
 function TSeGuiPin.GetValueFloat: Single;
 begin
- GetModule.CallHost(seGuiHostPlugGetVal, getIndex, 0, @result);
+ FModule.CallHost(seGuiHostPlugGetVal, FIndex, 0, @result);
+end;
+
+procedure TSEGuiPin.SetValueAsString(const Value: TSeSdkString);
+begin
+ FModule.CallHost(seGuiHostPlugSetValText, FIndex, 0, @Value);
+end;
+
+procedure TSEGuiPin.SetValueBool(const Value: Boolean);
+begin
+ FModule.CallHost(seGuiHostPlugSetVal, FIndex, Integer(Value), nil);
 end;
 
 procedure TSeGuiPin.setValueFloat(Value: Single);
 begin
- GetModule.CallHost(seGuiHostPlugSetVal, getIndex, 0, nil, Value);
+ FModule.CallHost(seGuiHostPlugSetVal, FIndex, 0, nil, Value);
 end;
 
 procedure TSeGuiPin.setValueInt(Value: Integer);
 begin
- GetModule.CallHost(seGuiHostPlugSetVal, getIndex, Value, nil);
+ FModule.CallHost(seGuiHostPlugSetVal, FIndex, Value, nil);
 end;
 
 function TSeGuiPin.getExtraData: TSeSdkString2;
@@ -333,11 +369,11 @@ var
   StringLength : Integer;
   Temp         : PWideChar;
 begin
- StringLength := getModule.CallHost(seGuiHostPlugGetExtraData, getIndex, 0, nil);
+ StringLength := FModule.CallHost(seGuiHostPlugGetExtraData, FIndex, 0, nil);
  GetMem(Temp, StringLength * 2);
  try
-  getModule.CallHost(seGuiHostPlugGetExtraData, getIndex, StringLength, temp);
-  result := temp;
+  FModule.CallHost(seGuiHostPlugGetExtraData, FIndex, StringLength, temp);
+  Result := temp;
  finally
   Dispose(temp);
  end;
@@ -377,7 +413,6 @@ end;
 function TSEGUIBase.Dispatcher(Opcode: TSEGuiPluginOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer;
 var
   pnt : TSEPoint;
-  pin : TSeGuiPin;
 begin
  result := 0;
  case Opcode of
@@ -407,8 +442,8 @@ begin
   seGuiOnModuleMessage: GuiModuleMsg(Value, Index, Ptr);
   seGuiOnGuiPlugValueChange:
    begin
-    pin.Init(Index, Self);
-    GuiPinValueChange(@pin);
+    StaticPin.Init(Index, Self);
+    GuiPinValueChange(StaticPin);
    end;
   seGuiOnWindowOpen    : GuiWindowOpen(PSEWndInfo(Ptr));
   seGuiOnWindowClose   : GuiWindowClose(PSEWndInfo(Ptr));
@@ -421,7 +456,7 @@ end;
 function TSEGUIBase.CallHost(Opcode: TSEGuiHostOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer;
 begin
  assert(assigned(FAudioMaster));
- result := FAudioMaster(@FEffect, Integer(Opcode), Index, Value, Ptr, Opt);
+ result := FAudioMaster(@FEffect, Opcode, Index, Value, Ptr, Opt);
 end;
 
 procedure TSEGUIBase.Close;
@@ -440,10 +475,10 @@ begin
   then FOnDisconnect(Self, PinIndex);
 end;
 
-procedure TSEGUIBase.GuiPinValueChange(Pin: TSeGuiPin);
+procedure TSEGUIBase.GuiPinValueChange(CurrentPin: TSeGuiPin);
 begin
  if assigned(FOnPinValueChange)
-  then FOnPinValueChange(Self, Pin);
+  then FOnPinValueChange(Self, CurrentPin);
 end;
 
 function TSEGUIBase.GuiIdle: Boolean;
@@ -526,15 +561,12 @@ begin
 end;
 
 function TSEGUIBase.getPin(Index: Integer): TSeGuiPin;
-var
-  Pin : TSeGuiPin; // static
 begin
   // there are no pins.
   // pins currently hold no state, implement them as a flyweight (saves having
   // to track pin add/remove, we're not notified of autoduplicate add/remove anyhow)
-  Pin := TSEGuiPin.Create;
-  Pin.Init(Index, Self);
-  result := Pin;
+  StaticPin.Init(Index, Self);
+  result := StaticPin;
 
  //{ return &m_pins[Index];}
 end;
@@ -561,5 +593,11 @@ function TSEGUIBase.GetCapture(WI: PSEWndInfo): Boolean;
 begin
   result := CallHost(seGuiHostGetCapture, 0, 0, WI) <> 0;
 end;
+
+initialization
+  StaticPin := TSEGuiPin.Create;
+
+finalization
+  FreeAndNil(StaticPin);
 
 end.

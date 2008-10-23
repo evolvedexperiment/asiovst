@@ -30,15 +30,16 @@ type
     function Handle: THandle;
     procedure SendStringToAudio(AMsgID, ALength: Integer; AData: Pointer);
     function InvalidateControl: Integer;
-  public
-    constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); override;
+  protected
     procedure GuiPaint(hDC: HDC; wi: PSEWndInfo); override;
     procedure GuiModuleMsg(AUserMsgID, ALength: Integer; AData: Pointer); override;
     procedure GuiLButtonDown(wi: PSEWndInfo; nFlags: Cardinal; Pnt: TSEPoint); override;
     procedure GuiLButtonUp(wi: PSEWndInfo; nFlags: Cardinal; Point: TSEPoint); override;
     procedure GuiMouseMove(wi: PSEWndInfo; nFlags: Cardinal; Pnt: TSEPoint); override;
+    procedure GuiPinValueChange(CurrentPin: TSeGuiPin); override;
+  public
+    constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); override;
     procedure Initialise(LoadedFromFile: Boolean); override;
-    procedure GuiPinValueChange(Pin: TSeGuiPin); override;
     class procedure UpdateNodes(FNodes: PPoints; var AValues: TSeSdkString);
   end;
 
@@ -101,7 +102,7 @@ begin
  OnValueChanged; // initial value
 end;
 
-procedure TSEWaveshaperGui.GuiPinValueChange(Pin: TSeGuiPin);
+procedure TSEWaveshaperGui.GuiPinValueChange(CurrentPin: TSeGuiPin);
 begin
  OnValueChanged;
 end;
@@ -123,12 +124,12 @@ end;
 
 function TSEWaveshaperGui.GetValueS: TSeSdkString;
 begin
- result := getPin(pinShape).getValueText;
+ result := Pin[pinShape].getValueText;
 end;
 
 procedure TSEWaveshaperGui.SetValueS(AString: TSeSdkString);
 begin
-  getPin(pinShape).setValueText(AString);
+  Pin[pinShape].setValueText(AString);
 end;
 
 function TSEWaveshaperGui.DefaultValue: TSeSdkString;

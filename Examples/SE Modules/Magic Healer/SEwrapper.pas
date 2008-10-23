@@ -76,7 +76,7 @@ begin
       Magic := 2 * Magic;
 
       // comment the following line to let the wrapper run inside the VST as well!
-      assert(Magic = SepMagic);
+//      assert(Magic = SepMagic);
      end;
   end;
 end;

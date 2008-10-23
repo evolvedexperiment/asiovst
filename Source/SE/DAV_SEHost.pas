@@ -3,11 +3,12 @@ unit DAV_SEHost;
 interface
 
 uses
-  Windows, Classes, SysUtils, DAV_SECommon, DAV_SEModule, DAV_DLLLoader;
+  Windows, Classes, SysUtils, DAV_SECommon, DAV_SEModule, DAV_SEGUI,
+  DAV_DLLLoader;
 
 type
   TSEGetModuleProperties = function(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl;
-  TSEMakeModule = function(Index, ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl;
+  TSEMakeModule = function(Index, ProcessType: Integer; Callback: Pointer; Reserved: Pointer): Pointer; cdecl;
 
   TCustomSEHost = class;
   TCustomSEHostedModule = class;
@@ -18,6 +19,10 @@ type
     FProperties       : TSEModuleProperties;
     FSEHostedModule   : TCustomSEHostedModule;
     FSE2ModStructBase : PSE2ModStructBase;
+    FSEGUIStructBase  : PSEGUIStructBase;
+
+    FOnRepaintRequest : TNotifyEvent;
+
     function GetAbout: string;
     function GetID: string;
     function GetName: string;
@@ -25,13 +30,21 @@ type
     function GetActive: Boolean;
     function GetMagic: Integer;
     function GetVersion: Integer;
+    procedure DisposeStructures;
   protected
     function CallPlugin(Opcode: TSEPluginModuleOpcodes; Index: Integer = 0;
       Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer; virtual;
+    procedure GuiHostRepaintRequest;
+    function GuiHostGetHandle: THandle;
+    procedure GuiHostSetWindowSize(const x, y: Integer);
+    procedure GuiHostSetWindowSizeable;
+    procedure GuiHostAddGuiPlug;
+    function GuiHostGetTotalPinCount: Integer;
+    procedure GuiHostResolveFilename(FileName: PWideChar; MaxStringLength: Integer);
   public
     constructor Create(Owner: TCustomSEHostedModule; Index: Integer = 0;
       Properties: PSEModuleProperties = nil); virtual;
-    procedure Instanciate; virtual;  
+    procedure Instanciate; virtual;
     procedure Open; virtual;
     procedure Close; virtual;
     procedure AddEvent(Event: TSEEvent); virtual;
@@ -51,6 +64,8 @@ type
     property Magic: Integer read GetMagic;
     property Version: Integer read GetVersion;
     property About: string read GetAbout;
+
+    property OnRepaintRequest: TNotifyEvent read FOnRepaintRequest write FOnRepaintRequest;
   end;
 
   TCustomSEHostedModule = class(TCollectionItem)
@@ -184,83 +199,228 @@ end;
 
 function SE2AudioMasterCallback(Effect: PSE2ModStructBase; Opcode: TSEHostOpcodes; Index, Value: Integer; Ptr : Pointer; Opt : Single): Integer; cdecl;
 begin
- if (Effect = nil) or not (TObject(Effect.HostPtr) is TCustomSEHostedModulePart) then
-  begin
-   result := 0;
-   exit;
+ result := 0;
+ if (Effect = nil) or not (TObject(Effect.HostPtr) is TCustomSEHostedModulePart)
+  then exit;
+
+{
+ with TCustomSEHostedModulePart(Effect.HostPtr) do
+  case Opcode of
+   SEAudioMasterSetPinStatus       : result := AMSetPinStatus;
+   SEAudioMasterIsPinConnected     : result := AMIsPinConnected;
+   SEAudioMasterGetPinInputText    : result := AMGetPinInputText;   // gets pointer to plugs input string (DT_TEXT only)
+   SEAudioMasterGetSampleClock     : result := AMGetSampleClock;    // get current sampleclock at block start
+   SEAudioMasterSendMIDI           : result := AMSendMIDI;          // send short MIDI msg
+   SEAudioMasterGetInputPinCount   : result := AMGetInputPinCount;  // total AUDIO ins
+   SEAudioMasterGetOutputPinCount  : result := AMGetOutputPinCount; // total AUDIO outs
+   SEAudioMasterGetPinVarAddress   : result := AMGetPinVarAddress;
+   SEAudioMasterGetBlockStartClock : result := AMGetBlockStartClock;
+   SEAudioMasterGetTime            : result := AMGetTime;
+   SEAudioMasterSleepMode          : result := AMSleepMode;
+   SEAudioMasterGetRegisteredName  : result := AMGetRegisteredName; // limited to 50 characters or less
+   (* EXAMPLE CALLING CODE
+     name : array [0..49] of Char;
+     CallHost(SEAudioMasterGetRegisteredName, 0, 0, @name[0]);
+   *)
+   SEAudioMasterGetFirstClone      : result := AMGetFirstClone;
+   SEAudioMasterGetNextClone       : result := AMGetNextClone;
+   (* EXAMPLE CALLING CODE
+
+     procedure IterateThroughAllClones;
+     var
+       CloneStruct : PSE2ModStructBase;
+       Clone       : PModule;
+     begin
+       // get first one
+       CallHost(SEAudioMasterGetFirstClone, 0, 0, CloneStruct);
+
+       while (clone_struct <> 0)
+        begin
+         // convert host's clone pointer to a 'Module' object
+         Clone := PModule(CloneStruct.Object);
+
+         // Access each clone here
+
+         // step to Next clone
+         Clone.CallHost(SEAudioMasterGetNextClone, 0, 0, CloneStruct);
+        end;
+     end;
+   *)
+   SEAudioMasterGetTotalPinCount   : result := AMGetTotalPinCount;   // Total pins of all types
+   SEAudioMasterCallVstHost        : result := AMCallVstHost;        // Call VST Host direct (see se_call_vst_host_params struct)
+   SEAudioMasterResolveFilename    : result := AMResolveFilename;    // get full path from a short filename, (int pin_idx, float max_characters, Char *destination)
+   SEAudioMasterSendStringToGui    : result := AMSendStringToGui;    // Reserved for Experimental use (by Jef)
+   SEAudioMasterGetModuleHandle    : result := AMGetModuleHandle;    // Reserved for Experimental use (by Jef)
+   SEAudioMasterAddEvent           : result := AMAddEvent;           // pass SeEvent *, host will copy data from struct. Safe to discard after call.
+   SEAudioMasterCreateSharedLookup : result := AMCreateSharedLookup;
+   SEAudioMasterSetPinOutputText   : result := AMSetPinOutputText;   // sets plug's output string (DT_TEXT only)
+   SEAudioMasterSetProcessFunction : result := AMSetProcessFunction; // sets the current SubProcess function
+   SEAudioMasterResolveFilename2   : result := AMrResolveFilename2;  // get full path from a short filename - UNICODE
+   (* EXAMPLE CALLING CODE
+     uses windows;  //for WideCharToMultiByte
+
+     // get the full path of an imbedded file when you only know it's short name
+     const
+       MAX_FILENAME_LENGTH : Integer = 300;
+
+     // Both source and destination are UNICODE (two-byte) character strings
+     unsigned short *source = L"test.txt";
+     unsigned short dest[MAX_FILENAME_LENGTH];
+
+     CallHost(SEAudioMasterResolveFilename2, Integer(source), MAX_FILENAME_LENGTH, &dest);
+
+     // to convert to ascii (optional)
+     Char ascii_filename[MAX_FILENAME_LENGTH];
+     WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_filename, MAX_FILENAME_LENGTH, NULL, NULL);
+   *)
+   SEAudioMasterGetSeVersion       : result := AMHostVersion; // returns SE Version number times 100,000 ( e.g. 120000 is V 1.2 )
+   else raise Exception.Create('Unknown Opcode');
   end;
+}
+end;
 
- case Opcode of
-  SEAudioMasterSetPinStatus       : result := 0;
-  SEAudioMasterIsPinConnected     : result := 0;
-  SEAudioMasterGetPinInputText    : result := 0; // gets pointer to plugs input string (DT_TEXT only)
-  SEAudioMasterGetSampleClock     : result := 0; // get current sampleclock at block start
-  SEAudioMasterSendMIDI           : result := 0; // send short MIDI msg
-  SEAudioMasterGetInputPinCount   : result := 0; // total AUDIO ins
-  SEAudioMasterGetOutputPinCount  : result := 0; // total AUDIO outs
-  SEAudioMasterGetPinVarAddress   : result := 0;
-  SEAudioMasterGetBlockStartClock : result := 0;
-  SEAudioMasterGetTime            : result := 0;
-  SEAudioMasterSleepMode          : result := 0;
-  SEAudioMasterGetRegisteredName  : result := 0; // limited to 50 characters or less
-  (* EXAMPLE CALLING CODE
-    name : array [0..49] of Char;
-    CallHost(SEAudioMasterGetRegisteredName, 0, 0, @name[0]);
-  *)
-  SEAudioMasterGetFirstClone      : result := 0;
-  SEAudioMasterGetNextClone       : result := 0;
-  (* EXAMPLE CALLING CODE
+function SEGuiCallback(Effect: PSEGUIStructBase; Opcode: TSEGuiHostOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
+begin
+ result := 0;
+ if (Effect = nil) or not (TObject(Effect.HostPtr) is TCustomSEHostedModulePart)
+  then exit;
 
-    procedure IterateThroughAllClones;
-    var
-      CloneStruct : PSE2ModStructBase;
-      Clone       : PModule;
-    begin
-      // get first one
-      CallHost(SEAudioMasterGetFirstClone, 0, 0, CloneStruct);
+ with TCustomSEHostedModulePart(Effect.HostPtr) do
+  case Opcode of
+   seGuiHostRequestRepaint         : GuiHostRepaintRequest;
+   seGuiHostGetHandle              : result := GuiHostGetHandle;
+   seGuiHostSendStringToAudio      : result := 0;  // SendStringToAudio test
+   seGuiHostSetWindowSize          : GuiHostSetWindowSize(Index, Value);
+   seGuiHostSetWindowSizeable      : GuiHostSetWindowSizeable;
+   seGuiHostGetTotalPinCount       : result := GuiHostGetTotalPinCount;
+   seGuiHostPlugSetValText         : result := 0;
+   seGuiHostPlugGetValText         : result := 0;
+   seGuiHostAddGuiPlug             : GuiHostAddGuiPlug;
+   seGuiRegisterPatchParameter     : result := 0; // Obsolete, use IO_PATCH_STORE or IO_UI_COMMUNICATION_DUAL flags instead. Will crash module on destruction (mayby need Unregister Opcode to fix this)
+   seGuiHostGetFontInfo            : result := 0;
+   seGuiHostSetWindowType          : result := 0; // pass 1 to provide your GuiModule with a 'real' HWND (else SE draws your module on the parent window)
+   seGuiHostGetWindowHandle        : result := 0;
+   (* example code... (WI is a SEWndInfo pointer )
+     result := HWND(CallHost(seGuiHostGetWindowHandle, WI.context_handle));
+   *)
+   seGuiHostSetWindowFlags         : result := 0;
+   seGuiHostPlugGetVal             : result := 0;
+   seGuiHostPlugSetVal             : result := 0;
+   seGuiHostPlugSetExtraData       : result := 0;  // sets enum list or file extension (depending on datatype)
+   (* example code...
+     // pass pin number and new list
+     CallHost(seGuiHostPlugSetExtraData, 4, 0, 'moose, cat, dog', 0);
+   *)
+   seGuiHostPlugGetExtraData       : result := 0;  // gets enum list or file extension (depending on datatype). Easier to use SeGuiPin.getExtraData
+   (* example code...
+     var
+       string_length : Integer;
+       dest          : ^wchar_t;
+       ascii_text    : PChar;
+     begin
+      string_length := CallHost(seGuiHostPlugGetExtraData, getIndex, 0, 0);
 
-      while (clone_struct <> 0)
-       begin
-        // convert host's clone pointer to a 'Module' object
-        Clone := PModule(CloneStruct.Object);
+      // Destination is UNICODE (two-byte) character string
+      dest := new wchar_t[string_length];
 
-        // Access each clone here
+      CallHost(seGuiHostPlugGetExtraData, PN_ENUM_OUT, string_length, @dest);
 
-        // step to Next clone
-        Clone.CallHost(SEAudioMasterGetNextClone, 0, 0, CloneStruct);
-       end;
-    end;
-  *)
-  SEAudioMasterGetTotalPinCount   : result := 0; // Total pins of all types
-  SEAudioMasterCallVstHost        : result := 0; // Call VST Host direct (see se_call_vst_host_params struct)
-  SEAudioMasterResolveFilename    : result := 0; // get full path from a short filename, (int pin_idx, float max_characters, Char *destination)
-  SEAudioMasterSendStringToGui    : result := 0; // Reserved for Experimental use (by Jef)
-  SEAudioMasterGetModuleHandle    : result := 0; // Reserved for Experimental use (by Jef)
-  SEAudioMasterAddEvent           : result := 0; // pass SeEvent *, host will copy data from struct. Safe to discard after call.
-  SEAudioMasterCreateSharedLookup : result := 0;
-  SEAudioMasterSetPinOutputText   : result := 0; // sets plug's output string (DT_TEXT only)
-  SEAudioMasterSetProcessFunction : result := 0; // sets the current SubProcess function
-  SEAudioMasterResolveFilename2   : result := 0; // get full path from a short filename - UNICODE
-  (* EXAMPLE CALLING CODE
-    uses windows;  //for WideCharToMultiByte
+      // to convert to ascii
+      ascii_text := new char[string_length];
+      WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_text, MAX_STRING_LENGTH, nil, nil);
 
-    // get the full path of an imbedded file when you only know it's short name
-    const
-      MAX_FILENAME_LENGTH : Integer = 300;
+      // clean up
+      Dispose(dest);
+      Dispose(ascii_text);
+     end;
+   *)
+   seGuiHostSetCapture             : result := 0; // see SEGUI_base::SetCapture(...)
+   seGuiHostReleaseCapture         : result := 0;
+   seGuiHostGetCapture             : result := 0;
+   seGuiHostCallVstHost            : result := 0; // pass se_call_vst_host_params structure in Ptr
+   seGuiHostSetIdle                : result := 0; // pass 1 to receive regular calls to OnIdle(), pass zero to cancel
+   seGuiHostGetModuleFilename      : result := 0; // returns full module path
+   (* example code...
+     const
+       MAX_STRING_LENGTH : Integer = 300;
+     var
+       dest       : array [0..MAX_STRING_LENGTH-1] of ShortInt;
+       ascii_text : array [0..MAX_STRING_LENGTH-1] of Char;
+     begin
+      // Destination is UNICODE (two-byte) character string
+      CallHost(seGuiHostGetModuleFilename, 0, MAX_STRING_LENGTH, @dest);
 
-    // Both source and destination are UNICODE (two-byte) character strings
-    unsigned short *source = L"test.txt";
-    unsigned short dest[MAX_FILENAME_LENGTH];
+      // to convert to ascii
+      WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_text, MAX_STRING_LENGTH, nil, nil);
+     end;
+   *)
+   seGuiHostResolveFilename     : GuiHostResolveFilename(Ptr, Value); // returns full module path
+   (* example code...
+     const
+       MAX_STRING_LENGTH : Integer = 300;
+     var
+       dest       : array [0..MAX_STRING_LENGTH-1] of ShortInt;
+       ascii_text : array [0..MAX_STRING_LENGTH-1] of Char;
+     begin
+      // Destination is UNICODE (two-byte) character string
+      // convert filename to UNICODE
+      MultiByteToWideChar(CP_ACP, 0, "test.wav", -1, LPWSTR(@dest), MAX_STRING_LENGTH);
 
-    CallHost(SEAudioMasterResolveFilename2, Integer(source), MAX_FILENAME_LENGTH, &dest);
+      // query full filename (SE concatenates default path for that type of file, depending on file extension)
+      CallHost(seGuiHostResolveFilename, 0, MAX_STRING_LENGTH, @dest);
 
-    // to convert to ascii (optional)
-    Char ascii_filename[MAX_FILENAME_LENGTH];
-    WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_filename, MAX_FILENAME_LENGTH, NULL, NULL);
-  *)
-  SEAudioMasterGetSeVersion       : result := 0; // returns SE Version number times 100,000 ( e.g. 120000 is V 1.2 )
-  else result := 0;
- end;
+      // to convert to ascii
+      WideCharToMultiByte(CP_ACP, 0, dest, -1, ascii_text, MAX_STRING_LENGTH, nil, nil);
+     end;
+   *)
+   seGuiHostGetHostType            : result := 0; // return code 0 = unsuported, 1 = module is running in SynthEdit, 2 = Module is in a VST plugin (made with SE)
+   seGuiHostRemoveGuiPlug          : result := 0;
+   seGuiHostGetParentContext       : result := 0; // Get 'handle' of parent window.  This is an SE handle, not an HWND. Use seGuiHostGetWindowHandle to convert.
+   seGuiHostMapWindowPoints        : result := 0; // map a point on one window to the co-ordinate system of a 2nd window
+   (*
+     var
+       parent_context : Integer;
+       h              : HWND;
+     begin
+       // Example: getting parent HWND, and your position relative to it
+       parent_context := WI.context_handle;
+       h := 0;
+       while h = 0 do
+        begin
+         parent_context = CallHost(seGuiHostGetParentContext, parent_context);
+         h := HWND(CallHost(seGuiHostGetWindowHandle, parent_context));
+        end;
+
+       sepoint offset(0,0);
+       CallHost(seGuiHostMapWindowPoints, WI.context_handle, parent_context, @offset, 0);
+     end;
+   *)
+   seGuiHostMapClientPointToScreen : result := 0; // maps a point on your gui to the system screen (absolute co-ords)
+   (*
+     // Example: converting a point on your GUI to an absolute co-ordinate. Useful for pop-up menus
+     var
+       offset : TSEPoint;
+     begin
+       offset.x := 0;
+       offset.y := 0;
+       CallHost(seGuiHostMapClientPointToScreen, WI.context_handle, 0, @offset, 0);
+     end;
+   *)                              
+   seGuiHostInvalidateRect         : result := 0; // invlalidate (cause redraw) of any SE window
+   (*
+     var
+       n: TRect;
+     begin
+       n.top = 0;
+       n.bottom = 1;
+       n.left = 2;
+       n.right = 20;
+       CallHost(seGuiHostInvalidateRect, WI.context_handle, 0, @n, 0);
+     end;
+   *)                              
+   seGuiHostIsGraphInitialsed      : result := 0; // test if pin updates are due to file loading, or from user.
+   else raise Exception.Create('Unknown Opcode');
+  end; 
 end;
 
 { TCustomSEHostedModulePart }
@@ -270,6 +430,7 @@ constructor TCustomSEHostedModulePart.Create(Owner: TCustomSEHostedModule;
 begin
  FIndex := Index;
  FSE2ModStructBase := nil;
+ FSEGUIStructBase := nil;
  FSEHostedModule := Owner;
  if assigned(Properties)
   then FProperties := Properties^
@@ -314,6 +475,43 @@ begin
  result := FSE2ModStructBase.Version;
 end;
 
+procedure TCustomSEHostedModulePart.GuiHostAddGuiPlug;
+begin
+ // do nothing yet;
+end;
+
+function TCustomSEHostedModulePart.GuiHostGetHandle: THandle;
+begin
+ result := 0;
+end;
+
+function TCustomSEHostedModulePart.GuiHostGetTotalPinCount: Integer;
+begin
+ result := 0; // ToDo
+end;
+
+procedure TCustomSEHostedModulePart.GuiHostRepaintRequest;
+begin
+ if assigned(FOnRepaintRequest)
+  then FOnRepaintRequest(Self);
+end;
+
+procedure TCustomSEHostedModulePart.GuiHostResolveFilename(FileName: PWideChar;
+  MaxStringLength: Integer);
+begin
+ // do nothing yet
+end;
+
+procedure TCustomSEHostedModulePart.GuiHostSetWindowSize(const x, y: Integer);
+begin
+ // do nothing yet
+end;
+
+procedure TCustomSEHostedModulePart.GuiHostSetWindowSizeable;
+begin
+ // do nothing yet
+end;
+
 procedure TCustomSEHostedModulePart.GuiNotify(Value: Integer = 0; Index: Integer = 0; Ptr: Pointer = nil);
 begin
  if Active
@@ -323,10 +521,26 @@ end;
 procedure TCustomSEHostedModulePart.Instanciate;
 begin
  try
-  FSE2ModStructBase := FSEHostedModule.FMakeModule(FIndex, 1, SE2AudioMasterCallback, Self);
+  DisposeStructures;
+  FSE2ModStructBase := FSEHostedModule.FMakeModule(FIndex, 1, @SE2AudioMasterCallback, Self);
+  FSEGUIStructBase  := FSEHostedModule.FMakeModule(FIndex, 2, @SEGuiCallback, Self); // nasty
  except
   FSE2ModStructBase := nil;
  end;
+end;
+
+procedure TCustomSEHostedModulePart.DisposeStructures;
+begin
+ if assigned(FSE2ModStructBase) then
+  begin
+   Dispose(FSE2ModStructBase);
+   FSE2ModStructBase := nil;
+  end;
+ if assigned(FSEGUIStructBase) then
+  begin
+   Dispose(FSEGUIStructBase);
+   FSEGUIStructBase := nil;
+  end;
 end;
 
 function TCustomSEHostedModulePart.IsEventListEmpty: Boolean;

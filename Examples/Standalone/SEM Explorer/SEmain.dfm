@@ -24,7 +24,6 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
     Align = alClient
     ScrollBars = ssVertical
     TabOrder = 0
-    ExplicitHeight = 420
   end
   object MainMenu: TMainMenu
     Left = 8

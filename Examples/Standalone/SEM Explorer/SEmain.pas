@@ -132,6 +132,7 @@ begin
       dtInteger  : Memo.Lines.Add('DataType: Integer');
       dtBlob     : Memo.Lines.Add('DataType: Blob');
      end;
+     Memo.Lines.Add('Flags: '         + IOFlagsToString(Pin.Flags));
      Memo.Lines.Add('Name: '          + Pin.Name);
      Memo.Lines.Add('DefaultValue: '  + Pin.DefaultValue);
      if assigned(Pin.DatatypeExtra)

@@ -12,9 +12,10 @@ const
 
 type
   TSEIntToListGui = class(TSEGUIBase)
+  protected
+    procedure GuiPinValueChange(CurrentPin: TSeGuiPin); override;
   public
     constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); override;
-    procedure GuiPinValueChange(Pin: TSeGuiPin); override;
   end;
 
 implementation
@@ -27,7 +28,7 @@ begin
  inherited;
 end;
 
-procedure TSEIntToListGui.GuiPinValueChange(Pin: TSeGuiPin);
+procedure TSEIntToListGui.GuiPinValueChange(CurrentPin: TSeGuiPin);
 var
   Mode      : Integer;
   InValue   : Integer;
@@ -36,35 +37,35 @@ var
   ExtraData : TSeSdkString2;
 begin
  inherited;
- Mode := getPin(pinMode).getValueInt;
+ Mode := Pin[pinMode].getValueInt;
 
- case Pin.GetIndex of
+ case CurrentPin.GetIndex of
   pinIn,
   pinMode:
    begin
-    InValue := getPin(pinIn).getValueInt;
+    InValue := Pin[pinIn].getValueInt;
     if (Mode = 0) then // calc what value this index maps to
      begin
-      ExtraData := getPin(pinOut).getExtraData;
+      ExtraData := Pin[pinOut].getExtraData;
       it := TItEnumList.Create(ExtraData);
       it.First;
       while (not it.IsDone) and (it.CurrentItem^.Index <> InValue) do it.Next;
       if not it.IsDone
-       then getPin(pinOut).setValueInt(it.CurrentItem^.value);
-     end else getPin(pinOut).setValueInt(InValue);
+       then Pin[pinOut].setValueInt(it.CurrentItem^.value);
+     end else Pin[pinOut].setValueInt(InValue);
    end;
   pinOut:
    begin
-    OutValue := getPin(pinOut).getValueInt;
+    OutValue := Pin[pinOut].getValueInt;
     if Mode = 0 then // calc what index this value maps to
      begin
-      ExtraData := getPin(pinOut).getExtraData;
+      ExtraData := Pin[pinOut].getExtraData;
       it := TItEnumList.Create(ExtraData);
       it.First;
       while (not it.IsDone) and (it.CurrentItem^.Index <> OutValue) do it.Next;
       if not it.IsDone
-       then getPin(pinIn).setValueInt(it.CurrentItem^.value);
-     end else getPin(pinIn).setValueInt(OutValue);
+       then Pin[pinIn].setValueInt(it.CurrentItem^.value);
+     end else Pin[pinIn].setValueInt(OutValue);
    end;
  end;
 end;
