@@ -12,23 +12,27 @@ type
   end;
 
   TSEBrushedMetalModule = class(TSEModuleBase)
-  private
+  protected
     FHue        : Single;
     FLuminance  : Single;
     FSaturation : Single;
     FAmount     : Single;
-  protected
     procedure Open; override;
     procedure GuiNotify(AUserMsgID: Integer; ASize: Integer; AData: Pointer); override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
-    destructor Destroy; override;
 
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
 
     procedure SubProcessSleep(const BufferOffset, SampleFrames: Integer);
+  end;
+
+  TSEBrushedMetalExModule = class(TSEBrushedMetalModule)
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
   end;
 
 implementation
@@ -42,20 +46,9 @@ begin
  FAmount     := 0.2;
 end;
 
-destructor TSEBrushedMetalModule.Destroy;
-begin
- // This is where you free any memory/resources your module has created
- inherited;
-end;
-
 procedure TSEBrushedMetalModule.Open;
 begin
  inherited Open;
-
- FHue        := 0.1;
- FLuminance  := 0.1;
- FSaturation := 0.2;
- FAmount     := 0.2;
 
  // choose which function is used to process audio
  OnProcess := SubProcessSleep;
@@ -113,7 +106,7 @@ begin
                VariableAddress := @FHue;
                Direction       := drParameter;
                Datatype        := dtSingle;
-               Flags           := [iofHideWhenLocked, iofUICommunication];
+               Flags           := [iofHideWhenLocked, iofUICommunication, iofPatchStore];
                DefaultValue    := '0.1';
               end;
   1: with Properties^ do
@@ -122,7 +115,7 @@ begin
                VariableAddress := @FSaturation;
                Direction       := drParameter;
                Datatype        := dtSingle;
-               Flags           := [iofHideWhenLocked, iofUICommunication];
+               Flags           := [iofHideWhenLocked, iofUICommunication, iofPatchStore];
                DefaultValue    := '0.1';
               end;
   2: with Properties^ do
@@ -131,7 +124,7 @@ begin
                VariableAddress := @FLuminance;
                Direction       := drParameter;
                Datatype        := dtSingle;
-               Flags           := [iofHideWhenLocked, iofUICommunication];
+               Flags           := [iofHideWhenLocked, iofUICommunication, iofPatchStore];
                DefaultValue    := '0.2';
               end;
   3: with Properties^ do
@@ -140,11 +133,11 @@ begin
                VariableAddress := @FAmount;
                Direction       := drParameter;
                Datatype        := dtSingle;
-               Flags           := [iofHideWhenLocked, iofUICommunication];
+               Flags           := [iofHideWhenLocked, iofUICommunication, iofPatchStore];
                DefaultValue    := '0.2';
               end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 procedure TSEBrushedMetalModule.GuiNotify(AUserMsgID: Integer; ASize: Integer; AData: Pointer);
@@ -189,5 +182,52 @@ begin
  inherited;
 end;
 *)
+
+{ TSEBrushedMetalExModule }
+
+class procedure TSEBrushedMetalExModule.GetModuleProperties(Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Brushed Metal Exposed';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'Synthedit Brushed Metal Exposed';
+   GuiFlags   := [gfControlView, gfStructureView];
+  end;
+end;
+
+function TSEBrushedMetalExModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case Index of
+  0: with Properties^ do
+      begin
+       Direction       := drIn;
+       Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
+      end;
+  1: with Properties^ do
+      begin
+       Direction       := drIn;
+       Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
+      end;
+  2: with Properties^ do
+      begin
+       Direction       := drIn;
+       Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
+      end;
+  3: with Properties^ do
+      begin
+       Direction       := drIn;
+       Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
+      end;
+ end;
+end;
 
 end.

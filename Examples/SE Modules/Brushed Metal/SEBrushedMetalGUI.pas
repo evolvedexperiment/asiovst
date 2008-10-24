@@ -3,7 +3,7 @@ unit SEBrushedMetalGUI;
 interface
 
 uses
-  Windows, Classes, Controls, DAV_SEModule, DAV_SEGUI, Graphics,
+  Windows, Classes, DAV_SEModule, DAV_SEGUI, Graphics,
   SEBrushedMetalModule;
 
 type
@@ -20,16 +20,13 @@ type
   private
     FColor     : TColor;
     FBitmap    : TBitmap;
-    FFontInfo  : TSeFontInfo;
-    function Handle: THandle;
-    procedure SendStringToAudio(AMsgID, ALength: Integer; AData: Pointer);
     function InvalidateControl: Integer;
     procedure BitmapChanged(Sender: TObject);
   protected
     procedure GuiPaint(hDC: HDC; wi: PSEWndInfo); override;
     procedure GuiModuleMsg(AUserMsgID, ALength: Integer; AData: Pointer); override;
     procedure GuiPinValueChange(CurrentPin: TSeGuiPin); override;
-//    function GuiIdle: Boolean; override;
+    procedure GuiWindowOpen(WI: PSEWndInfo); override;
   public
     constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); override;
     destructor Destroy; override;
@@ -61,7 +58,7 @@ end;
 
 procedure TSEBrushedMetalGui.GuiPaint(hDC: HDC; wi :PSEWndInfo);
 begin
- with TControlCanvas.Create do
+ with TCanvas.Create do
   try
    CallHost(seGuiHostSetWindowSize, 64, 64);
    Handle := hDC;
@@ -132,6 +129,7 @@ begin
                                 Pin[2].ValueAsSingle) and $FFFFFF);
          end;
   3    : NewColor := (FColor and $FFFFFF) or ((round(255 * CurrentPin.ValueAsSingle) shl 24) and $FF000000);
+  else NewColor := FColor;
  end;
  if NewColor <> FColor then
   begin
@@ -142,42 +140,54 @@ begin
  inherited;
 end;
 
+procedure TSEBrushedMetalGui.GuiWindowOpen(WI: PSEWndInfo);
+begin
+ inherited;
+ FColor := (round(255 * Pin[3].ValueAsSingle) shl 24 and $FF000000) or
+           (HSLtoRGB(Pin[0].ValueAsSingle,
+                     Pin[1].ValueAsSingle,
+                     Pin[2].ValueAsSingle) and $FFFFFF);
+
+end;
+
 procedure TSEBrushedMetalGui.BitmapChanged(Sender: TObject);
 var
   x, y, v : Integer;
+  hght    : Integer;
   s       : array[0..1] of Single;
-  b       : ShortInt;
+  h, hr   : Single;
   Line    : PRGB24Array;
 begin
  s[0] := 0;
  s[1] := 0;
- for y := 0 to FBitmap.Height - 1 do
+ hght := FBitmap.Height;
+ hr   := 1 / hght;
+ for y := 0 to hght - 1 do
   begin
    Line := FBitmap.Scanline[y];
+   h    := 0.6 * (1 - sqr(2 * (y - hght div 2) * hr));
    for x := 0 to FBitmap.Width - 1 do
     begin
      s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
      s[0] := s[1];
 
      // blue
-     v := round(TRGB32(FColor).B + TRGB32(FColor).A * s[1]);
+     v := round(TRGB32(FColor).B + TRGB32(FColor).A * (h + s[1]));
      if v < 0 then Line[x].B := 0 else
      if v > 255 then Line[x].B := 255
       else Line[x].B := v;
 
      // green
-     v := round(TRGB32(FColor).G + TRGB32(FColor).A * s[1]);
+     v := round(TRGB32(FColor).G + TRGB32(FColor).A * (h + s[1]));
      if v < 0 then Line[x].G := 0 else
      if v > 255 then Line[x].G := 255
       else Line[x].G := v;
-     Line[x].G := round(TRGB32(FColor).G + TRGB32(FColor).A * s[1]);
 
      // red
-     v := round(TRGB32(FColor).R + TRGB32(FColor).A * s[1]);
+     v := round(TRGB32(FColor).R + TRGB32(FColor).A * (h + s[1]));
      if v < 0 then Line[x].R := 0 else
      if v > 255 then Line[x].R := 255
       else Line[x].R := v;
-     Line[x].R := round(TRGB32(FColor).R + TRGB32(FColor).A * s[1]);
     end;
   end;
 end;
@@ -185,16 +195,6 @@ end;
 procedure TSEBrushedMetalGui.GuiModuleMsg(AUserMsgID, ALength: Integer; AData: Pointer);
 begin
  InvalidateControl;
-end;
-
-procedure TSEBrushedMetalGui.SendStringToAudio(AMsgID, ALength: Integer; AData: Pointer);
-begin
- CallHost(seGuiHostSendStringToAudio, ALength, AMsgID, AData);
-end;
-
-function TSEBrushedMetalGui.Handle: THandle;
-begin
- result := CallHost(seGuiHostGetHandle);
 end;
 
 function TSEBrushedMetalGui.InvalidateControl: Integer;

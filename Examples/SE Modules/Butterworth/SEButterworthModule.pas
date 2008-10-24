@@ -26,7 +26,7 @@ type
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
   end;
 
   TSEButterworthLPModule = class(TSEButterworthModule)
@@ -41,10 +41,28 @@ type
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
+  TSEButterworthLPExModule = class(TSEButterworthLPModule)
+  protected
+    FFreqBuffer : PDAVSingleFixedArray;
+  public
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSEButterworthHPExModule = class(TSEButterworthHPModule)
+  protected
+    FFreqBuffer : PDAVSingleFixedArray;
+  public
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_DspFilter;
 
 constructor TSEButterworthModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
@@ -119,7 +137,7 @@ begin
               Name            := 'Input';
               VariableAddress := @FInput1Buffer;
               Direction       := drIn;
-              Datatype        := dtFSAMPLE;
+              Datatype        := dtFSample;
               DefaultValue    := '0';
              end;
 
@@ -137,6 +155,7 @@ begin
                   VariableAddress := @FFrequency;
                   Direction       := drParameter;
                   DataType        := dtSingle;
+                  Flags           := [iofLinearInput];
                   DefaultValue    := '1000';
                  end;
   pinOrder: with Properties^ do
@@ -145,6 +164,7 @@ begin
               VariableAddress := @FOrder;
               Direction       := drParameter;
               DataType        := dtEnum;
+              Flags           := [iofLinearInput];
               DefaultValue    := '4';
               DatatypeExtra   := 'range -0,64';
              end;
@@ -181,14 +201,14 @@ begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Butterworth Lowpass';
+   Name := 'Butterworth Lowpass Static';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Butterworth Lowpass';
-  end; 
+   ID := 'DAV Butterworth Lowpass Static';
+  end;
 end;
 
 { TSEButterworthHPModule }
@@ -207,13 +227,136 @@ begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Butterworth Highpass';
+   Name := 'Butterworth Highpass Static';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Butterworth Highpass';
+   ID := 'DAV Butterworth Highpass Static';
+  end;
+end;
+
+{ TSEButterworthLPExModule }
+
+class procedure TSEButterworthLPExModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Butterworth Lowpass Automatable';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Butterworth Lowpass Automatable';
+  end;
+end;
+
+function TSEButterworthLPExModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSEButterworthPins(Index) of
+  pinFrequency: with Properties^ do
+                 begin
+                  VariableAddress := @FFreqBuffer;
+                  Direction       := drIn;
+                  Datatype        := dtFSample;
+                  Flags           := [iofLinearInput];
+                  DefaultValue    := '0.5';
+                 end;
+  pinOrder: with Properties^ do
+             begin
+              Direction       := drIn;
+              DataType        := dtEnum;
+              Flags           := [iofLinearInput];
+             end;
+ end;
+end;
+
+procedure TSEButterworthLPExModule.SubProcess(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Input  : PDAVSingleFixedArray;
+  Output : PDAVSingleFixedArray;
+  Freq   : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ Freq   := PDAVSingleFixedArray(@FFreqBuffer[BufferOffset]);
+
+ for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
+  begin
+   FFilter.Frequency := 0.5 * FFreqBuffer[Sample] * FFilter.SampleRate; 
+   Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+  end;
+end;
+
+{ TSEButterworthHPExModule }
+
+class procedure TSEButterworthHPExModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Butterworth Highpass Automatable';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Butterworth Highpass Automatable';
+  end;
+end;
+
+function TSEButterworthHPExModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSEButterworthPins(Index) of
+  pinFrequency: with Properties^ do
+                 begin
+                  VariableAddress := @FFreqBuffer;
+                  Direction       := drIn;
+                  Flags           := [iofLinearInput];
+                  Datatype        := dtFSample;
+                  DefaultValue    := '0.5';
+                 end;
+  pinOrder: with Properties^ do
+             begin
+              VariableAddress := @FOrder;
+              Direction       := drIn;
+              DataType        := dtEnum;
+              Flags           := [iofLinearInput];
+             end;
+ end;
+end;
+
+procedure TSEButterworthHPExModule.SubProcess(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Input  : PDAVSingleFixedArray;
+  Output : PDAVSingleFixedArray;
+  Freq   : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ Freq   := PDAVSingleFixedArray(@FFreqBuffer[BufferOffset]);
+
+ for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
+  begin
+   FFilter.Frequency := 0.5 * FFreqBuffer[Sample] * FFilter.SampleRate; 
+   Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;
 

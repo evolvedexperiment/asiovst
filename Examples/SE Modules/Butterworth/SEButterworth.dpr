@@ -17,6 +17,8 @@ begin
  case Index of // !!TODO!! list your in / out plugs
   0: TSEButterworthLPModule.GetModuleProperties(Properties);
   1: TSEButterworthHPModule.GetModuleProperties(Properties);
+  2: TSEButterworthLPExModule.GetModuleProperties(Properties);
+  3: TSEButterworthHPExModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -39,6 +41,22 @@ begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
         SEModuleBase := TSEButterworthHPModule.Create(SEAudioMaster, Reserved);
+        if assigned(SEModuleBase)
+         then result := SEModuleBase.Effect;
+       end;
+     end;
+  2: begin
+      if (ProcessType = 1) then// Audio Processing Object
+       begin
+        SEModuleBase := TSEButterworthLPExModule.Create(SEAudioMaster, Reserved);
+        if assigned(SEModuleBase)
+         then result := SEModuleBase.Effect;
+       end;
+     end;
+  3: begin
+      if (ProcessType = 1) then// Audio Processing Object
+       begin
+        SEModuleBase := TSEButterworthHPExModule.Create(SEAudioMaster, Reserved);
         if assigned(SEModuleBase)
          then result := SEModuleBase.Effect;
        end;

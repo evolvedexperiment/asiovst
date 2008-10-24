@@ -295,8 +295,7 @@ begin
    SaveIndex := SaveDC(DC);
    try
     SetViewportOrgEx(DC, Pnt.X, Pnt.Y, nil);
-    IntersectClipRect(DC, 0, 0, Control.Parent.ClientWidth,
-       Control.Parent.ClientHeight);
+    IntersectClipRect(DC, 0, 0, Control.Parent.ClientWidth, Control.Parent.ClientHeight);
     with TParentControl(Control.Parent) do
      begin
       Perform(WM_ERASEBKGND, DC, 0);

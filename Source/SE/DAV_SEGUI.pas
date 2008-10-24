@@ -194,7 +194,6 @@ type
     ContextHandle : THandle;
   end;
 
-
   TSEFontInfo = record
     Size            : Integer;
     Color           : Integer;
@@ -257,7 +256,8 @@ type
     function GetPin(Index: Integer): TSEGuiPin;
   protected
     FAudioMaster : TSEGuiCallback;
-    FEffect      : TSEGUIStructBase;
+    FStructBase  : TSEGUIStructBase;
+    function GetSEGUIStructBase: PSEGUIStructBase;
     function GuiIdle: Boolean; virtual;
     procedure GuiDisconnect(PinIndex: Integer); virtual;
     procedure GuiPinValueChange(CurrentPin: TSeGuiPin); virtual;
@@ -272,7 +272,6 @@ type
   public
     constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); virtual;
     destructor Destroy; override;
-    function GetEffect: PSEGUIStructBase;
 
     // called from audio master
     function CallHost(Opcode: TSEGuiHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
@@ -284,6 +283,7 @@ type
     procedure ReleaseCapture(WI: PSEWndInfo);
     procedure SetCapture(WI: PSEWndInfo);
 
+    property SEGUIStructBase: PSEGUIStructBase read GetSEGUIStructBase;
     property Pin[Index: Integer]: TSEGuiPin read GetPin;
   published
     property OnIdle: TNotifyEvent read FOnIdle write FOnIdle;
@@ -320,7 +320,7 @@ end;
 function TSeGuiPin.GetValueText: TSeSdkString;
 begin
  // warning, unstable over 2000 bytes  ( that's 1000 UNICODE characters )
- result := TSeSdkString(FModule.CallHost(seGuiHostPlugGetValText, FIndex, 0, nil));
+ result := PChar(FModule.CallHost(seGuiHostPlugGetValText, FIndex, 0, nil));
 end;
 
 procedure TSEGuiPin.Init(const AIndex: Integer; const AModule: TSEGUIBase);
@@ -394,8 +394,8 @@ end;
 constructor TSEGUIBase.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
 begin
  FAudioMaster := SEGuiCallback;
- FillChar(FEffect, SizeOf(TSEGUIStructBase), 0);
- with FEffect do
+ FillChar(FStructBase, SizeOf(TSEGUIStructBase), 0);
+ with FStructBase do
   begin
    Magic      := SepMagic2;
    Dispatcher := @DispatchEffectClass;
@@ -456,7 +456,7 @@ end;
 function TSEGUIBase.CallHost(Opcode: TSEGuiHostOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer;
 begin
  assert(assigned(FAudioMaster));
- result := FAudioMaster(@FEffect, Opcode, Index, Value, Ptr, Opt);
+ result := FAudioMaster(@FStructBase, Opcode, Index, Value, Ptr, Opt);
 end;
 
 procedure TSEGUIBase.Close;
@@ -584,9 +584,9 @@ begin
 end;
 
 // query mouse capture state
-function TSEGUIBase.GetEffect: PSEGUIStructBase;
+function TSEGUIBase.GetSEGUIStructBase: PSEGUIStructBase;
 begin
- result := @FEffect;
+ result := @FStructBase;
 end;
 
 function TSEGUIBase.GetCapture(WI: PSEWndInfo): Boolean;
