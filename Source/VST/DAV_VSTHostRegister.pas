@@ -8,7 +8,7 @@ procedure Register;
 
 implementation
 
-{$IFNDEF FPC}{$R ..\..\Resources\DAV_VSTHost.res}{$ENDIF}
+{$IFNDEF FPC}{$R ..\..\Resources\DAV_VstHostRegister.res}{$ENDIF}
 
 uses
   {$IFDEF FPC} LResources, {$ENDIF} Classes, DAV_VSTHost;
@@ -20,7 +20,7 @@ end;
 
 {$IFDEF FPC}
   initialization
-  {$i ..\..\Resources\VSTHost.lrs}
+  {$i ..\..\Resources\VstHost.lrs}
 {$ENDIF}
 
 end.

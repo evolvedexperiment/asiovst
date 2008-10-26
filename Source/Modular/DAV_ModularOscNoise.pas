@@ -1,9 +1,9 @@
-unit DAV_DSPOscNoise;
+unit DAV_ModularOscNoise;
 
 interface
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspBaseComponent, DAV_DSPBaseOsc;
+  DAV_Common, DAV_Complex, DAV_ModularBaseComponent, DAV_ModularBaseOsc;
 
 type
   TDspOscNoise = class(TDspBaseOsc)

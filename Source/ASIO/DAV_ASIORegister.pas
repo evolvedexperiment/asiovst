@@ -8,7 +8,7 @@ procedure Register;
 
 implementation
 
-{$IFNDEF FPC}{$R ..\..\Resources\DAV_ASIOHost.res}{$ENDIF}
+{$IFNDEF FPC}{$R ..\..\Resources\DAV_AsioHostRegister.res}{$ENDIF}
 
 uses
   {$IFDEF FPC} LResources, {$ENDIF} Classes, DAV_ASIOHOST, DAV_ASIOGenerator;
@@ -26,7 +26,7 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i ..\..\Resources\DAV_ASIOHost.lrs}
+  {$i ..\..\Resources\DAV_AsioHostRegister.lrs}
 {$ENDIF}
 
 end.

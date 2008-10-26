@@ -478,7 +478,7 @@ type
     property VendorVersion: Integer read FVendorVersion write FVendorVersion;
     property VstPlugIns: TVstPlugIns read FVstPlugIns write SetVstPlugIns;
     property VstTimeInfo: TVstTimeInformation read FVTI write FVTI;
-    property VstVersion: Integer read getHostVersion write setHostVersion;
+    property VstVersion: Integer read GetHostVersion write SetHostVersion;
   end;
 
   TVstHost = class(TCustomVstHost)

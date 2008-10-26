@@ -49,6 +49,7 @@ contains
   DAV_AudioFileWavePack in '..\Source\FileFormats\DAV_AudioFileWavePack.pas',
   DAV_AudioFileMonkeyAudio in '..\Source\FileFormats\DAV_AudioFileMonkeyAudio.pas',
   DAV_ComplexData in '..\Source\DAV_ComplexData.pas',
-  DAV_CommonRegister in '..\Source\DAV_CommonRegister.pas';
+  DAV_CommonRegister in '..\Source\DAV_CommonRegister.pas',
+  DAV_DLLLoader in '..\Source\DAV_DLLLoader.pas';
 
 end.

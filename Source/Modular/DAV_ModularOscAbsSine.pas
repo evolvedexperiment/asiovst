@@ -1,9 +1,9 @@
-unit DAV_DSPOscAbsSine;
+unit DAV_ModularOscAbsSine;
 
 interface
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspBaseComponent, DAV_DSPBaseOsc;
+  DAV_Common, DAV_Complex, DAV_ModularBaseComponent, DAV_ModularBaseOsc;
 
 type
   TDspOscAbsSine = class(TDspBaseOsc)

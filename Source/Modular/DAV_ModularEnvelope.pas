@@ -1,11 +1,11 @@
-unit DAV_DspEnvelope;
+unit DAV_ModularEnvelope;
 
 interface
                
 {$I ASIOVST.inc}
 
 uses
-  DAV_DspBaseComponent, DAV_Common;
+  DAV_ModularBaseComponent, DAV_Common;
 
 type
   TDspEnvelopeInputProcessing = (eipIgnoreInput, eipMultiply, eipAdd);

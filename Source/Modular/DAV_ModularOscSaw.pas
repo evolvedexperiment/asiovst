@@ -1,11 +1,11 @@
-unit DAV_DSPOscSaw;
+unit DAV_ModularOscSaw;
 
 interface
 
 {$I ASIOVST.INC}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspBaseComponent, DAV_DSPBaseOsc;
+  DAV_Common, DAV_Complex, DAV_ModularBaseComponent, DAV_ModularBaseOsc;
 
 type
   TDspOscSaw = class(TDspBaseOsc)

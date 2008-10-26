@@ -1,4 +1,4 @@
-unit DAV_DspVoice;
+unit DAV_ModularVoice;
 
 interface
 

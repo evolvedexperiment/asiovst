@@ -1,9 +1,9 @@
-unit DAV_DSPOscRamp;
+unit DAV_ModularOscRamp;
 
 interface
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspBaseComponent, DAV_DSPBaseOsc;
+  DAV_Common, DAV_Complex, DAV_ModularBaseComponent, DAV_ModularBaseOsc;
 
 type
   TDspOscRamp = class(TDspBaseOsc)

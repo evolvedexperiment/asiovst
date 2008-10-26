@@ -6,7 +6,6 @@ interface
 
 uses
   Classes, DAV_Complex, DAV_Common;
-//  DAV_DspBaseComponent;
 
 type
   TPNType = array[0..1] of TComplexSingle;

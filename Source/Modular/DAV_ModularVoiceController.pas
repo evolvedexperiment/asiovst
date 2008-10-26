@@ -1,11 +1,11 @@
-unit DAV_DspVoiceController;
+unit DAV_ModularVoiceController;
 
 interface
 
 {$I ASIOVST.inc}
 
 uses
-  DAV_DspBaseComponent, DAV_Common, DAV_DspVoiceList, DAV_DspVoice;
+  DAV_ModularBaseComponent, DAV_Common, DAV_ModularVoiceList, DAV_ModularVoice;
 
 type
   TDspVoiceController = class;

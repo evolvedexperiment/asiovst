@@ -1,4 +1,4 @@
-unit DAV_DspBaseComponent;
+unit DAV_ModularBaseComponent;
 
 interface
 
@@ -121,8 +121,8 @@ implementation
 {$ENDIF}
 
 uses
-  Sysutils, Math, DAV_DspVoice
-  {$IFDEF PUREPASCAL},DAV_BufferMathPascal{$ELSE},DAV_BufferMathAsm{$ENDIF};
+  Sysutils, Math, DAV_VSTModuleWithDsp, DAV_ModularVoice
+  {$IFDEF PUREPASCAL}, DAV_BufferMathPascal{$ELSE}, DAV_BufferMathAsm{$ENDIF};
 
 constructor TDspBaseComponent.Create(AOwner: TComponent);
 begin

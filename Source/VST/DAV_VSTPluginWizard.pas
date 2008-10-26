@@ -42,7 +42,7 @@ type
 
 implementation
 
-{$R ..\..\Resources\VSTPluginWizard.RES}
+{$R ..\..\Resources\DAV_VSTPluginWizard.res}
 
 uses
   Dialogs, DAV_VSTProjectCreator, DAV_VSTModuleCreator, DAV_VSTEditorCreator,

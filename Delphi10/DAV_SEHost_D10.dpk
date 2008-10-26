@@ -32,6 +32,7 @@ requires
   DAV_VSTHost_D10;
 
 contains
-  DAV_SEHost in '..\Source\SE\DAV_SEHost.pas';
+  DAV_SEHost in '..\Source\SE\DAV_SEHost.pas',
+  DAV_SEHostRegister in '..\Source\SE\DAV_SEHostRegister.pas';
 
 end.

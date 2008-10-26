@@ -1,11 +1,11 @@
-unit DAV_DspEnvelopeFollower;
+unit DAV_ModularEnvelopeFollower;
 
 interface
 
 {$I ASIOVST.inc}
 
 uses
-  DAV_DspBaseComponent, DAV_Common;
+  DAV_ModularBaseComponent, DAV_Common;
 
 type
   TDspEnvelopeFollower = class(TDspBaseComponent)

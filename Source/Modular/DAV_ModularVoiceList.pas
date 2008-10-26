@@ -1,11 +1,11 @@
-unit DAV_DspVoiceList;
+unit DAV_ModularVoiceList;
 
 interface
 
 {$I ASIOVST.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspVoice;
+  Classes, DAV_Common, DAV_ModularVoice;
 
 type
   TDspVoiceList = class(TList)
