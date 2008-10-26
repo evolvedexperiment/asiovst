@@ -1,4 +1,4 @@
-package DAV_Modular_D10;
+package DAV_Modular_D7;
 
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -28,9 +28,9 @@ requires
   vcl,
   rtl,
   designide,
-  DAV_DSP_D10,
-  DAV_VSTPlugin_D10,
-  DAV_Common_D10;
+  DAV_DSP_D7,
+  DAV_VSTPlugin_D7,
+  DAV_Common_D7;
 
 contains
   DAV_ModularBaseComponent in '..\Source\Modular\DAV_ModularBaseComponent.pas',

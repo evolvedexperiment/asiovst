@@ -1,4 +1,4 @@
-package DAV_SEHost_D10;
+package DAV_SEHost_D5;
 
 {$R *.res}
 {$ALIGN 8}
@@ -22,15 +22,13 @@ package DAV_SEHost_D10;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $528000}
-{$DESCRIPTION 'ASIO/VST SE Host Package'}
+{$DESCRIPTION 'ASIO/VST SEM Host Package'}
 {$IMPLICITBUILD OFF}
 
 requires
-  rtl,
-  DAV_Common_D10,
   vcl,
-  designide,
-  DAV_VSTHost_D10;
+  rtl,
+  DAV_Common_D5;
 
 contains
   DAV_SEHost in '..\Source\SE\DAV_SEHost.pas',

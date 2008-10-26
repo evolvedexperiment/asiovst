@@ -1,4 +1,4 @@
-package DAV_SEHost_D10;
+package DAV_SEHost_D9;
 
 {$R *.res}
 {$ALIGN 8}
@@ -26,11 +26,9 @@ package DAV_SEHost_D10;
 {$IMPLICITBUILD OFF}
 
 requires
-  rtl,
-  DAV_Common_D10,
   vcl,
-  designide,
-  DAV_VSTHost_D10;
+  rtl,
+  DAV_Common_D9;
 
 contains
   DAV_SEHost in '..\Source\SE\DAV_SEHost.pas',
