@@ -1,6 +1,6 @@
-package DAV_VSTHost_D5;
+ package DAV_VSTHost_D12;
 
-{$ALIGN ON}
+{$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -22,12 +22,13 @@ package DAV_VSTHost_D5;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $530000}
 {$DESCRIPTION 'ASIO/VST VST Host'}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
-  vcl50,
-  DAV_Common_D5,
-  DAV_VstPlugin_D5;
+  vcl,
+  rtl,
+  DAV_Common_D12,
+  DAV_VstPlugin_D12;
 
 contains
   DAV_VSTHost in '..\Source\VST\DAV_VSTHost.pas',

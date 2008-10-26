@@ -1,6 +1,5 @@
 package DAV_VSTHost_D6;
 
-{$R DAV_VSTHost.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -31,6 +30,7 @@ requires
   DAV_VstPlugin_D6;
 
 contains
-  DAV_VstHost in '..\Source\VST\DAV_VstHost.pas';
+  DAV_VSTHost in '..\Source\VST\DAV_VSTHost.pas',
+  DAV_VSTHostRegister in '..\Source\VST\DAV_VSTHostRegister.pas';
 
 end.

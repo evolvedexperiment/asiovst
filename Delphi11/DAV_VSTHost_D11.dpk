@@ -1,6 +1,5 @@
  package DAV_VSTHost_D11;
 
-{$R 'DAV_VSTHost.res'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -28,11 +27,11 @@
 requires
   vcl,
   rtl,
-  designide,
   DAV_Common_D11,
   DAV_VstPlugin_D11;
 
 contains
-  DAV_VSTHost in '..\Source\VST\DAV_VSTHost.pas';
+  DAV_VSTHost in '..\Source\VST\DAV_VSTHost.pas',
+  DAV_VSTHostRegister in '..\Source\VST\DAV_VSTHostRegister.pas';
 
 end.

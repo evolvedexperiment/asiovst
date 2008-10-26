@@ -1,4 +1,4 @@
-package HostASIO_D11;
+package HostASIO_D12;
 
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -27,7 +27,7 @@ package HostASIO_D11;
 requires
   vcl,
   rtl,
-  DAV_Common_D11;
+  DAV_Common_D12;
 
 contains
   DAV_ASIO in '..\Source\ASIO\DAV_ASIO.pas',

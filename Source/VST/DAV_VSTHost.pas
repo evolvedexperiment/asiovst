@@ -506,7 +506,6 @@ type
 var
   audioMaster : TAudioMasterCallbackFunc;
 
-procedure Register;
 function string2Language(LanguageString: string): TVstHostLanguage;
 function PlugCategory2String(Category: TVstPluginCategory):string;
 function EffOptions2String(EffOpts: TEffFlags):string;
@@ -3189,17 +3188,7 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure Register;
-begin
-  RegisterComponents('ASIO/VST Basics', [TVstHost]);
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-
 initialization
- {$IFDEF FPC}
- {$I TVstHost.lrs}
- {$ENDIF}
  audioMaster := AudioMasterCallback;
  HostWindows := TObjectList.Create;
  HostList    := TObjectList.Create(False);
