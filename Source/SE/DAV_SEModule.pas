@@ -250,7 +250,6 @@ type
   end;
 
   TSEEvent = record // a generic timestamped event
-  public
     TimeStamp : Cardinal;
     EventType : TUGEventType;
     IntParamA : Integer;
