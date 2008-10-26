@@ -37,13 +37,13 @@ var
   ExtraData : TSeSdkString2;
 begin
  inherited;
- Mode := Pin[pinMode].getValueInt;
+ Mode := Pin[pinMode].ValueAsInteger;
 
- case CurrentPin.GetIndex of
+ case CurrentPin.PinIndex of
   pinIn,
   pinMode:
    begin
-    InValue := Pin[pinIn].getValueInt;
+    InValue := Pin[pinIn].ValueAsInteger;
     if (Mode = 0) then // calc what value this index maps to
      begin
       ExtraData := Pin[pinOut].getExtraData;
@@ -51,12 +51,12 @@ begin
       it.First;
       while (not it.IsDone) and (it.CurrentItem^.Index <> InValue) do it.Next;
       if not it.IsDone
-       then Pin[pinOut].setValueInt(it.CurrentItem^.value);
-     end else Pin[pinOut].setValueInt(InValue);
+       then Pin[pinOut].ValueAsInteger :=  it.CurrentItem^.Value;
+     end else Pin[pinOut].ValueAsInteger := InValue;
    end;
   pinOut:
    begin
-    OutValue := Pin[pinOut].getValueInt;
+    OutValue := Pin[pinOut].ValueAsInteger;
     if Mode = 0 then // calc what index this value maps to
      begin
       ExtraData := Pin[pinOut].getExtraData;
@@ -64,8 +64,8 @@ begin
       it.First;
       while (not it.IsDone) and (it.CurrentItem^.Index <> OutValue) do it.Next;
       if not it.IsDone
-       then Pin[pinIn].setValueInt(it.CurrentItem^.value);
-     end else Pin[pinIn].setValueInt(OutValue);
+       then Pin[pinIn].ValueAsInteger := it.CurrentItem^.value;
+     end else Pin[pinIn].ValueAsInteger := OutValue;
    end;
  end;
 end;

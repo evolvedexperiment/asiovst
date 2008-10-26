@@ -20,6 +20,7 @@ type
   private
     FColor     : TColor;
     FBitmap    : TBitmap;
+    FGradient  : Single;
     function InvalidateControl: Integer;
     procedure BitmapChanged(Sender: TObject);
   protected
@@ -40,6 +41,7 @@ uses
 constructor TSEBrushedMetalGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
 begin
  inherited;
+ FGradient := 0.6; 
  FBitmap := TBitmap.Create;
  FBitmap.PixelFormat := pf24bit;
  FBitmap.OnChange := BitmapChanged;
@@ -121,6 +123,7 @@ procedure TSEBrushedMetalGui.GuiPinValueChange(CurrentPin: TSeGuiPin);
 var
   NewColor : TColor;
 begin
+ NewColor := FColor;
  case CurrentPin.PinIndex of
   0..2 : begin
           NewColor := (FColor and $FF000000) or
@@ -129,7 +132,11 @@ begin
                                 Pin[2].ValueAsSingle) and $FFFFFF);
          end;
   3    : NewColor := (FColor and $FFFFFF) or ((round(255 * CurrentPin.ValueAsSingle) shl 24) and $FF000000);
-  else NewColor := FColor;
+  4    : begin
+          FGradient := CurrentPin.ValueAsSingle;
+          BitmapChanged(Self);
+          CallHost(seGuiHostRequestRepaint);
+         end;
  end;
  if NewColor <> FColor then
   begin
@@ -147,7 +154,7 @@ begin
            (HSLtoRGB(Pin[0].ValueAsSingle,
                      Pin[1].ValueAsSingle,
                      Pin[2].ValueAsSingle) and $FFFFFF);
-
+ FGradient := Pin[4].ValueAsSingle;
 end;
 
 procedure TSEBrushedMetalGui.BitmapChanged(Sender: TObject);
@@ -165,7 +172,7 @@ begin
  for y := 0 to hght - 1 do
   begin
    Line := FBitmap.Scanline[y];
-   h    := 0.6 * (1 - sqr(2 * (y - hght div 2) * hr));
+   h    := FGradient * (1 - sqr(2 * (y - hght div 2) * hr));
    for x := 0 to FBitmap.Width - 1 do
     begin
      s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);

@@ -10,24 +10,42 @@ const
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEChebyshevWaveshaperModule = class(TSEModuleBase)
-  private
+  TSECustomChebyshevWaveshaperModule = class(TSEModuleBase)
   protected
     FInput1Buffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
-    FHarmonics    : array [0..CHarmonicCount - 1] of Single;
     FWaveShaper   : TChebyshevWaveshaper;
-    procedure SampleRateChanged; override;
+    FOrder        : Integer;
     procedure Open; override;
-    procedure Close; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
+  end;
+
+  TSEStaticChebyshevWaveshaperModule = class(TSECustomChebyshevWaveshaperModule)
+  protected
+    FHarmonics : array [0..CHarmonicCount - 1] of Single;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
+  end;
+
+  TSEAutomatableChebyshevWaveshaperModule = class(TSECustomChebyshevWaveshaperModule)
+  protected
+    FHarmonics : array [0..CHarmonicCount - 1] of PDAVSingleFixedArray;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+  public
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
 implementation
@@ -35,24 +53,21 @@ implementation
 uses
   SysUtils;
 
-constructor TSEChebyshevWaveshaperModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
-var
-  i : Integer;
+constructor TSECustomChebyshevWaveshaperModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- for i := 0 to CHarmonicCount - 1
-  do FHarmonics[i] := 0;
- FWaveShaper := TChebyshevWaveshaper.Create; 
+ FWaveShaper := TChebyshevWaveshaper.Create;
+ FWaveShaper.Order := 24;
 end;
 
-destructor TSEChebyshevWaveshaperModule.Destroy;
+destructor TSECustomChebyshevWaveshaperModule.Destroy;
 begin
  // This is where you free any memory/resources your module has created
  FreeAndNil(FWaveShaper);
  inherited;
 end;
 
-procedure TSEChebyshevWaveshaperModule.Open;
+procedure TSECustomChebyshevWaveshaperModule.Open;
 begin
  inherited Open;
 
@@ -63,49 +78,12 @@ begin
  Pin[1].TransmitStatusChange(SampleClock, stRun);
 end;
 
-procedure TSEChebyshevWaveshaperModule.Close;
-begin
- // nothing here todo yet
- inherited;
-end;
-
-procedure TSEChebyshevWaveshaperModule.SampleRateChanged;
-begin
- inherited;
-end;
-
 // The most important part, processing the audio
-procedure TSEChebyshevWaveshaperModule.SubProcess(const BufferOffset, SampleFrames: Integer);
-var
-  Input  : PDAVSingleFixedArray;
-  Output : PDAVSingleFixedArray;
-  Sample : Integer;
-begin
- // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
- Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
-
- for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
-  begin
-   // do the actual processing (multiplying the two input samples together)
-   Output^[Sample] := FWaveShaper.ProcessSample(Input[Sample]);
-  end;
-end;
-
 // describe your module
-class procedure TSEChebyshevWaveshaperModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSECustomChebyshevWaveshaperModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Chebyshev Waveshaper';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Chebyshev Waveshaper';
-
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';
    SDKVersion := CSeSdkVersion;
@@ -113,7 +91,9 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEChebyshevWaveshaperModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSECustomChebyshevWaveshaperModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+var
+ str : string;
 begin
  result := True;
  case Index of
@@ -135,39 +115,184 @@ begin
        Direction       := drOut;
        Datatype        := dtFSample;
       end;
+  2: Properties^.Name := 'Order';
+  3: Properties^.Name := 'Fundamental';
+  4..CHarmonicCount + 2:
+     with Properties^ do
+      begin
+       str := 'Harmonic ' + IntToStr(Index - 3);
+       Name            := PChar(str);
+      end;
+  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+ end;
+end;
+
+{ TSEStaticChebyshevWaveshaperModule }
+
+constructor TSEStaticChebyshevWaveshaperModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+var
+  i : Integer;
+begin
+ inherited;
+ for i := 0 to CHarmonicCount - 1
+  do FHarmonics[i] := 0;
+end;
+
+class procedure TSEStaticChebyshevWaveshaperModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Chebyshev Waveshaper (static)';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Chebyshev Waveshaper (static)';
+  end;
+end;
+
+function TSEStaticChebyshevWaveshaperModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case Index of
   2: with Properties^ do
       begin
-       Name            := 'Fundamental';
+       VariableAddress := @FOrder;
+       Direction       := drParameter;
+       DataType        := dtEnum;
+       DefaultValue    := '24';
+       DatatypeExtra   := 'range 4,24';
+      end;
+  3: with Properties^ do
+      begin
        VariableAddress := @FHarmonics[0];
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
        DatatypeExtra   := 'range -1,1';
       end;
-  3..CHarmonicCount + 1:
+  4..CHarmonicCount + 2:
      with Properties^ do
       begin
-       Name            := 'Harmonic';
-       VariableAddress := @FHarmonics[Index - 2];
+       VariableAddress := @FHarmonics[Index - 3];
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '0';
        DatatypeExtra   := 'range -1,1';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 // this routine is called whenever an input changes status.
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
-procedure TSEChebyshevWaveshaperModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSEStaticChebyshevWaveshaperModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  // has user altered ChebyshevWaveshaper time parameter?
  case CurrentPin.PinID of
-  2..CHarmonicCount + 1: FWaveShaper.Gain[CurrentPin.PinID - 2] := FHarmonics[CurrentPin.PinID - 2];
+  2 : FWaveShaper.Order := FOrder;
+  3..CHarmonicCount + 1: if (CurrentPin.PinID - 3) < FWaveShaper.Order
+                          then FWaveShaper.Gain[CurrentPin.PinID - 3] := FHarmonics[CurrentPin.PinID - 3];
  end;
  inherited;
+end;
+
+procedure TSEStaticChebyshevWaveshaperModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+var
+  Input  : PDAVSingleFixedArray;
+  Output : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+
+ for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
+  begin
+   // do the actual processing (multiplying the two input samples together)
+   Output^[Sample] := FWaveShaper.ProcessSample(Input[Sample]);
+  end;
+end;
+
+
+{ TSEAutomatableChebyshevWaveshaperModule }
+
+class procedure TSEAutomatableChebyshevWaveshaperModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Chebyshev Waveshaper (automatable)';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Chebyshev Waveshaper (automatable)';
+  end;
+end;
+
+// this routine is called whenever an input changes status.
+// e.g when the user changes a module's parameters,
+// or when audio stops/starts streaming into a pin
+procedure TSEAutomatableChebyshevWaveshaperModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ // has user altered ChebyshevWaveshaper time parameter?
+ if CurrentPin.PinID = 2
+  then FWaveShaper.Order := FOrder;
+ inherited;
+end;
+
+function TSEAutomatableChebyshevWaveshaperModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case Index of
+  2: with Properties^ do
+      begin
+       VariableAddress := @FOrder;
+       Direction       := drIn;
+       DataType        := dtEnum;
+       DefaultValue    := '4';
+       DatatypeExtra   := 'range 4,24';
+      end;
+  3: with Properties^ do
+      begin
+       VariableAddress := @FHarmonics[0];
+       Direction       := drIn;
+       DataType        := dtFSample;
+       DefaultValue    := '1';
+      end;
+  4..CHarmonicCount + 2:
+     with Properties^ do
+      begin
+       VariableAddress := @FHarmonics[Index - 3];
+       Direction       := drIn;
+       DataType        := dtFSample;
+      end;
+ end;
+end;
+
+procedure TSEAutomatableChebyshevWaveshaperModule.SubProcess(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Sample, i : Integer;
+begin
+ CallHost(SEAudioMasterSetPinStatus)
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   for i := 0 to FWaveShaper.Order - 1
+    do FWaveShaper.Gain[i] := FHarmonics[i, BufferOffset + Sample];
+   FOutputBuffer[BufferOffset + Sample] := FWaveShaper.ProcessSample(FInput1Buffer[BufferOffset + Sample]);
+  end;
 end;
 
 end.

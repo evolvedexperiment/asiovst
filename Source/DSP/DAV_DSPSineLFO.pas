@@ -40,6 +40,7 @@ implementation
 { TSineLFO }
 
 procedure TSineLFO.CalculateNextSample;
+{$IFDEF PUREPASCAL}
 var
   temp : Double;
 begin
@@ -47,6 +48,23 @@ begin
   FPosition.Im := FPosition.Im * fAngle.Re + FPosition.Re * fAngle.Im;
   FPosition.Re := temp;
 end;
+{$ELSE}
+asm
+ fld [Self.FPosition.Re].Double  // FPosition.Re
+ fmul [Self.FAngle.Re].Double    // FPosition.Re * fAngle.Re
+ fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * fAngle.Re
+ fmul [Self.FAngle.Im].Double    // FPosition.Im * fAngle.Im, FPosition.Re * fAngle.Re
+ fsubp                           // FPosition.Re * fAngle.Re - FPosition.Im * fAngle.Im = New.Re
+
+ fld [Self.FPosition.Im].Double  // FPosition.Im, New.Re
+ fmul [Self.FAngle.Re].Double    // FPosition.Im * fAngle.Re, New.Re
+ fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * fAngle.Re, New.Re
+ fmul [Self.FAngle.Im].Double    // FPosition.Re * fAngle.Im, FPosition.Re * fAngle.Re, New.Re
+ faddp                           // FPosition.Re * fAngle.Re + FPosition.Im * fAngle.Im = New.Im, New.Re
+ fstp [Self.FPosition.Im].Double // FPosition.Im := New.Im, New.Re
+ fstp [Self.FPosition.Re].Double // FPosition.Re := New.Re
+end;
+{$ENDIF}
 
 constructor TSineLFO.Create;
 begin
@@ -60,7 +78,7 @@ end;
 procedure TSineLFO.Reset;
 begin
   FPosition.Re := 0;
-  FPosition.Im := FAmplitude;
+  FPosition.Im := -FAmplitude;
 end;
 
 procedure TSineLFO.SampleRateChanged;
@@ -70,7 +88,7 @@ end;
 
 procedure TSineLFO.FrequencyChanged;
 begin
-  GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
+ GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
 end;
 
 procedure TSineLFO.SetAmplitude(const Value: Single);

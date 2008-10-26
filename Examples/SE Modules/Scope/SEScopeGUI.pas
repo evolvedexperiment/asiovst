@@ -14,8 +14,6 @@ type
     FDrawTrace : array [0..CScopeChannels - 1] of Boolean;
     FValues    : array [0..CScopeChannels - 1, 0..CScopeBufferSize + 3] of TSEFloatSample; // must allow generator to overfill by 2 samples
     FFontInfo  : TSeFontInfo;
-    function Handle: THandle;
-    procedure SendStringToAudio(AMsgID, ALength: Integer; AData: Pointer);
     function InvalidateControl: Integer;
   protected
     procedure GuiPaint(hDC: HDC; wi: PSEWndInfo); override;
@@ -258,46 +256,7 @@ procedure TSEScopeGui.GuiModuleMsg(AUserMsgID, ALength: Integer; AData: Pointer)
 begin
   assert(ALength = SizeOf(Fvalues));
   Move(FValues[0, 0], AData^, ALength);
-
-  // aknowledge
-
-//  char *msg = "ack";
-//  int size = 4;
-(*
-  char *msg =  "ack00000000000000000000000000000000000000000000000"
-             "11111111111111111111111111111111111111111111111111"
-         "22222222222222222222222222222222222222222222222222"
-         "22222222222222222222222222222222222222222222222222"
-         "22222222222222222222222222222222222222222222222222"
-         "22222222222222222222222222222222222222222222222222"
-         "22222222222222222222222222222222222222222222222222"
-         "22222222222222222222222222222222222222222222222222"
-         "33333333333333333333333333333333333333333333333333"
-         "44444444444444444444444444444444444444444444444444"
-         "55555555555555555555555555555555555555555555555555"
-         "66666666666666666666666666666666666666666666666666"
-         "66666666666666666666666666666666666666666666666666"
-         "66666666666666666666666666666666666666666666666666"
-         "66666666666666666666666666666666666666666666666666"
-         "77777777777777777777777777777777777777777777777777"
-         "88888888888888888888888888888888888888888888888888";
-  int size = strlen( msg ) + 1;
-*)
-
-  // send aknowledge message to DSP
-// TODO: SendStringToAudio(id_to_int('a','c','k',0), 0, 0);
-
   InvalidateControl;
-end;
-
-procedure TSEScopeGui.SendStringToAudio(AMsgID, ALength: Integer; AData: Pointer);
-begin
- CallHost(seGuiHostSendStringToAudio, ALength, AMsgID, AData);
-end;
-
-function TSEScopeGui.Handle: THandle;
-begin
- result := CallHost(seGuiHostGetHandle);
 end;
 
 function TSEScopeGui.InvalidateControl: Integer;

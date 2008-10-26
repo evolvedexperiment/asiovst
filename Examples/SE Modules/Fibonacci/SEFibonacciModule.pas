@@ -157,7 +157,7 @@ begin
       begin
        Name            := 'Order';
        VariableAddress := @FOrder;
-       Direction       := drParameter;
+       Direction       := drIn;
        Datatype        := dtEnum;
        DefaultValue    := '8';
        DatatypeExtra   := 'range 2, 64'
@@ -166,7 +166,7 @@ begin
       begin
        Name            := 'Downsample';
        VariableAddress := @FDownsample;
-       Direction       := drParameter;
+       Direction       := drIn;
        Datatype        := dtEnum;
        DefaultValue    := '1';
        DatatypeExtra   := 'range 1, 1024'

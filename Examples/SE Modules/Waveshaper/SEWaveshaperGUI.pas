@@ -124,7 +124,7 @@ end;
 
 function TSEWaveshaperGui.GetValueS: TSeSdkString;
 begin
- result := Pin[pinShape].getValueText;
+ result := Pin[pinShape].ValueAsString;
 end;
 
 procedure TSEWaveshaperGui.SetValueS(AString: TSeSdkString);

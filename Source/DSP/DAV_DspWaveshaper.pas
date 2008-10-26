@@ -403,7 +403,7 @@ end;
 procedure TChebyshevWaveshaper.SetGain(Harmonic: Integer; const Value: Double);
 begin
  if (Harmonic < 0) or (Harmonic >= Order)
-  then raise Exception.Create('Index out of bounds')
+  then raise Exception.Create('Index out of bounds (' + IntToStr(Harmonic) + ')')
   else
    begin
     fGains[Harmonic] := Value;

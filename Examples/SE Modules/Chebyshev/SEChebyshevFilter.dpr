@@ -15,10 +15,12 @@ function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): B
 begin
  result := True;
  case Index of // !!TODO!! list your in / out plugs
-  0: TSEChebyshevFilterLPModule.GetModuleProperties(Properties);
-  1: TSEChebyshevFilterHPModule.GetModuleProperties(Properties);
+  0: TSEStaticChebyshevFilterLPModule.GetModuleProperties(Properties);
+  1: TSEStaticChebyshevFilterHPModule.GetModuleProperties(Properties);
+  2: TSEAutomatebleChebyshevFilterLPModule.GetModuleProperties(Properties);
+  3: TSEAutomatebleChebyshevFilterHPModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
@@ -30,7 +32,7 @@ begin
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        SEModuleBase := TSEChebyshevFilterLPModule.Create(SEAudioMaster, Reserved);
+        SEModuleBase := TSEStaticChebyshevFilterLPModule.Create(SEAudioMaster, Reserved);
         if assigned(SEModuleBase)
          then result := SEModuleBase.Effect;
        end;
@@ -38,7 +40,23 @@ begin
   1: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
-        SEModuleBase := TSEChebyshevFilterHPModule.Create(SEAudioMaster, Reserved);
+        SEModuleBase := TSEStaticChebyshevFilterHPModule.Create(SEAudioMaster, Reserved);
+        if assigned(SEModuleBase)
+         then result := SEModuleBase.Effect;
+       end;
+     end;
+  2: begin
+      if (ProcessType = 1) then// Audio Processing Object
+       begin
+        SEModuleBase := TSEAutomatebleChebyshevFilterLPModule.Create(SEAudioMaster, Reserved);
+        if assigned(SEModuleBase)
+         then result := SEModuleBase.Effect;
+       end;
+     end;
+  3: begin
+      if (ProcessType = 1) then// Audio Processing Object
+       begin
+        SEModuleBase := TSEAutomatebleChebyshevFilterHPModule.Create(SEAudioMaster, Reserved);
         if assigned(SEModuleBase)
          then result := SEModuleBase.Effect;
        end;

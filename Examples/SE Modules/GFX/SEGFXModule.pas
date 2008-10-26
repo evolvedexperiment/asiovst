@@ -137,6 +137,19 @@ type
     class function GetGfxName: string; override;
   end;
 
+  TSEGFXBrushedMetalModule = class(TSEGFXAmountModule)
+  protected
+    FGradient : Single;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class function GetGfxName: string; override;
+  end;
+
+  TSEGFXBrushedMetal2Module = class(TSEGFXBrushedMetalModule)
+  public
+    class function GetGfxName: string; override;
+  end;
+
 implementation
 
 function TSEGFXBaseModule.GetPinProperties(const Index: Integer;
@@ -225,7 +238,7 @@ end;
 
 class function TSEGFXGrayScaleModule.GetGfxName: string;
 begin
- result := 'GrayScale';
+ result := 'Grayscale';
 end;
 
 { TSEGFXEmbossModule }
@@ -239,14 +252,14 @@ end;
 
 class function TSEGFXAddColorNoiseModule.GetGfxName: string;
 begin
- result := 'AddColorNoise';
+ result := 'Add Color Noise';
 end;
 
 { TSEGFXAddMonoNoiseModule }
 
 class function TSEGFXAddMonoNoiseModule.GetGfxName: string;
 begin
- result := 'AddMonoNoise';
+ result := 'Add Mono Noise';
 end;
 
 { TSEGFXContrastModule }
@@ -270,7 +283,6 @@ begin
     Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
     Direction       := drIn;
     Datatype        := dtBoolean;
-    DefaultValue    := '3';
     result          := True;
    end;
 end;
@@ -284,7 +296,7 @@ end;
 
 class function TSEGFXFishEyeModule.GetGfxName: string;
 begin
- result := 'FishEye';
+ result := 'Fish Eye';
 end;
 
 { TSEGFXLightnessModule }
@@ -312,21 +324,21 @@ end;
 
 class function TSEGFXSplitBlurModule.GetGfxName: string;
 begin
- result := 'SplitBlur';
+ result := 'Split Blur';
 end;
 
 { TSEGFXSplitBlur2Module }
 
 class function TSEGFXSplitBlur2Module.GetGfxName: string;
 begin
- result := 'SplitBlur²';
+ result := 'Split Blur²';
 end;
 
 { TSEGFXGaussianBlurModule }
 
 class function TSEGFXGaussianBlurModule.GetGfxName: string;
 begin
- result := 'GaussianBlur';
+ result := 'Gaussian Blur';
 end;
 
 { TSEGFXMosaicModule }
@@ -383,6 +395,36 @@ end;
 class function TSEGFXSpotlightModule.GetGfxName: string;
 begin
  result := 'Spotlight';
+end;
+
+{ TSEGFXBrushedMetalModule }
+
+function TSEGFXBrushedMetalModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ if Index = 2 then
+  with Properties^ do
+   begin
+    Name            := 'Gradient';
+    VariableAddress := @FGradient;
+    Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
+    Direction       := drIn;
+    Datatype        := dtSingle;
+    result          := True;
+   end;
+end;
+
+class function TSEGFXBrushedMetalModule.GetGfxName: string;
+begin
+ result := 'Brushed Metal';
+end;
+
+{ TSEGFXBrushedMetal2Module }
+
+class function TSEGFXBrushedMetal2Module.GetGfxName: string;
+begin
+ result := 'Brushed Metal²';
 end;
 
 end.

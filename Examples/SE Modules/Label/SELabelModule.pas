@@ -128,7 +128,7 @@ begin
        Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
        Datatype        := dtEnum;
        Direction       := drIn;
-       DatatypeExtra   := 'range 0,32';
+       DatatypeExtra   := 'range -32,32';
       end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;

@@ -10,37 +10,74 @@ type
   TSEChebyshevFilterPins = (pinInput, pinOutput, pinFrequency, pinOrder,
     pinRipple);
 
-  TSEChebyshevFilterModule = class(TSEModuleBase)
-  private
+  TSECustomChebyshevFilterModule = class(TSEModuleBase)
   protected
     FInput1Buffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
-    FFrequency    : Single;
-    FOrder        : Integer;
-    FRipple       : Single;
     FFilter       : TChebyshev1Filter;
     procedure SampleRateChanged; override;
     procedure Open; override;
-    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+    class function GetModueName: string; virtual; abstract;
   public
-    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
   end;
 
-  TSEChebyshevFilterLPModule = class(TSEChebyshevFilterModule)
+  TSEStaticChebyshevFilterModule = class(TSECustomChebyshevFilterModule)
+  protected
+    FFrequency    : Single;
+    FOrder        : Integer;
+    FRipple       : Single;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
-  TSEChebyshevFilterHPModule = class(TSEChebyshevFilterModule)
+  TSEStaticChebyshevFilterLPModule = class(TSEStaticChebyshevFilterModule)
+  protected
+    class function GetModueName: string; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+  end;
+
+  TSEStaticChebyshevFilterHPModule = class(TSEStaticChebyshevFilterModule)
+  protected
+    class function GetModueName: string; override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+  end;
+
+  TSEAutomatebleChebyshevFilterModule = class(TSECustomChebyshevFilterModule)
+  protected
+    FFreqBuffer  : PDAVSingleFixedArray;
+    FRipplBuffer : PDAVSingleFixedArray;
+    FOrder       : Integer;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSEAutomatebleChebyshevFilterLPModule = class(TSEAutomatebleChebyshevFilterModule)
+  protected
+    class function GetModueName: string; override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+  end;
+
+  TSEAutomatebleChebyshevFilterHPModule = class(TSEAutomatebleChebyshevFilterModule)
+  protected
+    class function GetModueName: string; override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
   end;
 
 implementation
@@ -48,22 +85,14 @@ implementation
 uses
   SysUtils;
 
-constructor TSEChebyshevFilterModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
-begin
- inherited Create(SEAudioMaster, Reserved);
-
- FFrequency := 1000;
- FOrder := 4;
-end;
-
-destructor TSEChebyshevFilterModule.Destroy;
+destructor TSECustomChebyshevFilterModule.Destroy;
 begin
  // This is where you free any memory/resources your module has created
  FreeAndNil(FFilter);
  inherited;
 end;
 
-procedure TSEChebyshevFilterModule.Open;
+procedure TSECustomChebyshevFilterModule.Open;
 begin
  inherited Open;
 
@@ -75,42 +104,38 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSEChebyshevFilterModule.SampleRateChanged;
+procedure TSECustomChebyshevFilterModule.SampleRateChanged;
 begin
  inherited;
  FFilter.SampleRate := SampleRate;
 end;
 
-procedure TSEChebyshevFilterModule.SubProcess(const BufferOffset, SampleFrames: Integer);
-var
-  Input  : PDAVSingleFixedArray;
-  Output : PDAVSingleFixedArray;
-  Sample : Integer;
-begin
- // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
- Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
-
- for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
-  begin
-   // do the actual processing (multiplying the two input samples together)
-   Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
-  end;
-end;
-
 // describe your module
-class procedure TSEChebyshevFilterModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSECustomChebyshevFilterModule.getModuleProperties(Properties : PSEModuleProperties);
+var
+  str : string;
 begin
  with Properties^ do
   begin
+   // describe the plugin, this is the name the end-user will see.
+   str := GetModueName;
+   Name := PChar(str);
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := PChar(str);
+
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';
+
    SDKVersion := CSeSdkVersion;
   end;
 end;
 
 // describe the pins (plugs)
-function TSEChebyshevFilterModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSECustomChebyshevFilterModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case TSEChebyshevFilterPins(index) of
@@ -132,9 +157,30 @@ begin
                Direction       := drOut;
                Datatype        := dtFSample;
               end;
+  pinFrequency: with Properties^ do Name := 'Frequency';
+  pinOrder: with Properties^ do Name := 'Order';
+  pinRipple: with Properties^ do Name := 'Ripple';
+  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+ end;;
+end;
+
+{ TSEStaticChebyshevFilterModule }
+
+constructor TSEStaticChebyshevFilterModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFrequency := 1000;
+ FOrder := 4;
+ FRipple := 1;
+end;
+
+function TSEStaticChebyshevFilterModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSEChebyshevFilterPins(index) of
   pinFrequency: with Properties^ do
                  begin
-                  Name            := 'Frequency';
                   VariableAddress := @FFrequency;
                   Direction       := drParameter;
                   DataType        := dtSingle;
@@ -142,7 +188,6 @@ begin
                  end;
   pinOrder: with Properties^ do
              begin
-              Name            := 'Order';
               VariableAddress := @FOrder;
               Direction       := drParameter;
               DataType        := dtEnum;
@@ -151,20 +196,18 @@ begin
              end;
   pinRipple: with Properties^ do
               begin
-               Name            := 'Ripple';
                VariableAddress := @FRipple;
                Direction       := drParameter;
                DataType        := dtSingle;
                DefaultValue    := '1';
               end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 // this routine is called whenever an input changes status.
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
-procedure TSEChebyshevFilterModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSEStaticChebyshevFilterModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  // has user altered a filter parameter?
  case TSEChebyshevFilterPins(CurrentPin.PinID) of
@@ -175,9 +218,27 @@ begin
  inherited;
 end;
 
-{ TSEChebyshevFilterModule }
+procedure TSEStaticChebyshevFilterModule.SubProcess(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Input  : PDAVSingleFixedArray;
+  Output : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
-constructor TSEChebyshevFilterLPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+ for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
+  begin
+   // do the actual processing (multiplying the two input samples together)
+   Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+  end;
+end;
+
+{ TSEStaticChebyshevFilterLPModule }
+
+constructor TSEStaticChebyshevFilterLPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
  FFilter := TChebyshev1LP.Create;
@@ -185,25 +246,14 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class procedure TSEChebyshevFilterLPModule.GetModuleProperties(Properties: PSEModuleProperties);
+class function TSEStaticChebyshevFilterLPModule.GetModueName: string;
 begin
- inherited GetModuleProperties(Properties);
- with Properties^ do
-  begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Chebyshev Lowpass';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Chebyshev Lowpass';
-  end;
+ result := 'Chebyshev Lowpass (static)';
 end;
 
-{ TSEChebyshevFilterHPModule }
+{ TSEStaticChebyshevFilterHPModule }
 
-constructor TSEChebyshevFilterHPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEStaticChebyshevFilterHPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
  FFilter := TChebyshev1HP.Create;
@@ -211,20 +261,112 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class procedure TSEChebyshevFilterHPModule.GetModuleProperties(Properties: PSEModuleProperties);
+class function TSEStaticChebyshevFilterHPModule.GetModueName: string;
 begin
- inherited GetModuleProperties(Properties);
- with Properties^ do
-  begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Chebyshev Highpass';
+ result := 'Chebyshev Highpass (static)';
+end;
 
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Chebyshev Highpass';
+{ TSEAutomatebleChebyshevFilterModule }
+
+constructor TSEAutomatebleChebyshevFilterModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FOrder := 4;
+end;
+
+function TSEAutomatebleChebyshevFilterModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSEChebyshevFilterPins(index) of
+  pinFrequency: with Properties^ do
+                 begin
+                  VariableAddress := @FFreqBuffer;
+                  Direction       := drIn;
+                  DataType        := dtFSample;
+                  DefaultValue    := '1000';
+                 end;
+  pinOrder: with Properties^ do
+             begin
+              VariableAddress := @FOrder;
+              Direction       := drIn;
+              DataType        := dtEnum;
+              DefaultValue    := '4';
+              DatatypeExtra   := 'range -0,32';
+             end;
+  pinRipple: with Properties^ do
+              begin
+               VariableAddress := @FRipplBuffer;
+               Direction       := drIn;
+               DataType        := dtFSample;
+               DefaultValue    := '1';
+              end;
+ end;
+end;
+
+procedure TSEAutomatebleChebyshevFilterModule.PlugStateChange(
+  const CurrentPin: TSEPin);
+begin
+ // has user altered a filter parameter?
+ if TSEChebyshevFilterPins(CurrentPin.PinID) = pinOrder
+  then FFilter.Order     := FOrder;
+ inherited;
+end;
+
+procedure TSEAutomatebleChebyshevFilterModule.SubProcess(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Input  : PDAVSingleFixedArray;
+  Output : PDAVSingleFixedArray;
+  Freq   : PDAVSingleFixedArray;
+  Rippl  : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ Freq   := PDAVSingleFixedArray(@FFreqBuffer[BufferOffset]);
+ Rippl  := PDAVSingleFixedArray(@FRipplBuffer[BufferOffset]);
+
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   FFilter.Frequency := Freq[Sample];
+   FFilter.Ripple    := Rippl[Sample];
+   Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
+end;
+
+{ TSEAutomatebleChebyshevFilterLPModule }
+
+constructor TSEAutomatebleChebyshevFilterLPModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFilter := TChebyshev1LP.Create;
+ FFilter.SetFilterValues(1000, 0, 0.1);
+ FFilter.Order := FOrder;
+end;
+
+class function TSEAutomatebleChebyshevFilterLPModule.GetModueName: string;
+begin
+ result := 'Chebyshev Lowpass (automatable)';
+end;
+
+{ TSEAutomatebleChebyshevFilterHPModule }
+
+constructor TSEAutomatebleChebyshevFilterHPModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFilter := TChebyshev1HP.Create;
+ FFilter.SetFilterValues(1000, 0, 0.1);
+ FFilter.Order := FOrder;
+end;
+
+class function TSEAutomatebleChebyshevFilterHPModule.GetModueName: string;
+begin
+ result := 'Chebyshev Highpass (automatable)';
 end;
 
 end.

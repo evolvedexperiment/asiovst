@@ -39,7 +39,7 @@ begin
        begin
         GUI := TSEIntToListGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
         if assigned(GUI)
-         then result := GUI.getEffect;
+         then result := GUI.SEGUIStructBase;
        end;
      end;
  end;

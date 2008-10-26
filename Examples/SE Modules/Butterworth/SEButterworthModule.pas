@@ -29,19 +29,19 @@ type
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
   end;
 
-  TSEButterworthLPModule = class(TSEButterworthModule)
+  TSEStaticButterworthLPModule = class(TSEButterworthModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TSEButterworthHPModule = class(TSEButterworthModule)
+  TSEStaticButterworthHPModule = class(TSEButterworthModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TSEButterworthLPExModule = class(TSEButterworthLPModule)
+  TSEAutomatableButterworthLPModule = class(TSEStaticButterworthLPModule)
   protected
     FFreqBuffer : PDAVSingleFixedArray;
   public
@@ -50,7 +50,7 @@ type
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
-  TSEButterworthHPExModule = class(TSEButterworthHPModule)
+  TSEAutomatableButterworthHPModule = class(TSEStaticButterworthHPModule)
   protected
     FFreqBuffer : PDAVSingleFixedArray;
   public
@@ -187,7 +187,7 @@ end;
 
 { TSEButterworthModule }
 
-constructor TSEButterworthLPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEStaticButterworthLPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
  FFilter := TButterworthLP.Create;
@@ -195,25 +195,25 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class procedure TSEButterworthLPModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEStaticButterworthLPModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Butterworth Lowpass Static';
+   Name := 'Butterworth Lowpass (static)';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Butterworth Lowpass Static';
+   ID := 'DAV Butterworth Lowpass (static)';
   end;
 end;
 
-{ TSEButterworthHPModule }
+{ TSEStaticButterworthHPModule }
 
-constructor TSEButterworthHPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEStaticButterworthHPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
  FFilter := TButterworthHP.Create;
@@ -221,42 +221,42 @@ begin
  FFilter.Order := FOrder;
 end;
 
-class procedure TSEButterworthHPModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEStaticButterworthHPModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Butterworth Highpass Static';
+   Name := 'Butterworth Highpass (static)';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Butterworth Highpass Static';
+   ID := 'DAV Butterworth Highpass (static)';
   end;
 end;
 
-{ TSEButterworthLPExModule }
+{ TSEAutomatableButterworthLPModule }
 
-class procedure TSEButterworthLPExModule.GetModuleProperties(
+class procedure TSEAutomatableButterworthLPModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 begin
  inherited;
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Butterworth Lowpass Automatable';
+   Name := 'Butterworth Lowpass (automatable)';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Butterworth Lowpass Automatable';
+   ID := 'DAV Butterworth Lowpass (automatable)';
   end;
 end;
 
-function TSEButterworthLPExModule.GetPinProperties(const Index: Integer;
+function TSEAutomatableButterworthLPModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
@@ -278,7 +278,7 @@ begin
  end;
 end;
 
-procedure TSEButterworthLPExModule.SubProcess(const BufferOffset,
+procedure TSEAutomatableButterworthLPModule.SubProcess(const BufferOffset,
   SampleFrames: Integer);
 var
   Input  : PDAVSingleFixedArray;
@@ -298,26 +298,26 @@ begin
   end;
 end;
 
-{ TSEButterworthHPExModule }
+{ TSEAutomatableButterworthHPModule }
 
-class procedure TSEButterworthHPExModule.GetModuleProperties(
+class procedure TSEAutomatableButterworthHPModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 begin
  inherited;
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Butterworth Highpass Automatable';
+   Name := 'Butterworth Highpass (automatable)';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Butterworth Highpass Automatable';
+   ID := 'DAV Butterworth Highpass (automatable)';
   end;
 end;
 
-function TSEButterworthHPExModule.GetPinProperties(const Index: Integer;
+function TSEAutomatableButterworthHPModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
@@ -340,7 +340,7 @@ begin
  end;
 end;
 
-procedure TSEButterworthHPExModule.SubProcess(const BufferOffset,
+procedure TSEAutomatableButterworthHPModule.SubProcess(const BufferOffset,
   SampleFrames: Integer);
 var
   Input  : PDAVSingleFixedArray;

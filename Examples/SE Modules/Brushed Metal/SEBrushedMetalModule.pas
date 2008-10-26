@@ -17,6 +17,7 @@ type
     FLuminance  : Single;
     FSaturation : Single;
     FAmount     : Single;
+    FGradient   : Single;
     procedure Open; override;
     procedure GuiNotify(AUserMsgID: Integer; ASize: Integer; AData: Pointer); override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
@@ -136,6 +137,15 @@ begin
                Flags           := [iofHideWhenLocked, iofUICommunication, iofPatchStore];
                DefaultValue    := '0.2';
               end;
+  4: with Properties^ do
+              begin
+               Name            := 'Gradient';
+               VariableAddress := @FGradient;
+               Direction       := drParameter;
+               Datatype        := dtSingle;
+               Flags           := [iofHideWhenLocked, iofUICommunication, iofPatchStore];
+               DefaultValue    := '0.6';
+              end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
@@ -223,6 +233,11 @@ begin
        Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
       end;
   3: with Properties^ do
+      begin
+       Direction       := drIn;
+       Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];
+      end;
+  4: with Properties^ do
       begin
        Direction       := drIn;
        Flags           := [iofUICommunication, iofLinearInput, iofPatchStore];

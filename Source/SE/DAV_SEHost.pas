@@ -13,7 +13,7 @@ type
   TCustomSEHost = class;
   TCustomSEHostedModule = class;
 
-  TCustomSEHostedModulePart = class(TPersistent)
+  TCustomSEHostedModulePart = class(TComponent)
   private
     FIndex            : Integer;
     FProperties       : TSEModuleProperties;
@@ -24,13 +24,13 @@ type
     FOnRepaintRequest : TNotifyEvent;
 
     function GetAbout: string;
-    function GetID: string;
-    function GetName: string;
-    procedure SetActive(const Value: Boolean);
     function GetActive: Boolean;
+    function GetID: string;
     function GetMagic: Integer;
+    function GetName: string;
     function GetVersion: Integer;
     procedure DisposeStructures;
+    procedure SetActive(const Value: Boolean);
   protected
     function CallPlugin(Opcode: TSEPluginModuleOpcodes; Index: Integer = 0;
       Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer; virtual;
@@ -43,7 +43,7 @@ type
     procedure GuiHostResolveFilename(FileName: PWideChar; MaxStringLength: Integer);
   public
     constructor Create(Owner: TCustomSEHostedModule; Index: Integer = 0;
-      Properties: PSEModuleProperties = nil); virtual;
+      Properties: PSEModuleProperties = nil); reintroduce; virtual;
     procedure Instanciate; virtual;
     procedure Open; virtual;
     procedure Close; virtual;
@@ -98,7 +98,7 @@ type
     property DisplayName: string read GetDisplayName write FDisplayName;
     property SEMFileName: TFileName read FSEMFileName write SetSEMFileName;
     property Part[index: Integer]: TCustomSEHostedModulePart read GetPart;
-    property PartCount: Integer read GetPartCount; 
+    property PartCount: Integer read GetPartCount;
   end;
 
   TSEHostedModule = class(TCustomSEHostedModule)
@@ -111,12 +111,12 @@ type
   TSEHostedModules = class(TOwnedCollection)
   private
     FOwner: TComponent;
-    function GetVSTHost: TCustomSEHost;
+    function GetSEHost: TCustomSEHost;
     function GetItem(Index: Integer): TSEHostedModule;
     procedure SetItem(Index: Integer; const Value: TSEHostedModule);
   protected
     property Items[Index: Integer]: TSEHostedModule read GetItem write SetItem; default;
-    property VstHost: TCustomSEHost read GetVSTHost; 
+    property SEHost: TCustomSEHost read GetSEHost; 
   public
     constructor Create(AOwner: TComponent);
     function Add: TSEHostedModule;
@@ -152,6 +152,8 @@ type
     property HostedSEModules;
   end;
 
+procedure Register;
+
 implementation
 
 uses
@@ -182,7 +184,7 @@ begin
   SEAudioMasterGetFirstClone      : result := 'SEAudioMasterGetFirstClone';
   SEAudioMasterGetNextClone       : result := 'SEAudioMasterGetNextClone';
   SEAudioMasterGetTotalPinCount   : result := 'SEAudioMasterGetTotalPinCount';
-  SEAudioMasterCallVstHost        : result := 'SEAudioMasterCallVstHost';
+  SEAudioMasterCallVSTHost        : result := 'SEAudioMasterCallVSTHost';
   SEAudioMasterResolveFilename    : result := 'SEAudioMasterResolveFilename';
   SEAudioMasterSendStringToGui    : result := 'SEAudioMasterSendStringToGui';
   SEAudioMasterGetModuleHandle    : result := 'SEAudioMasterGetModuleHandle';
@@ -247,7 +249,7 @@ begin
      end;
    *)
    SEAudioMasterGetTotalPinCount   : result := AMGetTotalPinCount;   // Total pins of all types
-   SEAudioMasterCallVstHost        : result := AMCallVstHost;        // Call VST Host direct (see se_call_vst_host_params struct)
+   SEAudioMasterCallSEHost        : result := AMCallSEHost;        // Call VST Host direct (see se_call_vst_host_params struct)
    SEAudioMasterResolveFilename    : result := AMResolveFilename;    // get full path from a short filename, (int pin_idx, float max_characters, Char *destination)
    SEAudioMasterSendStringToGui    : result := AMSendStringToGui;    // Reserved for Experimental use (by Jef)
    SEAudioMasterGetModuleHandle    : result := AMGetModuleHandle;    // Reserved for Experimental use (by Jef)
@@ -337,7 +339,7 @@ begin
    seGuiHostSetCapture             : result := 0; // see SEGUI_base::SetCapture(...)
    seGuiHostReleaseCapture         : result := 0;
    seGuiHostGetCapture             : result := 0;
-   seGuiHostCallVstHost            : result := 0; // pass se_call_vst_host_params structure in Ptr
+   seGuiHostCallVSTHost            : result := 0; // pass se_call_vst_host_params structure in Ptr
    seGuiHostSetIdle                : result := 0; // pass 1 to receive regular calls to OnIdle(), pass zero to cancel
    seGuiHostGetModuleFilename      : result := 0; // returns full module path
    (* example code...
@@ -428,6 +430,7 @@ end;
 constructor TCustomSEHostedModulePart.Create(Owner: TCustomSEHostedModule;
   Index: Integer = 0; Properties: PSEModuleProperties = nil);
 begin
+ inherited Create(TSEHostedModules(Owner.Collection).SEHost);
  FIndex := Index;
  FSE2ModStructBase := nil;
  FSEGUIStructBase := nil;
@@ -598,6 +601,8 @@ begin
  try
   if Active then CallPlugin(seffClose);
  finally
+  if assigned(FSE2ModStructBase)
+   then Dispose(FSE2ModStructBase);
   FSE2ModStructBase := nil;
  end;
 end;
@@ -624,18 +629,6 @@ end;
 
 { TCustomSEHostedModule }
 
-procedure TCustomSEHostedModule.CloseParts;
-var
-  Module : Integer;
-begin
- for Module := 0 to Length(FParts) - 1 do
-  try
-   FParts[Module].Close;
-  finally
-   FreeAndNil(FParts[Module]);
-  end;
-end;
-
 constructor TCustomSEHostedModule.Create(Collection: TCollection);
 begin
  inherited;
@@ -657,6 +650,19 @@ begin
     DisplayName  := Self.DisplayName;
     FSEMFileName := Self.FSEMFileName;
    end else inherited;
+end;
+
+procedure TCustomSEHostedModule.CloseParts;
+var
+  Module : Integer;
+begin
+ for Module := 0 to Length(FParts) - 1 do
+  try
+   if FParts[Module] <> nil
+    then FParts[Module].Close;
+  finally
+   FreeAndNil(FParts[Module]);
+  end;
 end;
 
 function TCustomSEHostedModule.GetDisplayName: string;
@@ -735,6 +741,7 @@ begin
   begin
    SetLength(FParts, Module + 1);
    FParts[Module] := TCustomSEHostedModulePart.Create(Self, Module, @ModuleProperties);
+   TSEHostedModules(Collection).SEHost.InsertComponent(FParts[Module]);
    inc(Module); FillChar(ModuleProperties, SizeOf(TSEModuleProperties), 0);
   end;
 end;
@@ -823,7 +830,7 @@ begin
  Result := TSEHostedModule(inherited GetItem(Index));
 end;
 
-function TSEHostedModules.GetVSTHost: TCustomSEHost;
+function TSEHostedModules.GetSEHost: TCustomSEHost;
 begin
  Result := TCustomSEHost(FOwner);
 end;
@@ -867,5 +874,13 @@ begin
  assert(assigned(FSEHostedModules));
  FSEHostedModules.Assign(Value);
 end;
+
+procedure Register;
+begin
+ RegisterComponents('ASIO/VST Basics', [TSEHost]);
+end;
+
+initialization
+  RegisterClass(TCustomSEHostedModulePart);
 
 end.

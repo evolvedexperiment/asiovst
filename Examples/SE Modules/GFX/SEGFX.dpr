@@ -13,7 +13,7 @@ uses
 {$R *.res}
 
 const
-  SEGFXBaseModuleClasses : array [0..21] of TSEGFXBaseModuleClass = (
+  SEGFXBaseModuleClasses : array [0..23] of TSEGFXBaseModuleClass = (
     TSEGFXAddColorNoiseModule, TSEGFXAddMonoNoiseModule,
     TSEGFXContrastModule, TSEGFXEmbossModule, TSEGFXGrayScaleModule,
     TSEGFXHueModule, TSEGFXInvertModule, TSEGFXFishEyeModule,
@@ -21,16 +21,18 @@ const
     TSEGFXSplitBlurModule, TSEGFXSplitBlur2Module, TSEGFXGaussianBlurModule,
     TSEGFXMosaicModule, TSEGFXTwistModule, TSEGFXSplitlightModule,
     TSEGFXTileModule, TSEGFXSpotlightModule, TSEGFXTraceModule,
-    TSEGFXSolarizeModule, TSEGFXPosterizeModule);
+    TSEGFXSolarizeModule, TSEGFXPosterizeModule, TSEGFXBrushedMetalModule,
+    TSEGFXBrushedMetal2Module);
 
-  SEGFXBaseGuiClasses : array [0..21] of TSEGFXBaseGuiClass = (
+  SEGFXBaseGuiClasses : array [0..23] of TSEGFXBaseGuiClass = (
     TSEGFXAddColorNoiseGui, TSEGFXAddMonoNoiseGui, TSEGFXContrastGui,
     TSEGFXEmbossGui, TSEGFXGrayScaleGui, TSEGFXHueGui, TSEGFXInvertGui,
     TSEGFXFishEyeGui, TSEGFXLightnessGui, TSEGFXDarknessGui,
     TSEGFXSaturationGui, TSEGFXSplitBlurGui, TSEGFXSplitBlur2Gui,
     TSEGFXGaussianBlurGui, TSEGFXMosaicGui, TSEGFXTwistGui,
     TSEGFXSplitlightGui, TSEGFXTileGui, TSEGFXSpotlightGui, TSEGFXTraceGui,
-    TSEGFXSolarizeGui, TSEGFXPosterizeGui);
+    TSEGFXSolarizeGui, TSEGFXPosterizeGui, TSEGFXBrushedMetalGui,
+    TSEGFXBrushedMetal2Gui);
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin

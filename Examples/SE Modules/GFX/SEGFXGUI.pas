@@ -7,6 +7,9 @@ uses
 
 type
   TSEGFXBaseGuiClass = class of TSEGFXBaseGui;
+  PSEGFXColor32 = ^TSEGFXColor32;
+  TSEGFXColor32 = type Longword;
+  TSEGFXCombineReg  = function(X, Y, W: TSEGFXColor32): TSEGFXColor32;
 
   TSEGFXBaseGui = class(TSEGUIBase)
   protected
@@ -142,10 +145,97 @@ type
     procedure PerformBitmapOperation; override;
   end;
 
+  TSEGFXBrushedMetalGui = class(TSEGFXAmountGui)
+  protected
+    FGradient : Single;
+    procedure GuiPinValueChange(CurrentPin: TSEGuiPin); override;
+  public
+    procedure PerformBitmapOperation; override;
+  end;
+
+  TSEGFXBrushedMetal2Gui = class(TSEGFXBrushedMetalGui)
+  public
+    procedure PerformBitmapOperation; override;
+  end;
+
 implementation
 
 uses
   SysUtils, Math, DAV_Common;
+
+(*
+var
+  AlphaTable: Pointer;
+  BiasPtr: Pointer;
+  AlphaPtr: Pointer;
+
+procedure GenAlphaTable;
+var
+  I: Integer;
+  L: Longword;
+  P: ^Longword;
+begin
+  GetMem(AlphaTable, 257 * 8);
+  AlphaPtr := Pointer(Integer(AlphaTable) and $FFFFFFF8);
+  if Integer(AlphaPtr) < Integer(AlphaTable) then
+    AlphaPtr := Pointer(Integer(AlphaPtr) + 8);
+  P := AlphaPtr;
+  for I := 0 to 255 do
+  begin
+    L := I + I shl 16;
+    P^ := L;
+    Inc(P);
+    P^ := L;
+    Inc(P);
+  end;
+  BiasPtr := Pointer(Integer(AlphaPtr) + $80 * 8);
+end;
+
+function CombineRegPascal(X, Y, W: TSEGFXColor32): TSEGFXColor32; assembler;
+const
+  Bias = $00800080;
+begin
+  // combine RGBA channels of colors X and Y with the weight of X given in W
+  // Result Z = W * X + (1 - W) * Y (all channels are combined, including alpha)
+
+  if W = 0 then Result := Y else // maybe if W <= 0 ???
+  if W = $FF then Result := X else // maybe if W >= $FF ??? or if W > $FF ???
+   begin
+    Result := (((((X shr 8) and $00FF00FF) * W) + Bias) and $FF00FF00) or
+              (((((X and $00FF00FF) * W) + Bias) and $FF00FF00) shr 8);
+    W := W xor $FF; // W := 1 - W;
+
+    Result := Result + (
+      (((((Y shr 8) and $00FF00FF) * W) + Bias) and $FF00FF00) or
+      (((((Y and $00FF00FF) * W) + Bias) and $FF00FF00) shr 8));
+   end;
+end;
+
+function CombineRegMMX(X, Y, W: TSEGFXColor32): TSEGFXColor32; assembler;
+asm
+  // EAX - Color X
+  // EDX - Color Y
+  // ECX - Weight of X [0..255]
+  // Result := W * (X - Y) + Y
+
+ db $0F, $EF, $C0           // PXOR      MM0, MM0
+ db $0F, $6E, $C8           // MOVD      MM1, EAX
+ SHL       ECX, 3
+ db $0F, $6E, $D2           // MOVD      MM2, EDX
+ db $0F, $60, $C8           // PUNPCKLBW MM1, MM0
+ db $0F, $60, $D0           // PUNPCKLBW MM2, MM0
+ ADD       ECX, AlphaPtr
+ db $0F, $F9, $CA           // PSUBW     MM1, MM2
+ db $0F, $D5, $09           // PMULLW    MM1, [ECX]
+ db $0F, $71, $F2,$08       // PSLLW     MM2, 8
+ MOV       ECX, BiasPtr
+ db $0F, $FD, $11           // PADDW     MM2, [ECX]
+ db $0F, $FD, $CA           // PADDW     MM1, MM2
+ db $0F, $71, $D1, $08      // PSRLW     MM1, 8
+ db $0F, $67, $C8           // PACKUSWB  MM1, MM0
+ db $0F, $7E, $C8           // MOVD      EAX, MM1
+end;
+*)
 
 constructor TSEGFXBaseGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
 begin
@@ -1401,7 +1491,7 @@ end;
 
 procedure Tile(Src, Dst: TBitmap; Amount: Integer);
 var
-  w, h, i, j, 
+  w, h, i, j,
   w2, h2      : Integer;
   Temp        : TBitmap;
 begin
@@ -1470,5 +1560,157 @@ begin
   FreeAndNil(Temp);
  end;
 end;
+
+{ TSEGFXBrushedMetalGui }
+
+procedure TSEGFXBrushedMetalGui.GuiPinValueChange(CurrentPin: TSEGuiPin);
+var
+  Value : Single;
+begin
+ case CurrentPin.PinIndex of
+  2 : begin
+       Value := CurrentPin.ValueAsSingle;
+       if Value <> FGradient then
+        begin
+         FGradient := Value;
+         CallHost(seGuiHostRequestRepaint);
+        end;
+      end;
+ end;
+ inherited;
+end;
+
+procedure TSEGFXBrushedMetalGui.PerformBitmapOperation;
+var
+  x, y, v : Integer;
+  hght    : Integer;
+  s       : array[0..1] of Single;
+  h, hr   : Single;
+  Line    : PByteArray;
+begin
+ s[0] := 0;
+ s[1] := 0;
+ hght := FBitmap.Height;
+ hr   := 1 / hght;
+ for y := 0 to hght - 1 do
+  begin
+   Line := FBitmap.Scanline[y];
+   h    := FGradient * (1 - sqr(2 * (y - hght div 2) * hr));
+   for x := 0 to FBitmap.Width - 1 do
+    begin
+     s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
+     s[0] := s[1];
+
+     // blue
+     v := round(Line[x * 3] + Amount * (h + s[1]));
+     if v < 0 then Line[x * 3] := 0 else
+     if v > 255 then Line[x * 3] := 255
+      else Line[x * 3] := v;
+
+     // green
+     v := round(Line[x * 3 + 1] + Amount * (h + s[1]));
+     if v < 0 then Line[x * 3 + 1] := 0 else
+     if v > 255 then Line[x * 3 + 1] := 255
+      else Line[x * 3 + 1] := v;
+
+     // red
+     v := round(Line[x * 3 + 2] + Amount * (h + s[1]));
+     if v < 0 then Line[x * 3 + 2] := 0 else
+     if v > 255 then Line[x * 3 + 2] := 255
+      else Line[x * 3 + 2] := v;
+    end;
+  end;
+end;
+
+{ TSEGFXBrushedMetal2Gui }
+
+procedure TSEGFXBrushedMetal2Gui.PerformBitmapOperation;
+var
+  x, y, v : Integer;
+  hght    : Integer;
+  s       : array[0..1] of Single;
+  h, hr   : Single;
+  Line    : PByteArray;
+begin
+ hght := FBitmap.Height;
+ hr   := 1 / hght;
+ for y := 0 to hght - 1 do
+  begin
+   Line := FBitmap.Scanline[y];
+   h    := FGradient * (1 - sqr(2 * (y - hght div 2) * hr));
+   s[0] := 0;
+   s[1] := 0;
+   for x := 0 to FBitmap.Width - 1 do
+    begin
+     s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
+     s[0] := s[1];
+
+     // blue
+     v := round(Line[x * 3] + Amount * (h + s[1]));
+     if v < 0 then Line[x * 3] := 0 else
+     if v > 255 then Line[x * 3] := 255
+      else Line[x * 3] := v;
+
+     // green
+     v := round(Line[x * 3 + 1] + Amount * (h + s[1]));
+     if v < 0 then Line[x * 3 + 1] := 0 else
+     if v > 255 then Line[x * 3 + 1] := 255
+      else Line[x * 3 + 1] := v;
+
+     // red
+     v := round(Line[x * 3 + 2] + Amount * (h + s[1]));
+     if v < 0 then Line[x * 3 + 2] := 0 else
+     if v > 255 then Line[x * 3 + 2] := 255
+      else Line[x * 3 + 2] := v;
+    end;
+
+   s[0] := 0;
+   s[1] := 0;
+
+   for x := FBitmap.Width - 1 downto 0 do
+    begin
+     s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
+     s[0] := s[1];
+
+     // blue
+     v := round(Line[x * 3] + Amount * (h + s[1]));
+     if v < 0 then Line[x * 3] := 0 else
+     if v > 255 then Line[x * 3] := 255
+      else Line[x * 3] := v;
+
+     // green
+     v := round(Line[x * 3 + 1] + Amount * (h + s[1]));
+     if v < 0 then Line[x * 3 + 1] := 0 else
+     if v > 255 then Line[x * 3 + 1] := 255
+      else Line[x * 3 + 1] := v;
+
+     // red
+     v := round(Line[x * 3 + 2] + Amount * (h + s[1]));
+     if v < 0 then Line[x * 3 + 2] := 0 else
+     if v > 255 then Line[x * 3 + 2] := 255
+      else Line[x * 3 + 2] := v;
+    end;
+  end;
+end;
+
+(*
+procedure SetupFunctions;
+var
+  CpuInfo: TCpuInfo;
+begin
+  //WIMDC
+  CpuInfo := CPUID;
+  MMX_ACTIVE := (CpuInfo.Features and MMX_FLAG) = MMX_FLAG;
+end;
+
+initialization
+  SetupFunctions;
+  if MMX_ACTIVE then
+    GenAlphaTable;
+
+finalization
+  if MMX_ACTIVE then
+    FreeAlphaTable;
+*)
 
 end.

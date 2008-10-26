@@ -3,7 +3,7 @@ unit SELabelGUI;
 interface
 
 uses
-  Windows, Classes, Controls, Graphics, DAV_SEModule, DAV_SEGUI, SELabelModule;
+  Windows, Classes, Graphics, DAV_SEModule, DAV_SEGUI, SELabelModule;
 
 type
   TRGB24 = packed record
@@ -30,7 +30,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_GuiBaseControl;
+  SysUtils, DAV_Common;
 
 constructor TSELabelGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
 begin
@@ -121,14 +121,14 @@ begin
   begin
    if FBitmap.Width  <> 4 * wi.Width  then FBitmap.Width  := 4 * wi.Width;
    if FBitmap.Height <> 4 * wi.Height then FBitmap.Height := 4 * wi.Height;
-   with TControlCanvas.Create do
+   with TCanvas.Create do
     try
      Handle := hDC;
      Brush.Style := bsClear;
      BitBlt(FBitmap.Canvas.Handle, 0, 0, Wi.Width, Wi.Height, Handle, 0, 0, SRCCOPY);
      FBitmap.Canvas.Brush.Style := bsClear;
      Upsample4xBitmap24(FBitmap);
-     if FFontShadow > 0 then
+     if FFontShadow <> 0 then
       begin
        OldColor := FBitmap.Canvas.Font.Color;
        FBitmap.Canvas.Font.Color := clBlack;
