@@ -723,6 +723,7 @@ begin
      then raise Exception.Create(RStrNoEntryPoint);
     ListParts;
    end;
+  FLoaded := True;
  except
   Unload;
  end;
@@ -762,6 +763,7 @@ begin
    then raise Exception.Create(RStrNoEntryPoint);
   if not assigned(FMakeModule)
    then raise Exception.Create(RStrNoEntryPoint);
+  FLoaded := True;
  except
   Unload;
  end;
@@ -791,6 +793,7 @@ begin
    FInternalDLLLoader.Unload;
    FreeAndNil(FInternalDLLLoader);
   end;
+ FLoaded := False; 
  InitializeVariables;
 end;
 

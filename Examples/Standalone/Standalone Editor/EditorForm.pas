@@ -93,7 +93,7 @@ begin
 
    Active := True;
    Idle;
-   ShowEdit(TForm(VSTPanel));
+   ShowEdit(VSTPanel);
    Idle;
    EditIdle;
    Caption :=  GetVendorString + ' ' + GetEffectName;

@@ -118,7 +118,7 @@ object FmVSTEditor: TFmVSTEditor
     Align = alClient
     BevelOuter = bvNone
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 6695441
+    Font.Color = clBtnText
     Font.Height = -11
     Font.Name = 'Verdana'
     Font.Style = []
@@ -135,6 +135,7 @@ object FmVSTEditor: TFmVSTEditor
     VstPlugIns = <
       item
         DisplayName = 'Plugin'
+        VstOfflineTasks = <>
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000

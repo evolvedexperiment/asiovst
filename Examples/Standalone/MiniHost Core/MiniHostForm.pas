@@ -640,8 +640,8 @@ begin
  for i := 0 to VSTHost.VSTPlugIns.Count - 1 do
   if VSTHost[i].Active then
    begin
-    VSTHost[i].CanDo('sendVstTimeInfo');
-    VSTHost[i].CanDo('receiveVstTimeInfo');
+    VSTHost[i].VstCanDo('sendVstTimeInfo');
+    VSTHost[i].VstCanDo('receiveVstTimeInfo');
    end;
  VSTHost.VstTimeInfo.Flags := VSTHost.VstTimeInfo.Flags + [vtiTransportPlaying];
  ASIOHost.Active := True;
@@ -2186,7 +2186,7 @@ begin
  if fMDataCnt > 0 then
   begin
    fMyEvents.numEvents := fMDataCnt;
-   if VSTHost[0].CanDo('receiveVstMidiEvent') >= 0 then
+   if VSTHost[0].VstCanDo('receiveVstMidiEvent') >= 0 then
     VSTHost[0].ProcessEvents(@fMyEvents);
    if (fCurrentMidiOut > 0) and MIMidiThru.Checked then
     begin

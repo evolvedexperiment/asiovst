@@ -298,7 +298,7 @@ type
     InitialDelay     : LongInt;              // for algorithms which need input in the first place
     RealQualities    : LongInt;              // number of realtime qualities (0: realtime)
     OffQualities     : LongInt;              // number of offline qualities (0: realtime only)
-    IORatio          : LongInt;              // input samplerate to output samplerate ratio, not used yet
+    IORatio          : Single;               // input samplerate to output samplerate ratio, not used yet
     vObject          : Pointer;              // for class access (see AudioEffect.hpp), MUST be 0 else!
     User             : Pointer;              // user access
     UniqueID         : TChunkName;           // pls choose 4 character as unique as possible. This is used to identify an effect for save+load

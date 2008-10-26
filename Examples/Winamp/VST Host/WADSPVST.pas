@@ -401,7 +401,7 @@ var
   rct  : ERect;
   i    : Integer;
   s    : string;
-  temp : pchar;
+  str  : string;
 begin
  Timer.Enabled := False;
  with VstHost[0] do
@@ -432,21 +432,16 @@ begin
   end;
 
  CBPreset.Clear; if not VSTHost[0].Active then exit;
- getmem(temp, 25);
- try
-  for i := 0 to VSTHost[0].numPrograms - 1 do
-   begin
-    VSTHost[0].GetProgramNameIndexed(-1, i, temp);
-    s := IntToStr(i);
-    if i < 10 then s := '00' + s else
-    if i < 100 then s := '0' + s;
-    s := s+' - '+StrPas(temp);
-    CBPreset.Items.Add(s)
-   end;
-  CBPreset.ItemIndex := 0;
- finally
-  Freemem(temp);
- end;
+ for i := 0 to VSTHost[0].numPrograms - 1 do
+  begin
+   VSTHost[0].GetProgramNameIndexed(-1, i, str);
+   s := IntToStr(i);
+   if i < 10 then s := '00' + s else
+   if i < 100 then s := '0' + s;
+   s := s + ' - ' + str;
+   CBPreset.Items.Add(s)
+  end;
+ CBPreset.ItemIndex := 0;
 
  try
   s := VSTHost[0].GetProgramName;

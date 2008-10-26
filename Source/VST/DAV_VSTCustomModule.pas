@@ -216,7 +216,7 @@ type
     property HostVendor: string read GetHostVendor stored false;
     property HostVersion: Integer read GetHostVendorVersion stored false;
     property InitialDelay: Integer read FEffect.initialDelay write SetInitialDelay default 0;
-    property IORatio: Integer read FEffect.ioRatio write FEffect.ioRatio default 1;
+    property IORatio: Single read FEffect.ioRatio write FEffect.ioRatio;
     property KeysRequired: Boolean read FKeysRequired write SetKeysRequired default False;
     property numCategories: Integer read fNumCategories write fNumCategories default 1;
     property numInputs: Integer read FEffect.numInputs write SetNumInputs default 2;

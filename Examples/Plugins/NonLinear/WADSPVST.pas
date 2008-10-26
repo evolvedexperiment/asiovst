@@ -8,7 +8,7 @@ unit WADSPVST;
 interface
 
 uses 
-  Windows, Classes, Forms, SysUtils, Registry, DVstHost, Controls, ExtCtrls, 
+  Windows, Classes, Forms, SysUtils, Controls, ExtCtrls, Registry, DAV_VstHost,
   OpAmpModule;
 
 type
@@ -71,7 +71,7 @@ procedure Quit(This_Mod : PWinAmpDSPModule); cdecl;
 
 implementation
 
-uses Math, SyncObjs, DAVDCommon, DVSTEffect;
+uses Math, SyncObjs, DAV_Common, DAV_VSTEffect;
 
 var WADSPHeader  : TWinAmpDSPheader =
                    (Version : $20;
@@ -114,17 +114,17 @@ end;
 
 function Init(This_Mod : PWinAmpDSPModule) : Integer;
 begin
- CriticalSection:=TCriticalSection.Create;
+ CriticalSection := TCriticalSection.Create;
  CriticalSection.Enter;
  if not Assigned(FmWinAmpVST) then
   begin
    FmWinAmpVST := TFmWinAmpVST.Create(Application);
-   This_Mod^.UserData:=@FmWinAmpVST;
+   This_Mod^.UserData := @FmWinAmpVST;
   end
  else
   begin
    Application.ProcessMessages; sleep(10);
-   WADSPModule.UserData^.Visible:=True;
+   WADSPModule.UserData^.Visible := True;
   end;
  CriticalSection.Leave;
  Result := 0;
@@ -138,9 +138,10 @@ end;
 
 function ModifySamples(This_Mod : PWinAmpDSPModule; Samples : Pointer;
                        NumSamples, BitPerSample, nCh, sRate : Integer) : Integer;
-var TmpData : TAVDArrayOfSingleDynArray;
-    i,j,ch  : Integer;
-    Temp    : Integer;
+var
+  TmpData  : TDAVArrayOfSingleDynArray;
+  i, j, ch : Integer;
+  Temp     : Integer;
 const
   DivFak8  : Single = 1/$80;     MulFak8:Single  = $7F;
   DivFak16 : Single = 1/$8000;   MulFak16:Single = $7FFF;
@@ -154,65 +155,65 @@ begin
          if VstHost[0].Active then
           begin
            VstHost[0].SetBlockSizeAndSampleRate(NumSamples,sRate);
-           ch:=max(VstHost[0].numInputs,VstHost[0].numOutputs);
-           ch:=max(nCh,ch);
+           ch := max(VstHost[0].numInputs,VstHost[0].numOutputs);
+           ch := max(nCh,ch);
            SetLength(TmpData,ch);
-           for i:=0 to ch-1 do
+           for i := 0 to ch-1 do
             begin
              SetLength(TmpData[i],NumSamples);
              if i<nCh then
-              for j:=0 to NumSamples-1 do TmpData[i,j]:=PShortIntArray(Samples)^[j*nCh+i]*DivFak8;
+              for j := 0 to NumSamples-1 do TmpData[i,j] := PShortIntArray(Samples)^[j*nCh+i]*DivFak8;
             end;
 
            VstHost[0].ProcessReplacing(@TmpData[0],@TmpData[0], NumSamples);
-           for i:=0 to ch-1 do if i<nCh then
-            for j:=0 to NumSamples-1
-             do PShortIntArray(Samples)^[j*nCh+i]:=Round(f_Limit(1.9*Tanh2b(TmpData[i,j]))*MulFak8);
+           for i := 0 to ch-1 do if i<nCh then
+            for j := 0 to NumSamples-1
+             do PShortIntArray(Samples)^[j*nCh+i] := Round(f_Limit(1.9*Tanh2b(TmpData[i,j]))*MulFak8);
           end;
     16: with This_Mod^.UserData^ do if Assigned(VstHost) then
          if VstHost[0].Active then
           begin
            VstHost[0].SetBlockSizeAndSampleRate(NumSamples,sRate);
-           ch:=max(VstHost[0].numInputs,VstHost[0].numOutputs);
-           ch:=max(nCh,ch);
+           ch := max(VstHost[0].numInputs,VstHost[0].numOutputs);
+           ch := max(nCh,ch);
            SetLength(TmpData,ch);
-           for i:=0 to ch-1 do
+           for i := 0 to ch-1 do
             begin
              SetLength(TmpData[i],NumSamples);
              if i<nCh then
-              for j:=0 to NumSamples-1 do TmpData[i,j]:=PSmallIntArray(Samples)^[j*nCh+i]*DivFak16;
+              for j := 0 to NumSamples-1 do TmpData[i,j] := PSmallIntArray(Samples)^[j*nCh+i]*DivFak16;
             end;
 
            VstHost[0].ProcessReplacing(@TmpData[0],@TmpData[0], NumSamples);
-           for i:=0 to ch-1 do if i<nCh then
-            for j:=0 to NumSamples-1
-             do PSmallIntArray(Samples)^[j*nCh+i]:=Round(f_Limit(1.9*Tanh2b(TmpData[i,j]))*MulFak16);
+           for i := 0 to ch-1 do if i<nCh then
+            for j := 0 to NumSamples-1
+             do PSmallIntArray(Samples)^[j*nCh+i] := Round(f_Limit(1.9*Tanh2b(TmpData[i,j]))*MulFak16);
           end;
     24: with This_Mod^.UserData^ do if Assigned(VstHost) then
          if VstHost[0].Active then
           begin
            VstHost[0].SetBlockSizeAndSampleRate(NumSamples,sRate);
-           ch:=max(VstHost[0].numInputs,VstHost[0].numOutputs);
-           ch:=max(nCh,ch);
+           ch := max(VstHost[0].numInputs,VstHost[0].numOutputs);
+           ch := max(nCh,ch);
            SetLength(TmpData,ch);
-           for i:=0 to ch-1 do
+           for i := 0 to ch-1 do
             begin
              SetLength(TmpData[i],NumSamples);
              if i<nCh then
-              for j:=0 to NumSamples-1
-               do TmpData[i,j]:=((ShortInt(P3ByteArray(Samples)^[j*nCh+i][2]) shl 16) +
+              for j := 0 to NumSamples-1
+               do TmpData[i,j] := ((ShortInt(P3ByteArray(Samples)^[j*nCh+i][2]) shl 16) +
                                  (P3ByteArray(Samples)^[j*nCh+i][1] shl 8)  +
                                  (P3ByteArray(Samples)^[j*nCh+i][0] )) * DivFak24;
             end;
            VstHost[0].ProcessReplacing(@TmpData[0],@TmpData[0], NumSamples);
 
-           for i:=0 to ch-1 do if i<nCh then
-            for j:=0 to NumSamples-1 do
+           for i := 0 to ch-1 do if i<nCh then
+            for j := 0 to NumSamples-1 do
              begin
-              Temp:=Round(f_Limit(1.9*Tanh2b(TmpData[i,j]))*MulFak24);
-              P3ByteArray(Samples)^[j*nCh+i][2]:=(Temp shr 16) and $FF;
-              P3ByteArray(Samples)^[j*nCh+i][1]:=(Temp shr 8 ) and $FF;
-              P3ByteArray(Samples)^[j*nCh+i][0]:=(Temp       ) and $FF;
+              Temp := Round(f_Limit(1.9*Tanh2b(TmpData[i,j]))*MulFak24);
+              P3ByteArray(Samples)^[j*nCh+i][2] := (Temp shr 16) and $FF;
+              P3ByteArray(Samples)^[j*nCh+i][1] := (Temp shr 8 ) and $FF;
+              P3ByteArray(Samples)^[j*nCh+i][0] := (Temp       ) and $FF;
              end;
           end;
    end;
@@ -226,7 +227,7 @@ procedure Quit(This_Mod : PWinAmpDSPModule);
 begin
  CriticalSection.Enter;
  try This_Mod^.UserData^.ClosePlugin; finally
-  try FreeAndNil(This_Mod^.UserData^); finally FmWinAmpVST:=nil; end; end;
+  try FreeAndNil(This_Mod^.UserData^); finally FmWinAmpVST := nil; end; end;
  CriticalSection.Leave; FreeAndNil(CriticalSection);
 end;
 
@@ -237,11 +238,11 @@ begin
  with TRegistry.Create do
   try
    LoadVST;
-   RootKey:=HKEY_CURRENT_USER;
+   RootKey := HKEY_CURRENT_USER;
    if OpenKeyReadOnly('SOFTWARE\ASIOVST\WinAmp') then
     begin
      if ValueExists('Visible') then if ReadBool('Visible') then Show;
-     if ValueExists('Left') then Left:=ReadInteger('Left');
+     if ValueExists('Left') then Left := ReadInteger('Left');
      if ValueExists('Visible') then Visible := ReadBool('Visible');
     end;
   finally
@@ -264,12 +265,12 @@ begin
    CloseKey;
    Free;
   end;
- Visible:=False; 
+ Visible := False; 
  with VstHost[0] do
   try
    SavePreset(ExtractFilePath(Application.ExeName)+'OpAmp.fxp');
    CloseEdit;
-   Active:=False;
+   Active := False;
    Unload;
   finally
    FreeAndNil(FmWinAmpVST);
@@ -283,23 +284,24 @@ begin
 end;
 
 procedure TFmWinAmpVST.LoadVST;
-var rct  : ERect;
+var
+  rct : ERect;
 begin
  with VstHost[0] do
   try
    CriticalSection.Enter;
    try CloseEdit; except end;
-   Active:=False;
-   sleep(10);
+   Active := False;
+   Sleep(10);
    try Unload; except end;
-   sleep(10);
+   Sleep(10);
 
-   OpAmpModule:=TVSTOpAmp.Create(Application);
-   OpAmpModule.Effect^.user:=OpAmpModule;
-   OpAmpModule.AudioMaster:=audioMaster;
-   PVstEffect:=OpAmpModule.Effect;
+   OpAmpModule := TVSTOpAmp.Create(Application);
+   OpAmpModule.Effect^.user := OpAmpModule;
+   OpAmpModule.AudioMaster := audioMaster;
+   LoadFromVSTEffect(OpAmpModule.Effect);
 
-   Active:=True;
+   Active := True;
    try
     ShowEdit(TForm(PnGUI));
     Idle;
@@ -312,7 +314,7 @@ begin
    CriticalSection.Leave;
   end;
 
- rct:=VSTHost[0].EditGetRect;
+ rct := VSTHost[0].EditGetRect;
  ClientWidth := rct.right - rct.left;
  ClientHeight := rct.bottom - rct.Top;
 end;
