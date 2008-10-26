@@ -1,6 +1,8 @@
 unit DAV_ASIOMixer;
 
-{If this file makes troubles, delete the DEFINE ASIOMixer in DASIOHost}
+{$I ..\ASIOVST.inc}
+
+{If this file makes troubles, delete the DEFINE ASIOMixer in DAV_ASIOHost}
 
 interface
 
@@ -18,6 +20,8 @@ type
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 end.

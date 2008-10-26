@@ -5,7 +5,7 @@ unit DAV_ASIOHost;
 // Benjamin Rosseaux. Please give credit if you use this component in your
 // programs. Thanks to Martin Fay (original Delphi ASIO interface)
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 {.$DEFINE OpenASIO}
 // define OpenASIO to compile using old OpenASIO interface (needs OpenASIO.dll)
 

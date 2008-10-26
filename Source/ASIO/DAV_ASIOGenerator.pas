@@ -2,7 +2,7 @@ unit DAV_ASIOGenerator;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses Classes, DAV_Common;
 

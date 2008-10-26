@@ -2,13 +2,13 @@ unit DAV_ASIORegister;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 procedure Register;
 
 implementation
 
-{$IFNDEF FPC}{$R DAV_ASIOHost.res}{$ENDIF}
+{$IFNDEF FPC}{$R ..\..\Resources\DAV_ASIOHost.res}{$ENDIF}
 
 uses
   {$IFDEF FPC} LResources, {$ENDIF} Classes, DAV_ASIOHOST, DAV_ASIOGenerator;
@@ -26,8 +26,7 @@ end;
 
 {$IFDEF FPC}
   initialization
-  {$i TASIOHost.lrs}
-  {$i TASIOHostBasic.lrs}
+  {$i ..\..\Resources\DAV_ASIOHost.lrs}
 {$ENDIF}
 
 end.

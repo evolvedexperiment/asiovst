@@ -2,65 +2,71 @@
 <CONFIG>
   <Package Version="3">
     <PathDelim Value="\"/>
-    <Name Value="HostASIOLaz"/>
+    <Name Value="DAV_ASIOHost_Lazarus"/>
     <CompilerOptions>
-      <Version Value="5"/>
+      <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\Source\"/>
+        <OtherUnitFiles Value="..\Source\;C:\Users\Christian Budde\Projects\VSTPack\Source\ASIO\;C:\Users\Christian Budde\Projects\VSTPack\Resources\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
-      <CodeGeneration>
-        <Generate Value="Faster"/>
-      </CodeGeneration>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="7">
+    <Files Count="10">
       <Item1>
-        <Filename Value="..\Source\DASIOHost.pas"/>
-        <UnitName Value="DASIOHost"/>
+        <Filename Value="..\Source\ASIO\DAV_ASIO.pas"/>
+        <UnitName Value="DAV_ASIO"/>
       </Item1>
       <Item2>
-        <Filename Value="..\Source\OpenASIO.pas"/>
-        <UnitName Value="OpenASIO"/>
+        <Filename Value="..\Source\ASIO\DAV_OpenASIO.pas"/>
+        <UnitName Value="DAV_OpenASIO"/>
       </Item2>
       <Item3>
-        <Filename Value="..\Source\Asio.pas"/>
-        <UnitName Value="Asio"/>
+        <Filename Value="..\Source\ASIO\DAV_ASIOConvert.pas"/>
+        <UnitName Value="DAV_ASIOConvert"/>
       </Item3>
       <Item4>
-        <Filename Value="..\Source\DASIOConvert.pas"/>
-        <UnitName Value="DASIOConvert"/>
+        <Filename Value="..\Source\ASIO\DAV_ASIOGenerator.pas"/>
+        <UnitName Value="DAV_ASIOGenerator"/>
       </Item4>
       <Item5>
-        <Filename Value="..\Source\DASIOGenerator.pas"/>
-        <UnitName Value="DASIOGenerator"/>
+        <Filename Value="..\Source\ASIO\DAV_ASIOHost.pas"/>
+        <UnitName Value="DAV_ASIOHost"/>
       </Item5>
       <Item6>
-        <Filename Value="..\Source\BeRoASIO.pas"/>
-        <UnitName Value="BeRoASIO"/>
+        <Filename Value="..\Source\ASIO\DAV_ASIOMixer.pas"/>
+        <UnitName Value="DAV_ASIOMixer"/>
       </Item6>
       <Item7>
-        <Filename Value="..\Source\DASIORegister.pas"/>
+        <Filename Value="..\Source\ASIO\DAV_ASIORegister.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="DASIORegister"/>
+        <UnitName Value="DAV_ASIORegister"/>
       </Item7>
+      <Item8>
+        <Filename Value="..\Source\ASIO\DAV_BeRoASIO.pas"/>
+        <UnitName Value="DAV_BeRoASIO"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\Source\ASIOVST.inc"/>
+        <Type Value="Include"/>
+      </Item9>
+      <Item10>
+        <Filename Value="..\Resources\DAV_ASIOHost.lrs"/>
+        <Type Value="LRS"/>
+      </Item10>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="3">
+    <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="AVDDSPLaz"/>
+        <PackageName Value="LCL"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
-      </Item2>
-      <Item3>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item3>
+      </Item2>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)\"/>

@@ -1,22 +1,23 @@
-{ Diese Datei wurde automatisch von Lazarus erzeugt. Sie darf nicht bearbeitet werden!
-Dieser Quelltext dient nur dem Übersetzen und Installieren des Packages.
+{ Diese Datei wurde automatisch von Lazarus erzeugt. Sie darf nicht bearbeitet 
+  werden!
+  Dieser Quelltext dient nur dem Ãœbersetzen und Installieren des Packages.
  }
 
-unit HostASIOLaz; 
+unit DAV_ASIOHost_Lazarus; 
 
 interface
 
 uses
-  DASIOHost, OpenASIO, Asio, DASIOConvert, DASIOGenerator, BeRoASIO, 
-    DASIORegister, LazarusPackageIntf; 
+  DAV_ASIO, DAV_OpenASIO, DAV_ASIOConvert, DAV_ASIOGenerator, DAV_ASIOHost, 
+  DAV_ASIOMixer, DAV_ASIORegister, DAV_BeRoASIO, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('DASIORegister', @DASIORegister.Register); 
+  RegisterUnit('DAV_ASIORegister', @DAV_ASIORegister.Register); 
 end; 
 
 initialization
-  RegisterPackage('HostASIOLaz', @Register); 
+  RegisterPackage('DAV_ASIOHost_Lazarus', @Register); 
 end.

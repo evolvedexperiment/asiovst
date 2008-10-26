@@ -36,7 +36,7 @@ unit DAV_ASIO;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 {$IFDEF FPC} uses LCLIntf;
 {$ELSE} uses Windows; {$ENDIF}
 
