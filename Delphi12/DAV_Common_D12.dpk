@@ -1,6 +1,5 @@
 package DAV_Common_D12;
 
-{$R 'DAV_Common.res'}
 {$M+}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -32,6 +31,7 @@ requires
 
 contains
   DAV_Common in '..\Source\DAV_Common.pas',
+  DAV_CommonRegister in '..\Source\DAV_CommonRegister.pas',
   CPUDetectionTool in '..\Source\CPUDetectionTool.pas',
   DAV_ProcessingComponent in '..\Source\DAV_ProcessingComponent.pas',
   DAV_BufferMathPascal in '..\Source\Math\DAV_BufferMathPascal.pas',

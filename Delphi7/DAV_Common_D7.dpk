@@ -1,6 +1,5 @@
 package DAV_Common_D7;
 
-{$R 'DAV_Common.res'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -31,6 +30,7 @@ requires
 
 contains
   DAV_Common in '..\Source\DAV_Common.pas',
+  DAV_CommonRegister in '..\Source\DAV_CommonRegister.pas',
   DAV_CPUDetectionTool in '..\Source\DAV_CPUDetectionTool.pas',
   DAV_ProcessingComponent in '..\Source\DAV_ProcessingComponent.pas',
   DAV_BufferMathPascal in '..\Source\Math\DAV_BufferMathPascal.pas',

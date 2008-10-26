@@ -121,7 +121,7 @@ implementation
 {$ENDIF}
 
 uses
-  Sysutils, Math, DAV_VSTModuleWithDsp, DAV_DspVoice
+  Sysutils, Math, DAV_DspVoice
   {$IFDEF PUREPASCAL},DAV_BufferMathPascal{$ELSE},DAV_BufferMathAsm{$ENDIF};
 
 constructor TDspBaseComponent.Create(AOwner: TComponent);

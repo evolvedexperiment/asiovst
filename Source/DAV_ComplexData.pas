@@ -130,8 +130,6 @@ type
     property SampleRateSource;
   end;
 
-procedure Register;
-
 implementation
 
 uses
@@ -418,14 +416,6 @@ begin
  if (Index < 0) or (Index >= fChannels.Count)
   then raise Exception.Create('Index out of bounds')
   else result := TComplexChannel64(fChannels.Items[index]);
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-
-procedure Register;
-begin
-  RegisterComponents('ASIO/VST Basics', [TComplexData32]);
-  RegisterComponents('ASIO/VST Basics', [TComplexData64]);
 end;
 
 end.

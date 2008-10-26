@@ -25,7 +25,7 @@ begin
 end; 
 
 {$IFDEF FPC}
-  initialization
+initialization
   {$i ..\..\Resources\DAV_ASIOHost.lrs}
 {$ENDIF}
 

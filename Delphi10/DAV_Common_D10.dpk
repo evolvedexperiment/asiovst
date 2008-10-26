@@ -1,6 +1,6 @@
 package DAV_Common_D10;
 
-{$R 'DAV_Common.res'}
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -48,6 +48,7 @@ contains
   DAV_AudioFileFLAC in '..\Source\FileFormats\DAV_AudioFileFLAC.pas',
   DAV_AudioFileWavePack in '..\Source\FileFormats\DAV_AudioFileWavePack.pas',
   DAV_AudioFileMonkeyAudio in '..\Source\FileFormats\DAV_AudioFileMonkeyAudio.pas',
-  DAV_ComplexData in '..\Source\DAV_ComplexData.pas';
+  DAV_ComplexData in '..\Source\DAV_ComplexData.pas',
+  DAV_CommonRegister in '..\Source\DAV_CommonRegister.pas';
 
 end.

@@ -234,7 +234,6 @@ type
 
 function KeyToStr(key: Integer): string;
 function MyTimeToStr(val: Integer): string;
-procedure Register;
 
 implementation
 
@@ -882,11 +881,6 @@ procedure TMidiFile.SetManual(const Value: Boolean);
 begin
  FManual := Value;
  fMTimer.Enabled := not Value;
-end;
-
-procedure Register;
-begin
-  RegisterComponents('ASIO/VST Basics', [TMidiFile]);
 end;
 
 end.

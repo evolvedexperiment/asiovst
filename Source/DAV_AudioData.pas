@@ -397,8 +397,6 @@ type
   end;
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-procedure Register;
-
 implementation
 
 uses
@@ -1411,16 +1409,5 @@ begin
  result := ChannelList[Channel].ChannelDataPointer;
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
-
-////////////////////////////////////////////////////////////////////////////////
-
-procedure Register;
-begin
-  RegisterComponents('ASIO/VST Basics', [TSampleRateSource]);
-  RegisterComponents('ASIO/VST Basics', [TAudioData32]);
-  RegisterComponents('ASIO/VST Basics', [TAudioData64]);
-  RegisterComponents('ASIO/VST Basics', [TAudioDataCollection32]);
-  RegisterComponents('ASIO/VST Basics', [TAudioDataCollection64]);
-end;
 
 end.

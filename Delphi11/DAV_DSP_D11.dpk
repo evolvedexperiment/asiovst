@@ -1,6 +1,5 @@
 package DAV_DSP_D11;
 
-{$R DAV_DspRegister.res}
 {$M+}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -29,7 +28,6 @@ package DAV_DSP_D11;
 requires
   vcl,
   rtl,
-  designide,
   DAV_Common_D11;
 
 contains
@@ -52,16 +50,18 @@ contains
   DAV_DspMetronome in '..\Source\DSP\DAV_DspMetronome.pas',
   DAV_DspRemez in '..\Source\DSP\DAV_DspRemez.pas',
   DAV_DspStateVariableFilter in '..\Source\DSP\DAV_DspStateVariableFilter.pas',
-  DAV_DspVoice in '..\Source\DAV_DspVoice.pas',
-  DAV_DspOscSine in '..\Source\DAV_DspOscSine.pas',
-  DAV_DspOscSaw in '..\Source\DAV_DspOscSaw.pas',
-  DAV_DspOscRamp in '..\Source\DAV_DspOscRamp.pas',
-  DAV_DspOscSquare in '..\Source\DAV_DspOscSquare.pas',
-  DAV_DspOscNoise in '..\Source\DAV_DspOscNoise.pas',
-  DAV_DspOscAbsSine in '..\Source\DAV_DspOscAbsSine.pas',
-  DAV_DspBaseOsc in '..\Source\DAV_DspBaseOsc.pas',
-  DAV_DspVoiceController in '..\Source\DAV_DspVoiceController.pas',
-  DAV_DspVoiceList in '..\Source\DAV_DspVoiceList.pas',
-  DAV_DspEnvelope in '..\Source\DSP\DAV_DspEnvelope.pas';
+  DAV_DspVoice in '..\Source\DSP\DAV_DspVoice.pas',
+  DAV_DspOscSine in '..\Source\DSP\DAV_DspOscSine.pas',
+  DAV_DspOscSaw in '..\Source\DSP\DAV_DspOscSaw.pas',
+  DAV_DspOscRamp in '..\Source\DSP\DAV_DspOscRamp.pas',
+  DAV_DspOscSquare in '..\Source\DSP\DAV_DspOscSquare.pas',
+  DAV_DspOscNoise in '..\Source\DSP\DAV_DspOscNoise.pas',
+  DAV_DspOscAbsSine in '..\Source\DSP\DAV_DspOscAbsSine.pas',
+  DAV_DspBaseOsc in '..\Source\DSP\DAV_DspBaseOsc.pas',
+  DAV_DspVoiceController in '..\Source\DSP\DAV_DspVoiceController.pas',
+  DAV_DspVoiceList in '..\Source\DSP\DAV_DspVoiceList.pas',
+  DAV_DspEnvelope in '..\Source\DSP\DAV_DspEnvelope.pas',
+  DAV_DSPUpDownSampling in '..\Source\DSP\DAV_DSPUpDownSampling.pas',
+  DAV_DSPSineLFO in '..\Source\DAV_DSPSineLFO.pas';
 
 end.

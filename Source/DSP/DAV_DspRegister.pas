@@ -8,6 +8,8 @@ procedure Register;
 
 implementation
 
+{$IFNDEF FPC}{$R '..\..\Resources\DAV_DspRegister.res'}{$ENDIF}
+
 uses
   Classes, DAV_DspEnvelopeFollower, DAV_DspRemez, DAV_DspFilter,
   DAV_DspVoiceController, DAV_DspOscSine, DAV_DspOscSaw, DAV_DspOscRamp,
@@ -32,7 +34,7 @@ begin
                                       TRemezBandpassFilterDesigner,
                                       TRemezBandstopFilterDesigner,
                                       TDspEnvelopeFollower,
-                                      TDspLowpassFilter,
+//                                      TDspLowpassFilter,
                                       TDspVoiceController,
                                       TDspOscSine,
                                       TDspOscSaw,
@@ -49,5 +51,10 @@ begin
    {$ENDIF}
   {$ENDIF}
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i ..\..\Resources\DAV_DspRegister.lrs}
+{$ENDIF}
 
 end.

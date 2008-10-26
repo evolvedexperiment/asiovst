@@ -242,11 +242,11 @@ begin
     FDspDirectProcessItem.ResetQueue;
 end;
 
-procedure TDspVoice.RegisterDSPItem(item: TDAVProcessingComponent);
+procedure TDspVoice.RegisterDSPItem(Item: TDAVProcessingComponent);
 begin
   with FDspQueueList do
   begin
-    if IndexOf(item)<0 then
+    if IndexOf(item) < 0 then
     begin
       Add(item);
       if (FVoiceProcessingMode = pmDspQueue) and not Assigned(FDspDirectProcessItem) then

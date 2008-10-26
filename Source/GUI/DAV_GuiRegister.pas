@@ -2,17 +2,20 @@ unit DAV_GuiRegister;
 
 interface
 
+{$I ..\ASIOVST.INC}
+
 procedure Register;
 
 implementation
 
-{$IFNDEF FPC}{$R DAV_GuiRegister.res}{$ENDIF}
+{$IFNDEF FPC}{$R ..\..\Resources\DAV_GuiRegister.res}{$ENDIF}
 
 uses
-  Classes, DAV_GuiStaticWaveform, DAV_GuiDynamicWaveform, DAV_GuiDial, DAV_GuiLED,
-  DAV_GuiGroup, DAV_GuiMidiKeys, DAV_GuiPanel, DAV_GuiADSRGraph, DAV_GuiLevelMeter,
-  DAV_GuiAudioDataDisplay, DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiVUMeter,
-  DAV_GuiButton, DAV_CorrelationMeter;
+  {$IFDEF FPC} LResources, {$ENDIF} Classes, DAV_GuiStaticWaveform,
+  DAV_GuiDynamicWaveform, DAV_GuiDial, DAV_GuiLED, DAV_GuiGroup, DAV_GuiButton,
+  DAV_GuiMidiKeys, DAV_GuiLevelMeter, DAV_GuiAudioDataDisplay, DAV_GuiLabel,
+  DAV_GuiPanel, DAV_GuiADSRGraph, DAV_GuiSelectBox, DAV_CorrelationMeter,
+  DAV_GuiVUMeter;
 
 procedure Register;
 begin
@@ -24,5 +27,10 @@ begin
                                       TGuiVUMeter, TGuiLevelMeter,
                                       TGuiCorrelationMeter]);
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i ..\..\Resources\DAV_GuiRegister.lrs}
+{$ENDIF}
 
 end.

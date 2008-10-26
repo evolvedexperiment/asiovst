@@ -42,11 +42,10 @@ type
 
 implementation
 
-{$R VSTPluginWizard.RES}
+{$R ..\..\Resources\VSTPluginWizard.RES}
 
 uses
-  Dialogs,
-  DAV_VSTProjectCreator, DAV_VSTModuleCreator, DAV_VSTEditorCreator,
+  Dialogs, DAV_VSTProjectCreator, DAV_VSTModuleCreator, DAV_VSTEditorCreator,
   DAV_VSTPluginWizardFrm;
 
 const
