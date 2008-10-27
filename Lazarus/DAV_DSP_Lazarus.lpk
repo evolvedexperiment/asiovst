@@ -2,120 +2,126 @@
 <CONFIG>
   <Package Version="3">
     <PathDelim Value="\"/>
-    <Name Value="AVDDSPLaz"/>
+    <Name Value="DAV_DSP_Lazarus"/>
     <CompilerOptions>
-      <Version Value="5"/>
+      <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\lcl\units\$(TargetCPU)-$(TargetOS)\$(LCLWidgetType)\;$(LazarusDir)\components\codetools\units\$(TargetCPU)-$(TargetOS)\;$(LazarusDir)\components\custom\;$(LazarusDir)\packager\units\$(TargetCPU)-$(TargetOS)\;C:\Code\VSTPack\Source\"/>
+        <OtherUnitFiles Value="..\Source\;C:\Users\Christian Budde\Projects\VSTPack\Source\ASIO\;C:\Users\Christian Budde\Projects\VSTPack\Resources\;C:\Users\Christian Budde\Projects\VSTPack\Source\DSP\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
-      <Parsing>
-        <SyntaxOptions>
-          <DelphiCompat Value="True"/>
-        </SyntaxOptions>
-      </Parsing>
-      <CodeGeneration>
-        <Generate Value="Faster"/>
-      </CodeGeneration>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Files Count="19">
+    <Version Minor="3"/>
+    <Files Count="21">
       <Item1>
-        <Filename Value="..\Source\DDspWindowing.pas"/>
-        <UnitName Value="DDspWindowing"/>
+        <Filename Value="..\Source\DSP\DAV_DspBesselFilter.pas"/>
+        <UnitName Value="DAV_DspBesselFilter"/>
       </Item1>
       <Item2>
-        <Filename Value="..\Source\DDspBaseComponent.pas"/>
-        <UnitName Value="DDspBaseComponent"/>
+        <Filename Value="..\Source\DSP\DAV_DspButterworthFilter.pas"/>
+        <UnitName Value="DAV_DspButterworthFilter"/>
       </Item2>
       <Item3>
-        <Filename Value="..\Source\DDspBesselFilter.pas"/>
-        <UnitName Value="DDspBesselFilter"/>
+        <Filename Value="..\Source\DSP\DAV_DspChebyshevFilter.pas"/>
+        <UnitName Value="DAV_DspChebyshevFilter"/>
       </Item3>
       <Item4>
-        <Filename Value="..\Source\DDspButterworthFilter.pas"/>
-        <UnitName Value="DDspButterworthFilter"/>
+        <Filename Value="..\Source\DSP\DAV_DspDFT.pas"/>
+        <UnitName Value="DAV_DspDFT"/>
       </Item4>
       <Item5>
-        <Filename Value="..\Source\DDspChebyshevFilter.pas"/>
-        <UnitName Value="DDspChebyshevFilter"/>
+        <Filename Value="..\Source\DSP\DAV_DspDitherNoiseShaper.pas"/>
+        <UnitName Value="DAV_DspDitherNoiseShaper"/>
       </Item5>
       <Item6>
-        <Filename Value="..\Source\DDspDFT.pas"/>
-        <UnitName Value="DDspDFT"/>
+        <Filename Value="..\Source\DSP\DAV_DspDynamics.pas"/>
+        <UnitName Value="DAV_DspDynamics"/>
       </Item6>
       <Item7>
-        <Filename Value="..\Source\DDspDitherNoiseShaper.pas"/>
-        <UnitName Value="DDspDitherNoiseShaper"/>
+        <Filename Value="..\Source\DSP\DAV_DspFFT.pas"/>
+        <UnitName Value="DAV_DspFFT"/>
       </Item7>
       <Item8>
-        <Filename Value="..\Source\DDspDynamics.pas"/>
-        <UnitName Value="DDspDynamics"/>
+        <Filename Value="..\Source\DSP\DAV_DspFilter.pas"/>
+        <UnitName Value="DAV_DspFilter"/>
       </Item8>
       <Item9>
-        <Filename Value="..\Source\DDspEnvelopeFollower.pas"/>
-        <UnitName Value="DDspEnvelopeFollower"/>
+        <Filename Value="..\Source\DSP\DAV_DspInterpolation.pas"/>
+        <UnitName Value="DAV_DspInterpolation"/>
       </Item9>
       <Item10>
-        <Filename Value="..\Source\DDspFFT.pas"/>
-        <UnitName Value="DDspFFT"/>
+        <Filename Value="..\Source\DSP\DAV_DspMetronome.pas"/>
+        <UnitName Value="DAV_DspMetronome"/>
       </Item10>
       <Item11>
-        <Filename Value="..\Source\DDspFilter.pas"/>
-        <UnitName Value="DDspFilter"/>
+        <Filename Value="..\Source\DSP\DAV_DspMinBlep.pas"/>
+        <UnitName Value="DAV_DspMinBlep"/>
       </Item11>
       <Item12>
-        <Filename Value="..\Source\DDspInterpolation.pas"/>
-        <UnitName Value="DDspInterpolation"/>
+        <Filename Value="..\Source\DSP\DAV_DspPhaser.pas"/>
+        <UnitName Value="DAV_DspPhaser"/>
       </Item12>
       <Item13>
-        <Filename Value="..\Source\DDspMetronome.pas"/>
-        <UnitName Value="DDspMetronome"/>
+        <Filename Value="..\Source\DSP\DAV_DspRegister.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="DAV_DspRegister"/>
       </Item13>
       <Item14>
-        <Filename Value="..\Source\DDspMinBlep.pas"/>
-        <UnitName Value="DDspMinBlep"/>
+        <Filename Value="..\Source\DSP\DAV_DspRemez.pas"/>
+        <UnitName Value="DAV_DspRemez"/>
       </Item14>
       <Item15>
-        <Filename Value="..\Source\DDspPhaser.pas"/>
-        <UnitName Value="DDspPhaser"/>
+        <Filename Value="..\Source\DSP\DAV_DspStateVariableFilter.pas"/>
+        <UnitName Value="DAV_DspStateVariableFilter"/>
       </Item15>
       <Item16>
-        <Filename Value="..\Source\DDspRegister.pas"/>
-        <HasRegisterProc Value="True"/>
-        <UnitName Value="DDspRegister"/>
+        <Filename Value="..\Source\DSP\DAV_DspWaveshaper.pas"/>
+        <UnitName Value="DAV_DspWaveshaper"/>
       </Item16>
       <Item17>
-        <Filename Value="..\Source\DDSPRemez.pas"/>
-        <UnitName Value="DDSPRemez"/>
+        <Filename Value="..\Source\DSP\DAV_DspWindowing.pas"/>
+        <UnitName Value="DAV_DspWindowing"/>
       </Item17>
       <Item18>
-        <Filename Value="..\Source\DDSPStateVariableFilter.pas"/>
-        <UnitName Value="DDSPStateVariableFilter"/>
+        <Filename Value="..\Source\DSP\DAV_DSPLevelingAmplifier.pas"/>
+        <UnitName Value="DAV_DSPLevelingAmplifier"/>
       </Item18>
       <Item19>
-        <Filename Value="..\Source\DDspWaveshaper.pas"/>
-        <UnitName Value="DDspWaveshaper"/>
+        <Filename Value="..\Source\DSP\DAV_DSPSineLFO.pas"/>
+        <UnitName Value="DAV_DSPSineLFO"/>
       </Item19>
+      <Item20>
+        <Filename Value="..\Source\DSP\DAV_DSPUpDownsampling.pas"/>
+        <UnitName Value="DAV_DSPUpDownsampling"/>
+      </Item20>
+      <Item21>
+        <Filename Value="..\Resources\DAV_DSPRegister.lrs"/>
+        <Type Value="LRS"/>
+      </Item21>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="IDEIntf"/>
+        <PackageName Value="DAV_Common_Lazarus"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
       </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)\;\Source\"/>
+      <UnitPath Value="$(PkgOutDir)\"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
       <DestinationDirectory Value="$(TestDir)\publishedpackage\"/>
+      <IgnoreBinaries Value="False"/>
     </PublishOptions>
   </Package>
 </CONFIG>

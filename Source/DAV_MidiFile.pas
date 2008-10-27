@@ -157,7 +157,7 @@ type
     procedure SetManual(const Value: Boolean);
   protected
     fMTimer          : TTimer;
-    fMidiFileHandle  : HWND;
+    fMidiFileHandle  : THandle;
 
     { Protected declarations }
     fMidiFile        : file of Byte;

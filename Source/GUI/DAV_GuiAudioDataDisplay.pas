@@ -1,11 +1,12 @@
 unit DAV_GuiAudioDataDisplay;
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 interface
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LResources, LMessages,
+  {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Controls, Graphics, DAV_GuiBaseControl, DAV_Common, DAV_AudioData;
 
 type
@@ -103,7 +104,9 @@ type
     property WaveDrawMode;
     property WaveVPadding;
 
+    {$IFNDEF FPC}
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;

@@ -2,8 +2,12 @@ unit DAV_CorrelationMeter;
 
 interface
 
+{$I ..\ASIOVST.INC}
+
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Graphics;
+  {$IFDEF FPC} LCLIntf, LResources, LMessages,
+  {$ELSE} Windows, Messages, {$ENDIF}
+  SysUtils, Classes, Controls, Graphics;
 
 type
   TCorrelationMeterDirection = (cmdHorizontal, cmdVertical);
@@ -35,7 +39,9 @@ type
     property Color;
     property ShowHint;
     property Visible;
+    {$IFNDEF FPC}
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;
@@ -137,9 +143,9 @@ begin
      for i := 1 to 21 do
       begin
        MoveTo(FStart.Left + 16, round(i * FHeight22));
-       LineTo(FStart.Left + 22, round(i * FHeight22), );
+       LineTo(FStart.Left + 22, round(i * FHeight22));
        MoveTo(FStart.Right - 22, round(i * FHeight22));
-       LineTo(FStart.Right - 28, round(i * FHeight22), );
+       LineTo(FStart.Right - 28, round(i * FHeight22));
       end;
      Canvas.Font := Self.Font;
      TextOut(FStart.Left + 2, round(FHeight22 - 7), '-1');

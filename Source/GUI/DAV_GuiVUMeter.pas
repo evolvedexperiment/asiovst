@@ -2,8 +2,10 @@ unit DAV_GuiVUMeter;
 
 interface
 
+{$I ..\ASIOVST.INC}
+
 uses
-  Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls, Consts,
+  Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls,
   DAV_GuiBaseControl;
 
 type
@@ -49,6 +51,8 @@ type
   end;
 
 implementation
+
+//uses Consts;
 
 { TCustomGuiVUMeter }
 

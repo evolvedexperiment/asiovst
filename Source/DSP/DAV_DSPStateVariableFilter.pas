@@ -2,7 +2,7 @@ unit DAV_DSPStateVariableFilter;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   DAV_Common;

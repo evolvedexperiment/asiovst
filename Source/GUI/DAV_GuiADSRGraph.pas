@@ -1,13 +1,13 @@
 unit DAV_GuiADSRGraph;
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
-  {$ELSE} Windows, {$ENDIF}
-  Classes, Graphics, Forms, Controls, ExtCtrls, Messages, DAV_GuiBaseControl;
+  {$ELSE} Windows, Messages, {$ENDIF}
+  Classes, Graphics, Forms, Controls, ExtCtrls, DAV_GuiBaseControl;
 
 type
   TGuiADSRGraphMouseEdit = (meNone, meAttack, meDecay, meSustain, meRelease);
@@ -94,7 +94,9 @@ type
     property Sustain : Single read GetSustain write SetSustain;
     property Release : Single read GetRelease write SetRelease;
   published    
+    {$IFNDEF FPC}
     property Transparent;
+    {$ENDIF}
     property LineWidth;
     property LineColor;
     property Color;

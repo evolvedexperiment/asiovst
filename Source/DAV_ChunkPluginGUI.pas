@@ -2,6 +2,8 @@ unit DAV_ChunkPluginGUI;
 
 interface
 
+{$I ASIOVST.INC}
+
 uses
   Classes, Graphics, DAV_Common, DAV_ChunkClasses, DAV_GuiBaseControl;
 

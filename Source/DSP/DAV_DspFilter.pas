@@ -2,7 +2,7 @@ unit DAV_DspFilter;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   Classes, DAV_Complex, DAV_Common;

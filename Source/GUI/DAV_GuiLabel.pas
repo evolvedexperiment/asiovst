@@ -2,10 +2,10 @@ unit DAV_GuiLabel;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
-  Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls, Consts,
+  Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls,
   DAV_GuiBaseControl;
 
 type
@@ -34,8 +34,8 @@ type
     property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
     property Alignment: TAlignment read fAlignment write SetAlignment default taLeftJustify;
     property Caption: string read fCaption write SetCaption;
-    property Shadow: TGUIShadow read fShadow write fShadow;
     {$IFNDEF FPC}
+    property Shadow: TGUIShadow read fShadow write fShadow;
     property Transparent: Boolean read fTransparent write SetTransparent default False;
     {$ENDIF}
   end;
@@ -58,10 +58,11 @@ type
     property PopupMenu;
 //    property Shadow;
     property ShowHint;
-    property Transparent;
     property Visible;
-
+    {$IFNDEF FPC}
+    property Transparent;
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;
@@ -93,15 +94,19 @@ begin
  inherited;
  fAntiAlias   := gaaNone;
  fOSFactor    := 1;
- fTransparent := False;
  fAlignment   := taLeftJustify;
+ {$IFNDEF FPC}
+ fTransparent := False;
  fShadow      := TGuiShadow.Create;
  fShadow.OnChange := ShadowChangedHandler;
+ {$ENDIF}
 end;
 
 destructor TCustomGuiLabel.Destroy;
 begin
+ {$IFNDEF FPC}
  FreeAndNil(fShadow);
+ {$ENDIF}
  inherited;
 end;
 
@@ -142,8 +147,8 @@ begin
     with Bmp, Canvas do
      try
       PixelFormat := pf32bit;
-      Width       := fOSFactor * fBuffer.Width;
-      Height      := fOSFactor * fBuffer.Height;
+      Bmp.Width   := fOSFactor * fBuffer.Width;
+      Bmp.Height  := fOSFactor * fBuffer.Height;
       Font.Assign(fBuffer.Canvas.Font);
       Brush.Assign(fBuffer.Canvas.Brush);
       Pen.Assign(fBuffer.Canvas.Pen);
@@ -176,8 +181,8 @@ begin
     with Bmp, Canvas do
      try
       PixelFormat := pf32bit;
-      Width       := fOSFactor * fBuffer.Width;
-      Height      := fOSFactor * fBuffer.Height;
+      Bmp.Width   := fOSFactor * fBuffer.Width;
+      Bmp.Height  := fOSFactor * fBuffer.Height;
       Font.Assign(fBuffer.Canvas.Font);
       Brush.Assign(fBuffer.Canvas.Brush);
       Pen.Assign(fBuffer.Canvas.Pen);

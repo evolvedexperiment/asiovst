@@ -2,11 +2,12 @@ unit DAV_GuiDial;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
-  Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls, Consts,
-  DAV_GuiBaseControl;
+  {$IFDEF FPC} LCLIntf, LResources, LMessages,
+  {$ELSE} Windows, Messages, {$ENDIF}
+  Classes, Graphics, Forms, SysUtils, Controls, DAV_GuiBaseControl;
 
 type
   TGuiDialRMBFunc = (rmbfReset,rmbfCircular);
@@ -151,7 +152,9 @@ type
     property RightMouseButton;
     property ScrollRange_Pixel;
     property StitchKind;
+    {$IFNDEF FPC}
     property Transparent;
+    {$ENDIF}
   end;
 
   TCustomGuiDialMetal = class(TCustomGuiDial)
@@ -180,7 +183,9 @@ type
     property RightMouseButton;
     property ScrollRange_Pixel;
     property StitchKind;
+    {$IFNDEF FPC}
     property Transparent;
+    {$ENDIF}
   end;
 
   TCustomGuiDialEx = class(TCustomGuiDial)
@@ -216,13 +221,15 @@ type
     property RightMouseButton;
     property ScrollRange_Pixel;
     property StitchKind;
+    {$IFNDEF FPC}
     property Transparent;
+    {$ENDIF}
   end;
 
 implementation
 
 uses
-  ExtCtrls, Math, DAV_Common, DAV_Complex;
+  ExtCtrls, Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common, DAV_Complex;
 
 function RadToDeg(const Radians: Extended): Extended;  { Degrees := Radians * 180 / PI }
 const
@@ -626,8 +633,10 @@ procedure TCustomGuiDial.SetMax(const Value: Single);
 begin
   if Value <> FMax then
   begin
-    if (Value < FMin) and not (csLoading in ComponentState) then
-      raise EInvalidOperation.CreateFmt(SOutOfRange, [FMin + 1, MaxInt]);
+   {$IFNDEF FPC}
+   if (Value < FMin) and not (csLoading in ComponentState) then
+     raise EInvalidOperation.CreateFmt(SOutOfRange, [FMin + 1, MaxInt]);
+   {$ENDIF}
 
    FMax := Value;
    if FPosition > Value then FPosition := Value;
@@ -640,13 +649,15 @@ procedure TCustomGuiDial.SetMin(const Value: Single);
 begin
   if Value <> FMin then
   begin
-    if (Value > FMax) and not (csLoading in ComponentState) then
-      raise EInvalidOperation.CreateFmt(SOutOfRange, [-MaxInt, FMax - 1]);
+   {$IFNDEF FPC}
+   if (Value > FMax) and not (csLoading in ComponentState) then
+    raise EInvalidOperation.CreateFmt(SOutOfRange, [-MaxInt, FMax - 1]);
+   {$ENDIF}
 
-    FMin := Value;
-    if FPosition < Value then FPosition := Value;
-    if FDefaultPosition < Value then FDefaultPosition := Value;
-    RedrawBuffer(True);
+   FMin := Value;
+   if FPosition < Value then FPosition := Value;
+   if FDefaultPosition < Value then FDefaultPosition := Value;
+   RedrawBuffer(True);
   end;
 end;
 
@@ -879,6 +890,7 @@ begin
    Pen.Color := fLineColor;
    Brush.Color := FCircleColor;
 
+   {$IFNDEF FPC}
    for i := 0 to round(2 * Rad) do
     begin
      XStart := sqrt(abs(sqr(rad) - sqr(Rad - i)));
@@ -906,6 +918,7 @@ begin
      LineTo(Round((1 - LineFrac) * Pnt.X + LineFrac * Center.x),
             Round((1 - LineFrac) * Pnt.Y + LineFrac * Center.y));
     end;
+   {$ENDIF}
   end;
 end;
 

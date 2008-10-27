@@ -2,7 +2,7 @@ unit DAV_DspDynamics;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   DAV_DspButterworthFilter, DAV_Common;

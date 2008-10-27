@@ -2,10 +2,12 @@ unit DAV_GuiButton;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
-  Windows, Classes, Controls, DAV_GuiBaseControl, Graphics;
+  {$IFDEF FPC} LCLIntf, LResources, LMessages,
+  {$ELSE} Windows, Messages, {$ENDIF}
+  Classes, Controls, DAV_GuiBaseControl, Graphics;
 
 type
   TCustomGuiButton = class(TCustomGuiBaseControl)
@@ -54,10 +56,11 @@ type
     property PopupMenu;
     property Radius;
     property ShowHint;
-    property Transparent;
     property Visible;
-
+    {$IFNDEF FPC}
+    property Transparent;
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;
@@ -98,6 +101,7 @@ begin
 end;
 
 procedure TCustomGuiButton.RenderButtonToBitmap(const Bitmap: TBitmap);
+{$IFNDEF FPC}
 var
   Val, Off : TComplexDouble;
   Steps, i : Integer;
@@ -197,6 +201,9 @@ begin
 
    Unlock;
   end;
+{$ELSE}
+begin
+{$ENDIF}
 end;
 
 procedure TCustomGuiButton.RedrawBuffer(doBufferFlip: Boolean);

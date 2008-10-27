@@ -2,6 +2,8 @@ unit DAV_GuiMidiKeyZones;
 
 interface
 
+{$I ..\ASIOVST.INC}
+
 uses
   Classes, Graphics;
 

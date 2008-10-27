@@ -1,6 +1,6 @@
 unit DAV_DspPhaser;
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 interface
 

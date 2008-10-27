@@ -27,6 +27,7 @@ package DAV_GUI_D10;
 requires
   rtl,
   vcl,
+  DAV_Modular_D10,
   DAV_Common_D10,
   DAV_VSTPlugin_D10;
 

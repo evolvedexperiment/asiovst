@@ -2,7 +2,7 @@ unit DAV_DspChebyshevFilter;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   DAV_DspFilter, DAV_Common;

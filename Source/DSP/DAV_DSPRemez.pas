@@ -2,7 +2,7 @@ unit DAV_DSPRemez;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   Classes, DAV_Common;

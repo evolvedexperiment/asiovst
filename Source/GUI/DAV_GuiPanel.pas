@@ -2,10 +2,11 @@ unit DAV_GuiPanel;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
-  Windows, Classes, Messages, Controls, Graphics, ExtCtrls, DAV_GuiBaseControl;
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
+  Classes, Messages, Controls, Graphics, ExtCtrls, DAV_GuiBaseControl;
 
 type
   TCustomGuiPanel = class(TCustomPanel)
@@ -79,13 +80,14 @@ type
     property ShowHint;
     property TabOrder;
     property TabStop;
-    property Transparent;
     property UseDockManager;
     property Visible;
-
+    {$IFNDEF FPC}
+    property Transparent;
+    property OnCanResize;
+    {$ENDIF}
     property OnEndDock;
     property OnStartDock;
-    property OnCanResize;
     property OnConstrainedResize;
     property OnDockDrop;
     property OnDockOver;

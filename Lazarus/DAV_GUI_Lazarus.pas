@@ -1,23 +1,26 @@
-{ Diese Datei wurde automatisch von Lazarus erzeugt. Sie darf nicht bearbeitet werden!
-Dieser Quelltext dient nur dem Übersetzen und Installieren des Packages.
+{ Diese Datei wurde automatisch von Lazarus erzeugt. Sie darf nicht bearbeitet 
+  werden!
+  Dieser Quelltext dient nur dem Ãœbersetzen und Installieren des Packages.
  }
 
-unit DVSTGuiLaz; 
+unit DAV_GUI_Lazarus; 
 
 interface
 
 uses
-  DGuiMidiKeys, DGuiStaticWaveform, DGuiADSRGraph, LazarusPackageIntf; 
+  DAV_GuiVUMeter, DAV_CorrelationMeter, DAV_GuiADSRGraph, 
+  DAV_GuiAudioDataDisplay, DAV_GuiBaseControl, DAV_GuiButton, DAV_GuiDial, 
+  DAV_GuiDynamicWaveform, DAV_GuiLabel, DAV_GuiLED, DAV_GuiMidiKeys, 
+  DAV_GuiMidiKeyZones, DAV_GuiPanel, DAV_GuiRegister, DAV_GuiSelectBox, 
+  DAV_GuiStaticWaveform, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('DGuiMidiKeys', @DGuiMidiKeys.Register); 
-  RegisterUnit('DGuiStaticWaveform', @DGuiStaticWaveform.Register); 
-  RegisterUnit('DGuiADSRGraph', @DGuiADSRGraph.Register); 
+  RegisterUnit('DAV_GuiRegister', @DAV_GuiRegister.Register); 
 end; 
 
 initialization
-  RegisterPackage('DVSTGuiLaz', @Register); 
+  RegisterPackage('DAV_GUI_Lazarus', @Register); 
 end.

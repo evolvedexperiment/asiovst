@@ -2,10 +2,11 @@ unit DAV_GuiLED;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
-  Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls, Consts,
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
+  Classes, Graphics, Forms, Messages, SysUtils, Controls,
   DAV_GuiBaseControl;
 
 type
@@ -140,6 +141,7 @@ begin
    Pen.Color := fLineColor;
    Brush.Color := FLEDColor;
 
+   {$IFNDEF FPC}
    for i := 0 to round(2 * Rad) do
     begin
      XStart := sqrt(abs(sqr(rad) - sqr(Rad - i)));
@@ -155,6 +157,7 @@ begin
        Line[steps].R := round(Scale * LEDColor.R);
       end;
     end;
+   {$ENDIF}
   end;
 end;
 

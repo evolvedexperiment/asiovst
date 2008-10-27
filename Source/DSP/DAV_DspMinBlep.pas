@@ -8,7 +8,7 @@ unit DAV_DspMinBlep;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   DAV_DspWindowing, DAV_Common;

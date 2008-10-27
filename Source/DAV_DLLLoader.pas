@@ -2,6 +2,8 @@ unit DAV_DLLLoader;
 
 interface
 
+{$I ASIOVST.INC}
+
 uses
   Windows, Classes;
 
@@ -229,7 +231,7 @@ var
     SubNode := Node^.Next;
     while assigned(SubNode) do
      begin
-      Write(SubNode.TheChar);
+      Write(SubNode^.TheChar);
       if not assigned(SubNode^.Next) then break;
       Inc(Ident);
       SubNode := SubNode^.Next;

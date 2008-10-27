@@ -2,7 +2,7 @@ unit DAV_DSPUpDownSampling;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   Classes, SysUtils, DAV_Common, DAV_AudioData, DAV_DspFilter,

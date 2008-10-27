@@ -2,7 +2,7 @@ unit DAV_GuiSelectBox;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   Windows, Classes, Controls, Graphics, Menus, DAV_GuiBaseControl;
@@ -78,10 +78,11 @@ type
     property SelectBoxColor;
     property Radius;
     property ShowHint;
-    property Transparent;
     property Visible;
-
+    {$IFNDEF FPC}
+    property Transparent;
     property OnCanResize;
+    {$ENDIF}
     property OnChange;
     property OnClick;
     property OnConstrainedResize;

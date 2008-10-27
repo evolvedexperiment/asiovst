@@ -2,7 +2,7 @@ unit DAV_DspRegister;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 procedure Register;
 
@@ -11,7 +11,7 @@ implementation
 {$IFNDEF FPC}{$R '..\..\Resources\DAV_DspRegister.res'}{$ENDIF}
 
 uses
-  Classes, DAV_DspRemez;
+  {$IFDEF FPC} LResources, {$ENDIF} Classes, DAV_DspRemez;
 
 procedure Register;
 begin

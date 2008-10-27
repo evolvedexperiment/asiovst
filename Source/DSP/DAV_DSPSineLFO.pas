@@ -2,6 +2,9 @@ unit DAV_DSPSineLFO;
 
 interface
 
+{$I ..\ASIOVST.INC}
+{$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
+
 uses
   DAV_Common, DAV_Complex;
 

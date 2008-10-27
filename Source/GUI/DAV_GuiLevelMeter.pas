@@ -1,13 +1,13 @@
 unit DAV_GuiLevelMeter;
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
   Classes, Controls, Graphics, DAV_Common, DAV_GuiBaseControl,
-  DAV_DspEnvelopeFollower;
+  DAV_ModularEnvelopeFollower;
 
 type
   TGuiLevelDirection = (ldirHorizontal, ldirHorizontalInverted, ldmVertical, ldmVerticalInverted);

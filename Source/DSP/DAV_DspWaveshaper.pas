@@ -2,7 +2,7 @@ unit DAV_DspWaveshaper;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   Classes, SysUtils, Math, DAV_Common;

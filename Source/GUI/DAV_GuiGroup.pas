@@ -2,10 +2,11 @@ unit DAV_GuiGroup;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
-  Windows, Messages, SysUtils, Forms, Classes, Graphics, Controls, StdCtrls,
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
+  Messages, SysUtils, Forms, Classes, Graphics, Controls, StdCtrls,
   DAV_GuiBaseControl;
 
 type

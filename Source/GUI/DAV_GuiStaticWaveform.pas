@@ -1,6 +1,6 @@
 unit DAV_GuiStaticWaveform;
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 interface
 
@@ -85,12 +85,13 @@ type
     property NormalizationType;
     property PopupMenu;
     property ShowHint;
-    property Transparent;
     property Visible;
     property WaveDrawMode;
     property WaveVPadding;
-
+    {$IFNDEF FPC}
+    property Transparent;
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;

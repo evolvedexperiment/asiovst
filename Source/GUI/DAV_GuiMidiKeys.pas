@@ -1,6 +1,6 @@
 unit DAV_GuiMidiKeys;
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 interface
 
@@ -879,8 +879,8 @@ begin
     LineTo(0       ,0);
 
     UnLock;
-  end;
-  if doBufferFlip then Invalidate;
+  end;
+  if doBufferFlip then Invalidate;
 end;
 
 function TGuiMidiKeys.ScreenCoordOnKey(X, Y: Integer; KeyNr: Integer; CheckYPos: Boolean): Boolean;

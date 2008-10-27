@@ -2,7 +2,7 @@ unit DAV_DspInterpolation;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
   function Hermite1(const x,y0,y1,y2,y3:Single):Single;

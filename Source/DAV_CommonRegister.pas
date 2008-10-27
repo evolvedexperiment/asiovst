@@ -2,7 +2,7 @@ unit DAV_CommonRegister;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ASIOVST.INC}
 
 procedure Register;
 
@@ -23,7 +23,7 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i ..\..\Resources\DAV_Common.lrs}
+  {$i ..\Resources\DAV_CommonRegister.lrs}
 {$ENDIF}
 
 end.

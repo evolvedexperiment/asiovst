@@ -57,13 +57,14 @@ type
     property PopupMenu;
     property RedrawInterval;
     property ShowHint;
-    property Transparent;
     property Visible;
     property WaveDrawMode;
     property WaveProcessMode;
     property WaveVPadding;
-
+    {$IFNDEF FPC}
+    property Transparent;
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;

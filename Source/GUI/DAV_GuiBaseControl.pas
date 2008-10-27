@@ -2,11 +2,12 @@ unit DAV_GuiBaseControl;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-  Messages, Graphics, Classes, Controls, ExtCtrls;
+  {$IFDEF FPC} LCLIntf, LResources, LMessages,
+  {$ELSE} Windows, Messages, {$ENDIF}
+  Graphics, Classes, Controls, ExtCtrls;
 
 type
   TRGB32 = packed record
@@ -79,6 +80,7 @@ type
     FBuffer   : TBitmap;
     FOnPaint  : TNotifyEvent;
 
+    {$IFNDEF FPC}
     {$IFNDEF COMPILER10_UP}
     FOnMouseLeave: TNotifyEvent;
     FOnMouseEnter: TNotifyEvent;
@@ -87,8 +89,16 @@ type
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     {$ENDIF}
     
-    {$IFNDEF FPC}
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
+    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
     procedure DrawParentImage(Dest: TCanvas); virtual;
+    {$ELSE}
+    procedure CMEnabledChanged(var Message: TLMessage); message CM_ENABLEDCHANGED;
+    procedure CMColorChanged(var Message: TLMessage); message CM_COLORCHANGED;
+    procedure CMFontChanged(var Message: TLMessage); message CM_FONTCHANGED;
+    procedure WMEraseBkgnd(var Message: TLmEraseBkgnd); message LM_ERASEBKGND;
     {$ENDIF}
 
     procedure Downsample2xBitmap(var Bitmap: TBitmap);
@@ -99,10 +109,6 @@ type
     procedure ResizeBuffer; dynamic;
     procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
 
-    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
-    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
-    procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
-    procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
     procedure Loaded; override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -200,8 +206,13 @@ type
     procedure DragMouseMoveMiddle(Shift: TShiftState; X, Y: Integer); dynamic;
     procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); dynamic;
 
+    {$IFNDEF FPC}
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    {$ELSE}
+    procedure CMMouseEnter(var Message: TLMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TLMessage); message CM_MOUSELEAVE;
+    {$ENDIF}
 
     procedure SetRedrawInterval(Value: Integer); virtual;
     function  GetRedrawInterval: Integer; virtual;
@@ -233,7 +244,9 @@ type
     property DragCursor;
     property DragMode;
 
+    {$IFNDEF FPC}
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;
@@ -263,7 +276,7 @@ procedure Downsample2xBitmap32(var Bitmap: TBitmap);
 procedure Downsample4xBitmap32(var Bitmap: TBitmap);
 procedure Upsample2xBitmap32(var Bitmap: TBitmap);
 procedure Upsample4xBitmap32(var Bitmap: TBitmap);
-procedure CopyParentImage(Control: TControl; Dest: TCanvas);
+procedure CopyParentImage(Control: TControl; Dest: TCanvas);
 
 implementation
 
@@ -274,11 +287,12 @@ procedure CopyParentImage(Control: TControl; Dest: TCanvas);
 var
   I, Count,
   SaveIndex  : Integer;
-  DC         : HDC;
+  DC         : THandle;
   Pnt        : TPoint;
   R, SelfR,
   CtlR       : TRect;
 begin
+{$IFNDEF FPC}
  if (Control = nil) or (Control.Parent = nil) then Exit;
  Count := Control.Parent.ControlCount;
  DC := Dest.Handle;
@@ -339,6 +353,7 @@ begin
    with Control.Parent do ControlState := ControlState - [csPaintCopy];
  end;
 {$ENDIF}
+{$ENDIF}
 end;
 
 procedure Downsample2xBitmap32(var Bitmap: TBitmap);
@@ -346,6 +361,7 @@ var
   x, y : Integer;
   Line : Array [0..2] of PRGB32Array;
 begin
+{$IFNDEF FPC}
  with Bitmap do
   begin
    // first stage
@@ -363,6 +379,7 @@ begin
       end;
     end;
   end;
+{$ENDIF}
 end;
 
 procedure Downsample4xBitmap32(var Bitmap: TBitmap);
@@ -370,6 +387,7 @@ var
   x, y : Integer;
   Line : Array [0..4] of PRGB32Array;
 begin
+{$IFNDEF FPC}
  with Bitmap do
   begin
    // first stage
@@ -401,6 +419,7 @@ begin
       end;
     end;
   end;
+{$ENDIF}
 end;
 
 procedure Upsample2xBitmap32(var Bitmap: TBitmap);
@@ -408,6 +427,7 @@ var
   x, y : Integer;
   Line : Array [0..2] of PRGB32Array;
 begin
+ {$IFNDEF FPC}
  with Bitmap do
   begin
    assert(PixelFormat = pf32bit);
@@ -439,6 +459,7 @@ begin
       end;
     end;
   end;
+ {$ENDIF}
 end;
 
 procedure Upsample4xBitmap32(var Bitmap: TBitmap);
@@ -447,6 +468,7 @@ var
   i, j : Integer;
   Line : Array [0..4] of PRGB32Array;
 begin
+ {$IFNDEF FPC}
  with Bitmap do
   for y := (Height div 4) - 1 downto 0 do
    begin
@@ -467,6 +489,7 @@ begin
         Line[i, 4 * x + j].A := Line[0, x].A;
        end;
    end;
+ {$ENDIF}
 end;
 
 { TCustomGuiBaseControl }
@@ -485,6 +508,7 @@ begin
  inherited;
 end;
 
+{$IFNDEF FPC}
 procedure TBufferedGraphicControl.DrawParentImage(Dest: TCanvas);
 var
   SaveIndex : Integer;
@@ -501,6 +525,7 @@ begin
   Parent.Perform(WM_PAINT, Longint(DC), 0);
   RestoreDC(DC, SaveIndex);
 end;
+{$ENDIF}
 
 procedure TBufferedGraphicControl.Downsample2xBitmap(var Bitmap: TBitmap);
 begin
@@ -538,6 +563,7 @@ begin
   if Assigned(FOnPaint) then FOnPaint(Self);
 end;
 
+{$IFNDEF FPC}
 procedure TBufferedGraphicControl.WMEraseBkgnd(var Message: TWmEraseBkgnd);
 begin
   Message.Result := 0;
@@ -552,6 +578,13 @@ end;
 procedure TBufferedGraphicControl.CMMouseEnter(var Message: TMessage);
 begin
   if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
+end;
+{$ENDIF}
+
+{$ELSE}
+procedure TBufferedGraphicControl.WMEraseBkgnd(var Message: TLmEraseBkgnd);
+begin
+  Message.Result := 0;
 end;
 {$ENDIF}
 
@@ -571,17 +604,17 @@ begin
   ResizeBuffer;
 end;
 
-procedure TBufferedGraphicControl.CMColorchanged(var Message: TMessage);
+procedure TBufferedGraphicControl.CMColorchanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
   RedrawBuffer(True);
 end;
 
-procedure TBufferedGraphicControl.CMEnabledChanged(var Message: TMessage);
+procedure TBufferedGraphicControl.CMEnabledChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
   RedrawBuffer(True);
 end;
 
-procedure TBufferedGraphicControl.CMFontChanged(var Message: TMessage);
+procedure TBufferedGraphicControl.CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
   RedrawBuffer(True);
 end;
@@ -590,10 +623,12 @@ end;
 
 constructor TCustomGuiBaseControl.Create(AOwner: TComponent);
 begin
-  inherited;
-  FLineWidth   := 1;
-  FLineColor   := clBlack;
-  FTransparent := False;
+ inherited;
+ FLineWidth   := 1;
+ FLineColor   := clBlack;
+ {$IFNDEF FPC}
+ FTransparent := False;
+ {$ENDIF}
 end;
 
 procedure TCustomGuiBaseControl.SetLineColor(Value: TColor);
@@ -658,21 +693,21 @@ procedure TCustomGuiBaseMouseControl.CreateMouseClass(MouseStateClass: TGuiMouse
 begin
  MouseState := MouseStateClass.Create;
  with MouseState do
-  begin
-   LeftBtn.ButtonDown   := False;
-   MiddleBtn.ButtonDown := False;
-   RightBtn.ButtonDown  := False;
-   LastEventX := 0;
-   LastEventY := 0;
-  end;
-end;
+  begin
+   LeftBtn.ButtonDown   := False;
+   MiddleBtn.ButtonDown := False;
+   RightBtn.ButtonDown  := False;
+   LastEventX := 0;
+   LastEventY := 0;
+  end;
+end;
 
-procedure TCustomGuiBaseMouseControl.CMMouseEnter(var Message: TMessage);
+procedure TCustomGuiBaseMouseControl.CMMouseEnter(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
   MouseEnter;
 end;
 
-procedure TCustomGuiBaseMouseControl.CMMouseLeave(var Message: TMessage);
+procedure TCustomGuiBaseMouseControl.CMMouseLeave(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
   MouseLeave;
 end;

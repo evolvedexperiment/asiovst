@@ -1,401 +1,76 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <ProjectOptions>
+  <Package Version="3">
     <PathDelim Value="\"/>
-    <Version Value="6"/>
-    <General>
-      <MainUnit Value="0"/>
-      <IconPath Value="./"/>
-      <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="5"/>
-    </General>
+    <Name Value="DAV_Common_Lazarus"/>
+    <CompilerOptions>
+      <Version Value="8"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="..\Source\;C:\Users\Christian Budde\Projects\VSTPack\Source\ASIO\;C:\Users\Christian Budde\Projects\VSTPack\Resources\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Version Minor="3"/>
+    <Files Count="9">
+      <Item1>
+        <Filename Value="..\Source\DAV_Common.pas"/>
+        <UnitName Value="DAV_Common"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\Source\DAV_CommonRegister.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="DAV_CommonRegister"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\Source\DAV_Complex.pas"/>
+        <UnitName Value="DAV_Complex"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\Source\DAV_ComplexData.pas"/>
+        <UnitName Value="DAV_ComplexData"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\Source\DAV_MidiFile.pas"/>
+        <UnitName Value="DAV_MidiFile"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\Source\DAV_MidiIO.pas"/>
+        <UnitName Value="DAV_MidiIO"/>
+      </Item6>
+      <Item7>
+        <Filename Value="..\Source\ASIOVST.inc"/>
+        <Type Value="Include"/>
+      </Item7>
+      <Item8>
+        <Filename Value="..\Source\DAV_AudioData.pas"/>
+        <UnitName Value="DAV_AudioData"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\Resources\DAV_CommonRegister.lrs"/>
+        <Type Value="LRS"/>
+      </Item9>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="2">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item2>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)\"/>
+    </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
-      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
-      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+      <DestinationDirectory Value="$(TestDir)\publishedpackage\"/>
+      <IgnoreBinaries Value="False"/>
     </PublishOptions>
-    <RunParams>
-      <local>
-        <FormatVersion Value="1"/>
-        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
-      </local>
-    </RunParams>
-    <Units Count="45">
-      <Unit0>
-        <Filename Value="AVDCommonLaz.pas"/>
-        <UnitName Value="AVDCommonLaz"/>
-        <CursorPos X="3" Y="10"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit0>
-      <Unit1>
-        <Filename Value="AVDDSPLaz.pas"/>
-        <UnitName Value="AVDDSPLaz"/>
-        <CursorPos X="26" Y="10"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="11"/>
-      </Unit1>
-      <Unit2>
-        <Filename Value="..\Source\DAVDBufferMathAsm.pas"/>
-        <UnitName Value="DAVDBufferMathAsm"/>
-        <CursorPos X="21" Y="244"/>
-        <TopLine Value="232"/>
-        <UsageCount Value="10"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="..\Source\DDspWindowing.pas"/>
-        <UnitName Value="DDspWindowing"/>
-        <CursorPos X="51" Y="25"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="..\Source\DDspBaseComponent.pas"/>
-        <UnitName Value="DDspBaseComponent"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="11"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="..\Source\DAVDCommon.pas"/>
-        <UnitName Value="DAVDCommon"/>
-        <CursorPos X="1" Y="412"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="..\Source\DDspBesselFilter.pas"/>
-        <UnitName Value="DDspBesselFilter"/>
-        <CursorPos X="3" Y="72"/>
-        <TopLine Value="61"/>
-        <UsageCount Value="10"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="..\Source\DDspButterworthFilter.pas"/>
-        <UnitName Value="DDspButterworthFilter"/>
-        <CursorPos X="1" Y="220"/>
-        <TopLine Value="204"/>
-        <UsageCount Value="10"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="..\Source\DDspChebyshevFilter.pas"/>
-        <UnitName Value="DDspChebyshevFilter"/>
-        <CursorPos X="5" Y="3"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="..\Source\DDspDFT.pas"/>
-        <UnitName Value="DDspDFT"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="..\Source\DDspDitherNoiseShaper.pas"/>
-        <UnitName Value="DDspDitherNoiseShaper"/>
-        <CursorPos X="3" Y="8"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="..\Source\DDspDynamics.pas"/>
-        <UnitName Value="DDspDynamics"/>
-        <CursorPos X="3" Y="8"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="..\Source\DDspEnvelopeFollower.pas"/>
-        <UnitName Value="DDspEnvelopeFollower"/>
-        <CursorPos X="15" Y="8"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="..\Source\DDspFFT.pas"/>
-        <UnitName Value="DDspFFT"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit13>
-      <Unit14>
-        <Filename Value="..\Source\DDspFilter.pas"/>
-        <UnitName Value="DDspFilter"/>
-        <CursorPos X="30" Y="3"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit14>
-      <Unit15>
-        <Filename Value="..\Source\DDspInterpolation.pas"/>
-        <UnitName Value="DDspInterpolation"/>
-        <CursorPos X="1" Y="6"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit15>
-      <Unit16>
-        <Filename Value="..\Source\DDspMetronome.pas"/>
-        <UnitName Value="DDspMetronome"/>
-        <CursorPos X="13" Y="9"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit16>
-      <Unit17>
-        <Filename Value="..\Source\DDspMinBlep.pas"/>
-        <UnitName Value="DDspMinBlep"/>
-        <CursorPos X="3" Y="14"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit17>
-      <Unit18>
-        <Filename Value="..\Source\DDspPhaser.pas"/>
-        <UnitName Value="DDspPhaser"/>
-        <CursorPos X="1" Y="5"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="..\Source\DDSPRemez.pas"/>
-        <UnitName Value="DDSPRemez"/>
-        <CursorPos X="3" Y="8"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit19>
-      <Unit20>
-        <Filename Value="..\Source\DDSPStateVariableFilter.pas"/>
-        <UnitName Value="DDSPStateVariableFilter"/>
-        <CursorPos X="1" Y="7"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit20>
-      <Unit21>
-        <Filename Value="..\Source\DDspWaveshaper.pas"/>
-        <UnitName Value="DDspWaveshaper"/>
-        <CursorPos X="65" Y="14"/>
-        <TopLine Value="2"/>
-        <UsageCount Value="10"/>
-      </Unit21>
-      <Unit22>
-        <Filename Value="..\Source\DAVDProcessingComponent.pas"/>
-        <UnitName Value="DAVDProcessingComponent"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="97"/>
-        <UsageCount Value="10"/>
-      </Unit22>
-      <Unit23>
-        <Filename Value="..\Source\DVSTModuleWithDsp.pas"/>
-        <UnitName Value="DVSTModuleWithDsp"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit23>
-      <Unit24>
-        <Filename Value="..\Source\DDspVoice.pas"/>
-        <UnitName Value="DDspVoice"/>
-        <CursorPos X="32" Y="8"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit24>
-      <Unit25>
-        <Filename Value="..\Source\DVSTModuleWithPrograms.pas"/>
-        <UnitName Value="DVSTModuleWithPrograms"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit25>
-      <Unit26>
-        <Filename Value="..\Source\DVSTModuleWithMidi.pas"/>
-        <UnitName Value="DVSTModuleWithMidi"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit26>
-      <Unit27>
-        <Filename Value="..\Source\DVSTCustomModule.pas"/>
-        <UnitName Value="DVSTCustomModule"/>
-        <CursorPos X="40" Y="2"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit27>
-      <Unit28>
-        <Filename Value="..\Source\DVSTEffect.pas"/>
-        <UnitName Value="DVSTEffect"/>
-        <CursorPos X="3" Y="10"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit28>
-      <Unit29>
-        <Filename Value="..\Source\DAVDBufferMathPascal.pas"/>
-        <UnitName Value="DAVDBufferMathPascal"/>
-        <CursorPos X="5" Y="170"/>
-        <TopLine Value="158"/>
-        <EditorIndex Value="5"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit29>
-      <Unit30>
-        <Filename Value="..\Source\DVSTShellPlugins.pas"/>
-        <UnitName Value="DVSTShellPlugins"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit30>
-      <Unit31>
-        <Filename Value="..\Source\DVSTBasicModule.pas"/>
-        <UnitName Value="DVSTBasicModule"/>
-        <CursorPos X="1" Y="9"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit31>
-      <Unit32>
-        <Filename Value="..\Source\DVSTEffectFunctions.pas"/>
-        <UnitName Value="DVSTEffectFunctions"/>
-        <CursorPos X="1" Y="15"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit32>
-      <Unit33>
-        <Filename Value="..\Source\DDspVoiceController.pas"/>
-        <UnitName Value="DDspVoiceController"/>
-        <CursorPos X="1" Y="76"/>
-        <TopLine Value="66"/>
-        <UsageCount Value="10"/>
-      </Unit33>
-      <Unit34>
-        <Filename Value="..\Source\DDspVoiceList.pas"/>
-        <UnitName Value="DDspVoiceList"/>
-        <CursorPos X="1" Y="39"/>
-        <TopLine Value="25"/>
-        <UsageCount Value="10"/>
-      </Unit34>
-      <Unit35>
-        <Filename Value="..\Source\DDSPOscSaw.pas"/>
-        <UnitName Value="DDSPOscSaw"/>
-        <CursorPos X="9" Y="8"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit35>
-      <Unit36>
-        <Filename Value="..\Source\DDSPOscAbsSine.pas"/>
-        <UnitName Value="DDSPOscAbsSine"/>
-        <CursorPos X="8" Y="22"/>
-        <TopLine Value="10"/>
-        <UsageCount Value="10"/>
-      </Unit36>
-      <Unit37>
-        <Filename Value="..\Source\DDspEnvelope.pas"/>
-        <UnitName Value="DDspEnvelope"/>
-        <CursorPos X="13" Y="24"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit37>
-      <Unit38>
-        <Filename Value="..\Source\DDspRegister.pas"/>
-        <UnitName Value="DDspRegister"/>
-        <CursorPos X="51" Y="36"/>
-        <TopLine Value="7"/>
-        <UsageCount Value="10"/>
-      </Unit38>
-      <Unit39>
-        <Filename Value="..\Source\DASIORegister.pas"/>
-        <UnitName Value="DASIORegister"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit39>
-      <Unit40>
-        <Filename Value="..\Source\DVSTHost.pas"/>
-        <UnitName Value="DVSTHost"/>
-        <CursorPos X="32" Y="10"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit40>
-      <Unit41>
-        <Filename Value="..\Source\DVSTModule.pas"/>
-        <UnitName Value="DVSTModule"/>
-        <CursorPos X="34" Y="10"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="0"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit41>
-      <Unit42>
-        <Filename Value="..\..\..\..\..\Program Files\Borland\Library\GR32\GR32_Polygons.pas"/>
-        <UnitName Value="GR32_Polygons"/>
-        <CursorPos X="42" Y="14"/>
-        <TopLine Value="2"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit42>
-      <Unit43>
-        <Filename Value="..\Source\MidiFile.pas"/>
-        <UnitName Value="MidiFile"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="3"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit43>
-      <Unit44>
-        <Filename Value="..\..\..\..\..\Lazarus\components\images\lazpng.pas"/>
-        <UnitName Value="LazPNG"/>
-        <CursorPos X="20" Y="33"/>
-        <TopLine Value="21"/>
-        <EditorIndex Value="4"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit44>
-    </Units>
-    <JumpHistory Count="7" HistoryIndex="6">
-      <Position1>
-        <Filename Value="..\Source\DVSTModule.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position1>
-      <Position2>
-        <Filename Value="..\..\..\..\..\Program Files\Borland\Library\GR32\GR32_Polygons.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position2>
-      <Position3>
-        <Filename Value="AVDCommonLaz.pas"/>
-        <Caret Line="10" Column="3" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="..\Source\MidiFile.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position4>
-      <Position5>
-        <Filename Value="..\Source\MidiFile.pas"/>
-        <Caret Line="106" Column="59" TopLine="91"/>
-      </Position5>
-      <Position6>
-        <Filename Value="..\..\..\..\..\Lazarus\components\images\lazpng.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
-      </Position6>
-      <Position7>
-        <Filename Value="..\Source\DAVDBufferMathPascal.pas"/>
-        <Caret Line="3" Column="10" TopLine="1"/>
-      </Position7>
-    </JumpHistory>
-  </ProjectOptions>
-  <CompilerOptions>
-    <Version Value="5"/>
-    <PathDelim Value="\"/>
-    <SearchPaths>
-      <OtherUnitFiles Value="C:\Users\Christian Budde\Projects\VSTPack\Source\"/>
-    </SearchPaths>
-    <CodeGeneration>
-      <Generate Value="Faster"/>
-    </CodeGeneration>
-    <Linking>
-      <Debugging>
-        <UseLineInfoUnit Value="False"/>
-      </Debugging>
-    </Linking>
-    <Other>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
-  </CompilerOptions>
+  </Package>
 </CONFIG>

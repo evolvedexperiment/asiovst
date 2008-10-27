@@ -2,7 +2,8 @@ unit DAV_DspDFT;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
+{$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
   DAV_Common, DAV_Complex;
