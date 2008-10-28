@@ -32,7 +32,8 @@ procedure TVSTGUI.LbGainClick(Sender: TObject);
 var
   b : PChar;
 begin
- // Example on how to query the DLL name of the plugin 
+(*
+ // Example on how to query the DLL name of the plugin
  GetMem(b, 255);
  FillChar(b^, 255, 0);
  try
@@ -42,6 +43,7 @@ begin
  finally
   Dispose(b);
  end;
+*)
 end;
 
 procedure TVSTGUI.SBGainChange(Sender: TObject);

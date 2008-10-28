@@ -6,19 +6,21 @@ library OpAmp;
 uses
   Interfaces,
   Forms,
-  DVSTModule,
-  DVSTEffect,
-  DAVDCommon,
+  DAV_VSTModule,
+  DAV_VSTEffect,
+  DAV_Common,
   OpAmpModule in 'OpAmpModule.pas' {VSTOpAmp: TVSTModule},
-  OpAmpGUI in 'OpAmpGUI.pas' {VSTGUI};
+  OpAmpGUI in 'OpAmpGUI.pas' {VSTGUI},
+  DAV_VSTPlugin_Lazarus;
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var VSTOpAmp : TVSTOpAmp;
+var
+  VSTOpAmp : TVSTOpAmp;
 begin
  try
-  VSTOpAmp:=TVSTOpAmp.Create(Application);
-  VSTOpAmp.Effect^.user:=VSTOpAmp;
-  VSTOpAmp.AudioMaster:=audioMaster;
+  VSTOpAmp := TVSTOpAmp.Create(Application);
+  VSTOpAmp.Effect^.user := VSTOpAmp;
+  VSTOpAmp.AudioMaster := audioMaster;
   Result := VSTOpAmp.Effect;
  except
   Result := nil;

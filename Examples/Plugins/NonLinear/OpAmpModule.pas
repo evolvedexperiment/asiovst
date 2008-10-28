@@ -6,15 +6,15 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
-  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
+  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule, DAV_VSTCustomModule;
 
 type
   TVSTOpAmp = class(TVSTModule)
+    procedure DataModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: THandle);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
     fGain   : Double;
   public
@@ -28,6 +28,14 @@ implementation
 
 uses
   Math, OpAmpGUI;
+
+{ TVSTOpAmp }
+
+procedure TVSTOpAmp.DataModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: THandle);
+begin
+ GUI := TVSTGUI.Create(Self);
+end;
 
 procedure TVSTOpAmp.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -47,12 +55,6 @@ begin
  for j := 0 to min(numOutputs, numInputs) - 1 do
   for i := 0 to SampleFrames - 1
    do Outputs[j, i] := Tanh2a(fGain * Inputs[j, i]);
-end;
-
-procedure TVSTOpAmp.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TVSTOpAmp.VSTModuleInitialize(Sender: TObject);
