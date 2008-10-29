@@ -302,14 +302,11 @@ object FmBassExtender: TFmBassExtender
       Color = 2372409
       LineColor = 1450277
       CircleColor = 3163213
-      DefaultPosition = -0.000000009999999939
-      Max = -0.000000009999999939
       Min = -80.000000000000000000
       NumGlyphs = 65
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
-      Position = -0.000000009999999939
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
       OnChange = DialThresholdChange

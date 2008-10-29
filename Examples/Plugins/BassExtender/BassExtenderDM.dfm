@@ -38,9 +38,7 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
-      Max = 20000.000000000000000000
       MaxInteger = 20000
-      Min = 2.000000000000000000
       MinInteger = 2
       ShortLabel = 'Freq'
       SmallStepFloat = 1.000000000000000000
@@ -60,9 +58,7 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 4.000000000000000000
       LargeStepInteger = 4
-      Max = 32.000000000000000000
       MaxInteger = 32
-      Min = 1.000000000000000000
       MinInteger = 1
       ShortLabel = 'Order'
       SmallStepFloat = 2.000000000000000000
@@ -80,7 +76,6 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
-      Max = 100.000000000000000000
       ShortLabel = 'Divider'
       SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
@@ -96,10 +91,10 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
-      Max = 100.000000000000000000
       ShortLabel = 'Shape'
       SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
       OnParameterChange = ParamShapeChange
@@ -111,9 +106,7 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
-      Max = -0.000000009999999939
       MaxInteger = 0
-      Min = -60.000000000000000000
       MinInteger = -60
       ShortLabel = 'Thresho'
       SmallStepFloat = 0.500000000000000000
@@ -130,9 +123,7 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
-      Max = 1000.000000000000000000
       MaxInteger = 1000
-      Min = 1.000000000000000000
       MinInteger = 1
       ShortLabel = 'Ratio'
       SmallStepFloat = 0.500000000000000000
@@ -149,9 +140,7 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
-      Max = 1000000.000000000000000000
       MaxInteger = 1000000
-      Min = 1.000000000000000000
       MinInteger = 1
       ShortLabel = 'Attack'
       SmallStepFloat = 1.000000000000000000
@@ -170,9 +159,7 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
-      Max = 10000.000000000000000000
       MaxInteger = 10000
-      Min = 1.000000000000000000
       MinInteger = 1
       ShortLabel = 'Release'
       SmallStepFloat = 1.000000000000000000
@@ -191,7 +178,6 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
-      Max = 100.000000000000000000
       ShortLabel = 'CompMix'
       SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
@@ -207,8 +193,6 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
-      Max = 100.000000000000000000
-      Min = -100.000000000000000000
       MinInteger = -100
       ShortLabel = 'Balance'
       SmallStepFloat = 0.500000000000000000
@@ -225,7 +209,6 @@ object BassExtenderModule: TBassExtenderModule
       Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 3.000000000000000000
       MaxInteger = 3
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000

@@ -2,33 +2,38 @@
 <CONFIG>
   <Package Version="3">
     <PathDelim Value="\"/>
-    <Name Value="HostVSTLaz"/>
+    <Name Value="DAV_VSTHost_Lazarus"/>
     <CompilerOptions>
-      <Version Value="5"/>
+      <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\Source\"/>
+        <OtherUnitFiles Value="..\Source\;C:\Users\Christian Budde\Projects\VSTPack\Source\VST\;C:\Users\Christian Budde\Projects\VSTPack\Resources\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
-      <CodeGeneration>
-        <Generate Value="Faster"/>
-      </CodeGeneration>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="1">
+    <Files Count="3">
       <Item1>
-        <Filename Value="..\Source\DVSTHost.pas"/>
+        <Filename Value="..\Source\VST\DAV_VSTHostRegister.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="DVSTHost"/>
+        <UnitName Value="DAV_VSTHostRegister"/>
       </Item1>
+      <Item2>
+        <Filename Value="..\Source\VST\DAV_VSTHost.pas"/>
+        <UnitName Value="DAV_VSTHost"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\Resources\DAV_VstHostRegister.lrs"/>
+        <Type Value="LRS"/>
+      </Item3>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="AVDDSPLaz"/>
+        <PackageName Value="DAV_Common_Lazarus"/>
       </Item1>
       <Item2>
         <PackageName Value="FCL"/>

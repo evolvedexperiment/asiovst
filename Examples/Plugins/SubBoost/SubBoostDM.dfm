@@ -12,6 +12,7 @@ object SubBoostDataModule: TSubBoostDataModule
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Sub Bass Synthesizer'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdaB'
   ShellPlugins = <>
   Programs = <
@@ -124,14 +125,14 @@ object SubBoostDataModule: TSubBoostDataModule
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = SubBoostDataModuleParameterProperties6ParameterChange
+      OnParameterChange = ParamOrderChange
     end>
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
-  OnResume = VSTModuleResume
-  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnResume = VSTModuleResume
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 223
   Top = 79
   Height = 150

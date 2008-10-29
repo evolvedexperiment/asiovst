@@ -2,24 +2,21 @@
 <CONFIG>
   <Package Version="3">
     <PathDelim Value="\"/>
-    <Name Value="VSTPluginLazIDE"/>
+    <Name Value="DAV_VSTPluginIDE"/>
     <CompilerOptions>
-      <Version Value="5"/>
+      <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\Source\"/>
+        <OtherUnitFiles Value="..\Source\;C:\Users\Christian Budde\Projects\VSTPack\Source\VST\;C:\Users\Christian Budde\Projects\VSTPack\Source\Math\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
         <SrcPath Value="..\Source\"/>
       </SearchPaths>
       <Parsing>
         <Style Value="1"/>
         <SyntaxOptions>
-          <DelphiCompat Value="True"/>
+          <SyntaxMode Value="Delphi"/>
         </SyntaxOptions>
       </Parsing>
-      <CodeGeneration>
-        <Generate Value="Faster"/>
-      </CodeGeneration>
       <Linking>
         <Debugging>
           <UseLineInfoUnit Value="False"/>
@@ -33,23 +30,25 @@
     <Version Minor="3"/>
     <Files Count="1">
       <Item1>
-        <Filename Value="VSTModuleLazIDEIntf.pas"/>
+        <Filename Value="..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="VSTModuleLazIDEIntf"/>
       </Item1>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="3">
+    <RequiredPkgs Count="4">
       <Item1>
-        <PackageName Value="VSTPluginLaz"/>
+        <PackageName Value="DAV_VSTPlugin_Lazarus"/>
       </Item1>
       <Item2>
-        <PackageName Value="IDEIntf"/>
+        <PackageName Value="DAV_Common_Lazarus"/>
       </Item2>
       <Item3>
+        <PackageName Value="IDEIntf"/>
+      </Item3>
+      <Item4>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item3>
+      </Item4>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)\"/>

@@ -3,20 +3,20 @@
   Dieser Quelltext dient nur dem Übersetzen und Installieren des Packages.
  }
 
-unit DAV_VSTHost_Lazarus; 
+unit DAV_VSTPluginIDE; 
 
 interface
 
 uses
-DAV_VSTHostRegister, DAV_VSTHost, LazarusPackageIntf;
+DAV_VSTModuleLazIDE, LazarusPackageIntf;
 
 implementation
 
 procedure Register; 
 begin
-  RegisterUnit('DAV_VSTHostRegister', @DAV_VSTHostRegister.Register); 
+  RegisterUnit('DAV_VSTModuleLazIDE', @DAV_VSTModuleLazIDE.Register); 
 end; 
 
 initialization
-  RegisterPackage('DAV_VSTHost_Lazarus', @Register); 
+  RegisterPackage('DAV_VSTPluginIDE', @Register); 
 end.

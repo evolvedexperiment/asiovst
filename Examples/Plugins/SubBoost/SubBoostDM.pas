@@ -22,14 +22,11 @@ type
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterTuneChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure ParameterTuneChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
-    procedure SubBoostDataModuleParameterProperties6ParameterChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     fInputFilter  : TButterworthLP;
     fOutputFilter : TButterworthLP;
@@ -71,7 +68,7 @@ begin
  PreDefined := FloatToStrF(fInputFilter.Frequency, ffGeneral, 3, 3);
 end;
 
-procedure TSubBoostDataModule.SubBoostDataModuleParameterProperties6ParameterChange(
+procedure TSubBoostDataModule.ParamOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  fInputFilter.Order := round(Value);
