@@ -2,7 +2,7 @@ unit DAV_VSTParameters;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   Classes, SysUtils, Windows, Forms, DAV_VSTEffect, DAV_Common,
@@ -18,7 +18,7 @@ type
   TCustomVstParameterProperty = class(TCollectionItem)
   private
     FSmoothStates     : T2SingleArray;
-    FMin, fMax        : Single;
+    FMin, FMax        : Single;
     FCurve            : TCurveType;
     FCurveFactor      : Single;
     FDisplayName      : string;
@@ -45,6 +45,8 @@ type
     function GetShortLabel: string;
     procedure SetShortLabel(const Value: string);
     procedure SetCurve(const Value: TCurveType);
+    procedure SetMax(const Value: Single);
+    procedure SetMin(const Value: Single);
   protected
     function GetDisplayName: string; override;
     procedure AssignTo(Dest: TPersistent); override;
@@ -67,9 +69,9 @@ type
     property Flags: TVstParameterPropertiesFlags read FFlags write FFlags default [];
     property LargeStepFloat: Single read FLargeStepFloat write FLargeStepFloat;
     property LargeStepInteger: Integer read FLargeStepInteger write FLargeStepInteger default 10;
-    property Max: Single read FMax write FMax;
+    property Max: Single read FMax write SetMax stored False nodefault;
     property MaxInteger: Integer read FMaxInteger write FMaxInteger default 100;
-    property Min: Single read FMin write FMin;
+    property Min: Single read FMin write SetMin stored False nodefault;
     property MinInteger: Integer read FMinInteger write FMinInteger default 0;
     property ReportVST2Properties: Boolean read FV2Properties write FV2Properties default false;
     property ShortLabel: string read GetShortLabel write SetShortLabel;
@@ -116,33 +118,43 @@ constructor TCustomVstParameterProperty.Create(ACollection: TCollection);
 {$ELSE}
 constructor TCustomVstParameterProperty.Create(Collection: TCollection);
 {$ENDIF}
-var i: Integer;
+var
+  i: Integer;
 begin
   inherited;
-  FMin         := 0;
-  FMax         := 1;
-  FMinInteger  := 0;
-  FMaxInteger  := 100;
-  FStepInteger := 1;
-  FCC          := -1;
-  FCurve       := ctLinear;
-  FFlags       := [];
-  FCurveFactor := 1;
+  FMinInteger       := 0;
+  FMaxInteger       := 100;
+  FStepInteger      := 1;
+  FCC               := -1;
+  FCurve            := ctLinear;
+  FFlags            := [];
   FLargeStepInteger := 10;
   FSmoothingFactor  := 1;
   FCanBeAutomated   := True;
   FV2Properties     := False;
-  FDisplayName := 'Parameter ' + IntTostr(Collection.Count);
+  FDisplayName      := 'Parameter ' + IntTostr(Collection.Count);
 
-  FVSTModule := (Collection As TCustomVstParameterProperties).VSTModule;
+  assert(Collection is TCustomVstParameterProperties);
+  FVSTModule := TCustomVstParameterProperties(Collection).VSTModule;
+
+  if csDesigning in FVSTModule.ComponentState then
+   begin
+    FMin            := 0;
+    FStepFloat      := 1;
+    FMax            := 1;
+    FCurveFactor    := 1;
+    FSmallStepFloat := 0.5;
+    FLargeStepFloat := 2;
+   end;
+
   with FVSTModule as TVSTModuleWithPrograms do
    try
     Effect^.numParams := Collection.Count;
-     if not (effFlagsProgramChunks in Effect^.EffectFlags) then
-      if (Effect^.numPrograms > 0) then
-       for i := 0 to Effect^.numPrograms - 1
-        do Programs[i].SetParameterCount(Collection.Count)
-      else SetParameterCount(Collection.Count);
+    if not (effFlagsProgramChunks in Effect^.EffectFlags) then
+     if (Effect^.numPrograms > 0) then
+      for i := 0 to Effect^.numPrograms - 1
+       do Programs[i].SetParameterCount(Collection.Count)
+     else SetParameterCount(Collection.Count);
    except
    end;
 end;
@@ -216,8 +228,8 @@ begin
   begin
    FCurve := Value;
    case FCurve of
-    ctLogarithmic : if fMin <> 0
-                     then FCurveFactor := fMax / fMin;
+    ctLogarithmic : if FMin <> 0
+                     then FCurveFactor := FMax / FMin;
    end;
   end;
 end;
@@ -235,6 +247,22 @@ begin
   end;
 end;
 
+procedure TCustomVstParameterProperty.SetMax(const Value: Single);
+begin
+ if FMax <> Value then
+  begin
+   FMax := Value;
+  end;
+end;
+
+procedure TCustomVstParameterProperty.SetMin(const Value: Single);
+begin
+ if FMin <> Value then
+  begin
+   FMin := Value;
+  end;
+end;
+
 function TCustomVstParameterProperty.GetDisplayName: string;
 begin
   Result := FDisplayName;
@@ -247,12 +275,12 @@ end;
 
 function TCustomVstParameterProperty.GetShortLabel: string;
 begin
-  Result := fShortLabel;
+  Result := FShortLabel;
 end;
 
 procedure TCustomVstParameterProperty.SetShortLabel(const Value: string);
 begin
-  fShortLabel := Value;
+  FShortLabel := Value;
 end;
 
 { TCustomVstParameterProperties }
@@ -303,7 +331,7 @@ begin
     for i := 0 to Count-1 do
     begin
       Add(#9 + #9 + '<Param name="' + Items[i].FDisplayName + '"' + #9 +
-                    'shortName="' + Items[i].fShortLabel + '"' + #9 +
+                    'shortName="' + Items[i].FShortLabel + '"' + #9 +
                     'id="' + IntToStr(i)+'"/>');
     end;
     Add(#9 + '</VSTParametersStructure>');

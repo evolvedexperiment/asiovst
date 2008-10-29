@@ -16,16 +16,18 @@ VST is a trademark of:
 
 unit DAV_VSTHost;
 
-{$I ASIOVST.INC}
+interface
+
+{$I ..\ASIOVST.INC}
 {-$DEFINE SB}
 
-interface
+{$IFNDEF FPC}{$DEFINE MemDLL}{$ENDIF}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
   {$IFDEF MSWINDOWS} Registry, {$ENDIF} Contnrs, SysUtils, Classes, Graphics,
   Controls, Forms, StdCtrls, ComCtrls, Dialogs, DAV_Common, DAV_AudioData,
-  DAV_VSTEffect, DAV_ChunkClasses, DAV_VSTOfflineTask, DAV_DLLLoader
+  DAV_VSTEffect, DAV_VSTOfflineTask {$IFDEF MemDLL}, DAV_DLLLoader {$ENDIF}
   {$IFDEF SB}, TFlatScrollbarUnit{$ENDIF};
 
 type
@@ -68,7 +70,9 @@ type
     FLoaded                        : Boolean;
     FVstDllFileName                : TFileName;
     FVstDllHandle                  : THandle;
+    {$IFDEF MemDLL}
     FInternalDllLoader             : TDLLLoader;
+    {$ENDIF}
     FMainFunction                  : TMainProc;
     FVstEffect                     : PVstEffect;
     FNeedIdle                      : Boolean;
@@ -212,7 +216,9 @@ type
     procedure LoadPreset(FileName: TFileName); overload;
     procedure LoadPreset(Stream: TStream); overload;
     procedure LoadFromFile(const FileName: TFilename);
+    {$IFDEF MemDLL}
     procedure LoadFromStream(const Stream: TStream);
+    {$ENDIF}
     procedure LoadFromVSTEffect(const Value: PVSTEffect);
 
     procedure MainsChanged(IsOn: Boolean);
@@ -1276,6 +1282,7 @@ begin
     if assigned(GUIControl) and FGUIControlCreated
      then FreeAndNil(FGUIControl);
    end;
+  {$IFDEF MemDLL}
   if assigned(FInternalDllLoader) then
    begin
     if EditVisible then CloseEdit;
@@ -1283,6 +1290,7 @@ begin
      then FreeAndNil(FGUIControl);
     FreeAndNil(FInternalDllLoader)
    end;
+  {$ENDIF}
  finally
   inherited;
  end;
@@ -2605,8 +2613,10 @@ begin
  if FVstDllFileName <> Value then
   if FileExists(Value)
    then LoadFromFile(Value) else
+  {$IFDEF MemDLL}
   if not assigned(FInternalDLLLoader)
    then Unload;
+  {$ENDIF}
 end;
 
 procedure TCustomVstPlugIn.LoadFromVSTEffect(const Value: PVSTEffect);
@@ -2676,6 +2686,7 @@ begin
  end;
 end;
 
+{$IFDEF MemDLL}
 procedure TCustomVstPlugIn.LoadFromStream(const Stream: TStream);
 begin
  if FLoaded
@@ -2695,6 +2706,7 @@ begin
   Unload;
  end;
 end;
+{$ENDIF}
 
 procedure TCustomVstPlugIn.UnLoad;
 begin
@@ -2704,11 +2716,13 @@ begin
   finally
    FVstDllHandle := 0;
   end;
+ {$IFDEF MemDLL}
  if assigned(FInternalDllLoader) then
   begin
    FInternalDllLoader.Unload;
    FreeAndNil(FInternalDllLoader);
   end;
+ {$ENDIF}
 
  FMainFunction := nil;
  FVstEffect := nil;

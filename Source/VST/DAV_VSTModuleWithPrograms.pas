@@ -2,7 +2,7 @@ unit DAV_VSTModuleWithPrograms;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   Classes, DAV_VSTModuleWithMidi, DAV_VSTParameters, DAV_VSTPrograms,
@@ -468,11 +468,11 @@ end;
 
 function TVSTModuleWithPrograms.HostCallBeginLoadProgram(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  if PVstPatchChunkInfo(ptr)^.pluginUniqueID <> FEffect.uniqueID
-   then Result := -1
-   else Result := 0;
+ if PVstPatchChunkInfo(ptr)^.pluginUniqueID <> FEffect.uniqueID
+  then Result := -1
+  else Result := 0;
 
-  if Assigned(FOnBeginLoadProgram) then FOnBeginLoadProgram(Self, PVstPatchChunkInfo(ptr)^)
+ if Assigned(FOnBeginLoadProgram) then FOnBeginLoadProgram(Self, PVstPatchChunkInfo(ptr)^)
 end;
 
 

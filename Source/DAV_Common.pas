@@ -240,6 +240,13 @@ const
   cDenorm32     : Single = 1E-24;
   cDenorm64     : Double = 1E-34;
 
+const
+  kMaxLong  = $7FFFFFFF;
+  kMinLong  = -$7FFFFFFF-1;
+  kMaxInt64 = 9223372036854775807;
+  kMinInt64 = -9223372036854775807-1;
+  kMaxFloat = 3.40282346638528860e+38;
+
 implementation
 
 uses

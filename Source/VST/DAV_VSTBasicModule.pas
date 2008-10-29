@@ -4,11 +4,10 @@ unit DAV_VSTBasicModule;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
-  Classes, {$IFDEF Delphi5} Forms, {$ENDIF} DAV_Common, DAV_VSTEffect,
-  DAV_ChunkClasses;
+  Classes, {$IFDEF Delphi5} Forms, {$ENDIF} DAV_Common, DAV_VSTEffect;
 
 type
   TBasicVSTModule = class({$IFDEF UseDelphi}TDataModule{$ELSE}TComponent{$ENDIF})

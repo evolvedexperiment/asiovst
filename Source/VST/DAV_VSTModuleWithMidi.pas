@@ -2,7 +2,7 @@ unit DAV_VSTModuleWithMidi;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   Classes, DAV_VSTCustomModule, DAV_VSTEffect, DAV_Common;

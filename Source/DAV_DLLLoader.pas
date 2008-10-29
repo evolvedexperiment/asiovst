@@ -5,7 +5,8 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Windows, Classes;
+  {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$IFDEF Win32} Windows, {$ENDIF}
+  {$ELSE} Windows, Messages, {$ENDIF} Classes;
 
 const
   IMPORTED_NAME_OFFSET = $00000002;

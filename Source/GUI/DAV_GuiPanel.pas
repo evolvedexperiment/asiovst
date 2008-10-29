@@ -11,15 +11,17 @@ uses
 type
   TCustomGuiPanel = class(TCustomPanel)
   private
-    fAntiAlias              : TGuiAntiAlias;
-    fBorderVisible          : Boolean;
-    fPanelColor             : TColor;
-    fOwnerDraw              : Boolean;
-    fOSFactor               : Integer;
-    fRoundRadius            : Integer;
-    fTransparent            : Boolean;
-    fLineWidth              : Integer;
-    fLineColor              : TColor;
+    FAntiAlias      : TGuiAntiAlias;
+    FBorderVisible  : Boolean;
+    FPanelColor     : TColor;
+    FOwnerDraw      : Boolean;
+    FOSFactor       : Integer;
+    FRoundRadius    : Integer;
+    FTransparent    : Boolean;
+    FLineWidth      : Integer;
+    FLineColor      : TColor;
+    FBitmap         : TBitmap;
+    FBitmapChanged  : Boolean;
     procedure CMEnabledChanged (var Message: TMessage); message CM_ENABLEDCHANGED;
     procedure CMTextChanged (var Message: TWmNoParams); message CM_TEXTCHANGED;
     procedure RenderPanelToBitmap(Bitmap: TBitmap);
@@ -31,21 +33,24 @@ type
     procedure SetPanelColor(const Value: TColor);
     procedure SetRoundRadius(const Value: Integer);
     procedure SetTransparent (const Value: Boolean);
+    procedure PaintBitmap;
+    procedure SetBitmapChanged(const Value: Boolean);
   protected
     procedure Paint; override;
+    procedure Resize; override;
+    property BitmapChanged: Boolean read FBitmapChanged write SetBitmapChanged; 
   public
     constructor Create (AOwner: TComponent); override;
-    destructor Destroy; override;
     procedure AssignTo(Dest: TPersistent); override;
 
-    property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
-    property BorderVisible: Boolean read fBorderVisible write SetBorderVisible default True;
-    property PanelColor: TColor read fPanelColor write SetPanelColor default clBtnShadow;
-    property OwnerDraw: Boolean read fOwnerDraw write SetOwnerDraw default True;
-    property LineColor: TColor read fLineColor write SetLineColor default clBtnHighlight;
-    property Linewidth: Integer read fLinewidth write SetLinewidth default 2;
-    property Radius: Integer read fRoundRadius write SetRoundRadius default 2;
-    property Transparent: Boolean read fTransparent write SetTransparent default False;
+    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+    property BorderVisible: Boolean read FBorderVisible write SetBorderVisible default True;
+    property PanelColor: TColor read FPanelColor write SetPanelColor default clBtnShadow;
+    property OwnerDraw: Boolean read FOwnerDraw write SetOwnerDraw default True;
+    property LineColor: TColor read FLineColor write SetLineColor default clBtnHighlight;
+    property Linewidth: Integer read FLineWidth write SetLinewidth default 2;
+    property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
+    property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
   TGuiPanel = class(TCustomGuiPanel)
@@ -120,164 +125,155 @@ uses
 constructor TCustomGuiPanel.Create (AOwner: TComponent);
 begin
  inherited Create(AOwner);
- ParentFont      := True;
- fPanelColor     := clBtnHighlight;
- fLineColor      := clBtnShadow;
- fLineWidth      := 2;
- fRoundRadius    := 2;
- fBorderVisible  := True;
- fOwnerDraw      := True;
- fOSFactor       := 1;
- fAntiAlias      := gaaNone;
- ParentColor     := True;
- ControlStyle    := ControlStyle + [csAcceptsControls, csOpaque];
+ ParentFont           := True;
+ FPanelColor          := clBtnHighlight;
+ FLineColor           := clBtnShadow;
+ FLineWidth           := 2;
+ FRoundRadius         := 2;
+ FBorderVisible       := True;
+ FOwnerDraw           := True;
+ FOSFactor            := 1;
+ FAntiAlias           := gaaNone;
+ FBitmap              := TBitmap.Create;
+ FBitmap.PixelFormat  := pf32bit;
+ FBitmapChanged       := True;
+ ParentColor          := True;
+ ControlStyle         := ControlStyle + [csAcceptsControls, csOpaque];
  SetBounds(0, 0, 185, 41);
-end;
-
-destructor TCustomGuiPanel.Destroy;
-begin
- inherited;
 end;
 
 procedure TCustomGuiPanel.SetOwnerDraw(const Value: Boolean);
 begin
- if fOwnerDraw <> Value then
+ if FOwnerDraw <> Value then
   begin
-   fOwnerDraw := Value;
-   Invalidate;
+   FOwnerDraw := Value;
+   if FOwnerDraw
+    then BitmapChanged := True
+    else Invalidate;
   end;
 end;
 
 procedure TCustomGuiPanel.SetLineColor(const Value: TColor);
 begin
- if fLineColor <> Value then
+ if FLineColor <> Value then
   begin
-   fLineColor := Value;
-   if fOwnerDraw then Invalidate;
+   FLineColor := Value;
+   if FOwnerDraw then BitmapChanged := True;
   end;
 end;
 
 procedure TCustomGuiPanel.SetLinewidth(const Value: Integer);
 begin
- if fLinewidth <> Value then
+ if FLineWidth <> Value then
   begin
-   fLinewidth := Value;
-   if fOwnerDraw then Invalidate;
+   FLineWidth := Value;
+   if FOwnerDraw then BitmapChanged := True;
   end;
 end;
 
 procedure TCustomGuiPanel.SetPanelColor(const Value: TColor);
 begin
- if fPanelColor <> Value then
+ if FPanelColor <> Value then
   begin
-   fPanelColor := Value;
-   if fOwnerDraw then Invalidate;
+   FPanelColor := Value;
+   if FOwnerDraw then BitmapChanged := True;
   end;
 end;
 
-procedure TCustomGuiPanel.Paint;
-var
-(*
-  textBounds : TRect;
-  format     : UINT;
-*)
-  Bmp        : TBitmap;
+procedure TCustomGuiPanel.PaintBitmap;
 begin
- if not fOwnerDraw then
-  begin
-   inherited;
-   exit;
-  end;
-(*
- textBounds := ClientRect;
- format := DT_SINGLELINE or DT_VCENTER;
- case Alignment of
-  taLeftJustify  : format := format or DT_LEFT;
-        taCenter : format := format or DT_CENTER;
-  taRightJustify : format := format or DT_RIGHT;
- end;
-*)
-
  if (Width > 0) and (Height > 0) then
-  begin
-   Bmp := TBitmap.Create;
-   with Bmp do
+  with FBitmap do
+   begin
+    Canvas.Lock;
     try
-     PixelFormat := pf32bit;
-     Canvas.Lock;
      Canvas.Brush.Style := bsSolid;
      Canvas.Brush.Color := PanelColor;
-     Width  := fOSFactor * Self.ClientRect.Right;
-     Height := fOSFactor * Self.ClientRect.Bottom;
-     case fAntiAlias of
+     Width  := FOSFactor * Self.ClientRect.Right;
+     Height := FOSFactor * Self.ClientRect.Bottom;
+     case FAntiAlias of
       gaaNone     :
        begin
-        {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, Canvas) else {$ENDIF}
+        {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, Canvas) else {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(Bmp);
+        RenderPanelToBitmap(FBitmap);
        end;
       gaaLinear2x :
        begin
         {$IFNDEF FPC}
-        if fTransparent then
+        if FTransparent then
          begin
-          CopyParentImage(Self, Bmp.Canvas);
-          Upsample2xBitmap32(Bmp);
+          CopyParentImage(Self, FBitmap.Canvas);
+          Upsample2xBitmap32(FBitmap);
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(Bmp);
-        Downsample2xBitmap32(Bmp);
+        RenderPanelToBitmap(FBitmap);
+        Downsample2xBitmap32(FBitmap);
        end;
       gaaLinear4x :
        begin
         {$IFNDEF FPC}
-        if fTransparent then
+        if FTransparent then
          begin
-          CopyParentImage(Self, Bmp.Canvas);
-          Upsample4xBitmap32(Bmp);
+          CopyParentImage(Self, FBitmap.Canvas);
+          Upsample4xBitmap32(FBitmap);
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(Bmp);
-        Downsample4xBitmap32(Bmp);
+        RenderPanelToBitmap(FBitmap);
+        Downsample4xBitmap32(FBitmap);
        end;
       gaaLinear8x :
        begin
         {$IFNDEF FPC}
-        if fTransparent then
+        if FTransparent then
          begin
-          CopyParentImage(Self, Bmp.Canvas);
-          Upsample4xBitmap32(Bmp);
-          Upsample2xBitmap32(Bmp);
+          CopyParentImage(Self, FBitmap.Canvas);
+          Upsample4xBitmap32(FBitmap);
+          Upsample2xBitmap32(FBitmap);
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(Bmp);
-        Downsample4xBitmap32(Bmp);
-        Downsample2xBitmap32(Bmp);
+        RenderPanelToBitmap(FBitmap);
+        Downsample4xBitmap32(FBitmap);
+        Downsample2xBitmap32(FBitmap);
        end;
       gaaLinear16x :
        begin
         {$IFNDEF FPC}
-        if fTransparent then
+        if FTransparent then
          begin
-          CopyParentImage(Self, Bmp.Canvas);
-          Upsample4xBitmap32(Bmp);
-          Upsample4xBitmap32(Bmp);
+          CopyParentImage(Self, FBitmap.Canvas);
+          Upsample4xBitmap32(FBitmap);
+          Upsample4xBitmap32(FBitmap);
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(Bmp);
-        Downsample4xBitmap32(Bmp);
-        Downsample4xBitmap32(Bmp);
+        RenderPanelToBitmap(FBitmap);
+        Downsample4xBitmap32(FBitmap);
+        Downsample4xBitmap32(FBitmap);
        end;
      end;
     finally
-     Self.Canvas.Draw(0, 0, Bmp);
-     FreeAndNil(Bmp)
+     Canvas.Unlock;
     end;
-  end;
+   end;
+end;
+
+procedure TCustomGuiPanel.Paint;
+begin
+ if not FOwnerDraw
+  then inherited
+  else
+   begin
+    if FBitmapChanged then
+     begin
+      FBitmapChanged := False;
+      PaintBitmap;
+     end;
+    Canvas.Draw(0, 0, FBitmap);
+   end;
 end;
 
 procedure TCustomGuiPanel.RenderPanelToBitmap(Bitmap: TBitmap);
@@ -292,16 +288,16 @@ begin
   begin
    Lock;
    Font.Assign(Self.Font);
-   Font.Size := fOSFactor * Font.Size;
+   Font.Size := FOSFactor * Font.Size;
 
    Brush.Style := bsClear;
-   Brush.Color := fPanelColor;
-   Pen.Width   := fOSFactor * fLineWidth;
-   Pen.Color   := fLineColor;
+   Brush.Color := FPanelColor;
+   Pen.Width   := FOSFactor * FLineWidth;
+   Pen.Color   := FLineColor;
 
-   case fRoundRadius of
+   case FRoundRadius of
     0, 1 : begin
-            Brush.Color := fLineColor;
+            Brush.Color := FLineColor;
             FrameRect(ClipRect);
            end;
        2 : begin
@@ -315,8 +311,8 @@ begin
            end;
     else
      begin
-      rad := fOSFactor * fRoundRadius;
-      Steps := Round(2 / arcsin(1 / fRoundRadius)) + 1;
+      rad := FOSFactor * FRoundRadius;
+      Steps := Round(2 / arcsin(1 / FRoundRadius)) + 1;
       if Steps > 1 then
        begin
         SetLength(PtsArray, Steps + 4);
@@ -367,7 +363,7 @@ begin
         PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
 
         PolyGon(PtsArray);
-        if fLineColor <> fPanelColor
+        if FLineColor <> FPanelColor
          then PolyLine(PtsArray);
        end;
      end;
@@ -393,33 +389,48 @@ begin
   end;
 end;
 
+procedure TCustomGuiPanel.Resize;
+begin
+ inherited;
+ if FBitmap.Width <> Width then
+  begin
+   FBitmap.Width := Width;
+   FBitmapChanged := True;
+  end;
+ if FBitmap.Height <> Height then
+  begin
+   FBitmap.Height := Height;
+   FBitmapChanged := True;
+  end;
+end;
+
 procedure TCustomGuiPanel.SetRoundRadius(const Value: Integer);
 begin
- if fRoundRadius <> Value then
+ if FRoundRadius <> Value then
   begin
-   fRoundRadius := Value;
-   if fOwnerDraw then Invalidate;
+   FRoundRadius := Value;
+   if FOwnerDraw then BitmapChanged := True;
   end;
 end;
 
 procedure TCustomGuiPanel.CMEnabledChanged(var Message: TMessage);
 begin
  inherited;
- if fOwnerDraw then Invalidate;
+ if FOwnerDraw then BitmapChanged := True;
 end;
 
 procedure TCustomGuiPanel.CMTextChanged(var Message: TWmNoParams);
 begin
  inherited;
- if fOwnerDraw then Invalidate;
+ if FOwnerDraw then BitmapChanged := True;
 end;
 
 procedure TCustomGuiPanel.SetTransparent(const Value: Boolean);
 begin
- if fTransparent <> Value then
+ if FTransparent <> Value then
   begin
-   fTransparent := Value;
-   if OwnerDraw then Invalidate;
+   FTransparent := Value;
+   if FOwnerDraw then BitmapChanged := True;
   end;
 end;
 
@@ -435,16 +446,23 @@ begin
      gaaLinear8x : FOSFactor :=  8;
     gaaLinear16x : FOSFactor := 16;
    end;
-   if fOwnerDraw then Invalidate;
+   if FOwnerDraw then BitmapChanged := True;
   end;
+end;
+
+procedure TCustomGuiPanel.SetBitmapChanged(const Value: Boolean);
+begin
+ FBitmapChanged := Value;
+ if FBitmapChanged
+  then Invalidate;
 end;
 
 procedure TCustomGuiPanel.SetBorderVisible(const Value: Boolean);
 begin
- if fBorderVisible <> Value then
+ if FBorderVisible <> Value then
   begin
-   fBorderVisible := Value;
-   if fOwnerDraw then Invalidate;
+   FBorderVisible := Value;
+   if FOwnerDraw then BitmapChanged := True;
   end;
 end;
 

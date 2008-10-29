@@ -2,7 +2,7 @@ unit DAV_VSTEffect;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_Common;
@@ -1240,7 +1240,7 @@ function KeyCodeToInteger(VKC: TVstKeyCode): Integer;
 begin
  if (VKC.character = 0) then
   begin
-{$IFNDEF FPC}
+   {$IFNDEF FPC}
    case VKC.virt of
     VKEY_BACK      : Result := VK_BACK;
     VKEY_TAB       : Result := VK_TAB;
@@ -1301,13 +1301,18 @@ begin
     VKEY_EQUALS    : Result := $5D;
     else Result := VKC.character;
    end;
-{$ENDIF}
+   {$ENDIF}
   end
  else
   begin
    Result := VKC.character;
+   {$IFNDEF FPC}
    if mkShift in TVstModifierKeys(VKC.modifier)
     then Dec(Result, 32);
+   {$ELSE}
+   if mkShift in TVstModifierKeys(Integer(VKC.modifier))
+    then Dec(Result, 32);
+   {$ENDIF}
   end;
 end;
 

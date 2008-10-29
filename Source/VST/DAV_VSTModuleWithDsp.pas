@@ -2,7 +2,7 @@ unit DAV_VSTModuleWithDsp;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
   Classes, DAV_Common, DAV_VSTEffect, DAV_VSTModuleWithPrograms,

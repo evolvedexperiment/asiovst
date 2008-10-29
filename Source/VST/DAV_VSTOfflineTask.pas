@@ -2,6 +2,8 @@ unit DAV_VSTOfflineTask;
 
 interface
 
+{$I ..\ASIOVST.INC}
+
 uses
   Classes, SysUtils, DAV_VSTEffect;
 
@@ -105,11 +107,13 @@ type
     property PlugOwned: Pointer read GetPlugOwned write SetPlugOwned;
   end;
 
+  { TVstOfflineTask }
+
   TVstOfflineTask = class(TCustomVstOfflineTask)
-  protected
-    FVstOfflineTaskRecord : TVstOfflineTaskRecord;
+  private
+    function GetVstOfflineTaskRecord: TVstOfflineTaskRecord;
   public
-    property VstOfflineTaskRecord: TVstOfflineTaskRecord read FVstOfflineTaskRecord;
+    property VstOfflineTaskRecord: TVstOfflineTaskRecord read GetVstOfflineTaskRecord;
   published
     property ProcessName;            // set by plug
     property ReadPosition;           // set by plug/host
@@ -585,6 +589,13 @@ destructor TVstOfflineTaskCollectionItem.Destroy;
 begin
  FreeAndNil(FVstOfflineTask);
  inherited;
+end;
+
+{ TVstOfflineTask }
+
+function TVstOfflineTask.GetVstOfflineTaskRecord: TVstOfflineTaskRecord;
+begin
+ result := FVstOfflineTaskRecord^;
 end;
 
 end.

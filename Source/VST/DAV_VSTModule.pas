@@ -2,10 +2,10 @@ unit DAV_VSTModule;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\ASIOVST.INC}
 
 uses
-  {$IFDEF FPC} LCLIntf, {$ENDIF} Classes, DAV_VSTModuleWithDsp;
+  {$IFDEF FPC} LCLIntf, LResources, {$ENDIF} Classes, DAV_VSTModuleWithDsp;
 
 type
   TVSTModule = class(TDspVSTModule)
@@ -98,7 +98,6 @@ type
   end;
 
 
-
 {$IFDEF FPC}
 function InitResourceComponent(Instance: TComponent; RootAncestor: TClass):Boolean;
 {$ENDIF}
@@ -132,7 +131,9 @@ begin
  if Assigned(OnCreate) then OnCreate(Self);
  {$ENDIF}
 end;
+
 {$ELSE}
+
 constructor TVSTModule.Create(AOwner: TComponent);
 begin
  {$IFDEF UseDelphi}
@@ -148,6 +149,7 @@ begin
  inherited Create(AOwner);
  {$ENDIF}
 end;
+
 {$ENDIF}
 
 destructor TVSTModule.Destroy;
@@ -161,7 +163,7 @@ end;
 {$IFDEF FPC}
 function InitResourceComponent(Instance: TComponent; RootAncestor: TClass): Boolean;
 begin
-//  Result := InitLazResourceComponent(Instance,RootAncestor);
+ Result := InitLazResourceComponent(Instance, RootAncestor);
 end;
 
 initialization

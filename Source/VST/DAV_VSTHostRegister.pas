@@ -20,7 +20,7 @@ end;
 
 {$IFDEF FPC}
   initialization
-  {$i ..\..\Resources\VstHost.lrs}
+  {$i ..\..\Resources\DAV_VstHostRegister.lrs}
 {$ENDIF}
 
 end.

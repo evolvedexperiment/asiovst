@@ -88,7 +88,7 @@ type
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     {$ENDIF}
-    
+
     procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
     procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
     procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
@@ -292,14 +292,14 @@ var
   R, SelfR,
   CtlR       : TRect;
 begin
-{$IFNDEF FPC}
+ {$IFNDEF FPC}
  if (Control = nil) or (Control.Parent = nil) then Exit;
  Count := Control.Parent.ControlCount;
  DC := Dest.Handle;
-{$IFDEF WIN32}
+ {$IFDEF WIN32}
  with Control.Parent do ControlState := ControlState + [csPaintCopy];
  try
-{$ENDIF}
+ {$ENDIF}
    with Control do
     begin
      SelfR := Bounds(Left, Top, Width, Height);
@@ -348,12 +348,12 @@ begin
            end;
          end;
     end;
-{$IFDEF WIN32}
+ {$IFDEF WIN32}
  finally
    with Control.Parent do ControlState := ControlState - [csPaintCopy];
  end;
-{$ENDIF}
-{$ENDIF}
+ {$ENDIF}
+ {$ENDIF}
 end;
 
 procedure Downsample2xBitmap32(var Bitmap: TBitmap);
