@@ -91,10 +91,12 @@ begin
  UpdateFrequency;
  UpdateRipple;
  UpdateOrder;
+(*
  with TChebyshevLPModule(Owner) do
   begin
    Resizer.SetEditorHwnd(Self.Handle);
   end;
+*)
 end;
 
 procedure TFmChebyshev.UpdateFrequency;
@@ -106,6 +108,7 @@ begin
    Freq := ParameterByName['Frequency'];
    if DialFrequency.Position <> Freq
     then DialFrequency.Position := Freq;
+   LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 5, 5);
   end;
 end;
 
@@ -118,6 +121,7 @@ begin
    Order := ParameterByName['Order'];
    if DialOrder.Position <> Order
     then DialOrder.Position := Order;
+   LbOrderValue.Caption := IntToStr(round(Order));
   end;
 end;
 
@@ -130,6 +134,7 @@ begin
    Ripple := ParameterByName['Ripple'];
    if DialRipple.Position <> Ripple
     then DialRipple.Position := Ripple;
+   LbRippleValue.Caption := FloatToStrF(Ripple, ffGeneral, 3, 3);
   end;
 end;
 

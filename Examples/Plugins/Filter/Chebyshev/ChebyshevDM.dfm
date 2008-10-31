@@ -8,10 +8,16 @@ object ChebyshevLPModule: TChebyshevLPModule
   PlugCategory = vpcEffect
   CanDos = [vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
   UniqueID = 'CbcL'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear
@@ -19,9 +25,7 @@ object ChebyshevLPModule: TChebyshevLPModule
       DisplayName = 'Frequency'
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
-      Max = 20000.000000000000000000
       MaxInteger = 20000
-      Min = 20.000000000000000000
       MinInteger = 20
       ShortLabel = 'Freq'
       SmallStepFloat = 10.000000000000000000
@@ -38,9 +42,7 @@ object ChebyshevLPModule: TChebyshevLPModule
       DisplayName = 'Ripple'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 10.000000000000000000
       MaxInteger = 10
-      Min = 0.001000000047497451
       ShortLabel = 'Ripple'
       SmallStepFloat = 0.100000001490116100
       SmoothingFactor = 1.000000000000000000
@@ -55,7 +57,6 @@ object ChebyshevLPModule: TChebyshevLPModule
       DisplayName = 'Order'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
-      Max = 16.000000000000000000
       MaxInteger = 16
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
@@ -71,8 +72,8 @@ object ChebyshevLPModule: TChebyshevLPModule
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 517
-  Top = 76
+  Left = 694
+  Top = 85
   Height = 150
   Width = 215
 end

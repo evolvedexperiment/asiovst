@@ -169,7 +169,7 @@ var
 begin
  if fOrder > 0 then
   begin
-   t := arcsinh(1 / fRipple) / fOrder;
+   t := arcsinh(1 / sqrt(Power(10, (fRipple * 0.1)) - 1)) / fOrder;
    fRippleFactors[1] := sinh(t);
    fRippleFactors[0] := sqr(cosh(t));
   end;

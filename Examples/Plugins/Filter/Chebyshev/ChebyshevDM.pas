@@ -51,7 +51,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1 do
-  if assigned(fFilter[ch]) then fFilter[ch].Order := max(2, 2 * round(0.5 * Value));
+  if assigned(fFilter[ch]) then fFilter[ch].Order := max(2, 2 * round(Value) div 2);
  if EditorForm is TFmChebyshev then
   with TFmChebyshev(EditorForm) do
    begin
@@ -82,8 +82,21 @@ begin
    fFilter[ch] := TChebyshev1LP.Create;
    fFilter[ch].SetFilterValues(1000, 0, 1);
   end;
+(*
  fResizer := TVstWindowSizer.Create;
  fResizer.Effect := Self;
+*)
+
+ Parameter[0] := 1000;
+ Parameter[1] := 1;
+ Parameter[2] := 4;
+
+ with Programs[0] do
+  begin
+   Parameter[0] := 1000;
+   Parameter[1] := 1;
+   Parameter[2] := 4;
+  end;
 end;
 
 procedure TChebyshevLPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -97,7 +110,7 @@ var
 begin
  for ch := 0 to numInputs - 1
   do FreeAndNil(fFilter[ch]);
- FreeAndNil(fResizer);
+// FreeAndNil(fResizer);
 end;
 
 procedure TChebyshevLPModule.VSTModuleProcess(const Inputs,
@@ -128,8 +141,9 @@ procedure TChebyshevLPModule.VSTModuleSampleRateChange(Sender: TObject; const Sa
 var
   ch : Integer;
 begin
- for ch := 0 to numInputs - 1
-  do fFilter[ch].SampleRate := SampleRate;
+ for ch := 0 to numInputs - 1 do
+  if assigned(fFilter[ch])
+   then fFilter[ch].SampleRate := SampleRate;
 end;
 
 end.
