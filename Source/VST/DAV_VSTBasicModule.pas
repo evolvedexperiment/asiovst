@@ -12,11 +12,11 @@ uses
 type
   TBasicVSTModule = class({$IFDEF UseDelphi}TDataModule{$ELSE}TComponent{$ENDIF})
   protected
-    FEffect: TVSTEffect;
-    FAudioMaster: TAudioMasterCallbackFunc;
+    FEffect      : TVSTEffect;
+    FAudioMaster : TAudioMasterCallbackFunc;
     {$IFNDEF UseDelphi}
-    FOnCreate: TNotifyEvent;
-    FOnDestroy: TNotifyEvent;
+    FOnCreate    : TNotifyEvent;
+    FOnDestroy   : TNotifyEvent;
     {$ENDIF}
 
     function GetEffect: PVSTEffect; virtual;
@@ -175,6 +175,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
 
+    class function GetStaticDescription: string; virtual;
     function  HostCallGetParameter(Index: Integer): Single; virtual; abstract;
     procedure HostCallSetParameter(Index: Integer; Value: Single); virtual; abstract;
 
@@ -210,7 +211,7 @@ begin
    reservedForHost := nil;
    resvd2          := nil;
    user            := nil;
-   uniqueID        := 'NoEf';
+   uniqueID        := 'fEoN';
    ioRatio         := 1;
    numParams       := 0;
    numPrograms     := 0;
@@ -369,6 +370,11 @@ begin
     Result := PVSTEffect(FAudioMaster(@FEffect, audioMasterGetPreviousPlug, 0, 0, nil, 0))
   else
     Result := nil;
+end;
+
+class function TBasicVSTModule.GetStaticDescription: string;
+begin
+ result := 'Delphi ASIO & VST Package Plugin';
 end;
 
 function TBasicVSTModule.GetNextPlug(output: Integer): PVSTEffect;
@@ -701,7 +707,7 @@ function TBasicVSTModule.HostCallIdentify(Index, Value: Integer; ptr: pointer; o
 var
   ChunkName : TChunkName;
 begin
- ChunkName := 'NvEf';
+ ChunkName := 'fEvN';
  Result := Integer(ChunkName);
 end;
 

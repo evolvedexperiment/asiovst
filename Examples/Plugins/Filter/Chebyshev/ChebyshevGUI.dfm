@@ -80,7 +80,7 @@ object FmChebyshev: TFmChebyshev
       LineColor = 10526927
       CircleColor = 657940
       CurveMapping = -2.099999904632568000
-      DefaultPosition = 100.000000000000000000
+      DefaultPosition = 1000.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       NumGlyphs = 65
@@ -102,7 +102,7 @@ object FmChebyshev: TFmChebyshev
       LineColor = 10526927
       CircleColor = 657940
       CurveMapping = -2.750000000000000000
-      DefaultPosition = 0.100000001490116100
+      DefaultPosition = 1.000000000000000000
       Max = 10.000000000000000000
       Min = 0.001000000047497451
       NumGlyphs = 65
@@ -154,7 +154,6 @@ object FmChebyshev: TFmChebyshev
       Color = 1315880
       LineColor = 10526927
       CircleColor = 657940
-      DefaultPosition = 4.000000000000000000
       Max = 16.000000000000000000
       NumGlyphs = 65
       PointerAngles.Start = 225

@@ -810,7 +810,11 @@ begin
  if StrComp(ptr, 'midiProgramNames')      = 0 then Result := 2 * Integer(vcdMidiProgramNames      in fCanDos)-1 else
  if StrComp(ptr, 'conformsToWindowRules') = 0 then Result := 2 * Integer(vcdConformsToWindowRules in fCanDos)-1 else
  if StrComp(ptr, 'LiveWithoutToolbar')    = 0 then Result := 2 * Integer(vcdLiveWithoutToolbar    in fCanDos)-1 else
- if StrComp(ptr, 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in fCanDos)-1;
+ if StrComp(ptr, 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in fCanDos)-1 else
+ if StrComp(ptr, 'hasCockosExtensions')   = 0 then
+  if vcdCockosExtension in fCanDos
+   then Result := $BEEF0000
+   else Result := 0;
  if Assigned(FOnCanDo) then FOnCanDo(Self,pchar(ptr));
 end;
 
@@ -835,9 +839,10 @@ begin
 end;
 
 function TCustomVSTModule.HostCallEditKeyDown(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
-var keyCode : TVstKeyCode;
-    a,b: Integer;
-    Hndl: THandle;
+var
+  keyCode : TVstKeyCode;
+  a,b     : Integer;
+  Hndl    : THandle;
 begin
  Result := 0;
  {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditKeyDown'); FLog.SaveToFile('Debug.log'); {$ENDIF}
@@ -1002,18 +1007,20 @@ end;
 
 function TCustomVSTModule.GetUniqueID: string;
 begin
- Result := FEffect.UniqueID;
+ Result := FEffect.UniqueID[3] +
+           FEffect.UniqueID[2] +
+           FEffect.UniqueID[1] +
+           FEffect.UniqueID[0];
 end;
 
 procedure TCustomVSTModule.SetUniqueID(Value: string);
+var
+  i : Integer;
 begin
- if Length(Value) > 4
-  then Move(Value[1], FEffect.uniqueID, 4)
-  else
-   begin
-    Move(Value[1], FEffect.uniqueID, Length(Value));
-    FillChar(Value[Length(Value)], 4 - Length(Value), 0);
-   end;
+ for i := 1 to 4 do
+  if i <= Length(Value)
+   then FEffect.uniqueID[4 - i] := Value[i]
+   else FEffect.uniqueID[4 - i] := #0;
 end;
 
 procedure TCustomVSTModule.SetSampleRate(newValue: Single);

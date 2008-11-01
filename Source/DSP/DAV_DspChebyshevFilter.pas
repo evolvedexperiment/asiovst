@@ -14,7 +14,7 @@ type
     procedure SetDownsamplePower(Value: Integer);
   protected
     fRipple         : Double;
-    fRippleFactors  : T2DoubleArray;
+    fRippleFactors  : TDAV2DoubleArray;
     fDownsamplePow  : Integer;
     fDownsampleFak  : Integer;
     fOrder          : Integer;

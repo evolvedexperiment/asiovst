@@ -25,7 +25,9 @@ object ChebyshevLPModule: TChebyshevLPModule
       DisplayName = 'Frequency'
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
+      Max = 20000.000000000000000000
       MaxInteger = 20000
+      Min = 20.000000000000000000
       MinInteger = 20
       ShortLabel = 'Freq'
       SmallStepFloat = 10.000000000000000000
@@ -42,6 +44,7 @@ object ChebyshevLPModule: TChebyshevLPModule
       DisplayName = 'Ripple'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
+      Max = 10.000000000000000000
       MaxInteger = 10
       ShortLabel = 'Ripple'
       SmallStepFloat = 0.100000001490116100
@@ -57,6 +60,7 @@ object ChebyshevLPModule: TChebyshevLPModule
       DisplayName = 'Order'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
+      Max = 16.000000000000000000
       MaxInteger = 16
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000

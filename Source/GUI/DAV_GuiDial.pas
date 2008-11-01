@@ -97,9 +97,10 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); override;
-
+    procedure ReadState(Reader: TReader); override;
+    
     property NormalizedPosition: Single read GetNormalizedPosition write SetNormalizedPosition;
-    property MappedPosition: Single read GetMappedPosition;
+    property MappedPosition: Single read GetMappedPosition; 
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -117,9 +118,9 @@ type
     property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
     property ImageIndex: Integer read FImageIndex write SetImageIndex default -1;
     property ImageList: TImageList read FImageList write SetImageList;
-    property Inertia: Single read fInertia write SetInertia stored True nodefault;
-    property Max: Single read FMax write SetMax stored True nodefault;
-    property Min: Single read FMin write SetMin stored True nodefault;
+    property Inertia: Single read fInertia write SetInertia;
+    property Max: Single read FMax write SetMax;
+    property Min: Single read FMin write SetMin;
     property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
     property PointerAngles: TGuiDialPointerAngles read FPointerAngles write SetPointerAngles;
     property Position: Single read FPosition write SetPosition;
@@ -230,7 +231,7 @@ type
 implementation
 
 uses
-  ExtCtrls, Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common, DAV_Complex;
+  Dialogs, ExtCtrls, Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common, DAV_Complex;
 
 function RadToDeg(const Radians: Extended): Extended;  { Degrees := Radians * 180 / PI }
 const
@@ -330,7 +331,7 @@ begin
 end;
 
 
-
+{ TCustomGuiDial }
 
 constructor TCustomGuiDial.Create(AOwner: TComponent);
 begin
@@ -353,14 +354,12 @@ begin
   FInertia                := 0;
   FInertiaExp             := 1;
   FInertiaScale           := 1;
+  FMin                    := 0;
   FStitchKind             := skHorizontal;
   FDialBitmap             := TBitmap.Create;
   FDialBitmap.OnChange    := SettingsChanged;
-  if csDesigning in ComponentState then
-   begin
-    FMin                  := 0;
-    FMax                  := 100;
-   end;
+  if csDesigning in ComponentState
+   then FMax := 100;
 end;
 
 destructor TCustomGuiDial.Destroy;
@@ -424,6 +423,13 @@ begin
    MoveTo(PtsArray[0].X, PtsArray[0].Y);
    LineTo(Round(0.5 * Width), Round(0.5 * Height));
   end;
+end;
+
+procedure TCustomGuiDial.ReadState(Reader: TReader);
+begin
+ if csDesigning in ComponentState
+  then FMax := 0;
+ inherited;
 end;
 
 procedure TCustomGuiDial.RedrawBuffer(doBufferFlip: Boolean);

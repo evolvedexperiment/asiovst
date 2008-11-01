@@ -3,9 +3,8 @@ unit ChebyshevGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, ExtCtrls,
-  DAV_GuiPanel;
+  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, DAV_Common,
+  DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel;
 
 type
   TFmChebyshev = class(TForm)
@@ -38,13 +37,14 @@ implementation
 {$R *.DFM}
 
 uses
-  ChebyshevDM, DAV_VSTModuleWithPrograms;
+  DAV_VSTModuleWithPrograms, ChebyshevDM;
 
 procedure TFmChebyshev.DialFrequencyChange(Sender: TObject);
 begin
  with TChebyshevLPModule(Owner) do
   begin
-   ParameterByName['Frequency'] := DialFrequency.Position;
+   if ParameterByName['Frequency'] <> DialFrequency.Position
+    then ParameterByName['Frequency'] := DialFrequency.Position;
   end;
 end;
 
@@ -52,7 +52,8 @@ procedure TFmChebyshev.DialOrderChange(Sender: TObject);
 begin
  with TChebyshevLPModule(Owner) do
   begin
-   ParameterByName['Order'] := DialOrder.Position;
+   if ParameterByName['Order'] <> DialOrder.Position
+    then ParameterByName['Order'] := DialOrder.Position;
   end;
 end;
 
@@ -60,7 +61,8 @@ procedure TFmChebyshev.DialRippleChange(Sender: TObject);
 begin
  with TChebyshevLPModule(Owner) do
   begin
-   ParameterByName['Ripple'] := DialRipple.Position;
+   if ParameterByName['Ripple'] <> DialRipple.Position
+    then ParameterByName['Ripple'] := DialRipple.Position;
   end;
 end;
 
@@ -108,7 +110,9 @@ begin
    Freq := ParameterByName['Frequency'];
    if DialFrequency.Position <> Freq
     then DialFrequency.Position := Freq;
-   LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 5, 5);
+   if Freq < 1000
+    then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 5, 5) + ' Hz'
+    else LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 5, 5) + ' kHz'
   end;
 end;
 
@@ -134,7 +138,7 @@ begin
    Ripple := ParameterByName['Ripple'];
    if DialRipple.Position <> Ripple
     then DialRipple.Position := Ripple;
-   LbRippleValue.Caption := FloatToStrF(Ripple, ffGeneral, 3, 3);
+   LbRippleValue.Caption := FloatToStrF(Ripple, ffGeneral, 3, 3) + ' dB';
   end;
 end;
 

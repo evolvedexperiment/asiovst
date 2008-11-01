@@ -55,6 +55,8 @@ type
     procedure SetParameterProperties(const Value : TCustomVstParameterProperties);
     procedure SetProgram(aProgram: Integer); virtual;
     procedure SetVstPrograms(const Value: TCustomVstPrograms);
+    function HostCallVendorSpecific(Index: Integer; Value: Integer;
+      ptr: Pointer; opt: Single): Integer; override;
   published
   public
     constructor Create(AOwner: TComponent); override;
@@ -110,7 +112,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Common;
+  SysUtils, Math, DAV_Common, DAV_VSTCustomModule;
 
 resourcestring
   RStrUndefined = 'undefined';
@@ -392,6 +394,41 @@ begin
   end;
 end;
 
+function TVSTModuleWithPrograms.HostCallVendorSpecific(Index, Value: Integer;
+  ptr: Pointer; opt: Single): Integer;
+var
+  ParamStr  : string;
+  ParamUnit : string;
+begin
+ result := inherited HostCallVendorSpecific(Index, Value, ptr, opt);
+ if (vcdCockosExtension in CanDos) then
+  begin
+   if (Index = Integer(effGetParamDisplay)) and
+      assigned(ptr) and (Value >= 0) and (Value < numParams) then
+    begin
+     ParamStr := FloatToStrF(Opt, ffGeneral, 5, 5);
+     with ParameterProperties[Value] do
+      begin
+       if assigned(OnCustomParameterDisplay)
+        then OnCustomParameterDisplay(Self, Value, ParamStr);
+       ParamUnit := Units;
+       if assigned(OnCustomParameterLabel)
+        then OnCustomParameterDisplay(Self, Value, ParamUnit);
+       ParamStr := ParamStr + ParamUnit;
+      end;
+     ptr := PChar(ParamStr);
+     result := $BEEF;
+    end else
+   if (Index = $DEADBEF0) and assigned(Ptr) and
+      (Value >= 0) and (Value < numParams) then
+    begin
+     PDAV2SingleArray(Ptr)^[0] := 0;
+     PDAV2SingleArray(Ptr)^[1] := 1;
+     result := $BEEF;
+    end;
+  end;
+end;
+
 function TVSTModuleWithPrograms.HostCallGetNumProgramCategories(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
   Result := fNumCategories;
@@ -521,7 +558,7 @@ end;
 
 function TVSTModuleWithPrograms.GetCurrentProgramName: string;
 begin
- if (FCurProgram<numPrograms) and (numPrograms > 0) and (FCurProgram >= 0)
+ if (FCurProgram < numPrograms) and (numPrograms > 0) and (FCurProgram >= 0)
   then Result := Programs[FCurProgram].DisplayName
   else Result := '';
 end;

@@ -5,7 +5,7 @@ interface
 {$I ..\ASIOVST.INC}
 
 uses
-  Classes, SysUtils, Windows, Forms, DAV_VSTEffect, DAV_Common,
+  Classes, SysUtils, Windows, Forms, DAV_Common, DAV_VSTEffect,
   DAV_VSTBasicModule;
 
 type
@@ -17,7 +17,7 @@ type
 
   TCustomVstParameterProperty = class(TCollectionItem)
   private
-    FSmoothStates     : T2SingleArray;
+    FSmoothStates     : TDAV2SingleArray;
     FMin, FMax        : Single;
     FCurve            : TCurveType;
     FCurveFactor      : Single;
@@ -61,7 +61,7 @@ type
     destructor Destroy; override;
     function Smooth(const Value: Single): Single;
   published
-    property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated default true;
+    property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated default True;
     property CC: Integer read FCC write FCC default -1;
     property Curve: TCurveType read FCurve write SetCurve;
     property CurveFactor: Single read FCurveFactor write FCurveFactor;
@@ -69,9 +69,9 @@ type
     property Flags: TVstParameterPropertiesFlags read FFlags write FFlags default [];
     property LargeStepFloat: Single read FLargeStepFloat write FLargeStepFloat;
     property LargeStepInteger: Integer read FLargeStepInteger write FLargeStepInteger default 10;
-    property Max: Single read FMax write SetMax stored False nodefault;
+    property Max: Single read FMax write SetMax;
     property MaxInteger: Integer read FMaxInteger write FMaxInteger default 100;
-    property Min: Single read FMin write SetMin stored False nodefault;
+    property Min: Single read FMin write SetMin;
     property MinInteger: Integer read FMinInteger write FMinInteger default 0;
     property ReportVST2Properties: Boolean read FV2Properties write FV2Properties default false;
     property ShortLabel: string read GetShortLabel write SetShortLabel;
@@ -137,7 +137,7 @@ begin
   assert(Collection is TCustomVstParameterProperties);
   FVSTModule := TCustomVstParameterProperties(Collection).VSTModule;
 
-  if csDesigning in FVSTModule.ComponentState then
+//  if csDesigning in FVSTModule.ComponentState then
    begin
     FMin            := 0;
     FStepFloat      := 1;

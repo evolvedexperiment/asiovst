@@ -31,8 +31,8 @@ implementation
 uses
   Math, ChebyshevGUI;
 
-procedure TChebyshevLPModule.ParamRippleChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChebyshevLPModule.ParamRippleChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
   ch : Integer;
 begin
@@ -45,13 +45,14 @@ begin
    end;
 end;
 
-procedure TChebyshevLPModule.ParamOrderChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChebyshevLPModule.ParamOrderChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1 do
-  if assigned(fFilter[ch]) then fFilter[ch].Order := max(2, 2 * round(Value) div 2);
+  if assigned(fFilter[ch])
+   then fFilter[ch].Order := max(2, 2 * round(Value) div 2);
  if EditorForm is TFmChebyshev then
   with TFmChebyshev(EditorForm) do
    begin
@@ -59,13 +60,14 @@ begin
    end;
 end;
 
-procedure TChebyshevLPModule.ParamFrequencyChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure TChebyshevLPModule.ParamFrequencyChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1 do
-  if assigned(fFilter[ch]) then fFilter[ch].Frequency := Value;
+  if assigned(fFilter[ch])
+   then fFilter[ch].Frequency := Value;
  if EditorForm is TFmChebyshev then
   with TFmChebyshev(EditorForm) do
    begin
@@ -99,7 +101,8 @@ begin
   end;
 end;
 
-procedure TChebyshevLPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TChebyshevLPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
 begin
  GUI := TFmChebyshev.Create(Self);
 end;
@@ -137,7 +140,8 @@ begin
   end;
 end;
 
-procedure TChebyshevLPModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+procedure TChebyshevLPModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
 var
   ch : Integer;
 begin

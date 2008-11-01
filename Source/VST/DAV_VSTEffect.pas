@@ -278,7 +278,8 @@ type
                vcd2in1out,            vcd2in2out,               vcd2in4out,
                vcd4in2out,            vcd4in4out,               vcd4in8out,
                vcd8in4out,            vcd8in8out,               vcdMidiProgramNames,
-               vcdLiveWithoutToolbar, vcdConformsToWindowRules, vcdBypass);
+               vcdLiveWithoutToolbar, vcdConformsToWindowRules, vcdBypass,
+               vcdCockosExtension);
 
   TVstCanDos = set of TVstCanDo;
 

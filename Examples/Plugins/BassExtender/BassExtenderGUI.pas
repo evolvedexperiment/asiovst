@@ -268,7 +268,7 @@ begin
    if DialAttack.Position <> Attack
     then DialAttack.Position := Attack;
    if Attack < 1000
-    then LbAttackValue.Caption := FloatToStrF(Attack, ffGeneral, 3, 3) + ' µs'
+    then LbAttackValue.Caption := FloatToStrF(Attack, ffGeneral, 3, 3) + ' Âµs'
     else LbAttackValue.Caption := FloatToStrF(1E-3 * Attack, ffGeneral, 3, 3) + ' ms';
   end;
 end;

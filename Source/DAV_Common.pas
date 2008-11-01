@@ -47,15 +47,15 @@ type
   TDAVDoubleDynMatrix = TDAVArrayOfDoubleDynArray;
   PDAVDoubleDynMatrix = ^TDAVDoubleDynMatrix;
 
-  T4SingleArray = array[0..3] of Single;
-  P4SingleArray = ^T4SingleArray;
-  T4DoubleArray = array[0..3] of Double;
-  P4DoubleArray = ^T4DoubleArray;
+  TDAV4SingleArray = array[0..3] of Single;
+  PDAV4SingleArray = ^TDAV4SingleArray;
+  TDAV4DoubleArray = array[0..3] of Double;
+  PDAV4DoubleArray = ^TDAV4DoubleArray;
 
-  T2SingleArray = array [0..1] of Single;
-  P2SingleArray = ^T2SingleArray;
-  T2DoubleArray = array [0..1] of Double;
-  P2DoubleArray = ^T2SingleArray;
+  TDAV2SingleArray = array [0..1] of Single;
+  PDAV2SingleArray = ^TDAV2SingleArray;
+  TDAV2DoubleArray = array [0..1] of Double;
+  PDAV2DoubleArray = ^TDAV2SingleArray;
 
   TDAVMinMaxSingle = record
     min : Single;
@@ -113,7 +113,7 @@ type
   function dB_to_Amp(g: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function Amp_to_dB(v: Single): Single; overload;
   {$IFNDEF FPC}
-  procedure Amp_to_dB(var v: T4SingleArray); overload;
+  procedure Amp_to_dB(var v: TDAV4SingleArray); overload;
   {$ENDIF}
   function Smallest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function Largest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -126,7 +126,7 @@ type
   function f_Frac(Sample: Double):Double; overload;
   procedure f_Abs(var f: Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
   procedure f_Abs(var f: Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
-  procedure f_Abs(var f: T4SingleArray); overload;
+  procedure f_Abs(var f: TDAV4SingleArray); overload;
   function f_mod(const Arg1, Arg2: Single): Single;
 
   {$IFNDEF FPC}
@@ -451,7 +451,7 @@ begin
 end;
 
 {$IFNDEF FPC}
-procedure Amp_to_dB(var v: T4SingleArray);
+procedure Amp_to_dB(var v: TDAV4SingleArray);
 {$IFDEF PUREPASCAL}
 begin
  v[0] := Amp_to_dB(v[0]);
@@ -659,7 +659,7 @@ begin
  Result := (((Integer((@f)^) and $7F800000) shr 23) - $7F);
 end;
 
-procedure f_Abs(var f: T4SingleArray); overload;
+procedure f_Abs(var f: TDAV4SingleArray); overload;
 {$IFDEF PUREPASCAL}
 var
   i0 : Integer absolute f[0];

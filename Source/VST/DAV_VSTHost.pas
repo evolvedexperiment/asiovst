@@ -41,6 +41,21 @@ type
   TVstOfflineEvent = procedure(Sender: TObject; VstOfflineTaskPointer: PVstOfflineTaskRecord) of object;
   TGUIStyle = (gsDefault, gsOld, gsList);
 
+  // Reaper Extension Callbacks
+  TGetPlayPosition = function: Double;
+  TGetPlayPosition2 = function: Double;
+  TGetCursorPosition = function: Double;
+  TGetPlayState = function: Integer;
+  TSetEditCurPos = procedure(Time: Double; MoveView, SeekPlay: Boolean);
+  TGetSetRepeat =  function(Parm: Integer): Integer;
+  TGetProjectPath =  procedure(Buffer: PChar; BufferSize: Integer);
+  TOnPlayButton = procedure;
+  TOnPauseButton = procedure;
+  TOnStopButton = procedure;
+  TIsInRealTimeAudio = function: Integer;
+  TAudioIsRunning = function: Integer;
+
+
   THostCanDo = (hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo,
                 hcdReceiveVstEvents, hcdReceiveVstMidiEvent,
                 hcdReceiveVstTimeInfo, hcdReportConnectionChanges,
@@ -462,7 +477,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure UpdateVstTimeInfo(samples: word = 1);
+    procedure UpdateVstTimeInfo(Samples: Word = 1);
     procedure ResetVstTimeInformation;
 
     property BlockSize: Integer read getBlockSize write setBlocksize default 2048;
@@ -626,14 +641,36 @@ var
   theHost   : TCustomVstHost;
   PlugNr, i : Integer;
 begin
+ result := 0;
  try
-   // find plugin in host list
    if assigned(Effect)
-    then thePlug := Effect.ReservedForHost
-    else thePlug := nil;
+    then thePlug := Effect.ReservedForHost else
+     begin
+      thePlug := nil;
+
+      // check for REAPER extension
+      if (Integer(Opcode) = $DEADBEEF) and (Integer(Index) = $DEADBEEF) then
+       begin
+        if PChar(Ptr) = 'GetPlayPosition' then else
+        if PChar(Ptr) = 'GetPlayPosition2' then else
+        if PChar(Ptr) = 'GetCursorPosition' then else
+        if PChar(Ptr) = 'GetPlayState' then else
+        if PChar(Ptr) = 'SetEditCurPos' then else
+        if PChar(Ptr) = 'GetSetRepeat' then else
+        if PChar(Ptr) = 'GetProjectPath' then else
+        if PChar(Ptr) = 'OnPlayButton' then else
+        if PChar(Ptr) = 'OnPauseButton' then else
+        if PChar(Ptr) = 'OnStopButton' then else
+        if PChar(Ptr) = 'IsInRealTimeAudio' then else
+        if PChar(Ptr) = 'Audio_IsRunning' then else
+        exit;
+       end;
+     end;
    if assigned(effect)
     then theHost := Effect.Resvd2
     else theHost := nil;
+
+   // find plugin in host list
    for i := 0 to HostList.Count - 1 do
     with TCustomVstHost(HostList[i]) do
      begin
@@ -645,11 +682,10 @@ begin
          theHost := TCustomVstHost(HostList[i]);
          Break;
         end;
-      if assigned(thePlug) then break;   
+      if assigned(thePlug) then break;
      end;
    DontRaiseExceptionsAndSetFPUcodeword;
 
-   result := 0;
    case TAudiomasterOpcode(opcode) of
     audioMasterAutomate                    : begin
                                               if Assigned(thePlug) then
@@ -2864,7 +2900,7 @@ begin
     FXPreset := GetPreset(GetProgram);
     try
      Stream.WriteBuffer(FXPreset, SizeOf(FXPreset) - SizeOf(Single));
-     Stream.WriteBuffer(FXPreset.params^, SizeOf(Single) * numParams);
+     Stream.WriteBuffer(FXPreset.Params^, SizeOf(Single) * numParams);
     finally
      Dispose(FXPreset.params);
     end;
@@ -3093,7 +3129,7 @@ begin
       FXPreset := GetPreset(PrgNo);
       try
        Stream.WriteBuffer(FXPreset, SizeOf(FXPreset) - SizeOf(Single));
-       Stream.WriteBuffer(FXPreset.params^, SizeOf(Single) * numParams);
+       Stream.WriteBuffer(FXPreset.Params^, SizeOf(Single) * numParams);
       finally
        Dispose(FXPreset.params);
       end;
@@ -3107,8 +3143,8 @@ begin
  if FVstEffect <> nil then
   with FVstEffect^ do
    if effFlagsCanReplacing in EffectFlags
-    then processreplacing(FVstEffect, Inputs, Outputs, SampleFrames)
-    else process(FVstEffect, Inputs, Outputs, SampleFrames);
+    then ProcessReplacing(FVstEffect, Inputs, Outputs, SampleFrames)
+    else Process(FVstEffect, Inputs, Outputs, SampleFrames);
 end;
 
 procedure TCustomVstPlugIn.ProcessAudioDataCollection(Inputs,
