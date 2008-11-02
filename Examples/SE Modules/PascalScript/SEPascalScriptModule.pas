@@ -9,17 +9,19 @@ uses
 type
   // define some constants to make referencing in/outs clearer
   TSEPascalScriptPins = (pinFilename, pinInput, pinOutput);
-  TSEProcessSample = procedure (Channel : Integer; var Data : Double) of object;
+  TSEProcessSample = procedure (Channel : Integer; var Data : Single) of object;
+  TSEProcessBlock = procedure (Channel : Integer) of object;
 
   TSEPascalScriptModule = class(TSEModuleBase)
   private
-    fByteCode        : string;
+    FByteCode        : string;
     FFileName        : PChar;
     FInputBuffer     : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer    : PDAVSingleFixedArray;
-    fPSCompiler      : TPSPascalCompiler;
-    fPSExecuter      : TPSExec;
-    fSEProcessSample : TSEProcessSample;
+    FPSCompiler      : TPSPascalCompiler;
+    FPSExecuter      : TPSExec;
+    FSEProcessSample : TSEProcessSample;
+    FSEProcessBlock  : TSEProcessBlock;
     procedure SetByteCode(const Value: string);
     procedure ByteCodeLoaded;
   protected
@@ -33,7 +35,7 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer);
 
-    property ByteCode : string read fByteCode write SetByteCode;
+    property ByteCode : string read FByteCode write SetByteCode;
   end;
 
 implementation
@@ -45,12 +47,22 @@ function ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedu
 begin
  if Proc.Name = 'SEPROCESSSAMPLE' then
   begin
-   if not ExportCheck(Sender, Proc, [btReturnAddress, btS32, btDouble], [pmIn, pmInOut]) then // Check if the proc has the correct params.
+   if not ExportCheck(Sender, Proc, [btReturnAddress, btS32, btSingle], [pmIn, pmInOut]) then // Check if the proc has the correct params.
     begin
      Sender.MakeError('', ecTypeMismatch, '');
      Result := False;
      Exit;
     end;
+   Result := True;
+  end else
+ if Proc.Name = 'SEPROCESSBLOCK' then
+  begin
+   if not ExportCheck(Sender, Proc, [btReturnAddress, btS32], [pmIn]) then // Check if the proc has the correct params.
+    begin
+     Sender.MakeError('', ecTypeMismatch, '');
+     Result := False;
+     Exit;
+    end;                 
    Result := True;
   end
  else Result := True;
@@ -59,9 +71,9 @@ end;
 constructor TSEPascalScriptModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- fPSExecuter := TPSExec.Create;
- fPSCompiler := TPSPascalCompiler.Create; // create an instance of the compiler.
- with fPSCompiler do
+ FPSExecuter := TPSExec.Create;
+ FPSCompiler := TPSPascalCompiler.Create; // create an instance of the compiler.
+ with FPSCompiler do
   begin
    OnExportCheck := ScriptOnExportCheck; // Assign the onExportCheck event.
    AllowNoBegin := True;
@@ -72,8 +84,8 @@ end;
 destructor TSEPascalScriptModule.Destroy;
 begin
  // This is where you free any memory/resources your module has created
- FreeAndNil(fPSExecuter);
- FreeAndNil(fPSCompiler);
+ FreeAndNil(FPSExecuter);
+ FreeAndNil(FPSCompiler);
  inherited;
 end;
 
@@ -87,9 +99,9 @@ end;
 
 procedure TSEPascalScriptModule.SetByteCode(const Value: string);
 begin
- if fByteCode <> Value then
+ if FByteCode <> Value then
   begin
-   fByteCode := Value;
+   FByteCode := Value;
    ByteCodeLoaded;
   end;
 end;
@@ -97,10 +109,14 @@ end;
 procedure TSEPascalScriptModule.ByteCodeLoaded;
 begin
  try
-  if fPSExecuter.LoadData(fByteCode)
-   then fSEProcessSample := TSEProcessSample(fPSExecuter.GetProcAsMethodN('SEProcessSample'));
+  if FPSExecuter.LoadData(FByteCode) then
+   begin
+    FSEProcessSample := TSEProcessSample(FPSExecuter.GetProcAsMethodN('SEProcessSample'));
+    FSEProcessBlock  := TSEProcessBlock(FPSExecuter.GetProcAsMethodN('SEProcessBlock'));
+   end;
  except
-  fSEProcessSample := nil;
+  FSEProcessSample := nil;
+  FSEProcessBlock  := nil;
  end;
 end;
 
@@ -110,16 +126,17 @@ var
   Input  : PDAVSingleFixedArray;
   Output : PDAVSingleFixedArray;
   Sample : Integer;
-  d      : Double;
+  d      : Single;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
- if @fSEProcessSample <> nil then
+ if assigned(FSEProcessBlock) then FSEProcessBlock(0);
+ if assigned(FSEProcessSample) then
   for Sample := 0 to SampleFrames - 1 do
    begin
     d := Input^[Sample] + cDenorm64;
-    fSEProcessSample(0, d);
+    FSEProcessSample(0, d);
     Output^[Sample] := d;
    end;
 end;
@@ -185,25 +202,37 @@ end;
 procedure TSEPascalScriptModule.PlugStateChange(const CurrentPin: TSEPin);
 var
   StrLst : TStringList;
+  FN     : TFileName;
 begin
  case TSEPascalScriptPins(CurrentPin.PinID) of
-  pinFilename : if FileExists(FFileName) then
-                 begin
-                  StrLst := TStringList.Create;
-                  try
-                   StrLst.LoadFromFile(FFileName);
-                   if not fPSCompiler.Compile(StrLst.Text)
-                    then raise Exception.Create('could not compile script')
-                    else
-                     begin
-                      fPSCompiler.GetOutput(FByteCode);
-                      ByteCodeLoaded;
-                     end;
-                  finally
-                   FreeAndNil(StrLst);
-                  end;
-                 end;
+  pinFilename :
+    begin
+     FN := ResolveFileName(0);
+
+     if FileExists(FN) then
+      begin
+       StrLst := TStringList.Create;
+       try
+        StrLst.LoadFromFile(FN);
+        if not FPSCompiler.Compile(StrLst.Text)
+         then raise Exception.Create('could not compile script')
+         else
+          begin
+           FPSCompiler.GetOutput(FByteCode);
+           ByteCodeLoaded;
+          end;
+       finally
+        FreeAndNil(StrLst);
+       end;
+      end;
+    end;
  end;
+
+(*
+ if (Pin[1].Status <> stRun) or (Pin[2].Status <> stRun)
+  then SEAudioMasterSleepMode
+*)
+
  inherited;
 end;
 

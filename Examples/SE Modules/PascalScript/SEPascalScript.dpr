@@ -26,7 +26,7 @@ begin
  result := nil;
  case Index of // !!TODO!! list your in / out plugs
   0: begin
-      if (ProcessType = 1) then// Audio Processing Object
+      if (ProcessType = 1) then // Audio Processing Object
        begin
         SEModuleBase := TSEPascalScriptModule.Create(SEAudioMaster, Reserved);
         if assigned(SEModuleBase)

@@ -64,6 +64,7 @@ type
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   end;
 
   TSEAutomatebleChebyshevFilterLPModule = class(TSEAutomatebleChebyshevFilterModule)
@@ -157,9 +158,9 @@ begin
                Direction       := drOut;
                Datatype        := dtFSample;
               end;
-  pinFrequency: with Properties^ do Name := 'Frequency';
+  pinFrequency: with Properties^ do Name := 'Frequency [kHz]';
   pinOrder: with Properties^ do Name := 'Order';
-  pinRipple: with Properties^ do Name := 'Ripple';
+  pinRipple: with Properties^ do Name := 'Ripple [dB]';
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -169,7 +170,7 @@ end;
 constructor TSEStaticChebyshevFilterModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFrequency := 1000;
+ FFrequency := 1;
  FOrder := 4;
  FRipple := 1;
 end;
@@ -184,7 +185,7 @@ begin
                   VariableAddress := @FFrequency;
                   Direction       := drParameter;
                   DataType        := dtSingle;
-                  DefaultValue    := '1000';
+                  DefaultValue    := '1';
                  end;
   pinOrder: with Properties^ do
              begin
@@ -211,9 +212,9 @@ procedure TSEStaticChebyshevFilterModule.PlugStateChange(const CurrentPin: TSEPi
 begin
  // has user altered a filter parameter?
  case TSEChebyshevFilterPins(CurrentPin.PinID) of
-  pinFrequency : FFilter.Frequency := FFrequency;
-      pinOrder : FFilter.Order     := FOrder;
-     pinRipple : FFilter.Ripple    := FRipple;
+  pinFrequency : FFilter.Frequency := 10000 * FFrequency;
+      pinOrder : FFilter.Order     := 2 * (FOrder div 2);
+     pinRipple : FFilter.Ripple    := 10 * FRipple;
  end;
  inherited;
 end;
@@ -242,7 +243,7 @@ constructor TSEStaticChebyshevFilterLPModule.Create(SEAudioMaster: TSE2audioMast
 begin
  inherited;
  FFilter := TChebyshev1LP.Create;
- FFilter.SetFilterValues(FFrequency, 0, 0.1);
+ FFilter.SetFilterValues(10000 * FFrequency, 0, 0.1);
  FFilter.Order := FOrder;
 end;
 
@@ -257,7 +258,7 @@ constructor TSEStaticChebyshevFilterHPModule.Create(SEAudioMaster: TSE2audioMast
 begin
  inherited;
  FFilter := TChebyshev1HP.Create;
- FFilter.SetFilterValues(FFrequency, 0, 0.1);
+ FFilter.SetFilterValues(10000 * FFrequency, 0, 0.1);
  FFilter.Order := FOrder;
 end;
 
@@ -285,7 +286,7 @@ begin
                   VariableAddress := @FFreqBuffer;
                   Direction       := drIn;
                   DataType        := dtFSample;
-                  DefaultValue    := '1000';
+                  DefaultValue    := '1';
                  end;
   pinOrder: with Properties^ do
              begin
@@ -309,8 +310,14 @@ procedure TSEAutomatebleChebyshevFilterModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
  // has user altered a filter parameter?
- if TSEChebyshevFilterPins(CurrentPin.PinID) = pinOrder
-  then FFilter.Order     := FOrder;
+ case TSEChebyshevFilterPins(CurrentPin.PinID) of
+  pinOrder: FFilter.Order := FOrder;
+  pinFrequency,
+  pinRipple:
+    if (Pin[2].Status <> stRun) and (Pin[4].Status <> stRun)
+     then OnProcess := SubProcessStatic
+     else OnProcess := SubProcess;
+ end;
  inherited;
 end;
 
@@ -331,10 +338,24 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FFilter.Frequency := Freq[Sample];
-   FFilter.Ripple    := Rippl[Sample];
+   FFilter.Frequency := 10000 * Freq[Sample];
+   FFilter.Ripple    := 10 * Rippl[Sample];
    Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
+end;
+
+procedure TSEAutomatebleChebyshevFilterModule.SubProcessStatic(
+  const BufferOffset, SampleFrames: Integer);
+var
+  Input  : PDAVSingleFixedArray;
+  Output : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ for Sample := 0 to SampleFrames - 1
+  do Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
 end;
 
 { TSEAutomatebleChebyshevFilterLPModule }
@@ -344,7 +365,7 @@ constructor TSEAutomatebleChebyshevFilterLPModule.Create(
 begin
  inherited;
  FFilter := TChebyshev1LP.Create;
- FFilter.SetFilterValues(1000, 0, 0.1);
+ FFilter.SetFilterValues(10000, 0, 0.1);
  FFilter.Order := FOrder;
 end;
 
@@ -360,7 +381,7 @@ constructor TSEAutomatebleChebyshevFilterHPModule.Create(
 begin
  inherited;
  FFilter := TChebyshev1HP.Create;
- FFilter.SetFilterValues(1000, 0, 0.1);
+ FFilter.SetFilterValues(10000, 0, 0.1);
  FFilter.Order := FOrder;
 end;
 

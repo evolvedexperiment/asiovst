@@ -7,7 +7,7 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEAveragePins = (pinInput, pinOutput);
+  TSEAveragePins = (pinOutput, pinVarInput);
 
   TSEAverageModule = class(TSEModuleBase)
   private
@@ -59,7 +59,7 @@ begin
  // to work out how many 'dynamic' plugs the module has..
  // Ask host how many input plugs this module actually has,
  // then subtract the number of 'regular' plugs
- FDynamicPlugsCount := CallHost(SEAudioMasterGetTotalPinCount) - Integer(pinInput);
+ FDynamicPlugsCount := CallHost(SEAudioMasterGetTotalPinCount) - Integer(pinOutput);
 
  if FDynamicPlugsCount > 0 then
   begin
@@ -69,7 +69,7 @@ begin
    // ask the host for a pointer to each input buffer
    // store them in the array
    for i := 0 to FDynamicPlugsCount - 1
-    do FDynamicPlugs[i] := Pin[i + Integer(pinInput)].VariableAddress; //(float*)CallHost(SEAudioMasterGetPinVarAddress, i + PN_INPUT1);
+    do FDynamicPlugs[i] := Pin[i + Integer(pinOutput)].VariableAddress; //(float*)CallHost(SEAudioMasterGetPinVarAddress, i + PN_INPUT1);
   end;
 end;
 
@@ -135,14 +135,14 @@ function TSEAverageModule.GetPinProperties(const Index: Integer; Properties: PSE
 begin
  result := True;
  case TSEAveragePins(index) of                   // !!TODO!! list your in / out plugs
-   pinInput: with Properties^ do
+   pinOutput: with Properties^ do
               begin
                Name            := 'Output';
                VariableAddress := @FOutput;
                Direction       := drOut;
                Datatype        := dtFSample;
               end;
-  pinOutput: with Properties^ do // this plug automatically duplicates itself
+  pinVarInput: with Properties^ do // this plug automatically duplicates itself
               begin              // it must be the last plug in the list
                name            := 'Input';
                direction       := drIn;
