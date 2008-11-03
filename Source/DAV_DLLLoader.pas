@@ -157,14 +157,14 @@ type
 
   TDLLLoader = class
   private
-    ImageBase            : Pointer;
-    ImageBaseDelta       : Integer;
-    DLLProc              : TDLLEntryProc;
-    ExternalLibraryArray : TExternalLibrarys;
-    ImportArray          : TImports;
-    ExportArray          : TExports;
-    Sections             : TSections;
-    ExportTree           : TExportTree;
+    FImageBase            : Pointer;
+    FImageBaseDelta       : Integer;
+    FDLLProc              : TDLLEntryProc;
+    FExternalLibraryArray : TExternalLibrarys;
+    FImportArray          : TImports;
+    FExportArray          : TExports;
+    FSections             : TSections;
+    FExportTree           : TExportTree;
     function FindExternalLibrary(LibraryName: string): Integer;
     function LoadExternalLibrary(LibraryName: string): Integer;
     function GetExternalLibraryHandle(LibraryName: string): HInst;
@@ -424,19 +424,21 @@ end;
 constructor TDLLLoader.Create;
 begin
   inherited Create;
-  ImageBase            := nil;
-  DLLProc              := nil;
-  ExternalLibraryArray := nil;
-  ImportArray          := nil;
-  ExportArray          := nil;
-  Sections             := nil;
-  ExportTree           := nil;
+  FImageBase            := nil;
+  FDLLProc              := nil;
+  FExternalLibraryArray := nil;
+  FImportArray          := nil;
+  FExportArray          := nil;
+  FSections             := nil;
+  FExportTree           := nil;
 end;
 
 destructor TDLLLoader.Destroy;
 begin
-  if @DLLProc <> nil then Unload;
-  if assigned(ExportTree) then ExportTree.Destroy;
+  if @FDLLProc <> nil then Unload;
+  if assigned(FExportTree) then FExportTree.Free;
+  FDLLProc := nil;
+  FExportTree := nil;
   inherited Destroy;
 end;
 
@@ -445,8 +447,8 @@ var
   I: Integer;
 begin
   Result := -1;
-  for I := 0 to Length(ExternalLibraryArray) - 1 do
-    if ExternalLibraryArray[I].LibraryName = LibraryName then
+  for I := 0 to Length(FExternalLibraryArray) - 1 do
+    if FExternalLibraryArray[I].LibraryName = LibraryName then
      begin
       Result := I;
       exit;
@@ -458,10 +460,10 @@ begin
   Result := FindExternalLibrary(LibraryName);
   if Result < 0 then
    begin
-    Result := Length(ExternalLibraryArray);
-    SetLength(ExternalLibraryArray, Length(ExternalLibraryArray) + 1);
-    ExternalLibraryArray[Result].LibraryName := LibraryName;
-    ExternalLibraryArray[Result].LibraryHandle :=
+    Result := Length(FExternalLibraryArray);
+    SetLength(FExternalLibraryArray, Length(FExternalLibraryArray) + 1);
+    FExternalLibraryArray[Result].LibraryName := LibraryName;
+    FExternalLibraryArray[Result].LibraryHandle :=
       LoadLibrary(PChar(LibraryName));
    end;
 end;
@@ -471,10 +473,10 @@ var
   I: Integer;
 begin
   Result := 0;
-  for I := 0 to Length(ExternalLibraryArray) - 1 do
-    if ExternalLibraryArray[I].LibraryName = LibraryName then
+  for I := 0 to Length(FExternalLibraryArray) - 1 do
+    if FExternalLibraryArray[I].LibraryName = LibraryName then
      begin
-      Result := ExternalLibraryArray[I].LibraryHandle;
+      Result := FExternalLibraryArray[I].LibraryHandle;
       exit;
      end;
 end;
@@ -490,12 +492,12 @@ var
     I: Integer;
   begin
     Result := nil;
-    for I := 0 to Length(Sections) - 1 do
-      if (RVA < (Sections[I].RVA + Sections[I].Size)) and
-        (RVA >= Sections[I].RVA) then
+    for I := 0 to Length(FSections) - 1 do
+      if (RVA < (FSections[I].RVA + FSections[I].Size)) and
+        (RVA >= FSections[I].RVA) then
        begin
-        Result := Pointer(LongWord((RVA - LongWord(Sections[I].RVA)) +
-          LongWord(Sections[I].Base)));
+        Result := Pointer(LongWord((RVA - LongWord(FSections[I].RVA)) +
+          LongWord(FSections[I].Base)));
         exit;
        end;
   end;
@@ -527,9 +529,9 @@ var
     with ImageNTHeaders do
       if FileHeader.NumberOfSections > 0 then
        begin
-        ImageBase := VirtualAlloc(nil, OptionalHeader.SizeOfImage, MEM_RESERVE, PAGE_NOACCESS);
-        ImageBaseDelta := LongWord(ImageBase) - OptionalHeader.ImageBase;
-        SectionBase := VirtualAlloc(ImageBase, OptionalHeader.SizeOfHeaders, MEM_COMMIT, PAGE_READWRITE);
+        FImageBase := VirtualAlloc(nil, OptionalHeader.SizeOfImage, MEM_RESERVE, PAGE_NOACCESS);
+        FImageBaseDelta := LongWord(FImageBase) - OptionalHeader.ImageBase;
+        SectionBase := VirtualAlloc(FImageBase, OptionalHeader.SizeOfHeaders, MEM_COMMIT, PAGE_READWRITE);
         OldPosition := Stream.Position;
         Stream.Seek(0, soFrombeginning);
         Stream.Read(SectionBase^, OptionalHeader.SizeOfHeaders);
@@ -551,22 +553,22 @@ var
       GetMem(SectionHeaders, ImageNTHeaders.FileHeader.NumberOfSections * SizeOf(TImageSectionHeader));
       if Stream.Read(SectionHeaders^, (ImageNTHeaders.FileHeader.NumberOfSections * SizeOf(TImageSectionHeader))) <> (ImageNTHeaders.FileHeader.NumberOfSections * SizeOf(TImageSectionHeader))
        then exit;
-      SetLength(Sections, ImageNTHeaders.FileHeader.NumberOfSections);
+      SetLength(FSections, ImageNTHeaders.FileHeader.NumberOfSections);
       for I := 0 to ImageNTHeaders.FileHeader.NumberOfSections - 1 do
        begin
         Section := SectionHeaders^[I];
-        Sections[I].RVA := Section.VirtualAddress;
-        Sections[I].Size := Section.SizeOfRawData;
-        if Sections[I].Size < Section.Misc.VirtualSize
-         then Sections[I].Size := Section.Misc.VirtualSize;
-        Sections[I].Characteristics := Section.Characteristics;
-        Sections[I].Base := VirtualAlloc(Pointer(LongWord(Sections[I].RVA +
-          LongWord(ImageBase))), Sections[I].Size, MEM_COMMIT, PAGE_READWRITE);
-        FillChar(Sections[I].Base^, Sections[I].Size, #0);
+        FSections[I].RVA := Section.VirtualAddress;
+        FSections[I].Size := Section.SizeOfRawData;
+        if FSections[I].Size < Section.Misc.VirtualSize
+         then FSections[I].Size := Section.Misc.VirtualSize;
+        FSections[I].Characteristics := Section.Characteristics;
+        FSections[I].Base := VirtualAlloc(Pointer(LongWord(FSections[I].RVA +
+          LongWord(FImageBase))), FSections[I].Size, MEM_COMMIT, PAGE_READWRITE);
+        FillChar(FSections[I].Base^, FSections[I].Size, #0);
         if Section.PointerToRawData <> 0 then
          begin
           Stream.Seek(Section.PointerToRawData, soFrombeginning);
-          if Stream.Read(Sections[I].Base^, Section.SizeOfRawData) <> LONGINT(Section.SizeOfRawData) then exit;
+          if Stream.Read(FSections[I].Base^, Section.SizeOfRawData) <> LONGINT(Section.SizeOfRawData) then exit;
          end;
        end;
       FreeMem(SectionHeaders);
@@ -617,15 +619,15 @@ var
             IMAGE_REL_BASED_ABSOLUTE : ;
             IMAGE_REL_BASED_HIGH : PWord(RelocationPointer)^ :=
                 (LongWord(
-                ((LongWord(PWord(RelocationPointer)^ + LongWord(ImageBase) -
+                ((LongWord(PWord(RelocationPointer)^ + LongWord(FImageBase) -
                 ImageNTHeaders.OptionalHeader.ImageBase)))) shr 16) and $FFFF;
             IMAGE_REL_BASED_LOW : PWord(RelocationPointer)^ :=
                 LongWord(((LongWord(PWord(RelocationPointer)^
-                + LongWord(ImageBase) - ImageNTHeaders.
+                + LongWord(FImageBase) - ImageNTHeaders.
                 OptionalHeader.ImageBase)))) and $FFFF;
             IMAGE_REL_BASED_HIGHLOW : PPointer(RelocationPointer)^ :=
                 Pointer((LongWord(LongWord(PPointer(RelocationPointer)^) +
-                LongWord(ImageBase) -
+                LongWord(FImageBase) -
                 ImageNTHeaders.OptionalHeader.ImageBase)));
             IMAGE_REL_BASED_HIGHADJ : ; // ???
             IMAGE_REL_BASED_MIPS_JMPADDR : ; // Only for MIPS CPUs ;)
@@ -656,13 +658,13 @@ var
         IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
       if assigned(ImportDescriptor) then
        begin
-        SetLength(ImportArray, 0);
+        SetLength(FImportArray, 0);
         while ImportDescriptor^.Name <> 0 do
          begin
           Name := ConvertPointer(ImportDescriptor^.Name);
-          SetLength(ImportArray, Length(ImportArray) + 1);
+          SetLength(FImportArray, Length(FImportArray) + 1);
           LoadExternalLibrary(Name);
-          DLLImport := @ImportArray[Length(ImportArray) - 1];
+          DLLImport := @FImportArray[Length(FImportArray) - 1];
           DLLImport^.LibraryName := Name;
           DLLImport^.LibraryHandle := GetExternalLibraryHandle(Name);
           DLLImport^.Entries := nil;
@@ -716,7 +718,7 @@ var
      begin
       for I := 0 to ImageNTHeaders.FileHeader.NumberOfSections - 1 do
        begin
-        Characteristics := Sections[I].Characteristics;
+        Characteristics := FSections[I].Characteristics;
         Flags := 0;
         if (Characteristics and IMAGE_SCN_MEM_EXECUTE) <> 0 then
          begin
@@ -739,7 +741,7 @@ var
          else Flags := Flags or PAGE_NOACCESS;
         if (Characteristics and IMAGE_SCN_MEM_not_CACHED) <> 0
          then Flags := Flags or PAGE_NOCACHE;
-        VirtualProtect(Sections[I].Base, Sections[I].Size, Flags, OldProtect);
+        VirtualProtect(FSections[I].Base, FSections[I].Size, Flags, OldProtect);
        end;
       Result := True;
      end;
@@ -748,8 +750,8 @@ var
   function InitializeLibrary: Boolean;
   begin
     Result := False;
-    @DLLProc := ConvertPointer(ImageNTHeaders.OptionalHeader.AddressOfEntryPoint);
-    if DLLProc(CARDINAL(ImageBase), DLL_PROCESS_ATTACH, nil)
+    @FDLLProc := ConvertPointer(ImageNTHeaders.OptionalHeader.AddressOfEntryPoint);
+    if FDLLProc(CARDINAL(FImageBase), DLL_PROCESS_ATTACH, nil)
      then Result := True;
   end;
 
@@ -785,7 +787,7 @@ var
     if ImageNTHeaders.OptionalHeader.DataDirectory[
       IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress <> 0 then
      begin
-      ExportTree := TExportTree.Create;
+      FExportTree := TExportTree.Create;
       ExportDirectory := ConvertPointer(
         ImageNTHeaders.OptionalHeader.DataDirectory[
         IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
@@ -794,7 +796,7 @@ var
         ExportDirectorySize :=
           ImageNTHeaders.OptionalHeader.DataDirectory[
           IMAGE_DIRECTORY_ENTRY_EXPORT].Size;
-        SetLength(ExportArray, ExportDirectory^.NumberOfNames);
+        SetLength(FExportArray, ExportDirectory^.NumberOfNames);
         for I := 0 to ExportDirectory^.NumberOfNames - 1 do
          begin
           FunctionNamePointer := ConvertPointer(LongWord(ExportDirectory^.AddressOfNames));
@@ -804,8 +806,8 @@ var
           FunctionIndex := PWordArray(FunctionIndexPointer)^[I];
           FunctionPointer := ConvertPointer(LongWord(ExportDirectory^.AddressOfFunctions));
           FunctionPointer := ConvertPointer(PLongWordArray(FunctionPointer)^[FunctionIndex]);
-          ExportArray[I].Name := FunctionName;
-          ExportArray[I].Index := FunctionIndex;
+          FExportArray[I].Name := FunctionName;
+          FExportArray[I].Index := FunctionIndex;
           if (LongWord(ExportDirectory) < LongWord(FunctionPointer)) and
             (LongWord(FunctionPointer) <
             (LongWord(ExportDirectory) + ExportDirectorySize)) then
@@ -826,10 +828,10 @@ var
             else
              begin
               Forwarderstring := ForwarderCharPointer;
-              ExportArray[I].FunctionPointer := GetProcAddress(ForwarderLibraryHandle, PChar(Forwarderstring));
+              FExportArray[I].FunctionPointer := GetProcAddress(ForwarderLibraryHandle, PChar(Forwarderstring));
              end;
-           end else ExportArray[I].FunctionPointer := FunctionPointer;
-          ExportTree.Add(ExportArray[I].Name, ExportArray[I].FunctionPointer);
+           end else FExportArray[I].FunctionPointer := FunctionPointer;
+          FExportTree.Add(FExportArray[I].Name, FExportArray[I].FunctionPointer);
          end
        end;
      end;
@@ -861,37 +863,37 @@ var
   I, J: Integer;
 begin
   Result := False;
-  if @DLLProc <> nil then
-    DLLProc(LongWord(ImageBase), DLL_PROCESS_DETACH, nil);
-  for I := 0 to Length(Sections) - 1 do
-    if assigned(Sections[I].Base) then
-      VirtualFree(Sections[I].Base, 0, MEM_RELEASE);
+  if @FDLLProc <> nil then
+    FDLLProc(LongWord(FImageBase), DLL_PROCESS_DETACH, nil);
+  for I := 0 to Length(FSections) - 1 do
+    if assigned(FSections[I].Base) then
+      VirtualFree(FSections[I].Base, 0, MEM_RELEASE);
 
-  SetLength(Sections, 0);
-  for I := 0 to Length(ExternalLibraryArray) - 1 do
+  SetLength(FSections, 0);
+  for I := 0 to Length(FExternalLibraryArray) - 1 do
    begin
-    ExternalLibraryArray[I].LibraryName := '';
-    FreeLibrary(ExternalLibraryArray[I].LibraryHandle);
+    FExternalLibraryArray[I].LibraryName := '';
+    FreeLibrary(FExternalLibraryArray[I].LibraryHandle);
    end;
 
-  SetLength(ExternalLibraryArray, 0);
-  for I := 0 to Length(ImportArray) - 1 do
+  SetLength(FExternalLibraryArray, 0);
+  for I := 0 to Length(FImportArray) - 1 do
    begin
-    for J := 0 to Length(ImportArray[I].Entries) - 1 do
-      ImportArray[I].Entries[J].Name := '';
-    SetLength(ImportArray[I].Entries, 0);
+    for J := 0 to Length(FImportArray[I].Entries) - 1 do
+      FImportArray[I].Entries[J].Name := '';
+    SetLength(FImportArray[I].Entries, 0);
    end;
 
-  SetLength(ImportArray, 0);
-  for I := 0 to Length(ExportArray) - 1 do
-    ExportArray[I].Name := '';
+  SetLength(FImportArray, 0);
+  for I := 0 to Length(FExportArray) - 1 do
+    FExportArray[I].Name := '';
 
-  SetLength(ExportArray, 0);
-  VirtualFree(ImageBase, 0, MEM_RELEASE);
-  if assigned(ExportTree) then
+  SetLength(FExportArray, 0);
+  VirtualFree(FImageBase, 0, MEM_RELEASE);
+  if assigned(FExportTree) then
    begin
-    ExportTree.Destroy;
-    ExportTree := nil;
+    FExportTree.Destroy;
+    FExportTree := nil;
    end;
 end;
 
@@ -900,13 +902,13 @@ var
   I: Integer;
 begin
   Result := nil;
-  if assigned(ExportTree) then
-    ExportTree.Find(FunctionName, Result)
+  if assigned(FExportTree) then
+    FExportTree.Find(FunctionName, Result)
   else
-    for I := 0 to Length(ExportArray) - 1 do
-      if ExportArray[I].Name = FunctionName then
+    for I := 0 to Length(FExportArray) - 1 do
+      if FExportArray[I].Name = FunctionName then
        begin
-        Result := ExportArray[I].FunctionPointer;
+        Result := FExportArray[I].FunctionPointer;
         exit;
        end;
 end;
@@ -916,10 +918,10 @@ var
   I: Integer;
 begin
   Result := nil;
-  for i := 0 to Length(ExportArray) - 1 do
-    if ExportArray[i].Index = FunctionIndex then
+  for i := 0 to Length(FExportArray) - 1 do
+    if FExportArray[i].Index = FunctionIndex then
      begin
-      Result := ExportArray[i].FunctionPointer;
+      Result := FExportArray[i].FunctionPointer;
       exit;
      end;
 end;
@@ -929,8 +931,8 @@ var
   I: Integer;
 begin
   Result := TStringList.Create;
-  for I := 0 to Length(ExportArray) - 1 do
-    Result.Add(ExportArray[I].Name);
+  for I := 0 to Length(FExportArray) - 1 do
+    Result.Add(FExportArray[I].Name);
   Result.Sort;
 end;
 

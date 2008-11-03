@@ -31,7 +31,7 @@ type
   TGuiFlags = set of TGuiFlag;
 
   TSEIOFlag =
-    (iofPolyphonicActive,    // midi channel selection etc should should ignore patch changes
+    (iofPolyphonicActive,    // midi channel selection etc should ignore patch changes
      iofIgnorePatchChange,   // auto-rename on new connection
      iofRename,              // plugs which are automaticly duplicated (like a container's 'spare' plug)
      iofAutoDuplicate,
