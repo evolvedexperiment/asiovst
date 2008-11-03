@@ -3,7 +3,7 @@ unit DAV_SEModule;
 interface
 
 uses
-  Windows, Classes, DAV_Common, DAV_SECommon;
+  Windows, Classes, SysUtils, DAV_Common, DAV_SECommon;
 
 type
   TUgFlag = (
@@ -348,6 +348,7 @@ type
     function GetSampleClock: Cardinal;
     function GetPin(Index: Integer): TSEPin;
     function GetPinPropertiesClean(const Index: Integer; Properties: PSEPinProperties): Boolean;
+    function GetTotalPinCount: Integer;
     procedure SetProcess(const Value: TSE2ProcessEvent);
     procedure SetSampleRate(const Value: Single);
     procedure SetBlockSize(const Value: Integer);
@@ -382,6 +383,9 @@ type
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); virtual;
     destructor Destroy; override;
 
+    function ResolveFileName(const Pin: Integer): TFileName; overload;
+    function ResolveFileName(const FileName: TFileName): TFileName; overload;
+
     procedure AddEvent(Event: TSEEvent);
     procedure RunDelayed(SampleClock: Cardinal; Func: TUgFunc);
 
@@ -391,6 +395,7 @@ type
     property Effect: PSE2ModStructBase read GetEffect;
     property Pin[Index: Integer]: TSEPin read GetPin;
     property SampleClock: Cardinal read GetSampleClock;
+    property TotalPinCount: Integer read GetTotalPinCount;
   published
     property SampleRate: Single read FSampleRate;
     property BlockSize: Integer read FBlockSize;
@@ -424,9 +429,6 @@ function PropertyFlagsToString(Flags: TUgFlags): string;
 function PropertyGUIFlagsToString(Flags: TGuiFlags): string;
 
 implementation
-
-uses
-  SysUtils;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -578,7 +580,7 @@ begin
  //  SetSampleClock(CallHost(SEAudioMasterGetSampleClock, 0, 0, 0));
 
  // get actual number of pins used (may be more or less if auto-duplicating plugs used)
- ActualPlugCount := CallHost(SEAudioMasterGetTotalPinCount);
+ ActualPlugCount := TotalPinCount;
 
  if ActualPlugCount > 0 then
   begin
@@ -724,6 +726,11 @@ end;
 function TSEModuleBase.GetSampleClock: Cardinal;
 begin
   result := CallHost(SEAudioMasterGetSampleClock);
+end;
+
+function TSEModuleBase.GetTotalPinCount: Integer;
+begin
+ result := CallHost(SEAudioMasterGetTotalPinCount);
 end;
 
 procedure TSEModuleBase.GuiNotify(AUserMsgID, ASize: Integer; AData: Pointer);
@@ -940,6 +947,21 @@ begin
     prev = e;
     e = e.Next;
   end;*)
+end;
+
+function TSEModuleBase.ResolveFileName(const FileName: TFileName): TFileName;
+begin
+ SetLength(result, 256);
+ CallHost(SEAudioMasterResolveFilename2, Integer(PChar(FileName)),
+   Length(result), PChar(result));
+end;
+
+function TSEModuleBase.ResolveFileName(const Pin: Integer): TFileName;
+var
+  str: array[0..1023] of char;
+begin
+ CallHost(SEAudioMasterResolveFilename, Pin, Length(str), @str[0]);
+ result := StrPas(str);
 end;
 
 procedure TSEModuleBase.Resume; // from either sleep or suspend
