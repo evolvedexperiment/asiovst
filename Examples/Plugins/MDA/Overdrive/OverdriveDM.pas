@@ -54,19 +54,26 @@ procedure TOverdriveDataModule.VSTModuleProcess(const Inputs,
 var
   Sample : Integer;
   State  : Array [0..1] of Double;
+  Inp    : Array [0..1] of Double;
+  Outp   : Array [0..1] of Double;
 begin
+ State[0] := fState[0];
+ State[1] := fState[1];
+
  for Sample := 0 to SampleFrames - 1 do
   begin
-    if (Inputs[0, Sample] > 0)
-     then Outputs[0, Sample] :=  sqrt( Inputs[0, Sample])
-     else Outputs[0, Sample] := -sqrt(-Inputs[0, Sample]); //overdrive
+   Inp[0] := Inputs[0, Sample];
+   if (Inp[0] > 0)
+    then Outp[0] :=  sqrt( Inp[0])
+    else Outp[0] := -sqrt(-Inp[0]); //overdrive
 
-    if (Inputs[1, Sample] > 0)
-     then Outputs[1, Sample] :=  sqrt( Inputs[1, Sample])
-     else Outputs[1, Sample] := -sqrt(-Inputs[1, Sample]); //overdrive
+   Inp[1] := Inputs[1, Sample];
+   if (Inputs[1, Sample] > 0)
+    then Outp[1] :=  sqrt( Inp[1])
+    else Outp[1] := -sqrt(-Inp[1]); //overdrive
 
-   State[0] := State[0] + fFilter * (fDrive * (Outputs[0, Sample] - Inputs[1, Sample]) + Inputs[1, Sample] - State[0]);                //filter
-   State[1] := State[1] + fFilter * (fDrive * (Outputs[1, Sample] - Inputs[1, Sample]) + Inputs[1, Sample] - State[1]);
+   State[0] := State[0] + fFilter * (fDrive * (Outp[0] - Inp[0]) + Inp[0] - State[0]); //filter
+   State[1] := State[1] + fFilter * (fDrive * (Outp[1] - Inp[1]) + Inp[1] - State[1]);
 
    Outputs[0, Sample] := fGain * State[0];
    Outputs[1, Sample] := fGain * State[1];

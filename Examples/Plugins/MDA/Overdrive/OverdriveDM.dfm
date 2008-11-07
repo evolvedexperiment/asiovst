@@ -11,6 +11,7 @@ object OverdriveDataModule: TOverdriveDataModule
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Soft Overdrive'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdaO'
   ShellPlugins = <>
   Programs = <
@@ -20,48 +21,48 @@ object OverdriveDataModule: TOverdriveDataModule
     end>
   ParameterProperties = <
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Drive'
-      Units = '%'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Drive'
+      LargeStepFloat = 10.000000000000000000
+      Max = 100.000000000000000000
+      ShortLabel = 'Drive'
+      SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 1.000000000000000000
-      LargeStepFloat = 10.000000000000000000
-      ShortLabel = 'Drive'
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterDriveChange
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Muffle'
-      Units = '%'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Muffle'
+      LargeStepFloat = 10.000000000000000000
+      Max = 100.000000000000000000
+      ShortLabel = 'Muffle'
+      SmallStepFloat = 0.100000001490116100
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.100000001490116100
-      LargeStepFloat = 10.000000000000000000
-      ShortLabel = 'Muffle'
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterMuffleChange
     end
     item
-      Min = -20.000000000000000000
-      Max = 20.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Output'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
+      DisplayName = 'Output'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 20.000000000000000000
+      MaxInteger = 20
+      Min = -20.000000000000000000
+      MinInteger = -20
+      ShortLabel = 'Output'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      SmallStepFloat = 0.500000000000000000
-      LargeStepFloat = 2.000000000000000000
-      MinInteger = -20
-      MaxInteger = 20
-      LargeStepInteger = 2
-      ShortLabel = 'Output'
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
     end>
