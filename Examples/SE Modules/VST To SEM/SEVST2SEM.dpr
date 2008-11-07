@@ -5,7 +5,6 @@ library SEVST2SEM;
 uses
   Fastmm4,
   FastMove,
-  SysUtils,
   Classes,
   DAV_SECommon,
   DAV_SEModule,

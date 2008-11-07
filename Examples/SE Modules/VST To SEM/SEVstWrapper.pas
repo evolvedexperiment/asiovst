@@ -38,7 +38,8 @@ type
 
   TAutomatableVST2SEModule = class(TCustomVST2SEModule)
   protected
-    FParamPtr   : array of PDAVSingleDynArray;
+    FParamPtr    : array of PDAVSingleFixedArray;
+    FStaticCount : Integer;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
@@ -51,11 +52,10 @@ type
 implementation
 
 uses
-  SysUtils;
+  Math, SysUtils;
 
 var
  FS  : TFormatSettings;
-
 
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
@@ -156,8 +156,6 @@ end;
 // describe the pins (plugs)
 function TCustomVST2SEModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 var
-  i, ndx : Integer;
-  s, p   : Single;
   str    : string;
 begin
  if FVSTHost.Count = 0 then
@@ -261,6 +259,7 @@ begin
  if not result and (Index - FVSTHost[0].numInputs - FVSTHost[0].numOutputs < FVSTHost[0].numParams) then
   with Properties^ do
    begin
+    result := True;
     ndx := Index - FVSTHost[0].numInputs - FVSTHost[0].numOutputs;
 
     // parameter name
@@ -340,28 +339,46 @@ begin
       FParamEnum[ndx] := 0;
       DefaultValue    := '0';
      end;
-    result := True;
    end;
 end;
 
 // An input plug has changed value
 procedure TStaticVST2SEModule.PlugStateChange(const CurrentPin: TSEPin);
 var
-  ndx : Integer;
+  i, ndx   : Integer;
+  InState  : TSEStateType;
+  OutState : TSEStateType;
 begin
  if FVSTHost.Count >= 0 then
   with FVSTHost[0] do
-   if (CurrentPin.PinID >= numInputs + numOutputs) and
-      (CurrentPin.PinID < numInputs + numOutputs + numParams)  then
-    begin
-     ndx := CurrentPin.PinID - numInputs - numOutputs;
-     if FParamEnum[ndx] > 0
-      then Parameter[ndx] := PInteger(@FParamPtr[ndx])^ / FParamEnum[ndx]
-      else Parameter[ndx] := FParamPtr[ndx]
-    end;
+   begin
+    if (CurrentPin.PinID >= numInputs + numOutputs) and
+       (CurrentPin.PinID < numInputs + numOutputs + numParams)  then
+     begin
+      ndx := CurrentPin.PinID - numInputs - numOutputs;
+      if FParamEnum[ndx] > 0
+       then Parameter[ndx] := PInteger(@FParamPtr[ndx])^ / FParamEnum[ndx]
+       else Parameter[ndx] := FParamPtr[ndx]
+     end;
 
- // ToDo detect changes
+    // query the 'state of the input plugs...
+    //   stRun    = Normal Streaming Audio        (e.g. from an oscillator)
+    //   stStatic = Fixed, unchanging input value (e.g. a slider at rest)
+    InState := stRun;
+    for i := 0 to numInputs - 1 do
+     if Pin[i].Status < InState then InState := Pin[i].Status;
 
+    OutState := stRun;
+    for i := numInputs to numInputs + numOutputs - 1 do
+     if Pin[i].Status < OutState then OutState := Pin[i].Status;
+
+    if InState > OutState
+     then OutState := InState;
+
+    // 'transmit' new output status to next module 'downstream'
+    for i := numInputs to numInputs + numOutputs - 1
+     do Pin[i].TransmitStatusChange(SampleClock, OutState);
+   end;
  inherited;
 end;
 
@@ -397,11 +414,8 @@ end;
 function TAutomatableVST2SEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 var
-  i, ndx : Integer;
-  s, p   : Single;
+  ndx    : Integer;
   str    : string;
-  pd, un : array [0..1] of string;
-  IsFlt  : Boolean;
 begin
  if FVSTHost.Count = 0 then
   begin
@@ -420,8 +434,8 @@ begin
     GetMem(Name, Length(str));
     Move(str[1], Name[0], Length(str));
     Direction       := drIn;
-    VariableAddress := @FParamPtr[ndx];
     Datatype        := dtFSample;
+    VariableAddress := @FParamPtr[ndx];
     DefaultValue    := '0';
     result          := True;
    end;
@@ -429,16 +443,52 @@ end;
 
 procedure TAutomatableVST2SEModule.PlugStateChange(const CurrentPin: TSEPin);
 var
-  ndx : Integer;
+  i, ndx   : Integer;
+  s        : Single;
+  InState  : TSEStateType;
+  OutState : TSEStateType;
 begin
+ if not assigned(CurrentPin) then exit;
  if FVSTHost.Count >= 0 then
   with FVSTHost[0] do
-   if (CurrentPin.PinID >= numInputs + numOutputs) and
-      (CurrentPin.PinID < numInputs + numOutputs + numParams)  then
-    begin
-     ndx := CurrentPin.PinID - numInputs - numOutputs;
-     Parameter[ndx] := CurrentPin.Value;
-    end;
+   begin
+    if (CurrentPin.PinID >= numInputs + numOutputs) and
+       (CurrentPin.PinID < numInputs + numOutputs + numParams)  then
+     try
+      ndx := CurrentPin.PinID - numInputs - numOutputs;
+      s   := CurrentPin.Value;
+      if not IsNaN(s)
+       then Parameter[ndx] := s;
+     except
+     end;
+
+    // query the 'state of the input plugs...
+    //   stRun    = Normal Streaming Audio        (e.g. from an oscillator)
+    //   stStatic = Fixed, unchanging input value (e.g. a slider at rest)
+    InState := stRun;
+    for i := 0 to numInputs - 1 do
+     if Pin[i].Status < InState then InState := Pin[i].Status;
+
+    OutState := stRun;
+    for i := numInputs to numInputs + numOutputs - 1 do
+     if Pin[i].Status < OutState then OutState := Pin[i].Status;
+
+    if InState > OutState
+     then OutState := InState;
+
+    // 'transmit' new output status to next module 'downstream'
+    for i := numInputs to numInputs + numOutputs - 1
+     do Pin[i].TransmitStatusChange(SampleClock, OutState);
+
+    // setup 'sleep mode' or not
+    if (OutState < stRun) then
+     begin
+      FStaticCount := BlockSize;
+      OnProcess := SubProcessStatic;
+     end
+    else OnProcess := SubProcess;
+   end;
+
  inherited;
 end;
 
@@ -454,12 +504,11 @@ end;
 
 procedure TAutomatableVST2SEModule.SubProcessStatic(const BufferOffset,
   SampleFrames: Integer);
-var
-  i : Integer;
 begin
- for i := 0 to Length(FVSTInputs)  - 1 do FVSTInputs[i]  := @FInputPtr[i, BufferOffset];
- for i := 0 to Length(FVSTOutputs) - 1 do FVSTOutputs[i] := @FOutputPtr[i, BufferOffset];
- FVSTHost[0].ProcessAudio(@FVSTInputs[0], @FVSTOutputs[0], SampleFrames);
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
 end;
 
 initialization

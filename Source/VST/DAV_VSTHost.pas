@@ -21,7 +21,7 @@ interface
 {$I ..\ASIOVST.INC}
 {-$DEFINE SB}
 
-{.$DEFINE GUI}
+{$DEFINE GUI}
 {$IFNDEF FPC}{$DEFINE MemDLL}{$ENDIF}
 
 uses
@@ -569,7 +569,7 @@ resourcestring
   RStrVSTPluginNotValid          = 'This is not a valid Vst Plugin!';
   RStrNoEntryPoint               = 'DLL entry point could not be detected';
   RStrLoadingFailed              = 'Loading failed!';
-  RStrFileDoesNotExist           = 'File %d does not exists';
+  RStrFileDoesNotExist           = 'File %s does not exists';
   RStrPlugInCouldNotBeLoaded     = 'PlugIn %d could not be loaded';
   RStrPlugInStreamError          = 'PlugIn could not be loaded from stream';
   RStrBankFileDoesNotExist       = 'Bank file does not exist';
@@ -3296,7 +3296,7 @@ initialization
 finalization
   {$IFDEF GUI}
   FreeAndNil(HostWindows);
-  FreeAndNil(HostList);
   {$ENDIF}
+  FreeAndNil(HostList);
 
 end.

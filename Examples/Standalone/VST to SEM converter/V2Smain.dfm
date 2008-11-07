@@ -3,7 +3,7 @@ object FmVST2SEM: TFmVST2SEM
   Top = 81
   BorderStyle = bsSingle
   Caption = 'VST to SEM converter'
-  ClientHeight = 215
+  ClientHeight = 234
   ClientWidth = 321
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,13 +13,14 @@ object FmVST2SEM: TFmVST2SEM
   Font.Style = []
   Menu = MainMenu
   OldCreateOrder = False
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object PC: TPageControl
     Left = 0
     Top = 0
     Width = 321
-    Height = 215
+    Height = 234
     ActivePage = TSVSTPlugin
     Align = alClient
     TabOrder = 0
@@ -30,7 +31,7 @@ object FmVST2SEM: TFmVST2SEM
       ImageIndex = 1
       DesignSize = (
         313
-        187)
+        206)
       object LbVSTName: TLabel
         Left = 3
         Top = 8
@@ -51,7 +52,7 @@ object FmVST2SEM: TFmVST2SEM
         Left = 3
         Top = 32
         Width = 307
-        Height = 152
+        Height = 171
         Anchors = [akLeft, akTop, akRight, akBottom]
         ReadOnly = True
         TabOrder = 1
@@ -65,7 +66,7 @@ object FmVST2SEM: TFmVST2SEM
       ExplicitHeight = 295
       DesignSize = (
         313
-        187)
+        206)
       object LbName: TLabel
         Left = 3
         Top = 8
@@ -133,14 +134,17 @@ object FmVST2SEM: TFmVST2SEM
         Caption = '&Open...'
         OnClick = MIOpenClick
       end
-      object MISave: TMenuItem
-        Caption = 'Save'
-        OnClick = MISaveClick
-      end
       object MISaveAs: TMenuItem
         Caption = 'Save as...'
         Enabled = False
         OnClick = MISaveAsClick
+      end
+      object N2: TMenuItem
+        Caption = '-'
+      end
+      object MIBatchConvert: TMenuItem
+        Caption = 'Batch Convert...'
+        OnClick = MIBatchConvertClick
       end
       object N1: TMenuItem
         Caption = '-'
@@ -169,7 +173,7 @@ object FmVST2SEM: TFmVST2SEM
     VstVersion = 2300
     Left = 248
   end
-  object XPManifest1: TXPManifest
+  object XPManifest: TXPManifest
     Left = 280
   end
 end

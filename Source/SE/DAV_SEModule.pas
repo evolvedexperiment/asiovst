@@ -300,7 +300,7 @@ type
     FAutoDuplicatePlugVar : TAutoduplicatePlugData; // Holds pointer to buffer (auto duplicate plugs only)
     FOnStatusupdate       : TSEPinStatusUpdateEvent;
     function GetIsConnected: Boolean;
-    function GetValue: Double;
+    function GetValue: Single;
   protected
     procedure StatusUpdate(AStatus: TSEStateType);
   public
@@ -312,7 +312,7 @@ type
 
     property IsConnected: Boolean read GetIsConnected;
     property Module: TSEModuleBase read FModule;
-    property Value: Double read GetValue;
+    property Value: Single read GetValue;
     property VariableAddress: Pointer read FVariablePtr;
   published
     property DataType: TSEPlugDataType read FDataType;
@@ -506,18 +506,16 @@ begin
   then FStatus := stStop;
 end;
 
-function TSEPin.GetValue: Double;
+function TSEPin.GetValue: Single;
 var
   BlockPos    : Cardinal;
   SampleClock : Cardinal;
-  Buffer      : PDAVSingleFixedArray;
 begin
  assert(FDataType = dtFSample);
  assert(assigned(FModule));
  BlockPos := FModule.CallHost(SEAudioMasterGetBlockStartClock, FPinIndex, 0, nil);
  SampleClock := FModule.SampleClock;
- Buffer := PDAVSingleFixedArray(FVariablePtr);
- result := Buffer[SampleClock - BlockPos];
+ result := PDAVSingleFixedArray(FVariablePtr^)[(SampleClock - BlockPos)];
 end;
 
 procedure TSEPin.TransmitStatusChange(SampleClock: Cardinal; NewState: TSEStateType);
