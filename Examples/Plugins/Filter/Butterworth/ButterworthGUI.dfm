@@ -21,12 +21,12 @@ object FmButterworth: TFmButterworth
   PixelsPerInch = 96
   TextHeight = 13
   object LbButterworthFilterDemoShaddow: TGuiLabel
-    Left = 26
+    Left = 9
     Top = 11
-    Width = 152
+    Width = 184
     Height = 26
     AntiAlias = gaaLinear4x
-    Caption = 'Butterworth!'
+    Caption = 'Butterworth LP'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 2039615
     Font.Height = -21
@@ -34,12 +34,12 @@ object FmButterworth: TFmButterworth
     Font.Style = [fsBold]
   end
   object LbButterworthFilterDemo: TGuiLabel
-    Left = 23
+    Left = 6
     Top = 8
-    Width = 155
+    Width = 184
     Height = 26
     AntiAlias = gaaLinear4x
-    Caption = 'Butterworth!'
+    Caption = 'Butterworth LP'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 10526927
     Font.Height = -21
@@ -79,7 +79,7 @@ object FmButterworth: TFmButterworth
       LineColor = 10526927
       CircleColor = 1315880
       CurveMapping = -2.099999904632568000
-      DefaultPosition = 100.000000000000000000
+      DefaultPosition = 20.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       NumGlyphs = 65
@@ -115,7 +115,6 @@ object FmButterworth: TFmButterworth
       Color = 1315880
       LineColor = 10526927
       CircleColor = 1315880
-      DefaultPosition = 4.000000000000000000
       Max = 16.000000000000000000
       NumGlyphs = 65
       PointerAngles.Start = 225

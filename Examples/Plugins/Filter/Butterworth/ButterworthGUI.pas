@@ -78,6 +78,9 @@ begin
    Freq := ParameterByName['Frequency'];
    if DialFrequency.Position <> Freq
     then DialFrequency.Position := Freq;
+   if Freq < 1000
+    then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 4, 4) + ' Hz'
+    else LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 4, 4) + ' kHz';
   end;
 end;
 
@@ -90,6 +93,7 @@ begin
    Order := ParameterByName['Order'];
    if DialOrder.Position <> Order
     then DialOrder.Position := Order;
+   LbOrderValue.Caption := IntToStr(round(Order));
   end;
 end;
 

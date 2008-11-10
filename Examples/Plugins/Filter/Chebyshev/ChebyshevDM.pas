@@ -52,7 +52,7 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   if assigned(fFilter[ch])
-   then fFilter[ch].Order := max(2, 2 * round(Value) div 2);
+   then fFilter[ch].Order := max(2, 2 * round(0.5 * Value));
  if EditorForm is TFmChebyshev then
   with TFmChebyshev(EditorForm) do
    begin

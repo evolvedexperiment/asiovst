@@ -9,6 +9,7 @@ object ButterworthLPModule: TButterworthLPModule
   CanDos = [vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'CbcL'
   ShellPlugins = <>
   Programs = <>
