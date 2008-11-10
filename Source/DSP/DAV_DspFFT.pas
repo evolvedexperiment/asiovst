@@ -19,20 +19,17 @@ procedure FFT(Buffer: PDAVSingleFixedArray; FFTSize: Integer);
  as {in[0],0.,in[1],0.,in[2],0.,...end; asf. In that case, the transform of
  the frequencies of interest is in fftBuffer[0...fftFrameSize].
 *)
-{
 var
   wr, wi, arg, temp  : Single;
-  p1, p2             : PDAVSingleFixedArray;
+  p1, p2, tmp        : PDAVSingleFixedArray;
   tr, ti, ur, ui     : Single;
   p1r, p1i, p2r, p2i : PSingle;
   i, bitm, j, le,
   le2, k, logN       : Integer;
-}
 
 begin
-{
  logN := round(log2(FFTSize) + 0.5);
-
+                     
  i := 2;
  while i < 2 * FFTSize - 2 do
   begin
@@ -48,16 +45,17 @@ begin
 
    if (i < j) then
     begin
+     p1      := @Buffer[i];
+     p2      := @Buffer[j];
+     tmp     := p1;
 (*
-     p1      := Buffer[i];
-     p2      := Buffer[j];
-     temp    := *p1;
      *(p1++) := *p2;
-     *(p2++) := temp;
-     temp    := *p1;
-     *p1     := *p2;
-     *p2     := temp;
+     *(p2++) := tmp;
 *)
+
+     tmp     := ^f;
+     p1      := p2;
+     p2      := tmp;
     end;
 
    inc(i, 2);
@@ -77,21 +75,24 @@ begin
    j := 0;
    while j < le2 do
     begin
-     p1r := Buffer + j;
-     p1i := p1r + 1;
-     p2r := p1r + le2;
-     p2i := p2r + 1;
+     p1r := @Buffer[j          ];
+     p1i := @Buffer[j       + 1];
+     p2r := @Buffer[j + le2    ];
+     p2i := @Buffer[j + le2 + 1];
 
      i := j;
      while i < 2 * FFTSize do
       begin
-       tr := *p2r * ur - *p2i * ui;
-       ti := *p2r * ui + *p2i * ur;
-       *p2r := *p1r - tr; *p2i = *p1i - ti;
-       *p1r := *p1r + tr;
-       *p1i := *p1i + ti;
-       p1r := p1r + le; p1i := p1i + le;
-       p2r := p2r + le; p2i := p2i + le;
+       tr := p2r^ * ur - p2i^ * ui;
+       ti := p2r^ * ui + p2i^ * ur;
+       p2r^ := p1r^ - tr;
+       p2i^ := p1i^ - ti;
+       p1r^ := p1r^ + tr;
+       p1i^ := p1i^ + ti;
+       Inc(p1r, le);
+       Inc(p1i, le);
+       Inc(p2r, le);
+       Inc(p2i, le);
        i := i + le;
       end;
 
@@ -104,7 +105,6 @@ begin
     end;
    inc(k);
   end;
-}
 end;
 
 end.

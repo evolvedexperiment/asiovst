@@ -234,11 +234,13 @@ var
   ln10, ln2, ln22, ln2Rez : Double;
 
 const
-  MinusOneThird : Double = -1/3;
-  Two           : Double = 2;
-  MinusTwoThird : Double = -2/3;
-  cDenorm32     : Single = 1E-24;
-  cDenorm64     : Double = 1E-34;
+  CMinusOneThird : Double = -1/3;
+  CTwo           : Double = 2;
+  CMinusTwoThird : Double = -2/3;
+  CDenorm32      : Single = 1E-24;
+  CDenorm64      : Double = 1E-34;
+  CTwoPI         : Double = 2 * Pi;
+  CFourPI        : Double = 4 * Pi;
 
 const
   kMaxLong  = $7FFFFFFF;
@@ -710,7 +712,7 @@ var
 begin
  log2 := ((x shr 23) and $FF) - $80;
  x := x and (not ($FF shl 23)) + $7F shl 23;
- val := ((MinusOneThird * val) + Two) * val + MinusTwoThird;
+ val := ((CMinusOneThird * val) + CTwo) * val + CMinusTwoThird;
  Result := val + log2;
 end;
 

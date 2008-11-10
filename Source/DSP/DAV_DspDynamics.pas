@@ -122,7 +122,7 @@ type
     FSideChain    : Double;
     FAutoMakeUp   : Boolean;
     FMakeUpGaindB : Double;
-    FMakeUpGain   : T2DoubleArray;
+    FMakeUpGain   : TDAV2DoubleArray;
     procedure RatioChanged; override;
     procedure ThresholdChanged; override;
     procedure CalculateMakeUpGain; virtual;
