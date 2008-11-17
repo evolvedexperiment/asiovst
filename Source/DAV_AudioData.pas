@@ -707,7 +707,7 @@ end;
 
 procedure TAudioData32.SampleFramesChanged(NewSampleFrames: Int64);
 begin
- if ExternalData then
+ if not ExternalData then
   begin
    ReallocMem(FChannelData, NewSampleFrames * SizeOf(Single));
 

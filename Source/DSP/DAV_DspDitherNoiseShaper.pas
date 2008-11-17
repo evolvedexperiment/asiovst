@@ -5,23 +5,26 @@ interface
 {$I ..\ASIOVST.INC}
 
 uses
-  DAV_Common;
+  DAV_Common, DAV_DspCommon;
 
 type
   TDitherType = (dtor9Fc, dtor3Fc, dtor2MEc, dtor3MEc, dtor9MEc, dtor5IEc,
                  dtor9IEc, dtor2Sc);
-  TDitherNoiseShaper = class
+  TDitherNoiseShaper = class(TDspObject)
   private
-    fOrder        : Integer;
-    fHistoryPos   : Integer;
-    fCoefficients : TDAVDoubleDynArray; // Coeffs
-    fHistory      : TDAVDoubleDynArray; // Error History
-    fDitherType   : TDitherType;
-    fBitDepth     : Byte;
-    fBitMul       : Double;
-    fBitDiv       : Double;
+    FOrder        : Integer;
+    FHistoryPos   : Integer;
+    FCoefficients : TDAVDoubleDynArray; // Coeffs
+    FHistory      : TDAVDoubleDynArray; // Error History
+    FDitherType   : TDitherType;
+    FBitDepth     : Byte;
+    FBitMul       : Double;
+    FBitDiv       : Double;
     procedure SetDitherType(v: TDitherType);
     procedure SetBitDepth(Value: Byte);
+  protected  
+    procedure DitherTypeChanged;
+    procedure BitDepthChanged;
   public
     constructor Create;
     destructor Destroy; override;
@@ -29,8 +32,8 @@ type
     function ProcessFloat(Input: Double): Double;
     procedure Reset;
   published
-    property DitherType: TDitherType read fDitherType write SetDitherType default dtor9Fc;
-    property BitDepth: Byte read fBitDepth write SetBitDepth;
+    property DitherType: TDitherType read FDitherType write SetDitherType default dtor9Fc;
+    property BitDepth: Byte read FBitDepth write SetBitDepth;
   end;
 
 implementation
@@ -40,18 +43,18 @@ uses Math;
 constructor TDitherNoiseShaper.Create;
 begin
  inherited;
- SetLength(fHistory, 2 * fOrder);
- FillChar(fHistory, 2 * fOrder * SizeOf(Double), 0);
+ SetLength(FHistory, 2 * FOrder);
+ FillChar(FHistory, 2 * FOrder * SizeOf(Double), 0);
  SetBitDepth(16);
  SetDitherType(dtor9Fc);
- fHistoryPos := 8;
+ FHistoryPos := 8;
  Randomize;
 end;
 
 destructor TDitherNoiseShaper.Destroy;
 begin
- SetLength(fCoefficients, 0);
- SetLength(fHistory, 0);
+ SetLength(FCoefficients, 0);
+ SetLength(FHistory, 0);
  inherited;
 end;
 
@@ -59,15 +62,20 @@ procedure TDitherNoiseShaper.SetBitDepth(Value: Byte);
 begin
  if Value < 1  then Value := 1 else
  if Value > 32 then Value := 32;
- if fBitDepth <> Value then
+ if FBitDepth <> Value then
   begin
-   fBitDepth := Value;
-   fBitMul := Power(2, fBitDepth - 1) - 1;
-   fBitDiv := 1 / fBitMul;
+   FBitDepth := Value;
+   BitDepthChanged;
   end;
 end;
 
-procedure TDitherNoiseShaper.SetDitherType(v: TDitherType);
+procedure TDitherNoiseShaper.BitDepthChanged;
+begin
+ FBitMul := Power(2, FBitDepth - 1) - 1;
+ FBitDiv := 1 / FBitMul;
+end;
+
+procedure TDitherNoiseShaper.DitherTypeChanged;
 const
   // F-weighted
   or9Fc : array [0..8] of Double = ( 2.412, -3.370,  3.937, -4.174, 3.353,
@@ -88,87 +96,95 @@ const
   or2Sc : array [0..1] of Double = (1.0, -0.5);
 
 begin
- fDitherType := v;
- case v of
+ case FDitherType of
   dtor9Fc  : begin
-              fOrder := 9;
-              SetLength(fCoefficients, fOrder);
-              Move(or9Fc[0], fCoefficients[0], fOrder * SizeOf(Double));
+              FOrder := 9;
+              SetLength(FCoefficients, FOrder);
+              Move(or9Fc[0], FCoefficients[0], FOrder * SizeOf(Double));
              end;
   dtor3Fc  : begin
-              fOrder := 3;
-              SetLength(fCoefficients, fOrder);
-              Move(or3Fc[0], fCoefficients[0], fOrder * SizeOf(Double));
+              FOrder := 3;
+              SetLength(FCoefficients, FOrder);
+              Move(or3Fc[0], FCoefficients[0], FOrder * SizeOf(Double));
              end;
   dtor2MEc : begin
-              fOrder := 2;
-              SetLength(fCoefficients, fOrder);
-              Move(or2MEc[0], fCoefficients[0], fOrder * SizeOf(Double));
+              FOrder := 2;
+              SetLength(FCoefficients, FOrder);
+              Move(or2MEc[0], FCoefficients[0], FOrder * SizeOf(Double));
              end;
   dtor3MEc : begin
-              fOrder := 3;
-              SetLength(fCoefficients, fOrder);
-              Move(or3MEc[0], fCoefficients[0], fOrder * SizeOf(Double));
+              FOrder := 3;
+              SetLength(FCoefficients, FOrder);
+              Move(or3MEc[0], FCoefficients[0], FOrder * SizeOf(Double));
              end;
   dtor9MEc : begin
-              fOrder := 9;
-              SetLength(fCoefficients, fOrder);
-              Move(or9MEc[0], fCoefficients[0], fOrder * SizeOf(Double));
+              FOrder := 9;
+              SetLength(FCoefficients, FOrder);
+              Move(or9MEc[0], FCoefficients[0], FOrder * SizeOf(Double));
              end;
   dtor5IEc : begin
-              fOrder := 5;
-              SetLength(fCoefficients, fOrder);
-              Move(or5IEc[0], fCoefficients[0], fOrder * SizeOf(Double));
+              FOrder := 5;
+              SetLength(FCoefficients, FOrder);
+              Move(or5IEc[0], FCoefficients[0], FOrder * SizeOf(Double));
              end;
   dtor9IEc : begin
-              fOrder := 9;
-              SetLength(fCoefficients, fOrder);
-              Move(or9IEc[0], fCoefficients[0], fOrder * SizeOf(Double));
+              FOrder := 9;
+              SetLength(FCoefficients, FOrder);
+              Move(or9IEc[0], FCoefficients[0], FOrder * SizeOf(Double));
              end;
   dtor2Sc  : begin
-              fOrder := 2;
-              SetLength(fCoefficients, fOrder);
-              Move(or2Sc[0], fCoefficients[0], fOrder * SizeOf(Double));
+              FOrder := 2;
+              SetLength(FCoefficients, FOrder);
+              Move(or2Sc[0], FCoefficients[0], FOrder * SizeOf(Double));
              end;
  end;
- SetLength(fHistory, 2 * fOrder);
+ SetLength(FHistory, 2 * FOrder);
  Reset;
+end;
+
+procedure TDitherNoiseShaper.SetDitherType(v: TDitherType);
+begin
+ if FDitherType <> v then
+  begin
+   FDitherType := v;
+   DitherTypeChanged;
+  end;
 end;
 
 procedure TDitherNoiseShaper.Reset;
 begin
- FillChar(fHistory[0], 2 * fOrder * SizeOf(Double), 0);
- fHistoryPos := 8;
+ FillChar(FHistory[0], 2 * FOrder * SizeOf(Double), 0);
+ FHistoryPos := 8;
 end;
 
 function TDitherNoiseShaper.ProcessInteger(Input: Double):Integer;
 begin
  // scale input to bit range
- Input := fBitMul * Input;
+ Input := FBitMul * Input;
 
  // Unrolled loop for faster execution
- Input := Input - fCoefficients[8] * fHistory[fHistoryPos + 8] +
-                  fCoefficients[7] * fHistory[fHistoryPos + 7] +
-                  fCoefficients[6] * fHistory[fHistoryPos + 6] +
-                  fCoefficients[5] * fHistory[fHistoryPos + 5] +
-                  fCoefficients[4] * fHistory[fHistoryPos + 4] +
-                  fCoefficients[3] * fHistory[fHistoryPos + 3] +
-                  fCoefficients[2] * fHistory[fHistoryPos + 2] +
-                  fCoefficients[1] * fHistory[fHistoryPos + 1] +
-                  fCoefficients[0] * fHistory[fHistoryPos];
+ Input := Input - FCoefficients[8] * FHistory[FHistoryPos + 8] +
+                  FCoefficients[7] * FHistory[FHistoryPos + 7] +
+                  FCoefficients[6] * FHistory[FHistoryPos + 6] +
+                  FCoefficients[5] * FHistory[FHistoryPos + 5] +
+                  FCoefficients[4] * FHistory[FHistoryPos + 4] +
+                  FCoefficients[3] * FHistory[FHistoryPos + 3] +
+                  FCoefficients[2] * FHistory[FHistoryPos + 2] +
+                  FCoefficients[1] * FHistory[FHistoryPos + 1] +
+                  FCoefficients[0] * FHistory[FHistoryPos];
 
  // add triangular distributed noise
  result := round(Input + (random - random));
- fHistoryPos := ((fHistoryPos + 8) mod fOrder);
+ FHistoryPos := ((FHistoryPos + 8) mod FOrder);
 
  // Update buffer (both copies)
- fHistory[fHistoryPos]     := Result - Input;
- fHistory[fHistoryPos + 9] := fHistory[fHistoryPos];
+ FHistory[FHistoryPos]     := Result - Input;
+ FHistory[FHistoryPos + 9] := FHistory[FHistoryPos];
 end;
 
 function TDitherNoiseShaper.ProcessFloat(Input: Double): Double;
 begin
- result := ProcessInteger(Input) * fBitDiv;
+ result := ProcessInteger(Input) * FBitDiv;
 end;
 
 end.

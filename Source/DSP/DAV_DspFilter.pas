@@ -5,12 +5,12 @@ interface
 {$I ..\ASIOVST.INC}
 
 uses
-  Classes, DAV_Complex, DAV_Common;
+  Classes, DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
   TPNType = array[0..1] of TComplexSingle;
 
-  TCustomFilter = class(TPersistent)
+  TCustomFilter = class(TDspObject)
   private
     procedure SetFrequency(Value: Double);
     procedure SetSampleRate(const Value: Double);
@@ -58,6 +58,7 @@ type
     property SampleRate: Double read FSampleRate write SetSampleRate;
   end;
 
+  TOrderFilterClass = class of TCustomOrderFilter;
   TCustomOrderFilter = class(TCustomFilter)
   private
     procedure SetOrder(Value: Cardinal);
@@ -84,6 +85,29 @@ type
   public
     constructor Create; override;
     property BandWidth: Double read FBandWidth write SetBW;
+  end;
+
+  TCustomFIRFilter = class(TCustomOrderFilter)
+  private
+    procedure SetKernelSize(const Value: Integer);
+  protected
+    fKernelSize : Integer;
+    fIR         : TDAVDoubleDynArray;
+    fHistory    : TDAVDoubleDynArray;
+    fCircular   : TDAVDoubleDynArray;
+    fSpeedTab   : TDAVDoubleDynArray;
+    fStateStack : TDAVDoubleDynArray;
+    fBufferPos  : Integer;
+  public
+    constructor Create; override;
+    function MagnitudeSquared(const Frequency: Double): Double; override;
+    function MagnitudeLog10(const Frequency: Double): Double; override;
+    function ProcessSample(const Input: Double): Double; override;
+//    function ProcessSample(const Input: Int64): Int64; override;
+//    function ProcessSampleASM: Double; override;
+    procedure PushStates; override;
+    procedure PopStates; override;
+    property KernelSize: Integer Read fKernelSize Write SetKernelSize;
   end;
 
   TIIRFilterClass = class of TCustomIIRFilter;
@@ -209,7 +233,8 @@ implementation
 {$DEFINE PUREPASCAL}
 {$ENDIF}
 
-uses Math;
+uses
+  Math, DAV_DspDFT;
 
 { TCustomFilter }
 
@@ -398,6 +423,133 @@ begin
   begin
    FBandWidth := Value;
    BandwidthChanged;
+  end;
+end;
+
+{ TCustomFIRFilter }
+
+constructor TCustomFIRFilter.Create;
+begin
+ inherited;
+end;
+
+function TCustomFIRFilter.MagnitudeLog10(const Frequency: Double): Double;
+begin
+ Result := 10 * log10(MagnitudeSquared(Frequency));
+end;
+
+function TCustomFIRFilter.MagnitudeSquared(const Frequency: Double): Double;
+var
+  Cmplx    : TComplexDouble;
+begin
+ Cmplx := Goertzel(PDAVDoubleFixedArray(@fIR[0]), fKernelSize, Pi * Frequency / SampleRate);
+ Result := FGainFactor * (sqr(Cmplx.Re) + sqr(Cmplx.Im));
+end;
+
+procedure TCustomFIRFilter.PopStates;
+begin
+ Move(fStateStack[0], fHistory[0], Length(fHistory) * SizeOf(Double));
+ Move(fStateStack[Length(fHistory)], fCircular[0], Length(fCircular) * SizeOf(Double));
+end;
+
+procedure ConvolveIR_X87(InOutBuffer, IRBuffer: PDouble; samples: Integer;
+ Current: Double);
+asm
+  fld   Current.Double
+  @SmallLoop:
+  fld   [edx].Double
+  fmul  st(0),st(1)
+  fld   [eax].Double
+  faddp
+
+  fstp [eax].Double
+  add   eax, 8
+  add   edx, 8
+  loop  @SmallLoop
+
+  @EndSmallLoop:
+  ffree st(0)
+end;
+
+procedure ConvolveIR_X87large(InOutBuffer, IRBuffer: PDouble;
+ samples: Integer; Current: Double);
+asm
+  fld   Current.Double
+
+  push ecx
+  shr ecx,2
+  jz @SkipLargeAddLoop
+  @LargeLoop:
+  fld   [edx].Double
+  fmul  st(0),st(1)
+  fld   [eax].Double
+  faddp
+  fstp  [eax].Double
+  fld   [edx+8].Double
+  fmul  st(0),st(1)
+  fld   [eax+8].Double
+  faddp
+  fstp  [eax+8].Double
+  fld   [edx+16].Double
+  fmul  st(0),st(1)
+  fld   [eax+16].Double
+  faddp
+  fstp  [eax+16].Double
+  fld   [edx+24].Double
+  fmul  st(0),st(1)
+  fld   [eax+24].Double
+  faddp
+  fstp  [eax+24].Double
+
+  add   eax, 32
+  add   edx, 32
+  loop  @LargeLoop
+
+  @SkipLargeAddLoop:
+  pop ecx
+  and ecx,$00000003
+  jz @EndSmallLoop
+
+  @SmallLoop:
+  fld   [edx].Double
+  fmul  st(0),st(1)
+  fld   [eax].Double
+  faddp
+  fstp [eax].Double
+
+  add   eax, 8
+  add   edx, 8
+  loop  @SmallLoop
+
+  @EndSmallLoop:
+  ffree st(0)
+end;
+
+function TCustomFIRFilter.ProcessSample(const Input: Double): Double;
+begin
+ fHistory[fBufferPos] := Input;
+ Result := (fCircular[fBufferPos] + fHistory[fBufferPos] * fIR[0]);
+ ConvolveIR_X87large(@fCircular[fBufferPos], @fIR[0], fKernelSize, fHistory[fBufferPos]);
+ Inc(fBufferPos);
+ if fBufferPos >= fKernelSize then
+  begin
+   fBufferPos := 0;
+   move(fCircular[fKernelSize], fCircular[0], fKernelSize * SizeOf(Double));
+   FillChar(fCircular[fKernelSize], fKernelSize * SizeOf(Double), 0);
+  end;
+end;
+
+procedure TCustomFIRFilter.PushStates;
+begin
+ Move(fHistory[0], fStateStack[0], Length(fHistory) * SizeOf(Double));
+ Move(fCircular[0], fStateStack[Length(fHistory)], Length(fCircular) * SizeOf(Double));
+end;
+
+procedure TCustomFIRFilter.SetKernelSize(const Value: Integer);
+begin
+ if fKernelSize <> Value then
+  begin
+   fKernelSize := Value;
   end;
 end;
 

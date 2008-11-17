@@ -12,91 +12,88 @@ type
 
   TRemezFilterDesigner = class(TComponent)
   private
-    fFilterTyp: TFilterKind;
-    fSampleRate: Double;
+    FFilterTyp  : TFilterKind;
+    FSampleRate : Double;
   protected
     procedure SetSampleRate(const Value: Double); virtual;
-    procedure CalculateFilterKernel(var Data : TDAVSingleDynArray); overload; virtual;
-    procedure CalculateFilterKernel(var Data : TDAVDoubleDynArray); overload; virtual; abstract;
-    property FilterTyp : TFilterKind read fFilterTyp write fFilterTyp;
+    procedure CalculateFilterKernel(var Data: TDAVSingleDynArray); overload; virtual;
+    procedure CalculateFilterKernel(var Data: TDAVDoubleDynArray); overload; virtual; abstract;
+    property FilterTyp: TFilterKind read FFilterTyp write FFilterTyp;
   public
     constructor Create(AOwner: TComponent); override;
   published
-    property SampleRate : Double read fSampleRate write SetSampleRate;
+    property SampleRate: Double read FSampleRate write SetSampleRate;
   end;
 
   TRemezLowpassFilterDesigner = class(TRemezFilterDesigner)
   private
-    fCutoffFrequency: Double;
-    fRippleRatio: Double;
+    FCutoffFrequency : Double;
+    FRippleRatio     : Double;
     procedure SetCutoffFrequency(const Value: Double);
-  protected
   public
-    procedure CalculateFilterKernel(var Data : TDAVDoubleDynArray); override;
+    procedure CalculateFilterKernel(var Data: TDAVDoubleDynArray); override;
     constructor Create(AOwner: TComponent); override;
   published
-    property CutoffFrequency : Double read fCutoffFrequency write SetCutoffFrequency;
-    property RippleRatio : Double read fRippleRatio write fRippleRatio;
+    property CutoffFrequency: Double read FCutoffFrequency write SetCutoffFrequency;
+    property RippleRatio: Double read FRippleRatio write FRippleRatio;
   end;
 
   TRemezHighpassFilterDesigner = class(TRemezFilterDesigner)
   private
-    fCutoffFrequency: Double;
-    fRippleRatio: Double;
+    FCutoffFrequency : Double;
+    FRippleRatio     : Double;
     procedure SetCutoffFrequency(const Value: Double);
-  protected
   public
-    procedure CalculateFilterKernel(var Data : TDAVDoubleDynArray); override;
+    procedure CalculateFilterKernel(var Data: TDAVDoubleDynArray); override;
     constructor Create(AOwner: TComponent); override;
   published
-    property CutoffFrequency : Double read fCutoffFrequency write SetCutoffFrequency;
-    property RippleRatio : Double read fRippleRatio write fRippleRatio;
+    property CutoffFrequency: Double read FCutoffFrequency write SetCutoffFrequency;
+    property RippleRatio: Double read FRippleRatio write FRippleRatio;
   end;
 
   TRemezBandpassFilterDesigner = class(TRemezFilterDesigner)
   private
-    fLowFrequency: Double;
-    fHighFrequency: Double;
-    fRippleRatio: Double;
+    FLowFrequency  : Double;
+    FHighFrequency : Double;
+    FRippleRatio   : Double;
     procedure SetLowFrequency(const Value: Double);
     procedure SetHighFrequency(const Value: Double);
-  protected
   public
-    procedure CalculateFilterKernel(var Data : TDAVDoubleDynArray); override;
+    procedure CalculateFilterKernel(var Data: TDAVDoubleDynArray); override;
     constructor Create(AOwner: TComponent); override;
   published
-    property LowFrequency : Double read fLowFrequency write SetLowFrequency;
-    property HighFrequency : Double read fHighFrequency write SetHighFrequency;
-    property RippleRatio : Double read fRippleRatio write fRippleRatio;
+    property LowFrequency: Double read FLowFrequency write SetLowFrequency;
+    property HighFrequency: Double read FHighFrequency write SetHighFrequency;
+    property RippleRatio: Double read FRippleRatio write FRippleRatio;
   end;
 
   TRemezBandstopFilterDesigner = class(TRemezFilterDesigner)
   private
-    fLowFrequency: Double;
-    fHighFrequency: Double;
-    fRippleRatio: Double;
+    FLowFrequency  : Double;
+    FHighFrequency : Double;
+    FRippleRatio   : Double;
     procedure SetLowFrequency(const Value: Double);
     procedure SetHighFrequency(const Value: Double);
-  protected
   public
-    procedure CalculateFilterKernel(var Data : TDAVDoubleDynArray); override;
+    procedure CalculateFilterKernel(var Data: TDAVDoubleDynArray); override;
     constructor Create(AOwner: TComponent); override;
   published
-    property LowFrequency : Double read fLowFrequency write SetLowFrequency;
-    property HighFrequency : Double read fHighFrequency write SetHighFrequency;
-    property RippleRatio : Double read fRippleRatio write fRippleRatio;
+    property LowFrequency: Double read FLowFrequency write SetLowFrequency;
+    property HighFrequency: Double read FHighFrequency write SetHighFrequency;
+    property RippleRatio: Double read FRippleRatio write FRippleRatio;
   end;
 
-procedure Remez(var h : TDAVDoubleDynArray; const bands, des, weight: TDAVDoubleDynArray; FilterTyp:TFilterKind);
+procedure Remez(var h: TDAVDoubleDynArray;
+  const bands, des, weight: TDAVDoubleDynArray; FilterTyp: TFilterKind);
 
 implementation
 
 uses Math;
 
 const
-  Pi2 = 2 * Pi;
-  GRIDDENSITY = 16;
-  MAXITERATIONS = 40;
+  CPi2 = 2 * Pi;
+  CGridDensity = 16;
+  CMaxIterations = 40;
 
 type
   TSymmetryKind = (skOdd, skEven);
@@ -127,36 +124,39 @@ type
  Double     W[]           - Weight function on the dense grid [gridsize]
 }
 
-procedure CreateDenseGrid(r, numtaps, numband:Integer;
-                          bands, des, weight: TDAVDoubleDynArray;
-                          gridsize : Integer;
-                          Grid, D, W : TDAVDoubleDynArray; symmetry:TSymmetryKind);
-var i,j,k,band:Integer;
-    delf,lowf,Highf:Double;
+procedure CreateDenseGrid(r, numtaps, numband: Integer;
+  bands, des, weight: TDAVDoubleDynArray;
+  gridsize: Integer;
+  Grid, D, W: TDAVDoubleDynArray;
+  symmetry: TSymmetryKind);
+var
+  i, j, k, band: Integer;
+  delf, lowf, Highf: Double;
 begin
- delf := 0.5 / (GRIDDENSITY * r);
+  delf := 0.5 / (CGridDensity * r);
 
  // For differentiator, hilbert, symmetry is odd and Grid[0] = max(delf, band[0])
- if (symmetry=skOdd) and (delf>bands[0])
-  then bands[0] := delf;
+  if (symmetry = skOdd) and (delf > bands[0]) then
+    bands[0] := delf;
 
- j := 0;
- for band := 0 to numband - 1 do
-  begin
-   Grid[j] := bands[2 * band];
-   lowf    := bands[2 * band];
-   highf   := bands[2 * band + 1];
-   k := round((highf - lowf) / delf { +  0.5}); { .5 for rounding }  //eigentlich int
-   for i := 0 to k - 1 do
-    begin
-     D[j] := des[band];
-     W[j] := weight[band];
-     Grid[j] := lowf;
-     lowf := lowf + delf;
-     Inc(j);
-    end;
-   Grid[j - 1] := highf;
-  end;
+  j := 0;
+  for band := 0 to numband - 1 do
+   begin
+    Grid[j] := bands[2 * band];
+    lowf := bands[2 * band];
+    highf := bands[2 * band + 1];
+    k := round((highf - lowf) / delf { +  0.5});
+ { .5 for rounding }  //eigentlich int
+    for i := 0 to k - 1 do
+     begin
+      D[j] := des[band];
+      W[j] := weight[band];
+      Grid[j] := lowf;
+      lowf := lowf + delf;
+      Inc(j);
+     end;
+    Grid[j - 1] := highf;
+   end;
 
  // Similar to above, if odd symmetry, last grid point can't be .5
  // - but, if there are even taps, leave the last grid point at .5
@@ -181,11 +181,12 @@ end;
  int Ext[]          - Extremal indexes to dense frequency grid [r + 1]
 }
 
-procedure  InitialGuess(r:Integer; Ext:TIntegerArray; gridsize:Integer);
-var i : Integer;
+procedure InitialGuess(r: Integer; Ext: TIntegerArray; gridsize: Integer);
+var
+  i: Integer;
 begin
- for i := 0 to r
-  do Ext[i] := i * (gridsize - 1) div r;
+  for i := 0 to r do
+    Ext[i] := i * (gridsize - 1) div r;
 end;
 
 
@@ -208,55 +209,60 @@ end;
  Double y[]     - 'C' in Oppenheim & Schafer [r + 1]
 }
 
-procedure CalcParms(r:Integer; Ext:TIntegerArray; Grid, D, W, ad, x, y : TDAVDoubleDynArray);
-var i,j,k,ld:Integer;
-    sign,xi,delta,denom,numer : Double;
+procedure CalcParms(r: Integer; Ext: TIntegerArray;
+  Grid, D, W, ad, x, y: TDAVDoubleDynArray);
+var
+  i, j, k, ld: Integer;
+  sign, xi, delta, denom, numer: Double;
 begin
 // Find x[]
- for i := 0 to r
-  do x[i] := cos(Pi2 * Grid[Ext[i]]);
+  for i := 0 to r do
+    x[i] := cos(CPi2 * Grid[Ext[i]]);
 
  // Calculate ad[]  - Oppenheim & Schafer eq 7.132
- ld := ((r - 1) div 15) + 1;   { Skips around to avoid round errors }
+  ld := ((r - 1) div 15) + 1;   { Skips around to avoid round errors }
 
- for i := 0 to r do
-  begin
-   denom := 1.0;
-   xi := x[i];
-   for j := 0 to ld - 1 do
-    begin
-     k := j;
-     while (k<=r) do
-      begin
-       if (k<>i)
-        then denom := denom * 2.0 * (xi - x[k]);
-       k := k + ld
-      end;
-    end;
-   if abs(denom) < 0.00001
-    then denom := 0.00001;
-   ad[i] := 1.0 / denom;
-  end;
+  for i := 0 to r do
+   begin
+    denom := 1.0;
+    xi := x[i];
+    for j := 0 to ld - 1 do
+     begin
+      k := j;
+      while (k <= r) do
+       begin
+        if (k <> i) then
+          denom := denom * 2.0 * (xi - x[k]);
+        k := k + ld
+       end;
+     end;
+    if abs(denom) < 0.00001 then
+      denom := 0.00001;
+    ad[i] := 1.0 / denom;
+   end;
 
  // Calculate delta  - Oppenheim & Schafer eq 7.131
- numer := 0;
- denom := 0;
- sign := 1;
- for i := 0 to r do
-  begin
-   numer := numer + ad[i] * D[Ext[i]];
-   denom := denom + ad[i] / W[Ext[i]] * sign;
-   sign :=  - sign;
-  end;
- if denom > 0 then delta := numer / denom else delta := 1e6; {kludge!!}
- sign := 1;
+  numer := 0;
+  denom := 0;
+  sign := 1;
+  for i := 0 to r do
+   begin
+    numer := numer + ad[i] * D[Ext[i]];
+    denom := denom + ad[i] / W[Ext[i]] * sign;
+    sign := -sign;
+   end;
+  if denom > 0 then
+    delta := numer / denom
+  else
+    delta := 1e6; {kludge!!}
+  sign := 1;
 
  // Calculate y[]  - Oppenheim & Schafer eq 7.133b
- for i := 0 to r do
-  begin
-   y[i] := D[Ext[i]] - sign * delta / W[Ext[i]];
-   sign :=  - sign;
-  end;
+  for i := 0 to r do
+   begin
+    y[i] := D[Ext[i]] - sign * delta / W[Ext[i]];
+    sign := -sign;
+   end;
 end;
 
 {
@@ -279,27 +285,29 @@ end;
  Returns Double value of A[freq]
 }
 
-function ComputeA(freq: Double; r: Integer; ad, x, y: TDAVDoubleDynArray) : Double;
-var i:Integer;
-    xc,c,denom,numer:Double;
+function ComputeA(freq: Double; r: Integer;
+  ad, x, y: TDAVDoubleDynArray): Double;
+var
+  i: Integer;
+  xc, c, denom, numer: Double;
 begin
- denom := 0;
- numer := 0;
- xc    := cos(Pi2 * freq);
- for i := 0 to r do
-  begin
-   c := xc - x[i];
-   if abs(c) < 1.0E-7 then
-    begin
-     numer := y[i];
-     denom := 1;
-     break;
-    end;
-   c := ad[i] / c;
-   denom := denom + c;
-   numer := numer + c * y[i];
-  end;
- ComputeA := numer / denom;
+  denom := 0;
+  numer := 0;
+  xc := cos(CPi2 * freq);
+  for i := 0 to r do
+   begin
+    c := xc - x[i];
+    if abs(c) < 1.0E-7 then
+     begin
+      numer := y[i];
+      denom := 1;
+      break;
+     end;
+    c := ad[i] / c;
+    denom := denom + c;
+    numer := numer + c * y[i];
+   end;
+  ComputeA := numer / denom;
 end;
 
 {                       
@@ -325,16 +333,17 @@ end;
  Double     E[]       - Error function on dense grid [gridsize]
 }
 
-procedure CalcError(r:Integer; ad,x,y:TDAVDoubleDynArray; gridsize:Integer;
-                    Grid,D,W,E:TDAVDoubleDynArray);
-var i:Integer;
-    A:Double;
+procedure CalcError(r: Integer; ad, x, y: TDAVDoubleDynArray;
+  gridsize: Integer; Grid, D, W, E: TDAVDoubleDynArray);
+var
+  i: Integer;
+  A: Double;
 begin
- for i := 0 to gridsize - 1 do
-  begin
-   A := ComputeA(Grid[i], r, ad, x, y);
-   E[i] := W[i] * (D[i] - A);
-  end;
+  for i := 0 to gridsize - 1 do
+   begin
+    A := ComputeA(Grid[i], r, ad, x, y);
+    E[i] := W[i] * (D[i] - A);
+   end;
 end;
 
 {                       
@@ -362,83 +371,91 @@ end;
  Integer     Ext[]    - New indexes to extremal frequencies [r + 1]
 }
 
-procedure  Search(r:Integer; Ext: TIntegerArray; gridsize:Integer; E:TDAVDoubleDynArray);
-var i,j,k,l,extra:Integer;   { Counters }
-    alt,up: Boolean;
-    foundExt:TIntegerArray; { Array of found extremals }
+procedure Search(r: Integer; Ext: TIntegerArray; gridsize: Integer;
+  E: TDAVDoubleDynArray);
+var
+  i, j, k, l, extra: Integer;   { Counters }
+  alt, up: Boolean;
+  foundExt: TIntegerArray; { Array of found extremals }
 begin
 
  // Allocate enough space for found extremals.
- SetLength(foundExt,2 * r);
- k := 0;
+  SetLength(foundExt, 2 * r);
+  k := 0;
 
  // Check for extremum at 0.
- if ((E[0] > 0.0) and (E[0] > E[1])) or ((E[0] < 0.0) and (E[0] < E[1])) then
-  begin
-   foundExt[k] := 0;
-   inc(k)
-  end;
-
- // Check for extrema inside dense grid
- for i := 1 to gridsize - 2 do       {<<bugfix: was gridsize - 1}
-  if ((E[i] >= E[i - 1]) and (E[i] > E[i + 1]) and (E[i] > 0.0)) or ((E[i] <= E[i - 1]) and (E[i]<E[i + 1]) and (E[i] < 0.0)) then
+  if ((E[0] > 0.0) and (E[0] > E[1])) or ((E[0] < 0.0) and (E[0] < E[1])) then
    begin
-    foundExt[k] := i;
-    inc(k)
+    foundExt[k] := 0;
+    Inc(k)
    end;
 
+ // Check for extrema inside dense grid
+  for i := 1 to gridsize - 2 do       {<<bugfix: was gridsize - 1}
+    if ((E[i] >= E[i - 1]) and (E[i] > E[i + 1]) and (E[i] > 0.0)) or
+      ((E[i] <= E[i - 1]) and (E[i] < E[i + 1]) and (E[i] < 0.0)) then
+     begin
+      foundExt[k] := i;
+      Inc(k)
+     end;
+
  // Check for extremum at 0.5
- j := gridsize - 1;
- if ((E[j] > 0.0) and (E[j] > E[j - 1])) or ((E[j] < 0.0) and (E[j] < E[j - 1])) then
-  begin
-   foundExt[k] := j;
-   inc(k)
-  end;
+  j := gridsize - 1;
+  if ((E[j] > 0.0) and (E[j] > E[j - 1])) or ((E[j] < 0.0) and
+    (E[j] < E[j - 1])) then
+   begin
+    foundExt[k] := j;
+    Inc(k)
+   end;
 
  // Remove extra extremals
- extra := k - (r + 1);
+  extra := k - (r + 1);
 
- while (extra > 0) do
-  begin
-   if E[foundExt[0]] > 0.0
-    then up := True    // first one is a maxima
-    else up := False;  // first one is a minima
+  while (extra > 0) do
+   begin
+    if E[foundExt[0]] > 0.0 then
+      up := True    // first one is a maxima
+    else
+      up := False;  // first one is a minima
 
-   l := 0;
-   alt := True;
-   for j := 1 to k - 1 do
-    begin
-     if abs(E[foundExt[j]]) < abs(E[foundExt[l]])
-      then l := j; // new smallest error.
-     if up and (E[foundExt[j]] < 0.0)
-      then up := false // switch to a minima
-      else if (not up) and (E[foundExt[j]] > 0.0)
-            then up := True // switch to a maxima
-            else
-             begin
+    l := 0;
+    alt := True;
+    for j := 1 to k - 1 do
+     begin
+      if abs(E[foundExt[j]]) < abs(E[foundExt[l]]) then
+        l := j; // new smallest error.
+      if up and (E[foundExt[j]] < 0.0) then
+        up := False // switch to a minima
+      else if (not up) and (E[foundExt[j]] > 0.0) then
+        up := True // switch to a maxima
+      else
+       begin
 //              k := j;
-              alt := False;
-              break; // Ooops, found two non - alternating extrema. Delete smallest of them.
-             end;
-    end; // if the loop finishes, all extrema are alternating
+        alt := False;
+        break;
+ // Ooops, found two non - alternating extrema. Delete smallest of them.
+       end;
+     end; // if the loop finishes, all extrema are alternating
 
   // If there's only one extremal and all are alternating,
   // delete the smallest of the first / last extremals.
-   if alt and (extra = 1) then
-    if abs(E[foundExt[k - 1]]) < abs(E[foundExt[0]])
-     then l := foundExt[k - 1]  // Delete last extremal
-     else l := foundExt[0];     // Delete first extremal
+    if alt and (extra = 1) then
+      if abs(E[foundExt[k - 1]]) < abs(E[foundExt[0]]) then
+        l := foundExt[k - 1]  // Delete last extremal
+      else
+        l := foundExt[0];     // Delete first extremal
 
-   for j := l to k - 1          // Loop that does the deletion
-    do foundExt[j] := foundExt[j + 1];
-   Dec(k);
-   Dec(extra);
-  end;
+    for j := l to k - 1          // Loop that does the deletion
+      do
+      foundExt[j] := foundExt[j + 1];
+    Dec(k);
+    Dec(extra);
+   end;
 
- for i := 0 to r
-  do Ext[i] := foundExt[i];   { Copy found extremals to Ext[] }
+  for i := 0 to r do
+    Ext[i] := foundExt[i];   { Copy found extremals to Ext[] }
 
- SetLength(foundExt, 0);
+  SetLength(foundExt, 0);
 end;
 
 {                    
@@ -458,61 +475,55 @@ end;
  Double h[]         - Impulse Response of final filter [N]
 }
 
-procedure FreqSample(N:Integer; A,h:TDAVDoubleDynArray; symm:TSymmetryKind);
-var i,k: Integer;
-    x,val,M: Double;
+procedure FreqSample(N: Integer; A, h: TDAVDoubleDynArray; symm: TSymmetryKind);
+var
+  i, k: Integer;
+  x, val, M: Double;
 begin
- M := (N - 1) * 0.5;
- if (symm = skEven) then
-  begin
-   if (N mod 2) <> 0 then
-    begin
-     for i := 0 to N - 1 do
-      begin
-       val := A[0];
-       x := Pi2 * (i - M) / N;
-       for k := 1 to trunc(M)
-        do val := val + 2.0 * A[k] * cos(x * k);
-       h[i] := val / N;
-      end;
-    end
-   else
-    begin
-     for i := 0 to N - 1 do
-      begin
-       val := A[0];
-       x := Pi2 * (i - M) / N;
-       for k := 1 to ((N div 2) - 1) // for (k=1; k<=(N / 2 - 1); k +  + )
-        do val := val + 2.0 * A[k] * cos(x * k);
-       h[i] := val / N;
-    end;
-   end;
-  end
- else
-  begin
-   if (N mod 2) <> 0 then
-    begin
-     for i := 0 to N - 1 do
-      begin
-       val := 0;
-       x := Pi2 * (i - M) / N;
-       for k := 1 to trunc(M)
-        do val := val + 2.0 * A[k] * sin(x * k);
-       h[i] := val / N;
-      end;
-    end
-   else
-    begin
-     for i := 0 to N - 1 do
-      begin
-       val := A[N div 2] * sin(Pi * (i - M));
-       x := Pi2 * (i - M) / N;
-       for k := 1 to ((N div 2) - 1)
-        do val := val + 2.0 * A[k] * sin(x * k);
-       h[i] := val / N;
-      end;
-    end;
-  end;
+  M := (N - 1) * 0.5;
+  if (symm = skEven) then
+   begin
+    if (N mod 2) <> 0 then
+      for i := 0 to N - 1 do
+       begin
+        val := A[0];
+        x := CPi2 * (i - M) / N;
+        for k := 1 to trunc(M) do
+          val := val + 2.0 * A[k] * cos(x * k);
+        h[i] := val / N;
+       end
+    else
+     begin
+      for i := 0 to N - 1 do
+       begin
+        val := A[0];
+        x := CPi2 * (i - M) / N;
+        for k := 1 to ((N div 2) - 1) // for (k=1; k<=(N / 2 - 1); k +  + )
+          do
+          val := val + 2.0 * A[k] * cos(x * k);
+        h[i] := val / N;
+       end;
+     end;
+   end
+  else
+  if (N mod 2) <> 0 then
+    for i := 0 to N - 1 do
+     begin
+      val := 0;
+      x := CPi2 * (i - M) / N;
+      for k := 1 to trunc(M) do
+        val := val + 2.0 * A[k] * sin(x * k);
+      h[i] := val / N;
+     end
+  else
+    for i := 0 to N - 1 do
+     begin
+      val := A[N div 2] * sin(Pi * (i - M));
+      x := CPi2 * (i - M) / N;
+      for k := 1 to ((N div 2) - 1) do
+        val := val + 2.0 * A[k] * sin(x * k);
+      h[i] := val / N;
+     end;
 end;
 
 {                  
@@ -522,7 +533,7 @@ end;
  the result to have converged.
 
  INPUT:
- ------ 
+ ------
  Integer    r       - 1 / 2 the number of filter coeffiecients
  Integer    Ext[]   - Indexes to extremal frequencies [r + 1]
  Double     E[]     - Error function on the dense grid [gridsize]
@@ -533,19 +544,22 @@ end;
  Returns 0 if the result has not converged
 }
 
-function IsDone(r:Integer; Ext:TIntegerArray; E:TDAVDoubleDynArray):Boolean;
-var i: Integer;
-    min,max,current:Double;
+function IsDone(r: Integer; Ext: TIntegerArray; E: TDAVDoubleDynArray): Boolean;
+var
+  i: Integer;
+  min, max, current: Double;
 begin
- min := abs(E[Ext[0]]);
- max := min;
- for i := 1 to r do
-  begin
-   current := abs(E[Ext[i]]);
-   if current < min then min := current;
-   if current > max then max := current;
-  end;
- IsDone := ((max - min) / max) < 0.0001;
+  min := abs(E[Ext[0]]);
+  max := min;
+  for i := 1 to r do
+   begin
+    current := abs(E[Ext[i]]);
+    if current < min then
+      min := current;
+    if current > max then
+      max := current;
+   end;
+  IsDone := ((max - min) / max) < 0.0001;
 end;
 
 {                   
@@ -570,314 +584,321 @@ end;
  Double h[]        - Impulse response of final filter [numtaps]
 }
 
-procedure remez(var h:TDAVDoubleDynArray; const bands,des,weight:TDAVDoubleDynArray; FilterTyp:TFilterKind);
-var i, iter, gridsize, r: Integer;
-    symmetry: TSymmetryKind;
-    Grid,W,D,E,taps: TDAVDoubleDynArray;
-    x, y, ad: TDAVDoubleDynArray;
-    c: Double;
-    Ext: TIntegerArray;
-    numtaps, numband: Integer;
+procedure remez(var h: TDAVDoubleDynArray;
+  const bands, des, weight: TDAVDoubleDynArray; FilterTyp: TFilterKind);
+var
+  i, iter, gridsize, r: Integer;
+  symmetry: TSymmetryKind;
+  Grid, W, D, E, taps: TDAVDoubleDynArray;
+  x, y, ad: TDAVDoubleDynArray;
+  c: Double;
+  Ext: TIntegerArray;
+  numtaps, numband: Integer;
 begin
- numtaps := Length(h);
- numband := Length(des);
- if (FilterTyp = fkBandPass)
-  then symmetry := skEven // ==POSITIVE
-  else symmetry := skOdd;
+  numtaps := Length(h);
+  numband := Length(des);
+  if (FilterTyp = fkBandPass) then
+    symmetry := skEven // ==POSITIVE
+  else
+    symmetry := skOdd;
 
- r := numtaps div 2;      { number of extrema }
- if ((numtaps mod 2) <> 0) and (symmetry = skEven)
-  then Inc(r);
+  r := numtaps div 2;      { number of extrema }
+  if ((numtaps mod 2) <> 0) and (symmetry = skEven) then
+    Inc(r);
 
- gridsize := 0;
- for i := 0 to numband - 1 do
-  gridsize := gridsize + round(2 * r * GRIDDENSITY * (bands[2 * i + 1] - bands[2 * i])); //ceil???
+  gridsize := 0;
+  for i := 0 to numband - 1 do
+    gridsize := gridsize + round(2 * r * CGridDensity *
+      (bands[2 * i + 1] - bands[2 * i])); //ceil???
 
- if symmetry = skOdd then Dec(gridsize);
+  if symmetry = skOdd then
+    Dec(gridsize);
 
  // Dynamically allocate memory for arrays with proper sizes
- SetLength(Grid, gridsize);
- SetLength(D, gridsize);
- SetLength(W, gridsize);
- SetLength(E, gridsize);
- SetLength(Ext, r + 1);
- SetLength(taps ,r + 1);
- SetLength(x, r + 1);
- SetLength(y, r + 1);
- SetLength(ad, r + 1);
+  SetLength(Grid, gridsize);
+  SetLength(D, gridsize);
+  SetLength(W, gridsize);
+  SetLength(E, gridsize);
+  SetLength(Ext, r + 1);
+  SetLength(taps, r + 1);
+  SetLength(x, r + 1);
+  SetLength(y, r + 1);
+  SetLength(ad, r + 1);
 
  // Create dense frequency grid
- CreateDenseGrid(r,numtaps,numband,bands,des,weight,gridsize,Grid,D,W,symmetry);
- InitialGuess(r,Ext,gridsize);
+  CreateDenseGrid(r, numtaps, numband, bands, des, weight, gridsize,
+    Grid, D, W, symmetry);
+  InitialGuess(r, Ext, gridsize);
 
  // For Differentiator: (fix grid)
- if (FilterTyp=fkDifferentiator) then
-  for i := 0 to gridsize - 1 do
-   begin
-    D[i] := D[i] * Grid[i];
-    if D[i]>0.0001 then W[i] := W[i] / Grid[i];
-   end;
-
- // For odd or Negative symmetry filters, alter the D[] and W[] according to Parks McClellan
- if (symmetry=skEven) then
-  begin
-   if ((numtaps mod 2) = 0) then
+  if (FilterTyp = fkDifferentiator) then
     for i := 0 to gridsize - 1 do
      begin
-      c := cos(Pi * Grid[i]);
+      D[i] := D[i] * Grid[i];
+      if D[i] > 0.0001 then
+        W[i] := W[i] / Grid[i];
+     end;
+
+ // For odd or Negative symmetry filters, alter the D[] and W[] according to Parks McClellan
+  if (symmetry = skEven) then
+   begin
+    if ((numtaps mod 2) = 0) then
+      for i := 0 to gridsize - 1 do
+       begin
+        c := cos(Pi * Grid[i]);
+        D[i] := D[i] / c;
+        W[i] := W[i] * c;
+       end;
+   end
+  else
+  if ((numtaps mod 2) <> 0) then
+    for i := 0 to gridsize - 1 do
+     begin
+      c := sin(CPi2 * Grid[i]);
+      D[i] := D[i] / c;
+      W[i] := W[i] * c;
+     end
+  else
+    for i := 0 to gridsize - 1 do
+     begin
+      c := sin(Pi * Grid[i]);
       D[i] := D[i] / c;
       W[i] := W[i] * c;
      end;
-  end
- else
-  if ((numtaps mod 2) <> 0) then
-   for i := 0 to gridsize - 1 do
-    begin
-     c := sin(Pi2 * Grid[i]);
-     D[i] := D[i] / c;
-     W[i] := W[i] * c;
-    end
-  else
-   for i := 0 to gridsize - 1 do
-    begin
-     c := sin(Pi * Grid[i]);
-     D[i] := D[i] / c;
-     W[i] := W[i] * c;
-    end;
 
  // Perform the Remez Exchange algorithm
- for iter := 0 to MAXITERATIONS - 1 do
-  begin
-   CalcParms(r, Ext, Grid, D, W, ad, x, y);
-   CalcError(r, ad, x, y, gridsize, Grid, D, W, E);
-   Search(r, Ext, gridsize, E);
-   if (isDone(r, Ext, E)) then break;
-  end;
- if iter = 39 then ;
- CalcParms(r, Ext, Grid, D, W, ad, x, y); {not needed?}
+  for iter := 0 to CMaxIterations - 1 do
+   begin
+    CalcParms(r, Ext, Grid, D, W, ad, x, y);
+    CalcError(r, ad, x, y, gridsize, Grid, D, W, E);
+    Search(r, Ext, gridsize, E);
+    if (isDone(r, Ext, E)) then
+      break;
+   end;
+  if iter = 39 then
+  ;
+  CalcParms(r, Ext, Grid, D, W, ad, x, y); {not needed?}
 
  // Find the 'taps' of the filter for use with Frequency Sampling.  If odd
  // or Negative symmetry, fix the taps according to Parks McClellan.
- for i := 0 to (numtaps div 2) - 1 do
- begin
-  if (symmetry = skEven) then
-  begin
-   if (numtaps mod 2) <> 0
-    then c := 1
-     else c := cos(Pi * i / numtaps);
-  end
-  else
-  begin
-   if (numtaps mod 2) <> 0
-    then c := sin(Pi2 * i / numtaps)
-     else c := sin(Pi * i / numtaps);
-  end;
-  taps[i] := ComputeA(i / numtaps, r, ad, x, y) * c;
- end;
+  for i := 0 to (numtaps div 2) - 1 do
+   begin
+    if (symmetry = skEven) then
+     begin
+      if (numtaps mod 2) <> 0 then
+        c := 1
+      else
+        c := cos(Pi * i / numtaps);
+     end
+    else
+    if (numtaps mod 2) <> 0 then
+      c := sin(CPi2 * i / numtaps)
+    else
+      c := sin(Pi * i / numtaps);
+    taps[i] := ComputeA(i / numtaps, r, ad, x, y) * c;
+   end;
 
  // Frequency sampling design with calculated taps
- FreqSample(numtaps, taps, h, symmetry);
+  FreqSample(numtaps, taps, h, symmetry);
 
  // Delete allocated memory
- SetLength(Grid, 0);
- SetLength(taps, 0);
- SetLength(W, 0);
- SetLength(D, 0);
- SetLength(E, 0);
- SetLength(Ext, 0);
- SetLength(x, 0);
- SetLength(y, 0);
- SetLength(ad, 0);
+  SetLength(Grid, 0);
+  SetLength(taps, 0);
+  SetLength(W, 0);
+  SetLength(D, 0);
+  SetLength(E, 0);
+  SetLength(Ext, 0);
+  SetLength(x, 0);
+  SetLength(y, 0);
+  SetLength(ad, 0);
 end;
 
 { TRemezLowpassFilterDesigner }
 
 { TRemezFilterDesigner }
 
-procedure TRemezFilterDesigner.CalculateFilterKernel(var Data: TDAVSingleDynArray);
-var
-  i        : Integer;
-  DblArray : TDAVDoubleDynArray;
-begin
- SetLength(DblArray, Length(Data));
- CalculateFilterKernel(DblArray);
- for i := 0 to Length(Data) - 1
-  do Data[i] := DblArray[i];
-end;
-
 constructor TRemezFilterDesigner.Create(AOwner: TComponent);
 begin
- inherited;
- fSampleRate := 44100;
+  inherited;
+  FSampleRate := 44100;
+end;
+
+procedure TRemezFilterDesigner.CalculateFilterKernel(
+  var Data: TDAVSingleDynArray);
+var
+  i: Integer;
+  DblArray: TDAVDoubleDynArray;
+begin
+  SetLength(DblArray, Length(Data));
+  CalculateFilterKernel(DblArray);
+  for i := 0 to Length(Data) - 1 do
+    Data[i] := DblArray[i];
 end;
 
 procedure TRemezFilterDesigner.SetSampleRate(const Value: Double);
 begin
-  fSampleRate := Value;
+ if FSampleRate <> Value then
+  begin
+   FSampleRate := Value;
+  end;
 end;
 
-procedure TRemezLowpassFilterDesigner.CalculateFilterKernel(var Data: TDAVDoubleDynArray);
+procedure TRemezLowpassFilterDesigner.CalculateFilterKernel(
+  var Data: TDAVDoubleDynArray);
 var
-  bands, weights, desired : TDAVDoubleDynArray;
+  bands, weights, desired: TDAVDoubleDynArray;
 begin
- SetLength(bands, 4);
- SetLength(weights, 2);
- SetLength(desired, 2);
- desired[0] := 1.0;
- desired[1] := 0.0;
- bands[0]   := 0.0;
- bands[1]   := 0.9 * fCutoffFrequency / fSampleRate;
- bands[2]   := 1.1 * fCutoffFrequency / fSampleRate;
- bands[3]   := 0.5;
- weights[0] := 1.0;
- weights[1] := fRippleRatio;
- Remez(Data, bands, desired, weights, fkBandPass);
+  SetLength(bands, 4);
+  SetLength(weights, 2);
+  SetLength(desired, 2);
+  desired[0] := 1.0;
+  desired[1] := 0.0;
+  bands[0] := 0.0;
+  bands[1] := 0.9 * FCutoffFrequency / FSampleRate;
+  bands[2] := 1.1 * FCutoffFrequency / FSampleRate;
+  bands[3] := 0.5;
+  weights[0] := 1.0;
+  weights[1] := FRippleRatio;
+  Remez(Data, bands, desired, weights, fkBandPass);
 end;
 
 constructor TRemezLowpassFilterDesigner.Create(AOwner: TComponent);
 begin
- inherited;
- fCutoffFrequency := 1000;
- fRippleRatio := 1;
+  inherited;
+  FCutoffFrequency := 1000;
+  FRippleRatio := 1;
 end;
 
 procedure TRemezLowpassFilterDesigner.SetCutoffFrequency(const Value: Double);
 begin
- if fCutoffFrequency <> Value then
-  begin
-   fCutoffFrequency := Value;
-  end;
+  if FCutoffFrequency <> Value then
+    FCutoffFrequency := Value;
 end;
 
 { TRemezHighpassFilterDesigner }
 
-procedure TRemezHighpassFilterDesigner.CalculateFilterKernel(var Data: TDAVDoubleDynArray);
+procedure TRemezHighpassFilterDesigner.CalculateFilterKernel(
+  var Data: TDAVDoubleDynArray);
 var
-  bands, weights, desired : TDAVDoubleDynArray;
+  bands, weights, desired: TDAVDoubleDynArray;
 begin
- SetLength(bands, 4);
- SetLength(weights, 2);
- SetLength(desired, 2);
- desired[0] := 0.0;
- desired[1] := 1.0;
- bands[0]   := 0.0;
- bands[1]   := 0.9 * fCutoffFrequency / fSampleRate;
- bands[2]   := 1.1 * fCutoffFrequency / fSampleRate;
- bands[3]   := 0.5;
- weights[0] := 1.0;
- weights[1] := fRippleRatio;
- Remez(Data, bands, desired, weights, fkBandPass);
+  SetLength(bands, 4);
+  SetLength(weights, 2);
+  SetLength(desired, 2);
+  desired[0] := 0.0;
+  desired[1] := 1.0;
+  bands[0] := 0.0;
+  bands[1] := 0.9 * FCutoffFrequency / FSampleRate;
+  bands[2] := 1.1 * FCutoffFrequency / FSampleRate;
+  bands[3] := 0.5;
+  weights[0] := 1.0;
+  weights[1] := FRippleRatio;
+  Remez(Data, bands, desired, weights, fkBandPass);
 end;
 
 constructor TRemezHighpassFilterDesigner.Create(AOwner: TComponent);
 begin
- inherited;
- fCutoffFrequency := 1000;
- fRippleRatio := 1;
+  inherited;
+  FCutoffFrequency := 1000;
+  FRippleRatio := 1;
 end;
 
 procedure TRemezHighpassFilterDesigner.SetCutoffFrequency(const Value: Double);
 begin
- if fCutoffFrequency <> Value then
-  begin
-   fCutoffFrequency := Value;
-  end;
+  if FCutoffFrequency <> Value then
+   begin
+    FCutoffFrequency := Value;
+   end;
 end;
 
 { TRemezBandpassFilterDesigner }
 
-procedure TRemezBandpassFilterDesigner.CalculateFilterKernel(var Data: TDAVDoubleDynArray);
+procedure TRemezBandpassFilterDesigner.CalculateFilterKernel(
+  var Data: TDAVDoubleDynArray);
 var
-  bands, weights, desired : TDAVDoubleDynArray;
+  bands, weights, desired: TDAVDoubleDynArray;
 begin
- SetLength(bands, 6);
- SetLength(weights, 3);
- SetLength(desired, 3);
- desired[0] := 0.0;
- desired[1] := 1.0;
- desired[2] := 0.0;
- bands[0]   := 0.0;
- bands[1]   := 0.9 * fLowFrequency;
- bands[2]   := fLowFrequency;
- bands[3]   := fHighFrequency;
- bands[4]   := 1.1 * fHighFrequency;
- bands[5]   := 0.5;
- weights[0] := rippleRatio;
- weights[1] := 1.0;
- weights[2] := rippleRatio;
- Remez(Data, bands, desired, weights, fkBandPass);
+  SetLength(bands, 6);
+  SetLength(weights, 3);
+  SetLength(desired, 3);
+  desired[0] := 0.0;
+  desired[1] := 1.0;
+  desired[2] := 0.0;
+  bands[0] := 0.0;
+  bands[1] := 0.9 * FLowFrequency;
+  bands[2] := FLowFrequency;
+  bands[3] := FHighFrequency;
+  bands[4] := 1.1 * FHighFrequency;
+  bands[5] := 0.5;
+  weights[0] := rippleRatio;
+  weights[1] := 1.0;
+  weights[2] := rippleRatio;
+  Remez(Data, bands, desired, weights, fkBandPass);
 end;
 
 constructor TRemezBandpassFilterDesigner.Create(AOwner: TComponent);
 begin
- inherited;
- fLowFrequency := 1000;
- fHighFrequency := 8000;
- fRippleRatio := 1;
+  inherited;
+  FLowFrequency := 1000;
+  FHighFrequency := 8000;
+  FRippleRatio := 1;
 end;
 
 procedure TRemezBandpassFilterDesigner.SetLowFrequency(const Value: Double);
 begin
- if fLowFrequency <> Value then
-  begin
-   fLowFrequency := Value;
-  end;
+  if FLowFrequency <> Value then
+    FLowFrequency := Value;
 end;
 
 procedure TRemezBandpassFilterDesigner.SetHighFrequency(const Value: Double);
 begin
- if fHighFrequency <> Value then
-  begin
-   fHighFrequency := Value;
-  end;
+  if FHighFrequency <> Value then
+    FHighFrequency := Value;
 end;
 
 { TRemezBandstopFilterDesigner }
 
-procedure TRemezBandstopFilterDesigner.CalculateFilterKernel(var Data: TDAVDoubleDynArray);
+procedure TRemezBandstopFilterDesigner.CalculateFilterKernel(
+  var Data: TDAVDoubleDynArray);
 var
-  bands, weights, desired : TDAVDoubleDynArray;
+  bands, weights, desired: TDAVDoubleDynArray;
 begin
- SetLength(bands, 6);
- SetLength(weights, 3);
- SetLength(desired, 3);
- desired[0] := 0.0;
- desired[1] := 1.0;
- desired[2] := 0.0;
- bands[0]   := 0.0;
- bands[1]   := 0.9 * fLowFrequency;
- bands[2]   := fLowFrequency;
- bands[3]   := fHighFrequency;
- bands[4]   := 1.1 * fHighFrequency;
- bands[5]   := 0.5;
- weights[0] := rippleRatio;
- weights[1] := 1.0;
- weights[2] := rippleRatio;
- Remez(Data, bands, desired, weights, fkBandPass);
+  SetLength(bands, 6);
+  SetLength(weights, 3);
+  SetLength(desired, 3);
+  desired[0] := 0.0;
+  desired[1] := 1.0;
+  desired[2] := 0.0;
+  bands[0] := 0.0;
+  bands[1] := 0.9 * FLowFrequency;
+  bands[2] := FLowFrequency;
+  bands[3] := FHighFrequency;
+  bands[4] := 1.1 * FHighFrequency;
+  bands[5] := 0.5;
+  weights[0] := rippleRatio;
+  weights[1] := 1.0;
+  weights[2] := rippleRatio;
+  Remez(Data, bands, desired, weights, fkBandPass);
 end;
 
 constructor TRemezBandstopFilterDesigner.Create(AOwner: TComponent);
 begin
- inherited;
- fLowFrequency := 1000;
- fHighFrequency := 8000;
- fRippleRatio := 1;
+  inherited;
+  FLowFrequency := 1000;
+  FHighFrequency := 8000;
+  FRippleRatio := 1;
 end;
 
 procedure TRemezBandstopFilterDesigner.SetLowFrequency(const Value: Double);
 begin
- if fLowFrequency <> Value then
-  begin
-   fLowFrequency := Value;
-  end;
+  if FLowFrequency <> Value then
+    FLowFrequency := Value;
 end;
 
 procedure TRemezBandstopFilterDesigner.SetHighFrequency(const Value: Double);
 begin
- if fHighFrequency <> Value then
-  begin
-   fHighFrequency := Value;
-  end;
+  if FHighFrequency <> Value then
+    FHighFrequency := Value;
 end;
 
 end.

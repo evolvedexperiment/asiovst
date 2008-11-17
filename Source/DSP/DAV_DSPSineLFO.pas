@@ -6,12 +6,13 @@ interface
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
-  DAV_Common, DAV_Complex;
+  DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
-  TSineLFO = class(TObject)
+  TSineLFO = class(TDspObject)
   private
     procedure SetSampleRate(const Value: Single);
+    procedure SetFrequency(const Value: Single);
   protected
     FFrequency  : Single;
     FAmplitude  : Single;
@@ -20,7 +21,6 @@ type
     FPosition   : TComplexDouble;
 
     procedure SetAmplitude(const Value: Single); virtual;
-    procedure SetFrequency(const Value: Single); virtual;
 
     procedure SampleRateChanged; virtual;
     procedure FrequencyChanged; virtual;

@@ -19,7 +19,8 @@ procedure ApplyBlackmanWindow(var Data : TDAVSingleDynArray);
 var
   l, i  : Integer;
   f, fm : Double;
-const cBlackman : array [0..2] of Double = ( 0.34, -0.5, 0.16);
+const
+  CBlackman : array [0..2] of Double = (0.34, -0.5, 0.16);
 begin
  l  := Length(Data) - 1;
  fm := 1 / l;
@@ -27,7 +28,7 @@ begin
   begin
    // using the chebyshev polynom identity to get rid of the cos(2*x)
    f := cos((2 * PI * i) * fm);
-   Data[i]:= Data[i] * (cBlackman[0] + f * (cBlackman[1] + cBlackman[2] * f));
+   Data[i]:= Data[i] * (CBlackman[0] + f * (CBlackman[1] + CBlackman[2] * f));
   end;
 end;
 

@@ -5,10 +5,10 @@ interface
 {$I ..\ASIOVST.INC}
 
 uses
-  Classes, SysUtils, Math, DAV_Common;
+  Classes, SysUtils, Math, DAV_Common, DAV_DspCommon;
 
 type
-  TChebyshevWaveshaper = class
+  TChebyshevWaveshaper = class(TDspObject)
   private
     function GetGain(Harmonic: Integer): Double;
     function GetInverted(Harmonic: Integer): Boolean;

@@ -11,12 +11,12 @@ uses
 type
   TDAVResampling = class(TAudioObject)
   private
-    fFilterClass: TIIRFilterClass;
+    fFilterClass         : TOrderFilterClass;
     procedure SetFactor(const Value: Integer);
     procedure SetOrder(const Value: Integer);
     procedure SetTransitionBandwidth(const Value: Double);
     procedure SetSampleRate(const Value: Double);
-    procedure SetFilterClass(const Value: TIIRFilterClass);
+    procedure SetFilterClass(const Value: TOrderFilterClass);
   protected
     fFactor              : Integer;
     fOrder               : Integer;
@@ -30,7 +30,7 @@ type
     procedure UpdateFilter; virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
-    property FilterClass: TIIRFilterClass read fFilterClass write SetFilterClass;
+    property FilterClass: TOrderFilterClass read fFilterClass write SetFilterClass;
   published
     property Factor: Integer read fFactor write SetFactor;
     property Order: Integer read fOrder write SetOrder default 2;
@@ -40,7 +40,7 @@ type
 
   TDAVUpSampling = class(TDAVResampling)
   private
-    fFilter : TIIRFilter;
+    fFilter : TCustomOrderFilter;
   protected
     procedure FilterClassChanged; override;
     procedure OrderChanged; override;
@@ -55,7 +55,7 @@ type
 
   TDAVDownSampling = class(TDAVResampling)
   private
-    fFilter : TIIRFilter;
+    fFilter : TCustomOrderFilter;
   protected
     procedure FilterClassChanged; override;
     procedure OrderChanged; override;
@@ -70,7 +70,7 @@ type
 
   TDAVUpDownsampling = class(TDAVResampling)
   private
-    fFilter : array [0..1] of TIIRFilter;
+    fFilter : array [0..1] of TCustomOrderFilter;
   protected
     procedure FilterClassChanged; override;
     procedure OrderChanged; override;
@@ -107,7 +107,7 @@ begin
   end;
 end;
 
-procedure TDAVResampling.SetFilterClass(const Value: TIIRFilterClass);
+procedure TDAVResampling.SetFilterClass(const Value: TOrderFilterClass);
 begin
  if fFilterClass <> Value then
   begin
@@ -232,7 +232,7 @@ end;
 procedure TDAVUpDownsampling.FilterClassChanged;
 var
   i         : Integer;
-  oldFilter : TIIRFilter;
+  oldFilter : TCustomOrderFilter;
 begin
  for i := 0 to Length(fFilter) - 1 do
   begin
@@ -240,8 +240,8 @@ begin
    fFilter[i] := fFilterClass.Create;
    if assigned(oldFilter)
     then fFilter[i].Assign(oldFilter);
-   if fFilter[i] is TChebyshev1Filter then
-    with TChebyshev1Filter(fFilter[i]) do
+   if fFilter[i] is TCustomChebyshev1Filter then
+    with TCustomChebyshev1Filter(fFilter[i]) do
      begin
       Ripple := 0.1;
      end;
@@ -281,14 +281,14 @@ end;
 
 procedure TDAVUpSampling.FilterClassChanged;
 var
-  oldFilter : TIIRFilter;
+  oldFilter : TCustomOrderFilter;
 begin
  oldFilter := fFilter;
  fFilter := fFilterClass.Create;
  if assigned(oldFilter)
   then fFilter.Assign(oldFilter);
- if fFilter is TChebyshev1Filter then
-  with TChebyshev1Filter(fFilter) do
+ if fFilter is TCustomChebyshev1Filter then
+  with TCustomChebyshev1Filter(fFilter) do
    begin
     Ripple := 0.1;
    end;
@@ -349,14 +349,14 @@ end;
 
 procedure TDAVDownSampling.FilterClassChanged;
 var
-  oldFilter : TIIRFilter;
+  oldFilter : TCustomOrderFilter;
 begin
  oldFilter := fFilter;
  fFilter := fFilterClass.Create;
  if assigned(oldFilter)
   then fFilter.Assign(oldFilter);
- if fFilter is TChebyshev1Filter then
-  with TChebyshev1Filter(fFilter) do
+ if fFilter is TCustomChebyshev1Filter then
+  with TCustomChebyshev1Filter(fFilter) do
    begin
     Ripple := 0.1;
    end;

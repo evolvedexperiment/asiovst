@@ -21,7 +21,6 @@ procedure FFT(Buffer: PDAVSingleFixedArray; FFTSize: Integer);
 *)
 var
   wr, wi, arg, temp  : Single;
-  p1, p2, tmp        : PDAVSingleFixedArray;
   tr, ti, ur, ui     : Single;
   p1r, p1i, p2r, p2i : PSingle;
   i, bitm, j, le,
@@ -41,21 +40,17 @@ begin
      if (i and bitm) > 0
       then inc(j);
      j := j shl 1;
+     bitm := bitm shl 1;
     end;
 
    if (i < j) then
     begin
-     p1      := @Buffer[i];
-     p2      := @Buffer[j];
-     tmp     := p1;
-(*
-     *(p1++) := *p2;
-     *(p2++) := tmp;
-*)
-
-     tmp     := ^f;
-     p1      := p2;
-     p2      := tmp;
+     temp           := Buffer^[i];
+     Buffer^[i]     := Buffer^[j];
+     Buffer^[j]     := temp;
+     temp           := Buffer^[i + 1];
+     Buffer^[i + 1] := Buffer^[j + 1];
+     Buffer^[j + 1] := temp;
     end;
 
    inc(i, 2);
@@ -100,7 +95,6 @@ begin
      ui := ur * wi + ui * wr;
      ur := tr;
 
-     bitm := bitm shl 1;
      inc(j, 2);
     end;
    inc(k);

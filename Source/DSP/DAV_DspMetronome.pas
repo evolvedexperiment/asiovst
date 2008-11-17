@@ -5,30 +5,30 @@ interface
 {$I ..\ASIOVST.INC}
 
 uses
-  DAV_Common, DAV_Complex;
+  DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
-  TMetronome = class
+  TMetronome = class(TDspObject)
   private
-    fAngle     : TComplexDouble;
-    fPosition  : TComplexDouble;
-    fVolume    : Single;
-    fBeatPos   : Integer;
-    fSamplesPerBeat : Single;
-    fSamplesCount   : Single;
-    fMetroVolume    : Single;
-    fSampleRate: Double;
-    fBeatsPerMinute: Double;
+    FAngle          : TComplexDouble;
+    FPosition       : TComplexDouble;
+    FVolume         : Single;
+    FBeatPos        : Integer;
+    FSamplesPerBeat : Single;
+    FSamplesCount   : Single;
+    FMetroVolume    : Single;
+    FSampleRate     : Double;
+    FBeatsPerMinute : Double;
     procedure SetSampleRate(const Value: Double);
     procedure SetBeatsPerMinute(const Value: Double);
   public
     constructor Create;
     procedure SetSamplesPerBeat;
-    function ProcessSample : Single;
+    function ProcessSample: Single;
     procedure Reset;
   published
-    property BeatsPerMinute : Double read fBeatsPerMinute write SetBeatsPerMinute;
-    property Samplerate : Double read fSampleRate write SetSampleRate;
+    property BeatsPerMinute: Double read FBeatsPerMinute write SetBeatsPerMinute;
+    property Samplerate: Double read FSampleRate write SetSampleRate;
   end;
 
 implementation
@@ -37,65 +37,66 @@ implementation
 
 constructor TMetronome.Create;
 begin
- fSampleRate     := 44100;
- fBeatsPerMinute := 120;
- fMetroVolume    := 1;
- fVolume         := 1;
- SetSamplesPerBeat;
- Reset;
+  FSampleRate := 44100;
+  FBeatsPerMinute := 120;
+  FMetroVolume := 1;
+  FVolume := 1;
+  SetSamplesPerBeat;
+  Reset;
 end;
 
 procedure TMetronome.Reset;
 begin
- fSamplesCount := 0;
- fPosition.Re  := 1;
- fPosition.Im  := 0;
+  FSamplesCount := 0;
+  FPosition.Re := 1;
+  FPosition.Im := 0;
 end;
 
 function TMetronome.ProcessSample: Single;
 begin
- result := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
- fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
- fPosition.Re := result;
- if fBeatPos = 0
-  then result := 2 * fPosition.Re * fPosition.Re - 1;
- result := fVolume * result * fMetroVolume;
- fMetroVolume  := 0.995 * fMetroVolume;
- fSamplesCount := fSamplesCount + 1;
- if fSamplesCount > fSamplesPerBeat then
-  begin
-   fMetroVolume  := 1;
-   fSamplesCount := fSamplesCount - fSamplesPerBeat;
-   fPosition.Re  := 1;
-   fPosition.Im  := 0;
-   if fBeatPos < 3
-    then inc(fBeatPos)
-    else fBeatPos := 0;
-  end;
+  Result := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+  FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
+  FPosition.Re := Result;
+  if FBeatPos = 0 then
+    Result := 2 * FPosition.Re * FPosition.Re - 1;
+  Result := FVolume * Result * FMetroVolume;
+  FMetroVolume := 0.995 * FMetroVolume;
+  FSamplesCount := FSamplesCount + 1;
+  if FSamplesCount > FSamplesPerBeat then
+   begin
+    FMetroVolume := 1;
+    FSamplesCount := FSamplesCount - FSamplesPerBeat;
+    FPosition.Re := 1;
+    FPosition.Im := 0;
+    if FBeatPos < 3 then
+      Inc(FBeatPos)
+    else
+      FBeatPos := 0;
+   end;
 end;
 
 procedure TMetronome.SetBeatsPerMinute(const Value: Double);
 begin
- if fBeatsPerMinute <> Value then
-  begin
-   fBeatsPerMinute := Value;
-   SetSamplesPerBeat;
-  end;
+  if FBeatsPerMinute <> Value then
+   begin
+    FBeatsPerMinute := Value;
+    SetSamplesPerBeat;
+   end;
 end;
 
 procedure TMetronome.SetSamplesPerBeat;
 begin
- fSamplesPerBeat := 60 / fBeatsPerMinute * fSampleRate;
- GetSinCos(2000 * Pi / fSampleRate, fAngle.Im, fAngle.Re);
+  FSamplesPerBeat := 60 / FBeatsPerMinute * FSampleRate;
+  GetSinCos(2000 * Pi / FSampleRate, FAngle.Im, FAngle.Re);
 end;
 
 procedure TMetronome.SetSampleRate(const Value: Double);
 begin
- if fSampleRate <> Value then
-  begin
-   fSampleRate := Value;
-   SetSamplesPerBeat;
-  end;
+  if FSampleRate <> Value then
+   begin
+    FSampleRate := Value;
+    SetSamplesPerBeat;
+   end;
 end;
 
 end.

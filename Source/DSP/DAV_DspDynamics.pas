@@ -5,10 +5,10 @@ interface
 {$I ..\ASIOVST.INC}
 
 uses
-  DAV_DspButterworthFilter, DAV_Common;
+  DAV_Common, DAV_DspCommon, DAV_DspButterworthFilter;
 
 type
-  TCustomDynamics = class
+  TCustomDynamics = class(TDspObject)
   private
     procedure SetAttack(const Value: Double);
     procedure SetDecay(const Value: Double);
@@ -601,13 +601,8 @@ end;
 function TSimpleFeedbackCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  if PeakLevel < FThreshold
-  then result := FMakeUpGain[0]
-  else result := FMakeUpGain[1] * Power(PeakLevel, FRatio - 1);
-(*
- if PeakLevel < FThreshold
-  then result := FMakeUpGain[0]
-  else result := FMakeUpGain[1] * Power(PeakLevel, 1 - 1 / FRatio);
-*)
+  then result := 1
+  else result := FMakeUpGain[1] * Power(PeakLevel, 1 - (1 / FRatio));
 end;
 
 function TSimpleFeedbackCompressor.ProcessSample(Input: Double): Double;
@@ -619,7 +614,7 @@ begin
  FGain := TranslatePeakToGain(FPeak);
 
  FSideChain := FGain * Input;
- result := FSideChain; // * FMakeUpGain[0];
+ result := FMakeUpGain[0] * FSideChain; // * FMakeUpGain[0];
 end;
 
 procedure TSimpleFeedbackCompressor.RatioChanged;
@@ -637,14 +632,7 @@ begin
  if FAutoMakeUp
   then FMakeUpGain[0] := 1 / dbl
   else FMakeUpGain[0] := dB_to_Amp(FMakeUpGaindB);
- FMakeUpGain[1] := FMakeUpGain[0] * dbl;
-
-(*
- if FAutoMakeUp
-  then FMakeUpGain[0] := 1 / Power(FThreshold, 1 - FRatio)
-  else FMakeUpGain[0] := dB_to_Amp(FMakeUpGaindB);
- FMakeUpGain[1] := Power(FThreshold, 1 / FRatio - 1);
-*)
+ FMakeUpGain[1] := Power(FThreshold, (1 - FRatio) / FRatio);
 end;
 
 { TSoftKneeFeedbackCompressor }

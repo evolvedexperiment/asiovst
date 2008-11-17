@@ -4,239 +4,254 @@ unit DAV_DspPhaser;
 
 interface
 
+uses
+  DAV_Common, DAV_DspCommon;
+
 type
-  TLFOSine = class(TObject)
+  TLFOSine = class(TDspObject)
   protected
-    iSpeed     : Integer;
-    fSpeed     : Single;
-    fMax, fMin : Single;
-    fValue     : Single;
-    fPos       : Integer;
-    fScale     : Single;
-    fPosMul    : Single;
-    fHalfScale : Single;
+    FIntSpeed  : Integer;
+    FSpeed     : Single;
+    FMax, FMin : Single;
+    FValue     : Single;
+    FPos       : Integer;
+    FScale     : Single;
+    FPosMul    : Single;
+    FHalfScale : Single;
     function GetValue: Single; virtual;
-    procedure SetMin(v: Single);
-    procedure SetMax(v: Single);
-    procedure SetSpeed(v: Single);
+    procedure SetMin(Value: Single);
+    procedure SetMax(Value: Single);
+    procedure SetSpeed(Value: Single);
   public
     constructor Create;
   published
     property Value: Single read GetValue;
-    property Speed: Single read FSpeed Write SetSpeed;
+    property Speed: Single read FSpeed write SetSpeed;
     property Min: Single read FMin write SetMin;
-    property Max: Single read FMax Write SetMax;
+    property Max: Single read FMax write SetMax;
   end;
 
-  TLFOTriangle = class(TObject)
+  TLFOTriangle = class(TDspObject)
   protected
-    iSpeed     : Integer;
-    fSpeed     : Single;
-    fMax, fMin : Single;
-    fValue     : Single;
-    fPos       : Integer;
-    fScale     : Single;
-    fPosMul    : Single;
-    fHalfScale : Single;
+    FIntSpeed  : Integer;
+    FSpeed     : Single;
+    FMax, FMin : Single;
+    FValue     : Single;
+    FPos       : Integer;
+    FScale     : Single;
+    FPosMul    : Single;
+    FHalfScale : Single;
     function GetValue: Single; virtual;
-    procedure SetMin(v: Single);
-    procedure SetMax(v: Single);
-    procedure SetSpeed(v: Single);
+    procedure SetMin(Value: Single);
+    procedure SetMax(Value: Single);
+    procedure SetSpeed(Value: Single);
   public
     constructor Create;
   published
-    property Value:Single read GetValue;
-    property Speed:Single read FSpeed Write SetSpeed;
-    property Min:Single read FMin write SetMin;
-    property Max:Single read FMax Write SetMax;
+    property Value: Single read GetValue;
+    property Speed: Single read FSpeed write SetSpeed;
+    property Min: Single read FMin write SetMin;
+    property Max: Single read FMax write SetMax;
   end;
 
-  TMasterAllPass = class(TObject)
+  TMasterAllPass = class(TDspObject)
   private
-    fA1 : Single;
-    fDelay : Single;
-    fStages : Integer;
-    fY : array [0..31] of Single;
-    fSampleRate : Single;
-    procedure SetDelay(v: Single);
+    FA1         : Single;
+    FDelay      : Single;
+    FStages     : Integer;
+    FY          : array [0..31] of Single;
+    FSampleRate : Single;
+    procedure SetDelay(Value: Single);
   public
     constructor Create;
     destructor Destroy; override;
     function Process(const x: Single): Single;
-    property Delay: Single read fDelay write SetDelay;
-    property Stages: Integer read fStages write fStages;
-    property SampleRate : Single read fSampleRate write fSampleRate;
+    property Delay: Single read FDelay write SetDelay;
+    property Stages: Integer read FStages write FStages;
+    property SampleRate: Single read FSampleRate write FSampleRate;
   end;
 
-  TPhaser=class(TObject)
+  TPhaser = class(TDspObject)
   private
-    fZM1 : Single;
-    fDepth : Single;
-    fLFO: TLFOSine;
-    fLFOPhase : Single;
-    fFeedBack : Single;
-    fRate : Single;
-    fMinimum: Single;
-    fMaximum: Single;
-    fMin: Single;
-    fMax: Single;
-    fSampleRate : Single;
-    fMasterAllPass: TMasterAllPass;
-    procedure SetSampleRate(v: Single);
-    procedure SetMinimum(v: Single);
-    procedure SetMaximum(v: Single);
-    procedure SetRate(v: Single);
-    procedure SetStages(v: Integer);
+    FZM1           : Single;
+    FDepth         : Single;
+    FLFO           : TLFOSine;
+    FLFOPhase      : Single;
+    FFeedBack      : Single;
+    FRate          : Single;
+    FMinimum       : Single;
+    FMaximum       : Single;
+    FMin           : Single;
+    FMax           : Single;
+    FSampleRate    : Single;
+    FMasterAllPass : TMasterAllPass;
+    procedure SetSampleRate(Value: Single);
+    procedure SetMinimum(Value: Single);
+    procedure SetMaximum(Value: Single);
+    procedure SetRate(Value: Single);
+    procedure SetStages(Value: Integer);
     function GetStages: Integer;
     procedure Calculate;
+  protected
+    procedure RateChanged; virtual;
+    procedure SampleRateChanged; virtual;
   public
     constructor Create;
     destructor Destroy; override;
-    function Process(const x: Single): Single;
-    property SampleRate : Single read fSampleRate write SetSampleRate;
-    property Depth: Single read fDepth write fDepth; //0..1
-    property Feedback: Single read fFeedback write fFeedback; // 0..<1
-    property Minimum: Single read fMin write SetMinimum;
-    property Maximum: Single read fMax write SetMaximum;
+    function Process(const Input: Single): Single;
+    property SampleRate: Single read FSampleRate write SetSampleRate;
+    property Depth: Single read FDepth write FDepth; //0..1
+    property Feedback: Single read FFeedBack write FFeedBack; // 0..<1
+    property Minimum: Single read FMin write SetMinimum;
+    property Maximum: Single read FMax write SetMaximum;
     property Stages: Integer read GetStages write SetStages;
-    property Rate: Single read fRate write SetRate; // Hz
+    property Rate: Single read FRate write SetRate; // Hz
   end;
 
 implementation
 
 uses
-  DAV_Common;
+  SysUtils;
 
 const
   kDenorm = 1E-25;
 
+
+{ TLFOSine }
+
 constructor TLFOSine.Create;
 begin
- fMax   := 1;
- fMin   := 0;
- fValue := 1;
- fPos   := 0;
- Speed  := 100;
- fScale := fMax - ((fMin + fMax) * 0.5);
- inherited;
- fPosMul    := Sqrt(fScale * 2) / $80000000;
- fHalfScale := Sqrt(fScale * 2) * 0.5;
+  FMax   := 1;
+  FMin   := 0;
+  FValue := 1;
+  FPos   := 0;
+  Speed  := 100;
+  FScale := FMax - ((FMin + FMax) * 0.5);
+  inherited;
+  FPosMul := Sqrt(FScale * 2) / $80000000;
+  FHalfScale := Sqrt(FScale * 2) * 0.5;
 end;
 
-procedure TLFOSine.SetMin(v: Single);
+procedure TLFOSine.SetMin(Value: Single);
 begin
- fMin := v;
- fScale := fMax - ((fMin + fMax) * 0.5);
+  FMin := Value;
+  FScale := FMax - ((FMin + FMax) * 0.5);
 end;
 
-procedure TLFOSine.SetMax(v: Single);
+procedure TLFOSine.SetMax(Value: Single);
 begin
- fMax := v;
- fScale := fMax - ((fMin + fMax) * 0.5);
+  FMax := Value;
+  FScale := FMax - ((FMin + FMax) * 0.5);
 end;
 
-procedure TLFOSine.SetSpeed(v: Single);
+procedure TLFOSine.SetSpeed(Value: Single);
 begin
- fSpeed := v;
- iSpeed := Round($100000000 / fSpeed);
+  FSpeed := Value;
+  FIntSpeed := Round($100000000 / FSpeed);
 end;
 
-function TLFOSine.GetValue:Single;
+function TLFOSine.GetValue: Single;
 begin
- Result := Abs(fPos * fPosMul) - fHalfScale;
- Result := Result*(fHalfScale * 2 - Abs(Result)) * 2;
- Result := Result + (fMin + fMax) * 0.5;
- fPos   := fPos + iSpeed;
+  Result := Abs(FPos * FPosMul) - FHalfScale;
+  Result := Result * (FHalfScale * 2 - Abs(Result)) * 2;
+  Result := Result + (FMin + FMax) * 0.5;
+  FPos := FPos + FIntSpeed;
 end;
+
+
+{ TLFOTriangle }
 
 constructor TLFOTriangle.Create;
 begin
- fMax    := 1;
- fMin    := 0;
- fValue  := 1;
- fPos    := 0;
- Speed   := 100;
- fScale  := fMax - (fMin + fMax) * 0.5;
- fPosMul := fScale / $80000000;
- fHalfScale := Sqrt(fScale * 2) * 0.5;
+  FMax := 1;
+  FMin := 0;
+  FValue := 1;
+  FPos := 0;
+  Speed := 100;
+  FScale := FMax - (FMin + FMax) * 0.5;
+  FPosMul := FScale / $80000000;
+  FHalfScale := Sqrt(FScale * 2) * 0.5;
 end;
 
-procedure TLFOTriangle.SetMin(v: Single);
+procedure TLFOTriangle.SetMin(Value: Single);
 begin
- fMin   := v;
- fScale := fMax - (fMin + fMax) * 0.5;
+  FMin := Value;
+  FScale := FMax - (FMin + FMax) * 0.5;
 end;
 
-procedure TLFOTriangle.SetMax(v: Single);
+procedure TLFOTriangle.SetMax(Value: Single);
 begin
- fMax   := v;
- fScale := fMax - (fMin + fMax) * 0.5;
+  FMax := Value;
+  FScale := FMax - (FMin + FMax) * 0.5;
 end;
 
-procedure TLFOTriangle.SetSpeed(v:Single);
+procedure TLFOTriangle.SetSpeed(Value: Single);
 begin
- fSpeed := v;
- iSpeed := Round($100000000 / fSpeed);
+  FSpeed := Value;
+  FIntSpeed := Round($100000000 / FSpeed);
 end;
 
-function TLFOTriangle.GetValue:Single;
+function TLFOTriangle.GetValue: Single;
 begin
- Result := Abs(fPos * (2 * fPosMul)) + fMin;
- fPos   := fPos + iSpeed;
+  Result := Abs(FPos * (2 * FPosMul)) + FMin;
+  FPos := FPos + FIntSpeed;
 end;
+
+
+{ TMasterAllpass }
 
 constructor TMasterAllpass.Create;
 begin
- inherited;
- fA1   := 0;
- fY[0] := 0;
- fY[1] := 0;
- fY[2] := 0;
- fY[3] := 0;
- fY[4] := 0;
- fY[5] := 0;
- fStages := 1;
+  inherited;
+  FA1 := 0;
+  FY[0] := 0;
+  FY[1] := 0;
+  FY[2] := 0;
+  FY[3] := 0;
+  FY[4] := 0;
+  FY[5] := 0;
+  FStages := 1;
 end;
 
 destructor TMasterAllpass.Destroy;
 begin
- inherited;
+  inherited;
 end;
 
 {$IFDEF PUREPASCAL}
-function TMasterAllpass.Process(const x:single):single;
+function TMasterAllpass.Process(const x: single): single;
 var
-  a : array[0..1] of Single;
-  b : Single;
+  a: array[0..1] of Single;
+  b: Single;
 begin
- a[0]   := x * fA1 + fY[0];
- b      := a[0] * fA1;
- fY[0]  := b - x;
- a[1]   := b - fY[1];
- b      := a[1] * fA1;
- fY[1]  := a[0] - b;
- a[0]   := b - fY[2];
- b      := a[0] * fA1;
- fY[2]  := a[1] - b;
- a[1]   := b - fY[3];
- b      := a[1] * fA1;
- fY[3]  := a[0] - b;
- a[0]   := b - fY[4];
- b      := a[0] * fA1;
- fY[4]  := a[1] - b;
- a[1]   := b - fY[5];
- b      := a[1] * fA1;
- fY[5]  := a[0] - b;
- Result := a[1];
+  a[0] := x * FA1 + FY[0];
+  b := a[0] * FA1;
+  FY[0] := b - x;
+  a[1] := b - FY[1];
+  b := a[1] * FA1;
+  FY[1] := a[0] - b;
+  a[0] := b - FY[2];
+  b := a[0] * FA1;
+  FY[2] := a[1] - b;
+  a[1] := b - FY[3];
+  b := a[1] * FA1;
+  FY[3] := a[0] - b;
+  a[0] := b - FY[4];
+  b := a[0] * FA1;
+  FY[4] := a[1] - b;
+  a[1] := b - FY[5];
+  b := a[1] * FA1;
+  FY[5] := a[0] - b;
+  Result := a[1];
 end;
 
 {$ELSE}
 
 function TMasterAllpass.Process(const x:single):single;
 asm
- fld self.fA1.Single
- mov ecx,self.fStages.Integer
- add eax,fY.Single
+ fld self.FA1.Single
+ mov ecx,self.FStages.Integer
+ add eax,FY.Single
  fld x.single
  fmul st(0),st(1)
  fadd [eax].Single
@@ -291,86 +306,118 @@ end;
 
 {$ENDIF}
 
-procedure TMasterAllpass.SetDelay(v: Single);
+procedure TMasterAllpass.SetDelay(Value: Single);
 begin
- fDelay := v;
- fA1    := (1 - v) / (1 + v);
+  FDelay := Value;
+  FA1 := (1 - Value) / (1 + Value);
 end;
+
+{ TPhaser }
 
 constructor TPhaser.Create;
 begin
- inherited;
- fLFO := TLFOSine.Create;
- fSampleRate := 44100;
- fFeedBack := 0.7;
- fLFOPhase := 0;
- fDepth := 1;
- fZM1 := 0;
- Minimum := 440;
- Maximum := 1600;
- Rate := 0;
- fMasterAllPass := TMasterAllPass.Create;
- Stages := 5;
+  inherited;
+  FLFO := TLFOSine.Create;
+  FMasterAllPass := TMasterAllPass.Create;
+  FSampleRate := 44100;
+  FMinimum    := 440;
+  FMaximum    := 1600;
+  FFeedBack   := 0.7;
+  FLFOPhase   := 0;
+  FDepth      := 1;
+  FZM1        := 0;
+  Rate        := 0;
+  Stages      := 5;
+  Calculate;
 end;
 
 destructor TPhaser.Destroy;
 begin
- fLFO.Free;
- fMasterAllPass.Free;
- inherited;
+  FreeAndNil(FLFO);
+  FreeAndNil(FMasterAllPass);
+  inherited;
 end;
 
-procedure TPhaser.SetRate(v: Single);
+procedure TPhaser.RateChanged;
 begin
- fLFO.Speed := 2 * SampleRate / v;
+ FLFO.Speed := 2 * SampleRate / FRate;
+end;
+
+procedure TPhaser.SetRate(Value: Single);
+begin
+ if Value <> FRate then
+  begin
+   FRate := Value;
+   RateChanged;
+  end;
 end;
 
 procedure TPhaser.Calculate;
 var
-  x : Double;
+  x: Double;
 begin
- x := 1 / fSampleRate;
- fMin :=  2 * fMinimum * x;
- fMax :=  2 * fMaximum * x;
+  x := 1 / FSampleRate;
+  FMin := 2 * FMinimum * x;
+  FMax := 2 * FMaximum * x;
 end;
 
-procedure TPhaser.SetMinimum(v:Single);
+procedure TPhaser.SetMinimum(Value: Single);
 begin
- fMinimum := v;
- Calculate;
+ if FMinimum <> Value then
+  begin
+   FMinimum := Value;
+   Calculate;
+  end;
 end;
 
-procedure TPhaser.SetMaximum(v:Single);
+procedure TPhaser.SetMaximum(Value: Single);
 begin
- fMaximum := v;
- Calculate;
+ if FMaximum <> Value then
+  begin
+   FMaximum := Value;
+   Calculate;
+  end;
 end;
 
-function TPhaser.Process(const x:single):single;
+function TPhaser.Process(const Input: single): single;
 var
   d: Single;
 //  i: Integer;
 begin
- d := fMin + (fMax-fMin) * fLFO.Value;
- fMasterAllPass.Delay := d;
- Result :=  fMasterAllPass.Process(kDenorm + x + fZM1 * fFeedBack );
- fZM1 := tanh2c(2 * Result);
- Result := 1.1 * tanh2c(2 * (x + Result * fDepth));
+  d := FMin + (FMax - FMin) * FLFO.Value;
+  FMasterAllPass.Delay := d;
+  Result := FMasterAllPass.Process(kDenorm + Input + FZM1 * FFeedBack);
+  FZM1 := tanh2c(2 * Result);
+  Result := 1.1 * tanh2c(2 * (Input + Result * FDepth));
 end;
 
-procedure TPhaser.SetSampleRate(v:Single);
+procedure TPhaser.SampleRateChanged;
 begin
- fSampleRate := v;
+ FMasterAllPass.SampleRate := FSampleRate;
+ Calculate;
+// FLFO.SampleRate := FSampleRate;
 end;
 
-procedure TPhaser.SetStages(v:Integer);
+procedure TPhaser.SetSampleRate(Value: Single);
 begin
- fMasterAllPass.fStages := v;
+ if Value = 0
+  then exit
+  else Value := abs(Value);
+ if FSampleRate <> Value then
+  begin
+   FSampleRate := Value;
+   SampleRateChanged;
+  end;
 end;
 
-function TPhaser.GetStages:Integer;
+procedure TPhaser.SetStages(Value: Integer);
 begin
- Result := fMasterAllPass.fStages;
+  FMasterAllPass.FStages := Value;
+end;
+
+function TPhaser.GetStages: Integer;
+begin
+  Result := FMasterAllPass.FStages;
 end;
 
 end.

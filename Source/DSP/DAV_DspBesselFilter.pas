@@ -8,7 +8,7 @@ uses
   DAV_DspFilter, DAV_Common;
 
 type
-  TBesselFilter = class(TIIRFilter)
+  TBesselFilter = class(TCustomOrderFilter)
   private
     procedure SetDownsamplePower(Value: Integer);
   protected
@@ -19,27 +19,22 @@ type
     fB              : array [0..63] of Double;
     fState          : array [0..127] of Double;
     fStateStack     : array of array [0..127] of Double;
-    procedure SetW0; override;
-    procedure SetOrder(Value: Integer); override;
-    procedure SetGain(const Value: Double); override;
-    procedure SetFrequency(const Value: Double); override;
-    procedure SetSampleRate(const Value: Double); override;
-    function GetOrder:Integer; override;
+    procedure CalculateW0; override;
   public
     constructor Create; override;
     procedure SetFilterValues(const AFrequency, AGain : Single); virtual;
-    function MagnitudeSquared(Frequency: Double): Double; override;
-    function MagnitudeLog10(Frequency: Double): Double; override;
+    function MagnitudeSquared(const Frequency: Double): Double; override;
+    function MagnitudeLog10(const Frequency: Double): Double; override;
     procedure ResetStates; override;
     procedure Reset; override;
     procedure PushStates; override;
     procedure PopStates; override;
     procedure ResetStatesInt64; override;
-    procedure Complex(Frequency: Double; out Real: Double; out Imaginary: Double); override;
-    procedure Complex(Frequency: Double; out Real: Single; out Imaginary: Single); override;
-    function Imaginary(Frequency: Double): Double; override;
-    function Phase(Frequency: Double): Double; override;
-    function Real(Frequency: Double): Double; override;
+    procedure Complex(const Frequency: Double; out Real: Double; out Imaginary: Double); override;
+    procedure Complex(const Frequency: Double; out Real: Single; out Imaginary: Single); override;
+    function Imaginary(const Frequency: Double): Double; override;
+    function Phase(const Frequency: Double): Double; override;
+    function Real(const Frequency: Double): Double; override;
     property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
     property DownsampleFaktor : Integer read fDownsampleFak;
   end;
@@ -49,8 +44,8 @@ type
     constructor Create; override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input: Double): Double; override;
-    function MagnitudeSquared(Frequency: Double): Double; override;
-    function Phase(Frequency: Double): Double; override;
+    function MagnitudeSquared(const Frequency: Double): Double; override;
+    function Phase(const Frequency: Double): Double; override;
   end;
   TBesselHighCut = TBesselLP;
 
@@ -58,8 +53,8 @@ type
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;
-    function ProcessSample(const Input:Double): Double; override;
-    function MagnitudeSquared(Frequency:Double): Double; override;
+    function ProcessSample(const Input: Double): Double; override;
+    function MagnitudeSquared(const Frequency: Double): Double; override;
   end;
   TBesselLowCut = TBesselHP;
 
@@ -74,19 +69,15 @@ uses
 
 constructor TBesselFilter.Create;
 begin
+ inherited;
  fDownsamplePow := 0;
  fDownsampleFak := 1;
- fFrequency     := 0;
- fGain          := 0;
- fOrder         := 6;
- SampleRate     := 44100;
  CalculateCoefficients;
 end;
 
 procedure TBesselFilter.Reset;
 begin
- fGain := 0;
- CalculateCoefficients;
+ Gain := 0;
 end;
 
 procedure TBesselFilter.ResetStates;
@@ -100,91 +91,46 @@ begin
  PInt64(@fState[1])^ := 0;
 end;
 
-procedure TBesselFilter.SetSampleRate(const Value: Double);
-begin
- if Value=0 then Exit;
- if Value<>fSampleRate then
-  begin
-   fSampleRate := Value;
-   fSRR := 1 / fSampleRate;
-   SetW0;
-   CalculateCoefficients;
-  end;
-end;
-
 procedure TBesselFilter.SetDownsamplePower(Value: Integer);
 begin
- if Value<0 then Value:=0;
+ if Value < 0 then Value := 0;
  if fDownsamplePow<>Value then
   begin
    fDownsamplePow := Value;
-   fDownsampleFak := round(IntPower(2,fDownsamplePow));
-   SetW0;
+   fDownsampleFak := round(IntPower(2, fDownsamplePow));
+   CalculateW0;
   end;
 end;
 
-procedure TBesselFilter.SetW0;
+procedure TBesselFilter.CalculateW0;
 begin
  fW0 := 2 * Pi * fSRR * (fFrequency * fDownsampleFak);
  fSinW0 := sin(fW0);
  if fW0 > 3.1 then fW0 := 3.1;
 end;
 
-procedure TBesselFilter.SetGain(const Value: Double);
-const ln10_0025 : Double = 5.7564627325E-2;
-begin
- fGain := Value;
- fGainSpeed := Exp(fGain * ln10_0025);
-end;
-
-procedure TBesselFilter.SetOrder(Value: Integer);
-begin
- if Value <  1 then Value :=  1 else
- if Value > 64 then Value := 64;
- if fOrder <> Value then
-  begin
-   fOrder := Value;
-   CalculateCoefficients;
-  end;
-end;
-
-procedure TBesselFilter.SetFrequency(const Value: Double);
-begin
- if fFrequency <> Value then
-  begin
-   fFrequency := Value;
-   SetW0;
-   CalculateCoefficients;
-  end;
-end;
-
 procedure TBesselFilter.SetFilterValues(const AFrequency, AGain : Single);
-const ln10_0025 : Double = 5.7564627325E-2;
 begin
  fFrequency := AFrequency;
- fGain := AGain;
- fGainSpeed := Exp(fGain * ln10_0025);
- SetW0;
+ FGain_dB := AGain;
+ FGainFactor := dB_to_Amp(FGain_dB);
+ CalculateW0;
 end;
 
-function TBesselFilter.GetOrder: Integer;
-begin
- Result := fOrder;
-end;
-
-function TBesselFilter.Real(Frequency: Double): Double;
-var Temp : Double;
+function TBesselFilter.Real(const Frequency: Double): Double;
+var
+  Temp : Double;
 begin
  Complex(Frequency, result, Temp);
 end;
 
-function TBesselFilter.Imaginary(Frequency: Double): Double;
+function TBesselFilter.Imaginary(const Frequency: Double): Double;
 var Temp : Double;
 begin
  Complex(Frequency, Temp, result);
 end;
 
-procedure TBesselFilter.Complex(Frequency: Double; out Real, Imaginary: Double);
+procedure TBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
 (*var cw, Divider  : Double;
     cmplx        : TComplexDouble;
     i            : Integer;*)
@@ -222,7 +168,7 @@ begin
 *)
 end;
 
-procedure TBesselFilter.Complex(Frequency: Double; out Real, Imaginary: Single);
+procedure TBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
 var cmplx : TComplexDouble;
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
@@ -230,17 +176,17 @@ begin
  Imaginary := cmplx.Im;
 end;
 
-function TBesselFilter.MagnitudeSquared(Frequency: Double): Double;
+function TBesselFilter.MagnitudeSquared(const Frequency: Double): Double;
 begin
  Result := 1;
 end;
 
-function TBesselFilter.MagnitudeLog10(Frequency: Double): Double;
+function TBesselFilter.MagnitudeLog10(const Frequency: Double): Double;
 begin
  result := 20 * Log10(MagnitudeSquared(Frequency));
 end;
 
-function TBesselFilter.Phase(Frequency: Double): Double;
+function TBesselFilter.Phase(const Frequency: Double): Double;
 var cmplx : TComplexDouble;
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
@@ -271,8 +217,7 @@ end;
 constructor TBesselLP.Create;
 begin
  inherited Create;
- fGainSpeed := 1;
- fOrder := 6;
+ Order := 6;
 end;
 
 function CalculateReverseBesselPolynomial(Order : Integer;  X : Double): Double;
@@ -308,7 +253,7 @@ begin
    fB[2] :=   - ( ((4 * K - 20) * K * K       + 210)*K - 420)*t;
    fB[3] :=   - ((((    K - 10) * K + 45) * K - 105)*K + 105)*t;
 
-   fA[0] := 105 * t * fGainSpeed;
+   fA[0] := 105 * t * fGainFactor;
    fA[1] := - 4 * fA[0];
    fA[2] := 6 * fA[0];
    fA[3] := fA[1];
@@ -322,7 +267,7 @@ begin
    fB[2] :=   - ( ((420 * K - 210) * K * K       + 20)*K - 4)*t;
    fB[3] :=   - ((((105 * K - 105) * K + 45) * K - 10)*K + 1)*t;
 
-   fA[0] := 105 * t * fGainSpeed;
+   fA[0] := 105 * t * fGainFactor;
    fA[1] := 4 * fA[0];
    fA[2] := 6 * fA[0];
    fA[3] := fA[1];
@@ -339,7 +284,7 @@ begin
    fB[4] :=   - ( (((( 6 * K - 4 * 21) * K + 2 * 210)* K * K           - 2 * 4725) * K + 4 * 10395)*K -  6 * 10395)*t;
    fB[5] :=   - ((((((     K - 1 * 21) * K + 1 * 210)* K - 1 * 1260)*K + 1 * 4725) * K - 1 * 10395)*K +  1 * 10395)*t;
 
-   fA[0] :=   10395 * t * fGainSpeed;
+   fA[0] :=   10395 * t * fGainFactor;
    fA[1] := - 6 * fA[0];
    fA[2] :=  15 * fA[0];
    fA[3] := -20 * fA[0];
@@ -349,7 +294,7 @@ begin
   end;
 end;
 
-function TBesselLP.MagnitudeSquared(Frequency:Double):Double;
+function TBesselLP.MagnitudeSquared(const Frequency: Double): Double;
 (*var
   i    : Integer;
   a,cw : Double;*)
@@ -369,7 +314,7 @@ begin
 *)
 end;
 
-function TBesselLP.Phase(Frequency:Double):Double;
+function TBesselLP.Phase(const Frequency: Double): Double;
 (*var cw, sw, Nom, Den : Double;
     i : Integer;*)
 begin
@@ -430,7 +375,7 @@ end;
 constructor TBesselHP.Create;
 begin
  inherited Create;
- fGainSpeed:=1;
+ fGainFactor:=1;
 end;
 
 procedure TBesselHP.CalculateCoefficients;
@@ -445,7 +390,7 @@ begin
    fB[2] :=   - ( ((420 * K - 210) * K * K       + 20)*K - 4)*t;
    fB[3] :=   - ((((105 * K - 105) * K + 45) * K - 10)*K + 1)*t;
 
-   fA[0] := 105 * t * fGainSpeed;
+   fA[0] := 105 * t * fGainFactor;
    fA[1] := - 4 * fA[0];
    fA[2] :=  6 * fA[0];
    fA[3] := fA[1];
@@ -460,7 +405,7 @@ begin
    fB[3] :=   - ((((((15*K -  105)*K -  210)*K + 3780)*K -  4725)*K - 51975)*K + 155925) * t;
    fB[4] :=   - ( (((( 6*K -   84)*K +  420)*K*K         -  9450)*K + 41580)*K -  62370) * t;
    fB[5] :=   - ((((((   K -   21)*K +  210)*K - 1260)*K +  4725)*K - 10395)*K +  10395) * t;
-   fA[0] := 10395 * t * fGainSpeed;
+   fA[0] := 10395 * t * fGainFactor;
    fA[1] := - 6 * fA[0];
    fA[2] :=  15 * fA[0];
    fA[3] := -20 * fA[0];
@@ -470,7 +415,7 @@ begin
   end;
 end;
 
-function TBesselHP.MagnitudeSquared(Frequency:Double):Double;
+function TBesselHP.MagnitudeSquared(const Frequency: Double): Double;
 (*var
   i    : Integer;
   a,cw : Double;*)
