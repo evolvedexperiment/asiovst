@@ -6,29 +6,35 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
 
 const
-  BUFMAX = 512;
+  BUFMAX = 8192;
 
 type
   TDetuneDataModule = class(TVSTModule)
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure DetuneDataModulePrograms1Initialize(Sender: TObject);
     procedure DetuneDataModulePrograms2Initialize(Sender: TObject);
     procedure VSTModuleCreate(Sender: TObject);
+    procedure ParamLatencyChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamDetuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamDetuneChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamMixChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fBuffer : PDAVSingleFixedArray;
-    fBufLen : Integer;
-    fBufRes : Double;
-    fPos    : Array [0..2] of Integer;
-    fDPos   : Array [0..1] of Integer;
-    fWin    : PDAVSingleFixedArray;
-    fSemi   : Double;
-    fDPs1   : Double;
-    fDPs2   : Double;
-    fWet    : Single;
-    fDry    : Single;
+    FBuffer : PDAVSingleFixedArray;
+    FBufLen : Integer;
+    FBufRes : Double;
+    FPos    : Array [0..2] of Integer;
+    FDPos   : Array [0..1] of Integer;
+    FWin    : PDAVSingleFixedArray;
+    FSemi   : Double;
+    FDPs    : array [0..1] of Double;
+    FMix    : Single;
+    FWet    : Single;
+    FDry    : Single;
+    procedure MixChanged;
   public
   end;
 
@@ -39,6 +45,64 @@ implementation
 uses
   Math;
 
+procedure TDetuneDataModule.ParamLatencyChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+var
+  i, tmp : Integer;
+  p, dp  : Double;
+begin
+  tmp := 1 shl (8 + round(4.9 * Parameter[3]));
+
+  if (tmp <> FBufLen) then //recalculate crossfade window
+   begin
+    FBufLen := tmp;
+    FBufRes := 1000 * FBufLen / SampleRate;
+
+    // hanning half-overlap-and-add
+    p  := 0;
+    dp := 2 * Pi / FBufLen;
+    for i := 0 to FBufLen - 1 do
+     begin
+      FWin[i] := (0.5 - 0.5 * cos(p));
+      p := p + dp;
+     end;
+   end;
+end;
+
+procedure TDetuneDataModule.ParamDetuneDisplay(Sender: TObject;
+  const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF(1000 * FBufLen / SampleRate, ffGeneral, 3, 3);
+end;
+
+procedure TDetuneDataModule.ParamDetuneChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+begin
+  FSemi := 3.0 * sqr(Parameter[0]) * Parameter[0];
+  FDPs[1] := Power(1.0594631, FSemi);
+  FDPs[0] := 1 / FDPs[1];
+end;
+
+procedure TDetuneDataModule.ParamOutputChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+  FWet := dB_to_Amp(Value);
+  MixChanged;
+end;
+
+procedure TDetuneDataModule.MixChanged;
+begin
+ FDry := FWet * (1 - FMix) * FMix;
+ FWet := FWet * (2 - FMix) * FMix;
+end;
+
+procedure TDetuneDataModule.ParamMixChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FMix := 0.01 * Value;
+ MixChanged;
+end;
+
 procedure TDetuneDataModule.DetuneDataModulePrograms1Initialize(Sender: TObject);
 begin
  Programs[1].Parameter[0] := 0.20
@@ -46,15 +110,15 @@ end;
 
 procedure TDetuneDataModule.DetuneDataModulePrograms2Initialize(Sender: TObject);
 begin
- programs[2].Parameter[0] := 0.8;
- programs[2].Parameter[1] := 0.7;
+ Programs[2].Parameter[0] := 0.8;
+ Programs[2].Parameter[1] := 0.7;
 end;
 
 procedure TDetuneDataModule.VSTModuleCreate(Sender: TObject);
 begin
- GetMem(fBuffer, BUFMAX * SizeOf(Single));
- GetMem(fWin   , BUFMAX * SizeOf(Single));
- fBufLen := 0;
+ GetMem(FBuffer, BUFMAX * SizeOf(Single));
+ GetMem(FWin   , BUFMAX * SizeOf(Single));
+ FBufLen := 0;
 
 (*
  Parameter[0] := 0.4;  // Fine
@@ -71,8 +135,8 @@ end;
 
 procedure TDetuneDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- if assigned(fBuffer) then Dispose(fBuffer);
- if assigned(fWin) then Dispose(fWin);
+ if assigned(FBuffer) then Dispose(FBuffer);
+ if assigned(FWin) then Dispose(FWin);
 end;
 
 procedure TDetuneDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -83,47 +147,50 @@ var
   lh, l                 : Integer;
   a, b, c, d            : Single;
 begin
- w  := fWet;
- p0 := fPos[0];
- p1 := fPos[1];
- p2 := fPos[2];
- d1 := fDPos[0];
- d2 := fDPos[1];
- l  := fBuflen - 1;
- lh := fBuflen shr 1;
- lf := fBuflen;
+ w  := FWet;
+ p0 := FPos[0];
+ p1 := FPos[1];
+ p2 := FPos[2];
+ d1 := FDPos[0];
+ d2 := FDPos[1];
+ l  := FBufLen - 1;
+ lh := FBufLen shr 1;
+ lf := FBufLen;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   c := fDry * Inputs[0, Sample];
-   d := fDry * Inputs[1, Sample];
+   c := FDry * Inputs[0, Sample];
+   d := FDry * Inputs[1, Sample];
 
    dec(p0);
    p0 := p0 and l;
 
-   fBuffer[p0] := w * (Inputs[0, Sample] + Inputs[1, Sample]);      //input
+   FBuffer[p0] := w * (Inputs[0, Sample] + Inputs[1, Sample]);  // input
 
    p1 := p1 - d1;
-   if p1 < 0 then p1 := p1 + lf;          // output
+   if p1 < 0 then p1 := p1 + lf;                                // output
    p1i := round(p1);
    p1f := p1 - round(p1i);
-   a := fBuffer[p1i];
+   a := FBuffer[p1i];
    inc(p1i);
    p1i := p1i and l;
-   a := a + p1f * (fBuffer[p1i] - a);  // linear interpolation
+   a := a + p1f * (FBuffer[p1i] - a);                           // linear interpolation
 
-   p2i := (p1i + lh) and l;                 // 180-degree ouptut
-   b := fBuffer[p2i];
+   p2i := (p1i + lh) and l;                                     // 180-degree ouptut
+   b := FBuffer[p2i];
    inc(p2i);
    p2i := p2i and l;
-   b := b + p1f * (fBuffer[p2i] - b);    // Linear interpolation
+   b := b + p1f * (FBuffer[p2i] - b);                           // linear interpolation
 
-   p2i := (p1i - p0) and l;                 // Crossfade
-   x   := fWin[p2i];
+
+   // crossfade
+   p2i := (p1i - p0) and l;
+   x   := FWin^[p2i];
 
 (*
-   //++p2i &= l;
-   //x += p1f * (*(win + p2i) - x); //linear interpolation (doesn't do much)
+   // inc(p2i);
+   // p2i := p2i and l;
+   // x := x + p1f * (win^[p2i] - x); //linear interpolation (doesn't do much)
 *)
 
    c := c + b + x * (a - b);
@@ -133,72 +200,42 @@ begin
 
    p1i := round(p2);
    p1f := p2 - p1i;
-   a   := fBuffer[p1i];
+   a   := FBuffer[p1i];
    inc(p1i);
    p1i := p1i and l;
-   a := a + p1f * (fBuffer[p1i] - a); // linear interpolation
+   a := a + p1f * (FBuffer[p1i] - a);    // linear interpolation
 
    p2i := (p1i + lh) and l;              // 180-degree Output
-   b   := fBuffer[p2i];
+   b   := FBuffer[p2i];
    Inc(p2i);
    p2i := p2i + l;
-   b := b + p1f * (fBuffer[p2i] - b); // Linear Interpolation
+   b := b + p1f * (FBuffer[p2i] - b);    // linear Interpolation
 
    p2i := (p1i - p0) and l;              // Crossfade
 
-   x := fWin[p2i];
-   //++p2i &= l;
+   x := FWin[p2i];
+(*
+   // inc(p2i);
+   // p2i := p2i and l;
    //x += p1f * (*(win + p2i) - x); //linear interpolation (doesn't do much)
+*)
    d := d + b + x * (a - b);
 
    Outputs[0, Sample] := c;
    Outputs[1, Sample] := d;
   end;
 
-(*
- fPos[0] := p0;
- fPos[1] := p1;
- fPos[2] := p2;
-*)
-end;
-
-procedure TDetuneDataModule.VSTModuleResume(Sender: TObject);
-var
-  i, tmp : Integer;
-  p, dp  : Double;
-begin
-  fSemi := 3.0 * sqr(Parameter[0]) * Parameter[0];
-  fDPs2 := Power(1.0594631, fSemi);
-  fDPs1 := 1 / fDPs2;
-
-  fWet := dB_to_Amp(Parameter[2]);
-  fDry := fWet * (1 - Parameter[1]) * Parameter[1];
-  fWet := fWet * (2 - Parameter[1]) * Parameter[1];
-
-  tmp  := 1 shl (8 + round(4.9 * Parameter[3]));
-
-  if (tmp <> fBufLen) then //recalculate crossfade window
-   begin
-    fBufLen := tmp;
-    fBufRes := 1000 * fBufLen / SampleRate;
-
-    //hanning half-overlap-and-add
-    p  := 0;
-    dp := 2 * Pi / fBufLen;
-    for i:=0 to fBufLen - 1 do
-     begin
-      fWin[i] := (0.5 - 0.5 * cos(p));
-      p := p + dp;
-     end;
-   end;
+ FPos[0] := p0;
+ FPos[1] := round(p1);
+ FPos[2] := round(p2);
 end;
 
 procedure TDetuneDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- FillChar(fBuffer, BUFMAX * SizeOf(Single), 0);
- fPos[0] := 0;
- fPos[1] := 0;
- fPos[2] := 0;
+ FillChar(FBuffer^, BUFMAX * SizeOf(Single), 0);
+ FPos[0] := 0;
+ FPos[1] := 0;
+ FPos[2] := 0;
 end;
 
 end.

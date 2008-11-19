@@ -12,6 +12,7 @@ object DetuneDataModule: TDetuneDataModule
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Stereo Detune'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdat'
   ShellPlugins = <>
   Programs = <
@@ -42,6 +43,7 @@ object DetuneDataModule: TDetuneDataModule
       StepFloat = 1.000000000000000000
       Units = 'cents'
       VSTModule = Owner
+      OnParameterChange = ParamDetuneChange
     end
     item
       Curve = ctLinear
@@ -55,6 +57,7 @@ object DetuneDataModule: TDetuneDataModule
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParamMixChange
     end
     item
       Curve = ctLinear
@@ -71,21 +74,26 @@ object DetuneDataModule: TDetuneDataModule
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
+      OnParameterChange = ParamOutputChange
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Latency'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Latency'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
+      OnParameterChange = ParamLatencyChange
+      OnCustomParameterDisplay = ParamDetuneDisplay
     end>
-  OnResume = VSTModuleResume
-  OnSuspend = VSTModuleSuspend
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnSuspend = VSTModuleSuspend
   Left = 218
   Top = 81
   Height = 150
