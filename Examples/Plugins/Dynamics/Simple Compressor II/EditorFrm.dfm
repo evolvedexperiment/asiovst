@@ -14,6 +14,7 @@ object EditorForm: TEditorForm
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object DialThreshold: TGuiDial
@@ -21,13 +22,14 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 64
     Height = 64
-    LineWidth = 2
     LineColor = 15652795
-    Position = -0.000000000100000001
-    DefaultPosition = -0.000000000100000001
+    DefaultPosition = -10.000000000000000000
     Min = -96.000000000000000000
-    Max = -0.000000000100000001
     NumGlyphs = 64
+    PointerAngles.Start = 235
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialThresholdChange
   end
@@ -51,10 +53,15 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 64
     Height = 64
-    LineWidth = 2
     LineColor = 15652795
+    DefaultPosition = 60.000000000000000000
     Max = 200.000000000000000000
     NumGlyphs = 64
+    PointerAngles.Start = 235
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 60.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialRatioChange
   end
@@ -78,11 +85,14 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 64
     Height = 64
-    LineWidth = 2
     LineColor = 15652795
-    Min = -200.000000000000000000
     Max = 300.000000000000000000
+    Min = -200.000000000000000000
     NumGlyphs = 64
+    PointerAngles.Start = 235
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialAttackChange
   end
@@ -106,13 +116,16 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 64
     Height = 64
-    LineWidth = 2
     LineColor = 15652795
-    Position = 699.000000000000000000
     DefaultPosition = 699.000000000000000000
-    Min = 699.000000000000000000
     Max = 3699.000000000000000000
+    Min = 699.000000000000000000
     NumGlyphs = 64
+    PointerAngles.Start = 235
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 699.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialReleaseChange
   end

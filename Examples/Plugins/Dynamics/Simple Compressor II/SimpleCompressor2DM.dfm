@@ -1,15 +1,16 @@
-object SimpleLimiterDataModule: TSimpleLimiterDataModule
+object SoftKneeCompressorDataModule: TSoftKneeCompressorDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor]
   Version = '0.0'
-  EffectName = 'Simple Limiter'
-  ProductName = 'Simple Limiter'
+  EffectName = 'Simple Compressor II'
+  ProductName = 'Simple Compressor II'
   VendorName = 'ASIO-VST Delphi Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'SiGa'
   ShellPlugins = <>
   Programs = <>
@@ -52,6 +53,7 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
       CurveFactor = 100000.000000000000000000
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep]
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -86,6 +88,7 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 239
   Top = 105
   Height = 150

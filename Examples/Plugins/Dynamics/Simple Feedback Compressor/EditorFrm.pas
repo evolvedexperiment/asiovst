@@ -77,11 +77,18 @@ begin
 end;
 
 procedure TEditorForm.UpdateAttack;
+var
+  TempAttack : Single;
 begin
  with TSimpleFeedbackCompressorDataModule(Owner) do
-  if Parameter[2] < 1
-   then LbAttackValue.Caption := FloatToStrF(1000 * Parameter[2], ffGeneral, 4, 2) + ' µs'
-   else LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
+  begin
+   TempAttack := 100 * Log10(Parameter[2]);
+   if Parameter[2] <> TempAttack
+    then DialAttack.Position := TempAttack;
+   if Parameter[2] < 1
+    then LbAttackValue.Caption := FloatToStrF(1000 * Parameter[2], ffGeneral, 4, 2) + ' µs'
+    else LbAttackValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 4, 2) + ' ms';
+  end;
 end;
 
 procedure TEditorForm.UpdateRelease;

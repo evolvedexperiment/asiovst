@@ -10,25 +10,25 @@ uses
 type
   TFmSubBoost = class(TForm)
     DialDryMix: TGuiDial;
+    DialFilterOrder: TGuiDial;
+    DialInputFilter: TGuiDial;
     DialLevel: TGuiDial;
     DialRelease: TGuiDial;
     DialThreshold: TGuiDial;
     DialTune: TGuiDial;
+    GuiLabel2: TGuiLabel;
     GuiPanel1: TGuiPanel;
+    GuiPanel2: TGuiPanel;
     LbDryMix: TGuiLabel;
+    LbFilterOrder: TGuiLabel;
     LbLevel: TGuiLabel;
     LbRelease: TGuiLabel;
     LbThreshold: TGuiLabel;
     LbTitle: TGuiLabel;
+    LbTitleShadow: TGuiLabel;
     LbTune: TGuiLabel;
     LbType: TGuiLabel;
     SBType: TGuiSelectBox;
-    LbTitleShadow: TGuiLabel;
-    GuiPanel2: TGuiPanel;
-    DialInputFilter: TGuiDial;
-    DialFilterOrder: TGuiDial;
-    GuiLabel2: TGuiLabel;
-    LbFilterOrder: TGuiLabel;
     procedure DialDryMixChange(Sender: TObject);
     procedure DialLevelChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);

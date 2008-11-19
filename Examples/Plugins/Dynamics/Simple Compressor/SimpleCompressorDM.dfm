@@ -10,6 +10,7 @@ object SimpleCompressorDataModule: TSimpleCompressorDataModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'SiGa'
   ShellPlugins = <>
   Programs = <>
@@ -52,6 +53,7 @@ object SimpleCompressorDataModule: TSimpleCompressorDataModule
       CurveFactor = 100000.000000000000000000
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep]
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1000.000000000000000000
       MaxInteger = 1000

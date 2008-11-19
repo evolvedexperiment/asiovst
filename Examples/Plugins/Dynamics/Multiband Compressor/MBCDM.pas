@@ -148,7 +148,7 @@ var i : Integer;
 begin
  for i := 0 to 1 do
   with fMultiband[i]
-   do LowComp.MakeUpGaindB := Value;
+   do LowComp.MakeUpGain_dB := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -164,7 +164,7 @@ var i : Integer;
 begin
  for i := 0 to 1 do
   with fMultiband[i]
-   do MidComp.MakeUpGaindB := Value;
+   do MidComp.MakeUpGain_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -179,7 +179,7 @@ var i : Integer;
 begin
  for i := 0 to 1 do
   with fMultiband[i]
-   do HighComp.MakeUpGaindB := Value;
+   do HighComp.MakeUpGain_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -193,7 +193,8 @@ procedure TMBCDataModule.MBCDMLowThresholdChange(Sender: TObject; const Index: I
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do LowComp.Threshold := Value;
+  with fMultiband[i]
+   do LowComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -207,8 +208,8 @@ procedure TMBCDataModule.MBCDMMidThresholdChange(Sender: TObject; const Index: I
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
-   MidComp.Threshold := Value;
+  with fMultiband[i]
+   do MidComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -222,8 +223,8 @@ procedure TMBCDataModule.MBCDMHighThresholdChange(Sender: TObject; const Index: 
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
-   HighComp.Threshold := Value;
+  with fMultiband[i]
+   do HighComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -332,7 +333,7 @@ var i : Integer;
 begin
  for i := 0 to 1 do
   with fMultiband[i] do
-   LowComp.Decay := Value;
+   LowComp.Release := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -348,7 +349,7 @@ var i : Integer;
 begin
  for i := 0 to 1 do
   with fMultiband[i] do
-   MidComp.Decay := Value;
+   MidComp.Release := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -364,7 +365,7 @@ var i : Integer;
 begin
  for i := 0 to 1 do
   with fMultiband[i] do
-   HighComp.Decay := Value;
+   HighComp.Release := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do

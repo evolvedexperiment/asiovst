@@ -14,7 +14,7 @@ type
   private
     FAntiAlias              : TGuiAntiAlias;
     FAutoFocus              : Boolean;
-    FBorderColor            : TColor;
+//    FBorderColor            : TColor;
     FCaption                : string;
     FHeaderMinWidth         : Integer;
     FLineColor              : TColor;

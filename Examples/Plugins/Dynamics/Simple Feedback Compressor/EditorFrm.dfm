@@ -28,8 +28,8 @@ object EditorForm: TEditorForm
     ParentColor = True
     Radius = 15
     TabOrder = 0
-    Transparent = True
     UseDockManager = True
+    Transparent = True
     object LbRatioValue: TLabel
       Left = 65
       Top = 94
@@ -68,11 +68,15 @@ object EditorForm: TEditorForm
       Width = 48
       Height = 48
       Color = 14602441
-      LineWidth = 2
       LineColor = 12097673
       CircleColor = 5983816
+      DefaultPosition = 100.000000000000000000
       Max = 200.000000000000000000
       NumGlyphs = 31
+      PointerAngles.Start = 235
+      PointerAngles.Range = 270
+      PointerAngles.Resolution = 270.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
       OnChange = DialRatioChange
     end
@@ -82,14 +86,17 @@ object EditorForm: TEditorForm
       Width = 48
       Height = 48
       Color = 14602441
-      LineWidth = 2
       LineColor = 12097673
       CircleColor = 5983816
-      Position = 699.000000000000000000
       DefaultPosition = 699.000000000000000000
-      Min = 699.000000000000000000
       Max = 3699.000000000000000000
+      Min = 699.000000000000000000
       NumGlyphs = 31
+      PointerAngles.Start = 235
+      PointerAngles.Range = 270
+      PointerAngles.Resolution = 270.000000000000000000
+      Position = 699.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
       OnChange = DialReleaseChange
     end
@@ -116,14 +123,15 @@ object EditorForm: TEditorForm
       Width = 48
       Height = 48
       Color = 14602441
-      LineWidth = 2
       LineColor = 12097673
       CircleColor = 5983816
-      Position = -0.000000000100000001
-      DefaultPosition = -0.000000000100000001
+      DefaultPosition = -20.000000000000000000
       Min = -96.000000000000000000
-      Max = -0.000000000100000001
       NumGlyphs = 31
+      PointerAngles.Start = 235
+      PointerAngles.Range = 270
+      PointerAngles.Resolution = 270.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
       OnChange = DialThresholdChange
     end
@@ -213,12 +221,15 @@ object EditorForm: TEditorForm
       Width = 48
       Height = 48
       Color = 14602441
-      LineWidth = 2
       LineColor = 12097673
       CircleColor = 5983816
-      Min = -200.000000000000000000
       Max = 300.000000000000000000
+      Min = -200.000000000000000000
       NumGlyphs = 31
+      PointerAngles.Start = 235
+      PointerAngles.Range = 270
+      PointerAngles.Resolution = 270.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
       OnChange = DialAttackChange
     end

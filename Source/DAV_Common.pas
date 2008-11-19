@@ -107,9 +107,9 @@ type
   function Factorial(Order : Integer) : Double;
   function f_Limit(v: Single; l: Single = -1; u: Single = 1): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Limit(v: Double; l: Double = -1; u: Double = 1): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Clip(x,l,h: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Cliplo(x,l: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Cliphi(x,h: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Clip(x, l, h: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Cliplo(x, l: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Cliphi(x, h: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function dB_to_Amp(g: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function Amp_to_dB(v: Single): Single; overload;
   {$IFNDEF FPC}
@@ -127,7 +127,7 @@ type
   procedure f_Abs(var f: Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
   procedure f_Abs(var f: Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
   procedure f_Abs(var f: TDAV4SingleArray); overload;
-  function f_mod(const Arg1, Arg2: Single): Single;
+  function f_Mod(const Arg1, Arg2: Single): Single;
 
   {$IFNDEF FPC}
   function f_Int(Sample: Single): Single; overload;
@@ -159,8 +159,8 @@ type
 
   {$ENDIF}
   // scale logarithmically from 20 Hz to 20 kHz
-  function FreqLinearToLog(value:Single):Single;
-  function FreqLogToLinear(value:Single):Single;
+  function FreqLinearToLog(Value: Single): Single;
+  function FreqLogToLinear(Value: Single): Single;
 
   procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double); overload;
   procedure GetSinCos(Frequency: Extended; var SinValue, CosValue : Extended); overload;
@@ -755,7 +755,7 @@ begin
  Result:=Single((@l)^);
 end;
 
-function f_Power(base, exp : Double) : Double;
+function f_Power(base, exp : Double): Double;
 begin
  Result := Power(base, exp);
 end;

@@ -10,6 +10,7 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'SKLi'
   ShellPlugins = <>
   Programs = <>
@@ -24,7 +25,7 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       MaxInteger = 0
       Min = -96.000000000000000000
       MinInteger = -96
-      ShortLabel = 'thrshld'
+      ShortLabel = 'Thrshld'
       SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -35,23 +36,26 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Ratio'
-      LargeStepFloat = 10.000000000000000000
-      Max = 100.000000000000000000
-      Min = 1.000000000000000000
-      MinInteger = 1
-      ShortLabel = 'ratio'
-      SmallStepFloat = 1.000000000000000000
+      DisplayName = 'Knee'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 1
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      Min = 0.050000000745058060
+      ShortLabel = 'Knee'
+      SmallStepFloat = 0.100000001490116100
       SmoothingFactor = 1.000000000000000000
-      StepFloat = 1.000000000000000000
+      StepFloat = 0.100000001490116100
+      Units = 'dB'
       VSTModule = Owner
-      OnParameterChange = SKLRatioChange
+      OnParameterChange = SKLSoftKneeChange
     end
     item
       Curve = ctLogarithmic
       CurveFactor = 100000.000000000000000000
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep]
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -86,26 +90,25 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Soft Knee'
-      LargeStepFloat = 1.000000000000000000
-      LargeStepInteger = 1
-      Max = 10.000000000000000000
-      MaxInteger = 10
-      ShortLabel = 'knee'
-      SmallStepFloat = 0.009999999776482582
+      DisplayName = 'Makeup  Gain'
+      LargeStepFloat = 2.000000000000000000
+      Max = 40.000000000000000000
+      MaxInteger = 40
+      ShortLabel = 'Makeup'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
-      StepFloat = 0.100000001490116100
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = SKLSoftKneeChange
+      OnParameterChange = SKLMakeUpGainChange
     end>
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
-  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  Left = 452
-  Top = 121
+  OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
+  Left = 618
+  Top = 117
   Height = 150
   Width = 215
 end

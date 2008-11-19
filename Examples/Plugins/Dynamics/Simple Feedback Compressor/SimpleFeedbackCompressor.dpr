@@ -13,14 +13,14 @@ uses
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
-  SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule;
+  VSTModule: TVSTModule;
 begin
   try
-    SimpleFeedbackCompressorDataModule := TSimpleFeedbackCompressorDataModule.Create(Application);
-    SimpleFeedbackCompressorDataModule.AudioMaster := audioMaster;
-    with SimpleFeedbackCompressorDataModule do
+    VSTModule := TSimpleFeedbackCompressorDataModule.Create(Application);
+    VSTModule.AudioMaster := audioMaster;
+    with VSTModule do
     begin
-      Effect^.user := SimpleFeedbackCompressorDataModule;
+      Effect^.user := VSTModule;
       Result := Effect;
     end;
   except

@@ -1,5 +1,6 @@
 package DAV_GUI_D10;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -27,6 +28,7 @@ package DAV_GUI_D10;
 requires
   rtl,
   vcl,
+  designide,
   DAV_Modular_D10,
   DAV_Common_D10,
   DAV_VSTPlugin_D10;
@@ -49,6 +51,8 @@ contains
   DAV_GuiSelectBox in '..\Source\GUI\DAV_GuiSelectBox.pas',
   DAV_GuiStaticWaveform in '..\Source\GUI\DAV_GuiStaticWaveform.pas',
   DAV_GuiVUMeter in '..\Source\GUI\DAV_GuiVUMeter.pas',
-  DAV_CorrelationMeter in '..\Source\GUI\DAV_CorrelationMeter.pas';
+  DAV_CorrelationMeter in '..\Source\GUI\DAV_CorrelationMeter.pas',
+  DAV_GuiGraphXY in '..\Source\GUI\DAV_GuiGraphXY.pas',
+  DAV_GuiGraphXYDesign in '..\Source\GUI\DAV_GuiGraphXYDesign.pas';
 
 end.

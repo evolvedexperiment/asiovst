@@ -4,7 +4,7 @@ object EditorForm: TEditorForm
   BorderStyle = bsNone
   Caption = 'EditorForm'
   ClientHeight = 128
-  ClientWidth = 323
+  ClientWidth = 402
   Color = clSilver
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,6 +14,7 @@ object EditorForm: TEditorForm
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object LbThresholdValue: TLabel
@@ -58,14 +59,17 @@ object EditorForm: TEditorForm
     Top = 32
     Width = 64
     Height = 64
-    LineWidth = 2
     LineColor = clGray
     CircleColor = clSilver
-    Position = -0.000000000100000001
     DefaultPosition = -0.000000000100000001
-    Min = -96.000000000000000000
     Max = -0.000000000100000001
+    Min = -96.000000000000000000
     NumGlyphs = 31
+    PointerAngles.Start = 235
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = -0.000000000100000001
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialThresholdChange
   end
@@ -74,11 +78,14 @@ object EditorForm: TEditorForm
     Top = 32
     Width = 64
     Height = 64
-    LineWidth = 2
     LineColor = clGray
     CircleColor = clSilver
     Max = 200.000000000000000000
     NumGlyphs = 31
+    PointerAngles.Start = 235
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialRatioChange
   end
@@ -87,12 +94,15 @@ object EditorForm: TEditorForm
     Top = 32
     Width = 64
     Height = 64
-    LineWidth = 2
     LineColor = clGray
     CircleColor = clSilver
-    Min = -200.000000000000000000
     Max = 300.000000000000000000
+    Min = -200.000000000000000000
     NumGlyphs = 31
+    PointerAngles.Start = 235
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialAttackChange
   end
@@ -101,14 +111,17 @@ object EditorForm: TEditorForm
     Top = 32
     Width = 64
     Height = 64
-    LineWidth = 2
     LineColor = clGray
     CircleColor = clSilver
-    Position = 699.000000000000000000
     DefaultPosition = 699.000000000000000000
-    Min = 699.000000000000000000
     Max = 3699.000000000000000000
+    Min = 699.000000000000000000
     NumGlyphs = 31
+    PointerAngles.Start = 235
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 699.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialReleaseChange
   end
@@ -118,10 +131,10 @@ object EditorForm: TEditorForm
     Width = 64
     Height = 13
     Margins.Bottom = 0
-    Caption = 'Ratio'
-    AntiAlias = gaaLinear4x
     Alignment = taCenter
+    AntiAlias = gaaLinear4x
     AutoSize = True
+    Caption = 'Ratio'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -134,10 +147,10 @@ object EditorForm: TEditorForm
     Width = 64
     Height = 13
     Margins.Bottom = 0
-    Caption = 'Attack'
-    AntiAlias = gaaLinear4x
     Alignment = taCenter
+    AntiAlias = gaaLinear4x
     AutoSize = True
+    Caption = 'Attack'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -150,10 +163,10 @@ object EditorForm: TEditorForm
     Width = 64
     Height = 13
     Margins.Bottom = 0
-    Caption = 'Release'
-    AntiAlias = gaaLinear4x
     Alignment = taCenter
+    AntiAlias = gaaLinear4x
     AutoSize = True
+    Caption = 'Release'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -166,10 +179,51 @@ object EditorForm: TEditorForm
     Width = 64
     Height = 13
     Margins.Bottom = 0
-    Caption = 'Threshold'
-    AntiAlias = gaaLinear4x
     Alignment = taCenter
+    AntiAlias = gaaLinear4x
     AutoSize = True
+    Caption = 'Threshold'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
+  end
+  object LbMakeUpValue: TLabel
+    Left = 324
+    Top = 102
+    Width = 64
+    Height = 13
+    Alignment = taCenter
+    AutoSize = False
+    Transparent = False
+  end
+  object DialMakeUp: TGuiDial
+    Left = 324
+    Top = 32
+    Width = 64
+    Height = 64
+    LineColor = clGray
+    CircleColor = clSilver
+    Max = 40.000000000000000000
+    NumGlyphs = 31
+    PointerAngles.Start = 235
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
+    StitchKind = skVertical
+    OnChange = DialMakeUpChange
+  end
+  object LbMakeUp: TGuiLabel
+    Left = 324
+    Top = 8
+    Width = 64
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    AutoSize = True
+    Caption = 'Makeup'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11

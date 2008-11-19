@@ -12,7 +12,9 @@ type
     ScrollBar: TScrollBar;
     LbdB: TLabel;
     procedure ScrollBarChange(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   public
+    procedure UpdateScrollBar;
   end;
 
 implementation
@@ -22,10 +24,25 @@ implementation
 uses
   SimpleGateDM;
 
+procedure TEditorForm.FormShow(Sender: TObject);
+begin
+ UpdateScrollBar;
+end;
+
 procedure TEditorForm.ScrollBarChange(Sender: TObject);
 begin
  TSimpleGateDataModule(Owner).Parameter[0] := ScrollBar.Position;
  LbdB.Caption := IntToStr(ScrollBar.Position) + ' dB';
+end;
+
+procedure TEditorForm.UpdateScrollBar;
+begin
+ with Owner as TSimpleGateDataModule do
+  begin
+   if Round(Parameter[0]) <> ScrollBar.Position
+    then ScrollBar.Position := Round(Parameter[0]);
+   LbdB.Caption := IntToStr(ScrollBar.Position) + ' dB';
+  end;
 end;
 
 end.

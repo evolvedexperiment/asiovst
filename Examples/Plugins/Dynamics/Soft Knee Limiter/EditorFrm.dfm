@@ -22,41 +22,34 @@ object EditorForm: TEditorForm
     Top = 26
     Width = 48
     Height = 48
-    LineWidth = 2
     LineColor = clSilver
     CircleColor = clGray
-    Position = -0.000000000100000001
     DefaultPosition = -0.000000000100000001
-    Min = -96.000000000000000000
     Max = -0.000000000100000001
+    Min = -96.000000000000000000
     NumGlyphs = 64
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = -0.000000000100000001
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialThresholdChange
-  end
-  object DialRatio: TGuiDial
-    Left = 70
-    Top = 26
-    Width = 48
-    Height = 48
-    LineWidth = 2
-    LineColor = clSilver
-    CircleColor = clGray
-    Max = 2.000000000000000000
-    NumGlyphs = 64
-    StitchKind = skVertical
-    OnChange = DialRatioChange
   end
   object DialAttack: TGuiDial
     Left = 132
     Top = 26
     Width = 48
     Height = 48
-    LineWidth = 2
     LineColor = clSilver
     CircleColor = clGray
-    Min = -2.000000000000000000
     Max = 3.000000000000000000
+    Min = -2.000000000000000000
     NumGlyphs = 64
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialAttackChange
   end
@@ -65,29 +58,36 @@ object EditorForm: TEditorForm
     Top = 26
     Width = 48
     Height = 48
-    LineWidth = 2
     LineColor = clSilver
     CircleColor = clGray
-    Position = 3.698999881744385000
-    DefaultPosition = 3.698999881744385000
-    Min = 0.699000000953674300
+    DefaultPosition = 1.699000000953674000
     Max = 3.698999881744385000
+    Min = 0.699000000953674300
     NumGlyphs = 64
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 1.699000000953674000
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialReleaseChange
   end
   object DialSoftKnee: TGuiDial
-    Left = 256
+    Left = 72
     Top = 26
     Width = 48
     Height = 48
-    LineWidth = 2
     LineColor = clSilver
     CircleColor = clGray
-    Position = 20.000000000000000000
-    DefaultPosition = 20.000000000000000000
-    Max = 20.000000000000000000
+    DefaultPosition = 2.000000000000000000
+    Max = 10.000000000000000000
+    Min = 0.050000000745058060
     NumGlyphs = 64
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 0.050000000745058060
+    ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
     OnChange = DialSoftKneeChange
   end
@@ -100,21 +100,6 @@ object EditorForm: TEditorForm
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Threshold'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 2105376
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-  end
-  object LbRatio: TGuiLabel
-    Left = 77
-    Top = 8
-    Width = 34
-    Height = 13
-    Margins.Bottom = 0
-    Alignment = taCenter
-    AntiAlias = gaaLinear4x
-    Caption = 'Ratio'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 2105376
     Font.Height = -11
@@ -152,7 +137,7 @@ object EditorForm: TEditorForm
     Font.Style = [fsBold]
   end
   object LbSoftKnee: TGuiLabel
-    Left = 252
+    Left = 68
     Top = 8
     Width = 56
     Height = 13
@@ -176,15 +161,6 @@ object EditorForm: TEditorForm
     AntiAlias = gaaLinear4x
     Caption = 'dB'
   end
-  object LbRatioValue: TGuiLabel
-    Left = 70
-    Top = 79
-    Width = 48
-    Height = 13
-    Margins.Bottom = 0
-    Alignment = taCenter
-    AntiAlias = gaaLinear4x
-  end
   object LbAttackValue: TGuiLabel
     Left = 132
     Top = 79
@@ -204,12 +180,52 @@ object EditorForm: TEditorForm
     AntiAlias = gaaLinear4x
   end
   object LbSoftKneeValue: TGuiLabel
-    Left = 256
+    Left = 72
     Top = 79
     Width = 48
     Height = 13
     Margins.Bottom = 0
     Alignment = taCenter
     AntiAlias = gaaLinear4x
+  end
+  object LbMakeUpValue: TGuiLabel
+    Left = 258
+    Top = 79
+    Width = 48
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+  end
+  object DialMakeUp: TGuiDial
+    Left = 258
+    Top = 26
+    Width = 48
+    Height = 48
+    LineColor = clSilver
+    CircleColor = clGray
+    Max = 20.000000000000000000
+    NumGlyphs = 64
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
+    StitchKind = skVertical
+    OnChange = DialMakeUpChange
+  end
+  object LbMakeUp: TGuiLabel
+    Left = 254
+    Top = 8
+    Width = 56
+    Height = 13
+    Margins.Bottom = 0
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Makeup'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 2105376
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
   end
 end

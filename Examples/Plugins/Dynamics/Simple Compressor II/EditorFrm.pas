@@ -2,7 +2,7 @@ unit EditorFrm;
 
 interface
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Common,
   DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel;
 
@@ -20,22 +20,17 @@ type
     LbReleaseValue: TLabel;
     LbThreshold: TGuiLabel;
     LbThresholdValue: TLabel;
-    LbMakeUpValue: TLabel;
-    DialMakeUp: TGuiDial;
-    LbMakeUp: TGuiLabel;
     procedure DialThresholdChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure DialMakeUpChange(Sender: TObject);
   public
-    procedure UpdateAttack;
-    procedure UpdateMakeUpGain;
     procedure UpdateRatio;
-    procedure UpdateRelease;
     procedure UpdateThreshold;
+    procedure UpdateAttack;
+    procedure UpdateRelease;
   end;
 
 implementation
@@ -43,19 +38,18 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, SoftKneeFeedbackCompressorDM;
+  Math, SimpleCompressor2DM;
 
 procedure TEditorForm.FormCreate(Sender: TObject);
 var
   RS  : TResourceStream;
 begin
- RS := TResourceStream.Create(hInstance, 'RoundKnob', 'BMP');
+ RS := TResourceStream.Create(hInstance, 'WaveArtsKnob', 'BMP');
  try
   DialThreshold.DialBitmap.LoadFromStream(RS); RS.Position := 0;
-  DialRatio.DialBitmap.Assign(DialThreshold.DialBitmap);
-  DialAttack.DialBitmap.Assign(DialThreshold.DialBitmap);
-  DialRelease.DialBitmap.Assign(DialThreshold.DialBitmap);
-  DialMakeUp.DialBitmap.Assign(DialThreshold.DialBitmap);
+  DialRatio.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
+  DialAttack.DialBitmap.LoadFromStream(RS);    RS.Position := 0;
+  DialRelease.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
  finally
   RS.Free;
  end;
@@ -64,19 +58,18 @@ end;
 procedure TEditorForm.FormShow(Sender: TObject);
 begin
  UpdateAttack;
- UpdateMakeUpGain;
  UpdateRatio;
- UpdateRelease;
  UpdateThreshold;
+ UpdateRelease;
 end;
 
 procedure TEditorForm.UpdateThreshold;
 begin
- with TSoftKneeFeedbackCompressorDataModule(Owner) do
+ with TSoftKneeCompressorDataModule(Owner) do
   begin
    if Parameter[0] <> DialThreshold.Position
     then DialThreshold.Position := Parameter[0];
-   LbThresholdValue.Caption := FloatToStrF(Parameter[0], ffFixed, 3, 1) + ' dB';
+   LbThresholdValue.Caption := FloatToStrF(DialThreshold.Position, ffFixed, 3, 1) + ' dB';
   end;
 end;
 
@@ -84,7 +77,7 @@ procedure TEditorForm.UpdateAttack;
 var
   AttackTemp : Single;
 begin
- with TSoftKneeFeedbackCompressorDataModule(Owner) do
+ with TSoftKneeCompressorDataModule(Owner) do
   begin
    AttackTemp := 100 * Log10(Parameter[2]);
    if DialAttack.Position <> AttackTemp
@@ -93,24 +86,11 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateMakeUpGain;
-var
-  MakeUpTemp : Single;
-begin
- with TSoftKneeFeedbackCompressorDataModule(Owner) do
-  begin
-   MakeUpTemp := Parameter[4];
-   if DialMakeUp.Position <> MakeUpTemp
-    then DialMakeUp.Position := MakeUpTemp;
-   LbMakeUpValue.Caption := FloatToStrF(Parameter[4], ffFixed, 3, 1) + ' dB';
-  end;
-end;
-
 procedure TEditorForm.UpdateRatio;
 var
   RatioTemp : Single;
 begin
- with TSoftKneeFeedbackCompressorDataModule(Owner) do
+ with TSoftKneeCompressorDataModule(Owner) do
   begin
    RatioTemp := 100 * Log10(Parameter[1]);
    if DialRatio.Position <> RatioTemp
@@ -123,7 +103,7 @@ procedure TEditorForm.UpdateRelease;
 var
   ReleaseTemp : Single;
 begin
- with TSoftKneeFeedbackCompressorDataModule(Owner) do
+ with TSoftKneeCompressorDataModule(Owner) do
   begin
    ReleaseTemp := 1000 * Log10(Parameter[3]);
    if DialRelease.Position <> ReleaseTemp
@@ -134,41 +114,46 @@ end;
 
 procedure TEditorForm.DialThresholdChange(Sender: TObject);
 begin
- with TSoftKneeFeedbackCompressorDataModule(Owner) do
+ with TSoftKneeCompressorDataModule(Owner) do
   begin
-   Parameter[0] := DialThreshold.Position;
+   if Parameter[0] <> DialThreshold.Position
+    then Parameter[0] := DialThreshold.Position;
   end;
 end;
 
 procedure TEditorForm.DialRatioChange(Sender: TObject);
+var
+  TempRatio : Single;
 begin
- with TSoftKneeFeedbackCompressorDataModule(Owner) do
+ with TSoftKneeCompressorDataModule(Owner) do
   begin
-   Parameter[1] := Power(10, 0.01 * DialRatio.Position);
+   TempRatio := Power(10, 0.01 * DialRatio.Position);
+   if Parameter[1] <> TempRatio
+    then Parameter[1] := TempRatio;
   end;
 end;
 
 procedure TEditorForm.DialAttackChange(Sender: TObject);
+var
+  TempAttack : Single;
 begin
- with TSoftKneeFeedbackCompressorDataModule(Owner) do
+ with TSoftKneeCompressorDataModule(Owner) do
   begin
-   Parameter[2] := Power(10, 0.01 * DialAttack.Position);
+   TempAttack := Power(10, 0.01 * DialAttack.Position);
+   if Parameter[2] <> TempAttack
+    then Parameter[2] := TempAttack;
   end;
 end;
 
 procedure TEditorForm.DialReleaseChange(Sender: TObject);
+var
+  TempRelease : Single;
 begin
- with TSoftKneeFeedbackCompressorDataModule(Owner) do
+ with TSoftKneeCompressorDataModule(Owner) do
   begin
-   Parameter[3] := Power(10, 0.001 * DialRelease.Position);
-  end;
-end;
-
-procedure TEditorForm.DialMakeUpChange(Sender: TObject);
-begin
- with TSoftKneeFeedbackCompressorDataModule(Owner) do
-  begin
-   Parameter[4] := DialMakeUp.Position;
+   TempRelease := Power(10, 0.001 * DialRelease.Position);
+   if Parameter[3] <> TempRelease
+    then Parameter[3] := TempRelease;
   end;
 end;
 

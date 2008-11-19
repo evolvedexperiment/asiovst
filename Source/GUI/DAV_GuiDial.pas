@@ -706,8 +706,11 @@ end;
 
 procedure TCustomGuiDial.SetDefaultPosition(Value: Single);
 begin
-  if Value < FMin then Value := FMin else
-  if Value > FMax then Value := FMax;
+ if not (csLoading in ComponentState) then
+  begin
+   if Value < FMin then Value := FMin else
+   if Value > FMax then Value := FMax;
+  end;
 
   FDefaultPosition := Value;
 end;

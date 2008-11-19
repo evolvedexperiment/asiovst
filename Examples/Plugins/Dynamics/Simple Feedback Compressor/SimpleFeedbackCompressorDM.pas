@@ -15,11 +15,12 @@ type
     procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject;
+      const SampleRate: Single);
   private
-    fSimpleFeedbackCompressors : Array [0..1] of TSimpleCompressor;
+    fSimpleFeedbackCompressors : Array [0..1] of TCustomFeedbackCompressor;
   public
   end;
 
@@ -30,64 +31,15 @@ implementation
 uses
   Math, EditorFrm;
 
-procedure TSimpleFeedbackCompressorDataModule.SLThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- fSimpleFeedbackCompressors[0].Threshold := Value;
- fSimpleFeedbackCompressors[1].Threshold := Value;
- if Assigned(EditorForm) then
-  with EditorForm As TEditorForm do
-   if DialThreshold.Position <> Round(Value) then
-    begin
-     DialThreshold.Position := Round(Value);
-     UpdateThreshold;
-    end;
-end;
-
-procedure TSimpleFeedbackCompressorDataModule.SLRatioChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- fSimpleFeedbackCompressors[0].Ratio := 1 / Value;
- fSimpleFeedbackCompressors[1].Ratio := 1 / Value;
- if Assigned(EditorForm) then
-  with EditorForm As TEditorForm do
-   if DialRatio.Position <> Round(100 * Log10(Value)) then
-    begin
-     DialRatio.Position := Round(100 * Log10(Value));
-     UpdateRatio;
-    end;
-end;
-
-procedure TSimpleFeedbackCompressorDataModule.SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-begin
- fSimpleFeedbackCompressors[0].Decay := Value;
- fSimpleFeedbackCompressors[1].Decay := Value;
- if Assigned(EditorForm) then
-  with EditorForm As TEditorForm do
-   if DialRelease.Position <> Round(Value) then
-    begin
-     DialRelease.Position := Round(1000 * Log10(Value));
-     UpdateRelease;
-    end;
-end;
-
-procedure TSimpleFeedbackCompressorDataModule.SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
-begin
- fSimpleFeedbackCompressors[0].Attack := Value;
- fSimpleFeedbackCompressors[1].Attack := Value;
- if Assigned(EditorForm) then
-  with EditorForm As TEditorForm do
-   if DialAttack.Position <> Round(100 * Log10(Value)) then
-    begin
-     DialAttack.Position := Round(100 * Log10(Value));
-     UpdateAttack;
-    end;
-end;
-
 procedure TSimpleFeedbackCompressorDataModule.VSTModuleCreate(Sender: TObject);
+var
+  i : Integer;
 begin
- fSimpleFeedbackCompressors[0] := TSimpleFeedbackCompressor.Create;
- fSimpleFeedbackCompressors[1] := TSimpleFeedbackCompressor.Create;
+ for i := 0 to Length(fSimpleFeedbackCompressors) - 1 do
+  begin
+   fSimpleFeedbackCompressors[i] := TSimpleFeedbackCompressor.Create;
+   fSimpleFeedbackCompressors[i].AutoMakeUp := True;
+  end;
 end;
 
 procedure TSimpleFeedbackCompressorDataModule.VSTModuleDestroy(Sender: TObject);
@@ -110,6 +62,61 @@ begin
  Parameter[3] := 40;
 end;
 
+procedure TSimpleFeedbackCompressorDataModule.SLThresholdChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSimpleFeedbackCompressors[0].Threshold_dB := Value;
+ fSimpleFeedbackCompressors[1].Threshold_dB := Value;
+ if EditorForm is TEditorForm then
+  with TEditorForm(EditorForm) do
+   if DialThreshold.Position <> Round(Value) then
+    begin
+     DialThreshold.Position := Round(Value);
+     UpdateThreshold;
+    end;
+end;
+
+procedure TSimpleFeedbackCompressorDataModule.SLRatioChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSimpleFeedbackCompressors[0].Ratio := 1 / Value;
+ fSimpleFeedbackCompressors[1].Ratio := fSimpleFeedbackCompressors[0].Ratio;
+ if EditorForm is TEditorForm then
+  with TEditorForm(EditorForm) do
+   if DialRatio.Position <> Round(100 * Log10(Value)) then
+    begin
+     DialRatio.Position := Round(100 * Log10(Value));
+     UpdateRatio;
+    end;
+end;
+
+procedure TSimpleFeedbackCompressorDataModule.SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSimpleFeedbackCompressors[0].Release := Value;
+ fSimpleFeedbackCompressors[1].Release := Value;
+ if EditorForm is TEditorForm then
+  with TEditorForm(EditorForm) do
+   if DialRelease.Position <> Round(Value) then
+    begin
+     DialRelease.Position := Round(1000 * Log10(Value));
+     UpdateRelease;
+    end;
+end;
+
+procedure TSimpleFeedbackCompressorDataModule.SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
+var
+  SampleDuration_ms : Single;
+begin
+ SampleDuration_ms := 1000 / SampleRate;
+ if Value < 3 * SampleDuration_ms
+  then Value := 3 * SampleDuration_ms;
+ fSimpleFeedbackCompressors[0].Attack := Value;
+ fSimpleFeedbackCompressors[1].Attack := Value;
+ if EditorForm is TEditorForm then
+  with TEditorForm(EditorForm)
+   do UpdateAttack;
+end;
+
 procedure TSimpleFeedbackCompressorDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
@@ -117,9 +124,22 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-    Outputs[0, i] := fSimpleFeedbackCompressors[0].ProcessSample(Inputs[0, i]);
-    Outputs[1, i] := fSimpleFeedbackCompressors[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := fSimpleFeedbackCompressors[0].ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := fSimpleFeedbackCompressors[1].ProcessSample(Inputs[1, i]);
   end;
+end;
+
+procedure TSimpleFeedbackCompressorDataModule.VSTModuleSampleRateChange(
+  Sender: TObject; const SampleRate: Single);
+var
+  SampleDuration_ms : Single;
+begin
+ fSimpleFeedbackCompressors[0].SampleRate := SampleRate;
+ fSimpleFeedbackCompressors[1].SampleRate := SampleRate;
+
+ SampleDuration_ms := 1000 / SampleRate;
+ if Parameter[3] < 3 * SampleDuration_ms
+  then Parameter[3] := 3 * SampleDuration_ms;
 end;
 
 end.

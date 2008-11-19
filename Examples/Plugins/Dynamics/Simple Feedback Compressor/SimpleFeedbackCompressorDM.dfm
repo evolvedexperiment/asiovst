@@ -11,6 +11,7 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
   UniqueID = 'SFeC'
   ShellPlugins = <>
   Programs = <
@@ -57,6 +58,7 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       CurveFactor = 100000.000000000000000000
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep]
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -87,11 +89,27 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = SLReleaseChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'AutoMakeUp'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'AutoMak'
+      SmallStepFloat = 1.000000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 679
   Top = 126
   Height = 150

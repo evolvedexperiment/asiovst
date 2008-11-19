@@ -50,6 +50,8 @@ contains
   DAV_DspStateVariableFilter in '..\Source\DSP\DAV_DspStateVariableFilter.pas',
   DAV_DSPUpDownSampling in '..\Source\DSP\DAV_DSPUpDownSampling.pas',
   DAV_DSPSineLFO in '..\Source\DSP\DAV_DSPSineLFO.pas',
-  DAV_DspFftReal2Complex in '..\Source\DSP\DAV_DspFftReal2Complex.pas';
+  DAV_DspFftReal2Complex in '..\Source\DSP\DAV_DspFftReal2Complex.pas',
+  DAV_DspFilterManager in '..\Source\DSP\DAV_DspFilterManager.pas',
+  DAV_DspCommon in '..\Source\DSP\DAV_DspCommon.pas';
 
 end.

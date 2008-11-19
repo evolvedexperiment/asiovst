@@ -3,16 +3,22 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor]
-  Version = '0.0'
-  EffectName = 'Simple Limiter'
-  ProductName = 'Simple Limiter'
+  Version = '1.0'
+  EffectName = 'Soft Knee Feedback Compressor'
+  ProductName = 'Soft Knee Feedback Compressor'
   VendorName = 'ASIO-VST Delphi Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
-  UniqueID = 'SiGa'
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
+  UniqueID = 'SKFC'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear
@@ -52,6 +58,7 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       CurveFactor = 100000.000000000000000000
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep]
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -82,10 +89,28 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = SLReleaseChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Make Up Gain'
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 40.000000000000000000
+      MaxInteger = 40
+      ShortLabel = 'MakeUp'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParamMakeUpGainChange
     end>
+  OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 679
   Top = 126
   Height = 150

@@ -4,6 +4,18 @@ interface
 
 {$I ..\ASIOVST.INC}
 
+uses
+  Classes, TypInfo,
+  {$IFDEF FPC}
+  LCLIntf, LazIDEIntf, PropEdits, ComponentEditors
+  {$ELSE}
+  {$IFDEF COMPILER6_UP}
+  DesignIntf
+  {$ELSE}
+  DsgnIntf
+  {$ENDIF}
+  {$ENDIF};
+
 procedure Register;
 
 implementation
@@ -12,11 +24,10 @@ implementation
 
 uses
   {$IFDEF FPC} LResources, {$ELSE} DAV_GuiGroup, DAV_GuiLevelMeter, {$ENDIF}
-  Classes, DAV_GuiStaticWaveform,
-  DAV_GuiDynamicWaveform, DAV_GuiDial, DAV_GuiLED, DAV_GuiButton,
-  DAV_GuiMidiKeys, DAV_GuiAudioDataDisplay, DAV_GuiLabel,
-  DAV_GuiPanel, DAV_GuiADSRGraph, DAV_GuiSelectBox, DAV_CorrelationMeter,
-  DAV_GuiVUMeter;
+  DAV_GuiADSRGraph, DAV_GuiStaticWaveform, DAV_GuiDynamicWaveform,
+  DAV_GuiAudioDataDisplay, DAV_GuiDial, DAV_GuiLED, DAV_GuiPanel, DAV_GuiLabel,
+  DAV_GuiButton, DAV_GuiMidiKeys, DAV_GuiSelectBox, DAV_CorrelationMeter,
+  DAV_GuiVUMeter, DAV_GuiGraphXY, DAV_GuiGraphXYDesign;
 
 procedure Register;
 begin
@@ -24,7 +35,9 @@ begin
     TGuiADSRGraph, TGuiAudioDataDisplay, TGuiLabel, TGuiPanel, TGuiLED,
     TGuiVUMeter, TGuiDial, TGuiDialMetal, TGuiCorrelationMeter, TGuiSelectBox,
     TGuiMidiKeys, TGuiButton, {$IFNDEF FPC} TGuiGroup, TGuiLevelMeter, {$ENDIF}
-    TGuiDialEx]);
+    TGuiGraphXY, TGuiDialEx]);
+  RegisterPropertyEditor(TypeInfo(string), TGuiGraphXYSeriesCollectionItem, 'SeriesClassName', nil);
+  RegisterPropertyEditor(TypeInfo(TCustomGuiGraphXYSeries), TGuiGraphXYSeriesCollectionItem, 'Series', TSeriesClassProperty);
 end;
 
 {$IFDEF FPC}

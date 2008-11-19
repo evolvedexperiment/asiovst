@@ -201,8 +201,8 @@ end;
 procedure TBassExtenderModule.ParamReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then FCompressor[0].Decay := Value;
- if assigned(FCompressor[1]) then FCompressor[1].Decay := Value;
+ if assigned(FCompressor[0]) then FCompressor[0].Release := Value;
+ if assigned(FCompressor[1]) then FCompressor[1].Release := Value;
  if EditorForm is TFmBassExtender then
   with TFmBassExtender(EditorForm) do
    begin
@@ -251,8 +251,8 @@ end;
 procedure TBassExtenderModule.ParamThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then FCompressor[0].Threshold := Value;
- if assigned(FCompressor[1]) then FCompressor[1].Threshold := Value;
+ if assigned(FCompressor[0]) then FCompressor[0].Threshold_dB := Value;
+ if assigned(FCompressor[1]) then FCompressor[1].Threshold_dB := Value;
  if EditorForm is TFmBassExtender then
   with TFmBassExtender(EditorForm) do
    begin
@@ -443,8 +443,8 @@ begin
     L := fLowpass[ch, 1].ProcessSample(L);
     L := fLowpass[ch, 0].ProcessSample(fDivideMix[0] * FOctaveDivider[ch].ProcessSample(L) +
                                        fDivideMix[1] * L);
-    FCompressor[ch].InputSideChain(L);
-    Outputs[ch, Sample] := fBalance[0] * (fCompressorMix[0] * FCompressor[ch].ProcessSample(L) +
+    FCompressor[ch].InputSample(L);
+    Outputs[ch, Sample] := fBalance[0] * (fCompressorMix[0] * FCompressor[ch].GainSample(L) +
                            fCompressorMix[1] * L) + fBalance[1] * H;
    end;
 end;
@@ -464,8 +464,8 @@ begin
     L := fLowpass[ch, 1].ProcessSample(L);
     L := fLowpass[ch, 0].ProcessSample(fDivideMix[0] * FOctaveDivider[ch].ProcessSample(L) +
                                        fDivideMix[1] * L);
-    FCompressor[ch].InputSideChain(L);
-    Outputs[ch, Sample] := fBalance[0] * (fCompressorMix[0] * FCompressor[ch].ProcessSample(L) +
+    FCompressor[ch].InputSample(L);
+    Outputs[ch, Sample] := fBalance[0] * (fCompressorMix[0] * FCompressor[ch].GainSample(L) +
                            fCompressorMix[1] * L) + fBalance[1] * H;
    end;
 end;
@@ -484,8 +484,8 @@ begin
    L := fLowpass[0, 1].ProcessSample(L);
    L := fLowpass[0, 0].ProcessSample(fDivideMix[0] * FOctaveDivider[0].ProcessSample(L) +
                                       fDivideMix[1] * L);
-   FCompressor[0].InputSideChain(L);
-   M := fBalance[0] * (fCompressorMix[0] * FCompressor[0].ProcessSample(L) +
+   FCompressor[0].InputSample(L);
+   M := fBalance[0] * (fCompressorMix[0] * FCompressor[0].GainSample(L) +
                        fCompressorMix[1] * L) + fBalance[1] * H;
 
    // Side
@@ -516,8 +516,8 @@ begin
    L := fLowpass[0, 1].ProcessSample(L);
    L := fLowpass[0, 0].ProcessSample(fDivideMix[0] * FOctaveDivider[0].ProcessSample(L) +
                                       fDivideMix[1] * L);
-   FCompressor[0].InputSideChain(L);
-   M := fBalance[0] * (fCompressorMix[0] * FCompressor[0].ProcessSample(L) +
+   FCompressor[0].InputSample(L);
+   M := fBalance[0] * (fCompressorMix[0] * FCompressor[0].GainSample(L) +
                        fCompressorMix[1] * L) + fBalance[1] * H;
 
    // Side
@@ -545,8 +545,8 @@ begin
     H := fHighpass[ch, 1].ProcessSample(Inputs[ch, Sample] - L);
     L := fLowpass[ch, 0].ProcessSample(fDivideMix[0] * FOctaveDivider[ch].ProcessSample(L) +
                                        fDivideMix[1] * L);
-    FCompressor[ch].InputSideChain(L);
-    Outputs[ch, Sample] := fBalance[0] * (fCompressorMix[0] * FCompressor[ch].ProcessSample(L) +
+    FCompressor[ch].InputSample(L);
+    Outputs[ch, Sample] := fBalance[0] * (fCompressorMix[0] * FCompressor[ch].GainSample(L) +
                            fCompressorMix[1] * L) + fBalance[1] * H;
    end;
 end;
@@ -564,8 +564,8 @@ begin
     H := fHighpass[ch, 1].ProcessSample(Inputs[ch, Sample] - L);
     L := fLowpass[ch, 0].ProcessSample(fDivideMix[0] * FOctaveDivider[ch].ProcessSample(L) +
                                        fDivideMix[1] * L);
-    FCompressor[ch].InputSideChain(L);
-    Outputs[ch, Sample] := fBalance[0] * (fCompressorMix[0] * FCompressor[ch].ProcessSample(L) +
+    FCompressor[ch].InputSample(L);
+    Outputs[ch, Sample] := fBalance[0] * (fCompressorMix[0] * FCompressor[ch].GainSample(L) +
                            fCompressorMix[1] * L) + fBalance[1] * H;
    end;
 end;
@@ -584,8 +584,8 @@ begin
    L := fLowpass[0, 0].ProcessSample(fDivideMix[0] * FOctaveDivider[0].ProcessSample(L) +
                                      fDivideMix[1] * L);
 
-   FCompressor[0].InputSideChain(L);
-   M := fBalance[0] * (fCompressorMix[0] * FCompressor[0].ProcessSample(L) +
+   FCompressor[0].InputSample(L);
+   M := fBalance[0] * (fCompressorMix[0] * FCompressor[0].GainSample(L) +
                        fCompressorMix[1] * L) + fBalance[1] * H;
 
    // Side
@@ -616,8 +616,8 @@ begin
    L := fLowpass[0, 0].ProcessSample(fDivideMix[0] * FOctaveDivider[0].ProcessSample(L) +
                                      fDivideMix[1] * L);
 
-   FCompressor[0].InputSideChain(L);
-   M := fBalance[0] * (fCompressorMix[0] * FCompressor[0].ProcessSample(L) +
+   FCompressor[0].InputSample(L);
+   M := fBalance[0] * (fCompressorMix[0] * FCompressor[0].GainSample(L) +
                        fCompressorMix[1] * L) + fBalance[1] * H;
 
    // Side

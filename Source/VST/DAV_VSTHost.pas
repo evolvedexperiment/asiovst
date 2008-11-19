@@ -2706,7 +2706,7 @@ begin
  if FLoaded
   then Unload;
  try
-   if Value^.Magic <> 'VstP'
+   if Value^.Magic <> 'PtsV'
     then raise Exception.Create(RStrVSTPluginNotValid);
   FVstEffect := Value;  
   DontRaiseExceptionsAndSetFPUcodeword;

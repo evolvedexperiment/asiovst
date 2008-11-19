@@ -10,6 +10,7 @@ object SimpleGateDataModule: TSimpleGateDataModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'SiGa'
   ShellPlugins = <>
   Programs = <>
@@ -35,6 +36,7 @@ object SimpleGateDataModule: TSimpleGateDataModule
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81
   Height = 150

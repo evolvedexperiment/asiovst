@@ -10,6 +10,7 @@ object MBCDataModule: TMBCDataModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'MBCo'
   ShellPlugins = <>
   Programs = <>
@@ -354,8 +355,8 @@ object MBCDataModule: TMBCDataModule
     end>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
   Left = 218
   Top = 81
   Height = 150

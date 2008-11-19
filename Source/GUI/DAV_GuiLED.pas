@@ -113,9 +113,7 @@ var
   Rad      : Single;
   XStart   : Single;
   BW       : Single;
-  Center   : record
-              x, y : Single;
-             end;
+  Center   : TPointFloat;
   Line     : PRGB32Array;
   LEDColor : TRGB32;
   Scale    : Single;

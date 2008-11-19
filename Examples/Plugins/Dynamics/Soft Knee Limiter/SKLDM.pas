@@ -2,7 +2,7 @@ unit SKLDM;
 
 interface
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_DspDynamics;
 
@@ -11,17 +11,17 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLSoftKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure SKLMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleOpen(Sender: TObject);
   private
-    fSoftKneeLimiters : Array [0..1] of TSoftKneeLimiter;
+    fSoftKneeLimiters : Array [0..1] of TSimpleSoftKneeLimiter;
   public
   end;
 
@@ -32,80 +32,10 @@ implementation
 uses
   Math, EditorFrm;
 
-procedure TSoftKneeLimiterDataModule.SKLThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- fSoftKneeLimiters[0].Threshold := Value;
- fSoftKneeLimiters[1].Threshold := Value;
- if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
-   if DialThreshold.Position <> Value then
-    begin
-     DialThreshold.Position := Value;
-     UpdateThreshold;
-    end;
-end;
-
-procedure TSoftKneeLimiterDataModule.SKLSoftKneeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- fSoftKneeLimiters[0].SoftKnee := 2 * (20 - Value);
- fSoftKneeLimiters[1].SoftKnee := 2 * (20 - Value);
- if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
-   if DialSoftKnee.Position <> Value then
-    begin
-     DialSoftKnee.Position := Value;
-     UpdateSoftKnee;
-    end;
-end;
-
-procedure TSoftKneeLimiterDataModule.SKLRatioChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- fSoftKneeLimiters[0].Ratio := 1 / Value;
- fSoftKneeLimiters[1].Ratio := 1 / Value;
- if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
-   if DialRatio.Position <> Log10(Value) then
-    begin
-     DialRatio.Position := Log10(Value);
-     UpdateRatio;
-    end;
-end;
-
-procedure TSoftKneeLimiterDataModule.SKLReleaseChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- fSoftKneeLimiters[0].Decay := Value;
- fSoftKneeLimiters[1].Decay := Value;
- if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
-   if DialRelease.Position <> Log10(Value) then
-    begin
-     DialRelease.Position := Log10(Value);
-     UpdateRelease;
-    end;
-end;
-
-procedure TSoftKneeLimiterDataModule.SKLAttackChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- fSoftKneeLimiters[0].Attack := Value;
- fSoftKneeLimiters[1].Attack := Value;
- if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
-   if DialAttack.Position <> Log10(Value) then
-    begin
-     DialAttack.Position := Log10(Value);
-     UpdateAttack;
-    end;
-end;
-
 procedure TSoftKneeLimiterDataModule.VSTModuleCreate(Sender: TObject);
 begin
- fSoftKneeLimiters[0] := TSoftKneeLimiter.Create;
- fSoftKneeLimiters[1] := TSoftKneeLimiter.Create;
+ fSoftKneeLimiters[0] := TSimpleSoftKneeLimiter.Create;
+ fSoftKneeLimiters[1] := TSimpleSoftKneeLimiter.Create;
 end;
 
 procedure TSoftKneeLimiterDataModule.VSTModuleDestroy(Sender: TObject);
@@ -114,19 +44,64 @@ begin
  FreeAndNil(fSoftKneeLimiters[1]);
 end;
 
-procedure TSoftKneeLimiterDataModule.VSTModuleEditOpen(Sender: TObject;
-  var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TEditorForm.Create(Self);
-end;
-
 procedure TSoftKneeLimiterDataModule.VSTModuleOpen(Sender: TObject);
 begin
  Parameter[0] := 0;
  Parameter[1] := 1;
  Parameter[2] := 5;
  Parameter[3] := 40;
- Parameter[4] := 6;
+ Parameter[4] := 0;
+end;
+
+procedure TSoftKneeLimiterDataModule.VSTModuleEditOpen(Sender: TObject;
+  var GUI: TForm; ParentWindow: Cardinal);
+begin
+ GUI := TEditorForm.Create(Self);
+end;
+
+procedure TSoftKneeLimiterDataModule.SKLThresholdChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSoftKneeLimiters[0].Threshold_dB := Value;
+ fSoftKneeLimiters[1].Threshold_dB := Value;
+ if EditorForm is TEditorForm
+  then TEditorForm(EditorForm).UpdateThreshold;
+end;
+
+procedure TSoftKneeLimiterDataModule.SKLMakeUpGainChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSoftKneeLimiters[0].MakeUpGain_dB := Value;
+ fSoftKneeLimiters[1].MakeUpGain_dB := Value;
+ if EditorForm is TEditorForm
+  then TEditorForm(EditorForm).UpdateMakeUp;
+end;
+
+procedure TSoftKneeLimiterDataModule.SKLSoftKneeChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSoftKneeLimiters[0].Knee_dB := Value;
+ fSoftKneeLimiters[1].Knee_dB := Value;
+ if EditorForm is TEditorForm
+  then TEditorForm(EditorForm).UpdateSoftKnee;
+end;
+
+procedure TSoftKneeLimiterDataModule.SKLReleaseChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSoftKneeLimiters[0].Release := Value;
+ fSoftKneeLimiters[1].Release := Value;
+ if EditorForm is TEditorForm
+  then TEditorForm(EditorForm).UpdateRelease;
+end;
+
+procedure TSoftKneeLimiterDataModule.SKLAttackChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSoftKneeLimiters[0].Attack := Value;
+ fSoftKneeLimiters[1].Attack := Value;
+ if EditorForm is TEditorForm
+  then TEditorForm(EditorForm).UpdateAttack;
 end;
 
 procedure TSoftKneeLimiterDataModule.VSTModuleProcess(const Inputs, Outputs:

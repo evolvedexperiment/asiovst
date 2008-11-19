@@ -11,6 +11,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out, vcdBypass]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'EAGa'
   ShellPlugins = <>
   Programs = <>
@@ -70,13 +71,16 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       Curve = ctLogarithmic
       CurveFactor = 250.000000000000000000
       DisplayName = 'Hold'
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 2.500000000000000000
       MaxInteger = 24
       Min = 0.009999999776482582
       MinInteger = -200
       ShortLabel = 'Hold'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = 'ms'
       VSTModule = Owner
@@ -238,9 +242,9 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       OnParameterChange = EAGRangeChange
     end>
   OnEditOpen = VSTModuleEditOpen
-  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcessBypass
   OnProcessReplacing = VSTModuleProcessBypass
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 552
   Top = 84
   Height = 150

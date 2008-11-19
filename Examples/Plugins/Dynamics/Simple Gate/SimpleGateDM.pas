@@ -13,8 +13,10 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
     procedure SGDMThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleSampleRateChange(Sender: TObject;
+      const SampleRate: Single);
   private
-    fSimpleGates : Array [0..1] of TSimpleGate;
+    fSimpleGates : Array [0..1] of TClassicGate;
   public
   end;
 
@@ -25,30 +27,26 @@ implementation
 uses
   EditorFrm;
 
-procedure TSimpleGateDataModule.SGDMThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- fSimpleGates[0].Threshold := Value;
- fSimpleGates[1].Threshold := Value;
- if Assigned(EditorForm) then
-  with EditorForm As TEditorForm do
-   if ScrollBar.Position <> Round(Value) then
-    begin
-     ScrollBar.Position := Round(Value);
-     LbdB.Caption := IntToStr(ScrollBar.Position) + ' dB';
-    end;
-end;
-
 procedure TSimpleGateDataModule.VSTModuleCreate(Sender: TObject);
 begin
- fSimpleGates[0] := TSimpleGate.Create;
- fSimpleGates[1] := TSimpleGate.Create;
+ fSimpleGates[0] := TClassicGate.Create;
+ fSimpleGates[1] := TClassicGate.Create;
 end;
 
 procedure TSimpleGateDataModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(fSimpleGates[0]);
  FreeAndNil(fSimpleGates[1]);
+end;
+
+procedure TSimpleGateDataModule.SGDMThresholdChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ fSimpleGates[0].Threshold_dB := Value;
+ fSimpleGates[1].Threshold_dB := Value;
+ if EditorForm is TEditorForm then
+  with TEditorForm(EditorForm)
+   do UpdateScrollBar;
 end;
 
 procedure TSimpleGateDataModule.VSTModuleEditOpen(Sender: TObject;
@@ -58,15 +56,22 @@ begin
 end;
 
 procedure TSimpleGateDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i : Integer;
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0,i] := fSimpleGates[0].ProcessSample(Inputs[0, i]);
-   Outputs[1,i] := fSimpleGates[0].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := fSimpleGates[0].ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := fSimpleGates[1].ProcessSample(Inputs[1, i]);
   end;
+end;
+
+procedure TSimpleGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+begin
+ fSimpleGates[0].SampleRate := SampleRate;
+ fSimpleGates[1].SampleRate := SampleRate;
 end;
 
 end.

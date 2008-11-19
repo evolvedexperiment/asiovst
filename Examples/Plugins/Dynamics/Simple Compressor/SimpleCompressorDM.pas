@@ -31,8 +31,8 @@ uses
 procedure TSimpleCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fSimpleCompressors[0].Threshold := Value;
- fSimpleCompressors[1].Threshold := Value;
+ fSimpleCompressors[0].Threshold_dB := Value;
+ fSimpleCompressors[1].Threshold_dB := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
    if SBThreshold.Position <> Round(Value) then
@@ -59,8 +59,8 @@ end;
 procedure TSimpleCompressorDataModule.SLReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fSimpleCompressors[0].Decay := Value;
- fSimpleCompressors[1].Decay := Value;
+ fSimpleCompressors[0].Release := Value;
+ fSimpleCompressors[1].Release := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do
    if SBRelease.Position <> Round(Value) then
