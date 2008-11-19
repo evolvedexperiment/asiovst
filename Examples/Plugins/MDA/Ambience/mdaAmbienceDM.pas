@@ -136,7 +136,7 @@ begin
 
    t := fBuffers[1]^[p];
    r := r - cFeedBack * t;
-   fBuffers[0]^[d[1]] := r; // Allpass
+   fBuffers[1]^[d[1]] := r; // Allpass
    r := r + t;
 
    t := fBuffers[2]^[p];
@@ -211,7 +211,7 @@ begin
 
    t := fBuffers[1]^[p];
    r := r - cFeedBack * t;
-   fBuffers[0]^[d[1]] := r; // Allpass
+   fBuffers[1]^[d[1]] := r; // Allpass
    r := r + t;
 
    t := fBuffers[2]^[p];
