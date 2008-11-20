@@ -7,7 +7,7 @@
       <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\Source\;C:\Users\Christian Budde\Projects\VSTPack\Source\VST\;C:\Users\Christian Budde\Projects\VSTPack\Source\Math\"/>
+        <OtherUnitFiles Value="..\Source\;..\Source\VST\;..\Source\Math\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
         <SrcPath Value="..\Source\"/>
       </SearchPaths>
@@ -15,6 +15,7 @@
         <Style Value="1"/>
         <SyntaxOptions>
           <SyntaxMode Value="Delphi"/>
+          <CStyleOperator Value="False"/>
         </SyntaxOptions>
       </Parsing>
       <Linking>
@@ -32,6 +33,7 @@
       <Item1>
         <Filename Value="..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
         <HasRegisterProc Value="True"/>
+        <UnitName Value="DAV_VSTModuleLazIDE"/>
       </Item1>
     </Files>
     <Type Value="RunAndDesignTime"/>

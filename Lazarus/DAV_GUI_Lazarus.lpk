@@ -7,9 +7,14 @@
       <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\Source\;C:\Users\Christian Budde\Projects\VSTPack\Source\GUI\"/>
+        <OtherUnitFiles Value="..\Source\;..\Source\GUI\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <CStyleOperator Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>

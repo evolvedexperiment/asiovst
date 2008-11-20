@@ -7,7 +7,7 @@
       <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\Source\;C:\Users\Christian Budde\Projects\VSTPack\Source\VST\;C:\Users\Christian Budde\Projects\VSTPack\Source\Math\"/>
+        <OtherUnitFiles Value="..\Source\;..\Source\VST\;..\Source\Math\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
         <SrcPath Value="..\Source\"/>
       </SearchPaths>
