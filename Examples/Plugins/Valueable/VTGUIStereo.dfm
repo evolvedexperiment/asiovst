@@ -3,8 +3,8 @@ object FmVT: TFmVT
   Top = 220
   BorderStyle = bsNone
   Caption = 'Valueable'
-  ClientHeight = 395
-  ClientWidth = 359
+  ClientHeight = 381
+  ClientWidth = 485
   Color = 329145
   Font.Charset = DEFAULT_CHARSET
   Font.Color = 103128
@@ -17,9 +17,9 @@ object FmVT: TFmVT
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object LbTrebleFLat: TGuiLabel
-    Left = 65
-    Top = 16
+  object LbTrebleFlatRight: TGuiLabel
+    Left = 392
+    Top = 13
     Width = 37
     Height = 13
     Alignment = taCenter
@@ -31,9 +31,9 @@ object FmVT: TFmVT
     Font.Name = 'Arial'
     Font.Style = [fsBold]
   end
-  object LbBassFLat: TGuiLabel
-    Left = 65
-    Top = 204
+  object LbBassFlatLeft: TGuiLabel
+    Left = 59
+    Top = 193
     Width = 37
     Height = 12
     Alignment = taCenter
@@ -45,9 +45,9 @@ object FmVT: TFmVT
     Font.Name = 'Arial'
     Font.Style = [fsBold]
   end
-  object DialLowGain: TGuiDial
-    Left = 20
-    Top = 218
+  object DialLowGainLeft: TGuiDial
+    Left = 14
+    Top = 207
     Width = 128
     Height = 128
     LineColor = 103128
@@ -59,11 +59,11 @@ object FmVT: TFmVT
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 200.000000000000000000
     StitchKind = skHorizontal
-    OnChange = DialLowGainChange
+    OnChange = DialLowGainLeftChange
   end
-  object DialHiGain: TGuiDial
-    Left = 20
-    Top = 31
+  object DialHiGainRight: TGuiDial
+    Left = 347
+    Top = 28
     Width = 128
     Height = 128
     LineColor = 103128
@@ -75,11 +75,11 @@ object FmVT: TFmVT
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 200.000000000000000000
     StitchKind = skHorizontal
-    OnChange = DialHiGainChange
+    OnChange = DialHiGainRightChange
   end
   object DialSelector: TGuiDial
-    Left = 162
-    Top = 142
+    Left = 159
+    Top = 120
     Width = 84
     Height = 84
     LineColor = 103128
@@ -95,9 +95,9 @@ object FmVT: TFmVT
     StitchKind = skHorizontal
     OnChange = DialSelectorChange
   end
-  object DialLowBypass: TGuiDial
-    Left = 29
-    Top = 349
+  object DialLowBypassLeft: TGuiDial
+    Left = 23
+    Top = 338
     Width = 32
     Height = 32
     LineColor = 103128
@@ -108,11 +108,11 @@ object FmVT: TFmVT
     PointerAngles.Resolution = 180.000000000000000000
     ScrollRange_Pixel = 20.000000000000000000
     StitchKind = skHorizontal
-    OnChange = DialLowBypassChange
+    OnChange = DialLowBypassLeftChange
   end
-  object DialHiBypass: TGuiDial
-    Left = 18
-    Top = 163
+  object DialHiBypassRight: TGuiDial
+    Left = 345
+    Top = 158
     Width = 32
     Height = 32
     LineColor = 103128
@@ -123,11 +123,11 @@ object FmVT: TFmVT
     PointerAngles.Resolution = 180.000000000000000000
     ScrollRange_Pixel = 20.000000000000000000
     StitchKind = skHorizontal
-    OnChange = DialHiBypassChange
+    OnChange = DialHiBypassRightChange
   end
   object LbTitle: TGuiLabel
-    Left = 162
-    Top = 21
+    Left = 156
+    Top = 15
     Width = 179
     Height = 39
     Alignment = taCenter
@@ -139,9 +139,9 @@ object FmVT: TFmVT
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsItalic]
   end
-  object LbBass: TGuiLabel
-    Left = 67
-    Top = 352
+  object LbBassLeft: TGuiLabel
+    Left = 61
+    Top = 341
     Width = 64
     Height = 23
     Alignment = taCenter
@@ -153,9 +153,9 @@ object FmVT: TFmVT
     Font.Name = 'Arial'
     Font.Style = [fsBold]
   end
-  object LbTreble: TGuiLabel
-    Left = 52
-    Top = 167
+  object LbTrebleRight: TGuiLabel
+    Left = 379
+    Top = 162
     Width = 94
     Height = 25
     Alignment = taCenter
@@ -168,22 +168,22 @@ object FmVT: TFmVT
     Font.Style = [fsBold]
   end
   object LbSubTitle: TGuiLabel
-    Left = 199
-    Top = 65
-    Width = 92
-    Height = 39
+    Left = 180
+    Top = 59
+    Width = 121
+    Height = 35
     Alignment = taCenter
     AntiAlias = gaaLinear4x
-    Caption = '1963'
+    Caption = '(stereo)'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
-    Font.Height = -32
+    Font.Height = -27
     Font.Name = 'Verdana'
     Font.Style = [fsBold, fsItalic]
   end
   object LbDrive: TGuiLabel
-    Left = 202
-    Top = 241
+    Left = 197
+    Top = 219
     Width = 74
     Height = 25
     Alignment = taCenter
@@ -196,12 +196,12 @@ object FmVT: TFmVT
     Font.Style = [fsBold]
   end
   object LbRoasty1: TGuiLabel
-    Left = 256
-    Top = 161
+    Left = 243
+    Top = 139
     Width = 65
     Height = 18
     AntiAlias = gaaLinear4x
-    Caption = 'Roasty I'
+    Caption = '- Rusty I'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -16
@@ -210,12 +210,12 @@ object FmVT: TFmVT
     OnClick = LbRoasty1Click
   end
   object LbRoasty2: TGuiLabel
-    Left = 247
-    Top = 136
+    Left = 234
+    Top = 114
     Width = 70
     Height = 18
     AntiAlias = gaaLinear4x
-    Caption = 'Roasty II'
+    Caption = '- Rusty II'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -16
@@ -224,12 +224,12 @@ object FmVT: TFmVT
     OnClick = LbRoasty2Click
   end
   object LbSteamin1: TGuiLabel
-    Left = 256
-    Top = 188
-    Width = 82
+    Left = 243
+    Top = 166
+    Width = 87
     Height = 18
     AntiAlias = gaaLinear4x
-    Caption = 'Steamin'#39' I'
+    Caption = '- Steamin'#39' I'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -16
@@ -238,12 +238,12 @@ object FmVT: TFmVT
     OnClick = LbSteamin1Click
   end
   object LbSteamin2: TGuiLabel
-    Left = 247
-    Top = 213
-    Width = 82
+    Left = 234
+    Top = 191
+    Width = 89
     Height = 19
     AntiAlias = gaaLinear4x
-    Caption = 'Steamin'#39' II'
+    Caption = '- Steamin'#39' II'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -16
@@ -251,65 +251,129 @@ object FmVT: TFmVT
     Font.Style = [fsBold]
     OnClick = LbSteamin2Click
   end
-  object GuiLabel1: TGuiLabel
+  object LbTrebleFlatLeft: TGuiLabel
+    Left = 59
+    Top = 13
+    Width = 37
+    Height = 13
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'FLAT'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 103128
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+  end
+  object DialHiGainLeft: TGuiDial
     Left = 14
-    Top = 144
-    Width = 20
-    Height = 13
-    Alignment = taRightJustify
+    Top = 28
+    Width = 128
+    Height = 128
+    LineColor = 103128
+    Max = 12.000000000000000000
+    Min = -12.000000000000000000
+    NumGlyphs = 65
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    ScrollRange_Pixel = 200.000000000000000000
+    StitchKind = skHorizontal
+    OnChange = DialHiGainLeftChange
+  end
+  object DialHiBypassLeft: TGuiDial
+    Left = 12
+    Top = 158
+    Width = 32
+    Height = 32
+    LineColor = 103128
+    Max = 1.000000000000000000
+    NumGlyphs = 2
+    PointerAngles.Start = 180
+    PointerAngles.Range = 180
+    PointerAngles.Resolution = 180.000000000000000000
+    ScrollRange_Pixel = 20.000000000000000000
+    StitchKind = skHorizontal
+    OnChange = DialHiBypassLeftChange
+  end
+  object LbTrebleLeft: TGuiLabel
+    Left = 46
+    Top = 162
+    Width = 94
+    Height = 25
+    Alignment = taCenter
     AntiAlias = gaaLinear4x
-    Caption = '-12'
+    Caption = 'TREBLE'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 103128
+    Font.Height = -24
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+  end
+  object LbBassFlatRight: TGuiLabel
+    Left = 392
+    Top = 193
+    Width = 37
+    Height = 12
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'FLAT'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
   end
-  object GuiLabel2: TGuiLabel
-    Left = 14
-    Top = 330
-    Width = 20
-    Height = 13
-    Alignment = taRightJustify
-    AntiAlias = gaaLinear4x
-    Caption = '-12'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 103128
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
+  object DialLowGainRight: TGuiDial
+    Left = 347
+    Top = 207
+    Width = 128
+    Height = 128
+    LineColor = 103128
+    Max = 12.000000000000000000
+    Min = -12.000000000000000000
+    NumGlyphs = 65
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    ScrollRange_Pixel = 200.000000000000000000
+    StitchKind = skHorizontal
+    OnChange = DialLowGainRightChange
   end
-  object GuiLabel3: TGuiLabel
-    Left = 132
-    Top = 144
-    Width = 14
-    Height = 13
-    AntiAlias = gaaLinear4x
-    Caption = '12'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 103128
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
+  object DialLowBypassRight: TGuiDial
+    Left = 356
+    Top = 338
+    Width = 32
+    Height = 32
+    LineColor = 103128
+    Max = 1.000000000000000000
+    NumGlyphs = 2
+    PointerAngles.Start = 180
+    PointerAngles.Range = 180
+    PointerAngles.Resolution = 180.000000000000000000
+    ScrollRange_Pixel = 20.000000000000000000
+    StitchKind = skHorizontal
+    OnChange = DialLowBypassRightChange
   end
-  object GuiLabel4: TGuiLabel
-    Left = 132
-    Top = 330
-    Width = 14
-    Height = 13
+  object LbBassRight: TGuiLabel
+    Left = 394
+    Top = 341
+    Width = 64
+    Height = 23
+    Alignment = taCenter
     AntiAlias = gaaLinear4x
-    Caption = '12'
+    Caption = 'BASS'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 103128
-    Font.Height = -13
+    Font.Height = -24
     Font.Name = 'Arial'
     Font.Style = [fsBold]
   end
   object GuiPanel: TGuiPanel
-    Left = 163
-    Top = 275
-    Width = 178
-    Height = 106
+    Left = 158
+    Top = 272
+    Width = 174
+    Height = 98
     AntiAlias = gaaLinear4x
     Caption = 'GuiPanel'
     LineColor = 329145
@@ -322,7 +386,7 @@ object FmVT: TFmVT
     Transparent = True
     object DialOutputGain: TGuiDial
       Left = 71
-      Top = 10
+      Top = 9
       Width = 32
       Height = 32
       Color = 103128
@@ -339,7 +403,7 @@ object FmVT: TFmVT
     end
     object DialChannel: TGuiDial
       Left = 114
-      Top = 55
+      Top = 50
       Width = 32
       Height = 32
       Color = 103128
@@ -358,54 +422,54 @@ object FmVT: TFmVT
     end
     object LbGain: TGuiLabel
       Left = 13
-      Top = 15
+      Top = 16
       Width = 54
-      Height = 25
+      Height = 17
       AntiAlias = gaaLinear4x
       Caption = 'GAIN:'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 329145
-      Font.Height = -19
+      Font.Height = -16
       Font.Name = 'Arial'
       Font.Style = [fsBold]
     end
     object LbChannel: TGuiLabel
       Left = 13
-      Top = 62
-      Width = 100
-      Height = 23
+      Top = 59
+      Width = 95
+      Height = 17
       AntiAlias = gaaLinear4x
-      Caption = 'CHANNEL:'
+      Caption = 'CHANNELS:'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 329145
-      Font.Height = -19
+      Font.Height = -16
       Font.Name = 'Arial'
       Font.Style = [fsBold]
     end
     object LbGainValue: TGuiLabel
       Left = 109
-      Top = 15
-      Width = 66
-      Height = 22
+      Top = 16
+      Width = 62
+      Height = 16
       AntiAlias = gaaLinear4x
       Caption = '0 dB'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 329145
-      Font.Height = -19
+      Font.Height = -16
       Font.Name = 'Arial'
       Font.Style = [fsBold]
     end
     object LbMono: TGuiLabel
-      Left = 112
-      Top = 45
-      Width = 37
+      Left = 110
+      Top = 82
+      Width = 45
       Height = 10
       Alignment = taCenter
       AntiAlias = gaaLinear4x
-      Caption = 'MONO'
+      Caption = 'MID / SIDE'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 329145
@@ -414,13 +478,13 @@ object FmVT: TFmVT
       Font.Style = [fsBold]
     end
     object LbStereo: TGuiLabel
-      Left = 111
-      Top = 88
-      Width = 42
+      Left = 100
+      Top = 40
+      Width = 66
       Height = 10
       Alignment = taCenter
       AntiAlias = gaaLinear4x
-      Caption = 'STEREO'
+      Caption = 'LEFT / RIGHT'
       Color = 103128
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 329145

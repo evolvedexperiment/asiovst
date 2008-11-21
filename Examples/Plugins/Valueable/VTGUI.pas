@@ -33,6 +33,10 @@ type
     LbGainValue: TGuiLabel;
     LbMono: TGuiLabel;
     LbStereo: TGuiLabel;
+    GuiLabel1: TGuiLabel;
+    GuiLabel2: TGuiLabel;
+    GuiLabel3: TGuiLabel;
+    GuiLabel4: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialLowGainChange(Sender: TObject);

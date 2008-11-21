@@ -192,7 +192,7 @@ procedure TVTVSTModule.VSTModuleOpen(Sender: TObject);
 var
   i, m, n, sz : Integer;
 begin
-  FOutGain := 1;
+  FOutGain := 1.25;
   FBufferPos := 0;
   FHistoryBuffer[0] := nil;
   FHistoryBuffer[1] := nil;
@@ -256,7 +256,7 @@ end;
 
 procedure TVTVSTModule.KernelSizeChanged;
 begin
-  ReallocMem(FFilterKernel, FKernelSize);
+  ReallocMem(FFilterKernel, FKernelSize * SizeOf(Single));
   ReallocMem(FHistoryBuffer[0], FKernelSize * SizeOf(Single));
   ReallocMem(FHistoryBuffer[1], FKernelSize * SizeOf(Single));
   ReallocMem(FCircularBuffer[0], 2 * FKernelSize * SizeOf(Single));
@@ -422,7 +422,7 @@ begin
  try
   if FModeBypass[0] and FModeBypass[1] then
    begin
-    FFilterKernel^[0] := 1;
+    FFilterKernel^[0] := 0.8;
     KernelSize := 1;
    end else
   if FModeBypass[0] then
@@ -497,7 +497,7 @@ end;
 
 procedure TVTVSTModule.ParamOutGainChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FOutGain := dB_to_Amp(Value);
+ FOutGain := 1.25 * dB_to_Amp(Value);
  if EditorForm is TFmVT then
   with TFmVT(EditorForm) do UpdateGain;
 end;

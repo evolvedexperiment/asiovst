@@ -813,7 +813,7 @@ begin
  if StrComp(ptr, 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in fCanDos)-1 else
  if StrComp(ptr, 'hasCockosExtensions')   = 0 then
   if vcdCockosExtension in fCanDos
-   then Result := $BEEF0000
+   then Result := Integer($BEEF0000)
    else Result := 0;
  if Assigned(FOnCanDo) then FOnCanDo(Self,pchar(ptr));
 end;
