@@ -218,6 +218,7 @@ begin
                   Direction       := drParameter;
                   DataType        := dtSingle;
                   DefaultValue    := '1000';
+                  result          := True;
                  end;
   pinOrder: with Properties^ do
              begin
@@ -227,6 +228,7 @@ begin
               DataType        := dtEnum;
               DefaultValue    := '4';
               DatatypeExtra   := 'range 0,64';
+              result          := True;
              end;
  end;
 end;
@@ -310,6 +312,7 @@ begin
                   VariableAddress := @FFreqBuffer;
                   Direction       := drIn;
                   DataType        := dtFSample;
+                  result          := True;
                  end;
   pinOrder: with Properties^ do
              begin
@@ -319,6 +322,7 @@ begin
               DataType        := dtEnum;
               DefaultValue    := '4';
               DatatypeExtra   := 'range 0,64';
+              result          := True;
              end;
  end;;
 end;

@@ -111,6 +111,7 @@ type
   public
     constructor Create; override;
     function ProcessSample(const Input: Double): Double; override;
+    procedure InputSample(const Input: Double); override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   published
     property Threshold_dB;
@@ -443,7 +444,7 @@ type
   TClassicSoftRangeGate = class(TCustomClassicRangeGate)
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    procedure InputSideChain(Input : Double); virtual;
+    procedure InputSample(const Input : Double); override;
   published
     property Attack;
     property Release;
@@ -489,7 +490,7 @@ type
     procedure ThresholdChanged; override;
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    procedure InputSideChain(Input : Double); virtual;
+    procedure InputSample(const Input : Double); override;
   published
     property Attack;
     property Release;
@@ -751,7 +752,7 @@ type
 implementation
 
 uses
-  SysUtils, Dialogs, Math;
+  SysUtils, Math;
 
 { TCustomDynamicProcessor }
 
@@ -879,6 +880,11 @@ end;
 procedure TSoftDirectGate.CalculateKneedThreshold;
 begin
  FKneedThreshold := Power(FThreshold, FSoftKnee[1]);
+end;
+
+procedure TSoftDirectGate.InputSample(const Input: Double);
+begin
+ FGain := TranslatePeakToGain(abs(Input));
 end;
 
 function TSoftDirectGate.TranslatePeakToGain(const PeakLevel: Double): Double;
@@ -1405,7 +1411,7 @@ end;
 
 { TClassicSoftRangeGate }
 
-procedure TClassicSoftRangeGate.InputSideChain(Input: Double);
+procedure TClassicSoftRangeGate.InputSample(const Input: Double);
 begin
  if abs(Input) > FPeak
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
@@ -1447,7 +1453,7 @@ end;
 
 { TClassicSoftKneeGate }
 
-procedure TClassicSoftKneeGate.InputSideChain(Input: Double);
+procedure TClassicSoftKneeGate.InputSample(const Input: Double);
 begin
  if abs(Input) > FPeak
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
