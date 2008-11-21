@@ -3,8 +3,8 @@ object FmVT: TFmVT
   Top = 220
   BorderStyle = bsNone
   Caption = 'Valueable'
-  ClientHeight = 381
-  ClientWidth = 485
+  ClientHeight = 382
+  ClientWidth = 489
   Color = 329145
   Font.Charset = DEFAULT_CHARSET
   Font.Color = 103128

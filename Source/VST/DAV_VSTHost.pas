@@ -2797,6 +2797,7 @@ begin
    FreeLibrary(FVstDllHandle);
   finally
    FVstDllHandle := 0;
+   FVstDllFileName := '';
   end;
  {$IFDEF MemDLL}
  if assigned(FInternalDllLoader) then
