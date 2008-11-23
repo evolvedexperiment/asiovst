@@ -14,6 +14,8 @@ object FmUniQuE: TFmUniQuE
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnPaint = FormPaint
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 22
@@ -23,13 +25,13 @@ object FmUniQuE: TFmUniQuE
     Width = 345
     Height = 137
     AntiAlias = gaaLinear4x
-    Caption = 'UniQuE'
+    Caption = 'UNIQUE'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 5329233
     Font.Height = -16
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
-    HeaderMinWidth = 64
+    HeaderMinWidth = 80
     LineColor = 15790320
     LineWidth = 8
     ParentFont = False
@@ -40,13 +42,12 @@ object FmUniQuE: TFmUniQuE
       Top = 34
       Width = 75
       Height = 75
-      LineWidth = 2
       LineColor = 15790320
-      Min = -15.000000000000000000
       Max = 15.000000000000000000
+      Min = -15.000000000000000000
       NumGlyphs = 65
-      StitchKind = skVertical
       ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skVertical
       OnChange = DialLowChange
     end
     object DialMid: TGuiDial
@@ -54,13 +55,12 @@ object FmUniQuE: TFmUniQuE
       Top = 34
       Width = 75
       Height = 75
-      LineWidth = 2
       LineColor = 15790320
-      Min = -15.000000000000000000
       Max = 15.000000000000000000
+      Min = -15.000000000000000000
       NumGlyphs = 65
-      StitchKind = skVertical
       ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skVertical
       OnChange = DialMidChange
     end
     object DialPresence: TGuiDial
@@ -68,13 +68,12 @@ object FmUniQuE: TFmUniQuE
       Top = 34
       Width = 75
       Height = 75
-      LineWidth = 2
       LineColor = 15790320
-      Min = -15.000000000000000000
       Max = 15.000000000000000000
+      Min = -15.000000000000000000
       NumGlyphs = 65
-      StitchKind = skVertical
       ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skVertical
       OnChange = DialPresenceChange
     end
     object DialHigh: TGuiDial
@@ -82,13 +81,12 @@ object FmUniQuE: TFmUniQuE
       Top = 34
       Width = 75
       Height = 75
-      LineWidth = 2
       LineColor = 15790320
-      Min = -15.000000000000000000
       Max = 15.000000000000000000
+      Min = -15.000000000000000000
       NumGlyphs = 65
-      StitchKind = skVertical
       ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skVertical
       OnChange = DialHighChange
     end
     object LEDOnOff: TGuiLED

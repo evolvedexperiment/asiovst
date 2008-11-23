@@ -41,6 +41,14 @@ type
     LbTrebleFlatRight: TGuiLabel;
     LbTrebleLeft: TGuiLabel;
     LbTrebleRight: TGuiLabel;
+    LbLowGainLeftLower: TGuiLabel;
+    LbHiGainLeftLower: TGuiLabel;
+    LbLowGainRightLower: TGuiLabel;
+    LbHiGainRightLower: TGuiLabel;
+    LbHiGainLeftUpper: TGuiLabel;
+    GuiLabel1: TGuiLabel;
+    GuiLabel2: TGuiLabel;
+    GuiLabel3: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialLowGainLeftChange(Sender: TObject);

@@ -2,10 +2,10 @@ unit UniQuEGUI;
 
 interface
 
-uses 
-  Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Common,
-  DAV_VSTModule, DAV_GuiLED, DAV_GuiLabel, DAV_GuiGroup, DAV_GuiBaseControl,
-  DAV_GuiDial, StdCtrls;
+uses
+  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, StdCtrls,
+  DAV_Common, DAV_VSTModule, DAV_GuiLED, DAV_GuiLabel, DAV_GuiGroup,
+  DAV_GuiDial, DAV_GuiBaseControl;
 
 type
   TFmUniQuE = class(TForm)
@@ -33,6 +33,10 @@ type
     procedure InvertClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+  private
+    FBackgrounBitmap : TBitmap;
   public
     procedure UpdateOnOff;
     procedure UpdatePad;
@@ -52,7 +56,11 @@ uses
 
 procedure TFmUniQuE.FormCreate(Sender: TObject);
 var
-  RS  : TResourceStream;
+  RS   : TResourceStream;
+  x, y : Integer;
+  s    : array[0..1] of Single;
+  b    : ShortInt;
+  Line : PRGB24Array;
 begin
  RS := TResourceStream.Create(hInstance, 'UniQuEKnob', 'BMP');
  try
@@ -63,6 +71,40 @@ begin
  finally
   RS.Free;
  end;
+
+ // Create Background Image
+ FBackgrounBitmap := TBitmap.Create;
+ with FBackgrounBitmap do
+  begin
+   PixelFormat := pf24bit;
+   Width := Self.Width;
+   Height := Self.Height;
+   s[0] := 0;
+   s[1] := 0;
+   for y := 0 to Height - 1 do
+    begin
+     Line := Scanline[y];
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.9 * s[0] + 0.1 * random;
+       b := round($1F + $32 * s[1]);
+       s[0] := s[1];
+       Line[x].B := b;
+       Line[x].G := b;
+       Line[x].R := b;
+      end;
+    end;
+  end;
+end;
+
+procedure TFmUniQuE.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(FBackgrounBitmap);
+end;
+
+procedure TFmUniQuE.FormPaint(Sender: TObject);
+begin
+ Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
 procedure TFmUniQuE.FormShow(Sender: TObject);

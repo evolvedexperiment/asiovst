@@ -369,6 +369,114 @@ object FmVT: TFmVT
     Font.Name = 'Arial'
     Font.Style = [fsBold]
   end
+  object LbLowGainLeftLower: TGuiLabel
+    Left = 14
+    Top = 141
+    Width = 20
+    Height = 13
+    Alignment = taRightJustify
+    AntiAlias = gaaLinear4x
+    Caption = '-12'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 103128
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+  end
+  object LbHiGainLeftLower: TGuiLabel
+    Left = 14
+    Top = 319
+    Width = 20
+    Height = 13
+    Alignment = taRightJustify
+    AntiAlias = gaaLinear4x
+    Caption = '-12'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 103128
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+  end
+  object LbLowGainRightLower: TGuiLabel
+    Left = 351
+    Top = 141
+    Width = 20
+    Height = 13
+    Alignment = taRightJustify
+    AntiAlias = gaaLinear4x
+    Caption = '-12'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 103128
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+  end
+  object LbHiGainRightLower: TGuiLabel
+    Left = 351
+    Top = 319
+    Width = 20
+    Height = 13
+    Alignment = taRightJustify
+    AntiAlias = gaaLinear4x
+    Caption = '-12'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 103128
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+  end
+  object LbHiGainLeftUpper: TGuiLabel
+    Left = 123
+    Top = 141
+    Width = 17
+    Height = 13
+    AntiAlias = gaaLinear4x
+    Caption = '12'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 103128
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+  end
+  object GuiLabel1: TGuiLabel
+    Left = 123
+    Top = 319
+    Width = 17
+    Height = 13
+    AntiAlias = gaaLinear4x
+    Caption = '12'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 103128
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+  end
+  object GuiLabel2: TGuiLabel
+    Left = 461
+    Top = 319
+    Width = 17
+    Height = 13
+    AntiAlias = gaaLinear4x
+    Caption = '12'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 103128
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+  end
+  object GuiLabel3: TGuiLabel
+    Left = 461
+    Top = 141
+    Width = 17
+    Height = 13
+    AntiAlias = gaaLinear4x
+    Caption = '12'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 103128
+    Font.Height = -13
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+  end
   object GuiPanel: TGuiPanel
     Left = 158
     Top = 272

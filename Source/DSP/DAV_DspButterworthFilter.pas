@@ -45,6 +45,11 @@ type
     function ProcessSample(const Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
+  published
+    property Gain;
+    property Order;
+    property Frequency;
+    property SampleRate;
   end;
   TButterworthHighCut = TButterworthLP;
 
@@ -54,6 +59,11 @@ type
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
+  published
+    property Gain;
+    property Order;
+    property Frequency;
+    property SampleRate;
   end;
   TButterworthLowCut = TButterworthHP;
 

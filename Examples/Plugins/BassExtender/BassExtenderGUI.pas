@@ -1,4 +1,4 @@
-unit BassExtenderGUI;
+﻿unit BassExtenderGUI;
 
 interface
 
@@ -55,7 +55,7 @@ type
     procedure DialCompressionChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    fBackgrounBitmap : TBitmap;
+    FBackgrounBitmap : TBitmap;
   public
     procedure UpdateAttack;
     procedure UpdateBalance;
@@ -75,6 +75,79 @@ uses
   Math, BassExtenderDM, PngImage;
 
 {$R *.DFM}
+
+procedure TFmBassExtender.FormCreate(Sender: TObject);
+var
+  RS     : TResourceStream;
+  x, y   : Integer;
+  s      : array[0..1] of Single;
+  h, hr  : Single;
+  Line   : PRGB24Array;
+  PngBmp : TPngObject;
+
+begin
+ // Create Background Image
+ FBackgrounBitmap := TBitmap.Create;
+ with FBackgrounBitmap do
+  begin
+   PixelFormat := pf24bit;
+   Width := Self.Width;
+   Height := Self.Height;
+   s[0] := 0;
+   s[1] := 0;
+   hr   := 1 / Height;
+   for y := 0 to Height - 1 do
+    begin
+     Line := Scanline[y];
+     h    := 0.3 * (1 - sqr(2 * (y - Height div 2) * hr));
+     for x := 0 to Width - 1 do
+      begin
+       s[1] := 0.97 * s[0] + 0.03 * random;
+       s[0] := s[1];
+
+       Line[x].B := round($30 - $24 * (s[1] - h));
+       Line[x].G := round($44 - $38 * (s[1] - h));
+       Line[x].R := round($4D - $40 * (s[1] - h));
+      end;
+    end;
+  end;
+
+ PngBmp := TPngObject.Create;
+ try
+  RS := TResourceStream.Create(hInstance, 'BassExtender', 'PNG');
+  try
+   PngBmp.LoadFromStream(RS);
+   DialFrequency.DialBitmap.Assign(PngBmp);
+   DialOrder.DialBitmap.Assign(PngBmp);
+   DialDivide.DialBitmap.Assign(PngBmp);
+   DialShape.DialBitmap.Assign(PngBmp);
+   DialRatio.DialBitmap.Assign(PngBmp);
+   DialAttack.DialBitmap.Assign(PngBmp);
+   DialRelease.DialBitmap.Assign(PngBmp);
+   DialCompression.DialBitmap.Assign(PngBmp);
+  finally
+   RS.Free;
+  end;
+
+  RS := TResourceStream.Create(hInstance, 'BassExtenderPan', 'PNG');
+  try
+   PngBmp.LoadFromStream(RS);
+   DialBalance.DialBitmap.Assign(PngBmp);
+  finally
+   RS.Free;
+  end;
+
+  RS := TResourceStream.Create(hInstance, 'BassExtenderThreshold', 'PNG');
+  try
+   PngBmp.LoadFromStream(RS);
+   DialThreshold.DialBitmap.Assign(PngBmp);
+  finally
+   RS.Free;
+  end;
+ finally
+  FreeAndNil(PngBmp);
+ end;
+end;
 
 procedure TFmBassExtender.DialAttackChange(Sender: TObject);
 begin
@@ -166,82 +239,9 @@ begin
   end;
 end;
 
-procedure TFmBassExtender.FormCreate(Sender: TObject);
-var
-  RS     : TResourceStream;
-  x, y   : Integer;
-  s      : array[0..1] of Single;
-  h, hr  : Single;
-  Line   : PRGB24Array;
-  PngBmp : TPngObject;
-
-begin
- // Create Background Image
- fBackgrounBitmap := TBitmap.Create;
- with fBackgrounBitmap do
-  begin
-   PixelFormat := pf24bit;
-   Width := Self.Width;
-   Height := Self.Height;
-   s[0] := 0;
-   s[1] := 0;
-   hr   := 1 / Height;
-   for y := 0 to Height - 1 do
-    begin
-     Line := Scanline[y];
-     h    := 0.3 * (1 - sqr(2 * (y - Height div 2) * hr));
-     for x := 0 to Width - 1 do
-      begin
-       s[1] := 0.97 * s[0] + 0.03 * random;
-       s[0] := s[1];
-
-       Line[x].B := round($30 - $24 * (s[1] - h));
-       Line[x].G := round($44 - $38 * (s[1] - h));
-       Line[x].R := round($4D - $40 * (s[1] - h));
-      end;
-    end;
-  end;
-
- PngBmp := TPngObject.Create;
- try
-  RS := TResourceStream.Create(hInstance, 'BassExtender', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialFrequency.DialBitmap.Assign(PngBmp);
-   DialOrder.DialBitmap.Assign(PngBmp);
-   DialDivide.DialBitmap.Assign(PngBmp);
-   DialShape.DialBitmap.Assign(PngBmp);
-   DialRatio.DialBitmap.Assign(PngBmp);
-   DialAttack.DialBitmap.Assign(PngBmp);
-   DialRelease.DialBitmap.Assign(PngBmp);
-   DialCompression.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'BassExtenderPan', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialBalance.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
-
-  RS := TResourceStream.Create(hInstance, 'BassExtenderThreshold', 'PNG');
-  try
-   PngBmp.LoadFromStream(RS);
-   DialThreshold.DialBitmap.Assign(PngBmp);
-  finally
-   RS.Free;
-  end;
- finally
-  FreeAndNil(PngBmp);
- end;
-end;
-
 procedure TFmBassExtender.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, fBackgrounBitmap);
+ Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
 procedure TFmBassExtender.FormShow(Sender: TObject);

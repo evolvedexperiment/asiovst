@@ -55,9 +55,7 @@ type
     procedure SetParameterProperties(const Value : TCustomVstParameterProperties);
     procedure SetProgram(aProgram: Integer); virtual;
     procedure SetVstPrograms(const Value: TCustomVstPrograms);
-    function HostCallVendorSpecific(Index: Integer; Value: Integer;
-      ptr: Pointer; opt: Single): Integer; override;
-  published
+    function HostCallVendorSpecific(Index: Integer; Value: Integer; ptr: Pointer; opt: Single): Integer; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -416,10 +414,11 @@ begin
         then OnCustomParameterDisplay(Self, Value, ParamUnit);
        ParamStr := ParamStr + ParamUnit;
       end;
-     ptr := PChar(ParamStr);
+     ParamStr := ParamStr + #0;
+     StrCopy(ptr, PChar(ParamStr));
      result := $BEEF;
     end else
-   if (Index = $DEADBEF0) and assigned(Ptr) and
+   if (Index = Integer($DEADBEF0)) and assigned(Ptr) and
       (Value >= 0) and (Value < numParams) then
     begin
      PDAV2SingleArray(Ptr)^[0] := 0;
