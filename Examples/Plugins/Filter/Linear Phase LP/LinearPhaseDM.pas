@@ -8,17 +8,18 @@ uses
 
 type
   TLinearPhaseDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleCreate(Sender: TObject);
   private
     FFilterKernel : PDAVSingleFixedArray;
     FSignalPadded : PDAVSingleFixedArray;
     FFilterFreq   : PDAVSingleFixedArray;
     FSignalFreq   : PDAVSingleFixedArray;
+    FSemaphore    : Integer;
     FFft          : TFftReal2ComplexNativeFloat32;
     procedure CalculateFilterKernel;
   public
@@ -29,14 +30,16 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_DspWindowing, LinearPhaseGUI;
+  Math, DAV_DspWindowing, LinearPhaseGUI;
 
 procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
 begin
+ FSemaphore := 0;
  FFilterKernel := nil;
  FSignalPadded := nil;
  FFilterFreq   := nil;
  FSignalFreq   := nil;
+ BlockModeOverlap := BlockModeSize div 2;
 end;
 
 procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
@@ -51,7 +54,7 @@ begin
  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
 
- FFft := TFftReal2ComplexNativeFloat32.Create(10);
+ FFft := TFftReal2ComplexNativeFloat32.Create(round(Log2(BlockModeSize)));
  FFft.AutoScaleType := astDivideInvByN;
  CalculateFilterKernel;
 end;
@@ -69,6 +72,9 @@ procedure TLinearPhaseDataModule.ParamFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateFilterKernel;
+ if EditorForm is TFmLinearPhase then
+  with TFmLinearPhase(EditorForm)
+   do UpdateFrequency;
 end;
 
 procedure TLinearPhaseDataModule.CalculateFilterKernel;
@@ -79,23 +85,29 @@ var
 begin
  if assigned(FFilterKernel) and assigned(FFilterFreq) and assigned(FFft) then
   begin
-   CutOff := Parameter[0] / SampleRate;
-   j := BlockModeSize div 2 - 1;
+   while FSemaphore > 0 do;
+   inc(FSemaphore);
+   try
+    CutOff := Parameter[0] / SampleRate;
+    j := BlockModeSize div 2 - 1;
 
-   // Generate sinc delayed by (N-1)/2
-   for i := 0 to j do
-    if (i = j div 2)
-     then FFilterKernel^[i] := 2.0 * CutOff
-     else
-      begin
-       n := i - j * 0.5;
-       FFilterKernel^[i] := sin(2.0 * PI * Cutoff * n) / (PI * n);
-      end;
-   ApplyBlackmanHarrisWindow(FFilterKernel, BlockModeSize div 2);
-   FillChar(FFilterKernel^[BlockModeSize div 2], (BlockModeSize div 2) * SizeOf(Single), 0);
+    // Generate sinc delayed by (N-1)/2
+    for i := 0 to j do
+     if (i = j div 2)
+      then FFilterKernel^[i] := 2.0 * CutOff
+      else
+       begin
+        n := i - j * 0.5;
+        FFilterKernel^[i] := sin(2.0 * PI * Cutoff * n) / (PI * n);
+       end;
+    ApplyBlackmanWindow(FFilterKernel, BlockModeSize div 2);
+    FillChar(FFilterKernel^[BlockModeSize div 2], (BlockModeSize div 2) * SizeOf(Single), 0);
 
-   // calculate frequency
-   FFft.PerformFFT32(PDAVComplexSingleFixedArray(FFilterFreq), FFilterKernel);
+    // calculate frequency
+    FFft.PerformFFT32(PDAVComplexSingleFixedArray(FFilterFreq), FFilterKernel);
+   finally
+    dec(FSemaphore);
+   end;
   end;
 end;
 
@@ -111,32 +123,36 @@ var
   Bin     : Integer;
   Half    : Integer;
 begin
- assert(SampleFrames = BlockModeSize);
+ while FSemaphore > 0 do;
+ inc(FSemaphore);
+ try
+  for Channel := 0 to numOutputs - 1 do
+   begin
+    FFft.PerformFFT32(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
 
- for Channel := 0 to numOutputs - 1 do
-  begin
-   FFft.PerformFFT32(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
+    Half := BlockModeSize div 2;
 
-   Half := BlockModeSize div 2;
+    // DC
+    Bin := 0;
+    FSignalFreq^[Bin] := FFilterFreq^[Bin] * FSignalFreq^[Bin];
+    inc(Bin);
 
-   // DC
-   Bin := 0;
-   FSignalFreq^[Bin] := FFilterFreq^[Bin] * FSignalFreq^[Bin];
-   inc(Bin);
+    // inbetween...
+    while Bin < BlockModeSize div 2 do
+     begin
+      ComplexMultiplyInplace(FSignalFreq^[Bin], FSignalFreq^[Bin + Half],
+        FFilterFreq^[Bin], FFilterFreq^[Bin + Half]);
+      inc(Bin);
+     end;
 
-   // inbetween...
-   while Bin < BlockModeSize div 2 do
-    begin
-     ComplexMultiplyInplace(FSignalFreq^[Bin], FSignalFreq^[Bin + Half],
-       FFilterFreq^[Bin], FFilterFreq^[Bin + Half]);
-     inc(Bin);
-    end;
+    // Nyquist
+    FSignalFreq^[Bin] := FFilterFreq^[Bin] * FSignalFreq^[Bin];
 
-   // Nyquist 
-   FSignalFreq^[Bin] := FFilterFreq^[Bin] * FSignalFreq^[Bin];
-
-   FFft.PerformIFFT32(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
-  end;
+    FFft.PerformIFFT32(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
+   end;
+ finally
+  dec(FSemaphore);
+ end;
 end;
 
 end.
