@@ -90,10 +90,10 @@ type
   function ComplexMultiply(ARe,AIm,BRe,BIm : Single):TComplexSingle; overload;
   function ComplexMultiply(ARe,AIm,BRe,BIm : Double):TComplexDouble; overload;
 
-  procedure ComplexMultiplyInplace(var A : TComplexSingle; B : TComplexSingle); overload;
-  procedure ComplexMultiplyInplace(var A : TComplexDouble; B : TComplexDouble); overload;
-  procedure ComplexMultiplyInplace(var ARe,AIm : Single; BRe,BIm : Single); overload;
-  procedure ComplexMultiplyInplace(var ARe,AIm : Double; BRe,BIm : Double); overload;
+  procedure ComplexMultiplyInplace(var A : TComplexSingle; const B : TComplexSingle); overload;
+  procedure ComplexMultiplyInplace(var A : TComplexDouble; const B : TComplexDouble); overload;
+  procedure ComplexMultiplyInplace(var ARe,AIm : Single; const BRe, BIm : Single); overload;
+  procedure ComplexMultiplyInplace(var ARe,AIm : Double; const BRe, BIm : Double); overload;
 
   function ComplexDivide(A,B : TComplexSingle):TComplexSingle; overload;
   function ComplexDivide(A,B : TComplexDouble):TComplexDouble; overload;
@@ -411,7 +411,7 @@ begin
  Result.Im := A.Im * B.Re + A.Re * B.Im;
 end;
 
-procedure ComplexMultiplyInplace(var A : TComplexSingle; B : TComplexSingle);
+procedure ComplexMultiplyInplace(var A : TComplexSingle; const B : TComplexSingle);
 var
   Temp : Single;
 begin
@@ -420,7 +420,7 @@ begin
  A.Im := A.Im * B.Re + Temp * B.Im;
 end;
 
-procedure ComplexMultiplyInplace(var A : TComplexDouble; B : TComplexDouble);
+procedure ComplexMultiplyInplace(var A : TComplexDouble; const B : TComplexDouble);
 var
   Temp : Double;
 begin
@@ -429,7 +429,7 @@ begin
  A.Im := A.Im * B.Re + Temp * B.Im;
 end;
 
-procedure ComplexMultiplyInplace(var ARe, AIm : Single; BRe, BIm : Single);
+procedure ComplexMultiplyInplace(var ARe, AIm : Single; const BRe, BIm : Single);
 var
   Tmp : Single;
 begin
@@ -438,7 +438,7 @@ begin
  AIm := AIm * BRe + Tmp * BIm;
 end;
 
-procedure ComplexMultiplyInplace(var ARe, AIm  : Double; BRe, BIm : Double);
+procedure ComplexMultiplyInplace(var ARe, AIm  : Double; const BRe, BIm : Double);
 var
   Tmp : Double;
 begin

@@ -307,7 +307,7 @@ begin
   repeat
     if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
      begin
-      for i := 0 to numInputs - 1  do move(Inputs[i, CurrentPosition], fBlockInBuffer32[i, FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
+      for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], fBlockInBuffer32[i, FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
       for i := 0 to numOutputs - 1 do move(fBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i, CurrentPosition])^,(SampleFrames-CurrentPosition)*Sizeof(Single));
 
       FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
@@ -315,12 +315,13 @@ begin
      end
     else
      begin
-      for i := 0 to numInputs-1  do move(Inputs[i,CurrentPosition], fBlockInBuffer32[i,FBlockPosition], (FBlockModeSize - FBlockPosition) * Sizeof(Single));
-      for i := 0 to numOutputs-1 do move(fBlockOutBuffer32[i,FBlockPosition], PSingle(@Outputs[i,CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Single));
+      for i := 0 to numInputs  - 1 do move(Inputs[i,CurrentPosition], fBlockInBuffer32[i,FBlockPosition], (FBlockModeSize - FBlockPosition) * Sizeof(Single));
+      for i := 0 to numOutputs - 1 do move(fBlockOutBuffer32[i,FBlockPosition], PSingle(@Outputs[i,CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Single));
 
       FOnProcessReplacing(fBlockInBuffer32, fBlockOutBuffer32, FBlockModeSize);
 
-      for i := 0 to numInputs-1  do move(fBlockInBuffer32[i, (FBlockModeSize - FBlockModeOverlap)], fBlockInBuffer32[i,0], FBlockModeOverlap * Sizeof(Single));
+      for i := 0 to numInputs - 1
+       do move(fBlockInBuffer32[i, (FBlockModeSize - FBlockModeOverlap)], fBlockInBuffer32[i, 0], FBlockModeOverlap * Sizeof(Single));
 
       CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
       FBlockPosition := FBlockModeOverlap;

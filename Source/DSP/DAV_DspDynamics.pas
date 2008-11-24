@@ -2018,10 +2018,18 @@ begin
 end;
 
 function TCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
+(*
+var
+  Soft : Double;
+*)
 begin
+// Soft := FThreshold / (PeakLevel + FThreshold);
+
  if PeakLevel < FThreshold
   then result := FMakeUpGain[0]
   else result := FMakeUpGain[1] * Power(PeakLevel, FRatio - 1);
+
+// result := sqrt(Soft * result);
 end;
 
 procedure TCompressor.InputSample(const Input: Double);

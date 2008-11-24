@@ -93,6 +93,8 @@ type
     procedure PerformIFFTThree32(const FreqDomain, TimeDomain: PDAVSingleFixedArray);
     procedure PerformIFFTOdd32(const FreqDomain, TimeDomain: PDAVSingleFixedArray);
     procedure PerformIFFTEven32(const FreqDomain, TimeDomain: PDAVSingleFixedArray);
+    procedure Rescale(Data: PDAVSingleFixedArray);
+    procedure RescaleSqrt(Data: PDAVSingleFixedArray);
   protected
     FBuffer        : TDAVSingleDynArray;
     FPerformFFT32  : TPerform32;
@@ -460,11 +462,33 @@ begin
   DoTrigoLUT(fOrder);
 end;
 
+procedure TFftReal2ComplexNativeFloat32.Rescale(Data: PDAVSingleFixedArray);
+var
+  i : Integer;
+  s : Double;
+begin
+ s :=  1 / FFTSize;
+ for i := 0 to FFTSize - 1 do Data^[i] := s * Data^[i];
+end;
+
+procedure TFftReal2ComplexNativeFloat32.RescaleSqrt(Data: PDAVSingleFixedArray);
+var
+  i : Integer;
+  s : Double;
+begin
+ s :=  sqrt(1 / FFTSize);
+ for i := 0 to FFTSize - 1 do Data^[i] := s * Data^[i];
+end;
+
 procedure TFftReal2ComplexNativeFloat32.PerformFFT32(
   const FrequencyDomain: PDAVComplexSingleFixedArray;
   const TimeDomain: PDAVSingleFixedArray);
 begin
   FPerformFFT32(@FrequencyDomain[0], TimeDomain);
+  case AutoScaleType of
+   astDivideFwdByN  : Rescale(@FrequencyDomain[0]);
+   astDivideBySqrtN : RescaleSqrt(@FrequencyDomain[0]);
+  end;
 end;
 
 procedure TFftReal2ComplexNativeFloat32.PerformIFFT32(
@@ -472,6 +496,10 @@ procedure TFftReal2ComplexNativeFloat32.PerformIFFT32(
   const TimeDomain: PDAVSingleFixedArray);
 begin
   FPerformIFFT32(@FrequencyDomain[0], TimeDomain);
+  case AutoScaleType of
+   astDivideInvByN  : Rescale(TimeDomain);
+   astDivideBySqrtN : RescaleSqrt(TimeDomain);
+  end;
 end;
 
 

@@ -7,9 +7,11 @@ interface
 uses
   DAV_Common;
 
+procedure ApplyBlackmanHarrisWindow(Data : PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+
 procedure ApplyBlackmanWindow(var Data : TDAVSingleDynArray);
 procedure ApplyGaussianWindow(var Data : TDAVSingleDynArray);
-procedure ApplyBlackmanHarrisWindow(var Data : TDAVSingleDynArray);
+procedure ApplyBlackmanHarrisWindow(var Data : TDAVSingleDynArray); overload;
 procedure ApplyHanningWindow(var Data : TDAVSingleDynArray);
 procedure ApplyHammingWindow(var Data : TDAVSingleDynArray);
 
@@ -42,19 +44,26 @@ begin
   do Data[i] := Data[i] * (exp(-5.0 / (sqr(j)) * (2 * i - j) * (2 * i - j)));
 end;
 
+
 // Generate window function (Blackman-Harris)
-procedure ApplyBlackmanHarrisWindow(var Data : TDAVSingleDynArray);
+procedure ApplyBlackmanHarrisWindow(Data : PDAVSingleFixedArray; const SampleFrames: Integer);
 var
   i, j : Integer;
   k    : Double;
 begin
- j := Length(Data) - 1;
+ j := SampleFrames - 1;
  k := 1 / j;
  for i := 0 to j
-  do Data[i] := Data[i] * (0.35875 - 0.48829 * cos(2 * PI * (i + 0.5) * k)
+  do Data^[i] := Data^[i] * (0.35875 - 0.48829 * cos(2 * PI * (i + 0.5) * k)
                          + 0.14128 * cos(4 * PI * (i + 0.5) * k)
                          - 0.01168 * cos(6 * PI * (i + 0.5) * k));
 end;
+
+procedure ApplyBlackmanHarrisWindow(var Data : TDAVSingleDynArray);
+begin
+ ApplyBlackmanHarrisWindow(@Data[0], Length(Data));
+end;
+
 
 // Generate window function (Hanning)
 procedure ApplyHanningWindow(var Data : TDAVSingleDynArray);
