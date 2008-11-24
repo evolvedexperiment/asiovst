@@ -18,7 +18,7 @@ type
   private
     procedure SetThreshold(const Value: Double);
   protected
-    fOldInput        : Double;
+    FOldInput        : Double;
     FInputLevel      : Double;
     FOutputLevel     : Double;
     FPeak            : Double;
@@ -232,7 +232,17 @@ begin
   end;
 end;
 
-function Diode(x: Single): Single;
+function Diode1(x: Single): Single;
+var
+  a, b : Double;
+begin
+ x := abs(x - 0.4) + x - 0.4;
+ a := abs(x);
+ b := 10 * (1 + sqr(a));
+ Result := 0.5 * (x + (b * x) / (b * a + 1));
+end;
+
+function Diode2(x: Single): Single;
 var
   a, b : Double;
 begin
@@ -256,13 +266,13 @@ begin
  Value := Input * FInputLevel;
 
  // smooth input by attack
- fOldInput := abs(Value) + (fOldInput - abs(Value)) * fAttackFactor;
+ FOldInput := abs(Value) + (FOldInput - abs(Value)) * fAttackFactor;
 
  // add fall off (released) caused by electroluminicence effect of an LED
  fPeak := fPeak * fReleaseFactor;
 
  // calculate difference to current peak level
- Value := SimpleDiode(fOldInput - fPeak);
+ Value := SimpleDiode(FOldInput - fPeak);
 
  // apply release phase
  fPeak := fPeak + Value;
@@ -322,13 +332,13 @@ begin
  Value := Input * FInputLevel;
 
  // smooth input by attack
- fOldInput := abs(Value) + (fOldInput - abs(Value)) * fAttackFactor;
+ FOldInput := abs(Value) + (FOldInput - abs(Value)) * fAttackFactor;
 
  // add fall off (released) caused by electroluminicence effect of an LED
  fPeak := fPeak * fReleaseFactor;
 
  // calculate difference to current peak level
- Value := SimpleDiode(fOldInput - fPeak);
+ Value := SimpleDiode(FOldInput - fPeak);
 
  // apply release phase
  fPeak := fPeak + Value;

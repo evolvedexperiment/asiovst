@@ -16,34 +16,37 @@ type
 
   TCustomAxis = class(TPersistent)
   private
+    FFlags         : TCustomAxisFlags;
     FGranularity   : Double;
     FLower         : Double;
     FUpper         : Double;
     FMaximum       : Double;
     FMinimum       : Double;
-    FRange         : Double;
-    FRangeReci     : Double;
-    FZeroPosition  : Double;
-    FValuePerPixel : Double;
+    FMinGranDist   : Integer;
+    FOnChanged     : TNotifyEvent;
+    FGranBase      : Integer;
     FPixelPerValue : Double;
     FPixelSize     : Integer;
-    FFlags         : TCustomAxisFlags;
-    FOnChanged     : TNotifyEvent;
-    FMinGranDist   : Integer;
+    FRange         : Double;
+    FRangeReci     : Double;
+    FValuePerPixel : Double;
+    FZeroPosition  : Double;
     function CalculateAutoGranularity: Boolean;
+    procedure CalculatePixelValueRelation;
+    procedure CalculateRange;
     procedure CalculateZeroPosition;
     procedure Changed;
+    procedure GranularityBaseChanged;
     procedure MinimumGranularityDistanceChanged;
     procedure SetFlags(const Value: TCustomAxisFlags);
     procedure SetGranularity(const Value: Double);
+    procedure SetGranularityBase(const Value: Integer);
     procedure SetLower(Value: Double);
     procedure SetMaximum(Value: Double);
     procedure SetMinGranDist(Value: Integer);
     procedure SetMinimum(Value: Double);
     procedure SetPixelSize(Value: Integer);
     procedure SetUpper(Value: Double);
-    procedure CalculatePixelValueRelation;
-    procedure CalculateRange;
   protected
     procedure AutoExtendBoundsFlagChanged; virtual;
     procedure AutoGranularityFlagChanged; virtual;
@@ -54,6 +57,7 @@ type
     procedure MinimumChanged; virtual;
     procedure UpperChanged; virtual;
     procedure Resized; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
 
     property ZeroPosition: Double read FZeroPosition;
     property ValuePerPixel: Double read FValuePerPixel;
@@ -66,11 +70,12 @@ type
   published
     property Flags: TCustomAxisFlags read FFlags write SetFlags default [cafAutoGranularity];
     property Granularity: Double read FGranularity write SetGranularity;
-    property MinimumGranularityDistance: Integer read fMinGranDist write SetMinGranDist default 30; 
-    property Lower: Double read FLower write SetLower;
-    property Upper: Double read FUpper write SetUpper;
+    property GranularityBase: Integer read FGranBase write SetGranularityBase default 10; 
+    property MinimumGranularityDistance: Integer read FMinGranDist write SetMinGranDist default 30; 
     property Minimum: Double read FMinimum write SetMinimum;
     property Maximum: Double read FMaximum write SetMaximum;
+    property Lower: Double read FLower write SetLower;
+    property Upper: Double read FUpper write SetUpper;
     property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
   end;
 
@@ -78,6 +83,7 @@ type
   TCustomGuiGraphXYSeries = class(TPersistent)
   private
     FColor    : TColor;
+    FTag      : Integer;
     FVisible  : Boolean;
     FOnChange : TNotifyEvent;
     procedure SetColor(const Value: TColor);
@@ -90,6 +96,7 @@ type
     constructor Create; virtual;
     property Color: TColor read FColor write SetColor default clRed;
     property Visible: Boolean read FVisible write SetVisible default True;
+    property Tag: Longint read FTag write FTag default 0;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -109,6 +116,7 @@ type
   TGuiGraphXYFunctionSeries = class(TCustomGuiGraphXYFunctionSeries)
   published
     property Color;
+    property Tag;
     property Visible;
     property OnEvaluate;
   end;
@@ -227,6 +235,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure UpdateGraph;
   published
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property FrameColor: TColor read FFrameColor write SetFrameColor default clRed;
@@ -290,6 +299,7 @@ begin
  FGranularity :=  1;
  FPixelSize   :=  1;
  FMinGranDist := 30;
+ FGranBase    := 10;
  FFlags       := [cafAutoGranularity];
 
  // set missing initial values automatically
@@ -321,6 +331,29 @@ begin
   if CalculateAutoGranularity then Changed;
 end;
 
+procedure TCustomAxis.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomAxis then
+  with TCustomAxis(Dest) do
+   begin
+    FFlags         := Self.FFlags;
+    FGranularity   := Self.FGranularity;
+    FLower         := Self.FLower;
+    FUpper         := Self.FUpper;
+    FMaximum       := Self.FMaximum;
+    FMinimum       := Self.FMinimum;
+    FMinGranDist   := Self.FMinGranDist;
+    FOnChanged     := Self.FOnChanged;
+    FGranBase      := Self.FGranBase;
+    FPixelPerValue := Self.FPixelPerValue;
+    FPixelSize     := Self.FPixelSize;
+    FRange         := Self.FRange;
+    FRangeReci     := Self.FRangeReci;
+    FValuePerPixel := Self.FValuePerPixel;
+    FZeroPosition  := Self.FZeroPosition;
+   end else inherited;
+end;
+
 procedure TCustomAxis.AutoExtendBoundsFlagChanged;
 begin
  if not (cafAutoExtendBounds in Flags) then
@@ -336,6 +369,8 @@ var
   MinGran        : Double;
   MinCount       : Integer;
   GranRange      : Double;
+  IntExp         : Integer;
+  BaseGran       : Integer;
 begin
  OldGranularity := FGranularity;
  MinGran   := MinimumGranularityDistance * ValuePerPixel;
@@ -343,7 +378,13 @@ begin
  if MinCount > 0 then
   begin
    GranRange := Range / MinCount;
-   FGranularity := Power(2, 1 + round(Log2(GranRange) - 0.5));
+   IntExp := round(Log2(GranRange) / Log2(FGranBase) - 0.5);
+   BaseGran := round(GranRange * IntPower(FGranBase, -IntExp) + 0.5);
+   case BaseGran of
+    3, 4 : BaseGran := 5;
+    6..9 : BaseGran := 10;
+   end;
+   FGranularity := BaseGran * IntPower(FGranBase, IntExp);
    assert(FGranularity > MinGran);
    result := OldGranularity <> FGranularity;
   end
@@ -422,14 +463,30 @@ begin
   end;
 end;
 
+procedure TCustomAxis.SetGranularityBase(const Value: Integer);
+begin
+ if (Value <= 0) or (Value > 1E10) then exit;
+ if FGranBase <> Value then
+  begin
+   FGranBase := Value;
+   GranularityBaseChanged;
+  end;
+end;
+
 procedure TCustomAxis.SetMinGranDist(Value: Integer);
 begin
  if Value < 1 then Value := 1;
- if fMinGranDist <> Value then
+ if FMinGranDist <> Value then
   begin
-   fMinGranDist := Value;
+   FMinGranDist := Value;
    MinimumGranularityDistanceChanged;
   end;
+end;
+
+procedure TCustomAxis.GranularityBaseChanged;
+begin
+ if cafAutoGranularity in Flags then
+  if CalculateAutoGranularity then Changed;
 end;
 
 procedure TCustomAxis.MinimumGranularityDistanceChanged;
@@ -1229,6 +1286,11 @@ end;
 procedure TCustomGuiGraphXY.ShowLabelsChanged;
 begin
  Changed;
+end;
+
+procedure TCustomGuiGraphXY.UpdateGraph;
+begin
+ RedrawBuffer(True);
 end;
 
 procedure TCustomGuiGraphXY.SetFlags(const Value: TGraphXYFlags);
