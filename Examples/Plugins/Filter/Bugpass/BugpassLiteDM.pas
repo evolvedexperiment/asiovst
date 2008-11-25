@@ -1,4 +1,4 @@
-unit LinearPhaseDM;
+unit BugpassLiteDM;
 
 interface
 
@@ -7,13 +7,15 @@ uses
   DAV_Complex, DAV_DspFftReal2Complex;
 
 type
-  TLinearPhaseDataModule = class(TVSTModule)
+  TBugpassLiteDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamFreqLowChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamFreqHighChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject;
       const SampleRate: Single);
   private
@@ -32,9 +34,9 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_DspWindowing, LinearPhaseGUI;
+  Math, DAV_DspWindowing, BugpassLiteGUI;
 
-procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
+procedure TBugpassLiteDataModule.VSTModuleCreate(Sender: TObject);
 begin
  FSemaphore := 0;
  FFilterKernel := nil;
@@ -44,7 +46,7 @@ begin
  BlockModeOverlap := BlockModeSize div 2;
 end;
 
-procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
+procedure TBugpassLiteDataModule.VSTModuleOpen(Sender: TObject);
 begin
  GetMem(FFilterKernel, BlockModeSize * SizeOf(Single));
  GetMem(FSignalPadded, BlockModeSize * SizeOf(Single));
@@ -58,10 +60,12 @@ begin
 
  FFft := TFftReal2ComplexNativeFloat32.Create(round(Log2(BlockModeSize)));
  FFft.AutoScaleType := astDivideInvByN;
+ Parameter[0] := 100;
+ Parameter[1] := 16000;
  CalculateFilterKernel;
 end;
 
-procedure TLinearPhaseDataModule.VSTModuleClose(Sender: TObject);
+procedure TBugpassLiteDataModule.VSTModuleClose(Sender: TObject);
 begin
  Dispose(FFilterKernel);
  Dispose(FSignalPadded);
@@ -70,38 +74,48 @@ begin
  FreeAndNil(FFft);
 end;
 
-procedure TLinearPhaseDataModule.ParamFrequencyChange(
+procedure TBugpassLiteDataModule.ParamFreqLowChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateFilterKernel;
- if EditorForm is TFmLinearPhase then
-  with TFmLinearPhase(EditorForm)
-   do UpdateFrequency;
+ if EditorForm is TFmBugpassLite then
+  with TFmBugpassLite(EditorForm)
+   do UpdateFrequencyBar;
 end;
 
-procedure TLinearPhaseDataModule.CalculateFilterKernel;
+procedure TBugpassLiteDataModule.ParamFreqHighChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ CalculateFilterKernel;
+ if EditorForm is TFmBugpassLite then
+  with TFmBugpassLite(EditorForm)
+   do UpdateFrequencyBar;
+end;
+
+procedure TBugpassLiteDataModule.CalculateFilterKernel;
 var
   i, h, q : Integer;
   n       : Double;
-  CutOff  : Double;
+  CutOff  : array [0..1] of Double;
 begin
  if assigned(FFilterKernel) and assigned(FFilterFreq) and assigned(FFft) then
   begin
    while FSemaphore > 0 do;
    inc(FSemaphore);
    try
-    CutOff := Parameter[0] / SampleRate;
+    CutOff[0] := Parameter[0] / SampleRate;
+    CutOff[1] := Parameter[1] / SampleRate;
     h := BlockModeSize div 2;
     q := BlockModeSize div 4;
 
     // Generate sinc delayed by (N-1)/2
     for i := 0 to h - 1 do
      if (i = q)
-      then FFilterKernel^[i] := 2.0 * CutOff
+      then FFilterKernel^[i] := 2.0 * (CutOff[0] - CutOff[1])
       else
        begin
         n := PI * (i - q);
-        FFilterKernel^[i] := sin(2.0 * Cutoff * n) / n;
+        FFilterKernel^[i] := (sin(2.0 * CutOff[0] * n) - sin(2.0 * CutOff[1] * n)) / n;
        end;
     ApplyBlackmanWindow(FFilterKernel, h);
     FillChar(FFilterKernel^[h], h * SizeOf(Single), 0);
@@ -114,12 +128,12 @@ begin
   end;
 end;
 
-procedure TLinearPhaseDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TBugpassLiteDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmLinearPhase.Create(Self);
+  GUI := TFmBugpassLite.Create(Self);
 end;
 
-procedure TLinearPhaseDataModule.VSTModuleProcess(const Inputs,
+procedure TBugpassLiteDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Channel : Integer;
@@ -158,7 +172,7 @@ begin
  end;
 end;
 
-procedure TLinearPhaseDataModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TBugpassLiteDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
  CalculateFilterKernel;

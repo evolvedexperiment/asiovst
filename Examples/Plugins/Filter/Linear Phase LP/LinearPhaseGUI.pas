@@ -12,6 +12,7 @@ type
     LbFrequency: TGuiLabel;
     LbFrequencyValue: TGuiLabel;
     procedure DialFrequencyChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
   public
     procedure UpdateFrequency;
@@ -23,6 +24,18 @@ implementation
 
 uses
   LinearPhaseDM, DAV_VSTModuleWithPrograms;
+
+procedure TFmLinearPhase.FormCreate(Sender: TObject);
+var
+  RS  : TResourceStream;
+begin
+ RS := TResourceStream.Create(hInstance, 'YamahaKnob', 'BMP');
+ try
+  DialFrequency.DialBitmap.LoadFromStream(RS);
+ finally
+  RS.Free;
+ end;
+end;
 
 procedure TFmLinearPhase.DialFrequencyChange(Sender: TObject);
 begin

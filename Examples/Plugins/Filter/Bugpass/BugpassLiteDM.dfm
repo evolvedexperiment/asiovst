@@ -1,4 +1,4 @@
-object LinearPhaseDataModule: TLinearPhaseDataModule
+object BugpassLiteDataModule: TBugpassLiteDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -20,20 +20,38 @@ object LinearPhaseDataModule: TLinearPhaseDataModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
-      DisplayName = 'Frequency'
+      DisplayName = 'Low Frequency'
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 20000.000000000000000000
       MaxInteger = 20000
       Min = 20.000000000000000000
       MinInteger = 20
-      ShortLabel = 'Freq'
+      ShortLabel = 'LowFreq'
       SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
-      OnParameterChange = ParamFrequencyChange
+      OnParameterChange = ParamFreqLowChange
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
+      DisplayName = 'High Frequency'
+      LargeStepFloat = 100.000000000000000000
+      LargeStepInteger = 100
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ShortLabel = 'HiFreq'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParamFreqHighChange
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
