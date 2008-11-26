@@ -917,7 +917,7 @@ begin
      SampleRate := Wave.format.nSamplesPerSec;
      fPFullSize := Wave.fFullsize;
      Channels   := 1;
-     Result     := buffertofloat(True);
+     Result     := BufferToFloat(True);
      WavSize    := fPFlSize;
     finally
      Free;

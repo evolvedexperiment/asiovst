@@ -76,7 +76,7 @@ begin
  if FileExists(EditSample.Text) then
   begin
    pt := LoadWAVFileMono(EditSample.Text,sr, c, sz);
-   SetLength(TVSTSSModule(Owner).Sample,sz);
+   SetLength(TVSTSSModule(Owner).Sample, sz);
    for c := 0 to sz - 1 do
     begin
      TVSTSSModule(Owner).Sample[c] := pt^;

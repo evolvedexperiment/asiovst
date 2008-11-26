@@ -27,7 +27,7 @@ package DAV_Gui_D9;
 requires
   rtl,
   vcl,
-  DAV_Common_D10;
+  DAV_Common_D9;
 
 contains
   DAV_GuiRegister in '..\Source\GUI\DAV_GuiRegister.pas',

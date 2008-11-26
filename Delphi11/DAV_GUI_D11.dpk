@@ -27,8 +27,8 @@ package DAV_GUI_D11;
 requires
   rtl,
   vcl,
-  DAV_Common_D11,
-  DAV_VSTPlugin_D11;
+  DAV_Modular_D11,
+  DAV_Common_D11;
 
 contains
   DAV_GuiRegister in '..\Source\GUI\DAV_GuiRegister.pas',

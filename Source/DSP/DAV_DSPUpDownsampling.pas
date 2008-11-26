@@ -11,17 +11,17 @@ uses
 type
   TDAVResampling = class(TAudioObject)
   private
-    fFilterClass         : TOrderFilterClass;
+    FFilterClass         : TOrderFilterClass;
     procedure SetFactor(const Value: Integer);
     procedure SetOrder(const Value: Integer);
     procedure SetTransitionBandwidth(const Value: Double);
     procedure SetSampleRate(const Value: Double);
     procedure SetFilterClass(const Value: TOrderFilterClass);
   protected
-    fFactor              : Integer;
-    fOrder               : Integer;
-    fTransitionBandwidth : Double;
-    fSampleRate          : Double;
+    FFactor              : Integer;
+    FOrder               : Integer;
+    FTransitionBandwidth : Double;
+    FSampleRate          : Double;
     procedure FactorChanged; virtual;
     procedure FilterClassChanged; virtual; abstract;
     procedure OrderChanged; virtual;
@@ -30,17 +30,17 @@ type
     procedure UpdateFilter; virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
-    property FilterClass: TOrderFilterClass read fFilterClass write SetFilterClass;
+    property FilterClass: TOrderFilterClass read FFilterClass write SetFilterClass;
   published
-    property Factor: Integer read fFactor write SetFactor;
-    property Order: Integer read fOrder write SetOrder default 2;
-    property TransitionBandwidth: Double read fTransitionBandwidth write SetTransitionBandwidth;
-    property SampleRate: Double read fSampleRate write SetSampleRate;
+    property Factor: Integer read FFactor write SetFactor;
+    property Order: Integer read FOrder write SetOrder default 2;
+    property TransitionBandwidth: Double read FTransitionBandwidth write SetTransitionBandwidth;
+    property SampleRate: Double read FSampleRate write SetSampleRate;
   end;
 
   TDAVUpSampling = class(TDAVResampling)
   private
-    fFilter : TCustomOrderFilter;
+    FFilter : TCustomOrderFilter;
   protected
     procedure FilterClassChanged; override;
     procedure OrderChanged; override;
@@ -55,7 +55,7 @@ type
 
   TDAVDownSampling = class(TDAVResampling)
   private
-    fFilter : TCustomOrderFilter;
+    FFilter : TCustomOrderFilter;
   protected
     procedure FilterClassChanged; override;
     procedure OrderChanged; override;
@@ -70,7 +70,7 @@ type
 
   TDAVUpDownsampling = class(TDAVResampling)
   private
-    fFilter : array [0..1] of TCustomOrderFilter;
+    FFilter : array [0..1] of TCustomOrderFilter;
   protected
     procedure FilterClassChanged; override;
     procedure OrderChanged; override;
@@ -92,26 +92,26 @@ implementation
 constructor TDAVResampling.Create(AOwner: TComponent);
 begin
  inherited;
- fFactor              := 1;
- fTransitionBandwidth := 0.99;
- fSampleRate          := 44100;
+ FFactor              := 1;
+ FTransitionBandwidth := 0.99;
+ FSampleRate          := 44100;
  Order                := 2;
 end;
 
 procedure TDAVResampling.SetFactor(const Value: Integer);
 begin
- if fFactor <> Value then
+ if FFactor <> Value then
   begin
-   fFactor := Value;
+   FFactor := Value;
    FactorChanged;
   end;
 end;
 
 procedure TDAVResampling.SetFilterClass(const Value: TOrderFilterClass);
 begin
- if fFilterClass <> Value then
+ if FFilterClass <> Value then
   begin
-   fFilterClass := Value;
+   FFilterClass := Value;
    FilterClassChanged;
   end;
 end;
@@ -133,18 +133,18 @@ end;
 
 procedure TDAVResampling.SetTransitionBandwidth(const Value: Double);
 begin
- if fTransitionBandwidth <> Value then
+ if FTransitionBandwidth <> Value then
   begin
-   fTransitionBandwidth := Value;
+   FTransitionBandwidth := Value;
    TransitionBandwidthChanged;
   end;
 end;
 
 procedure TDAVResampling.SetOrder(const Value: Integer);
 begin
- if fOrder <> Value then
+ if FOrder <> Value then
   begin
-   fOrder := Value;
+   FOrder := Value;
    OrderChanged;
   end;
 end;
@@ -156,9 +156,9 @@ end;
 
 procedure TDAVResampling.SetSampleRate(const Value: Double);
 begin
- if fSampleRate <> Value then
+ if FSampleRate <> Value then
   begin
-   fSampleRate := Value;
+   FSampleRate := Value;
    SampleRateChanged;
   end;
 end;
@@ -173,8 +173,8 @@ end;
 
 destructor TDAVUpDownsampling.Destroy;
 begin
- FreeAndNil(fFilter[0]);
- FreeAndNil(fFilter[1]);
+ FreeAndNil(FFilter[0]);
+ FreeAndNil(FFilter[1]);
  inherited;
 end;
 
@@ -183,12 +183,12 @@ var
   Frequency : Double;
 begin
  Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
- assert(assigned(fFilter[0]));
- assert(assigned(fFilter[1]));
- fFilter[0].Frequency := Frequency;
- fFilter[1].Frequency := Frequency;
- fFilter[0].ResetStates;
- fFilter[1].ResetStates;
+ assert(assigned(FFilter[0]));
+ assert(assigned(FFilter[1]));
+ FFilter[0].Frequency := Frequency;
+ FFilter[1].Frequency := Frequency;
+ FFilter[0].ResetStates;
+ FFilter[1].ResetStates;
 end;
 
 procedure TDAVUpDownsampling.Upsample32(Input: Single;
@@ -196,36 +196,36 @@ procedure TDAVUpDownsampling.Upsample32(Input: Single;
 var
   i : Integer;
 begin
- Output[0] := fFilter[0].ProcessSample(Factor * Input + cDenorm32);
+ Output[0] := FFilter[0].ProcessSample(Factor * Input + cDenorm32);
  for i := 1 to Factor - 1
-  do Output[i] := fFilter[0].ProcessSample(-cDenorm32);
+  do Output[i] := FFilter[0].ProcessSample(-cDenorm32);
 end;
 
 procedure TDAVUpDownsampling.Upsample64(Input: Double; Output: PDAVDoubleFixedArray);
 var
   i : Integer;
 begin
- Output[0] := fFilter[0].ProcessSample(Factor * Input + cDenorm64);
+ Output[0] := FFilter[0].ProcessSample(Factor * Input + cDenorm64);
  for i := 1 to Factor - 1
-  do Output[i] := fFilter[0].ProcessSample(-cDenorm64);
+  do Output[i] := FFilter[0].ProcessSample(-cDenorm64);
 end;
 
 function TDAVUpDownsampling.Downsample32(Input: PDAVSingleFixedArray): Single;
 var
   i : Integer;
 begin
- result := fFilter[1].ProcessSample(Input[0] + cDenorm32);
+ result := FFilter[1].ProcessSample(Input[0] + cDenorm32);
  for i := 1 to Factor - 1
-  do fFilter[1].ProcessSample(Input[i]);
+  do FFilter[1].ProcessSample(Input[i]);
 end;
 
 function TDAVUpDownsampling.Downsample64(Input: PDAVDoubleFixedArray): Double;
 var
   i : Integer;
 begin
- result := fFilter[1].ProcessSample(Input[0] + cDenorm64);
+ result := FFilter[1].ProcessSample(Input[0] + cDenorm64);
  for i := 1 to Factor - 1
-  do fFilter[1].ProcessSample(Input[i] - cDenorm64);
+  do FFilter[1].ProcessSample(Input[i] - cDenorm64);
 end;
 
 
@@ -234,14 +234,14 @@ var
   i         : Integer;
   oldFilter : TCustomOrderFilter;
 begin
- for i := 0 to Length(fFilter) - 1 do
+ for i := 0 to Length(FFilter) - 1 do
   begin
-   oldFilter := fFilter[i];
-   fFilter[i] := fFilterClass.Create;
+   oldFilter := FFilter[i];
+   FFilter[i] := FFilterClass.Create;
    if assigned(oldFilter)
-    then fFilter[i].Assign(oldFilter);
-   if fFilter[i] is TCustomChebyshev1Filter then
-    with TCustomChebyshev1Filter(fFilter[i]) do
+    then FFilter[i].Assign(oldFilter);
+   if FFilter[i] is TCustomChebyshev1Filter then
+    with TCustomChebyshev1Filter(FFilter[i]) do
      begin
       Ripple := 0.1;
      end;
@@ -251,17 +251,17 @@ end;
 
 procedure TDAVUpDownsampling.OrderChanged;
 begin
- fFilter[0].Order := fOrder;
- fFilter[1].Order := fOrder;
- fFilter[0].ResetStates;
- fFilter[1].ResetStates;
+ FFilter[0].Order := FOrder;
+ FFilter[1].Order := FOrder;
+ FFilter[0].ResetStates;
+ FFilter[1].ResetStates;
  inherited;
 end;
 
 procedure TDAVUpDownsampling.SampleRateChanged;
 begin
- fFilter[0].SampleRate := SampleRate;
- fFilter[1].SampleRate := SampleRate;
+ FFilter[0].SampleRate := SampleRate;
+ FFilter[1].SampleRate := SampleRate;
  inherited;
 end;
 
@@ -275,7 +275,7 @@ end;
 
 destructor TDAVUpSampling.Destroy;
 begin
- FreeAndNil(fFilter);
+ FreeAndNil(FFilter);
  inherited;
 end;
 
@@ -283,12 +283,12 @@ procedure TDAVUpSampling.FilterClassChanged;
 var
   oldFilter : TCustomOrderFilter;
 begin
- oldFilter := fFilter;
- fFilter := fFilterClass.Create;
+ oldFilter := FFilter;
+ FFilter := FFilterClass.Create;
  if assigned(oldFilter)
-  then fFilter.Assign(oldFilter);
- if fFilter is TCustomChebyshev1Filter then
-  with TCustomChebyshev1Filter(fFilter) do
+  then FFilter.Assign(oldFilter);
+ if FFilter is TCustomChebyshev1Filter then
+  with TCustomChebyshev1Filter(FFilter) do
    begin
     Ripple := 0.1;
    end;
@@ -297,40 +297,40 @@ end;
 
 procedure TDAVUpSampling.OrderChanged;
 begin
- fFilter.Order := fOrder;
- fFilter.ResetStates;
+ FFilter.Order := FOrder;
+ FFilter.ResetStates;
  inherited;
 end;
 
 procedure TDAVUpSampling.SampleRateChanged;
 begin
- fFilter.SampleRate := fSampleRate;
+ FFilter.SampleRate := FSampleRate;
  inherited;
 end;
 
 procedure TDAVUpSampling.UpdateFilter;
 begin
- assert(assigned(fFilter));
- fFilter.Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
- fFilter.ResetStates;
+ assert(assigned(FFilter));
+ FFilter.Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
+ FFilter.ResetStates;
 end;
 
 procedure TDAVUpSampling.Upsample32(Input: Single; Output: PDAVSingleFixedArray);
 var
   i : Integer;
 begin
- Output[0] := fFilter.ProcessSample(Factor * Input + cDenorm32);
+ Output[0] := FFilter.ProcessSample(Factor * Input + cDenorm32);
  for i := 1 to Factor - 1
-  do Output[i] := fFilter.ProcessSample(-cDenorm32);
+  do Output[i] := FFilter.ProcessSample(-cDenorm32);
 end;
 
 procedure TDAVUpSampling.Upsample64(Input: Double; Output: PDAVDoubleFixedArray);
 var
   i : Integer;
 begin
- Output[0] := fFilter.ProcessSample(Factor * Input + cDenorm64);
+ Output[0] := FFilter.ProcessSample(Factor * Input + cDenorm64);
  for i := 1 to Factor - 1
-  do Output[i] := fFilter.ProcessSample(-cDenorm64);
+  do Output[i] := FFilter.ProcessSample(-cDenorm64);
 end;
 
 { TDAVDownSampling }
@@ -343,7 +343,7 @@ end;
 
 destructor TDAVDownSampling.Destroy;
 begin
- FreeAndNil(fFilter);
+ FreeAndNil(FFilter);
  inherited;
 end;
 
@@ -351,12 +351,12 @@ procedure TDAVDownSampling.FilterClassChanged;
 var
   oldFilter : TCustomOrderFilter;
 begin
- oldFilter := fFilter;
- fFilter := fFilterClass.Create;
+ oldFilter := FFilter;
+ FFilter := FFilterClass.Create;
  if assigned(oldFilter)
-  then fFilter.Assign(oldFilter);
- if fFilter is TCustomChebyshev1Filter then
-  with TCustomChebyshev1Filter(fFilter) do
+  then FFilter.Assign(oldFilter);
+ if FFilter is TCustomChebyshev1Filter then
+  with TCustomChebyshev1Filter(FFilter) do
    begin
     Ripple := 0.1;
    end;
@@ -367,38 +367,38 @@ function TDAVDownSampling.Downsample32(Input: PDAVSingleFixedArray): Single;
 var
   i : Integer;
 begin
- result := fFilter.ProcessSample(Input[0] + cDenorm32);
+ result := FFilter.ProcessSample(Input[0] + cDenorm32);
  for i := 1 to Factor - 1
-  do fFilter.ProcessSample(Input[i]);
+  do FFilter.ProcessSample(Input[i]);
 end;
 
 function TDAVDownSampling.Downsample64(Input: PDAVDoubleFixedArray): Double;
 var
   i : Integer;
 begin
- result := fFilter.ProcessSample(Input[0] + cDenorm64);
+ result := FFilter.ProcessSample(Input[0] + cDenorm64);
  for i := 1 to Factor - 1
-  do fFilter.ProcessSample(Input[i]);
+  do FFilter.ProcessSample(Input[i]);
 end;
 
 procedure TDAVDownSampling.OrderChanged;
 begin
- fFilter.Order := fOrder;
- fFilter.ResetStates;
+ FFilter.Order := FOrder;
+ FFilter.ResetStates;
  inherited;
 end;
 
 procedure TDAVDownSampling.SampleRateChanged;
 begin
- fFilter.SampleRate := fSampleRate;
+ FFilter.SampleRate := FSampleRate;
  inherited;
 end;
 
 procedure TDAVDownSampling.UpdateFilter;
 begin
- assert(assigned(fFilter));
- fFilter.Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
- fFilter.ResetStates;
+ assert(assigned(FFilter));
+ FFilter.Frequency := 0.5 * TransitionBandwidth * SampleRate / Factor;
+ FFilter.ResetStates;
 end;
 
 end.
