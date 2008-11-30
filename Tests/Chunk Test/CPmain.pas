@@ -1,0 +1,147 @@
+unit CPmain;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Menus, StdCtrls, ExtCtrls, ComCtrls, DAV_Common, DAV_ChunkClasses;
+
+type
+  TFmChunkParser = class(TForm)
+    MainMenu: TMainMenu;
+    MIFile: TMenuItem;
+    MIOpen: TMenuItem;
+    N1: TMenuItem;
+    MIExit: TMenuItem;
+    OD: TOpenDialog;
+    TreeView: TTreeView;
+    Splitter1: TSplitter;
+    Memo: TMemo;
+    procedure MIOpenClick(Sender: TObject);
+    procedure TreeViewChange(Sender: TObject; Node: TTreeNode);
+  private
+    procedure LoadFile(FileName: TFileName);
+  public
+    FChunkContainer : TUnknownChunkContainer;
+  end;
+
+var
+  FmChunkParser: TFmChunkParser;
+
+implementation
+
+{$R *.dfm}
+
+function ChunknameValidASCII(ChunkName: TChunkName): Boolean;
+var
+  CharPos : Byte;
+begin
+ result := True;
+ for CharPos := 0 to 3 do
+  case ChunkName[CharPos] of
+   #0, #$21..#$7F : ;
+   else
+    begin
+     result := False;
+     Exit;
+    end;
+  end;
+end;
+
+function ValidASCIIString(str: string): Boolean;
+var
+  CharPos : Byte;
+begin
+ result := True;
+ for CharPos := 1 to Length(str) do
+  case str[CharPos] of
+   #$20..#$7F : ;
+   else
+    begin
+     result := False;
+     if str[CharPos] = #12 then Exit;
+    end;
+  end;
+end;
+
+procedure TFmChunkParser.MIOpenClick(Sender: TObject);
+begin
+ if OD.Execute
+  then LoadFile(OD.Filename);
+end;
+
+procedure TFmChunkParser.TreeViewChange(Sender: TObject; Node: TTreeNode);
+var
+  str : string;
+begin
+ if TObject(Node.Data) is TUnknownChunk then
+  with TUnknownChunk(Node.Data) do
+   begin
+    Memo.Clear;
+    Memo.Lines.Add('chunk name: ' + ChunkName);
+    Memo.Lines.Add('chunk size: ' + IntToStr(DataStream.Size));
+    DataStream.Position := 0;
+    SetLength(str, DataStream.Size);
+    DataStream.Read(str[1], DataStream.Size);
+    if ValidASCIIString(str)
+     then Memo.Lines.Add('chunk data as string: ' + str);
+   end;
+end;
+
+procedure TFmChunkParser.LoadFile(FileName: TFileName);
+var
+  ChunkName : TChunkName;
+  ChunkSize : Cardinal;
+  FS        : TFileStream;
+
+  procedure MirrorChunkToTreeview(Chunk: TUnknownChunkContainer; TreeNode: TTreeNode);
+  var
+    i  : Integer;
+    nt : TTreeNode;
+  begin
+   for i := 0 to Chunk.Count - 1 do
+    begin
+     nt := TTreeView(TreeNode.TreeView).Items.AddChildObject(TreeNode, Chunk.SubChunk[i].ChunkName, Chunk.SubChunk[i]);
+     if Chunk.SubChunk[i] is TUnknownChunkContainer
+      then MirrorChunkToTreeview(TUnknownChunkContainer(Chunk.SubChunk[i]), nt);
+    end;
+  end;
+
+begin
+ FS := TFileStream.Create(Filename, fmOpenRead);
+ with FS do
+  try
+   if Size < 8
+    then raise Exception.CreateFmt('Filesize too small (%d)', [Size]);
+
+   // read chunk name
+   Read(ChunkName, 4);
+
+   // read chunk size
+   Read(ChunkSize, 4);
+(*   if ChunkName = #$89'PNG' then ChunkSize := SWAP_32(ChunkSize); *)
+   if ChunkSize = $FFFFFFFF
+    then raise Exception.Create('Not supported yet');
+   if ChunkSize + 8 <> Size then
+    if ChunknameValidASCII(ChunkName)
+     then raise Exception.CreateFmt('Invalid chunk size found (%d)', [Chunksize])
+     else raise Exception.CreateFmt('Not a chunk format or invalid chunk size found (%d)', [Chunksize]);
+
+   // clear old data
+   TreeView.Items.Clear;
+   FreeAndNil(FChunkContainer);
+
+   // actually load chunk file
+   FChunkContainer := TUnknownChunkContainer.Create;
+//   if ChunkName = 'RIFF' then Position := 16 else
+   Position := 4;
+   FChunkContainer.LoadFromStream(FS);
+
+   TreeView.Items.AddObject(TTreeNode.Create(TreeView.Items), ChunkName, FChunkContainer);
+   MirrorChunkToTreeview(FChunkContainer, TreeView.Items[0]);
+  finally
+   FreeAndNil(FS);
+  end;
+end;
+
+end.
