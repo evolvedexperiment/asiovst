@@ -8,18 +8,22 @@ uses
   Classes, Contnrs, SysUtils, DAV_Common;
 
 type
+  TChunkFlag = (cfSizeFirst, cfReversedByteOrder, cfPadSize);
+  TChunkFlags = set of TChunkFlag;
   {$IFDEF DELPHI5}
   TCustomChunk = class(TPersistent)
   {$ELSE}
   TCustomChunk = class(TInterfacedPersistent, IStreamPersist)
   {$ENDIF}
   protected
-    FChunkName : TChunkName;
-    FChunkSize : Cardinal;
+    FChunkName  : TChunkName;
+    FChunkSize  : Cardinal;
+    FChunkFlags : TChunkFlags;
     function GetChunkName: string; virtual;
     function GetChunkSize: Cardinal; virtual;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SetChunkName(const Value: string); virtual;
+    function CalculateZeroPad: Integer;
   public
     constructor Create; virtual;
     procedure LoadFromStream(Stream : TStream); virtual;
@@ -28,6 +32,7 @@ type
     procedure SaveToFile(FileName : TFileName); virtual;
     property ChunkName: string read GetChunkName write SetChunkName;
     property ChunkSize: Cardinal read GetChunkSize;
+    property ChunkFlags: TChunkFlags read FChunkFlags write FChunkFlags default [];
   end;
 
   TCustomChunkClass = class of TCustomChunk;
@@ -43,6 +48,7 @@ type
     procedure SetData(index: Integer; const Value: Byte);
   protected
     FDataStream : TMemoryStream;
+    function CalculateChecksum: Integer;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
@@ -106,7 +112,7 @@ type
     function GetCount: Integer;
   protected
     FChunkList : TChunkList;
-    function GetChunkClass(ChunkName : TChunkName) : TCustomChunkClass; virtual; abstract;
+    function GetChunkClass(ChunkName : TChunkName): TCustomChunkClass; virtual; abstract;
     function GetChunkSize: Cardinal; override;
     procedure AssignTo(Dest: TPersistent); override;
     procedure ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream: TStream); virtual;
@@ -137,9 +143,10 @@ type
   private
     function GetSubChunk(index: Integer): TCustomChunk;
     function GetCount: Integer;
-    procedure ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream: TStream);
+    function ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream: TStream): TCustomChunk; virtual;
   protected
     FChunkList : TChunkList;
+    function CheckForSubchunks: Boolean; virtual;
     function GetChunkSize: Cardinal; override;
   public
     constructor Create; override;
@@ -149,6 +156,13 @@ type
     property SubChunk[index : Integer] : TCustomChunk read GetSubChunk;
   published
     property Count : Integer read GetCount;
+  end;
+
+  TPNGChunkContainer = class(TUnknownChunkContainer)
+  protected
+    function CheckForSubchunks: Boolean; override;
+  public
+    procedure LoadFromStream(Stream : TStream); override;
   end;
 
   TCustomBinaryChunk = class(TDefinedChunk)
@@ -172,7 +186,15 @@ type
 
 implementation
 
+const
+  CZeroPad: Integer = 0;
+
 { TCustomChunk }
+
+function TCustomChunk.CalculateZeroPad: Integer;
+begin
+ result := (2 - (FChunkSize and 1)) and 1;
+end;
 
 constructor TCustomChunk.Create;
 begin
@@ -228,15 +250,46 @@ end;
 
 procedure TCustomChunk.LoadFromStream(Stream: TStream);
 begin
- Stream.Read(FChunkSize, 4);
+ with Stream do
+  if cfSizeFirst in ChunkFlags then
+   begin
+    // order known from PNG
+    Read(FChunkSize, 4);
+    Read(FChunkName, 4);
+   end
+  else
+   begin
+    // order known from WAVE, AIFF, etc.
+    Read(FChunkName, 4);
+    Read(FChunkSize, 4);
+   end;
+
+ // eventually flip bytes
+ if cfReversedByteOrder in ChunkFlags
+  then FlipLong(FChunkSize);
 end;
 
 procedure TCustomChunk.SaveToStream(Stream: TStream);
+var
+  TempSize : Cardinal;
 begin
- with Stream do
+ TempSize := FChunkSize;
+
+ // eventually flip bytes
+ if cfReversedByteOrder in ChunkFlags
+  then FlipLong(TempSize);
+
+ if cfSizeFirst in ChunkFlags then
   begin
+   // order known from PNG
+   Write(TempSize, 4);
    Write(FChunkName[0], 4);
-   Write(FChunkSize, 4);
+  end
+ else
+  begin
+   // order known from WAVE, AIFF, etc.
+   Write(FChunkName[0], 4);
+   Write(TempSize, 4);
   end;
 end;
 
@@ -255,14 +308,30 @@ procedure TDummyChunk.LoadFromStream(Stream: TStream);
 begin
  with Stream do
   begin
-   Position := Position - 4;
-   Read(FChunkName, 4);
    inherited;
-   Position := Position + Size;
+   Position := Position + FChunkSize;
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
   end;
 end;
 
 { TUnknownChunk }
+
+function TUnknownChunk.CalculateChecksum: Integer;
+var
+  b : Byte;
+begin
+ with FDataStream do
+  begin
+   Position := 0;
+   result := 0;
+   while Position < Size do
+    begin
+     Read(b, 1);
+     result := result + b;
+    end;
+  end;
+end;
 
 constructor TUnknownChunk.Create;
 begin
@@ -301,14 +370,16 @@ procedure TUnknownChunk.LoadFromStream(Stream: TStream);
 begin
  with Stream do
   begin
-   Position := Position - 4;
-   Read(FChunkName, 4);
    inherited;
    assert(FChunkSize < Size);
    FDataStream.Clear;
    FDataStream.Size := FChunkSize;
    FDataStream.Position := 0;
    FDataStream.CopyFrom(Stream, FChunkSize);
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
   end;
 end;
 
@@ -320,6 +391,8 @@ begin
    inherited;
    FDataStream.Position := 0;
    CopyFrom(FDataStream, FDataStream.Position);
+   if cfPadSize in ChunkFlags
+    then Write(CZeroPad, CalculateZeroPad);
   end;
 end;
 
@@ -357,10 +430,21 @@ var
 begin
  with Stream do
   begin
-   // Assume chunk name fits the defined one
-   Position := Position - 4;
-   Read(TempChunkName, 4);
-   assert(TempChunkName = FChunkName);
+   if cfSizeFirst in ChunkFlags then
+    begin
+     // Assume chunk name fits the defined one
+     Position := Position + 4;
+     Read(TempChunkName, 4);
+     assert(TempChunkName = FChunkName);
+     Position := Position - 8;
+    end
+   else
+    begin
+     // Assume chunk name fits the defined one
+     Read(TempChunkName, 4);
+     assert(TempChunkName = FChunkName);
+     Position := Position - 4;
+    end;
    inherited;
   end;
 end;
@@ -412,14 +496,18 @@ var
 begin
  inherited;
  with Stream do
-  if FChunkSize <= GetClassChunkSize
-   then Read(FStartAddresses[0]^, FChunkSize)
-   else
-    begin
-     BytesReaded := Read(FStartAddresses[0]^, GetClassChunkSize);
-     assert(BytesReaded = GetClassChunkSize);
-     Position := Position + FChunkSize - GetClassChunkSize;
-    end;
+  begin
+   if FChunkSize <= GetClassChunkSize
+    then Read(FStartAddresses[0]^, FChunkSize)
+    else
+     begin
+      BytesReaded := Read(FStartAddresses[0]^, GetClassChunkSize);
+      assert(BytesReaded = GetClassChunkSize);
+      Position := Position + FChunkSize - GetClassChunkSize;
+     end;
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
+  end;
 end;
 
 procedure TFixedDefinedChunk.SaveToStream(Stream: TStream);
@@ -431,6 +519,10 @@ begin
  try
   BytesWritten := Stream.Write(FStartAddresses[0]^, GetClassChunkSize);
   assert(BytesWritten = FChunkSize);
+
+  // insert pad byte if necessary
+  if cfPadSize in ChunkFlags
+   then Write(CZeroPad, CalculateZeroPad);
  except
   raise Exception.Create('Wrong Start Addess of Chunk: ' + ChunkName);
  end;
@@ -485,6 +577,18 @@ end;
 
 { TCustomChunkContainer }
 
+constructor TCustomChunkContainer.Create;
+begin
+ inherited;
+ FChunkList := TChunkList.Create;
+end;
+
+destructor TCustomChunkContainer.Destroy;
+begin
+ FreeAndNil(FChunkList);
+ inherited;
+end;
+
 procedure TCustomChunkContainer.AssignTo(Dest: TPersistent);
 {$IFDEF DELPHI5}
 var
@@ -501,18 +605,6 @@ begin
    TCustomChunkContainer(Dest).FChunkList.Assign(FChunkList);
    {$ENDIF}
   end;
-end;
-
-constructor TCustomChunkContainer.Create;
-begin
- inherited;
- FChunkList := TChunkList.Create;
-end;
-
-destructor TCustomChunkContainer.Destroy;
-begin
- FreeAndNil(FChunkList);
- inherited;
 end;
 
 procedure TCustomChunkContainer.AddChunk(Chunk: TCustomChunk);
@@ -543,11 +635,25 @@ begin
    ChunkEnd := Position + FChunkSize;
    while Position < ChunkEnd do
     begin
-     Read(ChunkName, 4);
+     if cfSizeFirst in ChunkFlags then
+      begin
+       Position := Position + 4;
+       Read(ChunkName, 4);
+       Position := Position - 8;
+      end
+     else
+      begin
+       Read(ChunkName, 4);
+       Position := Position - 4;
+      end;
      ConvertStreamToChunk(GetChunkClass(ChunkName), Stream);
     end;
    if Position <> ChunkEnd
     then Position := ChunkEnd;
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
   end;
 end;
 
@@ -556,6 +662,7 @@ var
   Chunk : TCustomChunk;
 begin
  Chunk := ChunkClass.Create;
+ Chunk.ChunkFlags := ChunkFlags;
  Chunk.LoadFromStream(Stream);
  AddChunk(Chunk);
 end;
@@ -577,6 +684,10 @@ begin
  inherited;
  for i := 0 to FChunkList.Count - 1
   do FChunkList[i].SaveToStream(Stream);
+
+ // insert pad byte if necessary
+ if cfPadSize in ChunkFlags
+  then Stream.Write(CZeroPad, CalculateZeroPad);
 end;
 
 { TChunkContainer }
@@ -647,53 +758,72 @@ begin
  inherited;
 end;
 
-procedure TUnknownChunkContainer.ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream : TStream);
-var
-  Chunk : TCustomChunk;
+function TUnknownChunkContainer.ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream : TStream): TCustomChunk;
 begin
- Chunk := ChunkClass.Create;
- Chunk.LoadFromStream(Stream);
- FChunkList.Add(Chunk);
+ result := ChunkClass.Create;
+ result.ChunkFlags := ChunkFlags;
+ result.LoadFromStream(Stream);
+ FChunkList.Add(result);
 end;
 
-procedure TUnknownChunkContainer.LoadFromStream(Stream: TStream);
+function TUnknownChunkContainer.CheckForSubchunks: Boolean;
 var
   TempSize : Cardinal;
   TempName : TChunkName;
-  Valid    : Boolean;
 begin
- inherited;
-
- // test whether the data contains chunks
- Valid                := False;
- FDataStream.Position := 0;
+ result := False;
+ if (ChunkName = 'RIFF') or (ChunkName = 'FORM')
+  then FDataStream.Position := 4
+  else FDataStream.Position := 0;
  while FDataStream.Position + 8 < FChunkSize do
   begin
-   // read chunk name
-   FDataStream.Read(TempName, 4);
+   if cfSizeFirst in ChunkFlags then
+    begin
+     // read chunk size
+     FDataStream.Read(TempSize, 4);
 
-   // read chunk size
-   FDataStream.Read(TempSize, 4);
+     // read chunk name
+     FDataStream.Read(TempName, 4);
+    end
+   else
+    begin
+     // read chunk name
+     FDataStream.Read(TempName, 4);
 
-   if FDataStream.Position + TempSize <= FChunkSize
+     // read chunk size
+     FDataStream.Read(TempSize, 4);
+    end;
+
+   // eventually reverse byte order
+   if cfReversedByteOrder in ChunkFlags
+    then FlipLong(TempSize);
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then TempSize := TempSize + (2 - (TempSize and 1)) and 1;
+
+   if (FDataStream.Position + TempSize) <= FChunkSize
     then
      begin
       FDataStream.Position := FDataStream.Position + TempSize;
-      Valid := FDataStream.Position = FChunkSize;
-      if Valid then break;
+      result := FDataStream.Position = FChunkSize;
+      if result then break;
      end
     else exit;
   end;
+end;
 
- // valid subchunks found
- if Valid then
+procedure TUnknownChunkContainer.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+
+ if CheckForSubchunks then
   begin
-   FDataStream.Position := 0;
-   while FDataStream.Position + 8 < FChunkSize do
-    begin
-     FDataStream.Position := FDataStream.Position + 4;
-     ConvertStreamToChunk(TUnknownChunkContainer, FDataStream);
-    end;
+   if (ChunkName = 'RIFF') or (ChunkName = 'FORM')
+    then FDataStream.Position := 4
+    else FDataStream.Position := 0;
+   while FDataStream.Position + 8 < FChunkSize
+    do ConvertStreamToChunk(TUnknownChunkContainer, FDataStream);
   end;
 end;
 
@@ -705,6 +835,10 @@ begin
  inherited;
  for i := 0 to FChunkList.Count - 1
   do FChunkList[i].SaveToStream(Stream);
+
+ // insert pad byte if necessary
+ if cfPadSize in ChunkFlags
+  then Stream.Write(CZeroPad, CalculateZeroPad);
 end;
 
 function TUnknownChunkContainer.GetChunkSize: Cardinal;
@@ -726,6 +860,90 @@ begin
  if (index >= 0) and (index < FChunkList.Count)
   then result := FChunkList[index]
   else result := nil;
+end;
+
+{ TPNGChunkContainer }
+
+function TPNGChunkContainer.CheckForSubchunks: Boolean;
+var
+  TempSize : Cardinal;
+  TempName : TChunkName;
+begin
+ result := False;
+ FDataStream.Position := 0;
+ while FDataStream.Position + 8 < FChunkSize do
+  begin
+   if cfSizeFirst in ChunkFlags then
+    begin
+     // read chunk size
+     FDataStream.Read(TempSize, 4);
+
+     // read chunk name
+     FDataStream.Read(TempName, 4);
+    end
+   else
+    begin
+     // read chunk name
+     FDataStream.Read(TempName, 4);
+
+     // read chunk size
+     FDataStream.Read(TempSize, 4);
+    end;
+
+   // eventually reverse byte order
+   if cfReversedByteOrder in ChunkFlags
+    then FlipLong(TempSize);
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then TempSize := TempSize + (2 - (TempSize and 1)) and 1;
+
+   // checksum 
+   TempSize := TempSize + 4;
+
+   if (FDataStream.Position + TempSize) <= FChunkSize
+    then
+     begin
+      FDataStream.Position := FDataStream.Position + TempSize;
+      result := FDataStream.Position = FChunkSize;
+      if result then break;
+     end
+    else exit;
+  end;
+end;
+
+procedure TPNGChunkContainer.LoadFromStream(Stream: TStream);
+var
+  PngMagic : TChunkName;
+  CheckSum : Integer;
+  SubChunk : TUnknownChunkContainer;
+begin
+ with Stream do
+  begin
+   Read(FChunkName, 4);
+   Read(PngMagic, 4);
+   if PngMagic <> #$0D#$0A#$1A#$0A
+    then Exception.Create('Not a valid PNG file');
+   FChunkSize := Stream.Size - 8;
+
+   FDataStream.Clear;
+   FDataStream.Size := FChunkSize;
+   FDataStream.Position := 0;
+   FDataStream.CopyFrom(Stream, FChunkSize);
+  end;
+
+ if CheckForSubchunks then
+  begin
+   FDataStream.Position := 0;
+   while FDataStream.Position + 8 < FChunkSize do
+    begin
+     SubChunk := TUnknownChunkContainer(ConvertStreamToChunk(TUnknownChunkContainer, FDataStream));
+
+     // read checksum
+     FDataStream.Read(CheckSum, 4);
+//     assert(Checksum = SubChunk.CalculateChecksum);
+    end;
+  end;
 end;
 
 { TCustomBinaryChunk }

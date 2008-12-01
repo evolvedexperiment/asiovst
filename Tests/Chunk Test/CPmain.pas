@@ -117,28 +117,61 @@ begin
    // read chunk name
    Read(ChunkName, 4);
 
-   // read chunk size
-   Read(ChunkSize, 4);
-(*   if ChunkName = #$89'PNG' then ChunkSize := SWAP_32(ChunkSize); *)
-   if ChunkSize = $FFFFFFFF
-    then raise Exception.Create('Not supported yet');
-   if ChunkSize + 8 <> Size then
-    if ChunknameValidASCII(ChunkName)
-     then raise Exception.CreateFmt('Invalid chunk size found (%d)', [Chunksize])
-     else raise Exception.CreateFmt('Not a chunk format or invalid chunk size found (%d)', [Chunksize]);
+   if (ChunkName = #$89'PNG') then
+    begin
+     // read chunk name
+     Read(ChunkName, 4);
 
-   // clear old data
-   TreeView.Items.Clear;
-   FreeAndNil(FChunkContainer);
+     if ChunkName <> #$0D#$0A#$1A#$0A
+      then raise Exception.Create('Not a valid PNG file');
 
-   // actually load chunk file
-   FChunkContainer := TUnknownChunkContainer.Create;
-//   if ChunkName = 'RIFF' then Position := 16 else
-   Position := 4;
-   FChunkContainer.LoadFromStream(FS);
+     ChunkName := #$89'PNG';
 
-   TreeView.Items.AddObject(TTreeNode.Create(TreeView.Items), ChunkName, FChunkContainer);
-   MirrorChunkToTreeview(FChunkContainer, TreeView.Items[0]);
+     // clear old data
+     TreeView.Items.Clear;
+     FreeAndNil(FChunkContainer);
+
+     // actually load chunk file
+     Position := 0;
+     FChunkContainer := TPNGChunkContainer.Create;
+     FChunkContainer.ChunkFlags := FChunkContainer.ChunkFlags +
+       [cfReversedByteOrder, cfSizeFirst];
+     FChunkContainer.LoadFromStream(FS);
+
+     TreeView.Items.AddObject(TTreeNode.Create(TreeView.Items), ChunkName, FChunkContainer);
+     MirrorChunkToTreeview(FChunkContainer, TreeView.Items[0]);
+    end
+   else
+    begin
+     // read chunk size
+     Read(ChunkSize, 4);
+
+     if ChunkName = 'FORM'
+      then FlipLong(ChunkSize);
+
+     // generic header
+     if ChunkSize = $FFFFFFFF
+      then raise Exception.Create('Not supported yet');
+     if ChunkSize + 8 <> Size then
+      if ChunknameValidASCII(ChunkName)
+       then raise Exception.CreateFmt('Invalid chunk size found (%d)', [Chunksize])
+       else raise Exception.CreateFmt('Not a chunk format or invalid chunk size found (%d)', [Chunksize]);
+
+     // clear old data
+     TreeView.Items.Clear;
+     FreeAndNil(FChunkContainer);
+
+     // actually load chunk file
+     FChunkContainer := TUnknownChunkContainer.Create;
+     if ChunkName = 'FORM' then
+      with FChunkContainer
+       do ChunkFlags := ChunkFlags + [cfReversedByteOrder, cfPadSize];
+     Position := 0;
+     FChunkContainer.LoadFromStream(FS);
+
+     TreeView.Items.AddObject(TTreeNode.Create(TreeView.Items), ChunkName, FChunkContainer);
+     MirrorChunkToTreeview(FChunkContainer, TreeView.Items[0]);
+    end;
   finally
    FreeAndNil(FS);
   end;

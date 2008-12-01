@@ -1,6 +1,6 @@
 object FmChunkParser: TFmChunkParser
-  Left = 218
-  Top = 81
+  Left = 286
+  Top = 106
   Caption = 'Generic Chunk Parser'
   ClientHeight = 266
   ClientWidth = 410
