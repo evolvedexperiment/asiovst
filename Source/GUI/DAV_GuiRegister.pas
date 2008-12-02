@@ -35,7 +35,7 @@ begin
     TGuiADSRGraph, TGuiAudioDataDisplay, TGuiLabel, TGuiPanel, TGuiLED,
     TGuiVUMeter, TGuiDial, TGuiDialMetal, TGuiCorrelationMeter, TGuiSelectBox,
     TGuiMidiKeys, TGuiButton, {$IFNDEF FPC} TGuiGroup, TGuiLevelMeter, {$ENDIF}
-    TGuiGraphXY, TGuiDialEx]);
+    TGuiGraphXY, TGuiDialEx, TGuiDialImageList, TGuiDialImageRenderer]);
   RegisterPropertyEditor(TypeInfo(string), TGuiGraphXYSeriesCollectionItem, 'SeriesClassName', nil);
   RegisterPropertyEditor(TypeInfo(TCustomGuiGraphXYSeries), TGuiGraphXYSeriesCollectionItem, 'Series', TSeriesClassProperty);
 end;

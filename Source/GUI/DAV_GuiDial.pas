@@ -7,10 +7,12 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
   {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Graphics, Forms, SysUtils, Controls, DAV_GuiBaseControl;
+  Classes, Graphics, Forms, SysUtils, Controls, Contnrs, DAV_GuiBaseControl;
 
 type
-  TGuiDialRMBFunc = (rmbfReset,rmbfCircular);
+  TGuiDialRMBFunc = (rmbfReset, rmbfCircular);
+  TGuiDialImageList = class;
+  TGuiDialImageCollectionItem = class;
 
   TGuiDialSettings = class(TPersistent)
   private
@@ -50,7 +52,6 @@ type
     FCurveMappingExp  : Single;
     FDefaultPosition  : Single;
     FDialBitmap       : TBitmap;
-    FImageIndex       : Integer;
     FImageList        : TImageList;
     FInertia          : Single;
     FInertiaExp       : Single;
@@ -64,9 +65,12 @@ type
     FRightMouseButton : TGuiDialRMBFunc;
     FScrollRange      : Single;
     FStitchKind       : TGuiStitchKind;
+    FDialImageList    : TGuiDialImageList;
+    FDialImageItem    : TGuiDialImageCollectionItem;
     function CircularMouseToPosition(X, Y: Integer): Single;
     function GetNormalizedPosition: Single;
     function PositionToAngle: Single;
+    function GetDialImageIndex: Integer;
     function GetMappedPosition: Single;
     function MapValue(Value: Double): Double;
     function UnmapValue(Value: Double): Double;
@@ -87,7 +91,8 @@ type
     procedure SetCurveMapping(const Value: Single);
     procedure SetNormalizedPosition(const Value: Single);
     procedure SetImageList(const Value: TImageList);
-    procedure SetImageIndex(Value: Integer);
+    procedure SetDialImageIndex(Value: Integer);
+    procedure SetDialImageList(const Value: TGuiDialImageList);
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure CalcColorCircle;
@@ -98,9 +103,9 @@ type
     procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); override;
     procedure ReadState(Reader: TReader); override;
-    
+
     property NormalizedPosition: Single read GetNormalizedPosition write SetNormalizedPosition;
-    property MappedPosition: Single read GetMappedPosition; 
+    property MappedPosition: Single read GetMappedPosition;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -116,7 +121,8 @@ type
     property CurveMapping: Single read FCurveMapping write SetCurveMapping;
     property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
     property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
-    property ImageIndex: Integer read FImageIndex write SetImageIndex default -1;
+    property DialImageList: TGuiDialImageList read FDialImageList write SetDialImageList;
+    property DialImageIndex: Integer read GetDialImageIndex write SetDialImageIndex;
     property ImageList: TImageList read FImageList write SetImageList;
     property Inertia: Single read fInertia write SetInertia;
     property Max: Single read FMax write SetMax;
@@ -127,7 +133,7 @@ type
     property RightMouseButton: TGuiDialRMBFunc read FRightMouseButton write FRightMouseButton default rmbfCircular;
     property ScrollRange_Pixel: Single read fScrollRange write fScrollRange;
     property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
-    property OnChange: TNotifyEvent read fOnChange write fOnChange;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
   TGuiDial = class(TCustomGuiDial)
@@ -142,7 +148,6 @@ type
     property DialBitmap;
     property Inertia;
     property ImageList;
-    property ImageIndex;
     property LineColor;
     property LineWidth;
     property Max;
@@ -228,10 +233,124 @@ type
     {$ENDIF}
   end;
 
+  TGuiDialImageCollection = class(TOwnedCollection)
+  protected
+    function GetItem(Index: Integer): TGuiDialImageCollectionItem; virtual;
+    procedure SetItem(Index: Integer; const Value: TGuiDialImageCollectionItem); virtual;
+    procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
+    property Items[Index: Integer]: TGuiDialImageCollectionItem read GetItem write SetItem; default;
+  public
+    constructor Create(AOwner: TComponent);
+    function Add: TGuiDialImageCollectionItem;
+    function Insert(Index: Integer): TGuiDialImageCollectionItem;
+    procedure Delete(Index: Integer);
+    property Count;
+  end;
+
+  TGuiDialImageCollectionItem = class(TCollectionItem)
+  private
+    FDialBitmap  : TBitmap;
+    FNumGlyphs   : Integer;
+    FOnChange    : TNotifyEvent;
+    FStitchKind  : TGuiStitchKind;
+    FLinkedDials : TObjectList;
+    procedure SetDialBitmap(const Value: TBitmap);
+    procedure SetNumGlyphs(const Value: Integer);
+    procedure SetStitchKind(const Value: TGuiStitchKind);
+    procedure SettingsChanged(Sender: TObject);
+    function GetHeight: Integer;
+    function GetWidth: Integer;
+    procedure SetHeight(const Value: Integer);
+    procedure SetWidth(const Value: Integer);
+  protected
+    procedure NumGlyphsChanged; virtual;
+    procedure StitchKindChanged; virtual;
+  public
+    constructor Create(Collection: TCollection); override;
+    destructor Destroy; override;
+    procedure LinkDial(Dial: TCustomGuiDial);
+    procedure UnLinkDial(Dial: TCustomGuiDial);
+  published
+    property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
+    property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
+    property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+    property Height: Integer read GetHeight write SetHeight;
+    property Width: Integer read GetWidth write SetWidth;
+  end;
+
+  TGuiDialImageList = class(TComponent)
+  private
+    FDialImageCollection : TGuiDialImageCollection;
+    function GetCount: Integer;
+    function GetItems(Index: Integer): TGuiDialImageCollectionItem;
+  protected
+    property Items[Index: Integer]: TGuiDialImageCollectionItem read GetItems; default;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property DialImages: TGuiDialImageCollection read FDialImageCollection write FDialImageCollection;
+    property Count: Integer read GetCount;
+  end;
+
+
+  ////////////////////
+  //  Dial Renderer //
+  ////////////////////
+
+  TGuiDialLayerCollectionItem = class;
+
+  TGuiDialLayerCollection = class(TOwnedCollection)
+  protected
+    function GetItem(Index: Integer): TGuiDialLayerCollectionItem; virtual;
+    procedure SetItem(Index: Integer; const Value: TGuiDialLayerCollectionItem); virtual;
+    procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
+    property Items[Index: Integer]: TGuiDialLayerCollectionItem read GetItem write SetItem; default;
+  public
+    constructor Create(AOwner: TComponent);
+    function Add: TGuiDialLayerCollectionItem;
+    function Insert(Index: Integer): TGuiDialLayerCollectionItem;
+    procedure Delete(Index: Integer);
+    property Count;
+  end;
+
+  TGuiDialLayerCollectionItem = class(TCollectionItem)
+  private
+    FOnChange : TNotifyEvent;
+  public
+    constructor Create(Collection: TCollection); override;
+    destructor Destroy; override;
+  published
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+  end;
+
+  TGuiDialImageRenderer = class(TComponent)
+  private
+    FDialLayerCollection : TGuiDialLayerCollection;
+    function GetCount: Integer;
+    function GetItems(Index: Integer): TGuiDialLayerCollectionItem;
+  protected
+    property Items[Index: Integer]: TGuiDialLayerCollectionItem read GetItems; default;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property Layers: TGuiDialLayerCollection read FDialLayerCollection write FDialLayerCollection;
+    property Count: Integer read GetCount;
+  end;
+
 implementation
 
 uses
-  Dialogs, ExtCtrls, Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common, DAV_Complex;
+  Dialogs, ExtCtrls, Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common,
+  DAV_Complex, ImgList;
+
+resourcestring
+  RCStrNumGlyphsMustBePositive = 'NumGlyphs must be > 0!';
+  RCStrPointerAngleRange = 'Range must be 1..360';
+  RCStrPointerRangeResolution = 'Resolution must be above 0 and less than %d';
+  RCStrPointerAngleStart = 'Start must be 0..359';
 
 function RadToDeg(const Radians: Extended): Extended;  { Degrees := Radians * 180 / PI }
 const
@@ -305,7 +424,7 @@ end;
 procedure TGuiDialPointerAngles.SetRange(const Value: Integer);
 begin
   if (Value < 1) or (Value > 360)
-   then raise Exception.Create('Range must be 1..360');
+   then raise Exception.Create(RCStrPointerAngleRange);
 
   FRange := Value;
   if FRange > Resolution then Resolution := FRange;
@@ -315,7 +434,7 @@ end;
 procedure TGuiDialPointerAngles.SetResolution(const Value: Extended);
 begin
   if (Value < 0) or (Value > Range)
-   then raise Exception.Create('Resolution must be above 0 and less than ' + IntToStr(Range + 1));
+   then raise Exception.CreateFmt(RCStrPointerRangeResolution, [Range + 1]);
 
   FResolution := Value;
   Changed;
@@ -324,7 +443,7 @@ end;
 procedure TGuiDialPointerAngles.SetStart(const Value: Integer);
 begin
   if (Value < 0) or (Value > 359)
-   then raise Exception.Create('Start must be 0..359');
+   then raise Exception.Create(RCStrPointerAngleStart);
 
   FStart := Value;
   Changed;
@@ -341,7 +460,6 @@ begin
   FCircleColor            := clBlack;
   FLineColor              := clRed;
   FLineWidth              := 2;
-  FImageIndex             := -1;
   FAntiAlias              := gaaNone;
   FOSValue                := 1;
   FRightMouseButton       := rmbfCircular;
@@ -444,7 +562,7 @@ begin
   begin
    Lock;
    Brush.Color := Self.Color;
-   if FDialBitmap.Empty and (FImageIndex < 0) then
+   if FDialBitmap.Empty and not assigned(FImageList) then
     case FAntiAlias of
      gaaNone     :
       begin
@@ -569,31 +687,35 @@ begin
      GlyphNr := Trunc(MapValue(NormalizedPosition) * FNumGlyphs);
      if (GlyphNr >= FNumGlyphs) then GlyphNr := FNumGlyphs - 1 else
      if (GlyphNr < 0) then GlyphNr := 0;
-     theRect := ClientRect;
 
-     if not DialBitmap.Empty
-      then Bmp := DialBitmap
-      else raise Exception.Create('Yet todo!');
+     if Assigned(FDialImageItem)
+      then Bmp := FDialImageItem.FDialBitmap
+      else Bmp := DialBitmap;
 
-     if FStitchKind = skVertical then
+     if not Bmp.Empty then
       begin
-       theRect.Top    := Bmp.Height * GlyphNr div FNumGlyphs;
-       theRect.Bottom := Bmp.Height * (GlyphNr + 1) div FNumGlyphs;
-      end
-     else
-      begin
-       theRect.Left  := Bmp.Width * GlyphNr div FNumGlyphs;
-       theRect.Right := Bmp.Width * (GlyphNr + 1) div FNumGlyphs;
-      end;
 
-//     CopyRect(Clientrect, Bmp.Canvas, theRect);
+       theRect := ClientRect;
+       if FStitchKind = skVertical then
+        begin
+         theRect.Top    := Bmp.Height * GlyphNr div FNumGlyphs;
+         theRect.Bottom := Bmp.Height * (GlyphNr + 1) div FNumGlyphs;
+        end
+       else
+        begin
+         theRect.Left  := Bmp.Width * GlyphNr div FNumGlyphs;
+         theRect.Right := Bmp.Width * (GlyphNr + 1) div FNumGlyphs;
+        end;
 
-     with ClientRect do
-      begin
-       BitBlt(Handle, Left, Top, Right - Left, Bottom - Top,
-         Bmp.Canvas.Handle, theRect.Left, theRect.Top, CopyMode);
-      end;
+       with ClientRect do
+        begin
+         BitBlt(Handle, Left, Top, Right - Left, Bottom - Top,
+           Bmp.Canvas.Handle, theRect.Left, theRect.Top, CopyMode);
+        end;
+      end else
 
+     if assigned(ImageList)
+      then ImageList.Draw(fBuffer.Canvas, 0, 0, GlyphNr);
     end;
    Unlock;
   end;
@@ -606,6 +728,13 @@ begin
  if Max = Min
   then result := Min
   else result := (FPosition - Min) / (Max - Min);
+end;
+
+function TCustomGuiDial.GetDialImageIndex: Integer;
+begin
+ if assigned(FDialImageItem)
+  then result := FDialImageItem.Index
+  else result := -1;
 end;
 
 function TCustomGuiDial.GetMappedPosition: Single;
@@ -622,6 +751,12 @@ end;
 
 procedure TCustomGuiDial.DoAutoSize;
 begin
+ if assigned(FImageList) then
+  begin
+   Width := FImageList.Width;
+   Height := FImageList.Height;
+   exit;
+  end;
  if FDialBitmap.Empty or (FNumGlyphs = 0) then Exit;
 
  if FStitchKind = skVertical then
@@ -684,10 +819,11 @@ end;
 
 procedure TCustomGuiDial.SetNumGlyphs(const Value: Integer);
 begin
-  if FNumGlyphs <> Value then
+ if assigned(FImageList) then exit;
+ if FNumGlyphs <> Value then
   begin
-    FNumGlyphs := Value;
-    DoAutoSize;
+   FNumGlyphs := Value;
+   DoAutoSize;
   end;
 end;
 
@@ -721,15 +857,33 @@ begin
   DoAutoSize;
 end;
 
-procedure TCustomGuiDial.SetImageIndex(Value: Integer);
+procedure TCustomGuiDial.SetDialImageIndex(Value: Integer);
 begin
- if not assigned(FImageList)
-  then Value := -1;
- if FImageIndex <> Value then
+ // check if dial image list is available
+ if not assigned(FDialImageList) then exit;
+
+ // limit range to existing dial images
+ if Value < 0 then Value := 0 else
+ if Value >= FDialImageList.Count then Value := FDialImageList.Count - 1;
+
+ if DialImageIndex <> Value then
   begin
-   FImageIndex := Value;
-   if (FImageIndex < 0) or FDialBitmap.Empty
-    then RedrawBuffer(True);
+   if Value >= 0
+    then FDialImageList[Value].LinkDial(Self)
+    else FDialImageItem.UnLinkDial(Self);
+   FDialImageItem := FDialImageList[Value];
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiDial.SetDialImageList(const Value: TGuiDialImageList);
+begin
+ if FDialImageList <> Value then
+  begin
+   FDialImageList := Value;
+   if not assigned(FDialImageList)
+    then FDialImageItem := nil;
+   RedrawBuffer(True); 
   end;
 end;
 
@@ -738,8 +892,13 @@ begin
  if FImageList <> Value then
   begin
    FImageList := Value;
-   if not assigned(FImageList)
-    then ImageIndex := -1;
+   if assigned(FImageList) then
+    begin
+     Width := FImageList.Width;
+     Height := FImageList.Height;
+     FNumGlyphs := FImageList.Count;
+    end;
+   RedrawBuffer(True);
   end;
 end;
 
@@ -890,9 +1049,7 @@ var
   XStart   : Single;
   LineFrac : Single;
   BW       : Single;
-  Center   : record
-              x, y : Single;
-             end;
+  Center   : TPointFloat;
   Line     : PRGB32Array;
 begin
  with Bitmap, Canvas do
@@ -1007,6 +1164,279 @@ begin
    fIndLineLength := Value;
    RedrawBuffer(True);
   end;
+end;
+
+{ TGuiDialImageCollection }
+
+constructor TGuiDialImageCollection.Create(AOwner: TComponent);
+begin
+ inherited Create(AOwner, TGuiDialImageCollectionItem);
+end;
+
+function TGuiDialImageCollection.Add: TGuiDialImageCollectionItem;
+begin
+ result := TGuiDialImageCollectionItem(inherited Add);
+end;
+
+procedure TGuiDialImageCollection.Delete(Index: Integer);
+begin
+ inherited Delete(Index);
+end;
+
+function TGuiDialImageCollection.GetItem(
+  Index: Integer): TGuiDialImageCollectionItem;
+begin
+ result := TGuiDialImageCollectionItem(inherited GetItem(Index));
+end;
+
+function TGuiDialImageCollection.Insert(
+  Index: Integer): TGuiDialImageCollectionItem;
+begin
+ result:= TGuiDialImageCollectionItem(inherited Insert(Index));
+end;
+
+procedure TGuiDialImageCollection.Notify(Item: TCollectionItem;
+  Action: TCollectionNotification);
+begin
+ inherited;
+ // add things that depend on the order here!
+end;
+
+procedure TGuiDialImageCollection.SetItem(Index: Integer;
+  const Value: TGuiDialImageCollectionItem);
+begin
+ inherited SetItem(Index, Value);
+end;
+
+{ TGuiDialImageCollectionItem }
+
+constructor TGuiDialImageCollectionItem.Create(Collection: TCollection);
+begin
+ inherited;
+ FNumGlyphs           := 1;
+ FDialBitmap          := TBitmap.Create;
+ FDialBitmap.OnChange := SettingsChanged;
+ FLinkedDials         := TObjectList.Create(False);
+end;
+
+destructor TGuiDialImageCollectionItem.Destroy;
+begin
+ FreeAndNil(FDialBitmap);
+ FreeAndNil(FLinkedDials);
+ inherited;
+end;
+
+function TGuiDialImageCollectionItem.GetHeight: Integer;
+begin
+ result := FDialBitmap.Height;
+end;
+
+function TGuiDialImageCollectionItem.GetWidth: Integer;
+begin
+ result := FDialBitmap.Width;
+end;
+
+procedure TGuiDialImageCollectionItem.LinkDial(Dial: TCustomGuiDial);
+begin
+ if FLinkedDials.IndexOf(Dial) < 0 then
+  begin
+   FLinkedDials.Add(Dial);
+   Dial.NumGlyphs := NumGlyphs;
+   Dial.StitchKind := StitchKind;
+   case StitchKind of
+    skHorizontal :
+     begin
+      Dial.Width  := Width div NumGlyphs;
+      Dial.Height := Height;
+     end;
+    skVertical :
+     begin
+      Dial.Width  := Width;
+      Dial.Height := Height div NumGlyphs;
+     end;
+   end;
+  end;
+end;
+
+procedure TGuiDialImageCollectionItem.UnLinkDial(Dial: TCustomGuiDial);
+begin
+ FLinkedDials.Remove(Dial);
+end;
+
+procedure TGuiDialImageCollectionItem.SettingsChanged(Sender: TObject);
+var
+  i : Integer;
+begin
+ for i := 0 to FLinkedDials.Count - 1 do
+  with TCustomGuiDial(FLinkedDials[i]) do
+   begin
+    NumGlyphs := Self.NumGlyphs;
+    StitchKind := Self.StitchKind;
+    RedrawBuffer(True);
+   end;
+end;
+
+procedure TGuiDialImageCollectionItem.SetWidth(const Value: Integer);
+begin
+ if Value < 0 then exit;
+ FDialBitmap.Width := Value;
+end;
+
+procedure TGuiDialImageCollectionItem.SetDialBitmap(const Value: TBitmap);
+begin
+ FDialBitmap.Assign(Value);
+end;
+
+procedure TGuiDialImageCollectionItem.SetHeight(const Value: Integer);
+begin
+ if Value < 0 then exit;
+ FDialBitmap.Height := Value;
+end;
+
+procedure TGuiDialImageCollectionItem.NumGlyphsChanged;
+var
+  i : Integer;
+begin
+ for i := 0 to FLinkedDials.Count - 1
+  do TCustomGuiDial(FLinkedDials[i]).NumGlyphs := NumGlyphs;
+end;
+
+procedure TGuiDialImageCollectionItem.StitchKindChanged;
+var
+  i : Integer;
+begin
+ for i := 0 to FLinkedDials.Count - 1
+  do TCustomGuiDial(FLinkedDials[i]).StitchKind := StitchKind;
+end;
+
+procedure TGuiDialImageCollectionItem.SetNumGlyphs(const Value: Integer);
+begin
+ if Value <= 0
+  then raise Exception.Create(RCStrNumGlyphsMustBePositive);
+
+ if FNumGlyphs <> Value then
+  begin
+   FNumGlyphs := Value;
+   NumGlyphsChanged;
+  end;
+end;
+
+procedure TGuiDialImageCollectionItem.SetStitchKind(const Value: TGuiStitchKind);
+begin
+ if FStitchKind <> Value then
+  begin
+   FStitchKind := Value;
+   StitchKindChanged;
+  end;
+end;
+
+{ TGuiDialImageList }
+
+constructor TGuiDialImageList.Create(AOwner: TComponent);
+begin
+  inherited;
+  FDialImageCollection := TGuiDialImageCollection.Create(Self);
+end;
+
+destructor TGuiDialImageList.Destroy;
+begin
+  FreeAndNil(FDialImageCollection);
+  inherited;
+end;
+
+function TGuiDialImageList.GetCount: Integer;
+begin
+  result := FDialImageCollection.Count;
+end;
+
+function TGuiDialImageList.GetItems(Index: Integer): TGuiDialImageCollectionItem;
+begin
+ if (Index >= 0) and (Index < FDialImageCollection.Count)
+  then result := FDialImageCollection[Index]
+  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+end;
+
+{ TGuiDialLayerCollection }
+
+constructor TGuiDialLayerCollection.Create(AOwner: TComponent);
+begin
+ inherited Create(AOwner, TGuiDialImageCollectionItem);
+end;
+
+function TGuiDialLayerCollection.Add: TGuiDialLayerCollectionItem;
+begin
+ result := TGuiDialLayerCollectionItem(inherited Add);
+end;
+
+procedure TGuiDialLayerCollection.Delete(Index: Integer);
+begin
+ inherited Delete(Index);
+end;
+
+function TGuiDialLayerCollection.GetItem(
+  Index: Integer): TGuiDialLayerCollectionItem;
+begin
+ result := TGuiDialLayerCollectionItem(inherited GetItem(Index));
+end;
+
+function TGuiDialLayerCollection.Insert(
+  Index: Integer): TGuiDialLayerCollectionItem;
+begin
+ result:= TGuiDialLayerCollectionItem(inherited Insert(Index));
+end;
+
+procedure TGuiDialLayerCollection.Notify(Item: TCollectionItem;
+  Action: TCollectionNotification);
+begin
+ inherited;
+ // add things that depend on the order here!
+end;
+
+procedure TGuiDialLayerCollection.SetItem(Index: Integer;
+  const Value: TGuiDialLayerCollectionItem);
+begin
+ inherited SetItem(Index, Value);
+end;
+
+{ TGuiDialLayerCollectionItem }
+
+constructor TGuiDialLayerCollectionItem.Create(Collection: TCollection);
+begin
+ inherited;
+ // nothing here yet
+end;
+
+destructor TGuiDialLayerCollectionItem.Destroy;
+begin
+ // nothing here yet
+ inherited;
+end;
+
+{ TGuiDialImageRenderer }
+
+constructor TGuiDialImageRenderer.Create(AOwner: TComponent);
+begin
+ inherited;
+ FDialLayerCollection := TGuiDialLayerCollection.Create(Self); 
+end;
+
+destructor TGuiDialImageRenderer.Destroy;
+begin
+ FreeAndNil(FDialLayerCollection);
+ inherited;
+end;
+
+function TGuiDialImageRenderer.GetCount: Integer;
+begin
+ result := FDialLayerCollection.Count;
+end;
+
+function TGuiDialImageRenderer.GetItems(
+  Index: Integer): TGuiDialLayerCollectionItem;
+begin
+ if (Index >= 0) and (Index < FDialLayerCollection.Count)
+  then result := FDialLayerCollection[Index]
+  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
 end.
