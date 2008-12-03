@@ -79,6 +79,7 @@ type
 
   TInputMonitor = (imDisabled, imMono, imStereo, imAll);
 
+  {$IFDEF DELPHI10_UP} {$region 'TASIOTimeSub'} {$ENDIF}
   TATFlag = (atSystemTimeValid, atSamplePositionValid, atSampleRateValid,
              atSpeedValid, atSampleRateChanged, atClockSourceChanged);
   TATFlags = set of TATFlag;
@@ -105,6 +106,7 @@ type
     property SampleRate: Double Index 1 read GetATdouble write SetATdouble;
     property Flags : TATFlags read GetATflags Write SetATflags;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'TASIOTimeSub'} {$ENDIF}
 
 {$IFDEF D5CP}
   TASIOControlPanel = class(TComponentEditor)
@@ -118,6 +120,7 @@ type
 
   TCustomAudioDevice = class(TComponent);
 
+  {$IFDEF DELPHI10_UP} {$region 'TASIOHostBasic'} {$ENDIF}
   TCustomASIOHostBasic = class(TCustomAudioDevice)
   private
     Fmin, Fmax,
@@ -281,10 +284,12 @@ type
     property OnSampleRateChanged;
     property OnUpdateSamplePos;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'TASIOHostBasic'} {$ENDIF}
 
   TASIOAudioData32 = class(TAudioData32);
   TASIOAudioData64 = class(TAudioData64);
 
+  {$IFDEF DELPHI10_UP} {$region 'TASIOHost'} {$ENDIF}
   TCustomASIOHost = class(TCustomASIOHostBasic)
   private
     FPreventClipping      : TPreventClipping;
@@ -396,6 +401,7 @@ type
     property OnSampleRateChanged;
     property OnUpdateSamplePos;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'TASIOHost'} {$ENDIF}
 
   TASIOAudioChannel32 = class(TAudioChannel32);
   TASIOAudioChannel64 = class(TAudioChannel64);
@@ -415,6 +421,7 @@ type
   TBufferSwitchAudioData32Event = procedure(Sender: TObject; const InBuffer, OutBuffer: TASIOAudioDataCollection32) of object;
   TBufferSwitchAudioData64Event = procedure(Sender: TObject; const InBuffer, OutBuffer: TASIOAudioDataCollection64) of object;
 
+  {$IFDEF DELPHI10_UP} {$region 'TASIOHostAudioData'} {$ENDIF}
   TCustomASIOHostAudioData = class(TCustomASIOHostBasic)
   private
     FPreventClipping      : TPreventClipping;
@@ -503,6 +510,7 @@ type
     property OnSampleRateChanged;
     property OnUpdateSamplePos;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'TASIOHostAudioData'} {$ENDIF}
 
 var
   theHost             : TCustomASIOHostBasic;
@@ -663,6 +671,7 @@ end;
 {$ENDIF}
 {$ENDIF}
 
+{$IFDEF DELPHI10_UP} {$region 'TASIOTimeSub implementation'} {$ENDIF}
 constructor TASIOTimeSub.Create;
 begin
  with FBufferTime.timeInfo do
@@ -770,6 +779,7 @@ begin
        end;
  end;
 end;
+{$IFDEF DELPHI10_UP} {$endregion 'TASIOTimeSub implementation'} {$ENDIF}
 
 function ChannelTypeToString(vType: TASIOSampleType): string;
 begin
@@ -897,6 +907,12 @@ begin
    end;
  end;
 end;
+
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// TCustomASIOHostBasic /////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+{$IFDEF DELPHI10_UP} {$region 'TCustomASIOHostBasic implementation'} {$ENDIF}
 
 { TCustomASIOHostBasic }
 
@@ -1569,9 +1585,13 @@ end;
 
 procedure TCustomASIOHostBasic.SetASIOCanDos(const Value: TASIOCanDos); begin end;
 
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
+
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// TCustomASIOHost ////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+{$IFDEF DELPHI10_UP} {$region 'TCustomASIOHost implementation'} {$ENDIF}
 
 constructor TCustomASIOHost.Create(AOwner: TComponent);
 begin
@@ -1940,15 +1960,13 @@ begin
   end;
 end;
 
-
-
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// TCustomASIOHostAudioData ////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-
+{$IFDEF DELPHI10_UP} {$region 'TCustomASIOHostAudioData implementation'} {$ENDIF}
 
 constructor TCustomASIOHostAudioData.Create(AOwner: TComponent);
 begin
@@ -2236,6 +2254,7 @@ begin
  FDriver.OutputReady;
 end;
 
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 initialization
  PMUpdSamplePos.Msg := PM_UpdateSamplePos;

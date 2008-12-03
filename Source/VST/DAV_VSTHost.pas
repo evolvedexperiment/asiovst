@@ -33,6 +33,7 @@ uses
   DAV_DLLLoader{$ENDIF};
 
 type
+  {$IFDEF DELPHI10_UP} {$region 'General Types'} {$ENDIF}
   TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): Integer of object;
   TVstAutomateEvent = procedure(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single) of object;
   TVstProcessEventsEvent = procedure(Sender: TObject; p: PVstEvents) of object;
@@ -77,7 +78,9 @@ type
   TAutomationState = (as0NotSupported, as1Off, as2Read, as3Write, as4ReadWrite);
 
   TCustomVstHost = class;
+  {$IFDEF DELPHI10_UP} {$endregion 'General Types'} {$ENDIF}
 
+  {$IFDEF DELPHI10_UP} {$region 'TVstPlugIn'} {$ENDIF}
   TCustomVstPlugIn = class(TCollectionItem)
   private
     FActive                        : Boolean;
@@ -411,7 +414,9 @@ type
     procedure Delete(Index: Integer);
     property Count;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'TVstPlugIn'} {$ENDIF}
 
+  {$IFDEF DELPHI10_UP} {$region 'TVstTimeInformation'} {$ENDIF}
   TCustomVstTimeInformation = class(TPersistent)
   private
     FOnChange: TNotifyEvent;
@@ -462,7 +467,9 @@ type
     property SamplesToNextClock;
     property Flags;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'TVstTimeInformation'} {$ENDIF}
 
+  {$IFDEF DELPHI10_UP} {$region 'TVstHost'} {$ENDIF}
   TCustomVstHost = class(TComponent)
   private
     FAutoIdle           : Boolean;
@@ -543,6 +550,7 @@ type
     property VstTimeInfo;
     property VstVersion;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'TVstHost'} {$ENDIF}
 
 var
   audioMaster : TAudioMasterCallbackFunc;
@@ -553,6 +561,7 @@ function EffOptions2String(EffOpts: TEffFlags):string;
 
 implementation
 
+{$IFDEF DELPHI10_UP} {$region 'Resource Strings'} {$ENDIF}
 resourcestring
   RStrUnknown                    = 'Unknown';
   RStrEffect                     = 'Effect';
@@ -578,6 +587,7 @@ resourcestring
   RStrPresetFileNotForThisPlugin = 'Preset file not for this plugin!';
   RStrCloseEditorFirst           = 'Close editor first!';
   RStrValue                      = 'Value';
+{$IFDEF DELPHI10_UP} {$endregion 'Resource Strings'} {$ENDIF}
 
 var
   FBlockSize     : Integer = 2048;
@@ -598,6 +608,8 @@ const
   SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
 
 ///////////////////////////////////////////////////////////////////////////////
+
+{$IFDEF DELPHI10_UP} {$region 'General Functions'} {$ENDIF}
 
 function WhatIfNoEntry: Integer;
 begin
@@ -1002,6 +1014,7 @@ begin
   {$ENDIF}
  end;
 end;
+{$IFDEF DELPHI10_UP} {$endregion 'General Functions'} {$ENDIF}
 
 ///////////////////////////////////////////////////////////////////////////////
 
