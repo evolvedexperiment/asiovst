@@ -28,7 +28,7 @@ interface
 {$I ASIOVST.INC}
 
 uses
-  Windows, Classes, MMSystem, SysUtils, MSACMX, Dialogs;
+  Windows, Classes, MMSystem, SysUtils, MSACMX;
 
 const
   cMPEGLayer3 = 85;

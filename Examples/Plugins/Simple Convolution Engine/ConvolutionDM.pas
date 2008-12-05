@@ -15,7 +15,6 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
   private
     FFilterKernel   : PDAVSingleFixedArray;
-    FSignalPadded   : PDAVSingleFixedArray;
     FFilterFreq     : PDAVSingleFixedArray;
     FSignalFreq     : PDAVSingleFixedArray;
     FSignalTime     : array of PDAVSingleFixedArray;
@@ -31,7 +30,7 @@ type
     procedure IRSizeChanged;
   public
     procedure LoadIR(FileName: TFileName);
-    property IRSize: Integer read FFFTSize write SetIRSize; 
+    property IRSize: Integer read FIRSize write SetIRSize; 
   end;
 
 implementation
@@ -45,7 +44,6 @@ procedure TConvolutionDataModule.VSTModuleCreate(Sender: TObject);
 begin
  FSemaphore := 0;
  FFilterKernel := nil;
- FSignalPadded := nil;
  FFilterFreq   := nil;
  FSignalFreq   := nil;
  FBuffer       := nil;
@@ -63,7 +61,6 @@ var
   i : Integer;
 begin
  Dispose(FFilterKernel);
- Dispose(FSignalPadded);
  Dispose(FFilterFreq);
  Dispose(FSignalFreq);
  for i := 0 to Length(FSignalTime) - 1
@@ -98,13 +95,11 @@ begin
  FFFTSizeHalf    := FFFTSize div 2;
  FFFTSizeQuarter := FFFTSize div 4;
  ReallocMem(FFilterKernel, FFFTSize * SizeOf(Single));
- ReallocMem(FSignalPadded, FFFTSize * SizeOf(Single));
  ReallocMem(FFilterFreq, FFFTSize * SizeOf(Single));
  ReallocMem(FSignalFreq, FFFTSize * SizeOf(Single));
  ReallocMem(FBuffer, FFFTSize * SizeOf(Single));
 
  FillChar(FFilterKernel^[0], FFFTSize * SizeOf(Single), 0);
- FillChar(FSignalPadded^[0], FFFTSize * SizeOf(Single), 0);
  FillChar(FFilterFreq^[0], FFFTSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], FFFTSize * SizeOf(Single), 0);
  FillChar(FBuffer^[0], FFFTSize * SizeOf(Single), 0);

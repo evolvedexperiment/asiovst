@@ -209,6 +209,7 @@ type
     property CanDo[canDo: string]: Integer read GetCanHostDo;
 
     property About: string read FAbout write ReadOnlyString stored False;
+    property BlockSize: Integer read FBlockSize write SetBlockSize default 1024;
     property CanDos: TVstCanDos read fCanDos write fCanDos default [];
     property EffectName: string read FEffectName write SetEffectName;
     property HostProduct: string read GetHostProduct stored false;

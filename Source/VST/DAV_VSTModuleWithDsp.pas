@@ -62,7 +62,6 @@ type
     procedure RegisterDSPItem(item: TDAVProcessingComponent);
     procedure UnRegisterDSPItem(item: TDAVProcessingComponent);
 
-    property BlockSize: Integer read fBlockSize write SetBlockSize default 1024;
     property BlockModeSize: Integer read FBlockModeSize write SetBlockForcedSize default 1024;
     property BlockModeOverlap: Integer read FBlockModeOverlap write SetBlockOverlapSize default 0;
     property ProcessingMode: TProcessingMode read FProcessingMode write SetProcessingMode default pmNormal;
@@ -358,7 +357,7 @@ end;
 
 procedure TDspVSTModule.PrepareBlockProcessing;
 begin
- if FProcessingMode=pmBlockSave then
+ if FProcessingMode = pmBlockSave then
   begin
    SetLength(fBlockInBuffer32,  numInputs,  FBlockModeSize);
    SetLength(fBlockOutBuffer32, numOutputs, FBlockModeSize);
