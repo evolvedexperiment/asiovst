@@ -313,6 +313,7 @@ type
     property GUIControl: TWinControl read FGUIControl;
     property GUIStyle : TGUIStyle read fGUIStyle write SetGUIStyle default gsDefault;
     {$ENDIF}
+    property Loaded: Boolean read FLoaded stored False;
     property PlugCategory: TVstPluginCategory read FPlugCategory stored False;
     property PluginVstVersion: Integer read FVstVersion stored False default -1;
     property ProductString: string read GetProductString stored False;
@@ -553,7 +554,7 @@ type
   {$IFDEF DELPHI10_UP} {$endregion 'TVstHost'} {$ENDIF}
 
 var
-  audioMaster : TAudioMasterCallbackFunc;
+  AudioMaster : TAudioMasterCallbackFunc;
 
 function string2Language(LanguageString: string): TVstHostLanguage;
 function PlugCategory2String(Category: TVstPluginCategory):string;
@@ -1580,13 +1581,13 @@ begin
  try
   FillChar(Temp^, Lngth, 0);
   if FActive then
-   if VstDispatch(effGetProgramName, 0, 0, Temp) = 0
+   if VstDispatch(effGetProgramName, 0, 0, Temp) = 1
     then result := StrPas(Temp);
 
   // check whether the result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
-   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(result) <= 24);
+   if (TVSTPlugins(Collection).VSTHost.CheckStringLengths) and (Length(result) > 24)
+    then raise Exception.Create('String too short');
  finally
   // dispose memory
   Dispose(Temp);
@@ -1607,13 +1608,13 @@ begin
  try
   FillChar(Temp^, Lngth, 0);
   if FActive then
-   if VstDispatch(effGetParamLabel, index, 0, Temp) = 0
+   if VstDispatch(effGetParamLabel, index, 0, Temp) = 1
     then result := StrPas(Temp);
 
   // check whether the result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
-   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(result) <= 8);
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(result) > 8)
+    then raise Exception.Create('String too short');
  finally
 
   // dispose memory
@@ -1635,13 +1636,13 @@ begin
  try
   FillChar(Temp^, Lngth, 0);
   if FActive then
-   if VstDispatch(effGetParamDisplay, index, 0, Temp) = 0
+   if VstDispatch(effGetParamDisplay, index, 0, Temp) = 1
     then result := StrPas(Temp);
 
   // check whether the result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
-   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(result) <= 8);
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(result) > 8)
+    then raise Exception.Create('String too short');
  finally
 
   // dispose memory
@@ -1663,13 +1664,13 @@ begin
  try
   FillChar(Temp^, Lngth, 0);
   if FActive then
-   if VstDispatch(effGetParamName, index, 0, Temp) = 0
+   if VstDispatch(effGetParamName, index, 0, Temp) = 1
     then result := StrPas(Temp);
 
   // check whether the result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
-   if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(result) <= 8);
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(result) > 8)
+    then raise Exception.Create('String too short');
  finally
 
   // dispose memory

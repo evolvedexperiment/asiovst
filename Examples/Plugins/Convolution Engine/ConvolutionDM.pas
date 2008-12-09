@@ -2,9 +2,13 @@ unit ConvolutionDM;
 
 interface
 
+{$I ASIOVST.INC}
+{-$DEFINE Use_IPPS}
+
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_Complex, DAV_DspFftReal2Complex;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_Complex,
+  DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
+  DAV_VSTModule;
 
 type
   TConvolutionDataModule = class(TVSTModule)
@@ -15,13 +19,19 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
   private
     FFilterKernel       : PDAVSingleFixedArray;
-    FFilterFreqs        : array of PDAVSingleFixedArray;
-    FSignalFreq         : PDAVSingleFixedArray;
-    FConvolved          : PDAVSingleFixedArray;
+    FFilterFreqs        : array of PDAVComplexSingleFixedArray;
+    FSignalFreq         : PDAVComplexSingleFixedArray;
+    FConvolved          : PDAVComplexSingleFixedArray;
     FConvolvedTime      : PDAVSingleFixedArray;
     FOutputBuffer       : array of PDAVSingleFixedArray;
     FSemaphore          : Integer;
+
+    {$IFDEF Use_IPPS}
+    FFft                : TFftReal2ComplexIPPSFloat32;
+    {$ELSE}
     FFft                : TFftReal2ComplexNativeFloat32;
+    {$ENDIF}
+
     FIRSize             : Integer;
     FOffsetSize         : Integer;
 
@@ -133,20 +143,24 @@ var
 begin
  i := CeilLog2(FFFTSize);
  if not assigned(FFft)
+ {$IFDEF Use_IPPS}
+  then FFft := TFftReal2ComplexIPPSFloat32.Create(i)
+ {$ELSE}
   then FFft := TFftReal2ComplexNativeFloat32.Create(i)
+ {$ENDIF}
   else FFft.Order := i;
 
  FFFTSizeHalf    := FFFTSize div 2;
  FFFTSizeQuarter := FFFTSize div 4;
 
  ReallocMem(FFilterKernel, FFFTSize * SizeOf(Single));
- ReallocMem(FSignalFreq, FFFTSize * SizeOf(Single));
- ReallocMem(FConvolved, FFFTSize * SizeOf(Single));
+ ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
  ReallocMem(FConvolvedTime, FFFTSize * SizeOf(Single));
 
  FillChar(FFilterKernel^[0], FFFTSize * SizeOf(Single), 0);
- FillChar(FSignalFreq^[0], FFFTSize * SizeOf(Single), 0);
- FillChar(FConvolved^[0], FFFTSize * SizeOf(Single), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FConvolvedTime^[0], FFFTSize * SizeOf(Single), 0);
 
  FFft.AutoScaleType := astDivideInvByN;
@@ -202,7 +216,7 @@ begin
  GetMem(TempIR, FFFTSize * SizeOf(Single));
  for Blocks := 0 to Length(FFilterFreqs) - 1 do
   begin
-   ReallocMem(FFilterFreqs[Blocks], FFFTSize * SizeOf(Single));
+   ReallocMem(FFilterFreqs[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
 
    // calculate IR part size to be copied
    sz := IRSize - Blocks * FFFTSizeHalf;
@@ -213,8 +227,65 @@ begin
    FillChar(TempIR^[sz], (FFFTSize - sz) * SizeOf(Single), 0);
 
    // perform FFT
-   FFft.PerformFFT32(PDAVComplexSingleFixedArray(FFilterFreqs[Blocks]), TempIR);
+   {$IFDEF Use_IPPS}
+   FFft.Perform_FFT(FFilterFreqs[Blocks], TempIR);
+   {$ELSE}
+   FFft.PerformFFT32(FFilterFreqs[Blocks], TempIR);
+   {$ENDIF}
   end;
+end;
+
+procedure MixBuffers_FPU(InBuffer: PSingle; MixBuffer: PSingle; SampleFrames: Integer); overload;
+asm
+@Start:
+  fld   [eax + 4 * ecx - 4].Single
+  fadd  [edx + 4 * ecx - 4].Single
+  fstp  [edx + 4 * ecx - 4].Single
+  loop @Start
+end;
+
+procedure ComplexMultiply(InplaceBuffer: PDAVComplexSingleFixedArray; Filter: PDAVComplexSingleFixedArray; SampleFrames: Integer); overload;
+asm
+ // DC
+ fld   [eax].Single
+ fmul  [edx].Single
+ fstp  [eax].Single
+ add eax, 4
+ add edx, 4
+
+ // Nyquist
+ fld   [eax].Single
+ fmul  [edx].Single
+ fstp  [eax].Single
+ add eax, 4
+ add edx, 4
+
+ dec ecx
+@Start:
+  fld [eax    ].Single  // A.Re
+  fld [eax + 4].Single  // A.Im, A.Re
+  fld [edx    ].Single  // B.Re, A.Im, A.Re
+  fld [edx + 4].Single  // B.Im, B.Re, A.Im, A.Re
+  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fsubp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  fstp [eax    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
+  fmulp                 // A.Im * B.Re, B.Im, A.Re
+  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
+  fmulp                 // B.Im * A.Re, A.Im * B.Re
+  faddp                 // A.Im * B.Re + A.Re * B.Im
+  fstp [eax + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
+  add eax, 8
+  add edx, 8
+ loop @Start
+
+ // Nyquist
+ fld   [eax].Single
+ fmul  [edx].Single
+ fstp  [eax].Single
 end;
 
 procedure TConvolutionDataModule.PerformConvolution(SignalIn, SignalOut: PDAVSingleFixedArray);
@@ -222,40 +293,47 @@ var
   Block  : Integer;
   Bin    : Integer;
   Half   : Integer;
-  Sample : Integer;
-  Temp   : PDAVSingleFixedArray;
 begin
- FFft.PerformFFT32(PDAVComplexSingleFixedArray(FSignalFreq), SignalIn);
+ {$IFDEF Use_IPPS}
+ FFft.Perform_FFT(FSignalFreq, SignalIn);
  Half := FFFTSizeHalf;
 
  for Block := 0 to FFreqRespBlockCount - 1 do
   begin
    // make a copy of the frequency respose
-   move(FSignalFreq^[0], FConvolved^[0], FFFTSize * SizeOf(Single));
+   move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
 
-   // DC
-   Bin := 0;
-   FConvolved^[Bin] := FFilterFreqs[Block]^[Bin] * FConvolved^[Bin];
-   inc(Bin);
+   ComplexMultiply(@FConvolved^[0], @FFilterFreqs[Block]^[0], Half);
+
+   FFft.Perform_IFFT(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
+
+   // copy and combine
+   MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
+  end;
+
+ {$ELSE}
+ FFft.PerformFFT32(FSignalFreq, SignalIn);
+ Half := FFFTSizeHalf;
+
+ for Block := 0 to FFreqRespBlockCount - 1 do
+  begin
+   // make a copy of the frequency respose
+   move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+
+   // DC & Nyquist
+   FConvolved^[0].Re := FFilterFreqs[Block]^[0].Re * FConvolved^[0].Re;
+   FConvolved^[0].Im := FFilterFreqs[Block]^[0].Im * FConvolved^[0].Im;
 
    // inbetween...
-   while Bin < FFFTSizeHalf do
-    begin
-     ComplexMultiplyInplace(FConvolved^[Bin], FConvolved^[Bin + Half],
-       FFilterFreqs[Block]^[Bin], FFilterFreqs[Block]^[Bin + Half]);
-     inc(Bin);
-    end;
-
-   // Nyquist
-   FConvolved^[Bin] := FFilterFreqs[Block]^[Bin] * FConvolved^[Bin];
+   for Bin := 0 to Half - 1
+    do ComplexMultiplyInplace(FConvolved^[Bin], FFilterFreqs[Block]^[Bin]);
 
    FFft.PerformIFFT32(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
 
    // copy and combine
-   Temp := @SignalOut^[Block * Half];
-   for Sample := 0 to Half - 1
-    do Temp^[Sample] := Temp^[Sample] + FConvolvedTime^[Half + Sample];
+   MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
   end;
+ {$ENDIF}
 end;
 
 procedure TConvolutionDataModule.VSTModuleProcess(const Inputs,

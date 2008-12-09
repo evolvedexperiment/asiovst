@@ -126,38 +126,38 @@ var
 
 var
   MixBuffers : record
-    mb32 : procedure(InBuffer:PSingle; MixBuffer:PSingle; Samples:integer);
-    mb64 : procedure(InBuffer:PDouble; MixBuffer:PDouble; Samples:integer);
+    mb32 : procedure(InBuffer: PSingle; MixBuffer:PSingle; SampleFrames: Integer);
+    mb64 : procedure(InBuffer: PDouble; MixBuffer:PDouble; SampleFrames: Integer);
   end;
 
   Volume : record
-    v32 : procedure(InBuffer:PSingle; Volume:Single; Samples:integer);
-    v64 : procedure(InBuffer:PDouble; Volume:Double; Samples:integer);
+    v32 : procedure(InBuffer: PSingle; Volume: Single; SampleFrames: Integer);
+    v64 : procedure(InBuffer: PDouble; Volume: Double; SampleFrames: Integer);
   end;
 
   FadeInLinear  : record
-    v32 : procedure(InBuffer:PSingle; Samples:integer);
-    v64 : procedure(InBuffer:PDouble; Samples:integer);
+    v32 : procedure(InBuffer: PSingle; SampleFrames: Integer);
+    v64 : procedure(InBuffer: PDouble; SampleFrames: Integer);
   end;
 
   FadeOutLinear : record
-    v32 : procedure(InBuffer:PSingle; Samples: Integer);
-    v64 : procedure(InBuffer:PDouble; Samples: Integer);
+    v32 : procedure(InBuffer: PSingle; SampleFrames: Integer);
+    v64 : procedure(InBuffer: PDouble; SampleFrames: Integer);
   end;
 
   FadeLinear : record
-    v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
-    v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
+    v32 : procedure(InBuffer:PSingle; SampleFrames: Integer; CurrentFak, FacInc: Double);
+    v64 : procedure(InBuffer:PDouble; SampleFrames: Integer; CurrentFak, FacInc: Double);
   end;
 
   FadeExponential : record
-    v32 : procedure(InBuffer:PSingle; Samples:Integer; CurrentFak, FacInc : Double);
-    v64 : procedure(InBuffer:PDouble; Samples:Integer; CurrentFak, FacInc : Double);
+    v32 : procedure(InBuffer:PSingle; SampleFrames: Integer; CurrentFak, FacInc: Double);
+    v64 : procedure(InBuffer:PDouble; SampleFrames: Integer; CurrentFak, FacInc: Double);
   end;
   
   Trigger : record
-    v32 : function(InBuffer: PSingle; Samples: Integer; TriggerFaktor : Double): Integer;
-    v64 : function(InBuffer: PDouble; Samples: Integer; TriggerFaktor : Double): Integer;
+    v32 : function(InBuffer: PSingle; SampleFrames: Integer; TriggerFaktor: Double): Integer;
+    v64 : function(InBuffer: PDouble; SampleFrames: Integer; TriggerFaktor: Double): Integer;
   end;
   
   ClipDigital   : TClipBuffer;
@@ -3039,21 +3039,21 @@ begin
   end;
 end;
 
-procedure MixBuffers_FPU(InBuffer:PSingle; MixBuffer:PSingle; samples:integer); overload;
+procedure MixBuffers_FPU(InBuffer: PSingle; MixBuffer: PSingle; SampleFrames: Integer); overload;
 asm
 @Start:
-  fld   [eax+4*ecx-4].Single
-  fadd  [edx+4*ecx-4].Single
-  fstp  [edx+4*ecx-4].Single
+  fld   [eax + 4 * ecx - 4].Single
+  fadd  [edx + 4 * ecx - 4].Single
+  fstp  [edx + 4 * ecx - 4].Single
   loop @Start
 end;
 
-procedure MixBuffers_FPU(InBuffer:PDouble; MixBuffer:PDouble; samples:integer); overload;
+procedure MixBuffers_FPU(InBuffer: PDouble; MixBuffer: PDouble; SampleFrames: Integer); overload;
 asm
 @Start:
-  fld   [eax+8*ecx-8].Double
-  fadd  [edx+8*ecx-8].Double
-  fstp  [edx+8*ecx-8].Double
+  fld   [eax + 8 * ecx - 8].Double
+  fadd  [edx + 8 * ecx - 8].Double
+  fstp  [edx + 8 * ecx - 8].Double
   loop @Start
 end;
 

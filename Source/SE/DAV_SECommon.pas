@@ -6,8 +6,8 @@ const
   CSeSdkVersion : Integer = 2230;
 
   // the 'magic number' that identifies a SynthEdit module (spells SEPL)
-  SepMagic  = $5345504C;
-  SepMagic2 = SepMagic + 1;
+  CSepMagic  = $5345504C;
+  CSepMagic2 = CSepMagic + 1;
 
 type
   // plug datatype

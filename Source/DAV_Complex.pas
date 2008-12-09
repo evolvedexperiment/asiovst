@@ -29,6 +29,16 @@ type
   PDAVComplexDoubleFixedArray = ^TDAVComplexDoubleFixedArray;
   TDAVComplexDoubleFixedArray = array [0..0] of TComplexDouble;
 
+  PDAV2ComplexSingleArray = ^TDAV2ComplexSingleArray;
+  TDAV2ComplexSingleArray = array [0..1] of TComplexSingle;
+  PDAV4ComplexSingleArray = ^TDAV4ComplexSingleArray;
+  TDAV4ComplexSingleArray = array [0..3] of TComplexSingle;
+
+  PDAV2ComplexDoubleArray = ^TDAV2ComplexDoubleArray;
+  TDAV2ComplexDoubleArray = array [0..1] of TComplexDouble;
+  PDAV4ComplexDoubleArray = ^TDAV4ComplexDoubleArray;
+  TDAV4ComplexDoubleArray = array [0..3] of TComplexDouble;
+
   function Complex(Re, Im : Double):TComplexDouble; overload;
   function Complex(Re, Im : Single):TComplexSingle; overload;
 
@@ -412,6 +422,7 @@ begin
 end;
 
 procedure ComplexMultiplyInplace(var A : TComplexSingle; const B : TComplexSingle);
+{$IFDEF PUREPASCAL}
 var
   Temp : Single;
 begin
@@ -419,6 +430,26 @@ begin
  A.Re := A.Re * B.Re - A.Im * B.Im;
  A.Im := A.Im * B.Re + Temp * B.Im;
 end;
+{$ELSE}
+asm
+ fld A.Re.Single    // A.Re
+ fld A.Im.Single    // A.Im, A.Re
+ fld B.Re.Single    // B.Re, A.Im, A.Re
+ fld B.Im.Single    // B.Im, B.Re, A.Im, A.Re
+ fld st(3)          // A.Re, B.Im, B.Re, A.Im, A.Re
+ fmul st(0), st(2)  // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fld st(3)          // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fmul st(0), st(2)  // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fsubp              // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+ fstp A.Re.Single   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+ fxch st(2)         // A.Im, B.Re, B.Im, A.Re
+ fmulp              // A.Im * B.Re, B.Im, A.Re
+ fxch st(2)         // B.Im, A.Re, A.Im * B.Re
+ fmulp              // B.Im * A.Re, A.Im * B.Re
+ faddp              // A.Im * B.Re + A.Re * B.Im
+ fstp A.Im.Single   // A.Im := A.Im * B.Re + A.Re * B.Im
+end;
+{$ENDIF}
 
 procedure ComplexMultiplyInplace(var A : TComplexDouble; const B : TComplexDouble);
 var

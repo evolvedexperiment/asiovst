@@ -144,7 +144,7 @@ type
     SEAudioMasterResolveFilename,    // get full path from a short filename, (int pin_idx, float max_characters, Char *destination)
     SEAudioMasterSendStringToGui,    // Reserved for Experimental use (by Jef)
     SEAudioMasterGetModuleHandle,    // Reserved for Experimental use (by Jef)
-    SEAudioMasterAddEvent,           // pass SeEvent *, host will copy data from struct. Safe to discard after call.
+    SEAudioMasterAddEvent,           // pass PSeEvent, host will copy data from struct. Safe to discard after call.
     SEAudioMasterCreateSharedLookup,
     SEAudioMasterSetPinOutputText,   // sets plug's output string (DT_TEXT only)
     SEAudioMasterSetProcessFunction, // sets the current SubProcess function
@@ -544,7 +544,7 @@ begin
  FOnProcessEvent := ProcessIdle;
  with FEffect do
   begin
-   Magic           := SepMagic;
+   Magic           := CSepMagic;
    Version         := 1;
    HostPtr         := Reserved;
    SEModule        := Self;

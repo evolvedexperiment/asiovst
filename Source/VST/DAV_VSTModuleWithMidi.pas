@@ -28,16 +28,16 @@ type
     function HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
     function HostCallGetCurrentMidiProgram(Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
 
-    procedure MIDI_Out(b1, b2, b3, b4: Byte; offset: Integer = 0);
-    procedure MIDI_SendSysEx(Data: array of Byte; Offset: Integer = 0);
-    procedure MIDI_CC(ch, num, val: Integer; offset: Integer = 0);
-    procedure MIDI_ChannelAftertouch(ch, val: Integer; offset: Integer = 0);
-    procedure MIDI_NoteOff(ch, note, val: Integer; offset: Integer = 0);
-    procedure MIDI_NoteOn(ch, note, val: Integer; offset: Integer = 0);
-    procedure MIDI_PitchBend(ch, val: Integer; offset: Integer = 0);
-    procedure MIDI_PitchBend2(ch, x1, x2: Integer; offset: Integer = 0);
-    procedure MIDI_PolyAftertouch(ch, note, val: Integer; offset: Integer = 0);
-    procedure MIDI_ProgramChange(ch, val: Integer; offset: Integer = 0);
+    procedure MIDI_Out(b1, b2, b3: Byte; b4: Byte = 0; const Offset: Integer = 0);
+    procedure MIDI_SendSysEx(Data: array of Byte; const Offset: Integer = 0);
+    procedure MIDI_CC(ch, num, val: Integer; const Offset: Integer = 0);
+    procedure MIDI_ChannelAftertouch(ch, val: Integer; const Offset: Integer = 0);
+    procedure MIDI_NoteOff(ch, note, val: Integer; const Offset: Integer = 0);
+    procedure MIDI_NoteOn(ch, note, val: Integer; const Offset: Integer = 0);
+    procedure MIDI_PitchBend(ch, val: Integer; const Offset: Integer = 0);
+    procedure MIDI_PitchBend2(ch, x1, x2: Integer; const Offset: Integer = 0);
+    procedure MIDI_PolyAftertouch(ch, note, val: Integer; const Offset: Integer = 0);
+    procedure MIDI_ProgramChange(ch, val: Integer; const Offset: Integer = 0);
 
     property OnProcessMidi: TProcessMidiEvent read FOnProcessMidi write FOnProcessMidi;
     property OnProcessEvents: TProcessEvents read FOnProcessEvents write FOnProcessEvents;
@@ -133,7 +133,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_Out(b1, b2, b3, b4: Byte; offset: Integer);
+procedure TVSTModuleWithMidi.MIDI_Out(b1, b2, b3: Byte; b4: Byte = 0; const Offset: Integer = 0);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
@@ -147,7 +147,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_CC(ch, num, val: Integer; offset: Integer = 0);
+procedure TVSTModuleWithMidi.MIDI_CC(ch, num, val: Integer; const Offset: Integer = 0);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
@@ -160,7 +160,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_ChannelAftertouch(ch, val: Integer; offset: Integer = 0);
+procedure TVSTModuleWithMidi.MIDI_ChannelAftertouch(ch, val: Integer; const Offset: Integer = 0);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
@@ -173,7 +173,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_NoteOff(ch, note, val: Integer; offset: Integer = 0);
+procedure TVSTModuleWithMidi.MIDI_NoteOff(ch, note, val: Integer; const Offset: Integer = 0);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
@@ -186,7 +186,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_NoteOn(ch, note, val: Integer; offset: Integer = 0);
+procedure TVSTModuleWithMidi.MIDI_NoteOn(ch, note, val: Integer; const Offset: Integer = 0);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
@@ -200,7 +200,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_PitchBend(ch, val: Integer; offset: Integer = 0);
+procedure TVSTModuleWithMidi.MIDI_PitchBend(ch, val: Integer; const Offset: Integer = 0);
 var
   a, b: Integer;
 begin
@@ -218,7 +218,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_PitchBend2(ch, x1, x2: Integer; offset: Integer = 0);
+procedure TVSTModuleWithMidi.MIDI_PitchBend2(ch, x1, x2: Integer; const Offset: Integer = 0);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
@@ -231,7 +231,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_PolyAftertouch(ch, note, val: Integer; offset: Integer = 0);
+procedure TVSTModuleWithMidi.MIDI_PolyAftertouch(ch, note, val: Integer; const Offset: Integer = 0);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
@@ -244,12 +244,12 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_ProgramChange(ch, val: Integer; offset: Integer = 0);
+procedure TVSTModuleWithMidi.MIDI_ProgramChange(ch, val: Integer; const Offset: Integer = 0);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin
    EventType := etMidi;
-   MidiData[0] := $D0 + ch;
+   MidiData[0] := $C0 + ch;
    MidiData[1] := val;
    MidiData[2] := 0;
    DeltaFrames := offset;
@@ -257,7 +257,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_SendSysEx(Data: array of Byte; Offset: Integer);
+procedure TVSTModuleWithMidi.MIDI_SendSysEx(Data: array of Byte; const Offset: Integer = 0);
 begin
  with PVstMidiSysexEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin

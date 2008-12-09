@@ -47,15 +47,20 @@ type
   TDAVDoubleDynMatrix = TDAVArrayOfDoubleDynArray;
   PDAVDoubleDynMatrix = ^TDAVDoubleDynMatrix;
 
-  TDAV4SingleArray = array[0..3] of Single;
+  TDAV2SingleArray = Array [0..1] of Single;
+  PDAV2SingleArray = ^TDAV2SingleArray;
+  TDAV2DoubleArray = Array [0..1] of Double;
+  PDAV2DoubleArray = ^TDAV2SingleArray;
+
+  TDAV4SingleArray = Array [0..3] of Single;
   PDAV4SingleArray = ^TDAV4SingleArray;
-  TDAV4DoubleArray = array[0..3] of Double;
+  TDAV4DoubleArray = Array [0..3] of Double;
   PDAV4DoubleArray = ^TDAV4DoubleArray;
 
-  TDAV2SingleArray = array [0..1] of Single;
-  PDAV2SingleArray = ^TDAV2SingleArray;
-  TDAV2DoubleArray = array [0..1] of Double;
-  PDAV2DoubleArray = ^TDAV2SingleArray;
+  TDAV8SingleArray = Array [0..7] of Single;
+  PDAV8SingleArray = ^TDAV8SingleArray;
+  TDAV8DoubleArray = Array [0..7] of Double;
+  PDAV8DoubleArray = ^TDAV8SingleArray;
 
   TDAVMinMaxSingle = record
     min : Single;

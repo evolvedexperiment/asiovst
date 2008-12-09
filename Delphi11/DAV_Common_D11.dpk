@@ -32,7 +32,7 @@ requires
 contains
   DAV_Common in '..\Source\DAV_Common.pas',
   DAV_CommonRegister in '..\Source\DAV_CommonRegister.pas',
-  CPUDetectionTool in '..\Source\CPUDetectionTool.pas',
+  DAV_CPUDetectionTool in '..\Source\DAV_CPUDetectionTool.pas',
   DAV_ProcessingComponent in '..\Source\DAV_ProcessingComponent.pas',
   DAV_BufferMathPascal in '..\Source\Math\DAV_BufferMathPascal.pas',
   DAV_BufferMathAsm in '..\Source\Math\DAV_BufferMathAsm.pas',
@@ -46,9 +46,6 @@ contains
   DAV_AudioFile in '..\Source\FileFormats\DAV_AudioFile.pas',
   DAV_AudioFileWAV in '..\Source\FileFormats\DAV_AudioFileWAV.pas',
   DAV_AudioFileAIFF in '..\Source\FileFormats\DAV_AudioFileAIFF.pas',
-  DAV_AudioFileFLAC in '..\Source\FileFormats\DAV_AudioFileFLAC.pas',
-  DAV_AudioFileWavePack in '..\Source\FileFormats\DAV_AudioFileWavePack.pas',
-  DAV_AudioFileMonkeyAudio in '..\Source\FileFormats\DAV_AudioFileMonkeyAudio.pas',
   DAV_ComplexData in '..\Source\DAV_ComplexData.pas';
 
 end.

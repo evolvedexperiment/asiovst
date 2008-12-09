@@ -296,7 +296,7 @@ begin
  {$ENDIF}
  Randomize;
  FTruncateStrings    := False;
- FVersion            := '0.0';
+ FVersion            := '1.0';
  FAbout              := 'VST Plugin Template by Christian Budde, Tobybear & MyCo';
  FHostProduct        := '';
  FProcessPrecisition := pp32;

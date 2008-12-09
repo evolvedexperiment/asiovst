@@ -32,8 +32,8 @@ requires
   DAV_Common_D11;
 
 contains
-  Config in '..\Source\Config.pas',
-  OpenToolsUtils in '..\Source\OpenToolsUtils.pas',
+  DAV_VSTPluginConfig in '..\Source\VST\DAV_VSTPluginConfig.pas',
+  DAV_OpenToolsUtils in '..\Source\DAV_OpenToolsUtils.pas',
   DAV_VSTEditorCreator in '..\Source\VST\DAV_VSTEditorCreator.pas',
   DAV_VSTModule in '..\Source\VST\DAV_VSTModule.pas',
   DAV_VSTModuleCreator in '..\Source\VST\DAV_VSTModuleCreator.pas',
@@ -50,7 +50,7 @@ contains
   DAV_VSTShellPlugins in '..\Source\VST\DAV_VSTShellPlugins.pas',
   DAV_VSTCustomModule in '..\Source\VST\DAV_VSTCustomModule.pas',
   DAV_VSTEffect in '..\Source\VST\DAV_VSTEffect.pas',
-  DAV_VSTEffectFunctions in '..\Source\VST\DAV_VSTEffectFunctions.pas',
+  DAV_VSTOfflineTask in '..\Source\VST\DAV_VSTOfflineTask.pas',
   DAV_VSTParameters in '..\Source\VST\DAV_VSTParameters.pas';
 
 end.
