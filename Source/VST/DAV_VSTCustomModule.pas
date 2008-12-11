@@ -82,47 +82,47 @@ type
     {$IFDEF Debug} FLog     : TStringList; {$ENDIF}
     {$IFDEF Debug} FTmStmp  : TDateTime; {$ENDIF}
 
+    procedure SetNumInputs(const Inputs: Integer);
+    procedure SetNumOutputs(const Outputs: Integer);
     procedure SetVstShellPlugins(const Value: TCustomVstShellPlugins);
     procedure SetKeysRequired(const Value: Boolean);
     procedure ReadOnlyString(s: string); virtual;
     function GetHostProduct: string;
     function GetHostVendor: string;
   protected
-    FTruncateStrings        : Boolean;
-    FNumCategories          : Integer;
-    FEditorNeedUpdate       : Boolean;
-    FEditorForm             : TForm;
-    FEditorRect             : ERect;
-    FSampleRate             : Single;
     FBlockSize              : Integer;
+    FEditorForm             : TForm;
+    FEditorNeedUpdate       : Boolean;
+    FEditorRect             : ERect;
     FEffectName             : string;
+    FHostProduct            : string;
+    FHostVendor             : string;
+    FInitialDelay           : Integer;
+    FNumCategories          : Integer;
+    FOnClose                : TNotifyEvent;
+    FOnEditOpen             : TGetEditorEvent;
+    FOnOpen                 : TNotifyEvent;
+    FOnProcessDoublesEx     : TProcessDoubleEvent;
+    FOnProcessEx            : TProcessAudioEvent;
+    FOnProcessReplacingEx   : TProcessAudioEvent;
+    FProductName            : string;
+    FSampleRate             : Single;
+    FTruncateStrings        : Boolean;
     FVendorName             : string;
     FVersionMajor           : Integer;
     FVersionMinor           : Integer;
     FVersionRelease         : Integer;
-    FProductName            : string;
-    FHostProduct            : string;
-    FHostVendor             : string;
-    FInitialDelay           : Integer;
-    FOnOpen                 : TNotifyEvent;
-    FOnClose                : TNotifyEvent;
-    FOnEditOpen             : TGetEditorEvent;
-    FOnProcessEx            : TProcessAudioEvent;
-    FOnProcessReplacingEx   : TProcessAudioEvent;
-    FOnProcessDoublesEx     : TProcessDoubleEvent;
 
     function GetPluginFlags: TEffFlags; virtual;
     function GetUniqueID: string; virtual;
     function OfflinePrepare(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual;
-    function OfflineRun(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual; 
+    function OfflineRun(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual;
     procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); override;
-    procedure SetBlockSize(newValue: Integer); virtual;
-    procedure SetInitialDelay(delay: Integer); virtual;
-    procedure SetNumInputs(Inputs: Integer); virtual;
-    procedure SetNumOutputs(Outputs: Integer); virtual;
+    procedure SetBlockSize(const Value: Integer); virtual;
+    procedure SetInitialDelay(const Delay: Integer); virtual;
     procedure SetPluginFlags(newFlags : TEffFlags); virtual;
-    procedure SetSampleRate(newValue: Single); virtual;
-    procedure SetUniqueID(Value: string); virtual;
+    procedure SetSampleRate(const Value: Single); virtual;
+    procedure SetUniqueID(const Value: string); virtual;
     {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
     {$ENDIF}
@@ -135,6 +135,8 @@ type
     procedure UpdateVersion;
     procedure SampleRateChanged; virtual;
     procedure BlockSizeChanged; virtual;
+    procedure NumInputsChanged; virtual;
+    procedure NumOutputsChanged; virtual;
 
     procedure HostCallDispatchEffect(opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single); override;
     procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
@@ -226,7 +228,7 @@ type
     property ProcessPrecisition: TProcessPrecision read FProcessPrecisition write FProcessPrecisition default pp32;
     property ProductName: string read fProductName write SetProductName;
     property RealQualities: Integer read FEffect.realQualities write FEffect.realQualities default 0;
-    property SampleRate: Single read fSampleRate write SetSampleRate;
+    property SampleRate: Single read FSampleRate write SetSampleRate;
     property ShellPlugins: TCustomVstShellPlugins read FVstShellPlugins write SetVstShellPlugins;
     property TailSize: Integer read FTailSize write FTailSize default 0;
     property Tempo: Single read fTempo;
@@ -372,7 +374,7 @@ var
   hv   : boolean;
 begin
  inherited;
- hv := (HostProduct <> 'WaveLab') {or (shortstring(temp)<>'energyXT')};
+ hv := (Pos('WaveLab', HostProduct) < 0) {or (shortstring(temp)<>'energyXT')};
  if hv then hv := (CanDo['shellCategory'] = 1);
 
  if (PlugCategory = vpcShell) and hv then
@@ -716,14 +718,14 @@ end;
 function TCustomVSTModule.HostCallSetBlockSizeAndSampleRate(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
  {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetBlockSizeAndSampleRate: Blocksize ' + IntToStr(Value) + ' Samplerate ' + FloatToStr(opt)); FLog.SaveToFile('Debug.log'); {$ENDIF}
- if fSampleRate <> opt then
+ if FSampleRate <> opt then
   begin
-   fSampleRate := opt;
+   FSampleRate := opt;
    SampleRateChanged;
   end;
- if fBlockSize <> Value then
+ if FBlockSize <> Value then
   begin
-   fBlockSize := Value;
+   FBlockSize := Value;
    BlockSizeChanged;
   end;
  Result := 1;
@@ -1014,7 +1016,7 @@ begin
            FEffect.UniqueID[0];
 end;
 
-procedure TCustomVSTModule.SetUniqueID(Value: string);
+procedure TCustomVSTModule.SetUniqueID(const Value: string);
 var
   i : Integer;
 begin
@@ -1024,34 +1026,50 @@ begin
    else FEffect.uniqueID[4 - i] := #0;
 end;
 
-procedure TCustomVSTModule.SetSampleRate(newValue: Single);
+procedure TCustomVSTModule.SetSampleRate(const Value: Single);
 begin
- if fSampleRate <> newValue then
+ if FSampleRate <> Value then
   begin
-   fSampleRate := newValue;
+   FSampleRate := Value;
    SampleRateChanged;
   end;
 end;
 
-procedure TCustomVSTModule.SetBlockSize(newValue: Integer);
+procedure TCustomVSTModule.SetBlockSize(const Value: Integer);
 begin
- if fBlockSize <> newValue then
+ if FBlockSize <> Value then
   begin
-   fBlockSize := newValue;
+   FBlockSize := Value;
    BlockSizeChanged;
   end;
 end;
 
-procedure TCustomVSTModule.SetNumInputs(Inputs: Integer);
+procedure TCustomVSTModule.NumInputsChanged;
 begin
- FEffect.numInputs := Inputs;
  IOChanged;
 end;
 
-procedure TCustomVSTModule.SetNumOutputs(Outputs: Integer);
+procedure TCustomVSTModule.NumOutputsChanged;
 begin
- FEffect.numOutputs := Outputs;
  IOChanged;
+end;
+
+procedure TCustomVSTModule.SetNumInputs(const Inputs: Integer);
+begin
+ if FEffect.numInputs <> Inputs then
+  begin
+   FEffect.numInputs := Inputs;
+   NumInputsChanged;
+  end;
+end;
+
+procedure TCustomVSTModule.SetNumOutputs(const Outputs: Integer);
+begin
+ if FEffect.numInputs <> Outputs then
+  begin
+   FEffect.numOutputs := Outputs;
+   NumOutputsChanged
+  end;
 end;
 
 procedure TCustomVSTModule.SetPluginFlags(newFlags : TEffFlags);
@@ -1064,13 +1082,17 @@ begin
  Result := FEffect.EffectFlags;
 end;
 
-procedure TCustomVSTModule.SetInitialDelay(delay: Integer);
+procedure TCustomVSTModule.SetInitialDelay(const Delay: Integer);
 begin
- if FInitialDelay <> delay then
+ if FInitialDelay <> Delay then
   begin
-   FInitialDelay := delay;
-   FEffect.initialDelay := FInitialDelay;
+   FInitialDelay := Delay;
+   FEffect.initialDelay := Delay;
 
+   if Pos('WaveLab', HostProduct) > 0 then
+    begin
+     IOChanged;
+    end else
    if HostProduct <> 'energyXT' then IOChanged;
   end;
 end;
@@ -1102,7 +1124,7 @@ begin
   Result := inherited UpdateSampleRate;
   if (Result>0) and (Result<>FSampleRate) then
   begin
-    fSampleRate := Result;
+    FSampleRate := Result;
     SampleRateChanged;
   end;
 end;
@@ -1203,7 +1225,7 @@ end;
 
 procedure TCustomVSTModule.SampleRateChanged;
 begin
-  if Assigned(FSampleRateChangeEvent) then FSampleRateChangeEvent(Self,fSampleRate);
+  if Assigned(FSampleRateChangeEvent) then FSampleRateChangeEvent(Self,FSampleRate);
 end;
 
 {$WARNINGS ON}

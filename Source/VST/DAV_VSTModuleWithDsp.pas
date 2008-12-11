@@ -43,9 +43,9 @@ type
 
     procedure ProcessMidiEvent(MidiEvent: TVstMidiEvent); override;
 
-    procedure SetNumInputs(Inputs: Integer); override;
-    procedure SetNumOutputs(Outputs: Integer); override;
-    procedure SetInitialDelay(delay: Integer); override;
+    procedure NumInputsChanged; override;
+    procedure NumOutputsChanged; override;
+    procedure SetInitialDelay(const Delay: Integer); override;
 
     procedure SetOnProcess(v : TProcessAudioEvent);
     procedure SetOnProcessReplacing(v : TProcessAudioEvent);
@@ -138,23 +138,23 @@ begin
   inherited;
 end;
 
-procedure TDspVSTModule.SetNumInputs(Inputs: Integer);
+procedure TDspVSTModule.NumInputsChanged;
 begin
-  inherited;
-  PrepareBlockProcessing;
+ inherited;
+ PrepareBlockProcessing;
 end;
 
-procedure TDspVSTModule.SetNumOutputs(Outputs: Integer);
+procedure TDspVSTModule.NumOutputsChanged;
 begin
-  inherited;
-  PrepareBlockProcessing;
+ inherited;
+ PrepareBlockProcessing;
 end;
 
-procedure TDspVSTModule.SetInitialDelay(delay: Integer);
+procedure TDspVSTModule.SetInitialDelay(const Delay: Integer);
 begin
-  if FInitialDelay <> delay then
+  if FInitialDelay <> Delay then
   begin
-    FInitialDelay := delay;
+    FInitialDelay := Delay;
     if (FProcessingMode = pmBlockSave) and
        (FInitialDelay < FBlockModeSize - FBlockModeOverlap)
      then FEffect.initialDelay := FBlockModeSize - FBlockModeOverlap
