@@ -13,6 +13,8 @@ type
   TFftAutoScaleType = (astDivideFwdByN = 1, astDivideInvByN = 2,
     astDivideBySqrtN = 4, astDivideNoDivByAny = 8);
 
+  TFftDataOrder = (doPackedRealImaginary, doPackedComplex, doComplex);
+
   TFftReal2Complex = class(TObject)
   private
     procedure SetBinCount(const Value: Integer);
@@ -20,15 +22,18 @@ type
     procedure SetFFTSize(l: Integer);
     procedure SetAutoScaleType(const Value: TFftAutoScaleType);
     procedure CalculateOrderDependentValues;
+    procedure SetDataOrder(const Value: TFftDataOrder);
   protected
     FBinCount      : Integer;
     FFftSize       : Integer;
     FFFTSizeInv    : Double;
     FAutoScaleType : TFftAutoScaleType;
+    FDataOrder     : TFftDataOrder;
     FOrder         : Integer;
     FOnSizeChanged : TNotifyEvent;
     procedure FFTOrderChanged; virtual;
     procedure AutoScaleTypeChanged; virtual;
+    procedure DataOrderChanged; virtual;
   public
     constructor Create; overload; virtual;
     constructor Create(const Order: Byte); overload; virtual;
@@ -38,6 +43,7 @@ type
 
     property AutoScaleType: TFftAutoScaleType read FAutoScaleType write SetAutoScaleType;
     property BinCount: Integer read FBinCount write SetBinCount stored False;
+    property DataOrder: TFftDataOrder read FDataOrder write SetDataOrder;
     property FFTSize: Integer read FFftSize write SetFFTSize stored False;
     property FFTSizeInverse: Double read FFFTSizeInv;
     property Order: Integer read FOrder write SetFFTOrder default 13;
@@ -76,6 +82,7 @@ type
   public
     constructor Create; overload; override;
     constructor Create(const Order: Byte); overload; override;
+    property DataOrder default doPackedRealImaginary;
   end;
 
   TPerform32Old = procedure(const FrequencyDomain, TimeDomain: PDAVSingleFixedArray) of object;
@@ -259,6 +266,20 @@ begin
   if FBinCount <> Value then FFTSize := 2 * (Value - 1);
 end;
 
+procedure TFftReal2Complex.DataOrderChanged;
+begin
+ // Nothing in here yet!
+end;
+
+procedure TFftReal2Complex.SetDataOrder(const Value: TFftDataOrder);
+begin
+ if FDataOrder <> Value then
+  begin
+   FDataOrder := Value;
+   DataOrderChanged;
+  end;
+end;
+
 procedure TFftReal2Complex.SetFFTOrder(const Value: Integer);
 begin
   if FOrder <> Value then
@@ -403,6 +424,7 @@ constructor TFftReal2ComplexNative.Create;
 begin
   inherited Create;
   FFTOrderChanged;
+  FDataOrder := doPackedRealImaginary;
 end;
 
 constructor TFftReal2ComplexNative.Create(const Order: Byte);
@@ -545,29 +567,40 @@ var
   i, h : Integer;
   temp : PDAVSingleFixedArray;
 begin
-(*
-  FPerformFFT32Old(@FrequencyDomain[0], TimeDomain);
-*)
-  h := fFFTSize div 2;
-  GetMem(temp, fFFTSize * SizeOf(Single));
-  try
-   FPerformFFT32Old(temp, TimeDomain);
+ case FDataOrder of
+  doPackedRealImaginary:
+   begin
+    FPerformFFT32Old(@FrequencyDomain[0], TimeDomain);
+    case FAutoScaleType of
+     astDivideFwdByN  : Rescale(@FrequencyDomain[0]);
+     astDivideBySqrtN : RescaleSqrt(@FrequencyDomain[0]);
+    end;
+   end;
+  doPackedComplex:
+   begin
+    h := fFFTSize div 2;
+    GetMem(temp, fFFTSize * SizeOf(Single));
+    try
+     FPerformFFT32Old(temp, TimeDomain);
 
-   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
-    for i := 0 to h - 1 do
-     begin
-      FrequencyDomain[i].Re := temp[i    ] * fScaleFactor;
-      FrequencyDomain[i].Im := temp[i + h] * fScaleFactor;
-     end
-   else
-    for i := 0 to h - 1 do
-     begin
-      FrequencyDomain[i].Re := temp[i    ];
-      FrequencyDomain[i].Im := temp[i + h];
-     end
-  finally
-   Dispose(temp);
-  end;
+     if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
+      for i := 0 to h - 1 do
+       begin
+        FrequencyDomain[i].Re := temp[i    ] * fScaleFactor;
+        FrequencyDomain[i].Im := temp[i + h] * fScaleFactor;
+       end
+     else
+      for i := 0 to h - 1 do
+       begin
+        FrequencyDomain[i].Re := temp[i    ];
+        FrequencyDomain[i].Im := temp[i + h];
+       end
+    finally
+     Dispose(temp);
+    end;
+   end;
+  else Raise Exception.Create('Not supported'); 
+ end;
 end;
 
 procedure TFftReal2ComplexNativeFloat32.PerformIFFT32(
@@ -577,30 +610,40 @@ var
   i, h : Integer;
   temp : PDAVSingleFixedArray;
 begin
-(*
-  FPerformIFFT32(@FrequencyDomain[0], TimeDomain);
-*)
-
- h := fFFTSize div 2;
- GetMem(temp, fFFTSize * SizeOf(Single));
- try
-  if FAutoScaleType in [astDivideInvByN, astDivideBySqrtN] then
-   for i := 0 to h - 1 do
-    begin
-     temp[i    ] := FrequencyDomain[i].Re * fScaleFactor;
-     temp[i + h] := FrequencyDomain[i].Im * fScaleFactor;
-    end
-  else
-   for i := 0 to h - 1 do
-    begin
-     temp[i    ] := FrequencyDomain[i].Re;
-     temp[i + h] := FrequencyDomain[i].Im;
+ case FDataOrder of
+  doPackedRealImaginary:
+   begin
+    FPerformIFFT32Old(@FrequencyDomain[0], TimeDomain);
+    case FAutoScaleType of
+     astDivideBySqrtN : RescaleSqrt(@TimeDomain[0]);
+     astDivideInvByN  : Rescale(@TimeDomain[0]);
     end;
+   end;
+  doPackedComplex:
+   begin
+    h := fFFTSize div 2;
+    GetMem(temp, fFFTSize * SizeOf(Single));
+    try
+     if FAutoScaleType in [astDivideInvByN, astDivideBySqrtN] then
+      for i := 0 to h - 1 do
+       begin
+        temp[i    ] := FrequencyDomain[i].Re * fScaleFactor;
+        temp[i + h] := FrequencyDomain[i].Im * fScaleFactor;
+       end
+     else
+      for i := 0 to h - 1 do
+       begin
+        temp[i    ] := FrequencyDomain[i].Re;
+        temp[i + h] := FrequencyDomain[i].Im;
+       end;
 
-  FPerformIFFT32Old(@temp[0], TimeDomain);
+     FPerformIFFT32Old(@temp[0], TimeDomain);
 
- finally
-  Dispose(temp);
+    finally
+     Dispose(temp);
+    end;
+   end;
+  else Raise Exception.Create('Not supported'); 
  end;
 end;
 
@@ -1968,21 +2011,31 @@ var
   FD   : TDAVDoubleDynArray absolute FrequencyDomain;
   temp : TDAVDoubleDynArray;
 begin
-  h := fFFTSize div 2;
-  SetLength(temp, fFFTSize);
-
-  FPerformFFT64Old(@temp[0], @TimeDomain[0]);
-
-  if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
+ case FDataOrder of
+  doPackedRealImaginary:
    begin
-    for i := 0 to h do FD[2 * i] := temp[i] * fScaleFactor;
-    for i := 1 to h - 1 do FD[2 * i + 1] := temp[i + h] * fScaleFactor;
-   end
-  else
+    FPerformFFT64Old(@FrequencyDomain[0], TimeDomain);
+   end;
+  doPackedComplex:
    begin
-    for i := 0 to h do FD[2 * i] := temp[i];
-    for i := 1 to h - 1 do FD[2 * i + 1] := temp[i + h];
-   end
+    h := fFFTSize div 2;
+    SetLength(temp, fFFTSize);
+
+    FPerformFFT64Old(@temp[0], @TimeDomain[0]);
+
+    if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
+     begin
+      for i := 0 to h do FD[2 * i] := temp[i] * fScaleFactor;
+      for i := 1 to h - 1 do FD[2 * i + 1] := temp[i + h] * fScaleFactor;
+     end
+    else
+     begin
+      for i := 0 to h do FD[2 * i] := temp[i];
+      for i := 1 to h - 1 do FD[2 * i + 1] := temp[i + h];
+     end
+   end;
+  else Raise Exception.Create('Not supported'); 
+ end;
 end;
 
 procedure TFftReal2ComplexNativeFloat64.PerformIFFT64(const FrequencyDomain: PDAVComplexDoubleFixedArray; const TimeDomain : PDAVDoubleFixedArray);
@@ -1991,19 +2044,25 @@ var
   FD   : TDAVDoubleDynArray absolute FrequencyDomain;
   temp : TDAVDoubleDynArray;
 begin
- h := fFFTSize div 2;
- SetLength(temp, fFFTSize);
- if FAutoScaleType in [astDivideInvByN, astDivideBySqrtN] then
-  begin
-   for i := 0 to h do temp[i] := FD[2 * i] * fScaleFactor;
-   for i := 1 to h - 1 do temp[i + h] := FD[2 * i + 1] * fScaleFactor;
-  end
- else
-  begin
-   for i := 0 to h do temp[i] := FD[2 * i];
-   for i := 1 to h - 1 do temp[i + h] := FD[2 * i + 1];
-  end;
- FPerformIFFT64Old(@temp[0], @TimeDomain[0]);
+ case FDataOrder of
+  doPackedRealImaginary: FPerformIFFT64Old(@FrequencyDomain[0], TimeDomain);
+  doPackedComplex:
+   begin
+    h := fFFTSize div 2;
+    SetLength(temp, fFFTSize);
+    if FAutoScaleType in [astDivideInvByN, astDivideBySqrtN] then
+     begin
+      for i := 0 to h do temp[i] := FD[2 * i] * fScaleFactor;
+      for i := 1 to h - 1 do temp[i + h] := FD[2 * i + 1] * fScaleFactor;
+     end
+    else
+     begin
+      for i := 0 to h do temp[i] := FD[2 * i];
+      for i := 1 to h - 1 do temp[i + h] := FD[2 * i + 1];
+     end;
+    FPerformIFFT64Old(@temp[0], @TimeDomain[0]);
+   end;
+ end;
 end;
 
 { FFT Routines }
