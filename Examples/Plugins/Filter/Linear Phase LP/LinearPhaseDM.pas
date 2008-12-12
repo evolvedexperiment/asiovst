@@ -18,8 +18,7 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     FFilterKernel : PDAVSingleFixedArray;
     FSignalPadded : PDAVSingleFixedArray;
@@ -76,6 +75,7 @@ begin
  FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
 
  FFft.AutoScaleType := astDivideInvByN;
+ FFft.DataOrder := doPackedComplex;
  CalculateFilterKernel;
 end;
 
@@ -128,7 +128,7 @@ begin
     {$IFDEF Use_IPPS}
     FFft.Perform_FFT(FFilterFreq, FFilterKernel);
     {$ELSE}
-    FFft.PerformFFT32(FFilterFreq, FFilterKernel);
+    FFft.PerformFFTPackedComplex(FFilterFreq, FFilterKernel);
     {$ENDIF}
    finally
     dec(FSemaphore);
@@ -168,30 +168,17 @@ begin
 
     {$ELSE}
 
-    FFft.PerformFFT32(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
+    FFft.PerformFFTPackedComplex(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
 
-    // DC
-    Bin := 0;
-    PDAVSingleFixedArray(FSignalFreq)^[Bin] :=
-      PDAVSingleFixedArray(FFilterFreq)^[Bin] * PDAVSingleFixedArray(FSignalFreq)^[Bin];
-    inc(Bin);
+    // DC & Nyquist
+    FSignalFreq^[0].Re := FFilterFreq^[0].Re * FSignalFreq^[0].Re;
+    FSignalFreq^[0].Im := FFilterFreq^[0].Im * FSignalFreq^[0].Im;
+    FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
 
-    // inbetween...
-    while Bin < Half do
-     begin
-      ComplexMultiplyInplace(
-        PDAVSingleFixedArray(FSignalFreq)^[Bin],
-        PDAVSingleFixedArray(FSignalFreq)^[Bin + Half],
-        PDAVSingleFixedArray(FFilterFreq)^[Bin],
-        PDAVSingleFixedArray(FFilterFreq)^[Bin + Half]);
-      inc(Bin);
-     end;
+    for Bin := 1 to Half - 1
+     do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
-    // Nyquist
-    PDAVSingleFixedArray(FSignalFreq)^[Bin] :=
-      PDAVSingleFixedArray(FFilterFreq)^[Bin] * PDAVSingleFixedArray(FSignalFreq)^[Bin];
-
-    FFft.PerformIFFT32(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
+    FFft.PerformIFFTPackedComplex(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
     {$ENDIF}
    end;
  finally

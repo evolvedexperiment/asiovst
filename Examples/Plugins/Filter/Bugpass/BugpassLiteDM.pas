@@ -76,6 +76,7 @@ begin
  FillChar(FFilterKernel^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
 
+ FFft.DataOrder := doPackedComplex;
  FFft.AutoScaleType := astDivideInvByN;
  Parameter[0] := 100;
  Parameter[1] := 16000;
@@ -141,7 +142,11 @@ begin
     {$IFDEF Use_IPPS}
     FFft.Perform_FFT(FFilterFreq, FFilterKernel);
     {$ELSE}
-    FFft.PerformFFT32(FFilterFreq, FFilterKernel);
+    case FFft.DataOrder of
+     doPackedRealImaginary : FFft.PerformFFTPackedReIm(PDAVSingleFixedArray(FFilterFreq), FFilterKernel);
+           doPackedComplex : FFft.PerformFFTPackedComplex(FFilterFreq, FFilterKernel);
+     else raise Exception.Create('not supported');
+    end;
     {$ENDIF}
    finally
     dec(FSemaphore);
@@ -180,31 +185,49 @@ begin
     FFft.Perform_IFFT(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
 
     {$ELSE}
+    case FFft.DataOrder of
+     doPackedRealImaginary :
+      begin
+       FFft.PerformFFTPackedReIm(PDAVSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
 
-    FFft.PerformFFT32(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
+       // DC
+       Bin := 0;
+       PDAVSingleFixedArray(FSignalFreq)^[Bin] :=
+         PDAVSingleFixedArray(FFilterFreq)^[Bin] * PDAVSingleFixedArray(FSignalFreq)^[Bin];
+       inc(Bin);
 
-    // DC
-    Bin := 0;
-    PDAVSingleFixedArray(FSignalFreq)^[Bin] :=
-      PDAVSingleFixedArray(FFilterFreq)^[Bin] * PDAVSingleFixedArray(FSignalFreq)^[Bin];
-    inc(Bin);
+       // inbetween...
+       while Bin < Half do
+        begin
+         ComplexMultiplyInplace(
+           PDAVSingleFixedArray(FSignalFreq)^[Bin],
+           PDAVSingleFixedArray(FSignalFreq)^[Bin + Half],
+           PDAVSingleFixedArray(FFilterFreq)^[Bin],
+           PDAVSingleFixedArray(FFilterFreq)^[Bin + Half]);
+         inc(Bin);
+        end;
 
-    // inbetween...
-    while Bin < Half do
-     begin
-      ComplexMultiplyInplace(
-        PDAVSingleFixedArray(FSignalFreq)^[Bin],
-        PDAVSingleFixedArray(FSignalFreq)^[Bin + Half],
-        PDAVSingleFixedArray(FFilterFreq)^[Bin],
-        PDAVSingleFixedArray(FFilterFreq)^[Bin + Half]);
-      inc(Bin);
-     end;
+       // Nyquist
+       PDAVSingleFixedArray(FSignalFreq)^[Bin] :=
+         PDAVSingleFixedArray(FFilterFreq)^[Bin] * PDAVSingleFixedArray(FSignalFreq)^[Bin];
 
-    // Nyquist
-    PDAVSingleFixedArray(FSignalFreq)^[Bin] :=
-      PDAVSingleFixedArray(FFilterFreq)^[Bin] * PDAVSingleFixedArray(FSignalFreq)^[Bin];
+       FFft.PerformIFFTPackedReIm(PDAVSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
+      end;
+      doPackedComplex :
+       begin
+        FFft.PerformFFTPackedComplex(FSignalFreq, @Inputs[Channel, 0]);
 
-    FFft.PerformIFFT32(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
+        // DC & Nyquist
+        FSignalFreq^[0].Re := FFilterFreq^[0].Re * FSignalFreq^[0].Re;
+        FSignalFreq^[0].Im := FFilterFreq^[Half].Im * FSignalFreq^[Half].Im;
+
+        for Bin := 1 to Half - 1
+         do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
+
+        FFft.PerformIFFTPackedComplex(FSignalFreq, @Outputs[Channel, 0]);
+       end
+     else raise Exception.Create('not supported');
+    end;
     {$ENDIF}
    end;
  finally

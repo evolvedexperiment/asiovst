@@ -12,8 +12,9 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
   CurrentProgram = -1
   ProcessingMode = pmBlockSave
   BlockModeOverlap = 512
+  InitialDelay = 1024
   IORatio = 1.000000000000000000
-  UniqueID = 'LPLP'
+  UniqueID = 'BugP'
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <

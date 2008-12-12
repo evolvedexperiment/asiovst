@@ -78,8 +78,8 @@ begin
      i := j;
      while i < 2 * FFTSize do
       begin
-       tr := p2r^ * ur - p2i^ * ui;
-       ti := p2r^ * ui + p2i^ * ur;
+       tr   := p2r^ * ur - p2i^ * ui;
+       ti   := p2r^ * ui + p2i^ * ur;
        p2r^ := p1r^ - tr;
        p2i^ := p1i^ - ti;
        p1r^ := p1r^ + tr;
