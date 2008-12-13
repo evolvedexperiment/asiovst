@@ -126,7 +126,7 @@ begin
 
     // calculate frequency
     {$IFDEF Use_IPPS}
-    FFft.Perform_FFT(FFilterFreq, FFilterKernel);
+    FFft.PerformFFTCCS(FFilterFreq, FFilterKernel);
     {$ELSE}
     FFft.PerformFFTPackedComplex(FFilterFreq, FFilterKernel);
     {$ENDIF}
@@ -155,7 +155,7 @@ begin
   for Channel := 0 to numOutputs - 1 do
    begin
     {$IFDEF Use_IPPS}
-    FFft.Perform_FFT(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
+    FFft.PerformFFTCCS(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
 
     // DC & Nyquist
     FSignalFreq^[0].Re := FFilterFreq^[0].Re * FSignalFreq^[0].Re;
@@ -164,7 +164,7 @@ begin
     for Bin := 1 to Half - 1
      do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
-    FFft.Perform_IFFT(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
+    FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
 
     {$ELSE}
 

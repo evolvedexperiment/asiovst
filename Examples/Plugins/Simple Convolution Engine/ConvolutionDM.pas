@@ -99,7 +99,11 @@ begin
  {$IFDEF Use_IPPS}
   then FFft := TFftReal2ComplexIPPSFloat32.Create(i)
  {$ELSE}
-  then FFft := TFftReal2ComplexNativeFloat32.Create(i)
+  then
+   begin
+    FFft := TFftReal2ComplexNativeFloat32.Create(i);
+    FFft.DataOrder := doPackedComplex;
+   end
  {$ENDIF}
   else FFft.Order := i;
 
@@ -137,16 +141,11 @@ begin
    try
     pt := LoadWAVFileMono(FileName, sr, c, sz);
     IRSize := sz;
-    IRSize := 2048;
     Move(pt^, FFilterKernel^[0], sz * SizeOf(Single));
     FillChar(FFilterKernel^[sz], (FFFTSize - sz) * SizeOf(Single), 0);
 
     // calculate frequency
-    {$IFDEF Use_IPPS}
-    FFft.Perform_FFT(FFilterFreq, FFilterKernel);
-    {$ELSE}
-    FFft.PerformFFT32(FFilterFreq, FFilterKernel);
-   {$ENDIF}
+    FFft.PerformFFT(FFilterFreq, FFilterKernel);
    finally
     dec(FSemaphore);
    end;
@@ -162,7 +161,7 @@ asm
  add eax, 4
  add edx, 4
 
- // Nyquist
+ // Nyquist (packed)
  fld   [eax].Single
  fmul  [edx].Single
  fstp  [eax].Single
@@ -201,27 +200,9 @@ procedure TConvolutionDataModule.PerformConvolution(Signal: PDAVSingleFixedArray
 var
   Bin  : Integer;
 begin
- {$IFDEF Use_IPPS}
- FFft.Perform_FFT(FSignalFreq, Signal);
-
+ FFft.PerformFFT(FSignalFreq, Signal);
  ComplexMultiply(@FSignalFreq^[0], @FFilterFreq^[0], FFFTSizeHalf);
-
- FFft.Perform_IFFT(FSignalFreq, Signal);
-
- {$ELSE}
-
- FFft.PerformFFT32(FSignalFreq, Signal);
-
- // DC & Nyquist
- FSignalFreq^[0].Re := FFilterFreq^[0].Re * FSignalFreq^[0].Re;
- FSignalFreq^[0].Im := FFilterFreq^[0].Im * FSignalFreq^[0].Im;
-
- // inbetween...
- for Bin := 1 to FFFTSizeHalf - 1
-  do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
-
- FFft.PerformIFFT32(FSignalFreq, Signal);
- {$ENDIF}
+ FFft.PerformIFFT(FSignalFreq, Signal);
 end;
 
 procedure TConvolutionDataModule.VSTModuleProcess(const Inputs,

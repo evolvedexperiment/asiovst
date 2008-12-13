@@ -146,7 +146,11 @@ begin
  {$IFDEF Use_IPPS}
   then FFft := TFftReal2ComplexIPPSFloat32.Create(i)
  {$ELSE}
-  then FFft := TFftReal2ComplexNativeFloat32.Create(i)
+  then
+   begin
+    FFft := TFftReal2ComplexNativeFloat32.Create(i);
+    FFft.DataOrder := doPackedComplex;
+   end
  {$ENDIF}
   else FFft.Order := i;
 
@@ -227,11 +231,7 @@ begin
    FillChar(TempIR^[sz], (FFFTSize - sz) * SizeOf(Single), 0);
 
    // perform FFT
-   {$IFDEF Use_IPPS}
-   FFft.Perform_FFT(FFilterFreqs[Blocks], TempIR);
-   {$ELSE}
-   FFft.PerformFFT32(FFilterFreqs[Blocks], TempIR);
-   {$ENDIF}
+   FFft.PerformFFT(FFilterFreqs[Blocks], TempIR);
   end;
 end;
 
@@ -291,11 +291,9 @@ end;
 procedure TConvolutionDataModule.PerformConvolution(SignalIn, SignalOut: PDAVSingleFixedArray);
 var
   Block  : Integer;
-  Bin    : Integer;
   Half   : Integer;
 begin
- {$IFDEF Use_IPPS}
- FFft.Perform_FFT(FSignalFreq, SignalIn);
+ FFft.PerformFFT(FSignalFreq, SignalIn);
  Half := FFFTSizeHalf;
 
  for Block := 0 to FFreqRespBlockCount - 1 do
@@ -305,35 +303,11 @@ begin
 
    ComplexMultiply(@FConvolved^[0], @FFilterFreqs[Block]^[0], Half);
 
-   FFft.Perform_IFFT(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
+   FFft.PerformIFFT(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
 
    // copy and combine
    MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
   end;
-
- {$ELSE}
- FFft.PerformFFT32(FSignalFreq, SignalIn);
- Half := FFFTSizeHalf;
-
- for Block := 0 to FFreqRespBlockCount - 1 do
-  begin
-   // make a copy of the frequency respose
-   move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
-
-   // DC & Nyquist
-   FConvolved^[0].Re := FFilterFreqs[Block]^[0].Re * FConvolved^[0].Re;
-   FConvolved^[0].Im := FFilterFreqs[Block]^[0].Im * FConvolved^[0].Im;
-
-   // inbetween...
-   for Bin := 0 to Half - 1
-    do ComplexMultiplyInplace(FConvolved^[Bin], FFilterFreqs[Block]^[Bin]);
-
-   FFft.PerformIFFT32(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
-
-   // copy and combine
-   MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
-  end;
- {$ENDIF}
 end;
 
 procedure TConvolutionDataModule.VSTModuleProcess(const Inputs,

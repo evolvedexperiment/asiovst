@@ -11,7 +11,7 @@ object ConvolutionDataModule: TConvolutionDataModule
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
   IORatio = 1.000000000000000000
-  UniqueID = 'LPLP'
+  UniqueID = 'SCnv'
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <>

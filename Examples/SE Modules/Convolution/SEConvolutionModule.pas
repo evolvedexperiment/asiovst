@@ -3,7 +3,7 @@ unit SEConvolutionModule;
 interface
 
 {$I ASIOVST.INC}
-{$DEFINE Use_IPPS}
+{-$DEFINE Use_IPPS}
 
 uses
   SysUtils, DAV_Common, DAV_SECommon, DAV_SEModule, DAV_Complex,
@@ -11,8 +11,8 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEConvolutionPins = (pinInput, pinOutput, pinFileName, pinDesiredLatency,
-    pinRealLatency);
+  TSEConvolutionPins = (pinInput, pinOutput, pinFileName, pinMaxIRSize,
+    pinDesiredLatency, pinRealLatency);
 
   TSEConvolutionModule = class(TSEModuleBase)
   private
@@ -43,6 +43,7 @@ type
     FInputBuffer         : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer        : PDAVSingleFixedArray;
     FFileName            : PChar;
+    FMaxIRSize           : Integer;
     FRealLatency         : Integer;
     FDesiredLatencyIndex : Integer;
     procedure SampleRateChanged; override;
@@ -99,6 +100,7 @@ begin
  FFFTSizeHalf         := 0;
  FFFTSizeQuarter      := 0;
  IRBlockSize          := 512;
+ FMaxIRSize           := 16384;
  FDesiredLatencyIndex := 5;
 end;
 
@@ -231,7 +233,16 @@ begin
       VariableAddress := @FFileName;
       Direction       := drIn;
       DataType        := dtText;
-      DefaultValue    := '1000';
+      DefaultValue    := 'IR.wav';
+     end;
+  pinMaxIRSize:
+    with Properties^ do
+     begin
+      Name            := 'Maximum IR Size';
+      VariableAddress := @FMaxIRSize;
+      Direction       := drIn;
+      DataType        := dtInteger;
+      DefaultValue    := '16384';
      end;
   pinDesiredLatency:
     with Properties^ do
@@ -259,6 +270,8 @@ end;
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
 procedure TSEConvolutionModule.PlugStateChange(const CurrentPin: TSEPin);
+var
+  OldSize : Integer;
 begin
  // has user altered a filter parameter?
  case TSEConvolutionPins(CurrentPin.PinID) of
@@ -270,6 +283,18 @@ begin
                          else OnProcess := SubProcessBypass;
                        end
                       else OnProcess := SubProcessBypass;
+       pinMaxIRSize : begin
+                       while FSemaphore > 0 do;
+                       Inc(FSemaphore);
+                       try
+                        OldSize := FIRSizePadded;
+                        CalculatePaddedIRSize;
+                        if OldSize <> FIRSizePadded
+                         then CalculateFilterBlockFrequencyResponses;
+                       finally
+                        Dec(FSemaphore);
+                       end;
+                      end;
   pinDesiredLatency : case 6 + FDesiredLatencyIndex of
                         6 : IRBlockSize :=   64;
                         7 : IRBlockSize :=  128;
@@ -309,17 +334,24 @@ begin
 
    // perform FFT
    {$IFDEF Use_IPPS}
-   FFft.Perform_FFT(FFilterFreqs[Blocks], TempIR);
+   FFft.PerformFFTCCS(FFilterFreqs[Blocks], TempIR);
    {$ELSE}
-   FFft.PerformFFT32(FFilterFreqs[Blocks], TempIR);
+   FFft.PerformFFTPackedComplex(FFilterFreqs[Blocks], TempIR);
    {$ENDIF}
   end;
 end;
 
 procedure TSEConvolutionModule.CalculateFrequencyResponseBlockCount;
+var
+  RealIRSize : Integer;
 begin
+ // limit IR Size if necessary
+ if (FMaxIRSize > 64) and (FIRSize > FMaxIRSize)
+  then RealIRSize := FMaxIRSize
+  else RealIRSize := FIRSize;
+
  // calculate number of blocks over the whole IR
- FFreqRespBlockCount := (FIRSize + FFFTSizeHalf - 1) div FFFTSizeHalf;
+ FFreqRespBlockCount := (RealIRSize + FFFTSizeHalf - 1) div FFFTSizeHalf;
 end;
 
 procedure TSEConvolutionModule.CalculatePaddedIRSize;
@@ -361,7 +393,11 @@ begin
   {$IFDEF Use_IPPS}
    then FFft := TFftReal2ComplexIPPSFloat32.Create(i)
   {$ELSE}
-   then FFft := TFftReal2ComplexNativeFloat32.Create(i)
+   then
+    begin
+     FFft := TFftReal2ComplexNativeFloat32.Create(i);
+     FFft.DataOrder := doPackedComplex;
+    end
   {$ENDIF}
    else FFft.Order := i;
   FFft.AutoScaleType := astDivideInvByN;
@@ -436,7 +472,7 @@ asm
  add eax, 4
  add edx, 4
 
- // Nyquist
+ // Nyquist (packed)
  fld   [eax].Single
  fmul  [edx].Single
  fstp  [eax].Single
@@ -483,7 +519,7 @@ begin
  Half := FFFTSizeHalf;
 
  {$IFDEF Use_IPPS}
- FFft.Perform_FFT(FSignalFreq, SignalIn);
+ FFft.PerformFFTCCS(FSignalFreq, SignalIn);
  for Block := 0 to FFreqRespBlockCount - 1 do
   begin
    // make a copy of the frequency respose
@@ -491,14 +527,14 @@ begin
 
    ComplexMultiply(@FConvolved^[0], @FFilterFreqs[Block]^[0], Half);
 
-   FFft.Perform_IFFT(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
+   FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
 
    // copy and combine
    MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
   end;
 
  {$ELSE}
- FFft.PerformFFT32(FSignalFreq, SignalIn);
+ FFft.PerformFFTPackedComplex(FSignalFreq, SignalIn);
  for Block := 0 to FFreqRespBlockCount - 1 do
   begin
    // make a copy of the frequency respose
@@ -512,7 +548,7 @@ begin
    for Bin := 0 to Half - 1
     do ComplexMultiplyInplace(FConvolved^[Bin], FFilterFreqs[Block]^[Bin]);
 
-   FFft.PerformIFFT32(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
+   FFft.PerformIFFTPackedComplex(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
 
    // copy and combine
    MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);

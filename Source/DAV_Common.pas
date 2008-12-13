@@ -50,7 +50,7 @@ type
   TDAV2SingleArray = Array [0..1] of Single;
   PDAV2SingleArray = ^TDAV2SingleArray;
   TDAV2DoubleArray = Array [0..1] of Double;
-  PDAV2DoubleArray = ^TDAV2SingleArray;
+  PDAV2DoubleArray = ^TDAV2DoubleArray;
 
   TDAV4SingleArray = Array [0..3] of Single;
   PDAV4SingleArray = ^TDAV4SingleArray;
