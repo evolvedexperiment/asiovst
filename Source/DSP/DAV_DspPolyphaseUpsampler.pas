@@ -22,7 +22,8 @@ type
     procedure ProcessSample2(const Input : Single; out Output : TDAV2SingleArray);
     procedure ProcessSample3(const Input : Single; out Output : TDAV2SingleArray);
     procedure ProcessSample4(const Input : Single; out Output : TDAV2SingleArray);
-    procedure ProcessSampleLarge(const Input : Single; out Output : TDAV2SingleArray);
+    procedure ProcessSampleOdd(const Input : Single; out Output : TDAV2SingleArray);
+    procedure ProcessSampleEven(const Input : Single; out Output : TDAV2SingleArray);
   protected
     procedure SetProcedures; override;
     procedure NumberOfCoeffsChanged; override;
@@ -90,7 +91,10 @@ begin
     2: FProcessSample32 := ProcessSample2;
     3: FProcessSample32 := ProcessSample3;
     4: FProcessSample32 := ProcessSample4;
-  else FProcessSample32 := ProcessSampleLarge;
+  else
+  if FNumberOfCoeffs mod 2 <> 0
+   then FProcessSample32 := ProcessSampleOdd
+   else FProcessSample32 := ProcessSampleEven;
  end;
 end;
 
@@ -216,7 +220,7 @@ asm
  mov  edi, [self.FY]                  // edi = FY
  mov  ecx, [self.FX]                  // esi = FX
  mov  eax, [self.fCoefficients]       // ecx = fCoefficients
- fld  [ecx].Double                    // FX[0]
+ fld  [ecx].Single                    // FX[0]
  fld  Input.Single                    // Input, FX[0]
  fst  [Output + 4].Single             // Output[1] := Input;
  fst  [ecx].Single                    // FX[0] := Input;
@@ -282,13 +286,13 @@ asm
  mov ecx, [self.FX]                  // esi = FX
  mov eax, [self.fCoefficients]       // ecx = fCoefficients
 
- fld [ecx].Double                    // FX[0]
+ fld [ecx].Single                    // FX[0]
  fld Input.Single                    // Input, FX[0]
- fst  [ecx].Double                   // FX[0] := Input;
- fsub [edi].Double                   // (Input - FY[0])
+ fst  [ecx].Single                   // FX[0] := Input;
+ fsub [edi].Single                   // (Input - FY[0])
  fmul [eax].Double                   // (Input - FY[0]) * fCoefficients[0]
  faddp                               // (Input - FY[0]) * fCoefficients[0] + FX[0]
- fstp [edi].Double                   // FY[0] := (Input - FY[0]) * fCoefficients[0] + FX[0]
+ fstp [edi].Single                   // FY[0] := (Input - FY[0]) * fCoefficients[0] + FX[0]
 
  fld [ecx + 4].Single                // FX[1]
  fld Input.Single                    // Input, FX[1]
@@ -300,10 +304,10 @@ asm
  fstp [Output + 4].Single            // Output[1] := FY[1];
 
  fld  [ecx +  8].Single              // FX[2]
- fld  [edi].Double                   // FY[0], FX[2]
+ fld  [edi].Single                   // FY[0], FX[2]
  fst  [ecx +  8].Single              // FX[2] := FY[0];
  fsub [edi +  8].Single              // (FY[0] - FY[2])
- fmul [eax + 16].Single              // (FY[0] - FY[2]) * fCoefficients[2]
+ fmul [eax + 16].Double              // (FY[0] - FY[2]) * fCoefficients[2]
  faddp                               // (FY[0] - FY[2]) * fCoefficients[2] + FX[2]
  fst  [edi +  8].Single              // FY[2] := (FY[0] - FY[2]) * fCoefficients[2] + FX[2]
  fstp [Output].Single                // Output[0] := FY[2];
@@ -346,7 +350,7 @@ asm
  fstp [edi + 4].Single               // FY[1] := (Input - FY[1]) * fCoefficients[1] + FX[1]
 
  fld  [ecx +  8].Single              // FX[2]
- fld  [edi].Double                   // FY[0], FX[2]
+ fld  [edi].Single                   // FY[0], FX[2]
  fst  [ecx +  8].Single              // FX[2] := FY[0];
  fsub [edi +  8].Single              // (FY[0] - FY[2])
  fmul [eax + 16].Double              // (FY[0] - FY[2]) * fCoefficients[2]
@@ -367,21 +371,100 @@ asm
 end;
 {$ENDIF}
 
-procedure TPolyphaseUpsampler32.ProcessSampleLarge(const Input : Single; out Output : TDAV2SingleArray);
+procedure TPolyphaseUpsampler32.ProcessSampleOdd(const Input : Single; out Output : TDAV2SingleArray);
 {$IFDEF PUREPASCAL}
 var
   i : Integer;
 begin
- FY[ 0] := (Input  - FY[ 0]) * fCoefficients[ 0] + FX[ 0];
- FX[ 0] := Input;
- FY[ 1] := (Input  - FY[ 1]) * fCoefficients[ 1] + FX[ 1];
- FX[ 1] := Input;
+ FY[0] := (Input - FY[0]) * fCoefficients[0] + FX[0]; FX[0] := Input;
+ PDav2SingleArray(FY)^[1] := (Input - PDav2SingleArray(FY)^[1]) * PDav2DoubleArray(fCoefficients)^[1] + PDav2SingleArray(FX)^[1];
+ PDav2SingleArray(FX)^[1] := Input;
 
  for i := 2 to FNumberOfCoeffs - 1 do
   begin
-   FY[ i] := (FY[i-2] - FY[i]) * fCoefficients[i] + FX[i];
-   FX[ i] :=  FY[i-2];
+   FY[ i] := (FY[i - 2] - FY[i]) * fCoefficients[i] + FX[i];
+   FX[ i] :=  FY[i - 2];
   end;
+ Output[1] := FY[FNumberOfCoeffs - 2];
+ Output[0] := FY[FNumberOfCoeffs - 1];
+end;
+{$ELSE}
+asm
+ pushad
+ mov  esi, [self.FX]                  // esi = FX
+ mov  edi, [self.FY]                  // edi = FY
+ mov  ebx, [self.fCoefficients]       // ebx = fCoefficients
+
+ fld  [esi].Single                    // FX[0]
+ fld  Input.Single                    // Input, FX[0]
+ fst  [esi].Single                    // FX[0] := Input;
+ fsub [edi].Single                    // (Input - FY[0])
+ fmul [ebx].Double                    // (Input - FY[0]) * fCoefficients[0]
+ faddp                                // (Input - FY[0]) * fCoefficients[0] + FX[0]
+ fstp [edi].Single                    // FY[0] := (Input - FY[0]) * fCoefficients[0] + FX[0]
+
+ fld  [esi + 4].Single                // FX[1]
+ fld  Input.Single                    // Input, FX[1]
+ fst  [esi + 4].Single                // FX[1] := Input;
+ fsub [edi + 4].Single                // (Input - FY[1])
+ fmul [ebx + 8].Double                // (Input - FY[1]) * fCoefficients[1]
+ faddp                                // (Input - FY[1]) * fCoefficients[1] + FX[1]
+ fstp [edi + 4].Single                // FY[1] := (Input - FY[1]) * fCoefficients[1] + FX[1]
+
+ push ecx                             // The Saviour of ECX
+ mov  ecx,[self.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
+ sub  ecx, 4                          // "Den Rest mach ich selber"
+@Loopy:
+ fld  [esi +  8].Single               // FX[2], FY[2]
+ fld  [edi].Single                    // FY[0], FX[2], FY[2]
+ fst  [esi +  8].Single               // FX[2] := FY[0];
+ fsub [edi +  8].Single               // (FY[0] - FY[2]), FY[2]
+ fmul [ebx + 16].Double               // (FY[0] - FY[2]) * fCoefficients[2], FY[2]
+ faddp                                // (FY[0] - FY[2]) * fCoefficients[2] + FX[2], FY[2]
+ fstp [edi +  8].Single               // FY[2] := (FY[0] - FY[2]) * fCoefficients[2] + FX[2]
+ add  esi, 4
+ add  edi, 4
+ add  ebx, 8                          // Weiter geht's
+ loop @Loopy
+ pop ecx                              // ecx hat ausgedient!
+
+ fld  [esi +  8].Single               // FX[2], FY[2]
+ fld  [edi].Single                    // FY[0], FX[2], FY[2]
+ fst  [esi +  8].Single               // FX[2] := FY[0];
+ fsub [edi +  8].Single               // (FY[0] - FY[2]), FY[2]
+ fmul [ebx + 16].Double               // (FY[0] - FY[2]) * fCoefficients[2], FY[2]
+ faddp                                // (FY[0] - FY[2]) * fCoefficients[2] + FX[2], FY[2]
+ fst  [edi +  8].Single               // FY[2] := (FY[0] - FY[2]) * fCoefficients[2] + FX[2]
+ fstp [Output + 4].Single             // Output[0] := FY[2];
+
+ fld  [esi + 12].Single               // FX[2], FY[2]
+ fld  [edi +  4].Single               // FY[0], FX[2], FY[2]
+ fst  [esi + 12].Single               // FX[2] := FY[0];
+ fsub [edi + 12].Single               // (FY[0] - FY[2]), FY[2]
+ fmul [ebx + 24].Double               // (FY[0] - FY[2]) * fCoefficients[2], FY[2]
+ faddp                                // (FY[0] - FY[2]) * fCoefficients[2] + FX[2], FY[2]
+ fst [edi + 12].Single                // FY[2] := (FY[0] - FY[2]) * fCoefficients[2] + FX[2]
+ fstp [Output].Single                 // Output[1] := FY[3];
+
+ popad
+end;
+{$ENDIF}
+
+procedure TPolyphaseUpsampler32.ProcessSampleEven(const Input : Single; out Output : TDAV2SingleArray);
+{$IFDEF PUREPASCAL}
+var
+  i : Integer;
+begin
+ FY[0] := (Input - FY[0]) * fCoefficients[0] + FX[0]; FX[0] := Input;
+ PDav2SingleArray(FY)^[1] := (Input - PDav2SingleArray(FY)^[1]) * PDav2DoubleArray(fCoefficients)^[1] + PDav2SingleArray(FX)^[1];
+ PDav2SingleArray(FX)^[1] := Input;
+
+ for i := 2 to FNumberOfCoeffs - 1 do
+  begin
+   FY[ i] := (FY[i - 2] - FY[i]) * fCoefficients[i] + FX[i];
+   FX[ i] :=  FY[i - 2];
+  end;
+ i := FNumberOfCoeffs and 1;
  Output[0] := FY[FNumberOfCoeffs - 2];
  Output[1] := FY[FNumberOfCoeffs - 1];
 end;
@@ -426,7 +509,7 @@ asm
  pop ecx                              // ecx hat ausgedient!
 
  fld  [esi +  8].Single               // FX[2], FY[2]
- fld  [edi].Double                    // FY[0], FX[2], FY[2]
+ fld  [edi].Single                    // FY[0], FX[2], FY[2]
  fst  [esi +  8].Single               // FX[2] := FY[0];
  fsub [edi +  8].Single               // (FY[0] - FY[2]), FY[2]
  fmul [ebx + 16].Double               // (FY[0] - FY[2]) * fCoefficients[2], FY[2]

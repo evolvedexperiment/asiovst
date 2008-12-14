@@ -11,6 +11,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdReceiveVstTimeInfo, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'Spli'
   ShellPlugins = <>
   Programs = <>
@@ -169,8 +170,8 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   OnStopProcess = VSTModuleStopProcess
   OnSuspend = VSTModuleSuspend
   OnVendorSpecific = VSTModuleVendorSpecific
-  Left = 215
-  Top = 89
+  Left = 261
+  Top = 82
   Height = 150
   Width = 215
   object VstHost: TVstHost

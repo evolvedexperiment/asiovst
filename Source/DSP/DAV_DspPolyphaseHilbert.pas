@@ -51,8 +51,8 @@ type
     procedure ProcessBlock(const Input, OutputA, OutputB: PDAVSingleFixedArray; SampleFrames: Integer);
     procedure ClearBuffers;
 
-    property ProcessHilbertSample32: TProcessHilbertSample32 read FPHilbertSample32 write FPHilbertSample32;
-    property ProcessEnvelopeSample32: TProcessEnvelopeSample32 read FPEnvSample32 write FPEnvSample32;
+    property ProcessHilbertSample: TProcessHilbertSample32 read FPHilbertSample32;
+    property ProcessEnvelopeSample: TProcessEnvelopeSample32 read FPEnvSample32;
   end;
 
   TPhaseHalfPi64 = class(TCustomPhaseHalfPi)
@@ -81,8 +81,8 @@ type
     procedure ProcessBlock(const Input, OutputA, OutputB: PDAVDoubleFixedArray; SampleFrames: Integer);
     procedure ClearBuffers;
 
-    property ProcessHilbertSample64: TProcessHilbertSample64 read FPHilbertSample64 write FPHilbertSample64;
-    property ProcessEnvelopeSample64: TProcessEnvelopeSample64 read FPEnvSample64 write FPEnvSample64;
+    property ProcessHilbertSample: TProcessHilbertSample64 read FPHilbertSample64;
+    property ProcessEnvelopeSample: TProcessEnvelopeSample64 read FPEnvSample64;
   end;
 
 implementation
@@ -94,6 +94,7 @@ begin
   FMem[0].Y := nil;
   FMem[1].X := nil;
   FMem[1].Y := nil;
+  NumberOfCoeffsChanged;
 end;
 
 destructor TPhaseHalfPi32.Destroy;
@@ -156,7 +157,7 @@ begin
   assert(SampleFrames > 0);
   Pos := 0;
   repeat
-    ProcessHilbertSample32(Input[pos], OutputA[Pos], OutputB[Pos]);
+    ProcessHilbertSample(Input[pos], OutputA[Pos], OutputB[Pos]);
     Inc(Pos);
   until (pos >= SampleFrames);
 end;
@@ -290,82 +291,13 @@ procedure TPhaseHalfPi32.ProcessSample3(const Input: Single;
   out OutputA, OutputB: Single);
 {$IFNDEF PUREPASCAL}
 asm
- push ebx                        // The Saviours of ebx
- push edi                        // The Saviours of edi
- push esi                        // The Saviours of esi
- mov ebx, [self.FPhase]          // ebx = FPhase
- shl ebx, 3                      // ebx = 8 * FPhase
- mov edi, [self + FMem[ebx]]     // edi = X[0]
- mov esi, [self + FMem[ebx] + 4] // esi = Y[0]
- shr ebx, 3                      // ebx = FPhase
- xor ebx, $1                     // Toggle FPhase!!
- mov [self.FPhase],ebx           // FPhase = ebx
- fld CDenorm32                   // Pure Speed
-
- fld  Input.Single               // input
- fld  [edi].Single               // X[0], input
- fld  Input.Single               // input, X[0], input
- fadd st(0), st(3)               // dEnOrMaL
- fst  [edi].Single               // FMem[FPhase].X[0] := input;
- fadd [esi].Single               // input + Y[0], X[0], input
- mov  ebx, [self.fCoefficients]  // edx = fCoefficients
- fmul [ebx].Double               // (input + Y[0]) * fCoefficients[0], X[0], input
- fsubrp                          // (input + Y[0]) * fCoefficients[0] - X[0], input
- fstp [esi].Single               // FMem[FPhase].Y[0] :=  "
-
- fld  [edi + 4].Single           // X[1], input
- fld  [self.FPrev].Single        // FPrev, X[1], input
- fadd st(0), st(3)               // dEnOrMaL
- fst  [edi + 4].Single           // FMem[FPhase].X[1] := FPrev;
- fadd [esi + 4].Single           // FPrev + Y[1], X[1], input
- fmul [ebx + 8].Double           // (FPrev + Y[1]) * fCoefficients[1], X[1]
- fsubrp                          // (FPrev + Y[1]) * fCoefficients[1] - X[1]
- fst  [esi + 4].Single           // FMem[FPhase].Y[1] :=  "
- fstp OutputA.Single             // OutputB := FMem[FPhase].Y[1];
-
- fld  [edi +  8].Single          // X[2], input
- fld  [esi].Double               // Y[0], X[2], input
- fst  [edi +  8].Single          // FMem[FPhase].X[2] := Y[0];
- fadd [esi +  8].Single          // Y[2] + Y[0], X[2], input
- fmul [ebx + 16].Double          // (Y[0] + Y[2]) * fCoefficients[2], X[2]
- fsubrp                          // (Y[0] + Y[2]) * fCoefficients[2] - X[2]
- fst  [esi +  8].Single          // FMem[FPhase].Y[2] :=  "
- fstp OutputB.Single             // OutputB := FMem[FPhase].Y[2];
-
- fstp [self.FPrev].Single        // FPrev := Input;
- fstp st(0)
-
- pop esi
- pop edi
- pop ebx
-end;
-{$ELSE}
-begin
-  FMem[FPhase].Y[0] := (Input + CDenorm64 + FMem[FPhase].Y[0]) * fCoefficients[0] - FMem[FPhase].X[0];
-  FMem[FPhase].X[0] := Input;
-  FMem[FPhase].Y[1] := (FPrev + CDenorm64 + FMem[FPhase].Y[1]) * fCoefficients[1] - FMem[FPhase].X[1];
-  FMem[FPhase].X[1] := FPrev;
-  FMem[FPhase].Y[2] := (FMem[FPhase].Y[0] + FMem[FPhase].Y[2]) * fCoefficients[2] - FMem[FPhase].X[2];
-  FMem[FPhase].X[2] := FMem[FPhase].Y[0];
-  OutputA := FMem[FPhase].Y[1];
-  OutputB := FMem[FPhase].Y[2];
-  FPrev := input;
-  FPhase := 1 - FPhase;
-end;
-
-{$ENDIF}
-
-procedure TPhaseHalfPi32.ProcessSample4(const Input: Single;
-  out OutputA, OutputB: Single);
-{$IFNDEF PurePascal}
-asm
  push ebx                         // The Saviours of ebx
  push edi                         // The Saviours of edi
  push esi                         // The Saviours of esi
  mov  ebx, [self.FPhase]          // ebx = FPhase
- shl  ebx, 3                      // ebx = 8*FPhase
- mov  edi, [self + FMem[ebx]]     // edi=X[0]
- mov  esi, [self + FMem[ebx] + 4] // esi=Y[0]
+ shl  ebx, 3                      // ebx = 8 * FPhase
+ mov  edi, [self + FMem[ebx]]     // edi = X[0]
+ mov  esi, [self + FMem[ebx] + 4] // esi = Y[0]
  shr  ebx, 3                      // ebx = FPhase
  xor  ebx, $1                     // Toggle FPhase!!
  mov  [self.FPhase], ebx          // FPhase = ebx
@@ -374,30 +306,101 @@ asm
  fld  Input.Single                // input
  fld  [edi].Single                // X[0], input
  fld  Input.Single                // input, X[0], input
+ fadd st(0), st(3)                // dEnOrMaL
  fst  [edi].Single                // FMem[FPhase].X[0] := input;
- fadd st(0), st(3)                // dEnOrMaL + input, X[0], input
- fadd [esi].Single                // dEnOrMaL + input + Y[0], X[0], input
+ fadd [esi].Single                // input + Y[0], X[0], input
  mov  ebx, [self.fCoefficients]   // edx = fCoefficients
- fmul [ebx].Double                // (dEnOrMaL + input + Y[0]) * fCoefficients[0], X[0], input
- fsubrp                           // (dEnOrMaL + input + Y[0]) * fCoefficients[0] - X[0], input
+ fmul [ebx].Double                // (input + Y[0]) * fCoefficients[0], X[0], input
+ fsubrp                           // (input + Y[0]) * fCoefficients[0] - X[0], input
  fstp [esi].Single                // FMem[FPhase].Y[0] :=  "
 
  fld  [edi + 4].Single            // X[1], input
  fld  [self.FPrev].Single         // FPrev, X[1], input
- fst  [edi + 4].Single            // FMem[FPhase].X[1] := FPrev;
  fadd st(0), st(3)                // dEnOrMaL
- fadd [esi + 8].Single            // FPrev + Y[1], X[1], input
- fmul [ebx + 4].Double            // (FPrev + Y[1]) * fCoefficients[1], X[1]
+ fst  [edi + 4].Single            // FMem[FPhase].X[1] := FPrev;
+ fadd [esi + 4].Single            // FPrev + Y[1], X[1], input
+ fmul [ebx + 8].Double            // (FPrev + Y[1]) * fCoefficients[1], X[1]
+ fsubrp                           // (FPrev + Y[1]) * fCoefficients[1] - X[1]
+ fst  [esi + 4].Single            // FMem[FPhase].Y[1] :=  "
+ fstp OutputA.Single              // OutputB := FMem[FPhase].Y[1];
+
+ fld  [edi +  8].Single           // X[2], input
+ fld  [esi     ].Single           // Y[0], X[2], input
+ fst  [edi +  8].Single           // FMem[FPhase].X[2] := Y[0];
+ fadd [esi +  8].Single           // Y[2] + Y[0], X[2], input
+ fmul [ebx + 16].Double           // (Y[0] + Y[2]) * fCoefficients[2], X[2]
+ fsubrp                           // (Y[0] + Y[2]) * fCoefficients[2] - X[2]
+ fst  [esi +  8].Single           // FMem[FPhase].Y[2] :=  "
+ fstp OutputB.Single              // OutputB := FMem[FPhase].Y[2];
+
+ fstp [self.FPrev].Single         // FPrev := Input;
+ fstp st(0)
+
+ pop esi
+ pop edi
+ pop ebx
+end;
+{$ELSE}
+var
+  MemY : PDAV4SingleArray;
+  MemX : PDAV4SingleArray;
+begin
+  MemY  := @FMem[FPhase].Y[0];
+  MemX  := @FMem[FPhase].X[0];
+  MemY[0] := (Input + CDenorm64 + MemY[0]) * PDAV4DoubleArray(fCoefficients)[0] - MemX[0]; MemX[0] := Input;
+  MemY[1] := (FPrev + CDenorm64 + MemY[1]) * PDAV4DoubleArray(fCoefficients)[1] - MemX[1]; MemX[1] := FPrev;
+  MemY[2] := (MemY[0] + MemY[2]) * PDAV4DoubleArray(fCoefficients)[2] - MemX[2];           MemX[2] := MemY[0];
+  OutputA := MemY[1];
+  OutputB := MemY[2];
+  FPrev := Input;
+  FPhase := 1 - FPhase;
+end;
+
+{$ENDIF}
+
+procedure TPhaseHalfPi32.ProcessSample4(const Input: Single;
+  out OutputA, OutputB: Single);
+{$IFNDEF PUREPASCAL}
+asm
+ push ebx                         // The Saviours of ebx
+ push edi                         // The Saviours of edi
+ push esi                         // The Saviours of esi
+ mov  ebx, [self.FPhase]          // ebx = FPhase
+ shl  ebx, 3                      // ebx = 8 * FPhase
+ mov  edi, [self + FMem[ebx]]     // edi = X[0]
+ mov  esi, [self + FMem[ebx] + 4] // esi = Y[0]
+ shr  ebx, 3                      // ebx = FPhase
+ xor  ebx, $1                     // Toggle FPhase!!
+ mov  [self.FPhase], ebx          // FPhase = ebx
+ fld  CDenorm32                   // Pure Speed
+
+ fld  Input.Single                // input
+ fld  [edi].Single                // X[0], input
+ fld  Input.Single                // input, X[0], input
+ fadd st(0), st(3)                // dEnOrMaL
+ fst  [edi].Single                // FMem[FPhase].X[0] := input;
+ fadd [esi].Single                // input + Y[0], X[0], input
+ mov  ebx, [self.fCoefficients]   // edx = fCoefficients
+ fmul [ebx].Double                // (input + Y[0]) * fCoefficients[0], X[0], input
+ fsubrp                           // (input + Y[0]) * fCoefficients[0] - X[0], input
+ fstp [esi].Single                // FMem[FPhase].Y[0] :=  "
+
+ fld  [edi + 4].Single            // X[1], input
+ fld  [self.FPrev].Single         // FPrev, X[1], input
+ fadd st(0), st(3)                // dEnOrMaL
+ fst  [edi + 4].Single            // FMem[FPhase].X[1] := FPrev;
+ fadd [esi + 4].Single            // FPrev + Y[1], X[1], input
+ fmul [ebx + 8].Double            // (FPrev + Y[1]) * fCoefficients[1], X[1]
  fsubrp                           // (FPrev + Y[1]) * fCoefficients[1] - X[1]
  fstp [esi + 4].Single            // FMem[FPhase].Y[1] :=  "
 
- fld  [edi + 8].Single            // X[2], input
+ fld  [edi +  8].Single           // X[2], input
  fld  [esi].Single                // Y[0], X[2], input
- fst  [edi + 8].Single            // FMem[FPhase].X[2] := Y[0];
- fadd [esi + 8].Single            // Y[2] + Y[0], X[2], input
+ fst  [edi +  8].Single           // FMem[FPhase].X[2] := Y[0];
+ fadd [esi +  8].Single           // Y[2] + Y[0], X[2], input
  fmul [ebx + 16].Double           // (Y[0] + Y[2]) * fCoefficients[2], X[2]
  fsubrp                           // (Y[0] + Y[2]) * fCoefficients[2] - X[2]
- fst  [esi + 8].Single            // FMem[FPhase].Y[2] :=  "
+ fst  [esi +  8].Single           // FMem[FPhase].Y[2] :=  "
  fstp OutputA.Single              // OutputB := FMem[FPhase].Y[2];
 
  fld  [edi + 12].Single           // X[3], input
@@ -405,7 +408,7 @@ asm
  fst  [edi + 12].Single           // FMem[FPhase].X[3] := X[1];
  fadd [esi + 12].Single           // FPrev + Y[3], X[3], input
  fmul [ebx + 24].Double           // (FPrev + Y[3]) * fCoefficients[3], X[3]
- fsubp                            // (FPrev + Y[3]) * fCoefficients[3] - X[3]
+ fsubrp                           // (FPrev + Y[3]) * fCoefficients[3] - X[3]
  fst  [esi + 12].Single           // FMem[FPhase].Y[3] :=  "
  fstp OutputB.Single              // OutputB := FMem[FPhase].Y[3];
 
@@ -416,17 +419,18 @@ asm
  pop ebx
 end;
 {$ELSE}
+var
+  MemY : PDAV4SingleArray;
+  MemX : PDAV4SingleArray;
 begin
-  FMem[FPhase].Y[0] := (Input + CDenorm64 + FMem[FPhase].Y[0]) * fCoefficients[0] - FMem[FPhase].X[0];
-  FMem[FPhase].X[0] := Input;
-  FMem[FPhase].Y[1] := (FPrev + CDenorm64 + FMem[FPhase].Y[1]) * fCoefficients[1] - FMem[FPhase].X[1];
-  FMem[FPhase].X[1] := FPrev;
-  FMem[FPhase].Y[2] := (FMem[FPhase].Y[0] + FMem[FPhase].Y[2]) * fCoefficients[2] - FMem[FPhase].X[2];
-  FMem[FPhase].X[2] := FMem[FPhase].Y[0];
-  FMem[FPhase].Y[3] := (FMem[FPhase].Y[1] + FMem[FPhase].Y[3]) * fCoefficients[3] - FMem[FPhase].X[3];
-  FMem[FPhase].X[3] := FMem[FPhase].Y[1];
-  OutputA := FMem[FPhase].Y[2];
-  OutputB := FMem[FPhase].Y[3];
+  MemY  := @FMem[FPhase].Y[0];
+  MemX  := @FMem[FPhase].X[0];
+  MemY[0] := (Input + CDenorm64 + MemY[0]) * PDAV4DoubleArray(fCoefficients)^[0] - MemX[0]; MemX[0] := Input;
+  MemY[1] := (FPrev + CDenorm64 + MemY[1]) * PDAV4DoubleArray(fCoefficients)^[1] - MemX[1]; MemX[1] := FPrev;
+  MemY[2] := (MemY[0] + MemY[2]) * PDAV4DoubleArray(fCoefficients)^[2] - MemX[2]; MemX[2] := MemY[0];
+  MemY[3] := (MemY[1] + MemY[3]) * PDAV4DoubleArray(fCoefficients)^[3] - MemX[3]; MemX[3] := MemY[1];
+  OutputA := MemY[2];
+  OutputB := MemY[3];
   FPrev := input;
   FPhase := 1 - FPhase;
 end;
@@ -474,17 +478,17 @@ asm
  sub ecx, 4                       // "Den Rest mach ich selber"
 @Loopy:
  fld  [edi +  8].Single           // X[2], input
- fld  [esi].Double                // Y[0], X[2], input
+ fld  [esi].Single                // Y[0], X[2], input
  fst  [edi +  8].Single           // FMem[FPhase].X[2] := Y[0];
  fadd [esi +  8].Single           // FPrev + Y[2], X[2], input
  fmul [ebx + 16].Double           // (FPrev + Y[2]) * fCoefficients[2], X[2]
  fsubrp                           // (FPrev + Y[2]) * fCoefficients[2] - X[2]
  fstp [esi +  8].Single           // FMem[FPhase].Y[2] :=  "
- add esi, 4
- add edi, 4
- add ebx, 8                       // Weiter geht's
+ add  esi, 4
+ add  edi, 4
+ add  ebx, 8                      // Weiter geht's
  loop @Loopy
- pop ecx                          // ecx hat ausgedient!
+ pop  ecx                         // ecx hat ausgedient!
 
  fld  [edi + 8].Single            // X[10], input
  fld  [esi].Single                // X[8], X[10], input
@@ -897,6 +901,7 @@ begin
   FMem[0].Y := nil;
   FMem[1].X := nil;
   FMem[1].Y := nil;
+  NumberOfCoeffsChanged;
 end;
 
 destructor TPhaseHalfPi64.Destroy;
@@ -959,7 +964,7 @@ begin
   assert(SampleFrames > 0);
   Pos := 0;
   repeat
-    ProcessHilbertSample64(Input[pos], OutputA[Pos], OutputB[Pos]);
+    ProcessHilbertSample(Input[pos], OutputA[Pos], OutputB[Pos]);
     Inc(Pos);
   until (pos >= SampleFrames);
 end;
@@ -1160,7 +1165,7 @@ end;
 
 procedure TPhaseHalfPi64.ProcessSample4(const Input: Double;
   out OutputA, OutputB: Double);
-{$IFNDEF PurePascal}
+{$IFNDEF PUREPASCAL}
 asm
  push ebx                         // The Saviours of ebx
  push edi                         // The Saviours of edi
@@ -1513,16 +1518,16 @@ asm
  push edi                        // The Saviours of edi
  push esi                        // The Saviours of esi
  mov ebx, [self.FPhase]          // ebx = FPhase
- shl ebx, 3                      // ebx = 8*FPhase
- mov edi, [self + FMem[ebx]]     // edi=X[0]
- mov esi, [self + FMem[ebx] + 4] // esi=Y[0]
+ shl ebx, 3                      // ebx = 8 * FPhase
+ mov edi, [self + FMem[ebx]]     // edi = X[0]
+ mov esi, [self + FMem[ebx] + 4] // esi = Y[0]
  shr ebx, 3                      // ebx = FPhase
  xor ebx, $1                     // Toggle FPhase!!
  mov [self.FPhase], ebx          // FPhase = ebx
 
  fld  Input.Double               // input
  fld  [edi].Double               // X[0],input
- fld  Input.Double               // input,X[0],input
+ fld  Input.Double               // input, X[0], input
  fadd CDenorm64                  // dEnOrMaL
  fst  [edi].Double               // FMem[FPhase].X[0] := input;
  fadd [esi].Double               // input + Y[0], X[0], input
