@@ -621,7 +621,7 @@ asm
  faddp                            // sqr(FMem[FPhase].Y[0]) + sqr(FMem[FPhase].Y[1]
  fsqrt                            // result := sqrt(sqr(FMem[FPhase].Y[0]) + sqr(FMem[FPhase].Y[1]));
  fxch                             // Input, result
- fstp [self.FPrev].Double         // FPrev := Input;
+ fstp [self.FPrev].Single         // FPrev := Input;
 
  pop esi
  pop edi
@@ -676,7 +676,7 @@ asm
  fmul st(0), st(0)                // sqr(FMem[FPhase].Y[1]);
 
  fld  [edi +  8].Single           // X[2], input
- fld  [esi].Double                // Y[0], X[2], input
+ fld  [esi].Single                // Y[0], X[2], input
  fst  [edi +  8].Single           // FMem[FPhase].X[2] := Y[0];
  fadd [esi +  8].Single           // Y[2] + Y[0], X[2], input
  fmul [ebx + 16].Double           // (Y[0] + Y[2]) * fCoefficients[2], X[2]
@@ -746,7 +746,7 @@ asm
  fstp [esi + 4].Single            // FMem[FPhase].Y[1] :=  "
 
  fld  [edi + 8].Single            // X[2], input
- fld  [esi].Double                // Y[0], X[2], input
+ fld  [esi].Single                // Y[0], X[2], input
  fst  [edi + 8].Single            // FMem[FPhase].X[2] := Y[0];
  fadd [esi + 8].Single            // Y[2] + Y[0], X[2], input
  fmul [ebx + 16].Double           // (Y[0] + Y[2]) * fCoefficients[2], X[2]
@@ -830,7 +830,7 @@ asm
  sub  ecx, 4                      // "Den Rest mach ich selber"
 @Loopy:
  fld  [edi +  8].Single           // X[2], input
- fld  [esi].Double                // Y[0], X[2], input
+ fld  [esi].Single                // Y[0], X[2], input
  fst  [edi +  8].Single           // FMem[FPhase].X[2] := Y[0];
  fadd [esi +  8].Single           // FPrev + Y[2], X[2], input
  fmul [ebx + 16].Double           // (FPrev + Y[2]) * fCoefficients[2], X[2]

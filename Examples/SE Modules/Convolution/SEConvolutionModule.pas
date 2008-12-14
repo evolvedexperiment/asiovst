@@ -231,6 +231,7 @@ begin
      begin
       Name            := 'FileName';
       VariableAddress := @FFileName;
+      Flags           := [iofFilename];
       Direction       := drIn;
       DataType        := dtText;
       DefaultValue    := 'IR.wav';

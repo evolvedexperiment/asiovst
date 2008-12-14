@@ -10,26 +10,42 @@ const
     'Courier New', 'Georgia', 'Impact', 'Script', 'Tahoma', 'Times New Roman',
     'Trebuchet MS', 'Verdana', 'WST_Engl');
 type
-  TSELabelModule = class(TSEModuleBase)
+  TCustomSELabelModule = class(TSEModuleBase)
   private
-    FText       : PChar;
+    FText : PChar;
+  protected
+    procedure Open; override;
+  public
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+  end;
+
+  TSELabelModuleDSP = class(TCustomSELabelModule)
+  protected
+    FHiddenText : PChar;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+  public
+    function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+  end;
+
+  TSELabelModuleGUI = class(TCustomSELabelModule)
+  private
     FFontColor  : Integer;
     FFontName   : Integer;
     FFontSize   : Integer;
     FFontBold   : Boolean;
     FFontItalic : Boolean;
     FFontShadow : Integer;
-  protected
-    procedure Open; override;
   public
     function GetPinProperties(const Index: Integer; Properties : PSEPinProperties): Boolean; override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
   end;
 
 implementation
 
-procedure TSELabelModule.Open;
+{ TCustomSELabelModule }
+
+procedure TCustomSELabelModule.Open;
 begin
  inherited Open;
 
@@ -38,22 +54,25 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSELabelModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+procedure TCustomSELabelModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  CallHost(SEAudioMasterSleepMode);
 end;
 
+
+{ TSELabelModuleDSP }
+
 // describe your module
-class procedure TSELabelModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSELabelModuleDSP.getModuleProperties(Properties : PSEModuleProperties);
 begin
  // describe the plugin, this is the name the end-user will see.
- Properties.Name := 'Label Example';
+ Properties.Name := 'DSP Label';
 
  // return a unique string 32 characters max
  // if posible include manufacturer and plugin identity
  // this is used internally by SE to identify the plug.
  // No two plugs may have the same id.
- Properties.ID := 'Synthedit Label Example';
+ Properties.ID := 'DAV DSP Label';
 
  // Info, may include Author, Web page whatever
  Properties.About := 'by Christian-W. Budde';
@@ -64,7 +83,67 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSELabelModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSELabelModuleDSP.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := True;
+ case Index of
+  // typical input plug (inputs are listed first)
+  0: with Properties^ do
+      begin
+       Name            := 'Text';
+       VariableAddress := @FText;
+       Flags           := [iofLinearInput];
+       Direction       := drIn;
+       Datatype        := dtText;
+       DefaultValue    := 'Label';
+      end;
+  1: with Properties^ do
+      begin
+       Name            := 'Text';
+       VariableAddress := @FHiddenText;
+       Flags           := [iofUICommunication, iofHidePin];
+       Direction       := drIn;
+       Datatype        := dtText;
+       DefaultValue    := 'Label';
+      end;
+  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+ end;;
+end;
+
+
+procedure TSELabelModuleDSP.PlugStateChange(const CurrentPin: TSEPin);
+begin
+  inherited;
+  if CurrentPin.PinID = 0 then
+   begin
+    FHiddenText := PChar(FText + #0);
+   end;
+end;
+
+{ TSELabelModuleGUI }
+
+// describe your module
+class procedure TSELabelModuleGUI.getModuleProperties(Properties : PSEModuleProperties);
+begin
+ // describe the plugin, this is the name the end-user will see.
+ Properties.Name := 'Label';
+
+ // return a unique string 32 characters max
+ // if posible include manufacturer and plugin identity
+ // this is used internally by SE to identify the plug.
+ // No two plugs may have the same id.
+ Properties.ID := 'DAV Label';
+
+ // Info, may include Author, Web page whatever
+ Properties.About := 'by Christian-W. Budde';
+
+ Properties.Flags      := [];
+ Properties.GuiFlags   := [gfControlView, gfStructureView];
+ Properties.SdkVersion := CSeSdkVersion;
+end;
+
+// describe the pins (plugs)
+function TSELabelModuleGUI.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case Index of

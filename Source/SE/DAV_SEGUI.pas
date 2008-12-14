@@ -182,7 +182,8 @@ type
     Future     : array[0..15] of Char; // pls zero
   end;
 
-  TSEHostWindowFlags = (HWF_RESIZEABLE = 1, HWF_NO_CUSTOM_GFX_ON_STRUCTURE = 2);
+  TSEHostWindowFlags = (hwfResizable = 1, hwfNoCustomGfxOnStructure = 2);
+//  TSEHostWindowFlags = set of TSEHostWindowFlag;
 
   // painting info
   TSEpoint = TPoint;
@@ -276,12 +277,12 @@ type
     // called from audio master
     function CallHost(Opcode: TSEGuiHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
     function Dispatcher(Opcode: TSEGuiPluginOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; virtual;
-    function GetCapture(WI: PSEWndInfo): Boolean;
+    function GetCapture(const WI: PSEWndInfo): Boolean;
     procedure AddGuiPlug(ADatatype: TSEPlugDataType; ADirection: TSEDirection; const AName: Pchar);
     procedure Close; virtual;
-    procedure Initialise(LoadedFromFile: Boolean); virtual;
-    procedure ReleaseCapture(WI: PSEWndInfo);
-    procedure SetCapture(WI: PSEWndInfo);
+    procedure Initialise(const LoadedFromFile: Boolean); virtual;
+    procedure ReleaseCapture(const WI: PSEWndInfo);
+    procedure SetCapture(const WI: PSEWndInfo);
 
     property SEGUIStructBase: PSEGUIStructBase read GetSEGUIStructBase;
     property Pin[Index: Integer]: TSEGuiPin read GetPin;
@@ -397,7 +398,7 @@ begin
  FillChar(FStructBase, SizeOf(TSEGUIStructBase), 0);
  with FStructBase do
   begin
-   Magic      := SepMagic2;
+   Magic      := CSepMagic2;
    Dispatcher := @DispatchEffectClass;
    SEGUIBase  := Self;
    HostPtr    := AHostPtr;
@@ -464,7 +465,7 @@ begin
  // do nothing yet
 end;
 
-procedure TSEGUIBase.Initialise(LoadedFromFile: Boolean);
+procedure TSEGUIBase.Initialise(const LoadedFromFile: Boolean);
 begin
  SetupPins;
 end;
@@ -572,13 +573,13 @@ begin
 end;
 
 // capture mouse movement
-procedure TSEGUIBase.SetCapture(WI: PSEWndInfo);
+procedure TSEGUIBase.SetCapture(const WI: PSEWndInfo);
 begin
   CallHost(seGuiHostSetCapture, 0, 0, WI);
 end;
 
 // release capture mouse movement
-procedure TSEGUIBase.ReleaseCapture(WI: PSEWndInfo);
+procedure TSEGUIBase.ReleaseCapture(const WI: PSEWndInfo);
 begin
   CallHost(seGuiHostReleaseCapture, 0, 0, WI);
 end;
@@ -589,7 +590,7 @@ begin
  result := @FStructBase;
 end;
 
-function TSEGUIBase.GetCapture(WI: PSEWndInfo): Boolean;
+function TSEGUIBase.GetCapture(const WI: PSEWndInfo): Boolean;
 begin
   result := CallHost(seGuiHostGetCapture, 0, 0, WI) <> 0;
 end;

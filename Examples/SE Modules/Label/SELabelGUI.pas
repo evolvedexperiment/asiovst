@@ -12,13 +12,24 @@ type
   TRGB24Array = packed array[0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
   PRGB24Array = ^TRGB24Array;
 
-  TSELabelGui = class(TSEGUIBase)
-  private
+  TCustomSELabelGui = class(TSEGUIBase)
+  protected
     FText       : string;
+  public  
+    constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); override;
+  end;
+
+  TSELabelDsp = class(TCustomSELabelGui)
+  protected
+    procedure GuiPaint(hDC: HDC; wi: PSEWndInfo); override;
+    procedure GuiPinValueChange(CurrentPin: TSEGuiPin); override;
+  end;
+
+  TSELabelGui = class(TCustomSELabelGui)
+  protected
     FFontName   : Integer;
     FFontShadow : Integer;
     FBitmap     : TBitmap;
-  protected
     procedure GuiPaint(hDC: HDC; wi: PSEWndInfo); override;
     procedure GuiPinValueChange(CurrentPin: TSEGuiPin); override;
     procedure GuiWindowOpen(WI: PSEWndInfo); override;
@@ -32,15 +43,59 @@ implementation
 uses
   SysUtils, DAV_Common;
 
-constructor TSELabelGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
+{ TCustomSELabelGui }
+
+constructor TCustomSELabelGui.Create(SEGuiCallback: TSEGuiCallback;
+  AHostPtr: Pointer);
 begin
  inherited;
-// FGuiDial.Parent
- CallHost(seGuiHostSetWindowSize, 64, 64);
+ CallHost(seGuiHostSetWindowSize, 64, 32);
  CallHost(seGuiHostSetWindowType, 0); // 0 = Draw on SE's window (default), 1 = HWND based
 
 // CallHost(seGuiHostSetWindowFlags, Integer(HWF_RESIZEABLE or HWF_NO_CUSTOM_GFX_ON_STRUCTURE));
- CallHost(seGuiHostSetWindowFlags, Integer(HWF_RESIZEABLE));
+ CallHost(seGuiHostSetWindowFlags, Integer(hwfResizable));
+end;
+
+
+{ TSELabelDsp }
+
+procedure TSELabelDsp.GuiPaint(hDC: HDC; wi :PSEWndInfo);
+begin
+ if FText <> '' then
+  begin
+   with TCanvas.Create do
+    try
+     Handle := hDC;
+     Brush.Style := bsClear;
+     TextOut(0, 0, FText);
+    finally
+     Free;
+    end;
+  end ;
+end;
+
+procedure TSELabelDsp.GuiPinValueChange(CurrentPin: TSEGuiPin);
+var
+  NewText : string;
+begin
+ case CurrentPin.PinIndex of
+  1 : begin
+       NewText := CurrentPin.ValueAsString;
+       if NewText <> FText then
+        begin
+         FText := NewText;
+         CallHost(seGuiHostRequestRepaint);
+        end;
+      end;
+ end;
+ inherited;
+end;
+
+{ TSELabelGui }
+
+constructor TSELabelGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
+begin
+ inherited;
  FBitmap := TBitmap.Create;
  FBitmap.PixelFormat := pf24bit;
  FBitmap.Canvas.Font.Height := 4 * 24;
@@ -117,7 +172,7 @@ procedure TSELabelGui.GuiPaint(hDC: HDC; wi :PSEWndInfo);
 var
   OldColor : TColor;
 begin
- if fText <> '' then
+ if FText <> '' then
   begin
    if FBitmap.Width  <> 4 * wi.Width  then FBitmap.Width  := 4 * wi.Width;
    if FBitmap.Height <> 4 * wi.Height then FBitmap.Height := 4 * wi.Height;
@@ -132,10 +187,10 @@ begin
       begin
        OldColor := FBitmap.Canvas.Font.Color;
        FBitmap.Canvas.Font.Color := clBlack;
-       FBitmap.Canvas.TextOut(FFontShadow, FFontShadow, fText);
+       FBitmap.Canvas.TextOut(FFontShadow, FFontShadow, FText);
        FBitmap.Canvas.Font.Color := OldColor;
       end;
-     FBitmap.Canvas.TextOut(0, 0, fText);
+     FBitmap.Canvas.TextOut(0, 0, FText);
      Downsample4xBitmap24(FBitmap);
      Draw(0, 0, FBitmap);
     finally

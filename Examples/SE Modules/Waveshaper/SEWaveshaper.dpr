@@ -28,20 +28,18 @@ var
 begin
  result := nil;
  case Index of
-  0: begin
-      if (ProcessType = 1) then// Audio Processing Object
-       begin
-        SEModuleBase := TSEWaveshaperModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end else
-      if (ProcessType = 2) then // GUI Object
-       begin
-        GUI := TSEWaveshaperGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
-        if assigned(GUI)
-         then result := GUI.SEGUIStructBase;
-       end;
-     end;
+  0: if (ProcessType = 1) then// Audio Processing Object
+      begin
+       SEModuleBase := TSEWaveshaperModule.Create(SEAudioMaster, Reserved);
+       if assigned(SEModuleBase)
+        then result := SEModuleBase.Effect;
+      end else
+     if (ProcessType = 2) then // GUI Object
+      begin
+       GUI := TSEWaveshaperGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
+       if assigned(GUI)
+        then result := GUI.SEGUIStructBase;
+      end;
  end;
 end;
 

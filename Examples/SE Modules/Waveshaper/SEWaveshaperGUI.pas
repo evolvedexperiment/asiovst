@@ -6,7 +6,7 @@ uses
   Windows, Classes, DAV_SECommon, DAV_SEModule, DAV_SEGUI, SEWaveshaperModule;
 
 const
-  pinShape     =  0;
+  pinShape =  0;
   CDefaultValue : array [0..CWsNodeCount-1, 0..1] of Single =
   ((-5,-5), (-4,-4), (-3,-3), (-2,-2), (-1, -1), (0, 0), (1, 1), (2 ,2),
    (3, 3), (4, 4), (5, 5));
@@ -24,12 +24,12 @@ type
 
     function DefaultValue: TSeSdkString;
     function GetValueS: TSeSdkString;
-    procedure SetValueS(Astring: TSeSdkString);
-    procedure OnValueChanged;
-    procedure DrawScale(hDC: HDC; wi: PSEWndInfo);
     function Handle: THandle;
-    procedure SendStringToAudio(AMsgID, ALength: Integer; AData: Pointer);
     function InvalidateControl: Integer;
+    procedure DrawScale(hDC: HDC; wi: PSEWndInfo);
+    procedure OnValueChanged;
+    procedure SendStringToAudio(AMsgID, ALength: Integer; AData: Pointer);
+    procedure SetValueS(Astring: TSeSdkString);
   protected
     procedure GuiPaint(hDC: HDC; wi: PSEWndInfo); override;
     procedure GuiModuleMsg(AUserMsgID, ALength: Integer; AData: Pointer); override;
