@@ -99,6 +99,7 @@ begin
   FX := nil;
   FY := nil;
   FStateStack := nil;
+  NumberOfCoeffsChanged;
 end;
 
 destructor TPolyphaseDownsampler32.Destroy;
@@ -640,6 +641,7 @@ begin
   FX := nil;
   FY := nil;
   FStateStack := nil;
+  NumberOfCoeffsChanged;
 end;
 
 destructor TPolyphaseDownsampler64.Destroy;
