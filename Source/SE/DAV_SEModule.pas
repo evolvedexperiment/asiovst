@@ -183,6 +183,7 @@ type
   PSEEvent           = ^TSEEvent;
   TSEModuleBase      = class;
   TSEPin             = class;
+  TSEModuleBaseClass = class of TSEModuleBase;
 
   ////////////////////
   // function types //
@@ -360,7 +361,6 @@ type
     FBlockSize     : Integer;
     FPins          : TSEPins;
 
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); virtual;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; virtual;
     function GetName(name: PChar): Boolean; virtual;     // name max 32 Char
     function GetUniqueId(name: PChar): Boolean; virtual; // id max 32 Char
@@ -391,6 +391,7 @@ type
 
     { inquiry }
     function CallHost(Opcode: TSEHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); virtual;
 
     property Effect: PSE2ModStructBase read GetEffect;
     property Pin[Index: Integer]: TSEPin read GetPin;

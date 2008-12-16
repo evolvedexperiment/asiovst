@@ -11,57 +11,28 @@ uses
 
 {$R *.res}
 
+const
+  CModuleClasses : array [0..5] of TSEModuleBaseClass = (
+    TSEStaticButterworthLPModule, TSEStaticButterworthHPModule,
+    TSEStaticControlableButterworthLPModule,
+    TSEStaticControlableButterworthHPModule,
+    TSEAutomatableButterworthLPModule, TSEAutomatableButterworthHPModule);
+
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
- case Index of // !!TODO!! list your in / out plugs
-  0: TSEStaticButterworthLPModule.GetModuleProperties(Properties);
-  1: TSEStaticButterworthHPModule.GetModuleProperties(Properties);
-  2: TSEAutomatableButterworthLPModule.GetModuleProperties(Properties);
-  3: TSEAutomatableButterworthHPModule.GetModuleProperties(Properties);
-  else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
- end;;
+ if (Index >= 0) and (Index < Length(CModuleClasses)) then
+  begin
+   CModuleClasses[Index].GetModuleProperties(Properties);
+   result := True;
+  end
+ else result := False;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
-var
-  SEModuleBase: TSEModuleBase;
 begin
- result := nil;
- case Index of // !!TODO!! list your in / out plugs
-  0: begin
-      if (ProcessType = 1) then// Audio Processing Object
-       begin
-        SEModuleBase := TSEStaticButterworthLPModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end;
-     end;
-  1: begin
-      if (ProcessType = 1) then// Audio Processing Object
-       begin
-        SEModuleBase := TSEStaticButterworthHPModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end;
-     end;
-  2: begin
-      if (ProcessType = 1) then// Audio Processing Object
-       begin
-        SEModuleBase := TSEAutomatableButterworthLPModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end;
-     end;
-  3: begin
-      if (ProcessType = 1) then// Audio Processing Object
-       begin
-        SEModuleBase := TSEAutomatableButterworthHPModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end;
-     end;
- end;
+ if (Index >= 0) and (Index < Length(CModuleClasses)) and (ProcessType = 1)
+  then result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect
+  else result := nil;
 end;
 
 exports makeModule name 'makeModule';

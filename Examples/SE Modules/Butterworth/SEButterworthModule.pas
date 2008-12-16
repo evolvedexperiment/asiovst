@@ -27,8 +27,8 @@ type
 
   TSEStaticButterworthLPModule = class(TSEButterworthModule)
   protected
-    FFrequency    : Single;
-    FOrder        : Integer;
+    FFrequency : Single;
+    FOrder     : Integer;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
@@ -44,6 +44,18 @@ type
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  end;
+
+  TSEStaticControlableButterworthLPModule = class(TSEStaticButterworthLPModule)
+  public
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+  end;
+
+  TSEStaticControlableButterworthHPModule = class(TSEStaticButterworthHPModule)
+  public
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSEAutomatableButterworthLPModule = class(TSEStaticButterworthLPModule)
@@ -296,6 +308,56 @@ begin
  end;
 end;
 
+{ TSEStaticControlableButterworthLPModule }
+
+function TSEStaticControlableButterworthLPModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ if index in [2..3] then Properties^.Direction := drIn;
+end;
+
+class procedure TSEStaticControlableButterworthLPModule.GetModuleProperties(Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Butterworth Lowpass';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Butterworth Lowpass';
+  end;
+end;
+
+{ TSEStaticControlableButterworthHPModule }
+
+function TSEStaticControlableButterworthHPModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ if index in [2..3] then Properties^.Direction := drIn;
+end;
+
+class procedure TSEStaticControlableButterworthHPModule.GetModuleProperties(Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Butterworth Highpass';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Butterworth Highpass';
+  end;
+end;
+
 { TSEAutomatableButterworthLPModule }
 
 class procedure TSEAutomatableButterworthLPModule.GetModuleProperties(
@@ -327,7 +389,7 @@ begin
       Direction       := drIn;
       Datatype        := dtFSample;
       Flags           := [iofLinearInput];
-      DefaultValue    := '0.5';
+      DefaultValue    := '5';
       result          := True;
      end;
   pinOrder:
@@ -392,7 +454,7 @@ begin
       Direction       := drIn;
       Flags           := [iofLinearInput];
       Datatype        := dtFSample;
-      DefaultValue    := '0.5';
+      DefaultValue    := '5';
       result          := True;
      end;
   pinOrder:
