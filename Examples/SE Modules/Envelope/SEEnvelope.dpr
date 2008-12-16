@@ -15,25 +15,19 @@ begin
  result := True;
  case Index of // !!TODO!! list your in / out plugs
   0: TSEEnvelopeModule.GetModuleProperties(Properties);
+  1: TSEHilbertModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
-var
-  SEModuleBase: TSEModuleBase;
 begin
  result := nil;
- case Index of // !!TODO!! list your in / out plugs
-  0: begin
-      if (ProcessType = 1) then// Audio Processing Object
-       begin
-        SEModuleBase := TSEEnvelopeModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end;
-     end;
- end;
+ if (ProcessType = 1) then
+  case Index of // !!TODO!! list your in / out plugs
+   0: result := TSEEnvelopeModule.Create(SEAudioMaster, Reserved).Effect;
+   1: result := TSEHilbertModule.Create(SEAudioMaster, Reserved).Effect;
+  end;
 end;
 
 exports makeModule name 'makeModule';

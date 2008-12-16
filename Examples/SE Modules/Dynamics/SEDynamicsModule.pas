@@ -6,6 +6,8 @@ uses
   DAV_Common, DAV_DSPDynamics, DAV_SECommon, DAV_SEModule;
 
 type
+  TCustomDynamicsSEModuleClass = class of TCustomDynamicsSEModule;
+
   //////////////////////////////////////////////////////////////////////////////
   //                                                                          //
   //  TCustomDynamicsSEModule                                                 //
@@ -51,9 +53,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSimpleDirectGateParamStaticSEModule = class(TSimpleDirectGateStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSimpleDirectGateAutomatableSEModule = class(TCustomSimpleDirectGateSEModule)
@@ -95,9 +104,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSoftDirectGateParamStaticSEModule = class(TSoftDirectGateStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSoftDirectGateAutomatableSEModule = class(TCustomSoftDirectGateSEModule)
@@ -156,9 +172,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TBrickwallLimiterParamStaticSEModule = class(TBrickwallLimiterStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TBrickwallLimiterAutomatableSEModule = class(TCustomSimpleBrickwallLimiterSEModule)
@@ -195,9 +218,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TBrickwallSoftLimiterParamStaticSEModule = class(TBrickwallSoftLimiterStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TBrickwallSoftLimiterAutomatableSEModule = class(TCustomSoftBrickwallLimiterSEModule)
@@ -235,9 +265,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TBrickwallSimpleSoftLimiterParamStaticSEModule = class(TBrickwallSimpleSoftLimiterStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TBrickwallSimpleSoftLimiterAutomatableSEModule = class(TCustomSimpleSoftBrickwallLimiterSEModule)
@@ -283,9 +320,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TRangeGateParamStaticSEModule = class(TRangeGateStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TRangeGateAutomatableSEModule = class(TCustomRangeGateSEModule)
@@ -333,9 +377,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TClassicGateParamStaticSEModule = class(TClassicGateStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TClassicGateAutomatableSEModule = class(TCustomClassicGateSEModule)
@@ -382,9 +433,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSoftClassicGateParamStaticSEModule = class(TSoftClassicGateStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSoftClassicGateAutomatableSEModule = class(TCustomSoftClassicGateSEModule)
@@ -443,9 +501,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TLimiterParamStaticSEModule = class(TLimiterStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TLimiterAutomatableSEModule = class(TCustomSimpleLimiterSEModule)
@@ -485,9 +550,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSoftLimiterParamStaticSEModule = class(TSoftLimiterStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSoftLimiterAutomatableSEModule = class(TCustomSoftLimiterSEModule)
@@ -528,9 +600,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSimpleSoftLimiterParamStaticSEModule = class(TSoftLimiterStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSimpleSoftLimiterAutomatableSEModule = class(TCustomSimpleSoftLimiterSEModule)
@@ -591,9 +670,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSimpleCompressorParamStaticSEModule = class(TSimpleCompressorStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSimpleCompressorAutomatableSEModule = class(TCustomSimpleCompressorSEModule)
@@ -634,9 +720,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSoftKneeCompressorParamStaticSEModule = class(TSoftKneeCompressorStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSoftKneeCompressorAutomatableSEModule = class(TCustomSoftKneeCompressorSEModule)
@@ -678,9 +771,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TRMSCompressorParamStaticSEModule = class(TRMSCompressorStaticSEModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TRMSCompressorAutomatableSEModule = class(TCustomRMSCompressorSEModule)
@@ -860,6 +960,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TSimpleDirectGateParamStaticSEModule }
+
+class procedure TSimpleDirectGateParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+  inherited;
+ with Properties^ do
+  begin
+   Name := 'Simple Direct Gate';
+   ID := 'DAV Simple Direct Gate';
+  end;
+end;
+
+function TSimpleDirectGateParamStaticSEModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TSimpleDirectGateAutomatableSEModule }
 
 class procedure TSimpleDirectGateAutomatableSEModule.GetModuleProperties(
@@ -868,13 +990,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Simple Direct Gate (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Simple Direct Gate (Automatable)';
   end;
 end;
@@ -889,7 +1005,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -1061,6 +1177,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TSoftDirectGateParamStaticSEModule }
+
+class procedure TSoftDirectGateParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Soft Direct Gate';
+   ID := 'DAV Soft Direct Gate';
+  end;
+end;
+
+function TSoftDirectGateParamStaticSEModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..3: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TSoftDirectGateAutomatableSEModule }
 
 class procedure TSoftDirectGateAutomatableSEModule.GetModuleProperties(
@@ -1069,13 +1207,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Soft Direct Gate (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Soft Direct Gate (Automatable)';
   end;
 end;
@@ -1090,7 +1222,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -1099,7 +1231,7 @@ begin
        Name            := 'Knee [dB]';
        VariableAddress := @FKnee_dB;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '1';
        result          := True;
       end;
@@ -1294,6 +1426,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TBrickwallLimiterParamStaticSEModule }
+
+class procedure TBrickwallLimiterParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Brickwall Limiter';
+   ID := 'DAV Brickwall Limiter';
+  end;
+end;
+
+function TBrickwallLimiterParamStaticSEModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..3: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TBrickwallLimiterAutomatableSEModule }
 
 class procedure TBrickwallLimiterAutomatableSEModule.GetModuleProperties(
@@ -1302,13 +1456,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Brickwall Limiter (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Brickwall Limiter (Automatable)';
   end;
 end;
@@ -1323,7 +1471,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -1466,6 +1614,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TBrickwallSoftLimiterParamStaticSEModule }
+
+class procedure TBrickwallSoftLimiterParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Brickwall Soft Limiter';
+   ID := 'DAV Brickwall Soft Limiter';
+  end;
+end;
+
+function TBrickwallSoftLimiterParamStaticSEModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..4: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TBrickwallSoftLimiterAutomatableSEModule }
 
 class procedure TBrickwallSoftLimiterAutomatableSEModule.GetModuleProperties(
@@ -1474,13 +1644,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Brickwall Soft Limiter (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Brickwall Soft Limiter (Automatable)';
   end;
 end;
@@ -1495,7 +1659,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -1504,7 +1668,7 @@ begin
        Name            := 'Knee [dB]';
        VariableAddress := @FKnee_dB;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '1';
        result          := True;
       end;
@@ -1650,6 +1814,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TBrickwallSimpleSoftLimiterParamStaticSEModule }
+
+class procedure TBrickwallSimpleSoftLimiterParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Brickwall Simple Soft Limiter';
+   ID := 'DAV Brickwall Simple Soft Limiter';
+  end;
+end;
+
+function TBrickwallSimpleSoftLimiterParamStaticSEModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..4: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TBrickwallSimpleSoftLimiterAutomatableSEModule }
 
 class procedure TBrickwallSimpleSoftLimiterAutomatableSEModule.GetModuleProperties(
@@ -1658,13 +1844,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Brickwall Simple Soft Limiter (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Brickwall Simple Soft Limiter (Automatable)';
   end;
 end;
@@ -1679,7 +1859,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -1688,7 +1868,7 @@ begin
        Name            := 'Knee [dB]';
        VariableAddress := @FKnee_dB;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '1';
        result          := True;
       end;
@@ -1884,6 +2064,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TRangeGateParamStaticSEModule }
+
+class procedure TRangeGateParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Range Gate';
+   ID := 'DAV Range Gate';
+  end;
+end;
+
+function TRangeGateParamStaticSEModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..5: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TRangeGateAutomatableSEModule }
 
 class procedure TRangeGateAutomatableSEModule.GetModuleProperties(
@@ -1892,13 +2094,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Range Gate (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Range Gate (Automatable)';
   end;
 end;
@@ -1913,7 +2109,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -1922,7 +2118,7 @@ begin
        Name            := 'Range [dB]';
        VariableAddress := @FRange;
        Direction       := drParameter;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -1931,7 +2127,7 @@ begin
        Name            := 'Attack [ms]';
        VariableAddress := @FAttack;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '10';
        result          := True;
       end;
@@ -1940,7 +2136,7 @@ begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '100';
        result          := True;
       end;
@@ -2135,6 +2331,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TClassicGateParamStaticSEModule }
+
+class procedure TClassicGateParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Classic Gate';
+   ID := 'DAV Classic Gate';
+  end;
+end;
+
+function TClassicGateParamStaticSEModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..4: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TClassicGateAutomatableSEModule }
 
 class procedure TClassicGateAutomatableSEModule.GetModuleProperties(
@@ -2143,13 +2361,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Classic Gate (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Classic Gate (Automatable)';
   end;
 end;
@@ -2164,7 +2376,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -2173,7 +2385,7 @@ begin
        Name            := 'Attack [ms]';
        VariableAddress := @FAttack;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '10';
        result          := True;
       end;
@@ -2182,7 +2394,7 @@ begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '100';
        result          := True;
       end;
@@ -2382,6 +2594,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TSoftClassicGateParamStaticSEModule }
+
+class procedure TSoftClassicGateParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Classic Soft Knee Gate';
+   ID := 'DAV Classic Soft Knee Gate';
+  end;
+end;
+
+function TSoftClassicGateParamStaticSEModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..5: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TSoftClassicGateAutomatableSEModule }
 
 class procedure TSoftClassicGateAutomatableSEModule.GetModuleProperties(
@@ -2390,13 +2624,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Classic Soft Knee Gate (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Classic Soft Knee Gate (Automatable)';
   end;
 end;
@@ -2411,7 +2639,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -2420,7 +2648,7 @@ begin
        Name            := 'Knee [dB]';
        VariableAddress := @FKnee_dB;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '1';
        result          := True;
       end;
@@ -2429,7 +2657,7 @@ begin
        Name            := 'Attack [ms]';
        VariableAddress := @FAttack;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '10';
        result          := True;
       end;
@@ -2438,7 +2666,7 @@ begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '100';
        result          := True;
       end;
@@ -2647,6 +2875,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TLimiterParamStaticSEModule }
+
+class procedure TLimiterParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Simple Limiter';
+   ID := 'DAV Simple Limiter';
+  end;
+end;
+
+function TLimiterParamStaticSEModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..5: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TLimiterAutomatableSEModule }
 
 class procedure TLimiterAutomatableSEModule.GetModuleProperties(
@@ -2655,13 +2905,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Simple Limiter (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Simple Limiter (Automatable)';
   end;
 end;
@@ -2676,7 +2920,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -2685,7 +2929,7 @@ begin
        Name            := 'Attack [ms]';
        VariableAddress := @FAttack;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '10';
        result          := True;
       end;
@@ -2694,7 +2938,7 @@ begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '100';
        result          := True;
       end;
@@ -2851,6 +3095,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TSoftLimiterParamStaticSEModule }
+
+class procedure TSoftLimiterParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Soft Knee Limiter';
+   ID := 'DAV Soft Knee Limiter';
+  end;
+end;
+
+function TSoftLimiterParamStaticSEModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..6: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TSoftLimiterAutomatableSEModule }
 
 class procedure TSoftLimiterAutomatableSEModule.GetModuleProperties(
@@ -2859,13 +3125,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Soft Knee Limiter (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Soft Knee Limiter (Automatable)';
   end;
 end;
@@ -2880,7 +3140,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -2889,7 +3149,7 @@ begin
        Name            := 'Knee [dB]';
        VariableAddress := @FKnee_dB;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '1';
        result          := True;
       end;
@@ -2898,7 +3158,7 @@ begin
        Name            := 'Attack [ms]';
        VariableAddress := @FAttack;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '10';
        result          := True;
       end;
@@ -2907,7 +3167,7 @@ begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '100';
        result          := True;
       end;
@@ -3069,6 +3329,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TSimpleSoftLimiterParamStaticSEModule }
+
+class procedure TSimpleSoftLimiterParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Simple Soft Knee Limiter';
+   ID := 'DAV Simple Soft Knee Limiter';
+  end;
+end;
+
+function TSimpleSoftLimiterParamStaticSEModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..6: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TSimpleSoftLimiterAutomatableSEModule }
 
 class procedure TSimpleSoftLimiterAutomatableSEModule.GetModuleProperties(
@@ -3077,13 +3359,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Simple Soft Knee Limiter (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Simple Soft Knee Limiter (Automatable)';
   end;
 end;
@@ -3098,7 +3374,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -3107,7 +3383,7 @@ begin
        Name            := 'Knee [dB]';
        VariableAddress := @FKnee_dB;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '1';
        result          := True;
       end;
@@ -3116,7 +3392,7 @@ begin
        Name            := 'Attack [ms]';
        VariableAddress := @FAttack;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '10';
        result          := True;
       end;
@@ -3125,7 +3401,7 @@ begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '100';
        result          := True;
       end;
@@ -3345,6 +3621,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TSimpleCompressorParamStaticSEModule }
+
+class procedure TSimpleCompressorParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Simple Compressor';
+   ID := 'DAV Simple Compressor';
+  end;
+end;
+
+function TSimpleCompressorParamStaticSEModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..6: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TSimpleCompressorAutomatableSEModule }
 
 class procedure TSimpleCompressorAutomatableSEModule.GetModuleProperties(
@@ -3353,13 +3651,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Simple Compressor (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Simple Compressor (Automatable)';
   end;
 end;
@@ -3374,7 +3666,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -3383,7 +3675,7 @@ begin
        Name            := 'Ratio (1:x)';
        VariableAddress := @FRatio;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '8';
        result          := True;
       end;
@@ -3392,7 +3684,7 @@ begin
        Name            := 'Attack [ms]';
        VariableAddress := @FAttack;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '10';
        result          := True;
       end;
@@ -3401,7 +3693,7 @@ begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '100';
        result          := True;
       end;
@@ -3570,6 +3862,28 @@ begin
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
 end;
 
+{ TSoftKneeCompressorParamStaticSEModule }
+
+class procedure TSoftKneeCompressorParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'Soft Knee Compressor';
+   ID := 'DAV Soft Knee Compressor';
+  end;
+end;
+
+function TSoftKneeCompressorParamStaticSEModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..7: with Properties^ do Direction := drIn;
+ end;
+end;
+
 { TSoftKneeCompressorAutomatableSEModule }
 
 class procedure TSoftKneeCompressorAutomatableSEModule.GetModuleProperties(
@@ -3578,13 +3892,7 @@ begin
  inherited;
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
    Name := 'Soft Knee Compressor (Automatable)';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
    ID := 'DAV Soft Knee Compressor (Automatable)';
   end;
 end;
@@ -3599,7 +3907,7 @@ begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -3608,7 +3916,7 @@ begin
        Name            := 'Ratio (1:x)';
        VariableAddress := @FRatio;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '8';
        result          := True;
       end;
@@ -3617,7 +3925,7 @@ begin
        Name            := 'Knee [dB]';
        VariableAddress := @FKnee;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '1';
        result          := True;
       end;
@@ -3626,7 +3934,7 @@ begin
        Name            := 'Attack [ms]';
        VariableAddress := @FAttack;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '10';
        result          := True;
       end;
@@ -3635,7 +3943,7 @@ begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '100';
        result          := True;
       end;
@@ -3645,13 +3953,13 @@ end;
 procedure TSoftKneeCompressorAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  case CurrentPin.PinID of
-  3..7: if (Pin[3].Status <> stRun) and
-           (Pin[4].Status <> stRun) and
-           (Pin[5].Status <> stRun) and
-           (Pin[6].Status <> stRun) and
-           (Pin[7].Status <> stRun)
-         then OnProcess := SubProcess
-         else OnProcess := SubProcessAutomated;
+  3..7: if (Pin[3].Status > stStop) and
+           (Pin[4].Status > stStop) and
+           (Pin[5].Status > stStop) and
+           (Pin[6].Status > stStop) and
+           (Pin[7].Status > stStop)
+         then OnProcess := SubProcessAutomated
+         else OnProcess := SubProcess;
  end;
  inherited;
 end;
@@ -3786,9 +4094,9 @@ begin
  case CurrentPin.PinID of
   3: FDynamicProcesor.Threshold_dB := FThreshold;
   4: FDynamicProcesor.Ratio        := FRatio;
+  5: TSimpleRMSCompressor(FDynamicProcesor).RMSTime := FRMSTime;
   6: FDynamicProcesor.Attack       := FAttack;
   7: FDynamicProcesor.Release      := FRelease;
-  5: TSimpleRMSCompressor(FDynamicProcesor).RMSTime := FRMSTime;
  end;
  inherited;
 end;
@@ -3806,6 +4114,28 @@ begin
 
  for Sample := 0 to SampleFrames - 1
   do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+end;
+
+{ TRMSCompressorParamStaticSEModule }
+
+class procedure TRMSCompressorParamStaticSEModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   Name := 'RMS Compressor';
+   ID := 'DAV RMS Compressor';
+  end;
+end;
+
+function TRMSCompressorParamStaticSEModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case index of
+  2..7: with Properties^ do Direction := drIn;
+ end;
 end;
 
 { TRMSCompressorAutomatableSEModule }
@@ -3832,12 +4162,13 @@ function TRMSCompressorAutomatableSEModule.GetPinProperties(
 begin
  result := inherited GetPinProperties(Index, Properties);
  case index of
+  2: with Properties^ do Direction := drIn;
   3: with Properties^ do
       begin
        Name            := 'Threshold [dB]';
        VariableAddress := @FThreshold;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '-10';
        result          := True;
       end;
@@ -3846,7 +4177,7 @@ begin
        Name            := 'Ratio (1:x)';
        VariableAddress := @FRatio;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '8';
        result          := True;
       end;
@@ -3855,7 +4186,7 @@ begin
        Name            := 'RMS time [ms]';
        VariableAddress := @FRMSTime;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '1';
        result          := True;
       end;
@@ -3864,7 +4195,7 @@ begin
        Name            := 'Attack [ms]';
        VariableAddress := @FAttack;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '10';
        result          := True;
       end;
@@ -3873,7 +4204,7 @@ begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
        Direction       := drIn;
-       DataType        := dtSingle;
+       DataType        := dtFSample;
        DefaultValue    := '100';
        result          := True;
       end;

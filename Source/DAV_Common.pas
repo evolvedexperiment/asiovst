@@ -123,12 +123,12 @@ type
   function Smallest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function Largest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function LimitAngle(const Angle: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Ln2(f: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Floorln2(f: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Arctan(Value: Single):Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Arctan(Value: Double):Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Frac(Sample: Single):Single; overload;
-  function f_Frac(Sample: Double):Double; overload;
+  function f_Ln2(const f: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Floorln2(const f: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Arctan(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Arctan(const Value: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Frac(Sample: Single): Single; overload;
+  function f_Frac(Sample: Double): Double; overload;
   procedure f_Abs(var f: Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
   procedure f_Abs(var f: Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
   procedure f_Abs(var f: TDAV4SingleArray); overload;
@@ -143,7 +143,7 @@ type
   function f_Round(Sample: Single): Integer; overload;
   function f_Round(Sample: Double): Integer; overload;
 
-  function f_Exp(x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function f_Exp(const x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
 
   function f_Neg(f: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Root(i: Single; n: Integer): Single; {$IFDEF useinlining} inline; {$ENDIF}
@@ -152,8 +152,10 @@ type
   function f_Log2Laurent(val: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Log2Continous5(val: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Log2MinError5(val: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Sin(Angle: Single): Single;
-  function f_Cos(Angle: Single): Single;
+  function f_Sin(const Angle: Single): Single; overload;
+  function f_Sin(const Angle: Double): Double; overload;
+  function f_Cos(const Angle: Single): Single; overload;
+  function f_Cos(const Angle: Double): Double; overload;
   function f_Sgn(f: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
   function f_Min(const A, B: Single) : Single;
   function f_Max(const A, B: Single) : Single;
@@ -167,20 +169,20 @@ type
   function FreqLinearToLog(Value: Single): Single;
   function FreqLogToLinear(Value: Single): Single;
 
-  procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double); overload;
-  procedure GetSinCos(Frequency: Extended; var SinValue, CosValue : Extended); overload;
-  procedure GetSinCos(Frequency: Single; var SinValue, CosValue : Single); overload;
+  procedure GetSinCos(const Frequency: Double; var SinValue, CosValue : Double); overload;
+  procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended); overload;
+  procedure GetSinCos(const Frequency: Single; var SinValue, CosValue : Single); overload;
 
-  function IsPowerOf2(Value: Integer): Boolean;
-  function RoundToPowerOf2(Value: Integer): Integer;
-  function TruncToPowerOf2(Value: Integer): Integer;
-  function ExtendToPowerOf2(Value: Integer): Integer;
+  function IsPowerOf2(const Value: Integer): Boolean; {$IFDEF useinlining} inline; {$ENDIF}
+  function RoundToPowerOf2(const Value: Integer): Integer; {$IFDEF useinlining} inline; {$ENDIF}
+  function TruncToPowerOf2(const Value: Integer): Integer; {$IFDEF useinlining} inline; {$ENDIF}
+  function ExtendToPowerOf2(const Value: Integer): Integer; {$IFDEF useinlining} inline; {$ENDIF}
   function TruncLog2(Value : Extended): Integer; overload;
   function TruncLog2(Value : Integer): Integer; overload;
   function CeilLog2(Value : Extended): Integer; overload;
   function CeilLog2(Value : Integer): Integer; overload;
-  function OnOff(Value: Single): Boolean;
-  function unDenormalize(Value: Single): Single;
+  function OnOff(const Value: Single): Boolean;
+  function unDenormalize(const Value: Single): Single;
 
   function FastTanhOpt3(x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastTanhOpt4(x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
@@ -208,8 +210,10 @@ type
   function Tanh2b(x: Single): Single;
   function Tanh2c(x: Single): Single;
   function Tanh2d(x: Single): Single;
-  function Sigmoid(x: Single): Single;
-  function Sinc(x: Double): Double;
+  function Sigmoid(const x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function Sigmoid(const x: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function Sinc(const x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function Sinc(const x: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   {$IFNDEF FPC}
   procedure Msg(b: Boolean); overload;
   procedure Msg(m: string; m2: string = ''); overload;
@@ -585,12 +589,12 @@ asm
 {$ENDIF}
 end;   
 
-function f_Exp(x: Single): Single;
+function f_Exp(const x: Single): Single;
 begin
  Result := Exp(x * ln2);
 end;
 
-function f_Sin(Angle: Single): Single;
+function f_Sin(const Angle: Single): Single;
 const
   sin1 : Double = 7.61e-03;
   sin2 : Double = -1.6605e-01;
@@ -614,7 +618,31 @@ asm
 {$ENDIF}
 end;
 
-function f_Cos(Angle:Single):Single;
+function f_Sin(const Angle: Double): Double;
+const
+  sin1 : Double = 7.61e-03;
+  sin2 : Double = -1.6605e-01;
+{$IFDEF PUREPASCAL}
+var Asqr : Double;
+begin
+ Asqr   := sqr(Angle);
+ result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Angle;
+{$ELSE}
+asm
+ fld Angle.Double
+ fmul Angle.Double
+ fld sin1.Double
+ fmul st(0),st(1)
+ fld sin2.Double
+ faddp st(1),st(0)
+ fmulp st(1),st(0)
+ fld1
+ faddp
+ fmul Angle
+{$ENDIF}
+end;
+
+function f_Cos(const Angle: Single): Single;
 const
   sin1 : Double =  3.705e-02;
   sin2 : Double = -4.967e-01;
@@ -639,29 +667,56 @@ asm
 {$ENDIF}
 end;
 
+function f_Cos(const Angle: Double): Double;
+const
+  sin1 : Double =  3.705e-02;
+  sin2 : Double = -4.967e-01;
+{$IFDEF PUREPASCAL}
+var
+  Asqr : Double;
+begin
+ Asqr   := sqr(Angle);
+ result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Angle;
+{$ELSE}
+asm
+ fld Angle.Double
+ fmul Angle.Double
+ fld sin1.Double
+ fmul st(0),st(1)
+ fld sin2.Double
+ faddp st(1),st(0)
+ fmulp st(1),st(0)
+ fld1
+ faddp
+ fmul Angle
+{$ENDIF}
+end;
+
 {$ENDIF}
 
-function f_ArcTan(Value: Single): Single;
-var VSqr : Double;
+function f_ArcTan(const Value: Single): Single;
+var
+  VSqr : Double;
 begin
  VSqr   := sqr(Value);
  Result := ((((0.0208351 * VSqr - 0.085133) * VSqr + 0.180141) * VSqr - 0.3302995) * VSqr + 0.999866) * Value;
 end;
 
-function f_ArcTan(Value: Double): Double;
-var VSqr : Double;
+function f_ArcTan(const Value: Double): Double;
+var
+  VSqr : Double;
 begin
  VSqr   := sqr(Value);
  Result := ((((0.0208351 * VSqr - 0.085133) * VSqr + 0.180141) * VSqr - 0.3302995) * VSqr + 0.999866) * Value;
 end;
 
-function f_Ln2(f: Single): Single;
+function f_Ln2(const f: Single): Single;
 begin
  Result := (((Integer((@f)^) and $7F800000) shr 23) - $7F) +
              (Integer((@f)^) and $007FFFFF) / $800000;
 end;
 
-function f_FloorLn2(f: Single): Integer;
+function f_FloorLn2(const f: Single): Integer;
 begin
  Result := (((Integer((@f)^) and $7F800000) shr 23) - $7F);
 end;
@@ -696,7 +751,8 @@ asm
 end;
 
 function f_Neg(f: Single): Single;
-var i,j:Integer;
+var
+  i, j: Integer;
 begin
  j := $80000000;
  i := Integer((@f)^) xor j;
@@ -834,7 +890,7 @@ asm
 {$ENDIF}
 end;   
 
-procedure GetSinCos(Frequency: Extended; var SinValue, CosValue : Extended);
+procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
@@ -848,7 +904,7 @@ asm
 {$ENDIF}
 end;
 
-procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
+procedure GetSinCos(const Frequency: Double; var SinValue, CosValue : Double);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
@@ -862,7 +918,7 @@ asm
 {$ENDIF}
 end;
 
-procedure GetSinCos(Frequency: Single; var SinValue, CosValue : Single);
+procedure GetSinCos(const Frequency: Single; var SinValue, CosValue : Single);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
@@ -876,25 +932,25 @@ asm
 {$ENDIF}
 end;
 
-function IsPowerOf2(Value:Integer) : Boolean;
+function IsPowerOf2(const Value: Integer): Boolean;
 begin
  result := abs(IntPower(2, round(Log2(Value))) - Value) < 1E-20;
 end;
 
-function RoundToPowerOf2(Value:Integer) : Integer;
+function RoundToPowerOf2(const Value: Integer): Integer;
 begin
  Result := round(Log2(Value));
  Result := (Value shr (Result - 1)) shl (Result - 1);
 end;
 
-function TruncToPowerOf2(Value:Integer) : Integer;
+function TruncToPowerOf2(const Value: Integer): Integer;
 begin
  result := 1;
  while result <= value do result := result shl 1;
  result := result shr 1;
 end;
 
-function ExtendToPowerOf2(Value:Integer) : Integer;
+function ExtendToPowerOf2(const Value: Integer): Integer;
 begin
  result := 1;
  while result < value do result := result shl 1;
@@ -965,10 +1021,10 @@ asm
 {$ENDIF}
 end;
 
-function OnOff(value:Single):boolean;
+function OnOff(const value: Single): Boolean;
 begin Result := value > 0.5 end;
 
-function UnDenormalize(value : Single) : Single;
+function UnDenormalize(const Value : Single) : Single;
 begin
  if (abs(value) < 1.0e-20)
   then Result := 0.0
@@ -1183,11 +1239,25 @@ begin
 end;
 
 // SINC Function
-function Sinc(x: Double): Double;
-var pix : Double;
+function Sinc(const x: Double): Double;
+var
+  pix : Double;
 begin
- if (x=0)
-  then result:=1
+ if (x = 0)
+  then result := 1
+  else
+   begin
+    pix := PI * x;
+    result := sin(pix) / pix;
+   end;
+end;
+
+function Sinc(const x: Single): Single;
+var
+  pix : Double;
+begin
+ if (x = 0)
+  then result := 1
   else
    begin
     pix := PI * x;
@@ -1674,14 +1744,24 @@ asm
  fdivp             // Stack: (b * x) / (1 + b * a)
 end;
 
-function Sigmoid(x: Single): Single;
+function Sigmoid(const x: Single): Single;
 begin
- if(abs(x)<1)
+ if (abs(x) < 1)
   then Result := x * (1.5 - 0.5 * x * x)
   else
    if x < 0
-    then Result:=-1
-    else Result:= 1;
+    then Result := -1
+    else Result :=  1;
+end;
+
+function Sigmoid(const x: Double): Double;
+begin
+ if (abs(x) < 1)
+  then Result := x * (1.5 - 0.5 * x * x)
+  else
+   if x < 0
+    then Result := -1
+    else Result :=  1;
 end;
 
 {$IFDEF DELPHI5}

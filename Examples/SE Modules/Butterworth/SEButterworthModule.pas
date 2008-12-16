@@ -12,16 +12,12 @@ type
   TSEButterworthModule = class(TSEModuleBase)
   private
   protected
-    FInput1Buffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
+    FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
-    FFrequency    : Single;
-    FOrder        : Integer;
     FFilter       : TButterworthFilter;
     procedure SampleRateChanged; override;
     procedure Open; override;
-    procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
@@ -30,15 +26,24 @@ type
   end;
 
   TSEStaticButterworthLPModule = class(TSEButterworthModule)
+  protected
+    FFrequency    : Single;
+    FOrder        : Integer;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEStaticButterworthHPModule = class(TSEButterworthModule)
+    FFrequency    : Single;
+    FOrder        : Integer;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
 
   TSEAutomatableButterworthLPModule = class(TSEStaticButterworthLPModule)
@@ -63,14 +68,6 @@ implementation
 
 uses
   SysUtils, DAV_DspFilter;
-
-constructor TSEButterworthModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
-begin
- inherited Create(SEAudioMaster, Reserved);
-
- FFrequency := 1000;
- FOrder := 4;
-end;
 
 destructor TSEButterworthModule.Destroy;
 begin
@@ -104,7 +101,7 @@ var
   Sample : Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
@@ -132,57 +129,27 @@ begin
  result := True;
  case TSEButterworthPins(index) of
   // typical input plug (inputs are listed first)
-  pinInput: with Properties^ do
-             begin
-              Name            := 'Input';
-              VariableAddress := @FInput1Buffer;
-              Direction       := drIn;
-              Datatype        := dtFSample;
-              DefaultValue    := '0';
-             end;
+  pinInput:
+    with Properties^ do
+     begin
+      Name            := 'Input';
+      VariableAddress := @FInputBuffer;
+      Direction       := drIn;
+      Datatype        := dtFSample;
+      DefaultValue    := '0';
+     end;
 
   // typical output plug
-  pinOutput: with Properties^ do
-              begin
-               Name            := 'Output';
-               VariableAddress := @FOutputBuffer;
-               Direction       := drOut;
-               Datatype        := dtFSample;
-              end;
-  pinFrequency: with Properties^ do
-                 begin
-                  Name            := 'Frequency';
-                  VariableAddress := @FFrequency;
-                  Direction       := drParameter;
-                  DataType        := dtSingle;
-                  Flags           := [iofLinearInput];
-                  DefaultValue    := '1000';
-                 end;
-  pinOrder: with Properties^ do
-             begin
-              Name            := 'Order';
-              VariableAddress := @FOrder;
-              Direction       := drParameter;
-              DataType        := dtEnum;
-              Flags           := [iofLinearInput];
-              DefaultValue    := '4';
-              DatatypeExtra   := 'range -0,64';
-             end;
+  pinOutput:
+    with Properties^ do
+     begin
+      Name            := 'Output';
+      VariableAddress := @FOutputBuffer;
+      Direction       := drOut;
+      Datatype        := dtFSample;
+     end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
-end;
-
-// this routine is called whenever an input changes status.
-// e.g when the user changes a module's parameters,
-// or when audio stops/starts streaming into a pin
-procedure TSEButterworthModule.PlugStateChange(const CurrentPin: TSEPin);
-begin
- // has user altered a filter parameter?
- case TSEButterworthPins(CurrentPin.PinID) of
-  pinFrequency : FFilter.Frequency := FFrequency;
-      pinOrder : FFilter.Order     := FOrder;
- end;
- inherited;
 end;
 
 { TSEButterworthModule }
@@ -190,6 +157,9 @@ end;
 constructor TSEStaticButterworthLPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
+ FFrequency := 1000;
+ FOrder := 4;
+
  FFilter := TButterworthLP.Create;
  FFilter.SetFilterValues(FFrequency, 0);
  FFilter.Order := FOrder;
@@ -211,11 +181,57 @@ begin
   end;
 end;
 
+function TSEStaticButterworthLPModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSEButterworthPins(index) of
+  pinFrequency:
+    with Properties^ do
+     begin
+      Name            := 'Frequency';
+      VariableAddress := @FFrequency;
+      Direction       := drParameter;
+      DataType        := dtSingle;
+      Flags           := [iofLinearInput];
+      DefaultValue    := '1000';
+      result          := True;
+     end;
+  pinOrder:
+    with Properties^ do
+     begin
+      Name            := 'Order';
+      VariableAddress := @FOrder;
+      Direction       := drParameter;
+      DataType        := dtEnum;
+      Flags           := [iofLinearInput];
+      DefaultValue    := '4';
+      DatatypeExtra   := 'range -0,64';
+      result          := True;
+     end;
+ end;
+end;
+
+// this routine is called whenever an input changes status.
+// e.g when the user changes a module's parameters,
+// or when audio stops/starts streaming into a pin
+procedure TSEStaticButterworthLPModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ // has user altered a filter parameter?
+ case TSEButterworthPins(CurrentPin.PinID) of
+  pinFrequency : FFilter.Frequency := FFrequency;
+      pinOrder : FFilter.Order     := FOrder;
+ end;
+ inherited;
+end;
+
 { TSEStaticButterworthHPModule }
 
 constructor TSEStaticButterworthHPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
+ FFrequency := 1000;
+ FOrder := 4;
+
  FFilter := TButterworthHP.Create;
  FFilter.SetFilterValues(FFrequency, 0);
  FFilter.Order := FOrder;
@@ -235,6 +251,49 @@ begin
    // No two plugs may have the same id.
    ID := 'DAV Butterworth Highpass (static)';
   end;
+end;
+
+// this routine is called whenever an input changes status.
+// e.g when the user changes a module's parameters,
+// or when audio stops/starts streaming into a pin
+procedure TSEStaticButterworthHPModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ // has user altered a filter parameter?
+ case TSEButterworthPins(CurrentPin.PinID) of
+  pinFrequency : FFilter.Frequency := FFrequency;
+      pinOrder : FFilter.Order     := FOrder;
+ end;
+ inherited;
+end;
+
+function TSEStaticButterworthHPModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSEButterworthPins(index) of
+  pinFrequency:
+    with Properties^ do
+     begin
+      Name            := 'Frequency';
+      VariableAddress := @FFrequency;
+      Direction       := drParameter;
+      DataType        := dtSingle;
+      Flags           := [iofLinearInput];
+      DefaultValue    := '1000';
+      result          := True;
+     end;
+  pinOrder:
+    with Properties^ do
+     begin
+      Name            := 'Order';
+      VariableAddress := @FOrder;
+      Direction       := drParameter;
+      DataType        := dtEnum;
+      Flags           := [iofLinearInput];
+      DefaultValue    := '4';
+      DatatypeExtra   := 'range -0,64';
+      result          := True;
+     end;
+ end;
 end;
 
 { TSEAutomatableButterworthLPModule }
@@ -261,20 +320,24 @@ function TSEAutomatableButterworthLPModule.GetPinProperties(const Index: Integer
 begin
  result := inherited GetPinProperties(Index, Properties);
  case TSEButterworthPins(Index) of
-  pinFrequency: with Properties^ do
-                 begin
-                  VariableAddress := @FFreqBuffer;
-                  Direction       := drIn;
-                  Datatype        := dtFSample;
-                  Flags           := [iofLinearInput];
-                  DefaultValue    := '0.5';
-                 end;
-  pinOrder: with Properties^ do
-             begin
-              Direction       := drIn;
-              DataType        := dtEnum;
-              Flags           := [iofLinearInput];
-             end;
+  pinFrequency:
+    with Properties^ do
+     begin
+      VariableAddress := @FFreqBuffer;
+      Direction       := drIn;
+      Datatype        := dtFSample;
+      Flags           := [iofLinearInput];
+      DefaultValue    := '0.5';
+      result          := True;
+     end;
+  pinOrder:
+    with Properties^ do
+     begin
+      Direction       := drIn;
+      DataType        := dtEnum;
+      Flags           := [iofLinearInput];
+      result          := True;
+     end;
  end;
 end;
 
@@ -287,13 +350,13 @@ var
   Sample : Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  Freq   := PDAVSingleFixedArray(@FFreqBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
-   FFilter.Frequency := 0.5 * FFreqBuffer[Sample] * FFilter.SampleRate; 
+   FFilter.Frequency := 0.5 * Freq[Sample] * FFilter.SampleRate; 
    Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;
@@ -322,21 +385,25 @@ function TSEAutomatableButterworthHPModule.GetPinProperties(const Index: Integer
 begin
  result := inherited GetPinProperties(Index, Properties);
  case TSEButterworthPins(Index) of
-  pinFrequency: with Properties^ do
-                 begin
-                  VariableAddress := @FFreqBuffer;
-                  Direction       := drIn;
-                  Flags           := [iofLinearInput];
-                  Datatype        := dtFSample;
-                  DefaultValue    := '0.5';
-                 end;
-  pinOrder: with Properties^ do
-             begin
-              VariableAddress := @FOrder;
-              Direction       := drIn;
-              DataType        := dtEnum;
-              Flags           := [iofLinearInput];
-             end;
+  pinFrequency:
+    with Properties^ do
+     begin
+      VariableAddress := @FFreqBuffer;
+      Direction       := drIn;
+      Flags           := [iofLinearInput];
+      Datatype        := dtFSample;
+      DefaultValue    := '0.5';
+      result          := True;
+     end;
+  pinOrder:
+    with Properties^ do
+     begin
+      VariableAddress := @FOrder;
+      Direction       := drIn;
+      DataType        := dtEnum;
+      Flags           := [iofLinearInput];
+      result          := True;
+     end;
  end;
 end;
 
@@ -349,13 +416,13 @@ var
   Sample : Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  Freq   := PDAVSingleFixedArray(@FFreqBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
-   FFilter.Frequency := 0.5 * FFreqBuffer[Sample] * FFilter.SampleRate; 
+   FFilter.Frequency := 0.5 * Freq[Sample] * FFilter.SampleRate; 
    Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;
