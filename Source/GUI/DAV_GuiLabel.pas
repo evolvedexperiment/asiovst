@@ -11,13 +11,13 @@ uses
 type
   TCustomGuiLabel = class(TBufferedGraphicControl)
   private
-    fAntiAlias     : TGuiAntiAlias;
-    fAlignment     : TAlignment;
-    fCaption       : string;
-    fOSFactor      : Integer;
+    FAntiAlias     : TGuiAntiAlias;
+    FAlignment     : TAlignment;
+    FCaption       : string;
+    FOSFactor      : Integer;
     {$IFNDEF FPC}
-    fTransparent   : Boolean;
-    fShadow        : TGUIShadow;
+    FTransparent   : Boolean;
+    FShadow        : TGUIShadow;
     procedure SetTransparent(Value: Boolean); virtual;
     {$ENDIF}
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
@@ -31,12 +31,12 @@ type
   public
     constructor Create(AOwner: TComponent); overload; override;
     destructor Destroy; override;
-    property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
-    property Alignment: TAlignment read fAlignment write SetAlignment default taLeftJustify;
-    property Caption: string read fCaption write SetCaption;
+    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+    property Alignment: TAlignment read FAlignment write SetAlignment default taLeftJustify;
+    property Caption: string read FCaption write SetCaption;
     {$IFNDEF FPC}
-    property Shadow: TGUIShadow read fShadow write fShadow;
-    property Transparent: Boolean read fTransparent write SetTransparent default False;
+    property Shadow: TGUIShadow read FShadow write FShadow;
+    property Transparent: Boolean read FTransparent write SetTransparent default False;
     {$ENDIF}
   end;
 
@@ -92,20 +92,20 @@ implementation
 constructor TCustomGuiLabel.Create(AOwner: TComponent);
 begin
  inherited;
- fAntiAlias   := gaaNone;
- fOSFactor    := 1;
- fAlignment   := taLeftJustify;
+ FAntiAlias   := gaaNone;
+ FOSFactor    := 1;
+ FAlignment   := taLeftJustify;
  {$IFNDEF FPC}
- fTransparent := False;
- fShadow      := TGuiShadow.Create;
- fShadow.OnChange := ShadowChangedHandler;
+ FTransparent := False;
+ FShadow      := TGuiShadow.Create;
+ FShadow.OnChange := ShadowChangedHandler;
  {$ENDIF}
 end;
 
 destructor TCustomGuiLabel.Destroy;
 begin
  {$IFNDEF FPC}
- FreeAndNil(fShadow);
+ FreeAndNil(FShadow);
  {$ENDIF}
  inherited;
 end;
@@ -131,13 +131,13 @@ begin
   begin
    Brush.Color := Self.Color;
    Font.Assign(Self.Font);
-   Font.Size := fOSFactor * Self.Font.Size;
+   Font.Size := FOSFactor * Self.Font.Size;
   end;
 
- case fAntiAlias of
+ case FAntiAlias of
   gaaNone     :
    begin
-    {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+    {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
     fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
     RenderLabelToBitmap(fBuffer);
    end;
@@ -147,13 +147,13 @@ begin
     with Bmp, Canvas do
      try
       PixelFormat := pf32bit;
-      Bmp.Width   := fOSFactor * fBuffer.Width;
-      Bmp.Height  := fOSFactor * fBuffer.Height;
+      Bmp.Width   := FOSFactor * fBuffer.Width;
+      Bmp.Height  := FOSFactor * fBuffer.Height;
       Font.Assign(fBuffer.Canvas.Font);
       Brush.Assign(fBuffer.Canvas.Brush);
       Pen.Assign(fBuffer.Canvas.Pen);
       {$IFNDEF FPC}
-      if fTransparent then
+      if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
 //        DrawParentImage(Bmp.Canvas);
@@ -162,7 +162,7 @@ begin
       {$ENDIF}
       Canvas.FillRect(ClipRect);
 {
-      if fShadow.Visible then
+      if FShadow.Visible then
        begin
         RenderLabelToBitmap(Bmp);
        end
@@ -181,13 +181,13 @@ begin
     with Bmp, Canvas do
      try
       PixelFormat := pf32bit;
-      Bmp.Width   := fOSFactor * fBuffer.Width;
-      Bmp.Height  := fOSFactor * fBuffer.Height;
+      Bmp.Width   := FOSFactor * fBuffer.Width;
+      Bmp.Height  := FOSFactor * fBuffer.Height;
       Font.Assign(fBuffer.Canvas.Font);
       Brush.Assign(fBuffer.Canvas.Brush);
       Pen.Assign(fBuffer.Canvas.Pen);
       {$IFNDEF FPC}
-      if fTransparent then
+      if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
 //        DrawParentImage(Bmp.Canvas);
@@ -208,13 +208,13 @@ begin
     with Bmp do
      try
       PixelFormat := pf32bit;
-      Width       := fOSFactor * fBuffer.Width;
-      Height      := fOSFactor * fBuffer.Height;
+      Width       := FOSFactor * fBuffer.Width;
+      Height      := FOSFactor * fBuffer.Height;
       Canvas.Font.Assign(fBuffer.Canvas.Font);
       Canvas.Brush.Assign(fBuffer.Canvas.Brush);
       Canvas.Pen.Assign(fBuffer.Canvas.Pen);
       {$IFNDEF FPC}
-      if fTransparent then
+      if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
 //        DrawParentImage(Bmp.Canvas);
@@ -237,13 +237,13 @@ begin
     with Bmp do
      try
       PixelFormat := pf32bit;
-      Width       := fOSFactor * fBuffer.Width;
-      Height      := fOSFactor * fBuffer.Height;
+      Width       := FOSFactor * fBuffer.Width;
+      Height      := FOSFactor * fBuffer.Height;
       Canvas.Font.Assign(fBuffer.Canvas.Font);
       Canvas.Brush.Assign(fBuffer.Canvas.Brush);
       Canvas.Pen.Assign(fBuffer.Canvas.Pen);
       {$IFNDEF FPC}
-      if fTransparent then
+      if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
 //        DrawParentImage(Bmp.Canvas);
@@ -271,36 +271,36 @@ var
 begin
  with Bitmap.Canvas do
   begin
-   TextSize := TextExtent(fCaption);
+   TextSize := TextExtent(FCaption);
    Brush.Style := bsClear;
-   case fAlignment of
-     taLeftJustify : TextOut(0, 0, fCaption);
-    taRightJustify : TextOut(Bitmap.Width - TextSize.cx, 0, fCaption);
-          taCenter : TextOut((Bitmap.Width - TextSize.cx) div 2, 0, fCaption);
+   case FAlignment of
+     taLeftJustify : TextOut(0, 0, FCaption);
+    taRightJustify : TextOut(Bitmap.Width - TextSize.cx, 0, FCaption);
+          taCenter : TextOut((Bitmap.Width - TextSize.cx) div 2, 0, FCaption);
    end;
   end;
 end;
 
 procedure TCustomGuiLabel.SetAlignment(const Value: TAlignment);
 begin
- if fAlignment <> Value then
+ if FAlignment <> Value then
   begin
-   fAlignment := Value;
+   FAlignment := Value;
    RedrawBuffer(True);
   end;
 end;
 
 procedure TCustomGuiLabel.SetAntiAlias(const Value: TGuiAntiAlias);
 begin
- if fAntiAlias <> Value then
+ if FAntiAlias <> Value then
   begin
-   fAntiAlias := Value;
-   case fAntiAlias of
-         gaaNone : fOSFactor :=  1;
-     gaaLinear2x : fOSFactor :=  2;
-     gaaLinear4x : fOSFactor :=  4;
-     gaaLinear8x : fOSFactor :=  8;
-    gaaLinear16x : fOSFactor := 16;
+   FAntiAlias := Value;
+   case FAntiAlias of
+         gaaNone : FOSFactor :=  1;
+     gaaLinear2x : FOSFactor :=  2;
+     gaaLinear4x : FOSFactor :=  4;
+     gaaLinear8x : FOSFactor :=  8;
+    gaaLinear16x : FOSFactor := 16;
    end;
    RedrawBuffer(True);
   end;
@@ -308,9 +308,9 @@ end;
 
 procedure TCustomGuiLabel.SetCaption(const Value: string);
 begin
- if fCaption <> Value then
+ if FCaption <> Value then
   begin
-   fCaption := Value;
+   FCaption := Value;
    RedrawBuffer(True);
   end;
 end;
@@ -318,9 +318,9 @@ end;
 {$IFNDEF FPC}
 procedure TCustomGuiLabel.SetTransparent(Value: Boolean);
 begin
- if fTransparent <> Value then
+ if FTransparent <> Value then
   begin
-   fTransparent := Value;
+   FTransparent := Value;
    RedrawBuffer(True);
   end;
 end;

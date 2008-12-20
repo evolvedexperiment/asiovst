@@ -35,7 +35,8 @@ begin
     TGuiADSRGraph, TGuiAudioDataDisplay, TGuiLabel, TGuiPanel, TGuiLED,
     TGuiVUMeter, TGuiDial, TGuiDialMetal, TGuiCorrelationMeter, TGuiSelectBox,
     TGuiMidiKeys, TGuiButton, {$IFNDEF FPC} TGuiGroup, TGuiLevelMeter, {$ENDIF}
-    TGuiGraphXY, TGuiDialEx, TGuiDialImageList, TGuiDialImageRenderer]);
+    TGuiGraphXY, TGuiDialEx, TGuiDialImageList, TGuiDialImageRenderer,
+    TGuiSwitch]);
 
   RegisterPropertyEditor(TypeInfo(string), TGuiDialLayerCollectionItem, 'PrimitiveClassName', nil);
   RegisterPropertyEditor(TypeInfo(TCustomGuiDialPrimitive), TGuiDialLayerCollectionItem, 'Primitive', TPrimitiveClassProperty);

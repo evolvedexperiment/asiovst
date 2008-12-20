@@ -141,7 +141,7 @@ type
     function GetRealQualities: LongInt;
     function GetUniqueID: string;
     function GetVersion: Integer;
-    function VstDispatch(opCode : TDispatcherOpcode; Index: Integer = 0; value: Integer = 0; pntr: Pointer = nil; opt: Double = 0): Integer; {overload;} //virtual;
+    function VstDispatch(opCode : TDispatcherOpcode; Index: Integer = 0; value: Integer = 0; pntr: Pointer = nil; opt: Single = 0): Integer; {overload;} //virtual;
     procedure InitializeVstEffect;
     procedure SetActive(Value: Boolean);
     procedure SetBlockSize(Value: Integer);
@@ -236,8 +236,8 @@ type
     procedure EditDeactivate;
     function EditGetRect: ERect;
     function EditIdle: Integer;
-    function EditKeyDown(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
-    function EditKeyUp(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
+    function EditKeyDown(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
+    function EditKeyUp(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
     function EditOpen(Handle: THandle): Integer;
     {$ENDIF}
     procedure EndSetProgram;
@@ -269,9 +269,9 @@ type
     procedure SetParameter(index: Integer; parameter: Single); virtual;
     procedure SetProgram(const lValue: Integer);
     procedure SetProgramName(const newName: string);
-    procedure SetSampleRate(Value: Double);
+    procedure SetSampleRate(const Value: Single);
     procedure SetTotalSampleToProcess;
-    procedure SetViewPosition(x, y: Integer);
+    procedure SetViewPosition(const x, y: Integer);
     {$IFDEF GUI}
     procedure SetEditKnobMode(Mode : TKnobMode);
     procedure ShowEdit(Control: TWinControl); overload;
@@ -428,7 +428,7 @@ type
     procedure SetVTIDouble(Index :Integer; Value: Double);
     procedure SetVTIflags(Flags:TVstTimeInfoFlags);
   protected
-    fVstTimeInfo        : TVstTimeInfo;
+    FVstTimeInfo        : TVstTimeInfo;
     procedure Change; dynamic;
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -505,7 +505,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure UpdateVstTimeInfo(Samples: Word = 1);
+    procedure UpdateVstTimeInfo(const Samples: Word = 1);
     procedure ResetVstTimeInformation;
 
     property BlockSize: Integer read getBlockSize write setBlocksize default 2048;
@@ -1046,19 +1046,19 @@ begin
  if Dest is TCustomVstTimeInformation then
   with TCustomVstTimeInformation(Dest) do
    try
-    fVstTimeInfo := Self.FVstTimeInfo;
+    FVstTimeInfo := Self.FVstTimeInfo;
    finally
     Change;
    end
  else inherited AssignTo(Dest);
 end;
 
-function TCustomVstTimeInformation.GetVTIflags :TVstTimeInfoFlags;
+function TCustomVstTimeInformation.GetVTIflags: TVstTimeInfoFlags;
 begin
- result := fVstTimeInfo.Flags;
+ result := FVstTimeInfo.Flags;
 end;
 
-function TCustomVstTimeInformation.GetVTIDouble(Index :Integer): Double;
+function TCustomVstTimeInformation.GetVTIDouble(Index: Integer): Double;
 begin
  Result := 0;
  with FVstTimeInfo do
@@ -1074,7 +1074,7 @@ begin
   end;
 end;
 
-function TCustomVstTimeInformation.GetVTI(Index :Integer) :Integer;
+function TCustomVstTimeInformation.GetVTI(Index: Integer) :Integer;
 begin
  Result := 0;
  with FVstTimeInfo do
@@ -1087,7 +1087,7 @@ begin
   end;
 end;
 
-procedure TCustomVstTimeInformation.SetVTI(Index,Value :Integer);
+procedure TCustomVstTimeInformation.SetVTI(Index, Value: Integer);
 begin
  with FVstTimeInfo do
   case Index of
@@ -1099,7 +1099,7 @@ begin
   end;
 end;
 
-procedure TCustomVstTimeInformation.SetVTIDouble(Index :Integer; Value: Double);
+procedure TCustomVstTimeInformation.SetVTIDouble(Index: Integer; Value: Double);
 begin
  with FVstTimeInfo do
   case Index of
@@ -1114,9 +1114,9 @@ begin
   end;
 end;
 
-procedure TCustomVstTimeInformation.SetVTIflags(Flags:TVstTimeInfoFlags);
+procedure TCustomVstTimeInformation.SetVTIflags(Flags: TVstTimeInfoFlags);
 begin
- fVstTimeInfo.Flags := Flags;
+ FVstTimeInfo.Flags := Flags;
 end;
 
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
@@ -1254,7 +1254,7 @@ begin
    VstPlugIns[i].SetBlockSize(FBlockSize);
 end;
 
-procedure TCustomVstHost.UpdateVstTimeInfo(samples: word = 1);
+procedure TCustomVstHost.UpdateVstTimeInfo(const Samples: Word = 1);
 var
   p: Double;
 begin
@@ -1500,7 +1500,7 @@ begin
  FPlugCategory := vpcUnknown;
 end;
 
-function TCustomVstPlugIn.VstDispatch(opCode : TDispatcherOpcode; Index, Value: Integer; Pntr: Pointer; opt: Double): Integer;
+function TCustomVstPlugIn.VstDispatch(opCode : TDispatcherOpcode; Index, Value: Integer; Pntr: Pointer; opt: Single): Integer;
 begin
  try
   DontRaiseExceptionsAndSetFPUcodeword;
@@ -1581,7 +1581,7 @@ begin
  try
   FillChar(Temp^, Lngth, 0);
   if FActive then
-   if VstDispatch(effGetProgramName, 0, 0, Temp) = 1
+   if VstDispatch(effGetProgramName, 0, 0, Temp) = 0 // check is not part of the official specification
     then result := StrPas(Temp);
 
   // check whether the result string accords to the specs
@@ -1608,7 +1608,7 @@ begin
  try
   FillChar(Temp^, Lngth, 0);
   if FActive then
-   if VstDispatch(effGetParamLabel, index, 0, Temp) = 1
+   if VstDispatch(effGetParamLabel, index, 0, Temp) = 0 // check is not part of the specification
     then result := StrPas(Temp);
 
   // check whether the result string accords to the specs
@@ -1636,7 +1636,7 @@ begin
  try
   FillChar(Temp^, Lngth, 0);
   if FActive then
-   if VstDispatch(effGetParamDisplay, index, 0, Temp) = 1
+   if VstDispatch(effGetParamDisplay, index, 0, Temp) = 0 // check is not part of the specification
     then result := StrPas(Temp);
 
   // check whether the result string accords to the specs
@@ -1664,7 +1664,7 @@ begin
  try
   FillChar(Temp^, Lngth, 0);
   if FActive then
-   if VstDispatch(effGetParamName, index, 0, Temp) = 1
+   if VstDispatch(effGetParamName, index, 0, Temp) = 0 // check is not part of the official specification
     then result := StrPas(Temp);
 
   // check whether the result string accords to the specs
@@ -1678,7 +1678,7 @@ begin
  end;
 end;
 
-procedure TCustomVstPlugIn.SetSampleRate(Value: Double);
+procedure TCustomVstPlugIn.SetSampleRate(const Value: Single);
 begin
  VstDispatch(effSetSampleRate, 0, 0, nil, Value);
 end;
@@ -1770,8 +1770,6 @@ begin
 end;
 
 procedure TCustomVstPlugIn.ShowEdit;
-var
-  theRect: ERect;
 begin
  if not assigned(GUIControl) then
   begin
@@ -1784,29 +1782,25 @@ begin
      OnClose := FormCloseHandler;
      OnActivate := EditActivateHandler;
      OnDeActivate := EditDeactivateHandler;
-     if Caption=' - ' then Caption := GetEffectName;
+     if Caption = ' - ' then Caption := GetEffectName;
     end;
    FGUIControlCreated := True;
    ShowEdit(GUIControl);
-   if (effFlagsHasEditor in FVstEffect.EffectFlags)
-    then theRect := EditGetRect
-    else theRect := Rect(0, 200, 0, 80);
-   GUIControl.ClientWidth := theRect.right - theRect.left;
-   GUIControl.ClientHeight := theRect.Bottom - theRect.Top;
   end;
- GUIControl.Visible := True;
 end;
 
 procedure TCustomVstPlugIn.ShowEdit(Control: TWinControl);
 begin
+ if Control = nil
+  then raise Exception.Create('Control must exist!');
  if (effFlagsHasEditor in FVstEffect.EffectFlags) and (fGUIStyle = gsDefault) then
   begin
    if not FEditOpen then
-   begin
-    EditOpen(Control.Handle);
-    FGUIControl := Control;
-    EditIdle;
-   end;
+    begin
+     EditOpen(Control.Handle);
+     FGUIControl := Control;
+     EditIdle;
+    end;
 //  else raise Exception.Create('Editor is already open!');
   end
  else // Vst has no GUI
@@ -2027,7 +2021,7 @@ begin
   if assigned(FOnCloseEdit) then FOnCloseEdit(Self);
   if (effFlagsHasEditor in FVstEffect.EffectFlags) and (FGUIStyle = gsDefault)
    then EditClose else
-   if Assigned(GUIControl)
+   if Assigned(FGUIElements)
     then FreeAndNil(FGUIElements);
   if assigned(GUIControl) and FGUIControlCreated
    then FreeAndNil(FGUIControl); //and (not FExternalForm) then
@@ -2463,7 +2457,7 @@ begin
   else result := -1;
 end;
 
-procedure TCustomVstPlugIn.SetViewPosition(x, y: Integer);
+procedure TCustomVstPlugIn.SetViewPosition(const x, y: Integer);
 begin
  VstDispatch(effSetViewPosition, x, y);
 end;
@@ -2488,20 +2482,30 @@ begin
 end;
 
 {$IFDEF GUI}
-function TCustomVstPlugIn.EditKeyDown(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
+function TCustomVstPlugIn.EditKeyDown(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
+var
+  IntMod : Integer;
 begin
  // character in <index>, virtual in <value>, modifiers in <opt>, return True if used, else False
  Result := False;
- if FActive
-  then Result := (VstDispatch(effEditKeyDown, Integer(Key), VirtualKeycode, nil, Modifier) = 1);
+ if FActive then
+  begin
+   IntMod := PByte(@Modifier)^;
+   Result := (VstDispatch(effEditKeyDown, Integer(Key), VirtualKeycode, nil, PSingle(@IntMod)^) = 1);
+  end;
 end;
 
-function TCustomVstPlugIn.EditKeyUp(Key : Char; VirtualKeycode : Integer; Modifier :Double): Boolean;
+function TCustomVstPlugIn.EditKeyUp(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
+var
+  IntMod : Integer;
 begin
  // character in <index>, virtual in <value>, modifiers in <opt>, return True if used, else False
  Result := False;
- if FActive
-  then Result := (VstDispatch(effEditKeyUp, Integer(Key), VirtualKeycode, nil, Modifier) = 1);
+ if FActive then
+  begin
+   IntMod := PByte(@Modifier)^;
+   Result := (VstDispatch(effEditKeyUp, Integer(Key), VirtualKeycode, nil, PSingle(@IntMod)^) = 1);
+  end;
 end;
 
 procedure TCustomVstPlugIn.SetEditKnobMode(Mode : TKnobMode);

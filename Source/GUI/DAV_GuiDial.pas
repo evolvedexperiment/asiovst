@@ -48,62 +48,86 @@ type
 
   {$IFDEF DELPHI10_UP} {$region 'Custom Dials'} {$ENDIF}
 
-  TCustomGuiDial = class(TGuiBaseControl)
+  TCustomGuiStitchedControl = class(TGuiBaseControl)
   private
-    FAntiAlias        : TGuiAntiAlias;
-    FAutoColor        : Boolean;
-    FAutoSize         : Boolean;
-    FCircleColor      : TColor;
-    FCurveMapping     : Single;
-    FCurveMappingExp  : Single;
-    FDefaultPosition  : Single;
-    FDialBitmap       : TBitmap;
-    FImageList        : TImageList;
-    FInertia          : Single;
-    FInertiaExp       : Single;
-    FInertiaScale     : Single;
-    FMin, FMax        : Single;
-    FNumGlyphs        : Integer;
-    FOnChange         : TNotifyEvent;
-    FOSValue          : Integer;
-    FPointerAngles    : TGuiDialPointerAngles;
-    FPosition         : Single;
-    FRightMouseButton : TGuiDialRMBFunc;
-    FScrollRange      : Single;
-    FStitchKind       : TGuiStitchKind;
-    FDialImageList    : TGuiDialImageList;
-    FDialImageItem    : TGuiDialImageCollectionItem;
-    function CircularMouseToPosition(X, Y: Integer): Single;
-    function GetNormalizedPosition: Single;
-    function PositionToAngle: Single;
     function GetDialImageIndex: Integer;
-    function GetMappedPosition: Single;
-    function MapValue(Value: Double): Double;
-    function UnmapValue(Value: Double): Double;
     procedure DoAutoSize;
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
-    procedure SetAutoColor(const Value: Boolean);
     procedure SetAutoSize(const Value: Boolean); reintroduce;
-    procedure SetCircleColor(const Value: TColor);
-    procedure SetDefaultPosition(Value: Single);
     procedure SetDialBitmap(const Value: TBitmap);
-    procedure SetInertia(Value: Single);
-    procedure SetMax(const Value: Single);
-    procedure SetMin(const Value: Single);
     procedure SetNumGlyphs(const Value: Integer);
-    procedure SetPointerAngles(const Value: TGuiDialPointerAngles);
-    procedure SetPosition(Value: Single);
     procedure SetStitchKind(const Value: TGuiStitchKind);
-    procedure SetCurveMapping(const Value: Single);
-    procedure SetNormalizedPosition(const Value: Single);
     procedure SetImageList(const Value: TImageList);
     procedure SetDialImageIndex(Value: Integer);
     procedure SetDialImageList(const Value: TGuiDialImageList);
   protected
+    FAntiAlias        : TGuiAntiAlias;
+    FAutoSize         : Boolean;
+    FDialBitmap       : TBitmap;
+    FImageList        : TImageList;
+    FNumGlyphs        : Integer;
+    FOnChange         : TNotifyEvent;
+    FOSValue          : Integer;
+    FStitchKind       : TGuiStitchKind;
+    FDialImageList    : TGuiDialImageList;
+    FDialImageItem    : TGuiDialImageCollectionItem;
+
+    function GetGlyphNr: Integer; virtual; abstract;
     procedure SettingsChanged(Sender: TObject); virtual;
-    procedure CalcColorCircle;
+    procedure NumGlyphsChanged; virtual;
     procedure RedrawBuffer(doBufferFlip: Boolean); override;
-    procedure RenderKnobToBitmap(const Bitmap: TBitmap); virtual;
+    procedure RenderBitmap(const Bitmap: TBitmap); virtual; abstract;
+
+    property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+    property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
+    property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
+    property DialImageList: TGuiDialImageList read FDialImageList write SetDialImageList;
+    property DialImageIndex: Integer read GetDialImageIndex write SetDialImageIndex;
+    property ImageList: TImageList read FImageList write SetImageList;
+    property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+  end;
+
+  TCustomGuiDial = class(TCustomGuiStitchedControl)
+  private
+    FAutoColor        : Boolean;
+    FCircleColor      : TColor;
+    FCurveMapping     : Single;
+    FCurveMappingExp  : Single;
+    FDefaultPosition  : Single;
+    FInertia          : Single;
+    FInertiaExp       : Single;
+    FInertiaScale     : Single;
+    FMin, FMax        : Single;
+    FPointerAngles    : TGuiDialPointerAngles;
+    FPosition         : Single;
+    FRightMouseButton : TGuiDialRMBFunc;
+    FScrollRange      : Single;
+    function CircularMouseToPosition(X, Y: Integer): Single;
+    function GetNormalizedPosition: Single;
+    function PositionToAngle: Single;
+    function GetMappedPosition: Single;
+    function MapValue(Value: Double): Double;
+    function UnmapValue(Value: Double): Double;
+    procedure SetAutoColor(const Value: Boolean);
+    procedure SetCircleColor(const Value: TColor);
+    procedure SetDefaultPosition(Value: Single);
+    procedure SetInertia(Value: Single);
+    procedure SetMax(const Value: Single);
+    procedure SetMin(const Value: Single);
+    procedure SetPointerAngles(const Value: TGuiDialPointerAngles);
+    procedure SetPosition(Value: Single);
+    procedure SetCurveMapping(const Value: Single);
+    procedure SetNormalizedPosition(const Value: Single);
+  protected
+    function GetGlyphNr: Integer; override;
+
+    procedure CalcColorCircle;
+    procedure RenderBitmap(const Bitmap: TBitmap); override;
 
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
@@ -115,36 +139,47 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-  published
-    property Color;
-    property LineWidth default 2;
-    property LineColor default clRed;
-    property CircleColor : TColor read FCircleColor write SetCircleColor default clBlack;
 
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
-    property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
+    property CircleColor : TColor read FCircleColor write SetCircleColor default clBlack;
     property CurveMapping: Single read FCurveMapping write SetCurveMapping;
     property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
-    property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
-    property DialImageList: TGuiDialImageList read FDialImageList write SetDialImageList;
-    property DialImageIndex: Integer read GetDialImageIndex write SetDialImageIndex;
-    property ImageList: TImageList read FImageList write SetImageList;
     property Inertia: Single read fInertia write SetInertia;
     property Max: Single read FMax write SetMax;
     property Min: Single read FMin write SetMin;
-    property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
     property PointerAngles: TGuiDialPointerAngles read FPointerAngles write SetPointerAngles;
     property Position: Single read FPosition write SetPosition;
     property RightMouseButton: TGuiDialRMBFunc read FRightMouseButton write FRightMouseButton default rmbfCircular;
     property ScrollRange_Pixel: Single read fScrollRange write fScrollRange;
-    property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
-    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+  end;
+
+  TCustomGuiSwitch = class(TCustomGuiStitchedControl)
+  private
+    FGlyphNr        : Integer;
+    FDefaultGlyphNr : Integer;
+    FStringList     : TStringList;
+    FReadOnly       : Boolean;
+    procedure SetGlyphNr(Value: Integer);
+    procedure SetDefaultGlyphNr(Value: Integer);
+    procedure SetStringList(const Value: TStringList);
+  protected
+    function GetGlyphNr: Integer; override;
+    procedure RenderBitmap(const Bitmap: TBitmap); override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure NumGlyphsChanged; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    property DefaultGlyphNr: Integer read FDefaultGlyphNr write SetDefaultGlyphNr;
+    property GlyphNr: Integer read FGlyphNr write SetGlyphNr;
+    property ReadOnly: Boolean read FReadOnly write FReadOnly default false;
+    property StringList: TStringList read FStringList write SetStringList; 
   end;
 
   TCustomGuiDialMetal = class(TCustomGuiDial)
   protected
-    procedure RenderKnobToBitmap(const Bitmap: TBitmap); override;
+    procedure RenderBitmap(const Bitmap: TBitmap); override;
   end;
 
   TCustomGuiDialEx = class(TCustomGuiDial)
@@ -152,7 +187,7 @@ type
     FIndLineLength : Single;
     procedure SetIndLineLength(const Value: Single);
   protected
-    procedure RenderKnobToBitmap(const Bitmap: TBitmap); override;
+    procedure RenderBitmap(const Bitmap: TBitmap); override;
   public
     constructor Create(AOwner: TComponent); override;
     property IndicatorLineLength_Percent: Single read fIndLineLength write SetIndLineLength;
@@ -172,8 +207,10 @@ type
     property CurveMapping;
     property DefaultPosition;
     property DialBitmap;
-    property Inertia;
+    property DialImageList;
+    property DialImageIndex;
     property ImageList;
+    property Inertia;
     property LineColor;
     property LineWidth;
     property Max;
@@ -200,6 +237,8 @@ type
     property CurveMapping;
     property DefaultPosition;
     property DialBitmap;
+    property DialImageList;
+    property DialImageIndex;
     property LineColor;
     property LineWidth;
     property Max;
@@ -226,6 +265,8 @@ type
     property CurveMapping;
     property DefaultPosition;
     property DialBitmap;
+    property DialImageList;
+    property DialImageIndex;
     property IndicatorLineLength_Percent;
     property LineColor;
     property LineWidth;
@@ -238,6 +279,29 @@ type
     property RightMouseButton;
     property ScrollRange_Pixel;
     property StitchKind;
+    {$IFNDEF FPC}
+    property Transparent;
+    {$ENDIF}
+  end;
+
+  TGuiSwitch = class(TCustomGuiSwitch)
+  published
+    property AntiAlias;
+    property AutoSize;
+    property Color;
+    property DefaultGlyphNr;
+    property DialBitmap;
+    property DialImageList;
+    property DialImageIndex;
+    property ImageList;
+    property LineColor;
+    property LineWidth;
+    property NumGlyphs;
+    property OnChange;
+    property GlyphNr;
+    property ReadOnly;
+    property StitchKind;
+    property StringList;
     {$IFNDEF FPC}
     property Transparent;
     {$ENDIF}
@@ -285,8 +349,8 @@ type
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-    procedure LinkDial(Dial: TCustomGuiDial);
-    procedure UnLinkDial(Dial: TCustomGuiDial);
+    procedure LinkStitchedControl(Dial: TCustomGuiStitchedControl);
+    procedure UnLinkStitchedControl(Dial: TCustomGuiStitchedControl);
   published
     property DisplayName: string read GetDisplayName write SetDisplayName;
     property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
@@ -888,6 +952,336 @@ end;
 
 {$IFDEF DELPHI10_UP} {$region 'Custom Dial implementations'} {$ENDIF}
 
+{ TCustomGuiStitchedControl }
+
+constructor TCustomGuiStitchedControl.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FLineColor              := clRed;
+  FLineWidth              := 2;
+  FAntiAlias              := gaaNone;
+  FOSValue                := 1;
+  FNumGlyphs              := 1;
+  FStitchKind             := skHorizontal;
+  FDialBitmap             := TBitmap.Create;
+  FDialBitmap.OnChange    := SettingsChanged;
+end;
+
+destructor TCustomGuiStitchedControl.Destroy;
+begin
+  FreeAndNil(FDialBitmap);
+  inherited Destroy;
+end;
+
+procedure TCustomGuiStitchedControl.SettingsChanged(Sender: TObject);
+begin
+  FDialBitmap.Canvas.Brush.Color := Self.Color;
+  RedrawBuffer(True);
+end;
+
+procedure TCustomGuiStitchedControl.RedrawBuffer(doBufferFlip: Boolean);
+var
+  theRect    : TRect;
+  GlyphNr    : Integer;
+  Bmp        : TBitmap;
+begin
+ if [csLoading..csDestroying] * ComponentState <> [] then exit;
+
+ if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
+  begin
+   Lock;
+   Brush.Color := Self.Color;
+   if FDialBitmap.Empty and not assigned(FImageList) then
+    case FAntiAlias of
+     gaaNone     :
+      begin
+       // draw background
+       {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+       FillRect(ClipRect);
+
+       RenderBitmap(fBuffer);
+      end;
+     gaaLinear2x :
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := FOSValue * fBuffer.Width;
+         Height      := FOSValue * fBuffer.Height;
+         Canvas.Brush.Style := bsSolid;
+         Canvas.Brush.Color := Self.Color;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           CopyParentImage(Self, Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+          end else
+         {$ENDIF}
+         Canvas.FillRect(Canvas.ClipRect);
+         RenderBitmap(Bmp);
+         Downsample2xBitmap(Bmp);
+         fBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         FreeAndNil(Bmp);
+        end;
+      end;
+     gaaLinear4x :
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := FOSValue * fBuffer.Width;
+         Height      := FOSValue * fBuffer.Height;
+         Canvas.Brush.Style := bsSolid;
+         Canvas.Brush.Color := Self.Color;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           CopyParentImage(Self, Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+          end else
+         {$ENDIF}
+         Canvas.FillRect(Canvas.ClipRect);
+         RenderBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
+         fBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         FreeAndNil(Bmp);
+        end;
+      end;
+     gaaLinear8x :
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := FOSValue * fBuffer.Width;
+         Height      := FOSValue * fBuffer.Height;
+         Canvas.Brush.Style := bsSolid;
+         Canvas.Brush.Color := Self.Color;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           CopyParentImage(Self, Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+           Upsample2xBitmap(Bmp);
+          end else
+         {$ENDIF}
+         Canvas.FillRect(Canvas.ClipRect);
+         RenderBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
+         Downsample2xBitmap(Bmp);
+         fBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         FreeAndNil(Bmp);
+        end;
+      end;
+     gaaLinear16x :
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := FOSValue * fBuffer.Width;
+         Height      := FOSValue * fBuffer.Height;
+         Canvas.Brush.Style := bsSolid;
+         Canvas.Brush.Color := Self.Color;
+         {$IFNDEF FPC}
+         if fTransparent then
+          begin
+           CopyParentImage(Self, Bmp.Canvas);
+           Upsample4xBitmap(Bmp);
+           Upsample4xBitmap(Bmp);
+          end else
+         {$ENDIF}
+         Canvas.FillRect(Canvas.ClipRect);
+         RenderBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
+         Downsample4xBitmap(Bmp);
+         fBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         FreeAndNil(Bmp);
+        end;
+      end;
+    end
+   else
+    begin
+     // draw background
+     Brush.Color := Self.Color;
+     {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+     FillRect(ClipRect);
+
+     GlyphNr := GetGlyphNr;
+     if (GlyphNr >= FNumGlyphs) then GlyphNr := FNumGlyphs - 1 else
+     if (GlyphNr < 0) then GlyphNr := 0;
+
+     if Assigned(FDialImageItem)
+      then Bmp := FDialImageItem.FDialBitmap
+      else Bmp := DialBitmap;
+
+     if not Bmp.Empty then
+      begin
+
+       theRect := ClientRect;
+       if FStitchKind = skVertical then
+        begin
+         theRect.Top    := Bmp.Height * GlyphNr div FNumGlyphs;
+         theRect.Bottom := Bmp.Height * (GlyphNr + 1) div FNumGlyphs;
+        end
+       else
+        begin
+         theRect.Left  := Bmp.Width * GlyphNr div FNumGlyphs;
+         theRect.Right := Bmp.Width * (GlyphNr + 1) div FNumGlyphs;
+        end;
+
+       with ClientRect do
+        begin
+         BitBlt(Handle, Left, Top, Right - Left, Bottom - Top,
+           Bmp.Canvas.Handle, theRect.Left, theRect.Top, CopyMode);
+        end;
+      end else
+
+     if assigned(ImageList)
+      then ImageList.Draw(fBuffer.Canvas, 0, 0, GlyphNr);
+    end;
+   Unlock;
+  end;
+
+ if doBufferFlip then Invalidate;
+end;
+
+function TCustomGuiStitchedControl.GetDialImageIndex: Integer;
+begin
+ if assigned(FDialImageItem)
+  then result := FDialImageItem.Index
+  else result := -1;
+end;
+
+procedure TCustomGuiStitchedControl.DoAutoSize;
+begin
+ if assigned(FImageList) then
+  begin
+   Width := FImageList.Width;
+   Height := FImageList.Height;
+   exit;
+  end;
+ if FDialBitmap.Empty or (FNumGlyphs = 0) then Exit;
+
+ if FStitchKind = skVertical then
+  begin
+   Width  := FDialBitmap.Width;
+   Height := FDialBitmap.Height div FNumGlyphs;
+  end
+ else
+  begin
+   Width  := FDialBitmap.Width div FNumGlyphs;
+   Height := FDialBitmap.Height;
+  end;
+end;
+
+procedure TCustomGuiStitchedControl.SetAutoSize(const Value: boolean);
+begin
+  if FAutoSize <> Value then
+  begin
+    FAutoSize := Value;
+    if Autosize then DoAutoSize;
+  end;
+end;
+
+procedure TCustomGuiStitchedControl.SetNumGlyphs(const Value: Integer);
+begin
+ if assigned(FImageList) then exit;
+ if FNumGlyphs <> Value then
+  begin
+   FNumGlyphs := Value;
+   NumGlyphsChanged;
+  end;
+end;
+
+procedure TCustomGuiStitchedControl.NumGlyphsChanged;
+begin
+ DoAutoSize;
+end;
+
+procedure TCustomGuiStitchedControl.SetDialBitmap(const Value: TBitmap);
+begin
+  FDialBitmap.Assign(Value);
+  DoAutoSize;
+end;
+
+procedure TCustomGuiStitchedControl.SetDialImageIndex(Value: Integer);
+begin
+ // check if dial image list is available
+ if not assigned(FDialImageList) then exit;
+
+ // limit range to existing dial images
+ if Value < 0 then Value := 0 else
+ if Value >= FDialImageList.Count then Value := FDialImageList.Count - 1;
+
+ if DialImageIndex <> Value then
+  begin
+   if Value >= 0
+    then FDialImageList[Value].LinkStitchedControl(Self)
+    else FDialImageItem.UnLinkStitchedControl(Self);
+   FDialImageItem := FDialImageList[Value];
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiStitchedControl.SetDialImageList(const Value: TGuiDialImageList);
+begin
+ if FDialImageList <> Value then
+  begin
+   FDialImageList := Value;
+   if not assigned(FDialImageList)
+    then FDialImageItem := nil;
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiStitchedControl.SetImageList(const Value: TImageList);
+begin
+ if FImageList <> Value then
+  begin
+   FImageList := Value;
+   if assigned(FImageList) then
+    begin
+     Width := FImageList.Width;
+     Height := FImageList.Height;
+     FNumGlyphs := FImageList.Count;
+    end;
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiStitchedControl.SetStitchKind(const Value: TGuiStitchKind);
+begin
+  if FStitchKind <> Value then
+  begin
+    FStitchKind := Value;
+    DoAutoSize;
+  end;
+end;
+
+procedure TCustomGuiStitchedControl.SetAntiAlias(const Value: TGuiAntiAlias);
+begin
+ if FAntiAlias <> Value then
+  begin
+   FAntiAlias := Value;
+   case FAntiAlias of
+         gaaNone : FOSValue :=  1;
+     gaaLinear2x : FOSValue :=  2;
+     gaaLinear4x : FOSValue :=  4;
+     gaaLinear8x : FOSValue :=  8;
+    gaaLinear16x : FOSValue := 16;
+   end;
+   RedrawBuffer(True);
+  end;
+end;
+
+
 { TCustomGuiDial }
 
 constructor TCustomGuiDial.Create(AOwner: TComponent);
@@ -898,37 +1292,24 @@ begin
   FCircleColor            := clBlack;
   FLineColor              := clRed;
   FLineWidth              := 2;
-  FAntiAlias              := gaaNone;
-  FOSValue                := 1;
   FRightMouseButton       := rmbfCircular;
   FCurveMapping           := 0;
   FCurveMappingExp        := 1;
   FPosition               := 0;
   FDefaultPosition        := 0;
-  FNumGlyphs              := 1;
   FScrollRange            := 400;
   FInertia                := 0;
   FInertiaExp             := 1;
   FInertiaScale           := 1;
   FMin                    := 0;
-  FStitchKind             := skHorizontal;
-  FDialBitmap             := TBitmap.Create;
-  FDialBitmap.OnChange    := SettingsChanged;
   if csDesigning in ComponentState
    then FMax := 100;
 end;
 
 destructor TCustomGuiDial.Destroy;
 begin
-  FreeAndNil(FDialBitmap);
   FreeAndNil(FPointerAngles);
   inherited Destroy;
-end;
-
-procedure TCustomGuiDial.SettingsChanged(Sender: TObject);
-begin
-  FDialBitmap.Canvas.Brush.Color := Self.Color;
-  RedrawBuffer(True);
 end;
 
 function TCustomGuiDial.PositionToAngle: Single;
@@ -938,7 +1319,7 @@ begin
  Result := SafeAngle(PointerAngles.Start + (PointerAngles.Range * MapValue(NormalizedPosition))) * Pi180;
 end;
 
-procedure TCustomGuiDial.RenderKnobToBitmap(const Bitmap: TBitmap);
+procedure TCustomGuiDial.RenderBitmap(const Bitmap: TBitmap);
 var
   Steps, i : Integer;
   Val, Off : TComplexDouble;
@@ -988,179 +1369,6 @@ begin
  inherited;
 end;
 
-procedure TCustomGuiDial.RedrawBuffer(doBufferFlip: Boolean);
-var
-  theRect    : TRect;
-  GlyphNr    : Integer;
-  Bmp        : TBitmap;
-begin
- if [csLoading..csDestroying] * ComponentState <> [] then exit;
-
- if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
-  begin
-   Lock;
-   Brush.Color := Self.Color;
-   if FDialBitmap.Empty and not assigned(FImageList) then
-    case FAntiAlias of
-     gaaNone     :
-      begin
-       // draw background
-       {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
-       FillRect(ClipRect);
-
-       RenderKnobToBitmap(fBuffer);
-      end;
-     gaaLinear2x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSValue * fBuffer.Width;
-         Height      := FOSValue * fBuffer.Height;
-         Canvas.Brush.Style := bsSolid;
-         Canvas.Brush.Color := Self.Color;
-         {$IFNDEF FPC}
-         if fTransparent then
-          begin
-           CopyParentImage(Self, Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-          end else
-         {$ENDIF}
-         Canvas.FillRect(Canvas.ClipRect);
-         RenderKnobToBitmap(Bmp);
-         Downsample2xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         FreeAndNil(Bmp);
-        end;
-      end;
-     gaaLinear4x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSValue * fBuffer.Width;
-         Height      := FOSValue * fBuffer.Height;
-         Canvas.Brush.Style := bsSolid;
-         Canvas.Brush.Color := Self.Color;
-         {$IFNDEF FPC}
-         if fTransparent then
-          begin
-           CopyParentImage(Self, Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-          end else
-         {$ENDIF}
-         Canvas.FillRect(Canvas.ClipRect);
-         RenderKnobToBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         FreeAndNil(Bmp);
-        end;
-      end;
-     gaaLinear8x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSValue * fBuffer.Width;
-         Height      := FOSValue * fBuffer.Height;
-         Canvas.Brush.Style := bsSolid;
-         Canvas.Brush.Color := Self.Color;
-         {$IFNDEF FPC}
-         if fTransparent then
-          begin
-           CopyParentImage(Self, Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-           Upsample2xBitmap(Bmp);
-          end else
-         {$ENDIF}
-         Canvas.FillRect(Canvas.ClipRect);
-         RenderKnobToBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         Downsample2xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         FreeAndNil(Bmp);
-        end;
-      end;
-     gaaLinear16x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSValue * fBuffer.Width;
-         Height      := FOSValue * fBuffer.Height;
-         Canvas.Brush.Style := bsSolid;
-         Canvas.Brush.Color := Self.Color;
-         {$IFNDEF FPC}
-         if fTransparent then
-          begin
-           CopyParentImage(Self, Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-           Upsample4xBitmap(Bmp);
-          end else
-         {$ENDIF}
-         Canvas.FillRect(Canvas.ClipRect);
-         RenderKnobToBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         FreeAndNil(Bmp);
-        end;
-      end;
-    end
-   else
-    begin
-     // draw background
-     Brush.Color := Self.Color;
-     {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
-     FillRect(ClipRect);
-
-     GlyphNr := Trunc(MapValue(NormalizedPosition) * FNumGlyphs);
-     if (GlyphNr >= FNumGlyphs) then GlyphNr := FNumGlyphs - 1 else
-     if (GlyphNr < 0) then GlyphNr := 0;
-
-     if Assigned(FDialImageItem)
-      then Bmp := FDialImageItem.FDialBitmap
-      else Bmp := DialBitmap;
-
-     if not Bmp.Empty then
-      begin
-
-       theRect := ClientRect;
-       if FStitchKind = skVertical then
-        begin
-         theRect.Top    := Bmp.Height * GlyphNr div FNumGlyphs;
-         theRect.Bottom := Bmp.Height * (GlyphNr + 1) div FNumGlyphs;
-        end
-       else
-        begin
-         theRect.Left  := Bmp.Width * GlyphNr div FNumGlyphs;
-         theRect.Right := Bmp.Width * (GlyphNr + 1) div FNumGlyphs;
-        end;
-
-       with ClientRect do
-        begin
-         BitBlt(Handle, Left, Top, Right - Left, Bottom - Top,
-           Bmp.Canvas.Handle, theRect.Left, theRect.Top, CopyMode);
-        end;
-      end else
-
-     if assigned(ImageList)
-      then ImageList.Draw(fBuffer.Canvas, 0, 0, GlyphNr);
-    end;
-   Unlock;
-  end;
-
- if doBufferFlip then Invalidate;
-end;
-
 function TCustomGuiDial.GetNormalizedPosition: Single;
 begin
  if Max = Min
@@ -1168,11 +1376,9 @@ begin
   else result := (FPosition - Min) / (Max - Min);
 end;
 
-function TCustomGuiDial.GetDialImageIndex: Integer;
+function TCustomGuiDial.GetGlyphNr: Integer;
 begin
- if assigned(FDialImageItem)
-  then result := FDialImageItem.Index
-  else result := -1;
+ result := Trunc(MapValue(NormalizedPosition) * FNumGlyphs);
 end;
 
 function TCustomGuiDial.GetMappedPosition: Single;
@@ -1185,37 +1391,6 @@ begin
  if Value < 0
   then result := -Power(abs(Value), 1 / FCurveMappingExp)
   else result :=  Power(abs(Value), 1 / FCurveMappingExp)
-end;
-
-procedure TCustomGuiDial.DoAutoSize;
-begin
- if assigned(FImageList) then
-  begin
-   Width := FImageList.Width;
-   Height := FImageList.Height;
-   exit;
-  end;
- if FDialBitmap.Empty or (FNumGlyphs = 0) then Exit;
-
- if FStitchKind = skVertical then
-  begin
-   Width  := FDialBitmap.Width;
-   Height := FDialBitmap.Height div FNumGlyphs;
-  end
- else
-  begin
-   Width  := FDialBitmap.Width div FNumGlyphs;
-   Height := FDialBitmap.Height;
-  end;
-end;
-
-procedure TCustomGuiDial.SetAutoSize(const Value: boolean);
-begin
-  if FAutoSize <> Value then
-  begin
-    FAutoSize := Value;
-    if Autosize then DoAutoSize;
-  end;
 end;
 
 procedure TCustomGuiDial.SetMax(const Value: Single);
@@ -1255,27 +1430,17 @@ begin
  Position := Min + Value * (Max - Min);
 end;
 
-procedure TCustomGuiDial.SetNumGlyphs(const Value: Integer);
-begin
- if assigned(FImageList) then exit;
- if FNumGlyphs <> Value then
-  begin
-   FNumGlyphs := Value;
-   DoAutoSize;
-  end;
-end;
-
 procedure TCustomGuiDial.SetPosition(Value: Single);
 begin
   if Value < FMin then Value := FMin else
   if Value > FMax then Value := FMax;
 
   if FPosition <> Value then
-  begin
+   begin
     FPosition := Value;
     if not (csLoading in ComponentState) and Assigned(FOnChange) then FOnChange(Self);
     RedrawBuffer(True);
-  end;
+   end;
 end;
 
 procedure TCustomGuiDial.SetDefaultPosition(Value: Single);
@@ -1289,57 +1454,6 @@ begin
   FDefaultPosition := Value;
 end;
 
-procedure TCustomGuiDial.SetDialBitmap(const Value: TBitmap);
-begin
-  FDialBitmap.Assign(Value);
-  DoAutoSize;
-end;
-
-procedure TCustomGuiDial.SetDialImageIndex(Value: Integer);
-begin
- // check if dial image list is available
- if not assigned(FDialImageList) then exit;
-
- // limit range to existing dial images
- if Value < 0 then Value := 0 else
- if Value >= FDialImageList.Count then Value := FDialImageList.Count - 1;
-
- if DialImageIndex <> Value then
-  begin
-   if Value >= 0
-    then FDialImageList[Value].LinkDial(Self)
-    else FDialImageItem.UnLinkDial(Self);
-   FDialImageItem := FDialImageList[Value];
-   RedrawBuffer(True);
-  end;
-end;
-
-procedure TCustomGuiDial.SetDialImageList(const Value: TGuiDialImageList);
-begin
- if FDialImageList <> Value then
-  begin
-   FDialImageList := Value;
-   if not assigned(FDialImageList)
-    then FDialImageItem := nil;
-   RedrawBuffer(True); 
-  end;
-end;
-
-procedure TCustomGuiDial.SetImageList(const Value: TImageList);
-begin
- if FImageList <> Value then
-  begin
-   FImageList := Value;
-   if assigned(FImageList) then
-    begin
-     Width := FImageList.Width;
-     Height := FImageList.Height;
-     FNumGlyphs := FImageList.Count;
-    end;
-   RedrawBuffer(True);
-  end;
-end;
-
 procedure TCustomGuiDial.SetInertia(Value: Single);
 begin
  if Value < 0 then Value := 0;
@@ -1349,15 +1463,6 @@ begin
    FInertiaExp   := Power(2, -Value);
    FInertiaScale := 0.01 * Power(0.01, -FInertiaExp);
    RedrawBuffer(True);
-  end;
-end;
-
-procedure TCustomGuiDial.SetStitchKind(const Value: TGuiStitchKind);
-begin
-  if FStitchKind <> Value then
-  begin
-    FStitchKind := Value;
-    DoAutoSize; 
   end;
 end;
 
@@ -1391,7 +1496,7 @@ begin
     if ssCtrl in Shift then Position := FDefaultPosition;
     if (Button = mbRight) and
        (FRightMouseButton = rmbfReset)
-     then position := FDefaultPosition;
+     then Position := FDefaultPosition;
   end;
 
   inherited;
@@ -1435,22 +1540,6 @@ begin
   RedrawBuffer(True);
 end;
 
-procedure TCustomGuiDial.SetAntiAlias(const Value: TGuiAntiAlias);
-begin
- if FAntiAlias <> Value then
-  begin
-   FAntiAlias := Value;
-   case FAntiAlias of
-         gaaNone : FOSValue :=  1;
-     gaaLinear2x : FOSValue :=  2;
-     gaaLinear4x : FOSValue :=  4;
-     gaaLinear8x : FOSValue :=  8;
-    gaaLinear16x : FOSValue := 16;
-   end;
-   RedrawBuffer(True);
-  end;
-end;
-
 procedure TCustomGuiDial.SetAutoColor(const Value: Boolean);
 begin
   CalcColorCircle;
@@ -1475,9 +1564,101 @@ begin
   end;
 end;
 
+{ TCustomGuiSwitch }
+
+constructor TCustomGuiSwitch.Create(AOwner: TComponent);
+begin
+ inherited;
+ FStringList := TStringList.Create;
+ FGlyphNr := 0;
+ FDefaultGlyphNr := 0;
+end;
+
+destructor TCustomGuiSwitch.Destroy;
+begin
+ FreeAndNil(FStringList);
+ inherited;
+end;
+
+function TCustomGuiSwitch.GetGlyphNr: Integer;
+begin
+ result := FGlyphNr;
+end;
+
+procedure TCustomGuiSwitch.MouseDown(Button: TMouseButton; Shift: TShiftState;
+  X, Y: Integer);
+begin
+ if not FReadOnly then
+  begin
+   if (Button = mbLeft) then
+    if FGlyphNr < FNumGlyphs - 1
+     then GlyphNr := FGlyphNr + 1
+     else GlyphNr := 0 else
+   if (Button = mbRight) then
+    if FGlyphNr > 0
+     then GlyphNr := FGlyphNr - 1
+     else GlyphNr := FNumGlyphs - 1;
+  end;
+ inherited;
+end;
+
+procedure TCustomGuiSwitch.NumGlyphsChanged;
+begin
+ inherited;
+ if FDefaultGlyphNr >= FNumGlyphs then DefaultGlyphNr := FNumGlyphs - 1;
+ if FGlyphNr >= FNumGlyphs then GlyphNr := FNumGlyphs - 1;
+end;
+
+procedure TCustomGuiSwitch.RenderBitmap(const Bitmap: TBitmap);
+var
+  txt : string; 
+begin
+ with Bitmap, Canvas do
+  begin
+   Brush.Color := Self.Color;
+   Font.Assign(Self.Font);
+   Font.Size := Font.Size * FOSValue;
+   if FGlyphNr < FStringList.Count
+    then txt := FStringList[FGlyphNr]
+    else txt := IntToStr(FGlyphNr);
+   TextOut((Width - TextWidth(txt)) div 2, 0, txt);
+  end;
+end;
+
+procedure TCustomGuiSwitch.SetDefaultGlyphNr(Value: Integer);
+begin
+ if Value < 0 then Value := 0 else
+ if Value >= FNumGlyphs then Value := FNumGlyphs - 1;
+ if Value <> FDefaultGlyphNr then
+  begin
+   FDefaultGlyphNr := Value;
+  end;
+end;
+
+procedure TCustomGuiSwitch.SetGlyphNr(Value: Integer);
+begin
+ if Value < 0 then Value := 0 else
+ if Value >= FNumGlyphs then Value := FNumGlyphs - 1;
+ if Value <> FGlyphNr then
+  begin
+   FGlyphNr := Value;
+   if assigned(FOnChange) and ([csLoading, csDestroying] * ComponentState = []) 
+    then FOnChange(Self);
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiSwitch.SetStringList(const Value: TStringList);
+begin
+ FStringList.Assign(Value);
+ if FDialBitmap.Empty
+  then NumGlyphs := max(1, FStringList.Count);
+ RedrawBuffer(True);
+end;
+
 { TCustomGuiDialMetal }
 
-procedure TCustomGuiDialMetal.RenderKnobToBitmap(const Bitmap: TBitmap);
+procedure TCustomGuiDialMetal.RenderBitmap(const Bitmap: TBitmap);
 var
   Steps, i : Integer;
   Val      : Single;
@@ -1548,7 +1729,7 @@ begin
  fIndLineLength := 100;
 end;
 
-procedure TCustomGuiDialEx.RenderKnobToBitmap(const Bitmap: TBitmap);
+procedure TCustomGuiDialEx.RenderBitmap(const Bitmap: TBitmap);
 var
   Steps, i  : Integer;
   Val, Off  : TComplexDouble;
@@ -1683,7 +1864,7 @@ begin
  result := FDialBitmap.Width;
 end;
 
-procedure TGuiDialImageCollectionItem.LinkDial(Dial: TCustomGuiDial);
+procedure TGuiDialImageCollectionItem.LinkStitchedControl(Dial: TCustomGuiStitchedControl);
 begin
  if FLinkedDials.IndexOf(Dial) < 0 then
   begin
@@ -1705,7 +1886,7 @@ begin
   end;
 end;
 
-procedure TGuiDialImageCollectionItem.UnLinkDial(Dial: TCustomGuiDial);
+procedure TGuiDialImageCollectionItem.UnLinkStitchedControl(Dial: TCustomGuiStitchedControl);
 begin
  FLinkedDials.Remove(Dial);
 end;
