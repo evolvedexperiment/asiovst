@@ -3,7 +3,7 @@ unit DAV_DspCommon;
 interface
 
 uses
-  Classes;
+  DAV_Common, Classes;
 
 type
   TDspObject = class(TPersistent);

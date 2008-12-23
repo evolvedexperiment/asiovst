@@ -991,7 +991,7 @@ begin
   begin
    Lock;
    Brush.Color := Self.Color;
-   if FDialBitmap.Empty and not assigned(FImageList) then
+   if FDialBitmap.Empty and not assigned(FImageList) and not assigned(FDialImageList) then
     case FAntiAlias of
      gaaNone     :
       begin

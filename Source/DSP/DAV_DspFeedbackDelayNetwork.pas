@@ -5,7 +5,8 @@ interface
 {$I ASIOVST.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath, DAV_DspFilter;
+  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath, DAV_DspFilter,
+  DAV_DspChorus;
 
 type
   TDampingFilter = class(TCustomFilter)
@@ -32,6 +33,80 @@ type
     procedure PopStates; override;
   end;
 
+  TCustomDelayLine = class(TDspObject)
+  private
+    procedure SetBufferSize(const Value: Integer);
+  protected
+    FBufferPos  : Integer;
+    FBufferSize : Integer;
+    procedure BufferSizeChanged; virtual; abstract;
+    property BufferSize: Integer read FBufferSize write SetBufferSize;
+  public
+    constructor Create; virtual;
+    procedure Reset; virtual;
+  end;
+
+  TDelayLineSamples32 = class(TCustomDelayLine)
+  protected
+    FBuffer : PDAVSingleFixedArray;
+    procedure BufferSizeChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure Reset; override;
+    function ProcessSample(const Input: Single): Single;
+  published
+    property BufferSize;
+  end;
+
+  TDelayLineSamples64 = class(TCustomDelayLine)
+  protected
+    FBuffer : PDAVDoubleFixedArray;
+    procedure BufferSizeChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure Reset; override;
+    function ProcessSample(const Input: Double): Double;
+  published
+    property BufferSize;
+  end;
+
+  TCustomDelayLineTime = class(TCustomDelayLine)
+  private
+    procedure SetSampleRate(const Value: Single);
+    procedure SetTime(const Value: Single);
+  protected
+    FSampleRate : Single;
+    FTime       : Single;
+    procedure SampleRateChanged; virtual; abstract;
+    procedure TimeChanged; virtual; abstract;
+  public
+    constructor Create; override;
+    property Samplerate: Single read FSampleRate write SetSampleRate;
+    property Time: Single read FTime write SetTime;
+  end;
+
+  TDelayLineTime32 = class(TCustomDelayLineTime)
+  private
+    procedure CalculateBufferSize;
+  protected
+    FBuffer         : PDAVSingleFixedArray;
+    FRealBufferSize : Integer;
+    FFractional     : Single;
+    FIntBuffer      : TDAV4SingleArray;
+    procedure BufferSizeChanged; override;
+    procedure SampleRateChanged; override;
+    procedure TimeChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure Reset; override;
+    function ProcessSample(const Input: Single): Single;
+  published
+    property Samplerate;
+    property Time;
+  end;
 
   TCustomFeedbackDelayNetwork = class(TDspObject)
   private
@@ -39,20 +114,25 @@ type
     FDamping         : Double;
     FNonLinearActive : Boolean;
     FNonLinearGain   : Double;
+    FSampleRate      : Single;
     procedure SetHalfLife(const Value: Double);
     procedure SetDamping(const Value: Double);
     procedure SetNonLinearActive(const Value: Boolean);
     procedure SetNonLinearGain(const Value: Double);
+    procedure SetSampleRate(const Value: Single);
   protected
     procedure HalfLifeChanged; virtual; abstract;
     procedure DampingChanged; virtual; abstract;
     procedure NonLinearActiveChanged; virtual; abstract;
     procedure NonLinearGainChanged; virtual; abstract;
+    procedure SampleRateChanged; virtual; abstract;
     function GetDelaySamples(Index: Integer): Integer; virtual; abstract;
+    function GetDelayTimes(Index: Integer): Single; virtual; abstract;
     function GetFeedbackMatrix(InputIndex, OutputIndex: Integer): Double; virtual; abstract;
     function GetInputVector(Index: Integer): Double; virtual; abstract;
     function GetOutputVector(Index: Integer): Double; virtual; abstract;
     procedure SetDelaySamples(Index: Integer; const Value: Integer); virtual; abstract;
+    procedure SetDelayTimes(Index: Integer; const Value: Single); virtual; abstract;
     procedure SetFeedbackMatrix(InputIndex, OutputIndex: Integer; const Value: Double); virtual; abstract;
     procedure SetInputVector(Index: Integer; const Value: Double); virtual; abstract;
     procedure SetOutputVector(Index: Integer; const Value: Double); virtual; abstract;
@@ -61,11 +141,13 @@ type
     property InputVector[Index: Integer]: Double read GetInputVector write SetInputVector;
     property OutputVector[Index: Integer]: Double read GetOutputVector write SetOutputVector;
     property DelaySamples[Index: Integer]: Integer read GetDelaySamples write SetDelaySamples;
+    property DelayTimes[Index: Integer]: Single read GetDelayTimes write SetDelayTimes;
     property FeedbackMatrix[InputIndex, OutputIndex: Integer]: Double read GetFeedbackMatrix write SetFeedbackMatrix;
     property HalfLife: Double read FHalfLife write SetHalfLife;
     property Damping: Double read FDamping write SetDamping;
     property NonLinearActive: Boolean read FNonLinearActive write SetNonLinearActive;
     property NonLinearGain: Double read FNonLinearGain write SetNonLinearGain;
+    property SampleRate: Single read FSampleRate write SetSampleRate; 
   end;
 
   TFeedbackDelayNetwork32 = class(TCustomFeedbackDelayNetwork)
@@ -76,6 +158,7 @@ type
     FDelaySamples   : Array [0..3] of Integer;
     FDelayPos       : Array [0..3] of Integer;
     FDelayBuffers   : Array [0..3] of PDAVSingleFixedArray;
+    FDelayFracs     : Array [0..3] of Single;
     FFeedbackMatrix : TDAVMatrix32;
     FRotationMatrix : TDAVMatrix32;
     FDampingFilter  : Array [0..3] of TDampingFilter;
@@ -85,11 +168,14 @@ type
     procedure DampingChanged; override;
     procedure NonLinearActiveChanged; override;
     procedure NonLinearGainChanged; override;
+    procedure SampleRateChanged; override;
     function GetDelaySamples(Index: Integer): Integer; override;
+    function GetDelayTimes(Index: Integer): Single; override;
     function GetFeedbackMatrix(InputIndex, OutputIndex: Integer): Double; override;
     function GetInputVector(Index: Integer): Double; override;
     function GetOutputVector(Index: Integer): Double; override;
     procedure SetDelaySamples(Index: Integer; const Value: Integer); override;
+    procedure SetDelayTimes(Index: Integer; const Value: Single); override;
     procedure SetFeedbackMatrix(InputIndex, OutputIndex: Integer; const Value: Double); override;
     procedure SetInputVector(Index: Integer; const Value: Double); override;
     procedure SetOutputVector(Index: Integer; const Value: Double); override;
@@ -103,7 +189,7 @@ type
 implementation
 
 uses
-  Math, SysUtils;
+  Math, SysUtils, DAV_DspInterpolation;
 
 constructor TDampingFilter.Create;
 begin
@@ -269,6 +355,191 @@ begin
  raise Exception.Create('Not supported');
 end;
 
+
+{ TCustomDelayLine }
+
+constructor TCustomDelayLine.Create;
+begin
+ inherited;
+ FBufferSize := 0;
+ FBufferPos  := 0;
+end;
+
+procedure TCustomDelayLine.Reset;
+begin
+ FBufferPos := 0;
+end;
+
+procedure TCustomDelayLine.SetBufferSize(const Value: Integer);
+begin
+ if FBufferSize <> Value then
+  begin
+   FBufferSize := Value;
+   BufferSizeChanged;
+  end;
+end;
+
+
+{ TDelayLineSamples32 }
+
+constructor TDelayLineSamples32.Create;
+begin
+ inherited;
+ FBuffer := nil;
+end;
+
+destructor TDelayLineSamples32.Destroy;
+begin
+ Dispose(FBuffer);
+ inherited;
+end;
+
+function TDelayLineSamples32.ProcessSample(const Input: Single): Single;
+begin
+ result := FBuffer^[FBufferPos];
+ FBuffer^[FBufferPos] := Input;
+ inc(FBufferPos);
+ if FBufferPos >= FBufferSize
+  then FBufferPos := 0;
+end;
+
+procedure TDelayLineSamples32.BufferSizeChanged;
+begin
+ ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
+end;
+
+procedure TDelayLineSamples32.Reset;
+begin
+ inherited;
+ FillChar(FBuffer^, FBufferSize * SizeOf(Single), 0);
+end;
+
+
+{ TDelayLineSamples64 }
+
+constructor TDelayLineSamples64.Create;
+begin
+ inherited;
+ FBuffer := nil;
+end;
+
+destructor TDelayLineSamples64.Destroy;
+begin
+ Dispose(FBuffer);
+ inherited;
+end;
+
+procedure TDelayLineSamples64.BufferSizeChanged;
+begin
+ ReallocMem(FBuffer, FBufferSize * SizeOf(Double));
+end;
+
+function TDelayLineSamples64.ProcessSample(const Input: Double): Double;
+begin
+ result := FBuffer^[FBufferPos];
+ FBuffer^[FBufferPos] := Input;
+ inc(FBufferPos);
+ if FBufferPos >= FBufferSize
+  then FBufferPos := 0;
+end;
+
+procedure TDelayLineSamples64.Reset;
+begin
+ inherited;
+ FillChar(FBuffer^, FBufferSize * SizeOf(Double), 0);
+end;
+
+
+{ TCustomDelayLineTime }
+
+constructor TCustomDelayLineTime.Create;
+begin
+ inherited;
+ FTime := 1;
+ FSampleRate := 44100;
+end;
+
+procedure TCustomDelayLineTime.SetSampleRate(const Value: Single);
+begin
+ if FSampleRate <> Value then
+  begin
+   FSampleRate := Value;
+   SampleRateChanged;
+  end;
+end;
+
+procedure TCustomDelayLineTime.SetTime(const Value: Single);
+begin
+ if FTime <> Value then
+  begin
+   FTime := Value;
+   TimeChanged;
+  end;
+end;
+
+
+{ TDelayLineTime32 }
+
+constructor TDelayLineTime32.Create;
+begin
+ inherited;
+ FBuffer := nil;
+ FIntBuffer[3] := 0;
+end;
+
+destructor TDelayLineTime32.Destroy;
+begin
+ assert(FBuffer[BufferSize - 1] = 0);
+ Dispose(FBuffer);
+ inherited;
+end;
+
+procedure TDelayLineTime32.BufferSizeChanged;
+begin
+ ReallocMem(FBuffer, FBufferSize * SizeOf(Double));
+end;
+
+function TDelayLineTime32.ProcessSample(const Input: Single): Single;
+begin
+ FBuffer^[FBufferPos] := Input;
+
+ inc(FBufferPos);
+ if FBufferPos >= BufferSize - 1
+  then FBufferPos := 0;
+
+ Move(FIntBuffer[1], FIntBuffer[0], 2 * SizeOf(Single));
+ FIntBuffer[2] := FBuffer^[FBufferPos];
+ result := Hermite32_asm(FFractional, @FIntBuffer);
+end;
+
+procedure TDelayLineTime32.Reset;
+begin
+ inherited;
+ FillChar(FBuffer^, FBufferSize * SizeOf(Double), 0);
+end;
+
+procedure TDelayLineTime32.CalculateBufferSize;
+begin
+ BufferSize      := round(FTime * FSampleRate + 0.5) + 1;
+ FFractional     := BufferSize - 1 - (FTime * FSampleRate);
+ FBuffer[BufferSize - 1] := 0;
+ assert(FFractional >= 0);
+ assert(FFractional <= 1);
+end;
+
+procedure TDelayLineTime32.SampleRateChanged;
+begin
+ inherited;
+ CalculateBufferSize;
+end;
+
+procedure TDelayLineTime32.TimeChanged;
+begin
+ inherited;
+ CalculateBufferSize;
+end;
+
+
 { TCustomFeedbackDelayNetwork }
 
 constructor TCustomFeedbackDelayNetwork.Create;
@@ -313,6 +584,15 @@ begin
   begin
    FNonLinearGain := Value;
    NonLinearGainChanged;
+  end;
+end;
+
+procedure TCustomFeedbackDelayNetwork.SetSampleRate(const Value: Single);
+begin
+ if FSampleRate <> Value then
+  begin
+   FSampleRate := Value;
+   SampleRateChanged;
   end;
 end;
 
@@ -370,6 +650,14 @@ begin
  end;
 end;
 
+function TFeedbackDelayNetwork32.GetDelayTimes(Index: Integer): Single;
+begin
+ case Index of
+  0..3 : result := (FDelaySamples[Index] + FDelayFracs[Index]) * FSampleRate;
+  else result := 0;
+ end;
+end;
+
 function TFeedbackDelayNetwork32.GetFeedbackMatrix(InputIndex,
   OutputIndex: Integer): Double;
 begin
@@ -414,6 +702,14 @@ begin
  // nothing here yet
 end;
 
+procedure TFeedbackDelayNetwork32.SampleRateChanged;
+begin
+ if assigned(FDampingFilter[0]) then FDampingFilter[0].SampleRate := SampleRate;
+ if assigned(FDampingFilter[1]) then FDampingFilter[1].SampleRate := SampleRate;
+ if assigned(FDampingFilter[2]) then FDampingFilter[2].SampleRate := SampleRate;
+ if assigned(FDampingFilter[3]) then FDampingFilter[3].SampleRate := SampleRate;
+end;
+
 procedure TFeedbackDelayNetwork32.SetDelaySamples(Index: Integer;
   const Value: Integer);
 begin
@@ -421,8 +717,23 @@ begin
   0..3 : if FDelaySamples[Index] <> Value then
           begin
            FDelaySamples[Index] := Value;
+           FDelayFracs[Index] := 0;
            DelaySamplesChanged(Index);
           end;
+  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+ end;
+end;
+
+procedure TFeedbackDelayNetwork32.SetDelayTimes(Index: Integer;
+  const Value: Single);
+begin
+ case Index of
+  0..3 : begin
+          DelaySamples[Index] := round(Value * SampleRate + 0.5);
+          FDelayFracs[Index] := DelaySamples[Index] - Value * SampleRate;
+          assert(FDelayFracs[Index] >= 0);
+          assert(FDelayFracs[Index] <= 1);
+         end;
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
  end;
 end;
@@ -486,7 +797,7 @@ begin
  DelayedSignal[3] := FDelayBuffers[1]^[FDelayPos[1]];
 
  // Output
- VectorDotProduct(FOutputVector, DelayedSignal);
+ result := VectorDotProduct(FOutputVector, DelayedSignal);
 
  // Feedback Matrix
  FeedbackInput := VectorTransform(DelayedSignal, FFeedbackMatrix);

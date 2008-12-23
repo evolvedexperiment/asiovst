@@ -250,6 +250,9 @@ const
   CDenorm64      : Double = 1E-34;
   CTwoPI         : Double = 2 * Pi;
   CFourPI        : Double = 4 * Pi;
+  CHalf32        : Single = 0.5;
+  CHalf64        : Double = 0.5;
+  CTwenty64      : Double = 20;
 
 const
   kMaxLong  = $7FFFFFFF;
@@ -262,12 +265,6 @@ implementation
 
 uses
   Math, SysUtils;
-
-const
-  {$IFNDEF PUREPASCAL}
-  Half          : Double = 0.5;
-  {$ENDIF}
-  Twenty        : Double = 20;
 
 {$IFNDEF FPC}
 procedure SetMatrixLength(Matrix : TDAVDoubleDynMatrix; Size : TPoint);
@@ -405,7 +402,7 @@ asm
  fldlg2
  fld v
  fyl2x
- fmul Twenty.Double
+ fmul CTwenty64.Double
 {$ENDIF}
 end;
 
@@ -418,7 +415,7 @@ var i : Integer;
 asm
  fld Sample.Single
  fld Sample.Single
- fsub half
+ fsub CHalf64
  frndint
  fsubp
 {$ENDIF}
@@ -433,7 +430,7 @@ var i : Integer;
 asm
  fld Sample.Double
  fld Sample.Double
- fsub half
+ fsub CHalf64
  frndint
  fsubp
 {$ENDIF}
@@ -474,22 +471,22 @@ asm
  fldlg2
  fld    [eax].Single
  fyl2x
- fmul   Twenty.Double
+ fmul   CTwenty64.Double
  fstp   [eax].Single
  fldlg2
  fld    [eax + 4].Single
  fyl2x
- fmul   Twenty.Double
+ fmul   CTwenty64.Double
  fstp   [eax + 4].Single
  fldlg2
  fld    [eax + 8].Single
  fyl2x
- fmul   Twenty.Double
+ fmul   CTwenty64.Double
  fstp   [eax + 8].Single
  fldlg2
  fld    [eax + 12].Single
  fyl2x
- fmul   Twenty.Double
+ fmul   CTwenty64.Double
  fstp   [eax + 12].Single
 {$ENDIF}
 end;
@@ -501,7 +498,7 @@ begin
 {$ELSE}
 asm
  fld Sample.Single
- fsub half
+ fsub CHalf64
  fistp Result.Integer
 {$ENDIF}
 end;
@@ -513,7 +510,7 @@ begin
 {$ELSE}
 asm
  fld Sample.Double
- fsub half
+ fsub CHalf64
  fistp Result.Integer
 {$ENDIF}
 end;
@@ -533,7 +530,7 @@ begin
 asm
  @Start:
  fld [eax].Single
- fsub half
+ fsub CHalf64
  fistp [edx].Integer
  add eax,4
  add edx,4
@@ -548,7 +545,7 @@ begin
 {$ELSE}
 asm
  fld Sample.Single
- fsub half
+ fsub CHalf64
  frndint
 {$ENDIF}
 end;
@@ -560,7 +557,7 @@ begin
 {$ELSE}
 asm
  fld Sample.Double
- fsub half
+ fsub CHalf64
  frndint
 {$ENDIF}
 end;
@@ -869,7 +866,7 @@ asm
  FADD
  FSCALE              { result := z * 2**i }
  FSTP    ST(1)
- FMUL Twenty
+ FMUL CTwenty64
 {$ENDIF}
 end;
 

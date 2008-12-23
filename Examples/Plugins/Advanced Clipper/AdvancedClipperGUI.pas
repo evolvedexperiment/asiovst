@@ -57,54 +57,6 @@ implementation
 uses
   PNGImage, AdvancedClipperDM;
 
-procedure TFmAdvancedClipper.DialFilterOrder1Change(Sender: TObject);
-begin
- with Owner as TAdvancedClipperDataModule do
-  begin
-   ParameterByName['Stage 1: Filter Order'] := DialFilterOrder1.Position;
-  end;
-end;
-
-procedure TFmAdvancedClipper.DialFilterOrder2Change(Sender: TObject);
-begin
- with Owner as TAdvancedClipperDataModule do
-  begin
-   ParameterByName['Stage 2: Filter Order'] := DialFilterOrder2.Position;
-  end;
-end;
-
-procedure TFmAdvancedClipper.DialInputGainChange(Sender: TObject);
-begin
- with Owner as TAdvancedClipperDataModule do
-  begin
-   ParameterByName['Input Gain'] := DialInputGain.Position;
-  end;
-end;
-
-procedure TFmAdvancedClipper.DialOutputGainChange(Sender: TObject);
-begin
- with Owner as TAdvancedClipperDataModule do
-  begin
-   ParameterByName['Output Gain'] := DialOutputGain.Position;
-  end;
-end;
-
-procedure TFmAdvancedClipper.DialOSFactor1Change(Sender: TObject);
-begin
- with Owner as TAdvancedClipperDataModule do
-  begin
-   ParameterByName['Stage 1: Oversampling Factor'] := DialOSFactor1.Position;
-  end;
-end;
-
-procedure TFmAdvancedClipper.DialOSFactor2Change(Sender: TObject);
-begin
- with Owner as TAdvancedClipperDataModule do
-  begin
-   ParameterByName['Stage 2: Oversampling Factor'] := DialOSFactor2.Position;
-  end;
-end;
-
 procedure TFmAdvancedClipper.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
@@ -158,6 +110,54 @@ begin
  finally
   FreeAndNil(PngBmp);
  end;
+end;
+
+procedure TFmAdvancedClipper.DialFilterOrder1Change(Sender: TObject);
+begin
+ with Owner as TAdvancedClipperDataModule do
+  begin
+   ParameterByName['Stage 1: Filter Order'] := DialFilterOrder1.Position;
+  end;
+end;
+
+procedure TFmAdvancedClipper.DialFilterOrder2Change(Sender: TObject);
+begin
+ with Owner as TAdvancedClipperDataModule do
+  begin
+   ParameterByName['Stage 2: Filter Order'] := DialFilterOrder2.Position;
+  end;
+end;
+
+procedure TFmAdvancedClipper.DialInputGainChange(Sender: TObject);
+begin
+ with Owner as TAdvancedClipperDataModule do
+  begin
+   ParameterByName['Input Gain'] := DialInputGain.Position;
+  end;
+end;
+
+procedure TFmAdvancedClipper.DialOutputGainChange(Sender: TObject);
+begin
+ with Owner as TAdvancedClipperDataModule do
+  begin
+   ParameterByName['Output Gain'] := DialOutputGain.Position;
+  end;
+end;
+
+procedure TFmAdvancedClipper.DialOSFactor1Change(Sender: TObject);
+begin
+ with Owner as TAdvancedClipperDataModule do
+  begin
+   ParameterByName['Stage 1: Oversampling Factor'] := DialOSFactor1.Position;
+  end;
+end;
+
+procedure TFmAdvancedClipper.DialOSFactor2Change(Sender: TObject);
+begin
+ with Owner as TAdvancedClipperDataModule do
+  begin
+   ParameterByName['Stage 2: Oversampling Factor'] := DialOSFactor2.Position;
+  end;
 end;
 
 procedure TFmAdvancedClipper.FormPaint(Sender: TObject);

@@ -1,4 +1,4 @@
-unit DAV_DSPSineLFO;
+unit DAV_DspSineLFO;
 
 interface
 
@@ -9,40 +9,51 @@ uses
   DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
-  TSineLFO = class(TDspObject)
+  TCustomSineLFO = class(TDspObject)
   private
+    function GetPhase: Single;
     procedure SetSampleRate(const Value: Single);
     procedure SetFrequency(const Value: Single);
+    procedure SetPhase(const Value: Single);
   protected
     FFrequency  : Single;
     FAmplitude  : Single;
     FSampleRate : Single;
     FAngle      : TComplexDouble;
     FPosition   : TComplexDouble;
-
     procedure SetAmplitude(const Value: Single); virtual;
-
     procedure SampleRateChanged; virtual;
     procedure FrequencyChanged; virtual;
-
-    procedure Reset; virtual;
   public
     constructor Create; virtual;
     procedure CalculateNextSample; virtual;
+    procedure Reset; virtual;
 
     property Sine: Double read FPosition.Re;
     property Cosine: Double read FPosition.Im;
-  published
+
     property Amplitude: Single read FAmplitude write SetAmplitude; //  0..1
     property Frequency: Single read FFrequency write SetFrequency; //  0..Samplerate
+    property Phase: Single read GetPhase write SetPhase; //  0..2*Pi;
     property SampleRate: Single read FSampleRate write SetSampleRate;
+  end;
+
+  TSineLFO = class(TCustomSineLFO)
+  published
+    property Amplitude;
+    property Frequency;
+    property Phase;
+    property SampleRate;
   end;
 
 implementation
 
+uses
+  Math;
+
 { TSineLFO }
 
-procedure TSineLFO.CalculateNextSample;
+procedure TCustomSineLFO.CalculateNextSample;
 {$IFDEF PUREPASCAL}
 var
   temp : Double;
@@ -69,7 +80,7 @@ asm
 end;
 {$ENDIF}
 
-constructor TSineLFO.Create;
+constructor TCustomSineLFO.Create;
 begin
   FFrequency   := 440;
   FSampleRate  := 44100;
@@ -78,23 +89,27 @@ begin
   Reset;
 end;
 
-procedure TSineLFO.Reset;
+procedure TCustomSineLFO.Reset;
 begin
-  FPosition.Re := 0;
-  FPosition.Im := -FAmplitude;
+  Phase := 0;
 end;
 
-procedure TSineLFO.SampleRateChanged;
+procedure TCustomSineLFO.SampleRateChanged;
 begin
   FrequencyChanged;
 end;
 
-procedure TSineLFO.FrequencyChanged;
+procedure TCustomSineLFO.FrequencyChanged;
 begin
  GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
 end;
 
-procedure TSineLFO.SetAmplitude(const Value: Single);
+function TCustomSineLFO.GetPhase: Single;
+begin
+ result := -ArcTan2(FPosition.Re, -FPosition.Im);
+end;
+
+procedure TCustomSineLFO.SetAmplitude(const Value: Single);
 begin
  if FAmplitude <> Value then
   begin
@@ -112,7 +127,7 @@ begin
   end;
 end;
 
-procedure TSineLFO.SetFrequency(const Value: Single);
+procedure TCustomSineLFO.SetFrequency(const Value: Single);
 begin
   if FFrequency <> Value then
   begin
@@ -121,7 +136,14 @@ begin
   end;
 end;
 
-procedure TSineLFO.SetSampleRate(const Value: Single);
+procedure TCustomSineLFO.SetPhase(const Value: Single);
+begin
+ GetSinCos(Value, FPosition.Re, FPosition.Im);
+ FPosition.Re := FPosition.Re * -FAmplitude;
+ FPosition.Im := FPosition.Im * -FAmplitude;
+end;
+
+procedure TCustomSineLFO.SetSampleRate(const Value: Single);
 begin
  if FSampleRate <> Value then
   begin
