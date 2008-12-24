@@ -2,17 +2,50 @@ object SimpleChorusModule: TSimpleChorusModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
-  EffectName = 'Simple Chorus'
+  EffectName = 'Chorus'
   ProductName = 'DAV Examples'
   VendorName = 'Delphi ASIO & VST Packages'
   PlugCategory = vpcEffect
   CanDos = [vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'Chor'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Soft Flange'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Hard Flange'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'WishyWoshy'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Full Chorus'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = '2,5 Promille'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Thick'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Leave me alone'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLogarithmic

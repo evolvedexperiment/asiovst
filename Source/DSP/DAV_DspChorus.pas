@@ -28,6 +28,7 @@ type
     procedure SetStages(const Value: Byte);
     procedure SetSampleRate(const Value: Double);
     procedure SetDrift(const Value: Double);
+    function GetLFO(Index: Integer): TSineLFO;
   protected
     procedure CalculateStageMix; virtual;
     procedure DepthChanged; virtual;
@@ -36,10 +37,12 @@ type
     procedure SpeedChanged; virtual;
     procedure StagesChanged; virtual;
     procedure UpdateBuffer; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Reset; virtual;
+    property LFO[Index: Integer]: TSineLFO read GetLFO; 
   published
     property SampleRate: Double read FSampleRate write SetSampleRate;
     property Speed: Double read FSpeed write SetSpeed;
@@ -115,12 +118,38 @@ begin
  inherited;
 end;
 
+function TCustomDspChorus.GetLFO(Index: Integer): TSineLFO;
+begin
+ if (Index >= 0) and (Index < Length(FLFOs))
+  then result := FLFOs[Index]
+  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+end;
+
 procedure TCustomDspChorus.Reset;
 var
   i : Integer;
 begin
  for i := 0 to FStages - 1
   do FLFOs[i].Reset;
+end;
+
+procedure TCustomDspChorus.AssignTo(Dest: TPersistent);
+var
+  i : Integer;
+begin
+ if Dest is TCustomDspChorus then
+  with TCustomDspChorus(Dest) do
+   begin
+    SampleRate   := Self.FSampleRate;
+    Speed        := Self.Speed;
+    Depth        := Self.Depth;
+    Mix          := Self.Drift;
+    Stages       := Self.Stages;
+    Drift        := Self.Drift;
+    for i := 0 to Stages - 1
+     do Self.FLFOs[0].Assign(FLFOs[0]);
+   end
+ else inherited;
 end;
 
 procedure TCustomDspChorus.CalculateStageMix;
@@ -160,14 +189,22 @@ end;
 
 procedure TCustomDspChorus.SpeedChanged;
 var
-  i : Integer;
-  d : Double;
+  i         : Integer;
+  d         : Double;
+  BasePhase : Double;
 begin
+ // check that at least one LFO is available
+ if Length(FLFOs) = 0 then exit;
+
+ // calculate scale factor
  d := 2 * Pi / Length(FLFOs);
+
+ // store current base phase
+ BasePhase := FLFOs[0].Phase;
  for i := 0 to Length(FLFOs) - 1 do
   begin
    FLFOs[i].Frequency := (1 - FDrift * random) * Speed;
-   FLFOs[i].Phase := (i + FDrift * random) * d;
+   FLFOs[i].Phase := BasePhase + (i + FDrift * random) * d;
   end;
  UpdateBuffer;
 end;
@@ -265,11 +302,16 @@ begin
 end;
 
 procedure TDspChorus32.UpdateBuffer;
+var
+  OldBufferSize : Integer;
 begin
+ OldBufferSize := FRealBufSize;
  inherited;
 
  // allocate memory
  ReallocMem(FBuffer32, FRealBufSize * SizeOf(Single));
+ if FRealBufSize > OldBufferSize
+  then FillChar(FBuffer32^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Single), 0);
 end;
 
 function TDspChorus32.Process(const Input: Single): Single;
@@ -301,7 +343,7 @@ begin
    if p >= FRealBufSize
     then p := p - (FRealBufSize - 4) else
    if p < 4 then p := p + (FRealBufSize - 4);
-   result := result + m * Hermite64_asm(d, @FBuffer32[p - 4]);
+   result := result + m * Hermite32_asm(d, @FBuffer32[p - 4]);
   end;
 
  // store new data
@@ -334,11 +376,16 @@ begin
 end;
 
 procedure TDspChorus64.UpdateBuffer;
+var
+  OldBufferSize : Integer;
 begin
+ OldBufferSize := FRealBufSize;
  inherited;
 
  // allocate memory
  ReallocMem(FBuffer64, FRealBufSize * SizeOf(Double));
+ if FRealBufSize > OldBufferSize
+  then FillChar(FBuffer64^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Double), 0);
 end;
 
 function TDspChorus64.Process(const Input: Double): Double;

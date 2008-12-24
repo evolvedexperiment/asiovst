@@ -8,18 +8,16 @@ uses
 
 type
   TSimpleChorusModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
-    procedure ParamDriftChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamDriftChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FChorus    : Array [0..1] of TDspChorus32;
     FSemaphore : Integer;
@@ -50,6 +48,78 @@ begin
  Parameter[2] :=  5;
  Parameter[3] := 50;
  Parameter[4] :=  8;
+ with Programs[0] do
+  begin
+   Parameter[0] :=  0.2;
+   Parameter[1] :=  4;
+   Parameter[2] :=  5;
+   Parameter[3] := 50;
+   Parameter[4] :=  8;
+  end;
+ with Programs[1] do
+  begin
+   Parameter[0] :=  0.02;
+   Parameter[1] :=  2;
+   Parameter[2] :=  2;
+   Parameter[3] := 50;
+   Parameter[4] :=  0.2;
+  end;
+ with Programs[2] do
+  begin
+   Parameter[0] :=  0.04;
+   Parameter[1] :=  4;
+   Parameter[2] :=  4;
+   Parameter[3] := 50;
+   Parameter[4] :=  0.4;
+  end;
+ with Programs[3] do
+  begin
+   Parameter[0] :=  0.62;
+   Parameter[1] :=  4;
+   Parameter[2] :=  4.5;
+   Parameter[3] := 50;
+   Parameter[4] :=  19.8;
+  end;
+ with Programs[4] do
+  begin
+   Parameter[0] :=  1.3;
+   Parameter[1] :=  6;
+   Parameter[2] :=  9.5;
+   Parameter[3] := 77;
+   Parameter[4] := 16.8;
+  end;
+ with Programs[5] do
+  begin
+   Parameter[0] :=  2.5;
+   Parameter[1] :=  1;
+   Parameter[2] :=  25;
+   Parameter[3] :=  25;
+   Parameter[4] :=  25;
+  end;
+ with Programs[6] do
+  begin
+   Parameter[0] :=  2.5;
+   Parameter[1] :=  1;
+   Parameter[2] :=  25;
+   Parameter[3] :=  25;
+   Parameter[4] :=  25;
+  end;
+ with Programs[7] do
+  begin
+   Parameter[0] :=  0.33;
+   Parameter[1] :=  8;
+   Parameter[2] :=  57;
+   Parameter[3] :=  15;
+   Parameter[4] :=  25;
+  end;
+ with Programs[8] do
+  begin
+   Parameter[0] :=  0.33;
+   Parameter[1] :=  8;
+   Parameter[2] :=  100;
+   Parameter[3] :=  72.7;
+   Parameter[4] :=  33.6;
+  end;
 end;
 
 procedure TSimpleChorusModule.VSTModuleClose(Sender: TObject);
@@ -102,12 +172,18 @@ end;
 
 procedure TSimpleChorusModule.ParamDriftChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  i : Integer;
 begin
  while FSemaphore > 0 do Sleep(1);
  Inc(FSemaphore);
  try
   if assigned(FChorus[0]) then FChorus[0].Drift := 0.01 * Value;
-  if assigned(FChorus[1]) then FChorus[1].Drift := 0.01 * Value;
+  if assigned(FChorus[1]) then
+   if Value > 0
+    then FChorus[1].Drift := 0.01 * Value
+    else for i := 0 to FChorus[1].Stages - 1
+          do FChorus[1].LFO[i].Assign(FChorus[0].LFO[i]); 
  finally
   Dec(FSemaphore);
  end;

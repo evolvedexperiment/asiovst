@@ -5,6 +5,8 @@ library SimpleChorus;
 
 uses
   FastMM4,
+  madExcept,
+  madLinkDisAsm,
   FastMove,
   Forms,
   DAV_VSTEffect,

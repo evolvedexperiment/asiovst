@@ -6,7 +6,7 @@ interface
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon;
+  Classes, DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
   TCustomSineLFO = class(TDspObject)
@@ -24,6 +24,7 @@ type
     procedure SetAmplitude(const Value: Single); virtual;
     procedure SampleRateChanged; virtual;
     procedure FrequencyChanged; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
     procedure CalculateNextSample; virtual;
@@ -53,6 +54,29 @@ uses
 
 { TSineLFO }
 
+constructor TCustomSineLFO.Create;
+begin
+  FFrequency   := 440;
+  FSampleRate  := 44100;
+  FAmplitude   := 1;
+  FrequencyChanged;
+  Reset;
+end;
+
+procedure TCustomSineLFO.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomSineLFO then
+  with TCustomSineLFO(Dest) do
+   begin
+    FFrequency  := Self.FFrequency;
+    FAmplitude  := Self.FAmplitude;
+    FSampleRate := Self.FSampleRate;
+    FAngle      := Self.FAngle;
+    FPosition   := Self.FPosition;
+   end
+ else inherited;
+end;
+
 procedure TCustomSineLFO.CalculateNextSample;
 {$IFDEF PUREPASCAL}
 var
@@ -79,15 +103,6 @@ asm
  fstp [Self.FPosition.Re].Double // FPosition.Re := New.Re
 end;
 {$ENDIF}
-
-constructor TCustomSineLFO.Create;
-begin
-  FFrequency   := 440;
-  FSampleRate  := 44100;
-  FAmplitude   := 1;
-  FrequencyChanged;
-  Reset;
-end;
 
 procedure TCustomSineLFO.Reset;
 begin

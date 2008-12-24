@@ -43,7 +43,7 @@ implementation
 {$R *.DFM}
 
 uses
-  SimpleChorusDM, PngImage, DAV_VSTModuleWithPrograms;
+  Math, PngImage, DAV_VSTModuleWithPrograms, SimpleChorusDM;
 
 procedure TFmSimpleChorus.FormCreate(Sender: TObject);
 var
@@ -123,42 +123,54 @@ begin
 end;
 
 procedure TFmSimpleChorus.UpdateDepth;
+var
+  Depth : Single;
 begin
  with TSimpleChorusModule(Owner) do
   begin
-   if DialDepth.Position <> Parameter[2]
-    then DialDepth.Position := Parameter[2];
-   LbDepthValue.Caption := FloatToStrF(Parameter[2], ffGeneral, 3, 3) + ' %';
+   Depth := Parameter[2];
+   if DialDepth.Position <> Depth
+    then DialDepth.Position := Depth;
+   LbDepthValue.Caption := FloatToStrF(RoundTo(Depth, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
 
 procedure TFmSimpleChorus.UpdateDrift;
+var
+  Drift : Single;
 begin
  with TSimpleChorusModule(Owner) do
   begin
-   if DialDrift.Position <> Parameter[4]
-    then DialDrift.Position := Parameter[4];
-   LbDriftValue.Caption := FloatToStrF(Parameter[4], ffGeneral, 3, 3) + ' %';
+   Drift := Parameter[4];
+   if DialDrift.Position <> Drift
+    then DialDrift.Position := Drift;
+   LbDriftValue.Caption := FloatToStrF(RoundTo(Drift, -1), ffGeneral, 3, 2) + ' %';
   end;
 end;
 
 procedure TFmSimpleChorus.UpdateMix;
+var
+  Mix : Single;
 begin
  with TSimpleChorusModule(Owner) do
   begin
-   if DialMix.Position <> Parameter[3]
-    then DialMix.Position := Parameter[3];
-   LbMixValue.Caption := FloatToStrF(Parameter[3], ffGeneral, 3, 3) + ' %';
+   Mix := Parameter[3];
+   if DialMix.Position <> Mix
+    then DialMix.Position := Mix;
+   LbMixValue.Caption := FloatToStrF(RoundTo(Mix, -1), ffGeneral, 3, 3) + ' %';
   end;
 end;
 
 procedure TFmSimpleChorus.UpdateSpeed;
+var
+  Speed : Single;
 begin
  with TSimpleChorusModule(Owner) do
   begin
-   if DialSpeed.Position <> Parameter[0]
-    then DialSpeed.Position := Parameter[0];
-   LbSpeedValue.Caption := FloatToStrF(Parameter[0], ffGeneral, 2, 2) + ' Hz';
+   Speed := Parameter[0];
+   if DialSpeed.Position <> Speed
+    then DialSpeed.Position := Speed;
+   LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
   end;
 end;
 
