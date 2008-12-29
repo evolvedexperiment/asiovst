@@ -8,18 +8,17 @@ uses
   PianoDM in 'PianoDM.pas' {PianoDataModule: TVSTModule},
   PianoData in 'PianoData.pas';
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  PianoDataModule: TPianoDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    PianoDataModule := TPianoDataModule.Create(Application);
-    PianoDataModule.Effect^.user := PianoDataModule;
-    PianoDataModule.AudioMaster := audioMaster;
-    Result := PianoDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TPianoDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

@@ -7,25 +7,25 @@ uses
 
 type
   TTestToneDataModule = class(TVSTModule)
+    procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleSuspend(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
   private
-    fLength    : Integer;
-    fPhi       : Single;
-    fDeltaPhi  : Single;
-    fLeft      : Single;
-    fRight     : Single;
-    fThru      : Single;
-    fSw        : Single;
-    fSwx       : Single;
-    fSwd       : Single;
-    fScale     : Single;
-    fSwt       : Integer;
-    fMode      : Integer;
-    fPinkState : array [0..5] of Single;
+    FLength    : Integer;
+    FPhi       : Single;
+    FDeltaPhi  : Single;
+    FLeft      : Single;
+    FRight     : Single;
+    FThru      : Single;
+    FSw        : Single;
+    FSwx       : Single;
+    FSwd       : Single;
+    FScale     : Single;
+    FSwt       : Integer;
+    FMode      : Integer;
+    FPinkState : array [0..5] of Single;
     function Midi2String(const n : Single): string;
     function ISO2String(b: Single): string;
     procedure Update;
@@ -67,6 +67,26 @@ begin
 
  if (o < 0) then result := result + '-';
  result := result + char(48 + (abs(o) mod 10));
+end;
+
+procedure TTestToneDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ // Initial Parameters
+ Parameter[0] := 0.47; //FMode
+ Parameter[1] := 0.71; //level dB
+ Parameter[2] := 0.50; //pan dB
+ Parameter[3] := 0.57; //freq1 B
+ Parameter[4] := 0.50; //freq2 Hz
+ Parameter[5] := 0.00; //FThru dB
+ Parameter[6] := 0.30; //sweep ms
+ Parameter[7] := 1.00; //cal dBFS
+
+(*
+ updateTx := updateRx;
+
+ setParameter(6, 0);
+*)
+ VSTModuleSuspend(Sender);
 end;
 
 procedure TTestToneDataModule.ParameterModeDisplay(
@@ -133,25 +153,6 @@ begin
  end;
 end;
 
-procedure TTestToneDataModule.VSTModuleCreate(Sender: TObject);
-begin
-(*
- Parameter[0] := 0.47; //fMode
- Parameter[1] := 0.71; //level dB
- Parameter[2] := 0.50; //pan dB
- Parameter[3] := 0.57; //freq1 B
- Parameter[4] := 0.50; //freq2 Hz
- Parameter[5] := 0.00; //fThru dB
- Parameter[6] := 0.30; //sweep ms
- Parameter[7] := 1.00; //cal dBFS
-
- updateTx := updateRx;
- 
- setParameter(6, 0);
-*)
- VSTModuleSuspend(Sender);
-end;
-
 procedure TTestToneDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
@@ -168,24 +169,24 @@ begin
 *)
 
  x := 0;
- z[0] := fPinkState[0];
- z[1] := fPinkState[1];
- z[2] := fPinkState[2];
- z[3] := fPinkState[3];
- z[4] := fPinkState[4];
- z[5] := fPinkState[5];
+ z[0] := FPinkState[0];
+ z[1] := FPinkState[1];
+ z[2] := FPinkState[2];
+ z[3] := FPinkState[3];
+ z[4] := FPinkState[4];
+ z[5] := FPinkState[5];
 
- ph   := fPhi;
- dph  := fDeltaPhi;
- l    := fLeft;
- r    := fRight;
- t    := fThru;
- s    := fSw;
- sx   := fSwx;
- ds   := fSwd;
- fsc  := fScale;
- st   := fSwt;
- m    := fMode;
+ ph   := FPhi;
+ dph  := FDeltaPhi;
+ l    := FLeft;
+ r    := FRight;
+ t    := FThru;
+ s    := FSw;
+ sx   := FSwx;
+ ds   := FSwd;
+ fsc  := FScale;
+ st   := FSwt;
+ m    := FMode;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
@@ -201,7 +202,7 @@ begin
        else
         begin
          x  := 1;
-         st := round (fLength * SampleRate);
+         st := round (FLength * SampleRate);
         end;
     2, 3: begin
            x := 2 * Random - 1;               // Noise
@@ -270,15 +271,15 @@ begin
    Outputs[1, Sample] := t * b + r * x;
   end;
 
- fPinkState[0] := z[0];
- fPinkState[1] := z[1];
- fPinkState[2] := z[2];
- fPinkState[3] := z[3];
- fPinkState[4] := z[4];
- fPinkState[5] := z[5];
- fPhi := ph;
- fSw  := s;
- fSwt := st;
+ FPinkState[0] := z[0];
+ FPinkState[1] := z[1];
+ FPinkState[2] := z[2];
+ FPinkState[3] := z[3];
+ FPinkState[4] := z[4];
+ FPinkState[5] := z[5];
+ FPhi := ph;
+ FSw  := s;
+ FSwt := st;
 (*
  if (s > sx)
   then setParameter(0, Parameter[0]); //retrigger sweep
@@ -287,13 +288,13 @@ end;
 
 procedure TTestToneDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- fPinkState[0] := 0;
- fPinkState[1] := 0;
- fPinkState[2] := 0;
- fPinkState[3] := 0;
- fPinkState[4] := 0;
- fPinkState[5] := 0;
- fPhi := 0;
+ FPinkState[0] := 0;
+ FPinkState[1] := 0;
+ FPinkState[2] := 0;
+ FPinkState[3] := 0;
+ FPinkState[4] := 0;
+ FPinkState[5] := 0;
+ FPhi := 0;
 end;
 
 procedure TTestToneDataModule.Update;
@@ -306,15 +307,15 @@ begin
  updateRx := updateTx;
 
  //calcs here!
- fMode := round(8.9 * Parameter[0]);
- fLeft := 0.05 * round(60.*Parameter[1]);
- fLeft := Power(10, fLeft - 3);
- if (fMode = 2) then fLeft := fLeft * 0.0000610; //scale white for RAND_MAX = 32767
- if (fMode = 3) then fLeft := fLeft * 0.0000243; //scale pink for RAND_MAX = 32767
- if(Parameter[2] < 0.3) then fRight := 0 else fRight := fLeft;
- if(Parameter[2] > 0.6) then fLeft  := 0;
+ FMode := round(8.9 * Parameter[0]);
+ FLeft := 0.05 * round(60.*Parameter[1]);
+ FLeft := Power(10, FLeft - 3);
+ if (FMode = 2) then FLeft := FLeft * 0.0000610; //scale white for RAND_MAX = 32767
+ if (FMode = 3) then FLeft := FLeft * 0.0000243; //scale pink for RAND_MAX = 32767
+ if(Parameter[2] < 0.3) then FRight := 0 else FRight := FLeft;
+ if(Parameter[2] > 0.6) then FLeft  := 0;
  fLengh := 1 + 0.5 * round(62 * Parameter[6]);
- fSwt := round(fLengh * SampleRate);
+ FSwt := round(fLengh * SampleRate);
 
  if (Parameter[7] > 0.8) then //output level trim
   begin
@@ -325,8 +326,8 @@ begin
    else cal := -0.2;
 
    calx   := Power(10, 0.05 * cal);
-   fLeft  := fLeft * calx;
-   fRight := fRight * calx; 
+   FLeft  := FLeft * calx;
+   FRight := FRight * calx; 
    calx   := 0;
   end;
  else //output level calibrate
@@ -340,7 +341,7 @@ begin
  if Parameter[4] > 0.6 then df := 1.25 * Parameter[4] - 0.75;
  if Parameter[4] < 0.4 then df := 1.25 * Parameter[4] - 0.50;
 
- case fMode of
+ case FMode of
   0: begin //MIDI note
       f := Trunc(128 * Parameter[3]);
 (*
@@ -348,7 +349,7 @@ begin
       midi2string(f, disp1); //Semitones
       long2string((long)(100.*df), disp2); //Cents
 *)
-      fDeltaPhi := 51.37006 * Power(1.0594631, f + df) / SampleRate;
+      FDeltaPhi := 51.37006 * Power(1.0594631, f + df) / SampleRate;
      end;
 
     1, 2, 3, 4:  begin //no frequency display
@@ -364,50 +365,50 @@ begin
         f := Power(10, 0.1 * (f + df));
         float2strng(, disp2); //Hz
 *)
-        fDeltaPhi := 2 * Pi * f / SampleRate;
+        FDeltaPhi := 2 * Pi * f / SampleRate;
        end;
 
     6, 7: begin //log sweep & step
 (*
-           fSw  := 13 + Trunc(30 * Parameter[3]);
-           fSwx := 13 + Trunc(30 * Parameter[4]);
-           iso2string(fSw, disp1); //start freq
-           iso2string(fSwx, disp2); //end freq
-           if fSw > fSwx then
+           FSw  := 13 + Trunc(30 * Parameter[3]);
+           FSwx := 13 + Trunc(30 * Parameter[4]);
+           iso2string(FSw, disp1); //start freq
+           iso2string(FSwx, disp2); //end freq
+           if FSw > FSwx then
             begin
-             fSwd := fSwx;
-             fSwx := fSw;
-             fSw  := fSwd;
+             FSwd := FSwx;
+             FSwx := FSw;
+             FSw  := FSwd;
             end; //only sweep up
-           if fMode = 7 then fSwx := fSwx + 1;
-           fSwd := (fSwx - sw) / (fLengh * SampleRate);
-           fSwt := 2 * round SampleRate;
+           if FMode = 7 then FSwx := FSwx + 1;
+           FSwd := (FSwx - sw) / (fLengh * SampleRate);
+           FSwt := 2 * round SampleRate;
 *)
           end;
 
    8: begin//lin sweep
 (*
-       fSw  := 200 * Trunc(100 * Parameter[3]);
-       fSwx := 200 * Trunc(100 * Parameter[4]);
-       long2string(round(fSw), disp1); //start freq
-       long2string(round(fSwx), disp2); //end freq
-       if (fSw > fSwx) then
+       FSw  := 200 * Trunc(100 * Parameter[3]);
+       FSwx := 200 * Trunc(100 * Parameter[4]);
+       long2string(round(FSw), disp1); //start freq
+       long2string(round(FSwx), disp2); //end freq
+       if (FSw > FSwx) then
         begin
-         fSwd := fSwx;
-         fSwx := fSw;
-         fSw  := fSwd;
+         FSwd := FSwx;
+         FSwx := FSw;
+         FSw  := FSwd;
         end; //only sweep up
-       fSw  := twopi*fSw/SampleRate();
-       fSwx := twopi*fSwx/SampleRate();
-       fSwd := (fSwx-sw) / (fLengh*SampleRate());
-       fSwt := 2 * (long)SampleRate();
+       FSw  := twopi*FSw/SampleRate();
+       FSwx := twopi*FSwx/SampleRate();
+       FSwd := (FSwx-sw) / (fLengh*SampleRate());
+       FSwt := 2 * (long)SampleRate();
 *)
       end;
  end;
 
- fThru := Power(10, (0.05 * int(40 * Parameter[5])) - 2);
- if Parameter[5] = 0 then fThru := 0;
- fScale := 2 * Pi / SampleRate;
+ FThru := Power(10, (0.05 * int(40 * Parameter[5])) - 2);
+ if Parameter[5] = 0 then FThru := 0;
+ FScale := 2 * Pi / SampleRate;
 end;
 
 end.
@@ -418,11 +419,11 @@ var
   f, df : Single;
 begin
  //just update display text...
- int fMode := round(8.9 * Parameter[0]);
+ int FMode := round(8.9 * Parameter[0]);
  df := 0.0;
  if (Parameter[4] > 0.6) then df := 1.25 * Parameter[4] - 0.75;
  if (Parameter[4] < 0.4) then df := 1.25 * Parameter[4] - 0.50;
- switch(fMode)
+ switch(FMode)
  begin
   case 0: //MIDI note
       f := Trunc(128.*Parameter[3]);
@@ -445,17 +446,17 @@ begin
       break;
   
   case 6: //log sweep & step    
-  case 7: fSw = 13. + Trunc(30.*Parameter[3]);
-      fSwx = 13. + Trunc(30.*Parameter[4]);
-      iso2string(fSw, disp1); //start freq
-      iso2string(fSwx, disp2); //end freq
+  case 7: FSw = 13. + Trunc(30.*Parameter[3]);
+      FSwx = 13. + Trunc(30.*Parameter[4]);
+      iso2string(FSw, disp1); //start freq
+      iso2string(FSwx, disp2); //end freq
       break; 
   
   case 8: //lin sweep
-      fSw = 200. * Trunc(100.*Parameter[3]);
-      fSwx = 200. * Trunc(100.*Parameter[4]);
-      long2string((long)fSw, disp1); //start freq
-      long2string((long)fSwx, disp2); //end freq
+      FSw = 200. * Trunc(100.*Parameter[3]);
+      FSwx = 200. * Trunc(100.*Parameter[4]);
+      long2string((long)FSw, disp1); //start freq
+      long2string((long)FSwx, disp2); //end freq
       break; 
  end;
 

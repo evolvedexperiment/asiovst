@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   LoudnessDM in 'LoudnessDM.pas' {LoudnessDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  LoudnessDataModule: TLoudnessDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    LoudnessDataModule := TLoudnessDataModule.Create(Application);
-    LoudnessDataModule.Effect^.user := LoudnessDataModule;
-    LoudnessDataModule.AudioMaster := audioMaster;
-    Result := LoudnessDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TLoudnessDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

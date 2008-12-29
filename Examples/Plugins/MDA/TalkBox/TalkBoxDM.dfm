@@ -5,13 +5,14 @@ object TalkBoxDataModule: TTalkBoxDataModule
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda TalkBox'
-  ProductName = 'TalkBox'
-  VendorName = 'mda'
+  ProductName = 'DAV mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Talkbox'
+  IORatio = 1.000000000000000000
   UniqueID = 'mda&'
   ShellPlugins = <>
   Programs = <
@@ -67,15 +68,18 @@ object TalkBoxDataModule: TTalkBoxDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Quality'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Quality'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>
-  OnResume = VSTModuleResume
-  OnSuspend = VSTModuleSuspend
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnResume = VSTModuleResume
+  OnSuspend = VSTModuleSuspend
   Left = 188
   Top = 77
   Height = 150

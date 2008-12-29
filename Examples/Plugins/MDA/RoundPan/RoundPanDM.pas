@@ -7,17 +7,17 @@ uses
 
 type
   TRoundPanDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterAutoChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
-    fBuffer  : Array [0..1] of PDAVSingleFixedArray;
-    fSize    : Integer;
-    fPhi     : Single;
-    fDPhi    : Single;
+    FBuffer  : Array [0..1] of PDAVSingleFixedArray;
+    FSize    : Integer;
+    FPhi     : Single;
+    FDPhi    : Single;
   public
   end;
 
@@ -28,18 +28,18 @@ implementation
 procedure TRoundPanDataModule.ParameterAutoChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
   if (Parameter[1] > 0.55)
-   then fDPhi := 20 * (Parameter[1] - 0.55) / SampleRate else
+   then FDPhi := 20 * (Parameter[1] - 0.55) / SampleRate else
   if (Parameter[1] < 0.45)
-   then fDPhi := -20 * (0.45 - Parameter[1]) / SampleRate
-   else fDPhi := 0;
+   then FDPhi := -20 * (0.45 - Parameter[1]) / SampleRate
+   else FDPhi := 0;
 end;
 
 procedure TRoundPanDataModule.ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fPhi := (6.2831853 * (Parameter[0] - 0.5));
+ FPhi := (6.2831853 * (Parameter[0] - 0.5));
 end;
 
-procedure TRoundPanDataModule.VSTModuleCreate(Sender: TObject);
+procedure TRoundPanDataModule.VSTModuleOpen(Sender: TObject);
 begin
 (*
   //inits here!
@@ -48,23 +48,23 @@ begin
 *)
 
 {
-  fSize   := 1500;
+  FSize   := 1500;
   fBufpos := 0;
-  GetMem(fBuffer[0], fSize * SizeOf(Single));
-  GetMem(fBuffer[1], fSize * SizeOf(Single));
+  GetMem(FBuffer[0], FSize * SizeOf(Single));
+  GetMem(FBuffer[1], FSize * SizeOf(Single));
 }
 
  VSTModuleSuspend(Sender);
 
  //calcs here!
- fPhi  := 0;
- fDPhi := (5 / SampleRate);
+ FPhi  := 0;
+ FDPhi := (5 / SampleRate);
 end;
 
-procedure TRoundPanDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TRoundPanDataModule.VSTModuleClose(Sender: TObject);
 begin
- // if assigned(fBuffer[0]) then Dispose(fBuffer[0]);
- // if assigned(fBuffer[1]) then Dispose(fBuffer[1]);
+ // if assigned(FBuffer[0]) then Dispose(FBuffer[0]);
+ // if assigned(FBuffer[1]) then Dispose(FBuffer[1]);
 end;
 
 procedure TRoundPanDataModule.VSTModuleProcess(const Inputs,
@@ -76,8 +76,8 @@ const
   cHalf : Single = 0.5;
   cRoot : Single = 0.7854;
 begin
- ph  := fPhi;
- dph := fDPhi;
+ ph  := FPhi;
+ dph := FDPhi;
  for Sample := 0 to SampleFrames - 1 do
   begin
    a := cHalf * (Inputs[0, Sample] + Inputs[1, Sample]); //process from here...
@@ -90,13 +90,13 @@ begin
  if (ph < 0.0)
   then ph := ph + 4 * Pi else
  if (ph > 4 * Pi) then ph := ph - 4 * Pi;
- fPhi := ph;
+ FPhi := ph;
 end;
 
 procedure TRoundPanDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- // FillChar(fBuffer[0], fSize * SizeOf(Single), 0);
- // FillChar(fBuffer[1], fSize * SizeOf(Single), 0);
+ // FillChar(FBuffer[0], FSize * SizeOf(Single), 0);
+ // FillChar(FBuffer[1], FSize * SizeOf(Single), 0);
 end;
 
 end.

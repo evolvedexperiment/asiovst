@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   SplitterDM in 'SplitterDM.pas' {SplitterDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SplitterDataModule: TSplitterDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    SplitterDataModule := TSplitterDataModule.Create(Application);
-    SplitterDataModule.Effect^.user := SplitterDataModule;
-    SplitterDataModule.AudioMaster := audioMaster;
-    Result := SplitterDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TSplitterDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

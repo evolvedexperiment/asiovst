@@ -7,7 +7,6 @@ uses
 
 type
   TSplitterDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray;const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
@@ -16,19 +15,20 @@ type
     procedure ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleOpen(Sender: TObject);
   private
-    fBuffer    : array [0..1, 0..1] of Single;
-    fFreq, ff  : Single;
-    fFreqDisp  : Single;
-    fLevel, ll : Single;
-    fEnv, pp   : Single;
-    fAttack    : Single;
-    fRelease   : Single;
+    FBuffer    : array [0..1, 0..1] of Single;
+    FFreq, ff  : Single;
+    FFreqDisp  : Single;
+    FLevel, ll : Single;
+    FEnv, pp   : Single;
+    FAttack    : Single;
+    FRelease   : Single;
     i2l        : Single;
     i2r        : Single;
     o2l        : Single;
     o2r        : Single;
-    fMode      : Integer;
+    FMode      : Integer;
   public
   end;
 
@@ -56,15 +56,15 @@ end;
 
 procedure TSplitterDataModule.ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := FloatToStrF(fFreqDisp, ffGeneral, 5, 5); 
+ PreDefined := FloatToStrF(FFreqDisp, ffGeneral, 5, 5); 
 end;
 
 procedure TSplitterDataModule.ParameterEnvelopeChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
-  fAttack  := 0.05 * (1 - Value);
-  fRelease := 1 - exp(-6 - 4 * Value);             // Envelope
-  if (fAttack  > 0.02)   then fAttack  := 0.02;
-  if (fRelease < 0.9995) then fRelease := 0.9995;
+  FAttack  := 0.05 * (1 - Value);
+  FRelease := 1 - exp(-6 - 4 * Value);             // Envelope
+  if (FAttack  > 0.02)   then FAttack  := 0.02;
+  if (FRelease < 0.9995) then FRelease := 0.9995;
 end;
 
 procedure TSplitterDataModule.ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -76,8 +76,9 @@ begin
  end;
 end;
 
-procedure TSplitterDataModule.VSTModuleCreate(Sender: TObject);
+procedure TSplitterDataModule.VSTModuleOpen(Sender: TObject);
 begin
+ // Initial Parameters
  Parameter[0] := 0.3;     // Mode
  Parameter[1] := 0.5;     // Freq
  Parameter[2] := 0.5;     // Freq Mode
@@ -86,6 +87,19 @@ begin
  Parameter[5] := 0.5;     // Envelope
  Parameter[6] := 0;       // Gain
 
+ // Default Preset
+ with Programs[0] do
+  begin
+   Parameter[0] := 0.3;     // Mode
+   Parameter[1] := 0.5;     // Freq
+   Parameter[2] := 0.5;     // Freq Mode
+   Parameter[3] := -20;     // Level [dB] (was 2)
+   Parameter[4] := 1;       // Level Mode
+   Parameter[5] := 0.5;     // Envelope
+   Parameter[6] := 0;       // Gain
+  end;
+
+ // Preset 1
  with Programs[1] do
   begin
    Parameter[0] := 0.3;   // Mode
@@ -97,6 +111,7 @@ begin
    Parameter[6] := 0;     // Gain
   end;
 
+ // Preset 2
  with Programs[2] do
   begin
    Parameter[0] := 2;
@@ -124,15 +139,15 @@ var
   il, ir, fx,
   l, r         : Single;
 begin
-  a0 := fBuffer[0, 0];
-  a1 := fBuffer[0, 1];
-  b0 := fBuffer[1, 0];
-  b1 := fBuffer[1, 1];
-  e  := fEnv;
-  at := fAttack;
-  re := fRelease;
+  a0 := FBuffer[0, 0];
+  a1 := FBuffer[0, 1];
+  b0 := FBuffer[1, 0];
+  b1 := FBuffer[1, 1];
+  e  := FEnv;
+  at := FAttack;
+  re := FRelease;
   fx := ff;
-  lv := fLevel;
+  lv := FLevel;
   lx := ll;
   px := pp;
   il := i2l;
@@ -145,12 +160,12 @@ begin
     a := Inputs[0, Sample];
     b := Inputs[1, Sample];
 
-    a0 := a0 + fFreq * (a - a0 - a1);  // Frequency Split
-    a1 := a1 + fFreq * a0;
+    a0 := a0 + FFreq * (a - a0 - a1);  // Frequency Split
+    a1 := a1 + FFreq * a0;
     aa := a1 + fx * a;
 
-    b0 := b0 + fFreq * (b - b0 - b1);
-    b1 := b1 + fFreq * b0;
+    b0 := b0 + FFreq * (b - b0 - b1);
+    b1 := b1 + FFreq * b0;
     bb := b1 + fx * b;
 
     ee := -(aa + bb);
@@ -166,19 +181,19 @@ begin
    Outputs[1, Sample] := b;
   end;
 
-  fEnv := e;
-  if abs(e) < 1E-10 then fEnv := 0;
-  fBuffer[0, 0] := a0;
-  fBuffer[0, 1] := a1;
-  fBuffer[1, 0] := b0;
-  fBuffer[1, 1] := b1;
+  FEnv := e;
+  if abs(e) < 1E-10 then FEnv := 0;
+  FBuffer[0, 0] := a0;
+  FBuffer[0, 1] := a1;
+  FBuffer[1, 0] := b0;
+  FBuffer[1, 1] := b1;
 
   if (abs(a0) < 1E-10) then            // catch denormals
    begin
-    fBuffer[0, 0] := 0;
-    fBuffer[0, 1] := 0;
-    fBuffer[1, 0] := 0;
-    fBuffer[1, 1] := 0;
+    FBuffer[0, 0] := 0;
+    FBuffer[0, 1] := 0;
+    FBuffer[1, 0] := 0;
+    FBuffer[1, 1] := 0;
    end;
 end;
 
@@ -186,21 +201,21 @@ procedure TSplitterDataModule.VSTModuleResume(Sender: TObject);
 var
   tmp : Integer;
 begin
-  fFreqDisp := Power(10, 2 + 2 * Parameter[1]);   // Frequency
-  fFreq     := 5.5 * fFreqDisp / SampleRate;
-  if fFreq > 1 then fFreq := 1;
+  FFreqDisp := Power(10, 2 + 2 * Parameter[1]);   // Frequency
+  FFreq     := 5.5 * FFreqDisp / SampleRate;
+  if FFreq > 1 then FFreq := 1;
 
   ff  := -1;                                      // Above
   tmp := round(2.9 * Parameter[2]);               // Frequency Switching
   if tmp = 0 then ff := 0.0;                      // Below
-  if tmp = 1 then fFreq := 0.001;                 // All
+  if tmp = 1 then FFreq := 0.001;                 // All
 
-  fLevel := Power(10, 0.05 * Parameter[3] + 0.3); // Level
+  FLevel := Power(10, 0.05 * Parameter[3] + 0.3); // Level
 
   ll := 0.0;                                      // Above
   tmp := round(2.9 * Parameter[4]);               // Level Switching
   if (tmp = 0) then ll := -1;                     // Below
-  if (tmp = 1) then fLevel := 0;                  // All
+  if (tmp = 1) then FLevel := 0;                  // All
 
   pp := -1;                                       // Phase Correction
   if (ff = ll) then pp := 1;
@@ -212,8 +227,8 @@ begin
   o2l := i2l;
   o2r := i2l;
 
-  fMode := round(Parameter[0]);                   // Output Routing
-  case round(fMode) of
+  FMode := round(Parameter[0]);                   // Output Routing
+  case round(FMode) of
      0: begin i2l :=   0 ;  i2r :=   0 ; end;
      1: begin o2l := -o2l;  o2r := -o2r; end;
      2: begin i2l :=   0 ;  o2r := -o2r; end;
@@ -223,11 +238,11 @@ end;
 
 procedure TSplitterDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- fEnv := 0;
- fBuffer[0, 0] := 0;
- fBuffer[0, 1] := 0;
- fBuffer[1, 0] := 0;
- fBuffer[1, 1] := 0;
+ FEnv := 0;
+ FBuffer[0, 0] := 0;
+ FBuffer[0, 1] := 0;
+ FBuffer[1, 0] := 0;
+ FBuffer[1, 1] := 0;
 end;
 
 end.

@@ -7,20 +7,19 @@ uses
 
 type
   TLoudnessDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure ParameterLinkDisplay( Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer;
-      var Value: Single);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleOpen(Sender: TObject);
   private
-    fIsBoost : Boolean;
-    fGain    : Single;
-    fIGain   : Single;
-    fOGain   : Single;
-    fCoeffs  : Array [0..2] of Single;
-    fState   : Array [0..1, 0..1] of Single;
+    FIsBoost : Boolean;
+    FGain    : Single;
+    FIGain   : Single;
+    FOGain   : Single;
+    FCoeffs  : Array [0..2] of Single;
+    FState   : Array [0..1, 0..1] of Single;
   public
   end;
 
@@ -49,7 +48,14 @@ const
       (   0,      0,  0.00)  );
 
 
-procedure TLoudnessDataModule.VSTModuleCreate(Sender: TObject);
+procedure TLoudnessDataModule.ParameterLinkDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] > 0.5
+  then PreDefined := 'ON'
+  else PreDefined := 'OFF';
+end;
+
+procedure TLoudnessDataModule.VSTModuleOpen(Sender: TObject);
 begin
  VSTModuleSuspend(Sender);
 (*
@@ -57,13 +63,6 @@ begin
   Parameter[1] = 0.5;  //output
   Parameter[2] = 0.35; //link
 *)
-end;
-
-procedure TLoudnessDataModule.ParameterLinkDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-begin
- if Parameter[Index] > 0.5
-  then PreDefined := 'ON'
-  else PreDefined := 'OFF';
 end;
 
 procedure TLoudnessDataModule.VSTModuleParameterChange(Sender: TObject;
@@ -79,58 +78,58 @@ var
   z0, z1,
   z2, z3  : Single;
 begin
-  if (fIsBoost = False) then //cut
+  if (FIsBoost = False) then //cut
    for Sample := 0 to SampleFrames - 1 do
     begin
-     z0 := z0 + fCoeffs[0] * (Inputs[0, Sample] - z0 + 0.3 * z1);
+     z0 := z0 + FCoeffs[0] * (Inputs[0, Sample] - z0 + 0.3 * z1);
      Inputs[0, Sample] := Inputs[0, Sample] - z0;
-     z1 := z1 + fCoeffs[0] * (Inputs[0, Sample] - z1);
+     z1 := z1 + FCoeffs[0] * (Inputs[0, Sample] - z1);
      Inputs[0, Sample] := Inputs[0, Sample] - z1;
-     Inputs[0, Sample] := Inputs[0, Sample] - z0 * fCoeffs[1];
+     Inputs[0, Sample] := Inputs[0, Sample] - z0 * FCoeffs[1];
 
-     z2 := z2 + fCoeffs[0] * (Inputs[1, Sample] - z2 + 0.3 * z1);
+     z2 := z2 + FCoeffs[0] * (Inputs[1, Sample] - z2 + 0.3 * z1);
      Inputs[1, Sample] := Inputs[1, Sample] - z2;
-     z3 := z3 + fCoeffs[0] * (Inputs[1, Sample] - z3);
+     z3 := z3 + FCoeffs[0] * (Inputs[1, Sample] - z3);
      Inputs[1, Sample] := Inputs[1, Sample] - z3;
-     Inputs[1, Sample] := Inputs[1, Sample] - z2 * fCoeffs[1];
+     Inputs[1, Sample] := Inputs[1, Sample] - z2 * FCoeffs[1];
 
-     Outputs[0, Sample] := Inputs[0, Sample] * fGain;
-     Outputs[1, Sample] := Inputs[1, Sample] * fGain;
+     Outputs[0, Sample] := Inputs[0, Sample] * FGain;
+     Outputs[1, Sample] := Inputs[1, Sample] * FGain;
     end
   else //boost
    for Sample := 0 to SampleFrames - 1 do
     begin
-      z0 := z0 + fCoeffs[0] * (Inputs[0, Sample]  - z0);
-      z1 := z1 + fCoeffs[0] * (z0 - z1);
-      Inputs[0, Sample]  := Inputs[0, Sample] + fCoeffs[1] * (z1 - fCoeffs[2] * z0);
+      z0 := z0 + FCoeffs[0] * (Inputs[0, Sample]  - z0);
+      z1 := z1 + FCoeffs[0] * (z0 - z1);
+      Inputs[0, Sample]  := Inputs[0, Sample] + FCoeffs[1] * (z1 - FCoeffs[2] * z0);
 
-      z2 := z2 + fCoeffs[0] * (Inputs[1, Sample]  - z2);
-      z3 := z3 + fCoeffs[0] * (z2 - z3);
-      Inputs[1, Sample] := Inputs[1, Sample] + fCoeffs[1] * (z3 - fCoeffs[2] * z2);
+      z2 := z2 + FCoeffs[0] * (Inputs[1, Sample]  - z2);
+      z3 := z3 + FCoeffs[0] * (z2 - z3);
+      Inputs[1, Sample] := Inputs[1, Sample] + FCoeffs[1] * (z3 - FCoeffs[2] * z2);
 
-     Outputs[0, Sample] := Inputs[0, Sample] * fGain;
-     Outputs[1, Sample] := Inputs[1, Sample] * fGain;
+     Outputs[0, Sample] := Inputs[0, Sample] * FGain;
+     Outputs[1, Sample] := Inputs[1, Sample] * FGain;
     end;
 
   if (abs(z1) < 1E-10) or (abs(z1) > 100) then
    begin
-    fState[0, 0] := 0;
-    fState[0, 1] := 0;
+    FState[0, 0] := 0;
+    FState[0, 1] := 0;
    end
   else
    begin
-    fState[0, 0] := z0;
-    fState[0, 1] := z1;
+    FState[0, 0] := z0;
+    FState[0, 1] := z1;
    end; //catch denormals
   if (abs(z3) < 1E-10) or (abs(z3) > 100) then
    begin
-    fState[1, 0] := 0;
-    fState[1, 1] := 0;
+    FState[1, 0] := 0;
+    FState[1, 1] := 0;
    end
   else
    begin
-    fState[1, 0] := z2;
-    fState[1, 1] := z3;
+    FState[1, 0] := z2;
+    FState[1, 1] := z3;
    end;
 end;
 
@@ -140,50 +139,50 @@ var
   i      : Integer;
 begin
  tmp   := sqr(Parameter[0]) - 1;
- fIGain := 60 * sqr(tmp);
- if (tmp < 0) then fIGain := -fIGain ;
+ FIGain := 60 * sqr(tmp);
+ if (tmp < 0) then FIGain := -FIGain ;
  tmp := Parameter[1] + Parameter[1] - 1;
- fOGain := 60 * sqr(tmp);
+ FOGain := 60 * sqr(tmp);
  if (tmp < 0)
-  then fOGain := -fOGain;
+  then FOGain := -FOGain;
 
- f := 0.1 * fIGain + 6;  //coefficient index + fractional part
+ f := 0.1 * FIGain + 6;  //coefficient index + fractional part
  i := round(f);
  f := f - i;
 
- tmp := cLoudness[i][0];  fCoeffs[0] := tmp + f * (cLoudness[i + 1][0] - tmp);
- tmp := cLoudness[i][1];  fCoeffs[1] := tmp + f * (cLoudness[i + 1][1] - tmp);
- tmp := cLoudness[i][2];  fCoeffs[2] := tmp + f * (cLoudness[i + 1][2] - tmp);
+ tmp := cLoudness[i][0];  FCoeffs[0] := tmp + f * (cLoudness[i + 1][0] - tmp);
+ tmp := cLoudness[i][1];  FCoeffs[1] := tmp + f * (cLoudness[i + 1][1] - tmp);
+ tmp := cLoudness[i][2];  FCoeffs[2] := tmp + f * (cLoudness[i + 1][2] - tmp);
 
- fCoeffs[0] := 1 - Exp(-6.283153 * fCoeffs[0] / SampleRate);
+ FCoeffs[0] := 1 - Exp(-6.283153 * FCoeffs[0] / SampleRate);
 
- if (fIGain > 0) then
+ if (FIGain > 0) then
   begin
-   //if not fIsBoost then suspend();  //don't click when switching mode
-   fIsBoost := True;
+   //if not FIsBoost then suspend();  //don't click when switching mode
+   FIsBoost := True;
   end
  else
   begin
-   //if fIsBoost then suspend();
-   fIsBoost := False;
+   //if FIsBoost then suspend();
+   FIsBoost := False;
   end;
 
-  tmp := fOGain;
+  tmp := FOGain;
   if (Parameter[2] > 0.5) then //linked gain
    begin
-    tmp := tmp - fIGain;
+    tmp := tmp - FIGain;
     if (tmp > 0)
      then tmp := 0;  //limit max gain
    end
-  else fGain := Power(10, 0.05 * tmp);
+  else FGain := Power(10, 0.05 * tmp);
 end;
 
 procedure TLoudnessDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- fState[0, 0] := 0;
- fState[0, 1] := 0;
- fState[1, 0] := 0;
- fState[1, 1] := 0;
+ FState[0, 0] := 0;
+ FState[0, 1] := 0;
+ FState[1, 0] := 0;
+ FState[1, 1] := 0;
 end;
 
 end.

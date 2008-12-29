@@ -7,7 +7,6 @@ uses
 
 type
   TTransientDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackChangeHold(Sender: TObject; const Index: Integer; var Value: Single);
@@ -15,19 +14,20 @@ type
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterReleaseChangeHold(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleOpen(Sender: TObject);
   private
-    fDry         : Single;
-    fBuf         : Array [0..1] of Single;
-    fEnv         : Array [0..3] of Single;
-    fAtt12       : Single;
-    fAtt34       : Single;
-    fRel12       : Single;
-    fRel34       : Single;
-    fAttack      : Array [0..1] of Single;
-    fRelease     : Array [2..3] of Single;
-    fFilterIn    : Single;
-    fFilterOut   : Single;
-    fFilterState : Single;
+    FDry         : Single;
+    FBuf         : Array [0..1] of Single;
+    FEnv         : Array [0..3] of Single;
+    FAtt12       : Single;
+    FAtt34       : Single;
+    FRel12       : Single;
+    FRel34       : Single;
+    FAttack      : Array [0..1] of Single;
+    FRelease     : Array [2..3] of Single;
+    FFilterIn    : Single;
+    FFilterOut   : Single;
+    FFilterState : Single;
   public
   end;
 
@@ -38,10 +38,21 @@ implementation
 uses
   Math;
 
+procedure TTransientDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ // Initial Parameters
+ Parameter[0] := 50;   // Attack [%]
+ Parameter[1] := 50;   // Release [%]
+ Parameter[2] := 0;    // Output [dB]
+ Parameter[3] := 0.49; // Filter
+ Parameter[4] := 35;   // Att-rel [%]
+ Parameter[5] := 35;   // Rel-att [%]
+end;
+
 procedure TTransientDataModule.ParameterOutputChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- fDry := dB_to_Amp(Value);
+ FDry := dB_to_Amp(Value);
 end;
 
 procedure TTransientDataModule.ParameterReleaseChange(Sender: TObject;
@@ -49,26 +60,26 @@ procedure TTransientDataModule.ParameterReleaseChange(Sender: TObject;
 begin
  if Value > 50 then
   begin
-   fRelease[2] := 1 - Power(10, -4.5);
-   fRelease[3] := 1 - Power(10, -5.85 + 0.027 * Value);
+   FRelease[2] := 1 - Power(10, -4.5);
+   FRelease[3] := 1 - Power(10, -5.85 + 0.027 * Value);
   end
  else
   begin
-   fRelease[2] := 1 - Power(10, -3.15 - 0.027 * Value);
-   fRelease[3] := 1 - Power(10, -4.5);
+   FRelease[2] := 1 - Power(10, -3.15 - 0.027 * Value);
+   FRelease[3] := 1 - Power(10, -4.5);
   end;
 end;
 
 procedure TTransientDataModule.ParameterAttackChangeHold(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- fRel12 := 1 - Power(10, -2 - 0.04 * Value);
+ FRel12 := 1 - Power(10, -2 - 0.04 * Value);
 end;
 
 procedure TTransientDataModule.ParameterReleaseChangeHold(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- fAtt34 := Power(10, - 0.04 * Value);
+ FAtt34 := Power(10, - 0.04 * Value);
 end;
 
 procedure TTransientDataModule.ParameterAttackChange(Sender: TObject;
@@ -76,13 +87,13 @@ procedure TTransientDataModule.ParameterAttackChange(Sender: TObject;
 begin
  if Value > 50 then
   begin
-   fAttack[0] := Power(10, -1.5);
-   fAttack[1] := Power(10, 1 - 0.05 * Value);
+   FAttack[0] := Power(10, -1.5);
+   FAttack[1] := Power(10, 1 - 0.05 * Value);
   end
  else
   begin
-   fAttack[0] := Power(10, -4 + 0.05 * Value);
-   fAttack[1] := Power(10, -1.5);
+   FAttack[0] := Power(10, -4 + 0.05 * Value);
+   FAttack[1] := Power(10, -1.5);
   end;
 end;
 
@@ -91,26 +102,16 @@ procedure TTransientDataModule.ParameterFilterChange(Sender: TObject;
 begin
  if Value > 0.5 then
   begin
-   fFilterIn := 0.8 - 1.6 * Value;
-   fFilterOut := 1 + fFilterIn;
-   fFilterState := 1;
+   FFilterIn := 0.8 - 1.6 * Value;
+   FFilterOut := 1 + FFilterIn;
+   FFilterState := 1;
   end
  else
   begin
-   fFilterIn := 0.1 + 1.8 * Value;
-   fFilterOut := 1 - fFilterIn;
-   fFilterState := 0;
+   FFilterIn := 0.1 + 1.8 * Value;
+   FFilterOut := 1 - FFilterIn;
+   FFilterState := 0;
   end;
-end;
-
-procedure TTransientDataModule.VSTModuleCreate(Sender: TObject);
-begin
- Parameter[0] := 50;   // Attack [%]
- Parameter[1] := 50;   // Release [%]
- Parameter[2] := 0;    // Output [dB]
- Parameter[3] := 0.49; // Filter
- Parameter[4] := 35;   // Att-rel [%]
- Parameter[5] := 35;   // Rel-att [%]
 end;
 
 procedure TTransientDataModule.VSTModuleProcess(const Inputs,
@@ -122,22 +123,22 @@ var
   a1, a2, r12, a34, r3, r4 : Single;
   fi, fo, fx, fb1, fb2     : Single;
 begin
- e1  := fEnv[0];
- e2  := fEnv[1];
- e3  := fEnv[2];
- e4  := fEnv[3];
- y   := fDry;
- a1  := fAttack[0];
- a2  := fAttack[1];
- a34 := fAtt34;
- r12 := fRel12;
- r3  := fRelease[2];
- r4  := fRelease[3];
- fi  := fFilterIn;
- fo  := fFilterOut;
- fx  := fFilterState;
- fb1 := fBuf[0];
- fb2 := fBuf[1];
+ e1  := FEnv[0];
+ e2  := FEnv[1];
+ e3  := FEnv[2];
+ e4  := FEnv[3];
+ y   := FDry;
+ a1  := FAttack[0];
+ a2  := FAttack[1];
+ a34 := FAtt34;
+ r12 := FRel12;
+ r3  := FRelease[2];
+ r4  := FRelease[3];
+ fi  := FFilterIn;
+ fo  := FFilterOut;
+ fx  := FFilterState;
+ fb1 := FBuf[0];
+ fb2 := FBuf[1];
 
  for Sample := 0 to SampleFrames - 1 do
   begin
@@ -158,21 +159,21 @@ begin
   end;
  if (e1 < 1E-10) then
   begin
-   fEnv[0] := 0;
-   fEnv[1] := 0;
-   fEnv[2] := 0;
-   fEnv[3] := 0;
-   fBuf[0] := 0;
-   fBuf[1] := 0;
+   FEnv[0] := 0;
+   FEnv[1] := 0;
+   FEnv[2] := 0;
+   FEnv[3] := 0;
+   FBuf[0] := 0;
+   FBuf[1] := 0;
   end
  else
   begin
-   fEnv[0] := e1;
-   fEnv[1] := e2;
-   fEnv[2] := e3;
-   fEnv[3] := e4;
-   fBuf[0] := fb1;
-   fBuf[1] := fb2;
+   FEnv[0] := e1;
+   FEnv[1] := e2;
+   FEnv[2] := e3;
+   FEnv[3] := e4;
+   FBuf[0] := fb1;
+   FBuf[1] := fb2;
   end;
 end;
 

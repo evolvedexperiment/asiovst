@@ -6,7 +6,7 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
   Version = '1.0'
   EffectName = 'mda Ambience'
   ProductName = 'Ambience'
-  VendorName = 'mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000

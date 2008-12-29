@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   TrackerDM in 'TrackerDM.pas' {TrackerDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  TrackerDataModule: TTrackerDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    TrackerDataModule := TTrackerDataModule.Create(Application);
-    TrackerDataModule.Effect^.user := TrackerDataModule;
-    TrackerDataModule.AudioMaster := audioMaster;
-    Result := TrackerDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TTrackerDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

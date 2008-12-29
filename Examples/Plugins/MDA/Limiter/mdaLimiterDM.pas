@@ -17,14 +17,14 @@ type
     procedure ThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
   private
-    fThreshold_dB : Single;
-    fThreshold    : Single;
-    fTrim         : Single;
-    fGain         : Single;
-    fAttack       : Single;
-    fRelease      : Single;
+    FThreshold_dB : Single;
+    FThreshold    : Single;
+    FTrim         : Single;
+    FGain         : Single;
+    FAttack       : Single;
+    FRelease      : Single;
     procedure CalculateThreshold;
   public
   end;
@@ -39,28 +39,28 @@ uses
 procedure TmdaLimiterDataModule.ThresholdChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if fThreshold_dB <> Value then
+ if FThreshold_dB <> Value then
   begin
-   fThreshold_dB := Value;
+   FThreshold_dB := Value;
    CalculateThreshold;
   end;
 end;
 
 procedure TmdaLimiterDataModule.OutputTrimChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fTrim := Power(10.0, (2.0 * Value) - 1.0);
+ FTrim := Power(10.0, (2.0 * Value) - 1.0);
 end;
 
 procedure TmdaLimiterDataModule.CalculateThreshold;
 begin
  if Parameter[4] > 0.5
-  then fThreshold := Power(10, 1 - (2 * fThreshold_dB))  //soft knee
-  else fThreshold := Power(10, (2 * fThreshold_dB) - 2); //hard knee
+  then FThreshold := Power(10, 1 - (2 * FThreshold_dB))  //soft knee
+  else FThreshold := Power(10, (2 * FThreshold_dB) - 2); //hard knee
 end;
 
 procedure TmdaLimiterDataModule.AttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fAttack := Power(10, -2 * Value);
+ FAttack := Power(10, -2 * Value);
 end;
 
 procedure TmdaLimiterDataModule.KneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -72,17 +72,17 @@ end;
 
 procedure TmdaLimiterDataModule.AttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := FloatToStrF(-301030.1 / (SampleRate * log10(1 - fAttack)), ffGeneral, 4, 4);
+ PreDefined := FloatToStrF(-301030.1 / (SampleRate * log10(1 - FAttack)), ffGeneral, 4, 4);
 end;
 
 procedure TmdaLimiterDataModule.ReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := FloatToStrF(-301.0301 / (SampleRate * log10(1 - fRelease)), ffGeneral, 4, 4);
+ PreDefined := FloatToStrF(-301.0301 / (SampleRate * log10(1 - FRelease)), ffGeneral, 4, 4);
 end;
 
 procedure TmdaLimiterDataModule.ReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fRelease := Power(10, -2 - (3 * Value));
+ FRelease := Power(10, -2 - (3 * Value));
 end;
 
 procedure TmdaLimiterDataModule.KneeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -90,10 +90,10 @@ begin
  CalculateThreshold;
 end;
 
-procedure TmdaLimiterDataModule.VSTModuleCreate(Sender: TObject);
+procedure TmdaLimiterDataModule.VSTModuleOpen(Sender: TObject);
 begin
- fAttack  := 0.5;
- fRelease := 0.5;
+ FAttack  := 0.5;
+ FRelease := 0.5;
 end;
 
 procedure TmdaLimiterDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -104,11 +104,11 @@ var
   th, lev,
   l, r     : Single;
 begin
- th := fThreshold;
- g  := fGain;
- at := fAttack;
- re := fRelease;
- tr := fTrim;
+ th := FThreshold;
+ g  := FGain;
+ at := FAttack;
+ re := FRelease;
+ tr := FTrim;
  if Parameter[4] < 0.5 then //soft knee
   for smp := 0 to SampleFrames - 1 do
    begin
@@ -137,7 +137,7 @@ begin
     outputs[0, smp] := (l * tr * g);
     outputs[1, smp] := (r * tr * g);
    end;
- fGain := g;
+ FGain := g;
 end;
 
 procedure TmdaLimiterDataModule.VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -148,11 +148,11 @@ var
   th, lev,
   l, r     : Double;
 begin
- th := fThreshold;
- g  := fGain;
- at := fAttack;
- re := fRelease;
- tr := fTrim;
+ th := FThreshold;
+ g  := FGain;
+ at := FAttack;
+ re := FRelease;
+ tr := FTrim;
  if Parameter[4] < 0.5 then //soft knee
   for smp := 0 to SampleFrames - 1 do
    begin
@@ -181,7 +181,7 @@ begin
     outputs[0, smp] := (l * tr * g);
     outputs[1, smp] := (r * tr * g);
    end;
- fGain := g;
+ FGain := g;
 end;
 
 end.

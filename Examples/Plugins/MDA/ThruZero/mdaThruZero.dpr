@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   ThruZeroDM in 'ThruZeroDM.pas' {ThruZeroDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  ThruZeroDataModule: TThruZeroDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    ThruZeroDataModule := TThruZeroDataModule.Create(Application);
-    ThruZeroDataModule.Effect^.user := ThruZeroDataModule;
-    ThruZeroDataModule.AudioMaster := audioMaster;
-    Result := ThruZeroDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TThruZeroDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

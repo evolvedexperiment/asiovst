@@ -7,27 +7,27 @@ uses
 
 type
   TVocInputDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure ParameterTrackingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMaxFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleOpen(Sender: TObject);
   private
-    fLowBuffer : Array [0..3] of Single;
-    fPStep     : Single;
-    fSawbuf    : Single;
-    fNoise     : Single;
-    fLowEnv    : Single;
-    fHighEnv   : Single;
-    fLowFreq   : Single;
-    fVUv       : Single;
-    fRoot      : Single;
-    fMinp      : Single;
-    fMaxp      : Single;
-    fPMult     : Single;
-    fTrack     : Integer;
-    function midi2string(const n : Single): string;
+    FLowBuffer : Array [0..3] of Single;
+    FPStep     : Single;
+    FSawbuf    : Single;
+    FNoise     : Single;
+    FLowEnv    : Single;
+    FHighEnv   : Single;
+    FLowFreq   : Single;
+    FVUv       : Single;
+    FRoot      : Single;
+    FMinp      : Single;
+    FMaxp      : Single;
+    FPMult     : Single;
+    FTrack     : Integer;
+    function Midi2string(const n : Single): string;
   public
   end;
 
@@ -50,22 +50,10 @@ end;
 procedure TVocInputDataModule.ParameterMaxFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := midi2string(Parameter[4]);
+ PreDefined := Midi2string(Parameter[4]);
 end;
 
-procedure TVocInputDataModule.VSTModuleCreate(Sender: TObject);
-begin
- Parameter[0] := 0.5;  // Tracking Off / On / Quant
-
- Parameter[2] := 20;   // Breath fNoise
- Parameter[3] := 50;   // Voiced / Unvoiced Thresh
-(*
- Parameter[1] := 0.50;  //Pitch
- Parameter[4] := 0.35;  //Max Freq
-*)
-end;
-
-function TVocInputDataModule.midi2string(const n : Single) : string; //show name of MIDI note number (60=C3)
+function TVocInputDataModule.Midi2string(const n : Single) : string; //show name of MIDI note number (60=C3)
 var
   o, s, p : Integer;
 begin
@@ -96,6 +84,19 @@ begin
  result := result + char(48 + (abs(o) mod 10));
 end;
 
+procedure TVocInputDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ // Initial Parameters
+ Parameter[0] := 0.5;  // Tracking Off / On / Quant
+
+ Parameter[2] := 20;   // Breath FNoise
+ Parameter[3] := 50;   // Voiced / Unvoiced Thresh
+(*
+ Parameter[1] := 0.50;  //Pitch
+ Parameter[4] := 0.35;  //Max Freq
+*)
+end;
+
 procedure TVocInputDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
@@ -117,22 +118,22 @@ var
   rootm  : Single;
   tr     : Integer;
 begin
-  ds    := fPStep;
-  s     := fSawbuf;
-  n     := fNoise;
-  l0    := fLowBuffer[0];
-  l1    := fLowBuffer[1];
-  l2    := fLowBuffer[2];
-  l3    := fLowBuffer[3];
-  le    := fLowEnv;
-  he    := fHighEnv;
-  et    := fLowFreq * 0.1;
-  lf    := fLowFreq;
-  v     := fVUv;
-  mn    := fMinp;
-  mx    := fMaxp;
+  ds    := FPStep;
+  s     := FSawbuf;
+  n     := FNoise;
+  l0    := FLowBuffer[0];
+  l1    := FLowBuffer[1];
+  l2    := FLowBuffer[2];
+  l3    := FLowBuffer[3];
+  le    := FLowEnv;
+  he    := FHighEnv;
+  et    := FLowFreq * 0.1;
+  lf    := FLowFreq;
+  v     := FVUv;
+  mn    := FMinp;
+  mx    := FMaxp;
   rootm := 39.863137;
-  tr    := fTrack;
+  tr    := FTrack;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
@@ -154,12 +155,12 @@ begin
         begin
          mn := 0.6 * l3;                  // new max pitch to discourage octave jumps!
          l2 := l1 / (l1 - l2);            // fractional period...
-         ds := fPMult / (l3 - l2);        // new period
+         ds := FPMult / (l3 - l2);        // new period
 
          if (tr = 2) then                 // quantize pitch
           begin
-           ds := rootm * (log10(ds) - fRoot);
-           ds := Power(1.0594631, trunc(ds + 0.5) + rootm * fRoot);
+           ds := rootm * (log10(ds) - FRoot);
+           ds := Power(1.0594631, trunc(ds + 0.5) + rootm * FRoot);
           end;
         end;
        l3 := l2;                          // restart period measurement
@@ -171,7 +172,7 @@ begin
    Outputs[1, Sample] := 0.00001 * ((random & 32767) - 16384); // sibilance
 *)
    if (le > he)
-    then Outputs[1, Sample] := Outputs[1, Sample] * s * n;     // ...or modulated breath fNoise
+    then Outputs[1, Sample] := Outputs[1, Sample] * s * n;     // ...or modulated breath FNoise
    Outputs[1, Sample] := Outputs[1, Sample] + s;
    s := s + ds;
    if (s > 0.5)
@@ -179,26 +180,26 @@ begin
 
    Outputs[0, Sample] := Inputs[0, Sample];
   end;
-  fSawbuf := s;
+  FSawbuf := s;
 
   if (abs(he) > 1E-10)
-   then fHighEnv := he
-   else fHighEnv := 0;                    // catch denormals
+   then FHighEnv := he
+   else FHighEnv := 0;                    // catch denormals
   if (abs(l1) > 1E-10) then
    begin
-    fLowBuffer[0] := l0;
-    fLowBuffer[1] := l1;
-    fLowEnv       := le;
+    FLowBuffer[0] := l0;
+    FLowBuffer[1] := l1;
+    FLowEnv       := le;
    end
   else
    begin
-    fLowBuffer[0] := 0;
-    fLowBuffer[1] := 0;
-    fLowEnv := 0;
+    FLowBuffer[0] := 0;
+    FLowBuffer[1] := 0;
+    FLowEnv := 0;
    end; 
-  fLowBuffer[2] := l2;
-  fLowBuffer[3] := l3;
-  if (tr > 0) then fPStep := ds; 
+  FLowBuffer[2] := l2;
+  FLowBuffer[3] := l3;
+  if (tr > 0) then FPStep := ds; 
 end;
 
 procedure TVocInputDataModule.VSTModuleResume(Sender: TObject);
@@ -207,29 +208,29 @@ var
 begin
   fs  := SampleRate;
   ifs := 1 / fs;
-  fTrack := round(2.99 * Parameter[0]);
-  fPMult := Power(1.0594631, Trunc(48 * Parameter[1] - 24));
-  if (fTrack = 0)
-   then fPStep := 110.0 * fPMult * ifs;
+  FTrack := round(2.99 * Parameter[0]);
+  FPMult := Power(1.0594631, Trunc(48 * Parameter[1] - 24));
+  if (FTrack = 0)
+   then FPStep := 110.0 * FPMult * ifs;
 
-  fNoise   := 6 * 0.01 * Parameter[2];
-  fLowFreq := 660 * ifs;
+  FNoise   := 6 * 0.01 * Parameter[2];
+  FLowFreq := 660 * ifs;
 
-  fMinp    := Power(16, 0.5 - (Parameter[4] - 45) / 48) * fs / 440;
-  fMaxp    := 0.03 * fs;
-  fRoot    := log10(8.1757989 * ifs);
-  fVUv     := sqr(0.01 * Parameter[3]);
+  FMinp    := Power(16, 0.5 - (Parameter[4] - 45) / 48) * fs / 440;
+  FMaxp    := 0.03 * fs;
+  FRoot    := log10(8.1757989 * ifs);
+  FVUv     := sqr(0.01 * Parameter[3]);
 end;
 
 procedure TVocInputDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- fLowBuffer[0] := 0;
- fLowBuffer[1] := 0;
- fLowBuffer[2] := 0;
- fLowBuffer[3] := 0;
- fPStep        := 0;
- fSawbuf       := 0;
- fLowEnv       := 0;
+ FLowBuffer[0] := 0;
+ FLowBuffer[1] := 0;
+ FLowBuffer[2] := 0;
+ FLowBuffer[3] := 0;
+ FPStep        := 0;
+ FSawbuf       := 0;
+ FLowEnv       := 0;
 end;
 
 end.
@@ -239,9 +240,9 @@ void mdaVocInput::getParameterDisplay(VstInt32 index, char *text)
 {
   switch(index)
   {
-    case  1: if (fTrack)
+    case  1: if (FTrack)
               then sprintf(string, "%ld", (long)(48.0f * Parameter[1] - 24.0f));
-              else midi2string((long)(48.0f * Parameter[1] + 21.0f), string); break;
+              else Midi2string((long)(48.0f * Parameter[1] + 21.0f), string); break;
   }
 }
 *)

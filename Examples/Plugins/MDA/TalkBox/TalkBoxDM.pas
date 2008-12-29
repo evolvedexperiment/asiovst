@@ -18,17 +18,17 @@ type
     procedure VSTModuleResume(Sender: TObject);
     procedure ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    fBuf       : array [0..1] of PDAVSingleFixedArray;
-    fCar       : array [0..1] of PDAVSingleFixedArray;
-    fWindow    : PDAVSingleFixedArray;
-    fWinSize   : Integer;
-    fEmphasis  : Single;
-    fFX        : Single;
-    fWet, fDry : Single;
-    fPos       : Integer;
-    fSwap      : Integer;
-    fK, fO     : Integer;
-    fD, fU     : Array [0..4] of Single;
+    FBuf       : array [0..1] of PDAVSingleFixedArray;
+    FCar       : array [0..1] of PDAVSingleFixedArray;
+    FWindow    : PDAVSingleFixedArray;
+    FWinSize   : Integer;
+    FEmphasis  : Single;
+    FFX        : Single;
+    FWet, FDry : Single;
+    FPos       : Integer;
+    FSwap      : Integer;
+    FK, FO     : Integer;
+    FD, FU     : Array [0..4] of Single;
     procedure LPC(buf, car: PDAVSingleFixedArray; n, o: Integer);
     procedure LPCDurbin(r : PDAVSingleFixedArray; p : Integer; k : PDAVSingleFixedArray; var g: Single);
   public
@@ -55,23 +55,23 @@ begin
 *)
 
  ///initialise...
- GetMem(fBuf[0], CMaxBufferSize * SizeOf(Single));
- GetMem(fBuf[1], CMaxBufferSize * SizeOf(Single));
- GetMem(fWindow, CMaxBufferSize * SizeOf(Single));
- GetMem(fCar[0], CMaxBufferSize * SizeOf(Single));
- GetMem(fCar[1], CMaxBufferSize * SizeOf(Single));
- fWinSize := 1; //trigger window recalc
- fK := 0;
+ GetMem(FBuf[0], CMaxBufferSize * SizeOf(Single));
+ GetMem(FBuf[1], CMaxBufferSize * SizeOf(Single));
+ GetMem(FWindow, CMaxBufferSize * SizeOf(Single));
+ GetMem(FCar[0], CMaxBufferSize * SizeOf(Single));
+ GetMem(FCar[1], CMaxBufferSize * SizeOf(Single));
+ FWinSize := 1; //trigger window recalc
+ FK := 0;
  VSTModuleSuspend(Sender);
 end;
 
 procedure TTalkBoxDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- if assigned(fBuf[0]) then Dispose(fBuf[0]);
- if assigned(fBuf[1]) then Dispose(fBuf[1]);
- if assigned(fWindow) then Dispose(fWindow);
- if assigned(fCar[0]) then Dispose(fCar[0]);
- if assigned(fCar[1]) then Dispose(fCar[1]);
+ if assigned(FBuf[0]) then Dispose(FBuf[0]);
+ if assigned(FBuf[1]) then Dispose(FBuf[1]);
+ if assigned(FWindow) then Dispose(FWindow);
+ if assigned(FCar[0]) then Dispose(FCar[0]);
+ if assigned(FCar[1]) then Dispose(FCar[1]);
 end;
 
 procedure TTalkBoxDataModule.LPC(buf, car : PDAVSingleFixedArray; n, o : Integer);
@@ -177,79 +177,79 @@ const
   h0  : Single = 0.3;
   h1  : Single = 0.77;
 begin
- p0 := fPos;
- p1 := (fPos + fWinSize div 2) mod fWinSize;
- e  := fEmphasis;
- FX := fFX;
+ p0 := FPos;
+ p1 := (FPos + FWinSize div 2) mod FWinSize;
+ e  := FEmphasis;
+ FX := FFX;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   o  := Inputs[    fSwap, Sample];
-   x  := Inputs[1 - fSwap, Sample];
+   o  := Inputs[    FSwap, Sample];
+   x  := Inputs[1 - FSwap, Sample];
    dr := o;
 
-   p := fD[0] + h0 *  x;    fD[0] := fD[1];  fD[1] := x  - h0 * p;
-   q := fD[2] + h1 * fD[4]; fD[2] := fD[3];  fD[3] := fD[4] - h1 * q;
-   fD[4] := x;
+   p := FD[0] + h0 *  x;    FD[0] := FD[1];  FD[1] := x  - h0 * p;
+   q := FD[2] + h1 * FD[4]; FD[2] := FD[3];  FD[3] := FD[4] - h1 * q;
+   FD[4] := x;
    x := p + q;
 
-   if fK > 0 then
+   if FK > 0 then
     begin
-     fK := 0;
+     FK := 0;
 
-     fCar[0][p0] := x;
-     fCar[1][p1] := x;              // carrier input
+     FCar[0][p0] := x;
+     FCar[1][p1] := x;              // carrier input
 
      x := o - e;
      e := o;                        // 6dB / oct pre-emphasis
 
-     w := fWindow[p0];
-     fFX := fBuf[0, p0] * w;
-     fBuf[0, p0] := x * w;          // 50% overlapping hanning windows
+     w := FWindow[p0];
+     FFX := FBuf[0, p0] * w;
+     FBuf[0, p0] := x * w;          // 50% overlapping hanning windows
 
      inc(p0);
-     if p0 >= fWinSize then
+     if p0 >= FWinSize then
       begin
-       LPC(fBuf[0], fCar[0], fWinSize, fO);
+       LPC(FBuf[0], FCar[0], FWinSize, FO);
        p0 := 0;
       end;
 
      w := 1 - w;
-     fFX := fFX + fBuf[1][p1] * w;
-     fBuf[1][p1] := x * w;
+     FFX := FFX + FBuf[1][p1] * w;
+     FBuf[1][p1] := x * w;
 
      inc(p1);
-     if p1 >= fWinSize then
+     if p1 >= FWinSize then
       begin
-       lpc(fBuf[1], fCar[1], fWinSize, fO);
+       lpc(FBuf[1], FCar[1], FWinSize, FO);
        p1 := 0;
       end;
     end;
-   inc(fK);
+   inc(FK);
 
-   p := fU[0] + h0 * fFX;   fU[0] := fU[1];  fU[1] := fFX - h0 * p;
-   q := fU[2] + h1 * fU[4]; fU[2] := fU[3];  fU[3] := fU[4] - h1 * q;
-   fU[4] := fFX;
+   p := FU[0] + h0 * FFX;   FU[0] := FU[1];  FU[1] := FFX - h0 * p;
+   q := FU[2] + h1 * FU[4]; FU[2] := FU[3];  FU[3] := FU[4] - h1 * q;
+   FU[4] := FFX;
    x := p + q;
 
-   o := fWet * x + fDry * dr;
+   o := FWet * x + FDry * dr;
 
    Outputs[0, Sample] := o;
    Outputs[1, Sample] := o;
   end;
 
-  fEmphasis := e;
-  fPos := p0;
-  fFX := FX;
+  FEmphasis := e;
+  FPos := p0;
+  FFX := FX;
 
-  if (abs(fD[0]) < den) then fD[0] := 0; //anti-denormal (doesn't seem necessary but P4?)
-  if (abs(fD[1]) < den) then fD[1] := 0;
-  if (abs(fD[2]) < den) then fD[2] := 0;
-  if (abs(fD[3]) < den) then fD[3] := 0;
-  if (abs(fU[0]) < den) then fU[0] := 0;
-  if (abs(fU[1]) < den) then fU[1] := 0;
-  if (abs(fU[2]) < den) then fU[2] := 0;
-  if (abs(fU[3]) < den) then fU[3] := 0;
+  if (abs(FD[0]) < den) then FD[0] := 0; //anti-denormal (doesn't seem necessary but P4?)
+  if (abs(FD[1]) < den) then FD[1] := 0;
+  if (abs(FD[2]) < den) then FD[2] := 0;
+  if (abs(FD[3]) < den) then FD[3] := 0;
+  if (abs(FU[0]) < den) then FU[0] := 0;
+  if (abs(FU[1]) < den) then FU[1] := 0;
+  if (abs(FU[2]) < den) then FU[2] := 0;
+  if (abs(FU[3]) < den) then FU[3] := 0;
 end;
 
 procedure TTalkBoxDataModule.VSTModuleResume(Sender: TObject);
@@ -263,54 +263,54 @@ begin
  if (fs > 96000) then fs := 96000.0;
 
  if Parameter[2] > 0.5
-  then fSwap := 1
-  else fSwap := 0;
+  then FSwap := 1
+  else FSwap := 0;
 
  n := round(0.01633 * fs);
  if (n > CMaxBufferSize)
   then n := CMaxBufferSize;
 
- //fO = round(0.0005 * fs);
- fO := round((0.0001 + 0.0004 * Parameter[3]) * fs);
+ //FO = round(0.0005 * fs);
+ FO := round((0.0001 + 0.0004 * Parameter[3]) * fs);
 
- if (n <> fWinSize) then //recalc hanning window
+ if (n <> FWinSize) then //recalc hanning window
   begin
-   fWinSize := n;
-   dp := 2 * Pi / fWinSize;
+   FWinSize := n;
+   dp := 2 * Pi / FWinSize;
    p  := 0;
    for n := 0 to N - 1 do
     begin
-     fWindow[n] := 0.5 - 0.5 * cos(p);
+     FWindow[n] := 0.5 - 0.5 * cos(p);
      p := p + dp;
     end;
   end;
 
- fWet := 0.5 * Sqr(0.01 * Parameter[0]);
- fDry := 2   * Sqr(0.01 * Parameter[1]);
+ FWet := 0.5 * Sqr(0.01 * Parameter[0]);
+ FDry := 2   * Sqr(0.01 * Parameter[1]);
 end;
 
 procedure TTalkBoxDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- fPos := 0;
- fK   := 0;
- fU[0] := 0;
- fU[1] := 0;
- fU[2] := 0;
- fU[3] := 0;
- fU[4] := 0;
- fD[0] := 0;
- fD[1] := 0;
- fD[2] := 0;
- fD[3] := 0;
- fD[4] := 0;
+ FPos := 0;
+ FK   := 0;
+ FU[0] := 0;
+ FU[1] := 0;
+ FU[2] := 0;
+ FU[3] := 0;
+ FU[4] := 0;
+ FD[0] := 0;
+ FD[1] := 0;
+ FD[2] := 0;
+ FD[3] := 0;
+ FD[4] := 0;
 
- fEmphasis := 0;
- fFX := 0;
+ FEmphasis := 0;
+ FFX := 0;
 
- FillChar(fBuf[0]^, CMaxBufferSize * SizeOf(Single), 0);
- FillChar(fBuf[1]^, CMaxBufferSize * SizeOf(Single), 0);
- FillChar(fCar[0]^, CMaxBufferSize * SizeOf(Single), 0);
- FillChar(fCar[1]^, CMaxBufferSize * SizeOf(Single), 0);
+ FillChar(FBuf[0]^, CMaxBufferSize * SizeOf(Single), 0);
+ FillChar(FBuf[1]^, CMaxBufferSize * SizeOf(Single), 0);
+ FillChar(FCar[0]^, CMaxBufferSize * SizeOf(Single), 0);
+ FillChar(FCar[1]^, CMaxBufferSize * SizeOf(Single), 0);
 end;
 
 end.

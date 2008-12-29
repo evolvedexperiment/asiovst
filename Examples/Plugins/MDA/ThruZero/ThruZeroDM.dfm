@@ -5,13 +5,14 @@ object ThruZeroDataModule: TThruZeroDataModule
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda ThruZero'
-  ProductName = 'ThruZero'
-  VendorName = 'mda'
+  ProductName = 'DAV mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Thru-Zero Flanger'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdaZ'
   ShellPlugins = <>
   Programs = <
@@ -36,9 +37,12 @@ object ThruZeroDataModule: TThruZeroDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Rate'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Rate'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 's'
       VSTModule = Owner
       OnParameterChange = ParameterRateChange
@@ -48,9 +52,12 @@ object ThruZeroDataModule: TThruZeroDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Depth'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Depth'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterDepthChange
@@ -100,11 +107,11 @@ object ThruZeroDataModule: TThruZeroDataModule
       VSTModule = Owner
       OnParameterChange = ParameterFeedbackChange
     end>
-  OnResume = VSTModuleResume
-  OnSuspend = VSTModuleSuspend
-  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnResume = VSTModuleResume
+  OnSampleRateChange = VSTModuleSampleRateChange
+  OnSuspend = VSTModuleSuspend
   Left = 188
   Top = 77
   Height = 150

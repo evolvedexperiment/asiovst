@@ -1,11 +1,10 @@
 object OverdriveDataModule: TOverdriveDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'mda Overdrive'
-  ProductName = 'Overdrive'
-  VendorName = '1.0'
+  ProductName = 'DAV mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
@@ -66,6 +65,7 @@ object OverdriveDataModule: TOverdriveDataModule
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
     end>
+  OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   Left = 188

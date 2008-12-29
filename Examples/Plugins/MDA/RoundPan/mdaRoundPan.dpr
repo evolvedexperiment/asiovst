@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   RoundPanDM in 'RoundPanDM.pas' {RoundPanDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  RoundPanDataModule: TRoundPanDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    RoundPanDataModule := TRoundPanDataModule.Create(Application);
-    RoundPanDataModule.Effect^.user := RoundPanDataModule;
-    RoundPanDataModule.AudioMaster := audioMaster;
-    Result := RoundPanDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TRoundPanDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

@@ -6,7 +6,7 @@ object DetuneDataModule: TDetuneDataModule
   Version = '1.0'
   EffectName = 'mda Detune'
   ProductName = 'Detune'
-  VendorName = 'mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000

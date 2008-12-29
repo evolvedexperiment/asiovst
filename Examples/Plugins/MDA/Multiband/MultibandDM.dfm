@@ -1,16 +1,16 @@
 object MultibandDataModule: TMultibandDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'mda Multiband'
   ProductName = 'Multiband'
-  VendorName = '1.0'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Multi-Band Compressor'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdaM'
   ShellPlugins = <>
   Programs = <
@@ -38,9 +38,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'L <> M'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'L <> M'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
     end
@@ -48,9 +51,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'M <> H'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'M <> H'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
     end
@@ -58,9 +64,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'L Comp'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'L Comp'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
     end
@@ -68,9 +77,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'M Comp'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'M Comp'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
     end
@@ -78,9 +90,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'H Comp'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'H Comp'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
     end
@@ -88,9 +103,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'L Out'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'L Out'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterGainDisplay
@@ -99,9 +117,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'M Out'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'M Out'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterGainDisplay
@@ -110,9 +131,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'H Out'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'H Out'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterGainDisplay
@@ -121,9 +145,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Attack'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = #181's'
       VSTModule = Owner
     end
@@ -131,9 +158,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Release'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
     end
@@ -141,9 +171,12 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stereo'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Stereo'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -151,11 +184,15 @@ object MultibandDataModule: TMultibandDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Process'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Process'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>
+  OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

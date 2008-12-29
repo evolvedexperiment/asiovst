@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   RePsychoDM in 'RePsychoDM.pas' {RePsychoDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  RePsychoDataModule: TRePsychoDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    RePsychoDataModule := TRePsychoDataModule.Create(Application);
-    RePsychoDataModule.Effect^.user := RePsychoDataModule;
-    RePsychoDataModule.AudioMaster := audioMaster;
-    Result := RePsychoDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TRePsychoDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

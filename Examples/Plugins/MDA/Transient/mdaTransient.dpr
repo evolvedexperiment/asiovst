@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   TransientDM in 'TransientDM.pas' {TransientDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  TransientDataModule: TTransientDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    TransientDataModule := TTransientDataModule.Create(Application);
-    TransientDataModule.Effect^.user := TransientDataModule;
-    TransientDataModule.AudioMaster := audioMaster;
-    Result := TransientDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TTransientDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

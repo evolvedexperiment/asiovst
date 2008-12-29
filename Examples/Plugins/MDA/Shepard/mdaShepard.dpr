@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   ShepardDM in 'ShepardDM.pas' {ShepardDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  ShepardDataModule: TShepardDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    ShepardDataModule := TShepardDataModule.Create(Application);
-    ShepardDataModule.Effect^.user := ShepardDataModule;
-    ShepardDataModule.AudioMaster := audioMaster;
-    Result := ShepardDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TShepardDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

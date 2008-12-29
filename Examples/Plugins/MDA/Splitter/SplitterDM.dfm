@@ -1,16 +1,16 @@
 object SplitterDataModule: TSplitterDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Splitter'
-  ProductName = 'Splitter'
-  VendorName = 'mda'
+  ProductName = 'DAV mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Frequency/Level Splitter'
+  IORatio = 1.000000000000000000
   UniqueID = 'mda7'
   ShellPlugins = <>
   Programs = <
@@ -46,9 +46,12 @@ object SplitterDataModule: TSplitterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Freq'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterFrequencyDisplay
@@ -103,9 +106,12 @@ object SplitterDataModule: TSplitterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Envelope'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Env'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterEnvelopeChange
@@ -127,10 +133,11 @@ object SplitterDataModule: TSplitterDataModule
       Units = 'dB'
       VSTModule = Owner
     end>
-  OnResume = VSTModuleResume
-  OnSuspend = VSTModuleSuspend
+  OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnResume = VSTModuleResume
+  OnSuspend = VSTModuleSuspend
   Left = 188
   Top = 77
   Height = 150

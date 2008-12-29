@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   VocoderDM in 'VocoderDM.pas' {VocoderDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  VocoderDataModule: TVocoderDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    VocoderDataModule := TVocoderDataModule.Create(Application);
-    VocoderDataModule.Effect^.user := VocoderDataModule;
-    VocoderDataModule.AudioMaster := audioMaster;
-    Result := VocoderDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TVocoderDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

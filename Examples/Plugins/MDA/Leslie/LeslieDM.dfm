@@ -1,16 +1,15 @@
 object LeslieDataModule: TLeslieDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = []
   Version = '1.0'
   EffectName = 'mda Leslie'
   ProductName = 'Leslie'
-  VendorName = 'mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Leslie Simulator'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdaH'
   ShellPlugins = <>
   Programs = <
@@ -20,108 +19,137 @@ object LeslieDataModule: TLeslieDataModule
     end>
   ParameterProperties = <
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Speed'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Speed'
+      LargeStepFloat = 2.000000000000000000
+      Max = 1.000000000000000000
       MaxInteger = 1
       ShortLabel = 'Speed'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParamSpeedDisplay
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Low Width'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Low Width'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'LoWidth'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterLowWidthChange
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Low Throb'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Low Throb'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'LoThrob'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterLowThrobChange
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
-      DisplayName = 'High Width'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'High Width'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'HiWidth'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterHighWidthChange
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
-      DisplayName = 'High Depth'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'High Depth'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'HiDepth'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterHighDepthChange
     end
     item
-      Max = 100.000000000000000000
       Curve = ctLinear
-      DisplayName = 'High Throb'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'High Throb'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
       ShortLabel = 'HiThrob'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterHighThrobChange
     end
     item
-      Max = 1.000000000000000000
       Curve = ctLinear
-      DisplayName = 'X-Over'
-      Units = 'Hz'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'X-Over'
+      LargeStepFloat = 2.000000000000000000
+      Max = 1.000000000000000000
       ShortLabel = 'X-Over'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParameterXOverChange
     end
     item
-      Min = -20.000000000000000000
-      Max = 20.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Output'
-      Units = 'dB'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
-      MinInteger = -20
+      DisplayName = 'Output'
+      LargeStepFloat = 2.000000000000000000
+      Max = 20.000000000000000000
       MaxInteger = 20
+      Min = -20.000000000000000000
+      MinInteger = -20
       ShortLabel = 'Output'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
     end
     item
-      Max = 200.000000000000000000
       Curve = ctLinear
-      DisplayName = 'Speed'
-      Units = '%'
       CurveFactor = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
+      DisplayName = 'Speed'
+      LargeStepFloat = 2.000000000000000000
+      Max = 200.000000000000000000
       MaxInteger = 200
       ShortLabel = 'Speed'
+      SmallStepFloat = 0.500000000000000000
+      SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterSpeedChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

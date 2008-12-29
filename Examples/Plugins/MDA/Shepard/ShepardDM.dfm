@@ -1,17 +1,16 @@
 object ShepardDataModule: TShepardDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Shepard'
-  ProductName = 'Shepard'
-  VendorName = 'mda'
+  ProductName = 'DAV mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Shepard Tone Generator'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdaX'
   ShellPlugins = <>
   Programs = <
@@ -24,9 +23,12 @@ object ShepardDataModule: TShepardDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mode'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Mode'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterModeChange
       OnCustomParameterDisplay = ParameterModeDisplay
@@ -64,6 +66,8 @@ object ShepardDataModule: TShepardDataModule
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   Left = 188

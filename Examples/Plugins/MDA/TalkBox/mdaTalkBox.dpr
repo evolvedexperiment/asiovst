@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   TalkBoxDM in 'TalkBoxDM.pas' {TalkBoxDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  TalkBoxDataModule: TTalkBoxDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    TalkBoxDataModule := TTalkBoxDataModule.Create(Application);
-    TalkBoxDataModule.Effect^.user := TalkBoxDataModule;
-    TalkBoxDataModule.AudioMaster := audioMaster;
-    Result := TalkBoxDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TTalkBoxDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

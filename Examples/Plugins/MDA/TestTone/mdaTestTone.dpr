@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   TestToneDM in 'TestToneDM.pas' {TestToneDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  TestToneDataModule: TTestToneDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    TestToneDataModule := TTestToneDataModule.Create(Application);
-    TestToneDataModule.Effect^.user := TestToneDataModule;
-    TestToneDataModule.AudioMaster := audioMaster;
-    Result := TestToneDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TTestToneDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

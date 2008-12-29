@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   RezFilterDM in 'RezFilterDM.pas' {RezFilterDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  RezFilterDataModule: TRezFilterDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    RezFilterDataModule := TRezFilterDataModule.Create(Application);
-    RezFilterDataModule.Effect^.user := RezFilterDataModule;
-    RezFilterDataModule.AudioMaster := audioMaster;
-    Result := RezFilterDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TRezFilterDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

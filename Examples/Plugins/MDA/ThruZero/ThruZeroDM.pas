@@ -24,14 +24,14 @@ type
     procedure ParameterDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fBuffer    : array [0..1] of PDAVSingleFixedArray;
-    fRate      : Single;
-    fPhi, fDem : Single;
-    fDeps      : Single;
-    fDepth     : Single;
-    fWet, fDry : Single;
-    fBufPos    : Integer;
-    fFeedback  : array [0..2] of Single;
+    FBuffer    : array [0..1] of PDAVSingleFixedArray;
+    FRate      : Single;
+    FPhi, FDem : Single;
+    FDeps      : Single;
+    FDepth     : Single;
+    FWet, FDry : Single;
+    FBufPos    : Integer;
+    FFeedback  : array [0..2] of Single;
     procedure RateChanged;
     procedure DepthChanged;
   public
@@ -81,22 +81,22 @@ begin
    end;
 
  ///initialise...
- fBufPos := 0;
- GetMem(fBuffer[0], cBUFMAX * SizeOf(Single));
- GetMem(fBuffer[1], cBUFMAX * SizeOf(Single));
- fPhi         := 0;
- fFeedback[0] := 0;
- fFeedback[1] := 0;
- fFeedback[2] := 0;
- fDeps        := 0;
+ FBufPos := 0;
+ GetMem(FBuffer[0], cBUFMAX * SizeOf(Single));
+ GetMem(FBuffer[1], cBUFMAX * SizeOf(Single));
+ FPhi         := 0;
+ FFeedback[0] := 0;
+ FFeedback[1] := 0;
+ FFeedback[2] := 0;
+ FDeps        := 0;
 
  VSTModuleSuspend(Sender);
 end;
 
 procedure TThruZeroDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- if assigned(fBuffer[0]) then Dispose(fBuffer[0]);
- if assigned(fBuffer[1]) then Dispose(fBuffer[1]);
+ if assigned(FBuffer[0]) then Dispose(FBuffer[0]);
+ if assigned(FBuffer[1]) then Dispose(FBuffer[1]);
 end;
 
 procedure TThruZeroDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -107,17 +107,17 @@ var
   tmp, tmpi, bp           : Integer;
   tmpf, dpt               : Single;
 begin
- f  := fFeedback[0];
- f1 := fFeedback[1];
- f2 := fFeedback[2];
- ph := fPhi;
- ra := fRate;
- de := fDepth;
- we := fWet;
- dr := fDry;
- ds := fDeps;
- dm := fDem;
- bp := fBufPos;
+ f  := FFeedback[0];
+ f1 := FFeedback[1];
+ f2 := FFeedback[2];
+ ph := FPhi;
+ ra := FRate;
+ de := FDepth;
+ we := FWet;
+ dr := FDry;
+ ds := FDeps;
+ dm := FDem;
+ bp := FBufPos;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
@@ -130,8 +130,8 @@ begin
 
     dec(bp);
     bp := bp and cBUFMAX;
-    fBuffer[0, bp] := a + f * f1;
-    fBuffer[1, bp] := b + f * f2;
+    FBuffer[0, bp] := a + f * f1;
+    FBuffer[1, bp] := b + f * f2;
 
     // ds := 0.995 * (ds - de) + de;           // smoothed depth change ...try inc not mult
     dpt  := dm + de * (1 - sqr(ph));           // delay mod shape
@@ -141,10 +141,10 @@ begin
     tmp  := (tmp + bp) and $7FF;
     tmpi := (tmp + 1) and $7FF;
 
-    f1 := fBuffer[0, tmp];                     // try adding a constant to reduce denormalling
-    f2 := fBuffer[1, tmp];
-    f1 := tmpf * (fBuffer[0, tmpi] - f1) + f1; // linear interpolation
-    f2 := tmpf * (fBuffer[1, tmpi] - f2) + f2;
+    f1 := FBuffer[0, tmp];                     // try adding a constant to reduce denormalling
+    f2 := FBuffer[1, tmp];
+    f1 := tmpf * (FBuffer[0, tmpi] - f1) + f1; // linear interpolation
+    f2 := tmpf * (FBuffer[1, tmpi] - f2) + f2;
 
     a := a * dr - f1 * we;
     b := b * dr - f2 * we;
@@ -155,17 +155,17 @@ begin
 
  if abs(f1) > 1E-10 then
   begin
-   fFeedback[1] := f1;
-   fFeedback[2] := f2;
+   FFeedback[1] := f1;
+   FFeedback[2] := f2;
   end
  else
   begin
-   fFeedback[1] := 0;
-   fFeedback[2] := 0; //catch denormals
+   FFeedback[1] := 0;
+   FFeedback[2] := 0; //catch denormals
   end;
- fPhi    := ph;
- fDeps   := ds;
- fBufPos := bp;
+ FPhi    := ph;
+ FDeps   := ds;
+ FBufPos := bp;
 end;
 
 procedure TThruZeroDataModule.VSTModuleResume(Sender: TObject);
@@ -175,23 +175,23 @@ end;
 
 procedure TThruZeroDataModule.DepthChanged;
 begin
- fDepth := 2000 * sqr(Parameter[1]);
- fDem := sqr(fDepth) * 0.01 * Parameter[4];
- fDepth := fDepth - fDem;
+ FDepth := 2000 * sqr(Parameter[1]);
+ FDem := sqr(FDepth) * 0.01 * Parameter[4];
+ FDepth := FDepth - FDem;
 end;
 
 procedure TThruZeroDataModule.ParameterMixChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- fWet := 0.01 * Value;
- fDry := 1 - fWet;
+ FWet := 0.01 * Value;
+ FDry := 1 - FWet;
 end;
 
 procedure TThruZeroDataModule.ParameterDepthModChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- fFeedback[0] := 0.0095 * Value;
- fPhi         := 0.0;             //reset cycle
+ FFeedback[0] := 0.0095 * Value;
+ FPhi         := 0.0;             //reset cycle
 end;
 
 procedure TThruZeroDataModule.ParameterRateChange(Sender: TObject;
@@ -200,14 +200,14 @@ begin
  RateChanged;
  if Value < 0.01 then
   begin
-   fRate := 0;
-   fPhi  := 0;
+   FRate := 0;
+   FPhi  := 0;
   end;
 end;
 
 procedure TThruZeroDataModule.RateChanged;
 begin
- fRate := Power(10, 3 * Parameter[0] - 2) * 2 / SampleRate;
+ FRate := Power(10, 3 * Parameter[0] - 2) * 2 / SampleRate;
 end;
 
 procedure TThruZeroDataModule.ParameterFeedbackChange(Sender: TObject;
@@ -233,7 +233,7 @@ end;
 procedure TThruZeroDataModule.ParameterDepthDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := FloatToStrF(1000 * fDepth / SampleRate, ffGeneral, 4, 4);
+ PreDefined := FloatToStrF(1000 * FDepth / SampleRate, ffGeneral, 4, 4);
 end;
 
 procedure TThruZeroDataModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -244,8 +244,8 @@ end;
 
 procedure TThruZeroDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- if assigned(fBuffer[0]) then FillChar(fBuffer[0, 0], cBUFMAX * SizeOf(Single), 0);
- if assigned(fBuffer[1]) then FillChar(fBuffer[1, 0], cBUFMAX * SizeOf(Single), 0);
+ if assigned(FBuffer[0]) then FillChar(FBuffer[0, 0], cBUFMAX * SizeOf(Single), 0);
+ if assigned(FBuffer[1]) then FillChar(FBuffer[1, 0], cBUFMAX * SizeOf(Single), 0);
 end;
 
 end.

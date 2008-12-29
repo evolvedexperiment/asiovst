@@ -4,13 +4,14 @@ object TrackerDataModule: TTrackerDataModule
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Tracker'
-  ProductName = 'Tracker'
-  VendorName = 'mda'
+  ProductName = 'DAV mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Pitch Tracker'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdaJ'
   ShellPlugins = <>
   Programs = <
@@ -77,9 +78,12 @@ object TrackerDataModule: TTrackerDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Transpose'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Transpo'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'semi'
       VSTModule = Owner
     end
@@ -87,9 +91,12 @@ object TrackerDataModule: TTrackerDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Maximum'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Maximum'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
     end
@@ -97,9 +104,12 @@ object TrackerDataModule: TTrackerDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Trigger'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Trigger'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
     end
@@ -107,9 +117,12 @@ object TrackerDataModule: TTrackerDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Output'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
     end>

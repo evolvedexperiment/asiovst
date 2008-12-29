@@ -7,8 +7,6 @@ uses
 
 type
   TLeslieDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamSpeedDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -20,26 +18,28 @@ type
     procedure ParameterLowWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
   private
-    fGain : Single;
-    fFilo : Single;
-    fLWid : Single;
-    fLLev : Single;
-    fHWid : Single;
-    fHDep : Single;
-    fHLev : Single;
-    fHMom : Single;
-    fLMom : Single;
-    fHSet : Single;
-    fLSet : Single;
-    fLSpd : Single;
-    fHSpd : Single;
-    fLPhi : Single;
-    fHPhi : Single;
-    fHPos : Integer;
-    fHBuf : PDAVSingleFixedArray;
-    fBuf  : Array [0..1] of Single;
-    fHBufferSize : Integer;
+    FGain : Single;
+    FFilo : Single;
+    FLWid : Single;
+    FLLev : Single;
+    FHWid : Single;
+    FHDep : Single;
+    FHLev : Single;
+    FHMom : Single;
+    FLMom : Single;
+    FHSet : Single;
+    FLSet : Single;
+    FLSpd : Single;
+    FHSpd : Single;
+    FLPhi : Single;
+    FHPhi : Single;
+    FHPos : Integer;
+    FHBuf : PDAVSingleFixedArray;
+    FBuf  : Array [0..1] of Single;
+    FHBufferSize : Integer;
     procedure GainChanged;
   public
   end;
@@ -53,24 +53,24 @@ uses
 
 procedure TLeslieDataModule.ParameterHighWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fHWid := sqr(Parameter[3]);
+ FHWid := sqr(Parameter[3]);
 end;
 
 procedure TLeslieDataModule.ParameterXOverChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fGain := 0.4 * Power(10, 2 * Parameter[6] - 1);
+ FGain := 0.4 * Power(10, 2 * Parameter[6] - 1);
  GainChanged;
 end;
 
 procedure TLeslieDataModule.ParameterLowWidthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLWid := sqr(Parameter[6]);
+ FLWid := sqr(Parameter[6]);
 end;
 
 procedure TLeslieDataModule.GainChanged;
 begin
- fLLev := fGain * 0.9 * sqr(Parameter[7]);
+ FLLev := FGain * 0.9 * sqr(Parameter[7]);
 end;
 
 procedure TLeslieDataModule.ParameterSpeedChange(
@@ -87,17 +87,17 @@ end;
 
 procedure TLeslieDataModule.ParameterHighDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fHDep := sqr(Parameter[4]) * SampleRate / 760;
+ FHDep := sqr(Parameter[4]) * SampleRate / 760;
 end;
 
 procedure TLeslieDataModule.ParameterHighThrobChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fHLev := fGain * 0.9 * sqr(Parameter[5]);
+ FHLev := FGain * 0.9 * sqr(Parameter[5]);
 end;
 
 procedure TLeslieDataModule.ParameterLowThrobChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fFilo := 1 - Power(10, Value * (0.0227 - 0.000054 * Value) - 1.92);
+ FFilo := 1 - Power(10, Value * (0.0227 - 0.000054 * Value) - 1.92);
 end;
 
 procedure TLeslieDataModule.ParamSpeedDisplay(
@@ -109,21 +109,21 @@ begin
   else PreDefined := 'FAST';
 end;
 
-procedure TLeslieDataModule.VSTModuleCreate(Sender: TObject);
+procedure TLeslieDataModule.VSTModuleOpen(Sender: TObject);
 begin
- fLSpd := 0;
- fHSpd := 0;
- fLPhi := 0;
- fHPhi := 1.6;
+ FLSpd := 0;
+ FHSpd := 0;
+ FLPhi := 0;
+ FHPhi := 1.6;
 
- fHBufferSize := 256 * SizeOf(Single);
- fHPos := 0;
- GetMem(fHBuf, fHBufferSize);
+ FHBufferSize := 256 * SizeOf(Single);
+ FHPos := 0;
+ GetMem(FHBuf, FHBufferSize);
 end;
 
-procedure TLeslieDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TLeslieDataModule.VSTModuleClose(Sender: TObject);
 begin
- Dispose(fHBuf);
+ Dispose(FHBuf);
 end;
 
 procedure TLeslieDataModule.VSTModuleParameterChange(Sender: TObject;
@@ -136,27 +136,27 @@ begin
   begin
    if (Parameter[0] < 0.1) then //stop
     begin
-     fLSet := 0.00; fHSet := 0.0;
-     fLMom := 0.12; fHMom := 0.1;
+     FLSet := 0.00; FHSet := 0.0;
+     FLMom := 0.12; FHMom := 0.1;
     end
    else //low speed
     begin
-     fLSet := 0.49; fHSet := 0.66;
-     fLMom := 0.27; fHMom := 0.18;
+     FLSet := 0.49; FHSet := 0.66;
+     FLMom := 0.27; FHMom := 0.18;
     end;
   end
  else //high speed
   begin
-    fLSet := 5.31; fHSet := 6.40;
-    fLMom := 0.14; fHMom := 0.09;
+    FLSet := 5.31; FHSet := 6.40;
+    FLMom := 0.14; FHMom := 0.09;
   end;
 
  spd   := 4 * Pi * Parameter[8] / SampleRate;
 
- fHMom := Power(10, -1 / (SampleRate * fHMom));
- fLMom := Power(10, -1 / (SampleRate * fLMom));
- fHSet := fHSet * spd;
- fLSet := fLSet * spd;
+ FHMom := Power(10, -1 / (SampleRate * FHMom));
+ FLMom := Power(10, -1 / (SampleRate * FLMom));
+ FHSet := FHSet * spd;
+ FLSet := FLSet * spd;
 end;
 
 procedure TLeslieDataModule.VSTModuleProcess(const Inputs,
@@ -173,28 +173,28 @@ var
   Sample                     : Integer;
 
 begin
- g   := fGain;
- fo  := fFilo;
- fb1 := fBuf[0];
- fb2 := fBuf[1];
- hl  := fHLev;
- hs  := fHSpd;
- hm  := fHMom;
- hp  := fHPhi;
- hw  := fHWid;
- hd  := fHDep;
- ll  := fLLev;
- ls  := fLSpd;
- lm  := fLMom;
- lp  := fLPhi;
- lw  := fLWid;
+ g   := FGain;
+ fo  := FFilo;
+ fb1 := FBuf[0];
+ fb2 := FBuf[1];
+ hl  := FHLev;
+ hs  := FHSpd;
+ hm  := FHMom;
+ hp  := FHPhi;
+ hw  := FHWid;
+ hd  := FHDep;
+ ll  := FLLev;
+ ls  := FLSpd;
+ lm  := FLMom;
+ lp  := FLPhi;
+ lw  := FLWid;
  k0  := 0.03125;
  k1  := 32;
  k   := 0;
- hps := fHPos;
+ hps := FHPos;
 
- ht := fHSet * (1 - hm); //target speeds
- lt := fLSet * (1 - lm);
+ ht := FHSet * (1 - hm); //target speeds
+ lt := FLSet * (1 - lm);
 
  chp := cos(hp);
  chp := chp * chp * chp; //set LFO values
@@ -241,9 +241,9 @@ begin
      hdd2 := hdd2 - 201;
     end;
 
-    fHBuf[hps] := h; //delay input
-    a := fHBuf[hdd];
-    h := h + a + hint * (fHBuf[hdd2] - a); //delay output
+    FHBuf[hps] := h; //delay input
+    a := FHBuf[hdd];
+    h := h + a + hint * (FHBuf[hdd2] - a); //delay output
 
     c := l + h;
     d := l + h;
@@ -261,17 +261,17 @@ begin
    slp := slp + dslp;
   end;
 
- fLSpd := ls;
- fHSpd := hs;
- fHPos := hps;
- fLPhi := (lp + (k1 - k) * ls);
- while fLPhi > 2 * Pi do fLPhi := fLPhi - 2 * Pi;
- fHPhi := (hp + (k1 - k) * hs);
- while fHPhi > 2 * Pi do fHPhi := fHPhi - 2 * Pi;
+ FLSpd := ls;
+ FHSpd := hs;
+ FHPos := hps;
+ FLPhi := (lp + (k1 - k) * ls);
+ while FLPhi > 2 * Pi do FLPhi := FLPhi - 2 * Pi;
+ FHPhi := (hp + (k1 - k) * hs);
+ while FHPhi > 2 * Pi do FHPhi := FHPhi - 2 * Pi;
 
 
- if (abs(fb1) > 1E-10) then fBuf[0] := fb1 else fBuf[0] := 0; //catch denormals
- if (abs(fb2) > 1E-10) then fBuf[1] := fb2 else fBuf[1] := 0;
+ if (abs(fb1) > 1E-10) then FBuf[0] := fb1 else FBuf[0] := 0; //catch denormals
+ if (abs(fb2) > 1E-10) then FBuf[1] := fb2 else FBuf[1] := 0;
 end;
 
 end.

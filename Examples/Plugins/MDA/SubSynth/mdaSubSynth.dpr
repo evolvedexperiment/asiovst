@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   SubSynthDM in 'SubSynthDM.pas' {SubSynthDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SubSynthDataModule: TSubSynthDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    SubSynthDataModule := TSubSynthDataModule.Create(Application);
-    SubSynthDataModule.Effect^.user := SubSynthDataModule;
-    SubSynthDataModule.AudioMaster := audioMaster;
-    Result := SubSynthDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TSubSynthDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

@@ -5,13 +5,14 @@ object EPianoDataModule: TEPianoDataModule
   Version = '1.0'
   EffectName = 'mda E-Piano'
   ProductName = 'E-Piano'
-  VendorName = 'mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcSynth
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent]
   SampleRate = 44100.000000000000000000
   numInputs = 0
   CurrentProgram = 0
   CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
   UniqueID = 'MDAe'
   ShellPlugins = <>
   Programs = <
@@ -52,9 +53,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Envelope Decay'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Envelop'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -62,9 +66,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Envelope Release'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Envelop'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -72,9 +79,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Hardness'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Hardnes'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -82,9 +92,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Treble Boost'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Treble '
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -92,9 +105,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Modulation'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Modulat'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -102,9 +118,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'LFO Rate'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'LFO Rat'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
     end
@@ -112,9 +131,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Velocity Sense'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Velocit'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -122,9 +144,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stereo Width'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Modulat'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -132,9 +157,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Polyphony'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Polypho'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'voices'
       VSTModule = Owner
     end
@@ -142,9 +170,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Fine Tuning'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Fine Tu'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'cents'
       VSTModule = Owner
     end
@@ -152,9 +183,12 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Random Tuning'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Random '
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'cents'
       VSTModule = Owner
     end
@@ -162,17 +196,20 @@ object EPianoDataModule: TEPianoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Overdrive'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Overdri'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end>
-  OnSampleRateChange = VSTModuleSampleRateChange
-  OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
-  OnProcessMidi = VSTModuleProcessMidi
   OnOutputProperties = VSTModuleOutputProperties
+  OnProcess = VSTModuleProcess
+  OnProcessMidi = VSTModuleProcessMidi
+  OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81
   Height = 150

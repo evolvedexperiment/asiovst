@@ -1,16 +1,16 @@
 object VocInputDataModule: TVocInputDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda VocInput'
   ProductName = 'VocInput'
-  VendorName = 'mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Vocoder Carrier Signal'
+  IORatio = 1.000000000000000000
   UniqueID = 'mda3'
   ShellPlugins = <>
   Programs = <
@@ -38,9 +38,12 @@ object VocInputDataModule: TVocInputDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Pitch'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Pitch'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
     item
@@ -86,10 +89,11 @@ object VocInputDataModule: TVocInputDataModule
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterMaxFrequencyDisplay
     end>
-  OnResume = VSTModuleResume
-  OnSuspend = VSTModuleSuspend
+  OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnResume = VSTModuleResume
+  OnSuspend = VSTModuleSuspend
   Left = 188
   Top = 77
   Height = 150

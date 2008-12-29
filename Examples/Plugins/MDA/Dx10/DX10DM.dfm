@@ -5,13 +5,14 @@ object DX10DataModule: TDX10DataModule
   Version = '0.0'
   EffectName = 'mda DX10'
   ProductName = 'DX10'
-  VendorName = 'mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcSynth
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend]
   SampleRate = 44100.000000000000000000
   numInputs = 0
   CurrentProgram = 0
   CurrentProgramName = 'Bright E.Piano'
+  IORatio = 1.000000000000000000
   UniqueID = 'MDAx'
   ShellPlugins = <>
   Programs = <
@@ -148,9 +149,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Attack'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -158,9 +162,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Decay'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Decay'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -168,9 +175,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Release'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -178,9 +188,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Coarse'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Coarse'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'ratio'
       VSTModule = Owner
     end
@@ -188,9 +201,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Fine'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Fine'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'ratio'
       VSTModule = Owner
     end
@@ -198,9 +214,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Init'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Mod Ini'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -208,9 +227,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Dec'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Mod Dec'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -218,9 +240,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Sus'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Mod Sus'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -228,9 +253,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Rel'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Mod Rel'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -238,9 +266,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Vel'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Mod Vel'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -248,9 +279,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Vibrato'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Vibrato'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -258,18 +292,24 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Octave'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Octave'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'FineTune'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'FineTun'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'cents'
       VSTModule = Owner
     end
@@ -277,9 +317,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Waveform'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Wavefrm'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -287,9 +330,12 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Thru'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'ModThru'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
     end
@@ -297,17 +343,20 @@ object DX10DataModule: TDX10DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'LFO Rate'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'LFORate'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
     end>
-  OnResume = VSTModuleResume
-  OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
-  OnProcessMidi = VSTModuleProcessMidi
   OnOutputProperties = VSTModuleOutputProperties
+  OnProcess = VSTModuleProcess
+  OnProcessMidi = VSTModuleProcessMidi
+  OnProcessReplacing = VSTModuleProcess
+  OnResume = VSTModuleResume
   Left = 218
   Top = 81
   Height = 150

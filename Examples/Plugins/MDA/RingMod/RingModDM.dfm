@@ -1,16 +1,16 @@
 object RingModDataModule: TRingModDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda RingMod'
-  ProductName = 'RingMod'
-  VendorName = 'mda'
+  ProductName = 'DAV mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Ring Modulator'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdaR'
   ShellPlugins = <>
   Programs = <
@@ -23,9 +23,12 @@ object RingModDataModule: TRingModDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Freq'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Freq'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
     end
@@ -33,9 +36,12 @@ object RingModDataModule: TRingModDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Fine'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Fine'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
     end
@@ -54,6 +60,7 @@ object RingModDataModule: TRingModDataModule
       VSTModule = Owner
       OnParameterChange = ParameterFeedbackChange
     end>
+  OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

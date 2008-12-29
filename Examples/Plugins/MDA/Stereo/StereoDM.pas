@@ -20,15 +20,15 @@ type
     procedure ParameterModChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    fPhi, fDel : Single;
-    fDeltaPhi  : Single;
-    fMod       : Single;
-    fSize      : Integer;
-    fBufferPos : Integer;
-    fDelay     : Integer;
-    fRi, fRd   : Single;
-    fLi, fLd   : Single;
-    fBuffer    : PDAVSingleFixedArray;
+    FPhi, FDel : Single;
+    FDeltaPhi  : Single;
+    FMod       : Single;
+    FSize      : Integer;
+    FBufferPos : Integer;
+    FDelay     : Integer;
+    FRi, FRd   : Single;
+    FLi, FLd   : Single;
+    FBuffer    : PDAVSingleFixedArray;
     procedure DeltaPhiChanged;
   public
   end;
@@ -51,14 +51,14 @@ begin
  Parameter[4] = 0.50; // Rate
 *)
 
- fSize      := 4800;
- fBufferPos := 0;
- GetMem(fBuffer, fSize * SizeOf(Single));
+ FSize      := 4800;
+ FBufferPos := 0;
+ GetMem(FBuffer, FSize * SizeOf(Single));
 end;
 
 procedure TStereoDataModule.VSTModuleDestroy(Sender: TObject);
 begin
- if assigned(fBuffer) then Dispose(fBuffer);
+ if assigned(FBuffer) then Dispose(FBuffer);
 end;
 
 procedure TStereoDataModule.VSTModuleParameterChange(Sender: TObject;
@@ -66,19 +66,19 @@ procedure TStereoDataModule.VSTModuleParameterChange(Sender: TObject;
 begin
  if (Parameter[2] > 0.5) then
   begin
-   fLi := fLi * 2 * (1 - Parameter[2]);
-   fLd := fLd * 2 * (1 - Parameter[2]);
+   FLi := FLi * 2 * (1 - Parameter[2]);
+   FLd := FLd * 2 * (1 - Parameter[2]);
   end
  else
   begin
-   fRi := fRi * (2 * Parameter[2]);
-   fRd := fRd * (2 * Parameter[2]);
+   FRi := FRi * (2 * Parameter[2]);
+   FRd := FRd * (2 * Parameter[2]);
   end;
 
- fRi := fRi * abs(Parameter[0]);
- fRd := fRd * abs(Parameter[0]);
- fLi := fLi * abs(Parameter[0]);
- fLd := fLd * abs(Parameter[0]);
+ FRi := FRi * abs(Parameter[0]);
+ FRd := FRd * abs(Parameter[0]);
+ FLi := FLi * abs(Parameter[0]);
+ FLd := FLd * abs(Parameter[0]);
 end;
 
 procedure TStereoDataModule.VSTModuleProcess(const Inputs,
@@ -92,31 +92,31 @@ var
   dph, md : Double;
   tmp, bp : Integer;
 begin
- ph  := fPhi;
- dph := fDeltaPhi;
- bp  := fBufferPos;
+ ph  := FPhi;
+ dph := FDeltaPhi;
+ bp  := FBufferPos;
 
- li  := fLi;
- ld  := fLd;
- ri  := fRi;
- rd  := fRd;
- del := fDel;
+ li  := FLi;
+ ld  := FLd;
+ ri  := FRi;
+ rd  := FRd;
+ del := FDel;
 
- if fMod > 0 then //modulated delay
+ if FMod > 0 then //modulated delay
   for Sample := 0 to SampleFrames - 1 do
    begin
     a := Inputs[0, Sample] + Inputs[1, Sample]; //sum to mono
 
-    fBuffer[bp] := a; //write
-    tmp := (bp + round(del + abs(fMod * sin(ph)))) mod 4410;
-    b   := fBuffer[tmp];
+    FBuffer[bp] := a; //write
+    tmp := (bp + round(del + abs(FMod * sin(ph)))) mod 4410;
+    b   := FBuffer[tmp];
 
     Outputs[0, Sample] := (Inputs[0, Sample] * li) - (Inputs[1, Sample] * ld); // output
     Outputs[1, Sample] := (Inputs[0, Sample] * ri) - (Inputs[1, Sample] * rd);
 
     dec(bp);
     if (bp < 0)
-     then bp := 4410; //fBuffer position
+     then bp := 4410; //FBuffer position
 
     ph := ph + dph;
    end
@@ -125,21 +125,21 @@ begin
    begin
     a := Inputs[0, Sample] + Inputs[1, Sample]; //sum to mono
 
-    fBuffer[bp] := a; //write
+    FBuffer[bp] := a; //write
     tmp := (bp + round(del)) mod 4410;
-    b   := fBuffer[tmp];
+    b   := FBuffer[tmp];
 
     Outputs[0, Sample] := (Inputs[0, Sample] * li) - (Inputs[1, Sample] * ld); // output
     Outputs[1, Sample] := (Inputs[0, Sample] * ri) - (Inputs[1, Sample] * rd);
 
     dec(bp);
     if (bp < 0)
-     then bp := 4410; //fBuffer position
+     then bp := 4410; //FBuffer position
 
     ph := ph + dph;
    end;
- fBufferPos := bp;
- fPhi       := f_mod(ph, 2 * Pi);
+ FBufferPos := bp;
+ FPhi       := f_mod(ph, 2 * Pi);
 end;
 
 procedure TStereoDataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -149,24 +149,24 @@ end;
 
 procedure TStereoDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- FillChar(fBuffer, fSize * SizeOf(Single), 0);
+ FillChar(FBuffer, FSize * SizeOf(Single), 0);
 end;
 
 procedure TStereoDataModule.ParameterWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if (Parameter[0] < 0.5) then
   begin
-   fLi := (0.25 + (1.5 * Parameter[0]));
-   fLd := 0;
-   fRi := (2 * Parameter[0]);
-   fRd := (1 - fRi);
+   FLi := (0.25 + (1.5 * Parameter[0]));
+   FLd := 0;
+   FRi := (2 * Parameter[0]);
+   FRd := (1 - FRi);
   end
  else
   begin
-   fLi := (1.5 - Parameter[0]);
-   fLd := (Parameter[0] - 0.5);
-   fRi := fLi;
-   fRd := -fLd;
+   FLi := (1.5 - Parameter[0]);
+   FLd := (Parameter[0] - 0.5);
+   FRi := FLi;
+   FRd := -FLd;
   end;
 end;
 
@@ -179,14 +179,14 @@ end;
 
 procedure TStereoDataModule.ParameterModDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- if fMod > 0
-  then PreDefined := FloatToStrF(1000 * fMod / SampleRate, ffGeneral, 2, 2)
+ if FMod > 0
+  then PreDefined := FloatToStrF(1000 * FMod / SampleRate, ffGeneral, 2, 2)
   else PreDefined := 'OFF';
 end;
 
 procedure TStereoDataModule.ParameterModChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fMod := (2100 * Power(Value, 2));
+ FMod := (2100 * Power(Value, 2));
 end;
 
 procedure TStereoDataModule.ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -196,12 +196,12 @@ end;
 
 procedure TStereoDataModule.DeltaPhiChanged;
 begin
- fDeltaPhi := (Pi * Power(10, -2 + 3 * Parameter[3]) / SampleRate);
+ FDeltaPhi := (Pi * Power(10, -2 + 3 * Parameter[3]) / SampleRate);
 end;
 
 procedure TStereoDataModule.ParameterDelayChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fDelay := round(20 + 2080 * Power(Value, 2));
+ FDelay := round(20 + 2080 * Power(Value, 2));
 end;
 
 end.
@@ -212,7 +212,7 @@ begin
   switch(index)
   begin
     case 0: long2string(round(200 * abs(Parameter[0] - 0.5)), text);break;
-    case 1: float2strng((1000 * fdel / SampleRate), text); break;
+    case 1: float2strng((1000 * FDel / SampleRate), text); break;
     case 2: long2string(round(200 * (Parameter[2] - 0.5)), text); break;
     case 4: float2strng(Power(10, 2 - 3 * Parameter[4]), text); break;
   end;

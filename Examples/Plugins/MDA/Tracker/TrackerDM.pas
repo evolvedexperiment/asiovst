@@ -12,16 +12,16 @@ type
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    fMode      : Integer;
-    fThreshold : Single;
-    fMin, fMax : Single;
-    fTrans     : Single;
-    fDry, fWet : Single;
-    fDyn, fPhi : Single;
-    fRel, fEnv : Single;
-    fDeltaPhi  : Single;
-    fBuffer    : array [0..3] of Single; 
-    function filterFreq(Hz: Double): Double;
+    FMode      : Integer;
+    FThreshold : Single;
+    FMin, FMax : Single;
+    FTrans     : Single;
+    FDry, FWet : Single;
+    FDyn, FPhi : Single;
+    FRel, FEnv : Single;
+    FDeltaPhi  : Single;
+    FBuffer    : array [0..3] of Single; 
+    function FilterFreq(Hz: Double): Double;
   public
   end;
 
@@ -48,7 +48,7 @@ procedure TTrackerDataModule.VSTModuleCreate(Sender: TObject);
 begin
 (*
  //inits here!
- Parameter[0] := 0; //fMode
+ Parameter[0] := 0; //FMode
  Parameter[1] := 1; //Dynamics
  Parameter[2] := 1; //Mix
  Parameter[3] := 0.97; //Tracking
@@ -61,11 +61,11 @@ begin
  res2 := sin(0.01); //q
 *)
 
- fMin := SampleRate / 30; //lower limit
- fDeltaPhi := 100 / SampleRate;  // Initial Pitch
+ FMin := SampleRate / 30; //lower limit
+ FDeltaPhi := 100 / SampleRate;  // Initial Pitch
 end;
 
-function TTrackerDataModule.filterFreq(Hz: Double) : Double;
+function TTrackerDataModule.FilterFreq(Hz: Double) : Double;
 var
   j, k, r : Double;
 begin
@@ -79,30 +79,30 @@ procedure TTrackerDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
  //calcs here
- fMode := round(Parameter[0] * 4.9);
+ FMode := round(Parameter[0] * 4.9);
 (*
- fo := filterFreq(50);
+ fo := FilterFreq(50);
  fi := sqr(1 - fo);
  ddphi := sqr(Parameter[3]);
 *)
- fThreshold := Power(10, 3 * Parameter[6] - 3.8);
- fWet := Power(10, 2 * Parameter[7] - 1);
- fMax := round(SampleRate / Power(10, 1.6 + 2.2 * Parameter[5]));
- fTrans := Power(1.0594631, round(72 * Parameter[4] - 36));
+ FThreshold := Power(10, 3 * Parameter[6] - 3.8);
+ FWet := Power(10, 2 * Parameter[7] - 1);
+ FMax := round(SampleRate / Power(10, 1.6 + 2.2 * Parameter[5]));
+ FTrans := Power(1.0594631, round(72 * Parameter[4] - 36));
 
- if (fMode < 4) then
+ if (FMode < 4) then
   begin
-   fDyn := fWet * 0.6 * Parameter[2] * Parameter[1];
-   fDry := fWet * sqrt(1 - Parameter[2]);
-   fWet := fWet * 0.3 * Parameter[2] * (1 - Parameter[1]);
+   FDyn := FWet * 0.6 * Parameter[2] * Parameter[1];
+   FDry := FWet * sqrt(1 - Parameter[2]);
+   FWet := FWet * 0.3 * Parameter[2] * (1 - Parameter[1]);
   end
  else
   begin
-   fDry := fWet * (1 - Parameter[2]);
-   fWet := fWet * (0.02 * Parameter[2] - 0.004);
-   fDyn := 0;
+   FDry := FWet * (1 - Parameter[2]);
+   FWet := FWet * (0.02 * Parameter[2] - 0.004);
+   FDyn := 0;
   end;
- fRel := Power(10, -10 / SampleRate);
+ FRel := Power(10, -10 / SampleRate);
 end;
 
 procedure TTrackerDataModule.VSTModuleProcess(const Inputs,
@@ -118,33 +118,33 @@ var
 const
   TwoPi : Single = 6.2831853;
 begin
- t   := fThreshold;
- p   := fPhi;
- dp  := fDeltaPhi;
+ t   := FThreshold;
+ p   := FPhi;
+ dp  := FDeltaPhi;
 (*
  ddp := ddphi;
  o   := fo;
  i   := fi;
- b1  := fBuffer[0];
- b2  := fBuffer[1]
+ b1  := FBuffer[0];
+ b2  := FBuffer[1]
  bo  := fBold;
  r1  := res1;
  r2  := res2;
- b3  := fBuffer[2];
- b4  := fBuffer[3];
+ b3  := FBuffer[2];
+ b4  := FBuffer[3];
  sw  := saw;
  dsw := dsaw;
  re  := rel;
  n   := num;
  s   := sig;
 *)
- we  := fWet;
- dr  := fDry;
- mn  := fMin;
- m   := fMax;
- dy  := fDyn;
- e   := fEnv;
- mo  := fMode;
+ we  := FWet;
+ dr  := FDry;
+ mn  := FMin;
+ m   := FMax;
+ dy  := FDyn;
+ e   := FEnv;
+ mo  := FMode;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
@@ -170,12 +170,12 @@ begin
         begin
 (*
          tmp2 := b2 / (b2 - bo);                   // update period
-         tmp  := fTrans * TwoPi / (n + dn - tmp2);
+         tmp  := FTrans * TwoPi / (n + dn - tmp2);
          dp   := dp + ddp * (tmp - dp);
          dn   := tmp2;
 *)
          dsw  := 0.3183098 * dp;
-         if fMode = 4 then
+         if FMode = 4 then
           begin
            r1 := cos(4 * dp); //resonator
            r2 := sin(4 * dp);
@@ -216,17 +216,17 @@ begin
 
   if abs(b1) < 1E-10 then
    begin
-    fBuffer[0] := 0;
-    fBuffer[1] := 0;
-    fBuffer[2] := 0;
-    fBuffer[3] := 0;
+    FBuffer[0] := 0;
+    FBuffer[1] := 0;
+    FBuffer[2] := 0;
+    FBuffer[3] := 0;
    end
   else
    begin
-    fBuffer[0] := b1;
-    fBuffer[1] := b2;
-    fBuffer[2] := b3;
-    fBuffer[3] := b4;
+    FBuffer[0] := b1;
+    FBuffer[1] := b2;
+    FBuffer[2] := b3;
+    FBuffer[3] := b4;
    end;
 
 (*
@@ -243,9 +243,9 @@ begin
   res2  := r2;
 *)
 
- fPhi      := p;
- fDeltaPhi := dp;
- fEnv      := e;
+ FPhi      := p;
+ FDeltaPhi := dp;
+ FEnv      := e;
 end;
 
 end.
@@ -258,7 +258,7 @@ begin
   2: long2string(round(100 * Parameter[2]), text); break;
   3: long2string(round(100 * Parameter[3]), text); break;
   4: long2string(round( 72 * Parameter[4] - 36), text); break;
-  5: long2string(round(SampleRate / fMax), text); break;
+  5: long2string(round(SampleRate / FMax), text); break;
   6: long2string(round( 60 * Parameter[6] - 60), text); break;
   7: long2string(round( 40 * Parameter[7] - 20), text); break;
  end;

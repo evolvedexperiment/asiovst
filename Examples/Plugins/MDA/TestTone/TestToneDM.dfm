@@ -1,16 +1,16 @@
 object TestToneDataModule: TTestToneDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda TestTone'
-  ProductName = 'TestTone'
-  VendorName = 'mda'
+  ProductName = 'DAV mda'
+  VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Signal Generator'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdaT'
   ShellPlugins = <>
   Programs = <
@@ -38,9 +38,12 @@ object TestToneDataModule: TTestToneDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Level'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Level'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
     end
@@ -64,27 +67,36 @@ object TestToneDataModule: TTestToneDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'F1'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'F1'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'F2'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'F2'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Thru'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Thru'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
     end
@@ -92,9 +104,12 @@ object TestToneDataModule: TTestToneDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Sweep'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Sweep'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
     end
@@ -102,15 +117,19 @@ object TestToneDataModule: TTestToneDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = '0dB ='
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = '0dB ='
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'dBFS'
       VSTModule = Owner
     end>
-  OnSuspend = VSTModuleSuspend
+  OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnSuspend = VSTModuleSuspend
   Left = 188
   Top = 77
   Height = 150

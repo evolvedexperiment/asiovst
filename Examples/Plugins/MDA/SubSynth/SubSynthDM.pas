@@ -21,21 +21,21 @@ type
     procedure ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    fFilterState : array [0..3] of Single;
-    fFilterIn    : Single;
-    fFilterOut   : Single;
+    FFilterState : array [0..3] of Single;
+    FFilterIn    : Single;
+    FFilterOut   : Single;
 
-    fPhi         : Single;
-    fEnv         : Single;
-    fDivide      : Single;
-    fPhase       : Single;
-    fOsc         : Single;
-    fType        : TProcessType;
-    fWet         : Single;
-    fDry         : Single;
-    fThreshold   : Single;
-    fRelease     : Single;
-    fDeltaPhi    : Single;
+    FPhi         : Single;
+    FEnv         : Single;
+    FDivide      : Single;
+    FPhase       : Single;
+    FOsc         : Single;
+    FType        : TProcessType;
+    FWet         : Single;
+    FDry         : Single;
+    FThreshold   : Single;
+    FRelease     : Single;
+    FDeltaPhi    : Single;
   public
   end;
 
@@ -48,12 +48,12 @@ uses
 
 procedure TSubSynthDataModule.ParameterLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fWet := 0.01 * Value;
+ FWet := 0.01 * Value;
 end;
 
 procedure TSubSynthDataModule.ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fThreshold := dB_to_Amp(Parameter[4]);
+ FThreshold := dB_to_Amp(Parameter[4]);
 end;
 
 procedure TSubSynthDataModule.ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -64,12 +64,12 @@ end;
 procedure TSubSynthDataModule.ParameterReleaseDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(-301.03 / (SampleRate * log10(fRelease))));
+ PreDefined := IntToStr(round(-301.03 / (SampleRate * log10(FRelease))));
 end;
 
 procedure TSubSynthDataModule.ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fRelease := 1 - Power(10, -2 - (3 * Parameter[5]));
+ FRelease := 1 - Power(10, -2 - (3 * Parameter[5]));
 end;
 
 procedure TSubSynthDataModule.ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -84,7 +84,7 @@ end;
 
 procedure TSubSynthDataModule.ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fDry := 0.01 * Value;
+ FDry := 0.01 * Value;
 end;
 
 procedure TSubSynthDataModule.VSTModuleCreate(Sender: TObject);
@@ -102,15 +102,15 @@ end;
 procedure TSubSynthDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
-  fDivide := 1;
-  fPhase  := 1;
-  fOsc    := 0; // Oscillator phase
-  fType   := TProcessType(round(Parameter[0]));
-  if fType = ptKeyOsc
-   then fFilterIn := 0.018
-   else fFilterIn := Power(10, -3 + (2 * Parameter[2]));
-  fFilterOut := 1 - fFilterIn;
-  fDeltaPhi  := 0.456159 * Power(10, -2.5 + (1.5 * Parameter[2]));
+  FDivide := 1;
+  FPhase  := 1;
+  FOsc    := 0; // Oscillator phase
+  FType   := TProcessType(round(Parameter[0]));
+  if FType = ptKeyOsc
+   then FFilterIn := 0.018
+   else FFilterIn := Power(10, -3 + (2 * Parameter[2]));
+  FFilterOut := 1 - FFilterIn;
+  FDeltaPhi  := 0.456159 * Power(10, -2.5 + (1.5 * Parameter[2]));
 end;
 
 procedure TSubSynthDataModule.VSTModuleProcess(const Inputs,
@@ -125,21 +125,21 @@ var
 
   Sample       : Integer;
 begin
- dph  := fDeltaPhi;
- rl   := fRelease;
- phii := fPhi;
- en   := fEnv;
- os   := fOsc;
- th   := fThreshold;
- dv   := fDivide;
- ph   := fPhase;
- f1   := fFilterState[0];
- f2   := fFilterState[1];
- f3   := fFilterState[2];
- f4   := fFilterState[3];
+ dph  := FDeltaPhi;
+ rl   := FRelease;
+ phii := FPhi;
+ en   := FEnv;
+ os   := FOsc;
+ th   := FThreshold;
+ dv   := FDivide;
+ ph   := FPhase;
+ f1   := FFilterState[0];
+ f2   := FFilterState[1];
+ f3   := FFilterState[2];
+ f4   := FFilterState[3];
 
- fi   := fFilterIn;
- fo   := fFilterOut;
+ fi   := FFilterIn;
+ fo   := FFilterOut;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
@@ -156,7 +156,7 @@ begin
      if dv < 0 then ph := -ph;
     end;
 
-   case fType of
+   case FType of
     ptDivide : sub := ph * sub;     // Divide
     ptInvert : sub := ph * f2 * 2;  // Invert
     ptKeyOsc : begin                // Osc
@@ -171,32 +171,32 @@ begin
    f3 := (fo * f3) + (fi * sub);
    f4 := (fo * f4) + (fi * f3);
 
-  Outputs[0, Sample] := Inputs[0, Sample] * fDry + f4 * fWet; // output
-  Outputs[1, Sample] := Inputs[1, Sample] * fDry + f4 * fWet;
+  Outputs[0, Sample] := Inputs[0, Sample] * FDry + f4 * FWet; // output
+  Outputs[1, Sample] := Inputs[1, Sample] * FDry + f4 * FWet;
   end;
 
- if (abs(f1) < 1E-10) then fFilterState[0] := 0 else fFilterState[0] := f1;
- if (abs(f2) < 1E-10) then fFilterState[1] := 0 else fFilterState[1] := f2;
- if (abs(f3) < 1E-10) then fFilterState[2] := 0 else fFilterState[2] := f3;
- if (abs(f4) < 1E-10) then fFilterState[3] := 0 else fFilterState[3] := f4;
+ if (abs(f1) < 1E-10) then FFilterState[0] := 0 else FFilterState[0] := f1;
+ if (abs(f2) < 1E-10) then FFilterState[1] := 0 else FFilterState[1] := f2;
+ if (abs(f3) < 1E-10) then FFilterState[2] := 0 else FFilterState[2] := f3;
+ if (abs(f4) < 1E-10) then FFilterState[3] := 0 else FFilterState[3] := f4;
 
- fDivide := dv;
- fPhase  := ph;
- fOsc    := os;
- fPhi    := phii;
- fEnv    := en;
+ FDivide := dv;
+ FPhase  := ph;
+ FOsc    := os;
+ FPhi    := phii;
+ FEnv    := en;
 end;
 
 procedure TSubSynthDataModule.VSTModuleResume(Sender: TObject);
 begin
- fPhi     := 0;
- fEnv     := 0;
- fFilterState[0] := 0;
- fFilterState[1] := 0;
- fFilterState[2] := 0;
- fFilterState[3] := 0;
- fFilterIn   := 0;
- fFilterOut   := 0;
+ FPhi     := 0;
+ FEnv     := 0;
+ FFilterState[0] := 0;
+ FFilterState[1] := 0;
+ FFilterState[2] := 0;
+ FFilterState[3] := 0;
+ FFilterIn   := 0;
+ FFilterOut   := 0;
 end;
 
 end.

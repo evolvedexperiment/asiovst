@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   MultibandDM in 'MultibandDM.pas' {MultibandDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  MultibandDataModule: TMultibandDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    MultibandDataModule := TMultibandDataModule.Create(Application);
-    MultibandDataModule.Effect^.user := MultibandDataModule;
-    MultibandDataModule.AudioMaster := audioMaster;
-    Result := MultibandDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TMultibandDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

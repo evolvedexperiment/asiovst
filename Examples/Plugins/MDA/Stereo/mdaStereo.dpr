@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   StereoDM in 'StereoDM.pas' {StereoDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  StereoDataModule: TStereoDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    StereoDataModule := TStereoDataModule.Create(Application);
-    StereoDataModule.Effect^.user := StereoDataModule;
-    StereoDataModule.AudioMaster := audioMaster;
-    Result := StereoDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TStereoDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

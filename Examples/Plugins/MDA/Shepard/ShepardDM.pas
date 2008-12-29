@@ -7,21 +7,21 @@ uses
 
 type
   TShepardDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleClose(Sender: TObject);
   private
-    fMax    : Integer;
-    fBuffer : Array [0..1] of PDAVSingleFixedArray;
-    fOut    : Single;
-    fPos    : Single;
-    fRate   : Single;
-    fDRate  : Single;
-    fMode   : Integer;
+    FMax    : Integer;
+    FBuffer : Array [0..1] of PDAVSingleFixedArray;
+    FOut    : Single;
+    FPos    : Single;
+    FRate   : Single;
+    FDRate  : Single;
+    FMode   : Integer;
   public
   end;
 
@@ -43,61 +43,59 @@ end;
 
 procedure TShepardDataModule.ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fOut := 0.4842 * dB_to_Amp(Value - 1);
+ FOut := 0.4842 * dB_to_Amp(Value - 1);
 end;
 
 procedure TShepardDataModule.ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fDRate := 1 + 10 * Power(0.01 * Value - 0.5, 3) / SampleRate;
+ FDRate := 1 + 10 * Power(0.01 * Value - 0.5, 3) / SampleRate;
 end;
 
 procedure TShepardDataModule.ParameterModeChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fMode := round(Value);
+ FMode := round(Value);
 end;
 
-procedure TShepardDataModule.VSTModuleCreate(Sender: TObject);
+procedure TShepardDataModule.VSTModuleOpen(Sender: TObject);
 var
   i, j : Integer;
   x, a : Single;
 const
   Twopi = 6.2831853;
 begin
-(*
- //inits here!
+ FMax := 512 * SizeOf(Single);
+ GetMem(FBuffer[0], FMax);
+ GetMem(FBuffer[1], FMax);
+ for i := 0 to FMax - 1 do
+  begin
+   FPos := (2 * Pi * i / (FMax - 1)); //generate wavetables
+   x    := 0;
+   a    := 1;
+   FBuffer[1, FMax] := sin(FPos);
+   for j := 0 to 7 do
+    begin
+     x   := x + a * sin(f_mod(FPos, twopi));
+     a   := a * 0.5;
+     FPos := FPos * 2;
+    end;
+    FBuffer[0, FMax] := x;
+  end;
+ i := 511;
+ FBuffer[0, i] := 0;
+ FBuffer[1, i] := 0; // wrap end for interpolation
+ FPos  := 0;
+ FRate := 1;
+
+ // Initial Parameters
  Parameter[0] := 0.2; // Mode
  Parameter[1] := 0.7; // Rate
  Parameter[2] := 0.5; // Level
-*)
-
- fMax := 512 * SizeOf(Single);
- GetMem(fBuffer[0], fMax);
- GetMem(fBuffer[1], fMax);
- for i := 0 to fMax - 1 do
-  begin
-   fPos := (2 * Pi * i / (fMax - 1)); //generate wavetables
-   x    := 0;
-   a    := 1;
-   fBuffer[1, fMax] := sin(fPos);
-   for j := 0 to 7 do
-    begin
-     x   := x + a * sin(f_mod(fPos, twopi));
-     a   := a * 0.5;
-     fPos := fPos * 2;
-    end;
-    fBuffer[0, fMax] := x;
-  end;
- i := 511;
- fBuffer[0, i] := 0;
- fBuffer[1, i] := 0; // wrap end for interpolation
- fPos  := 0;
- fRate := 1;
 end;
 
-procedure TShepardDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TShepardDataModule.VSTModuleClose(Sender: TObject);
 begin
- Dispose(fBuffer[0]);
- Dispose(fBuffer[1]);
+ Dispose(FBuffer[0]);
+ Dispose(FBuffer[1]);
 end;
 
 procedure TShepardDataModule.VSTModuleProcess(const Inputs,
@@ -108,16 +106,16 @@ var
   r, p, di     : Single;
   x, m, i1, i2 : Integer;
 begin
- r := fRate;
- p := fPos;
- x := fMax;
- m := fMode;
+ r := FRate;
+ p := FPos;
+ x := FMax;
+ m := FMode;
 
  for Sample := 0 to SampleFrames - 1 do
   begin
    a := Inputs[0, Sample] + Inputs[1, Sample];
 
-   r := r * fDRate;
+   r := r * FDRate;
    if r > 2 then
     begin
      r := r * 0.5;
@@ -139,9 +137,9 @@ begin
    i2 := i1 + 1;
    di := i2 - p;
 
-   b :=          di  * (fBuffer[0, i1] + (r - 2) * fBuffer[1, i1]);
-   b := b + (1 - di) * (fBuffer[0, i2] + (r - 2) * fBuffer[1, i2]);
-   b := b * fOut / r;
+   b :=          di  * (FBuffer[0, i1] + (r - 2) * FBuffer[1, i1]);
+   b := b + (1 - di) * (FBuffer[0, i2] + (r - 2) * FBuffer[1, i2]);
+   b := b * FOut / r;
 
    if (m > 0) then
     if (m = 2)
@@ -152,8 +150,8 @@ begin
    Outputs[1, Sample] := b;
   end;
 
- fPos  := p;
- fRate := r;
+ FPos  := p;
+ FRate := r;
 end;
 
 end.

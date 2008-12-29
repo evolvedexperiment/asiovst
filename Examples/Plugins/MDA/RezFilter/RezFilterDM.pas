@@ -7,7 +7,6 @@ uses
 
 type
   TRezFilterDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSuspend(Sender: TObject);
@@ -16,20 +15,21 @@ type
     procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterLFORateDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTriggerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleOpen(Sender: TObject);
   private
-    fBuffer           : Array [0..2] of Single;
-    fFrequency        : Single;
-    fQuality, fGain   : Single;
-    fFreqMax          : Single;
-    fFreqEnv          : Single;
-    fEnv, fEnv2       : Single;
-    fAtt, fRel, fPhi  : Single;
-    fLFOMode          : Integer;
-    fState, fFreqLFO  : Single;
-    fDeltaPhi         : Single;
-    fTrigger          : Integer;
-    fTriggerAttack    : Integer;
-    fTriggerThreshold : Single;
+    FBuffer           : Array [0..2] of Single;
+    FFrequency        : Single;
+    FQuality, FGain   : Single;
+    FFreqMax          : Single;
+    FFreqEnv          : Single;
+    FEnv, FEnv2       : Single;
+    FAtt, FRel, FPhi  : Single;
+    FLFOMode          : Integer;
+    FState, FFreqLFO  : Single;
+    FDeltaPhi         : Single;
+    FTrigger          : Integer;
+    FTriggerAttack    : Integer;
+    FTriggerThreshold : Single;
   public
   end;
 
@@ -43,21 +43,21 @@ uses
 procedure TRezFilterDataModule.ParameterGainChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- fGain  := 0.5 * dB_to_Amp(Value);
+ FGain  := 0.5 * dB_to_Amp(Value);
 end;
 
 procedure TRezFilterDataModule.ParameterReleaseDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- PreDefined := FloatToStrF((-301.0301 / (SampleRate * log10(fRel))), ffGeneral, 3, 3);
+ PreDefined := FloatToStrF((-301.0301 / (SampleRate * log10(FRel))), ffGeneral, 3, 3);
 end;
 
 procedure TRezFilterDataModule.ParameterTriggerDisplay(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- if (fTriggerThreshold = 0)
+ if (FTriggerThreshold = 0)
   then PreDefined := 'FREE RUN'
-  else PreDefined := IntToStr(round(20 * log10(0.5 * fTriggerThreshold)));
+  else PreDefined := IntToStr(round(20 * log10(0.5 * FTriggerThreshold)));
 end;
 
 procedure TRezFilterDataModule.ParameterLFORateDisplay(Sender: TObject;
@@ -69,12 +69,12 @@ end;
 procedure TRezFilterDataModule.ParameterAttackDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := FloatToStrF(-301.0301 / (SampleRate * log10(1 - fAtt)), ffGeneral, 3, 3);
+ PreDefined := FloatToStrF(-301.0301 / (SampleRate * log10(1 - FAtt)), ffGeneral, 3, 3);
 end;
 
-procedure TRezFilterDataModule.VSTModuleCreate(Sender: TObject);
+procedure TRezFilterDataModule.VSTModuleOpen(Sender: TObject);
 begin
- // inits here!
+ // Initial Parameters
  Parameter[0] := 33;   // Frequency [%]
  Parameter[1] := 70;   // Quality [%]
  Parameter[2] := 0;    // Amplification [dB]
@@ -92,30 +92,30 @@ end;
 procedure TRezFilterDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- fFrequency := 1.5 * sqr(0.01 * Parameter[0]) - 0.15;
- fQuality  := 0.99 * Power(0.01 * Parameter[1], 0.3); // was 0.99 *
+ FFrequency := 1.5 * sqr(0.01 * Parameter[0]) - 0.15;
+ FQuality  := 0.99 * Power(0.01 * Parameter[1], 0.3); // was 0.99 *
 
- fFreqMax := 0.99 + 0.3 * Parameter[1];
- if fFreqMax > (0.013 * Parameter[9])
-  then fFreqMax := 0.013 * Parameter[9];
+ FFreqMax := 0.99 + 0.3 * Parameter[1];
+ if FFreqMax > (0.013 * Parameter[9])
+  then FFreqMax := 0.013 * Parameter[9];
 
- fFreqEnv := abs(2 * sqr(0.005 * Parameter[3]));
- fAtt     := Power(10, -0.01 - 4.0 * Parameter[4]);
- fRel     := 1 - Power(10, -2.00 - 4.0 * Parameter[5]);
+ FFreqEnv := abs(2 * sqr(0.005 * Parameter[3]));
+ FAtt     := Power(10, -0.01 - 4.0 * Parameter[4]);
+ FRel     := 1 - Power(10, -2.00 - 4.0 * Parameter[5]);
 
- fLFOMode := 0;
- fFreqLFO := 2 * sqr(0.005 * Parameter[6]);
- fDeltaPhi := (6.2832 * Power(10, 3 * Parameter[7] - 1.5) / SampleRate);
+ FLFOMode := 0;
+ FFreqLFO := 2 * sqr(0.005 * Parameter[6]);
+ FDeltaPhi := (6.2832 * Power(10, 3 * Parameter[7] - 1.5) / SampleRate);
  if (Parameter[6] < 0) then
   begin
-   fLFOMode  := 1;
-   fDeltaPhi := 0.15915 * fDeltaPhi;
-   fFreqLFO  := fFreqLFO * 0.001;
+   FLFOMode  := 1;
+   FDeltaPhi := 0.15915 * FDeltaPhi;
+   FFreqLFO  := FFreqLFO * 0.001;
   end; //S&H
 
  if (Parameter[8] < 0.1)
-  then fTriggerThreshold := 0
-  else fTriggerThreshold := 3 * sqr(Parameter[8]);
+  then FTriggerThreshold := 0
+  else FTriggerThreshold := 3 * sqr(Parameter[8]);
 end;
 
 procedure TRezFilterDataModule.VSTModuleProcess(const Inputs,
@@ -129,26 +129,26 @@ var
   dph, ph, bl, th, e2 : Single;
   lm, ta, tt          : Integer;
 begin
-  ff  := fFrequency;
-  fe  := fFreqEnv;
-  q   := fQuality;
-  g   := fGain;
-  e   := fEnv;
-  at  := fAtt;
-  re  := fRel;
-  fm  := fFreqMax;
-  fl  := fFreqLFO;
-  dph := fDeltaPhi;
-  th  := fTriggerThreshold;
-  e2  := fEnv2;
-  lm  := fLFOMode;
-  ta  := fTriggerAttack;
-  tt  := fTrigger;
-  b0  := fBuffer[0];
-  b1  := fBuffer[1];
-  b2  := fBuffer[2];
-  ph  := fPhi;
-  bl  := fState;
+  ff  := FFrequency;
+  fe  := FFreqEnv;
+  q   := FQuality;
+  g   := FGain;
+  e   := FEnv;
+  at  := FAtt;
+  re  := FRel;
+  fm  := FFreqMax;
+  fl  := FFreqLFO;
+  dph := FDeltaPhi;
+  th  := FTriggerThreshold;
+  e2  := FEnv2;
+  lm  := FLFOMode;
+  ta  := FTriggerAttack;
+  tt  := FTrigger;
+  b0  := FBuffer[0];
+  b1  := FBuffer[1];
+  b2  := FBuffer[2];
+  ph  := FPhi;
+  bl  := FState;
 
   if th = 0 then
    begin
@@ -238,30 +238,30 @@ begin
 
   if (abs(b0) < 1E-10) then
    begin
-    fBuffer[0] := 0;
-    fBuffer[1] := 0;
-    fBuffer[2] := 0;
+    FBuffer[0] := 0;
+    FBuffer[1] := 0;
+    FBuffer[2] := 0;
    end
   else
    begin
-    fBuffer[0] := b0;
-    fBuffer[1] := b1;
-    fBuffer[2] := b2;
+    FBuffer[0] := b0;
+    FBuffer[1] := b1;
+    FBuffer[2] := b2;
    end;
 
- fState         := bl;
- fPhi           := f_mod(ph, 2 * Pi);
- fEnv           := e;
- fEnv2          := e2;
- fTriggerAttack := ta;
- fTrigger       := tt;
+ FState         := bl;
+ FPhi           := f_mod(ph, 2 * Pi);
+ FEnv           := e;
+ FEnv2          := e2;
+ FTriggerAttack := ta;
+ FTrigger       := tt;
 end;
 
 procedure TRezFilterDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- fBuffer[0] := 0;
- fBuffer[1] := 0;
- fBuffer[2] := 0;
+ FBuffer[0] := 0;
+ FBuffer[1] := 0;
+ FBuffer[2] := 0;
 end;
 
 end.
