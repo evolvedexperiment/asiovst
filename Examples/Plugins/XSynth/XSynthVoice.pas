@@ -23,86 +23,94 @@ type
 
   TOscilator = class(TObject)
   private
-    fSampleRate : Single;
-    fFrequency  : Single;
-    fAmplitude  : Single;
-    fAttack,
-    fDecay,
-    fSustain,
-    fRelease    : Single;
-    fADSRStage  : TADSRStage;
-    fADSRGain   : Single;
-    fLevel      : Single;
-    fReleased   : Boolean;
-    procedure SetAmplitude(const Value: Single); virtual;
-    procedure SetFrequency(const Value: Single); virtual;
-    procedure SetSampleRate(const Value: Single); virtual;
+    FSampleRate : Single;
+    FSampleReci : Single;
+    FFrequency  : Single;
+    FAmplitude  : Single;
+    FAttack,
+    FDecay,
+    FSustain,
+    FRelease    : Single;
+    FADSRStage  : TADSRStage;
+    FADSRGain   : Single;
+    FLevel      : Single;
+    FReleased   : Boolean;
+    procedure SetAmplitude(const Value: Single);
+    procedure SetFrequency(const Value: Single);
+    procedure SetSampleRate(const Value: Single);
     procedure SetOsc(Osc : TOsc); virtual;
     procedure SetLevel(const Value: Single);
   protected
     function ProcessADSR: Single; virtual;
+    procedure AmplitudeChanged; virtual;
+    procedure FrequencyChanged; virtual;
+    procedure SampleRateChanged; virtual;
   public
     constructor Create; overload; virtual;
-    constructor Create(SampleRate: Single); overload; virtual;
+    constructor Create(const SampleRate: Single); overload; virtual;
     destructor Destroy; override;
     function Process: Single; virtual;
     procedure ReleaseOsc; virtual;
   published
-    property Frequency: Single read fFrequency write SetFrequency;
-    property SampleRate: Single read fSampleRate write SetSampleRate;
-    property Level: Single read fLevel write SetLevel;
-    property Amplitude: Single read fAmplitude write SetAmplitude;
-    property Attack: Single read fAttack write fAttack;
-    property Decay: Single read fDecay write fDecay;
-    property Sustain: Single read fSustain write fSustain;
-    property Release: Single read fRelease write fRelease;
+    property Frequency: Single read FFrequency write SetFrequency;
+    property SampleRate: Single read FSampleRate write SetSampleRate;
+    property Level: Single read FLevel write SetLevel;
+    property Amplitude: Single read FAmplitude write SetAmplitude;
+    property Attack: Single read FAttack write FAttack;
+    property Decay: Single read FDecay write FDecay;
+    property Sustain: Single read FSustain write FSustain;
+    property Release: Single read FRelease write FRelease;
   end;
 
   TSineOscilator = class(TOscilator)
   private
-    fAngle,
-    fPosition   : TComplexDouble;
-    procedure SetFrequency(const Value: Single); override;
+    FAngle,
+    FPosition   : TComplexDouble;
+  protected
+    procedure FrequencyChanged; override;
   public
     constructor Create; override;
-    function Process:Single; override;
+    function Process: Single; override;
   end;
 
   TSquareOscilator = class(TOscilator)
   private
-    fAngle,
-    fPosition   : TComplexDouble;
-    procedure SetFrequency(const Value: Single); override;
+    FAngle,
+    FPosition   : TComplexDouble;
+  protected
+    procedure FrequencyChanged; override;
   public
     constructor Create; override;
-    function Process:Single; override;
+    function Process: Single; override;
   end;
 
   THalfSineOscilator = class(TSineOscilator)
   private
   public
-    function Process:Single; override;
+    function Process: Single; override;
   end;
 
   TNoiseOscilator = class(TOscilator)
   private
   public
     constructor Create; override;
-    function Process:Single; override;
+    function Process: Single; override;
   end;
 
   TXSynthVoice = class(TObject)
   private
-    fMidiKeyNr  : Integer;
-    fVelocity   : Integer;
-    fSampleRate : Single;
-    fFrequency  : Single;
-    fAmplitude  : Single;
-    fReleased   : Boolean;
-    fOscilators : Array[0..1] of TOscilator;
-    fVSTModule  : TVSTModule;
-    function GetSampleRate: Single; virtual;
-    procedure SetSampleRate(v: Single); virtual;
+    FMidiKeyNr  : Integer;
+    FVelocity   : Integer;
+    FSampleRate : Single;
+    FSampleReci : Single;
+    FFrequency  : Single;
+    FAmplitude  : Single;
+    FReleased   : Boolean;
+    FOscilators : Array[0..1] of TOscilator;
+    FVSTModule  : TVSTModule;
+    procedure SetSampleRate(const Value: Single); virtual;
+  protected
+    procedure SampleRateChanged; virtual;
   public
     constructor Create(theModule: TVSTModule);
     destructor Destroy; override;
@@ -111,11 +119,11 @@ type
     procedure NoteOff;
     function Process: Single; virtual;
   published
-    property Frequency: Single read fFrequency write SetFrequency;
-    property SampleRate: Single read GetSampleRate write SetSampleRate;
-    property Released: Boolean read fReleased;
-    property MidiKeyNr: Integer read fMidiKeyNr write fMidiKeyNr;
-    property Velocity: Integer read fVelocity write fVelocity;
+    property Frequency: Single read FFrequency write SetFrequency;
+    property SampleRate: Single read FSampleRate write SetSampleRate;
+    property Released: Boolean read FReleased;
+    property MidiKeyNr: Integer read FMidiKeyNr write FMidiKeyNr;
+    property Velocity: Integer read FVelocity write FVelocity;
   end;
 
 implementation
@@ -127,17 +135,18 @@ uses
 
 constructor TOscilator.Create;
 begin
- fSampleRate := 44100;
- fFrequency  := 1000;
- fAmplitude  := 1;
- fADSRStage  := adsrAttack;
- fReleased   := False;
+ FSampleRate := 44100;
+ FFrequency  := 1000;
+ FAmplitude  := 1;
+ FADSRStage  := adsrAttack;
+ FReleased   := False;
 end;
 
-constructor TOscilator.Create(SampleRate: Single);
+constructor TOscilator.Create(const SampleRate: Single);
 begin
  inherited Create;
  Self.SampleRate := SampleRate;
+ SampleRateChanged;
 end;
 
 destructor TOscilator.Destroy;
@@ -145,33 +154,43 @@ begin
  inherited;
 end;
 
+procedure TOscilator.AmplitudeChanged;
+begin
+ // nothing to do yet
+end;
+
+procedure TOscilator.FrequencyChanged;
+begin
+ // nothing to do yet
+end;
+
 function TOscilator.ProcessADSR: Single;
 begin
- case fADSRStage of
+ case FADSRStage of
   adsrAttack  : begin
-                 fADSRGain := fADSRGain + fAttack*(1 - fADSRGain);
-                 if fADSRGain > 0.999
-                  then fADSRStage := adsrDecay;
+                 FADSRGain := FADSRGain + FAttack*(1 - FADSRGain);
+                 if FADSRGain > 0.999
+                  then FADSRStage := adsrDecay;
                 end;
   adsrDecay   : begin
-                 fADSRGain := fADSRGain - fDecay * (fADSRGain - fSustain);
-                 if fADSRGain < 1.001 * fSustain
-                  then fADSRStage := adsrSustain;
+                 FADSRGain := FADSRGain - FDecay * (FADSRGain - FSustain);
+                 if FADSRGain < 1.001 * FSustain
+                  then FADSRStage := adsrSustain;
                 end;
-  adsrSustain : if fReleased then fADSRStage := adsrRelease;
+  adsrSustain : if FReleased then FADSRStage := adsrRelease;
   adsrRelease : begin
-                 fADSRGain := fADSRGain - fRelease * fADSRGain;
-                 if fADSRGain < 0.001
-                  then fADSRGain := 0;
+                 FADSRGain := FADSRGain - FRelease * FADSRGain;
+                 if FADSRGain < 0.001
+                  then FADSRGain := 0;
                 end;
  end;
- Result := fADSRGain;
+ Result := FADSRGain;
 end;
 
 procedure TOscilator.ReleaseOsc;
 begin
- fReleased := True;
- fADSRStage := adsrRelease;
+ FReleased := True;
+ FADSRStage := adsrRelease;
 end;
 
 function TOscilator.Process: Single;
@@ -179,27 +198,34 @@ begin
  result := 0;
 end;
 
+procedure TOscilator.SampleRateChanged;
+begin
+ FSampleReci := 1 / FSampleRate;
+end;
+
 procedure TOscilator.SetAmplitude(const Value: Single);
 begin
- if fAmplitude <> Value then
+ if FAmplitude <> Value then
   begin
-   fAmplitude := Value * fLevel;
+   FAmplitude := Value * FLevel;
+   AmplitudeChanged;
   end;
 end;
 
 procedure TOscilator.SetFrequency(const Value: Single);
 begin
- if fFrequency <> Value then
+ if FFrequency <> Value then
   begin
-   fFrequency := Value;
+   FFrequency := Value;
+   FrequencyChanged;
   end;
 end;
 
 procedure TOscilator.SetLevel(const Value: Single);
 begin
- if fLevel <> Value then
+ if FLevel <> Value then
   begin
-   fLevel := Value;
+   FLevel := Value;
   end;
 end;
 
@@ -214,9 +240,10 @@ end;
 
 procedure TOscilator.SetSampleRate(const Value: Single);
 begin
- if fSampleRate <> Value then
+ if FSampleRate <> Value then
   begin
-   fSampleRate := Value;
+   FSampleRate := Value;
+   SampleRateChanged;
   end;
 end;
 
@@ -225,22 +252,22 @@ end;
 constructor TSineOscilator.Create;
 begin
  inherited;
- fPosition.Re := 0;
- fPosition.Im := -1;
- fADSRGain := 0;
+ FPosition.Re := 0;
+ FPosition.Im := -1;
+ FADSRGain := 0;
+end;
+
+procedure TSineOscilator.FrequencyChanged;
+begin
+ inherited;
+ GetSinCos(2 * Pi * FFrequency * FSampleReci, FAngle.Im, FAngle.Re);
 end;
 
 function TSineOscilator.Process: Single;
 begin
- result := fPosition.Re*fAngle.Re-fPosition.Im*fAngle.Im;
- fPosition.Im := fPosition.Im*fAngle.Re+fPosition.Re*fAngle.Im;
- fPosition.Re := result; result := result * fAmplitude * ProcessADSR;
-end;
-
-procedure TSineOscilator.SetFrequency(const Value: Single);
-begin
- fFrequency := Value;
- GetSinCos(2 * Pi * fFrequency / fSampleRate, fAngle.Im, fAngle.Re);
+ result := FPosition.Re*FAngle.Re-FPosition.Im*FAngle.Im;
+ FPosition.Im := FPosition.Im*FAngle.Re+FPosition.Re*FAngle.Im;
+ FPosition.Re := result; result := result * FAmplitude * ProcessADSR;
 end;
 
 { THalfSineOscilator }
@@ -255,24 +282,24 @@ end;
 constructor TSquareOscilator.Create;
 begin
  inherited;
- fPosition.Re :=  0;
- fPosition.Im := -1;
+ FPosition.Re :=  0;
+ FPosition.Im := -1;
+end;
+
+procedure TSquareOscilator.FrequencyChanged;
+begin
+ inherited;
+ GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
 end;
 
 function TSquareOscilator.Process: Single;
 begin
- result := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
- fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
- fPosition.Re := result;
+ result := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+ FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
+ FPosition.Re := result;
  if Result > 0
-  then Result :=  fAmplitude * ProcessADSR
-  else Result := -fAmplitude * ProcessADSR;
-end;
-
-procedure TSquareOscilator.SetFrequency(const Value: Single);
-begin
- fFrequency := Value;
- GetSinCos(2 * Pi * fFrequency / fSampleRate, fAngle.Im, fAngle.Re);
+  then Result :=  FAmplitude * ProcessADSR
+  else Result := -FAmplitude * ProcessADSR;
 end;
 
 { TNoiseOscilator }
@@ -285,7 +312,7 @@ end;
 
 function TNoiseOscilator.Process: Single;
 begin
- result := (2 * random - 1) * fAmplitude * ProcessADSR;
+ result := (2 * random - 1) * FAmplitude * ProcessADSR;
 end;
 
 { TXSynthVoice }
@@ -293,51 +320,57 @@ end;
 constructor TXSynthVoice.Create(theModule: TVSTModule);
 var i : Integer;
 begin
- fVSTModule := theModule;
- fReleased := False;
+ FVSTModule := theModule;
+ FReleased := False;
  if theModule.SampleRate=0
   then SampleRate := 44100
   else SampleRate := theModule.SampleRate;
  for i := 0 to 1 do
-  with (fVSTModule as TVSTSSModule) do
+  with (FVSTModule as TVSTSSModule) do
    begin
     case Oscilators[i].OType of
-     otNone     : fOscilators[i] := TOscilator.Create;
-     otSine     : fOscilators[i] := TSineOscilator.Create;
-     otHalfSine : fOscilators[i] := THalfSineOscilator.Create;
-     otSquare   : fOscilators[i] := TSquareOscilator.Create;
-     otNoise    : fOscilators[i] := TNoiseOscilator.Create;
+     otNone     : FOscilators[i] := TOscilator.Create;
+     otSine     : FOscilators[i] := TSineOscilator.Create;
+     otHalfSine : FOscilators[i] := THalfSineOscilator.Create;
+     otSquare   : FOscilators[i] := TSquareOscilator.Create;
+     otNoise    : FOscilators[i] := TNoiseOscilator.Create;
     end;
-    fOscilators[i].SampleRate := SampleRate;
-    fOscilators[i].SetOsc(Oscilators[i]);
+    FOscilators[i].SampleRate := SampleRate;
+    FOscilators[i].SetOsc(Oscilators[i]);
    end;
 end;
 
 destructor TXSynthVoice.Destroy;
 begin
- fOscilators[0].Free;
- fOscilators[1].Free;
+ FOscilators[0].Free;
+ FOscilators[1].Free;
  inherited;
 end;
 
-function TXSynthVoice.GetSampleRate: Single;
+procedure TXSynthVoice.SetSampleRate(const Value: Single);
 begin
- result := fSampleRate;
+ if Value <= 0
+  then raise Exception.Create('Samplerate must be above 0!');
+ if Value <> FSampleRate then
+  begin
+   FSampleRate := Value;
+   SampleRateChanged;
+  end;
 end;
 
-procedure TXSynthVoice.SetSampleRate(v: Single);
+procedure TXSynthVoice.SampleRateChanged;
 begin
- if (v > 0) then fSampleRate := v;
+ FSampleReci := 1 / FSampleRate;
 end;
 
 function TXSynthVoice.Process: Single;
 var
   i : Integer;
 begin
- result := fOscilators[0].Process + fOscilators[1].Process;
- if (fOscilators[0].fADSRGain = 0) and
-    (fOscilators[1].fADSRGain = 0) then
-  with (fVSTModule as TVSTSSModule) do
+ result := FOscilators[0].Process + FOscilators[1].Process;
+ if (FOscilators[0].FADSRGain = 0) and
+    (FOscilators[1].FADSRGain = 0) then
+  with (FVSTModule as TVSTSSModule) do
    for i := 0 to Voices.Count - 1 do
     if Voices.Items[i] = Self then
      begin
@@ -348,28 +381,28 @@ end;
 
 procedure TXSynthVoice.SetFrequency(Frequency: Single);
 begin
- fFrequency := Frequency;
- fOscilators[0].Frequency := fFrequency;
- fOscilators[1].Frequency := fFrequency;
+ FFrequency := Frequency;
+ FOscilators[0].Frequency := FFrequency;
+ FOscilators[1].Frequency := FFrequency;
 end;
 
 procedure TXSynthVoice.NoteOn(Frequency, Amplitude: Single);
 begin
- fFrequency := Frequency;
+ FFrequency := Frequency;
  SetFrequency(Frequency);
- fAmplitude := Amplitude;
+ FAmplitude := Amplitude;
 
- fOscilators[0].Frequency := Frequency;
- fOscilators[1].Frequency := Frequency;
- fOscilators[0].Amplitude := fAmplitude;
- fOscilators[1].Amplitude := fAmplitude;
+ FOscilators[0].Frequency := Frequency;
+ FOscilators[1].Frequency := Frequency;
+ FOscilators[0].Amplitude := FAmplitude;
+ FOscilators[1].Amplitude := FAmplitude;
 end;
 
 procedure TXSynthVoice.NoteOff;
 begin
- fOscilators[0].ReleaseOsc;
- fOscilators[1].ReleaseOsc;
- fReleased := True;
+ FOscilators[0].ReleaseOsc;
+ FOscilators[1].ReleaseOsc;
+ FReleased := True;
 end;
 
 end.

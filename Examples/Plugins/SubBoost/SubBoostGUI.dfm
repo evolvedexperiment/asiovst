@@ -105,16 +105,18 @@ object FmSubBoost: TFmSubBoost
       Width = 48
       Height = 48
       Color = 2105376
-      LineColor = 13948116
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
+      LineColor = 13948116
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialLevelChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialLevelChange
     end
     object DialTune: TGuiDial
       Left = 69
@@ -122,20 +124,22 @@ object FmSubBoost: TFmSubBoost
       Width = 48
       Height = 48
       Color = 2105376
-      LineColor = 13948116
       CurveMapping = -1.000000000000000000
       DefaultPosition = 10.000000000000000000
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
+      LineColor = 13948116
+      LineWidth = 2
       Max = 400.000000000000000000
       Min = 10.000000000000000000
       NumGlyphs = 65
+      OnChange = DialTuneChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 10.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialTuneChange
     end
     object DialDryMix: TGuiDial
       Left = 131
@@ -143,16 +147,18 @@ object FmSubBoost: TFmSubBoost
       Width = 48
       Height = 48
       Color = 2105376
-      LineColor = 13948116
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
+      LineColor = 13948116
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialDryMixChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialDryMixChange
     end
     object DialThreshold: TGuiDial
       Left = 193
@@ -160,17 +166,19 @@ object FmSubBoost: TFmSubBoost
       Width = 48
       Height = 48
       Color = 2105376
-      LineColor = 13948116
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
+      LineColor = 13948116
+      LineWidth = 2
       Max = 0.000000000100000001
       Min = -60.000000000000000000
       NumGlyphs = 65
+      OnChange = DialThresholdChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialThresholdChange
     end
     object LbLevel: TGuiLabel
       Left = 7
@@ -246,16 +254,18 @@ object FmSubBoost: TFmSubBoost
       Width = 48
       Height = 48
       Color = 2105376
-      LineColor = 13948116
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
+      LineColor = 13948116
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialReleaseChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialReleaseChange
     end
     object LbRelease: TGuiLabel
       Left = 247
@@ -294,10 +304,12 @@ object FmSubBoost: TFmSubBoost
       Width = 48
       Height = 48
       Color = 2105376
-      LineColor = 13948116
       CurveMapping = -1.000000000000000000
       DefaultPosition = 10.000000000000000000
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
+      LineColor = 13948116
+      LineWidth = 2
       Max = 400.000000000000000000
       Min = 10.000000000000000000
       NumGlyphs = 65
@@ -314,20 +326,22 @@ object FmSubBoost: TFmSubBoost
       Width = 48
       Height = 48
       Color = 2105376
-      LineColor = 13948116
       CurveMapping = -1.000000000000000000
       DefaultPosition = 1.000000000000000000
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
+      LineColor = 13948116
+      LineWidth = 2
       Max = 64.000000000000000000
       Min = 1.000000000000000000
       NumGlyphs = 65
+      OnChange = DialFilterOrderChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 1.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialFilterOrderChange
     end
     object GuiLabel2: TGuiLabel
       Left = 7

@@ -10,6 +10,7 @@ object VSTFilter: TVSTFilter
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Preset 1'
+  IORatio = 1.000000000000000000
   UniqueID = 'Filt'
   ShellPlugins = <>
   Programs = <
@@ -60,10 +61,10 @@ object VSTFilter: TVSTFilter
       StepFloat = 0.100000001490116100
       VSTModule = Owner
     end>
-  OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnInitialize = VSTModuleInitialize
+  OnProcess = VSTModuleProcess
+  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
   Left = 443
   Top = 102
   Height = 150

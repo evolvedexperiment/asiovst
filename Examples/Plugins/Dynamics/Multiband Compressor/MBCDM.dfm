@@ -1,12 +1,10 @@
 object MBCDataModule: TMBCDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'Multiband Compressor'
-  ProductName = 'Multiband Compressor'
-  VendorName = 'Delphi ASIO & VST'
+  ProductName = 'DAV Dynamics Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
@@ -353,6 +351,8 @@ object MBCDataModule: TMBCDataModule
       VSTModule = Owner
       OnParameterChange = MBCDMHighReleaseChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing

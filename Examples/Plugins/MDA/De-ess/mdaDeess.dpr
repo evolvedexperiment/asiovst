@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   DeessDM in 'DeessDM.pas' {DeessDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  DeessDataModule: TDeessDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    DeessDataModule := TDeessDataModule.Create(Application);
-    DeessDataModule.Effect^.user := DeessDataModule;
-    DeessDataModule.AudioMaster := audioMaster;
-    Result := DeessDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TDeessDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

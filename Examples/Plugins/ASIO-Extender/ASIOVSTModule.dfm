@@ -1,16 +1,15 @@
 object ASIOVSTModule: TASIOVSTModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'ASIO Extender'
-  ProductName = 'ASIO Extender'
-  VendorName = 'ASIO/VST Project'
+  ProductName = 'DAV Tools Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Init'
+  IORatio = 1.000000000000000000
   UniqueID = 'ASIO'
   ShellPlugins = <>
   Programs = <

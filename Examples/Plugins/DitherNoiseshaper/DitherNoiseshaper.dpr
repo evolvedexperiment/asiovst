@@ -8,15 +8,14 @@ uses
   DitherNoiseshaperDM in 'DitherNoiseshaperDM.pas' {DitherNoiseshaperModule: TVSTModule},
   DitherNoiseshaperGUI in 'DitherNoiseshaperGUI.pas' {FmDitherNoiseshaper};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  DitherNoiseshaperModule: TDitherNoiseshaperModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  DitherNoiseshaperModule := TDitherNoiseshaperModule.Create(Application);
-  DitherNoiseshaperModule.Effect^.user := DitherNoiseshaperModule;
-  DitherNoiseshaperModule.AudioMaster := audioMaster;
-  Result := DitherNoiseshaperModule.Effect;
+  with TDitherNoiseshaperModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

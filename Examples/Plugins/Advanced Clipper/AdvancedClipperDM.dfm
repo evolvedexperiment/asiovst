@@ -3,13 +3,14 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Advanced Clipper'
-  ProductName = 'AdvancedClipper'
+  ProductName = 'DAV effect examples'
   VendorName = 'Delphi ASIO & VST Packages'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
   UniqueID = 'AdCr'
   ShellPlugins = <>
   Programs = <

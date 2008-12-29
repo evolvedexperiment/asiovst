@@ -12,7 +12,6 @@ uses
 
 type
   TConvolutionDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -48,7 +47,7 @@ implementation
 uses
   Math, WaveIOX, DAV_DspWindowing, ConvolutionGUI;
 
-procedure TConvolutionDataModule.VSTModuleCreate(Sender: TObject);
+procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
 begin
  FSemaphore := 0;
  FFilterKernel := nil;
@@ -57,10 +56,7 @@ begin
  FBuffer       := nil;
  SetLength(FSignalTime, max(numInputs, numOutputs));
  FFFTSize       := 0;
-end;
 
-procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
-begin
  IRSize := 64;
 end;
 

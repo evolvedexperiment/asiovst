@@ -1,6 +1,5 @@
 object SimpleDelayVST: TSimpleDelayVST
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Delay'
@@ -11,6 +10,7 @@ object SimpleDelayVST: TSimpleDelayVST
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Init'
+  IORatio = 1.000000000000000000
   UniqueID = 'dlay'
   ShellPlugins = <>
   Programs = <
@@ -31,17 +31,21 @@ object SimpleDelayVST: TSimpleDelayVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Delay Length'
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 44100.000000000000000000
       MaxInteger = 0
       Min = 1.000000000000000000
       ShortLabel = 'Delay L'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = 'Samples'
       VSTModule = Owner
       OnParameterChange = SDDelayLengthChange
     end>
+  OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

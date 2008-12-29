@@ -1,6 +1,5 @@
 object VTVSTModule: TVTVSTModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Valve Tone '#39'63'

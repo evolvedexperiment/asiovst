@@ -210,7 +210,7 @@ begin
    EffectFlags     := [effFlagsCanReplacing];
    reservedForHost := nil;
    resvd2          := nil;
-   user            := nil;
+   user            := Self;
    uniqueID        := 'fEoN';
    ioRatio         := 1;
    numParams       := 0;

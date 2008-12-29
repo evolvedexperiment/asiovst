@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   DetuneDM in 'DetuneDM.pas' {DetuneDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  DetuneDataModule: TDetuneDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    DetuneDataModule := TDetuneDataModule.Create(Application);
-    DetuneDataModule.Effect^.user := DetuneDataModule;
-    DetuneDataModule.AudioMaster := audioMaster;
-    Result := DetuneDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TDetuneDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

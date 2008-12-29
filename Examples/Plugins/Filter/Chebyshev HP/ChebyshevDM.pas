@@ -8,20 +8,20 @@ uses
 
 type
   TChebyshevHPModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleClose(Sender: TObject);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamRippleChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fFilter  : array [0..1] of TChebyshev1HP;
-    fResizer : TVstWindowSizer;
+    FFilter  : array [0..1] of TChebyshev1HP;
+    FResizer : TVstWindowSizer;
   public
-    property Resizer: TVstWindowSizer read fResizer;
+    property Resizer: TVstWindowSizer read FResizer;
   end;
 
 implementation
@@ -37,7 +37,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1 do
-  if assigned(fFilter[ch]) then fFilter[ch].Ripple := Value;
+  if assigned(FFilter[ch]) then FFilter[ch].Ripple := Value;
  if EditorForm is TFmChebyshev then
   with TFmChebyshev(EditorForm) do
    begin
@@ -51,8 +51,8 @@ var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1 do
-  if assigned(fFilter[ch])
-   then fFilter[ch].Order := max(2, 2 * round(0.5 * Value));
+  if assigned(FFilter[ch])
+   then FFilter[ch].Order := max(2, 2 * round(0.5 * Value));
  if EditorForm is TFmChebyshev then
   with TFmChebyshev(EditorForm) do
    begin
@@ -66,8 +66,8 @@ var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1 do
-  if assigned(fFilter[ch])
-   then fFilter[ch].Frequency := Value;
+  if assigned(FFilter[ch])
+   then FFilter[ch].Frequency := Value;
  if EditorForm is TFmChebyshev then
   with TFmChebyshev(EditorForm) do
    begin
@@ -81,14 +81,15 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   begin
-   fFilter[ch] := TChebyshev1HP.Create;
-   fFilter[ch].SetFilterValues(1000, 0, 1);
+   FFilter[ch] := TChebyshev1HP.Create;
+   FFilter[ch].SetFilterValues(1000, 0, 1);
   end;
 (*
- fResizer := TVstWindowSizer.Create;
- fResizer.Effect := Self;
+ FResizer := TVstWindowSizer.Create;
+ FResizer.Effect := Self;
 *)
 
+ // Initial Parameters
  Parameter[0] := 1000;
  Parameter[1] := 1;
  Parameter[2] := 4;
@@ -101,19 +102,19 @@ begin
   end;
 end;
 
-procedure TChebyshevHPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmChebyshev.Create(Self);
-end;
-
 procedure TChebyshevHPModule.VSTModuleClose(Sender: TObject);
 var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1
-  do FreeAndNil(fFilter[ch]);
-// FreeAndNil(fResizer);
+  do FreeAndNil(FFilter[ch]);
+// FreeAndNil(FResizer);
+end;
+
+procedure TChebyshevHPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TFmChebyshev.Create(Self);
 end;
 
 procedure TChebyshevHPModule.VSTModuleProcess(const Inputs,
@@ -123,8 +124,8 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := fFilter[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := fFilter[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := FFilter[0].ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := FFilter[1].ProcessSample(Inputs[1, i]);
   end;
 end;
 
@@ -135,8 +136,8 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := fFilter[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := fFilter[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := FFilter[0].ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := FFilter[1].ProcessSample(Inputs[1, i]);
   end;
 end;
 
@@ -146,8 +147,8 @@ var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1 do
-  if assigned(fFilter[ch])
-   then fFilter[ch].SampleRate := SampleRate;
+  if assigned(FFilter[ch])
+   then FFilter[ch].SampleRate := SampleRate;
 end;
 
 end.

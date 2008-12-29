@@ -1,6 +1,5 @@
 object VSTSSModule: TVSTSSModule
   OldCreateOrder = False
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'Vocoder'
@@ -11,6 +10,7 @@ object VSTSSModule: TVSTSSModule
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
   UniqueID = 'Voco'
   ShellPlugins = <>
   Programs = <
@@ -73,11 +73,12 @@ object VSTSSModule: TVSTSSModule
       VSTModule = Owner
       OnParameterChange = VocVocoderVolumeChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi
-  OnInitialize = VSTModuleInitialize
+  OnProcessReplacing = VSTModuleProcess
   Left = 200
   Top = 103
   Height = 150

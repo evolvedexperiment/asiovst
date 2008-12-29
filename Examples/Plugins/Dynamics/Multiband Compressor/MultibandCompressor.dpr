@@ -10,18 +10,17 @@ uses
   MBCDM in 'MBCDM.pas' {MBCDataModule: TVSTModule},
   MBCGUI in 'MBCGUI.pas' {FmMBC};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  MBCDataModule: TMBCDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    MBCDataModule := TMBCDataModule.Create(Application);
-    MBCDataModule.Effect^.user := MBCDataModule;
-    MBCDataModule.AudioMaster := audioMaster;
-    Result := MBCDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TMBCDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

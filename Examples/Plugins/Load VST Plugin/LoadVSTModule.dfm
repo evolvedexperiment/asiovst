@@ -4,11 +4,12 @@ object PlugInPlugModule: TPlugInPlugModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Load VST Plugin'
-  ProductName = 'Load VST Plugin'
-  VendorName = 'Delphi VST example'
+  ProductName = 'DAV Tools Examples'
+  VendorName = 'Delphi ASIO & VST Examples'
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd1in2out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'Plug'
   ShellPlugins = <>
   Programs = <>
@@ -19,16 +20,16 @@ object PlugInPlugModule: TPlugInPlugModule
   OnEditIdle = VST2ModuleEditIdle
   OnEditTop = VST2ModuleEditTop
   OnEditSleep = VST2ModuleEditSleep
-  OnParameterChange = VST2ModuleParameterChange
+  OnBeforeProgramChange = VST2ModuleBeforeProgramChange
   OnBlockSizeChange = VST2ModuleBlockSizeChange
-  OnSampleRateChange = VST2ModuleSampleRateChange
+  OnCanDo = VST2ModuleCanDo
   OnGetVU = VST2ModuleGetVU
+  OnParameterChange = VST2ModuleParameterChange
   OnProcess = VST2ModuleProcess
   OnProcessReplacing = VST2ModuleProcessReplacing
+  OnSampleRateChange = VST2ModuleSampleRateChange
   OnStartProcess = VST2ModuleStartProcess
   OnStopProcess = VST2ModuleStopProcess
-  OnBeforeProgramChange = VST2ModuleBeforeProgramChange
-  OnCanDo = VST2ModuleCanDo
   Left = 254
   Top = 128
   Height = 199
@@ -43,6 +44,7 @@ object PlugInPlugModule: TPlugInPlugModule
     VstPlugIns = <
       item
         DisplayName = 'TVstPlugIn'
+        VstOfflineTasks = <>
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000

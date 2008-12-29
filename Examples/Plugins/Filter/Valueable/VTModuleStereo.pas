@@ -12,12 +12,11 @@ type
   TDriveMode = (dmRoasty1 = 1, dmRoasty2 = 2, dmSteamin1 = 3, dmSteamin2 = 4);
 
   TVTVSTModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessMidSide(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamChannelChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
@@ -32,8 +31,7 @@ type
     procedure ParamLowGainLeftChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamLowGainRightChange(Sender: TObject; const Index: Integer;var Value: Single);
     procedure ParamOutGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterBypassDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterBypassDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FDriveMode       : TDriveMode;
     FBufferPos       : array [0..1] of Cardinal;
@@ -55,7 +53,6 @@ type
     procedure BuildTrebleFilterKernel(const index: Integer);
     procedure BuildCompleteFilterKernel(const index: Integer);
     procedure BuildEntireFilters;
-    procedure KernelSizesChanged;
     procedure KernelSizeLeftChanged;
     procedure KernelSizeRightChanged;
     function GetKernelSize(Index: Integer): Cardinal;
@@ -84,20 +81,20 @@ const
 procedure ConvolveIR_X87(InOutBuffer, IRBuffer: PSingle;
   SampleFrames: Integer; Current: Single);
 asm
-    fld   Current.Single
-    @SmallLoop:
-    fld   [edx].Single
-    fmul  st(0),st(1)
-    fld   [eax].Single
-    faddp
+ fld   Current.Single
+ @SmallLoop:
+ fld   [edx].Single
+ fmul  st(0),st(1)
+ fld   [eax].Single
+ faddp
 
-    fstp [eax].Single
-    add   eax, 4
-    add   edx, 4
-    loop  @SmallLoop
+ fstp [eax].Single
+ add   eax, 4
+ add   edx, 4
+ loop  @SmallLoop
 
-    @EndSmallLoop:
-    ffree st(0)
+ @EndSmallLoop:
+ ffree st(0)
 end;
 
 procedure ConvolveIR_X87large(InOutBuffer, IRBuffer: PSingle;
@@ -205,41 +202,45 @@ procedure TVTVSTModule.VSTModuleOpen(Sender: TObject);
 var
   i, m, n, sz : Integer;
 begin
-  FOutGain := 1.25;
-  FBufferPos[0] := 0;
-  FBufferPos[1] := 0;
-  FHistoryBuffer[0] := nil;
-  FHistoryBuffer[1] := nil;
-  FCircularBuffer[0] := nil;
-  FCircularBuffer[1] := nil;
+ FDriveMode := dmRoasty1;
+ FSemaphore := 0;
 
-  for m := 1 to 4 do
-   for n := 0 to 1 do
-    with TResourceStream.Create(hInstance, CKernelResourceNames[m, n], RT_RCDATA) do
-     try
-      for i := 0 to Length(FImpulseResponse[m, n]) - 1 do
-       begin
-        GetMem(FImpulseResponse[m, n, i], CKernelSizes[m, n] * SizeOf(Single));
-        sz := Read(FImpulseResponse[m, n, i]^, CKernelSizes[m, n] * SizeOf(Single));
-        assert(sz = CKernelSizes[m, n] * SizeOf(Single));
-       end;
-     finally
-      Free;
-     end;
-  SetCPUDependant;
-  BuildEntireFilters;
+ FOutGain := 1.25;
+ FBufferPos[0] := 0;
+ FBufferPos[1] := 0;
+ FHistoryBuffer[0] := nil;
+ FHistoryBuffer[1] := nil;
+ FCircularBuffer[0] := nil;
+ FCircularBuffer[1] := nil;
 
-  Parameter[ 0] := 0;
-  Parameter[ 1] := 0;
-  Parameter[ 2] := 0;
-  Parameter[ 3] := 0;
-  Parameter[ 4] := 0;
-  Parameter[ 5] := 0;
-  Parameter[ 6] := 0;
-  Parameter[ 7] := 0;
-  Parameter[ 8] := 1;
-  Parameter[ 9] := 1;
-  Parameter[10] := 0;
+ for m := 1 to 4 do
+  for n := 0 to 1 do
+   with TResourceStream.Create(hInstance, CKernelResourceNames[m, n], RT_RCDATA) do
+    try
+     for i := 0 to Length(FImpulseResponse[m, n]) - 1 do
+      begin
+       GetMem(FImpulseResponse[m, n, i], CKernelSizes[m, n] * SizeOf(Single));
+       sz := Read(FImpulseResponse[m, n, i]^, CKernelSizes[m, n] * SizeOf(Single));
+       assert(sz = CKernelSizes[m, n] * SizeOf(Single));
+      end;
+    finally
+     Free;
+    end;
+ SetCPUDependant;
+ BuildEntireFilters;
+
+ // Initial Parameters
+ Parameter[ 0] := 0;
+ Parameter[ 1] := 0;
+ Parameter[ 2] := 0;
+ Parameter[ 3] := 0;
+ Parameter[ 4] := 0;
+ Parameter[ 5] := 0;
+ Parameter[ 6] := 0;
+ Parameter[ 7] := 0;
+ Parameter[ 8] := 1;
+ Parameter[ 9] := 1;
+ Parameter[10] := 0;
 end;
 
 procedure TVTVSTModule.VSTModuleClose(Sender: TObject);
@@ -254,12 +255,6 @@ begin
   Dispose(FTrebleKernel[1]);
   Dispose(FFilterKernel[0]);
   Dispose(FFilterKernel[1]);
-end;
-
-procedure TVTVSTModule.VSTModuleCreate(Sender: TObject);
-begin
- FDriveMode := dmRoasty1;
- FSemaphore := 0;
 end;
 
 procedure TVTVSTModule.VSTEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -278,12 +273,6 @@ begin
 *)
 end;
 
-
-procedure TVTVSTModule.KernelSizesChanged;
-begin
- KernelSizeLeftChanged;
- KernelSizeRightChanged;
-end;
 
 procedure TVTVSTModule.KernelSizeLeftChanged;
 begin

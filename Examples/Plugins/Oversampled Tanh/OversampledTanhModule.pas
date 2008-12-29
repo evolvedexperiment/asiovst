@@ -9,12 +9,11 @@ uses
 type
   TOversampledTanhModule = class(TVSTModule)
     procedure VSTEditOpen(Sender: TObject; var GUI: TForm; const ParentWindow: Cardinal);
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure ParamCoeffsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamTransitionChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleClose(Sender: TObject);
   private
     FDownsampler2x : array[0..1] of TPolyphaseDownsampler32;
     FUpSampler2x   : array[0..1] of TPolyphaseUpsampler32;
@@ -29,7 +28,7 @@ implementation
 uses
   OversampledTanhGUI;
 
-procedure TOversampledTanhModule.VSTModuleCreate(Sender: TObject);
+procedure TOversampledTanhModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
@@ -39,12 +38,21 @@ begin
    FUpSampler2x[Channel] := TPolyphaseUpsampler32.Create;
   end;
  ReallocMem(FBuffer, 2 * BlockModeSize * SizeOf(Single));
+
+ // initial parameters
+ Parameter[0] := 16;
+ Parameter[1] := 0.01;
 end;
 
-procedure TOversampledTanhModule.VSTModuleOpen(Sender: TObject);
+procedure TOversampledTanhModule.VSTModuleClose(Sender: TObject);
+var
+  Channel : Integer;
 begin
-  Parameter[0] := 16;
-  Parameter[1] := 0.01;
+ for Channel := 0 to 1 do
+  begin
+   FreeAndNil(FDownsampler2x[Channel]);
+   FreeAndNil(FUpSampler2x[Channel]);
+  end;
 end;
 
 procedure TOversampledTanhModule.ParamTransitionChange(
@@ -88,17 +96,6 @@ procedure TOversampledTanhModule.VSTEditOpen(Sender: TObject;
   var GUI: TForm; const ParentWindow: Cardinal);
 begin
   GUI := TFmOversampledTanh.Create(Self);
-end;
-
-procedure TOversampledTanhModule.VSTModuleDestroy(Sender: TObject);
-var
-  Channel : Integer;
-begin
- for Channel := 0 to 1 do
-  begin
-   FreeAndNil(FDownsampler2x[Channel]);
-   FreeAndNil(FUpSampler2x[Channel]);
-  end;
 end;
 
 procedure TOversampledTanhModule.VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);

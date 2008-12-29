@@ -36,36 +36,39 @@ procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
 var
   newNote : TSimpleSamplerVoice;
 begin
-  (Owner as TVSTSSModule).MIDI_NoteOn(0, KeyNr, round(Velocity * 128));
-  newNote := TSimpleSamplerVoice.Create((Owner as TVSTSSModule));
-  newNote.MidiKeyNr := KeyNr;
-  newNote.Velocity := round(Velocity * 127);
-  newNote.NoteOn(Midi2Pitch[KeyNr],Velocity);
-  (Owner as TVSTSSModule).Voices.Add(newNote);
+ if (Owner is TVSTSSModule) then
+  with TVSTSSModule(Owner) do
+   begin
+    MIDI_NoteOn(0, KeyNr, round(Velocity * 128));
+    newNote := TSimpleSamplerVoice.Create(TVSTSSModule(Owner));
+    newNote.MidiKeyNr := KeyNr;
+    newNote.Velocity := round(Velocity * 127);
+    newNote.NoteOn(Midi2Pitch[KeyNr], Velocity);
+    Voices.Add(newNote);
+   end;
 end;
 
 procedure TVSTGUI.MidiKeysNoteOff(Sender: TObject; KeyNr: Byte);
 var
   i : Integer;
 begin
- with (Owner as TVSTSSModule) do
-  begin
-   MIDI_NoteOff(0, KeyNr, 0);
-   for i := Voices.Count - 1 downto 0 do
-    if (Voices[i].MidiKeyNr=KeyNr) then
-     begin
-      Voices.Delete(i);
-      Break;
-     end;
-  end;
+ if (Owner is TVSTSSModule) then
+  with TVSTSSModule(Owner) do
+   begin
+    MIDI_NoteOff(0, KeyNr, 0);
+    for i := Voices.Count - 1 downto 0 do
+     if (Voices[i].MidiKeyNr = KeyNr) then
+      begin
+       Voices.Delete(i);
+       Break;
+      end;
+   end;
 end;
 
 procedure TVSTGUI.BtSampleSelectClick(Sender: TObject);
 begin
- if OpenDialog.Execute then
-  begin
-   EditSample.Text := OpenDialog.FileName;
-  end;
+ if OpenDialog.Execute
+  then EditSample.Text := OpenDialog.FileName;
 end;
 
 procedure TVSTGUI.EditSampleChange(Sender: TObject);

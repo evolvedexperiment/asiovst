@@ -8,15 +8,14 @@ uses
   OpAmpModule in 'OpAmpModule.pas' {VSTOpAmp: TVSTModule},
   OpAmpGUI in 'OpAmpGUI.pas' {VSTGUI};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  VSTOpAmp : TVSTOpAmp;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  VSTOpAmp := TVSTOpAmp.Create(Application);
-  VSTOpAmp.Effect^.user := VSTOpAmp;
-  VSTOpAmp.AudioMaster := audioMaster;
-  Result := VSTOpAmp.Effect;
+  with TVSTOpAmp.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

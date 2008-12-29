@@ -8,15 +8,14 @@ uses
   DelaylaModule in 'DelaylaModule.pas' {SimpleDelayVST: TVST2Module},
   DelaylaGUI in 'DelaylaGUI.pas' {VSTGUI};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SimpleDelay : TSimpleDelayVST;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  SimpleDelay:=TSimpleDelayVST.Create(Application);
-  SimpleDelay.Effect^.user := SimpleDelay;
-  SimpleDelay.AudioMaster := audioMaster;
-  Result := SimpleDelay.Effect;
+  with TSimpleDelayVST.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

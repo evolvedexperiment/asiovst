@@ -1,12 +1,10 @@
 object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'Soft Knee Limiter'
-  ProductName = 'Soft Knee Limiter'
-  VendorName = 'ASIO-VST Delphi Project'
+  ProductName = 'DAV Dynamics Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
@@ -102,6 +100,7 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       OnParameterChange = SKLMakeUpGainChange
     end>
   OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing

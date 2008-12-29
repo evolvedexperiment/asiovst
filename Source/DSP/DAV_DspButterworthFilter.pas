@@ -12,11 +12,11 @@ type
   private
     procedure SetDownsamplePower(Value: Integer);
   protected
-    fDownsamplePow  : Integer;
-    fDownsampleFak  : Integer;
-    fAB             : array [0..127] of Double;
-    fState          : array [0.. 63] of Double;
-    fStateStack     : array of array [0.. 63] of Double;
+    FDownsamplePow  : Integer;
+    FDownsampleFak  : Integer;
+    FAB             : array [0..127] of Double;
+    FState          : array [0.. 63] of Double;
+    FStateStack     : array of array [0.. 63] of Double;
     procedure CalculateW0; override;
     class function GetMaxOrder: Cardinal; override;
   public
@@ -34,8 +34,8 @@ type
     function Imaginary(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
     function Real(const Frequency: Double): Double; override;
-    property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
-    property DownsampleFaktor : Integer read fDownsampleFak;
+    property DownsampleAmount : Integer read FDownsamplePow write SetDownsamplePower;
+    property DownsampleFaktor : Integer read FDownsampleFak;
   end;
 
   TButterworthLP = class(TButterworthFilter)
@@ -79,8 +79,8 @@ uses
 constructor TButterworthFilter.Create;
 begin
  inherited;
- fDownsamplePow := 0;
- fDownsampleFak := 1;
+ FDownsamplePow := 0;
+ FDownsampleFak := 1;
  CalculateCoefficients;
 end;
 
@@ -96,29 +96,29 @@ end;
 
 procedure TButterworthFilter.ResetStates;
 begin
- FillChar(fState[0], fOrder * SizeOf(Double), 0);
+ FillChar(FState[0], FOrder * SizeOf(Double), 0);
 end;
 
 procedure TButterworthFilter.ResetStatesInt64;
 begin
- PInt64(@fState[0])^ := 0;
- PInt64(@fState[1])^ := 0;
+ PInt64(@FState[0])^ := 0;
+ PInt64(@FState[1])^ := 0;
 end;
 
 procedure TButterworthFilter.SetDownsamplePower(Value: Integer);
 begin
  if Value < 0 then Value := 0;
- if fDownsamplePow <> Value then
+ if FDownsamplePow <> Value then
   begin
-   fDownsamplePow := Value;
-   fDownsampleFak := round(IntPower(2, fDownsamplePow));
+   FDownsamplePow := Value;
+   FDownsampleFak := round(IntPower(2, FDownsamplePow));
    CalculateW0;
   end;
 end;
 
 procedure TButterworthFilter.CalculateW0;
 begin
- fW0 := 2 * Pi * fSRR * (fFrequency * fDownsampleFak);
+ fW0 := 2 * Pi * fSRR * (fFrequency * FDownsampleFak);
  fSinW0 := sin(fW0);
  if fW0 > 3.1 then fW0 := 3.1;
 end;
@@ -153,7 +153,7 @@ var
   cmplx        : TComplexDouble;
   i            : Integer;
 begin
- if fOrder = 0 then
+ if FOrder = 0 then
   begin
    Real := 1;
    Imaginary := 1;
@@ -161,22 +161,22 @@ begin
  else
   begin
    cw := cos(2 * Frequency * pi * fSRR);
-   Divider   := 1 / ( sqr(fAB[3]) - 2 * fAB[3] + sqr(fAB[2]) + 1
-                      + 2 * cw * (fAB[2] * (fAB[3] + 1) + 2 * cw * fAB[3]));
-   Real      := (fAB[0] + fAB[1] * fAB[2] + fAB[0] * fAB[3]
-                + cw * (fAB[1] * (1 + fAB[3]) + fAB[2] * 2 * fAB[0])
-                + (2 * sqr(cw) - 1) * fAB[0] * (fAB[3] + 1)) * Divider;
-   Imaginary := (fAB[1] * (1 - fAB[3])
-                + 2 * cw * fAB[0] * (1 - fAB[3])) * sqrt(1 - sqr(cw)) * Divider;
-   for i := 1 to (fOrder div 2) - 1 do
+   Divider   := 1 / ( sqr(FAB[3]) - 2 * FAB[3] + sqr(FAB[2]) + 1
+                      + 2 * cw * (FAB[2] * (FAB[3] + 1) + 2 * cw * FAB[3]));
+   Real      := (FAB[0] + FAB[1] * FAB[2] + FAB[0] * FAB[3]
+                + cw * (FAB[1] * (1 + FAB[3]) + FAB[2] * 2 * FAB[0])
+                + (2 * sqr(cw) - 1) * FAB[0] * (FAB[3] + 1)) * Divider;
+   Imaginary := (FAB[1] * (1 - FAB[3])
+                + 2 * cw * FAB[0] * (1 - FAB[3])) * sqrt(1 - sqr(cw)) * Divider;
+   for i := 1 to (FOrder div 2) - 1 do
     begin
-     Divider   := 1 / ( sqr(fAB[4*i+3]) - 2 * fAB[4*i+3] + sqr(fAB[4*i+2]) + 1
-                + 2 * cw * (fAB[4*i+2] * (fAB[4*i+3] + 1) + 2 * cw * fAB[4*i+3]));
-     cmplx.Re  := (fAB[4*i+0] + fAB[4*i+1] * fAB[4*i+2] + fAB[4*i+0] * fAB[4*i+3]
-                 + cw * (fAB[4*i+1] * (1 + fAB[4*i+3]) + fAB[4*i+2] * 2 * fAB[4*i+0])
-                 + (2*sqr(cw)-1) * fAB[4*i+0] * (fAB[4*i+3] + 1)) * Divider;
-     cmplx.Im := (fAB[4*i+1] * (1 - fAB[4*i+3])
-                 + 2 * cw * (fAB[4*i+0] - fAB[4*i+0] * fAB[4*i+3])) * sqrt(1 - sqr(cw)) * Divider;
+     Divider   := 1 / ( sqr(FAB[4*i+3]) - 2 * FAB[4*i+3] + sqr(FAB[4*i+2]) + 1
+                + 2 * cw * (FAB[4*i+2] * (FAB[4*i+3] + 1) + 2 * cw * FAB[4*i+3]));
+     cmplx.Re  := (FAB[4*i+0] + FAB[4*i+1] * FAB[4*i+2] + FAB[4*i+0] * FAB[4*i+3]
+                 + cw * (FAB[4*i+1] * (1 + FAB[4*i+3]) + FAB[4*i+2] * 2 * FAB[4*i+0])
+                 + (2*sqr(cw)-1) * FAB[4*i+0] * (FAB[4*i+3] + 1)) * Divider;
+     cmplx.Im := (FAB[4*i+1] * (1 - FAB[4*i+3])
+                 + 2 * cw * (FAB[4*i+0] - FAB[4*i+0] * FAB[4*i+3])) * sqrt(1 - sqr(cw)) * Divider;
      ComplexMultiplyInplace(Real, Imaginary, cmplx.Re, cmplx.Im);
     end;
   end;
@@ -211,21 +211,21 @@ end;
 
 procedure TButterworthFilter.PopStates;
 begin
- if Length(fStateStack) > 0 then
+ if Length(FStateStack) > 0 then
   begin
-   Move(fStateStack[0, 0], fState[0], Length(fStateStack[0]) * SizeOf(Double));
-   if Length(fStateStack) > 1
-    then Move(fStateStack[1, 0],fStateStack[0, 0], (Length(fStateStack) - 1) * Length(fStateStack[0]) * SizeOf(Double));
-   SetLength(fStateStack, Length(fStateStack) - 1);
+   Move(FStateStack[0, 0], FState[0], Length(FStateStack[0]) * SizeOf(Double));
+   if Length(FStateStack) > 1
+    then Move(FStateStack[1, 0],FStateStack[0, 0], (Length(FStateStack) - 1) * Length(FStateStack[0]) * SizeOf(Double));
+   SetLength(FStateStack, Length(FStateStack) - 1);
   end;
 end;
 
 procedure TButterworthFilter.PushStates;
 begin
- SetLength(fStateStack, Length(fStateStack) + 1);
- if Length(fStateStack) > 1
-  then Move(fStateStack[0, 0], fStateStack[1, 0], (Length(fStateStack) - 1) * Length(fStateStack[0]) * SizeOf(Double));
- Move(fState[0], fStateStack[0, 0], Length(fStateStack[0]) * SizeOf(Double));
+ SetLength(FStateStack, Length(FStateStack) + 1);
+ if Length(FStateStack) > 1
+  then Move(FStateStack[0, 0], FStateStack[1, 0], (Length(FStateStack) - 1) * Length(FStateStack[0]) * SizeOf(Double));
+ Move(FState[0], FStateStack[0, 0], Length(FStateStack[0]) * SizeOf(Double));
 end;
 
 { TButterworthFilterLP }
@@ -237,60 +237,62 @@ begin
 end;
 
 procedure TButterworthLP.CalculateCoefficients;
-var i : Integer;
-    K,K2,t,a  : Double;
+var
+  i : Integer;
+  K, K2, t, a  : Double;
 begin
- K := tan(fW0*0.5); K2 := K*K;
+ K := tan(fW0 * 0.5); K2 := K * K;
 
- for i := 0 to (fOrder div 2) - 1 do
+ for i := 0 to (FOrder div 2) - 1 do
   begin
-   a := -2*cos((2*i+fOrder+1)/(2*fOrder)*PI)*K;
-   t := 1/(K2+a+1);
-   fAB[4*i+0] := t*K2;
-   fAB[4*i+1] := 2*fAB[4*i];
-   fAB[4*i+2] := -2*(K2-1)*t;
-   fAB[4*i+3] := (a-K2-1)*t;
+   a := -2*cos((2*i + FOrder + 1) / (2 * FOrder) * PI) * K;
+   t := 1 / (K2 + a + 1);
+   FAB[4 * i    ] := t*K2;
+   FAB[4 * i + 1] := 2*FAB[4*i];
+   FAB[4 * i + 2] := -2*(K2-1)*t;
+   FAB[4 * i + 3] := (a-K2-1)*t;
   end;
- if (fOrder mod 2) = 1 then
+ if (FOrder mod 2) = 1 then
   begin
-   i := ((fOrder+1) div 2)-1; t := 1/(K+1);
-   fAB[4*i] := K*t;
-   fAB[4*i+1] := fAB[4*i];
-   fAB[4*i+2] := (1-K)*t;
+   i := ((FOrder+1) div 2)-1; t := 1/(K+1);
+   FAB[4*i] := K*t;
+   FAB[4*i+1] := FAB[4*i];
+   FAB[4*i+2] := (1-K)*t;
   end;
  t := sqr(FGainFactor);
- fAB[0] := fAB[0]*t;
- fAB[1] := fAB[1]*t;
+ FAB[0] := FAB[0]*t;
+ FAB[1] := FAB[1]*t;
 end;
 
 function TButterworthLP.MagnitudeSquared(const Frequency: Double): Double;
 var
-  i    : Integer;
-  a,cw : Double;
+  i     : Integer;
+  a, cw : Double;
 begin
  cw := 2*cos(2*Frequency*pi*fSRR); a := sqr(cw+2);
  Result := 1;
- for i := 0 to (fOrder div 2) - 1
-  do Result := Result*sqr(fAB[4*i])*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
- if (fOrder mod 2) = 1 then
+ for i := 0 to (FOrder div 2) - 1
+  do Result := Result*sqr(FAB[4*i])*a/(1+sqr(FAB[4*i+2])+sqr(FAB[4*i+3])+2*FAB[4*i+3]+cw*((FAB[4*i+2]-cw)*FAB[4*i+3]-FAB[4*i+2]));
+ if (FOrder mod 2) = 1 then
   begin
-   i := ((fOrder+1) div 2) - 1;
-   Result := Result*sqr(fAB[4*i])*(cw+2)/(1+sqr(fAB[4*i+2])-cw*fAB[4*i+2]);
+   i := ((FOrder+1) div 2) - 1;
+   Result := Result*sqr(FAB[4*i])*(cw+2)/(1+sqr(FAB[4*i+2])-cw*FAB[4*i+2]);
   end;
  Result := Abs(1E-32+Result);
 end;
 
 function TButterworthLP.Phase(const Frequency: Double): Double;
-var cw, sw, Nom, Den : Double;
-    i : Integer;
+var
+  cw, sw, Nom, Den : Double;
+  i : Integer;
 begin
  GetSinCos(2*Frequency*pi*fSRR,sw,cw);
- Nom := sw * fAB[0] * 2 * (fAB[3] -1) * (1 + cw);
- Den := fAB[0] * (2 * fAB[2] * (1 + cw) + cw * (2 * fAB[3] * (cw + 1) + 2 * (1 + cw)));
- for i := 1 to (fOrder div 2) - 1 do
+ Nom := sw * FAB[0] * 2 * (FAB[3] -1) * (1 + cw);
+ Den := FAB[0] * (2 * FAB[2] * (1 + cw) + cw * (2 * FAB[3] * (cw + 1) + 2 * (1 + cw)));
+ for i := 1 to (FOrder div 2) - 1 do
   begin
-   Nom := Nom * sw * fAB[4*i] * 2 * (fAB[4*i+3] - 1) * (cw + 1);
-   Den := Den * fAB[4*i] * (2 * fAB[4*i+2] * (1 + cw) + cw * (2 * fAB[4*i+3] * (cw + 1) + 2 * (1 + cw)));
+   Nom := Nom * sw * FAB[4*i] * 2 * (FAB[4*i+3] - 1) * (cw + 1);
+   Den := Den * FAB[4*i] * (2 * FAB[4*i+2] * (1 + cw) + cw * (2 * FAB[4*i+3] * (cw + 1) + 2 * (1 + cw)));
   end;
  Result := ArcTan2(Nom,Den);
 end;
@@ -302,24 +304,24 @@ var
   i : Integer;
 begin
  Result := Input;
- for i := 0 to (fOrder div 2) - 1 do
+ for i := 0 to (FOrder div 2) - 1 do
   begin
    x := Result;
-   Result            := fAB[4 * i    ] * x                           + fState[2 * i    ];
-   fState[2 * i    ] := fAB[4 * i + 1] * x + fAB[4 * i + 2] * Result + fState[2 * i + 1];
-   fState[2 * i + 1] := fAB[4 * i    ] * x + fAB[4 * i + 3] * Result;
+   Result            := FAB[4 * i    ] * x                           + FState[2 * i    ];
+   FState[2 * i    ] := FAB[4 * i + 1] * x + FAB[4 * i + 2] * Result + FState[2 * i + 1];
+   FState[2 * i + 1] := FAB[4 * i    ] * x + FAB[4 * i + 3] * Result;
   end;
- if (fOrder mod 2) = 1 then
+ if (FOrder mod 2) = 1 then
   begin
-   i := ((fOrder+1) div 2) - 1;
-   x             := fAB[4 * i] * Result;
-   Result        := x + fState[2 * i];
-   fState[2 * i] := x + fAB[4 * i + 2] * Result;
+   i := ((FOrder+1) div 2) - 1;
+   x             := FAB[4 * i] * Result;
+   Result        := x + FState[2 * i];
+   FState[2 * i] := x + FAB[4 * i + 2] * Result;
   end;
 {$ELSE}
 asm
  fld Input.Double;
- mov ecx, [self.fOrder]
+ mov ecx, [self.FOrder]
  test ecx, ecx
  jz @End
  shr ecx, 1
@@ -329,40 +331,40 @@ asm
  @FilterLoop:
   sub ecx, 4
   fld st(0)
-  fmul [self.fAB + ecx * 8].Double
-  fadd [self.fState + ecx * 4].Double
+  fmul [self.FAB + ecx * 8].Double
+  fadd [self.FState + ecx * 4].Double
   fld st(0)
   fld st(0)
-  fmul [self.fAB + ecx * 8 + 16].Double
-  fadd [self.fState + ecx * 4 + 8].Double
+  fmul [self.FAB + ecx * 8 + 16].Double
+  fadd [self.FState + ecx * 4 + 8].Double
   fld st(3)
-  fmul [self.fAB + ecx * 8 + 8].Double
+  fmul [self.FAB + ecx * 8 + 8].Double
   faddp
-  fstp [self.fState + ecx * 4].Double
-  fmul [self.fAB + ecx * 8 + 24].Double
+  fstp [self.FState + ecx * 4].Double
+  fmul [self.FAB + ecx * 8 + 24].Double
   fxch
   fxch st(2)
-  fmul [self.fAB + ecx * 8].Double
+  fmul [self.FAB + ecx * 8].Double
   faddp
-  fstp [self.fState + ecx * 4 + 8].Double
+  fstp [self.FState + ecx * 4 + 8].Double
  ja @FilterLoop
 
  @SingleStage:
  pop ecx
  shr ecx, 1
- sub ecx, [self.fOrder]
+ sub ecx, [self.FOrder]
  jz @End
-  mov ecx, [self.fOrder]
+  mov ecx, [self.FOrder]
   dec ecx
   shl ecx, 1
-  fmul [self.fAB + ecx * 8].Double
+  fmul [self.FAB + ecx * 8].Double
   fld st(0)
-  fadd [self.fState + ecx * 4].Double
+  fadd [self.FState + ecx * 4].Double
   fld st(0)
-  fmul [self.fAB + ecx * 8 + 16].Double
+  fmul [self.FAB + ecx * 8 + 16].Double
   faddp st(2), st(0)
   fxch
-  fstp [self.fState + ecx * 4].Double
+  fstp [self.FState + ecx * 4].Double
  @End:
  {$ENDIF}
 end;
@@ -381,25 +383,25 @@ var i : Integer;
 begin
  K := tan(fW0*0.5); K2 := K*K;
 
- for i := 0 to (fOrder div 2) - 1 do
+ for i := 0 to (FOrder div 2) - 1 do
   begin
-   a := -2*cos((2*i+fOrder+1)/(2*fOrder)*PI)*K;
+   a := -2*cos((2*i+FOrder+1)/(2*FOrder)*PI)*K;
    t := 1/(K2+a+1);
-   fAB[4*i+0] := t;
-   fAB[4*i+1] := -2*t;
-   fAB[4*i+2] := -2*(K2-1)*t;
-   fAB[4*i+3] := (a-K2-1)*t;
+   FAB[4*i+0] := t;
+   FAB[4*i+1] := -2*t;
+   FAB[4*i+2] := -2*(K2-1)*t;
+   FAB[4*i+3] := (a-K2-1)*t;
   end;
- if (fOrder mod 2) = 1 then
+ if (FOrder mod 2) = 1 then
   begin
-   i := ((fOrder+1) div 2)-1; t := 1/(K+1);
-   fAB[4*i] := t;
-   fAB[4*i+1] := fAB[4*i];
-   fAB[4*i+2] := (1-K)*t;
+   i := ((FOrder+1) div 2)-1; t := 1/(K+1);
+   FAB[4*i] := t;
+   FAB[4*i+1] := FAB[4*i];
+   FAB[4*i+2] := (1-K)*t;
   end;
  t := sqr(FGainFactor);
- fAB[0] := fAB[0]*t;
- fAB[1] := fAB[1]*t;
+ FAB[0] := FAB[0]*t;
+ FAB[1] := FAB[1]*t;
 end;
 
 function TButterworthHP.MagnitudeSquared(const Frequency: Double): Double;
@@ -409,12 +411,12 @@ var
 begin
  cw := 2*cos(2*Frequency*pi*fSRR); a := sqr(cw-2);
  Result := 1;
- for i := 0 to (fOrder div 2) - 1
-  do Result := Result*sqr(fAB[4*i])*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
- if (fOrder mod 2) = 1 then
+ for i := 0 to (FOrder div 2) - 1
+  do Result := Result*sqr(FAB[4*i])*a/(1+sqr(FAB[4*i+2])+sqr(FAB[4*i+3])+2*FAB[4*i+3]+cw*((FAB[4*i+2]-cw)*FAB[4*i+3]-FAB[4*i+2]));
+ if (FOrder mod 2) = 1 then
   begin
-   i := ((fOrder+1) div 2) - 1;
-   Result := Result*sqr(fAB[4*i])*(cw-2)/(1+sqr(fAB[4*i+2])-cw*fAB[4*i+2]);
+   i := ((FOrder+1) div 2) - 1;
+   Result := Result*sqr(FAB[4*i])*(cw-2)/(1+sqr(FAB[4*i+2])-cw*FAB[4*i+2]);
   end;
  Result := Abs(1E-32+Result);
 end;
@@ -426,24 +428,24 @@ var
   i : Integer;
 begin
  Result := Input;
- for i := 0 to (fOrder div 2) - 1 do
+ for i := 0 to (FOrder div 2) - 1 do
   begin
    x := Result;
-   Result            := fAB[4 * i    ] * x                           + fState[2 * i];
-   fState[2 * i    ] := fAB[4 * i + 1] * x + fAB[4 * i + 2] * Result + fState[2 * i + 1];
-   fState[2 * i + 1] := fAB[4 * i    ] * x + fAB[4 * i + 3] * Result;
+   Result            := FAB[4 * i    ] * x                           + FState[2 * i];
+   FState[2 * i    ] := FAB[4 * i + 1] * x + FAB[4 * i + 2] * Result + FState[2 * i + 1];
+   FState[2 * i + 1] := FAB[4 * i    ] * x + FAB[4 * i + 3] * Result;
   end;
- if (fOrder mod 2) = 1 then
+ if (FOrder mod 2) = 1 then
   begin
-   i             := ((fOrder + 1) div 2) - 1;
-   x             := fAB[4 * i] * Result;
-   Result        :=  x + fState[2 * i];
-   fState[2 * i] := -x + fAB[4 * i + 2] * Result;
+   i             := ((FOrder + 1) div 2) - 1;
+   x             := FAB[4 * i] * Result;
+   Result        :=  x + FState[2 * i];
+   FState[2 * i] := -x + FAB[4 * i + 2] * Result;
   end;
 {$ELSE}
 asm
  fld Input.Double;
- mov ecx, [self.fOrder]
+ mov ecx, [self.FOrder]
  test ecx, ecx
  jz @End
  shr ecx, 1
@@ -453,40 +455,40 @@ asm
  @FilterLoop:
   sub ecx,4
   fld st(0)
-  fmul [self.fAB+ecx*8].Double
-  fadd [self.fState+ecx*4].Double
+  fmul [self.FAB+ecx*8].Double
+  fadd [self.FState+ecx*4].Double
   fld st(0)
   fld st(0)
-  fmul [self.fAB+ecx*8+16].Double
-  fadd [self.fState+ecx*4+8].Double
+  fmul [self.FAB+ecx*8+16].Double
+  fadd [self.FState+ecx*4+8].Double
   fld st(3)
-  fmul [self.fAB+ecx*8+8].Double
+  fmul [self.FAB+ecx*8+8].Double
   faddp
-  fstp [self.fState+ecx*4].Double
-  fmul [self.fAB+ecx*8+24].Double
+  fstp [self.FState+ecx*4].Double
+  fmul [self.FAB+ecx*8+24].Double
   fxch
   fxch st(2)
-  fmul [self.fAB+ecx*8].Double
+  fmul [self.FAB+ecx*8].Double
   faddp
-  fstp [self.fState+ecx*4+8].Double
+  fstp [self.FState+ecx*4+8].Double
  ja @FilterLoop
 
  @SingleStage:
  pop ecx
  shr ecx, 1
- sub ecx, [self.fOrder]
+ sub ecx, [self.FOrder]
  jz @End
-  mov ecx, [self.fOrder]
+  mov ecx, [self.FOrder]
   dec ecx
   shl ecx, 1
-  fmul [self.fAB+ecx*8].Double
+  fmul [self.FAB+ecx*8].Double
   fld st(0)
-  fadd [self.fState+ecx*4].Double
+  fadd [self.FState+ecx*4].Double
   fld st(0)
-  fmul [self.fAB+ecx*8+16].Double
+  fmul [self.FAB+ecx*8+16].Double
   fsubrp st(2), st(0)
   fxch
-  fstp [self.fState+ecx*4].Double
+  fstp [self.FState+ecx*4].Double
  @End:
  {$ENDIF}
 end;

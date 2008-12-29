@@ -76,7 +76,7 @@ type
     procedure VUMeterTimerTimer(Sender: TObject);
     procedure LbTitleClick(Sender: TObject);
   private
-    fBackgrounBitmap : TBitmap;
+    FBackgrounBitmap : TBitmap;
     procedure SetLevelState(const Value: TLevelState);
     function GetLevelState: TLevelState;
     function VUMeterValueToPos(Value: Double): Integer;
@@ -113,9 +113,9 @@ var
 
 begin
  // Create Background Image
- fBackgrounBitmap := TBitmap.Create;
+ FBackgrounBitmap := TBitmap.Create;
  ClrBt := $F + random($40);
- with fBackgrounBitmap do
+ with FBackgrounBitmap do
   begin
    PixelFormat := pf32bit;
    Width := Self.Width;
@@ -185,13 +185,13 @@ end;
 
 procedure TFmLA1701.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(fBackgrounBitmap);
+ FreeAndNil(FBackgrounBitmap);
 end;
 
 procedure TFmLA1701.FormPaint(Sender: TObject);
 begin
- if assigned(fBackgrounBitmap)
-  then Self.Canvas.Draw(0, 0, fBackgrounBitmap);
+ if assigned(FBackgrounBitmap)
+  then Self.Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
 procedure TFmLA1701.FormShow(Sender: TObject);

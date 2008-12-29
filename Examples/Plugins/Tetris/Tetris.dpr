@@ -9,18 +9,17 @@ uses
   TetrisEditor in 'TetrisEditor.pas' {FmTetris},
   TetrisUnit in 'TetrisUnit.pas';
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  TetrisModule: TTetrisModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    TetrisModule := TTetrisModule.Create(Application);
-    TetrisModule.Effect^.user := TetrisModule;
-    TetrisModule.AudioMaster := audioMaster;
-    Result := TetrisModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TTetrisModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   DitherDM in 'DitherDM.pas' {DitherDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  DitherDataModule: TDitherDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    DitherDataModule := TDitherDataModule.Create(Application);
-    DitherDataModule.Effect^.user := DitherDataModule;
-    DitherDataModule.AudioMaster := audioMaster;
-    Result := DitherDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TDitherDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

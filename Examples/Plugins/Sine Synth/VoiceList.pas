@@ -2,15 +2,16 @@ unit VoiceList;
 
 interface
 
-uses Classes, RTLConsts, SineSynthVoice;
+uses
+  Classes, RTLConsts, SineSynthVoice;
 
 type
   TVoiceList = class(TObject)
   private
-    FList: PPointerList;
-    FCount: Integer;
-    FCapacity: Integer;
-    FOwnsObjects: Boolean;
+    FList        : PPointerList;
+    FCount       : Integer;
+    FCapacity    : Integer;
+    FOwnsObjects : Boolean;
   protected
     function Get(Index: Integer): TSineSynthVoice;
     procedure Grow; virtual;
@@ -64,8 +65,8 @@ end;
 
 destructor TVoiceList.Destroy;
 begin
- inherited Destroy;
  Clear;
+ inherited Destroy;
 end;
 
 function TVoiceList.Add(SineSynthVoice: TSineSynthVoice): Integer;

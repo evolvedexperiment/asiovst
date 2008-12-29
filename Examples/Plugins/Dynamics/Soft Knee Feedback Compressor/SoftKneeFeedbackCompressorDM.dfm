@@ -1,12 +1,10 @@
 object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor]
   Version = '1.0'
   EffectName = 'Soft Knee Feedback Compressor'
-  ProductName = 'Soft Knee Feedback Compressor'
-  VendorName = 'ASIO-VST Delphi Project'
+  ProductName = 'DAV Dynamics Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
@@ -107,6 +105,7 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       OnParameterChange = ParamMakeUpGainChange
     end>
   OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

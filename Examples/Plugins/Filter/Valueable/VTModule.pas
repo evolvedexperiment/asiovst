@@ -12,12 +12,12 @@ type
   TDriveMode = (dmRoasty1 = 1, dmRoasty2 = 2, dmSteamin1 = 3, dmSteamin2 = 4);
 
   TVTVSTModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamDriveDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
     procedure ParamChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
     procedure ParamLowGainChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -27,8 +27,6 @@ type
     procedure ParamOutGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamLowBypassChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHiBypassChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
   private
     FDriveMode       : TDriveMode;
     FBufferPos       : Cardinal;
@@ -192,31 +190,36 @@ procedure TVTVSTModule.VSTModuleOpen(Sender: TObject);
 var
   i, m, n, sz : Integer;
 begin
-  FOutGain := 1.25;
-  FBufferPos := 0;
-  FHistoryBuffer[0] := nil;
-  FHistoryBuffer[1] := nil;
-  FCircularBuffer[0] := nil;
-  FCircularBuffer[1] := nil;
+ FDriveMode := dmRoasty1;
+ FBassKernel := nil;
+ FTrebleKernel := nil;
+ FSemaphore := 0;
 
-  for m := 1 to 4 do
-   for n := 0 to 1 do
-    with TResourceStream.Create(hInstance, CKernelResourceNames[m, n], RT_RCDATA) do
-     try
-      for i := 0 to Length(FImpulseResponse[m, n]) - 1 do
-       begin
-        GetMem(FImpulseResponse[m, n, i], CKernelSizes[m, n] * SizeOf(Single));
-        sz := Read(FImpulseResponse[m, n, i]^, CKernelSizes[m, n] * SizeOf(Single));
-        assert(sz = CKernelSizes[m, n] * SizeOf(Single));
-       end;
-     finally
-      Free;
-     end;
-  SetCPUDependant;
+ FOutGain := 1.25;
+ FBufferPos := 0;
+ FHistoryBuffer[0] := nil;
+ FHistoryBuffer[1] := nil;
+ FCircularBuffer[0] := nil;
+ FCircularBuffer[1] := nil;
 
-  BuildBassFilterKernel;
-  BuildTrebleFilterKernel;
-  BuildCompleteFilterKernel;
+ for m := 1 to 4 do
+  for n := 0 to 1 do
+   with TResourceStream.Create(hInstance, CKernelResourceNames[m, n], RT_RCDATA) do
+    try
+     for i := 0 to Length(FImpulseResponse[m, n]) - 1 do
+      begin
+       GetMem(FImpulseResponse[m, n, i], CKernelSizes[m, n] * SizeOf(Single));
+       sz := Read(FImpulseResponse[m, n, i]^, CKernelSizes[m, n] * SizeOf(Single));
+       assert(sz = CKernelSizes[m, n] * SizeOf(Single));
+      end;
+    finally
+     Free;
+    end;
+ SetCPUDependant;
+
+ BuildBassFilterKernel;
+ BuildTrebleFilterKernel;
+ BuildCompleteFilterKernel;
 end;
 
 procedure TVTVSTModule.VSTModuleClose(Sender: TObject);
@@ -227,14 +230,6 @@ begin
   Dispose(FCircularBuffer[1]);
   Dispose(FBassKernel);
   Dispose(FTrebleKernel);
-end;
-
-procedure TVTVSTModule.VSTModuleCreate(Sender: TObject);
-begin
- FDriveMode := dmRoasty1;
- FBassKernel := nil;
- FTrebleKernel := nil;
- FSemaphore := 0;
 end;
 
 procedure TVTVSTModule.VSTEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);

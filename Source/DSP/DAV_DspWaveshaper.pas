@@ -19,8 +19,8 @@ type
     procedure SetOrder(Value: Integer);
     procedure SetInverted(Harmonic: Integer; const Value: Boolean);
   protected
-    fChebyshevCoeffs  : TDAVDoubleDynArray;
-    fGains            : TDAVDoubleDynArray;
+    FChebyshevCoeffs  : TDAVDoubleDynArray;
+    FGains            : TDAVDoubleDynArray;
     procedure RecalculateHarmonics; virtual;
     procedure OrderChanged; virtual;
   public
@@ -40,13 +40,13 @@ type
 
   TChebyshevWaveshaperSquarelShape = class(TChebyshevWaveshaper)
   private
-    fShape: Double;
+    FShape: Double;
     procedure SetShape(const Value: Double);
   published
   protected
     procedure OrderChanged; override;
   published
-    property Shape: Double read fShape write SetShape;
+    property Shape: Double read FShape write SetShape;
   end;
 
 function Waveshaper1(x, t: Single): Single; overload;
@@ -301,7 +301,7 @@ function TChebyshevWaveshaper.GetGain(Harmonic: Integer): Double;
 begin
  if (Harmonic < 0) or (Harmonic >= Order)
   then raise Exception.Create('Index out of bounds')
-  else result := fGains[Harmonic];
+  else result := FGains[Harmonic];
 end;
 
 function TChebyshevWaveshaper.GetInverted(Harmonic: Integer): Boolean;
@@ -311,21 +311,21 @@ end;
 
 function TChebyshevWaveshaper.GetLevel(Harmonic: Integer): Double;
 begin
- result := Amp_to_dB(abs(fGains[Harmonic]));
+ result := Amp_to_dB(abs(FGains[Harmonic]));
 end;
 
 function TChebyshevWaveshaper.GetOrder: Integer;
 begin
- result := Length(fGains);
+ result := Length(FGains);
 end;
 
 function TChebyshevWaveshaper.ProcessSample(Input: Double): Double;
 var
   i : Integer;
 begin
- result := fChebyshevCoeffs[Order];
+ result := FChebyshevCoeffs[Order];
  for i := Order - 1 downto 0
-  do result := result * Input + fChebyshevCoeffs[i];
+  do result := result * Input + FChebyshevCoeffs[i];
 end;
 
 function ChebyPolynome(Order, Power: Integer): Integer;
@@ -394,9 +394,9 @@ var
 begin
  for y := 0 to Order do
   begin
-   fChebyshevCoeffs[y] := fGains[0] * ChebyPolynome(1, y);
+   FChebyshevCoeffs[y] := FGains[0] * ChebyPolynome(1, y);
    for x := 1 to Order - 1
-    do fChebyshevCoeffs[y] := fChebyshevCoeffs[y] + fGains[x] * ChebyPolynome(1 + x, y);
+    do FChebyshevCoeffs[y] := FChebyshevCoeffs[y] + FGains[x] * ChebyPolynome(1 + x, y);
   end;
 end;
 
@@ -406,7 +406,7 @@ begin
   then raise Exception.Create('Index out of bounds (' + IntToStr(Harmonic) + ')')
   else
    begin
-    fGains[Harmonic] := Value;
+    FGains[Harmonic] := Value;
     RecalculateHarmonics;
    end;
 end;
@@ -421,7 +421,7 @@ end;
 
 procedure TChebyshevWaveshaper.SetLevel(Harmonic: Integer; const Value: Double);
 begin
- if fGains[Harmonic] < 0
+ if FGains[Harmonic] < 0
   then Gain[Harmonic] := -dB_to_Amp(Value)
   else Gain[Harmonic] :=  dB_to_Amp(Value);
 end;
@@ -432,9 +432,9 @@ begin
  if Value > 24 then Value := 24;
  if Value <> Order then
   begin
-   SetLength(fGains, Value);
-   SetLength(fChebyshevCoeffs, Value + 1);
-   fGains[0] := 1;
+   SetLength(FGains, Value);
+   SetLength(FChebyshevCoeffs, Value + 1);
+   FGains[0] := 1;
    OrderChanged;
    RecalculateHarmonics;
   end;
@@ -448,9 +448,9 @@ var
 begin
  for i := 0 to Order - 1 do
   case i mod 4 of
-   0: fGains[i] := -1 / (i + 1);
-   2: fGains[i] :=  1 / (i + 1);
-   else fGains[i] := 0;
+   0: FGains[i] := -1 / (i + 1);
+   2: FGains[i] :=  1 / (i + 1);
+   else FGains[i] := 0;
   end;
  inherited;
 end;
@@ -463,18 +463,18 @@ var
 begin
  for i := 0 to Order - 1 do
   case i mod 4 of
-   0: fGains[i] := -1 / Power(i + 1, fShape);
-   2: fGains[i] :=  1 / Power(i + 1, fShape);
-   else fGains[i] := 0;
+   0: FGains[i] := -1 / Power(i + 1, FShape);
+   2: FGains[i] :=  1 / Power(i + 1, FShape);
+   else FGains[i] := 0;
   end;
  inherited;
 end;
 
 procedure TChebyshevWaveshaperSquarelShape.SetShape(const Value: Double);
 begin
- if fShape <> Value then
+ if FShape <> Value then
   begin
-   fShape := Value;
+   FShape := Value;
    OrderChanged;
   end;
 end;

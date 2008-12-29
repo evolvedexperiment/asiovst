@@ -8,14 +8,14 @@ uses
   ASIOVSTModule in 'ASIOVSTModule.pas' {ASIOVSTModule: TVSTModule},
   ASIOVSTGUI in 'ASIOVSTGUI.pas' {FmASIOVST};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var VSTModule : TASIOVSTModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  VSTModule := TASIOVSTModule.Create(Application);
-  VSTModule.AudioMaster := audiomaster;
-  VSTModule.Effect^.user:=VSTModule;
-  Result := VSTModule.Effect;
+  with TASIOVSTModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

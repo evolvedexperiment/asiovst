@@ -5,13 +5,14 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Split Template'
-  ProductName = 'Split Template'
-  VendorName = 'Delphi ASIO & VST Packages'
+  ProductName = 'DAV Wrapper Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
   UniqueID = 'Spli'
   ShellPlugins = <>
   Programs = <
@@ -56,6 +57,7 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamModeChange
       OnCustomParameterDisplay = ParamModeDisplay

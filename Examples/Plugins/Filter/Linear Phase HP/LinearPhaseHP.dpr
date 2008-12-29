@@ -10,18 +10,17 @@ uses
   LinearPhaseDM in 'LinearPhaseDM.pas' {LinearPhaseDataModule: TVSTModule},
   LinearPhaseGUI in 'LinearPhaseGUI.pas' {FmLinearPhase};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  LinearPhaseDataModule: TLinearPhaseDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    LinearPhaseDataModule := TLinearPhaseDataModule.Create(Application);
-    LinearPhaseDataModule.Effect^.user := LinearPhaseDataModule;
-    LinearPhaseDataModule.AudioMaster := audioMaster;
-    Result := LinearPhaseDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TLinearPhaseDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

@@ -1,12 +1,10 @@
 object SimpleGateDataModule: TSimpleGateDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'Simple Gate'
-  ProductName = 'Simple Gate'
-  VendorName = 'ASIO-VST Delphi Project'
+  ProductName = 'DAV Dynamics Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
@@ -33,6 +31,8 @@ object SimpleGateDataModule: TSimpleGateDataModule
       VSTModule = Owner
       OnParameterChange = SGDMThresholdChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

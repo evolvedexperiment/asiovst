@@ -7,14 +7,14 @@ uses
   DAV_VSTModule,
   FilterModule in 'FilterModule.pas' {VSTFilter: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var VSTModule1 : TVSTFilter;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  VSTModule1 := TVSTFilter.Create(Application);
-  VSTModule1.Effect^.user := VSTModule1;
-  VSTModule1.AudioMaster := audioMaster;
-  Result := VSTModule1.Effect;
+  with TVSTFilter.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

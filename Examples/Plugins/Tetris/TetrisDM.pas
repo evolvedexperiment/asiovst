@@ -23,7 +23,8 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses TetrisEditor;
+uses
+  TetrisEditor;
 
 function TTetrisModule.VSTModuleCheckKey(Sender: TObject; Key: Char): Boolean;
 begin

@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   DX10DM in 'DX10DM.pas' {DX10DataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  DX10DataModule: TDX10DataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    DX10DataModule := TDX10DataModule.Create(Application);
-    DX10DataModule.Effect^.user := DX10DataModule;
-    DX10DataModule.AudioMaster := audioMaster;
-    Result := DX10DataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TDX10DataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

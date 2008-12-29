@@ -8,14 +8,14 @@ uses
   VUMeterModule in 'VUMeterModule.pas' {VSTVUMeterModule: TVSTModule},
   VUMeterGUI in 'VUMeterGUI.pas' {VSTVUMeterGUI};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var VSTVUMeterModule : TVSTVUMeterModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  VSTVUMeterModule := TVSTVUMeterModule.Create(Application);
-  VSTVUMeterModule.Effect^.user := VSTVUMeterModule;
-  VSTVUMeterModule.AudioMaster := audioMaster;
-  Result := VSTVUMeterModule.Effect;
+  with TVSTVUMeterModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

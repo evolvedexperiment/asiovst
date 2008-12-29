@@ -11,12 +11,13 @@ const
 
 type
   TEnhancedGateDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure EAGThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure EAGThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure EAGPowerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGDuckChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -31,7 +32,6 @@ type
     procedure EAGRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure EAGRangeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
     FEnhancedGates : Array [0..NrChannels - 1] of TAdvancedGate;
     FLevels        : Array [0..NrChannels - 1] of Single;
@@ -46,12 +46,14 @@ implementation
 
 uses Math, EditorFrm;
 
-procedure TEnhancedGateDataModule.VSTModuleCreate(Sender: TObject);
+procedure TEnhancedGateDataModule.VSTModuleOpen(Sender: TObject);
 var
   i : Integer;
 begin
  for i := 0 to NrChannels - 1
   do FEnhancedGates[i] := TAdvancedGate.Create;
+
+ // initial parameters 
  Parameter[ 0] :=   1.0;
  Parameter[ 1] := -60.0;
  Parameter[ 2] :=   0.1;
@@ -67,7 +69,7 @@ begin
  Parameter[12] :=  40.0;
 end;
 
-procedure TEnhancedGateDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TEnhancedGateDataModule.VSTModuleClose(Sender: TObject);
 var
   i : Integer;
 begin
@@ -79,21 +81,6 @@ procedure TEnhancedGateDataModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
  GUI := TEditorForm.Create(Self);
- with (GUI as TEditorForm) do
-  begin
-   if Boolean(Round(Parameter[0]))
-    then CBOnOff.Brightness_Percent := 100
-    else CBOnOff.Brightness_Percent := 20;
-   UpdateThreshold;
-   UpdateAttack;
-   UpdateHold;
-   UpdateDecay;
-   UpdateHiCut;
-   UpdateLoCut;
-   UpdateRatio;
-   UpdateKnee;
-   UpdateRange;
-  end;
 end;
 
 procedure TEnhancedGateDataModule.EAGPowerChange(Sender: TObject;

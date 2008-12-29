@@ -4,12 +4,13 @@ object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Chebyshev Waveshaper'
-  ProductName = 'DAV - Waveshapers'
-  VendorName = 'Delphi ASIO & VST Packages'
+  ProductName = 'DAV Effect Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'DCWS'
   ShellPlugins = <>
   Programs = <>

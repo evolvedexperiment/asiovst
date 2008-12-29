@@ -11,18 +11,14 @@ uses
   EnhancedGateDM in 'EnhancedGateDM.pas' {EnhancedGateDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  EnhancedGateDataModule: TEnhancedGateDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    EnhancedGateDataModule := TEnhancedGateDataModule.Create(Application);
-    EnhancedGateDataModule.AudioMaster := audioMaster;
-    with EnhancedGateDataModule do
-    begin
-      Effect^.user := EnhancedGateDataModule;
-      Result := Effect;
-    end;
+ try
+  with TEnhancedGateDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
   except
     Result := nil;
   end;

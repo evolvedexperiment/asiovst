@@ -9,18 +9,17 @@ uses
   DAV_VSTModule,
   WrapperDM in 'WrapperDM.pas' {WrapperDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  WrapperDataModule: TWrapperDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    WrapperDataModule := TWrapperDataModule.Create(Application);
-    WrapperDataModule.Effect^.user := WrapperDataModule;
-    WrapperDataModule.AudioMaster := audioMaster;
-    Result := WrapperDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TWrapperDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+   Result := nil;
+ end;
 end;
 
 exports Main name 'main';

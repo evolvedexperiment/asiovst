@@ -15,7 +15,7 @@ object VSTVUMeterGUI: TVSTVUMeterGUI
   Scaled = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
+  object LbAbout: TLabel
     Left = 80
     Top = 104
     Width = 302
@@ -26,40 +26,40 @@ object VSTVUMeterGUI: TVSTVUMeterGUI
       'nels'#13#10' '#13#10'This is only a demonstration plugin!'#13#10' '#13#10'(C)opyright in' +
       ' 2004-2006 by Tobias Fleischer (www.tobybear.de)'
   end
-  object Label2: TLabel
+  object LbTrademark: TLabel
     Left = 88
     Top = 192
     Width = 282
     Height = 13
     Caption = 'VST is a trademark of Steinberg Media Technologies GmbH'
   end
-  object vu_l: TShape
+  object ShVULeft: TShape
     Left = 120
     Top = 62
     Width = 17
     Height = 12
   end
-  object vu_r: TShape
+  object ShVURight: TShape
     Left = 120
     Top = 78
     Width = 17
     Height = 12
   end
-  object gain_l: TLabel
+  object LbGainLeft: TLabel
     Left = 8
     Top = 62
     Width = 78
     Height = 13
     Caption = 'left gain: 0 db(fs)'
   end
-  object gain_r: TLabel
+  object LbGainRight: TLabel
     Left = 8
     Top = 78
     Width = 84
     Height = 13
     Caption = 'right gain: 0 db(fs)'
   end
-  object par0: TScrollBar
+  object SBLeft: TScrollBar
     Left = 8
     Top = 8
     Width = 425
@@ -70,7 +70,7 @@ object VSTVUMeterGUI: TVSTVUMeterGUI
     TabOrder = 0
     OnChange = ParameterChange
   end
-  object par1: TScrollBar
+  object SBRight: TScrollBar
     Tag = 1
     Left = 8
     Top = 40

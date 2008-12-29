@@ -1,16 +1,15 @@
 object LA1701DataModule: TLA1701DataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'LA-1701 Leveling Amplifier'
-  ProductName = 'LA-1701 Leveling Amplifier'
-  VendorName = 'ASIO-VST Delphi Project'
+  ProductName = 'DAV Dynamics Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = '1701'
   ShellPlugins = <>
   Programs = <>
@@ -72,6 +71,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 50.000000000000000000
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep]
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 20.000000000000000000
       MaxInteger = 20
@@ -206,21 +206,26 @@ object LA1701DataModule: TLA1701DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Highpass Order'
+      LargeStepFloat = 2.000000000000000000
       Max = 4.000000000000000000
       MaxInteger = 4
       Min = 1.000000000000000000
       MinInteger = 1
       ShortLabel = 'HP Ord.'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamHPOrderChange
       OnCustomParameterDisplay = ParamHPOrderDisplay
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
-  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   OnSoftBypass = VSTModuleSoftBypass
   Left = 739
   Top = 64

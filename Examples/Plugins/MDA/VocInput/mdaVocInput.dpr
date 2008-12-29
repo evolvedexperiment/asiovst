@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   VocInputDM in 'VocInputDM.pas' {VocInputDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  VocInputDataModule: TVocInputDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    VocInputDataModule := TVocInputDataModule.Create(Application);
-    VocInputDataModule.Effect^.user := VocInputDataModule;
-    VocInputDataModule.AudioMaster := audioMaster;
-    Result := VocInputDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TVocInputDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

@@ -6,7 +6,7 @@ interface
 
 uses
   FastMove, Windows, Messages, SysUtils, Classes, Forms, DAV_Common,
-  DAV_VSTEffect, DAV_VSTEffectFunctions, DAV_VSTModule;
+  DAV_VSTEffect, DAV_VSTModule;
 
 type
   TPerformanceTestModule = class(TVSTModule)

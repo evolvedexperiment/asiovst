@@ -3,13 +3,14 @@ object VSTOpAmp: TVSTOpAmp
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Simple OpAmp Simulation'
-  ProductName = 'Simple OpAmp Simulation'
-  VendorName = 'Christian Budde'
+  ProductName = 'DAV Effect Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd1in2out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Init'
+  IORatio = 1.000000000000000000
   UniqueID = 'NoLi'
   ShellPlugins = <>
   Programs = <
@@ -35,12 +36,12 @@ object VSTOpAmp: TVSTOpAmp
       Units = 'dB'
       VSTModule = Owner
     end>
+  OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  OnInitialize = VSTModuleInitialize
+  OnProcessReplacing = VSTModuleProcess
   Left = 243
   Top = 103
   Height = 150

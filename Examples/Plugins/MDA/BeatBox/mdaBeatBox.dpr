@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   BeatBoxDM in 'BeatBoxDM.pas' {BeatBoxDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  BeatBoxDataModule: TBeatBoxDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    BeatBoxDataModule := TBeatBoxDataModule.Create(Application);
-    BeatBoxDataModule.Effect^.user := BeatBoxDataModule;
-    BeatBoxDataModule.AudioMaster := audioMaster;
-    Result := BeatBoxDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TBeatBoxDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

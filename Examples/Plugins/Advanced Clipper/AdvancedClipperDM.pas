@@ -26,10 +26,10 @@ type
     procedure ParamHardClipDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamHardClipChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fUpDownSampling : array [0..3] of TDAVUpDownsampling;
-    fInputGain      : Single;
-    fOutputGain     : Single;
-    fHardClip       : Boolean;
+    FUpDownSampling : array [0..3] of TDAVUpDownsampling;
+    FInputGain      : Single;
+    FOutputGain     : Single;
+    FHardClip       : Boolean;
   public
   end;
 
@@ -45,8 +45,8 @@ var
   ch : Integer;
 begin
  for ch := 0 to 1 do
-  if assigned(fUpDownSampling[ch])
-   then fUpDownSampling[ch].Factor := round(Value);
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].Factor := round(Value);
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -59,8 +59,8 @@ var
   ch : Integer;
 begin
  for ch := 2 to 3 do
-  if assigned(fUpDownSampling[ch])
-   then fUpDownSampling[ch].Factor := round(Value);
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].Factor := round(Value);
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -71,7 +71,7 @@ end;
 procedure TAdvancedClipperDataModule.ParamInputGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fInputGain := dB_to_Amp(Value);
+ FInputGain := dB_to_Amp(Value);
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -96,7 +96,7 @@ end;
 procedure TAdvancedClipperDataModule.ParamHardClipChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fHardClip := Boolean(round(Value));
+ FHardClip := Boolean(round(Value));
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -110,8 +110,8 @@ var
   ch : Integer;
 begin
  for ch := 0 to 1 do
-  if assigned(fUpDownSampling[ch])
-   then fUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
 end;
 
 procedure TAdvancedClipperDataModule.ParamBW2Change(
@@ -120,14 +120,14 @@ var
   ch : Integer;
 begin
  for ch := 2 to 3 do
-  if assigned(fUpDownSampling[ch])
-   then fUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
 end;
 
 procedure TAdvancedClipperDataModule.ParamOutputGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fOutputGain := dB_to_Amp(Value);
+ FOutputGain := dB_to_Amp(Value);
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -141,8 +141,8 @@ var
   ch : Integer;
 begin
  for ch := 0 to 1 do
-  if assigned(fUpDownSampling[ch])
-   then fUpDownSampling[ch].Order := round(Value);
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].Order := round(Value);
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -156,8 +156,8 @@ var
   ch : Integer;
 begin
  for ch := 2 to 3 do
-  if assigned(fUpDownSampling[ch])
-   then fUpDownSampling[ch].Order := round(Value);
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].Order := round(Value);
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -169,11 +169,11 @@ procedure TAdvancedClipperDataModule.VSTModuleOpen(Sender: TObject);
 var
   ch : Integer;
 begin
- fHardClip   := False;
- fInputGain  := 1;
- fOutputGain := 1;
+ FHardClip   := False;
+ FInputGain  := 1;
+ FOutputGain := 1;
  for ch := 0 to 3
-  do fUpDownSampling[ch] := TDAVUpDownsampling.Create(Self);
+  do FUpDownSampling[ch] := TDAVUpDownsampling.Create(Self);
 
  Parameter[0] := -0.1;
  Parameter[1] := 4;
@@ -290,7 +290,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to 1
-  do FreeAndNil(fUpDownSampling[ch]);
+  do FreeAndNil(FUpDownSampling[ch]);
 end;
 
 procedure TAdvancedClipperDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -308,18 +308,18 @@ begin
  for i := 0 to SampleFrames - 1 do
   for ch := 0 to 1 do
    begin
-    fUpDownSampling[ch].Upsample64(fInputGain * Inputs[ch, i], @d);
-    for j := 0 to fUpDownSampling[ch].Factor - 1
+    FUpDownSampling[ch].Upsample64(FInputGain * Inputs[ch, i], @d);
+    for j := 0 to FUpDownSampling[ch].Factor - 1
      do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
-    InterStage := fUpDownSampling[ch].Downsample64(@d);
+    InterStage := FUpDownSampling[ch].Downsample64(@d);
 
-    fUpDownSampling[ch + 2].Upsample64(InterStage, @d);
-    for j := 0 to fUpDownSampling[ch + 2].Factor - 1
+    FUpDownSampling[ch + 2].Upsample64(InterStage, @d);
+    for j := 0 to FUpDownSampling[ch + 2].Factor - 1
      do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
-    d[0] := fUpDownSampling[ch + 2].Downsample64(@d);
-    if fHardClip
+    d[0] := FUpDownSampling[ch + 2].Downsample64(@d);
+    if FHardClip
      then d[0] := (abs(d[0] + 1) - abs(d[0] - 1)) * 0.5;
-    Outputs[ch, i] := fOutputGain * d[0];
+    Outputs[ch, i] := FOutputGain * d[0];
    end;
 end;
 
@@ -334,18 +334,18 @@ begin
  for i := 0 to SampleFrames - 1 do
   for ch := 0 to 1 do
    begin
-    fUpDownSampling[ch].Upsample64(fInputGain * Inputs[ch, i], @d);
-    for j := 0 to fUpDownSampling[ch].Factor - 1
+    FUpDownSampling[ch].Upsample64(FInputGain * Inputs[ch, i], @d);
+    for j := 0 to FUpDownSampling[ch].Factor - 1
      do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
-    InterStage := fUpDownSampling[ch].Downsample64(@d);
+    InterStage := FUpDownSampling[ch].Downsample64(@d);
 
-    fUpDownSampling[ch + 2].Upsample64(InterStage, @d);
-    for j := 0 to fUpDownSampling[ch + 2].Factor - 1
+    FUpDownSampling[ch + 2].Upsample64(InterStage, @d);
+    for j := 0 to FUpDownSampling[ch + 2].Factor - 1
      do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
-    d[0] := fUpDownSampling[ch + 2].Downsample64(@d);
-    if fHardClip
+    d[0] := FUpDownSampling[ch + 2].Downsample64(@d);
+    if FHardClip
      then d[0] := (abs(d[0] + 1) - abs(d[0] - 1)) * 0.5;
-    Outputs[ch, i] := fOutputGain * d[0];
+    Outputs[ch, i] := FOutputGain * d[0];
    end;
 end;
 
@@ -355,8 +355,8 @@ var
   ch : Integer;
 begin
  for ch := 0 to 3 do
-  if assigned(fUpDownSampling[ch])
-   then fUpDownSampling[ch].SampleRate := SampleRate;
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].SampleRate := SampleRate;
 end;
 
 end.

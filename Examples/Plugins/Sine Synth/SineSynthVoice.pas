@@ -10,45 +10,45 @@ uses
 type
   TSineSynthVoice = class(TObject)
   private
-    fMidiKeyNr  : Integer;
-    fVelocity   : Integer;
-    fSampleRate : Single;
-    fFrequency  : Single;
-    fAmplitude  : Single;
-    fVSTModule  : TVSTModule;
-    fAngle,
-    fPosition   : TComplexDouble;
-    function GetSampleRate: Single; virtual;
-    procedure SetSampleRate(v: Single); virtual;
+    FAmplitude, FFrequency : Single;
+    FSampleRate            : Single;
+    FSampleRateReciprocal  : Single;
+    FAngle, FPosition      : TComplexDouble;
+    FMidiKeyNr, FVelocity  : Integer;
+    FVSTModule             : TVSTModule;
+    procedure SetSampleRate(const Value: Single);
+    procedure SetFrequency(const Frequency: Single);
+  protected
+    procedure FrequencyChanged; virtual;
+    procedure SampleRateChanged; virtual;
   public
     constructor Create(theModule: TVSTModule);
     destructor Destroy; override;
-    procedure SetFrequency(Frequency: Single); virtual;
     procedure NoteOn(Frequency, Amplitude: Single);
     procedure NoteOff;
     function Process: Single; virtual;
   published
-    property Frequency: Single read fFrequency write SetFrequency;
-    property SampleRate: Single read GetSampleRate write SetSampleRate;
-    property MidiKeyNr: Integer read fMidiKeyNr write fMidiKeyNr;
-    property Velocity: Integer read fVelocity write fVelocity;
+    property Frequency: Single read FFrequency write SetFrequency;
+    property SampleRate: Single read FSampleRate write SetSampleRate;
+    property MidiKeyNr: Integer read FMidiKeyNr write FMidiKeyNr;
+    property Velocity: Integer read FVelocity write FVelocity;
   end;
 
 implementation
 
 uses
-  DAV_Common, SineSynthModule;
+  SysUtils, DAV_Common, SineSynthModule;
 
 { TSineSynthVoice }
 
 constructor TSineSynthVoice.Create(theModule: TVSTModule);
 begin
- fVSTModule := theModule;
+ FVSTModule := theModule;
  if theModule.SampleRate = 0
   then SampleRate := 44100
   else SampleRate := theModule.SampleRate;
- fPosition.Re := 0;
- fPosition.Im := -1;
+ FPosition.Re := 0;
+ FPosition.Im := -1;
 end;
 
 destructor TSineSynthVoice.Destroy;
@@ -56,46 +56,53 @@ begin
  inherited;
 end;
 
-function TSineSynthVoice.GetSampleRate: Single;
+procedure TSineSynthVoice.FrequencyChanged;
 begin
- result := fSampleRate;
+ GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
 end;
 
-procedure TSineSynthVoice.SetSampleRate(v: Single);
+procedure TSineSynthVoice.SetSampleRate(const Value: Single);
 begin
- if (v > 0) then fSampleRate := v;
+ if Value <= 0
+  then raise Exception.Create('Samplerate must be positive and larger than 0!');
+ if FSampleRate <> Value then
+  begin
+   FSampleRate := Value;
+   SamplerateChanged;
+  end;
 end;
 
 function TSineSynthVoice.Process: Single;
 begin
- result := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
- fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
- fPosition.Re := result; result := result * fAmplitude;
+ result := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+ FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
+ FPosition.Re := result; result := result * FAmplitude;
 end;
 
-procedure TSineSynthVoice.SetFrequency(Frequency: Single);
-  procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
-  asm
-   fld Frequency.Double;
-   fsincos
-   fstp [CosValue].Double;
-   fstp [SinValue].Double;
-  end;
+procedure TSineSynthVoice.SampleRateChanged;
 begin
- fFrequency := Frequency;
- GetSinCos(2 * Pi * fFrequency / fSampleRate, fAngle.Im, fAngle.Re);
+ FSampleRateReciprocal := 1 / FSampleRate;
+end;
+
+procedure TSineSynthVoice.SetFrequency(const Frequency: Single);
+begin
+ if FFrequency <> Frequency then
+  begin
+   FFrequency := Frequency;
+   FrequencyChanged;
+  end;
 end;
 
 procedure TSineSynthVoice.NoteOn(Frequency, Amplitude: Single);
 begin
- fFrequency := Frequency;
+ FFrequency := Frequency;
  SetFrequency(Frequency);
- fAmplitude := Amplitude;
+ FAmplitude := Amplitude;
 end;
 
 procedure TSineSynthVoice.NoteOff;
 begin
- fAmplitude := 0;
+ FAmplitude := 0;
 end;
 
 end.

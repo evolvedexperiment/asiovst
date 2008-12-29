@@ -8,14 +8,16 @@ uses
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleProcess(inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
+    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+  private
+    FVoices : TVoiceList;
   public
-    Voices      : TVoiceList;
+    property Voices: TVoiceList read FVoices;
   end;
 
 implementation
@@ -24,6 +26,23 @@ implementation
 
 uses
   SineSynthGUI, Math;
+
+procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
+begin
+ FVoices := TVoiceList.Create(True);
+end;
+
+procedure TVSTSSModule.VSTModuleClose(Sender: TObject);
+begin
+ FreeAndNil(FVoices);
+end;
+
+procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+// Do not delete this if you are using the editor
+begin
+ GUI := TVSTGUI.Create(Self);
+end;
 
 procedure TVSTSSModule.VSTModuleProcess(inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -55,18 +74,6 @@ begin
 
  for i := 1 to numOutputs - 1
   do Move(Outputs[0, 0], Outputs[i, 0], SampleFrames * SizeOf(Double));
-end;
-
-procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-// Do not delete this if you are using the editor
-begin
- GUI := TVSTGUI.Create(Self);
-end;
-
-procedure TVSTSSModule.VSTModuleInitialize(Sender: TObject);
-begin
- Voices := TVoiceList.Create(True);
 end;
 
 procedure TVSTSSModule.VSTModuleProcessMidi(Sender: TObject;
@@ -107,11 +114,6 @@ begin
    // all notes off
    Voices.Clear;
   end;
-end;
-
-procedure TVSTSSModule.VSTModuleDestroy(Sender: TObject);
-begin
- FreeAndNil(Voices);
 end;
 
 end.

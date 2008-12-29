@@ -10,15 +10,14 @@ uses
   XSynthVoice in 'XSynthVoice.pas',
   VoiceList in 'VoiceList.pas';
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  VSTSSModule : TVSTSSModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  VSTSSModule := TVSTSSModule.Create(Application);
-  VSTSSModule.Effect^.user := VSTSSModule;
-  VSTSSModule.AudioMaster := audioMaster;
-  Result := VSTSSModule.Effect;
+  with TVSTSSModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

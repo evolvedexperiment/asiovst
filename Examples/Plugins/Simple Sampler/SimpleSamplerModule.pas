@@ -8,18 +8,17 @@ uses
 
 type
   TVSTSSModule = class(TVSTModule)
-    procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleInitialize(Sender: TObject);
-    procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
   private
+    FVoices : TVoiceList;
   public
-    Voices : TVoiceList;
-    Sample : TDAVSingleDynArray;
-    MyGUI  : TVSTGUI;
+    Sample  : TDAVSingleDynArray;
+    property Voices: TVoiceList read FVoices;
   end;
 
 implementation
@@ -29,48 +28,52 @@ implementation
 uses
   Math;
 
-procedure TVSTSSModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  i, j : Integer;
+procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 begin
- FillChar(outputs[0,0], sampleframes * SizeOf(Single), 0);
- FillChar(outputs[1,0], sampleframes * SizeOf(Single), 0);
-
- for j := 0 to sampleframes - 1 do
-  for i := 0 to Voices.Count - 1
-   do outputs[0,j] := outputs[0,j] + Voices[i].Process;
-
- for i := 1 to numOutputs - 1
-  do Move(outputs[0, 0], outputs[i, 0], sampleframes * SizeOf(Single));
+ FVoices := TVoiceList.Create(True);
 end;
 
-procedure TVSTSSModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-var i,j : Integer;
+procedure TVSTSSModule.VSTModuleClose(Sender: TObject);
 begin
- FillChar(outputs[0, 0], sampleframes * SizeOf(Double), 0);
- FillChar(outputs[1, 0], sampleframes * SizeOf(Double), 0);
-
- for j := 0 to SampleFrames - 1 do
-  for i := 0 to Voices.Count - 1
-   do Outputs[0, j] := Outputs[0, j] + Voices[i].Process;
-
- for i := 1 to numOutputs - 1
-  do Move(outputs[0, 0], outputs[i, 0], sampleframes * SizeOf(Double));
+ FreeAndNil(FVoices);
 end;
 
 procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
   ParentWindow: Cardinal);
 // Do not delete this if you are using the editor
 begin
- GUI := MyGUI;
+ GUI := TVSTGUI.Create(Self);
 end;
 
-procedure TVSTSSModule.VSTModuleInitialize(Sender: TObject);
+procedure TVSTSSModule.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  i, j : Integer;
 begin
- Voices := TVoiceList.Create(True);
- MyGUI  := TVSTGUI.Create(Self);
+ FillChar(Outputs[0,0], SampleFrames * SizeOf(Single), 0);
+ FillChar(Outputs[1,0], SampleFrames * SizeOf(Single), 0);
+
+ for j := 0 to SampleFrames - 1 do
+  for i := 0 to Voices.Count - 1
+   do Outputs[0, j] := Outputs[0, j] + Voices[i].Process;
+
+ for i := 1 to numOutputs - 1
+  do Move(Outputs[0, 0], Outputs[i, 0], SampleFrames * SizeOf(Single));
+end;
+
+procedure TVSTSSModule.VSTModuleProcessDoubleReplacing(const Inputs,
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var i,j : Integer;
+begin
+ FillChar(Outputs[0, 0], SampleFrames * SizeOf(Double), 0);
+ FillChar(Outputs[1, 0], SampleFrames * SizeOf(Double), 0);
+
+ for j := 0 to SampleFrames - 1 do
+  for i := 0 to Voices.Count - 1
+   do Outputs[0, j] := Outputs[0, j] + Voices[i].Process;
+
+ for i := 1 to numOutputs - 1
+  do Move(Outputs[0, 0], Outputs[i, 0], SampleFrames * SizeOf(Double));
 end;
 
 procedure TVSTSSModule.VSTModuleProcessMidi(Sender: TObject;
@@ -111,18 +114,6 @@ begin
    // all notes off
    Voices.Clear;
   end;
-end;
-
-procedure TVSTSSModule.VSTModuleDestroy(Sender: TObject);
-begin
- FreeAndNil(Voices);
- MyGUI.Free;
-end;
-
-procedure TVSTSSModule.VSTModuleEditClose(Sender: TObject;
-  var DestroyForm: Boolean);
-begin
- DestroyForm := False;
 end;
 
 end.

@@ -43,52 +43,53 @@ uses PhaserDM;
 
 procedure TPhaserForm.SBDepthChange(Sender: TObject);
 begin
- with TPhaserModule(Owner) do
-  begin
-   Parameter[0] := SBDepth.Position * 0.1;
-   LbVDepth.Caption:=FloatToStrF(Parameter[0], ffFixed, 2, 2);
-  end;
+  with TPhaserModule(Owner) do
+   begin
+    Parameter[0] := SBDepth.Position * 0.1;
+    LbVDepth.Caption := FloatToStrF(Parameter[0], ffFixed, 2, 2);
+   end;
 end;
 
 procedure TPhaserForm.SBFeedbackChange(Sender: TObject);
 begin
- with TPhaserModule(Owner) do
-  begin
-   Parameter[1] := SBFeedback.Position * 0.1;
-   LbVFeedback.Caption := FloatToStrF(Parameter[1],ffFixed,3,1) + '%';
-  end;
+  with TPhaserModule(Owner) do
+   begin
+    Parameter[1] := SBFeedback.Position * 0.1;
+    LbVFeedback.Caption := FloatToStrF(Parameter[1], ffFixed, 3, 1) + '%';
+   end;
 end;
 
 procedure TPhaserForm.SBMinimumChange(Sender: TObject);
 begin
- with TPhaserModule(Owner) do
-  begin
-   Parameter[2] := FreqLinearToLog(SBMinimum.Position / 20000);
-   LbVMinimum.Caption := FloatToStrF(Parameter[2], ffFixed, 6, 0) + 'Hz';
-  end;
+  with TPhaserModule(Owner) do
+   begin
+    Parameter[2] := FreqLinearToLog(SBMinimum.Position / 20000);
+    LbVMinimum.Caption := FloatToStrF(Parameter[2], ffFixed, 6, 0) + 'Hz';
+   end;
 end;
 
 procedure TPhaserForm.SBMaximumChange(Sender: TObject);
 begin
- with TPhaserModule(Owner) do
-  begin
-   Parameter[3]:=FreqLinearToLog(SBMaximum.Position / 20000);
-   LbVMaximum.Caption:=FloatToStrF(Parameter[3], ffFixed, 6, 0) + 'Hz';
-  end;
+  with TPhaserModule(Owner) do
+   begin
+    Parameter[3] := FreqLinearToLog(SBMaximum.Position / 20000);
+    LbVMaximum.Caption := FloatToStrF(Parameter[3], ffFixed, 6, 0) + 'Hz';
+   end;
 end;
 
 procedure TPhaserForm.SBRateChange(Sender: TObject);
 begin
- with TPhaserModule(Owner) do
-  begin
-   Parameter[4] := SBRate.Position * 1E-3;
-   LbVRate.Caption := FloatToStrF(Parameter[4], ffFixed, 2, 2) + 'Hz';
-  end;
+  with TPhaserModule(Owner) do
+   begin
+    Parameter[4] := SBRate.Position * 1E-3;
+    LbVRate.Caption := FloatToStrF(Parameter[4], ffFixed, 2, 2) + 'Hz';
+   end;
 end;
 
 procedure TPhaserForm.SBStagesChange(Sender: TObject);
 begin
- with TPhaserModule(Owner) do Parameter[5] := SBStages.Position;
+  with TPhaserModule(Owner) do
+    Parameter[5] := SBStages.Position;
 end;
 
 end.

@@ -9,11 +9,13 @@ object WrapperDataModule: TWrapperDataModule
   CanDos = [vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'Wrap'
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <>
   OnOpen = VSTModuleOpen
+  OnCanDo = VSTModuleCanDo
   Left = 218
   Top = 81
   Height = 150
@@ -28,6 +30,7 @@ object WrapperDataModule: TWrapperDataModule
     VstPlugIns = <
       item
         DisplayName = 'Wrapped Plugin'
+        VstOfflineTasks = <>
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000

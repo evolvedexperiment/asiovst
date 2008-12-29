@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   BandistoDM in 'BandistoDM.pas' {BandistoDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  BandistoDataModule: TBandistoDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    BandistoDataModule := TBandistoDataModule.Create(Application);
-    BandistoDataModule.Effect^.user := BandistoDataModule;
-    BandistoDataModule.AudioMaster := audioMaster;
-    Result := BandistoDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TBandistoDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

@@ -7,14 +7,14 @@ uses
 
 type
   TSimpleDelayVST = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleOpen(Sender: TObject);
   private
-    fBuffer     : array[0..1] of TDAVSingleDynArray;
-    fBufferSize : Integer;
-    fBufferPos  : Integer;
+    FBuffer     : array[0..1] of TDAVSingleDynArray;
+    FBufferSize : Integer;
+    FBufferPos  : Integer;
   end;
 
 implementation
@@ -24,26 +24,10 @@ implementation
 uses
   DelaylaGUI;
 
-procedure TSimpleDelayVST.VSTModuleCreate(Sender: TObject);
+procedure TSimpleDelayVST.VSTModuleOpen(Sender: TObject);
 begin
+ FBufferPos := 0;
  Parameter[0] := 441;
- fBufferPos := 0;
-end;
-
-procedure TSimpleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  j : Integer;
-begin
- for j := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, j] := Inputs[0, j] + fBuffer[0, fBufferPos];
-   Outputs[1, j] := Inputs[1, j] + fBuffer[1, fBufferPos];
-   fBuffer[0, fBufferPos] := Inputs[0, j];
-   fBuffer[1, fBufferPos] := Inputs[1, j];
-   Inc(fBufferPos);
-   if fBufferPos>=fBufferSize
-    then fBufferPos := 0;
-   end;
 end;
 
 procedure TSimpleDelayVST.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
@@ -52,13 +36,29 @@ begin
  GUI := TVSTGUI.Create(Self);
 end;
 
+procedure TSimpleDelayVST.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  j : Integer;
+begin
+ for j := 0 to SampleFrames - 1 do
+  begin
+   Outputs[0, j] := Inputs[0, j] + FBuffer[0, FBufferPos];
+   Outputs[1, j] := Inputs[1, j] + FBuffer[1, FBufferPos];
+   FBuffer[0, FBufferPos] := Inputs[0, j];
+   FBuffer[1, FBufferPos] := Inputs[1, j];
+   Inc(FBufferPos);
+   if FBufferPos>=FBufferSize
+    then FBufferPos := 0;
+   end;
+end;
+
 procedure TSimpleDelayVST.SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fBufferSize := round(Value);
- SetLength(fBuffer[0], fBufferSize);
- SetLength(fBuffer[1], fBufferSize);
- if fBufferPos >= fBufferSize
-  then fBufferPos := 0;
+ FBufferSize := round(Value);
+ SetLength(FBuffer[0], FBufferSize);
+ SetLength(FBuffer[1], FBufferSize);
+ if FBufferPos >= FBufferSize
+  then FBufferPos := 0;
 end;
 
 end.

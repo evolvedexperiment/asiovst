@@ -8,6 +8,15 @@ uses
 
 type
   TLA1701DataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacingBypass(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure VSTModuleSoftBypass(Sender: TObject; isBypass: Boolean);
     procedure ParamAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -26,23 +35,14 @@ type
     procedure SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacingBypass(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleSoftBypass(Sender: TObject; isBypass: Boolean);
   private
-    fLA1701s            : TLevelingAmplifier;
-    fOutLevel           : Double;
-    fInLevel            : Double;
-    fLevelFallOff_ms    : Double;
-    fLevelFallOffFactor : Double;
-    fMix                : array [0..1] of Double;
-    fHighpass           : TButterworthHP;
+    FLA1701s            : TLevelingAmplifier;
+    FOutLevel           : Double;
+    FInLevel            : Double;
+    FLevelFallOff_ms    : Double;
+    FLevelFallOffFactor : Double;
+    FMix                : array [0..1] of Double;
+    FHighpass           : TButterworthHP;
     function GetGRReduction: Double;
     function GetInLevel_dB: Double;
     function GetOutLevel_dB: Double;
@@ -50,13 +50,13 @@ type
     procedure CalculateLevelFallOff;
     procedure SetLevelFallOff_ms(const Value: Double);
   published
-    property InLevel: Double read fInLevel;
+    property InLevel: Double read FInLevel;
     property InLevel_dB: Double read GetInLevel_dB;
-    property OutLevel: Double read fOutLevel;
+    property OutLevel: Double read FOutLevel;
     property OutLevel_dB: Double read GetOutLevel_dB;
     property GRReduction: Double read GetGRReduction;
     property GRReduction_dB: Double read GetGRReduction_dB;
-    property LevelFallOff_ms: Double read fLevelFallOff_ms write SetLevelFallOff_ms;
+    property LevelFallOff_ms: Double read FLevelFallOff_ms write SetLevelFallOff_ms;
   end;
 
 implementation
@@ -66,18 +66,18 @@ implementation
 uses
   Dialogs, Math, EditorFrm, DAV_DspFilter;
 
-procedure TLA1701DataModule.VSTModuleCreate(Sender: TObject);
+procedure TLA1701DataModule.VSTModuleOpen(Sender: TObject);
 begin
- fLA1701s  := TLevelingAmplifier.Create;
- fHighpass := TButterworthHP.Create;
- with fHighpass do
+ FLA1701s  := TLevelingAmplifier.Create;
+ FHighpass := TButterworthHP.Create;
+ with FHighpass do
   begin
    SampleRate := Samplerate;
    Order      := 1;
-   Bandwidth  := 1;
    SetFilterValues(5, 0);
   end;
 
+ // Initial Parameters 
  Parameter[ 0] :=   0;
  Parameter[ 1] :=   0;
  Parameter[ 2] :=   0;
@@ -92,10 +92,10 @@ begin
  Parameter[11] :=   1;
 end;
 
-procedure TLA1701DataModule.VSTModuleDestroy(Sender: TObject);
+procedure TLA1701DataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(fLA1701s);
- FreeAndNil(fHighpass);
+ FreeAndNil(FLA1701s);
+ FreeAndNil(FHighpass);
 end;
 
 procedure TLA1701DataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -105,7 +105,7 @@ end;
 
 procedure TLA1701DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA1701s.Input_dB := Value;
+ FLA1701s.Input_dB := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
@@ -119,7 +119,7 @@ end;
 procedure TLA1701DataModule.SKLOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA1701s.Output_dB := Value;
+ FLA1701s.Output_dB := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
@@ -132,7 +132,7 @@ end;
 
 procedure TLA1701DataModule.SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA1701s.Knee := 0.1 * Value;
+ FLA1701s.Knee := 0.1 * Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
@@ -145,7 +145,7 @@ end;
 
 procedure TLA1701DataModule.SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA1701s.Ratio := 1 / Value;
+ FLA1701s.Ratio := 1 / Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
@@ -158,7 +158,7 @@ end;
 
 procedure TLA1701DataModule.SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA1701s.Release_ms := Value;
+ FLA1701s.Release_ms := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
@@ -187,36 +187,36 @@ end;
 
 procedure TLA1701DataModule.ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- if Parameter[Index] < 1 then PreDefined := 'μs';
+ if Parameter[Index] < 1 then PreDefined := 'µs';
 end;
 
 procedure TLA1701DataModule.CalculateLevelFallOff;
 begin
- fLevelFallOffFactor := exp(-ln2 / (fLevelFallOff_ms * 0.001 * SampleRate));
+ FLevelFallOffFactor := exp(-ln2 / (FLevelFallOff_ms * 0.001 * SampleRate));
 end;
 
 function TLA1701DataModule.GetGRReduction: Double;
 begin
- if assigned(fLA1701s)
-  then result := fLA1701s.GainReductionFactor
+ if assigned(FLA1701s)
+  then result := FLA1701s.GainReductionFactor
   else result := 1;
 end;
 
 function TLA1701DataModule.GetGRReduction_dB: Double;
 begin
- if assigned(fLA1701s)
-  then result := fLA1701s.GainReduction_dB
+ if assigned(FLA1701s)
+  then result := FLA1701s.GainReduction_dB
   else result := 0;
 end;
 
 function TLA1701DataModule.GetInLevel_dB: Double;
 begin
- result := Amp_to_dB(fInLevel);
+ result := Amp_to_dB(FInLevel);
 end;
 
 function TLA1701DataModule.GetOutLevel_dB: Double;
 begin
- result := Amp_to_dB(fOutLevel);
+ result := Amp_to_dB(FOutLevel);
 end;
 
 procedure TLA1701DataModule.ParamVUMeterDisplayChange(
@@ -245,8 +245,8 @@ end;
 procedure TLA1701DataModule.ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  assert(round(Value) >= 0);
- if assigned(fHighpass)
-  then fHighpass.Order := round(Value);
+ if assigned(FHighpass)
+  then FHighpass.Order := round(Value);
 end;
 
 procedure TLA1701DataModule.ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -256,8 +256,8 @@ end;
 
 procedure TLA1701DataModule.ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(fHighpass)
-  then fHighpass.Frequency := Value;
+ if assigned(FHighpass)
+  then FHighpass.Frequency := Value;
 end;
 
 procedure TLA1701DataModule.ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -271,8 +271,8 @@ end;
 
 procedure TLA1701DataModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fMix[0] := sqrt(0.01 * Value);
- fMix[1] := 1 - fMix[0];
+ FMix[0] := sqrt(0.01 * Value);
+ FMix[1] := 1 - FMix[0];
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
    begin
@@ -296,16 +296,16 @@ end;
 
 procedure TLA1701DataModule.SetLevelFallOff_ms(const Value: Double);
 begin
- if fLevelFallOff_ms <> Value then
+ if FLevelFallOff_ms <> Value then
   begin
-   fLevelFallOff_ms := Value;
+   FLevelFallOff_ms := Value;
    CalculateLevelFallOff;
   end;
 end;
 
 procedure TLA1701DataModule.SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA1701s.Attack_ms := Value;
+ FLA1701s.Attack_ms := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
@@ -329,14 +329,14 @@ begin
  for i := 0 to SampleFrames - 1 do
   begin
    d := Inputs[0, i] + Inputs[1, i];
-   fInLevel := fLevelFallOffFactor * (fInLevel + SimpleDiode(abs(d) - fInLevel));
-   fLA1701s.Sidechain(fHighpass.ProcessSample(d));
+   FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
+   FLA1701s.Sidechain(FHighpass.ProcessSample(d));
 
-   Outputs[0, i] := fMix[0] * fLA1701s.ProcessSample(Inputs[0, i]) + fMix[1] * Inputs[0, i];
-   Outputs[1, i] := fMix[0] * fLA1701s.ProcessSample(Inputs[1, i]) + fMix[1] * Inputs[1, i];
+   Outputs[0, i] := FMix[0] * FLA1701s.ProcessSample(Inputs[0, i]) + FMix[1] * Inputs[0, i];
+   Outputs[1, i] := FMix[0] * FLA1701s.ProcessSample(Inputs[1, i]) + FMix[1] * Inputs[1, i];
 
    d := Outputs[0, i] + Outputs[1, i];
-   fOutLevel := fLevelFallOffFactor * (fOutLevel + SimpleDiode(d - fOutLevel));
+   FOutLevel := FLevelFallOffFactor * (FOutLevel + SimpleDiode(d - FOutLevel));
   end;
 end;
 
@@ -348,14 +348,14 @@ begin
  for i := 0 to SampleFrames - 1 do
   begin
    d := Inputs[0, i] + Inputs[1, i];
-   fInLevel := fLevelFallOffFactor * (fInLevel + SimpleDiode(abs(d) - fInLevel));
-   fLA1701s.Sidechain(fHighpass.ProcessSample(d));
+   FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
+   FLA1701s.Sidechain(FHighpass.ProcessSample(d));
 
-   Outputs[0, i] := fMix[0] * fLA1701s.ProcessSample(Inputs[0, i]) + fMix[1] * Inputs[0, i];
-   Outputs[1, i] := fMix[0] * fLA1701s.ProcessSample(Inputs[1, i]) + fMix[1] * Inputs[1, i];
+   Outputs[0, i] := FMix[0] * FLA1701s.ProcessSample(Inputs[0, i]) + FMix[1] * Inputs[0, i];
+   Outputs[1, i] := FMix[0] * FLA1701s.ProcessSample(Inputs[1, i]) + FMix[1] * Inputs[1, i];
 
    d := Outputs[0, i] + Outputs[1, i];
-   fOutLevel := fLevelFallOffFactor * (fOutLevel + SimpleDiode(d - fOutLevel));
+   FOutLevel := FLevelFallOffFactor * (FOutLevel + SimpleDiode(d - FOutLevel));
   end;
 end;
 
@@ -375,10 +375,10 @@ end;
 procedure TLA1701DataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Assigned(fLA1701s)
-  then fLA1701s.SampleRate := SampleRate;
- if Assigned(fHighpass)
-  then fHighpass.SampleRate := SampleRate;
+ if Assigned(FLA1701s)
+  then FLA1701s.SampleRate := SampleRate;
+ if Assigned(FHighpass)
+  then FHighpass.SampleRate := SampleRate;
  CalculateLevelFallOff;
 end;
 

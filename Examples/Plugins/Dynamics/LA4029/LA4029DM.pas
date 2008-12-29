@@ -8,6 +8,15 @@ uses
 
 type
   TLA4029DataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacingBypass(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure VSTModuleSoftBypass(Sender: TObject; isBypass: Boolean);
     procedure ParamAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -17,6 +26,7 @@ type
     procedure ParamOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamRatioDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamVUMeterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamVUSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -25,25 +35,14 @@ type
     procedure SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleProcessDoubleReplacingBypass(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleSoftBypass(Sender: TObject; isBypass: Boolean);
-    procedure LA4029DataModuleParameterProperties8ParameterChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fLA4029s            : TLevelingAmplifier;
-    fOutLevel           : Double;
-    fInLevel            : Double;
-    fLevelFallOff_ms    : Double;
-    fLevelFallOffFactor : Double;
-    fMix                : array [0..1] of Double;
-    fHighpass           : TButterworthHP;
+    FLA4029s            : TLevelingAmplifier;
+    FOutLevel           : Double;
+    FInLevel            : Double;
+    FLevelFallOff_ms    : Double;
+    FLevelFallOffFactor : Double;
+    FMix                : array [0..1] of Double;
+    FHighpass           : TButterworthHP;
     function GetGRReduction: Double;
     function GetInLevel_dB: Double;
     function GetOutLevel_dB: Double;
@@ -51,13 +50,13 @@ type
     procedure CalculateLevelFallOff;
     procedure SetLevelFallOff_ms(const Value: Double);
   published
-    property InLevel: Double read fInLevel;
+    property InLevel: Double read FInLevel;
     property InLevel_dB: Double read GetInLevel_dB;
-    property OutLevel: Double read fOutLevel;
+    property OutLevel: Double read FOutLevel;
     property OutLevel_dB: Double read GetOutLevel_dB;
     property GRReduction: Double read GetGRReduction;
     property GRReduction_dB: Double read GetGRReduction_dB;
-    property LevelFallOff_ms: Double read fLevelFallOff_ms write SetLevelFallOff_ms;
+    property LevelFallOff_ms: Double read FLevelFallOff_ms write SetLevelFallOff_ms;
   end;
 
 implementation
@@ -67,15 +66,14 @@ implementation
 uses
   Dialogs, Math, EditorFrm, DAV_DspFilter;
 
-procedure TLA4029DataModule.VSTModuleCreate(Sender: TObject);
+procedure TLA4029DataModule.VSTModuleOpen(Sender: TObject);
 begin
- fLA4029s  := TLevelingAmplifier.Create;
- fHighpass := TButterworthHP.Create;
- with fHighpass do
+ FLA4029s  := TLevelingAmplifier.Create;
+ FHighpass := TButterworthHP.Create;
+ with FHighpass do
   begin
    SampleRate := Samplerate;
    Order      := 1;
-   Bandwidth  := 1;
    SetFilterValues(5, 0);
   end;
 
@@ -93,10 +91,10 @@ begin
  Parameter[11] :=   1;
 end;
 
-procedure TLA4029DataModule.VSTModuleDestroy(Sender: TObject);
+procedure TLA4029DataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(fLA4029s);
- FreeAndNil(fHighpass);
+ FreeAndNil(FLA4029s);
+ FreeAndNil(FHighpass);
 end;
 
 procedure TLA4029DataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -106,7 +104,7 @@ end;
 
 procedure TLA4029DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA4029s.Input_dB := Value;
+ FLA4029s.Input_dB := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -120,7 +118,7 @@ end;
 procedure TLA4029DataModule.SKLOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA4029s.Output_dB := Value;
+ FLA4029s.Output_dB := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -133,7 +131,7 @@ end;
 
 procedure TLA4029DataModule.SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA4029s.Knee := 0.1 * Value;
+ FLA4029s.Knee := 0.1 * Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -146,7 +144,7 @@ end;
 
 procedure TLA4029DataModule.SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA4029s.Ratio := 1 / Value;
+ FLA4029s.Ratio := 1 / Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -159,7 +157,7 @@ end;
 
 procedure TLA4029DataModule.SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA4029s.Release_ms := Value;
+ FLA4029s.Release_ms := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -188,39 +186,39 @@ end;
 
 procedure TLA4029DataModule.ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- if Parameter[Index] < 1 then PreDefined := 'μs';
+ if Parameter[Index] < 1 then PreDefined := 'µs';
 end;
 
 procedure TLA4029DataModule.CalculateLevelFallOff;
 begin
- fLevelFallOffFactor := exp(-ln2 / (fLevelFallOff_ms * 0.001 * SampleRate));
+ FLevelFallOffFactor := exp(-ln2 / (FLevelFallOff_ms * 0.001 * SampleRate));
 end;
 
 function TLA4029DataModule.GetGRReduction: Double;
 begin
- if assigned(fLA4029s)
-  then result := fLA4029s.GainReductionFactor
+ if assigned(FLA4029s)
+  then result := FLA4029s.GainReductionFactor
   else result := 1;
 end;
 
 function TLA4029DataModule.GetGRReduction_dB: Double;
 begin
- if assigned(fLA4029s)
-  then result := fLA4029s.GainReduction_dB
+ if assigned(FLA4029s)
+  then result := FLA4029s.GainReduction_dB
   else result := 0;
 end;
 
 function TLA4029DataModule.GetInLevel_dB: Double;
 begin
- result := Amp_to_dB(fInLevel);
+ result := Amp_to_dB(FInLevel);
 end;
 
 function TLA4029DataModule.GetOutLevel_dB: Double;
 begin
- result := Amp_to_dB(fOutLevel);
+ result := Amp_to_dB(FOutLevel);
 end;
 
-procedure TLA4029DataModule.LA4029DataModuleParameterProperties8ParameterChange(
+procedure TLA4029DataModule.ParamVUMeterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if Assigned(EditorForm) then
@@ -246,8 +244,8 @@ end;
 procedure TLA4029DataModule.ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  assert(round(Value) >= 0);
- if assigned(fHighpass)
-  then fHighpass.Order := round(Value);
+ if assigned(FHighpass)
+  then FHighpass.Order := round(Value);
 end;
 
 procedure TLA4029DataModule.ParamHPOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -257,8 +255,8 @@ end;
 
 procedure TLA4029DataModule.ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(fHighpass)
-  then fHighpass.Frequency := Value;
+ if assigned(FHighpass)
+  then FHighpass.Frequency := Value;
 end;
 
 procedure TLA4029DataModule.ParamVUMeterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -272,8 +270,8 @@ end;
 
 procedure TLA4029DataModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fMix[0] := sqrt(0.01 * Value);
- fMix[1] := 1 - fMix[0];
+ FMix[0] := sqrt(0.01 * Value);
+ FMix[1] := 1 - FMix[0];
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
    begin
@@ -297,16 +295,16 @@ end;
 
 procedure TLA4029DataModule.SetLevelFallOff_ms(const Value: Double);
 begin
- if fLevelFallOff_ms <> Value then
+ if FLevelFallOff_ms <> Value then
   begin
-   fLevelFallOff_ms := Value;
+   FLevelFallOff_ms := Value;
    CalculateLevelFallOff;
   end;
 end;
 
 procedure TLA4029DataModule.SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLA4029s.Attack_ms := Value;
+ FLA4029s.Attack_ms := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -330,14 +328,14 @@ begin
  for i := 0 to SampleFrames - 1 do
   begin
    d := Inputs[0, i] + Inputs[1, i];
-   fInLevel := fLevelFallOffFactor * (fInLevel + SimpleDiode(abs(d) - fInLevel));
-   fLA4029s.Sidechain(fHighpass.ProcessSample(d));
+   FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
+   FLA4029s.Sidechain(FHighpass.ProcessSample(d));
 
-   Outputs[0, i] := fMix[0] * fLA4029s.ProcessSample(Inputs[0, i]) + fMix[1] * Inputs[0, i];
-   Outputs[1, i] := fMix[0] * fLA4029s.ProcessSample(Inputs[1, i]) + fMix[1] * Inputs[1, i];
+   Outputs[0, i] := FMix[0] * FLA4029s.ProcessSample(Inputs[0, i]) + FMix[1] * Inputs[0, i];
+   Outputs[1, i] := FMix[0] * FLA4029s.ProcessSample(Inputs[1, i]) + FMix[1] * Inputs[1, i];
 
    d := Outputs[0, i] + Outputs[1, i];
-   fOutLevel := fLevelFallOffFactor * (fOutLevel + SimpleDiode(d - fOutLevel));
+   FOutLevel := FLevelFallOffFactor * (FOutLevel + SimpleDiode(d - FOutLevel));
   end;
 end;
 
@@ -349,14 +347,14 @@ begin
  for i := 0 to SampleFrames - 1 do
   begin
    d := Inputs[0, i] + Inputs[1, i];
-   fInLevel := fLevelFallOffFactor * (fInLevel + SimpleDiode(abs(d) - fInLevel));
-   fLA4029s.Sidechain(fHighpass.ProcessSample(d));
+   FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
+   FLA4029s.Sidechain(FHighpass.ProcessSample(d));
 
-   Outputs[0, i] := fMix[0] * fLA4029s.ProcessSample(Inputs[0, i]) + fMix[1] * Inputs[0, i];
-   Outputs[1, i] := fMix[0] * fLA4029s.ProcessSample(Inputs[1, i]) + fMix[1] * Inputs[1, i];
+   Outputs[0, i] := FMix[0] * FLA4029s.ProcessSample(Inputs[0, i]) + FMix[1] * Inputs[0, i];
+   Outputs[1, i] := FMix[0] * FLA4029s.ProcessSample(Inputs[1, i]) + FMix[1] * Inputs[1, i];
 
    d := Outputs[0, i] + Outputs[1, i];
-   fOutLevel := fLevelFallOffFactor * (fOutLevel + SimpleDiode(d - fOutLevel));
+   FOutLevel := FLevelFallOffFactor * (FOutLevel + SimpleDiode(d - FOutLevel));
   end;
 end;
 
@@ -376,10 +374,10 @@ end;
 procedure TLA4029DataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Assigned(fLA4029s)
-  then fLA4029s.SampleRate := SampleRate;
- if Assigned(fHighpass)
-  then fHighpass.SampleRate := SampleRate;
+ if Assigned(FLA4029s)
+  then FLA4029s.SampleRate := SampleRate;
+ if Assigned(FHighpass)
+  then FHighpass.SampleRate := SampleRate;
  CalculateLevelFallOff;
 end;
 

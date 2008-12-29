@@ -11,15 +11,14 @@ uses
   SpinBugLiteModule in 'SpinBugLiteModule.pas' {SpinBugLiteModule: TVSTModule},
   SpinBugLiteGUI in 'SpinBugLiteGUI.pas' {SpinBugLiteGUI: TFmSpinBugLite};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SpinBugLiteModule : TSpinBugLiteModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  SpinBugLiteModule := TSpinBugLiteModule.Create(Application);
-  SpinBugLiteModule.AudioMaster := audioMaster;
-  SpinBugLiteModule.Effect^.user := SpinBugLiteModule;
-  Result := SpinBugLiteModule.Effect;
+  with TSpinBugLiteModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

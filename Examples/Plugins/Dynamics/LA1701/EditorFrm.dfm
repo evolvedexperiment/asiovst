@@ -30,43 +30,45 @@ object FmLA1701: TFmLA1701
     ParentColor = True
     Radius = 4
     TabOrder = 0
-    Transparent = True
     UseDockManager = True
+    Transparent = True
     object DialAttack: TGuiDial
       Left = 8
       Top = 34
       Width = 48
       Height = 48
-      Color = clBlack
-      LineWidth = 2
-      LineColor = clSilver
       CircleColor = 2105376
+      Color = clBlack
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
-      Min = -0.699000000953674300
+      LineColor = clSilver
+      LineWidth = 2
       Max = 1.301030039787292000
+      Min = -0.699000000953674300
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialAttackChange
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
     end
     object DialRelease: TGuiDial
       Left = 8
       Top = 88
       Width = 48
       Height = 48
-      Color = clBlack
-      LineWidth = 2
-      LineColor = clSilver
       CircleColor = 2105376
-      Position = 1.398000001907349000
+      Color = clBlack
       DefaultPosition = 1.398000001907349000
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
-      Min = 1.000000000000000000
+      LineColor = clSilver
+      LineWidth = 2
       Max = 2.698999881744385000
+      Min = 1.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialReleaseChange
+      Position = 1.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
     end
     object LbRelease: TGuiLabel
       Left = 8
@@ -312,16 +314,17 @@ object FmLA1701: TFmLA1701
       Top = 72
       Width = 64
       Height = 64
-      Color = clBlack
-      LineWidth = 2
-      LineColor = clSilver
       CircleColor = 2105376
+      Color = clBlack
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
+      LineColor = clSilver
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialMixChange
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
     end
     object PnMix: TGuiPanel
       Left = 248
@@ -364,41 +367,43 @@ object FmLA1701: TFmLA1701
     ParentColor = True
     Radius = 4
     TabOrder = 1
-    Transparent = True
     UseDockManager = True
+    Transparent = True
     object DialInput: TGuiDial
       Left = 8
       Top = 28
       Width = 64
       Height = 64
-      Color = clBlack
-      LineWidth = 2
-      LineColor = clSilver
       CircleColor = 2105376
+      Color = clBlack
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
-      Min = -24.000000000000000000
+      LineColor = clSilver
+      LineWidth = 2
       Max = 24.000000000000000000
+      Min = -24.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialInputChange
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
     end
     object DialOutput: TGuiDial
       Left = 88
       Top = 28
       Width = 64
       Height = 64
-      Color = clBlack
-      LineWidth = 2
-      LineColor = clSilver
       CircleColor = 2105376
+      Color = clBlack
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
-      Min = -24.000000000000000000
+      LineColor = clSilver
+      LineWidth = 2
       Max = 24.000000000000000000
+      Min = -24.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialOutputChange
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
     end
     object LbInput: TGuiLabel
       Left = 8
@@ -435,16 +440,17 @@ object FmLA1701: TFmLA1701
       Top = 28
       Width = 64
       Height = 64
-      Color = clBlack
-      LineWidth = 2
-      LineColor = clSilver
       CircleColor = 2105376
+      Color = clBlack
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
+      LineColor = clSilver
+      LineWidth = 2
       Max = 2.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialRatioChange
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
     end
     object LbRatioX: TGuiLabel
       Left = 168
@@ -466,16 +472,17 @@ object FmLA1701: TFmLA1701
       Top = 28
       Width = 64
       Height = 64
-      Color = clBlack
-      LineWidth = 2
-      LineColor = clSilver
       CircleColor = 2105376
+      Color = clBlack
+      DialImageIndex = -1
       Inertia = 0.100000001490116100
+      LineColor = clSilver
+      LineWidth = 2
       Max = 10.000000000000000000
       NumGlyphs = 65
-      StitchKind = skHorizontal
-      ScrollRange_Pixel = 400.000000000000000000
       OnChange = DialKneeChange
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
     end
     object LbKnee: TGuiLabel
       Left = 248

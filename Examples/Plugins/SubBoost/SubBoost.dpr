@@ -10,18 +10,17 @@ uses
   SubBoostDM in 'SubBoostDM.pas' {SubBoostDataModule: TVSTModule},
   SubBoostGUI in 'SubBoostGUI.pas' {FmSubBoost};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SubBoostDataModule: TSubBoostDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    SubBoostDataModule := TSubBoostDataModule.Create(Application);
-    SubBoostDataModule.Effect^.user := SubBoostDataModule;
-    SubBoostDataModule.AudioMaster := audioMaster;
-    Result := SubBoostDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TSubBoostDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

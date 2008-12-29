@@ -8,18 +8,17 @@ uses
   PhaserDM in 'PhaserDM.pas' {PhaserModule: TPhaserModule},
   PhaserFrm in 'PhaserFrm.pas' {PhaserForm};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  PhaserModule: TPhaserModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    PhaserModule := TPhaserModule.Create(Application);
-    PhaserModule.Effect^.user := PhaserModule;
-    PhaserModule.AudioMaster := audioMaster;
-    Result := PhaserModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TPhaserModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

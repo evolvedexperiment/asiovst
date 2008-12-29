@@ -4,13 +4,14 @@ object CustomWrapperDataModule: TCustomWrapperDataModule
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
-  EffectName = 'CustomWrapper'
-  ProductName = 'CustomWrapper'
-  VendorName = 'Delphi ASIO & VST Packages'
+  EffectName = 'Custom VST Wrapper'
+  ProductName = 'DAV Wrapper Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'Wrap'
   ShellPlugins = <>
   Programs = <>

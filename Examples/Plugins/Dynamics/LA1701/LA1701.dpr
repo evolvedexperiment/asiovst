@@ -7,9 +7,6 @@ uses
   FastMM4,
   madExcept,
   madLinkDisAsm,
-  madListHardware,
-  madListProcesses,
-  madListModules,
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,
@@ -18,16 +15,12 @@ uses
   DAV_DSPLevelingAmplifier in '..\..\..\..\Source\DSP\DAV_DSPLevelingAmplifier.pas',
   DAV_GuiVUMeter in '..\..\..\..\Source\DAV_GuiVUMeter.pas';
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  LA1701DataModule: TLA1701DataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  LA1701DataModule := TLA1701DataModule.Create(Application);
-  LA1701DataModule.AudioMaster := audioMaster;
-  with LA1701DataModule do
+  with TLA1701DataModule.Create(Application) do
    begin
-    Effect^.user := LA1701DataModule;
+    AudioMaster := AudioMasterCallback;
     Result := Effect;
    end;
  except

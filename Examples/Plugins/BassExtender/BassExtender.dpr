@@ -17,15 +17,14 @@ uses
   DAV_DspFilterLinkwitzRiley in '..\..\..\Source\DSP\DAV_DspFilterLinkwitzRiley.pas',
   DAV_PluginWrapper in 'DAV_PluginWrapper.pas';
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  BassExtenderModule: TBassExtenderModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
   try
-    BassExtenderModule := TBassExtenderModule.Create(Application);
-    BassExtenderModule.Effect^.user := BassExtenderModule;
-    BassExtenderModule.AudioMaster := audioMaster;
-    Result := BassExtenderModule.Effect;
+    with TBassExtenderModule.Create(Application) do
+     begin
+      AudioMaster := AudioMasterCallback;
+      Result := Effect;
+     end;
   except
     Result := nil;
   end;

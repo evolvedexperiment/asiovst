@@ -2,15 +2,18 @@ unit VoiceList;
 
 interface
 
-uses Classes, RTLConsts, XSynthVoice;
+{$I ASIOVST.INC}
+
+uses
+  Classes, RTLConsts, XSynthVoice;
 
 type
   TVoiceList = class(TObject)
   private
-    FList: PPointerList;
-    FCount: Integer;
-    FCapacity: Integer;
-    FOwnsObjects: Boolean;
+    FList        : PPointerList;
+    FCount       : Integer;
+    FCapacity    : Integer;
+    FOwnsObjects : Boolean;
   protected
     function Get(Index: Integer): TXSynthVoice;
     procedure Grow; virtual;
@@ -258,7 +261,7 @@ begin
  FCount := NewCount;
 end;
 
-procedure QuickSort(SorTVoiceList: PPointerList; L, R: Integer;
+procedure QuickSort(SortVoiceList: PPointerList; L, R: Integer;
   SCompare: TListSortCompare);
 var
   I, J: Integer;
@@ -267,20 +270,20 @@ begin
  repeat
   I := L;
   J := R;
-  P := SorTVoiceList^[(L + R) shr 1];
+  P := SortVoiceList^[(L + R) shr 1];
   repeat
-   while SCompare(SorTVoiceList^[I], P) < 0 do Inc(I);
-   while SCompare(SorTVoiceList^[J], P) > 0 do Dec(J);
+   while SCompare(SortVoiceList^[I], P) < 0 do Inc(I);
+   while SCompare(SortVoiceList^[J], P) > 0 do Dec(J);
    if I <= J then
     begin
-     T := SorTVoiceList^[I];
-     SorTVoiceList^[I] := SorTVoiceList^[J];
-     SorTVoiceList^[J] := T;
+     T := SortVoiceList^[I];
+     SortVoiceList^[I] := SortVoiceList^[J];
+     SortVoiceList^[J] := T;
      Inc(I);
      Dec(J);
     end;
   until I > J;
-  if L < J then QuickSort(SorTVoiceList, L, J, SCompare);
+  if L < J then QuickSort(SortVoiceList, L, J, SCompare);
   L := I;
  until I >= R;
 end;

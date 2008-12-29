@@ -12,18 +12,17 @@ uses
   OversampleTemplateDM in 'OversampleTemplateDM.pas' {OversampleTemplateDataModule: TVSTModule},
   OversampleTemplateGUI in 'OversampleTemplateGUI.pas' {FmOversampleter};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  OversampleTemplateDataModule: TOversampleTemplateDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    OversampleTemplateDataModule := TOversampleTemplateDataModule.Create(Application);
-    OversampleTemplateDataModule.Effect^.user := OversampleTemplateDataModule;
-    OversampleTemplateDataModule.AudioMaster := audioMaster;
-    Result := OversampleTemplateDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TOversampleTemplateDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

@@ -10,13 +10,14 @@ uses
 
 type
   TVSTOpAmp = class(TVSTModule)
-    procedure DataModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: THandle);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleInitialize(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+      ParentWindow: Cardinal);
+    procedure VSTModuleOpen(Sender: TObject);
   private
-    fGain   : Double;
+    FGain : Double;
   public
   end;
 
@@ -31,8 +32,13 @@ uses
 
 { TVSTOpAmp }
 
-procedure TVSTOpAmp.DataModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: THandle);
+procedure TVSTOpAmp.VSTModuleOpen(Sender: TObject);
+begin
+ Parameter[0] := 1;
+end;
+
+procedure TVSTOpAmp.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
 begin
  GUI := TVSTGUI.Create(Self);
 end;
@@ -44,7 +50,7 @@ var
 begin
  for j := 0 to min(numOutputs, numInputs) - 1 do
   for i := 0 to SampleFrames - 1
-   do Outputs[j, i] := Tanh2a(fGain * Inputs[j, i]);
+   do Outputs[j, i] := FastTanhOpt5(FGain * Inputs[j, i]);
 end;
 
 procedure TVSTOpAmp.VSTModuleProcessDoubleReplacing(const inputs,
@@ -54,19 +60,14 @@ var
 begin
  for j := 0 to min(numOutputs, numInputs) - 1 do
   for i := 0 to SampleFrames - 1
-   do Outputs[j, i] := Tanh2a(fGain * Inputs[j, i]);
-end;
-
-procedure TVSTOpAmp.VSTModuleInitialize(Sender: TObject);
-begin
- Parameter[0] := 1;
+   do Outputs[j, i] := FastTanhOpt5(FGain * Inputs[j, i]);
 end;
 
 procedure TVSTOpAmp.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var i : Integer;
 begin
- fGain := 2 * dB_to_Amp(Value);
+ FGain := 2 * dB_to_Amp(Value);
  if Assigned(fEditorForm) then
   with fEditorForm As TVSTGUI do
    begin

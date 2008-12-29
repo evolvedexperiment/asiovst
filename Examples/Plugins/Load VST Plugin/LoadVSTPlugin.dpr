@@ -7,15 +7,14 @@ uses
   DAV_VSTModule,
   LoadVSTModule in 'LoadVSTModule.pas' {PlugInPlugModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  PlugInPlugModule : TPlugInPlugModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  PlugInPlugModule := TPlugInPlugModule.Create(Application);
-  PlugInPlugModule.Effect^.user:=PlugInPlugModule;
-  PlugInPlugModule.AudioMaster:=audioMaster;
-  Result := PlugInPlugModule.Effect;
+  with TPlugInPlugModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

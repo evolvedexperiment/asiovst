@@ -1,7 +1,5 @@
 object SubBoostDataModule: TSubBoostDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'SubBoost'
@@ -104,9 +102,12 @@ object SubBoostDataModule: TSubBoostDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
+      LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ShortLabel = 'Release'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChange
@@ -127,6 +128,8 @@ object SubBoostDataModule: TSubBoostDataModule
       VSTModule = Owner
       OnParameterChange = ParamOrderChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess

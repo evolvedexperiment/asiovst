@@ -12,6 +12,7 @@ object PascalScriptDataModule: TPascalScriptDataModule
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
   UniqueID = 'PVST'
   ShellPlugins = <>
   Programs = <
@@ -24,8 +25,8 @@ object PascalScriptDataModule: TPascalScriptDataModule
   ParameterProperties = <>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
   Left = 218
   Top = 81
   Height = 150

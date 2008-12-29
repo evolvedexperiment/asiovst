@@ -5,9 +5,6 @@ uses
   FastMM4,
   madExcept,
   madLinkDisAsm,
-  madListHardware,
-  madListProcesses,
-  madListModules,
   FastMove,
   RTLVCLOptimize,
   Forms,
@@ -15,18 +12,17 @@ uses
   DAV_VSTModule,
   CustomWrapperDM in 'CustomWrapperDM.pas' {CustomWrapperDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  CustomWrapperDataModule: TCustomWrapperDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    CustomWrapperDataModule := TCustomWrapperDataModule.Create(Application);
-    CustomWrapperDataModule.Effect^.user := CustomWrapperDataModule;
-    CustomWrapperDataModule.AudioMaster := audioMaster;
-    Result := CustomWrapperDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TCustomWrapperDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

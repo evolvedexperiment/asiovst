@@ -1,9 +1,10 @@
 object OversampledTanhModule: TOversampledTanhModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '0.0'
+  EffectName = 'Oversampled Tanh'
+  ProductName = 'DAV Effect Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
@@ -53,6 +54,7 @@ object OversampledTanhModule: TOversampledTanhModule
       OnParameterChange = ParamTransitionChange
     end>
   OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

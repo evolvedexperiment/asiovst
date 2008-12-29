@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   DynamicsDM in 'DynamicsDM.pas' {DynamicsDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  DynamicsDataModule: TDynamicsDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    DynamicsDataModule := TDynamicsDataModule.Create(Application);
-    DynamicsDataModule.Effect^.user := DynamicsDataModule;
-    DynamicsDataModule.AudioMaster := audioMaster;
-    Result := DynamicsDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TDynamicsDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

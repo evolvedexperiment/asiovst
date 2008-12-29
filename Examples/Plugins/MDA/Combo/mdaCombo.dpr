@@ -8,18 +8,17 @@ uses
   ComboDM in 'ComboDM.pas' {ComboDataModule: TVSTModule},
   ComboGUI in 'ComboGUI.pas' {FmCombo};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  ComboDataModule: TComboDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    ComboDataModule := TComboDataModule.Create(Application);
-    ComboDataModule.Effect^.user := ComboDataModule;
-    ComboDataModule.AudioMaster := audioMaster;
-    Result := ComboDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TComboDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

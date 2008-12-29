@@ -1,11 +1,10 @@
 object SpinBugLiteModule: TSpinBugLiteModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
-  Version = '1.1'
-  EffectName = 'SpinBugLite'
-  ProductName = 'SpinBugLite'
-  VendorName = 'Delphi ASIO & VST Package'
+  Version = '1.0'
+  EffectName = 'SpinBug Lite'
+  ProductName = 'DAV Effect Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000

@@ -22,16 +22,18 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 64
     Height = 64
-    LineColor = 15652795
     DefaultPosition = -10.000000000000000000
+    DialImageIndex = -1
+    LineColor = 15652795
+    LineWidth = 2
     Min = -96.000000000000000000
     NumGlyphs = 64
+    OnChange = DialThresholdChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialThresholdChange
   end
   object LbThreshold: TGuiLabel
     Left = 8
@@ -53,17 +55,19 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 64
     Height = 64
-    LineColor = 15652795
     DefaultPosition = 60.000000000000000000
+    DialImageIndex = -1
+    LineColor = 15652795
+    LineWidth = 2
     Max = 200.000000000000000000
     NumGlyphs = 64
+    OnChange = DialRatioChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     Position = 60.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialRatioChange
   end
   object LbRatio: TGuiLabel
     Left = 72
@@ -85,16 +89,18 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 64
     Height = 64
+    DialImageIndex = -1
     LineColor = 15652795
+    LineWidth = 2
     Max = 300.000000000000000000
     Min = -200.000000000000000000
     NumGlyphs = 64
+    OnChange = DialAttackChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialAttackChange
   end
   object LbAttack: TGuiLabel
     Left = 136
@@ -116,18 +122,20 @@ object EditorForm: TEditorForm
     Top = 8
     Width = 64
     Height = 64
-    LineColor = 15652795
     DefaultPosition = 699.000000000000000000
+    DialImageIndex = -1
+    LineColor = 15652795
+    LineWidth = 2
     Max = 3699.000000000000000000
     Min = 699.000000000000000000
     NumGlyphs = 64
+    OnChange = DialReleaseChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     Position = 699.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialReleaseChange
   end
   object LbRelease: TGuiLabel
     Left = 200

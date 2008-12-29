@@ -167,6 +167,10 @@ end;
 
 procedure TEditorForm.FormShow(Sender: TObject);
 begin
+ with TEnhancedGateDataModule(Owner) do
+  if Boolean(Round(Parameter[0]))
+   then CBOnOff.Brightness_Percent := 100
+   else CBOnOff.Brightness_Percent := 20;
  UpdateThreshold;
  UpdateAttack;
  UpdateHold;

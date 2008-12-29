@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   DegradeDM in 'DegradeDM.pas' {DegradeDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  DegradeDataModule: TDegradeDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    DegradeDataModule := TDegradeDataModule.Create(Application);
-    DegradeDataModule.Effect^.user := DegradeDataModule;
-    DegradeDataModule.AudioMaster := audioMaster;
-    Result := DegradeDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TDegradeDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

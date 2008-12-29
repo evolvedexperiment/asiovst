@@ -14,25 +14,23 @@ type
     procedure AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
     procedure ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
   private
-    fASIOHost        : TASIOHost;
-    fInBuffer        : TDAVArrayOfSingleDynArray;
-    fOutBuffer       : TDAVArrayOfSingleDynArray;
-    fIntBufSize,
-    fIntWritePos,
-    fIntReadPos      : Integer;
-    fNrOfBuffers     : Integer;
-    fBufferUnderruns : Integer;
+    FASIOHost        : TASIOHost;
+    FInBuffer        : TDAVArrayOfSingleDynArray;
+    FOutBuffer       : TDAVArrayOfSingleDynArray;
+    FIntBufSize,
+    FIntWritePos,
+    FIntReadPos      : Integer;
+    FNrOfBuffers     : Integer;
+    FBufferUnderruns : Integer;
     procedure AHLatencyChanged(Sender: TObject);
   public
-    property BufferUnderruns : Integer read fBufferUnderruns;
-    property AsioHost : TASIOHost read fASIOHost;
+    property BufferUnderruns : Integer read FBufferUnderruns;
+    property AsioHost : TASIOHost read FASIOHost;
   end;
 
 implementation
@@ -42,21 +40,33 @@ implementation
 uses
   Math, ASIOVSTGUI;
 
-procedure TASIOVSTModule.VSTModuleCreate(Sender: TObject);
+procedure TASIOVSTModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
 begin
- fNrOfBuffers := 2;
- fIntWritePos := 1;
- fIntReadPos := 0;
- fIntBufSize := BlockSize * fNrOfBuffers;
- SetLength(fInBuffer, 2);
- SetLength(fOutBuffer, 2);
- SetLength(fInBuffer[0],  fIntBufSize);
- SetLength(fInBuffer[1],  fIntBufSize);
- SetLength(fOutBuffer[0], fIntBufSize);
- SetLength(fOutBuffer[1], fIntBufSize);
+ GUI := TFmASIOVST.Create(Self);
+ with (GUI As TFmASIOVST) do
+  try
+   CB_ASIO.Items := FASIOHost.DriverList;
+   DisplayASIOInformation;
+  except
+  end;
+end;
 
- fASIOHost := TASIOHost.Create(Self);
- with fASIOHost do
+procedure TASIOVSTModule.VSTModuleOpen(Sender: TObject);
+begin
+ FNrOfBuffers := 2;
+ FIntWritePos := 1;
+ FIntReadPos := 0;
+ FIntBufSize := BlockSize * FNrOfBuffers;
+ SetLength(FInBuffer, 2);
+ SetLength(FOutBuffer, 2);
+ SetLength(FInBuffer[0],  FIntBufSize);
+ SetLength(FInBuffer[1],  FIntBufSize);
+ SetLength(FOutBuffer[0], FIntBufSize);
+ SetLength(FOutBuffer[1], FIntBufSize);
+
+ FASIOHost := TASIOHost.Create(Self);
+ with FASIOHost do
   begin
    Active := False;
    PreventClipping := pcDigital;
@@ -68,73 +78,55 @@ begin
    ASIOTime.Flags := [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid];
    OnBufferSwitch32 := AHBufferSwitch;
    OnLatencyChanged := AHLatencyChanged;
-   InitialDelay := InputLatency + OutputLatency + BufferSize;
+   InitialDelay := InputLatency + OutputLatency + Integer(BufferSize);
   end;
  with ParameterProperties[0] do
   begin
    Min := 0;
-   Max := fASIOHost.DriverList.Count - 1;
+   Max := FASIOHost.DriverList.Count - 1;
   end;
-end;
 
-procedure TASIOVSTModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmASIOVST.Create(Self);
- with (GUI As TFmASIOVST) do
-  try
-   CB_ASIO.Items := fASIOHost.DriverList;
-   DisplayASIOInformation;
-  except
-  end;
-end;
-
-procedure TASIOVSTModule.VSTModuleDestroy(Sender: TObject);
-begin
- fASIOHost.Free;
-end;
-
-procedure TASIOVSTModule.VSTModuleOpen(Sender: TObject);
-begin
- if Assigned(fASIOHost)
-  then fASIOHost.Active := True;
+ if Assigned(FASIOHost)
+  then FASIOHost.Active := True;
 end;
 
 procedure TASIOVSTModule.VSTModuleClose(Sender: TObject);
 begin
- if Assigned(fASIOHost)
-  then fASIOHost.Active := False;
+ if Assigned(FASIOHost)
+  then FASIOHost.Active := False;
+
+ FreeAndNil(FASIOHost);
 end;
 
 procedure TASIOVSTModule.AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
 begin
- if (fIntWritePos > fIntReadPos) and (fIntWritePos < fIntReadPos + fASIOHost.BufferSize)
-  then inc(fBufferUnderruns);
- Move(fInBuffer[0, fIntReadPos], OutBuffer[0, 0], fASIOHost.BufferSize * SizeOf(Single));
- Move(fInBuffer[1, fIntReadPos], OutBuffer[1, 0], fASIOHost.BufferSize * SizeOf(Single));
- Move(InBuffer[0, 0], fOutBuffer[0, fIntReadPos], fASIOHost.BufferSize * SizeOf(Single));
- Move(InBuffer[1, 0], fOutBuffer[1, fIntReadPos], fASIOHost.BufferSize * SizeOf(Single));
- fIntReadPos := (fIntReadPos + fASIOHost.BufferSize) mod (fNrOfBuffers * fASIOHost.BufferSize);
+ if (FIntWritePos > FIntReadPos) and (FIntWritePos < FIntReadPos + Integer(FASIOHost.BufferSize))
+  then inc(FBufferUnderruns);
+ Move(FInBuffer[0, FIntReadPos], OutBuffer[0, 0], FASIOHost.BufferSize * SizeOf(Single));
+ Move(FInBuffer[1, FIntReadPos], OutBuffer[1, 0], FASIOHost.BufferSize * SizeOf(Single));
+ Move(InBuffer[0, 0], FOutBuffer[0, FIntReadPos], FASIOHost.BufferSize * SizeOf(Single));
+ Move(InBuffer[1, 0], FOutBuffer[1, FIntReadPos], FASIOHost.BufferSize * SizeOf(Single));
+ FIntReadPos := (FIntReadPos + Integer(FASIOHost.BufferSize)) mod (FNrOfBuffers * Integer(FASIOHost.BufferSize));
 end;
 
 procedure TASIOVSTModule.AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
 begin
- if (fIntWritePos > fIntReadPos) and (fIntWritePos < fIntReadPos + fASIOHost.BufferSize)
-  then inc(fBufferUnderruns);
- Move(fInBuffer[0, fIntReadPos], fOutBuffer[0, fIntReadPos], fASIOHost.BufferSize * SizeOf(Single));
- Move(fInBuffer[1, fIntReadPos], fOutBuffer[0, fIntReadPos], fASIOHost.BufferSize * SizeOf(Single));
- fIntReadPos := (fIntReadPos + fASIOHost.BufferSize) mod (fNrOfBuffers * fASIOHost.BufferSize);
+ if (FIntWritePos > FIntReadPos) and (FIntWritePos < FIntReadPos + Integer(FASIOHost.BufferSize))
+  then inc(FBufferUnderruns);
+ Move(FInBuffer[0, FIntReadPos], FOutBuffer[0, FIntReadPos], FASIOHost.BufferSize * SizeOf(Single));
+ Move(FInBuffer[1, FIntReadPos], FOutBuffer[0, FIntReadPos], FASIOHost.BufferSize * SizeOf(Single));
+ FIntReadPos := (FIntReadPos + Integer(FASIOHost.BufferSize)) mod (FNrOfBuffers * Integer(FASIOHost.BufferSize));
 end;
 
 procedure TASIOVSTModule.AHLatencyChanged(Sender: TObject);
 begin
- fIntBufSize := fASIOHost.BufferSize * fNrOfBuffers;
- SetLength(fInBuffer[0],  fIntBufSize);
- SetLength(fInBuffer[1],  fIntBufSize);
- SetLength(fOutBuffer[0], fIntBufSize);
- SetLength(fOutBuffer[1], fIntBufSize);
- fIntReadPos := (fNrOfBuffers div 2) * fASIOHost.BufferSize;
- fIntWritePos := 0;
+ FIntBufSize := Integer(FASIOHost.BufferSize) * FNrOfBuffers;
+ SetLength(FInBuffer[0],  FIntBufSize);
+ SetLength(FInBuffer[1],  FIntBufSize);
+ SetLength(FOutBuffer[0], FIntBufSize);
+ SetLength(FOutBuffer[1], FIntBufSize);
+ FIntReadPos := (FNrOfBuffers div 2) * Integer(FASIOHost.BufferSize);
+ FIntWritePos := 0;
 end;
 
 procedure TASIOVSTModule.VSTModuleProcess(const Inputs,
@@ -143,14 +135,14 @@ var i, j : Integer;
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   fInBuffer[0, fIntWritePos] := inputs[0, i];
-   fInBuffer[1, fIntWritePos] := inputs[1, i];
-   outputs[0, i] := fOutBuffer[0, fIntWritePos];
-   outputs[1, i] := fOutBuffer[1, fIntWritePos];
-   Inc(fIntWritePos);
-   if fIntWritePos >= fIntBufSize then fIntWritePos := 0;
+   FInBuffer[0, FIntWritePos] := inputs[0, i];
+   FInBuffer[1, FIntWritePos] := inputs[1, i];
+   outputs[0, i] := FOutBuffer[0, FIntWritePos];
+   outputs[1, i] := FOutBuffer[1, FIntWritePos];
+   Inc(FIntWritePos);
+   if FIntWritePos >= FIntBufSize then FIntWritePos := 0;
    j := 0;
-   while (j < 500) and (fIntWritePos = fIntReadPos) and fASIOHost.Active do
+   while (j < 500) and (FIntWritePos = FIntReadPos) and FASIOHost.Active do
     begin
      inc(j);
      Sleep(1);
@@ -160,24 +152,24 @@ end;
 
 procedure TASIOVSTModule.ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
 begin
- PreDefined := fASIOHost.DriverName;
+ PreDefined := FASIOHost.DriverName;
 end;
 
 procedure TASIOVSTModule.ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if not assigned(fASIOHost) then Exit;
- if fASIOHost.DriverIndex = Round(Value) then Exit;
- fASIOHost.Active := False;
- fASIOHost.DriverIndex := Round(Value);
- InitialDelay := fASIOHost.InputLatency + fASIOHost.OutputLatency + fASIOHost.BufferSize;
+ if not assigned(FASIOHost) then Exit;
+ if FASIOHost.DriverIndex = Round(Value) then Exit;
+ FASIOHost.Active := False;
+ FASIOHost.DriverIndex := Round(Value);
+ InitialDelay := FASIOHost.InputLatency + FASIOHost.OutputLatency + Integer(FASIOHost.BufferSize);
  if Assigned(EditorForm) then
   with TFmASIOVST(EditorForm) do
-   if CB_ASIO.ItemIndex <> fASIOHost.DriverIndex then
+   if CB_ASIO.ItemIndex <> FASIOHost.DriverIndex then
     begin
-     CB_ASIO.ItemIndex := fASIOHost.DriverIndex;
+     CB_ASIO.ItemIndex := FASIOHost.DriverIndex;
      DisplayASIOInformation;
     end;
- fASIOHost.Active := True;
+ FASIOHost.Active := True;
 end;
 
 end.

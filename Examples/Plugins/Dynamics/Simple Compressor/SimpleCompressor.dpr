@@ -9,16 +9,12 @@ uses
   SimpleCompressorDM in 'SimpleCompressorDM.pas' {SimpleCompressorDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SimpleCompressorDataModule: TSimpleCompressorDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  SimpleCompressorDataModule := TSimpleCompressorDataModule.Create(Application);
-  SimpleCompressorDataModule.AudioMaster := audioMaster;
-  with SimpleCompressorDataModule do
+  with TSimpleCompressorDataModule.Create(Application) do
    begin
-    Effect^.user := SimpleCompressorDataModule;
+    AudioMaster := AudioMasterCallback;
     Result := Effect;
    end;
  except

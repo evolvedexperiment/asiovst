@@ -33,8 +33,8 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   begin
-   fFilter[ch] := TButterworthHP.Create;
-   fFilter[ch].SetFilterValues(1000, 0);
+   FFilter[ch] := TButterworthHP.Create;
+   FFilter[ch].SetFilterValues(1000, 0);
   end;
  Parameter[0] := 1000;
  Parameter[1] := 2;
@@ -45,7 +45,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1
-  do FreeAndNil(fFilter[ch]);
+  do FreeAndNil(FFilter[ch]);
 end;
 
 procedure TButterworthHPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -60,8 +60,8 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   begin
-   if assigned(fFilter[ch])
-    then fFilter[ch].Order := round(Value);
+   if assigned(FFilter[ch])
+    then FFilter[ch].Order := round(Value);
   end;
  if EditorForm is TFmButterworth then
   with TFmButterworth(EditorForm) do
@@ -76,8 +76,8 @@ var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1 do
-  if assigned(fFilter[ch])
-   then fFilter[ch].Frequency := Value;
+  if assigned(FFilter[ch])
+   then FFilter[ch].Frequency := Value;
  if EditorForm is TFmButterworth then
   with TFmButterworth(EditorForm) do
    begin
@@ -92,8 +92,8 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := fFilter[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := fFilter[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := FFilter[0].ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := FFilter[1].ProcessSample(Inputs[1, i]);
   end;
 end;
 
@@ -104,8 +104,8 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := fFilter[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := fFilter[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := FFilter[0].ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := FFilter[1].ProcessSample(Inputs[1, i]);
   end;
 end;
 
@@ -114,7 +114,7 @@ var
   ch : Integer;
 begin
  for ch := 0 to numInputs - 1
-  do fFilter[ch].SampleRate := SampleRate;
+  do FFilter[ch].SampleRate := SampleRate;
 end;
 
 end.

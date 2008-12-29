@@ -20,12 +20,12 @@ type
     LbReleaseValue: TLabel;
     LbThreshold: TGuiLabel;
     LbThresholdValue: TLabel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure DialThresholdChange(Sender: TObject);
     procedure DialRatioChange(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   public
     procedure UpdateRatio;
     procedure UpdateThreshold;

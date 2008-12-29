@@ -8,14 +8,14 @@ uses
   MIDIPlugInModule in 'MIDIPlugInModule.pas' {MIDIModule: TVSTModule},
   MIDIPlugInGUI in 'MIDIPlugInGUI.pas' {VSTGUI};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var MIDIModule : TMIDIModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  MIDIModule:=TMIDIModule.Create(Application);
-  MIDIModule.Effect^.user:=MIDIModule;
-  MIDIModule.AudioMaster:=audioMaster;
-  Result := MIDIModule.Effect;
+  with TMIDIModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

@@ -30,14 +30,13 @@ type
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleSoftBypass(Sender: TObject; const isBypass: Boolean);
-    procedure VSTModuleProcessVarIO(Sender: TObject;
-      const varIo: TVstVariableIo);
+    procedure VSTModuleProcessVarIO(Sender: TObject; const varIo: TVstVariableIo);
   private
-    fDials      : array of TGuiDial;
-    fLabels     : array of TGuiLabel;
-    fDisplays   : array of TGuiLabel;
-    fMaxInputs  : Integer;
-    fMaxOutputs : Integer;
+    FDials      : array of TGuiDial;
+    FLabels     : array of TGuiLabel;
+    FDisplays   : array of TGuiLabel;
+    FMaxInputs  : Integer;
+    FMaxOutputs : Integer;
     procedure DialChanged(Sender: TObject);
     procedure AssignKnobBitmap(const Dial: TGuiDial);
   public
@@ -77,8 +76,8 @@ var
   PI   : TCustomVstPlugIn;
   i, n : Integer;
 begin
- fMaxInputs  := 0;
- fMaxOutputs := 0;
+ FMaxInputs  := 0;
+ FMaxOutputs := 0;
  RN          := TStringList.Create;
  try
   EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, DWord(RN));
@@ -104,8 +103,8 @@ begin
        OnCustomParameterDisplay := CustomParameterDisplay;
        DisplayName              := VstHost[n].GetParamName(i);
       end;
-    if PI.numInputs  > fMaxInputs  then fMaxInputs  := PI.numInputs;
-    if PI.numOutputs > fMaxOutputs then fMaxOutputs := PI.numOutputs;
+    if PI.numInputs  > FMaxInputs  then FMaxInputs  := PI.numInputs;
+    if PI.numOutputs > FMaxOutputs then FMaxOutputs := PI.numOutputs;
     if PI.numPrograms > 0 then PI.SetProgram(0); 
    end;
  finally
@@ -123,14 +122,14 @@ procedure TCustomWrapperDataModule.VSTModuleEditClose(Sender: TObject;
 var
   i : Integer;
 begin
- for i := 0 to Length(fDials) - 1 do FreeAndNil(fDials[i]);
- SetLength(fDials, 0);
+ for i := 0 to Length(FDials) - 1 do FreeAndNil(FDials[i]);
+ SetLength(FDials, 0);
 
- for i := 0 to Length(fLabels) - 1 do FreeAndNil(fLabels[i]);
- SetLength(fLabels, 0);
+ for i := 0 to Length(FLabels) - 1 do FreeAndNil(FLabels[i]);
+ SetLength(FLabels, 0);
 
- for i := 0 to Length(fDisplays) - 1 do FreeAndNil(fDisplays[i]);
- SetLength(fDisplays, 0);
+ for i := 0 to Length(FDisplays) - 1 do FreeAndNil(FDisplays[i]);
+ SetLength(FDisplays, 0);
 end;
 
 procedure TCustomWrapperDataModule.AssignKnobBitmap(const Dial: TGuiDial);
@@ -233,20 +232,20 @@ begin
    ClientWidth  := numElementsPerRow * 64;
    ClientHeight := ((numParams + numElementsPerRow - 1) div numElementsPerRow) * 96;
 
-   SetLength(fDials, numParams);
-   SetLength(fLabels, numParams);
-   SetLength(fDisplays, numParams);
+   SetLength(FDials, numParams);
+   SetLength(FLabels, numParams);
+   SetLength(FDisplays, numParams);
    for i := 0 to numParams - 1 do
     begin
-     fDials[i] := TGuiDial.Create(Gui);
-     with fDials[i] do
+     FDials[i] := TGuiDial.Create(Gui);
+     with FDials[i] do
       begin
        Parent              := GUI;
        Width               := 48;
        Height              := 48;
-       AssignKnobBitmap(fDials[i]);
-       Left                := 8 + (i mod numElementsPerRow) * (fDials[i].Width + 16);
-       Top                 := 24 + (i div numElementsPerRow) * (fDials[i].Height + 48);
+       AssignKnobBitmap(FDials[i]);
+       Left                := 8 + (i mod numElementsPerRow) * (FDials[i].Width + 16);
+       Top                 := 24 + (i div numElementsPerRow) * (FDials[i].Height + 48);
        LineWidth           := 2;
        LineColor           := clRed;
        PointerAngles.Range := 270;
@@ -258,28 +257,28 @@ begin
        OnChange            := DialChanged;
        AntiAlias           := FontAntiAlias;
       end;
-     fLabels[i] := TGuiLabel.Create(Gui);
-     with fLabels[i] do
+     FLabels[i] := TGuiLabel.Create(Gui);
+     with FLabels[i] do
       begin
        Parent    := GUI;
-       Width     := (fDials[i].Width + 16);
+       Width     := (FDials[i].Width + 16);
        Height    := 16;
-       Left      := (i mod numElementsPerRow) * (fDials[i].Width + 16);
-       Top       := 8 + (i div numElementsPerRow) * (fDials[i].Height + 48);
+       Left      := (i mod numElementsPerRow) * (FDials[i].Width + 16);
+       Top       := 8 + (i div numElementsPerRow) * (FDials[i].Height + 48);
        Tag       := i;
        Alignment := taCenter;
        Font.Size := FontSize;
        Caption   := ParameterProperties[i].DisplayName;
        AntiAlias := FontAntiAlias;
       end;
-     fDisplays[i] := TGuiLabel.Create(Gui);
-     with fDisplays[i] do
+     FDisplays[i] := TGuiLabel.Create(Gui);
+     with FDisplays[i] do
       begin
        Parent    := GUI;
-       Width     := (fDials[i].Width + 16);
+       Width     := (FDials[i].Width + 16);
        Height    := 16;
-       Left      := (i mod numElementsPerRow) * (fDials[i].Width + 16);
-       Top       := (fDials[i].Height + 24) + (i div numElementsPerRow) * (fDials[i].Height + 48);
+       Left      := (i mod numElementsPerRow) * (FDials[i].Width + 16);
+       Top       := (FDials[i].Height + 24) + (i div numElementsPerRow) * (FDials[i].Height + 48);
        Tag       := i;
        Alignment := taCenter;
        Caption   := '';
@@ -287,10 +286,10 @@ begin
        AntiAlias := FontAntiAlias;
       end;
     end;
-   if Length(fDials) > 0 then
+   if Length(FDials) > 0 then
     begin
-     ClientWidth  := min(numElementsPerRow, Length(fDials)) * (fDials[0].Width + 16);
-     ClientHeight := ((numParams + numElementsPerRow - 1) div numElementsPerRow) * (fDials[0].Height + 48);
+     ClientWidth  := min(numElementsPerRow, Length(FDials)) * (FDials[0].Width + 16);
+     ClientHeight := ((numParams + numElementsPerRow - 1) div numElementsPerRow) * (FDials[0].Height + 48);
     end;
 
    GUI.Visible     := True;
@@ -339,11 +338,11 @@ begin
    Inc(pnr, VstHost[n].numParams);
    Inc(n);
   end;
- VstHost[n].Parameters[Index - pnr] := Value;
- if (Index < Length(fDials)) and assigned(fDials[Index])
-  then fDials[Index].Position := Value;
- if (Index < Length(fDisplays)) and assigned(fDisplays[Index])
-  then fDisplays[Index].Caption := VstHost[n].GetParamDisplay(Index - pnr) +
+ VstHost[n].Parameter[Index - pnr] := Value;
+ if (Index < Length(FDials)) and assigned(FDials[Index])
+  then FDials[Index].Position := Value;
+ if (Index < Length(FDisplays)) and assigned(FDisplays[Index])
+  then FDisplays[Index].Caption := VstHost[n].GetParamDisplay(Index - pnr) +
                                    ' ' + VstHost[n].GetParamLabel(Index - pnr);
 end;
 
@@ -427,8 +426,8 @@ var
   Temp  : TDAVArrayOfDoubleDynArray;
   InOut : TDAVArrayOfDoubleDynArray;
 begin
- SetLength(Temp, fMaxInputs, SampleFrames);
- ChCnt := min(fMaxInputs, fMaxOutputs);
+ SetLength(Temp, FMaxInputs, SampleFrames);
+ ChCnt := min(FMaxInputs, FMaxOutputs);
  InOut := Inputs;
 
  for n := 0 to VstHost.Count - 1 do
@@ -458,8 +457,8 @@ var
   Temp  : TDAVArrayOfSingleDynArray;
   InOut : TDAVArrayOfSingleDynArray;
 begin
- SetLength(Temp, fMaxInputs, SampleFrames);
- ChCnt := min(fMaxInputs, fMaxOutputs);
+ SetLength(Temp, FMaxInputs, SampleFrames);
+ ChCnt := min(FMaxInputs, FMaxOutputs);
  InOut := Inputs;
 
  for n := 0 to VstHost.Count - 1 do
@@ -478,8 +477,8 @@ var
   Temp  : TDAVArrayOfSingleDynArray;
   InOut : TDAVArrayOfSingleDynArray;
 begin
- SetLength(Temp, fMaxInputs, SampleFrames);
- ChCnt := min(fMaxInputs, fMaxOutputs);
+ SetLength(Temp, FMaxInputs, SampleFrames);
+ ChCnt := min(FMaxInputs, FMaxOutputs);
  InOut := Inputs;
 
  for n := 0 to VstHost.Count - 1 do

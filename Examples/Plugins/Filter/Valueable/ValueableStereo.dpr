@@ -12,15 +12,14 @@ uses
   VTModuleStereo in 'VTModuleStereo.pas' {VTVSTModule: TVST2Module},
   VTGUIStereo in 'VTGUIStereo.pas' {FmVT};
 
-function Main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  VTVSTModule: TVTVSTModule;
+function Main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  VTVSTModule := TVTVSTModule.Create(Application);
-  VTVSTModule.Effect^.user := VTVSTModule;
-  VTVSTModule.AudioMaster := audioMaster;
-  Result := VTVSTModule.Effect;
+  with TVTVSTModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

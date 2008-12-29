@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   DelayDM in 'DelayDM.pas' {DelayDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  DelayDataModule: TDelayDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    DelayDataModule := TDelayDataModule.Create(Application);
-    DelayDataModule.Effect^.user := DelayDataModule;
-    DelayDataModule.AudioMaster := audioMaster;
-    Result := DelayDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TDelayDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

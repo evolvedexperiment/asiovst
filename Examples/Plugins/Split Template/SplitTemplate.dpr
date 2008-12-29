@@ -5,9 +5,6 @@ uses
   FastMM4,
   madExcept,
   madLinkDisAsm,
-  madListHardware,
-  madListProcesses,
-  madListModules,
   FastMove,
   RTLVCLOptimize,
   Forms,
@@ -16,18 +13,17 @@ uses
   SplitTemplateDM in 'SplitTemplateDM.pas' {SplitTemplateDataModule: TVSTModule},
   SplitTemplateGUI in 'SplitTemplateGUI.pas' {FmSplitter};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SplitTemplateDataModule: TSplitTemplateDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    SplitTemplateDataModule := TSplitTemplateDataModule.Create(Application);
-    SplitTemplateDataModule.Effect^.user := SplitTemplateDataModule;
-    SplitTemplateDataModule.AudioMaster := audioMaster;
-    Result := SplitTemplateDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TSplitTemplateDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

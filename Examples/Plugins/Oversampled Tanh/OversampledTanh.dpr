@@ -8,15 +8,14 @@ uses
   OversampledTanhModule in 'OversampledTanhModule.pas' {VST2Module1: TVST2Module},
   OversampledTanhGUI in 'OversampledTanhGUI.pas' {FmOversampledTanh};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVstEffect; cdecl; export;
-var 
-  VSTModule : TVSTModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVstEffect; cdecl; export;
 begin
  try
-  VSTModule := TOversampledTanhModule.Create(Application);
-  VSTModule.Effect^.user := VSTModule;
-  VSTModule.AudioMaster := audioMaster;
-  Result := VSTModule.Effect;
+  with TOversampledTanhModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

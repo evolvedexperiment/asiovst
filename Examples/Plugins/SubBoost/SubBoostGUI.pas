@@ -40,7 +40,7 @@ type
     procedure FormPaint(Sender: TObject);
     procedure DialFilterOrderChange(Sender: TObject);
   private
-    fBackgrounBitmap : TBitmap;
+    FBackgrounBitmap : TBitmap;
   public
     procedure UpdateType;
     procedure UpdateLevel;
@@ -71,8 +71,8 @@ var
 
 begin
  // Create Background Image
- fBackgrounBitmap := TBitmap.Create;
- with fBackgrounBitmap do
+ FBackgrounBitmap := TBitmap.Create;
+ with FBackgrounBitmap do
   begin
    PixelFormat := pf32bit;
    Width := Self.Width;
@@ -115,7 +115,7 @@ end;
 
 procedure TFmSubBoost.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, fBackgrounBitmap);
+ Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
 procedure TFmSubBoost.FormShow(Sender: TObject);

@@ -8,15 +8,14 @@ uses
   WavedisplayModule in 'WavedisplayModule.pas' {WavedisplayModule: TVSTModule},
   WavedisplayGUI in 'WavedisplayGUI.pas' {WavedisplayGUI};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  WavedisplayModule: TWavedisplayModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    WavedisplayModule := TWavedisplayModule.Create(Application);
-    WavedisplayModule.Effect^.user := WavedisplayModule;
-    WavedisplayModule.AudioMaster := audioMaster;
-    Result := WavedisplayModule.Effect;
+ try
+  with TWavedisplayModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
   except
     Result := nil;
   end;

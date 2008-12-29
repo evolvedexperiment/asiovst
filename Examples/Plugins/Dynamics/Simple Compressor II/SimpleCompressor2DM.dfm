@@ -1,7 +1,5 @@
 object SoftKneeCompressorDataModule: TSoftKneeCompressorDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor]
   Version = '0.0'
   EffectName = 'Simple Compressor II'
@@ -85,6 +83,8 @@ object SoftKneeCompressorDataModule: TSoftKneeCompressorDataModule
       VSTModule = Owner
       OnParameterChange = SLReleaseChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

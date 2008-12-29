@@ -4,7 +4,7 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Linear Phase'
-  ProductName = 'Filter'
+  ProductName = 'DAV Filter Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]

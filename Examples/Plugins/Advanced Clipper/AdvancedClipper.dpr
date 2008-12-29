@@ -17,18 +17,17 @@ uses
   AdvancedClipperDM in 'AdvancedClipperDM.pas' {AdvancedClipperDataModule: TVSTModule},
   AdvancedClipperGUI in 'AdvancedClipperGUI.pas' {FmAdvancedClipper};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  AdvancedClipperDataModule: TAdvancedClipperDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    AdvancedClipperDataModule := TAdvancedClipperDataModule.Create(Application);
-    AdvancedClipperDataModule.Effect^.user := AdvancedClipperDataModule;
-    AdvancedClipperDataModule.AudioMaster := audioMaster;
-    Result := AdvancedClipperDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TAdvancedClipperDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

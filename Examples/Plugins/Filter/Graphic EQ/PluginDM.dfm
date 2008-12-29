@@ -3,13 +3,14 @@ object PluginDataModule: TPluginDataModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Graphic EQ'
-  ProductName = 'Graphic EQ'
-  VendorName = 'Delphi VST Example'
+  ProductName = 'DAV Filter Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd1in2out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
   UniqueID = 'GrEQ'
   ShellPlugins = <>
   Programs = <
@@ -396,9 +397,9 @@ object PluginDataModule: TPluginDataModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
-  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcessLR
   OnProcessReplacing = VSTModuleProcessLR
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 838
   Top = 136
   Height = 150

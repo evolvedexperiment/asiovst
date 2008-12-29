@@ -9,18 +9,17 @@ uses
   PTDM in 'PTDM.pas' {PerformanceTestModule: TVSTModule},
   PTGUI in 'PTGUI.pas' {FmPerformanceTest};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  PerformanceTestModule: TPerformanceTestModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    PerformanceTestModule := TPerformanceTestModule.Create(Application);
-    PerformanceTestModule.Effect^.user := PerformanceTestModule;
-    PerformanceTestModule.AudioMaster := audioMaster;
-    Result := PerformanceTestModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TPerformanceTestModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

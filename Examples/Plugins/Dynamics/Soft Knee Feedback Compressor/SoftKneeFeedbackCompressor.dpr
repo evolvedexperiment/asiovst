@@ -11,21 +11,17 @@ uses
   SoftKneeFeedbackCompressorDM in 'SoftKneeFeedbackCompressorDM.pas' {SoftKneeFeedbackCompressorDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    SoftKneeFeedbackCompressorDataModule := TSoftKneeFeedbackCompressorDataModule.Create(Application);
-    SoftKneeFeedbackCompressorDataModule.AudioMaster := audioMaster;
-    with SoftKneeFeedbackCompressorDataModule do
-    begin
-      Effect^.user := SoftKneeFeedbackCompressorDataModule;
-      Result := Effect;
-    end;
-  except
-    Result := nil;
-  end;
+ try
+  with TSoftKneeFeedbackCompressorDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

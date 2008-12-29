@@ -1,16 +1,15 @@
 object DitherNoiseshaperModule: TDitherNoiseshaperModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Dither & Noiseshaper Plugin'
-  ProductName = 'ASIO & VST for Delphi project'
-  VendorName = 'http://sourceforge.net/projects/delphiasiovst/'
+  ProductName = 'DAV Effect Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'DiNo'
   ShellPlugins = <>
   Programs = <>
@@ -27,6 +26,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       Min = 2.000000000000000000
       MinInteger = 2
       ShortLabel = 'Bit Dep'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Bit'
@@ -39,6 +39,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       CurveFactor = 1.000000000000000000
       DisplayName = 'Type'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
       MaxInteger = 7
@@ -50,10 +51,12 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       OnParameterChange = DNTypeChange
       OnCustomParameterDisplay = DNTypeDisplay
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
   Left = 218
   Top = 81
   Height = 150

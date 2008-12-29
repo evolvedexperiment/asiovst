@@ -11,21 +11,17 @@ uses
   SimpleCompressor2DM in 'SimpleCompressor2DM.pas' {SoftKneeCompressorDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SoftKneeCompressorDataModule: TSoftKneeCompressorDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    SoftKneeCompressorDataModule := TSoftKneeCompressorDataModule.Create(Application);
-    SoftKneeCompressorDataModule.AudioMaster := audioMaster;
-    with SoftKneeCompressorDataModule do
-    begin
-      Effect^.user := SoftKneeCompressorDataModule;
-      Result := Effect;
-    end;
-  except
-    Result := nil;
-  end;
+ try
+  with TSoftKneeCompressorDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

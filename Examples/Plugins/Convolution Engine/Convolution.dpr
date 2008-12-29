@@ -8,17 +8,16 @@ uses
   ConvolutionDM in 'ConvolutionDM.pas' {ConvolutionDataModule: TVSTModule},
   ConvolutionGUI in 'ConvolutionGUI.pas' {FmConvolution};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  ConvolutionDataModule: TConvolutionDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    ConvolutionDataModule := TConvolutionDataModule.Create(Application);
-    ConvolutionDataModule.Effect^.user := ConvolutionDataModule;
-    ConvolutionDataModule.AudioMaster := audioMaster;
-    Result := ConvolutionDataModule.Effect;
+ try
+  with TConvolutionDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
   except
-    Result := nil;
+   Result := nil;
   end;
 end;
 

@@ -10,18 +10,17 @@ uses
   ExciterDM in 'ExciterDM.pas' {ExciterDataModule: TVSTModule},
   ExciterGUI in 'ExciterGUI.pas' {FmExciter};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  ExciterDataModule: TExciterDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    ExciterDataModule := TExciterDataModule.Create(Application);
-    ExciterDataModule.Effect^.user := ExciterDataModule;
-    ExciterDataModule.AudioMaster := audioMaster;
-    Result := ExciterDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TExciterDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

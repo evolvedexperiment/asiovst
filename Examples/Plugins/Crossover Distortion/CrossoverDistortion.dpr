@@ -10,18 +10,17 @@ uses
   CrossoverDistortionDM in 'CrossoverDistortionDM.pas' {CrossoverDistortionDataModule: TVSTModule},
   CrossoverDistortionGUI in 'CrossoverDistortionGUI.pas' {FmCrossoverDistortion};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  CrossoverDistortionDataModule: TCrossoverDistortionDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    CrossoverDistortionDataModule := TCrossoverDistortionDataModule.Create(Application);
-    CrossoverDistortionDataModule.Effect^.user := CrossoverDistortionDataModule;
-    CrossoverDistortionDataModule.AudioMaster := audioMaster;
-    Result := CrossoverDistortionDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TCrossoverDistortionDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

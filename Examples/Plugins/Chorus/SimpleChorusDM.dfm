@@ -3,7 +3,7 @@ object SimpleChorusModule: TSimpleChorusModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Chorus'
-  ProductName = 'DAV Examples'
+  ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Packages'
   PlugCategory = vpcEffect
   CanDos = [vcd2in2out]

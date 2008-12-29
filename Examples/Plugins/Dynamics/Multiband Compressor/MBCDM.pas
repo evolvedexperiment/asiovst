@@ -18,8 +18,8 @@ type
   end;
 
   TMBCDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(Inputs, Outputs: TDAVArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const sampleframes: Integer);
     procedure MBCDMLowFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -41,10 +41,9 @@ type
     procedure MBCDMLowReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMMidReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMHighReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
-    fMultiband : Array [0..1] of TMultiband;
+    FMultiband : Array [0..1] of TMultiband;
   public
   end;
 
@@ -55,11 +54,12 @@ implementation
 uses
   Math, MBCGUI;
 
-procedure TMBCDataModule.VSTModuleCreate(Sender: TObject);
-var i : Integer;
+procedure TMBCDataModule.VSTModuleOpen(Sender: TObject);
+var
+  i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    begin
     Lowpass      := TButterworthLP.Create;
     LowComp      := TSimpleCompressor.Create;
@@ -90,19 +90,20 @@ begin
  Parameter[18] := 0.1;
 end;
 
-procedure TMBCDataModule.VSTModuleDestroy(Sender: TObject);
-var i : Integer;
+procedure TMBCDataModule.VSTModuleClose(Sender: TObject);
+var
+  i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    begin
-    Lowpass.Free;
-    LowComp.Free;
-    MidHighpass.Free;
-    MidComp.Free;
-    MidLowpass.Free;
-    Highpass.Free;
-    HighComp.Free;
+    FreeAndNil(Lowpass);
+    FreeAndNil(LowComp);
+    FreeAndNil(MidHighpass);
+    FreeAndNil(MidComp);
+    FreeAndNil(MidLowpass);
+    FreeAndNil(Highpass);
+    FreeAndNil(HighComp);
    end;
 end;
 
@@ -116,7 +117,7 @@ procedure TMBCDataModule.MBCDMLowFrequencyChange(Sender: TObject; const Index: I
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    begin
     Lowpass.Frequency := Value;
     MidHighpass.Frequency := Value;
@@ -136,7 +137,7 @@ procedure TMBCDataModule.MBCDCLowOrderChange(Sender: TObject; const Index: Integ
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    begin
     Lowpass.Order := round(Value);
     MidHighpass.Order := round(Value);
@@ -147,7 +148,7 @@ procedure TMBCDataModule.MBCDMLowGainChange(Sender: TObject; const Index: Intege
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i]
+  with FMultiband[i]
    do LowComp.MakeUpGain_dB := Value;
 
  if Assigned(EditorForm) then
@@ -163,7 +164,7 @@ procedure TMBCDataModule.MBCDMMidGainChange(Sender: TObject; const Index: Intege
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i]
+  with FMultiband[i]
    do MidComp.MakeUpGain_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -178,7 +179,7 @@ procedure TMBCDataModule.MBCDMHighGainChange(Sender: TObject; const Index: Integ
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i]
+  with FMultiband[i]
    do HighComp.MakeUpGain_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -193,7 +194,7 @@ procedure TMBCDataModule.MBCDMLowThresholdChange(Sender: TObject; const Index: I
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i]
+  with FMultiband[i]
    do LowComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -208,7 +209,7 @@ procedure TMBCDataModule.MBCDMMidThresholdChange(Sender: TObject; const Index: I
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i]
+  with FMultiband[i]
    do MidComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -223,7 +224,7 @@ procedure TMBCDataModule.MBCDMHighThresholdChange(Sender: TObject; const Index: 
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i]
+  with FMultiband[i]
    do HighComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -239,7 +240,7 @@ procedure TMBCDataModule.MBCDMLowRatioChange(
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    LowComp.Ratio := 1 / Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -254,7 +255,7 @@ procedure TMBCDataModule.MBCDMMidRatioChange(Sender: TObject; const Index: Integ
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    MidComp.Ratio := 1 / Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -269,7 +270,7 @@ procedure TMBCDataModule.MBCDMHighRatioChange(Sender: TObject; const Index: Inte
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    HighComp.Ratio := 1 / Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -284,7 +285,7 @@ procedure TMBCDataModule.MBCDMLowAttackChange(Sender: TObject; const Index: Inte
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    LowComp.Attack := Value;
 
  if Assigned(EditorForm) then
@@ -300,7 +301,7 @@ procedure TMBCDataModule.MBCDMMidAttackChange(Sender: TObject; const Index: Inte
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    MidComp.Attack := Value;
 
  if Assigned(EditorForm) then
@@ -316,7 +317,7 @@ procedure TMBCDataModule.MBCDMHighAttackChange(Sender: TObject; const Index: Int
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    HighComp.Attack := Value;
 
  if Assigned(EditorForm) then
@@ -332,7 +333,7 @@ procedure TMBCDataModule.MBCDMLowReleaseChange(Sender: TObject; const Index: Int
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    LowComp.Release := Value;
 
  if Assigned(EditorForm) then
@@ -348,7 +349,7 @@ procedure TMBCDataModule.MBCDMMidReleaseChange(Sender: TObject; const Index: Int
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    MidComp.Release := Value;
 
  if Assigned(EditorForm) then
@@ -364,7 +365,7 @@ procedure TMBCDataModule.MBCDMHighReleaseChange(Sender: TObject; const Index: In
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    HighComp.Release := Value;
 
  if Assigned(EditorForm) then
@@ -380,7 +381,7 @@ procedure TMBCDataModule.MBCDCHighOrderChange(Sender: TObject; const Index: Inte
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    begin
     MidLowpass.Order := round(Value);
     Highpass.Order := round(Value);
@@ -391,7 +392,7 @@ procedure TMBCDataModule.MBCDMHighFrequencyChange(Sender: TObject; const Index: 
 var i : Integer;
 begin
  for i := 0 to 1 do
-  with fMultiband[i] do
+  with FMultiband[i] do
    begin
     MidLowpass.Frequency := Value;
     Highpass.Frequency := Value;
@@ -414,18 +415,18 @@ begin
  for i := 0 to sampleframes - 1 do
   begin
 (*
-   with fMultiband[0] do
+   with FMultiband[0] do
     Outputs[0, i] := Lowpass.ProcessSample(Inputs[0, i]) +
                      MidHighpass.ProcessSample(Inputs[0, i]);
-   with fMultiband[1] do
+   with FMultiband[1] do
     Outputs[1, i] := Lowpass.ProcessSample(Inputs[1, i]) +
                      MidHighpass.ProcessSample(Inputs[1, i]);
 *)
-   with fMultiband[0] do
+   with FMultiband[0] do
     Outputs[0, i] := LowComp.ProcessSample(Lowpass.ProcessSample(Inputs[0, i])) +
                      MidComp.ProcessSample(MidHighpass.ProcessSample(MidLowpass.ProcessSample(Inputs[0, i]))) -
                      HighComp.ProcessSample(Highpass.ProcessSample(Inputs[0, i]));
-   with fMultiband[1] do
+   with FMultiband[1] do
     Outputs[1, i] := LowComp.ProcessSample(Lowpass.ProcessSample(Inputs[1, i])) +
                      MidComp.ProcessSample(MidHighpass.ProcessSample(MidLowpass.ProcessSample(Inputs[0, i]))) -
                      HighComp.ProcessSample(Highpass.ProcessSample(Inputs[1, i]));
@@ -438,11 +439,11 @@ var i : Integer;
 begin
  for i := 0 to sampleframes - 1 do
   begin
-   with fMultiband[0] do
+   with FMultiband[0] do
    Outputs[0, i] := Lowpass.ProcessSample(Inputs[0, i]) +
                     MidHighpass.ProcessSample(MidLowpass.ProcessSample(Inputs[0, i])) +
                     Highpass.ProcessSample(Inputs[0, i]);
-   with fMultiband[1] do
+   with FMultiband[1] do
    Outputs[1, i] := Lowpass.ProcessSample(Inputs[1, i]) +
                     MidHighpass.ProcessSample(MidLowpass.ProcessSample(Inputs[0, i])) +
                     Highpass.ProcessSample(Inputs[1, i]);

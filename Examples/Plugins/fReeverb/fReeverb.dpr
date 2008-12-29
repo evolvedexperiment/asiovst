@@ -10,14 +10,14 @@ uses
   fReeverbModule in 'fReeverbModule.pas' {fReeverbVST: TVSTModule},
   fReeverbGUI in 'fReeverbGUI.pas' {FmReverb};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var fReeverbVST : TfReeverbVST;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  fReeverbVST:=TfReeverbVST.Create(Application);
-  fReeverbVST.Effect^.user := fReeverbVST;
-  fReeverbVST.AudioMaster := audioMaster;
-  Result := fReeverbVST.Effect;
+  with TfReeverbVST.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

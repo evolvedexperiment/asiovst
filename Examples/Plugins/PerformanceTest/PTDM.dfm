@@ -9,14 +9,15 @@ object PerformanceTestModule: TPerformanceTestModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'DVPT'
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <>
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
   Left = 309
   Top = 202
   Height = 150

@@ -13,6 +13,7 @@ object EditorForm: TEditorForm
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
+  OnShow = FormShow
   DesignSize = (
     252
     160)

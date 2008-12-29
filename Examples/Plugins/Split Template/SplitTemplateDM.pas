@@ -94,37 +94,37 @@ type
     procedure ParamFreqLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamOrderLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    fLowpass          : array of TLowPassArray;
-    fHighpass         : array of THighPassArray;
-    fOversampler      : array of TUpDownsampling;
-    fLow64, fHigh64   : array of PDAVDoubleFixedArray;
-    fTmpOutput64      : array of PDAVDoubleFixedArray;
-    fLow32, fHigh32   : array of PDAVSingleFixedArray;
-    fTmpOutput32      : array of PDAVSingleFixedArray;
-    fEnvelope         : array of array [0..1] of Single;
-    fAttackFactor     : array [0..1] of Single;
-    fReleaseFactor    : array [0..1] of Single;
-    fLiRiSign         : Single;
-    fMaxChannels      : Integer;
-    fMinChannels      : Integer;
-    fSplitType        : TSplitType;
-    fOSActive         : Boolean;
-    fOSFactor         : Integer;
-    fMaximumBlockSize : Integer;
-    fTempBufferSize   : Integer;
-    fSineLFO          : TSineLFO;
-    fVolumeFactor     : Double;
-    fPlugNr           : Integer;
-    fDifferentPlugins : Boolean;
+    FLowpass          : array of TLowPassArray;
+    FHighpass         : array of THighPassArray;
+    FOversampler      : array of TUpDownsampling;
+    FLow64, FHigh64   : array of PDAVDoubleFixedArray;
+    FTmpOutput64      : array of PDAVDoubleFixedArray;
+    FLow32, FHigh32   : array of PDAVSingleFixedArray;
+    FTmpOutput32      : array of PDAVSingleFixedArray;
+    FEnvelope         : array of array [0..1] of Single;
+    FAttackFactor     : array [0..1] of Single;
+    FReleaseFactor    : array [0..1] of Single;
+    FLiRiSign         : Single;
+    FMaxChannels      : Integer;
+    FMinChannels      : Integer;
+    FSplitType        : TSplitType;
+    FOSActive         : Boolean;
+    FOSFactor         : Integer;
+    FMaximumBlockSize : Integer;
+    FTempBufferSize   : Integer;
+    FSineLFO          : TSineLFO;
+    FVolumeFactor     : Double;
+    FPlugNr           : Integer;
+    FDifferentPlugins : Boolean;
     procedure SetOSFactor(NewOSFactor: Integer);
     procedure SetTempBufferSize(const Value: Integer);
     procedure VSTBuffersChanged;
     procedure PluginSampleRateChanged;
     procedure CheckSampleFrames(const SampleFrames: Integer);
   published
-    property SplitType: TSplitType read fSplitType;
-    property PluginVisible: Integer read fPlugNr write fPlugNr default 0;
-    property TempBufferSize: Integer read fTempBufferSize write SetTempBufferSize default 0;
+    property SplitType: TSplitType read FSplitType;
+    property PluginVisible: Integer read FPlugNr write FPlugNr default 0;
+    property TempBufferSize: Integer read FTempBufferSize write SetTempBufferSize default 0;
   end;
 
 function ConvertOrderToString(Order: Integer): string;
@@ -165,7 +165,7 @@ begin
  RN := TStringList.Create;
  try
   EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, DWord(RN));
-  fDifferentPlugins := RN.Count > 1;
+  FDifferentPlugins := RN.Count > 1;
 
   if RN.Count > 0 then
    begin
@@ -246,55 +246,55 @@ begin
 
  if numInputs > numOutputs then
   begin
-   fMaxChannels := numInputs;
-   fMinChannels := numOutputs;
+   FMaxChannels := numInputs;
+   FMinChannels := numOutputs;
   end
  else
   begin
-   fMaxChannels := numOutputs;
-   fMinChannels := numInputs;
+   FMaxChannels := numOutputs;
+   FMinChannels := numInputs;
   end;
 
- SetLength(fLowpass, numInputs);
- SetLength(fHighpass, numInputs);
- SetLength(fOversampler, numInputs);
+ SetLength(FLowpass, numInputs);
+ SetLength(FHighpass, numInputs);
+ SetLength(FOversampler, numInputs);
  for ch := 0 to numInputs - 1 do
   for n := 0 to 1 do
    begin
-    fLowpass[ch, n]     := TButterworthLP.Create;
-    fHighpass[ch, n]    := TButterworthHP.Create;
+    FLowpass[ch, n]     := TButterworthLP.Create;
+    FHighpass[ch, n]    := TButterworthHP.Create;
    end;
 
- for ch := 0 to fMaxChannels - 1 do
+ for ch := 0 to FMaxChannels - 1 do
   for n := 0 to 1
-   do fOversampler[ch, n] := TDAVUpDownsampling.Create(Self);
+   do FOversampler[ch, n] := TDAVUpDownsampling.Create(Self);
 
- fOSFactor     := 1;
- fOSActive     := False;
- fVolumeFactor := 1;
+ FOSFactor     := 1;
+ FOSActive     := False;
+ FVolumeFactor := 1;
 
  OnProcess := VSTModuleProcess32SplitFrequencySimple;
  OnProcessReplacing := VSTModuleProcess32SplitFrequencySimple;
  OnProcessDoubleReplacing := VSTModuleProcess64SplitFrequencySimple;
- fTempBufferSize := 0;
- fMaximumBlockSize := VstHost.BlockSize;
- fPlugNr := 0;
- SetLength(fEnvelope, fMaxChannels);
- SetLength(fLow32, fMaxChannels);
- SetLength(fLow64, fMaxChannels);
- SetLength(fHigh32, fMaxChannels);
- SetLength(fHigh64, fMaxChannels);
- SetLength(fTmpOutput32, numOutputs);
- SetLength(fTmpOutput64, numOutputs);
+ FTempBufferSize := 0;
+ FMaximumBlockSize := VstHost.BlockSize;
+ FPlugNr := 0;
+ SetLength(FEnvelope, FMaxChannels);
+ SetLength(FLow32, FMaxChannels);
+ SetLength(FLow64, FMaxChannels);
+ SetLength(FHigh32, FMaxChannels);
+ SetLength(FHigh64, FMaxChannels);
+ SetLength(FTmpOutput32, numOutputs);
+ SetLength(FTmpOutput64, numOutputs);
 
- fAttackFactor[0]  := 0.01;
- fAttackFactor[1]  := 0.001;
- fReleaseFactor[0] := 0.9999;
- fReleaseFactor[1] := 0.9999;
+ FAttackFactor[0]  := 0.01;
+ FAttackFactor[1]  := 0.001;
+ FReleaseFactor[0] := 0.9999;
+ FReleaseFactor[1] := 0.9999;
 
- fSineLFO := TSineLFO.Create;
- fSineLFO.Frequency := 1;
- fSineLFO.Amplitude := 1;
+ FSineLFO := TSineLFO.Create;
+ FSineLFO.Frequency := 1;
+ FSineLFO.Amplitude := 1;
 
  VSTBuffersChanged;
 end;
@@ -303,21 +303,21 @@ procedure TSplitTemplateDataModule.VSTModuleDestroy(Sender: TObject);
 var
   ch, n : Integer;
 begin
- for ch := 0 to fMaxChannels - 1 do Dispose(fLow64[ch]);
- for ch := 0 to fMaxChannels - 1 do Dispose(fHigh64[ch]);
- for ch := 0 to numOutputs - 1   do Dispose(fTmpOutput64[ch]);
+ for ch := 0 to FMaxChannels - 1 do Dispose(FLow64[ch]);
+ for ch := 0 to FMaxChannels - 1 do Dispose(FHigh64[ch]);
+ for ch := 0 to numOutputs - 1   do Dispose(FTmpOutput64[ch]);
 
  for ch := 0 to numInputs - 1 do
   for n := 0 to 1 do
    begin
-    FreeAndNil(fLowpass[ch, n]);
-    FreeAndNil(fHighpass[ch, n]);
+    FreeAndNil(FLowpass[ch, n]);
+    FreeAndNil(FHighpass[ch, n]);
    end;
- for ch := 0 to fMaxChannels - 1 do
+ for ch := 0 to FMaxChannels - 1 do
   for n := 0 to 1
-   do FreeAndNil(fOversampler[ch, n]);
+   do FreeAndNil(FOversampler[ch, n]);
 
- FreeAndNil(fSineLFO);
+ FreeAndNil(FSineLFO);
 
  VSTHost.VstPlugIns.Clear;
 end;
@@ -353,7 +353,7 @@ begin
     if not VstHost[0].EditVisible
      then VstHost[0].ShowEdit(TForm(PnGui));
     Rct[0]   := VstHost[0].GetRect;
-    if fDifferentPlugins then
+    if FDifferentPlugins then
      if assigned(VstHost[1]) and VstHost[1].Active then
       begin
        Rct[1] := VstHost[1].GetRect;
@@ -579,11 +579,11 @@ end;
 
 procedure TSplitTemplateDataModule.VSTBuffersChanged;
 begin
- VstHost.BlockSize := BlockSize * fOSFactor;
- with VstHost[0] do if Active then SetBlockSizeAndSampleRate(BlockSize * fOSFactor, SampleRate * fOSFactor);
- with VstHost[1] do if Active then SetBlockSizeAndSampleRate(BlockSize * fOSFactor, SampleRate * fOSFactor);
- fMaximumBlockSize := BlockSize;
- TempBufferSize := fMaximumBlockSize * fOSFactor;
+ VstHost.BlockSize := BlockSize * FOSFactor;
+ with VstHost[0] do if Active then SetBlockSizeAndSampleRate(BlockSize * FOSFactor, SampleRate * FOSFactor);
+ with VstHost[1] do if Active then SetBlockSizeAndSampleRate(BlockSize * FOSFactor, SampleRate * FOSFactor);
+ FMaximumBlockSize := BlockSize;
+ TempBufferSize := FMaximumBlockSize * FOSFactor;
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -591,29 +591,29 @@ procedure TSplitTemplateDataModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   ch : Integer;
 begin
- for ch := 0 to Length(fLowpass) - 1 do
+ for ch := 0 to Length(FLowpass) - 1 do
   begin
-   fLowpass[ch, 0].SampleRate := SampleRate;
-   fLowpass[ch, 1].SampleRate := SampleRate;
+   FLowpass[ch, 0].SampleRate := SampleRate;
+   FLowpass[ch, 1].SampleRate := SampleRate;
   end;
- for ch := 0 to Length(fHighpass) - 1 do
+ for ch := 0 to Length(FHighpass) - 1 do
   begin
-   fHighpass[ch, 0].SampleRate := SampleRate;
-   fHighpass[ch, 1].SampleRate := SampleRate;
+   FHighpass[ch, 0].SampleRate := SampleRate;
+   FHighpass[ch, 1].SampleRate := SampleRate;
   end;
- for ch := 0 to Length(fOversampler) - 1 do
+ for ch := 0 to Length(FOversampler) - 1 do
   begin
-   fOversampler[ch, 0].SampleRate := SampleRate;
-   fOversampler[ch, 1].SampleRate := SampleRate;
+   FOversampler[ch, 0].SampleRate := SampleRate;
+   FOversampler[ch, 1].SampleRate := SampleRate;
   end;
- fSineLFO.SampleRate := SampleRate; 
+ FSineLFO.SampleRate := SampleRate; 
  PluginSampleRateChanged;
 end;
 
 procedure TSplitTemplateDataModule.PluginSampleRateChanged;
 begin
- with VstHost[0] do if Active then SetSampleRate(fOSFactor * SampleRate);
- with VstHost[1] do if Active then SetSampleRate(fOSFactor * SampleRate);
+ with VstHost[0] do if Active then SetSampleRate(FOSFactor * SampleRate);
+ with VstHost[1] do if Active then SetSampleRate(FOSFactor * SampleRate);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleStartProcess(Sender: TObject);
@@ -725,7 +725,7 @@ end;
 procedure TSplitTemplateDataModule.ParamOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case fSplitType of
+ case FSplitType of
   stLeftRight, stMS, stSerial,
    stBypass  : PreDefined := '';
      stLiRi  : PreDefined := ConvertOrderToString(2 * round(Parameter[Index]));
@@ -745,8 +745,8 @@ end;
 procedure TSplitTemplateDataModule.ParamOversamplingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fOSActive := Boolean(round(Value));
- if fOSActive = True
+ FOSActive := Boolean(round(Value));
+ if FOSActive = True
   then SetOSFactor(round(ParameterByName['OS Factor']))
   else SetOSFactor(1);
  if EditorForm is TFmSplitter
@@ -756,7 +756,7 @@ end;
 procedure TSplitTemplateDataModule.ParamOSFactorChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if fOSActive = True
+ if FOSActive = True
   then SetOSFactor(round(Value))
   else SetOSFactor(1);
 
@@ -768,11 +768,11 @@ procedure TSplitTemplateDataModule.SetOSFactor(NewOSFactor: Integer);
 var
   ch, n : Integer;
 begin
- fOSFactor := NewOSFactor;
- for ch := 0 to fMaxChannels - 1 do
+ FOSFactor := NewOSFactor;
+ for ch := 0 to FMaxChannels - 1 do
   for n := 0 to 1
-   do fOversampler[ch, n].Factor := fOSFactor;
- TempBufferSize := fMaximumBlockSize * fOSFactor;
+   do FOversampler[ch, n].Factor := FOSFactor;
+ TempBufferSize := FMaximumBlockSize * FOSFactor;
  PluginSampleRateChanged;
 end;
 
@@ -781,20 +781,20 @@ procedure TSplitTemplateDataModule.SetTempBufferSize(
 var
   i : Integer;
 begin
- if fTempBufferSize <> Value then
+ if FTempBufferSize <> Value then
   begin
-   fTempBufferSize := Value;
+   FTempBufferSize := Value;
    for i := 0 to numInputs - 1 do
     begin
      {$IFDEF DELPHI10}
      SetMinimumBlockAlignment(mba16Byte);
      {$ENDIF}
-     ReallocMem(fLow64[i], fTempBufferSize * SizeOf(Double));
-     fLow32[i] := PDAVSingleFixedArray(fLow64[i]);
-     ReallocMem(fHigh64[i], fTempBufferSize * SizeOf(Double));
-     fHigh32[i] := PDAVSingleFixedArray(fHigh64[i]);
-     ReallocMem(fTmpOutput64[i], fTempBufferSize * SizeOf(Double));
-     fTmpOutput32[i] := PDAVSingleFixedArray(fTmpOutput64[i]);
+     ReallocMem(FLow64[i], FTempBufferSize * SizeOf(Double));
+     FLow32[i] := PDAVSingleFixedArray(FLow64[i]);
+     ReallocMem(FHigh64[i], FTempBufferSize * SizeOf(Double));
+     FHigh32[i] := PDAVSingleFixedArray(FHigh64[i]);
+     ReallocMem(FTmpOutput64[i], FTempBufferSize * SizeOf(Double));
+     FTmpOutput32[i] := PDAVSingleFixedArray(FTmpOutput64[i]);
     end;
   end;
 end;
@@ -802,7 +802,7 @@ end;
 procedure TSplitTemplateDataModule.ParamOrderLabel(Sender: TObject;
   const Index: Integer; var PreDefined: string);
 begin
- case fSplitType of
+ case FSplitType of
   stLeftRight, stMS, stSerial, stBypass : PreDefined := '';
  end;
 end;
@@ -810,7 +810,7 @@ end;
 procedure TSplitTemplateDataModule.ParamFreqLabel(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case fSplitType of
+ case FSplitType of
   stLeftRight, stMS, stSerial, stBypass : PreDefined := '';
  end;
 end;
@@ -818,7 +818,7 @@ end;
 procedure TSplitTemplateDataModule.ParamFreqDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case fSplitType of
+ case FSplitType of
   stLeftRight, stMS, stSerial, stBypass : PreDefined := '-';
  end;
 end;
@@ -826,8 +826,8 @@ end;
 procedure TSplitTemplateDataModule.ParamVolumeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fVolumeFactor := dB_to_Amp(Value);
- fSineLFO.Amplitude := fVolumeFactor;
+ FVolumeFactor := dB_to_Amp(Value);
+ FSineLFO.Amplitude := FVolumeFactor;
 end;
 
 procedure TSplitTemplateDataModule.ParamOrderChange(
@@ -835,12 +835,12 @@ procedure TSplitTemplateDataModule.ParamOrderChange(
 var
   ch, n : Integer;
 begin
- fLiRiSign := 1 - 2 * (round(Value) mod 2);
+ FLiRiSign := 1 - 2 * (round(Value) mod 2);
  for ch := 0 to numInputs - 1 do
   for n := 0 to 1 do
    begin
-    fLowpass[ch, n].Order  := round(Value);
-    fHighpass[ch, n].Order := round(Value);
+    FLowpass[ch, n].Order  := round(Value);
+    FHighpass[ch, n].Order := round(Value);
    end;
  if EditorForm is TFmSplitter
   then TFmSplitter(EditorForm).UpdateOrder;
@@ -854,8 +854,8 @@ begin
  for ch := 0 to numInputs - 1 do
   for n := 0 to 1 do
    begin
-    fLowpass[ch, n].Frequency  := Value;
-    fHighpass[ch, n].Frequency := Value;
+    FLowpass[ch, n].Frequency  := Value;
+    FHighpass[ch, n].Frequency := Value;
    end;
  if EditorForm is TFmSplitter
   then TFmSplitter(EditorForm).UpdateFrequency;
@@ -864,8 +864,8 @@ end;
 procedure TSplitTemplateDataModule.ParamModeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fSplitType := TSplitType(round(Value));
- case fSplitType of
+ FSplitType := TSplitType(round(Value));
+ case FSplitType of
      stSimple : begin
                  OnProcess := VSTModuleProcess32SplitFrequencySimple;
                  OnProcessReplacing := VSTModuleProcess32SplitFrequencySimple;
@@ -969,11 +969,11 @@ end;
 
 procedure TSplitTemplateDataModule.CheckSampleFrames(const SampleFrames: Integer);
 begin
- if SampleFrames > fMaximumBlockSize then
+ if SampleFrames > FMaximumBlockSize then
   begin
-   fMaximumBlockSize := SampleFrames;
-   if TempBufferSize < fMaximumBlockSize * fOSFactor
-    then TempBufferSize := fMaximumBlockSize * fOSFactor;
+   FMaximumBlockSize := SampleFrames;
+   if TempBufferSize < FMaximumBlockSize * FOSFactor
+    then TempBufferSize := FMaximumBlockSize * FOSFactor;
   end;
 end;
 
@@ -983,15 +983,15 @@ var
 begin
  if VstHost[0].Active then
   begin
-   VstHost[0].ProcessReplacing(@fLow32[0], @fTmpOutput32[0], SampleFrames * fOSFactor);
+   VstHost[0].ProcessReplacing(@FLow32[0], @FTmpOutput32[0], SampleFrames * FOSFactor);
    for ch := 0 to numOutputs - 1
-    do Move(fTmpOutput32[ch, 0], fLow32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+    do Move(FTmpOutput32[ch, 0], FLow32[ch, 0], SampleFrames * SizeOf(Single) * FOSFactor);
   end;
  if VstHost[1].Active then
   begin
-   VstHost[1].ProcessReplacing(@fHigh32[0], @fTmpOutput32[0], SampleFrames * fOSFactor);
+   VstHost[1].ProcessReplacing(@FHigh32[0], @FTmpOutput32[0], SampleFrames * FOSFactor);
    for ch := 0 to numOutputs - 1
-    do Move(fTmpOutput32[ch, 0], fHigh32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+    do Move(FTmpOutput32[ch, 0], FHigh32[ch, 0], SampleFrames * SizeOf(Single) * FOSFactor);
   end;
 end;
 
@@ -1001,15 +1001,15 @@ var
 begin
  if VstHost[0].Active then
   begin
-   VstHost[0].ProcessDoubleReplacing(@fLow64[0], @fTmpOutput64[0], SampleFrames * fOSFactor);
+   VstHost[0].ProcessDoubleReplacing(@FLow64[0], @FTmpOutput64[0], SampleFrames * FOSFactor);
    for ch := 0 to numOutputs - 1
-    do Move(fTmpOutput64[ch, 0], fLow64[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+    do Move(FTmpOutput64[ch, 0], FLow64[ch, 0], SampleFrames * SizeOf(Double) * FOSFactor);
   end;
  if VstHost[1].Active then
   begin
-   VstHost[1].ProcessDoubleReplacing(@fHigh64[0], @fTmpOutput64[0], SampleFrames * fOSFactor);
+   VstHost[1].ProcessDoubleReplacing(@FHigh64[0], @FTmpOutput64[0], SampleFrames * FOSFactor);
    for ch := 0 to numOutputs - 1
-    do Move(fTmpOutput64[ch, 0], fHigh64[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+    do Move(FTmpOutput64[ch, 0], FHigh64[ch, 0], SampleFrames * SizeOf(Double) * FOSFactor);
   end;
 end;
 
@@ -1020,36 +1020,36 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     L := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
-     fOversampler[ch, 0].Upsample32(L, @fLow32[ch, i * fOSFactor]);
-     fOversampler[ch, 1].Upsample32(Inputs[ch, i] - L, @fHigh32[ch, i * fOSFactor]);
+     L := FLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
+     FOversampler[ch, 0].Upsample32(L, @FLow32[ch, i * FOSFactor]);
+     FOversampler[ch, 1].Upsample32(Inputs[ch, i] - L, @FHigh32[ch, i * FOSFactor]);
     end
  else
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     fLow32[ch, i]  := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
-     fHigh32[ch, i] := Inputs[ch, i] - fLow32[ch, i];
+     FLow32[ch, i]  := FLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
+     FHigh32[ch, i] := Inputs[ch, i] - FLow32[ch, i];
     end;
 
  VSTModuleProcess32SplitVST(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     Outputs[ch, i] := fVolumeFactor * (
-        fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]) +
-        fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]));
+     Outputs[ch, i] := FVolumeFactor * (
+        FOversampler[ch, 0].DownSample32(@FLow32[ch, i * FOSFactor]) +
+        FOversampler[ch, 1].DownSample32(@FHigh32[ch, i * FOSFactor]));
     end
  else
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1
-    do Outputs[ch, i] := fVolumeFactor * (fLow32[ch, i] + fHigh32[ch, i]);
+    do Outputs[ch, i] := FVolumeFactor * (FLow32[ch, i] + FHigh32[ch, i]);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess32SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -1058,41 +1058,41 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     fOversampler[ch, 0].Upsample32(
-       fLowpass[ch, 1].ProcessSample(
-       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i])), @fLow32[ch, i * fOSFactor]);
-     fOversampler[ch, 1].Upsample32(
-       fHighpass[ch, 0].ProcessSample(
-       fHighpass[ch, 1].ProcessSample(Inputs[ch, i])), @fHigh32[ch, i * fOSFactor]);
+     FOversampler[ch, 0].Upsample32(
+       FLowpass[ch, 1].ProcessSample(
+       FLowpass[ch, 0].ProcessSample(FLiRiSign * Inputs[ch, i])), @FLow32[ch, i * FOSFactor]);
+     FOversampler[ch, 1].Upsample32(
+       FHighpass[ch, 0].ProcessSample(
+       FHighpass[ch, 1].ProcessSample(Inputs[ch, i])), @FHigh32[ch, i * FOSFactor]);
     end
  else
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     fLow32[ch, i]  := fLowpass[ch, 1].ProcessSample(
-                       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i]));;
-     fHigh32[ch, i] := fHighpass[ch, 0].ProcessSample(
-                       fHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
+     FLow32[ch, i]  := FLowpass[ch, 1].ProcessSample(
+                       FLowpass[ch, 0].ProcessSample(FLiRiSign * Inputs[ch, i]));;
+     FHigh32[ch, i] := FHighpass[ch, 0].ProcessSample(
+                       FHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
     end;
 
  VSTModuleProcess32SplitVST(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     Outputs[ch, i] := fVolumeFactor *
-       (fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]) +
-        fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]));
+     Outputs[ch, i] := FVolumeFactor *
+       (FOversampler[ch, 0].DownSample32(@FLow32[ch, i * FOSFactor]) +
+        FOversampler[ch, 1].DownSample32(@FHigh32[ch, i * FOSFactor]));
     end
  else
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1
-    do Outputs[ch, i] := fVolumeFactor * (fLow32[ch, i] + fHigh32[ch, i]);
+    do Outputs[ch, i] := FVolumeFactor * (FLow32[ch, i] + FHigh32[ch, i]);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess32SplitExciter(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -1101,41 +1101,41 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     fOversampler[ch, 0].Upsample32(
-       fLowpass[ch, 1].ProcessSample(
-       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i])), @fLow32[ch, i * fOSFactor]);
-     fOversampler[ch, 1].Upsample32(
-       fHighpass[ch, 0].ProcessSample(
-       fHighpass[ch, 1].ProcessSample(Inputs[ch, i])), @fHigh32[ch, i * fOSFactor]);
+     FOversampler[ch, 0].Upsample32(
+       FLowpass[ch, 1].ProcessSample(
+       FLowpass[ch, 0].ProcessSample(FLiRiSign * Inputs[ch, i])), @FLow32[ch, i * FOSFactor]);
+     FOversampler[ch, 1].Upsample32(
+       FHighpass[ch, 0].ProcessSample(
+       FHighpass[ch, 1].ProcessSample(Inputs[ch, i])), @FHigh32[ch, i * FOSFactor]);
     end
  else
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     fLow32[ch, i]  := fLowpass[ch, 1].ProcessSample(
-                       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i]));;
-     fHigh32[ch, i] := fHighpass[ch, 0].ProcessSample(
-                       fHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
+     FLow32[ch, i]  := FLowpass[ch, 1].ProcessSample(
+                       FLowpass[ch, 0].ProcessSample(FLiRiSign * Inputs[ch, i]));;
+     FHigh32[ch, i] := FHighpass[ch, 0].ProcessSample(
+                       FHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
     end;
 
  VSTModuleProcess32SplitVST(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     Outputs[ch, i] := fVolumeFactor *
-       (fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]) +
-        fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]));
+     Outputs[ch, i] := FVolumeFactor *
+       (FOversampler[ch, 0].DownSample32(@FLow32[ch, i * FOSFactor]) +
+        FOversampler[ch, 1].DownSample32(@FHigh32[ch, i * FOSFactor]));
     end
  else
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1
-    do Outputs[ch, i] := fVolumeFactor * (fLow32[ch, i] + fHigh32[ch, i]);
+    do Outputs[ch, i] := FVolumeFactor * (FLow32[ch, i] + FHigh32[ch, i]);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess32SplitDynamic(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -1145,43 +1145,43 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample32(Inputs[ch, i], @fTmpOutput32[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample32(Inputs[ch, i], @FTmpOutput32[ch, i * FOSFactor]);
 
    // process
    with VstHost[0] do
-    if Active then ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
    with VstHost[1] do
-    if Active then ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput32[0], @FHigh32[0], SampleFrames * FOSFactor);
 
    for ch := 0 to numOutputs - 1 do
     for i := 0 to SampleFrames - 1 do
      begin
-      L := fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]);
-      H := fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]);
-      fEnvelope[ch, 0] := fLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
-      Outputs[ch, i]   := fVolumeFactor *
-        (fEnvelope[ch, 0] * H + (1 - fEnvelope[ch, 0]) * L);
+      L := FOversampler[ch, 0].DownSample32(@FLow32[ch, i * FOSFactor]);
+      H := FOversampler[ch, 1].DownSample32(@FHigh32[ch, i * FOSFactor]);
+      FEnvelope[ch, 0] := FLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
+      Outputs[ch, i]   := FVolumeFactor *
+        (FEnvelope[ch, 0] * H + (1 - FEnvelope[ch, 0]) * L);
      end;
   end
  else
   begin
    // directly process both VSTs to the low/high buffers
    with VstHost[0] do
-    if Active then ProcessReplacing(@Inputs[0], @fLow32[0], SampleFrames);
+    if Active then ProcessReplacing(@Inputs[0], @FLow32[0], SampleFrames);
    with VstHost[1] do
-    if Active then ProcessReplacing(@Inputs[0], @fHigh32[0], SampleFrames);
+    if Active then ProcessReplacing(@Inputs[0], @FHigh32[0], SampleFrames);
 
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1 do
      begin
-      fEnvelope[ch, 0]  := fLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
-      Outputs[ch, i] := fVolumeFactor *
-        (fEnvelope[ch, 0] * fHigh32[ch, i] + (1 - fEnvelope[ch, 0]) * fLow32[ch, i]);
+      FEnvelope[ch, 0]  := FLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
+      Outputs[ch, i] := FVolumeFactor *
+        (FEnvelope[ch, 0] * FHigh32[ch, i] + (1 - FEnvelope[ch, 0]) * FLow32[ch, i]);
      end;
   end;
 end;
@@ -1191,7 +1191,7 @@ procedure TSplitTemplateDataModule.VSTModuleProcess32Bypass(const Inputs,
 var
   ch  : Integer;
 begin
- for ch := 0 to fMinChannels - 1
+ for ch := 0 to FMinChannels - 1
   do Move(Inputs[ch, 0], Outputs[ch, 0], SampleFrames * SizeOf(Single));
 end;
 
@@ -1201,45 +1201,45 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample32(Inputs[ch, i], @fTmpOutput32[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample32(Inputs[ch, i], @FTmpOutput32[ch, i * FOSFactor]);
 
    // process serial chain
    if VstHost[0].Active then
     begin
-     VstHost[0].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+     VstHost[0].ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
      for ch := 0 to numOutputs - 1
-      do Move(fLow32[ch, 0], fTmpOutput32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+      do Move(FLow32[ch, 0], FTmpOutput32[ch, 0], SampleFrames * SizeOf(Single) * FOSFactor);
     end;
    if VstHost[1].Active then
     begin
-     VstHost[1].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+     VstHost[1].ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
      for ch := 0 to numOutputs - 1
-      do Move(fLow32[ch, 0], fTmpOutput32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+      do Move(FLow32[ch, 0], FTmpOutput32[ch, 0], SampleFrames * SizeOf(Single) * FOSFactor);
     end;
 
    // downsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do Outputs[ch, i] := fVolumeFactor * fOversampler[ch, 0].Downsample32(@fTmpOutput32[ch, i * fOSFactor]);
+     do Outputs[ch, i] := FVolumeFactor * FOversampler[ch, 0].Downsample32(@FTmpOutput32[ch, i * FOSFactor]);
   end
  else
   begin
    if VstHost[0].Active then
     begin
-     VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor);
+     VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor);
 
      // move output to input to prepare for the next stage
      if VstHost[1].Active then
-      for ch := 0 to fMinChannels - 1
-       do Move(Outputs[ch, 0], Inputs[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+      for ch := 0 to FMinChannels - 1
+       do Move(Outputs[ch, 0], Inputs[ch, 0], SampleFrames * SizeOf(Single) * FOSFactor);
     end;
    if VstHost[1].Active
-    then VstHost[1].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor);
+    then VstHost[1].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor);
   end;
 end;
 
@@ -1251,20 +1251,20 @@ begin
 
  if numInputs = 1 then
   begin
-   if fOSActive then
+   if FOSActive then
     begin
      for i := 0 to SampleFrames - 1
-      do fOversampler[0, 0].Upsample32(Inputs[0, i], @fTmpOutput32[0, i * fOSFactor]);
+      do FOversampler[0, 0].Upsample32(Inputs[0, i], @FTmpOutput32[0, i * FOSFactor]);
 
      if VstHost[0].Active
-      then VstHost[0].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+      then VstHost[0].ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
      if VstHost[1].Active
-      then VstHost[1].ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+      then VstHost[1].ProcessReplacing(@FTmpOutput32[0], @FHigh32[0], SampleFrames * FOSFactor);
 
      for i := 0 to SampleFrames - 1 do
       begin
-       Outputs[0, i] := fVolumeFactor * fOversampler[0, 0].DownSample32(@fLow32[0, i * fOSFactor]);
-       Outputs[1, i] := fVolumeFactor * fOversampler[1, 0].DownSample32(@fHigh32[0, i * fOSFactor]);
+       Outputs[0, i] := FVolumeFactor * FOversampler[0, 0].DownSample32(@FLow32[0, i * FOSFactor]);
+       Outputs[1, i] := FVolumeFactor * FOversampler[1, 0].DownSample32(@FHigh32[0, i * FOSFactor]);
       end
     end
    else
@@ -1277,48 +1277,48 @@ begin
   end
  else
   begin
-   if fOSActive then
+   if FOSActive then
     begin
      // upsample left channel
      for i := 0 to SampleFrames - 1
-      do fOversampler[0, 0].Upsample32(Inputs[0, i], @fTmpOutput32[0, i * fOSFactor]);
-     move(fTmpOutput32[0, 0], fTmpOutput32[1, 0], SampleFrames * fOSFactor * SizeOf(Single));
+      do FOversampler[0, 0].Upsample32(Inputs[0, i], @FTmpOutput32[0, i * FOSFactor]);
+     move(FTmpOutput32[0, 0], FTmpOutput32[1, 0], SampleFrames * FOSFactor * SizeOf(Single));
 
      if VstHost[0].Active
-      then VstHost[0].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+      then VstHost[0].ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
 
      // upsample right channel
      for i := 0 to SampleFrames - 1
-      do fOversampler[1, 0].Upsample32(Inputs[1, i], @fTmpOutput32[0, i * fOSFactor]);
-     move(fTmpOutput32[0, 0], fTmpOutput32[1, 0], SampleFrames * fOSFactor * SizeOf(Single));
+      do FOversampler[1, 0].Upsample32(Inputs[1, i], @FTmpOutput32[0, i * FOSFactor]);
+     move(FTmpOutput32[0, 0], FTmpOutput32[1, 0], SampleFrames * FOSFactor * SizeOf(Single));
 
      if VstHost[1].Active
-      then VstHost[1].ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+      then VstHost[1].ProcessReplacing(@FTmpOutput32[0], @FHigh32[0], SampleFrames * FOSFactor);
 
      for i := 0 to SampleFrames - 1 do
       begin
-       Outputs[0, i] := fVolumeFactor * fOversampler[0, 0].DownSample32(@fLow32[0, i * fOSFactor]);
-       Outputs[1, i] := fVolumeFactor * fOversampler[1, 0].DownSample32(@fHigh32[0, i * fOSFactor]);
+       Outputs[0, i] := FVolumeFactor * FOversampler[0, 0].DownSample32(@FLow32[0, i * FOSFactor]);
+       Outputs[1, i] := FVolumeFactor * FOversampler[1, 0].DownSample32(@FHigh32[0, i * FOSFactor]);
       end
     end
    else
     begin
      // move left channel
-     move(Inputs[0, 0], fTmpOutput32[0, 0], SampleFrames * SizeOf(Single));
-     move(Inputs[0, 0], fTmpOutput32[1, 0], SampleFrames * SizeOf(Single));
+     move(Inputs[0, 0], FTmpOutput32[0, 0], SampleFrames * SizeOf(Single));
+     move(Inputs[0, 0], FTmpOutput32[1, 0], SampleFrames * SizeOf(Single));
 
      if VstHost[0].Active
-      then VstHost[0].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames);
+      then VstHost[0].ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames);
 
      // move right channel
-     move(Inputs[1, 0], fTmpOutput32[0, 0], SampleFrames * SizeOf(Single));
-     move(Inputs[1, 0], fTmpOutput32[1, 0], SampleFrames * SizeOf(Single));
+     move(Inputs[1, 0], FTmpOutput32[0, 0], SampleFrames * SizeOf(Single));
+     move(Inputs[1, 0], FTmpOutput32[1, 0], SampleFrames * SizeOf(Single));
 
      if VstHost[1].Active
-      then VstHost[1].ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames);
+      then VstHost[1].ProcessReplacing(@FTmpOutput32[0], @FHigh32[0], SampleFrames);
 
-     move(fLow32[0, 0],  Outputs[0, 0], SampleFrames * SizeOf(Single));
-     move(fHigh32[0, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
+     move(FLow32[0, 0],  Outputs[0, 0], SampleFrames * SizeOf(Single));
+     move(FHigh32[0, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
     end;
   end;
 end;
@@ -1332,52 +1332,52 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample32(Inputs[ch, i], @fTmpOutput32[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample32(Inputs[ch, i], @FTmpOutput32[ch, i * FOSFactor]);
 
    // process
    with VstHost[0] do
-    if Active then ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
    with VstHost[1] do
-    if Active then ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput32[0], @FHigh32[0], SampleFrames * FOSFactor);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to min(2, numOutputs) - 1 do
       begin
-       Data[ch, 0] := fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]);
-       Data[ch, 1] := fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]);
+       Data[ch, 0] := FOversampler[ch, 0].DownSample32(@FLow32[ch, i * FOSFactor]);
+       Data[ch, 1] := FOversampler[ch, 1].DownSample32(@FHigh32[ch, i * FOSFactor]);
       end;
-     fSineLFO.CalculateNextSample;
-     Pan[0] := (0.5 + 0.5 * fSineLFO.Cosine); Pan[1] := 1 - Pan[0];
-     Outputs[0, i] := fVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
-     Outputs[1, i] := fVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
+     FSineLFO.CalculateNextSample;
+     Pan[0] := (0.5 + 0.5 * FSineLFO.Cosine); Pan[1] := 1 - Pan[0];
+     Outputs[0, i] := FVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
+     Outputs[1, i] := FVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
     end;
   end
  else
   begin
    // directly process both VSTs to the low/high buffers
    with VstHost[0] do
-    if Active then ProcessReplacing(@Inputs[0], @fLow32[0], SampleFrames);
+    if Active then ProcessReplacing(@Inputs[0], @FLow32[0], SampleFrames);
    with VstHost[1] do
-    if Active then ProcessReplacing(@Inputs[0], @fHigh32[0], SampleFrames);
+    if Active then ProcessReplacing(@Inputs[0], @FHigh32[0], SampleFrames);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to min(2, numOutputs) - 1 do
       begin
-       Data[ch, 0] := fLow32[ch, i];
-       Data[ch, 1] := fHigh32[ch, i];
+       Data[ch, 0] := FLow32[ch, i];
+       Data[ch, 1] := FHigh32[ch, i];
       end;
-     fSineLFO.CalculateNextSample;
+     FSineLFO.CalculateNextSample;
 
-     Pan[0] := (0.5 + 0.5 * fSineLFO.Cosine); Pan[1] := 1 - Pan[0];
-     Outputs[0, i] := fVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
-     Outputs[1, i] := fVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
+     Pan[0] := (0.5 + 0.5 * FSineLFO.Cosine); Pan[1] := 1 - Pan[0];
+     Outputs[0, i] := FVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
+     Outputs[1, i] := FVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
     end;
   end;
 end;
@@ -1391,52 +1391,52 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample32(Inputs[ch, i], @fTmpOutput32[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample32(Inputs[ch, i], @FTmpOutput32[ch, i * FOSFactor]);
 
    // process
    with VstHost[0] do
-    if Active then ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
    with VstHost[1] do
-    if Active then ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput32[0], @FHigh32[0], SampleFrames * FOSFactor);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to min(2, numOutputs) - 1 do
       begin
-       Data[ch, 0] := fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]);
-       Data[ch, 1] := fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]);
+       Data[ch, 0] := FOversampler[ch, 0].DownSample32(@FLow32[ch, i * FOSFactor]);
+       Data[ch, 1] := FOversampler[ch, 1].DownSample32(@FHigh32[ch, i * FOSFactor]);
       end;
-     fSineLFO.CalculateNextSample;
-     Pan[0] := (0.5 + 0.5 * fSineLFO.Cosine); Pan[1] := 1 - Pan[0];
-     Outputs[0, i] := fVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
-     Outputs[1, i] := fVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
+     FSineLFO.CalculateNextSample;
+     Pan[0] := (0.5 + 0.5 * FSineLFO.Cosine); Pan[1] := 1 - Pan[0];
+     Outputs[0, i] := FVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
+     Outputs[1, i] := FVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
     end;
   end
  else
   begin
    // directly process both VSTs to the low/high buffers
    with VstHost[0] do
-    if Active then ProcessReplacing(@Inputs[0], @fLow32[0], SampleFrames);
+    if Active then ProcessReplacing(@Inputs[0], @FLow32[0], SampleFrames);
    with VstHost[1] do
-    if Active then ProcessReplacing(@Inputs[0], @fHigh32[0], SampleFrames);
+    if Active then ProcessReplacing(@Inputs[0], @FHigh32[0], SampleFrames);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to min(2, numOutputs) - 1 do
       begin
-       Data[ch, 0] := fLow32[ch, i];
-       Data[ch, 1] := fHigh32[ch, i];
+       Data[ch, 0] := FLow32[ch, i];
+       Data[ch, 1] := FHigh32[ch, i];
       end;
-     fSineLFO.CalculateNextSample;
+     FSineLFO.CalculateNextSample;
 
-     Pan[0] := (0.5 + 0.5 * fSineLFO.Cosine); Pan[1] := 1 - Pan[0];
-     Outputs[0, i] := fVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
-     Outputs[1, i] := fVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
+     Pan[0] := (0.5 + 0.5 * FSineLFO.Cosine); Pan[1] := 1 - Pan[0];
+     Outputs[0, i] := FVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
+     Outputs[1, i] := FVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
     end;
   end;
 end;
@@ -1450,20 +1450,20 @@ begin
 
  if numInputs = 1 then // process mono here
   begin
-   if fOSActive then
+   if FOSActive then
     begin
      for i := 0 to SampleFrames - 1
-      do fOversampler[0, 0].Upsample32(Inputs[0, i], @fTmpOutput32[0, i * fOSFactor]);
+      do FOversampler[0, 0].Upsample32(Inputs[0, i], @FTmpOutput32[0, i * FOSFactor]);
 
      if VstHost[0].Active
-      then VstHost[0].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+      then VstHost[0].ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
      if VstHost[1].Active
-      then VstHost[1].ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+      then VstHost[1].ProcessReplacing(@FTmpOutput32[0], @FHigh32[0], SampleFrames * FOSFactor);
 
      for i := 0 to SampleFrames - 1 do
       begin
-       Outputs[0, i] := fVolumeFactor * (fOversampler[0, 0].DownSample32(@fLow32[0, i * fOSFactor]));
-       Outputs[1, i] := fVolumeFactor * (fOversampler[1, 0].DownSample32(@fHigh32[0, i * fOSFactor]));
+       Outputs[0, i] := FVolumeFactor * (FOversampler[0, 0].DownSample32(@FLow32[0, i * FOSFactor]));
+       Outputs[1, i] := FVolumeFactor * (FOversampler[1, 0].DownSample32(@FHigh32[0, i * FOSFactor]));
       end
     end
    else
@@ -1477,38 +1477,38 @@ begin
  else
   begin
    // upsample or move channels
-   if fOSActive then
+   if FOSActive then
     for i := 0 to SampleFrames - 1 do
      begin
-      fOversampler[0, 0].Upsample32(Inputs[0, i] + Inputs[1, i], @fLow32[0, i * fOSFactor]);
-      fOversampler[0, 1].Upsample32(Inputs[0, i] - Inputs[1, i], @fHigh32[0, i * fOSFactor]);
+      FOversampler[0, 0].Upsample32(Inputs[0, i] + Inputs[1, i], @FLow32[0, i * FOSFactor]);
+      FOversampler[0, 1].Upsample32(Inputs[0, i] - Inputs[1, i], @FHigh32[0, i * FOSFactor]);
      end
    else
     for i := 0 to SampleFrames - 1 do
      begin
-      fLow32[0, i]  := Inputs[0, i] + Inputs[1, i];
-      fHigh32[0, i] := Inputs[0, i] - Inputs[1, i];
+      FLow32[0, i]  := Inputs[0, i] + Inputs[1, i];
+      FHigh32[0, i] := Inputs[0, i] - Inputs[1, i];
      end;
    // dublicate internal channels
-   Move(fLow32[0, 0], fLow32[1, 0], SampleFrames * SizeOf(Single) * fOSFactor);
-   Move(fHigh32[0, 0], fHigh32[1, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+   Move(FLow32[0, 0], FLow32[1, 0], SampleFrames * SizeOf(Single) * FOSFactor);
+   Move(FHigh32[0, 0], FHigh32[1, 0], SampleFrames * SizeOf(Single) * FOSFactor);
 
    VSTModuleProcess32SplitVST(SampleFrames);
 
    // downsample or move channels
-   if fOSActive then
+   if FOSActive then
     for i := 0 to SampleFrames - 1 do
      begin
-      L := fOversampler[0, 0].Downsample32(@fLow32[0, i * fOSFactor]);
-      H := fOversampler[0, 1].Downsample32(@fHigh32[0, i * fOSFactor]);
-      Outputs[0, i] := fVolumeFactor * 0.5 * (L + H);
-      Outputs[1, i] := fVolumeFactor * 0.5 * (L - H);
+      L := FOversampler[0, 0].Downsample32(@FLow32[0, i * FOSFactor]);
+      H := FOversampler[0, 1].Downsample32(@FHigh32[0, i * FOSFactor]);
+      Outputs[0, i] := FVolumeFactor * 0.5 * (L + H);
+      Outputs[1, i] := FVolumeFactor * 0.5 * (L - H);
      end
    else
     for i := 0 to SampleFrames - 1 do
      begin
-      Outputs[0, i] := fVolumeFactor * 0.5 * (fLow32[0, i] + fHigh32[0, i]);
-      Outputs[1, i] := fVolumeFactor * 0.5 * (fLow32[0, i] - fHigh32[0, i]);
+      Outputs[0, i] := FVolumeFactor * 0.5 * (FLow32[0, i] + FHigh32[0, i]);
+      Outputs[1, i] := FVolumeFactor * 0.5 * (FLow32[0, i] - FHigh32[0, i]);
      end;
   end;
 end;
@@ -1520,33 +1520,33 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample32(Inputs[ch, i], @fTmpOutput32[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample32(Inputs[ch, i], @FTmpOutput32[ch, i * FOSFactor]);
 
    // process serial chain
-   if VstHost[fPlugNr].Active then
+   if VstHost[FPlugNr].Active then
     begin
-     VstHost[fPlugNr].ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+     VstHost[FPlugNr].ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
      for ch := 0 to numOutputs - 1
-      do Move(fLow32[ch, 0], fTmpOutput32[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+      do Move(FLow32[ch, 0], FTmpOutput32[ch, 0], SampleFrames * SizeOf(Single) * FOSFactor);
     end;
 
    // downsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do Outputs[ch, i] := fVolumeFactor * fOversampler[ch, 0].Downsample32(@fTmpOutput32[ch, i * fOSFactor]);
+     do Outputs[ch, i] := FVolumeFactor * FOversampler[ch, 0].Downsample32(@FTmpOutput32[ch, i * FOSFactor]);
   end
  else
   begin
-   if VstHost[fPlugNr].Active
-    then VstHost[fPlugNr].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor)
+   if VstHost[FPlugNr].Active
+    then VstHost[FPlugNr].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor)
     else
-     for ch := 0 to fMinChannels - 1
-      do Move(Inputs[ch, 0], Outputs[ch, 0], SampleFrames * SizeOf(Single) * fOSFactor);
+     for ch := 0 to FMinChannels - 1
+      do Move(Inputs[ch, 0], Outputs[ch, 0], SampleFrames * SizeOf(Single) * FOSFactor);
   end;
 end;
 
@@ -1564,32 +1564,32 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample32(Inputs[ch, i], @fTmpOutput32[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample32(Inputs[ch, i], @FTmpOutput32[ch, i * FOSFactor]);
 
    // process
    with VstHost[0] do
-    if Active then ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
    with VstHost[1] do
-    if Active then ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput32[0], @FHigh32[0], SampleFrames * FOSFactor);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to min(2, numOutputs) - 1 do
       begin
-       Data[ch, 0] := fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]);
-       Data[ch, 1] := fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]);
+       Data[ch, 0] := FOversampler[ch, 0].DownSample32(@FLow32[ch, i * FOSFactor]);
+       Data[ch, 1] := FOversampler[ch, 1].DownSample32(@FHigh32[ch, i * FOSFactor]);
       end;
-     fSineLFO.CalculateNextSample;
+     FSineLFO.CalculateNextSample;
 
-     Pan[0, 0] := sqr(SimpleDiode(abs(fSineLFO.Cosine) - fSineLFO.Cosine));
-     Pan[0, 1] := sqr(SimpleDiode(abs(fSineLFO.Cosine) + fSineLFO.Cosine));
-     Pan[1, 0] := sqr(SimpleDiode(abs(fSineLFO.Sine) - fSineLFO.Sine));
-     Pan[1, 1] := sqr(SimpleDiode(abs(fSineLFO.Sine) + fSineLFO.Sine));
+     Pan[0, 0] := sqr(SimpleDiode(abs(FSineLFO.Cosine) - FSineLFO.Cosine));
+     Pan[0, 1] := sqr(SimpleDiode(abs(FSineLFO.Cosine) + FSineLFO.Cosine));
+     Pan[1, 0] := sqr(SimpleDiode(abs(FSineLFO.Sine) - FSineLFO.Sine));
+     Pan[1, 1] := sqr(SimpleDiode(abs(FSineLFO.Sine) + FSineLFO.Sine));
 
      Outputs[0, i] := Pan[0, 0] * Data[0, 0] +
                       Pan[1, 0] * Data[1, 0] +
@@ -1605,23 +1605,23 @@ begin
   begin
    // directly process both VSTs to the low/high buffers
    with VstHost[0] do
-    if Active then ProcessReplacing(@Inputs[0], @fLow32[0], SampleFrames);
+    if Active then ProcessReplacing(@Inputs[0], @FLow32[0], SampleFrames);
    with VstHost[1] do
-    if Active then ProcessReplacing(@Inputs[0], @fHigh32[0], SampleFrames);
+    if Active then ProcessReplacing(@Inputs[0], @FHigh32[0], SampleFrames);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to min(2, numOutputs) - 1 do
       begin
-       Data[ch, 0] := fLow32[ch, i];
-       Data[ch, 1] := fHigh32[ch, i];
+       Data[ch, 0] := FLow32[ch, i];
+       Data[ch, 1] := FHigh32[ch, i];
       end;
-     fSineLFO.CalculateNextSample;
+     FSineLFO.CalculateNextSample;
 
-     Pan[0, 0] := sqr(0.5 * SimpleDiode(abs(fSineLFO.Cosine) - fSineLFO.Cosine));
-     Pan[0, 1] := sqr(0.5 * SimpleDiode(abs(fSineLFO.Cosine) + fSineLFO.Cosine));
-     Pan[1, 0] := sqr(0.5 * SimpleDiode(abs(fSineLFO.Sine) - fSineLFO.Sine));
-     Pan[1, 1] := sqr(0.5 * SimpleDiode(abs(fSineLFO.Sine) + fSineLFO.Sine));
+     Pan[0, 0] := sqr(0.5 * SimpleDiode(abs(FSineLFO.Cosine) - FSineLFO.Cosine));
+     Pan[0, 1] := sqr(0.5 * SimpleDiode(abs(FSineLFO.Cosine) + FSineLFO.Cosine));
+     Pan[1, 0] := sqr(0.5 * SimpleDiode(abs(FSineLFO.Sine) - FSineLFO.Sine));
+     Pan[1, 1] := sqr(0.5 * SimpleDiode(abs(FSineLFO.Sine) + FSineLFO.Sine));
 
      Outputs[0, i] := Pan[0, 0] * Data[0, 0] +
                       Pan[1, 0] * Data[1, 0] +
@@ -1642,44 +1642,44 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample32(Inputs[ch, i], @fTmpOutput32[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample32(Inputs[ch, i], @FTmpOutput32[ch, i * FOSFactor]);
 
    // process
    with VstHost[0] do
-    if Active then ProcessReplacing(@fTmpOutput32[0], @fLow32[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput32[0], @FLow32[0], SampleFrames * FOSFactor);
    with VstHost[1] do
-    if Active then ProcessReplacing(@fTmpOutput32[0], @fHigh32[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput32[0], @FHigh32[0], SampleFrames * FOSFactor);
 
    for ch := 0 to numOutputs - 1 do
     for i := 0 to SampleFrames - 1 do
      begin
-      L := fOversampler[ch, 0].DownSample32(@fLow32[ch, i * fOSFactor]);
-      H := fOversampler[ch, 1].DownSample32(@fHigh32[ch, i * fOSFactor]);
-      fEnvelope[ch, 0] := fReleaseFactor[0] * fEnvelope[ch, 0] +
-                          fAttackFactor[0] * SimpleDiode(abs(Inputs[ch, i]) - fEnvelope[ch, 0]);
-      Outputs[ch, i] := fVolumeFactor * (fEnvelope[ch, 0] * H + (1 - fEnvelope[ch, 0]) * L);
+      L := FOversampler[ch, 0].DownSample32(@FLow32[ch, i * FOSFactor]);
+      H := FOversampler[ch, 1].DownSample32(@FHigh32[ch, i * FOSFactor]);
+      FEnvelope[ch, 0] := FReleaseFactor[0] * FEnvelope[ch, 0] +
+                          FAttackFactor[0] * SimpleDiode(abs(Inputs[ch, i]) - FEnvelope[ch, 0]);
+      Outputs[ch, i] := FVolumeFactor * (FEnvelope[ch, 0] * H + (1 - FEnvelope[ch, 0]) * L);
      end;
   end
  else
   begin
    // directly process both VSTs to the low/high buffers
    with VstHost[0] do
-    if Active then ProcessReplacing(@Inputs[0], @fLow32[0], SampleFrames);
+    if Active then ProcessReplacing(@Inputs[0], @FLow32[0], SampleFrames);
    with VstHost[1] do
-    if Active then ProcessReplacing(@Inputs[0], @fHigh32[0], SampleFrames);
+    if Active then ProcessReplacing(@Inputs[0], @FHigh32[0], SampleFrames);
 
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1 do
      begin
-      fEnvelope[ch, 0] := fReleaseFactor[0] * fEnvelope[ch, 0] +
-                          fAttackFactor[0] * SimpleDiode(abs(Inputs[ch, i]) - fEnvelope[ch, 0]);
-      Outputs[ch, i]   := fVolumeFactor *
-        (fEnvelope[ch, 0] * fHigh32[ch, i] + (1 - fEnvelope[ch, 0]) * fLow32[ch, i]);
+      FEnvelope[ch, 0] := FReleaseFactor[0] * FEnvelope[ch, 0] +
+                          FAttackFactor[0] * SimpleDiode(abs(Inputs[ch, i]) - FEnvelope[ch, 0]);
+      Outputs[ch, i]   := FVolumeFactor *
+        (FEnvelope[ch, 0] * FHigh32[ch, i] + (1 - FEnvelope[ch, 0]) * FLow32[ch, i]);
      end;
   end;
 end;
@@ -1693,36 +1693,36 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     L := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
-     fOversampler[ch, 0].Upsample64(L, @fLow64[ch, i * fOSFactor]);
-     fOversampler[ch, 1].Upsample64(Inputs[ch, i] - L, @fHigh64[ch, i * fOSFactor]);
+     L := FLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
+     FOversampler[ch, 0].Upsample64(L, @FLow64[ch, i * FOSFactor]);
+     FOversampler[ch, 1].Upsample64(Inputs[ch, i] - L, @FHigh64[ch, i * FOSFactor]);
     end
  else
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     fLow64[ch, i]  := fLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
-     fHigh64[ch, i] := Inputs[ch, i] - fLow64[ch, i];
+     FLow64[ch, i]  := FLowpass[ch, 0].ProcessSample(Inputs[ch, i]);
+     FHigh64[ch, i] := Inputs[ch, i] - FLow64[ch, i];
     end;
 
  VSTModuleProcess64SplitVST(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     Outputs[ch, i] := fVolumeFactor *
-       (fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]) +
-        fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]));
+     Outputs[ch, i] := FVolumeFactor *
+       (FOversampler[ch, 0].DownSample64(@FLow64[ch, i * FOSFactor]) +
+        FOversampler[ch, 1].DownSample64(@FHigh64[ch, i * FOSFactor]));
     end
  else
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1
-    do Outputs[ch, i] := fVolumeFactor * (fLow64[ch, i] + fHigh64[ch, i]);
+    do Outputs[ch, i] := FVolumeFactor * (FLow64[ch, i] + FHigh64[ch, i]);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess64SplitFrequencyLiRi(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -1731,41 +1731,41 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     fOversampler[ch, 0].Upsample64(
-       fLowpass[ch, 1].ProcessSample(
-       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i])), @fLow64[ch, i * fOSFactor]);
-     fOversampler[ch, 1].Upsample64(
-       fHighpass[ch, 0].ProcessSample(
-       fHighpass[ch, 1].ProcessSample(Inputs[ch, i])), @fHigh64[ch, i * fOSFactor]);
+     FOversampler[ch, 0].Upsample64(
+       FLowpass[ch, 1].ProcessSample(
+       FLowpass[ch, 0].ProcessSample(FLiRiSign * Inputs[ch, i])), @FLow64[ch, i * FOSFactor]);
+     FOversampler[ch, 1].Upsample64(
+       FHighpass[ch, 0].ProcessSample(
+       FHighpass[ch, 1].ProcessSample(Inputs[ch, i])), @FHigh64[ch, i * FOSFactor]);
     end
  else
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     fLow64[ch, i]  := fLowpass[ch, 1].ProcessSample(
-                       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i]));;
-     fHigh64[ch, i] := fHighpass[ch, 0].ProcessSample(
-                       fHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
+     FLow64[ch, i]  := FLowpass[ch, 1].ProcessSample(
+                       FLowpass[ch, 0].ProcessSample(FLiRiSign * Inputs[ch, i]));;
+     FHigh64[ch, i] := FHighpass[ch, 0].ProcessSample(
+                       FHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
     end;
 
  VSTModuleProcess64SplitVST(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     Outputs[ch, i] := fVolumeFactor *
-       (fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]) +
-        fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]));
+     Outputs[ch, i] := FVolumeFactor *
+       (FOversampler[ch, 0].DownSample64(@FLow64[ch, i * FOSFactor]) +
+        FOversampler[ch, 1].DownSample64(@FHigh64[ch, i * FOSFactor]));
     end
  else
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1
-    do Outputs[ch, i] := fVolumeFactor * (fLow64[ch, i] + fHigh64[ch, i]);
+    do Outputs[ch, i] := FVolumeFactor * (FLow64[ch, i] + FHigh64[ch, i]);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess64SplitExciter(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -1774,41 +1774,41 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     fOversampler[ch, 0].Upsample64(
-       fLowpass[ch, 1].ProcessSample(
-       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i])), @fLow64[ch, i * fOSFactor]);
-     fOversampler[ch, 1].Upsample64(
-       fHighpass[ch, 0].ProcessSample(
-       fHighpass[ch, 1].ProcessSample(Inputs[ch, i])), @fHigh64[ch, i * fOSFactor]);
+     FOversampler[ch, 0].Upsample64(
+       FLowpass[ch, 1].ProcessSample(
+       FLowpass[ch, 0].ProcessSample(FLiRiSign * Inputs[ch, i])), @FLow64[ch, i * FOSFactor]);
+     FOversampler[ch, 1].Upsample64(
+       FHighpass[ch, 0].ProcessSample(
+       FHighpass[ch, 1].ProcessSample(Inputs[ch, i])), @FHigh64[ch, i * FOSFactor]);
     end
  else
   for ch := 0 to numInputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     fLow64[ch, i]  := fLowpass[ch, 1].ProcessSample(
-                       fLowpass[ch, 0].ProcessSample(fLiRiSign * Inputs[ch, i]));;
-     fHigh64[ch, i] := fHighpass[ch, 0].ProcessSample(
-                       fHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
+     FLow64[ch, i]  := FLowpass[ch, 1].ProcessSample(
+                       FLowpass[ch, 0].ProcessSample(FLiRiSign * Inputs[ch, i]));;
+     FHigh64[ch, i] := FHighpass[ch, 0].ProcessSample(
+                       FHighpass[ch, 1].ProcessSample(Inputs[ch, i]));
     end;
 
  VSTModuleProcess64SplitVST(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1 do
     begin
-     Outputs[ch, i] := fVolumeFactor *
-       (fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]) +
-        fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]));
+     Outputs[ch, i] := FVolumeFactor *
+       (FOversampler[ch, 0].DownSample64(@FLow64[ch, i * FOSFactor]) +
+        FOversampler[ch, 1].DownSample64(@FHigh64[ch, i * FOSFactor]));
     end
  else
   for ch := 0 to numOutputs - 1 do
    for i := 0 to SampleFrames - 1
-    do Outputs[ch, i] := fVolumeFactor * (fLow64[ch, i] + fHigh64[ch, i]);
+    do Outputs[ch, i] := FVolumeFactor * (FLow64[ch, i] + FHigh64[ch, i]);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess64SplitDynamic(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -1818,43 +1818,43 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample64(Inputs[ch, i], @fTmpOutput64[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample64(Inputs[ch, i], @FTmpOutput64[ch, i * FOSFactor]);
 
    // process
    with VstHost[0] do
-    if Active then ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+    if Active then ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
    with VstHost[1] do
-    if Active then ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+    if Active then ProcessDoubleReplacing(@FTmpOutput64[0], @FHigh64[0], SampleFrames * FOSFactor);
 
    for ch := 0 to numOutputs - 1 do
     for i := 0 to SampleFrames - 1 do
      begin
-      L := fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]);
-      H := fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]);
-      fEnvelope[ch, 0] := fLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
-      Outputs[ch, i]   := fVolumeFactor *
-        (fEnvelope[ch, 0] * H + (1 - fEnvelope[ch, 0]) * L);
+      L := FOversampler[ch, 0].DownSample64(@FLow64[ch, i * FOSFactor]);
+      H := FOversampler[ch, 1].DownSample64(@FHigh64[ch, i * FOSFactor]);
+      FEnvelope[ch, 0] := FLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
+      Outputs[ch, i]   := FVolumeFactor *
+        (FEnvelope[ch, 0] * H + (1 - FEnvelope[ch, 0]) * L);
      end;
   end
  else
   begin
    // directly process both VSTs to the low/high buffers
    with VstHost[0] do
-    if Active then ProcessDoubleReplacing(@Inputs[0], @fLow64[0], SampleFrames);
+    if Active then ProcessDoubleReplacing(@Inputs[0], @FLow64[0], SampleFrames);
    with VstHost[1] do
-    if Active then ProcessDoubleReplacing(@Inputs[0], @fHigh64[0], SampleFrames);
+    if Active then ProcessDoubleReplacing(@Inputs[0], @FHigh64[0], SampleFrames);
 
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1 do
      begin
-      fEnvelope[ch, 0] := fLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
-      Outputs[ch, i]   := fVolumeFactor *
-        (fEnvelope[ch, 0] * fHigh64[ch, i] + (1 - fEnvelope[ch, 0]) * fLow64[ch, i]);
+      FEnvelope[ch, 0] := FLowpass[ch, 0].ProcessSample(abs(Inputs[ch, i]));
+      Outputs[ch, i]   := FVolumeFactor *
+        (FEnvelope[ch, 0] * FHigh64[ch, i] + (1 - FEnvelope[ch, 0]) * FLow64[ch, i]);
      end;
   end;
 end;
@@ -1864,7 +1864,7 @@ procedure TSplitTemplateDataModule.VSTModuleProcess64Bypass(const Inputs,
 var
   ch  : Integer;
 begin
- for ch := 0 to fMinChannels - 1
+ for ch := 0 to FMinChannels - 1
   do Move(Inputs[ch, 0], Outputs[ch, 0], SampleFrames * SizeOf(Double));  
 end;
 
@@ -1874,45 +1874,45 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample64(Inputs[ch, i], @fTmpOutput64[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample64(Inputs[ch, i], @FTmpOutput64[ch, i * FOSFactor]);
 
    // process serial chain
    if VstHost[0].Active then
     begin
-     VstHost[0].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+     VstHost[0].ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
      for ch := 0 to numOutputs - 1
-      do Move(fLow64[ch, 0], fTmpOutput64[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+      do Move(FLow64[ch, 0], FTmpOutput64[ch, 0], SampleFrames * SizeOf(Double) * FOSFactor);
     end;
    if VstHost[1].Active then
     begin
-     VstHost[1].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+     VstHost[1].ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
      for ch := 0 to numOutputs - 1
-      do Move(fLow64[ch, 0], fTmpOutput64[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+      do Move(FLow64[ch, 0], FTmpOutput64[ch, 0], SampleFrames * SizeOf(Double) * FOSFactor);
     end;
 
    // downsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do Outputs[ch, i] := fVolumeFactor * fOversampler[ch, 0].Downsample64(@fTmpOutput64[ch, i * fOSFactor]);
+     do Outputs[ch, i] := FVolumeFactor * FOversampler[ch, 0].Downsample64(@FTmpOutput64[ch, i * FOSFactor]);
   end
  else
   begin
    if VstHost[0].Active then
     begin
-     VstHost[0].ProcessDoubleReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor);
+     VstHost[0].ProcessDoubleReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor);
 
      // move output to input to prepare for the next stage
      if VstHost[1].Active then
-      for ch := 0 to fMinChannels - 1
-       do Move(Outputs[ch, 0], Inputs[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+      for ch := 0 to FMinChannels - 1
+       do Move(Outputs[ch, 0], Inputs[ch, 0], SampleFrames * SizeOf(Double) * FOSFactor);
     end;
    if VstHost[1].Active
-    then VstHost[1].ProcessDoubleReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor);
+    then VstHost[1].ProcessDoubleReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor);
   end;
 end;
 
@@ -1924,20 +1924,20 @@ begin
 
  if numInputs = 1 then
   begin
-   if fOSActive then
+   if FOSActive then
     begin
      for i := 0 to SampleFrames - 1
-      do fOversampler[0, 0].Upsample64(Inputs[0, i], @fTmpOutput64[0, i * fOSFactor]);
+      do FOversampler[0, 0].Upsample64(Inputs[0, i], @FTmpOutput64[0, i * FOSFactor]);
 
      if VstHost[0].Active
-      then VstHost[0].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+      then VstHost[0].ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
      if VstHost[1].Active
-      then VstHost[1].ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+      then VstHost[1].ProcessDoubleReplacing(@FTmpOutput64[0], @FHigh64[0], SampleFrames * FOSFactor);
 
      for i := 0 to SampleFrames - 1 do
       begin
-       Outputs[0, i] := fVolumeFactor * fOversampler[0, 0].DownSample64(@fLow64[0, i * fOSFactor]);
-       Outputs[1, i] := fVolumeFactor * fOversampler[1, 0].DownSample64(@fHigh64[0, i * fOSFactor]);
+       Outputs[0, i] := FVolumeFactor * FOversampler[0, 0].DownSample64(@FLow64[0, i * FOSFactor]);
+       Outputs[1, i] := FVolumeFactor * FOversampler[1, 0].DownSample64(@FHigh64[0, i * FOSFactor]);
       end
     end
    else
@@ -1950,48 +1950,48 @@ begin
   end
  else
   begin
-   if fOSActive then
+   if FOSActive then
     begin
      // upsample left channel
      for i := 0 to SampleFrames - 1
-      do fOversampler[0, 0].Upsample64(Inputs[0, i], @fTmpOutput64[0, i * fOSFactor]);
-     move(fTmpOutput64[0, 0], fTmpOutput64[1, 0], SampleFrames * fOSFactor * SizeOf(Double));
+      do FOversampler[0, 0].Upsample64(Inputs[0, i], @FTmpOutput64[0, i * FOSFactor]);
+     move(FTmpOutput64[0, 0], FTmpOutput64[1, 0], SampleFrames * FOSFactor * SizeOf(Double));
 
      if VstHost[0].Active
-      then VstHost[0].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+      then VstHost[0].ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
 
      // upsample right channel
      for i := 0 to SampleFrames - 1
-      do fOversampler[1, 0].Upsample64(Inputs[1, i], @fTmpOutput64[0, i * fOSFactor]);
-     move(fTmpOutput64[0, 0], fTmpOutput64[1, 0], SampleFrames * fOSFactor * SizeOf(Double));
+      do FOversampler[1, 0].Upsample64(Inputs[1, i], @FTmpOutput64[0, i * FOSFactor]);
+     move(FTmpOutput64[0, 0], FTmpOutput64[1, 0], SampleFrames * FOSFactor * SizeOf(Double));
 
      if VstHost[1].Active
-      then VstHost[1].ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+      then VstHost[1].ProcessDoubleReplacing(@FTmpOutput64[0], @FHigh64[0], SampleFrames * FOSFactor);
 
      for i := 0 to SampleFrames - 1 do
       begin
-       Outputs[0, i] := fVolumeFactor * fOversampler[0, 0].DownSample64(@fLow64[0, i * fOSFactor]);
-       Outputs[1, i] := fVolumeFactor * fOversampler[1, 0].DownSample64(@fHigh64[0, i * fOSFactor]);
+       Outputs[0, i] := FVolumeFactor * FOversampler[0, 0].DownSample64(@FLow64[0, i * FOSFactor]);
+       Outputs[1, i] := FVolumeFactor * FOversampler[1, 0].DownSample64(@FHigh64[0, i * FOSFactor]);
       end
     end
    else
     begin
      // move left channel
-     move(Inputs[0, 0], fTmpOutput64[0, 0], SampleFrames * SizeOf(Double));
-     move(Inputs[0, 0], fTmpOutput64[1, 0], SampleFrames * SizeOf(Double));
+     move(Inputs[0, 0], FTmpOutput64[0, 0], SampleFrames * SizeOf(Double));
+     move(Inputs[0, 0], FTmpOutput64[1, 0], SampleFrames * SizeOf(Double));
 
      if VstHost[0].Active
-      then VstHost[0].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames);
+      then VstHost[0].ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames);
 
      // move right channel
-     move(Inputs[1, 0], fTmpOutput64[0, 0], SampleFrames * SizeOf(Double));
-     move(Inputs[1, 0], fTmpOutput64[1, 0], SampleFrames * SizeOf(Double));
+     move(Inputs[1, 0], FTmpOutput64[0, 0], SampleFrames * SizeOf(Double));
+     move(Inputs[1, 0], FTmpOutput64[1, 0], SampleFrames * SizeOf(Double));
 
      if VstHost[1].Active
-      then VstHost[1].ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames);
+      then VstHost[1].ProcessDoubleReplacing(@FTmpOutput64[0], @FHigh64[0], SampleFrames);
 
-     move(fLow64[0, 0],  Outputs[0, 0], SampleFrames * SizeOf(Double));
-     move(fHigh64[0, 0], Outputs[1, 0], SampleFrames * SizeOf(Double));
+     move(FLow64[0, 0],  Outputs[0, 0], SampleFrames * SizeOf(Double));
+     move(FHigh64[0, 0], Outputs[1, 0], SampleFrames * SizeOf(Double));
     end;
   end;
 end;
@@ -2005,52 +2005,52 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample64(Inputs[ch, i], @fTmpOutput64[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample64(Inputs[ch, i], @FTmpOutput64[ch, i * FOSFactor]);
 
    // process
    with VstHost[0] do
-    if Active then ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+    if Active then ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
    with VstHost[1] do
-    if Active then ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+    if Active then ProcessDoubleReplacing(@FTmpOutput64[0], @FHigh64[0], SampleFrames * FOSFactor);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to min(2, numOutputs) - 1 do
       begin
-       Data[ch, 0] := fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]);
-       Data[ch, 1] := fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]);
+       Data[ch, 0] := FOversampler[ch, 0].DownSample64(@FLow64[ch, i * FOSFactor]);
+       Data[ch, 1] := FOversampler[ch, 1].DownSample64(@FHigh64[ch, i * FOSFactor]);
       end;
-     fSineLFO.CalculateNextSample;
-     Pan[0] := (0.5 + 0.5 * fSineLFO.Cosine); Pan[1] := 1 - Pan[0];
-     Outputs[0, i] := fVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
-     Outputs[1, i] := fVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
+     FSineLFO.CalculateNextSample;
+     Pan[0] := (0.5 + 0.5 * FSineLFO.Cosine); Pan[1] := 1 - Pan[0];
+     Outputs[0, i] := FVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
+     Outputs[1, i] := FVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
     end;
   end
  else
   begin
    // directly process both VSTs to the low/high buffers
    with VstHost[0] do
-    if Active then ProcessDoubleReplacing(@Inputs[0], @fLow64[0], SampleFrames);
+    if Active then ProcessDoubleReplacing(@Inputs[0], @FLow64[0], SampleFrames);
    with VstHost[1] do
-    if Active then ProcessDoubleReplacing(@Inputs[0], @fHigh64[0], SampleFrames);
+    if Active then ProcessDoubleReplacing(@Inputs[0], @FHigh64[0], SampleFrames);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to min(2, numOutputs) - 1 do
       begin
-       Data[ch, 0] := fLow64[ch, i];
-       Data[ch, 1] := fHigh64[ch, i];
+       Data[ch, 0] := FLow64[ch, i];
+       Data[ch, 1] := FHigh64[ch, i];
       end;
-     fSineLFO.CalculateNextSample;
+     FSineLFO.CalculateNextSample;
 
-     Pan[0] := (0.5 + 0.5 * fSineLFO.Cosine); Pan[1] := 1 - Pan[0];
-     Outputs[0, i] := fVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
-     Outputs[1, i] := fVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
+     Pan[0] := (0.5 + 0.5 * FSineLFO.Cosine); Pan[1] := 1 - Pan[0];
+     Outputs[0, i] := FVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
+     Outputs[1, i] := FVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
     end;
   end;
 end;
@@ -2064,52 +2064,52 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample64(Inputs[ch, i], @fTmpOutput64[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample64(Inputs[ch, i], @FTmpOutput64[ch, i * FOSFactor]);
 
    // process
    with VstHost[0] do
-    if Active then ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+    if Active then ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
    with VstHost[1] do
-    if Active then ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+    if Active then ProcessDoubleReplacing(@FTmpOutput64[0], @FHigh64[0], SampleFrames * FOSFactor);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to min(2, numOutputs) - 1 do
       begin
-       Data[ch, 0] := fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]);
-       Data[ch, 1] := fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]);
+       Data[ch, 0] := FOversampler[ch, 0].DownSample64(@FLow64[ch, i * FOSFactor]);
+       Data[ch, 1] := FOversampler[ch, 1].DownSample64(@FHigh64[ch, i * FOSFactor]);
       end;
-     fSineLFO.CalculateNextSample;
-     Pan[0] := (0.5 + 0.5 * fSineLFO.Cosine); Pan[1] := 1 - Pan[0];
-     Outputs[0, i] := fVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
-     Outputs[1, i] := fVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
+     FSineLFO.CalculateNextSample;
+     Pan[0] := (0.5 + 0.5 * FSineLFO.Cosine); Pan[1] := 1 - Pan[0];
+     Outputs[0, i] := FVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
+     Outputs[1, i] := FVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
     end;
   end
  else
   begin
    // directly process both VSTs to the low/high buffers
    with VstHost[0] do
-    if Active then ProcessDoubleReplacing(@Inputs[0], @fLow64[0], SampleFrames);
+    if Active then ProcessDoubleReplacing(@Inputs[0], @FLow64[0], SampleFrames);
    with VstHost[1] do
-    if Active then ProcessDoubleReplacing(@Inputs[0], @fHigh64[0], SampleFrames);
+    if Active then ProcessDoubleReplacing(@Inputs[0], @FHigh64[0], SampleFrames);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to min(2, numOutputs) - 1 do
       begin
-       Data[ch, 0] := fLow64[ch, i];
-       Data[ch, 1] := fHigh64[ch, i];
+       Data[ch, 0] := FLow64[ch, i];
+       Data[ch, 1] := FHigh64[ch, i];
       end;
-     fSineLFO.CalculateNextSample;
+     FSineLFO.CalculateNextSample;
 
-     Pan[0] := (0.5 + 0.5 * fSineLFO.Cosine); Pan[1] := 1 - Pan[0];
-     Outputs[0, i] := fVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
-     Outputs[1, i] := fVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
+     Pan[0] := (0.5 + 0.5 * FSineLFO.Cosine); Pan[1] := 1 - Pan[0];
+     Outputs[0, i] := FVolumeFactor * (Pan[0] * Data[0, 0] + Pan[1] * Data[0, 1]);
+     Outputs[1, i] := FVolumeFactor * (Pan[0] * Data[1, 0] + Pan[1] * Data[1, 1]);
     end;
   end;
 end;
@@ -2123,20 +2123,20 @@ begin
 
  if numInputs = 1 then // process mono here
   begin
-   if fOSActive then
+   if FOSActive then
     begin
      for i := 0 to SampleFrames - 1
-      do fOversampler[0, 0].Upsample64(Inputs[0, i], @fTmpOutput64[0, i * fOSFactor]);
+      do FOversampler[0, 0].Upsample64(Inputs[0, i], @FTmpOutput64[0, i * FOSFactor]);
 
      if VstHost[0].Active
-      then VstHost[0].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+      then VstHost[0].ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
      if VstHost[1].Active
-      then VstHost[1].ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+      then VstHost[1].ProcessDoubleReplacing(@FTmpOutput64[0], @FHigh64[0], SampleFrames * FOSFactor);
 
      for i := 0 to SampleFrames - 1 do
       begin
-       Outputs[0, i] := fVolumeFactor * fOversampler[0, 0].DownSample64(@fLow64[0, i * fOSFactor]);
-       Outputs[1, i] := fVolumeFactor * fOversampler[1, 0].DownSample64(@fHigh64[0, i * fOSFactor]);
+       Outputs[0, i] := FVolumeFactor * FOversampler[0, 0].DownSample64(@FLow64[0, i * FOSFactor]);
+       Outputs[1, i] := FVolumeFactor * FOversampler[1, 0].DownSample64(@FHigh64[0, i * FOSFactor]);
       end
     end
    else
@@ -2150,38 +2150,38 @@ begin
  else
   begin
    // upsample or move channels
-   if fOSActive then
+   if FOSActive then
     for i := 0 to SampleFrames - 1 do
      begin
-      fOversampler[0, 0].Upsample64(Inputs[0, i] + Inputs[1, i], @fLow64[0, i * fOSFactor]);
-      fOversampler[0, 1].Upsample64(Inputs[0, i] - Inputs[1, i], @fHigh64[0, i * fOSFactor]);
+      FOversampler[0, 0].Upsample64(Inputs[0, i] + Inputs[1, i], @FLow64[0, i * FOSFactor]);
+      FOversampler[0, 1].Upsample64(Inputs[0, i] - Inputs[1, i], @FHigh64[0, i * FOSFactor]);
      end
    else
     for i := 0 to SampleFrames - 1 do
      begin
-      fLow64[0, i]  := Inputs[0, i] + Inputs[1, i];
-      fHigh64[0, i] := Inputs[0, i] - Inputs[1, i];
+      FLow64[0, i]  := Inputs[0, i] + Inputs[1, i];
+      FHigh64[0, i] := Inputs[0, i] - Inputs[1, i];
      end;
    // dublicate internal channels
-   Move(fLow64[0, 0], fLow64[1, 0], SampleFrames * SizeOf(Double) * fOSFactor);
-   Move(fHigh64[0, 0], fHigh64[1, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+   Move(FLow64[0, 0], FLow64[1, 0], SampleFrames * SizeOf(Double) * FOSFactor);
+   Move(FHigh64[0, 0], FHigh64[1, 0], SampleFrames * SizeOf(Double) * FOSFactor);
 
    VSTModuleProcess64SplitVST(SampleFrames);
 
    // downsample or move channels
-   if fOSActive then
+   if FOSActive then
     for i := 0 to SampleFrames - 1 do
      begin
-      L := fOversampler[0, 0].Downsample64(@fLow64[0, i * fOSFactor]);
-      H := fOversampler[0, 1].Downsample64(@fHigh64[0, i * fOSFactor]);
-      Outputs[0, i] := fVolumeFactor * 0.5 * (L + H);
-      Outputs[1, i] := fVolumeFactor * 0.5 * (L - H);
+      L := FOversampler[0, 0].Downsample64(@FLow64[0, i * FOSFactor]);
+      H := FOversampler[0, 1].Downsample64(@FHigh64[0, i * FOSFactor]);
+      Outputs[0, i] := FVolumeFactor * 0.5 * (L + H);
+      Outputs[1, i] := FVolumeFactor * 0.5 * (L - H);
      end
    else
     for i := 0 to SampleFrames - 1 do
      begin
-      Outputs[0, i] := fVolumeFactor * 0.5 * (fLow64[0, i] + fHigh64[0, i]);
-      Outputs[1, i] := fVolumeFactor * 0.5 * (fLow64[0, i] - fHigh64[0, i]);
+      Outputs[0, i] := FVolumeFactor * 0.5 * (FLow64[0, i] + FHigh64[0, i]);
+      Outputs[1, i] := FVolumeFactor * 0.5 * (FLow64[0, i] - FHigh64[0, i]);
      end;
   end;
 end;
@@ -2193,32 +2193,32 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample64(Inputs[ch, i], @fTmpOutput64[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample64(Inputs[ch, i], @FTmpOutput64[ch, i * FOSFactor]);
 
    // process serial chain
-   if VstHost[fPlugNr].Active then
+   if VstHost[FPlugNr].Active then
     begin
-     VstHost[fPlugNr].ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+     VstHost[FPlugNr].ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
      for ch := 0 to numOutputs - 1
-      do Move(fLow64[ch, 0], fTmpOutput64[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+      do Move(FLow64[ch, 0], FTmpOutput64[ch, 0], SampleFrames * SizeOf(Double) * FOSFactor);
     end;
 
    // downsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do Outputs[ch, i] := fVolumeFactor * fOversampler[ch, 0].Downsample64(@fTmpOutput64[ch, i * fOSFactor]);
+     do Outputs[ch, i] := FVolumeFactor * FOversampler[ch, 0].Downsample64(@FTmpOutput64[ch, i * FOSFactor]);
   end
  else
-  if VstHost[fPlugNr].Active
-   then VstHost[fPlugNr].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * fOSFactor)
+  if VstHost[FPlugNr].Active
+   then VstHost[FPlugNr].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor)
    else
-    for ch := 0 to fMinChannels - 1
-     do Move(Inputs[ch, 0], Outputs[ch, 0], SampleFrames * SizeOf(Double) * fOSFactor);
+    for ch := 0 to FMinChannels - 1
+     do Move(Inputs[ch, 0], Outputs[ch, 0], SampleFrames * SizeOf(Double) * FOSFactor);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcess64SplitSpin(const Inputs,
@@ -2230,32 +2230,32 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample64(Inputs[ch, i], @fTmpOutput64[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample64(Inputs[ch, i], @FTmpOutput64[ch, i * FOSFactor]);
 
    // process
    with VstHost[0] do
-    if Active then ProcessDoubleReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+    if Active then ProcessDoubleReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
    with VstHost[1] do
-    if Active then ProcessDoubleReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+    if Active then ProcessDoubleReplacing(@FTmpOutput64[0], @FHigh64[0], SampleFrames * FOSFactor);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to numOutputs - 1 do
       begin
-       Data[ch, 0] := fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]);
-       Data[ch, 1] := fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]);
+       Data[ch, 0] := FOversampler[ch, 0].DownSample64(@FLow64[ch, i * FOSFactor]);
+       Data[ch, 1] := FOversampler[ch, 1].DownSample64(@FHigh64[ch, i * FOSFactor]);
       end;
-     fSineLFO.CalculateNextSample;
+     FSineLFO.CalculateNextSample;
 
-     Pan[0, 0] := SimpleDiode(abs(fSineLFO.Cosine) - fSineLFO.Cosine);
-     Pan[0, 1] := SimpleDiode(abs(fSineLFO.Cosine) + fSineLFO.Cosine);
-     Pan[1, 0] := SimpleDiode(abs(fSineLFO.Sine) - fSineLFO.Sine);
-     Pan[1, 1] := SimpleDiode(abs(fSineLFO.Sine) + fSineLFO.Sine);
+     Pan[0, 0] := SimpleDiode(abs(FSineLFO.Cosine) - FSineLFO.Cosine);
+     Pan[0, 1] := SimpleDiode(abs(FSineLFO.Cosine) + FSineLFO.Cosine);
+     Pan[1, 0] := SimpleDiode(abs(FSineLFO.Sine) - FSineLFO.Sine);
+     Pan[1, 1] := SimpleDiode(abs(FSineLFO.Sine) + FSineLFO.Sine);
 
      Outputs[0, i] := Pan[0, 0] * Data[0, 0] +
                       Pan[1, 0] * Data[1, 0] +
@@ -2271,23 +2271,23 @@ begin
   begin
    // directly process both VSTs to the low/high buffers
    with VstHost[0] do
-    if Active then ProcessDoubleReplacing(@Inputs[0], @fLow64[0], SampleFrames);
+    if Active then ProcessDoubleReplacing(@Inputs[0], @FLow64[0], SampleFrames);
    with VstHost[1] do
-    if Active then ProcessDoubleReplacing(@Inputs[0], @fHigh64[0], SampleFrames);
+    if Active then ProcessDoubleReplacing(@Inputs[0], @FHigh64[0], SampleFrames);
 
    for i := 0 to SampleFrames - 1 do
     begin
      for ch := 0 to numOutputs - 1 do
       begin
-       Data[ch, 0] := fLow64[ch, i];
-       Data[ch, 1] := fHigh64[ch, i];
+       Data[ch, 0] := FLow64[ch, i];
+       Data[ch, 1] := FHigh64[ch, i];
       end;
-     fSineLFO.CalculateNextSample;
+     FSineLFO.CalculateNextSample;
 
-     Pan[0, 0] := SimpleDiode(abs(fSineLFO.Cosine) - fSineLFO.Cosine);
-     Pan[0, 1] := SimpleDiode(abs(fSineLFO.Cosine) + fSineLFO.Cosine);
-     Pan[1, 0] := SimpleDiode(abs(fSineLFO.Sine) - fSineLFO.Sine);
-     Pan[1, 1] := SimpleDiode(abs(fSineLFO.Sine) + fSineLFO.Sine);
+     Pan[0, 0] := SimpleDiode(abs(FSineLFO.Cosine) - FSineLFO.Cosine);
+     Pan[0, 1] := SimpleDiode(abs(FSineLFO.Cosine) + FSineLFO.Cosine);
+     Pan[1, 0] := SimpleDiode(abs(FSineLFO.Sine) - FSineLFO.Sine);
+     Pan[1, 1] := SimpleDiode(abs(FSineLFO.Sine) + FSineLFO.Sine);
 
      Outputs[0, i] := Pan[0, 0] * Data[0, 0] +
                       Pan[1, 0] * Data[1, 0] +
@@ -2308,44 +2308,44 @@ var
 begin
  CheckSampleFrames(SampleFrames);
 
- if fOSActive then
+ if FOSActive then
   begin
    // upsample
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1
-     do fOversampler[ch, 0].Upsample64(Inputs[ch, i], @fTmpOutput64[ch, i * fOSFactor]);
+     do FOversampler[ch, 0].Upsample64(Inputs[ch, i], @FTmpOutput64[ch, i * FOSFactor]);
 
    // process
    with VstHost[0] do
-    if Active then ProcessReplacing(@fTmpOutput64[0], @fLow64[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput64[0], @FLow64[0], SampleFrames * FOSFactor);
    with VstHost[1] do
-    if Active then ProcessReplacing(@fTmpOutput64[0], @fHigh64[0], SampleFrames * fOSFactor);
+    if Active then ProcessReplacing(@FTmpOutput64[0], @FHigh64[0], SampleFrames * FOSFactor);
 
    for ch := 0 to numOutputs - 1 do
     for i := 0 to SampleFrames - 1 do
      begin
-      L := fOversampler[ch, 0].DownSample64(@fLow64[ch, i * fOSFactor]);
-      H := fOversampler[ch, 1].DownSample64(@fHigh64[ch, i * fOSFactor]);
-      fEnvelope[ch, 0] := fReleaseFactor[0] * fEnvelope[ch, 0] +
-                          fAttackFactor[0] * SimpleDiode(abs(Inputs[ch, i]) - fEnvelope[ch, 0]);
-      Outputs[ch, i] := fVolumeFactor * (fEnvelope[ch, 0] * H + (1 - fEnvelope[ch, 0]) * L);
+      L := FOversampler[ch, 0].DownSample64(@FLow64[ch, i * FOSFactor]);
+      H := FOversampler[ch, 1].DownSample64(@FHigh64[ch, i * FOSFactor]);
+      FEnvelope[ch, 0] := FReleaseFactor[0] * FEnvelope[ch, 0] +
+                          FAttackFactor[0] * SimpleDiode(abs(Inputs[ch, i]) - FEnvelope[ch, 0]);
+      Outputs[ch, i] := FVolumeFactor * (FEnvelope[ch, 0] * H + (1 - FEnvelope[ch, 0]) * L);
      end;
   end
  else
   begin
    // directly process both VSTs to the low/high buffers
    with VstHost[0] do
-    if Active then ProcessDoubleReplacing(@Inputs[0], @fLow64[0], SampleFrames);
+    if Active then ProcessDoubleReplacing(@Inputs[0], @FLow64[0], SampleFrames);
    with VstHost[1] do
-    if Active then ProcessDoubleReplacing(@Inputs[0], @fHigh64[0], SampleFrames);
+    if Active then ProcessDoubleReplacing(@Inputs[0], @FHigh64[0], SampleFrames);
 
    for ch := 0 to numInputs - 1 do
     for i := 0 to SampleFrames - 1 do
      begin
-      fEnvelope[ch, 0] := fReleaseFactor[0] * fEnvelope[ch, 0] +
-                          fAttackFactor[0] * SimpleDiode(abs(Inputs[ch, i]) - fEnvelope[ch, 0]);
-      Outputs[ch, i]   := fVolumeFactor *
-        (fEnvelope[ch, 0] * fHigh64[ch, i] + (1 - fEnvelope[ch, 0]) * fLow64[ch, i]);
+      FEnvelope[ch, 0] := FReleaseFactor[0] * FEnvelope[ch, 0] +
+                          FAttackFactor[0] * SimpleDiode(abs(Inputs[ch, i]) - FEnvelope[ch, 0]);
+      Outputs[ch, i]   := FVolumeFactor *
+        (FEnvelope[ch, 0] * FHigh64[ch, i] + (1 - FEnvelope[ch, 0]) * FLow64[ch, i]);
      end;
   end;
 end;

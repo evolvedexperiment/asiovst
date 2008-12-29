@@ -9,7 +9,6 @@ uses
 type
   TWrapperDataModule = class(TVSTModule)
     VstHost: TVstHost;
-    function VSTModuleCanDo(Sender: TObject; CanDoText: String): Integer;
     procedure VSTModuleBeforeProgramChange(Sender: TObject);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure VSTModuleClose(Sender: TObject);
@@ -27,10 +26,9 @@ type
     procedure VSTModuleStopProcess(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure CustomParameterDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure CustomParameterLabel(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    function VSTModuleCanDo(Sender: TObject; const CanDoText: string): Integer;
   private
   public
   end;
@@ -122,6 +120,12 @@ begin
   end;
 end;
 
+function TWrapperDataModule.VSTModuleCanDo(Sender: TObject;
+  const CanDoText: string): Integer;
+begin
+ result := VstHost[0].CanDo(@CanDoText); // comment if necessary!
+end;
+
 procedure TWrapperDataModule.VSTModuleClose(Sender: TObject);
 begin
  VstHost[0].Active := False;
@@ -142,11 +146,6 @@ begin
  VstHost[0].SetBlockSizeAndSampleRate(BlockSize, SampleRate)
 end;
 
-function TWrapperDataModule.VSTModuleCanDo(Sender: TObject; CanDoText: String): Integer;
-begin
- result := VstHost[0].CanDo(@CanDoText);
-end;
-
 procedure TWrapperDataModule.VSTModuleEditTop(Sender: TObject);
 begin
  VstHost[0].EditActivate;
@@ -165,7 +164,7 @@ end;
 procedure TWrapperDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- VstHost[0].Parameters[Index] := Value;
+ VstHost[0].Parameter[Index] := Value;
 end;
 
 procedure TWrapperDataModule.VSTModuleSampleRateChange(Sender: TObject;

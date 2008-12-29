@@ -13,8 +13,8 @@ type
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
-    fPeak   : T2DoubleArray;
-    fVolume : T2DoubleArray;
+    FPeak   : TDAV2DoubleArray;
+    FVolume : TDAV2DoubleArray;
     function GetPeak(index: Integer): Double;
   public
     property Peak[index : Integer] : Double read GetPeak;
@@ -28,7 +28,7 @@ uses VUMeterGUI;
 
 function TVSTVUMeterModule.GetPeak(index: Integer): Double;
 begin
- result := fPeak[index];
+ result := FPeak[index];
 end;
 
 procedure TVSTVUMeterModule.VSTModuleEditIdle(Sender: TObject);
@@ -60,14 +60,14 @@ begin
  // There is also a simple VU meter code here
 for i := 0 to SampleFrames - 1 do
   begin
-   outputs[0, i] := inputs[0, i] * fVolume[0];
-   outputs[1, i] := inputs[1, i] * fVolume[1];
+   outputs[0, i] := inputs[0, i] * FVolume[0];
+   outputs[1, i] := inputs[1, i] * FVolume[1];
 
    // simple (but not very efficient) VU meter code:
-   fPeak[0] := fPeak[0] * 0.9999;
-   fPeak[1] := fPeak[1] * 0.9999;
-   if abs(outputs[0, i]) > fPeak[0] then fPeak[0] := abs(outputs[0, i]);
-   if abs(outputs[1, i]) > fPeak[1] then fPeak[1] := abs(outputs[1, i]);
+   FPeak[0] := FPeak[0] * 0.9999;
+   FPeak[1] := FPeak[1] * 0.9999;
+   if abs(outputs[0, i]) > FPeak[0] then FPeak[0] := abs(outputs[0, i]);
+   if abs(outputs[1, i]) > FPeak[1] then FPeak[1] := abs(outputs[1, i]);
   end;
 end;
 
@@ -83,26 +83,26 @@ begin
  // Same as above, but (internally) 64Bit...
  for i := 0 to SampleFrames - 1 do
   begin
-   outputs[0, i] := inputs[0, i] * fVolume[0];
-   outputs[1, i] := inputs[1, i] * fVolume[1];
+   outputs[0, i] := inputs[0, i] * FVolume[0];
+   outputs[1, i] := inputs[1, i] * FVolume[1];
 
    // simple (but not very efficient) VU meter code:
-   fPeak[0] := fPeak[0] * 0.9999;
-   fPeak[1] := fPeak[1] * 0.9999;
-   if abs(outputs[0, i]) > fPeak[0] then fPeak[0] := abs(outputs[0, i]);
-   if abs(outputs[1, i]) > fPeak[1] then fPeak[1] := abs(outputs[1, i]);
+   FPeak[0] := FPeak[0] * 0.9999;
+   FPeak[1] := FPeak[1] * 0.9999;
+   if abs(outputs[0, i]) > FPeak[0] then FPeak[0] := abs(outputs[0, i]);
+   if abs(outputs[1, i]) > FPeak[1] then FPeak[1] := abs(outputs[1, i]);
   end;
 end;
 
 procedure TVSTVUMeterModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- fVolume[Index] := dB_to_Amp(Value);
- if Amp_to_dB(fVolume[Index])<>Value then
+ FVolume[Index] := dB_to_Amp(Value);
+ if Amp_to_dB(FVolume[Index])<>Value then
   with (EditorForm As TVSTVUMeterGUI) do
    case Index of
-    0 : par0.Position := Round(Amp_to_dB(fVolume[Index]));
-    1 : par1.Position := Round(Amp_to_dB(fVolume[Index]));
+    0 : SBLeft.Position := Round(Amp_to_dB(FVolume[Index]));
+    1 : SBRight.Position := Round(Amp_to_dB(FVolume[Index]));
    end;
 end;
 

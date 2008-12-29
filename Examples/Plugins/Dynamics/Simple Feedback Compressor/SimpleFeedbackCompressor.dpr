@@ -11,21 +11,17 @@ uses
   SimpleFeedbackCompressorDM in 'SimpleFeedbackCompressorDM.pas' {SimpleFeedbackCompressorDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  VSTModule: TVSTModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    VSTModule := TSimpleFeedbackCompressorDataModule.Create(Application);
-    VSTModule.AudioMaster := audioMaster;
-    with VSTModule do
-    begin
-      Effect^.user := VSTModule;
-      Result := Effect;
-    end;
-  except
-    Result := nil;
-  end;
+ try
+  with TSimpleFeedbackCompressorDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

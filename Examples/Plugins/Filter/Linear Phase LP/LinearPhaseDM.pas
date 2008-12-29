@@ -12,7 +12,6 @@ uses
 
 type
   TLinearPhaseDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -41,7 +40,7 @@ implementation
 uses
   Math, DAV_DspWindowing, LinearPhaseGUI;
 
-procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
+procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
 begin
  FSemaphore := 0;
  FFilterKernel := nil;
@@ -49,10 +48,7 @@ begin
  FFilterFreq   := nil;
  FSignalFreq   := nil;
  BlockModeOverlap := BlockModeSize div 2;
-end;
 
-procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
-begin
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(round(Log2(BlockModeSize)));
 

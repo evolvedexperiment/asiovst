@@ -10,18 +10,17 @@ uses
   ChebyshevDM in 'ChebyshevDM.pas' {ChebyshevLPModule: TVSTModule},
   ChebyshevGUI in 'ChebyshevGUI.pas' {FmChebyshev};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  ChebyshevLPModule: TChebyshevLPModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    ChebyshevLPModule := TChebyshevLPModule.Create(Application);
-    ChebyshevLPModule.Effect^.user := ChebyshevLPModule;
-    ChebyshevLPModule.AudioMaster := audioMaster;
-    Result := ChebyshevLPModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TChebyshevLPModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

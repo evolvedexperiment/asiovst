@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   LoopExDM in 'LoopExDM.pas' {LoopExDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  LoopExDataModule: TLoopExDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    LoopExDataModule := TLoopExDataModule.Create(Application);
-    LoopExDataModule.Effect^.user := LoopExDataModule;
-    LoopExDataModule.AudioMaster := audioMaster;
-    Result := LoopExDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TLoopExDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

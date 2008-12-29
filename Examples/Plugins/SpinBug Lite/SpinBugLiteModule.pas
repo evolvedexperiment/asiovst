@@ -12,7 +12,6 @@ uses
 type
   TSpinBugLiteModule = class(TVSTModule)
     procedure VSTEditOpen(Sender : TObject; var GUI : TForm; ParentWindow : Cardinal);
-    procedure VSTModuleCreate(Sender : TObject);
     procedure VSTModuleOpen(Sender : TObject);
     procedure VSTModuleProcessStereoA(const Inputs, Outputs : TDAVArrayOfSingleDynArray; const SampleFrames : Integer);
     procedure VSTModuleProcessStereoB(const Inputs, Outputs : TDAVArrayOfSingleDynArray; const SampleFrames : Integer);
@@ -48,21 +47,10 @@ implementation
 uses
   SpinBugLiteGUI, Math;
 
-procedure TSpinBugLiteModule.VSTModuleCreate(Sender : TObject);
-begin
- FTBW := 0.01;
-end;
-
-procedure TSpinBugLiteModule.VSTModuleClose(Sender: TObject);
-begin
- if Assigned(FHilbert[0]) then FreeAndNil(FHilbert[0]);
- if Assigned(FHilbert[1]) then FreeAndNil(FHilbert[1]);
- if Assigned(FSineLFO[0]) then FreeAndNil(FSineLFO[0]);
- if Assigned(FSineLFO[1]) then FreeAndNil(FSineLFO[1]);
-end;
-
 procedure TSpinBugLiteModule.VSTModuleOpen(Sender : TObject);
 begin
+ FTBW := 0.01;
+
  FHilbert[0] := TPhaseHalfPi32.Create;
  FHilbert[1] := TPhaseHalfPi32.Create;
  FSineLFO[0] := TSineLFO.Create;
@@ -74,6 +62,7 @@ begin
 
  if assigned(Programs) then
   try
+   // default preset
    with programs[0] do
     begin
      Parameter[0] := 8;
@@ -82,6 +71,7 @@ begin
      Parameter[3] := 0.01;
     end;
 
+   // preset 1
    with programs[1] do
     begin
      Parameter[0] := 32;
@@ -90,6 +80,7 @@ begin
      Parameter[3] := 0.01;
     end;
 
+   // preset 2
    with programs[2] do
     begin
      Parameter[0] := 7;
@@ -98,6 +89,7 @@ begin
      Parameter[3] := 0.01;
     end;
 
+   // preset 3
    with programs[3] do
     begin
      Parameter[0] := 12;
@@ -106,6 +98,7 @@ begin
      Parameter[3] := 0.01;
     end;
 
+   // preset 4
    with programs[4] do
     begin
      Parameter[0] := 16;
@@ -114,6 +107,7 @@ begin
      Parameter[3] := 0.01;
     end;
 
+   // preset 5
    with programs[5] do
     begin
      Parameter[0] := 8;
@@ -124,10 +118,19 @@ begin
   except
   end;
 
+ // default parameters
  Parameter[0] := 8;
  Parameter[1] := 5;
  Parameter[2] := 0.6;
  Parameter[3] := 0.01;
+end;
+
+procedure TSpinBugLiteModule.VSTModuleClose(Sender: TObject);
+begin
+ if Assigned(FHilbert[0]) then FreeAndNil(FHilbert[0]);
+ if Assigned(FHilbert[1]) then FreeAndNil(FHilbert[1]);
+ if Assigned(FSineLFO[0]) then FreeAndNil(FSineLFO[0]);
+ if Assigned(FSineLFO[1]) then FreeAndNil(FSineLFO[1]);
 end;
 
 procedure TSpinBugLiteModule.VSTEditOpen(Sender : TObject;

@@ -5,8 +5,8 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Oversample Template'
-  ProductName = 'Oversample Template'
-  VendorName = 'Delphi ASIO & VST Packages'
+  ProductName = 'DAV Wrapper Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdReceiveVstTimeInfo, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000

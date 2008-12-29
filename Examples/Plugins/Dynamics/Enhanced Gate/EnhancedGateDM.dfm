@@ -1,12 +1,10 @@
 object EnhancedGateDataModule: TEnhancedGateDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Gate'
-  ProductName = 'Enhanced Audio Gate'
-  VendorName = 'ASIO-VST Delphi Project'
+  ProductName = 'DAV Dynamics Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out, vcdBypass]
   SampleRate = 44100.000000000000000000
@@ -241,6 +239,8 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       VSTModule = Owner
       OnParameterChange = EAGRangeChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessBypass
   OnProcessReplacing = VSTModuleProcessBypass

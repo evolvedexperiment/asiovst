@@ -10,18 +10,17 @@ uses
   ButterworthDM in 'ButterworthDM.pas' {ButterworthHPModule: TVSTModule},
   ButterworthGUI in 'ButterworthGUI.pas' {FmButterworth};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  ButterworthHPModule: TButterworthHPModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    ButterworthHPModule := TButterworthHPModule.Create(Application);
-    ButterworthHPModule.Effect^.user := ButterworthHPModule;
-    ButterworthHPModule.AudioMaster := audioMaster;
-    Result := ButterworthHPModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TButterworthHPModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   LeslieDM in 'LeslieDM.pas' {LeslieDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  LeslieDataModule: TLeslieDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    LeslieDataModule := TLeslieDataModule.Create(Application);
-    LeslieDataModule.Effect^.user := LeslieDataModule;
-    LeslieDataModule.AudioMaster := audioMaster;
-    Result := LeslieDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TLeslieDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

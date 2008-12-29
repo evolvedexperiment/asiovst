@@ -8,15 +8,14 @@ uses
   DecimatorModule in 'DecimatorModule.pas' {VSTDecimator: TVSTModule},
   DecimatorGUI in 'DecimatorGUI.pas' {VSTGUI};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  VSTDecimator : TVSTDecimator;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  VSTDecimator := TVSTDecimator.Create(Application);
-  VSTDecimator.Effect^.user := VSTDecimator;
-  VSTDecimator.AudioMaster := audioMaster;
-  Result := VSTDecimator.Effect;
+  with TVSTDecimator.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
  except
   Result := nil;
  end;

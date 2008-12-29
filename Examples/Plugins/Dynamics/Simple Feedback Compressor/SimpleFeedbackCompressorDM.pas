@@ -8,17 +8,15 @@ uses
 
 type
   TSimpleFeedbackCompressorDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure SLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
+    procedure VSTModuleClose(Sender: TObject);
   private
     fSimpleFeedbackCompressors : Array [0..1] of TCustomFeedbackCompressor;
   public
@@ -31,7 +29,7 @@ implementation
 uses
   Math, EditorFrm;
 
-procedure TSimpleFeedbackCompressorDataModule.VSTModuleCreate(Sender: TObject);
+procedure TSimpleFeedbackCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
   i : Integer;
 begin
@@ -40,9 +38,15 @@ begin
    fSimpleFeedbackCompressors[i] := TSimpleFeedbackCompressor.Create;
    fSimpleFeedbackCompressors[i].AutoMakeUp := True;
   end;
+
+ // initial parameters 
+ Parameter[0] := 0;
+ Parameter[1] := 1;
+ Parameter[2] := 5;
+ Parameter[3] := 40;
 end;
 
-procedure TSimpleFeedbackCompressorDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TSimpleFeedbackCompressorDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(fSimpleFeedbackCompressors[0]);
  FreeAndNil(fSimpleFeedbackCompressors[1]);
@@ -52,14 +56,6 @@ procedure TSimpleFeedbackCompressorDataModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
   GUI := TEditorForm.Create(Self);
-end;
-
-procedure TSimpleFeedbackCompressorDataModule.VSTModuleOpen(Sender: TObject);
-begin
- Parameter[0] := 0;
- Parameter[1] := 1;
- Parameter[2] := 5;
- Parameter[3] := 40;
 end;
 
 procedure TSimpleFeedbackCompressorDataModule.SLThresholdChange(

@@ -10,21 +10,17 @@ uses
   SKLDM in 'SKLDM.pas' {SoftKneeLimiterDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    SoftKneeLimiterDataModule := TSoftKneeLimiterDataModule.Create(Application);
-    SoftKneeLimiterDataModule.AudioMaster := audioMaster;
-    with SoftKneeLimiterDataModule do
-    begin
-      Effect^.user := SoftKneeLimiterDataModule;
-      Result := Effect;
-    end;
-  except
-    Result := nil;
-  end;
+ try
+  with TSoftKneeLimiterDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

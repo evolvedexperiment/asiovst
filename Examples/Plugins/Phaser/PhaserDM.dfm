@@ -3,12 +3,13 @@ object PhaserModule: TPhaserModule
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Phaser VST Example'
-  ProductName = 'Phaser VST Example'
-  VendorName = 'Delphi ASIO & VST Example'
+  ProductName = 'DAV Effect Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'phsx'
   ShellPlugins = <>
   Programs = <>
@@ -17,6 +18,7 @@ object PhaserModule: TPhaserModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Depth'
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
       ShortLabel = 'depth'
@@ -116,8 +118,8 @@ object PhaserModule: TPhaserModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
   Left = 272
   Top = 81
   Height = 150

@@ -8,18 +8,17 @@ uses
   PSDM in 'PSDM.pas' {PascalScriptDataModule: TVSTModule},
   PSGUI in 'PSGUI.pas' {FmPascalScript};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  PascalScriptDataModule: TPascalScriptDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    PascalScriptDataModule := TPascalScriptDataModule.Create(Application);
-    PascalScriptDataModule.Effect^.user := PascalScriptDataModule;
-    PascalScriptDataModule.AudioMaster := audioMaster;
-    Result := PascalScriptDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TPascalScriptDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   ImageDM in 'ImageDM.pas' {ImageDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  ImageDataModule: TImageDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    ImageDataModule := TImageDataModule.Create(Application);
-    ImageDataModule.Effect^.user := ImageDataModule;
-    ImageDataModule.AudioMaster := audioMaster;
-    Result := ImageDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TImageDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

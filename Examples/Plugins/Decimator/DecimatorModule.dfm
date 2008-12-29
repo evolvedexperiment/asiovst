@@ -10,6 +10,7 @@ object VSTDecimator: TVSTDecimator
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Preset 1'
+  IORatio = 1.000000000000000000
   UniqueID = 'TBDM'
   ShellPlugins = <>
   Programs = <
@@ -82,12 +83,15 @@ object VSTDecimator: TVSTDecimator
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Resonance'
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 8.000000000000000000
       MaxInteger = 8
       Min = 0.100000001490116100
       ShortLabel = 'res'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
     end
@@ -96,11 +100,14 @@ object VSTDecimator: TVSTDecimator
       CurveFactor = 1.000000000000000000
       DisplayName = 'FilterType'
       Flags = [kVstParameterIsSwitch]
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1.000000000000000000
       MaxInteger = 0
       ShortLabel = 'FilterT'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
     end
@@ -135,13 +142,13 @@ object VSTDecimator: TVSTDecimator
       Units = 'dB'
       VSTModule = Owner
     end>
+  OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessMidi = VSTModuleProcessMidi
-  OnInitialize = VSTModuleInitialize
+  OnProcessReplacing = VSTModuleProcess
   Left = 243
   Top = 103
   Height = 152

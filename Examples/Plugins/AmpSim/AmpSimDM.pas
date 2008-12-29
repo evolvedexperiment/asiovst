@@ -12,8 +12,6 @@ type
   TModelType = (mtDI, mtSpeakerSim, mtRadio, mtMesaBoogie1, mtMesaBoogie8,
     mtMarshall4x12, mtScoopedOutMetal);
   TComboDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -30,21 +28,22 @@ type
     procedure ParamOutputChanged(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleClose(Sender: TObject);
   private
-    fBufferSize     : Integer;
-    fBufferPosition : Integer;
-    fBuffer         : array [0..1] of PDAVSingleFixedArray;
-    fMix            : array [0..1] of Double;
-    fDelay          : array [0..1] of Integer;
-    fHighPass       : array [0..1] of TSimpleHighpassFilter;
-    fFilterState    : array [0..1, 0..4] of Double;
-    fRndAmt         : Double;
-    fLPF, fHPF      : Double;
-    fTrim           : Double;
-    fDrive, fClip   : Double;
-    fBias           : Double;
-    fStereo         : Boolean;
-    fIsSoftClipping : Boolean;
+    FBufferSize     : Integer;
+    FBufferPosition : Integer;
+    FBuffer         : array [0..1] of PDAVSingleFixedArray;
+    FMix            : array [0..1] of Double;
+    FDelay          : array [0..1] of Integer;
+    FHighPass       : array [0..1] of TSimpleHighpassFilter;
+    FFilterState    : array [0..1, 0..4] of Double;
+    FRndAmt         : Double;
+    FLPF, FHPF      : Double;
+    FTrim           : Double;
+    FDrive, FClip   : Double;
+    FBias           : Double;
+    FStereo         : Boolean;
+    FIsSoftClipping : Boolean;
     function FilterFreq(Frequency: Double): Double;
     function GetModelType: TModelType;
     procedure SetModelType(const Value: TModelType);
@@ -54,7 +53,7 @@ type
     procedure TrimChanged;
   public
     property ModelType: TModelType read GetModelType write SetModelType;
-    property Stereo: Boolean read fStereo;
+    property Stereo: Boolean read FStereo;
   end;
 
 implementation
@@ -64,31 +63,9 @@ implementation
 uses
   Math, DAV_VSTEffect, AmpSimGUI, Controls;
 
-procedure TComboDataModule.VSTModuleCreate(Sender: TObject);
-begin
- fBufferSize := 1024;
- fBufferPosition := 0;
- GetMem(fBuffer[0], fBufferSize * SizeOf(Single));
- GetMem(fBuffer[1], fBufferSize * SizeOf(Single));
- fHighPass[0] := TSimpleHighpassFilter.Create;
- fHighPass[1] := TSimpleHighpassFilter.Create;
-
- {$IFDEF UseGUI}
- Flags := Flags + [effFlagsHasEditor];
- {$ENDIF}
-end;
-
-procedure TComboDataModule.VSTModuleDestroy(Sender: TObject);
-begin
- Dispose(fBuffer[0]);
- Dispose(fBuffer[1]);
- FreeAndNil(fHighPass[0]);
- FreeAndNil(fHighPass[1]);
-end;
-
 procedure TComboDataModule.ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fStereo := Value > 0.5;
+ FStereo := Value > 0.5;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
   with TFmCombo(EditorForm)
@@ -110,8 +87,8 @@ end;
 
 procedure TComboDataModule.ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fHighPass[0].Bandwidth := 1.1 - 0.01 * Value;
- fHighPass[1].Bandwidth := fHighPass[0].Bandwidth;
+ FHighPass[0].Bandwidth := 1.1 - 0.01 * Value;
+ FHighPass[1].Bandwidth := FHighPass[0].Bandwidth;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
   with TFmCombo(EditorForm)
@@ -149,72 +126,72 @@ begin
  case Value of
   mtDI:
     begin
-     fLPF      := 0;
-     fMix[0]   := 0;
-     fMix[1]   := 0;
-     fDelay[0] := 0;
-     fDelay[1] := 0;
-     fHPF      := filterFreq(25);
+     FLPF      := 0;
+     FMix[0]   := 0;
+     FMix[1]   := 0;
+     FDelay[0] := 0;
+     FDelay[1] := 0;
+     FHPF      := filterFreq(25);
     end;
 
   mtSpeakerSim:
     begin
-     fLPF      := filterFreq(2700);
-     fMix[0]   := 0;
-     fMix[1]   := 0;
-     fDelay[0] := 0;
-     fDelay[1] := 0;
-     fHPF      := filterFreq(382);
+     FLPF      := filterFreq(2700);
+     FMix[0]   := 0;
+     FMix[1]   := 0;
+     FDelay[0] := 0;
+     FDelay[1] := 0;
+     FHPF      := filterFreq(382);
     end;
 
   mtRadio:
     begin
-     fLPF      := filterFreq(1685);
-     fMix[0]   := -1.7;
-     fMix[1]   := 0.82;
-     fDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
-     fDelay[1] := round(SampleRate * 2.3174971031286210892236384704519E-4);
-     fHPF      := filterFreq(25);
+     FLPF      := filterFreq(1685);
+     FMix[0]   := -1.7;
+     FMix[1]   := 0.82;
+     FDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
+     FDelay[1] := round(SampleRate * 2.3174971031286210892236384704519E-4);
+     FHPF      := filterFreq(25);
     end;
 
   mtMesaBoogie1:
     begin
-     fLPF      := filterFreq(1385);
-     fMix[0]   := -0.53;
-     fMix[1]   := 0.21;
-     fDelay[0] := round(SampleRate * 1.361470388019060585432266848196E-4);
-     fDelay[1] := round(SampleRate * 8.382229673093042749371332774518E-4);
-     fHPF      := filterFreq(25);
+     FLPF      := filterFreq(1385);
+     FMix[0]   := -0.53;
+     FMix[1]   := 0.21;
+     FDelay[0] := round(SampleRate * 1.361470388019060585432266848196E-4);
+     FDelay[1] := round(SampleRate * 8.382229673093042749371332774518E-4);
+     FHPF      := filterFreq(25);
     end;
 
   mtMesaBoogie8:
     begin
-     fLPF      := filterFreq(1685);
-     fMix[0]   := -0.85;
-     fMix[1]   := 0.41;
-     fDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
-     fDelay[1] := round(SampleRate * 3.0165912518853695324283559577677E-4);
-     fHPF      := filterFreq(25);
+     FLPF      := filterFreq(1685);
+     FMix[0]   := -0.85;
+     FMix[1]   := 0.41;
+     FDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
+     FDelay[1] := round(SampleRate * 3.0165912518853695324283559577677E-4);
+     FHPF      := filterFreq(25);
     end;
 
   mtMarshall4x12:
     begin
-     fLPF      := filterFreq(2795);
-     fMix[0]   := -0.29;
-     fMix[1]   := 0.38;
-     fDelay[0] := round(SampleRate * 1.0183299389002036659877800407332E-3);
-     fDelay[1] := round(SampleRate * 4.1631973355537052456286427976686E-4);
-     fHPF      := filterFreq(459);
+     FLPF      := filterFreq(2795);
+     FMix[0]   := -0.29;
+     FMix[1]   := 0.38;
+     FDelay[0] := round(SampleRate * 1.0183299389002036659877800407332E-3);
+     FDelay[1] := round(SampleRate * 4.1631973355537052456286427976686E-4);
+     FHPF      := filterFreq(459);
     end;
 
   mtScoopedOutMetal:
     begin
-     fLPF      := filterFreq(1744);
-     fMix[0]   := -0.96;
-     fMix[1]   := 1.6;
-     fDelay[0] := round(SampleRate * 2.8089887640449438202247191011236E-3);
-     fDelay[1] := round(SampleRate * 7.9176563737133808392715756136184E-4);
-     fHPF      := filterFreq(382);
+     FLPF      := filterFreq(1744);
+     FMix[0]   := -0.96;
+     FMix[1]   := 1.6;
+     FDelay[0] := round(SampleRate * 2.8089887640449438202247191011236E-3);
+     FDelay[1] := round(SampleRate * 7.9176563737133808392715756136184E-4);
+     FHPF      := filterFreq(382);
     end;
  end;
 end;
@@ -232,8 +209,8 @@ end;
 
 procedure TComboDataModule.ParamHPFFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fHighPass[0].Frequency := Value;
- fHighPass[1].Frequency := fHighPass[0].Frequency;
+ FHighPass[0].Frequency := Value;
+ FHighPass[1].Frequency := FHighPass[0].Frequency;
  DriveChanged(Parameter[1]);
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
@@ -244,52 +221,52 @@ end;
 
 procedure TComboDataModule.ParamNoiseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fRndAmt := dB_to_Amp(Value);
+ FRndAmt := dB_to_Amp(Value);
 end;
 
 procedure TComboDataModule.DriveChanged(const Value: Single);
 begin
- fIsSoftClipping := Value < 0;
+ FIsSoftClipping := Value < 0;
 
- if fIsSoftClipping
-  then fDrive := Power(10, -(1 + 0.03 * Value))  // soft clipping
+ if FIsSoftClipping
+  then FDrive := Power(10, -(1 + 0.03 * Value))  // soft clipping
   else                                                  // hard clipping
    begin
-    fDrive := 1;
-    fClip  := 3.7 - 0.08 * Value;
+    FDrive := 1;
+    FClip  := 3.7 - 0.08 * Value;
     if Value > 40 then
      begin
-      fDrive := Power(10, 0.035 * Value - 1.4);
-      fClip  := 0.5;
+      FDrive := Power(10, 0.035 * Value - 1.4);
+      FClip  := 0.5;
      end;
    end;
 
  if (Parameter[5] > 100)
-  then fDrive := fDrive * (1 + 0.1 * fDrive);
+  then FDrive := FDrive * (1 + 0.1 * FDrive);
 end;
 
 procedure TComboDataModule.BiasChanged;
 begin
- fBias := 6 * Parameter[2] / (1000 + abs(1.5 * Parameter[1]));
+ FBias := 6 * Parameter[2] / (1000 + abs(1.5 * Parameter[1]));
 end;
 
 procedure TComboDataModule.TrimChanged;
 begin
  case round(Parameter[0]) of
-  0: fTrim := 0.50;   // DI
-  1: fTrim := 0.53;   // speaker sim
-  2: fTrim := 1.10;   // radio
-  3: fTrim := 0.98;   // mesa boogie 1"
-  4: fTrim := 0.96;   // mesa boogie 8"
-  5: fTrim := 0.59;   // Marshall 4x12" celestion
-  6: fTrim := 0.30;   // scooped-out metal
+  0: FTrim := 0.50;   // DI
+  1: FTrim := 0.53;   // speaker sim
+  2: FTrim := 1.10;   // radio
+  3: FTrim := 0.98;   // mesa boogie 1"
+  4: FTrim := 0.96;   // mesa boogie 8"
+  5: FTrim := 0.59;   // Marshall 4x12" celestion
+  6: FTrim := 0.30;   // scooped-out metal
  end;
 
- if fIsSoftClipping
-  then fTrim := fTrim * (0.55 + 150 * IntPower((0.5 + 0.005 * Parameter[1]), 4));
+ if FIsSoftClipping
+  then FTrim := FTrim * (0.55 + 150 * IntPower((0.5 + 0.005 * Parameter[1]), 4));
 
- fTrim := fTrim * Power(10, Parameter[3] * 0.05);
- if fStereo then fTrim := fTrim * 2;
+ FTrim := FTrim * Power(10, Parameter[3] * 0.05);
+ if FStereo then FTrim := FTrim * 2;
 end;
 
 procedure TComboDataModule.ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -323,6 +300,14 @@ begin
   else PreDefined := 'MONO';
 end;
 
+procedure TComboDataModule.VSTModuleClose(Sender: TObject);
+begin
+ Dispose(FBuffer[0]);
+ Dispose(FBuffer[1]);
+ FreeAndNil(FHighPass[0]);
+ FreeAndNil(FHighPass[1]);
+end;
+
 procedure TComboDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
   ParentWindow: Cardinal);
 begin
@@ -331,6 +316,18 @@ end;
 
 procedure TComboDataModule.VSTModuleOpen(Sender: TObject);
 begin
+ FBufferSize := 1024;
+ FBufferPosition := 0;
+ GetMem(FBuffer[0], FBufferSize * SizeOf(Single));
+ GetMem(FBuffer[1], FBufferSize * SizeOf(Single));
+ FHighPass[0] := TSimpleHighpassFilter.Create;
+ FHighPass[1] := TSimpleHighpassFilter.Create;
+
+ {$IFDEF UseGUI}
+ Flags := Flags + [effFlagsHasEditor];
+ {$ENDIF}
+
+ // parameter initialization
  Parameter[0] := 0;
  Parameter[1] := 0;
  Parameter[2] := 0;
@@ -339,6 +336,8 @@ begin
  Parameter[5] := 100;
  Parameter[6] := 0;
  Parameter[7] := -75;
+
+ // default preset
  with Programs[0] do
   begin
    Parameter[0] := 0;
@@ -350,6 +349,8 @@ begin
    Parameter[6] := 0;
    Parameter[7] := -75;
   end;
+
+ // preset 1
  with Programs[1] do
   begin
    Parameter[0] := 3;
@@ -374,36 +375,36 @@ var
   m            : array [0..1] of Single;
   bp, Sample   : Integer;
 begin
- m[0] := fMix[0];
- m[1] := fMix[1];
- clp  := fClip;
- LPF  := fLPF;
- HPF  := fHPF;
- bi   := fBias - 0.0001;
- drv  := fDrive;
- FilterState[0, 0] := fFilterState[0, 0];
- FilterState[0, 1] := fFilterState[0, 1];
- FilterState[0, 2] := fFilterState[0, 2];
- FilterState[0, 3] := fFilterState[0, 3];
- FilterState[0, 4] := fFilterState[0, 4];
- FilterState[1, 0] := fFilterState[1, 0];
- FilterState[1, 1] := fFilterState[1, 1];
- FilterState[1, 2] := fFilterState[1, 2];
- FilterState[1, 3] := fFilterState[1, 3];
- FilterState[1, 4] := fFilterState[1, 4];
- d[0] := fDelay[0];
- d[1] := fDelay[1];
- bp   := fBufferPosition;
- trm  := fTrim * sqr(sqr(1 - LPF));
+ m[0] := FMix[0];
+ m[1] := FMix[1];
+ clp  := FClip;
+ LPF  := FLPF;
+ HPF  := FHPF;
+ bi   := FBias - 0.0001;
+ drv  := FDrive;
+ FilterState[0, 0] := FFilterState[0, 0];
+ FilterState[0, 1] := FFilterState[0, 1];
+ FilterState[0, 2] := FFilterState[0, 2];
+ FilterState[0, 3] := FFilterState[0, 3];
+ FilterState[0, 4] := FFilterState[0, 4];
+ FilterState[1, 0] := FFilterState[1, 0];
+ FilterState[1, 1] := FFilterState[1, 1];
+ FilterState[1, 2] := FFilterState[1, 2];
+ FilterState[1, 3] := FFilterState[1, 3];
+ FilterState[1, 4] := FFilterState[1, 4];
+ d[0] := FDelay[0];
+ d[1] := FDelay[1];
+ bp   := FBufferPosition;
+ trm  := FTrim * sqr(sqr(1 - LPF));
 
- if fStereo then //stereo
+ if FStereo then //stereo
   begin
    for  Sample := 0 to SampleFrames - 1 do
     begin
-     InP[0] := fHighPass[0].ProcessSample(drv * (fRndAmt * random + Inputs[0, Sample] + bi));
-     InP[1] := fHighPass[1].ProcessSample(drv * (fRndAmt * random + Inputs[1, Sample] + bi));
+     InP[0] := FHighPass[0].ProcessSample(drv * (FRndAmt * random + Inputs[0, Sample] + bi));
+     InP[1] := FHighPass[1].ProcessSample(drv * (FRndAmt * random + Inputs[1, Sample] + bi));
 
-     if fIsSoftClipping then
+     if FIsSoftClipping then
       begin
        OutP[0] := InP[0] / (1 + abs(InP[0]));
        OutP[1] := InP[1] / (1 + abs(InP[1]));
@@ -418,12 +419,12 @@ begin
         else OutP[1] := InP[1];
       end;
 
-     fBuffer[0]^[bp] := OutP[0];
-     fBuffer[1]^[bp] := OutP[1];
-     OutP[0] := OutP[0] + (m[0] * fBuffer[0]^[(bp + d[0]) mod 1000]) +
-                          (m[1] * fBuffer[0]^[(bp + d[1]) mod 1000]);
-     OutP[1] := OutP[1] + (m[0] * fBuffer[1]^[(bp + d[0]) mod 1000]) +
-                          (m[1] * fBuffer[1]^[(bp + d[1]) mod 1000]);
+     FBuffer[0]^[bp] := OutP[0];
+     FBuffer[1]^[bp] := OutP[1];
+     OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
+                          (m[1] * FBuffer[0]^[(bp + d[1]) mod 1000]);
+     OutP[1] := OutP[1] + (m[0] * FBuffer[1]^[(bp + d[0]) mod 1000]) +
+                          (m[1] * FBuffer[1]^[(bp + d[1]) mod 1000]);
 
      FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
      FilterState[1, 0] := LPF * FilterState[1, 0] + trm * OutP[1];
@@ -450,17 +451,17 @@ begin
   end
  else //mono
   begin
-   if fIsSoftClipping then //soft clip
+   if FIsSoftClipping then //soft clip
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := fHighPass[0].ProcessSample(drv * (fRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := FHighPass[0].ProcessSample(drv * (FRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        OutP[0] := InP[0] / (1 + abs(InP[0]));
 
-       fBuffer[0]^[bp] := OutP[0];
-       OutP[0] := OutP[0] + (m[0] * fBuffer[0]^[(bp + d[0]) mod 1000]) +
-                            (m[1] * fBuffer[0]^[(bp + d[1]) mod 1000]);
+       FBuffer[0]^[bp] := OutP[0];
+       OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
+                            (m[1] * FBuffer[0]^[(bp + d[1]) mod 1000]);
 
        FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
        FilterState[0, 1] := LPF * FilterState[0, 1] + FilterState[0, 0];
@@ -482,15 +483,15 @@ begin
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := fHighPass[0].ProcessSample(drv * (fRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := FHighPass[0].ProcessSample(drv * (FRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        if InP[0] > clp        then OutP[0] :=  clp
         else if InP[0] < -clp then OutP[0] := -clp
         else OutP[0] := InP[0];
 
-       fBuffer[0]^[bp] := OutP[0];
-       OutP[0] := OutP[0] + (m[0] * fBuffer[0]^[(bp + d[0]) mod 1000]) +
-                            (m[1] * fBuffer[0]^[(bp + d[1]) mod 1000]);
+       FBuffer[0]^[bp] := OutP[0];
+       OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
+                            (m[1] * FBuffer[0]^[(bp + d[1]) mod 1000]);
 
        FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
        FilterState[0, 1] := LPF * FilterState[0, 1] + FilterState[0, 0];
@@ -509,13 +510,13 @@ begin
       end;
     end;
   end;
- fBufferPosition := bp;
+ FBufferPosition := bp;
  if (abs(FilterState[0, 0]) < 1E-10)
-  then FillChar(fFilterState[0, 0], 5 * SizeOf(Double), 0)
-  else Move(FilterState[0, 0], fFilterState[0, 0], 5 * SizeOf(Double));
- if (abs(FilterState[1, 0]) < 1E-10) or (not fStereo)
-  then FillChar(fFilterState[1, 0], 5 * SizeOf(Double), 0)
-  else Move(FilterState[1, 0], fFilterState[1, 0], 5 * SizeOf(Double));
+  then FillChar(FFilterState[0, 0], 5 * SizeOf(Double), 0)
+  else Move(FilterState[0, 0], FFilterState[0, 0], 5 * SizeOf(Double));
+ if (abs(FilterState[1, 0]) < 1E-10) or (not FStereo)
+  then FillChar(FFilterState[1, 0], 5 * SizeOf(Double), 0)
+  else Move(FilterState[1, 0], FFilterState[1, 0], 5 * SizeOf(Double));
 
 end;
 
@@ -531,37 +532,37 @@ var
   m            : Array [0..1] of Single;
   bp, Sample   : Integer;
 begin
- m[0] := fMix[0];
- m[1] := fMix[1];
- clp  := fClip;
- LPF  := fLPF;
- HPF  := fHPF;
- bi   := fBias;
- drv  := fDrive;
- FilterState[0, 0] := fFilterState[0, 0];
- FilterState[0, 1] := fFilterState[0, 1];
- FilterState[0, 2] := fFilterState[0, 2];
- FilterState[0, 3] := fFilterState[0, 3];
- FilterState[0, 4] := fFilterState[0, 4];
- FilterState[1, 0] := fFilterState[1, 0];
- FilterState[1, 1] := fFilterState[1, 1];
- FilterState[1, 2] := fFilterState[1, 2];
- FilterState[1, 3] := fFilterState[1, 3];
- FilterState[1, 4] := fFilterState[1, 4];
+ m[0] := FMix[0];
+ m[1] := FMix[1];
+ clp  := FClip;
+ LPF  := FLPF;
+ HPF  := FHPF;
+ bi   := FBias;
+ drv  := FDrive;
+ FilterState[0, 0] := FFilterState[0, 0];
+ FilterState[0, 1] := FFilterState[0, 1];
+ FilterState[0, 2] := FFilterState[0, 2];
+ FilterState[0, 3] := FFilterState[0, 3];
+ FilterState[0, 4] := FFilterState[0, 4];
+ FilterState[1, 0] := FFilterState[1, 0];
+ FilterState[1, 1] := FFilterState[1, 1];
+ FilterState[1, 2] := FFilterState[1, 2];
+ FilterState[1, 3] := FFilterState[1, 3];
+ FilterState[1, 4] := FFilterState[1, 4];
 
- d[0] := fDelay[0];
- d[1] := fDelay[1];
- bp   := fBufferPosition;
- trm  := fTrim * sqr(sqr(1 - LPF));
+ d[0] := FDelay[0];
+ d[1] := FDelay[1];
+ bp   := FBufferPosition;
+ trm  := FTrim * sqr(sqr(1 - LPF));
 
- if fStereo then //stereo
+ if FStereo then //stereo
   begin
    for  Sample := 0 to SampleFrames - 1 do
     begin
      InP[0] := drv * (Inputs[0, Sample] + bi);
      InP[1] := drv * (Inputs[1, Sample] + bi);
 
-      if fIsSoftClipping then
+      if FIsSoftClipping then
        begin
         OutP[0] := InP[0] / (1 + abs(InP[0]));
         OutP[1] := InP[1] / (1 + abs(InP[1]));
@@ -576,12 +577,12 @@ begin
          else OutP[1] := InP[1];
        end;
 
-      fBuffer[0]^[bp] := OutP[0];
-      fBuffer[1]^[bp] := OutP[1];
-      OutP[0] := OutP[0] + (m[0] * fBuffer[0]^[(bp + d[0]) mod 1000]) +
-                           (m[1] * fBuffer[0]^[(bp + d[1]) mod 1000]);
-      OutP[1] := OutP[1] + (m[0] * fBuffer[1]^[(bp + d[0]) mod 1000]) +
-                           (m[1] * fBuffer[1]^[(bp + d[1]) mod 1000]);
+      FBuffer[0]^[bp] := OutP[0];
+      FBuffer[1]^[bp] := OutP[1];
+      OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
+                           (m[1] * FBuffer[0]^[(bp + d[1]) mod 1000]);
+      OutP[1] := OutP[1] + (m[0] * FBuffer[1]^[(bp + d[0]) mod 1000]) +
+                           (m[1] * FBuffer[1]^[(bp + d[1]) mod 1000]);
 
       FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
       FilterState[1, 0] := LPF * FilterState[1, 0] + trm * OutP[1];
@@ -608,17 +609,17 @@ begin
   end
  else //mono
   begin
-   if fIsSoftClipping then //soft clip
+   if FIsSoftClipping then //soft clip
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := fHighPass[0].ProcessSample(drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := FHighPass[0].ProcessSample(drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        OutP[0] := InP[0] / (1 + abs(InP[0]));
 
-       fBuffer[0]^[bp] := OutP[0];
-       OutP[0] := OutP[0] + (m[0] * fBuffer[0]^[(bp + d[0]) mod 1000]) +
-                            (m[1] * fBuffer[0]^[(bp + d[1]) mod 1000]);
+       FBuffer[0]^[bp] := OutP[0];
+       OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
+                            (m[1] * FBuffer[0]^[(bp + d[1]) mod 1000]);
 
        FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
        FilterState[0, 1] := LPF * FilterState[0, 1] + FilterState[0, 0];
@@ -640,15 +641,15 @@ begin
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := fHighPass[0].ProcessSample(drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := FHighPass[0].ProcessSample(drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        if InP[0] > clp        then OutP[0] :=  clp
         else if InP[0] < -clp then OutP[0] := -clp
         else OutP[0] := InP[0];
 
-       fBuffer[0]^[bp] := OutP[0];
-       OutP[0] := OutP[0] + (m[0] * fBuffer[0]^[(bp + d[0]) mod 1000]) +
-                            (m[1] * fBuffer[0]^[(bp + d[1]) mod 1000]);
+       FBuffer[0]^[bp] := OutP[0];
+       OutP[0] := OutP[0] + (m[0] * FBuffer[0]^[(bp + d[0]) mod 1000]) +
+                            (m[1] * FBuffer[0]^[(bp + d[1]) mod 1000]);
 
        FilterState[0, 0] := LPF * FilterState[0, 0] + trm * OutP[0];
        FilterState[0, 1] := LPF * FilterState[0, 1] + FilterState[0, 0];
@@ -667,27 +668,27 @@ begin
       end;
     end;
   end;
- fBufferPosition := bp;
+ FBufferPosition := bp;
  if (abs(FilterState[0, 0]) < 1E-10)
-  then FillChar(fFilterState[0, 0], 5 * SizeOf(Double), 0)
-  else Move(FilterState[0, 0], fFilterState[0, 0], 5 * SizeOf(Double));
- if (abs(FilterState[1, 0]) < 1E-10) or (not fStereo)
-  then FillChar(fFilterState[1, 0], 5 * SizeOf(Double), 0)
-  else Move(FilterState[1, 0], fFilterState[1, 0], 5 * SizeOf(Double));
+  then FillChar(FFilterState[0, 0], 5 * SizeOf(Double), 0)
+  else Move(FilterState[0, 0], FFilterState[0, 0], 5 * SizeOf(Double));
+ if (abs(FilterState[1, 0]) < 1E-10) or (not FStereo)
+  then FillChar(FFilterState[1, 0], 5 * SizeOf(Double), 0)
+  else Move(FilterState[1, 0], FFilterState[1, 0], 5 * SizeOf(Double));
 end;
 
 procedure TComboDataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
- fHighPass[0].SampleRate := SampleRate;
- fHighPass[1].SampleRate := SampleRate;
+ FHighPass[0].SampleRate := SampleRate;
+ FHighPass[1].SampleRate := SampleRate;
  ModelType := ModelType;
 end;
 
 procedure TComboDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- FillChar(fBuffer[0]^[0], fBufferSize * SizeOf(Single), 0);
- FillChar(fBuffer[1]^[0], fBufferSize * SizeOf(Single), 0);
- FillChar(fFilterState[0, 0], 10 * SizeOf(Double), 0);
+ FillChar(FBuffer[0]^[0], FBufferSize * SizeOf(Single), 0);
+ FillChar(FBuffer[1]^[0], FBufferSize * SizeOf(Single), 0);
+ FillChar(FFilterState[0, 0], 10 * SizeOf(Double), 0);
 end;
 
 end.

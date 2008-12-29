@@ -14,18 +14,17 @@ uses
   SimpleChorusDM in 'SimpleChorusDM.pas' {SimpleChorusModule: TVSTModule},
   SimpleChorusGUI in 'SimpleChorusGUI.pas' {FmSimpleChorus};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SimpleChorusModule: TSimpleChorusModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    SimpleChorusModule := TSimpleChorusModule.Create(Application);
-    SimpleChorusModule.Effect^.user := SimpleChorusModule;
-    SimpleChorusModule.AudioMaster := audioMaster;
-    Result := SimpleChorusModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TSimpleChorusModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

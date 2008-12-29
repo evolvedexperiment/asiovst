@@ -9,21 +9,17 @@ uses
   SimpleGateDM in 'SimpleGateDM.pas' {SimpleGateDataModule: TVSTModule},
   EditorFrm in 'EditorFrm.pas' {EditorForm};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  SimpleGateDataModule: TSimpleGateDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    SimpleGateDataModule := TSimpleGateDataModule.Create(Application);
-    SimpleGateDataModule.AudioMaster := audioMaster;
-    with SimpleGateDataModule do
-    begin
-      Effect^.user := SimpleGateDataModule;
-      Result := Effect;
-    end;
-  except
-    Result := nil;
-  end;
+ try
+  with TSimpleGateDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

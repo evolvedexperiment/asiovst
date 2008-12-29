@@ -3,7 +3,7 @@ object ChebyshevLPModule: TChebyshevLPModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Chebyshev Lowpass Filter'
-  ProductName = 'DAV - Filter Demo'
+  ProductName = 'DAV Filter Examples'
   VendorName = 'Delphi ASIO & VST Packages'
   PlugCategory = vpcEffect
   CanDos = [vcd2in2out]

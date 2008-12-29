@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   JX10 in 'JX10.pas' {JX10DataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  JX10DataModule: TJX10DataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    JX10DataModule := TJX10DataModule.Create(Application);
-    JX10DataModule.Effect^.user := JX10DataModule;
-    JX10DataModule.AudioMaster := audioMaster;
-    Result := JX10DataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TJX10DataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

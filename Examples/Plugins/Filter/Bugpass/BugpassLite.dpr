@@ -8,15 +8,14 @@ uses
   BugpassLiteDM in 'BugpassLiteDM.pas' {BugpassLiteDataModule: TVSTModule},
   BugpassLiteGUI in 'BugpassLiteGUI.pas' {FmBugpassLite};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  BugpassLiteDataModule: TBugpassLiteDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    BugpassLiteDataModule := TBugpassLiteDataModule.Create(Application);
-    BugpassLiteDataModule.Effect^.user := BugpassLiteDataModule;
-    BugpassLiteDataModule.AudioMaster := audioMaster;
-    Result := BugpassLiteDataModule.Effect;
+ try
+  with TBugpassLiteDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
   except
     Result := nil;
   end;

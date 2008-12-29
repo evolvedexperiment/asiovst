@@ -1,6 +1,5 @@
 object VSTSSModule: TVSTSSModule
   OldCreateOrder = False
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'X Synth'
@@ -11,6 +10,7 @@ object VSTSSModule: TVSTSSModule
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
   UniqueID = 'XSyn'
   ShellPlugins = <>
   Programs = <
@@ -27,11 +27,14 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Osc1 Type'
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 10.000000000000000000
       MaxInteger = 10
       ShortLabel = '1type'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
       OnParameterChange = VSTSSModuleOsc1TypeChange
@@ -115,11 +118,14 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Osc2 Type'
+      LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 10.000000000000000000
       MaxInteger = 10
       ShortLabel = '2type'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
+      StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
       OnParameterChange = VSTSSModuleOsc2TypeChange
@@ -208,6 +214,7 @@ object VSTSSModule: TVSTSSModule
       Max = 10.000000000000000000
       MaxInteger = 10
       ShortLabel = 'drive'
+      SmallStepFloat = 0.500000000000000000
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
@@ -264,11 +271,11 @@ object VSTSSModule: TVSTSSModule
       OnParameterChange = VSTSSModuleLevelParameterChange
     end>
   OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi
-  OnInitialize = VSTModuleInitialize
+  OnProcessReplacing = VSTModuleProcess
   Left = 207
   Top = 191
   Height = 150

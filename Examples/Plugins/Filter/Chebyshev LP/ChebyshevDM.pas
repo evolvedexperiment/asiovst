@@ -8,12 +8,12 @@ uses
 
 type
   TChebyshevLPModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleClose(Sender: TObject);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamRippleChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -30,6 +30,47 @@ implementation
 
 uses
   Math, ChebyshevGUI;
+
+procedure TChebyshevLPModule.VSTModuleOpen(Sender: TObject);
+var
+  ch : Integer;
+begin
+ for ch := 0 to numInputs - 1 do
+  begin
+   fFilter[ch] := TChebyshev1LP.Create;
+   fFilter[ch].SetFilterValues(1000, 0, 1);
+  end;
+(*
+ fResizer := TVstWindowSizer.Create;
+ fResizer.Effect := Self;
+*)
+
+ Parameter[0] := 1000;
+ Parameter[1] := 1;
+ Parameter[2] := 4;
+
+ with Programs[0] do
+  begin
+   Parameter[0] := 1000;
+   Parameter[1] := 1;
+   Parameter[2] := 4;
+  end;
+end;
+
+procedure TChebyshevLPModule.VSTModuleClose(Sender: TObject);
+var
+  ch : Integer;
+begin
+ for ch := 0 to numInputs - 1
+  do FreeAndNil(fFilter[ch]);
+// FreeAndNil(fResizer);
+end;
+
+procedure TChebyshevLPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TFmChebyshev.Create(Self);
+end;
 
 procedure TChebyshevLPModule.ParamRippleChange(Sender: TObject;
   const Index: Integer; var Value: Single);
@@ -73,47 +114,6 @@ begin
    begin
     UpdateFrequency;
    end;
-end;
-
-procedure TChebyshevLPModule.VSTModuleOpen(Sender: TObject);
-var
-  ch : Integer;
-begin
- for ch := 0 to numInputs - 1 do
-  begin
-   fFilter[ch] := TChebyshev1LP.Create;
-   fFilter[ch].SetFilterValues(1000, 0, 1);
-  end;
-(*
- fResizer := TVstWindowSizer.Create;
- fResizer.Effect := Self;
-*)
-
- Parameter[0] := 1000;
- Parameter[1] := 1;
- Parameter[2] := 4;
-
- with Programs[0] do
-  begin
-   Parameter[0] := 1000;
-   Parameter[1] := 1;
-   Parameter[2] := 4;
-  end;
-end;
-
-procedure TChebyshevLPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmChebyshev.Create(Self);
-end;
-
-procedure TChebyshevLPModule.VSTModuleClose(Sender: TObject);
-var
-  ch : Integer;
-begin
- for ch := 0 to numInputs - 1
-  do FreeAndNil(fFilter[ch]);
-// FreeAndNil(fResizer);
 end;
 
 procedure TChebyshevLPModule.VSTModuleProcess(const Inputs,

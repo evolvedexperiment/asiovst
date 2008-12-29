@@ -1,17 +1,16 @@
 object ComboDataModule: TComboDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
-  EffectName = 'mda Combo'
-  ProductName = 'Combo'
-  VendorName = 'mda'
+  EffectName = 'AmpSim'
+  ProductName = 'DAV effect examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Amp & Speaker Simulator'
+  IORatio = 1.000000000000000000
   UniqueID = 'mdaX'
   ShellPlugins = <>
   Programs = <
@@ -159,6 +158,7 @@ object ComboDataModule: TComboDataModule
       OnParameterChange = ParamNoiseChange
     end>
   OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing

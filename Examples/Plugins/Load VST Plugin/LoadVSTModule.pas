@@ -20,8 +20,8 @@ type
     procedure VST2ModuleGetVU(var VU: Single);
     procedure VST2ModuleOpen(Sender: TObject);
     procedure VST2ModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VST2ModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
-    procedure VST2ModuleProcessReplacing(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+    procedure VST2ModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VST2ModuleProcessReplacing(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VST2ModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VST2ModuleStartProcess(Sender: TObject);
     procedure VST2ModuleStopProcess(Sender: TObject);
@@ -37,14 +37,14 @@ implementation
 uses
   Dialogs;
 
-procedure TPlugInPlugModule.VST2ModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+procedure TPlugInPlugModule.VST2ModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 begin
- VstHost[0].Process(@inputs[0], @outputs[0], sampleframes);
+ VstHost[0].Process(@inputs[0], @outputs[0], SampleFrames);
 end;
 
-procedure TPlugInPlugModule.VST2ModuleProcessReplacing(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
+procedure TPlugInPlugModule.VST2ModuleProcessReplacing(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 begin
- VstHost[0].ProcessReplacing(@inputs[0], @outputs[0], sampleframes);
+ VstHost[0].ProcessReplacing(@inputs[0], @outputs[0], SampleFrames);
 end;
 
 procedure TPlugInPlugModule.VST2ModuleCreate(Sender: TObject);

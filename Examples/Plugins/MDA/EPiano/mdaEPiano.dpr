@@ -8,18 +8,17 @@ uses
   EPianoDM in 'EPianoDM.pas' {EPianoDataModule: TVSTModule},
   EPianoData in 'EPianoData.pas';
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  EPianoDataModule: TEPianoDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    EPianoDataModule := TEPianoDataModule.Create(Application);
-    EPianoDataModule.Effect^.user := EPianoDataModule;
-    EPianoDataModule.AudioMaster := audioMaster;
-    Result := EPianoDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TEPianoDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

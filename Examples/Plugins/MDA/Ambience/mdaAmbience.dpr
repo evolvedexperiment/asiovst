@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   mdaAmbienceDM in 'mdaAmbienceDM.pas' {mdaAmbienceDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  mdaAmbienceDataModule: TmdaAmbienceDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    mdaAmbienceDataModule := TmdaAmbienceDataModule.Create(Application);
-    mdaAmbienceDataModule.Effect^.user := mdaAmbienceDataModule;
-    mdaAmbienceDataModule.AudioMaster := audioMaster;
-    Result := mdaAmbienceDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TmdaAmbienceDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

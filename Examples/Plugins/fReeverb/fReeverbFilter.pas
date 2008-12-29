@@ -75,7 +75,7 @@ end;
 
 destructor TAllpass.Destroy;
 begin
- SetLength(FBuffer, 0);
+ Dispose(FBuffer);
  inherited;
 end;
 

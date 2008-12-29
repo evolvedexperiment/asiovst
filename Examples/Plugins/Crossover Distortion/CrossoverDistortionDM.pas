@@ -18,10 +18,10 @@ type
     procedure ParamHighDistChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fLowpassFilter  : array [0..1, 0..1] of TButterworthLP;
-    fHighpassFilter : array [0..1, 0..1] of TButterworthHP;
-    fLowMix         : array [0..1] of Single;
-    fHighMix        : array [0..1] of Single;
+    FLowpassFilter  : array [0..1, 0..1] of TButterworthLP;
+    FHighpassFilter : array [0..1, 0..1] of TButterworthHP;
+    FLowMix         : array [0..1] of Single;
+    FHighMix        : array [0..1] of Single;
     procedure InvertHighMix;
   public
   end;
@@ -40,10 +40,10 @@ begin
  for ch := 0 to numInputs - 1 do
   for i := 0 to 1 do
    begin
-    fLowpassFilter[ch, i]  := TButterworthLP.Create;
-//    fLowpassFilter[ch, i].Order := 4;
-    fHighpassFilter[ch, i] := TButterworthHP.Create;
-//    fHighpassFilter[ch, i].Order := 4;
+    FLowpassFilter[ch, i]  := TButterworthLP.Create;
+//    FLowpassFilter[ch, i].Order := 4;
+    FHighpassFilter[ch, i] := TButterworthHP.Create;
+//    FHighpassFilter[ch, i].Order := 4;
    end;
 end;
 
@@ -57,13 +57,13 @@ begin
   for ch := 0 to 1 do
    begin
     // using Linkwitz-Riley crossover filters
-    Low  := fLowpassFilter[ch, 1].ProcessSample(
-            fLowpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
-    High := fHighpassFilter[ch, 1].ProcessSample(
-            fHighpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
+    Low  := FLowpassFilter[ch, 1].ProcessSample(
+            FLowpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
+    High := FHighpassFilter[ch, 1].ProcessSample(
+            FHighpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
 
-    Outputs[ch, sample] := fLowMix[0]  * Low  + FastTanhOpt5(fLowMix[1]  * Low) +
-                           fHighMix[0] * High + FastTanhOpt5(fHighMix[1] * High);
+    Outputs[ch, sample] := FLowMix[0]  * Low  + FastTanhOpt5(FLowMix[1]  * Low) +
+                           FHighMix[0] * High + FastTanhOpt5(FHighMix[1] * High);
   end;
 end;
 
@@ -78,21 +78,21 @@ begin
   for ch := 0 to 1 do
    begin
     // using Linkwitz-Riley crossover filters
-    Low  := fLowpassFilter[ch, 1].ProcessSample(
-            fLowpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
-    High := fHighpassFilter[ch, 1].ProcessSample(
-            fHighpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
+    Low  := FLowpassFilter[ch, 1].ProcessSample(
+            FLowpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
+    High := FHighpassFilter[ch, 1].ProcessSample(
+            FHighpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
 
-    Outputs[ch, sample] := fLowMix[0]  * Low  + fLowMix[1]  * FastTanhOpt5(Low) +
-                           fHighMix[0] * High + fHighMix[1] * FastTanhOpt5(High);
+    Outputs[ch, sample] := FLowMix[0]  * Low  + FLowMix[1]  * FastTanhOpt5(Low) +
+                           FHighMix[0] * High + FHighMix[1] * FastTanhOpt5(High);
   end;
 end;
 
 procedure TCrossoverDistortionDataModule.ParamLowDistChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fLowMix[1] := 0.01 * Value;
- fLowMix[0] := 1 - fLowMix[1];
+ FLowMix[1] := 0.01 * Value;
+ FLowMix[0] := 1 - FLowMix[1];
  if EditorForm is TFmCrossoverDistortion then
   with TFmCrossoverDistortion(EditorForm) do
    begin
@@ -104,21 +104,21 @@ procedure TCrossoverDistortionDataModule.InvertHighMix;
 begin
  if round(ParameterByName['Crossover Order']) mod 2 = 1 then
   begin
-   fHighMix[0] := -abs(fHighMix[0]);
-   fHighMix[1] := -abs(fHighMix[1]);
+   FHighMix[0] := -abs(FHighMix[0]);
+   FHighMix[1] := -abs(FHighMix[1]);
   end
  else
   begin
-   fHighMix[0] := abs(fHighMix[0]);
-   fHighMix[1] := abs(fHighMix[1]);
+   FHighMix[0] := abs(FHighMix[0]);
+   FHighMix[1] := abs(FHighMix[1]);
   end;
 end;
 
 procedure TCrossoverDistortionDataModule.ParamHighDistChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fHighMix[1] := 0.01 * Value;
- fHighMix[0] := 1 - fHighMix[1];
+ FHighMix[1] := 0.01 * Value;
+ FHighMix[0] := 1 - FHighMix[1];
  InvertHighMix;
  if EditorForm is TFmCrossoverDistortion then
   with TFmCrossoverDistortion(EditorForm) do
@@ -135,8 +135,8 @@ begin
  for ch := 0 to numInputs - 1 do
   for i := 0 to 1 do
    begin
-    fLowpassFilter[ch, i].Order  := round(Value);
-    fHighpassFilter[ch, i].Order := round(Value);
+    FLowpassFilter[ch, i].Order  := round(Value);
+    FHighpassFilter[ch, i].Order := round(Value);
    end;
  InvertHighMix;  
  if EditorForm is TFmCrossoverDistortion then
@@ -154,8 +154,8 @@ begin
  for ch := 0 to numInputs - 1 do
   for i := 0 to 1 do
    begin
-    fLowpassFilter[ch, i].Frequency := Value;
-    fHighpassFilter[ch, i].Frequency := Value;
+    FLowpassFilter[ch, i].Frequency := Value;
+    FHighpassFilter[ch, i].Frequency := Value;
    end;
  if EditorForm is TFmCrossoverDistortion then
   with TFmCrossoverDistortion(EditorForm) do
@@ -166,10 +166,10 @@ end;
 
 procedure TCrossoverDistortionDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(fLowpassFilter[0]);
- FreeAndNil(fLowpassFilter[1]);
- FreeAndNil(fHighpassFilter[0]);
- FreeAndNil(fHighpassFilter[1]);
+ FreeAndNil(FLowpassFilter[0]);
+ FreeAndNil(FLowpassFilter[1]);
+ FreeAndNil(FHighpassFilter[0]);
+ FreeAndNil(FHighpassFilter[1]);
 end;
 
 procedure TCrossoverDistortionDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);

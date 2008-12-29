@@ -10,18 +10,17 @@ uses
   ChebyshevWaveshaperDM in 'ChebyshevWaveshaperDM.pas' {ChebyshevWaveshaperDataModule: TVSTModule},
   ChebyshevWaveshaperGUI in 'ChebyshevWaveshaperGUI.pas' {FmChebyshevWaveshaper};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    ChebyshevWaveshaperDataModule := TChebyshevWaveshaperDataModule.Create(Application);
-    ChebyshevWaveshaperDataModule.Effect^.user := ChebyshevWaveshaperDataModule;
-    ChebyshevWaveshaperDataModule.AudioMaster := audioMaster;
-    Result := ChebyshevWaveshaperDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TChebyshevWaveshaperDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

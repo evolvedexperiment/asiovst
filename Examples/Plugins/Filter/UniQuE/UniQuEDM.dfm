@@ -1,17 +1,16 @@
 object UniQuEDataModule: TUniQuEDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'UniQuE'
-  ProductName = 'UniQuE'
+  ProductName = 'DAV Filter Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Init'
+  IORatio = 1.000000000000000000
   UniqueID = '4g83'
   ShellPlugins = <>
   Programs = <
@@ -138,10 +137,11 @@ object UniQuEDataModule: TUniQuEDataModule
       OnParameterChange = ParamHigh
     end>
   OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
-  OnSampleRateChange = VSTModuleSampleRateChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81
   Height = 150

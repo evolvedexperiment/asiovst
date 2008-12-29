@@ -10,18 +10,17 @@ uses
   UniQuEDM in 'UniQuEDM.pas' {UniQuEDataModule: TVSTModule},
   UniQuEGUI in 'UniQuEGUI.pas' {FmUniQuE};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  UniQuEDataModule: TUniQuEDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    UniQuEDataModule := TUniQuEDataModule.Create(Application);
-    UniQuEDataModule.Effect^.user := UniQuEDataModule;
-    UniQuEDataModule.AudioMaster := audioMaster;
-    Result := UniQuEDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TUniQuEDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

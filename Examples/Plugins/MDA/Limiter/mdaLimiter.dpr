@@ -7,18 +7,17 @@ uses
   DAV_VSTModule,
   mdaLimiterDM in 'mdaLimiterDM.pas' {mdaLimiterDataModule: TVSTModule};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  mdaLimiterDataModule: TmdaLimiterDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    mdaLimiterDataModule := TmdaLimiterDataModule.Create(Application);
-    mdaLimiterDataModule.Effect^.user := mdaLimiterDataModule;
-    mdaLimiterDataModule.AudioMaster := audioMaster;
-    Result := mdaLimiterDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TmdaLimiterDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

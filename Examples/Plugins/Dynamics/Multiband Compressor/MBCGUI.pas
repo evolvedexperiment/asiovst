@@ -2,93 +2,93 @@ unit MBCGUI;
 
 interface
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
   ExtCtrls, DAV_Common, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial;
 
 type
   TFmMBC = class(TForm)
+    CBLimiter: TCheckBox;
+    DlHighAttack: TGuiDial;
+    DlHighGain: TGuiDial;
+    DlHighRatio: TGuiDial;
+    DlHighRelease: TGuiDial;
+    DlHighThreshold: TGuiDial;
+    DlLowAttack: TGuiDial;
+    DlLowGain: TGuiDial;
+    DlLowRatio: TGuiDial;
+    DlLowRelease: TGuiDial;
+    DlLowThreshold: TGuiDial;
+    DlMidAttack: TGuiDial;
+    DlMidGain: TGuiDial;
+    DlMidRatio: TGuiDial;
+    DlMidRelease: TGuiDial;
+    DlMidThreshold: TGuiDial;
     LbAbout1: TLabel;
     LbAbout2: TLabel;
-    CBLimiter: TCheckBox;
-    RbLPFIR: TRadioButton;
-    RBBWIIR: TRadioButton;
-    SbMasterGain: TScrollBar;
-    SbLowFreq: TScrollBar;
-    SbHighFreq: TScrollBar;
-    LbMasterGain: TLabel;
     LbCrossover: TLabel;
-    LbMasterGaindB: TLabel;
-    LbLowFreqHz: TLabel;
-    LbHighFreqHz: TLabel;
-    DlLowThreshold: TGuiDial;
-    DlLowRatio: TGuiDial;
-    DlLowAttack: TGuiDial;
-    DlLowRelease: TGuiDial;
-    DlLowGain: TGuiDial;
-    DlMidThreshold: TGuiDial;
-    DlMidRatio: TGuiDial;
-    DlMidAttack: TGuiDial;
-    DlMidRelease: TGuiDial;
-    DlMidGain: TGuiDial;
-    DlHighThreshold: TGuiDial;
-    DlHighRatio: TGuiDial;
-    DlHighAttack: TGuiDial;
-    DlHighRelease: TGuiDial;
-    DlHighGain: TGuiDial;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    LbLowThreshold: TLabel;
-    LbLowRatio: TLabel;
-    LbLowAttack: TLabel;
-    LbLowRelease: TLabel;
-    LbLowGain: TLabel;
-    LbMidThreshold: TLabel;
-    LbMidRatio: TLabel;
-    LbMidAttack: TLabel;
-    LbMidRelease: TLabel;
-    LbMidGain: TLabel;
-    LbHighThreshold: TLabel;
-    LbHighRatio: TLabel;
     LbHighAttack: TLabel;
-    LbHighRelease: TLabel;
-    LbHighGain: TLabel;
-    LbLowThresholddB: TLabel;
-    LbLowRatioValue: TLabel;
-    LbLowAttackValue: TLabel;
-    LbLowReleaseValue: TLabel;
-    LbLowGaindB: TLabel;
-    LbMidThresholddB: TLabel;
-    LbMidRatioValue: TLabel;
-    LbMidAttackValue: TLabel;
-    LbMidReleaseValue: TLabel;
-    LbMidGaindB: TLabel;
-    LbHighThresholddB: TLabel;
-    LbHighRatioValue: TLabel;
     LbHighAttackValue: TLabel;
-    LbHighReleaseValue: TLabel;
+    LbHighBand: TLabel;
+    LbHighBandVU: TLabel;
+    LbHighFreqHz: TLabel;
+    LbHighGain: TLabel;
     LbHighGaindB: TLabel;
+    LbHighInput: TLabel;
+    LbHighRatio: TLabel;
+    LbHighRatioValue: TLabel;
+    LbHighRed: TLabel;
+    LbHighRelease: TLabel;
+    LbHighReleaseValue: TLabel;
+    LbHighThreshold: TLabel;
+    LbHighThresholddB: TLabel;
+    LbInput: TLabel;
+    LbInputL: TLabel;
+    LbInputR: TLabel;
+    LbLowAttack: TLabel;
+    LbLowAttackValue: TLabel;
+    LbLowBand: TLabel;
+    LbLowBandVU: TLabel;
+    LbLowFreqHz: TLabel;
+    LbLowGain: TLabel;
+    LbLowGaindB: TLabel;
+    LbLowInput: TLabel;
+    LbLowRatio: TLabel;
+    LbLowRatioValue: TLabel;
+    LbLowRed: TLabel;
+    LbLowRelease: TLabel;
+    LbLowReleaseValue: TLabel;
+    LbLowThreshold: TLabel;
+    LbLowThresholddB: TLabel;
+    LbMasterGain: TLabel;
+    LbMasterGaindB: TLabel;
+    LbMidAttack: TLabel;
+    LbMidAttackValue: TLabel;
+    LbMidBand: TLabel;
+    LbMidBandVU: TLabel;
+    LbMidGain: TLabel;
+    LbMidGaindB: TLabel;
+    LbMidInput: TLabel;
+    LbMidRatio: TLabel;
+    LbMidRatioValue: TLabel;
+    LbMidRed: TLabel;
+    LbMidRelease: TLabel;
+    LbMidReleaseValue: TLabel;
+    LbMidThreshold: TLabel;
+    LbMidThresholddB: TLabel;
+    LbOutput: TLabel;
+    LbOutputLeft: TLabel;
+    LbOutputRight: TLabel;
     MeterIn: TPaintBox;
     MeterOut: TPaintBox;
     PaintBox1: TPaintBox;
     PaintBox2: TPaintBox;
     PaintBox3: TPaintBox;
-    LbInputL: TLabel;
-    LbInputR: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    Label10: TLabel;
-    Label11: TLabel;
-    Label12: TLabel;
-    Label13: TLabel;
-    Label14: TLabel;
-    Label15: TLabel;
-    Label16: TLabel;
+    RBBWIIR: TRadioButton;
+    RbLPFIR: TRadioButton;
+    SbHighFreq: TScrollBar;
+    SbLowFreq: TScrollBar;
+    SbMasterGain: TScrollBar;
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -114,7 +114,7 @@ type
     procedure MeterInPaint(Sender: TObject);
     procedure MeterOutPaint(Sender: TObject);
   private
-    fBackground : TBitmap;
+    FBackground : TBitmap;
   end;
 
 implementation
@@ -128,7 +128,7 @@ procedure TFmMBC.FormCreate(Sender: TObject);
 var
   RS  : TResourceStream;
 begin
- fBackground := TBitmap.Create;
+ FBackground := TBitmap.Create;
  RS := TResourceStream.Create(hInstance, 'SlimSlowKnob', 'BMP');
  try
   DlLowThreshold.DialBitmap.LoadFromStream(RS); RS.Position := 0;
@@ -155,19 +155,19 @@ end;
 
 procedure TFmMBC.FormDestroy(Sender: TObject);
 begin
- fBackground.Free;
+ FBackground.Free;
 end;
 
 procedure TFmMBC.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, fBackground);
+ Canvas.Draw(0, 0, FBackground);
 end;
 
 procedure TFmMBC.FormResize(Sender: TObject);
 var
   x, y : Integer;
 begin
- with fBackground do
+ with FBackground do
   begin
    Width := ClientWidth;
    Height := ClientHeight;

@@ -1,6 +1,5 @@
 object VSTSSModule: TVSTSSModule
   OldCreateOrder = False
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'Simple Sampler'
@@ -11,6 +10,7 @@ object VSTSSModule: TVSTSSModule
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
+  IORatio = 1.000000000000000000
   UniqueID = 'Fibo'
   ShellPlugins = <>
   Programs = <
@@ -19,13 +19,13 @@ object VSTSSModule: TVSTSSModule
       VSTModule = Owner
     end>
   ParameterProperties = <>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
-  OnEditClose = VSTModuleEditClose
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessMidi = VSTModuleProcessMidi
-  OnInitialize = VSTModuleInitialize
+  OnProcessReplacing = VSTModuleProcess
   Left = 247
   Top = 85
   Height = 150

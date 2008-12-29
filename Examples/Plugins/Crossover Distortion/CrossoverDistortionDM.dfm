@@ -3,12 +3,13 @@ object CrossoverDistortionDataModule: TCrossoverDistortionDataModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Crossover Distortion'
-  ProductName = 'Crossover Distortion'
-  VendorName = 'Delphi ASIO & VST Packages'
+  ProductName = 'DAV Effect Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
+  IORatio = 1.000000000000000000
   UniqueID = 'CODI'
   ShellPlugins = <>
   Programs = <>
@@ -82,8 +83,8 @@ object CrossoverDistortionDataModule: TCrossoverDistortionDataModule
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
   Left = 218
   Top = 81
   Height = 150
