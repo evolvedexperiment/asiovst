@@ -4,6 +4,9 @@ library fReeverb;
 {$R 'fReeverbKnob.res' 'fReeverbKnob.rc'}
 
 uses
+  FastMM4,
+  madExcept,
+  madLinkDisAsm,
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,

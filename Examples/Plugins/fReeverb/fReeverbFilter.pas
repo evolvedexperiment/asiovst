@@ -27,7 +27,7 @@ type
   TAllpass = class(TObject)
   private
     FFeedback    : Single;
-    FBuffer      : PDAVSingleDynArray;
+    FBuffer      : PDAVSingleFixedArray;
     FBufferSize,
     FBufferPos   : Integer;
     procedure SetBufferSize(const Value: Integer);
@@ -47,9 +47,9 @@ type
     FFilterStore,
     FDampA,
     FDampB       : Single;
-    FBuffer      : TDAVSingleDynArray;
+    FBuffer      : PDAVSingleFixedArray;
     FBufferSize,
-    FBufferPos : Integer;
+    FBufferPos   : Integer;
     FDamp        : Single;
     procedure SetDamp(Value: Single);
     procedure SetBufferSize(const Value: Integer);
@@ -145,14 +145,14 @@ end;
 
 destructor TComb.Destroy;
 begin
- SetLength(FBuffer, 0);
+ Dispose(FBuffer);
  inherited;
 end;
 
 procedure TComb.SetBufferSize(const Value: Integer);
 begin
  FBufferSize := Value;
- SetLength(FBuffer,FBufferSize);
+ ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
  FBufferPos := 0;
 end;
 
@@ -164,7 +164,7 @@ end;
 
 procedure TComb.Mute;
 begin
- Fillchar(FBuffer[0], FBufferSize * SizeOf(Single), 0);
+ Fillchar(FBuffer^[0], FBufferSize * SizeOf(Single), 0);
 end;
 
 { I really don't know if this is all as fast as can be,

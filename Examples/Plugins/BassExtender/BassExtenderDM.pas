@@ -8,6 +8,8 @@ uses
 
 type
   TBassExtenderModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -17,8 +19,6 @@ type
     procedure VSTModuleProcessLight64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessLightMS32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessLightMS64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
     procedure ParamAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);

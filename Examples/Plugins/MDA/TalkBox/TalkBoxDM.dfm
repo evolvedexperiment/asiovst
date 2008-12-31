@@ -1,7 +1,5 @@
 object TalkBoxDataModule: TTalkBoxDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda TalkBox'
@@ -76,6 +74,8 @@ object TalkBoxDataModule: TTalkBoxDataModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnResume = VSTModuleResume

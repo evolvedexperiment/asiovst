@@ -1,6 +1,7 @@
 program ChunkParser;
 
 uses
+  FastMM4,
   Forms,
   CPmain in 'CPmain.pas' {FmChunkParser};
 

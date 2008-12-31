@@ -3,7 +3,7 @@ object VocInputDataModule: TVocInputDataModule
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda VocInput'
-  ProductName = 'VocInput'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]

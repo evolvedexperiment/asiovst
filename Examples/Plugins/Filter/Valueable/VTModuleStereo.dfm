@@ -3,8 +3,8 @@ object VTVSTModule: TVTVSTModule
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Valve Tone '#39'63'
-  ProductName = 'Valve Tone '#39'63'
-  VendorName = 'Christian Budde'
+  ProductName = 'DAV Filter Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000

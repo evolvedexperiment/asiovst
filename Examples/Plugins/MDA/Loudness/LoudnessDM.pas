@@ -7,12 +7,12 @@ uses
 
 type
   TLoudnessDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure ParameterLinkDisplay( Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleOpen(Sender: TObject);
   private
     FIsBoost : Boolean;
     FGain    : Single;
@@ -78,6 +78,10 @@ var
   z0, z1,
   z2, z3  : Single;
 begin
+ z0 := 0;
+ z1 := 0;
+ z2 := 0;
+ z3 := 0;
   if (FIsBoost = False) then //cut
    for Sample := 0 to SampleFrames - 1 do
     begin

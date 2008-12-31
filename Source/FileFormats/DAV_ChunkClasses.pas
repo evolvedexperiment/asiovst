@@ -8,7 +8,8 @@ uses
   Classes, Contnrs, SysUtils, DAV_Common;
 
 type
-  TChunkFlag = (cfSizeFirst, cfReversedByteOrder, cfPadSize);
+  TChunkFlag = (cfSizeFirst, cfReversedByteOrder, cfPadSize,
+    cfIncludeChunkInSize);
   TChunkFlags = set of TChunkFlag;
   {$IFDEF DELPHI5}
   TCustomChunk = class(TPersistent)
@@ -371,11 +372,13 @@ begin
  with Stream do
   begin
    inherited;
-   assert(FChunkSize < Size);
+   assert(FChunkSize <= Size);
    FDataStream.Clear;
    FDataStream.Size := FChunkSize;
    FDataStream.Position := 0;
-   FDataStream.CopyFrom(Stream, FChunkSize);
+   if cfIncludeChunkInSize in ChunkFlags
+    then FDataStream.CopyFrom(Stream, FChunkSize - 8)
+    else FDataStream.CopyFrom(Stream, FChunkSize);
 
    // eventually skip padded zeroes
    if cfPadSize in ChunkFlags

@@ -3,7 +3,7 @@ object WrapperDataModule: TWrapperDataModule
   OnCreate = VSTModuleCreate
   Version = '1.0'
   EffectName = 'Wrapper'
-  ProductName = 'Wrapper'
+  ProductName = 'DAV Wrapper Examples'
   VendorName = 'Delphi ASIO & VST Packages'
   PlugCategory = vpcEffect
   CanDos = [vcd2in2out]

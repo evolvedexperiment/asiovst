@@ -7,6 +7,8 @@ uses
 
 type
   TLeslieDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamSpeedDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -18,8 +20,6 @@ type
     procedure ParameterLowWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
   private
     FGain : Single;
     FFilo : Single;
@@ -201,6 +201,8 @@ begin
  clp := cos(lp);
  shp := sin(hp);
  slp := sin(lp);
+ dchp := 0;
+ dclp := 0;
 
  for Sample := 0 to SampleFrames - 1 do
   begin

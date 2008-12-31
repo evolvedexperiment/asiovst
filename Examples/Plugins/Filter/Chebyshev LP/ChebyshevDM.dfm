@@ -4,7 +4,7 @@ object ChebyshevLPModule: TChebyshevLPModule
   Version = '1.0'
   EffectName = 'Chebyshev Lowpass Filter'
   ProductName = 'DAV Filter Examples'
-  VendorName = 'Delphi ASIO & VST Packages'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcd2in2out]
   SampleRate = 44100.000000000000000000

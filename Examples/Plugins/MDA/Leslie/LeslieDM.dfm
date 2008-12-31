@@ -3,7 +3,7 @@ object LeslieDataModule: TLeslieDataModule
   Flags = []
   Version = '1.0'
   EffectName = 'mda Leslie'
-  ProductName = 'Leslie'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000

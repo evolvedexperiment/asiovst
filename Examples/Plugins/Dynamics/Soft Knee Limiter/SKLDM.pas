@@ -8,6 +8,8 @@ uses
 
 type
   TSoftKneeLimiterDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SKLSoftKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -17,8 +19,6 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
   private
     FSoftKneeLimiters : Array [0..1] of TSimpleSoftKneeLimiter;
   public

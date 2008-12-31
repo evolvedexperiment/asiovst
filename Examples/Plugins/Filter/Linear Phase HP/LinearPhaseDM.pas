@@ -19,6 +19,7 @@ type
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject;
       const SampleRate: Single);
+    procedure VSTModuleCreate(Sender: TObject);
   private
     FFilterKernel : PDAVSingleFixedArray;
     FSignalPadded : PDAVSingleFixedArray;
@@ -43,13 +44,6 @@ uses
 
 procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FSemaphore       := 0;
- FFilterKernel    := nil;
- FSignalPadded    := nil;
- FFilterFreq      := nil;
- FSignalFreq      := nil;
- BlockModeOverlap := BlockModeSize div 2;
-
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(round(Log2(BlockModeSize)));
 
@@ -82,6 +76,16 @@ begin
  Dispose(FFilterFreq);
  Dispose(FSignalFreq);
  FreeAndNil(FFft);
+end;
+
+procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ FSemaphore       := 0;
+ FFilterKernel    := nil;
+ FSignalPadded    := nil;
+ FFilterFreq      := nil;
+ FSignalFreq      := nil;
+ BlockModeOverlap := BlockModeSize div 2;
 end;
 
 procedure TLinearPhaseDataModule.ParamFrequencyChange(

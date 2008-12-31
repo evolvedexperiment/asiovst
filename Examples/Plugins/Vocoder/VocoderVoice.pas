@@ -10,45 +10,47 @@ uses
 type
   TVocoderVoice = class(TObject)
   private
-    fMidiKeyNr  : Integer;
-    fVelocity   : Integer;
-    fSampleRate : Single;
-    fFrequency  : Single;
-    fAmplitude  : Single;
-    fVSTModule  : TVSTModule;
-    fAngle,
-    fPosition   : TComplexDouble;
-    function GetSampleRate:Single; virtual;
-    procedure SetSampleRate(v:Single); virtual;
+    FMidiKeyNr        : Integer;
+    FVelocity         : Integer;
+    FSampleRate       : Single;
+    FInvSampleRate    : Single;
+    FFrequency        : Single;
+    FAmplitude        : Single;
+    FVSTModule        : TVSTModule;
+    FAngle, FPosition : TComplexDouble;
+    procedure SetSampleRate(const Value: Single);
+  protected
+    procedure FrequencyChanged; virtual;
+    procedure SamplerateChanged; virtual;
   public
-    constructor Create(theModule:TVSTModule);
+    constructor Create(theModule: TVSTModule);
     destructor Destroy; override;
-    procedure SetFrequency(Frequency:Single); virtual;
-    procedure NoteOn(Frequency, Amplitude:Single);
+    procedure SetFrequency(const Value: Single); virtual;
+    procedure NoteOn(Frequency, Amplitude: Single);
     procedure NoteOff;
-    function Process:Single; virtual;
+    function Process: Single; virtual;
   published
-    property Frequency : Single read fFrequency write SetFrequency;
-    property SampleRate : Single read GetSampleRate write SetSampleRate;
-    property MidiKeyNr : Integer read fMidiKeyNr write fMidiKeyNr;
-    property Velocity : Integer read fVelocity write fVelocity;
+    property Frequency: Single read FFrequency write SetFrequency;
+    property SampleRate: Single read FSampleRate write SetSampleRate;
+    property MidiKeyNr: Integer read FMidiKeyNr write FMidiKeyNr;
+    property Velocity: Integer read FVelocity write FVelocity;
   end;
 
 implementation
 
 uses
-  DAV_Common, VocoderModule;
+  SysUtils, DAV_Common, VocoderModule;
 
 { TVocoderVoice }
 
 constructor TVocoderVoice.Create(theModule: TVSTModule);
 begin
- fVSTModule:=theModule;
- if theModule.SampleRate=0
-  then SampleRate:=44100
-  else SampleRate:=theModule.SampleRate;
- fPosition.Re:=0;
- fPosition.Im:=-1;
+ FVSTModule := theModule;
+ if theModule.SampleRate = 0
+  then SampleRate := 44100
+  else SampleRate := theModule.SampleRate;
+ FPosition.Re := 0;
+ FPosition.Im := -1;
 end;
 
 destructor TVocoderVoice.Destroy;
@@ -56,49 +58,56 @@ begin
  inherited;
 end;
 
-function TVocoderVoice.GetSampleRate: Single;
+procedure TVocoderVoice.SetSampleRate(const Value: Single);
 begin
- result:=fSampleRate;
-end;
-
-procedure TVocoderVoice.SetSampleRate(v: Single);
-begin
- if (v > 0) then fSampleRate:=v;
+ if Value <= 0
+  then raise Exception.Create('Samplerate must be larger than 0!'); 
+ if FSampleRate <> Value then
+  begin
+   FSampleRate := Value;
+   SampleRateChanged;
+  end;
 end;
 
 function TVocoderVoice.Process: Single;
 begin
- result:=fPosition.Re*fAngle.Re-fPosition.Im*fAngle.Im;
- fPosition.Im:=fPosition.Im*fAngle.Re+fPosition.Re*fAngle.Im;
- fPosition.Re:=result;
- if Result>0
-  then result:=fAmplitude*result
-  else result:=-fAmplitude;
+ Result := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+ FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
+ FPosition.Re := Result;
+ if Result > 0
+  then Result := FAmplitude * Result
+  else Result := -FAmplitude;
 end;
 
-procedure TVocoderVoice.SetFrequency(Frequency: Single);
-  procedure GetSinCos(Frequency: Double; var SinValue, CosValue : Double);
-  asm
-   fld Frequency.Double;
-   fsincos
-   fstp [CosValue].Double;
-   fstp [SinValue].Double;
-  end;
+procedure TVocoderVoice.SamplerateChanged;
 begin
- fFrequency:=Frequency;
- GetSinCos(2*Pi*fFrequency/fSampleRate,fAngle.Im,fAngle.Re);
+ FInvSampleRate := 1 / Samplerate;
+end;
+
+procedure TVocoderVoice.FrequencyChanged;
+begin
+ GetSinCos(2 * Pi * FFrequency * FInvSampleRate, FAngle.Im, FAngle.Re);
+end;
+
+procedure TVocoderVoice.SetFrequency(const Value: Single);
+begin
+ if FFrequency <> Value then
+  begin
+   FFrequency := Value;
+   FrequencyChanged;
+  end;
 end;
 
 procedure TVocoderVoice.NoteOn(Frequency, Amplitude: Single);
 begin
- fFrequency:=Frequency;
+ FFrequency := Frequency;
  SetFrequency(Frequency);
- fAmplitude:=Amplitude;
+ FAmplitude := Amplitude;
 end;
 
 procedure TVocoderVoice.NoteOff;
 begin
- fAmplitude:=0;
+  FAmplitude := 0;
 end;
 
 end.

@@ -10,8 +10,7 @@ const
 
 type
   TThruZeroDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
@@ -23,6 +22,7 @@ type
     procedure ParameterDepthDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleClose(Sender: TObject);
   private
     FBuffer    : array [0..1] of PDAVSingleFixedArray;
     FRate      : Single;
@@ -44,7 +44,7 @@ implementation
 uses
   Math;
 
-procedure TThruZeroDataModule.VSTModuleCreate(Sender: TObject);
+procedure TThruZeroDataModule.VSTModuleOpen(Sender: TObject);
 begin
   Parameter[0] := 0.30;  // Rate
   Parameter[1] := 0.43;  // Depth
@@ -93,7 +93,7 @@ begin
  VSTModuleSuspend(Sender);
 end;
 
-procedure TThruZeroDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TThruZeroDataModule.VSTModuleClose(Sender: TObject);
 begin
  if assigned(FBuffer[0]) then Dispose(FBuffer[0]);
  if assigned(FBuffer[1]) then Dispose(FBuffer[1]);

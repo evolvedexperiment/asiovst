@@ -1,10 +1,9 @@
 object DeessDataModule: TDeessDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'mda De-ess'
-  ProductName = 'De-ess'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
@@ -74,6 +73,7 @@ object DeessDataModule: TDeessDataModule
       VSTModule = Owner
       OnParameterChange = ParamHFDriveChange
     end>
+  OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess

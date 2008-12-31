@@ -7,11 +7,11 @@ uses
 
 type
   TMultibandDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleOpen(Sender: TObject);
   private
     FDriveL    : Single;
     FTrimL     : Single;

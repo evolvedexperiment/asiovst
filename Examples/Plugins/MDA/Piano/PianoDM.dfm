@@ -3,7 +3,7 @@ object PianoDataModule: TPianoDataModule
   Flags = [effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'mda Piano'
-  ProductName = 'Piano'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcSynth
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent]

@@ -245,7 +245,7 @@ begin
 
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   a := -2*cos((2*i + FOrder + 1) / (2 * FOrder) * PI) * K;
+   a := -2 * cos((2 * i + Integer(FOrder) + 1) / (2 * FOrder) * PI) * K;
    t := 1 / (K2 + a + 1);
    FAB[4 * i    ] := t*K2;
    FAB[4 * i + 1] := 2*FAB[4*i];
@@ -385,23 +385,23 @@ begin
 
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   a := -2*cos((2*i+FOrder+1)/(2*FOrder)*PI)*K;
-   t := 1/(K2+a+1);
-   FAB[4*i+0] := t;
-   FAB[4*i+1] := -2*t;
-   FAB[4*i+2] := -2*(K2-1)*t;
-   FAB[4*i+3] := (a-K2-1)*t;
+   a := -2*cos((2 * i + Integer(FOrder) + 1) / (2 * FOrder) * PI) * K;
+   t := 1 / (K2 + a + 1);
+   FAB[4 * i    ] := t;
+   FAB[4 * i + 1] := -2 * t;
+   FAB[4 * i + 2] := -2 * (K2 - 1) * t;
+   FAB[4 * i + 3] := (a - K2 - 1) * t;
   end;
  if (FOrder mod 2) = 1 then
   begin
-   i := ((FOrder+1) div 2)-1; t := 1/(K+1);
-   FAB[4*i] := t;
-   FAB[4*i+1] := FAB[4*i];
-   FAB[4*i+2] := (1-K)*t;
+   i := ((FOrder + 1) div 2) - 1; t := 1 / (K + 1);
+   FAB[4 * i    ] := t;
+   FAB[4 * i + 1] := FAB[4 * i];
+   FAB[4 * i + 2] := (1 - K) * t;
   end;
  t := sqr(FGainFactor);
- FAB[0] := FAB[0]*t;
- FAB[1] := FAB[1]*t;
+ FAB[0] := FAB[0] * t;
+ FAB[1] := FAB[1] * t;
 end;
 
 function TButterworthHP.MagnitudeSquared(const Frequency: Double): Double;
@@ -409,16 +409,16 @@ var
   i    : Integer;
   a,cw : Double;
 begin
- cw := 2*cos(2*Frequency*pi*fSRR); a := sqr(cw-2);
+ cw := 2 * cos(2 * Frequency * Pi * fSRR); a := sqr(cw - 2);
  Result := 1;
  for i := 0 to (FOrder div 2) - 1
-  do Result := Result*sqr(FAB[4*i])*a/(1+sqr(FAB[4*i+2])+sqr(FAB[4*i+3])+2*FAB[4*i+3]+cw*((FAB[4*i+2]-cw)*FAB[4*i+3]-FAB[4*i+2]));
+  do Result := Result * sqr(FAB[4 * i]) * a / (1 + sqr(FAB[4 * i + 2]) + sqr(FAB[4 * i + 3]) + 2 * FAB[4 * i + 3] + cw * ((FAB[4 * i + 2] - cw) * FAB[4 * i + 3] - FAB[4 * i + 2]));
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder+1) div 2) - 1;
-   Result := Result*sqr(FAB[4*i])*(cw-2)/(1+sqr(FAB[4*i+2])-cw*FAB[4*i+2]);
+   Result := Result * sqr(FAB[4 * i]) * (cw - 2) / (1 + sqr(FAB[4 * i + 2]) - cw * FAB[4 * i + 2]);
   end;
- Result := Abs(1E-32+Result);
+ Result := Abs(CDenorm32 + Result);
 end;
 
 function TButterworthHP.ProcessSample(const Input: Double): Double;
@@ -453,24 +453,24 @@ asm
  push ecx
  jz @SingleStage
  @FilterLoop:
-  sub ecx,4
-  fld st(0)
-  fmul [self.FAB+ecx*8].Double
-  fadd [self.FState+ecx*4].Double
-  fld st(0)
-  fld st(0)
-  fmul [self.FAB+ecx*8+16].Double
-  fadd [self.FState+ecx*4+8].Double
-  fld st(3)
-  fmul [self.FAB+ecx*8+8].Double
+  sub  ecx, 4
+  fld  st(0)
+  fmul [self.FAB + ecx * 8].Double
+  fadd [self.FState + ecx * 4].Double
+  fld  st(0)
+  fld  st(0)
+  fmul [self.FAB + ecx * 8 + 16].Double
+  fadd [self.FState + ecx * 4 + 8].Double
+  fld  st(3)
+  fmul [self.FAB + ecx * 8 + 8].Double
   faddp
   fstp [self.FState+ecx*4].Double
-  fmul [self.FAB+ecx*8+24].Double
+  fmul [self.FAB + ecx * 8 + 24].Double
   fxch
   fxch st(2)
-  fmul [self.FAB+ecx*8].Double
+  fmul [self.FAB + ecx * 8].Double
   faddp
-  fstp [self.FState+ecx*4+8].Double
+  fstp [self.FState + ecx * 4 + 8].Double
  ja @FilterLoop
 
  @SingleStage:

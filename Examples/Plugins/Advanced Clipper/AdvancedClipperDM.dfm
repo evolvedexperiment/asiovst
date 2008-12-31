@@ -4,7 +4,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
   Version = '1.0'
   EffectName = 'Advanced Clipper'
   ProductName = 'DAV effect examples'
-  VendorName = 'Delphi ASIO & VST Packages'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000

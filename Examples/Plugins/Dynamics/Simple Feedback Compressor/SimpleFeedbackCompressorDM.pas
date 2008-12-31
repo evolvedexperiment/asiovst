@@ -9,6 +9,7 @@ uses
 type
   TSimpleFeedbackCompressorDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -16,9 +17,8 @@ type
     procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleClose(Sender: TObject);
   private
-    fSimpleFeedbackCompressors : Array [0..1] of TCustomFeedbackCompressor;
+    FSimpleFeedbackCompressors : Array [0..1] of TCustomFeedbackCompressor;
   public
   end;
 
@@ -33,10 +33,10 @@ procedure TSimpleFeedbackCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
   i : Integer;
 begin
- for i := 0 to Length(fSimpleFeedbackCompressors) - 1 do
+ for i := 0 to Length(FSimpleFeedbackCompressors) - 1 do
   begin
-   fSimpleFeedbackCompressors[i] := TSimpleFeedbackCompressor.Create;
-   fSimpleFeedbackCompressors[i].AutoMakeUp := True;
+   FSimpleFeedbackCompressors[i] := TSimpleFeedbackCompressor.Create;
+   FSimpleFeedbackCompressors[i].AutoMakeUp := True;
   end;
 
  // initial parameters 
@@ -48,8 +48,8 @@ end;
 
 procedure TSimpleFeedbackCompressorDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(fSimpleFeedbackCompressors[0]);
- FreeAndNil(fSimpleFeedbackCompressors[1]);
+ FreeAndNil(FSimpleFeedbackCompressors[0]);
+ FreeAndNil(FSimpleFeedbackCompressors[1]);
 end;
 
 procedure TSimpleFeedbackCompressorDataModule.VSTModuleEditOpen(Sender: TObject;
@@ -61,8 +61,8 @@ end;
 procedure TSimpleFeedbackCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fSimpleFeedbackCompressors[0].Threshold_dB := Value;
- fSimpleFeedbackCompressors[1].Threshold_dB := Value;
+ FSimpleFeedbackCompressors[0].Threshold_dB := Value;
+ FSimpleFeedbackCompressors[1].Threshold_dB := Value;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
    if DialThreshold.Position <> Round(Value) then
@@ -75,8 +75,8 @@ end;
 procedure TSimpleFeedbackCompressorDataModule.SLRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fSimpleFeedbackCompressors[0].Ratio := 1 / Value;
- fSimpleFeedbackCompressors[1].Ratio := fSimpleFeedbackCompressors[0].Ratio;
+ FSimpleFeedbackCompressors[0].Ratio := 1 / Value;
+ FSimpleFeedbackCompressors[1].Ratio := FSimpleFeedbackCompressors[0].Ratio;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
    if DialRatio.Position <> Round(100 * Log10(Value)) then
@@ -88,8 +88,8 @@ end;
 
 procedure TSimpleFeedbackCompressorDataModule.SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fSimpleFeedbackCompressors[0].Release := Value;
- fSimpleFeedbackCompressors[1].Release := Value;
+ FSimpleFeedbackCompressors[0].Release := Value;
+ FSimpleFeedbackCompressors[1].Release := Value;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
    if DialRelease.Position <> Round(Value) then
@@ -106,8 +106,8 @@ begin
  SampleDuration_ms := 1000 / SampleRate;
  if Value < 3 * SampleDuration_ms
   then Value := 3 * SampleDuration_ms;
- fSimpleFeedbackCompressors[0].Attack := Value;
- fSimpleFeedbackCompressors[1].Attack := Value;
+ FSimpleFeedbackCompressors[0].Attack := Value;
+ FSimpleFeedbackCompressors[1].Attack := Value;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
    do UpdateAttack;
@@ -120,8 +120,8 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := fSimpleFeedbackCompressors[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := fSimpleFeedbackCompressors[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := FSimpleFeedbackCompressors[0].ProcessSample(Inputs[0, i]);
+   Outputs[1, i] := FSimpleFeedbackCompressors[1].ProcessSample(Inputs[1, i]);
   end;
 end;
 
@@ -130,8 +130,8 @@ procedure TSimpleFeedbackCompressorDataModule.VSTModuleSampleRateChange(
 var
   SampleDuration_ms : Single;
 begin
- fSimpleFeedbackCompressors[0].SampleRate := SampleRate;
- fSimpleFeedbackCompressors[1].SampleRate := SampleRate;
+ FSimpleFeedbackCompressors[0].SampleRate := SampleRate;
+ FSimpleFeedbackCompressors[1].SampleRate := SampleRate;
 
  SampleDuration_ms := 1000 / SampleRate;
  if Parameter[3] < 3 * SampleDuration_ms

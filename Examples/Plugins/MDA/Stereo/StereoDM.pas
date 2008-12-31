@@ -7,8 +7,6 @@ uses
 
 type
   TStereoDataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -19,6 +17,8 @@ type
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
   private
     FPhi, FDel : Single;
     FDeltaPhi  : Single;
@@ -40,7 +40,12 @@ implementation
 uses
   Math;
 
-procedure TStereoDataModule.VSTModuleCreate(Sender: TObject);
+procedure TStereoDataModule.VSTModuleClose(Sender: TObject);
+begin
+ if assigned(FBuffer) then Dispose(FBuffer);
+end;
+
+procedure TStereoDataModule.VSTModuleOpen(Sender: TObject);
 begin
 (*
  //inits here!
@@ -54,11 +59,6 @@ begin
  FSize      := 4800;
  FBufferPos := 0;
  GetMem(FBuffer, FSize * SizeOf(Single));
-end;
-
-procedure TStereoDataModule.VSTModuleDestroy(Sender: TObject);
-begin
- if assigned(FBuffer) then Dispose(FBuffer);
 end;
 
 procedure TStereoDataModule.VSTModuleParameterChange(Sender: TObject;

@@ -1,5 +1,6 @@
 object LinearPhaseDataModule: TLinearPhaseDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Linear Phase'

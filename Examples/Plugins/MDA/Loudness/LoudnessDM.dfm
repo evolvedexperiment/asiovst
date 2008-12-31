@@ -3,7 +3,7 @@ object LoudnessDataModule: TLoudnessDataModule
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Loudness'
-  ProductName = 'Loudness'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]

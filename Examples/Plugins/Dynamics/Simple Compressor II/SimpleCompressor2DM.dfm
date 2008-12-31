@@ -1,10 +1,10 @@
 object SoftKneeCompressorDataModule: TSoftKneeCompressorDataModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'Simple Compressor II'
-  ProductName = 'Simple Compressor II'
-  VendorName = 'ASIO-VST Delphi Project'
+  ProductName = 'DAV Dynamics Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1

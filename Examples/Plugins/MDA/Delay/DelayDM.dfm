@@ -1,11 +1,9 @@
 object DelayDataModule: TDelayDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = []
   Version = '1.0'
   EffectName = 'mda Delay'
-  ProductName = 'Delay'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
@@ -97,6 +95,8 @@ object DelayDataModule: TDelayDataModule
       Units = 'dB'
       VSTModule = Owner
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

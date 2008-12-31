@@ -12,7 +12,6 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
     procedure ParameterLevelChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -20,6 +19,7 @@ type
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleOpen(Sender: TObject);
   private
     FFilterState : array [0..3] of Single;
     FFilterIn    : Single;
@@ -87,7 +87,7 @@ begin
  FDry := 0.01 * Value;
 end;
 
-procedure TSubSynthDataModule.VSTModuleCreate(Sender: TObject);
+procedure TSubSynthDataModule.VSTModuleOpen(Sender: TObject);
 begin
  Parameter[0] :=  0;    // Type
  Parameter[1] := 30;    // Level

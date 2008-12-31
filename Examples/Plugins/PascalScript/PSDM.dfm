@@ -5,7 +5,7 @@ object PascalScriptDataModule: TPascalScriptDataModule
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsProgramChunks, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Pascal Script Effect Plugin'
-  ProductName = 'Delphi ASIO & VST Project'
+  ProductName = 'DAV Tools Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]

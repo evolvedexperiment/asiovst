@@ -11,9 +11,7 @@ uses
   DAV_VSTEffect,
   DAV_VSTModule,
   LA4029DM in 'LA4029DM.pas' {LA4029DataModule: TVSTModule},
-  EditorFrm in 'EditorFrm.pas' {FmLA4029},
-  DAV_DSPLevelingAmplifier in '..\..\..\..\Source\DSP\DAV_DSPLevelingAmplifier.pas',
-  DAV_GuiVUMeter in '..\..\..\..\Source\DAV_GuiVUMeter.pas';
+  EditorFrm in 'EditorFrm.pas' {FmLA4029};
 
 function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

@@ -15,7 +15,7 @@ type
     MIExit: TMenuItem;
     OD: TOpenDialog;
     TreeView: TTreeView;
-    Splitter1: TSplitter;
+    Splitter: TSplitter;
     Memo: TMemo;
     procedure MIOpenClick(Sender: TObject);
     procedure TreeViewChange(Sender: TObject; Node: TTreeNode);
@@ -149,6 +149,9 @@ begin
      if ChunkName = 'FORM'
       then FlipLong(ChunkSize);
 
+     if (ChunkName[1] = 'W') and (ChunkName[2] = 'S')
+      then ChunkSize := ChunkSize - 8;
+
      // generic header
      if ChunkSize = $FFFFFFFF
       then raise Exception.Create('Not supported yet');
@@ -167,6 +170,8 @@ begin
       with FChunkContainer
        do ChunkFlags := ChunkFlags + [cfReversedByteOrder, cfPadSize];
      Position := 0;
+     if (ChunkName[1] = 'W') and (ChunkName[2] = 'S')
+      then FChunkContainer.ChunkFlags := FChunkContainer.ChunkFlags + [cfIncludeChunkInSize]; 
      FChunkContainer.LoadFromStream(FS);
 
      TreeView.Items.AddObject(TTreeNode.Create(TreeView.Items), ChunkName, FChunkContainer);

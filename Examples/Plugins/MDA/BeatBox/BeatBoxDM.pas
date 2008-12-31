@@ -7,54 +7,54 @@ uses
 
 type
   TBeatBoxDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure ParameterDynamicsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fHihatBufferLength : Integer;
-    fKickBufferLength  : Integer;
-    fSnareBufferLength : Integer;
-    fHihatThreshold    : Single;
-    fHihatDelay        : Integer;
-    fSnareThreshold    : Single;
-    fSnareDelay        : Integer;
-    fKickThreshold     : Single;
-    fKickDelay         : Integer;
-    fSnareBufferPos    : Integer;
-    fRec               : Integer;
-    fRecx              : Integer;
-    fRecPos            : Integer;
-    fMix               : Single;
-    fDyna              : Single;
-    fDynr              : Single;
-    fDyne              : Single;
-    fDynm              : Single;
-    fKWW, fKWWx        : Single;
-    fKSF1              : Single;
-    fKSF2              : Single;
-    fWW, fWWx          : Single;
-    fHfil              : Single;
-    fHBufPos           : Integer;
-    fSBufPos           : Integer;
-    fSb1               : Single;
-    fSb2               : Single;
-    fKBufPos           : Integer;
-    fKsb1              : Single;
-    fKsb2              : Single;
-    fSf1               : Single;
-    fSf2               : Single;
-    fSf3               : Single;
-    fSnareFX           : Single;
-    fKSFX              : Single;
-    fHihatLevel        : Single;
-    fKickLevel         : Single;
-    fSnareLevel        : Single;
-    fHihatBuffer       : PDAVSingleFixedArray;
-    fKickBuffer        : PDAVSingleFixedArray;
-    fSnareBuffer       : array [0..1] of PDAVSingleFixedArray;
+    FHihatBufferLength : Integer;
+    FKickBufferLength  : Integer;
+    FSnareBufferLength : Integer;
+    FHihatThreshold    : Single;
+    FHihatDelay        : Integer;
+    FSnareThreshold    : Single;
+    FSnareDelay        : Integer;
+    FKickThreshold     : Single;
+    FKickDelay         : Integer;
+    FSnareBufferPos    : Integer;
+    FRec               : Integer;
+    FRecx              : Integer;
+    FRecPos            : Integer;
+    FMix               : Single;
+    FDyna              : Single;
+    FDynr              : Single;
+    FDyne              : Single;
+    FDynm              : Single;
+    FKWW, FKWWx        : Single;
+    FKSF1              : Single;
+    FKSF2              : Single;
+    FWW, FWWx          : Single;
+    FHfil              : Single;
+    FHBufPos           : Integer;
+    FSBufPos           : Integer;
+    FSb1               : Single;
+    FSb2               : Single;
+    FKBufPos           : Integer;
+    FKsb1              : Single;
+    FKsb2              : Single;
+    FSf1               : Single;
+    FSf2               : Single;
+    FSf3               : Single;
+    FSnareFX           : Single;
+    FKSFX              : Single;
+    FHihatLevel        : Single;
+    FKickLevel         : Single;
+    FSnareLevel        : Single;
+    FHihatBuffer       : PDAVSingleFixedArray;
+    FKickBuffer        : PDAVSingleFixedArray;
+    FSnareBuffer       : array [0..1] of PDAVSingleFixedArray;
     procedure Synth;
   public
   end;
@@ -66,11 +66,63 @@ implementation
 uses
   Math;
 
-procedure TBeatBoxDataModule.VSTModuleCreate(Sender: TObject);
+procedure TBeatBoxDataModule.VSTModuleClose(Sender: TObject);
+begin
+ if assigned(FHihatBuffer)    then Dispose(FHihatBuffer);
+ if assigned(FKickBuffer)     then Dispose(FKickBuffer);
+ if assigned(FSnareBuffer[0]) then Dispose(FSnareBuffer[0]);
+ if assigned(FSnareBuffer[1]) then Dispose(FSnareBuffer[1]);
+end;
+
+procedure TBeatBoxDataModule.VSTModuleOpen(Sender: TObject);
 var
   Oversampling : Integer;
 begin
-(*
+ Oversampling := round(SampleRate / 49000 + 0.5);
+ if Oversampling < 1 then Oversampling := 1; 
+
+ FHihatBufferLength := Oversampling * 20000;
+ FKickBufferLength  := Oversampling * 20000;
+ FSnareBufferLength := Oversampling * 60000;
+
+ GetMem(FKickBuffer,     FKickBufferLength  * SizeOf(Single));
+ GetMem(FSnareBuffer[0], FSnareBufferLength * SizeOf(Single));
+ GetMem(FSnareBuffer[1], FSnareBufferLength * SizeOf(Single));
+ GetMem(FHihatBuffer,    FHihatBufferLength * SizeOf(Single));
+
+ //calcs here
+ FHihatThreshold := Power(10, 2 * Parameter[0] - 2);
+ FHihatDelay     := Round((0.04 + 0.2 * Parameter[1]) * SampleRate);
+ FSnareThreshold := 40 * Power(10, 2 * Parameter[6] - 2);
+ FSnareDelay     := Round(0.12 * SampleRate);
+ FKickThreshold  := 220 * Power(10, 2 * Parameter[3] - 2);
+ FKickDelay      := Round(0.1 * SampleRate);
+
+ FHihatLevel := (1E-4 + sqr(Parameter[2]) * 4);
+ FKickLevel  := (1E-4 + sqr(Parameter[5]) * 4);
+ FSnareLevel := (1E-4 + sqr(Parameter[8]) * 4);
+
+ FKWW     := Power(10, -3 + 2.2 * Parameter[4]);
+ FKSF1    := cos(Pi * FKWW);    // p
+ FKSF2    := sin(Pi * FKWW);    // q
+
+ FWW      := Power(10, -3 + 2.2 * Parameter[7]);
+ FSf1     := cos(Pi * FWW);     // p
+ FSf2     := sin(Pi * FWW);     // q
+ FSf3     := 0.991;             // r
+ FSnareFX := 0;
+ FKSFX    := 0;
+
+ FRec     := 0;
+ FRecx    := 0;
+ FRecPos  := 0;
+
+ FDyna    := Power(10, -1E4 / SampleRate);
+ FDynr    := Power(10, -6   / SampleRate);
+ FDyne    := 0;
+
+ Synth;
+
  Parameter[ 0] := 0.3;  // Hat Thresh
  Parameter[ 1] := 0.45; // Hat rate
  Parameter[ 2] := 0.5;  // Hat Mix
@@ -83,105 +135,51 @@ begin
  Parameter[ 9] := 0;    // Dynamics
  Parameter[10] := 0;    // Record
  Parameter[11] := 0;    // Thru Mix
-*)
-
- Oversampling := round(SampleRate / 49000 + 0.5);
- if Oversampling < 1 then Oversampling := 1; 
-
- fHihatBufferLength := Oversampling * 20000;
- fKickBufferLength  := Oversampling * 20000;
- fSnareBufferLength := Oversampling * 60000;
-
- GetMem(fKickBuffer,     fKickBufferLength  * SizeOf(Single));
- GetMem(fSnareBuffer[0], fSnareBufferLength * SizeOf(Single));
- GetMem(fSnareBuffer[1], fSnareBufferLength * SizeOf(Single));
- GetMem(fHihatBuffer,    fHihatBufferLength * SizeOf(Single));
-
- //calcs here
- fHihatThreshold := Power(10, 2 * Parameter[0] - 2);
- fHihatDelay     := Round((0.04 + 0.2 * Parameter[1]) * SampleRate);
- fSnareThreshold := 40 * Power(10, 2 * Parameter[6] - 2);
- fSnareDelay     := Round(0.12 * SampleRate);
- fKickThreshold  := 220 * Power(10, 2 * Parameter[3] - 2);
- fKickDelay      := Round(0.1 * SampleRate);
-
- fHihatLevel := (1E-4 + sqr(Parameter[2]) * 4);
- fKickLevel  := (1E-4 + sqr(Parameter[5]) * 4);
- fSnareLevel := (1E-4 + sqr(Parameter[8]) * 4);
-
- fKWW     := Power(10, -3 + 2.2 * Parameter[4]);
- fKSF1    := cos(Pi * fKWW);    // p
- fKSF2    := sin(Pi * fKWW);    // q
-
- fWW      := Power(10, -3 + 2.2 * Parameter[7]);
- fSf1     := cos(Pi * fWW);     // p
- fSf2     := sin(Pi * fWW);     // q
- fSf3     := 0.991;             // r
- fSnareFX := 0;
- fKSFX    := 0;
-
- fRec     := 0;
- fRecx    := 0;
- fRecPos  := 0;
-
- fDyna    := Power(10, -1E4 / SampleRate);
- fDynr    := Power(10, -6   / SampleRate);
- fDyne    := 0;
-
- Synth;
-end;
-
-procedure TBeatBoxDataModule.VSTModuleDestroy(Sender: TObject);
-begin
- if assigned(fHihatBuffer)    then Dispose(fHihatBuffer);
- if assigned(fKickBuffer)     then Dispose(fKickBuffer);
- if assigned(fSnareBuffer[0]) then Dispose(fSnareBuffer[0]);
- if assigned(fSnareBuffer[1]) then Dispose(fSnareBuffer[1]);
 end;
 
 procedure TBeatBoxDataModule.VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fHihatThreshold := Power(10, 2 * Parameter[0] - 2);
- fHihatDelay     := Round((0.04 + 0.2 * Parameter[1]) * SampleRate);
- fSnareThreshold := 40 * Power(10, 2 * Parameter[6] - 2);
- fKickThreshold  := 220 * Power(10, 2 * Parameter[3] - 2);
+ FHihatThreshold := Power(10, 2 * Parameter[0] - 2);
+ FHihatDelay     := Round((0.04 + 0.2 * Parameter[1]) * SampleRate);
+ FSnareThreshold := 40 * Power(10, 2 * Parameter[6] - 2);
+ FKickThreshold  := 220 * Power(10, 2 * Parameter[3] - 2);
 
- fHihatLevel     := 1E-4 + sqr(Parameter[2]) * 4;
- fKickLevel      := 1E-4 + sqr(Parameter[5]) * 4;
- fSnareLevel     := 1E-4 + sqr(Parameter[8]) * 4;
+ FHihatLevel     := 1E-4 + sqr(Parameter[2]) * 4;
+ FKickLevel      := 1E-4 + sqr(Parameter[5]) * 4;
+ FSnareLevel     := 1E-4 + sqr(Parameter[8]) * 4;
 
- fWWx            := fWW;
- fWW             := Power(10, -3 + 2.2 * Parameter[7]);
- fSf1            := cos(3.1415927 * fWW);     //p
- fSf2            := sin(3.1415927 * fWW);     //q
- fSnareFX        := 0;
- fKSFX           := 0;
+ FWWx            := FWW;
+ FWW             := Power(10, -3 + 2.2 * Parameter[7]);
+ FSf1            := cos(3.1415927 * FWW);     //p
+ FSf2            := sin(3.1415927 * FWW);     //q
+ FSnareFX        := 0;
+ FKSFX           := 0;
 
- fKWWx           := fKWW;
- fKWW            := Power(10, -3 + 2.2 * Parameter[4]);
- fKSF1           := cos(3.1415927 * fKWW);     //p
- fKSF2           := sin(3.1415927 * fKWW);     //q
+ FKWWx           := FKWW;
+ FKWW            := Power(10, -3 + 2.2 * Parameter[4]);
+ FKSF1           := cos(3.1415927 * FKWW);     //p
+ FKSF2           := sin(3.1415927 * FKWW);     //q
 
- if (fWWx  <> fWW)  then fSnareFX := round(2 * SampleRate);
- if (fKWWx <> fKWW) then fKSFX    := round(2 * SampleRate);
+ if (FWWx  <> FWW)  then FSnareFX := round(2 * SampleRate);
+ if (FKWWx <> FKWW) then FKSFX    := round(2 * SampleRate);
 
- fRec := round(4.9 * Parameter[10]);
- if (fRec <> fRecx) and (fRecPos > 0) then //finish sample
+ FRec := round(4.9 * Parameter[10]);
+ if (FRec <> FRecx) and (FRecPos > 0) then //finish sample
   begin
-   case fRec of
-    2: while (fRecPos < fHihatBufferLength) do begin fHihatBuffer[fRecPos] := 0; inc(fRecPos); end;
-    3: while (fRecPos < fKickBufferLength)  do begin fKickBuffer[fRecPos] := 0;  inc(fRecPos); end;
-    4: while (fRecPos < fSnareBufferLength) do
+   case FRec of
+    2: while (FRecPos < FHihatBufferLength) do begin FHihatBuffer[FRecPos] := 0; inc(FRecPos); end;
+    3: while (FRecPos < FKickBufferLength)  do begin FKickBuffer[FRecPos] := 0;  inc(FRecPos); end;
+    4: while (FRecPos < FSnareBufferLength) do
         begin
-         fSnareBuffer[0, fRecPos] := 0;
-         fSnareBuffer[1, fRecPos] := 0;
-         inc(fRecPos);
+         FSnareBuffer[0, FRecPos] := 0;
+         FSnareBuffer[1, FRecPos] := 0;
+         inc(FRecPos);
         end;
    end;
  end;
 
- fRecPos := 0;
- fRecx   := fRec;
+ FRecPos := 0;
+ FRecx   := FRec;
 end;
 
 procedure TBeatBoxDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -200,61 +198,61 @@ var
   sp, sl, sd       : Integer;
   ya, yr, ye, ym   : Single;
 begin
- ht  := fHihatThreshold;
- hl  := fHihatBufferLength - 2;
- hd  := fHihatDelay;
- kt  := fKickThreshold;
- kl  := fKickBufferLength - 2;
- kd  := fKickDelay;
- st  := fSnareThreshold;
+ ht  := FHihatThreshold;
+ hl  := FHihatBufferLength - 2;
+ hd  := FHihatDelay;
+ kt  := FKickThreshold;
+ kl  := FKickBufferLength - 2;
+ kd  := FKickDelay;
+ st  := FSnareThreshold;
  mx3 := 0;
- hf  := fHfil;
- mx1 := fMix;
- hp  := fHBufPos;
- kp  := fKBufPos;
- f1  := fSb1;
- f2  := fSb2;
- kf1 := fKsb1;
- kf2 := fKsb2;
- b1  := fSf1;
- b2  := fSf2;
- b3  := fSf3;
- kb1 := fKSF1;
- kb2 := fKSF2;
- hlv := fHihatLevel;
- klv := fKickLevel;
- slv := fSnareLevel;
- sp  := fSnareBufferPos;
- sl  := fSnareBufferLength - 2;
- sd  := fSnareDelay;
- ya  := fDyna;
- yr  := fDynr;
- ye  := fDyne;
- ym  := fDynm;
+ hf  := FHfil;
+ mx1 := FMix;
+ hp  := FHBufPos;
+ kp  := FKBufPos;
+ f1  := FSb1;
+ f2  := FSb2;
+ kf1 := FKsb1;
+ kf2 := FKsb2;
+ b1  := FSf1;
+ b2  := FSf2;
+ b3  := FSf3;
+ kb1 := FKSF1;
+ kb2 := FKSF2;
+ hlv := FHihatLevel;
+ klv := FKickLevel;
+ slv := FSnareLevel;
+ sp  := FSnareBufferPos;
+ sl  := FSnareBufferLength - 2;
+ sd  := FSnareDelay;
+ ya  := FDyna;
+ yr  := FDynr;
+ ye  := FDyne;
+ ym  := FDynm;
 
- if (fSnareFX > 0) then
+ if (FSnareFX > 0) then
   begin
    mx3 := 0.08;
    slv := 0;
    klv := 0;
    hlv := 0;
    mx1 := 0;
-   fSnareFX := fSnareFX - sampleFrames;
+   FSnareFX := FSnareFX - sampleFrames;
   end; //key listen (snare)
 
- if (fKSFX > 0) then
+ if (FKSFX > 0) then
   begin
    mx3   := 0.03;
    slv   := 0;
    klv   := 0;
    hlv   := 0;
    mx1   := 0;
-   fKSFX := fKSFX - sampleFrames;
-   b1    := fKSF1;
-   b2    := fKSF2;
+   FKSFX := FKSFX - sampleFrames;
+   b1    := FKSF1;
+   b2    := FKSF2;
   end; //key listen (kick)
 
-if (fRec = 0) then
+if (FRec = 0) then
  for Sample := 0 to SampleFrames - 1 do
   begin
    a    := Inputs[0, Sample];
@@ -274,7 +272,7 @@ if (fRec = 0) then
       if (hp > hl)
        then hp := hl;
      end;
-   o := hlv * fHihatBuffer[hp]; //hat
+   o := hlv * FHihatBuffer[hp]; //hat
 
    k   := e + (kf1 * kb1) - (kf2 * kb2); //low filter
    kf2 := b3 * ((kf1 * kb2) + (kf2 * kb1));
@@ -287,7 +285,7 @@ if (fRec = 0) then
       if (kp > kl) then kp := kl;
      end;
 
-   o := o + klv * fKickBuffer[kp]; //kick
+   o := o + klv * FKickBuffer[kp]; //kick
 
    s  := hf + (0.3 * e) + (f1 * b1) - (f2 * b2); //mid filter
    f2 := b3 * ((f1 * b2) + (f2 * b1));
@@ -303,8 +301,8 @@ if (fRec = 0) then
 
    mx4 := 1 + ym * (ye + ye - 1); //dynamics
 
-   Outputs[0, Sample] := mx1 * a + mx3 * s + mx4 * (o + slv * fSnareBuffer[0, sp]);
-   Outputs[1, Sample] := mx1 * a + mx3 * s + mx4 * (o + slv * fSnareBuffer[1, sp]);
+   Outputs[0, Sample] := mx1 * a + mx3 * s + mx4 * (o + slv * FSnareBuffer[0, sp]);
+   Outputs[1, Sample] := mx1 * a + mx3 * s + mx4 * (o + slv * FSnareBuffer[1, sp]);
 
    hf := e;
   end
@@ -315,27 +313,27 @@ else //record
    b := Inputs[1, Sample];
    e := 0.5 * (a + b);
 
-   if ((fRecPos = 0) and (abs(e) < 0.004))
+   if ((FRecPos = 0) and (abs(e) < 0.004))
     then e := 0
     else
-     case fRec of
+     case FRec of
        2: begin
-           if (fRecPos < hl)
-            then fHihatBuffer[fRecPos] := e
+           if (FRecPos < hl)
+            then FHihatBuffer[FRecPos] := e
             else e := 0;
-           inc(fRecPos);
+           inc(FRecPos);
           end;
        3: begin
-           if (fRecPos < kl)
-            then fKickBuffer[fRecPos] := e
+           if (FRecPos < kl)
+            then FKickBuffer[FRecPos] := e
             else e := 0;
-           inc(fRecPos);
+           inc(FRecPos);
           end;
-       4: if (fRecPos < sl) then
+       4: if (FRecPos < sl) then
            begin
-            fSnareBuffer[0, fRecPos] := a;
-            fSnareBuffer[1, fRecPos] := b;
-            inc(fRecPos);
+            FSnareBuffer[0, FRecPos] := a;
+            FSnareBuffer[1, FRecPos] := b;
+            inc(FRecPos);
            end
           else e := 0;
      end;
@@ -344,15 +342,15 @@ else //record
    Outputs[1, Sample] := e;
   end;
 
- fHfil    := hf;
- fHBufPos := hp;
- fSBufPos := sp;
- fSb1     := f1;
- fSb2     := f2;
- fKBufPos := kp;
- fKsb1    := kf1;
- fKsb2    := kf2;
- fDyne    := ye;
+ FHfil    := hf;
+ FHBufPos := hp;
+ FSBufPos := sp;
+ FSb1     := f1;
+ FSb2     := f2;
+ FKBufPos := kp;
+ FKsb1    := kf1;
+ FKsb2    := kf2;
+ FDyne    := ye;
 end;
 
 function fmod(Arg1, Arg2: Single): Single;
@@ -365,12 +363,12 @@ end;
 
 procedure TBeatBoxDataModule.ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fMix := Value;
+ FMix := Value;
 end;
 
 procedure TBeatBoxDataModule.ParameterDynamicsChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- fDynm := Value;
+ FDynm := Value;
 end;
 
 procedure TBeatBoxDataModule.Synth;
@@ -385,38 +383,38 @@ begin
  p   := 0.2;
 
  //generate hi-hat
- FillChar(fHihatBuffer, fHihatBufferLength * SizeOf(Single), 0);
+ FillChar(FHihatBuffer^, FHihatBufferLength * SizeOf(Single), 0);
  de := Power(10, -36 / SampleRate);
- for t := 0 to fHihatBufferLength - 1 do
+ for t := 0 to FHihatBufferLength - 1 do
   begin
    o := 1000 * (random * 2 - 1);
-   fHihatBuffer[t] :=  e * (2 * o1 - o2 - o);
+   FHihatBuffer[t] :=  e * (2 * o1 - o2 - o);
    e  := e * de;
    o2 := o1;
    o1 := o;
   end;
 
- FillChar(fKickBuffer, fKickBufferLength * SizeOf(Single), 0); //generate kick
+ FillChar(FKickBuffer^, FKickBufferLength * SizeOf(Single), 0); //generate kick
  de := Power(10, -3.8 / SampleRate);
  e  := 0.5;
  dp := 1588 / SampleRate;
- for t := 0 to fKickBufferLength - 1 do
+ for t := 0 to FKickBufferLength - 1 do
   begin
-   fKickBuffer[t] :=  e * sin(p);
+   FKickBuffer[t] :=  e * sin(p);
    e := e * de;
    p := fmod(p + dp * e, 2 * Pi);
   end;
 
- FillChar(fSnareBuffer[0], fSnareBufferLength * SizeOf(Single), 0); //generate snare
- FillChar(fSnareBuffer[1], fSnareBufferLength * SizeOf(Single), 0); //generate snare
+ FillChar(FSnareBuffer[0]^, FSnareBufferLength * SizeOf(Single), 0); //generate snare
+ FillChar(FSnareBuffer[1]^, FSnareBufferLength * SizeOf(Single), 0); //generate snare
  de := Power(10, -15.0 / SampleRate);
  e  := 0.38;
  dp := 1103 / SampleRate;
- for t := 0 to fSnareBufferLength - 1 do
+ for t := 0 to FSnareBufferLength - 1 do
   begin
    o := (0.3 * o) + 1000 * (2 * random - 1);
-   fSnareBuffer[0, t] := (e * (sin(p) + 0.0004 * o));
-   fSnareBuffer[1, t] := fSnareBuffer[0, t];
+   FSnareBuffer[0, t] := (e * (sin(p) + 0.0004 * o));
+   FSnareBuffer[1, t] := FSnareBuffer[0, t];
    e := e * de;
    p := fmod(p + 0.025, 2 * Pi);
   end;
@@ -430,18 +428,18 @@ begin
   switch(index)
   begin
     case 0: float2strng((40.0*Parameter[0 - 40.0),text); break;
-    case 1: long2string((long)(1000. * fHihatDelay / SampleRate),text); break;
-    case 2: long2string((long)(20. * log10(fHihatLevel)),text); break;
+    case 1: long2string((long)(1000. * FHihatDelay / SampleRate),text); break;
+    case 2: long2string((long)(20. * log10(FHihatLevel)),text); break;
     case 3: float2strng((40.0*Parameter[3 - 40.0),text); break;
-    case 4: long2string((long)(0.5 * fKWW * SampleRate), text); break;
-    case 5: long2string((long)(20. * log10(fKickLevel)),text); break;
+    case 4: long2string((long)(0.5 * FKWW * SampleRate), text); break;
+    case 5: long2string((long)(20. * log10(FKickLevel)),text); break;
     case 6: float2strng((40.0*Parameter[6 - 40.0),text); break;
-    case 7: long2string((long)(0.5 * fWW * SampleRate), text); break;
-    case 8: long2string((long)(20. * log10(fSnareLevel)),text); break;
+    case 7: long2string((long)(0.5 * FWW * SampleRate), text); break;
+    case 8: long2string((long)(20. * log10(FSnareLevel)),text); break;
     case 9: long2string((long)(100. * Parameter[9),text); break; 
     case 11: long2string((long)(20. * log10(Parameter[11)),text); break;
 
-    case 10: switch(fRec) 
+    case 10: switch(FRec) 
             begin case 0: strcpy(text, "-"); break;
               case 1: strcpy(text, "MONITOR"); break;
               case 2: strcpy(text, "-> HAT"); break;

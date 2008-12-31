@@ -3,7 +3,7 @@ object ImageDataModule: TImageDataModule
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Image'
-  ProductName = 'Image'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
@@ -32,6 +32,7 @@ object ImageDataModule: TImageDataModule
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParameterModeChange
       OnCustomParameterDisplay = ParamModeDisplay
     end
     item
@@ -46,6 +47,7 @@ object ImageDataModule: TImageDataModule
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParameterSWidthChange
     end
     item
       Curve = ctLinear
@@ -59,6 +61,7 @@ object ImageDataModule: TImageDataModule
       StepFloat = 1.000000000000000000
       Units = 'L<->R'
       VSTModule = Owner
+      OnParameterChange = ParameterSPanChange
     end
     item
       Curve = ctLinear
@@ -72,6 +75,7 @@ object ImageDataModule: TImageDataModule
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParameterMLevelChange
     end
     item
       Curve = ctLinear
@@ -85,6 +89,7 @@ object ImageDataModule: TImageDataModule
       StepFloat = 1.000000000000000000
       Units = 'L<->R'
       VSTModule = Owner
+      OnParameterChange = ParameterMPanChange
     end
     item
       Curve = ctLinear
@@ -101,9 +106,11 @@ object ImageDataModule: TImageDataModule
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
+      OnParameterChange = ParameterOutputGainChange
     end>
-  OnParameterChange = VSTModuleParameterChange
+  OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
+  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess
   Left = 218
   Top = 81

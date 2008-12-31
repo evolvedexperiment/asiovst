@@ -7,6 +7,7 @@ uses
 
 type
   TRezFilterDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSuspend(Sender: TObject);
@@ -15,7 +16,6 @@ type
     procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterLFORateDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTriggerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleOpen(Sender: TObject);
   private
     FBuffer           : Array [0..2] of Single;
     FFrequency        : Single;

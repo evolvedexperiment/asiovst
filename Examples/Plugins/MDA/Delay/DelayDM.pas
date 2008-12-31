@@ -7,22 +7,22 @@ uses
 
 type
   TDelayDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
-    fBuffer    : PDAVSingleFixedArray;
-    fSize      : Integer;
-    fWet       : Single;
-    fDry       : Single;
-    fFeedback  : Single;
-    fLowMix    : Single;
-    fHighMix   : Single;
-    fFilter    : Single;
-    fFilter0   : Single;
-    ipos       : Integer;
+    FBuffer    : PDAVSingleFixedArray;
+    FSize      : Integer;
+    FWet       : Single;
+    FDry       : Single;
+    FFeedback  : Single;
+    FLowMix    : Single;
+    FHighMix   : Single;
+    FFilter    : Single;
+    FFilter0   : Single;
+    FIntPos    : Integer;
     ldel, rdel : Integer;
   public
   end;
@@ -31,13 +31,13 @@ implementation
 
 {$R *.DFM}
 
-procedure TDelayDataModule.VSTModuleCreate(Sender: TObject);
+procedure TDelayDataModule.VSTModuleOpen(Sender: TObject);
 begin
- fSize   := 32766;  //set max delay time at max sample rate
- GetMem(fBuffer, fSize * SizeOf(Single));
+ FSize   := 32766;  //set max delay time at max sample rate
+ GetMem(FBuffer, FSize * SizeOf(Single));
 
 (*
- ipos = 0;
+ FIntPos = 0;
  fil0 = 0.0;
 
  // inits here!
@@ -48,15 +48,15 @@ begin
  Parameter[4] := 0.33; // Wet mix
  Parameter[5] := 0.50; // Output
 
- suspend();    //flush fBuffer
+ suspend();    //flush FBuffer
  setParameter(0, 0.5);
 *)
 end;
 
-procedure TDelayDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TDelayDataModule.VSTModuleClose(Sender: TObject);
 begin
- if assigned(fBuffer)
-  then Dispose(fBuffer);
+ if assigned(FBuffer)
+  then Dispose(FBuffer);
 end;
 
 procedure TDelayDataModule.VSTModuleParameterChange(Sender: TObject;
@@ -65,7 +65,7 @@ var
   tmp : Single;
 begin
  //calcs here
- ldel := round(fSize * sqr(Parameter[0]));
+ ldel := round(FSize * sqr(Parameter[0]));
  if (ldel < 4) then ldel := 4;
 
  case round(Parameter[1] * 17.9) of //fixed left/right ratios
@@ -81,8 +81,8 @@ begin
   else tmp := 4 * Parameter[1]; //variable ratio
  end;
 
- rdel := round(fSize * sqr(Parameter[0]) * tmp);
- if (rdel > fSize) then rdel := fSize;
+ rdel := round(FSize * sqr(Parameter[0]) * tmp);
+ if (rdel > FSize) then rdel := FSize;
  if (rdel < 4) then rdel := 4;
 
 (*
@@ -102,12 +102,12 @@ begin
  fil := exp(-6.2831853 * Power(10, 2.2 + 4.5 * fil) / SampleRate);
 *)
 
- fFeedback := 0.495 * Parameter[2];
- fWet      := 1 - Parameter[4];
- fWet      := Parameter[5] * (1 - sqr(fWet)); // -3dB at 50% mix
- fDry      := Parameter[5] * 2 * (1 - sqr(Parameter[4]));
+ FFeedback := 0.495 * Parameter[2];
+ FWet      := 1 - Parameter[4];
+ FWet      := Parameter[5] * (1 - sqr(FWet)); // -3dB at 50% mix
+ FDry      := Parameter[5] * 2 * (1 - sqr(Parameter[4]));
 
- //if(Parameter[2] > 0.99) { fbk=0.5; fWet=0.0; } //freeze
+ //if(Parameter[2] > 0.99) { fbk=0.5; FWet=0.0; } //freeze
 end;
 
 procedure TDelayDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -117,45 +117,45 @@ var
   fb, lx, hx,
   f, f0, tmp  : Single;
 begin
- fb := fFeedback;
- lx := fLowMix;
- hx := fHighMix;
- f  := fFilter;
- f0 := fFilter0;
+ fb := FFeedback;
+ lx := FLowMix;
+ hx := FHighMix;
+ f  := FFilter;
+ f0 := FFilter0;
 
- i  := ipos;
+ i  := FIntPos;
 
- s  := fSize;
+ s  := FSize;
  l  := (i + ldel) mod (s + 1);
  r  := (i + rdel) mod (s + 1);
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := fBuffer[l]; //delay outputs
-   Outputs[1, Sample] := fBuffer[r];
+   Outputs[0, Sample] := FBuffer[l]; //delay outputs
+   Outputs[1, Sample] := FBuffer[r];
 
-   tmp := fWet * ( Inputs[0, Sample] +  Inputs[1, Sample]) +
+   tmp := FWet * ( Inputs[0, Sample] +  Inputs[1, Sample]) +
           fb   * (Outputs[0, Sample] + Outputs[1, Sample]);   // mix input & feedback
    f0  := f * (f0 - tmp) + tmp;                             // low-pass filter
-   fBuffer[i] := lx * f0 + hx * tmp;                        // delay input
+   FBuffer[i] := lx * f0 + hx * tmp;                        // delay input
 
    dec(i); if (i < 0) then i := s;
    dec(l); if (l < 0) then l := s;
    dec(r); if (r < 0) then r := s;
 
-   Outputs[0, Sample] := fDry * Inputs[0, Sample] + Outputs[0, Sample]; //mix fWet & fDry
-   Outputs[1, Sample] := fDry * Inputs[1, Sample] + Outputs[1, Sample];
+   Outputs[0, Sample] := FDry * Inputs[0, Sample] + Outputs[0, Sample]; //mix FWet & FDry
+   Outputs[1, Sample] := FDry * Inputs[1, Sample] + Outputs[1, Sample];
   end;
 
- ipos := i;
+ FIntPos := i;
  if abs(f0) < 1E-10
-  then fFilter0 := 0
-  else fFilter0 := f0; //trap denormals
+  then FFilter0 := 0
+  else FFilter0 := f0; //trap denormals
 end;
 
 procedure TDelayDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- FillChar(fBuffer, fSize * SizeOf(Single), 0);
+ FillChar(FBuffer, FSize * SizeOf(Single), 0);
 end;
 
 end.

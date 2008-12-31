@@ -1,10 +1,9 @@
 object DynamicsDataModule: TDynamicsDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Dynamics'
-  ProductName = 'Dynamics'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend]
@@ -176,6 +175,7 @@ object DynamicsDataModule: TDynamicsDataModule
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterMixDisplay
     end>
+  OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

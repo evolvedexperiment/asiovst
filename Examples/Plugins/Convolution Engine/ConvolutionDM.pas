@@ -82,12 +82,12 @@ begin
  InitialDelay        := BlockModeOverlap;
  IRBlockSize         := BlockModeSize;
  FOffsetSize         := BlockModeSize - BlockModeOverlap;
- SetLength(FOutputBuffer, max(numInputs, numOutputs));
 end;
 
 procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
 begin
  FIRSize := 0;
+ SetLength(FOutputBuffer, max(numInputs, numOutputs));
 end;
 
 procedure TConvolutionDataModule.VSTModuleClose(Sender: TObject);

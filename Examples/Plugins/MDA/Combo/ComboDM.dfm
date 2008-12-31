@@ -1,11 +1,9 @@
 object ComboDataModule: TComboDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'mda Combo'
-  ProductName = 'Combo'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
@@ -127,6 +125,8 @@ object ComboDataModule: TComboDataModule
       VSTModule = Owner
       OnParameterChange = ParamHPFResonanceChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing

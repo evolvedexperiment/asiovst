@@ -1,7 +1,5 @@
 object StereoDataModule: TStereoDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Stereo'
@@ -90,6 +88,8 @@ object StereoDataModule: TStereoDataModule
       VSTModule = Owner
       OnParameterChange = ParameterRateChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

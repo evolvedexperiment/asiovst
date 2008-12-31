@@ -1,10 +1,9 @@
 object EPianoDataModule: TEPianoDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'mda E-Piano'
-  ProductName = 'E-Piano'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcSynth
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent]
@@ -205,6 +204,7 @@ object EPianoDataModule: TEPianoDataModule
       Units = '%'
       VSTModule = Owner
     end>
+  OnOpen = VSTModuleOpen
   OnOutputProperties = VSTModuleOutputProperties
   OnProcess = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi

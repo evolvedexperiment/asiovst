@@ -8,12 +8,12 @@ uses
 type
   TShepardDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleClose(Sender: TObject);
   private
     FMax    : Integer;
     FBuffer : Array [0..1] of PDAVSingleFixedArray;

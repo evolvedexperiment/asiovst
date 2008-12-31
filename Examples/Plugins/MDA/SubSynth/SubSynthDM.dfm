@@ -1,6 +1,5 @@
 object SubSynthDataModule: TSubSynthDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda SubSynth'
@@ -109,6 +108,7 @@ object SubSynthDataModule: TSubSynthDataModule
       OnParameterChange = ParameterReleaseChange
       OnCustomParameterDisplay = ParameterReleaseDisplay
     end>
+  OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

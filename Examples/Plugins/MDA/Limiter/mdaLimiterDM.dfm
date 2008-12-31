@@ -2,8 +2,8 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
   OldCreateOrder = False
   Flags = [effFlagsCanMono]
   Version = '1.0'
-  EffectName = 'Limiter'
-  ProductName = 'mdaLimiter'
+  EffectName = 'mda Limiter'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]

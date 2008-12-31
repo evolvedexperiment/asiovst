@@ -84,7 +84,7 @@ constructor TCustomVstProgram.Create(Collection: TCollection);
 begin
  inherited;
  FDisplayName := 'Init';
- fVSTModule := (Collection As TCustomVstPrograms).VSTModule;
+ FVSTModule := (Collection As TCustomVstPrograms).VSTModule;
  VSTModule.Effect^.numPrograms := Collection.Count;
  with TVSTModuleWithPrograms(VSTModule) do
   begin
@@ -146,8 +146,8 @@ end;
 
 procedure TCustomVstProgram.SetParameter(AIndex: Integer; AValue: Single);
 begin
- assert(fVSTModule is TVSTModuleWithPrograms);
- with TVSTModuleWithPrograms(fVSTModule) do
+ assert(FVSTModule is TVSTModuleWithPrograms);
+ with TVSTModuleWithPrograms(FVSTModule) do
   begin
    if effFlagsProgramChunks in Flags then exit;
    if (AIndex >= 0) and (AIndex < numParams)
@@ -158,8 +158,8 @@ end;
 
 function TCustomVstProgram.GetParameter(AIndex: Integer): Single;
 begin
- assert(fVSTModule is TVSTModuleWithPrograms);
- if (AIndex >= 0) and (AIndex < TVSTModuleWithPrograms(fVSTModule).numParams)
+ assert(FVSTModule is TVSTModuleWithPrograms);
+ if (AIndex >= 0) and (AIndex < TVSTModuleWithPrograms(FVSTModule).numParams)
   then Result := FParameter[AIndex] else
    begin
     Result := 0;

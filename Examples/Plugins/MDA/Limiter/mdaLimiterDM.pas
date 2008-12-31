@@ -7,6 +7,7 @@ uses
 
 type
   TmdaLimiterDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
     procedure AttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure AttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure KneeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -17,7 +18,6 @@ type
     procedure ThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleOpen(Sender: TObject);
   private
     FThreshold_dB : Single;
     FThreshold    : Single;

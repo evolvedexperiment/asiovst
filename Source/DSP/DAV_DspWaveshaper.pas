@@ -395,8 +395,9 @@ begin
  for y := 0 to Order do
   begin
    FChebyshevCoeffs[y] := FGains[0] * ChebyPolynome(1, y);
-   for x := 1 to Order - 1
-    do FChebyshevCoeffs[y] := FChebyshevCoeffs[y] + FGains[x] * ChebyPolynome(1 + x, y);
+   for x := 1 to Order - 1 do
+    if FGains[x] <> 0
+     then FChebyshevCoeffs[y] := FChebyshevCoeffs[y] + FGains[x] * ChebyPolynome(1 + x, y);
   end;
 end;
 

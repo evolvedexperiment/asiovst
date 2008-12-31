@@ -1,10 +1,9 @@
 object DegradeDataModule: TDegradeDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Degrade'
-  ProductName = 'Degrade'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
@@ -101,6 +100,7 @@ object DegradeDataModule: TDegradeDataModule
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
     end>
+  OnOpen = VSTModuleOpen
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

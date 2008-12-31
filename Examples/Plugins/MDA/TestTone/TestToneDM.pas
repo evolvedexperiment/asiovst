@@ -7,11 +7,11 @@ uses
 
 type
   TTestToneDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterChannelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleOpen(Sender: TObject);
   private
     FLength    : Integer;
     FPhi       : Single;

@@ -1,10 +1,9 @@
 object JX10DataModule: TJX10DataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'mda JX10'
-  ProductName = 'JX10'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcSynth
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent]
@@ -583,6 +582,7 @@ object JX10DataModule: TJX10DataModule
       Units = 'cent'
       VSTModule = Owner
     end>
+  OnOpen = VSTModuleOpen
   OnOutputProperties = VSTModuleOutputProperties
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess

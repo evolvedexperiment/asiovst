@@ -7,6 +7,7 @@ uses
 
 type
   TSplitterDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray;const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
@@ -15,7 +16,6 @@ type
     procedure ParameterFreqLevelModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleOpen(Sender: TObject);
   private
     FBuffer    : array [0..1, 0..1] of Single;
     FFreq, ff  : Single;

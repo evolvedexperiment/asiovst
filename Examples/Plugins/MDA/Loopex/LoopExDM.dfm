@@ -3,7 +3,7 @@ object LoopExDataModule: TLoopExDataModule
   Flags = [effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'mda LoopEx'
-  ProductName = 'LoopEx'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcSynth
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent]

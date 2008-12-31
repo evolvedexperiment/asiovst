@@ -18,6 +18,7 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure VSTModuleCreate(Sender: TObject);
   private
     FFilterKernel : PDAVSingleFixedArray;
     FSignalPadded : PDAVSingleFixedArray;
@@ -40,7 +41,7 @@ implementation
 uses
   Math, DAV_DspWindowing, LinearPhaseGUI;
 
-procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
+procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
 begin
  FSemaphore := 0;
  FFilterKernel := nil;
@@ -48,7 +49,10 @@ begin
  FFilterFreq   := nil;
  FSignalFreq   := nil;
  BlockModeOverlap := BlockModeSize div 2;
+end;
 
+procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
+begin
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(round(Log2(BlockModeSize)));
 

@@ -14,13 +14,11 @@ object FmChunkParser: TFmChunkParser
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Splitter1: TSplitter
+  object Splitter: TSplitter
     Left = 145
     Top = 0
     Height = 266
-    ExplicitLeft = 208
-    ExplicitTop = 104
-    ExplicitHeight = 100
+    ExplicitLeft = 151
   end
   object TreeView: TTreeView
     Left = 0

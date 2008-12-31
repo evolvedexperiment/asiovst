@@ -11,8 +11,8 @@ type
     MidiKeys: TGuiMidiKeys;
     SBInputLevel: TScrollBar;
     LbInput: TLabel;
-    Label1: TLabel;
-    Label2: TLabel;
+    LbSynthLevel: TLabel;
+    LbVocoderLevel: TLabel;
     SBSynthLevel: TScrollBar;
     SBVocoderLevel: TScrollBar;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

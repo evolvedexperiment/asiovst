@@ -8,7 +8,6 @@ uses
 
 type
   TDX10DataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
@@ -16,29 +15,30 @@ type
       var vLabel, shortLabel: string;
       var SpeakerArrangement: TVstSpeakerArrangementType;
       var Flags: TVstPinPropertiesFlags): Boolean;
+    procedure VSTModuleOpen(Sender: TObject);
   private
-    fTune      : Single;
-    fRatF      : Single;
-    fRati      : Integer;
-    fRatio     : Single;
-    fDepth     : Array [0..1] of Single;
-    fVelSens   : Single;
-    fVibrato   : Single;
-    fCAtt      : Single;
-    fCDec      : Single;
-    fCRel      : Single;
-    fLFO       : Array [0..1] of Single;
-    fMDec      : Single;
-    fMRel      : Single;
-    fRich      : Single;
-    fModMix    : Single;
-    fModWheel  : Single;
-    fVolume    : Single;
-    fSustain   : Single;
-    fPitchBend : Single;
-    fDeltaLFO  : Single;
+    FTune      : Single;
+    FRatF      : Single;
+    FRati      : Integer;
+    FRatio     : Single;
+    FDepth     : Array [0..1] of Single;
+    FVelSens   : Single;
+    FVibrato   : Single;
+    FCAtt      : Single;
+    FCDec      : Single;
+    FCRel      : Single;
+    FLFO       : Array [0..1] of Single;
+    FMDec      : Single;
+    FMRel      : Single;
+    FRich      : Single;
+    FModMix    : Single;
+    FModWheel  : Single;
+    FVolume    : Single;
+    FSustain   : Single;
+    FPitchBend : Single;
+    FDeltaLFO  : Single;
     procedure Update;
-    procedure noteOn(Note, Velocity: Integer);
+    procedure NoteOn(Note, Velocity: Integer);
   public
   end;
 
@@ -49,7 +49,7 @@ implementation
 uses
   Math;
 
-procedure TDX10DataModule.VSTModuleCreate(Sender: TObject);
+procedure TDX10DataModule.VSTModuleOpen(Sender: TObject);
 var
   i : Integer;
 begin
@@ -58,7 +58,7 @@ begin
 (*
  programs = new mdaDX10Program[NPROGS];
  if(programs)
-  begin                                //Att     Dec     Rel   | Rat C   Rat    Att     Dec     Sus     Rel     Vel   | Vib     Oct     Fine    fRich    Thru    LFO
+  begin                                //Att     Dec     Rel   | Rat C   Rat    Att     Dec     Sus     Rel     Vel   | Vib     Oct     Fine    FRich    Thru    LFO
     fillpatch(i++, "Bright E.Piano", 0.000, 0.650, 0.441, 0.842, 0.329, 0.230, 0.800, 0.050, 0.800, 0.900, 0.000, 0.500, 0.500, 0.447, 0.000, 0.414);
     fillpatch(i++, "Jazz E.Piano",   0.000, 0.500, 0.100, 0.671, 0.000, 0.441, 0.336, 0.243, 0.800, 0.500, 0.000, 0.500, 0.500, 0.178, 0.000, 0.500);
     fillpatch(i++, "E.Piano Pad",    0.000, 0.700, 0.400, 0.230, 0.184, 0.270, 0.474, 0.224, 0.800, 0.974, 0.250, 0.500, 0.500, 0.428, 0.836, 0.500);
@@ -106,19 +106,19 @@ begin
    voice[i].mod0  := 0;
    voice[i].mod1  := 0;
    voice[i].dmod  := 0;
-   voice[i].fCDec := 0.99; //all notes off
+   voice[i].FCDec := 0.99; //all notes off
   end;
  notes[0] = EVENTS_DONE;
 *)
- fLFO[0]       := 0;
- fLFO[1]       := 0;
- fDeltaLFO     := 0;
+ FLFO[0]       := 0;
+ FLFO[1]       := 0;
+ FDeltaLFO     := 0;
+ FModWheel     := 0;
+ FPitchBend    := 1;
+ FVolume       := 0.0035;
+ FSustain      := 0
 (*
- fModWheel     := 0;
- fPitchBend    := 1;
- fVolume       := 0.0035;
- fSustain      := 0
- fActiveVoices := 0;
+ FActiveVoices := 0;
  K             := 0;
 
   Update;
@@ -150,38 +150,38 @@ var
 begin
  ifs := 1 / SampleRate;
 
- fTune := (8.175798915644 * ifs * Power(2, trunc(Parameter[11] * 6.9) - 2.0));
+ FTune := (8.175798915644 * ifs * Power(2, trunc(Parameter[11] * 6.9) - 2.0));
 
- fRati := trunc(40.1 * sqr(Parameter[3]));
+ FRati := trunc(40.1 * sqr(Parameter[3]));
  if (Parameter[4] < 0.5)
-  then fRatF := 0.2 * sqr(Parameter[4])
+  then FRatF := 0.2 * sqr(Parameter[4])
   else
    case round(8.9 * Parameter[4]) of
-      4: fRatF := 0.25;
-      5: fRatF := 0.33333333;
-      6: fRatF := 0.50;
-      7: fRatF := 0.66666667; 
-    else fRatF := 0.75;
+      4: FRatF := 0.25;
+      5: FRatF := 0.33333333;
+      6: FRatF := 0.50;
+      7: FRatF := 0.66666667; 
+    else FRatF := 0.75;
    end;
- fRatio := 1.570796326795 * (fRati + fRatF);
+ FRatio := 1.570796326795 * (FRati + FRatF);
 
- fDepth[0] := 0.0002 * sqr(Parameter[5]);
- fDepth[1] := 0.0002 * sqr(Parameter[7]);
+ FDepth[0] := 0.0002 * sqr(Parameter[5]);
+ FDepth[1] := 0.0002 * sqr(Parameter[7]);
 
- fVelSens := Parameter[9];
- fVibrato := 0.001 * sqr(Parameter[10]);
+ FVelSens := Parameter[9];
+ FVibrato := 0.001 * sqr(Parameter[10]);
 
- fCAtt := 1 - exp(-ifs * exp(8 - 8 * Parameter[0]));
+ FCAtt := 1 - exp(-ifs * exp(8 - 8 * Parameter[0]));
  if Parameter[1] > 0.98
-  then fCDec := 1
-  else fCDec := exp(-ifs * exp(5 - 8 * Parameter[1]));
- fCRel :=       exp(-ifs * exp(5 - 5 * Parameter[2]));
- fMDec := 1.0 - exp(-ifs * exp(6 - 7 * Parameter[6]));
- fMRel := 1.0 - exp(-ifs * exp(5 - 8 * Parameter[8]));
+  then FCDec := 1
+  else FCDec := exp(-ifs * exp(5 - 8 * Parameter[1]));
+ FCRel :=       exp(-ifs * exp(5 - 5 * Parameter[2]));
+ FMDec := 1.0 - exp(-ifs * exp(6 - 7 * Parameter[6]));
+ FMRel := 1.0 - exp(-ifs * exp(5 - 8 * Parameter[8]));
 
- fRich     := 0.5 - 3 * sqr(Parameter[13]);  // -1.0 + 2 * Parameter[13];
- fModMix   := 0.25 * sqr(Parameter[14]);
- fDeltaLFO := 628.3 * ifs * 25 * sqr(Parameter[15]); // these params not in original DX10
+ FRich     := 0.5 - 3 * sqr(Parameter[13]);  // -1.0 + 2 * Parameter[13];
+ FModMix   := 0.25 * sqr(Parameter[14]);
+ FDeltaLFO := 628.3 * ifs * 25 * sqr(Parameter[15]); // these params not in original DX10
 end;
 
 procedure TDX10DataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -192,8 +192,8 @@ var
 begin
  event := 0;
  frame := 0;
- w     := fRich;
- m     := fModMix;
+ w     := FRich;
+ m     := FModMix;
 (*
  mw    := MW;
  k     := K;
@@ -219,9 +219,9 @@ begin
        dec(k);
        if (k < 0) then
         begin
-         fLFO[0] := fLFO[0] + fDeltaLFO * fLFO[1]; //sine LFO
-         fLFO[1] := fLFO[1] - fDeltaLFO * fLFO[0];
-         mw := fLFO[1] * (fModWheel + fVibrato);
+         FLFO[0] := FLFO[0] + FDeltaLFO * FLFO[1]; //sine LFO
+         FLFO[1] := FLFO[1] - FDeltaLFO * FLFO[0];
+         mw := FLFO[1] * (FModWheel + FVibrato);
          k  :=100;
         end;
 
@@ -230,13 +230,13 @@ begin
          e := V->env;
          if (e > SILENCE) then //**** this is the synth ****
           begin
-           V->env  := e * V->fCDec; //decay & release
-           V->cenv := V->cenv + V->fCAtt * (e - V->cenv); //attack
+           V->env  := e * V->FCDec; //decay & release
+           V->cenv := V->cenv + V->FCAtt * (e - V->cenv); //attack
 
            x = V->dmod * V->mod0 - V->mod1;  // could add more modulator blocks like
            V->mod1 := V->mod0;               // this for a wider range of FM sounds
            V->mod0 := x;
-           V->menv := V->menv + V->fMDec * (V->mlev - V->menv);
+           V->menv := V->menv + V->FMDec * (V->mlev - V->menv);
 
            x := V->car + V->dcar + x * V->menv + mw; //carrier phase
            while (x >  1) do x := x - 2;  //wrap phase
@@ -258,7 +258,7 @@ begin
        begin
         long note := notes[event++];
         long vel  := notes[event++];
-        noteOn(note, vel);
+        NoteOn(note, vel);
        end;
      end;
 
@@ -310,16 +310,16 @@ begin
        end;
 
   $B0: case MidiEvent.MidiData[1] of                               // Controller
-        $01: fModWheel := 0.00000005 * sqr(MidiEvent.midiData[2]); // Mod Wheel
-        $07: fVolume   := 0.00000035 * sqr(MidiEvent.midiData[2]); // Volume
+        $01: FModWheel := 0.00000005 * sqr(MidiEvent.midiData[2]); // Mod Wheel
+        $07: FVolume   := 0.00000035 * sqr(MidiEvent.midiData[2]); // Volume
         $40: begin                                                 // Sustain
-              fSustain := MidiEvent.MidiData[2] and $40;
-              if (fSustain = 0) then 
+              FSustain := MidiEvent.MidiData[2] and $40;
+              if (FSustain = 0) then 
                begin
 //                inc(npos);
 //                notes[npos] := event.deltaFrames;
 //                inc(npos);
-//                notes[npos] := fSustain; //end all sustained notes
+//                notes[npos] := FSustain; //end all sustained notes
 //                inc(npos);
 //                notes[npos] := 0;
                end;
@@ -327,8 +327,8 @@ begin
         else
          if (MidiEvent.midiData[1] > $7A) then //all notes off
           begin
-//           for v := 0 to NVOICES - 1 do voice[v].fCDec := 0.99;
-           fSustain := 0;
+//           for v := 0 to NVOICES - 1 do voice[v].FCDec := 0.99;
+           FSustain := 0;
           end;
        end;
 
@@ -336,11 +336,11 @@ begin
         then setProgram(MidiEvent.midiData[1]); // Program Change
 
   $E0: begin // Pitch Bend
-        fPitchBend := (MidiEvent.midiData[1] + 128 *
+        FPitchBend := (MidiEvent.midiData[1] + 128 *
                        MidiEvent.midiData[2] - 8192);
-        if (fPitchBend > 0)
-         then fPitchBend := 1 + 0.000014951 * fPitchBend
-         else fPitchBend := 1 + 0.000013318 * fPitchBend;
+        if (FPitchBend > 0)
+         then FPitchBend := 1 + 0.000014951 * FPitchBend
+         else FPitchBend := 1 + 0.000013318 * FPitchBend;
        end;
 
  end;
@@ -359,11 +359,11 @@ begin
 (*
   DECLARE_VST_DEPRECATED (wantEvents) ();
 *)
-  fLFO[0] := 0;
-  fLFO[1] := 1; //reset LFO phase
+  FLFO[0] := 0;
+  FLFO[1] := 1; //reset LFO phase
 end;
 
-procedure TDX10DataModule.noteOn(Note, Velocity : Integer);
+procedure TDX10DataModule.NoteOn(Note, Velocity : Integer);
 var
   l     : Single;
   v, vl : Integer;
@@ -386,22 +386,22 @@ begin
     l := exp(0.05776226505 * (note + 2 * Parameter[12] - 1));
     voice[vl].note := note;                         //fine tuning
     voice[vl].car  := 0.0;
-    voice[vl].dcar := fTune * fPitchBend * l; //pitch bend not updated during note as a bit tricky...
+    voice[vl].dcar := FTune * FPitchBend * l; //pitch bend not updated during note as a bit tricky...
 
     if (l > 50.0) then l := 50.0; //key tracking
-    l               := l * (64 + fVelSens * (velocity - 64)); //vel sens
-    voice[vl].menv  := fDepth[0] * l;
-    voice[vl].mlev  := fDepth[1] * l;
-    voice[vl].MDec  := fMDec;
+    l               := l * (64 + FVelSens * (velocity - 64)); //vel sens
+    voice[vl].menv  := FDepth[0] * l;
+    voice[vl].mlev  := FDepth[1] * l;
+    voice[vl].MDec  := FMDec;
 
-    voice[vl].dmod  := fRatio * voice[vl].dcar; //sine oscillator
+    voice[vl].dmod  := FRatio * voice[vl].dcar; //sine oscillator
     voice[vl].mod0  := 0.0;
     voice[vl].mod1  := sin(voice[vl].dmod);
     voice[vl].dmod  := cos(voice[vl].dmod) * 2;
-    voice[vl].env   := (1.5 - Parameter[13]) * fVolume * (Velocity + 10); // scale Volume with richness
-    voice[vl].cAtt  := fCAtt;
+    voice[vl].env   := (1.5 - Parameter[13]) * FVolume * (Velocity + 10); // scale Volume with richness
+    voice[vl].cAtt  := FCAtt;
     voice[vl].cenv  := 0;
-    voice[vl].cDec  := fCDec;
+    voice[vl].cDec  := FCDec;
 *)
   end
  else //note off
@@ -409,15 +409,15 @@ begin
 (*
    for v := 0 to NVOICES - 1 do      // find quietest voice
     if (voice[v].note = Note) then   // any voices playing that note?
-     if(fSustain = 0)
+     if(FSustain = 0)
       begin
-       voice[v].fCDec := fCRel;     // release phase
+       voice[v].FCDec := FCRel;     // release phase
        voice[v].env   := voice[v].cenv;
-       voice[v].fCAtt := 1.0;
+       voice[v].FCAtt := 1.0;
        voice[v].mlev  := 0.0;
-       voice[v].fMDec := fMRel;
+       voice[v].FMDec := FMRel;
       end
-     else voice[v].note := fSustain;
+     else voice[v].note := FSustain;
 *)
   end;
 end;
@@ -425,9 +425,9 @@ end;
 end.
 
 (*
-void mdaDX10::fillpatch(long Power, char *name, 
-                     float p0,  float p1,  float p2,  float p3,  float p4,  float p5, 
-                     float p6,  float p7,  float p8,  float p9,  float p10, float p11, 
+procedure TDX10DataModule.fillpatch(long Power, char *name,
+                     float p0,  float p1,  float p2,  float p3,  float p4,  float p5,
+                     float p6,  float p7,  float p8,  float p9,  float p10, float p11,
                      float p12, float p13, float p14, float p15)
 begin
   strcpy(programs[Power].name, name);
@@ -441,14 +441,14 @@ begin
   programs[Power].Parameter[14] := p14;  programs[Power].Parameter[15] := p15;
 end;
 
-void mdaDX10::getParameterDisplay(VstInt32 index, char *text)
+procedure TDX10DataModule.getParameterDisplay(VstInt32 index, char *text)
 begin
   char string[16];
 
   switch(index)
   begin
-    case  3: sprintf(string, "%.0f", fRati); break;
-    case  4: sprintf(string, "%.3f", fRatF); break;
+    case  3: sprintf(string, "%.0f", FRati); break;
+    case  4: sprintf(string, "%.3f", FRatF); break;
     case 11: sprintf(string, "%ld", (long)(Parameter[index] * 6.9) - 3); break;
     case 12: sprintf(string, "%.0f", 200.0 * Parameter[index] - 100.0); break;
     case 15: sprintf(string, "%.2f", 25.0 * Parameter[index] * Parameter[index]); break;

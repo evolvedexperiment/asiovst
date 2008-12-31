@@ -11,46 +11,46 @@ const
 
 type
   TJX10DataModule = class(TVSTModule)
-    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     function VSTModuleOutputProperties(Sender: TObject; const index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
-    procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    fLFO            : Single;
-    fModWheel       : Single;
-    fFiltWheel      : Single;
-    fPress          : Single;
-    fMode           : Integer;
-    fInvSampleRate  : Single;
-    fNoiseMix       : Single;
-    fVolTrim        : Single;
-    fSemi           : Single;
-    fCent           : Single;
-    fOscMix         : Single;
-    fDetune         : Single;
-    fTune           : Single;
-    fVibrato        : Single;
-    fPWDepth        : Single;
-    fLFOHz          : Single;
-    fDeltaLFO       : Single;
-    fFilterFreq     : Single;
-    fFilterQ        : Single;
-    fFilterLFO      : Single;
-    fFilterEnv      : Single;
-    fFilterVel      : Single;
-    fVelOff         : Integer;
-    fVolume         : Single;
-    fResonanceWheel : Single;
-    fAttack         : Single;
-    fDecay          : Single;
-    fRelease        : Single;
-    fSustain        : Single;
-    fPitchBend      : Single;
-    fPitchBendInv   : Single;
+    FLFO            : Single;
+    FModWheel       : Single;
+    FFiltWheel      : Single;
+    FPress          : Single;
+    FMode           : Integer;
+    FInvSampleRate  : Single;
+    FNoiseMix       : Single;
+    FVolTrim        : Single;
+    FSemi           : Single;
+    FCent           : Single;
+    FOscMix         : Single;
+    FDetune         : Single;
+    FTune           : Single;
+    FVibrato        : Single;
+    FPWDepth        : Single;
+    FLFOHz          : Single;
+    FDeltaLFO       : Single;
+    FFilterFreq     : Single;
+    FFilterQ        : Single;
+    FFilterLFO      : Single;
+    FFilterEnv      : Single;
+    FFilterVel      : Single;
+    FVelOff         : Integer;
+    FVolume         : Single;
+    FResonanceWheel : Single;
+    FAttack         : Single;
+    FDecay          : Single;
+    FRelease        : Single;
+    FSustain        : Single;
+    FPitchBend      : Single;
+    FPitchBendInv   : Single;
     procedure Update;
     procedure noteOn(Note, Velocity: Integer);
   public
@@ -65,64 +65,64 @@ uses
 
 procedure TJX10DataModule.Update;  // Parameter Change
 begin
- fMode     := round(7.9 * Parameter[3]);
- fNoiseMix := sqr(Parameter[21]);
- fVolTrim  := (3.2 - Parameter[0] - 1.5 * fNoiseMix) * (1.5 - 0.5 * Parameter[7]);
- fNoiseMix := fNoiseMix * 0.06;
- fOscMix   := Parameter[0];
+ FMode     := round(7.9 * Parameter[3]);
+ FNoiseMix := sqr(Parameter[21]);
+ FVolTrim  := (3.2 - Parameter[0] - 1.5 * FNoiseMix) * (1.5 - 0.5 * Parameter[7]);
+ FNoiseMix := FNoiseMix * 0.06;
+ FOscMix   := Parameter[0];
 
- fSemi     := trunc(48 * Parameter[1]) - 24;
- fCent     := 15.876 * Parameter[2] - 7.938;
- fCent     := 0.1 * trunc(sqr(fCent) * fCent);
- fDetune   := Power(1.059463094359, - fSemi - 0.01 * fCent);
- fTune     := -23.376 - 2 * Parameter[23] - 12 * trunc(Parameter[22] * 4.9);
- fTune     := SampleRate * Power(1.059463094359, fTune);
+ FSemi     := trunc(48 * Parameter[1]) - 24;
+ FCent     := 15.876 * Parameter[2] - 7.938;
+ FCent     := 0.1 * trunc(sqr(FCent) * FCent);
+ FDetune   := Power(1.059463094359, - FSemi - 0.01 * FCent);
+ FTune     := -23.376 - 2 * Parameter[23] - 12 * trunc(Parameter[22] * 4.9);
+ FTune     := SampleRate * Power(1.059463094359, FTune);
 
- fVibrato  := 0.2 * (Parameter[20] - 0.5) * (Parameter[20] - 0.5);
- fPWDepth    := fVibrato;
- if Parameter[20] < 0.5 then fVibrato := 0;
+ FVibrato  := 0.2 * (Parameter[20] - 0.5) * (Parameter[20] - 0.5);
+ FPWDepth    := FVibrato;
+ if Parameter[20] < 0.5 then FVibrato := 0;
 
- fLFOHz    := exp(7 * Parameter[19] - 4);
+ FLFOHz    := exp(7 * Parameter[19] - 4);
 (*
- fDeltaLFO := fLFOHz * (fInvSampleRate * 2 * Pi * KMAX);
+ FDeltaLFO := FLFOHz * (FInvSampleRate * 2 * Pi * KMAX);
 *)
 
- fFilterFreq := 8 * Parameter[6] - 1.5;
- fFilterQ    := sqr(1 - Parameter[7]);        ////// + 0.02;
- fFilterLFO  := 2.5 * sqr(Parameter[9]);
- fFilterEnv  := 12 * Parameter[8] - 6;
- fFilterVel  := 0.1 * Parameter[10] - 0.05;
+ FFilterFreq := 8 * Parameter[6] - 1.5;
+ FFilterQ    := sqr(1 - Parameter[7]);        ////// + 0.02;
+ FFilterLFO  := 2.5 * sqr(Parameter[9]);
+ FFilterEnv  := 12 * Parameter[8] - 6;
+ FFilterVel  := 0.1 * Parameter[10] - 0.05;
  if (Parameter[10] < 0.05) then
    begin
-    fVelOff := 1;
-    fFilterVel := 0;
+    FVelOff := 1;
+    FFilterVel := 0;
    end
-  else fVelOff := 0;
+  else FVelOff := 0;
 
- fAttack  := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[15]));
- fDecay   := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[16]));
- fSustain := Parameter[17];
- fRelease := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[18]));
- if Parameter[18] < 0.01 then fRelease := 0.1; //extra fast release
+ FAttack  := 1 - exp(-FInvSampleRate * exp(5.5 - 7.5 * Parameter[15]));
+ FDecay   := 1 - exp(-FInvSampleRate * exp(5.5 - 7.5 * Parameter[16]));
+ FSustain := Parameter[17];
+ FRelease := 1 - exp(-FInvSampleRate * exp(5.5 - 7.5 * Parameter[18]));
+ if Parameter[18] < 0.01 then FRelease := 0.1; //extra fast release
 
 (*
- fInvSampleRate := fInvSampleRate * KMAX; //lower update rate...
+ FInvSampleRate := FInvSampleRate * KMAX; //lower update rate...
 
- fAtt := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[11]));
- fDec := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[12]));
+ fAtt := 1 - exp(-FInvSampleRate * exp(5.5 - 7.5 * Parameter[11]));
+ fDec := 1 - exp(-FInvSampleRate * exp(5.5 - 7.5 * Parameter[12]));
  fSus := sqr(Parameter[13]);
- fRel := 1 - exp(-fInvSampleRate * exp(5.5 - 7.5 * Parameter[14]));
+ fRel := 1 - exp(-FInvSampleRate * exp(5.5 - 7.5 * Parameter[14]));
 
  if (Parameter[4] < 0.02)
   then fGlide := 1.0
-  else fGlide := 1 - exp(-fInvSampleRate * exp(6 - 7 * Parameter[4]));
+  else fGlide := 1 - exp(-FInvSampleRate * exp(6 - 7 * Parameter[4]));
  fGlidedisp   := (6.604 * Parameter[5] - 3.302);
  fGlidedisp   := fGlidedisp * sqr(fGlidedisp);
 *)
 end;
 
 
-procedure TJX10DataModule.VSTModuleCreate(Sender: TObject);
+procedure TJX10DataModule.VSTModuleOpen(Sender: TObject);
 var
   i, v : Integer;
 begin
@@ -725,20 +725,20 @@ begin
 (*
   notes[0] := EVENTS_DONE;
 *)
-  fLFO          := 0;
-  fModWheel     := 0;
-  fFiltWheel    := 0;
-  fPress        := 0;
+  FLFO          := 0;
+  FModWheel     := 0;
+  FFiltWheel    := 0;
+  FPress        := 0;
 (*
   fzip          := 0;
   fRezWheel     := 1;
-  fPitchBend    := 1;
+  FPitchBend    := 1;
   ipbend        := 1;
-  fVolume       := 0.0005;
+  FVolume       := 0.0005;
   K             := 0;
-  fMode         := 0;
+  FMode         := 0;
   fLastNote     := 0;
-  fSustain      := 0;
+  FSustain      := 0;
   fActiveVoices := 0;
   fNoise        := 22222;
 *)
@@ -781,23 +781,23 @@ begin
   float* out1 = outputs[0];
   float* out2 = outputs[1];
   long event=0, frame=0, frames, v;
-  pb   := fPitchBend;
+  pb   := FPitchBend;
   ipb  := ipbend;
   gl   := fGlide;
   hpf  := 0.997;
   min  := 1;
   w    := 0;
-  ww   := fNoiseMix;
-  fe   := fFilterEnv;
-  fq   := fFilterQ * fRezWheel;
+  ww   := FNoiseMix;
+  fe   := FFilterEnv;
+  fq   := FFilterQ * fRezWheel;
   fx   := 1.97 - 0.85 * fq;
   fz   := fzip;
   k    := K;
 *)
-  vib := sin(fLFO);
-  ff  := fFilterFreq + fFiltWheel + (fFilterLFO + fPress) * vib; //have to do again here as way that
-  pwm := 1 + vib * (fModWheel + fPWDepth);           //below triggers on k was too cheap!
-  vib := 1 + vib * (fModWheel + fVibrato);
+  vib := sin(FLFO);
+  ff  := FFilterFreq + FFiltWheel + (FFilterLFO + FPress) * vib; //have to do again here as way that
+  pwm := 1 + vib * (FModWheel + FPWDepth);           //below triggers on k was too cheap!
+  vib := 1 + vib * (FModWheel + FVibrato);
 
 (*
   if ((fActiveVoices > 0) or (notes[event] < sampleFrames))
@@ -823,12 +823,12 @@ begin
         dec(k);
         if (k < 0) then
          begin
-          fLFO := fLFO + fDeltaLFO;
-          if fLFO > PI then fLFO := fLFO - 2 * Pi;
-          vib := sin(fLFO);
-          ff  := fFilterFreq + fFiltWheel + (fFilterLFO + fPress) * vib;
-          pwm := 1 + vib * (fModWheel + fPWDepth);
-          vib := 1 + vib * (fModWheel + fVibrato);
+          FLFO := FLFO + FDeltaLFO;
+          if FLFO > PI then FLFO := FLFO - 2 * Pi;
+          vib := sin(FLFO);
+          ff  := FFilterFreq + FFiltWheel + (FFilterLFO + FPress) * vib;
+          pwm := 1 + vib * (FModWheel + FPWDepth);
+          vib := 1 + vib * (FModWheel + FVibrato);
           k   := KMAX;
          end;
 
@@ -886,7 +886,7 @@ begin
              begin
               y       := - y;
               V.p2    := y;
-              V.dp2   := V.period * V.fDetune * pwm * pb;
+              V.dp2   := V.period * V.FDetune * pwm * pb;
               V.pmax2 := trunc(0.5 + V.dp2) - 0.5;
               V.dc2   := -0.5 * V.lev2 / V.pmax2;
               V.pmax2 := V.pmax2 * PI;
@@ -902,12 +902,12 @@ begin
             x := V.saw + w;
             V.env := V.env + V.envd * (V.envl - V.env);
 
-            if (k = KMAX) then //filter freq update at fLFO rate
+            if (k = KMAX) then //filter freq update at FLFO rate
              begin
               if V.env + V.envl > 3 then
                begin
-                V.envd := fDecay;
-                V.envl := fSustain;
+                V.envd := FDecay;
+                V.envl := FSustain;
                end; //envelopes
               V.fenv := V.fenv + V.fenvd * (V.fenvl - V.fenv);
              if V.fenv + V.fenvl > 3 then
@@ -1001,20 +1001,20 @@ begin
         end;
 
    $B0: case midiData[1] of  // Controller
-         $01: fModWheel := 0.000005 * sqr(midiData[2]);         // Mod Wheel
+         $01: FModWheel := 0.000005 * sqr(midiData[2]);         // Mod Wheel
          $02,
-         $4A: fFiltWheel :=  0.02 * (midiData[2]);              // Filter +
-         $03: fFiltWheel := -0.03 * (midiData[2]);              // Filter -
-         $07: fVolume    := 0.00000005 * sqr(midiData[2]);      // Volume
+         $4A: FFiltWheel :=  0.02 * (midiData[2]);              // Filter +
+         $03: FFiltWheel := -0.03 * (midiData[2]);              // Filter -
+         $07: FVolume    := 0.00000005 * sqr(midiData[2]);      // Volume
          $10,
-         $47: fResonanceWheel  := 0.0065 * (154 - midiData[2]); // Resonance
+         $47: FResonanceWheel  := 0.0065 * (154 - midiData[2]); // Resonance
          $40: begin // Sustain
-               fSustain := midiData[2] and $40;
-               if (fSustain = 0) then
+               FSustain := midiData[2] and $40;
+               if (FSustain = 0) then
                 begin
 (*
                  notes[npos++] = event.deltaFrames;
-                 notes[npos++] = fSustain; //end all sustained notes
+                 notes[npos++] = FSustain; //end all sustained notes
                  notes[npos++] = 0;
 *)               end;
               end;
@@ -1031,17 +1031,17 @@ begin
               //could probably reset some more stuff here for safety!
              end;
 *)
-            fSustain := 0;
+            FSustain := 0;
            end;
         end;
 
    $C0: if (midiData[1] < NumPrograms)
          then setProgram(midiData[1]);        // Program Change
 
-   $D0: fPress := 0.00001 * sqr(midiData[1]); // Channel Aftertouch
+   $D0: FPress := 0.00001 * sqr(midiData[1]); // Channel Aftertouch
    $E0: begin //pitch bend
-         fPitchBendInv := exp(0.000014102 * (midiData[1] + 128 * midiData[2] - 8192));
-         fPitchBend := 1 / fPitchBendInv;
+         FPitchBendInv := exp(0.000014102 * (midiData[1] + 128 * midiData[2] - 8192));
+         FPitchBend := 1 / FPitchBendInv;
         end;
   end;
 end;
@@ -1053,7 +1053,7 @@ end;
 
 procedure TJX10DataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
-// fDeltaLFO := fLFOHz * (2 * Pi * KMAX) / SampleRate;
+// FDeltaLFO := FLFOHz * (2 * Pi * KMAX) / SampleRate;
 end;
 
 procedure TJX10DataModule.VSTModuleSuspend(Sender: TObject);
@@ -1085,19 +1085,19 @@ begin
 
  if (velocity > 0) then // Note on
   begin
-    if fVelOff > 0 then Velocity := 80;
+    if FVelOff > 0 then Velocity := 80;
 
-    if (fMode and 4) > 0 then // Monophonic
+    if (FMode and 4) > 0 then // Monophonic
      begin
 (*      if (fVoices[0].note > 0) // Legato Pitch Change
        begin
         for tmp := (cNumVoices - 1) downto 0   // queue any held notes
          do fVoices[tmp].note := fVoices[tmp - 1].note;
-        p := fTune * exp(-0.05776226505 * (note + ANALOG * v));
-        while (p < 3) or ((p * fDetune)<3) do p := p + p;
+        p := FTune * exp(-0.05776226505 * (note + ANALOG * v));
+        while (p < 3) or ((p * FDetune)<3) do p := p + p;
         fVoices[v].target := p;
-        if (fMode and 2) = 0 then fVoices[v].period := p;
-        fVoices[v].fc   := exp(fFilterVel * (velocity - 64)) / p;
+        if (FMode and 2) = 0 then fVoices[v].period := p;
+        fVoices[v].fc   := exp(FFilterVel * (velocity - 64)) / p;
         fVoices[v].env  := fVoices[v].env + 2 * cSilence; ///was missed out below if returned?
         fVoices[v].note := note;
         exit;
@@ -1117,14 +1117,14 @@ begin
 *)
       end;
 (*
-    p := fTune * exp(-0.05776226505 * (note + ANALOG * v));
-    while (p < 3) or ((p * fDetune) < 3) do p := p + p;
+    p := FTune * exp(-0.05776226505 * (note + ANALOG * v));
+    while (p < 3) or ((p * FDetune) < 3) do p := p + p;
     fVoices[v].target  := p;
-    fVoices[v].fDetune := fDetune;
+    fVoices[v].FDetune := FDetune;
 
     tmp := 0;
-    if (fMode and 2) > 0 then
-     if ((fMode and 1 > 0) or (held > 0)) then tmp := note - fLastNote; // Glide
+    if (FMode and 2) > 0 then
+     if ((FMode and 1 > 0) or (held > 0)) then tmp := note - fLastNote; // Glide
     fVoices[v].period := p * Power(1.059463094359, tmp - fGlidedisp);
     if fVoices[v].period < 3
      then fVoices[v].period := 3.0; //limit min period
@@ -1132,10 +1132,10 @@ begin
     fVoices[v].note := note;
     fLastNote       := note;
 
-    fVoices[v].fc   := exp(fFilterVel * (velocity - 64)) / p;  // filter tracking
+    fVoices[v].fc   := exp(FFilterVel * (velocity - 64)) / p;  // filter tracking
 
-    fVoices[v].lev  := fVolTrim * fVolume * (0.004 * sqr(velocity + 64) - 8);
-    fVoices[v].lev2 := fVoices[v].lev * fOscMix;
+    fVoices[v].lev  := FVolTrim * FVolume * (0.004 * sqr(velocity + 64) - 8);
+    fVoices[v].lev2 := fVoices[v].lev * FOscMix;
 *)
 
     if (Parameter[20] < 0.5) then //force 180 deg phase difference for PWM
@@ -1162,7 +1162,7 @@ begin
      end;
 
 (*
-    if (fMode and 4) > 0    // monophonic retriggering
+    if (FMode and 4) > 0    // monophonic retriggering
      then fVoices[v].env := fVoices[v].env + 2 * cSilence
      else
       begin
@@ -1176,7 +1176,7 @@ begin
          fVoices[v].env := fVoices[v].env + 2 * cSilence; //anti-glitching trick
       end;
     fVoices[v].envl  := 2;
-    fVoices[v].envd  := fAttack;
+    fVoices[v].envd  := FAttack;
     fVoices[v].fenvl := 2;
     fVoices[v].fenvd := fatt;
 *)
@@ -1184,7 +1184,7 @@ begin
  else //note off
   begin
 (*
-   if (fMode and 4 > 0) and (fVoices[0].note = Note) then //monophonic (and current note)
+   if (FMode and 4 > 0) and (fVoices[0].note = Note) then //monophonic (and current note)
     begin
       for v := cNumVoices - 1 downto 0 do
        if fVoices[v].Note > 0 then held := v; //any other notes queued?
@@ -1193,17 +1193,17 @@ begin
         fVoices[v].note    := fVoices[held].note;
         fVoices[held].note := 0;
 
-        p := fTune * exp(-0.05776226505 * (fVoices[v].note + ANALOG * (double)v));
-        while (p < 3) or ((p * fDetune) < 3) do p := p + p;
+        p := FTune * exp(-0.05776226505 * (fVoices[v].note + ANALOG * (double)v));
+        while (p < 3) or ((p * FDetune) < 3) do p := p + p;
         fVoices[v].target := p;
-        if (fMode and 2) = 0
+        if (FMode and 2) = 0
          then fVoices[v].period := p;
         fVoices[v].fc := 1 / p;
        end
       else
        begin
         fVoices[v].envl  := 0.0;
-        fVoices[v].envd  := fRelease;
+        fVoices[v].envd  := FRelease;
         fVoices[v].fenvl := 0.0;
         fVoices[v].fenvd := frel;
         fVoices[v].note  := 0;
@@ -1213,15 +1213,15 @@ begin
     begin
      for v := 0 to cNumVoices - 1 do
       if fVoices[v].note = Note then //any voices playing that note?
-       if fSustain = 0 then
+       if FSustain = 0 then
         begin
          fVoices[v].envl  := 0.0;
-         fVoices[v].envd  := fRelease;
+         fVoices[v].envd  := FRelease;
          fVoices[v].fenvl := 0.0;
          fVoices[v].fenvd := frel;
          fVoices[v].note  := 0;
         end
-       else fVoices[v].note := fSustain;
+       else fVoices[v].note := FSustain;
     end;
 *)
   end;
@@ -1233,10 +1233,10 @@ end.
 mdaJX10Program::mdaJX10Program()
 begin
   Parameter[0] := 0.00; // OSC Mix
-  Parameter[1] := 0.25; // OSC fTune
+  Parameter[1] := 0.25; // OSC FTune
   Parameter[2] := 0.50; // OSC Fine
 
-  Parameter[3] := 0.00; // OSC fMode
+  Parameter[3] := 0.00; // OSC FMode
   Parameter[4] := 0.35; // OSC Rate
   Parameter[5] := 0.50; // OSC Bend
 
@@ -1244,19 +1244,19 @@ begin
   Parameter[7] := 0.15; // VCF Reso
   Parameter[8] := 0.75; // VCF <Env
 
-  Parameter[9] := 0.00; // VCF <fLFO
+  Parameter[9] := 0.00; // VCF <FLFO
   Parameter[10] = 0.50; // VCF <Vel
-  Parameter[11] = 0.00; // VCF fAttack
+  Parameter[11] = 0.00; // VCF FAttack
 
-  Parameter[12] = 0.30; // VCF fDecay
-  Parameter[13] = 0.00; // VCF fSustain
-  Parameter[14] = 0.25; // VCF fRelease
+  Parameter[12] = 0.30; // VCF FDecay
+  Parameter[13] = 0.00; // VCF FSustain
+  Parameter[14] = 0.25; // VCF FRelease
 
-  Parameter[15] = 0.00; // ENV fAttack
-  Parameter[16] = 0.50; // ENV fDecay
-  Parameter[17] = 1.00; // ENV fSustain
+  Parameter[15] = 0.00; // ENV FAttack
+  Parameter[16] = 0.50; // ENV FDecay
+  Parameter[17] = 1.00; // ENV FSustain
 
-  Parameter[18] = 0.30; // ENV fRelease
+  Parameter[18] = 0.30; // ENV FRelease
   Parameter[19] = 0.81; // LFO Rate
   Parameter[20] = 0.50; // Vibrato
 
@@ -1271,9 +1271,9 @@ void mdaJX10::getParameterDisplay(VstInt32 index, char *text)
 begin
  case index of
    0: sprintf(string, "%4.0f:%2.0f", 100.0-50.0*Parameter[index], 50.0*Parameter[index]); break;
-   1: sprintf(string, "%.0f", fSemi); break;
-   2: sprintf(string, "%.1f", fCent); break;
-   3: switch(fMode)
+   1: sprintf(string, "%.0f", FSemi); break;
+   2: sprintf(string, "%.1f", FCent); break;
+   3: switch(FMode)
               begin case  0:
               1: strcpy(string, "POLY    "); break;
               2: strcpy(string, "P-LEGATO"); break;
@@ -1288,7 +1288,7 @@ begin
   23: sprintf(string, "%.1f", 200.0 * Parameter[index] - 100.0); break;
   10: if(Parameter[index]<0.05) strcpy(string, "   OFF  ");
                 else sprintf(string, "%.0f", 200.0 * Parameter[index] - 100.0); break;
-  19: sprintf(string, "%.3f", fLFOHz); break;
+  19: sprintf(string, "%.3f", FLFOHz); break;
   20: if(Parameter[index]<0.5) sprintf(string, "PWM %3.0f", 100.0 - 200.0 * Parameter[index]);
                 else sprintf(string, "%7.0f", 200.0 * Parameter[index] - 100.0); break;
   22: sprintf(string, "%d", (long)(Parameter[index] * 4.9) - 2); break;

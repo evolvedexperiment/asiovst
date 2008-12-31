@@ -7,12 +7,12 @@ uses
 
 type
   TVocInputDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure ParameterTrackingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMaxFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleOpen(Sender: TObject);
   private
     FLowBuffer : Array [0..3] of Single;
     FPStep     : Single;
@@ -38,6 +38,19 @@ implementation
 uses
   Math;
 
+procedure TVocInputDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ // Initial Parameters
+ Parameter[0] := 0.5;  // Tracking Off / On / Quant
+
+ Parameter[2] := 20;   // Breath FNoise
+ Parameter[3] := 50;   // Voiced / Unvoiced Thresh
+(*
+ Parameter[1] := 0.50;  //Pitch
+ Parameter[4] := 0.35;  //Max Freq
+*)
+end;
+
 procedure TVocInputDataModule.ParameterTrackingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[index]) of
@@ -55,9 +68,8 @@ end;
 
 function TVocInputDataModule.Midi2string(const n : Single) : string; //show name of MIDI note number (60=C3)
 var
-  o, s, p : Integer;
+  o, s : Integer;
 begin
- p      := 0;
  result := '   ';
  o      := round(n / 12);
  s      := round(n - (12 * o));
@@ -82,19 +94,6 @@ begin
 
  if (o < 0) then result := result + '-';
  result := result + char(48 + (abs(o) mod 10));
-end;
-
-procedure TVocInputDataModule.VSTModuleOpen(Sender: TObject);
-begin
- // Initial Parameters
- Parameter[0] := 0.5;  // Tracking Off / On / Quant
-
- Parameter[2] := 20;   // Breath FNoise
- Parameter[3] := 50;   // Voiced / Unvoiced Thresh
-(*
- Parameter[1] := 0.50;  //Pitch
- Parameter[4] := 0.35;  //Max Freq
-*)
 end;
 
 procedure TVocInputDataModule.VSTModuleProcess(const Inputs,

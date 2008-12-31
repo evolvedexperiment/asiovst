@@ -7,32 +7,32 @@ uses
   DAV_VSTCustomModule;
 
 const
-  cNumParams  =     12;  // Number of Parameters
-  cNumProgs   =      8;  // Number of Programs
-  cNumOuts    =      2;  // Number of Outputs
-  cNumVoices  =     32;  // Max Polyphony
-  cSustain    =    128;
-  cSilence    = 0.0001;  // Voice Choking
-  cWaveLength = 422414;  // Wave Data Bytes
+  CNumParams  =     12;  // Number of Parameters
+  CNumProgs   =      8;  // Number of Programs
+  CNumOuts    =      2;  // Number of Outputs
+  CNumVoices  =     32;  // Max Polyphony
+  CSustain    =    128;
+  CSilence    = 0.0001;  // Voice Choking
+  CWaveLength = 422414;  // Wave Data Bytes
 
 type
-  TVoice = record  //voice state
-    delta : Integer;  //sample playback
+  TVoice = record        // voice state
+    delta : Integer;     // sample playback
     frac  : Integer;
     pos   : Integer;
     stop  : Integer;
     loop  : Integer;
 
-    env   : Single;  //envelope
+    env   : Single;      // envelope
     dec   : Single;
 
-    f0    : Single;   //first-order LPF
+    f0    : Single;      // first-order LPF
     f1    : Single;
     ff    : Single;
 
     outl  : Single;
     outr  : Single;
-    note  : Integer; //remember what note triggered this
+    note  : Integer;     // remember what note triggered this
   end;
 
   TKeyGroup = record  // keygroup
@@ -44,34 +44,34 @@ type
   end;
 
   TEPianoDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
-    procedure VSTModuleCreate(Sender: TObject);
     function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
-    fVoices          : array [0..cNumVoices - 1] of TVoice;
-    fKeyGroup        : array [0..33] of TKeyGroup;
-    fInvSampleRate   : Double;
-    fSize            : Integer;
-    fSizeVelocity    : Single;
-    fTreble          : Single;
-    fTrebleFrequency : Single;
-    fDeltaLFO        : Single;
-    fVelSens         : Single;
-    fWidth           : Single;
-    fPoly            : Integer;
-    fFine            : Single;
-    fRandom          : Single;
-    fStretch         : Single;
-    fOverdrive       : Single;
-    fVolume          : Single;
-    fMuffle          : Single;
-    fMuffleVelocity  : Single;
-    fLFO             : array [0..1] of Single;
-    fSustain         : Integer;
-    fActiveVoices    : Integer;
-    fWaves           : PDAVSingleFixedArray;
+    FVoices          : array [0..cNumVoices - 1] of TVoice;
+    FKeyGroup        : array [0..33] of TKeyGroup;
+    FInvSampleRate   : Double;
+    FSize            : Integer;
+    FSizeVelocity    : Single;
+    FTreble          : Single;
+    FTrebleFrequency : Single;
+    FDeltaLFO        : Single;
+    FVelSens         : Single;
+    FWidth           : Single;
+    FPoly            : Integer;
+    FFine            : Single;
+    FRandom          : Single;
+    FStretch         : Single;
+    FOverdrive       : Single;
+    FVolume          : Single;
+    FMuffle          : Single;
+    FMuffleVelocity  : Single;
+    FLFO             : array [0..1] of Single;
+    FSustain         : Integer;
+    FActiveVoices    : Integer;
+    FWaves           : PDAVSingleFixedArray;
     procedure Resume;
     procedure Update;
     procedure NoteOn(Note, Velocity: Integer);
@@ -85,13 +85,13 @@ implementation
 uses
   Math, EPianoData, DAV_VSTBasicModule;
 
-procedure TEPianoDataModule.VSTModuleCreate(Sender: TObject);
+procedure TEPianoDataModule.VSTModuleOpen(Sender: TObject);
 var
   k, v    : Integer;
   p       : array [0..1] of Integer;
   xf, dxf : Single;
 begin
- fInvSampleRate := 1 / SampleRate;
+ FInvSampleRate := 1 / SampleRate;
 (*
   programs = new mdaEPianoProgram[NPROGS];
   if(programs)
@@ -111,66 +111,70 @@ begin
 
   waves = cEPianoData;
 *)
+  ReallocMem(FWaves, Length(cEPianoData) * SizeOf(Single));
+  xf := 1 / (Power(2, 15) - 1);
+  for k := 0 to Length(cEPianoData) - 1
+   do FWaves[k] := cEPianoData[k] * xf;
 
   //Waveform data and keymapping
-  fKeyGroup[ 0].root := 36;     fKeyGroup[ 0].high :=  39; // C1
-  fKeyGroup[ 3].root := 43;     fKeyGroup[ 3].high :=  45; // G1
-  fKeyGroup[ 6].root := 48;     fKeyGroup[ 6].high :=  51; // C2
-  fKeyGroup[ 9].root := 55;     fKeyGroup[ 9].high :=  57; // G2
-  fKeyGroup[12].root := 60;     fKeyGroup[12].high :=  63; // C3
-  fKeyGroup[15].root := 67;     fKeyGroup[15].high :=  69; // G3
-  fKeyGroup[18].root := 72;     fKeyGroup[18].high :=  75; // C4
-  fKeyGroup[21].root := 79;     fKeyGroup[21].high :=  81; // G4
-  fKeyGroup[24].root := 84;     fKeyGroup[24].high :=  87; // C5
-  fKeyGroup[27].root := 91;     fKeyGroup[27].high :=  93; // G5
-  fKeyGroup[30].root := 96;     fKeyGroup[30].high := 999; // C6
+  FKeyGroup[ 0].root := 36;     FKeyGroup[ 0].high :=  39; // C1
+  FKeyGroup[ 3].root := 43;     FKeyGroup[ 3].high :=  45; // G1
+  FKeyGroup[ 6].root := 48;     FKeyGroup[ 6].high :=  51; // C2
+  FKeyGroup[ 9].root := 55;     FKeyGroup[ 9].high :=  57; // G2
+  FKeyGroup[12].root := 60;     FKeyGroup[12].high :=  63; // C3
+  FKeyGroup[15].root := 67;     FKeyGroup[15].high :=  69; // G3
+  FKeyGroup[18].root := 72;     FKeyGroup[18].high :=  75; // C4
+  FKeyGroup[21].root := 79;     FKeyGroup[21].high :=  81; // G4
+  FKeyGroup[24].root := 84;     FKeyGroup[24].high :=  87; // C5
+  FKeyGroup[27].root := 91;     FKeyGroup[27].high :=  93; // G5
+  FKeyGroup[30].root := 96;     FKeyGroup[30].high := 999; // C6
 
-  with fKeyGroup[ 0] do begin pos := 0;      stop := 8476;   loop :=  4400; end;
-  with fKeyGroup[ 1] do begin pos := 8477;   stop := 16248;  loop :=  4903; end;
-  with fKeyGroup[ 2] do begin pos := 16249;  stop := 34565;  loop :=  6398; end;
-  with fKeyGroup[ 3] do begin pos := 34566;  stop := 41384;  loop :=  3938; end;
-  with fKeyGroup[ 4] do begin pos := 41385;  stop := 45760;  loop :=  1633; end; // was 1636;
-  with fKeyGroup[ 5] do begin pos := 45761;  stop := 65211;  loop :=  5245; end;
-  with fKeyGroup[ 6] do begin pos := 65212;  stop := 72897;  loop :=  2937; end;
-  with fKeyGroup[ 7] do begin pos := 72898;  stop := 78626;  loop :=  2203; end; // was 2204;
-  with fKeyGroup[ 8] do begin pos := 78627;  stop := 100387; loop :=  6368; end;
-  with fKeyGroup[ 9] do begin pos := 100388; stop := 116297; loop := 10452; end;
-  with fKeyGroup[10] do begin pos := 116298; stop := 127661; loop :=  5217; end; // was 5220;
-  with fKeyGroup[11] do begin pos := 127662; stop := 144113; loop :=  3099; end;
-  with fKeyGroup[12] do begin pos := 144114; stop := 152863; loop :=  4284; end;
-  with fKeyGroup[13] do begin pos := 152864; stop := 173107; loop :=  3916; end;
-  with fKeyGroup[14] do begin pos := 173108; stop := 192734; loop :=  2937; end;
-  with fKeyGroup[15] do begin pos := 192735; stop := 204598; loop :=  4732; end;
-  with fKeyGroup[16] do begin pos := 204599; stop := 218995; loop :=  4733; end;
-  with fKeyGroup[17] do begin pos := 218996; stop := 233801; loop :=  2285; end;
-  with fKeyGroup[18] do begin pos := 233802; stop := 248011; loop :=  4098; end;
-  with fKeyGroup[19] do begin pos := 248012; stop := 265287; loop :=  4099; end;
-  with fKeyGroup[20] do begin pos := 265288; stop := 282255; loop :=  3609; end;
-  with fKeyGroup[21] do begin pos := 282256; stop := 293776; loop :=  2446; end;
-  with fKeyGroup[22] do begin pos := 293777; stop := 312566; loop :=  6278; end;
-  with fKeyGroup[23] do begin pos := 312567; stop := 330200; loop :=  2283; end;
-  with fKeyGroup[24] do begin pos := 330201; stop := 348889; loop :=  2689; end;
-  with fKeyGroup[25] do begin pos := 348890; stop := 365675; loop :=  4370; end;
-  with fKeyGroup[26] do begin pos := 365676; stop := 383661; loop :=  5225; end;
-  with fKeyGroup[27] do begin pos := 383662; stop := 393372; loop :=  2811; end;
-  with fKeyGroup[28] do begin pos := 383662; stop := 393372; loop :=  2811; end; //ghost
-  with fKeyGroup[29] do begin pos := 393373; stop := 406045; loop :=  4522; end;
-  with fKeyGroup[30] do begin pos := 406046; stop := 414486; loop :=  2306; end;
-  with fKeyGroup[31] do begin pos := 406046; stop := 414486; loop :=  2306; end; //ghost
-  with fKeyGroup[32] do begin pos := 414487; stop := 422408; loop :=  2169; end;
+  with FKeyGroup[ 0] do begin pos := 0;      stop := 8476;   loop :=  4400; end;
+  with FKeyGroup[ 1] do begin pos := 8477;   stop := 16248;  loop :=  4903; end;
+  with FKeyGroup[ 2] do begin pos := 16249;  stop := 34565;  loop :=  6398; end;
+  with FKeyGroup[ 3] do begin pos := 34566;  stop := 41384;  loop :=  3938; end;
+  with FKeyGroup[ 4] do begin pos := 41385;  stop := 45760;  loop :=  1633; end; // was 1636;
+  with FKeyGroup[ 5] do begin pos := 45761;  stop := 65211;  loop :=  5245; end;
+  with FKeyGroup[ 6] do begin pos := 65212;  stop := 72897;  loop :=  2937; end;
+  with FKeyGroup[ 7] do begin pos := 72898;  stop := 78626;  loop :=  2203; end; // was 2204;
+  with FKeyGroup[ 8] do begin pos := 78627;  stop := 100387; loop :=  6368; end;
+  with FKeyGroup[ 9] do begin pos := 100388; stop := 116297; loop := 10452; end;
+  with FKeyGroup[10] do begin pos := 116298; stop := 127661; loop :=  5217; end; // was 5220;
+  with FKeyGroup[11] do begin pos := 127662; stop := 144113; loop :=  3099; end;
+  with FKeyGroup[12] do begin pos := 144114; stop := 152863; loop :=  4284; end;
+  with FKeyGroup[13] do begin pos := 152864; stop := 173107; loop :=  3916; end;
+  with FKeyGroup[14] do begin pos := 173108; stop := 192734; loop :=  2937; end;
+  with FKeyGroup[15] do begin pos := 192735; stop := 204598; loop :=  4732; end;
+  with FKeyGroup[16] do begin pos := 204599; stop := 218995; loop :=  4733; end;
+  with FKeyGroup[17] do begin pos := 218996; stop := 233801; loop :=  2285; end;
+  with FKeyGroup[18] do begin pos := 233802; stop := 248011; loop :=  4098; end;
+  with FKeyGroup[19] do begin pos := 248012; stop := 265287; loop :=  4099; end;
+  with FKeyGroup[20] do begin pos := 265288; stop := 282255; loop :=  3609; end;
+  with FKeyGroup[21] do begin pos := 282256; stop := 293776; loop :=  2446; end;
+  with FKeyGroup[22] do begin pos := 293777; stop := 312566; loop :=  6278; end;
+  with FKeyGroup[23] do begin pos := 312567; stop := 330200; loop :=  2283; end;
+  with FKeyGroup[24] do begin pos := 330201; stop := 348889; loop :=  2689; end;
+  with FKeyGroup[25] do begin pos := 348890; stop := 365675; loop :=  4370; end;
+  with FKeyGroup[26] do begin pos := 365676; stop := 383661; loop :=  5225; end;
+  with FKeyGroup[27] do begin pos := 383662; stop := 393372; loop :=  2811; end;
+  with FKeyGroup[28] do begin pos := 383662; stop := 393372; loop :=  2811; end; //ghost
+  with FKeyGroup[29] do begin pos := 393373; stop := 406045; loop :=  4522; end;
+  with FKeyGroup[30] do begin pos := 406046; stop := 414486; loop :=  2306; end;
+  with FKeyGroup[31] do begin pos := 406046; stop := 414486; loop :=  2306; end; //ghost
+  with FKeyGroup[32] do begin pos := 414487; stop := 422408; loop :=  2169; end;
 
   //extra xfade looping...
   for k := 0 to 27 do
    begin
-    p[0] := fKeyGroup[k].stop;
-    p[1] := fKeyGroup[k].stop - fKeyGroup[k].loop;
+    p[0] := FKeyGroup[k].Stop;
+    p[1] := FKeyGroup[k].Stop - FKeyGroup[k].Loop;
 
     xf   := 1;
     dxf  := -0.02;
 
     while xf > 0 do
      begin
-      fWaves[p[0]] := round((1 - xf) * fWaves[p[0]] + xf * fWaves[p[1]]);
+      FWaves[p[0]] := round((1 - xf) * FWaves[p[0]] + xf * FWaves[p[1]]);
       dec(p[0]);
       dec(p[1]);
       xf := xf + dxf;
@@ -178,16 +182,16 @@ begin
    end;
 
   //initialise...
-  for v := 0 to cNumVoices - 1 do
+  for v := 0 to CNumVoices - 1 do
    begin
-    fVoices[v].Env := 0.0;
-    fVoices[v].Dec := 0.99; //all notes off
+    FVoices[v].Env := 0.0;
+    FVoices[v].Dec := 0.99; //all notes off
    end;
 
- fVolume       := 0.2;
- fMuffle       := 160.0;
- fSustain      := 0;
- fActivevoices := 0;
+ FVolume       := 0.2;
+ FMuffle       := 160.0;
+ FSustain      := 0;
+ FActiveVoices := 0;
 
 (*
   notes[0] = EVENTS_DONE;
@@ -198,9 +202,9 @@ begin
 
   suspend();
 *)
- fLFO[0]    := 0.0;
- fLFO[1]    := 1.0;
- fDeltaLFO  := 0.0;
+ FLFO[0]    := 0.0;
+ FLFO[1]    := 1.0;
+ FDeltaLFO  := 0.0;
 
  Update;
 end;
@@ -247,7 +251,7 @@ begin
 
            $40,           // Sustain Pedal
            $42: begin     // Sustenuto Pedal
-                 fSustain := MidiEvent.midiData[2] and $40;
+                 FSustain := MidiEvent.midiData[2] and $40;
                  if (sustain = 0) then
                   begin
                    notes[npos++] = event.deltaFrames;
@@ -260,10 +264,10 @@ begin
              begin
               if MidiEvent.midiData[1] > $7A then
                begin
-                for v := 0 to cNumVoices - 1
-                 do fVoices[v].dec := 0.99;
-                fSustain := 0;
-                fMuffle  := 160;
+                for v := 0 to CNumVoices - 1
+                 do FVoices[v].dec := 0.99;
+                FSustain := 0;
+                FMuffle  := 160;
                end;
              end;
           end;
@@ -282,13 +286,13 @@ end;
 
 procedure TEPianoDataModule.Update;  //parameter change
 begin
- fSize   := round(12 * Parameter[2] - 6);
+ FSize   := round(12 * Parameter[2] - 6);
 
- fTreble := 4 * sqr(Parameter[3]) - 1.0; // Treble Gain
+ FTreble := 4 * sqr(Parameter[3]) - 1.0; // Treble Gain
  if (Parameter[3] > 0.5)
-  then fTrebleFrequency := 14000
-  else fTrebleFrequency := 5000;         // Treble Frequency
- fTrebleFrequency := 1.0 - exp(-fInvSampleRate * fTrebleFrequency);
+  then FTrebleFrequency := 14000
+  else FTrebleFrequency := 5000;         // Treble Frequency
+ FTrebleFrequency := 1.0 - exp(-FInvSampleRate * FTrebleFrequency);
 
 (*
  rmod := 2 * Parameter[4] - 1.0; // LFO depth
@@ -296,24 +300,24 @@ begin
  if (Parameter[4] < 0.5) then rmod := -rmod;
 *)
 
- fDeltaLFO := 6.283 * fInvSampleRate * Exp(6.22 * Parameter[5] - 2.61); // LFO rate
+ FDeltaLFO := 6.283 * FInvSampleRate * Exp(6.22 * Parameter[5] - 2.61); // LFO rate
 
- fVelSens := 1 + 2 * Parameter[6];
+ FVelSens := 1 + 2 * Parameter[6];
  if (Parameter[6] < 0.25)
-  then fVelSens := fVelSens - (0.75 - 3.0 * Parameter[6]);
+  then FVelSens := FVelSens - (0.75 - 3.0 * Parameter[6]);
 
- fWidth     := 0.03 * Parameter[7];
- fPoly      := 1 + round(31.9 * Parameter[8]);
- fFine      := Parameter[9] - 0.5;
- fRandom    := 0.077 * sqr(Parameter[10]);
- fStretch   := 0.0; //0.000434 * (Parameter[11] - 0.5); parameter re-used for fOverdrive!
- fOverdrive := 1.8 * Parameter[11];
+ FWidth     := 0.03 * Parameter[7];
+ FPoly      := 1 + round(31.9 * Parameter[8]);
+ FFine      := Parameter[9] - 0.5;
+ FRandom    := 0.077 * sqr(Parameter[10]);
+ FStretch   := 0.0; //0.000434 * (Parameter[11] - 0.5); parameter re-used for FOverdrive!
+ FOverdrive := 1.8 * Parameter[11];
 end;
 
 procedure TEPianoDataModule.Resume;
 begin
- fInvSampleRate := 1 / SampleRate;
- fDeltaLFO := 6.283 * fInvSampleRate * exp(6.22 * Parameter[5] - 2.61); // LFO rate
+ FInvSampleRate := 1 / SampleRate;
+ FDeltaLFO := 6.283 * FInvSampleRate * exp(6.22 * Parameter[5] - 2.61); // LFO rate
  WantEvents(1);
 end;
 
@@ -335,7 +339,7 @@ var
 begin
   event := 0;
   frame := 0;
-  od    := fOverdrive;
+  od    := FOverdrive;
  (*
   float* out0 = outputs[0];
   float* out1 = outputs[1];
@@ -354,7 +358,7 @@ begin
       l := 0.0;
       r := 0.0;
 
-      for v :=0 to fActiveVoices - 1 do
+      for v :=0 to FActiveVoices - 1 do
        begin
         V.frac := V.frac + V.delta;  //integer-based linear interpolation
         V.pos  := V.pos  + (V.frac shr 16);
@@ -369,22 +373,22 @@ begin
 
     V.env = V.env * V.dec;  //envelope
 
-        if(x>0.0) begin x -= od * x * x;  if(x < -V.env) x = -V.env; end; //+= 0.5 * x * x; end; //fOverdrive
+        if(x>0.0) begin x -= od * x * x;  if(x < -V.env) x = -V.env; end; //+= 0.5 * x * x; end; //FOverdrive
 
         l += V.outl * x;
         r += V.outr * x;
 
         V++;
        end;
-      tl := tl + fTrebleFrequency * (l - tl);  // Treble Boost
-      tr := tr + fTrebleFrequency * (r - tr);
-      r  := r + fTreble * (r - tr);
-      l  := l + fTreble * (l - tl);
+      tl := tl + FTrebleFrequency * (l - tl);  // Treble Boost
+      tr := tr + FTrebleFrequency * (r - tr);
+      r  := r + FTreble * (r - tr);
+      l  := l + FTreble * (l - tl);
 
-      fLFO[0] := fLFO[0] + fDeltaLFO * fLFO[1];   // LFO for tremolo and autopan
-      fLFO[1] := fLFO[1] - fDeltaLFO * fLFO[0];
-      l       := l + l * lmod * fLFO[1];
-      r       := r + r * rmod * fLFO[1];  // worth making all these local variables?
+      FLFO[0] := FLFO[0] + FDeltaLFO * FLFO[1];   // LFO for tremolo and autopan
+      FLFO[1] := FLFO[1] - FDeltaLFO * FLFO[0];
+      l       := l + l * lmod * FLFO[1];
+      r       := r + r * rmod * FLFO[1];  // worth making all these local variables?
 
       *out0++ = l;
       *out1++ = r;
@@ -392,10 +396,10 @@ begin
 *)
     if (frame < sampleFrames) then
      begin
-      if (fActiveVoices = 0) and (Parameter[4] > 0.5) then
+      if (FActiveVoices = 0) and (Parameter[4] > 0.5) then
        begin
-        fLFO[0] := -0.7071;
-        fLFO[1] :=  0.7071;
+        FLFO[0] := -0.7071;
+        FLFO[1] :=  0.7071;
        end;              // reset LFO phase - good idea?
 (*
       note := notes[event++];
@@ -409,11 +413,11 @@ begin
  if (abs(tr) < 1E-10) then tr := 0;
 *)
 
- for v := 0 to fActiveVoices - 1 do
-  if (fVoices[v].env < cSilence) then
+ for v := 0 to FActiveVoices - 1 do
+  if (FVoices[v].env < CSilence) then
    begin
-    dec(fActiveVoices);
-    fVoices[v] := fVoices[fActiveVoices];
+    dec(FActiveVoices);
+    FVoices[v] := FVoices[FActiveVoices];
    end;
 (*
  notes[0] := EVENTS_DONE;  //mark events buffer as done
@@ -429,75 +433,75 @@ begin
  vl :=0;
  if (Velocity > 0) then
    begin
-    if (fActiveVoices < fPoly) then //add a note
+    if (FActiveVoices < FPoly) then //add a note
      begin
-      vl := fActiveVoices;
-      inc(fActiveVoices);
-      fVoices[vl].f0 := 0;
-      fVoices[vl].f1 := 0;
+      vl := FActiveVoices;
+      inc(FActiveVoices);
+      FVoices[vl].f0 := 0;
+      FVoices[vl].f1 := 0;
      end
     else //steal a note
      begin
-      for v := 0 to fPoly - 1 do  //find quietest voice
+      for v := 0 to FPoly - 1 do  //find quietest voice
        begin
-        if (fVoices[v].env < l) then
+        if (FVoices[v].env < l) then
          begin
-          l  := fVoices[v].env;
+          l  := FVoices[v].env;
           vl := v;
          end;
        end;
      end;
 
     k := sqr(note - 60);
-    l := fFine + fRandom * ((k mod 13) - 6.5);  // Random & Fine tune
+    l := FFine + FRandom * ((k mod 13) - 6.5);  // Random & Fine tune
     if (note > 60)
-     then l := l + fStretch * k;                      // Stretch
+     then l := l + FStretch * k;                      // Stretch
 
-    s := fSize;
+    s := FSize;
     if (velocity > 40)
-     then s := s + round(fSizeVelocity * (velocity - 40));
+     then s := s + round(FSizeVelocity * (velocity - 40));
 
     k := 0;
-    while (note > (fKeyGroup[k].high + s)) do k := k + 3;  //find keygroup
-    l := l + (note - fKeyGroup[k].root); // Pitch
-    l := 32000 * fInvSampleRate * exp(0.05776226505 * l);
-    fVoices[vl].delta := round(65536.0 * l);
-    fVoices[vl].frac  := 0;
+    while (note > (FKeyGroup[k].high + s)) do k := k + 3;  //find keygroup
+    l := l + (note - FKeyGroup[k].root); // Pitch
+    l := 32000 * FInvSampleRate * exp(0.05776226505 * l);
+    FVoices[vl].delta := round(65536.0 * l);
+    FVoices[vl].frac  := 0;
 
     if (velocity > 48) then Inc(k); // Mid Velocity Sample
     if (velocity > 80) then Inc(k); // High Velocity Sample
-    fVoices[vl].pos  := fKeyGroup[k].pos;
-    fVoices[vl].stop := fKeyGroup[k].stop - 1;
-    fVoices[vl].loop := fKeyGroup[k].loop;
+    FVoices[vl].pos  := FKeyGroup[k].pos;
+    FVoices[vl].stop := FKeyGroup[k].stop - 1;
+    FVoices[vl].loop := FKeyGroup[k].loop;
 
-    fVoices[vl].env  := (3 + 2 * fVelSens) * Power(0.0078 * velocity, fVelSens); //velocity
+    FVoices[vl].env  := (3 + 2 * FVelSens) * Power(0.0078 * velocity, FVelSens); //velocity
 
     if (note > 60)
-     then fVoices[vl].env := fVoices[vl].env * exp(0.01 * (60 - note));   // new! high notes quieter
+     then FVoices[vl].env := FVoices[vl].env * exp(0.01 * (60 - note));   // new! high notes quieter
 
-    l := 50.0 + sqr(Parameter[4]) * fMuffle + fMuffleVelocity * (velocity - 64); // Muffle
+    l := 50.0 + sqr(Parameter[4]) * FMuffle + FMuffleVelocity * (velocity - 64); // Muffle
     if (l < (55.0 + 0.4 * note)) then l := 55.0 + 0.4 * note;
     if (l > 210.0) then l := 210.0;
-    fVoices[vl].ff := sqr(l) * fInvSampleRate;
-    fVoices[vl].note := note; //note.pan
+    FVoices[vl].ff := sqr(l) * FInvSampleRate;
+    FVoices[vl].note := note; //note.pan
     if (note <  12) then note := 12;
     if (note > 108) then note := 108;
-    l := fVolume;
+    l := FVolume;
 
-    fVoices[vl].outr := l + l * fWidth * (note - 60);
-    fVoices[vl].outl := l + l - fVoices[vl].outr;
+    FVoices[vl].outr := l + l * FWidth * (note - 60);
+    FVoices[vl].outl := l + l - FVoices[vl].outr;
 
     if (Note < 44) then Note := 44; // limit max decay length
-    fVoices[vl].dec := exp(-fInvSampleRate * exp(-1 + 0.03 * note - 2 * Parameter[0]));
+    FVoices[vl].dec := exp(-FInvSampleRate * exp(-1 + 0.03 * note - 2 * Parameter[0]));
    end
   else //note off
    begin
-    for v := 0 to cNumVoices - 1 do
-     if (fVoices[v].note = note) then // any voices playing that note?
+    for v := 0 to CNumVoices - 1 do
+     if (FVoices[v].note = note) then // any voices playing that note?
       begin
-       if (fSustain = 0)
-        then fVoices[v].dec  := exp(-fInvSampleRate * exp(6 + 0.01 * note - 5 * Parameter[1]))
-        else fVoices[v].note := cSustain;
+       if (FSustain = 0)
+        then FVoices[v].dec  := exp(-FInvSampleRate * exp(6 + 0.01 * note - 5 * Parameter[1]))
+        else FVoices[v].note := CSustain;
      end;
    end;
 end;
@@ -505,7 +509,7 @@ end;
 procedure TEPianoDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- fInvSampleRate := 1 / SampleRate;
+ FInvSampleRate := 1 / SampleRate;
 end;
 
 end.
@@ -541,7 +545,7 @@ begin
 
     case  5: sprintf(string, "%.2f", (float)exp(6.22 * Parameter[5] - 2.61)); break; //LFO Hz
     case  7: sprintf(string, "%.0f", 200.0 * Parameter[index]); break;
-    case  8: sprintf(string, "%ld", fPoly); break;
+    case  8: sprintf(string, "%ld", FPoly); break;
     case 10: sprintf(string, "%.1f",  50.0 * Parameter[index] * Parameter[index]); break;
     case 11: sprintf(string, "%.1f", 100.0 * Parameter[index]); break;
     default: sprintf(string, "%.0f", 100.0 * Parameter[index]);

@@ -1,11 +1,9 @@
 object DetuneDataModule: TDetuneDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda Detune'
-  ProductName = 'Detune'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
@@ -91,6 +89,8 @@ object DetuneDataModule: TDetuneDataModule
       OnParameterChange = ParamLatencyChange
       OnCustomParameterDisplay = ParamDetuneDisplay
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnSuspend = VSTModuleSuspend

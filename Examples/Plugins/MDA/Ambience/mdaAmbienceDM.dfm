@@ -1,11 +1,9 @@
 object mdaAmbienceDataModule: TmdaAmbienceDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'mda Ambience'
-  ProductName = 'Ambience'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
@@ -82,6 +80,8 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
       VSTModule = Owner
       OnParameterChange = ParamOutputChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess

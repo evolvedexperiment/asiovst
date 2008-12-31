@@ -3,8 +3,8 @@ object SubBoostDataModule: TSubBoostDataModule
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'SubBoost'
-  ProductName = 'SubBoost'
-  VendorName = 'Delphi ASIO & VST Packages'
+  ProductName = 'DAV Effect Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000

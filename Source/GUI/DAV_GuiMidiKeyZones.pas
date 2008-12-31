@@ -10,54 +10,54 @@ uses
 type
   TGuiKeyZoneItem = class(TCollectionItem)
   protected
-    fDefaultBrushColor:  TColor;
-    fDefaultBrushStyle:  TBrushStyle;
-    fDefaultBorderColor: TColor;
-    fDefaultBorderWidth: Integer;
-    fDefaultBorderStyle: TPenStyle;
-    
-    fHoverBrushColor:  TColor;
-    fHoverBrushStyle:  TBrushStyle;
-    fHoverBorderColor: TColor;
-    fHoverBorderWidth: Integer;
-    fHoverBorderStyle: TPenStyle;
-    
-    fSelectedBrushColor:  TColor;
-    fSelectedBrushStyle:  TBrushStyle;
-    fSelectedBorderColor: TColor;
-    fSelectedBorderWidth: Integer;
-    fSelectedBorderStyle: TPenStyle;
+    FDefaultBrushColor   : TColor;
+    FDefaultBrushStyle   : TBrushStyle;
+    FDefaultBorderColor  : TColor;
+    FDefaultBorderWidth  : Integer;
+    FDefaultBorderStyle  : TPenStyle;
 
-    fDisplayName: String;
-    fVisible:     Boolean;
-    fSelected:    Boolean;
-    fIsMouseOver: Boolean;
-    
-    fLowestZoneKey: Byte;
-    fHighestZoneKey: Byte;
+    FHoverBrushColor     : TColor;
+    FHoverBrushStyle     : TBrushStyle;
+    FHoverBorderColor    : TColor;
+    FHoverBorderWidth    : Integer;
+    FHoverBorderStyle    : TPenStyle;
 
-    fTag: Integer;
+    FSelectedBrushColor  : TColor;
+    FSelectedBrushStyle  : TBrushStyle;
+    FSelectedBorderColor : TColor;
+    FSelectedBorderWidth : Integer;
+    FSelectedBorderStyle : TPenStyle;
 
-    procedure SetLowestZoneKey(Value: Byte);
-    procedure SetHighestZoneKey(Value: Byte);
-    procedure SetVisible(Value: Boolean);
-    procedure SetDefaultBrushColor(Value: TColor);
-    procedure SetDefaultBrushStyle(Value: TBrushStyle);
-    procedure SetDefaultBorderColor(Value: TColor);
-    procedure SetDefaultBorderWidth(Value: Integer);
-    procedure SetDefaultBorderStyle(Value: TPenStyle);
-    
-    procedure SetHoverBrushColor(Value: TColor);
-    procedure SetHoverBrushStyle(Value: TBrushStyle);
-    procedure SetHoverBorderColor(Value: TColor);
-    procedure SetHoverBorderWidth(Value: Integer);
-    procedure SetHoverBorderStyle(Value: TPenStyle);
-    
-    procedure SetSelectedBrushColor(Value: TColor);
-    procedure SetSelectedBrushStyle(Value: TBrushStyle);
-    procedure SetSelectedBorderColor(Value: TColor);
-    procedure SetSelectedBorderWidth(Value: Integer);
-    procedure SetSelectedBorderStyle(Value: TPenStyle);
+    FDisplayName         : String;
+    FVisible             : Boolean;
+    FSelected            : Boolean;
+    FIsMouseOver         : Boolean;
+
+    FLowestZoneKey       : Byte;
+    FHighestZoneKey      : Byte;
+
+    FTag                 : Integer;
+
+    procedure SetLowestZoneKey(const Value: Byte);
+    procedure SetHighestZoneKey(const Value: Byte);
+    procedure SetVisible(const Value: Boolean);
+    procedure SetDefaultBrushColor(const Value: TColor);
+    procedure SetDefaultBrushStyle(const Value: TBrushStyle);
+    procedure SetDefaultBorderColor(const Value: TColor);
+    procedure SetDefaultBorderWidth(const Value: Integer);
+    procedure SetDefaultBorderStyle(const Value: TPenStyle);
+
+    procedure SetHoverBrushColor(const Value: TColor);
+    procedure SetHoverBrushStyle(const Value: TBrushStyle);
+    procedure SetHoverBorderColor(const Value: TColor);
+    procedure SetHoverBorderWidth(const Value: Integer);
+    procedure SetHoverBorderStyle(const Value: TPenStyle);
+
+    procedure SetSelectedBrushColor(const Value: TColor);
+    procedure SetSelectedBrushStyle(const Value: TBrushStyle);
+    procedure SetSelectedBorderColor(const Value: TColor);
+    procedure SetSelectedBorderWidth(const Value: Integer);
+    procedure SetSelectedBorderStyle(const Value: TPenStyle);
 
     function GetDisplayName: string; override;
     procedure SetDisplayName(const Value: string); override;
@@ -68,39 +68,39 @@ type
     procedure MoveZone(MoveAmount: Integer);
     procedure BringToFront;
     procedure SendToBack;
-    procedure Select(doUpdate: Boolean = true);
-    procedure SetMouseOver(MouseOverState: Boolean = true; doUpdate: Boolean = true);
-    procedure UnSelect(doUpdate: Boolean = true);
-    procedure SetBorders(Key1, Key2: Byte; doUpdate: Boolean = true);
-    function  KeyInZone(KeyNr: Byte): boolean;
+    procedure Select(const doUpdate: Boolean = True);
+    procedure SetMouseOver(MouseOverState: Boolean = True; doUpdate: Boolean = True);
+    procedure UnSelect(doUpdate: Boolean = True);
+    procedure SetBorders(Key1, Key2: Byte; doUpdate: Boolean = True);
+    function  KeyInZone(const KeyNr: Byte): Boolean;
   published
     property DisplayName;
-    property LowestZoneKey: Byte read fLowestZoneKey write SetLowestZoneKey default 48;
-    property HighestZoneKey: Byte read fHighestZoneKey write SetHighestZoneKey default 59;
+    property LowestZoneKey: Byte read FLowestZoneKey write SetLowestZoneKey default 48;
+    property HighestZoneKey: Byte read FHighestZoneKey write SetHighestZoneKey default 59;
 
-    property Visible: Boolean read fVisible write SetVisible default true;
+    property Visible: Boolean read FVisible write SetVisible default True;
 
-    property DefaultBrushColor: TColor read fDefaultBrushColor write SetDefaultBrushColor default clSkyBlue;
-    property DefaultBrushStyle: TBrushStyle read fDefaultBrushStyle write SetDefaultBrushStyle default bsSolid;
-    property DefaultBorderColor: TColor read fDefaultBorderColor write SetDefaultBorderColor default clBlack;
-    property DefaultBorderWidth: Integer read fDefaultBorderWidth write SetDefaultBorderWidth default 1;
-    property DefaultBorderStyle: TPenStyle read fDefaultBorderStyle write SetDefaultBorderStyle default psSolid;
+    property DefaultBrushColor: TColor read FDefaultBrushColor write SetDefaultBrushColor default clSkyBlue;
+    property DefaultBrushStyle: TBrushStyle read FDefaultBrushStyle write SetDefaultBrushStyle default bsSolid;
+    property DefaultBorderColor: TColor read FDefaultBorderColor write SetDefaultBorderColor default clBlack;
+    property DefaultBorderWidth: Integer read FDefaultBorderWidth write SetDefaultBorderWidth default 1;
+    property DefaultBorderStyle: TPenStyle read FDefaultBorderStyle write SetDefaultBorderStyle default psSolid;
 
-    property HoverBrushColor: TColor read fHoverBrushColor write SetHoverBrushColor default $FFDAB6;
-    property HoverBrushStyle: TBrushStyle read fHoverBrushStyle write SetHoverBrushStyle default bsSolid;
-    property HoverBorderColor: TColor read fHoverBorderColor write SetHoverBorderColor default clBlack;
-    property HoverBorderWidth: Integer read fHoverBorderWidth write SetHoverBorderWidth default 1;
-    property HoverBorderStyle: TPenStyle read fHoverBorderStyle write SetHoverBorderStyle default psSolid;
+    property HoverBrushColor: TColor read FHoverBrushColor write SetHoverBrushColor default $FFDAB6;
+    property HoverBrushStyle: TBrushStyle read FHoverBrushStyle write SetHoverBrushStyle default bsSolid;
+    property HoverBorderColor: TColor read FHoverBorderColor write SetHoverBorderColor default clBlack;
+    property HoverBorderWidth: Integer read FHoverBorderWidth write SetHoverBorderWidth default 1;
+    property HoverBorderStyle: TPenStyle read FHoverBorderStyle write SetHoverBorderStyle default psSolid;
 
-    property SelectedBrushColor: TColor read fSelectedBrushColor write SetSelectedBrushColor default $000099;
-    property SelectedBrushStyle: TBrushStyle read fSelectedBrushStyle write SetSelectedBrushStyle default bsSolid;
-    property SelectedBorderColor: TColor read fSelectedBorderColor write SetSelectedBorderColor default clBlack;
-    property SelectedBorderWidth: Integer read fSelectedBorderWidth write SetSelectedBorderWidth default 1;
-    property SelectedBorderStyle: TPenStyle read fSelectedBorderStyle write SetSelectedBorderStyle default psSolid;
+    property SelectedBrushColor: TColor read FSelectedBrushColor write SetSelectedBrushColor default $000099;
+    property SelectedBrushStyle: TBrushStyle read FSelectedBrushStyle write SetSelectedBrushStyle default bsSolid;
+    property SelectedBorderColor: TColor read FSelectedBorderColor write SetSelectedBorderColor default clBlack;
+    property SelectedBorderWidth: Integer read FSelectedBorderWidth write SetSelectedBorderWidth default 1;
+    property SelectedBorderStyle: TPenStyle read FSelectedBorderStyle write SetSelectedBorderStyle default psSolid;
 
-    property Tag: Integer read fTag write fTag;
-    property Selected: Boolean read fSelected;
-    property IsMouseOver: Boolean read fIsMouseOver;
+    property Tag: Integer read FTag write FTag;
+    property Selected: Boolean read FSelected;
+    property IsMouseOver: Boolean read FIsMouseOver;
   end;
 
 
@@ -110,7 +110,7 @@ type
     function GetItem(Index: Integer):TGuiKeyZoneItem;
     procedure SetItem(Index: Integer; Value: TGuiKeyZoneItem);
   protected
-    fAllowUpdate: Boolean;
+    FAllowUpdate: Boolean;
     procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
     procedure Update(Item: TCollectionItem); override;
   public
@@ -120,8 +120,8 @@ type
     function Selected: TGuiKeyZoneItem;
     function Insert(Index: Integer): TCollectionItem;
     procedure UpdateOwner;
-    procedure UnselectAll(doUpdate: Boolean = true);
-    function ZoneByKey(KeyNr: Byte): TGuiKeyZoneItem;
+    procedure UnselectAll(doUpdate: Boolean = True);
+    function ZoneByKey(const KeyNr: Byte): TGuiKeyZoneItem;
     procedure DeleteSelected;
     property Items[Index: Integer]: TGuiKeyZoneItem read GetItem write SetItem; default;
   end;
@@ -134,17 +134,17 @@ uses
   
 constructor TGuiKeyZoneItem.Create(Collection: TCollection);
 begin
-  inherited Create(Collection);
-  fDisplayName    := ClassName;
-  fLowestZoneKey  := 48;
-  fHighestZoneKey := 59;
-  fVisible        := true;
+ inherited Create(Collection);
+ FDisplayName    := ClassName;
+ FLowestZoneKey  := 48;
+ FHighestZoneKey := 59;
+ FVisible        := True;
 
-  fDefaultBrushColor  := $F0CAA6;   fHoverBrushColor  := $FFDAB6;             fSelectedBrushColor  := $000099;
-  fDefaultBrushStyle  := bsSolid;   fHoverBrushStyle  := fDefaultBrushStyle;  fSelectedBrushStyle  := fDefaultBrushStyle;
-  fDefaultBorderWidth := 1;         fHoverBorderWidth := fDefaultBorderWidth; fSelectedBorderWidth := fDefaultBorderWidth;
-  fDefaultBorderColor := clBlack;   fHoverBorderColor := fDefaultBorderColor; fSelectedBorderColor := fDefaultBorderColor;
-  fDefaultBorderStyle := psSolid;   fHoverBorderStyle := fDefaultBorderStyle; fSelectedBorderStyle := fDefaultBorderStyle;
+ FDefaultBrushColor  := $F0CAA6;   FHoverBrushColor  := $FFDAB6;             FSelectedBrushColor  := $000099;
+ FDefaultBrushStyle  := bsSolid;   FHoverBrushStyle  := FDefaultBrushStyle;  FSelectedBrushStyle  := FDefaultBrushStyle;
+ FDefaultBorderWidth := 1;         FHoverBorderWidth := FDefaultBorderWidth; FSelectedBorderWidth := FDefaultBorderWidth;
+ FDefaultBorderColor := clBlack;   FHoverBorderColor := FDefaultBorderColor; FSelectedBorderColor := FDefaultBorderColor;
+ FDefaultBorderStyle := psSolid;   FHoverBorderStyle := FDefaultBorderStyle; FSelectedBorderStyle := FDefaultBorderStyle;
 end;
 
 procedure TGuiKeyZoneItem.SetIndex(Value: Integer);
@@ -154,221 +154,222 @@ end;
 
 function TGuiKeyZoneItem.GetDisplayName: string;
 begin
-  Result := fDisplayName;
+  Result := FDisplayName;
 end;
 
 procedure TGuiKeyZoneItem.SetDisplayName(const Value: string);
 begin
-  fDisplayName := Value;
+  FDisplayName := Value;
 end;
 
 
 
 
 
-procedure TGuiKeyZoneItem.SetDefaultBrushColor(Value: TColor);
+procedure TGuiKeyZoneItem.SetDefaultBrushColor(const Value: TColor);
 begin
-  if fDefaultBrushColor<>Value then
+ if FDefaultBrushColor <> Value then
   begin
-    fDefaultBrushColor:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FDefaultBrushColor := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.SetDefaultBrushStyle(Value: TBrushStyle);
+procedure TGuiKeyZoneItem.SetDefaultBrushStyle(const Value: TBrushStyle);
 begin
-  if fDefaultBrushStyle<>Value then
+ if FDefaultBrushStyle <> Value then
   begin
-    fDefaultBrushStyle:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FDefaultBrushStyle := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.SetDefaultBorderColor(Value: TColor);
+procedure TGuiKeyZoneItem.SetDefaultBorderColor(const Value: TColor);
 begin
-  if fDefaultBorderColor<>Value then
+ if FDefaultBorderColor <> Value then
   begin
-    fDefaultBorderColor:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FDefaultBorderColor := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.SetDefaultBorderWidth(Value: Integer);
+procedure TGuiKeyZoneItem.SetDefaultBorderWidth(const Value: Integer);
 begin
-  if fDefaultBorderWidth<>Value then
+ if FDefaultBorderWidth <> Value then
   begin
-    fDefaultBorderWidth:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FDefaultBorderWidth := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.SetDefaultBorderStyle(Value: TPenStyle);
+procedure TGuiKeyZoneItem.SetDefaultBorderStyle(const Value: TPenStyle);
 begin
-  if fDefaultBorderStyle<>Value then
+ if FDefaultBorderStyle<>Value then
   begin
-    fDefaultBorderStyle:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
-  end;
-end;
-
-
-
-
-procedure TGuiKeyZoneItem.SetHoverBrushColor(Value: TColor);
-begin
-  if fHoverBrushColor<>Value then
-  begin
-    fHoverBrushColor:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
-  end;
-end;
-
-procedure TGuiKeyZoneItem.SetHoverBrushStyle(Value: TBrushStyle);
-begin
-  if fHoverBrushStyle<>Value then
-  begin
-    fHoverBrushStyle:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
-  end;
-end;
-
-procedure TGuiKeyZoneItem.SetHoverBorderColor(Value: TColor);
-begin
-  if fHoverBorderColor<>Value then
-  begin
-    fHoverBorderColor:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
-  end;
-end;
-
-procedure TGuiKeyZoneItem.SetHoverBorderWidth(Value: Integer);
-begin
-  if fHoverBorderWidth<>Value then
-  begin
-    fHoverBorderWidth:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
-  end;
-end;
-
-procedure TGuiKeyZoneItem.SetHoverBorderStyle(Value: TPenStyle);
-begin
-  if fHoverBorderStyle<>Value then
-  begin
-    fHoverBorderStyle:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FDefaultBorderStyle := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
 
 
 
-procedure TGuiKeyZoneItem.SetSelectedBrushColor(Value: TColor);
+procedure TGuiKeyZoneItem.SetHoverBrushColor(const Value: TColor);
 begin
-  if fSelectedBrushColor<>Value then
+ if FHoverBrushColor <> Value then
   begin
-    fSelectedBrushColor:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FHoverBrushColor := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.SetSelectedBrushStyle(Value: TBrushStyle);
+procedure TGuiKeyZoneItem.SetHoverBrushStyle(const Value: TBrushStyle);
 begin
-  if fSelectedBrushStyle<>Value then
+ if FHoverBrushStyle <> Value then
   begin
-    fSelectedBrushStyle:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FHoverBrushStyle := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.SetSelectedBorderColor(Value: TColor);
+procedure TGuiKeyZoneItem.SetHoverBorderColor(const Value: TColor);
 begin
-  if fSelectedBorderColor<>Value then
+ if FHoverBorderColor <> Value then
   begin
-    fSelectedBorderColor:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FHoverBorderColor := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.SetSelectedBorderWidth(Value: Integer);
+procedure TGuiKeyZoneItem.SetHoverBorderWidth(const Value: Integer);
 begin
-  if fSelectedBorderWidth<>Value then
+ if FHoverBorderWidth<>Value then
   begin
-    fSelectedBorderWidth:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FHoverBorderWidth := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.SetSelectedBorderStyle(Value: TPenStyle);
+procedure TGuiKeyZoneItem.SetHoverBorderStyle(const Value: TPenStyle);
 begin
-  if fSelectedBorderStyle<>Value then
+ if FHoverBorderStyle <> Value then
   begin
-    fSelectedBorderStyle:=Value;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FHoverBorderStyle := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
 
 
 
-procedure TGuiKeyZoneItem.SetVisible(Value: Boolean);
+procedure TGuiKeyZoneItem.SetSelectedBrushColor(const Value: TColor);
 begin
-  if fVisible<>Value then
+ if FSelectedBrushColor <> Value then
   begin
-    fVisible:=Value;
+   FSelectedBrushColor := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+  end;
+end;
+
+procedure TGuiKeyZoneItem.SetSelectedBrushStyle(const Value: TBrushStyle);
+begin
+ if FSelectedBrushStyle <> Value then
+  begin
+   FSelectedBrushStyle := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+  end;
+end;
+
+procedure TGuiKeyZoneItem.SetSelectedBorderColor(const Value: TColor);
+begin
+ if FSelectedBorderColor <> Value then
+  begin
+   FSelectedBorderColor := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+  end;
+end;
+
+procedure TGuiKeyZoneItem.SetSelectedBorderWidth(const Value: Integer);
+begin
+ if FSelectedBorderWidth <> Value then
+  begin
+   FSelectedBorderWidth := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+  end;
+end;
+
+procedure TGuiKeyZoneItem.SetSelectedBorderStyle(const Value: TPenStyle);
+begin
+ if FSelectedBorderStyle <> Value then
+  begin
+   FSelectedBorderStyle := Value;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+  end;
+end;
+
+
+
+
+procedure TGuiKeyZoneItem.SetVisible(const Value: Boolean);
+begin
+  if FVisible <> Value then
+  begin
+    FVisible := Value;
     (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.SetLowestZoneKey(Value: Byte);
+procedure TGuiKeyZoneItem.SetLowestZoneKey(const Value: Byte);
 begin
-   if fLowestZoneKey<>Value then
+   if FLowestZoneKey <> Value then
   begin
-    fLowestZoneKey:=Value;
-    if fHighestZoneKey<fLowestZoneKey then fHighestZoneKey:=fLowestZoneKey;
+    FLowestZoneKey := Value;
+    if FHighestZoneKey < FLowestZoneKey then FHighestZoneKey := FLowestZoneKey;
     if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.SetHighestZoneKey(Value: Byte);
+procedure TGuiKeyZoneItem.SetHighestZoneKey(const Value: Byte);
 begin
-  if fHighestZoneKey<>Value then
+ if FHighestZoneKey <> Value then
   begin
-    fHighestZoneKey:=Value;
-    if fHighestZoneKey<fLowestZoneKey then fLowestZoneKey:=fHighestZoneKey;
-    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FHighestZoneKey := Value;
+   if FHighestZoneKey < FLowestZoneKey then FLowestZoneKey := FHighestZoneKey;
+   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
 procedure TGuiKeyZoneItem.SetMouseOver(MouseOverState, doUpdate: Boolean);
-var i:integer;
+var
+  i: Integer;
 begin
-  if MouseOverState<>fIsMouseOver then
-  begin
-    if MouseOverState then with (Collection as TGuiKeyZoneCollection) do
-    begin
-      for i:=Count-1 downto 0 do Items[i].SetMouseOver(false, false);
-    end;
-    fIsMouseOver:=MouseOverState;
+  if MouseOverState <> FIsMouseOver then
+   begin
+    if MouseOverState then
+     with (Collection as TGuiKeyZoneCollection) do
+      for i := Count - 1 downto 0 do Items[i].SetMouseOver(False, False);
+    FIsMouseOver := MouseOverState;
     if doUpdate then (Collection as TGuiKeyZoneCollection).UpdateOwner;
-  end;
+   end;
 end;
 
 
-procedure TGuiKeyZoneItem.Select(doUpdate: Boolean = true);
+procedure TGuiKeyZoneItem.Select(const doUpdate: Boolean = True);
 begin
-  if not fSelected then
+  if not FSelected then
   begin
-    (Collection as TGuiKeyZoneCollection).UnSelectAll(false);
-    fSelected:=true;
-    if doUpdate then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+    (Collection as TGuiKeyZoneCollection).UnSelectAll(False);
+    FSelected := True;
+    if doUpdate
+     then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
-procedure TGuiKeyZoneItem.UnSelect(doUpdate: Boolean = true);
+procedure TGuiKeyZoneItem.UnSelect(doUpdate: Boolean = True);
 begin
-  if fSelected then
+  if FSelected then
   begin
-    fSelected:=false;
+    FSelected := False;
     if doUpdate then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
@@ -376,9 +377,9 @@ end;
 procedure TGuiKeyZoneItem.SetBorders(Key1, Key2: Byte; doUpdate: Boolean);
 var tmp: Byte;
 begin
-  if Key2<Key1 then begin tmp:=Key1; Key1:=Key2; Key2:=tmp; end; // flip
-  fLowestZoneKey:=Key1;
-  fHighestZoneKey:=Key2;
+  if Key2<Key1 then begin tmp := Key1; Key1 := Key2; Key2 := tmp; end; // flip
+  FLowestZoneKey := Key1;
+  FHighestZoneKey := Key2;
   if doUpdate then (Collection as TGuiKeyZoneCollection).UpdateOwner;
 end;
 
@@ -403,18 +404,18 @@ procedure TGuiKeyZoneItem.MoveZone(MoveAmount: Integer);
 begin
   if MoveAmount=0 then exit;
 
-  MoveAmount:=max(-fLowestZoneKey, MoveAmount);
-  MoveAmount:=min(GUI_KB_HIGHESTKEY-fHighestZoneKey, MoveAmount);
+  MoveAmount := max(-FLowestZoneKey, MoveAmount);
+  MoveAmount := min(GUI_KB_HIGHESTKEY-FHighestZoneKey, MoveAmount);
 
-  fLowestZoneKey  := fLowestZoneKey+MoveAmount;
-  fHighestZoneKey := fHighestZoneKey+MoveAmount;
+  FLowestZoneKey  := FLowestZoneKey+MoveAmount;
+  FHighestZoneKey := FHighestZoneKey+MoveAmount;
 
   if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
 end;
 
-function TGuiKeyZoneItem.KeyInZone(KeyNr: Byte): boolean;
+function TGuiKeyZoneItem.KeyInZone(const KeyNr: Byte): Boolean;
 begin
-  result:=(KeyNr>=fLowestZoneKey) and (KeyNr<=fHighestZoneKey);
+  result := (KeyNr >= FLowestZoneKey) and (KeyNr <= FHighestZoneKey);
 end;
 
 
@@ -425,12 +426,12 @@ end;
 constructor TGuiKeyZoneCollection.create(AOwner: TPersistent);
 begin
   inherited Create(AOwner, TGuiKeyZoneItem);
-  fAllowUpdate := true;
+  FAllowUpdate := True;
 end;
 
 procedure TGuiKeyZoneCollection.UpdateOwner;
 begin
-  if fAllowUpdate then (Owner as TGuiMidiKeys).RedrawBuffer(true);
+  if FAllowUpdate then (Owner as TGuiMidiKeys).RedrawBuffer(True);
 end;
 
 procedure TGuiKeyZoneCollection.Notify(Item: TCollectionItem; Action: TCollectionNotification);
@@ -443,7 +444,7 @@ begin
   UpdateOwner
 end;
 
-function TGuiKeyZoneCollection.GetItem(Index: Integer):TGuiKeyZoneItem;
+function TGuiKeyZoneCollection.GetItem(Index: Integer): TGuiKeyZoneItem;
 begin
   Result := TGuiKeyZoneItem(inherited GetItem(Index));
 end;
@@ -463,16 +464,17 @@ begin
   Result := TGuiKeyZoneItem(inherited Insert(Index));
 end;
 
-function TGuiKeyZoneCollection.ZoneByKey(KeyNr: Byte): TGuiKeyZoneItem;
-var i:integer;
+function TGuiKeyZoneCollection.ZoneByKey(const KeyNr: Byte): TGuiKeyZoneItem;
+var
+  i: Integer;
 begin
-  result:=nil;
-  if Count=0 then exit;
+  result := nil;
+  if Count = 0 then exit;
 
-  for i:=Count-1 downto 0 do
+  for i := Count - 1 downto 0 do
     if items[i].KeyInZone(KeyNr) then
     begin
-      result:=items[i];
+      result := items[i];
       exit;
     end;
 end;
@@ -480,7 +482,8 @@ end;
 procedure TGuiKeyZoneCollection.ClipZones;
 
     procedure ClipZoneX(clipIndex, OverlayIndex: Integer);
-    var mink, maxk: byte;
+    var
+      mink, maxk: Byte;
     begin
        if not items[OverlayIndex].Visible then Exit;
 
@@ -495,59 +498,61 @@ procedure TGuiKeyZoneCollection.ClipZones;
          // check for complete overlay (underlaying layer is invisible)
          if  (LowestZoneKey>=mink) and (HighestZoneKey<=maxk) then
          begin          
-           Visible:=false;
-           LowestZoneKey :=0;
-           HighestZoneKey:=0;
+           Visible := False;
+           LowestZoneKey  := 0;
+           HighestZoneKey := 0;
            exit;
          end;
 
          // check for partial overlay
          if (HighestZoneKey>=mink) and (HighestZoneKey<=maxk) then begin
-           if LowestZoneKey>maxk then HighestZoneKey:=maxk+1 else HighestZoneKey:=mink-1;
+           if LowestZoneKey>maxk then HighestZoneKey := maxk+1 else HighestZoneKey := mink-1;
          end else if (LowestZoneKey>=mink) and (LowestZoneKey<=maxk) then begin
-           if HighestZoneKey>maxk then LowestZoneKey:=maxk+1 else LowestZoneKey:=mink-1;
+           if HighestZoneKey>maxk then LowestZoneKey := maxk+1 else LowestZoneKey := mink-1;
          end else begin
            // complete overlay (underlaying Layer is visible)
-           HighestZoneKey:=mink-1;
+           HighestZoneKey := mink-1;
          end;
        end;
     end;
 
-var i, j: integer;
+var
+  i, j : Integer;
 begin
-  if Count<2 then exit;
+  if Count < 2 then exit;
 
-  fAllowUpdate := false;
+  FAllowUpdate := False;
 
-  for j:=count-1 downto 1 do
-    for i:=j-1 downto 0 do
-      ClipZoneX(i,j);
+  for j := count - 1 downto 1 do
+   for i := j - 1 downto 0
+    do ClipZoneX(i,j);
 
-  fAllowUpdate := true;
+  FAllowUpdate := True;
   UpdateOwner;
 end;
 
-procedure TGuiKeyZoneCollection.UnSelectAll(doUpdate: Boolean = true);
-var i: integer;
+procedure TGuiKeyZoneCollection.UnSelectAll(doUpdate: Boolean = True);
+var
+  i : Integer;
 begin
-  if Count<1 then exit;
+  if Count < 1 then exit;
 
-  for i:=Count-1 downto 0 do Items[i].UnSelect(false);
+  for i := Count - 1 downto 0
+   do Items[i].UnSelect(False);
 
   if doUpdate then UpdateOwner;
 end;
 
 function TGuiKeyZoneCollection.Selected: TGuiKeyZoneItem;
-var i: integer;
+var
+  i : Integer;
 begin
-  Result:=nil;
-  if Count<1 then exit;
+  Result := nil;
+  if Count < 1 then exit;
 
-  for i:=Count-1 downto 0 do
-    if Items[i].Selected then
-    begin
-      Result:=Items[i];
-    end;
+  for i := Count-1 downto 0 do
+   if Items[i].Selected
+    then Result := Items[i];
 end;
 
 procedure TGuiKeyZoneCollection.DeleteSelected;

@@ -4,7 +4,7 @@ object SimpleChorusModule: TSimpleChorusModule
   Version = '1.0'
   EffectName = 'Chorus'
   ProductName = 'DAV Effect Examples'
-  VendorName = 'Delphi ASIO & VST Packages'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcd2in2out]
   SampleRate = 44100.000000000000000000
@@ -44,6 +44,10 @@ object SimpleChorusModule: TSimpleChorusModule
     end
     item
       DisplayName = 'Leave me alone'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Extreme'
       VSTModule = Owner
     end>
   ParameterProperties = <

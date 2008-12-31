@@ -10,11 +10,11 @@ type
   TVSTProcessSample = procedure (Channel : Integer; var Data : Double) of object;
 
   TPascalScriptDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure VPSStoreChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
     procedure VPSLoadChunk(Sender: TObject; const Index: Integer; const isPreset: Boolean);
   private

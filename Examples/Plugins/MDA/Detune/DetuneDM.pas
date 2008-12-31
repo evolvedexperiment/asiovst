@@ -6,22 +6,21 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
 
 const
-  BUFMAX = 8192;
+  CBufMax = 8192;
 
 type
   TDetuneDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure DetuneDataModulePrograms1Initialize(Sender: TObject);
     procedure DetuneDataModulePrograms2Initialize(Sender: TObject);
-    procedure VSTModuleCreate(Sender: TObject);
     procedure ParamLatencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDetuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamDetuneChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamMixChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FBuffer : PDAVSingleFixedArray;
     FBufLen : Integer;
@@ -44,6 +43,31 @@ implementation
 
 uses
   Math;
+
+procedure TDetuneDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ GetMem(FBuffer, CBufMax * SizeOf(Single));
+ GetMem(FWin   , CBufMax * SizeOf(Single));
+ FBufLen := 0;
+
+(*
+ Parameter[0] := 0.4;  // Fine
+ Parameter[1] := 0.4;  // Mix
+ Parameter[2] := 0.5;  // Output
+ Parameter[3] := 0.5;  // ChunkSize
+
+ ///differences from default program...
+ Programs[3].Parameter[0] = 0.90f;
+*)
+
+ VSTModuleSuspend(Sender);
+end;
+
+procedure TDetuneDataModule.VSTModuleClose(Sender: TObject);
+begin
+ if assigned(FBuffer) then Dispose(FBuffer);
+ if assigned(FWin) then Dispose(FWin);
+end;
 
 procedure TDetuneDataModule.ParamLatencyChange(Sender: TObject;
   const Index: Integer; var Value: Single);
@@ -112,31 +136,6 @@ procedure TDetuneDataModule.DetuneDataModulePrograms2Initialize(Sender: TObject)
 begin
  Programs[2].Parameter[0] := 0.8;
  Programs[2].Parameter[1] := 0.7;
-end;
-
-procedure TDetuneDataModule.VSTModuleCreate(Sender: TObject);
-begin
- GetMem(FBuffer, BUFMAX * SizeOf(Single));
- GetMem(FWin   , BUFMAX * SizeOf(Single));
- FBufLen := 0;
-
-(*
- Parameter[0] := 0.4;  // Fine
- Parameter[1] := 0.4;  // Mix
- Parameter[2] := 0.5;  // Output
- Parameter[3] := 0.5;  // ChunkSize
-
- ///differences from default program...
- Programs[3].Parameter[0] = 0.90f;
-*)
-
- VSTModuleSuspend(Sender);
-end;
-
-procedure TDetuneDataModule.VSTModuleDestroy(Sender: TObject);
-begin
- if assigned(FBuffer) then Dispose(FBuffer);
- if assigned(FWin) then Dispose(FWin);
 end;
 
 procedure TDetuneDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -232,7 +231,7 @@ end;
 
 procedure TDetuneDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- FillChar(FBuffer^, BUFMAX * SizeOf(Single), 0);
+ FillChar(FBuffer^, CBufMax * SizeOf(Single), 0);
  FPos[0] := 0;
  FPos[1] := 0;
  FPos[2] := 0;

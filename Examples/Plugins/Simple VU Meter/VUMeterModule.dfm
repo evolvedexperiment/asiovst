@@ -3,7 +3,7 @@ object VSTVUMeterModule: TVSTVUMeterModule
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'VU Meter'
-  ProductName = 'DAV Effect Examples'
+  ProductName = 'DAV Tools Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]

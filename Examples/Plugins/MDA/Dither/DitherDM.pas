@@ -7,18 +7,19 @@ uses
 
 type
   TDitherDataModule = class(TVSTModule)
-    procedure ParamDitherDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
+    procedure ParamDitherDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    fWordLength : Integer;
-    fBits       : Single;
-    fGain       : Single;
-    fOffset     : Single;
-    fDither     : Single;
-    fShaper     : Single;
-    fShapeState : Array [0..3] of Single;
+    FWordLength : Integer;
+    FBits       : Single;
+    FGain       : Single;
+    FOffset     : Single;
+    FDither     : Single;
+    FShaper     : Single;
+    FRandom     : Array [0..1] of Integer;
+    FShapeState : Array [0..3] of Single;
   public
   end;
 
@@ -40,42 +41,40 @@ begin
  end;
 end;
 
-procedure TDitherDataModule.VSTModuleCreate(Sender: TObject);
+procedure TDitherDataModule.VSTModuleOpen(Sender: TObject);
 begin
- fShapeState[0] := 0;
- fShapeState[1] := 0;
- fShapeState[2] := 0;
- fShapeState[3] := 0;
-(*
- rnd1 := 0;
- rnd3 := 0;
-*) 
+ FShapeState[0] := 0;
+ FShapeState[1] := 0;
+ FShapeState[2] := 0;
+ FShapeState[3] := 0;
+ FRandom[0]     := 0;
+ FRandom[1]     := 0;
 end;
 
 procedure TDitherDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
  //calcs here
- fGain := 1;
- fBits := 8 + 2 * trunc(8.9 * Parameter[0]);
+ FGain := 1;
+ FBits := 8 + 2 * trunc(8.9 * Parameter[0]);
 
  if (Parameter[4] > 0.1) then //zoom to 6 bit & fade out audio
   begin
-   fWordLength := 32;
-   fGain := sqr(1 - Parameter[4]);
+   FWordLength := 32;
+   FGain := sqr(1 - Parameter[4]);
   end
- else fWordLength := round(Power(2, fBits - 1)); //word length in quanta
+ else FWordLength := round(Power(2, FBits - 1)); //word length in quanta
 
  //Using WaveLab 2.01 (unity gain) as a reference:
  //  16-bit output is floor(floating_point_value * 32768)
 
- fOffset := (4 * Parameter[3] - 1.5) / fWordLength;   //DC offset (plus 0.5 to round dither not truncate)
- fDither := 2 * Parameter[2] / (fWordLength * 32767);
- fShaper := 0;
+ FOffset := (4 * Parameter[3] - 1.5) / FWordLength;   //DC offset (plus 0.5 to round dither not truncate)
+ FDither := 2 * Parameter[2] / (FWordLength * 32767);
+ FShaper := 0;
 
- case round(Parameter[0]) of //dither mode
-  0: fDither := 0;     //off
-  3: fShaper := 0.5;   //noise shaping
+ case round(Parameter[0]) of // dither mode:
+  0: FDither := 0;           // - off
+  3: FShaper := 0.5;         // - noise shaping
  end;
 end;
 
@@ -91,22 +90,22 @@ var
   r1, r2, r3, r4     : Integer; // random numbers for dither
   m                  : Integer; // dither mode
 begin
-(*
-  sl := shap;
-  s1 := fShapeState[0];
-  s2 := fShapeState[1];
-  s3 := fShapeState[2];
-  s4 := fShapeState[3];
-  dl := dith;
-  o  := offs,
-  w  := wlen;
-  wi := 1 / wlen;
-  g  := gain;
-  r1 := rnd1;
-  r3 := rnd3;
+  sl := FShaper;
+  s1 := FShapeState[0];
+  s2 := FShapeState[1];
+  s3 := FShapeState[2];
+  s4 := FShapeState[3];
+  dl := FDither;
+  o  := FOffset;
+  w  := FWordLength;
+  wi := 1 / w;
+  g  := FGain;
+  r1 := FRandom[0];
+  r3 := FRandom[1];
   m := 1;
-  if (round(fParam1 * 3.9f) == 1)
-   then m=0;
+(*
+  if (round(fParam1 * 3.9) = 1)
+   then m := 0;
 *)
 
  for Sample := 0 to SampleFrames - 1 do
@@ -119,36 +118,34 @@ begin
 
     r2 := r1;
     r4 := r3; //HP-TRI dither (also used when noise shaping)
-    if(m==0) { r4=rand() & 0x7FFF; r2=(r4 & 0x7F)<<8; } //TRI dither
+    if (m=0) { r4=rand() & 0x7FFF; r2=(r4 & 0x7F)<<8; } //TRI dither
                r1=rand() & 0x7FFF; r3=(r1 & 0x7F)<<8;   //Assumes RAND_MAX=32767?
 
-    a  = g * a + sl * (s1 + s1 - s2);    //target level + error feedback
-    aa = a + o + dl * (float)(r1 - r2);  //             + offset + dither
-    if(aa<0.0f) aa-=wi;                 //(long) truncates towards zero!
-    aa = wi * (float)(long)(w * aa);    //truncate
-    s2 = s1;
-    s1 = a - aa;                        //error feedback: 2nd order noise shaping
+    a  := g * a + sl * (s1 + s1 - s2);    // target level + error feedback
+    aa := a + o + dl * (r1 - r2);         //              + offset + dither
+    if (aa < 0) then aa := aa - wi;       // (long) truncates towards zero!
+    aa := wi * (float)(long)(w * aa);     // truncate
+    s2 := s1;
+    s1 := a - aa;                         // error feedback: 2nd order noise shaping
 
-    b  = g * b + sl * (s3 + s3 - s4);
-    bb = b + o + dl * (float)(r3 - r4);
-    if(bb<0.0f) bb-=wi;
-    bb = wi * (float)(long)(w * bb);
-    s4 = s3;
-    s3 = b - bb;
+    b  := g * b + sl * (s3 + s3 - s4);
+    bb := b + o + dl * (r3 - r4);
+    if (bb < 0) then bb := bb - wi;
+    bb := wi * (float)(long)(w * bb);
+    s4 := s3;
+    s3 := b - bb;
 
     *++out1 = aa;
     *++out2 = bb;
    *)
   end;
 
-(*
-  fShapeState[0]  := s1;
-  fShapeState[1]  := s2;
-  fShapeState[2]  := s3;
-  fShapeState[3]  := s4;                     //doesn't actually matter if these are
-  rnd1 := r1;
-  rnd3 := r3;                     //saved or not as effect is so small !
-*)
+  FShapeState[0]  := s1;
+  FShapeState[1]  := s2;
+  FShapeState[2]  := s3;
+  FShapeState[3]  := s4;   // doesn't actually matter if these are
+  FRandom[0] := r1;
+  FRandom[1] := r3;        // saved or not as effect is so small !
 end;
 
 end.

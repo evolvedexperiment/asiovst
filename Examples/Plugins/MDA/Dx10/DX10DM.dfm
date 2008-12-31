@@ -1,10 +1,9 @@
 object DX10DataModule: TDX10DataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'mda DX10'
-  ProductName = 'DX10'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcSynth
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend]
@@ -352,6 +351,7 @@ object DX10DataModule: TDX10DataModule
       Units = 'Hz'
       VSTModule = Owner
     end>
+  OnOpen = VSTModuleOpen
   OnOutputProperties = VSTModuleOutputProperties
   OnProcess = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi

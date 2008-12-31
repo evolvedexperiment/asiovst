@@ -30,6 +30,8 @@ type
   TAllpassArray = array [0..1] of TAllpass;
 
   TfReeverbVST = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
     procedure VSTModuleProcessReplacing(const inputs, outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
@@ -43,8 +45,6 @@ type
     procedure ParameterDampChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterNumCombsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterNumAllpassesChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
   private
     FGain         : Single;
     FRoomSize     : Single;
@@ -89,7 +89,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, fReeverbGUI;
+  Math, fReeverbGUI, DAV_VSTCustomModule;
 
 procedure TfReeverbVST.VSTModuleOpen(Sender: TObject);
 var
@@ -148,7 +148,7 @@ begin
  Parameter[6] := 0.5;
 
  // default preset
- with programs[1] do
+ with programs[0] do
   begin
    Parameter[0] := 0.5;
    Parameter[1] := 0.5;
@@ -385,22 +385,34 @@ end;
 procedure TfReeverbVST.ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Dry := Value;
+ if EditorForm is TFmReverb then
+  with TFmReverb(EditorForm)
+   do UpdateDry;
 end;
 
 procedure TfReeverbVST.ParameterWetChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Wet := Value;
+ if EditorForm is TFmReverb then
+  with TFmReverb(EditorForm)
+   do UpdateWet;
 end;
 
 procedure TfReeverbVST.ParameterWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Width := Value;
+ if EditorForm is TFmReverb then
+  with TFmReverb(EditorForm)
+   do UpdateWidth;
 end;
 
 procedure TfReeverbVST.ParameterRoomSizeChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  RoomSize := Value;
  ShuffleAllPassFeedBack;
+ if EditorForm is TFmReverb then
+  with TFmReverb(EditorForm)
+   do UpdateSize;
 end;
 
 procedure TfReeverbVST.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -450,11 +462,17 @@ procedure TfReeverbVST.ParameterStretchChange(
 begin
  FStretch := 1 + 9 * Value;
  BufferRezize;
+ if EditorForm is TFmReverb then
+  with TFmReverb(EditorForm)
+   do UpdateStretch;
 end;
 
 procedure TfReeverbVST.ParameterDampChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Damp := Value;
+ if EditorForm is TFmReverb then
+  with TFmReverb(EditorForm)
+   do UpdateDamp;
 end;
 
 procedure TfReeverbVST.ParameterNumAllpassesChange(Sender: TObject; const Index: Integer; var Value: Single);

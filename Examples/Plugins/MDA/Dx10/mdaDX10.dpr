@@ -2,6 +2,7 @@
 library mdaDX10;
 
 uses
+  FastMM4,
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,

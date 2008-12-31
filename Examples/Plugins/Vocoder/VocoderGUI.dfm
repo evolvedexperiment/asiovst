@@ -40,14 +40,14 @@ object VSTGUI: TVSTGUI
     Height = 13
     Caption = 'Input Level:'
   end
-  object Label1: TLabel
+  object LbSynthLevel: TLabel
     Left = 8
     Top = 29
     Width = 72
     Height = 13
     Caption = 'Synth Level:'
   end
-  object Label2: TLabel
+  object LbVocoderLevel: TLabel
     Left = 8
     Top = 48
     Width = 86

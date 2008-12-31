@@ -3,8 +3,8 @@ object VSTSSModule: TVSTSSModule
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'Sine Synth'
-  ProductName = 'Sine Synth'
-  VendorName = 'VST Plugin Wizard Example'
+  ProductName = 'DAV Synth Examples'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcSynth
   CanDos = [vcdSendVstEvents, vcdSendVstMidiEvent, vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000

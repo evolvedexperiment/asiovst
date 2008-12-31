@@ -8,9 +8,9 @@ uses
 type
   TTrackerDataModule = class(TVSTModule)
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleOpen(Sender: TObject);
   private
     FMode      : Integer;
     FThreshold : Single;
@@ -44,7 +44,17 @@ begin
  end;
 end;
 
-procedure TTrackerDataModule.VSTModuleCreate(Sender: TObject);
+function TTrackerDataModule.FilterFreq(Hz: Double) : Double;
+var
+  j, k, r : Double;
+begin
+ r := 0.999;
+ j := r * r - 1;
+ k := 2 - 2 * sqr(r) * cos(0.647 * Hz / SampleRate);
+ result := (sqrt(k * k - 4 * j * j) - k) / (2 * j);
+end;
+
+procedure TTrackerDataModule.VSTModuleOpen(Sender: TObject);
 begin
 (*
  //inits here!
@@ -63,16 +73,6 @@ begin
 
  FMin := SampleRate / 30; //lower limit
  FDeltaPhi := 100 / SampleRate;  // Initial Pitch
-end;
-
-function TTrackerDataModule.FilterFreq(Hz: Double) : Double;
-var
-  j, k, r : Double;
-begin
- r := 0.999;
- j := r * r - 1;
- k := 2 - 2 * sqr(r) * cos(0.647 * Hz / SampleRate);
- result := (sqrt(k * k - 4 * j * j) - k) / (2 * j);
 end;
 
 procedure TTrackerDataModule.VSTModuleParameterChange(Sender: TObject;

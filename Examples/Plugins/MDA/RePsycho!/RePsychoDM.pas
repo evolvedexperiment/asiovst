@@ -7,6 +7,8 @@ uses
 
 type
   TRePsychoDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterQualityDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -19,8 +21,6 @@ type
     procedure ParameterTuneDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterFineDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterHoldDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
   private
     FWet       : Single;
     FDry       : Single;
@@ -286,8 +286,8 @@ end;
 
 procedure TRePsychoDataModule.VSTModuleSuspend(Sender: TObject);
 begin
-  FillChar(FBuffer[0], FSize * SizeOf(Single), 0);
-  FillChar(FBuffer[1], FSize * SizeOf(Single), 0);
+  FillChar(FBuffer[0]^, FSize * SizeOf(Single), 0);
+  FillChar(FBuffer[1]^, FSize * SizeOf(Single), 0);
 end;
 
 end.

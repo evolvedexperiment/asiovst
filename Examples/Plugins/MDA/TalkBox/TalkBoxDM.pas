@@ -11,12 +11,12 @@ const
 
 type
   TTalkBoxDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleResume(Sender: TObject);
     procedure ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleClose(Sender: TObject);
   private
     FBuf       : array [0..1] of PDAVSingleFixedArray;
     FCar       : array [0..1] of PDAVSingleFixedArray;
@@ -38,14 +38,7 @@ implementation
 
 {$R *.DFM}
 
-procedure TTalkBoxDataModule.ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-begin
- if Parameter[Index] < 0.5
-  then PreDefined := 'Left'
-  else PreDefined := 'Right';
-end;
-
-procedure TTalkBoxDataModule.VSTModuleCreate(Sender: TObject);
+procedure TTalkBoxDataModule.VSTModuleOpen(Sender: TObject);
 begin
  Parameter[0] := 100; // Wet  [%]
  Parameter[1] := 0;   // Dry  [%]
@@ -65,13 +58,20 @@ begin
  VSTModuleSuspend(Sender);
 end;
 
-procedure TTalkBoxDataModule.VSTModuleDestroy(Sender: TObject);
+procedure TTalkBoxDataModule.VSTModuleClose(Sender: TObject);
 begin
  if assigned(FBuf[0]) then Dispose(FBuf[0]);
  if assigned(FBuf[1]) then Dispose(FBuf[1]);
  if assigned(FWindow) then Dispose(FWindow);
  if assigned(FCar[0]) then Dispose(FCar[0]);
  if assigned(FCar[1]) then Dispose(FCar[1]);
+end;
+
+procedure TTalkBoxDataModule.ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 0.5
+  then PreDefined := 'Left'
+  else PreDefined := 'Right';
 end;
 
 procedure TTalkBoxDataModule.LPC(buf, car : PDAVSingleFixedArray; n, o : Integer);

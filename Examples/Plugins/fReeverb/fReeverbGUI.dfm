@@ -21,78 +21,90 @@ object FmReverb: TFmReverb
     Top = 34
     Width = 48
     Height = 48
-    LineColor = clWhite
     CircleColor = clSilver
+    DialImageIndex = -1
+    LineColor = clWhite
+    LineWidth = 2
     Max = 1.000000000000000000
     NumGlyphs = 64
+    OnChange = DialDryChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialDryChange
   end
   object DialWet: TGuiDial
     Left = 70
     Top = 34
     Width = 48
     Height = 48
-    LineColor = clWhite
     CircleColor = clSilver
+    DialImageIndex = -1
+    LineColor = clWhite
+    LineWidth = 2
     Max = 1.000000000000000000
     NumGlyphs = 64
+    OnChange = DialWetChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialWetChange
   end
   object DialWidth: TGuiDial
     Left = 124
     Top = 34
     Width = 48
     Height = 48
-    LineColor = clWhite
     CircleColor = clSilver
+    DialImageIndex = -1
+    LineColor = clWhite
+    LineWidth = 2
     Max = 1.000000000000000000
     NumGlyphs = 64
+    OnChange = DialWidthChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialWidthChange
   end
   object DialDamp: TGuiDial
     Left = 178
     Top = 34
     Width = 48
     Height = 48
-    LineColor = clWhite
     CircleColor = clSilver
+    DialImageIndex = -1
+    LineColor = clWhite
+    LineWidth = 2
     Max = 1.000000000000000000
     NumGlyphs = 64
+    OnChange = DialDampChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialDampChange
   end
   object DialRoomSize: TGuiDial
     Left = 232
     Top = 34
     Width = 48
     Height = 48
-    LineColor = clWhite
     CircleColor = clSilver
+    DialImageIndex = -1
+    LineColor = clWhite
+    LineWidth = 2
     Max = 1.000000000000000000
     NumGlyphs = 64
+    OnChange = DialRoomSizeChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialRoomSizeChange
   end
   object DialStretch: TGuiDial
     Left = 286
     Top = 34
     Width = 48
     Height = 48
-    LineColor = clWhite
     CircleColor = clSilver
+    DialImageIndex = -1
+    LineColor = clWhite
+    LineWidth = 2
     Max = 1.000000000000000000
     NumGlyphs = 64
+    OnChange = DialStretchChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialStretchChange
   end
   object PnLabel: TGuiPanel
     Left = 12
@@ -105,8 +117,8 @@ object FmReverb: TFmReverb
     ParentColor = True
     Radius = 9
     TabOrder = 2
-    Transparent = True
     UseDockManager = True
+    Transparent = True
     object LbDry: TGuiLabel
       Left = 4
       Top = 3
@@ -228,7 +240,6 @@ object FmReverb: TFmReverb
     BevelOuter = bvNone
     Color = clWhite
     TabOrder = 1
-    ExplicitWidth = 355
     object SBPreset: TGuiSelectBox
       Left = 51
       Top = 2

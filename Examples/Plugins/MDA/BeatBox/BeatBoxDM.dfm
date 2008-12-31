@@ -1,11 +1,9 @@
 object BeatBoxDataModule: TBeatBoxDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsIsSynth]
   Version = '1.0'
   EffectName = 'mda BeatBox'
-  ProductName = 'BeatBox'
+  ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
@@ -178,6 +176,8 @@ object BeatBoxDataModule: TBeatBoxDataModule
       VSTModule = Owner
       OnParameterChange = ParameterMixChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess

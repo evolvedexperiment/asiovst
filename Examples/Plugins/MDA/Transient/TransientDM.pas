@@ -7,6 +7,7 @@ uses
 
 type
   TTransientDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackChangeHold(Sender: TObject; const Index: Integer; var Value: Single);
@@ -14,15 +15,12 @@ type
     procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterReleaseChangeHold(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleOpen(Sender: TObject);
   private
     FDry         : Single;
     FBuf         : Array [0..1] of Single;
     FEnv         : Array [0..3] of Single;
-    FAtt12       : Single;
     FAtt34       : Single;
     FRel12       : Single;
-    FRel34       : Single;
     FAttack      : Array [0..1] of Single;
     FRelease     : Array [2..3] of Single;
     FFilterIn    : Single;
@@ -118,7 +116,7 @@ procedure TTransientDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample: Integer;
-  a, b, e, f, g, i         : Single;
+  e, f, g, i               : Single;
   e1, e2, e3, e4, y        : Single;
   a1, a2, r12, a34, r3, r4 : Single;
   fi, fo, fx, fb1, fb2     : Single;

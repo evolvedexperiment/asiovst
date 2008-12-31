@@ -1,7 +1,5 @@
 object ThruZeroDataModule: TThruZeroDataModule
   OldCreateOrder = False
-  OnCreate = VSTModuleCreate
-  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'mda ThruZero'
@@ -107,6 +105,8 @@ object ThruZeroDataModule: TThruZeroDataModule
       VSTModule = Owner
       OnParameterChange = ParameterFeedbackChange
     end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnResume = VSTModuleResume

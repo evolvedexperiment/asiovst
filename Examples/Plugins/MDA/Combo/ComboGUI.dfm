@@ -1,6 +1,7 @@
 object FmCombo: TFmCombo
   Left = 397
   Top = 347
+  BorderStyle = bsNone
   Caption = 'Combo'
   ClientHeight = 142
   ClientWidth = 291

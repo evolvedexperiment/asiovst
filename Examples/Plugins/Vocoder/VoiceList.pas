@@ -7,10 +7,10 @@ uses Classes, RTLConsts, VocoderVoice;
 type
   TVoiceList = class(TObject)
   private
-    FList: PPointerList;
-    FCount: Integer;
-    FCapacity: Integer;
-    FOwnsObjects: Boolean;
+    FList        : PPointerList;
+    FCount       : Integer;
+    FCapacity    : Integer;
+    FOwnsObjects : Boolean;
   protected
     function Get(Index: Integer): TVocoderVoice;
     procedure Grow; virtual;
