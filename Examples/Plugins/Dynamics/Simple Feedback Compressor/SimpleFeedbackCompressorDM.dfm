@@ -30,7 +30,6 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       MinInteger = -96
       ShortLabel = 'thrshld'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -46,7 +45,6 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       MinInteger = 1
       ShortLabel = 'ratio'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = SLRatioChange
@@ -64,7 +62,6 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       MinInteger = 1
       ShortLabel = 'Attack'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       Units = 'ms'
       VSTModule = Owner
@@ -82,7 +79,6 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       MinInteger = 5
       ShortLabel = 'Release'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -99,7 +95,6 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       MaxInteger = 1
       ShortLabel = 'AutoMak'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>

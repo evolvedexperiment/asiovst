@@ -29,7 +29,6 @@ object LinearPhaseDataModule: TLinearPhaseDataModule
       MinInteger = 20
       ShortLabel = 'Freq'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner

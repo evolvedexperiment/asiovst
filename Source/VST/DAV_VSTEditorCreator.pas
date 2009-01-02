@@ -10,6 +10,8 @@ unit DAV_VSTEditorCreator;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   ToolsAPI,
   DAV_VSTPluginConfig;

@@ -2,7 +2,7 @@ unit LinearPhaseDM;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 {-$DEFINE Use_IPPS}
 
 uses
@@ -56,21 +56,21 @@ begin
  {$IFDEF Use_IPPS}
  FFft := TFftReal2ComplexIPPSFloat32.Create(round(Log2(BlockModeSize)));
 
- GetMem(FFilterFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
- GetMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FFilterFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
+ ReallocMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  {$ELSE}
  FFft := TFftReal2ComplexNativeFloat32.Create(round(Log2(BlockModeSize)));
 
- GetMem(FFilterFreq, BlockModeSize * SizeOf(Single));
- GetMem(FSignalFreq, BlockModeSize * SizeOf(Single));
+ ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
+ ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
  {$ENDIF}
 
- GetMem(FFilterKernel, BlockModeSize * SizeOf(Single));
- GetMem(FSignalPadded, BlockModeSize * SizeOf(Single));
+ ReallocMem(FFilterKernel, BlockModeSize * SizeOf(Single));
+ ReallocMem(FSignalPadded, BlockModeSize * SizeOf(Single));
  FillChar(FFilterKernel^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
 

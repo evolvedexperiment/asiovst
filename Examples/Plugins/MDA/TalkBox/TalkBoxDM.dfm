@@ -28,7 +28,6 @@ object TalkBoxDataModule: TTalkBoxDataModule
       MaxInteger = 200
       ShortLabel = 'Wet'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -42,7 +41,6 @@ object TalkBoxDataModule: TTalkBoxDataModule
       MaxInteger = 200
       ShortLabel = 'Dry'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -57,7 +55,6 @@ object TalkBoxDataModule: TTalkBoxDataModule
       MaxInteger = 1
       ShortLabel = 'Carrier'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterCarrierDisplay
@@ -70,7 +67,6 @@ object TalkBoxDataModule: TTalkBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Quality'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>

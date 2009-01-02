@@ -2,7 +2,7 @@ unit DAV_VSTModule;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ENDIF} Classes, DAV_VSTModuleWithDsp;

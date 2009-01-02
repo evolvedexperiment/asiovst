@@ -2,7 +2,7 @@ unit DAV_ChunkAIFFFile;
 
 interface
 
-{$I ASIOVST.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, SysUtils, DAV_Common, DAV_ChunkClasses;
@@ -27,8 +27,8 @@ type
 
   TAIFFCommonChunk = class(TDefinedChunk) // 'COMM'
   private
-    fCompressionType: TAIFFCompressionType;
-    fCompressionName: string;
+    FCompressionType: TAIFFCompressionType;
+    FCompressionName: string;
     procedure SetChannels(const Value: SmallInt);
     procedure SetSampleRate(const Value: Extended);
     procedure SetSampleSize(const Value: SmallInt);
@@ -47,7 +47,7 @@ type
     property SampleFrames: Cardinal read AIFFCommonRecord.SampleFrames write AIFFCommonRecord.SampleFrames;
     property SampleSize: SmallInt read AIFFCommonRecord.SampleSize write SetSampleSize;
     property SampleRate: Extended read AIFFCommonRecord.SampleRate write SetSampleRate;
-    property Compression: TAIFFCompressionType read fCompressionType write SetCompressionType;
+    property Compression: TAIFFCompressionType read FCompressionType write SetCompressionType;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ type
 
   TAIFFMarkerItem = class(TCollectionItem)
   private
-    fMarkerName : string;
+    FMarkerName : string;
     procedure SetMarkerID(const Value: TMarkerID);
   protected
     function GetDisplayName: string; override;
@@ -148,12 +148,12 @@ type
   published
     property MarkerID: TMarkerID read MarkerRecord.MarkerID write SetMarkerID;
     property Position: Cardinal read MarkerRecord.Position write MarkerRecord.Position;
-    property MarkerName: string read fMarkerName write fMarkerName;
+    property MarkerName: string read FMarkerName write FMarkerName;
   end;
 
   TAIFFMarkerChunk = class(TDefinedChunk) // 'MARK'
   private
-    fMarkers : TOwnedCollection;
+    FMarkers : TOwnedCollection;
     procedure CalculateChunkSize;
     function GetMarkerCount: Byte;
   protected
@@ -179,7 +179,7 @@ type
 
   TAIFFCommentItem = class(TCollectionItem)
   private
-    fComment : string;
+    FComment : string;
     procedure SetMarkerID(const Value: TMarkerID);
   protected
     function GetDisplayName: string; override;
@@ -194,12 +194,12 @@ type
   published
     property MarkerID: TMarkerID read CommentRecord.MarkerID write SetMarkerID;
     property TimeStamp: Cardinal read CommentRecord.TimeStamp write CommentRecord.TimeStamp;
-    property Comment: string read fComment write fComment;
+    property Comment: string read FComment write FComment;
   end;
 
   TAIFFCommentChunk = class(TDefinedChunk) // 'COMT'
   private
-    fComments : TOwnedCollection;
+    FComments : TOwnedCollection;
     procedure CalculateChunkSize;
     function GetCommentCount: Byte;
   protected
@@ -267,7 +267,7 @@ type
     function GetMIDIData(index: Integer): Byte;
     procedure SetMIDIData(index: Integer; const Value: Byte);
   protected
-    fMIDIData : array of Byte;
+    FMIDIData : array of Byte;
     procedure AssignTo(Dest: TPersistent); override;
   public
     procedure LoadFromStream(Stream : TStream); override;
@@ -312,8 +312,8 @@ type
     procedure SetApplicationSignature(const Value: string);
     procedure SetData(index: Integer; const Value: Byte);
   protected
-    fApplicationSignature : TChunkName;
-    fApplicationData      : string;
+    FApplicationSignature : TChunkName;
+    FApplicationData      : string;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
@@ -323,7 +323,7 @@ type
     property ApplicationData[index : Integer]: Byte read GetData write SetData;
   published
     property ApplicationSignature: string read GetApplicationSignature write SetApplicationSignature;
-    property ApplicationDataAsString: string read fApplicationData write fApplicationData;
+    property ApplicationDataAsString: string read FApplicationData write FApplicationData;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -368,7 +368,7 @@ begin
    SampleSize     := 16;      // 16bit
    SampleFrames   := 0;       // no data yet
   end;
- fCompressionType := ctNotAvailable;
+ FCompressionType := ctNotAvailable;
 
  CalculateChunkSize; 
 end;
@@ -382,17 +382,18 @@ procedure TAIFFCommonChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
  if Dest is TAIFFCommonChunk then
-  begin
-   TAIFFCommonChunk(Dest).AIFFCommonRecord := AIFFCommonRecord;
-   TAIFFCommonChunk(Dest).fCompressionType := fCompressionType;
+  with TAIFFCommonChunk(Dest) do
+   begin
+    AIFFCommonRecord := Self.AIFFCommonRecord;
+    FCompressionType := Self.FCompressionType;
   end;
 end;
 
 procedure TAIFFCommonChunk.CalculateChunkSize;
 begin
- fChunkSize := SizeOf(AIFFCommonRecord);
- if fCompressionType <> ctNotAvailable
-  then fChunkSize := fChunkSize + SizeOf(TChunkName) + Length(fCompressionName);
+ FChunkSize := SizeOf(AIFFCommonRecord);
+ if FCompressionType <> ctNotAvailable
+  then FChunkSize := FChunkSize + SizeOf(TChunkName) + Length(FCompressionName);
 end;
 
 procedure TAIFFCommonChunk.LoadFromStream(Stream: TStream);
@@ -415,7 +416,7 @@ begin
     end;
 
    // exit if no addition information are available
-   if fChunkSize = SizeOf(TAIFFCommonRecord) then
+   if FChunkSize = SizeOf(TAIFFCommonRecord) then
     begin
      Compression := ctNotAvailable;
      exit;
@@ -424,15 +425,15 @@ begin
    // read additional compression information
    Read(CompTypeID, SizeOf(TChunkName));
    FlipLong(CompTypeID);
-   if CompTypeID = 'NONE' then fCompressionType := ctNone else
-   if CompTypeID = 'ACE2' then fCompressionType := ctACE2 else
-   if CompTypeID = 'ACE8' then fCompressionType := ctACE8 else
-   if CompTypeID = 'MAC3' then fCompressionType := ctMACE3 else
-   if CompTypeID = 'MAC8' then fCompressionType := ctMACE6
-    else fCompressionType := ctUnknown;
+   if CompTypeID = 'NONE' then FCompressionType := ctNone else
+   if CompTypeID = 'ACE2' then FCompressionType := ctACE2 else
+   if CompTypeID = 'ACE8' then FCompressionType := ctACE8 else
+   if CompTypeID = 'MAC3' then FCompressionType := ctMACE3 else
+   if CompTypeID = 'MAC8' then FCompressionType := ctMACE6
+    else FCompressionType := ctUnknown;
 
    // set position to end of chunk
-   Position := Position + fChunkSize - SizeOf(TAIFFCommonRecord) - SizeOf(TChunkName);
+   Position := Position + FChunkSize - SizeOf(TAIFFCommonRecord) - SizeOf(TChunkName);
   end;
 end;
 
@@ -457,9 +458,9 @@ begin
    Write(FlippedAIFFCommonRecord, SizeOf(TAIFFCommonRecord));
 
    // write compression info if necessary
-   if fCompressionType <> ctNotAvailable then
+   if FCompressionType <> ctNotAvailable then
     begin
-     case fCompressionType of
+     case FCompressionType of
          ctNone : CompressionTypeID := 'None';
          ctACE2 : CompressionTypeID := 'ACE2';
          ctACE8 : CompressionTypeID := 'ACE8';
@@ -468,7 +469,7 @@ begin
       ctUnknown : raise Exception.Create('Not supported');
      end;
      Write(CompressionTypeID, SizeOf(TChunkName));
-     Write(fCompressionName, Length(fCompressionName));
+     Write(FCompressionName, Length(FCompressionName));
     end;
   end;
 end;
@@ -485,16 +486,16 @@ end;
 
 procedure TAIFFCommonChunk.SetCompressionType(const Value: TAIFFCompressionType);
 begin
- if fCompressionType <> Value then
+ if FCompressionType <> Value then
   begin
-   fCompressionType := Value;
-   case fCompressionType of
-    ctNotAvailable : fCompressionName := 'not available';
-            ctNone : fCompressionName := 'not compressed';
-            ctACE2 : fCompressionName := 'ACE 2-to-1';
-            ctACE8 : fCompressionName := 'ACE 8-to-1';
-           ctMACE3 : fCompressionName := 'MACE 3-to-1';
-           ctMACE6 : fCompressionName := 'MACE 6-to-1';
+   FCompressionType := Value;
+   case FCompressionType of
+    ctNotAvailable : FCompressionName := 'not available';
+            ctNone : FCompressionName := 'not compressed';
+            ctACE2 : FCompressionName := 'ACE 2-to-1';
+            ctACE8 : FCompressionName := 'ACE 8-to-1';
+           ctMACE3 : FCompressionName := 'MACE 3-to-1';
+           ctMACE6 : FCompressionName := 'MACE 6-to-1';
    end;
   end;
 end;
@@ -626,7 +627,7 @@ begin
     end;
 
    // set position to end of chunk
-   Position := Position + fChunkSize - SizeOf(TAIFFSoundDataRecord);
+   Position := Position + FChunkSize - SizeOf(TAIFFSoundDataRecord);
   end;
 end;
 
@@ -652,7 +653,7 @@ end;
 
 procedure TAIFFSoundDataChunk.CalculateChunkSize;
 begin
- fChunkSize := SizeOf(AIFFSoundDataRecord);
+ FChunkSize := SizeOf(AIFFSoundDataRecord);
 end;
 
 procedure TAIFFSoundDataChunk.AssignTo(Dest: TPersistent);
@@ -675,12 +676,12 @@ end;
 
 function TAIFFMarkerItem.GetDisplayName: string;
 begin
- result := fMarkerName;
+ result := FMarkerName;
 end;
 
 function TAIFFMarkerItem.GetSize: Cardinal;
 begin
- result := SizeOf(TAIFFMarkerRecord) + Length(fMarkerName) + 1;
+ result := SizeOf(TAIFFMarkerRecord) + Length(FMarkerName) + 1;
 end;
 
 procedure TAIFFMarkerItem.LoadFromStream(Stream: TStream);
@@ -694,8 +695,8 @@ begin
 
    // now read the marker string
    Read(StringSize, SizeOf(Byte));
-   SetLength(fMarkerName, StringSize);
-   Read(fMarkerName[1], StringSize);
+   SetLength(FMarkerName, StringSize);
+   Read(FMarkerName[1], StringSize);
   end;
 end;
 
@@ -709,15 +710,15 @@ begin
    Write(MarkerRecord, SizeOf(TAIFFMarkerRecord));
 
    // now write the marker string
-   StringSize := Length(fMarkerName);
+   StringSize := Length(FMarkerName);
    Write(StringSize, SizeOf(Byte));
-   Write(fMarkerName[1], StringSize);
+   Write(FMarkerName[1], StringSize);
   end;
 end;
 
 procedure TAIFFMarkerItem.SetDisplayName(const Value: string);
 begin
- fMarkerName := Value;
+ FMarkerName := Value;
  inherited;
 end;
 
@@ -736,13 +737,13 @@ end;
 constructor TAIFFMarkerChunk.Create;
 begin
  inherited;
- fMarkers := TOwnedCollection.Create(Self, TAIFFMarkerItem);
+ FMarkers := TOwnedCollection.Create(Self, TAIFFMarkerItem);
  CalculateChunkSize;
 end;
 
 destructor TAIFFMarkerChunk.Destroy;
 begin
- FreeAndNil(fMarkers);
+ FreeAndNil(FMarkers);
  inherited;
 end;
 
@@ -753,23 +754,23 @@ end;
 
 function TAIFFMarkerChunk.GetMarkerCount: Byte;
 begin
- result := fMarkers.Count;
+ result := FMarkers.Count;
 end;
 
 procedure TAIFFMarkerChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
  if Dest is TAIFFMarkerChunk
-  then TAIFFMarkerChunk(Dest).fMarkers.Assign(fMarkers);
+  then TAIFFMarkerChunk(Dest).FMarkers.Assign(FMarkers);
 end;
 
 procedure TAIFFMarkerChunk.CalculateChunkSize;
 var
   i : Integer;
 begin
- fChunkSize := SizeOf(Byte);
- for i := 0 to fMarkers.Count - 1
-  do fChunkSize := fChunkSize + TAIFFMarkerItem(fMarkers.Items[i]).GetSize;
+ FChunkSize := SizeOf(Byte);
+ for i := 0 to FMarkers.Count - 1
+  do FChunkSize := FChunkSize + TAIFFMarkerItem(FMarkers.Items[i]).GetSize;
 end;
 
 procedure TAIFFMarkerChunk.LoadFromStream(Stream: TStream);
@@ -783,15 +784,15 @@ begin
    Read(MarkerCount, SizeOf(Byte));
 
    // clear existing markers
-   fMarkers.Clear;
+   FMarkers.Clear;
 
    // load every single marker
    for i := 0 to MarkerCount - 1 do
-    with TAIFFMarkerItem(fMarkers.Add)
+    with TAIFFMarkerItem(FMarkers.Add)
      do LoadFromStream(Stream);
 
    // set position to end of chunk
-   Position := Position + fChunkSize - SizeOf(Byte);
+   Position := Position + FChunkSize - SizeOf(Byte);
   end;
 end;
 
@@ -804,11 +805,11 @@ begin
  with Stream do
   begin
    // store number of markers
-   MarkerCount := fMarkers.Count;
+   MarkerCount := FMarkers.Count;
    Write(MarkerCount, SizeOf(Byte));
 
-   for i := 0 to fMarkers.Count - 1
-    do TAIFFMarkerItem(fMarkers.Items[i]).SaveToStream(Stream);
+   for i := 0 to FMarkers.Count - 1
+    do TAIFFMarkerItem(FMarkers.Items[i]).SaveToStream(Stream);
   end;
 end;
 
@@ -823,12 +824,12 @@ end;
 
 function TAIFFCommentItem.GetDisplayName: string;
 begin
- result := fComment;
+ result := FComment;
 end;
 
 function TAIFFCommentItem.GetSize: Cardinal;
 begin
- result := SizeOf(TAIFFCommentRecord) + Length(fComment) + 1;
+ result := SizeOf(TAIFFCommentRecord) + Length(FComment) + 1;
 end;
 
 procedure TAIFFCommentItem.LoadFromStream(Stream: TStream);
@@ -842,8 +843,8 @@ begin
 
    // now read the comment string
    Read(StringSize, SizeOf(Byte));
-   SetLength(fComment, StringSize);
-   Read(fComment[1], StringSize);
+   SetLength(FComment, StringSize);
+   Read(FComment[1], StringSize);
   end;
 end;
 
@@ -857,15 +858,15 @@ begin
    Write(CommentRecord, SizeOf(TAIFFCommentRecord));
 
    // now write the comment string
-   StringSize := Length(fComment);
+   StringSize := Length(FComment);
    Write(StringSize, SizeOf(Byte));
-   Write(fComment[1], StringSize);
+   Write(FComment[1], StringSize);
   end;
 end;
 
 procedure TAIFFCommentItem.SetDisplayName(const Value: string);
 begin
- fComment := Value;
+ FComment := Value;
  inherited;
 end;
 
@@ -884,13 +885,13 @@ end;
 constructor TAIFFCommentChunk.Create;
 begin
  inherited;
- fComments := TOwnedCollection.Create(Self, TAIFFCommentItem);
+ FComments := TOwnedCollection.Create(Self, TAIFFCommentItem);
  CalculateChunkSize;
 end;
 
 destructor TAIFFCommentChunk.Destroy;
 begin
- FreeAndNil(fComments);
+ FreeAndNil(FComments);
  inherited;
 end;
 
@@ -898,16 +899,16 @@ procedure TAIFFCommentChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
  if Dest is TAIFFCommentChunk
-  then TAIFFCommentChunk(Dest).fComments.Assign(fComments);
+  then TAIFFCommentChunk(Dest).FComments.Assign(FComments);
 end;
 
 procedure TAIFFCommentChunk.CalculateChunkSize;
 var
   i : Integer;
 begin
- fChunkSize := SizeOf(Byte);
- for i := 0 to fComments.Count - 1
-  do fChunkSize := fChunkSize + TAIFFCommentItem(fComments.Items[i]).GetSize;
+ FChunkSize := SizeOf(Byte);
+ for i := 0 to FComments.Count - 1
+  do FChunkSize := FChunkSize + TAIFFCommentItem(FComments.Items[i]).GetSize;
 end;
 
 class function TAIFFCommentChunk.GetClassChunkName: TChunkName;
@@ -917,7 +918,7 @@ end;
 
 function TAIFFCommentChunk.GetCommentCount: Byte;
 begin
- result := fComments.Count;
+ result := FComments.Count;
 end;
 
 procedure TAIFFCommentChunk.LoadFromStream(Stream: TStream);
@@ -931,15 +932,15 @@ begin
    Read(CommentCount, SizeOf(Byte));
 
    // clear existing comments
-   fComments.Clear;
+   FComments.Clear;
 
    // load every single comment
    for i := 0 to CommentCount - 1 do
-    with TAIFFCommentItem(fComments.Add)
+    with TAIFFCommentItem(FComments.Add)
      do LoadFromStream(Stream);
 
    // set position to end of chunk
-   Position := Position + fChunkSize - SizeOf(Byte);
+   Position := Position + FChunkSize - SizeOf(Byte);
   end;
 end;
 
@@ -952,11 +953,11 @@ begin
  with Stream do
   begin
    // store number of comments
-   CommentCount := fComments.Count;
+   CommentCount := FComments.Count;
    Write(CommentCount, SizeOf(Byte));
 
-   for i := 0 to fComments.Count - 1
-    do TAIFFCommentItem(fComments.Items[i]).SaveToStream(Stream);
+   for i := 0 to FComments.Count - 1
+    do TAIFFCommentItem(FComments.Items[i]).SaveToStream(Stream);
   end;
 end;
 
@@ -1066,8 +1067,8 @@ begin
  inherited;
  if Dest is TAIFFMIDIChunk then
   begin
-   SetLength(TAIFFMIDIChunk(Dest).fMidiData, Length(fMidiData));
-   Move(fMidiData[0], TAIFFMIDIChunk(Dest).fMidiData[0], Length(fMidiData));
+   SetLength(TAIFFMIDIChunk(Dest).FMIDIData, Length(FMIDIData));
+   Move(FMIDIData[0], TAIFFMIDIChunk(Dest).FMIDIData[0], Length(FMIDIData));
   end;
 end;
 
@@ -1078,8 +1079,8 @@ end;
 
 function TAIFFMIDIChunk.GetMIDIData(index: Integer): Byte;
 begin
- if (index >= 0) and (index < Length(fMidiData))
-  then result := fMidiData[index]
+ if (index >= 0) and (index < Length(FMIDIData))
+  then result := FMIDIData[index]
   else result := 0;
 end;
 
@@ -1088,25 +1089,25 @@ begin
  inherited;
  with Stream do
   begin
-   SetLength(fMidiData, fChunkSize);
-   Read(fMidiData[0], fChunkSize);
+   SetLength(FMIDIData, FChunkSize);
+   Read(FMIDIData[0], FChunkSize);
   end;
 end;
 
 procedure TAIFFMIDIChunk.SaveToStream(Stream: TStream);
 begin
- fChunkSize := Length(fMidiData);
+ FChunkSize := Length(FMIDIData);
  inherited;
  with Stream do
   begin
-   Write(fMidiData[0], fChunkSize);
+   Write(FMIDIData[0], FChunkSize);
   end;
 end;
 
 procedure TAIFFMIDIChunk.SetMIDIData(index: Integer; const Value: Byte);
 begin
- if (index >= 0) and (index < Length(fMidiData))
-  then fMidiData[index] := Value;
+ if (index >= 0) and (index < Length(FMIDIData))
+  then FMIDIData[index] := Value;
 end;
 
 { TAIFFAudioRecordingChunk }
@@ -1154,7 +1155,7 @@ constructor TAIFFApplicationSpecificChunk.Create;
 begin
  inherited;
  // default the signature assotiated with this project
- fApplicationSignature := 'DAVD';
+ FApplicationSignature := 'DAVD';
 end;
 
 procedure TAIFFApplicationSpecificChunk.AssignTo(Dest: TPersistent);
@@ -1162,20 +1163,20 @@ begin
  inherited;
  if Dest is TAIFFApplicationSpecificChunk then
   begin
-   TAIFFApplicationSpecificChunk(Dest).fApplicationSignature := fApplicationSignature;
-   SetLength(TAIFFApplicationSpecificChunk(Dest).fApplicationData, Length(fApplicationData));
-   Move(fApplicationData[1], TAIFFApplicationSpecificChunk(Dest).fApplicationData[1], Length(fApplicationData));
+   TAIFFApplicationSpecificChunk(Dest).FApplicationSignature := FApplicationSignature;
+   SetLength(TAIFFApplicationSpecificChunk(Dest).FApplicationData, Length(FApplicationData));
+   Move(FApplicationData[1], TAIFFApplicationSpecificChunk(Dest).FApplicationData[1], Length(FApplicationData));
   end;
 end;
 
 procedure TAIFFApplicationSpecificChunk.CalculateChunkSize;
 begin
- fChunkSize := Length(fApplicationData) + SizeOf(TChunkName);
+ FChunkSize := Length(FApplicationData) + SizeOf(TChunkName);
 end;
 
 function TAIFFApplicationSpecificChunk.GetApplicationSignature: string;
 begin
- result := fApplicationSignature;
+ result := FApplicationSignature;
 end;
 
 class function TAIFFApplicationSpecificChunk.GetClassChunkName: TChunkName;
@@ -1185,8 +1186,8 @@ end;
 
 function TAIFFApplicationSpecificChunk.GetData(index: Integer): Byte;
 begin
- if (index >= 0) and (index < Length(fApplicationData))
-  then result := Byte(fApplicationData[index + 1])
+ if (index >= 0) and (index < Length(FApplicationData))
+  then result := Byte(FApplicationData[index + 1])
   else result := 0;
 end;
 
@@ -1196,14 +1197,14 @@ var
 begin
  ApplicationSignatureSize := Length(Value);
  if ApplicationSignatureSize > 3 then ApplicationSignatureSize := 4;
- Move(Value[1], fApplicationSignature[0], ApplicationSignatureSize);
+ Move(Value[1], FApplicationSignature[0], ApplicationSignatureSize);
 end;
 
 procedure TAIFFApplicationSpecificChunk.SetData(index: Integer;
   const Value: Byte);
 begin
- if (index >= 0) and (index < Length(fApplicationSignature))
-  then fApplicationSignature[index + 1] := Char(Value);
+ if (index >= 0) and (index < Length(FApplicationSignature))
+  then FApplicationSignature[index + 1] := Char(Value);
 end;
 
 procedure TAIFFApplicationSpecificChunk.LoadFromStream(Stream: TStream);
@@ -1212,11 +1213,11 @@ begin
  with Stream do
   begin
    // read application signature
-   Read(fApplicationSignature, SizeOf(TChunkName));
+   Read(FApplicationSignature, SizeOf(TChunkName));
 
    // read application data
-   SetLength(fApplicationData, fChunkSize - SizeOf(TChunkName));
-   Read(fApplicationData[1], fChunkSize);
+   SetLength(FApplicationData, FChunkSize - SizeOf(TChunkName));
+   Read(FApplicationData[1], FChunkSize);
   end;
 end;
 
@@ -1227,10 +1228,10 @@ begin
  with Stream do
   begin
    // write application signature
-   Write(fApplicationSignature, SizeOf(TChunkName));
+   Write(FApplicationSignature, SizeOf(TChunkName));
 
    // write application data
-   Write(fApplicationData[1], fChunkSize - SizeOf(TChunkName));
+   Write(FApplicationData[1], FChunkSize - SizeOf(TChunkName));
   end;
 end;
 

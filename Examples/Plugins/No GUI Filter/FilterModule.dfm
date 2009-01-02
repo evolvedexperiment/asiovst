@@ -39,7 +39,6 @@ object VSTFilter: TVSTFilter
       MinInteger = 20
       ShortLabel = 'Cutoff'
       SmallStepFloat = 100.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 100.000000000000000000
       StepInteger = 100
       Units = 'Hz'
@@ -57,7 +56,6 @@ object VSTFilter: TVSTFilter
       Min = 0.009999999776482582
       ShortLabel = 'Res'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       VSTModule = Owner
     end>

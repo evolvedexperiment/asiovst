@@ -2,10 +2,10 @@
 library SplitTemplate;
 
 uses
-  FastMM4,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
   madExcept,
   madLinkDisAsm,
-  FastMove,
   RTLVCLOptimize,
   Forms,
   DAV_VSTEffect,

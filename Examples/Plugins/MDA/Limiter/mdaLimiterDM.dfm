@@ -25,7 +25,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       MinInteger = -40
       ShortLabel = 'Thres'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -42,7 +41,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       MinInteger = -40
       ShortLabel = 'Trim'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -57,7 +55,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       MaxInteger = 1
       ShortLabel = 'Att'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = #181's'
       VSTModule = Owner
@@ -73,7 +70,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       MaxInteger = 1
       ShortLabel = 'Rel'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -88,7 +84,6 @@ object mdaLimiterDataModule: TmdaLimiterDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Knee'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = KneeChange

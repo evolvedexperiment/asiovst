@@ -2,7 +2,7 @@ unit BugpassLiteDM;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 {-$DEFINE Use_IPPS}
 
 uses

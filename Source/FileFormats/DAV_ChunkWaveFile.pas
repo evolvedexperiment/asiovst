@@ -2,7 +2,7 @@ unit DAV_ChunkWaveFile;
 
 interface
 
-{$I ASIOVST.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, SysUtils, DAV_Common, DAV_ChunkClasses, DAV_WaveFileTypes;
@@ -23,7 +23,7 @@ type
     procedure SetFormatTag(const Value: TWavEncoding);
     procedure SetSampleRate(const Value: Cardinal);
   protected
-    fFormatSpecific: array of Byte;
+    FFormatSpecific: array of Byte;
     procedure AssignTo(Dest: TPersistent); override;
   public
     WaveFormatRecord : TWavFormatRecord;
@@ -688,7 +688,7 @@ begin
    BlockAlign     := (BitsPerSample + 7) div 8 * Channels;
    BytesPerSecond := Channels * BlockAlign * SampleRate;
   end;
- SetLength(fFormatSpecific, 0);
+ SetLength(FFormatSpecific, 0);
 end;
 
 procedure TFormatChunk.AssignTo(Dest: TPersistent);
@@ -697,14 +697,14 @@ begin
  if Dest is TFormatChunk then
   begin
    TFormatChunk(Dest).WaveFormatRecord := WaveFormatRecord;
-   SetLength(TFormatChunk(Dest).fFormatSpecific, Length(fFormatSpecific));
-   Move(fFormatSpecific[0], TFormatChunk(Dest).fFormatSpecific[0], Length(fFormatSpecific));
+   SetLength(TFormatChunk(Dest).FFormatSpecific, Length(FFormatSpecific));
+   Move(FFormatSpecific[0], TFormatChunk(Dest).FFormatSpecific[0], Length(FFormatSpecific));
   end;
 end;
 
 procedure TFormatChunk.CalculateChunkSize;
 begin
- fChunkSize := SizeOf(TWavFormatRecord) + SizeOf(Word) + Length(fFormatSpecific);
+ fChunkSize := SizeOf(TWavFormatRecord) + SizeOf(Word) + Length(FFormatSpecific);
 end;
 
 procedure TFormatChunk.LoadFromStream(Stream: TStream);
@@ -724,8 +724,8 @@ begin
 
    // read format specific bytes
    assert(fChunkSize >= SizeOf(TWavFormatRecord) + SizeOf(Word) + FormatSpecificBytes);
-   SetLength(fFormatSpecific, FormatSpecificBytes);
-   Read(fFormatSpecific[0], FormatSpecificBytes);
+   SetLength(FFormatSpecific, FormatSpecificBytes);
+   Read(FFormatSpecific[0], FormatSpecificBytes);
 
    // move position to the end of this chunk
    Position := Position + fChunkSize - SizeOf(TWavFormatRecord) - SizeOf(Word) - FormatSpecificBytes;
@@ -744,10 +744,10 @@ begin
    Write(WaveFormatRecord, SizeOf(TWavFormatRecord));
 
    // write format specific bytes
-   FormatSpecificBytes := Length(fFormatSpecific);
+   FormatSpecificBytes := Length(FFormatSpecific);
    Write(FormatSpecificBytes, SizeOf(Word));
    if FormatSpecificBytes > 0
-    then Write(fFormatSpecific[0], FormatSpecificBytes);
+    then Write(FFormatSpecific[0], FormatSpecificBytes);
   end;
 end;
 

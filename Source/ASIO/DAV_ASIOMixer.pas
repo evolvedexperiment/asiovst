@@ -1,10 +1,10 @@
 unit DAV_ASIOMixer;
 
-{$I ..\ASIOVST.inc}
+interface
+
+{$I ..\DAV_Compiler.inc}
 
 {If this file makes troubles, delete the DEFINE ASIOMixer in DAV_ASIOHost}
-
-interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,

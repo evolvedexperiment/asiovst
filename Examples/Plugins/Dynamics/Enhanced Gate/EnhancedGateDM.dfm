@@ -24,7 +24,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MaxInteger = 1
       ShortLabel = 'Power'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = EAGPowerChange
@@ -42,7 +41,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MinInteger = -80
       ShortLabel = 'Thrshld'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -59,7 +57,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MinInteger = -200
       ShortLabel = 'Attack'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -77,7 +74,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MinInteger = -200
       ShortLabel = 'Hold'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = 'ms'
@@ -95,7 +91,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MinInteger = 70
       ShortLabel = 'Decay'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 10.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -111,7 +106,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MaxInteger = 1
       ShortLabel = 'Duck'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = EAGDuckChange
@@ -127,7 +121,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MaxInteger = 1
       ShortLabel = 'Link'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = EAGStereoLinkChange
@@ -143,7 +136,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MaxInteger = 1
       ShortLabel = 'SCSrc'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = EAGSideChainSourceChange
@@ -161,7 +153,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MinInteger = 20
       ShortLabel = 'LoCut'
       SmallStepFloat = 20.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 20.000000000000000000
       StepInteger = 20
       Units = 'Hz'
@@ -180,7 +171,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MinInteger = 200
       ShortLabel = 'HiCut'
       SmallStepFloat = 20.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 20.000000000000000000
       StepInteger = 20
       Units = 'kHz'
@@ -199,7 +189,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MinInteger = 1
       ShortLabel = 'Ratio'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.500000000000000000
       VSTModule = Owner
       OnParameterChange = EAGRatioChange
@@ -216,7 +205,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MinInteger = 1
       ShortLabel = 'Knee'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.200000002980232200
       Units = 'dB'
       VSTModule = Owner
@@ -233,7 +221,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       MinInteger = -80
       ShortLabel = 'Range'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

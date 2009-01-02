@@ -2,7 +2,7 @@ unit DAV_GuiDialDesign;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LazIDEIntf, PropEdits,{$ELSE} {$IFDEF DELPHI6_UP}

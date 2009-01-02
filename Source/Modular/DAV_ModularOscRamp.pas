@@ -2,6 +2,8 @@ unit DAV_ModularOscRamp;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   DAV_Common, DAV_Complex, DAV_ModularBaseComponent, DAV_ModularBaseOsc;
 
@@ -9,8 +11,8 @@ type
   TDspOscRamp = class(TDspBaseOsc)
   protected
     procedure FrequencyChanged; override; 
-    procedure Process(var Data: Single; const channel: integer); override;
-    procedure Process(var Data: Double; const channel: integer); override;
+    procedure Process(var Data: Single; const Channel: integer); override;
+    procedure Process(var Data: Double; const Channel: integer); override;
   end;
 
 implementation
@@ -21,22 +23,22 @@ begin
   FAngle.Re:=FFrequency/FSampleRate
 end;
 
-procedure TDspOscRamp.Process(var Data: Single; const channel: integer);
+procedure TDspOscRamp.Process(var Data: Single; const Channel: integer);
 begin
-  fPosition[channel].Re := fPosition[channel].Re + FAngle.Re;
-  if fPosition[channel].Re > 1 then
-    fPosition[channel].Re := f_Frac(fPosition[channel].Re);
+  FPosition[Channel].Re := FPosition[Channel].Re + FAngle.Re;
+  if FPosition[Channel].Re > 1 then
+    FPosition[Channel].Re := f_Frac(FPosition[Channel].Re);
 
-  Data := (fPosition[channel].Re * 2 - 1) * fAmplitude + FDCOffset;
+  Data := (FPosition[Channel].Re * 2 - 1) * fAmplitude + FDCOffset;
 end;
 
-procedure TDspOscRamp.Process(var Data: Double; const channel: integer);
+procedure TDspOscRamp.Process(var Data: Double; const Channel: integer);
 begin
-  fPosition[channel].Re := fPosition[channel].Re + FAngle.Re;
-  if fPosition[channel].Re > 1 then
-    fPosition[channel].Re := f_Frac(fPosition[channel].Re);
+  FPosition[Channel].Re := FPosition[Channel].Re + FAngle.Re;
+  if FPosition[Channel].Re > 1 then
+    FPosition[Channel].Re := f_Frac(FPosition[Channel].Re);
 
-  Data:=(fPosition[channel].Re * 2 - 1) * fAmplitude + FDCOffset;
+  Data:=(FPosition[Channel].Re * 2 - 1) * fAmplitude + FDCOffset;
 end;
 
 end.

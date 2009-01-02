@@ -34,24 +34,26 @@ object FmCrossoverDistortion: TFmCrossoverDistortion
     ParentColor = True
     Radius = 13
     TabOrder = 0
-    Transparent = True
     UseDockManager = True
+    Transparent = True
     object DialFreq: TGuiDial
       Left = 16
       Top = 24
       Width = 64
       Height = 64
       Color = 7039851
-      LineColor = 116222
       CurveMapping = -2.099999904632568000
       DefaultPosition = 20.000000000000000000
+      DialImageIndex = -1
+      LineColor = 116222
+      LineWidth = 2
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       NumGlyphs = 65
+      OnChange = DialFreqChange
       Position = 100.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialFreqChange
     end
     object LbFreq: TGuiLabel
       Left = 16
@@ -89,13 +91,15 @@ object FmCrossoverDistortion: TFmCrossoverDistortion
       Width = 64
       Height = 64
       Color = 7039851
+      DialImageIndex = -1
       LineColor = 116222
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialLowDistChange
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialLowDistChange
     end
     object LbLowDist: TGuiLabel
       Left = 156
@@ -148,13 +152,15 @@ object FmCrossoverDistortion: TFmCrossoverDistortion
       Width = 64
       Height = 64
       Color = 7039851
+      DialImageIndex = -1
       LineColor = 116222
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialHighDistChange
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialHighDistChange
     end
     object LbHighDistValue: TGuiLabel
       Left = 226
@@ -177,15 +183,17 @@ object FmCrossoverDistortion: TFmCrossoverDistortion
       Width = 64
       Height = 64
       Color = 7039851
-      LineColor = 116222
       DefaultPosition = 16.000000000000000000
+      DialImageIndex = -1
+      LineColor = 116222
+      LineWidth = 2
       Max = 16.000000000000000000
       Min = 2.000000000000000000
       NumGlyphs = 65
+      OnChange = DialOrderChange
       Position = 2.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialOrderChange
     end
     object LbOrderValue: TGuiLabel
       Left = 86

@@ -56,7 +56,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       MaxInteger = 12
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamModeChange
@@ -74,7 +73,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       MinInteger = 20
       ShortLabel = 'Freq'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 10.000000000000000000
       StepInteger = 10
       Units = 'Hz'
@@ -95,7 +93,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       MinInteger = 1
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange
@@ -114,7 +111,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       MinInteger = -90
       ShortLabel = 'Volume'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -131,7 +127,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       MaxInteger = 1
       ShortLabel = 'Oversmp'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOversamplingChange
@@ -149,7 +144,6 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       MinInteger = 1
       ShortLabel = 'Factor'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOSFactorChange

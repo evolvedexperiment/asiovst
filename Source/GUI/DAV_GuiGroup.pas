@@ -2,7 +2,7 @@ unit DAV_GuiGroup;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}

@@ -27,7 +27,6 @@ object LoudnessDataModule: TLoudnessDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Loudnes'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -40,7 +39,6 @@ object LoudnessDataModule: TLoudnessDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -55,7 +53,6 @@ object LoudnessDataModule: TLoudnessDataModule
       MaxInteger = 1
       ShortLabel = 'Link'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 11
       VSTModule = Owner

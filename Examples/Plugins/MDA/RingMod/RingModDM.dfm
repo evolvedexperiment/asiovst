@@ -27,7 +27,6 @@ object RingModDataModule: TRingModDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Freq'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -40,7 +39,6 @@ object RingModDataModule: TRingModDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Fine'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -54,7 +52,6 @@ object RingModDataModule: TRingModDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Feedbac'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

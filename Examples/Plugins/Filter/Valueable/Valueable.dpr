@@ -4,8 +4,8 @@ library Valueable;
 {$R 'Valueable.res' 'Valueable.rc'}
 
 uses
-  FastMM4,
-  FastMove,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,

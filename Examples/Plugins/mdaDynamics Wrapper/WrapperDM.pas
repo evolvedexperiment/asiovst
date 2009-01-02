@@ -9,15 +9,15 @@ uses
 type
   TWrapperDataModule = class(TVSTModule)
     VstHost: TVstHost;
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleBeforeProgramChange(Sender: TObject);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
-    procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleEditIdle(Sender: TObject);
     procedure VSTModuleEditSleep(Sender: TObject);
     procedure VSTModuleEditTop(Sender: TObject);
     procedure VSTModuleGetVU(var VU: Single);
-    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);

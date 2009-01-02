@@ -29,7 +29,6 @@ object SubBoostDataModule: TSubBoostDataModule
       MaxInteger = 3
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterModeDisplay
@@ -42,7 +41,6 @@ object SubBoostDataModule: TSubBoostDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Level'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -60,7 +58,6 @@ object SubBoostDataModule: TSubBoostDataModule
       MinInteger = 10
       ShortLabel = 'Tune'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -75,7 +72,6 @@ object SubBoostDataModule: TSubBoostDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Dry Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -92,7 +88,6 @@ object SubBoostDataModule: TSubBoostDataModule
       MinInteger = -60
       ShortLabel = 'Thresh'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -106,7 +101,6 @@ object SubBoostDataModule: TSubBoostDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Release'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -123,7 +117,6 @@ object SubBoostDataModule: TSubBoostDataModule
       MaxInteger = 64
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange

@@ -2,7 +2,7 @@ unit DAV_VSTChannels;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, SysUtils, Windows, Forms, DAV_VSTEffect, DAV_Common,

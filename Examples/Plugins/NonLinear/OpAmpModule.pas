@@ -1,6 +1,6 @@
 unit OpAmpModule;
 
-{$I ASIOVST.inc}
+{$I DAV_Compiler.inc}
 
 interface
 
@@ -13,12 +13,12 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-      ParentWindow: Cardinal);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
   private
     FGain : Double;
   public
+    property Gain: Double read FGain;
   end;
 
 implementation

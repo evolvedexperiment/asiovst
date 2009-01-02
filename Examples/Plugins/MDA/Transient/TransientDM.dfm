@@ -27,7 +27,6 @@ object TransientDataModule: TTransientDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Attack'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -41,7 +40,6 @@ object TransientDataModule: TTransientDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Release'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -58,7 +56,6 @@ object TransientDataModule: TTransientDataModule
       MinInteger = -20
       ShortLabel = 'Output'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -72,7 +69,6 @@ object TransientDataModule: TTransientDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Filter'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Lo <> Hi'
       VSTModule = Owner
@@ -86,7 +82,6 @@ object TransientDataModule: TTransientDataModule
       Max = 100.000000000000000000
       ShortLabel = 'AttHold'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -100,7 +95,6 @@ object TransientDataModule: TTransientDataModule
       Max = 100.000000000000000000
       ShortLabel = 'RelHold'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

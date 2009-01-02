@@ -27,7 +27,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'HatThrs'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -40,7 +39,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'HatRate'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -53,7 +51,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'HatMix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -66,7 +63,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'KikThrs'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -79,7 +75,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'KikTrig'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -92,7 +87,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'KikMix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -105,7 +99,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'SnrThrs'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -118,7 +111,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'SnrTrig'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -131,7 +123,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'SnrMix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -144,7 +135,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Dynamic'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -158,7 +148,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Record'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -170,7 +159,6 @@ object BeatBoxDataModule: TBeatBoxDataModule
       Max = 1.000000000000000000
       ShortLabel = 'ThruMix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

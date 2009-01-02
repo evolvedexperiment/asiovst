@@ -2,7 +2,7 @@ unit DAV_GuiRegister;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, TypInfo,

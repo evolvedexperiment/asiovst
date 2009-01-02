@@ -18,17 +18,14 @@ unit DAV_VSTHost;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
-{$DEFINE GUI}
-{-$DEFINE SearchPluginAndHost}
-{-$DEFINE FlatSrcollBar}
 {$IFNDEF FPC}{$DEFINE MemDLL}{$ENDIF}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
   {$IFDEF MSWINDOWS} Registry, {$ENDIF} Contnrs, SysUtils, Classes, Graphics,
-  {$IFDEF GUI} Controls, Forms, StdCtrls, ComCtrls, Dialogs,
+  {$IFDEF VstHostGUI} Controls, Forms, StdCtrls, ComCtrls, Dialogs,
   {$IFDEF FlatSrcollBar}TFlatScrollbarUnit, {$ENDIF}{$ENDIF}
   DAV_Common, DAV_AudioData, DAV_VSTEffect, DAV_VSTOfflineTask {$IFDEF MemDLL},
   DAV_DLLLoader{$ENDIF};
@@ -42,7 +39,7 @@ type
   TVstSampleRateChangedEvent = procedure(Sender: TObject; SampleRate: Single) of object;
   TVstPinConnectedEvent = function(Sender: TObject; PinNr: Integer; isInput: Boolean): Boolean of object;
   TVstOfflineEvent = procedure(Sender: TObject; VstOfflineTaskPointer: PVstOfflineTaskRecord) of object;
-  {$IFDEF GUI}
+  {$IFDEF VstHostGUI}
   TVstShowEditEvent = procedure(Sender: TObject; Control: TWinControl) of object;
   TGUIStyle = (gsDefault, gsOld, gsList);
   {$ENDIF}
@@ -97,7 +94,7 @@ type
     FMainFunction                  : TMainProc;
     FVstEffect                     : PVstEffect;
     FNeedIdle                      : Boolean;
-    {$IFDEF GUI}
+    {$IFDEF VstHostGUI}
     FGUIControlCreated             : Boolean;
     FGUIStyle                      : TGUIStyle;
     FOnCloseEdit                   : TNotifyEvent;
@@ -147,7 +144,7 @@ type
     procedure SetActive(Value: Boolean);
     procedure SetBlockSize(Value: Integer);
     procedure SetVstDllFileName(Value: TFilename);
-    {$IFDEF GUI}
+    {$IFDEF VstHostGUI}
     procedure SetGUIStyle(const Value: TGUIStyle);
     procedure FormCloseHandler(Sender: TObject; var Action: TCloseAction);
     procedure ListParamChange(Sender: TObject);
@@ -162,7 +159,7 @@ type
     {$ENDIF}
     function GetVSTCanDos: TVstCanDos;
   protected
-    {$IFDEF GUI}
+    {$IFDEF VstHostGUI}
     FGUIControl  : TWinControl;
     FGUIElements : TObjectList;
     procedure EditClose;
@@ -231,7 +228,7 @@ type
     procedure BeginLoadProgram(PatchChunkInfo : PVstPatchChunkInfo);
     procedure BeginSetProgram;
     procedure Close;
-    {$IFDEF GUI}
+    {$IFDEF VstHostGUI}
     procedure CloseEdit;
     procedure EditActivate;
     procedure EditDeactivate;
@@ -273,7 +270,7 @@ type
     procedure SetSampleRate(const Value: Single);
     procedure SetTotalSampleToProcess;
     procedure SetViewPosition(const x, y: Integer);
-    {$IFDEF GUI}
+    {$IFDEF VstHostGUI}
     procedure SetEditKnobMode(Mode : TKnobMode);
     procedure ShowEdit(Control: TWinControl); overload;
     procedure ShowDefaultEditOld(Control: TWinControl);
@@ -310,7 +307,7 @@ type
     property DLLFileName: TFileName read FVstDllFileName write SetVstDllFileName;
     property EditVisible: Boolean read FEditOpen;
     property EffectName: string read GetEffectName;
-    {$IFDEF GUI}
+    {$IFDEF VstHostGUI}
     property GUIControl: TWinControl read FGUIControl;
     property GUIStyle : TGUIStyle read fGUIStyle write SetGUIStyle default gsDefault;
     {$ENDIF}
@@ -343,7 +340,7 @@ type
     property OnAudioMasterWantMidi: TNotifyEvent read FOnAMWantMidi write FOnAMWantMidi;
     property OnProcessEvents: TVstProcessEventsEvent read FOnProcessEvents write FOnProcessEvents;
     property OnVendorSpecific: TVendorSpecificEvent read FOnVendorSpecific write FOnVendorSpecific;
-    {$IFDEF GUI}
+    {$IFDEF VstHostGUI}
     property OnCloseEdit: TNotifyEvent read FOnCloseEdit write FOnCloseEdit;
     property OnShowEdit: TVstShowEditEvent read FOnShowEdit write FOnShowEdit;
     {$ENDIF}
@@ -392,7 +389,7 @@ type
     property OnAudioMasterWantMidi;
     property OnProcessEvents;
     property OnVendorSpecific;
-    {$IFDEF GUI}
+    {$IFDEF VstHostGUI}
     property GUIStyle;
     property OnCloseEdit;
     property OnShowEdit;
@@ -421,7 +418,7 @@ type
   {$IFDEF DELPHI10_UP} {$region 'TVstTimeInformation'} {$ENDIF}
   TCustomVstTimeInformation = class(TPersistent)
   private
-    FOnChange: TNotifyEvent;
+    FOnChange    : TNotifyEvent;
     function GetVTI(Index :Integer) : Integer;
     function GetVTIDouble(Index :Integer) : Double;
     function GetVTIflags :TVstTimeInfoFlags;
@@ -429,7 +426,7 @@ type
     procedure SetVTIDouble(Index :Integer; Value: Double);
     procedure SetVTIflags(Flags:TVstTimeInfoFlags);
   protected
-    FVstTimeInfo        : TVstTimeInfo;
+    FVstTimeInfo : TVstTimeInfo;
     procedure Change; dynamic;
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -502,6 +499,7 @@ type
     procedure SetVstPlugIns(const Value: TVstPlugIns);
     procedure VstTimeInfoChanged(Sender: TObject);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     property Items[Index: Integer]: TCustomVstPlugIn read GetItem; default;
   public
     constructor Create(AOwner: TComponent); override;
@@ -600,7 +598,7 @@ var
   {$IFDEF SearchPluginAndHost}
   HostList       : TObjectList;
   {$ENDIF}
-  {$IFDEF GUI}
+  {$IFDEF VstHostGUI}
   HostDialog     : TCommonDialog;
   HostWindows    : TObjectList;
   {$ENDIF}
@@ -742,7 +740,7 @@ begin
    audioMasterVersion                     : result := FHostVersion;
    audioMasterIdle                        : if Assigned(thePlug) then
                                              begin
-                                              {$IFDEF GUI}
+                                              {$IFDEF VstHostGUI}
                                               thePlug.FNeedIdle := True;
                                               if Assigned(thePlug.FOnAMIdle)
                                                then thePlug.FOnAMIdle(thePlug);
@@ -796,7 +794,7 @@ begin
                                                then thePlug.Idle;
                                              end;
    audioMasterSizeWindow                  : begin
-                                             {$IFDEF GUI}
+                                             {$IFDEF VstHostGUI}
                                              if Assigned(thePlug) then
                                               if pos('DASH', uppercase(thePlug.VendorString)) > 0
                                                then result := 0
@@ -896,7 +894,7 @@ begin
                                              else result := Integer(kVstLangUnknown);
    audioMasterOpenWindow                  : if assigned(ptr) then
                                              begin
-                                             {$IFDEF GUI}
+                                             {$IFDEF VstHostGUI}
                                               with (HostWindows.Items[HostWindows.Add(TForm.Create(theHost))] as TForm) do
                                                begin
                                                 Caption := PVstWindow(ptr).title;
@@ -932,7 +930,7 @@ begin
                                              if Assigned(thePlug.FOnAMEndEdit)
                                               then thePlug.FOnAMEndEdit(thePlug,index);
    audioMasterOpenFileSelector            : begin
-                                             {$IFDEF GUI}
+                                             {$IFDEF VstHostGUI}
                                              if (ptr <> nil) and not Assigned(HostDialog) then
                                               begin
                                                case PVstFileSelect(ptr).Command of
@@ -1003,7 +1001,7 @@ begin
                                              {$ENDIF}
                                             end;
    audioMasterCloseFileSelector           : begin
-                                             {$IFDEF GUI}
+                                             {$IFDEF VstHostGUI}
                                              if assigned(HostDialog) then
                                               case PVstFileSelect(ptr).Command of
                                                kVstFileLoad:
@@ -1154,6 +1152,30 @@ end;
 
 { TCustomVstHost }
 
+procedure TCustomVstHost.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomVstHost then
+  with TCustomVstHost(Dest) do
+   begin
+    FAutoIdle           := Self.FAutoIdle;
+    FCheckStringLengths := Self.FCheckStringLengths;
+    FInputLatency       := Self.FInputLatency;
+    FLanguage           := Self.FLanguage;
+    FnumAutomatable     := Self.FnumAutomatable;
+    FOnCreate           := Self.FOnCreate;
+    FOnDestroy          := Self.FOnDestroy;
+    FOutputLatency      := Self.FOutputLatency;
+    FParamQuan          := Self.FParamQuan;
+    FPlugInDir          := Self.FPlugInDir;
+    FProductString      := Self.FProductString;
+    FVendorString       := Self.FVendorString;
+    FVendorVersion      := Self.FVendorVersion;
+    FVTI.Assign(Self.FVTI);
+    FVstPlugIns.Assign(Self.FVstPlugIns);
+   end
+ else inherited;
+end;
+
 constructor TCustomVstHost.Create(AOwner: TComponent);
 begin
  inherited;
@@ -1179,7 +1201,7 @@ begin
 
    if ValueExists('VstPluginsPath')
     then FPlugInDir := ReadString('VstPluginsPath')
-    {$IFDEF GUI} else FPlugInDir := ExtractFileDir(Application.ExeName){$ENDIF};
+    {$IFDEF VstHostGUI} else FPlugInDir := ExtractFileDir(Application.ExeName){$ENDIF};
    CloseKey;
   finally
    Free;
@@ -1378,7 +1400,7 @@ begin
  FVstVersion        := -1;
  FPlugCategory      := vpcUnknown;
  FVstDllFileName    := '';
- {$IFDEF GUI}
+ {$IFDEF VstHostGUI}
  FGUIStyle          := gsDefault;
  FGUIControlCreated := False;
  {$ENDIF}
@@ -1394,7 +1416,7 @@ begin
    then FreeAndNil(FVstOfflineTasks);
   if FVstDllFileName <> '' then
    try
-    {$IFDEF GUI}
+    {$IFDEF VstHostGUI}
     if EditVisible then CloseEdit;
     if assigned(GUIControl) and FGUIControlCreated
      then FreeAndNil(FGUIControl);
@@ -1405,7 +1427,7 @@ begin
   {$IFDEF MemDLL}
   if assigned(FInternalDllLoader) then
    try
-    {$IFDEF GUI}
+    {$IFDEF VstHostGUI}
     if EditVisible then CloseEdit;
     if assigned(GUIControl) and FGUIControlCreated
      then FreeAndNil(FGUIControl);
@@ -1426,40 +1448,85 @@ var
 begin
  if Dest is TCustomVstPlugIn then with TCustomVstPlugIn(Dest) do
   begin
-   DisplayName                            := Self.DisplayName;
-   ReplaceOrAccumulate                    := Self.ReplaceOrAccumulate;
-   CurrentProcessLevel                    := Self.CurrentProcessLevel;
-   AutomationState                        := Self.AutomationState;
-   {$IFDEF GUI}
-   GUIStyle                               := Self.GUIStyle;
-   OnShowEdit                             := Self.OnShowEdit;
-   OnCloseEdit                            := Self.OnCloseEdit;
+   // assign events
+   FOnAfterLoad                   := Self.FOnAfterLoad;
+   FOnAMAutomate                  := Self.FOnAMAutomate;
+   FOnAMBeginEdit                 := Self.FOnAMBeginEdit;
+   FOnAMEndEdit                   := Self.FOnAMEndEdit;
+   FOnAMIdle                      := Self.FOnAMIdle;
+   FOnAMIOChanged                 := Self.FOnAMIOChanged;
+   FOnAMNeedIdle                  := Self.FOnAMNeedIdle;
+   FOnAMOfflineGetCurrentMetaPass := Self.FOnAMOfflineGetCurrentMetaPass;
+   FOnAMOfflineGetCurrentPass     := Self.FOnAMOfflineGetCurrentPass;
+   FOnAMOfflineRead               := Self.FOnAMOfflineRead;
+   FOnAMOfflineStart              := Self.FOnAMOfflineStart;
+   FOnAMOfflineWrite              := Self.FOnAMOfflineWrite;
+   FOnAMPinConnected              := Self.FOnAMPinConnected;
+   FOnAMSetOutputsampleRate       := Self.FOnAMSetOutputsampleRate;
+   FOnAMUpdateDisplay             := Self.FOnAMUpdateDisplay;
+   FOnAMWantMidi                  := Self.FOnAMWantMidi;
+   FOnProcessEvents               := Self.FOnProcessEvents;
+   FOnVendorSpecific              := Self.FOnVendorSpecific;
+   {$IFDEF VstHostGUI}
+   FOnCloseEdit                   := Self.FOnCloseEdit;
+   FOnShowEdit                    := Self.FOnShowEdit;
    {$ENDIF}
-   OnAudioMasterAutomate                  := Self.OnAudioMasterAutomate;
-   OnAudioMasterIdle                      := Self.OnAudioMasterIdle;
-   OnAudioMasterNeedIdle                  := Self.OnAudioMasterNeedIdle;
-   OnAudioMasterIOChanged                 := Self.OnAudioMasterIOChanged;
-   OnAudioMasterWantMidi                  := Self.OnAudioMasterWantMidi;
-   OnAudioMasterOfflineStart              := Self.OnAudioMasterOfflineStart;
-   OnAudioMasterOfflineRead               := Self.OnAudioMasterOfflineRead;
-   OnAudioMasterOfflineWrite              := Self.OnAudioMasterOfflineWrite;
-   OnAudioMasterOfflineGetCurrentPass     := Self.OnAudioMasterOfflineGetCurrentPass;
-   OnAudioMasterOfflineGetCurrentMetaPass := Self.OnAudioMasterOfflineGetCurrentMetaPass;
-   OnAudioMasterSetOutputsampleRate       := Self.OnAudioMasterSetOutputsampleRate;
-   OnAudioMasterUpdateDisplay             := Self.OnAudioMasterUpdateDisplay;
-   OnAudioMasterBeginEdit                 := Self.OnAudioMasterBeginEdit;
-   OnAudioMasterEndEdit                   := Self.OnAudioMasterEndEdit;
-   OnAudioMasterPinConnected              := Self.OnAudioMasterPinConnected;
-   OnAfterLoad                            := Self.OnAfterLoad;
-   OnProcessEvents                        := Self.OnProcessEvents;
-   OnVendorSpecific                       := Self.OnVendorSpecific;
-   DLLFileName                            := Self.DLLFileName;
-   Active                                 := Self.Active;
-   FProgramNr                             := Self.ProgramNr;
 
-   // copy chunk
-   i := Self.GetChunk(@p);
-   TCustomVstPlugIn(Dest).SetChunk(p, i)
+   FDisplayName                   := Self.FDisplayName;
+   {$IFDEF VstHostGUI}
+   FGUIStyle                      := Self.FGUIStyle;
+   {$ENDIF}
+
+   FVstOfflineTasks.Assign(Self.FVstOfflineTasks);
+
+   if Self.FLoaded then
+    begin
+     if FileExists(Self.FVstDllFileName)
+      then LoadFromFile(Self.FVstDllFileName) else
+     {$IFDEF MemDLL}
+     if assigned(Self.FInternalDllLoader)
+      then FInternalDllLoader.Assign(Self.FInternalDllLoader) else
+     {$ENDIF}
+     if assigned(Self.FVstEffect)
+      then LoadFromVSTEffect(Self.FVstEffect);
+
+     Active := Self.FActive;
+
+     {$IFDEF VstHostGUI}
+     if Self.FEditOpen then
+      begin
+       ShowEdit(Self.FGUIControl);
+      end;
+     {$ENDIF}
+
+     // copy chunk
+     try
+      i := Self.GetChunk(@p);
+      TCustomVstPlugIn(Dest).SetChunk(p, i)
+     except
+     end;
+    end
+   else
+    begin
+     if FLoaded then Unload;
+     FLoaded            := False;
+     FActive            := False;
+     FEditOpen          := False;
+     FMainFunction      := nil;
+     {$IFDEF VstHostGUI}
+     FGUIControlCreated := False;
+     {$ENDIF}
+     FAutomationState           := Self.FAutomationState;
+     FNeedIdle                  := Self.FNeedIdle;
+     FPlugCategory              := Self.FPlugCategory;
+     FProcessLevel              := Self.FProcessLevel;
+     FProgramNr                 := Self.FProgramNr;
+     FReplaceOrAccumulate       := Self.FReplaceOrAccumulate;
+     FVstVersion                := Self.FVstVersion;
+     FWantMidi                  := Self.FWantMidi;
+     FVSTCanDos                 := Self.FVSTCanDos;
+     FVSTCanDosScannedComplete  := Self.FVSTCanDosScannedComplete;
+    end;
   end
  else inherited;
 end;
@@ -1523,7 +1590,7 @@ end;
 
 procedure TCustomVstPlugIn.Close;
 begin
- {$IFDEF GUI}
+ {$IFDEF VstHostGUI}
  while FEditOpen do CloseEdit;
  {$ENDIF}
  if FActive then VstDispatch(effClose);
@@ -1751,7 +1818,7 @@ function TCustomVstPlugIn.GetRect: TRect;
 var
   theRect: ERect;
 begin
- {$IFDEF GUI}
+ {$IFDEF VstHostGUI}
  theRect := EditGetRect;
  {$ELSE}
  theRect := Rect(0, 0, 0, 0);
@@ -1759,7 +1826,7 @@ begin
  result := Classes.Rect(theRect.left, theRect.Top, theRect.right, theRect.Bottom);
 end;
 
-{$IFDEF GUI}
+{$IFDEF VstHostGUI}
 function TCustomVstPlugIn.EditGetRect: ERect;
 var
   temp: PPERect;
@@ -2514,7 +2581,7 @@ begin
   else result := -1;
 end;
 
-{$IFDEF GUI}
+{$IFDEF VstHostGUI}
 function TCustomVstPlugIn.EditKeyDown(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
 var
   IntMod : Integer;
@@ -2764,6 +2831,7 @@ begin
   FLoaded := True;
  except
   Unload;
+  raise;
  end;
 end;
 
@@ -2816,6 +2884,7 @@ begin
   FLoaded := True;
  except
   Unload;
+  raise;
  end;
 end;
 
@@ -2837,6 +2906,7 @@ begin
   FLoaded := True;
  except
   Unload;
+  raise;
  end;
 end;
 {$ENDIF}
@@ -3326,7 +3396,7 @@ begin
   else result := 0;
 end;
 
-{$IFDEF GUI}
+{$IFDEF VstHostGUI}
 procedure TCustomVstPlugIn.SetGUIStyle(const Value: TGUIStyle);
 begin
  if FEditOpen
@@ -3343,12 +3413,12 @@ initialization
   {$IFDEF SearchPluginAndHost}
   HostList    := TObjectList.Create(False);
   {$ENDIF}
-  {$IFDEF GUI}
+  {$IFDEF VstHostGUI}
   HostWindows := TObjectList.Create;
   {$ENDIF}
 
 finalization
-  {$IFDEF GUI}
+  {$IFDEF VstHostGUI}
   FreeAndNil(HostWindows);
   {$ENDIF}
   {$IFDEF SearchPluginAndHost}

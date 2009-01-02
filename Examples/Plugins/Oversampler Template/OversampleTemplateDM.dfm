@@ -27,7 +27,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       MaxInteger = 1
       ShortLabel = 'Oversmp'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOversamplingChange
@@ -45,7 +44,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       MinInteger = 1
       ShortLabel = 'Factor'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOSFactorChange
@@ -61,7 +59,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       MaxInteger = 16
       ShortLabel = 'Pre-Ord'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamPreFilterOrderValue
@@ -76,7 +73,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Pre-BW'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -92,7 +88,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       MaxInteger = 6
       ShortLabel = 'Pre-Chr'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamCharChange
@@ -108,7 +103,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       MaxInteger = 16
       ShortLabel = 'Pst-Ord'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamPostOrderChange
@@ -123,7 +117,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Pst-BW'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -139,7 +132,6 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       MaxInteger = 6
       ShortLabel = 'Pst-Chr'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamPostCharChange

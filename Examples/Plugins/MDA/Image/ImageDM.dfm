@@ -29,7 +29,6 @@ object ImageDataModule: TImageDataModule
       MaxInteger = 3
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterModeChange
@@ -43,7 +42,6 @@ object ImageDataModule: TImageDataModule
       Max = 1.000000000000000000
       ShortLabel = 'S Width'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -57,7 +55,6 @@ object ImageDataModule: TImageDataModule
       Max = 1.000000000000000000
       ShortLabel = 'S Pan'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'L<->R'
       VSTModule = Owner
@@ -71,7 +68,6 @@ object ImageDataModule: TImageDataModule
       Max = 1.000000000000000000
       ShortLabel = 'M Level'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -85,7 +81,6 @@ object ImageDataModule: TImageDataModule
       Max = 1.000000000000000000
       ShortLabel = 'M Pan'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'L<->R'
       VSTModule = Owner
@@ -102,7 +97,6 @@ object ImageDataModule: TImageDataModule
       MinInteger = -20
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

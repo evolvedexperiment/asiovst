@@ -34,7 +34,6 @@ object OversampledTanhModule: TOversampledTanhModule
       MinInteger = 1
       ShortLabel = 'CoefCnt'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamCoeffsChange
@@ -48,7 +47,6 @@ object OversampledTanhModule: TOversampledTanhModule
       Max = 1.000000000000000000
       ShortLabel = 'Transit'
       SmallStepFloat = 0.050000000745058060
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       VSTModule = Owner
       OnParameterChange = ParamTransitionChange

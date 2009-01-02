@@ -25,7 +25,6 @@ object VTVSTModule: TVTVSTModule
       MinInteger = -12
       ShortLabel = 'LowGain'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -43,7 +42,6 @@ object VTVSTModule: TVTVSTModule
       MinInteger = -12
       ShortLabel = 'HiGain'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -59,7 +57,6 @@ object VTVSTModule: TVTVSTModule
       MaxInteger = 1
       ShortLabel = 'LowByps'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamLowBypassChange
@@ -74,7 +71,6 @@ object VTVSTModule: TVTVSTModule
       MaxInteger = 1
       ShortLabel = 'HiByps'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamHiBypassChange
@@ -91,7 +87,6 @@ object VTVSTModule: TVTVSTModule
       MinInteger = 1
       ShortLabel = 'Drive'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamDriveChange
@@ -109,7 +104,6 @@ object VTVSTModule: TVTVSTModule
       MinInteger = 1
       ShortLabel = 'Channel'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamChannelChange
@@ -127,7 +121,6 @@ object VTVSTModule: TVTVSTModule
       MinInteger = -12
       ShortLabel = 'OutGain'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

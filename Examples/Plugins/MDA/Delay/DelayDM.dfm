@@ -26,7 +26,6 @@ object DelayDataModule: TDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'L Delay'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -39,7 +38,6 @@ object DelayDataModule: TDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'R Delay'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -52,7 +50,6 @@ object DelayDataModule: TDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Feedbac'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -64,7 +61,6 @@ object DelayDataModule: TDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Fb Tone'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Lo <> Hi'
       VSTModule = Owner
@@ -77,7 +73,6 @@ object DelayDataModule: TDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'FX Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -90,7 +85,6 @@ object DelayDataModule: TDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

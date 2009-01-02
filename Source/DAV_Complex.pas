@@ -2,7 +2,7 @@ unit DAV_Complex;
 
 interface
 
-{$I ASIOVST.inc}
+{$I DAV_Compiler.inc}
 
 type
   PComplexSingle = ^TComplexSingle;

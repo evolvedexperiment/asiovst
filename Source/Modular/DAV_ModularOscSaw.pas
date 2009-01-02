@@ -2,7 +2,7 @@ unit DAV_ModularOscSaw;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_Common, DAV_Complex, DAV_ModularBaseComponent, DAV_ModularBaseOsc;
@@ -27,20 +27,20 @@ end;
 
 procedure TDspOscSaw.Process(var Data: Single; const channel: integer);
 begin
-  fPosition[channel].Re := fPosition[channel].Re+FAngle.Re;
-  if fPosition[channel].Re > 1 then
-    fPosition[channel].Re := Frac(fPosition[channel].Re);
+  FPosition[channel].Re := FPosition[channel].Re + FAngle.Re;
+  if FPosition[channel].Re > 1 then
+    FPosition[channel].Re := Frac(FPosition[channel].Re);
 
-  Data := (1 - fPosition[channel].Re * 2) * fAmplitude + FDCOffset;
+  Data := (1 - FPosition[channel].Re * 2) * FAmplitude + FDCOffset;
 end;
 
 procedure TDspOscSaw.Process(var Data: Double; const channel: integer);
 begin
-  fPosition[channel].Re := fPosition[channel].Re + FAngle.Re;
-  if fPosition[channel].Re > 1 then
-    fPosition[channel].Re := f_Frac(fPosition[channel].Re);
+  FPosition[channel].Re := FPosition[channel].Re + FAngle.Re;
+  if FPosition[channel].Re > 1 then
+    FPosition[channel].Re := f_Frac(FPosition[channel].Re);
 
-  Data := (1 - fPosition[channel].Re * 2) * fAmplitude + FDCOffset;
+  Data := (1 - FPosition[channel].Re * 2) * FAmplitude + FDCOffset;
 end;
 
 end.

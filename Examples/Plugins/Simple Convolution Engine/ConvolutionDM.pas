@@ -2,7 +2,7 @@ unit ConvolutionDM;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 {-$DEFINE Use_IPPS}
 
 uses
@@ -193,8 +193,6 @@ asm
 end;
 
 procedure TConvolutionDataModule.PerformConvolution(Signal: PDAVSingleFixedArray);
-var
-  Bin  : Integer;
 begin
  FFft.PerformFFT(FSignalFreq, Signal);
  ComplexMultiply(@FSignalFreq^[0], @FFilterFreq^[0], FFFTSizeHalf);

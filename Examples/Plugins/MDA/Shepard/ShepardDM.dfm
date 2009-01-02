@@ -27,7 +27,6 @@ object ShepardDataModule: TShepardDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mode'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterModeChange
@@ -43,7 +42,6 @@ object ShepardDataModule: TShepardDataModule
       MinInteger = -100
       ShortLabel = 'Rate'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -60,7 +58,6 @@ object ShepardDataModule: TShepardDataModule
       MinInteger = -20
       ShortLabel = 'Output'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

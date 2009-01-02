@@ -29,7 +29,6 @@ object VocInputDataModule: TVocInputDataModule
       MaxInteger = 2
       ShortLabel = 'Trackin'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterTrackingDisplay
@@ -42,7 +41,6 @@ object VocInputDataModule: TVocInputDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Pitch'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -54,7 +52,6 @@ object VocInputDataModule: TVocInputDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Breath'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -67,7 +64,6 @@ object VocInputDataModule: TVocInputDataModule
       Max = 100.000000000000000000
       ShortLabel = 'SThresh'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -84,7 +80,6 @@ object VocInputDataModule: TVocInputDataModule
       MinInteger = 45
       ShortLabel = 'MaxFreq'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterMaxFrequencyDisplay

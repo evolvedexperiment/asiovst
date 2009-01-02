@@ -2,6 +2,8 @@ unit DAV_SEModule;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Windows, Classes, SysUtils, DAV_Common, DAV_SECommon;
 

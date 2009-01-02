@@ -2,7 +2,7 @@ object PhaserForm: TPhaserForm
   Left = 310
   Top = 168
   BorderStyle = bsNone
-  Caption = 'ITA Phaser'
+  Caption = 'Phaser'
   ClientHeight = 301
   ClientWidth = 383
   Color = clBtnFace
@@ -13,9 +13,10 @@ object PhaserForm: TPhaserForm
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Image1: TImage
+  object BackgroundImage: TImage
     Left = 0
     Top = 0
     Width = 383
@@ -11272,7 +11273,7 @@ object PhaserForm: TPhaserForm
       90F52E90F52E90F52E90F52E90F52E90F52F91F52E90F52E90F52E90F52E90F5
       2E90F52E90F52E90F52E8FF52C8FF5000000}
   end
-  object LbVDepth: TLabel
+  object LbDepthValue: TLabel
     Left = 190
     Top = 102
     Width = 89
@@ -11287,79 +11288,79 @@ object PhaserForm: TPhaserForm
     ParentFont = False
     Transparent = True
   end
-  object Label1: TLabel
+  object LbDepth: TLabel
     Left = 8
     Top = 84
-    Width = 46
-    Height = 16
+    Width = 43
+    Height = 19
     Caption = 'Depth:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
-    Font.Name = 'MS Sans Serif'
+    Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
   end
-  object Label2: TLabel
+  object LbFeedback: TLabel
     Left = 9
     Top = 119
-    Width = 75
-    Height = 16
+    Width = 65
+    Height = 19
     Caption = 'Feedback:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
-    Font.Name = 'MS Sans Serif'
+    Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
   end
-  object Label3: TLabel
+  object LbMinimum: TLabel
     Left = 9
     Top = 154
-    Width = 65
-    Height = 16
+    Width = 59
+    Height = 19
     Caption = 'Minimum:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
-    Font.Name = 'MS Sans Serif'
+    Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
   end
-  object Label4: TLabel
+  object LbMaximum: TLabel
     Left = 9
     Top = 190
-    Width = 69
-    Height = 16
+    Width = 63
+    Height = 19
     Caption = 'Maximum:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
-    Font.Name = 'MS Sans Serif'
+    Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
   end
-  object Label5: TLabel
+  object LbRate: TLabel
     Left = 9
     Top = 226
-    Width = 38
-    Height = 16
+    Width = 34
+    Height = 19
     Caption = 'Rate:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
-    Font.Name = 'MS Sans Serif'
+    Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
   end
-  object LbVFeedback: TLabel
+  object LbFeedbackValue: TLabel
     Left = 190
-    Top = 136
+    Top = 138
     Width = 89
     Height = 13
     Alignment = taCenter
@@ -11372,7 +11373,7 @@ object PhaserForm: TPhaserForm
     ParentFont = False
     Transparent = True
   end
-  object LbVMinimum: TLabel
+  object LbMinimumValue: TLabel
     Left = 190
     Top = 172
     Width = 89
@@ -11387,9 +11388,9 @@ object PhaserForm: TPhaserForm
     ParentFont = False
     Transparent = True
   end
-  object LbVMaximum: TLabel
+  object LbMaximumValue: TLabel
     Left = 190
-    Top = 207
+    Top = 209
     Width = 89
     Height = 13
     Alignment = taCenter
@@ -11402,7 +11403,7 @@ object PhaserForm: TPhaserForm
     ParentFont = False
     Transparent = True
   end
-  object LbVRate: TLabel
+  object LbRateValue: TLabel
     Left = 190
     Top = 244
     Width = 89
@@ -11417,23 +11418,23 @@ object PhaserForm: TPhaserForm
     ParentFont = False
     Transparent = True
   end
-  object Label6: TLabel
+  object LbStages: TLabel
     Left = 9
     Top = 261
-    Width = 54
-    Height = 16
+    Width = 48
+    Height = 19
     Caption = 'Stages:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
-    Font.Name = 'MS Sans Serif'
+    Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
   end
-  object Label7: TLabel
+  object LbStagesValue: TLabel
     Left = 190
-    Top = 276
+    Top = 279
     Width = 89
     Height = 13
     Alignment = taCenter
@@ -11447,9 +11448,9 @@ object PhaserForm: TPhaserForm
     Transparent = True
   end
   object SBFeedback: TScrollBar
-    Left = 92
+    Left = 80
     Top = 119
-    Width = 276
+    Width = 288
     Height = 16
     Max = 1000
     PageSize = 0
@@ -11457,29 +11458,29 @@ object PhaserForm: TPhaserForm
     OnChange = SBFeedbackChange
   end
   object SBMinimum: TScrollBar
-    Left = 92
+    Left = 80
     Top = 154
-    Width = 276
+    Width = 288
     Height = 16
-    Max = 20000
+    Max = 1000
     PageSize = 0
     TabOrder = 1
     OnChange = SBMinimumChange
   end
   object SBMaximum: TScrollBar
-    Left = 92
+    Left = 80
     Top = 190
-    Width = 276
+    Width = 288
     Height = 16
-    Max = 20000
+    Max = 1000
     PageSize = 0
     TabOrder = 2
     OnChange = SBMaximumChange
   end
   object SBRate: TScrollBar
-    Left = 92
+    Left = 80
     Top = 226
-    Width = 276
+    Width = 288
     Height = 16
     Max = 10000
     PageSize = 0
@@ -11487,9 +11488,9 @@ object PhaserForm: TPhaserForm
     OnChange = SBRateChange
   end
   object SBDepth: TScrollBar
-    Left = 92
+    Left = 80
     Top = 84
-    Width = 276
+    Width = 288
     Height = 16
     Max = 1300
     PageSize = 0
@@ -11497,9 +11498,9 @@ object PhaserForm: TPhaserForm
     OnChange = SBDepthChange
   end
   object SBStages: TScrollBar
-    Left = 92
+    Left = 80
     Top = 261
-    Width = 276
+    Width = 288
     Height = 16
     Max = 5
     Min = 1

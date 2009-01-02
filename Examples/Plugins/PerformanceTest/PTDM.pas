@@ -1,6 +1,6 @@
 unit PTDM;
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 interface
 

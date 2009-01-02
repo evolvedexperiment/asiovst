@@ -2,7 +2,7 @@ unit DAV_DspChebyshevFilter;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_Common, DAV_DspFilter;
@@ -107,6 +107,10 @@ implementation
 
 uses
   Math, SysUtils;
+
+const
+  CHalf32 : Single = 0.5;
+  CHalf64 : Double = 0.5;
 
 { TCustomChebyshevFilter }
 

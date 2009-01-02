@@ -10,10 +10,11 @@ uses
 type
   TCustomWrapperDataModule = class(TVSTModule)
     VstHost: TVstHost;
-    procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
-    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -25,7 +26,6 @@ type
     procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleProcessEvents(Sender: TObject; Events: PVstEvents);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
@@ -49,6 +49,9 @@ implementation
 uses
   Math, Dialogs, Controls, PNGImage, DAV_VSTParameters,
   DAV_VSTModuleWithPrograms;
+
+resourcestring
+  RCStrCouldNotLoadGUI = 'Could not load GUI definition, defaults used';
 
 function EnumNamesFunc(hModule:THandle; lpType, lpName:PChar; lParam: DWORD): Boolean; stdcall;
 begin
@@ -105,7 +108,7 @@ begin
       end;
     if PI.numInputs  > FMaxInputs  then FMaxInputs  := PI.numInputs;
     if PI.numOutputs > FMaxOutputs then FMaxOutputs := PI.numOutputs;
-    if PI.numPrograms > 0 then PI.SetProgram(0); 
+    if PI.numPrograms > 0 then PI.SetProgram(0);
    end;
  finally
   FreeAndNil(RN);
@@ -115,6 +118,19 @@ end;
 procedure TCustomWrapperDataModule.VSTModuleDestroy(Sender: TObject);
 begin
  VSTHost.VstPlugIns.Clear;
+end;
+
+procedure TCustomWrapperDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ // Todo
+end;
+
+procedure TCustomWrapperDataModule.VSTModuleClose(Sender: TObject);
+var
+  n : Integer;
+begin
+ for n := 0 to VstHost.Count - 1
+  do VstHost[n].Active := False;
 end;
 
 procedure TCustomWrapperDataModule.VSTModuleEditClose(Sender: TObject;
@@ -223,7 +239,7 @@ begin
   begin
    FontSize      := 8;
    FontAntiAlias := gaaNone;
-   ShowMessage('Could not load GUI definition, defaults used');
+   ShowMessage(RCStrCouldNotLoadGUI);
   end;
 
  with GUI do
@@ -303,19 +319,6 @@ begin
    begin
     Parameter[Tag] := Position;
    end;
-end;
-
-procedure TCustomWrapperDataModule.VSTModuleOpen(Sender: TObject);
-begin
- // Todo
-end;
-
-procedure TCustomWrapperDataModule.VSTModuleClose(Sender: TObject);
-var
-  n : Integer;
-begin
- for n := 0 to VstHost.Count - 1
-  do VstHost[n].Active := False;
 end;
 
 procedure TCustomWrapperDataModule.VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);

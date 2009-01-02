@@ -31,7 +31,6 @@ object DubDelayDataModule: TDubDelayDataModule
       MinInteger = -40
       ShortLabel = 'Thresho'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -45,7 +44,6 @@ object DubDelayDataModule: TDubDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Ratio'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = ':1'
       VSTModule = Owner
@@ -60,7 +58,6 @@ object DubDelayDataModule: TDubDelayDataModule
       MaxInteger = 40
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -74,7 +71,6 @@ object DubDelayDataModule: TDubDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Attack'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = #181's'
       VSTModule = Owner
@@ -88,7 +84,6 @@ object DubDelayDataModule: TDubDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Release'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -102,7 +97,6 @@ object DubDelayDataModule: TDubDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Limiter'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -116,7 +110,6 @@ object DubDelayDataModule: TDubDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Gate Th'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -130,7 +123,6 @@ object DubDelayDataModule: TDubDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Gate At'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = #181's'
       VSTModule = Owner
@@ -144,7 +136,6 @@ object DubDelayDataModule: TDubDelayDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Gate Re'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -158,7 +149,6 @@ object DubDelayDataModule: TDubDelayDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

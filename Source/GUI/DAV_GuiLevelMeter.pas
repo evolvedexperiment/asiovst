@@ -1,8 +1,8 @@
 unit DAV_GuiLevelMeter;
 
-{$I ..\ASIOVST.INC}
-
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}

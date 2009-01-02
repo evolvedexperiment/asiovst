@@ -10,7 +10,7 @@ unit DAV_OpenToolsUtils;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, TypInfo,

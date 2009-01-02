@@ -2,9 +2,7 @@ unit DAV_DspFftReal2Complex;
 
 interface
 
-{$I ASIOVST.inc}
-
-{$DEFINE PUREPASCAL}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Windows, Classes, DAV_Common, DAV_Complex;
@@ -1726,7 +1724,7 @@ end;
 procedure TFftReal2ComplexNativeFloat32.PerformIFFTTwo32(
   const FreqDomain: PDAVComplexSingleFixedArray;
   const TimeDomain: PDAVSingleFixedArray);
-{$IFNDEF PUREPASCAL}
+{$IFDEF PUREPASCAL}
 var
   Tmp : Array [0..1] of Double;
   FD  : PDAV2ComplexSingleArray absolute FreqDomain;
@@ -1744,7 +1742,7 @@ end;
 const
   c2 : Double = 2;
 asm
- fld (FreqDomain+8).Single
+ fld (FreqDomain + 8).Single
  fld FreqDomain.Single
  fld st(0)
  fadd st(0),st(2)
@@ -2752,6 +2750,24 @@ begin
      end;
    end;
  end;
+end;
+
+procedure TFftReal2ComplexNativeFloat64.Rescale(const Data: PDAVDoubleFixedArray);
+var
+  i : Integer;
+  s : Double;
+begin
+ s :=  1 / FFTSize;
+ for i := 0 to FFTSize - 1 do Data^[i] := s * Data^[i];
+end;
+
+procedure TFftReal2ComplexNativeFloat64.RescaleSqrt(const Data: PDAVDoubleFixedArray);
+var
+  i : Integer;
+  s : Double;
+begin
+ s :=  sqrt(1 / FFTSize);
+ for i := 0 to FFTSize - 1 do Data^[i] := s * Data^[i];
 end;
 
 procedure TFftReal2ComplexNativeFloat64.CalculateTrigoLUT;
@@ -3793,25 +3809,6 @@ procedure TFftReal2ComplexNativeFloat64.PerformIFFTZero64(const FreqDomain, Time
 begin
  TimeDomain^[0] := FreqDomain^[0];
 end;
-
-procedure TFftReal2ComplexNativeFloat64.Rescale(const Data: PDAVDoubleFixedArray);
-var
-  i : Integer;
-  s : Double;
-begin
- s :=  1 / FFTSize;
- for i := 0 to FFTSize - 1 do Data^[i] := s * Data^[i];
-end;
-
-procedure TFftReal2ComplexNativeFloat64.RescaleSqrt(const Data: PDAVDoubleFixedArray);
-var
-  i : Integer;
-  s : Double;
-begin
- s :=  sqrt(1 / FFTSize);
- for i := 0 to FFTSize - 1 do Data^[i] := s * Data^[i];
-end;
-
 {$ELSE}
 asm
  fld FreqDomain.Double

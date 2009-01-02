@@ -2,6 +2,8 @@ unit DAV_AudioFileWAV;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Classes, Contnrs, SysUtils, DAV_Common, DAV_AudioFile, DAV_WaveFileTypes,
   DAV_ChunkClasses, DAV_ChunkWaveFile;
@@ -14,27 +16,27 @@ type
 
   TWaveChunk = class(TComponent)
   private
-    fChunk           : TCustomChunk;
-    fCollectionItem  : TCollectionItem;
+    FChunk           : TCustomChunk;
+    FCollectionItem  : TCollectionItem;
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
     destructor Destroy; override;
     class function CanApplyTo(aComponent: TPersistent): Boolean; virtual;
     class function GetDisplayName: string; virtual;
-    property CollectionItem: TCollectionItem read fCollectionItem;
-    property Chunk: TCustomChunk read fChunk;
+    property CollectionItem: TCollectionItem read FCollectionItem;
+    property Chunk: TCustomChunk read FChunk;
   end;
 
   TWaveChunkCollectionItem = class(TCollectionItem)
   private
-    fSubPropertiesSize   : Integer;
-    fSubProperties       : Pointer;
-    fWaveChunkParameters : string;
-    fWaveChunk           : TWaveChunk;
-    fEnabled             : Boolean;
-    fWaveChunkClass      : TWaveChunkClass;
-    fWaveChunkClassName  : string;
+    FSubPropertiesSize   : Integer;
+    FSubProperties       : Pointer;
+    FWaveChunkParameters : string;
+    FWaveChunk           : TWaveChunk;
+    FEnabled             : Boolean;
+    FWaveChunkClass      : TWaveChunkClass;
+    FWaveChunkClassName  : string;
     function GetWaveChunkClass: TWaveChunkClass;
     procedure ReadParams(S: TStream);
     procedure SetWaveChunkClassName(const Value: string);
@@ -48,7 +50,7 @@ type
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     function GetDisplayName: string; override;
-    property WaveChunk: TWaveChunk read fWaveChunk write fWaveChunk;
+    property WaveChunk: TWaveChunk read FWaveChunk write FWaveChunk;
   published
     property Enabled: Boolean read FEnabled write FEnabled default True;
     property WaveChunkClass: TWaveChunkClass read GetWaveChunkClass write SetWaveChunkClass;
@@ -71,12 +73,12 @@ type
 
   TCustomAudioFileWAV = class(TCustomAudioFile)
   private
-    fTotalNrOfSamples : Cardinal;
-    fFormatChunk      : TFormatChunk;
-//    fBextChunk        : PBextRecord;
-//    fCartChunk        : PCartRecord;
-//    fFileTags         : TObjectList;
-    fBytesPerSample   : Integer;
+    FTotalNrOfSamples : Cardinal;
+    FFormatChunk      : TFormatChunk;
+//    FBextChunk        : PBextRecord;
+//    FCartChunk        : PCartRecord;
+//    FFileTags         : TObjectList;
+    FBytesPerSample   : Integer;
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
@@ -95,7 +97,7 @@ type
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
     property BitsPerSample: Byte read GetBitsPerSample write SetBitsPerSample;
-    property BytesPerSample: Integer read fBytesPerSample;
+    property BytesPerSample: Integer read FBytesPerSample;
     property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
   end;
 
@@ -153,8 +155,8 @@ end;
 
 destructor TWaveChunk.Destroy;
 begin
- if assigned(fChunk)
-  then FreeAndNil(fChunk);
+ if assigned(FChunk)
+  then FreeAndNil(FChunk);
  inherited;
 end;
 
@@ -162,8 +164,8 @@ procedure TWaveChunk.AssignTo(Dest: TPersistent);
 begin
  if (Dest is TWaveChunk) then
   begin
-   TWaveChunk(Dest).fChunk.Assign(fChunk);
-   TWaveChunk(Dest).fCollectionItem.Assign(fCollectionItem);
+   TWaveChunk(Dest).FChunk.Assign(FChunk);
+   TWaveChunk(Dest).FCollectionItem.Assign(FCollectionItem);
   end
  else inherited;
 end;
@@ -183,14 +185,14 @@ end;
 constructor TWaveChunkCollectionItem.Create(Collection: TCollection);
 begin
  inherited;
- fEnabled := True;
- fSubProperties := nil;
+ FEnabled := True;
+ FSubProperties := nil;
 end;
 
 destructor TWaveChunkCollectionItem.Destroy;
 begin
- if fSubProperties <> nil then FreeMem(fSubProperties);
- if fWaveChunk <> nil then fWaveChunk.Free;
+ if FSubProperties <> nil then FreeMem(FSubProperties);
+ if FWaveChunk <> nil then FWaveChunk.Free;
  inherited;
 end;
 
@@ -201,7 +203,7 @@ begin
    begin
     Enabled := Self.Enabled;
     WaveChunkClassName := Self.WaveChunkClassName;
-    fWaveChunk.Assign(Self.fWaveChunk);
+    FWaveChunk.Assign(Self.FWaveChunk);
    end
  else inherited;
 end;
@@ -209,19 +211,19 @@ end;
 procedure TWaveChunkCollectionItem.DefineProperties(Filer: TFiler);
 begin
  inherited;
- Filer.DefineBinaryProperty('WaveChunkParameters', ReadParams, WriteParams, (fWaveChunk <> nil));
+ Filer.DefineBinaryProperty('WaveChunkParameters', ReadParams, WriteParams, (FWaveChunk <> nil));
 end;
 
 function TWaveChunkCollectionItem.GetDisplayName: string;
 begin
- if fWaveChunk = nil
+ if FWaveChunk = nil
   then Result := 'Wave Chunk'
-  else Result := fWaveChunk.GetDisplayName;
+  else Result := FWaveChunk.GetDisplayName;
 end;
 
 function TWaveChunkCollectionItem.GetWaveChunkClass: TWaveChunkClass;
 begin
- result := fWaveChunkClass;
+ result := FWaveChunkClass;
 end;
 
 procedure TWaveChunkCollectionItem.Loaded;
@@ -230,17 +232,17 @@ var
   Reader: TReader;
 begin
  inherited;
- if fSubProperties <> nil then
+ if FSubProperties <> nil then
   begin
    MS := TMemoryStream.Create;
    try
-    MS.SetSize(fSubPropertiesSize);
-    move(fSubProperties^, MS.Memory^, MS.Size);
+    MS.SetSize(FSubPropertiesSize);
+    move(FSubProperties^, MS.Memory^, MS.Size);
     Reader := TReader.Create(MS, 4096);
     try
      Reader.IgnoreChildren := False;
      WaveChunkClassName := Reader.ReadString;
-     Reader.ReadRootComponent(fWaveChunk);
+     Reader.ReadRootComponent(FWaveChunk);
     finally
      Reader.Free;
     end;
@@ -254,11 +256,11 @@ procedure TWaveChunkCollectionItem.ReadParams(S: TStream);
 begin
  if S.Size > 0 then
   begin
-   fSubPropertiesSize := S.Size;
-   Getmem(fSubProperties, S.Size);
-   S.Read(fSubProperties^, S.Size);
+   FSubPropertiesSize := S.Size;
+   Getmem(FSubProperties, S.Size);
+   S.Read(FSubProperties^, S.Size);
   end
- else fSubPropertiesSize := 0;
+ else FSubPropertiesSize := 0;
 end;
 
 procedure TWaveChunkCollectionItem.SetWaveChunkClass(const AWaveChunkClass: TWaveChunkClass);
@@ -274,15 +276,15 @@ begin
 
  FoundFilter:
 
- oldFilter := fWaveChunk;
+ oldFilter := FWaveChunk;
 
- fWaveChunkClass := AWaveChunkClass;
- if fWaveChunkClass <> nil then
+ FWaveChunkClass := AWaveChunkClass;
+ if FWaveChunkClass <> nil then
   begin
-   fWaveChunk := AWaveChunkClass.Create(nil); // TWaveChunkCollection(GetOwner)
-   fWaveChunk.FCollectionItem := Self;
+   FWaveChunk := AWaveChunkClass.Create(nil); // TWaveChunkCollection(GetOwner)
+   FWaveChunk.FCollectionItem := Self;
    if oldFilter <> nil
-    then fWaveChunk.Assign(oldFilter);
+    then FWaveChunk.Assign(oldFilter);
   end;
 
  if oldFilter <> nil
@@ -301,17 +303,17 @@ begin
     raise Exception.Create(Value + ' has not been registered');
   end;
 
- fWaveChunkClass := TheClass;
- if fWaveChunk <> nil then
+ FWaveChunkClass := TheClass;
+ if FWaveChunk <> nil then
   begin
-   fWaveChunk.Free;
-   fWaveChunk := nil;
+   FWaveChunk.Free;
+   FWaveChunk := nil;
   end;
  FWaveChunkClassName := Value;
  if TheClass <> nil then
   begin
-   fWaveChunk := TheClass.Create(nil); // TWaveChunkList(GetOwner).
-   fWaveChunk.FCollectionItem := Self;
+   FWaveChunk := TheClass.Create(nil); // TWaveChunkList(GetOwner).
+   FWaveChunk.FCollectionItem := Self;
   end;
 end;
 
@@ -324,7 +326,7 @@ begin
   try
    IgnoreChildren := False;
    WriteString(FWaveChunkClassName);
-   WriteRootComponent(fWaveChunk);
+   WriteRootComponent(FWaveChunk);
   finally
    Free;
   end;
@@ -378,38 +380,38 @@ end;
 constructor TCustomAudioFileWAV.Create(AOwner: TComponent);
 begin
  inherited;
- fFormatChunk := TFormatChunk.Create;
+ FFormatChunk := TFormatChunk.Create;
 end;
 
 destructor TCustomAudioFileWAV.Destroy;
 begin
- FreeAndNil(fFormatChunk);
+ FreeAndNil(FFormatChunk);
  inherited;
 end;
 
 function TCustomAudioFileWAV.GetChannels: Cardinal;
 begin
- result := fFormatChunk.Channels;
+ result := FFormatChunk.Channels;
 end;
 
 function TCustomAudioFileWAV.GetSampleCount: Cardinal;
 begin
- result := fTotalNrOfSamples;
+ result := FTotalNrOfSamples;
 end;
 
 function TCustomAudioFileWAV.GetSampleRate: Double;
 begin
- result := fFormatChunk.SampleRate;
+ result := FFormatChunk.SampleRate;
 end;
 
 function TCustomAudioFileWAV.GetBitsPerSample: Byte;
 begin
- result := fFormatChunk.BitsPerSample;
+ result := FFormatChunk.BitsPerSample;
 end;
 
 function TCustomAudioFileWAV.GetEncoding: TAudioEncoding;
 begin
- case fFormatChunk.FormatTag of
+ case FFormatChunk.FormatTag of
              etPCM : result := aeInteger;
         etPCMFLOAT : result := aeFloat;
          etMSADPCM : result := aeMSADPCM;
@@ -421,12 +423,12 @@ end;
 
 procedure TCustomAudioFileWAV.SetBitsPerSample(const Value: Byte);
 begin
- with fFormatChunk do
+ with FFormatChunk do
   if BitsPerSample <> Value then
    begin
     BitsPerSample   := Value;
-    fBytesPerSample := (BitsPerSample + 7) div 8; 
-    BlockAlign      := Channels * fBytesPerSample;
+    FBytesPerSample := (BitsPerSample + 7) div 8; 
+    BlockAlign      := Channels * FBytesPerSample;
     BytesPerSecond  := BlockAlign * SampleRate;
 //    BitsPerSampleChanged;
    end;
@@ -435,11 +437,11 @@ end;
 procedure TCustomAudioFileWAV.SetChannels(const Value: Cardinal);
 begin
  inherited;
- with fFormatChunk do
+ with FFormatChunk do
   if Channels <> Value then
    begin
     Channels       := Value;
-    BlockAlign     := fBytesPerSample * Value;
+    BlockAlign     := FBytesPerSample * Value;
     BytesPerSecond := BlockAlign * SampleRate;
    end;
 end;
@@ -451,17 +453,17 @@ end;
 
 procedure TCustomAudioFileWAV.SetSampleCount(const Value: Cardinal);
 begin
- if fTotalNrOfSamples <> Value then
+ if FTotalNrOfSamples <> Value then
   begin
    inherited;
-   fTotalNrOfSamples := Value;
+   FTotalNrOfSamples := Value;
   end;
 end;
 
 procedure TCustomAudioFileWAV.SetSampleRate(const Value: Double);
 begin
  inherited;
- with fFormatChunk do
+ with FFormatChunk do
   if SampleRate <> Value then
    begin
     SampleRate := Round(Value);
@@ -509,7 +511,7 @@ begin
        then raise Exception.Create(rcFMTChunkDublicate)
        else
         begin
-         fFormatChunk.LoadFromStream(Stream);
+         FFormatChunk.LoadFromStream(Stream);
          ChunksReaded := ChunksReaded + [ctFormat];
         end else
      if ChunkName = 'fact' then
@@ -524,7 +526,7 @@ begin
            LoadFromStream(Stream);
 
            // now only use the sample count information
-           fTotalNrOfSamples := SampleCount;
+           FTotalNrOfSamples := SampleCount;
           finally
            Free;
           end;
@@ -576,13 +578,13 @@ begin
    Write(ChunkName, 4);
 
    // write format chunk
-   fFormatChunk.SaveToStream(Stream);
+   FFormatChunk.SaveToStream(Stream);
 
    // if exists, write the fact chunk
-   if fFormatChunk.FormatTag <> etPCM then
+   if FFormatChunk.FormatTag <> etPCM then
     with TFactChunk.Create do
      try
-      SampleCount := fTotalNrOfSamples;
+      SampleCount := FTotalNrOfSamples;
       SaveToStream(Stream);
      finally
       Free;

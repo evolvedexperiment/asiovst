@@ -2,7 +2,7 @@ unit DAV_ChunkClasses;
 
 interface
 
-{$I ASIOVST.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, Contnrs, SysUtils, DAV_Common;

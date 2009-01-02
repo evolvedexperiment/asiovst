@@ -29,7 +29,6 @@ object TestToneDataModule: TTestToneDataModule
       MaxInteger = 8
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterModeDisplay
@@ -42,7 +41,6 @@ object TestToneDataModule: TTestToneDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Level'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -57,7 +55,6 @@ object TestToneDataModule: TTestToneDataModule
       MaxInteger = 2
       ShortLabel = 'Channel'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'L <> R'
       VSTModule = Owner
@@ -71,7 +68,6 @@ object TestToneDataModule: TTestToneDataModule
       Max = 1.000000000000000000
       ShortLabel = 'F1'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -83,7 +79,6 @@ object TestToneDataModule: TTestToneDataModule
       Max = 1.000000000000000000
       ShortLabel = 'F2'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -95,7 +90,6 @@ object TestToneDataModule: TTestToneDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Thru'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -108,7 +102,6 @@ object TestToneDataModule: TTestToneDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Sweep'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -121,7 +114,6 @@ object TestToneDataModule: TTestToneDataModule
       Max = 1.000000000000000000
       ShortLabel = '0dB ='
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dBFS'
       VSTModule = Owner

@@ -24,7 +24,6 @@ object LA1701DataModule: TLA1701DataModule
       MaxInteger = 1
       ShortLabel = 'On/Off'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOnOffChange
@@ -42,7 +41,6 @@ object LA1701DataModule: TLA1701DataModule
       MinInteger = -24
       ShortLabel = 'input'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -60,7 +58,6 @@ object LA1701DataModule: TLA1701DataModule
       MinInteger = -24
       ShortLabel = 'output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -78,7 +75,6 @@ object LA1701DataModule: TLA1701DataModule
       Min = 0.200000002980232200
       ShortLabel = 'Attack'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       Units = 'ms'
       VSTModule = Owner
@@ -98,7 +94,6 @@ object LA1701DataModule: TLA1701DataModule
       MinInteger = 10
       ShortLabel = 'Release'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -114,7 +109,6 @@ object LA1701DataModule: TLA1701DataModule
       MinInteger = 1
       ShortLabel = 'ratio'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = SKLRatioChange
@@ -130,7 +124,6 @@ object LA1701DataModule: TLA1701DataModule
       MaxInteger = 10
       ShortLabel = 'knee'
       SmallStepFloat = 0.009999999776482582
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       VSTModule = Owner
       OnParameterChange = SKLSKFBChange
@@ -144,7 +137,6 @@ object LA1701DataModule: TLA1701DataModule
       Max = 100.000000000000000000
       ShortLabel = 'Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -160,7 +152,6 @@ object LA1701DataModule: TLA1701DataModule
       MaxInteger = 2
       ShortLabel = 'VUMeter'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamVUMeterDisplayChange
@@ -178,7 +169,6 @@ object LA1701DataModule: TLA1701DataModule
       MinInteger = 1
       ShortLabel = 'FallOff'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -196,7 +186,6 @@ object LA1701DataModule: TLA1701DataModule
       MinInteger = 1
       ShortLabel = 'HP Freq'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -213,7 +202,6 @@ object LA1701DataModule: TLA1701DataModule
       MinInteger = 1
       ShortLabel = 'HP Ord.'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamHPOrderChange

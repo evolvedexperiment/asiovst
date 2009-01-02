@@ -27,7 +27,6 @@ object DitherDataModule: TDitherDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Word Le'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Bits'
       VSTModule = Owner
@@ -42,7 +41,6 @@ object DitherDataModule: TDitherDataModule
       MaxInteger = 4
       ShortLabel = 'Dither'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParamDitherDisplay
@@ -55,7 +53,6 @@ object DitherDataModule: TDitherDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Dith Am'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'lsb'
       VSTModule = Owner
@@ -68,7 +65,6 @@ object DitherDataModule: TDitherDataModule
       Max = 1.000000000000000000
       ShortLabel = 'DC Trim'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'lsb'
       VSTModule = Owner
@@ -81,7 +77,6 @@ object DitherDataModule: TDitherDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Zoom...'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

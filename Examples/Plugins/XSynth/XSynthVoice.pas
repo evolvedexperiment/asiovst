@@ -2,7 +2,7 @@ unit XSynthVoice;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 uses
   DAV_VSTModule, DAV_Complex;

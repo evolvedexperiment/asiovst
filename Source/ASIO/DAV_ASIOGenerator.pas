@@ -2,50 +2,51 @@ unit DAV_ASIOGenerator;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
-uses Classes, DAV_Common;
+uses
+  Classes, DAV_Common;
 
 type
   TNoiseColor = (ncWhite, ncPink, ncBrown);
   TToneFlavor = (tfSine, tfSaw, tfSquare, tfTriangle, tfPulse);
   TASIOGenerator = class(TComponent)
   private
-    fSampleRate  : Double;
-    fBlockSize   : Cardinal;
+    FSampleRate  : Double;
+    FBlockSize   : Cardinal;
     procedure SetSampleRate(const Value: Double);
     procedure SetBlockSize(const Value: Cardinal);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: boolean = true); virtual;
+    procedure ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: Boolean = True); virtual;
   published
-    property SampleRate: Double read fSampleRate write SetSampleRate;
-    property BlockSize: Cardinal read fBlockSize write SetBlockSize;
+    property SampleRate: Double read FSampleRate write SetSampleRate;
+    property BlockSize: Cardinal read FBlockSize write SetBlockSize;
   end;
 
   TASIOGeneratorNoise = class(TASIOGenerator)
   private
-   NoiZe : Array[0..7] of Single;
-   fNoiseColor: TNoiseColor;
+   FNoiZe      : Array[0..7] of Single;
+   FNoiseColor : TNoiseColor;
   public
-   procedure ProcessBlock(SingleBlock:TDAVArrayOfSingleDynArray; isOutput: boolean = true); override;
+   procedure ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: Boolean = True); override;
   published
-   property NoiseColor: TNoiseColor read fNoiseColor write fNoiseColor;
+   property NoiseColor: TNoiseColor read FNoiseColor write FNoiseColor;
   end;
 
   TASIOGeneratorTone = class(TASIOGenerator)
   private
-   fFrequency  : Single;
-   fToneFlavor : TToneFlavor;
-   fPhase      : Double;
+   FFrequency  : Single;
+   FToneFlavor : TToneFlavor;
+   FPhase      : Double;
    procedure SetFrequency(value: Single);
   public
    constructor Create(AOwner: TComponent); override;
-   procedure ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: boolean = true); override;
+   procedure ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: Boolean = True); override;
   published
-   property Frequency: Single read fFrequency write SetFrequency;
-   property ToneFlavor:TToneFlavor read fToneFlavor write fToneFlavor;
+   property Frequency: Single read FFrequency write SetFrequency;
+   property ToneFlavor:TToneFlavor read FToneFlavor write FToneFlavor;
   end;
 
 implementation
@@ -55,8 +56,8 @@ uses
 
 constructor TASIOGenerator.Create(AOwner: TComponent);
 begin
- fBlocksize := 2048;
- fSampleRate := 44100;
+ FBlockSize := 2048;
+ FSampleRate := 44100;
  inherited;
 end;
 
@@ -67,23 +68,23 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TASIOGenerator.ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: boolean = true);
+procedure TASIOGenerator.ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: Boolean = True);
 begin
  FillChar(SingleBlock[0], BlockSize * SizeOf(Single), 0);
 end;
 
 procedure TASIOGenerator.SetSampleRate(const Value: Double);
 begin
- fSampleRate := Value;
+ FSampleRate := Value;
 end;
 
 procedure TASIOGenerator.SetBlockSize(const Value: Cardinal);
 begin
- fBlockSize := Value;
+ FBlockSize := Value;
 end;
 
 procedure TASIOGeneratorNoise.ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray;
- isOutput: boolean = true);
+ isOutput: Boolean = True);
 var i, j : integer;
 begin
  if NoiseColor = ncWhite then
@@ -94,38 +95,38 @@ begin
   for i := 0 to Length(SingleBlock) - 1 do
    for j := 0 to Blocksize - 1 do
     begin
-     NoiZe[0]:=(2 * Random - 1);
-     NoiZe[1]:= 0.99886 * NoiZe[1] + NoiZe[0] * 0.0555179;
-     NoiZe[2]:= 0.99332 * NoiZe[2] + NoiZe[0] * 0.0750759;
-     NoiZe[3]:= 0.96900 * NoiZe[3] + NoiZe[0] * 0.1538520;
-     NoiZe[4]:= 0.86650 * NoiZe[4] + NoiZe[0] * 0.3104856;
-     NoiZe[5]:= 0.55000 * NoiZe[5] + NoiZe[0] * 0.5329522;
-     NoiZe[6]:= -0.7616 * NoiZe[6] - NoiZe[0] * 0.0168980;
-     SingleBlock[i,j] := 0.1 * (NoiZe[0] + NoiZe[1] + NoiZe[2] + NoiZe[3] + NoiZe[4] + NoiZe[5] + NoiZe[6] + NoiZe[7] * 0.5362);   NoiZe[7]:= NoiZe[0] * 0.115926;
+     FNoiZe[0]:=(2 * Random - 1);
+     FNoiZe[1]:= 0.99886 * FNoiZe[1] + FNoiZe[0] * 0.0555179;
+     FNoiZe[2]:= 0.99332 * FNoiZe[2] + FNoiZe[0] * 0.0750759;
+     FNoiZe[3]:= 0.96900 * FNoiZe[3] + FNoiZe[0] * 0.1538520;
+     FNoiZe[4]:= 0.86650 * FNoiZe[4] + FNoiZe[0] * 0.3104856;
+     FNoiZe[5]:= 0.55000 * FNoiZe[5] + FNoiZe[0] * 0.5329522;
+     FNoiZe[6]:= -0.7616 * FNoiZe[6] - FNoiZe[0] * 0.0168980;
+     SingleBlock[i,j] := 0.1 * (FNoiZe[0] + FNoiZe[1] + FNoiZe[2] + FNoiZe[3] + FNoiZe[4] + FNoiZe[5] + FNoiZe[6] + FNoiZe[7] * 0.5362);   FNoiZe[7]:= FNoiZe[0] * 0.115926;
     end
  else if NoiseColor = ncBrown then
   for i := 0 to Length(SingleBlock) - 1 do
    for j := 0 to Blocksize - 1 do
     begin
-     SingleBlock[i, j] := NoiZe[i] + 0.0002 * (2 * Random - 1);
-     NoiZe[i] := 0.999 * SingleBlock[i, j];
+     SingleBlock[i, j] := FNoiZe[i] + 0.0002 * (2 * Random - 1);
+     FNoiZe[i] := 0.999 * SingleBlock[i, j];
      SingleBlock[i, j] := 150 * SingleBlock[i, j];
    end;
 end;
 
 procedure TASIOGeneratorTone.SetFrequency(value:Single);
 begin
- fFrequency := value;
+ FFrequency := value;
 end;
 
 constructor TASIOGeneratorTone.Create(AOwner: TComponent);
 begin
  inherited;
- fFrequency := 1000;
+ FFrequency := 1000;
 end;
 
 procedure TASIOGeneratorTone.ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray;
- isOutput: boolean = true);
+ isOutput: Boolean = True);
 var i, j : Integer;
     fPh: Double;
 begin
@@ -134,21 +135,21 @@ begin
  for j := 0 to Blocksize - 1 do
  begin
   case ToneFlavor of
-  tfSine: SingleBlock[i, j] := sin(fPhase * 2 * PI);
-  tfSaw: if fPhase <= 0.5 then SingleBlock[i, j] := 2 * fPhase
-         else SingleBlock[i, j] := 2 * fPhase - 2;
-  tfSquare: if fPhase <= 0.5 then SingleBlock[i, j] := 1 else
+  tfSine: SingleBlock[i, j] := sin(FPhase * 2 * PI);
+  tfSaw: if FPhase <= 0.5 then SingleBlock[i, j] := 2 * FPhase
+         else SingleBlock[i, j] := 2 * FPhase - 2;
+  tfSquare: if FPhase <= 0.5 then SingleBlock[i, j] := 1 else
    SingleBlock[i, j] := -1;
-  tfTriangle: if (fPhase >= 0.25) and (fPhase < 0.75) then
-   SingleBlock[i, j] := -4 * (fPhase + 0.25) + 3
-   else if (fphase < 0.25) then SingleBlock[i, j] := 4 * (fPhase + 0.25) - 1
-   else SingleBlock[i, j] := 4 * (fphase + 0.25) - 5;
+  tfTriangle: if (FPhase >= 0.25) and (FPhase < 0.75) then
+   SingleBlock[i, j] := -4 * (FPhase + 0.25) + 3
+   else if (FPhase < 0.25) then SingleBlock[i, j] := 4 * (FPhase + 0.25) - 1
+   else SingleBlock[i, j] := 4 * (FPhase + 0.25) - 5;
   tfPulse: if j = 0 then SingleBlock[i, j] := 0 else
    SingleBlock[i, j] := 1;
   else
   end;
-  fPhase := fPhase + fPh;
-  if fPhase >= 1 then fPhase := fPhase - 1;
+  FPhase := FPhase + fPh;
+  if FPhase >= 1 then FPhase := FPhase - 1;
  end;
  for i := 1 to High(SingleBlock) do
   for j := 0 to Blocksize - 1 do

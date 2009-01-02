@@ -31,7 +31,6 @@ object ChebyshevHPModule: TChebyshevHPModule
       MinInteger = 20
       ShortLabel = 'Freq'
       SmallStepFloat = 10.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 50.000000000000000000
       StepInteger = 50
       Units = 'Hz'
@@ -48,7 +47,6 @@ object ChebyshevHPModule: TChebyshevHPModule
       MaxInteger = 10
       ShortLabel = 'Ripple'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       Units = 'dB'
       VSTModule = Owner
@@ -64,7 +62,6 @@ object ChebyshevHPModule: TChebyshevHPModule
       MaxInteger = 16
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange

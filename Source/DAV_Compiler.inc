@@ -1,7 +1,19 @@
-{$DEFINE CONVERT_TO_DYNARRAY}
-{$DEFINE UseNativeTypes}
-{$DEFINE UseDelphi}
-{-$DEFINE Debug}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Delphi ASIO & VST Package - Compiler Defines                              //
+//  --------------------------------------------                              //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+{$INCLUDE DAV_CompilerSwitches.inc}
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//  do not edit the stuff below except you really know, what you do!!!  //
+//////////////////////////////////////////////////////////////////////////
 
 {$DEFINE BORLAND}
 

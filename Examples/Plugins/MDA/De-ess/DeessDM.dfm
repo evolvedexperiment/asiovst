@@ -31,7 +31,6 @@ object DeessDataModule: TDeessDataModule
       MinInteger = -60
       ShortLabel = 'Thres'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -49,7 +48,6 @@ object DeessDataModule: TDeessDataModule
       MinInteger = 1000
       ShortLabel = 'Freq'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 10.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -67,7 +65,6 @@ object DeessDataModule: TDeessDataModule
       MinInteger = -20
       ShortLabel = 'HFDrive'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

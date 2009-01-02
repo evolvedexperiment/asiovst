@@ -27,7 +27,6 @@ object RezFilterDataModule: TRezFilterDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Frequen'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -40,7 +39,6 @@ object RezFilterDataModule: TRezFilterDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Resonan'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -56,7 +54,6 @@ object RezFilterDataModule: TRezFilterDataModule
       MinInteger = -20
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -72,7 +69,6 @@ object RezFilterDataModule: TRezFilterDataModule
       MinInteger = -100
       ShortLabel = 'Env->VC'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -85,7 +81,6 @@ object RezFilterDataModule: TRezFilterDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Attack'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -99,7 +94,6 @@ object RezFilterDataModule: TRezFilterDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Release'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -115,7 +109,6 @@ object RezFilterDataModule: TRezFilterDataModule
       MinInteger = -100
       ShortLabel = 'LFO->VC'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'S+H<>Sin'
       VSTModule = Owner
@@ -128,7 +121,6 @@ object RezFilterDataModule: TRezFilterDataModule
       Max = 1.000000000000000000
       ShortLabel = 'LFO Rat'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -142,7 +134,6 @@ object RezFilterDataModule: TRezFilterDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Trigger'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -156,7 +147,6 @@ object RezFilterDataModule: TRezFilterDataModule
       Max = 100.000000000000000000
       ShortLabel = 'MaxFreq'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

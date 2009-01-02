@@ -4,6 +4,12 @@ library AmpSim;
 {$R 'AmpKnob.res' 'AmpKnob.rc'}
 
 uses
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  madExcept,
+  madLinkDisAsm,
+  madListProcesses,
+  madListModules,
   RTLVCLOptimize,
   Forms,
   DAV_VSTEffect,
@@ -11,18 +17,17 @@ uses
   AmpSimDM in 'AmpSimDM.pas' {ComboDataModule: TVSTModule},
   AmpSimGUI in 'AmpSimGUI.pas' {FmCombo};
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var
-  ComboDataModule: TComboDataModule;
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    ComboDataModule := TComboDataModule.Create(Application);
-    ComboDataModule.Effect^.user := ComboDataModule;
-    ComboDataModule.AudioMaster := audioMaster;
-    Result := ComboDataModule.Effect;
-  except
-    Result := nil;
-  end;
+ try
+  with TComboDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
 end;
 
 exports Main name 'main';

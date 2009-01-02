@@ -1,8 +1,8 @@
 unit DAV_GuiStaticWaveform;
 
-{$I ..\ASIOVST.INC}
-
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
@@ -14,16 +14,16 @@ type
 
   TCustomGuiStaticWaveform = class(TCustomGuiBaseMouseControl)
   private
-    fNormalizationType    : TGuiNormalizationType;
-    fNormalizationFactors : TDAVSingleDynArray;
-    fWaveHalfHeight       : Integer;
-    fWaveData             : TDAVArrayOfSingleDynArray;
-    fWaveVPadding         : Integer;
-    fDisplayChannels      : Integer;
-    fMedianVisible        : Boolean;
-    fMedianColor          : TColor;
-    fMedianLineWidth      : Integer;
-    fWaveDrawMode         : TGuiWaveDrawMode;
+    FNormalizationType    : TGuiNormalizationType;
+    FNormalizationFactors : TDAVSingleDynArray;
+    FWaveHalfHeight       : Integer;
+    FWaveData             : TDAVArrayOfSingleDynArray;
+    FWaveVPadding         : Integer;
+    FDisplayChannels      : Integer;
+    FMedianVisible        : Boolean;
+    FMedianColor          : TColor;
+    FMedianLineWidth      : Integer;
+    FWaveDrawMode         : TGuiWaveDrawMode;
 
     procedure SetNormalizationType(Value: TGuiNormalizationType);
     function  GetWaveLength: Integer;
@@ -53,17 +53,17 @@ type
     procedure SetWaveForm(NewWaveData: TDAVArrayOfSingleDynArray; DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False);overload;
     procedure ClearWaveForm(DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False);
 
-    property Wavedata: TDAVArrayOfSingleDynArray read fWaveData;
+    property Wavedata: TDAVArrayOfSingleDynArray read FWaveData;
     property WaveLength: Integer read GetWaveLength write SetWaveLength;
     property WaveChannels: Integer read GetWaveChannels write SetWaveChannels;
-    property DisplayChannels: Integer read fDisplayChannels write SetDisplayChannels default 2;
-    property WaveVPadding: Integer read fWaveVPadding write SetWaveVPadding default 3;
+    property DisplayChannels: Integer read FDisplayChannels write SetDisplayChannels default 2;
+    property WaveVPadding: Integer read FWaveVPadding write SetWaveVPadding default 3;
 
-    property MedianVisible: Boolean read fMedianVisible write SetMedianVisible default True;
-    property MedianColor: TColor read fMedianColor write SetMedianColor default clRed;
-    property MedianLineWidth: Integer read fMedianLineWidth write SetMedianLineWidth default 1;
-    property NormalizationType: TGuiNormalizationType read fNormalizationType write SetNormalizationType default ntNone;
-    property WaveDrawMode: TGuiWaveDrawMode read fWaveDrawMode write SetWaveDrawMode default wdmSolid;
+    property MedianVisible: Boolean read FMedianVisible write SetMedianVisible default True;
+    property MedianColor: TColor read FMedianColor write SetMedianColor default clRed;
+    property MedianLineWidth: Integer read FMedianLineWidth write SetMedianLineWidth default 1;
+    property NormalizationType: TGuiNormalizationType read FNormalizationType write SetNormalizationType default ntNone;
+    property WaveDrawMode: TGuiWaveDrawMode read FWaveDrawMode write SetWaveDrawMode default wdmSolid;
   end;
 
   TGuiStaticWaveform = class(TCustomGuiStaticWaveform)
@@ -122,16 +122,16 @@ uses Math;
 constructor TCustomGuiStaticWaveform.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  fNormalizationType := ntNone;
+  FNormalizationType := ntNone;
   
-  fDisplayChannels := 2;
-  fWaveVPadding    := 3;
-  fMedianVisible   := True;
-  fMedianColor     := clRed;
-  fMedianLineWidth := 1;
-  fWaveDrawMode    := wdmSolid;
+  FDisplayChannels := 2;
+  FWaveVPadding    := 3;
+  FMedianVisible   := True;
+  FMedianColor     := clRed;
+  FMedianLineWidth := 1;
+  FWaveDrawMode    := wdmSolid;
 
-  SetLength(fNormalizationFactors, fDisplayChannels); // !IMPORTANT
+  SetLength(FNormalizationFactors, FDisplayChannels); // !IMPORTANT
   ClearWaveForm;
 end;
 
@@ -143,7 +143,7 @@ end;
 
 procedure TCustomGuiStaticWaveform.ClearWaveForm(DoRedrawBuffer, DoFlipBuffer: Boolean);
 begin
-  SetLength(fWaveData, 0, 0);
+  SetLength(FWaveData, 0, 0);
 
   if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
 end;
@@ -153,21 +153,21 @@ var
   i: Integer;
 begin
   result := 0;
-  for i := 0 to Length(fWaveData) - 1
-   do result := Max(result, Length(fWavedata[i]));
+  for i := 0 to Length(FWaveData) - 1
+   do result := Max(result, Length(FWaveData[i]));
 end;
 
 function TCustomGuiStaticWaveform.GetWaveChannels: Integer;
 begin
-  result := Length(fWavedata);
+  result := Length(FWaveData);
 end;
 
 procedure TCustomGuiStaticWaveform.SetDisplayChannels(Value: Integer);
 begin
   if Value < 1 then Value := 1;
-  if fDisplayChannels <> Value then
+  if FDisplayChannels <> Value then
    begin
-    fDisplayChannels := Value;
+    FDisplayChannels := Value;
     ResizeBuffer;
    end;
 end;
@@ -175,45 +175,45 @@ end;
 
 procedure TCustomGuiStaticWaveform.SetMedianVisible(Value: Boolean);
 begin
-  if fMedianVisible <> Value then
+  if FMedianVisible <> Value then
   begin
-    fMedianVisible := Value;
+    FMedianVisible := Value;
     RedrawBuffer(True);
   end;
 end;
 
 procedure TCustomGuiStaticWaveform.SetMedianColor(Value: TColor);
 begin
-  if fMedianColor <> Value then
+  if FMedianColor <> Value then
   begin
-    fMedianColor := Value;
+    FMedianColor := Value;
     RedrawBuffer(True);
   end;
 end;
 
 procedure TCustomGuiStaticWaveform.SetMedianLineWidth(Value: Integer);
 begin
-  if fMedianLineWidth <> Value then
+  if FMedianLineWidth <> Value then
   begin
-    fMedianLineWidth := Value;
+    FMedianLineWidth := Value;
     RedrawBuffer(True);
   end;
 end;
 
 procedure TCustomGuiStaticWaveform.SetWaveVPadding(Value: Integer);
 begin
-  if fWaveVPadding <> Value then
+  if FWaveVPadding <> Value then
   begin
-    fWaveVPadding := Value;
+    FWaveVPadding := Value;
     ResizeBuffer;
   end;
 end;
 
 procedure TCustomGuiStaticWaveform.SetNormalizationType(Value: TGuiNormalizationType);
 begin
-  if fNormalizationType <> Value then
+  if FNormalizationType <> Value then
   begin
-    fNormalizationType := Value;
+    FNormalizationType := Value;
     RedrawBuffer(True);
   end;
 end;
@@ -222,23 +222,23 @@ procedure TCustomGuiStaticWaveform.SetWaveChannels(const Value: Integer);
 begin
  if Value <> WaveChannels then
   begin
-   SetLength(fWaveData, Value);
+   SetLength(FWaveData, Value);
   end;
 end;
 
 procedure TCustomGuiStaticWaveform.SetWaveDrawMode(Value: TGuiWaveDrawMode);
 begin
-  if fWaveDrawMode <> Value then
+  if FWaveDrawMode <> Value then
    begin
-    fWaveDrawMode := Value;
+    FWaveDrawMode := Value;
     RedrawBuffer(True);
    end;
 end;
 
 procedure TCustomGuiStaticWaveform.ResizeBuffer;
 begin
-  fWaveHalfHeight := Height div (2 * fDisplayChannels) - fWaveVPadding;
-  SetLength(fNormalizationFactors, fDisplayChannels);
+  FWaveHalfHeight := Height div (2 * FDisplayChannels) - FWaveVPadding;
+  SetLength(FNormalizationFactors, FDisplayChannels);
 
   inherited;
 end;
@@ -246,8 +246,8 @@ end;
 procedure TCustomGuiStaticWaveform.SetWaveForm(NewWaveData: TDAVSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
 begin
   ClearWaveForm;
-  SetLength(fWaveData, 1);
-  fWaveData[0] := NewWaveData;
+  SetLength(FWaveData, 1);
+  FWaveData[0] := NewWaveData;
 
   if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
 end;
@@ -262,12 +262,12 @@ begin
    else
     begin
      ClearWaveForm;
-     SetLength(fWaveData, Length(NewWaveData));
+     SetLength(FWaveData, Length(NewWaveData));
      for i := 0 to Length(NewWaveData) - 1 do
       begin
        len := Length(NewWaveData[i]);
-       SetLength(fWaveData[i], len);
-       Move(NewWaveData[i][0], fWaveData[i][0], len * SizeOf(Single));
+       SetLength(FWaveData[i], len);
+       Move(NewWaveData[i][0], FWaveData[i][0], len * SizeOf(Single));
       end;
 
      if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
@@ -280,8 +280,8 @@ var
 begin
  if Value <> WaveLength then
   begin
-   for ch := 0 to Length(fWavedata) - 1 do
-   SetLength(fWavedata[ch], Value);
+   for ch := 0 to Length(FWaveData) - 1 do
+   SetLength(FWaveData[ch], Value);
   end;
 end;
 
@@ -290,16 +290,16 @@ var
   i: Integer;
 begin
   Result := 0;
-  for i := 0 to Length(fWaveData[Channel]) - 1
-   do Result := max(Result, abs(fWaveData[Channel][i]));
+  for i := 0 to Length(FWaveData[Channel]) - 1
+   do Result := max(Result, abs(FWaveData[Channel][i]));
 end;
 
 procedure TCustomGuiStaticWaveform.DrawMedian(YOffset: Integer);
 begin
   with fBuffer.Canvas do
    begin
-    Pen.Width := fMedianLineWidth;
-    Pen.Color := fMedianColor;
+    Pen.Width := FMedianLineWidth;
+    Pen.Color := FMedianColor;
 
     MoveTo(0, YOffset);
     LineTo(width, YOffset);
@@ -312,7 +312,7 @@ var
 begin
   with fBuffer.Canvas do
   begin
-    case fWaveDrawMode of
+    case FWaveDrawMode of
       wdmPoints: begin
              Pixels[NewMax.X, NewMax.Y] := Pen.Color;
              Pixels[NewMin.X, NewMin.Y] := Pen.Color;
@@ -374,21 +374,21 @@ begin
 
     SampleWidth := (width - 1) / (WaveLength - 1);
 
-    MinSample := fWaveData[Channel][0];
+    MinSample := FWaveData[Channel][0];
     MaxSample := MinSample;
 
     COffset := 0;
     COffsetRounded := 1;
     i := 1;
-    while i<Length(fWavedata[Channel]) do
+    while i<Length(FWaveData[Channel]) do
      begin
       COffset := COffset+SampleWidth;
-      if (COffset > COffsetRounded) or (i = Length(fWavedata[Channel]) - 1) then
+      if (COffset > COffsetRounded) or (i = Length(FWaveData[Channel]) - 1) then
        begin
         if COffsetRounded = 1 then
          begin
-          OldMaxPos := Point(0, round(YOffset - MaxSample*fNormalizationFactors[Channel]*HalfHeight));
-          OldMinPos := Point(0, round(YOffset - MinSample*fNormalizationFactors[Channel]*HalfHeight));
+          OldMaxPos := Point(0, round(YOffset - MaxSample*FNormalizationFactors[Channel]*HalfHeight));
+          OldMinPos := Point(0, round(YOffset - MinSample*FNormalizationFactors[Channel]*HalfHeight));
           MoveTo((OldMinPos.X+OldMaxPos.X) div 2, (OldMinPos.Y+OldMaxPos.Y) div 2);
          end;
 
@@ -396,18 +396,18 @@ begin
         DrawSamples(
           OldMaxPos,
           OldMinPos,
-          Point(COffsetRounded - 1, round(YOffset - MaxSample*fNormalizationFactors[Channel]*HalfHeight)),
-          Point(COffsetRounded - 1, round(YOffset - MinSample*fNormalizationFactors[Channel]*HalfHeight)));
+          Point(COffsetRounded - 1, round(YOffset - MaxSample*FNormalizationFactors[Channel]*HalfHeight)),
+          Point(COffsetRounded - 1, round(YOffset - MinSample*FNormalizationFactors[Channel]*HalfHeight)));
 
-        MaxSample := fWaveData[Channel][i];
+        MaxSample := FWaveData[Channel][i];
         MinSample := MaxSample;
        end
       else
        begin
-        if fWaveData[Channel][i] > MaxSample
-         then MaxSample := fWaveData[Channel][i] else
-        if fWaveData[Channel][i] < MinSample
-         then MinSample := fWaveData[Channel][i];
+        if FWaveData[Channel][i] > MaxSample
+         then MaxSample := FWaveData[Channel][i] else
+        if FWaveData[Channel][i] < MinSample
+         then MinSample := FWaveData[Channel][i];
        end;
 
       inc(i);
@@ -420,14 +420,14 @@ var
   YOffset, i: Integer;
 begin
   with fBuffer.Canvas do
-   for i := 0 to fDisplayChannels - 1 do
+   for i := 0 to FDisplayChannels - 1 do
     begin
-     YOffset := (fWaveVPadding + fWaveHalfHeight) * (i * 2 + 1);
+     YOffset := (FWaveVPadding + FWaveHalfHeight) * (i * 2 + 1);
 
-     if fNormalizationFactors[i] > 0
-      then DrawSingleWave(YOffset, fWaveHalfHeight, i);
+     if FNormalizationFactors[i] > 0
+      then DrawSingleWave(YOffset, FWaveHalfHeight, i);
 
-     if fMedianVisible then DrawMedian(YOffset);
+     if FMedianVisible then DrawMedian(YOffset);
     end;
 end;
 
@@ -447,31 +447,31 @@ begin
      else {$ENDIF} fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
 
     MaxAmp := 0;
-    if fDisplayChannels < 1 then exit;
-    for i := 0 to fDisplayChannels - 1 do
-      if i >= Length(fWaveData)
-       then fNormalizationFactors[i] := 0 else
-      if Length(fWaveData[i]) < 1 then fNormalizationFactors[i] := 0 else
+    if FDisplayChannels < 1 then exit;
+    for i := 0 to FDisplayChannels - 1 do
+      if i >= Length(FWaveData)
+       then FNormalizationFactors[i] := 0 else
+      if Length(FWaveData[i]) < 1 then FNormalizationFactors[i] := 0 else
        begin
         Amp := GetMaxAmp(i);
         MaxAmp := Max(MaxAmp, Amp);
         if Amp = 0
-         then fNormalizationFactors[i] := 0
-         else fNormalizationFactors[i] := 1 / Amp;
+         then FNormalizationFactors[i] := 0
+         else FNormalizationFactors[i] := 1 / Amp;
       end;
     
-    if fNormalizationType = ntNone then
+    if FNormalizationType = ntNone then
      begin
-      for i := 0 to fDisplayChannels - 1 do
-        if fNormalizationFactors[i] > 0 then
-          fNormalizationFactors[i] := 1;
+      for i := 0 to FDisplayChannels - 1 do
+        if FNormalizationFactors[i] > 0 then
+          FNormalizationFactors[i] := 1;
 
      end
-    else if (fNormalizationType = ntOverallChannels) and (MaxAmp > 0) then
+    else if (FNormalizationType = ntOverallChannels) and (MaxAmp > 0) then
      begin
-      for i := 0 to fDisplayChannels - 1 do
-        if fNormalizationFactors[i] > 0 then
-          fNormalizationFactors[i] := 1 / MaxAmp;
+      for i := 0 to FDisplayChannels - 1 do
+        if FNormalizationFactors[i] > 0 then
+          FNormalizationFactors[i] := 1 / MaxAmp;
      end;
           
     DrawGraphs;

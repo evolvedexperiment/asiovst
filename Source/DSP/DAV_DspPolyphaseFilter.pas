@@ -1,8 +1,8 @@
 unit DAV_DspPolyphaseFilter;
 
-{$I ..\ASIOVST.INC}
-
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_Common, DAV_DspPolyphaseIirDesigner;

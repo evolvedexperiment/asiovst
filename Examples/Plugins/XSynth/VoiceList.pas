@@ -2,7 +2,7 @@ unit VoiceList;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 uses
   Classes, RTLConsts, XSynthVoice;

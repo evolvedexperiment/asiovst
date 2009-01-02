@@ -27,7 +27,6 @@ object BandistoDataModule: TBandistoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Listen'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -39,7 +38,6 @@ object BandistoDataModule: TBandistoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'L <> M'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -52,7 +50,6 @@ object BandistoDataModule: TBandistoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'M <> H'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -65,7 +62,6 @@ object BandistoDataModule: TBandistoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'L Dist'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -78,7 +74,6 @@ object BandistoDataModule: TBandistoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'M Dist'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -91,7 +86,6 @@ object BandistoDataModule: TBandistoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'H Dist'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -104,7 +98,6 @@ object BandistoDataModule: TBandistoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'L Out'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -117,7 +110,6 @@ object BandistoDataModule: TBandistoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'M Out'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -130,7 +122,6 @@ object BandistoDataModule: TBandistoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'H Out'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -143,7 +134,6 @@ object BandistoDataModule: TBandistoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mode'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>

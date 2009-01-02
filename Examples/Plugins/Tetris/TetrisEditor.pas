@@ -1,6 +1,6 @@
 unit TetrisEditor;
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 interface
 

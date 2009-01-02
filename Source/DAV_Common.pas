@@ -2,7 +2,7 @@ unit DAV_Common;
 
 interface
 
-{$I ASIOVST.inc}
+{$I DAV_Compiler.inc}
 
 {$IFDEF FPC}
 uses LCLIntf; {$DEFINE PUREPASCAL}
@@ -866,7 +866,7 @@ asm
  FADD
  FSCALE              { result := z * 2**i }
  FSTP    ST(1)
- FMUL CTwenty64
+ FMUL CTwenty64.Double
 {$ENDIF}
 end;
 

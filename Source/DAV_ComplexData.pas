@@ -2,7 +2,7 @@ unit DAV_ComplexData;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.inc}
 
 uses
   Classes, DAV_Common, DAV_Complex, DAV_AudioData;

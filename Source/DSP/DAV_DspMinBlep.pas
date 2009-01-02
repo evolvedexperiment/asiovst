@@ -8,7 +8,7 @@ unit DAV_DspMinBlep;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_DspWindowing, DAV_Common;
@@ -47,27 +47,27 @@ begin
   SetLength(realFreq, sz);
   SetLength(imagFreq, sz);
 
- // Compose Complex FFT Input
+  // Compose Complex FFT Input
   for i := 0 to sz - 1 do
    begin
     realTime[i] := Signal[i];
     imagTime[i] := 0;
    end;
 
- // Perform DFT
+  // Perform DFT
   DFT(realTime, imagTime, realFreq, imagFreq);
 
- // Calculate Log Of Absolute Value
+  // Calculate Log Of Absolute Value
   for i := 0 to sz - 1 do
    begin
     realFreq[i] := log10(ComplexMagnitude(realFreq[i], imagFreq[i]));
     imagFreq[i] := 0;
    end;
 
- // Perform Inverse FFT
+  // Perform Inverse FFT
   InverseDFT(realTime, imagTime, realFreq, imagFreq);
 
- // Output Real Part Of FFT
+  // Output Real Part Of FFT
   for i := 0 to sz - 1 do
     RealCepstrum[i] := realTime[i];
 end;
@@ -129,24 +129,24 @@ begin
   SetLength(buffer[0], n);
   SetLength(buffer[1], n);
 
- // Generate Sinc
+  // Generate Sinc
   a := -ZeroCrossings;
-  b := ZeroCrossings;
+  b :=  ZeroCrossings;
   for i := 0 to n - 1 do
    begin
     r := i / (n - 1);
     buffer[0][i] := Sinc(a + (r * (b - a)));
    end;
 
- // Window Sinc
+  // Window Sinc
   ApplyBlackmanWindow(buffer[0]);
 
- // Minimum Phase Reconstruction
+  // Minimum Phase Reconstruction
   RealCepstrum(buffer[0], buffer[1]);
   MinimumPhase(buffer[1], buffer[0]);
 
- // Integrate Into MinBLEP
-  setLength(Result, n);
+  // Integrate Into MinBLEP
+  SetLength(Result, n);
   a := 0;
   for i := 0 to n - 1 do
    begin
@@ -154,7 +154,7 @@ begin
     Result[i] := a;
    end;
 
- // Normalize
+  // Normalize
   a := Result[n - 1];
   a := 1 / a;
   for i := 0 to n - 1 do

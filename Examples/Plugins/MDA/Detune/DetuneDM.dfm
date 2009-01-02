@@ -37,7 +37,6 @@ object DetuneDataModule: TDetuneDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Detune'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'cents'
       VSTModule = Owner
@@ -51,7 +50,6 @@ object DetuneDataModule: TDetuneDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -68,7 +66,6 @@ object DetuneDataModule: TDetuneDataModule
       MinInteger = -20
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -82,7 +79,6 @@ object DetuneDataModule: TDetuneDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Latency'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner

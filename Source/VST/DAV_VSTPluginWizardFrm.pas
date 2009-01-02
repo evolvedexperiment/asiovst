@@ -11,6 +11,8 @@ unit DAV_VSTPluginWizardFrm;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Windows, Messages, Classes, Controls, Forms, StdCtrls, ComCtrls, ExtCtrls,
   DAV_VSTPluginConfig, Graphics;

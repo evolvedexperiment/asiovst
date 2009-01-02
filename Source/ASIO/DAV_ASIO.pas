@@ -36,9 +36,10 @@ unit DAV_ASIO;
 
 interface
 
-{$I ..\ASIOVST.INC}
-{$IFDEF FPC} uses LCLIntf;
-{$ELSE} uses Windows; {$ENDIF}
+{$I ..\DAV_Compiler.inc}
+
+uses
+  {$IFDEF FPC} LCLIntf; {$ELSE} Windows; {$ENDIF}
 
 const
   ASIOFalse = 0;

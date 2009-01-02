@@ -11,7 +11,7 @@ unit DAV_VSTPluginConfig;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 type
   TConfig = class(TObject)

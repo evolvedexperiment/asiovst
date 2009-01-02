@@ -28,7 +28,6 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
       MaxInteger = 10
       ShortLabel = 'Size'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'm'
       VSTModule = Owner
@@ -42,7 +41,6 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
       Max = 100.000000000000000000
       ShortLabel = 'HF'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -56,7 +54,6 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -74,7 +71,6 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
       MinInteger = -20
       ShortLabel = 'Output'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

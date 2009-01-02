@@ -2,6 +2,8 @@ unit DAV_DspFFT;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 implementation
 
 uses

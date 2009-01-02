@@ -2,7 +2,7 @@ unit DAV_AudioFile;
 
 interface
 
-{$I ASIOVST.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, SysUtils, DAV_Common;
@@ -22,13 +22,13 @@ type
 
   TCustomAudioFile = class(TComponent{$IFDEF Delphi6_Up}, IStreamPersist{$ENDIF})
   private
-    fOnSaveData64    : TOnLoadSaveData64;
-    fOnLoadData32    : TOnLoadSaveData32;
-    fOnLoadData64    : TOnLoadSaveData64;
-    fOnSaveData32    : TOnLoadSaveData32;
-    fReadHeaderOnly  : Boolean;
-    fRWBufferSize    : Cardinal;
-    fRWBuffer        : PByteArray;
+    FOnSaveData64    : TOnLoadSaveData64;
+    FOnLoadData32    : TOnLoadSaveData32;
+    FOnLoadData64    : TOnLoadSaveData64;
+    FOnSaveData32    : TOnLoadSaveData32;
+    FReadHeaderOnly  : Boolean;
+    FRWBufferSize    : Cardinal;
+    FRWBuffer        : PByteArray;
     procedure SetRWBufferSize(const Value: Cardinal);
   protected
     function GetChannels: Cardinal; virtual; abstract;
@@ -49,16 +49,16 @@ type
     procedure LoadFromStream(Stream: TStream); virtual; abstract;
     procedure SaveToStream(Stream: TStream); virtual; abstract;
 
-    property ReadHeaderOnly: Boolean read fReadHeaderOnly write fReadHeaderOnly;
+    property ReadHeaderOnly: Boolean read FReadHeaderOnly write FReadHeaderOnly;
     property SampleRate: Double read GetSampleRate write SetSampleRate;
     property ChannelCount: Cardinal read GetChannels write SetChannels;
     property SampleCount: Cardinal read GetSampleCount write SetSampleCount;
-    property ReadWriteBufferSize: Cardinal read fRWBufferSize write SetRWBufferSize default 16384;
+    property ReadWriteBufferSize: Cardinal read FRWBufferSize write SetRWBufferSize default 16384;
     property TotalTime: Double read GetTotalTime; // = SampleCount / SampleRate
-    property OnLoadData32: TOnLoadSaveData32 read fOnLoadData32 write fOnLoadData32;
-    property OnLoadData64: TOnLoadSaveData64 read fOnLoadData64 write fOnLoadData64;
-    property OnSaveData32: TOnLoadSaveData32 read fOnSaveData32 write fOnSaveData32;
-    property OnSaveData64: TOnLoadSaveData64 read fOnSaveData64 write fOnSaveData64;
+    property OnLoadData32: TOnLoadSaveData32 read FOnLoadData32 write FOnLoadData32;
+    property OnLoadData64: TOnLoadSaveData64 read FOnLoadData64 write FOnLoadData64;
+    property OnSaveData32: TOnLoadSaveData32 read FOnSaveData32 write FOnSaveData32;
+    property OnSaveData64: TOnLoadSaveData64 read FOnSaveData64 write FOnSaveData64;
   end;
 
 implementation
@@ -69,28 +69,28 @@ constructor TCustomAudioFile.Create(AOwner: TComponent);
 begin
  inherited;
  // default read/write buffer size: 16 kB
- fRWBufferSize := 16384;
- GetMem(fRWBuffer, fRWBufferSize);
+ FRWBufferSize := 16384;
+ GetMem(FRWBuffer, FRWBufferSize);
 end;
 
 destructor TCustomAudioFile.Destroy;
 begin
- Dispose(fRWBuffer);
+ Dispose(FRWBuffer);
  inherited;
 end;
 
 procedure TCustomAudioFile.SetRWBufferSize(const Value: Cardinal);
 begin
- if fRWBufferSize <> Value then
+ if FRWBufferSize <> Value then
   begin
-   fRWBufferSize := Value;
+   FRWBufferSize := Value;
    RWBufferSizeChanged;
   end;
 end;
 
 procedure TCustomAudioFile.RWBufferSizeChanged;
 begin
- ReallocMem(fRWBuffer, fRWBufferSize);
+ ReallocMem(FRWBuffer, FRWBufferSize);
 end;
 
 function TCustomAudioFile.GetTotalTime: Double;

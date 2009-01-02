@@ -2,7 +2,7 @@ unit XSynthModule;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect,

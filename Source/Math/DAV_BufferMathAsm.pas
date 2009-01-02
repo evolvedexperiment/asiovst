@@ -7,7 +7,7 @@ well, I did my best... but ASM is not my world...
 
 *)
 
-{$I ..\ASIOVST.inc}
+{$I ..\DAV_Compiler.inc}
 
 interface
 

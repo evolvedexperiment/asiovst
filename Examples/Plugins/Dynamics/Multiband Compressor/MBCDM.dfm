@@ -25,7 +25,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = -15
       ShortLabel = 'LowGain'
       SmallStepFloat = 0.009999999776482582
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       Units = 'dB'
       VSTModule = Owner
@@ -44,7 +43,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 20
       ShortLabel = 'LowFreq'
       SmallStepFloat = 10.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 100.000000000000000000
       StepInteger = 100
       Units = 'Hz'
@@ -63,7 +61,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 1
       ShortLabel = 'LowOrd'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 2.000000000000000000
       StepInteger = 2
       VSTModule = Owner
@@ -81,7 +78,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = -48
       ShortLabel = 'LowThrs'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -99,7 +95,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 1
       ShortLabel = 'LoRatio'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = MBCDMLowRatioChange
@@ -115,7 +110,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 10
       ShortLabel = 'LowAtt'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -132,7 +126,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 10
       ShortLabel = 'LowRel'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -150,7 +143,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = -15
       ShortLabel = 'MidGain'
       SmallStepFloat = 0.009999999776482582
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       Units = 'dB'
       VSTModule = Owner
@@ -168,7 +160,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = -48
       ShortLabel = 'MidThrs'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -186,7 +177,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 1
       ShortLabel = 'MidRtio'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = MBCDMMidRatioChange
@@ -202,7 +192,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 10
       ShortLabel = 'MidAtt'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -219,7 +208,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 10
       ShortLabel = 'MidRel'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -238,7 +226,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 20
       ShortLabel = 'HighFrq'
       SmallStepFloat = 10.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 100.000000000000000000
       StepInteger = 100
       Units = 'Hz'
@@ -258,7 +245,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 1
       ShortLabel = 'HighOrd'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 2.000000000000000000
       StepInteger = 2
       VSTModule = Owner
@@ -276,7 +262,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = -15
       ShortLabel = 'HighGai'
       SmallStepFloat = 0.009999999776482582
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       Units = 'dB'
       VSTModule = Owner
@@ -294,7 +279,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = -48
       ShortLabel = 'HighTrh'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -312,7 +296,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 1
       ShortLabel = 'HiRatio'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = MBCDMHighRatioChange
@@ -328,7 +311,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 10
       ShortLabel = 'HighAtt'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -345,7 +327,6 @@ object MBCDataModule: TMBCDataModule
       MinInteger = 10
       ShortLabel = 'HighRel'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner

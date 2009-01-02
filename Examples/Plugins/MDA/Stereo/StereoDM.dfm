@@ -27,7 +27,6 @@ object StereoDataModule: TStereoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Width'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterWidthChange
@@ -41,7 +40,6 @@ object StereoDataModule: TStereoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Delay'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -55,7 +53,6 @@ object StereoDataModule: TStereoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Balance'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -67,7 +64,6 @@ object StereoDataModule: TStereoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mod'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -82,7 +78,6 @@ object StereoDataModule: TStereoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Rate'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'sec'
       VSTModule = Owner

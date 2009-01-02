@@ -1,8 +1,8 @@
 unit DAV_GuiAudioDataDisplay;
 
-{$I ..\ASIOVST.INC}
-
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
@@ -15,20 +15,20 @@ type
 
   TCustomGuiAudioDataDisplay = class(TBufferedGraphicControl)
   private
-    fAntiAlias            : TGuiAntiAlias;
-    fAudioData            : TCustomAudioDataCollection;
-    fDisplayedChannel     : Integer;
-    fLineColor            : TColor;
-    fLineWidth            : Integer;
-    fMedianColor          : TColor;
-    fMedianLineWidth      : Integer;
-    fMedianVisible        : Boolean;
-    fNormalizationType    : TGuiNormalizationType;
-    fOSFactor             : Integer;
-    fWaveDrawMode         : TGuiWaveDrawMode;
-    fHalfHeight           : Integer;
-    fTransparent          : Boolean;
-    fWaveVPadding         : Integer;
+    FAntiAlias            : TGuiAntiAlias;
+    FAudioData            : TCustomAudioDataCollection;
+    FDisplayedChannel     : Integer;
+    FLineColor            : TColor;
+    FLineWidth            : Integer;
+    FMedianColor          : TColor;
+    FMedianLineWidth      : Integer;
+    FMedianVisible        : Boolean;
+    FNormalizationType    : TGuiNormalizationType;
+    FOSFactor             : Integer;
+    FWaveDrawMode         : TGuiWaveDrawMode;
+    FHalfHeight           : Integer;
+    FTransparent          : Boolean;
+    FWaveVPadding         : Integer;
 
     function  GetChannelCount: Integer;
     function  GetSampleFrames: Integer;
@@ -64,21 +64,21 @@ type
     destructor Destroy; override;
     procedure Paint; override;
 
-    property AntiAlias: TGuiAntiAlias read fAntiAlias write SetAntiAlias default gaaNone;
-    property AudioData: TCustomAudioDataCollection read fAudioData write SetAudioData;
-    property DisplayedChannel: Integer read fDisplayedChannel write SetDisplayedChannel default -1;
-    property WaveVPadding: Integer read fWaveVPadding write SetWaveVPadding default 3;
+    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+    property AudioData: TCustomAudioDataCollection read FAudioData write SetAudioData;
+    property DisplayedChannel: Integer read FDisplayedChannel write SetDisplayedChannel default -1;
+    property WaveVPadding: Integer read FWaveVPadding write SetWaveVPadding default 3;
 
-    property LineWidth: Integer read fLineWidth write SetLineWidth default 1;
-    property LineColor: TColor read fLineColor write SetLineColor default clBlack;
+    property LineWidth: Integer read FLineWidth write SetLineWidth default 1;
+    property LineColor: TColor read FLineColor write SetLineColor default clBlack;
     {$IFNDEF FPC}
-    property Transparent: Boolean read fTransparent write SetTransparent default False;
+    property Transparent: Boolean read FTransparent write SetTransparent default False;
     {$ENDIF}
-    property MedianVisible: Boolean read fMedianVisible write SetMedianVisible default True;
-    property MedianColor: TColor read fMedianColor write SetMedianColor default clRed;
-    property MedianLineWidth: Integer read fMedianLineWidth write SetMedianLineWidth default 1;
-    property NormalizationType: TGuiNormalizationType read fNormalizationType write SetNormalizationType default ntNone;
-    property WaveDrawMode: TGuiWaveDrawMode read fWaveDrawMode write SetWaveDrawMode default wdmSolid;
+    property MedianVisible: Boolean read FMedianVisible write SetMedianVisible default True;
+    property MedianColor: TColor read FMedianColor write SetMedianColor default clRed;
+    property MedianLineWidth: Integer read FMedianLineWidth write SetMedianLineWidth default 1;
+    property NormalizationType: TGuiNormalizationType read FNormalizationType write SetNormalizationType default ntNone;
+    property WaveDrawMode: TGuiWaveDrawMode read FWaveDrawMode write SetWaveDrawMode default wdmSolid;
   end;
 
   TGuiAudioDataDisplay = class(TCustomGuiAudioDataDisplay)
@@ -138,14 +138,14 @@ constructor TCustomGuiAudioDataDisplay.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
-  fNormalizationType := ntNone;
-  fDisplayedChannel  := -1;
-  fWaveVPadding      := 3;
-  fMedianVisible     := True;
-  fMedianColor       := clRed;
-  fMedianLineWidth   := 1;
-  fOSFactor          :=  1; 
-  fWaveDrawMode      := wdmSolid;
+  FNormalizationType := ntNone;
+  FDisplayedChannel  := -1;
+  FWaveVPadding      := 3;
+  FMedianVisible     := True;
+  FMedianColor       := clRed;
+  FMedianLineWidth   := 1;
+  FOSFactor          :=  1; 
+  FWaveDrawMode      := wdmSolid;
 end;
 
 destructor TCustomGuiAudioDataDisplay.Destroy;
@@ -155,35 +155,35 @@ end;
 
 function TCustomGuiAudioDataDisplay.GetSampleFrames: Integer;
 begin
- if assigned(fAudioData)
-  then result := fAudioData.SampleFrames
+ if assigned(FAudioData)
+  then result := FAudioData.SampleFrames
   else result := 0;
 end;
 
 procedure TCustomGuiAudioDataDisplay.Loaded;
 begin
  inherited;
- fHalfHeight := Height div 2;
+ FHalfHeight := Height div 2;
 end;
 
 function TCustomGuiAudioDataDisplay.GetChannelCount: Integer;
 begin
- if assigned(fAudioData)
-  then result := fAudioData.Channels.Count
+ if assigned(FAudioData)
+  then result := FAudioData.Channels.Count
   else result := 0;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetAntiAlias(const Value: TGuiAntiAlias);
 begin
- if fAntiAlias <> Value then
+ if FAntiAlias <> Value then
   begin
-   fAntiAlias := Value;
-   case fAntiAlias of
-         gaaNone : fOSFactor :=  1;
-     gaaLinear2x : fOSFactor :=  2;
-     gaaLinear4x : fOSFactor :=  4;
-     gaaLinear8x : fOSFactor :=  8;
-    gaaLinear16x : fOSFactor := 16;
+   FAntiAlias := Value;
+   case FAntiAlias of
+         gaaNone : FOSFactor :=  1;
+     gaaLinear2x : FOSFactor :=  2;
+     gaaLinear4x : FOSFactor :=  4;
+     gaaLinear8x : FOSFactor :=  8;
+    gaaLinear16x : FOSFactor := 16;
    end;
    Invalidate;
   end;
@@ -191,9 +191,9 @@ end;
 
 procedure TCustomGuiAudioDataDisplay.SetAudioData(const Value: TCustomAudioDataCollection);
 begin
- if fAudioData <> Value then
+ if FAudioData <> Value then
   begin
-   fAudioData := Value;
+   FAudioData := Value;
    Invalidate;
   end;
 end;
@@ -201,90 +201,90 @@ end;
 procedure TCustomGuiAudioDataDisplay.SetDisplayedChannel(Value: Integer);
 begin
  if Value < -1 then Value := -1;
- if fDisplayedChannel <> Value then
+ if FDisplayedChannel <> Value then
   begin
-   fDisplayedChannel := Value;
+   FDisplayedChannel := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetLineColor(const Value: TColor);
 begin
- if fLineColor <> Value then
+ if FLineColor <> Value then
   begin
-   fLineColor := Value;
+   FLineColor := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetLineWidth(const Value: Integer);
 begin
- if fLineWidth <> Value then
+ if FLineWidth <> Value then
   begin
-   fLineWidth := Value;
+   FLineWidth := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetMedianVisible(Value: Boolean);
 begin
- if fMedianVisible <> Value then
+ if FMedianVisible <> Value then
   begin
-   fMedianVisible := Value;
+   FMedianVisible := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetMedianColor(Value: TColor);
 begin
- if fMedianColor <> Value then
+ if FMedianColor <> Value then
   begin
-   fMedianColor := Value;
+   FMedianColor := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetMedianLineWidth(Value: Integer);
 begin
- if fMedianLineWidth <> Value then
+ if FMedianLineWidth <> Value then
   begin
-   fMedianLineWidth := Value;
+   FMedianLineWidth := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetWaveVPadding(Value: Integer);
 begin
- if fWaveVPadding <> Value then
+ if FWaveVPadding <> Value then
   begin
-   fWaveVPadding := Value;
+   FWaveVPadding := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetNormalizationType(Value: TGuiNormalizationType);
 begin
- if fNormalizationType <> Value then
+ if FNormalizationType <> Value then
   begin
-   fNormalizationType := Value;
+   FNormalizationType := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetTransparent(const Value: Boolean);
 begin
- if fTransparent <> Value then
+ if FTransparent <> Value then
   begin
-   fTransparent := Value;
+   FTransparent := Value;
    Invalidate;
   end;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetWaveDrawMode(Value: TGuiWaveDrawMode);
 begin
- if fWaveDrawMode <> Value then
+ if FWaveDrawMode <> Value then
   begin
-   fWaveDrawMode := Value;
+   FWaveDrawMode := Value;
    Invalidate;
   end;
 end;
@@ -298,7 +298,7 @@ end;
 procedure TCustomGuiAudioDataDisplay.Resize;
 begin
  inherited;
- fHalfHeight := Height div 2;
+ FHalfHeight := Height div 2;
 end;
 
 // Drawing stuff
@@ -318,7 +318,7 @@ begin
       begin
        // draw background
        {$IFNDEF FPC}
-       if fTransparent
+       if FTransparent
         then DrawParentImage(fBuffer.Canvas)
         else
        {$ENDIF}
@@ -337,7 +337,7 @@ begin
          Width       := FOSFactor * fBuffer.Width;
          Height      := FOSFactor * fBuffer.Height;
          {$IFNDEF FPC}
-         if fTransparent then
+         if FTransparent then
           begin
            DrawParentImage(Bmp.Canvas);
            Upsample2xBitmap(Bmp);
@@ -366,7 +366,7 @@ begin
          Width       := FOSFactor * fBuffer.Width;
          Height      := FOSFactor * fBuffer.Height;
          {$IFNDEF FPC}
-         if fTransparent then
+         if FTransparent then
           begin
            DrawParentImage(Bmp.Canvas);
            Upsample4xBitmap(Bmp);
@@ -394,7 +394,7 @@ begin
          Width       := FOSFactor * fBuffer.Width;
          Height      := FOSFactor * fBuffer.Height;
          {$IFNDEF FPC}
-         if fTransparent then
+         if FTransparent then
           begin
            DrawParentImage(Bmp.Canvas);
            Upsample4xBitmap(Bmp);
@@ -424,7 +424,7 @@ begin
          Width       := FOSFactor * fBuffer.Width;
          Height      := FOSFactor * fBuffer.Height;
          {$IFNDEF FPC}
-         if fTransparent then
+         if FTransparent then
           begin
            DrawParentImage(Bmp.Canvas);
            Upsample4xBitmap(Bmp);
@@ -456,8 +456,8 @@ procedure TCustomGuiAudioDataDisplay.RenderDisplayToBitmap(Bitmap: TBitmap);
 var
   ch: Integer;
 begin
- if (ChannelCount > 0) and (ChannelCount > fDisplayedChannel) then
-  if fDisplayedChannel >= 0 then DrawChannelData(Bitmap, fDisplayedChannel) else
+ if (ChannelCount > 0) and (ChannelCount > FDisplayedChannel) then
+  if FDisplayedChannel >= 0 then DrawChannelData(Bitmap, FDisplayedChannel) else
    for ch := 0 to ChannelCount - 1 do DrawChannelData(Bitmap, ch);
 end;
 
@@ -473,13 +473,13 @@ begin
  with Bitmap.Canvas do
   begin
    if SampleFrames = 0 then exit;
-   HlfHght := fOSFactor * fHalfHeight;
-   PixelPerSample := fOSFactor * Self.Width / SampleFrames;
-   Pen.Width := fOSFactor * fLineWidth;
-   Pen.Color := fLineColor;
+   HlfHght := FOSFactor * FHalfHeight;
+   PixelPerSample := FOSFactor * Self.Width / SampleFrames;
+   Pen.Width := FOSFactor * FLineWidth;
+   Pen.Color := FLineColor;
 
-   if (fAudioData.Channels.Items[Channel] is TAudioChannel32) then
-    with TAudioChannel32(fAudioData.Channels.Items[Channel]) do
+   if (FAudioData.Channels.Items[Channel] is TAudioChannel32) then
+    with TAudioChannel32(FAudioData.Channels.Items[Channel]) do
      begin
       if SampleCount = 0 then Exit;
       MinVal := ChannelDataPointer^[0];
@@ -548,8 +548,8 @@ procedure TCustomGuiAudioDataDisplay.DrawMedian(YOffset: Integer);
 begin
   with fBuffer.Canvas do
    begin
-    Pen.Width := fMedianLineWidth;
-    Pen.Color := fMedianColor;
+    Pen.Width := FMedianLineWidth;
+    Pen.Color := FMedianColor;
 
     MoveTo(0, YOffset);
     LineTo(Width, YOffset);
@@ -562,7 +562,7 @@ var
 begin
   with fBuffer.Canvas do
   begin
-    case fWaveDrawMode of
+    case FWaveDrawMode of
       wdmPoints:
         begin
          Pixels[NewMax.X, NewMax.Y] := Pen.Color;
@@ -628,8 +628,8 @@ var
 begin
   with fBuffer.Canvas do
    begin
-    Pen.Width := fLineWidth;
-    Pen.Color := fLineColor;
+    Pen.Width := FLineWidth;
+    Pen.Color := FLineColor;
 
     SampleWidth := (Width - 1) / (WaveLength - 1);
 
@@ -682,12 +682,12 @@ begin
   with fBuffer.Canvas do
    for i := 0 to fDisplayChannels - 1 do
     begin
-     YOffset := (fWaveVPadding + fHalfHeight) * (i * 2 + 1);
+     YOffset := (FWaveVPadding + FHalfHeight) * (i * 2 + 1);
 
      if fNormalizationFactors[i] > 0
-      then DrawSingleWave(YOffset, fHalfHeight, i);
+      then DrawSingleWave(YOffset, FHalfHeight, i);
 
-     if fMedianVisible then DrawMedian(YOffset);
+     if FMedianVisible then DrawMedian(YOffset);
     end;
 end;
 *)

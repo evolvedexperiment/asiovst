@@ -5,14 +5,7 @@ unit DAV_ASIOHost;
 // Benjamin Rosseaux. Please give credit if you use this component in your
 // programs. Thanks to Martin Fay (original Delphi ASIO interface)
 
-{$I ..\ASIOVST.INC}
-{.$DEFINE OpenASIO}
-// define OpenASIO to compile using old OpenASIO interface (needs OpenASIO.dll)
-
-{.$DEFINE ASIOMixer}
-// define ASIOMixer to compile with the ASIO mixer
-{-$DEFINE D5CP}
-// define D5CP to compile with the ASIO control panel design time for Delphi 5
+{$I ..\DAV_Compiler.inc}
 
 interface
 

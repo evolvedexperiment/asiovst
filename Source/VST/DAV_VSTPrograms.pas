@@ -2,7 +2,7 @@ unit DAV_VSTPrograms;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, DAV_VSTBasicModule;

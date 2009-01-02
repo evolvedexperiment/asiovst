@@ -2,7 +2,7 @@ unit ConvolutionDM;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.inc}
 {-$DEFINE Use_IPPS}
 
 uses

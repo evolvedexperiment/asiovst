@@ -9,11 +9,11 @@ uses
 type
   TOversampledTanhModule = class(TVSTModule)
     procedure VSTEditOpen(Sender: TObject; var GUI: TForm; const ParentWindow: Cardinal);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleOpen(Sender: TObject);
     procedure ParamCoeffsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamTransitionChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleClose(Sender: TObject);
   private
     FDownsampler2x : array[0..1] of TPolyphaseDownsampler32;
     FUpSampler2x   : array[0..1] of TPolyphaseUpsampler32;

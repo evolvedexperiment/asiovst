@@ -2,7 +2,7 @@ unit DAV_ChunkPluginGUI;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.inc}
 
 uses
   Classes, Graphics, DAV_Common, DAV_ChunkClasses, DAV_GuiBaseControl;
@@ -21,18 +21,18 @@ type
     function GetKnobsPerRow: TGuiAntiAlias;
     procedure SetFontAntiAliasing(const Value: TGuiAntiAlias);
   protected
-    fPluginGuiChunkRecord : TDAVPluginGuiChunkRecord;
+    FPluginGuiChunkRecord : TDAVPluginGuiChunkRecord;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     class function GetClassChunkSize: Integer; override;
     class function GetClassChunkName : TChunkName; override;
   published
-    property BackgroundColor: TColor read fPluginGuiChunkRecord.BackgroundColor write fPluginGuiChunkRecord.BackgroundColor;
-    property KnobsPerRow: Byte read fPluginGuiChunkRecord.KnobsPerRow write fPluginGuiChunkRecord.KnobsPerRow;
+    property BackgroundColor: TColor read FPluginGuiChunkRecord.BackgroundColor write FPluginGuiChunkRecord.BackgroundColor;
+    property KnobsPerRow: Byte read FPluginGuiChunkRecord.KnobsPerRow write FPluginGuiChunkRecord.KnobsPerRow;
     property FontAntiAliasing: TGuiAntiAlias read GetKnobsPerRow write SetFontAntiAliasing;
-    property FontSize: Byte read fPluginGuiChunkRecord.FontSize write fPluginGuiChunkRecord.FontSize;
-    property FontColor: TColor read fPluginGuiChunkRecord.FontColor write fPluginGuiChunkRecord.FontColor;
+    property FontSize: Byte read FPluginGuiChunkRecord.FontSize write FPluginGuiChunkRecord.FontSize;
+    property FontColor: TColor read FPluginGuiChunkRecord.FontColor write FPluginGuiChunkRecord.FontColor;
   end;
 
 implementation
@@ -42,8 +42,8 @@ implementation
 constructor TDAVPluginGuiChunk.Create;
 begin
  inherited;
- StartAddress := @fPluginGuiChunkRecord;
- with fPluginGuiChunkRecord do
+ StartAddress := @FPluginGuiChunkRecord;
+ with FPluginGuiChunkRecord do
   begin
    BackgroundColor  := $007F7F7F;
    KnobsPerRow      := 6;
@@ -56,7 +56,7 @@ procedure TDAVPluginGuiChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
  if Dest is TDAVPluginGuiChunk
-  then TDAVPluginGuiChunk(Dest).fPluginGuiChunkRecord := fPluginGuiChunkRecord; 
+  then TDAVPluginGuiChunk(Dest).FPluginGuiChunkRecord := FPluginGuiChunkRecord; 
 end;
 
 class function TDAVPluginGuiChunk.GetClassChunkName: TChunkName;
@@ -71,12 +71,12 @@ end;
 
 function TDAVPluginGuiChunk.GetKnobsPerRow: TGuiAntiAlias;
 begin
- result := TGuiAntiAlias(fPluginGuiChunkRecord.FontAntiAliasing);
+ result := TGuiAntiAlias(FPluginGuiChunkRecord.FontAntiAliasing);
 end;
 
 procedure TDAVPluginGuiChunk.SetFontAntiAliasing(const Value: TGuiAntiAlias);
 begin
- fPluginGuiChunkRecord.FontAntiAliasing := Byte(Value);
+ FPluginGuiChunkRecord.FontAntiAliasing := Byte(Value);
 end;
 
 end.

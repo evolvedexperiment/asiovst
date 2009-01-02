@@ -27,7 +27,6 @@ object DegradeDataModule: TDegradeDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Headroo'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -40,7 +39,6 @@ object DegradeDataModule: TDegradeDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Quantiz'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'bits'
       VSTModule = Owner
@@ -53,7 +51,6 @@ object DegradeDataModule: TDegradeDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Rate'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'S<>S&&H'
       VSTModule = Owner
@@ -66,7 +63,6 @@ object DegradeDataModule: TDegradeDataModule
       Max = 1.000000000000000000
       ShortLabel = 'PstFilt'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -80,7 +76,6 @@ object DegradeDataModule: TDegradeDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Non-Lin'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Odd<>Even'
       VSTModule = Owner
@@ -94,7 +89,6 @@ object DegradeDataModule: TDegradeDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

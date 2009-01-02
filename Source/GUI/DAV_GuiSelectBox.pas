@@ -2,7 +2,7 @@ unit DAV_GuiSelectBox;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Windows, Classes, Controls, Graphics, Menus, DAV_GuiBaseControl;

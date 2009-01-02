@@ -2,7 +2,7 @@ unit DAV_ModularBaseComponent;
 
 interface
 
-{$I ASIOVST.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, DAV_Common, Contnrs, DAV_ProcessingComponent;
@@ -12,23 +12,23 @@ type
 
   TDspBaseComponent = class(TDAVProcessingComponent)
   protected
-    fNextDspQueueItem: TDspBaseComponent;
-    fPrevDspQueueItem: TDspBaseComponent;
+    FNextDspQueueItem   : TDspBaseComponent;
+    FPrevDspQueueItem   : TDspBaseComponent;
 
-    fStdProcessS:   TDspBaseProcessFuncS;
-    fStdProcessD:   TDspBaseProcessFuncD;
-    fStdProcessSA:  TDspBaseProcessFuncSA;
-    fStdProcessDA:  TDspBaseProcessFuncDA;
-    fStdProcessSAA: TDspBaseProcessFuncSAA;
-    fStdProcessDAA: TDspBaseProcessFuncDAA;
+    FStdProcessS        : TDspBaseProcessFuncS;
+    FStdProcessD        : TDspBaseProcessFuncD;
+    FStdProcessSA       : TDspBaseProcessFuncSA;
+    FStdProcessDA       : TDspBaseProcessFuncDA;
+    FStdProcessSAA      : TDspBaseProcessFuncSAA;
+    FStdProcessDAA      : TDspBaseProcessFuncDAA;
 
-    fStdProcessQueueS:   TDspBaseProcessFuncS;
-    fStdProcessQueueD:   TDspBaseProcessFuncD;
-    fStdProcessQueueSA:  TDspBaseProcessFuncSA;
-    fStdProcessQueueDA:  TDspBaseProcessFuncDA;
-    fStdProcessQueueSAA: TDspBaseProcessFuncSAA;
-    fStdProcessQueueDAA: TDspBaseProcessFuncDAA;
-    
+    FStdProcessQueueS   : TDspBaseProcessFuncS;
+    FStdProcessQueueD   : TDspBaseProcessFuncD;
+    FStdProcessQueueSA  : TDspBaseProcessFuncSA;
+    FStdProcessQueueDA  : TDspBaseProcessFuncDA;
+    FStdProcessQueueSAA : TDspBaseProcessFuncSAA;
+    FStdProcessQueueDAA : TDspBaseProcessFuncDAA;
+
     function  GetTrailingSamplesQueue: integer; override;
 
     procedure SetBypass(const Value: Boolean); override;
@@ -105,13 +105,13 @@ type
     procedure ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean); override;
     procedure ProcessMidiEventQueue(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean); override;
 
-    property PrevDspQueueItem: TDspBaseComponent read fPrevDspQueueItem write fPrevDspQueueItem;
+    property PrevDspQueueItem: TDspBaseComponent read FPrevDspQueueItem write FPrevDspQueueItem;
   published
     property Enabled: Boolean                    read fEnabled          write SetEnabled    default true;
     property Bypass: Boolean                     read fBypass           write SetBypass     default false;
     property Channels: Integer                   read fChannels         write SetChannels   default 2;
     property SampleRate: Single                  read fSampleRate       write SetSampleRate;
-    property NextDspQueueItem: TDspBaseComponent read fNextDspQueueItem write SetNextDspQueueItem;
+    property NextDspQueueItem: TDspBaseComponent read FNextDspQueueItem write SetNextDspQueueItem;
   end;
 
 implementation
@@ -128,27 +128,27 @@ constructor TDspBaseComponent.Create(AOwner: TComponent);
 begin
   inherited;
 
-  fNextDspQueueItem := nil;
-  fPrevDspQueueItem := nil;
+  FNextDspQueueItem := nil;
+  FPrevDspQueueItem := nil;
   fEnabled          := true;
   fBypass           := false;
   fSampleRate       := 44100;
   fChannels         := 2;
   fTrailingSamples  := 0;
 
-  fStdProcessS   := ProcessBypass;
-  fStdProcessD   := ProcessBasic;
-  fStdProcessSA  := ProcessBasic;
-  fStdProcessDA  := ProcessBasic;
-  fStdProcessSAA := ProcessBasic;
-  fStdProcessDAA := ProcessBasic;
+  FStdProcessS   := ProcessBypass;
+  FStdProcessD   := ProcessBasic;
+  FStdProcessSA  := ProcessBasic;
+  FStdProcessDA  := ProcessBasic;
+  FStdProcessSAA := ProcessBasic;
+  FStdProcessDAA := ProcessBasic;
 
-  fStdProcessQueueS  := ProcessQueueBasic;
-  fStdProcessQueueD  := ProcessQueueBasic;
-  fStdProcessQueueSA := ProcessQueueBasic;
-  fStdProcessQueueDA := ProcessQueueBasic;
-  fStdProcessQueueSAA:= ProcessQueueBasic;
-  fStdProcessQueueDAA:= ProcessQueueBasic;
+  FStdProcessQueueS  := ProcessQueueBasic;
+  FStdProcessQueueD  := ProcessQueueBasic;
+  FStdProcessQueueSA := ProcessQueueBasic;
+  FStdProcessQueueDA := ProcessQueueBasic;
+  FStdProcessQueueSAA:= ProcessQueueBasic;
+  FStdProcessQueueDAA:= ProcessQueueBasic;
 
   RegisterInOwner(self);
 
@@ -168,12 +168,12 @@ destructor TDspBaseComponent.Destroy;
 begin
   BeforeDestroy;
 
-  if assigned(fNextDspQueueItem) then
+  if assigned(FNextDspQueueItem) then
   begin
-    fNextDspQueueItem.PrevDspQueueItem := fPrevDspQueueItem;
-    if not assigned(fPrevDspQueueItem) then RegisterInOwner(fNextDspQueueItem);
+    FNextDspQueueItem.PrevDspQueueItem := FPrevDspQueueItem;
+    if not assigned(FPrevDspQueueItem) then RegisterInOwner(FNextDspQueueItem);
   end;
-  if assigned(fPrevDspQueueItem) then fPrevDspQueueItem.NextDspQueueItem := fNextDspQueueItem;
+  if assigned(FPrevDspQueueItem) then FPrevDspQueueItem.NextDspQueueItem := FNextDspQueueItem;
 
   UnRegisterInOwner(self);
   inherited;
@@ -220,7 +220,7 @@ end;
 procedure TDspBaseComponent.ResetQueue;
 begin
   Reset;
-  if assigned(fNextDspQueueItem) then fNextDspQueueItem.ResetQueue;
+  if assigned(FNextDspQueueItem) then FNextDspQueueItem.ResetQueue;
 end;
 
 
@@ -231,17 +231,17 @@ begin
   if not assigned(items) then
     items:=TDspQueueList.Create(false);
 
-  if assigned(fNextDspQueueItem) then
+  if assigned(FNextDspQueueItem) then
   begin
     for i:=items.Count-1 downto 0 do
-      if items[i]=fNextDspQueueItem then
+      if items[i]=FNextDspQueueItem then
       begin
         Result:=false;
         exit;
       end;
 
-    items.Add(fNextDspQueueItem);
-    Result:=Result and fNextDspQueueItem.GetFollowingItems(items);
+    items.Add(FNextDspQueueItem);
+    Result:=Result and FNextDspQueueItem.GetFollowingItems(items);
   end;
 end;
 
@@ -252,17 +252,17 @@ begin
   if not assigned(items) then
     items:=TDspQueueList.Create(false);
 
-  if assigned(fPrevDspQueueItem) then
+  if assigned(FPrevDspQueueItem) then
   begin
     for i:=items.Count-1 downto 0 do
-      if items[i]=fPrevDspQueueItem then
+      if items[i]=FPrevDspQueueItem then
       begin
         Result:=false;
         exit;
       end;
 
-    items.Insert(0, fPrevDspQueueItem);
-    Result:=Result and fNextDspQueueItem.GetPreviousItems(items);
+    items.Insert(0, FPrevDspQueueItem);
+    Result:=Result and FNextDspQueueItem.GetPreviousItems(items);
   end;
 end;
 
@@ -282,23 +282,23 @@ end;
 procedure TDspBaseComponent.SetNextDspQueueItem(const Value: TDspBaseComponent);
 var x: TDspQueueList; backup: TDspBaseComponent;
 begin
-  if (Value<>self) and (fNextDspQueueItem<>Value) then
+  if (Value<>self) and (FNextDspQueueItem<>Value) then
   begin
-    backup := fNextDspQueueItem;
-    fNextDspQueueItem := Value;
+    backup := FNextDspQueueItem;
+    FNextDspQueueItem := Value;
     if Value<>nil then
     begin
       x:=nil;
-      if (fPrevDspQueueItem=Value) or not (GetQueueItems(x)) then
+      if (FPrevDspQueueItem=Value) or not (GetQueueItems(x)) then
       begin
-        fNextDspQueueItem := backup;
+        FNextDspQueueItem := backup;
         raise Exception.Create('Processing queue loopback');
         exit;
       end else begin
-        if not assigned(fNextDspQueueItem.PrevDspQueueItem) then
-          UnRegisterInOwner(fNextDspQueueItem);
+        if not assigned(FNextDspQueueItem.PrevDspQueueItem) then
+          UnRegisterInOwner(FNextDspQueueItem);
 
-        fNextDspQueueItem.PrevDspQueueItem:=self;
+        FNextDspQueueItem.PrevDspQueueItem:=self;
       end;
     end;
 
@@ -314,7 +314,7 @@ begin
     fSampleRate := Value;
     SampleRateChanged;
     
-    if assigned(fNextDspQueueItem) then fNextDspQueueItem.SampleRate:=fSampleRate;
+    if assigned(FNextDspQueueItem) then FNextDspQueueItem.SampleRate:=fSampleRate;
   end;
 end;
 
@@ -325,7 +325,7 @@ begin
     fChannels := Value;
     ChannelsChanged;
 
-    if assigned(fNextDspQueueItem) then fNextDspQueueItem.Channels:=fChannels;
+    if assigned(FNextDspQueueItem) then FNextDspQueueItem.Channels:=fChannels;
   end;
 end;
 
@@ -373,7 +373,7 @@ begin
       fProcessSAA:= ProcessBypass;
       fProcessDAA:= ProcessBypass;
 
-      if assigned(fNextDspQueueItem) then
+      if assigned(FNextDspQueueItem) then
       begin
         // ignore this item and call directly the next item
         fProcessQueueS  := ProcessQueueBypass;
@@ -393,30 +393,30 @@ begin
       end;
     end else begin
       // process item
-      fProcessS  := fStdProcessS;
-      fProcessD  := fStdProcessD;
-      fProcessSA := fStdProcessSA;
-      fProcessDA := fStdProcessDA;
-      fProcessSAA:= fStdProcessSAA;
-      fProcessDAA:= fStdProcessDAA;
+      fProcessS  := FStdProcessS;
+      fProcessD  := FStdProcessD;
+      fProcessSA := FStdProcessSA;
+      fProcessDA := FStdProcessDA;
+      fProcessSAA:= FStdProcessSAA;
+      fProcessDAA:= FStdProcessDAA;
 
-      if assigned(fNextDspQueueItem) then
+      if assigned(FNextDspQueueItem) then
       begin
         // process this item and pass output to the next
-        fProcessQueueS  := fStdProcessQueueS;
-        fProcessQueueD  := fStdProcessQueueD;
-        fProcessQueueSA := fStdProcessQueueSA;
-        fProcessQueueDA := fStdProcessQueueDA;
-        fProcessQueueSAA:= fStdProcessQueueSAA;
-        fProcessQueueDAA:= fStdProcessQueueDAA;
+        fProcessQueueS  := FStdProcessQueueS;
+        fProcessQueueD  := FStdProcessQueueD;
+        fProcessQueueSA := FStdProcessQueueSA;
+        fProcessQueueDA := FStdProcessQueueDA;
+        fProcessQueueSAA:= FStdProcessQueueSAA;
+        fProcessQueueDAA:= FStdProcessQueueDAA;
       end else begin
         // only process this item
-        fProcessQueueS  := fStdProcessS;
-        fProcessQueueD  := fStdProcessD;
-        fProcessQueueSA := fStdProcessSA;
-        fProcessQueueDA := fStdProcessDA;
-        fProcessQueueSAA:= fStdProcessSAA;
-        fProcessQueueDAA:= fStdProcessDAA;
+        fProcessQueueS  := FStdProcessS;
+        fProcessQueueD  := FStdProcessD;
+        fProcessQueueSA := FStdProcessSA;
+        fProcessQueueDA := FStdProcessDA;
+        fProcessQueueSAA:= FStdProcessSAA;
+        fProcessQueueDAA:= FStdProcessDAA;
       end;
     end;
   end else begin
@@ -555,37 +555,37 @@ end;
 procedure TDspBaseComponent.ProcessQueueBasic(var Data: Single; const channel: integer);
 begin
  fProcessS(Data, channel);
- fNextDspQueueItem.ProcessQueueS(Data, channel);
+ FNextDspQueueItem.ProcessQueueS(Data, channel);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBasic(var Data: Double; const channel: integer);
 begin
  fProcessD(Data, channel);
- fNextDspQueueItem.ProcessQueueD(Data, channel);
+ FNextDspQueueItem.ProcessQueueD(Data, channel);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer);
 begin
  fProcessSA(ProcessBuffer, channel, SampleFrames);
- fNextDspQueueItem.ProcessQueueSA(ProcessBuffer, channel, SampleFrames);
+ FNextDspQueueItem.ProcessQueueSA(ProcessBuffer, channel, SampleFrames);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 begin
  fProcessDA(ProcessBuffer, channel, SampleFrames);
- fNextDspQueueItem.ProcessQueueDA(ProcessBuffer, channel, SampleFrames);
+ FNextDspQueueItem.ProcessQueueDA(ProcessBuffer, channel, SampleFrames);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 begin
  fProcessSAA(ProcessBuffer, SampleFrames);
- fNextDspQueueItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
+ FNextDspQueueItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBasic(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
  fProcessDAA(ProcessBuffer, SampleFrames);
- fNextDspQueueItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
+ FNextDspQueueItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
 end;
 
 
@@ -593,32 +593,32 @@ end;
 
 procedure TDspBaseComponent.ProcessQueueBypass(var Data: Single; const channel: integer);
 begin
- fNextDspQueueItem.ProcessQueueS(Data, channel);
+ FNextDspQueueItem.ProcessQueueS(Data, channel);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBypass(var Data: Double; const channel: integer);
 begin
- fNextDspQueueItem.ProcessQueueD(Data, channel);
+ FNextDspQueueItem.ProcessQueueD(Data, channel);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TDAVSingleDynArray; const channel, SampleFrames: integer);
 begin
- fNextDspQueueItem.ProcessQueueSA(ProcessBuffer, channel, SampleFrames);
+ FNextDspQueueItem.ProcessQueueSA(ProcessBuffer, channel, SampleFrames);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 begin
- fNextDspQueueItem.ProcessQueueDA(ProcessBuffer, channel, SampleFrames);
+ FNextDspQueueItem.ProcessQueueDA(ProcessBuffer, channel, SampleFrames);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 begin
- fNextDspQueueItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
+ FNextDspQueueItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
 end;
 
 procedure TDspBaseComponent.ProcessQueueBypass(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
- fNextDspQueueItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
+ FNextDspQueueItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
 end;
 
 procedure TDspBaseComponent.ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean);
@@ -629,20 +629,20 @@ begin
   FilterEvent:=false;
   ProcessMidiEvent(MidiEvent, FilterEvent);
 
-  if not FilterEvent and assigned(fNextDspQueueItem) then
-    fNextDspQueueItem.ProcessMidiEventQueue(MidiEvent, FilterEvent);
+  if not FilterEvent and assigned(FNextDspQueueItem) then
+    FNextDspQueueItem.ProcessMidiEventQueue(MidiEvent, FilterEvent);
 end;
 
 function TDspBaseComponent.GetTrailingSamplesQueue: integer;
 begin
   result:=fTrailingSamples;
-  if assigned(fNextDspQueueItem) then result:=max(result, fNextDspQueueItem.TrailingSamplesQueue);
+  if assigned(FNextDspQueueItem) then result:=max(result, FNextDspQueueItem.TrailingSamplesQueue);
 end;
 
 procedure TDspBaseComponent.NoteOffQueue;
 begin
   NoteOff;
-  if assigned(fNextDspQueueItem) then fNextDspQueueItem.NoteOffQueue;
+  if assigned(FNextDspQueueItem) then FNextDspQueueItem.NoteOffQueue;
 end;
 
 end.

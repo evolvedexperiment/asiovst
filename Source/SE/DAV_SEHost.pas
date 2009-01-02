@@ -2,6 +2,8 @@ unit DAV_SEHost;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Windows, Classes, SysUtils, DAV_SECommon, DAV_SEModule, DAV_SEGUI,
   DAV_DLLLoader;

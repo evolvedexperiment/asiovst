@@ -27,7 +27,6 @@ object LeslieDataModule: TLeslieDataModule
       MaxInteger = 1
       ShortLabel = 'Speed'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParamSpeedDisplay
@@ -40,7 +39,6 @@ object LeslieDataModule: TLeslieDataModule
       Max = 100.000000000000000000
       ShortLabel = 'LoWidth'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -54,7 +52,6 @@ object LeslieDataModule: TLeslieDataModule
       Max = 100.000000000000000000
       ShortLabel = 'LoThrob'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -68,7 +65,6 @@ object LeslieDataModule: TLeslieDataModule
       Max = 100.000000000000000000
       ShortLabel = 'HiWidth'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -82,7 +78,6 @@ object LeslieDataModule: TLeslieDataModule
       Max = 100.000000000000000000
       ShortLabel = 'HiDepth'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -96,7 +91,6 @@ object LeslieDataModule: TLeslieDataModule
       Max = 100.000000000000000000
       ShortLabel = 'HiThrob'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -110,7 +104,6 @@ object LeslieDataModule: TLeslieDataModule
       Max = 1.000000000000000000
       ShortLabel = 'X-Over'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -127,7 +120,6 @@ object LeslieDataModule: TLeslieDataModule
       MinInteger = -20
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -142,7 +134,6 @@ object LeslieDataModule: TLeslieDataModule
       MaxInteger = 200
       ShortLabel = 'Speed'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

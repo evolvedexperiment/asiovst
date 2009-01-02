@@ -62,7 +62,6 @@ object SimpleChorusModule: TSimpleChorusModule
       MinInteger = 1
       ShortLabel = 'Speed'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -80,7 +79,6 @@ object SimpleChorusModule: TSimpleChorusModule
       MinInteger = 1
       ShortLabel = 'Stages'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'x'
       VSTModule = Owner
@@ -96,7 +94,6 @@ object SimpleChorusModule: TSimpleChorusModule
       MinInteger = 1
       ShortLabel = 'Depth'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -110,7 +107,6 @@ object SimpleChorusModule: TSimpleChorusModule
       Max = 100.000000000000000000
       ShortLabel = 'Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -124,7 +120,6 @@ object SimpleChorusModule: TSimpleChorusModule
       Max = 100.000000000000000000
       ShortLabel = 'Drift'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

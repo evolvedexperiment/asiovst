@@ -2,6 +2,8 @@ unit DAV_AudioFileAIFF;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Classes, Contnrs, SysUtils, DAV_Common, DAV_AudioFile, DAV_ChunkClasses,
   DAV_ChunkAIFFFile;
@@ -9,10 +11,10 @@ uses
 type
   TCustomAudioFileAIFF = class(TCustomAudioFile)
   private
-    fCommonChunk     : TAIFFCommonChunk;
-    fCommentChunk    : TAIFFCommentChunk;
-    fMarkerChunk     : TAIFFMarkerChunk;
-    fInstrumentChunk : TAIFFInstrumentChunk;
+    FCommonChunk     : TAIFFCommonChunk;
+    FCommentChunk    : TAIFFCommentChunk;
+    FMarkerChunk     : TAIFFMarkerChunk;
+    FInstrumentChunk : TAIFFInstrumentChunk;
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
@@ -63,26 +65,26 @@ resourcestring
 constructor TCustomAudioFileAIFF.Create(AOwner: TComponent);
 begin
  inherited;
- fCommonChunk := TAIFFCommonChunk.Create;
+ FCommonChunk := TAIFFCommonChunk.Create;
 end;
 
 destructor TCustomAudioFileAIFF.Destroy;
 begin
- FreeAndNil(fCommonChunk);
- if assigned(fCommentChunk)    then FreeAndNil(fCommentChunk);
- if assigned(fMarkerChunk)     then FreeAndNil(fMarkerChunk);
- if assigned(fInstrumentChunk) then FreeAndNil(fInstrumentChunk);
+ FreeAndNil(FCommonChunk);
+ if assigned(FCommentChunk)    then FreeAndNil(FCommentChunk);
+ if assigned(FMarkerChunk)     then FreeAndNil(FMarkerChunk);
+ if assigned(FInstrumentChunk) then FreeAndNil(FInstrumentChunk);
  inherited;
 end;
 
 function TCustomAudioFileAIFF.GetBitsPerSample: Byte;
 begin
- result := fCommonChunk.SampleSize;
+ result := FCommonChunk.SampleSize;
 end;
 
 function TCustomAudioFileAIFF.GetChannels: Cardinal;
 begin
- result := fCommonChunk.Channels;
+ result := FCommonChunk.Channels;
 end;
 
 function TCustomAudioFileAIFF.GetEncoding: TAudioEncoding;
@@ -92,17 +94,17 @@ end;
 
 function TCustomAudioFileAIFF.GetSampleCount: Cardinal;
 begin
- result := fCommonChunk.SampleFrames;
+ result := FCommonChunk.SampleFrames;
 end;
 
 function TCustomAudioFileAIFF.GetSampleRate: Double;
 begin
- result := fCommonChunk.SampleRate;
+ result := FCommonChunk.SampleRate;
 end;
 
 procedure TCustomAudioFileAIFF.SetBitsPerSample(const Value: Byte);
 begin
- with fCommonChunk do
+ with FCommonChunk do
   if SampleSize <> Value then
    begin
     SampleSize := Value;
@@ -111,7 +113,7 @@ end;
 
 procedure TCustomAudioFileAIFF.SetChannels(const Value: Cardinal);
 begin
- with fCommonChunk do
+ with FCommonChunk do
   if Channels <> Value then
    begin
     inherited;
@@ -127,7 +129,7 @@ end;
 
 procedure TCustomAudioFileAIFF.SetSampleCount(const Value: Cardinal);
 begin
- with fCommonChunk do
+ with FCommonChunk do
   if SampleFrames <> Value then
    begin
     inherited;
@@ -137,7 +139,7 @@ end;
 
 procedure TCustomAudioFileAIFF.SetSampleRate(const Value: Double);
 begin
- with fCommonChunk do
+ with FCommonChunk do
   if SampleRate <> Value then
    begin
     inherited;
@@ -174,9 +176,9 @@ begin
     then raise Exception.Create(rcAIFFChunkNotFound);
 
    // Remove existing optional chunk
-   FreeAndNil(fCommentChunk);
-   FreeAndNil(fMarkerChunk);
-   FreeAndNil(fInstrumentChunk);
+   FreeAndNil(FCommentChunk);
+   FreeAndNil(FMarkerChunk);
+   FreeAndNil(FInstrumentChunk);
 
    // start parsing here
    ChunkEnd := Position + ChunkSize - 4;
@@ -187,7 +189,7 @@ begin
      if ChunkName = 'COMM' then
       begin
        // load common chunk
-       fCommonChunk.LoadFromStream(Stream);
+       FCommonChunk.LoadFromStream(Stream);
       end else
      if ChunkName = 'SSND' then
       begin
@@ -197,30 +199,30 @@ begin
       end else
      if ChunkName = 'MARK' then
       begin
-       if assigned(fMarkerChunk)
+       if assigned(FMarkerChunk)
         then raise Exception.Create('Only one marker chunk allowed');
 
        // load marker chunk
-       fMarkerChunk := TAIFFMArkerChunk.Create;
-       fMarkerChunk.LoadFromStream(Stream);
+       FMarkerChunk := TAIFFMArkerChunk.Create;
+       FMarkerChunk.LoadFromStream(Stream);
       end else
      if ChunkName = 'COMT' then
       begin
-       if assigned(fCommentChunk)
+       if assigned(FCommentChunk)
         then raise Exception.Create('Only one comment chunk allowed');
 
        // load comment chunk
-       fCommentChunk := TAIFFCommentChunk.Create;
-       fCommentChunk.LoadFromStream(Stream);
+       FCommentChunk := TAIFFCommentChunk.Create;
+       FCommentChunk.LoadFromStream(Stream);
       end else
      if ChunkName = 'COMT' then
       begin
-       if assigned(fInstrumentChunk)
+       if assigned(FInstrumentChunk)
         then raise Exception.Create('Only one instrument chunk allowed');
 
        // load comment chunk
-       fInstrumentChunk := TAIFFInstrumentChunk.Create;
-       fInstrumentChunk.LoadFromStream(Stream);
+       FInstrumentChunk := TAIFFInstrumentChunk.Create;
+       FInstrumentChunk.LoadFromStream(Stream);
       end
      else
       begin
@@ -263,7 +265,7 @@ begin
    Write(ChunkName, 4);
 
    // write format chunk
-   fCommonChunk.SaveToStream(Stream);
+   FCommonChunk.SaveToStream(Stream);
 
 
    // ToDo: write data here!

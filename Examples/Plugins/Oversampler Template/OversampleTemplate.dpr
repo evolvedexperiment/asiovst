@@ -4,8 +4,9 @@ library OversampleTemplate;
 {$R 'Test.res' 'Test.rc'}
 
 uses
-  FastMove,
-  RTLVCLOptimize,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  RTLVCLOptimize, // "
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,

@@ -27,7 +27,6 @@ object RePsychoDataModule: TRePsychoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Tune'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'semi'
       VSTModule = Owner
@@ -42,7 +41,6 @@ object RePsychoDataModule: TRePsychoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Fine'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'cent'
       VSTModule = Owner
@@ -60,7 +58,6 @@ object RePsychoDataModule: TRePsychoDataModule
       MinInteger = -50
       ShortLabel = 'Decay'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -77,7 +74,6 @@ object RePsychoDataModule: TRePsychoDataModule
       MinInteger = -30
       ShortLabel = 'Thresho'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -91,7 +87,6 @@ object RePsychoDataModule: TRePsychoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Hold'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -106,7 +101,6 @@ object RePsychoDataModule: TRePsychoDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Mix'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       Units = '%'
       VSTModule = Owner
@@ -123,7 +117,6 @@ object RePsychoDataModule: TRePsychoDataModule
       MaxInteger = 1
       ShortLabel = 'Quality'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterQualityDisplay

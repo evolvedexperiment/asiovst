@@ -33,7 +33,6 @@ object ComboDataModule: TComboDataModule
       MaxInteger = 6
       ShortLabel = 'select'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamModelChange
@@ -50,7 +49,6 @@ object ComboDataModule: TComboDataModule
       MinInteger = -100
       ShortLabel = 'drive'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'S <> H'
       VSTModule = Owner
@@ -67,7 +65,6 @@ object ComboDataModule: TComboDataModule
       MinInteger = -100
       ShortLabel = 'bias'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamBiasChange
@@ -84,7 +81,6 @@ object ComboDataModule: TComboDataModule
       MinInteger = -20
       ShortLabel = 'output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -100,7 +96,6 @@ object ComboDataModule: TComboDataModule
       MaxInteger = 1
       ShortLabel = 'stereo'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamProcessChange
@@ -117,7 +112,6 @@ object ComboDataModule: TComboDataModule
       MinInteger = 2
       ShortLabel = 'hpfFreq'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -132,7 +126,6 @@ object ComboDataModule: TComboDataModule
       Max = 100.000000000000000000
       ShortLabel = 'hpfReso'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -151,7 +144,6 @@ object ComboDataModule: TComboDataModule
       MinInteger = -120
       ShortLabel = 'Noise'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

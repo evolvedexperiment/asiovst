@@ -2,10 +2,10 @@
 library CustomWrapper;
 
 uses
-  FastMM4,
+  FastMM4,  // either download the library or comment if there is an error here
   madExcept,
   madLinkDisAsm,
-  FastMove,
+  FastMove, // either download the library or comment if there is an error here
   RTLVCLOptimize,
   Forms,
   DAV_VSTEffect,

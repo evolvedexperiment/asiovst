@@ -43,7 +43,6 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mod In'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterModInChange
@@ -57,7 +56,6 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -71,7 +69,6 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Hi Thru'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -84,7 +81,6 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Hi Band'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -98,7 +94,6 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Envelop'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -112,7 +107,6 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Filter '
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -125,7 +119,6 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mid Fre'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -139,7 +132,6 @@ object VocoderDataModule: TVocoderDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Quality'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParamQualityDisplay

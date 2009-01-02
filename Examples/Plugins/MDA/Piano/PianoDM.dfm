@@ -56,7 +56,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Envelop'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -69,7 +68,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Envelop'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -82,7 +80,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Hardnes'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -95,7 +92,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Velocit'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -108,7 +104,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mufflin'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -121,7 +116,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Velocit'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -134,7 +128,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Velocit'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -147,7 +140,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Stereo '
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -160,7 +152,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Polypho'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'voices'
       VSTModule = Owner
@@ -173,7 +164,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Fine Tu'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'centes'
       VSTModule = Owner
@@ -186,7 +176,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Random '
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'centes'
       VSTModule = Owner
@@ -199,7 +188,6 @@ object PianoDataModule: TPianoDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Stretch'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'centes'
       VSTModule = Owner

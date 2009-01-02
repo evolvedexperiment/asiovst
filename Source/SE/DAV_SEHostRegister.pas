@@ -2,7 +2,7 @@ unit DAV_SEHostRegister;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 procedure Register;
 

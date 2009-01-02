@@ -2,7 +2,7 @@ unit DAV_VSTModuleWithPrograms;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, DAV_VSTModuleWithMidi, DAV_VSTParameters, DAV_VSTPrograms,
@@ -171,8 +171,8 @@ begin
 
  FIsHostAutomation := True;
  if ((Index >= numParams) or (Index >= FParameterProperties.Count)) and
-    Assigned(fOnParameterSizeFailed)
-  then fOnParameterSizeFailed(TVSTModuleWithPrograms(Effect^.vObject))
+    Assigned(FOnParameterSizeFailed)
+  then FOnParameterSizeFailed(TVSTModuleWithPrograms(Effect^.vObject))
   else SetParameter(Index, VSTParameter2Parameter(Value, Index));
 
  FIsHostAutomation := False;
@@ -586,40 +586,25 @@ end;
 
 function TVSTModuleWithPrograms.Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
 begin
+ assert(Index >= 0);
+ assert(Index < numParams);
+ assert(Index < FParameterProperties.Count);
+
  if (Index >= numParams) or
     (Index >= FParameterProperties.Count) then
   begin
    Result := 0;
    Exit;
   end;
- with FParameterProperties[Index] do
-  begin
-   Result := (Value - Min) / (Max - Min);
-   case FParameterProperties[Index].Curve of
-    ctLogarithmic: Result := log2(CurveFactor * Result + 1) / log2(CurveFactor + 1);
-    ctExponential: Result := exp(Result * ln(CurveFactor + 1)) - 1;
-    ctFrequencyScale: if min <> 0
-                       then Result := log2(Max / Min * Result + 1) / log2(Max / Min)
-                       else Result := log2(Max * Result + 1) / log2(Max);
-    else
-   end;
-  end;
- Result := f_limit(Result, 0, 1);
+ Result := FParameterProperties[Index].Parameter2VSTParameter(Value);
 end;
 
 function TVSTModuleWithPrograms.VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
 begin
- Result := Value;
- with FParameterProperties[Index] do
-  begin
-   case Curve of
-    ctLogarithmic: Result := (exp(Result * ln(curveFactor + 1)) - 1) / curveFactor;
-    ctExponential: Result := log2(curveFactor * Result + 1) / log2(curveFactor + 1);
-    ctFrequencyScale: Result := (exp(Result * ln((Max / Min) + 1)) - 1) / (Max / Min);
-   else
-   end;
-   Result := Smooth(Result * (Max - Min) + Min);
-  end;
+ assert(Index >= 0);
+ assert(Index < numParams);
+ assert(Index < FParameterProperties.Count);
+ Result := FParameterProperties[Index].VSTParameter2Parameter(Value);
 end;
 
 procedure TVSTModuleWithPrograms.SetParameterAutomated(Index: Integer; Value: Single);
@@ -627,8 +612,9 @@ begin
  if (Index >= numParams) or (Index >= FParameterProperties.Count) then Exit;
  setParameter(Index, Value);
  if Assigned(FParameterProperties[Index]) then
-  if FParameterProperties[Index].CanBeAutomated and not FIsHostAutomation then
-   inherited SetParameterAutomated(Index, Parameter2VSTParameter(Value, Index));
+  with FParameterProperties[Index] do
+   if CanBeAutomated and not FIsHostAutomation
+    then inherited SetParameterAutomated(Index, Parameter2VSTParameter(Value));
 end;
 
 function TVSTModuleWithPrograms.TranslateParameterNameToIndex(ParameterName: string): Integer;

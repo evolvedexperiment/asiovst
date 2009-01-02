@@ -30,7 +30,6 @@ object VSTSSModule: TVSTSSModule
       MinInteger = -80
       ShortLabel = 'vol in'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 3
       Units = 'dB'
@@ -48,7 +47,6 @@ object VSTSSModule: TVSTSSModule
       MinInteger = -80
       ShortLabel = 'vol syn'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 3
       Units = 'dB'
@@ -66,7 +64,6 @@ object VSTSSModule: TVSTSSModule
       MinInteger = -80
       ShortLabel = 'vol voc'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 3
       Units = 'dB'

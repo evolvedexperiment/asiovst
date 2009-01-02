@@ -30,7 +30,6 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
       MinInteger = 20
       ShortLabel = 'LowFreq'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -48,7 +47,6 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
       MinInteger = 20
       ShortLabel = 'HiFreq'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner

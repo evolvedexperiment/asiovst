@@ -4,6 +4,7 @@ library Wrapper;
 {$R 'Wrapper.res' 'Wrapper.rc'}
 
 uses
+  FastMM4, // either download the library or comment if there is an error here
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,

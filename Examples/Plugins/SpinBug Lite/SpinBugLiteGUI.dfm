@@ -59,19 +59,20 @@ object FmSpinBugLite: TFmSpinBugLite
     Top = 8
     Width = 96
     Height = 96
-    LineColor = clWhite
-    CircleColor = 216826
     AntiAlias = gaaLinear2x
+    CircleColor = 216826
     CurveMapping = -0.920000016689300500
     DialImageIndex = -1
+    LineColor = clWhite
+    LineWidth = 2
     Max = 13.000000000000000000
+    OnChange = DialLFOChange
     PointerAngles.Start = 215
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     Position = 4.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
-    OnChange = DialLFOChange
   end
   object SelectType: TGuiSelectBox
     Left = 45

@@ -25,7 +25,6 @@ object SimpleGateDataModule: TSimpleGateDataModule
       MinInteger = -96
       ShortLabel = 'thrshld'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

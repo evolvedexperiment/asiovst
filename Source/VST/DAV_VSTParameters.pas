@@ -2,7 +2,7 @@ unit DAV_VSTParameters;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.INC}
 
 uses
   Classes, SysUtils, Windows, Forms, DAV_Common, DAV_VSTEffect,
@@ -21,6 +21,7 @@ type
     FMin, FMax        : Single;
     FCurve            : TCurveType;
     FCurveFactor      : Single;
+    FInvCurveFactor   : Single;
     FDisplayName      : string;
     FUnits            : string;
     FSmoothingFactor  : Single;
@@ -45,13 +46,20 @@ type
     function GetShortLabel: string;
     procedure SetShortLabel(const Value: string);
     procedure SetCurve(const Value: TCurveType);
+    procedure SetCurveFactor(const Value: Single);
     procedure SetMax(const Value: Single);
     procedure SetMin(const Value: Single);
+    procedure SetUnits(AUnits: string);
+    procedure SetSmoothingFactor(const Value: Single);
   protected
     function GetDisplayName: string; override;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SetDisplayName(const AValue: string); override;
-    procedure SetUnits(AUnits: string);
+    procedure CurveFactorChanged; virtual;
+    procedure MaximumChanged; virtual;
+    procedure MinimumChanged; virtual;
+    procedure ShortLabelChanged; virtual;
+    procedure UnitsChanged; virtual;
   public
     {$IFDEF FPC}
     constructor Create(ACollection: TCollection); override;
@@ -60,11 +68,13 @@ type
     {$ENDIF}
     destructor Destroy; override;
     function Smooth(const Value: Single): Single;
+    function VSTParameter2Parameter(const Value: Single): Single;
+    function Parameter2VSTParameter(const Value: Single): Single;
   published
     property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated default True;
     property CC: Integer read FCC write FCC default -1;
     property Curve: TCurveType read FCurve write SetCurve;
-    property CurveFactor: Single read FCurveFactor write FCurveFactor;
+    property CurveFactor: Single read FCurveFactor write SetCurveFactor;
     property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
     property Flags: TVstParameterPropertiesFlags read FFlags write FFlags default [];
     property LargeStepFloat: Single read FLargeStepFloat write FLargeStepFloat;
@@ -76,7 +86,7 @@ type
     property ReportVST2Properties: Boolean read FV2Properties write FV2Properties default false;
     property ShortLabel: string read GetShortLabel write SetShortLabel;
     property SmallStepFloat: Single read FSmallStepFloat write FSmallStepFloat;
-    property SmoothingFactor: Single read FSmoothingFactor write FSmoothingFactor;
+    property SmoothingFactor: Single read FSmoothingFactor write SetSmoothingFactor;
     property StepFloat: Single read FStepFloat write FStepFloat;
     property StepInteger: Integer read FStepInteger write FStepInteger default 1;
     property Units: string read FUnits write SetUnits;
@@ -129,7 +139,7 @@ begin
   FCurve            := ctLinear;
   FFlags            := [];
   FLargeStepInteger := 10;
-  FSmoothingFactor  := 1;
+  FSmoothingFactor  := 0;
   FCanBeAutomated   := True;
   FV2Properties     := False;
   FDisplayName      := 'Parameter ' + IntTostr(Collection.Count);
@@ -183,12 +193,37 @@ begin
  inherited;
 end;
 
+function TCustomVstParameterProperty.VSTParameter2Parameter(const Value: Single): Single;
+begin
+ Result := Value;
+ case Curve of
+  ctLogarithmic: Result := (exp(Result * ln(FCurveFactor + 1)) - 1) * FInvCurveFactor;
+  ctExponential: Result := log2(FCurveFactor * Result + 1) / log2(FCurveFactor + 1);
+  ctFrequencyScale: Result := (exp(Result * ln((Max / Min) + 1)) - 1) / (Max / Min);
+ else
+ end;
+ Result := Smooth(Result * (Max - Min) + Min);
+end;
+
+function TCustomVstParameterProperty.Parameter2VSTParameter(const Value: Single): Single;
+begin
+ Result := (Value - Min) / (Max - Min);
+ case Curve of
+  ctLogarithmic: Result := log2(FCurveFactor * Result + 1) / log2(FCurveFactor + 1);
+  ctExponential: Result := exp(Result * ln(FCurveFactor + 1)) - 1;
+  ctFrequencyScale: if min <> 0
+                     then Result := log2(Max / Min * Result + 1) / log2(Max / Min)
+                     else Result := log2(Max * Result + 1) / log2(Max);
+  else
+ end;
+ Result := f_limit(Result, 0, 1);
+end;
+
 function TCustomVstParameterProperty.Smooth(const Value: Single): Single;
 begin
- // simple second order lowpass
- FSmoothStates[0] := FSmoothStates[0] + SmoothingFactor * (Value - FSmoothStates[0]);
- FSmoothStates[1] := FSmoothStates[1] + SmoothingFactor * (FSmoothStates[0] - FSmoothStates[1]);
- Result := FSmoothStates[1];
+ // simple first order lowpass
+ FSmoothStates[0] := Value + SmoothingFactor * (FSmoothStates[0] - Value);
+ Result := FSmoothStates[0];
 end;
 
 procedure TCustomVstParameterProperty.AssignTo(Dest: TPersistent);
@@ -228,10 +263,23 @@ begin
   begin
    FCurve := Value;
    case FCurve of
-    ctLogarithmic : if FMin <> 0
-                     then FCurveFactor := FMax / FMin;
+    ctLogarithmic : if FMin <> 0 then FCurveFactor := FMax / FMin;
    end;
   end;
+end;
+
+procedure TCustomVstParameterProperty.SetCurveFactor(const Value: Single);
+begin
+ if FCurveFactor <> Value then
+  begin
+   FCurveFactor := Value;
+   CurveFactorChanged;
+  end;
+end;
+
+procedure TCustomVstParameterProperty.CurveFactorChanged;
+begin
+ FInvCurveFactor := 1 / FCurveFactor;
 end;
 
 procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string);
@@ -252,7 +300,13 @@ begin
  if FMax <> Value then
   begin
    FMax := Value;
+   MaximumChanged;
   end;
+end;
+
+procedure TCustomVstParameterProperty.MaximumChanged;
+begin
+ // nothing todo yet;
 end;
 
 procedure TCustomVstParameterProperty.SetMin(const Value: Single);
@@ -260,7 +314,13 @@ begin
  if FMin <> Value then
   begin
    FMin := Value;
+   MinimumChanged;
   end;
+end;
+
+procedure TCustomVstParameterProperty.MinimumChanged;
+begin
+ // nothing todo yet;
 end;
 
 function TCustomVstParameterProperty.GetDisplayName: string;
@@ -270,7 +330,16 @@ end;
 
 procedure TCustomVstParameterProperty.SetUnits(AUnits: string);
 begin
-  FUnits := AUnits;
+ if FUnits <> AUnits then
+  begin
+   FUnits := AUnits;
+   UnitsChanged;
+  end;
+end;
+
+procedure TCustomVstParameterProperty.UnitsChanged;
+begin
+ // nothing todo yet;
 end;
 
 function TCustomVstParameterProperty.GetShortLabel: string;
@@ -280,7 +349,35 @@ end;
 
 procedure TCustomVstParameterProperty.SetShortLabel(const Value: string);
 begin
-  FShortLabel := Value;
+ if FShortLabel <> Value then
+  begin
+   FShortLabel := Value;
+   ShortLabelChanged;
+  end;
+end;
+
+procedure TCustomVstParameterProperty.SetSmoothingFactor(const Value: Single);
+begin
+ // try..except will be removed soon, so please change all your projects
+ // according to the new limits!
+ try
+  if FSmoothingFactor < 0
+   then raise Exception.Create('SmoothingFactor needs to be above or equal zero');
+  if FSmoothingFactor >= 1
+   then raise Exception.Create('SmoothingFactor needs to be below one! (0 = no smoothing)');
+
+  if FSmoothingFactor <> Value then
+   begin
+    FSmoothingFactor := Value;
+   end;
+ except
+  FSmoothingFactor := 0
+ end;
+end;
+
+procedure TCustomVstParameterProperty.ShortLabelChanged;
+begin
+ // nothing todo yet;
 end;
 
 { TCustomVstParameterProperties }

@@ -28,7 +28,6 @@ object LoopExDataModule: TLoopExDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Max Del'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -40,7 +39,6 @@ object LoopExDataModule: TLoopExDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Reset'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -52,7 +50,6 @@ object LoopExDataModule: TLoopExDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Record'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '(susped)'
       VSTModule = Owner
@@ -65,7 +62,6 @@ object LoopExDataModule: TLoopExDataModule
       Max = 1.000000000000000000
       ShortLabel = 'In Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -77,7 +73,6 @@ object LoopExDataModule: TLoopExDataModule
       Max = 1.000000000000000000
       ShortLabel = 'In Pan'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -89,7 +84,6 @@ object LoopExDataModule: TLoopExDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Feedbck'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '(modwhl)'
       VSTModule = Owner
@@ -102,7 +96,6 @@ object LoopExDataModule: TLoopExDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Out Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>

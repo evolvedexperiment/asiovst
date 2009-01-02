@@ -2,7 +2,7 @@ unit DAV_VSTCustomModule;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC}LCLIntf, LMessages, Controls, {$ELSE} Windows, Messages, {$ENDIF}

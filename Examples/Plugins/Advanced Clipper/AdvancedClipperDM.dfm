@@ -63,7 +63,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MinInteger = -6
       ShortLabel = 'InGain'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -82,7 +81,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MinInteger = 1
       ShortLabel = 'Factor'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParaOSFactor1Change
@@ -99,7 +97,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MaxInteger = 64
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamFilterOrder1Change
@@ -114,7 +111,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Bw'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -133,7 +129,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MinInteger = 1
       ShortLabel = 'Factor'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOSFactor2Change
@@ -150,7 +145,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MaxInteger = 64
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamFilterOrder2Change
@@ -165,7 +159,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Bw'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -183,7 +176,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MinInteger = -6
       ShortLabel = 'OutGain'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -200,7 +192,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MaxInteger = 1
       ShortLabel = 'Hrd Clp'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamHardClipChange

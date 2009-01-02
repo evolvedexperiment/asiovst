@@ -2,13 +2,13 @@ unit SplitTemplateDM;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Forms, DAV_Common,
   DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VSTModuleWithPrograms,
   DAV_VSTCustomModule, DAV_DspButterworthFilter, DAV_DspUpDownsampling,
-  DAV_VstHost, DAV_DSPSineLFO, Themes;
+  DAV_VstHost, DAV_DSPLFO, Themes;
 
 type
   TLowPassArray = array [0..1] of TButterworthLP;
@@ -112,7 +112,7 @@ type
     FOSFactor         : Integer;
     FMaximumBlockSize : Integer;
     FTempBufferSize   : Integer;
-    FSineLFO          : TSineLFO;
+    FSineLFO          : TLFOSine;
     FVolumeFactor     : Double;
     FPlugNr           : Integer;
     FDifferentPlugins : Boolean;
@@ -292,7 +292,7 @@ begin
  FReleaseFactor[0] := 0.9999;
  FReleaseFactor[1] := 0.9999;
 
- FSineLFO := TSineLFO.Create;
+ FSineLFO := TLFOSine.Create;
  FSineLFO.Frequency := 1;
  FSineLFO.Amplitude := 1;
 

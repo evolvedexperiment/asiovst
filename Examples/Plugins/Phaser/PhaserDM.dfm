@@ -8,11 +8,16 @@ object PhaserModule: TPhaserModule
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'phsx'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear
@@ -23,7 +28,6 @@ object PhaserModule: TPhaserModule
       Max = 100.000000000000000000
       ShortLabel = 'depth'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -38,15 +42,14 @@ object PhaserModule: TPhaserModule
       Max = 100.000000000000000000
       ShortLabel = 'fdbck'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
       OnParameterChange = PMFeedbackChange
     end
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
       DisplayName = 'Minimum'
       LargeStepFloat = 200.000000000000000000
       LargeStepInteger = 200
@@ -56,7 +59,6 @@ object PhaserModule: TPhaserModule
       MinInteger = 20
       ShortLabel = 'min'
       SmallStepFloat = 20.000000000000000000
-      SmoothingFactor = 20.000000000000000000
       StepFloat = 20.000000000000000000
       StepInteger = 20
       Units = 'Hz'
@@ -64,8 +66,8 @@ object PhaserModule: TPhaserModule
       OnParameterChange = PMMinimumChange
     end
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
       DisplayName = 'Maximum'
       LargeStepFloat = 200.000000000000000000
       LargeStepInteger = 200
@@ -75,7 +77,6 @@ object PhaserModule: TPhaserModule
       MinInteger = 20
       ShortLabel = 'max'
       SmallStepFloat = 20.000000000000000000
-      SmoothingFactor = 20.000000000000000000
       StepFloat = 20.000000000000000000
       StepInteger = 20
       Units = 'Hz'
@@ -83,7 +84,7 @@ object PhaserModule: TPhaserModule
       OnParameterChange = PMMaximumChange
     end
     item
-      Curve = ctLinear
+      Curve = ctLogarithmic
       CurveFactor = 1.000000000000000000
       DisplayName = 'Rate'
       LargeStepFloat = 2.000000000000000000
@@ -92,7 +93,6 @@ object PhaserModule: TPhaserModule
       MaxInteger = 10
       ShortLabel = 'rate'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = PMRateChange
@@ -109,7 +109,6 @@ object PhaserModule: TPhaserModule
       MinInteger = 1
       ShortLabel = 'stage'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = PMStagesChange

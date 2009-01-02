@@ -35,7 +35,6 @@ object ExciterDataModule: TExciterDataModule
       MinInteger = 1000
       ShortLabel = 'Tune'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -53,7 +52,6 @@ object ExciterDataModule: TExciterDataModule
       MinInteger = 2
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterOrderChange
@@ -66,7 +64,6 @@ object ExciterDataModule: TExciterDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Shape'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -81,7 +78,6 @@ object ExciterDataModule: TExciterDataModule
       Max = 100.000000000000000000
       ShortLabel = 'LoDist'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

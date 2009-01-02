@@ -11,7 +11,7 @@ unit DAV_VSTPluginWizard;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Windows, ToolsAPI, DAV_VSTPluginConfig;

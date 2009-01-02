@@ -2,6 +2,8 @@ unit DAV_DspFilterManager;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Classes, DAV_Common, DAV_AudioData, DAV_DspFilter;
 

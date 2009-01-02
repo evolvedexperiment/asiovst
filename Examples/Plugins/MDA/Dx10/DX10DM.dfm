@@ -152,7 +152,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Attack'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -165,7 +164,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Decay'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -178,7 +176,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Release'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -191,7 +188,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Coarse'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ratio'
       VSTModule = Owner
@@ -204,7 +200,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Fine'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ratio'
       VSTModule = Owner
@@ -217,7 +212,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mod Ini'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -230,7 +224,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mod Dec'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -243,7 +236,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mod Sus'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -256,7 +248,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mod Rel'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -269,7 +260,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mod Vel'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -282,7 +272,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Vibrato'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -295,7 +284,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Octave'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end
@@ -307,7 +295,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'FineTun'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'cents'
       VSTModule = Owner
@@ -320,7 +307,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'Wavefrm'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -333,7 +319,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'ModThru'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -346,7 +331,6 @@ object DX10DataModule: TDX10DataModule
       Max = 1.000000000000000000
       ShortLabel = 'LFORate'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner

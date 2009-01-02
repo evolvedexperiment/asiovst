@@ -24,7 +24,6 @@ object MIDIModule: TMIDIModule
       Min = -24.000000000000000000
       ShortLabel = 'Transpo'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = 'semitone'

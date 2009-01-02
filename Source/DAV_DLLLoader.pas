@@ -2,7 +2,7 @@ unit DAV_DLLLoader;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$IFDEF Win32} Windows, {$ENDIF}
@@ -143,9 +143,11 @@ type
     Up, Down  : PExportTreeNode;
   end;
 
-  TExportTree = class
+  TExportTree = class(TPersistent)
   private
-    Root: PExportTreeNode;
+    FRoot: PExportTreeNode;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create;
     destructor Destroy; override;
@@ -155,7 +157,7 @@ type
     function Find(FunctionName: string; var Link: TExportTreeLink): Boolean;
   end;
 
-  TDLLLoader = class
+  TDLLLoader = class(TPersistent)
   private
     FImageBase            : Pointer;
     FImageBaseDelta       : Integer;
@@ -168,6 +170,8 @@ type
     function FindExternalLibrary(LibraryName: string): Integer;
     function LoadExternalLibrary(LibraryName: string): Integer;
     function GetExternalLibraryHandle(LibraryName: string): HInst;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create;
     destructor Destroy; override;
@@ -179,6 +183,9 @@ type
   end;
 
 implementation
+
+uses
+  SysUtils;
 
 function CreateExportTreeNode(AChar: Char): PExportTreeNode;
 begin
@@ -205,15 +212,26 @@ begin
    end;
 end;
 
+{ TExportTree }
+
+procedure TExportTree.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TExportTree then
+  begin
+   FRoot^ := Self.FRoot^;
+  end
+ else inherited;
+end;
+
 constructor TExportTree.Create;
 begin
   inherited Create;
-  Root := nil;
+  FRoot := nil;
 end;
 
 destructor TExportTree.Destroy;
 begin
-  DestroyExportTreeNode(Root);
+  DestroyExportTreeNode(FRoot);
   inherited Destroy;
 end;
 
@@ -251,7 +269,7 @@ var
 
 begin
   Ident := 0;
-  DumpNode(Root);
+  DumpNode(FRoot);
 end;
 
 function TExportTree.Add(FunctionName: string; Link: TExportTreeLink): Boolean;
@@ -265,7 +283,7 @@ begin
   if stringLength > 0 then
    begin
     LastNode := nil;
-    Node := Root;
+    Node := FRoot;
     for Position := 1 to stringLength do
      begin
       stringChar := FunctionName[Position];
@@ -308,7 +326,7 @@ begin
               if not assigned(NewNode^.Up) then
                 if assigned(NewNode^.Prevoius)
                  then NewNode^.Prevoius^.Next := NewNode
-                 else Root := NewNode;
+                 else FRoot := NewNode;
               Node^.Up := NewNode;
              end;
             LastNode := NewNode;
@@ -325,10 +343,10 @@ begin
             NewNode^.Prevoius := LastNode;
             LastNode^.Next := NewNode;
             LastNode := LastNode^.Next;
-           end else if not assigned(Root) then
+           end else if not assigned(FRoot) then
            begin
-            Root := NewNode;
-            LastNode := Root;
+            FRoot := NewNode;
+            LastNode := FRoot;
            end;
          end;
         break;
@@ -354,7 +372,7 @@ begin
   stringLength := Length(FunctionName);
   if stringLength > 0 then
    begin
-    Node := Root;
+    Node := FRoot;
     for Position := 1 to stringLength do
      begin
       stringChar := FunctionName[Position];
@@ -393,7 +411,7 @@ begin
   stringLength := Length(FunctionName);
   if stringLength > 0 then
    begin
-    Node := Root;
+    Node := FRoot;
     for Position := 1 to stringLength do
      begin
       stringChar := FunctionName[Position];
@@ -421,6 +439,8 @@ begin
    end;
 end;
 
+{ TDLLLoader }
+
 constructor TDLLLoader.Create;
 begin
   inherited Create;
@@ -436,10 +456,27 @@ end;
 destructor TDLLLoader.Destroy;
 begin
   if @FDLLProc <> nil then Unload;
-  if assigned(FExportTree) then FExportTree.Free;
+  if assigned(FExportTree)
+   then FreeAndNil(FExportTree);
   FDLLProc := nil;
   FExportTree := nil;
   inherited Destroy;
+end;
+
+procedure TDLLLoader.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TDLLLoader then
+  with TDLLLoader(Dest) do
+   begin
+    FImageBase            := Self.FImageBase;
+    FDLLProc              := Self.FDLLProc;
+    FExternalLibraryArray := Self.FExternalLibraryArray;
+    FImportArray          := Self.FImportArray;
+    FExportArray          := Self.FExportArray;
+    FSections             := Self.FSections;
+    FExportTree.Assign(Self.FExportTree);
+   end
+ else inherited;
 end;
 
 function TDLLLoader.FindExternalLibrary(LibraryName: string): Integer;

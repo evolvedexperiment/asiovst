@@ -1,6 +1,6 @@
 unit OpAmpGUI;
 
-{$I ASIOVST.inc}
+{$I DAV_Compiler.inc}
 
 interface
 

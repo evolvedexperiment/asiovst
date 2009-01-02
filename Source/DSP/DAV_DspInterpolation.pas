@@ -2,7 +2,7 @@ unit DAV_DspInterpolation;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
@@ -21,6 +21,10 @@ function LinearInterpolation(f, a, b: Double): Double; overload; {$IFDEF useinli
 function CubicInterpolation(fr, inm1, inp, inp1, inp2: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
 
 implementation
+
+const
+  CHalf32 : Single = 0.5;
+  CHalf64 : Double = 0.5;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //

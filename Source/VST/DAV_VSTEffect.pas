@@ -2,7 +2,7 @@ unit DAV_VSTEffect;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_Common;

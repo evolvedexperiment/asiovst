@@ -27,7 +27,6 @@ object RoundPanDataModule: TRoundPanDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Pan'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'deg'
       VSTModule = Owner
@@ -41,7 +40,6 @@ object RoundPanDataModule: TRoundPanDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Auto'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'deg/sec'
       VSTModule = Owner

@@ -2,7 +2,7 @@ unit DAV_GuiLabel;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Windows, Classes, Graphics, Forms, Messages, SysUtils, Controls,

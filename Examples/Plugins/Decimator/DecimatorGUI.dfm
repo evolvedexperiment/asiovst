@@ -14,9 +14,10 @@ object VSTGUI: TVSTGUI
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object bg: TImage
+  object ImageBackground: TImage
     Left = 0
     Top = 0
     Width = 244
@@ -2162,7 +2163,7 @@ object VSTGUI: TVSTGUI
     Left = 0
     Top = 230
     Width = 249
-    Height = 137
+    Height = 138
     BevelOuter = bvNone
     Color = clBlack
     Font.Charset = DEFAULT_CHARSET
@@ -2177,7 +2178,7 @@ object VSTGUI: TVSTGUI
       Left = 0
       Top = 0
       Width = 249
-      Height = 137
+      Height = 138
       Cursor = crHandPoint
       Align = alClient
       Picture.Data = {
@@ -3275,7 +3276,9 @@ object VSTGUI: TVSTGUI
         A483A483A483A483A483A483A483A483A483A483A4838383A483A483A483A483
         A4838383A483A483A483A483A483A483A483A483A483A483A483A483A483A483
         A483A483A483A483A483A483A483A483A483A483A483A483A483A4A00000}
-      OnClick = Label3Click
+      OnClick = LbAboutClick
+      ExplicitTop = 230
+      ExplicitHeight = 137
     end
     object LbVSTTechnology: TLabel
       Left = 16
@@ -3291,9 +3294,9 @@ object VSTGUI: TVSTGUI
       Font.Style = []
       ParentFont = False
       Transparent = True
-      OnClick = Label3Click
+      OnClick = LbAboutClick
     end
-    object Label3: TLabel
+    object LbAbout: TLabel
       Left = 16
       Top = 10
       Width = 215
@@ -3311,9 +3314,9 @@ object VSTGUI: TVSTGUI
       Font.Style = []
       ParentFont = False
       Transparent = True
-      OnClick = Label3Click
+      OnClick = LbAboutClick
     end
-    object Label4: TLabel
+    object LbContact: TLabel
       Left = 56
       Top = 84
       Width = 135
@@ -3328,7 +3331,7 @@ object VSTGUI: TVSTGUI
       Font.Style = []
       ParentFont = False
       Transparent = True
-      OnClick = Label3Click
+      OnClick = LbAboutClick
     end
   end
 end

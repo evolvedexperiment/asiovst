@@ -10,7 +10,7 @@ unit DAV_VSTProjectCreator;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\DAV_Compiler.INC}
 
 uses
   ToolsAPI,

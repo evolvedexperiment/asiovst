@@ -2,7 +2,7 @@ unit DAV_DspPolyphaseDownsampler;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_Common, DAV_DspPolyphaseFilter;

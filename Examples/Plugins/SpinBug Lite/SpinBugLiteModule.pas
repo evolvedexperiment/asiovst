@@ -1,18 +1,18 @@
 unit SpinBugLiteModule;
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 interface
 
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} FastMove, Windows, Messages, {$ENDIF}
   SysUtils, Classes, Forms, DAV_Common, DAV_DspPolyphaseHilbert, DAV_VSTModule,
-  DAV_DSPSineLFO;
+  DAV_DSPLFO;
 
 type
   TSpinBugLiteModule = class(TVSTModule)
-    procedure VSTEditOpen(Sender : TObject; var GUI : TForm; ParentWindow : Cardinal);
     procedure VSTModuleOpen(Sender : TObject);
+    procedure VSTEditOpen(Sender : TObject; var GUI : TForm; ParentWindow : Cardinal);
     procedure VSTModuleProcessStereoA(const Inputs, Outputs : TDAVArrayOfSingleDynArray; const SampleFrames : Integer);
     procedure VSTModuleProcessStereoB(const Inputs, Outputs : TDAVArrayOfSingleDynArray; const SampleFrames : Integer);
     procedure VSTModuleProcessStereoC(const Inputs, Outputs : TDAVArrayOfSingleDynArray; const SampleFrames : Integer);
@@ -33,11 +33,11 @@ type
     procedure VSTModuleClose(Sender: TObject);
   private
     FHilbert   : array[0..1] of TPhaseHalfPi32;
-    FSineLFO   : array[0..1] of TSineLFO;
+    FSineLFO   : array[0..1] of TLFOSine;
     FTBW       : Single;
   public
-    property BasicSineLFO: TSineLFO read FSineLFO[0];
-    property AdditionalSineLFO: TSineLFO read FSineLFO[1];
+    property BasicSineLFO: TLFOSine read FSineLFO[0];
+    property AdditionalSineLFO: TLFOSine read FSineLFO[1];
   end;
 
 implementation
@@ -53,8 +53,8 @@ begin
 
  FHilbert[0] := TPhaseHalfPi32.Create;
  FHilbert[1] := TPhaseHalfPi32.Create;
- FSineLFO[0] := TSineLFO.Create;
- FSineLFO[1] := TSineLFO.Create;
+ FSineLFO[0] := TLFOSine.Create;
+ FSineLFO[1] := TLFOSine.Create;
 
  Parameter[0] := 8;
  OnProcess := VSTModuleProcessMono;

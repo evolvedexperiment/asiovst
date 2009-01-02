@@ -29,7 +29,6 @@ object UniQuEDataModule: TUniQuEDataModule
       MaxInteger = 1
       ShortLabel = 'Power'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamPowerChange
@@ -45,7 +44,6 @@ object UniQuEDataModule: TUniQuEDataModule
       MaxInteger = -12
       ShortLabel = 'Power'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -62,7 +60,6 @@ object UniQuEDataModule: TUniQuEDataModule
       MaxInteger = 1
       ShortLabel = 'Power'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamPhaseChange
@@ -79,7 +76,6 @@ object UniQuEDataModule: TUniQuEDataModule
       MinInteger = -15
       ShortLabel = 'Low'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -96,7 +92,6 @@ object UniQuEDataModule: TUniQuEDataModule
       MinInteger = -15
       ShortLabel = 'Mid'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -113,7 +108,6 @@ object UniQuEDataModule: TUniQuEDataModule
       MinInteger = -15
       ShortLabel = 'Pres'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -130,7 +124,6 @@ object UniQuEDataModule: TUniQuEDataModule
       MinInteger = -15
       ShortLabel = 'High'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

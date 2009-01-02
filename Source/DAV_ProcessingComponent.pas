@@ -2,7 +2,7 @@ unit DAV_ProcessingComponent;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_CompilerSwitches.INC}
 
 uses
   Classes, DAV_Common;
@@ -17,26 +17,26 @@ type
 
   TDAVProcessingComponent = class(TComponent)
   protected
-    fBypass:     Boolean;
-    fEnabled:    Boolean;
-    fSampleRate: Single;
-    fChannels:   Integer;
+    FBypass:     Boolean;
+    FEnabled:    Boolean;
+    FSampleRate: Single;
+    FChannels:   Integer;
 
-    fTrailingSamples: Integer;
+    FTrailingSamples: Integer;
 
-    fProcessS:   TDspBaseProcessFuncS;
-    fProcessD:   TDspBaseProcessFuncD;
-    fProcessSA:  TDspBaseProcessFuncSA;
-    fProcessDA:  TDspBaseProcessFuncDA;
-    fProcessSAA: TDspBaseProcessFuncSAA;
-    fProcessDAA: TDspBaseProcessFuncDAA;
+    FProcessS:   TDspBaseProcessFuncS;
+    FProcessD:   TDspBaseProcessFuncD;
+    FProcessSA:  TDspBaseProcessFuncSA;
+    FProcessDA:  TDspBaseProcessFuncDA;
+    FProcessSAA: TDspBaseProcessFuncSAA;
+    FProcessDAA: TDspBaseProcessFuncDAA;
 
-    fProcessQueueS:   TDspBaseProcessFuncS;
-    fProcessQueueD:   TDspBaseProcessFuncD;
-    fProcessQueueSA:  TDspBaseProcessFuncSA;
-    fProcessQueueDA:  TDspBaseProcessFuncDA;
-    fProcessQueueSAA: TDspBaseProcessFuncSAA;
-    fProcessQueueDAA: TDspBaseProcessFuncDAA;
+    FProcessQueueS:   TDspBaseProcessFuncS;
+    FProcessQueueD:   TDspBaseProcessFuncD;
+    FProcessQueueSA:  TDspBaseProcessFuncSA;
+    FProcessQueueDA:  TDspBaseProcessFuncDA;
+    FProcessQueueSAA: TDspBaseProcessFuncSAA;
+    FProcessQueueDAA: TDspBaseProcessFuncDAA;
 
     function GetTrailingSamplesQueue: integer; virtual; abstract;
 
@@ -57,27 +57,27 @@ type
     procedure ProcessMidiEventQueue(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean); virtual; abstract;
 
     
-    property Enabled: Boolean   read fEnabled    write SetEnabled    default true;
-    property Bypass: Boolean    read fBypass     write SetBypass     default true;
-    property Channels: Integer  read fChannels   write SetChannels   default 2;
-    property SampleRate: Single read fSampleRate write SetSampleRate;    
+    property Enabled: Boolean   read FEnabled    write SetEnabled    default true;
+    property Bypass: Boolean    read FBypass     write SetBypass     default true;
+    property Channels: Integer  read FChannels   write SetChannels   default 2;
+    property SampleRate: Single read FSampleRate write SetSampleRate;    
 
-    property TrailingSamples: Integer read fTrailingSamples write SetTrailingSamples default 0;
+    property TrailingSamples: Integer read FTrailingSamples write SetTrailingSamples default 0;
     property TrailingSamplesQueue: Integer read GetTrailingSamplesQueue;
 
-    property ProcessS:   TDspBaseProcessFuncS   read fProcessS;
-    property ProcessD:   TDspBaseProcessFuncD   read fProcessD;
-    property ProcessSA:  TDspBaseProcessFuncSA  read fProcessSA;
-    property ProcessDA:  TDspBaseProcessFuncDA  read fProcessDA;
-    property ProcessSAA: TDspBaseProcessFuncSAA read fProcessSAA;
-    property ProcessDAA: TDspBaseProcessFuncDAA read fProcessDAA;
+    property ProcessS:   TDspBaseProcessFuncS   read FProcessS;
+    property ProcessD:   TDspBaseProcessFuncD   read FProcessD;
+    property ProcessSA:  TDspBaseProcessFuncSA  read FProcessSA;
+    property ProcessDA:  TDspBaseProcessFuncDA  read FProcessDA;
+    property ProcessSAA: TDspBaseProcessFuncSAA read FProcessSAA;
+    property ProcessDAA: TDspBaseProcessFuncDAA read FProcessDAA;
 
-    property ProcessQueueS:   TDspBaseProcessFuncS   read fProcessQueueS;
-    property ProcessQueueD:   TDspBaseProcessFuncD   read fProcessQueueD;
-    property ProcessQueueSA:  TDspBaseProcessFuncSA  read fProcessQueueSA;
-    property ProcessQueueDA:  TDspBaseProcessFuncDA  read fProcessQueueDA;
-    property ProcessQueueSAA: TDspBaseProcessFuncSAA read fProcessQueueSAA;
-    property ProcessQueueDAA: TDspBaseProcessFuncDAA read fProcessQueueDAA;
+    property ProcessQueueS:   TDspBaseProcessFuncS   read FProcessQueueS;
+    property ProcessQueueD:   TDspBaseProcessFuncD   read FProcessQueueD;
+    property ProcessQueueSA:  TDspBaseProcessFuncSA  read FProcessQueueSA;
+    property ProcessQueueDA:  TDspBaseProcessFuncDA  read FProcessQueueDA;
+    property ProcessQueueSAA: TDspBaseProcessFuncSAA read FProcessQueueSAA;
+    property ProcessQueueDAA: TDspBaseProcessFuncDAA read FProcessQueueDAA;
   end;
 
   TDAVProcessingComponentList = class(TList)

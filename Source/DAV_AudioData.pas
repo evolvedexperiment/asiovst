@@ -2,7 +2,7 @@ unit DAV_AudioData;
 
 interface
 
-{$I ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 {$IFDEF DELPHI10_UP} {$region 'Documentation'} {$ENDIF}
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -45,13 +45,13 @@ type
   private
     procedure SetSampleRate(const Value: Double);
   protected
-    fSampleRate     : Double;
-    fSampleRateReci : Double;
+    FSampleRate     : Double;
+    FSampleRateReci : Double;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(AOwner: TComponent); override;
-    property SampleRateReciprocal: Double read fSampleRateReci;
-    property SampleRate: Double read fSampleRate write SetSampleRate;
+    property SampleRateReciprocal: Double read FSampleRateReci;
+    property SampleRate: Double read FSampleRate write SetSampleRate;
   end;
 
   TSampleRateSource = class(TCustomSampleRateSource)
@@ -63,12 +63,12 @@ type
   {$IFDEF DELPHI10_UP} {$region 'AudioObject classes'} {$ENDIF}
   TCustomAudioObject = class(TComponent)
   private
-    fInternalSampleRateSource : TSampleRateSource;
+    FInternalSampleRateSource : TSampleRateSource;
     function GetSampleRate: Double;
     procedure SetSampleRate(const Value: Double);
     procedure SetSampleRateSource(const Value: TSampleRateSource);
   protected
-    fSampleRateSource : TSampleRateSource;
+    FSampleRateSource : TSampleRateSource;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -76,7 +76,7 @@ type
                                                          
     // properties:
     property SampleRate: Double read GetSampleRate write SetSampleRate;
-    property SampleRateSource: TSampleRateSource read fSampleRateSource write SetSampleRateSource;
+    property SampleRateSource: TSampleRateSource read FSampleRateSource write SetSampleRateSource;
   end;
 
   TAudioObject = class(TCustomAudioObject)
@@ -410,8 +410,8 @@ procedure TCustomSampleRateSource.AssignTo(Dest: TPersistent);
 begin
  if Dest is TCustomSampleRateSource then
   begin
-   TCustomSampleRateSource(Dest).fSampleRate     := fSampleRate;
-   TCustomSampleRateSource(Dest).fSampleRateReci := fSampleRateReci;
+   TCustomSampleRateSource(Dest).FSampleRate     := FSampleRate;
+   TCustomSampleRateSource(Dest).FSampleRateReci := FSampleRateReci;
   end
  else inherited;
 end;
@@ -419,17 +419,17 @@ end;
 constructor TCustomSampleRateSource.Create(AOwner: TComponent);
 begin
  inherited;
- fSampleRate := 44100;
+ FSampleRate := 44100;
 end;
 
 procedure TCustomSampleRateSource.SetSampleRate(const Value: Double);
 begin
- if fSampleRate <> abs(Value) then
+ if FSampleRate <> abs(Value) then
   begin
    if Value = 0
     then raise Exception.Create('value must be larger than 0');
-   fSampleRate     := abs(Value);
-   fSampleRateReci := 1 / fSampleRate;
+   FSampleRate     := abs(Value);
+   FSampleRateReci := 1 / FSampleRate;
   end;
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
@@ -442,8 +442,8 @@ procedure TCustomAudioObject.AssignTo(Dest: TPersistent);
 begin
  if Dest is TCustomAudioObject then
   begin
-   TCustomAudioObject(Dest).fInternalSampleRateSource := fInternalSampleRateSource;
-   TCustomAudioObject(Dest).fSampleRateSource         := fSampleRateSource;
+   TCustomAudioObject(Dest).FInternalSampleRateSource := FInternalSampleRateSource;
+   TCustomAudioObject(Dest).FSampleRateSource         := FSampleRateSource;
   end
  else inherited;
 end;
@@ -451,27 +451,27 @@ end;
 constructor TCustomAudioObject.Create(AOwner: TComponent);
 begin
  inherited;
- fInternalSampleRateSource := TSampleRateSource.Create(Self);
+ FInternalSampleRateSource := TSampleRateSource.Create(Self);
 end;
 
 destructor TCustomAudioObject.Destroy;
 begin
  // in case the internal sample rate source is really internal, release it
- if fSampleRateSource = nil
-  then FreeAndNil(fInternalSampleRateSource);
+ if FSampleRateSource = nil
+  then FreeAndNil(FInternalSampleRateSource);
  inherited;
 end;
 
 function TCustomAudioObject.GetSampleRate: Double;
 begin
- result := fInternalSampleRateSource.SampleRate;
+ result := FInternalSampleRateSource.SampleRate;
 end;
 
 procedure TCustomAudioObject.SetSampleRate(const Value: Double);
 begin
  // only allow writing in case the samplerate source is internal
- if fSampleRateSource = nil
-  then fInternalSampleRateSource.SampleRate := Value;
+ if FSampleRateSource = nil
+  then FInternalSampleRateSource.SampleRate := Value;
 end;
 
 procedure TCustomAudioObject.SetSampleRateSource(const Value: TSampleRateSource);
@@ -480,20 +480,20 @@ var
   OldIntSampleRateSource : TSampleRateSource;
   NewIntSampleRateSource : TSampleRateSource;
 begin
- if fSampleRateSource <> Value then
+ if FSampleRateSource <> Value then
   begin
    // store old samplerate sources
-   OldSampleRateSource    := fSampleRateSource;
-   OldIntSampleRateSource := fInternalSampleRateSource;
+   OldSampleRateSource    := FSampleRateSource;
+   OldIntSampleRateSource := FInternalSampleRateSource;
 
    // set actual sample rate source
-   fSampleRateSource      := Value;
+   FSampleRateSource      := Value;
 
    // check whether previously the sample rate source was purely internal
    if not assigned(OldSampleRateSource) then
     begin
      // set new internal sample rate source to the actual sample rate source
-     fInternalSampleRateSource := fSampleRateSource;
+     FInternalSampleRateSource := FSampleRateSource;
 
      // release old purely internal sample rate source
      FreeAndNil(OldIntSampleRateSource);
@@ -510,7 +510,7 @@ begin
      NewIntSampleRateSource.Assign(OldSampleRateSource);
 
      // now actually link the new internal sample rate source
-     fInternalSampleRateSource := NewIntSampleRateSource;
+     FInternalSampleRateSource := NewIntSampleRateSource;
     end;
   end;
 end;

@@ -25,7 +25,6 @@ object VSTVUMeterModule: TVSTVUMeterModule
       Min = -90.000000000000000000
       ShortLabel = 'Volume '
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = 'dB'
@@ -42,7 +41,6 @@ object VSTVUMeterModule: TVSTVUMeterModule
       Min = -90.000000000000000000
       ShortLabel = 'Volume '
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = 'dB'

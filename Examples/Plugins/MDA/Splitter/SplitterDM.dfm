@@ -37,7 +37,6 @@ object SplitterDataModule: TSplitterDataModule
       MaxInteger = 3
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterModeDisplay
@@ -50,7 +49,6 @@ object SplitterDataModule: TSplitterDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Freq'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -66,7 +64,6 @@ object SplitterDataModule: TSplitterDataModule
       MaxInteger = 2
       ShortLabel = 'Freq'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterFreqLevelModeDisplay
@@ -82,7 +79,6 @@ object SplitterDataModule: TSplitterDataModule
       MinInteger = -40
       ShortLabel = 'Level'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -97,7 +93,6 @@ object SplitterDataModule: TSplitterDataModule
       MaxInteger = 2
       ShortLabel = 'Level M'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterFreqLevelModeDisplay
@@ -110,7 +105,6 @@ object SplitterDataModule: TSplitterDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Env'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -128,7 +122,6 @@ object SplitterDataModule: TSplitterDataModule
       MinInteger = -20
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

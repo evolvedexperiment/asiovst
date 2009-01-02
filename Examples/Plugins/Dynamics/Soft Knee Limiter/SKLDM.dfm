@@ -25,7 +25,6 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       MinInteger = -96
       ShortLabel = 'Thrshld'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -42,7 +41,6 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       Min = 0.050000000745058060
       ShortLabel = 'Knee'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       Units = 'dB'
       VSTModule = Owner
@@ -61,7 +59,6 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       MinInteger = 1
       ShortLabel = 'Attack'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       Units = 'ms'
       VSTModule = Owner
@@ -79,7 +76,6 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       MinInteger = 5
       ShortLabel = 'Release'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -94,7 +90,6 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       MaxInteger = 40
       ShortLabel = 'Makeup'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = SKLMakeUpGainChange

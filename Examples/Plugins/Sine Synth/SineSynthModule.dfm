@@ -32,7 +32,6 @@ object VSTSSModule: TVSTSSModule
       MinInteger = 2
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>

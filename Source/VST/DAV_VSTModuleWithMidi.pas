@@ -2,7 +2,7 @@ unit DAV_VSTModuleWithMidi;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, DAV_VSTCustomModule, DAV_VSTEffect, DAV_Common;
@@ -46,7 +46,7 @@ type
 implementation
 
 const
-  maxMidiEvents = 256;
+  CMaxMidiEvents = 256;
 
 constructor TVSTModuleWithMidi.Create(AOwner: TComponent);
 var
@@ -55,7 +55,7 @@ begin
   inherited;
   FMidiEvent.numEvents := 0;
 
-  for i := 0 to maxMidiEvents - 1 do
+  for i := 0 to CMaxMidiEvents - 1 do
    begin
     GetMem(FMidiEvent.events[i], SizeOf(TVstMidiEvent));
     FillChar(FMidiEvent.events[i]^, SizeOf(TVstMidiEvent), 0);
@@ -69,7 +69,7 @@ var
   i : Integer;
 begin
  try
-  for i := 0 to maxMidiEvents - 1 do
+  for i := 0 to CMaxMidiEvents - 1 do
    if assigned(FMidiEvent.events[i])
     then FreeMem(FMidiEvent.events[i]);
  finally
@@ -143,7 +143,7 @@ begin
    MidiData[2] := b3;
    MidiData[3] := b4;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
   end;
 end;
 
@@ -156,7 +156,7 @@ begin
    MidiData[1] := num;
    MidiData[2] := val;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
   end;
 end;
 
@@ -169,7 +169,7 @@ begin
    MidiData[1] := val;
    MidiData[2] := 0;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
   end;
 end;
 
@@ -182,7 +182,7 @@ begin
    MidiData[1] := note;
    MidiData[2] := val;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
   end;
 end;
 
@@ -195,7 +195,7 @@ begin
    MidiData[1] := note;
    MidiData[2] := val;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < maxMidiEvents - 1
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1
     then inc(FMidiEvent.numEvents);
   end;
 end;
@@ -214,7 +214,7 @@ begin
    MidiData[1] := b;
    MidiData[2] := a;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
   end;
 end;
 
@@ -227,7 +227,7 @@ begin
    MidiData[1] := x1;
    MidiData[2] := x2;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
   end;
 end;
 
@@ -240,7 +240,7 @@ begin
    MidiData[1] := note;
    MidiData[2] := val;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
   end;
 end;
 
@@ -253,7 +253,7 @@ begin
    MidiData[1] := val;
    MidiData[2] := 0;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < maxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
   end;
 end;
 
@@ -268,7 +268,7 @@ begin
    EventType := etSysEx;
    DeltaFrames := Offset;
    Move(Data[0], sysexDump^, dumpBytes);
-   if FMidiEvent.numEvents < maxMidiEvents - 1
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1
     then inc(FMidiEvent.numEvents);
   end;
 end;

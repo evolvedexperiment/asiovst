@@ -1,6 +1,7 @@
 unit DAV_ASIOConvert;
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
+
 {$IFDEF DELPHI6_UP}
 {$WARN UNIT_PLATFORM OFF}
 {$WARN SYMBOL_PLATFORM OFF}

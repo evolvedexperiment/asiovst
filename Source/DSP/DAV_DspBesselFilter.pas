@@ -2,7 +2,7 @@ unit DAV_DspBesselFilter;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_DspFilter, DAV_Common;
@@ -12,14 +12,15 @@ type
   private
     procedure SetDownsamplePower(Value: Integer);
   protected
-    fDownsamplePow  : Integer;
-    fDownsampleFak  : Integer;
-    fOrder          : Integer;
-    fA              : array [0..63] of Double;
-    fB              : array [0..63] of Double;
-    fState          : array [0..127] of Double;
-    fStateStack     : array of array [0..127] of Double;
+    FDownsamplePow  : Integer;
+    FDownsampleFak  : Integer;
+    FOrder          : Integer;
+    FA              : array [0..63] of Double;
+    FB              : array [0..63] of Double;
+    FState          : array [0..127] of Double;
+    FStateStack     : array of array [0..127] of Double;
     procedure CalculateW0; override;
+    class function GetMaxOrder: Cardinal; override;
   public
     constructor Create; override;
     procedure SetFilterValues(const AFrequency, AGain : Single); virtual;
@@ -35,8 +36,8 @@ type
     function Imaginary(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
     function Real(const Frequency: Double): Double; override;
-    property DownsampleAmount : Integer read fDownsamplePow write SetDownsamplePower;
-    property DownsampleFaktor : Integer read fDownsampleFak;
+    property DownsampleAmount : Integer read FDownsamplePow write SetDownsamplePower;
+    property DownsampleFaktor : Integer read FDownsampleFak;
   end;
 
   TBesselLP = class(TBesselFilter)
@@ -70,9 +71,14 @@ uses
 constructor TBesselFilter.Create;
 begin
  inherited;
- fDownsamplePow := 0;
- fDownsampleFak := 1;
+ FDownsamplePow := 0;
+ FDownsampleFak := 1;
  CalculateCoefficients;
+end;
+
+class function TBesselFilter.GetMaxOrder: Cardinal;
+begin
+ result := 64;
 end;
 
 procedure TBesselFilter.Reset;
@@ -82,29 +88,29 @@ end;
 
 procedure TBesselFilter.ResetStates;
 begin
- FillChar(fState[0],fOrder*SizeOf(Double),0);
+ FillChar(FState[0], FOrder * SizeOf(Double), 0);
 end;
 
 procedure TBesselFilter.ResetStatesInt64;
 begin
- PInt64(@fState[0])^ := 0;
- PInt64(@fState[1])^ := 0;
+ PInt64(@FState[0])^ := 0;
+ PInt64(@FState[1])^ := 0;
 end;
 
 procedure TBesselFilter.SetDownsamplePower(Value: Integer);
 begin
  if Value < 0 then Value := 0;
- if fDownsamplePow<>Value then
+ if FDownsamplePow <> Value then
   begin
-   fDownsamplePow := Value;
-   fDownsampleFak := round(IntPower(2, fDownsamplePow));
+   FDownsamplePow := Value;
+   FDownsampleFak := round(IntPower(2, FDownsamplePow));
    CalculateW0;
   end;
 end;
 
 procedure TBesselFilter.CalculateW0;
 begin
- fW0 := 2 * Pi * fSRR * (fFrequency * fDownsampleFak);
+ fW0 := 2 * Pi * fSRR * (fFrequency * FDownsampleFak);
  fSinW0 := sin(fW0);
  if fW0 > 3.1 then fW0 := 3.1;
 end;
@@ -136,7 +142,7 @@ procedure TBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Do
     i            : Integer;*)
 begin
 (*
- if fOrder = 0 then
+ if FOrder = 0 then
   begin
    Real := 1;
    Imaginary := 1;
@@ -151,7 +157,7 @@ begin
                 + (2 * sqr(cw) - 1) * fAB[0] * (fAB[3] + 1)) * Divider;
    Imaginary := (fAB[1] * (1 - fAB[3])
                 + 2 * cw * fAB[0] * (1 - fAB[3])) * sqrt(1 - sqr(cw)) * Divider;
-   for i := 1 to (fOrder div 2) - 1 do
+   for i := 1 to (FOrder div 2) - 1 do
     begin
      Divider   := 1 / ( sqr(fAB[4*i+3]) - 2 * fAB[4*i+3] + sqr(fAB[4*i+2]) + 1
                 + 2 * cw * (fAB[4*i+2] * (fAB[4*i+3] + 1) + 2 * cw * fAB[4*i+3]));
@@ -169,7 +175,8 @@ begin
 end;
 
 procedure TBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
-var cmplx : TComplexDouble;
+var
+  cmplx : TComplexDouble;
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
  Real := cmplx.Re;
@@ -187,7 +194,8 @@ begin
 end;
 
 function TBesselFilter.Phase(const Frequency: Double): Double;
-var cmplx : TComplexDouble;
+var
+  cmplx : TComplexDouble;
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
  Result := ArcTan2(cmplx.Im, cmplx.Re);
@@ -195,21 +203,21 @@ end;
 
 procedure TBesselFilter.PopStates;
 begin
- if Length(fStateStack) > 0 then
+ if Length(FStateStack) > 0 then
   begin
-   Move(fStateStack[0,0], fState[0], Length(fStateStack[0])*SizeOf(Double));
-   if Length(fStateStack) > 1
-    then Move(fStateStack[1,0],fStateStack[0,0], (Length(fStateStack)-1)*Length(fStateStack[0])*SizeOf(Double));
-   SetLength(fStateStack, Length(fStateStack) - 1);
+   Move(FStateStack[0,0], FState[0], Length(FStateStack[0])*SizeOf(Double));
+   if Length(FStateStack) > 1
+    then Move(FStateStack[1,0],FStateStack[0,0], (Length(FStateStack)-1)*Length(FStateStack[0])*SizeOf(Double));
+   SetLength(FStateStack, Length(FStateStack) - 1);
   end;
 end;
 
 procedure TBesselFilter.PushStates;
 begin
- SetLength(fStateStack, Length(fStateStack) + 1);
- if Length(fStateStack) > 1
-  then Move(fStateStack[0,0], fStateStack[1,0], (Length(fStateStack) - 1) * Length(fStateStack[0]) * SizeOf(Double));
- Move(fState[0], fStateStack[0,0], Length(fStateStack[0]) * SizeOf(Double));
+ SetLength(FStateStack, Length(FStateStack) + 1);
+ if Length(FStateStack) > 1
+  then Move(FStateStack[0,0], FStateStack[1,0], (Length(FStateStack) - 1) * Length(FStateStack[0]) * SizeOf(Double));
+ Move(FState[0], FStateStack[0,0], Length(FStateStack[0]) * SizeOf(Double));
 end;
 
 { TBesselFilterLP }
@@ -248,49 +256,49 @@ begin
  if Order = 4 then
   begin
    t     := 1 / ((((    K + 10) * K + 45) * K + 105)*K + 105);
-   fB[0] :=   - ( ((4 * K + 20) * K * K       - 210)*K - 420)*t;
-   fB[1] :=   - (  (6 * K * K       - 90) * K * K      + 630)*t;
-   fB[2] :=   - ( ((4 * K - 20) * K * K       + 210)*K - 420)*t;
-   fB[3] :=   - ((((    K - 10) * K + 45) * K - 105)*K + 105)*t;
+   FB[0] :=   - ( ((4 * K + 20) * K * K       - 210)*K - 420)*t;
+   FB[1] :=   - (  (6 * K * K       - 90) * K * K      + 630)*t;
+   FB[2] :=   - ( ((4 * K - 20) * K * K       + 210)*K - 420)*t;
+   FB[3] :=   - ((((    K - 10) * K + 45) * K - 105)*K + 105)*t;
 
-   fA[0] := 105 * t * fGainFactor;
-   fA[1] := - 4 * fA[0];
-   fA[2] := 6 * fA[0];
-   fA[3] := fA[1];
-   fA[4] := fA[0];
+   FA[0] := 105 * t * fGainFactor;
+   FA[1] := - 4 * FA[0];
+   FA[2] := 6 * FA[0];
+   FA[3] := FA[1];
+   FA[4] := FA[0];
 
 
 (*
    t     := 1 / ((((105 * K + 105) * K + 45) * K + 10)*K + 1);
-   fB[0] :=   - ( ((420 * K + 210) * K * K       - 20)*K - 4)*t;
-   fB[1] :=   - (  (630 * K * K        - 90) * K * K     + 6)*t;
-   fB[2] :=   - ( ((420 * K - 210) * K * K       + 20)*K - 4)*t;
-   fB[3] :=   - ((((105 * K - 105) * K + 45) * K - 10)*K + 1)*t;
+   FB[0] :=   - ( ((420 * K + 210) * K * K       - 20)*K - 4)*t;
+   FB[1] :=   - (  (630 * K * K        - 90) * K * K     + 6)*t;
+   FB[2] :=   - ( ((420 * K - 210) * K * K       + 20)*K - 4)*t;
+   FB[3] :=   - ((((105 * K - 105) * K + 45) * K - 10)*K + 1)*t;
 
-   fA[0] := 105 * t * fGainFactor;
-   fA[1] := 4 * fA[0];
-   fA[2] := 6 * fA[0];
-   fA[3] := fA[1];
-   fA[4] := fA[0];
+   FA[0] := 105 * t * fGainFactor;
+   FA[1] := 4 * FA[0];
+   FA[2] := 6 * FA[0];
+   FA[3] := FA[1];
+   FA[4] := FA[0];
 *)
   end else
  if Order = 6 then
   begin
    t     := 1 / ((((((     K + 1 * 21) * K + 1 * 210)* K + 1 * 1260)*K + 1 * 4725) * K + 1 * 10395)*K +  1 * 10395);
-   fB[0] :=   - ( (((( 6 * K + 4 * 21) * K + 2 * 210)* K * K           - 2 * 4725) * K - 4 * 10395)*K -  6 * 10395)*t;
-   fB[1] :=   - ((((((15 * K + 5 * 21) * K - 1 * 210)* K - 3 * 1260)*K - 1 * 4725) * K + 5 * 10395)*K + 15 * 10395)*t;
-   fB[2] :=   - (   ((20 * K * K           - 4 * 210)* K * K           + 4 * 4725) * K * K            - 20 * 10395)*t;
-   fB[3] :=   - ((((((15 * K - 5 * 21) * K - 1 * 210)* K + 3 * 1260)*K - 1 * 4725) * K - 5 * 10395)*K + 15 * 10395)*t;
-   fB[4] :=   - ( (((( 6 * K - 4 * 21) * K + 2 * 210)* K * K           - 2 * 4725) * K + 4 * 10395)*K -  6 * 10395)*t;
-   fB[5] :=   - ((((((     K - 1 * 21) * K + 1 * 210)* K - 1 * 1260)*K + 1 * 4725) * K - 1 * 10395)*K +  1 * 10395)*t;
+   FB[0] :=   - ( (((( 6 * K + 4 * 21) * K + 2 * 210)* K * K           - 2 * 4725) * K - 4 * 10395)*K -  6 * 10395)*t;
+   FB[1] :=   - ((((((15 * K + 5 * 21) * K - 1 * 210)* K - 3 * 1260)*K - 1 * 4725) * K + 5 * 10395)*K + 15 * 10395)*t;
+   FB[2] :=   - (   ((20 * K * K           - 4 * 210)* K * K           + 4 * 4725) * K * K            - 20 * 10395)*t;
+   FB[3] :=   - ((((((15 * K - 5 * 21) * K - 1 * 210)* K + 3 * 1260)*K - 1 * 4725) * K - 5 * 10395)*K + 15 * 10395)*t;
+   FB[4] :=   - ( (((( 6 * K - 4 * 21) * K + 2 * 210)* K * K           - 2 * 4725) * K + 4 * 10395)*K -  6 * 10395)*t;
+   FB[5] :=   - ((((((     K - 1 * 21) * K + 1 * 210)* K - 1 * 1260)*K + 1 * 4725) * K - 1 * 10395)*K +  1 * 10395)*t;
 
-   fA[0] :=   10395 * t * fGainFactor;
-   fA[1] := - 6 * fA[0];
-   fA[2] :=  15 * fA[0];
-   fA[3] := -20 * fA[0];
-   fA[4] :=  15 * fA[0];
-   fA[5] := - 6 * fA[0];
-   fA[6] :=       fA[0];
+   FA[0] :=   10395 * t * fGainFactor;
+   FA[1] := - 6 * FA[0];
+   FA[2] :=  15 * FA[0];
+   FA[3] := -20 * FA[0];
+   FA[4] :=  15 * FA[0];
+   FA[5] := - 6 * FA[0];
+   FA[6] :=       FA[0];
   end;
 end;
 
@@ -303,11 +311,11 @@ begin
 (*
  cw:=2*cos(2*Frequency*pi*fSRR); a:=sqr(cw+2);
  Result:=1;
- for i := 0 to (fOrder div 2) - 1
+ for i := 0 to (FOrder div 2) - 1
   do Result:=Result*sqr(fAB[4*i])*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
- if (fOrder mod 2) = 1 then
+ if (FOrder mod 2) = 1 then
   begin
-   i:=((fOrder+1) div 2) - 1;
+   i:=((FOrder+1) div 2) - 1;
    Result:=Result*sqr(fAB[4*i])*(cw+2)/(1+sqr(fAB[4*i+2])-cw*fAB[4*i+2]);
   end;
  Result:=Abs(1E-32+Result);
@@ -323,7 +331,7 @@ begin
  GetSinCos(2*Frequency*pi*fSRR,sw,cw);
  Nom := sw * fAB[0] * 2 * (fAB[3] -1) * (1 + cw);
  Den := fAB[0] * (2 * fAB[2] * (1 + cw) + cw * (2 * fAB[3] * (cw + 1) + 2 * (1 + cw)));
- for i := 1 to (fOrder div 2) - 1 do
+ for i := 1 to (FOrder div 2) - 1 do
   begin
    Nom := Nom * sw * fAB[4*i] * 2 * (fAB[4*i+3] - 1) * (cw + 1);
    Den := Den * fAB[4*i] * (2 * fAB[4*i+2] * (1 + cw) + cw * (2 * fAB[4*i+3] * (cw + 1) + 2 * (1 + cw)));
@@ -336,37 +344,37 @@ function TBesselLP.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin
- result    := fA[0] * Input + fState[0];
- for i := 1 to fOrder - 1
-  do fState[i - 1] := fA[i] * Input + fB[i - 1] * result + fState[i];
- fState[fOrder - 1] := fA[fOrder] * Input + fB[fOrder - 1] * result;
+ result    := FA[0] * Input + FState[0];
+ for i := 1 to FOrder - 1
+  do FState[i - 1] := FA[i] * Input + FB[i - 1] * result + FState[i];
+ FState[FOrder - 1] := FA[FOrder] * Input + FB[FOrder - 1] * result;
 end;
 {$ELSE}
 asm
  fld Input.Double
- fmul [self.fA].Double
- fadd [self.fState].Double
+ fmul [self.FA].Double
+ fadd [self.FState].Double
  mov ecx, 1
- mov edx, [self.fOrder]
+ mov edx, [self.FOrder]
 
 @StageLoop:
  fld st(0)
- fmul [self.fB + ecx * 8 - 8].Double
- fadd [self.fState + ecx * 8].Double
+ fmul [self.FB + ecx * 8 - 8].Double
+ fadd [self.FState + ecx * 8].Double
  fld Input.Double
- fmul [self.fA + ecx * 8].Double
+ fmul [self.FA + ecx * 8].Double
  faddp
- fstp [self.fState + ecx * 8 - 8].Double
+ fstp [self.FState + ecx * 8 - 8].Double
  inc ecx
  test ecx, edx
  jnp @StageLoop
 
  fld st(0)
- fmul [self.fB + ecx * 8 - 8].Double
+ fmul [self.FB + ecx * 8 - 8].Double
  fld Input.Double
- fmul [self.fA + ecx * 8].Double
+ fmul [self.FA + ecx * 8].Double
  faddp
- fstp [self.fState + ecx * 8 - 8].Double
+ fstp [self.FState + ecx * 8 - 8].Double
 end;
 {$ENDIF}
 
@@ -385,33 +393,33 @@ begin
  if Order = 4 then
   begin
    t     := 1 / ((((105 * K + 105) * K + 45) * K + 10)*K + 1);
-   fB[0] :=   - ( ((420 * K + 210) * K * K       - 20)*K - 4)*t;
-   fB[1] :=   - (  (630 * K * K        - 90) * K * K     + 6)*t;
-   fB[2] :=   - ( ((420 * K - 210) * K * K       + 20)*K - 4)*t;
-   fB[3] :=   - ((((105 * K - 105) * K + 45) * K - 10)*K + 1)*t;
+   FB[0] :=   - ( ((420 * K + 210) * K * K       - 20)*K - 4)*t;
+   FB[1] :=   - (  (630 * K * K        - 90) * K * K     + 6)*t;
+   FB[2] :=   - ( ((420 * K - 210) * K * K       + 20)*K - 4)*t;
+   FB[3] :=   - ((((105 * K - 105) * K + 45) * K - 10)*K + 1)*t;
 
-   fA[0] := 105 * t * fGainFactor;
-   fA[1] := - 4 * fA[0];
-   fA[2] :=  6 * fA[0];
-   fA[3] := fA[1];
-   fA[4] := fA[0];
+   FA[0] := 105 * t * fGainFactor;
+   FA[1] := - 4 * FA[0];
+   FA[2] :=  6 * FA[0];
+   FA[3] := FA[1];
+   FA[4] := FA[0];
   end else
  if Order = 6 then
   begin
    t     := 1 / ((((((   K +   21)*K +  210)*K + 1260)*K +  4725)*K + 10395)*K +  10395);
-   fB[0] :=   - ( (((( 6*K +   84)*K +  420)*K*K         -  9450)*K - 41580)*K -  62370) * t;
-   fB[1] :=   - ((((((15*K +  105)*K -  210)*K - 3780)*K -  4725)*K + 51975)*K + 155925) * t;
-   fB[2] :=   - (   ((20*K*K         -  840)*K*K         + 18900)*K*K          - 207900) * t;
-   fB[3] :=   - ((((((15*K -  105)*K -  210)*K + 3780)*K -  4725)*K - 51975)*K + 155925) * t;
-   fB[4] :=   - ( (((( 6*K -   84)*K +  420)*K*K         -  9450)*K + 41580)*K -  62370) * t;
-   fB[5] :=   - ((((((   K -   21)*K +  210)*K - 1260)*K +  4725)*K - 10395)*K +  10395) * t;
-   fA[0] := 10395 * t * fGainFactor;
-   fA[1] := - 6 * fA[0];
-   fA[2] :=  15 * fA[0];
-   fA[3] := -20 * fA[0];
-   fA[4] :=  15 * fA[0];
-   fA[5] := - 6 * fA[0];
-   fA[6] :=       fA[0];
+   FB[0] :=   - ( (((( 6*K +   84)*K +  420)*K*K         -  9450)*K - 41580)*K -  62370) * t;
+   FB[1] :=   - ((((((15*K +  105)*K -  210)*K - 3780)*K -  4725)*K + 51975)*K + 155925) * t;
+   FB[2] :=   - (   ((20*K*K         -  840)*K*K         + 18900)*K*K          - 207900) * t;
+   FB[3] :=   - ((((((15*K -  105)*K -  210)*K + 3780)*K -  4725)*K - 51975)*K + 155925) * t;
+   FB[4] :=   - ( (((( 6*K -   84)*K +  420)*K*K         -  9450)*K + 41580)*K -  62370) * t;
+   FB[5] :=   - ((((((   K -   21)*K +  210)*K - 1260)*K +  4725)*K - 10395)*K +  10395) * t;
+   FA[0] := 10395 * t * fGainFactor;
+   FA[1] := - 6 * FA[0];
+   FA[2] :=  15 * FA[0];
+   FA[3] := -20 * FA[0];
+   FA[4] :=  15 * FA[0];
+   FA[5] := - 6 * FA[0];
+   FA[6] :=       FA[0];
   end;
 end;
 
@@ -424,11 +432,11 @@ begin
 (*
  cw:=2*cos(2*Frequency*pi*fSRR); a:=sqr(cw-2);
  Result:=1;
- for i := 0 to (fOrder div 2) - 1
+ for i := 0 to (FOrder div 2) - 1
   do Result:=Result*sqr(fAB[4*i])*a/(1+sqr(fAB[4*i+2])+sqr(fAB[4*i+3])+2*fAB[4*i+3]+cw*((fAB[4*i+2]-cw)*fAB[4*i+3]-fAB[4*i+2]));
- if (fOrder mod 2) = 1 then
+ if (FOrder mod 2) = 1 then
   begin
-   i:=((fOrder+1) div 2) - 1;
+   i:=((FOrder+1) div 2) - 1;
    Result:=Result*sqr(fAB[4*i])*(cw-2)/(1+sqr(fAB[4*i+2])-cw*fAB[4*i+2]);
   end;
  Result:=Abs(1E-32+Result);
@@ -439,37 +447,37 @@ function TBesselHP.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin
- result    := fA[0] * Input + fState[0];
- for i := 1 to fOrder - 1
-  do fState[i - 1] := fA[i] * Input + fB[i - 1] * result + fState[i];
- fState[fOrder - 1] := fA[fOrder] * Input + fB[fOrder - 1] * result;
+ result    := FA[0] * Input + FState[0];
+ for i := 1 to FOrder - 1
+  do FState[i - 1] := FA[i] * Input + FB[i - 1] * result + FState[i];
+ FState[FOrder - 1] := FA[FOrder] * Input + FB[FOrder - 1] * result;
 end;
 {$ELSE}
 asm
  fld Input.Double
- fmul [self.fA].Double
- fadd [self.fState].Double
+ fmul [self.FA].Double
+ fadd [self.FState].Double
  mov ecx, 1
- mov edx, [self.fOrder]
+ mov edx, [self.FOrder]
 
 @StageLoop:
  fld st(0)
- fmul [self.fB + ecx * 8 - 8].Double
- fadd [self.fState + ecx * 8].Double
+ fmul [self.FB + ecx * 8 - 8].Double
+ fadd [self.FState + ecx * 8].Double
  fld Input.Double
- fmul [self.fA + ecx * 8].Double
+ fmul [self.FA + ecx * 8].Double
  faddp
- fstp [self.fState + ecx * 8 - 8].Double
+ fstp [self.FState + ecx * 8 - 8].Double
  inc ecx
  test ecx, edx
  jnp @StageLoop
 
  fld st(0)
- fmul [self.fB + ecx * 8 - 8].Double
+ fmul [self.FB + ecx * 8 - 8].Double
  fld Input.Double
- fmul [self.fA + ecx * 8].Double
+ fmul [self.FA + ecx * 8].Double
  faddp
- fstp [self.fState + ecx * 8 - 8].Double
+ fstp [self.FState + ecx * 8 - 8].Double
 end;
 {$ENDIF}
 

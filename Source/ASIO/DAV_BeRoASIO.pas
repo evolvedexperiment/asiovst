@@ -2,9 +2,9 @@
 // Copyright (C) 2005-2006, Benjamin Rosseaux ( http://bero.0ok.de/ )
 unit DAV_BeRoASIO;
 
-{$I ..\ASIOVST.inc}
-
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 {$IFDEF WIN32}
 uses

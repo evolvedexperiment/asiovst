@@ -2,7 +2,7 @@ unit DAV_ModularEnvelope;
 
 interface
                
-{$I ASIOVST.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_ModularBaseComponent, DAV_Common;

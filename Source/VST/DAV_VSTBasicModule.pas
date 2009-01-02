@@ -4,7 +4,7 @@ unit DAV_VSTBasicModule;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, {$IFDEF Delphi5} Forms, {$ENDIF} DAV_Common, DAV_VSTEffect;
@@ -1000,7 +1000,7 @@ end;
 procedure SetParameterFunc(Effect: PVSTEffect; Index: Integer; Value: Single); cdecl;
 begin
  assert(TObject(Effect^.vObject) is TBasicVSTModule);
- TBasicVSTModule(Effect^.vObject).HostCallSetParameter(Index,Value);
+ TBasicVSTModule(Effect^.vObject).HostCallSetParameter(Index, Value);
 end;
 
 procedure ProcessFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;

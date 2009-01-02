@@ -39,11 +39,11 @@ object VSTDecimator: TVSTDecimator
       MinInteger = 20
       ShortLabel = 'rate'
       SmallStepFloat = 100.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 100.000000000000000000
       StepInteger = 100
       Units = 'Hz'
       VSTModule = Owner
+      OnParameterChange = ParameterSampleRateChange
     end
     item
       Curve = ctLinear
@@ -57,9 +57,9 @@ object VSTDecimator: TVSTDecimator
       MinInteger = 1
       ShortLabel = 'bits'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParameterBitsChange
     end
     item
       Curve = ctLinear
@@ -73,11 +73,11 @@ object VSTDecimator: TVSTDecimator
       MinInteger = 20
       ShortLabel = 'cut'
       SmallStepFloat = 100.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 100.000000000000000000
       StepInteger = 100
       Units = 'Hz'
       VSTModule = Owner
+      OnParameterChange = ParameterCutoffChange
     end
     item
       Curve = ctLinear
@@ -90,26 +90,26 @@ object VSTDecimator: TVSTDecimator
       Min = 0.100000001490116100
       ShortLabel = 'res'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
+      OnParameterChange = ParameterResonanceChange
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'FilterType'
       Flags = [kVstParameterIsSwitch]
-      LargeStepFloat = 2.000000000000000000
-      LargeStepInteger = 0
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
       Max = 1.000000000000000000
-      MaxInteger = 0
+      MaxInteger = 1
       ShortLabel = 'FilterT'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      StepInteger = 0
       VSTModule = Owner
+      OnParameterChange = ParameterFilterTypeChange
+      OnCustomParameterDisplay = ParameterFilterTypeDisplay
     end
     item
       Curve = ctLinear
@@ -120,10 +120,10 @@ object VSTDecimator: TVSTDecimator
       MaxInteger = 0
       ShortLabel = 'mix'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '&'
       VSTModule = Owner
+      OnParameterChange = ParameterWetDryMixChange
     end
     item
       Curve = ctLinear
@@ -137,14 +137,13 @@ object VSTDecimator: TVSTDecimator
       MinInteger = -24
       ShortLabel = 'vol'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
+      OnParameterChange = ParameterOutputVolumeChange
     end>
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
-  OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessMidi = VSTModuleProcessMidi

@@ -2,6 +2,8 @@ unit DAV_ModularBaseOsc;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   DAV_Common, DAV_Complex, DAV_ModularBaseComponent;
 

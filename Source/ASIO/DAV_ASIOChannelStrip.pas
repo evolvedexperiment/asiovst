@@ -4,6 +4,8 @@ unit DAV_ASIOChannelStrip;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls;
@@ -15,21 +17,21 @@ type
     procedure TrackBarChange(Sender: TObject);
     procedure CBMuteClick(Sender: TObject);
   private
-    fChannel        : Integer;
-    fMute           : Boolean;
-    fOnMuteChange   : TNotifyEvent;
-    fOnSoloChange   : TNotifyEvent;
-    fOnVolumeChange : TNotifyEvent;
-    fSolo           : Boolean;
-    fVolume         : Single;
+    FChannel        : Integer;
+    FMute           : Boolean;
+    FOnMuteChange   : TNotifyEvent;
+    FOnSoloChange   : TNotifyEvent;
+    FOnVolumeChange : TNotifyEvent;
+    FSolo           : Boolean;
+    FVolume         : Single;
   public
-    property Channel: Integer read fChannel write fChannel default -1;
-    property Mute: Boolean read fMute Write fMute;
-    property OnMuteChange: TNotifyEvent read fOnMuteChange write fOnMuteChange;
-    property OnSoloChange: TNotifyEvent read fOnSoloChange write fOnSoloChange;
-    property OnVolumeChange: TNotifyEvent read fOnVolumeChange write fOnVolumeChange;
-    property Solo: Boolean read fSolo Write fSolo;
-    property Volume: Single read fVolume Write fVolume;
+    property Channel: Integer read FChannel write FChannel default -1;
+    property Mute: Boolean read FMute Write FMute;
+    property OnMuteChange: TNotifyEvent read FOnMuteChange write FOnMuteChange;
+    property OnSoloChange: TNotifyEvent read FOnSoloChange write FOnSoloChange;
+    property OnVolumeChange: TNotifyEvent read FOnVolumeChange write FOnVolumeChange;
+    property Solo: Boolean read FSolo Write FSolo;
+    property Volume: Single read FVolume Write FVolume;
   end;
 
 implementation
@@ -40,16 +42,16 @@ implementation
 
 procedure TFrChannelStrip.TrackBarChange(Sender: TObject);
 begin
- fVolume := (TrackBar.Max - TrackBar.Position) / TrackBar.Max;
- if Assigned(fOnVolumeChange) then fOnVolumeChange(Self);
- TrackBar.Hint := IntToStr(round(fVolume * 100)) + '%';
+ FVolume := (TrackBar.Max - TrackBar.Position) / TrackBar.Max;
+ if Assigned(FOnVolumeChange) then FOnVolumeChange(Self);
+ TrackBar.Hint := IntToStr(round(FVolume * 100)) + '%';
 end;
 
 procedure TFrChannelStrip.CBMuteClick(Sender: TObject);
 begin
- fMute := CBMute.Checked;
- if Assigned(fOnMuteChange) then fOnMuteChange(Self);
- if fMute
+ FMute := CBMute.Checked;
+ if Assigned(FOnMuteChange) then FOnMuteChange(Self);
+ if FMute
   then CBMute.Hint := 'Mute'
   else CBMute.Hint := '';
 end;

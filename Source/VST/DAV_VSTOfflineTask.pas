@@ -2,7 +2,7 @@ unit DAV_VSTOfflineTask;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, SysUtils, DAV_VSTEffect;

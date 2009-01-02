@@ -38,7 +38,6 @@ object SimpleDelayVST: TSimpleDelayVST
       Min = 1.000000000000000000
       ShortLabel = 'Delay L'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = 'Samples'

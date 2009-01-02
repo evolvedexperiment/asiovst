@@ -26,7 +26,6 @@ object CrossoverDistortionDataModule: TCrossoverDistortionDataModule
       MinInteger = 20
       ShortLabel = 'CO-Freq'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -44,7 +43,6 @@ object CrossoverDistortionDataModule: TCrossoverDistortionDataModule
       MinInteger = 2
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterOrderChange
@@ -58,7 +56,6 @@ object CrossoverDistortionDataModule: TCrossoverDistortionDataModule
       Max = 100.000000000000000000
       ShortLabel = 'LoDist'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -73,7 +70,6 @@ object CrossoverDistortionDataModule: TCrossoverDistortionDataModule
       Max = 100.000000000000000000
       ShortLabel = 'HiDist'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

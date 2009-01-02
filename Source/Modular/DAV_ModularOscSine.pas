@@ -2,6 +2,8 @@ unit DAV_ModularOscSine;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   DAV_Common, DAV_Complex, DAV_ModularBaseComponent, DAV_ModularBaseOsc;
 
@@ -16,17 +18,17 @@ implementation
 
 procedure TDspOscSine.Process(var Data: Single; const channel: integer);
 begin
-  Data := fPosition[channel].Re * fAngle.Re - fPosition[channel].Im * fAngle.Im;
-  fPosition[channel].Im := fPosition[channel].Im * fAngle.Re + fPosition[channel].Re * fAngle.Im;
-  fPosition[channel].Re := Data;
+  Data := FPosition[channel].Re * FAngle.Re - FPosition[channel].Im * FAngle.Im;
+  FPosition[channel].Im := FPosition[channel].Im * FAngle.Re + FPosition[channel].Re * FAngle.Im;
+  FPosition[channel].Re := Data;
   Data := Data * fAmplitude + FDCOffset;
 end;
 
 procedure TDspOscSine.Process(var Data: Double; const channel: integer);
 begin
-  Data:=fPosition[channel].Re * fAngle.Re - fPosition[channel].Im * fAngle.Im;
-  fPosition[channel].Im := fPosition[channel].Im * fAngle.Re + fPosition[channel].Re * fAngle.Im;
-  fPosition[channel].Re := Data;
+  Data:=FPosition[channel].Re * FAngle.Re - FPosition[channel].Im * FAngle.Im;
+  FPosition[channel].Im := FPosition[channel].Im * FAngle.Re + FPosition[channel].Re * FAngle.Im;
+  FPosition[channel].Re := Data;
   Data := Data * fAmplitude + FDCOffset;
 end;
 

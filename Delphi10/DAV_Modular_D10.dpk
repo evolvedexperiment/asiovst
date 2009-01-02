@@ -28,9 +28,9 @@ requires
   vcl,
   rtl,
   designide,
+  DAV_Common_D10,
   DAV_DSP_D10,
-  DAV_VSTPlugin_D10,
-  DAV_Common_D10;
+  DAV_VSTPlugin_D10;
 
 contains
   DAV_ModularBaseComponent in '..\Source\Modular\DAV_ModularBaseComponent.pas',

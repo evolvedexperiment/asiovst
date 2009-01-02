@@ -27,7 +27,6 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       MinInteger = 2
       ShortLabel = 'Bit Dep'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Bit'
       VSTModule = Owner
@@ -45,7 +44,6 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       MaxInteger = 7
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = DNTypeChange

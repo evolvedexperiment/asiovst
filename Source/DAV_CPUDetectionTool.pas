@@ -2,6 +2,8 @@ unit DAV_CPUDetectionTool;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
   SysUtils;
 

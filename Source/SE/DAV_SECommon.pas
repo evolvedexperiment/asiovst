@@ -2,6 +2,8 @@ unit DAV_SECommon;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 const
   CSeSdkVersion : Integer = 2230;
 

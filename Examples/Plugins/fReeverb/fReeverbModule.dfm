@@ -41,7 +41,6 @@ object fReeverbVST: TfReeverbVST
       MaxInteger = 0
       ShortLabel = 'Dry'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = '%'
@@ -58,7 +57,6 @@ object fReeverbVST: TfReeverbVST
       MaxInteger = 0
       ShortLabel = 'Wet'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = '%'
@@ -75,7 +73,6 @@ object fReeverbVST: TfReeverbVST
       MaxInteger = 0
       ShortLabel = 'Width'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = '%'
@@ -92,7 +89,6 @@ object fReeverbVST: TfReeverbVST
       MaxInteger = 0
       ShortLabel = 'RoomSiz'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
@@ -108,7 +104,6 @@ object fReeverbVST: TfReeverbVST
       MaxInteger = 0
       ShortLabel = 'FreeZe'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
@@ -124,7 +119,6 @@ object fReeverbVST: TfReeverbVST
       MaxInteger = 0
       ShortLabel = 'Stretch'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
@@ -140,7 +134,6 @@ object fReeverbVST: TfReeverbVST
       MaxInteger = 0
       ShortLabel = 'Damp'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = '%'
@@ -158,7 +151,6 @@ object fReeverbVST: TfReeverbVST
       Min = 1.000000000000000000
       ShortLabel = 'NumAllP'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
@@ -175,7 +167,6 @@ object fReeverbVST: TfReeverbVST
       Min = 1.000000000000000000
       ShortLabel = 'NumComb'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner

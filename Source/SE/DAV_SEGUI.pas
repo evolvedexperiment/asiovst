@@ -2,6 +2,8 @@ unit DAV_SEGUI;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Windows, Classes, DAV_SECommon;
 

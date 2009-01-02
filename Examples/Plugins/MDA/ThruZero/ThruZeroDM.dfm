@@ -39,7 +39,6 @@ object ThruZeroDataModule: TThruZeroDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Rate'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 's'
       VSTModule = Owner
@@ -54,7 +53,6 @@ object ThruZeroDataModule: TThruZeroDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Depth'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -69,7 +67,6 @@ object ThruZeroDataModule: TThruZeroDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -85,7 +82,6 @@ object ThruZeroDataModule: TThruZeroDataModule
       MinInteger = -100
       ShortLabel = 'DepthMd'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -99,7 +95,6 @@ object ThruZeroDataModule: TThruZeroDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Feedbck'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

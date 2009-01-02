@@ -2,7 +2,7 @@ unit DAV_ModularVoiceController;
 
 interface
 
-{$I ASIOVST.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_ModularBaseComponent, DAV_Common, DAV_ModularVoiceList, DAV_ModularVoice;

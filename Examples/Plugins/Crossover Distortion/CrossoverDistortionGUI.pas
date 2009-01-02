@@ -30,7 +30,7 @@ type
     procedure DialHighDistChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
   private
-    fBackgrounBitmap : TBitmap;
+    FBackgrounBitmap : TBitmap;
   public
     procedure UpdateFrequency;
     procedure UpdateOrder;
@@ -56,8 +56,8 @@ var
 
 begin
  // Create Background Image
- fBackgrounBitmap := TBitmap.Create;
- with fBackgrounBitmap do
+ FBackgrounBitmap := TBitmap.Create;
+ with FBackgrounBitmap do
   begin
    PixelFormat := pf24bit;
    Width := Self.Width;
@@ -98,7 +98,7 @@ end;
 
 procedure TFmCrossoverDistortion.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, fBackgrounBitmap);
+ Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
 procedure TFmCrossoverDistortion.DialFreqChange(Sender: TObject);

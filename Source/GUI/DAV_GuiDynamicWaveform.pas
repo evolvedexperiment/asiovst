@@ -2,6 +2,8 @@ unit DAV_GuiDynamicWaveform;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   DAV_GuiStaticWaveform, DAV_Common, Classes, Controls;
 
@@ -10,10 +12,10 @@ type
 
   TCustomGuiDynamicWaveform = class(TCustomGuiStaticWaveform)
   private
-    fWaveProcessMode: TGuiWaveProcessMode;
-    fInternalBufferSize: Integer;
-    fInternalBuffer: TDAVArrayOfSingleDynArray;
-    fInternalBufferChannels: Integer;
+    FWaveProcessMode: TGuiWaveProcessMode;
+    FInternalBufferSize: Integer;
+    FInternalBuffer: TDAVArrayOfSingleDynArray;
+    FInternalBufferChannels: Integer;
 
     procedure SetInternalBufferSize(const Value: Integer);
     procedure SetInternalBufferChannels(const Value: Integer);
@@ -30,9 +32,9 @@ type
   published
     property RedrawInterval;
 
-    property InternalBufferSize: Integer read fInternalBufferSize write SetInternalBufferSize default 512;
-    property InternalBufferChannels: Integer read fInternalBufferChannels write SetInternalBufferChannels default 2;
-    property WaveProcessMode: TGuiWaveProcessMode read fWaveProcessMode write fWaveProcessMode default wpmScroll;
+    property InternalBufferSize: Integer read FInternalBufferSize write SetInternalBufferSize default 512;
+    property InternalBufferChannels: Integer read FInternalBufferChannels write SetInternalBufferChannels default 2;
+    property WaveProcessMode: TGuiWaveProcessMode read FWaveProcessMode write FWaveProcessMode default wpmScroll;
   end;
 
   TGuiDynamicWaveform = class(TCustomGuiDynamicWaveform)
@@ -97,16 +99,16 @@ begin
   inherited;
 
   fRedrawTimer.Interval   := 25;
-  fWaveProcessMode        := wpmScroll;
-  fInternalBufferChannels := 2;
-  fInternalBufferSize     := 512;
+  FWaveProcessMode        := wpmScroll;
+  FInternalBufferChannels := 2;
+  FInternalBufferSize     := 512;
   UpdateInternalBuffer;
 end;
 
 destructor TCustomGuiDynamicWaveform.Destroy;
 begin
-  fInternalBufferChannels := 0;
-  fInternalBufferSize     := 0;
+  FInternalBufferChannels := 0;
+  FInternalBufferSize     := 0;
   UpdateInternalBuffer;
   inherited;
 end;
@@ -143,14 +145,14 @@ var
 begin
   if InpLen<1 then
   begin
-    for i := 0 to fInternalBufferChannels-1 do
+    for i := 0 to FInternalBufferChannels-1 do
       if i < Length(NewWaveData) then
         InpLen := max(Length(NewWaveData[i]), InpLen);
 
     if InpLen<1 then exit;
   end;
 
-  for i := 0 to fInternalBufferChannels-1 do
+  for i := 0 to FInternalBufferChannels-1 do
   begin
     tmpLen := 0;
     if i < Length(NewWaveData) then
@@ -163,48 +165,48 @@ begin
     if tmpLen < InpLen then
       FillChar(InputBuffer[tmpLen], (InpLen - tmpLen) * SizeOf(Single), 0);
 
-    case fWaveProcessMode of
+    case FWaveProcessMode of
       wpmScroll:
-        if InpLen >= fInternalBufferSize then
+        if InpLen >= FInternalBufferSize then
         begin
 
           // copy part of input into full working buffer
-          nOffset := InpLen - fInternalBufferSize;
-          Move(InputBuffer[nOffset], fInternalBuffer[i, 0], fInternalBufferSize * SizeOf(Single));
+          nOffset := InpLen - FInternalBufferSize;
+          Move(InputBuffer[nOffset], FInternalBuffer[i, 0], FInternalBufferSize * SizeOf(Single));
         end else begin
 
           // copy full input buffer into part of working buffer
-          nOffset := fInternalBufferSize - InpLen;
-          Move(fInternalBuffer[i, InpLen], fInternalBuffer[i, 0], nOffset * SizeOf(Single));
-          Move(InputBuffer[0], fInternalBuffer[i, nOffset], InpLen * SizeOf(Single));
+          nOffset := FInternalBufferSize - InpLen;
+          Move(FInternalBuffer[i, InpLen], FInternalBuffer[i, 0], nOffset * SizeOf(Single));
+          Move(InputBuffer[0], FInternalBuffer[i, nOffset], InpLen * SizeOf(Single));
         end;
       wpmReplace:
         begin
-          Amount := min(InpLen, fInternalBufferSize);
-          Move(InputBuffer[0], fInternalBuffer[i, 0], Amount * SizeOf(Single));
+          Amount := min(InpLen, FInternalBufferSize);
+          Move(InputBuffer[0], FInternalBuffer[i, 0], Amount * SizeOf(Single));
 
-          if Amount < fInternalBufferSize then
+          if Amount < FInternalBufferSize then
           begin
-            fillchar(fInternalBuffer[i, Amount], (fInternalBufferSize - Amount) * SizeOf(Single), 0);
+            fillchar(FInternalBuffer[i, Amount], (FInternalBufferSize - Amount) * SizeOf(Single), 0);
           end;
         end; 
 
       wpmStretch:
         begin
-          stepw := (InpLen - 1) / (fInternalBufferSize - 1);
-          fInternalBuffer[i, 0] := InputBuffer[0];
+          stepw := (InpLen - 1) / (FInternalBufferSize - 1);
+          FInternalBuffer[i, 0] := InputBuffer[0];
 
-          for nOffset := 1 to fInternalBufferSize - 1 do
+          for nOffset := 1 to FInternalBufferSize - 1 do
            begin
             pos := stepw * nOffset;
             frac := pos - trunc(pos);
 
-            fInternalBuffer[i, nOffset] := InputBuffer[floor(pos)] * frac + InputBuffer[ceil(pos)] * (1 - frac);
+            FInternalBuffer[i, nOffset] := InputBuffer[floor(pos)] * frac + InputBuffer[ceil(pos)] * (1 - frac);
            end;
         end;
     end;
   end;
-  if not fTimerMustRedraw then SetWaveForm(fInternalBuffer);
+  if not fTimerMustRedraw then SetWaveForm(FInternalBuffer);
   fTimerMustRedraw := true;
 end;
 
@@ -212,13 +214,13 @@ procedure TCustomGuiDynamicWaveform.UpdateInternalBuffer;
 var
   i : Integer;
 begin
-  for i := fInternalBufferChannels to Length(fInternalBuffer) - 1
-   do SetLength(fInternalBuffer[i], 0);
-  SetLength(fInternalBuffer, fInternalBufferChannels, fInternalBufferSize);
+  for i := FInternalBufferChannels to Length(FInternalBuffer) - 1
+   do SetLength(FInternalBuffer[i], 0);
+  SetLength(FInternalBuffer, FInternalBufferChannels, FInternalBufferSize);
 
-  if fInternalBufferChannels > 0 then
-   for i := 0 to Length(fInternalBuffer) - 1 do
-      FillChar(fInternalBuffer[i][0], SizeOf(Single) * fInternalBufferSize, 0);
+  if FInternalBufferChannels > 0 then
+   for i := 0 to Length(FInternalBuffer) - 1 do
+      FillChar(FInternalBuffer[i][0], SizeOf(Single) * FInternalBufferSize, 0);
 end;
 
 procedure TCustomGuiDynamicWaveform.SetInternalBufferChannels(const Value: Integer);
@@ -226,9 +228,9 @@ begin
   if Value < 1
    then raise Exception.Create('InternalBufferChannels must greater than 0');
 
- if fInternalBufferChannels <> Value then
+ if FInternalBufferChannels <> Value then
   begin
-   fInternalBufferChannels := Value;
+   FInternalBufferChannels := Value;
    UpdateInternalBuffer;
   end;
 end;
@@ -237,9 +239,9 @@ procedure TCustomGuiDynamicWaveform.SetInternalBufferSize(const Value: Integer);
 begin
   if Value < 1
    then raise Exception.Create('InternalBufferSize must greater than 0');
-  if fInternalBufferSize <> Value then
+  if FInternalBufferSize <> Value then
    begin
-    fInternalBufferSize := Value;
+    FInternalBufferSize := Value;
     UpdateInternalBuffer;
    end;
 end;

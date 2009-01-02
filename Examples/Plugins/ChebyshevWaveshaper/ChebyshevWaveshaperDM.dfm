@@ -26,7 +26,6 @@ object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
       MinInteger = -30
       ShortLabel = 'Volume'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

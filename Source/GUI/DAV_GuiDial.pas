@@ -2,7 +2,7 @@ unit DAV_GuiDial;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,

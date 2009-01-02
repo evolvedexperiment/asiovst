@@ -75,7 +75,7 @@ type
     procedure PopupVUMeterSpeedPopup(Sender: TObject);
     procedure VUMeterTimerTimer(Sender: TObject);
   private
-    fBackgrounBitmap : TBitmap;
+    FBackgrounBitmap : TBitmap;
     procedure SetLevelState(const Value: TLevelState);
     function GetLevelState: TLevelState;
     function VUMeterValueToPos(Value: Double): Integer;
@@ -112,9 +112,9 @@ var
 
 begin
  // Create Background Image
- fBackgrounBitmap := TBitmap.Create;
+ FBackgrounBitmap := TBitmap.Create;
  ClrBt := $F + random($40);
- with fBackgrounBitmap do
+ with FBackgrounBitmap do
   begin
    PixelFormat := pf32bit;
    Width := Self.Width;
@@ -184,13 +184,13 @@ end;
 
 procedure TFmLA4029.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(fBackgrounBitmap);
+ FreeAndNil(FBackgrounBitmap);
 end;
 
 procedure TFmLA4029.FormPaint(Sender: TObject);
 begin
- if assigned(fBackgrounBitmap)
-  then Self.Canvas.Draw(0, 0, fBackgrounBitmap);
+ if assigned(FBackgrounBitmap)
+  then Self.Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
 procedure TFmLA4029.FormShow(Sender: TObject);

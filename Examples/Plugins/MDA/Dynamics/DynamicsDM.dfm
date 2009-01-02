@@ -30,7 +30,6 @@ object DynamicsDataModule: TDynamicsDataModule
       MinInteger = -40
       ShortLabel = 'Thrshld'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -43,7 +42,6 @@ object DynamicsDataModule: TDynamicsDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Ratio'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = ':1'
       VSTModule = Owner
@@ -58,7 +56,6 @@ object DynamicsDataModule: TDynamicsDataModule
       MaxInteger = 40
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -71,7 +68,6 @@ object DynamicsDataModule: TDynamicsDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Attack'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = #181's'
       VSTModule = Owner
@@ -86,7 +82,6 @@ object DynamicsDataModule: TDynamicsDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Release'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -104,7 +99,6 @@ object DynamicsDataModule: TDynamicsDataModule
       MinInteger = -20
       ShortLabel = 'Limiter'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -123,7 +117,6 @@ object DynamicsDataModule: TDynamicsDataModule
       MinInteger = -61
       ShortLabel = 'GateThr'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -139,7 +132,6 @@ object DynamicsDataModule: TDynamicsDataModule
       Max = 1.000000000000000000
       ShortLabel = 'GateAtt'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = #181's'
       VSTModule = Owner
@@ -154,7 +146,6 @@ object DynamicsDataModule: TDynamicsDataModule
       Max = 1.000000000000000000
       ShortLabel = 'GateRel'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -169,7 +160,6 @@ object DynamicsDataModule: TDynamicsDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

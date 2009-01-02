@@ -29,7 +29,6 @@ object TrackerDataModule: TTrackerDataModule
       MaxInteger = 4
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterModeDisplay
@@ -42,7 +41,6 @@ object TrackerDataModule: TTrackerDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Dynamic'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -55,7 +53,6 @@ object TrackerDataModule: TTrackerDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Mix'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -68,7 +65,6 @@ object TrackerDataModule: TTrackerDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Glide'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -81,7 +77,6 @@ object TrackerDataModule: TTrackerDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Transpo'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'semi'
       VSTModule = Owner
@@ -94,7 +89,6 @@ object TrackerDataModule: TTrackerDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Maximum'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -107,7 +101,6 @@ object TrackerDataModule: TTrackerDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Trigger'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -120,7 +113,6 @@ object TrackerDataModule: TTrackerDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner

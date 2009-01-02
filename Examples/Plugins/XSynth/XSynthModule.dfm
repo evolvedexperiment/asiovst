@@ -33,7 +33,6 @@ object VSTSSModule: TVSTSSModule
       MaxInteger = 10
       ShortLabel = '1type'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
@@ -48,7 +47,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'Osc1 At'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -63,7 +61,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'Osc1 De'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -78,7 +75,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'Osc1 Re'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -93,7 +89,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'Osc1 Su'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -108,7 +103,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'Osc1 Le'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -124,7 +118,6 @@ object VSTSSModule: TVSTSSModule
       MaxInteger = 10
       ShortLabel = '2type'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
@@ -139,7 +132,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'Osc2 At'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -154,7 +146,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'Osc2 De'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -169,7 +160,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'Osc2 Re'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -184,7 +174,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'Osc2 Su'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -199,7 +188,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'Osc2 Le'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -215,7 +203,6 @@ object VSTSSModule: TVSTSSModule
       MaxInteger = 10
       ShortLabel = 'drive'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = VSTSSModuleDriveParameterChange
@@ -232,7 +219,6 @@ object VSTSSModule: TVSTSSModule
       MinInteger = 20
       ShortLabel = 'Cutoff'
       SmallStepFloat = 100.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 100.000000000000000000
       StepInteger = 100
       Units = 'Hz'
@@ -250,7 +236,6 @@ object VSTSSModule: TVSTSSModule
       Min = 0.009999999776482582
       ShortLabel = 'Res'
       SmallStepFloat = 0.100000001490116100
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 0.100000001490116100
       VSTModule = Owner
       OnParameterChange = VSTSSModuleResonanceParameterChange
@@ -264,7 +249,6 @@ object VSTSSModule: TVSTSSModule
       Max = 100.000000000000000000
       ShortLabel = 'level'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner

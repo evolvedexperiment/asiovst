@@ -43,7 +43,6 @@ object BassExtenderModule: TBassExtenderModule
       MinInteger = 2
       ShortLabel = 'Freq'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 10.000000000000000000
       StepInteger = 10
       Units = 'Hz'
@@ -64,7 +63,6 @@ object BassExtenderModule: TBassExtenderModule
       MinInteger = 1
       ShortLabel = 'Order'
       SmallStepFloat = 2.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 2.000000000000000000
       StepInteger = 2
       VSTModule = Owner
@@ -81,7 +79,6 @@ object BassExtenderModule: TBassExtenderModule
       Max = 1.000000000000000000
       ShortLabel = 'Divider'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -97,7 +94,6 @@ object BassExtenderModule: TBassExtenderModule
       Max = 1.000000000000000000
       ShortLabel = 'Shape'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -115,7 +111,6 @@ object BassExtenderModule: TBassExtenderModule
       MinInteger = -60
       ShortLabel = 'Thresho'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -133,7 +128,6 @@ object BassExtenderModule: TBassExtenderModule
       MinInteger = 1
       ShortLabel = 'Ratio'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamRatioChange
@@ -151,7 +145,6 @@ object BassExtenderModule: TBassExtenderModule
       MinInteger = 1
       ShortLabel = 'Attack'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 10.000000000000000000
       Units = #181's'
       VSTModule = Owner
@@ -171,7 +164,6 @@ object BassExtenderModule: TBassExtenderModule
       MinInteger = 1
       ShortLabel = 'Release'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 10.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -189,7 +181,6 @@ object BassExtenderModule: TBassExtenderModule
       Max = 1.000000000000000000
       ShortLabel = 'CompMix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -206,7 +197,6 @@ object BassExtenderModule: TBassExtenderModule
       MinInteger = -100
       ShortLabel = 'Balance'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -223,7 +213,6 @@ object BassExtenderModule: TBassExtenderModule
       MaxInteger = 3
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamModeChange

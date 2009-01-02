@@ -2,6 +2,8 @@ unit DAV_ModularOscNoise;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   DAV_Common, DAV_Complex, DAV_ModularBaseComponent, DAV_ModularBaseOsc;
 
@@ -24,12 +26,12 @@ end;
 
 procedure TDspOscNoise.Process(var Data: Single; const channel: integer);
 begin
-  Data := (2 * random - 1) * fAmplitude + FDCOffset;
+  Data := (2 * Random - 1) * FAmplitude + FDCOffset;
 end;
 
 procedure TDspOscNoise.Process(var Data: Double; const channel: integer);
 begin
-  Data := (2 * random - 1) * fAmplitude + FDCOffset;
+  Data := (2 * Random - 1) * FAmplitude + FDCOffset;
 end;
 
 end.

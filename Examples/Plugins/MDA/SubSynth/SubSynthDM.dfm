@@ -29,7 +29,6 @@ object SubSynthDataModule: TSubSynthDataModule
       MaxInteger = 3
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterModeDisplay
@@ -42,7 +41,6 @@ object SubSynthDataModule: TSubSynthDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Level'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -56,7 +54,6 @@ object SubSynthDataModule: TSubSynthDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Tune'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -70,7 +67,6 @@ object SubSynthDataModule: TSubSynthDataModule
       Max = 100.000000000000000000
       ShortLabel = 'Dry Mix'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -87,7 +83,6 @@ object SubSynthDataModule: TSubSynthDataModule
       MinInteger = -60
       ShortLabel = 'Thresh'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -101,7 +96,6 @@ object SubSynthDataModule: TSubSynthDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Release'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner

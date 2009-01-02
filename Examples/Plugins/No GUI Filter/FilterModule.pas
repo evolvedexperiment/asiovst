@@ -1,6 +1,6 @@
 unit FilterModule;
 
-{$I ASIOVST.INC}
+{$I DAV_COmpiler.inc}
 
 interface
 

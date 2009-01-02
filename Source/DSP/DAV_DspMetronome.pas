@@ -2,7 +2,7 @@ unit DAV_DspMetronome;
 
 interface
 
-{$I ..\ASIOVST.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_Common, DAV_Complex, DAV_DspCommon;

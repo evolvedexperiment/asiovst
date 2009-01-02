@@ -26,7 +26,6 @@ object ButterworthLPModule: TButterworthLPModule
       MinInteger = 20
       ShortLabel = 'Freq.'
       SmallStepFloat = 10.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 50.000000000000000000
       StepInteger = 50
       Units = 'Hz'
@@ -43,7 +42,6 @@ object ButterworthLPModule: TButterworthLPModule
       MaxInteger = 16
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange

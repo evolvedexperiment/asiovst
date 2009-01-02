@@ -1,11 +1,11 @@
 unit DAV_DspChorus;
 
-{$I ASIOVST.inc}
+{$I DAV_Compiler.inc}
 
 interface
 
 uses
-  Classes, DAV_Common, DAV_DspCommon, DAV_DspSineLFO;
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspLFO;
 
 type
   TCustomDspChorus = class(TDspObject)
@@ -20,7 +20,7 @@ type
     FBufferSize   : Integer;
     FBufferInPos  : Integer;
     FBufferOutPos : Integer;
-    FLFOs         : array of TSineLFO;
+    FLFOs         : array of TLFOSine;
     FDrift        : Double;
     procedure SetDepth(const Value: Double);
     procedure SetMix(const Value: Double);
@@ -28,7 +28,7 @@ type
     procedure SetStages(const Value: Byte);
     procedure SetSampleRate(const Value: Double);
     procedure SetDrift(const Value: Double);
-    function GetLFO(Index: Integer): TSineLFO;
+    function GetLFO(Index: Integer): TLFOSine;
   protected
     procedure CalculateStageMix; virtual;
     procedure DepthChanged; virtual;
@@ -42,7 +42,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     procedure Reset; virtual;
-    property LFO[Index: Integer]: TSineLFO read GetLFO; 
+    property LFO[Index: Integer]: TLFOSine read GetLFO; 
   published
     property SampleRate: Double read FSampleRate write SetSampleRate;
     property Speed: Double read FSpeed write SetSpeed;
@@ -118,7 +118,7 @@ begin
  inherited;
 end;
 
-function TCustomDspChorus.GetLFO(Index: Integer): TSineLFO;
+function TCustomDspChorus.GetLFO(Index: Integer): TLFOSine;
 begin
  if (Index >= 0) and (Index < Length(FLFOs))
   then result := FLFOs[Index]
@@ -166,7 +166,7 @@ begin
  SetLength(FLFOs, FStages);
  for i := OldStages to FStages - 1 do
   begin
-   FLFOs[i]            := TSineLFO.Create;
+   FLFOs[i]            := TLFOSine.Create;
    FLFOs[i].SampleRate := FSampleRate;
   end;
  SpeedChanged; 

@@ -29,7 +29,6 @@ object MultibandDataModule: TMultibandDataModule
       MaxInteger = 3
       ShortLabel = 'Listen'
       SmallStepFloat = 1.000000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnCustomParameterDisplay = ParameterOutputDisplay
@@ -42,7 +41,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'L <> M'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -55,7 +53,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'M <> H'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
@@ -68,7 +65,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'L Comp'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -81,7 +77,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'M Comp'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -94,7 +89,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'H Comp'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -107,7 +101,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'L Out'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -121,7 +114,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'M Out'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -135,7 +127,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'H Out'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
@@ -149,7 +140,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Attack'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = #181's'
       VSTModule = Owner
@@ -162,7 +152,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Release'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
@@ -175,7 +164,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Stereo'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
@@ -188,7 +176,6 @@ object MultibandDataModule: TMultibandDataModule
       Max = 1.000000000000000000
       ShortLabel = 'Process'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>
