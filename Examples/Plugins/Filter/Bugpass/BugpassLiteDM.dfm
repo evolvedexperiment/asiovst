@@ -7,7 +7,6 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
   ProductName = 'DAV Filter Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
   ProcessingMode = pmBlockSave
@@ -22,12 +21,14 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
       DisplayName = 'Low Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 20000.000000000000000000
       MaxInteger = 20000
       Min = 20.000000000000000000
       MinInteger = 20
+      ReportVST2Properties = True
       ShortLabel = 'LowFreq'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -39,12 +40,14 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
       DisplayName = 'High Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 20000.000000000000000000
       MaxInteger = 20000
       Min = 20.000000000000000000
       MinInteger = 20
+      ReportVST2Properties = True
       ShortLabel = 'HiFreq'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -52,6 +55,7 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
       VSTModule = Owner
       OnParameterChange = ParamFreqHighChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

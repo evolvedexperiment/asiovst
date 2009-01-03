@@ -6,7 +6,6 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
   ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
   IORatio = 1.000000000000000000
@@ -25,6 +24,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       MaxInteger = 32
       Min = 2.000000000000000000
       MinInteger = 2
+      ReportVST2Properties = True
       ShortLabel = 'Bit Dep'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -37,11 +37,12 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
       MaxInteger = 7
+      ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -49,6 +50,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       OnParameterChange = DNTypeChange
       OnCustomParameterDisplay = DNTypeDisplay
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

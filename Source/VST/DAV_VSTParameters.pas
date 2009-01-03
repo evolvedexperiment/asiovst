@@ -9,6 +9,48 @@ uses
   DAV_VSTBasicModule;
 
 type
+  TCustomVstParameterCategory = class(TCollectionItem)
+  private
+    FDisplayName : string;
+    FParamsInCat : Integer;
+    FVSTModule   : TBasicVSTModule;
+  protected
+    function GetDisplayName: string; override;
+    procedure SetDisplayName(const AValue: string); override;
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    {$IFDEF FPC}
+    constructor Create(ACollection: TCollection); override;
+    {$ELSE}
+    constructor Create(Collection: TCollection); override;
+    {$ENDIF}
+    destructor Destroy; override;
+  published
+    property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
+    property ParametersInCategory: Integer read FParamsInCat;
+    property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
+  end;
+
+  TCustomVstParameterCategories = class(TOwnedCollection)
+  private
+    FVSTModule: TBasicVSTModule;
+  protected
+    function GetItem(Index: Integer): TCustomVstParameterCategory; virtual;
+    procedure SetItem(Index: Integer; const Value: TCustomVstParameterCategory); virtual;
+    property Items[Index: Integer]: TCustomVstParameterCategory read GetItem write SetItem; default;
+  public
+    constructor Create(AOwner: TComponent);
+    destructor Destroy; override;
+    function CategoryExists(const Value: string): Boolean;
+    function CategoryIndex(const Value: string): Integer;
+    function Add: TCustomVstParameterCategory;
+    function Insert(const Index: Integer): TCustomVstParameterCategory;
+    procedure CheckParametersInUse;
+    procedure Delete(const Index: Integer);
+    property Count;
+    property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
+  end;
+
   TCurveType = (ctLinear, ctLogarithmic, ctExponential, ctFrequencyScale);
 
   TParameterChangeEvent        = procedure(Sender: TObject; const Index: Integer; var Value: Single) of object;
@@ -37,6 +79,7 @@ type
     FLargeStepInteger : Integer;
     FCC               : Integer;
     FShortLabel       : string[7];
+    FCategoryString   : string[24];
 
     FVSTModule        : TBasicVSTModule;
     FOnSPC            : TParameterChangeEvent;
@@ -44,6 +87,8 @@ type
     FOnCPD            : TCustomParameterDisplayEvent;
 
     function GetShortLabel: string;
+    function GetCategoryString: string;
+    function GetCategoryIndex: Integer;
     procedure SetShortLabel(const Value: string);
     procedure SetCurve(const Value: TCurveType);
     procedure SetCurveFactor(const Value: Single);
@@ -51,6 +96,8 @@ type
     procedure SetMin(const Value: Single);
     procedure SetUnits(AUnits: string);
     procedure SetSmoothingFactor(const Value: Single);
+    procedure SetCategoryString(const Value: string);
+    procedure SetCategoryIndex(const Value: Integer);
   protected
     function GetDisplayName: string; override;
     procedure AssignTo(Dest: TPersistent); override;
@@ -75,6 +122,8 @@ type
     property CC: Integer read FCC write FCC default -1;
     property Curve: TCurveType read FCurve write SetCurve;
     property CurveFactor: Single read FCurveFactor write SetCurveFactor;
+    property Category: string read GetCategoryString write SetCategoryString;
+    property CategoryIndex: Integer read GetCategoryIndex write SetCategoryIndex stored false; 
     property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
     property Flags: TVstParameterPropertiesFlags read FFlags write FFlags default [];
     property LargeStepFloat: Single read FLargeStepFloat write FLargeStepFloat;
@@ -122,6 +171,143 @@ implementation
 
 uses
   Math, DAV_VSTModuleWithPrograms;
+
+{ TCustomVstParameterCategory }
+
+constructor TCustomVstParameterCategory.Create(Collection: TCollection);
+begin
+ inherited;
+ FDisplayName := 'Category ' + IntTostr(Collection.Count);
+ FParamsInCat := 0;
+ FVSTModule   := TCustomVstParameterCategories(Collection).VSTModule;
+end;
+
+destructor TCustomVstParameterCategory.Destroy;
+begin
+ inherited;
+end;
+
+procedure TCustomVstParameterCategory.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomVstParameterCategory then
+  with TCustomVstParameterCategory(Dest) do
+   try
+    DisplayName := Self.DisplayName;
+   except
+    inherited;
+   end
+  else inherited;
+end;
+
+function TCustomVstParameterCategory.GetDisplayName: string;
+begin
+ result := FDisplayName;
+end;
+
+procedure TCustomVstParameterCategory.SetDisplayName(const AValue: string);
+var
+  NewDisplayName : string;
+begin
+ NewDisplayName := Copy(AValue, 1, Math.Min(24, Length(AValue)));
+ if NewDisplayName <> FDisplayName then
+  begin
+   FDisplayName := NewDisplayName;
+  end;
+ inherited;
+end;
+
+{ TCustomVstParameterCategories }
+
+constructor TCustomVstParameterCategories.Create(AOwner: TComponent);
+begin
+ inherited Create(AOwner, TCustomVstParameterCategory);
+ FVSTModule := TVSTModuleWithPrograms(AOwner);
+end;
+
+destructor TCustomVstParameterCategories.Destroy;
+begin
+  while Count > 0 do Delete(0);
+  inherited;
+end;
+
+function TCustomVstParameterCategories.Add: TCustomVstParameterCategory;
+begin
+  Result := TCustomVstParameterCategory(inherited Add);
+end;
+
+function TCustomVstParameterCategories.GetItem(Index: Integer): TCustomVstParameterCategory;
+begin
+  Result := TCustomVstParameterCategory(inherited GetItem(Index));
+end;
+
+function TCustomVstParameterCategories.Insert(const Index: Integer): TCustomVstParameterCategory;
+begin
+  Result := TCustomVstParameterCategory(inherited Insert(Index));
+end;
+
+procedure TCustomVstParameterCategories.Delete(const Index: Integer);
+var
+  i : Integer;
+begin
+ if VSTModule is TVSTModuleWithPrograms then
+  with TVSTModuleWithPrograms(VSTModule) do
+   if assigned(ParameterProperties) then
+    begin
+     for i := 0 to ParameterProperties.Count - 1 do
+      if ParameterProperties[i].Category = Items[Index].DisplayName
+       then ParameterProperties[i].Category := '';
+    end;
+ inherited Delete(Index);
+end;
+
+procedure TCustomVstParameterCategories.SetItem(Index: Integer; const Value: TCustomVstParameterCategory);
+begin
+  inherited SetItem(Index, Value);
+end;
+
+function TCustomVstParameterCategories.CategoryExists(const Value: string): Boolean;
+var
+  i : Integer;
+begin
+ result := False;
+ for i := 0 to Count - 1 do
+  if Items[i].DisplayName = Value then
+   begin
+    result := True;
+    exit;
+   end;
+end;
+
+function TCustomVstParameterCategories.CategoryIndex(const Value: string): Integer;
+var
+  i : Integer;
+begin
+ result := -1;
+ for i := 0 to Count - 1 do
+  if Items[i].DisplayName = Value then
+   begin
+    result := i;
+    exit;
+   end;
+end;
+
+procedure TCustomVstParameterCategories.CheckParametersInUse;
+var
+  c, p : Integer;
+begin
+ if VSTModule is TVSTModuleWithPrograms then
+  with TVSTModuleWithPrograms(VSTModule) do
+   if assigned(ParameterProperties) then
+    for c := 0 to Count - 1 do
+     begin
+      Items[c].FParamsInCat := 0;
+      for p := 0 to ParameterProperties.Count - 1 do
+       if ParameterProperties[p].Category = Items[c].DisplayName
+        then Inc(Items[c].FParamsInCat);
+     end;
+end;
+
+{ TCustomVstParameterProperty }
 
 {$IFDEF FPC}
 constructor TCustomVstParameterProperty.Create(ACollection: TCollection);
@@ -174,8 +360,8 @@ var
   i: Integer;
 begin
  try
-  if assigned(VSTModule) then
-   with FVSTModule as TVSTModuleWithPrograms do
+  if VSTModule is TVSTModuleWithPrograms then
+   with TVSTModuleWithPrograms(FVSTModule) do
     begin
      if not (effFlagsProgramChunks in Effect^.EffectFlags) then
       if Effect^.numPrograms > 0 then
@@ -257,6 +443,52 @@ begin
   else inherited;
 end;
 
+procedure TCustomVstParameterProperty.SetCategoryIndex(const Value: Integer);
+begin
+ if VSTModule is TVSTModuleWithPrograms then
+  with TVSTModuleWithPrograms(VSTModule) do
+   if assigned(ParameterCategories) then
+    if (Value > 0) and (Value <= ParameterCategories.Count)
+     then Category := ParameterCategories[Value - 1].DisplayName
+     else Category := '';
+end;
+
+procedure TCustomVstParameterProperty.SetCategoryString(const Value: string);
+var
+  catndx : Integer;
+begin
+ if Category <> Value then
+  if VSTModule is TVSTModuleWithPrograms then
+   with TVSTModuleWithPrograms(VSTModule) do
+    if assigned(ParameterCategories) then
+     with ParameterCategories do
+      begin
+       if (Value = '') then
+        begin
+         catndx := CategoryIndex(FCategoryString);
+         if (catndx >= 0) and (catndx < Count - 1) then
+          begin
+           dec(Items[catndx].FParamsInCat);
+           assert(Items[catndx].FParamsInCat >= 0);
+          end;
+         FCategoryString := Value;
+        end
+       else
+        begin
+         FCategoryString := Value;
+         catndx := CategoryIndex(FCategoryString);
+         if catndx < 0 then
+          with Add do
+           begin
+            DisplayName := Value;
+            inc(FParamsInCat);
+           end else
+         if (catndx >= 0) and (catndx < Count - 1)
+          then inc(Items[catndx].FParamsInCat);
+        end;
+      end;
+end;
+
 procedure TCustomVstParameterProperty.SetCurve(const Value: TCurveType);
 begin
  if FCurve <> Value then
@@ -286,7 +518,7 @@ procedure TCustomVstParameterProperty.SetDisplayName(const AValue: string);
 var
   NewDisplayName : string;
 begin
- NewDisplayName := Copy(AValue, 1, Math.Min(30, Length(AValue)));
+ NewDisplayName := Copy(AValue, 1, Math.Min(64, Length(AValue)));
  if NewDisplayName <> FDisplayName then
   begin
    if (ShortLabel = '') or (ShortLabel = FDisplayName)
@@ -321,6 +553,21 @@ end;
 procedure TCustomVstParameterProperty.MinimumChanged;
 begin
  // nothing todo yet;
+end;
+
+function TCustomVstParameterProperty.GetCategoryIndex: Integer;
+begin
+ if VSTModule is TVSTModuleWithPrograms then
+  with TVSTModuleWithPrograms(VSTModule) do
+   if assigned(ParameterCategories)
+    then result := ParameterCategories.CategoryIndex(Category) + 1
+    else result := 0
+ else result := 0;
+end;
+
+function TCustomVstParameterProperty.GetCategoryString: string;
+begin
+ result := FCategoryString;
 end;
 
 function TCustomVstParameterProperty.GetDisplayName: string;

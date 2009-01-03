@@ -21,6 +21,9 @@ type
     function GetVstProgramByName(ProgramName: string): TVstProgram;
     procedure SetParameterByName(ParameterName: string; const Value: Single);
     procedure SetVstProgramByName(ProgramName: string; const Value: TVstProgram);
+    procedure SetParameterProperties(const Value: TCustomVstParameterProperties);
+    procedure SetParameterCategories(const Value: TCustomVstParameterCategories);
+    procedure SetVstPrograms(const Value: TCustomVstPrograms);
   protected
     FParameterUpdate        : Boolean;
     FCurProgram             : Integer;
@@ -28,6 +31,7 @@ type
     FParameter              : array of Single;
     FChunkData              : TMemoryStream;
     FParameterProperties    : TCustomVstParameterProperties;
+    FParameterCategories    : TCustomVstParameterCategories;
     FIsHostAutomation       : Boolean;
 
     FOnBeforeProgramChange  : TNotifyEvent;
@@ -47,15 +51,14 @@ type
     function  GetParameter(Index: Integer): Single; virtual;
     function  Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
     function  VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
+    function  HostCallVendorSpecific(Index: Integer; Value: Integer; ptr: Pointer; opt: Single): Integer; override;
     procedure SetCurrentProgramName(AName: string); virtual;
-    procedure SetNumParams(newNum : Integer); virtual;
-    procedure SetNumPrograms(newNum : Integer); virtual;
+    procedure SetNumParams(const Value: Integer); virtual;
+    procedure SetNumPrograms(const Value: Integer); virtual;
     procedure SetParameter(const Index: Integer; Value: Single); virtual;
     procedure SetParameterAutomated(Index: Integer; Value: Single); override;
-    procedure SetParameterProperties(const Value : TCustomVstParameterProperties);
-    procedure SetProgram(aProgram: Integer); virtual;
-    procedure SetVstPrograms(const Value: TCustomVstPrograms);
-    function HostCallVendorSpecific(Index: Integer; Value: Integer; ptr: Pointer; opt: Single): Integer; override;
+    procedure SetProgram(const aProgram: Integer); virtual;
+    procedure Loaded; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -65,25 +68,25 @@ type
     function  HostCallGetParameter(Index: Integer): Single; override;
     procedure HostCallSetParameter(Index: Integer; Value: Single); override;
 
-    function HostCallEditOpen                  (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetProgramm               (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetProgramm               (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetProgramName            (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetProgramName            (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetParamLabel             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetParamDisplay           (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetParamName              (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetChunk                  (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetChunk                  (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallCanBeAutomated            (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallString2Parameter          (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetNumProgramCategories   (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetProgramNameIndexed     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetParameterProperties    (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallBeginSetProgram           (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallEndSetProgram             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallBeginLoadBank             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallBeginLoadProgram          (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallEditOpen                (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallSetProgramm             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallGetProgramm             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallSetProgramName          (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallGetProgramName          (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallGetParamLabel           (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallGetParamDisplay         (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallGetParamName            (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallGetChunk                (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallSetChunk                (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallCanBeAutomated          (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallString2Parameter        (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallGetNumProgramCategories (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallGetProgramNameIndexed   (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallGetParameterProperties  (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallBeginSetProgram         (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallEndSetProgram           (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallBeginLoadBank           (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallBeginLoadProgram        (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
 
     property numParams: Integer read FEffect.numParams write SetNumParams stored false;
     property numPrograms: Integer read FEffect.numPrograms write SetNumPrograms stored false;
@@ -93,6 +96,7 @@ type
     property Programs: TVstPrograms read FVstPrograms write SetVstPrograms;
     property ProgramByName[ProgramName: string]: TVstProgram read GetVstProgramByName write SetVstProgramByName;
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
+    property ParameterCategories: TCustomVstParameterCategories read FParameterCategories write SetParameterCategories;
     property Parameter[Index: Integer]: Single read getParameter write setParameterAutomated;
     property ParameterByName[ParameterName: string]: Single read GetParameterByName write SetParameterByName;
 
@@ -125,6 +129,7 @@ begin
  inherited;
  FCurProgram          := -1;
  FParameterProperties := TCustomVstParameterProperties.Create(Self);
+ FParameterCategories := TCustomVstParameterCategories.Create(Self);
  FVstPrograms         := TCustomVstPrograms.Create(Self);
  FParameterUpdate     := False;
  FChunkData           := TMemoryStream.Create;
@@ -134,6 +139,7 @@ destructor TVSTModuleWithPrograms.Destroy;
 begin
  try
   if Assigned(FParameterProperties) then FreeAndNil(FParameterProperties);
+  if Assigned(FParameterCategories) then FreeAndNil(FParameterCategories);
   if Assigned(FVstPrograms) then FreeAndNil(FVstPrograms);
   if Assigned(FChunkData) then FreeAndNil(FChunkData);
  finally
@@ -428,9 +434,15 @@ begin
   end;
 end;
 
+procedure TVSTModuleWithPrograms.Loaded;
+begin
+ inherited;
+ FParameterCategories.CheckParametersInUse;
+end;
+
 function TVSTModuleWithPrograms.HostCallGetNumProgramCategories(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 begin
-  Result := fNumCategories;
+  Result := FNumCategories;
 end;
 
 function TVSTModuleWithPrograms.HostCallGetProgramNameIndexed(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
@@ -451,24 +463,58 @@ end;
 
 function TVSTModuleWithPrograms.HostCallGetParameterProperties(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
 var
-  str: string;
+  str : string;
 begin
   Result := Integer(ParameterProperties[Index].ReportVST2Properties);
   if Result > 0 then
    with PVstParameterPropertyRecord(ptr)^ do
     begin
-      StrCopy(Caption, @ParameterProperties[Index].DisplayName[1]);
-      str := ParameterProperties[Index].ShortLabel;
-      StrCopy(shortLabel, @str);
-      minInteger := ParameterProperties[Index].MinInteger;
-      maxInteger := ParameterProperties[Index].MaxInteger;
-      stepInteger := ParameterProperties[Index].StepInteger;
-      largeStepInteger := ParameterProperties[Index].LargeStepInteger;
-      stepFloat := ParameterProperties[Index].StepFloat;
-      largeStepFloat := ParameterProperties[Index].LargeStepFloat;
-      smallStepFloat := ParameterProperties[Index].SmallStepFloat;
-      displayIndex := 0;
-      Flags := ParameterProperties[Index].Flags;
+     // copy display name
+     StrCopy(Caption, @ParameterProperties[Index].DisplayName[1]);
+
+     // copy short label
+     str := ParameterProperties[Index].ShortLabel;
+     StrCopy(shortLabel, @str);
+
+     // assign flags
+     Flags := ParameterProperties[Index].Flags;
+
+     // use integer min/max
+     if kVstParameterUsesIntegerMinMax in Flags then
+      begin
+       minInteger       := ParameterProperties[Index].MinInteger;
+       maxInteger       := ParameterProperties[Index].MaxInteger;
+      end;
+
+     // use integer steps
+     if kVstParameterUsesIntStep in Flags then
+      begin
+       stepInteger      := ParameterProperties[Index].StepInteger;
+       largeStepInteger := ParameterProperties[Index].LargeStepInteger;
+      end;
+
+     // use float steps
+     if kVstParameterUsesFloatStep in Flags then
+      begin
+       stepFloat        := ParameterProperties[Index].StepFloat;
+       largeStepFloat   := ParameterProperties[Index].LargeStepFloat;
+       smallStepFloat   := ParameterProperties[Index].SmallStepFloat;
+      end;
+
+     // assign display index
+     if kVstParameterSupportsDisplayIndex in Flags
+      then displayIndex := Index;
+
+     // copy category label
+     if kVstParameterSupportsDisplayCategory in Flags then
+      begin
+       str := ParameterProperties[Index].Category;
+       StrCopy(CategoryLabel, @str);
+       Category := ParameterProperties[Index].CategoryIndex;
+       if (Category > 0) and (Category <= ParameterCategories.Count)
+        then numParametersInCategory := ParameterCategories[Category - 1].ParametersInCategory
+        else numParametersInCategory := 0;
+      end;
     end;
 end;
 
@@ -512,22 +558,23 @@ begin
 end;
 
 
-procedure TVSTModuleWithPrograms.SetNumParams(newNum : Integer);
+procedure TVSTModuleWithPrograms.SetNumParams(const Value: Integer);
 begin
  if Assigned(FParameterProperties)
   then FEffect.numParams := FParameterProperties.Count
   else FEffect.numParams := 0;
 end;
 
-procedure TVSTModuleWithPrograms.SetNumPrograms(newNum : Integer);
+procedure TVSTModuleWithPrograms.SetNumPrograms(const Value: Integer);
 begin
  if Assigned(fVstPrograms)
-  then FEffect.numPrograms := fVstPrograms.Count
+  then FEffect.numPrograms := FVstPrograms.Count
   else FEffect.numPrograms := 0;
 end;
 
-procedure TVSTModuleWithPrograms.SetProgram(aProgram: Integer);
-var i: Integer;
+procedure TVSTModuleWithPrograms.SetProgram(const aProgram: Integer);
+var
+  i: Integer;
 begin
  if (aProgram >= 0) and (aProgram < FEffect.numPrograms) and (numPrograms > 0) then
   begin
@@ -560,6 +607,12 @@ begin
  if (FCurProgram < numPrograms) and (numPrograms > 0) and (FCurProgram >= 0)
   then Result := Programs[FCurProgram].DisplayName
   else Result := '';
+end;
+
+procedure TVSTModuleWithPrograms.SetParameterCategories(
+  const Value: TCustomVstParameterCategories);
+begin
+ FParameterCategories.Assign(Value);
 end;
 
 procedure TVSTModuleWithPrograms.SetParameterCount(cnt: Integer);

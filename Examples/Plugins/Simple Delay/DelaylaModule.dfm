@@ -6,7 +6,6 @@ object SimpleDelayVST: TSimpleDelayVST
   ProductName = 'Simple Delay'
   VendorName = 'VST Wizard Example'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Init'
@@ -31,12 +30,14 @@ object SimpleDelayVST: TSimpleDelayVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Delay Length'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 44100.000000000000000000
       MaxInteger = 0
       Min = 1.000000000000000000
-      ShortLabel = 'Delay L'
+      ReportVST2Properties = True
+      ShortLabel = 'Length'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
@@ -44,6 +45,7 @@ object SimpleDelayVST: TSimpleDelayVST
       VSTModule = Owner
       OnParameterChange = SDDelayLengthChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess

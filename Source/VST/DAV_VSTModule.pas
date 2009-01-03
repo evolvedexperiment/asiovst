@@ -48,6 +48,7 @@ type
     property TruncateStrings;
     property Programs;
     property ParameterProperties;
+    property ParameterCategories;
     property ProcessPrecisition;
     property OnGetChunkParameter;
     property OnOpen;

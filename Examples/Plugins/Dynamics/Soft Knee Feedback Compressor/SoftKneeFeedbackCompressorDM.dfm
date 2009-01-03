@@ -1,6 +1,6 @@
 object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModule
   OldCreateOrder = False
-  Flags = [effFlagsHasEditor]
+  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Soft Knee Feedback Compressor'
   ProductName = 'DAV Dynamics Examples'
@@ -22,12 +22,14 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 0
       Min = -96.000000000000000000
       MinInteger = -96
+      ReportVST2Properties = True
       ShortLabel = 'thrshld'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -39,10 +41,12 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Ratio'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 10.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'ratio'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -53,13 +57,14 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       Curve = ctLogarithmic
       CurveFactor = 100000.000000000000000000
       DisplayName = 'Attack'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1000.000000000000000000
       MaxInteger = 1000
       Min = 0.009999999776482582
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Attack'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 0.100000001490116100
@@ -71,12 +76,14 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
       DisplayName = 'Release'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 5.000000000000000000
       LargeStepInteger = 5
       Max = 5000.000000000000000000
       MaxInteger = 5000
       Min = 5.000000000000000000
       MinInteger = 5
+      ReportVST2Properties = True
       ShortLabel = 'Release'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -88,10 +95,12 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Make Up Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 40.000000000000000000
       MaxInteger = 40
+      ReportVST2Properties = True
       ShortLabel = 'MakeUp'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -99,6 +108,7 @@ object SoftKneeFeedbackCompressorDataModule: TSoftKneeFeedbackCompressorDataModu
       VSTModule = Owner
       OnParameterChange = ParamMakeUpGainChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

@@ -104,6 +104,7 @@ object ComboDataModule: TComboDataModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
+      Category = 'Highpass Filter'
       DisplayName = 'HPF Frequency'
       LargeStepFloat = 10.000000000000000000
       Max = 20000.000000000000000000
@@ -120,6 +121,7 @@ object ComboDataModule: TComboDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Highpass Filter'
       DisplayName = 'HPF Resonance'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -148,6 +150,11 @@ object ComboDataModule: TComboDataModule
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParamNoiseChange
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Highpass Filter'
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose

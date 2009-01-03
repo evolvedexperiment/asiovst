@@ -17,6 +17,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Bass'
       DisplayName = 'Bass Gain'
       LargeStepFloat = 2.000000000000000000
       Max = 12.000000000000000000
@@ -33,6 +34,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Treble'
       DisplayName = 'Treble Gain'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -50,6 +52,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Bass'
       DisplayName = 'Bass Bypass'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -64,6 +67,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Treble'
       DisplayName = 'Treble Bypass'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -78,6 +82,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Misc.'
       DisplayName = 'Drive'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -95,6 +100,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Misc.'
       DisplayName = 'Channel'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -112,6 +118,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Misc.'
       DisplayName = 'Output Gain'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -125,6 +132,19 @@ object VTVSTModule: TVTVSTModule
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParamOutGainChange
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Bass'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Treble'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Misc.'
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose

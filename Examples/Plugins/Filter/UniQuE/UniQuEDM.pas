@@ -8,6 +8,9 @@ uses
 
 type
   TUniQuEDataModule = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamPhaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -20,9 +23,6 @@ type
     procedure ParamMidChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPresChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHigh(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleClose(Sender: TObject);
   private
     FFade   : array [0..1] of Single;
     FVolume : Single;

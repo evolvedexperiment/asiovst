@@ -6,7 +6,6 @@ object fReeverbVST: TfReeverbVST
   ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
@@ -34,11 +33,14 @@ object fReeverbVST: TfReeverbVST
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Mix'
       DisplayName = 'Dry'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
       MaxInteger = 0
+      ReportVST2Properties = True
       ShortLabel = 'Dry'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -50,11 +52,14 @@ object fReeverbVST: TfReeverbVST
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Mix'
       DisplayName = 'Wet'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
       MaxInteger = 0
+      ReportVST2Properties = True
       ShortLabel = 'Wet'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -66,11 +71,14 @@ object fReeverbVST: TfReeverbVST
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Geometry'
       DisplayName = 'Width'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
       MaxInteger = 0
+      ReportVST2Properties = True
       ShortLabel = 'Width'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -82,11 +90,14 @@ object fReeverbVST: TfReeverbVST
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Geometry'
       DisplayName = 'RoomSize'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1.000000000000000000
       MaxInteger = 0
+      ReportVST2Properties = True
       ShortLabel = 'RoomSiz'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -97,11 +108,14 @@ object fReeverbVST: TfReeverbVST
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Geometry'
       DisplayName = 'FreeZe'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1.000000000000000000
       MaxInteger = 0
+      ReportVST2Properties = True
       ShortLabel = 'FreeZe'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -112,11 +126,14 @@ object fReeverbVST: TfReeverbVST
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Geometry'
       DisplayName = 'Stretch'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 20.000000000000000000
       MaxInteger = 0
+      ReportVST2Properties = True
       ShortLabel = 'Stretch'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -127,11 +144,14 @@ object fReeverbVST: TfReeverbVST
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Geometry'
       DisplayName = 'Damp'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
       MaxInteger = 0
+      ReportVST2Properties = True
       ShortLabel = 'Damp'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -143,12 +163,15 @@ object fReeverbVST: TfReeverbVST
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Filter Count'
       DisplayName = 'NumAllPasses'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 16.000000000000000000
       MaxInteger = 0
       Min = 1.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'NumAllP'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -159,18 +182,34 @@ object fReeverbVST: TfReeverbVST
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Filter Count'
       DisplayName = 'NumCombs'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 16.000000000000000000
       MaxInteger = 0
       Min = 1.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'NumComb'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       VSTModule = Owner
       OnParameterChange = ParameterNumCombsChange
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Mix'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Geometry'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Filter Count'
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose

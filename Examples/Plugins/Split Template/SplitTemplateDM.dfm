@@ -48,12 +48,14 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Split'
       DisplayName = 'Mode'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 12.000000000000000000
       MaxInteger = 12
+      ReportVST2Properties = True
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -64,13 +66,16 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
+      Category = 'Split'
       DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 20000.000000000000000000
       MaxInteger = 20000
       Min = 20.000000000000000000
       MinInteger = 20
+      ReportVST2Properties = True
       ShortLabel = 'Freq'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 10.000000000000000000
@@ -84,13 +89,16 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Split'
       DisplayName = 'Order'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
       MaxInteger = 16
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -103,12 +111,14 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Volume'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 6.000000000000000000
       MaxInteger = 6
       Min = -90.000000000000000000
       MinInteger = -90
+      ReportVST2Properties = True
       ShortLabel = 'Volume'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -119,12 +129,14 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Oversampling'
       DisplayName = 'Oversampling'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Oversmp'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -135,19 +147,31 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Oversampling'
       DisplayName = 'OS Factor'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
       MaxInteger = 16
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Factor'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOSFactorChange
       OnCustomParameterDisplay = ParamOSFactorDisplay
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Split'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Oversampling'
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose

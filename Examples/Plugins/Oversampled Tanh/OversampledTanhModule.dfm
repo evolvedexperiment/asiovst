@@ -6,7 +6,6 @@ object OversampledTanhModule: TOversampledTanhModule
   ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   BlockSize = 16
   CurrentProgram = 0
@@ -27,11 +26,13 @@ object OversampledTanhModule: TOversampledTanhModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Number of Coeffs'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 32.000000000000000000
       MaxInteger = 32
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'CoefCnt'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -42,15 +43,18 @@ object OversampledTanhModule: TOversampledTanhModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Transition'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 0.500000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'Transit'
       SmallStepFloat = 0.050000000745058060
       StepFloat = 0.100000001490116100
       VSTModule = Owner
       OnParameterChange = ParamTransitionChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTEditOpen

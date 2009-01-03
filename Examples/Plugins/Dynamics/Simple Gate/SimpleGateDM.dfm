@@ -1,6 +1,6 @@
 object SimpleGateDataModule: TSimpleGateDataModule
   OldCreateOrder = False
-  Flags = [effFlagsHasEditor]
+  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Gate'
   ProductName = 'DAV Dynamics Examples'
@@ -17,12 +17,14 @@ object SimpleGateDataModule: TSimpleGateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 0
       Min = -96.000000000000000000
       MinInteger = -96
+      ReportVST2Properties = True
       ShortLabel = 'thrshld'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -30,6 +32,7 @@ object SimpleGateDataModule: TSimpleGateDataModule
       VSTModule = Owner
       OnParameterChange = SGDMThresholdChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

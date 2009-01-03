@@ -54,6 +54,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Input Section'
       DisplayName = 'Input Gain'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -71,6 +72,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Stage 1'
       DisplayName = 'Stage 1: Oversampling Factor'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
@@ -89,6 +91,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Stage 1'
       DisplayName = 'Stage 1: Filter Order'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
@@ -105,6 +108,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Stage 1'
       DisplayName = 'Stage 1: Transition Bandwidth'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -119,6 +123,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Stage 2'
       DisplayName = 'Stage 2: Oversampling Factor'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
@@ -137,6 +142,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Stage 2'
       DisplayName = 'Stage 2: Filter Order'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
@@ -153,6 +159,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Stage 2'
       DisplayName = 'Stage 2: Transition Bandwidth'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -167,6 +174,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Output Section'
       DisplayName = 'Output Gain'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -184,6 +192,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Output Section'
       DisplayName = 'Hard Clip'
       Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
@@ -196,6 +205,23 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       VSTModule = Owner
       OnParameterChange = ParamHardClipChange
       OnCustomParameterDisplay = ParamHardClipDisplay
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Input Section'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Stage 1'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Stage 2'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Output Section'
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose

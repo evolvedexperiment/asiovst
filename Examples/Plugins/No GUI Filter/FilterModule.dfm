@@ -31,12 +31,14 @@ object VSTFilter: TVSTFilter
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Cutoff Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 1000.000000000000000000
       LargeStepInteger = 1000
       Max = 20000.000000000000000000
       MaxInteger = 20000
       Min = 20.000000000000000000
       MinInteger = 20
+      ReportVST2Properties = True
       ShortLabel = 'Cutoff'
       SmallStepFloat = 100.000000000000000000
       StepFloat = 100.000000000000000000
@@ -49,17 +51,20 @@ object VSTFilter: TVSTFilter
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Resonance'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
       MaxInteger = 10
       Min = 0.009999999776482582
+      ReportVST2Properties = True
       ShortLabel = 'Res'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 0.100000001490116100
       VSTModule = Owner
     end>
-  OnInitialize = VSTModuleInitialize
+  ParameterCategories = <>
+  OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess

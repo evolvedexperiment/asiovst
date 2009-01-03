@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Vocoder Installer
+;XSynth Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Vocoder Installer"
-  OutFile "Vocoder_Install.exe"
+  Name "XSynth Installer"
+  OutFile "XSynth_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Vocoder"
+  !define PRODUCT_NAME "XSynth"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,17 +69,17 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Vocoder VST-Plugin" SecProgramFiles
+Section "XSynth VST-Plugin" SecProgramFiles
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Vocoder.dll"
+  File "..\Bin\XSynth.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallVocoder.exe"
+  WriteUninstaller "$INSTDIR\UninstallXSynth.exe"
 
 
 SectionEnd
@@ -88,13 +88,13 @@ SectionEnd
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Vocoder VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "XSynth VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Vocoder VST Plugin"
+  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "XSynth VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -107,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Vocoder.dll"
+  Delete "$INSTDIR\XSynth.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

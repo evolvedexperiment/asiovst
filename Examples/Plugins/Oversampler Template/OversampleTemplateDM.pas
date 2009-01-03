@@ -2,7 +2,7 @@ unit OversampleTemplateDM;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Forms, DAV_Common,
@@ -349,14 +349,14 @@ procedure TOversampleTemplateDataModule.VSTModuleEditorKeyDown(Sender: TObject;
   var keyCode: TVstKeyCode);
 begin
  with VstHost[0] do if EditVisible
-  then EditKeyDown(Char(keyCode.Character), keyCode.Virt, keyCode.Modifier); 
+  then EditKeyDown(Char(keyCode.Character), keyCode.Virt, TVstModifierKeys(keyCode.Modifier)); 
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleEditorKeyUp(Sender: TObject;
   var keyCode: TVstKeyCode);
 begin
  with VstHost[0] do if EditVisible
-  then EditKeyUp(Char(keyCode.Character), keyCode.Virt, keyCode.Modifier)
+  then EditKeyUp(Char(keyCode.Character), keyCode.Virt, TVstModifierKeys(keyCode.Modifier))
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleEditSleep(Sender: TObject);

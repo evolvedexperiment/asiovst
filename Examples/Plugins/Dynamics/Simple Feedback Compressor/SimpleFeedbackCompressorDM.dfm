@@ -1,6 +1,6 @@
 object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
   OldCreateOrder = False
-  Flags = [effFlagsHasEditor]
+  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Feedback Compressor'
   ProductName = 'DAV Dynamics Examples'
@@ -22,12 +22,14 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 0
       Min = -96.000000000000000000
       MinInteger = -96
+      ReportVST2Properties = True
       ShortLabel = 'thrshld'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -39,10 +41,12 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Ratio'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'ratio'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -53,13 +57,14 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       Curve = ctLogarithmic
       CurveFactor = 100000.000000000000000000
       DisplayName = 'Attack'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1000.000000000000000000
       MaxInteger = 1000
       Min = 0.009999999776482582
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Attack'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 0.100000001490116100
@@ -71,12 +76,14 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
       DisplayName = 'Release'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 5.000000000000000000
       LargeStepInteger = 5
       Max = 5000.000000000000000000
       MaxInteger = 5000
       Min = 5.000000000000000000
       MinInteger = 5
+      ReportVST2Properties = True
       ShortLabel = 'Release'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -88,16 +95,18 @@ object SimpleFeedbackCompressorDataModule: TSimpleFeedbackCompressorDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'AutoMakeUp'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'AutoMak'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

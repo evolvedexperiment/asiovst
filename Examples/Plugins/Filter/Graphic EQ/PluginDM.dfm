@@ -22,13 +22,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 20 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L20Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -38,13 +41,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 40 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L40Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -54,13 +60,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 80 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L80Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -70,13 +79,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 160 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L160Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -86,13 +98,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 320 Hz '
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L320Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -102,13 +117,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 640 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L640Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -118,13 +136,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 1250 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L1.2kHz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -134,13 +155,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 2500 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L2.5kHz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -150,13 +174,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 5 kHz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L5kHz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -166,13 +193,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 10 kHz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L10kHz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -182,13 +212,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Left'
       DisplayName = 'Left 20 kHz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'L20kHz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -198,13 +231,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 20 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R20Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -214,13 +250,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 40 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R40Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -230,13 +269,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 80 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R80Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -246,13 +288,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 160 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R160Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -262,13 +307,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 320 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R320Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -278,13 +326,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 640 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R640Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -294,13 +345,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 1250 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R1k2Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -310,13 +364,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 2500 Hz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R2k5Hz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -326,13 +383,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 5 kHz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R5kHz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -342,13 +402,16 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 10 kHz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R10kHz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -358,17 +421,29 @@ object PluginDataModule: TPluginDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Right'
       DisplayName = 'Right 20 kHz'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = 15
+      ReportVST2Properties = True
       ShortLabel = 'R20kHz'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      VSTModule = Owner
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Left'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Right'
       VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen

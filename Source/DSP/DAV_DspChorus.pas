@@ -143,7 +143,7 @@ begin
     SampleRate   := Self.FSampleRate;
     Speed        := Self.Speed;
     Depth        := Self.Depth;
-    Mix          := Self.Drift;
+    Mix          := Self.Mix;
     Stages       := Self.Stages;
     Drift        := Self.Drift;
     for i := 0 to Stages - 1

@@ -6,7 +6,6 @@ object ButterworthLPModule: TButterworthLPModule
   ProductName = 'DAV Filter Examples'
   VendorName = 'Delphi ASIO & VST Packages'
   PlugCategory = vpcEffect
-  CanDos = [vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
   IORatio = 1.000000000000000000
@@ -18,12 +17,14 @@ object ButterworthLPModule: TButterworthLPModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 20000.000000000000000000
       MaxInteger = 20000
       Min = 20.000000000000000000
       MinInteger = 20
+      ReportVST2Properties = True
       ShortLabel = 'Freq.'
       SmallStepFloat = 10.000000000000000000
       StepFloat = 50.000000000000000000
@@ -36,16 +37,19 @@ object ButterworthLPModule: TButterworthLPModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
       MaxInteger = 16
+      ReportVST2Properties = True
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

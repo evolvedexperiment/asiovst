@@ -34,6 +34,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLogarithmic
       CurveFactor = 10000.000000000000000000
+      Category = 'Frequency Splitter'
       DisplayName = 'Split Frequency'
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 100.000000000000000000
@@ -54,6 +55,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Frequency Splitter'
       DisplayName = 'Split Order'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 4.000000000000000000
@@ -72,6 +74,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Frequency Divider'
       DisplayName = 'Divider'
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
@@ -87,6 +90,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Frequency Divider'
       DisplayName = 'Shape'
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
@@ -102,6 +106,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Compressor'
       DisplayName = 'Threshold'
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
@@ -119,6 +124,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
+      Category = 'Compressor'
       DisplayName = 'Ratio'
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
@@ -136,6 +142,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000000.000000000000000000
+      Category = 'Compressor'
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 100.000000000000000000
@@ -155,6 +162,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLogarithmic
       CurveFactor = 10000.000000000000000000
+      Category = 'Compressor'
       DisplayName = 'Release'
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 100.000000000000000000
@@ -174,6 +182,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Compressor'
       DisplayName = 'Compression Mix'
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
@@ -189,6 +198,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Misc.'
       DisplayName = 'Balance'
       Flags = [kVstParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
@@ -205,6 +215,7 @@ object BassExtenderModule: TBassExtenderModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Misc.'
       DisplayName = 'Mode'
       Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
@@ -217,6 +228,23 @@ object BassExtenderModule: TBassExtenderModule
       VSTModule = Owner
       OnParameterChange = ParamModeChange
       OnCustomParameterDisplay = ParamModeDisplay
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Frequency Splitter'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Frequency Divider'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Compressor'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Misc.'
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose

@@ -23,12 +23,14 @@ object VSTOpAmp: TVSTOpAmp
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gain'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 20.000000000000000000
       MaxInteger = 20
       Min = -40.000000000000000000
       MinInteger = -40
+      ReportVST2Properties = True
       ShortLabel = 'Gain'
       SmallStepFloat = 1.000000000000000000
       SmoothingFactor = 1.000000000000000000
@@ -36,6 +38,7 @@ object VSTOpAmp: TVSTOpAmp
       Units = 'dB'
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange

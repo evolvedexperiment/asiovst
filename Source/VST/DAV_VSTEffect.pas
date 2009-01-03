@@ -469,11 +469,11 @@ type
     // Wave  Detune  Octave  Mod
     // ---------------------------
     // if the plug supports it (flag kVstParameterSupportsDisplayCategory)
-    Category         : SmallInt;     // 0: no category, else group index + 1
+    Category                : SmallInt;     // 0: no category, else group index + 1
     numParametersInCategory : SmallInt;
-    Reserved         : SmallInt;
-    CategoryLabel    : array[0..23] of Char;    // for instance, "Osc 1"
-    Future           : array[0..15] of Char;
+    Reserved                : SmallInt;
+    CategoryLabel           : array[0..23] of Char;    // for instance, "Osc 1"
+    Future                  : array[0..15] of Char;
   end;
 
   TVstPinPropertiesFlag = (vppIsActive, vppIsStereo, vppUseSpeaker);

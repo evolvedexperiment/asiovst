@@ -19,6 +19,10 @@ type
     stTransient, stExciter, stLFO, stSpin, stDynLFO, stSingle, stBypass);
   TSplitTemplateDataModule = class(TVSTModule)
     VstHost: TVstHost;
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     function VSTModuleInputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     function VSTModuleVendorSpecific(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
@@ -36,9 +40,6 @@ type
     procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
-    procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
     procedure VSTModuleEditIdle(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -46,7 +47,6 @@ type
     procedure VSTModuleEditTop(Sender: TObject);
     procedure VSTModuleGetVU(var VU: Single);
     procedure VSTModuleOfflineNotify(Sender: TObject; const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean);
-    procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
 
     procedure VSTModuleProcess32SplitVST(const SampleFrames: Integer);

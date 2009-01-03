@@ -11,6 +11,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -32,6 +33,9 @@ implementation
 
 uses
   SimpleChorusGUI, DAV_VSTCustomModule;
+
+resourcestring
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
 procedure TSimpleChorusModule.VSTModuleOpen(Sender: TObject);
 var
@@ -137,7 +141,7 @@ function TSimpleChorusModule.GetChorus(Index: Integer): TDspChorus32;
 begin
  if Index in [0..1]
   then result := FChorus[Index]
-  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TSimpleChorusModule.ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -225,6 +229,22 @@ end;
 
 procedure TSimpleChorusModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Channel, Sample : Integer;
+begin
+ while FSemaphore > 0 do;
+ Inc(FSemaphore);
+ try
+  for Channel := 0 to 1 do
+   for Sample := 0 to SampleFrames - 1
+    do Outputs[Channel, Sample] := FastTanhOpt5asm(FChorus[Channel].Process(Inputs[Channel, Sample]))
+ finally
+  Dec(FSemaphore);
+ end;
+end;
+
+procedure TSimpleChorusModule.VSTModuleProcessDoubleReplacing(const Inputs,
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   Channel, Sample : Integer;
 begin

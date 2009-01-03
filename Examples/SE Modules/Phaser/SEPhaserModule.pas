@@ -1,26 +1,27 @@
-unit SEChorusModule;
+unit SEPhaserModule;
 
 interface
 
 uses
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspChorus;
+  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspPhaser;
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEChorusPins = (pinInput, pinOutput, pinStages, pinDepth, pinSpeed, pinDrift,
-    pinMix);
+  TSEPhaserPins = (pinInput, pinOutput, pinDepth, pinFeedback, pinMinimum,
+    pinMaximum, pinRate, pinStages);
 
-  TSEChorusModule = class(TSEModuleBase)
+  TSEPhaserModule = class(TSEModuleBase)
   private
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FStages       : Integer;
     FDepth        : Single;
-    FSpeed        : Single;
-    FDrift        : Single;
-    FMix          : Single;
+    FRate         : Single;
+    FMinimum      : Single;
+    FMaximum      : Single;
+    FFeedback     : Single;
   protected
-    FChorus       : TDspChorus32;
+    FPhaser       : TPhaser;
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     procedure SampleRateChanged; override;
@@ -38,21 +39,21 @@ implementation
 uses
   SysUtils;
 
-{ TSEChorusModule }
+{ TSEPhaserModule }
 
-constructor TSEChorusModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TSEPhaserModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- FChorus := TDspChorus32.Create
+ FPhaser := TPhaser.Create
 end;
 
-destructor TSEChorusModule.Destroy;
+destructor TSEPhaserModule.Destroy;
 begin
- FreeAndNil(FChorus);
+ FreeAndNil(FPhaser);
  inherited;
 end;
 
-procedure TSEChorusModule.Open;
+procedure TSEPhaserModule.Open;
 begin
  inherited Open;
 
@@ -61,13 +62,13 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSEChorusModule.SampleRateChanged;
+procedure TSEPhaserModule.SampleRateChanged;
 begin
  inherited;
- FChorus.SampleRate := SampleRate;
+ FPhaser.SampleRate := SampleRate;
 end;
 
-procedure TSEChorusModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+procedure TSEPhaserModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   Inp    : PDAVSingleFixedArray;
   Outp   : PDAVSingleFixedArray;
@@ -78,22 +79,22 @@ begin
  Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FChorus.Process(Inp^[Sample]);
+  do Outp^[Sample] := FPhaser.Process(Inp^[Sample]);
 end;
 
 // describe your module
-class procedure TSEChorusModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEPhaserModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Chorus';
+   Name := 'Phaser';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Chorus';
+   ID := 'DAV Phaser';
 
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';
@@ -102,10 +103,10 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEChorusModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEPhaserModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSEChorusPins(index) of
+ case TSEPhaserPins(index) of
   pinInput:
    with Properties^ do
     begin
@@ -124,6 +125,51 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
+  pinDepth:
+   with Properties^ do
+    begin
+     Name            := 'Depth [%]';
+     VariableAddress := @FDepth;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '10';
+    end;
+  pinFeedback:
+   with Properties^ do
+    begin
+     Name            := 'Feedback [%]';
+     VariableAddress := @FFeedback;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '10';
+    end;
+  pinMinimum:
+   with Properties^ do
+    begin
+     Name            := 'Minimum [Hz]';
+     VariableAddress := @FMinimum;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '300';
+    end;
+  pinMaximum:
+   with Properties^ do
+    begin
+     Name            := 'Maximum [Hz]';
+     VariableAddress := @FMaximum;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '1000';
+    end;
+  pinRate:
+   with Properties^ do
+    begin
+     Name            := 'Rate [Hz]';
+     VariableAddress := @FRate;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '1';
+    end;
   pinStages:
    with Properties^ do
     begin
@@ -134,48 +180,12 @@ begin
      DatatypeExtra   := 'range 1,16';
      DefaultValue    := '2';
     end;
-  pinDepth:
-   with Properties^ do
-    begin
-     Name            := 'Depth';
-     VariableAddress := @FDepth;
-     Direction       := drIn;
-     Datatype        := dtSingle;
-     DefaultValue    := '0.2';
-    end;
-  pinSpeed:
-   with Properties^ do
-    begin
-     Name            := 'Speed';
-     VariableAddress := @FSpeed;
-     Direction       := drIn;
-     Datatype        := dtSingle;
-     DefaultValue    := '0.2';
-    end;
-  pinDrift:
-   with Properties^ do
-    begin
-     Name            := 'Drift';
-     VariableAddress := @FDrift;
-     Direction       := drIn;
-     Datatype        := dtSingle;
-     DefaultValue    := '0.2';
-    end;
-  pinMix:
-   with Properties^ do
-    begin
-     Name            := 'Mix';
-     VariableAddress := @FMix;
-     Direction       := drIn;
-     Datatype        := dtSingle;
-     DefaultValue    := '0.5';
-    end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 // An input plug has changed value
-procedure TSEChorusModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSEPhaserModule.PlugStateChange(const CurrentPin: TSEPin);
 var
   InState  : TSEStateType;
   OutState : TSEStateType;
@@ -188,12 +198,13 @@ begin
  Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, OutState);
  inherited;
 
- case TSEChorusPins(CurrentPin.PinID) of
-      pinStages: FChorus.Stages := FStages;
-       pinDepth: FChorus.Depth := FDepth;
-       pinSpeed: FChorus.Speed := FSpeed;
-       pinDrift: FChorus.Drift := FDrift;
-         pinMix: FChorus.Mix := FMix;
+ case TSEPhaserPins(CurrentPin.PinID) of
+       pinDepth: FPhaser.Depth    := 0.01 * FDepth;
+    pinFeedback: FPhaser.Feedback := 0.01 * FFeedback;
+     pinMinimum: FPhaser.Minimum  := FMinimum;
+     pinMaximum: FPhaser.Maximum  := FMaximum;
+        pinRate: FPhaser.Rate     := FRate;
+      pinStages: FPhaser.Stages   := FStages;
  end;
 end;
 

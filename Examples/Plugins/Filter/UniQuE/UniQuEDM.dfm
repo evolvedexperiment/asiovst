@@ -6,7 +6,6 @@ object UniQuEDataModule: TUniQuEDataModule
   ProductName = 'DAV Filter Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Init'
@@ -23,10 +22,12 @@ object UniQuEDataModule: TUniQuEDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Power'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Power'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -38,10 +39,12 @@ object UniQuEDataModule: TUniQuEDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Pad'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 1
       Max = -12.000000000000000000
       MaxInteger = -12
+      ReportVST2Properties = True
       ShortLabel = 'Power'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -54,10 +57,12 @@ object UniQuEDataModule: TUniQuEDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Phase'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Power'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -68,12 +73,15 @@ object UniQuEDataModule: TUniQuEDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Gains'
       DisplayName = 'Low'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = -15
+      ReportVST2Properties = True
       ShortLabel = 'Low'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -84,12 +92,15 @@ object UniQuEDataModule: TUniQuEDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Gains'
       DisplayName = 'Mid'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = -15
+      ReportVST2Properties = True
       ShortLabel = 'Mid'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -100,12 +111,15 @@ object UniQuEDataModule: TUniQuEDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Gains'
       DisplayName = 'Pres'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = -15
+      ReportVST2Properties = True
       ShortLabel = 'Pres'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -116,18 +130,26 @@ object UniQuEDataModule: TUniQuEDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Gains'
       DisplayName = 'High'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
       Min = -15.000000000000000000
       MinInteger = -15
+      ReportVST2Properties = True
       ShortLabel = 'High'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParamHigh
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Gains'
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose

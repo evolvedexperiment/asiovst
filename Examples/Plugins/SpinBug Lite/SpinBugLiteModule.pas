@@ -12,6 +12,7 @@ uses
 type
   TSpinBugLiteModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender : TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTEditOpen(Sender : TObject; var GUI : TForm; ParentWindow : Cardinal);
     procedure VSTModuleProcessStereoA(const Inputs, Outputs : TDAVArrayOfSingleDynArray; const SampleFrames : Integer);
     procedure VSTModuleProcessStereoB(const Inputs, Outputs : TDAVArrayOfSingleDynArray; const SampleFrames : Integer);
@@ -30,7 +31,6 @@ type
     procedure SBMProcessTypeChange(Sender : TObject; const Index : Integer; var Value : Single);
     procedure SBMLFOSpeedChange(Sender : TObject; const Index : Integer; var Value : Single);
     procedure SBMTBWChange(Sender : TObject; const Index : Integer; var Value : Single);
-    procedure VSTModuleClose(Sender: TObject);
   private
     FHilbert   : array[0..1] of TPhaseHalfPi32;
     FSineLFO   : array[0..1] of TLFOSine;

@@ -19,12 +19,14 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Oversampling'
       DisplayName = 'Oversampling'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Oversmp'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -35,13 +37,16 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Oversampling'
       DisplayName = 'OS Factor'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
       MaxInteger = 16
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Factor'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -52,11 +57,14 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Pre-Filter'
       DisplayName = 'OS Pre-Filter Order'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
       MaxInteger = 16
+      ReportVST2Properties = True
       ShortLabel = 'Pre-Ord'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -67,10 +75,13 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Pre-Filter'
       DisplayName = 'OS Pre-Filter Transition Bandw'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'Pre-BW'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -81,11 +92,14 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Pre-Filter'
       DisplayName = 'OS Pre-Filter Characteristic'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 6.000000000000000000
       MaxInteger = 6
+      ReportVST2Properties = True
       ShortLabel = 'Pre-Chr'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -96,11 +110,14 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Post-Filter'
       DisplayName = 'OS Post-Filter Order'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
       MaxInteger = 16
+      ReportVST2Properties = True
       ShortLabel = 'Pst-Ord'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -111,10 +128,13 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Post-Filter'
       DisplayName = 'OS Post-Filter Transition'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'Pst-BW'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -125,17 +145,33 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Post-Filter'
       DisplayName = 'OS Post-Filter Characteristic'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 6.000000000000000000
       MaxInteger = 6
+      ReportVST2Properties = True
       ShortLabel = 'Pst-Chr'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamPostCharChange
       OnCustomParameterDisplay = ParamCharacterDisplay
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Oversampling'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Pre-Filter'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Post-Filter'
+      VSTModule = Owner
     end>
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

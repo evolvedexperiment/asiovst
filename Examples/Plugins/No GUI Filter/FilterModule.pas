@@ -12,7 +12,7 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTFilterParameterProperties0ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleInitialize(Sender: TObject);
+    procedure VSTModuleOpen(Sender: TObject);
   private
     FCutOffFrequency   : Single;
     FOld               : array [0..1] of array[0..1] of Double;
@@ -26,16 +26,15 @@ implementation
 {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
-// OnInitialize
+// OnOpen
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTFilter.VSTModuleInitialize(Sender: TObject);
+procedure TVSTFilter.VSTModuleOpen(Sender: TObject);
 begin
  FCutOffFrequency := 0.5;
  Parameter[0] := 1000;
  Parameter[1] := 1;
 end;
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Parameter 0 Changed (Cutoff Frequency)
@@ -44,7 +43,7 @@ end;
 procedure TVSTFilter.VSTFilterParameterProperties0ParameterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCutOffFrequency := 0.01+Parameter[0]*0.00005;
+ FCutOffFrequency := 0.01 + Parameter[0] * 0.00005;
 end;
 
 
@@ -59,16 +58,16 @@ var
   fb        : Single;
 begin
  cut := FCutOffFrequency;
- res := 0.1*Parameter[1];
+ res := 0.1 * Parameter[1];
  fb := res + res / (1 - cut * 0.9);
  for i := 0 to SampleFrames - 1 do
   begin
-   FOld[0,0] := FOld[0,0] + cut * (Inputs[0,i] - FOld[0,0] + fb * (FOld[0,0] - FOld[1,0])) + CDenorm32;
-   FOld[0,1] := FOld[0,1] + cut * (Inputs[1,i] - FOld[0,1] + fb * (FOld[0,1] - FOld[1,1])) + CDenorm32;
-   FOld[1,0] := FOld[1,0] + cut * (FOld[0,0] - FOld[1,0]);
-   FOld[1,1] := FOld[1,1] + cut * (FOld[0,1] - FOld[1,1]);
-   Outputs[0,i] := f_limit(FOld[1,0]);
-   Outputs[1,i] := f_limit(FOld[1,1]);
+   FOld[0,0] := FOld[0, 0] + cut * (Inputs[0, i] - FOld[0, 0] + fb * (FOld[0, 0] - FOld[1, 0])) + CDenorm32;
+   FOld[0,1] := FOld[0, 1] + cut * (Inputs[1, i] - FOld[0, 1] + fb * (FOld[0, 1] - FOld[1, 1])) + CDenorm32;
+   FOld[1,0] := FOld[1, 0] + cut * (FOld[0, 0] - FOld[1, 0]);
+   FOld[1,1] := FOld[1, 1] + cut * (FOld[0, 1] - FOld[1, 1]);
+   Outputs[0,i] := f_limit(FOld[1, 0]);
+   Outputs[1,i] := f_limit(FOld[1, 1]);
   end;
 end;
 
@@ -86,13 +85,13 @@ var
 begin
  cut := Parameter[0] * 0.8;
  res := Parameter[1];
- fb := res + res / (1 - cut * 0.9);
+ fb := res + res / (1 - Cut * 0.9);
  for i := 0 to SampleFrames - 1 do
   begin
-   FOld[0,0] := FOld[0,0] + cut * (Inputs[0,i] - FOld[0,0] + fb * (FOld[0,0] - FOld[1,0])) + CDenorm32;
-   FOld[0,1] := FOld[0,1] + cut * (Inputs[1,i] - FOld[0,1] + fb * (FOld[0,1] - FOld[1,1])) + CDenorm32;
-   FOld[1,0] := FOld[1,0] + cut * (FOld[0,0] - FOld[1,0]);
-   FOld[1,1] := FOld[1,1] + cut * (FOld[0,1] - FOld[1,1]);
+   FOld[0, 0] := FOld[0, 0] + cut * (Inputs[0, i] - FOld[0, 0] + fb * (FOld[0, 0] - FOld[1, 0])) + CDenorm32;
+   FOld[0, 1] := FOld[0, 1] + cut * (Inputs[1, i] - FOld[0, 1] + fb * (FOld[0, 1] - FOld[1, 1])) + CDenorm32;
+   FOld[1, 0] := FOld[1, 0] + cut * (FOld[0, 0] - FOld[1, 0]);
+   FOld[1, 1] := FOld[1, 1] + cut * (FOld[0, 1] - FOld[1, 1]);
    Outputs[0, i] := f_limit(FOld[1,0]);
    Outputs[1, i] := f_limit(FOld[1,1]);
   end;

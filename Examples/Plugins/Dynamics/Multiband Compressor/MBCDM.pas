@@ -20,6 +20,7 @@ type
   TMBCDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(Inputs, Outputs: TDAVArrayOfSingleDynArray; sampleframes: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const sampleframes: Integer);
     procedure MBCDMLowFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -41,7 +42,6 @@ type
     procedure MBCDMLowReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMMidReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMHighReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
   private
     FMultiband : Array [0..1] of TMultiband;
   public

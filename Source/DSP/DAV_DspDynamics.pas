@@ -686,7 +686,7 @@ type
 
   TSoftKneeFeedbackCompressor = class(TSimpleFeedbackCompressor)
   public
-    function ProcessSample(const Input : Double):Double; override;
+    function ProcessSample(const Input : Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   end;
 

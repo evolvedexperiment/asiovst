@@ -17,6 +17,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Treble'
       DisplayName = 'Treble Gain Left'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -34,6 +35,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Treble'
       DisplayName = 'Treble Bypass Left'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -49,6 +51,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Bass'
       DisplayName = 'Bass Gain Left'
       LargeStepFloat = 2.000000000000000000
       Max = 12.000000000000000000
@@ -65,6 +68,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Bass'
       DisplayName = 'Bass Bypass Left'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -80,6 +84,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Treble'
       DisplayName = 'Treble Gain Right'
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -97,6 +102,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Treble'
       DisplayName = 'Treble Bypass Right'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -112,6 +118,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Bass'
       DisplayName = 'Bass Gain Right'
       LargeStepFloat = 2.000000000000000000
       Max = 12.000000000000000000
@@ -128,6 +135,7 @@ object VTVSTModule: TVTVSTModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Bass'
       DisplayName = 'Bass Bypass Right'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
@@ -190,6 +198,15 @@ object VTVSTModule: TVTVSTModule
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParamOutGainChange
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Treble'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Bass'
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose

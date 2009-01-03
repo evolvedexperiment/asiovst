@@ -23,11 +23,13 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Input Volume'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 5.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 0
       Min = -80.000000000000000000
       MinInteger = -80
+      ReportVST2Properties = True
       ShortLabel = 'vol in'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -40,11 +42,13 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Synth Volume'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 5.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 0
       Min = -80.000000000000000000
       MinInteger = -80
+      ReportVST2Properties = True
       ShortLabel = 'vol syn'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -57,11 +61,13 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Vocoder Volume'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 5.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 0
       Min = -80.000000000000000000
       MinInteger = -80
+      ReportVST2Properties = True
       ShortLabel = 'vol voc'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -70,6 +76,7 @@ object VSTSSModule: TVSTSSModule
       VSTModule = Owner
       OnParameterChange = VocVocoderVolumeChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

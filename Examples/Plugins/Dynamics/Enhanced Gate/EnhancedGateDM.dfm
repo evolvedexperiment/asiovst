@@ -18,10 +18,12 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Power'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Power'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -33,12 +35,14 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 0
       Min = -80.000000000000000000
       MinInteger = -80
+      ReportVST2Properties = True
       ShortLabel = 'Thrshld'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -49,12 +53,15 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Curve = ctLogarithmic
       CurveFactor = 100000.000000000000000000
+      Category = 'Time Constants'
       DisplayName = 'Attack'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 300
       Min = 0.009999999776482582
       MinInteger = -200
+      ReportVST2Properties = True
       ShortLabel = 'Attack'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
@@ -65,13 +72,16 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Curve = ctLogarithmic
       CurveFactor = 250.000000000000000000
+      Category = 'Time Constants'
       DisplayName = 'Hold'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 2.500000000000000000
       MaxInteger = 24
       Min = 0.009999999776482582
       MinInteger = -200
+      ReportVST2Properties = True
       ShortLabel = 'Hold'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -83,12 +93,15 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
+      Category = 'Time Constants'
       DisplayName = 'Decay'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 100.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 370
       Min = 5.000000000000000000
       MinInteger = 70
+      ReportVST2Properties = True
       ShortLabel = 'Decay'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 10.000000000000000000
@@ -100,10 +113,12 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Duck'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Duck'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -115,10 +130,12 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stereo Link'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Link'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -129,11 +146,14 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Sidechain'
       DisplayName = 'Side Chain Source'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'SCSrc'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -144,13 +164,16 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Curve = ctLogarithmic
       CurveFactor = 200.000000000000000000
+      Category = 'Sidechain'
       DisplayName = 'Lo Cut'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 20.000000000000000000
       LargeStepInteger = 20
       Max = 4000.000000000000000000
       MaxInteger = 4000
       Min = 20.000000000000000000
       MinInteger = 20
+      ReportVST2Properties = True
       ShortLabel = 'LoCut'
       SmallStepFloat = 20.000000000000000000
       StepFloat = 20.000000000000000000
@@ -162,13 +185,16 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Curve = ctLogarithmic
       CurveFactor = 100.000000000000000000
+      Category = 'Sidechain'
       DisplayName = 'Hi Cut'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 20.000000000000000000
       LargeStepInteger = 20
       Max = 20.000000000000000000
       MaxInteger = 20000
       Min = 0.200000002980232200
       MinInteger = 200
+      ReportVST2Properties = True
       ShortLabel = 'HiCut'
       SmallStepFloat = 20.000000000000000000
       StepFloat = 20.000000000000000000
@@ -180,13 +206,16 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Characteristic'
       DisplayName = 'Ratio'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
       MaxInteger = 10
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Ratio'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 0.500000000000000000
@@ -196,13 +225,16 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Characteristic'
       DisplayName = 'Knee'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 6.000000000000000000
       MaxInteger = 6
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Knee'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 0.200000002980232200
@@ -213,18 +245,38 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Characteristic'
       DisplayName = 'Range'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 0
       Min = -80.000000000000000000
       MinInteger = -80
+      ReportVST2Properties = True
       ShortLabel = 'Range'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = EAGRangeChange
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Sidechain'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Characteristic'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Time constants'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Time Constants'
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose

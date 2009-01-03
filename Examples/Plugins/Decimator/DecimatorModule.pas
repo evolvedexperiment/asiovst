@@ -19,10 +19,8 @@ type
     procedure ParameterResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterWetDryMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOutputVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFilterTypeChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure ParameterFilterTypeDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFilterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFilterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FCutoffFreqNorm  : Double;
     FResonance       : Double;

@@ -6,7 +6,6 @@ object ExciterDataModule: TExciterDataModule
   ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
@@ -27,12 +26,14 @@ object ExciterDataModule: TExciterDataModule
       Curve = ctLogarithmic
       CurveFactor = 200.000000000000000000
       DisplayName = 'Tune'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16000.000000000000000000
       MaxInteger = 16000
       Min = 1000.000000000000000000
       MinInteger = 1000
+      ReportVST2Properties = True
       ShortLabel = 'Tune'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -44,12 +45,14 @@ object ExciterDataModule: TExciterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
       MaxInteger = 16
       Min = 2.000000000000000000
       MinInteger = 2
+      ReportVST2Properties = True
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -60,8 +63,10 @@ object ExciterDataModule: TExciterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Shape'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'Shape'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -73,9 +78,11 @@ object ExciterDataModule: TExciterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'LoDist'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -83,6 +90,7 @@ object ExciterDataModule: TExciterDataModule
       VSTModule = Owner
       OnParameterChange = ParamMixChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

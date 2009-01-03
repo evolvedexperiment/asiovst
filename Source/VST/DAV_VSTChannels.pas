@@ -11,11 +11,11 @@ uses
 type
   TCustomVstChannel = class(TCollectionItem)
   private
-    fLabel              : ShortString;
-    fShortLabel         : ShortString;
-    fSpeakerArrangement : TVstSpeakerArrangementType;
-    fFlags              : TVstPinPropertiesFlags;
-    fVSTModule          : TBasicVSTModule;
+    FLabel              : ShortString;
+    FShortLabel         : ShortString;
+    FSpeakerArrangement : TVstSpeakerArrangementType;
+    FFlags              : TVstPinPropertiesFlags;
+    FVSTModule          : TBasicVSTModule;
     procedure SetShortLabel(const Value: ShortString);
   protected
     procedure AssignTo(Dest: TPersistent); override;
@@ -31,10 +31,10 @@ type
     destructor Destroy; override;
   published
     property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
-    property ShortLabel: ShortString read fShortLabel write SetShortLabel;
-    property SpeakerArrangement: TVstSpeakerArrangementType read fSpeakerArrangement write fSpeakerArrangement;
-    property Flags: TVstPinPropertiesFlags read fFlags write fFlags;
-    property VSTModule: TBasicVSTModule read fVSTModule write fVSTModule;
+    property ShortLabel: ShortString read FShortLabel write SetShortLabel;
+    property SpeakerArrangement: TVstSpeakerArrangementType read FSpeakerArrangement write FSpeakerArrangement;
+    property Flags: TVstPinPropertiesFlags read FFlags write FFlags;
+    property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
   end;
 
   TCustomVstChannels = class(TOwnedCollection)
@@ -85,9 +85,9 @@ begin
   with TCustomVstChannel(Dest) do
    try
     DisplayName := Self.DisplayName;
-    fLabel      := Self.fLabel;
-    fShortLabel := Self.fShortLabel;
-    fFlags      := Self.fFlags;
+    FLabel      := Self.FLabel;
+    FShortLabel := Self.FShortLabel;
+    FFlags      := Self.FFlags;
    except
     inherited;
    end
@@ -96,23 +96,23 @@ end;
 
 function TCustomVstChannel.GetDisplayName: string;
 begin
- result := fLabel;
+ result := FLabel;
 end;
 
 procedure TCustomVstChannel.SetDisplayName(const AValue: string);
 begin
- if fLabel <> AValue then
+ if FLabel <> AValue then
   begin
-   fLabel := AValue;
+   FLabel := AValue;
    inherited;
   end;
 end;
 
 procedure TCustomVstChannel.SetShortLabel(const Value: ShortString);
 begin
- if fShortLabel <> Value then
+ if FShortLabel <> Value then
   begin
-   fShortLabel := Copy(Value, 0, 7);
+   FShortLabel := Copy(Value, 0, 7);
   end;
 end;
 
