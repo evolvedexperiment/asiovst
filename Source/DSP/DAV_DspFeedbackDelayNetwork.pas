@@ -2,7 +2,7 @@ unit DAV_DspFeedbackDelayNetwork;
 
 interface
 
-{$I ASIOVST.inc}
+{$I DAV_Compiler.inc}
 
 uses
   DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath, DAV_DspFilter,
@@ -329,6 +329,7 @@ begin
  FDamping         := 0.25;
  FNonLinearActive := False;
  FNonLinearGain   := 1;
+ SampleRate       := 44100;
 end;
 
 procedure TCustomFeedbackZDelayNetwork.SetDamping(const Value: Double);
