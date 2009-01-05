@@ -1,13 +1,13 @@
 unit MiniHostForm;
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types, Messages,
   Forms, SysUtils, Classes, Graphics, Controls, StdCtrls, ExtCtrls, ComCtrls,
-  Menus, DAV_Common, DAV_VstEffect, WaveIOX, DAV_MidiFile, DAV_MidiIO,
+  Menus, SyncObjs, DAV_Common, DAV_VstEffect, WaveIOX, DAV_MidiFile, DAV_MidiIO,
   DAV_ASIOHost, DAV_VSTHost;
 
 type
@@ -190,6 +190,7 @@ type
     procedure IQuickWavPlayMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure IQuickWavRecMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
+    FDataSection    : TCriticalSection;
     FRecordState    : TRecordState;
     FDownMix        : Boolean;
     FTotalFrames    : Integer;
@@ -300,6 +301,8 @@ var
   Line32   : PRGB32Array;
 *)
 begin
+ FDataSection := TCriticalSection.Create;
+
  FAllowed := False;
  with ToolBarBackground.Picture do
   begin
@@ -628,6 +631,8 @@ begin
  SetLength(FVSTBufIn, 0);
  SetLength(FVSTPinProps, 0);
  for i := 0 to 2047 do FreeMem(FMyEvents.Events[i]);
+
+ FreeAndNil(FDataSection);
 end;
 
 procedure TFmMiniHost.StartAudio;
@@ -854,6 +859,8 @@ begin
  end;
 end;
 
+// By Daniel:  Note that Dav_MidiIO midiInProc midiInCallback is called
+// concurrently by different service threads
 procedure TFmMiniHost.MidiData(const aDeviceIndex: Integer; const aStatus, aData1, aData2: Byte);
 begin
  if aStatus = $FE then exit; // ignore active sensing
@@ -870,20 +877,26 @@ end;
 
 procedure TFmMiniHost.SysExData(const aDeviceIndex: integer; const aStream: TMemoryStream);
 begin
- // yet ToDo...
- if FMDataCnt > 2046 then exit;
- inc(FMDataCnt);
- with PVstMidiSysexEvent(FMyEvents.events[FMDataCnt - 1])^ do
-  begin
-   EventType := etSysEx;
-   ByteSize := 24;
-   DeltaFrames := 0;
-   Flags := 0;
-   dumpBytes := aStream.Size;
-   sysexDump := aStream.Memory;
-   resvd1 := nil;
-   resvd2 := nil;
-  end;
+ FDataSection.Acquire;
+ try
+  if FMDataCnt > 2046 
+   then exit;
+
+  inc(FMDataCnt);
+  with PVstMidiSysexEvent(FMyEvents.events[FMDataCnt - 1])^ do
+   begin
+    EventType := etSysEx;
+    ByteSize := 24;
+    DeltaFrames := 0;
+    Flags := 0;
+    dumpBytes := aStream.Size;
+    sysexDump := aStream.Memory;
+    resvd1 := nil;
+    resvd2 := nil;
+   end;
+ finally
+  FDataSection.Release;
+ end; 
 end;
 
 procedure TFmMiniHost.ASIOHostLatencyChanged(Sender: TObject);
@@ -1015,9 +1028,14 @@ procedure TFmMiniHost.MIPanicClick(Sender: TObject);
 var
   Ch, Note: word;
 begin
- FMDataCnt := 0;
- for Note := 0 to 127 do AddMidiData($80, Note, 0);
- for Ch := 0 to 15 do AddMidiData($B0 + Ch, 123, 0);
+ FDataSection.Acquire;
+ try
+  FMDataCnt := 0;
+  for Note := 0 to 127 do AddMidiData($80, Note, 0);
+  for Ch := 0 to 15 do AddMidiData($B0 + Ch, 123, 0);
+ finally 
+  FDataSection.Release;
+ end; 
 end;
 
 procedure TFmMiniHost.MILoadPresetClick(Sender: TObject);
@@ -1490,26 +1508,35 @@ var
   aStream: TMemoryStream;
 begin
  if FCurrentMIDIOut = 0 then exit;
- for i := 0 to ev^.numEvents - 1 do
-  if (ev.events[i].EventType = etMidi) then
-   begin
-    event := PVstMidiEvent(ev^.events[i]);
-    MidiOutput.Send(FCurrentMIDIOut - 1, event^.mididata[0],
-      event^.mididata[1], event^.mididata[2]);
-   end else
-  if ev.events[i].EventType = etSysex then
-   begin
-    Sysex := PVstMidiSysexEvent(ev^.events[i]);
-    if Sysex.dumpBytes > 0 then
-     begin
-      AStream := TMemoryStream.Create;
-      aStream.Size := Sysex.dumpBytes;
-      aStream.Position := 0;
-      Move(Sysex.SysexDump^, pchar(aStream.Memory)[0], Sysex.dumpBytes);
-      MidiOutput.SendSysEx(FCurrentMIDIOut - 1, aStream);
-      aStream.Free;
-     end;
-   end;
+
+ FDataSection.Acquire;
+ try
+  for i := 0 to ev^.numEvents - 1 do
+   if (ev.events[i].EventType = etMidi) then
+    begin
+     event := PVstMidiEvent(ev^.events[i]);
+     MidiOutput.Send(FCurrentMIDIOut - 1, event^.mididata[0],
+       event^.mididata[1], event^.mididata[2]);
+    end else
+   if ev.events[i].EventType = etSysex then
+    begin
+     Sysex := PVstMidiSysexEvent(ev^.events[i]);
+     if Sysex.dumpBytes > 0 then
+      begin
+       AStream := TMemoryStream.Create;
+       try
+        aStream.Size := Sysex.dumpBytes;
+        aStream.Position := 0;
+        Move(Sysex.SysexDump^, pchar(aStream.Memory)[0], Sysex.dumpBytes);
+        MidiOutput.SendSysEx(FCurrentMIDIOut - 1, aStream);
+       finally
+        FreeAndNil(aStream);
+       end;
+      end;
+    end;
+ finally
+  FDataSection.Release;
+ end; 
 end;
 
 procedure TFmMiniHost.WMDropFiles(var msg: TMessage);
@@ -1650,18 +1677,30 @@ begin
  SetLength(FVSTPinProps, 0);
 end;
 
+
+// By Daniel:  Dav_MidiIO midiInProc midiIncallback is called
+// concurrently by different service threads
+// we need to protect the midi event arrary and the DataCnt
+// against concurrent access
 procedure TFmMiniHost.AddMIDIData(d1, d2, d3: byte; pos: Integer = 0);
 begin
- if FMDataCnt > 2046 then exit;
- inc(FMDataCnt);
- with PVstMidiEvent(FMyEvents.events[FMDataCnt - 1])^ do
-  begin
-   EventType := etMidi;
-   deltaFrames := pos;
-   midiData[0] := d1;
-   midiData[1] := d2;
-   midiData[2] := d3;
-  end;
+ FDataSection.Acquire; 
+ try
+  if FMDataCnt > 2046 
+   then exit;                 
+ 
+  inc(FMDataCnt);
+  with PVstMidiEvent(FMyEvents.events[FMDataCnt - 1])^ do
+   begin
+    EventType := etMidi;
+    deltaFrames := pos;
+    midiData[0] := d1;
+    midiData[1] := d2;
+    midiData[2] := d3;
+   end;
+ finally 
+  FDataSection.Release;
+ end; 
 end;
 
 procedure TFmMiniHost.NoteOn(ch, note, v: byte);
@@ -2181,20 +2220,30 @@ begin
  VSTHost.UpdateVstTimeInfo(bs);
  MidiFile.MidiTimer(nil);
 
- if FMDataCnt > 0 then
-  begin
-   FMyEvents.numEvents := FMDataCnt;
-   if VSTHost[0].VstCanDo('receiveVstMidiEvent') >= 0 then
+ FDataSection.Acquire;
+ try
+  if FMDataCnt > 0 then
+   begin
+    FMyEvents.numEvents := FMDataCnt;
+ 
+    // by Daniel :  this is a critical path, better save this cando in a value
+    // instead of calling VstDispatch here
+ //   if VSTHost[0].VstCanDo('receiveVstMidiEvent') >= 0 then
     VSTHost[0].ProcessEvents(@FMyEvents);
-   if (FCurrentMIDIOut > 0) and MIMidiThru.Checked then
-    begin
-     for i := 0 to FMDataCnt - 1 do
-      MidiOutput.Send(FCurrentMIDIOut - 1,
-                      PVstMidiEvent(FMyEvents.events[i])^.midiData[0],
-                      PVstMidiEvent(FMyEvents.events[i])^.midiData[1],
-                      PVstMidiEvent(FMyEvents.events[i])^.midiData[2]);
-    end;
-  end;
+ 
+    if (FCurrentMIDIOut > 0) and MIMidiThru.Checked then
+     begin
+      for i := 0 to FMDataCnt - 1 do
+       MidiOutput.Send(FCurrentMIDIOut - 1,
+                       PVstMidiEvent(FMyEvents.events[i])^.midiData[0],
+                       PVstMidiEvent(FMyEvents.events[i])^.midiData[1],
+                       PVstMidiEvent(FMyEvents.events[i])^.midiData[2]);
+     end;
+     FMDataCnt := 0;
+   end;
+ finally  
+  FDataSection.Release;
+ end; 
 
  ChOfs := ASIOHost.OutputChannelOffset;
  if FCurrentInputChannel = 0 then
@@ -2292,7 +2341,10 @@ begin
      OutBuffer[ChOfs + 1], bs);
   end;
 
- FMDataCnt := 0;
+ // by Daniel: this line messes up, midi data may have changed in the meantime
+ // by other thread so this will kill data which was just processed
+ // Line has been moved to just after vstPlugin.processEvents has been called
+ //  FMDataCnt := 0;
 end;
 
 {$IFDEF FPC}

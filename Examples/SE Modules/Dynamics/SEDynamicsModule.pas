@@ -1038,7 +1038,7 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -1266,8 +1266,8 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Knee_dB := Knee[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Knee_dB := 10 * Knee[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -1504,7 +1504,7 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -1703,8 +1703,8 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Knee_dB := Knee[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Knee_dB := 10 * Knee[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -1903,8 +1903,8 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Knee_dB := Knee[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Knee_dB := 10 * Knee[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -2178,10 +2178,10 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Range_dB := Range[Sample];
-   FDynamicProcesor.Attack := Attack[Sample];
-   FDynamicProcesor.Release := Release[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Range_dB := 10 * Range[Sample];
+   FDynamicProcesor.Attack := 10 * Attack[Sample];
+   FDynamicProcesor.Release := 10 * Release[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -2433,9 +2433,9 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Attack := Attack[Sample];
-   FDynamicProcesor.Release := Release[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Attack := 10 * Attack[Sample];
+   FDynamicProcesor.Release := 10 * Release[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -2708,10 +2708,10 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Knee_dB := Knee[Sample];
-   FDynamicProcesor.Attack := Attack[Sample];
-   FDynamicProcesor.Release := Release[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Knee_dB := 10 * Knee[Sample];
+   FDynamicProcesor.Attack := 10 * Attack[Sample];
+   FDynamicProcesor.Release := 10 * Release[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -2976,9 +2976,9 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Attack := Attack[Sample];
-   FDynamicProcesor.Release := Release[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Attack := 10 * Attack[Sample];
+   FDynamicProcesor.Release := 10 * Release[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -3209,10 +3209,10 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Knee_dB := Knee[Sample];
-   FDynamicProcesor.Attack := Attack[Sample];
-   FDynamicProcesor.Release := Release[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Knee_dB := 10 * Knee[Sample];
+   FDynamicProcesor.Attack := 10 * Attack[Sample];
+   FDynamicProcesor.Release := 10 * Release[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -3443,11 +3443,11 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Knee_dB := Knee[Sample];
-   FDynamicProcesor.Attack := Attack[Sample];
-   FDynamicProcesor.Release := Release[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Knee_dB      := 10 * Knee[Sample];
+   FDynamicProcesor.Attack       := 10 * Attack[Sample];
+   FDynamicProcesor.Release      := 10 * Release[Sample];
+   Output^[Sample]               := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
 
@@ -3732,9 +3732,9 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Attack := Attack[Sample];
-   FDynamicProcesor.Release := Release[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Attack       := 10 * Attack[Sample];
+   FDynamicProcesor.Release      := 10 * Release[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -3985,10 +3985,10 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   FDynamicProcesor.Knee_dB := Knee[Sample];
-   FDynamicProcesor.Attack := Attack[Sample];
-   FDynamicProcesor.Release := Release[Sample];
+   FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
+   FDynamicProcesor.Knee_dB      := 10 * Knee[Sample];
+   FDynamicProcesor.Attack       := 10 * Attack[Sample];
+   FDynamicProcesor.Release      := 10 * Release[Sample];
    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
   end;
 end;
@@ -4228,30 +4228,31 @@ end;
 procedure TRMSCompressorAutomatableSEModule.SubProcessAutomated(const BufferOffset,
   SampleFrames: Integer);
 var
-  Input   : PDAVSingleFixedArray;
-  Output  : PDAVSingleFixedArray;
-  Thres   : PDAVSingleFixedArray;
-  RMSTime : PDAVSingleFixedArray;
-  Attack  : PDAVSingleFixedArray;
-  Release : PDAVSingleFixedArray;
-  Sample  : Integer;
+  Input    : PDAVSingleFixedArray;
+  Output   : PDAVSingleFixedArray;
+  DThres   : PDAVSingleFixedArray;
+  DRMSTime : PDAVSingleFixedArray;
+  DAttack  : PDAVSingleFixedArray;
+  DRelease : PDAVSingleFixedArray;
+  Sample   : Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Input   := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
- Output  := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
- Thres   := PDAVSingleFixedArray(@FThreshold[BufferOffset]);
- RMSTime := PDAVSingleFixedArray(@FRMSTime[BufferOffset]);
- Attack  := PDAVSingleFixedArray(@FAttack[BufferOffset]);
- Release := PDAVSingleFixedArray(@FRelease[BufferOffset]);
+ Input    := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
+ Output   := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ DThres   := PDAVSingleFixedArray(@FThreshold[BufferOffset]);
+ DRMSTime := PDAVSingleFixedArray(@FRMSTime[BufferOffset]);
+ DAttack  := PDAVSingleFixedArray(@FAttack[BufferOffset]);
+ DRelease := PDAVSingleFixedArray(@FRelease[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1 do
-  begin
-   FDynamicProcesor.Threshold_dB := Thres[Sample];
-   TSimpleRMSCompressor(FDynamicProcesor).RMSTime := RMSTime[Sample];
-   FDynamicProcesor.Attack := Attack[Sample];
-   FDynamicProcesor.Release := Release[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
-  end;
+  with TSimpleRMSCompressor(FDynamicProcesor) do
+   begin
+    Threshold_dB := 10 * DThres[Sample];
+    RMSTime := 10 * DRMSTime[Sample];
+    Attack := 10 * DAttack[Sample];
+    Release := 10 * DRelease[Sample];
+    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   end;
 end;
 
 end.

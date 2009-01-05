@@ -15,7 +15,7 @@ unit DAV_MidiIO;
 //* let me know if you have any questions: adrian.meyer@rocketmail.com.
 //****************************************************************************/
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 interface
 
