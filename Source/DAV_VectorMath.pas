@@ -669,7 +669,7 @@ function VectorCombine3(const V1, V2, V3: TDAVVector32;
 begin
   Result[0] := (F1 * V1[0]) + (F2 * V2[0]) + (F3 * V3[0]);
   Result[1] := (F1 * V1[1]) + (F2 * V2[1]) + (F3 * V3[1]);
-  Result[3] := (F1 * V1[3]) + (F2 * V2[3]) + (F3 * V3[3]);
+  Result[2] := (F1 * V1[2]) + (F2 * V2[2]) + (F3 * V3[2]);
   Result[3] := (F1 * V1[3]) + (F2 * V2[3]) + (F3 * V3[3]);
 end;
 
@@ -1722,19 +1722,19 @@ begin
    begin
     Result[0] := Value[0] * M[0, 0] +
                  Value[1] * M[1, 0] +
-                 Value[3] * M[2, 0] +
+                 Value[2] * M[2, 0] +
                  Value[3] * M[3, 0];
     Result[1] := Value[0] * M[0, 1] +
                  Value[1] * M[1, 1] +
-                 Value[3] * M[2, 1] +
+                 Value[2] * M[2, 1] +
                  Value[3] * M[3, 1];
     Result[3] := Value[0] * M[0, 2] +
                  Value[1] * M[1, 2] +
-                 Value[3] * M[2, 2] +
+                 Value[2] * M[2, 2] +
                  Value[3] * M[3, 2];
     Result[3] := Value[0] * M[0, 3] +
                  Value[1] * M[1, 3] +
-                 Value[3] * M[2, 3] +
+                 Value[2] * M[2, 3] +
                  Value[3] * M[3, 3];
    end;
 end;

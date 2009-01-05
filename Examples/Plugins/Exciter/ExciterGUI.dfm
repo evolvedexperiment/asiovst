@@ -34,27 +34,29 @@ object FmExciter: TFmExciter
     ParentColor = True
     Radius = 13
     TabOrder = 0
-    Transparent = True
     UseDockManager = True
+    Transparent = True
     object DialTune: TGuiDial
       Left = 16
       Top = 24
       Width = 64
       Height = 64
       Color = 6908265
-      LineColor = 116222
       CurveMapping = -1.200000047683716000
       DefaultPosition = 1000.000000000000000000
+      DialImageIndex = -1
+      LineColor = 116222
+      LineWidth = 2
       Max = 16000.000000000000000000
       Min = 1000.000000000000000000
       NumGlyphs = 65
+      OnChange = DialTuneChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 1000.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialTuneChange
     end
     object LbFreq: TGuiLabel
       Left = 16
@@ -92,17 +94,19 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 64
       Color = 6908265
-      LineColor = 116222
       DefaultPosition = 50.000000000000000000
+      DialImageIndex = -1
+      LineColor = 116222
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialShapeChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialShapeChange
     end
     object LbShape: TGuiLabel
       Left = 156
@@ -155,17 +159,19 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 64
       Color = 6908265
-      LineColor = 116222
       DefaultPosition = 50.000000000000000000
+      DialImageIndex = -1
+      LineColor = 116222
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialMixChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialMixChange
     end
     object LbMixValue: TGuiLabel
       Left = 226
@@ -188,19 +194,21 @@ object FmExciter: TFmExciter
       Width = 64
       Height = 64
       Color = 6908265
-      LineColor = 116222
       CurveMapping = -0.660000026226043700
       DefaultPosition = 4.000000000000000000
+      DialImageIndex = -1
+      LineColor = 116222
+      LineWidth = 2
       Max = 8.000000000000000000
       Min = 2.000000000000000000
       NumGlyphs = 65
+      OnChange = DialOrderChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 4.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialOrderChange
     end
     object LbOrderValue: TGuiLabel
       Left = 86

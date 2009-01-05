@@ -45,7 +45,7 @@ type
     property Alignment: TAlignment read FAlignment write SetAlignment default taCenter;
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property ArrowColor: TColor read FArrowColor write SetArrowColor default clBtnHighlight;
-    property ArrowWidth: Integer read FArrowWidth write SetArrowWidth default 2;
+    property ArrowWidth: Integer read FArrowWidth write SetArrowWidth default 1;
     property ButtonColor: TColor read FButtonColor write SetButtonColor default clBtnShadow;
     property ItemIndex: Integer read FItemIndex write SetItemIndex;
     property Items: TStringList read FItems write SetItems;
@@ -75,8 +75,10 @@ type
     property Items;
     property LineColor;
     property LineWidth;
-    property SelectBoxColor;
+    property ParentFont;
+    property ParentColor;
     property Radius;
+    property SelectBoxColor;
     property ShowHint;
     property Visible;
     {$IFNDEF FPC}
@@ -122,7 +124,7 @@ begin
  FArrowColor       := clBtnHighlight;
  FSelectBoxColor   := clBtnShadow;
  FButtonColor      := clBtnShadow;
- FArrowWidth       := 2;
+ FArrowWidth       := 1;
  FItemIndex        := -1;
  FOSFactor         := 1;
  FAlignment        := taCenter;

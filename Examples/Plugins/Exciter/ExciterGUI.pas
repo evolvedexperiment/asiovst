@@ -30,7 +30,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
   private
-    fBackgrounBitmap : TBitmap;
+    FBackgrounBitmap : TBitmap;
   public
     procedure UpdateTune;
     procedure UpdateOrder;
@@ -57,8 +57,8 @@ var
 
 begin
  // Create Background Image
- fBackgrounBitmap := TBitmap.Create;
- with fBackgrounBitmap do
+ FBackgrounBitmap := TBitmap.Create;
+ with FBackgrounBitmap do
   begin
    PixelFormat := pf24bit;
    Width       := Self.Width;
@@ -101,7 +101,7 @@ end;
 
 procedure TFmExciter.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, fBackgrounBitmap);
+ Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
 procedure TFmExciter.DialTuneChange(Sender: TObject);

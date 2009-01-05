@@ -24,6 +24,9 @@ type
     procedure SetParameterProperties(const Value: TCustomVstParameterProperties);
     procedure SetParameterCategories(const Value: TCustomVstParameterCategories);
     procedure SetVstPrograms(const Value: TCustomVstPrograms);
+    function GetParameterDisplay(Index: Integer): string;
+    function GetParameterLabel(Index: Integer): string;
+    function GetParameterName(Index: Integer): string;
   protected
     FParameterUpdate        : Boolean;
     FCurProgram             : Integer;
@@ -100,6 +103,10 @@ type
     property Parameter[Index: Integer]: Single read getParameter write setParameterAutomated;
     property ParameterByName[ParameterName: string]: Single read GetParameterByName write SetParameterByName;
 
+    property ParameterName[Index: Integer]: string read GetParameterName;
+    property ParameterLabel[Index: Integer]: string read GetParameterLabel;
+    property ParameterDisplay[Index: Integer]: string read GetParameterDisplay;
+
     property OnParameterChange: TParameterChangeEvent read FOnParameterChangeEvent write FOnParameterChangeEvent;
     property OnBeginSetProgram: TNotifyEvent read FOnBeginSetProgram write FOnBeginSetProgram;
     property OnEndSetProgram: TNotifyEvent read FOnEndSetProgram write FOnEndSetProgram;
@@ -164,6 +171,50 @@ begin
 end;
 {$ENDIF}
 
+function TVSTModuleWithPrograms.GetParameterDisplay(Index: Integer): string;
+begin
+ if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
+  then result := RStrUndefined
+  else
+   begin
+    if (effFlagsProgramChunks in FEffect.EffectFlags)
+     then result := FloatToStr(FOnGetChunkParamEvent(Self, Index))
+     else if (numPrograms > 0)
+      then result := FloatToStrF(Programs[FCurProgram].Parameter[Index], ffGeneral, 4, 4)
+      else result := FloatToStrF(FParameter[Index], ffGeneral, 4, 4);
+
+    if Assigned(FParameterProperties[Index].OnCustomParameterDisplay)
+     then FParameterProperties[Index].OnCustomParameterDisplay(Self, Index, result);
+   end;
+
+ if FTruncateStrings and (Length(result) > 8)
+  then SetLength(result, 8);
+end;
+
+function TVSTModuleWithPrograms.GetParameterLabel(Index: Integer): string;
+begin
+ if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
+  then result := RStrUndefined
+  else
+   begin
+    result := FParameterProperties[Index].Units;
+    if Assigned(FParameterProperties[Index].OnCustomParameterLabel)
+     then FParameterProperties[Index].OnCustomParameterLabel(Self, Index, result);
+   end;
+ if FTruncateStrings and (Length(result) > 8)
+  then SetLength(result, 8);
+end;
+
+function TVSTModuleWithPrograms.GetParameterName(Index: Integer): string;
+begin
+ if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
+  then result := RStrUndefined
+  else result := FParameterProperties[Index].DisplayName;
+
+ if FTruncateStrings and (Length(result) > 8)
+  then SetLength(result, 8);
+end;
+
 function TVSTModuleWithPrograms.HostCallGetParameter(Index: Integer): Single;
 begin
  if (Index < numParams) and (Index < FParameterProperties.Count)
@@ -222,18 +273,8 @@ function TVSTModuleWithPrograms.HostCallGetParamLabel(Index, Value: Integer; ptr
 var
   str : string;
 begin
- if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
-  then str := RStrUndefined
-  else
-   begin
-    str := FParameterProperties[Index].Units;
-    if Assigned(FParameterProperties[Index].OnCustomParameterLabel)
-     then FParameterProperties[Index].OnCustomParameterLabel(Self, Index, str);
-   end;
- if FTruncateStrings and (Length(str) > 8)
-  then SetLength(str, 8);
+ Str := ParameterLabel[Index];
  StrPCopy(ptr, str);
-
  Result := 0;
 end;
 
@@ -241,22 +282,7 @@ function TVSTModuleWithPrograms.HostCallGetParamDisplay(Index, Value: Integer; p
 var
   str : string;
 begin
- if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
-  then str := RStrUndefined
-  else
-   begin
-    if (effFlagsProgramChunks in FEffect.EffectFlags)
-     then str := FloatToStr(FOnGetChunkParamEvent(Self, Index))
-     else if (numPrograms > 0)
-      then str := FloatToStrF(Programs[FCurProgram].Parameter[Index], ffGeneral, 4, 4)
-      else str := FloatToStrF(FParameter[Index], ffGeneral, 4, 4);
-
-    if Assigned(FParameterProperties[Index].OnCustomParameterDisplay)
-     then FParameterProperties[Index].OnCustomParameterDisplay(Self, Index, str);
-   end;
-
- if FTruncateStrings and (Length(str) > 8)
-  then SetLength(str, 8);
+ str := ParameterDisplay[Index];
  StrPCopy(ptr, str);
  Result := 0;
 end;
@@ -265,12 +291,7 @@ function TVSTModuleWithPrograms.HostCallGetParamName(Index, Value: Integer; ptr:
 var
   str : string;
 begin
- if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
-  then str := RStrUndefined
-  else str := FParameterProperties[Index].DisplayName;
-
- if FTruncateStrings and (Length(str) > 8)
-  then SetLength(str, 8);
+ str := ParameterName[Index];
  StrPCopy(ptr, str);
  Result := 0;
 end;
