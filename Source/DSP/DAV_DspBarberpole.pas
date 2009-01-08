@@ -108,8 +108,6 @@ begin
 end;
 
 procedure TCustomDspBarberpole.AssignTo(Dest: TPersistent);
-var
-  i : Integer;
 begin
  if Dest is TCustomDspBarberpole then
   with TCustomDspBarberpole(Dest) do

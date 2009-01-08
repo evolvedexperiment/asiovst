@@ -207,8 +207,8 @@ var
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Inp  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
- OutA := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
- OutB := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ OutA := PDAVSingleFixedArray(@FOutputBuffer[0, BufferOffset]);
+ OutB := PDAVSingleFixedArray(@FOutputBuffer[1, BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
   do FHilbert.ProcessHilbertSample(Inp^[Sample], OutA^[Sample], OutB^[Sample]);
@@ -238,8 +238,8 @@ end;
 function TSEHilbertModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSEEnvelopePins(index) of
-  pinInput:
+ case index of
+  0:
    with Properties^ do
     begin
      Name            := 'Input';
@@ -248,15 +248,23 @@ begin
      Datatype        := dtFSample;
      DefaultValue    := '0';
     end;
-  pinOutput:
+  1:
    with Properties^ do
     begin
-     Name            := 'Output';
+     Name            := 'Output (sin)';
      VariableAddress := @FOutputBuffer;
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  pinCoefficients:
+  2:
+   with Properties^ do
+    begin
+     Name            := 'Output (cos)';
+     VariableAddress := @FOutputBuffer;
+     Direction       := drOut;
+     Datatype        := dtFSample;
+    end;
+  3:
    with Properties^ do
     begin
      Name            := 'Coefficients';
@@ -266,7 +274,7 @@ begin
      DatatypeExtra   := 'range -0,64';
      DefaultValue    := '8';
     end;
-  pinTransition:
+  4:
    with Properties^ do
     begin
      Name            := 'Transition';
@@ -286,10 +294,11 @@ var
 begin
  InState  := Pin[Integer(pinInput)].Status;
  OutState := InState;
- if (InState < stRun) and (Pin[Integer(pinInput)].Value = 0)
+ if (InState < stRun) and (Pin[0].Value = 0)
   then OutState := stStatic;
 
- Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, OutState);
+ Pin[1].TransmitStatusChange(SampleClock, OutState);
+ Pin[2].TransmitStatusChange(SampleClock, OutState);
  inherited;
 
  case TSEEnvelopePins(CurrentPin.PinID) of

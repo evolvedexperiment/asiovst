@@ -18,10 +18,8 @@ type
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamStagesDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterAlgorithmDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterAlgorithmChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterAlgorithmDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterAlgorithmChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FBarberpole   : Array [0..1] of TDspBarberpole32;
     FSemaphore : Integer;

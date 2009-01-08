@@ -57,6 +57,11 @@ type
   TDAV4DoubleArray = Array [0..3] of Double;
   PDAV4DoubleArray = ^TDAV4DoubleArray;
 
+  TDAV6SingleArray = Array [0..5] of Single;
+  PDAV6ingleArray = ^TDAV6SingleArray;
+  TDAV6DoubleArray = Array [0..5] of Double;
+  PDAV6DoubleArray = ^TDAV6DoubleArray;
+
   TDAV8SingleArray = Array [0..7] of Single;
   PDAV8SingleArray = ^TDAV8SingleArray;
   TDAV8DoubleArray = Array [0..7] of Double;

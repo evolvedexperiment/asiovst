@@ -51,7 +51,7 @@ var
 begin
  PngBmp := TPngObject.Create;
  try
-  RS := TResourceStream.Create(hInstance, 'ShepardKnob', 'PNG');
+  RS := TResourceStream.Create(hInstance, 'BarberpoleKnob', 'PNG');
   try
    PngBmp.LoadFromStream(RS);
    DialSpeed.DialBitmap.Assign(PngBmp);

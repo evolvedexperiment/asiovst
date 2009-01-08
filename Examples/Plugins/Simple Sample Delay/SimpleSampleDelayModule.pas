@@ -3,7 +3,8 @@ unit SimpleSampleDelayModule;
 interface
 
 uses
-  Windows, Types, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
+  Windows, Types, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_DspInterpolation;
 
 type
   TSimpleDelayVST = class(TVSTModule)
@@ -11,16 +12,11 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleOpen(Sender: TObject);
-    procedure ParameterFeedbackChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure ParamDryMixChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure ParameterWetMixChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure ParameterInvFBDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterInvFBChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
+    procedure ParameterFeedbackChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamDryMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterWetMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterInvFBDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterInvFBChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FBuffer     : array[0..1] of PDAVSingleFixedArray;
     FMix        : array[0..1] of Single;
