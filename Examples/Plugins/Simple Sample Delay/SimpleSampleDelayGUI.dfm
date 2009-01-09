@@ -1,4 +1,4 @@
-object VSTGUI: TVSTGUI
+object FmSimpleSampleDelay: TFmSimpleSampleDelay
   Left = 300
   Top = 179
   BorderStyle = bsNone
@@ -71,7 +71,6 @@ object VSTGUI: TVSTGUI
     Position = 441
     TabOrder = 0
     OnChange = SampleBarChange
-    ExplicitWidth = 244
   end
   object SBFeedback: TScrollBar
     Left = 8

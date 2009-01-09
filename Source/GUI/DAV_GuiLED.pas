@@ -10,14 +10,11 @@ uses
   DAV_GuiBaseControl;
 
 type
-  TCustomGuiLED = class(TGuiBaseControl)
+  TCustomGuiLED = class(TCustomGuiBaseAntialiasedControl)
   private
-    FAntiAlias  : TGuiAntiAlias;
     FLEDColor   : TColor;
     FOnChange   : TNotifyEvent;
-    FOSValue    : Integer;
     FBrightness : Single;
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetLEDColor(const Value: TColor);
     procedure SetBrightness(const Value: Single);
   protected
@@ -29,11 +26,10 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property Brightness_Percent: Single read fBrightness write SetBrightness;
+    property Brightness_Percent: Single read FBrightness write SetBrightness;
     property Color;
     property LineWidth;
     property LEDColor: TColor read FLEDColor write SetLEDColor default clBlack;
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -92,9 +88,7 @@ begin
   FLEDColor    := clBlack;
   FLineColor   := clRed;
   FLineWidth   := 2;
-  FAntiAlias   := gaaNone;
-  FOSValue     := 1;
-  fBrightness  := 100;
+  FBrightness  := 100;
 end;
 
 destructor TCustomGuiLED.Destroy;
@@ -124,19 +118,19 @@ begin
    Brush.Color := Self.Color;
 
    LEDColor.A := $FF;
-   LEDColor.R := $FF and fLEDColor;
-   LEDColor.G := $FF and (fLEDColor shr 8);
-   LEDColor.B := $FF and (fLEDColor shr 16);
-   Bright := 0.3 + 0.007 * fBrightness;
+   LEDColor.R := $FF and FLEDColor;
+   LEDColor.G := $FF and (FLEDColor shr 8);
+   LEDColor.B := $FF and (FLEDColor shr 16);
+   Bright := 0.3 + 0.007 * FBrightness;
 
    // draw circle
-   Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
-   BW := 1 - fLineWidth * FOSValue / Rad;
+   Rad := 0.45 * Math.Min(Width, Height) - FLineWidth div 2;
+   BW := 1 - FLineWidth * OversamplingFactor / Rad;
    if Rad < 0 then exit;
 
    Center.x := 0.5 * Width;
    Center.y := 0.5 * Height;
-   Pen.Color := fLineColor;
+   Pen.Color := FLineColor;
    Brush.Color := FLEDColor;
 
    {$IFNDEF FPC}
@@ -146,7 +140,7 @@ begin
      Line := Scanline[round(Center.y - (Rad - i))];
      for steps := round(Center.x - XStart) to round(Center.x + XStart) do
       begin
-       Scale := Bright * (1 - 0.8 * Math.Max(0, (sqr(steps - Center.x) + sqr(Rad - i)) / sqr(rad)) / FOSValue);
+       Scale := Bright * (1 - 0.8 * Math.Max(0, (sqr(steps - Center.x) + sqr(Rad - i)) / sqr(rad)) / OversamplingFactor);
 
        if sqr(steps - Center.x) + sqr(Rad - i) > sqr(BW * Rad)
         then Scale := 0.4 * Scale;
@@ -161,9 +155,9 @@ end;
 
 procedure TCustomGuiLED.SetBrightness(const Value: Single);
 begin
- if fBrightness <> Value then
+ if FBrightness <> Value then
   begin
-   fBrightness := Value;
+   FBrightness := Value;
    RedrawBuffer(True);
   end;
 end;
@@ -172,142 +166,52 @@ procedure TCustomGuiLED.RedrawBuffer(doBufferFlip: Boolean);
 var
   Bmp        : TBitmap;
 begin
- if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
+ if (Width > 0) and (Height > 0) then with FBuffer.Canvas do
   begin
    Lock;
-   case FAntiAlias of
-    gaaNone     :
-     begin
-      // draw background
-      {$IFNDEF FPC}
-      if fTransparent
-       then DrawParentImage(fBuffer.Canvas)
+   if AntiAlias = gaaNone then
+    begin
+     // draw background
+     {$IFNDEF FPC}
+     if fTransparent
+      then DrawParentImage(FBuffer.Canvas)
+      else
+     {$ENDIF}
+      begin
+       Brush.Color := Self.Color;
+       FillRect(ClipRect);
+      end;
+     RenderLEDToBitmap(FBuffer);
+    end
+   else
+    begin
+     Bmp := TBitmap.Create;
+     with Bmp do
+      try
+       PixelFormat := pf32bit;
+       Width       := OversamplingFactor * FBuffer.Width;
+       Height      := OversamplingFactor * FBuffer.Height;
+       {$IFNDEF FPC}
+       if fTransparent then
+        begin
+         DrawParentImage(Bmp.Canvas);
+         UpsampleBitmap(Bmp);
+        end
        else
-      {$ENDIF}
-       begin
-        Brush.Color := Self.Color;
-        FillRect(ClipRect);
-       end;
-      RenderLEDToBitmap(fBuffer);
-     end;
-    gaaLinear2x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width       := FOSValue * fBuffer.Width;
-        Height      := FOSValue * fBuffer.Height;
-        {$IFNDEF FPC}
-        if fTransparent then
+       {$ENDIF}
+        with Bmp.Canvas do
          begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample2xBitmap(Bmp);
-         end
-        else
-        {$ENDIF}
-         with Bmp.Canvas do
-          begin
-           Brush.Color := Self.Color;
-           FillRect(ClipRect);
-          end;
-        Bmp.Canvas.FillRect(ClipRect);
-        RenderLEDToBitmap(Bmp);
-        Downsample2xBitmap(Bmp);
-        fBuffer.Canvas.Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear4x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width       := FOSValue * fBuffer.Width;
-        Height      := FOSValue * fBuffer.Height;
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-         end
-        else
-        {$ENDIF}
-         with Bmp.Canvas do
-          begin
-           Brush.Color := Self.Color;
-           FillRect(ClipRect);
-          end;
-        RenderLEDToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        fBuffer.Canvas.Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear8x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width       := FOSValue * fBuffer.Width;
-        Height      := FOSValue * fBuffer.Height;
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-          Upsample2xBitmap(Bmp);
-         end
-        else
-        {$ENDIF}
-         with Bmp.Canvas do
-          begin
-           Brush.Color := Self.Color;
-           FillRect(ClipRect);
-          end;
-        RenderLEDToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Downsample2xBitmap(Bmp);
-        fBuffer.Canvas.Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear16x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width       := FOSValue * fBuffer.Width;
-        Height      := FOSValue * fBuffer.Height;
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-          Upsample4xBitmap(Bmp);
-         end
-        else
-        {$ENDIF}
-         with Bmp.Canvas do
-          begin
-           Brush.Color := Self.Color;
-           FillRect(ClipRect);
-          end;
-        RenderLEDToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        fBuffer.Canvas.Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-   end;
+          Brush.Color := Self.Color;
+          FillRect(ClipRect);
+         end;
+       Bmp.Canvas.FillRect(ClipRect);
+       RenderLEDToBitmap(Bmp);
+       DownsampleBitmap(Bmp);
+       FBuffer.Canvas.Draw(0, 0, Bmp);
+      finally
+       Free;
+      end;
+    end;
    Unlock;
   end;
 
@@ -318,22 +222,6 @@ procedure TCustomGuiLED.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
   inherited;
-end;
-
-procedure TCustomGuiLED.SetAntiAlias(const Value: TGuiAntiAlias);
-begin
- if FAntiAlias <> Value then
-  begin
-   FAntiAlias := Value;
-   case FAntiAlias of
-         gaaNone : FOSValue :=  1;
-     gaaLinear2x : FOSValue :=  2;
-     gaaLinear4x : FOSValue :=  4;
-     gaaLinear8x : FOSValue :=  8;
-    gaaLinear16x : FOSValue := 16;
-   end;
-   RedrawBuffer(True);
-  end;
 end;
 
 procedure TCustomGuiLED.SetLEDColor(const Value: TColor);

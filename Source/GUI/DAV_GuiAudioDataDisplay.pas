@@ -46,6 +46,8 @@ type
     procedure SetWaveVPadding(Value: Integer);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure RenderDisplayToBitmap(Bitmap: TBitmap);
+    procedure DownsampleBitmap(Bitmap: TBitmap);
+    procedure UpsampleBitmap(Bitmap: TBitmap);
   protected
     procedure Resize; override;
     procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
@@ -132,7 +134,7 @@ type
 implementation
 
 uses
-  Math;
+  Math, SysUtils;
 
 constructor TCustomGuiAudioDataDisplay.Create(AOwner: TComponent);
 begin
@@ -181,6 +183,7 @@ begin
    case FAntiAlias of
          gaaNone : FOSFactor :=  1;
      gaaLinear2x : FOSFactor :=  2;
+     gaaLinear3x : FOSFactor :=  3;
      gaaLinear4x : FOSFactor :=  4;
      gaaLinear8x : FOSFactor :=  8;
     gaaLinear16x : FOSFactor := 16;
@@ -303,6 +306,42 @@ end;
 
 // Drawing stuff
 
+procedure TCustomGuiAudioDataDisplay.UpsampleBitmap(Bitmap: TBitmap);
+begin
+ case FAntiAlias of
+   gaaLinear2x: Upsample2xBitmap32(Bitmap);
+   gaaLinear3x: Upsample3xBitmap32(Bitmap);
+   gaaLinear4x: Upsample4xBitmap32(Bitmap);
+   gaaLinear8x: begin
+                 Upsample4xBitmap32(Bitmap);
+                 Upsample2xBitmap32(Bitmap);
+                end;
+  gaaLinear16x: begin
+                 Upsample4xBitmap32(Bitmap);
+                 Upsample4xBitmap32(Bitmap);
+                end;
+  else raise Exception.Create('not yet supported');
+ end;
+end;
+
+procedure TCustomGuiAudioDataDisplay.DownsampleBitmap(Bitmap: TBitmap);
+begin
+ case FAntiAlias of
+   gaaLinear2x: Downsample2xBitmap32(Bitmap);
+   gaaLinear3x: Downsample3xBitmap32(Bitmap);
+   gaaLinear4x: Downsample4xBitmap32(Bitmap);
+   gaaLinear8x: begin
+                 Downsample4xBitmap32(Bitmap);
+                 Downsample2xBitmap32(Bitmap);
+                end;
+  gaaLinear16x: begin
+                 Downsample4xBitmap32(Bitmap);
+                 Downsample4xBitmap32(Bitmap);
+                end;
+  else raise Exception.Create('not yet supported');
+ end;
+end;
+
 procedure TCustomGuiAudioDataDisplay.Paint;
 var
   Bmp: TBitmap;
@@ -328,7 +367,7 @@ begin
         end;
        RenderDisplayToBitmap(fBuffer);
       end;
-     gaaLinear2x :
+     else
       begin
        Bmp := TBitmap.Create;
        with Bmp do
@@ -340,7 +379,7 @@ begin
          if FTransparent then
           begin
            DrawParentImage(Bmp.Canvas);
-           Upsample2xBitmap(Bmp);
+           UpsampleBitmap(Bmp);
           end
          else
          {$ENDIF}
@@ -351,102 +390,13 @@ begin
            end;
          Bmp.Canvas.FillRect(ClipRect);
          RenderDisplayToBitmap(Bmp);
-         Downsample2xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         Free;
-        end;
-      end;
-     gaaLinear4x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSFactor * fBuffer.Width;
-         Height      := FOSFactor * fBuffer.Height;
-         {$IFNDEF FPC}
-         if FTransparent then
-          begin
-           DrawParentImage(Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-          end
-         else
-         {$ENDIF}
-          with Bmp.Canvas do
-           begin
-            Brush.Color := Self.Color;
-            FillRect(ClipRect);
-           end;
-         RenderDisplayToBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         Free;
-        end;
-      end;
-     gaaLinear8x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSFactor * fBuffer.Width;
-         Height      := FOSFactor * fBuffer.Height;
-         {$IFNDEF FPC}
-         if FTransparent then
-          begin
-           DrawParentImage(Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-           Upsample2xBitmap(Bmp);
-          end
-         else
-         {$ENDIF}
-          with Bmp.Canvas do
-           begin
-            Brush.Color := Self.Color;
-            FillRect(ClipRect);
-           end;
-         RenderDisplayToBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         Downsample2xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         Free;
-        end;
-      end;
-     gaaLinear16x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSFactor * fBuffer.Width;
-         Height      := FOSFactor * fBuffer.Height;
-         {$IFNDEF FPC}
-         if FTransparent then
-          begin
-           DrawParentImage(Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-           Upsample4xBitmap(Bmp);
-          end
-         else
-         {$ENDIF}
-          with Bmp.Canvas do
-           begin
-            Brush.Color := Self.Color;
-            FillRect(ClipRect);
-           end;
-         RenderDisplayToBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
+         DownsampleBitmap(Bmp);
          fBuffer.Canvas.Draw(0, 0, Bmp);
         finally
          Free;
         end;
       end;
     end;
-
     Unlock;
    end;
  inherited;

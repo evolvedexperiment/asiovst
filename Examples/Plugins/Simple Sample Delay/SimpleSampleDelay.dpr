@@ -2,18 +2,18 @@
 library SimpleSampleDelay;
 
 uses
-  FastMM4,  // either download the library or comment if there is an error here
-  FastMove, // either download the library or comment if there is an error here
+  FastMM4,
+  FastMove,
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,
-  SimpleSampleDelayModule in 'SimpleSampleDelayModule.pas' {SimpleDelayVST: TVST2Module},
-  SimpleSampleDelayGUI in 'SimpleSampleDelayGUI.pas' {VSTGUI};
+  SimpleSampleDelayModule in 'SimpleSampleDelayModule.pas' {SimpleSampleDelayVST: TVST2Module},
+  SimpleSampleDelayGUI in 'SimpleSampleDelayGUI.pas' {FmSimpleSampleDelay};
 
 function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  try
-  with TSimpleDelayVST.Create(Application) do
+  with TSimpleSampleDelayVST.Create(Application) do
    begin
     AudioMaster := AudioMasterCallback;
     Result := Effect;

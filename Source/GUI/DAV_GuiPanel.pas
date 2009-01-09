@@ -35,6 +35,8 @@ type
     procedure SetTransparent (const Value: Boolean);
     procedure PaintBitmap;
     procedure SetBitmapChanged(const Value: Boolean);
+    procedure DownsampleBitmap(Bitmap: TBitmap);
+    procedure UpsampleBitmap(Bitmap: TBitmap);
   protected
     procedure Paint; override;
     procedure Resize; override;
@@ -180,6 +182,42 @@ begin
   end;
 end;
 
+procedure TCustomGuiPanel.UpsampleBitmap(Bitmap: TBitmap);
+begin
+ case FAntiAlias of
+   gaaLinear2x: Upsample2xBitmap32(Bitmap);
+   gaaLinear3x: Upsample3xBitmap32(Bitmap);
+   gaaLinear4x: Upsample4xBitmap32(Bitmap);
+   gaaLinear8x: begin
+                 Upsample4xBitmap32(Bitmap);
+                 Upsample2xBitmap32(Bitmap);
+                end;
+  gaaLinear16x: begin
+                 Upsample4xBitmap32(Bitmap);
+                 Upsample4xBitmap32(Bitmap);
+                end;
+  else raise Exception.Create('not yet supported');
+ end;
+end;
+
+procedure TCustomGuiPanel.DownsampleBitmap(Bitmap: TBitmap);
+begin
+ case FAntiAlias of
+   gaaLinear2x: Downsample2xBitmap32(Bitmap);
+   gaaLinear3x: Downsample3xBitmap32(Bitmap);
+   gaaLinear4x: Downsample4xBitmap32(Bitmap);
+   gaaLinear8x: begin
+                 Downsample4xBitmap32(Bitmap);
+                 Downsample2xBitmap32(Bitmap);
+                end;
+  gaaLinear16x: begin
+                 Downsample4xBitmap32(Bitmap);
+                 Downsample4xBitmap32(Bitmap);
+                end;
+  else raise Exception.Create('not yet supported');
+ end;
+end;
+
 procedure TCustomGuiPanel.PaintBitmap;
 begin
  if (Width > 0) and (Height > 0) then
@@ -198,61 +236,18 @@ begin
         Canvas.FillRect(Canvas.ClipRect);
         RenderPanelToBitmap(FBitmap);
        end;
-      gaaLinear2x :
+      else
        begin
         {$IFNDEF FPC}
         if FTransparent then
          begin
           CopyParentImage(Self, FBitmap.Canvas);
-          Upsample2xBitmap32(FBitmap);
+          UpsampleBitmap(FBitmap);
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
         RenderPanelToBitmap(FBitmap);
-        Downsample2xBitmap32(FBitmap);
-       end;
-      gaaLinear4x :
-       begin
-        {$IFNDEF FPC}
-        if FTransparent then
-         begin
-          CopyParentImage(Self, FBitmap.Canvas);
-          Upsample4xBitmap32(FBitmap);
-         end else
-        {$ENDIF}
-        Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(FBitmap);
-        Downsample4xBitmap32(FBitmap);
-       end;
-      gaaLinear8x :
-       begin
-        {$IFNDEF FPC}
-        if FTransparent then
-         begin
-          CopyParentImage(Self, FBitmap.Canvas);
-          Upsample4xBitmap32(FBitmap);
-          Upsample2xBitmap32(FBitmap);
-         end else
-        {$ENDIF}
-        Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(FBitmap);
-        Downsample4xBitmap32(FBitmap);
-        Downsample2xBitmap32(FBitmap);
-       end;
-      gaaLinear16x :
-       begin
-        {$IFNDEF FPC}
-        if FTransparent then
-         begin
-          CopyParentImage(Self, FBitmap.Canvas);
-          Upsample4xBitmap32(FBitmap);
-          Upsample4xBitmap32(FBitmap);
-         end else
-        {$ENDIF}
-        Canvas.FillRect(Canvas.ClipRect);
-        RenderPanelToBitmap(FBitmap);
-        Downsample4xBitmap32(FBitmap);
-        Downsample4xBitmap32(FBitmap);
+        DownsampleBitmap(FBitmap);
        end;
      end;
     finally
@@ -442,6 +437,7 @@ begin
    case FAntiAlias of
          gaaNone : FOSFactor :=  1;
      gaaLinear2x : FOSFactor :=  2;
+     gaaLinear3x : FOSFactor :=  3;
      gaaLinear4x : FOSFactor :=  4;
      gaaLinear8x : FOSFactor :=  8;
     gaaLinear16x : FOSFactor := 16;

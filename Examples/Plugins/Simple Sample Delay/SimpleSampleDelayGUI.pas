@@ -7,7 +7,7 @@ uses
   DAV_Common;
 
 type
-  TVSTGUI = class(TForm)
+  TFmSimpleSampleDelay = class(TForm)
     SampleBar: TScrollBar;
     LbSamples: TLabel;
     LbFeedbackValue: TLabel;
@@ -39,59 +39,59 @@ implementation
 uses
   SimpleSampleDelayModule;
 
-procedure TVSTGUI.FormShow(Sender: TObject);
+procedure TFmSimpleSampleDelay.FormShow(Sender: TObject);
 begin
  UpdateDelayLength;
 end;
 
-procedure TVSTGUI.SampleBarChange(Sender: TObject);
+procedure TFmSimpleSampleDelay.SampleBarChange(Sender: TObject);
 begin
- with TSimpleDelayVST(Owner) do
+ with TSimpleSampleDelayVST(Owner) do
   begin
    if Parameter[0] <> SampleBar.Position
     then Parameter[0] := SampleBar.Position;
   end;
 end;
 
-procedure TVSTGUI.SBFeedbackChange(Sender: TObject);
+procedure TFmSimpleSampleDelay.SBFeedbackChange(Sender: TObject);
 begin
- with TSimpleDelayVST(Owner) do
+ with TSimpleSampleDelayVST(Owner) do
   begin
    if Parameter[1] <> 0.1 * SBFeedback.Position
     then Parameter[1] := 0.1 * SBFeedback.Position;
   end;
 end;
 
-procedure TVSTGUI.CBFeedbackInvClick(Sender: TObject);
+procedure TFmSimpleSampleDelay.CBFeedbackInvClick(Sender: TObject);
 begin
- with TSimpleDelayVST(Owner) do
+ with TSimpleSampleDelayVST(Owner) do
   begin
    if Parameter[2] <> Integer(CBFeedbackInv.Checked)
     then Parameter[2] := Integer(CBFeedbackInv.Checked);
   end;
 end;
 
-procedure TVSTGUI.SBDryMixChange(Sender: TObject);
+procedure TFmSimpleSampleDelay.SBDryMixChange(Sender: TObject);
 begin
- with TSimpleDelayVST(Owner) do
+ with TSimpleSampleDelayVST(Owner) do
   begin
    if Parameter[3] <> 0.1 * SBDryMix.Position
     then Parameter[3] := 0.1 * SBDryMix.Position;
   end;
 end;
 
-procedure TVSTGUI.SBWetMixChange(Sender: TObject);
+procedure TFmSimpleSampleDelay.SBWetMixChange(Sender: TObject);
 begin
- with TSimpleDelayVST(Owner) do
+ with TSimpleSampleDelayVST(Owner) do
   begin
    if Parameter[4] <> 0.1 * SBWetMix.Position
     then Parameter[4] := 0.1 * SBWetMix.Position;
   end;
 end;
 
-procedure TVSTGUI.UpdateDelayLength;
+procedure TFmSimpleSampleDelay.UpdateDelayLength;
 begin
- with TSimpleDelayVST(Owner) do
+ with TSimpleSampleDelayVST(Owner) do
   begin
    if round(Parameter[0]) <> SampleBar.Position
     then SampleBar.Position := round(Parameter[0]);
@@ -100,24 +100,25 @@ begin
   end;
 end;
 
-procedure TVSTGUI.UpdateFeedback;
+procedure TFmSimpleSampleDelay.UpdateFeedback;
 begin
- with TSimpleDelayVST(Owner) do
+ with TSimpleSampleDelayVST(Owner) do
   begin
    if round(10 * Parameter[1]) <> SBFeedback.Position
     then SBFeedback.Position := round(10 * Parameter[1]);
+   UpdateFeedbackInvert;
    LbFeedbackValue.Caption := 'Feedback: ' + FloatToStrF(Parameter[1], ffGeneral, 3, 3) + ' %';
   end;
 end;
 
-procedure TVSTGUI.UpdateFeedbackInvert;
+procedure TFmSimpleSampleDelay.UpdateFeedbackInvert;
 begin
- CBFeedbackInv.Checked := TSimpleDelayVST(Owner).Parameter[2] > 0.5;
+ CBFeedbackInv.Checked := TSimpleSampleDelayVST(Owner).Parameter[2] > 0.5;
 end;
 
-procedure TVSTGUI.UpdateDryMix;
+procedure TFmSimpleSampleDelay.UpdateDryMix;
 begin
- with TSimpleDelayVST(Owner) do
+ with TSimpleSampleDelayVST(Owner) do
   begin
    if round(10 * Parameter[3]) <> SBDryMix.Position
     then SBDryMix.Position := round(10 * Parameter[3]);
@@ -125,9 +126,9 @@ begin
   end;
 end;
 
-procedure TVSTGUI.UpdateWetMix;
+procedure TFmSimpleSampleDelay.UpdateWetMix;
 begin
- with TSimpleDelayVST(Owner) do
+ with TSimpleSampleDelayVST(Owner) do
   begin
    if round(10 * Parameter[4]) <> SBWetMix.Position
     then SBWetMix.Position := round(10 * Parameter[4]);

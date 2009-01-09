@@ -1,4 +1,4 @@
-object SimpleDelayVST: TSimpleDelayVST
+object SimpleSampleDelayVST: TSimpleSampleDelayVST
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
@@ -111,6 +111,7 @@ object SimpleDelayVST: TSimpleDelayVST
   OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
+  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess
   Left = 248
   Top = 106

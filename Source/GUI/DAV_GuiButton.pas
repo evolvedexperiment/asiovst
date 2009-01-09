@@ -24,6 +24,8 @@ type
     procedure SetButtonColor(const Value: TColor);
     procedure SetCaption(const Value: string);
     procedure SetAlignment(const Value: TAlignment);
+    procedure DownsampleBitmap(Bitmap: TBitmap);
+    procedure UpsampleBitmap(Bitmap: TBitmap);
   protected
     procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
   public
@@ -83,7 +85,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Complex;
+  Math, SysUtils, DAV_Common, DAV_Complex;
 
 { TCustomGuiButton }
 
@@ -206,6 +208,42 @@ begin
 {$ENDIF}
 end;
 
+procedure TCustomGuiButton.UpsampleBitmap(Bitmap: TBitmap);
+begin
+ case FAntiAlias of
+   gaaLinear2x: Upsample2xBitmap32(Bitmap);
+   gaaLinear3x: Upsample3xBitmap32(Bitmap);
+   gaaLinear4x: Upsample4xBitmap32(Bitmap);
+   gaaLinear8x: begin
+                 Upsample4xBitmap32(Bitmap);
+                 Upsample2xBitmap32(Bitmap);
+                end;
+  gaaLinear16x: begin
+                 Upsample4xBitmap32(Bitmap);
+                 Upsample4xBitmap32(Bitmap);
+                end;
+  else raise Exception.Create('not yet supported');
+ end;
+end;
+
+procedure TCustomGuiButton.DownsampleBitmap(Bitmap: TBitmap);
+begin
+ case FAntiAlias of
+   gaaLinear2x: Downsample2xBitmap32(Bitmap);
+   gaaLinear3x: Downsample3xBitmap32(Bitmap);
+   gaaLinear4x: Downsample4xBitmap32(Bitmap);
+   gaaLinear8x: begin
+                 Downsample4xBitmap32(Bitmap);
+                 Downsample2xBitmap32(Bitmap);
+                end;
+  gaaLinear16x: begin
+                 Downsample4xBitmap32(Bitmap);
+                 Downsample4xBitmap32(Bitmap);
+                end;
+  else raise Exception.Create('not yet supported');
+ end;
+end;
+
 procedure TCustomGuiButton.RedrawBuffer(doBufferFlip: Boolean);
 var
   Bmp : TBitmap;
@@ -222,7 +260,7 @@ begin
       FillRect(ClipRect);
       RenderButtonToBitmap(fBuffer);
      end;
-    gaaLinear2x :
+    else
      begin
       Bmp := TBitmap.Create;
       with Bmp do
@@ -236,92 +274,13 @@ begin
         if fTransparent then
          begin
           DrawParentImage(Bmp.Canvas);
-          Upsample2xBitmap(Bmp);
+          UpsampleBitmap(Bmp);
          end else
         {$ENDIF}
         Canvas.FillRect(Canvas.ClipRect);
         FillRect(ClipRect);
         RenderButtonToBitmap(Bmp);
-        Downsample2xBitmap(Bmp);
-        Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear4x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width  := FOSFactor * fBuffer.Width;
-        Height := FOSFactor * fBuffer.Height;
-        Canvas.Brush.Style := bsSolid;
-        Canvas.Brush.Color := Self.Color;
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-         end else
-        {$ENDIF}
-        Canvas.FillRect(Canvas.ClipRect);
-        RenderButtonToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear8x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width  := FOSFactor * fBuffer.Width;
-        Height := FOSFactor * fBuffer.Height;
-        Canvas.Brush.Style := bsSolid;
-        Canvas.Brush.Color := Self.Color;
-        Canvas.FillRect(Canvas.ClipRect);
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-          Upsample2xBitmap(Bmp);
-         end else
-        {$ENDIF}
-        RenderButtonToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Downsample2xBitmap(Bmp);
-        Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear16x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width  := FOSFactor * fBuffer.Width;
-        Height := FOSFactor * fBuffer.Height;
-        Canvas.Brush.Style := bsSolid;
-        Canvas.Brush.Color := Self.Color;
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-          Upsample4xBitmap(Bmp);
-         end else
-        {$ENDIF}
-        Canvas.FillRect(Canvas.ClipRect);
-        RenderButtonToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
+        DownsampleBitmap(Bmp);
         Draw(0, 0, Bmp);
        finally
         Free;
@@ -350,6 +309,7 @@ begin
    case FAntiAlias of
          gaaNone : FOSFactor :=  1;
      gaaLinear2x : FOSFactor :=  2;
+     gaaLinear3x : FOSFactor :=  3;
      gaaLinear4x : FOSFactor :=  4;
      gaaLinear8x : FOSFactor :=  8;
     gaaLinear16x : FOSFactor := 16;

@@ -40,7 +40,6 @@ type
   end;
 
 
-
   TGuiADSRGraph = class(TGuiBaseControl)
   private
     FADSRSettings    : TGuiADSRSettings;

@@ -43,7 +43,7 @@ type
 
   TGuiMouseStateClass = class of TGuiMouseState;
 
-  TGuiAntiAlias = (gaaNone, gaaLinear2x, gaaLinear4x, gaaLinear8x, gaaLinear16x);
+  TGuiAntiAlias = (gaaNone, gaaLinear2x, gaaLinear3x, gaaLinear4x, gaaLinear8x, gaaLinear16x);
 
   TGuiStitchKind = (skHorizontal, skVertical);
 
@@ -121,8 +121,10 @@ type
     {$ENDIF}
 
     procedure Downsample2xBitmap(var Bitmap: TBitmap);
+    procedure Downsample3xBitmap(var Bitmap: TBitmap);
     procedure Downsample4xBitmap(var Bitmap: TBitmap);
     procedure Upsample2xBitmap(var Bitmap: TBitmap);
+    procedure Upsample3xBitmap(var Bitmap: TBitmap);
     procedure Upsample4xBitmap(var Bitmap: TBitmap);
     procedure Resize; override;
     procedure ResizeBuffer; dynamic;
@@ -250,6 +252,21 @@ type
     property OnDragMouseMove: TGuiOnDragMouseMove read FOnDragMouseMove write FOnDragMouseMove;
   end;
 
+  TCustomGuiBaseAntialiasedControl = class(TCustomGuiBaseMouseControl)
+  private
+    FAntiAlias  : TGuiAntiAlias;
+    FOSValue    : Integer;
+    procedure SetAntiAlias(const Value: TGuiAntiAlias);
+  protected
+    procedure AntialiasChanged; virtual;
+    procedure DownsampleBitmap(Bitmap: TBitmap);
+    procedure UpsampleBitmap(Bitmap: TBitmap);
+    property OversamplingFactor: Integer read FOSValue;
+  public
+    constructor Create(AOwner: TComponent); override;
+    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+  end;
+
   TGuiBaseControl = class(TCustomGuiBaseMouseControl)
   published
     property Enabled;
@@ -292,9 +309,17 @@ type
   end;
 
 procedure Downsample2xBitmap32(var Bitmap: TBitmap);
+procedure Downsample2xBitmap24(var Bitmap: TBitmap);
+procedure Downsample3xBitmap32(var Bitmap: TBitmap);
+procedure Downsample3xBitmap24(var Bitmap: TBitmap);
 procedure Downsample4xBitmap32(var Bitmap: TBitmap);
+procedure Downsample4xBitmap24(var Bitmap: TBitmap);
 procedure Upsample2xBitmap32(var Bitmap: TBitmap);
+procedure Upsample2xBitmap24(var Bitmap: TBitmap);
+procedure Upsample3xBitmap32(var Bitmap: TBitmap);
+procedure Upsample3xBitmap24(var Bitmap: TBitmap);
 procedure Upsample4xBitmap32(var Bitmap: TBitmap);
+procedure Upsample4xBitmap24(var Bitmap: TBitmap);
 procedure CopyParentImage(Control: TControl; Dest: TCanvas);
 
 implementation
@@ -401,9 +426,106 @@ begin
 {$ENDIF}
 end;
 
+procedure Downsample2xBitmap24(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  Line : Array [0..2] of PRGB24Array;
+begin
+{$IFNDEF FPC}
+ with Bitmap do
+  begin
+   // first stage
+   for y := 0 to (Height div 2) - 1 do
+    begin
+     Line[0] := Scanline[y];
+     Line[1] := Scanline[y * 2];
+     Line[2] := Scanline[y * 2 + 1];
+     for x := 0 to (Width  div 2) - 1 do
+      begin
+       Line[0, x].B := (Line[1, 2 * x].B + Line[2, 2 * x].B + Line[1, 2 * x + 1].B + Line[2, 2 * x + 1].B) div 4;
+       Line[0, x].G := (Line[1, 2 * x].G + Line[2, 2 * x].G + Line[1, 2 * x + 1].G + Line[2, 2 * x + 1].G) div 4;
+       Line[0, x].R := (Line[1, 2 * x].R + Line[2, 2 * x].R + Line[1, 2 * x + 1].R + Line[2, 2 * x + 1].R) div 4;
+      end;
+    end;
+  end;
+{$ENDIF}
+end;
+
+procedure Downsample3xBitmap32(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  x3   : Integer;
+  Line : Array [0..3] of PRGB32Array;
+begin
+{$IFNDEF FPC}
+ with Bitmap do
+  begin
+   // first stage
+   for y := 0 to (Height div 3) - 1 do
+    begin
+     Line[0] := Scanline[y];
+     Line[1] := Scanline[3 * y];
+     Line[2] := Scanline[3 * y + 1];
+     Line[3] := Scanline[3 * y + 2];
+     for x := 0 to (Width  div 3) - 1 do
+      begin
+       x3 := 3 * x;
+       Line[0, x].B := (Line[1, x3    ].B + Line[2, x3    ].B + Line[3, x3    ].B +
+                        Line[1, x3 + 1].B + Line[2, x3 + 1].B + Line[3, x3 + 1].B +
+                        Line[1, x3 + 2].B + Line[2, x3 + 2].B + Line[3, x3 + 2].B) div 9;
+       Line[0, x].G := (Line[1, x3    ].G + Line[2, x3    ].G + Line[3, x3    ].G +
+                        Line[1, x3 + 1].G + Line[2, x3 + 1].G + Line[3, x3 + 1].G +
+                        Line[1, x3 + 2].G + Line[2, x3 + 2].G + Line[3, x3 + 2].G) div 9;
+       Line[0, x].R := (Line[1, x3    ].R + Line[2, x3    ].R + Line[3, x3    ].R +
+                        Line[1, x3 + 1].R + Line[2, x3 + 1].R + Line[3, x3 + 1].R +
+                        Line[1, x3 + 2].R + Line[2, x3 + 2].R + Line[3, x3 + 2].R) div 9;
+       Line[0, x].A := (Line[1, x3    ].A + Line[2, x3    ].A + Line[3, x3    ].A +
+                        Line[1, x3 + 1].A + Line[2, x3 + 1].A + Line[3, x3 + 1].A +
+                        Line[1, x3 + 2].A + Line[2, x3 + 2].A + Line[3, x3 + 2].A) div 9;
+      end;
+    end;
+  end;
+{$ENDIF}
+end;
+
+procedure Downsample3xBitmap24(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  x3   : Integer;
+  Line : Array [0..3] of PRGB24Array;
+begin
+{$IFNDEF FPC}
+ with Bitmap do
+  begin
+   // first stage
+   for y := 0 to (Height div 3) - 1 do
+    begin
+     Line[0] := Scanline[y];
+     Line[1] := Scanline[3 * y];
+     Line[2] := Scanline[3 * y + 1];
+     Line[3] := Scanline[3 * y + 2];
+     for x := 0 to (Width  div 3) - 1 do
+      begin
+       x3 := 3 * x;
+       Line[0, x].B := (Line[1, x3    ].B + Line[2, x3    ].B + Line[3, x3    ].B +
+                        Line[1, x3 + 1].B + Line[2, x3 + 1].B + Line[3, x3 + 1].B +
+                        Line[1, x3 + 2].B + Line[2, x3 + 2].B + Line[3, x3 + 2].B) div 9;
+       Line[0, x].G := (Line[1, x3    ].G + Line[2, x3    ].G + Line[3, x3    ].G +
+                        Line[1, x3 + 1].G + Line[2, x3 + 1].G + Line[3, x3 + 1].G +
+                        Line[1, x3 + 2].G + Line[2, x3 + 2].G + Line[3, x3 + 2].G) div 9;
+       Line[0, x].R := (Line[1, x3    ].R + Line[2, x3    ].R + Line[3, x3    ].R +
+                        Line[1, x3 + 1].R + Line[2, x3 + 1].R + Line[3, x3 + 1].R +
+                        Line[1, x3 + 2].R + Line[2, x3 + 2].R + Line[3, x3 + 2].R) div 9;
+      end;
+    end;
+  end;
+{$ENDIF}
+end;
+
 procedure Downsample4xBitmap32(var Bitmap: TBitmap);
 var
   x, y : Integer;
+  x4   : Integer;
   Line : Array [0..4] of PRGB32Array;
 begin
 {$IFNDEF FPC}
@@ -419,22 +541,61 @@ begin
      Line[4] := Scanline[y * 4 + 3];
      for x := 0 to (Width  div 4) - 1 do
       begin
-       Line[0, x].B := (Line[1, 4 * x].B + Line[1, 4 * x + 1].B + Line[1, 4 * x + 2].B + Line[1, 4 * x + 3].B +
-                        Line[2, 4 * x].B + Line[2, 4 * x + 1].B + Line[2, 4 * x + 2].B + Line[2, 4 * x + 3].B +
-                        Line[3, 4 * x].B + Line[3, 4 * x + 1].B + Line[3, 4 * x + 2].B + Line[3, 4 * x + 3].B +
-                        Line[4, 4 * x].B + Line[4, 4 * x + 1].B + Line[4, 4 * x + 2].B + Line[4, 4 * x + 3].B) div 16;
-       Line[0, x].G := (Line[1, 4 * x].G + Line[1, 4 * x + 1].G + Line[1, 4 * x + 2].G + Line[1, 4 * x + 3].G +
-                        Line[2, 4 * x].G + Line[2, 4 * x + 1].G + Line[2, 4 * x + 2].G + Line[2, 4 * x + 3].G +
-                        Line[3, 4 * x].G + Line[3, 4 * x + 1].G + Line[3, 4 * x + 2].G + Line[3, 4 * x + 3].G +
-                        Line[4, 4 * x].G + Line[4, 4 * x + 1].G + Line[4, 4 * x + 2].G + Line[4, 4 * x + 3].G) div 16;
-       Line[0, x].R := (Line[1, 4 * x].R + Line[1, 4 * x + 1].R + Line[1, 4 * x + 2].R + Line[1, 4 * x + 3].R +
-                        Line[2, 4 * x].R + Line[2, 4 * x + 1].R + Line[2, 4 * x + 2].R + Line[2, 4 * x + 3].R +
-                        Line[3, 4 * x].R + Line[3, 4 * x + 1].R + Line[3, 4 * x + 2].R + Line[3, 4 * x + 3].R +
-                        Line[4, 4 * x].R + Line[4, 4 * x + 1].R + Line[4, 4 * x + 2].R + Line[4, 4 * x + 3].R) div 16;
-       Line[0, x].A := (Line[1, 4 * x].A + Line[1, 4 * x + 1].A + Line[1, 4 * x + 2].A + Line[1, 4 * x + 3].A +
-                        Line[2, 4 * x].A + Line[2, 4 * x + 1].A + Line[2, 4 * x + 2].A + Line[2, 4 * x + 3].A +
-                        Line[3, 4 * x].A + Line[3, 4 * x + 1].A + Line[3, 4 * x + 2].A + Line[3, 4 * x + 3].A +
-                        Line[4, 4 * x].A + Line[4, 4 * x + 1].A + Line[4, 4 * x + 2].A + Line[4, 4 * x + 3].A) div 16;
+       x4 := 4 * x;
+       Line[0, x].B := (Line[1, x4].B + Line[1, x4 + 1].B + Line[1, x4 + 2].B + Line[1, x4 + 3].B +
+                        Line[2, x4].B + Line[2, x4 + 1].B + Line[2, x4 + 2].B + Line[2, x4 + 3].B +
+                        Line[3, x4].B + Line[3, x4 + 1].B + Line[3, x4 + 2].B + Line[3, x4 + 3].B +
+                        Line[4, x4].B + Line[4, x4 + 1].B + Line[4, x4 + 2].B + Line[4, x4 + 3].B) div 16;
+       Line[0, x].G := (Line[1, x4].G + Line[1, x4 + 1].G + Line[1, x4 + 2].G + Line[1, x4 + 3].G +
+                        Line[2, x4].G + Line[2, x4 + 1].G + Line[2, x4 + 2].G + Line[2, x4 + 3].G +
+                        Line[3, x4].G + Line[3, x4 + 1].G + Line[3, x4 + 2].G + Line[3, x4 + 3].G +
+                        Line[4, x4].G + Line[4, x4 + 1].G + Line[4, x4 + 2].G + Line[4, x4 + 3].G) div 16;
+       Line[0, x].R := (Line[1, x4].R + Line[1, x4 + 1].R + Line[1, x4 + 2].R + Line[1, x4 + 3].R +
+                        Line[2, x4].R + Line[2, x4 + 1].R + Line[2, x4 + 2].R + Line[2, x4 + 3].R +
+                        Line[3, x4].R + Line[3, x4 + 1].R + Line[3, x4 + 2].R + Line[3, x4 + 3].R +
+                        Line[4, x4].R + Line[4, x4 + 1].R + Line[4, x4 + 2].R + Line[4, x4 + 3].R) div 16;
+       Line[0, x].A := (Line[1, x4].A + Line[1, x4 + 1].A + Line[1, x4 + 2].A + Line[1, x4 + 3].A +
+                        Line[2, x4].A + Line[2, x4 + 1].A + Line[2, x4 + 2].A + Line[2, x4 + 3].A +
+                        Line[3, x4].A + Line[3, x4 + 1].A + Line[3, x4 + 2].A + Line[3, x4 + 3].A +
+                        Line[4, x4].A + Line[4, x4 + 1].A + Line[4, x4 + 2].A + Line[4, x4 + 3].A) div 16;
+      end;
+    end;
+  end;
+{$ENDIF}
+end;
+
+procedure Downsample4xBitmap24(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  x4   : Integer;
+  Line : Array [0..4] of PRGB24Array;
+begin
+{$IFNDEF FPC}
+ with Bitmap do
+  begin
+   // first stage
+   for y := 0 to (Height div 4) - 1 do
+    begin
+     Line[0] := Scanline[y];
+     Line[1] := Scanline[y * 4];
+     Line[2] := Scanline[y * 4 + 1];
+     Line[3] := Scanline[y * 4 + 2];
+     Line[4] := Scanline[y * 4 + 3];
+     for x := 0 to (Width  div 4) - 1 do
+      begin
+       x4 := 4 * x;
+       Line[0, x].B := (Line[1, x4].B + Line[1, x4 + 1].B + Line[1, x4 + 2].B + Line[1, x4 + 3].B +
+                        Line[2, x4].B + Line[2, x4 + 1].B + Line[2, x4 + 2].B + Line[2, x4 + 3].B +
+                        Line[3, x4].B + Line[3, x4 + 1].B + Line[3, x4 + 2].B + Line[3, x4 + 3].B +
+                        Line[4, x4].B + Line[4, x4 + 1].B + Line[4, x4 + 2].B + Line[4, x4 + 3].B) div 16;
+       Line[0, x].G := (Line[1, x4].G + Line[1, x4 + 1].G + Line[1, x4 + 2].G + Line[1, x4 + 3].G +
+                        Line[2, x4].G + Line[2, x4 + 1].G + Line[2, x4 + 2].G + Line[2, x4 + 3].G +
+                        Line[3, x4].G + Line[3, x4 + 1].G + Line[3, x4 + 2].G + Line[3, x4 + 3].G +
+                        Line[4, x4].G + Line[4, x4 + 1].G + Line[4, x4 + 2].G + Line[4, x4 + 3].G) div 16;
+       Line[0, x].R := (Line[1, x4].R + Line[1, x4 + 1].R + Line[1, x4 + 2].R + Line[1, x4 + 3].R +
+                        Line[2, x4].R + Line[2, x4 + 1].R + Line[2, x4 + 2].R + Line[2, x4 + 3].R +
+                        Line[3, x4].R + Line[3, x4 + 1].R + Line[3, x4 + 2].R + Line[3, x4 + 3].R +
+                        Line[4, x4].R + Line[4, x4 + 1].R + Line[4, x4 + 2].R + Line[4, x4 + 3].R) div 16;
       end;
     end;
   end;
@@ -444,6 +605,7 @@ end;
 procedure Upsample2xBitmap32(var Bitmap: TBitmap);
 var
   x, y : Integer;
+  x2   : Integer;
   Line : Array [0..2] of PRGB32Array;
 begin
  {$IFNDEF FPC}
@@ -459,22 +621,178 @@ begin
      Line[2] := Scanline[y * 2 + 1];
      for x := (Width  div 2) - 1 downto 0 do
       begin
-       Line[1, 2 * x].B     := Line[0, x].B;
-       Line[2, 2 * x].B     := Line[0, x].B;
-       Line[1, 2 * x + 1].B := Line[0, x].B;
-       Line[2, 2 * x + 1].B := Line[0, x].B;
-       Line[1, 2 * x].G     := Line[0, x].G;
-       Line[2, 2 * x].G     := Line[0, x].G;
-       Line[1, 2 * x + 1].G := Line[0, x].G;
-       Line[2, 2 * x + 1].G := Line[0, x].G;
-       Line[1, 2 * x].R     := Line[0, x].R;
-       Line[2, 2 * x].R     := Line[0, x].R;
-       Line[1, 2 * x + 1].R := Line[0, x].R;
-       Line[2, 2 * x + 1].R := Line[0, x].R;
-       Line[1, 2 * x].A     := Line[0, x].A;
-       Line[2, 2 * x].A     := Line[0, x].A;
-       Line[1, 2 * x + 1].A := Line[0, x].A;
-       Line[2, 2 * x + 1].A := Line[0, x].A;
+       x2 := 2 * x;
+       Line[1, x2    ].B := Line[0, x].B;
+       Line[2, x2    ].B := Line[0, x].B;
+       Line[1, x2 + 1].B := Line[0, x].B;
+       Line[2, x2 + 1].B := Line[0, x].B;
+       Line[1, x2    ].G := Line[0, x].G;
+       Line[2, x2    ].G := Line[0, x].G;
+       Line[1, x2 + 1].G := Line[0, x].G;
+       Line[2, x2 + 1].G := Line[0, x].G;
+       Line[1, x2    ].R := Line[0, x].R;
+       Line[2, x2    ].R := Line[0, x].R;
+       Line[1, x2 + 1].R := Line[0, x].R;
+       Line[2, x2 + 1].R := Line[0, x].R;
+       Line[1, x2    ].A := Line[0, x].A;
+       Line[2, x2    ].A := Line[0, x].A;
+       Line[1, x2 + 1].A := Line[0, x].A;
+       Line[2, x2 + 1].A := Line[0, x].A;
+      end;
+    end;
+  end;
+ {$ENDIF}
+end;
+
+procedure Upsample2xBitmap24(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  x2   : Integer;
+  Line : Array [0..2] of PRGB24Array;
+begin
+ {$IFNDEF FPC}
+ with Bitmap do
+  begin
+   assert(PixelFormat = pf24bit);
+
+   // first stage
+   for y := (Height div 2) - 1 downto 0 do
+    begin
+     Line[0] := Scanline[y];
+     Line[1] := Scanline[y * 2];
+     Line[2] := Scanline[y * 2 + 1];
+     for x := (Width  div 2) - 1 downto 0 do
+      begin
+       x2 := 2 * x;
+       Line[1, x2    ].B := Line[0, x].B;
+       Line[2, x2    ].B := Line[0, x].B;
+       Line[1, x2 + 1].B := Line[0, x].B;
+       Line[2, x2 + 1].B := Line[0, x].B;
+       Line[1, x2    ].G := Line[0, x].G;
+       Line[2, x2    ].G := Line[0, x].G;
+       Line[1, x2 + 1].G := Line[0, x].G;
+       Line[2, x2 + 1].G := Line[0, x].G;
+       Line[1, x2    ].R := Line[0, x].R;
+       Line[2, x2    ].R := Line[0, x].R;
+       Line[1, x2 + 1].R := Line[0, x].R;
+       Line[2, x2 + 1].R := Line[0, x].R;
+      end;
+    end;
+  end;
+ {$ENDIF}
+end;
+
+procedure Upsample3xBitmap32(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  x3   : Integer;
+  Line : Array [0..3] of PRGB32Array;
+begin
+ {$IFNDEF FPC}
+ with Bitmap do
+  begin
+   assert(PixelFormat = pf32bit);
+
+   // first stage
+   for y := (Height div 3) - 1 downto 0 do
+    begin
+     Line[0] := Scanline[y];
+     Line[1] := Scanline[y * 3];
+     Line[2] := Scanline[y * 3 + 1];
+     Line[3] := Scanline[y * 3 + 2];
+     for x := (Width  div 3) - 1 downto 0 do
+      begin
+       x3 := 3 * x;
+       Line[1, x3    ].B := Line[0, x].B;
+       Line[2, x3    ].B := Line[0, x].B;
+       Line[3, x3    ].B := Line[0, x].B;
+       Line[1, x3 + 1].B := Line[0, x].B;
+       Line[2, x3 + 1].B := Line[0, x].B;
+       Line[3, x3 + 1].B := Line[0, x].B;
+       Line[1, x3 + 2].B := Line[0, x].B;
+       Line[2, x3 + 2].B := Line[0, x].B;
+       Line[3, x3 + 2].B := Line[0, x].B;
+       Line[1, x3    ].G := Line[0, x].G;
+       Line[2, x3    ].G := Line[0, x].G;
+       Line[3, x3    ].G := Line[0, x].G;
+       Line[1, x3 + 1].G := Line[0, x].G;
+       Line[2, x3 + 1].G := Line[0, x].G;
+       Line[3, x3 + 1].G := Line[0, x].G;
+       Line[1, x3 + 2].G := Line[0, x].G;
+       Line[2, x3 + 2].G := Line[0, x].G;
+       Line[3, x3 + 2].G := Line[0, x].G;
+       Line[1, x3    ].R := Line[0, x].R;
+       Line[2, x3    ].R := Line[0, x].R;
+       Line[3, x3    ].R := Line[0, x].R;
+       Line[1, x3 + 1].R := Line[0, x].R;
+       Line[2, x3 + 1].R := Line[0, x].R;
+       Line[3, x3 + 1].R := Line[0, x].R;
+       Line[1, x3 + 2].R := Line[0, x].R;
+       Line[2, x3 + 2].R := Line[0, x].R;
+       Line[3, x3 + 2].R := Line[0, x].R;
+       Line[1, x3    ].A := Line[0, x].A;
+       Line[2, x3    ].A := Line[0, x].A;
+       Line[3, x3    ].A := Line[0, x].A;
+       Line[1, x3 + 1].A := Line[0, x].A;
+       Line[2, x3 + 1].A := Line[0, x].A;
+       Line[3, x3 + 1].A := Line[0, x].A;
+       Line[1, x3 + 2].A := Line[0, x].A;
+       Line[2, x3 + 2].A := Line[0, x].A;
+       Line[3, x3 + 2].A := Line[0, x].A;
+      end;
+    end;
+  end;
+ {$ENDIF}
+end;
+
+procedure Upsample3xBitmap24(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  x3   : Integer;
+  Line : Array [0..3] of PRGB24Array;
+begin
+ {$IFNDEF FPC}
+ with Bitmap do
+  begin
+   assert(PixelFormat = pf24bit);
+
+   // first stage
+   for y := (Height div 3) - 1 downto 0 do
+    begin
+     Line[0] := Scanline[y];
+     Line[1] := Scanline[y * 3];
+     Line[2] := Scanline[y * 3 + 1];
+     Line[3] := Scanline[y * 3 + 2];
+     for x := (Width  div 3) - 1 downto 0 do
+      begin
+       x3 := 3 * x;
+       Line[1, x3    ].B := Line[0, x].B;
+       Line[2, x3    ].B := Line[0, x].B;
+       Line[3, x3    ].B := Line[0, x].B;
+       Line[1, x3 + 1].B := Line[0, x].B;
+       Line[2, x3 + 1].B := Line[0, x].B;
+       Line[3, x3 + 1].B := Line[0, x].B;
+       Line[1, x3 + 2].B := Line[0, x].B;
+       Line[2, x3 + 2].B := Line[0, x].B;
+       Line[3, x3 + 2].B := Line[0, x].B;
+       Line[1, x3    ].G := Line[0, x].G;
+       Line[2, x3    ].G := Line[0, x].G;
+       Line[3, x3    ].G := Line[0, x].G;
+       Line[1, x3 + 1].G := Line[0, x].G;
+       Line[2, x3 + 1].G := Line[0, x].G;
+       Line[3, x3 + 1].G := Line[0, x].G;
+       Line[1, x3 + 2].G := Line[0, x].G;
+       Line[2, x3 + 2].G := Line[0, x].G;
+       Line[3, x3 + 2].G := Line[0, x].G;
+       Line[1, x3    ].R := Line[0, x].R;
+       Line[2, x3    ].R := Line[0, x].R;
+       Line[3, x3    ].R := Line[0, x].R;
+       Line[1, x3 + 1].R := Line[0, x].R;
+       Line[2, x3 + 1].R := Line[0, x].R;
+       Line[3, x3 + 1].R := Line[0, x].R;
+       Line[1, x3 + 2].R := Line[0, x].R;
+       Line[2, x3 + 2].R := Line[0, x].R;
+       Line[3, x3 + 2].R := Line[0, x].R;
       end;
     end;
   end;
@@ -506,6 +824,35 @@ begin
         Line[i, 4 * x + j].G := Line[0, x].G;
         Line[i, 4 * x + j].R := Line[0, x].R;
         Line[i, 4 * x + j].A := Line[0, x].A;
+       end;
+   end;
+ {$ENDIF}
+end;
+
+procedure Upsample4xBitmap24(var Bitmap: TBitmap);
+var
+  x, y : Integer;
+  i, j : Integer;
+  Line : Array [0..4] of PRGB32Array;
+begin
+ {$IFNDEF FPC}
+ with Bitmap do
+  for y := (Height div 4) - 1 downto 0 do
+   begin
+    assert(PixelFormat = pf32bit);
+
+    Line[0] := Scanline[y];
+    Line[1] := Scanline[y * 4];
+    Line[2] := Scanline[y * 4 + 1];
+    Line[3] := Scanline[y * 4 + 2];
+    Line[4] := Scanline[y * 4 + 3];
+    for x := (Width  div 4) - 1 downto 0 do
+     for i := 1 to 4 do
+      for j := 0 to 3 do
+       begin
+        Line[i, 4 * x + j].B := Line[0, x].B;
+        Line[i, 4 * x + j].G := Line[0, x].G;
+        Line[i, 4 * x + j].R := Line[0, x].R;
        end;
    end;
  {$ENDIF}
@@ -616,22 +963,56 @@ end;
 
 procedure TBufferedGraphicControl.Downsample2xBitmap(var Bitmap: TBitmap);
 begin
- Downsample2xBitmap32(Bitmap);
+ case Bitmap.PixelFormat of
+  pf24bit : Downsample2xBitmap24(Bitmap);
+  pf32bit : Downsample2xBitmap32(Bitmap);
+  else raise Exception.Create('not supported');
+ end;
+end;
+
+procedure TBufferedGraphicControl.Downsample3xBitmap(var Bitmap: TBitmap);
+begin
+ case Bitmap.PixelFormat of
+  pf24bit : Downsample3xBitmap24(Bitmap);
+  pf32bit : Downsample3xBitmap32(Bitmap);
+  else raise Exception.Create('not supported');
+ end;
 end;
 
 procedure TBufferedGraphicControl.Downsample4xBitmap(var Bitmap: TBitmap);
 begin
- Downsample4xBitmap32(Bitmap);
+ case Bitmap.PixelFormat of
+  pf24bit : Downsample4xBitmap24(Bitmap);
+  pf32bit : Downsample4xBitmap32(Bitmap);
+  else raise Exception.Create('not supported');
+ end;
 end;
 
 procedure TBufferedGraphicControl.Upsample2xBitmap(var Bitmap: TBitmap);
 begin
- Upsample2xBitmap32(Bitmap);
+ case Bitmap.PixelFormat of
+  pf24bit : Upsample2xBitmap24(Bitmap);
+  pf32bit : Upsample2xBitmap32(Bitmap);
+  else raise Exception.Create('not supported');
+ end;
+end;
+
+procedure TBufferedGraphicControl.Upsample3xBitmap(var Bitmap: TBitmap);
+begin
+ case Bitmap.PixelFormat of
+  pf24bit : Upsample3xBitmap24(Bitmap);
+  pf32bit : Upsample3xBitmap32(Bitmap);
+  else raise Exception.Create('not supported');
+ end;
 end;
 
 procedure TBufferedGraphicControl.Upsample4xBitmap(var Bitmap: TBitmap);
 begin
- Upsample4xBitmap32(Bitmap);
+ case Bitmap.PixelFormat of
+  pf24bit : Upsample4xBitmap24(Bitmap);
+  pf32bit : Upsample4xBitmap32(Bitmap);
+  else raise Exception.Create('not supported');
+ end;
 end;
 
 procedure TBufferedGraphicControl.Loaded;
@@ -1020,5 +1401,73 @@ begin
    Changed;
   end;
 end;
+
+{ TCustomGuiBaseAntialiasedControl }
+
+procedure TCustomGuiBaseAntialiasedControl.SetAntiAlias(const Value: TGuiAntiAlias);
+begin
+ if FAntiAlias <> Value then
+  begin
+   FAntiAlias := Value;
+   AntialiasChanged;
+  end;
+end;
+
+procedure TCustomGuiBaseAntialiasedControl.AntialiasChanged;
+begin
+ case FAntiAlias of
+       gaaNone : FOSValue :=  1;
+   gaaLinear2x : FOSValue :=  2;
+   gaaLinear3x : FOSValue :=  3;
+   gaaLinear4x : FOSValue :=  4;
+   gaaLinear8x : FOSValue :=  8;
+  gaaLinear16x : FOSValue := 16;
+ end;
+ RedrawBuffer(True);
+end;
+
+procedure TCustomGuiBaseAntialiasedControl.UpsampleBitmap(Bitmap: TBitmap);
+begin
+ case FAntiAlias of
+   gaaLinear2x: Upsample2xBitmap(Bitmap);
+   gaaLinear3x: Upsample3xBitmap(Bitmap);
+   gaaLinear4x: Upsample4xBitmap(Bitmap);
+   gaaLinear8x: begin
+                 Upsample4xBitmap(Bitmap);
+                 Upsample2xBitmap(Bitmap);
+                end;
+  gaaLinear16x: begin
+                 Upsample4xBitmap(Bitmap);
+                 Upsample4xBitmap(Bitmap);
+                end;
+  else raise Exception.Create('not yet supported');
+ end;
+end;
+
+constructor TCustomGuiBaseAntialiasedControl.Create(AOwner: TComponent);
+begin
+ inherited;
+ FAntiAlias := gaaNone;
+ FOSValue   := 1;
+end;
+
+procedure TCustomGuiBaseAntialiasedControl.DownsampleBitmap(Bitmap: TBitmap);
+begin
+ case FAntiAlias of
+   gaaLinear2x: Downsample2xBitmap(Bitmap);
+   gaaLinear3x: Downsample3xBitmap(Bitmap);
+   gaaLinear4x: Downsample4xBitmap(Bitmap);
+   gaaLinear8x: begin
+                 Downsample4xBitmap(Bitmap);
+                 Downsample2xBitmap(Bitmap);
+                end;
+  gaaLinear16x: begin
+                 Downsample4xBitmap(Bitmap);
+                 Downsample4xBitmap(Bitmap);
+                end;
+  else raise Exception.Create('not yet supported');
+ end;
+end;
+
 
 end.

@@ -19,6 +19,7 @@ object VSTSSModule: TVSTSSModule
       VSTModule = Owner
     end>
   ParameterProperties = <>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

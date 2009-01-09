@@ -97,7 +97,7 @@ end;
 procedure TCustomDspVibrato.UpdateBuffer;
 begin
  // determine buffer size
- FBufferSize  := round(sqr(Depth) * 0.1 * FSampleRate); // quarter second
+ FBufferSize  := round(sqr(Depth) * 0.25 * FSampleRate); // quarter second
  FRealBufSize := FBufferSize + 8;
 
  // check and reset buffer position

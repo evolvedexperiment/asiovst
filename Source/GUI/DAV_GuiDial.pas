@@ -48,11 +48,10 @@ type
 
   {$IFDEF DELPHI10_UP} {$region 'Custom Dials'} {$ENDIF}
 
-  TCustomGuiStitchedControl = class(TGuiBaseControl)
+  TCustomGuiStitchedControl = class(TCustomGuiBaseAntialiasedControl)
   private
     function GetDialImageIndex: Integer;
     procedure DoAutoSize;
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetDialBitmap(const Value: TBitmap);
     procedure SetNumGlyphs(const Value: Integer);
@@ -61,16 +60,14 @@ type
     procedure SetDialImageIndex(Value: Integer);
     procedure SetDialImageList(const Value: TGuiDialImageList);
   protected
-    FAntiAlias        : TGuiAntiAlias;
-    FAutoSize         : Boolean;
-    FDialBitmap       : TBitmap;
-    FImageList        : TImageList;
-    FNumGlyphs        : Integer;
-    FOnChange         : TNotifyEvent;
-    FOSValue          : Integer;
-    FStitchKind       : TGuiStitchKind;
-    FDialImageList    : TGuiDialImageList;
-    FDialImageItem    : TGuiDialImageCollectionItem;
+    FAutoSize      : Boolean;
+    FDialBitmap    : TBitmap;
+    FImageList     : TImageList;
+    FNumGlyphs     : Integer;
+    FOnChange      : TNotifyEvent;
+    FStitchKind    : TGuiStitchKind;
+    FDialImageList : TGuiDialImageList;
+    FDialImageItem : TGuiDialImageCollectionItem;
 
     function GetGlyphNr: Integer; virtual; abstract;
     procedure SettingsChanged(Sender: TObject); virtual;
@@ -82,14 +79,13 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
     property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
-    property DialImageList: TGuiDialImageList read FDialImageList write SetDialImageList;
     property DialImageIndex: Integer read GetDialImageIndex write SetDialImageIndex;
+    property DialImageList: TGuiDialImageList read FDialImageList write SetDialImageList;
     property ImageList: TImageList read FImageList write SetImageList;
-    property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
+    property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
   end;
 
   TCustomGuiDial = class(TCustomGuiStitchedControl)
@@ -959,8 +955,6 @@ begin
   inherited Create(AOwner);
   FLineColor              := clRed;
   FLineWidth              := 2;
-  FAntiAlias              := gaaNone;
-  FOSValue                := 1;
   FNumGlyphs              := 1;
   FStitchKind             := skHorizontal;
   FDialBitmap             := TBitmap.Create;
@@ -992,125 +986,44 @@ begin
    Lock;
    Brush.Color := Self.Color;
    if FDialBitmap.Empty and not assigned(FImageList) and not assigned(FDialImageList) then
-    case FAntiAlias of
-     gaaNone     :
-      begin
-       // draw background
-       {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
-       FillRect(ClipRect);
+    if AntiAlias = gaaNone then
+     begin
+      // draw background
+      {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+      FillRect(ClipRect);
 
-       RenderBitmap(fBuffer);
-      end;
-     gaaLinear2x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSValue * fBuffer.Width;
-         Height      := FOSValue * fBuffer.Height;
-         Canvas.Brush.Style := bsSolid;
-         Canvas.Brush.Color := Self.Color;
-         {$IFNDEF FPC}
-         if fTransparent then
-          begin
-           CopyParentImage(Self, Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-          end else
-         {$ENDIF}
-         Canvas.FillRect(Canvas.ClipRect);
-         RenderBitmap(Bmp);
-         Downsample2xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         FreeAndNil(Bmp);
-        end;
-      end;
-     gaaLinear4x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSValue * fBuffer.Width;
-         Height      := FOSValue * fBuffer.Height;
-         Canvas.Brush.Style := bsSolid;
-         Canvas.Brush.Color := Self.Color;
-         {$IFNDEF FPC}
-         if fTransparent then
-          begin
-           CopyParentImage(Self, Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-          end else
-         {$ENDIF}
-         Canvas.FillRect(Canvas.ClipRect);
-         RenderBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         FreeAndNil(Bmp);
-        end;
-      end;
-     gaaLinear8x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSValue * fBuffer.Width;
-         Height      := FOSValue * fBuffer.Height;
-         Canvas.Brush.Style := bsSolid;
-         Canvas.Brush.Color := Self.Color;
-         {$IFNDEF FPC}
-         if fTransparent then
-          begin
-           CopyParentImage(Self, Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-           Upsample2xBitmap(Bmp);
-          end else
-         {$ENDIF}
-         Canvas.FillRect(Canvas.ClipRect);
-         RenderBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         Downsample2xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         FreeAndNil(Bmp);
-        end;
-      end;
-     gaaLinear16x :
-      begin
-       Bmp := TBitmap.Create;
-       with Bmp do
-        try
-         PixelFormat := pf32bit;
-         Width       := FOSValue * fBuffer.Width;
-         Height      := FOSValue * fBuffer.Height;
-         Canvas.Brush.Style := bsSolid;
-         Canvas.Brush.Color := Self.Color;
-         {$IFNDEF FPC}
-         if fTransparent then
-          begin
-           CopyParentImage(Self, Bmp.Canvas);
-           Upsample4xBitmap(Bmp);
-           Upsample4xBitmap(Bmp);
-          end else
-         {$ENDIF}
-         Canvas.FillRect(Canvas.ClipRect);
-         RenderBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         Downsample4xBitmap(Bmp);
-         fBuffer.Canvas.Draw(0, 0, Bmp);
-        finally
-         FreeAndNil(Bmp);
-        end;
-      end;
+      RenderBitmap(fBuffer);
+     end
+    else
+     begin
+      Bmp := TBitmap.Create;
+      with Bmp do
+       try
+        PixelFormat := pf32bit;
+        Width       := OversamplingFactor * fBuffer.Width;
+        Height      := OversamplingFactor * fBuffer.Height;
+        Canvas.Brush.Style := bsSolid;
+        Canvas.Brush.Color := Self.Color;
+        {$IFNDEF FPC}
+        if FTransparent then
+         begin
+          CopyParentImage(Self, Bmp.Canvas);
+          UpsampleBitmap(Bmp);
+         end else
+        {$ENDIF}
+        Canvas.FillRect(Canvas.ClipRect);
+        RenderBitmap(Bmp);
+        DownsampleBitmap(Bmp);
+        fBuffer.Canvas.Draw(0, 0, Bmp);
+       finally
+        FreeAndNil(Bmp);
+       end;
     end
    else
     begin
      // draw background
      Brush.Color := Self.Color;
-     {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+     {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
      FillRect(ClipRect);
 
      GlyphNr := GetGlyphNr;
@@ -1265,23 +1178,6 @@ begin
   end;
 end;
 
-procedure TCustomGuiStitchedControl.SetAntiAlias(const Value: TGuiAntiAlias);
-begin
- if FAntiAlias <> Value then
-  begin
-   FAntiAlias := Value;
-   case FAntiAlias of
-         gaaNone : FOSValue :=  1;
-     gaaLinear2x : FOSValue :=  2;
-     gaaLinear4x : FOSValue :=  4;
-     gaaLinear8x : FOSValue :=  8;
-    gaaLinear16x : FOSValue := 16;
-   end;
-   RedrawBuffer(True);
-  end;
-end;
-
-
 { TCustomGuiDial }
 
 constructor TCustomGuiDial.Create(AOwner: TComponent);
@@ -1350,7 +1246,7 @@ begin
        PtsArray[i] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
       end;
 
-     Pen.Width := FOSValue * fLineWidth;
+     Pen.Width := OversamplingFactor * fLineWidth;
      Pen.Color := fLineColor;
      Brush.Color := FCircleColor;
      Polygon(PtsArray);
@@ -1617,7 +1513,7 @@ begin
   begin
    Brush.Color := Self.Color;
    Font.Assign(Self.Font);
-   Font.Size := Font.Size * FOSValue;
+   Font.Size := Font.Size * OversamplingFactor;
    if FGlyphNr < FStringList.Count
     then txt := FStringList[FGlyphNr]
     else txt := IntToStr(FGlyphNr);
@@ -1676,12 +1572,12 @@ begin
    Brush.Color := Self.Color;
 
    // draw background
-   {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+   {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
    FillRect(ClipRect);
 
    // draw circle
    Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
-   BW := 1 - FOSValue / Rad; // border width = 1 pixel
+   BW := 1 - OversamplingFactor / Rad; // border width = 1 pixel
    if Rad < 0 then exit;
 
    Center.x := 0.5 * Width;
@@ -1712,7 +1608,7 @@ begin
 
      //LineFrac := 0.01 * fIndLineLength;
      LineFrac := 0.5;
-     Pen.Width := 3 * FOSValue;
+     Pen.Width := 3 * OversamplingFactor;
      MoveTo(Pnt.X, Pnt.Y);
      LineTo(Round((1 - LineFrac) * Pnt.X + LineFrac * Center.x),
             Round((1 - LineFrac) * Pnt.Y + LineFrac * Center.y));
@@ -1741,7 +1637,7 @@ begin
   begin
    Brush.Color := Self.Color;
 
-   {$IFNDEF FPC}if fTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+   {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
    FillRect(ClipRect);
 
    Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
