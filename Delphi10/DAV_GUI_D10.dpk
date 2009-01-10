@@ -39,6 +39,7 @@ contains
   DAV_GuiAudioDataDisplay in '..\Source\GUI\DAV_GuiAudioDataDisplay.pas',
   DAV_GuiBaseControl in '..\Source\GUI\DAV_GuiBaseControl.pas',
   DAV_GuiButton in '..\Source\GUI\DAV_GuiButton.pas',
+  DAV_GuiCommon in '..\Source\GUI\DAV_GuiCommon.pas',
   DAV_GuiDial in '..\Source\GUI\DAV_GuiDial.pas',
   DAV_GuiDynamicWaveform in '..\Source\GUI\DAV_GuiDynamicWaveform.pas',
   DAV_GuiGroup in '..\Source\GUI\DAV_GuiGroup.pas',

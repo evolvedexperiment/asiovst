@@ -52,7 +52,7 @@ implementation
 {$R *.DFM}
 
 uses
-  UniQuEDM;
+  DAV_GuiCommon, UniQuEDM;
 
 procedure TFmUniQuE.FormCreate(Sender: TObject);
 var

@@ -121,13 +121,14 @@ object FmLA1701: TFmLA1701
       Top = 11
       Width = 16
       Height = 16
-      OnClick = LEDOnOffClick
       Brightness_Percent = 100.000000000000000000
       Color = clBlack
       LineWidth = 2
       LEDColor = clRed
       AntiAlias = gaaLinear4x
       LineColor = clRed
+      OnClick = LEDOnOffClick
+      ParentColor = False
     end
     object LbOnOff: TGuiLabel
       Left = 86

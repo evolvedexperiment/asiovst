@@ -60,7 +60,7 @@ implementation
 {$R *.dfm}
 
 uses
-  AmpSimDM;
+  DAV_GuiCommon, AmpSimDM;
 
 procedure TFmCombo.FormCreate(Sender: TObject);
 var

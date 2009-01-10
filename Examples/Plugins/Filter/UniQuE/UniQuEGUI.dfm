@@ -42,64 +42,72 @@ object FmUniQuE: TFmUniQuE
       Top = 34
       Width = 75
       Height = 75
+      DialImageIndex = -1
       LineColor = 15790320
+      LineWidth = 2
       Max = 15.000000000000000000
       Min = -15.000000000000000000
       NumGlyphs = 65
+      OnChange = DialLowChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
-      OnChange = DialLowChange
     end
     object DialMid: TGuiDial
       Left = 92
       Top = 34
       Width = 75
       Height = 75
+      DialImageIndex = -1
       LineColor = 15790320
+      LineWidth = 2
       Max = 15.000000000000000000
       Min = -15.000000000000000000
       NumGlyphs = 65
+      OnChange = DialMidChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
-      OnChange = DialMidChange
     end
     object DialPresence: TGuiDial
       Left = 173
       Top = 34
       Width = 75
       Height = 75
+      DialImageIndex = -1
       LineColor = 15790320
+      LineWidth = 2
       Max = 15.000000000000000000
       Min = -15.000000000000000000
       NumGlyphs = 65
+      OnChange = DialPresenceChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
-      OnChange = DialPresenceChange
     end
     object DialHigh: TGuiDial
       Left = 254
       Top = 34
       Width = 75
       Height = 75
+      DialImageIndex = -1
       LineColor = 15790320
+      LineWidth = 2
       Max = 15.000000000000000000
       Min = -15.000000000000000000
       NumGlyphs = 65
+      OnChange = DialHighChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
-      OnChange = DialHighChange
     end
     object LEDOnOff: TGuiLED
       Left = 93
       Top = 10
       Width = 17
       Height = 18
-      OnClick = OnOffClick
       Brightness_Percent = 100.000000000000000000
       LineWidth = 2
       LEDColor = clLime
       AntiAlias = gaaLinear4x
       LineColor = 5329233
+      OnClick = OnOffClick
     end
     object LbOnOff: TGuiLabel
       Left = 116
@@ -134,12 +142,12 @@ object FmUniQuE: TFmUniQuE
       Top = 10
       Width = 17
       Height = 18
-      OnClick = PadClick
       Brightness_Percent = 100.000000000000000000
       LineWidth = 2
       LEDColor = clYellow
       AntiAlias = gaaLinear4x
       LineColor = 5329233
+      OnClick = PadClick
     end
     object LbInvert: TGuiLabel
       Left = 277
@@ -160,12 +168,12 @@ object FmUniQuE: TFmUniQuE
       Top = 10
       Width = 17
       Height = 18
-      OnClick = InvertClick
       Brightness_Percent = 100.000000000000000000
       LineWidth = 2
       LEDColor = 16735092
       AntiAlias = gaaLinear4x
       LineColor = 5329233
+      OnClick = InvertClick
     end
     object LbLow: TGuiLabel
       Left = 11

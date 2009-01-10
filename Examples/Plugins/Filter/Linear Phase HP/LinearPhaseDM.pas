@@ -2,13 +2,14 @@ unit LinearPhaseDM;
 
 interface
 
-{$I DAV_COmpiler.INC}
-{-$DEFINE Use_IPPS}
+{$I DAV_Compiler.INC}
+{.$DEFINE Use_IPPS}
+{.$DEFINE Use_CUDA}
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_Complex,
   DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
-  DAV_VSTModule;
+  {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
 
 type
   TLinearPhaseDataModule = class(TVSTModule)
@@ -27,9 +28,11 @@ type
     FSemaphore    : Integer;
     {$IFDEF Use_IPPS}
     FFft          : TFftReal2ComplexIPPSFloat32;
+    {$ELSE} {$IFDEF Use_CUDA}
+    FFft          : TFftReal2ComplexCUDA32;
     {$ELSE}
     FFft          : TFftReal2ComplexNativeFloat32;
-    {$ENDIF}
+    {$ENDIF}{$ENDIF}
     procedure CalculateFilterKernel;
   public
   end;
@@ -41,6 +44,16 @@ implementation
 uses
   Math, DAV_DspWindowing, LinearPhaseGUI;
 
+procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ FSemaphore       := 0;
+ FFilterKernel    := nil;
+ FSignalPadded    := nil;
+ FFilterFreq      := nil;
+ FSignalFreq      := nil;
+ BlockModeOverlap := BlockModeSize div 2;
+end;
+
 procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
 begin
  {$IFDEF Use_IPPS}
@@ -50,6 +63,13 @@ begin
  ReallocMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
+ {$ELSE} {$IFDEF Use_CUDA}
+ FFft := TFftReal2ComplexCUDA32.Create(round(Log2(BlockModeSize)));
+
+ ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
+ ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
+ FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
+ FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
  {$ELSE}
  FFft := TFftReal2ComplexNativeFloat32.Create(round(Log2(BlockModeSize)));
 
@@ -57,7 +77,7 @@ begin
  ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
- {$ENDIF}
+ {$ENDIF}{$ENDIF}
 
  ReallocMem(FFilterKernel, BlockModeSize * SizeOf(Single));
  ReallocMem(FSignalPadded, BlockModeSize * SizeOf(Single));
@@ -65,6 +85,8 @@ begin
  FillChar(FSignalPadded^[0], BlockModeSize * SizeOf(Single), 0);
 
  FFft.AutoScaleType := astDivideInvByN;
+ FFft.DataOrder := doPackedComplex;
+ Parameter[0] := 100;
  CalculateFilterKernel;
 end;
 
@@ -75,16 +97,6 @@ begin
  Dispose(FFilterFreq);
  Dispose(FSignalFreq);
  FreeAndNil(FFft);
-end;
-
-procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
-begin
- FSemaphore       := 0;
- FFilterKernel    := nil;
- FSignalPadded    := nil;
- FFilterFreq      := nil;
- FSignalFreq      := nil;
- BlockModeOverlap := BlockModeSize div 2;
 end;
 
 procedure TLinearPhaseDataModule.ParamFrequencyChange(
@@ -126,9 +138,11 @@ begin
     // calculate frequency
     {$IFDEF Use_IPPS}
     FFft.PerformFFTCCS(FFilterFreq, FFilterKernel);
+    {$ELSE}{$IFDEF Use_CUDA}
+    FFft.PerformFFTCCS(FFilterFreq, FFilterKernel);
     {$ELSE}
     FFft.PerformFFTPackedComplex(FFilterFreq, FFilterKernel);
-    {$ENDIF}
+    {$ENDIF}{$ENDIF}
    finally
     dec(FSemaphore);
    end;
@@ -165,8 +179,19 @@ begin
 
     FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
 
-    {$ELSE}
+    {$ELSE}{$IFDEF Use_CUDA}
+    FFft.PerformFFT(FSignalFreq, @Inputs[Channel, 0]);
 
+    // DC & Nyquist
+    FSignalFreq^[0].Re := FFilterFreq^[0].Re * FSignalFreq^[0].Re;
+    FSignalFreq^[0].Im := FFilterFreq^[0].Im * FSignalFreq^[0].Im;
+    FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
+
+    for Bin := 1 to Half - 1
+     do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
+
+    FFft.PerformIFFT(FSignalFreq, @Outputs[Channel, 0]);
+    {$ELSE}
     FFft.PerformFFTPackedComplex(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
 
     // DC & Nyquist
@@ -178,7 +203,7 @@ begin
      do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
     FFft.PerformIFFTPackedComplex(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
-    {$ENDIF}
+    {$ENDIF}{$ENDIF}
    end;
  finally
   dec(FSemaphore);

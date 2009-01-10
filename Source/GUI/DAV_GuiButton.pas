@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
   {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Controls, DAV_GuiBaseControl, Graphics;
+  Classes, Controls, Graphics, DAV_GuiCommon, DAV_GuiBaseControl;
 
 type
   TCustomGuiButton = class(TCustomGuiBaseControl)

@@ -24,7 +24,6 @@ object FmCombo: TFmCombo
     Height = 25
     AntiAlias = gaaLinear4x
     ArrowColor = 4227200
-    ArrowWidth = 1
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clMaroon
     Font.Height = -21
@@ -41,8 +40,9 @@ object FmCombo: TFmCombo
       '4x12 >')
     LineColor = 2039583
     LineWidth = 2
-    SelectBoxColor = 4227200
+    ParentFont = False
     Radius = 8
+    SelectBoxColor = 4227200
     OnChange = SBModelChange
   end
   object LbModel: TGuiLabel
@@ -66,12 +66,12 @@ object FmCombo: TFmCombo
     Top = 8
     Width = 25
     Height = 25
-    OnClick = LbStereoClick
     Brightness_Percent = 100.000000000000000000
     LineWidth = 2
     LEDColor = 192
     AntiAlias = gaaLinear4x
     LineColor = 192
+    OnClick = LbStereoClick
   end
   object LbStereo: TGuiLabel
     Left = 302
@@ -102,8 +102,8 @@ object FmCombo: TFmCombo
     ParentColor = True
     Radius = 8
     TabOrder = 0
-    Transparent = True
     UseDockManager = True
+    Transparent = True
     object LbResonanceValue: TLabel
       Left = 288
       Top = 105
@@ -154,16 +154,18 @@ object FmCombo: TFmCombo
       Top = 35
       Width = 64
       Height = 64
+      DialImageIndex = -1
       LineColor = clMaroon
+      LineWidth = 2
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialDriveChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialDriveChange
     end
     object LbDrive: TGuiLabel
       Left = 8
@@ -186,16 +188,18 @@ object FmCombo: TFmCombo
       Top = 35
       Width = 64
       Height = 64
+      DialImageIndex = -1
       LineColor = clMaroon
+      LineWidth = 2
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialBiasChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialBiasChange
     end
     object LbBias: TGuiLabel
       Left = 78
@@ -217,50 +221,56 @@ object FmCombo: TFmCombo
       Top = 35
       Width = 64
       Height = 64
+      DialImageIndex = -1
       LineColor = clMaroon
+      LineWidth = 2
       Max = 20.000000000000000000
       Min = -20.000000000000000000
       NumGlyphs = 65
+      OnChange = DialOutputChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialOutputChange
     end
     object DialFrequency: TGuiDial
       Left = 218
       Top = 35
       Width = 64
       Height = 64
-      LineColor = clMaroon
       CurveMapping = -1.750000000000000000
       DefaultPosition = 100.000000000000000000
+      DialImageIndex = -1
+      LineColor = clMaroon
+      LineWidth = 2
       Max = 10000.000000000000000000
       Min = 10.000000000000000000
       NumGlyphs = 65
+      OnChange = DialFreqChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 1000.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialFreqChange
     end
     object DialResonance: TGuiDial
       Left = 288
       Top = 35
       Width = 64
       Height = 64
+      DialImageIndex = -1
       LineColor = clMaroon
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialResoChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialResoChange
     end
     object LbOutput: TGuiLabel
       Left = 148

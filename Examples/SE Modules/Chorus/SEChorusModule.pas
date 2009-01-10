@@ -15,10 +15,13 @@ type
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FStages       : Integer;
+    FStaticCount  : Integer;
     FDepth        : Single;
     FSpeed        : Single;
     FDrift        : Single;
     FMix          : Single;
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
     FChorus       : TDspChorus32;
     procedure Open; override;
@@ -79,6 +82,25 @@ begin
 
  for Sample := 0 to SampleFrames - 1
   do Outp^[Sample] := FChorus.Process(Inp^[Sample]);
+end;
+
+procedure TSEChorusModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TSEChorusModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
 end;
 
 // describe your module
@@ -176,19 +198,14 @@ end;
 
 // An input plug has changed value
 procedure TSEChorusModule.PlugStateChange(const CurrentPin: TSEPin);
-var
-  InState  : TSEStateType;
-  OutState : TSEStateType;
 begin
- InState  := Pin[Integer(pinInput)].Status;
- OutState := InState;
- if (InState < stRun) and (Pin[Integer(pinInput)].Value = 0)
-  then OutState := stStatic;
-
- Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, OutState);
  inherited;
 
  case TSEChorusPins(CurrentPin.PinID) of
+       pinInput: begin
+                  ChooseProcess;
+                  Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+                 end;
       pinStages: FChorus.Stages := FStages;
        pinDepth: FChorus.Depth := FDepth;
        pinSpeed: FChorus.Speed := FSpeed;

@@ -6,8 +6,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-  Classes, Graphics, Forms, Messages, SysUtils, Controls,
-  DAV_GuiBaseControl;
+  Classes, Graphics, Forms, Messages, SysUtils, Controls, DAV_GuiBaseControl;
 
 type
   TCustomGuiLED = class(TCustomGuiBaseAntialiasedControl)
@@ -35,18 +34,32 @@ type
 
   TGuiLED = class(TCustomGuiLED)
   published
+    property Anchors;
     property AntiAlias;
-    property LEDColor;
     property Color;
+    property Enabled;
+    property LEDColor;
     property LineColor;
     property LineWidth;
     property OnChange;
+    property OnClick;
+    property OnMouseDown;
+    property OnMouseEnter;
+    property OnMouseLeave;
+    property OnMouseMove;
+    property OnMouseUp;
+    property OnMouseWheel;
+    property OnMouseWheelDown;
+    property OnMouseWheelUp;
+    property OnPaint;
+    property OnResize;
+    property ParentColor;
   end;
 
 implementation
 
 uses
-  ExtCtrls, Math, DAV_Common, DAV_Complex;
+  ExtCtrls, Math, DAV_Common, DAV_Complex, DAV_GuiCommon;
 
 function RadToDeg(const Radians: Extended): Extended;  { Degrees := Radians * 180 / PI }
 const

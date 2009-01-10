@@ -43,7 +43,7 @@ implementation
 {$R *.DFM}
 
 uses
-  PNGImage, DAV_VSTModuleWithPrograms, ExciterDM;
+  PNGImage, DAV_GUICommon, ExciterDM;
 
 procedure TFmExciter.FormCreate(Sender: TObject);
 var

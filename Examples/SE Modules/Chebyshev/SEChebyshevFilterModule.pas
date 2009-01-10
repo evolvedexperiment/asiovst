@@ -14,10 +14,13 @@ type
   protected
     FInput1Buffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
-    FFilter       : TChebyshev1Filter;
-    procedure SampleRateChanged; override;
-    procedure Open; override;
+    FFilter       : TCustomChebyshev1Filter;
+    FStaticCount  : Integer;
     class function GetModueName: string; virtual; abstract;
+    procedure ChooseProcess;
+    procedure Open; override;
+    procedure SampleRateChanged; override;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   public
     destructor Destroy; override;
 
@@ -165,6 +168,25 @@ begin
  end;;
 end;
 
+procedure TSECustomChebyshevFilterModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TSECustomChebyshevFilterModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
+end;
+
 { TSEStaticChebyshevFilterModule }
 
 constructor TSEStaticChebyshevFilterModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
@@ -212,6 +234,10 @@ procedure TSEStaticChebyshevFilterModule.PlugStateChange(const CurrentPin: TSEPi
 begin
  // has user altered a filter parameter?
  case TSEChebyshevFilterPins(CurrentPin.PinID) of
+      pinInput : begin
+                  ChooseProcess;
+                  Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+                 end;
   pinFrequency : FFilter.Frequency := 10000 * FFrequency;
       pinOrder : FFilter.Order     := 2 * (FOrder div 2);
      pinRipple : FFilter.Ripple    := 10 * FRipple;
@@ -311,6 +337,10 @@ procedure TSEAutomatebleChebyshevFilterModule.PlugStateChange(
 begin
  // has user altered a filter parameter?
  case TSEChebyshevFilterPins(CurrentPin.PinID) of
+ pinInput : begin
+             ChooseProcess;
+             Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+            end;
   pinOrder: FFilter.Order := FOrder;
   pinFrequency,
   pinRipple:

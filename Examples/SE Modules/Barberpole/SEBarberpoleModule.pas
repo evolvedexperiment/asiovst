@@ -13,10 +13,13 @@ type
   private
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
+    FStaticCount  : Integer;
     FStages       : Integer;
     FDepth        : Single;
     FSpeed        : Single;
     FMix          : Single;
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
     FBarberpole       : TDspBarberpole32;
     procedure Open; override;
@@ -77,6 +80,25 @@ begin
 
  for Sample := 0 to SampleFrames - 1
   do Outp^[Sample] := FBarberpole.Process(Inp^[Sample]);
+end;
+
+procedure TSEBarberpoleModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TSEBarberpoleModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
 end;
 
 // describe your module
@@ -165,19 +187,14 @@ end;
 
 // An input plug has changed value
 procedure TSEBarberpoleModule.PlugStateChange(const CurrentPin: TSEPin);
-var
-  InState  : TSEStateType;
-  OutState : TSEStateType;
 begin
- InState  := Pin[Integer(pinInput)].Status;
- OutState := InState;
- if (InState < stRun) and (Pin[Integer(pinInput)].Value = 0)
-  then OutState := stStatic;
-
- Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, OutState);
  inherited;
 
  case TSEBarberpolePins(CurrentPin.PinID) of
+       pinInput: begin
+                  ChooseProcess;
+                  Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+                 end;
       pinStages: FBarberpole.Stages := FStages;
        pinDepth: FBarberpole.Depth := FDepth;
        pinSpeed: FBarberpole.Speed := FSpeed;

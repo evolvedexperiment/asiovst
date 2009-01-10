@@ -55,7 +55,7 @@ implementation
 {$R *.DFM}
 
 uses
-  PNGImage, AdvancedClipperDM;
+  DAV_GuiCommon, PNGImage, AdvancedClipperDM;
 
 procedure TFmAdvancedClipper.FormCreate(Sender: TObject);
 var

@@ -328,13 +328,14 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Top = 2
         Width = 15
         Height = 15
-        OnClick = LbHardClipClick
         Brightness_Percent = 90.000000000000000000
         Color = 4938079
         LineWidth = 2
         LEDColor = 14870505
         AntiAlias = gaaLinear4x
         LineColor = 3226174
+        OnClick = LbHardClipClick
+        ParentColor = False
       end
     end
   end

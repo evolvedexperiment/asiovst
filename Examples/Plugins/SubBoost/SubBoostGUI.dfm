@@ -38,7 +38,6 @@ object FmSubBoost: TFmSubBoost
     Width = 124
     Height = 22
     AntiAlias = gaaLinear4x
-    ArrowWidth = 1
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 13948116
     Font.Height = -11
@@ -52,8 +51,9 @@ object FmSubBoost: TFmSubBoost
       'Key Osc.')
     LineColor = 13948116
     LineWidth = 2
-    SelectBoxColor = 2105376
+    ParentFont = False
     Radius = 5
+    SelectBoxColor = 2105376
     OnChange = SBTypeChange
   end
   object LbType: TGuiLabel

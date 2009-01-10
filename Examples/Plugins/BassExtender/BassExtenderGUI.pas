@@ -72,7 +72,7 @@ type
 implementation
 
 uses
-  Math, BassExtenderDM, PngImage;
+  Math, DAV_GuiCommon, BassExtenderDM, PngImage;
 
 {$R *.DFM}
 

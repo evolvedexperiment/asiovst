@@ -3,22 +3,23 @@ unit LinearPhaseDM;
 interface
 
 {$I DAV_Compiler.INC}
-{-$DEFINE Use_IPPS}
+{.$DEFINE Use_IPPS}
+{.$DEFINE Use_CUDA}
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_Complex,
   DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
-  DAV_VSTModule;
+  {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
 
 type
   TLinearPhaseDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleCreate(Sender: TObject);
+    procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FFilterKernel : PDAVSingleFixedArray;
     FSignalPadded : PDAVSingleFixedArray;
@@ -27,9 +28,11 @@ type
     FSemaphore    : Integer;
     {$IFDEF Use_IPPS}
     FFft          : TFftReal2ComplexIPPSFloat32;
+    {$ELSE} {$IFDEF Use_CUDA}
+    FFft          : TFftReal2ComplexCUDA32;
     {$ELSE}
     FFft          : TFftReal2ComplexNativeFloat32;
-    {$ENDIF}
+    {$ENDIF}{$ENDIF}
     procedure CalculateFilterKernel;
   public
   end;
@@ -43,11 +46,11 @@ uses
 
 procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FSemaphore := 0;
- FFilterKernel := nil;
- FSignalPadded := nil;
- FFilterFreq   := nil;
- FSignalFreq   := nil;
+ FSemaphore       := 0;
+ FFilterKernel    := nil;
+ FSignalPadded    := nil;
+ FFilterFreq      := nil;
+ FSignalFreq      := nil;
  BlockModeOverlap := BlockModeSize div 2;
 end;
 
@@ -60,6 +63,13 @@ begin
  ReallocMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
+ {$ELSE} {$IFDEF Use_CUDA}
+ FFft := TFftReal2ComplexCUDA32.Create(round(Log2(BlockModeSize)));
+
+ ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
+ ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
+ FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
+ FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
  {$ELSE}
  FFft := TFftReal2ComplexNativeFloat32.Create(round(Log2(BlockModeSize)));
 
@@ -67,7 +77,7 @@ begin
  ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
- {$ENDIF}
+ {$ENDIF}{$ENDIF}
 
  ReallocMem(FFilterKernel, BlockModeSize * SizeOf(Single));
  ReallocMem(FSignalPadded, BlockModeSize * SizeOf(Single));
@@ -126,10 +136,12 @@ begin
 
     // calculate frequency
     {$IFDEF Use_IPPS}
-    FFft.Perform_FFT(FFilterFreq, FFilterKernel);
+    FFft.PerformFFTCCS(FFilterFreq, FFilterKernel);
+    {$ELSE}{$IFDEF Use_CUDA}
+    FFft.PerformFFTCCS(FFilterFreq, FFilterKernel);
     {$ELSE}
     FFft.PerformFFTPackedComplex(FFilterFreq, FFilterKernel);
-    {$ENDIF}
+    {$ENDIF}{$ENDIF}
    finally
     dec(FSemaphore);
    end;
@@ -155,7 +167,7 @@ begin
   for Channel := 0 to numOutputs - 1 do
    begin
     {$IFDEF Use_IPPS}
-    FFft.Perform_FFT(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
+    FFft.PerformFFTCCS(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
 
     // DC & Nyquist
     FSignalFreq^[0].Re := FFilterFreq^[0].Re * FSignalFreq^[0].Re;
@@ -164,10 +176,21 @@ begin
     for Bin := 1 to Half - 1
      do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
-    FFft.Perform_IFFT(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
+    FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
 
+    {$ELSE}{$IFDEF Use_CUDA}
+    FFft.PerformFFT(FSignalFreq, @Inputs[Channel, 0]);
+
+    // DC & Nyquist
+    FSignalFreq^[0].Re := FFilterFreq^[0].Re * FSignalFreq^[0].Re;
+    FSignalFreq^[0].Im := FFilterFreq^[0].Im * FSignalFreq^[0].Im;
+    FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
+
+    for Bin := 1 to Half - 1
+     do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
+
+    FFft.PerformIFFT(FSignalFreq, @Outputs[Channel, 0]);
     {$ELSE}
-
     FFft.PerformFFTPackedComplex(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
 
     // DC & Nyquist
@@ -179,7 +202,7 @@ begin
      do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
     FFft.PerformIFFTPackedComplex(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
-    {$ENDIF}
+    {$ENDIF}{$ENDIF}
    end;
  finally
   dec(FSemaphore);

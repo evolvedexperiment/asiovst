@@ -2,12 +2,14 @@ unit SEConvolutionModule;
 
 interface
 
-{$I ASIOVST.INC}
-{-$DEFINE Use_IPPS}
+{$I DAV_Compiler.INC}
+{.$DEFINE Use_IPPS}
+{$DEFINE Use_CUDA}
 
 uses
   SysUtils, DAV_Common, DAV_SECommon, DAV_SEModule, DAV_Complex,
-  DAV_DspFftReal2Complex {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF};
+  DAV_DspFftReal2Complex {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
+  {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 
 type
   // define some constants to make referencing in/outs clearer
@@ -26,9 +28,11 @@ type
     FSemaphore          : Integer;
     {$IFDEF Use_IPPS}
     FFft                : TFftReal2ComplexIPPSFloat32;
+    {$ELSE}{$IFDEF Use_CUDA}
+    FFft                : TFftReal2ComplexCUDA32;
     {$ELSE}
     FFft                : TFftReal2ComplexNativeFloat32;
-    {$ENDIF}
+    {$ENDIF}{$ENDIF}
     FIRSize             : Integer;
     FOffsetSize         : Integer;
     FBlockPosition      : Integer;
@@ -39,9 +43,12 @@ type
     FFFTSizeQuarter     : Integer;
     procedure SetIRSizePadded(const Value: Integer);
     procedure SetIRBlockSize(const Value: Integer);
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
     FInputBuffer         : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer        : PDAVSingleFixedArray;
+    FStaticCount         : Integer;
     FFileName            : PChar;
     FMaxIRSize           : Integer;
     FRealLatency         : Integer;
@@ -80,6 +87,11 @@ uses
 constructor TSEConvolutionModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  {$IFDEF Use_IPPS}
+ if CSepMagic <> 2 * $29A2A826
+  then raise Exception.Create('This module is not allowed to be embedded into a VST Plugin');
+ {$ENDIF}
+
+ {$IFDEF Use_CUDA}
  if CSepMagic <> 2 * $29A2A826
   then raise Exception.Create('This module is not allowed to be embedded into a VST Plugin');
  {$ENDIF}
@@ -182,6 +194,27 @@ begin
  Move(FInputBuffer[BufferOffset], FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single));
 end;
 
+procedure TSEConvolutionModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TSEConvolutionModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun then
+  if FileExists(FFileName) and (FIRSizePadded > 0)
+   then OnProcess := SubProcess
+   else OnProcess := SubProcessBypass
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
+end;
+
 // describe your module
 class procedure TSEConvolutionModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
@@ -190,10 +223,13 @@ begin
    {$IFDEF Use_IPPS}
    Name       := 'Convolution Module (IPP based)';
    ID         := 'IPP Convolution Module';
+   {$ELSE} {$IFDEF Use_CUDA}
+   Name       := 'Convolution Module (CUDA based)';
+   ID         := 'CUDA Convolution Module';
    {$ELSE}
    Name       := 'Simple Convolution Module';
    ID         := 'DAV Simple Convolution Module';
-   {$ENDIF}
+   {$ENDIF}{$ENDIF}
 
    About      := 'by Christian-W. Budde';
    SdkVersion := CSeSdkVersion;
@@ -276,14 +312,15 @@ var
 begin
  // has user altered a filter parameter?
  case TSEConvolutionPins(CurrentPin.PinID) of
-        pinFileName : if FileExists(FFileName) then
-                       begin
-                        LoadIR(StrPas(FFileName));
-                        if FIRSizePadded > 0
-                         then OnProcess := SubProcess
-                         else OnProcess := SubProcessBypass;
-                       end
-                      else OnProcess := SubProcessBypass;
+           pinInput : begin
+                       ChooseProcess;
+                       Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+                      end;
+        pinFileName : begin
+                       if FileExists(FFileName)
+                        then LoadIR(StrPas(FFileName));
+                       ChooseProcess; 
+                      end;
        pinMaxIRSize : begin
                        while FSemaphore > 0 do;
                        Inc(FSemaphore);
@@ -336,9 +373,11 @@ begin
    // perform FFT
    {$IFDEF Use_IPPS}
    FFft.PerformFFTCCS(FFilterFreqs[Blocks], TempIR);
+   {$ELSE}{$IFDEF Use_CUDA}
+   FFft.PerformFFT(FFilterFreqs[Blocks], TempIR);
    {$ELSE}
    FFft.PerformFFTPackedComplex(FFilterFreqs[Blocks], TempIR);
-   {$ENDIF}
+   {$ENDIF}{$ENDIF}
   end;
 end;
 
@@ -393,13 +432,15 @@ begin
   if not assigned(FFft)
   {$IFDEF Use_IPPS}
    then FFft := TFftReal2ComplexIPPSFloat32.Create(i)
+  {$ELSE} {$IFDEF Use_CUDA}
+   then FFft := TFftReal2ComplexCUDA32.Create(i)
   {$ELSE}
    then
     begin
      FFft := TFftReal2ComplexNativeFloat32.Create(i);
      FFft.DataOrder := doPackedComplex;
     end
-  {$ENDIF}
+  {$ENDIF}{$ENDIF}
    else FFft.Order := i;
   FFft.AutoScaleType := astDivideInvByN;
 
@@ -534,7 +575,24 @@ begin
    MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
   end;
 
+ {$ELSE} {$IFDEF Use_CUDA}
+
+ FFft.PerformFFT(FSignalFreq, SignalIn);
+ for Block := 0 to FFreqRespBlockCount - 1 do
+  begin
+   // make a copy of the frequency respose
+   move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+
+   ComplexMultiply(@FConvolved^[0], @FFilterFreqs[Block]^[0], Half);
+
+   FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
+
+   // copy and combine
+   MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
+  end;
+
  {$ELSE}
+
  FFft.PerformFFTPackedComplex(FSignalFreq, SignalIn);
  for Block := 0 to FFreqRespBlockCount - 1 do
   begin
@@ -554,7 +612,7 @@ begin
    // copy and combine
    MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
   end;
- {$ENDIF}
+ {$ENDIF}{$ENDIF}
 end;
 
 end.

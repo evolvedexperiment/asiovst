@@ -99,7 +99,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PngImage, LA1701DM;
+  Math, PngImage, DAV_GUICommon, LA1701DM;
 
 procedure TFmLA1701.FormCreate(Sender: TObject);
 var

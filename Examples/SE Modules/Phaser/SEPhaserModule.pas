@@ -14,12 +14,15 @@ type
   private
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
+    FStaticCount  : Integer;
     FStages       : Integer;
     FDepth        : Single;
     FRate         : Single;
     FMinimum      : Single;
     FMaximum      : Single;
     FFeedback     : Single;
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
     FPhaser       : TPhaser;
     procedure Open; override;
@@ -80,6 +83,25 @@ begin
 
  for Sample := 0 to SampleFrames - 1
   do Outp^[Sample] := FPhaser.Process(Inp^[Sample]);
+end;
+
+procedure TSEPhaserModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TSEPhaserModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
 end;
 
 // describe your module
@@ -186,19 +208,13 @@ end;
 
 // An input plug has changed value
 procedure TSEPhaserModule.PlugStateChange(const CurrentPin: TSEPin);
-var
-  InState  : TSEStateType;
-  OutState : TSEStateType;
 begin
- InState  := Pin[Integer(pinInput)].Status;
- OutState := InState;
- if (InState < stRun) and (Pin[Integer(pinInput)].Value = 0)
-  then OutState := stStatic;
-
- Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, OutState);
  inherited;
-
  case TSEPhaserPins(CurrentPin.PinID) of
+       pinInput: begin
+                  ChooseProcess;
+                  Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+                 end;
        pinDepth: FPhaser.Depth    := 0.01 * FDepth;
     pinFeedback: FPhaser.Feedback := 0.01 * FFeedback;
      pinMinimum: FPhaser.Minimum  := FMinimum;

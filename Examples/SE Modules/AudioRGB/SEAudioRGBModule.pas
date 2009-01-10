@@ -12,7 +12,11 @@ type
     pinCoefficients, pinTransition);
 
   TCustomSEAudioRGBModule = class(TSEModuleBase)
+  private
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
+    FStaticCount : Integer;
     procedure Open; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
   public
@@ -83,6 +87,26 @@ begin
  // choose which function is used to process audio
  OnProcess := SubProcess;
 end;
+
+procedure TCustomSEAudioRGBModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TCustomSEAudioRGBModule.ChooseProcess;
+begin
+ if Pin[0].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
+end;
+
 
 { TSEAudioRGBModule }
 
@@ -207,24 +231,26 @@ procedure TSEAudioRGBModule.PlugStateChange(const CurrentPin: TSEPin);
 var
   OutState : TSEStateType;
 begin
- if (Pin[0].Status < stRun) and (Pin[0].Value = 0)
-  then OutState := stStatic
-  else OutState := stRun;
-
- Pin[Integer(pinOutputR)].TransmitStatusChange(SampleClock, OutState);
- Pin[Integer(pinOutputG)].TransmitStatusChange(SampleClock, OutState);
- Pin[Integer(pinOutputB)].TransmitStatusChange(SampleClock, OutState);
  inherited;
 
  case TSEAudioRGBPins(CurrentPin.PinID) of
-  pinCoefficients: begin
-                    FSplitter[0].NumberOfCoefficients := FCoefficients;
-                    FSplitter[1].NumberOfCoefficients := FCoefficients;
-                   end;
-    pinTransition: begin
-                    FSplitter[0].Transition := f_Limit(FTransition, 0.01, 0.499);
-                    FSplitter[1].Transition := f_Limit(FTransition, 0.01, 0.499);
-                   end;
+         pinInput : begin
+                     if (Pin[0].Status < stRun) and (Pin[0].Value = 0)
+                      then OutState := stStatic
+                      else OutState := stRun;
+                     Pin[Integer(pinOutputR)].TransmitStatusChange(SampleClock, OutState);
+                     Pin[Integer(pinOutputG)].TransmitStatusChange(SampleClock, OutState);
+                     Pin[Integer(pinOutputB)].TransmitStatusChange(SampleClock, OutState);
+                     ChooseProcess;
+                    end;
+  pinCoefficients : begin
+                     FSplitter[0].NumberOfCoefficients := FCoefficients;
+                     FSplitter[1].NumberOfCoefficients := FCoefficients;
+                    end;
+    pinTransition : begin
+                     FSplitter[0].Transition := f_Limit(FTransition, 0.01, 0.499);
+                     FSplitter[1].Transition := f_Limit(FTransition, 0.01, 0.499);
+                    end;
  end;
 end;
 

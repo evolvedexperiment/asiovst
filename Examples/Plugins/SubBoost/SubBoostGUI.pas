@@ -58,7 +58,7 @@ implementation
 {$R *.dfm}
 
 uses
-  PngImage, SubBoostDM;
+  PngImage, DAV_GUICommon, SubBoostDM;
 
 procedure TFmSubBoost.FormCreate(Sender: TObject);
 var

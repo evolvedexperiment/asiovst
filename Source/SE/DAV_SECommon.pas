@@ -4,6 +4,9 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$ALIGN ON}
+{$MINENUMSIZE 4}
+
 const
   CSeSdkVersion : Integer = 2230;
 

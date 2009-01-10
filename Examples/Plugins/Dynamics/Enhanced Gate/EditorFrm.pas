@@ -89,7 +89,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, EnhancedGateDM;
+  Math, DAV_GUICommon, EnhancedGateDM;
 
 procedure TEditorForm.CBOnOffClick(Sender: TObject);
 begin

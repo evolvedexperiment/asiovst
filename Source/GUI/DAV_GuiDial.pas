@@ -7,7 +7,8 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
   {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Graphics, Forms, SysUtils, Controls, Contnrs, DAV_GuiBaseControl;
+  Classes, Graphics, Forms, SysUtils, Controls, Contnrs, DAV_GuiCommon,
+  DAV_GuiBaseControl;
 
 type
   TGuiDialRMBFunc = (rmbfReset, rmbfCircular);
@@ -59,9 +60,11 @@ type
     procedure SetImageList(const Value: TImageList);
     procedure SetDialImageIndex(Value: Integer);
     procedure SetDialImageList(const Value: TGuiDialImageList);
+    procedure SetDialAlpha(const Value: TBitmap);
   protected
     FAutoSize      : Boolean;
     FDialBitmap    : TBitmap;
+    FDialAlpha     : TBitmap;
     FImageList     : TImageList;
     FNumGlyphs     : Integer;
     FOnChange      : TNotifyEvent;
@@ -81,6 +84,7 @@ type
     destructor Destroy; override;
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
     property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
+    property DialAlpha: TBitmap read FDialAlpha write SetDialAlpha;
     property DialImageIndex: Integer read GetDialImageIndex write SetDialImageIndex;
     property DialImageList: TGuiDialImageList read FDialImageList write SetDialImageList;
     property ImageList: TImageList read FImageList write SetImageList;
@@ -203,6 +207,7 @@ type
     property CurveMapping;
     property DefaultPosition;
     property DialBitmap;
+    property DialAlpha;
     property DialImageList;
     property DialImageIndex;
     property ImageList;
@@ -958,7 +963,11 @@ begin
   FNumGlyphs              := 1;
   FStitchKind             := skHorizontal;
   FDialBitmap             := TBitmap.Create;
+  FDialBitmap.PixelFormat := pf24bit;
   FDialBitmap.OnChange    := SettingsChanged;
+  FDialAlpha              := TBitmap.Create;
+  FDialAlpha.PixelFormat  := pf8bit;
+  FDialAlpha.OnChange     := SettingsChanged;
 end;
 
 destructor TCustomGuiStitchedControl.Destroy;
@@ -1116,6 +1125,11 @@ end;
 procedure TCustomGuiStitchedControl.NumGlyphsChanged;
 begin
  DoAutoSize;
+end;
+
+procedure TCustomGuiStitchedControl.SetDialAlpha(const Value: TBitmap);
+begin
+ FDialAlpha.Assign(Value);
 end;
 
 procedure TCustomGuiStitchedControl.SetDialBitmap(const Value: TBitmap);

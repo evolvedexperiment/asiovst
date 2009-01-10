@@ -43,7 +43,7 @@ implementation
 {$R *.DFM}
 
 uses
-  PNGImage, DAV_VSTModuleWithPrograms, CrossoverDistortionDM;
+  DAV_GUICommon, PNGImage, DAV_VSTModuleWithPrograms, CrossoverDistortionDM;
 
 procedure TFmCrossoverDistortion.FormCreate(Sender: TObject);
 var

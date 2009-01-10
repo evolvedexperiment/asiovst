@@ -15,8 +15,11 @@ type
     FInput1Buffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FWaveShaper   : TChebyshevWaveshaper;
+    FStaticCount  : Integer;
     FOrder        : Integer;
     procedure Open; override;
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
@@ -36,6 +39,12 @@ type
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
+  end;
+
+  TSEControlableChebyshevWaveshaperModule = class(TSEStaticChebyshevWaveshaperModule)
+  public
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSEAutomatableChebyshevWaveshaperModule = class(TSECustomChebyshevWaveshaperModule)
@@ -127,6 +136,26 @@ begin
  end;
 end;
 
+procedure TSECustomChebyshevWaveshaperModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TSECustomChebyshevWaveshaperModule.ChooseProcess;
+begin
+ if Pin[0].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
+end;
+
+
 { TSEStaticChebyshevWaveshaperModule }
 
 constructor TSEStaticChebyshevWaveshaperModule.Create(
@@ -194,13 +223,17 @@ end;
 // or when audio stops/starts streaming into a pin
 procedure TSEStaticChebyshevWaveshaperModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered ChebyshevWaveshaper time parameter?
+ inherited;
+
  case CurrentPin.PinID of
+  0 : begin
+       Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+       ChooseProcess;
+      end;
   2 : FWaveShaper.Order := FOrder;
   3..CHarmonicCount + 1: if (CurrentPin.PinID - 3) < FWaveShaper.Order
                           then FWaveShaper.Gain[CurrentPin.PinID - 3] := FHarmonics[CurrentPin.PinID - 3];
  end;
- inherited;
 end;
 
 procedure TSEStaticChebyshevWaveshaperModule.SubProcess(const BufferOffset, SampleFrames: Integer);
@@ -218,6 +251,34 @@ begin
    // do the actual processing (multiplying the two input samples together)
    Output^[Sample] := FWaveShaper.ProcessSample(Input[Sample]);
   end;
+end;
+
+
+{ TSEControlableChebyshevWaveshaperModule }
+
+class procedure TSEControlableChebyshevWaveshaperModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Chebyshev Waveshaper';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Chebyshev Waveshaper';
+  end;
+end;
+
+function TSEControlableChebyshevWaveshaperModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ if Index in [2..CHarmonicCount + 2]
+  then with Properties^ do Direction := drIn;
 end;
 
 
@@ -245,10 +306,15 @@ end;
 // or when audio stops/starts streaming into a pin
 procedure TSEAutomatableChebyshevWaveshaperModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered ChebyshevWaveshaper time parameter?
- if CurrentPin.PinID = 2
-  then FWaveShaper.Order := FOrder;
  inherited;
+
+ case CurrentPin.PinID of
+  0 : begin
+       ChooseProcess;
+       Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+      end;
+  2 : FWaveShaper.Order := FOrder;
+ end;
 end;
 
 function TSEAutomatableChebyshevWaveshaperModule.GetPinProperties(
@@ -286,7 +352,6 @@ procedure TSEAutomatableChebyshevWaveshaperModule.SubProcess(const BufferOffset,
 var
   Sample, i : Integer;
 begin
- CallHost(SEAudioMasterSetPinStatus)
  for Sample := 0 to SampleFrames - 1 do
   begin
    for i := 0 to FWaveShaper.Order - 1

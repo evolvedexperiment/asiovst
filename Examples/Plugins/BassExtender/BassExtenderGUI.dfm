@@ -51,21 +51,23 @@ object FmBassExtender: TFmBassExtender
       Top = 35
       Width = 64
       Height = 64
-      Color = 2372409
-      LineColor = 1450277
       CircleColor = 3163213
+      Color = 2372409
       CurveMapping = -0.250000000000000000
       DefaultPosition = 80.000000000000000000
+      DialImageIndex = -1
+      LineColor = 1450277
+      LineWidth = 2
       Max = 160.000000000000000000
       Min = 16.000000000000000000
       NumGlyphs = 65
+      OnChange = DialFrequencyChange
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
       Position = 80.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialFrequencyChange
     end
     object LbFrequency: TGuiLabel
       Left = 12
@@ -117,21 +119,23 @@ object FmBassExtender: TFmBassExtender
       Top = 35
       Width = 64
       Height = 64
-      Color = 2372409
-      LineColor = 1450277
       CircleColor = 3163213
+      Color = 2372409
       CurveMapping = -0.400000005960464500
       DefaultPosition = 2.000000000000000000
+      DialImageIndex = -1
+      LineColor = 1450277
+      LineWidth = 2
       Max = 6.000000000000000000
       Min = 1.000000000000000000
       NumGlyphs = 65
+      OnChange = DialOrderChange
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
       Position = 2.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialOrderChange
     end
     object LbOrder: TGuiLabel
       Left = 116
@@ -168,19 +172,21 @@ object FmBassExtender: TFmBassExtender
       Top = 35
       Width = 64
       Height = 64
-      Color = 2372409
-      LineColor = 1450277
       CircleColor = 3163213
+      Color = 2372409
       DefaultPosition = 50.000000000000000000
+      DialImageIndex = -1
+      LineColor = 1450277
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialDivideChange
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
       Position = 50.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialDivideChange
     end
     object LbDivide: TGuiLabel
       Left = 220
@@ -217,19 +223,21 @@ object FmBassExtender: TFmBassExtender
       Top = 35
       Width = 64
       Height = 64
-      Color = 2372409
-      LineColor = 1450277
       CircleColor = 3163213
+      Color = 2372409
       DefaultPosition = 50.000000000000000000
+      DialImageIndex = -1
+      LineColor = 1450277
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialShapeChange
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
       Position = 50.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialShapeChange
     end
     object LbShape: TGuiLabel
       Left = 324
@@ -266,18 +274,20 @@ object FmBassExtender: TFmBassExtender
       Top = 35
       Width = 64
       Height = 64
-      Color = 2372409
-      LineColor = 1450277
       CircleColor = 3163213
+      Color = 2372409
+      DialImageIndex = -1
+      LineColor = 1450277
+      LineWidth = 2
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialBalanceChange
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialBalanceChange
     end
     object LbBalance: TGuiLabel
       Left = 428
@@ -299,17 +309,19 @@ object FmBassExtender: TFmBassExtender
       Top = 173
       Width = 64
       Height = 64
-      Color = 2372409
-      LineColor = 1450277
       CircleColor = 3163213
+      Color = 2372409
+      DialImageIndex = -1
+      LineColor = 1450277
+      LineWidth = 2
       Min = -80.000000000000000000
       NumGlyphs = 65
+      OnChange = DialThresholdChange
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialThresholdChange
     end
     object LbThreshold: TGuiLabel
       Left = 12
@@ -361,21 +373,23 @@ object FmBassExtender: TFmBassExtender
       Top = 173
       Width = 64
       Height = 64
-      Color = 2372409
-      LineColor = 1450277
       CircleColor = 3163213
+      Color = 2372409
       CurveMapping = -1.799999952316284000
       DefaultPosition = 10.000000000000000000
+      DialImageIndex = -1
+      LineColor = 1450277
+      LineWidth = 2
       Max = 100.000000000000000000
       Min = 1.000000000000000000
       NumGlyphs = 65
+      OnChange = DialRatioChange
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
       Position = 10.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialRatioChange
     end
     object LbRatio: TGuiLabel
       Left = 116
@@ -412,21 +426,23 @@ object FmBassExtender: TFmBassExtender
       Top = 173
       Width = 64
       Height = 64
-      Color = 2372409
-      LineColor = 1450277
       CircleColor = 3163213
+      Color = 2372409
       CurveMapping = -2.200000047683716000
       DefaultPosition = 100.000000000000000000
+      DialImageIndex = -1
+      LineColor = 1450277
+      LineWidth = 2
       Max = 100000.000000000000000000
       Min = 10.000000000000000000
       NumGlyphs = 65
+      OnChange = DialAttackChange
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
       Position = 2000.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialAttackChange
     end
     object LbAttack: TGuiLabel
       Left = 220
@@ -463,21 +479,23 @@ object FmBassExtender: TFmBassExtender
       Top = 173
       Width = 64
       Height = 64
-      Color = 2372409
-      LineColor = 1450277
       CircleColor = 3163213
+      Color = 2372409
       CurveMapping = -1.100000023841858000
       DefaultPosition = 100.000000000000000000
+      DialImageIndex = -1
+      LineColor = 1450277
+      LineWidth = 2
       Max = 800.000000000000000000
       Min = 20.000000000000000000
       NumGlyphs = 65
+      OnChange = DialReleaseChange
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
       Position = 200.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialReleaseChange
     end
     object LbRelease: TGuiLabel
       Left = 324
@@ -514,19 +532,21 @@ object FmBassExtender: TFmBassExtender
       Top = 173
       Width = 64
       Height = 64
-      Color = 2372409
-      LineColor = 1450277
       CircleColor = 3163213
+      Color = 2372409
       DefaultPosition = 50.000000000000000000
+      DialImageIndex = -1
+      LineColor = 1450277
+      LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
+      OnChange = DialCompressionChange
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
       Position = 50.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialCompressionChange
     end
     object LbCompression: TGuiLabel
       Left = 418

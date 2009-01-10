@@ -10,13 +10,15 @@ type
   TSEButterworthPins = (pinInput, pinOutput, pinFrequency, pinOrder);
 
   TSEButterworthModule = class(TSEModuleBase)
-  private
   protected
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FFilter       : TButterworthFilter;
-    procedure SampleRateChanged; override;
+    FStaticCount  : Integer;
+    procedure ChooseProcess;
     procedure Open; override;
+    procedure SampleRateChanged; override;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   public
     destructor Destroy; override;
 
@@ -99,13 +101,13 @@ begin
  Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
 end;
 
-// The most important part, processing the audio
 procedure TSEButterworthModule.SampleRateChanged;
 begin
  inherited;
  FFilter.SampleRate := SampleRate;
 end;
 
+// The most important part, processing the audio
 procedure TSEButterworthModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   Input  : PDAVSingleFixedArray;
@@ -122,6 +124,26 @@ begin
    Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;
+
+procedure TSEButterworthModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TSEButterworthModule.ChooseProcess;
+begin
+ if Pin[0].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
+end;
+
 
 // describe your module
 class procedure TSEButterworthModule.getModuleProperties(Properties : PSEModuleProperties);
@@ -230,6 +252,10 @@ procedure TSEStaticButterworthLPModule.PlugStateChange(const CurrentPin: TSEPin)
 begin
  // has user altered a filter parameter?
  case TSEButterworthPins(CurrentPin.PinID) of
+      pinInput : begin
+                  Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+                  ChooseProcess;
+                 end;
   pinFrequency : FFilter.Frequency := FFrequency;
       pinOrder : FFilter.Order     := FOrder;
  end;
@@ -272,6 +298,10 @@ procedure TSEStaticButterworthHPModule.PlugStateChange(const CurrentPin: TSEPin)
 begin
  // has user altered a filter parameter?
  case TSEButterworthPins(CurrentPin.PinID) of
+      pinInput : begin
+                  Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+                  ChooseProcess;
+                 end;
   pinFrequency : FFilter.Frequency := FFrequency;
       pinOrder : FFilter.Order     := FOrder;
  end;
