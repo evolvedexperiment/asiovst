@@ -15,7 +15,8 @@ function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): B
 begin
  result := True;
  case Index of // !!TODO!! list your in / out plugs
-  0: TSEPhaserModule.GetModuleProperties(Properties);
+  0: TSEPhaserStaticModule.GetModuleProperties(Properties);
+  1: TSEPhaserControllableModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -25,7 +26,8 @@ begin
  result := nil;
  if (ProcessType = 1) then
   case Index of
-   0: result := TSEPhaserModule.Create(SEAudioMaster, Reserved).Effect;
+   0: result := TSEPhaserStaticModule.Create(SEAudioMaster, Reserved).Effect;
+   1: result := TSEPhaserControllableModule.Create(SEAudioMaster, Reserved).Effect;
   end;
 end;
 

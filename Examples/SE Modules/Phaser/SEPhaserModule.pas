@@ -7,20 +7,15 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEPhaserPins = (pinInput, pinOutput, pinDepth, pinFeedback, pinMinimum,
-    pinMaximum, pinRate, pinStages);
+  TSEPhaserPins = (pinInput, pinOutput, pinStages, pinDepth, pinFeedback, pinMinimum,
+    pinMaximum, pinRate);
 
-  TSEPhaserModule = class(TSEModuleBase)
+  TCustomSEPhaserModule = class(TSEModuleBase)
   private
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FStaticCount  : Integer;
     FStages       : Integer;
-    FDepth        : Single;
-    FRate         : Single;
-    FMinimum      : Single;
-    FMaximum      : Single;
-    FFeedback     : Single;
     procedure ChooseProcess;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
@@ -34,7 +29,28 @@ type
 
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
+  end;
+
+  TSEPhaserStaticModule = class(TCustomSEPhaserModule)
+  private
+    FDepth        : Single;
+    FRate         : Single;
+    FMinimum      : Single;
+    FMaximum      : Single;
+    FFeedback     : Single;
+  protected
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSEPhaserControllableModule = class(TSEPhaserStaticModule)
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
 
 implementation
@@ -42,21 +58,21 @@ implementation
 uses
   SysUtils;
 
-{ TSEPhaserModule }
+{ TCustomSEPhaserModule }
 
-constructor TSEPhaserModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TCustomSEPhaserModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
  FPhaser := TPhaser.Create
 end;
 
-destructor TSEPhaserModule.Destroy;
+destructor TCustomSEPhaserModule.Destroy;
 begin
  FreeAndNil(FPhaser);
  inherited;
 end;
 
-procedure TSEPhaserModule.Open;
+procedure TCustomSEPhaserModule.Open;
 begin
  inherited Open;
 
@@ -65,27 +81,13 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSEPhaserModule.SampleRateChanged;
+procedure TCustomSEPhaserModule.SampleRateChanged;
 begin
  inherited;
  FPhaser.SampleRate := SampleRate;
 end;
 
-procedure TSEPhaserModule.SubProcess(const BufferOffset, SampleFrames: Integer);
-var
-  Inp    : PDAVSingleFixedArray;
-  Outp   : PDAVSingleFixedArray;
-  Sample : Integer;
-begin
- // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Inp  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
- Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
-
- for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FPhaser.Process(Inp^[Sample]);
-end;
-
-procedure TSEPhaserModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+procedure TCustomSEPhaserModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
@@ -93,7 +95,7 @@ begin
   then CallHost(SEAudioMasterSleepMode);
 end;
 
-procedure TSEPhaserModule.ChooseProcess;
+procedure TCustomSEPhaserModule.ChooseProcess;
 begin
  if Pin[Integer(pinInput)].Status = stRun
   then OnProcess := SubProcess
@@ -105,19 +107,10 @@ begin
 end;
 
 // describe your module
-class procedure TSEPhaserModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TCustomSEPhaserModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
  with Properties^ do
   begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Phaser';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Phaser';
-
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';
    SDKVersion := CSeSdkVersion;
@@ -125,7 +118,7 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEPhaserModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TCustomSEPhaserModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case TSEPhaserPins(index) of
@@ -147,51 +140,6 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  pinDepth:
-   with Properties^ do
-    begin
-     Name            := 'Depth [%]';
-     VariableAddress := @FDepth;
-     Direction       := drIn;
-     Datatype        := dtSingle;
-     DefaultValue    := '10';
-    end;
-  pinFeedback:
-   with Properties^ do
-    begin
-     Name            := 'Feedback [%]';
-     VariableAddress := @FFeedback;
-     Direction       := drIn;
-     Datatype        := dtSingle;
-     DefaultValue    := '10';
-    end;
-  pinMinimum:
-   with Properties^ do
-    begin
-     Name            := 'Minimum [Hz]';
-     VariableAddress := @FMinimum;
-     Direction       := drIn;
-     Datatype        := dtSingle;
-     DefaultValue    := '300';
-    end;
-  pinMaximum:
-   with Properties^ do
-    begin
-     Name            := 'Maximum [Hz]';
-     VariableAddress := @FMaximum;
-     Direction       := drIn;
-     Datatype        := dtSingle;
-     DefaultValue    := '1000';
-    end;
-  pinRate:
-   with Properties^ do
-    begin
-     Name            := 'Rate [Hz]';
-     VariableAddress := @FRate;
-     Direction       := drIn;
-     Datatype        := dtSingle;
-     DefaultValue    := '1';
-    end;
   pinStages:
    with Properties^ do
     begin
@@ -207,7 +155,7 @@ begin
 end;
 
 // An input plug has changed value
-procedure TSEPhaserModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TCustomSEPhaserModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
  case TSEPhaserPins(CurrentPin.PinID) of
@@ -215,13 +163,142 @@ begin
                   ChooseProcess;
                   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
                  end;
+      pinStages: FPhaser.Stages   := FStages;
+ end;
+end;
+
+
+{ TSEPhaserStaticModule }
+
+// describe your module
+class procedure TSEPhaserStaticModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Phaser (static)';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Phaser (static)';
+  end;
+end;
+
+procedure TSEPhaserStaticModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+var
+  Inp    : PDAVSingleFixedArray;
+  Outp   : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Inp  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
+ Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+
+ for Sample := 0 to SampleFrames - 1
+  do Outp^[Sample] := FPhaser.Process(Inp^[Sample]);
+end;
+
+// describe the pins (plugs)
+function TSEPhaserStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := GetPinProperties(Index, Properties);
+ case TSEPhaserPins(index) of
+  pinDepth:
+   with Properties^ do
+    begin
+     Name            := 'Depth [%]';
+     VariableAddress := @FDepth;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '10';
+     result          := True;
+    end;
+  pinFeedback:
+   with Properties^ do
+    begin
+     Name            := 'Feedback [%]';
+     VariableAddress := @FFeedback;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '10';
+     result          := True;
+    end;
+  pinMinimum:
+   with Properties^ do
+    begin
+     Name            := 'Minimum [Hz]';
+     VariableAddress := @FMinimum;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '300';
+     result          := True;
+    end;
+  pinMaximum:
+   with Properties^ do
+    begin
+     Name            := 'Maximum [Hz]';
+     VariableAddress := @FMaximum;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '1000';
+     result          := True;
+    end;
+  pinRate:
+   with Properties^ do
+    begin
+     Name            := 'Rate [Hz]';
+     VariableAddress := @FRate;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '1';
+     result          := True;
+    end;
+ end;
+end;
+
+// An input plug has changed value
+procedure TSEPhaserStaticModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ inherited;
+ case TSEPhaserPins(CurrentPin.PinID) of
        pinDepth: FPhaser.Depth    := 0.01 * FDepth;
     pinFeedback: FPhaser.Feedback := 0.01 * FFeedback;
      pinMinimum: FPhaser.Minimum  := FMinimum;
      pinMaximum: FPhaser.Maximum  := FMaximum;
         pinRate: FPhaser.Rate     := FRate;
-      pinStages: FPhaser.Stages   := FStages;
  end;
+end;
+
+
+{ TSEPhaserControllableModule }
+
+class procedure TSEPhaserControllableModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Phaser';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Phaser';
+  end;
+end;
+
+function TSEPhaserControllableModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := GetPinProperties(Index, Properties);
+ if TSEPhaserPins(index) in [pinDepth..pinRate]
+  then with Properties^ do Direction := drIn;
 end;
 
 end.

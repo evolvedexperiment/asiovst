@@ -21,10 +21,15 @@ type
   protected
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
+    FStaticCount  : Integer;
     procedure Open; override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
   end;
 
 
@@ -44,7 +49,7 @@ type
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
   TSimpleDirectGateStaticSEModule = class(TCustomSimpleDirectGateSEModule)
@@ -94,7 +99,7 @@ type
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
   TSoftDirectGateStaticSEModule = class(TCustomSoftDirectGateSEModule)
@@ -148,7 +153,7 @@ type
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     destructor Destroy; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
 
@@ -307,7 +312,7 @@ type
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
   TRangeGateStaticSEModule = class(TCustomRangeGateSEModule)
@@ -365,7 +370,7 @@ type
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
   TClassicGateStaticSEModule = class(TCustomClassicGateSEModule)
@@ -421,7 +426,7 @@ type
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
   TSoftClassicGateStaticSEModule = class(TCustomSoftClassicGateSEModule)
@@ -476,7 +481,7 @@ type
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     destructor Destroy; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -644,7 +649,7 @@ type
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     destructor Destroy; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -806,9 +811,17 @@ uses
 procedure TCustomDynamicsSEModule.Open;
 begin
  inherited Open;
+ ChooseProcess;
+end;
 
- // let 'downstream' modules know audio data is coming
- Pin[1].TransmitStatusChange(SampleClock, stRun);
+procedure TCustomDynamicsSEModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ inherited;
+ if CurrentPin.PinID = 0 then
+  begin
+   ChooseProcess;
+   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+  end;
 end;
 
 // describe your module
@@ -821,6 +834,25 @@ begin
 
    SDKVersion := CSeSdkVersion;
   end;
+end;
+
+procedure TCustomDynamicsSEModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TCustomDynamicsSEModule.ChooseProcess;
+begin
+ if Pin[0].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
 end;
 
 // describe the pins (plugs)
@@ -938,7 +970,7 @@ end;
 procedure TSimpleDirectGateStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2: FDynamicProcesor.Threshold_dB := FThreshold;
  end;
@@ -1014,7 +1046,7 @@ end;
 
 procedure TSimpleDirectGateAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered a filter parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2: if (Pin[2].Status <> stRun)
       then OnProcess := SubProcessStatic
@@ -1154,7 +1186,7 @@ end;
 procedure TSoftDirectGateStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2: FDynamicProcesor.Threshold_dB := FThreshold;
   3: FDynamicProcesor.Knee_dB := FKnee_dB;
@@ -1240,7 +1272,7 @@ end;
 
 procedure TSoftDirectGateAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered a filter parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2: if (Pin[2].Status <> stRun) and (Pin[3].Status <> stRun)
       then OnProcess := SubProcessStatic
@@ -1325,7 +1357,7 @@ end;
 // or when audio stops/starts streaming into a pin
 procedure TCustomBrickwallLimiterSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2: FDynamicProcesor.AutoMakeUp := FAutoMakeUp;
  end;
@@ -1404,7 +1436,7 @@ end;
 procedure TBrickwallLimiterStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3: FDynamicProcesor.Threshold_dB := FThreshold;
  end;
@@ -1480,7 +1512,7 @@ end;
 
 procedure TBrickwallLimiterAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered a filter parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3: if (Pin[3].Status <> stRun)
       then OnProcess := SubProcessStatic
@@ -1591,7 +1623,7 @@ end;
 procedure TBrickwallSoftLimiterStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3: FDynamicProcesor.Threshold_dB := FThreshold;
   4: FDynamicProcesor.Knee_dB := FKnee_dB;
@@ -1677,7 +1709,7 @@ end;
 
 procedure TBrickwallSoftLimiterAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered a filter parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3..4: if (Pin[3].Status <> stRun) and (Pin[4].Status <> stRun)
          then OnProcess := SubProcessStatic
@@ -1791,7 +1823,7 @@ end;
 procedure TBrickwallSimpleSoftLimiterStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3: FDynamicProcesor.Threshold_dB := FThreshold;
   4: FDynamicProcesor.Knee_dB := FKnee_dB;
@@ -1877,7 +1909,7 @@ end;
 
 procedure TBrickwallSimpleSoftLimiterAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered a filter parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3..4: if (Pin[3].Status <> stRun) and (Pin[4].Status <> stRun)
          then OnProcess := SubProcessStatic
@@ -2039,7 +2071,7 @@ end;
 procedure TRangeGateStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2: FDynamicProcesor.Threshold_dB := FThreshold;
   3: FDynamicProcesor.Range_dB     := FRange;
@@ -2145,7 +2177,7 @@ end;
 
 procedure TRangeGateAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered a filter parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2..5: if (Pin[2].Status <> stRun) and
            (Pin[3].Status <> stRun) and
@@ -2307,7 +2339,7 @@ end;
 procedure TClassicGateStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2: FDynamicProcesor.Threshold_dB := FThreshold;
   3: FDynamicProcesor.Attack       := FAttack;
@@ -2403,7 +2435,7 @@ end;
 
 procedure TClassicGateAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered a filter parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2..4: if (Pin[2].Status <> stRun) and
            (Pin[3].Status <> stRun) and
@@ -2569,7 +2601,7 @@ end;
 procedure TSoftClassicGateStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2: FDynamicProcesor.Threshold_dB := FThreshold;
   3: FDynamicProcesor.Knee_dB      := FKnee_dB;
@@ -2675,7 +2707,7 @@ end;
 
 procedure TSoftClassicGateAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered a filter parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2..5: if (Pin[2].Status <> stRun) and
            (Pin[3].Status <> stRun) and
@@ -2752,7 +2784,7 @@ end;
 // or when audio stops/starts streaming into a pin
 procedure TCustomLimiterSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2: FDynamicProcesor.AutoMakeUp := FAutoMakeUp;
  end;
@@ -2851,7 +2883,7 @@ end;
 procedure TLimiterStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3: FDynamicProcesor.Threshold_dB := FThreshold;
   4: FDynamicProcesor.Attack       := FAttack;
@@ -3070,7 +3102,7 @@ end;
 procedure TSoftLimiterStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3: FDynamicProcesor.Threshold_dB := FThreshold;
   4: FDynamicProcesor.Knee_dB := FKnee_dB;
@@ -3176,7 +3208,7 @@ end;
 
 procedure TSoftLimiterAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered a filter parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3..6: if (Pin[3].Status <> stRun) and
            (Pin[4].Status <> stRun) and
@@ -3304,7 +3336,7 @@ end;
 procedure TSimpleSoftLimiterStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3: FDynamicProcesor.Threshold_dB := FThreshold;
   4: FDynamicProcesor.Knee_dB := FKnee_dB;
@@ -3410,7 +3442,7 @@ end;
 
 procedure TSimpleSoftLimiterAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered a filter parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3..6: if (Pin[3].Status <> stRun) and
            (Pin[4].Status <> stRun) and
@@ -3487,7 +3519,7 @@ end;
 // or when audio stops/starts streaming into a pin
 procedure TCustomCompressorSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   2: FDynamicProcesor.AutoMakeUp := FAutoMakeUp;
  end;
@@ -3596,7 +3628,7 @@ end;
 procedure TSimpleCompressorStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3: FDynamicProcesor.Threshold_dB := FThreshold;
   4: FDynamicProcesor.Ratio        := FRatio;
@@ -3836,7 +3868,7 @@ end;
 procedure TSoftKneeCompressorStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3: FDynamicProcesor.Threshold_dB := FThreshold;
   4: FDynamicProcesor.Ratio        := FRatio;
@@ -4090,7 +4122,7 @@ end;
 procedure TRMSCompressorStaticSEModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- // has user altered Dynamics time parameter?
+ // has user altered dynamics parameter?
  case CurrentPin.PinID of
   3: FDynamicProcesor.Threshold_dB := FThreshold;
   4: FDynamicProcesor.Ratio        := FRatio;

@@ -11,6 +11,9 @@ type
     pinOrder);
 
   TSELinkwitzRileyModule = class(TSEModuleBase)
+  private
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
     FInputBuffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutLoBuffer : PDAVSingleFixedArray;
@@ -19,8 +22,10 @@ type
     FHighSign    : Single;
     FFilterLP    : array [0..1] of TButterworthLP;
     FFilterHP    : array [0..1] of TButterworthHP;
+    FStaticCount : Integer;
     procedure SampleRateChanged; override;
     procedure Open; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   public
@@ -37,10 +42,16 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
-
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+  end;
+
+  TSELinkwitzRileyControlableModule = class(TSELinkwitzRileyStaticModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
   TSELinkwitzRileyAutomatableModule = class(TSELinkwitzRileyModule)
@@ -49,7 +60,7 @@ type
     procedure Open; override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   public
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
@@ -90,7 +101,7 @@ begin
  Pin[Integer(pinOutputHigh)].TransmitStatusChange(SampleClock, stRun);
 end;
 
-// The most important part, processing the audio
+// set samplerate of the filters
 procedure TSELinkwitzRileyModule.SampleRateChanged;
 begin
  inherited;
@@ -98,6 +109,25 @@ begin
  FFilterLP[1].SampleRate := SampleRate;
  FFilterHP[0].SampleRate := SampleRate;
  FFilterHP[1].SampleRate := SampleRate;
+end;
+
+procedure TSELinkwitzRileyModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TSELinkwitzRileyModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
 end;
 
 // describe your module
@@ -167,6 +197,10 @@ procedure TSELinkwitzRileyModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  // has user altered LinkwitzRiley time parameter?
  case TSELinkwitzRileyPins(CurrentPin.PinID) of
+  pinInput : begin
+              ChooseProcess;
+              Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+             end;
   pinOrder :
    begin
     FFilterLP[0].Order := FOrder;
@@ -282,6 +316,37 @@ begin
   end;
 end;
 
+
+{ TSELinkwitzRileyControlableModule }
+
+class procedure TSELinkwitzRileyControlableModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited;
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Linkwitz-Riley Splitter';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Linkwitz-Riley Splitter';
+  end;
+end;
+
+function TSELinkwitzRileyControlableModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSELinkwitzRileyPins(index) of
+  pinFrequency : with Properties^ do Direction := drIn;
+      pinOrder : with Properties^ do Direction := drIn;
+ end;
+end;
+
+
 { TSELinkwitzRileyAutomatableModule }
 
 class procedure TSELinkwitzRileyAutomatableModule.GetModuleProperties(
@@ -308,7 +373,7 @@ begin
  case TSELinkwitzRileyPins(index) of
   pinFrequency: with Properties^ do
                  begin
-                  Name            := 'Frequency';
+                  Name            := 'Frequency [kHz]';
                   VariableAddress := @FFreqBuffer;
                   Direction       := drIn;
                   DataType        := dtFSample;
@@ -353,10 +418,10 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
-   FFilterLP[0].Frequency := Freq^[Sample];
-   FFilterLP[1].Frequency := Freq^[Sample];
-   FFilterHP[0].Frequency := Freq^[Sample];
-   FFilterHP[1].Frequency := Freq^[Sample];
+   FFilterLP[0].Frequency := 10000 * Freq^[Sample];
+   FFilterLP[1].Frequency := 10000 * Freq^[Sample];
+   FFilterHP[0].Frequency := 10000 * Freq^[Sample];
+   FFilterHP[1].Frequency := 10000 * Freq^[Sample];
 
    // do the actual processing
    Temp           := Input[Sample] + cDenorm32;

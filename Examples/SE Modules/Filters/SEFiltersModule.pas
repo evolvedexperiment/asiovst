@@ -12,11 +12,15 @@ type
   TCustomSEFiltersModule = class(TSEModuleBase)
   private
   protected
-    FInput1Buffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
+    FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FFilter       : TBiquadIIRFilter;
-    procedure SampleRateChanged; override;
+    FStaticCount  : Integer;
+    procedure ChooseProcess;
     procedure Open; override;
+    procedure SampleRateChanged; override;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     destructor Destroy; override;
 
@@ -127,6 +131,16 @@ begin
  Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
 end;
 
+procedure TCustomSEFiltersModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ inherited;
+ if CurrentPin.PinID = 0 then
+  begin
+   ChooseProcess;
+   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+  end;
+end;
+
 // The most important part, processing the audio
 procedure TCustomSEFiltersModule.SampleRateChanged;
 begin
@@ -140,15 +154,30 @@ var
   Output : PDAVSingleFixedArray;
   Sample : Integer;
 begin
- // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
- for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
-  begin
-   // do the actual processing (multiplying the two input samples together)
-   Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
-  end;
+ for Sample := 0 to SampleFrames - 1
+  do Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+end;
+
+procedure TCustomSEFiltersModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TCustomSEFiltersModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
 end;
 
 // describe your module
@@ -172,7 +201,7 @@ begin
   pinInput: with Properties^ do
              begin
               Name            := 'Input';
-              VariableAddress := @FInput1Buffer;
+              VariableAddress := @FInputBuffer;
               Direction       := drIn;
               Flags           := [iofLinearInput];
               Datatype        := dtFSample;
@@ -202,7 +231,7 @@ begin
   pinFrequency:
     with Properties^ do
      begin
-      Name            := 'Frequency';
+      Name            := 'Frequency [kHz]';
       VariableAddress := @FFreqBuffer;
       Direction       := drIn;
       DataType        := dtFSample;
@@ -213,7 +242,7 @@ begin
   pinGain:
     with Properties^ do
      begin
-      Name            := 'Gain';
+      Name            := 'Gain [dB]';
       VariableAddress := @FGainBuffer;
       Direction       := drIn;
       DataType        := dtFSample;
@@ -246,7 +275,7 @@ var
   Sample : Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  Freq   := PDAVSingleFixedArray(@FFreqBuffer[BufferOffset]);
  Gain   := PDAVSingleFixedArray(@FGainBuffer[BufferOffset]);
@@ -254,7 +283,7 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
-   FFilter.Frequency := 0.5 * Freq[Sample] * FFilter.SampleRate;
+   FFilter.Frequency := 10000 * Freq[Sample] * FFilter.SampleRate;
    FFilter.Gain      := 15 * Gain[Sample];
    FFilter.Bandwidth := 0.1 + 9.9 * abs(BW[Sample]);
    Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
@@ -616,7 +645,7 @@ var
   Sample : Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  Freq   := PDAVSingleFixedArray(@FFreqBuffer[BufferOffset]);
  Gain   := PDAVSingleFixedArray(@FGainBuffer[BufferOffset]);
@@ -625,7 +654,7 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
-   FFilter.Frequency := 0.5 * Freq[Sample] * FFilter.SampleRate;
+   FFilter.Frequency := 10000 * Freq[Sample];
    FFilter.Gain      := 15 * Gain[Sample];
    FFilter.Bandwidth := 0.1 + 9.9 * abs(BW[Sample]);
    TShapeFilter(FFilter).Shape := Sym[Sample];

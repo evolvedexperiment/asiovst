@@ -13,11 +13,14 @@ type
   private
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
+    FStaticCount  : Integer;
     FCoefficients : Integer;
     FTransition   : Single;
   protected
     FHilbert      : TPhaseHalfPi32;
     procedure Open; override;
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
@@ -32,11 +35,14 @@ type
   private
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : array [0..1] of PDAVSingleFixedArray;
+    FStaticCount  : Integer;
     FCoefficients : Integer;
     FTransition   : Single;
   protected
     FHilbert      : TPhaseHalfPi32;
     procedure Open; override;
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
@@ -90,6 +96,26 @@ begin
    // do the actual processing (multiplying the two input samples together)
    Outp^[Sample] := FHilbert.ProcessEnvelopeSample(Inp^[Sample]);
   end;
+end;
+
+procedure TSEEnvelopeModule.SubProcessStatic(const BufferOffset,
+  SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TSEEnvelopeModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
 end;
 
 // describe your module
@@ -159,20 +185,20 @@ end;
 // An input plug has changed value
 procedure TSEEnvelopeModule.PlugStateChange(const CurrentPin: TSEPin);
 var
-  InState  : TSEStateType;
   OutState : TSEStateType;
 begin
- InState  := Pin[Integer(pinInput)].Status;
- OutState := InState;
- if (InState < stRun) and (Pin[Integer(pinInput)].Value = 0)
-  then OutState := stStatic;
-
- Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, OutState);
  inherited;
 
  case TSEEnvelopePins(CurrentPin.PinID) of
-  pinCoefficients: FHilbert.NumberOfCoefficients := FCoefficients;
-    pinTransition: FHilbert.Transition := f_Limit(FTransition, 0.01, 0.499); 
+         pinInput : begin
+                     OutState := Pin[0].Status;
+                     if (OutState < stRun) and (Pin[Integer(pinInput)].Value = 0)
+                      then OutState := stStatic;
+                     ChooseProcess; 
+                     Pin[1].TransmitStatusChange(SampleClock, OutState);
+                    end;
+  pinCoefficients : FHilbert.NumberOfCoefficients := FCoefficients;
+    pinTransition : FHilbert.Transition := f_Limit(FTransition, 0.01, 0.499);
  end;
 end;
 
@@ -212,6 +238,26 @@ begin
 
  for Sample := 0 to SampleFrames - 1
   do FHilbert.ProcessHilbertSample(Inp^[Sample], OutA^[Sample], OutB^[Sample]);
+end;
+
+procedure TSEHilbertModule.SubProcessStatic(const BufferOffset,
+  SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TSEHilbertModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
 end;
 
 // describe your module
@@ -289,21 +335,22 @@ end;
 // An input plug has changed value
 procedure TSEHilbertModule.PlugStateChange(const CurrentPin: TSEPin);
 var
-  InState  : TSEStateType;
   OutState : TSEStateType;
 begin
- InState  := Pin[Integer(pinInput)].Status;
- OutState := InState;
- if (InState < stRun) and (Pin[0].Value = 0)
-  then OutState := stStatic;
-
- Pin[1].TransmitStatusChange(SampleClock, OutState);
- Pin[2].TransmitStatusChange(SampleClock, OutState);
  inherited;
 
  case TSEEnvelopePins(CurrentPin.PinID) of
-  pinCoefficients: FHilbert.NumberOfCoefficients := FCoefficients;
-    pinTransition: FHilbert.Transition := f_Limit(FTransition, 0.01, 0.499); 
+         pinInput : begin
+                     OutState := Pin[Integer(pinInput)].Status;
+                     if (OutState < stRun) and (Pin[0].Value = 0)
+                      then OutState := stStatic;
+
+                     ChooseProcess; 
+                     Pin[1].TransmitStatusChange(SampleClock, OutState);
+                     Pin[2].TransmitStatusChange(SampleClock, OutState);
+                    end;
+  pinCoefficients : FHilbert.NumberOfCoefficients := FCoefficients;
+    pinTransition : FHilbert.Transition := f_Limit(FTransition, 0.01, 0.499);
  end;
 end;
 

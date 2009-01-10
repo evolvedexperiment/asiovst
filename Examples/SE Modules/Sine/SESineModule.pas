@@ -177,16 +177,16 @@ asm
  add edx, Self.FOutputBuffer
 @loopstart:
  fld [Self.FPosition.Re].Double  // FPosition.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Re * fAngle.Re
- fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * fAngle.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Im * fAngle.Im, FPosition.Re * fAngle.Re
- fsubp                           // FPosition.Re * fAngle.Re - FPosition.Im * fAngle.Im = New.Re
+ fmul [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
+ fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * FAngle.Re
+ fmul [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+ fsubp                           // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
  fld [Self.FPosition.Im].Double  // FPosition.Im, New.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Im * fAngle.Re, New.Re
- fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * fAngle.Re, New.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Re * fAngle.Im, FPosition.Re * fAngle.Re, New.Re
- faddp                           // FPosition.Re * fAngle.Re + FPosition.Im * fAngle.Im = New.Im, New.Re
+ fmul [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
+ fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+ fmul [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+ faddp                           // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
  fstp [Self.FPosition.Im].Double // FPosition.Im := New.Im, New.Re
  fst [Self.FPosition.Re].Double  // FPosition.Re := New.Re
  fstp [edx].Single               // FOutputBuffer := New.Re
@@ -254,16 +254,16 @@ asm
  add edx, [eax + $A0]
 @loopstart:
  fld [eax + $B8].Double  // FPosition.Re
- fmul [eax + $A8].Double // FPosition.Re * fAngle.Re
- fld [eax + $C0].Double  // FPosition.Im, FPosition.Re * fAngle.Re
- fmul [eax + $B0].Double // FPosition.Im * fAngle.Im, FPosition.Re * fAngle.Re
- fsubp                   // FPosition.Re * fAngle.Re - FPosition.Im * fAngle.Im = New.Re
+ fmul [eax + $A8].Double // FPosition.Re * FAngle.Re
+ fld [eax + $C0].Double  // FPosition.Im, FPosition.Re * FAngle.Re
+ fmul [eax + $B0].Double // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+ fsubp                   // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
  fld [eax + $C0].Double  // FPosition.Im, New.Re
- fmul [eax + $A8].Double // FPosition.Im * fAngle.Re, New.Re
- fld [eax + $B8].Double  // FPosition.Re, FPosition.Re * fAngle.Re, New.Re
- fmul [eax + $B0].Double // FPosition.Re * fAngle.Im, FPosition.Re * fAngle.Re, New.Re
- faddp                   // FPosition.Re * fAngle.Re + FPosition.Im * fAngle.Im = New.Im, New.Re
+ fmul [eax + $A8].Double // FPosition.Im * FAngle.Re, New.Re
+ fld [eax + $B8].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+ fmul [eax + $B0].Double // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+ faddp                   // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
  fstp [eax + $C0].Double // FPosition.Im := New.Im, New.Re
  fst [eax + $B8].Double  // FPosition.Re := New.Re
  fstp [edx].Single       // FOutputBuffer := New.Re
@@ -362,16 +362,16 @@ asm
  add ebx, Self.FCosineBuffer
 @loopstart:
  fld [Self.FPosition.Re].Double  // FPosition.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Re * fAngle.Re
- fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * fAngle.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Im * fAngle.Im, FPosition.Re * fAngle.Re
- fsubp                           // FPosition.Re * fAngle.Re - FPosition.Im * fAngle.Im = New.Re
+ fmul [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
+ fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * FAngle.Re
+ fmul [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+ fsubp                           // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
  fld [Self.FPosition.Im].Double  // FPosition.Im, New.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Im * fAngle.Re, New.Re
- fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * fAngle.Re, New.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Re * fAngle.Im, FPosition.Re * fAngle.Re, New.Re
- faddp                           // FPosition.Re * fAngle.Re + FPosition.Im * fAngle.Im = New.Im, New.Re
+ fmul [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
+ fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+ fmul [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+ faddp                           // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
  fst [Self.FPosition.Im].Double  // FPosition.Im := New.Im, New.Re
  fstp [ebx].Single               // FCosineBuffer := New.Im, New.Re
  fst [Self.FPosition.Re].Double  // FPosition.Re := New.Re
@@ -451,16 +451,16 @@ asm
  add ebx, [eax + $A4]
 @loopstart:
  fld [eax + $C0].Double  // FPosition.Re
- fmul [eax + $B0].Double // FPosition.Re * fAngle.Re
- fld [eax + $C8].Double  // FPosition.Im, FPosition.Re * fAngle.Re
- fmul [eax + $B8].Double // FPosition.Im * fAngle.Im, FPosition.Re * fAngle.Re
- fsubp                   // FPosition.Re * fAngle.Re - FPosition.Im * fAngle.Im = New.Re
+ fmul [eax + $B0].Double // FPosition.Re * FAngle.Re
+ fld [eax + $C8].Double  // FPosition.Im, FPosition.Re * FAngle.Re
+ fmul [eax + $B8].Double // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+ fsubp                   // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
  fld [eax + $C8].Double  // FPosition.Im, New.Re
- fmul [eax + $B0].Double // FPosition.Im * fAngle.Re, New.Re
- fld [eax + $C0].Double  // FPosition.Re, FPosition.Re * fAngle.Re, New.Re
- fmul [eax + $B8].Double // FPosition.Re * fAngle.Im, FPosition.Re * fAngle.Re, New.Re
- faddp                   // FPosition.Re * fAngle.Re + FPosition.Im * fAngle.Im = New.Im, New.Re
+ fmul [eax + $B0].Double // FPosition.Im * FAngle.Re, New.Re
+ fld [eax + $C0].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+ fmul [eax + $B8].Double // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+ faddp                   // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
  fst [eax + $C8].Double  // FPosition.Im := New.Im, New.Re
 (*
  fmul st(0), st(0)
@@ -568,16 +568,16 @@ asm
  add ebx, Self.FSine2Buffer
 @loopstart:
  fld [Self.FPosition.Re].Double  // FPosition.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Re * fAngle.Re
- fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * fAngle.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Im * fAngle.Im, FPosition.Re * fAngle.Re
- fsubp                           // FPosition.Re * fAngle.Re - FPosition.Im * fAngle.Im = New.Re
+ fmul [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
+ fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * FAngle.Re
+ fmul [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+ fsubp                           // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
  fld [Self.FPosition.Im].Double  // FPosition.Im, New.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Im * fAngle.Re, New.Re
- fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * fAngle.Re, New.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Re * fAngle.Im, FPosition.Re * fAngle.Re, New.Re
- faddp                           // FPosition.Re * fAngle.Re + FPosition.Im * fAngle.Im = New.Im, New.Re
+ fmul [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
+ fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+ fmul [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+ faddp                           // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
  fst [Self.FPosition.Im].Double  // FPosition.Im := New.Im, New.Re
  fxch
  fst [Self.FPosition.Re].Double  // FPosition.Re := New.Re, New.Im
@@ -660,16 +660,16 @@ asm
  add ebx, [eax + $A4]
 @loopstart:
  fld [eax + $C0].Double  // FPosition.Re
- fmul [eax + $B0].Double // FPosition.Re * fAngle.Re
- fld [eax + $C8].Double  // FPosition.Im, FPosition.Re * fAngle.Re
- fmul [eax + $B8].Double // FPosition.Im * fAngle.Im, FPosition.Re * fAngle.Re
- fsubp                   // FPosition.Re * fAngle.Re - FPosition.Im * fAngle.Im = New.Re
+ fmul [eax + $B0].Double // FPosition.Re * FAngle.Re
+ fld [eax + $C8].Double  // FPosition.Im, FPosition.Re * FAngle.Re
+ fmul [eax + $B8].Double // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+ fsubp                   // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
 
  fld [eax + $C8].Double  // FPosition.Im, New.Re
- fmul [eax + $B0].Double // FPosition.Im * fAngle.Re, New.Re
- fld [eax + $C0].Double  // FPosition.Re, FPosition.Re * fAngle.Re, New.Re
- fmul [eax + $B8].Double // FPosition.Re * fAngle.Im, FPosition.Re * fAngle.Re, New.Re
- faddp                   // FPosition.Re * fAngle.Re + FPosition.Im * fAngle.Im = New.Im, New.Re
+ fmul [eax + $B0].Double // FPosition.Im * FAngle.Re, New.Re
+ fld [eax + $C0].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+ fmul [eax + $B8].Double // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+ faddp                   // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
  fst [eax + $C8].Double  // FPosition.Im := New.Im, New.Re
  fxch
  fst [eax + $C0].Double  // FPosition.Re := New.Re, New.Im
