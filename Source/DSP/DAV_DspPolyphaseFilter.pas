@@ -39,8 +39,9 @@ constructor TCustomPolyphaseFilter.Create;
 begin
  inherited;
  FCoefficients := nil;
- FNumberOfCoeffs := 8;
  FTransition := 0.1;
+ FNumberOfCoeffs := 8;
+ NumberOfCoeffsChanged;
 end;
 
 destructor TCustomPolyphaseFilter.Destroy;

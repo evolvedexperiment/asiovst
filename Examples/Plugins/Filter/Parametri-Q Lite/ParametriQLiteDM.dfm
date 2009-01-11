@@ -1,0 +1,677 @@
+object ParametriQLiteDataModule: TParametriQLiteDataModule
+  OldCreateOrder = False
+  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
+  Version = '1.0'
+  EffectName = 'Parametri-Q Lite'
+  ProductName = 'DAV Filter Examples'
+  VendorName = 'Delphi ASIO & VST Project'
+  PlugCategory = vpcEffect
+  SampleRate = 44100.000000000000000000
+  CurrentProgram = -1
+  IORatio = 1.000000000000000000
+  UniqueID = 'PQLt'
+  ShellPlugins = <>
+  Programs = <>
+  ParameterProperties = <
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'I/O'
+      DisplayName = 'Input'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ShortLabel = 'Input'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterInputChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 1'
+      DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 1'
+      DisplayName = 'Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      Min = 0.100000001490116100
+      ReportVST2Properties = True
+      ShortLabel = 'BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 1'
+      DisplayName = 'Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 1'
+      DisplayName = 'Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterTypeChange
+      OnCustomParameterDisplay = ParameterTypeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 2'
+      DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 2'
+      DisplayName = 'Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      Min = 0.100000001490116100
+      ReportVST2Properties = True
+      ShortLabel = 'BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 2'
+      DisplayName = 'Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 2'
+      DisplayName = 'Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterTypeChange
+      OnCustomParameterDisplay = ParameterTypeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 3'
+      DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 3'
+      DisplayName = 'Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      Min = 0.100000001490116100
+      ReportVST2Properties = True
+      ShortLabel = 'BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 3'
+      DisplayName = 'Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 3'
+      DisplayName = 'Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterTypeChange
+      OnCustomParameterDisplay = ParameterTypeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 4'
+      DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 4'
+      DisplayName = 'Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      Min = 0.100000001490116100
+      ReportVST2Properties = True
+      ShortLabel = 'BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 4'
+      DisplayName = 'Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 4'
+      DisplayName = 'Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterTypeChange
+      OnCustomParameterDisplay = ParameterTypeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 5'
+      DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 5'
+      DisplayName = 'Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      Min = 0.100000001490116100
+      ReportVST2Properties = True
+      ShortLabel = 'BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 5'
+      DisplayName = 'Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 5'
+      DisplayName = 'Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterTypeChange
+      OnCustomParameterDisplay = ParameterTypeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 6'
+      DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 6'
+      DisplayName = 'Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      Min = 0.100000001490116100
+      ReportVST2Properties = True
+      ShortLabel = 'BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 6'
+      DisplayName = 'Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 6'
+      DisplayName = 'Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterTypeChange
+      OnCustomParameterDisplay = ParameterTypeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 7'
+      DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 7'
+      DisplayName = 'Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      Min = 0.100000001490116100
+      ReportVST2Properties = True
+      ShortLabel = 'BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 7'
+      DisplayName = 'Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 7'
+      DisplayName = 'Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterTypeChange
+      OnCustomParameterDisplay = ParameterTypeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 8'
+      DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 8'
+      DisplayName = 'Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      Min = 0.100000001490116100
+      ReportVST2Properties = True
+      ShortLabel = 'BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 8'
+      DisplayName = 'Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Band 8'
+      DisplayName = 'Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterTypeChange
+      OnCustomParameterDisplay = ParameterTypeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'I/O'
+      DisplayName = 'Output'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Output'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterOutputChange
+    end>
+  ParameterCategories = <
+    item
+      DisplayName = 'Band 1'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Band 2'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Band 3'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Band 4'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Band 5'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Band 6'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Band 7'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Band 8'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'I/O'
+      VSTModule = Owner
+    end>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
+  OnEditOpen = VSTModuleEditOpen
+  OnProcess = VSTModuleProcess
+  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
+  Left = 286
+  Top = 77
+  Height = 150
+  Width = 215
+end

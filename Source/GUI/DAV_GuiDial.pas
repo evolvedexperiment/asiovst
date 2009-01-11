@@ -973,6 +973,7 @@ end;
 destructor TCustomGuiStitchedControl.Destroy;
 begin
   FreeAndNil(FDialBitmap);
+  FreeAndNil(FDialAlpha);
   inherited Destroy;
 end;
 
@@ -984,24 +985,29 @@ end;
 
 procedure TCustomGuiStitchedControl.RedrawBuffer(doBufferFlip: Boolean);
 var
-  theRect    : TRect;
-  GlyphNr    : Integer;
-  Bmp        : TBitmap;
+  theRect   : TRect;
+  GlyphNr   : Integer;
+  Bmp       : TBitmap;
+  OwnerDraw : Boolean;
 begin
  if [csLoading..csDestroying] * ComponentState <> [] then exit;
 
- if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
+ if (Width > 0) and (Height > 0) then with FBuffer.Canvas do
   begin
    Lock;
    Brush.Color := Self.Color;
-   if FDialBitmap.Empty and not assigned(FImageList) and not assigned(FDialImageList) then
+   OwnerDraw := FDialBitmap.Empty and not assigned(FImageList);
+   if OwnerDraw and assigned(FDialImageList) and assigned(FDialImageItem)
+    then OwnerDraw := FDialImageItem.FDialBitmap.Empty;
+
+   if OwnerDraw then
     if AntiAlias = gaaNone then
      begin
       // draw background
-      {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+      {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
       FillRect(ClipRect);
 
-      RenderBitmap(fBuffer);
+      RenderBitmap(FBuffer);
      end
     else
      begin
@@ -1009,8 +1015,8 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width       := OversamplingFactor * fBuffer.Width;
-        Height      := OversamplingFactor * fBuffer.Height;
+        Width       := OversamplingFactor * FBuffer.Width;
+        Height      := OversamplingFactor * FBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         {$IFNDEF FPC}
@@ -1023,7 +1029,7 @@ begin
         Canvas.FillRect(Canvas.ClipRect);
         RenderBitmap(Bmp);
         DownsampleBitmap(Bmp);
-        fBuffer.Canvas.Draw(0, 0, Bmp);
+        FBuffer.Canvas.Draw(0, 0, Bmp);
        finally
         FreeAndNil(Bmp);
        end;
@@ -1032,7 +1038,7 @@ begin
     begin
      // draw background
      Brush.Color := Self.Color;
-     {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+     {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
      FillRect(ClipRect);
 
      GlyphNr := GetGlyphNr;
@@ -1066,7 +1072,7 @@ begin
       end else
 
      if assigned(ImageList)
-      then ImageList.Draw(fBuffer.Canvas, 0, 0, GlyphNr);
+      then ImageList.Draw(FBuffer.Canvas, 0, 0, GlyphNr);
     end;
    Unlock;
   end;
@@ -1586,7 +1592,7 @@ begin
    Brush.Color := Self.Color;
 
    // draw background
-   {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+   {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
    FillRect(ClipRect);
 
    // draw circle
@@ -1651,7 +1657,7 @@ begin
   begin
    Brush.Color := Self.Color;
 
-   {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
+   {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
    FillRect(ClipRect);
 
    Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;

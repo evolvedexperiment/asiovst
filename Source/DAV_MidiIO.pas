@@ -25,66 +25,203 @@ uses
 
 const
   // size of system exclusive buffer
-  cSysExBufferSize = 2048;
+  CSysExBufferSize = 2048;
+
+  // MIDI Status Bytes for Channel Voice Messages
+  CMIDIMsgNoteOff             = $80;
+  CMIDIMsgNoteOn              = $90;
+  CMIDIMsgPolyKeyPressure     = $A0;
+  CMIDIMsgControlChange       = $B0;
+  CMIDIMsgProgramChange       = $C0;
+  CMIDIMsgChannelKeyPressure  = $D0;
+  CMIDIMsgAftertouch = CMIDIMsgChannelKeyPressure; // Synonym
+  CMIDIMsgPitchWheelChange    = $E0;
+
+  // MIDI Status Bytes for System Common Messages
+  CMIDIMsgSysEx               = $F0;
+  CMIDIMsgMTCQtrFrame         = $F1; // MIDI Time Code Qtr. Frame
+  CMIDIMsgSongPositionPtr     = $F2;
+  CMIDIMsgSongSelect          = $F3;
+  CMIDIMsgTuneRequest         = $F6;
+  CMIDIMsgEOX                 = $F7; // marks end of system exclusive message
+
+  // MIDI Status Bytes for System Real-Time Messages
+  CMIDIMsgTimingClock         = $F8;
+  CMIDIMsgStartSequence       = $FA;
+  CMIDIMsgContinueSequence    = $FB;
+  CMIDIMsgStopSequence        = $FC;
+  CMIDIMsgActiveSensing       = $FE;
+  CMIDIMsgSystemReset         = $FF;
+
+  // MIDICC...: MIDI Control Change Messages
+
+  // Continuous Controllers MSB
+  CMIDICCBankSelect           = $00;
+  CMIDICCModulationWheel      = $01;
+  CMIDICCBreathControl        = $02;
+  CMIDICCFootController       = $04;
+  CMIDICCPortamentoTime       = $05;
+  CMIDICCDataEntry            = $06;
+  CMIDICCChannelVolume        = $07;
+  CMIDICCMainVolume = CMIDICCChannelVolume;
+  CMIDICCBalance              = $08;
+  CMIDICCPan                  = $0A;
+  CMIDICCExpression           = $0B;
+  CMIDICCEffectControl        = $0C;
+  CMIDICCEffectControl2       = $0D;
+  CMIDICCGeneralPurpose1      = $10;
+  CMIDICCGeneralPurpose2      = $11;
+  CMIDICCGeneralPurpose3      = $12;
+  CMIDICCGeneralPurpose4      = $13;
+
+  // Continuous Controllers LSB
+  CMIDICCBankSelectLSB        = $20;
+  CMIDICCModulationWheelLSB   = $21;
+  CMIDICCBreathControlLSB     = $22;
+  CMIDICCFootControllerLSB    = $24;
+  CMIDICCPortamentoTimeLSB    = $25;
+  CMIDICCDataEntryLSB         = $26;
+  CMIDICCChannelVolumeLSB     = $27;
+  CMIDICCMainVolumeLSB = CMIDICCChannelVolumeLSB;
+  CMIDICCBalanceLSB           = $28;
+  CMIDICCPanLSB               = $2A;
+  CMIDICCExpressionLSB        = $2B;
+  CMIDICCEffectControlLSB     = $2C;
+  CMIDICCEffectControl2LSB    = $2D;
+  CMIDICCGeneralPurpose1LSB   = $30;
+  CMIDICCGeneralPurpose2LSB   = $31;
+  CMIDICCGeneralPurpose3LSB   = $32;
+  CMIDICCGeneralPurpose4LSB   = $33;
+
+  // Switches
+  CMIDICCSustain              = $40;
+  CMIDICCPortamento           = $41;
+  CMIDICCSustenuto            = $42;
+  CMIDICCSoftPedal            = $43;
+  CMIDICCLegato               = $44;
+  CMIDICCHold2                = $45;
+
+  CMIDICCSound1               = $46; // (Sound Variation)
+  CMIDICCSound2               = $47; // (Timbre/Harmonic Intens.)
+  CMIDICCSound3               = $48; // (Release Time)
+  CMIDICCSound4               = $49; // (Attack Time)
+  CMIDICCSound5               = $4A; // (Brightness)
+  CMIDICCSound6               = $4B; // (Decay Time)
+  CMIDICCSound7               = $4C; // (Vibrato Rate)
+  CMIDICCSound8               = $4D; // (Vibrato Depth)
+  CMIDICCSound9               = $4E; // (Vibrato Delay)
+  CMIDICCSound10              = $4F; //
+
+  CMIDICCGeneralPurpose5      = $50;
+  CMIDICCGeneralPurpose6      = $51;
+  CMIDICCGeneralPurpose7      = $52;
+  CMIDICCGeneralPurpose8      = $53;
+  CMIDICCPortamentoControl    = $54;
+
+  CMIDICCReverbSendLevel      = $5B;
+  CMIDICCEffects2Depth        = $5C;
+  CMIDICCTremoloDepth = CMIDICCEffects2Depth;
+  CMIDICCChorusSendLevel      = $5D;
+  CMIDICCEffects4Depth        = $5E;
+  CMIDICCCelesteDepth = CMIDICCEffects4Depth;
+  CMIDICCEffects5Depth        = $5F;
+  CMIDICCPhaserDepth = CMIDICCEffects5Depth;
+
+  CMIDICCDataEntryInc         = $60;
+  CMIDICCDataEntryDec         = $61;
+  CMIDICCNonRegParamNumLSB    = $62;
+  CMIDICCNonRegParamNumMSB    = $63;
+  CMIDICCRegParamNumLSB       = $64;
+  CMIDICCRegParamNumMSB       = $65;
+
+  //  Registered Parameter Numbers [CC# 65H,64H]
+  // -----------------------------------------------------------
+  //  CC#65 (MSB) | CC#64 (LSB) | Function
+  //  Hex|Dec|    |  Hex|Dec|   |
+  //  - - - - - - | - - - - - - |- - - - - - - - - - - - - - - -
+  //   00 = 0     |  00 = 0     | Pitch Bend Sensitivity
+  //   00 = 0     |  01 = 1     | Channel Fine Tuning
+  //   00 = 0     |  02 = 2     | Channel Coarse Tuning
+  //   00 = 0     |  03 = 3     | Tuning Program Change
+  //   00 = 0     |  04 = 4     | Tuning Bank Select
+
+  // Channel Mode Messages (Control Change >= $78)
+  CMIDICCAllSoundOff          = $78;
+  CMIDICCResetAllControllers  = $79;
+  CMIDICCLocalControl         = $7A;
+  CMIDICCAllNotesOff          = $7B;
+
+  CMIDICCOmniModeOff          = $7C;
+  CMIDICCOmniModeOn           = $7D;
+  CMIDICCMonoModeOn           = $7E;
+  CMIDICCPolyModeOn           = $7F;
 
 type
-  // event if data is received
-  TOnMidiInData = procedure (const aDeviceIndex: Integer; const aStatus, aData1, aData2: Byte) of object;
+  TMIDIChannel                = 1..16;
+  TMIDIDataByte               = 0..$7F;           //  7 bits
+  TMIDIDataWord               = 0..$3FFF;         // 14 bits
+  TMIDIStatusByte             = $80..$FF;
+  TMIDIVelocity               = TMIDIDataByte;
+  TMIDIKey                    = TMIDIDataByte;
+  TMIDINote                   = TMIDIKey;
+
+    // event if data is received
+  TOnMidiInData = procedure (const ADeviceIndex: Integer; const AStatus, AData1, AData2: Byte) of object;
   // event of system exclusive data is received
-  TOnSysExData = procedure (const aDeviceIndex: Integer; const aStream: TMemoryStream) of object;
+  TOnSysExData = procedure (const ADeviceIndex: Integer; const AStream: TMemoryStream) of object;
 
   EMidiDevices = Exception;
 
   // base class for MIDI devices
   TMidiDevices = class
   private
-    fDevices    : TStringList;
-    fMidiResult : MMResult;
+    FDevices    : TStringList;
+    FMidiResult : MMResult;
     procedure SetMidiResult(const Value: MMResult);
   protected
-    property MidiResult: MMResult read fMidiResult write SetMidiResult;
-    function GetHandle(const aDeviceIndex: Integer): THandle;
+    property MidiResult: MMResult read FMidiResult write SetMidiResult;
+    function GetHandle(const ADeviceIndex: Integer): THandle;
   public
     constructor Create; virtual;                                                // create the MIDI devices
     destructor Destroy; override;                                               // whack the devices
-    procedure Open(const aDeviceIndex: Integer); virtual; abstract;             // open a specific device
-    procedure Close(const aDeviceIndex: Integer); virtual; abstract;            // close a specific device
+    procedure Open(const ADeviceIndex: Integer); virtual; abstract;             // open a specific device
+    procedure Close(const ADeviceIndex: Integer); virtual; abstract;            // close a specific device
     procedure CloseAll;                                                         // close all devices
-    function IsOpen(aDeviceIndex: Integer): Boolean;                            // check if open
+    function IsOpen(ADeviceIndex: Integer): Boolean;                            // check if open
 
-    property Devices: TStringList read fDevices;                                // THE devices
+    property Devices: TStringList read FDevices;                                // THE devices
   end;
 
   // MIDI input devices
   TMidiInput = class(TMidiDevices)
   private
-    fOnMidiData  : TOnMidiInData;
-    fOnSysExData : TOnSysExData;
-    fSysExData   : TObjectList;
+    FOnMidiData  : TOnMidiInData;
+    FOnSysExData : TOnSysExData;
+    FSysExData   : TObjectList;
   protected
-    procedure DoSysExData(const aDeviceIndex: Integer);
+    procedure DoSysExData(const ADeviceIndex: Integer);
   public
     constructor Create; override;                                               // create an input device
     destructor Destroy; override;                                               // what the input devices
-    procedure Open(const aDeviceIndex: Integer); override;                      // open a specific input device
-    procedure Close(const aDeviceIndex: Integer); override;                     // close a specific device
+    procedure Open(const ADeviceIndex: Integer); override;                      // open a specific input device
+    procedure Close(const ADeviceIndex: Integer); override;                     // close a specific device
 
-    property OnMidiData: TOnMidiInData read fOnMidiData write fOnMidiData;      // midi data event
-    property OnSysExData: TOnSysExData read fOnSysExData write fOnSysExData;    // midi system exclusive is received
+    property OnMidiData: TOnMidiInData read FOnMidiData write FOnMidiData;      // midi data event
+    property OnSysExData: TOnSysExData read FOnSysExData write FOnSysExData;    // midi system exclusive is received
   end;
 
   // MIDI output devices
   TMidiOutput = class(TMidiDevices)
     constructor Create; override;
-    procedure Open(const aDeviceIndex: Integer); override;                      // open a specific input device
-    procedure Close(const aDeviceIndex: Integer); override;                     // close a specific device
-    procedure Send(const aDeviceINdex: Integer; const aStatus, aData1, aData2: Byte);         // send some midi data to the indexed device
-    procedure SendSysEx(const aDeviceIndex: Integer; const aStream: TMemoryStream); overload; // send system exclusive data to a device
-    procedure SendSysEx(const aDeviceIndex: Integer; const aString: string); overload;
+    procedure Open(const ADeviceIndex: Integer); override;                      // open a specific input device
+    procedure Close(const ADeviceIndex: Integer); override;                     // close a specific device
+    procedure Send(const ADeviceIndex: Integer; const AStatus, AData1, AData2: Byte);         // send some midi data to the indexed device
+    procedure SendSysEx(const ADeviceIndex: Integer; const AStream: TMemoryStream); overload; // send system exclusive data to a device
+    procedure SendSysEx(const ADeviceIndex: Integer; const AString: string); overload;
   end;
 
-  function SysExStreamToStr(const aStream: TMemoryStream): string; // convert the stream into xx xx xx xx string
-  procedure StrToSysExStream(const aString: string; const aStream: TMemoryStream); // fill the string in a xx xx xx xx into the stream
+  function SysExStreamToStr(const AStream: TMemoryStream): string; // convert the stream into xx xx xx xx string
+  procedure StrToSysExStream(const AString: string; const AStream: TMemoryStream); // fill the string in a xx xx xx xx into the stream
 
   function MidiInput: TMidiInput;   // MIDI input devices
   function MidiOutput: TMidiOutput; // MIDI output Devices
@@ -97,42 +234,42 @@ type
 
   TSysExData = class
   private
-    fSysExStream: TMemoryStream;
+    FSysExStream: TMemoryStream;
   public
     SysExHeader: {$IFDEF FPC}_midihdr{$ELSE}TMidiHdr{$ENDIF};
     SysExData: TSysExBuffer;
     constructor Create;
     destructor Destroy; override;
-    property SysExStream: TMemoryStream read fSysExStream;
+    property SysExStream: TMemoryStream read FSysExStream;
   end;
 
 constructor TMidiDevices.Create;
 begin
- fDevices := TStringList.create;
+ FDevices := TStringList.create;
 end;
 
 destructor TMidiDevices.Destroy;
 begin
- FreeAndNil(fDevices);
+ FreeAndNil(FDevices);
  inherited;
 end;
 
 var
-  gMidiInput: TMidiInput;
-  gMidiOutput: TMidiOutput;
+  GMidiInput: TMidiInput;
+  GMidiOutput: TMidiOutput;
 
 function MidiInput: TMidiInput;
 begin
- if not assigned(gMidiInput)
-  then gMidiInput := TMidiInput.Create;
- Result := gMidiInput;
+ if not assigned(GMidiInput)
+  then GMidiInput := TMidiInput.Create;
+ Result := GMidiInput;
 end;
 
 function MidiOutput: TMidiOutput;
 begin
- if not assigned(gMidiOutput)
-  then gMidiOutput := TMidiOutput.Create;
- Result := gMidiOutput;
+ if not assigned(GMidiOutput)
+  then GMidiOutput := TMidiOutput.Create;
+ Result := GMidiOutput;
 end;
 
 { TMidiInput }
@@ -161,18 +298,18 @@ begin
  end;
 end;
 
-procedure TMidiInput.Close(const aDeviceIndex: Integer);
+procedure TMidiInput.Close(const ADeviceIndex: Integer);
 var
   DeviceHandle : THandle;
 begin
- DeviceHandle := GetHandle(aDeviceIndex);
+ DeviceHandle := GetHandle(ADeviceIndex);
  if DeviceHandle = 0 then Exit else
   begin
    MidiResult := midiInStop(DeviceHandle);
    MidiResult := midiInReset(DeviceHandle);
-   MidiResult := midiInUnprepareHeader(DeviceHandle, @TSysExData(fSysExData[aDeviceIndex]).SysExHeader, SizeOf(TMidiHdr));
+   MidiResult := midiInUnprepareHeader(DeviceHandle, @TSysExData(FSysExData[ADeviceIndex]).SysExHeader, SizeOf(TMidiHdr));
    MidiResult := midiInClose(DeviceHandle);
-   fDevices.Objects[aDeviceIndex] := nil;
+   FDevices.Objects[ADeviceIndex] := nil;
   end;
 end;
 
@@ -180,7 +317,7 @@ procedure TMidiDevices.CloseAll;
 var
   i: Integer;
 begin
- for i := 0 to fDevices.Count - 1 do Close(i);
+ for i := 0 to FDevices.Count - 1 do Close(i);
 end;
 
 constructor TMidiInput.Create;
@@ -189,7 +326,7 @@ var
   lInCaps : TMidiInCaps;
 begin
  inherited;
- fSysExData := TObjectList.Create(true);
+ FSysExData := TObjectList.Create(true);
  try
   ll := midiInGetNumDevs;
  except
@@ -200,60 +337,60 @@ begin
    MidiResult := midiInGetDevCaps(i, @lInCaps, SizeOf(TMidiInCaps));
    if MidiResult = MMSYSERR_NOERROR then
    begin
-    fDevices.Add(StrPas(lInCaps.szPname));
-    fSysExData.Add(TSysExData.Create);
+    FDevices.Add(StrPas(lInCaps.szPname));
+    FSysExData.Add(TSysExData.Create);
    end;
   except
    // do nothing but supress the exception to the end user
   end;
 end;
 
-procedure TMidiInput.Open(const aDeviceIndex: Integer);
+procedure TMidiInput.Open(const ADeviceIndex: Integer);
 var
   lHandle: THandle;
   lSysExData: TSysExData;
 begin
- if GetHandle(aDeviceIndex) <> 0 then Exit;
- MidiResult := midiInOpen(@lHandle, aDeviceIndex, cardinal(@midiInCallback), aDeviceIndex, CALLBACK_FUNCTION);
- fDevices.Objects[aDeviceIndex] := TObject(lHandle);
- lSysExData := TSysExData(fSysExData[aDeviceIndex]);
+ if GetHandle(ADeviceIndex) <> 0 then Exit;
+ MidiResult := midiInOpen(@lHandle, ADeviceIndex, cardinal(@midiInCallback), ADeviceIndex, CALLBACK_FUNCTION);
+ FDevices.Objects[ADeviceIndex] := TObject(lHandle);
+ lSysExData := TSysExData(FSysExData[ADeviceIndex]);
  lSysExData.SysExHeader.dwFlags := 0;
  MidiResult := midiInPrepareHeader(lHandle, @lSysExData.SysExHeader, SizeOf(TMidiHdr));
  MidiResult := midiInAddBuffer(lHandle, @lSysExData.SysExHeader, SizeOf(TMidiHdr));
  MidiResult := midiInStart(lHandle);
 end;
 
-procedure TMidiInput.DoSysExData(const aDeviceIndex: Integer);
+procedure TMidiInput.DoSysExData(const ADeviceIndex: Integer);
 var
   lSysExData: TSysExData;
 begin
- lSysExData := TSysExData(fSysExData[aDeviceIndex]);
+ lSysExData := TSysExData(FSysExData[ADeviceIndex]);
  if lSysExData.SysExHeader.dwBytesRecorded = 0 then Exit;
  lSysExData.SysExStream.Write(lSysExData.SysExData, lSysExData.SysExHeader.dwBytesRecorded);
  if lSysExData.SysExHeader.dwFlags and MHDR_DONE = MHDR_DONE then
   begin
    lSysExData.SysExStream.Position := 0;
-   if assigned(fOnSysExData) then fOnSysExData(aDeviceIndex, lSysExData.SysExStream);
+   if assigned(FOnSysExData) then FOnSysExData(ADeviceIndex, lSysExData.SysExStream);
    lSysExData.SysExStream.Clear;
   end;
  lSysExData.SysExHeader.dwBytesRecorded := 0;
- MidiResult := midiInPrepareHeader(GetHandle(aDeviceIndex), @lSysExData.SysExHeader, SizeOf(TMidiHdr));
- MidiResult := midiInAddBuffer(GetHandle(aDeviceIndex), @lSysExData.SysExHeader, SizeOf(TMidiHdr));
+ MidiResult := midiInPrepareHeader(GetHandle(ADeviceIndex), @lSysExData.SysExHeader, SizeOf(TMidiHdr));
+ MidiResult := midiInAddBuffer(GetHandle(ADeviceIndex), @lSysExData.SysExHeader, SizeOf(TMidiHdr));
 end;
 
 destructor TMidiInput.Destroy;
 begin
- FreeAndNil(fSysExData);
+ FreeAndNil(FSysExData);
  inherited;
 end;
 
 { TMidiOutput }
 
-procedure TMidiOutput.Close(const aDeviceIndex: Integer);
+procedure TMidiOutput.Close(const ADeviceIndex: Integer);
 begin
- if GetHandle(aDeviceIndex) = 0 then Exit;
- MidiResult := midiOutClose(GetHandle(aDeviceIndex));
- fDevices.Objects[ aDeviceIndex ] := nil;
+ if GetHandle(ADeviceIndex) = 0 then Exit;
+ MidiResult := midiOutClose(GetHandle(ADeviceIndex));
+ FDevices.Objects[ ADeviceIndex ] := nil;
 end;
 
 constructor TMidiOutput.Create;
@@ -270,83 +407,83 @@ begin
  for i := 0 to ll - 1 do
   begin
    MidiResult := midiOutGetDevCaps(i, @lOutCaps, SizeOf(TMidiOutCaps));
-   fDevices.Add(lOutCaps.szPname);
+   FDevices.Add(lOutCaps.szPname);
   end;
 end;
 
-procedure TMidiOutput.Open(const aDeviceIndex: Integer);
+procedure TMidiOutput.Open(const ADeviceIndex: Integer);
 var
   lHandle: THandle;
 begin
  // device already open;
- if GetHandle(aDeviceIndex) <> 0 then Exit;
- MidiResult := midiOutOpen(@lHandle, aDeviceIndex, 0, 0, CALLBACK_NULL);
- fDevices.Objects[aDeviceIndex] := TObject(lHandle);
+ if GetHandle(ADeviceIndex) <> 0 then Exit;
+ MidiResult := midiOutOpen(@lHandle, ADeviceIndex, 0, 0, CALLBACK_NULL);
+ FDevices.Objects[ADeviceIndex] := TObject(lHandle);
 end;
 
-procedure TMidiOutput.Send(const aDeviceINdex: Integer; const aStatus,
-  aData1, aData2: Byte);
+procedure TMidiOutput.Send(const ADeviceIndex: Integer; const AStatus,
+  AData1, AData2: Byte);
 var
   lMsg: cardinal;
 begin
  // open the device is not open
- if not assigned(fDevices.Objects[ aDeviceIndex ]) then Open(aDeviceIndex);
- lMsg := aStatus + (aData1 * $100) + (aData2 * $10000);
- MidiResult := midiOutShortMsg(GetHandle(aDeviceIndex), lMSG);
+ if not assigned(FDevices.Objects[ ADeviceIndex ]) then Open(ADeviceIndex);
+ lMsg := AStatus + (AData1 * $100) + (AData2 * $10000);
+ MidiResult := midiOutShortMsg(GetHandle(ADeviceIndex), lMSG);
 end;
 
 procedure TMidiDevices.SetMidiResult(const Value: MMResult);
 var 
   lError: array[0..MAXERRORLENGTH] of char;
 begin
- fMidiResult := Value;
- if fMidiResult <> MMSYSERR_NOERROR then
-  if midiInGetErrorText(fMidiResult, @lError, MAXERRORLENGTH) = MMSYSERR_NOERROR
+ FMidiResult := Value;
+ if FMidiResult <> MMSYSERR_NOERROR then
+  if midiInGetErrorText(FMidiResult, @lError, MAXERRORLENGTH) = MMSYSERR_NOERROR
    then raise EMidiDevices.Create(StrPas(lError));
 end;
 
-function TMidiDevices.GetHandle(const aDeviceIndex: Integer): THandle;
+function TMidiDevices.GetHandle(const ADeviceIndex: Integer): THandle;
 begin
  try
-  if not ((aDeviceIndex >= 0) and (aDeviceIndex <= (fDevices.Count - 1))) then
-   raise EMidiDevices.CreateFmt('%s: Device index out of bounds! (%d)', [ClassName,aDeviceIndex]);
-  Result := THandle(fDevices.Objects[aDeviceIndex]);
+  if not ((ADeviceIndex >= 0) and (ADeviceIndex <= (FDevices.Count - 1))) then
+   raise EMidiDevices.CreateFmt('%s: Device index out of bounds! (%d)', [ClassName,ADeviceIndex]);
+  Result := THandle(FDevices.Objects[ADeviceIndex]);
  except
   Result := 0;
  end; 
 end;
 
-function TMidiDevices.IsOpen(aDeviceIndex: Integer): boolean;
+function TMidiDevices.IsOpen(ADeviceIndex: Integer): boolean;
 begin
- Result := GetHandle(aDeviceIndex) <> 0;
+ Result := GetHandle(ADeviceIndex) <> 0;
 end;
 
-procedure TMidiOutput.SendSysEx(const aDeviceIndex: Integer;
-  const aString: string);
+procedure TMidiOutput.SendSysEx(const ADeviceIndex: Integer;
+  const AString: string);
 var
   lStream: TMemoryStream;
 begin
  lStream := TMemoryStream.Create;
  try
-  StrToSysExStream(aString, lStream);
-  SendSysEx(aDeviceIndex, lStream);
+  StrToSysExStream(AString, lStream);
+  SendSysEx(ADeviceIndex, lStream);
  finally
   FreeAndNil(lStream);
  end;
 end;
 
-procedure TMidiOutput.SendSysEx(const aDeviceIndex: Integer;
-  const aStream: TMemoryStream);
+procedure TMidiOutput.SendSysEx(const ADeviceIndex: Integer;
+  const AStream: TMemoryStream);
 var
   lSysExHeader: TMidiHdr;
 begin
- aStream.Position := 0;
- lSysExHeader.dwBufferLength := aStream.Size;
- lSysExHeader.lpData := aStream.Memory;
+ AStream.Position := 0;
+ lSysExHeader.dwBufferLength := AStream.Size;
+ lSysExHeader.lpData := AStream.Memory;
  lSysExHeader.dwFlags := 0;
- MidiResult := midiOutPrepareHeader(GetHandle(aDeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
- MidiResult := midiOutLongMsg( GetHandle(aDeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
- MidiResult := midiOutUnprepareHeader(GetHandle(aDeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
+ MidiResult := midiOutPrepareHeader(GetHandle(ADeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
+ MidiResult := midiOutLongMsg( GetHandle(ADeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
+ MidiResult := midiOutUnprepareHeader(GetHandle(ADeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
 end;
 
 { TSysExData }
@@ -355,45 +492,45 @@ constructor TSysExData.Create;
 begin
  SysExHeader.dwBufferLength := cSysExBufferSize;
  SysExHeader.lpData := SysExData;
- fSysExStream := TMemoryStream.Create;
+ FSysExStream := TMemoryStream.Create;
 end;
 
 destructor TSysExData.Destroy;
 begin
- FreeAndNil(fSysExStream);
+ FreeAndNil(FSysExStream);
 end;
 
-function SysExStreamToStr(const aStream: TMemoryStream): string;
+function SysExStreamToStr(const AStream: TMemoryStream): string;
 var
   i: Integer;
 begin
  Result := '';
- aStream.Position := 0;
- for i := 0 to aStream.Size - 1 do
-  Result := Result + Format('%.2x ', [ Byte(pchar(aStream.Memory)[i]) ]);
+ AStream.Position := 0;
+ for i := 0 to AStream.Size - 1 do
+  Result := Result + Format('%.2x ', [ Byte(PChar(AStream.Memory)[i]) ]);
 end;
 
-procedure StrToSysExStream(const aString: string; const aStream: TMemoryStream);
+procedure StrToSysExStream(const AString: string; const AStream: TMemoryStream);
 const
   cHex = '123456789ABCDEF';
 var
   i: Integer;
   lStr: string;
 begin
- lStr := StringReplace(AnsiUpperCase(aString), ' ', '', [rfReplaceAll]);
- aStream.Size := Length(lStr) div 2 - 1;
- aStream.Position := 0;
- for i:=1 to aStream.Size do
-  pchar(aStream.Memory)[i-1] :=
-   char(AnsiPos(lStr[ i*2 - 1], cHex) shl 4 + AnsiPos(lStr[i*2], cHex));
+ lStr := StringReplace(AnsiUpperCase(AString), ' ', '', [rfReplaceAll]);
+ AStream.Size := Length(lStr) div 2 - 1;
+ AStream.Position := 0;
+ for i:=1 to AStream.Size do
+  PChar(AStream.Memory)[i-1] :=
+   Char(AnsiPos(lStr[ i*2 - 1], cHex) shl 4 + AnsiPos(lStr[i*2], cHex));
 end;
 
 initialization
-  gMidiInput := nil;
-  gMidiOutput := nil;
+  GMidiInput := nil;
+  GMidiOutput := nil;
 
 finalization
-  FreeAndNil(gMidiInput);
-  FreeAndNil(gMidiOutput);
+  FreeAndNil(GMidiInput);
+  FreeAndNil(GMidiOutput);
 
 end.

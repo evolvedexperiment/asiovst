@@ -127,7 +127,7 @@ begin
  if [csReadingState] * ControlState <> [] then exit;
 
  // clear buffer
- with fBuffer.Canvas do
+ with FBuffer.Canvas do
   begin
    Brush.Color := Self.Color;
    Font.Assign(Self.Font);
@@ -137,9 +137,9 @@ begin
  case FAntiAlias of
   gaaNone     :
    begin
-    {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, fBuffer.Canvas) else{$ENDIF}
-    fBuffer.Canvas.FillRect(fBuffer.Canvas.ClipRect);
-    RenderLabelToBitmap(fBuffer);
+    {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
+    FBuffer.Canvas.FillRect(FBuffer.Canvas.ClipRect);
+    RenderLabelToBitmap(FBuffer);
    end;
   gaaLinear2x :
    begin
@@ -147,11 +147,11 @@ begin
     with Bmp, Canvas do
      try
       PixelFormat := pf32bit;
-      Bmp.Width   := FOSFactor * fBuffer.Width;
-      Bmp.Height  := FOSFactor * fBuffer.Height;
-      Font.Assign(fBuffer.Canvas.Font);
-      Brush.Assign(fBuffer.Canvas.Brush);
-      Pen.Assign(fBuffer.Canvas.Pen);
+      Bmp.Width   := FOSFactor * FBuffer.Width;
+      Bmp.Height  := FOSFactor * FBuffer.Height;
+      Font.Assign(FBuffer.Canvas.Font);
+      Brush.Assign(FBuffer.Canvas.Brush);
+      Pen.Assign(FBuffer.Canvas.Pen);
       {$IFNDEF FPC}
       if FTransparent then
        begin
@@ -170,9 +170,36 @@ begin
 }
       RenderLabelToBitmap(Bmp);
       Downsample2xBitmap(Bmp);
-      fBuffer.Canvas.Draw(0, 0, Bmp);
+      FBuffer.Canvas.Draw(0, 0, Bmp);
      finally
        FreeAndNil(Bmp);
+     end;
+   end;
+  gaaLinear3x :
+   begin
+    Bmp := TBitmap.Create;
+    with Bmp, Canvas do
+     try
+      PixelFormat := pf32bit;
+      Bmp.Width   := FOSFactor * FBuffer.Width;
+      Bmp.Height  := FOSFactor * FBuffer.Height;
+      Font.Assign(FBuffer.Canvas.Font);
+      Brush.Assign(FBuffer.Canvas.Brush);
+      Pen.Assign(FBuffer.Canvas.Pen);
+      {$IFNDEF FPC}
+      if FTransparent then
+       begin
+        CopyParentImage(Self, Bmp.Canvas);
+//        DrawParentImage(Bmp.Canvas);
+        Upsample3xBitmap(Bmp);
+       end else
+      {$ENDIF}
+      FillRect(ClipRect);
+      RenderLabelToBitmap(Bmp);
+      Downsample3xBitmap(Bmp);
+      FBuffer.Canvas.Draw(0, 0, Bmp);
+     finally
+      FreeAndNil(Bmp);
      end;
    end;
   gaaLinear4x :
@@ -181,11 +208,11 @@ begin
     with Bmp, Canvas do
      try
       PixelFormat := pf32bit;
-      Bmp.Width   := FOSFactor * fBuffer.Width;
-      Bmp.Height  := FOSFactor * fBuffer.Height;
-      Font.Assign(fBuffer.Canvas.Font);
-      Brush.Assign(fBuffer.Canvas.Brush);
-      Pen.Assign(fBuffer.Canvas.Pen);
+      Bmp.Width   := FOSFactor * FBuffer.Width;
+      Bmp.Height  := FOSFactor * FBuffer.Height;
+      Font.Assign(FBuffer.Canvas.Font);
+      Brush.Assign(FBuffer.Canvas.Brush);
+      Pen.Assign(FBuffer.Canvas.Pen);
       {$IFNDEF FPC}
       if FTransparent then
        begin
@@ -197,7 +224,7 @@ begin
       FillRect(ClipRect);
       RenderLabelToBitmap(Bmp);
       Downsample4xBitmap(Bmp);
-      fBuffer.Canvas.Draw(0, 0, Bmp);
+      FBuffer.Canvas.Draw(0, 0, Bmp);
      finally
       FreeAndNil(Bmp);
      end;
@@ -208,11 +235,11 @@ begin
     with Bmp do
      try
       PixelFormat := pf32bit;
-      Width       := FOSFactor * fBuffer.Width;
-      Height      := FOSFactor * fBuffer.Height;
-      Canvas.Font.Assign(fBuffer.Canvas.Font);
-      Canvas.Brush.Assign(fBuffer.Canvas.Brush);
-      Canvas.Pen.Assign(fBuffer.Canvas.Pen);
+      Width       := FOSFactor * FBuffer.Width;
+      Height      := FOSFactor * FBuffer.Height;
+      Canvas.Font.Assign(FBuffer.Canvas.Font);
+      Canvas.Brush.Assign(FBuffer.Canvas.Brush);
+      Canvas.Pen.Assign(FBuffer.Canvas.Pen);
       {$IFNDEF FPC}
       if FTransparent then
        begin
@@ -226,7 +253,7 @@ begin
       RenderLabelToBitmap(Bmp);
       Downsample4xBitmap(Bmp);
       Downsample2xBitmap(Bmp);
-      fBuffer.Canvas.Draw(0, 0, Bmp);
+      FBuffer.Canvas.Draw(0, 0, Bmp);
      finally
       FreeAndNil(Bmp);
      end;
@@ -237,11 +264,11 @@ begin
     with Bmp do
      try
       PixelFormat := pf32bit;
-      Width       := FOSFactor * fBuffer.Width;
-      Height      := FOSFactor * fBuffer.Height;
-      Canvas.Font.Assign(fBuffer.Canvas.Font);
-      Canvas.Brush.Assign(fBuffer.Canvas.Brush);
-      Canvas.Pen.Assign(fBuffer.Canvas.Pen);
+      Width       := FOSFactor * FBuffer.Width;
+      Height      := FOSFactor * FBuffer.Height;
+      Canvas.Font.Assign(FBuffer.Canvas.Font);
+      Canvas.Brush.Assign(FBuffer.Canvas.Brush);
+      Canvas.Pen.Assign(FBuffer.Canvas.Pen);
       {$IFNDEF FPC}
       if FTransparent then
        begin
@@ -255,7 +282,7 @@ begin
       RenderLabelToBitmap(Bmp);
       Downsample4xBitmap(Bmp);
       Downsample4xBitmap(Bmp);
-      fBuffer.Canvas.Draw(0, 0, Bmp);
+      FBuffer.Canvas.Draw(0, 0, Bmp);
      finally
       FreeAndNil(Bmp);
      end;
@@ -298,6 +325,7 @@ begin
    case FAntiAlias of
          gaaNone : FOSFactor :=  1;
      gaaLinear2x : FOSFactor :=  2;
+     gaaLinear3x : FOSFactor :=  3;
      gaaLinear4x : FOSFactor :=  4;
      gaaLinear8x : FOSFactor :=  8;
     gaaLinear16x : FOSFactor := 16;

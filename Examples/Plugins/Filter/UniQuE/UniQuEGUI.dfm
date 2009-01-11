@@ -31,7 +31,7 @@ object FmUniQuE: TFmUniQuE
     Font.Height = -16
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
-    HeaderMinWidth = 80
+    HeaderMinWidth = 72
     LineColor = 15790320
     LineWidth = 8
     ParentFont = False
@@ -98,7 +98,7 @@ object FmUniQuE: TFmUniQuE
       StitchKind = skVertical
     end
     object LEDOnOff: TGuiLED
-      Left = 93
+      Left = 97
       Top = 10
       Width = 17
       Height = 18
@@ -110,7 +110,7 @@ object FmUniQuE: TFmUniQuE
       OnClick = OnOffClick
     end
     object LbOnOff: TGuiLabel
-      Left = 116
+      Left = 120
       Top = 8
       Width = 48
       Height = 20
@@ -124,7 +124,7 @@ object FmUniQuE: TFmUniQuE
       OnClick = OnOffClick
     end
     object LbPad: TGuiLabel
-      Left = 204
+      Left = 206
       Top = 8
       Width = 27
       Height = 20
@@ -138,7 +138,7 @@ object FmUniQuE: TFmUniQuE
       OnClick = PadClick
     end
     object LEDPad: TGuiLED
-      Left = 181
+      Left = 183
       Top = 10
       Width = 17
       Height = 18

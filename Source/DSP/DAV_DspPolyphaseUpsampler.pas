@@ -35,6 +35,8 @@ type
     procedure PushStates;
     procedure PopStates;
     procedure ResetStates;
+
+    property ProcessSample: TProcessSample32 read FProcessSample32;
   end;
 
   TPolyphaseUpsampler64 = class(TCustomPolyphaseDownsampler)
@@ -58,6 +60,8 @@ type
     procedure PushStates;
     procedure PopStates;
     procedure ResetStates;
+
+    property ProcessSample: TProcessSample64 read FProcessSample64;
   end;
 
 implementation

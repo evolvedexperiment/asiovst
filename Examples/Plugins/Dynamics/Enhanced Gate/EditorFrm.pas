@@ -110,22 +110,22 @@ var
 begin
  RS := TResourceStream.Create(hInstance, 'BigKnob3D', 'BMP');
  try
-  DialThreshold.DialBitmap.LoadFromStream(RS);  RS.Position := 0;
-  DialAttack.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
-  DialHold.DialBitmap.LoadFromStream(RS);       RS.Position := 0;
-  DialDecay.DialBitmap.LoadFromStream(RS);      RS.Position := 0;
+  DialThreshold.DialBitmap.LoadFromStream(RS);
+  DialAttack.DialBitmap.Assign(DialThreshold.DialBitmap);
+  DialHold.DialBitmap.Assign(DialThreshold.DialBitmap);
+  DialDecay.DialBitmap.Assign(DialThreshold.DialBitmap);
  finally
-  RS.Free;
+  FreeAndNil(RS);
  end;
  RS := TResourceStream.Create(hInstance, 'SmallKnob3D', 'BMP');
  try
   DialLoCut.DialBitmap.LoadFromStream(RS);  RS.Position := 0;
-  DialHiCut.DialBitmap.LoadFromStream(RS);  RS.Position := 0;
-  DialRatio.DialBitmap.LoadFromStream(RS);  RS.Position := 0;
-  DialKnee.DialBitmap.LoadFromStream(RS);   RS.Position := 0;
-  DialRange.DialBitmap.LoadFromStream(RS);  RS.Position := 0;
+  DialHiCut.DialBitmap.Assign(DialLoCut.DialBitmap);
+  DialRatio.DialBitmap.Assign(DialLoCut.DialBitmap);
+  DialKnee.DialBitmap.Assign(DialLoCut.DialBitmap);
+  DialRange.DialBitmap.Assign(DialLoCut.DialBitmap);
  finally
-  RS.Free;
+  FreeAndNil(RS);
  end;
 end;
 

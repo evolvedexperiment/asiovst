@@ -1,0 +1,30 @@
+{$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
+library ParametriQLite;
+
+{$R 'ParametriQLite.res' 'ParametriQLite.rc'}
+
+uses
+  Forms,
+  DAV_VSTEffect,
+  DAV_VSTModule,
+  ParametriQLiteDM in 'ParametriQLiteDM.pas' {ParametriQLiteDataModule: TVSTModule},
+  ParametriQLiteGUI in 'ParametriQLiteGUI.pas' {FmParametriQLite};
+
+function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+begin
+  try
+    with TParametriQLiteDataModule.Create(Application) do
+     begin
+      AudioMaster := AudioMasterCallback;
+      Result := Effect;
+     end;
+  except
+    Result := nil;
+  end;
+end;
+
+exports Main name 'main';
+exports Main name 'VSTPluginMain';
+
+begin
+end.

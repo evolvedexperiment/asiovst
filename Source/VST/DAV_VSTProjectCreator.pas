@@ -166,15 +166,14 @@ begin
     '  DAV_VSTEffect,' + CRLF +
     '  DAV_VSTModule;' + CRLF +
     CRLF +
-    'function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;' + CRLF +
-    'var' + CRLF +
-    '  ' + FConfig.PluginFormName + ': T' + FConfig.PluginFormName + ';' + CRLF +
+    'function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;' + CRLF +
     'begin' + CRLF +
     '  try' + CRLF +
-    '    ' + FConfig.PluginFormName + ' := T' + FConfig.PluginFormName + '.Create(Application);' + CRLF +
-    '    ' + FConfig.PluginFormName + '.Effect^.user := ' + FConfig.PluginFormName + ';' + CRLF +
-    '    ' + FConfig.PluginFormName + '.AudioMaster := audioMaster;' + CRLF +
-    '    Result := ' + FConfig.PluginFormName + '.Effect;' + CRLF +
+    '    with T' + FConfig.PluginFormName + '.Create(Application) do' + CRLF +
+    '     begin' + CRLF +
+    '      AudioMaster := AudioMasterCallback;' + CRLF +
+    '      Result := Effect;' + CRLF +
+    '     end;' + CRLF +
     '  except' + CRLF +
     '    Result := nil;' + CRLF +
     '  end;' + CRLF +
