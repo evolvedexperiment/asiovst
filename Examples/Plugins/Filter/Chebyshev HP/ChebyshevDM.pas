@@ -30,6 +30,48 @@ implementation
 
 uses
   Math, ChebyshevGUI;
+  
+procedure TChebyshevHPModule.VSTModuleOpen(Sender: TObject);
+var
+  ch : Integer;
+begin
+ for ch := 0 to numInputs - 1 do
+  begin
+   FFilter[ch] := TChebyshev1HP.Create;
+   FFilter[ch].SetFilterValues(1000, 0, 1);
+  end;
+(*
+ FResizer := TVstWindowSizer.Create;
+ FResizer.Effect := Self;
+*)
+
+ // Initial Parameters
+ Parameter[0] := 1000;
+ Parameter[1] := 1;
+ Parameter[2] := 4;
+
+ with Programs[0] do
+  begin
+   Parameter[0] := 1000;
+   Parameter[1] := 1;
+   Parameter[2] := 4;
+  end;
+end;
+
+procedure TChebyshevHPModule.VSTModuleClose(Sender: TObject);
+var
+  ch : Integer;
+begin
+ for ch := 0 to numInputs - 1
+  do FreeAndNil(FFilter[ch]);
+// FreeAndNil(FResizer);
+end;
+
+procedure TChebyshevHPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
+  ParentWindow: Cardinal);
+begin
+ GUI := TFmChebyshev.Create(Self);
+end;
 
 procedure TChebyshevHPModule.ParamRippleChange(Sender: TObject;
   const Index: Integer; var Value: Single);
@@ -73,48 +115,6 @@ begin
    begin
     UpdateFrequency;
    end;
-end;
-
-procedure TChebyshevHPModule.VSTModuleOpen(Sender: TObject);
-var
-  ch : Integer;
-begin
- for ch := 0 to numInputs - 1 do
-  begin
-   FFilter[ch] := TChebyshev1HP.Create;
-   FFilter[ch].SetFilterValues(1000, 0, 1);
-  end;
-(*
- FResizer := TVstWindowSizer.Create;
- FResizer.Effect := Self;
-*)
-
- // Initial Parameters
- Parameter[0] := 1000;
- Parameter[1] := 1;
- Parameter[2] := 4;
-
- with Programs[0] do
-  begin
-   Parameter[0] := 1000;
-   Parameter[1] := 1;
-   Parameter[2] := 4;
-  end;
-end;
-
-procedure TChebyshevHPModule.VSTModuleClose(Sender: TObject);
-var
-  ch : Integer;
-begin
- for ch := 0 to numInputs - 1
-  do FreeAndNil(FFilter[ch]);
-// FreeAndNil(FResizer);
-end;
-
-procedure TChebyshevHPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmChebyshev.Create(Self);
 end;
 
 procedure TChebyshevHPModule.VSTModuleProcess(const Inputs,

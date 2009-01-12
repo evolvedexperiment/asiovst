@@ -29,37 +29,32 @@ uses
 
 procedure TPluginDataModule.VSTModuleOpen(Sender: TObject);
 var
-  i, j : Integer;
+  Channel, Band : Integer;
+const
+  CDefaultFrequencies : Array [0..10] of Single = (20, 40, 80, 160, 320, 640,
+    1250, 2500, 5000, 10000, 20000);   
 begin
- for j := 0 to 1 do
-  for i := 0 to 10 do
+ for Channel := 0 to Length(FEQs) - 1 do
+  for Band := 0 to Length(FEQs[Channel]) - 1 do
    begin
-    if not Assigned(FEQs[j, i])
-     then FEQs[j, i] := TSimplePeakFilter.Create;
-    FEQs[j, i].SampleRate := SampleRate;
-    case i of
-      0 : FEQs[j, i].Frequency :=    20;
-      1 : FEQs[j, i].Frequency :=    40;
-      2 : FEQs[j, i].Frequency :=    80;
-      3 : FEQs[j, i].Frequency :=   160;
-      4 : FEQs[j, i].Frequency :=   320;
-      5 : FEQs[j, i].Frequency :=   640;
-      6 : FEQs[j, i].Frequency :=  1250;
-      7 : FEQs[j, i].Frequency :=  2500;
-      8 : FEQs[j, i].Frequency :=  5000;
-      9 : FEQs[j, i].Frequency := 10000;
-     10 : FEQs[j, i].Frequency := 20000;
-    end;
-    FEQs[j, i].Bandwidth := 1;
+    if not Assigned(FEQs[Channel, Band])
+     then FEQs[Channel, Band] := TSimplePeakFilter.Create;
+    with FEQs[Channel, Band] do
+     begin
+      SampleRate := Self.SampleRate;
+      Frequency := CDefaultFrequencies[Band];
+      Bandwidth := 1;
+     end;
    end;
 end;
 
 procedure TPluginDataModule.VSTModuleClose(Sender: TObject);
-var i,j : Integer;
+var
+  Channel, Band : Integer;
 begin
- for j := 0 to 1 do
-  for i := 0 to 10 do
-   if not Assigned(FEQs[j, i]) then FreeAndNil(FEQs[j, i]);
+ for Channel := 0 to Length(FEQs) - 1 do
+  for Band := 0 to Length(FEQs[Channel]) - 1 do
+   if not Assigned(FEQs[Channel, Band]) then FreeAndNil(FEQs[Channel, Band]);
 end;
 
 procedure TPluginDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
@@ -70,12 +65,13 @@ end;
 
 procedure TPluginDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  i : Integer;
 begin
- FEQs[Index div 11,Index mod 11].Gain := -Value;
+ FEQs[Index div 11, Index mod 11].Gain := -Value;
  i := Round(Value * 10);
- if Assigned(EditorForm) then
-  with EditorForm as TEditorForm do
+ if EditorForm is TEditorForm then
+  with TEditorForm(EditorForm) do
    case Index of
      0: if SB20L.Position   <> i then SB20L.Position   := i;
      1: if SB40L.Position   <> i then SB40L.Position   := i;
@@ -103,23 +99,24 @@ begin
 end;
 
 procedure TPluginDataModule.VSTModuleProcessLR(const inputs,
-  outputs: TDAVArrayOfSingleDynArray; const sampleframes: Integer);
-var i : Integer;
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample : Integer;
 begin
- for i := 0 to sampleframes - 1 do
+ for Sample := 0 to SampleFrames - 1 do
   begin
-   outputs[0,i] := FEQs[0, 0].ProcessSample(FEQs[0, 1].ProcessSample(
-                   FEQs[0, 2].ProcessSample(FEQs[0, 3].ProcessSample(
-                   FEQs[0, 4].ProcessSample(FEQs[0, 5].ProcessSample(
-                   FEQs[0, 6].ProcessSample(FEQs[0, 7].ProcessSample(
-                   FEQs[0, 8].ProcessSample(FEQs[0, 9].ProcessSample(
-                   FEQs[0,10].ProcessSample(inputs[0, i])))))))))));
-   outputs[1,i] := FEQs[1, 0].ProcessSample(FEQs[1, 1].ProcessSample(
-                   FEQs[1, 2].ProcessSample(FEQs[1, 3].ProcessSample(
-                   FEQs[1, 4].ProcessSample(FEQs[1, 5].ProcessSample(
-                   FEQs[1, 6].ProcessSample(FEQs[1, 7].ProcessSample(
-                   FEQs[1, 8].ProcessSample(FEQs[1, 9].ProcessSample(
-                   FEQs[1,10].ProcessSample(inputs[1, i])))))))))));
+   Outputs[0, Sample] := FEQs[0, 0].ProcessSample(FEQs[0, 1].ProcessSample(
+                         FEQs[0, 2].ProcessSample(FEQs[0, 3].ProcessSample(
+                         FEQs[0, 4].ProcessSample(FEQs[0, 5].ProcessSample(
+                         FEQs[0, 6].ProcessSample(FEQs[0, 7].ProcessSample(
+                         FEQs[0, 8].ProcessSample(FEQs[0, 9].ProcessSample(
+                         FEQs[0,10].ProcessSample(inputs[0, Sample])))))))))));
+   Outputs[1, Sample] := FEQs[1, 0].ProcessSample(FEQs[1, 1].ProcessSample(
+                         FEQs[1, 2].ProcessSample(FEQs[1, 3].ProcessSample(
+                         FEQs[1, 4].ProcessSample(FEQs[1, 5].ProcessSample(
+                         FEQs[1, 6].ProcessSample(FEQs[1, 7].ProcessSample(
+                         FEQs[1, 8].ProcessSample(FEQs[1, 9].ProcessSample(
+                         FEQs[1,10].ProcessSample(inputs[1, Sample])))))))))));
   end;
 end;
 
@@ -127,38 +124,41 @@ procedure TPluginDataModule.VSTModuleProcessMS(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i : Integer;
-  d : Double; 
+  d : Double;
+const
+  CQuarter32 : Single = 0.25;
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   outputs[0,i] := FEQs[0, 0].ProcessSample(FEQs[0, 1].ProcessSample(
-                   FEQs[0, 2].ProcessSample(FEQs[0, 3].ProcessSample(
-                   FEQs[0, 4].ProcessSample(FEQs[0, 5].ProcessSample(
-                   FEQs[0, 6].ProcessSample(FEQs[0, 7].ProcessSample(
-                   FEQs[0, 8].ProcessSample(FEQs[0, 9].ProcessSample(
-                   FEQs[0,10].ProcessSample(inputs[0, i] + inputs[1, i])))))))))));
-   outputs[1,i] := FEQs[1, 0].ProcessSample(FEQs[1, 1].ProcessSample(
-                   FEQs[1, 2].ProcessSample(FEQs[1, 3].ProcessSample(
-                   FEQs[1, 4].ProcessSample(FEQs[1, 5].ProcessSample(
-                   FEQs[1, 6].ProcessSample(FEQs[1, 7].ProcessSample(
-                   FEQs[1, 8].ProcessSample(FEQs[1, 9].ProcessSample(
-                   FEQs[1,10].ProcessSample(inputs[0, i] - inputs[1, i])))))))))));
-   d := 0.25*(outputs[1, i] + outputs[0, i]);
-   outputs[1,i] := 0.25 * (outputs[1, i] - outputs[0, i]);
-   outputs[0,i] := d;
+   Outputs[0, i] := FEQs[0, 0].ProcessSample(FEQs[0, 1].ProcessSample(
+                    FEQs[0, 2].ProcessSample(FEQs[0, 3].ProcessSample(
+                    FEQs[0, 4].ProcessSample(FEQs[0, 5].ProcessSample(
+                    FEQs[0, 6].ProcessSample(FEQs[0, 7].ProcessSample(
+                    FEQs[0, 8].ProcessSample(FEQs[0, 9].ProcessSample(
+                    FEQs[0,10].ProcessSample(inputs[0, i] + inputs[1, i])))))))))));
+   Outputs[1, i] := FEQs[1, 0].ProcessSample(FEQs[1, 1].ProcessSample(
+                    FEQs[1, 2].ProcessSample(FEQs[1, 3].ProcessSample(
+                    FEQs[1, 4].ProcessSample(FEQs[1, 5].ProcessSample(
+                    FEQs[1, 6].ProcessSample(FEQs[1, 7].ProcessSample(
+                    FEQs[1, 8].ProcessSample(FEQs[1, 9].ProcessSample(
+                    FEQs[1,10].ProcessSample(inputs[0, i] - inputs[1, i])))))))))));
+   d := CQuarter32 * (Outputs[1, i] + Outputs[0, i]);
+   Outputs[1, i] := CQuarter32 * (Outputs[1, i] - Outputs[0, i]);
+   Outputs[0, i] := d;
   end;
 end;
 
 procedure TPluginDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
-var i,j : Integer;
+var
+  Channel, Band : Integer;
 begin
- for j := 0 to 1 do
-  for i := 0 to 10 do
+ for Channel := 0 to Length(FEQs) - 1 do
+  for Band := 0 to Length(FEQs[Channel]) - 1 do
    begin
-    if not Assigned(FEQs[j, i])
-     then FEQs[j, i] := TSimplePeakFilter.Create;
-    FEQs[j, i].SampleRate := SampleRate;
+    if not Assigned(FEQs[Channel, Band])
+     then FEQs[Channel, Band] := TSimplePeakFilter.Create;
+    FEQs[Channel, Band].SampleRate := SampleRate;
    end;
 end;
 

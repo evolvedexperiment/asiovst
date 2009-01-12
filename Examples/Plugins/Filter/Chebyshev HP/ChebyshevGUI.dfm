@@ -75,44 +75,46 @@ object FmChebyshev: TFmChebyshev
       Top = 33
       Width = 64
       Height = 64
-      Anchors = [akLeft]
-      Color = 1315880
-      LineColor = 10526927
       CircleColor = 657940
+      Color = 1315880
       CurveMapping = -2.099999904632568000
       DefaultPosition = 1000.000000000000000000
+      DialImageIndex = -1
+      LineColor = 10526927
+      LineWidth = 2
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       NumGlyphs = 65
+      OnChange = DialFrequencyChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 1000.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
-      OnChange = DialFrequencyChange
     end
     object DialRipple: TGuiDial
       Left = 102
       Top = 33
       Width = 64
       Height = 64
-      Anchors = []
-      Color = 1315880
-      LineColor = 10526927
       CircleColor = 657940
+      Color = 1315880
       CurveMapping = -2.750000000000000000
       DefaultPosition = 1.000000000000000000
+      DialImageIndex = -1
+      LineColor = 10526927
+      LineWidth = 2
       Max = 10.000000000000000000
       Min = 0.001000000047497451
       NumGlyphs = 65
+      OnChange = DialRippleChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 0.100000001490116100
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
-      OnChange = DialRippleChange
     end
     object LbFrequency: TGuiLabel
       Left = 8
@@ -150,19 +152,20 @@ object FmChebyshev: TFmChebyshev
       Top = 33
       Width = 64
       Height = 64
-      Anchors = []
-      Color = 1315880
-      LineColor = 10526927
       CircleColor = 657940
+      Color = 1315880
+      DialImageIndex = -1
+      LineColor = 10526927
+      LineWidth = 2
       Max = 16.000000000000000000
       NumGlyphs = 65
+      OnChange = DialOrderChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 4.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
-      OnChange = DialOrderChange
     end
     object LbOrder: TGuiLabel
       Left = 182

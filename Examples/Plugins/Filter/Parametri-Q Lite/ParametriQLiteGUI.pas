@@ -152,7 +152,6 @@ type
     ShapeInputLeft: TShape;
     ShapeOutputBottom: TShape;
     ShapeOutputRight: TShape;
-    ShapePlot: TShape;
     Switch: TGuiSwitch;
     VUMeter: TGuiVUMeter;
     PopupFilter: TPopupMenu;
@@ -166,6 +165,8 @@ type
     MINotch: TMenuItem;
     MIBandpass: TMenuItem;
     N1: TMenuItem;
+    Timer: TTimer;
+    PlotBox: TPaintBox;
     procedure FormCreate(Sender: TObject);
     procedure DialBWChange(Sender: TObject);
     procedure DialFreqChange(Sender: TObject);
@@ -184,6 +185,8 @@ type
     procedure MIPeakClick(Sender: TObject);
     procedure PopupFilterPopup(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
+    procedure PlotBoxPaint(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
   public
@@ -338,6 +341,8 @@ begin
       end;
     end;
   end;
+ PlotBox.ControlStyle   := PlotBox.ControlStyle + [csOpaque];
+ ShapeInfo.ControlStyle := ShapeInfo.ControlStyle + [csOpaque];
 end;
 
 procedure TFmParametriQLite.FormShow(Sender: TObject);
@@ -432,6 +437,64 @@ begin
   end;
 end;
 
+procedure TFmParametriQLite.PlotBoxPaint(Sender: TObject);
+var
+  R         : TRect;
+  HalfHght  : Integer;
+  c, Wdth   : Integer;
+  WdthRez   : Single;
+  Magn, Frq : Single;
+  Band      : Integer;
+const
+  CdBFactor : Single = 0.2006829232;
+begin
+ with TParametriQLiteDataModule(Owner), PlotBox.Canvas do
+  begin
+   R := ClipRect;
+   Pen.Color := $00424341;
+   RoundRect(R.Left, R.Top, R.Right, R.Bottom, 2, 2);
+   InflateRect(R, -1, -1);
+   Brush.Color := $00232422;
+   FillRect(R);
+   Wdth := R.Right - R.Left + 1;
+   WdthRez := 1 / Wdth;
+   HalfHght := (R.Bottom - R.Top) div 2;
+
+   // draw 100 Hz
+   Band := round(FreqLogToLinear(100) * Wdth);
+   MoveTo(Band, R.Top);
+   LineTo(Band, R.Bottom);
+
+   // draw 1 kHz
+   Band := round(FreqLogToLinear(1E3) * Wdth);
+   MoveTo(Band, R.Top);
+   LineTo(Band, R.Bottom);
+
+   // draw 10 kHz
+   Band := round(FreqLogToLinear(1E4) * Wdth);
+   MoveTo(Band, R.Top);
+   LineTo(Band, R.Bottom);
+
+   // draw middle line
+   MoveTo(1, HalfHght);
+   LineTo(Wdth, HalfHght);
+
+   Pen.Color := $00666765;
+   Magn := Filter[0].MagnitudeSquared(20);
+   for Band := 1 to 7
+    do Magn := Magn * Filter[Band].MagnitudeSquared(20);
+   MoveTo(1, round(HalfHght * (1 - f_Log2MinError5(Magn) * CdBFactor)));
+   for c := 2 to Wdth do
+    begin
+     Frq := FreqLinearToLog(c * WdthRez);
+     Magn := Filter[0].MagnitudeSquared(Frq);
+     for Band := 1 to 7
+      do Magn := Magn * Filter[Band].MagnitudeSquared(Frq);
+     LineTo(c, round(HalfHght * (1 - f_Log2MinError5(Magn) * CdBFactor )));
+    end;
+  end;
+end;
+
 procedure TFmParametriQLite.PopupFilterPopup(Sender: TObject);
 var
   FilterType: Integer;
@@ -445,8 +508,25 @@ begin
    MIHighshelf.Checked := FilterType = 3;
    MILowpass.Checked   := FilterType = 4;
    MIHighpass.Checked  := FilterType = 5;
-   MIAllpass.Checked   := FilterType = 6;
+   MIBandpass.Checked  := FilterType = 6;
    MINotch.Checked     := FilterType = 7;
+   MIAllpass.Checked   := FilterType = 8;
+  end;
+end;
+
+procedure TFmParametriQLite.TimerTimer(Sender: TObject);
+var
+  PeakLevel : Single;
+const
+  COne25th : Single = 1 / 25;
+begin
+ with TParametriQLiteDataModule(Owner) do
+  begin
+   if Switch.GlyphNr = 0
+    then PeakLevel := InputPeakLevel
+    else PeakLevel := OutputPeakLevel;
+
+   VUMeter.GlyphIndex := round((25 + F_Limit(PeakLevel, -25, 0)) * VUMeter.NumGlyphs * COne25th);
   end;
 end;
 
@@ -497,6 +577,7 @@ begin
         end;
    end;
   end;
+ PlotBox.Invalidate;
 end;
 
 procedure TFmParametriQLite.UpdateBandwidth(const Index: Integer);
@@ -546,6 +627,7 @@ begin
         end;
    end;
   end;
+ PlotBox.Invalidate;
 end;
 
 procedure TFmParametriQLite.UpdateGain(const Index: Integer);
@@ -595,6 +677,7 @@ begin
         end;
    end;
   end;
+ PlotBox.Invalidate;
 end;
 
 procedure TFmParametriQLite.UpdateFilterType(const Index: Integer);
@@ -612,6 +695,7 @@ begin
     7 : LbTypeValue8.Caption := ParameterDisplay[Index * 4 + 4];
    end;
   end;
+ PlotBox.Invalidate;
 end;
 
 procedure TFmParametriQLite.DialFreqChange(Sender: TObject);

@@ -4,7 +4,7 @@ object FmParametriQLite: TFmParametriQLite
   BorderStyle = bsNone
   Caption = 'Parametri-Q Lite'
   ClientHeight = 349
-  ClientWidth = 813
+  ClientWidth = 796
   Color = 3092526
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,7 +16,7 @@ object FmParametriQLite: TFmParametriQLite
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    813
+    796
     349)
   PixelsPerInch = 96
   TextHeight = 13
@@ -194,7 +194,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 213
     Height = 184
     Anchors = [akLeft, akTop, akBottom]
-    Brush.Color = 2303010
+    Brush.Color = 1447701
     Pen.Color = 4342593
     ExplicitHeight = 182
   end
@@ -1895,16 +1895,6 @@ object FmParametriQLite: TFmParametriQLite
     Pen.Color = 6711141
     ExplicitHeight = 10
   end
-  object ShapePlot: TShape
-    Left = 583
-    Top = 33
-    Width = 198
-    Height = 84
-    Anchors = [akLeft, akTop, akBottom]
-    Brush.Color = 3092526
-    Pen.Color = 4342593
-    ExplicitHeight = 82
-  end
   object LbTitle: TGuiLabel
     Left = 651
     Top = 16
@@ -1913,7 +1903,7 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'DAV EQ'
-    Color = 2303010
+    Color = 1447701
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12961476
     Font.Height = -13
@@ -1925,8 +1915,8 @@ object FmParametriQLite: TFmParametriQLite
     Top = 139
     Width = 168
     Height = 40
-    Color = 2171424
-    Position = 0
+    Color = 1447701
+    GlyphIndex = 0
     NumGlyphs = 65
     StitchKind = skHorizontal
   end
@@ -1935,7 +1925,7 @@ object FmParametriQLite: TFmParametriQLite
     Top = 121
     Width = 32
     Height = 12
-    Color = 2303010
+    Color = 1447701
     DefaultGlyphNr = 0
     DialImageIndex = -1
     LineColor = 9145737
@@ -1951,7 +1941,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taRightJustify
     Caption = 'In'
-    Color = 2303010
+    Color = 1447701
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 9211275
     Font.Height = -11
@@ -1964,7 +1954,7 @@ object FmParametriQLite: TFmParametriQLite
     Width = 19
     Height = 14
     Caption = 'Out'
-    Color = 2303010
+    Color = 1447701
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 9211275
     Font.Height = -11
@@ -1978,7 +1968,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 14
     Alignment = taRightJustify
     Caption = 'dB'
-    Color = 2303010
+    Color = 1447701
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 9211275
     Font.Height = -11
@@ -2128,6 +2118,14 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = [fsBold, fsItalic]
     PopupMenu = PopupFilter
     OnClick = LbTypeClick
+  end
+  object PlotBox: TPaintBox
+    Left = 583
+    Top = 33
+    Width = 198
+    Height = 84
+    Anchors = [akLeft, akTop, akBottom]
+    OnPaint = PlotBoxPaint
   end
   object GuiDialImageList: TGuiDialImageList
     DialImages = <
@@ -5024,5 +5022,11 @@ object FmParametriQLite: TFmParametriQLite
       RadioItem = True
       OnClick = MIBypassClick
     end
+  end
+  object Timer: TTimer
+    Interval = 100
+    OnTimer = TimerTimer
+    Left = 608
+    Top = 144
   end
 end

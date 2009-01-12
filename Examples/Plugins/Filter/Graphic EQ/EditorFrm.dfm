@@ -15,13 +15,14 @@ object EditorForm: TEditorForm
   Scaled = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Shape1: TShape
+  object ShBackText: TShape
     Left = 49
     Top = 189
     Width = 524
     Height = 15
     Brush.Color = clBtnShadow
     Pen.Color = clBtnShadow
+    Shape = stRoundRect
   end
   object MiddleL: TShape
     Left = 70

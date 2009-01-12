@@ -40,8 +40,8 @@ var
 begin
  RS := TResourceStream.Create(hInstance, 'WineKnob', 'BMP');
  try
-  DialFrequency.DialBitmap.LoadFromStream(RS); RS.Position := 0;
-  DialOrder.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
+  DialFrequency.DialBitmap.LoadFromStream(RS);
+  DialOrder.DialBitmap.Assign(DialFrequency.DialBitmap);
  finally
   RS.Free;
  end;

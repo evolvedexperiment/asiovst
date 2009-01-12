@@ -2,24 +2,24 @@ unit ChebyshevGUI;
 
 interface
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, DAV_Common,
   DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel;
 
 type
   TFmChebyshev = class(TForm)
-    LbChebyshevFilterDemo: TGuiLabel;
-    PnControls: TGuiPanel;
     DialFrequency: TGuiDial;
-    DialRipple: TGuiDial;
-    LbFrequency: TGuiLabel;
-    LbRipple: TGuiLabel;
     DialOrder: TGuiDial;
+    DialRipple: TGuiDial;
+    LbChebyshevFilterDemo: TGuiLabel;
+    LbChebyshevFilterDemoShaddow: TGuiLabel;
+    LbFrequency: TGuiLabel;
+    LbFrequencyValue: TGuiLabel;
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
+    LbRipple: TGuiLabel;
     LbRippleValue: TGuiLabel;
-    LbFrequencyValue: TGuiLabel;
-    LbChebyshevFilterDemoShaddow: TGuiLabel;
+    PnControls: TGuiPanel;
     procedure DialFrequencyChange(Sender: TObject);
     procedure DialRippleChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
@@ -38,6 +38,33 @@ implementation
 
 uses
   DAV_VSTModuleWithPrograms, ChebyshevDM;
+
+procedure TFmChebyshev.FormCreate(Sender: TObject);
+var
+  RS  : TResourceStream;
+begin
+ RS := TResourceStream.Create(hInstance, 'WineKnob', 'BMP');
+ try
+  DialFrequency.DialBitmap.LoadFromStream(RS);
+  DialOrder.DialBitmap.Assign(DialFrequency.DialBitmap);
+  DialRipple.DialBitmap.Assign(DialFrequency.DialBitmap);
+ finally
+  RS.Free;
+ end;
+end;
+
+procedure TFmChebyshev.FormShow(Sender: TObject);
+begin
+ UpdateFrequency;
+ UpdateRipple;
+ UpdateOrder;
+(*
+ with TChebyshevLPModule(Owner) do
+  begin
+   Resizer.SetEditorHwnd(Self.Handle);
+  end;
+*)
+end;
 
 procedure TFmChebyshev.DialFrequencyChange(Sender: TObject);
 begin
@@ -72,33 +99,6 @@ begin
   begin
    Resizer.SetEditorHwnd(0);
   end;
-end;
-
-procedure TFmChebyshev.FormCreate(Sender: TObject);
-var
-  RS  : TResourceStream;
-begin
- RS := TResourceStream.Create(hInstance, 'WineKnob', 'BMP');
- try
-  DialFrequency.DialBitmap.LoadFromStream(RS); RS.Position := 0;
-  DialOrder.DialBitmap.LoadFromStream(RS);     RS.Position := 0;
-  DialRipple.DialBitmap.LoadFromStream(RS);    RS.Position := 0;
- finally
-  RS.Free;
- end;
-end;
-
-procedure TFmChebyshev.FormShow(Sender: TObject);
-begin
- UpdateFrequency;
- UpdateRipple;
- UpdateOrder;
-(*
- with TChebyshevLPModule(Owner) do
-  begin
-   Resizer.SetEditorHwnd(Self.Handle);
-  end;
-*)
 end;
 
 procedure TFmChebyshev.UpdateFrequency;
