@@ -18,43 +18,9 @@ uses
   function FastLog2Continous5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function FastLog2MinError5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function FastLog2(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastFloorln2(const Value: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastArctan(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastArctan(const Value: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-
-  { Trigonomic Approximations }
-
-  // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
-  function FastCosPart3Term(const Value: Single): Single; overload;
-  function FastCosPart3Term(const Value: Double): Double; overload;
-  function FastCos3Term(const Value: Single): Single; overload;
-  function FastCos3Term(const Value: Double): Double; overload;
-  function FastSin3Term(const Value: Single): Single; overload;
-  function FastSin3Term(const Value: Double): Double; overload; 
-
-  // 4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
-  function FastCosPart4Term(const Value: Single): Single; overload;
-  function FastCosPart4Term(const Value: Double): Double; overload;
-  function FastCos4Term(const Value: Single): Single; overload;
-  function FastCos4Term(const Value: Double): Double; overload;
-  function FastSin4Term(const Value: Single): Single; overload;
-  function FastSin4Term(const Value: Double): Double; overload;
-
-  // 5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
-  function FastCosPart5Term(const Value: Single): Single; overload;
-  function FastCosPart5Term(const Value: Double): Double; overload;
-  function FastCos5Term(const Value: Single): Single; overload;
-  function FastCos5Term(const Value: Double): Double; overload;
-  function FastSin5Term(const Value: Single): Single; overload;
-  function FastSin5Term(const Value: Double): Double; overload;
-
-  // 7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
-  function FastCosPart7Term(const Value: Single): Single; overload;
-  function FastCosPart7Term(const Value: Double): Double; overload;
-  function FastCos7Term(const Value: Single): Single; overload;
-  function FastCos7Term(const Value: Double): Double; overload;
-  function FastSin7Term(const Value: Single): Single; overload;
-  function FastSin7Term(const Value: Double): Double; overload;
+  function FastFloorLn2(const Value: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastArctanLike(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastArctanLike(const Value: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 
   function FastSinLike(const Value: Single): Single; overload;
   function FastSinLike(const Value: Double): Double; overload;
@@ -65,6 +31,112 @@ uses
   function FastCoTan(const Value: Extended): Extended;
   function FastLog10(const Value: Extended): Extended;
   {$ENDIF}
+
+  { Trigonomic Approximations }
+
+  // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
+  function FastCosPart3Term(const Value: Single): Single; overload;
+  function FastCosPart3Term(const Value: Double): Double; overload;
+  function FastCos3Term(const Value: Single): Single; overload;
+  function FastCos3Term(const Value: Double): Double; overload;
+  function FastSin3Term(const Value: Single): Single; overload;
+  function FastSin3Term(const Value: Double): Double; overload; 
+  function FastSec3Term(const Value: Single): Single; overload;
+  function FastSec3Term(const Value: Double): Double; overload; 
+  function FastCsc3Term(const Value: Single): Single; overload;
+  function FastCsc3Term(const Value: Double): Double; overload;
+
+  // 4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
+  function FastCosPart4Term(const Value: Single): Single; overload;
+  function FastCosPart4Term(const Value: Double): Double; overload;
+  function FastCos4Term(const Value: Single): Single; overload;
+  function FastCos4Term(const Value: Double): Double; overload;
+  function FastSin4Term(const Value: Single): Single; overload;
+  function FastSin4Term(const Value: Double): Double; overload;
+  function FastSec4Term(const Value: Single): Single; overload;
+  function FastSec4Term(const Value: Double): Double; overload;
+  function FastCsc4Term(const Value: Single): Single; overload;
+  function FastCsc4Term(const Value: Double): Double; overload;
+
+  // 5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
+  function FastCosPart5Term(const Value: Single): Single; overload;
+  function FastCosPart5Term(const Value: Double): Double; overload;
+  function FastCos5Term(const Value: Single): Single; overload;
+  function FastCos5Term(const Value: Double): Double; overload;
+  function FastSin5Term(const Value: Single): Single; overload;
+  function FastSin5Term(const Value: Double): Double; overload;
+  function FastSec5Term(const Value: Single): Single; overload;
+  function FastSec5Term(const Value: Double): Double; overload;
+  function FastCsc5Term(const Value: Single): Single; overload;
+  function FastCsc5Term(const Value: Double): Double; overload;
+
+  // 7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
+  function FastCosPart7Term(const Value: Single): Single; overload;
+  function FastCosPart7Term(const Value: Double): Double; overload;
+  function FastCos7Term(const Value: Single): Single; overload;
+  function FastCos7Term(const Value: Double): Double; overload;
+  function FastSin7Term(const Value: Single): Single; overload;
+  function FastSin7Term(const Value: Double): Double; overload;
+  function FastSec7Term(const Value: Single): Single; overload;
+  function FastSec7Term(const Value: Double): Double; overload;
+  function FastCsc7Term(const Value: Single): Single; overload;
+  function FastCsc7Term(const Value: Double): Double; overload;
+
+  // 2-Term: Accurate to about 3.2 decimal digits over the range [0, pi/4].
+  function FastTanPart2Term(const Value: Single): Single; overload;
+  function FastTanPart2Term(const Value: Double): Double; overload;
+  function FastTanPInv2Term(const Value: Single): Single; overload;
+  function FastTanPInv2Term(const Value: Double): Double; overload;
+  function FastTan2Term(const Value: Single): Single; overload;
+  function FastTan2Term(const Value: Double): Double; overload;
+  function FastCoTan2Term(const Value: Single): Single; overload;
+  function FastCoTan2Term(const Value: Double): Double; overload;
+
+  // 3-Term: Accurate to about 5.6 decimal digits over the range [0, pi/4].
+  function FastTanPart3Term(const Value: Single): Single; overload;
+  function FastTanPart3Term(const Value: Double): Double; overload;
+  function FastTanPInv3Term(const Value: Single): Single; overload;
+  function FastTanPInv3Term(const Value: Double): Double; overload;
+  function FastTan3Term(const Value: Single): Single; overload;
+  function FastTan3Term(const Value: Double): Double; overload;
+  function FastCoTan3Term(const Value: Single): Single; overload;
+  function FastCoTan3Term(const Value: Double): Double; overload;
+
+  // 4-Term: Accurate to about 8.2 decimal digits over the range [0, pi/4].
+  function FastTanPart4Term(const Value: Single): Single; overload;
+  function FastTanPart4Term(const Value: Double): Double; overload;
+  function FastTanPInv4Term(const Value: Single): Single; overload;
+  function FastTanPInv4Term(const Value: Double): Double; overload;
+  function FastTan4Term(const Value: Single): Single; overload;
+  function FastTan4Term(const Value: Double): Double; overload;
+  function FastCoTan4Term(const Value: Single): Single; overload;
+  function FastCoTan4Term(const Value: Double): Double; overload;
+
+  // 6-Term: Accurate to about 14 decimal digits over the range [0, pi/4].
+  function FastTanPart6Term(const Value: Single): Single; overload;
+  function FastTanPart6Term(const Value: Double): Double; overload;
+  function FastTanPInv6Term(const Value: Single): Single; overload;
+  function FastTanPInv6Term(const Value: Double): Double; overload;
+  function FastTan6Term(const Value: Single): Single; overload;
+  function FastTan6Term(const Value: Double): Double; overload;
+  function FastCoTan6Term(const Value: Single): Single; overload;
+  function FastCoTan6Term(const Value: Double): Double; overload;
+
+  // 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
+  function FastArcTanPart3Term(const Value: Single): Single; overload;
+  function FastArcTanPart3Term(const Value: Double): Double; overload;
+  function FastArcTan3Term(const Value: Single): Single; overload;
+  function FastArcTan3Term(const Value: Double): Double; overload;
+  function FastArcCotan3Term(const Value: Single): Single; overload;
+  function FastArcCotan3Term(const Value: Double): Double; overload;
+
+  // 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
+  function FastArcTanPart6Term(const Value: Single): Single; overload;
+  function FastArcTanPart6Term(const Value: Double): Double; overload;
+  function FastArcTan6Term(const Value: Single): Single; overload;
+  function FastArcTan6Term(const Value: Double): Double; overload;
+  function FastArcCotan6Term(const Value: Single): Single; overload;
+  function FastArcCotan6Term(const Value: Double): Double; overload;
 
 
   { TanH Approximations }
@@ -97,7 +169,9 @@ uses
   function Tanh2Like1Term(const Input: Single): Single;
 
 var
-  ln10, ln2, ln22, ln2Rez : Double;
+  Ln10, Ln2, Ln2Half, Ln2Rez   : Double;
+  TanSixthPi32, TanTwelfthPi32 : Single;
+  TanSixthPi64, TanTwelfthPi64 : Double;
 
 const
   CMinusOneThird : Double = -1/3;
@@ -118,10 +192,6 @@ const
   CSixthPi64     : Double = Pi / 6.0;  // pi/6.0, used in atan routines
   CTwelfthPi32   : Single = Pi / 12.0; // pi/12.0, used in atan routines
   CTwelfthPi64   : Double = Pi / 12.0; // pi/12.0, used in atan routines
-(*
-  CTansixthpi=tan(sixthpi);    // tan(pi/6), used in atan routines
-  CTanTwelfthPi = tan(twelfthpi);  // tan(pi/12), used in atan routines
-*)
 
 const
   CArcTanLike32 : Array [0..4] of Single = (0.0208351, -0.085133, 0.180141,
@@ -136,6 +206,19 @@ const
   CCos7Term : array [0..6] of Double = (0.99999999999925182,
    -0.49999999997024012, 4.1666666473384543E-2, -1.388888418000423E-3,
     2.48010406484558E-5, -2.752469638432E-7, 1.9907856854E-9);
+  CTan2Term : array [0..1] of Single = (-3.6112171, -4.6133253);
+  CTan3Term : array [0..2] of Single = (-3.16783027, 0.134516124, -4.033321984);
+  CTan4Term : array [0..3] of Double = (211.849369664121, -12.5288887278448,
+    269.7350131214121, -71.4145309347748);
+  CTan6Term : array [0..5] of Double = (-34287.4662577359568109624,
+    2566.7175462315050423295, -26.5366371951731325438,
+    -43656.1579281292375769579, 12244.4839556747426927793,
+    -336.611376245464339493);
+  CArcTan3Term : array [0..2] of Single = (1.6867629106, 0.4378497304,
+    1.6867633134); 
+  CArcTan6Term : array [0..5] of Double = (48.70107004404898384,
+    49.5326263772254345, 9.40604244231624, 48.70107004404996166,
+    65.7663163908956299, 21.587934067020262);
 
 implementation
 
@@ -147,7 +230,7 @@ uses
 function FastArcTan2(const Y, X: Extended): Extended;
 {$IFDEF PUREPASCAL}
 begin
- result := ArcTan2(Y,X);
+ Result := ArcTan2(Y, X);
 {$ELSE}
 asm
  fld Y
@@ -159,7 +242,7 @@ end;
 function FastTan(const Value: Extended): Extended;
 {$IFDEF PUREPASCAL}
 begin
- result := Tan(X);
+ Result := Tan(X);
 {$ELSE}
 asm
  fld Value
@@ -171,7 +254,7 @@ end;
 function FastCoTan(const Value: Extended): Extended;
 {$IFDEF PUREPASCAL}
 begin
- result := CoTan(X);
+ Result := CoTan(X);
 {$ELSE}
 asm
  fld Value
@@ -183,7 +266,7 @@ end;
 function FastLog10(const Value: Extended): Extended;
 {$IFDEF PUREPASCAL}
 begin
- result := Log10(X);
+ Result := Log10(X);
 {$ELSE}
 asm
  fldlg2
@@ -195,7 +278,7 @@ end;
 
 function FastExp(const Value: Single): Single;
 begin
- Result := Exp(Value * ln2);
+ Result := Exp(Value * Ln2);
 end;
 
 
@@ -203,229 +286,777 @@ end;
 
 type
   TQuadrant = 0..3;
+  TOctant   = 0..7;
 
 
-//  3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
+// 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
 
 function FastCosPart3Term(const Value: Single): Single;
 begin
- result := sqr(Value);
- result := (CCos3Term[0] + result * (CCos3Term[1] + CCos3Term[2] * result));
+ Result := sqr(Value);
+ Result := (CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result));
 end;
 
-function FastCosPart3Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+function FastCosPart3Term(const Value: Double): Double;
 begin
- result := sqr(Value);
- result := (CCos3Term[0] + result * (CCos3Term[1] + CCos3Term[2] * result));
+ Result := sqr(Value);
+ Result := (CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result));
 end;
 
-function FastCos3Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
-var
-  Quadrant : TQuadrant;
+function FastCos3Term(const Value: Single): Single;
 begin
-  result := abs(FastMod(Value, CTwoPi32));          // Get rid of values > 2* pi
-  Quadrant := TQuadrant(round(result * CTwoDivPi32)); // Get quadrant # (0 to 3) we're in
-  case Quadrant of
-   0 : result :=  FastCosPart3Term(result);
-   1 : result := -FastCosPart3Term(Pi - result);
-   2 : result := -FastCosPart3Term(result - Pi);
-   3 : result :=  FastCosPart3Term(CTwoPI32 - result);
-  end;
+ Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
+ case round(Result * CTwoDivPi32 - CHalf32) of
+  0 : Result :=  FastCosPart3Term(Result);
+  1 : Result := -FastCosPart3Term(Pi - Result);
+  2 : Result := -FastCosPart3Term(Result - Pi);
+  3 : Result :=  FastCosPart3Term(CTwoPI32 - Result);
+  4 : Result :=  FastCosPart3Term(Result);
+ end;
 end;
 
-function FastCos3Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
-var
-  Quadrant : TQuadrant;
+function FastCos3Term(const Value: Double): Double;
 begin
-  result := abs(FastMod(Value, CTwoPi64));          // Get rid of values > 2* pi
-  Quadrant := TQuadrant(round(result * CTwoDivPi64)); // Get quadrant # (0 to 3) we're in
-  case Quadrant of
-   0 : result :=  FastCosPart3Term(result);
-   1 : result := -FastCosPart3Term(Pi - result);
-   2 : result := -FastCosPart3Term(result - Pi);
-   3 : result :=  FastCosPart3Term(CTwoPI64 - result);
-  end;
+ Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
+ case round(Result * CTwoDivPi64 - CHalf64) of
+  0 : Result :=  FastCosPart3Term(Result);
+  1 : Result := -FastCosPart3Term(Pi - Result);
+  2 : Result := -FastCosPart3Term(Result - Pi);
+  3 : Result :=  FastCosPart3Term(CTwoPI64 - Result);
+  4 : Result :=  FastCosPart3Term(Result);
+ end;
 end;
 
-function FastSin3Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+function FastSin3Term(const Value: Single): Single;
 begin
-  result := FastCos3Term(CPiHalf32 - Value);
+  Result := FastCos3Term(CPiHalf32 - Value);
 end;
 
-function FastSin3Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+function FastSin3Term(const Value: Double): Double;
 begin
-  result := FastCos3Term(CPiHalf64 - Value);
+  Result := FastCos3Term(CPiHalf64 - Value);
+end;
+
+function FastSec3Term(const Value: Single): Single;
+begin
+  Result := 1 / FastCos3Term(Value);
+end;
+
+function FastSec3Term(const Value: Double): Double;
+begin
+  Result := 1 / FastCos3Term(Value);
+end;
+
+function FastCsc3Term(const Value: Single): Single;
+begin
+  Result := 1 / FastCos3Term(CPiHalf32 - Value);
+end;
+
+function FastCsc3Term(const Value: Double): Double;
+begin
+  Result := 1 / FastCos3Term(CPiHalf64 - Value);
 end;
 
 
-//  4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
+// 4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
 
 function FastCosPart4Term(const Value: Single): Single;
 begin
- result := sqr(Value);
- result := CCos4Term[0] + result * (CCos4Term[1] + result * (CCos4Term[2] + CCos4Term[3] * result));
+ Result := sqr(Value);
+ Result := CCos4Term[0] + Result * (CCos4Term[1] + Result * (CCos4Term[2] + CCos4Term[3] * Result));
 end;
 
 function FastCosPart4Term(const Value: Double): Double;
 begin
- result := sqr(Value);
- result := CCos4Term[0] + result * (CCos4Term[1] + result * (CCos4Term[2] + CCos4Term[3] * result));
+ Result := sqr(Value);
+ Result := CCos4Term[0] + Result * (CCos4Term[1] + Result * (CCos4Term[2] + CCos4Term[3] * Result));
 end;
 
 function FastCos4Term(const Value: Single): Single;
-var
-  Quadrant : TQuadrant;
 begin
-  result := abs(FastMod(Value, CTwoPi32));          // Get rid of values > 2* pi
-  Quadrant := TQuadrant(round(result * CTwoDivPi32)); // Get quadrant # (0 to 3) we're in
-  case Quadrant of
-   0 : result :=  FastCosPart4Term(result);
-   1 : result := -FastCosPart4Term(Pi - result);
-   2 : result := -FastCosPart4Term(result - Pi);
-   3 : result :=  FastCosPart4Term(CTwoPI32 - result);
+  Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
+  case round(Result * CTwoDivPi32 - CHalf32) of
+   0 : Result :=  FastCosPart4Term(Result);
+   1 : Result := -FastCosPart4Term(Pi - Result);
+   2 : Result := -FastCosPart4Term(Result - Pi);
+   3 : Result :=  FastCosPart4Term(CTwoPI32 - Result);
+   4 : Result :=  FastCosPart4Term(Result);
   end;
 end;
 
 function FastCos4Term(const Value: Double): Double;
-var
-  Quadrant : TQuadrant;
 begin
-  result := abs(FastMod(Value, CTwoPi64));          // Get rid of values > 2* pi
-  Quadrant := TQuadrant(round(result * CTwoDivPi64)); // Get quadrant # (0 to 3) we're in
-  case Quadrant of
-   0 : result :=  FastCosPart4Term(result);
-   1 : result := -FastCosPart4Term(Pi - result);
-   2 : result := -FastCosPart4Term(result - Pi);
-   3 : result :=  FastCosPart4Term(CTwoPI64 - result);
+  Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
+  case round(Result * CTwoDivPi64 - CHalf64) of
+   0 : Result :=  FastCosPart4Term(Result);
+   1 : Result := -FastCosPart4Term(Pi - Result);
+   2 : Result := -FastCosPart4Term(Result - Pi);
+   3 : Result :=  FastCosPart4Term(CTwoPI64 - Result);
+   4 : Result :=  FastCosPart4Term(Result);
   end;
 end;
 
 function FastSin4Term(const Value: Single): Single;
 begin
-  result := FastCos4Term(CPiHalf32 - Value);
+  Result := FastCos4Term(CPiHalf32 - Value);
 end;
 
 function FastSin4Term(const Value: Double): Double;
 begin
-  result := FastCos4Term(CPiHalf64 - Value);
+  Result := FastCos4Term(CPiHalf64 - Value);
+end;
+
+function FastSec4Term(const Value: Single): Single;
+begin
+  Result := 1 / FastCos4Term(Value);
+end;
+
+function FastSec4Term(const Value: Double): Double;
+begin
+  Result := 1 / FastCos4Term(Value);
+end;
+
+function FastCsc4Term(const Value: Single): Single;
+begin
+  Result := 1 / FastCos4Term(CPiHalf32 - Value);
+end;
+
+function FastCsc4Term(const Value: Double): Double;
+begin
+  Result := 1 / FastCos4Term(CPiHalf64 - Value);
 end;
 
 
-//  5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
+// 5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
 
 function FastCosPart5Term(const Value: Single): Single;
 begin
- result := sqr(Value);
- result := CCos5Term[0] + result * (CCos5Term[1] + result * (CCos5Term[2] + result * (CCos5Term[3] + CCos5Term[4] * result)));
+ Result := sqr(Value);
+ Result := CCos5Term[0] + Result * (CCos5Term[1] + Result * (CCos5Term[2] + Result * (CCos5Term[3] + CCos5Term[4] * Result)));
 end;
 
-function FastCosPart5Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+function FastCosPart5Term(const Value: Double): Double; 
 begin
- result := sqr(Value);
- result := CCos5Term[0] + result * (CCos5Term[1] + result * (CCos5Term[2] + result * (CCos5Term[3] + CCos5Term[4] * result)));
+ Result := sqr(Value);
+ Result := CCos5Term[0] + Result * (CCos5Term[1] + Result * (CCos5Term[2] + Result * (CCos5Term[3] + CCos5Term[4] * Result)));
 end;
 
-function FastCos5Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
-var
-  Quadrant : TQuadrant;
+function FastCos5Term(const Value: Single): Single;
 begin
-  result := abs(FastMod(Value, CTwoPi32));          // Get rid of values > 2* pi
-  Quadrant := TQuadrant(round(result * CTwoDivPi32)); // Get quadrant # (0 to 3) we're in
-  case Quadrant of
-   0 : result :=  FastCosPart5Term(result);
-   1 : result := -FastCosPart5Term(Pi - result);
-   2 : result := -FastCosPart5Term(result - Pi);
-   3 : result :=  FastCosPart5Term(CTwoPI32 - result);
-  end;
+ Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
+ case round(Result * CTwoDivPi32 - CHalf32) of
+  0 : Result :=  FastCosPart5Term(Result);
+  1 : Result := -FastCosPart5Term(Pi - Result);
+  2 : Result := -FastCosPart5Term(Result - Pi);
+  3 : Result :=  FastCosPart5Term(CTwoPI32 - Result);
+  4 : Result :=  FastCosPart5Term(Result);
+ end;
 end;
 
-function FastCos5Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
-var
-  Quadrant : TQuadrant;
+function FastCos5Term(const Value: Double): Double;
 begin
-  result := abs(FastMod(Value, CTwoPi64));          // Get rid of values > 2* pi
-  Quadrant := TQuadrant(round(result * CTwoDivPi64)); // Get quadrant # (0 to 3) we're in
-  case Quadrant of
-   0 : result :=  FastCosPart5Term(result);
-   1 : result := -FastCosPart5Term(Pi - result);
-   2 : result := -FastCosPart5Term(result - Pi);
-   3 : result :=  FastCosPart5Term(CTwoPI64 - result);
-  end;
+ Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
+ case round(Result * CTwoDivPi64 - CHalf64) of
+  0 : Result :=  FastCosPart5Term(Result);
+  1 : Result := -FastCosPart5Term(Pi - Result);
+  2 : Result := -FastCosPart5Term(Result - Pi);
+  3 : Result :=  FastCosPart5Term(CTwoPI64 - Result);
+  4 : Result :=  FastCosPart5Term(Result);
+ end;
 end;
 
-function FastSin5Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+function FastSin5Term(const Value: Single): Single;
 begin
-  result := FastCos5Term(CPiHalf32 - Value);
+  Result := FastCos5Term(CPiHalf32 - Value);
 end;
 
-function FastSin5Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+function FastSin5Term(const Value: Double): Double;
 begin
-  result := FastCos5Term(CPiHalf64 - Value);
+  Result := FastCos5Term(CPiHalf64 - Value);
+end;
+
+function FastSec5Term(const Value: Single): Single;
+begin
+  Result := 1 / FastCos5Term(Value);
+end;
+
+function FastSec5Term(const Value: Double): Double;
+begin
+  Result := 1 / FastCos5Term(Value);
+end;
+
+function FastCsc5Term(const Value: Single): Single;
+begin
+  Result := 1 / FastCos5Term(CPiHalf32 - Value);
+end;
+
+function FastCsc5Term(const Value: Double): Double;
+begin
+  Result := 1 / FastCos5Term(CPiHalf64 - Value);
 end;
 
 
-//  7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
+// 7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
 
 function FastCosPart7Term(const Value: Single): Single;
 begin
- result := sqr(Value);
- result := CCos7Term[0] + result *
-          (CCos7Term[1] + result *
-          (CCos7Term[2] + result *
-          (CCos7Term[3] + result *
-          (CCos7Term[4] + result *
-          (CCos7Term[5] + CCos7Term[6] * result)))));
+ Result := sqr(Value);
+ Result := CCos7Term[0] + Result *
+          (CCos7Term[1] + Result *
+          (CCos7Term[2] + Result *
+          (CCos7Term[3] + Result *
+          (CCos7Term[4] + Result *
+          (CCos7Term[5] + CCos7Term[6] * Result)))));
 end;
 
-function FastCosPart7Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+function FastCosPart7Term(const Value: Double): Double; 
 begin
- result := sqr(Value);
- result := CCos7Term[0] + result *
-          (CCos7Term[1] + result *
-          (CCos7Term[2] + result *
-          (CCos7Term[3] + result *
-          (CCos7Term[4] + result *
-          (CCos7Term[5] + CCos5Term[6] * result)))));
+ Result := sqr(Value);
+ Result := CCos7Term[0] + Result *
+          (CCos7Term[1] + Result *
+          (CCos7Term[2] + Result *
+          (CCos7Term[3] + Result *
+          (CCos7Term[4] + Result *
+          (CCos7Term[5] + CCos7Term[6] * Result)))));
 end;
 
-function FastCos7Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
-var
-  Quadrant : TQuadrant;
+function FastCos7Term(const Value: Single): Single; 
 begin
-  result := abs(FastMod(Value, CTwoPi32));          // Get rid of values > 2* pi
-  Quadrant := TQuadrant(round(result * CTwoDivPi32)); // Get quadrant # (0 to 3) we're in
-  case Quadrant of
-   0 : result :=  FastCosPart7Term(result);
-   1 : result := -FastCosPart7Term(Pi - result);
-   2 : result := -FastCosPart7Term(result - Pi);
-   3 : result :=  FastCosPart7Term(CTwoPI32 - result);
+ Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
+ case round(Result * CTwoDivPi32 - CHalf32) of
+  0 : Result :=  FastCosPart7Term(Result);
+  1 : Result := -FastCosPart7Term(Pi - Result);
+  2 : Result := -FastCosPart7Term(Result - Pi);
+  3 : Result :=  FastCosPart7Term(CTwoPI32 - Result);
+  4 : Result :=  FastCosPart7Term(Result);
+ end;
+end;
+
+function FastCos7Term(const Value: Double): Double;
+begin
+ Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
+ case round(Result * CTwoDivPi64 - CHalf64) of
+  0 : Result :=  FastCosPart7Term(Result);
+  1 : Result := -FastCosPart7Term(Pi - Result);
+  2 : Result := -FastCosPart7Term(Result - Pi);
+  3 : Result :=  FastCosPart7Term(CTwoPI64 - Result);
+  4 : Result :=  FastCosPart7Term(Result);
+ end;
+end;
+
+function FastSin7Term(const Value: Single): Single; 
+begin
+  Result := FastCos7Term(CPiHalf32 - Value);
+end;
+
+function FastSin7Term(const Value: Double): Double;
+begin
+  Result := FastCos7Term(CPiHalf64 - Value);
+end;
+
+function FastSec7Term(const Value: Single): Single;
+begin
+  Result := 1 / FastCos7Term(Value);
+end;
+
+function FastSec7Term(const Value: Double): Double;
+begin
+  Result := 1 / FastCos7Term(Value);
+end;
+
+function FastCsc7Term(const Value: Single): Single;
+begin
+  Result := 1 / FastCos7Term(CPiHalf32 - Value);
+end;
+
+function FastCsc7Term(const Value: Double): Double;
+begin
+  Result := 1 / FastCos7Term(CPiHalf64 - Value);
+end;
+
+
+// 2-Term: Accurate to about 3.2 decimal digits over the range [0, pi/4].
+
+function FastTanPart2Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := Value * CTan2Term[0] / (CTan2Term[1] + Result);
+end;
+
+function FastTanPart2Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := Value * CTan2Term[0] / (CTan2Term[1] + Result);
+end;
+
+function FastTanPInv2Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := (CTan2Term[1] + Result) / (Value * CTan2Term[0]);
+end;
+
+function FastTanPInv2Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := (CTan2Term[1] + Result) / (Value * CTan2Term[0]);
+end;
+
+// WARNING: We do not test for the tangent approaching infinity,
+// which it will at x=pi/2 and x=3*pi/2. If this is a problem
+// in your application, take appropriate action.
+
+function FastTan2Term(const Value: Single): Single;
+begin
+  Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
+  case round(Result * CFourDivPi32) of
+   0 : Result :=  FastTanPart2Term(Value                    * CFourDivPi32);
+   1 : Result :=  FastTanPInv2Term((CPiHalf32 - Value)      * CFourDivPi32);
+   2 : Result := -FastTanPInv2Term((Value - CPiHalf32)      * CFourDivPi32);
+   3 : Result := -FastTanPart2Term((Pi - Value)             * CFourDivPi32);
+   4 : Result :=  FastTanPart2Term((Value - Pi)             * CFourDivPi32);
+   5 : Result :=  FastTanPInv2Term((CThreeHalfPi32 - Value) * CFourDivPi32);
+   6 : Result := -FastTanPInv2Term((Value - CThreeHalfPi32) * CFourDivPi32);
+   7 : Result := -FastTanPart2Term((CTwo32 - Value)         * CFourDivPi32);
   end;
 end;
 
-function FastCos7Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
-var
-  Quadrant : TQuadrant;
+function FastTan2Term(const Value: Double): Double;
 begin
-  result := abs(FastMod(Value, CTwoPi64));          // Get rid of values > 2* pi
-  Quadrant := TQuadrant(round(result * CTwoDivPi64)); // Get quadrant # (0 to 3) we're in
-  case Quadrant of
-   0 : result :=  FastCosPart7Term(result);
-   1 : result := -FastCosPart7Term(Pi - result);
-   2 : result := -FastCosPart7Term(result - Pi);
-   3 : result :=  FastCosPart7Term(CTwoPI64 - result);
+  Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
+  case round(Result * CFourDivPi64) of
+   0 : Result :=  FastTanPart2Term(Value                    * CFourDivPi64);
+   1 : Result :=  FastTanPInv2Term((CPiHalf64 - Value)      * CFourDivPi64);
+   2 : Result := -FastTanPInv2Term((Value - CPiHalf64)      * CFourDivPi64);
+   3 : Result := -FastTanPart2Term((Pi - Value)             * CFourDivPi64);
+   4 : Result :=  FastTanPart2Term((Value - Pi)             * CFourDivPi64);
+   5 : Result :=  FastTanPInv2Term((CThreeHalfPi64 - Value) * CFourDivPi64);
+   6 : Result := -FastTanPInv2Term((Value - CThreeHalfPi64) * CFourDivPi64);
+   7 : Result := -FastTanPart2Term((CTwo64 - Value)         * CFourDivPi64);
   end;
 end;
 
-function FastSin7Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+function FastCotan2Term(const Value: Single): Single;
 begin
-  result := FastCos7Term(CPiHalf32 - Value);
+  Result := -FastTan2Term(CPiHalf32 - Value);
 end;
 
-function FastSin7Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+function FastCotan2Term(const Value: Double): Double;
 begin
-  result := FastCos7Term(CPiHalf64 - Value);
+  Result := -FastTan2Term(CPiHalf64 - Value);
 end;
 
+
+// 3-Term: Accurate to about 5.6 decimal digits over the range [0, pi/4].
+
+function FastTanPart3Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := Value * (CTan3Term[0] + CTan3Term[1] * Result) / (CTan3Term[2] + Result);
+end;
+
+function FastTanPart3Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := Value * (CTan3Term[0] + CTan3Term[1] * Result) / (CTan3Term[2] + Result);
+end;
+
+function FastTanPInv3Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := (CTan3Term[2] + Result) / (Value * (CTan3Term[0] + CTan3Term[1] * Result));
+end;
+
+function FastTanPInv3Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := (CTan3Term[2] + Result) / (Value * (CTan3Term[0] + CTan3Term[1] * Result));
+end;
+
+// WARNING: We do not test for the tangent approaching infinity,
+// which it will at x=pi/2 and x=3*pi/2. If this is a problem
+// in your application, take appropriate action.
+
+function FastTan3Term(const Value: Single): Single;
+begin
+  Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
+  case round(Result * CFourDivPi32) of
+   0 : Result :=  FastTanPart3Term(Value                    * CFourDivPi32);
+   1 : Result :=  FastTanPInv3Term((CPiHalf32 - Value)      * CFourDivPi32);
+   2 : Result := -FastTanPInv3Term((Value - CPiHalf32)      * CFourDivPi32);
+   3 : Result := -FastTanPart3Term((Pi - Value)             * CFourDivPi32);
+   4 : Result :=  FastTanPart3Term((Value - Pi)             * CFourDivPi32);
+   5 : Result :=  FastTanPInv3Term((CThreeHalfPi32 - Value) * CFourDivPi32);
+   6 : Result := -FastTanPInv3Term((Value - CThreeHalfPi32) * CFourDivPi32);
+   7 : Result := -FastTanPart3Term((CTwo32 - Value)         * CFourDivPi32);
+  end;
+end;
+
+function FastTan3Term(const Value: Double): Double;
+begin
+  Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
+  case round(Result * CFourDivPi64) of
+   0 : Result :=  FastTanPart3Term(Value                    * CFourDivPi64);
+   1 : Result :=  FastTanPInv3Term((CPiHalf64 - Value)      * CFourDivPi64);
+   2 : Result := -FastTanPInv3Term((Value - CPiHalf64)      * CFourDivPi64);
+   3 : Result := -FastTanPart3Term((Pi - Value)             * CFourDivPi64);
+   4 : Result :=  FastTanPart3Term((Value - Pi)             * CFourDivPi64);
+   5 : Result :=  FastTanPInv3Term((CThreeHalfPi64 - Value) * CFourDivPi64);
+   6 : Result := -FastTanPInv3Term((Value - CThreeHalfPi64) * CFourDivPi64);
+   7 : Result := -FastTanPart3Term((CTwo64 - Value)         * CFourDivPi64);
+  end;
+end;
+
+function FastCotan3Term(const Value: Single): Single;
+begin
+  Result := -FastTan3Term(CPiHalf32 - Value);
+end;
+
+function FastCotan3Term(const Value: Double): Double;
+begin
+  Result := -FastTan3Term(CPiHalf64 - Value);
+end;
+
+
+// 4-Term: Accurate to about 8.2 decimal digits over the range [0, pi/4].
+
+function FastTanPart4Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := Value * (CTan4Term[0] + CTan4Term[1] * Result) /
+           (CTan4Term[2] + Result * (CTan4Term[3] + Result));
+end;
+
+function FastTanPart4Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := Value * (CTan4Term[0] + CTan4Term[1] * Result) /
+           (CTan4Term[2] + Result * (CTan4Term[3] + Result));
+end;
+
+function FastTanPInv4Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := (CTan4Term[2] + Result * (CTan4Term[3] + Result)) /
+           (Value * (CTan4Term[0] + CTan4Term[1] * Result));
+end;
+
+function FastTanPInv4Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := (CTan4Term[2] + Result * (CTan4Term[3] + Result)) /
+           (Value * (CTan4Term[0] + CTan4Term[1] * Result));
+end;
+
+// WARNING: We do not test for the tangent approaching infinity,
+// which it will at x=pi/2 and x=3*pi/2. If this is a problem
+// in your application, take appropriate action.
+
+function FastTan4Term(const Value: Single): Single;
+begin
+  Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
+  case round(Result * CFourDivPi32) of
+   0 : Result :=  FastTanPart4Term(Value                    * CFourDivPi32);
+   1 : Result :=  FastTanPInv4Term((CPiHalf32 - Value)      * CFourDivPi32);
+   2 : Result := -FastTanPInv4Term((Value - CPiHalf32)      * CFourDivPi32);
+   3 : Result := -FastTanPart4Term((Pi - Value)             * CFourDivPi32);
+   4 : Result :=  FastTanPart4Term((Value - Pi)             * CFourDivPi32);
+   5 : Result :=  FastTanPInv4Term((CThreeHalfPi32 - Value) * CFourDivPi32);
+   6 : Result := -FastTanPInv4Term((Value - CThreeHalfPi32) * CFourDivPi32);
+   7 : Result := -FastTanPart4Term((CTwo32 - Value)         * CFourDivPi32);
+  end;
+end;
+
+function FastTan4Term(const Value: Double): Double;
+begin
+  Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
+  case round(Result * CFourDivPi64) of
+   0 : Result :=  FastTanPart4Term(Value                    * CFourDivPi64);
+   1 : Result :=  FastTanPInv4Term((CPiHalf64 - Value)      * CFourDivPi64);
+   2 : Result := -FastTanPInv4Term((Value - CPiHalf64)      * CFourDivPi64);
+   3 : Result := -FastTanPart4Term((Pi - Value)             * CFourDivPi64);
+   4 : Result :=  FastTanPart4Term((Value - Pi)             * CFourDivPi64);
+   5 : Result :=  FastTanPInv4Term((CThreeHalfPi64 - Value) * CFourDivPi64);
+   6 : Result := -FastTanPInv4Term((Value - CThreeHalfPi64) * CFourDivPi64);
+   7 : Result := -FastTanPart4Term((CTwo64 - Value)         * CFourDivPi64);
+  end;
+end;
+
+function FastCotan4Term(const Value: Single): Single;
+begin
+  Result := -FastTan4Term(CPiHalf32 - Value);
+end;
+
+function FastCotan4Term(const Value: Double): Double;
+begin
+  Result := -FastTan4Term(CPiHalf64 - Value);
+end;
+
+
+// 6-Term: Accurate to about 14 decimal digits over the range [0, pi/4].
+
+function FastTanPart6Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])) /
+   (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result)));
+end;
+
+function FastTanPart6Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])) /
+   (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result)));
+end;
+
+function FastTanPInv6Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result))) /
+   (Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])));
+end;
+
+function FastTanPInv6Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result))) /
+   (Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])));
+end;
+
+// WARNING: We do not test for the tangent approaching infinity,
+// which it will at x=pi/2 and x=3*pi/2. If this is a problem
+// in your application, take appropriate action.
+
+function FastTan6Term(const Value: Single): Single;
+begin
+  Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
+  case round(Result * CFourDivPi32) of
+   0 : Result :=  FastTanPart6Term(Value                    * CFourDivPi32);
+   1 : Result :=  FastTanPInv6Term((CPiHalf32 - Value)      * CFourDivPi32);
+   2 : Result := -FastTanPInv6Term((Value - CPiHalf32)      * CFourDivPi32);
+   3 : Result := -FastTanPart6Term((Pi - Value)             * CFourDivPi32);
+   4 : Result :=  FastTanPart6Term((Value - Pi)             * CFourDivPi32);
+   5 : Result :=  FastTanPInv6Term((CThreeHalfPi32 - Value) * CFourDivPi32);
+   6 : Result := -FastTanPInv6Term((Value - CThreeHalfPi32) * CFourDivPi32);
+   7 : Result := -FastTanPart6Term((CTwo32 - Value)         * CFourDivPi32);
+  end;
+end;
+
+function FastTan6Term(const Value: Double): Double;
+begin
+  Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
+  case round(Result * CFourDivPi64) of
+   0 : Result :=  FastTanPart6Term(Value                    * CFourDivPi64);
+   1 : Result :=  FastTanPInv6Term((CPiHalf64 - Value)      * CFourDivPi64);
+   2 : Result := -FastTanPInv6Term((Value - CPiHalf64)      * CFourDivPi64);
+   3 : Result := -FastTanPart6Term((Pi - Value)             * CFourDivPi64);
+   4 : Result :=  FastTanPart6Term((Value - Pi)             * CFourDivPi64);
+   5 : Result :=  FastTanPInv6Term((CThreeHalfPi64 - Value) * CFourDivPi64);
+   6 : Result := -FastTanPInv6Term((Value - CThreeHalfPi64) * CFourDivPi64);
+   7 : Result := -FastTanPart6Term((CTwo64 - Value)         * CFourDivPi64);
+  end;
+end;
+
+function FastCotan6Term(const Value: Single): Single;
+begin
+  Result := -FastTan6Term(CPiHalf32 - Value);
+end;
+
+function FastCotan6Term(const Value: Double): Double;
+begin
+  Result := -FastTan6Term(CPiHalf64 - Value);
+end;
+
+
+// 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
+
+function FastArcTanPart3Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := Value * (CArcTan3Term[0] + CArcTan3Term[1] * Result) / (CArcTan3Term[2] + Result);
+end;
+
+function FastArcTanPart3Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := Value * (CArcTan3Term[0] + CArcTan3Term[1] * Result) / (CArcTan3Term[2] + Result);
+end;
+
+// WARNING: We do not test for the tangent approaching infinity,
+// which it will at x=pi/2 and x=3*pi/2. If this is a problem
+// in your application, take appropriate action.
+
+function FastArcTan3Term(const Value: Single): Single;
+var
+  Complement : Boolean; // true if arg was >1
+  Region     : Boolean; // true depending on region arg is in
+  Sign       : Boolean; // true if arg was < 0
+begin
+ Complement := False;
+ Region     := False;
+ Sign       := False;
+ Result     := Value;
+
+ if Result < 0 then
+  begin
+   Result := -Result;
+   Sign   := True;         // arctan(-x) = -arctan(x)
+  end;
+ if Result > 1.0 then
+  begin
+   Result := 1.0 / Result; // keep arg between 0 and 1
+   Complement := True;
+  end;
+ if Result > TanTwelfthPi32 then
+  begin
+   Result := (Result - TanSixthPi32) / (1 + TanSixthPi32 * Result);  // reduce arg to under tan(pi/12)
+   Region := True;
+  end;
+
+ Result := FastArcTanPart3Term(Result);         // run the approximation
+ if Region then Result := Result + CSixthPi32; // correct for region we're in
+ if Complement then Result := CHalf32 - Result; // correct for 1/x if we did that
+ if Sign then Result := -Result;               // correct for negative arg
+end;
+
+function FastArcTan3Term(const Value: Double): Double;
+var
+  Complement : Boolean; // true if arg was >1
+  Region     : Boolean; // true depending on region arg is in
+  Sign       : Boolean; // true if arg was < 0
+begin
+ Complement := False;
+ Region     := False;
+ Sign       := False;
+ Result     := Value;
+
+ if Result < 0 then
+  begin
+   Result := -Result;
+   Sign   := True;         // arctan(-x) = -arctan(x)
+  end;
+ if Result > 1.0 then
+  begin
+   Result := 1.0 / Result; // keep arg between 0 and 1
+   Complement := True;
+  end;
+ if Result > TanTwelfthPi64 then
+  begin
+   Result := (Result - TanSixthPi64) / (1 + TanSixthPi64 * Result);  // reduce arg to under tan(pi/12)
+   Region := True;
+  end;
+
+ Result := FastArcTanPart3Term(Result);         // run the approximation
+ if Region then Result := Result + CSixthPi64; // correct for region we're in
+ if Complement then Result := CHalf64 - Result; // correct for 1/x if we did that
+ if Sign then Result := -Result;               // correct for negative arg
+end;
+
+function FastArcCotan3Term(const Value: Single): Single;
+begin
+  Result := -FastArcTan3Term(CPiHalf32 - Value);
+end;
+
+function FastArcCotan3Term(const Value: Double): Double;
+begin
+  Result := -FastArcTan3Term(CPiHalf64 - Value);
+end;
+
+
+// 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
+
+function FastArcTanPart6Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := Value * (CArcTan6Term[0] + Result * (CArcTan6Term[1] + Result * CArcTan6Term[2])) /
+   (CArcTan6Term[3] + Result * (CArcTan6Term[4] + Result * (CArcTan6Term[5] + Result)));
+end;
+
+function FastArcTanPart6Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := Value * (CArcTan6Term[0] + Result * (CArcTan6Term[1] + Result * CArcTan6Term[2])) /
+   (CArcTan6Term[3] + Result * (CArcTan6Term[4] + Result * (CArcTan6Term[5] + Result)));
+end;
+
+// WARNING: We do not test for the tangent approaching infinity,
+// which it will at x=pi/2 and x=3*pi/2. If this is a problem
+// in your application, take appropriate action.
+
+function FastArcTan6Term(const Value: Single): Single;
+var
+  Complement : Boolean; // true if arg was >1
+  Region     : Boolean; // true depending on region arg is in
+  Sign       : Boolean; // true if arg was < 0
+begin
+ Complement := False;
+ Region     := False;
+ Sign       := False;
+ Result     := Value;
+
+ if Result < 0 then
+  begin
+   Result := -Result;
+   Sign   := True;         // arctan(-x) = -arctan(x)
+  end;
+ if Result > 1.0 then
+  begin
+   Result := 1.0 / Result; // keep arg between 0 and 1
+   Complement := True;
+  end;
+ if Result > TanTwelfthPi32 then
+  begin
+   Result := (Result - TanSixthPi32) / (1 + TanSixthPi32 * Result);  // reduce arg to under tan(pi/12)
+   Region := True;
+  end;
+
+ Result := FastArcTanPart6Term(Result);         // run the approximation
+ if Region then Result := Result + CSixthPi32; // correct for region we're in
+ if Complement then Result := CHalf32 - Result; // correct for 1/x if we did that
+ if Sign then Result := -Result;               // correct for negative arg
+end;
+
+function FastArcTan6Term(const Value: Double): Double;
+var
+  Complement : Boolean; // true if arg was >1
+  Region     : Boolean; // true depending on region arg is in
+  Sign       : Boolean; // true if arg was < 0
+begin
+ Complement := False;
+ Region     := False;
+ Sign       := False;
+ Result     := Value;
+
+ if Result < 0 then
+  begin
+   Result := -Result;
+   Sign   := True;         // arctan(-x) = -arctan(x)
+  end;
+ if Result > 1.0 then
+  begin
+   Result := 1.0 / Result; // keep arg between 0 and 1
+   Complement := True;
+  end;
+ if Result > TanTwelfthPi64 then
+  begin
+   Result := (Result - TanSixthPi64) / (1 + TanSixthPi64 * Result);  // reduce arg to under tan(pi/12)
+   Region := True;
+  end;
+
+ Result := FastArcTanPart6Term(Result);         // run the approximation
+ if Region then Result := Result + CSixthPi64; // correct for region we're in
+ if Complement then Result := CHalf64 - Result; // correct for 1/x if we did that
+ if Sign then Result := -Result;               // correct for negative arg
+end;
+
+function FastArcCotan6Term(const Value: Single): Single;
+begin
+  Result := -FastArcTan6Term(CPiHalf32 - Value);
+end;
+
+function FastArcCotan6Term(const Value: Double): Double;
+begin
+  Result := -FastArcTan6Term(CPiHalf64 - Value);
+end;
 
 
 
@@ -437,7 +1068,7 @@ const
 var Asqr : Double;
 begin
  Asqr   := sqr(Value);
- result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
+ Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
  fld   Value
@@ -462,7 +1093,7 @@ var
   Asqr : Double;
 begin
  Asqr   := sqr(Value);
- result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
+ Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
  fld   Value
@@ -487,7 +1118,7 @@ var
   Asqr : Single;
 begin
  Asqr   := sqr(Value);
- result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
+ Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
  fld   Value
@@ -512,7 +1143,7 @@ var
   Asqr : Double;
 begin
  Asqr   := sqr(Value);
- result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
+ Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
  fld   Value
@@ -528,7 +1159,7 @@ asm
 {$ENDIF}
 end;
 
-function FastArcTan(const Value: Single): Single;
+function FastArctanLike(const Value: Single): Single;
 var
   VSqr : Single;
 begin
@@ -540,7 +1171,7 @@ begin
                CArcTanLike32[4]) * Value;
 end;
 
-function FastArcTan(const Value: Double): Double;
+function FastArctanLike(const Value: Double): Double;
 var
   VSqr : Single;
 begin
@@ -1106,17 +1737,25 @@ end;
 procedure InitConstants;
 {$IFDEF PUREPASCAL}
 begin
- ln2    := ln(2);
- ln22   := ln2 * CHalf32;
- ln2Rez := 1 / ln2;
- ln10   := ln(10);
+ Ln2            := Ln(2);
+ Ln2Half        := Ln2 * CHalf32;
+ Ln2Rez         := 1 / ln2;
+ Ln10           := Ln(10);
+ TanSixthPi64   := tan(CSixthPi64);
+ TanTwelfthPi64 := tan(CTwelfthPi64);
+ TanSixthPi32   := TanSixthPi64;
+ TanTwelfthPi32 := TanTwelfthPi64;
 end;
 {$ELSE}
 begin
- ln2    := ln(2); // ToDo: use ASM here!
- ln22   := ln2 * CHalf32;
- ln2Rez := 1 / ln2;
- ln10   := ln(10);
+ Ln2            := ln(2); // ToDo: use ASM here!
+ Ln2Half        := Ln2 * CHalf32;
+ Ln2Rez         := 1 / ln2;
+ Ln10           := Ln(10);
+ TanSixthPi64   := tan(CSixthPi64);
+ TanTwelfthPi64 := tan(CTwelfthPi64);
+ TanSixthPi32   := TanSixthPi64;
+ TanTwelfthPi32 := TanTwelfthPi64;
 end;
 {$ENDIF}
 
