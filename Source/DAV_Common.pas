@@ -223,15 +223,15 @@ var
   ln10, ln2, ln22, ln2Rez : Double;
 
 const
-  CMinusOneThird : Double = -1/3;
-  CTwo           : Double = 2;
-  CMinusTwoThird : Double = -2/3;
   CDenorm32      : Single = 1E-24;
   CDenorm64      : Double = 1E-34;
-  CTwoPI         : Double = 2 * Pi;
-  CFourPI        : Double = 4 * Pi;
+  CTwoPI32       : Single = 2 * Pi;
+  CTwoPI64       : Double = 2 * Pi;
+  CFourPI32      : Single = 4 * Pi;
+  CFourPI64      : Double = 4 * Pi;
   CHalf32        : Single = 0.5;
   CHalf64        : Double = 0.5;
+  CTwenty32      : Single = 20;
   CTwenty64      : Double = 20;
 
 const
@@ -414,7 +414,7 @@ asm
  fldlg2
  fld Value
  fyl2x
- fmul CTwenty64.Double
+ fmul CTwenty32.Double
 {$ENDIF}
 end;
 
@@ -443,22 +443,22 @@ asm
  fldlg2
  fld    [eax].Single
  fyl2x
- fmul   CTwenty64.Double
+ fmul   CTwenty32.Double
  fstp   [eax].Single
  fldlg2
  fld    [eax + 4].Single
  fyl2x
- fmul   CTwenty64.Double
+ fmul   CTwenty32.Double
  fstp   [eax + 4].Single
  fldlg2
  fld    [eax + 8].Single
  fyl2x
- fmul   CTwenty64.Double
+ fmul   CTwenty32.Double
  fstp   [eax + 8].Single
  fldlg2
  fld    [eax + 12].Single
  fyl2x
- fmul   CTwenty64.Double
+ fmul   CTwenty32.Double
  fstp   [eax + 12].Single
 {$ENDIF}
 end;

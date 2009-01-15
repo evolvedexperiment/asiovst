@@ -21,64 +21,121 @@ uses
   function FastFloorln2(const Value: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
   function FastArctan(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function FastArctan(const Value: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastSin(const Value: Single): Single; overload;
-  function FastSin(const Value: Double): Double; overload;
-  function FastCos(const Value: Single): Single; overload;
-  function FastCos(const Value: Double): Double; overload;
+
+  { Trigonomic Approximations }
+
+  // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
+  function FastCosPart3Term(const Value: Single): Single; overload;
+  function FastCosPart3Term(const Value: Double): Double; overload;
+  function FastCos3Term(const Value: Single): Single; overload;
+  function FastCos3Term(const Value: Double): Double; overload;
+  function FastSin3Term(const Value: Single): Single; overload;
+  function FastSin3Term(const Value: Double): Double; overload; 
+
+  // 4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
+  function FastCosPart4Term(const Value: Single): Single; overload;
+  function FastCosPart4Term(const Value: Double): Double; overload;
+  function FastCos4Term(const Value: Single): Single; overload;
+  function FastCos4Term(const Value: Double): Double; overload;
+  function FastSin4Term(const Value: Single): Single; overload;
+  function FastSin4Term(const Value: Double): Double; overload;
+
+  // 5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
+  function FastCosPart5Term(const Value: Single): Single; overload;
+  function FastCosPart5Term(const Value: Double): Double; overload;
+  function FastCos5Term(const Value: Single): Single; overload;
+  function FastCos5Term(const Value: Double): Double; overload;
+  function FastSin5Term(const Value: Single): Single; overload;
+  function FastSin5Term(const Value: Double): Double; overload;
+
+  // 7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
+  function FastCosPart7Term(const Value: Single): Single; overload;
+  function FastCosPart7Term(const Value: Double): Double; overload;
+  function FastCos7Term(const Value: Single): Single; overload;
+  function FastCos7Term(const Value: Double): Double; overload;
+  function FastSin7Term(const Value: Single): Single; overload;
+  function FastSin7Term(const Value: Double): Double; overload;
+
+  function FastSinLike(const Value: Single): Single; overload;
+  function FastSinLike(const Value: Double): Double; overload;
+  function FastCosLike(const Value: Single): Single; overload;
+  function FastCosLike(const Value: Double): Double; overload;
   function FastArcTan2(const Y, X: Extended): Extended;
   function FastTan(const Value: Extended): Extended;
   function FastCoTan(const Value: Extended): Extended;
   function FastLog10(const Value: Extended): Extended;
   {$ENDIF}
 
-  function FastTanhOpt3(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt4(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt5(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt6(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt7(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt3(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt4(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt5(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt6(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt7(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
-  function FastTanhOpt3asm(Input: Single): Single; assembler; overload;
-  function FastTanhOpt4asm(Input: Single): Single; assembler; overload;
-  function FastTanhOpt5asm(Input: Single): Single; assembler; overload;
-  function FastTanhOpt6asm(Input: Single): Single; assembler; overload;
-  function FastTanhOpt7asm(Input: Single): Single; assembler; overload;
-  function FastTanhOpt3asm(Input: Double): Double; assembler; overload;
-  function FastTanhOpt4asm(Input: Double): Double; assembler; overload;
-  function FastTanhOpt5asm(Input: Double): Double; assembler; overload;
-  function FastTanhOpt6asm(Input: Double): Double; assembler; overload;
-  function FastTanhOpt7asm(Input: Double): Double; assembler; overload;
+  { TanH Approximations }
 
-  function Tanh2a(const Input: Single): Single;
-  function Tanh2b(const Input: Single): Single;
-  function Tanh2c(const Input: Single): Single;
-  function Tanh2d(const Input: Single): Single;
+  function FastTanhOpt3Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt4Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt5Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt6Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt7Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt3Term(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt4Term(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt5Term(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt6Term(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt7Term(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+
+  function FastTanhOpt3TermFPU(const Input: Single): Single; assembler; overload;
+  function FastTanhOpt4TermFPU(const Input: Single): Single; assembler; overload;
+  function FastTanhOpt5TermFPU(const Input: Single): Single; assembler; overload;
+  function FastTanhOpt6TermFPU(const Input: Single): Single; assembler; overload;
+  function FastTanhOpt7TermFPU(const Input: Single): Single; assembler; overload;
+  function FastTanhOpt3TermFPU(const Input: Double): Double; assembler; overload;
+  function FastTanhOpt4TermFPU(const Input: Double): Double; assembler; overload;
+  function FastTanhOpt5TermFPU(const Input: Double): Double; assembler; overload;
+  function FastTanhOpt6TermFPU(const Input: Double): Double; assembler; overload;
+  function FastTanhOpt7TermFPU(const Input: Double): Double; assembler; overload;
+
+  function Tanh2Like4Term(const Input: Single): Single;
+  function Tanh2Like3Term(const Input: Single): Single;
+  function Tanh2Like2Term(const Input: Single): Single;
+  function Tanh2Like1Term(const Input: Single): Single;
 
 var
   ln10, ln2, ln22, ln2Rez : Double;
 
 const
   CMinusOneThird : Double = -1/3;
-  CTwo           : Double = 2;
   CMinusTwoThird : Double = -2/3;
-  CDenorm32      : Single = 1E-24;
-  CDenorm64      : Double = 1E-34;
-  CTwoPI         : Double = 2 * Pi;
-  CFourPI        : Double = 4 * Pi;
-  CHalf32        : Single = 0.5;
-  CHalf64        : Double = 0.5;
-  CTwenty64      : Double = 20;
+  CTwo32         : Single = 2;
+  CTwo64         : Double = 2;
+  CTwoDivPi32    : Single = 2.0 / Pi;
+  CTwoDivPi64    : Double = 2.0 / Pi;
+  CPiHalf32      : Single = Pi * 0.5;
+  CPiHalf64      : Double = Pi * 0.5;
+  CThreeHalfPi32 : Single = 1.5 * pi;  // pi times 3/2, used in tan routines
+  CThreeHalfPi64 : Double = 1.5 * pi;  // pi times 3/2, used in tan routines
+  CFourDivPi32   : Single = 4.0 / Pi;  // 4 / pi, used in tan routines
+  CFourDivPi64   : Double = 4.0 / Pi;  // 4 / pi, used in tan routines
+  CFourthPi32    : Single = Pi * 0.25; // pi / 4.0, used in tan routines
+  CFourthPi64    : Double = Pi * 0.25; // pi / 4.0, used in tan routines
+  CSixthPi32     : Single = Pi / 6.0;  // pi/6.0, used in atan routines
+  CSixthPi64     : Double = Pi / 6.0;  // pi/6.0, used in atan routines
+  CTwelfthPi32   : Single = Pi / 12.0; // pi/12.0, used in atan routines
+  CTwelfthPi64   : Double = Pi / 12.0; // pi/12.0, used in atan routines
+(*
+  CTansixthpi=tan(sixthpi);    // tan(pi/6), used in atan routines
+  CTanTwelfthPi = tan(twelfthpi);  // tan(pi/12), used in atan routines
+*)
 
 const
-  kMaxLong  = $7FFFFFFF;
-  kMinLong  = -$7FFFFFFF-1;
-  kMaxInt64 = 9223372036854775807;
-  kMinInt64 = -9223372036854775807-1;
-  kMaxFloat = 3.40282346638528860e+38;
+  CArcTanLike32 : Array [0..4] of Single = (0.0208351, -0.085133, 0.180141,
+    -0.3302995, 0.999866);
+  CArcTanLike64 : Array [0..4] of Single = (0.0208351, -0.085133, 0.180141,
+    -0.3302995, 0.999866);
+  CCos3Term : array [0..2] of Single = (0.99940307, -0.49558072, 0.03679168);
+  CCos4Term : array [0..3] of Single = (0.9999932946, -0.4999124376,
+    0.0414877472, -0.0012712095);
+  CCos5Term : array [0..4] of Double = (0.999999953464, -0.4999999053455,
+    0.0416635846769, -0.0013853704264, 0.000023233);
+  CCos7Term : array [0..6] of Double = (0.99999999999925182,
+   -0.49999999997024012, 4.1666666473384543E-2, -1.388888418000423E-3,
+    2.48010406484558E-5, -2.752469638432E-7, 1.9907856854E-9);
 
 implementation
 
@@ -141,118 +198,358 @@ begin
  Result := Exp(Value * ln2);
 end;
 
-function FastSin(const Value: Single): Single;
+
+{ Trigonomic Approximations }
+
+type
+  TQuadrant = 0..3;
+
+
+//  3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
+
+function FastCosPart3Term(const Value: Single): Single;
+begin
+ result := sqr(Value);
+ result := (CCos3Term[0] + result * (CCos3Term[1] + CCos3Term[2] * result));
+end;
+
+function FastCosPart3Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+begin
+ result := sqr(Value);
+ result := (CCos3Term[0] + result * (CCos3Term[1] + CCos3Term[2] * result));
+end;
+
+function FastCos3Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+var
+  Quadrant : TQuadrant;
+begin
+  result := abs(FastMod(Value, CTwoPi32));          // Get rid of values > 2* pi
+  Quadrant := TQuadrant(round(result * CTwoDivPi32)); // Get quadrant # (0 to 3) we're in
+  case Quadrant of
+   0 : result :=  FastCosPart3Term(result);
+   1 : result := -FastCosPart3Term(Pi - result);
+   2 : result := -FastCosPart3Term(result - Pi);
+   3 : result :=  FastCosPart3Term(CTwoPI32 - result);
+  end;
+end;
+
+function FastCos3Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+var
+  Quadrant : TQuadrant;
+begin
+  result := abs(FastMod(Value, CTwoPi64));          // Get rid of values > 2* pi
+  Quadrant := TQuadrant(round(result * CTwoDivPi64)); // Get quadrant # (0 to 3) we're in
+  case Quadrant of
+   0 : result :=  FastCosPart3Term(result);
+   1 : result := -FastCosPart3Term(Pi - result);
+   2 : result := -FastCosPart3Term(result - Pi);
+   3 : result :=  FastCosPart3Term(CTwoPI64 - result);
+  end;
+end;
+
+function FastSin3Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+begin
+  result := FastCos3Term(CPiHalf32 - Value);
+end;
+
+function FastSin3Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+begin
+  result := FastCos3Term(CPiHalf64 - Value);
+end;
+
+
+//  4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
+
+function FastCosPart4Term(const Value: Single): Single;
+begin
+ result := sqr(Value);
+ result := CCos4Term[0] + result * (CCos4Term[1] + result * (CCos4Term[2] + CCos4Term[3] * result));
+end;
+
+function FastCosPart4Term(const Value: Double): Double;
+begin
+ result := sqr(Value);
+ result := CCos4Term[0] + result * (CCos4Term[1] + result * (CCos4Term[2] + CCos4Term[3] * result));
+end;
+
+function FastCos4Term(const Value: Single): Single;
+var
+  Quadrant : TQuadrant;
+begin
+  result := abs(FastMod(Value, CTwoPi32));          // Get rid of values > 2* pi
+  Quadrant := TQuadrant(round(result * CTwoDivPi32)); // Get quadrant # (0 to 3) we're in
+  case Quadrant of
+   0 : result :=  FastCosPart4Term(result);
+   1 : result := -FastCosPart4Term(Pi - result);
+   2 : result := -FastCosPart4Term(result - Pi);
+   3 : result :=  FastCosPart4Term(CTwoPI32 - result);
+  end;
+end;
+
+function FastCos4Term(const Value: Double): Double;
+var
+  Quadrant : TQuadrant;
+begin
+  result := abs(FastMod(Value, CTwoPi64));          // Get rid of values > 2* pi
+  Quadrant := TQuadrant(round(result * CTwoDivPi64)); // Get quadrant # (0 to 3) we're in
+  case Quadrant of
+   0 : result :=  FastCosPart4Term(result);
+   1 : result := -FastCosPart4Term(Pi - result);
+   2 : result := -FastCosPart4Term(result - Pi);
+   3 : result :=  FastCosPart4Term(CTwoPI64 - result);
+  end;
+end;
+
+function FastSin4Term(const Value: Single): Single;
+begin
+  result := FastCos4Term(CPiHalf32 - Value);
+end;
+
+function FastSin4Term(const Value: Double): Double;
+begin
+  result := FastCos4Term(CPiHalf64 - Value);
+end;
+
+
+//  5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
+
+function FastCosPart5Term(const Value: Single): Single;
+begin
+ result := sqr(Value);
+ result := CCos5Term[0] + result * (CCos5Term[1] + result * (CCos5Term[2] + result * (CCos5Term[3] + CCos5Term[4] * result)));
+end;
+
+function FastCosPart5Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+begin
+ result := sqr(Value);
+ result := CCos5Term[0] + result * (CCos5Term[1] + result * (CCos5Term[2] + result * (CCos5Term[3] + CCos5Term[4] * result)));
+end;
+
+function FastCos5Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+var
+  Quadrant : TQuadrant;
+begin
+  result := abs(FastMod(Value, CTwoPi32));          // Get rid of values > 2* pi
+  Quadrant := TQuadrant(round(result * CTwoDivPi32)); // Get quadrant # (0 to 3) we're in
+  case Quadrant of
+   0 : result :=  FastCosPart5Term(result);
+   1 : result := -FastCosPart5Term(Pi - result);
+   2 : result := -FastCosPart5Term(result - Pi);
+   3 : result :=  FastCosPart5Term(CTwoPI32 - result);
+  end;
+end;
+
+function FastCos5Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+var
+  Quadrant : TQuadrant;
+begin
+  result := abs(FastMod(Value, CTwoPi64));          // Get rid of values > 2* pi
+  Quadrant := TQuadrant(round(result * CTwoDivPi64)); // Get quadrant # (0 to 3) we're in
+  case Quadrant of
+   0 : result :=  FastCosPart5Term(result);
+   1 : result := -FastCosPart5Term(Pi - result);
+   2 : result := -FastCosPart5Term(result - Pi);
+   3 : result :=  FastCosPart5Term(CTwoPI64 - result);
+  end;
+end;
+
+function FastSin5Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+begin
+  result := FastCos5Term(CPiHalf32 - Value);
+end;
+
+function FastSin5Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+begin
+  result := FastCos5Term(CPiHalf64 - Value);
+end;
+
+
+//  7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
+
+function FastCosPart7Term(const Value: Single): Single;
+begin
+ result := sqr(Value);
+ result := CCos7Term[0] + result *
+          (CCos7Term[1] + result *
+          (CCos7Term[2] + result *
+          (CCos7Term[3] + result *
+          (CCos7Term[4] + result *
+          (CCos7Term[5] + CCos7Term[6] * result)))));
+end;
+
+function FastCosPart7Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+begin
+ result := sqr(Value);
+ result := CCos7Term[0] + result *
+          (CCos7Term[1] + result *
+          (CCos7Term[2] + result *
+          (CCos7Term[3] + result *
+          (CCos7Term[4] + result *
+          (CCos7Term[5] + CCos5Term[6] * result)))));
+end;
+
+function FastCos7Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+var
+  Quadrant : TQuadrant;
+begin
+  result := abs(FastMod(Value, CTwoPi32));          // Get rid of values > 2* pi
+  Quadrant := TQuadrant(round(result * CTwoDivPi32)); // Get quadrant # (0 to 3) we're in
+  case Quadrant of
+   0 : result :=  FastCosPart7Term(result);
+   1 : result := -FastCosPart7Term(Pi - result);
+   2 : result := -FastCosPart7Term(result - Pi);
+   3 : result :=  FastCosPart7Term(CTwoPI32 - result);
+  end;
+end;
+
+function FastCos7Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+var
+  Quadrant : TQuadrant;
+begin
+  result := abs(FastMod(Value, CTwoPi64));          // Get rid of values > 2* pi
+  Quadrant := TQuadrant(round(result * CTwoDivPi64)); // Get quadrant # (0 to 3) we're in
+  case Quadrant of
+   0 : result :=  FastCosPart7Term(result);
+   1 : result := -FastCosPart7Term(Pi - result);
+   2 : result := -FastCosPart7Term(result - Pi);
+   3 : result :=  FastCosPart7Term(CTwoPI64 - result);
+  end;
+end;
+
+function FastSin7Term(const Value: Single): Single; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+begin
+  result := FastCos7Term(CPiHalf32 - Value);
+end;
+
+function FastSin7Term(const Value: Double): Double; //  Accurate to about 3.2 decimal digits over the range [0, pi/2].
+begin
+  result := FastCos7Term(CPiHalf64 - Value);
+end;
+
+
+
+
+function FastSinLike(const Value: Single): Single;
 const
-  sin1 : Double = 7.61e-03;
-  sin2 : Double = -1.6605e-01;
+  C1 : Single = 7.61E-03;
+  C2 : Single = -1.6605E-01;
 {$IFDEF PUREPASCAL}
 var Asqr : Double;
 begin
  Asqr   := sqr(Value);
- result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Value;
+ result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
- fld Value.Single
- fmul Value.Single
- fld sin1.Double
- fmul st(0),st(1)
- fld sin2.Double
- faddp st(1),st(0)
- fmulp st(1),st(0)
+ fld   Value
+ fmul  Value
+ fld   C1
+ fmul  st(0),  st(1)
+ fld   C2
+ faddp st(1), st(0)
+ fmulp st(1), st(0)
  fld1
  faddp
- fmul Value
+ fmul  Value
 {$ENDIF}
 end;
 
-function FastSin(const Value: Double): Double;
+function FastSinLike(const Value: Double): Double;
 const
-  sin1 : Double = 7.61e-03;
-  sin2 : Double = -1.6605e-01;
-{$IFDEF PUREPASCAL}
-var Asqr : Double;
-begin
- Asqr   := sqr(Value);
- result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Value;
-{$ELSE}
-asm
- fld Value.Double
- fmul Value.Double
- fld sin1.Double
- fmul st(0),st(1)
- fld sin2.Double
- faddp st(1),st(0)
- fmulp st(1),st(0)
- fld1
- faddp
- fmul Value
-{$ENDIF}
-end;
-
-function FastCos(const Value: Single): Single;
-const
-  sin1 : Double =  3.705e-02;
-  sin2 : Double = -4.967e-01;
+  C1 : Double = 7.61E-03;
+  C2 : Double = -1.6605E-01;
 {$IFDEF PUREPASCAL}
 var
   Asqr : Double;
 begin
  Asqr   := sqr(Value);
- result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Value;
+ result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
- fld Value.Single
- fmul Value.Single
- fld sin1.Double
- fmul st(0),st(1)
- fld sin2.Double
- faddp st(1),st(0)
- fmulp st(1),st(0)
+ fld   Value
+ fmul  Value
+ fld   C1
+ fmul  st(0), st(1)
+ fld   C2
+ faddp st(1), st(0)
+ fmulp st(1), st(0)
  fld1
  faddp
- fmul Value
+ fmul  Value
 {$ENDIF}
 end;
 
-function FastCos(const Value: Double): Double;
+function FastCosLike(const Value: Single): Single;
 const
-  sin1 : Double =  3.705e-02;
-  sin2 : Double = -4.967e-01;
+  C1 : Single =  3.705e-02;
+  C2 : Single = -4.967e-01;
+{$IFDEF PUREPASCAL}
+var
+  Asqr : Single;
+begin
+ Asqr   := sqr(Value);
+ result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
+{$ELSE}
+asm
+ fld   Value
+ fmul  Value
+ fld   C1
+ fmul  st(0), st(1)
+ fld   C2
+ faddp st(1), st(0)
+ fmulp st(1), st(0)
+ fld1
+ faddp
+ fmul  Value
+{$ENDIF}
+end;
+
+function FastCosLike(const Value: Double): Double;
+const
+  C1 : Double =  3.705e-02;
+  C2 : Double = -4.967e-01;
 {$IFDEF PUREPASCAL}
 var
   Asqr : Double;
 begin
  Asqr   := sqr(Value);
- result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Value;
+ result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
- fld Value.Double
- fmul Value.Double
- fld sin1.Double
- fmul st(0),st(1)
- fld sin2.Double
- faddp st(1),st(0)
- fmulp st(1),st(0)
+ fld   Value
+ fmul  Value
+ fld   C1
+ fmul  st(0), st(1)
+ fld   C2
+ faddp st(1), st(0)
+ fmulp st(1), st(0)
  fld1
  faddp
- fmul Value
+ fmul  Value
 {$ENDIF}
 end;
 
 function FastArcTan(const Value: Single): Single;
 var
-  VSqr : Double;
+  VSqr : Single;
 begin
  VSqr   := sqr(Value);
- Result := ((((0.0208351 * VSqr - 0.085133) * VSqr + 0.180141) * VSqr - 0.3302995) * VSqr + 0.999866) * Value;
+ Result := ((((CArcTanLike32[0]  * VSqr +
+               CArcTanLike32[1]) * VSqr +
+               CArcTanLike32[2]) * VSqr +
+               CArcTanLike32[3]) * VSqr +
+               CArcTanLike32[4]) * Value;
 end;
 
 function FastArcTan(const Value: Double): Double;
 var
-  VSqr : Double;
+  VSqr : Single;
 begin
  VSqr   := sqr(Value);
- Result := ((((0.0208351 * VSqr - 0.085133) * VSqr + 0.180141) * VSqr - 0.3302995) * VSqr + 0.999866) * Value;
+ Result := ((((CArcTanLike64[0]  * VSqr +
+               CArcTanLike64[1]) * VSqr +
+               CArcTanLike64[2]) * VSqr +
+               CArcTanLike64[3]) * VSqr +
+               CArcTanLike64[4]) * Value;
 end;
 
 function FastFloorLn2(const Value: Single): Integer;
@@ -273,7 +570,7 @@ var
 begin
  log2   := ((x shr 23) and $FF) - $80;
  x      := x and (not ($FF shl 23)) + $7F shl 23;
- Value  := ((CMinusOneThird * Value) + CTwo) * Value + CMinusTwoThird;
+ Value  := ((CMinusOneThird * Value) + CTwo32) * Value + CMinusTwoThird;
  Result := Value + log2;
 end;
 
@@ -309,11 +606,9 @@ end;
 
 function FastIntPower(i: Single; n: Integer): Single;
 var
-  l : Integer;
+  l : Integer absolute i;
 begin
- l := Integer((@i)^);
- l := (l - $3F800000) shl (n-1) + $3F800000;
- Result:=Single((@l)^);
+ Result := (l - $3F800000) shr (n-1) + $3F800000;
 end;
 
 function FastPower(base, exp : Double): Double;
@@ -323,73 +618,12 @@ end;
 
 function FastRoot(i: Single; n: Integer): Single;
 var
-  l : Integer;
+  l : Integer absolute i;
 begin
- l := Integer((@i)^);
- l := (l - $3F800000) shr (n-1) + $3F800000;
- Result:=Single((@l)^);
+ Result := (l - $3F800000) shr (n-1) + $3F800000;
 end;
 
-function Tanh2a(const Input: Single): Single;
-var
-  a, b: Single;
-begin
- a := abs(Input);
- b := 12 + a * (6 + a * (3 + a));
- Result := (Input * b) / (a * b + 24);
-end;
-
-function Tanh2b(const Input: Single): Single;
-var
-  a, b: Single;
-begin
- a := abs(Input);
- b := (6 + a * (3 + a));
- Result := (Input * b) / (a * b + 12);
-end;
-
-function Tanh2c(const Input: Single): Single;
-{$IFDEF PUREPASCAL}
-var
-  a, b: Single;
-begin
- a := abs(Input);
- b := 3 + a;
- Result := (Input * b) / (a * b + 6 );
-{$ELSE}
-const
-  c3: Single = 3;
-  c6: Single = 6;
-asm
- fld Input.Single;
- fabs
- fld c3
- fadd st(0),st(1)
- fld st(0)
- fmul Input.Single
- fxch st(2)
- fmulp
- fadd c6.Single
- fdiv
-{$ENDIF}
-end;
-
-function Tanh2d(const Input: Single): Single;
-{$IFDEF PUREPASCAL}
-begin
- Result := Input / (abs(Input) + 3);
-{$ELSE}
-const c3 : Single = 3;
-asm
- fld Input.Single;
- fld Input.Single;
- fabs
- fadd c3
- fdiv
-{$ENDIF}
-end;
-
-function FastTanhOpt3(const Input: Single): Single;
+function FastTanhOpt3Term(const Input: Single): Single;
 var
   a, b : Double;
 begin
@@ -400,7 +634,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt4(const Input: Single): Single;
+function FastTanhOpt4Term(const Input: Single): Single;
 var
   a, b : Double;
 begin
@@ -412,7 +646,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt5(const Input: Single): Single;
+function FastTanhOpt5Term(const Input: Single): Single;
 var
   a, b : Double;
 begin
@@ -425,7 +659,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt6(const Input: Single): Single;
+function FastTanhOpt6Term(const Input: Single): Single;
 var
   a, b : Double;
 begin
@@ -439,7 +673,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt7(const Input: Single): Single;
+function FastTanhOpt7Term(const Input: Single): Single;
 var
   a, b : Double;
 begin
@@ -454,7 +688,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt3(const Input: Double): Double;
+function FastTanhOpt3Term(const Input: Double): Double;
 var
   a, b : Double;
 begin
@@ -465,7 +699,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt4(const Input: Double): Double;
+function FastTanhOpt4Term(const Input: Double): Double;
 var
   a, b : Double;
 begin
@@ -477,7 +711,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt5(const Input: Double): Double;
+function FastTanhOpt5Term(const Input: Double): Double;
 var
   a, b : Double;
 begin
@@ -490,7 +724,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt6(const Input: Double): Double;
+function FastTanhOpt6Term(const Input: Double): Double;
 var
   a, b : Double;
 begin
@@ -504,7 +738,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt7(const Input: Double): Double;
+function FastTanhOpt7Term(const Input: Double): Double;
 var
   a, b : Double;
 begin
@@ -519,7 +753,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt3asm(Input: Single): Single; assembler;
+function FastTanhOpt3TermFPU(const Input: Single): Single; assembler;
 const
   c0 : Double =  2.66559097474027817;
   c1 : Double = -0.54699348440059470;
@@ -542,7 +776,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt4asm(Input: Single): Single; assembler;
+function FastTanhOpt4TermFPU(const Input: Single): Single; assembler;
 const
   c0 : Double =  1.74656303770202670;
   c1 : Double = -1.35205169119085666;
@@ -568,7 +802,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt5asm(Input: Single): Single; assembler;
+function FastTanhOpt5TermFPU(const Input: Single): Single; assembler;
 const
   c0 : Double =  0.91996358346770157;
   c1 : Double = -1.46060069227128242;
@@ -597,7 +831,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt6asm(Input: Single): Single; assembler;
+function FastTanhOpt6TermFPU(const Input: Single): Single; assembler;
 const
   c0 : Double =  0.40487405571569546;
   c1 : Double = -1.07161642656874956;
@@ -629,7 +863,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt7asm(Input: Single): Single; assembler;
+function FastTanhOpt7TermFPU(const Input: Single): Single; assembler;
 const
   c0 : Double =  0.152641093785489734;
   c1 : Double = -0.60147655894944263;
@@ -664,7 +898,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt3asm(Input: Double): Double; assembler;
+function FastTanhOpt3TermFPU(const Input: Double): Double; assembler;
 const
   c0 : Double =  2.66559097474027817;
   c1 : Double = -0.54699348440059470;
@@ -687,7 +921,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt4asm(Input: Double): Double; assembler;
+function FastTanhOpt4TermFPU(const Input: Double): Double; assembler;
 const
   c0 : Double =  1.74656303770202670;
   c1 : Double = -1.35205169119085666;
@@ -713,7 +947,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt5asm(Input: Double): Double; assembler;
+function FastTanhOpt5TermFPU(const Input: Double): Double; assembler;
 const
   c4 : Double =  0.91996358346770157;
   c3 : Double = -1.46060069227128242;
@@ -742,7 +976,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt6asm(Input: Double): Double; assembler;
+function FastTanhOpt6TermFPU(const Input: Double): Double; assembler;
 const
   c0 : Double =  0.40487405571569546;
   c1 : Double = -1.07161642656874956;
@@ -774,7 +1008,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt7asm(Input: Double): Double; assembler;
+function FastTanhOpt7TermFPU(const Input: Double): Double; assembler;
 const
   c0 : Double =  0.152641093785489734;
   c1 : Double = -0.60147655894944263;
@@ -808,6 +1042,66 @@ asm
  faddp             // Stack: 1 + b * a, b * Input
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
+
+function Tanh2Like4Term(const Input: Single): Single;
+var
+  a, b: Single;
+begin
+ a := abs(Input);
+ b := 12 + a * (6 + a * (3 + a));
+ Result := (Input * b) / (a * b + 24);
+end;
+
+function Tanh2Like3Term(const Input: Single): Single;
+var
+  a, b: Single;
+begin
+ a := abs(Input);
+ b := (6 + a * (3 + a));
+ Result := (Input * b) / (a * b + 12);
+end;
+
+function Tanh2Like2Term(const Input: Single): Single;
+{$IFDEF PUREPASCAL}
+var
+  a, b: Single;
+begin
+ a := abs(Input);
+ b := 3 + a;
+ Result := (Input * b) / (a * b + 6 );
+{$ELSE}
+const
+  c3: Single = 3;
+  c6: Single = 6;
+asm
+ fld Input.Single;
+ fabs
+ fld c3
+ fadd st(0),st(1)
+ fld st(0)
+ fmul Input.Single
+ fxch st(2)
+ fmulp
+ fadd c6.Single
+ fdiv
+{$ENDIF}
+end;
+
+function Tanh2Like1Term(const Input: Single): Single;
+{$IFDEF PUREPASCAL}
+begin
+ Result := Input / (abs(Input) + 3);
+{$ELSE}
+const c3 : Single = 3;
+asm
+ fld Input.Single;
+ fld Input.Single;
+ fabs
+ fadd c3
+ fdiv
+{$ENDIF}
+end;
+
 
 procedure InitConstants;
 {$IFDEF PUREPASCAL}
