@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">Default.Personality</Option>
+      <Option Name="ProjectType"></Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{B8A7775C-1EF5-4962-B3FC-9CF13B6093A2}</Option>
+    </Option>
+  </PersonalityInfo>
+  <Default.Personality>    
+    <Projects>
+      <Projects Name="AdvancedClipper.dll">Advanced Clipper\AdvancedClipper.bdsproj</Projects>
+      <Projects Name="AmpSim.dll">AmpSim\AmpSim.bdsproj</Projects>
+      <Projects Name="ASIOVST.dll">ASIO-Extender\ASIOVST.bdsproj</Projects>
+      <Projects Name="BarberpoleFlanger.dll">Barberpole\BarberpoleFlanger.bdsproj</Projects>
+      <Projects Name="BassExtender.dll">BassExtender\BassExtender.bdsproj</Projects>
+      <Projects Name="ChebyshevWaveshaper.dll">ChebyshevWaveshaper\ChebyshevWaveshaper.bdsproj</Projects>
+      <Projects Name="SimpleChorus.dll">Chorus\SimpleChorus.bdsproj</Projects>
+      <Projects Name="Convolution.dll">Simple Convolution Engine\Convolution.bdsproj</Projects>
+      <Projects Name="CrossoverDistortion.dll">Crossover Distortion\CrossoverDistortion.bdsproj</Projects>
+      <Projects Name="Decimator.dll">Decimator\Decimator.bdsproj</Projects>
+      <Projects Name="DitherNoiseshaper.dll">DitherNoiseshaper\DitherNoiseshaper.bdsproj</Projects>
+      <Projects Name="Exciter.dll">Exciter\Exciter.bdsproj</Projects>
+      <Projects Name="SimpleFlanger.dll">Flanger\SimpleFlanger.bdsproj</Projects>
+      <Projects Name="fReeverb.dll">fReeverb\fReeverb.bdsproj</Projects>
+      <Projects Name="OpAmp.dll">NonLinear\OpAmp.bdsproj</Projects>
+      <Projects Name="OversampledTanh.dll">Oversampled Tanh\OversampledTanh.bdsproj</Projects>
+      <Projects Name="Phaser.dll">Phaser\Phaser.bdsproj</Projects>
+      <Projects Name="SimpleSampleDelay.dll">Simple Sample Delay\SimpleSampleDelay.bdsproj</Projects>
+      <Projects Name="SpinBugLite.dll">SpinBug Lite\SpinBugLite.bdsproj</Projects>
+      <Projects Name="SubBoost.dll">SubBoost\SubBoost.bdsproj</Projects>
+      <Projects Name="SimpleVibrato.dll">Vibrato\SimpleVibrato.bdsproj</Projects>
+      <Projects Name="Targets">AdvancedClipper.dll AmpSim.dll ASIOVST.dll BarberpoleFlanger.dll BassExtender.dll ChebyshevWaveshaper.dll SimpleChorus.dll Convolution.dll CrossoverDistortion.dll Decimator.dll DitherNoiseshaper.dll Exciter.dll SimpleFlanger.dll fReeverb.dll OpAmp.dll OversampledTanh.dll Phaser.dll Convolution.dll SimpleSampleDelay.dll SpinBugLite.dll SubBoost.dll SimpleVibrato.dll</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>

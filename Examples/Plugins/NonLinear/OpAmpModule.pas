@@ -28,7 +28,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, OpAmpGUI;
+  Math, DAV_Approximations, OpAmpGUI;
 
 { TVSTOpAmp }
 
@@ -50,7 +50,7 @@ var
 begin
  for j := 0 to min(numOutputs, numInputs) - 1 do
   for i := 0 to SampleFrames - 1
-   do Outputs[j, i] := FastTanhOpt5(FGain * Inputs[j, i]);
+   do Outputs[j, i] := FastTanhOpt5TermFPU(FGain * Inputs[j, i]);
 end;
 
 procedure TVSTOpAmp.VSTModuleProcessDoubleReplacing(const inputs,
@@ -60,7 +60,7 @@ var
 begin
  for j := 0 to min(numOutputs, numInputs) - 1 do
   for i := 0 to SampleFrames - 1
-   do Outputs[j, i] := FastTanhOpt5(FGain * Inputs[j, i]);
+   do Outputs[j, i] := FastTanhOpt5TermFPU(FGain * Inputs[j, i]);
 end;
 
 procedure TVSTOpAmp.VSTModuleParameterChange(Sender: TObject;

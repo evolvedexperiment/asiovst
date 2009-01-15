@@ -124,7 +124,7 @@ end;
 procedure TVSTDecimator.ParameterCutoffChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCutoffFreqNorm := f_Limit(0.5 * FreqLogToLinear(Value), 0.01, 1);
+ FCutoffFreqNorm := Limit(0.5 * FreqLogToLinear(Value), 0.01, 1);
  FFC := FResonance * (1 + 1 / (1 - FCutoffFreqNorm));
  if EditorForm is TVSTGUI then
   with TVSTGUI(EditorForm)
@@ -223,8 +223,8 @@ begin
      if FOld[1, 0] > 1 then FOld[1, 0] := 1 else if FOld[1, 0] < -1 then FOld[1, 0] := -1;
      if FOld[1, 1] > 1 then FOld[1, 1] := 1 else if FOld[1, 1] < -1 then FOld[1, 1] := -1;
 
-     Outputs[0,i] := f_Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * FOld[0, 1])));
-     Outputs[1,i] := f_Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * FOld[1, 1])));
+     Outputs[0,i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * FOld[0, 1])));
+     Outputs[1,i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * FOld[1, 1])));
     end
   end
  else
@@ -251,8 +251,8 @@ begin
      if FOld[1, 0] > 1 then FOld[1, 0] := 1 else if FOld[1, 0] < -1 then FOld[1, 0] := -1;
      if FOld[1, 1] > 1 then FOld[1, 1] := 1 else if FOld[1, 1] < -1 then FOld[1, 1] := -1;
 
-     Outputs[0, i] := f_Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * (FYL - FOld[0, 1]))));
-     Outputs[1, i] := f_Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * (FYR - FOld[0, 1]))));
+     Outputs[0, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * (FYL - FOld[0, 1]))));
+     Outputs[1, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * (FYR - FOld[0, 1]))));
     end;
   end;
 end;
@@ -292,8 +292,8 @@ begin
      if FOld[1, 0] > 1 then FOld[1, 0] := 1 else if FOld[1, 0] < -1 then FOld[1, 0] := -1;
      if FOld[1, 1] > 1 then FOld[1, 1] := 1 else if FOld[1, 1] < -1 then FOld[1, 1] := -1;
 
-     Outputs[0, i] := f_Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * FOld[0, 1])));
-     Outputs[1, i] := f_Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * FOld[1, 1])));
+     Outputs[0, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * FOld[0, 1])));
+     Outputs[1, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * FOld[1, 1])));
     end
   end
  else
@@ -320,8 +320,8 @@ begin
      if FOld[1, 0] > 1 then FOld[1, 0] := 1 else if FOld[1, 0] < -1 then FOld[1, 0] := -1;
      if FOld[1, 1] > 1 then FOld[1, 1] := 1 else if FOld[1, 1] < -1 then FOld[1, 1] := -1;
 
-     Outputs[0, i] := f_Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet*(FYL - FOld[0, 1]))));
-     Outputs[1, i] := f_Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet*(FYR - FOld[0, 1]))));
+     Outputs[0, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet*(FYL - FOld[0, 1]))));
+     Outputs[1, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet*(FYR - FOld[0, 1]))));
     end;
   end;
 end;

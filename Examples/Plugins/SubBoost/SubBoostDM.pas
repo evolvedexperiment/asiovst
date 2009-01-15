@@ -204,7 +204,7 @@ begin
                   then en := 1
                   else en := en * rl;
                  SubBass  := (en * sin(phii));
-                 phii     := f_mod(phii + dph, 2 * Pi);
+                 phii     := FastMod(phii + dph, 2 * Pi);
                 end;
     else SubBass := 0;            
    end;

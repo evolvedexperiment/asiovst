@@ -35,108 +35,120 @@ uses
   { Trigonomic Approximations }
 
   // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
-  function FastCosPart3Term(const Value: Single): Single; overload;
-  function FastCosPart3Term(const Value: Double): Double; overload;
-  function FastCos3Term(const Value: Single): Single; overload;
-  function FastCos3Term(const Value: Double): Double; overload;
-  function FastSin3Term(const Value: Single): Single; overload;
-  function FastSin3Term(const Value: Double): Double; overload; 
-  function FastSec3Term(const Value: Single): Single; overload;
-  function FastSec3Term(const Value: Double): Double; overload; 
-  function FastCsc3Term(const Value: Single): Single; overload;
-  function FastCsc3Term(const Value: Double): Double; overload;
+  function FastCosPart3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSin3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSin3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload; 
+  function FastSec3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSec3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload; 
+  function FastCsc3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCsc3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
   // 4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
-  function FastCosPart4Term(const Value: Single): Single; overload;
-  function FastCosPart4Term(const Value: Double): Double; overload;
-  function FastCos4Term(const Value: Single): Single; overload;
-  function FastCos4Term(const Value: Double): Double; overload;
-  function FastSin4Term(const Value: Single): Single; overload;
-  function FastSin4Term(const Value: Double): Double; overload;
-  function FastSec4Term(const Value: Single): Single; overload;
-  function FastSec4Term(const Value: Double): Double; overload;
-  function FastCsc4Term(const Value: Single): Single; overload;
-  function FastCsc4Term(const Value: Double): Double; overload;
+  function FastCosPart4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSin4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSin4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSec4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSec4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCsc4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCsc4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
   // 5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
-  function FastCosPart5Term(const Value: Single): Single; overload;
-  function FastCosPart5Term(const Value: Double): Double; overload;
-  function FastCos5Term(const Value: Single): Single; overload;
-  function FastCos5Term(const Value: Double): Double; overload;
-  function FastSin5Term(const Value: Single): Single; overload;
-  function FastSin5Term(const Value: Double): Double; overload;
-  function FastSec5Term(const Value: Single): Single; overload;
-  function FastSec5Term(const Value: Double): Double; overload;
-  function FastCsc5Term(const Value: Single): Single; overload;
-  function FastCsc5Term(const Value: Double): Double; overload;
+  function FastCosPart5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSin5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSin5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSec5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSec5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCsc5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCsc5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+
+  // 6-Term: Accurate to about ?.? decimal digits over the range [0, pi/2].
+  function FastCosPart6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSin6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSin6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSec6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSec6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCsc6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCsc6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
   // 7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
-  function FastCosPart7Term(const Value: Single): Single; overload;
-  function FastCosPart7Term(const Value: Double): Double; overload;
-  function FastCos7Term(const Value: Single): Single; overload;
-  function FastCos7Term(const Value: Double): Double; overload;
-  function FastSin7Term(const Value: Single): Single; overload;
-  function FastSin7Term(const Value: Double): Double; overload;
-  function FastSec7Term(const Value: Single): Single; overload;
-  function FastSec7Term(const Value: Double): Double; overload;
-  function FastCsc7Term(const Value: Single): Single; overload;
-  function FastCsc7Term(const Value: Double): Double; overload;
+  function FastCosPart7Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart7Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos7Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos7Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSin7Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSin7Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSec7Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSec7Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCsc7Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCsc7Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
   // 2-Term: Accurate to about 3.2 decimal digits over the range [0, pi/4].
-  function FastTanPart2Term(const Value: Single): Single; overload;
-  function FastTanPart2Term(const Value: Double): Double; overload;
-  function FastTanPInv2Term(const Value: Single): Single; overload;
-  function FastTanPInv2Term(const Value: Double): Double; overload;
-  function FastTan2Term(const Value: Single): Single; overload;
-  function FastTan2Term(const Value: Double): Double; overload;
-  function FastCoTan2Term(const Value: Single): Single; overload;
-  function FastCoTan2Term(const Value: Double): Double; overload;
+  function FastTanPart2Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPart2Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPInv2Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPInv2Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTan2Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTan2Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCoTan2Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCoTan2Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
   // 3-Term: Accurate to about 5.6 decimal digits over the range [0, pi/4].
-  function FastTanPart3Term(const Value: Single): Single; overload;
-  function FastTanPart3Term(const Value: Double): Double; overload;
-  function FastTanPInv3Term(const Value: Single): Single; overload;
-  function FastTanPInv3Term(const Value: Double): Double; overload;
-  function FastTan3Term(const Value: Single): Single; overload;
-  function FastTan3Term(const Value: Double): Double; overload;
-  function FastCoTan3Term(const Value: Single): Single; overload;
-  function FastCoTan3Term(const Value: Double): Double; overload;
+  function FastTanPart3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPart3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPInv3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPInv3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTan3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTan3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCoTan3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCoTan3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
   // 4-Term: Accurate to about 8.2 decimal digits over the range [0, pi/4].
-  function FastTanPart4Term(const Value: Single): Single; overload;
-  function FastTanPart4Term(const Value: Double): Double; overload;
-  function FastTanPInv4Term(const Value: Single): Single; overload;
-  function FastTanPInv4Term(const Value: Double): Double; overload;
-  function FastTan4Term(const Value: Single): Single; overload;
-  function FastTan4Term(const Value: Double): Double; overload;
-  function FastCoTan4Term(const Value: Single): Single; overload;
-  function FastCoTan4Term(const Value: Double): Double; overload;
+  function FastTanPart4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPart4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPInv4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPInv4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTan4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTan4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCoTan4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCoTan4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
   // 6-Term: Accurate to about 14 decimal digits over the range [0, pi/4].
-  function FastTanPart6Term(const Value: Single): Single; overload;
-  function FastTanPart6Term(const Value: Double): Double; overload;
-  function FastTanPInv6Term(const Value: Single): Single; overload;
-  function FastTanPInv6Term(const Value: Double): Double; overload;
-  function FastTan6Term(const Value: Single): Single; overload;
-  function FastTan6Term(const Value: Double): Double; overload;
-  function FastCoTan6Term(const Value: Single): Single; overload;
-  function FastCoTan6Term(const Value: Double): Double; overload;
+  function FastTanPart6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPart6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPInv6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPInv6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTan6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTan6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCoTan6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCoTan6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
   // 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
-  function FastArcTanPart3Term(const Value: Single): Single; overload;
-  function FastArcTanPart3Term(const Value: Double): Double; overload;
-  function FastArcTan3Term(const Value: Single): Single; overload;
-  function FastArcTan3Term(const Value: Double): Double; overload;
-  function FastArcCotan3Term(const Value: Single): Single; overload;
-  function FastArcCotan3Term(const Value: Double): Double; overload;
+  function FastArcTanPart3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcTanPart3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcTan3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcTan3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcCotan3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcCotan3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
   // 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
-  function FastArcTanPart6Term(const Value: Single): Single; overload;
-  function FastArcTanPart6Term(const Value: Double): Double; overload;
-  function FastArcTan6Term(const Value: Single): Single; overload;
-  function FastArcTan6Term(const Value: Double): Double; overload;
-  function FastArcCotan6Term(const Value: Single): Single; overload;
-  function FastArcCotan6Term(const Value: Double): Double; overload;
+  function FastArcTanPart6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcTanPart6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcTan6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcTan6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcCotan6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcCotan6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
 
   { TanH Approximations }
@@ -163,10 +175,10 @@ uses
   function FastTanhOpt6TermFPU(const Input: Double): Double; assembler; overload;
   function FastTanhOpt7TermFPU(const Input: Double): Double; assembler; overload;
 
-  function Tanh2Like4Term(const Input: Single): Single;
-  function Tanh2Like3Term(const Input: Single): Single;
-  function Tanh2Like2Term(const Input: Single): Single;
-  function Tanh2Like1Term(const Input: Single): Single;
+  function FastTanh2Like4Term(const Input: Single): Single;
+  function FastTanh2Like3Term(const Input: Single): Single;
+  function FastTanh2Like2Term(const Input: Single): Single;
+  function FastTanh2Like1Term(const Input: Single): Single;
 
 var
   Ln10, Ln2, Ln2Half, Ln2Rez   : Double;
@@ -194,22 +206,28 @@ const
   CTwelfthPi64   : Double = Pi / 12.0; // pi/12.0, used in atan routines
 
 const
-  CArcTanLike32 : Array [0..4] of Single = (0.0208351, -0.085133, 0.180141,
+  CArcTanLike : Array [0..4] of Single = (0.0208351, -0.085133, 0.180141,
     -0.3302995, 0.999866);
-  CArcTanLike64 : Array [0..4] of Single = (0.0208351, -0.085133, 0.180141,
-    -0.3302995, 0.999866);
-  CCos3Term : array [0..2] of Single = (0.99940307, -0.49558072, 0.03679168);
-  CCos4Term : array [0..3] of Single = (0.9999932946, -0.4999124376,
-    0.0414877472, -0.0012712095);
-  CCos5Term : array [0..4] of Double = (0.999999953464, -0.4999999053455,
-    0.0416635846769, -0.0013853704264, 0.000023233);
-  CCos7Term : array [0..6] of Double = (0.99999999999925182,
-   -0.49999999997024012, 4.1666666473384543E-2, -1.388888418000423E-3,
+  CCos3Term : array [0..2] of Single = (9.99410127468481235E-1,
+    -4.95614819206541213E-1, 3.68101531561626713E-2);
+  CCos4Term : array [0..3] of Single = (9.99993413205793602E-1,
+    -4.99913469025972335E-1, 4.14891801631523741E-2, -1.27168190108224634E-3);
+  CCos5Term : array [0..4] of Double = (9.99999954384273471E-1,
+    -4.99999068400003466E-1, 4.16636211009559776E-2, -1.38539804095743203E-3,
+     2.31603397215404142E-5);
+  CCos6Term : array [0..5] of Double = (9.99999999785851190E-1,
+    -4.99999993711054302E-1, 4.16666367367911419E-2, -1.38883676220687841E-3,
+     2.47604862741507171E-5, -2.60573608883968794E-7);
+  CCos7Term : array [0..6] of Double = (9.9999999999925182E-1,
+   -4.9999999997024012E-1, 4.1666666473384543E-2, -1.388888418000423E-3,
     2.48010406484558E-5, -2.752469638432E-7, 1.9907856854E-9);
   CTan2Term : array [0..1] of Single = (-3.6112171, -4.6133253);
   CTan3Term : array [0..2] of Single = (-3.16783027, 0.134516124, -4.033321984);
   CTan4Term : array [0..3] of Double = (211.849369664121, -12.5288887278448,
     269.7350131214121, -71.4145309347748);
+  CTan5Term : array [0..4] of Double = (8.38820505317477848E+22,
+    -3.70665302360166393E+21, -5.32928201354683187E+19,
+     1.06801947663613863E+23, -2.66798401001070002E+22);
   CTan6Term : array [0..5] of Double = (-34287.4662577359568109624,
     2566.7175462315050423295, -26.5366371951731325438,
     -43656.1579281292375769579, 12244.4839556747426927793,
@@ -493,6 +511,83 @@ end;
 function FastCsc5Term(const Value: Double): Double;
 begin
   Result := 1 / FastCos5Term(CPiHalf64 - Value);
+end;
+
+
+// 6-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
+
+function FastCosPart6Term(const Value: Single): Single;
+begin
+ Result := sqr(Value);
+ Result := CCos6Term[0] + Result *
+          (CCos6Term[1] + Result *
+          (CCos6Term[2] + Result *
+          (CCos6Term[3] + Result *
+          (CCos6Term[4] + CCos6Term[5] * Result))));
+end;
+
+function FastCosPart6Term(const Value: Double): Double;
+begin
+ Result := sqr(Value);
+ Result := CCos6Term[0] + Result *
+          (CCos6Term[1] + Result *
+          (CCos6Term[2] + Result *
+          (CCos6Term[3] + Result *
+          (CCos6Term[4] + CCos6Term[5] * Result))));
+end;
+
+function FastCos6Term(const Value: Single): Single;
+begin
+ Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
+ case round(Result * CTwoDivPi32 - CHalf32) of
+  0 : Result :=  FastCosPart6Term(Result);
+  1 : Result := -FastCosPart6Term(Pi - Result);
+  2 : Result := -FastCosPart6Term(Result - Pi);
+  3 : Result :=  FastCosPart6Term(CTwoPI32 - Result);
+  4 : Result :=  FastCosPart6Term(Result);
+ end;
+end;
+
+function FastCos6Term(const Value: Double): Double;
+begin
+ Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
+ case round(Result * CTwoDivPi64 - CHalf64) of
+  0 : Result :=  FastCosPart6Term(Result);
+  1 : Result := -FastCosPart6Term(Pi - Result);
+  2 : Result := -FastCosPart6Term(Result - Pi);
+  3 : Result :=  FastCosPart6Term(CTwoPI64 - Result);
+  4 : Result :=  FastCosPart6Term(Result);
+ end;
+end;
+
+function FastSin6Term(const Value: Single): Single;
+begin
+  Result := FastCos6Term(CPiHalf32 - Value);
+end;
+
+function FastSin6Term(const Value: Double): Double;
+begin
+  Result := FastCos6Term(CPiHalf64 - Value);
+end;
+
+function FastSec6Term(const Value: Single): Single;
+begin
+  Result := 1 / FastCos6Term(Value);
+end;
+
+function FastSec6Term(const Value: Double): Double;
+begin
+  Result := 1 / FastCos6Term(Value);
+end;
+
+function FastCsc6Term(const Value: Single): Single;
+begin
+  Result := 1 / FastCos6Term(CPiHalf32 - Value);
+end;
+
+function FastCsc6Term(const Value: Double): Double;
+begin
+  Result := 1 / FastCos6Term(CPiHalf64 - Value);
 end;
 
 
@@ -1164,11 +1259,11 @@ var
   VSqr : Single;
 begin
  VSqr   := sqr(Value);
- Result := ((((CArcTanLike32[0]  * VSqr +
-               CArcTanLike32[1]) * VSqr +
-               CArcTanLike32[2]) * VSqr +
-               CArcTanLike32[3]) * VSqr +
-               CArcTanLike32[4]) * Value;
+ Result := ((((CArcTanLike[0]  * VSqr +
+               CArcTanLike[1]) * VSqr +
+               CArcTanLike[2]) * VSqr +
+               CArcTanLike[3]) * VSqr +
+               CArcTanLike[4]) * Value;
 end;
 
 function FastArctanLike(const Value: Double): Double;
@@ -1176,11 +1271,11 @@ var
   VSqr : Single;
 begin
  VSqr   := sqr(Value);
- Result := ((((CArcTanLike64[0]  * VSqr +
-               CArcTanLike64[1]) * VSqr +
-               CArcTanLike64[2]) * VSqr +
-               CArcTanLike64[3]) * VSqr +
-               CArcTanLike64[4]) * Value;
+ Result := ((((CArcTanLike[0]  * VSqr +
+               CArcTanLike[1]) * VSqr +
+               CArcTanLike[2]) * VSqr +
+               CArcTanLike[3]) * VSqr +
+               CArcTanLike[4]) * Value;
 end;
 
 function FastFloorLn2(const Value: Single): Integer;
@@ -1674,7 +1769,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function Tanh2Like4Term(const Input: Single): Single;
+function FastTanh2Like4Term(const Input: Single): Single;
 var
   a, b: Single;
 begin
@@ -1683,7 +1778,7 @@ begin
  Result := (Input * b) / (a * b + 24);
 end;
 
-function Tanh2Like3Term(const Input: Single): Single;
+function FastTanh2Like3Term(const Input: Single): Single;
 var
   a, b: Single;
 begin
@@ -1692,7 +1787,7 @@ begin
  Result := (Input * b) / (a * b + 12);
 end;
 
-function Tanh2Like2Term(const Input: Single): Single;
+function FastTanh2Like2Term(const Input: Single): Single;
 {$IFDEF PUREPASCAL}
 var
   a, b: Single;
@@ -1718,7 +1813,7 @@ asm
 {$ENDIF}
 end;
 
-function Tanh2Like1Term(const Input: Single): Single;
+function FastTanh2Like1Term(const Input: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  Result := Input / (abs(Input) + 3);

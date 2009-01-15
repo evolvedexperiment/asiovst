@@ -79,8 +79,8 @@ begin
     High := FHighpassFilter[ch, 1].ProcessSample(
             FHighpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
 
-    Outputs[ch, sample] := FLowMix[0]  * Low  + FastTanhOpt5(FLowMix[1]  * Low) +
-                           FHighMix[0] * High + FastTanhOpt5(FHighMix[1] * High);
+    Outputs[ch, sample] := FLowMix[0]  * Low  + FastTanhOpt5TermFPU(FLowMix[1]  * Low) +
+                           FHighMix[0] * High + FastTanhOpt5TermFPU(FHighMix[1] * High);
   end;
 end;
 
@@ -100,8 +100,8 @@ begin
     High := FHighpassFilter[ch, 1].ProcessSample(
             FHighpassFilter[ch, 0].ProcessSample(Inputs[ch, sample]));
 
-    Outputs[ch, sample] := FLowMix[0]  * Low  + FastTanhOpt5(FLowMix[1]  * Low) +
-                           FHighMix[0] * High + FastTanhOpt5(FHighMix[1] * High);
+    Outputs[ch, sample] := FLowMix[0]  * Low  + FastTanhOpt5TermFPU(FLowMix[1]  * Low) +
+                           FHighMix[0] * High + FastTanhOpt5TermFPU(FHighMix[1] * High);
   end;
 end;
 
