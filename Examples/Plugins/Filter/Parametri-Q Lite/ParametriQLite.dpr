@@ -12,15 +12,15 @@ uses
 
 function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    with TParametriQLiteDataModule.Create(Application) do
-     begin
-      AudioMaster := AudioMasterCallback;
-      Result := Effect;
-     end;
-  except
-    Result := nil;
-  end;
+ try
+  with TParametriQLiteDataModule.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result      := Effect;
+   end;
+ except
+  Result        := nil;
+ end;
 end;
 
 exports Main name 'main';

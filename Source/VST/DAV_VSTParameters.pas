@@ -402,7 +402,7 @@ begin
                      else Result := log2(Max * Result + 1) / log2(Max);
   else
  end;
- Result := f_limit(Result, 0, 1);
+ Result := Limit(Result, 0, 1);
 end;
 
 function TCustomVstParameterProperty.Smooth(const Value: Single): Single;

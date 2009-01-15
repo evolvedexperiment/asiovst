@@ -3,7 +3,7 @@ unit DAV_CudaFft;
 interface
 
 {$I DAV_Compiler.inc}
-{$DEFINE Emulation}
+{-$DEFINE Emulation}
 
 uses
   Windows, SysUtils, DAV_Complex;

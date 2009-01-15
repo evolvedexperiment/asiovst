@@ -150,19 +150,19 @@ type
   // MemCopy Function Prototypes //
   /////////////////////////////////
 
-  TCudaMemcpy = function (Dest: Pointer; const Source: Pointer; Count: Cardinal; kind: TCudaMemcpyKind): TCudaError; stdcall;
-  TCudaMemcpyToArray = (Dest: PCudaArray; WOffset, HOffset: Cardinal; const Source: Pointer; Count: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
-  TCudaMemcpyFromArray = (Dest: Pointer; const Source: PCudaArray; WOffset, HOffset: Cardinal; Count: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
+  TCudaMemcpy = function(Dest: Pointer; const Source: Pointer; Count: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
+  TCudaMemcpyToArray = function(Dest: PCudaArray; WOffset, HOffset: Cardinal; const Source: Pointer; Count: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
+  TCudaMemcpyFromArray = function(Dest: Pointer; const Source: PCudaArray; WOffset, HOffset: Cardinal; Count: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
 (*
-  TCudaMemcpyArrayToArray = (Dest: PCudaArray; WOffsetDst, HOffsetDst: Cardinal; const Source: PCudaArray; wOffsetSrc, hOffsetSrc: Cardinal; Count: Cardinal; Kind: TCudaMemcpyKind __dv(cudaMemcpyDeviceToDevice)): TCudaError; stdcall;
+  TCudaMemcpyArrayToArray = function(Dest: PCudaArray; WOffsetDst, HOffsetDst: Cardinal; const Source: PCudaArray; wOffsetSrc, hOffsetSrc: Cardinal; Count: Cardinal; Kind: TCudaMemcpyKind __dv(cudaMemcpyDeviceToDevice)): TCudaError; stdcall;
 *)
-  TCudaMemcpy2D = (Dest: Pointer; DPitch: Cardinal; const Source: Pointer; SPitch: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
-  TCudaMemcpy2DToArray = (Dest: PCudaArray; WOffset, HOffset: Cardinal;  const Source: Pointer; SPitch: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
-  TCudaMemcpy2DFromArray = (Dest: Pointer; DeltaPitch: Cardinal; const Source: PCudaArray; WOffset, HOffset: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
+  TCudaMemcpy2D = function(Dest: Pointer; DPitch: Cardinal; const Source: Pointer; SPitch: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
+  TCudaMemcpy2DToArray = function(Dest: PCudaArray; WOffset, HOffset: Cardinal;  const Source: Pointer; SPitch: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
+  TCudaMemcpy2DFromArray = function(Dest: Pointer; DeltaPitch: Cardinal; const Source: PCudaArray; WOffset, HOffset: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind): TCudaError; stdcall;
 (*
-  TCudaMemcpy2DArrayToArray = (Dest: PCudaArray; Cardinal wOffsetDst, Cardinal hOffsetDst, const Source: PCudaArray; Cardinal wOffsetSrc, Cardinal hOffsetSrc, Cardinal width, Cardinal height, Kind: TCudaMemcpyKind __dv(cudaMemcpyDeviceToDevice)): TCudaError; stdcall;
-  TCudaMemcpyToSymbol = (const Symbol: PChar; const Source: Pointer; Count: Cardinal; Cardinal offset __dv(0), Kind: TCudaMemcpyKind __dv(cudaMemcpyHostToDevice)): TCudaError; stdcall;
-  TCudaMemcpyFromSymbol = (Dest: Pointer; const Symbol: PChar; Count: Cardinal; Cardinal offset __dv(0), Kind: TCudaMemcpyKind __dv(cudaMemcpyDeviceToHost)): TCudaError; stdcall;
+  TCudaMemcpy2DArrayToArray = function(Dest: PCudaArray; Cardinal wOffsetDst, Cardinal hOffsetDst, const Source: PCudaArray; Cardinal wOffsetSrc, Cardinal hOffsetSrc, Cardinal width, Cardinal height, Kind: TCudaMemcpyKind __dv(cudaMemcpyDeviceToDevice)): TCudaError; stdcall;
+  TCudaMemcpyToSymbol = function(const Symbol: PChar; const Source: Pointer; Count: Cardinal; Cardinal offset __dv(0), Kind: TCudaMemcpyKind __dv(cudaMemcpyHostToDevice)): TCudaError; stdcall;
+  TCudaMemcpyFromSymbol = function(Dest: Pointer; const Symbol: PChar; Count: Cardinal; Cardinal offset __dv(0), Kind: TCudaMemcpyKind __dv(cudaMemcpyDeviceToHost)): TCudaError; stdcall;
 *)
 
   ///////////////////////////////////
@@ -171,10 +171,10 @@ type
 
   TCudaMemcpyAsync = function (Dest: Pointer; const Source: Pointer; count: Cardinal; Kind: TCudaMemcpyKind; Stream: TCudaStream): TCudaError; stdcall;
   TCudaMemcpyToArrayAsync = function (Dest: PCudaArray; WOffset, HOffset: Cardinal; const Source: Pointer; Count: Cardinal; Kind: TCudaMemcpyKind; Stream: TCudaStream): TCudaError; stdcall;
-  TCudaMemcpyFromArrayAsync = function (Dest: Pointer; const Source: PCudaArray; WOffset, HOffset: Cardinal; Count: Cardinal; Kind: TCudaMemcpyKind, Stream: TCudaStream): TCudaError; stdcall;
+  TCudaMemcpyFromArrayAsync = function (Dest: Pointer; const Source: PCudaArray; WOffset, HOffset: Cardinal; Count: Cardinal; Kind: TCudaMemcpyKind; Stream: TCudaStream): TCudaError; stdcall;
   TCudaMemcpy2DAsync = function (Dest: Pointer; DeltaPitch: Cardinal; const Source: Pointer; SPitch: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind; Stream: TCudaStream): TCudaError; stdcall;
-  TCudaMemcpy2DToArrayAsync = function (Dest: PCudaArray; WOffset, HOffset: Cardinal;  const Source: Pointer; SPitch: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind, Stream: TCudaStream): TCudaError; stdcall;
-  TCudaMemcpy2DFromArrayAsync = function (Dest: Pointer; DPitch: Cardinal; const Source: PCudaArray; WOffset, HOffset: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind, Stream: TCudaStream): TCudaError; stdcall;
+  TCudaMemcpy2DToArrayAsync = function (Dest: PCudaArray; WOffset, HOffset: Cardinal;  const Source: Pointer; SPitch: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind; Stream: TCudaStream): TCudaError; stdcall;
+  TCudaMemcpy2DFromArrayAsync = function (Dest: Pointer; DPitch: Cardinal; const Source: PCudaArray; WOffset, HOffset: Cardinal; Width, Height: Cardinal; Kind: TCudaMemcpyKind; Stream: TCudaStream): TCudaError; stdcall;
   TCudaMemcpyToSymbolAsync = function (const Symbol: Pchar; const Source: Pointer; Count: Cardinal; Offset: Cardinal; Kind: TCudaMemcpyKind; Stream: TCudaStream): TCudaError; stdcall;
   TCudaMemcpyFromSymbolAsync = function (Dest: Pointer; const Symbol: Pchar; Count: Cardinal; Offset: Cardinal; Kind: TCudaMemcpyKind; Stream: TCudaStream): TCudaError; stdcall;
 
@@ -221,7 +221,7 @@ type
   TCudaGetTextureReference = function (const struct textureReference **texref, const char *symbol): TCudaError; stdcall;
 *)
 
-  TCudaGetChannelDesc = function (var Desc: TCudaChannelFormatDesc; const Array: PCudaArray): TCudaError; stdcall;
+  TCudaGetChannelDesc = function (var Desc: TCudaChannelFormatDesc; const AArray: PCudaArray): TCudaError; stdcall;
   TCudaCreateChannelDesc = function (X, Y, Z, W: Integer; Format: TCudaChannelFormatKind): TCudaError; stdcall;
 
   TCudaGetLastError = function: TCudaError; stdcall;
@@ -237,11 +237,11 @@ type
   TCudaStreamQuery = function (Stream: TCudaStream): TCudaError; stdcall;
 
   TCudaEventCreate = function (var Event: TCudaEvent): TCudaError; stdcall;
-  TCudaEventRecord = function (Event: TCudaEvent, Stream TCudaStream): TCudaError; stdcall;
+  TCudaEventRecord = function (Event: TCudaEvent; Stream: TCudaStream): TCudaError; stdcall;
   TCudaEventQuery = function (Event: TCudaEvent): TCudaError; stdcall;
   TCudaEventSynchronize = function (Event: TCudaEvent): TCudaError; stdcall;
   TCudaEventDestroy = function (Event: TCudaEvent): TCudaError; stdcall;
-  TCudaEventElapsedTime = function (var ms: Single; Start, End: TCudaEvent): TCudaError; stdcall;
+  TCudaEventElapsedTime = function (var ms: Single; AStart, AEnd: TCudaEvent): TCudaError; stdcall;
 
   TCudaSetDoubleForDevice = function (var d : Double): TCudaError; stdcall;
   TCudaSetDoubleForHost = function (var d : Double): TCudaError; stdcall;
@@ -306,8 +306,8 @@ var
   CudaMemcpyToArray          : TCudaMemcpyToArray;
   CudaMemcpyFromArray        : TCudaMemcpyFromArray;
   CudaMemcpy2D               : TCudaMemcpy2D;
-  CudaMemcpyToArray2D        : TCudaMemcpyToArray2D;
-  CudaMemcpyFromArray2D      : TCudaMemcpyFromArray2D;
+//  CudaMemcpyToArray2D        : TCudaMemcpyToArray2D;
+//  CudaMemcpyFromArray2D      : TCudaMemcpyFromArray2D;
   CudaMemcpyAsync            : TCudaMemcpyAsync;
   CudaMemcpyToArrayAsync     : TCudaMemcpyToArrayAsync;
   CudaMemcpyFromArrayAsync   : TCudaMemcpyFromArrayAsync;
@@ -348,6 +348,9 @@ var
 
 function CudaErrorToString(CudaError: TCudaError): string;
 
+var
+  CudaRuntimeLoaded : Boolean;
+
 implementation
 
 function CudaErrorToString(CudaError: TCudaError): string;
@@ -361,7 +364,6 @@ end;
 
 var
   CudaRuntimeDLL    : HMODULE;
-  CudaRuntimeLoaded : Boolean;
 
 const
   CCudaRuntimeDLLName = 'CudaRt.dll';
@@ -390,8 +392,8 @@ begin
     CudaMemcpyToArray          := GetProcAddress(CudaRuntimeDLL, 'cudaMemcpyToArray');
     CudaMemcpyFromArray        := GetProcAddress(CudaRuntimeDLL, 'cudaMemcpyFromArray');
     CudaMemcpy2D               := GetProcAddress(CudaRuntimeDLL, 'cudaMemcpy2D');
-    CudaMemcpyToArray2D        := GetProcAddress(CudaRuntimeDLL, 'cudaMemcpyToArray2D');
-    CudaMemcpyFromArray2D      := GetProcAddress(CudaRuntimeDLL, 'cudaMemcpyFromArray2D');
+//    CudaMemcpyToArray2D        := GetProcAddress(CudaRuntimeDLL, 'cudaMemcpyToArray2D');
+//    CudaMemcpyFromArray2D      := GetProcAddress(CudaRuntimeDLL, 'cudaMemcpyFromArray2D');
     CudaMemcpyAsync            := GetProcAddress(CudaRuntimeDLL, 'cudaMemcpyAsync');
     CudaMemcpyToArrayAsync     := GetProcAddress(CudaRuntimeDLL, 'cudaMemcpyToArrayAsync');
     CudaMemcpyFromArrayAsync   := GetProcAddress(CudaRuntimeDLL, 'cudaMemcpyFromArrayAsync');

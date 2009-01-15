@@ -6,7 +6,6 @@ uses
   FastMM4,
   madExcept,
   madLinkDisAsm,
-  madListHardware,
   madListProcesses,
   madListModules,
   RTLVCLOptimize,

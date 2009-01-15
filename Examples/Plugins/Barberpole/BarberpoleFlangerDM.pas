@@ -33,7 +33,7 @@ implementation
 {$R *.DFM}
 
 uses
-  BarberpoleFlangerGUI, DAV_VSTCustomModule;
+  BarberpoleFlangerGUI, DAV_Approximations, DAV_VSTCustomModule;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';

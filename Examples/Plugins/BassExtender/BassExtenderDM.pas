@@ -291,7 +291,7 @@ end;
 procedure TBassExtenderModule.ParamDividerChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FDivideMix[0] := f_Limit(0.01 * Value, 0, 1);
+ FDivideMix[0] := Limit(0.01 * Value, 0, 1);
  FDivideMix[1] := 1 - FDivideMix[0];
 
  if EditorForm is TFmBassExtender then
@@ -304,7 +304,7 @@ end;
 procedure TBassExtenderModule.ParamCompressionMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressorMix[0] := f_Limit(0.01 * Value, 0, 1);
+ FCompressorMix[0] := Limit(0.01 * Value, 0, 1);
  FCompressorMix[1] := 1 - FCompressorMix[0];
 
  if EditorForm is TFmBassExtender then
@@ -317,7 +317,7 @@ end;
 procedure TBassExtenderModule.ParamBalanceChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FBalance[1] := f_Limit(1 + 0.01 * Value, 0, 2);
+ FBalance[1] := Limit(1 + 0.01 * Value, 0, 2);
  FBalance[0] := 2 - FBalance[1];
 
  if EditorForm is TFmBassExtender then

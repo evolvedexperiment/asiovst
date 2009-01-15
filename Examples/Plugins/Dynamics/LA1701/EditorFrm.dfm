@@ -182,7 +182,7 @@ object FmLA1701: TFmLA1701
       Width = 168
       Height = 72
       Color = clBlack
-      Position = 0
+      GlyphIndex = 0
       NumGlyphs = 65
       StitchKind = skHorizontal
       PopupMenu = PopupVUMeterSpeed

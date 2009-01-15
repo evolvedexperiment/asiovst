@@ -143,7 +143,7 @@ begin
                Datatype        := dtFSample;
               end;
   pinVarInput: with Properties^ do // this plug automatically duplicates itself
-              begin              // it must be the last plug in the list
+              begin                // it must be the last plug in the list
                name            := 'Input';
                direction       := drIn;
                datatype        := dtFSample;

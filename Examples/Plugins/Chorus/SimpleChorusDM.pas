@@ -32,7 +32,7 @@ implementation
 {$R *.DFM}
 
 uses
-  SimpleChorusGUI, DAV_VSTCustomModule;
+  SimpleChorusGUI, DAV_Approximations, DAV_VSTCustomModule;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';

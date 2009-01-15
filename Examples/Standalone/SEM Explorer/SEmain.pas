@@ -104,7 +104,15 @@ begin
    end;
  if SEHost[0].PartCount > 0 then
   begin
-   SEHost[0].Part[0].Instanciate;
+   with SEHost[0].Part[0] do
+    begin
+     // Instantiate Module
+     SEHost[0].Part[0].Instantiation;
+
+     // Check GUI available and if so, check the version
+     if GUIVersion >= 0
+      then Memo.Lines.Add('GUI Version: ' + IntToStr(GUIVersion));
+    end;
 
    PinNr := 0;
    FillChar(Pin, SizeOf(TSEPinProperties), 0);
@@ -134,14 +142,15 @@ begin
      end;
      Memo.Lines.Add('Flags: '         + IOFlagsToString(Pin.Flags));
      Memo.Lines.Add('Name: '          + Pin.Name);
-     Memo.Lines.Add('DefaultValue: '  + Pin.DefaultValue);
+     if assigned(Pin.DefaultValue)
+      then Memo.Lines.Add('DefaultValue: '  + Pin.DefaultValue);
      if assigned(Pin.DatatypeExtra)
       then Memo.Lines.Add('DatatypeExtra: ' + Pin.DatatypeExtra);
      Memo.Lines.Add('Spare: '         + IntToStr(Pin.Spare));
      inc(PinNr);
     end;
 
-   if SEHost[0].Part[0].Magic <> SepMagic then
+   if SEHost[0].Part[0].Magic <> CSepMagic then
     if not MIEnableWrapper.Checked
      then MessageBox(0, 'Magic number shreddered! It is likely that this SEM file is extracted from a VST plugin.' + #13#10#13#10 +
            'A special wrapper can be created by this tool that restores the functionality of the SEM.' + #13#10#13#10 +

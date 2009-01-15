@@ -197,8 +197,8 @@ begin
  FFrequency  := AFrequency;
  FGain_dB    := AGain;
  FRipple     := ARipple;
- FGainFactor := Exp(FGain_dB * ln10_0025);
  CalculateW0;
+ CalculateGainFactor;
  CalculateRippleFactors;
 end;
 
@@ -226,6 +226,7 @@ begin
  CalculateCoefficients;
 end;
 
+{.$DEFINE PUREPASCAL}
 procedure TChebyshev1LP.CalculateCoefficients;
 {$IFDEF PUREPASCAL}
 var
@@ -321,10 +322,10 @@ asm
  fstp st(0)                                 // stack free!
 
  fld  [self.FCoeffs].Double                 // load fA[0]
- fmul [self.FGainFactor].Double              // apply FGainFactor
+ fmul [self.FGainFactor].Double             // apply FGainFactor
  fstp [self.FCoeffs].Double                 // store fA[0]
  fld  [self.FCoeffs + 8].Double             // load fA[1]
- fmul [self.FGainFactor].Double              // apply FGainFactor
+ fmul [self.FGainFactor].Double             // apply FGainFactor
  fstp [self.FCoeffs + 8].Double             // store fA[1]
 @done:
 {$ENDIF}
@@ -547,7 +548,7 @@ asm
   faddp                                     // 1 + t1*K², t2, A[2*i], K, K², 1/2*FOrder
   fsubp                                     // t2 - (1 + t1*K²), A[2*i], K, K², 1/2*FOrder
   fmulp                                     // (t2 - (1 + t1*K²)) * A[2*i], K, K², 1/2*FOrder
-  fstp [self.FCoeffs+8*edx+24].Double       // store to fB[2*i+1], 1/2*FOrder
+  fstp [self.FCoeffs + 8 * edx + 24].Double // store to fB[2*i+1], 1/2*FOrder
   sub ecx, 2
  jnz @OrderLoop
  fstp st(0)                                 // K², 1/2*FOrder
@@ -675,8 +676,8 @@ begin
  FFrequency := AFrequency;
  FGain_dB   := AGain;
  FRipple    := ARipple;
- FGainFactor := Exp((FGain_dB * ln10_0025));
  CalculateW0;
+ CalculateGainFactor;
  CalculateRippleFactors;
 end;
 

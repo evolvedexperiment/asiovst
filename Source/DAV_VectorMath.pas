@@ -3,7 +3,7 @@ unit DAV_VectorMath;
 interface
 
 uses
-  DAV_Common, Math;
+  Math, DAV_Common;
 
 type
   TDAVVector32 = TDAV4SingleArray;
@@ -125,6 +125,8 @@ function CreateRotationMatrix(const anAxis: TDAVVector32; Angle: Single): TDAVMa
 function MatrixMultiply(const M1, M2: TDAVMatrix32): TDAVMatrix32; overload;
 procedure MatrixMultiply(const M1, M2: TDAVMatrix32; var MResult: TDAVMatrix32); overload;
 function VectorTransform(const Value: TDAVVector32; const M: TDAVMatrix32): TDAVVector32; overload;
+procedure SetMatrixLength(Matrix : TDAVDoubleDynMatrix; Size : TPoint); overload;
+procedure SetMatrixLength(Matrix : TDAVSingleDynMatrix; Size : TPoint); overload;
 function MatrixDeterminant(const M: TDAVMatrix32): Single; overload;
 procedure AdjointMatrix(var M: TDAVMatrix32); overload;
 procedure ScaleMatrix(var M: TDAVMatrix32; const Factor: Single); overload;
@@ -1410,6 +1412,24 @@ begin
   Result[1] := Abs(Value[1]);
   Result[2] := Abs(Value[2]);
   Result[3] := Abs(Value[3]);
+end;
+
+procedure SetMatrixLength(Matrix : TDAVDoubleDynMatrix; Size : TPoint);
+var
+  i : Integer;
+begin
+ SetLength(Matrix, Size.X);
+ for i := 0 to Size.X - 1
+  do SetLength(Matrix[i], Size.Y);
+end;
+
+procedure SetMatrixLength(Matrix : TDAVSingleDynMatrix; Size : TPoint);
+var
+  i : Integer;
+begin
+ SetLength(Matrix, Size.X);
+ for i := 0 to Size.X - 1
+  do SetLength(Matrix[i], Size.Y);
 end;
 
 procedure SetMatrix(var dest: TDAVMatrix64; const src: TDAVMatrix32);

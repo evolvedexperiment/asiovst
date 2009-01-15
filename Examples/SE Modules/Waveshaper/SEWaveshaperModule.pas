@@ -10,12 +10,11 @@ const
   CWsNodeCount = 11;
   CNodeSize    =  6;
 
-// define some constants to make referencing in/outs clearer
-  pinPatchParam = 0;
-  pinInput = 1;
-  pinOutput = 2;
 
 type
+  // define some constants to make referencing in/outs clearer
+  TSEWaveshaperPins = (pinPatchParam, pinInput, pinOutput);
+
   TSEWaveshaperModule = class(TSEModuleBase)
   private
     FInputPtr       : PDAVSingleFixedArray; // pointer to circular buffer of samples
@@ -97,7 +96,7 @@ end;
 
 procedure TSEWaveshaperModule.ChooseProcess;
 begin
- if Pin[pinInput].Status = stRun
+ if Pin[Integer(pinInput)].Status = stRun
   then OnProcess := SubProcess
   else
    begin
@@ -111,11 +110,11 @@ begin
 //  _RPT1(_CRT_WARN, 'LookupTableChanged %x\n',this );
 
   ChooseProcess;
-  if Pin[pinInput].Status <> stRun then
+  if Pin[Integer(pinInput)].Status <> stRun then
    begin
     // can't add event if sleeping
 //    OutputChange(SampleClock, GetPlug(pinOutput), stOneOff);
-    Pin[pinOutput].TransmitStatusChange(SampleClock, stOneOff);
+    Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stOneOff);
    end;
 end;
 
@@ -138,8 +137,7 @@ const
   CHalf      : Single = 0.5;
   CTableSize : Single = 512;
 var
-  Input         : PSingle;
-  Output        : PSingle;
+  Input, Output : PSingle;
   s             : Integer;
   ControlWordA  : Word;
   ControlWordB  : Word;
@@ -177,7 +175,7 @@ begin
     Inc(Output);
     {$ELSE}
     asm
-      push ebx
+      push   ebx
       mov    ebx, dword ptr [Input]
 
       // multiply index by table size
@@ -258,7 +256,7 @@ var
   slope, c    : Single;
 //  gain, t     : Single;
 begin
-// GuiTSEWaveshaperModule.UpdateNodes(nodes, SeSdkString(FShapePtr));
+// GuiModule.UpdateNodes(nodes, SeSdkString(FShapePtr));
 
 (* Old slower code
   segments := 11;
@@ -316,14 +314,6 @@ end;
 // describe the pins (plugs)
 function TSEWaveshaperModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
-(*
-  LIST_PIN2('Signal In', FInputPtr, DR_IN, '0','', IO_POLYPHONIC_ACTIVE,'');
-  LIST_PIN2('Signal Out', FOutputPtr, DR_OUT, '','', 0,'');
-  // move this to patch mgr
-  LIST_VAR3('Ignore Program Change', ignore_prog_change, DR_PARAMETER, DT_BOOL ,'0','', 0,'Prevents this control responding to patch changes from 'Patch Select' module');
-  LIST_VAR3('shape', m_shape_string,  DR_IN, DT_TEXT ,'', '', IO_UI_COMMUNICATION(*| IO_PRIVATE* /,'');
-*)
-
  result := True;
  case Index of                // !!TODO!! list your in / out plugs
   0: with Properties^ do
@@ -350,14 +340,14 @@ begin
        Direction       := drOut;
        Datatype        := dtFSample;
       end;
-  else result := false; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
 // An input plug has changed value
 procedure TSEWaveshaperModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- case CurrentPin.PinID of
+ case TSEWaveshaperPins(CurrentPin.PinID) of
   pinPatchParam:
    begin
     FillLookupTable;
@@ -367,7 +357,7 @@ begin
   pinInput:
    begin
     ChooseProcess;
-    Pin[pinOutput].TransmitStatusChange(SampleClock, Pin[pinInput].Status);
+    Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, Pin[Integer(pinInput)].Status);
    end;
  end;
  inherited;

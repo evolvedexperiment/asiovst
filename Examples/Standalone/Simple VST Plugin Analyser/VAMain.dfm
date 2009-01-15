@@ -49,6 +49,7 @@ object FmVSTAnalyser: TFmVSTAnalyser
     VstPlugIns = <
       item
         DisplayName = 'Plugin'
+        VstOfflineTasks = <>
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000

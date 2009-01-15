@@ -51,8 +51,8 @@ type
       result := HWND(CallHost(seGuiHostGetWindowHandle, WI.context_handle));
     *)
     seGuiHostSetWindowFlags,
-    seGuiHostPlugGetVal,
-    seGuiHostPlugSetVal,
+    seGuiHostPlugGetVal,          // query host value
+    seGuiHostPlugSetVal,          // set host value
     seGuiHostPlugSetExtraData,    // sets enum list or file extension (depending on datatype)
     (* example code...
       // pass pin number and new list

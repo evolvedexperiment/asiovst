@@ -2,7 +2,7 @@ unit WADSPVST;
 
 interface
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, Windows, {$ELSE} Windows, Messages, {$ENDIF}
@@ -76,16 +76,16 @@ type
     procedure FormShow(Sender: TObject);
     procedure LbPluginClick(Sender: TObject);
   private
-    fColDetected   : Boolean;
-    fColorBack     : TColor;
-    fColorEdit     : TColor;
-    fColorBorder   : TColor;
-    fBypass        : Boolean;
-    fRegistryEntry : string;
-    fTmpData       : TDAVArrayOfSingleDynArray;
-    fNrChannels    : Integer;
-    fSampleRate    : Integer;
-    fNumSamples    : Integer;
+    FColDetected   : Boolean;
+    FColorBack     : TColor;
+    FColorEdit     : TColor;
+    FColorBorder   : TColor;
+    FBypass        : Boolean;
+    FRegistryEntry : string;
+    FTmpData       : TDAVArrayOfSingleDynArray;
+    FNrChannels    : Integer;
+    FSampleRate    : Integer;
+    FNumSamples    : Integer;
     procedure SetScheme;
     procedure LoadVSTDLL(VSTDLL: TFileName);
     procedure LoadRecent(Sender: TObject);
@@ -186,7 +186,7 @@ begin
  try
   if Assigned(This_Mod^.UserData^) then
    with This_Mod^.UserData^ do if Assigned(VstHost) then
-    if VstHost[0].Active and not fBypass then
+    if VstHost[0].Active and not FBypass then
      begin
 (*
       if Length(fPDCBuffer)<nCh then SetLength(fPDCBuffer,nCh);
@@ -195,49 +195,49 @@ begin
         then SetLength(fPDCBuffer[i],VstHost[0].InitialDelay);
 *)
 
-      if sRate <> fSampleRate then
+      if sRate <> FSampleRate then
        begin
-        fSampleRate := sRate;
+        FSampleRate := sRate;
         VstHost[0].SetSampleRate(sRate);
        end;
       ch := max(VstHost[0].numInputs, VstHost[0].numOutputs);
       ch := max(nCh, ch);
 
-      if ch <> fNrChannels
+      if ch <> FNrChannels
        then ResizeChannelArray(ch);
 
       case BitPerSample of
        16: begin
             for i := 0 to ch - 1 do
              begin
-              SetLength(fTmpData[i], NumSamples);
+              SetLength(FTmpData[i], NumSamples);
               if i >= nCh then Break;
               for j := 0 to NumSamples - 1
-               do fTmpData[i,j] := PSmallIntArray(Samples)^[j * nCh + i] * DivFak16;
+               do FTmpData[i,j] := PSmallIntArray(Samples)^[j * nCh + i] * DivFak16;
              end;
-            VstHost[0].ProcessReplacing(@fTmpData[0], @fTmpData[0], NumSamples);
+            VstHost[0].ProcessReplacing(@FTmpData[0], @FTmpData[0], NumSamples);
             for i := 0 to ch - 1 do
              begin
               if i >= nCh then Break;
               for j := 0 to NumSamples - 1
-               do PSmallIntArray(Samples)^[j * nCh + i] := Round(f_Limit(fTmpData[i, j]) * MulFak16)
+               do PSmallIntArray(Samples)^[j * nCh + i] := Round(Limit(FTmpData[i, j]) * MulFak16)
              end;
            end;
        24: begin
             for i := 0 to ch - 1 do
              begin
-              SetLength(fTmpData[i], NumSamples);
+              SetLength(FTmpData[i], NumSamples);
               if i < nCh then
                for j := 0 to NumSamples - 1
-                do fTmpData[i, j] := ((ShortInt(P3ByteArray(Samples)^[j*nCh+i][2]) shl 16) +
+                do FTmpData[i, j] := ((ShortInt(P3ByteArray(Samples)^[j*nCh+i][2]) shl 16) +
                                       (P3ByteArray(Samples)^[j*nCh+i][1] shl 8)  +
                                       (P3ByteArray(Samples)^[j*nCh+i][0] )) * DivFak24;
              end;
-            VstHost[0].ProcessReplacing(@fTmpData[0], @fTmpData[0], NumSamples);
+            VstHost[0].ProcessReplacing(@FTmpData[0], @FTmpData[0], NumSamples);
             for i := 0 to ch-1 do if i < nCh then
              for j := 0 to NumSamples - 1 do
               begin
-               Temp := Round(f_Limit(fTmpData[i, j]) * MulFak24);
+               Temp := Round(Limit(FTmpData[i, j]) * MulFak24);
                P3ByteArray(Samples)^[j * nCh + i][2] := (Temp shr 16) and $FF;
                P3ByteArray(Samples)^[j * nCh + i][1] := (Temp shr 8 ) and $FF;
                P3ByteArray(Samples)^[j * nCh + i][0] := (Temp       ) and $FF;
@@ -256,7 +256,7 @@ begin
  CriticalSection.Enter;
  with This_Mod^ do
   try
-   UserData^.fBypass := True; Sleep(5);
+   UserData^.FBypass := True; Sleep(5);
    UserData^.ClosePlugin;
    try FreeAndNil(UserData^); finally FmWinAmpVST := nil; end;
   finally
@@ -272,17 +272,17 @@ var
   s : string;
   b : PChar;
 begin
- fSampleRate := 44100; fNumSamples := 0; fNrChannels := 0;
+ FSampleRate := 44100; FNumSamples := 0; FNrChannels := 0;
  GetMem(b, 255); GetModuleFileName(WADSPModule.hDLLinstance, b, 255);
- s := b; fRegistryEntry := ExtractFileName(s); FreeMem(b);
- if fRegistryEntry = 'dsp_vst.dll'
-  then fRegistryEntry := 'Software\WinAmp\VST Host DSP Plugin'
-  else fRegistryEntry := 'Software\WinAmp\' + Copy(fRegistryEntry, 1, Pos('.dll', fRegistryEntry) - 1);
+ s := b; FRegistryEntry := ExtractFileName(s); FreeMem(b);
+ if FRegistryEntry = 'dsp_vst.dll'
+  then FRegistryEntry := 'Software\WinAmp\VST Host DSP Plugin'
+  else FRegistryEntry := 'Software\WinAmp\' + Copy(FRegistryEntry, 1, Pos('.dll', FRegistryEntry) - 1);
  s := ExpandUNCFileName(Copy(s, 1, Pos('.dll', s) - 1) + '.fxp');
- fBypass := False;
+ FBypass := False;
  with TRegistry.Create do
   try
-   if OpenKeyReadOnly(fRegistryEntry) then
+   if OpenKeyReadOnly(FRegistryEntry) then
     begin
      if ValueExists('Visible') then if ReadBool('Visible') then Show;
      if ValueExists('Left') then Left := ReadInteger('Left');
@@ -312,7 +312,7 @@ var
 begin
  with TRegistry.Create do
   try
-   if OpenKey(fRegistryEntry,True) then
+   if OpenKey(FRegistryEntry,True) then
     begin
      WriteBool('Visible', Visible);
      WriteInteger('Left', Left);
@@ -342,8 +342,8 @@ end;
 
 procedure TFmWinAmpVST.ResizeChannelArray(NewChannelNumber: Integer);
 begin
- SetLength(fTmpData, NewChannelNumber);
- fNrChannels := NewChannelNumber;
+ SetLength(FTmpData, NewChannelNumber);
+ FNrChannels := NewChannelNumber;
 end;
 
 procedure TFmWinAmpVST.SetScheme;
@@ -383,15 +383,15 @@ begin
      c1 := GetRValue(c) + GetGValue(c) + GetBValue(c);
    end;
 
-  fColorEdit := rgb(GetRValue(c) div 2, GetGValue(c) div 2, GetBValue(c) div 2);
+  FColorEdit := rgb(GetRValue(c) div 2, GetGValue(c) div 2, GetBValue(c) div 2);
 //  Font.Color :=
-  fColorBack        := c;
-  fColorBorder      := fColorBack + $00101010;
-  EdVSTName.Color   := fColorEdit;
-  CBPreset.Color    := fColorEdit;
-  FmWinAmpVST.Color := fColorBack;
+  FColorBack        := c;
+  FColorBorder      := FColorBack + $00101010;
+  EdVSTName.Color   := FColorEdit;
+  CBPreset.Color    := FColorEdit;
+  FmWinAmpVST.Color := FColorBack;
  finally
-  fColDetected := True;
+  FColDetected := True;
   ReleaseDC(0, DC);
  end;
 end;
@@ -480,7 +480,7 @@ begin
       then CBPreset.Width := ClientWidth - 200
       else CBPreset.Width := 200
      else CBPreset.Width := 99;
-    fColDetected := False; Timer.Enabled := True;
+    FColDetected := False; Timer.Enabled := True;
    end
   else
    begin
@@ -515,7 +515,7 @@ begin
      LoadVSTDLL(FileName);
      with TRegistry.Create do
       try
-       if OpenKey(fRegistryEntry, True) then
+       if OpenKey(FRegistryEntry, True) then
         begin
          WriteString('Last Plugin', FileName);
          i := 1;
@@ -567,7 +567,7 @@ begin
  while MIRecent.Count > 2 do MIRecent.Delete(0);
  with TRegistry.Create do
   try
-   if OpenKey(fRegistryEntry, True) then
+   if OpenKey(FRegistryEntry, True) then
     begin
      i := 1;
      while ValueExists('Recent ' + IntToStr(i)) and (i < 10) do
@@ -593,7 +593,7 @@ var
 begin
  with TRegistry.Create do
   try
-   if OpenKey(fRegistryEntry, True) then
+   if OpenKey(FRegistryEntry, True) then
      begin
       str := ReadString('Recent ' + IntToStr(TMenuItem(Sender).Tag));
       if FileExists(str) then
@@ -629,7 +629,7 @@ var
 begin
  with TRegistry.Create do
   try
-   if OpenKey(fRegistryEntry, False) then
+   if OpenKey(FRegistryEntry, False) then
     for i := 0 to 9 do if ValueExists('Recent ' + IntToStr(i))
      then DeleteValue('Recent ' + IntToStr(i));
   finally
@@ -650,7 +650,7 @@ begin
  EdVSTName.Text := '';
  with TRegistry.Create do
   try
-   if OpenKey(fRegistryEntry,false)
+   if OpenKey(FRegistryEntry,false)
     then DeleteValue('Last Plugin');
   finally
    CloseKey; Free;
@@ -684,7 +684,7 @@ begin
      end;
    except
    end;
-  if not fColDetected
+  if not FColDetected
    then SetScheme;
  except
  end;
@@ -692,8 +692,8 @@ end;
 
 procedure TFmWinAmpVST.LbPluginClick(Sender: TObject);
 begin
- fBypass := not fBypass;
- if fBypass
+ FBypass := not FBypass;
+ if FBypass
   then PanelControl.Font.Color := $00C8C8C8
   else PanelControl.Font.Color := clWhite;
  EdVSTName.Font.Color := PanelControl.Font.Color;

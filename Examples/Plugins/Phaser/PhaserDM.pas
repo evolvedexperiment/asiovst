@@ -88,7 +88,7 @@ var
 begin
  for Channel := 0 to 1 do
   if Assigned(FPhaser[Channel])
-   then FPhaser[Channel].Minimum := f_Limit(Value, 20, 20000);
+   then FPhaser[Channel].Minimum := Limit(Value, 20, 20000);
  if EditorForm is TPhaserForm then
   with TPhaserForm(EditorForm)
    do UpdateMinimum;
@@ -101,7 +101,7 @@ var
 begin
  for Channel := 0 to 1 do
   if Assigned(FPhaser[Channel])
-   then FPhaser[Channel].Maximum := f_Limit(Value, 20, 20000);
+   then FPhaser[Channel].Maximum := Limit(Value, 20, 20000);
  if EditorForm is TPhaserForm then
   with TPhaserForm(EditorForm)
    do UpdateMaximum;

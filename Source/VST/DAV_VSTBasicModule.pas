@@ -176,8 +176,8 @@ type
     constructor Create(AOwner: TComponent); override;
 
     class function GetStaticDescription: string; virtual;
-    function  HostCallGetParameter(Index: Integer): Single; virtual; abstract;
-    procedure HostCallSetParameter(Index: Integer; Value: Single); virtual; abstract;
+    function  HostCallGetParameter(const Index: Integer): Single; virtual; abstract;
+    procedure HostCallSetParameter(const Index: Integer; const Value: Single); virtual; abstract;
 
     property Effect: PVSTEffect read GetEffect;
     property AudioMaster: TAudioMasterCallbackFunc read FAudioMaster write SetAudioMaster;

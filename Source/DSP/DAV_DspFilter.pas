@@ -19,10 +19,11 @@ type
     FGain_dB     : Double;
     FGainFactor  : Double;
     FFrequency   : Double;
-    FSinW0, fW0  : Double;
+    FSinW0, FW0  : Double;
     FSampleRate  : Double;
     FSRR         : Double; // reciprocal of FSampleRate
     procedure CalculateW0; virtual;
+    procedure CalculateGainFactor; virtual;
     procedure CalculateCoefficients; virtual; abstract;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SampleRateChanged; virtual;
@@ -32,7 +33,7 @@ type
     property GainFactor: Double read FGainFactor;
     property SampleRateReciprocal: Double read FSRR;
     property SinW0: Double read FSinW0;
-    property W0: Double read fW0;
+    property W0: Double read FW0;
   public
     constructor Create; virtual;
     function ProcessSample(const Input: Double): Double; overload; virtual; abstract;
@@ -256,18 +257,23 @@ begin
    TCustomFilter(Dest).FGainFactor := FGainFactor;
    TCustomFilter(Dest).FSampleRate := FSampleRate;
    TCustomFilter(Dest).FSRR        := FSRR;
-   TCustomFilter(Dest).fW0         := fW0;
+   TCustomFilter(Dest).FW0         := FW0;
    TCustomFilter(Dest).FSinW0      := FSinW0;
   end
  else inherited;
 end;
 
+procedure TCustomFilter.CalculateGainFactor;
+begin
+ FGainFactor := dB_to_Amp(CHalf32 * FGain_dB); // do not change this!
+end;
+
 procedure TCustomFilter.CalculateW0;
 begin
- fW0 := 2 * Pi * FFrequency * FSRR;
- FSinW0 := sin(fW0);
- if fW0 > 3.141
-  then fW0 := 3.141;
+ FW0 := 2 * Pi * FFrequency * FSRR;
+ FSinW0 := sin(FW0);
+ if FW0 > 3.141
+  then FW0 := 3.141;
 end;
 
 procedure TCustomFilter.FrequencyChanged;
@@ -278,6 +284,7 @@ end;
 
 procedure TCustomFilter.GainChanged;
 begin
+ CalculateGainFactor;
  CalculateCoefficients;
 end;
 
@@ -347,7 +354,6 @@ begin
  if FGain_dB <> Value then
   begin
    FGain_dB := Value;
-   FGainFactor := dB_to_Amp(FGain_dB);
    GainChanged;
   end;
 end;
@@ -413,7 +419,7 @@ procedure TCustomBandwidthFilter.CalculateAlpha;
 begin
  if (FSinW0 = 0)
   then FAlpha := FSinW0 /( 2 * FBandWidth)
-  else FAlpha := Sinh(ln22 * cos(fW0 * 0.5) * FBandWidth * (fW0 / FSinW0)) * FSinW0;
+  else FAlpha := Sinh(ln22 * cos(FW0 * 0.5) * FBandWidth * (FW0 / FSinW0)) * FSinW0;
 end;
 
 procedure TCustomBandwidthFilter.SetBW(Value: Double);
@@ -822,7 +828,7 @@ var
 begin
  t := FGainFactor / (FGainFactor + FAlpha);
  FDenominator[2] := (FGainFactor - FAlpha) / (FGainFactor + FAlpha);
- FDenominator[1] := -2 * cos(fW0)*t;
+ FDenominator[1] := -2 * cos(FW0) * t;
  FNominator[1] := FDenominator[1];
  FNominator[0] := (1 + FAlpha * FGainFactor) * t;
  FNominator[2] := (1 - FAlpha * FGainFactor) * t;
@@ -832,11 +838,12 @@ end;
 { TSimpleAllpassFilter }
 
 procedure TSimpleAllpassFilter.CalculateCoefficients;
-var t, a : Double;
+var
+  t, a : Double;
 begin
  t               := 1 / (1 + FAlpha);
- a               := FGainFactor * FGainFactor;
- FDenominator[1] := 2 * cos(fW0) * t;
+ a               := sqr(FGainFactor);
+ FDenominator[1] := 2 * cos(FW0) * t;
  FDenominator[2] := (FAlpha - 1) * t;
  FNominator[1]   := -FDenominator[1] * a;
  FNominator[0]   := -FDenominator[2] * a;
@@ -846,11 +853,12 @@ end;
 { TSimpleLowShelfFilter }
 
 procedure TSimpleLowShelfFilter.CalculateCoefficients;
-var t,A1,A2 : Double;
-    cn,sA   : Double;
+var
+  t, A1, A2 : Double;
+  cn, sA    : Double;
 begin
  sA := 2 * sqrt(FGainFactor) * FAlpha;
- cn := cos(fW0);
+ cn := cos(FW0);
  A1 := FGainFactor + 1;
  A2 := FGainFactor - 1;
  t  := 1 / (A1 + A2 * cn + sA);
@@ -868,7 +876,7 @@ procedure TSimpleHighShelfFilter.CalculateCoefficients;
 var t,A1,A2 : Double;
     cn,sA   : Double;
 begin
- cn := cos(fW0);
+ cn := cos(FW0);
  sA := 2*sqrt(FGainFactor)*FAlpha;
  A1 := FGainFactor + 1;
  A2 := FGainFactor - 1;
@@ -887,7 +895,7 @@ procedure TSimpleHighcutFilter.CalculateCoefficients;
 var cn, t : Double;
 begin
  t := 1/(1+FAlpha);
- cn := cos(fW0);
+ cn := cos(FW0);
  FNominator[0]   := sqr(FGainFactor) * (1 - cn) * 0.5 * t;
  FNominator[1]   := 2 * FNominator[0];
  FNominator[2]   := FNominator[0];
@@ -902,7 +910,7 @@ procedure TSimpleLowcutFilter.CalculateCoefficients;
 var cn, t : Double;
 begin
  t := 1 / (1 + FAlpha);
- cn := cos(fW0);
+ cn := cos(FW0);
  FNominator[0]   := sqr(FGainFactor) * (1 + cn) * 0.5 * t;
  FNominator[1]   := -2 * FNominator[0];
  FNominator[2]   := FNominator[0];
@@ -919,7 +927,7 @@ begin
  t := 1 / (1 + FAlpha);
  FNominator[0]   := FGainFactor*FGainFactor*FAlpha*t;
  FNominator[2]   := -FNominator[0];
- FDenominator[1] := -2*cos(fW0)*t;
+ FDenominator[1] := -2*cos(FW0)*t;
  FDenominator[2] := (1-FAlpha)*t;
  FNominator[1]   := 0;
 end;
@@ -932,7 +940,7 @@ begin
  try
   t := 1 / (1 + FAlpha);
   a := sqr(FGainFactor);
-  FDenominator[1] := 2 * cos(fW0)*t;
+  FDenominator[1] := 2 * cos(FW0)*t;
   FNominator[1]   := -FDenominator[1]*a;
   FDenominator[2] := (FAlpha-1)*t;
 

@@ -5,8 +5,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_VSTModuleWithMidi, DAV_VSTParameters, DAV_VSTPrograms,
-  DAV_VSTEffect;
+  Classes, DAV_Common, DAV_VSTEffect, DAV_VSTModuleWithMidi, DAV_VSTParameters,
+  DAV_VSTPrograms;
 
 type
   TGetChunkParameterEvent = function(Sender: TObject; const Index: Integer): Single of object;
@@ -31,7 +31,7 @@ type
     FParameterUpdate        : Boolean;
     FCurProgram             : Integer;
     FVstPrograms            : TCustomVstPrograms;
-    FParameter              : array of Single;
+    FParameter              : TDAVSingleDynArray;
     FChunkData              : TMemoryStream;
     FParameterProperties    : TCustomVstParameterProperties;
     FParameterCategories    : TCustomVstParameterCategories;
@@ -60,16 +60,17 @@ type
     procedure SetNumPrograms(const Value: Integer); virtual;
     procedure SetParameter(const Index: Integer; Value: Single); virtual;
     procedure SetParameterAutomated(Index: Integer; Value: Single); override;
-    procedure SetProgram(const aProgram: Integer); virtual;
+    procedure SetProgram(const AProgramIndex: Integer); virtual;
     procedure Loaded; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure SetParameterCount(cnt: Integer);
+    procedure SetProgramParameters(const ProgramIndex: Integer; Parameters: TDAVSingleDynArray); virtual;
+    procedure SetParameterCount(const Value: Integer);
 
-    function  HostCallGetParameter(Index: Integer): Single; override;
-    procedure HostCallSetParameter(Index: Integer; Value: Single); override;
+    function  HostCallGetParameter(const Index: Integer): Single; override;
+    procedure HostCallSetParameter(const Index: Integer; const Value: Single); override;
 
     function HostCallEditOpen                (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
     function HostCallSetProgramm             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
@@ -121,7 +122,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Common, DAV_VSTCustomModule;
+  SysUtils, Math, DAV_VSTCustomModule;
 
 resourcestring
   RStrUndefined = 'undefined';
@@ -215,14 +216,14 @@ begin
   then SetLength(result, 8);
 end;
 
-function TVSTModuleWithPrograms.HostCallGetParameter(Index: Integer): Single;
+function TVSTModuleWithPrograms.HostCallGetParameter(const Index: Integer): Single;
 begin
  if (Index < numParams) and (Index < FParameterProperties.Count)
   then Result := Parameter2VSTParameter(GetParameter(Index), Index)
   else Result := 0;
 end;
 
-procedure TVSTModuleWithPrograms.HostCallSetParameter(Index: Integer; Value: Single);
+procedure TVSTModuleWithPrograms.HostCallSetParameter(const Index: Integer; const Value: Single);
 begin
  if FIsHostAutomation then exit;
 
@@ -593,14 +594,14 @@ begin
   else FEffect.numPrograms := 0;
 end;
 
-procedure TVSTModuleWithPrograms.SetProgram(const aProgram: Integer);
+procedure TVSTModuleWithPrograms.SetProgram(const AProgramIndex: Integer);
 var
   i: Integer;
 begin
- if (aProgram >= 0) and (aProgram < FEffect.numPrograms) and (numPrograms > 0) then
+ if (AProgramIndex >= 0) and (AProgramIndex < FEffect.numPrograms) and (numPrograms > 0) then
   begin
    if Assigned(FOnBeforeProgramChange) then FOnBeforeProgramChange(Self);
-   FCurProgram := aProgram;
+   FCurProgram := AProgramIndex;
    if Assigned(FOnAfterProgramChange) then FOnAfterProgramChange(Self);
 //   if (effFlagsProgramChunks in FEffect.EffectFlags) then
     try
@@ -611,6 +612,18 @@ begin
    FEditorNeedUpdate := True;
   end;
  updateDisplay;
+end;
+
+procedure TVSTModuleWithPrograms.SetProgramParameters(
+  const ProgramIndex: Integer; Parameters: TDAVSingleDynArray);
+var
+  i : Integer;
+begin
+ if Length(Parameters) > numParams
+  then raise Exception.CreateFmt('Parameter mismatch (%d)', [Length(Parameters)]);
+ with Programs[ProgramIndex] do
+  for i := 0 to Length(Parameters) - 1
+   do Programs[ProgramIndex].Parameter[i] := Parameters[i];
 end;
 
 procedure TVSTModuleWithPrograms.SetCurrentProgramName(AName: string);
@@ -636,9 +649,9 @@ begin
  FParameterCategories.Assign(Value);
 end;
 
-procedure TVSTModuleWithPrograms.SetParameterCount(cnt: Integer);
+procedure TVSTModuleWithPrograms.SetParameterCount(const Value: Integer);
 begin
- SetLength(fParameter, cnt);
+ SetLength(FParameter, Value);
 end;
 
 

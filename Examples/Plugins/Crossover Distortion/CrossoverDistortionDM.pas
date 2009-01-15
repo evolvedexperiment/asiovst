@@ -31,7 +31,7 @@ implementation
 {$R *.DFM}
 
 uses
-  CrossoverDistortionGUI, DAV_VSTCustomModule;
+  CrossoverDistortionGUI, DAV_Approximations, DAV_VSTCustomModule;
 
 procedure TCrossoverDistortionDataModule.VSTModuleOpen(Sender: TObject);
 var

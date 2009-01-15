@@ -58,7 +58,7 @@ end;
 
 procedure TOcatveDivider.SetShape(Value: Single);
 begin
- Value := f_Limit(Value, 0, 1);
+ Value := Limit(Value, 0, 1);
  if FShape[0] <> Value then
   begin
    FShape[0] := Value;

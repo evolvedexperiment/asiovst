@@ -199,6 +199,7 @@ type
 
   TGuiDial = class(TCustomGuiDial)
   published
+    property Anchors;
     property AntiAlias;
     property AutoColor;
     property AutoSize;
@@ -218,6 +219,7 @@ type
     property Min;
     property NumGlyphs;
     property OnChange;
+    property ParentColor;
     property PointerAngles;
     property Position;
     property RightMouseButton;
@@ -230,6 +232,7 @@ type
 
   TGuiDialMetal = class(TCustomGuiDialMetal)
   published
+    property Anchors;
     property AntiAlias;
     property AutoColor;
     property AutoSize;
@@ -246,6 +249,7 @@ type
     property Min;
     property NumGlyphs;
     property OnChange;
+    property ParentColor;
     property PointerAngles;
     property Position;
     property RightMouseButton;
@@ -258,6 +262,7 @@ type
 
   TGuiDialEx = class(TCustomGuiDialEx)
   published
+    property Anchors;
     property AntiAlias;
     property AutoColor;
     property AutoSize;
@@ -275,6 +280,7 @@ type
     property Min;
     property NumGlyphs;
     property OnChange;
+    property ParentColor;
     property PointerAngles;
     property Position;
     property RightMouseButton;
@@ -287,6 +293,7 @@ type
 
   TGuiSwitch = class(TCustomGuiSwitch)
   published
+    property Anchors;
     property AntiAlias;
     property AutoSize;
     property Color;
@@ -294,12 +301,13 @@ type
     property DialBitmap;
     property DialImageList;
     property DialImageIndex;
+    property GlyphNr;
     property ImageList;
     property LineColor;
     property LineWidth;
     property NumGlyphs;
     property OnChange;
-    property GlyphNr;
+    property ParentColor;
     property ReadOnly;
     property StitchKind;
     property StringList;

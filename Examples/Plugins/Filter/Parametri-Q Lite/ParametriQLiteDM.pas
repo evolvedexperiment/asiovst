@@ -28,8 +28,8 @@ type
     FDownSampler : array [0..1] of TPolyphaseDownSampler64;
     FPeaks       : array [0..1, 0..1] of Single;
     FGains       : array [0..1] of Single;
-    function GetFilterClass(Index: Integer): TIIRFilterClass;
     procedure SetFilterClass(Index: Integer; const Value: TIIRFilterClass);
+    function GetFilterClass(Index: Integer): TIIRFilterClass;
     function GetDownSampler(Index: Integer): TPolyphaseDownSampler64;
     function GetUpSampler(Index: Integer): TPolyphaseUpSampler64;
     function GetInputPeakLevel: Single;

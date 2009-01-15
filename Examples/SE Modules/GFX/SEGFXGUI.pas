@@ -245,7 +245,7 @@ begin
  CallHost(seGuiHostSetWindowType, 0); // 0 = Draw on SE's window (default), 1 = HWND based
 
 // CallHost(seGuiHostSetWindowFlags, Integer(HWF_RESIZEABLE or HWF_NO_CUSTOM_GFX_ON_STRUCTURE));
- CallHost(seGuiHostSetWindowFlags, Integer(HWF_RESIZEABLE));
+ CallHost(seGuiHostSetWindowFlags, Integer(hwfResizable));
  FLock   := False; 
  FBitmap := TBitmap.Create;
  FBitmap.PixelFormat := pf24bit;

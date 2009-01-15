@@ -45,7 +45,7 @@ implementation
 {$R *.dfm}
 
 uses
-  SpinBugLiteGUI, Math;
+  Math, DAV_Approximations, SpinBugLiteGUI;
 
 procedure TSpinBugLiteModule.VSTModuleOpen(Sender : TObject);
 begin
@@ -339,8 +339,8 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   FHilbert[0].ProcessHilbertSample(tanh2b(2.1 * Inputs[0, i]), a1, b1);
-   FHilbert[1].ProcessHilbertSample(tanh2c(2.2 * Inputs[1, i]), a2, b2);
+   FHilbert[0].ProcessHilbertSample(Tanh2b(2.1 * Inputs[0, i]), a1, b1);
+   FHilbert[1].ProcessHilbertSample(Tanh2c(2.2 * Inputs[1, i]), a2, b2);
    a1 := a1 * BasicSineLFO.Sine;
    b1 := b1 * BasicSineLFO.Cosine;
    a2 := a2 * BasicSineLFO.Sine;

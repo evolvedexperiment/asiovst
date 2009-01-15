@@ -3,12 +3,11 @@ unit SEConvolutionModule;
 interface
 
 {$I DAV_Compiler.INC}
-{.$DEFINE Use_IPPS}
-{$DEFINE Use_CUDA}
 
 uses
   SysUtils, DAV_Common, DAV_SECommon, DAV_SEModule, DAV_Complex,
-  DAV_DspFftReal2Complex {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
+  DAV_DspFftReal2Complex
+  {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
   {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 
 type
@@ -16,31 +15,8 @@ type
   TSEConvolutionPins = (pinInput, pinOutput, pinFileName, pinMaxIRSize,
     pinDesiredLatency, pinRealLatency);
 
-  TSEConvolutionModule = class(TSEModuleBase)
+  TCustomSEConvolutionModule = class(TSEModuleBase)
   private
-    FFilterKernel       : PDAVSingleFixedArray;
-    FFilterFreqs        : array of PDAVComplexSingleFixedArray;
-    FSignalFreq         : PDAVComplexSingleFixedArray;
-    FConvolved          : PDAVComplexSingleFixedArray;
-    FConvolvedTime      : PDAVSingleFixedArray;
-    FBlockInBuffer32    : PDAVSingleFixedArray;
-    FBlockOutBuffer32   : PDAVSingleFixedArray;
-    FSemaphore          : Integer;
-    {$IFDEF Use_IPPS}
-    FFft                : TFftReal2ComplexIPPSFloat32;
-    {$ELSE}{$IFDEF Use_CUDA}
-    FFft                : TFftReal2ComplexCUDA32;
-    {$ELSE}
-    FFft                : TFftReal2ComplexNativeFloat32;
-    {$ENDIF}{$ENDIF}
-    FIRSize             : Integer;
-    FOffsetSize         : Integer;
-    FBlockPosition      : Integer;
-    FFreqRespBlockCount : Integer;
-    FIRSizePadded       : Integer;
-    FFFTSize            : Integer;
-    FFFTSizeHalf        : Integer;
-    FFFTSizeQuarter     : Integer;
     procedure SetIRSizePadded(const Value: Integer);
     procedure SetIRBlockSize(const Value: Integer);
     procedure ChooseProcess;
@@ -48,6 +24,22 @@ type
   protected
     FInputBuffer         : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer        : PDAVSingleFixedArray;
+    FFilterKernel        : PDAVSingleFixedArray;
+    FFilterFreqs         : array of PDAVComplexSingleFixedArray;
+    FSignalFreq          : PDAVComplexSingleFixedArray;
+    FConvolved           : PDAVComplexSingleFixedArray;
+    FConvolvedTime       : PDAVSingleFixedArray;
+    FBlockInBuffer32     : PDAVSingleFixedArray;
+    FBlockOutBuffer32    : PDAVSingleFixedArray;
+    FSemaphore           : Integer;
+    FIRSize              : Integer;
+    FOffsetSize          : Integer;
+    FBlockPosition       : Integer;
+    FFreqRespBlockCount  : Integer;
+    FIRSizePadded        : Integer;
+    FFFTSize             : Integer;
+    FFFTSizeHalf         : Integer;
+    FFFTSizeQuarter      : Integer;
     FStaticCount         : Integer;
     FFileName            : PChar;
     FMaxIRSize           : Integer;
@@ -57,18 +49,17 @@ type
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
 
-    procedure CalculateFilterBlockFrequencyResponses;
+    procedure CalculateFilterBlockFrequencyResponses; virtual; abstract;
     procedure CalculatePaddedIRSize;
     procedure CalculateFrequencyResponseBlockCount;
     procedure IRSizePaddedChanged;
-    procedure IRBlockSizeChanged;
-    procedure PerformConvolution(SignalIn, SignalOut: PDAVSingleFixedArray);
+    procedure IRBlockSizeChanged; virtual; abstract;
+    procedure PerformConvolution(SignalIn, SignalOut: PDAVSingleFixedArray); virtual; abstract;
 
     property IRSize: Integer read FIRSize;
     property IRSizePadded: Integer read FIRSizePadded write SetIRSizePadded;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
-    destructor Destroy; override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -79,23 +70,48 @@ type
     property IRBlockSize: Integer read FFFTSize write SetIRBlockSize;
   end;
 
+  TSEConvolutionModule = class(TCustomSEConvolutionModule)
+  private
+    {$IFDEF Use_IPPS}
+    FFft                : TFftReal2ComplexIPPSFloat32;
+    {$ELSE}
+    FFft                : TFftReal2ComplexNativeFloat32;
+    {$ENDIF}
+  protected
+    procedure CalculateFilterBlockFrequencyResponses; override;
+    procedure IRBlockSizeChanged; override;
+    procedure PerformConvolution(SignalIn, SignalOut: PDAVSingleFixedArray); override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    destructor Destroy; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+  end;
+
+  {$IFDEF Use_CUDA}
+  TSEConvolutionModuleCUDA = class(TCustomSEConvolutionModule)
+  private
+    FFft                : TFftReal2ComplexCUDA32;
+  protected
+    procedure CalculateFilterBlockFrequencyResponses; override;
+    procedure IRBlockSizeChanged; override;
+    procedure PerformConvolution(SignalIn, SignalOut: PDAVSingleFixedArray); override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    destructor Destroy; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+  end;
+  {$ENDIF}
+
 implementation
 
 uses
   WaveIOX;
 
-constructor TSEConvolutionModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+resourcestring
+  RCStrSynthEditOnly = 'This module is not allowed to be embedded into a VST Plugin';
+
+constructor TCustomSEConvolutionModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
- {$IFDEF Use_IPPS}
- if CSepMagic <> 2 * $29A2A826
-  then raise Exception.Create('This module is not allowed to be embedded into a VST Plugin');
- {$ENDIF}
-
- {$IFDEF Use_CUDA}
- if CSepMagic <> 2 * $29A2A826
-  then raise Exception.Create('This module is not allowed to be embedded into a VST Plugin');
- {$ENDIF}
-
  inherited Create(SEAudioMaster, Reserved);
  FFileName            := '';
  FSemaphore           := 0;
@@ -116,14 +132,7 @@ begin
  FDesiredLatencyIndex := 5;
 end;
 
-destructor TSEConvolutionModule.Destroy;
-begin
- // This is where you free any memory/resources your module has created
- FreeAndNil(FFft);
- inherited;
-end;
-
-procedure TSEConvolutionModule.Open;
+procedure TCustomSEConvolutionModule.Open;
 begin
  inherited Open;
 
@@ -134,67 +143,19 @@ begin
  Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
 end;
 
-procedure TSEConvolutionModule.SampleRateChanged;
+procedure TCustomSEConvolutionModule.SampleRateChanged;
 begin
  inherited;
  // ignore
 end;
 
 // The most important part, processing the audio
-procedure TSEConvolutionModule.SubProcess(const BufferOffset, SampleFrames: Integer);
-var
-  Input, Output   : PDAVSingleFixedArray;
-  CurrentPosition : Integer;
-begin
- // lock processing
- while FSemaphore > 0 do;
- inc(FSemaphore);
-
- try
-  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
-  Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
-  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
-
-  CurrentPosition := 0;
-
-  repeat
-    if FBlockPosition + (SampleFrames - CurrentPosition) < FFFTSize then
-     begin
-      Move(Input^[CurrentPosition], FBlockInBuffer32^[FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
-      Move(FBlockOutBuffer32^[FBlockPosition - FFFTSizeHalf], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
-
-      FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
-      CurrentPosition := SampleFrames;
-     end
-    else
-     begin
-      Move(Input^[CurrentPosition], FBlockInBuffer32^[FBlockPosition], (FFFTSize - FBlockPosition) * Sizeof(Single));
-      Move(FBlockOutBuffer32^[FBlockPosition - FFFTSizeHalf], Output^[CurrentPosition], (FFFTSize - FBlockPosition) * Sizeof(Single));
-
-      // shift already played signal part
-      Move(FBlockOutBuffer32^[FOffsetSize], FBlockOutBuffer32^[0], (FIRSizePadded - FOffsetSize) * SizeOf(Single));
-      FillChar(FBlockOutBuffer32^[(FIRSizePadded - FOffsetSize)], FOffsetSize * SizeOf(Single), 0);
-
-      // perform convolution for the next block
-      PerformConvolution(FBlockInBuffer32, FBlockOutBuffer32);
-
-      Move(FBlockInBuffer32[FOffsetSize], FBlockInBuffer32[0], FFFTSizeHalf * Sizeof(Single));
-
-      CurrentPosition := CurrentPosition + (FFFTSize - FBlockPosition);
-      FBlockPosition := FFFTSizeHalf;
-     end;
-  until CurrentPosition >= SampleFrames;
- finally
-  dec(FSemaphore);
- end;
-end;
-
-procedure TSEConvolutionModule.SubProcessBypass(const BufferOffset, SampleFrames: Integer);
+procedure TCustomSEConvolutionModule.SubProcessBypass(const BufferOffset, SampleFrames: Integer);
 begin
  Move(FInputBuffer[BufferOffset], FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single));
 end;
 
-procedure TSEConvolutionModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+procedure TCustomSEConvolutionModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
@@ -202,7 +163,7 @@ begin
   then CallHost(SEAudioMasterSleepMode);
 end;
 
-procedure TSEConvolutionModule.ChooseProcess;
+procedure TCustomSEConvolutionModule.ChooseProcess;
 begin
  if Pin[Integer(pinInput)].Status = stRun then
   if FileExists(FFileName) and (FIRSizePadded > 0)
@@ -216,28 +177,17 @@ begin
 end;
 
 // describe your module
-class procedure TSEConvolutionModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TCustomSEConvolutionModule.GetModuleProperties(Properties : PSEModuleProperties);
 begin
  with Properties^ do
   begin
-   {$IFDEF Use_IPPS}
-   Name       := 'Convolution Module (IPP based)';
-   ID         := 'IPP Convolution Module';
-   {$ELSE} {$IFDEF Use_CUDA}
-   Name       := 'Convolution Module (CUDA based)';
-   ID         := 'CUDA Convolution Module';
-   {$ELSE}
-   Name       := 'Simple Convolution Module';
-   ID         := 'DAV Simple Convolution Module';
-   {$ENDIF}{$ENDIF}
-
    About      := 'by Christian-W. Budde';
    SdkVersion := CSeSdkVersion;
   end;
 end;
 
 // describe the pins (plugs)
-function TSEConvolutionModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TCustomSEConvolutionModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
  case TSEConvolutionPins(index) of
@@ -306,7 +256,7 @@ end;
 // this routine is called whenever an input changes status.
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
-procedure TSEConvolutionModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TCustomSEConvolutionModule.PlugStateChange(const CurrentPin: TSEPin);
 var
   OldSize : Integer;
 begin
@@ -348,40 +298,7 @@ begin
 end;
 
 
-procedure TSEConvolutionModule.CalculateFilterBlockFrequencyResponses;
-var
-  TempIR     : PDAVSingleFixedArray;
-  Blocks, sz : Integer;
-begin
- // calculate frequency block count
- CalculateFrequencyResponseBlockCount;
-
- SetLength(FFilterFreqs, FFreqRespBlockCount);
- GetMem(TempIR, FFFTSize * SizeOf(Single));
- for Blocks := 0 to Length(FFilterFreqs) - 1 do
-  begin
-   ReallocMem(FFilterFreqs[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
-
-   // calculate IR part size to be copied
-   sz := IRSize - Blocks * FFFTSizeHalf;
-   if sz > FFFTSizeHalf then sz := FFFTSizeHalf;
-
-   // build temporary IR part
-   move(FFilterKernel^[Blocks * FFFTSizeHalf], TempIR^[0], sz * SizeOf(Single));
-   FillChar(TempIR^[sz], (FFFTSize - sz) * SizeOf(Single), 0);
-
-   // perform FFT
-   {$IFDEF Use_IPPS}
-   FFft.PerformFFTCCS(FFilterFreqs[Blocks], TempIR);
-   {$ELSE}{$IFDEF Use_CUDA}
-   FFft.PerformFFT(FFilterFreqs[Blocks], TempIR);
-   {$ELSE}
-   FFft.PerformFFTPackedComplex(FFilterFreqs[Blocks], TempIR);
-   {$ENDIF}{$ENDIF}
-  end;
-end;
-
-procedure TSEConvolutionModule.CalculateFrequencyResponseBlockCount;
+procedure TCustomSEConvolutionModule.CalculateFrequencyResponseBlockCount;
 var
   RealIRSize : Integer;
 begin
@@ -394,7 +311,7 @@ begin
  FFreqRespBlockCount := (RealIRSize + FFFTSizeHalf - 1) div FFFTSizeHalf;
 end;
 
-procedure TSEConvolutionModule.CalculatePaddedIRSize;
+procedure TCustomSEConvolutionModule.CalculatePaddedIRSize;
 begin
  // calculate frequency block count
  CalculateFrequencyResponseBlockCount;
@@ -403,7 +320,7 @@ begin
  IRSizePadded := FFreqRespBlockCount * FFFTSizeHalf;
 end;
 
-procedure TSEConvolutionModule.SetIRBlockSize(const Value: Integer);
+procedure TCustomSEConvolutionModule.SetIRBlockSize(const Value: Integer);
 begin
  if FFFTSize <> Value then
   begin
@@ -412,7 +329,7 @@ begin
   end;
 end;
 
-procedure TSEConvolutionModule.SetIRSizePadded(const Value: Integer);
+procedure TCustomSEConvolutionModule.SetIRSizePadded(const Value: Integer);
 begin
  if FIRSizePadded <> Value then
   begin
@@ -421,64 +338,18 @@ begin
   end;
 end;
 
-procedure TSEConvolutionModule.IRBlockSizeChanged;
-var
-  i : Integer;
-begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
- try
-  i := CeilLog2(FFFTSize);
-  if not assigned(FFft)
-  {$IFDEF Use_IPPS}
-   then FFft := TFftReal2ComplexIPPSFloat32.Create(i)
-  {$ELSE} {$IFDEF Use_CUDA}
-   then FFft := TFftReal2ComplexCUDA32.Create(i)
-  {$ELSE}
-   then
-    begin
-     FFft := TFftReal2ComplexNativeFloat32.Create(i);
-     FFft.DataOrder := doPackedComplex;
-    end
-  {$ENDIF}{$ENDIF}
-   else FFft.Order := i;
-  FFft.AutoScaleType := astDivideInvByN;
-
-  FFFTSizeHalf    := FFFTSize div 2;
-  FFFTSizeQuarter := FFFTSize div 4;
-  FBlockPosition  := FFFTSizeHalf;
-  FRealLatency    := FFFTSizeHalf;
-  FOffsetSize     := FFFTSize - FFFTSizeHalf;
-
-  ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
-  ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
-  ReallocMem(FConvolvedTime, FFFTSize * SizeOf(Single));
-  ReallocMem(FBlockInBuffer32,  FFFTSize * SizeOf(Single));
-
-  FillChar(FSignalFreq^[0], FFFTSize * SizeOf(Single), 0);
-  FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
-  FillChar(FConvolvedTime^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
-  FillChar(FBlockInBuffer32^[0],  FFFTSize * SizeOf(Single), 0);
-
-  CalculatePaddedIRSize;
-  CalculateFilterBlockFrequencyResponses;
- finally
-  Dec(FSemaphore);
- end;
-end;
-
-procedure TSEConvolutionModule.IRSizePaddedChanged;
+procedure TCustomSEConvolutionModule.IRSizePaddedChanged;
 begin
  GetMem(FBlockOutBuffer32, FIRSizePadded * SizeOf(Single));
  FillChar(FBlockOutBuffer32^[0], FIRSizePadded * SizeOf(Single), 0);
 end;
 
-procedure TSEConvolutionModule.LoadIR(FileName: TFileName);
+procedure TCustomSEConvolutionModule.LoadIR(FileName: TFileName);
 var
   sr, c : Integer;
   pt    : PSingle;
 begin
- if assigned(FFft) then
+ if FFFTSizeHalf > 0 then
   begin
    while FSemaphore > 0 do;
    inc(FSemaphore);
@@ -549,6 +420,171 @@ asm
  fstp  [eax].Single
 end;
 
+procedure TCustomSEConvolutionModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+var
+  Input, Output   : PDAVSingleFixedArray;
+  CurrentPosition : Integer;
+begin
+ // lock processing
+ while FSemaphore > 0 do;
+ inc(FSemaphore);
+
+ try
+  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+  Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
+  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+
+  CurrentPosition := 0;
+
+  repeat
+    if FBlockPosition + (SampleFrames - CurrentPosition) < FFFTSize then
+     begin
+      Move(Input^[CurrentPosition], FBlockInBuffer32^[FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
+      Move(FBlockOutBuffer32^[FBlockPosition - FFFTSizeHalf], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
+
+      FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
+      CurrentPosition := SampleFrames;
+     end
+    else
+     begin
+      Move(Input^[CurrentPosition], FBlockInBuffer32^[FBlockPosition], (FFFTSize - FBlockPosition) * Sizeof(Single));
+      Move(FBlockOutBuffer32^[FBlockPosition - FFFTSizeHalf], Output^[CurrentPosition], (FFFTSize - FBlockPosition) * Sizeof(Single));
+
+      // shift already played signal part
+      Move(FBlockOutBuffer32^[FOffsetSize], FBlockOutBuffer32^[0], (FIRSizePadded - FOffsetSize) * SizeOf(Single));
+      FillChar(FBlockOutBuffer32^[(FIRSizePadded - FOffsetSize)], FOffsetSize * SizeOf(Single), 0);
+
+      // perform convolution for the next block
+      PerformConvolution(FBlockInBuffer32, FBlockOutBuffer32);
+
+      Move(FBlockInBuffer32[FOffsetSize], FBlockInBuffer32[0], FFFTSizeHalf * Sizeof(Single));
+
+      CurrentPosition := CurrentPosition + (FFFTSize - FBlockPosition);
+      FBlockPosition := FFFTSizeHalf;
+     end;
+  until CurrentPosition >= SampleFrames;
+ finally
+  dec(FSemaphore);
+ end;
+end;
+
+{ TSEConvolutionModule }
+
+constructor TSEConvolutionModule.Create(SEAudioMaster: TSE2audioMasterCallback;
+  Reserved: Pointer);
+{$IFDEF Use_IPPS}
+var
+  VSTHostParams : TSECallVstHostParams;
+  VendorString  : string;
+{$ENDIF}
+begin
+ {$IFDEF Use_IPPS}
+ if CSepMagic <> 2 * $29A2A826
+  then raise Exception.Create(RCStrSynthEditOnly);
+ VSTHostParams.Opcode := 32;
+ VendorString := StrPas(PChar(CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams)));
+ if VendorString <> ''
+  then raise Exception.Create(RCStrSynthEditOnly);
+ {$ENDIF}
+ inherited;
+end;
+
+destructor TSEConvolutionModule.Destroy;
+begin
+ FreeAndNil(FFft);
+ inherited;
+end;
+
+class procedure TSEConvolutionModule.GetModuleProperties(Properties : PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   {$IFDEF Use_IPPS}
+   Name       := 'Convolution Module (IPP based)';
+   ID         := 'IPP Convolution Module';
+   {$ELSE}
+   Name       := 'Simple Convolution Module';
+   ID         := 'DAV Simple Convolution Module';
+   {$ENDIF}
+  end;
+end;
+
+procedure TSEConvolutionModule.CalculateFilterBlockFrequencyResponses;
+var
+  TempIR     : PDAVSingleFixedArray;
+  Blocks, sz : Integer;
+begin
+ // calculate frequency block count
+ CalculateFrequencyResponseBlockCount;
+
+ SetLength(FFilterFreqs, FFreqRespBlockCount);
+ GetMem(TempIR, FFFTSize * SizeOf(Single));
+ for Blocks := 0 to Length(FFilterFreqs) - 1 do
+  begin
+   ReallocMem(FFilterFreqs[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+
+   // calculate IR part size to be copied
+   sz := IRSize - Blocks * FFFTSizeHalf;
+   if sz > FFFTSizeHalf then sz := FFFTSizeHalf;
+
+   // build temporary IR part
+   move(FFilterKernel^[Blocks * FFFTSizeHalf], TempIR^[0], sz * SizeOf(Single));
+   FillChar(TempIR^[sz], (FFFTSize - sz) * SizeOf(Single), 0);
+
+   // perform FFT
+   {$IFDEF Use_IPPS}
+   FFft.PerformFFTCCS(FFilterFreqs[Blocks], TempIR);
+   {$ELSE}
+   FFft.PerformFFTPackedComplex(FFilterFreqs[Blocks], TempIR);
+   {$ENDIF}
+  end;
+end;
+
+procedure TSEConvolutionModule.IRBlockSizeChanged;
+var
+  i : Integer;
+begin
+ while FSemaphore > 0 do;
+ inc(FSemaphore);
+ try
+  i := CeilLog2(FFFTSize);
+  if not assigned(FFft)
+  {$IFDEF Use_IPPS}
+   then FFft := TFftReal2ComplexIPPSFloat32.Create(i)
+  {$ELSE}
+   then
+    begin
+     FFft := TFftReal2ComplexNativeFloat32.Create(i);
+     FFft.DataOrder := doPackedComplex;
+    end
+  {$ENDIF}
+   else FFft.Order := i;
+  FFft.AutoScaleType := astDivideInvByN;
+
+  FFFTSizeHalf    := FFFTSize div 2;
+  FFFTSizeQuarter := FFFTSize div 4;
+  FBlockPosition  := FFFTSizeHalf;
+  FRealLatency    := FFFTSizeHalf;
+  FOffsetSize     := FFFTSize - FFFTSizeHalf;
+
+  ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+  ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+  ReallocMem(FConvolvedTime, FFFTSize * SizeOf(Single));
+  ReallocMem(FBlockInBuffer32,  FFFTSize * SizeOf(Single));
+
+  FillChar(FSignalFreq^[0], FFFTSize * SizeOf(Single), 0);
+  FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+  FillChar(FConvolvedTime^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+  FillChar(FBlockInBuffer32^[0],  FFFTSize * SizeOf(Single), 0);
+
+  CalculatePaddedIRSize;
+  CalculateFilterBlockFrequencyResponses;
+ finally
+  Dec(FSemaphore);
+ end;
+end;
+
 procedure TSEConvolutionModule.PerformConvolution(SignalIn,
   SignalOut: PDAVSingleFixedArray);
 var
@@ -562,22 +598,6 @@ begin
 
  {$IFDEF Use_IPPS}
  FFft.PerformFFTCCS(FSignalFreq, SignalIn);
- for Block := 0 to FFreqRespBlockCount - 1 do
-  begin
-   // make a copy of the frequency respose
-   move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
-
-   ComplexMultiply(@FConvolved^[0], @FFilterFreqs[Block]^[0], Half);
-
-   FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
-
-   // copy and combine
-   MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
-  end;
-
- {$ELSE} {$IFDEF Use_CUDA}
-
- FFft.PerformFFT(FSignalFreq, SignalIn);
  for Block := 0 to FFreqRespBlockCount - 1 do
   begin
    // make a copy of the frequency respose
@@ -612,7 +632,128 @@ begin
    // copy and combine
    MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
   end;
- {$ENDIF}{$ENDIF}
+ {$ENDIF}
 end;
+
+{$IFDEF Use_CUDA}
+{ TSEConvolutionModuleCUDA }
+
+constructor TSEConvolutionModuleCUDA.Create(SEAudioMaster: TSE2audioMasterCallback;
+  Reserved: Pointer);
+var
+  VSTHostParams : TSECallVstHostParams;
+  VendorString  : string;
+begin
+ if CSepMagic <> 2 * $29A2A826
+  then raise Exception.Create(RCStrSynthEditOnly);
+ VSTHostParams.Opcode := 32;
+ VendorString := StrPas(PChar(CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams)));
+ if VendorString <> ''
+  then raise Exception.Create(RCStrSynthEditOnly);
+ inherited;
+end;
+
+destructor TSEConvolutionModuleCUDA.Destroy;
+begin
+ FreeAndNil(FFft);
+ inherited;
+end;
+
+class procedure TSEConvolutionModuleCUDA.GetModuleProperties(Properties : PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   Name       := 'Convolution Module (CUDA based)';
+   ID         := 'CUDA Convolution Module';
+  end;
+end;
+
+procedure TSEConvolutionModuleCUDA.CalculateFilterBlockFrequencyResponses;
+var
+  TempIR     : PDAVSingleFixedArray;
+  Blocks, sz : Integer;
+begin
+ // calculate frequency block count
+ CalculateFrequencyResponseBlockCount;
+
+ SetLength(FFilterFreqs, FFreqRespBlockCount);
+ GetMem(TempIR, FFFTSize * SizeOf(Single));
+ for Blocks := 0 to Length(FFilterFreqs) - 1 do
+  begin
+   ReallocMem(FFilterFreqs[Blocks], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+
+   // calculate IR part size to be copied
+   sz := IRSize - Blocks * FFFTSizeHalf;
+   if sz > FFFTSizeHalf then sz := FFFTSizeHalf;
+
+   // build temporary IR part
+   move(FFilterKernel^[Blocks * FFFTSizeHalf], TempIR^[0], sz * SizeOf(Single));
+   FillChar(TempIR^[sz], (FFFTSize - sz) * SizeOf(Single), 0);
+
+   // perform FFT
+   FFft.PerformFFT(FFilterFreqs[Blocks], TempIR);
+  end;
+end;
+
+procedure TSEConvolutionModuleCUDA.IRBlockSizeChanged;
+var
+  i : Integer;
+begin
+ while FSemaphore > 0 do;
+ inc(FSemaphore);
+ try
+  i := CeilLog2(FFFTSize);
+  if not assigned(FFft)
+   then FFft := TFftReal2ComplexCUDA32.Create(i)
+   else FFft.Order := i;
+  FFft.AutoScaleType := astDivideInvByN;
+
+  FFFTSizeHalf    := FFFTSize div 2;
+  FFFTSizeQuarter := FFFTSize div 4;
+  FBlockPosition  := FFFTSizeHalf;
+  FRealLatency    := FFFTSizeHalf;
+  FOffsetSize     := FFFTSize - FFFTSizeHalf;
+
+  ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+  ReallocMem(FConvolved, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+  ReallocMem(FConvolvedTime, FFFTSize * SizeOf(Single));
+  ReallocMem(FBlockInBuffer32,  FFFTSize * SizeOf(Single));
+
+  FillChar(FSignalFreq^[0], FFFTSize * SizeOf(Single), 0);
+  FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+  FillChar(FConvolvedTime^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+  FillChar(FBlockInBuffer32^[0],  FFFTSize * SizeOf(Single), 0);
+
+  CalculatePaddedIRSize;
+  CalculateFilterBlockFrequencyResponses;
+ finally
+  Dec(FSemaphore);
+ end;
+end;
+
+procedure TSEConvolutionModuleCUDA.PerformConvolution(SignalIn,
+  SignalOut: PDAVSingleFixedArray);
+var
+  Block  : Integer;
+  Half   : Integer;
+begin
+ Half := FFFTSizeHalf;
+
+ FFft.PerformFFT(FSignalFreq, SignalIn);
+ for Block := 0 to FFreqRespBlockCount - 1 do
+  begin
+   // make a copy of the frequency respose
+   move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+
+   ComplexMultiply(@FConvolved^[0], @FFilterFreqs[Block]^[0], Half);
+
+   FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FConvolved), FConvolvedTime);
+
+   // copy and combine
+   MixBuffers_FPU(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
+  end;
+end;
+{$ENDIF}
 
 end.

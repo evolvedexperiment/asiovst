@@ -188,7 +188,7 @@ type
     procedure TimerTimer(Sender: TObject);
     procedure PlotBoxPaint(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+//    FBackgrounBitmap : TBitmap;
   public
     procedure UpdateGain(const Index: Integer);
     procedure UpdateBandwidth(const Index: Integer);
@@ -318,6 +318,7 @@ begin
   FreeAndNil(PngBmp);
  end;
 
+(*
  // Create Background Image
  FBackgrounBitmap := TBitmap.Create;
  with FBackgrounBitmap do
@@ -341,6 +342,7 @@ begin
       end;
     end;
   end;
+*)
  PlotBox.ControlStyle   := PlotBox.ControlStyle + [csOpaque];
  ShapeInfo.ControlStyle := ShapeInfo.ControlStyle + [csOpaque];
 end;

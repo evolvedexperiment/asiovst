@@ -205,7 +205,7 @@ end;
 // describe the pins (plugs)
 function TSEPhaserStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := GetPinProperties(Index, Properties);
+ result := inherited GetPinProperties(Index, Properties);
  case TSEPhaserPins(index) of
   pinDepth:
    with Properties^ do
@@ -296,7 +296,7 @@ end;
 function TSEPhaserControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := GetPinProperties(Index, Properties);
+ result := inherited GetPinProperties(Index, Properties);
  if TSEPhaserPins(index) in [pinDepth..pinRate]
   then with Properties^ do Direction := drIn;
 end;

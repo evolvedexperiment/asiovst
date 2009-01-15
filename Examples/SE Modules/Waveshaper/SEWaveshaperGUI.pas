@@ -39,7 +39,7 @@ type
     procedure GuiPinValueChange(CurrentPin: TSeGuiPin); override;
   public
     constructor Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer); override;
-    procedure Initialise(LoadedFromFile: Boolean); override;
+    procedure Initialise(const LoadedFromFile: Boolean); override;
     class procedure UpdateNodes(FNodes: PPoints; var AValues: TSeSdkString);
   end;
 
@@ -96,7 +96,7 @@ begin
    end;
 end;
 
-procedure TSEWaveshaperGui.Initialise(LoadedFromFile: Boolean);
+procedure TSEWaveshaperGui.Initialise(const LoadedFromFile: Boolean);
 begin
  inherited Initialise(LoadedFromFile);
  OnValueChanged; // initial value
@@ -129,7 +129,7 @@ end;
 
 procedure TSEWaveshaperGui.SetValueS(AString: TSeSdkString);
 begin
-  Pin[pinShape].setValueText(AString);
+ Pin[pinShape].SetValueText(AString);
 end;
 
 function TSEWaveshaperGui.DefaultValue: TSeSdkString;
@@ -294,7 +294,7 @@ begin
  Mid.y     := CtlHeight div 2;
 
  // Fill in solid background black
- BackgroundBrush := CreateSolidBrush( RGB(0,0,0) );
+ BackgroundBrush := CreateSolidBrush(RGB(0, 0, 0));
 
  Rct.top    := 0;
  Rct.left   := 0;
@@ -339,32 +339,32 @@ begin
    end;
 
   // display drag node co-ords
-    if FDragNode > -1 then
-     begin
-      FillChar(LgFnt, SizeOf(LOGFONT), 0);   // Clear out structure.
+  if FDragNode > -1 then
+   begin
+    FillChar(LgFnt, SizeOf(LOGFONT), 0);   // Clear out structure.
 
-      StrCopy(LgFnt.lfFaceName, 'Terminal');    // face name
-      LgFnt.lfHeight := -FontHeight;
+    StrCopy(LgFnt.lfFaceName, 'Terminal');    // face name
+    LgFnt.lfHeight := -FontHeight;
 
-      Font := CreateFontIndirect(&LgFnt);
-      OldFont := SelectObject( hDC, Font );
+    Font := CreateFontIndirect(&LgFnt);
+    OldFont := SelectObject( hDC, Font );
 
-      SetTextColor( hDC, RGB(0,250,0) );
-      SetBkMode( hDC, TRANSPARENT );
-      SetTextAlign( hDC, TA_LEFT );
+    SetTextColor( hDC, RGB(0,250,0) );
+    SetBkMode( hDC, TRANSPARENT );
+    SetTextAlign( hDC, TA_LEFT );
 
-      pt := FNodes[FDragNode];
-      dx := pt.x * 0.1 - 5.0;
-      dy := 5.0 - pt.y * 0.1;
-      txt := FloatToStrF(dx, ffFixed, 3, 1) + ', ' +
-             FloatToStrF(dy, ffFixed, 3, 1);
+    pt := FNodes[FDragNode];
+    dx := pt.x * 0.1 - 5.0;
+    dy := 5.0 - pt.y * 0.1;
+    txt := FloatToStrF(dx, ffFixed, 3, 1) + ', ' +
+           FloatToStrF(dy, ffFixed, 3, 1);
 
-      TextOut(hDC, 0, 0, @txt[1], Length(txt));
+    TextOut(hDC, 0, 0, @txt[1], Length(txt));
 
-      // cleanup
-      SelectObject(hDC, OldFont);
-      DeleteObject(Font);
-     end;
+    // cleanup
+    SelectObject(hDC, OldFont);
+    DeleteObject(Font);
+   end;
 
   // cleanup
   SelectObject(hDC, OldPen);
@@ -401,50 +401,21 @@ end;
 procedure TSEWaveshaperGui.GuiLButtonDown(wi: PSEWndInfo; nFlags: Cardinal; Pnt: TSEPoint);
 var
   i         : Integer;
-  CtlWidth  : Integer;
-  CtlHeight : Integer;
   VertScale : Single;
   HorzScale : Single;
   pt        : TPoint;
   rct       : TRect;
 begin
-  (* testing pop up menu...
-  // get this module's window handle
-  HWND hw = (HWND) CallHost( seGuiHostGetWindowHandle, wi.context_handle );
-
-  RECT Rct;
-  // find it's location (so we know where to draw pop up menu)
-  GetWindowRect(hw, &Rct);
-
-  // create a pop-up menu
-  HMENU hm = CreatePopupMenu;
-
-  // add some items to it..
-  AppendMenu( hm, MF_STRING , 1, 'Cat' );
-  AppendMenu( hm, MF_STRING , 2, 'Dog' );
-
-  // show the menu
-  Integer selection = TrackPopupMenu( hm, TPM_LEFTALIGN|TPM_NONOTIFY|TPM_RETURNCMD,Rct.left ,Rct.top,0, hw, 0);
-
-  // clean up
-  DestroyMenu(hm);
-  return;
-*)
-  CtlWidth  := wi.width;
-  CtlHeight := wi.height;
-
-  VertScale     := CtlHeight * 0.01;
-  HorzScale     := CtlWidth * 0.01;
+  VertScale     := wi.height * 0.01;
+  HorzScale     := wi.width * 0.01;
 
   FDragNode := -1;
 
   for i := CWsNodeCount - 1 downto 0 do
    begin
     pt := Point(round(FNodes[i].x * HorzScale), round(FNodes[i].y * VertScale));
-    rct.top    := pt.y - CNodeSize div 2;
-    rct.bottom := pt.y + CNodeSize div 2;
-    rct.left   := pt.x - CNodeSize div 2;
-    rct.right  := pt.x + CNodeSize div 2;
+    rct := Rect(pt.x - CNodeSize div 2, pt.y - CNodeSize div 2,
+                pt.x + CNodeSize div 2, pt.y + CNodeSize div 2);
     if PtInRect(rct, Pnt) then
      begin
       FDragNode := i;
@@ -457,25 +428,20 @@ end;
 
 procedure TSEWaveshaperGui.GuiMouseMove(wi: PSEWndInfo; nFlags: Cardinal; Pnt: TSEPoint);
 var
-  i         : Integer;
-  CtlWidth  : Integer;
-  CtlHeight : Integer;
-
-  VertScale : Single;
-  HorzScale : Single;
-  Left      : Single;
-  Right     : Single;
-  pt        : TPoint;
-  v         : TSeSdkString;
+  i           : Integer;
+  VertScale   : Single;
+  HorzScale   : Single;
+  Left, Right : Single;
+//  x, y        : Single;
+  pt          : TPoint;
+  v           : TSeSdkString;
 begin
   if not GetCapture(wi) then exit;
 
   if FDragNode > -1 then
    begin
-    CtlWidth  := wi.width;
-    CtlHeight := wi.height;
-    VertScale     := CtlHeight * 0.01;
-    HorzScale     := CtlWidth * 0.01;
+    VertScale     := wi.height * 0.01;
+    HorzScale     := wi.width * 0.01;
 
     Left  := 0;
     Right := 100;
@@ -510,9 +476,9 @@ begin
 (*
       pt := FNodes[i];
       char pt[20];
-      double x = pt.x/10.0 - 5.0;
-      double y = 5.0 - pt.y/10.0;
-      sprintf(pt,'(%3.1f,%3.1f)',x,y);
+      x := pt.x * 0.1 - 5.0;
+      y := 5.0 - pt.y * 0.1;
+      sprintf(pt, '(%3.1f,%3.1f)', x, y);
       strcat(v, pt);
       assert(Length(v) < 280);
 *)

@@ -3,7 +3,7 @@ unit SEConvertModule;
 interface
 
 uses
-  DAV_Common, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DSPSineLFO;
+  DAV_Common, DAV_Complex, DAV_SECommon, DAV_SEModule;
 
 type
   TSEConvertModule = class(TSEModuleBase)

@@ -17,7 +17,8 @@ const
 type
   // plug datatype
   TSEPlugDataType = (dtNone = -1, dtEnum, dtText, dtMidi2, dtDouble, dtBoolean,
-       dtFSample, dtSingle, dtVstParam, dtInteger, dtBlob, dtExperimental);
+       dtFSample, dtSingle, dtVstParam, dtInteger, dtBlob, dtExperimental,
+       dtFilterReference = $666);
 
   // plug direction (use drNone in order to create a 32bit type)
   TSEDirection = (drIn = 0, drOut, drContainerIO, drParameter,

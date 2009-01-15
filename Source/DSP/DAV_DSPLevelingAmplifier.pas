@@ -98,7 +98,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Common, DAV_Approximations;
 
 const 
   Harms : array [0..3] of Single = (1.4092750123e-07, -7.5166615806e-07,

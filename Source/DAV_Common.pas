@@ -94,85 +94,78 @@ type
     NoteOffVelocity : Byte;
   end;
 
-  {$IFNDEF FPC}
-  function GetApplicationFilename: string; {$IFDEF useinlining} inline; {$ENDIF}
-  function GetApplicationDirectory: string; {$IFDEF useinlining} inline; {$ENDIF}
-  procedure SetMatrixLength(Matrix : TDAVDoubleDynMatrix; Size : TPoint); overload;
-  procedure SetMatrixLength(Matrix : TDAVSingleDynMatrix; Size : TPoint); overload;
-  {$ENDIF}
+
+  { Byte Ordering }
+
+  function SWAP_16(value: SmallInt): SmallInt;
+  function SWAP_32(value: LongInt): LongInt;
+  function SWAP_64(value: Int64): Int64;
 
   function SwapLong(var Value): LongInt;
   procedure FlipWord(var Value); overload;
   procedure FlipLong(var Value); overload;
   procedure FlipExtended(var Value : Extended); overload;
 
-  function SWAP_32(value: LongInt): LongInt;
-  function SWAP_16(value: SmallInt): SmallInt;
-  function SWAP_64(value: Int64): Int64;
 
-  function ms2smp(ms, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function smp2ms(smp, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function Sync2Smp(SyncFactor, bpm, SampleRate: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
-  function Factorial(Order : Integer) : Double;
-  function f_Limit(v: Single; l: Single = -1; u: Single = 1): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Limit(v: Double; l: Double = -1; u: Double = 1): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Clip(x, l, h: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Cliplo(x, l: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Cliphi(x, h: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function dB_to_Amp(g: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function Amp_to_dB(v: Single): Single; overload;
+  { Convert }
+
+  function ms2Samples(const ms, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function Samples2ms(const Samples, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
+  function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single; {$IFDEF useinlining} inline; {$ENDIF}
+
+  // dB stuff
+  function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function dB_to_Amp(const Value: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function Amp_to_dB(const Value: Single): Single; overload;
+  function Amp_to_dB(const Value: Double): Double; overload;
   {$IFNDEF FPC}
-  procedure Amp_to_dB(var v: TDAV4SingleArray); overload;
+  procedure Amp_to_dB(var v: TDAV4SingleArray); overload; // TODO: move to VectorMath!
   {$ENDIF}
-  function Smallest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function Largest(A, B: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function LimitAngle(const Angle: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Ln2(const f: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Floorln2(const f: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Arctan(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Arctan(const Value: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Frac(Sample: Single): Single; overload;
-  function f_Frac(Sample: Double): Double; overload;
-  procedure f_Abs(var f: Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
-  procedure f_Abs(var f: Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
-  procedure f_Abs(var f: TDAV4SingleArray); overload;
-  function f_Mod(const Arg1, Arg2: Single): Single;
 
-  {$IFNDEF FPC}
-  function f_Int(Sample: Single): Single; overload;
-  function f_Int(Sample: Double): Double; overload;
-  function f_Trunc(Sample: Single): Integer; overload;
-  function f_Trunc(Sample: Double): Integer; overload;
-  procedure f_Trunc(Input: PSingle; Output:PInteger; SampleFrames: Integer); overload;
-  function f_Round(Sample: Single): Integer; overload;
-  function f_Round(Sample: Double): Integer; overload;
-
-  function f_Exp(const x: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-
-  function f_Neg(f: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Root(i: Single; n: Integer): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_IntPower(i: Single; n: Integer): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Power(base, exp: Double) : Double; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Log2Laurent(val: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Log2Continous5(val: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Log2MinError5(val: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Sin(const Angle: Single): Single; overload;
-  function f_Sin(const Angle: Double): Double; overload;
-  function f_Cos(const Angle: Single): Single; overload;
-  function f_Cos(const Angle: Double): Double; overload;
-  function f_Sgn(f: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
-  function f_Min(const A, B: Single) : Single;
-  function f_Max(const A, B: Single) : Single;
-  function f_ArcTan2(const Y, X: Extended): Extended;
-  function f_Tan(const X: Extended): Extended;
-  function f_CoTan(const X: Extended): Extended;
-  function f_Log10(const X: Extended): Extended;
-
-  {$ENDIF}
   // scale logarithmically from 20 Hz to 20 kHz
-  function FreqLinearToLog(Value: Single): Single;
-  function FreqLogToLinear(Value: Single): Single;
+  function FreqLinearToLog(const Value: Single): Single; overload;
+  function FreqLinearToLog(const Value: Double): Double; overload;
+  function FreqLogToLinear(const Value: Single): Single; overload;
+  function FreqLogToLinear(const Value: Double): Double; overload;
+
+
+  { Limit & Clip, Min & Max }
+
+  function Limit(const Value: Single; Lower: Single = -1; Upper: Single = 1): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function Limit(const Value: Double; Lower: Double = -1; Upper: Double = 1): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function BranchlessClip(const Value, Lower, Upper: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function BranchlessClip(const Value, Lower, Upper: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function BranchlessClipLower(Value: Single; const Lower: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function BranchlessClipLower(Value: Double; const Lower: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function BranchlessClipUpper(Value: Single; const Upper: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function BranchlessClipUpper(Value: Double; const Upper: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function Smallest(const A, B: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function Smallest(const A, B: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function Largest(const A, B: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function Largest(const A, B: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function LimitAngle(const Angle: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function LimitAngle(const Angle: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+
+
+  function Factorial(const Order : Integer) : Double;
+  procedure FastNegative(var Value: Single); overload;
+  function FastFractional(const Value: Single): Single; overload;
+  function FastFractional(const Value: Double): Double; overload;
+  procedure FastAbs(var Value: Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
+  procedure FastAbs(var Value: Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
+  procedure FastAbs(var Value: TDAV4SingleArray); overload;
+  function FastMod(const Arg1, Arg2: Single): Single;
+
+  {$IFNDEF FPC}
+  function FastInt(Sample: Single): Single; overload;
+  function FastInt(Sample: Double): Double; overload;
+  function FastTrunc(const Value: Single): Integer; overload;
+  function FastTrunc(const Value: Double): Integer; overload;
+  procedure FastTrunc(Input: PSingle; Output:PInteger; SampleFrames: Integer); overload;
+  function FastRound(Sample: Single): Integer; overload;
+  function FastRound(Sample: Double): Integer; overload;
+  {$ENDIF}
 
   procedure GetSinCos(const Frequency: Double; var SinValue, CosValue : Double); overload;
   procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended); overload;
@@ -189,47 +182,33 @@ type
   function OnOff(const Value: Single): Boolean;
   function unDenormalize(const Value: Single): Single;
 
-  function FastTanhOpt3(Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt4(Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt5(Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt6(Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt7(Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt3(Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt4(Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt5(Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt6(Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt7(Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-
-  function FastTanhOpt3asm(Input: Single): Single; assembler; overload;
-  function FastTanhOpt4asm(Input: Single): Single; assembler; overload;
-  function FastTanhOpt5asm(Input: Single): Single; assembler; overload;
-  function FastTanhOpt6asm(Input: Single): Single; assembler; overload;
-  function FastTanhOpt7asm(Input: Single): Single; assembler; overload;
-  function FastTanhOpt3asm(Input: Double): Double; assembler; overload;
-  function FastTanhOpt4asm(Input: Double): Double; assembler; overload;
-  function FastTanhOpt5asm(Input: Double): Double; assembler; overload;
-  function FastTanhOpt6asm(Input: Double): Double; assembler; overload;
-  function FastTanhOpt7asm(Input: Double): Double; assembler; overload;
-
-  function Tanh2a(Input: Single): Single;
-  function Tanh2b(Input: Single): Single;
-  function Tanh2c(Input: Single): Single;
-  function Tanh2d(Input: Single): Single;
   function Sigmoid(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function Sigmoid(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function Sinc(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function Sinc(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+
+  {$IFDEF DELPHI5}
+  function Sign(const AValue: Double): Double;
+  {$ENDIF}
+
+  { String Stuff & Messages }
+
   {$IFNDEF FPC}
+  function GetApplicationFilename: string; {$IFDEF useinlining} inline; {$ENDIF}
+  function GetApplicationDirectory: string; {$IFDEF useinlining} inline; {$ENDIF}
+
   procedure Msg(b: Boolean); overload;
   procedure Msg(m: string; m2: string = ''); overload;
   procedure Msg(i: Integer); overload;
   procedure Msg(s: Single); overload;
   procedure Msg(m: string; i: Integer); overload;
 
-  function FloatWithUnit(f: Double):string;
+  function FloatWithUnit(const Value: Double):string;
   function SplitString(S: String; Delimiter: Char): TStrArray;
   function MakeGoodFileName(s: string): string;
   {$ENDIF}
+
+  { Block Routines }
 
   function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
   function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
@@ -239,10 +218,6 @@ type
   procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
   procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames:Integer);
   procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames:Integer);
-
-  {$IFDEF DELPHI5}
-  function Sign(const AValue: Double): Double;
-  {$ENDIF}
 
 var
   ln10, ln2, ln22, ln2Rez : Double;
@@ -271,199 +246,191 @@ implementation
 uses
   Math, SysUtils;
 
-{$IFNDEF FPC}
-procedure SetMatrixLength(Matrix : TDAVDoubleDynMatrix; Size : TPoint);
-var i : Integer;
-begin
- SetLength(Matrix,Size.X);
- for i:=0 to Size.X-1
-  do SetLength(Matrix[i],Size.Y);
-end;
+{ Byte Ordering }
 
-procedure SetMatrixLength(Matrix : TDAVSingleDynMatrix; Size : TPoint);
-var i : Integer;
-begin
- SetLength(Matrix,Size.X);
- for i:=0 to Size.X-1
-  do SetLength(Matrix[i],Size.Y);
-end;
-{$ENDIF}
+type
+  T16Bit = record
+    case integer of
+      0 :  (v: SmallInt);
+      1 :  (b: array[0..1] of byte);
+  end;
 
-{ Math }
+  T32Bit = record
+    case integer of
+      0 :  (v: LongInt);
+      1 :  (b: array[0..3] of byte);
+  end;
 
-function Factorial(Order : Integer) : Double;
-var i : Integer;
+  T64Bit = record
+    case integer of
+      0 :  (v: Int64);
+      1 :  (b: array[0..7] of byte);
+  end;
+
+function SWAP_16(Value: SmallInt): SmallInt;
+var
+  t: byte;
 begin
- if Order = 0
-  then result := 1
-  else
+  with T16Bit(value) do
    begin
-    result := 1;
-    for i := 2 to Order
-     do result := result * i;
+    t := b[0];
+    b[0] := b[1];
+    b[1] := t;
+    Result := v;
    end;
 end;
 
-// Limit a value to be l<=v<=u
-function f_Limit(v: Single; l: Single = -1; u: Single = 1): Single;
+function SWAP_32(Value: LongInt): LongInt;
+var
+  t: byte;
 begin
- if v < l then Result := l else
- if v > u then Result := u else Result := v;
+ with T32Bit(value) do
+  begin
+   t := b[0];
+   b[0] := b[3];
+   b[3] := t;
+   t := b[1];
+   b[1] := b[2];
+   b[2] := t;
+   Result := v;
+  end;
 end;
 
-// Limit a value to be l<=v<=u
-function f_Limit(v: Double; l: Double = -1; u: Double = 1): Double;
+function SWAP_64(Value: Int64): Int64;
+var
+   t: byte;
 begin
- if v < l then Result := l else
- if v > u then Result := u else Result := v;
+ with T64Bit(value) do
+  begin
+   t := b[0];
+   b[0] := b[7];
+   b[7] := t;
+   t := b[1];
+   b[1] := b[6];
+   b[6] := t;
+   t := b[2];
+   b[2] := b[5];
+   b[5] := t;
+   t := b[3];
+   b[3] := b[4];
+   b[4] := t;
+   Result := v;
+  end;
+end;
+
+function SwapLong(var Value): LongInt;
+var
+  t : Integer;
+type
+  X = array [0..1] of word;
+begin
+ T := Swap(X(Value)[1]);
+ X(Value)[1] := Swap(X(Value)[0]);
+ X(Value)[0] := T;
+ result := t;
+end;
+
+procedure FlipLong(var Value); overload;
+var
+  VA   : array [0..3] of Byte absolute Value;
+  temp : Byte;
+begin
+  temp  := VA[0];
+  VA[0] := VA[3];
+  VA[3] := temp;
+  temp  := VA[1];
+  VA[1] := VA[2];
+  VA[2] := temp;
+end;
+
+procedure FlipWord(var Value);
+var
+  VA   : array [0..1] of Byte absolute Value;
+  temp : Byte;
+begin
+  temp  := VA[0];
+  VA[0] := VA[1];
+  VA[1] := temp;
+end;
+
+procedure FlipExtended(var Value : Extended); overload;
+var
+  VA   : array [0..9] of Byte absolute Value;
+  temp : Byte;
+begin
+ temp := VA[0]; VA[0] := VA[9]; VA[9] := temp;
+ temp := VA[1]; VA[1] := VA[8]; VA[8] := temp;
+ temp := VA[2]; VA[2] := VA[7]; VA[7] := temp;
+ temp := VA[3]; VA[3] := VA[6]; VA[6] := temp;
+ temp := VA[4]; VA[4] := VA[5]; VA[5] := temp;
+end;
+
+{ Convert }
+
+function ms2Samples(const ms, SampleRate: Single): Single;
+begin
+ Result := ms * SampleRate * 0.001;
+end;
+
+function Samples2ms(const Samples, SampleRate: Single): Single;
+begin
+ Result := Samples * 1000 / SampleRate;
+end;
+
+function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer;
+begin
+ Result := Round(SyncFactor * SampleRate * 60 / BPM);
+end;
+
+function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single;
+begin
+ Result := BaseFactor;
+ if Dotted then Result := Result * 1.5;
+ if Triads then Result := Result / 3;
 end;
 
 // Convert a value in dB's to a linear amplitude
-function dB_to_Amp(g: Single): Single;
+function dB_to_Amp(const Value: Single): Single;
 begin
- if (g > -300.0)
-  then Result := exp(g * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
+ if (Value > -300.0)
+  then Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
   else Result := 0;
 end;
 
-{$IFNDEF FPC}
-{$WARNINGS OFF}
-function f_ArcTan2(const Y, X: Extended): Extended;
-{$IFDEF PUREPASCAL}
+// Convert a value in dB's to a linear amplitude
+function dB_to_Amp(const Value: Double): Double;
 begin
- result := ArcTan2(Y,X);
-{$ELSE}
-asm
- fld Y
- fld X
- fpatan
-{$ENDIF}
+ if (Value > -300.0)
+  then Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
+  else Result := 0;
 end;
 
-function f_Tan(const X: Extended): Extended;
+function Amp_to_dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- result := Tan(X);
-{$ELSE}
-asm
- fld X
- fptan
- fstp st(0)
-{$ENDIF}
-end;
-
-function f_CoTan(const X: Extended): Extended;
-{$IFDEF PUREPASCAL}
-begin
- result := CoTan(X);
-{$ELSE}
-asm
- fld X
- fptan
- fdivrp
-{$ENDIF}
-end;
-
-function f_Log10(const X: Extended): Extended;
-{$IFDEF PUREPASCAL}
-begin
- result := Log10(X);
+ result := Twenty * Log10(Value);
 {$ELSE}
 asm
  fldlg2
- fld x
- fyl2x
-{$ENDIF}
-end;
-{$ENDIF}
-
-function Smallest(A, B: Single): Single;
-begin
- if A < B
-  then Result := A
-  else Result := B;
-end;
-
-function Largest(A, B: Single): Single;
-begin
- if A > B
-  then Result := A
-  else Result := B;
-end;
-
-function LimitAngle(const Angle: Single): Single;
-begin
- Result := Angle;
- while Result <    0 do Result := Result + 360;
- while Result >= 360 do Result := Result - 360;
-end;
-
-function Amp_to_dB(v: Single): Single;
-{$IFDEF PUREPASCAL}
-begin
- result := Twenty * Log10(v);
-{$ELSE}
-asm
- fldlg2
- fld v
+ fld Value
  fyl2x
  fmul CTwenty64.Double
 {$ENDIF}
 end;
 
-function f_Frac(Sample: Single): Single;
+function Amp_to_dB(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- result:=Sample - Round(Sample - 0.5);
+ result := Twenty * Log10(Value);
 {$ELSE}
-var i : Integer;
 asm
- fld Sample.Single
- fld Sample.Single
- fsub CHalf64
- frndint
- fsubp
+ fldlg2
+ fld Value
+ fyl2x
+ fmul CTwenty64.Double
 {$ENDIF}
 end;
 
-function f_Frac(Sample: Double): Double;
-{$IFDEF PUREPASCAL}
-begin
- result := Sample - Round(Sample - 0.5);
-{$ELSE}
-var i : Integer;
-asm
- fld Sample.Double
- fld Sample.Double
- fsub CHalf64
- frndint
- fsubp
-{$ENDIF}
-end;
-
-procedure f_Abs(var f: Single);
-var
-  i : Integer absolute f;
-begin
- i := i and $7FFFFFFF;
-end;
-
-procedure f_Abs(var f: Double);
-var
-  i : array [0..1] of Integer absolute f;
-begin
- i[0] := i[0] and $7FFFFFFF;
-end;
-
-function f_mod(const Arg1, Arg2: Single): Single;
-var
-  Norm : Single;
-begin
- Norm := Arg1 / Arg2;
- result := (Norm - round(Norm - 0.5)) * Arg2
-end;
-
-{$IFNDEF FPC}
 procedure Amp_to_dB(var v: TDAV4SingleArray);
 {$IFDEF PUREPASCAL}
 begin
@@ -496,240 +463,252 @@ asm
 {$ENDIF}
 end;
 
-function f_Trunc(Sample: Single): Integer;
+// scale logarithmicly from 20 Hz to 20 kHz
+function FreqLinearToLog(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Sample - 0.5);
+ Result := (CTwenty32 * Exp(value * 6.907755279));
 {$ELSE}
+const
+  fltl2: Single = 6.907755279;
 asm
- fld Sample.Single
- fsub CHalf64
- fistp Result.Integer
-{$ENDIF}
-end;
-
-function f_Trunc(Sample:Double):Integer;
-{$IFDEF PUREPASCAL}
-begin
- result := Round(Sample - 0.5);
-{$ELSE}
-asm
- fld Sample.Double
- fsub CHalf64
- fistp Result.Integer
-{$ENDIF}
-end;
-
-procedure f_Trunc(Input: PSingle; Output: PInteger; SampleFrames: Integer);
-{$IFDEF PUREPASCAL}
-var
-  i : Integer;
-begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   Output^ := Round(Input^ - 0.5);
-   inc(Output);
-   inc(Input);
-  end;
-{$ELSE}
-asm
- @Start:
- fld [eax].Single
- fsub CHalf64
- fistp [edx].Integer
- add eax,4
- add edx,4
- loop    @Start
-{$ENDIF}
-end;
-
-function f_Int(Sample: Single): Single;
-{$IFDEF PUREPASCAL}
-begin
- result := Round(Sample - 0.5);
-{$ELSE}
-asm
- fld Sample.Single
- fsub CHalf64
+ fld     Value.Single
+ fmul    fltl2
+ fldl2e
+ fmul
+ fld     st(0)
  frndint
+ fsub    st(1), st
+ fxch    st(1)
+ f2xm1
+ fld1
+ fadd
+ fscale
+ fstp    st(1)
+ fmul CTwenty64.Double
 {$ENDIF}
 end;
 
-function f_Int(Sample: Double): Double;
+function FreqLinearToLog(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Sample - 0.5);
+ Result := (CTwenty64 * Exp(value * 6.907755279));
 {$ELSE}
+const
+  fltl2: Double = 6.907755279;
 asm
- fld Sample.Double
- fsub CHalf64
+ fld     Value.Double
+ fmul    fltl2
+ fldl2e
+ fmul
+ fld     st(0)
  frndint
+ fsub    st(1), st
+ fxch    st(1)
+ f2xm1
+ fld1
+ fadd
+ fscale
+ fstp    st(1)
+ fmul CTwenty64.Double
 {$ENDIF}
 end;
 
-function f_Round(Sample: Single): Integer;
+function FreqLogToLinear(const Value: Single): Single;
+const
+  fltl1 : Single = 0.05;
+  fltl2 : Single = 1.44764826019E-1;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Sample);
+ Result := ln(value * fltl1) * fltl2;
 {$ELSE}
 asm
- fld Sample.Single
- frndint
- fistp Result.Integer
-{$ENDIF}
-end;
-
-function f_Round(Sample: Double): Integer;
-{$IFDEF PUREPASCAL}
-begin
- result := Round(Sample);
-{$ELSE}
-asm
- fld Sample.Double
- frndint
- fistp Result.Integer
+ fldln2
+ fld Value.Single
+ fmul fltl1
+ fyl2x
+ fmul fltl2
 {$ENDIF}
 end;   
 
-function f_Exp(const x: Single): Single;
-begin
- Result := Exp(x * ln2);
-end;
-
-function f_Sin(const Angle: Single): Single;
+function FreqLogToLinear(const Value: Double): Double;
 const
-  sin1 : Double = 7.61e-03;
-  sin2 : Double = -1.6605e-01;
+  fltl1 : Double = 0.05;
+  fltl2 : Double = 1.44764826019E-1;
 {$IFDEF PUREPASCAL}
-var Asqr : Double;
 begin
- Asqr   := sqr(Angle);
- result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Angle;
+ Result := ln(value * fltl1) * fltl2;
 {$ELSE}
 asm
- fld Angle.Single
- fmul Angle.Single
- fld sin1.Double
- fmul st(0),st(1)
- fld sin2.Double
- faddp st(1),st(0)
- fmulp st(1),st(0)
- fld1
- faddp
- fmul Angle
+ fldln2
+ fld Value.Double
+ fmul fltl1
+ fyl2x
+ fmul fltl2
 {$ENDIF}
 end;
 
-function f_Sin(const Angle: Double): Double;
-const
-  sin1 : Double = 7.61e-03;
-  sin2 : Double = -1.6605e-01;
-{$IFDEF PUREPASCAL}
-var Asqr : Double;
+
+{ Limit & Clip, Min & Max }
+
+// Limit a Value to be Lower <= Value <= Upper
+function Limit(const Value: Single; Lower: Single = -1; Upper: Single = 1): Single;
 begin
- Asqr   := sqr(Angle);
- result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Angle;
+ if Value < Lower then Result := Lower else
+ if Value > Upper then Result := Upper else Result := Value;
+end;
+
+// Limit a Value to be Lower <= Value <= Upper
+function Limit(const Value: Double; Lower: Double = -1; Upper: Double = 1): Double;
+begin
+ if Value < Lower then Result := Lower else
+ if Value > Upper then Result := Upper else Result := Value;
+end;
+
+function BranchlessClip(const Value, Lower, Upper: Single): Single;
+begin
+ Result := (abs(Value - Lower) + (Lower + Upper) - abs(Value - Upper)) * 0.5;
+end;
+
+function BranchlessClip(const Value, Lower, Upper: Double): Double;
+begin
+ Result := (abs(Value - Lower) + (Lower + Upper) - abs(Value - Upper)) * 0.5;
+end;
+
+function BranchlessClipLower(Value: Single; const Lower: Single): Single;
+begin
+ Value := Value - Lower;
+ Result := (Value + abs(Value)) * 0.5 + Lower;
+end;
+
+function BranchlessClipLower(Value: Double; const Lower: Double): Double;
+begin
+ Value := Value - Lower;
+ Result := (Value + abs(Value)) * 0.5 + Lower;
+end;
+
+function BranchlessClipUpper(Value: Single; const Upper: Single): Single;
+begin
+ Value := Upper - Value;
+ Result := Upper -(Value + abs(Value)) * 0.5;
+end;
+
+function BranchlessClipUpper(Value: Double; const Upper: Double): Double;
+begin
+ Value := Upper - Value;
+ Result := Upper -(Value + abs(Value)) * 0.5;
+end;
+
+function Smallest(const A, B: Single): Single;
+begin
+ if A < B
+  then Result := A
+  else Result := B;
+end;
+
+function Smallest(const A, B: Double): Double;
+begin
+ if A < B
+  then Result := A
+  else Result := B;
+end;
+
+function Largest(const A, B: Single): Single;
+begin
+ if A > B
+  then Result := A
+  else Result := B;
+end;
+
+function Largest(const A, B: Double): Double;
+begin
+ if A > B
+  then Result := A
+  else Result := B;
+end;
+
+function LimitAngle(const Angle: Single): Single;
+begin
+ Result := Angle;
+ while Result <    0 do Result := Result + 360;
+ while Result >= 360 do Result := Result - 360;
+end;
+
+function LimitAngle(const Angle: Double): Double;
+begin
+ Result := Angle;
+ while Result <    0 do Result := Result + 360;
+ while Result >= 360 do Result := Result - 360;
+end;
+
+
+{ Math }
+
+function Factorial(const Order : Integer) : Double;
+var
+  i : Integer;
+begin
+ if Order = 0
+  then result := 1
+  else
+   begin
+    result := 1;
+    for i := 2 to Order
+     do result := result * i;
+   end;
+end;
+
+function FastFractional(const Value: Single): Single;
+{$IFDEF PUREPASCAL}
+begin
+ result := Value - Round(Value - 0.5);
 {$ELSE}
+var i : Integer;
 asm
- fld Angle.Double
- fmul Angle.Double
- fld sin1.Double
- fmul st(0),st(1)
- fld sin2.Double
- faddp st(1),st(0)
- fmulp st(1),st(0)
- fld1
- faddp
- fmul Angle
+ fld Value.Single
+ fld Value.Single
+ fsub CHalf64
+ frndint
+ fsubp
 {$ENDIF}
 end;
 
-function f_Cos(const Angle: Single): Single;
-const
-  sin1 : Double =  3.705e-02;
-  sin2 : Double = -4.967e-01;
+function FastFractional(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
-var
-  Asqr : Double;
 begin
- Asqr   := sqr(Angle);
- result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Angle;
+ result := Value - Round(Value - 0.5);
 {$ELSE}
+var i : Integer;
 asm
- fld Angle.Single
- fmul Angle.Single
- fld sin1.Double
- fmul st(0),st(1)
- fld sin2.Double
- faddp st(1),st(0)
- fmulp st(1),st(0)
- fld1
- faddp
- fmul Angle
+ fld Value.Double
+ fld Value.Double
+ fsub CHalf64
+ frndint
+ fsubp
 {$ENDIF}
 end;
 
-function f_Cos(const Angle: Double): Double;
-const
-  sin1 : Double =  3.705e-02;
-  sin2 : Double = -4.967e-01;
+procedure FastAbs(var Value: Single);
+var
+  i : Integer absolute Value;
+begin
+ i := i and $7FFFFFFF;
+end;
+
+procedure FastAbs(var Value: Double);
+var
+  i : array [0..1] of Integer absolute Value;
+begin
+ i[0] := i[0] and $7FFFFFFF;
+end;
+
+procedure FastAbs(var Value: TDAV4SingleArray); overload;
 {$IFDEF PUREPASCAL}
 var
-  Asqr : Double;
-begin
- Asqr   := sqr(Angle);
- result := (((Asqr * sin1) * Asqr + sin2 * Asqr) + 1) * Angle;
-{$ELSE}
-asm
- fld Angle.Double
- fmul Angle.Double
- fld sin1.Double
- fmul st(0),st(1)
- fld sin2.Double
- faddp st(1),st(0)
- fmulp st(1),st(0)
- fld1
- faddp
- fmul Angle
-{$ENDIF}
-end;
-
-{$ENDIF}
-
-function f_ArcTan(const Value: Single): Single;
-var
-  VSqr : Double;
-begin
- VSqr   := sqr(Value);
- Result := ((((0.0208351 * VSqr - 0.085133) * VSqr + 0.180141) * VSqr - 0.3302995) * VSqr + 0.999866) * Value;
-end;
-
-function f_ArcTan(const Value: Double): Double;
-var
-  VSqr : Double;
-begin
- VSqr   := sqr(Value);
- Result := ((((0.0208351 * VSqr - 0.085133) * VSqr + 0.180141) * VSqr - 0.3302995) * VSqr + 0.999866) * Value;
-end;
-
-function f_Ln2(const f: Single): Single;
-begin
- Result := (((Integer((@f)^) and $7F800000) shr 23) - $7F) +
-             (Integer((@f)^) and $007FFFFF) / $800000;
-end;
-
-function f_FloorLn2(const f: Single): Integer;
-begin
- Result := (((Integer((@f)^) and $7F800000) shr 23) - $7F);
-end;
-
-procedure f_Abs(var f: TDAV4SingleArray); overload;
-{$IFDEF PUREPASCAL}
-var
-  i0 : Integer absolute f[0];
-  i1 : Integer absolute f[0];
-  i2 : Integer absolute f[0];
-  i3 : Integer absolute f[0];
+  i0 : Integer absolute Value[0];
+  i1 : Integer absolute Value[1];
+  i2 : Integer absolute Value[2];
+  i3 : Integer absolute Value[3];
 begin
  i0 := i0 and $7FFFFFFF;
  i1 := i1 and $7FFFFFFF;
@@ -752,145 +731,124 @@ asm
 {$ENDIF}
 end;
 
-function f_Neg(f: Single): Single;
+procedure FastNegative(var Value: Single);
 var
-  i, j: Integer;
+  i : Integer absolute Value;
+const
+  CBitMask = $80000000;
 begin
- j := $80000000;
- i := Integer((@f)^) xor j;
- Result := Single((@i)^);
+ i := Cardinal((@Value)^) xor CBitMask;
+end;
+
+function FastMod(const Arg1, Arg2: Single): Single;
+var
+  Norm : Single;
+begin
+ Norm := Arg1 / Arg2;
+ result := (Norm - round(Norm - 0.5)) * Arg2
+end;
+
+function FastTrunc(const Value: Single): Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result := Round(Value - 0.5);
+{$ELSE}
+asm
+ fld Value.Single
+ fsub CHalf64
+ fistp Result.Integer
+{$ENDIF}
+end;
+
+function FastTrunc(const Value :Double):Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result := Round(Value - 0.5);
+{$ELSE}
+asm
+ fld Value.Double
+ fsub CHalf64
+ fistp Result.Integer
+{$ENDIF}
+end;
+
+procedure FastTrunc(Input: PSingle; Output: PInteger; SampleFrames: Integer);
+{$IFDEF PUREPASCAL}
+var
+  i : Integer;
+begin
+ for i := 0 to SampleFrames - 1 do
+  begin
+   Output^ := Round(Input^ - 0.5);
+   inc(Output);
+   inc(Input);
+  end;
+{$ELSE}
+asm
+ @Start:
+ fld [eax].Single
+ fsub CHalf64
+ fistp [edx].Integer
+ add eax,4
+ add edx,4
+ loop    @Start
+{$ENDIF}
+end;
+
+function FastInt(Sample: Single): Single;
+{$IFDEF PUREPASCAL}
+begin
+ result := Round(Sample - 0.5);
+{$ELSE}
+asm
+ fld Sample.Single
+ fsub CHalf64
+ frndint
+{$ENDIF}
+end;
+
+function FastInt(Sample: Double): Double;
+{$IFDEF PUREPASCAL}
+begin
+ result := Round(Sample - 0.5);
+{$ELSE}
+asm
+ fld Sample.Double
+ fsub CHalf64
+ frndint
+{$ENDIF}
+end;
+
+function FastRound(Sample: Single): Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result := Round(Sample);
+{$ELSE}
+asm
+ fld Sample.Single
+ frndint
+ fistp Result.Integer
+{$ENDIF}
+end;
+
+function FastRound(Sample: Double): Integer;
+{$IFDEF PUREPASCAL}
+begin
+ result := Round(Sample);
+{$ELSE}
+asm
+ fld Sample.Double
+ frndint
+ fistp Result.Integer
+{$ENDIF}
 end;
 
 {$IFNDEF FPC}
-function f_Sgn(f: Single): Integer;
+function FastSgn(f: Single): Integer;
 begin
  Result := 1 - ((Integer((@f)^) shr 31) shl 1);
 end;
 {$ENDIF}
-
-function f_Log2Laurent(val: Single): Single;
-var
-  log2 : Integer;
-  x    : Integer absolute val;
-begin
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- val := ((CMinusOneThird * val) + CTwo) * val + CMinusTwoThird;
- Result := val + log2;
-end;
-
-function f_Log2MinError5(val: Single): Single;
-var
-  log2 : Integer;
-  x    : Integer absolute val;
-begin
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- val := ((( - 8.18038640187952054E-2 *
-        val + 6.46216635143615381E-1) *
-        val - 2.12293700635511007) *
-        val + 4.07217052527789480) *
-        val - 1.51355930430330177;
- Result := val + log2;
-end;
-
-function f_Log2Continous5(val: Single): Single;
-var
-  log2 : Integer;
-  x    : Integer absolute val;
-begin
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- val := ((( - 8.21343513178931783E-2 *
-        val + 6.49732456739820052E-1) *
-        val - 2.13417801862571777) *
-        val + 4.08642207062728868) *
-        val - 1.51984215742349793;
- Result := val + log2;
-end;
-
-function f_IntPower(i: Single; n: Integer): Single;
-var
-  l : Integer;
-begin
- l := Integer((@i)^);
- l := (l - $3F800000) shl (n-1) + $3F800000;
- Result:=Single((@l)^);
-end;
-
-function f_Power(base, exp : Double): Double;
-begin
- Result := Power(base, exp);
-end;
-
-function f_Root(i: Single; n: Integer): Single;
-var
-  l : Integer;
-begin
- l := Integer((@i)^);
- l := (l - $3F800000) shr (n-1) + $3F800000;
- Result:=Single((@l)^);
-end;
-
-function f_Cliplo(x, l: Single): Single;
-begin
- x := x - l;
- Result := (x + abs(x)) * 0.5 + l;
-end;
-
-function f_Cliphi(x, h: Single):Single;
-begin
- x := h - x;
- Result := h -(x + abs(x)) * 0.5;
-end;
-
-function f_Clip(x, l, h: Single): Single;
-begin
- Result := (abs(x - l) + (l + h) - abs(x - h)) * 0.5;
-end;
-
-// scale logarithmicly from 20 Hz to 20 kHz
-function FreqLinearToLog(Value: Single): Single;
-{$IFDEF PUREPASCAL}
-begin
- Result := (Twenty * Exp(value * 6.907755279));
-{$ELSE}
-const
-  fltl2: Double = 6.907755279;
-asm
- FLD Value.Single
- FMUL fltl2
- FLDL2E              { y := x*log2e;      }
- FMUL
- FLD     ST(0)       { i := round(y);     }
- FRNDINT
- FSUB    ST(1), ST   { f := y - i;        }
- FXCH    ST(1)       { z := 2**f          }
- F2XM1
- FLD1
- FADD
- FSCALE              { result := z * 2**i }
- FSTP    ST(1)
- FMUL CTwenty64.Double
-{$ENDIF}
-end;
-
-function FreqLogToLinear(Value: Single): Single;
-const
-  fltl1 : Double = 0.05;
-  fltl2 : Double = 1.44764826019E-1;
-{$IFDEF PUREPASCAL}
-begin
- Result := ln(value * fltl1) * fltl2;
-{$ELSE}
-asm
- fldln2
- fld Value.Single
- fmul fltl1
- fyl2x
- fmul fltl2
-{$ENDIF}
-end;   
 
 procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended);
 {$IFDEF PUREPASCAL}
@@ -1035,22 +993,9 @@ end;
 
 { String Functions }
 
-{$IFNDEF FPC}
-procedure Msg(b: Boolean);
-begin if b then Msg('TRUE') else Msg('FALSE');end;
-procedure Msg(m: string; m2: string = '');
-begin MessageBox(0, PChar(m), PChar(m2), MB_OK); end;
-procedure Msg(i: Integer);
-begin MessageBox(0, PChar(IntToStr(i)), '', MB_OK); end;
-procedure Msg(s: Single);
-begin MessageBox(0, PChar(FloatToStrF(s, ffFixed, 3, 3)), '', MB_OK); end;
-procedure Msg(m: string; i:Integer);
-begin MessageBox(0, PChar(m + ' ' + inttostr(i)), '', MB_OK); end;
-{$WARNINGS ON}
-
 function GetApplicationFilename: string;
 var
-  s : array[0..1500] of char;
+  s : array[0..$7FF] of char;
 begin
  GetModuleFilename(hInstance, s, SizeOf(s));
  Result := StrPas(s);
@@ -1059,23 +1004,36 @@ end;
 
 function GetApplicationDirectory: string;
 var
-  s : array[0..1500] of char;
+  s : array[0..$7FF] of char;
 begin
- GetModuleFilename(hinstance, s, SizeOf(s));
+ GetModuleFilename(hInstance, s, SizeOf(s));
  Result := StrPas(s);
  Result := ExtractFileDir(Result);
 end;
 
-function FloatWithUnit(f: Double): string;
+{$IFNDEF FPC}
+procedure Msg(b: Boolean);
+begin if b then Msg('TRUE') else Msg('FALSE');end;
+procedure Msg(m: string; m2: string = '');
+begin MessageBox(0, PChar(m), PChar(m2), MB_OK); end;
+procedure Msg(i: Integer);
+begin Msg(IntToStr(i)); end;
+procedure Msg(s: Single);
+begin Msg(FloatToStrF(s, ffFixed, 3, 3)); end;
+procedure Msg(m: string; i:Integer);
+begin MessageBox(0, PChar(m + ' ' + IntToStr(i)), '', MB_OK); end;
+{$WARNINGS ON}
+
+function FloatWithUnit(const Value: Double): string;
 begin
- if f > 1 then result := FloatToStrF(f, ffFixed, 6, 3)+ 's' else
- if f > 1E-3 then result:=FloatToStrF(1E3 * f, ffFixed, 6, 3)+ 'ms' else
- if f > 1E-6
-  then result := FloatToStrF(1E6 * f, ffFixed, 6, 3)+ 'µs'
-  else result := FloatToStrF(1E9 * f, ffFixed, 6, 3)+ 'ns'
+ if Value > 1    then result := FloatToStrF(Value, ffFixed, 6, 3)+ 's' else
+ if Value > 1E-3 then result := FloatToStrF(1E3 * Value, ffFixed, 6, 3)+ 'ms' else
+ if Value > 1E-6
+  then result := FloatToStrF(1E6 * Value, ffFixed, 6, 3)+ 'µs'
+  else result := FloatToStrF(1E9 * Value, ffFixed, 6, 3)+ 'ns'
 end;
 
-function SplitString(S: String; Delimiter: char): TStrArray;
+function SplitString(S: String; Delimiter: Char): TStrArray;
 var
   C : Integer;
 begin
@@ -1100,145 +1058,6 @@ begin
 end;
 
 {$ENDIF}
-
-function Sync2Smp(SyncFactor, bpm, SampleRate: Single): Integer;
-begin
- Result := Round(SyncFactor * SampleRate * 60 / bpm);
-end;
-
-function ms2smp(ms, SampleRate: Single): Single;
-begin
- Result := ms * SampleRate * 0.001;
-end;
-
-function smp2ms(smp, SampleRate: Single): Single;
-begin
- Result := smp * 1000 / SampleRate;
-end;
-
-type
-  T16Bit = record
-    case integer of
-      0 :  (v: SmallInt);
-      1 :  (b: array[0..1] of byte);
-  end;
-
-  T32Bit = record
-    case integer of
-      0 :  (v: LongInt);
-      1 :  (b: array[0..3] of byte);
-  end;
-
-  T64Bit = record
-    case integer of
-      0 :  (v: Int64);
-      1 :  (b: array[0..7] of byte);
-  end;
-
-function SWAP_16(Value: SmallInt): SmallInt;
-var
-  t: byte;
-begin
-  with T16Bit(value) do
-   begin
-    t := b[0];
-    b[0] := b[1];
-    b[1] := t;
-    Result := v;
-   end;
-end;
-
-function SWAP_32(Value: LongInt): LongInt;
-var
-  t: byte;
-begin
- with T32Bit(value) do
-  begin
-   t := b[0];
-   b[0] := b[3];
-   b[3] := t;
-   t := b[1];
-   b[1] := b[2];
-   b[2] := t;
-   Result := v;
-  end;
-end;
-
-function SWAP_64(Value: Int64): Int64;
-var
-   t: byte;
-begin
- with T64Bit(value) do
-  begin
-   t := b[0];
-   b[0] := b[7];
-   b[7] := t;
-   t := b[1];
-   b[1] := b[6];
-   b[6] := t;
-   t := b[2];
-   b[2] := b[5];
-   b[5] := t;
-   t := b[3];
-   b[3] := b[4];
-   b[4] := t;
-   Result := v;
-  end;
-end;
-
-function SwapLong(var Value): LongInt;
-var
-  t : Integer;
-type
-  X = array [0..1] of word;
-begin
- T := Swap(X(Value)[1]);
- X(Value)[1] := Swap(X(Value)[0]);
- X(Value)[0] := T;
- result := t;
-end;
-
-procedure FlipLong(var Value); overload;
-var
-  VA   : array [0..3] of Byte absolute Value;
-  temp : Byte;
-begin
-  temp  := VA[0];
-  VA[0] := VA[3];
-  VA[3] := temp;
-  temp  := VA[1];
-  VA[1] := VA[2];
-  VA[2] := temp;
-end;
-
-procedure FlipWord(var Value);
-var
-  VA   : array [0..1] of Byte absolute Value;
-  temp : Byte;
-begin
-  temp  := VA[0];
-  VA[0] := VA[1];
-  VA[1] := temp;
-end;
-
-procedure FlipExtended(var Value : Extended); overload;
-var
-  VA   : array [0..9] of Byte absolute Value;
-  temp : Byte;
-begin
- temp := VA[0]; VA[0] := VA[9]; VA[9] := temp;
- temp := VA[1]; VA[1] := VA[8]; VA[8] := temp;
- temp := VA[2]; VA[2] := VA[7]; VA[7] := temp;
- temp := VA[3]; VA[3] := VA[6]; VA[6] := temp;
- temp := VA[4]; VA[4] := VA[5]; VA[5] := temp;
-end;
-
-function getSyncFactor(base_factor: Single; dotted, triads: boolean): Single;
-begin
- Result := base_factor;
- if dotted then Result := Result * 1.5;
- if triads then Result := Result / 3;
-end;
 
 // SINC Function
 function Sinc(const Input: Double): Double;
@@ -1326,426 +1145,6 @@ asm
 {$ENDIF}
 end;
 
-function FastTanhOpt3(Input: Single): Single;
-var
-  a, b : Double;
-begin
- a := abs(Input);
- b := 1.26175667589988239 + a *
-    (-0.54699348440059470 + a *
-    ( 2.66559097474027817));
- Result := (b * Input) / (b * a + 1);
-end;
-
-function FastTanhOpt4(Input: Single): Single;
-var
-  a, b : Double;
-begin
- a := abs(Input);
- b :=  0.89690305801668457 + a *
-     ( 1.89047619399687661 + a *
-     (-1.35205169119085666 + a *
-       1.74656303770202670));
- Result := (b * Input) / (b * a + 1);
-end;
-
-function FastTanhOpt5(Input: Single): Single;
-var
-  a, b : Double;
-begin
- a := abs(Input);
- b :=  1.03971379878158321 + a *
-     ( 0.54953758170495126 + a *
-     ( 2.13184139104070569 + a *
-     (-1.46060069227128242 + a *
-     ( 0.91996358346770157))));
- Result := (b * Input) / (b * a + 1);
-end;
-
-function FastTanhOpt6(Input: Single): Single;
-var
-  a, b : Double;
-begin
- a := abs(Input);
- b :=  0.98516470896867081 + a *
-     ( 1.21020234045009012 + a *
-     (-0.22720155259481389 + a *
-     ( 1.89719615102030725 + a *
-     (-1.07161642656874956 + a *
-     ( 0.40487405571569546)))));
- Result := (b * Input) / (b * a + 1);
-end;
-
-function FastTanhOpt7(Input: Single): Single;
-var
-  a, b : Double;
-begin
- a := abs(Input);
- b :=  1.00518193411912860 + a *
-     ( 0.91005085146116016 + a *
-     ( 1.14542500876429276 + a *
-     (-0.76509890972158046 + a *
-     ( 1.34808969964882519 + a *
-     (-0.60147655894944263 + a *
-     ( 0.15264109378548973))))));
- Result := (b * Input) / (b * a + 1);
-end;
-
-function FastTanhOpt3(Input: Double): Double;
-var
-  a, b : Double;
-begin
- a := abs(Input);
- b := 1.26175667589988239 + a *
-    (-0.54699348440059470 + a *
-    ( 2.66559097474027817));
- Result := (b * Input) / (b * a + 1);
-end;
-
-function FastTanhOpt4(Input: Double): Double;
-var
-  a, b : Double;
-begin
- a := abs(Input);
- b :=  0.89690305801668457 + a *
-     ( 1.89047619399687661 + a *
-     (-1.35205169119085666 + a *
-       1.74656303770202670));
- Result := (b * Input) / (b * a + 1);
-end;
-
-function FastTanhOpt5(Input: Double): Double;
-var
-  a, b : Double;
-begin
- a := abs(Input);
- b :=  1.03971379878158321 + a *
-     ( 0.54953758170495126 + a *
-     ( 2.13184139104070569 + a *
-     (-1.46060069227128242 + a *
-     ( 0.91996358346770157))));
- Result := (b * Input) / (b * a + 1);
-end;
-
-function FastTanhOpt6(Input: Double): Double;
-var
-  a, b : Double;
-begin
- a := abs(Input);
- b :=  0.98516470896867081 + a *
-     ( 1.21020234045009012 + a *
-     (-0.22720155259481389 + a *
-     ( 1.89719615102030725 + a *
-     (-1.07161642656874956 + a *
-     ( 0.40487405571569546)))));
- Result := (b * Input) / (b * a + 1);
-end;
-
-function FastTanhOpt7(Input: Double): Double;
-var
-  a, b : Double;
-begin
- a := abs(Input);
- b :=  1.00518193411912860 + a *
-     ( 0.91005085146116016 + a *
-     ( 1.14542500876429276 + a *
-     (-0.76509890972158046 + a *
-     ( 1.34808969964882519 + a *
-     (-0.60147655894944263 + a *
-     ( 0.15264109378548973))))));
- Result := (b * Input) / (b * a + 1);
-end;
-
-function FastTanhOpt3asm(Input: Single): Single; assembler;
-const
-  c0 : Double =  2.66559097474027817;
-  c1 : Double = -0.54699348440059470;
-  c2 : Double =  1.26175667589988239;
-asm
- fld Input.Single  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: b := c2 + a * (c1 + a * c0), a, Input
- fXch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
-end;
-
-function FastTanhOpt4asm(Input: Single): Single; assembler;
-const
-  c0 : Double =  1.74656303770202670;
-  c1 : Double = -1.35205169119085666;
-  c2 : Double =  1.89047619399687661;
-  c3 : Double =  0.89690305801668457;
-asm
- fld Input.Single  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: b := c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
-end;
-
-function FastTanhOpt5asm(Input: Single): Single; assembler;
-const
-  c0 : Double =  0.91996358346770157;
-  c1 : Double = -1.46060069227128242;
-  c2 : Double =  2.13184139104070569;
-  c3 : Double =  0.54953758170495126;
-  c4 : Double =  1.03971379878158321;
-asm
- fld Input.Single      // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
-end;
-
-function FastTanhOpt6asm(Input: Single): Single; assembler;
-const
-  c0 : Double =  0.40487405571569546;
-  c1 : Double = -1.07161642656874956;
-  c2 : Double =  1.89719615102030725;
-  c3 : Double = -0.22720155259481389;
-  c4 : Double =  1.21020234045009012;
-  c5 : Double =  0.98516470896867081;
-asm
- fld Input.Single  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fadd c5           // Stack: b := c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
-end;
-
-function FastTanhOpt7asm(Input: Single): Single; assembler;
-const
-  c0 : Double =  0.152641093785489734;
-  c1 : Double = -0.60147655894944263;
-  c2 : Double =  1.34808969964882519;
-  c3 : Double = -0.765098909721580456;
-  c4 : Double =  1.14542500876429276;
-  c5 : Double =  0.91005085146116016;
-  c6 : Double =  1.00518193411912860;
-asm
- fld Input.Single  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fadd c5           // Stack: c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fmul st(0), st(1) // Stack: a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
- fadd c6           // Stack: b := c6 + a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
- fxch st(2)        // exchange b and x, Stack: x, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
-end;
-
-function FastTanhOpt3asm(Input: Double): Double; assembler;
-const
-  c0 : Double =  2.66559097474027817;
-  c1 : Double = -0.54699348440059470;
-  c2 : Double =  1.26175667589988239;
-asm
- fld Input.Double  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: b := c2 + a * (c1 + a * c0), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
-end;
-
-function FastTanhOpt4asm(Input: Double): Double; assembler;
-const
-  c0 : Double =  1.74656303770202670;
-  c1 : Double = -1.35205169119085666;
-  c2 : Double =  1.89047619399687661;
-  c3 : Double =  0.89690305801668457;
-asm
- fld Input.Double      // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: b := c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
-end;
-
-function FastTanhOpt5asm(Input: Double): Double; assembler;
-const
-  c4 : Double =  0.91996358346770157;
-  c3 : Double = -1.46060069227128242;
-  c2 : Double =  2.13184139104070569;
-  c1 : Double =  0.54953758170495126;
-  c0 : Double =  1.03971379878158321;
-asm
- fld Input.Double  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
-end;
-
-function FastTanhOpt6asm(Input: Double): Double; assembler;
-const
-  c0 : Double =  0.40487405571569546;
-  c1 : Double = -1.07161642656874956;
-  c2 : Double =  1.89719615102030725;
-  c3 : Double = -0.22720155259481389;
-  c4 : Double =  1.21020234045009012;
-  c5 : Double =  0.98516470896867081;
-asm
- fld Input.Double  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fadd c5           // Stack: b := c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
-end;
-
-function FastTanhOpt7asm(Input: Double): Double; assembler;
-const
-  c0 : Double =  0.152641093785489734;
-  c1 : Double = -0.60147655894944263;
-  c2 : Double =  1.34808969964882519;
-  c3 : Double = -0.765098909721580456;
-  c4 : Double =  1.14542500876429276;
-  c5 : Double =  0.91005085146116016;
-  c6 : Double =  1.00518193411912860;
-asm
- fld Input.Double  // Load Input
- fld st(0)         // Copy Input
- fabs              // Stack: abs(Input), Input
- fld c0            // Load c0 as working value, abs(Input) => a
- fmul st(0), st(1) // Stack: a * c0, a, Input
- fadd c1           // Stack: c1 + a * c0, a, Input
- fmul st(0), st(1) // Stack: a * (c1 + a * c0), a, Input
- fadd c2           // Stack: c2 + a * (c1 + a * c0), a, Input
- fmul st(0), st(1) // Stack: a * (c2 + a * (c1 + a * c0)), a, Input
- fadd c3           // Stack: c3 + a * (c2 + a * (c1 + a * c0)), a, Input
- fmul st(0), st(1) // Stack: a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fadd c4           // Stack: b := c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))), a, Input
- fmul st(0), st(1) // Stack: a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fadd c5           // Stack: c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0)))), a, Input
- fmul st(0), st(1) // Stack: a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
- fadd c6           // Stack: b := c6 + a * (c5 + a * (c4 + a * (c3 + a * (c2 + a * (c1 + a * c0))))), a, Input
- fxch st(2)        // exchange b and Input, Stack: Input, a, b
- fmul st(0), st(2) // Stack: b * Input, a, b
- fxch st(2)        // exchange b * Input and Input, Stack: b, a, b * Input
- fmulp             // Stack: b * a, b * Input
- fld1              // Stack: 1, b * a, b * Input
- faddp             // Stack: 1 + b * a, b * Input
- fdivp             // Stack: (b * Input) / (1 + b * a)
-end;
-
 function Sigmoid(const Input: Single): Single;
 begin
  if (abs(Input) < 1)
@@ -1779,7 +1178,7 @@ end;
 {$ENDIF}
 
 {$IFNDEF FPC}
-function f_Min(const A, B: Single) : Single;
+function FastMin(const A, B: Single) : Single;
 {$IFDEF PUREPASCAL}
 begin
  if A > B
@@ -1795,7 +1194,7 @@ asm
 {$ENDIF}
 end;
 
-function f_Max(const A, B: Single) : Single;
+function FastMax(const A, B: Single) : Single;
 {$IFDEF PUREPASCAL}
 begin
  if A<B

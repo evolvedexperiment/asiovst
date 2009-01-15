@@ -4,6 +4,9 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$ALIGN ON}
+{$MINENUMSIZE 4}
+
 uses
   Windows, Classes, SysUtils, DAV_Common, DAV_SECommon;
 
@@ -142,7 +145,7 @@ type
       end;
     *)
     SEAudioMasterGetTotalPinCount,   // Total pins of all types
-    SEAudioMasterCallVstHost,        // Call VST Host direct (see se_call_vst_host_params struct)
+    SEAudioMasterCallVstHost,        // Call VST Host direct (see TSECallVstHostParams)
     SEAudioMasterResolveFilename,    // get full path from a short filename, (int pin_idx, float max_characters, Char *destination)
     SEAudioMasterSendStringToGui,    // Reserved for Experimental use (by Jef)
     SEAudioMasterGetModuleHandle,    // Reserved for Experimental use (by Jef)
@@ -244,6 +247,7 @@ type
   end;
 
   // fill in this structure when using Opcode SEAudioMasterCallVstHost
+  PSECallVstHostParams = ^TSECallVstHostParams;
   TSECallVstHostParams = record
     Opcode : Integer;
     Index  : Integer;

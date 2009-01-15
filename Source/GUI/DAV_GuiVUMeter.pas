@@ -15,13 +15,13 @@ type
     FVUMeterBitmap    : TBitmap;
     FNumGlyphs        : Integer;
     FLastGlyph        : Integer;
-    FPosition         : Integer;
+    FGlyphIndex       : Integer;
     FStitchKind       : TGuiStitchKind;
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetVUMeterBitmap(const Value: TBitmap);
     procedure SetNumGlyphs(const Value: Integer);
-    procedure SetPosition(Value: Integer);
+    procedure SetGlyphIndex(Value: Integer);
     procedure SetStitchKind(const Value: TGuiStitchKind);
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
@@ -33,7 +33,7 @@ type
     property Color;
 
     property AutoSize: Boolean read FAutoSize write SetAutoSize default False;
-    property Position: Integer read FPosition write SetPosition;
+    property GlyphIndex: Integer read FGlyphIndex write SetGlyphIndex;
     property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
     property VUMeterBitmap: TBitmap read FVUMeterBitmap write SetVUMeterBitmap;
     property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
@@ -45,7 +45,7 @@ type
     property Color;
     property NumGlyphs;
     property PopupMenu;
-    property Position;
+    property GlyphIndex;
     property StitchKind;
     property VUMeterBitmap;
   end;
@@ -59,7 +59,7 @@ implementation
 constructor TCustomGuiVUMeter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FPosition                  := 0;
+  FGlyphIndex                := 0;
   FNumGlyphs                 := 1;
   FLastGlyph                 := -1;
   FStitchKind                := skHorizontal;
@@ -94,30 +94,37 @@ var
   theRect : TRect;
   GlyphNr : Integer;
 begin
- if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
-  begin
-   GlyphNr := fPosition;
-   if (GlyphNr >= FNumGlyphs) then GlyphNr := FNumGlyphs - 1 else
-   if (GlyphNr < 0) then GlyphNr := 0;
-   if GlyphNr = FLastGlyph then Exit;
-   theRect := ClientRect;
+ if (Width <= 0) and (Height <= 0) then
+  with FBuffer.Canvas do
+   begin
+    Brush.Color := Self.Color;
+    FillRect(ClipRect);
+   end
+ else
+  with FBuffer.Canvas do
+   begin
+    GlyphNr := FGlyphIndex;
+    if (GlyphNr >= FNumGlyphs) then GlyphNr := FNumGlyphs - 1 else
+    if (GlyphNr < 0) then GlyphNr := 0;
+    if GlyphNr = FLastGlyph then Exit;
+    theRect := ClientRect;
 
-   if FStitchKind = skVertical then
-    begin
-     theRect.Top    := FVUMeterBitmap.Height * GlyphNr div FNumGlyphs;
-     theRect.Bottom := FVUMeterBitmap.Height * (GlyphNr + 1) div FNumGlyphs;
-    end
-   else
-    begin
-     theRect.Left  := FVUMeterBitmap.Width * GlyphNr div FNumGlyphs;
-     theRect.Right := FVUMeterBitmap.Width * (GlyphNr + 1) div FNumGlyphs;
-    end;
+    if FStitchKind = skVertical then
+     begin
+      theRect.Top    := FVUMeterBitmap.Height * GlyphNr div FNumGlyphs;
+      theRect.Bottom := FVUMeterBitmap.Height * (GlyphNr + 1) div FNumGlyphs;
+     end
+    else
+     begin
+      theRect.Left  := FVUMeterBitmap.Width * GlyphNr div FNumGlyphs;
+      theRect.Right := FVUMeterBitmap.Width * (GlyphNr + 1) div FNumGlyphs;
+     end;
 
-   Lock;
-   CopyRect(Clientrect, FVUMeterBitmap.Canvas, theRect);
-   Unlock;
-   FLastGlyph := GlyphNr;
-  end;
+    Lock;
+    CopyRect(Clientrect, FVUMeterBitmap.Canvas, theRect);
+    Unlock;
+    FLastGlyph := GlyphNr;
+   end;
 
  if doBufferFlip then Invalidate;
 end;
@@ -147,14 +154,14 @@ begin
   end;
 end;
 
-procedure TCustomGuiVUMeter.SetPosition(Value: Integer);
+procedure TCustomGuiVUMeter.SetGlyphIndex(Value: Integer);
 begin
   if Value < 0 then Value := 0 else
   if Value > FNumGlyphs then Value := FNumGlyphs;
 
-  if FPosition <> Value then
+  if FGlyphIndex <> Value then
   begin
-    FPosition := Value;
+    FGlyphIndex := Value;
     RedrawBuffer(True);
   end;
 end;
@@ -171,6 +178,7 @@ end;
 
 procedure TCustomGuiVUMeter.SettingsChanged(Sender: TObject);
 begin
+  FVUMeterBitmap.Canvas.Brush.Color := Self.Color;
   RedrawBuffer(True);
   FLastGlyph := -1;
 end;

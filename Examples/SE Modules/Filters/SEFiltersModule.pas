@@ -7,7 +7,8 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEFiltersPins = (pinInput, pinOutput, pinFrequency, pinGain, pinBandwidth);
+  TSEFiltersPins = (pinInput, pinOutput, pinFilterReference, pinFrequency,
+    pinGain, pinBandwidth, pinShape);
 
   TCustomSEFiltersModule = class(TSEModuleBase)
   private
@@ -198,24 +199,37 @@ begin
  result := True;
  case TSEFiltersPins(index) of
   // typical input plug (inputs are listed first)
-  pinInput: with Properties^ do
-             begin
-              Name            := 'Input';
-              VariableAddress := @FInputBuffer;
-              Direction       := drIn;
-              Flags           := [iofLinearInput];
-              Datatype        := dtFSample;
-              DefaultValue    := '0';
-             end;
+  pinInput:
+    with Properties^ do
+     begin
+      Name            := 'Input';
+      VariableAddress := @FInputBuffer;
+      Direction       := drIn;
+      Flags           := [iofLinearInput];
+      Datatype        := dtFSample;
+      DefaultValue    := '0';
+     end;
 
   // typical output plug
-  pinOutput: with Properties^ do
-              begin
-               Name            := 'Output';
-               VariableAddress := @FOutputBuffer;
-               Direction       := drOut;
-               Datatype        := dtFSample;
-              end;
+  pinOutput:
+    with Properties^ do
+     begin
+      Name            := 'Output';
+      VariableAddress := @FOutputBuffer;
+      Direction       := drOut;
+      Datatype        := dtFSample;
+     end;
+
+  // filter reference
+  pinFilterReference:
+    with Properties^ do
+     begin
+      Name            := 'Filter Reference';
+      VariableAddress := @FFilter;
+      Direction       := drOut;
+      Datatype        := dtInteger;
+     end;
+
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -619,17 +633,18 @@ function TSESimpleShapeModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
- case Index of
-  5: with Properties^ do
-      begin
-       Name            := 'Shape';
-       VariableAddress := @FShapeBuffer;
-       Direction       := drIn;
-       DataType        := dtFSample;
-       Flags           := [iofLinearInput];
-       DefaultValue    := '0';
-       result          := True;
-      end;
+ case TSEFiltersPins(Index) of
+  pinShape:
+    with Properties^ do
+     begin
+      Name            := 'Shape';
+      VariableAddress := @FShapeBuffer;
+      Direction       := drIn;
+      DataType        := dtFSample;
+      Flags           := [iofLinearInput];
+      DefaultValue    := '0';
+      result          := True;
+     end;
  end;
 end;
 

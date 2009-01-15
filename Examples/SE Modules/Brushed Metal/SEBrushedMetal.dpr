@@ -29,34 +29,30 @@ var
 begin
  result := nil;
  case Index of // !!TODO!! list your in / out plugs
-  0: begin
-      if (ProcessType = 1) then// Audio Processing Object
-       begin
-        SEModuleBase := TSEBrushedMetalModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end else
-      if (ProcessType = 2) then // GUI Object
-       begin
-        GUI := TSEBrushedMetalGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
-        if assigned(GUI)
-         then result := GUI.SEGUIStructBase;
-       end;
-     end;
-  1: begin
-      if (ProcessType = 1) then// Audio Processing Object
-       begin
-        SEModuleBase := TSEBrushedMetalExModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end else
-      if (ProcessType = 2) then // GUI Object
-       begin
-        GUI := TSEBrushedMetalGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
-        if assigned(GUI)
-         then result := GUI.SEGUIStructBase;
-       end;
-     end;
+  0: if (ProcessType = 1) then// Audio Processing Object
+      begin
+       SEModuleBase := TSEBrushedMetalModule.Create(SEAudioMaster, Reserved);
+       if assigned(SEModuleBase)
+        then result := SEModuleBase.Effect;
+      end else
+     if (ProcessType = 2) then // GUI Object
+      begin
+       GUI := TSEBrushedMetalGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
+       if assigned(GUI)
+        then result := GUI.SEGUIStructBase;
+      end;
+  1: if (ProcessType = 1) then// Audio Processing Object
+      begin
+       SEModuleBase := TSEBrushedMetalExModule.Create(SEAudioMaster, Reserved);
+       if assigned(SEModuleBase)
+        then result := SEModuleBase.Effect;
+      end else
+     if (ProcessType = 2) then // GUI Object
+      begin
+       GUI := TSEBrushedMetalGui.Create(TSEGuiCallback(SEAudioMaster), Reserved); //nasty!
+       if assigned(GUI)
+        then result := GUI.SEGUIStructBase;
+      end;
  end;
 end;
 

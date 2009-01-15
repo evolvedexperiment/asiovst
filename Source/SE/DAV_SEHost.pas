@@ -33,6 +33,7 @@ type
     function GetVersion: Integer;
     procedure DisposeStructures;
     procedure SetActive(const Value: Boolean);
+    function GetGUIVersion: Integer;
   protected
     function CallPlugin(Opcode: TSEPluginModuleOpcodes; Index: Integer = 0;
       Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer; virtual;
@@ -46,7 +47,7 @@ type
   public
     constructor Create(Owner: TCustomSEHostedModule; Index: Integer = 0;
       Properties: PSEModuleProperties = nil); reintroduce; virtual;
-    procedure Instanciate; virtual;
+    procedure Instantiation; virtual;
     procedure Open; virtual;
     procedure Close; virtual;
     procedure AddEvent(Event: TSEEvent); virtual;
@@ -66,6 +67,8 @@ type
     property Magic: Integer read GetMagic;
     property Version: Integer read GetVersion;
     property About: string read GetAbout;
+
+    property GUIVersion: Integer read GetGUIVersion;
 
     property OnRepaintRequest: TNotifyEvent read FOnRepaintRequest write FOnRepaintRequest;
   end;
@@ -452,6 +455,13 @@ begin
  result := FSE2ModStructBase <> nil;
 end;
 
+function TCustomSEHostedModulePart.GetGUIVersion: Integer;
+begin
+ if assigned(FSEGUIStructBase)
+  then result := FSEGUIStructBase.Version
+  else result := -1;
+end;
+
 function TCustomSEHostedModulePart.GetID: string;
 begin
  result := Properties.ID;
@@ -523,12 +533,21 @@ begin
   then CallPlugin(seffGuiNotify, Index, Value, Ptr);
 end;
 
-procedure TCustomSEHostedModulePart.Instanciate;
+procedure TCustomSEHostedModulePart.Instantiation;
 begin
  try
   DisposeStructures;
+
+  // Instantiate Module
   FSE2ModStructBase := FSEHostedModule.FMakeModule(FIndex, 1, @SE2AudioMasterCallback, Self);
+  if assigned(FSE2ModStructBase)
+   then FSE2ModStructBase^.HostPtr := Self;
+
+  // Instantiate GUI
   FSEGUIStructBase  := FSEHostedModule.FMakeModule(FIndex, 2, @SEGuiCallback, Self); // nasty
+  if assigned(FSEGUIStructBase)
+   then FSEGUIStructBase^.HostPtr := Self;
+
  except
   FSE2ModStructBase := nil;
  end;
@@ -603,8 +622,10 @@ begin
  try
   if Active then CallPlugin(seffClose);
  finally
+(*
   if assigned(FSE2ModStructBase)
    then Dispose(FSE2ModStructBase);
+*)
   FSE2ModStructBase := nil;
  end;
 end;
