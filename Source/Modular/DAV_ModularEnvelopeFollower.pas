@@ -98,7 +98,7 @@ begin
  {$IFDEF FPC}
   Data := abs(Data);
  {$ELSE}
-  f_abs(Data);
+  FastAbs(Data);
  {$ENDIF}
 
   if Data>=FLastOutputDouble[channel] then
@@ -116,7 +116,7 @@ begin
  {$IFDEF FPC}
   Data := abs(Data);
  {$ELSE}
-  f_abs(Data);
+  FastAbs(Data);
  {$ENDIF}
 
   if Data>=FLastOutputSingle[channel] then

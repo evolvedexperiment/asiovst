@@ -2,7 +2,7 @@ unit DAV_WaveFileTypes;
 
 interface
 
-{$I ..\DAV_Compiler.INC}
+{$I DAV_Compiler.INC}
 
 type
 {$IFDEF Delphi5}

@@ -27,7 +27,7 @@ procedure TDspOscRamp.Process(var Data: Single; const Channel: integer);
 begin
   FPosition[Channel].Re := FPosition[Channel].Re + FAngle.Re;
   if FPosition[Channel].Re > 1 then
-    FPosition[Channel].Re := f_Frac(FPosition[Channel].Re);
+    FPosition[Channel].Re := FastFractional(FPosition[Channel].Re);
 
   Data := (FPosition[Channel].Re * 2 - 1) * fAmplitude + FDCOffset;
 end;
@@ -36,7 +36,7 @@ procedure TDspOscRamp.Process(var Data: Double; const Channel: integer);
 begin
   FPosition[Channel].Re := FPosition[Channel].Re + FAngle.Re;
   if FPosition[Channel].Re > 1 then
-    FPosition[Channel].Re := f_Frac(FPosition[Channel].Re);
+    FPosition[Channel].Re := FastFractional(FPosition[Channel].Re);
 
   Data:=(FPosition[Channel].Re * 2 - 1) * fAmplitude + FDCOffset;
 end;

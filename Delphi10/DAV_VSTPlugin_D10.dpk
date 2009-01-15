@@ -21,7 +21,7 @@ package DAV_VSTPlugin_D10;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $560000}
-{$DESCRIPTION 'ASIO/VST VST Plugin Project Wizard (design-time)'}
+{$DESCRIPTION 'ASIO & VST VST Plugin Project Wizard (design-time)'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 

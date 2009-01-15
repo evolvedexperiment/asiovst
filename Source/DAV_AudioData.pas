@@ -2,7 +2,7 @@ unit DAV_AudioData;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 {$IFDEF DELPHI10_UP} {$region 'Documentation'} {$ENDIF}
 ////////////////////////////////////////////////////////////////////////////////
 //

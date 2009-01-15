@@ -2,7 +2,7 @@ unit DAV_MidiFile;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 {
   Load a MidiFile and get access to Tracks and Events
