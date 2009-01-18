@@ -1,113 +1,112 @@
 unit DAV_StkBowTabl;
 
-{
-/***************************************************/
-/*! \class TBowTabl
-    \brief STK bowed string table class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a simple bowed string
-    non-linear function, as described by Smith (1986).
+{  STK bowed string table class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+   This class implements a simple bowed string non-linear function, as
+   described by Smith (1986).
 }
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_StkCommon, Math;
 
 type
-  TBowTabl = class(TStk)
+  TStkBowTable = class(TStk)
+  protected
+    FOffSet     : Single;
+    FSlope      : Single;
+    FLastOutput : Single;
   public
   //! Default constructor.
-    constructor Create(sr: my_float);
+    constructor Create(SampleRate: Single);
 
   //! Class destructor.
     destructor Destroy;
 
-  //! Set the table offset value.
+  //! Set the table FOffSet value.
   {
-    The table offset is a bias which controls the
+    The table FOffSet is a bias which controls the
     symmetry of the friction.  If you want the
     friction to vary with direction, use a non-zero
-    value for the offset.  The default value is zero.
+    value for the FOffSet.  The default value is zero.
   }
-    procedure setOffset(aValue: my_float);
+    procedure setOffset(aValue: Single);
 
-  //! Set the table slope value.
+  //! Set the table FSlope value.
   {
-   The table slope controls the width of the friction
+   The table FSlope controls the width of the friction
    pulse, which is related to bow force.
   }
-    procedure setSlope(aValue: my_float);
+    procedure setSlope(aValue: Single);
 
   //! Return the last output value.
-    function lastOut: my_float;
+    function lastOut: Single;
 
   //! Return the function value for \e input.
   {
     The function input represents differential
     string-to-bow velocity.
   }
-    function tick(input: my_float): my_float; overload;
+    function tick(input: Single): Single; overload;
 
   //! Take \e vectorSize inputs and return the corresponding function values in \e vector.
     function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
-
-  protected
-    offSet, slope, lastOutput: my_float;
   end;
 
 implementation
 
-constructor TBowTabl.Create;
+constructor TStkBowTable.Create(SampleRate: Single);
 begin
-  inherited Create(sr);
-  offSet := 0.0;
-  slope := 0.1;
+  inherited Create(SampleRate);
+  FOffSet := 0.0;
+  FSlope := 0.1;
 end;
 
-destructor TBowTabl.Destroy;
+destructor TStkBowTable.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TBowTabl.setOffset;
+procedure TStkBowTable.setOffset;
 begin
-  offSet := aValue;
+  FOffSet := aValue;
 end;
 
-procedure TBowTabl.setSlope;
+procedure TStkBowTable.setSlope;
 begin
-  slope := aValue;
+  FSlope := aValue;
 end;
 
-function TBowTabl.lastOut: my_float;
+function TStkBowTable.lastOut: Single;
 begin
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
-function TBowTabl.tick(input: my_float): my_float;
+function TStkBowTable.tick(input: Single): Single;
 var
-  sample: my_float;
+  sample: Single;
 begin
   // The input represents differential string vs. bow velocity.
-  sample := input + offSet;  // add bias to input
-  sample := sample * slope;          // then scale it
-  lastOutput := abs(sample) + 0.75;
-  lastOutput := power(lastOutput, -4.0);
+  sample := input + FOffSet;  // add bias to input
+  sample := sample * FSlope;          // then scale it
+  FLastOutput := abs(sample) + 0.75;
+  FLastOutput := power(FLastOutput, -4.0);
 
   // Set minimum friction to 0.0
-  //if (lastOutput < 0.0 ) lastOutput := 0.0;
+  //if (FLastOutput < 0.0 ) FLastOutput := 0.0;
   // Set maximum friction to 1.0.
-  if (lastOutput > 1.0) then
-    lastOutput := 1.0;
+  if (FLastOutput > 1.0) then
+    FLastOutput := 1.0;
 
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
-function TBowTabl.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TStkBowTable.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
 var
   i: integer;
   p: pmy_float;

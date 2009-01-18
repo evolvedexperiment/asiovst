@@ -1,210 +1,222 @@
 unit DAV_StkBrass;
-{
-/***************************************************/
-/*! \class TBrass
-    \brief STK simple TBrass instrument class.
 
-    This class implements a simple Brass instrument
-    waveguide model, a la Cook (TBone, HosePlayer).
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This is a digital waveguide model, making its
-    use possibly subject to patents held by
-    Stanford University, Yamaha, and others.
+{ STK simple TStkBrass instrument class.
 
-    Control Change Numbers: 
-       - Lip Tension := 2
-       - Slide Length := 4
-       - Vibrato Frequency := 11
-       - Vibrato Gain := 1
-       - Volume := 128
+  This class implements a simple Brass instrument waveguide model, a la Cook
+  (TBone, HosePlayer).
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This is a digital waveguide model, making its use possibly subject to patents
+  held by Stanford University, Yamaha, and others.
+
+  Control Change Numbers:
+    - Lip Tension := 2
+    - Slide Length := 4
+    - Vibrato Frequency := 11
+    - Vibrato Gain := 1
+    - Volume := 128
 }
 
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_StkCommon, DAV_StkInstrmnt, DAV_StkDelaya, DAV_StkBiquad,
   DAV_StkPolezero, DAV_StkAdsr, DAV_StkLfo, Math;
 
-type TBrass=class(TInstrmnt)
-public
-  //! Class constructor, taking the lowest desired playing frequency.
-  constructor create(sr,lowestFrequency:my_float);
+type
+  TStkBrass = class(TInstrmnt)
+  protected
+    DelayLine   : TDelayA;
+    LipFilter   : TBiQuad;
+    DcBlock     : TPoleZero;
+    Adsr        : TADSR;
+    Vibrato     : TLFO;
+    Length      : Integer;
+    LipTarget   : Single;
+    SlideTarget : Single;
+    VibratoGain : Single;
+    MaxPressure : Single;
+  public
+  //! Class constructor, taking the lowest desired playing Frequency.
+    constructor Create(SampleRate, LowestFrequency: Single);
 
   //! Class destructor.
-  destructor destroy;
+    destructor Destroy;
 
   //! Reset and clear all internal state.
-  procedure clear;
+    procedure Clear;
 
-  //! Set instrument parameters for a particular frequency.
-  procedure setFrequency(frequency:my_float);
+  //! Set instrument parameters for a particular Frequency.
+    procedure setFrequency(Frequency: Single);
 
-  //! Set the lips frequency.
-  procedure setLip(frequency:my_float);
+  //! Set the lips Frequency.
+    procedure setLip(Frequency: Single);
 
-  //! Apply breath pressure to instrument with given amplitude and rate of increase.
-  procedure startBlowing(amplitude,rate:my_float);
+  //! Apply breath pressure to instrument with given Amplitude and Rate of increase.
+    procedure startBlowing(Amplitude, Rate: Single);
 
-  //! Decrease breath pressure with given rate of decrease.
-  procedure stopBlowing(rate:my_float);
+  //! Decrease breath pressure with given Rate of decrease.
+    procedure stopBlowing(Rate: Single);
 
-  //! Start a note with the given frequency and amplitude.
-  procedure noteOn(frequency,amplitude:my_float);
+  //! Start a note with the given Frequency and Amplitude.
+    procedure noteOn(Frequency, Amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
-  procedure noteOff(amplitude:my_float);
+  //! Stop a note with the given Amplitude (speed of decay).
+    procedure noteOff(Amplitude: Single);
 
   //! Compute one output sample.
-  function tick:my_float;
+    function tick: Single;
 
   //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-  procedure controlChange(number:integer;value:my_float);
+    procedure controlChange(number: integer; Value: Single);
 
- protected
-  delayLine:TDelayA;
-  lipFilter:TBiQuad;
-  dcBlock:TPoleZero;
-  adsr:TADSR;
-  vibrato:TLFO;
-  length:longint;
-  lipTarget,slideTarget,vibratoGain,maxPressure:my_float;
-end;
+  end;
 
 implementation
 
-constructor TBrass.create;
+constructor TStkBrass.Create;
 begin
- inherited create(sr);
- length := round(srate/lowestFrequency+1);
- delayLine :=TDelayA.create(srate, 0.5 * length, length );
+  inherited Create(SampleRate);
+  Length := round(SampleRate / LowestFrequency + 1);
+  DelayLine := TDelayA.Create(SampleRate, 0.5 * Length, Length);
 
-  lipFilter := TBiQuad.create(srate);
-  lipFilter.setGain( 0.03 );
-  dcBlock := TPoleZero.create(srate);
-  dcBlock.setBlockZero(0.99);
+  LipFilter := TBiQuad.Create(SampleRate);
+  LipFilter.SetGain(0.03);
+  DcBlock := TPoleZero.Create(SampleRate);
+  DcBlock.setBlockZero(0.99);
 
-  adsr := TADSR.create(srate);
-  adsr.setAllTimes( 0.005, 0.001, 1.0, 0.010);
+  Adsr := TADSR.Create(SampleRate);
+  Adsr.setAllTimes(0.005, 0.001, 1.0, 0.010);
 
-  vibrato := TLFO.create(srate);
-  vibrato.setFrequency( 6.137 );
-  vibratoGain := 0.0;
+  Vibrato := TLFO.Create(SampleRate);
+  Vibrato.setFrequency(6.137);
+  VibratoGain := 0.0;
 
-  clear;
-  maxPressure := 0.0;
-  lipTarget := 0.0;
+  Clear;
+  MaxPressure := 0.0;
+  LipTarget := 0.0;
 
   // Necessary to initialize variables.
-  setFrequency( 220.0 );
+  setFrequency(220.0);
 end;
 
-destructor TBrass.destroy;
+destructor TStkBrass.Destroy;
 begin
-  inherited destroy;
-  delayLine.free;
-  lipFilter.free;
-  dcBlock.free;
-  adsr.free;
-  vibrato.free;
+  inherited Destroy;
+  DelayLine.Free;
+  LipFilter.Free;
+  DcBlock.Free;
+  Adsr.Free;
+  Vibrato.Free;
 end;
 
-procedure TBrass.clear;
+procedure TStkBrass.Clear;
 begin
- delayLine.clear;
- lipFilter.clear;
- dcBlock.clear;
+  DelayLine.Clear;
+  LipFilter.Clear;
+  DcBlock.Clear;
 end;
 
-procedure TBrass.setFrequency;
-var freakency:my_float;
+procedure TStkBrass.setFrequency;
+var
+  Freakency: Single;
 begin
-  freakency:= frequency;
-  if ( frequency <= 0.0 ) then freakency := 220.0;
+  Freakency := Frequency;
+  if (Frequency <= 0.0) then
+    Freakency := 220.0;
 
   // Fudge correction for filter delays.
-  slideTarget := (srate / freakency * 2.0) + 3.0;
-  delayLine.setDelay(slideTarget); // play a harmonic
+  SlideTarget := (SampleRate / Freakency * 2.0) + 3.0;
+  DelayLine.setDelay(SlideTarget); // play a harmonic
 
-  lipTarget := freakency;
-  lipFilter.setResonance( freakency, 0.997, false );
+  LipTarget := Freakency;
+  LipFilter.setResonance(Freakency, 0.997, False);
 end;
 
-procedure TBrass.setLip;
-var freakency:my_float;
+procedure TStkBrass.setLip;
+var
+  Freakency: Single;
 begin
-  freakency := frequency;
-  if ( frequency <= 0.0 ) then freakency := 220.0;
+  Freakency := Frequency;
+  if (Frequency <= 0.0) then
+    Freakency := 220.0;
 
-  lipFilter.setResonance( freakency, 0.997, false );
+  LipFilter.setResonance(Freakency, 0.997, False);
 end;
 
-procedure TBrass.startBlowing;
+procedure TStkBrass.startBlowing;
 begin
-  adsr.setAttackRate(rate);
-  maxPressure := amplitude;
-  adsr.keyOn;
+  Adsr.setAttackRate(Rate);
+  MaxPressure := Amplitude;
+  Adsr.keyOn;
 end;
 
-procedure TBrass.stopBlowing;
+procedure TStkBrass.stopBlowing;
 begin
-  adsr.setReleaseRate(rate);
-  adsr.keyOff;
+  Adsr.setReleaseRate(Rate);
+  Adsr.keyOff;
 end;
 
-procedure TBrass.noteOn;
+procedure TStkBrass.noteOn;
 begin
- setFrequency(frequency);
- startBlowing(amplitude, amplitude * 0.001);
+  setFrequency(Frequency);
+  startBlowing(Amplitude, Amplitude * 0.001);
 end;
 
-procedure TBrass.noteOff;
+procedure TStkBrass.noteOff;
 begin
- stopBlowing(amplitude * 0.005);
+  stopBlowing(Amplitude * 0.005);
 end;
 
-function TBrass.tick:my_float;
-var deltaPressure,borePressure,mouthPressure,breathPressure:my_float;
+function TStkBrass.tick: Single;
+var
+  deltaPressure, borePressure, mouthPressure, breathPressure: Single;
 begin
-  breathPressure := maxPressure * adsr.tick;
-  breathPressure := breathPressure + vibratoGain * vibrato.tick;
+  breathPressure := MaxPressure * Adsr.tick;
+  breathPressure := breathPressure + VibratoGain * Vibrato.tick;
 
   mouthPressure := 0.3 * breathPressure;
-  borePressure := 0.85 * delayLine.lastOut;
+  borePressure := 0.85 * DelayLine.lastOut;
   deltaPressure := mouthPressure - borePressure; // Differential pressure.
-  deltaPressure := lipFilter.tick( deltaPressure );      // Force - > position.
-  deltaPressure := deltaPressure*deltaPressure;          // Basic position to area mapping.
-  if ( deltaPressure > 1.0 ) then deltaPressure := 1.0;         // Non-linear saturation.
+  deltaPressure := LipFilter.tick(deltaPressure);      // Force - > position.
+  deltaPressure := deltaPressure * deltaPressure;
+          // Basic position to area mapping.
+  if (deltaPressure > 1.0) then
+    deltaPressure := 1.0;         // Non-linear saturation.
   // The following input scattering assumes the mouthPressure := area.
-  lastOutput := deltaPressure * mouthPressure + ( 1.0 - deltaPressure) * borePressure;
-  lastOutput := delayLine.tick( dcBlock.tick( lastOutput ) );
+  lastOutput := deltaPressure * mouthPressure + (1.0 - deltaPressure) *
+    borePressure;
+  lastOutput := DelayLine.tick(DcBlock.tick(lastOutput));
 
-  result:=lastOutput;
+  Result := lastOutput;
 end;
 
-procedure TBrass.controlChange;
-var temp, norm:my_float;
+procedure TStkBrass.controlChange;
+var
+  temp, norm: Single;
 begin
-  norm := value; // * ONE_OVER_128;
-  if ( norm < 0 ) then norm := 0.0
-  else if ( norm > 1.0 ) then norm := 1.0;
+  norm := Value; // * ONE_OVER_128;
+  if (norm < 0) then
+    norm := 0.0
+  else if (norm > 1.0) then
+    norm := 1.0;
 
   if (number = __SK_LipTension_) then
-  begin // 2
-    temp := lipTarget * power( 4.0, (2.0 * norm) - 1.0 );
+   begin // 2
+    temp := LipTarget * power(4.0, (2.0 * norm) - 1.0);
     setLip(temp);
-  end
+   end
   else if (number = __SK_SlideLength_) then // 4
-    delayLine.setDelay( slideTarget * (0.5 + norm) )
+    DelayLine.setDelay(SlideTarget * (0.5 + norm))
   else if (number = __SK_ModFrequency_) then // 11
-    vibrato.setFrequency( norm * 12.0 )
-  else if (number = __SK_ModWheel_ ) then // 1
-    vibratoGain := norm * 0.4
+    Vibrato.setFrequency(norm * 12.0)
+  else if (number = __SK_ModWheel_) then // 1
+    VibratoGain := norm * 0.4
   else if (number = __SK_AfterTouch_Cont_) then // 128
-    adsr.setTarget( norm );
+    Adsr.setTarget(norm);
 end;
 
 end.

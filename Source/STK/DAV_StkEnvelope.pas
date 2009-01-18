@@ -1,177 +1,157 @@
 unit DAV_StkEnvelope;
 
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_StkCommon, Windows;
 
-{
-/***************************************************/
-/*! \class TEnvelope
-    \brief STK TEnvelope base class.
-
-    This class implements a simple TEnvelope
-    generator which is capable of ramping to
-    a target value by a specified \e rate.
-    It also responds to simple \e keyOn and
-    \e keyOff messages, ramping to 1.0 on
-    keyOn and to 0.0 on keyOff.
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
-}
 type
-  TEnvelope = class(TStk)
-  public
-
-  //! Default constructor.
-    constructor Create(sr: my_float);
-
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Set target = 1.
-    procedure keyOn;
-
-  //! Set target = 0.
-    procedure keyOff;
-
-  //! Set the \e rate.
-    procedure setRate(aRate: my_float);
-
-  //! Set the \e rate based on a time duration.
-    procedure setTime(aTime: my_float);
-
-  //! Set the target value.
-    procedure setTarget(aTarget: my_float);
-
-  //! Set current and target values to \e aValue.
-    procedure setValue(aValue: my_float);
-
-  //! Return the current envelope \e state (0 = at target, 1 otherwise).
-    function getState: integer;
-
-  //! Return one envelope output value.
-    function tick: my_float; overload;
-
-  //! Return \e vectorSize envelope outputs in \e vector.
-    function tick(vector: pmy_float; vectorSize: longword): pmy_float; overload;
-
-  //! Return the last computed output value.
-    function lastOut: my_float;
-
+  TStkEnvelope = class(TStk)
+  private
+    procedure SetCurrentValue(const Value: Single);
+    procedure SetRate(const Value: Single);
+    procedure SetTime(const Value: Single);
+    procedure SetTarget(const Value: Single);
   protected
-    Value, target, rate: my_float;
-    state: integer;
+    FCurrentValue : Single;
+    FTarget       : Single;
+    FRate         : Single;
+    FState        : Integer;
+
+    procedure CurrentValueChanged; virtual;
+    procedure RateChanged; virtual;
+    procedure TargetChanged; virtual;
+  public
+    constructor Create(const SampleRate: Single = 44100); override;
+    destructor Destroy; override;
+
+    procedure KeyOn; virtual;
+    procedure KeyOff; virtual;
+
+    function Tick: Single; overload; virtual;
+    procedure Tick(const Vector: PDAVSingleFixedArray; const VectorSize: Cardinal); overload; virtual;
+
+    property CurrentValue: Single read FCurrentValue write SetCurrentValue;
+    property Rate: Single read FRate write SetRate;
+    property Targer: Single read FTarget write SetTarget;
+    property State: Single read FState;
   end;
 
 implementation
 
-constructor TEnvelope.Create;
+constructor TStkEnvelope.Create;
 begin
   inherited Create(sr);
-  target := 0;
-  Value := 0;
-  rate := 0.001;
-  state := 0;
+  FTarget := 0;
+  FCurrentValue := 0;
+  FRate := 0.001;
+  FState := 0;
 end;
 
-destructor TEnvelope.Destroy;
+destructor TStkEnvelope.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TEnvelope.keyOn;
+procedure TStkEnvelope.KeyOn;
 begin
-  target := 1;
-  if (Value <> target) then
-    state := 1;
+  FTarget := 1;
+  if (FCurrentValue <> FTarget)
+   then FState := 1;
 end;
 
-procedure TEnvelope.keyOff;
+procedure TStkEnvelope.KeyOff;
 begin
-  target := 0;
-  if (Value <> target) then
-    state := 1;
+  FTarget := 0;
+  if (FCurrentValue <> FTarget)
+   then FState := 1;
 end;
 
-procedure TEnvelope.setRate(aRate: my_float);
+procedure TStkEnvelope.SetRate(Value: Single);
 begin
-  if (aRate < 0.0) then
-    rate := -aRate
-  else
-    rate := aRate;
+ if ARate < 0
+  then raise Exception.Create('Rate must be above 0!');
+ if FRate <> Value then
+  begin
+   FRate := Value;
+   RateChanged;
+  end;
 end;
 
-procedure TEnvelope.setTime(aTime: my_float);
+procedure TStkEnvelope.RateChanged;
 begin
-  if (aTime < 0.0) then
-    rate := 1.0 / (-aTime * srate)
-  else
-    rate := 1.0 / (aTime * srate);
+ // nothing here yet!
 end;
 
-procedure TEnvelope.setTarget(aTarget: my_float);
+procedure TStkEnvelope.SetTime(const Value: Single);
 begin
-  target := aTarget;
-  if (Value <> target) then
-    state := 1;
+ Rate := 1.0 / (-Value * SampleRate)
 end;
 
-procedure TEnvelope.setValue(aValue: my_float);
+procedure TStkEnvelope.SetTarget(const Value: Single);
 begin
-  state := 0;
-  target := aValue;
-  Value := aValue;
+ if FTarget <> ATarget then
+  begin
+   FTarget := ATarget;
+   TargetChanged;
+  end;
 end;
 
-function TEnvelope.getState: integer;
+procedure TStkEnvelope.TargetChanged;
 begin
-  Result := state;
+ if (FCurrentValue <> FTarget)
+  then FState := 1;
 end;
 
-function TEnvelope.tick: my_float;
+procedure TStkEnvelope.SetCurrentValue(const Value: Single);
 begin
-  if (state > 0) then
-    if (target > Value) then
-     begin
-      Value := Value + rate;
-      if (Value >= target) then
-       begin
-        Value := target;
-        state := 0;
-       end;
-     end
-    else
-     begin
-      Value := Value - rate;
-      if (Value <= target) then
-       begin
-        Value := target;
-        state := 0;
-       end;
-     end;
-  Result := Value;
+ if FCurrentValue <> Value then
+  begin
+   FCurrentValue := AValue;
+   CurrentValueChanged;
+  end;
 end;
 
-function TEnvelope.tick(vector: pmy_float; vectorSize: longword): pmy_float;
-var
-  i: integer;
-  p: pmy_float;
+procedure TStkEnvelope.CurrentValueChanged;
 begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
+ FTarget := FCurrentValue;
+ FState := 0;
+end;
+
+function TStkEnvelope.Tick: Single;
+begin
+ if (FState > 0) then
+  if (FTarget > FCurrentValue) then
    begin
-    p^ := tick;
-    Inc(p);
+    FCurrentValue := FCurrentValue + FRate;
+    if (FCurrentValue >= FTarget) then
+     begin
+      FCurrentValue := FTarget;
+      FState := 0;
+     end;
+   end
+  else
+   begin
+    FCurrentValue := FCurrentValue - FRate;
+    if (FCurrentValue <= FTarget) then
+     begin
+      FCurrentValue := FTarget;
+      FState := 0;
+     end;
    end;
-  Result := vector;
+ Result := FCurrentValue;
 end;
 
-function TEnvelope.lastOut: my_float;
+procedure TStkEnvelope.Tick(const Vector: PDAVSingleFixedArray; const VectorSize: Cardinal);
+var
+  i: Integer;
 begin
-  Result := Value;
+  for i := 0 to VectorSize - 1
+   do Vector^[i] := Tick;
 end;
 
 end.

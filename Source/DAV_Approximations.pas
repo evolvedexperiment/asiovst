@@ -37,18 +37,22 @@ uses
   // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
   function FastCosPart3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCosPart3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart3TermFPU(const Value: Single): Single; overload;
+  function FastCosPart3TermFPU(const Value: Double): Double; overload;
   function FastCos3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCos3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastSin3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload; 
+  function FastSin3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastSec3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload; 
+  function FastSec3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCsc3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCsc3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
   // 4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
   function FastCosPart4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCosPart4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart4TermFPU(const Value: Single): Single; overload;
+  function FastCosPart4TermFPU(const Value: Double): Double; overload;
   function FastCos4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCos4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastSin4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
@@ -61,6 +65,10 @@ uses
   // 5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
   function FastCosPart5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCosPart5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart5TermFPU(const Value: Single): Single; overload;
+  function FastCosPart5TermFPU(const Value: Double): Double; overload;
+  function FastCosInBounds5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosInBounds5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCos5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCos5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastSin5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
@@ -73,6 +81,8 @@ uses
   // 6-Term: Accurate to about ?.? decimal digits over the range [0, pi/2].
   function FastCosPart6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCosPart6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart6TermFPU(const Value: Single): Single; overload;
+  function FastCosPart6TermFPU(const Value: Double): Double; overload;
   function FastCos6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastCos6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastSin6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
@@ -312,13 +322,35 @@ type
 function FastCosPart3Term(const Value: Single): Single;
 begin
  Result := sqr(Value);
- Result := (CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result));
+ Result := CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result);
 end;
 
 function FastCosPart3Term(const Value: Double): Double;
 begin
  Result := sqr(Value);
- Result := (CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result));
+ Result := CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result);
+end;
+
+function FastCosPart3TermFPU(const Value: Single): Single;
+asm
+ fld   Value
+ fmul  st(0), st(0)                // Value²
+ fld   [CCos3Term + 4 * 2].Single  // CCos3Term[2], Value²
+ fmul  st(0), st(1)                // Value² * CCos3Term[2], Value²
+ fadd  [CCos3Term + 4 * 1].Single  // ...
+ fmulp
+ fadd  [CCos3Term].Single
+end;
+
+function FastCosPart3TermFPU(const Value: Double): Double;
+asm
+ fld   Value
+ fmul  st(0), st(0)                // Value²
+ fld   [CCos3Term + 4 * 2].Single  // CCos3Term[2], Value²
+ fmul  st(0), st(1)                // Value² * CCos3Term[2], Value²
+ fadd  [CCos3Term + 4 * 1].Single  // ...
+ fmulp
+ fadd  [CCos3Term].Single
 end;
 
 function FastCos3Term(const Value: Single): Single;
@@ -390,6 +422,32 @@ begin
  Result := CCos4Term[0] + Result * (CCos4Term[1] + Result * (CCos4Term[2] + CCos4Term[3] * Result));
 end;
 
+function FastCosPart4TermFPU(const Value: Single): Single;
+asm
+ fld   Value
+ fmul  st(0), st(0)                // Value²
+ fld   [CCos4Term + 4 * 3].Single  // CCos4Term[3], Value²
+ fmul  st(0), st(1)                // Value² * CCos4Term[3], Value²
+ fadd  [CCos4Term + 4 * 2].Single  // ...
+ fmul  st(0), st(1)
+ fadd  [CCos4Term + 4 * 1].Single
+ fmulp
+ fadd  [CCos4Term].Single
+end;
+
+function FastCosPart4TermFPU(const Value: Double): Double;
+asm
+ fld   Value
+ fmul  st(0), st(0)                // Value²
+ fld   [CCos4Term + 4 * 3].Single  // CCos4Term[3], Value²
+ fmul  st(0), st(1)                // Value² * CCos4Term[3], Value²
+ fadd  [CCos4Term + 4 * 2].Single  // ...
+ fmul  st(0), st(1)
+ fadd  [CCos4Term + 4 * 1].Single
+ fmulp
+ fadd  [CCos4Term].Single
+end;
+
 function FastCos4Term(const Value: Single): Single;
 begin
   Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
@@ -453,16 +511,45 @@ begin
  Result := CCos5Term[0] + Result * (CCos5Term[1] + Result * (CCos5Term[2] + Result * (CCos5Term[3] + CCos5Term[4] * Result)));
 end;
 
-function FastCosPart5Term(const Value: Double): Double; 
+function FastCosPart5Term(const Value: Double): Double;
 begin
  Result := sqr(Value);
  Result := CCos5Term[0] + Result * (CCos5Term[1] + Result * (CCos5Term[2] + Result * (CCos5Term[3] + CCos5Term[4] * Result)));
 end;
 
-function FastCos5Term(const Value: Single): Single;
+function FastCosPart5TermFPU(const Value: Single): Single;
+asm
+ fld   Value
+ fmul  st(0), st(0)                // Value²
+ fld   [CCos5Term + 4 * 4].Single  // CCos5Term[4], Value²
+ fmul  st(0), st(1)                // Value² * CCos5Term[4], Value²
+ fadd  [CCos5Term + 4 * 3].Single  // ...
+ fmul  st(0), st(1)
+ fadd  [CCos5Term + 4 * 2].Single
+ fmul  st(0), st(1)
+ fadd  [CCos5Term + 4 * 1].Single
+ fmulp
+ fadd  [CCos5Term].Single
+end;
+
+function FastCosPart5TermFPU(const Value: Double): Double;
+asm
+ fld   Value
+ fmul  st(0), st(0)                // Value²
+ fld   [CCos5Term + 4 * 4].Single  // CCos5Term[4], Value²
+ fmul  st(0), st(1)                // Value² * CCos5Term[4], Value²
+ fadd  [CCos5Term + 4 * 3].Single  // ...
+ fmul  st(0), st(1)
+ fadd  [CCos5Term + 4 * 2].Single
+ fmul  st(0), st(1)
+ fadd  [CCos5Term + 4 * 1].Single
+ fmulp
+ fadd  [CCos5Term].Single
+end;
+
+function FastCosInBounds5Term(const Value: Single): Single;
 begin
- Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
- case round(Result * CTwoDivPi32 - CHalf32) of
+ case round(Value * CTwoDivPi32 - CHalf32) of
   0 : Result :=  FastCosPart5Term(Result);
   1 : Result := -FastCosPart5Term(Pi - Result);
   2 : Result := -FastCosPart5Term(Result - Pi);
@@ -471,10 +558,9 @@ begin
  end;
 end;
 
-function FastCos5Term(const Value: Double): Double;
+function FastCosInBounds5Term(const Value: Double): Double;
 begin
- Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
- case round(Result * CTwoDivPi64 - CHalf64) of
+ case round(Value * CTwoDivPi64 - CHalf64) of
   0 : Result :=  FastCosPart5Term(Result);
   1 : Result := -FastCosPart5Term(Pi - Result);
   2 : Result := -FastCosPart5Term(Result - Pi);
@@ -483,34 +569,48 @@ begin
  end;
 end;
 
+function FastCos5Term(const Value: Single): Single;
+begin
+ // Get rid of values > 2 * pi
+ Result := abs(FastMod(Value, CTwoPi32));
+ Result := FastCosInBounds5Term(Result);
+end;
+
+function FastCos5Term(const Value: Double): Double;
+begin
+ // Get rid of values > 2 * pi
+ Result := abs(FastMod(Value, CTwoPi64));
+ Result := FastCosInBounds5Term(Result);
+end;
+
 function FastSin5Term(const Value: Single): Single;
 begin
-  Result := FastCos5Term(CPiHalf32 - Value);
+ Result := FastCos5Term(CPiHalf32 - Value);
 end;
 
 function FastSin5Term(const Value: Double): Double;
 begin
-  Result := FastCos5Term(CPiHalf64 - Value);
+ Result := FastCos5Term(CPiHalf64 - Value);
 end;
 
 function FastSec5Term(const Value: Single): Single;
 begin
-  Result := 1 / FastCos5Term(Value);
+ Result := 1 / FastCos5Term(Value);
 end;
 
 function FastSec5Term(const Value: Double): Double;
 begin
-  Result := 1 / FastCos5Term(Value);
+ Result := 1 / FastCos5Term(Value);
 end;
 
 function FastCsc5Term(const Value: Single): Single;
 begin
-  Result := 1 / FastCos5Term(CPiHalf32 - Value);
+ Result := 1 / FastCos5Term(CPiHalf32 - Value);
 end;
 
 function FastCsc5Term(const Value: Double): Double;
 begin
-  Result := 1 / FastCos5Term(CPiHalf64 - Value);
+ Result := 1 / FastCos5Term(CPiHalf64 - Value);
 end;
 
 
@@ -534,6 +634,44 @@ begin
           (CCos6Term[2] + Result *
           (CCos6Term[3] + Result *
           (CCos6Term[4] + CCos6Term[5] * Result))));
+end;
+
+function FastCosPart6TermFPU(const Value: Single): Single;
+asm
+ fld   Value
+ fmul  st(0), st(0)                // Value²
+ fld   [CCos6Term + 8 * 6].Double  // CCos6Term[5], Value²
+ fmul  st(0), st(1)                // Value² * CCos6Term[5], Value²
+ fadd  [CCos6Term + 8 * 5].Double  // ...
+ fmul  st(0), st(1)
+ fadd  [CCos6Term + 8 * 4].Double
+ fmul  st(0), st(1)
+ fadd  [CCos6Term + 8 * 3].Double
+ fmul  st(0), st(1)
+ fadd  [CCos6Term + 8 * 2].Double
+ fmul  st(0), st(1)
+ fadd  [CCos6Term + 8 * 1].Double
+ fmulp
+ fadd [CCos6Term + 8].Double
+end;
+
+function FastCosPart6TermFPU(const Value: Double): Double;
+asm
+ fld   Value
+ fmul  st(0), st(0)                // Value²
+ fld   [CCos6Term + 8 * 6].Double  // CCos6Term[5], Value²
+ fmul  st(0), st(1)                // Value² * CCos6Term[5], Value²
+ fadd  [CCos6Term + 8 * 5].Double  // ...
+ fmul  st(0), st(1)
+ fadd  [CCos6Term + 8 * 4].Double
+ fmul  st(0), st(1)
+ fadd  [CCos6Term + 8 * 3].Double
+ fmul  st(0), st(1)
+ fadd  [CCos6Term + 8 * 2].Double
+ fmul  st(0), st(1)
+ fadd  [CCos6Term + 8 * 1].Double
+ fmulp
+ fadd [CCos6Term + 8].Double
 end;
 
 function FastCos6Term(const Value: Single): Single;

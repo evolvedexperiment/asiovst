@@ -1,268 +1,228 @@
-unit DAV_ADSR;
+unit DAV_StkADSR;
+
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
 interface
 
-{
-/***************************************************/
-/*! \class TADSR.
-    \brief STK TADSR. envelope class.
-
-    This Envelope subclass implements a
-    traditional TADSR. (Attack, Decay,
-    Sustain, Release) envelope.  It
-    responds to simple keyOn and keyOff
-    messages, keeping track of its state.
-    The \e state := TADSR.::DONE after the
-    envelope value reaches 0.0 in the
-    TADSR.::RELEASE state.
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
-}
+{$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Envelope, DAV_Stk;
+  DAV_StkEnvelope, DAV_Stk;
 
-  //! Envelope states.
 type
-  states = (ATTACK, DECAY, SUSTAIN, Release, DONE);
+  TADSRStates = (asAttack, asDecay, asSustain, asRelease, asDone);
 
-  TADSR = class(TEnvelope)
-  public
-  //! Default constructor.
-    constructor Create(sr: my_float);
-
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Set target := 1, state := \e ADSR::ATTACK.
-    procedure keyOn;
-
-  //! Set target := 0, state := \e ADSR::RELEASE.
-    procedure keyOff;
-
-  //! Set the attack rate.
-    procedure setAttackRate(aRate: my_float);
-
-  //! Set the decay rate.
-    procedure setDecayRate(aRate: my_float);
-
-  //! Set the sustain level.
-    procedure setSustainLevel(aLevel: my_float);
-
-  //! Set the release rate.
-    procedure setReleaseRate(aRate: my_float);
-
-  //! Set the attack rate based on a time duration.
-    procedure setAttackTime(aTime: my_float);
-
-  //! Set the decay rate based on a time duration.
-    procedure setDecayTime(aTime: my_float);
-
-  //! Set the release rate based on a time duration.
-    procedure setReleaseTime(aTime: my_float);
-
-  //! Set sustain level and attack, decay, and release state rates based on time durations.
-    procedure setAllTimes(aTime, dTime, sLevel, rTime: my_float);
-
-  //! Set the target value.
-    procedure setTarget(aTarget: my_float);
-
-  //! Return the current envelope \e state (ATTACK, DECAY, SUSTAIN, RELEASE, DONE).
-    function getState: states;
-
-  //! Set to state := ADSR::SUSTAIN with current and target values of \e aValue.
-    procedure setValue(aValue: my_float);
-
-  //! Return one envelope output value.
-    function tick: my_float; overload;
-
-  //! Return \e vectorSize envelope outputs in \e vector.
-    function tick(vector: pmy_float; vectorSize: longword): pmy_float; overload;
-
+  TADSR = class(TStkEnvelope)
   protected
-    attackRate, decayRate, sustainLevel, releaseRate: my_float;
-    state: states;
+    FAttackRate   : Single;
+    FDecayRate    : Single;
+    FSustainLevel : Single;
+    FReleaseRate  : Single;
+    FState        : TADSRStates;
+  public
+    constructor Create(SampleRate: Single); override;
+    destructor Destroy; override;
+
+    procedure KeyOn; override;
+    procedure KeyOff; override;
+
+  //! Set the asAttack FRate.
+    procedure SetAttackRate(aRate: Single);
+
+  //! Set the asDecay FRate.
+    procedure SetDecayRate(aRate: Single);
+
+  //! Set the asSustain level.
+    procedure SetSustainLevel(aLevel: Single);
+
+  //! Set the asRelease FRate.
+    procedure setReleaseRate(aRate: Single);
+
+  //! Set the asAttack FRate based on a time duration.
+    procedure SetAttackTime(aTime: Single);
+
+  //! Set the asDecay FRate based on a time duration.
+    procedure SetDecayTime(aTime: Single);
+
+  //! Set the asRelease FRate based on a time duration.
+    procedure SetReleaseTime(aTime: Single);
+
+  //! Set asSustain level and asAttack, asDecay, and asRelease FState rates based on time durations.
+    procedure SetAllTimes(aTime, dTime, sLevel, rTime: Single);
+
+  //! Set the FTarget FCurrentValue.
+    procedure SetTarget(aTarget: Single);
+
+  //! Return the current envelope \e FState (asAttack, asDecay, asSustain, asRelease, asDone).
+    function GetState: TADSRStates;
+
+  //! Set to FState := ADSR::asSustain with current and FTarget values of \e Value.
+    procedure SetValue(Value: Single);
+
+    function Tick: Single; overload; override;
   end;
 
 implementation
 
 constructor TADSR.Create;
 begin
-  inherited Create(sr);
-  target := 0.0;
-  Value := 0.0;
-  attackRate := 0.001;
-  decayRate := 0.001;
-  sustainLevel := 0.5;
-  releaseRate := 0.01;
-  state := ATTACK;
+  inherited Create(SampleRate);
+  FTarget       := 0.0;
+  FCurrentValue := 0.0;
+  FAttackRate   := 0.001;
+  FDecayRate    := 0.001;
+  FSustainLevel := 0.5;
+  FReleaseRate  := 0.01;
+  FState        := asAttack;
 end;
 
 destructor TADSR.Destroy;
 begin
-  inherited Destroy;
+ inherited Destroy;
 end;
 
-procedure TADSR.keyOn;
+procedure TADSR.KeyOn;
 begin
-  target := 1.0;
-  rate := attackRate;
-  state := ATTACK;
+ FTarget := 1.0;
+ FRate := FAttackRate;
+ FState := asAttack;
 end;
 
-procedure TADSR.keyOff;
+procedure TADSR.KeyOff;
 begin
-  target := 0.0;
-  rate := releaseRate;
-  state := Release;
+ FTarget := 0.0;
+ FRate := FReleaseRate;
+ FState := asRelease;
 end;
 
-procedure TADSR.setAttackRate(aRate: MY_FLOAT);
-begin
-  if (aRate < 0.0) then
-    attackRate := -aRate
-  else
-    attackRate := aRate;
-end;
-
-procedure TADSR.setDecayRate(aRate: MY_FLOAT);
+procedure TADSR.SetAttackRate(aRate: Single);
 begin
   if (aRate < 0.0) then
-    decayRate := -aRate
+    FAttackRate := -aRate
   else
-    decayRate := aRate;
+    FAttackRate := aRate;
 end;
 
-procedure TADSR.setSustainLevel(aLevel: MY_FLOAT);
+procedure TADSR.SetDecayRate(aRate: Single);
+begin
+  if (aRate < 0.0) then
+    FDecayRate := -aRate
+  else
+    FDecayRate := aRate;
+end;
+
+procedure TADSR.SetSustainLevel(aLevel: Single);
 begin
   if (aLevel < 0.0) then
-    sustainLevel := 0.0
+    FSustainLevel := 0.0
   else
-    sustainLevel := aLevel;
+    FSustainLevel := aLevel;
 end;
 
-procedure TADSR.setReleaseRate(aRate: MY_FLOAT);
+procedure TADSR.setReleaseRate(aRate: Single);
 begin
-  if (aRate < 0.0) then
-    releaseRate := -aRate
-  else
-    releaseRate := aRate;
+  if (aRate < 0.0)
+   then FReleaseRate := -aRate
+   else FReleaseRate := aRate;
 end;
 
-procedure TADSR.setAttackTime(aTime: MY_FLOAT);
+procedure TADSR.SetAttackTime(aTime: Single);
+begin
+  if (aTime < 0.0)
+   then FAttackRate := 1.0 / (-aTime * SampleRate)
+   else FAttackRate := 1.0 / (aTime * SampleRate);
+end;
+
+procedure TADSR.SetDecayTime(aTime: Single);
 begin
   if (aTime < 0.0) then
-    attackRate := 1.0 / (-aTime * srate)
+    FDecayRate := 1.0 / (-aTime * SampleRate)
   else
-    attackRate := 1.0 / (aTime * srate);
+    FDecayRate := 1.0 / (aTime * SampleRate);
 end;
 
-procedure TADSR.setDecayTime(aTime: MY_FLOAT);
+procedure TADSR.SetReleaseTime(aTime: Single);
 begin
   if (aTime < 0.0) then
-    decayRate := 1.0 / (-aTime * srate)
+    FReleaseRate := 1.0 / (-aTime * SampleRate)
   else
-    decayRate := 1.0 / (aTime * srate);
+    FReleaseRate := 1.0 / (aTime * SampleRate);
 end;
 
-procedure TADSR.setReleaseTime(aTime: MY_FLOAT);
+procedure TADSR.SetAllTimes;
 begin
-  if (aTime < 0.0) then
-    releaseRate := 1.0 / (-aTime * srate)
-  else
-    releaseRate := 1.0 / (aTime * srate);
+  SetAttackTime(aTime);
+  SetDecayTime(dTime);
+  SetSustainLevel(sLevel);
+  SetReleaseTime(rTime);
 end;
 
-procedure TADSR.setAllTimes;
+procedure TADSR.SetTarget(aTarget: Single);
 begin
-  setAttackTime(aTime);
-  setDecayTime(dTime);
-  setSustainLevel(sLevel);
-  setReleaseTime(rTime);
-end;
-
-procedure TADSR.setTarget(aTarget: MY_FLOAT);
-begin
-  target := aTarget;
-  if (Value < target) then
+  FTarget := aTarget;
+  if (FCurrentValue < FTarget) then
    begin
-    state := ATTACK;
-    setSustainLevel(target);
-    rate := attackRate;
+    FState := asAttack;
+    SetSustainLevel(FTarget);
+    FRate := FAttackRate;
    end;
-  if (Value > target) then
+  if (FCurrentValue > FTarget) then
    begin
-    setSustainLevel(target);
-    state := DECAY;
-    rate := decayRate;
+    SetSustainLevel(FTarget);
+    FState := asDecay;
+    FRate := FDecayRate;
    end;
 end;
 
-procedure TADSR.setValue(aValue: MY_FLOAT);
+procedure TADSR.SetValue(Value: Single);
 begin
-  state := SUSTAIN;
-  target := aValue;
-  Value := aValue;
-  setSustainLevel(aValue);
-  rate := 0.0;
+  FState := asSustain;
+  FTarget := Value;
+  FCurrentValue := Value;
+  SetSustainLevel(Value);
+  FRate := 0.0;
 end;
 
-function TADSR.getState: states;
+function TADSR.GetState: TADSRStates;
 begin
-  Result := state;
+  Result := FState;
 end;
 
-function TADSR.tick: MY_FLOAT;
+function TADSR.Tick: Single;
 begin
-  case state of
-    ATTACK :
+  case FState of
+    asAttack :
      begin
-      Value := Value + rate;
-      if (Value >= target) then
+      FCurrentValue := FCurrentValue + FRate;
+      if (FCurrentValue >= FTarget) then
        begin
-        Value := target;
-        rate := decayRate;
-        target := sustainLevel;
-        state := DECAY;
+        FCurrentValue := FTarget;
+        FRate := FDecayRate;
+        FTarget := FSustainLevel;
+        FState := asDecay;
        end;
      end;
-    DECAY :
+    asDecay :
      begin
-      Value := Value - decayRate;
-      if (Value <= sustainLevel) then
+      FCurrentValue := FCurrentValue - FDecayRate;
+      if (FCurrentValue <= FSustainLevel) then
        begin
-        Value := sustainLevel;
-        rate := 0.0;
-        state := SUSTAIN;
+        FCurrentValue := FSustainLevel;
+        FRate := 0.0;
+        FState := asSustain;
        end;
      end;
-    Release :
+    asRelease :
      begin
-      Value := Value - releaseRate;
-      if (Value <= 0.0) then
+      FCurrentValue := FCurrentValue - FReleaseRate;
+      if (FCurrentValue <= 0.0) then
        begin
-        Value := 0.0;
-        state := DONE;
+        FCurrentValue := 0.0;
+        FState := asDone;
        end;
      end;
    end;
-  Result := Value;
-end;
-
-function TADSR.tick(vector: PMY_FLOAT; vectorSize: longword): PMY_FLOAT;
-var
-  i: integer;
-  p: pmy_float;
-begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := tick;
-    Inc(p);
-   end;
-  Result := vector;
+  Result := FCurrentValue;
 end;
 
 end.

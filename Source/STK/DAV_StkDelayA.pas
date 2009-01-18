@@ -1,43 +1,40 @@
 unit DAV_StkDelayA;
 
-{
-/***************************************************/
-/*! \class DelayA
-    \brief STK allpass interpolating delay line class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This delay subclass implements a fractional-
-    length digital delay-line using a first-order
-    allpass filter. A fixed maximum length
-    of 4095 and a delay of 0.5 is set using the
-    default constructor.  Alternatively, the
-    delay and maximum length can be set during
-    instantiation with an overloaded constructor.
+{  STK allpass interpolating delay line class.
 
-    An allpass filter has unity magnitude gain but
-    variable phase delay properties, making it useful
-    in achieving fractional delays without affecting
-    a signal's frequency magnitude response.  In
-    order to achieve a maximally flat phase delay
-    response, the minimum delay possible in this
-    implementation is limited to a value of 0.5.
+   This delay subclass implements a fractional-length digital delay-line using
+   a first-order allpass filter. A fixed maximum length of 4095 and a delay of
+   0.5 is set using the default constructor.  Alternatively, the delay and
+   maximum length can be set during instantiation with an overloaded
+   constructor.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+   An allpass filter has unity magnitude gain but variable phase delay
+   properties, making it useful in achieving fractional delays without
+   affecting a signal's frequency magnitude response.  In order to achieve a
+   maximally flat phase delay response, the minimum delay possible in this
+   implementation is limited to a value of 0.5.
 }
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_StkCommon, DAV_StkDelay;
 
 type
   TDelayA = class(TDelay)
+  protected
+    FAlpha, FCoeff, FApInput, FNextOutput: Single;
+    FDoNextOut: Boolean;
   public
   //! Default constructor creates a delay-line with maximum length of 4095 samples and zero delay.
-    constructor Create(sr: my_float); overload;
+    constructor Create(SampleRate: Single); overload;
 
   //! Overloaded constructor which specifies the current and maximum delay-line lengths.
-    constructor Create(sr, theDelay: MY_FLOAT; maxDelay: longint); overload;
+    constructor Create(SampleRate, ADelay: Single; AMaxDelay: longint); overload;
 
   //! Class destructor.
     destructor Destroy;
@@ -47,25 +44,22 @@ type
 
   //! Set the delay-line length
   {
-    The valid range for \e theDelay is from 0.5 to the maximum delay-line length.
+    The valid range for \e ADelay is from 0.5 to the maximum delay-line length.
   }
-    procedure setDelay(theDelay: MY_FLOAT);
+    procedure setDelay(ADelay: Single);
 
   //! Return the current delay-line length.
-    function getDelay: my_float;
+    function getDelay: Single;
 
   //! Return the value which will be output by the next call to tick().
   {
     This method is valid only for delay settings greater than zero!
    }
-    function nextOut: MY_FLOAT;
+    function nextOut: Single;
 
   //! Input one sample to the delay-line and return one output.
-    function tick(sample: MY_FLOAT): MY_FLOAT;
+    function tick(sample: Single): Single;
 
-  protected
-    alpha, coeff, apInput, nextOutput: MY_FLOAT;
-    doNextOut: boolean;
   end;
 
 implementation
@@ -75,34 +69,34 @@ implementation
 procedure TDelayA.Clear;
 begin
   inherited Clear;
-  apInput := 0.0;
+  FApInput := 0.0;
 end;
 
-constructor TDelayA.Create(sr: my_float);
+constructor TDelayA.Create(SampleRate: Single);
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   setDelay(0.5);
-  apInput := 0.0;
-  doNextOut := True;
+  FApInput := 0.0;
+  FDoNextOut := True;
 end;
 
-constructor TDelayA.Create(sr, theDelay: MY_FLOAT; maxDelay: Integer);
+constructor TDelayA.Create(SampleRate, ADelay: Single; AMaxDelay: Integer);
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
    // Writing before reading allows delays from 0 to length-1.
-  length := maxDelay + 1;
+  length := AMaxDelay + 1;
 
   if (length > 4096) then
    begin
     // We need to delete the previously allocated inputs.
     freemem(inputs);
-    getmem(inputs, sizeof(MY_FLOAT) * length);
+    getmem(inputs, sizeof(Single) * length);
     Clear;
    end;
 
   inPoint := 0;
-  setDelay(theDelay);
-  doNextOut := True;
+  setDelay(ADelay);
+  FDoNextOut := True;
 end;
 
 destructor TDelayA.Destroy;
@@ -110,63 +104,63 @@ begin
   inherited Destroy;
 end;
 
-function TDelayA.getDelay: my_float;
+function TDelayA.getDelay: Single;
 begin
   Result := inherited getdelay;
 end;
 
-function TDelayA.nextOut: MY_FLOAT;
+function TDelayA.nextOut: Single;
 begin
-  if (doNextOut) then
+  if (FDoNextOut) then
    begin
     // Do allpass interpolation delay.
-    nextOutput := -coeff * outputs^;
-    nextOutput := nextOutput + apInput + (coeff * index(inputs, outPoint));
-    doNextOut := False;
+    FNextOutput := -coeff * outputs^;
+    FNextOutput := FNextOutput + FApInput + (FCoeff * index(inputs, outPoint));
+    FDoNextOut := False;
    end;
-  Result := nextOutput;
+  Result := FNextOutput;
 end;
 
-procedure TDelayA.setDelay(theDelay: MY_FLOAT);
+procedure TDelayA.setDelay(ADelay: Single);
 var
-  outPointer: MY_FLOAT;
+  outPointer: Single;
 begin
-  if (theDelay > length - 1) then
+  if (ADelay > length - 1) then
    begin
     // Force delay to maxLength
     outPointer := inPoint + 1.0;
     delay := length - 1;
    end
-  else if (theDelay < 0.5) then
+  else if (ADelay < 0.5) then
    begin
     outPointer := inPoint + 0.4999999999;
     delay := 0.5;
    end
   else
    begin
-    outPointer := inPoint - theDelay + 1.0;     // outPoint chases inpoint
-    delay := theDelay;
+    outPointer := inPoint - ADelay + 1.0;     // outPoint chases inpoint
+    delay := ADelay;
    end;
 
   if (outPointer < 0) then
     outPointer := outPointer + length;  // modulo maximum length
 
   outPoint := round(outPointer);        // integer part
-  alpha := 1.0 + outPoint - outPointer; // fractional part
+  FAlpha := 1.0 + outPoint - outPointer; // fractional part
 
-  if (alpha < 0.5) then
+  if (FAlpha < 0.5) then
    begin
-    // The optimal range for alpha is about 0.5 - 1.5 in order to
+    // The optimal range for FAlpha is about 0.5 - 1.5 in order to
     // achieve the flattest phase delay response.
     outPoint := outPoint + 1;
     if (outPoint >= length) then
       outPoint := outPoint - length;
-    alpha := alpha + 1;
+    FAlpha := FAlpha + 1;
    end;
-  coeff := (1 - alpha) / (1 + alpha);         // coefficient for all pass
+  FCoeff := (1 - FAlpha) / (1 + FAlpha);         // coefficient for all pass
 end;
 
-function TDelayA.tick(sample: MY_FLOAT): MY_FLOAT;
+function TDelayA.tick(sample: Single): Single;
 var
   p: pmy_float;
 begin
@@ -179,10 +173,10 @@ begin
     inPoint := inPoint - length;
 
   outputs^ := nextOut;
-  doNextOut := True;
+  FDoNextOut := True;
 
  // Save the allpass input and increment modulo length.
-  apInput := index(inputs, outPoint);
+  FApInput := index(inputs, outPoint);
   if (outPoint = length) then
     outPoint := outPoint - length;
   Result := outputs^;

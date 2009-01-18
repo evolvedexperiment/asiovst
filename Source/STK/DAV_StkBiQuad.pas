@@ -1,14 +1,16 @@
 unit DAV_StkBiQuad;
 
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+
 {
 /***************************************************/
-/*! \class TBiQuad
-    \brief STK TBiQuad (two-pole, two-zero) filter class.
+/*! \class TStkBiQuad
+    \brief STK TStkBiQuad (two-pole, two-zero) filter class.
 
     This protected Filter subclass implements a
     two-pole, two-zero digital filter.  A method
     is provided for creating a resonance in the
-    frequency response while maintaining a constant
+    Frequency response while maintaining a constant
     filter gain.
 
     by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
@@ -17,13 +19,16 @@ unit DAV_StkBiQuad;
 }
 interface
 
-uses DAV_StkCommon, DAV_StkFilter;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_StkCommon, DAV_StkFilter;
 
 type
-  TBiQuad = class(TFilter)
+  TStkBiQuad = class(TStkFilter)
   public
   //! Default constructor creates a second-order pass-through filter.
-    constructor Create(sr: my_float);
+    constructor Create(SampleRate: Single);
 
   //! Class destructor.
     destructor Destroy;
@@ -32,78 +37,78 @@ type
     procedure Clear;
 
   //! Set the b[0] coefficient value.
-    procedure setB0(b0: MY_FLOAT);
+    procedure SetB0(b0: Single);
 
   //! Set the b[1] coefficient value.
-    procedure setB1(b1: MY_FLOAT);
+    procedure SetB1(b1: Single);
 
   //! Set the b[2] coefficient value.
-    procedure setB2(b2: MY_FLOAT);
+    procedure setB2(b2: Single);
 
   //! Set the a[1] coefficient value.
-    procedure setA1(a1: MY_FLOAT);
+    procedure setA1(a1: Single);
 
   //! Set the a[2] coefficient value.
-    procedure setA2(a2: MY_FLOAT);
+    procedure setA2(a2: Single);
 
-  //! Sets the filter coefficients for a resonance at \e frequency (in Hz).
+  //! Sets the filter coefficients for a resonance at \e Frequency (in Hz).
   {
     This method determines the filter coefficients corresponding to
-    two complex-conjugate poles with the given \e frequency (in Hz)
-    and \e radius from the z-plane origin.  If \e normalize is true,
+    two complex-conjugate poles with the given \e Frequency (in Hz)
+    and \e Radius from the z-plane origin.  If \e Normalize is true,
     the filter zeros are placed at z := 1, z := -1, and the coefficients
     are then normalized to produce a constant unity peak gain
     (independent of the filter \e gain parameter).  The resulting
-    filter frequency response has a resonance at the given \e
-    frequency.  The closer the poles are to the unit-circle (\e radius
+    filter Frequency response has a resonance at the given \e
+    Frequency.  The closer the poles are to the unit-circle (\e Radius
     close to one), the narrower the resulting resonance width.
   }
-    procedure setResonance(frequency, radius: my_float; normalize: boolean = False);
+    procedure SetResonance(Frequency, Radius: Single; Normalize: Boolean = False);
 
-  //! Set the filter coefficients for a notch at \e frequency (in Hz).
+  //! Set the filter coefficients for a notch at \e Frequency (in Hz).
   {
     This method determines the filter coefficients corresponding to
-    two complex-conjugate zeros with the given \e frequency (in Hz)
-    and \e radius from the z-plane origin.  No filter normalization
+    two complex-conjugate zeros with the given \e Frequency (in Hz)
+    and \e Radius from the z-plane origin.  No filter normalization
     is attempted.
   }
-    procedure setNotch(frequency, radius: my_float);
+    procedure SetNotch(Frequency, Radius: Single);
 
   //! Sets the filter zeroes for equal resonance gain.
   {
     When using the filter as a resonator, zeroes places at z := 1, z
     := -1 will result in a constant gain at resonance of 1 / (1 - R),
-    where R is the pole radius setting.
+    where R is the pole Radius setting.
   }
-    procedure setEqualGainZeroes;
+    procedure SetEqualGainZeroes;
 
   //! Set the filter gain.
   {
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    }
-    procedure setGain(theGain: MY_FLOAT);
+    procedure SetGain(theGain: Single);
 
   //! Return the current filter gain.
-    function getGain: MY_FLOAT;
+    function GetGain: Single;
 
   //! Return the last computed output value.
-    function lastOut: MY_FLOAT;
+    function lastOut: Single;
 
   //! Input one sample to the filter and return one output.
-    function tick(sample: MY_FLOAT): MY_FLOAT; overload;
+    function Tick(sample: Single): Single; overload;
 
   //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
+    function Tick(vector: PSingle; vectorSize: longint): PSingle; overload;
   end;
 
 implementation
 
-constructor TBiQuad.Create;
+constructor TStkBiQuad.Create;
 var
-  a, b: array[0..2] of my_float;
+  a, b: array[0..2] of Single;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   b[0] := 1;
   b[1] := 0;
   b[2] := 0;
@@ -113,64 +118,64 @@ begin
   inherited setCoefficients(3, @B, 3, @A);
 end;
 
-destructor TBiQuad.Destroy;
+destructor TStkBiQuad.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TBiQuad.Clear;
+procedure TStkBiQuad.Clear;
 begin
   inherited Clear;
 end;
 
-procedure TBiQuad.setB0(b0: MY_FLOAT);
+procedure TStkBiQuad.SetB0(b0: Single);
 begin
   b^ := b0;
 end;
 
-procedure TBiQuad.setB1(b1: MY_FLOAT);
+procedure TStkBiQuad.SetB1(b1: Single);
 var
-  p: pmy_float;
+  p: PSingle;
 begin
   p := pindex(b, 1);
   p^ := b1;
 end;
 
-procedure TBiQuad.setB2(b2: MY_FLOAT);
+procedure TStkBiQuad.setB2(b2: Single);
 var
-  p: pmy_float;
+  p: PSingle;
 begin
   p := pindex(b, 2);
   p^ := b2;
 end;
 
-procedure TBiQuad.setA1(a1: MY_FLOAT);
+procedure TStkBiQuad.setA1(a1: Single);
 var
-  p: pmy_float;
+  p: PSingle;
 begin
   p := pindex(a, 1);
   p^ := a1;
 end;
 
-procedure TBiQuad.setA2(a2: MY_FLOAT);
+procedure TStkBiQuad.setA2(a2: Single);
 var
-  p: pmy_float;
+  p: PSingle;
 begin
   p := pindex(a, 2);
   p^ := a2;
 end;
 
-procedure TBiQuad.setResonance;
+procedure TStkBiQuad.SetResonance;
 var
-  p: pmy_float;
+  p: PSingle;
 begin
   p := pindex(a, 2);
-  p^ := radius * radius;
+  p^ := Radius * Radius;
   Dec(p);
-  p^ := -2.0 * radius * cos(TWO_PI * frequency / srate);
-  if (normalize) then
+  p^ := -2.0 * Radius * cos(TWO_PI * Frequency / srate);
+  if (Normalize) then
    begin
-   // Use zeros at +- 1 and normalize the filter peak gain.
+   // Use zeros at +- 1 and Normalize the filter peak gain.
     p := b;
     p^ := 0.5 - 0.5 * index(a, 2);
     Inc(p);
@@ -180,20 +185,20 @@ begin
    end;
 end;
 
-procedure TBiQuad.setNotch;
+procedure TStkBiQuad.SetNotch;
 var
-  p: pmy_float;
+  p: PSingle;
 begin
   p := pindex(b, 2);
- // This method does not attempt to normalize the filter gain.
-  p^ := radius * radius;
+ // This method does not attempt to Normalize the filter gain.
+  p^ := Radius * Radius;
   Dec(p);
-  p^ := -2.0 * radius * cos(TWO_PI * frequency / srate);
+  p^ := -2.0 * Radius * cos(TWO_PI * Frequency / srate);
 end;
 
-procedure TBiQuad.setEqualGainZeroes;
+procedure TStkBiQuad.SetEqualGainZeroes;
 var
-  p: pmy_float;
+  p: PSingle;
 begin
   p := b;
   p^ := 1.0;
@@ -203,24 +208,24 @@ begin
   p^ := -1.0;
 end;
 
-procedure TBiQuad.setGain;
+procedure TStkBiQuad.SetGain;
 begin
-  inherited setGain(theGain);
+  inherited SetGain(theGain);
 end;
 
-function TBiQuad.getGain;
+function TStkBiQuad.GetGain;
 begin
-  Result := inherited getGain;
+  Result := inherited GetGain;
 end;
 
-function TBiQuad.lastOut;
+function TStkBiQuad.lastOut;
 begin
   Result := inherited lastOut;
 end;
 
-function TBiQuad.tick(sample: MY_FLOAT): MY_FLOAT;
+function TStkBiQuad.Tick(sample: Single): Single;
 var
-  p: pmy_float;
+  p: PSingle;
 begin
   inputs^ := gain * sample;
   outputs^ := b^ * inputs^ + index(b, 1) * index(inputs, 1) +
@@ -238,15 +243,15 @@ begin
   Result := outputs^;
 end;
 
-function TBiQuad.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TStkBiQuad.Tick(vector: PSingle; vectorSize: longint): PSingle;
 var
   i: integer;
-  p: pmy_float;
+  p: PSingle;
 begin
   p := vector;
   for i := 0 to vectorSize - 1 do
    begin
-    p^ := tick(p^);
+    p^ := Tick(p^);
     Inc(p);
    end;
   Result := vector;

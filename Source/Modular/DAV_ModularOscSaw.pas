@@ -29,7 +29,7 @@ procedure TDspOscSaw.Process(var Data: Single; const channel: integer);
 begin
   FPosition[channel].Re := FPosition[channel].Re + FAngle.Re;
   if FPosition[channel].Re > 1 then
-    FPosition[channel].Re := Frac(FPosition[channel].Re);
+    FPosition[channel].Re := FastFractional(FPosition[channel].Re);
 
   Data := (1 - FPosition[channel].Re * 2) * FAmplitude + FDCOffset;
 end;

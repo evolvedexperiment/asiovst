@@ -170,7 +170,7 @@ begin
  FStart.Top := FMargin;
  FStart.Right := Width - FMargin;
  FStart.Bottom := Height - FMargin;
- FWidth22 := Width / 22;
+ FWidth22  := Width / 22;
  FHeight22 := Height / 22;
  Invalidate;
 end;
@@ -183,7 +183,7 @@ end;
 
 procedure TGuiCorrelationMeter.SetCorrelation(Value: Single);
 begin
- Value := f_Limit(Value, -1, 1);
+ Value := Limit(Value, -1, 1);
  if FCorrelation <> Value then
   begin
    FCorrelation := Value;

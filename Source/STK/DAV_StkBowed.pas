@@ -1,225 +1,218 @@
 unit DAV_StkBowed;
 
-{
-/***************************************************/
-/*! \class TBowed
-    \brief STK TBowed string instrument class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a TBowed string model, a
-    la Smith (1986), after McIntyre, Schumacher,
-    Woodhouse (1983).
+{ STK TStkBowed string instrument class.
 
-    This is a digital waveguide model, making its
-    use possibly subject to patents held by
-    Stanford University, Yamaha, and others.
+  This class implements a TStkBowed string model, a la Smith (1986), after
+  McIntyre, Schumacher, Woodhouse (1983).
 
-    Control Change Numbers:
-       - Bow Pressure := 2
-       - Bow Position := 4
-       - Vibrato Frequency := 11
-       - Vibrato Gain := 1
-       - Volume := 128
+  This is a digital waveguide model, making its use possibly subject to patents
+  held by Stanford University, Yamaha, and others.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  Control Change Numbers:
+    - Bow Pressure := 2
+    - Bow Position := 4
+    - FVibrato Frequency := 11
+    - FVibrato Gain := 1
+    - Volume := 128
 }
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_StkCommon, DAV_StkInstrmnt, DAV_StkDelayl, DAV_StkBowtabl,
   DAV_StkOnepole, DAV_StkBiquad, DAV_StkLfo, DAV_StkAdsr, Windows;
 
 type
-  TBowed = class(TInstrmnt)
+  TStkBowed = class(TInstrmnt)
+  protected
+    FNeckDelay    : TDelayl;
+    FBridgeDelay  : TDelayl;
+    FBowTable     : TBowTable;
+    FStringFilter : TOnePole;
+    FBodyFilter   : TBiquad;
+    FVibrato      : TLfo;
+    FAdsr         : TAdsr;
+    FMaxVelocity  : Single;
+    FBaseDelay    : Single;
+    FVibratoGain  : Single;
+    FBetaRatio    : Single;
   public
-  //! Class constructor, taking the lowest desired playing frequency.
-    constructor Create(sr, lowestFrequency: my_float);
+    constructor Create(SampleRate, lowestFrequency: Single); override;
+    destructor Destroy; override;
 
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Reset and clear all internal state.
+    //! Reset and clear all internal state.
     procedure Clear;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: my_float);
+    //! Set instrument parameters for a particular Frequency.
+    procedure setFrequency(Frequency: Single);
 
-  //! Set vibrato gain.
-    procedure setVibrato(gain: my_float);
+    //! Set FVibrato Gain.
+    procedure setVibrato(Gain: Single);
 
-  //! Apply breath pressure to instrument with given amplitude and rate of increase.
-    procedure startBowing(amplitude, rate: my_float);
+    //! Apply breath pressure to instrument with given Amplitude and Rate of increase.
+    procedure startBowing(Amplitude, Rate: Single);
 
-  //! Decrease breath pressure with given rate of decrease.
-    procedure stopBowing(rate: my_float);
+    //! Decrease breath pressure with given Rate of decrease.
+    procedure stopBowing(Rate: Single);
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: my_float);
+    //! Start a note with the given Frequency and Amplitude.
+    procedure noteOn(Frequency, Amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: my_float);
+    //! Stop a note with the given Amplitude (speed of decay).
+    procedure noteOff(Amplitude: Single);
 
-  //! Compute one output sample.
-    function tick: my_float;
+    //! Compute one output sample.
+    function Tick: Single;
 
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: my_float);
-
-  protected
-    neckDelay: tdelayl;
-    bridgeDelay: tdelayl;
-    bowTable: tbowtabl;
-    stringFilter: tonepole;
-    bodyFilter: tbiquad;
-    vibrato: tlfo;
-    adsr: tadsr;
-    maxVelocity, baseDelay, vibratoGain, betaRatio: my_float;
+    //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure controlChange(number: integer; Value: Single);
   end;
 
 implementation
 
-constructor TBowed.Create;
+constructor TStkBowed.Create;
 var
-  length: longint;
+  Length: longint;
 begin
-  inherited Create(sr);
-  length := round(srate / lowestFrequency + 1);
-  neckDelay := TDelayL.Create(srate, 100.0, length);
-  length := length shr 1;
-  bridgeDelay := TDelayL.Create(srate, 29.0, length);
-  bowTable := TBowTabl.Create(srate);
-  bowTable.setSlope(3.0);
-  vibrato := TLFO.Create(srate);
-  vibrato.setFrequency(6.12723);
-  vibratoGain := 0.0;
+  inherited Create(SampleRate);
+  Length := round(SampleRate / lowestFrequency + 1);
+  FNeckDelay := TDelayl.Create(SampleRate, 100.0, Length);
+  Length := Length shr 1;
+  FBridgeDelay := TDelayl.Create(SampleRate, 29.0, Length);
+  FBowTable := TBowTable.Create(SampleRate);
+  FBowTable.setSlope(3.0);
+  FVibrato := TLfo.Create(SampleRate);
+  FVibrato.setFrequency(6.12723);
+  FVibratoGain := 0.0;
 
-  stringFilter := TOnePole.Create(srate);
-  stringFilter.setPole((0.6 - (0.1 * 22050.0 / srate)));
-  stringFilter.setGain(0.95);
+  FStringFilter := TOnePole.Create(SampleRate);
+  FStringFilter.setPole((0.6 - (0.1 * 22050.0 / SampleRate)));
+  FStringFilter.setGain(0.95);
 
-  bodyFilter := TBiQuad.Create(srate);
-  bodyFilter.setResonance(500.0, 0.85, True);
-  bodyFilter.setGain(0.2);
+  FBodyFilter := TBiquad.Create(SampleRate);
+  FBodyFilter.setResonance(500.0, 0.85, True);
+  FBodyFilter.setGain(0.2);
 
-  adsr := TADSR.Create(srate);
-  adsr.setAllTimes(0.02, 0.005, 0.9, 0.01);
+  FAdsr := TAdsr.Create(SampleRate);
+  FAdsr.setAllTimes(0.02, 0.005, 0.9, 0.01);
 
-  betaRatio := 0.127236;
+  FBetaRatio := 0.127236;
 
  // Necessary to initialize internal variables.
   setFrequency(220.0);
 end;
 
-destructor TBowed.Destroy;
+destructor TStkBowed.Destroy;
 begin
   inherited Destroy;
-  neckDelay.Free;
-  bridgeDelay.Free;
-  bowTable.Free;
-  stringFilter.Free;
-  bodyFilter.Free;
-  vibrato.Free;
-  adsr.Free;
+  FNeckDelay.Free;
+  FBridgeDelay.Free;
+  FBowTable.Free;
+  FStringFilter.Free;
+  FBodyFilter.Free;
+  FVibrato.Free;
+  FAdsr.Free;
 end;
 
-procedure TBowed.Clear;
+procedure TStkBowed.Clear;
 begin
-  neckDelay.Clear();
-  bridgeDelay.Clear();
+  FNeckDelay.Clear;
+  FBridgeDelay.Clear;
 end;
 
-procedure TBowed.setFrequency;
+procedure TStkBowed.setFrequency;
 var
-  freakency: my_float;
+  Freakwency: Single;
 begin
-  freakency := frequency;
-  if (frequency <= 0.0) then
-    freakency := 220.0;
+  Freakwency := Frequency;
+  if (Frequency <= 0.0) then
+    Freakwency := 220.0;
 
   // Delay := length - approximate filter delay.
-  baseDelay := srate / freakency - 4.0;
-  if (baseDelay <= 0.0) then
-    baseDelay := 0.3;
-  bridgeDelay.setDelay(baseDelay * betaRatio);
+  FBaseDelay := srate / Freakwency - 4.0;
+  if (FBaseDelay <= 0.0) then
+    FBaseDelay := 0.3;
+  FBridgeDelay.setDelay(FBaseDelay * FBetaRatio);
                   // bow to bridge length
-  neckDelay.setDelay(baseDelay * (1.0 - betaRatio));
+  FNeckDelay.setDelay(FBaseDelay * (1.0 - FBetaRatio));
  // bow to nut (finger) length
 end;
 
-procedure TBowed.startBowing;
+procedure TStkBowed.startBowing;
 begin
-  adsr.setRate(rate);
-  adsr.keyOn();
-  maxVelocity := 0.03 + (0.2 * amplitude);
+  FAdsr.setRate(Rate);
+  FAdsr.keyOn();
+  FMaxVelocity := 0.03 + (0.2 * Amplitude);
 end;
 
-procedure TBowed.stopBowing;
+procedure TStkBowed.stopBowing;
 begin
-  adsr.setRate(rate);
-  adsr.keyOff();
+  FAdsr.setRate(Rate);
+  FAdsr.keyOff();
 end;
 
-procedure TBowed.noteOn;
+procedure TStkBowed.noteOn;
 begin
-  startBowing(amplitude, amplitude * 0.001);
-  setFrequency(frequency);
+  startBowing(Amplitude, Amplitude * 0.001);
+  setFrequency(Frequency);
 end;
 
-procedure TBowed.noteOff;
+procedure TStkBowed.noteOff;
 begin
-  stopBowing((1.0 - amplitude) * 0.005);
+  stopBowing((1.0 - Amplitude) * 0.005);
 end;
 
-procedure TBowed.setVibrato;
+procedure TStkBowed.setVibrato;
 begin
-  vibratoGain := gain;
+  FVibratoGain := Gain;
 end;
 
-function TBowed.tick: my_float;
+function TStkBowed.Tick: Single;
 var
-  bowVelocity, bridgeRefl, nutRefl, newVel, velDiff, stringVel: my_float;
+  bowVelocity, bridgeRefl, nutRefl, newVel, velDiff, stringVel: Single;
 begin
-  bowVelocity := maxVelocity * adsr.tick();
-  bridgeRefl := -stringFilter.tick(bridgeDelay.lastOut());
-  nutRefl := -neckDelay.lastOut();
+  bowVelocity := FMaxVelocity * FAdsr.Tick();
+  bridgeRefl := -stringFilter.Tick(FBridgeDelay.lastOut());
+  nutRefl := -FNeckDelay.lastOut();
   stringVel := bridgeRefl + nutRefl;               // Sum is String Velocity
   velDiff := bowVelocity - stringVel;              // Differential Velocity
-  newVel := velDiff * bowTable.tick(velDiff);   // Non-Linear Bow Function
-  neckDelay.tick(bridgeRefl + newVel);           // Do string propagations
-  bridgeDelay.tick(nutRefl + newVel);
+  newVel := velDiff * FBowTable.Tick(velDiff);   // Non-Linear Bow Function
+  FNeckDelay.Tick(bridgeRefl + newVel);           // Do string propagations
+  FBridgeDelay.Tick(nutRefl + newVel);
 
-  if (vibratoGain > 0.0) then
-    neckDelay.setDelay((baseDelay * (1.0 - betaRatio)) +
-      (baseDelay * vibratoGain * vibrato.tick()));
-  lastOutput := bodyFilter.tick(bridgeDelay.lastOut());
+  if (FVibratoGain > 0.0) then
+    FNeckDelay.setDelay((FBaseDelay * (1.0 - FBetaRatio)) +
+      (FBaseDelay * FVibratoGain * FVibrato.Tick()));
+  lastOutput := FBodyFilter.Tick(FBridgeDelay.lastOut());
   Result := lastOutput;
 end;
 
-procedure TBowed.controlChange;
+procedure TStkBowed.controlChange;
 var
-  norm: my_float;
+  norm: Single;
 begin
   norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  if (norm < 0) then norm := 0.0
+  else if (norm > 1.0) then norm := 1.0;
 
-  if (number = __SK_BowPressure_) then // 2
-    bowTable.setSlope(5.0 - (4.0 * norm))
-  else if (number = __SK_BowPosition_) then
+  if (number = CMIDIBowPressure) then // 2
+    FBowTable.setSlope(5.0 - (4.0 * norm))
+  else if (number = CMIDIBowPosition) then
    begin // 4
-    betaRatio := 0.027236 + (0.2 * norm);
-    bridgeDelay.setDelay(baseDelay * betaRatio);
-    neckDelay.setDelay(baseDelay * (1.0 - betaRatio));
+    FBetaRatio := 0.027236 + (0.2 * norm);
+    FBridgeDelay.setDelay(FBaseDelay * FBetaRatio);
+    FNeckDelay.setDelay(FBaseDelay * (1.0 - FBetaRatio));
    end
-  else if (number = __SK_ModFrequency_) then // 11
-    vibrato.setFrequency(norm * 12.0)
-  else if (number = __SK_ModWheel_) then // 1
-    vibratoGain := (norm * 0.4)
-  else if (number = __SK_AfterTouch_Cont_) then // 128
-    adsr.setTarget(norm);
+  else if (number = CMIDIModFrequency) then // 11
+    FVibrato.setFrequency(norm * 12.0)
+  else if (number = CMIDIModWheel) then // 1
+    FVibratoGain := (norm * 0.4)
+  else if (number = CMIDIAfterTouchCont) then // 128
+    FAdsr.setTarget(norm);
 end;
 
 end.

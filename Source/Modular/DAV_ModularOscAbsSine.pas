@@ -19,20 +19,20 @@ implementation
 
 procedure TDspOscAbsSine.Process(var Data: Single; const Channel: integer);
 begin
-  Data := FPosition[Channel].Re * FAngle.Re - FPosition[Channel].Im * FAngle.Im;
-  FPosition[Channel].Im := FPosition[Channel].Im*FAngle.Re+FPosition[Channel].Re*FAngle.Im;
-  FPosition[Channel].Re := Data;
+  Data:=FPosition[Channel].Re*FAngle.Re-FPosition[Channel].Im*FAngle.Im;
+  FPosition[Channel].Im:=FPosition[Channel].Im*FAngle.Re+FPosition[Channel].Re*FAngle.Im;
+  FPosition[Channel].Re:=Data;
   FastAbs(Data);
-  Data := (Data * 2 - 1) * FAmplitude + FDCOffset;
+  Data := (Data*2-1) * FAmplitude + FDCOffset;
 end;
 
 procedure TDspOscAbsSine.Process(var Data: Double; const Channel: integer);
 begin
-  Data := FPosition[Channel].Re * FAngle.Re - FPosition[Channel].Im * FAngle.Im;
-  FPosition[Channel].Im := FPosition[Channel].Im * FAngle.Re + FPosition[Channel].Re * FAngle.Im;
-  FPosition[Channel].Re := Data;
+  Data:=FPosition[Channel].Re*FAngle.Re-FPosition[Channel].Im*FAngle.Im;
+  FPosition[Channel].Im:=FPosition[Channel].Im*FAngle.Re+FPosition[Channel].Re*FAngle.Im;
+  FPosition[Channel].Re:=Data;
   FastAbs(Data);
-  Data := (Data * 2 - 1) * FAmplitude + FDCOffset;
+  Data := (Data*2-1) * FAmplitude + FDCOffset;
 end;
 
 end.

@@ -1,140 +1,133 @@
 unit DAV_StkDrone;
 
-{
-/***************************************************/
-/*! \class Drone
-    \brief STK "drone" plucked string model.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a simple plucked string
-    physical model based on the Karplus-Strong
-    algorithm.
+{  STK "drone" plucked string model.
 
-    This is a digital waveguide model, making its
-    use possibly subject to patents held by
-    Stanford University, Yamaha, and others.
-    There exist at least two patents, assigned to
-    Stanford, bearing the names of Karplus and/or
-    Strong.
+   This class implements a simple plucked string physical model based on the
+   Karplus-Strong algorithm.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+   This is a digital waveguide model, making its use possibly subject to
+   patents held by Stanford University, Yamaha, and others.
+   There exist at least two patents, assigned to Stanford, bearing the names
+   of Karplus and/or Strong.
 }
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_StkCommon, DAV_StkInstrument, DAV_StkDelaya, DAV_StkOneZero, DAV_StkAdsr,
   DAV_StkNoise;
 
 type
-  TDrone = class(TInstrmnt)
+  TStkDrone = class(TInstrmnt)
+  protected
+    FDelayLine: TDelayA;
+    FLoopFilter: TOneZero;
+    FEnvelope: TAdsr;
+    FNoise: TNoise;
+    FLength: Integer;
+    FLoopGain: Single;
   public
-  //! Class constructor, taking the lowest desired playing frequency.
-    constructor Create(sr, lowestFrequency: my_float);
+  //! Class constructor, taking the lowest desired playing Frequency.
+    constructor Create(const SampleRate, LowestFrequency: Single);
 
-  //! Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
   //! Reset and clear all internal state.
     procedure Clear;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
+  //! Set instrument parameters for a particular Frequency.
+    procedure setFrequency(Frequency: Single);
 
-  //! Pluck the string with the given amplitude using the current frequency.
-    procedure pluck(amplitude: MY_FLOAT);
+  //! Pluck the string with the given Amplitude using the current Frequency.
+    procedure pluck(Amplitude: Single);
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
+  //! Start a note with the given Frequency and Amplitude.
+    procedure noteOn(Frequency, Amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
+  //! Stop a note with the given Amplitude (speed of decay).
+    procedure noteOff(Amplitude: Single);
 
   //! Compute one output sample.
-    function tick: MY_FLOAT;
-
-  protected
-    delayLine: tdelaya;
-    loopFilter: tonezero;
-    envelope: tadsr;
-    noise: tnoise;
-    length: integer;
-    loopGain: MY_FLOAT;
+    function Tick: Single;
   end;
 
 implementation
 
-constructor TDrone.Create;
+constructor TStkDrone.Create(SampleRate: Single, LowestFrequency: Single);
 begin
-  inherited Create(sr);
-  length := round(srate / lowestFrequency + 1);
-  loopGain := 0.999;
-  delayLine := TDelayA.Create(srate, (length / 2.0), length);
-  loopFilter := TOneZero.Create(srate);
-  noise := TNoise.Create(srate);
-  envelope := TADSR.Create(srate);
-  envelope.setAllTimes(2.0, 0.5, 0.0, 0.5);
+  inherited Create(SampleRate);
+  FLength := round(FSampleRate / LowestFrequency + 1);
+  FLoopGain := 0.999;
+  FDelayLine := TDelayA.Create(FSampleRate, (FLength / 2.0), FLength);
+  FLoopFilter := TOneZero.Create(FSampleRate);
+  FNoise := TNoise.Create(FSampleRate);
+  FEnvelope := TAdsr.Create(FSampleRate);
+  FEnvelope.setAllTimes(2.0, 0.5, 0.0, 0.5);
   Clear;
 end;
 
-destructor TDrone.Destroy;
+destructor TStkDrone.Destroy;
 begin
-  delayLine.Free;
-  loopFilter.Free;
-  envelope.Free;
-  noise.Free;
+  FDelayLine.Free;
+  FLoopFilter.Free;
+  FEnvelope.Free;
+  FNoise.Free;
 end;
 
-procedure TDrone.Clear;
+procedure TStkDrone.Clear;
 begin
-  delayLine.Clear;
-  loopFilter.Clear;
+  FDelayLine.Clear;
+  FLoopFilter.Clear;
 end;
 
-procedure TDrone.setFrequency;
+procedure TStkDrone.setFrequency;
 var
-  delay, freakency: my_float;
+  delay, freakency: Single;
 begin
-  freakency := frequency;
-  if (frequency <= 0.0) then
+  freakency := Frequency;
+  if (Frequency <= 0.0) then
     freakency := 220.0;
- // Delay=length - approximate filter delay.
-  delay := (srate / freakency) - 0.5;
+ // Delay=FLength - approximate filter delay.
+  delay := (FSampleRate / freakency) - 0.5;
   if (delay <= 0.0) then
     delay := 0.3
-  else if (delay > length) then
-    delay := length;
-  delayLine.setDelay(delay);
-  loopGain := 0.997 + (freakency * 0.000002);
-  if (loopGain >= 1.0) then
-    loopGain := 0.99999;
+  else if (delay > FLength) then
+    delay := FLength;
+  FDelayLine.setDelay(delay);
+  FLoopGain := 0.997 + (freakency * 0.000002);
+  if (FLoopGain >= 1.0) then
+    FLoopGain := 0.99999;
 end;
 
-procedure TDrone.pluck;
+procedure TStkDrone.pluck;
 begin
-  envelope.keyOn;
+  FEnvelope.keyOn;
 end;
 
-procedure TDrone.noteOn;
+procedure TStkDrone.noteOn;
 begin
-  setFrequency(frequency);
-  pluck(amplitude);
+  setFrequency(Frequency);
+  pluck(Amplitude);
 end;
 
-procedure TDrone.noteOff;
+procedure TStkDrone.noteOff;
 begin
-  loopGain := 1.0 - amplitude;
-  if (loopGain < 0.0) then
-    loopGain := 0.0
-  else if (loopGain > 1.0) then
-    loopGain := 0.99999;
+  FLoopGain := 1.0 - Amplitude;
+  if (FLoopGain < 0.0) then
+    FLoopGain := 0.0
+  else if (FLoopGain > 1.0) then
+    FLoopGain := 0.99999;
 end;
 
-function TDrone.tick: MY_FLOAT;
+function TStkDrone.Tick: Single;
 begin
  // Here's the whole inner loop of the instrument!!
-  lastOutput := delayLine.tick(loopFilter.tick(delayLine.lastOut * loopGain) +
-    (0.005 * envelope.tick * noise.tick));
+  lastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.lastOut * FLoopGain) +
+    (0.005 * FEnvelope.Tick * FNoise.Tick));
   Result := lastOutput;
 end;
 

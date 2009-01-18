@@ -208,17 +208,14 @@ type
 
   TGraphXYFlag = (gfShowLabels);
   TGraphXYFlags = set of TGraphXYFlag;
-  TCustomGuiGraphXY = class(TGuiBaseControl)
+  TCustomGuiGraphXY = class(TCustomGuiBaseAntialiasedControl)
   private
-    FAntiAlias        : TGuiAntiAlias;
     FOnChange         : TNotifyEvent;
-    FOSValue          : Integer;
     FFrameColor       : TColor;
     FXAxis            : TCustomAxis;
     FYAxis            : TCustomAxis;
     FSeriesCollection : TGuiGraphXYSeriesCollection;
-    FFlags: TGraphXYFlags;
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
+    FFlags            : TGraphXYFlags;
     function GetSeriesCollectionItem(Index: Integer): TGuiGraphXYSeriesCollectionItem;
     procedure SetSeriesCollectionItem(Index: Integer; const Value: TGuiGraphXYSeriesCollectionItem);
     procedure SetFlags(const Value: TGraphXYFlags);
@@ -237,7 +234,6 @@ type
     destructor Destroy; override;
     procedure UpdateGraph;
   published
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property FrameColor: TColor read FFrameColor write SetFrameColor default clRed;
     property Flags: TGraphXYFlags read FFlags write SetFlags default [gfShowLabels];
     property SeriesCollection: TGuiGraphXYSeriesCollection read FSeriesCollection write FSeriesCollection;
@@ -248,14 +244,24 @@ type
 
   TGuiGraphXY = class(TCustomGuiGraphXY)
   published
-    property Transparent;
+    property Align;
+    property Anchors;
     property AntiAlias;
     property Color;
+    property Constraints;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
+    property Enabled;
     property FrameColor;
     property LineColor;
     property LineWidth;
-    property SeriesCollection;
     property OnChange;
+    property PopupMenu;
+    property SeriesCollection;
+    property ShowHint;
+    property Transparent;
+    property Visible;
   end;
 
 var
@@ -625,15 +631,15 @@ begin
  if Visible and assigned(FOnEvaluate) then
   with GraphXY, Bitmap do
    begin
-    Scale.X   := FXAxis.ValuePerPixel / FOSValue;
+    Scale.X   := FXAxis.ValuePerPixel / OversamplingFactor;
     Offset.X  := FXAxis.Lower;
-    Scale.Y   := FOSValue * FYAxis.PixelPerValue;
-    Offset.Y  := {Top} + FOSValue * FYAxis.PixelSize + fYAxis.Lower * Scale.Y;
+    Scale.Y   := OversamplingFactor * FYAxis.PixelPerValue;
+    Offset.Y  := {Top} + OversamplingFactor * FYAxis.PixelSize + fYAxis.Lower * Scale.Y;
 
     Canvas.Pen.Color := fColor;
-    Canvas.Pen.Width := LineWidth * FOSValue;
+    Canvas.Pen.Width := LineWidth * OversamplingFactor;
     Canvas.MoveTo(0 {+ Left}, round(Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X)));
-    for x := 1 to FOSValue * FXAxis.PixelSize
+    for x := 1 to OversamplingFactor * FXAxis.PixelSize
      do Canvas.LineTo(0 {+ Left} + x, round(Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X + x * Scale.X)));
    end;
 end;
@@ -945,9 +951,7 @@ begin
   FLineColor        := clMaroon;
   FFrameColor       := clRed;
   FLineWidth        := 2;
-  FAntiAlias        := gaaNone;
   FFlags            := [gfShowLabels];
-  FOSValue          := 1;
   FSeriesCollection := TGuiGraphXYSeriesCollection.Create(Self);
   FXAxis            := TCustomAxis.Create;
   FYAxis            := TCustomAxis.Create;
@@ -1001,17 +1005,17 @@ begin
    Rct := ClipRect;
    FrameRect(Rct);
    InflateRect(Rct, -1, -1);
-   ZeroPos   := Point(round(XAxis.ZeroPosition * FOSValue * XAxis.PixelSize),
-                      round((1 - YAxis.ZeroPosition) * FOSValue * YAxis.PixelSize));
+   ZeroPos   := Point(round(XAxis.ZeroPosition * OversamplingFactor * XAxis.PixelSize),
+                      round((1 - YAxis.ZeroPosition) * OversamplingFactor * YAxis.PixelSize));
 
    Pen.Color   := FLineColor;
-   Pen.Width   := FOSValue;
+   Pen.Width   := OversamplingFactor;
    Brush.Color := Color;
-   Font.Height := Self.Font.Height * FOSValue; 
+   Font.Height := Self.Font.Height * OversamplingFactor; 
 
    with XAxis do
     begin
-     PixelRange := FOSValue * (PixelSize - 2);
+     PixelRange := OversamplingFactor * (PixelSize - 2);
      NormGran := FGranularity * FRangeReci;
      c := FZeroPosition + round(0.5 - FZeroPosition / NormGran) * NormGran;
      while c < 0 do c := c + NormGran;
@@ -1031,7 +1035,7 @@ begin
           begin
            str := '0';
            TextSize := TextExtent(str);
-           TextOut(Rct.Left + round(c * PixelRange - TextSize.cx) - FOSValue * TextXMargin,
+           TextOut(Rct.Left + round(c * PixelRange - TextSize.cx) - OversamplingFactor * TextXMargin,
                    ZeroPos.Y, str);
           end
          else
@@ -1051,7 +1055,7 @@ begin
    with YAxis do
     if fRange <> 0 then
      begin
-      PixelRange := FOSValue * (PixelSize - 2);
+      PixelRange := OversamplingFactor * (PixelSize - 2);
       NormGran := FGranularity * fRangeReci;
       c := FZeroPosition + round( -FZeroPosition / NormGran + 0.5) * NormGran;
       while c < 0 do c := c + NormGran;
@@ -1072,7 +1076,7 @@ begin
            str := FloatToStrF(fLower + FRange * c, ffGeneral, 2, 2);
            TextSize := TextExtent(str);
 
-           TextOut(ZeroPos.X - TextSize.cx - FOSValue * TextXMargin,
+           TextOut(ZeroPos.X - TextSize.cx - OversamplingFactor * TextXMargin,
                    Rct.Top + round((1 - c) * PixelRange - 0.5 * TextSize.cy),
                    str);
           end;
@@ -1103,139 +1107,49 @@ begin
  if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
   begin
    Lock;
-   case FAntiAlias of
-    gaaNone :
-     begin
-      // draw background
-      {$IFNDEF FPC}
-      if fTransparent
-       then DrawParentImage(fBuffer.Canvas)
+   if AntiAlias = gaaNone then
+    begin
+     // draw background
+     {$IFNDEF FPC}
+     if fTransparent
+      then DrawParentImage(FBuffer.Canvas)
+      else
+     {$ENDIF}
+      begin
+       Brush.Color := Self.Color;
+       FillRect(ClipRect);
+      end;
+     RenderGraphXYToBitmap(FBuffer);
+    end
+   else
+    begin
+     Bmp := TBitmap.Create;
+     with Bmp do
+      try
+       PixelFormat := pf32bit;
+       Width       := OversamplingFactor * FBuffer.Width;
+       Height      := OversamplingFactor * FBuffer.Height;
+       {$IFNDEF FPC}
+       if fTransparent then
+        begin
+         DrawParentImage(Bmp.Canvas);
+         UpsampleBitmap(Bmp);
+        end
        else
-      {$ENDIF}
-       begin
-        Brush.Color := Self.Color;
-        FillRect(ClipRect);
-       end;
-      RenderGraphXYToBitmap(fBuffer);
-     end;
-    gaaLinear2x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width       := FOSValue * fBuffer.Width;
-        Height      := FOSValue * fBuffer.Height;
-        {$IFNDEF FPC}
-        if fTransparent then
+       {$ENDIF}
+        with Bmp.Canvas do
          begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample2xBitmap(Bmp);
-         end
-        else
-        {$ENDIF}
-         with Bmp.Canvas do
-          begin
-           Brush.Color := Self.Color;
-           FillRect(ClipRect);
-          end;
-        Bmp.Canvas.FillRect(ClipRect);
-        RenderGraphXYToBitmap(Bmp);
-        Downsample2xBitmap(Bmp);
-        fBuffer.Canvas.Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear4x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width       := FOSValue * fBuffer.Width;
-        Height      := FOSValue * fBuffer.Height;
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-         end
-        else
-        {$ENDIF}
-         with Bmp.Canvas do
-          begin
-           Brush.Color := Self.Color;
-           FillRect(ClipRect);
-          end;
-        RenderGraphXYToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        fBuffer.Canvas.Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear8x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width       := FOSValue * fBuffer.Width;
-        Height      := FOSValue * fBuffer.Height;
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-          Upsample2xBitmap(Bmp);
-         end
-        else
-        {$ENDIF}
-         with Bmp.Canvas do
-          begin
-           Brush.Color := Self.Color;
-           FillRect(ClipRect);
-          end;
-        RenderGraphXYToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Downsample2xBitmap(Bmp);
-        fBuffer.Canvas.Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-    gaaLinear16x :
-     begin
-      Bmp := TBitmap.Create;
-      with Bmp do
-       try
-        PixelFormat := pf32bit;
-        Width       := FOSValue * fBuffer.Width;
-        Height      := FOSValue * fBuffer.Height;
-        {$IFNDEF FPC}
-        if fTransparent then
-         begin
-          DrawParentImage(Bmp.Canvas);
-          Upsample4xBitmap(Bmp);
-          Upsample4xBitmap(Bmp);
-         end
-        else
-        {$ENDIF}
-         with Bmp.Canvas do
-          begin
-           Brush.Color := Self.Color;
-           FillRect(ClipRect);
-          end;
-        RenderGraphXYToBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        Downsample4xBitmap(Bmp);
-        fBuffer.Canvas.Draw(0, 0, Bmp);
-       finally
-        Free;
-       end;
-     end;
-   end;
+          Brush.Color := Self.Color;
+          FillRect(ClipRect);
+         end;
+       Bmp.Canvas.FillRect(ClipRect);
+       RenderGraphXYToBitmap(Bmp);
+       DownsampleBitmap(Bmp);
+       FBuffer.Canvas.Draw(0, 0, Bmp);
+      finally
+       Free;
+      end;
+    end;
    Unlock;
   end;
 
@@ -1246,22 +1160,6 @@ procedure TCustomGuiGraphXY.MouseDown(Button: TMouseButton; Shift: TShiftState; 
   Y: Integer);
 begin
   inherited;
-end;
-
-procedure TCustomGuiGraphXY.SetAntiAlias(const Value: TGuiAntiAlias);
-begin
- if FAntiAlias <> Value then
-  begin
-   FAntiAlias := Value;
-   case FAntiAlias of
-         gaaNone : FOSValue :=  1;
-     gaaLinear2x : FOSValue :=  2;
-     gaaLinear4x : FOSValue :=  4;
-     gaaLinear8x : FOSValue :=  8;
-    gaaLinear16x : FOSValue := 16;
-   end;
-   RedrawBuffer(True);
-  end;
 end;
 
 procedure TCustomGuiGraphXY.ShowLabelsChanged;

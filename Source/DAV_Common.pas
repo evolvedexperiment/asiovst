@@ -155,7 +155,7 @@ type
   procedure FastAbs(var Value: Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
   procedure FastAbs(var Value: Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
   procedure FastAbs(var Value: TDAV4SingleArray); overload;
-  function FastMod(const Arg1, Arg2: Single): Single;
+  function FastMod(const Arg1, Arg2: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
 
   {$IFNDEF FPC}
   function FastInt(Sample: Single): Single; overload;

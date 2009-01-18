@@ -1,26 +1,29 @@
 unit DAV_StkEcho;
 
-{
-/***************************************************/
-/*! \class Echo
-    \brief STK echo effect class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a echo effect.
+{ STK echo effect class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This class implements a echo effect.
 }
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_StkCommon, DAV_StkDelay;
 
 type
   TEcho = class(TStk)
+  protected
+    FDelayLine   : TDelay;
+    FLength      : Integer;
+    FLastOutput  : Single;
+    FEffectMix   : Single;
   public
-  //! Class constructor, taking the longest desired delay length.
-    constructor Create(sr, longestDelay: MY_FLOAT);
+  //! Class constructor, taking the longest desired delay FLength.
+    constructor Create(sr, longestDelay: Single);
 
   //! Class destructor.
     destructor Destroy;
@@ -28,87 +31,82 @@ type
   //! Reset and clear all internal state.
     procedure Clear;
 
-  //! Set the delay line length in samples.
-    procedure setDelay(delay: MY_FLOAT);
+  //! Set the delay line FLength in samples.
+    procedure setDelay(delay: Single);
 
   //! Set the mixture of input and processed levels in the output (0.0 := input only, 1.0 := processed only). 
-    procedure setEffectMix(mix: MY_FLOAT);
+    procedure setEffectMix(mix: Single);
 
   //! Return the last output value.
-    function lastOut: MY_FLOAT;
+    function lastOut: Single;
 
   //! Compute one output sample.
-    function tick(input: MY_FLOAT): MY_FLOAT; overload;
+    function tick(input: Single): Single; overload;
 
   //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
-
-  protected
-    delayLine: TDelay;
-    length: longint;
-    lastOutput, effectMix: MY_FLOAT;
+    function tick(vector: PSingle; vectorSize: Integer): PSingle; overload;
   end;
 
 implementation
 
-constructor TEcho.Create(sr, longestDelay: MY_FLOAT);
+constructor TEcho.Create(sr, longestDelay: Single);
 begin
   inherited Create(sr);
-  length := round(longestDelay) + 2;
-  delayLine := TDelay.Create(srate, length shr 1, length);
-  effectMix := 0.5;
+  FLength := round(longestDelay) + 2;
+  FDelayLine := TDelay.Create(srate, FLength shr 1, FLength);
+  FEffectMix := 0.5;
   Clear;
 end;
 
 destructor TEcho.Destroy;
 begin
   inherited Destroy;
-  delayLine.Free;
+  FDelayLine.Free;
 end;
 
 procedure TEcho.Clear;
 begin
-  delayLine.Clear;
-  lastOutput := 0.0;
+  FDelayLine.Clear;
+  FLastOutput := 0.0;
 end;
 
 procedure TEcho.setDelay;
 var
-  size: MY_FLOAT;
+  size: Single;
 begin
   size := delay;
   if (delay < 0.0) then
     size := 0.0
-  else if (delay > length) then
-    size := length;
-  delayLine.setDelay(round(size));
+  else if (delay > FLength) then
+    size := FLength;
+  FDelayLine.setDelay(round(size));
 end;
 
 procedure TEcho.setEffectMix;
 begin
-  effectMix := mix;
+  FEffectMix := mix;
   if (mix < 0.0) then
-    effectMix := 0.0
+    FEffectMix := 0.0
   else if (mix > 1.0) then
-    effectMix := 1.0;
+    FEffectMix := 1.0;
 end;
 
-function TEcho.lastOut: MY_FLOAT;
+function TEcho.lastOut: Single;
 begin
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
-function TEcho.tick(input: MY_FLOAT): MY_FLOAT;
+function TEcho.tick(input: Single): Single;
 begin
-  lastOutput := effectMix * delayLine.tick(input);
-  lastOutput := lastOutput + input * (1.0 - effectMix);
-  Result := lastOutput;
+  FLastOutput := FEffectMix * FDelayLine.tick(input);
+  FLastOutput := FLastOutput + input * (1.0 - FEffectMix);
+  Result := FLastOutput;
 end;
 
-function TEcho.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TEcho.tick(vector: PSingle; vectorSize: Integer): PSingle;
 var
   i: integer;
-  p: pmy_float;
+  p: PSingle;
 begin
   p := vector;
   for i := 0 to vectorSize - 1 do
