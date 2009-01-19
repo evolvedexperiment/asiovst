@@ -1,93 +1,82 @@
 unit DAV_StkJetTabl;
 
-{
-/***************************************************/
-/*! \class TJetTabl
-    \brief STK jet table class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a flue jet non-linear
-    function, computed by a polynomial calculation.
-    Contrary to the name, this is not a "table".
+{  STK Jet Table class.
 
-    Consult Fletcher and Rossing, Karjalainen,
-    Cook, and others for more information.
+   This class implements a flue jet non-linear function, computed by a
+   polynomial calculation. Contrary to the name, this is not a "table".
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+   Consult Fletcher and Rossing, Karjalainen, Cook, and others for more
+   information.
 }
+
 interface
 
-uses stk;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk;
 
 type
-  TJetTabl = class(TStk)
-  public
-  //! Default constructor.
-    constructor Create(sr: my_float);
-
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Return the last output value.
-    function lastOut: my_float;
-
-  //! Return the function value for \e input.
-    function tick(input: MY_FLOAT): MY_FLOAT; overload;
-
-  //! Take \e vectorSize inputs and return the corresponding function values in \e vector.
-    function tick(vector: pmy_float; vectorSize: longint): pmy_float; overload;
-
+  TStkJetTable = class(TStk)
   protected
-    lastOutput: MY_FLOAT;
+    FLastOutput: Single;
+  public
+    constructor Create(const SampleRate: Single); override;
+    destructor Destroy; override;
 
+    function Tick(Input: Single): Single; overload;
+    function Tick(Vector: PSingle; VectorSize: Integer): PSingle; overload;
+
+    property LastOutput: Single read FLastOutput;
   end;
 
 implementation
 
-constructor TJetTabl.Create;
+constructor TStkJetTable.Create;
 begin
-  inherited Create(sr);
-  lastOutput := 0.0;
+  inherited Create(SampleRate);
+  FLastOutput := 0.0;
 end;
 
-destructor TJetTabl.Destroy;
+destructor TStkJetTable.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TJetTabl.lastOut: MY_FLOAT;
+function TStkJetTable.LastOut: Single;
 begin
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
-function TJetTabl.tick(input: MY_FLOAT): MY_FLOAT;
+function TStkJetTable.Tick(Input: Single): Single;
 begin
   // Perform "table lookup" using a polynomial
   // calculation (x^3 - x), which approximates
   // the jet sigmoid behavior.
-  lastOutput := input * (input * input - 1.0);
+  FLastOutput := Input * (Input * Input - 1.0);
 
   // Saturate at +/- 1.0.
-  if (lastOutput > 1.0) then
-    lastOutput := 1.0;
-  if (lastOutput < -1.0) then
-    lastOutput := -1.0;
-  Result := lastOutput;
+  if (FLastOutput > 1.0) then
+    FLastOutput := 1.0;
+  if (FLastOutput < -1.0) then
+    FLastOutput := -1.0;
+  Result := FLastOutput;
 end;
 
-function TJetTabl.tick(vector: pmy_float; vectorSize: longint): pmy_float;
+function TStkJetTable.Tick(Vector: PSingle; VectorSize: Integer): PSingle;
 var
   i: integer;
-  p: pmy_float;
+  p: PSingle;
 begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
+  p := Vector;
+  for i := 0 to VectorSize - 1 do
    begin
-    p^ := tick(p^);
+    p^ := Tick(p^);
     Inc(p);
    end;
-  Result := vector;
+  Result := Vector;
 end;
 
 end.

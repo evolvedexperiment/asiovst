@@ -1,142 +1,149 @@
 unit DAV_StkLFO;
 
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
-  Stk;
+  DAV_Stk;
 
 type
-  TLFO = class(TStk)
+  TStkLFO = class(TStk)
   protected
-    wave: integer;
-    cnt: my_float;
-    tmp, pofs, phase, freq: my_float;
+    FWave  : Integer;
+    Cnt    : Single;
+    FTmp   : Single;
+    FPofs  : Single;
+    FPhase : Single;
+    FFreq  : Single;
   public
-    constructor Create(sr: my_float);
-    destructor Destroy;
+    constructor Create(const SampleRate: Single); override;
+    destructor Destroy; override;
     procedure Reset;
-    procedure SetPhase(sp: my_float);
-    function GetPhase: my_float;
-    procedure SetPhaseOffset(sp: my_float);
-    procedure AddPhaseOffset(sp: my_float);
-    function GetPhaseOffset: my_float;
-    procedure SetFrequency(sf: my_float);
-    function GetFrequency: my_float;
-    function tick: my_float;
-    procedure SetActiveWave(i: integer);
-    function GetActiveWave: integer;
+    procedure SetPhase(Value: Single);
+    function GetPhase: Single;
+    procedure SetPhaseOffset(Value: Single);
+    procedure AddPhaseOffset(Value: Single);
+    function GetPhaseOffset: Single;
+    procedure SetFrequency(sf: Single);
+    function GetFrequency: Single;
+    function Tick: Single;
+    procedure SetActiveWave(i: Integer);
+    function GetActiveWave: Integer;
   end;
 
 implementation
 
 
-function TLFO.GetActiveWave: Integer;
+function TStkLFO.GetActiveWave: Integer;
 begin
-  Result := wave;
+  Result := FWave;
 end;
 
-procedure TLFO.SetActiveWave(i: Integer);
+procedure TStkLFO.SetActiveWave(i: Integer);
 begin
-  wave := i;
+  FWave := i;
 end;
 
-constructor TLFO.Create(sr: my_float);
+constructor TStkLFO.Create(SampleRate: Single);
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   SetFrequency(1);
   SetPhase(0);
   SetPhaseOffset(0);
   Reset;
-  wave := 0;
+  FWave := 0;
 end;
 
-function TLFO.tick: my_float;
+function TStkLFO.Tick: Single;
 var
-  y, j: my_float;
+  y, j: Single;
 begin
-  j := srate / freq;
-  phase := cnt / j;
-  case wave of
-    0 : y := sin(2 * pi * phase);
-    1 : if phase < 0.5 then
-        y := 2 * phase
+  j := srate / FFreq;
+  FPhase := Cnt / j;
+  case FWave of
+    0 : y := sin(2 * pi * FPhase);
+    1 : if FPhase < 0.5 then
+        y := 2 * FPhase
       else
-        y := 2 * phase - 2;
-    2 : if phase < 0.5 then
+        y := 2 * FPhase - 2;
+    2 : if FPhase < 0.5 then
         y := 1
       else
         y := -1;
-    3 : if (phase >= 0.25) and (phase < 0.75) then
-        y := -4 * (phase + 0.25) + 3
-      else if (phase < 0.25) then
-        y := 4 * (phase + 0.25) - 1
+    3 : if (FPhase >= 0.25) and (FPhase < 0.75) then
+        y := -4 * (FPhase + 0.25) + 3
+      else if (FPhase < 0.25) then
+        y := 4 * (FPhase + 0.25) - 1
       else
-        y := 4 * (phase + 0.25) - 5;
-    4 : y := tmp;
+        y := 4 * (FPhase + 0.25) - 5;
+    4 : y := FTmp;
   else y := random * 2 - 1;
    end;
-  cnt := cnt + 1;
-  while (cnt >= j) do
+  Cnt := Cnt + 1;
+  while (Cnt >= j) do
    begin
-    cnt := cnt - j;
-    tmp := random * 2 - 1
+    Cnt := Cnt - j;
+    FTmp := random * 2 - 1;
    end;
   Result := y;
 end;
 
-procedure TLFO.SetFrequency(sf: my_float);
+procedure TStkLFO.SetFrequency(sf: Single);
 begin
-  freq := sf;
+  FFreq := sf;
 end;
 
-function TLFO.GetFrequency: my_float;
+function TStkLFO.GetFrequency: Single;
 begin
-  Result := freq;
+  Result := FFreq;
 end;
 
-procedure TLFO.SetPhaseOffset(sp: my_float);
+procedure TStkLFO.SetPhaseOffset(Value: Single);
 begin
-  while sp >= 1 do
-    sp := sp - 1;
-  while sp < 0 do
-    sp := sp + 1;
-  pofs := sp;
-  SetPhase(pofs + phase);
+  while Value >= 1 do
+    Value := Value - 1;
+  while Value < 0 do
+    Value := Value + 1;
+  FPofs := Value;
+  SetPhase(FPofs + FPhase);
 end;
 
-function TLFO.GetPhaseOffset: my_float;
+function TStkLFO.GetPhaseOffset: Single;
 begin
-  Result := pofs;
+  Result := FPofs;
 end;
 
-procedure TLFO.SetPhase(sp: my_float);
+procedure TStkLFO.SetPhase(Value: Single);
 begin
-  while sp >= 1 do
-    sp := sp - 1;
-  while sp < 0 do
-    sp := sp + 1;
-  phase := sp;
-  cnt := phase * srate / freq;
+  while Value >= 1 do
+    Value := Value - 1;
+  while Value < 0 do
+    Value := Value + 1;
+  FPhase := Value;
+  Cnt := FPhase * srate / FFreq;
 end;
 
-function TLFO.GetPhase: my_float;
+function TStkLFO.GetPhase: Single;
 begin
-  Result := phase;
+  Result := FPhase;
 end;
 
-procedure TLFO.reset;
+procedure TStkLFO.reset;
 begin
-  SetPhase(pofs);
+  SetPhase(FPofs);
 end;
 
-destructor TLFO.Destroy;
+destructor TStkLFO.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TLFO.AddPhaseOffset(sp: my_float);
+procedure TStkLFO.AddPhaseOffset(Value: Single);
 begin
-  SetPhase(phase + sp);
+  SetPhase(FPhase + Value);
 end;
 
 end.

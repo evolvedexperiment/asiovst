@@ -11,11 +11,11 @@ unit DAV_StkBowed;
   held by Stanford University, Yamaha, and others.
 
   Control Change Numbers:
-    - Bow Pressure := 2
-    - Bow Position := 4
-    - FVibrato Frequency := 11
-    - FVibrato Gain := 1
-    - Volume := 128
+    - Bow Pressure = 2
+    - Bow Position = 4
+    - FVibrato Frequency = 11
+    - FVibrato Gain = 1
+    - Volume = 128
 }
 
 interface
@@ -44,31 +44,31 @@ type
     constructor Create(SampleRate, lowestFrequency: Single); override;
     destructor Destroy; override;
 
-    //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-    //! Set instrument parameters for a particular Frequency.
+    // Set instrument parameters for a particular Frequency.
     procedure setFrequency(Frequency: Single);
 
-    //! Set FVibrato Gain.
+    // Set FVibrato Gain.
     procedure setVibrato(Gain: Single);
 
-    //! Apply breath pressure to instrument with given Amplitude and Rate of increase.
+    // Apply breath pressure to instrument with given Amplitude and Rate of increase.
     procedure startBowing(Amplitude, Rate: Single);
 
-    //! Decrease breath pressure with given Rate of decrease.
+    // Decrease breath pressure with given Rate of decrease.
     procedure stopBowing(Rate: Single);
 
-    //! Start a note with the given Frequency and Amplitude.
+    // Start a note with the given Frequency and Amplitude.
     procedure noteOn(Frequency, Amplitude: Single);
 
-    //! Stop a note with the given Amplitude (speed of decay).
+    // Stop a note with the given Amplitude (speed of decay).
     procedure noteOff(Amplitude: Single);
 
-    //! Compute one output sample.
+    // Compute one output sample.
     function Tick: Single;
 
-    //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
     procedure controlChange(number: integer; Value: Single);
   end;
 

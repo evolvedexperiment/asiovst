@@ -1,189 +1,186 @@
 unit DAV_StkSingWave;
 
-{
-/***************************************************/
-/*! \class TSingWave
-    \brief STK "singing" looped soundfile class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class contains all that is needed to make
-    a pitched musical sound, like a simple voice
-    or violin.  In general, it will not be used
-    alone because of munchkinification effects
-    from pitch shifting.  It will be used as an
-    excitation source for other instruments.
+{ STK "singing" looped soundfile class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This class contains all that is needed to make a pitched musical sound, like
+  a simple voice or violin.  In general, it will not be used alone because of
+  munchkinification effects from pitch shifting.  It will be used as an
+  excitation source for other instruments.
 }
+
 interface
 
-uses stk, waveplayer, modulate, envelope;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkWavePlayer, DAV_StkModulate, DAV_StkEnvelope;
 
 type
   TSingWave = class(TStk)
   public
-  //! Class constructor taking filename argument.
+    // Class constructor taking filename argument.
   {
     An StkError will be thrown if the file is not found, its format is
     unknown, or a read error occurs.
   }
-    constructor Create(sr: my_float; fn: string);
+    constructor Create(SampleRate: Single; FileName: string);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset file to beginning.
-    procedure reset;
+    // Reset file to beginning.
+    procedure Reset;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
+    // Set instrument parameters for a particular frequency.
+    procedure setFrequency(frequency: Single);
 
-  //! Set the vibrato frequency in Hz.
-    procedure setVibratoRate(aRate: MY_FLOAT);
+    // Set the vibrato frequency in Hz.
+    procedure setVibratoRate(aRate: Single);
 
-  //! Set the vibrato gain.
-    procedure setVibratoGain(gain: MY_FLOAT);
+    // Set the vibrato gain.
+    procedure setVibratoGain(gain: Single);
 
-  //! Set the random-ness amount.
-    procedure setRandomGain(gain: MY_FLOAT);
+    // Set the random-ness amount.
+    procedure setRandomGain(gain: Single);
 
-  //! Set the sweep rate.
-    procedure setSweepRate(aRate: MY_FLOAT);
+    // Set the sweep FRate.
+    procedure setSweepRate(aRate: Single);
 
-  //! Set the gain rate.
-    procedure setGainRate(aRate: MY_FLOAT);
+    // Set the gain FRate.
+    procedure setGainRate(aRate: Single);
 
-  //! Set the gain target value.
-    procedure setGainTarget(target: MY_FLOAT);
+    // Set the gain target value.
+    procedure setGainTarget(target: Single);
 
-  //! Start a note.
+    // Start a note.
     procedure noteOn;
 
-  //! Stop a note.
+    // Stop a note.
     procedure noteOff;
 
-  //! Return the last output value.
-    function lastOut: MY_FLOAT;
+    // Return the last output value.
+    function lastOut: Single;
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function tick: Single;
 
   protected
 
-    wave: twaveplayer;
-    modulator: tmodulate;
-    Envelope: tenvelope;
-    pitchEnvelope: tenvelope;
-    rate, sweepRate, lastOutput: my_float;
+    FWave: TWavePlayer;
+    FModulator: TModulate;
+    FEnvelope: TEnvelope;
+    FPitchEnvelope: TEnvelope;
+    FRate, FSweepRate, FLastOutput: Single;
   end;
 
 implementation
 
 constructor TSingWave.Create;
 begin
-  inherited Create(sr);
-  wave := TWavePlayer.Create(srate, fn);
-  wave.SetOneShot(False);
-  rate := 1.0;
-  sweepRate := 0.001;
-  modulator := TModulate.Create(srate);
-  modulator.setVibratoRate(6.0);
-  modulator.setVibratoGain(0.04);
-  modulator.setRandomGain(0.005);
-  envelope := TEnvelope.Create(srate);
-  pitchEnvelope := TEnvelope.Create(srate);
+  inherited Create(SampleRate);
+  FWave := TWavePlayer.Create(SampleRate, FileName);
+  FWave.SetOneShot(False);
+  FRate := 1.0;
+  FSweepRate := 0.001;
+  FModulator := TModulate.Create(SampleRate);
+  FModulator.setVibratoRate(6.0);
+  FModulator.setVibratoGain(0.04);
+  FModulator.setRandomGain(0.005);
+  FEnvelope := TEnvelope.Create(SampleRate);
+  FPitchEnvelope := TEnvelope.Create(SampleRate);
   setFrequency(75.0);
-  pitchEnvelope.setRate(1.0);
+  FPitchEnvelope.setRate(1.0);
   tick;
   tick;
-  pitchEnvelope.setRate(sweepRate * rate);
+  FPitchEnvelope.setRate(FSweepRate * FRate);
 end;
 
 destructor TSingWave.Destroy;
 begin
   inherited Destroy;
-  wave.Free;
-  modulator.Free;
-  envelope.Free;
-  pitchEnvelope.Free;
+  FWave.Free;
+  FModulator.Free;
+  FEnvelope.Free;
+  FPitchEnvelope.Free;
 end;
 
-procedure TSingWave.reset;
+procedure TSingWave.Reset;
 begin
-  wave.reset;
-  lastOutput := 0.0;
+  FWave.Reset;
+  FLastOutput := 0.0;
 end;
 
 procedure TSingWave.setFrequency;
 var
-  temp: my_float;
+  temp: Single;
 begin
-  temp := rate;
-  rate := frequency / srate;
-  temp := temp - rate;
+  temp := FRate;
+  FRate := frequency / SampleRate;
+  temp := temp - FRate;
   if (temp < 0) then
     temp := -temp;
-  pitchEnvelope.setTarget(rate);
-  pitchEnvelope.setRate(sweepRate * temp);
+  FPitchEnvelope.setTarget(FRate);
+  FPitchEnvelope.setRate(FSweepRate * temp);
 end;
 
 procedure TSingWave.setVibratoRate;
 begin
-  modulator.setVibratoRate(aRate);
+  FModulator.setVibratoRate(aRate);
 end;
 
 procedure TSingWave.setVibratoGain;
 begin
-  modulator.setVibratoGain(gain);
+  FModulator.setVibratoGain(gain);
 end;
 
 procedure TSingWave.setRandomGain;
 begin
-  modulator.setRandomGain(gain);
+  FModulator.setRandomGain(gain);
 end;
 
 procedure TSingWave.setSweepRate;
 begin
-  sweepRate := aRate;
+  FSweepRate := aRate;
 end;
 
 procedure TSingWave.setGainRate;
 begin
-  envelope.setRate(aRate);
+  FEnvelope.setRate(aRate);
 end;
 
 procedure TSingWave.setGainTarget;
 begin
-  envelope.setTarget(target);
+  FEnvelope.setTarget(target);
 end;
 
 procedure TSingWave.noteOn;
 begin
-  envelope.keyOn;
+  FEnvelope.keyOn;
 end;
 
 procedure TSingWave.noteOff;
 begin
-  envelope.keyOff;
+  FEnvelope.keyOff;
 end;
 
-function TSingWave.tick: my_float;
+function TSingWave.tick: Single;
 var
-  newrate: my_float;
+  newrate: Single;
 begin
-  // Set the wave rate.
-  newRate := pitchEnvelope.tick;
-  newRate := newrate + newRate * modulator.tick;
-  wave.setfrequency(newRate);
-  lastOutput := wave.tick;
-  lastOutput := lastoutput * envelope.tick;
-  Result := lastOutput;
+  // Set the FWave FRate.
+  newRate := FPitchEnvelope.tick;
+  newRate := newrate + newRate * FModulator.tick;
+  FWave.setfrequency(newRate);
+  FLastOutput := FWave.tick;
+  FLastOutput := FLastOutput * FEnvelope.tick;
+  Result := FLastOutput;
 end;
 
-function TSingWave.lastOut: my_float;
+function TSingWave.lastOut: Single;
 begin
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
 end.

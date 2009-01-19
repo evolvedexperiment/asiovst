@@ -22,13 +22,13 @@ type
     FSlope      : Single;
     FLastOutput : Single;
   public
-  //! Default constructor.
+    // Default constructor.
     constructor Create(SampleRate: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Set the table FOffSet value.
+    // Set the table FOffSet value.
   {
     The table FOffSet is a bias which controls the
     symmetry of the friction.  If you want the
@@ -37,24 +37,24 @@ type
   }
     procedure setOffset(aValue: Single);
 
-  //! Set the table FSlope value.
+    // Set the table FSlope value.
   {
    The table FSlope controls the width of the friction
    pulse, which is related to bow force.
   }
     procedure setSlope(aValue: Single);
 
-  //! Return the last output value.
+    // Return the last output value.
     function lastOut: Single;
 
-  //! Return the function value for \e input.
+    // Return the function value for \e input.
   {
     The function input represents differential
     string-to-bow velocity.
   }
     function tick(input: Single): Single; overload;
 
-  //! Take \e vectorSize inputs and return the corresponding function values in \e vector.
+    // Take \e vectorSize inputs and return the corresponding function values in \e vector.
     function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
   end;
 

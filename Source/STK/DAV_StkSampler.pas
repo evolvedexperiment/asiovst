@@ -1,120 +1,118 @@
 unit DAV_StkSampler;
 
-{
-/***************************************************/
-/*! \class TSampler
-    \brief STK sampling synthesis abstract base class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This instrument contains up to 5 attack waves,
-    5 looped waves, and an ADSR envelope.
+{ STK sampling synthesis abstract base class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This instrument contains up to 5 attack waves, 5 looped waves, and an FADSR
+  envelope.
 }
+
 interface
 
-uses stk, waveplayer, instrmnt, adsr, onepole;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkWavePlayer, DAV_StkInstrument, DAV_StkAdsr, DAV_StkOnePole;
 
 type
-  TSampler = class(TInstrmnt)
+  TStkSampler = class(TStkInstrument)
+  protected
+    FADSR: TAdsr;
+    FAttacks: array[0..4] of TWavePlayer;
+    FLoops: array[0..4] of TWavePlayer;
+    FFilter: TOnepole;
+    FAttackGain, FLoopGain, FBaseFrequency: Single;
+    FLoopratios, FAttackRatios: array[0..4] of Single;
+    FWhichOne: Integer;
   public
-  //! Default constructor.
-    constructor Create(sr: my_float);
+    // Default constructor.
+    constructor Create(SampleRate: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
+    // Set instrument parameters for a particular Frequency.
+    procedure setFrequency(Frequency: Single);
 
-  //! Initiate the envelopes with a key-on event and reset the attack waves.
-    procedure keyOn;
+    // Initiate the envelopes with a key-on event and reset the attack waves.
+    procedure KeyOn;
 
-  //! Signal a key-off event to the envelopes.
-    procedure keyOff;
+    // Signal a key-off event to the envelopes.
+    procedure KeyOff;
 
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
+    // Stop a note with the given amplitude (speed of decay).
+    procedure NoteOff(amplitude: Single);
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function Tick: Single;
 
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: MY_FLOAT);
-
-  protected
-    ADSR: tadsr;
-    attacks: array[0..4] of twaveplayer;
-    loops: array[0..4] of twaveplayer;
-    filter: tonepole;
-    attackGain, loopGain, baseFrequency: my_float;
-    loopratios, attackRatios: array[0..4] of MY_FLOAT;
-    whichOne: integer;
+    // Perform the control change specified by \e Number and \e value (0.0 - 128.0).
+    procedure ControlChange(Number: Integer; Value: Single);
   end;
 
 implementation
 
 
-constructor TSampler.Create;
+constructor TStkSampler.Create;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   // We don't make the waves here yet, because
   // we don't know what they will be.
-  adsr := TADSR.Create(srate);
-  baseFrequency := 440.0;
-  filter := TOnePole.Create(srate);
-  attackGain := 0.25;
-  loopGain := 0.25;
-  whichOne := 0;
+  FADSR := TAdsr.Create(srate);
+  FBaseFrequency := 440.0;
+  FFilter := TOnepole.Create(srate);
+  FAttackGain := 0.25;
+  FLoopGain := 0.25;
+  FWhichOne := 0;
 end;
 
-destructor TSampler.Destroy;
+destructor TStkSampler.Destroy;
 begin
   inherited Destroy;
-  adsr.Free;
-  filter.Free;
+  FADSR.Free;
+  FFilter.Free;
 end;
 
-procedure TSampler.keyOn;
+procedure TStkSampler.KeyOn;
 begin
-  adsr.keyOn;
-  attacks[0].reset;
+  FADSR.KeyOn;
+  FAttacks[0].reset;
 end;
 
-procedure TSampler.keyOff;
+procedure TStkSampler.KeyOff;
 begin
-  adsr.keyOff;
+  FADSR.KeyOff;
 end;
 
-procedure TSampler.noteOff;
+procedure TStkSampler.NoteOff;
 begin
-  keyOff;
+  KeyOff;
 end;
 
-function TSampler.tick: my_float;
+function TStkSampler.Tick: Single;
 begin
-  lastOutput := attackGain * attacks[whichOne].tick;
-  lastOutput := lastoutput + loopGain * loops[whichOne].tick;
-  lastOutput := filter.tick(lastOutput);
-  lastOutput := lastoutput * adsr.tick;
+  lastOutput := FAttackGain * FAttacks[FWhichOne].Tick;
+  lastOutput := lastoutput + FLoopGain * FLoops[FWhichOne].Tick;
+  lastOutput := FFilter.Tick(lastOutput);
+  lastOutput := lastoutput * FADSR.Tick;
   Result := lastOutput;
 end;
 
-procedure TSampler.Clear;
+procedure TStkSampler.Clear;
 begin
 
 end;
 
-procedure TSampler.controlChange(number: integer; Value: MY_FLOAT);
+procedure TStkSampler.ControlChange(Number: Integer; Value: Single);
 begin
 
 end;
 
-procedure TSampler.setFrequency(frequency: MY_FLOAT);
+procedure TStkSampler.setFrequency(Frequency: Single);
 begin
 
 end;

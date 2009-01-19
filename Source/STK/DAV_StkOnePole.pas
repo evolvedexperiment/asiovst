@@ -1,81 +1,77 @@
 unit DAV_StkOnePole;
 
-{
-/***************************************************/
-/*! \class OnePole
-    \brief STK one-pole filter class.
+// based on DAV_Stk by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This protected Filter subclass implements
-    a one-pole digital filter.  A method is
-    provided for setting the pole position along
-    the real axis of the z-plane while maintaining
-    a constant peak filter gain.
+{ DAV_Stk one-pole DAV_StkFilter class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This protected DAV_StkFilter subclass implements a one-pole digital DAV_StkFilter. A method
+  is provided for setting the pole position along the real axis of the z-plane
+  while maintaining a constant peak DAV_StkFilter gain.
 }
+
 interface
 
-uses stk, filter;
+{$I ..\DAV_Compiler.inc}
+
+uses DAV_Stk, DAV_StkFilter;
 
 type
-  TOnePole = class(TFilter)
+  TStkOnePole = class(TStkFilter)
   public
-  //! Default constructor creates a first-order low-pass filter.
-    constructor Create(sr: my_float); overload;
+    // Default constructor creates a first-order low-pass DAV_StkFilter.
+    constructor Create(sr: Single); overload;
 
-  //! Overloaded constructor which sets the pole position during instantiation.
-    constructor Create(sr, thePole: MY_FLOAT); overload;
+    // Overloaded constructor which sets the pole position during instantiation.
+    constructor Create(sr, thePole: Single); overload;
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Clears the internal state of the filter.
+    // Clears the internal state of the DAV_StkFilter.
     procedure Clear;
 
-  //! Set the b[0] coefficient value.
-    procedure setB0(b0: MY_FLOAT);
+    // Set the b[0] coefficient value.
+    procedure setB0(b0: Single);
 
-  //! Set the a[1] coefficient value.
-    procedure setA1(a1: MY_FLOAT);
+    // Set the a[1] coefficient value.
+    procedure setA1(a1: Single);
 
-  //! Set the pole position in the z-plane.
+    // Set the pole position in the z-plane.
   {
     This method sets the pole position along the real-axis of the
     z-plane and normalizes the coefficients for a maximum gain of one.
-    A positive pole value produces a low-pass filter, while a negative
-    pole value produces a high-pass filter.  This method does not
-    affect the filter \e gain value.
+    A positive pole value produces a low-pass DAV_StkFilter, while a negative
+    pole value produces a high-pass DAV_StkFilter.  This method does not
+    affect the DAV_StkFilter \e gain value.
   }
-    procedure setPole(thePole: MY_FLOAT);
+    procedure setPole(thePole: Single);
 
-  //! Set the filter gain.
+    // Set the DAV_StkFilter gain.
   {
-    The gain is applied at the filter input and does not affect the
+    The gain is applied at the DAV_StkFilter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    }
-    procedure setGain(theGain: MY_FLOAT);
+    procedure setGain(theGain: Single);
 
-  //! Return the current filter gain.
-    function getGain: MY_FLOAT;
+    // Return the current DAV_StkFilter gain.
+    function getGain: Single;
 
-  //! Return the last computed output value.
-    function lastOut: MY_FLOAT;
+    // Return the last computed output value.
+    function lastOut: Single;
 
-  //! Input one sample to the filter and return one output.
-    function tick(sample: MY_FLOAT): MY_FLOAT; overload;
+    // Input one sample to the DAV_StkFilter and return one output.
+    function tick(sample: Single): Single; overload;
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
+    // Input \e vectorSize samples to the DAV_StkFilter and return an equal number of outputs in \e vector.
     function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
   end;
 
 implementation
 
-constructor TOnePole.Create(sr: my_float);
+constructor TStkOnePole.Create(sr: Single);
 var
-  a: array[0..1] of my_float;
-  b: my_float;
+  a: array[0..1] of Single;
+  b: Single;
 begin
   inherited Create(sr);
   B := 0.1;
@@ -84,10 +80,10 @@ begin
   inherited setCoefficients(1, @B, 2, @A);
 end;
 
-constructor TOnePole.Create(sr, thePole: MY_FLOAT);
+constructor TStkOnePole.Create(sr, thePole: Single);
 var
-  a: array[0..1] of my_float;
-  b: my_float;
+  a: array[0..1] of Single;
+  b: Single;
 begin
   inherited Create(sr);
   A[0] := 1.0;
@@ -102,17 +98,17 @@ begin
   inherited setCoefficients(1, @B, 2, @A);
 end;
 
-destructor TOnePole.Destroy;
+destructor TStkOnePole.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TOnePole.Clear;
+procedure TStkOnePole.Clear;
 begin
   inherited Clear;
 end;
 
-procedure TOnePole.setB0(b0: MY_FLOAT);
+procedure TStkOnePole.setB0(b0: Single);
 var
   p: pmy_float;
 begin
@@ -120,7 +116,7 @@ begin
   p^ := b0;
 end;
 
-procedure TOnePole.setA1(a1: MY_FLOAT);
+procedure TStkOnePole.setA1(a1: Single);
 var
   p: pmy_float;
 begin
@@ -128,7 +124,7 @@ begin
   p^ := a1;
 end;
 
-procedure TOnePole.setPole;
+procedure TStkOnePole.setPole;
 var
   p: pmy_float;
 begin
@@ -141,22 +137,22 @@ begin
   p^ := -thePole;
 end;
 
-procedure TOnePole.setGain;
+procedure TStkOnePole.setGain;
 begin
   inherited setGain(theGain);
 end;
 
-function TOnePole.getGain;
+function TStkOnePole.getGain;
 begin
   Result := inherited getGain;
 end;
 
-function TOnePole.lastOut;
+function TStkOnePole.lastOut;
 begin
   Result := inherited lastOut;
 end;
 
-function TOnePole.tick(sample: MY_FLOAT): MY_FLOAT;
+function TStkOnePole.tick(sample: Single): Single;
 var
   p: pmy_float;
 begin
@@ -168,7 +164,7 @@ begin
   Result := outputs^;
 end;
 
-function TOnePole.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TStkOnePole.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
 var
   i: integer;
   p: pmy_float;

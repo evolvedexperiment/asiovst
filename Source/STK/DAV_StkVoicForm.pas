@@ -1,94 +1,88 @@
 unit DAV_StkVoicForm;
 
-{
-/***************************************************/
-/*! \class TVoicForm
-    \brief Four formant synthesis instrument.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This instrument contains an excitation singing
-    wavetable (looping wave with random and
-    periodic vibrato, smoothing on frequency,
-    etc.), excitation noise, and four sweepable
-    complex resonances.
+{  Four formant synthesis instrument.
 
-    Measured formant data is included, and enough
-    data is there to support either parallel or
-    cascade synthesis.  In the floating point case
-    cascade synthesis is the most natural so
-    that's what you'll find here.
+   This instrument contains an excitation singing wavetable (looping wave
+   with random and periodic vibrato, smoothing on Frequency, etc.),
+   excitation FNoise, and four sweepable complex resonances.
 
-    Control Change Numbers: 
-       - Voiced/Unvoiced Mix:=2
-       - Vowel/Phoneme Selection:=4
-       - Vibrato Frequency:=11
-       - Vibrato Gain:=1
-       - Loudness (Spectral Tilt):=128
+  Measured formant data is included, and enough data is there to support
+  either parallel or cascade synthesis.  In the floating point case cascade
+  synthesis is the most natural so that's what you'll find here.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  Control Change Numbers:
+    - FVoiced/Unvoiced Mix = 2
+    - Vowel/Phoneme Selection = 4
+    - Vibrato Frequency = 11
+    - Vibrato Gain = 1
+    - Loudness (Spectral Tilt) = 128
 }
+
 interface
 
-uses stk, instrmnt, envelope, noise, singwave, formswep, onepole,
-  onezero, Math, phonemes;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkInstrument, DAV_StkEnvelope, DAV_StkNoise, DAV_StkSingWave,
+  DAV_StkFormantSweep, DAV_StkOnePole, DAV_StkOneZero, DAV_StkPhonemes, Math;
 
 type
-  TVoicForm = class(TInstrmnt)
+  TStkVoiceFormant = class(TStkInstrument)
+  protected
+    FVoiced: TSingWave;
+    FPhonemes: TPhonemes;
+    FNoise: TNoise;
+    FNoiseEnv: TEnvelope;
+    FFilters: array[0..3] of TFormswep;
+    FOnePole: TOnepole;
+    FOneZero: TOnezero;
   public
-  //! Class constructor, taking the lowest desired playing frequency.
-    constructor Create(sr: my_float);
+    // Class constructor, taking the lowest desired playing Frequency.
+    constructor Create(SampleRate: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
+    // Set instrument parameters for a particular Frequency.
+    procedure setFrequency(Frequency: Single);
 
-  //! Set instrument parameters for the given phoneme.  Returns FALSE if phoneme not found.
+    // Set instrument parameters for the given phoneme.  Returns FALSE if phoneme not found.
     function setPhoneme(phoneme: string): boolean;
 
-  //! Set the voiced component gain.
-    procedure setVoiced(vGain: MY_FLOAT);
+    // Set the FVoiced component gain.
+    procedure setVoiced(vGain: Single);
 
-  //! Set the unvoiced component gain.
-    procedure setUnVoiced(nGain: MY_FLOAT);
+    // Set the unvoiced component gain.
+    procedure setUnVoiced(nGain: Single);
 
-  //! Set the sweep rate for a particular formant filter (0-3).
-    procedure setFilterSweepRate(whichOne: integer; rate: MY_FLOAT);
+    // Set the sweep rate for a particular formant filter (0-3).
+    procedure setFilterSweepRate(whichOne: integer; rate: Single);
 
-  //! Set voiced component pitch sweep rate.
-    procedure setPitchSweepRate(rate: MY_FLOAT);
+    // Set FVoiced component pitch sweep rate.
+    procedure setPitchSweepRate(rate: Single);
 
-  //! Start the voice.
-    procedure speak;
+    // Start the voice.
+    procedure Speak;
 
-  //! Stop the voice.
-    procedure quiet;
+    // Stop the voice.
+    procedure Quiet;
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
+    // Start a note with the given Frequency and amplitude.
+    procedure NoteOn(Frequency, amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
+    // Stop a note with the given amplitude (speed of decay).
+    procedure NoteOff(amplitude: Single);
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function Tick: Single;
 
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: MY_FLOAT);
-
-  protected
-    voiced: tsingwave;
-    ph: tphonemes;
-    Noise: tnoise;
-    noiseEnv: tenvelope;
-    filters: array[0..3] of tformswep;
-    OnePole: tonepole;
-    OneZero: tonezero;
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure ControlChange(number: integer; Value: Single);
   end;
 
 implementation
@@ -97,26 +91,26 @@ constructor TVoicForm.Create;
 var
   i: integer;
 begin
-  inherited Create(sr);
-  voiced := TSingWave.Create(srate, 'c:\stk\impuls20.wav');
-  voiced.setGainRate(0.001);
-  voiced.setGainTarget(0.0);
-  noise := TNoise.Create(srate);
+  inherited Create(SampleRate);
+  FVoiced := TSingWave.Create(SampleRate, 'impuls20.wav');
+  FVoiced.setGainRate(0.001);
+  FVoiced.setGainTarget(0.0);
+  FNoise := TNoise.Create(SampleRate);
   for i := 0 to 3 do
    begin
-    filters[i] := TFormSwep.Create(srate);
-    filters[i].setSweepRate(0.001);
+    FFilters[i] := TFormswep.Create(SampleRate);
+    FFilters[i].setSweepRate(0.001);
    end;
 
-  ph := tphonemes.Create(srate);
-  onezero := TOneZero.Create(srate);
-  onezero.setZero(-0.9);
-  onepole := TOnePole.Create(srate);
-  onepole.setPole(0.9);
+  FPhonemes := TPhonemes.Create(SampleRate);
+  FOneZero := TOnezero.Create(SampleRate);
+  FOneZero.setZero(-0.9);
+  FOnePole := TOnepole.Create(SampleRate);
+  FOnePole.setPole(0.9);
 
-  noiseEnv := TEnvelope.Create(srate);
-  noiseEnv.setRate(0.001);
-  noiseEnv.setTarget(0.0);
+  FNoiseEnv := TEnvelope.Create(SampleRate);
+  FNoiseEnv.setRate(0.001);
+  FNoiseEnv.setTarget(0.0);
 
   setPhoneme('eee');
   Clear;
@@ -127,58 +121,58 @@ var
   i: integer;
 begin
   inherited Destroy;
-  voiced.Free;
-  noise.Free;
-  onezero.Free;
-  onepole.Free;
-  noiseEnv.Free;
-  ph.Free;
+  FVoiced.Free;
+  FNoise.Free;
+  FOneZero.Free;
+  FOnePole.Free;
+  FNoiseEnv.Free;
+  FPhonemes.Free;
   for i := 0 to 3 do
-    filters[i].Free;
+    FFilters[i].Free;
 end;
 
 procedure TVoicForm.Clear;
 var
   i: integer;
 begin
-  onezero.Clear;
-  onepole.Clear;
+  FOneZero.Clear;
+  FOnePole.Clear;
   for i := 0 to 3 do
-    filters[i].Clear;
+    FFilters[i].Clear;
 end;
 
 procedure TVoicForm.setFrequency;
 var
-  freakency: my_float;
+  Freakency: Single;
 begin
-  freakency := frequency;
-  if (frequency <= 0.0) then
-    freakency := 220.0;
-  voiced.setFrequency(freakency);
+  Freakency := Frequency;
+  if (Frequency <= 0.0)
+   then Freakency := 220.0;
+  FVoiced.setFrequency(Freakency);
 end;
 
 function TVoicForm.setPhoneme(phoneme: string): boolean;
 var
-  found: boolean;
-  i: integer;
+  found : Boolean;
+  i     : Integer;
 begin
   found := False;
   i := 0;
   while ((i < 32) and (not found)) do
    begin
-    if (ph.Name(i) = phoneme) then
+    if (FPhonemes.Name(i) = phoneme) then
      begin
       found := True;
-      filters[0].setTargets(ph.formantFrequency(i, 0), ph.formantRadius(i, 0),
-        power(10.0, ph.formantGain(i, 0) / 20.0));
-      filters[1].setTargets(ph.formantFrequency(i, 1), ph.formantRadius(i, 1),
-        power(10.0, ph.formantGain(i, 1) / 20.0));
-      filters[2].setTargets(ph.formantFrequency(i, 2), ph.formantRadius(i, 2),
-        power(10.0, ph.formantGain(i, 2) / 20.0));
-      filters[3].setTargets(ph.formantFrequency(i, 3), ph.formantRadius(i, 3),
-        power(10.0, ph.formantGain(i, 3) / 20.0));
-      setVoiced(ph.voiceGain(i));
-      setUnVoiced(ph.noiseGain(i));
+      FFilters[0].setTargets(FPhonemes.formantFrequency(i, 0), FPhonemes.formantRadius(i, 0),
+        power(10.0, FPhonemes.formantGain(i, 0) / 20.0));
+      FFilters[1].setTargets(FPhonemes.formantFrequency(i, 1), FPhonemes.formantRadius(i, 1),
+        power(10.0, FPhonemes.formantGain(i, 1) / 20.0));
+      FFilters[2].setTargets(FPhonemes.formantFrequency(i, 2), FPhonemes.formantRadius(i, 2),
+        power(10.0, FPhonemes.formantGain(i, 2) / 20.0));
+      FFilters[3].setTargets(FPhonemes.formantFrequency(i, 3), FPhonemes.formantRadius(i, 3),
+        power(10.0, FPhonemes.formantGain(i, 3) / 20.0));
+      setVoiced(FPhonemes.voiceGain(i));
+      setUnVoiced(FPhonemes.noiseGain(i));
      end;
     i := i + 1;
    end;
@@ -187,65 +181,65 @@ end;
 
 procedure TVoicForm.setVoiced;
 begin
-  voiced.setGainTarget(vGain);
+  FVoiced.setGainTarget(vGain);
 end;
 
 procedure TVoicForm.setUnVoiced;
 begin
-  noiseEnv.setTarget(nGain);
+  FNoiseEnv.setTarget(nGain);
 end;
 
 procedure TVoicForm.setFilterSweepRate;
 begin
   if (whichOne < 0) or (whichOne > 3) then
     exit;
-  filters[whichOne].setSweepRate(rate);
+  FFilters[whichOne].setSweepRate(rate);
 end;
 
 procedure TVoicForm.setPitchSweepRate;
 begin
-  voiced.setSweepRate(rate);
+  FVoiced.setSweepRate(rate);
 end;
 
-procedure TVoicForm.speak;
+procedure TVoicForm.Speak;
 begin
-  voiced.noteOn;
+  FVoiced.NoteOn;
 end;
 
-procedure TVoicForm.quiet;
+procedure TVoicForm.uiet;
 begin
-  voiced.noteOff;
-  noiseEnv.setTarget(0.0);
+  FVoiced.NoteOff;
+  FNoiseEnv.setTarget(0.0);
 end;
 
-procedure TVoicForm.noteOn;
+procedure TVoicForm.NoteOn;
 begin
-  setFrequency(frequency);
-  voiced.setGainTarget(amplitude);
-  onepole.setPole(0.97 - (amplitude * 0.2));
+  setFrequency(Frequency);
+  FVoiced.setGainTarget(amplitude);
+  FOnePole.setPole(0.97 - (amplitude * 0.2));
 end;
 
-procedure TVoicForm.noteOff;
+procedure TVoicForm.NoteOff;
 begin
-  quiet;
+  uiet;
 end;
 
-function TVoicForm.tick: my_float;
+function TVoicForm.Tick: Single;
 var
-  temp: my_float;
+  temp: Single;
 begin
-  temp := onepole.tick(onezero.tick(voiced.tick));
-  temp := temp + noiseEnv.tick * noise.tick;
-  lastOutput := filters[0].tick(temp);
-  lastOutput := lastoutput + filters[1].tick(temp);
-  lastOutput := lastoutput + filters[2].tick(temp);
-  lastOutput := lastoutput + filters[3].tick(temp);
+  temp := FOnePole.Tick(FOneZero.Tick(FVoiced.Tick));
+  temp := temp + FNoiseEnv.Tick * FNoise.Tick;
+  lastOutput := FFilters[0].Tick(temp);
+  lastOutput := lastoutput + FFilters[1].Tick(temp);
+  lastOutput := lastoutput + FFilters[2].Tick(temp);
+  lastOutput := lastoutput + FFilters[3].Tick(temp);
   Result := lastOutput;
 end;
 
-procedure TVoicForm.controlChange;
+procedure TVoicForm.ControlChange;
 var
-  temp, norm: my_float;
+  temp, norm: Single;
   i: integer;
 begin
   norm := Value;// * ONE_OVER_128;
@@ -284,25 +278,25 @@ begin
       i := 0;
       temp := 1.4;
      end;
-    filters[0].setTargets(temp * ph.formantFrequency(i, 0),
-      ph.formantRadius(i, 0), power(10.0, ph.formantGain(i, 0) / 20.0));
-    filters[1].setTargets(temp * ph.formantFrequency(i, 1),
-      ph.formantRadius(i, 1), power(10.0, ph.formantGain(i, 1) / 20.0));
-    filters[2].setTargets(temp * ph.formantFrequency(i, 2),
-      ph.formantRadius(i, 2), power(10.0, ph.formantGain(i, 2) / 20.0));
-    filters[3].setTargets(temp * ph.formantFrequency(i, 3),
-      ph.formantRadius(i, 3), power(10.0, ph.formantGain(i, 3) / 20.0));
-    setVoiced(ph.voiceGain(i));
-    setUnVoiced(ph.noiseGain(i));
+    FFilters[0].setTargets(temp * FPhonemes.formantFrequency(i, 0),
+      FPhonemes.formantRadius(i, 0), power(10.0, FPhonemes.formantGain(i, 0) / 20.0));
+    FFilters[1].setTargets(temp * FPhonemes.formantFrequency(i, 1),
+      FPhonemes.formantRadius(i, 1), power(10.0, FPhonemes.formantGain(i, 1) / 20.0));
+    FFilters[2].setTargets(temp * FPhonemes.formantFrequency(i, 2),
+      FPhonemes.formantRadius(i, 2), power(10.0, FPhonemes.formantGain(i, 2) / 20.0));
+    FFilters[3].setTargets(temp * FPhonemes.formantFrequency(i, 3),
+      FPhonemes.formantRadius(i, 3), power(10.0, FPhonemes.formantGain(i, 3) / 20.0));
+    setVoiced(FPhonemes.voiceGain(i));
+    setUnVoiced(FPhonemes.noiseGain(i));
    end
   else if (number = __SK_ModFrequency_) then // 11
-    voiced.setVibratoRate(norm * 12.0)  // 0 to 12 Hz
+    FVoiced.setVibratoRate(norm * 12.0)  // 0 to 12 Hz
   else if (number = __SK_ModWheel_) then // 1
-    voiced.setVibratoGain(norm * 0.2)
+    FVoiced.setVibratoGain(norm * 0.2)
   else if (number = __SK_AfterTouch_Cont_) then
    begin // 128
     setVoiced(norm);
-    onepole.setPole(0.97 - (norm * 0.2));
+    FOnePole.setPole(0.97 - (norm * 0.2));
    end;
 end;
 

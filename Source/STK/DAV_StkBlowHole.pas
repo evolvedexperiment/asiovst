@@ -19,11 +19,11 @@ unit DAV_StkBlowHole;
   held by Stanford University, Yamaha, and others.
 
   Control Change Numbers:
-    - Reed Stiffness := 2
-    - FNoise Gain := 4
-    - FTonehole State := 11
-    - Register State := 1
-    - Breath Pressure := 128
+    - Reed Stiffness = 2
+    - FNoise Gain = 4
+    - FTonehole State = 11
+    - Register State = 1
+    - Breath Pressure = 128
 }
 
 interface
@@ -31,9 +31,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrmnt, DAV_StkDelayl, DAV_StkReedtabl,
-  DAV_StkOnezero, DAV_StkPolezero, DAV_StkEnvelope, DAV_StkNoise, DAV_StkLfo,
-  Math;
+  DAV_StkCommon, DAV_StkInstrmnt, DAV_StkDelayl, DAV_StkReedtabl, DAV_StkLfo,
+  DAV_StkOneZero, DAV_StkPoleZero, DAV_StkEnvelope, DAV_StkNoise, Math;
 
 type
   TBlowHole = class(TInstrmnt)

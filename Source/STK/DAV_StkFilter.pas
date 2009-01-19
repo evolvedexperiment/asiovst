@@ -1,350 +1,344 @@
 unit DAV_StkFilter;
 
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+
+{  STK filter class.
+
+   This class implements FA generic structure which can be used to create FA wide
+   range of filters. It can function independently or be subclassed to provide
+   more specific controls based on FA particular filter type.
+
+   In particular, this class implements the standard difference equation:
+
+   FA[0]*y[n] := FB[0]*x[n] + ... + FB[FnumB]*x[n-FnumB] -
+               FA[1]*y[n-1] - ... - FA[FnumA]*y[n-FnumA]
+
+   If FA[0] is not equal to 1, the filter coeffcients
+   are normalized by FA[0].
+
+   The \e FGain parameter is applied at the filter
+   input and does not affect the coefficient values.
+   The default FGain value is 1.0.  This structure
+   results in one extra multiply per computed sample,
+   but allows easy control of the overall filter FGain.
+}
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_StkCommon;
 
-{
-/***************************************************/
-/*! \class Filter
-    \brief STK filter class.
-
-    This class implements a generic structure which
-    can be used to create a wide range of filters.
-    It can function independently or be subclassed
-    to provide more specific controls based on a
-    particular filter type.
-
-    In particular, this class implements the standard
-    difference equation:
-
-    a[0]*y[n] := b[0]*x[n] + ... + b[nb]*x[n-nb] -
-                a[1]*y[n-1] - ... - a[na]*y[n-na]
-
-    If a[0] is not equal to 1, the filter coeffcients
-    are normalized by a[0].
-
-    The \e gain parameter is applied at the filter
-    input and does not affect the coefficient values.
-    The default gain value is 1.0.  This structure
-    results in one extra multiply per computed sample,
-    but allows easy control of the overall filter gain.
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
-}
-
 type
-  TFilter = class(TStk)
+  TStkFilter = class(TStk)
+  protected
+    FGain: Single;
+    FnumB, FnumA: Integer;
+    FA, FB, FOutputs, FInputs: PSingle;
   public
-  //! Default constructor creates a zero-order pass-through "filter".
-    constructor Create(sr: my_float); overload;
+    // Default constructor creates FA zero-order pass-through "filter".
+    constructor Create(SampleRate: Single); overload;
 
-  //! Overloaded constructor which takes filter coefficients.
+    // Overloaded constructor which takes filter coefficients.
   {
-    An StkError can be thrown if either \e nb or \e na is less than
-    one, or if the a[0] coefficient is equal to zero.
+    An StkError can be thrown if either \e FnumB or \e FnumA is less than
+    one, or if the FA[0] coefficient is equal to zero.
   }
     constructor Create
-      (sr: my_float; nmb: integer; bCoefficients: PMY_FLOAT; nma: integer;
-      aCoefficients: PMY_FLOAT); overload;
+      (SampleRate: Single; nmb: Integer; bCoefficients: PSingle; nma: Integer;
+      aCoefficients: PSingle); overload;
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Clears all internal states of the filter.
+    // Clears all internal states of the filter.
     procedure Clear;
 
-  //! Set filter coefficients.
+    // Set filter coefficients.
   {
-    An StkError can be thrown if either \e nb or \e na is less than
-    one, or if the a[0] coefficient is equal to zero.  If a[0] is not
-    equal to 1, the filter coeffcients are normalized by a[0].
+    An StkError can be thrown if either \e FnumB or \e FnumA is less than
+    one, or if the FA[0] coefficient is equal to zero.  If FA[0] is not
+    equal to 1, the filter coeffcients are normalized by FA[0].
   }
-    procedure setCoefficients(nmb: integer; bCoefficients: PMY_FLOAT;
-      nma: integer; aCoefficients: PMY_FLOAT);
+    procedure setCoefficients(nmb: Integer; bCoefficients: PSingle;
+      nma: Integer; aCoefficients: PSingle);
 
-  //! Set numerator coefficients.
+    // Set numerator coefficients.
   {
-    An StkError can be thrown if \e nb is less than one.  Any
+    An StkError can be thrown if \e FnumB is less than one.  Any
     previously set denominator coefficients are left unaffected.
     Note that the default constructor sets the single denominator
-    coefficient a[0] to 1.0.
+    coefficient FA[0] to 1.0.
   }
-    procedure setNumerator(nmb: integer; bCoefficients: PMY_FLOAT);
+    procedure setNumerator(nmb: Integer; bCoefficients: PSingle);
 
-  //! Set denominator coefficients.
+    // Set denominator coefficients.
   {
-    An StkError can be thrown if \e na is less than one or if the
-    a[0] coefficient is equal to zero.  Previously set numerator
-    coefficients are unaffected unless a[0] is not equal to 1, in
-    which case all coeffcients are normalized by a[0].  Note that the
-    default constructor sets the single numerator coefficient b[0]
+    An StkError can be thrown if \e FnumA is less than one or if the
+    FA[0] coefficient is equal to zero.  Previously set numerator
+    coefficients are unaffected unless FA[0] is not equal to 1, in
+    which case all coeffcients are normalized by FA[0].  Note that the
+    default constructor sets the single numerator coefficient FB[0]
     to 1.0.
   }
-    procedure setDenominator(nma: integer; aCoefficients: PMY_FLOAT);
+    procedure setDenominator(nma: Integer; aCoefficients: PSingle);
 
-  //! Set the filter gain.
+    // Set the filter FGain.
   {
-    The gain is applied at the filter input and does not affect the
-    coefficient values.  The default gain value is 1.0.
+    The FGain is applied at the filter input and does not affect the
+    coefficient values.  The default FGain value is 1.0.
    }
-    procedure setGain(theGain: MY_FLOAT);
+    procedure setGain(theGain: Single);
 
-  //! Return the current filter gain.
-    function getGain: MY_FLOAT;
+    // Return the current filter FGain.
+    function getGain: Single;
 
-  //! Return the last computed output value.
-    function lastOut: MY_FLOAT;
+    // Return the last computed output value.
+    function lastOut: Single;
 
-  //! Input one sample to the filter and return one output.
-    function tick(sample: MY_FLOAT): MY_FLOAT; overload;
+    // Input one sample to the filter and return one output.
+    function tick(sample: Single): Single; overload;
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
+    // Input \e vectorSize samples to the filter and return an equal number of FOutputs in \e vector.
+    function tick(vector: PSingle; vectorSize: longint): PSingle; overload;
 
-  protected
-    gain: MY_FLOAT;
-    nB, nA: integer;
-    a, b, outputs, inputs: PMY_FLOAT;
   end;
 
 implementation
 
-{ TFilter }
+{ TStkFilter }
 
-procedure TFilter.Clear;
+procedure TStkFilter.Clear;
 var
-  i: integer;
-  p: pmy_float;
+  i: Integer;
+  p: PSingle;
 begin
-  for i := 0 to nB - 1 do
+  for i := 0 to FnumB - 1 do
    begin
-    p := pmy_float(longint(inputs) + i * sizeof(pmy_float));
+    p := PSingle(longint(FInputs) + i * sizeof(PSingle));
     p^ := 0;
    end;
-  for i := 0 to nA - 1 do
+  for i := 0 to FnumA - 1 do
    begin
-    p := pmy_float(longint(outputs) + i * sizeof(pmy_float));
+    p := PSingle(longint(FOutputs) + i * sizeof(PSingle));
     p^ := 0;
    end;
 end;
 
-constructor TFilter.Create(sr: my_float);
+constructor TStkFilter.Create(SampleRate: Single);
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
    // The default constructor should setup for pass-through.
-  gain := 1.0;
-  nB := 1;
-  nA := 1;
-  getmem(b, nb * sizeof(my_float));
-  b^ := 1.0;
-  getmem(a, na * sizeof(my_float));
-  a^ := 1.0;
+  FGain := 1.0;
+  FnumB := 1;
+  FnumA := 1;
+  getmem(FB, FnumB * sizeof(Single));
+  FB^ := 1.0;
+  getmem(FA, FnumA * sizeof(Single));
+  FA^ := 1.0;
 
-  getmem(inputs, nb * sizeof(my_float));
-  getmem(outputs, na * sizeof(my_float));
+  getmem(FInputs, FnumB * sizeof(Single));
+  getmem(FOutputs, FnumA * sizeof(Single));
   Clear;
 end;
 
-constructor TFilter.Create(sr: my_float; nmb: integer;
-  bCoefficients: PMY_FLOAT; nma: integer; aCoefficients: PMY_FLOAT);
+constructor TStkFilter.Create(SampleRate: Single; nmb: Integer;
+  bCoefficients: PSingle; nma: Integer; aCoefficients: PSingle);
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   // Check the arguments.
-  if (aCoefficients^ = 0) or (nb < 1) or (na < 1) then
+  if (aCoefficients^ = 0) or (FnumB < 1) or (FnumA < 1) then
     exit;
 
-  gain := 1.0;
-  nB := nmb;
-  nA := nma;
-  getmem(b, nb * sizeof(my_float));
-  getmem(a, na * sizeof(my_float));
-  getmem(inputs, nb * sizeof(my_float));
-  getmem(outputs, na * sizeof(my_float));
+  FGain := 1.0;
+  FnumB := nmb;
+  FnumA := nma;
+  getmem(FB, FnumB * sizeof(Single));
+  getmem(FA, FnumA * sizeof(Single));
+  getmem(FInputs, FnumB * sizeof(Single));
+  getmem(FOutputs, FnumA * sizeof(Single));
   Clear;
-  setCoefficients(nB, bCoefficients, nA, aCoefficients);
+  setCoefficients(FnumB, bCoefficients, FnumA, aCoefficients);
 end;
 
-destructor TFilter.Destroy;
+destructor TStkFilter.Destroy;
 begin
   inherited Destroy;
-  freemem(b);
-  freemem(a);
-  freemem(inputs);
-  freemem(outputs);
+  freemem(FB);
+  freemem(FA);
+  freemem(FInputs);
+  freemem(FOutputs);
 end;
 
-function TFilter.getGain: MY_FLOAT;
+function TStkFilter.getGain: Single;
 begin
-  Result := gain;
+  Result := FGain;
 end;
 
-function TFilter.lastOut: MY_FLOAT;
+function TStkFilter.lastOut: Single;
 begin
-  Result := outputs^;
+  Result := FOutputs^;
 end;
 
-procedure TFilter.setCoefficients(nmb: integer; bCoefficients: PMY_FLOAT;
-  nma: integer; aCoefficients: PMY_FLOAT);
+procedure TStkFilter.setCoefficients(nmb: Integer; bCoefficients: PSingle;
+  nma: Integer; aCoefficients: PSingle);
 var
-  i: integer;
-  p, q: pmy_float;
+  i: Integer;
+  p, q: PSingle;
 begin
   // Check the arguments.
-  if (aCoefficients^ = 0.0) or (nb < 1) or (na < 1) then
+  if (aCoefficients^ = 0.0) or (FnumB < 1) or (FnumA < 1) then
     exit;
 
-  if (nmb <> nB) then
+  if (nmb <> FnumB) then
    begin
-    freemem(b);
-    freemem(inputs);
-    nB := nmb;
-    getmem(b, nb * sizeof(my_float));
-    getmem(inputs, nb * sizeof(my_float));
-    for i := 0 to nB - 1 do
+    freemem(FB);
+    freemem(FInputs);
+    FnumB := nmb;
+    getmem(FB, FnumB * sizeof(Single));
+    getmem(FInputs, FnumB * sizeof(Single));
+    for i := 0 to FnumB - 1 do
      begin
-      p := pmy_float(longint(inputs) + i * 4);
+      p := PSingle(longint(FInputs) + i * 4);
       p^ := 0;
      end;
    end;
 
-  if (na <> nmA) then
+  if (FnumA <> nmA) then
    begin
-    freemem(a);
-    freemem(outputs);
-    na := nma;
-    getmem(a, na * sizeof(my_float));
-    getmem(outputs, na * sizeof(my_float));
-    for i := 0 to nB - 1 do
+    freemem(FA);
+    freemem(FOutputs);
+    FnumA := nma;
+    getmem(FA, FnumA * sizeof(Single));
+    getmem(FOutputs, FnumA * sizeof(Single));
+    for i := 0 to FnumB - 1 do
      begin
-      p := pmy_float(longint(outputs) + i * sizeof(my_float));
+      p := PSingle(longint(FOutputs) + i * sizeof(Single));
       p^ := 0;
      end;
    end;
 
-  p := b;
+  p := FB;
   q := bCoefficients;
-  for i := 0 to nB - 1 do
+  for i := 0 to FnumB - 1 do
    begin
     p^ := q^;
     Inc(p);
     Inc(q);
    end;
 
-  p := a;
+  p := FA;
   q := aCoefficients;
-  for i := 0 to nA - 1 do
+  for i := 0 to FnumA - 1 do
    begin
     p^ := q^;
     Inc(p);
     Inc(q);
    end;
 
-  // scale coefficients by a[0] if necessary
-  if (a^ <> 1.0) then
+  // scale coefficients by FA[0] if necessary
+  if (FA^ <> 1.0) then
    begin
-    p := a;
-    for i := 0 to nA - 1 do
+    p := FA;
+    for i := 0 to FnumA - 1 do
      begin
-      p^ := p^ / a^;
+      p^ := p^ / FA^;
       Inc(p);
      end;
-    p := b;
-    for i := 0 to nB - 1 do
+    p := FB;
+    for i := 0 to FnumB - 1 do
      begin
-      p^ := p^ / a^;
+      p^ := p^ / FA^;
       Inc(p);
      end;
    end;
 
 end;
 
-procedure TFilter.setDenominator(nma: integer; aCoefficients: PMY_FLOAT);
+procedure TStkFilter.setDenominator(nma: Integer; aCoefficients: PSingle);
 var
-  i: integer;
-  p, q: pmy_float;
+  i: Integer;
+  p, q: PSingle;
 begin
   // Check the arguments.
-  if (na < 1) or (aCoefficients^ = 0.0) then
+  if (FnumA < 1) or (aCoefficients^ = 0.0) then
     exit;
 
-  if (na <> nA) then
+  if (FnumA <> FnumA) then
    begin
-    freemem(a);
-    freemem(outputs);
-    nA := nma;
+    freemem(FA);
+    freemem(FOutputs);
+    FnumA := nma;
 
-    getmem(a, na * sizeof(my_float));
-    getmem(outputs, na * sizeof(my_float));
-    for i := 0 to nA - 1 do
+    getmem(FA, FnumA * sizeof(Single));
+    getmem(FOutputs, FnumA * sizeof(Single));
+    for i := 0 to FnumA - 1 do
      begin
-      p := pmy_float(longint(outputs) + i * sizeof(pmy_float));
+      p := PSingle(longint(FOutputs) + i * sizeof(PSingle));
       p^ := 0;
      end;
    end;
 
-  p := a;
+  p := FA;
   q := aCoefficients;
-  for i := 0 to nA - 1 do
+  for i := 0 to FnumA - 1 do
    begin
     p^ := q^;
     Inc(p);
     Inc(q);
    end;
 
-  // scale coefficients by a[0] if necessary
-  if (a^ <> 1.0) then
+  // scale coefficients by FA[0] if necessary
+  if (FA^ <> 1.0) then
    begin
-    p := a;
-    for i := 0 to nA - 1 do
+    p := FA;
+    for i := 0 to FnumA - 1 do
      begin
-      p^ := p^ / a^;
+      p^ := p^ / FA^;
       Inc(p);
      end;
-    p := b;
-    for i := 0 to nB - 1 do
+    p := FB;
+    for i := 0 to FnumB - 1 do
      begin
-      p^ := p^ / a^;
+      p^ := p^ / FA^;
       Inc(p);
      end;
    end;
 end;
 
-procedure TFilter.setGain(theGain: MY_FLOAT);
+procedure TStkFilter.setGain(theGain: Single);
 begin
-  gain := theGain;
+  FGain := theGain;
 end;
 
-procedure TFilter.setNumerator(nmb: integer; bCoefficients: PMY_FLOAT);
+procedure TStkFilter.setNumerator(nmb: Integer; bCoefficients: PSingle);
 var
-  i: integer;
-  p, q: pmy_float;
+  i: Integer;
+  p, q: PSingle;
 begin
 
   // Check the arguments.
-  if (nb < 1) then
+  if (FnumB < 1) then
     exit;
 
-  if (nb <> nB) then
+  if (FnumB <> FnumB) then
    begin
-    freemem(b);
-    freemem(inputs);
-    nB := nmb;
-    getmem(b, nb * sizeof(my_float));
-    getmem(inputs, nb * sizeof(my_float));
-    for i := 0 to nB - 1 do
+    freemem(FB);
+    freemem(FInputs);
+    FnumB := nmb;
+    getmem(FB, FnumB * sizeof(Single));
+    getmem(FInputs, FnumB * sizeof(Single));
+    for i := 0 to FnumB - 1 do
      begin
-      p := pmy_float(longint(inputs) + i * 4);
+      p := PSingle(longint(FInputs) + i * 4);
       p^ := 0;
      end;
    end;
 
-  p := b;
+  p := FB;
   q := bCoefficients;
-  for i := 0 to nB - 1 do
+  for i := 0 to FnumB - 1 do
    begin
     p^ := q^;
     Inc(p);
@@ -352,10 +346,10 @@ begin
    end;
 end;
 
-function TFilter.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TStkFilter.tick(vector: PSingle; vectorSize: longint): PSingle;
 var
-  i: integer;
-  p: pmy_float;
+  i: Integer;
+  p: PSingle;
 begin
   p := vector;
   for i := 0 to vectorSize - 1 do
@@ -366,32 +360,32 @@ begin
   Result := vector;
 end;
 
-function TFilter.tick(sample: MY_FLOAT): MY_FLOAT;
+function TStkFilter.tick(sample: Single): Single;
 var
-  i: integer;
-  p, q: pmy_float;
+  i: Integer;
+  p, q: PSingle;
 begin
-  outputs^ := 0.0;
-  inputs^ := gain * sample;
-  for i := nB - 1 downto 1 do
+  FOutputs^ := 0.0;
+  FInputs^ := FGain * sample;
+  for i := FnumB - 1 downto 1 do
    begin
-    p := pmy_float(longint(b) + sizeof(my_float) * i);
-    q := pmy_float(longint(inputs) + sizeof(my_float) * i);
-    outputs^ := outputs^ + p^ * q^;
-    p := pmy_float(longint(inputs) + sizeof(my_float) * (i - 1));
+    p := PSingle(longint(FB) + sizeof(Single) * i);
+    q := PSingle(longint(FInputs) + sizeof(Single) * i);
+    FOutputs^ := FOutputs^ + p^ * q^;
+    p := PSingle(longint(FInputs) + sizeof(Single) * (i - 1));
     q^ := p^;
    end;
-  outputs^ := outputs^ + b^ * inputs^;
+  FOutputs^ := FOutputs^ + FB^ * FInputs^;
 
-  for i := nA - 1 downto 1 do
+  for i := FnumA - 1 downto 1 do
    begin
-    p := pmy_float(longint(a) + sizeof(my_float) * i);
-    q := pmy_float(longint(outputs) + sizeof(my_float) * i);
-    outputs^ := outputs^ - p^ * q^;
-    p := pmy_float(longint(outputs) + sizeof(my_float) * (i - 1));
+    p := PSingle(longint(FA) + sizeof(Single) * i);
+    q := PSingle(longint(FOutputs) + sizeof(Single) * i);
+    FOutputs^ := FOutputs^ - p^ * q^;
+    p := PSingle(longint(FOutputs) + sizeof(Single) * (i - 1));
     q^ := p^;
    end;
-  Result := outputs^;
+  Result := FOutputs^;
 end;
 
 end.

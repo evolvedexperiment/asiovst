@@ -1,63 +1,57 @@
 unit DAV_StkShakers;
 
-{
-/***************************************************/
-/*! \class TShakers
-    \brief PhISEM and PhOLIES class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    PhISEM (Physically Informed Stochastic Event
-    Modeling) is an algorithmic approach for
-    simulating collisions of multiple independent
-    sound producing objects.  This class is a
-    meta-model that can simulate a Maraca, Sekere,
-    Cabasa, Bamboo Wind Chimes, Water Drops,
-    Tambourine, Sleighbells, and a Guiro.
+{ PhISEM and PhOLIES class.
 
-    PhOLIES (Physically-Oriented Library of
-    Imitated Environmental Sounds) is a similar
-    approach for the synthesis of environmental
-    sounds.  This class implements simulations of
-    breaking sticks, crunchy snow (or not), a
-    wrench, sandpaper, and more.
+  PhISEM (Physically Informed Stochastic Event Modeling) is an algorithmic
+  approach for simulating collisions of multiple independent sound producing
+  objects. This class is a meta-model that can simulate a Maraca, Sekere,
+  Cabasa, Bamboo Wind Chimes, Water Drops, Tambourine, Sleighbells, and a Guiro.
 
-    Control Change Numbers: 
-      - Shake Energy:=2
-      - System Decay:=4
-      - Number Of Objects:=11
-      - Resonance Frequency:=1
-      - Shake Energy:=128
-      - Instrument Selection:=1071
-        - Maraca:=0
-        - Cabasa:=1
-        - Sekere:=2
-        - Guiro:=3
-        - Water Drops:=4
-        - Bamboo Chimes:=5
-        - Tambourine:=6
-        - Sleigh Bells:=7
-        - Sticks:=8
-        - Crunch:=9
-        - Wrench:=10
-        - Sand Paper:=11
-        - Coke Can:=12
-        - Next Mug:=13
-        - Penny + Mug:=14
-        - Nickle + Mug:=15
-        - Dime + Mug:=16
-        - Quarter + Mug:=17
-        - Franc + Mug:=18
-        - Peso + Mug:=19
-        - Big Rocks:=20
-        - Little Rocks:=21
-        - Tuned Bamboo Chimes:=22
+  PhOLIES (Physically-Oriented Library of Imitated Environmental Sounds) is a
+  similar approach for the synthesis of environmental sounds. This class
+  implements simulations of breaking sticks, crunchy snow (or not), a wrench,
+  sandpaper, and more.
 
-    by Perry R. Cook, 1996 - 1999.
-*/
-/***************************************************/
+  Control Change Numbers:
+    - Shake Energy:=2
+    - System Decay:=4
+    - Number Of Objects:=11
+    - Resonance Frequency:=1
+    - Shake Energy:=128
+    - Instrument Selection:=1071
+      - Maraca:=0
+      - Cabasa:=1
+      - Sekere:=2
+      - Guiro:=3
+      - Water Drops:=4
+      - Bamboo Chimes:=5
+      - Tambourine:=6
+      - Sleigh Bells:=7
+      - Sticks:=8
+      - Crunch:=9
+      - Wrench:=10
+      - Sand Paper:=11
+      - Coke Can:=12
+      - Next Mug:=13
+      - Penny + Mug:=14
+      - Nickle + Mug:=15
+      - Dime + Mug:=16
+      - Quarter + Mug:=17
+      - Franc + Mug:=18
+      - Peso + Mug:=19
+      - Big Rocks:=20
+      - Little Rocks:=21
+      - Tuned Bamboo Chimes:=22
 }
+
 interface
 
-uses stk, instrmnt, Math;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkInstrument, Math;
 
 const
   MAX_FREQS = 8;
@@ -66,26 +60,26 @@ const
 type
   TShakers = class(TInstrmnt)
   public
-  //! Class constructor.
+    // Class constructor.
     constructor Create(sr: my_float);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Start a note with the given instrument and amplitude.
+    // Start a note with the given instrument and amplitude.
   {
     Use the instrument numbers above, converted to frequency values
     as if MIDI note numbers, to select a particular instrument.
   }
     procedure noteOn(frequency, amplitude: MY_FLOAT); overload;
 
-  //! Stop a note with the given amplitude (speed of decay).
+    // Stop a note with the given amplitude (speed of decay).
     procedure noteOff(amplitude: MY_FLOAT);
 
-  //! Compute one output sample.
+    // Compute one output sample.
     function tick: MY_FLOAT;
 
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
     procedure controlChange(number: integer; Value: MY_FLOAT);
 
   protected

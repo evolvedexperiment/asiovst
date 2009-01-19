@@ -42,34 +42,34 @@ type
     FNoiseGain   : Single;
     FVibratoGain : Single;
   public
-  //! Class constructor, taking the lowest desired playing frequency.
+    // Class constructor, taking the lowest desired playing frequency.
     constructor Create(sr, lowestFrequency: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set instrument parameters for a particular frequency.
+    // Set instrument parameters for a particular frequency.
     procedure setFrequency(frequency: Single);
 
-  //! Apply breath pressure to instrument with given amplitude and rate of increase.
+    // Apply breath pressure to instrument with given amplitude and rate of increase.
     procedure startBlowing(amplitude, rate: Single);
 
-  //! Decrease breath pressure with given rate of decrease.
+    // Decrease breath pressure with given rate of decrease.
     procedure stopBlowing(rate: Single);
 
-  //! Start a note with the given frequency and amplitude.
+    // Start a note with the given frequency and amplitude.
     procedure noteOn(frequency, amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
+    // Stop a note with the given amplitude (speed of decay).
     procedure noteOff(amplitude: Single);
 
-  //! Compute one output sample.
+    // Compute one output sample.
     function tick: Single;
 
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
     procedure controlChange(number: integer; Value: Single);
   end;
 

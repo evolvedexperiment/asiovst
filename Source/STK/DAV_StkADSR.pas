@@ -26,37 +26,37 @@ type
     procedure KeyOn; override;
     procedure KeyOff; override;
 
-  //! Set the asAttack FRate.
+    // Set the asAttack FRate.
     procedure SetAttackRate(aRate: Single);
 
-  //! Set the asDecay FRate.
+    // Set the asDecay FRate.
     procedure SetDecayRate(aRate: Single);
 
-  //! Set the asSustain level.
+    // Set the asSustain level.
     procedure SetSustainLevel(aLevel: Single);
 
-  //! Set the asRelease FRate.
+    // Set the asRelease FRate.
     procedure setReleaseRate(aRate: Single);
 
-  //! Set the asAttack FRate based on a time duration.
+    // Set the asAttack FRate based on a time duration.
     procedure SetAttackTime(aTime: Single);
 
-  //! Set the asDecay FRate based on a time duration.
+    // Set the asDecay FRate based on a time duration.
     procedure SetDecayTime(aTime: Single);
 
-  //! Set the asRelease FRate based on a time duration.
+    // Set the asRelease FRate based on a time duration.
     procedure SetReleaseTime(aTime: Single);
 
-  //! Set asSustain level and asAttack, asDecay, and asRelease FState rates based on time durations.
+    // Set asSustain level and asAttack, asDecay, and asRelease FState rates based on time durations.
     procedure SetAllTimes(aTime, dTime, sLevel, rTime: Single);
 
-  //! Set the FTarget FCurrentValue.
+    // Set the FTarget FCurrentValue.
     procedure SetTarget(aTarget: Single);
 
-  //! Return the current envelope \e FState (asAttack, asDecay, asSustain, asRelease, asDone).
+    // Return the current envelope \e FState (asAttack, asDecay, asSustain, asRelease, asDone).
     function GetState: TADSRStates;
 
-  //! Set to FState := ADSR::asSustain with current and FTarget values of \e Value.
+    // Set to FState := ADSR::asSustain with current and FTarget values of \e Value.
     procedure SetValue(Value: Single);
 
     function Tick: Single; overload; override;

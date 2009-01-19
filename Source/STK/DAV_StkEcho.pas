@@ -22,28 +22,28 @@ type
     FLastOutput  : Single;
     FEffectMix   : Single;
   public
-  //! Class constructor, taking the longest desired delay FLength.
+    // Class constructor, taking the longest desired delay FLength.
     constructor Create(sr, longestDelay: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set the delay line FLength in samples.
+    // Set the delay line FLength in samples.
     procedure setDelay(delay: Single);
 
-  //! Set the mixture of input and processed levels in the output (0.0 := input only, 1.0 := processed only). 
+    // Set the mixture of input and processed levels in the output (0.0 := input only, 1.0 := processed only). 
     procedure setEffectMix(mix: Single);
 
-  //! Return the last output value.
+    // Return the last output value.
     function lastOut: Single;
 
-  //! Compute one output sample.
+    // Compute one output sample.
     function tick(input: Single): Single; overload;
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
+    // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
     function tick(vector: PSingle; vectorSize: Integer): PSingle; overload;
   end;
 

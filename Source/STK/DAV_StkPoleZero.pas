@@ -1,78 +1,73 @@
 unit DAV_StkPoleZero;
 
-{
-/***************************************************/
-/*! \class TPoleZero
-    \brief STK one-pole, one-zero filter class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This protected Filter subclass implements
-    a one-pole, one-zero digital filter.  A
-    method is provided for creating an allpass
-    filter with a given coefficient.  Another
-    method is provided to create a DC blocking filter.
+{ STK one-pole, one-zero filter class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This protected Filter subclass implements a one-pole, one-zero digital
+  filter. A method is provided for creating an allpass filter with a given
+  coefficient. Another method is provided to create a DC blocking filter.
+
 }
+
 interface
 
-uses stk, filter;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_Filter;
 
 type
   TPoleZero = class(TFilter)
   public
-  //! Default constructor creates a first-order pass-through filter.
-    constructor Create(sr: my_float);
+    constructor Create(SampleRate: Single); override;
+    destructor Destroy; override;
 
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Clears the internal states of the filter.
+    // Clears the internal states of the filter.
     procedure Clear;
 
-  //! Set the b[0] coefficient value.
-    procedure setB0(b0: MY_FLOAT);
+    // Set the b[0] coefficient value.
+    procedure setB0(b0: Single);
 
-  //! Set the b[1] coefficient value.
-    procedure setB1(b1: MY_FLOAT);
+    // Set the b[1] coefficient value.
+    procedure setB1(b1: Single);
 
-  //! Set the a[1] coefficient value.
-    procedure setA1(a1: MY_FLOAT);
+    // Set the a[1] coefficient value.
+    procedure setA1(a1: Single);
 
-  //! Set the filter for allpass behavior using \e coefficient.
+    // Set the filter for allpass behavior using \e coefficient.
   {
     This method uses \e coefficient to create an allpass filter,
     which has unity gain at all frequencies.  Note that the \e
     coefficient magnitude must be less than one to maintain stability.
   }
-    procedure setAllpass(coefficient: MY_FLOAT);
+    procedure setAllpass(coefficient: Single);
 
-  //! Create a DC blocking filter with the given pole position in the z-plane.
+    // Create a DC blocking filter with the given pole position in the z-plane.
   {
     This method sets the given pole position, together with a zero
     at z=1, to create a DC blocking filter.  \e thePole should be
     close to one to minimize low-frequency attenuation.
   }
-    procedure setBlockZero(thePole: MY_FLOAT = 0.99);
+    procedure setBlockZero(thePole: Single = 0.99);
 
-  //! Set the filter gain.
+    // Set the filter gain.
   {
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    }
-    procedure setGain(theGain: MY_FLOAT);
+    procedure setGain(theGain: Single);
 
-  //! Return the current filter gain.
-    function getGain: MY_FLOAT;
+    // Return the current filter gain.
+    function getGain: Single;
 
-  //! Return the last computed output value.
-    function lastOut: MY_FLOAT;
+    // Return the last computed output value.
+    function lastOut: Single;
 
-  //! Input one sample to the filter and return one output.
-    function tick(sample: MY_FLOAT): MY_FLOAT; overload;
+    // Input one sample to the filter and return one output.
+    function tick(sample: Single): Single; overload;
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
+    // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
     function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
   end;
 
@@ -80,9 +75,9 @@ implementation
 
 constructor TPoleZero.Create;
 var
-  a, b: array[0..1] of my_float;
+  a, b: array[0..1] of Single;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   // Default setting for pass-through.
   b[0] := 1;
   b[1] := 0;
@@ -158,17 +153,17 @@ begin
   inherited setGain(theGain);
 end;
 
-function TPoleZero.getGain: my_float;
+function TPoleZero.getGain: Single;
 begin
   Result := inherited getGain;
 end;
 
-function TPoleZero.lastOut: my_float;
+function TPoleZero.lastOut: Single;
 begin
   Result := inherited lastOut;
 end;
 
-function TPoleZero.tick(sample: my_float): my_float;
+function TPoleZero.tick(sample: Single): Single;
 var
   p: pmy_float;
 begin

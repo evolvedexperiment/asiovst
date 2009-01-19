@@ -1,46 +1,40 @@
 unit DAV_StkTwoPole;
 
-{
-/***************************************************/
-/*! \class TTwoPole
-    \brief STK two-pole filter class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This protected Filter subclass implements
-    a two-pole digital filter.  A method is
-    provided for creating a resonance in the
-    frequency response while maintaining a nearly
-    constant filter gain.
+{ STK two-pole filter class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This protected Filter subclass implements a two-pole digital filter. A method
+  is provided for creating a resonance in the frequency response while
+  maintaining a nearly constant filter gain.
 }
+
 interface
 
-uses stk, filter;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkFilter;
 
 type
-  TTwoPole = class(TFilter)
+  TStkTwoPole = class(TStkFilter)
   public
-  //! Default constructor creates a second-order pass-through filter.
-    constructor Create(sr: my_float);
+    constructor Create(SampleRate: Single); override;
+    destructor Destroy; override;
 
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Clears the internal states of the filter.
+    // Clears the internal states of the filter.
     procedure Clear;
 
-  //! Set the b[0] coefficient value.
-    procedure setB0(b0: my_float);
+    // Set the b[0] coefficient value.
+    procedure setB0(b0: Single);
 
-  //! Set the a[1] coefficient value.
-    procedure setA1(a1: my_float);
+    // Set the a[1] coefficient value.
+    procedure setA1(a1: Single);
 
-  //! Set the a[2] coefficient value.
-    procedure setA2(a2: my_float);
+    // Set the a[2] coefficient value.
+    procedure setA2(a2: Single);
 
-  //! Sets the filter coefficients for a resonance at \e frequency (in Hz).
+    // Sets the filter coefficients for a resonance at \e frequency (in Hz).
   {
     This method determines the filter coefficients corresponding to
     two complex-conjugate poles with the given \e frequency (in Hz)
@@ -54,25 +48,25 @@ type
     An unstable filter will result for \e radius >= 1.0.  For a better
     resonance filter, use a BiQuad filter. \sa BiQuad filter class
   }
-    procedure setResonance(frequency, radius: my_float; normalize: boolean = False);
+    procedure setResonance(frequency, radius: Single; normalize: boolean = False);
 
-  //! Set the filter gain.
+    // Set the filter gain.
   {
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    }
-    procedure setGain(theGain: my_float);
+    procedure setGain(theGain: Single);
 
-  //! Return the current filter gain.
-    function getGain: my_float;
+    // Return the current filter gain.
+    function getGain: Single;
 
-  //! Return the last computed output value.
-    function lastOut: my_float;
+    // Return the last computed output value.
+    function lastOut: Single;
 
-  //! Input one sample to the filter and return one output.
-    function tick(sample: my_float): my_float; overload;
+    // Input one sample to the filter and return one output.
+    function tick(sample: Single): Single; overload;
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
+    // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
     function tick(vector: pmy_float; vectorSize: longint): Pmy_float; overload;
   end;
 
@@ -80,10 +74,10 @@ implementation
 
 constructor TTwoPole.Create;
 var
-  b: my_float;
-  a: array[0..2] of my_float;
+  b: Single;
+  a: array[0..2] of Single;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   B := 1.0;
   A[0] := 1;
   A[1] := 0;
@@ -128,7 +122,7 @@ end;
 procedure TTwoPole.setResonance;
 var
   p: pmy_float;
-  real, imag: my_float;
+  real, imag: Single;
 begin
   p := pindex(a, 2);
   p^ := radius * radius;
@@ -150,17 +144,17 @@ begin
   inherited setGain(theGain);
 end;
 
-function TTwoPole.getGain: my_float;
+function TTwoPole.getGain: Single;
 begin
   Result := inherited getGain;
 end;
 
-function TTwoPole.lastOut: my_float;
+function TTwoPole.lastOut: Single;
 begin
   Result := inherited lastOut;
 end;
 
-function TTwoPole.tick(sample: my_float): my_float;
+function TTwoPole.tick(sample: Single): Single;
 var
   p: pmy_float;
 begin

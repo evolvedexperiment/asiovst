@@ -1,133 +1,132 @@
 unit DAV_StkReverb;
 
-{
-/***************************************************/
-/*! \class TReverb
-    \brief STK abstract TReverberator parent class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class provides common functionality for
-    STK TReverberator subclasses.
+{ STK abstract TReverberator parent class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This class provides common functionality for STK TReverberator subclasses.
+
 }
+
 interface
 
-uses stk;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk;
 
 type
-  TReverb = class(TStk)
+  TStkReverb = class(TStk)
+  protected
+    FLastOutput : array[0..1] of Single;
+    FEffectMix  : Single;
+    function isPrime(Number: Integer): boolean;
   public
-  //! Class constructor.
-    constructor Create(sr: my_float);
+    // Class constructor.
+    constructor Create(SampleRate: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set the mixture of input and "TReverberated" levels in the output (0.0 := input only, 1.0 := TReverb only).
-    procedure setEffectMix(mix: MY_FLOAT);
+    // Set the mixture of input and "TReverberated" levels in the output (0.0 := input only, 1.0 := TStkReverb only).
+    procedure setEffectMix(Mix: Single);
 
-  //! Return the last output value.
-    function lastOut: MY_FLOAT;
+    // Return the last output value.
+    function lastOut: Single;
 
-  //! Return the last left output value.
-    function lastOutLeft: MY_FLOAT;
+    // Return the last left output value.
+    function lastOutLeft: Single;
 
-  //! Return the last right output value.
-    function lastOutRight: MY_FLOAT;
+    // Return the last right output value.
+    function lastOutRight: Single;
 
-  //! Abstract tick function ... must be implemented in subclasses.
-    function tick(input: MY_FLOAT): MY_FLOAT; overload;
+    // Abstract Tick function ... must be implemented in subclasses.
+    function Tick(input: Single): Single; overload;
 
-  //! Take \e vectorSize inputs, compute the same number of outputs and return them in \e vector.
-    function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
+    // Take \e VectorSize inputs, compute the same Number of outputs and return them in \e Vector.
+    function Tick(Vector: PSingle; VectorSize: longint): PSingle; overload;
 
-  protected
-    lastOutput: array[0..1] of my_float;
-    effectMix: my_float;
-    function isPrime(number: integer): boolean;
   end;
 
 implementation
 
-constructor TReverb.Create;
+constructor TStkReverb.Create;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
 end;
 
-destructor TReverb.Destroy;
+destructor TStkReverb.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TReverb.setEffectMix;
+procedure TStkReverb.setEffectMix;
 begin
-  effectMix := mix;
+  FEffectMix := Mix;
 end;
 
-function TReverb.lastOut: my_float;
+function TStkReverb.lastOut: Single;
 begin
-  Result := (lastOutput[0] + lastOutput[1]) * 0.5;
+  Result := (FLastOutput[0] + FLastOutput[1]) * 0.5;
 end;
 
-function TReverb.lastOutLeft: my_float;
+function TStkReverb.lastOutLeft: Single;
 begin
-  Result := lastOutput[0];
+  Result := FLastOutput[0];
 end;
 
-function TReverb.lastOutRight: my_float;
+function TStkReverb.lastOutRight: Single;
 begin
-  Result := lastOutput[1];
+  Result := FLastOutput[1];
 end;
 
-function TReverb.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TStkReverb.Tick(Vector: PSingle; VectorSize: longint): PSingle;
 var
-  i: integer;
-  p: pmy_float;
+  i: Integer;
+  p: PSingle;
 begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
+  p := Vector;
+  for i := 0 to VectorSize - 1 do
    begin
-    p^ := tick(p^);
+    p^ := Tick(p^);
     Inc(p);
    end;
-  Result := vector;
+  Result := Vector;
 end;
 
-function TReverb.isPrime;
+function TStkReverb.isPrime;
 var
-  i: integer;
+  i: Integer;
 begin
-  if (number = 2) then
+  if (Number = 2) then
    begin
     Result := True;
     exit
    end;
-  if (number and 1 > 0) then
+  if (Number and 1 > 0) then
    begin
     i := 3;
     repeat
-      if ((number mod i) = 0) then
+      if ((Number mod i) = 0) then
        begin
         Result := False;
         exit
        end;
       i := i + 2;
-    until (i >= round(sqrt(number) + 1));
+    until (i >= round(sqrt(Number) + 1));
     Result := True;
    end else
     Result := False;
 end;
 
-procedure TReverb.Clear;
+procedure TStkReverb.Clear;
 begin
 end;
 
-function TReverb.tick(input: MY_FLOAT): MY_FLOAT;
+function TStkReverb.Tick(input: Single): Single;
 begin
   Result := 0;
 end;

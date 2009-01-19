@@ -1,68 +1,63 @@
 unit DAV_StkPercFlut;
 
-{
-/***************************************************/
-/*! \class TPercFlut
-    \brief STK percussive flute FM synthesis instrument.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements algorithm 4 of the TX81Z.
+{ STK percussive flute FM synthesis instrument.
 
-    \code
-    Algorithm 4 is :   4.3--\
-                          2-- + -.1-.Out
-    \endcode
+  This class implements algorithm 4 of the TX81Z.
 
-    Control Change Numbers: 
-       - Total Modulator Index:=2
-       - Modulator Crossfade:=4
-       - LFO Speed:=11
-       - LFO Depth:=1
-       - ADSR 2 & 4 Target:=128
+  Algorithm 4 is :   4.3--\
+                       2-- + -.1-.Out
 
-    The basic Chowning/Stanford FM patent expired
-    in 1995, but there exist follow-on patents,
-    mostly assigned to Yamaha.  If you are of the
-    type who should worry about this (making
-    money) worry away.
+  Control Change Numbers:
+    - Total Modulator Index = 2
+    - Modulator Crossfade = 4
+    - LFO Speed = 11
+    - LFO Depth = 1
+    - ADSR 2 & 4 Target = 128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  The basic Chowning/Stanford FM patent expired in 1995, but there exist
+  follow-on patents, mostly assigned to Yamaha. If you are of the type who
+  should worry about this (making money) worry away.
 }
+
 interface
 
-uses stk, fm, waveplayer;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkFm, DAV_StkWavePlayer;
 
 type
-  TPercFlut = class(TFM)
+  TStkPercFlut = class(TStkFM)
   public
-  //! Class constructor.
-    constructor Create(sr: my_float);
+    // Class constructor.
+    constructor Create(SampleRate: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
+    // Set instrument parameters for a particular Frequency.
+    procedure SetFrequency(Frequency: Single);
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
+    // Start a note with the given Frequency and amplitude.
+    procedure NoteOn(Frequency, amplitude: Single);
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function Tick: Single;
   end;
 
 implementation
 
-constructor TPercFlut.Create;
+constructor TStkPercFlut.Create;
 var
   i: integer;
 begin
-  inherited Create(sr);
-  waves[0] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  waves[1] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  waves[2] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  waves[3] := TWavePlayer.Create(srate, 'c:\stk\fwavblnk.wav');
+  inherited Create(SampleRate);
+  waves[0] := TWavePlayer.Create(SampleRate, 'sinewave.wav');
+  waves[1] := TWavePlayer.Create(SampleRate, 'sinewave.wav');
+  waves[2] := TWavePlayer.Create(SampleRate, 'sinewave.wav');
+  waves[3] := TWavePlayer.Create(SampleRate, 'fwavblnk.wav');
   waves[0].SetOneShot(False);
   waves[1].SetOneShot(False);
   waves[2].SetOneShot(False);
@@ -84,44 +79,44 @@ begin
   modDepth := 0.005;
 end;
 
-destructor TPercFlut.Destroy;
+destructor TStkPercFlut.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TPercFlut.setFrequency;
+procedure TStkPercFlut.SetFrequency;
 begin
-  baseFrequency := frequency;
+  baseFrequency := Frequency;
 end;
 
-procedure TPercFlut.noteOn;
+procedure TStkPercFlut.NoteOn;
 begin
   gains[0] := amplitude * __TFM_gains[99] * 0.5;
   gains[1] := amplitude * __TFM_gains[71] * 0.5;
   gains[2] := amplitude * __TFM_gains[93] * 0.5;
   gains[3] := amplitude * __TFM_gains[85] * 0.5;
-  setFrequency(frequency);
+  SetFrequency(Frequency);
   keyOn;
 end;
 
-function TPercFlut.tick: my_float;
+function TStkPercFlut.Tick: Single;
 var
-  temp: my_float;
+  temp: Single;
 begin
-  temp := vibrato.tick * modDepth * 0.2;
-  waves[0].setFrequency(baseFrequency * (1.0 + temp) * ratios[0]);
-  waves[1].setFrequency(baseFrequency * (1.0 + temp) * ratios[1]);
-  waves[2].setFrequency(baseFrequency * (1.0 + temp) * ratios[2]);
-  waves[3].setFrequency(baseFrequency * (1.0 + temp) * ratios[3]);
+  temp := vibrato.Tick * modDepth * 0.2;
+  waves[0].SetFrequency(baseFrequency * (1.0 + temp) * ratios[0]);
+  waves[1].SetFrequency(baseFrequency * (1.0 + temp) * ratios[1]);
+  waves[2].SetFrequency(baseFrequency * (1.0 + temp) * ratios[2]);
+  waves[3].SetFrequency(baseFrequency * (1.0 + temp) * ratios[3]);
   waves[3].addPhaseOffset(twozero.lastOut);
-  temp := gains[3] * adsr[3].tick * waves[3].tick;
-  twozero.tick(temp);
+  temp := gains[3] * adsr[3].Tick * waves[3].Tick;
+  twozero.Tick(temp);
   waves[2].addPhaseOffset(temp);
-  temp := (1.0 - (control2 * 0.5)) * gains[2] * adsr[2].tick * waves[2].tick;
-  temp := temp + control2 * 0.5 * gains[1] * adsr[1].tick * waves[1].tick;
+  temp := (1.0 - (control2 * 0.5)) * gains[2] * adsr[2].Tick * waves[2].Tick;
+  temp := temp + control2 * 0.5 * gains[1] * adsr[1].Tick * waves[1].Tick;
   temp := temp * control1;
   waves[0].addPhaseOffset(temp);
-  temp := gains[0] * adsr[0].tick * waves[0].tick;
+  temp := gains[0] * adsr[0].Tick * waves[0].Tick;
   lastOutput := temp * 0.5;
   Result := lastOutput;
 end;

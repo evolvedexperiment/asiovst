@@ -1,81 +1,75 @@
 unit DAV_StkMoog;
 
-{
-/***************************************************/
-/*! \class TMoog
-    \brief STK moog-like swept filter sampling synthesis class.
+{  STK moog-like swept filter sampling synthesis class.
 
-    This instrument uses one attack wave, one
-    looped wave, and an ADSR envelope (inherited
-    from the Sampler class) and adds two sweepable
-    formant (FormSwep) filters.
+   This instrument uses one attack wave, one looped wave, and an ADSR envelope
+   (inherited from the Sampler class) and adds two sweepable formant (FormSwep)
+   FFilters.
 
     Control Change Numbers:
-       - Filter Q:=2
-       - Filter Sweep Rate:=4
-       - Vibrato Frequency:=11
-       - Vibrato Gain:=1
-       - Gain:=128
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+       - Filter Q = 2
+       - Filter Sweep Rate = 4
+       - Vibrato AFrequency = 11
+       - Vibrato Gain = 1
+       - Gain = 128
 }
+
 interface
 
-uses stk, waveplayer, sampler, formswep;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkWavePlayer, DAV_StkSampler, DAV_StkFormantSweep;
 
 type
   TMoog = class(TSampler)
-  public
-  //! Class constructor.
-    constructor Create(sr: my_float);
-
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
-
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
-
-  //! Set the modulation (vibrato) speed in Hz.
-    procedure setModulationSpeed(mSpeed: MY_FLOAT);
-
-  //! Set the modulation (vibrato) depth.
-    procedure setModulationDepth(mDepth: MY_FLOAT);
-
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
-
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: MY_FLOAT);
-
   protected
-    filters: array[0..1] of tformswep;
-    modDepth, filterQ, filterRate: MY_FLOAT;
+    FFilters    : array[0..1] of TFormantSweep;
+    FModDepth   : Single;
+    FFilterQ    : Single;
+    FFilterRate : Single;
+  public
+    constructor Create(SampleRate: Single); override;
+    destructor Destroy; override;
+
+    // Set instrument parameters for a particular AFrequency.
+    procedure SetFrequency(AFrequency: Single);
+
+    // Start a note with the given AFrequency and AAmplitude.
+    procedure NoteOn(AFrequency, AAmplitude: Single);
+
+    // Set the modulation (vibrato) speed in Hz.
+    procedure SetModulationSpeed(mSpeed: Single);
+
+    // Set the modulation (vibrato) depth.
+    procedure SetModulationDepth(mDepth: Single);
+
+    // Compute one output sample.
+    function Tick: Single;
+
+    // Perform the control change specified by Number and value (0.0 - 128.0).
+    procedure ControlChange(Number: Integer; Value: Single);
   end;
 
 implementation
 
 constructor TMoog.Create;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   attacks[0] := TWavePlayer.Create(srate, 'c:\stk\mandpluk.wav');
   loops[0] := TWavePlayer.Create(srate, 'c:\stk\impuls20.wav');
   loops[1] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
   loops[0].SetOneShot(False);
   loops[1].SetOneShot(False);
-  loops[1].setFrequency(6.122);
-  filters[0] := TFormSwep.Create(srate);
-  filters[0].setTargets(0.0, 0.7);
-  filters[1] := TFormSwep.Create(srate);
-  filters[1].setTargets(0.0, 0.7);
+  loops[1].SetFrequency(6.122);
+  FFilters[0] := TFormantSweep.Create(srate);
+  FFilters[0].setTargets(0.0, 0.7);
+  FFilters[1] := TFormantSweep.Create(srate);
+  FFilters[1].setTargets(0.0, 0.7);
   adsr.setAllTimes(0.001, 1.5, 0.6, 0.250);
-  filterQ := 0.85;
-  filterRate := 0.0001;
-  modDepth := 0.0;
+  FFilterQ := 0.85;
+  FFilterRate := 0.0001;
+  FModDepth := 0.0;
 end;
 
 destructor TMoog.Destroy;
@@ -84,73 +78,73 @@ begin
   attacks[0].Free;
   loops[0].Free;
   loops[1].Free;
-  filters[0].Free;
-  filters[1].Free;
+  FFilters[0].Free;
+  FFilters[1].Free;
 end;
 
-procedure TMoog.setFrequency;
+procedure TMoog.SetFrequency;
 var
-  rate: my_float;
+  rate: Single;
 begin
-  baseFrequency := frequency;
-  if (frequency <= 0.0) then
+  baseFrequency := AFrequency;
+  if (AFrequency <= 0.0) then
     baseFrequency := 220.0;
 //  rate:=attacks[0].getSize * 0.01 * baseFrequency / sampleRate;
 //  attacks[0].setRate( rate );
-  attacks[0].setFrequency(basefrequency);
-  loops[0].setFrequency(baseFrequency);
+  attacks[0].SetFrequency(basefrequency);
+  loops[0].SetFrequency(baseFrequency);
 end;
 
-procedure TMoog.noteOn;
+procedure TMoog.NoteOn;
 var
-  temp: my_float;
+  temp: Single;
 begin
-  setFrequency(frequency);
+  SetFrequency(AFrequency);
   keyOn;
-  attackGain := amplitude * 0.5;
-  loopGain := amplitude;
+  attackGain := AAmplitude * 0.5;
+  loopGain := AAmplitude;
 
-  temp := filterQ + 0.05;
-  filters[0].setStates(2000.0, temp);
-  filters[1].setStates(2000.0, temp);
+  temp := FFilterQ + 0.05;
+  FFilters[0].setStates(2000.0, temp);
+  FFilters[1].setStates(2000.0, temp);
 
-  temp := filterQ + 0.099;
-  filters[0].setTargets(frequency, temp);
-  filters[1].setTargets(frequency, temp);
+  temp := FFilterQ + 0.099;
+  FFilters[0].setTargets(AFrequency, temp);
+  FFilters[1].setTargets(AFrequency, temp);
 
-  filters[0].setSweepRate(filterRate * 22050.0 / srate);
-  filters[1].setSweepRate(filterRate * 22050.0 / srate);
+  FFilters[0].setSweepRate(FFilterRate * 22050.0 / srate);
+  FFilters[1].setSweepRate(FFilterRate * 22050.0 / srate);
 end;
 
-procedure TMoog.setModulationSpeed;
+procedure TMoog.SetModulationSpeed;
 begin
-  loops[1].setFrequency(mSpeed);
+  loops[1].SetFrequency(mSpeed);
 end;
 
-procedure TMoog.setModulationDepth;
+procedure TMoog.SetModulationDepth;
 begin
-  modDepth := mDepth * 0.5;
+  FModDepth := mDepth * 0.5;
 end;
 
-function TMoog.tick: my_float;
+function TMoog.Tick: Single;
 var
-  temp: my_float;
+  temp: Single;
 begin
-  if (modDepth <> 0.0) then
+  if (FModDepth <> 0.0) then
    begin
-    temp := loops[1].tick * modDepth;
-    loops[0].setFrequency(baseFrequency * (1.0 + temp));
+    temp := loops[1].Tick * FModDepth;
+    loops[0].SetFrequency(baseFrequency * (1.0 + temp));
    end;
 
-  temp := inherited tick;
-  temp := filters[0].tick(temp);
-  lastOutput := filters[1].tick(temp);
+  temp := inherited Tick;
+  temp := FFilters[0].Tick(temp);
+  lastOutput := FFilters[1].Tick(temp);
   Result := lastOutput * 3.0;
 end;
 
-procedure TMoog.controlChange;
+procedure TMoog.ControlChange;
 var
-  norm: my_float;
+  norm: Single;
 begin
   norm := Value;// * ONE_OVER_128;
   if (norm < 0) then
@@ -158,15 +152,15 @@ begin
   else if (norm > 1.0) then
     norm := 1.0;
 
-  if (number = __SK_FilterQ_) then // 2
-    filterQ := 0.80 + (0.1 * norm)
-  else if (number = __SK_FilterSweepRate_) then // 4
-    filterRate := norm * 0.0002
-  else if (number = __SK_ModFrequency_) then // 11
-    setModulationSpeed(norm * 12.0)
-  else if (number = __SK_ModWheel_) then // 1
-    setModulationDepth(norm)
-  else if (number = __SK_AfterTouch_Cont_) then // 128
+  if (Number = __SK_FilterQ_) then // 2
+    FFilterQ := 0.80 + (0.1 * norm)
+  else if (Number = __SK_FilterSweepRate_) then // 4
+    FFilterRate := norm * 0.0002
+  else if (Number = __SK_ModFrequency_) then // 11
+    SetModulationSpeed(norm * 12.0)
+  else if (Number = __SK_ModWheel_) then // 1
+    SetModulationDepth(norm)
+  else if (Number = __SK_AfterTouch_Cont_) then // 128
     adsr.setTarget(norm);
 end;
 

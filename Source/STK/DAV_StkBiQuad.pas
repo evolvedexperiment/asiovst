@@ -2,21 +2,13 @@ unit DAV_StkBiQuad;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{
-/***************************************************/
-/*! \class TStkBiQuad
-    \brief STK TStkBiQuad (two-pole, two-zero) filter class.
+{ STK TStkBiQuad (two-pole, two-zero) filter class.
 
-    This protected Filter subclass implements a
-    two-pole, two-zero digital filter.  A method
-    is provided for creating a resonance in the
-    Frequency response while maintaining a constant
-    filter gain.
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This protected Filter subclass implements a two-pole, two-zero digital
+  filter. A method is provided for creating a resonance in the frequency
+  response while maintaining a constant filter gain.
 }
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -27,31 +19,31 @@ uses
 type
   TStkBiQuad = class(TStkFilter)
   public
-  //! Default constructor creates a second-order pass-through filter.
+    // Default constructor creates a second-order pass-through filter.
     constructor Create(SampleRate: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Clears all internal states of the filter.
+    // Clears all internal states of the filter.
     procedure Clear;
 
-  //! Set the b[0] coefficient value.
+    // Set the b[0] coefficient value.
     procedure SetB0(b0: Single);
 
-  //! Set the b[1] coefficient value.
+    // Set the b[1] coefficient value.
     procedure SetB1(b1: Single);
 
-  //! Set the b[2] coefficient value.
+    // Set the b[2] coefficient value.
     procedure setB2(b2: Single);
 
-  //! Set the a[1] coefficient value.
+    // Set the a[1] coefficient value.
     procedure setA1(a1: Single);
 
-  //! Set the a[2] coefficient value.
+    // Set the a[2] coefficient value.
     procedure setA2(a2: Single);
 
-  //! Sets the filter coefficients for a resonance at \e Frequency (in Hz).
+    // Sets the filter coefficients for a resonance at \e Frequency (in Hz).
   {
     This method determines the filter coefficients corresponding to
     two complex-conjugate poles with the given \e Frequency (in Hz)
@@ -65,7 +57,7 @@ type
   }
     procedure SetResonance(Frequency, Radius: Single; Normalize: Boolean = False);
 
-  //! Set the filter coefficients for a notch at \e Frequency (in Hz).
+    // Set the filter coefficients for a notch at \e Frequency (in Hz).
   {
     This method determines the filter coefficients corresponding to
     two complex-conjugate zeros with the given \e Frequency (in Hz)
@@ -74,7 +66,7 @@ type
   }
     procedure SetNotch(Frequency, Radius: Single);
 
-  //! Sets the filter zeroes for equal resonance gain.
+    // Sets the filter zeroes for equal resonance gain.
   {
     When using the filter as a resonator, zeroes places at z := 1, z
     := -1 will result in a constant gain at resonance of 1 / (1 - R),
@@ -82,23 +74,23 @@ type
   }
     procedure SetEqualGainZeroes;
 
-  //! Set the filter gain.
+    // Set the filter gain.
   {
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    }
     procedure SetGain(theGain: Single);
 
-  //! Return the current filter gain.
+    // Return the current filter gain.
     function GetGain: Single;
 
-  //! Return the last computed output value.
+    // Return the last computed output value.
     function lastOut: Single;
 
-  //! Input one sample to the filter and return one output.
+    // Input one sample to the filter and return one output.
     function Tick(sample: Single): Single; overload;
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
+    // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
     function Tick(vector: PSingle; vectorSize: longint): PSingle; overload;
   end;
 

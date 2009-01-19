@@ -1,70 +1,70 @@
 unit DAV_StkSphere;
 
-{
-/***************************************************/
-/*! \class TSphere
-    \brief STK TSphere class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a spherical ball with
-    radius, mass, position, and velocity parameters.
+{ STK TSphere class.
 
-    by Perry R. Cook, 1995 - 2002.
-*/
-/***************************************************/
+  This class implements a spherical ball with radius, mass, position, and
+  velocity parameters.
 }
+
 interface
 
-uses Vector3D, Windows;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_StkVector3D, Windows;
 
 type
   TSphere = class
+  private
+    myPosition    : TVector3d;
+    myVelocity    : TVector3d;
+    workingVector : TVector3d;
+    myRadius      : Double;
+    myMass        : Double;
   public
-  //! Constructor taking an initial radius value.
-    constructor Create(initRadius: double);
+    // Constructor taking an initial radius value.
+    constructor Create(initRadius: Double);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Set the 3D center position of the TSphere.
-    procedure setPosition(anX, aY, aZ: double);
+    // Set the 3D center position of the TSphere.
+    procedure setPosition(anX, aY, aZ: Double);
 
-  //! Set the 3D velocity of the TSphere.
-    procedure setVelocity(anX, aY, aZ: double);
+    // Set the 3D velocity of the TSphere.
+    procedure setVelocity(anX, aY, aZ: Double);
 
-  //! Set the radius of the TSphere.
-    procedure setRadius(aRadius: double);
+    // Set the radius of the TSphere.
+    procedure setRadius(aRadius: Double);
 
-  //! Set the mass of the TSphere.
-    procedure setMass(aMass: double);
+    // Set the mass of the TSphere.
+    procedure setMass(aMass: Double);
 
-  //! Get the current position of the TSphere as a 3D vector.
-    function getPosition: tvector3d;
+    // Get the current position of the TSphere as a 3D vector.
+    function getPosition: TVector3d;
 
-  //! Get the relative position of the given point to the TSphere as a 3D vector.
-    function getRelativePosition(aPosition: tvector3d): tvector3d;
+    // Get the relative position of the given point to the TSphere as a 3D vector.
+    function getRelativePosition(aPosition: TVector3d): TVector3d;
 
-  //! Set the velcoity of the TSphere as a 3D vector.
-    function getVelocity(aVelocity: tvector3d): double;
+    // Set the velcoity of the TSphere as a 3D vector.
+    function getVelocity(aVelocity: TVector3d): Double;
 
-  //! Returns the distance from the TSphere boundary to the given position (< 0 if inside).
-    function isInside(aPosition: tvector3d): double;
+    // Returns the distance from the TSphere boundary to the given position (< 0 if inside).
+    function isInside(aPosition: TVector3d): Double;
 
-  //! Get the current TSphere radius.
-    function getRadius: double;
+    // Get the current TSphere radius.
+    function getRadius: Double;
 
-  //! Get the current TSphere mass.
-    function getMass: double;
+    // Get the current TSphere mass.
+    function getMass: Double;
 
-  //! Increase the current TSphere velocity by the given 3D components.
-    procedure addVelocity(anX, aY, aZ: double);
+    // Increase the current TSphere velocity by the given 3D components.
+    procedure addVelocity(anX, aY, aZ: Double);
 
-  //! Move the TSphere for the given time increment.
-    procedure tick(timeIncrement: double);
-
-  private
-    myPosition, myVelocity: tvector3d;
-    workingVector: tvector3d;
-    myRadius, myMass: double;
+    // Move the TSphere for the given time increment.
+    procedure tick(timeIncrement: Double);
   end;
 
 implementation
@@ -73,8 +73,8 @@ constructor TSphere.Create;
 begin
   myRadius := initRadius;
   myMass := 1.0;
-  myPosition := TVector3D.Create(0, 0, 0);
-  myVelocity := TVector3D.Create(0, 0, 0);
+  myPosition := TVector3d.Create(0, 0, 0);
+  myVelocity := TVector3d.Create(0, 0, 0);
 end;
 
 destructor TSphere.Destroy;
@@ -103,12 +103,12 @@ begin
   myMass := aMass;
 end;
 
-function TSphere.getPosition: tvector3d;
+function TSphere.getPosition: TVector3d;
 begin
   Result := myPosition;
 end;
 
-function TSphere.getRelativePosition(aPosition: tvector3d): tvector3d;
+function TSphere.getRelativePosition(aPosition: TVector3d): TVector3d;
 begin
   workingVector.setXYZ(aPosition.getX - myPosition.getX,
     aPosition.getY - myPosition.getY,
@@ -116,16 +116,16 @@ begin
   Result := workingVector;
 end;
 
-function TSphere.getVelocity(aVelocity: tvector3d): double;
+function TSphere.getVelocity(aVelocity: TVector3d): Double;
 begin
   aVelocity.setXYZ(myVelocity.getX, myVelocity.getY, myVelocity.getZ);
   Result := myVelocity.getLength;
 end;
 
-function TSphere.isInside(aPosition: tvector3d): double;
+function TSphere.isInside(aPosition: TVector3d): Double;
 var
-  distance: double;
-  tvector: tvector3d;
+  distance: Double;
+  tvector: TVector3d;
 begin
  // Return directed distance from aPosition to spherical boundary ( <
  // 0 if inside).
@@ -134,24 +134,24 @@ begin
   Result := distance - myRadius;
 end;
 
-function TSphere.getRadius: double;
+function TSphere.getRadius: Double;
 begin
   Result := myRadius;
 end;
 
-function TSphere.getMass: double;
+function TSphere.getMass: Double;
 begin
   Result := myMass;
 end;
 
-procedure TSphere.addVelocity(anX, aY, aZ: double);
+procedure TSphere.addVelocity(anX, aY, aZ: Double);
 begin
   myVelocity.setX(myVelocity.getX + anX);
   myVelocity.setY(myVelocity.getY + aY);
   myVelocity.setZ(myVelocity.getZ + aZ);
 end;
 
-procedure TSphere.tick(timeIncrement: double);
+procedure TSphere.tick(timeIncrement: Double);
 begin
   myPosition.setX(myPosition.getX + (timeIncrement * myVelocity.getX));
   myPosition.setY(myPosition.getY + (timeIncrement * myVelocity.getY));

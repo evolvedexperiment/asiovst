@@ -1,119 +1,109 @@
 unit DAV_StkReedTabl;
 
-{
-/***************************************************/
-/*! \class ReedTabl
-    \brief STK reed table class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a simple one breakpoint,
-    non-linear reed function, as described by
-    Smith (1986).  This function is based on a
-    memoryless non-linear spring model of the reed
-    (the reed mass is ignored) which saturates when
-    the reed collides with the mouthpiece facing.
+{ STK reed table class.
 
-    See McIntyre, Schumacher, & Woodhouse (1983),
-    Smith (1986), Hirschman, Cook, Scavone, and
-    others for more information.
+  This class implements a simple one breakpoint, non-linear reed function, as
+  described by Smith (1986).  This function is based on a memoryless non-linear
+  spring model of the reed (the reed mass is ignored) which saturates when the
+  reed collides with the mouthpiece facing.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
 }
+
 interface
 
-uses stk;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk;
 
 type
-  TReedTabl = class(TStk)
+  TStkReedTable = class(TStk)
+  protected
+    FOffSet, FSlope, FLastOutput: Single;
   public
-  //! Default constructor.
-    constructor Create(sr: my_float);
+    constructor Create(const SampleRate: Single); override;
+    destructor Destroy; override;
 
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Set the table offset value.
+    // Set the table FOffSet value.
   {
-    The table offset roughly corresponds to the size
-    of the initial reed tip opening (a greater offset
+    The table FOffSet roughly corresponds to the size
+    of the initial reed tip opening (a greater FOffSet
     represents a smaller opening).
   }
-    procedure setOffset(aValue: MY_FLOAT);
+    procedure setOffset(aValue: Single);
 
-  //! Set the table slope value.
+    // Set the table FSlope value.
   {
-   The table slope roughly corresponds to the reed
-   stiffness (a greater slope represents a harder
+   The table FSlope roughly corresponds to the reed
+   stiffness (a greater FSlope represents a harder
    reed).
   }
-    procedure setSlope(aValue: MY_FLOAT);
+    procedure setSlope(aValue: Single);
 
-  //! Return the last output value.
-    function lastOut: MY_FLOAT;
+    // Return the last output value.
+    function lastOut: Single;
 
-  //! Return the function value for \e input.
+    // Return the function value for \e input.
   {
     The function input represents the differential
     pressure across the reeds.
   }
-    function tick(input: MY_FLOAT): MY_FLOAT; overload;
+    function tick(input: Single): Single; overload;
 
-  //! Take \e vectorSize inputs and return the corresponding function values in \e vector.
+    // Take \e vectorSize inputs and return the corresponding function values in \e vector.
     function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
-
-  protected
-    offSet, slope, lastOutput: my_float;
   end;
 
 implementation
 
-constructor TReedTabl.Create;
+constructor TStkReedTable.Create;
 begin
-  inherited Create(sr);
-  offSet := 0.6;  // Offset is a bias, related to reed rest position.
-  slope := -0.8;  // Slope corresponds loosely to reed stiffness.
+  inherited Create(SampleRate);
+  FOffSet := 0.6;  // FOffSet is a bias, related to reed rest position.
+  FSlope := -0.8;  // FSlope corresponds loosely to reed stiffness.
 end;
 
-destructor TReedTabl.Destroy;
+destructor TStkReedTable.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TReedTabl.setOffset;
+procedure TStkReedTable.setOffset;
 begin
-  offSet := aValue;
+  FOffSet := aValue;
 end;
 
-procedure TReedTabl.setSlope;
+procedure TStkReedTable.setSlope;
 begin
-  slope := aValue;
+  FSlope := aValue;
 end;
 
-function TReedTabl.lastOut: my_float;
+function TStkReedTable.lastOut: Single;
 begin
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
-function TReedTabl.tick(input: MY_FLOAT): MY_FLOAT;
+function TStkReedTable.tick(input: Single): Single;
 begin
   // The input is differential pressure across the reed.
-  lastOutput := offSet + (slope * input);
+  FLastOutput := FOffSet + (FSlope * input);
 
   // If output is > 1, the reed has slammed shut and the
   // reflection function value saturates at 1.0.
-  if (lastOutput > 1.0) then
-    lastOutput := 1.0;
+  if (FLastOutput > 1.0) then
+    FLastOutput := 1.0;
 
   // This is nearly impossible in a physical system, but
   // a reflection function value of -1.0 corresponds to
   // an open end (and no discontinuity in bore profile).
-  if (lastOutput < -1.0) then
-    lastOutput := -1.0;
-  Result := lastOutput;
+  if (FLastOutput < -1.0) then
+    FLastOutput := -1.0;
+  Result := FLastOutput;
 end;
 
-function TReedTabl.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TStkReedTable.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
 var
   i: integer;
   p: pmy_float;

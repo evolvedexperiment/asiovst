@@ -1,120 +1,115 @@
 unit DAV_StkPlucked;
 
-{
-/***************************************************/
-/*! \class TPlucked
-    \brief STK TPlucked string model class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a simple TPlucked string
-    physical model based on the Karplus-Strong
-    algorithm.
+{ STK TPlucked string model class.
 
-    This is a digital waveguide model, making its
-    use possibly subject to patents held by
-    Stanford University, Yamaha, and others.
-    There exist at least two patents, assigned to
-    Stanford, bearing the names of Karplus and/or
-    Strong.
+  This class implements a simple TPlucked string physical model based on the
+  Karplus-Strong algorithm.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This is a digital waveguide model, making its use possibly subject to patents
+  held by Stanford University, Yamaha, and others. There exist at least two
+  patents, assigned to Stanford, bearing the names of Karplus and/or Strong.
 }
 
 interface
 
-uses stk, instrmnt, delaya, onezero, onepole, noise;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkInstrmnt, DAV_StkDelaya, DAV_StkOneZero, DAV_StkOnePole,
+  DAV_StkNoise;
 
 type
-  TPlucked = class(TInstrmnt)
+  TStkPlucked = class(TStkInstrument)
   public
-  //! Class constructor, taking the lowest desired playing frequency.
-    constructor Create(sr, lowestFrequency: MY_FLOAT);
+    // Class constructor, taking the lowest desired playing frequency.
+    constructor Create(const SampleRate, LowestFrequency: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
+    // Set instrument parameters for a particular frequency.
+    procedure setFrequency(frequency: Single);
 
-  //! Pluck the string with the given amplitude using the current frequency.
-    procedure pluck(amplitude: MY_FLOAT);
+    // Pluck the string with the given amplitude using the current frequency.
+    procedure pluck(amplitude: Single);
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
+    // Start a note with the given frequency and amplitude.
+    procedure noteOn(frequency, amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
+    // Stop a note with the given amplitude (speed of decay).
+    procedure noteOff(amplitude: Single);
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function tick: Single;
 
   protected
-    delayLine: TDelayA;
-    loopFilter: TOneZero;
-    pickFilter: TOnePole;
-    noise: TNoise;
-    length: longint;
-    loopGain: my_float;
+    FDelayLine: TDelayA;
+    FLoopFilter: TOneZero;
+    FPpickFilter: TOnePole;
+    FNoise: TNoise;
+    FLength: Integer;
+    FLoopGain: Single;
   end;
 
 implementation
 
 constructor TPlucked.Create;
 begin
-  inherited Create(sr);
-  length := round(srate / lowestFrequency + 1);
-  loopGain := 0.999;
-  delayLine := TDelayA.Create(srate, (length / 2.0), length);
-  loopFilter := TOneZero.Create(srate);
-  pickFilter := TOnePole.Create(srate);
-  noise := TNoise.Create(srate);
+  inherited Create(SampleRate);
+  FLength := round(srate / LowestFrequency + 1);
+  FLoopGain := 0.999;
+  FDelayLine := TDelayA.Create(SampleRate, (FLength / 2.0), FLength);
+  FLoopFilter := TOneZero.Create(SampleRate);
+  FPpickFilter := TOnePole.Create(SampleRate);
+  FNoise := TNoise.Create(SampleRate);
   Clear;
 end;
 
 destructor TPlucked.Destroy;
 begin
   inherited Destroy;
-  delayLine.Free;
-  loopFilter.Free;
-  pickFilter.Free;
-  noise.Free;
+  FDelayLine.Free;
+  FLoopFilter.Free;
+  FPpickFilter.Free;
+  FNoise.Free;
 end;
 
 procedure TPlucked.Clear;
 begin
-  delayLine.Clear;
-  loopFilter.Clear;
-  pickFilter.Clear;
+  FDelayLine.Clear;
+  FLoopFilter.Clear;
+  FPpickFilter.Clear;
 end;
 
 procedure TPlucked.setFrequency;
 var
-  delay, freakency: my_float;
+  delay, freakency: Single;
 begin
   freakency := frequency;
   if (frequency <= 0.0) then
     freakency := 220.0;
 
-  // Delay := length - approximate filter delay.
-  delay := (srate / freakency) - 0.5;
+  // Delay := FLength - approximate filter delay.
+  delay := (SampleRate / freakency) - 0.5;
   if (delay <= 0.0) then
     delay := 0.3
-  else if (delay > length) then
-    delay := length;
-  delayLine.setDelay(delay);
-  loopGain := 0.995 + (freakency * 0.000005);
-  if (loopGain >= 1.0) then
-    loopGain := 0.99999;
+  else if (delay > FLength) then
+    delay := FLength;
+  FDelayLine.setDelay(delay);
+  FLoopGain := 0.995 + (freakency * 0.000005);
+  if (FLoopGain >= 1.0) then
+    FLoopGain := 0.99999;
 end;
 
 procedure TPlucked.pluck;
 var
-  gain: my_float;
-  i: longint;
+  gain: Single;
+  i: Integer;
 begin
   gain := amplitude;
   if (gain > 1.0) then
@@ -122,12 +117,12 @@ begin
   else if (gain < 0.0) then
     gain := 0.0;
 
-  pickFilter.setPole(0.999 - (gain * 0.15));
-  pickFilter.setGain(gain * 0.5);
-  for i := 0 to length - 1 do
+  FPpickFilter.setPole(0.999 - (gain * 0.15));
+  FPpickFilter.setGain(gain * 0.5);
+  for i := 0 to FLength - 1 do
 
-  // Fill delay with noise additively with current contents.
-    delayLine.tick(0.6 * delayLine.lastOut + pickFilter.tick(noise.tick));
+  // Fill delay with FNoise additively with current contents.
+    FDelayLine.tick(0.6 * FDelayLine.lastOut + FPpickFilter.tick(FNoise.tick));
 end;
 
 procedure TPlucked.noteOn;
@@ -138,18 +133,18 @@ end;
 
 procedure TPlucked.noteOff;
 begin
-  loopGain := 1.0 - amplitude;
-  if (loopGain < 0.0) then
-    loopGain := 0.0
-  else if (loopGain > 1.0) then
-    loopGain := 0.99999;
+  FLoopGain := 1.0 - amplitude;
+  if (FLoopGain < 0.0) then
+    FLoopGain := 0.0
+  else if (FLoopGain > 1.0) then
+    FLoopGain := 0.99999;
 end;
 
-function TPlucked.tick: my_float;
+function TPlucked.tick: Single;
 begin
   // Here's the whole inner loop of the instrument!!
-  lastOutput := delayLine.tick(loopFilter.tick(
-    delayLine.lastOut * loopGain));
+  lastOutput := FDelayLine.tick(FLoopFilter.tick(
+    FDelayLine.lastOut * FLoopGain));
   lastOutput := lastoutput * 3;
   Result := lastOutput;
 end;

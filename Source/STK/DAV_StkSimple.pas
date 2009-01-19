@@ -1,136 +1,134 @@
 unit DAV_StkSimple;
 
-{
-/***************************************************/
-/*! \class TSimple
-    \brief STK wavetable/noise instrument.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class combines a looped wave, a
-    noise source, a biquad resonance filter,
-    a one-pole filter, and an ADSR envelope
-    to create some interesting sounds.
+{ STK wavetable/FNoise instrument.
 
-    Control Change Numbers: 
-       - Filter Pole Position:=2
-       - Noise/Pitched Cross-Fade:=4
-       - Envelope Rate:=11
-       - Gain:=128
+  This class combines a looped wave, a FNoise source, a FBiQuad resonance FFilter,
+  a one-pole FFilter, and an FADSR envelope to create some interesting sounds.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  Control Change Numbers:
+    - FFilter Pole Position = 2
+    - FNoise/Pitched Cross-Fade = 4
+    - Envelope Rate = 11
+    - Gain = 128
 }
+
 interface
 
-uses stk, instrmnt, adsr, waveplayer, onepole, biquad, noise;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkInstrument, DAV_StkAdsr, DAV_StkWavePlayer, DAV_StkOnePole,
+  DAV_StkBiquad, DAV_StkNoise;
 
 type
-  TSimple = class(TInstrmnt)
+  TStkSimple = class(TStkInstrmnt)
+  protected
+    FADSR          : TAdsr;
+    FLoop          : TWavePlayer;
+    FFilter        : TOnePole;
+    FBiQuad        : TBiquad;
+    FNoise         : TNoise;
+    FBaseFrequency : Single;
+    FLoopGain      : Single;
   public
-  //! Class constructor.
-    constructor Create(sr: my_float);
+    // Class constructor.
+    constructor Create(SampleRate: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: my_float);
+    // Set instrument parameters for a particular frequency.
+    procedure setFrequency(frequency: Single);
 
-  //! Start envelope toward "on" target.
+    // Start envelope toward "on" target.
     procedure keyOn;
 
-  //! Start envelope toward "off" target.
+    // Start envelope toward "off" target.
     procedure keyOff;
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
+    // Start a note with the given frequency and amplitude.
+    procedure noteOn(frequency, amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
+    // Stop a note with the given amplitude (speed of decay).
+    procedure noteOff(amplitude: Single);
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function tick: Single;
 
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: MY_FLOAT);
-
-  protected
-    ADSR: tadsr;
-    loop: twaveplayer;
-    filter: tonepole;
-    BiQuad: tbiquad;
-    Noise: tnoise;
-    baseFrequency, loopGain: MY_FLOAT;
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure controlChange(number: Integer; Value: Single);
   end;
 
 implementation
 
-constructor TSimple.Create;
+constructor TStkSimple.Create;
 begin
-  inherited Create(sr);
-  adsr := TADSR.Create(srate);
-  baseFrequency := 440.0;
+  inherited Create(SampleRate);
+  FADSR := TAdsr.Create(srate);
+  FBaseFrequency := 440.0;
 
-  loop := TWavePlayer.Create(srate, 'impuls10.raw');
+  FLoop := TWavePlayer.Create(srate, 'impuls10.raw');
 
-  filter := TOnePole.Create(srate, 0.5);
-  noise := TNoise.Create(srate);
-  biquad := TBiQuad.Create(srate);
+  FFilter := TOnePole.Create(srate, 0.5);
+  FNoise := TNoise.Create(srate);
+  FBiQuad := TBiquad.Create(srate);
 
-  setFrequency(baseFrequency);
-  loopGain := 0.5;
+  setFrequency(FBaseFrequency);
+  FLoopGain := 0.5;
 end;
 
-destructor TSimple.Destroy;
+destructor TStkSimple.Destroy;
 begin
   inherited Destroy;
-  adsr.Free;
-  loop.Free;
-  filter.Free;
-  biquad.Free;
+  FADSR.Free;
+  FLoop.Free;
+  FFilter.Free;
+  FBiQuad.Free;
 end;
 
-procedure TSimple.keyOn;
+procedure TStkSimple.keyOn;
 begin
-  adsr.keyOn;
+  FADSR.keyOn;
 end;
 
-procedure TSimple.keyOff;
+procedure TStkSimple.keyOff;
 begin
-  adsr.keyOff;
+  FADSR.keyOff;
 end;
 
-procedure TSimple.noteOn;
+procedure TStkSimple.noteOn;
 begin
   keyOn;
   setFrequency(frequency);
-  filter.setGain(amplitude);
+  FFilter.setGain(amplitude);
 end;
 
-procedure TSimple.noteOff;
+procedure TStkSimple.noteOff;
 begin
   keyOff;
 end;
 
-procedure TSimple.setFrequency;
+procedure TStkSimple.setFrequency;
 begin
-  biquad.setResonance(frequency, 0.98, True);
-  loop.setFrequency(frequency);
+  FBiQuad.setResonance(frequency, 0.98, True);
+  FLoop.setFrequency(frequency);
 end;
 
-function TSimple.tick: MY_FLOAT;
+function TStkSimple.tick: Single;
 begin
-  lastOutput := loopGain * loop.tick;
-  biquad.tick(noise.tick);
-  lastOutput := lastoutput + (1.0 - loopGain) * biquad.lastOut;
-  lastOutput := filter.tick(lastOutput);
-  lastOutput := lastoutput * adsr.tick;
+  lastOutput := FLoopGain * FLoop.tick;
+  FBiQuad.tick(FNoise.tick);
+  lastOutput := lastoutput + (1.0 - FLoopGain) * FBiQuad.lastOut;
+  lastOutput := FFilter.tick(lastOutput);
+  lastOutput := lastoutput * FADSR.tick;
   Result := lastOutput;
 end;
 
-procedure TSimple.controlChange;
+procedure TStkSimple.controlChange;
 var
-  norm: MY_FLOAT;
+  norm: Single;
 begin
   norm := Value;// * ONE_OVER_128;
   if (norm < 0) then
@@ -139,18 +137,18 @@ begin
     norm := 1.0;
 
   if (number = __SK_Breath_) then // 2
-    filter.setPole(0.99 * (1.0 - (norm * 2.0)))
+    FFilter.setPole(0.99 * (1.0 - (norm * 2.0)))
   else if (number = __SK_NoiseLevel_) then // 4
-    loopGain := norm
+    FLoopGain := norm
   else if (number = __SK_ModFrequency_) then
    begin // 11
     norm := norm / (0.2 * srate);
-    adsr.setAttackRate(norm);
-    adsr.setDecayRate(norm);
-    adsr.setReleaseRate(norm);
+    FADSR.setAttackRate(norm);
+    FADSR.setDecayRate(norm);
+    FADSR.setReleaseRate(norm);
    end
   else if (number = __SK_AfterTouch_Cont_) then // 128
-    adsr.setTarget(norm);
+    FADSR.setTarget(norm);
 end;
 
 end.

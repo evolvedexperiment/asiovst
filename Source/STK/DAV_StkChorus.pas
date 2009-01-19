@@ -23,37 +23,37 @@ type
   public
     mods: array[0..1] of TLFO;
 
-  //! Class constructor, taking the longest desired delay length.
+    // Class constructor, taking the longest desired delay length.
     constructor Create(SampleRate, BaseDelay: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set modulation depth.
+    // Set modulation depth.
     procedure setModDepth(depth: Single);
 
-  //! Set modulation frequency.
+    // Set modulation frequency.
     procedure setModFrequency(frequency: Single);
 
-  //! Set the mixture of input and processed levels in the output (0.0 := input only, 1.0 := processed only). 
+    // Set the mixture of input and processed levels in the output (0.0 := input only, 1.0 := processed only). 
     procedure setEffectMix(mix: Single);
 
-  //! Return the last output value.
+    // Return the last output value.
     function lastOut: Single;
 
-  //! Return the last left output value.
+    // Return the last left output value.
     function lastOutLeft: Single;
 
-  //! Return the last right output value.
+    // Return the last right output value.
     function lastOutRight: Single;
 
-  //! Compute one output sample.
+    // Compute one output sample.
     function tick(input: Single): Single; overload;
 
-  //! Take \e vectorSize inputs, compute the same number of outputs and return them in \e vector.
+    // Take \e vectorSize inputs, compute the same number of outputs and return them in \e vector.
     function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
   end;
 

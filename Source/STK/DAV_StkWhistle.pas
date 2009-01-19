@@ -1,61 +1,29 @@
 unit DAV_StkWhistle;
 
-{
-/***************************************************/
-/*! \class Whistle
-    \brief STK police/referee whistle instrument class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a hybrid physical/spectral
-    model of a police whistle (a la Cook).
+{ STK police/referee whistle instrument class.
 
-    Control Change Numbers:
-       - Noise Gain:=4
-       - Fipple Modulation Frequency:=11
-       - Fipple Modulation Gain:=1
-       - Blowing Frequency Modulation:=2
-       - Volume:=128
+  This class implements a hybrid physical/spectral model of a police
+  whistle (a la Cook).
 
-    by Perry R. Cook  1996 - 2002.
-*/
-/***************************************************/
+  Control Change Numbers:
+    - Noise Gain = 4
+    - Fipple Modulation Frequency = 11
+    - Fipple Modulation Gain = 1
+    - Blowing Frequency Modulation = 2
+    - Volume = 128
 }
 interface
 
-uses stk, instrmnt, sphere, vector3d, noise, lfo, onepole, envelope, Math, Windows;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkInstrument, DAV_StkSphere, DAV_StkVector3d, DAV_StkNoise,
+  DAV_StkLfo, DAV_StkOnePole, DAV_StkEnvelope, Math, Windows;
 
 type
-  TWhistle = class(TInstrmnt)
-  public
-  //! Class constructor.
-    constructor Create(sr: my_float);
-
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Reset and clear all internal state.
-    procedure Clear;
-
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
-
-  //! Apply breath velocity to instrument with given amplitude and rate of increase.
-    procedure startBlowing(amplitude, rate: MY_FLOAT);
-
-  //! Decrease breath velocity with given rate of decrease.
-    procedure stopBlowing(rate: MY_FLOAT);
-
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
-
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
-
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
-
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: my_float);
-
+  TStkWhistle = class(TStkInstrmnt)
   protected
     tempvector, tempvectorp: TVector3D;
     OnePole: Tonepole;
@@ -64,8 +32,38 @@ type
     pea, bumper, can: tsphere;           // Declare a Spherical "can".
     sine: tlfo;
     baseFrequency, maxPressure, noiseGain, fippleFreqMod,
-    fippleGainMod, blowFreqMod, tickSize, canLoss: my_float;
-    subSample, subSampCount: integer;
+    fippleGainMod, blowFreqMod, tickSize, canLoss: Single;
+    subSample, subSampCount: Integer;
+  public
+    // Class constructor.
+    constructor Create(SampleRate: Single);
+
+    // Class destructor.
+    destructor Destroy;
+
+    // Reset and clear all internal state.
+    procedure Clear;
+
+    // Set instrument parameters for a particular frequency.
+    procedure setFrequency(frequency: Single);
+
+    // Apply breath velocity to instrument with given amplitude and rate of increase.
+    procedure startBlowing(amplitude, rate: Single);
+
+    // Decrease breath velocity with given rate of decrease.
+    procedure stopBlowing(rate: Single);
+
+    // Start a note with the given frequency and amplitude.
+    procedure noteOn(frequency, amplitude: Single);
+
+    // Stop a note with the given amplitude (speed of decay).
+    procedure noteOff(amplitude: Single);
+
+    // Compute one output sample.
+    function tick: Single;
+
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure controlChange(number: Integer; Value: Single);
   end;
 
 implementation
@@ -81,9 +79,9 @@ const
   SLOW_TICK_SIZE = 0.0001;
   ENV_RATE = 0.001;
 
-constructor TWhistle.Create;
+constructor TStkWhistle.Create;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   tempVector := TVector3D.Create(0, 0, 0);
   can := TSphere.Create(CAN_RADIUS);
   pea := TSphere.Create(PEA_RADIUS);
@@ -118,7 +116,7 @@ begin
   subSampCount := subSample;
 end;
 
-destructor TWhistle.Destroy;
+destructor TStkWhistle.Destroy;
 begin
   inherited Destroy;
   tempVector.Free;
@@ -131,13 +129,13 @@ begin
   noise.Free;
 end;
 
-procedure TWhistle.Clear;
+procedure TStkWhistle.Clear;
 begin
 end;
 
-procedure TWhistle.setFrequency;
+procedure TStkWhistle.setFrequency;
 var
-  freakency: my_float;
+  freakency: Single;
 begin
   freakency := frequency * 4;  // the Whistle is a transposing instrument
   if (frequency <= 0.0) then
@@ -145,34 +143,34 @@ begin
   baseFrequency := freakency;
 end;
 
-procedure TWhistle.startBlowing;
+procedure TStkWhistle.startBlowing;
 begin
   envelope.setRate(ENV_RATE);
   envelope.setTarget(amplitude);
 end;
 
-procedure TWhistle.stopBlowing;
+procedure TStkWhistle.stopBlowing;
 begin
   envelope.setRate(rate);
   envelope.keyOff;
 end;
 
-procedure TWhistle.noteOn;
+procedure TStkWhistle.noteOn;
 begin
   setFrequency(frequency);
   startBlowing(amplitude * 2.0, amplitude * 0.2);
 end;
 
-procedure TWhistle.noteOff;
+procedure TStkWhistle.noteOff;
 begin
   stopBlowing(amplitude * 0.02);
 end;
 
-function TWhistle.tick: my_float;
+function TStkWhistle.tick: Single;
 var
-  soundMix, tempFreq: my_float;
+  soundMix, tempFreq: Single;
   dmod, envout, temp, temp1, temp2, tempX, tempY, phi, cosphi,
-  sinphi, gain: double;
+  sinphi, gain: Double;
 begin
   envOut := 0;
   gain := 0.5;
@@ -255,9 +253,9 @@ begin
   Result := lastOutput;
 end;
 
-procedure TWhistle.controlChange;
+procedure TStkWhistle.controlChange;
 var
-  norm: my_float;
+  norm: Single;
 begin
   norm := Value;// * ONE_OVER_128;
   if (norm < 0) then

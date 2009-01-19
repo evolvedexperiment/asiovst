@@ -1,59 +1,47 @@
 unit DAV_StkJCRev;
 
-{
-/***************************************************/
-/*! \class TJCRev
-    \brief John Chowning's reverberator class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class is derived from the CLM TJCRev
-    function, which is based on the use of
-    networks of simple allpass and comb delay
-    filters.  This class implements three series
-    allpass units, followed by four parallel comb
-    filters, and two decorrelation delay lines in
-    parallel at the output.
+{  John Chowning's reverberator class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+   This class is derived from the CLM TStkJCRev function, which is based on the
+   use of networks of simple allpass and comb delay filters.
+   This class implements three series allpass units, followed by four parallel
+   comb filters, and two decorrelation delay lines in parallel at the output.
 }
+
 interface
 
-uses stk, reverb, delay, Math;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkReverb, DAV_StkDelay, Math;
 
 type
-  TJCRev = class(TReverb)
-  public
-  //! Class constructor taking a T60 decay time argument.
-    constructor Create(sr, T60: my_float);
-
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Reset and clear all internal state.
-    procedure Clear;
-
-  //! Compute one output sample.
-    function tick(input: MY_FLOAT): MY_FLOAT;
-
+  TStkJCRev = class(TStkReverb)
   protected
-    allpassDelays: array[0..2] of tdelay;
-    combDelays: array[0..3] of tdelay;
-    outLeftDelay: tdelay;
-    outRightDelay: tdelay;
-    allpassCoefficient: my_float;
-    combCoefficient: array[0..3] of my_float;
+    FAllpassDelays      : array[0..2] of TDelay;
+    FCombDelays         : array[0..3] of TDelay;
+    FOutLeftDelay       : TDelay;
+    FOutRightDelay      : TDelay;
+    FAllpassCoefficient : Single;
+    FCombCoefficient    : array[0..3] of Single;
+  public
+    constructor Create(SampleRate, T60: Single); reintroduce;
+    destructor Destroy; override;
+    procedure Clear;
+    function Tick(const Input: Single): Single;
   end;
 
 implementation
 
-constructor TJCRev.Create;
+constructor TStkJCRev.Create;
 var
-  lengths: array[0..8] of integer;
-  scaler: double;
-  delay, i: integer;
+  lengths  : array[0..8] of Integer;
+  scaler   : Double;
+  delay, i : Integer;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   // Delay lengths for 44100 Hz sample rate.
   lengths[0] := 1777;
   lengths[1] := 1847;
@@ -78,86 +66,89 @@ begin
      end;
 
   for i := 0 to 2 do
-    allpassDelays[i] := TDelay.Create(srate, lengths[i + 4], lengths[i + 4]);
+    FAllpassDelays[i] := TDelay.Create(srate, lengths[i + 4], lengths[i + 4]);
 
   for i := 0 to 3 do
    begin
-    combDelays[i] := TDelay.Create(srate, lengths[i], lengths[i]);
-    combCoefficient[i] := power(10, (-3 * lengths[i] / (T60 * srate)));
+    FCombDelays[i] := TDelay.Create(srate, lengths[i], lengths[i]);
+    FCombCoefficient[i] := power(10, (-3 * lengths[i] / (T60 * srate)));
    end;
 
-  outLeftDelay := TDelay.Create(srate, lengths[7], lengths[7]);
-  outRightDelay := TDelay.Create(srate, lengths[8], lengths[8]);
-  allpassCoefficient := 0.7;
+  FOutLeftDelay := TDelay.Create(srate, lengths[7], lengths[7]);
+  FOutRightDelay := TDelay.Create(srate, lengths[8], lengths[8]);
+  FAllpassCoefficient := 0.7;
   effectMix := 0.3;
   Clear;
 end;
 
-destructor TJCRev.Destroy;
+destructor TStkJCRev.Destroy;
 begin
   inherited Destroy;
-  allpassDelays[0].Free;
-  allpassDelays[1].Free;
-  allpassDelays[2].Free;
-  combDelays[0].Free;
-  combDelays[1].Free;
-  combDelays[2].Free;
-  combDelays[3].Free;
-  outLeftDelay.Free;
-  outRightDelay.Free;
+  FAllpassDelays[0].Free;
+  FAllpassDelays[1].Free;
+  FAllpassDelays[2].Free;
+  FCombDelays[0].Free;
+  FCombDelays[1].Free;
+  FCombDelays[2].Free;
+  FCombDelays[3].Free;
+  FOutLeftDelay.Free;
+  FOutRightDelay.Free;
 end;
 
-procedure TJCRev.Clear;
+procedure TStkJCRev.Clear;
 begin
-  allpassDelays[0].Clear;
-  allpassDelays[1].Clear;
-  allpassDelays[2].Clear;
-  combDelays[0].Clear;
-  combDelays[1].Clear;
-  combDelays[2].Clear;
-  combDelays[3].Clear;
-  outRightDelay.Clear;
-  outLeftDelay.Clear;
+  FAllpassDelays[0].Clear;
+  FAllpassDelays[1].Clear;
+  FAllpassDelays[2].Clear;
+  FCombDelays[0].Clear;
+  FCombDelays[1].Clear;
+  FCombDelays[2].Clear;
+  FCombDelays[3].Clear;
+  FOutRightDelay.Clear;
+  FOutLeftDelay.Clear;
   lastOutput[0] := 0.0;
   lastOutput[1] := 0.0;
 end;
 
-function TJCRev.tick(input: MY_FLOAT): MY_FLOAT;
+function TStkJCRev.Tick(const Input: Single): Single;
 var
-  temp, temp0, temp1, temp2, temp3, temp4, temp5, temp6, filtout: MY_FLOAT;
+  temp    : Single;
+  filtout : Single;
+  tmp     : Array [0..6] of Single;
+
 begin
-  temp := allpassDelays[0].lastOut;
-  temp0 := allpassCoefficient * temp;
-  temp0 := temp0 + input;
-  allpassDelays[0].tick(temp0);
-  temp0 := -(allpassCoefficient * temp0) + temp;
+  temp := FAllpassDelays[0].lastOut;
+  tmp[0] := FAllpassCoefficient * temp;
+  tmp[0] := tmp[0] + input;
+  FAllpassDelays[0].Tick(tmp[0]);
+  tmp[0] := -(FAllpassCoefficient * tmp[0]) + temp;
 
-  temp := allpassDelays[1].lastOut;
-  temp1 := allpassCoefficient * temp;
-  temp1 := temp1 + temp0;
-  allpassDelays[1].tick(temp1);
-  temp1 := -(allpassCoefficient * temp1) + temp;
+  temp := FAllpassDelays[1].lastOut;
+  tmp[1] := FAllpassCoefficient * temp;
+  tmp[1] := tmp[1] + tmp[0];
+  FAllpassDelays[1].Tick(tmp[1]);
+  tmp[1] := -(FAllpassCoefficient * tmp[1]) + temp;
 
-  temp := allpassDelays[2].lastOut;
-  temp2 := allpassCoefficient * temp;
-  temp2 := temp2 + temp1;
-  allpassDelays[2].tick(temp2);
-  temp2 := -(allpassCoefficient * temp2) + temp;
+  temp := FAllpassDelays[2].lastOut;
+  tmp[2] := FAllpassCoefficient * temp;
+  tmp[2] := tmp[2] + tmp[1];
+  FAllpassDelays[2].Tick(tmp[2]);
+  tmp[2] := -(FAllpassCoefficient * tmp[2]) + temp;
 
-  temp3 := temp2 + (combCoefficient[0] * combDelays[0].lastOut());
-  temp4 := temp2 + (combCoefficient[1] * combDelays[1].lastOut());
-  temp5 := temp2 + (combCoefficient[2] * combDelays[2].lastOut());
-  temp6 := temp2 + (combCoefficient[3] * combDelays[3].lastOut());
+  tmp[3] := tmp[2] + (FCombCoefficient[0] * FCombDelays[0].lastOut());
+  tmp[4] := tmp[2] + (FCombCoefficient[1] * FCombDelays[1].lastOut());
+  tmp[5] := tmp[2] + (FCombCoefficient[2] * FCombDelays[2].lastOut());
+  tmp[6] := tmp[2] + (FCombCoefficient[3] * FCombDelays[3].lastOut());
 
-  combDelays[0].tick(temp3);
-  combDelays[1].tick(temp4);
-  combDelays[2].tick(temp5);
-  combDelays[3].tick(temp6);
+  FCombDelays[0].Tick(tmp[3]);
+  FCombDelays[1].Tick(tmp[4]);
+  FCombDelays[2].Tick(tmp[5]);
+  FCombDelays[3].Tick(tmp[6]);
 
-  filtout := temp3 + temp4 + temp5 + temp6;
+  filtout := tmp[3] + tmp[4] + tmp[5] + tmp[6];
 
-  lastOutput[0] := effectMix * (outLeftDelay.tick(filtout));
-  lastOutput[1] := effectMix * (outRightDelay.tick(filtout));
+  lastOutput[0] := effectMix * (FOutLeftDelay.Tick(filtout));
+  lastOutput[1] := effectMix * (FOutRightDelay.Tick(filtout));
   temp := (1.0 - effectMix) * input;
   lastOutput[0] := lastOutput[0] + temp;
   lastOutput[1] := lastOutput[1] + temp;

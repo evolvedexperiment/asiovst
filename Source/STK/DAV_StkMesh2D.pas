@@ -1,343 +1,342 @@
 unit DAV_StkMesh2D;
 
-{
-/***************************************************/
-/*! \class TMesh2D
-    \brief Two-dimensional rectilinear waveguide mesh class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a rectilinear,
-    two-dimensional digital waveguide mesh
-    structure.  For details, see Van Duyne and
-    Smith, "Physical Modeling with the 2-D Digital
-    Waveguide Mesh", Proceedings of the 1993
-    International Computer Music Conference.
+{ Two-dimensional rectilinear waveguide mesh class.
 
-    This is a digital waveguide model, making its
-    use possibly subject to patents held by Stanford
-    University, Yamaha, and others.
+  This class implements a rectilinear, two-dimensional digital waveguide mesh
+  structure.  For details, see Van Duyne and Smith, "Physical Modeling with the
+  2-D Digital Waveguide Mesh", Proceedings of the 1993 International Computer
+  Music Conference.
 
-    Control Change Numbers: 
-       - X Dimension := 2
-       - Y Dimension := 4
-       - Mesh Decay := 11
-       - X-Y Input Position := 1
+  This is a digital waveguide model, making its use possibly subject to patents
+  held by Stanford University, Yamaha, and others.
 
-    by Julius Smith, 2000 - 2002.
-    Revised by Gary Scavone for STK, 2002.
-*/
-/***************************************************/
+  Control Change Numbers:
+    - X Dimension = 2
+    - Y Dimension = 4
+    - Mesh Decay = 11
+    - X-Y Input Position = 1
 }
+
 interface
 
-uses stk, instrmnt, onepole;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkInstrument, DAV_StkOnePole;
 
 const
-  nxmax = 12;
-  nymax = 12;
+  CNxMax = 12;
+  CNyMax = 12;
 
 type
-  TMesh2D = class(TInstrmnt)
+  TStkMesh2D = class(TStkInstrument)
+  protected
+    FNX, FNY            : Integer;
+    FXInput, FYInput    : Integer;
+    FFilterX            : array[0..CNxMax - 1] of TOnePole;
+    FFilterY            : array[0..CNyMax - 1] of TOnePole;
+    FJunctionVelocities : array[0..CNxMax - 2, 0..CNyMax - 2] of Single; // junction velocities
+    FVxp1, FVxm1        : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
+    FVyp1, FVym1        : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
+    FVxm, FVyp          : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
+    FVym, FVxp          : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
+    FCounter            : Integer; // time in samples
+    procedure ClearMesh;
+    function Tick0: Single;
+    function Tick1: Single;
   public
-  //! Class constructor, taking the x and y dimensions in samples.
-    constructor Create(sr: my_float; nX, nY: integer);
+    // Class constructor, taking the x and y dimensions in samples.
+    constructor Create(SampleRate: Single; FNX, FNY: Integer);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set the x dimension size in samples.
-    procedure setNX(lenX: integer);
+    // Set the x dimension size in samples.
+    procedure SetNX(lenX: Integer);
 
-  //! Set the y dimension size in samples.
-    procedure setNY(lenY: integer);
+    // Set the y dimension size in samples.
+    procedure SetNY(lenY: Integer);
 
-  //! Set the x, y input position on a 0.0 - 1.0 scale.
-    procedure setInputPosition(xFactor, yFactor: my_float);
+    // Set the x, y Input position on a 0.0 - 1.0 scale.
+    procedure SetInputPosition(xFactor, yFactor: Single);
 
-  //! Set the loss filters gains (0.0 - 1.0).
-    procedure setDecay(decayFactor: my_float);
+    // Set the loss filters gains (0.0 - 1.0).
+    procedure SetDecay(DecayFactor: Single);
 
-  //! Impulse the mesh with the given amplitude (frequency ignored).
-    procedure noteOn(frequency, amplitude: my_float);
+    // Impulse the mesh with the given Amplitude (frequency ignored).
+    procedure NoteOn(frequency, Amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay) ... currently ignored.
-    procedure noteOff(amplitude: my_float);
+    // Stop a note with the given Amplitude (speed of decay) ... currently ignored.
+    procedure NoteOff(Amplitude: Single);
 
-  //! Calculate and return the signal energy stored in the mesh.
-    function energy: my_float;
+    // Calculate and return the signal Energy stored in the mesh.
+    function Energy: Single;
 
-  //! Compute one output sample, without adding energy to the mesh.
-    function tick: my_float; overload;
+    // Compute one output sample, without adding Energy to the mesh.
+    function Tick: Single; overload;
 
-  //! Input a sample to the mesh and compute one output sample.
-    function tick(input: my_float): my_float; overload;
+    // Input a sample to the mesh and compute one output sample.
+    function Tick(Input: Single): Single; overload;
 
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: my_float);
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure ControlChange(number: Integer; Value: Single);
 
-  protected
-    NX, NY, xInput, yInput: integer;
-    filterX: array[0..NXMAX - 1] of TOnePole;
-    filterY: array[0..NYMAX - 1] of TOnePole;
-    v: array[0..NXMAX - 2, 0..NYMAX - 2] of my_float; // junction velocities
-    vxp1, vxm1, vyp1, vym1, vxm, vyp, vym, vxp: array[0..NXMAX - 1, 0..NYMAX - 1] of my_float;
-    counter: longint; // time in samples
-    procedure clearMesh;
-    function tick0: my_float;
-    function tick1: my_float;
   end;
 
 implementation
 
-constructor TMesh2D.Create;
+constructor TStkMesh2D.Create;
 var
-  pole: my_float;
-  i: integer;
+  Pole: Single;
+  i: Integer;
 begin
-  inherited Create(sr);
-  setNX(nX);
-  setNY(nY);
-  pole := 0.05;
-  for i := 0 to NYMAX - 1 do
+  inherited Create(SampleRate);
+  SetNX(FNX);
+  SetNY(FNY);
+  Pole := 0.05;
+  for i := 0 to CNyMax - 1 do
    begin
-    filterY[i] := TOnePole.Create(srate, pole);
-    filterY[i].setGain(0.99);
+    FFilterY[i] := TOnePole.Create(SampleRate, Pole);
+    FFilterY[i].SetGain(0.99);
    end;
-  for i := 0 to NXMAX - 1 do
+  for i := 0 to CNxMax - 1 do
    begin
-    filterX[i] := TOnePole.Create(srate, pole);
-    filterX[i].setGain(0.99);
+    FFilterX[i] := TOnePole.Create(SampleRate, Pole);
+    FFilterX[i].SetGain(0.99);
    end;
-  clearMesh;
-  counter := 0;
-  xInput := 0;
-  yInput := 0;
+  ClearMesh;
+  FCounter := 0;
+  FXInput := 0;
+  FYInput := 0;
 end;
 
-destructor TMesh2D.Destroy;
+destructor TStkMesh2D.Destroy;
 var
-  i: integer;
+  i: Integer;
 begin
   inherited Destroy;
-  for i := 0 to NYMAX - 1 do
-    filterY[i].Free;
-  for i := 0 to NXMAX - 1 do
-    filterX[i].Free;
+  for i := 0 to CNyMax - 1 do
+    FFilterY[i].Free;
+  for i := 0 to CNxMax - 1 do
+    FFilterX[i].Free;
 end;
 
-procedure TMesh2D.Clear;
+procedure TStkMesh2D.Clear;
 var
-  i: integer;
+  i: Integer;
 begin
-  clearMesh;
-  for i := 0 to NY - 1 do
-    filterY[i].Clear;
-  for i := 0 to NX - 1 do
-    filterX[i].Clear;
-  counter := 0;
+  ClearMesh;
+  for i := 0 to FNY - 1 do
+    FFilterY[i].Clear;
+  for i := 0 to FNX - 1 do
+    FFilterX[i].Clear;
+  FCounter := 0;
 end;
 
-procedure TMesh2D.clearMesh;
+procedure TStkMesh2D.ClearMesh;
 var
-  x, y: integer;
+  x, y: Integer;
 begin
-  for x := 0 to NXMAX - 2 do
-    for y := 0 to NYMAX - 2 do
-      v[x][y] := 0;
-  for x := 0 to NXMAX - 1 do
-    for y := 0 to NYMAX - 1 do
+  for x := 0 to CNxMax - 2 do
+    for y := 0 to CNyMax - 2 do
+      FJunctionVelocities[x][y] := 0;
+  for x := 0 to CNxMax - 1 do
+    for y := 0 to CNyMax - 1 do
      begin
-      vxp[x][y] := 0;
-      vxm[x][y] := 0;
-      vyp[x][y] := 0;
-      vym[x][y] := 0;
-      vxp1[x][y] := 0;
-      vxm1[x][y] := 0;
-      vyp1[x][y] := 0;
-      vym1[x][y] := 0;
+      FVxp[x][y] := 0;
+      FVxm[x][y] := 0;
+      FVyp[x][y] := 0;
+      FVym[x][y] := 0;
+      FVxp1[x][y] := 0;
+      FVxm1[x][y] := 0;
+      FVyp1[x][y] := 0;
+      FVym1[x][y] := 0;
      end;
 end;
 
-function TMesh2D.energy: my_float;
+function TStkMesh2D.Energy: Single;
 var
-  x, y: integer;
-  e, t: my_float;
+  x, y: Integer;
+  e, t: Single;
 begin
-  // Return total energy contained in wave variables Note that some
-  // energy is also contained in any filter delay elements.
+  // Return total Energy contained in wave variables Note that some
+  // Energy is also contained in any filter delay elements.
   e := 0;
-  if (counter and 1 > 0) then
-    for x := 0 to NX - 1 do
-      for y := 0 to NY - 1 do
+  if (FCounter and 1 > 0) then
+    for x := 0 to FNX - 1 do
+      for y := 0 to FNY - 1 do
        begin
-        t := vxp1[x][y];
+        t := FVxp1[x][y];
         e := e + t * t;
-        t := vxm1[x][y];
+        t := FVxm1[x][y];
         e := e + t * t;
-        t := vyp1[x][y];
+        t := FVyp1[x][y];
         e := e + t * t;
-        t := vym1[x][y];
+        t := FVym1[x][y];
         e := e + t * t;
-       end// Ready for TMesh2D::tick1() to be called.
+       end// Ready for TStkMesh2D::Tick1() to be called.
 
   else
-    for x := 0 to NX - 1 do
-      for y := 0 to NY - 1 do
+    for x := 0 to FNX - 1 do
+      for y := 0 to FNY - 1 do
        begin
-        t := vxp[x][y];
+        t := FVxp[x][y];
         e := e + t * t;
-        t := vxm[x][y];
+        t := FVxm[x][y];
         e := e + t * t;
-        t := vyp[x][y];
+        t := FVyp[x][y];
         e := e + t * t;
-        t := vym[x][y];
+        t := FVym[x][y];
         e := e + t * t;
-       end// Ready for TMesh2D::tick0() to be called.
+       end// Ready for TStkMesh2D::Tick0() to be called.
   ;
 
   Result := e;
 end;
 
-procedure TMesh2D.setNX;
+procedure TStkMesh2D.SetNX;
 begin
-  NX := lenX;
+  FNX := lenX;
   if (lenX < 2) then
-    NX := 2
-  else if (lenX > NXMAX) then
-    NX := NXMAX;
+    FNX := 2
+  else if (lenX > CNxMax) then
+    FNX := CNxMax;
 end;
 
-procedure TMesh2D.setNY;
+procedure TStkMesh2D.SetNY;
 begin
-  NY := lenY;
+  FNY := lenY;
   if (lenY < 2) then
-    NY := 2
-  else if (lenY > NYMAX) then
-    NY := NYMAX;
+    FNY := 2
+  else if (lenY > CNyMax) then
+    FNY := CNyMax;
 end;
 
-procedure TMesh2D.setDecay;
+procedure TStkMesh2D.SetDecay;
 var
-  gain: my_float;
-  i: integer;
+  Gain: Single;
+  i: Integer;
 begin
-  gain := decayFactor;
-  if (decayFactor < 0.0) then
-    gain := 0.0
-  else if (decayFactor > 1.0) then
-    gain := 1.0;
-  for i := 0 to NYMAX - 1 do
-    filterY[i].setGain(gain);
-  for i := 0 to NXMAX - 1 do
-    filterX[i].setGain(gain);
+  Gain := DecayFactor;
+  if (DecayFactor < 0.0) then
+    Gain := 0.0
+  else if (DecayFactor > 1.0) then
+    Gain := 1.0;
+  for i := 0 to CNyMax - 1 do
+    FFilterY[i].SetGain(Gain);
+  for i := 0 to CNxMax - 1 do
+    FFilterX[i].SetGain(Gain);
 end;
 
-procedure TMesh2D.setInputPosition;
+procedure TStkMesh2D.SetInputPosition;
 begin
   if (xFactor < 0.0) then
-    xInput := 0
+    FXInput := 0
   else if (xFactor > 1.0) then
-    xInput := NX - 1
+    FXInput := FNX - 1
   else
-    xInput := round(xFactor * (NX - 1));
+    FXInput := round(xFactor * (FNX - 1));
 
   if (yFactor < 0.0) then
-    yInput := 0
+    FYInput := 0
   else if (yFactor > 1.0) then
-    yInput := NY - 1
+    FYInput := FNY - 1
   else
-    yInput := round(yFactor * (NY - 1));
+    FYInput := round(yFactor * (FNY - 1));
 end;
 
-procedure TMesh2D.noteOn;
+procedure TStkMesh2D.NoteOn;
 begin
   // Input at corner.
-  if (counter and 1 > 0) then
+  if (FCounter and 1 > 0) then
    begin
-    vxp1[xInput][yInput] := vxp1[xInput][yInput] + amplitude;
-    vyp1[xInput][yInput] := vyp1[xInput][yInput] + amplitude;
+    FVxp1[FXInput][FYInput] := FVxp1[FXInput][FYInput] + Amplitude;
+    FVyp1[FXInput][FYInput] := FVyp1[FXInput][FYInput] + Amplitude;
    end
   else
    begin
-    vxp[xInput][yInput] := vxp[xInput][yInput] + amplitude;
-    vyp[xInput][yInput] := vyp[xInput][yInput] + amplitude;
+    FVxp[FXInput][FYInput] := FVxp[FXInput][FYInput] + Amplitude;
+    FVyp[FXInput][FYInput] := FVyp[FXInput][FYInput] + Amplitude;
    end;
 end;
 
-procedure TMesh2D.noteOff;
+procedure TStkMesh2D.NoteOff;
 begin
 end;
 
-function TMesh2D.tick(input: my_float): my_float;
+function TStkMesh2D.Tick(Input: Single): Single;
 begin
-  if (counter and 1 > 0) then
+  if (FCounter and 1 > 0) then
    begin
-    vxp1[xInput][yInput] := vxp1[xInput][yInput] + input;
-    vyp1[xInput][yInput] := vyp1[xInput][yInput] + input;
-    lastOutput := tick1;
+    FVxp1[FXInput][FYInput] := FVxp1[FXInput][FYInput] + Input;
+    FVyp1[FXInput][FYInput] := FVyp1[FXInput][FYInput] + Input;
+    LastOutput := Tick1;
    end
   else
    begin
-    vxp[xInput][yInput] := vxp[xInput][yInput] + input;
-    vyp[xInput][yInput] := vyp[xInput][yInput] + input;
-    lastOutput := tick0;
+    FVxp[FXInput][FYInput] := FVxp[FXInput][FYInput] + Input;
+    FVyp[FXInput][FYInput] := FVyp[FXInput][FYInput] + Input;
+    LastOutput := Tick0;
    end;
 
-  counter := counter + 1;
-  Result := lastOutput;
+  FCounter := FCounter + 1;
+  Result := LastOutput;
 end;
 
-function TMesh2D.tick: my_float;
+function TStkMesh2D.Tick: Single;
 begin
-  if (counter and 1 > 0) then
-    lastOutput := tick1
+  if (FCounter and 1 > 0) then
+    LastOutput := Tick1
   else
-    lastOutput := tick0;
-  counter := counter + 1;
-  Result := lastOutput;
+    LastOutput := Tick0;
+  FCounter := FCounter + 1;
+  Result := LastOutput;
 end;
 
 const
   VSCALE = 0.5;
 
-function TMesh2D.tick0: my_float;
+function TStkMesh2D.Tick0: Single;
 var
-  x, y: integer;
-  vxy, outsamp: my_float;
+  x, y: Integer;
+  Vxy, Outsamp: Single;
 begin
   // Update junction velocities.
-  for x := 0 to NX - 2 do
-    for y := 0 to NY - 2 do
-      v[x][y] := (vxp[x][y] + vxm[x + 1][y] + vyp[x][y] +
-        vym[x][y + 1]) * VSCALE;
+  for x := 0 to FNX - 2 do
+    for y := 0 to FNY - 2 do
+      FJunctionVelocities[x][y] := (FVxp[x][y] + FVxm[x + 1][y] + FVyp[x][y] +
+        FVym[x][y + 1]) * VSCALE;
 
   // Update junction outgoing waves, using alternate wave-variable buffers.
-  for x := 0 to NX - 2 do
-    for y := 0 to NY - 2 do
+  for x := 0 to FNX - 2 do
+    for y := 0 to FNY - 2 do
      begin
-      vxy := v[x][y];
+      Vxy := FJunctionVelocities[x][y];
       // Update positive-going waves.
-      vxp1[x + 1][y] := vxy - vxm[x + 1][y];
-      vyp1[x][y + 1] := vxy - vym[x][y + 1];
+      FVxp1[x + 1][y] := Vxy - FVxm[x + 1][y];
+      FVyp1[x][y + 1] := Vxy - FVym[x][y + 1];
       // Update minus-going waves.
-      vxm1[x][y] := vxy - vxp[x][y];
-      vym1[x][y] := vxy - vyp[x][y];
+      FVxm1[x][y] := Vxy - FVxp[x][y];
+      FVym1[x][y] := Vxy - FVyp[x][y];
      end;
 
   // Loop over velocity-junction boundary faces, update edge
   // reflections, with filtering.  We're only filtering on one x and y
   // edge here and even this could be made much sparser.
-  for y := 0 to NY - 2 do
+  for y := 0 to FNY - 2 do
    begin
-    vxp1[0][y] := filterY[y].tick(vxm[0][y]);
-    vxm1[NX - 1][y] := vxp[NX - 1][y];
+    FVxp1[0][y] := FFilterY[y].Tick(FVxm[0][y]);
+    FVxm1[FNX - 1][y] := FVxp[FNX - 1][y];
    end;
-  for x := 0 to NX - 2 do
+  for x := 0 to FNX - 2 do
    begin
-    vyp1[x][0] := filterX[x].tick(vym[x][0]);
-    vym1[x][NY - 1] := vyp[x][NY - 1];
+    FVyp1[x][0] := FFilterX[x].Tick(FVym[x][0]);
+    FVym1[x][FNY - 1] := FVyp[x][FNY - 1];
    end;
 
   // Output := sum of outgoing waves at far corner.  Note that the last
@@ -345,76 +344,76 @@ begin
   // coordinate indices at their next-to-last values.  This is because
   // the "unit strings" attached to each velocity node to terminate
   // the mesh are not themselves connected together.
-  outsamp := vxp[NX - 1][NY - 2] + vyp[NX - 2][NY - 1];
+  Outsamp := FVxp[FNX - 1][FNY - 2] + FVyp[FNX - 2][FNY - 1];
 
-  Result := outsamp;
+  Result := Outsamp;
 end;
 
-function TMesh2D.tick1: my_float;
+function TStkMesh2D.Tick1: Single;
 var
-  x, y: integer;
-  vxy, outsamp: my_float;
+  x, y: Integer;
+  Vxy, Outsamp: Single;
 begin
   // Update junction velocities.
-  for x := 0 to NX - 2 do
-    for y := 0 to NY - 2 do
-      v[x][y] := (vxp1[x][y] + vxm1[x + 1][y] + vyp1[x][y] +
-        vym1[x][y + 1]) * VSCALE;
+  for x := 0 to FNX - 2 do
+    for y := 0 to FNY - 2 do
+      FJunctionVelocities[x][y] := (FVxp1[x][y] + FVxm1[x + 1][y] + FVyp1[x][y] +
+        FVym1[x][y + 1]) * VSCALE;
 
   // Update junction outgoing waves, 
   // using alternate wave-variable buffers.
-  for x := 0 to NX - 2 do
-    for y := 0 to NY - 2 do
+  for x := 0 to FNX - 2 do
+    for y := 0 to FNY - 2 do
      begin
-      vxy := v[x][y];
+      Vxy := FJunctionVelocities[x][y];
 
       // Update positive-going waves.
-      vxp[x + 1][y] := vxy - vxm1[x + 1][y];
-      vyp[x][y + 1] := vxy - vym1[x][y + 1];
+      FVxp[x + 1][y] := Vxy - FVxm1[x + 1][y];
+      FVyp[x][y + 1] := Vxy - FVym1[x][y + 1];
 
       // Update minus-going waves.
-      vxm[x][y] := vxy - vxp1[x][y];
-      vym[x][y] := vxy - vyp1[x][y];
+      FVxm[x][y] := Vxy - FVxp1[x][y];
+      FVym[x][y] := Vxy - FVyp1[x][y];
      end;
 
   // Loop over velocity-junction boundary faces, update edge
   // reflections, with filtering.  We're only filtering on one x and y
   // edge here and even this could be made much sparser.
-  for y := 0 to NY - 2 do
+  for y := 0 to FNY - 2 do
    begin
-    vxp[0][y] := filterY[y].tick(vxm1[0][y]);
-    vxm[NX - 1][y] := vxp1[NX - 1][y];
+    FVxp[0][y] := FFilterY[y].Tick(FVxm1[0][y]);
+    FVxm[FNX - 1][y] := FVxp1[FNX - 1][y];
    end;
-  for x := 0 to NX - 2 do
+  for x := 0 to FNX - 2 do
    begin
-    vyp[x][0] := filterX[x].tick(vym1[x][0]);
-    vym[x][NY - 1] := vyp1[x][NY - 1];
+    FVyp[x][0] := FFilterX[x].Tick(FVym1[x][0]);
+    FVym[x][FNY - 1] := FVyp1[x][FNY - 1];
    end;
 
   // Output := sum of outgoing waves at far corner.
-  outsamp := vxp1[NX - 1][NY - 2] + vyp1[NX - 2][NY - 1];
+  Outsamp := FVxp1[FNX - 1][FNY - 2] + FVyp1[FNX - 2][FNY - 1];
 
-  Result := outsamp;
+  Result := Outsamp;
 end;
 
-procedure TMesh2D.controlChange;
+procedure TStkMesh2D.ControlChange;
 var
-  norm: my_float;
+  Norm: Single;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  Norm := Value;// * ONE_OVER_128;
+  if (Norm < 0) then
+    Norm := 0.0
+  else if (Norm > 1.0) then
+    Norm := 1.0;
 
   if (number = 2) then // 2
-    setNX(round(norm * (NXMAX - 2) + 2))
+    SetNX(round(Norm * (CNxMax - 2) + 2))
   else if (number = 4) then // 4
-    setNY(round(norm * (NYMAX - 2) + 2))
+    SetNY(round(Norm * (CNyMax - 2) + 2))
   else if (number = 11) then // 11
-    setDecay(0.9 + (norm * 0.1))
+    SetDecay(0.9 + (Norm * 0.1))
   else if (number = __SK_ModWheel_) then // 1
-    setInputPosition(norm, norm);
+    SetInputPosition(Norm, Norm);
 end;
 
 end.

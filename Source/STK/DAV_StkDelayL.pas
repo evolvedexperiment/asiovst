@@ -30,32 +30,32 @@ type
     FAlpha, FOmAlpha, FNextOutput: Single;
     FDoNextOut: boolean;
   public
-  //! Default constructor creates a Delay-line with maximum length of 4095 samples and zero Delay.
+    // Default constructor creates a Delay-line with maximum length of 4095 samples and zero Delay.
     constructor Create(ASampleRate: Single); overload;
 
-  //! Overloaded constructor which specifies the current and maximum Delay-line lengths.
+    // Overloaded constructor which specifies the current and maximum Delay-line lengths.
 
     constructor Create(ASampleRate, ADelay: Single; AMaxDelay: longint); overload;
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Set the Delay-line length.
+    // Set the Delay-line length.
   {
     The valid range for \e ADelay is from 0 to the maximum Delay-line length.
   }
     procedure setDelay(ADelay: Single);
 
-  //! Return the current Delay-line length.
+    // Return the current Delay-line length.
     function getDelay: Single;
 
-  //! Return the value which will be output by the next call to tick().
+    // Return the value which will be output by the next call to tick().
   {
     This method is valid only for Delay settings greater than zero!
    }
     function nextOut: Single;
 
-  //! Input one sample to the Delay-line and return one output.
+    // Input one sample to the Delay-line and return one output.
     function tick(sample: Single): Single;
 
   end;

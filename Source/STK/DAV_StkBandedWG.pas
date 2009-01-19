@@ -1,38 +1,30 @@
 unit DAV_BandedWG;
 
-{
-/***************************************************/
-/*! \class TStkBandedWG
-    \brief Banded waveguide modeling class.
+{ Banded waveguide modeling class.
 
-    This class uses banded waveguide techniques to
-    model a variety of sounds, including bowed
-    bars, glasses, and bowls.  For more
-    information, see Essl, G. and Cook, P. "Banded
-    Waveguides: Towards Physical Modelling of Bar
-    Percussion Instruments", Proceedings of the
-    1999 International Computer Music Conference.
+  This class uses banded waveguide techniques to model a variety of sounds,
+  including bowed bars, glasses, and bowls.  For more information, see Essl, G.
+  and Cook, P. "Banded Waveguides: Towards Physical Modelling of Bar Percussion
+  Instruments", Proceedings of the 1999 International Computer Music Conference.
 
-    Control Change Numbers:
-       - Bow Pressure:=2
-       - Bow Motion:=4
-       - Strike Position:=8 
-       - Vibrato Frequency:=11
-       - Gain:=1
-       - Bow Velocity:=128
-       - Set Striking:=64
-       - Instrument Presets:=16
-         - Uniform Bar:=0
-         - Tuned Bar:=1
-         - Glass Harmonica:=2
-         - Tibetan Bowl:=3
-
-    by Georg Essl, 1999 - 2002.
-    Modified for Stk 4.0 by Gary Scavone.
-*/
-/***************************************************/
+  Control Change Numbers:
+    - Bow Pressure = 2
+    - Bow Motion = 4
+    - Strike Position = 8
+    - Vibrato Frequency = 11
+    - Gain = 1
+    - Bow Velocity = 128
+    - Set Striking = 64
+    - Instrument Presets = 16
+      - Uniform Bar = 0
+      - Tuned Bar = 1
+      - Glass Harmonica = 2
+      - Tibetan Bowl = 3
 }
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_Stk, DAV_Instrmnt, DAV_Delayl, DAV_Bowtabl, DAV_Adsr, DAV_Biquad, Math;
@@ -42,41 +34,6 @@ const
 
 type
   TStkBandedWG = class(TStkInstrument)
-  public
-    constructor Create(SampleRate: Single);
-    destructor Destroy;
-    procedure Clear;
-
-  //! Set strike position (0.0 - 1.0).
-    procedure setStrikePosition(position: Single);
-
-  //! Select a preset.
-    procedure setPreset(preset: Integer);
-
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: Single);
-
-  //! Apply bow velocity/pressure to instrument with given amplitude and rate of increase.
-    procedure startBowing(amplitude, rate: Single);
-
-  //! Decrease bow velocity/breath pressure with given rate of decrease.
-    procedure stopBowing(rate: Single);
-
-  //! Pluck the instrument with given amplitude.
-    procedure pluck(amp: Single);
-
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: Single);
-
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: Single);
-
-  //! Compute one output sample.
-    function Tick: Single;
-
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: Integer; Value: Single);
-
   protected
     FDoPluck               : Boolean;
     FTrackVelocity         : Boolean;
@@ -97,6 +54,40 @@ type
     FStrikeAmp             : Single;
     FBowPosition           : Single;
     FStrikePosition        : Integer;
+  public
+    constructor Create(const SampleRate: Single); override;
+    destructor Destroy; override; 
+    procedure Clear;
+
+    // Set strike position (0.0 - 1.0).
+    procedure setStrikePosition(position: Single);
+
+    // Select a preset.
+    procedure setPreset(preset: Integer);
+
+    // Set instrument parameters for a particular frequency.
+    procedure setFrequency(frequency: Single);
+
+    // Apply bow velocity/pressure to instrument with given amplitude and rate of increase.
+    procedure startBowing(amplitude, rate: Single);
+
+    // Decrease bow velocity/breath pressure with given rate of decrease.
+    procedure stopBowing(rate: Single);
+
+    // Pluck the instrument with given amplitude.
+    procedure pluck(amp: Single);
+
+    // Start a note with the given frequency and amplitude.
+    procedure noteOn(frequency, amplitude: Single);
+
+    // Stop a note with the given amplitude (speed of decay).
+    procedure noteOff(amplitude: Single);
+
+    // Compute one output sample.
+    function Tick: Single;
+
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure controlChange(number: Integer; Value: Single);
   end;
 
 implementation

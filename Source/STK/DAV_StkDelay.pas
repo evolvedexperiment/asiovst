@@ -28,49 +28,49 @@ type
     FInPoint, FOutPoint, FLength: Integer;
     Delay: Single;
   public
-  //! Default constructor creates a delay-line with maximum FLength of 4095 samples and zero TDelay.
+    // Default constructor creates a delay-line with maximum FLength of 4095 samples and zero TDelay.
     constructor Create(SampleRate: Single); overload;
 
-  //! Overloaded constructor which specifies the current and maximum delay-line lengths.
+    // Overloaded constructor which specifies the current and maximum delay-line lengths.
     constructor Create(SampleRate, theDelay: Single; maxDelay: Integer); overload;
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy; override;
 
-  //! Clears the internal state of the delay line.
+    // Clears the internal state of the delay line.
     procedure Clear;
 
-  //! Set the delay-line FLength.
+    // Set the delay-line FLength.
   {
     The valid range for \e theDelay is from 0 to the maximum delay-line FLength.
   }
     procedure SetDelay(theDelay: Integer);
 
-  //! Return the current delay-line FLength.
+    // Return the current delay-line FLength.
     function getDelay: Integer;
 
-  //! Calculate and return the signal Energy in the delay-line.
+    // Calculate and return the signal Energy in the delay-line.
     function Energy: Single;
 
-  //! Return the value at \e tapDelay samples from the delay-line input.
+    // Return the value at \e tapDelay samples from the delay-line input.
   {
     The valid range for \e tapDelay is 1 to the delay-line FLength.
   }
     function contentsAt(tapDelay: Integer): Single;
 
-  //! Return the last computed output value.
+    // Return the last computed output value.
     function lastOut: Single;
 
-  //! Return the value which will be output by the next call to tick().
+    // Return the value which will be output by the next call to tick().
   {
     This method is valid only for delay settings greater than zero!
    }
     function nextOut: Single;
 
-  //! Input one sample to the delay-line and return one output.
+    // Input one sample to the delay-line and return one output.
     function tick(sample: Single): Single; overload;
 
-  //! Input \e vectorSize samples to the delay-line and return an equal number of Outputs in \e vector.
+    // Input \e vectorSize samples to the delay-line and return an equal number of Outputs in \e vector.
     function tick(vector: PSingle; vectorSize: Integer): PSingle; overload;
   end;
 

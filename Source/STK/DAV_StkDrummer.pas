@@ -33,7 +33,7 @@ type
     constructor Create(SampleRate: Single);
     destructor Destroy;
 
-  //! Start a note with the given drum type and amplitude.
+    // Start a note with the given drum type and amplitude.
   {*!
     Use general MIDI drum instrument numbers, converted to
     frequency values as if MIDI note numbers, to select a
@@ -41,10 +41,10 @@ type
   *}
     procedure NoteOn(instrument, amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
+    // Stop a note with the given amplitude (speed of decay).
     procedure NoteOff(amplitude: Single);
 
-  //! Compute one output sample.
+    // Compute one output sample.
     function Tick: Single;
   end;
 

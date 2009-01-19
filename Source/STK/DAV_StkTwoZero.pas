@@ -1,46 +1,43 @@
 unit DAV_StkTwoZero;
 
-{
-/***************************************************/
-/*! \class TTwoZero
-    \brief STK two-zero filter class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This protected Filter subclass implements
-    a two-zero digital filter.  A method is
-    provided for creating a "notch" in the
-    frequency response while maintaining a
-    constant filter gain.
+{ STK two-zero filter class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This protected Filter subclass implements a two-zero digital filter. A method
+  is provided for creating a "notch" in the frequency response while
+  maintaining a constant filter gain.
 }
+
 interface
 
-uses stk, filter;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkFilter;
 
 type
   TTwoZero = class(TFilter)
   public
-  //! Default constructor creates a second-order pass-through filter.
+    // Default constructor creates a second-order pass-through filter.
     constructor Create(sr: my_float);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Clears the internal states of the filter.
+    // Clears the internal states of the filter.
     procedure Clear;
 
-  //! Set the b[0] coefficient value.
+    // Set the b[0] coefficient value.
     procedure setB0(b0: my_float);
 
-  //! Set the a[1] coefficient value.
+    // Set the a[1] coefficient value.
     procedure setB1(b1: my_float);
 
-  //! Set the a[2] coefficient value.
+    // Set the a[2] coefficient value.
     procedure setB2(B2: my_float);
 
-  //! Sets the filter coefficients for a "notch" at \e frequency (in Hz).
+    // Sets the filter coefficients for a "notch" at \e frequency (in Hz).
   {
     This method determines the filter coefficients corresponding to
     two complex-conjugate zeros with the given \e frequency (in Hz)
@@ -53,23 +50,23 @@ type
   }
     procedure setNotch(frequency, radius: my_float);
 
-  //! Set the filter gain.
+    // Set the filter gain.
   {
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    }
     procedure setGain(theGain: my_float);
 
-  //! Return the current filter gain.
+    // Return the current filter gain.
     function getGain: my_float;
 
-  //! Return the last computed output value.
+    // Return the last computed output value.
     function lastOut: my_float;
 
-  //! Input one sample to the filter and return one output.
+    // Input one sample to the filter and return one output.
     function tick(sample: my_float): my_float; overload;
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
+    // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
     function tick(vector: pmy_float; vectorSize: longint): Pmy_float; overload;
   end;
 

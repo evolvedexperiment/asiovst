@@ -1,9 +1,8 @@
 unit DAV_StkNRev;
 
-{
-/***************************************************/
-/*! \class TNRev
-    \brief CCRMA's TNRev reverberator class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+
+{ CCRMA's TNRev reverberator class.
 
     This class is derived from the CLM TNRev
     function, which is based on the use of
@@ -21,28 +20,31 @@ unit DAV_StkNRev;
 }
 interface
 
-uses stk, reverb, delay, Math;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkReverb, DAV_StkDelay, Math;
 
 type
   TNRev = class(TReverb)
   public
-  //! Class constructor taking a T60 decay time argument.
-    constructor Create(sr, T60: my_float);
+    // Class constructor taking a T60 decay time argument.
+    constructor Create(SampleRate, T60: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Compute one output sample.
-    function tick(input: my_float): my_float;
+    // Compute one output sample.
+    function tick(input: Single): Single;
 
   protected
-    allpassDelays: array[0..7] of tdelay;
-    combDelays: array[0..5] of tdelay;
-    lowpassState, allpassCoefficient: my_float;
-    combCoefficient: array[0..5] of my_float;
+    FAllpassDelays: array[0..7] of TDelay;
+    FCombDelays: array[0..5] of TDelay;
+    FLowpassState, FAllpassCoefficient: Single;
+    FCombCoefficient: array[0..5] of Single;
   end;
 
 implementation
@@ -55,7 +57,7 @@ var
   scaler: double;
   delay, i: integer;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   scaler := srate / 25641.0;
   for i := 0 to 14 do
    begin
@@ -69,14 +71,14 @@ begin
 
   for i := 0 to 5 do
    begin
-    combDelays[i] := TDelay.Create(srate, lengths[i], lengths[i]);
-    combCoefficient[i] := power(10, (-3 * lengths[i] / (T60 * srate)));
+    FCombDelays[i] := TDelay.Create(srate, lengths[i], lengths[i]);
+    FCombCoefficient[i] := power(10, (-3 * lengths[i] / (T60 * srate)));
    end;
 
   for i := 0 to 7 do
-    allpassDelays[i] := TDelay.Create(srate, lengths[i + 6], lengths[i + 6]);
+    FAllpassDelays[i] := TDelay.Create(srate, lengths[i + 6], lengths[i + 6]);
 
-  allpassCoefficient := 0.7;
+  FAllpassCoefficient := 0.7;
   effectMix := 0.3;
   Clear;
 end;
@@ -87,9 +89,9 @@ var
 begin
   inherited Destroy;
   for i := 0 to 5 do
-    combDelays[i].Free;
+    FCombDelays[i].Free;
   for i := 0 to 7 do
-    allpassDelays[i].Free;
+    FAllpassDelays[i].Free;
 end;
 
 procedure TNRev.Clear;
@@ -97,53 +99,53 @@ var
   i: integer;
 begin
   for i := 0 to 5 do
-    combDelays[i].Clear;
+    FCombDelays[i].Clear;
   for i := 0 to 7 do
-    allpassDelays[i].Clear;
+    FAllpassDelays[i].Clear;
   lastOutput[0] := 0.0;
   lastOutput[1] := 0.0;
-  lowpassState := 0.0;
+  FLowpassState := 0.0;
 end;
 
-function TNRev.tick(input: my_float): my_float;
+function TNRev.tick(input: Single): Single;
 var
-  temp, temp0, temp1, temp2, temp3: my_float;
+  temp, temp0, temp1, temp2, temp3: Single;
   i: integer;
 begin
   temp0 := 0.0;
   for i := 0 to 5 do
    begin
-    temp := input + (combCoefficient[i] * combDelays[i].lastOut());
-    temp0 := temp0 + combDelays[i].tick(temp);
+    temp := input + (FCombCoefficient[i] * FCombDelays[i].lastOut());
+    temp0 := temp0 + FCombDelays[i].tick(temp);
    end;
   for i := 0 to 2 do
    begin
-    temp := allpassDelays[i].lastOut();
-    temp1 := allpassCoefficient * temp;
+    temp := FAllpassDelays[i].lastOut();
+    temp1 := FAllpassCoefficient * temp;
     temp1 := temp1 + temp0;
-    allpassDelays[i].tick(temp1);
-    temp0 := -(allpassCoefficient * temp1) + temp;
+    FAllpassDelays[i].tick(temp1);
+    temp0 := -(FAllpassCoefficient * temp1) + temp;
    end;
 
   // One-pole lowpass filter.
-  lowpassState := 0.7 * lowpassState + 0.3 * temp0;
-  temp := allpassDelays[3].lastOut();
-  temp1 := allpassCoefficient * temp;
-  temp1 := temp1 + lowpassState;
-  allpassDelays[3].tick(temp1);
-  temp1 := -(allpassCoefficient * temp1) + temp;
+  FLowpassState := 0.7 * FLowpassState + 0.3 * temp0;
+  temp := FAllpassDelays[3].lastOut();
+  temp1 := FAllpassCoefficient * temp;
+  temp1 := temp1 + FLowpassState;
+  FAllpassDelays[3].tick(temp1);
+  temp1 := -(FAllpassCoefficient * temp1) + temp;
 
-  temp := allpassDelays[4].lastOut();
-  temp2 := allpassCoefficient * temp;
+  temp := FAllpassDelays[4].lastOut();
+  temp2 := FAllpassCoefficient * temp;
   temp2 := temp2 + temp1;
-  allpassDelays[4].tick(temp2);
-  lastOutput[0] := effectMix * (-(allpassCoefficient * temp2) + temp);
+  FAllpassDelays[4].tick(temp2);
+  lastOutput[0] := effectMix * (-(FAllpassCoefficient * temp2) + temp);
 
-  temp := allpassDelays[5].lastOut();
-  temp3 := allpassCoefficient * temp;
+  temp := FAllpassDelays[5].lastOut();
+  temp3 := FAllpassCoefficient * temp;
   temp3 := temp3 + temp1;
-  allpassDelays[5].tick(temp3);
-  lastOutput[1] := effectMix * (-(allpassCoefficient * temp3) + temp);
+  FAllpassDelays[5].tick(temp3);
+  lastOutput[1] := effectMix * (-(FAllpassCoefficient * temp3) + temp);
 
   temp := (1.0 - effectMix) * input;
   lastOutput[0] := lastOutput[0] + temp;

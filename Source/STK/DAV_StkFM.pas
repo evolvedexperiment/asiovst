@@ -1,102 +1,97 @@
 unit DAV_StkFM;
 
-{
-/***************************************************/
-/*! \class TFM
-    \brief STK abstract TFM synthesis base class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class controls an arbitrary number of
-    waves and envelopes, determined via a
-    constructor argument.
+{ STK abstract TFM synthesis base class.
 
-    Control Change Numbers:
-       - Control One:=2
-       - Control Two:=4
-       - LFO Speed:=11
-       - LFO Depth:=1
-       - ADSR 2 & 4 Target:=128
+  This class controls an arbitrary number of FWaves and envelopes, determined
+  via a constructor argument.
 
-    The basic Chowning/Stanford TFM patent expired
-    in 1995, but there exist follow-on patents,
-    mostly assigned to Yamaha.  If you are of the
-    type who should worry about this (making
-    money) worry away.
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  Control Change Numbers:
+    - Control One = 2
+    - Control Two = 4
+    - LFO Speed = 11
+    - LFO Depth = 1
+    - FAdsr 2 & 4 Target = 128
 }
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_StkCommon, DAV_StkInstrument, DAV_StkAdsr, DAV_StkTwoZero, DAV_StkLfo,
   DAV_StkWavePlayer;
 
 const
-  maxOperators = 20;
+  CMaxOperators = 20;
 
 type
   TFM = class(TInstrmnt)
+  protected
+    FAdsr           : array[0..CMaxOperators - 1] of TAdsr;
+    FWaves          : array[0..CMaxOperators - 1] of TWaveplayer;
+    FVibrato        : TLfo;
+    FTwoZero        : TTwozero;
+    FNOperators     : Integer;
+    FModDepth       : Single;
+    FControl1       : Single;
+    FControl2       : Single;
+    FBaseFrequency  : Single;
+    FGains          : array[0..CMaxOperators - 1] of Single;
+    FRatios         : array[0..CMaxOperators - 1] of Single;
+    __TFM_gains     : array[0..99] of Single;
+    __TFM_susLevels : array[0..15] of Single;
+    __TFM_attTimes  : array[0..31] of Single;
   public
-  //! Class constructor, taking the number of wave/envelope operators to control.
-    constructor Create(sr: my_float; operators: integer = 4);
+    // Class constructor, taking the number of wave/envelope Operators to control.
+    constructor Create(SampleRate: Single; Operators: Integer = 4);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all wave and envelope states.
+    // Reset and clear all wave and envelope states.
     procedure Clear;
 
-  //! Load the rawwave filenames in waves.
-    procedure loadWave(waveindex: integer; filename: string);
+    // Load the rawwave filenames in FWaves.
+    procedure LoadWave(waveindex: Integer; filename: string);
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: my_float);
+    // Set instrument parameters for a particular frequency.
+    procedure SetFrequency(frequency: Single);
 
-  //! Set the frequency ratio for the specified wave.
-    procedure setRatio(waveIndex: integer; ratio: MY_FLOAT);
+    // Set the frequency ratio for the specified wave.
+    procedure SetRatio(waveIndex: Integer; ratio: Single);
 
-  //! Set the gain for the specified wave.
-    procedure setGain(waveIndex: integer; gain: MY_FLOAT);
+    // Set the gain for the specified wave.
+    procedure SetGain(waveIndex: Integer; gain: Single);
 
-  //! Set the modulation speed in Hz.
-    procedure setModulationSpeed(mSpeed: MY_FLOAT);
+    // Set the modulation speed in Hz.
+    procedure SetModulationSpeed(mSpeed: Single);
 
-  //! Set the modulation depth.
-    procedure setModulationDepth(mDepth: MY_FLOAT);
+    // Set the modulation depth.
+    procedure SetModulationDepth(mDepth: Single);
 
-  //! Set the value of control1.
-    procedure setControl1(cVal: MY_FLOAT);
+    // Set the value of FControl1.
+    procedure SetControl1(cVal: Single);
 
-  //! Set the value of control2.
-    procedure setControl2(cVal: MY_FLOAT);
+    // Set the value of FControl2.
+    procedure SetControl2(cVal: Single);
 
-  //! Start envelopes toward "on" targets.
-    procedure keyOn;
+    // Start envelopes toward "on" targets.
+    procedure KeyOn;
 
-  //! Start envelopes toward "off" targets.
-    procedure keyOff;
+    // Start envelopes toward "off" targets.
+    procedure KeyOff;
 
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
+    // Stop a note with the given amplitude (speed of decay).
+    procedure NoteOff(amplitude: Single);
 
-  //! Pure virtual function ... must be defined in subclasses.
-    function tick: my_float;
+    // Pure virtual function ... must be defined in subclasses.
+    function Tick: Single;
 
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: MY_FLOAT);
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure ControlChange(number: Integer; Value: Single);
 
-  protected
-    adsr: array[0..maxoperators - 1] of tadsr;
-    waves: array[0..maxoperators - 1] of twaveplayer;
-    vibrato: tlfo;
-    TwoZero: ttwozero;
-    nOperators: integer;
-    modDepth, control1, control2, baseFrequency: my_float;
-    gains, ratios: array[0..maxoperators - 1] of my_float;
-    __TFM_gains: array[0..99] of my_float;
-    __TFM_susLevels: array[0..15] of my_float;
-    __TFM_attTimes: array[0..31] of my_float;
   end;
 
 implementation
@@ -108,9 +103,9 @@ begin
 
 end;
 
-procedure TFM.controlChange(number: integer; Value: MY_FLOAT);
+procedure TFM.ControlChange(number: Integer; Value: Single);
 var
-  norm: my_float;
+  norm: Single;
 begin
   norm := Value;// * ONE_OVER_128;
   if (norm < 0) then
@@ -119,50 +114,50 @@ begin
     norm := 1.0;
 
   if (number = __SK_Breath_) then // 2
-    setControl1(norm)
+    SetControl1(norm)
   else if (number = __SK_FootControl_) then // 4
-    setControl2(norm)
+    SetControl2(norm)
   else if (number = __SK_ModFrequency_) then // 11
-    setModulationSpeed(norm * 12.0)
+    SetModulationSpeed(norm * 12.0)
   else if (number = __SK_ModWheel_) then // 1
-    setModulationDepth(norm)
+    SetModulationDepth(norm)
   else if (number = __SK_AfterTouch_Cont_) then
    begin // 128
-    //adsr[0].setTarget( norm );
-    adsr[1].setTarget(norm);
-    //adsr[2].setTarget( norm );
-    adsr[3].setTarget(norm);
+    //FAdsr[0].setTarget( norm );
+    FAdsr[1].setTarget(norm);
+    //FAdsr[2].setTarget( norm );
+    FAdsr[3].setTarget(norm);
    end;
 end;
 
-constructor TFM.Create(sr: my_float; operators: integer);
+constructor TFM.Create(SampleRate: Single; Operators: Integer);
 var
-  i: integer;
-  temp: my_float;
+  i: Integer;
+  temp: Single;
 begin
-  inherited Create(sr);
-  if (nOperators <= 0) then
-    nOperators := 4;
+  inherited Create(SampleRate);
+  if (FNOperators <= 0) then
+    FNOperators := 4;
 
-  twozero := TTwoZero.Create(sr);
-  twozero.setB2(-1.0);
-  twozero.setGain(0.0);
+  FTwoZero := TTwozero.Create(SampleRate);
+  FTwoZero.setB2(-1.0);
+  FTwoZero.SetGain(0.0);
 
-  vibrato := TLFO.Create(sr);
-  vibrato.setFrequency(6.0);
+  FVibrato := TLfo.Create(SampleRate);
+  FVibrato.SetFrequency(6.0);
 
-  for i := 0 to nOperators - 1 do
+  for i := 0 to FNOperators - 1 do
    begin
-    ratios[i] := 1.0;
-    gains[i] := 1.0;
-    adsr[i] := TADSR.Create(sr);
+    FRatios[i] := 1.0;
+    FGains[i] := 1.0;
+    FAdsr[i] := TAdsr.Create(SampleRate);
     ;
    end;
 
-  modDepth := 0.0;
-  control1 := 1.0;
-  control2 := 1.0;
-  baseFrequency := 440.0;
+  FModDepth := 0.0;
+  FControl1 := 1.0;
+  FControl2 := 1.0;
+  FBaseFrequency := 440.0;
 
   temp := 1.0;
   for i := 99 downto 0 do
@@ -189,94 +184,94 @@ end;
 
 destructor TFM.Destroy;
 var
-  i: integer;
+  i: Integer;
 begin
   inherited Destroy;
-  vibrato.Free;
-  twozero.Free;
-  for i := 0 to nOperators - 1 do
+  FVibrato.Free;
+  FTwoZero.Free;
+  for i := 0 to FNOperators - 1 do
    begin
-    adsr[i].Free;
-    waves[i].Free;
+    FAdsr[i].Free;
+    FWaves[i].Free;
    end;
 end;
 
-procedure TFM.keyOff;
+procedure TFM.KeyOff;
 var
-  i: integer;
+  i: Integer;
 begin
-  for i := 0 to nOperators - 1 do
-    adsr[i].keyOff;
+  for i := 0 to FNOperators - 1 do
+    FAdsr[i].KeyOff;
 end;
 
-procedure TFM.keyOn;
+procedure TFM.KeyOn;
 var
-  i: integer;
+  i: Integer;
 begin
-  for i := 0 to nOperators - 1 do
-    adsr[i].keyOn;
+  for i := 0 to FNOperators - 1 do
+    FAdsr[i].KeyOn;
 end;
 
-procedure TFM.loadWave(waveIndex: Integer; filename: string);
+procedure TFM.LoadWave(waveIndex: Integer; filename: string);
 begin
-  waves[waveIndex] := TWavePlayer.Create(srate, filename);
+  FWaves[waveIndex] := TWaveplayer.Create(srate, filename);
 end;
 
-procedure TFM.noteOff(amplitude: MY_FLOAT);
+procedure TFM.NoteOff(amplitude: Single);
 begin
-  keyOff;
+  KeyOff;
 end;
 
-procedure TFM.setControl1(cVal: MY_FLOAT);
+procedure TFM.SetControl1(cVal: Single);
 begin
-  control1 := cVal * 2.0;
+  FControl1 := cVal * 2.0;
 end;
 
-procedure TFM.setControl2(cVal: MY_FLOAT);
+procedure TFM.SetControl2(cVal: Single);
 begin
-  control2 := cVal * 2.0;
+  FControl2 := cVal * 2.0;
 end;
 
-procedure TFM.setFrequency(frequency: my_float);
+procedure TFM.SetFrequency(frequency: Single);
 var
-  i: integer;
+  i: Integer;
 begin
-  baseFrequency := frequency;
-  for i := 0 to nOperators - 1 do
-    waves[i].setFrequency(baseFrequency * ratios[i]);
+  FBaseFrequency := frequency;
+  for i := 0 to FNOperators - 1 do
+    FWaves[i].SetFrequency(FBaseFrequency * FRatios[i]);
 end;
 
-procedure TFM.setGain(waveIndex: integer; gain: MY_FLOAT);
+procedure TFM.SetGain(waveIndex: Integer; gain: Single);
 begin
   if (waveIndex < 0) then
     exit
-  else if (waveIndex >= nOperators) then
+  else if (waveIndex >= FNOperators) then
     exit;
-  gains[waveIndex] := gain;
+  FGains[waveIndex] := gain;
 end;
 
-procedure TFM.setModulationDepth(mDepth: MY_FLOAT);
+procedure TFM.SetModulationDepth(mDepth: Single);
 begin
-  modDepth := mDepth;
+  FModDepth := mDepth;
 end;
 
-procedure TFM.setModulationSpeed(mSpeed: MY_FLOAT);
+procedure TFM.SetModulationSpeed(mSpeed: Single);
 begin
-  vibrato.setFrequency(mSpeed);
+  FVibrato.SetFrequency(mSpeed);
 end;
 
-procedure TFM.setRatio(waveIndex: integer; ratio: MY_FLOAT);
+procedure TFM.SetRatio(waveIndex: Integer; ratio: Single);
 begin
-  if (waveIndex < 0) or (waveIndex >= nOperators) then
+  if (waveIndex < 0) or (waveIndex >= FNOperators) then
     exit;
-  ratios[waveIndex] := ratio;
+  FRatios[waveIndex] := ratio;
   if (ratio > 0.0) then
-    waves[waveIndex].setFrequency(baseFrequency * ratio)
+    FWaves[waveIndex].SetFrequency(FBaseFrequency * ratio)
   else
-    waves[waveIndex].setFrequency(ratio);
+    FWaves[waveIndex].SetFrequency(ratio);
 end;
 
-function TFM.tick: my_float;
+function TFM.Tick: Single;
 begin
   Result := 0;
 end;

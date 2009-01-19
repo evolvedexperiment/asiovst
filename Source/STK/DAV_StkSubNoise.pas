@@ -1,38 +1,36 @@
 unit DAV_StkSubNoise;
 
-{/***************************************************/
-/*! \class SubNoise
-    \brief STK sub-sampled noise generator.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    Generates a new random number every "rate" ticks
-    using the C rand() function.  The quality of the
-    rand() function varies from one OS to another.
+{ STK sub-sampled noise generator.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  Generates a new random number every "rate" ticks using the C rand() function.
+  The quality of the rand() function varies from one OS to another.
 }
 
 interface
 
-uses stk, noise;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkNoise;
 
 type
   TSubNoise = class(TNoise)
   public
-  //! Default constructor sets sub-sample rate to 16.
+    // Default constructor sets sub-sample rate to 16.
     constructor Create(sr: my_float; subRate: integer);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Return the current sub-sampling rate.
+    // Return the current sub-sampling rate.
     function subRate: integer;
 
-  //! Set the sub-sampling rate.
+    // Set the sub-sampling rate.
     procedure setRate(subRate: integer);
 
-  //! Return a sub-sampled random number between -1.0 and 1.0.
+    // Return a sub-sampled random number between -1.0 and 1.0.
     function tick: my_float;
   protected
     counter, rate: integer;

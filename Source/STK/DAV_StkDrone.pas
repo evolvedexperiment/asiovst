@@ -31,27 +31,27 @@ type
     FLength: Integer;
     FLoopGain: Single;
   public
-  //! Class constructor, taking the lowest desired playing Frequency.
+    // Class constructor, taking the lowest desired playing Frequency.
     constructor Create(const SampleRate, LowestFrequency: Single);
 
     destructor Destroy; override;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set instrument parameters for a particular Frequency.
+    // Set instrument parameters for a particular Frequency.
     procedure setFrequency(Frequency: Single);
 
-  //! Pluck the string with the given Amplitude using the current Frequency.
+    // Pluck the string with the given Amplitude using the current Frequency.
     procedure pluck(Amplitude: Single);
 
-  //! Start a note with the given Frequency and Amplitude.
+    // Start a note with the given Frequency and Amplitude.
     procedure noteOn(Frequency, Amplitude: Single);
 
-  //! Stop a note with the given Amplitude (speed of decay).
+    // Stop a note with the given Amplitude (speed of decay).
     procedure noteOff(Amplitude: Single);
 
-  //! Compute one output sample.
+    // Compute one output sample.
     function Tick: Single;
   end;
 

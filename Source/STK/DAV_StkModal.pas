@@ -1,271 +1,275 @@
 unit DAV_StkModal;
 
-{
-/***************************************************/
-/*! \class TModal
-    \brief STK resonance model instrument.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class contains an excitation wavetable,
-    an envelope, an oscillator, and N resonances
-    (non-sweeping BiQuad filters), where N is set
-    during instantiation.
+{ STK resonance model instrument.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This class contains an excitation wavetable, an FEnvelope, an oscillator, and
+  N resonances (non-sweeping BiQuad FFilters), where N is set during
+  instantiation.
 }
+
 interface
 
-uses stk, instrmnt, envelope, biquad, onepole, lfo, waveplayer;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkInstrument, DAV_StkEnvelope, DAV_StkBiquad, DAV_StkOnePole,
+  DAV_StkLfo, DAV_StkWavePlayer;
 
 const
-  maxModes = 20;
+  CMaxModes = 20;
 
 type
-  TModal = class(TInstrmnt)
+  TStkModal = class(TStkInstrument)
   public
-  //! Class constructor, taking the desired number of modes to create.
-    constructor Create(sr: my_float; modes: integer = 4);
+    // Class constructor, taking the desired number of modes to create.
+    constructor Create(SampleRate: Single; modes: Integer = 4);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: my_float);
+    // Set instrument parameters for a particular AFrequency.
+    procedure SetFrequency(AFrequency: Single);
 
-  //! Set the ratio and radius for a specified mode filter.
-    procedure setRatioAndRadius(modeIndex: integer; ratio, radius: my_float);
+    // Set the ARatio and ARadius for a specified mode filter.
+    procedure SetRatioAndRadius(AModeIndex: Integer; ARatio, ARadius: Single);
 
-  //! Set the master gain.
-    procedure setMasterGain(aGain: my_float);
+    // Set the master AGain.
+    procedure SetMasterGain(AGain: Single);
 
-  //! Set the direct gain.
-    procedure setDirectGain(aGain: my_float);
+    // Set the direct AGain.
+    procedure SetDirectGain(AGain: Single);
 
-  //! Set the gain for a specified mode filter.
-    procedure setModeGain(modeIndex: integer; gain: MY_FLOAT);
+    // Set the AGain for a specified mode filter.
+    procedure SetModeGain(AModeIndex: Integer; AGain: Single);
 
-  //! Initiate a strike with the given amplitude (0.0 - 1.0).
-    procedure strike(amplitude: MY_FLOAT);
+    // Initiate a Strike with the given AAmplitude (0.0 - 1.0).
+    procedure Strike(AAmplitude: Single);
 
-  //! Damp modes with a given decay factor (0.0 - 1.0).
-    procedure damp(amplitude: MY_FLOAT);
+    // Damp modes with a given decay factor (0.0 - 1.0).
+    procedure Damp(AAmplitude: Single);
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
+    // Start a note with the given AFrequency and AAmplitude.
+    procedure NoteOn(AFrequency, AAmplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
+    // Stop a note with the given AAmplitude (speed of decay).
+    procedure NoteOff(AAmplitude: Single);
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function Tick: Single;
 
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: MY_FLOAT);
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure ControlChange(number: Integer; Value: Single);
 
   protected
-    envelope: tenvelope;
-    wave: twaveplayer;
-    filters: array[0..maxmodes - 1] of tbiquad;
-    OnePole: tonepole;
-    vibrato: tlfo;
-    nModes: integer;
-    vibratoGain, masterGain, directGain, stickHardness,
-    strikePosition, baseFrequency: my_float;
-    radii, ratios: array[0..maxmodes - 1] of my_float;
+    FEnvelope       : TEnvelope;
+    FWave           : TWavePlayer;
+    FFilters        : array[0..CMaxModes - 1] of TBiquad;
+    FOnePole        : TOnePole;
+    FVibrato        : TLfo;
+    FNModes         : Integer;
+    FVibratoGain    : Single;
+    FMasterGain     : Single;
+    FDirectGain     : Single;
+    FStickHardness  : Single;
+    FStrikePosition : Single;
+    FBaseFrequency  : Single;
+    FRadii          : array[0..CMaxModes - 1] of Single;
+    FRatios         : array[0..CMaxModes - 1] of Single;
   end;
 
 implementation
 
-constructor TModal.Create;
+constructor TStkModal.Create;
 var
-  i: integer;
+  i: Integer;
 begin
-  inherited Create(sr);
-  if (nModes <= 0) then
-    nModes := -nModes;
-  if (nModes > maxModes) then
-    nModes := maxModes;
+  inherited Create(SampleRate);
+  if (FNModes <= 0) then
+    FNModes := -FNModes;
+  if (FNModes > CMaxModes) then
+    FNModes := CMaxModes;
   // We don't make the excitation wave here yet, because we don't know
   // what it's going to be.
 
-  for i := 0 to maxmodes - 1 do
+  for i := 0 to CMaxModes - 1 do
    begin
-    filters[i] := tbiquad.Create(srate);
-    filters[i].setEqualGainZeroes;
+    FFilters[i] := TBiquad.Create(srate);
+    FFilters[i].setEqualGainZeroes;
    end;
 
-  envelope := TEnvelope.Create(srate);
-  onepole := TOnePole.Create(srate);
+  FEnvelope := TEnvelope.Create(srate);
+  FOnePole := TOnePole.Create(srate);
 
-  vibrato := TLFO.Create(srate);
+  FVibrato := TLFO.Create(srate);
 
   // Set some default values.
-  vibrato.setFrequency(6.0);
-  vibratoGain := 0.0;
-  directGain := 0.0;
-  masterGain := 1.0;
-  baseFrequency := 440.0;
+  FVibrato.SetFrequency(6.0);
+  FVibratoGain := 0.0;
+  FDirectGain := 0.0;
+  FMasterGain := 1.0;
+  FBaseFrequency := 440.0;
 
   Clear;
 
-  stickHardness := 0.5;
-  strikePosition := 0.561;
+  FStickHardness := 0.5;
+  FStrikePosition := 0.561;
 end;
 
-destructor TModal.Destroy;
+destructor TStkModal.Destroy;
 var
-  i: integer;
+  i: Integer;
 begin
   inherited Destroy;
-  envelope.Free;
-  onepole.Free;
-  vibrato.Free;
-  for i := 0 to maxModes - 1 do
-    filters[i].Free;
+  FEnvelope.Free;
+  FOnePole.Free;
+  FVibrato.Free;
+  for i := 0 to CMaxModes - 1 do
+    FFilters[i].Free;
 end;
 
-procedure TModal.Clear;
+procedure TStkModal.Clear;
 var
-  i: integer;
+  i: Integer;
 begin
-  onepole.Clear;
-  for i := 0 to nModes - 1 do
-    filters[i].Clear;
+  FOnePole.Clear;
+  for i := 0 to FNModes - 1 do
+    FFilters[i].Clear;
 end;
 
-procedure TModal.setFrequency;
+procedure TStkModal.SetFrequency;
 var
-  i: integer;
+  i: Integer;
 begin
-  baseFrequency := frequency;
-  for i := 0 to nModes - 1 do
-    setRatioAndRadius(i, ratios[i], radii[i]);
+  FBaseFrequency := AFrequency;
+  for i := 0 to FNModes - 1 do
+    SetRatioAndRadius(i, FRatios[i], FRadii[i]);
 end;
 
-procedure TModal.setRatioAndRadius;
+procedure TStkModal.SetRatioAndRadius;
 var
-  nyquist, temp: my_float;
+  nyquist, temp: Single;
 begin
-  if (modeIndex < 0) then
+  if (AModeIndex < 0) then
     exit
-  else if (modeIndex >= nModes) then
+  else if (AModeIndex >= FNModes) then
     exit;
 
   nyquist := srate * 0.5;
-  if (ratio * baseFrequency < nyquist) then
-    ratios[modeIndex] := ratio
+  if (ARatio * FBaseFrequency < nyquist) then
+    FRatios[AModeIndex] := ARatio
   else
    begin
-    temp := ratio;
-    while (temp * baseFrequency > nyquist) do
+    temp := ARatio;
+    while (temp * FBaseFrequency > nyquist) do
       temp := temp * 0.5;
-    ratios[modeIndex] := temp;
+    FRatios[AModeIndex] := temp;
    end;
-  radii[modeIndex] := radius;
-  if (ratio < 0) then
-    temp := -ratio
+  FRadii[AModeIndex] := ARadius;
+  if (ARatio < 0) then
+    temp := -ARatio
   else
-    temp := ratio * baseFrequency;
+    temp := ARatio * FBaseFrequency;
 
-  filters[modeIndex].setResonance(temp, radius);
+  FFilters[AModeIndex].setResonance(temp, ARadius);
 end;
 
-procedure TModal.setMasterGain;
+procedure TStkModal.SetMasterGain;
 begin
-  masterGain := aGain;
+  FMasterGain := AGain;
 end;
 
-procedure TModal.setDirectGain;
+procedure TStkModal.SetDirectGain;
 begin
-  directGain := aGain;
+  FDirectGain := AGain;
 end;
 
-procedure TModal.setModeGain;
+procedure TStkModal.SetModeGain;
 begin
-  if (modeIndex < 0) then
+  if (AModeIndex < 0) then
     exit
-  else if (modeIndex >= nModes) then
+  else if (AModeIndex >= FNModes) then
     exit;
-  filters[modeIndex].setGain(gain);
+  FFilters[AModeIndex].setGain(AGain);
 end;
 
-procedure TModal.strike;
+procedure TStkModal.Strike;
 var
-  temp, gain: my_float;
-  i: integer;
+  temp, AGain: Single;
+  i: Integer;
 begin
-  gain := amplitude;
-  if (amplitude < 0.0) then
-    gain := 0.0
-  else if (amplitude > 1.0) then
-    gain := 1.0;
+  AGain := AAmplitude;
+  if (AAmplitude < 0.0) then
+    AGain := 0.0
+  else if (AAmplitude > 1.0) then
+    AGain := 1.0;
 
-  envelope.setRate(1.0);
-  envelope.setTarget(gain);
-  onepole.setPole(1.0 - gain);
-  envelope.tick;
-  wave.reset;
+  FEnvelope.setRate(1.0);
+  FEnvelope.setTarget(AGain);
+  FOnePole.setPole(1.0 - AGain);
+  FEnvelope.Tick;
+  FWave.reset;
 
-  for i := 0 to nModes - 1 do
+  for i := 0 to FNModes - 1 do
    begin
-    if (ratios[i] < 0) then
-      temp := -ratios[i]
+    if (FRatios[i] < 0) then
+      temp := -FRatios[i]
     else
-      temp := ratios[i] * baseFrequency;
-    filters[i].setResonance(temp, radii[i]);
+      temp := FRatios[i] * FBaseFrequency;
+    FFilters[i].setResonance(temp, FRadii[i]);
    end;
 end;
 
-procedure TModal.noteOn;
+procedure TStkModal.NoteOn;
 begin
-  strike(amplitude);
-  setFrequency(frequency);
+  Strike(AAmplitude);
+  SetFrequency(AFrequency);
 end;
 
-procedure TModal.noteOff;
+procedure TStkModal.NoteOff;
 begin
-  // This calls damp, but inverts the meaning of amplitude (high
-  // amplitude means fast damping).
-  damp(1.0 - (amplitude * 0.03));
+  // This calls Damp, but inverts the meaning of AAmplitude (high
+  // AAmplitude means fast damping).
+  Damp(1.0 - (AAmplitude * 0.03));
 end;
 
-procedure TModal.damp;
+procedure TStkModal.Damp;
 var
-  temp: my_float;
-  i: integer;
+  temp: Single;
+  i: Integer;
 begin
-  for i := 0 to nModes - 1 do
+  for i := 0 to FNModes - 1 do
    begin
-    if (ratios[i] < 0) then
-      temp := -ratios[i]
+    if (FRatios[i] < 0) then
+      temp := -FRatios[i]
     else
-      temp := ratios[i] * baseFrequency;
-    filters[i].setResonance(temp, radii[i] * amplitude);
+      temp := FRatios[i] * FBaseFrequency;
+    FFilters[i].setResonance(temp, FRadii[i] * AAmplitude);
    end;
 end;
 
-function TModal.tick: my_float;
+function TStkModal.Tick: Single;
 var
-  temp, temp2: my_float;
-  i: integer;
+  temp, temp2: Single;
+  i: Integer;
 begin
-  temp := masterGain * onepole.tick(wave.tick * envelope.tick);
+  temp := FMasterGain * FOnePole.Tick(FWave.Tick * FEnvelope.Tick);
 
   temp2 := 0.0;
-  for i := 0 to nModes - 1 do
-    temp2 := temp2 + filters[i].tick(temp);
+  for i := 0 to FNModes - 1 do
+    temp2 := temp2 + FFilters[i].Tick(temp);
 
-  temp2 := temp2 - temp2 * directGain;
-  temp2 := temp2 + directGain * temp;
+  temp2 := temp2 - temp2 * FDirectGain;
+  temp2 := temp2 + FDirectGain * temp;
 
-  if (vibratoGain <> 0.0) then
+  if (FVibratoGain <> 0.0) then
    begin
     // Calculate AM and apply to master out
-    temp := 1.0 + (vibrato.tick * vibratoGain);
+    temp := 1.0 + (FVibrato.Tick * FVibratoGain);
     temp2 := temp * temp2;
    end;
 
@@ -273,7 +277,7 @@ begin
   Result := lastOutput;
 end;
 
-procedure TModal.controlChange;
+procedure TStkModal.ControlChange;
 begin
 end;
 

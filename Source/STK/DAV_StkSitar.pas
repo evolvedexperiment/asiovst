@@ -1,150 +1,149 @@
 unit DAV_StkSitar;
 
-{
-/***************************************************/
-/*! \class TSitar
-    \brief STK TSitar string model class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a TSitar plucked string
-    physical model based on the Karplus-Strong
-    algorithm.
+{ STK TStkSitar string model class.
 
-    This is a digital waveguide model, making its
-    use possibly subject to patents held by
-    Stanford University, Yamaha, and others.
-    There exist at least two patents, assigned to
-    Stanford, bearing the names of Karplus and/or
-    Strong.
+  This class implements a TStkSitar plucked string physical model based on the
+  Karplus-Strong algorithm.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This is a digital waveguide model, making its use possibly subject to patents
+  held by Stanford University, Yamaha, and others. There exist at least two
+  patents, assigned to Stanford, bearing the names of Karplus and/or Strong.
 }
+
 interface
 
-uses stk, instrmnt, delaya, onezero, noise, adsr;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkInstrument, DAV_StkDelaya, DAV_StkOneZero, DAV_StkNoise,
+  DAV_StkAdsr;
 
 type
-  TSitar = class(TInstrmnt)
+  TStkSitar = class(TStkInstrument)
+  protected
+    FDelayLine   : TDelayA;
+    FLoopFilter  : TOneZero;
+    FNoise       : TNoise;
+    FLength      : Longint;
+    FAmGain      : Single;
+    FDelay       : Single;
+    FTargetDelay : Single;
+    FLoopGain    : Single;
   public
-    envelope: TADSR;
+    Envelope     : TADSR;
 
-  //! Class constructor, taking the lowest desired playing frequency.
-    constructor Create(sr, lowestFrequency: MY_FLOAT);
+    // Class constructor, taking the lowest desired playing frequency.
+    constructor Create(sr, lowestFrequency: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
+    // Set instrument parameters for a particular frequency.
+    procedure setFrequency(frequency: Single);
 
-  //! Pluck the string with the given amplitude using the current frequency.
-    procedure pluck(amplitude: MY_FLOAT);
+    // Pluck the string with the given amplitude using the current frequency.
+    procedure pluck(amplitude: Single);
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
+    // Start a note with the given frequency and amplitude.
+    procedure noteOn(frequency, amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
+    // Stop a note with the given amplitude (speed of decay).
+    procedure noteOff(amplitude: Single);
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function tick: Single;
 
-  protected
-    delayLine: TDelayA;
-    loopFilter: TOneZero;
-    noise: TNoise;
-    length: longint;
-    amGain, delay, targetDelay, loopGain: my_float;
   end;
 
 implementation
 
-constructor TSitar.Create;
+constructor TStkSitar.Create;
 begin
   inherited Create(sr);
-  length := round(srate / lowestFrequency + 1);
-  loopGain := 0.999;
-  delayLine := TDelayA.Create(srate, (length / 2.0), length);
-  delay := length / 2.0;
-  targetDelay := delay;
+  FLength := round(srate / lowestFrequency + 1);
+  FLoopGain := 0.999;
+  FDelayLine := TDelayA.Create(srate, (FLength / 2.0), FLength);
+  FDelay := FLength / 2.0;
+  FTargetDelay := FDelay;
 
-  loopFilter := TOneZero.Create(srate);
-  loopFilter.setZero(0.01);
+  FLoopFilter := TOneZero.Create(srate);
+  FLoopFilter.setZero(0.01);
 
   envelope := TADSR.Create(srate);
   envelope.setAllTimes(0.001, 0.04, 0.0, 0.5);
-  noise := TNoise.Create(srate);
+  FNoise := TNoise.Create(srate);
   Clear;
 end;
 
-destructor TSitar.Destroy;
+destructor TStkSitar.Destroy;
 begin
   inherited Destroy;
-  delayLine.Free;
-  loopFilter.Free;
+  FDelayLine.Free;
+  FLoopFilter.Free;
   Envelope.Free;
-  noise.Free;
+  FNoise.Free;
 end;
 
-procedure TSitar.Clear;
+procedure TStkSitar.Clear;
 begin
-  delayLine.Clear;
-  loopFilter.Clear;
+  FDelayLine.Clear;
+  FLoopFilter.Clear;
 end;
 
-procedure TSitar.setFrequency;
+procedure TStkSitar.setFrequency;
 var
-  freakency: my_float;
+  freakency: Single;
 begin
   freakency := frequency;
   if (frequency <= 0.0) then
     freakency := 220.0;
 
-  targetDelay := (srate / freakency);
-  delay := targetDelay * (1.0 + (0.05 * noise.tick()));
-  delayLine.setDelay(delay);
-  loopGain := 0.995 + (freakency * 0.0000005);
-  if (loopGain > 0.9995) then
-    loopGain := 0.9995;
+  FTargetDelay := (srate / freakency);
+  FDelay := FTargetDelay * (1.0 + (0.05 * FNoise.tick()));
+  FDelayLine.setDelay(FDelay);
+  FLoopGain := 0.995 + (freakency * 0.0000005);
+  if (FLoopGain > 0.9995) then
+    FLoopGain := 0.9995;
 end;
 
-procedure TSitar.pluck;
+procedure TStkSitar.pluck;
 begin
   envelope.keyOn;
 end;
 
-procedure TSitar.noteOn;
+procedure TStkSitar.noteOn;
 begin
   setFrequency(frequency);
   pluck(amplitude);
-  amGain := 0.1 * amplitude;
+  FAmGain := 0.1 * amplitude;
 end;
 
-procedure TSitar.noteOff;
+procedure TStkSitar.noteOff;
 begin
-  loopGain := 1.0 - amplitude;
-  if (loopGain < 0.0) then
-    loopGain := 0.0
-  else if (loopGain > 1.0) then
-    loopGain := 0.99999;
+  FLoopGain := 1.0 - amplitude;
+  if (FLoopGain < 0.0) then
+    FLoopGain := 0.0
+  else if (FLoopGain > 1.0) then
+    FLoopGain := 0.99999;
 end;
 
-function TSitar.tick: my_float;
+function TStkSitar.tick: Single;
 begin
-  if (abs(targetDelay - delay) > 0.001) then
+  if (abs(FTargetDelay - FDelay) > 0.001) then
    begin
-    if (targetDelay < delay) then
-      delay := delay * 0.99999
+    if (FTargetDelay < FDelay) then
+      FDelay := FDelay * 0.99999
     else
-      delay := delay * 1.00001;
-    delayLine.setDelay(delay);
+      FDelay := FDelay * 1.00001;
+    FDelayLine.setDelay(FDelay);
    end;
-  lastOutput := delayLine.tick(loopFilter.tick(delayLine.lastOut * loopGain) +
-    (amGain * envelope.tick * noise.tick));
+  lastOutput := FDelayLine.tick(FLoopFilter.tick(FDelayLine.lastOut *
+    FLoopGain) + (FAmGain * envelope.tick * FNoise.tick));
   Result := lastOutput;
 end;
 

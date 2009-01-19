@@ -2,30 +2,33 @@ unit DAV_StkMultiOsc2;
 
 interface
 
-uses mm_osc, Math;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  mm_osc, Math;
 
 type
   TMultiOsc2 = class(TOsc)
   private
-    wave: integer;
-    pwm: single;
+    Wave: Integer;
+    Pwm: Single;
   public
-    constructor Create(sr: integer);
-    procedure SetMorph(morph: single);
-    function GetMorph: single;
-    procedure SetActiveWave(i: integer);
-    function GetActiveWave: integer;
-    function Process: single; override;
+    constructor Create(sr: Integer);
+    procedure SetMorph(morph: Single);
+    function GetMorph: Single;
+    procedure SetActiveWave(i: Integer);
+    function GetActiveWave: Integer;
+    function Process: Single; override;
   end;
 
 implementation
 
-function fmod(x: single): single;
+function fmod(x: Single): Single;
 begin
   Result := x - floor(x);
 end;
 
-function fpulse(x, a: single): single;
+function fpulse(x, a: Single): Single;
 begin
   if (fmod(x) < a) then
     Result := -1
@@ -33,7 +36,7 @@ begin
     Result := 1;
 end;
 
-function fsaw(x, a: single): single;
+function fsaw(x, a: Single): Single;
 begin
   if (a < 0.00001) then
     a := 0.00001
@@ -46,7 +49,7 @@ begin
     Result := (1 - x) / (1 - a) * 2 - 1;
 end;
 
-function ftri(x, a: single): single;
+function ftri(x, a: Single): Single;
 begin
   x := fmod(x + 0.25);
   a := 1 - a;
@@ -64,7 +67,7 @@ begin
   Result := x;
 end;
 
-function fpower(x, a: single): single;
+function fpower(x, a: Single): Single;
 begin
   x := fmod(x);
   if (a < 0.00001) then
@@ -74,7 +77,7 @@ begin
   Result := power(x, exp((a - 0.5) * 10)) * 2 - 1;
 end;
 
-function fgauss(x, a: single): single;
+function fgauss(x, a: Single): Single;
 begin
   x := fmod(x) * 2 - 1;
   if (a < 0.00001) then
@@ -82,7 +85,7 @@ begin
   Result := exp(-x * x * (exp(a * 8) + 5)) * 2 - 1;
 end;
 
-function fdiode(x, a: single): single;
+function fdiode(x, a: Single): Single;
 begin
   if (a < 0.00001) then
     a := 0.00001
@@ -95,9 +98,9 @@ begin
   Result := x / (1 - a) * 2 - 1;
 end;
 
-function fsine(x, a: single): single;
+function fsine(x, a: Single): Single;
 var
-  y: single;
+  y: Single;
 begin
   x := fmod(x);
   if (x < 0.5) then
@@ -107,7 +110,7 @@ begin
   Result := sin(x * 2 * pi) * (1 - a) + a * y;
 end;
 
-function fabssine(x, a: single): single;
+function fabssine(x, a: Single): Single;
 begin
   x := fmod(x);
   if (a < 0.00001) then
@@ -117,7 +120,7 @@ begin
   Result := sin(power(x, exp((a - 0.5) * 5)) * pi) * 2 - 1;
 end;
 
-function fpulsesine(x, a: single): single;
+function fpulsesine(x, a: Single): Single;
 begin
   if (a < 0.00001) then
     a := 0.00001;
@@ -130,9 +133,9 @@ begin
   Result := x;
 end;
 
-function fstretchsine(x, a: single): single;
+function fstretchsine(x, a: Single): Single;
 var
-  b: single;
+  b: Single;
 begin
   x := fmod(x + 0.5) * 2 - 1;
   a := (a - 0.5) * 4;
@@ -145,7 +148,7 @@ begin
   Result := -sin(b * pi);
 end;
 
-function fchirp(x, a: single): single;
+function fchirp(x, a: Single): Single;
 begin
   x := fmod(x) * 2 * pi;
   a := (a - 0.5) * 4;
@@ -155,15 +158,15 @@ begin
   Result := sin(x / 2) * sin(a * x * x);
 end;
 
-function fsinex(x, a: single): single;
+function fsinex(x, a: Single): Single;
 begin
   x := fmod(x);
   Result := 0.5 * (sin(x * 2 * pi) + sin(x * 2 * pi * (1 + a * 10)));
 end;
 
-function fabsstretchsine(x, a: single): single;
+function fabsstretchsine(x, a: Single): Single;
 var
-  b: single;
+  b: Single;
 begin
   x := fmod(x + 0.5) * 2 - 1;
   a := (a - 0.5) * 9;
@@ -174,100 +177,100 @@ begin
   Result := -2 * power(sin(b * pi), 2) + 1;
 end;
 
-constructor TMultiOsc2.Create(sr: integer);
+constructor TMultiOsc2.Create(sr: Integer);
 begin
-  wave := 0;
+  Wave := 0;
   inherited Create(sr);
 end;
 
-function TMultiOsc2.GetActiveWave: integer;
+function TMultiOsc2.GetActiveWave: Integer;
 begin
-  Result := wave;
+  Result := Wave;
 end;
 
-function TMultiOsc2.GetMorph: single;
+function TMultiOsc2.GetMorph: Single;
 begin
-  Result := pwm;
+  Result := Pwm;
 end;
 
-function TMultiOsc2.Process: single;
+function TMultiOsc2.Process: Single;
 var
-  y, j: single;
+  y, j: Single;
 begin
   j := srate / freq;
   phase := cnt / j;
-  case wave of
-    0 : y := fsine(phase, pwm);
-    1 : y := fsaw(phase, pwm);
-    2 : y := fpulse(phase, pwm);
-    3 : y := ftri(phase, pwm);
+  case Wave of
+    0 : y := fsine(phase, Pwm);
+    1 : y := fsaw(phase, Pwm);
+    2 : y := fpulse(phase, Pwm);
+    3 : y := ftri(phase, Pwm);
     4 : y := tmp;
     5 : y := random * 2 - 1;
-    6 : y := fpower(phase, pwm);
-    7 : y := fgauss(phase, pwm);
-    8 : y := fdiode(phase, pwm);
-    9 : y := fstretchsine(phase, pwm);
-    10 : y := fpulsesine(phase, pwm);
-    11 : y := fabssine(phase, pwm);
-    12 : y := fabsstretchsine(phase, pwm);
-    13 : y := fchirp(phase, pwm);
+    6 : y := fpower(phase, Pwm);
+    7 : y := fgauss(phase, Pwm);
+    8 : y := fdiode(phase, Pwm);
+    9 : y := fstretchsine(phase, Pwm);
+    10 : y := fpulsesine(phase, Pwm);
+    11 : y := fabssine(phase, Pwm);
+    12 : y := fabsstretchsine(phase, Pwm);
+    13 : y := fchirp(phase, Pwm);
 
-    14 : if ((pwm = 1) or (phase < pwm)) then
-        y := sin(pi * phase / pwm)
+    14 : if ((Pwm = 1) or (phase < Pwm)) then
+        y := sin(pi * phase / Pwm)
       else
-        y := -sin(pi * (phase - pwm) / (1 - pwm));
-    15 : if ((pwm = 1) or (phase < pwm)) then
-        y := phase / pwm
+        y := -sin(pi * (phase - Pwm) / (1 - Pwm));
+    15 : if ((Pwm = 1) or (phase < Pwm)) then
+        y := phase / Pwm
       else
-        y := ((phase - pwm) / (1 - pwm)) - 1;
-    16 : if (pwm = 0) then
+        y := ((phase - Pwm) / (1 - Pwm)) - 1;
+    16 : if (Pwm = 0) then
        begin
-        if (phase < 0.5 * (pwm + 1)) then
-          y := -2 * (phase - pwm) / (1 - pwm)
+        if (phase < 0.5 * (Pwm + 1)) then
+          y := -2 * (phase - Pwm) / (1 - Pwm)
         else
-          y := -1 + (2 * phase - (pwm + 1)) / (1 - pwm);
+          y := -1 + (2 * phase - (Pwm + 1)) / (1 - Pwm);
        end else
-      if (pwm = 1) then
+      if (Pwm = 1) then
        begin
-        if (phase < 0.5 * pwm) then
-          y := 2 * phase / pwm
+        if (phase < 0.5 * Pwm) then
+          y := 2 * phase / Pwm
         else
-          y := 1 - (2 * phase - pwm) / pwm;
+          y := 1 - (2 * phase - Pwm) / Pwm;
        end else
-      if (phase < pwm / 2) then
-        y := 2 * phase / pwm
+      if (phase < Pwm / 2) then
+        y := 2 * phase / Pwm
       else
-      if ((phase >= pwm / 2) and (phase < pwm)) then
-        y := 1 - (2 * phase - pwm) / pwm
-      else if ((phase >= pwm) and (phase < 0.5 * (pwm + 1))) then
-        y := -2 * (phase - pwm) / (1 - pwm)
+      if ((phase >= Pwm / 2) and (phase < Pwm)) then
+        y := 1 - (2 * phase - Pwm) / Pwm
+      else if ((phase >= Pwm) and (phase < 0.5 * (Pwm + 1))) then
+        y := -2 * (phase - Pwm) / (1 - Pwm)
       else
-        y := -1 + (2 * phase - (pwm + 1)) / (1 - pwm);
-    17 : y := fsine(phase * (pwm), 0) * ((1 - pwm) + 1) - (1 - pwm);
-    18 : y := fsinex(phase, pwm);
+        y := -1 + (2 * phase - (Pwm + 1)) / (1 - Pwm);
+    17 : y := fsine(phase * (Pwm), 0) * ((1 - Pwm) + 1) - (1 - Pwm);
+    18 : y := fsinex(phase, Pwm);
   else y := 0;
    end;
   cnt := cnt + 1;
   while (cnt > j) do
    begin
     cnt := cnt - j;
-    tmp := random * 2 - 1
+    tmp := random * 2 - 1;
    end;
   Result := y;
 end;
 
-procedure TMultiOsc2.SetActiveWave(i: integer);
+procedure TMultiOsc2.SetActiveWave(i: Integer);
 begin
-  wave := i;
+  Wave := i;
 end;
 
-procedure TMultiOsc2.SetMorph(morph: single);
+procedure TMultiOsc2.SetMorph(morph: Single);
 begin
   if morph > 1 then
     morph := 1
   else if morph < 0 then
     morph := 0;
-  pwm := morph;
+  Pwm := morph;
 end;
 
 end.

@@ -1,129 +1,129 @@
 unit DAV_StkWavePlayer;
 
-{
-/***************************************************/
-/*! \class TWavePlayer
-*/
-/***************************************************/
-}
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
+
+{ TWavePlayer }
+
 interface
 
-uses stk, lfo, Windows, waveiox;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkLfo, Windows, waveiox;
 
 type
   TWavePlayer = class(TLFO)
+  private
+    os         : Boolean;
+    sdata      : psingle;
+    pfofs      : Single;
+    FLoopstart : Integer;
+    FLoopend   : Integer;
+    ls, le     : Single;
   public
-    size: longint;
-    length: my_float;
-    isfinished: boolean;
+    Size: Longint;
+    Length: Single;
+    IsFinished: Boolean;
 
-  //! Set the loop points
-    procedure SetLoop(st, en: longint);
+    // Set the loop points
+    procedure SetLoop(st, en: Longint);
 
-  //! Seek to position in file
-    procedure SetPos(p: longint);
+    // Seek to position in file
+    procedure SetPos(p: Longint);
 
-  //! Class constructor, taking the desired number of modes to create.
-    constructor Create(sr: my_float); overload;
+    // Class constructor, taking the desired number of modes to create.
+    constructor Create(const SampleRate: Single); overload; override;
 
-  //! Overloaded constructor, load file on create
-    constructor Create(sr: my_float; fn: string); overload;
+    // Overloaded constructor, load file on create
+    constructor Create(const SampleRate: Single; FileName: String); overload; override;
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
-    procedure reset;
+    // Reset and clear all internal state.
+    procedure Reset;
 
-  //! Loads a WAV audio file
-    procedure loadfile(fn: string);
+    // Loads a WAV audio file
+    procedure LoadFile(FileName: String);
 
-  //! Sets the playback rate
-    procedure SetRate(r: single);
+    // Sets the playback rate
+    procedure SetRate(r: Single);
 
-    procedure SetOneShot(i: boolean);
+    procedure SetOneShot(i: Boolean);
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
-
-  private
-    os: boolean;
-    sdata: psingle;
-    pfofs: single;
-    loopstart, loopend: longint;
-    ls, le: single;
+    // Compute one output sample.
+    function Tick: Single;
   end;
 
 implementation
 
-constructor TWavePlayer.Create(sr: my_float);
+constructor TWavePlayer.Create(const SampleRate: Single);
 begin
-  inherited Create(sr);
-  size := 0;
+  inherited Create(SampleRate);
+  Size := 0;
   sdata := nil;
-  loopstart := 0;
-  loopend := 0;
+  FLoopstart := 0;
+  FLoopend := 0;
   ls := 0;
   le := 0;
 end;
 
-constructor TWavePlayer.Create(sr: my_float; fn: string);
+constructor TWavePlayer.Create(const SampleRate: Single; const FileName: String);
 begin
-  if sr < 10 then
-    sr := 44100;
-  inherited Create(sr);
-  size := 0;
+  if SampleRate <= 0
+   then raise Exception.Create('Samplerate must be larger than zero');
+  inherited Create(SampleRate);
+  Size := 0;
   sdata := nil;
-  loopstart := 0;
-  loopend := 0;
+  FLoopstart := 0;
+  FLoopend := 0;
   ls := 0;
   le := 0;
-  loadfile(fn);
+  LoadFile(FileName);
 end;
 
 destructor TWavePlayer.Destroy;
 begin
   inherited Destroy;
-  if assigned(sdata) then
-    freemem(sdata);
+  if assigned(sdata) then Dispose(sdata);
 end;
 
-procedure TWavePlayer.reset;
+procedure TWavePlayer.Reset;
 begin
   setpos(0);
 end;
 
-procedure TWavePlayer.loadfile(fn: string);
+procedure TWavePlayer.LoadFile(FileName: String);
 var
   p: pointer;
-  sr, ch, fsize: longint;
+  SampleRate, ch, fsize: Longint;
 begin
-  p := loadwavfile(fn, sr, ch, fsize);
+  p := loadwavfile(FileName, SampleRate, ch, fsize);
   if (p <> nil) and (fsize > 0) then
    begin
     sdata := p;
-    size := fsize;
-    length := size / sr;
-    loopstart := 0;
-    loopend := size - 1;
+    Size := fsize;
+    Length := Size / SampleRate;
+    FLoopstart := 0;
+    FLoopend := Size - 1;
     ls := 0;
-    le := (size - 1) / size;
+    le := (Size - 1) / Size;
     os := True;
-    isfinished := False;
+    IsFinished := False;
    end;
 end;
 
-function TWavePlayer.tick: my_float;
+function TWavePlayer.Tick: Single;
 var
-  x, y: longint;
-  q: single;
+  x, y: Longint;
+  q: Single;
   s1, s2: psingle;
 begin
   phase := pfofs + phase + (freq / srate);
   if os then
    begin
-    isfinished := (phase >= 1);
-    if isfinished then
+    IsFinished := (phase >= 1);
+    if IsFinished then
      begin
       Result := 0;
       exit;
@@ -137,14 +137,14 @@ begin
     q := 1
   else if q < 0 then
     q := 0;
-  q := q * size;
+  q := q * Size;
   x := round(q);
   q := q - x;
-  s1 := psingle(longint(sdata) + 4 * x);
+  s1 := psingle(Longint(sdata) + 4 * x);
   y := x + 1;
-  if y > loopend then
-    y := loopstart;
-  s2 := psingle(longint(sdata) + 4 * y);
+  if y > FLoopend then
+    y := FLoopstart;
+  s2 := psingle(Longint(sdata) + 4 * y);
   Result := s1^ * (1 - q) + s2^ * q;
 end;
 
@@ -152,31 +152,31 @@ procedure TWavePlayer.SetLoop(st, en: Integer);
 begin
   if st < 0 then
     st := 0
-  else if st > size - 1 then
-    st := size - 1;
+  else if st > Size - 1 then
+    st := Size - 1;
   if en < 1 then
     en := 1
-  else if en > size - 1 then
-    en := size - 1;
+  else if en > Size - 1 then
+    en := Size - 1;
   if st > en then
     st := 0;
-  loopstart := st;
-  loopend := en;
-  ls := loopstart / size;
-  le := loopend / size;
+  FLoopstart := st;
+  FLoopend := en;
+  ls := FLoopstart / Size;
+  le := FLoopend / Size;
 end;
 
-procedure TWavePlayer.SetPos(p: longint);
+procedure TWavePlayer.SetPos(p: Longint);
 begin
-  SetPhase(p / size);
+  SetPhase(p / Size);
 end;
 
-procedure TWavePlayer.SetRate(r: single);
+procedure TWavePlayer.SetRate(r: Single);
 begin
   setfrequency(r);
 end;
 
-procedure TWavePlayer.SetOneShot(i: boolean);
+procedure TWavePlayer.SetOneShot(i: Boolean);
 begin
   os := i;
 end;

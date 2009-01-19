@@ -1,51 +1,43 @@
 unit DAV_StkNoise;
 
-{
-/***************************************************/
-/*! \class Noise
-    \brief STK noise generator.
+// based on DAV_Stk by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    Generic random number generation using the
-    C rand() function.  The quality of the rand()
-    function varies from one OS to another.
+{  STK noise generator.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+   Generic random number generation using the C rand() function.
+   The quality of the rand() function varies from one OS to another.
 }
+
 interface
 
-uses stk;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk;
 
 type
   TNoise = class(TStk)
-  public
-  //! Default constructor.
-    constructor Create(sr: my_float);
-
-  //! Class destructor.
-    destructor Destroy;
-
-  //! Return a random number between -1.0 and 1.0 using rand().
-    function tick: my_float; overload;
-
-  //! Return \e vectorSize random numbers between -1.0 and 1.0 in \e vector.
-    function tick(vector: pmy_float; vectorSize: longint): pmy_float; overload;
-
-  //! Return the last computed value.
-    function lastOut: my_float;
-
   protected
-    lastOutput: my_float;
+    FLastOutput: Single;
+  public
+    constructor Create(SampleRate: Single); override;
+    destructor Destroy; override;
 
+    // Return a random number between -1.0 and 1.0 using rand().
+    function Tick: Single; overload;
+
+    // Return VectorSize random numbers between -1.0 and 1.0 in \ Vector.
+    function Tick(Vector: PSingle; VectorSize: Integer): PSingle; overload;
+
+    property FLastOutput: Single read FLastOutput;
   end;
 
 implementation
 
 constructor TNoise.Create;
 begin
-  inherited Create(sr);
-  lastOutput := 0.0;
+  inherited Create(SampleRate);
+  FLastOutput := 0.0;
 end;
 
 destructor TNoise.Destroy;
@@ -53,29 +45,29 @@ begin
   inherited Destroy;
 end;
 
-function TNoise.tick: my_float;
+function TNoise.Tick: Single;
 begin
-  lastOutput := (2.0 * random) - 1;
-  Result := lastOutput;
+  FLastOutput := (2.0 * random) - 1;
+  Result := FLastOutput;
 end;
 
-function TNoise.tick(vector: pmy_float; vectorSize: longint): pmy_float;
+function TNoise.Tick(Vector: PSingle; VectorSize: Integer): PSingle;
 var
   i: integer;
-  p: pmy_float;
+  p: PSingle;
 begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
+  p := Vector;
+  for i := 0 to VectorSize - 1 do
    begin
-    p^ := tick;
+    p^ := Tick;
     Inc(p);
    end;
-  Result := vector;
+  Result := Vector;
 end;
 
 function TNoise.lastOut;
 begin
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
 end.

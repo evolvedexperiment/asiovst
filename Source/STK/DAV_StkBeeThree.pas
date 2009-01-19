@@ -1,73 +1,61 @@
 unit DAV_StkBeeThree;
 
-{
-/***************************************************/
-/*! \class TBeeThree
-    \brief STK Hammond-oid organ FM synthesis instrument.
+{ STK Hammond-oid organ FM synthesis instrument.
 
-    This class implements a simple 4 operator
-    topology, also referred to as algorithm 8 of
-    the TX81Z.
+  This class implements a simple 4 operator topology, also referred to as
+  algorithm 8 of the TX81Z.
 
-    \code
-    Algorithm 8 is :
-                     1 --.
-                     2 -\|
-                         +. Out
-                     3 -/|
-                     4 --
-    \endcode
+  Algorithm 8 is :
+                    1 --.
+                    2 -\|
+                        +. Out
+                    3 -/|
+                    4 --
 
-    Control Change Numbers: 
-       - Operator 4 (feedback) Gain:=2
-       - Operator 3 Gain:=4
-       - LFO Speed:=11
-       - LFO Depth:=1
-       - ADSR 2 & 4 Target:=128
+  Control Change Numbers:
+    - Operator 4 (feedback) Gain = 2
+    - Operator 3 Gain = 4
+    - LFO Speed = 11
+    - LFO Depth = 1
+    - ADSR 2 & 4 Target = 128
 
-    The basic Chowning/Stanford FM patent expired
-    in 1995, but there exist follow-on patents,
-    mostly assigned to Yamaha.  If you are of the
-    type who should worry about this (making
-    money) worry away.
-
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  The basic Chowning/Stanford FM patent expired in 1995, but there exist
+  follow-on patents, mostly assigned to Yamaha.
+  If you are of the type who should worry about this (making money) worry away.
 }
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_StkCommon, DAV_StkFm, DAV_StkWaveplayer;
 
 type
-  TBeeThree = class(TFM)
+  TStkBeeThree = class(TStkFM)
   public
-  //! Class constructor.
-    constructor Create(sr: my_float);
+    constructor Create(const SampleRate: Single); override;
+    destructor Destroy; override;
 
-  //! Class destructor.
-    destructor Destroy;
+    // Start a note with the given Frequency and Amplitude.
+    procedure NoteOn(Frequency, Amplitude: Single);
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
-
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function Tick: Single;
   end;
 
 implementation
 
-{ TBeeThree }
+{ TStkBeeThree }
 
-constructor TBeeThree.Create(sr: my_float);
+constructor TStkBeeThree.Create(SampleRate: Single);
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
 
-  waves[0] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  waves[1] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  waves[2] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  waves[3] := TWavePlayer.Create(srate, 'c:\stk\fwavblnk.wav');
+  waves[0] := TWavePlayer.Create(srate, 'sinewave.wav');
+  waves[1] := TWavePlayer.Create(srate, 'sinewave.wav');
+  waves[2] := TWavePlayer.Create(srate, 'sinewave.wav');
+  waves[3] := TWavePlayer.Create(srate, 'fwavblnk.wav');
   waves[0].SetOneShot(False);
   waves[1].SetOneShot(False);
   waves[2].SetOneShot(False);
@@ -91,24 +79,24 @@ begin
   twozero.setGain(0.1);
 end;
 
-destructor TBeeThree.Destroy;
+destructor TStkBeeThree.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TBeeThree.noteOn(frequency, amplitude: MY_FLOAT);
+procedure TStkBeeThree.noteOn(Frequency, Amplitude: Single);
 begin
-  gains[0] := amplitude * __TFM_gains[95];
-  gains[1] := amplitude * __TFM_gains[95];
-  gains[2] := amplitude * __TFM_gains[99];
-  gains[3] := amplitude * __TFM_gains[95];
-  setFrequency(frequency);
+  gains[0] := Amplitude * __TFM_gains[95];
+  gains[1] := Amplitude * __TFM_gains[95];
+  gains[2] := Amplitude * __TFM_gains[99];
+  gains[3] := Amplitude * __TFM_gains[95];
+  setFrequency(Frequency);
   keyOn;
 end;
 
-function TBeeThree.tick: MY_FLOAT;
+function TStkBeeThree.tick: Single;
 var
-  temp: my_float;
+  temp: Single;
 begin
   if (modDepth > 0.0) then
    begin

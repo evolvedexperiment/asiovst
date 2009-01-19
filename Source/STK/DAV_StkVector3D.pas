@@ -1,49 +1,47 @@
 unit DAV_StkVector3D;
 
-{
-/***************************************************/
-/*! \class TVector3D
-    \brief STK 3D vector class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a three-dimensional vector.
+{ STK 3D vector class.
 
-    by Perry R. Cook, 1995 - 2002.
-*/
-/***************************************************/
+  This class implements a three-dimensional vector.
 }
+
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 type
   TVector3D = class
   public
-  //! Default constructor taking optional initial X, Y, and Z values.
+    // Default constructor taking optional initial X, Y, and Z values.
     constructor Create(initX, initY, initZ: double);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Get the current X value.
+    // Get the current X value.
     function getX: double;
 
-  //! Get the current Y value.
+    // Get the current Y value.
     function getY: double;
 
-  //! Get the current Z value.
+    // Get the current Z value.
     function getZ: double;
 
-  //! Calculate the vector length.
+    // Calculate the vector length.
     function getLength: double;
 
-  //! Set the X, Y, and Z values simultaniously.
+    // Set the X, Y, and Z values simultaniously.
     procedure setXYZ(anX, aY, aZ: double);
 
-  //! Set the X value.
+    // Set the X value.
     procedure setX(aval: double);
 
-  //! Set the Y value.
+    // Set the Y value.
     procedure setY(aval: double);
 
-  //! Set the Z value.
+    // Set the Z value.
     procedure setZ(aval: double);
 
   protected

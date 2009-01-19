@@ -1,140 +1,138 @@
 unit DAV_StkPitShift;
 
-{
-/***************************************************/
-/*! \class TPitShift
-    \brief STK simple pitch shifter effect class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a simple pitch shifter
-    using delay lines.
+{ STK simple pitch shifter effect class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This class implements a simple pitch shifter using FDelay lines.
 }
+
 interface
 
-uses stk, delayl;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkDelayl;
 
 type
-  TPitShift = class(TStk)
+  TStkPitchShifter = class(TStk)
   public
-  //! Class constructor.
-    constructor Create(sr: my_float);
+    // Class constructor.
+    constructor Create(SampleRate: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set the pitch shift factor (1.0 produces no shift).
-    procedure setShift(shift: MY_FLOAT);
+    // Set the pitch shift factor (1.0 produces no shift).
+    procedure SetShift(shift: Single);
 
-  //! Set the mixture of input and processed levels in the output (0.0 := input only, 1.0 := processed only). 
-    procedure setEffectMix(mix: MY_FLOAT);
+    // Set the mixture of input and processed levels in the output (0.0 := input only, 1.0 := processed only). 
+    procedure SetEffectMix(mix: Single);
 
-  //! Return the last output value.
-    function lastOut: MY_FLOAT;
+    // Return the last output value.
+    function LastOut: Single;
 
-  //! Compute one output sample.
-    function tick(input: MY_FLOAT): MY_FLOAT; overload;
+    // Compute one output sample.
+    function Tick(input: Single): Single; overload;
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
+    // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
+    function Tick(vector: PSingle; vectorSize: Integer): PSingle; overload;
 
   protected
-    delayLine: array[0..1] of TDelayL;
-    effectMix, rate, lastOutput: my_float;
-    delay, env: array[0..1] of my_float;
+    FDelayLine: array[0..1] of TDelayL;
+    FEffectMix, FRate, FLastOutput: Single;
+    FDelay, FEnv: array[0..1] of Single;
   end;
 
 implementation
 
-constructor TPitShift.Create;
+constructor TStkPitchShifter.Create;
 begin
-  inherited Create(sr);
-  delay[0] := 12;
-  delay[1] := 512;
-  delayLine[0] := TDelayL.Create(srate, delay[0], 1024);
-  delayLine[1] := TDelayL.Create(srate, delay[1], 1024);
-  effectMix := 0.5;
-  rate := 1.0;
+  inherited Create(SampleRate);
+  FDelay[0] := 12;
+  FDelay[1] := 512;
+  FDelayLine[0] := TDelayL.Create(srate, FDelay[0], 1024);
+  FDelayLine[1] := TDelayL.Create(srate, FDelay[1], 1024);
+  FEffectMix := 0.5;
+  FRate := 1.0;
 end;
 
-destructor TPitShift.Destroy;
+destructor TStkPitchShifter.Destroy;
 begin
   inherited Destroy;
-  delayLine[0].Free;
-  delayLine[1].Free;
+  FDelayLine[0].Free;
+  FDelayLine[1].Free;
 end;
 
-procedure TPitShift.Clear;
+procedure TStkPitchShifter.Clear;
 begin
-  delayLine[0].Clear;
-  delayLine[1].Clear;
-  lastOutput := 0.0;
+  FDelayLine[0].Clear;
+  FDelayLine[1].Clear;
+  FLastOutput := 0.0;
 end;
 
-procedure TPitShift.setEffectMix;
+procedure TStkPitchShifter.SetEffectMix;
 begin
-  effectMix := mix;
+  FEffectMix := mix;
   if (mix < 0.0) then
-    effectMix := 0.0
+    FEffectMix := 0.0
   else if (mix > 1.0) then
-    effectMix := 1.0;
+    FEffectMix := 1.0;
 end;
 
-procedure TPitShift.setShift;
+procedure TStkPitchShifter.SetShift;
 begin
   if (shift < 1.0) then
-    rate := 1.0 - shift
+    FRate := 1.0 - shift
   else if (shift > 1.0) then
-    rate := 1.0 - shift
+    FRate := 1.0 - shift
   else
    begin
-    rate := 0.0;
-    delay[0] := 512;
+    FRate := 0.0;
+    FDelay[0] := 512;
    end;
 end;
 
-function TPitShift.lastOut: my_float;
+function TStkPitchShifter.LastOut: Single;
 begin
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
-function TPitShift.tick(input: my_float): my_float;
+function TStkPitchShifter.Tick(input: Single): Single;
 begin
-  delay[0] := delay[0] + rate;
-  while (delay[0] > 1012) do
-    delay[0] := delay[0] - 1000;
-  while (delay[0] < 12) do
-    delay[0] := delay[0] + 1000;
-  delay[1] := delay[0] + 500;
-  while (delay[1] > 1012) do
-    delay[1] := delay[1] - 1000;
-  while (delay[1] < 12) do
-    delay[1] := delay[1] + 1000;
-  delayLine[0].setDelay(round(delay[0]));
-  delayLine[1].setDelay(round(delay[1]));
-  env[1] := abs(delay[0] - 512) * 0.002;
-  env[0] := 1.0 - env[1];
-  lastOutput := env[0] * delayLine[0].tick(input);
-  lastOutput := lastoutput + env[1] * delayLine[1].tick(input);
-  lastOutput := lastoutput * effectMix;
-  lastOutput := lastoutput + (1.0 - effectMix) * input;
-  Result := lastOutput;
+  FDelay[0] := FDelay[0] + FRate;
+  while (FDelay[0] > 1012) do
+    FDelay[0] := FDelay[0] - 1000;
+  while (FDelay[0] < 12) do
+    FDelay[0] := FDelay[0] + 1000;
+  FDelay[1] := FDelay[0] + 500;
+  while (FDelay[1] > 1012) do
+    FDelay[1] := FDelay[1] - 1000;
+  while (FDelay[1] < 12) do
+    FDelay[1] := FDelay[1] + 1000;
+  FDelayLine[0].setDelay(round(FDelay[0]));
+  FDelayLine[1].setDelay(round(FDelay[1]));
+  FEnv[1] := abs(FDelay[0] - 512) * 0.002;
+  FEnv[0] := 1.0 - FEnv[1];
+  FLastOutput := FEnv[0] * FDelayLine[0].Tick(input);
+  FLastOutput := FLastOutput + FEnv[1] * FDelayLine[1].Tick(input);
+  FLastOutput := FLastOutput * FEffectMix;
+  FLastOutput := FLastOutput + (1.0 - FEffectMix) * input;
+  Result := FLastOutput;
 end;
 
-function TPitShift.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TStkPitchShifter.Tick(vector: PSingle; vectorSize: Integer): PSingle;
 var
   i: integer;
-  p: pmy_float;
+  p: PSingle;
 begin
   p := vector;
   for i := 0 to vectorSize - 1 do
    begin
-    p^ := tick(p^);
+    p^ := Tick(p^);
     Inc(p);
    end;
   Result := vector;

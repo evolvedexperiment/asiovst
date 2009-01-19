@@ -1,46 +1,43 @@
 unit DAV_StkOneZero;
 
-{
-/***************************************************/
-/*! \class OneZero
-    \brief STK one-zero filter class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This protected Filter subclass implements
-    a one-zero digital filter.  A method is
-    provided for setting the zero position
-    along the real axis of the z-plane while
-    maintaining a constant filter gain.
+{ STK one-zero filter class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This protected Filter subclass implements a one-zero digital filter. A method
+  is provided for setting the zero position along the real axis of the z-plane
+  while maintaining a constant filter gain.
 }
+
 interface
 
-uses stk, filter;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkFilter;
 
 type
   TOneZero = class(TFilter)
   public
-  //! Default constructor creates a first-order low-pass filter.
-    constructor Create(sr: my_float); overload;
+    // Default constructor creates a first-order low-pass filter.
+    constructor Create(SampleRate: Single); overload;
 
-  //! Overloaded constructor which sets the pole position during instantiation.
-    constructor Create(sr, theZero: MY_FLOAT); overload;
+    // Overloaded constructor which sets the pole position during instantiation.
+    constructor Create(SampleRate, theZero: Single); overload;
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Clears the internal state of the filter.
+    // Clears the internal state of the filter.
     procedure Clear;
 
-  //! Set the b[0] coefficient value.
-    procedure setB0(b0: MY_FLOAT);
+    // Set the b[0] coefficient value.
+    procedure setB0(b0: Single);
 
-  //! Set the b[1] coefficient value.
-    procedure setB1(b1: MY_FLOAT);
+    // Set the b[1] coefficient value.
+    procedure setB1(b1: Single);
 
-  //! Set the zero position in the z-plane.
+    // Set the zero position in the z-plane.
   {
     This method sets the zero position along the real-axis of the
     z-plane and normalizes the coefficients for a maximum gain of one.
@@ -48,48 +45,48 @@ type
     negative zero value produces a low-pass filter.  This method does
     not affect the filter \e gain value.
   }
-    procedure setZero(theZero: MY_FLOAT);
+    procedure setZero(theZero: Single);
 
-  //! Set the filter gain.
+    // Set the filter gain.
   {
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    }
-    procedure setGain(theGain: MY_FLOAT);
+    procedure setGain(theGain: Single);
 
-  //! Return the current filter gain.
-    function getGain: MY_FLOAT;
+    // Return the current filter gain.
+    function getGain: Single;
 
-  //! Return the last computed output value.
-    function lastOut: MY_FLOAT;
+    // Return the last computed output value.
+    function lastOut: Single;
 
-  //! Input one sample to the filter and return one output.
-    function tick(sample: MY_FLOAT): MY_FLOAT; overload;
+    // Input one sample to the filter and return one output.
+    function tick(sample: Single): Single; overload;
 
-  //! Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
+    // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
     function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
   end;
 
 implementation
 
-constructor TOneZero.Create(sr: my_float);
+constructor TOneZero.Create(SampleRate: Single);
 var
-  b: array[0..1] of my_float;
-  a: my_float;
+  b: array[0..1] of Single;
+  a: Single;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   A := 1.0;
   B[0] := 0.5;
   B[1] := 0.5;
   inherited setCoefficients(2, @B, 1, @A);
 end;
 
-constructor TOneZero.Create(sr, theZero: MY_FLOAT);
+constructor TOneZero.Create(SampleRate, theZero: Single);
 var
-  b: array[0..1] of my_float;
-  a: my_float;
+  b: array[0..1] of Single;
+  a: Single;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   A := 1.0;
   // Normalize coefficients for unity gain.
   if (theZero > 0.0) then
@@ -111,7 +108,7 @@ begin
   inherited Clear;
 end;
 
-procedure TOneZero.setB0(b0: MY_FLOAT);
+procedure TOneZero.setB0(b0: Single);
 var
   p: pmy_float;
 begin
@@ -119,7 +116,7 @@ begin
   p^ := b0;
 end;
 
-procedure TOneZero.setB1(b1: MY_FLOAT);
+procedure TOneZero.setB1(b1: Single);
 var
   p: pmy_float;
 begin
@@ -155,7 +152,7 @@ begin
   Result := inherited lastOut;
 end;
 
-function TOneZero.tick(sample: MY_FLOAT): MY_FLOAT;
+function TOneZero.tick(sample: Single): Single;
 var
   p: pmy_float;
 begin

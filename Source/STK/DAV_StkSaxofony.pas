@@ -1,225 +1,217 @@
 unit DAV_StkSaxofony;
 
-{
-/***************************************************/
-/*! \class TSaxofony
-    \brief STK faux conical bore reed instrument class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a "hybrid" digital
-    waveguide instrument that can generate a
-    variety of wind-like sounds.  It has also been
-    referred to as the "blowed string" model.  The
-    waveguide section is essentially that of a
-    string, with one rigid and one lossy
-    termination.  The non-linear function is a
-    reed table.  The string can be "blown" at any
-    point between the terminations, though just as
-    with strings, it is impossible to excite the
-    system at either end.  If the excitation is
-    placed at the string mid-point, the sound is
-    that of a clarinet.  At points closer to the
-    "bridge", the sound is closer to that of a
-    saxophone.  See Scavone (2002) for more details.
+{ STK faux conical bore reed instrument class.
 
-    This is a digital waveguide model, making its
-    use possibly subject to patents held by Stanford
-    University, Yamaha, and others.
+  This class implements a "hybrid" digital waveguide instrument that can
+  generate a variety of wind-like sounds. It has also been referred to as the
+  "blowed string" model. The waveguide section is essentially that of a string,
+  with one rigid and one lossy termination. The non-linear function is a reed
+  table. The string can be "blown" at any point between the terminations,
+  though just as with strings, it is impossible to excite the system at either
+  end. If the excitation is placed at the string mid-point, the sound is that
+  of a clarinet.  At points closer to the "bridge", the sound is closer to that
+  of a saxophone. See Scavone (2002) for more details.
 
-    Control Change Numbers:
-       - Reed Stiffness := 2
-       - Reed Aperture := 26
-       - Noise Gain := 4
-       - Blow Position := 11
-       - Vibrato Frequency := 29
-       - Vibrato Gain := 1
-       - Breath Pressure := 128
+  This is a digital waveguide model, making its use possibly subject to patents
+  held by Stanford University, Yamaha, and others.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  Control Change Numbers:
+    - Reed Stiffness = 2
+    - Reed Aperture = 26
+    - FNoise Gain = 4
+    - Blow FPosition = 11
+    - FVibrato AFrequency = 29
+    - FVibrato Gain = 1
+    - Breath Pressure = 128
 }
+
 interface
 
-uses stk, instrmnt, delayl, reedtabl, onezero, envelope, noise, lfo;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkInstrument, DAV_StkDelayl, DAV_StkReedTable, DAV_StkOneZero,
+  DAV_StkEnvelope, DAV_StkNoise, DAV_StkLfo;
 
 type
-  TSaxofony = class(TInstrmnt)
+  TStkSaxofony = class(TStkInstrument)
+  protected
+    FDelays: array[0..1] of TDelayl;
+    FReedTable: TReedTable;
+    FFilter: TOnezero;
+    FEnvelope: TEnvelope;
+    FNoise: TNoise;
+    FVibrato: TLfo;
+    FLength: longint;
+    FOutputGain, FNoiseGain, FVibratoGain, FPosition: Single;
   public
-  //! Class constructor, taking the lowest desired playing frequency.
-    constructor Create(sr, lowestFrequency: MY_FLOAT);
+    // Class constructor, taking the lowest desired playing AFrequency.
+    constructor Create(SampleRate, LowestFrequency: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Reset and clear all internal state.
+    // Reset and clear all internal state.
     procedure Clear;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
+    // Set instrument parameters for a particular AFrequency.
+    procedure SetFrequency(AFrequency: Single);
 
-  //! Set the "blowing" position between the air column terminations (0.0 - 1.0).
-    procedure setBlowPosition(aPosition: MY_FLOAT);
+    // Set the "blowing" FPosition between the air column terminations (0.0 - 1.0).
+    procedure SetBlowPosition(APosition: Single);
 
-  //! Apply breath pressure to instrument with given amplitude and rate of increase.
-    procedure startBlowing(amplitude, rate: MY_FLOAT);
+    // Apply breath pressure to instrument with given Amplitude and Rate of increase.
+    procedure StartBlowing(Amplitude, Rate: Single);
 
-  //! Decrease breath pressure with given rate of decrease.
-    procedure stopBlowing(rate: MY_FLOAT);
+    // Decrease breath pressure with given Rate of decrease.
+    procedure StopBlowing(Rate: Single);
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
+    // Start a note with the given AFrequency and Amplitude.
+    procedure NoteOn(AFrequency, Amplitude: Single);
 
-  //! Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
+    // Stop a note with the given Amplitude (speed of decay).
+    procedure NoteOff(Amplitude: Single);
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function Tick: Single;
 
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: MY_FLOAT);
-
-  protected
-    delays: array[0..1] of tdelayl;
-    reedTable: treedtabl;
-    filter: tonezero;
-    envelope: tenvelope;
-    noise: tnoise;
-    vibrato: tlfo;
-    length: longint;
-    outputGain, noiseGain, vibratoGain, position: MY_FLOAT;
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure controlChange(number: integer; Value: Single);
   end;
 
 implementation
 
 constructor TSaxofony.Create;
 begin
-  inherited Create(sr);
-  length := round(srate / lowestFrequency + 1);
-  // Initialize blowing position to 0.2 of length / 2.
-  position := 0.2;
-  delays[0] := TDelayL.Create(srate, (1.0 - position) * (length shr 1), length);
-  delays[1] := TDelayL.Create(srate, position * (length shr 1), length);
+  inherited Create(SampleRate);
+  FLength := round(SampleRate / LowestFrequency + 1);
+  // Initialize blowing FPosition to 0.2 of FLength / 2.
+  FPosition := 0.2;
+  FDelays[0] := TDelayl.Create(SampleRate, (1.0 - FPosition) * (FLength shr 1), FLength);
+  FDelays[1] := TDelayl.Create(SampleRate, FPosition * (FLength shr 1), FLength);
 
-  reedTable := TReedTabl.Create(srate);
-  reedTable.setOffset(0.7);
-  reedTable.setSlope(0.3);
-  filter := TOneZero.Create(srate);
-  envelope := TEnvelope.Create(srate);
-  noise := TNoise.Create(srate);
+  FReedTable := TReedTable.Create(SampleRate);
+  FReedTable.setOffset(0.7);
+  FReedTable.setSlope(0.3);
+  FFilter := TOnezero.Create(SampleRate);
+  FEnvelope := TEnvelope.Create(SampleRate);
+  FNoise := TNoise.Create(SampleRate);
 
-  vibrato := TLFO.Create(srate);
-  vibrato.setFrequency(5.735);
+  FVibrato := TLfo.Create(SampleRate);
+  FVibrato.SetFrequency(5.735);
 
-  outputGain := 0.3;
-  noiseGain := 0.2;
-  vibratoGain := 0.1;
+  FOutputGain := 0.3;
+  FNoiseGain := 0.2;
+  FVibratoGain := 0.1;
 end;
 
 destructor TSaxofony.Destroy;
 begin
   inherited Destroy;
-  delays[0].Free;
-  delays[1].Free;
-  reedTable.Free;
-  filter.Free;
-  envelope.Free;
-  noise.Free;
-  vibrato.Free;
+  FDelays[0].Free;
+  FDelays[1].Free;
+  FReedTable.Free;
+  FFilter.Free;
+  FEnvelope.Free;
+  FNoise.Free;
+  FVibrato.Free;
 end;
 
 procedure TSaxofony.Clear;
 begin
-  delays[0].Clear;
-  delays[1].Clear;
-  filter.tick(0.0);
+  FDelays[0].Clear;
+  FDelays[1].Clear;
+  FFilter.Tick(0.0);
 end;
 
-procedure TSaxofony.setFrequency;
+procedure TSaxofony.SetFrequency;
 var
-  delay, freakency: my_float;
+  delay, freakency: Single;
 begin
-  freakency := frequency;
-  if (frequency <= 0.0) then
+  freakency := AFrequency;
+  if (AFrequency <= 0.0) then
     freakency := 220.0;
 
-  delay := (srate / freakency) - 3.0;
+  delay := (SampleRate / freakency) - 3.0;
   if (delay <= 0.0) then
     delay := 0.3
-  else if (delay > length) then
-    delay := length;
+  else if (delay > FLength) then
+    delay := FLength;
 
-  delays[0].setDelay((1.0 - position) * delay);
-  delays[1].setDelay(position * delay);
+  FDelays[0].setDelay((1.0 - FPosition) * delay);
+  FDelays[1].setDelay(FPosition * delay);
 end;
 
-procedure TSaxofony.setBlowPosition(aPosition: my_float);
+procedure TSaxofony.SetBlowPosition(APosition: Single);
 var
-  total_delay: my_float;
+  total_delay: Single;
 begin
-  if (position = aPosition) then
+  if (FPosition = APosition) then
     exit;
-  if (aPosition < 0.0) then
-    position := 0.0
-  else if (aPosition > 1.0) then
-    position := 1.0
+  if (APosition < 0.0) then
+    FPosition := 0.0
+  else if (APosition > 1.0) then
+    FPosition := 1.0
   else
-    position := aPosition;
+    FPosition := APosition;
 
-  total_delay := delays[0].getDelay;
-  total_delay := total_delay + delays[1].getDelay;
+  total_delay := FDelays[0].getDelay;
+  total_delay := total_delay + FDelays[1].getDelay;
 
-  delays[0].setDelay((1.0 - position) * total_delay);
-  delays[1].setDelay(position * total_delay);
+  FDelays[0].setDelay((1.0 - FPosition) * total_delay);
+  FDelays[1].setDelay(FPosition * total_delay);
 end;
 
-procedure TSaxofony.startBlowing;
+procedure TSaxofony.StartBlowing;
 begin
-  envelope.setRate(rate);
-  envelope.setTarget(amplitude);
+  FEnvelope.setRate(Rate);
+  FEnvelope.setTarget(Amplitude);
 end;
 
-procedure TSaxofony.stopBlowing;
+procedure TSaxofony.StopBlowing;
 begin
-  envelope.setRate(rate);
-  envelope.setTarget(0.0);
+  FEnvelope.setRate(Rate);
+  FEnvelope.setTarget(0.0);
 end;
 
-procedure TSaxofony.noteOn;
+procedure TSaxofony.NoteOn;
 begin
-  setFrequency(frequency);
-  startBlowing(0.55 + (amplitude * 0.30), amplitude * 0.005);
-  outputGain := amplitude + 0.001;
+  SetFrequency(AFrequency);
+  StartBlowing(0.55 + (Amplitude * 0.30), Amplitude * 0.005);
+  FOutputGain := Amplitude + 0.001;
 end;
 
-procedure TSaxofony.noteOff(amplitude: my_float);
+procedure TSaxofony.NoteOff(Amplitude: Single);
 begin
-  stopBlowing(amplitude * 0.01);
+  StopBlowing(Amplitude * 0.01);
 end;
 
-function TSaxofony.tick: my_float;
+function TSaxofony.Tick: Single;
 var
-  pressureDiff, breathPressure, temp: my_float;
+  pressureDiff, breathPressure, temp: Single;
 begin
-  // Calculate the breath pressure (envelope + noise + vibrato)
-  breathPressure := envelope.tick;
-  breathPressure := breathPressure + breathPressure * noiseGain * noise.tick;
-  breathPressure := breathPressure + breathPressure * vibratoGain *
-    vibrato.tick;
+  // Calculate the breath pressure (FEnvelope + FNoise + FVibrato)
+  breathPressure := FEnvelope.Tick;
+  breathPressure := breathPressure + breathPressure * FNoiseGain * FNoise.Tick;
+  breathPressure := breathPressure + breathPressure * FVibratoGain *
+    FVibrato.Tick;
 
-  temp := -0.95 * filter.tick(delays[0].lastOut);
-  lastOutput := temp - delays[1].lastOut;
+  temp := -0.95 * FFilter.Tick(FDelays[0].lastOut);
+  lastOutput := temp - FDelays[1].lastOut;
   pressureDiff := breathPressure - lastOutput;
-  delays[1].tick(temp);
-  delays[0].tick(breathPressure - (pressureDiff *
-    reedTable.tick(pressureDiff)) - temp);
+  FDelays[1].Tick(temp);
+  FDelays[0].Tick(breathPressure - (pressureDiff *
+    FReedTable.Tick(pressureDiff)) - temp);
 
-  lastOutput := lastOutput * outputGain;
+  lastOutput := lastOutput * FOutputGain;
   Result := lastOutput;
 end;
 
 procedure TSaxofony.controlChange;
 var
-  norm: my_float;
+  norm: Single;
 begin
   norm := Value;// * ONE_OVER_128;
   if (norm < 0) then
@@ -228,19 +220,19 @@ begin
     norm := 1.0;
 
   if (number = __SK_ReedStiffness_) then // 2
-    reedTable.setSlope(0.1 + (0.4 * norm))
+    FReedTable.setSlope(0.1 + (0.4 * norm))
   else if (number = __SK_NoiseLevel_) then // 4
-    noiseGain := (norm * 0.4)
+    FNoiseGain := (norm * 0.4)
   else if (number = 29) then // 29
-    vibrato.setFrequency(norm * 12.0)
+    FVibrato.SetFrequency(norm * 12.0)
   else if (number = __SK_ModWheel_) then // 1
-    vibratoGain := (norm * 0.5)
+    FVibratoGain := (norm * 0.5)
   else if (number = __SK_AfterTouch_Cont_) then // 128
-    envelope.setValue(norm)
+    FEnvelope.setValue(norm)
   else if (number = 11) then // 11
-    setBlowPosition(norm)
+    SetBlowPosition(norm)
   else if (number = 26) then // reed table offset
-    reedTable.setOffset(0.4 + (norm * 0.6));
+    FReedTable.setOffset(0.4 + (norm * 0.6));
 end;
 
 end.

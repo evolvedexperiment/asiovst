@@ -1,20 +1,18 @@
 unit DAV_StkPhonemes;
 
-{/***************************************************/
-/*! \class Phonemes
-    \brief STK phonemes table.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class does nothing other than declare a
-    set of 32 static phoneme formant parameters
-    and provide access to those values.
+{ STK phonemes table.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  This class does nothing other than declare a set of 32 static phoneme formant
+  parameters and provide access to those values.  
 }
+
 interface
 
-uses stk;
+{$I ..\DAV_Compiler.inc}
+
+uses DAV_Stk;
 
 type
   TPhonemes = class(tstk)
@@ -22,25 +20,24 @@ type
     constructor Create(sr: my_float);
     destructor Destroy;
 
-  //! Returns the phoneme name for the given index (0-31).
+    // Returns the phoneme name for the given index (0-31).
     function Name(index: integer): string;
 
-  //! Returns the voiced component gain for the given phoneme index (0-31).
+    // Returns the voiced component gain for the given phoneme index (0-31).
     function voiceGain(index: integer): my_float;
 
-  //! Returns the unvoiced component gain for the given phoneme index (0-31).
+    // Returns the unvoiced component gain for the given phoneme index (0-31).
     function noiseGain(index: integer): my_float;
 
-  //! Returns the formant frequency for the given phoneme index (0-31) and partial (0-3).
+    // Returns the formant frequency for the given phoneme index (0-31) and partial (0-3).
     function formantFrequency(index, partial: integer): my_float;
 
-  //! Returns the formant radius for the given phoneme index (0-31) and partial (0-3).
+    // Returns the formant radius for the given phoneme index (0-31) and partial (0-3).
     function formantRadius(index, partial: integer): my_float;
 
-  //! Returns the formant gain for the given phoneme index (0-31) and partial (0-3).
+    // Returns the formant gain for the given phoneme index (0-31) and partial (0-3).
     function formantGain(index, partial: integer): my_float;
-
-  end;
+ end;
 
 const
   phonemeNames: array[0..31] of string[3] =

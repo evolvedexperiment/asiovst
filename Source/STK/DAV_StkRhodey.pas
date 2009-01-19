@@ -1,68 +1,62 @@
 unit DAV_StkRhodey;
 
-{
-/***************************************************/
-/*! \class TRhodey
-    \brief STK Fender Rhodes electric piano FM
-           synthesis instrument.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements two simple FM Pairs
-    summed together, also referred to as algorithm
-    5 of the TX81Z.
+{ STK Fender Rhodes electric piano FM synthesis instrument.
 
-    \code
-    Algorithm 5 is :  4.3--\
-                             + -. Out
-                      2.1--/
-    \endcode
+  This class implements two simple FM Pairs summed together, also referred to
+  as algorithm 5 of the TX81Z.
 
-    Control Change Numbers: 
-       - Modulator Index One:=2
-       - Crossfade of Outputs:=4
-       - LFO Speed:=11
-       - LFO Depth:=1
-       - ADSR 2 & 4 Target:=128
+  Algorithm 5 is :  4.3--\
+                          + -. Out
+                    2.1--/
 
-    The basic Chowning/Stanford FM patent expired
-    in 1995, but there exist follow-on patents,
-    mostly assigned to Yamaha.  If you are of the
-    type who should worry about this (making
-    money) worry away.
+  Control Change Numbers:
+    - Modulator Index One:=2
+    - Crossfade of Outputs:=4
+    - LFO Speed:=11
+    - LFO Depth:=1
+    - ADSR 2 & 4 Target:=128
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  The basic Chowning/Stanford FM patent expired in 1995, but there exist
+  follow-on patents, mostly assigned to Yamaha. If you are of the type who
+  should worry about this (making money) worry away.
+
 }
+
 interface
 
-uses stk, fm, waveplayer;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  DAV_Stk, DAV_StkFm, DAV_StkWavePlayer;
 
 type
-  TRhodey = class(TFM)
+  TStkRhodey = class(TStkFM)
   public
-  //! Class constructor.
-    constructor Create(sr: my_float);
+    // Class constructor.
+    constructor Create(SampleRate: Single);
 
-  //! Class destructor.
+    // Class destructor.
     destructor Destroy;
 
-  //! Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: MY_FLOAT);
+    // Set instrument parameters for a particular Frequency.
+    procedure SetFrequency(Frequency: Single);
 
-  //! Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: MY_FLOAT);
+    // Start a note with the given Frequency and Amplitude.
+    procedure NoteOn(Frequency, Amplitude: Single);
 
-  //! Compute one output sample.
-    function tick: MY_FLOAT;
+    // Compute one output sample.
+    function Tick: Single;
   end;
 
 implementation
 
-constructor TRhodey.Create;
+constructor TStkRhodey.Create;
 var
   i: integer;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   waves[0] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
   waves[1] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
   waves[2] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
@@ -90,45 +84,45 @@ begin
   twozero.setGain(1.0);
 end;
 
-destructor TRhodey.Destroy;
+destructor TStkRhodey.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TRhodey.setFrequency;
+procedure TStkRhodey.SetFrequency;
 var
   i: integer;
 begin
-  baseFrequency := frequency * 2.0;
+  baseFrequency := Frequency * 2.0;
   for i := 0 to nOperators - 1 do
-    waves[i].setFrequency(baseFrequency * ratios[i]);
+    waves[i].SetFrequency(baseFrequency * ratios[i]);
 end;
 
-procedure TRhodey.noteOn;
+procedure TStkRhodey.NoteOn;
 begin
-  gains[0] := amplitude * __TFM_gains[99];
-  gains[1] := amplitude * __TFM_gains[90];
-  gains[2] := amplitude * __TFM_gains[99];
-  gains[3] := amplitude * __TFM_gains[67];
-  setFrequency(frequency);
+  gains[0] := Amplitude * __TFM_gains[99];
+  gains[1] := Amplitude * __TFM_gains[90];
+  gains[2] := Amplitude * __TFM_gains[99];
+  gains[3] := Amplitude * __TFM_gains[67];
+  SetFrequency(Frequency);
   keyOn;
 end;
 
-function TRhodey.tick: my_float;
+function TStkRhodey.Tick: Single;
 var
-  temp, temp2: my_float;
+  temp, temp2: Single;
 begin
-  temp := gains[1] * adsr[1].tick * waves[1].tick;
+  temp := gains[1] * adsr[1].Tick * waves[1].Tick;
   temp := temp * control1;
   waves[0].addPhaseOffset(temp);
   waves[3].addPhaseOffset(twozero.lastOut);
-  temp := gains[3] * adsr[3].tick * waves[3].tick;
-  twozero.tick(temp);
+  temp := gains[3] * adsr[3].Tick * waves[3].Tick;
+  twozero.Tick(temp);
   waves[2].addPhaseOffset(temp);
-  temp := (1.0 - (control2 * 0.5)) * gains[0] * adsr[0].tick * waves[0].tick;
-  temp := temp + control2 * 0.5 * gains[2] * adsr[2].tick * waves[2].tick;
-  // Calculate amplitude modulation and apply it to output.
-  temp2 := vibrato.tick * modDepth;
+  temp := (1.0 - (control2 * 0.5)) * gains[0] * adsr[0].Tick * waves[0].Tick;
+  temp := temp + control2 * 0.5 * gains[2] * adsr[2].Tick * waves[2].Tick;
+  // Calculate Amplitude modulation and apply it to output.
+  temp2 := vibrato.Tick * modDepth;
   temp := temp * (1.0 + temp2);
   lastOutput := temp * 0.5;
   Result := lastOutput;

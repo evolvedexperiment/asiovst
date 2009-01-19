@@ -1,39 +1,38 @@
 unit DAV_StkModalBar;
 
-{/***************************************************/
-/*! \class TModalBar
-    \brief STK resonant bar instrument class.
+// based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-    This class implements a number of different
-    struck bar instruments.  It inherits from the
-    Modal class.
+{ STK resonant bar instrument class.
 
-    Control Change Numbers:
-       - Stick Hardness:=2
-       - Stick Position:=4
-       - Vibrato Gain:=11
-       - Vibrato Frequency:=1
-       - Volume:=128
-       - Modal Presets:=3
-         - Marimba:=0
-         - Vibraphone:=1
-         - Agogo:=2
-         - Wood1:=3
-         - Reso:=4
-         - Wood2:=5
-         - Beats:=6
-         - Two Fixed:=7
-         - Clump:=8
+  This class implements a number of different struck bar instruments.
+  It inherits from the Modal class.
 
-    by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
-*/
-/***************************************************/
+  Control Change Numbers:
+    - Stick Hardness = 2
+    - Stick Position = 4
+    - Vibrato Gain = 11
+    - Vibrato Frequency = 1
+    - Volume = 128
+    - Modal CPresets = 3
+      - Marimba = 0
+      - Vibraphone = 1
+      - Agogo = 2
+      - Wood1 = 3
+      - Reso = 4
+      - Wood2 = 5
+      - Beats = 6
+      - Two Fixed = 7
+      - Clump = 8
 }
+
 interface
 
-uses stk, modal, waveplayer, Math;
+{$I ..\DAV_Compiler.inc}
 
-  // Presets:
+uses
+  DAV_Stk, DAV_StkModal, DAV_StkWavePlayer, Math;
+
+  // CPresets:
   //     First line:  relative modal frequencies (negative number is
   //                  a fixed mode that doesn't scale with frequency
   //     Second line: resonances of the modes
@@ -41,7 +40,8 @@ uses stk, modal, waveplayer, Math;
   //     Fourth line: stickHardness, strikePosition, and direct stick
   //                  gain (mixed directly into the output)
 const
-  presets: array[0..8, 0..3, 0..3] of single =
+
+  CPresets: array[0..8, 0..3, 0..3] of Single =
     (((1.0, 3.99, 10.65, -2443),    // Marimba
     (0.9996, 0.9994, 0.9994, 0.999),
     (0.04, 0.01, 0.01, 0.008),
@@ -83,34 +83,31 @@ const
 type
   TModalBar = class(TModal)
   public
-  //! Class constructor.
-    constructor Create(sr: my_float);
+    constructor Create(const SampleRate: Single); override;
+    destructor Destroy; override;
 
-  //! Class destructor.
-    destructor Destroy;
+    // Set stick hardness (0.0 - 1.0).
+    procedure SetStickHardness(Hardness: Single);
 
-  //! Set stick hardness (0.0 - 1.0).
-    procedure setStickHardness(hardness: MY_FLOAT);
+    // Set stick position (0.0 - 1.0).
+    procedure SetStrikePosition(Position: Single);
 
-  //! Set stick position (0.0 - 1.0).
-    procedure setStrikePosition(position: MY_FLOAT);
+    // Select a bar preset (currently modulo 9).
+    procedure SetPreset(Preset: Integer);
 
-  //! Select a bar preset (currently modulo 9).
-    procedure setPreset(preset: integer);
+    // Set the modulation (vibrato) depth.
+//  procedure setModulationDepth(mDepth:Single);
 
-  //! Set the modulation (vibrato) depth.
-//  procedure setModulationDepth(mDepth:MY_FLOAT);
-
-  //! Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: MY_FLOAT);
+    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
+    procedure ControlChange(number: Integer; Value: Single);
   end;
 
 implementation
 
 constructor TModalBar.Create;
 begin
-  inherited Create(sr);
-  wave := TWavePlayer.Create(srate, 'c:\stk\marmstk1.wav');
+  inherited Create(SampleRate);
+  wave := TWavePlayer.Create(srate, 'marmstk1.wav');
   wave.SetOneShot(False);
   wave.setFrequency(22050);
   // Set the resonances for preset 0 (marimba).
@@ -136,7 +133,7 @@ end;
 
 procedure TModalBar.setStrikePosition;
 var
-  temp, temp2: my_float;
+  temp, temp2: Single;
 begin
   strikePosition := position;
   if (position < 0.0) then
@@ -158,18 +155,18 @@ end;
 
 procedure TModalBar.setPreset;
 var
-  i, temp: integer;
+  i, temp: Integer;
 begin
   temp := (preset mod 9);
   for i := 0 to nModes - 1 do
    begin
-    setRatioAndRadius(i, presets[temp][0][i], presets[temp][1][i]);
-    setModeGain(i, presets[temp][2][i]);
+    setRatioAndRadius(i, CPresets[temp][0][i], CPresets[temp][1][i]);
+    setModeGain(i, CPresets[temp][2][i]);
    end;
 
-  setStickHardness(presets[temp][3][0]);
-  setStrikePosition(presets[temp][3][1]);
-  directGain := presets[temp][3][2];
+  setStickHardness(CPresets[temp][3][0]);
+  setStrikePosition(CPresets[temp][3][1]);
+  directGain := CPresets[temp][3][2];
 
   if (temp = 1) then // vibraphone
     vibratoGain := 0.2
@@ -179,7 +176,7 @@ end;
 
 procedure TModalBar.controlChange;
 var
-  norm: my_float;
+  norm: Single;
 begin
   norm := Value;// * ONE_OVER_128;
   if (norm < 0) then
