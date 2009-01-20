@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  fReeverbFilter;
+  DAV_DspFreeverbFilter;
 
 const
   CStereoSpread = 23;

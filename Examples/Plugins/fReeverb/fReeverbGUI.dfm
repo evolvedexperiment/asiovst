@@ -247,7 +247,6 @@ object FmReverb: TFmReverb
       Height = 19
       Alignment = taLeftJustify
       AntiAlias = gaaLinear2x
-      ArrowWidth = 1
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
@@ -257,8 +256,9 @@ object FmReverb: TFmReverb
       Items.Strings = (
         'Random 23')
       LineColor = clSilver
-      SelectBoxColor = 2960685
+      ParentFont = False
       Radius = 4
+      SelectBoxColor = 2960685
       OnChange = SBPresetChange
     end
     object LbPreset: TGuiLabel

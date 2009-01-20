@@ -156,22 +156,25 @@ end;
 
 procedure TFmReverb.DialDryChange(Sender: TObject);
 var
-  Dry : Single;
+  Value : Single;
 begin
  with TfReeverbVST(Owner) do
   begin
-   Dry := DialDry.Position;
-   if Parameter[0] <> Dry
-    then Parameter[0] := Dry;
+   Value := DialDry.Position;
+   if Parameter[0] <> Value
+    then Parameter[0] := Value;
   end;
 end;
 
 procedure TFmReverb.DialWetChange(Sender: TObject);
+var
+  Value : Single;
 begin
  with TfReeverbVST(Owner) do
   begin
-   if Parameter[1] <> DialWet.Position
-    then Parameter[1] := DialWet.Position;
+   Value := DialWet.Position;
+   if Parameter[1] <> Value
+    then Parameter[1] := Value;
   end;
 end;
 
