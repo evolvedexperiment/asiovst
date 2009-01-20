@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_VSTBasicModule;
+  Classes, DAV_Common, DAV_VSTBasicModule;
 
 type
   TChunkEvent = procedure(Sender: TObject; const Index : Integer; const isPreset : Boolean) of object;
@@ -34,7 +34,8 @@ type
     {$ENDIF}
     destructor Destroy; override;
     function ParameterCount: integer;
-    procedure SetParameterCount(cnt: integer);
+    procedure SetParameterCount(const Value: integer);
+    procedure SetParameters(const Parameters: TDAVSingleDynArray);
     property Parameter[AIndex: Integer]: Single read GetParameter write SetParameter;
     property Chunk: TMemoryStream read fChunkData write fChunkData;
     property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
@@ -76,8 +77,12 @@ implementation
 uses
   SysUtils, DAV_VSTEffect, DAV_VSTModuleWithPrograms;
 
+resourcestring
+  RCStrParameterMismatch = 'Parameter mismatch (%d)';
+
 {$IFDEF FPC}
 constructor TCustomVstProgram.Create(ACollection: TCollection);
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 {$ELSE}
 constructor TCustomVstProgram.Create(Collection: TCollection);
 {$ENDIF}
@@ -152,7 +157,7 @@ begin
    if effFlagsProgramChunks in Flags then exit;
    if (AIndex >= 0) and (AIndex < numParams)
     then FParameter[AIndex] := AValue
-   // else raise exception.Create('Index out of bounds');
+//    else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [AIndex]);
   end;
 end;
 
@@ -163,13 +168,23 @@ begin
   then Result := FParameter[AIndex] else
    begin
     Result := 0;
-    // raise exception.Create('Index out of bounds');
+//    raise Exception.CreateFmt(RCStrIndexOutOfBounds, [AIndex]);
    end;
 end;
 
-procedure TCustomVstProgram.SetParameterCount(cnt: Integer);
+procedure TCustomVstProgram.SetParameterCount(const Value: Integer);
 begin
- SetLength(fParameter, cnt);
+ SetLength(FParameter, Value);
+end;
+
+procedure TCustomVstProgram.SetParameters(const Parameters: TDAVSingleDynArray);
+var
+  i : Integer;
+begin
+ if Length(Parameters) > ParameterCount
+  then raise Exception.CreateFmt(RCStrParameterMismatch, [Length(Parameters)]);
+ for i := 0 to Length(Parameters) - 1
+  do Parameter[i] := Parameters[i];
 end;
 
 function TCustomVstProgram.ParameterCount: Integer;

@@ -8,11 +8,32 @@ object StkReverbModule: TStkReverbModule
   VendorName = 'Delphi ASIO & VST Projects'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default Network Reverb'
   IORatio = 1.000000000000000000
   UniqueID = 'STKR'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default Network Reverb'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Default JC Reverb'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Default Blended Reverb'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Short'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Long'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear
@@ -40,13 +61,30 @@ object StkReverbModule: TStkReverbModule
       Units = '%'
       VSTModule = Owner
       OnParameterChange = ParamMixChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Algorithm'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 2.000000000000000000
+      MaxInteger = 2
+      ReportVST2Properties = True
+      ShortLabel = 'Algo'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParamAlgorithmChange
+      OnCustomParameterDisplay = ParamAlgorithmDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessNetwork
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
+  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacingNetwork
   OnProcessReplacing = VSTModuleProcessNetwork
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 284

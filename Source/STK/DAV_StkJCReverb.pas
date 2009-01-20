@@ -19,69 +19,47 @@ uses
 
 type
   TStkJCReverb = class(TStkReverb)
+  private
+    procedure SetT60(const Value: Single);
+    procedure T60Changed;
   protected
     FAllpassDelays      : array[0..2] of TStkDelay;
     FCombDelays         : array[0..3] of TStkDelay;
+    FCombCoefficient    : array[0..3] of Single;
     FOutLeftDelay       : TStkDelay;
     FOutRightDelay      : TStkDelay;
     FAllpassCoefficient : Single;
-    FCombCoefficient    : array[0..3] of Single;
+    FT60                : Single;
+    FInternalLengths    : array[0..8] of Integer;
+    procedure SampleRateChanged; override;
+    procedure CalculateInternalLengths; virtual;
   public
     constructor Create(const SampleRate: Single = 44100); overload; override;
     constructor Create(const SampleRate, T60: Single); reintroduce; overload; virtual;
     destructor Destroy; override;
     procedure Clear; override;
     function Tick(const Input: Single): Single; override;
+
+  published
+    property T60: Single read FT60 write SetT60;  
   end;
 
 implementation
 
 uses
-  SysUtils, DAV_StkFilter;
+  SysUtils, DAV_Common, DAV_StkFilter;
+
+const
+  CLength : array[0..8] of Integer = (1777, 1847, 1993, 2137, 389, 127, 43,
+    211, 179);
 
 constructor TStkJCReverb.Create(const SampleRate, T60: Single);
-var
-  lengths  : array[0..8] of Integer;
-  scaler   : Double;
-  delay, i : Integer;
 begin
   inherited Create(SampleRate);
-  // delay lengths for 44100 Hz sample rate.
-  lengths[0] := 1777;
-  lengths[1] := 1847;
-  lengths[2] := 1993;
-  lengths[3] := 2137;
-  lengths[4] := 389;
-  lengths[5] := 127;
-  lengths[6] := 43;
-  lengths[7] := 211;
-  lengths[8] := 179;
-  scaler := SampleRate / 44100.0;
-
-  if (scaler <> 1.0) then
-    for i := 0 to 8 do
-     begin
-      delay := round(floor(scaler * lengths[i]));
-      if ((delay and 1) = 0) then
-        delay := delay + 1;
-      while (not isPrime(delay)) do
-        delay := delay + 2;
-      lengths[i] := delay;
-     end;
-
-  for i := 0 to 2
-   do FAllpassDelays[i] := TStkDelay.Create(SampleRate, lengths[i + 4], lengths[i + 4]);
-
-  for i := 0 to 3 do
-   begin
-    FCombDelays[i] := TStkDelay.Create(SampleRate, lengths[i], lengths[i]);
-    FCombCoefficient[i] := Power(10, (-3 * lengths[i] / (T60 * SampleRate)));
-   end;
-
-  FOutLeftDelay := TStkDelay.Create(SampleRate, lengths[7], lengths[7]);
-  FOutRightDelay := TStkDelay.Create(SampleRate, lengths[8], lengths[8]);
+  FT60 := T60;
   FAllpassCoefficient := 0.7;
   FEffectMix := 0.3;
+  SampleRateChanged;
   Clear;
 end;
 
@@ -104,6 +82,93 @@ begin
   FreeAndNil(FOutRightDelay);
 end;
 
+procedure TStkJCReverb.SampleRateChanged;
+var
+  i : Integer;
+begin
+ inherited;
+ CalculateInternalLengths;
+
+ for i := 0 to Length(FAllpassDelays) - 1 do
+  begin
+   if assigned(FAllpassDelays[i]) then
+    if FInternalLengths[i + 4] < FAllpassDelays[i].Length
+     then FAllpassDelays[i].Delay := FInternalLengths[i + 4]
+     else FreeAndNil(FAllpassDelays[i]);
+
+   // create new allpass delay if necessary
+   if not assigned(FAllpassDelays[i])
+    then FAllpassDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i + 4], ExtendToPowerOf2(FInternalLengths[i + 4]) - 1);
+  end;
+
+ for i := 0 to Length(FCombDelays) - 1 do
+  begin
+   if assigned(FCombDelays[i]) then
+    if FInternalLengths[i] < FCombDelays[i].Length
+     then FCombDelays[i].Delay := FInternalLengths[i]
+     else FreeAndNil(FCombDelays[i]);
+
+   // create new comb delay if necessary
+   if not assigned(FCombDelays[i])
+    then FCombDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i], ExtendToPowerOf2(FInternalLengths[i]) - 1);
+   FCombCoefficient[i] := Power(10, (-3 * FInternalLengths[i] / (T60 * SampleRate)));
+  end;
+
+ if assigned(FOutLeftDelay) then
+  if FInternalLengths[7] < FOutLeftDelay.Length
+   then FOutLeftDelay.Delay := FInternalLengths[7]
+   else FreeAndNil(FOutLeftDelay);
+
+ // create new comb delay if necessary
+ if not assigned(FOutLeftDelay)
+  then FOutLeftDelay := TStkDelay.Create(SampleRate, FInternalLengths[7], ExtendToPowerOf2(FInternalLengths[7]) - 1);
+
+ if assigned(FOutRightDelay) then
+  if FInternalLengths[8] < FOutRightDelay.Length
+   then FOutRightDelay.Delay := FInternalLengths[8]
+   else FreeAndNil(FOutRightDelay);
+
+ // create new comb delay if necessary
+ if not assigned(FOutRightDelay)
+  then FOutRightDelay := TStkDelay.Create(SampleRate, FInternalLengths[8], ExtendToPowerOf2(FInternalLengths[8]) - 1);
+end;
+
+procedure TStkJCReverb.CalculateInternalLengths;
+var
+  Scaler   : Double;
+  Delay, i : Integer;
+begin
+ // delay lengths for 44100 Hz sample rate.
+ Scaler := SampleRate / 44100.0;
+
+ for i := 0 to 8 do
+  begin
+   Delay := round(Scaler * CLength[i] + CHalf32) - 1;
+   if ((Delay and 1) = 0)
+    then Delay := Delay + 1;
+   while (not isPrime(Delay))
+    do Delay := Delay + 2;
+   FInternalLengths[i] := Delay;
+  end;
+end;
+
+procedure TStkJCReverb.SetT60(const Value: Single);
+begin
+ if FT60 <> Value then
+  begin
+   FT60 := Value;
+   T60Changed;
+  end;
+end;
+
+procedure TStkJCReverb.T60Changed;
+var
+  i: Integer;
+begin
+ for i := 0 to Length(FCombDelays) - 1
+  do FCombCoefficient[i] := Power(10, (-3 * FInternalLengths[i] / (T60 * SampleRate)));
+end;
+
 procedure TStkJCReverb.Clear;
 begin
   FAllpassDelays[0].Clear;
@@ -121,46 +186,45 @@ end;
 
 function TStkJCReverb.Tick(const Input: Single): Single;
 var
-  temp    : Single;
-  filtout : Single;
-  tmp     : Array [0..6] of Single;
-
+  Temp    : Single;
+  FiltOut : Single;
+  Tmp     : Array [0..3] of Single;
 begin
-  temp := FAllpassDelays[0].LastOutput;
-  tmp[0] := FAllpassCoefficient * temp;
-  tmp[0] := tmp[0] + input;
-  FAllpassDelays[0].Tick(tmp[0]);
-  tmp[0] := -(FAllpassCoefficient * tmp[0]) + temp;
+  Temp := FAllpassDelays[0].LastOutput;
+  Tmp[1] := FAllpassCoefficient * Temp;
+  Tmp[1] := Tmp[1] + input;
+  FAllpassDelays[0].Tick(Tmp[1]);
+  Tmp[1] := -(FAllpassCoefficient * Tmp[1]) + Temp;
 
-  temp := FAllpassDelays[1].LastOutput;
-  tmp[1] := FAllpassCoefficient * temp;
-  tmp[1] := tmp[1] + tmp[0];
-  FAllpassDelays[1].Tick(tmp[1]);
-  tmp[1] := -(FAllpassCoefficient * tmp[1]) + temp;
+  Temp := FAllpassDelays[1].LastOutput;
+  Tmp[2] := FAllpassCoefficient * Temp;
+  Tmp[2] := Tmp[2] + Tmp[1];
+  FAllpassDelays[1].Tick(Tmp[2]);
+  Tmp[2] := -(FAllpassCoefficient * Tmp[2]) + Temp;
 
-  temp := FAllpassDelays[2].LastOutput;
-  tmp[2] := FAllpassCoefficient * temp;
-  tmp[2] := tmp[2] + tmp[1];
-  FAllpassDelays[2].Tick(tmp[2]);
-  tmp[2] := -(FAllpassCoefficient * tmp[2]) + temp;
+  Temp := FAllpassDelays[2].LastOutput;
+  Tmp[3] := FAllpassCoefficient * Temp;
+  Tmp[3] := Tmp[3] + Tmp[2];
+  FAllpassDelays[2].Tick(Tmp[3]);
+  Tmp[3] := -(FAllpassCoefficient * Tmp[3]) + Temp;
 
-  tmp[3] := tmp[2] + (FCombCoefficient[0] * FCombDelays[0].LastOutput);
-  tmp[4] := tmp[2] + (FCombCoefficient[1] * FCombDelays[1].LastOutput);
-  tmp[5] := tmp[2] + (FCombCoefficient[2] * FCombDelays[2].LastOutput);
-  tmp[6] := tmp[2] + (FCombCoefficient[3] * FCombDelays[3].LastOutput);
+  Tmp[0] := Tmp[3] + (FCombCoefficient[0] * FCombDelays[0].LastOutput);
+  Tmp[1] := Tmp[3] + (FCombCoefficient[1] * FCombDelays[1].LastOutput);
+  Tmp[2] := Tmp[3] + (FCombCoefficient[2] * FCombDelays[2].LastOutput);
+  Tmp[3] := Tmp[3] + (FCombCoefficient[3] * FCombDelays[3].LastOutput);
 
-  FCombDelays[0].Tick(tmp[3]);
-  FCombDelays[1].Tick(tmp[4]);
-  FCombDelays[2].Tick(tmp[5]);
-  FCombDelays[3].Tick(tmp[6]);
+  FCombDelays[0].Tick(Tmp[0]);
+  FCombDelays[1].Tick(Tmp[1]);
+  FCombDelays[2].Tick(Tmp[2]);
+  FCombDelays[3].Tick(Tmp[3]);
 
-  filtout := tmp[3] + tmp[4] + tmp[5] + tmp[6];
+  FiltOut := Tmp[0] + Tmp[1] + Tmp[2] + Tmp[3];
 
-  FLastOutput[0] := FEffectMix * (FOutLeftDelay.Tick(filtout));
-  FLastOutput[1] := FEffectMix * (FOutRightDelay.Tick(filtout));
-  temp := (1.0 - FEffectMix) * input;
-  FLastOutput[0] := FLastOutput[0] + temp;
-  FLastOutput[1] := FLastOutput[1] + temp;
+  FLastOutput[0] := FEffectMix * (FOutLeftDelay.Tick(FiltOut));
+  FLastOutput[1] := FEffectMix * (FOutRightDelay.Tick(FiltOut));
+  Temp := (1.0 - FEffectMix) * Input;
+  FLastOutput[0] := FLastOutput[0] + Temp;
+  FLastOutput[1] := FLastOutput[1] + Temp;
 
   Result := (FLastOutput[0] + FLastOutput[1]) * 0.5;
 end;
