@@ -18,7 +18,7 @@ uses
   DAV_StkCommon, DAV_StkReverb, DAV_StkDelay, Math;
 
 type
-  TStkJCRev = class(TStkReverb)
+  TStkJCReverb = class(TStkReverb)
   protected
     FAllpassDelays      : array[0..2] of TStkDelay;
     FCombDelays         : array[0..3] of TStkDelay;
@@ -27,7 +27,8 @@ type
     FAllpassCoefficient : Single;
     FCombCoefficient    : array[0..3] of Single;
   public
-    constructor Create(SampleRate, T60: Single); reintroduce;
+    constructor Create(const SampleRate: Single = 44100); overload; override;
+    constructor Create(const SampleRate, T60: Single); reintroduce; overload; virtual;
     destructor Destroy; override;
     procedure Clear; override;
     function Tick(const Input: Single): Single; override;
@@ -38,14 +39,14 @@ implementation
 uses
   SysUtils, DAV_StkFilter;
 
-constructor TStkJCRev.Create;
+constructor TStkJCReverb.Create(const SampleRate, T60: Single);
 var
   lengths  : array[0..8] of Integer;
   scaler   : Double;
   delay, i : Integer;
 begin
   inherited Create(SampleRate);
-  // Delay lengths for 44100 Hz sample rate.
+  // delay lengths for 44100 Hz sample rate.
   lengths[0] := 1777;
   lengths[1] := 1847;
   lengths[2] := 1993;
@@ -68,8 +69,8 @@ begin
       lengths[i] := delay;
      end;
 
-  for i := 0 to 2 do
-    FAllpassDelays[i] := TStkDelay.Create(SampleRate, lengths[i + 4], lengths[i + 4]);
+  for i := 0 to 2
+   do FAllpassDelays[i] := TStkDelay.Create(SampleRate, lengths[i + 4], lengths[i + 4]);
 
   for i := 0 to 3 do
    begin
@@ -84,7 +85,12 @@ begin
   Clear;
 end;
 
-destructor TStkJCRev.Destroy;
+constructor TStkJCReverb.Create(const SampleRate: Single = 44100);
+begin
+ Create(SampleRate, 0.5);
+end;
+
+destructor TStkJCReverb.Destroy;
 begin
   inherited Destroy;
   FreeAndNil(FAllpassDelays[0]);
@@ -98,7 +104,7 @@ begin
   FreeAndNil(FOutRightDelay);
 end;
 
-procedure TStkJCRev.Clear;
+procedure TStkJCReverb.Clear;
 begin
   FAllpassDelays[0].Clear;
   FAllpassDelays[1].Clear;
@@ -113,7 +119,7 @@ begin
   FLastOutput[1] := 0.0;
 end;
 
-function TStkJCRev.Tick(const Input: Single): Single;
+function TStkJCReverb.Tick(const Input: Single): Single;
 var
   temp    : Single;
   filtout : Single;

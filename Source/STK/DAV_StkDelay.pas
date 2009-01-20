@@ -70,18 +70,7 @@ implementation
 
 constructor TStkDelay.Create(const SampleRate: Single);
 begin
-  inherited Create(SampleRate);
-
-  // Default max TStkDelay FLength set to 4095.
-  FLength := 4096;
-
-  FInputs := nil;
-  GetMem(FInputs, FLength * SizeOf(Single));
-  Clear;
-
-  FInPoint := 0;
-  FOutPoint := 0;
-  FDelay := 0;
+  Create(SampleRate, 4095, 4095);
 end;
 
 constructor TStkDelay.Create(SampleRate, ADelay: Single; AMaxDelay: Integer);
@@ -203,10 +192,11 @@ begin
   then FInPoint := FInPoint - FLength;
 
  // Read out next value
- result := FInputs^[FOutPoint];
+ FOutputs^[0] := FInputs^[FOutPoint];
  inc(FOutPoint);
  if (FOutPoint >= FLength)
   then FOutPoint := FOutPoint - FLength;
+ result := FOutputs^[0];
 end;
 
 end.

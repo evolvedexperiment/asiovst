@@ -168,7 +168,7 @@ end;
 
 function TStkFilter.GetLastOutput: Single;
 begin
-  Result := FOutputs^[0];
+ Result := FOutputs^[0];
 end;
 
 procedure TStkFilter.SetCoefficients(const BCoefficientCount: Integer;

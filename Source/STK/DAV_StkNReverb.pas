@@ -76,8 +76,8 @@ var
   i: Integer;
 begin
   inherited Destroy;
-  for i := 0 to Length(FCombDelays) do FreeAndNil(FCombDelays[i]);
-  for i := 0 to Length(FAllpassDelays) do FreeAndNil(FAllpassDelays[i]);
+  for i := 0 to Length(FCombDelays) - 1 do FreeAndNil(FCombDelays[i]);
+  for i := 0 to Length(FAllpassDelays) - 1 do FreeAndNil(FAllpassDelays[i]);
 end;
 
 procedure TStkNReverb.CalculateInternalLengths;
@@ -119,7 +119,7 @@ begin
 
    // create new allpass delay if necessary
    if not assigned(FAllpassDelays[i])
-    then FAllpassDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i + 6], ExtendToPowerOf2(FInternalLengths[i + 6]));
+    then FAllpassDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i + 6], ExtendToPowerOf2(FInternalLengths[i + 6]) - 1);
   end;
 
  for i := 0 to Length(FCombDelays) - 1 do
@@ -131,7 +131,7 @@ begin
 
    // create new comb delay if necessary
    if not assigned(FCombDelays[i])
-    then FCombDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i], ExtendToPowerOf2(FInternalLengths[i]));
+    then FCombDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i], ExtendToPowerOf2(FInternalLengths[i]) - 1);
    FCombCoefficient[i] := Power(10, (-3 * FInternalLengths[i] / (T60 * SampleRate)));
   end;
 end;
@@ -157,8 +157,8 @@ procedure TStkNReverb.Clear;
 var
   i: Integer;
 begin
-  for i := 0 to 5 do FCombDelays[i].Clear;
-  for i := 0 to 7 do FAllpassDelays[i].Clear;
+  for i := 0 to Length(FCombDelays) - 1 do FCombDelays[i].Clear;
+  for i := 0 to Length(FAllpassDelays) - 1 do FAllpassDelays[i].Clear;
   FLastOutput[0] := 0.0;
   FLastOutput[1] := 0.0;
   FLowpassState := 0.0;
@@ -171,17 +171,17 @@ var
   i    : Integer;
 begin
   tmp[0] := 0.0;
-  for i := 0 to 5 do
+  for i := 0 to Length(FCombDelays) - 1 do
    begin
     temp := Input + (FCombCoefficient[i] * FCombDelays[i].LastOutput);
-    tmp[0] := tmp[0] + FCombDelays[i].tick(temp);
+    tmp[0] := tmp[0] + FCombDelays[i].Tick(temp);
    end;
   for i := 0 to 2 do
    begin
     temp := FAllpassDelays[i].LastOutput;
     tmp[1] := FAllpassCoefficient * temp;
     tmp[1] := tmp[1] + tmp[0];
-    FAllpassDelays[i].tick(tmp[1]);
+    FAllpassDelays[i].Tick(tmp[1]);
     tmp[0] := -(FAllpassCoefficient * tmp[1]) + temp;
    end;
 
@@ -190,19 +190,19 @@ begin
   temp := FAllpassDelays[3].LastOutput;
   tmp[1] := FAllpassCoefficient * temp;
   tmp[1] := tmp[1] + FLowpassState;
-  FAllpassDelays[3].tick(tmp[1]);
+  FAllpassDelays[3].Tick(tmp[1]);
   tmp[1] := -(FAllpassCoefficient * tmp[1]) + temp;
 
   temp := FAllpassDelays[4].LastOutput;
   tmp[2] := FAllpassCoefficient * temp;
   tmp[2] := tmp[2] + tmp[1];
-  FAllpassDelays[4].tick(tmp[2]);
+  FAllpassDelays[4].Tick(tmp[2]);
   FLastOutput[0] := FEffectMix * (-(FAllpassCoefficient * tmp[2]) + temp);
 
   temp := FAllpassDelays[5].LastOutput;
   tmp[3] := FAllpassCoefficient * temp;
   tmp[3] := tmp[3] + tmp[1];
-  FAllpassDelays[5].tick(tmp[3]);
+  FAllpassDelays[5].Tick(tmp[3]);
   FLastOutput[1] := FEffectMix * (-(FAllpassCoefficient * tmp[3]) + temp);
 
   temp := (1.0 - FEffectMix) * Input;
