@@ -1,14 +1,15 @@
-unit DAV_STK;
+unit DAV_StkCommon;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
 interface
 
 {$I ..\DAV_Compiler.inc}
-{$I DAV_StkConsts.inc}
 
 uses
   Classes, DAV_Common;
+
+{$I DAV_StkConsts.inc}
 
 type
   STK_FORMAT = LongInt;
@@ -18,7 +19,7 @@ type
   FLOAT64 = double;
 
 type
-  TDavStk = class
+  TStk = class
   public
     procedure SetSampleRate(const Value: Single);
   protected
@@ -27,17 +28,16 @@ type
     procedure SampleRateChanged; virtual;
   public
     constructor Create(const SampleRate: Single = 44100); virtual;
-    destructor Destroy; override;
 
     property SampleRate: Single read FSampleRate write SetSampleRate;
   end;
 
-const
-  COne128th : Single = 0.0078125;
-
 implementation
 
 (*
+const
+  COne128th : Single = 0.0078125;
+
 function PIndex(p: PSingle; i: LongInt): PSingle;
 function Index(p: PSingle; i: LongInt): Single;
 

@@ -2,58 +2,46 @@ unit DAV_StkReverb;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{ STK abstract TReverberator parent class.
-
-  This class provides common functionality for STK TReverberator subclasses.
-
-}
-
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk;
+  DAV_Common, DAV_StkCommon;
 
 type
   TStkReverb = class(TStk)
+  private
+    procedure SetEffectMix(const Value: Single);
+    function GetLastOutput: Single;
   protected
     FLastOutput : array[0..1] of Single;
     FEffectMix  : Single;
-    function isPrime(Number: Integer): boolean;
+    function IsPrime(const Number: Integer): Boolean;
+    procedure EffectMixChanged; virtual;
   public
-    // Class constructor.
-    constructor Create(SampleRate: Single);
-
-    // Class destructor.
-    destructor Destroy;
+    constructor Create(const SampleRate: Single = 44100); override;
+    destructor Destroy; override;
 
     // Reset and clear all internal state.
-    procedure Clear;
-
-    // Set the mixture of input and "TReverberated" levels in the output (0.0 := input only, 1.0 := TStkReverb only).
-    procedure setEffectMix(Mix: Single);
-
-    // Return the last output value.
-    function lastOut: Single;
-
-    // Return the last left output value.
-    function lastOutLeft: Single;
-
-    // Return the last right output value.
-    function lastOutRight: Single;
+    procedure Clear; virtual; abstract;
 
     // Abstract Tick function ... must be implemented in subclasses.
-    function Tick(input: Single): Single; overload;
+    function Tick(const Input: Single): Single; overload; virtual;
 
-    // Take \e VectorSize inputs, compute the same Number of outputs and return them in \e Vector.
-    function Tick(Vector: PSingle; VectorSize: longint): PSingle; overload;
+    // Take VectorSize inputs, compute the same Number of outputs and return them in \e Vector.
+    procedure Tick(const Input: PDAVSingleFixedArray; out Output: PDAVSingleFixedArray; const SampleFrames: Cardinal); overload; virtual;
 
+  published
+    property EffectMix: Single read FEffectMix write SetEffectMix; // (0.0 = input only, 1.0 = reverb only).
+    property LastOutputLeft: Single read FLastOutput[0];  // Return the last left output value.
+    property LastOutputRight: Single read FLastOutput[1]; // Return the last right output value.
+    property LastOutput: Single read GetLastOutput;       // Return the last output value.
   end;
 
 implementation
 
-constructor TStkReverb.Create;
+constructor TStkReverb.Create(const SampleRate: Single = 44100);
 begin
   inherited Create(SampleRate);
 end;
@@ -63,72 +51,61 @@ begin
   inherited Destroy;
 end;
 
-procedure TStkReverb.setEffectMix;
+procedure TStkReverb.SetEffectMix(const Value: Single);
 begin
-  FEffectMix := Mix;
+ if EffectMix <> Value then
+  begin
+   FEffectMix := Value;
+   EffectMixChanged;
+  end;
 end;
 
-function TStkReverb.lastOut: Single;
+procedure TStkReverb.EffectMixChanged;
+begin
+ // nothing in here yet...
+end;
+
+function TStkReverb.GetLastOutput: Single;
 begin
   Result := (FLastOutput[0] + FLastOutput[1]) * 0.5;
 end;
 
-function TStkReverb.lastOutLeft: Single;
-begin
-  Result := FLastOutput[0];
-end;
-
-function TStkReverb.lastOutRight: Single;
-begin
-  Result := FLastOutput[1];
-end;
-
-function TStkReverb.Tick(Vector: PSingle; VectorSize: longint): PSingle;
-var
-  i: Integer;
-  p: PSingle;
-begin
-  p := Vector;
-  for i := 0 to VectorSize - 1 do
-   begin
-    p^ := Tick(p^);
-    Inc(p);
-   end;
-  Result := Vector;
-end;
-
-function TStkReverb.isPrime;
+function TStkReverb.IsPrime(const Number: Integer): Boolean;
 var
   i: Integer;
 begin
-  if (Number = 2) then
-   begin
-    Result := True;
-    exit
-   end;
-  if (Number and 1 > 0) then
-   begin
-    i := 3;
-    repeat
-      if ((Number mod i) = 0) then
-       begin
-        Result := False;
-        exit
-       end;
-      i := i + 2;
-    until (i >= round(sqrt(Number) + 1));
-    Result := True;
-   end else
-    Result := False;
+ if (Number = 2) then
+  begin
+   Result := True;
+   exit
+  end;
+ if (Number and 1 > 0) then
+  begin
+   i := 3;
+   repeat
+     if ((Number mod i) = 0) then
+      begin
+       Result := False;
+       exit
+      end;
+     i := i + 2;
+   until (i >= round(sqrt(Number) + 1));
+   Result := True;
+  end else Result := False;
 end;
 
-procedure TStkReverb.Clear;
-begin
-end;
-
-function TStkReverb.Tick(input: Single): Single;
+function TStkReverb.Tick(const Input: Single): Single;
 begin
   Result := 0;
+end;
+
+procedure TStkReverb.Tick(const Input: PDAVSingleFixedArray;
+  out Output: PDAVSingleFixedArray; const SampleFrames: Cardinal);
+var
+  i: Integer;
+begin
+ for i := 0 to SampleFrames - 1
+  do Output^[i] := Tick(Input^[i]);
 end;
 
 end.

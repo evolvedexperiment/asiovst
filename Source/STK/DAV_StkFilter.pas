@@ -4,23 +4,21 @@ unit DAV_StkFilter;
 
 {  STK filter class.
 
-   This class implements FA generic structure which can be used to create FA wide
+   This class implements a generic structure which can be used to create a wide
    range of filters. It can function independently or be subclassed to provide
-   more specific controls based on FA particular filter type.
+   more specific controls based on a particular filter type.
 
    In particular, this class implements the standard difference equation:
 
-   FA[0]*y[n] := FB[0]*x[n] + ... + FB[FnumB]*x[n-FnumB] -
-               FA[1]*y[n-1] - ... - FA[FnumA]*y[n-FnumA]
+   A[0] * y[n] := B[0] * x[n] + ... + B[numB] * x[n - numB] -
+                  A[1] * y[n-1] - ... - A[numA] * y[n - numA]
 
-   If FA[0] is not equal to 1, the filter coeffcients
-   are normalized by FA[0].
+   If FA[0] is not equal to 1, the filter coeffcients are normalized by FA[0].
 
-   The \e FGain parameter is applied at the filter
-   input and does not affect the coefficient values.
-   The default FGain value is 1.0.  This structure
-   results in one extra multiply per computed sample,
-   but allows easy control of the overall filter FGain.
+   The gain parameter is applied at the filter input and does not affect the
+   coefficient values. The default gain value is 1.0.  This structure results
+   in one extra multiply per computed sample, but allows easy control of the
+   overall filter gain.
 }
 
 interface
@@ -28,32 +26,32 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon;
+  DAV_Common, DAV_StkCommon;
 
 type
   TStkFilter = class(TStk)
+  private
+    function GetLastOutput: Single;
+    procedure SetGain(const AGain: Single);
   protected
-    FGain: Single;
-    FnumB, FnumA: Integer;
-    FA, FB, FOutputs, FInputs: PSingle;
+    FGain    : Single;
+    FnumB    : Integer;
+    FnumA    : Integer;
+    FA, FB   : PDAVSingleFixedArray;
+    FOutputs : PDAVSingleFixedArray;
+    FInputs  : PDAVSingleFixedArray;
+    procedure GainChanged; virtual;
   public
-    // Default constructor creates FA zero-order pass-through "filter".
-    constructor Create(SampleRate: Single); overload;
-
-    // Overloaded constructor which takes filter coefficients.
-  {
-    An StkError can be thrown if either \e FnumB or \e FnumA is less than
-    one, or if the FA[0] coefficient is equal to zero.
-  }
-    constructor Create
-      (SampleRate: Single; nmb: Integer; bCoefficients: PSingle; nma: Integer;
-      aCoefficients: PSingle); overload;
+    constructor Create(const SampleRate: Single); overload; override;
+    constructor Create(const SampleRate: Single;
+      const BCoefficientCount: Integer; BCoefficients: PDAVSingleFixedArray;
+      const ACoefficientCount: Integer; ACoefficients: PDAVSingleFixedArray); reintroduce; overload;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Clears all internal states of the filter.
-    procedure Clear;
+    procedure Clear; virtual;
 
     // Set filter coefficients.
   {
@@ -61,8 +59,9 @@ type
     one, or if the FA[0] coefficient is equal to zero.  If FA[0] is not
     equal to 1, the filter coeffcients are normalized by FA[0].
   }
-    procedure setCoefficients(nmb: Integer; bCoefficients: PSingle;
-      nma: Integer; aCoefficients: PSingle);
+    procedure SetCoefficients(const BCoefficientCount: Integer;
+      BCoefficients: PDAVSingleFixedArray; const ACoefficientCount: Integer;
+      ACoefficients: PDAVSingleFixedArray);
 
     // Set numerator coefficients.
   {
@@ -71,7 +70,8 @@ type
     Note that the default constructor sets the single denominator
     coefficient FA[0] to 1.0.
   }
-    procedure setNumerator(nmb: Integer; bCoefficients: PSingle);
+    procedure SetNumerator(BCoefficientCount: Integer;
+      BCoefficients: PDAVSingleFixedArray);
 
     // Set denominator coefficients.
   {
@@ -82,310 +82,261 @@ type
     default constructor sets the single numerator coefficient FB[0]
     to 1.0.
   }
-    procedure setDenominator(nma: Integer; aCoefficients: PSingle);
-
-    // Set the filter FGain.
-  {
-    The FGain is applied at the filter input and does not affect the
-    coefficient values.  The default FGain value is 1.0.
-   }
-    procedure setGain(theGain: Single);
-
-    // Return the current filter FGain.
-    function getGain: Single;
-
-    // Return the last computed output value.
-    function lastOut: Single;
+    procedure setDenominator(ACoefficientCount: Integer;
+      ACoefficients: PDAVSingleFixedArray);
 
     // Input one sample to the filter and return one output.
-    function tick(sample: Single): Single; overload;
+    function Tick(const Input: Single): Single; overload; virtual;
+    procedure Tick(const Input: PDAVSingleFixedArray;
+      out Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
 
-    // Input \e vectorSize samples to the filter and return an equal number of FOutputs in \e vector.
-    function tick(vector: PSingle; vectorSize: longint): PSingle; overload;
+    property LastOutput: Single read GetLastOutput; // Return the last computed output value.
+    property Gain: Single read FGain write SetGain; // The gain is applied at the filter input and does not affect the coefficient values.
 
   end;
 
 implementation
 
+uses
+  SysUtils;
+
+resourcestring
+  RCStrNoACoeffs = 'At least one A coefficient is mandatory!';
+  RCStrNoBCoeffs = 'At least one B coefficient is mandatory!';
+  RCStrFirstACoeffZero = 'The first A coeeficient must not be zero!';
+
 { TStkFilter }
 
-procedure TStkFilter.Clear;
-var
-  i: Integer;
-  p: PSingle;
-begin
-  for i := 0 to FnumB - 1 do
-   begin
-    p := PSingle(longint(FInputs) + i * sizeof(PSingle));
-    p^ := 0;
-   end;
-  for i := 0 to FnumA - 1 do
-   begin
-    p := PSingle(longint(FOutputs) + i * sizeof(PSingle));
-    p^ := 0;
-   end;
-end;
-
-constructor TStkFilter.Create(SampleRate: Single);
+constructor TStkFilter.Create(const SampleRate: Single);
 begin
   inherited Create(SampleRate);
-   // The default constructor should setup for pass-through.
-  FGain := 1.0;
+
+  // default constructor should setup for pass-through
   FnumB := 1;
   FnumA := 1;
-  getmem(FB, FnumB * sizeof(Single));
-  FB^ := 1.0;
-  getmem(FA, FnumA * sizeof(Single));
-  FA^ := 1.0;
+  GetMem(FB, FnumB * SizeOf(Single));
+  GetMem(FA, FnumA * SizeOf(Single));
+  FGain  := 1.0;
+  FB^[0] := 1.0;
+  FA^[0] := 1.0;
 
-  getmem(FInputs, FnumB * sizeof(Single));
-  getmem(FOutputs, FnumA * sizeof(Single));
+  GetMem(FInputs, FnumB * SizeOf(Single));
+  GetMem(FOutputs, FnumA * SizeOf(Single));
   Clear;
 end;
 
-constructor TStkFilter.Create(SampleRate: Single; nmb: Integer;
-  bCoefficients: PSingle; nma: Integer; aCoefficients: PSingle);
+constructor TStkFilter.Create(const SampleRate: Single;
+  const BCoefficientCount: Integer; BCoefficients: PDAVSingleFixedArray;
+  const ACoefficientCount: Integer; ACoefficients: PDAVSingleFixedArray);
 begin
   inherited Create(SampleRate);
-  // Check the arguments.
-  if (aCoefficients^ = 0) or (FnumB < 1) or (FnumA < 1) then
-    exit;
+  // check the arguments
+  if (ACoefficientCount < 1)
+   then raise Exception.Create(RCStrNoACoeffs);
+
+  if (BCoefficientCount < 1)
+   then raise Exception.Create(RCStrNoBCoeffs);
+
+  if (ACoefficients^[0] = 0)
+   then raise Exception.Create(RCStrFirstACoeffZero);
 
   FGain := 1.0;
-  FnumB := nmb;
-  FnumA := nma;
-  getmem(FB, FnumB * sizeof(Single));
-  getmem(FA, FnumA * sizeof(Single));
-  getmem(FInputs, FnumB * sizeof(Single));
-  getmem(FOutputs, FnumA * sizeof(Single));
+  FnumB := BCoefficientCount;
+  FnumA := ACoefficientCount;
+  GetMem(FB, FnumB * SizeOf(Single));
+  GetMem(FA, FnumA * SizeOf(Single));
+  GetMem(FInputs, FnumB * SizeOf(Single));
+  GetMem(FOutputs, FnumA * SizeOf(Single));
   Clear;
-  setCoefficients(FnumB, bCoefficients, FnumA, aCoefficients);
+  SetCoefficients(FnumB, BCoefficients, FnumA, aCoefficients);
 end;
 
 destructor TStkFilter.Destroy;
 begin
   inherited Destroy;
-  freemem(FB);
-  freemem(FA);
-  freemem(FInputs);
-  freemem(FOutputs);
+  Dispose(FB);
+  Dispose(FA);
+  Dispose(FInputs);
+  Dispose(FOutputs);
 end;
 
-function TStkFilter.getGain: Single;
+procedure TStkFilter.Clear;
 begin
-  Result := FGain;
+ FillChar(FInputs^[0], FnumB * SizeOf(Single), 0);
+ FillChar(FOutputs^[0], FnumA * SizeOf(Single), 0);
 end;
 
-function TStkFilter.lastOut: Single;
+function TStkFilter.GetLastOutput: Single;
 begin
-  Result := FOutputs^;
+  Result := FOutputs^[0];
 end;
 
-procedure TStkFilter.setCoefficients(nmb: Integer; bCoefficients: PSingle;
-  nma: Integer; aCoefficients: PSingle);
+procedure TStkFilter.SetCoefficients(const BCoefficientCount: Integer;
+  BCoefficients: PDAVSingleFixedArray; const ACoefficientCount: Integer;
+  ACoefficients: PDAVSingleFixedArray);
 var
   i: Integer;
-  p, q: PSingle;
+  t: Double;
 begin
-  // Check the arguments.
-  if (aCoefficients^ = 0.0) or (FnumB < 1) or (FnumA < 1) then
-    exit;
+  // check the arguments
+  if (ACoefficientCount < 1)
+   then raise Exception.Create(RCStrNoACoeffs);
 
-  if (nmb <> FnumB) then
+  if (BCoefficientCount < 1)
+   then raise Exception.Create(RCStrNoBCoeffs);
+
+  if (ACoefficients^[0] = 0)
+   then raise Exception.Create(RCStrFirstACoeffZero);
+
+  // test and reallocate B coefficients
+  if (BCoefficientCount > FnumB) then
    begin
-    freemem(FB);
-    freemem(FInputs);
-    FnumB := nmb;
-    getmem(FB, FnumB * sizeof(Single));
-    getmem(FInputs, FnumB * sizeof(Single));
-    for i := 0 to FnumB - 1 do
-     begin
-      p := PSingle(longint(FInputs) + i * 4);
-      p^ := 0;
-     end;
+    ReallocMem(FB, FnumB * SizeOf(Single));
+    ReallocMem(FInputs, FnumB * SizeOf(Single));
+    FillChar(FInputs^[FnumB], (BCoefficientCount - FnumB) * SizeOf(Single), 0);
+    FnumB := BCoefficientCount;
+   end;
+  if (BCoefficientCount < FnumB) then
+   begin
+    FnumB := BCoefficientCount;
+    ReallocMem(FB, FnumB * SizeOf(Single));
+    ReallocMem(FInputs, FnumB * SizeOf(Single));
    end;
 
-  if (FnumA <> nmA) then
+  // test and reallocate A coefficients
+  if (ACoefficientCount > FnumA) then
    begin
-    freemem(FA);
-    freemem(FOutputs);
-    FnumA := nma;
-    getmem(FA, FnumA * sizeof(Single));
-    getmem(FOutputs, FnumA * sizeof(Single));
-    for i := 0 to FnumB - 1 do
-     begin
-      p := PSingle(longint(FOutputs) + i * sizeof(Single));
-      p^ := 0;
-     end;
+    ReallocMem(FA, FnumA * SizeOf(Single));
+    ReallocMem(FOutputs, FnumA * SizeOf(Single));
+    FillChar(FOutputs^[FnumA], (ACoefficientCount - FnumA) * SizeOf(Single), 0);
+    FnumA := ACoefficientCount;
+   end;
+  if (ACoefficientCount < FnumA) then
+   begin
+    FnumA := ACoefficientCount;
+    ReallocMem(FA, FnumA * SizeOf(Single));
+    ReallocMem(FOutputs, FnumA * SizeOf(Single));
    end;
 
-  p := FB;
-  q := bCoefficients;
-  for i := 0 to FnumB - 1 do
-   begin
-    p^ := q^;
-    Inc(p);
-    Inc(q);
-   end;
-
-  p := FA;
-  q := aCoefficients;
-  for i := 0 to FnumA - 1 do
-   begin
-    p^ := q^;
-    Inc(p);
-    Inc(q);
-   end;
+  Move(ACoefficients^[0], FA^[0], FnumA * SizeOf(Single));
+  Move(BCoefficients^[0], FB^[0], FnumB * SizeOf(Single));
 
   // scale coefficients by FA[0] if necessary
-  if (FA^ <> 1.0) then
+  if (FA^[0] <> 1.0) then
    begin
-    p := FA;
-    for i := 0 to FnumA - 1 do
-     begin
-      p^ := p^ / FA^;
-      Inc(p);
-     end;
-    p := FB;
-    for i := 0 to FnumB - 1 do
-     begin
-      p^ := p^ / FA^;
-      Inc(p);
-     end;
+    t := 1 / FA^[0];
+    for i := 0 to FnumA - 1 do FA^[i] := FA^[i] * t;
+    for i := 0 to FnumB - 1 do FB^[i] := FB^[i] * t;
    end;
 
 end;
 
-procedure TStkFilter.setDenominator(nma: Integer; aCoefficients: PSingle);
+procedure TStkFilter.SetDenominator(ACoefficientCount: Integer;
+  ACoefficients: PDAVSingleFixedArray);
 var
   i: Integer;
-  p, q: PSingle;
+  t: Double;
 begin
-  // Check the arguments.
-  if (FnumA < 1) or (aCoefficients^ = 0.0) then
-    exit;
+  // check the arguments
+  if (ACoefficientCount < 1)
+   then raise Exception.Create(RCStrNoACoeffs);
 
-  if (FnumA <> FnumA) then
+  if (ACoefficients^[0] = 0)
+   then raise Exception.Create(RCStrFirstACoeffZero);
+
+  // test and reallocate A coefficients
+  if (ACoefficientCount > FnumA) then
    begin
-    freemem(FA);
-    freemem(FOutputs);
-    FnumA := nma;
-
-    getmem(FA, FnumA * sizeof(Single));
-    getmem(FOutputs, FnumA * sizeof(Single));
-    for i := 0 to FnumA - 1 do
-     begin
-      p := PSingle(longint(FOutputs) + i * sizeof(PSingle));
-      p^ := 0;
-     end;
+    ReallocMem(FA, FnumA * SizeOf(Single));
+    ReallocMem(FOutputs, FnumA * SizeOf(Single));
+    FillChar(FOutputs^[FnumA], (ACoefficientCount - FnumA) * SizeOf(Single), 0);
+    FnumA := ACoefficientCount;
+   end;
+  if (ACoefficientCount < FnumA) then
+   begin
+    FnumA := ACoefficientCount;
+    ReallocMem(FA, FnumA * SizeOf(Single));
+    ReallocMem(FOutputs, FnumA * SizeOf(Single));
    end;
 
-  p := FA;
-  q := aCoefficients;
-  for i := 0 to FnumA - 1 do
-   begin
-    p^ := q^;
-    Inc(p);
-    Inc(q);
-   end;
+  Move(ACoefficients^[0], FA^[0], FnumA * SizeOf(Single));
 
   // scale coefficients by FA[0] if necessary
-  if (FA^ <> 1.0) then
+  if (FA^[0] <> 1.0) then
    begin
-    p := FA;
-    for i := 0 to FnumA - 1 do
-     begin
-      p^ := p^ / FA^;
-      Inc(p);
-     end;
-    p := FB;
-    for i := 0 to FnumB - 1 do
-     begin
-      p^ := p^ / FA^;
-      Inc(p);
-     end;
+    t := 1 / FA^[0];
+    for i := 0 to FnumA - 1 do FA^[i] := FA^[i] * t;
+    for i := 0 to FnumB - 1 do FB^[i] := FB^[i] * t;
    end;
 end;
 
-procedure TStkFilter.setGain(theGain: Single);
+procedure TStkFilter.SetGain(const AGain: Single);
 begin
-  FGain := theGain;
+ if FGain <> AGain then
+  begin
+   FGain := AGain;
+   GainChanged;
+  end;
 end;
 
-procedure TStkFilter.setNumerator(nmb: Integer; bCoefficients: PSingle);
+procedure TStkFilter.GainChanged;
+begin
+ // nothing here yet
+end;
+
+procedure TStkFilter.setNumerator(BCoefficientCount: Integer;
+  BCoefficients: PDAVSingleFixedArray);
+begin
+  // check the arguments
+  if (BCoefficientCount < 1)
+   then raise Exception.Create(RCStrNoBCoeffs);
+
+  // test and reallocate B coefficients
+  if (BCoefficientCount > FnumB) then
+   begin
+    ReallocMem(FB, FnumB * SizeOf(Single));
+    ReallocMem(FInputs, FnumB * SizeOf(Single));
+    FillChar(FInputs^[FnumB], (BCoefficientCount - FnumB) * SizeOf(Single), 0);
+    FnumB := BCoefficientCount;
+   end;
+  if (BCoefficientCount < FnumB) then
+   begin
+    FnumB := BCoefficientCount;
+    ReallocMem(FB, FnumB * SizeOf(Single));
+    ReallocMem(FInputs, FnumB * SizeOf(Single));
+   end;
+
+  Move(BCoefficients^[0], FB^[0], FnumB * SizeOf(Single));
+end;
+
+procedure TStkFilter.Tick(const Input: PDAVSingleFixedArray;
+  out Output: PDAVSingleFixedArray; const SampleFrames: Integer);
+var
+  i: integer;
+begin
+  for i := 0 to SampleFrames - 1
+   do Output^[i] := Tick(Input^[i])
+end;
+
+function TStkFilter.Tick(const Input: Single): Single;
 var
   i: Integer;
-  p, q: PSingle;
 begin
-
-  // Check the arguments.
-  if (FnumB < 1) then
-    exit;
-
-  if (FnumB <> FnumB) then
-   begin
-    freemem(FB);
-    freemem(FInputs);
-    FnumB := nmb;
-    getmem(FB, FnumB * sizeof(Single));
-    getmem(FInputs, FnumB * sizeof(Single));
-    for i := 0 to FnumB - 1 do
-     begin
-      p := PSingle(longint(FInputs) + i * 4);
-      p^ := 0;
-     end;
-   end;
-
-  p := FB;
-  q := bCoefficients;
-  for i := 0 to FnumB - 1 do
-   begin
-    p^ := q^;
-    Inc(p);
-    Inc(q);
-   end;
-end;
-
-function TStkFilter.tick(vector: PSingle; vectorSize: longint): PSingle;
-var
-  i: Integer;
-  p: PSingle;
-begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := tick(p^);
-    Inc(p);
-   end;
-  Result := vector;
-end;
-
-function TStkFilter.tick(sample: Single): Single;
-var
-  i: Integer;
-  p, q: PSingle;
-begin
-  FOutputs^ := 0.0;
-  FInputs^ := FGain * sample;
+  FOutputs^[0] := 0.0;
+  FInputs^[0] := FGain * Input;
   for i := FnumB - 1 downto 1 do
    begin
-    p := PSingle(longint(FB) + sizeof(Single) * i);
-    q := PSingle(longint(FInputs) + sizeof(Single) * i);
-    FOutputs^ := FOutputs^ + p^ * q^;
-    p := PSingle(longint(FInputs) + sizeof(Single) * (i - 1));
-    q^ := p^;
+    FOutputs^[0] := FOutputs^[0] + FB^[i] * FInputs^[i];
+    FInputs^[i] := FInputs^[i - 1];
    end;
-  FOutputs^ := FOutputs^ + FB^ * FInputs^;
+  FOutputs^[0] := FOutputs^[0] + FB^[0] * FInputs^[0];
 
   for i := FnumA - 1 downto 1 do
    begin
-    p := PSingle(longint(FA) + sizeof(Single) * i);
-    q := PSingle(longint(FOutputs) + sizeof(Single) * i);
-    FOutputs^ := FOutputs^ - p^ * q^;
-    p := PSingle(longint(FOutputs) + sizeof(Single) * (i - 1));
-    q^ := p^;
+    FOutputs^[0] := FOutputs^[0] - FA^[i] * FOutputs^[i];
+    FOutputs^[i] := FOutputs^[i - 1];
    end;
-  Result := FOutputs^;
+  Result := FOutputs^[0];
 end;
 
 end.
