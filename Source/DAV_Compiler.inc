@@ -351,8 +351,6 @@
 
 {$DEFINE BORLAND}
 
-{$DEFINE BORLAND}
-
 {$IFDEF FPC}
  {$MODE DELPHI}
  {$WARNINGS OFF}
@@ -587,8 +585,6 @@
       {$ENDIF}
       {$UNDEF UNKNOWN_COMPILER_VERSION}
     {$ENDIF}
-
-  {$ENDIF ~KYLIX}
 
   {$IFDEF BCB}
     {$DEFINE CPPBUILDER}
@@ -1107,8 +1103,6 @@
 
 // for Delphi/BCB trial versions remove the point from the line below
 {.$UNDEF SUPPORTS_WEAKPACKAGEUNIT}
-
-{$ENDIF ~JEDI_INC}
 
 {$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}

@@ -8,6 +8,8 @@ uses
 type
   // define some constants to make referencing in/outs clearer
   TSEStkReverbPins = (pinInput, pinOutput, pinT60, pinEffectMix);
+  TSEStkReverb2Pins = (pin2Input, pin2Output1, pin2Output2, pin2T60,
+    pin2EffectMix);
 
   TCustomSEStkNReverbModule = class(TSEModuleBase)
   private
@@ -87,10 +89,90 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
 
+  TCustomSEStkNReverb2Module = class(TSEModuleBase)
+  private
+    FInputBuffer   : PDAVSingleFixedArray; // pointer to circular buffer of samples
+    FOutputBuffer1 : PDAVSingleFixedArray;
+    FOutputBuffer2 : PDAVSingleFixedArray;
+    FStaticCount   : Integer;
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+  protected
+    FNReverb      : TStkNReverb;
+    procedure Open; override;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+    procedure SampleRateChanged; override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    destructor Destroy; override;
+
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
+  end;
+
+  TSEStkNReverb2StaticModule = class(TCustomSEStkNReverb2Module)
+  private
+    FT60       : Single;
+    FEffectMix : Single;
+  protected
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSEStkNReverb2ControllableModule = class(TSEStkNReverb2StaticModule)
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  end;
+
+  TCustomSEStkJCReverb2Module = class(TSEModuleBase)
+  private
+    FInputBuffer   : PDAVSingleFixedArray; // pointer to circular buffer of samples
+    FOutputBuffer1 : PDAVSingleFixedArray;
+    FOutputBuffer2 : PDAVSingleFixedArray;
+    FStaticCount   : Integer;
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+  protected
+    FJCReverb     : TStkJCReverb;
+    procedure Open; override;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+    procedure SampleRateChanged; override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    destructor Destroy; override;
+
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
+  end;
+
+  TSEStkJCReverb2StaticModule = class(TCustomSEStkJCReverb2Module)
+  private
+    FT60       : Single;
+    FEffectMix : Single;
+  protected
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSEStkJCReverb2ControllableModule = class(TSEStkJCReverb2StaticModule)
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  end;
+
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_StkReverb;
 
 { TCustomSEStkNReverbModule }
 
@@ -135,7 +217,7 @@ begin
   then OnProcess := SubProcess
   else
    begin
-    FStaticCount := BlockSize;
+    FStaticCount := BlockSize + round(FNReverb.T60 * SampleRate);
     OnProcess := SubProcessStatic;
    end;
 end;
@@ -335,7 +417,7 @@ begin
   then OnProcess := SubProcess
   else
    begin
-    FStaticCount := BlockSize;
+    FStaticCount := BlockSize + round(FJCReverb.T60 * SampleRate);;
     OnProcess := SubProcessStatic;
    end;
 end;
@@ -488,6 +570,442 @@ function TSEStkJCReverbControllableModule.GetPinProperties(const Index: Integer;
 begin
  result := inherited GetPinProperties(Index, Properties);
  if TSEStkReverbPins(index) in [pinT60..pinEffectMix]
+  then with Properties^ do Direction := drIn;
+end;
+
+{ TCustomSEStkNReverb2Module }
+
+constructor TCustomSEStkNReverb2Module.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+begin
+ inherited Create(SEAudioMaster, Reserved);
+ FNReverb := TStkNReverb.Create
+end;
+
+destructor TCustomSEStkNReverb2Module.Destroy;
+begin
+ FreeAndNil(FNReverb);
+ inherited;
+end;
+
+procedure TCustomSEStkNReverb2Module.Open;
+begin
+ inherited Open;
+
+ // choose which function is used to process audio
+ OnProcess := SubProcess;
+end;
+
+// The most important part, processing the audio
+procedure TCustomSEStkNReverb2Module.SampleRateChanged;
+begin
+ inherited;
+ FNReverb.SampleRate := SampleRate;
+end;
+
+procedure TCustomSEStkNReverb2Module.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TCustomSEStkNReverb2Module.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize + round(FNReverb.T60 * SampleRate);;
+    OnProcess := SubProcessStatic;
+   end;
+end;
+
+// describe your module
+class procedure TCustomSEStkNReverb2Module.getModuleProperties(Properties : PSEModuleProperties);
+begin
+ with Properties^ do
+  begin
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+   SDKVersion := CSeSdkVersion;
+  end;
+end;
+
+// describe the pins (plugs)
+function TCustomSEStkNReverb2Module.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := True;
+ case TSEStkReverb2Pins(Index) of
+  pin2Input:
+   with Properties^ do
+    begin
+     Name            := 'Input';
+     VariableAddress := @FInputBuffer;
+     Direction       := drIn;
+     Flags           := [iofLinearInput];
+     Datatype        := dtFSample;
+     DefaultValue    := '0';
+    end;
+  pin2Output1:
+   with Properties^ do
+    begin
+     Name            := 'Output (left)';
+     VariableAddress := @FOutputBuffer1;
+     VariableAddress := @FOutputBuffer2;
+     Direction       := drOut;
+     Datatype        := dtFSample;
+    end;
+  pin2Output2:
+   with Properties^ do
+    begin
+     Name            := 'Output (right)';
+     VariableAddress := @FOutputBuffer2;
+     Direction       := drOut;
+     Datatype        := dtFSample;
+    end;
+  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+ end;
+end;
+
+// An input plug has changed value
+procedure TCustomSEStkNReverb2Module.PlugStateChange(const CurrentPin: TSEPin);
+var
+  InState : TSEStateType;
+begin
+ inherited;
+ case CurrentPin.PinID of
+  0..1: begin
+         ChooseProcess;
+         InState := Pin[0].Status;
+         if Pin[1].Status < InState then InState := Pin[1].Status;
+         Pin[2].TransmitStatusChange(SampleClock, InState);
+        end;
+ end;
+end;
+
+
+{ TSEStkNReverb2StaticModule }
+
+// describe your module
+class procedure TSEStkNReverb2StaticModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'DAV modified "STK" Reverb2 Network (static)';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV STK Reverb2 Network (static)';
+  end;
+end;
+
+procedure TSEStkNReverb2StaticModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+var
+  Inp    : PDAVSingleFixedArray;
+  Outp1  : PDAVSingleFixedArray;
+  Outp2  : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Inp   := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
+ Outp1 := PDAVSingleFixedArray(@FOutputBuffer1[BufferOffset]);
+ Outp2 := PDAVSingleFixedArray(@FOutputBuffer1[BufferOffset]);
+
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   FNReverb.Tick(Inp^[Sample]);
+   Outp1^[Sample] := FNReverb.LastOutputLeft;
+   Outp2^[Sample] := FNReverb.LastOutputRight;
+  end;
+end;
+
+// describe the pins (plugs)
+function TSEStkNReverb2StaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSEStkReverb2Pins(index) of
+  pin2T60:
+   with Properties^ do
+    begin
+     Name            := 'T60 [s]';
+     VariableAddress := @FT60;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '1';
+     result          := True;
+    end;
+  pin2EffectMix:
+   with Properties^ do
+    begin
+     Name            := 'EffectMix [%]';
+     VariableAddress := @FEffectMix;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '30';
+     result          := True;
+    end;
+ end;
+end;
+
+// An input plug has changed value
+procedure TSEStkNReverb2StaticModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ inherited;
+ case TSEStkReverb2Pins(CurrentPin.PinID) of
+        pin2T60: FNReverb.T60       := FT60;
+  pin2EffectMix: FNReverb.EffectMix := 0.01 * FEffectMix;
+ end;
+end;
+
+
+{ TSEStkNReverb2ControllableModule }
+
+class procedure TSEStkNReverb2ControllableModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'DAV modified "STK" Reverb2 Network';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV STK Reverb2 Network';
+  end;
+end;
+
+function TSEStkNReverb2ControllableModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ if TSEStkReverb2Pins(index) in [pin2T60..pin2EffectMix]
+  then with Properties^ do Direction := drIn;
+end;
+
+
+{ TCustomSEStkJCReverb2Module }
+
+constructor TCustomSEStkJCReverb2Module.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+begin
+ inherited Create(SEAudioMaster, Reserved);
+ FJCReverb := TStkJCReverb.Create
+end;
+
+destructor TCustomSEStkJCReverb2Module.Destroy;
+begin
+ FreeAndNil(FJCReverb);
+ inherited;
+end;
+
+procedure TCustomSEStkJCReverb2Module.Open;
+begin
+ inherited Open;
+
+ // choose which function is used to process audio
+ OnProcess := SubProcess;
+end;
+
+// The most important part, processing the audio
+procedure TCustomSEStkJCReverb2Module.SampleRateChanged;
+begin
+ inherited;
+ FJCReverb.SampleRate := SampleRate;
+end;
+
+procedure TCustomSEStkJCReverb2Module.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TCustomSEStkJCReverb2Module.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize + round(FJCReverb.T60 * SampleRate);;
+    OnProcess := SubProcessStatic;
+   end;
+end;
+
+// describe your module
+class procedure TCustomSEStkJCReverb2Module.getModuleProperties(Properties : PSEModuleProperties);
+begin
+ with Properties^ do
+  begin
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+   SDKVersion := CSeSdkVersion;
+  end;
+end;
+
+// describe the pins (plugs)
+function TCustomSEStkJCReverb2Module.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := True;
+ case TSEStkReverb2Pins(index) of
+  pin2Input:
+   with Properties^ do
+    begin
+     Name            := 'Input';
+     VariableAddress := @FInputBuffer;
+     Direction       := drIn;
+     Flags           := [iofLinearInput];
+     Datatype        := dtFSample;
+     DefaultValue    := '0';
+    end;
+  pin2Output1:
+   with Properties^ do
+    begin
+     Name            := 'Output (left)';
+     VariableAddress := @FOutputBuffer1;
+     Direction       := drOut;
+     Datatype        := dtFSample;
+    end;
+  pin2Output2:
+   with Properties^ do
+    begin
+     Name            := 'Output (right)';
+     VariableAddress := @FOutputBuffer2;
+     Direction       := drOut;
+     Datatype        := dtFSample;
+    end;
+  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+ end;
+end;
+
+// An input plug has changed value
+procedure TCustomSEStkJCReverb2Module.PlugStateChange(const CurrentPin: TSEPin);
+var
+  InState : TSEStateType;
+begin
+ inherited;
+ case CurrentPin.PinID of
+  0..1: begin
+         ChooseProcess;
+         InState := Pin[0].Status;
+         if Pin[1].Status < InState then InState := Pin[1].Status;
+         Pin[2].TransmitStatusChange(SampleClock, InState);
+        end;
+ end;
+end;
+
+
+{ TSEStkJCReverb2StaticModule }
+
+// describe your module
+class procedure TSEStkJCReverb2StaticModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'DAV modified "STK" JC Stereo Reverb (static)';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV STK JC Stereo Reverb (static)';
+  end;
+end;
+
+procedure TSEStkJCReverb2StaticModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+var
+  Inp    : PDAVSingleFixedArray;
+  Outp1  : PDAVSingleFixedArray;
+  Outp2  : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Inp   := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
+ Outp1 := PDAVSingleFixedArray(@FOutputBuffer1[BufferOffset]);
+ Outp2 := PDAVSingleFixedArray(@FOutputBuffer2[BufferOffset]);
+
+ for Sample := 0 to SampleFrames -1 do
+  begin
+   FJCReverb.Tick(Inp^[Sample]);
+   Outp1^[Sample] := FJCReverb.LastOutputLeft;
+   Outp2^[Sample] := FJCReverb.LastOutputRight;
+  end;
+end;
+
+// describe the pins (plugs)
+function TSEStkJCReverb2StaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSEStkReverb2Pins(index) of
+  pin2T60:
+   with Properties^ do
+    begin
+     Name            := 'T60 [s]';
+     VariableAddress := @FT60;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '1';
+     result          := True;
+    end;
+  pin2EffectMix:
+   with Properties^ do
+    begin
+     Name            := 'EffectMix [%]';
+     VariableAddress := @FEffectMix;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '30';
+     result          := True;
+    end;
+ end;
+end;
+
+// An input plug has changed value
+procedure TSEStkJCReverb2StaticModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ inherited;
+ case TSEStkReverb2Pins(CurrentPin.PinID) of
+        pin2T60: FJCReverb.T60       := FT60;
+  pin2EffectMix: FJCReverb.EffectMix := 0.01 * FEffectMix;
+ end;
+end;
+
+
+{ TSEStkJCReverb2ControllableModule }
+
+class procedure TSEStkJCReverb2ControllableModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'DAV modified "STK" JC Stereo Reverb';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV STK JC Stereo Reverb';
+  end;
+end;
+
+function TSEStkJCReverb2ControllableModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ if TSEStkReverb2Pins(index) in [pin2T60..pin2EffectMix]
   then with Properties^ do Direction := drIn;
 end;
 
