@@ -109,14 +109,14 @@ type
 
   { Convert }
 
-  function ms2Samples(const ms, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function Samples2ms(const Samples, SampleRate: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
-  function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function ms2Samples(const ms, SampleRate: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Samples2ms(const Samples, SampleRate: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   // dB stuff
-  function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function dB_to_Amp(const Value: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function dB_to_Amp(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function Amp_to_dB(const Value: Single): Single; overload;
   function Amp_to_dB(const Value: Double): Double; overload;
   {$IFNDEF FPC}
@@ -132,30 +132,30 @@ type
 
   { Limit & Clip, Min & Max }
 
-  function Limit(const Value: Single; Lower: Single = -1; Upper: Single = 1): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function Limit(const Value: Double; Lower: Double = -1; Upper: Double = 1): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function BranchlessClip(const Value, Lower, Upper: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function BranchlessClip(const Value, Lower, Upper: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function BranchlessClipLower(Value: Single; const Lower: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function BranchlessClipLower(Value: Double; const Lower: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function BranchlessClipUpper(Value: Single; const Upper: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function BranchlessClipUpper(Value: Double; const Upper: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function Smallest(const A, B: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function Smallest(const A, B: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function Largest(const A, B: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function Largest(const A, B: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function LimitAngle(const Angle: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function LimitAngle(const Angle: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function Limit(const Value: Single; Lower: Single = -1; Upper: Single = 1): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Limit(const Value: Double; Lower: Double = -1; Upper: Double = 1): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function BranchlessClip(const Value, Lower, Upper: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function BranchlessClip(const Value, Lower, Upper: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function BranchlessClipLower(Value: Single; const Lower: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function BranchlessClipLower(Value: Double; const Lower: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function BranchlessClipUpper(Value: Single; const Upper: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function BranchlessClipUpper(Value: Double; const Upper: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Smallest(const A, B: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Smallest(const A, B: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Largest(const A, B: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Largest(const A, B: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function LimitAngle(const Angle: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function LimitAngle(const Angle: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 
   function Factorial(const Order : Integer) : Double;
   procedure FastNegative(var Value: Single); overload;
   function FastFractional(const Value: Single): Single; overload;
   function FastFractional(const Value: Double): Double; overload;
-  procedure FastAbs(var Value: Single); {$IFDEF useinlining} inline; {$ENDIF} overload;
-  procedure FastAbs(var Value: Double); {$IFDEF useinlining} inline; {$ENDIF} overload;
+  procedure FastAbs(var Value: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  procedure FastAbs(var Value: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   procedure FastAbs(var Value: TDAV4SingleArray); overload;
-  function FastMod(const Arg1, Arg2: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastMod(const Arg1, Arg2: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   {$IFNDEF FPC}
   function FastInt(Sample: Single): Single; overload;
@@ -171,10 +171,10 @@ type
   procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended); overload;
   procedure GetSinCos(const Frequency: Single; var SinValue, CosValue : Single); overload;
 
-  function IsPowerOf2(const Value: Integer): Boolean; {$IFDEF useinlining} inline; {$ENDIF}
-  function RoundToPowerOf2(const Value: Integer): Integer; {$IFDEF useinlining} inline; {$ENDIF}
-  function TruncToPowerOf2(const Value: Integer): Integer; {$IFDEF useinlining} inline; {$ENDIF}
-  function ExtendToPowerOf2(const Value: Integer): Integer; {$IFDEF useinlining} inline; {$ENDIF}
+  function IsPowerOf2(const Value: Integer): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function RoundToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function TruncToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function ExtendToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function TruncLog2(Value : Extended): Integer; overload;
   function TruncLog2(Value : Integer): Integer; overload;
   function CeilLog2(Value : Extended): Integer; overload;
@@ -182,10 +182,10 @@ type
   function OnOff(const Value: Single): Boolean;
   function unDenormalize(const Value: Single): Single;
 
-  function Sigmoid(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function Sigmoid(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function Sinc(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function Sinc(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function Sigmoid(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function Sigmoid(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function Sinc(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function Sinc(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   {$IFDEF DELPHI5}
   function Sign(const AValue: Double): Double;
@@ -194,8 +194,8 @@ type
   { String Stuff & Messages }
 
   {$IFNDEF FPC}
-  function GetApplicationFilename: string; {$IFDEF useinlining} inline; {$ENDIF}
-  function GetApplicationDirectory: string; {$IFDEF useinlining} inline; {$ENDIF}
+  function GetApplicationFilename: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function GetApplicationDirectory: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   procedure Msg(b: Boolean); overload;
   procedure Msg(m: string; m2: string = ''); overload;

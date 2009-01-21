@@ -201,13 +201,13 @@ begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Reverb (static)';
+   Name := 'DAV modified "STK" Reverb Network (static)';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Reverb (static)';
+   ID := 'DAV STK Reverb Network (static)';
   end;
 end;
 
@@ -401,13 +401,13 @@ begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Reverb (static)';
+   Name := 'DAV modified "STK" JC Reverb (static)';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Reverb (static)';
+   ID := 'DAV STK JC Reverb (static)';
   end;
 end;
 
@@ -473,13 +473,13 @@ begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'DAV modified "STK" Reverb';
+   Name := 'DAV modified "STK" JC Reverb';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV STK Reverb Network';
+   ID := 'DAV STK JC Reverb';
   end;
 end;
 
