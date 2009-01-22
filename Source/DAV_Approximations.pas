@@ -15,9 +15,10 @@ uses
   function FastIntPower(i: Single; n: Integer): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function FastPower(base, exp: Double) : Double; {$IFDEF useinlining} inline; {$ENDIF}
   function FastLog2Laurent(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2Continous5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2MinError5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2ContinousError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2MinError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function FastLog2(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastPower2(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function FastFloorLn2(const Value: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
   function FastArctanLike(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function FastArctanLike(const Value: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
@@ -160,6 +161,16 @@ uses
   function FastArcCotan6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastArcCotan6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
+  { 2^x Approximations }
+
+  function FastPower2MinError2(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
+  function FastPower2ContinousError2(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
+  function FastPower2MinError3(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
+  function FastPower2ContinousError3(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
+  function FastPower2MinError4(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
+  function FastPower2ContinousError4(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
+  function FastPower2MinError5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
+  function FastPower2ContinousError5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
 
   { TanH Approximations }
 
@@ -190,30 +201,41 @@ uses
   function FastTanh2Like2Term(const Input: Single): Single;
   function FastTanh2Like1Term(const Input: Single): Single;
 
+  function FastdBtoAmpMinError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+
 var
   Ln10, Ln2, Ln2Half, Ln2Rez   : Double;
   TanSixthPi32, TanTwelfthPi32 : Single;
   TanSixthPi64, TanTwelfthPi64 : Double;
 
 const
-  CMinusOneThird : Double = -1/3;
-  CMinusTwoThird : Double = -2/3;
-  CTwo32         : Single = 2;
-  CTwo64         : Double = 2;
-  CTwoDivPi32    : Single = 2.0 / Pi;
-  CTwoDivPi64    : Double = 2.0 / Pi;
-  CPiHalf32      : Single = Pi * 0.5;
-  CPiHalf64      : Double = Pi * 0.5;
-  CThreeHalfPi32 : Single = 1.5 * pi;  // pi times 3/2, used in tan routines
-  CThreeHalfPi64 : Double = 1.5 * pi;  // pi times 3/2, used in tan routines
-  CFourDivPi32   : Single = 4.0 / Pi;  // 4 / pi, used in tan routines
-  CFourDivPi64   : Double = 4.0 / Pi;  // 4 / pi, used in tan routines
-  CFourthPi32    : Single = Pi * 0.25; // pi / 4.0, used in tan routines
-  CFourthPi64    : Double = Pi * 0.25; // pi / 4.0, used in tan routines
-  CSixthPi32     : Single = Pi / 6.0;  // pi/6.0, used in atan routines
-  CSixthPi64     : Double = Pi / 6.0;  // pi/6.0, used in atan routines
-  CTwelfthPi32   : Single = Pi / 12.0; // pi/12.0, used in atan routines
-  CTwelfthPi64   : Double = Pi / 12.0; // pi/12.0, used in atan routines
+  CMinusOneThird    : Double = -1/3;
+  CMinusTwoThird    : Double = -2/3;
+  CTwo32            : Single = 2;
+  CTwo64            : Double = 2;
+  CTwoDivPi32       : Single = 2.0 / Pi;
+  CTwoDivPi64       : Double = 2.0 / Pi;
+  CPiHalf32         : Single = Pi * 0.5;
+  CPiHalf64         : Double = Pi * 0.5;
+  CThreeHalfPi32    : Single = 1.5 * pi;  // pi times 3/2, used in tan routines
+  CThreeHalfPi64    : Double = 1.5 * pi;  // pi times 3/2, used in tan routines
+  CFourDivPi32      : Single = 4.0 / Pi;  // 4 / pi, used in tan routines
+  CFourDivPi64      : Double = 4.0 / Pi;  // 4 / pi, used in tan routines
+  CFourthPi32       : Single = Pi * 0.25; // pi / 4.0, used in tan routines
+  CFourthPi64       : Double = Pi * 0.25; // pi / 4.0, used in tan routines
+  CSixthPi32        : Single = Pi / 6.0;  // pi/6.0, used in atan routines
+  CSixthPi64        : Double = Pi / 6.0;  // pi/6.0, used in atan routines
+  CTwelfthPi32      : Single = Pi / 12.0; // pi/12.0, used in atan routines
+  CTwelfthPi64      : Double = Pi / 12.0; // pi/12.0, used in atan routines
+  CdBtoAmpExpGain32 : Single = 1.5051499783199059760686944736225E-2;
+  CdBtoAmpExpGain64 : Double = 1.5051499783199059760686944736225E-2;
 
 const
   CArcTanLike : Array [0..4] of Single = (0.0208351, -0.085133, 0.180141,
@@ -247,6 +269,9 @@ const
   CArcTan6Term : array [0..5] of Double = (48.70107004404898384,
     49.5326263772254345, 9.40604244231624, 48.70107004404996166,
     65.7663163908956299, 21.587934067020262);
+  CP2ContError5 : array [0..4] of Single = (6.93147084150589565E-1,
+    2.40221342016562145E-1, 5.55055126727891784E-2, 9.67692162036261003E-3,
+    1.33355654772594713E-3);
 
 implementation
 
@@ -1422,9 +1447,11 @@ begin
 end;
 
 function FastLog2(const Value: Single): Single;
+var
+  IntCast : Integer absolute Value;
 begin
- Result := (((Integer((@Value)^) and $7F800000) shr 23) - $7F) +
-             (Integer((@Value)^) and $007FFFFF) / $800000;
+ Result := (((IntCast and $7F800000) shr 23) - $7F) +
+             (IntCast and $007FFFFF) / $800000;
 end;
 
 function FastLog2Laurent(Value: Single): Single;
@@ -1438,34 +1465,245 @@ begin
  Result := Value + log2;
 end;
 
-function FastLog2MinError5(Value: Single): Single;
+function FastLog2MinError5(const Value: Single): Single;
 var
   log2 : Integer;
-  x    : Integer absolute Value;
+  x    : Integer absolute Result;
+const
+  CL2MinError5 : array [0..4] of Single = (-8.18038640187952054E-2,
+    6.46216635143615381E-1, -2.12293700635511007, 4.07217052527789480,
+    -1.51355930430330177);
 begin
+ Result := Value;
  log2 := ((x shr 23) and $FF) - $80;
  x := x and (not ($FF shl 23)) + $7F shl 23;
- Value := ((( - 8.18038640187952054E-2 *
-          Value + 6.46216635143615381E-1) *
-          Value - 2.12293700635511007) *
-          Value + 4.07217052527789480) *
-          Value - 1.51355930430330177;
- Result := Value + log2;
+ Result := log2 + (((CL2MinError5[0] *
+            Result + CL2MinError5[1]) *
+            Result + CL2MinError5[2]) *
+            Result + CL2MinError5[3]) *
+            Result + CL2MinError5[4];
 end;
 
-function FastLog2Continous5(Value: Single): Single;
+function FastLog2ContinousError5(const Value: Single): Single;
 var
   log2 : Integer;
-  x    : Integer absolute Value;
+  x    : Integer absolute Result;
+const
+  CL2Continous5 : array [0..4] of Single = (-8.21343513178931783E-2,
+    6.49732456739820052E-1, -2.13417801862571777, 4.08642207062728868,
+    -1.51984215742349793);
 begin
+ Result := Value;
  log2 := ((x shr 23) and $FF) - $80;
  x := x and (not ($FF shl 23)) + $7F shl 23;
- Value := ((( - 8.21343513178931783E-2 *
-          Value + 6.49732456739820052E-1) *
-          Value - 2.13417801862571777) *
-          Value + 4.08642207062728868) *
-          Value - 1.51984215742349793;
- Result := Value + log2;
+ Result := log2 + (((CL2Continous5[0] *
+           Result + CL2Continous5[1]) *
+           Result + CL2Continous5[2]) *
+           Result + CL2Continous5[3]) *
+           Result + CL2Continous5[4];
+end;
+
+function FastPower2MinError2(Value: Single): Single;
+var
+  IntCast : Integer absolute result;
+  j       : Integer;
+const
+  CP2MinError2 : array [0..1] of Single = (7.02679339377207945E-1,
+    2.39338555345344262E-1);
+begin
+ j := round(Value);
+ Value := Value - j;
+ IntCast := ((($7F + j) shl 23) and $FF800000);
+ Result := result * (1 +
+            Value * (CP2MinError2[0] +
+            Value * (CP2MinError2[1])));
+end;
+
+function FastPower2ContinousError2(Value: Single): Single;
+var
+  IntCast : Integer absolute result;
+  j       : Integer;
+const
+  CP2ContError2 : array [0..1] of Single = (7.07990673676189286E-1,
+    2.47944580878438597E-1);
+begin
+ j := round(Value);
+ Value := Value - j;
+ IntCast := ((($7F + j) shl 23) and $FF800000);
+ Result := result * (1 +
+            Value * (CP2ContError2[0] +
+            Value * (CP2ContError2[1])));
+end;
+
+function FastPower2MinError3(Value: Single): Single;
+var
+  IntCast : Integer absolute result;
+  j       : Integer;
+const
+  CP2MinError3 : array [0..2] of Single = (6.93292707161004662E-1,
+    2.42162975514835621E-1, 5.48668824216034384E-2);
+begin
+ j := round(Value);
+ Value := Value - j;
+ IntCast := ((($7F + j) shl 23) and $FF800000);
+ Result := result * (1 +
+            Value * (CP2MinError3[0] +
+            Value * (CP2MinError3[1] *
+            Value * (CP2MinError3[2]))));
+end;
+
+function FastPower2ContinousError3(Value: Single): Single;
+var
+  IntCast : Integer absolute result;
+  j       : Integer;
+const
+  CP2ContError3 : array [0..2] of Single = (6.93282526441610814E-1,
+    2.42201488582370950E-1, 5.50043626970249666E-2);
+begin
+ j := round(Value);
+ Value := Value - j;
+ IntCast := ((($7F + j) shl 23) and $FF800000);
+ Result := result * (1 +
+            Value * (CP2ContError3[0] +
+            Value * (CP2ContError3[1] *
+            Value * (CP2ContError3[2]))));
+end;
+
+function FastPower2MinError4(Value: Single): Single;
+var
+  IntCast : Integer absolute result;
+  j       : Integer;
+const
+  CP2MinError4 : array [0..3] of Single = (6.93125327471890484E-1,
+    2.40243955446532431E-1, 5.58964584033713671E-2, 9.56014434382608004E-3);
+begin
+ j := round(Value);
+ IntCast := ((($7F + j) shl 23) and $FF800000);
+ Value := Value - j;
+ result :=  result * (1 +
+             Value * (CP2MinError4[0] +
+             Value * (CP2MinError4[1] +
+             Value * (CP2MinError4[2] +
+             Value *  CP2MinError4[3]))));
+
+ result := result * (1 + Error);
+end;
+
+function FastPower2ContinousError4(Value: Single): Single;
+var
+  IntCast : Integer absolute result;
+  j       : Integer;
+const
+  CP2ContError4 : array [0..3] of Single = (6.93118326815805763E-1,
+    2.40239617833581720E-1, 5.59538423222786241E-2, 9.60540553453761992E-3);
+begin
+ j := round(Value);
+ IntCast := ((($7F + j) shl 23) and $FF800000);
+ Value := Value - j;
+ result :=  result * (1 +
+             Value * (CP2ContError4[0] + Value *
+                     (CP2ContError4[1] + Value *
+                     (CP2ContError4[2] + Value *
+                     (CP2ContError4[3])))));
+
+ result := result * (1 + Error);
+end;
+
+function FastPower2MinError5(Value: Single): Single;
+var
+  IntCast : Integer absolute result;
+  j       : Integer;
+const
+  CP2MinError5 : array [0..4] of Single = (6.93146707655684646E-1,
+    2.40222758408825315E-1, 5.55115371076677494E-2, 9.66918194816469324E-3,
+    1.31179782896480692E-3);
+begin
+ j := round(Value);
+ IntCast := ((($7F + j) shl 23) and $FF800000);
+ Value := Value - j;
+ result :=  result * (1 +
+             Value * (CP2MinError5[0] +
+             Value * (CP2MinError5[1] +
+             Value * (CP2MinError5[2] +
+             Value * (CP2MinError5[3] +
+             Value *  CP2MinError5[4])))));
+
+ result := result * (1 + Error);
+end;
+
+function FastPower2ContinousError5(Value: Single): Single;
+var
+  IntCast : Integer absolute result;
+  j       : Integer;
+begin
+ j := round(Value);
+ IntCast := ((($7F + j) shl 23) and $FF800000);
+ Value := Value - j;
+ result :=  result * (1 +
+             Value * (CP2ContError5[0] + Value *
+                     (CP2ContError5[1] + Value *
+                     (CP2ContError5[2] + Value *
+                     (CP2ContError5[3] + Value *
+                     (CP2ContError5[4]))))));
+
+ result := result * (1 + Error);
+end;
+
+// Convert a value in dB's to a linear amplitude
+function FastdBtoAmpMinError2(const Value: Single): Single;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2MinError2(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpMinError2(const Value: Double): Double;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2MinError2(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpContinousError2(const Value: Single): Single;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2ContinousError2(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpContinousError2(const Value: Double): Double;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2ContinousError2(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpMinError3(const Value: Single): Single;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2MinError3(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpMinError3(const Value: Double): Double;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2MinError3(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpContinousError3(const Value: Single): Single;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2ContinousError3(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpContinousError3(const Value: Double): Double;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2ContinousError3(Value * CdBtoAmpExpGain32)
+  else Result := 0;
 end;
 
 function FastIntPower(i: Single; n: Integer): Single;
@@ -1478,6 +1716,13 @@ end;
 function FastPower(base, exp : Double): Double;
 begin
  Result := Power(base, exp);
+end;
+
+function FastPower2(const Value: Single): Single;
+var
+  IntCast : Integer absolute result;
+begin
+ IntCast := ((($7F + round(Value)) shl 23) and $FF800000);
 end;
 
 function FastRoot(i: Single; n: Integer): Single;

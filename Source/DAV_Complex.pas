@@ -122,23 +122,23 @@ function ComplexSqr(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLI
 function ComplexSqr(const a: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function ComplexSqr(const a: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexSqrt(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSqrt(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSqrt(const a: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSqrt(const a: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSqrt(const Re, Im: Single): TComplexSingle; overload;
+function ComplexSqrt(const Re, Im: Double): TComplexDouble; overload;
+function ComplexSqrt(const a: TComplexSingle): TComplexSingle; overload;
+function ComplexSqrt(const a: TComplexDouble): TComplexDouble; overload;
 
 implementation
 
 uses
   Math {$IFDEF Delphi5}, DAV_Common{$ENDIF};
 
-function Complex(Re, Im: Double): TComplexDouble;
+function Complex(const Re, Im: Double): TComplexDouble;
 begin
   Result.Re := Re;
   Result.Im := Im;
 end;
 
-function Complex(Re, Im: Single): TComplexSingle;
+function Complex(const Re, Im: Single): TComplexSingle;
 begin
   Result.Re := Re;
   Result.Im := Im;
