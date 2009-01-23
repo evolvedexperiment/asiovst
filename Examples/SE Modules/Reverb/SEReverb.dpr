@@ -23,6 +23,8 @@ begin
   5: TSEStkNReverb2ControllableModule.GetModuleProperties(Properties);
   6: TSEStkJCReverb2StaticModule.GetModuleProperties(Properties);
   7: TSEStkJCReverb2ControllableModule.GetModuleProperties(Properties);
+  8: TSEFreeverbStaticModule.GetModuleProperties(Properties);
+  9: TSEFreeverbControllableModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -40,6 +42,8 @@ begin
    5: result := TSEStkNReverb2ControllableModule.Create(SEAudioMaster, Reserved).Effect;
    6: result := TSEStkJCReverb2StaticModule.Create(SEAudioMaster, Reserved).Effect;
    7: result := TSEStkJCReverb2ControllableModule.Create(SEAudioMaster, Reserved).Effect;
+   8: result := TSEFreeverbStaticModule.Create(SEAudioMaster, Reserved).Effect;
+   9: result := TSEFreeverbControllableModule.Create(SEAudioMaster, Reserved).Effect;
   end;
 end;
 

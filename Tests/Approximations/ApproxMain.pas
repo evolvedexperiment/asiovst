@@ -10,6 +10,7 @@ type
   TFmApproximationBenchmark = class(TForm)
     Memo: TMemo;
     procedure MemoClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   end;
 
 var
@@ -21,6 +22,11 @@ uses
   Math, DAV_Common, DAV_Approximations;
 
 {$R *.dfm}
+
+procedure TFmApproximationBenchmark.FormShow(Sender: TObject);
+begin
+ MemoClick(Sender);
+end;
 
 procedure TFmApproximationBenchmark.MemoClick(Sender: TObject);
 var
@@ -292,6 +298,144 @@ begin
   end;
  QueryPerformanceCounter(B);
  Memo.Lines.Add('Reference: FastPower2MinError5(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+
+ // Fast AmpTodB() Test
+ Temp := 1 / TestLength;
+ Memo.Lines.Add('----------------');
+ Application.ProcessMessages;
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   Amp_To_dB(i * Temp);
+   Amp_To_dB(i * Temp);
+   Amp_To_dB(i * Temp);
+   Amp_To_dB(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: Amp_To_dB(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastAmpTodBMinError2(i * Temp);
+   FastAmpTodBMinError2(i * Temp);
+   FastAmpTodBMinError2(i * Temp);
+   FastAmpTodBMinError2(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastAmpTodBMinError2(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastAmpTodBMinError3(i * Temp);
+   FastAmpTodBMinError3(i * Temp);
+   FastAmpTodBMinError3(i * Temp);
+   FastAmpTodBMinError3(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastAmpTodBMinError3(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastAmpTodBMinError4(i * Temp);
+   FastAmpTodBMinError4(i * Temp);
+   FastAmpTodBMinError4(i * Temp);
+   FastAmpTodBMinError4(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastAmpTodBMinError4(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastAmpTodBMinError5(i * Temp);
+   FastAmpTodBMinError5(i * Temp);
+   FastAmpTodBMinError5(i * Temp);
+   FastAmpTodBMinError5(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastAmpTodBMinError5(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+
+ // Fast dBtoAmp() Test
+ Temp := 1 / TestLength;
+ Memo.Lines.Add('----------------');
+ Application.ProcessMessages;
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   dB_to_Amp(i * Temp);
+   dB_to_Amp(i * Temp);
+   dB_to_Amp(i * Temp);
+   dB_to_Amp(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: dB_to_Amp(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastdBtoAmpMinError2(i * Temp);
+   FastdBtoAmpMinError2(i * Temp);
+   FastdBtoAmpMinError2(i * Temp);
+   FastdBtoAmpMinError2(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastdBtoAmpMinError2(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastdBtoAmpMinError3(i * Temp);
+   FastdBtoAmpMinError3(i * Temp);
+   FastdBtoAmpMinError3(i * Temp);
+   FastdBtoAmpMinError3(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastdBtoAmpMinError3(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastdBtoAmpMinError4(i * Temp);
+   FastdBtoAmpMinError4(i * Temp);
+   FastdBtoAmpMinError4(i * Temp);
+   FastdBtoAmpMinError4(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastdBtoAmpMinError4(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastdBtoAmpMinError5(i * Temp);
+   FastdBtoAmpMinError5(i * Temp);
+   FastdBtoAmpMinError5(i * Temp);
+   FastdBtoAmpMinError5(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastdBtoAmpMinError5(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
  Application.ProcessMessages;
 end;
 

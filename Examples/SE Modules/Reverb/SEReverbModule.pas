@@ -3,13 +3,56 @@ unit SEReverbModule;
 interface
 
 uses
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_StkNReverb, DAV_StkJCReverb;
+  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_StkNReverb, DAV_StkJCReverb,
+  DAV_DspFreeverb;
 
 type
   // define some constants to make referencing in/outs clearer
+  TSEFreeverbPins = (pinFvInput, pinFvOutput, pinRoomsize, pinDamp, pinWet,
+    pinDry);
   TSEStkReverbPins = (pinInput, pinOutput, pinT60, pinEffectMix);
   TSEStkReverb2Pins = (pin2Input, pin2Output1, pin2Output2, pin2T60,
     pin2EffectMix);
+
+  TCustomSEFreeverbModule = class(TSEModuleBase)
+  private
+    FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
+    FOutputBuffer : PDAVSingleFixedArray;
+    FStaticCount  : Integer;
+    procedure ChooseProcess;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+  protected
+    FFreeverb : TFreeverb;
+    procedure Open; override;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+    procedure SampleRateChanged; override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    destructor Destroy; override;
+
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
+  end;
+
+  TSEFreeverbStaticModule = class(TCustomSEFreeverbModule)
+  private
+    FDamp      : Single;
+    FRoomsize  : Single;
+    FDry, FWet : Single;    
+  protected
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSEFreeverbControllableModule = class(TSEFreeverbStaticModule)
+  public
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  end;
 
   TCustomSEStkNReverbModule = class(TSEModuleBase)
   private
@@ -173,6 +216,229 @@ implementation
 
 uses
   SysUtils, DAV_StkReverb;
+
+{ TCustomSEFreeverbModule }
+
+constructor TCustomSEFreeverbModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+begin
+ inherited Create(SEAudioMaster, Reserved);
+ FFreeverb := TFreeverb.Create
+end;
+
+destructor TCustomSEFreeverbModule.Destroy;
+begin
+ FreeAndNil(FFreeverb);
+ inherited;
+end;
+
+procedure TCustomSEFreeverbModule.Open;
+begin
+ inherited Open;
+
+ // choose which function is used to process audio
+ OnProcess := SubProcess;
+end;
+
+// The most important part, processing the audio
+procedure TCustomSEFreeverbModule.SampleRateChanged;
+begin
+ inherited;
+ FFreeverb.SampleRate := SampleRate;
+end;
+
+procedure TCustomSEFreeverbModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+
+procedure TCustomSEFreeverbModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize + round(FFreeverb.RoomSize * SampleRate);
+    OnProcess := SubProcessStatic;
+   end;
+end;
+
+// describe your module
+class procedure TCustomSEFreeverbModule.getModuleProperties(Properties : PSEModuleProperties);
+begin
+ with Properties^ do
+  begin
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+   SDKVersion := CSeSdkVersion;
+  end;
+end;
+
+// describe the pins (plugs)
+function TCustomSEFreeverbModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := True;
+ case TSEStkReverbPins(index) of
+  pinInput:
+   with Properties^ do
+    begin
+     Name            := 'Input';
+     VariableAddress := @FInputBuffer;
+     Direction       := drIn;
+     Flags           := [iofLinearInput];
+     Datatype        := dtFSample;
+     DefaultValue    := '0';
+    end;
+  pinOutput:
+   with Properties^ do
+    begin
+     Name            := 'Output';
+     VariableAddress := @FOutputBuffer;
+     Direction       := drOut;
+     Datatype        := dtFSample;
+    end;
+  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+ end;
+end;
+
+// An input plug has changed value
+procedure TCustomSEFreeverbModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ inherited;
+ case TSEStkReverbPins(CurrentPin.PinID) of
+       pinInput: begin
+                  ChooseProcess;
+                  Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+                 end;
+ end;
+end;
+
+
+{ TSEFreeverbStaticModule }
+
+// describe your module
+class procedure TSEFreeverbStaticModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'DAV modified Freeverb (static)';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV modified Freeverb (static)';
+  end;
+end;
+
+procedure TSEFreeverbStaticModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+var
+  Inp    : PDAVSingleFixedArray;
+  Outp   : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Inp  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
+ Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+
+ for Sample := 0 to SampleFrames - 1
+  do Outp^[Sample] := FFreeverb.ProcessSample(Inp^[Sample]);
+end;
+
+// describe the pins (plugs)
+function TSEFreeverbStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ if not result then
+  case TSEFreeverbPins(index) of
+   pinRoomsize:
+    with Properties^ do
+     begin
+      Name            := 'Roomsize';
+      VariableAddress := @FRoomsize;
+      Direction       := drIn;
+      Datatype        := dtSingle;
+      DefaultValue    := '1';
+      result          := True;
+     end;
+  pinDamp:
+   with Properties^ do
+    begin
+     Name            := 'Damp';
+     VariableAddress := @FDamp;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '30';
+     result          := True;
+    end;
+  pinWet:
+   with Properties^ do
+    begin
+     Name            := 'Wet [%]';
+     VariableAddress := @FWet;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '70';
+     result          := True;
+    end;
+  pinDry:
+   with Properties^ do
+    begin
+     Name            := 'Dry [%]';
+     VariableAddress := @FDry;
+     Direction       := drIn;
+     Datatype        := dtSingle;
+     DefaultValue    := '30';
+     result          := True;
+    end;
+ end;
+end;
+
+// An input plug has changed value
+procedure TSEFreeverbStaticModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ inherited;
+ case TSEFreeverbPins(CurrentPin.PinID) of
+  pinRoomsize : FFreeverb.RoomSize := FRoomsize;
+      pinDamp : FFreeverb.Damp := FDamp;
+       pinWet : FFreeverb.Wet := 0.01 * FWet;
+       pinDry : FFreeverb.Dry := 0.01 * FDry;
+ end;
+end;
+
+
+{ TSEFreeverbControllableModule }
+
+class procedure TSEFreeverbControllableModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'DAV modified Freeverb';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV modified Freeverb';
+  end;
+end;
+
+function TSEFreeverbControllableModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ if TSEStkReverbPins(index) in [pinT60..pinEffectMix]
+  then with Properties^ do Direction := drIn;
+end;
+
 
 { TCustomSEStkNReverbModule }
 

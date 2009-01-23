@@ -22,15 +22,17 @@ const
 
   // Allpass filter class declaration
 type
-  TAllpass = class(TDspObject)
+  TFreeverbAllpass = class(TDspObject)
   private
     FFeedback    : Single;
     FBuffer      : PDAVSingleFixedArray;
     FBufferSize  : Integer;
     FBufferPos   : Integer;
     procedure SetBufferSize(const Value: Integer);
+  protected
+    procedure BuffersizeChanged; virtual;
   public
-    constructor Create(const BS: Integer); virtual;
+    constructor Create(const Buffersize: Integer); virtual;
     destructor Destroy; override;
     function Process(const Input: Single): Single; register;
     procedure Mute;
@@ -39,7 +41,7 @@ type
   end;
 
   // Comb filter class declaration
-  TComb = class(TDspObject)
+  TFreeverbCombFilter = class(TDspObject)
   private
     FFeedback    : Single;
     FFilterStore : Single;
@@ -51,8 +53,11 @@ type
     FDamp        : Single;
     procedure SetDamp(Value: Single);
     procedure SetBufferSize(const Value: Integer);
+  protected
+    procedure BuffersizeChanged; virtual;
+    procedure DampChanged; virtual;
   public
-    constructor Create(const BS: Integer); virtual;
+    constructor Create(const Buffersize: Integer); virtual;
     destructor Destroy; override;
     function Process(const Input: Single): Single; register;
     procedure Mute;
@@ -63,33 +68,42 @@ type
 
 implementation
 
-{ TAllpass }
+{ TFreeverbAllpass }
 
-constructor TAllpass.Create(const BS: Integer);
+constructor TFreeverbAllpass.Create(const Buffersize: Integer);
 begin
  inherited Create;
- Buffersize := BS;
+ FBuffersize := Buffersize;
+ BuffersizeChanged;
 end;
 
-destructor TAllpass.Destroy;
+destructor TFreeverbAllpass.Destroy;
 begin
  Dispose(FBuffer);
  inherited;
 end;
 
-procedure TAllpass.SetBufferSize(const Value: Integer);
-begin             
- FBufferSize := Value - 1;
+procedure TFreeverbAllpass.SetBufferSize(const Value: Integer);
+begin
+ if FBufferSize <> Value - 1 then
+  begin
+   FBufferSize := Value - 1;
+   BuffersizeChanged;
+  end;
+end;
+
+procedure TFreeverbAllpass.BuffersizeChanged;
+begin
  ReallocMem(FBuffer, (FBufferSize + 1) * SizeOf(Single));
  FBufferPos := 0;
 end;
 
-procedure TAllpass.Mute;
+procedure TFreeverbAllpass.Mute;
 begin
  Fillchar(FBuffer^[0], (FBufferSize + 1) * SizeOf(Single), 0);
 end;
 
-function TAllpass.Process(const Input: Single): Single;
+function TFreeverbAllpass.Process(const Input: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  FBuffer^[FBufferPos] := ((FBuffer^[FBufferPos] - Input) * FFeedback) + Input;
@@ -132,35 +146,52 @@ asm
 end;
 {$ENDIF}
 
-{ TComb }
+{ TFreeverbCombFilter }
 
-constructor TComb.Create(const BS: Integer);
+constructor TFreeverbCombFilter.Create(const Buffersize: Integer);
 begin
  inherited Create;
- Buffersize := BS;
+ FBuffersize := Buffersize;
+ BuffersizeChanged;
  FFilterStore := 0;
 end;
 
-destructor TComb.Destroy;
+destructor TFreeverbCombFilter.Destroy;
 begin
  Dispose(FBuffer);
  inherited;
 end;
 
-procedure TComb.SetBufferSize(const Value: Integer);
+procedure TFreeverbCombFilter.SetBufferSize(const Value: Integer);
 begin
- FBufferSize := Value;
+ if FBufferSize <> Value then
+  begin
+   FBufferSize := Value;
+   BuffersizeChanged;
+  end;
+end;
+
+procedure TFreeverbCombFilter.BuffersizeChanged;
+begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
  FBufferPos := 0;
 end;
 
-procedure TComb.SetDamp(Value: Single);
+procedure TFreeverbCombFilter.SetDamp(Value: Single);
 begin
- FDampA := Value;
- FDampB := 1 - Value;
+ if FDampA <> Value then
+  begin
+   FDampA := Value;
+   DampChanged;
+  end;
 end;
 
-procedure TComb.Mute;
+procedure TFreeverbCombFilter.DampChanged;
+begin
+ FDampB := 1 - FDampA;
+end;
+
+procedure TFreeverbCombFilter.Mute;
 begin
  Fillchar(FBuffer^[0], FBufferSize * SizeOf(Single), 0);
 end;
@@ -169,7 +200,7 @@ end;
   but it beats Delphi's compiler generated code hands down,
   Thaddy}
 
-function TComb.Process(const input: Single): Single;
+function TFreeverbCombFilter.Process(const input: Single): Single;
 asm
   mov   ecx, [eax].FBuffer                        // FBuffer start in ecx
   mov   edx, [eax].FBufferPos                   // FBuffer index in edx
