@@ -3,14 +3,17 @@ unit ApproxMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ExtCtrls, DAV_GuiBaseControl, DAV_GuiGraphXY;
 
 type
   TFmApproximationBenchmark = class(TForm)
     Memo: TMemo;
+    GuiGraphXY: TGuiGraphXY;
+    Splitter: TSplitter;
     procedure MemoClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    function Evaluation(Sender: TObject; X: Double): Double;
   end;
 
 var
@@ -23,9 +26,21 @@ uses
 
 {$R *.dfm}
 
+function TFmApproximationBenchmark.Evaluation(Sender: TObject;
+  X: Double): Double;
+var
+  s : Single;
+begin
+// result := Amp_to_dB(abs(x)) - FastAmpTodBMinError5(abs(x));
+// result := Amp_to_dB(abs(x)) - FastAmptodBContinousError5(abs(x));
+ s := x;
+ result := dB_to_Amp(x) - FastdBtoAmpMinError3(s);
+end;
+
 procedure TFmApproximationBenchmark.FormShow(Sender: TObject);
 begin
- MemoClick(Sender);
+// MemoClick(Sender);
+ TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series).OnEvaluate := Evaluation;
 end;
 
 procedure TFmApproximationBenchmark.MemoClick(Sender: TObject);

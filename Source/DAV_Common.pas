@@ -408,26 +408,26 @@ end;
 function Amp_to_dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- result := Twenty * Log10(Value);
+ result := CTwenty32 * Log10(Value);
 {$ELSE}
 asm
  fldlg2
  fld Value
  fyl2x
- fmul CTwenty32.Double
+ fmul CTwenty32
 {$ENDIF}
 end;
 
 function Amp_to_dB(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- result := Twenty * Log10(Value);
+ result := CTwenty64 * Log10(Value);
 {$ELSE}
 asm
  fldlg2
  fld Value
  fyl2x
- fmul CTwenty64.Double
+ fmul CTwenty64
 {$ENDIF}
 end;
 

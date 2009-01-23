@@ -963,6 +963,7 @@ destructor TCustomGuiGraphXY.Destroy;
 begin
  FreeAndNil(FXAxis);
  FreeAndNil(FYAxis);
+// FreeAndNil(FSeriesCollection); ToDo!
  inherited Destroy;
 end;
 
@@ -1220,6 +1221,6 @@ initialization
   RegisterSeriesClass(TGuiGraphXYDataSeries);
 
 finalization
-  SeriesClassList.Free;
+  FreeAndNil(SeriesClassList);
 
 end.

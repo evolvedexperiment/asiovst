@@ -663,6 +663,13 @@ type
     property Knee_dB;
   end;
 
+  TFastCompressor = class(TCustomKneeCompressor)
+  public
+    function TranslatePeakToGain(const PeakLevel: Double): Double; override;
+  published
+    property Knee_dB;
+  end;
+
   TCustomFeedbackCompressor = class(TCustomCompressor)
   protected
     FPreviousAbsSample : Double;
@@ -689,7 +696,6 @@ type
     function ProcessSample(const Input : Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   end;
-
 
   TSimpleRMSCompressor = class(TSimpleCompressor)
   private
@@ -752,7 +758,7 @@ type
 implementation
 
 uses
-  SysUtils, Math;
+  SysUtils, Math, DAV_Approximations;
 
 { TCustomDynamicProcessor }
 
@@ -1802,6 +1808,28 @@ begin
   then result := FMakeUpGain[0]
   else result := FMakeUpGain[1] * Power(PeakLevel, FRatio - 1);
 end;
+
+
+{ TFastCompressor }
+
+function Diode(const Value: Single): Single;
+begin
+ result := CHalf32 * (abs(Value) + Value);
+end;
+
+function TFastCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
+begin
+ result := FastAmptodBContinousError5(PeakLevel);
+(*
+ if result < FThreshold_dB
+  then result := 0
+  else result := (FThreshold_dB - result) * (1 - 1 / Ratio);
+*)
+ result := Diode(result - FThreshold_dB) * -(1 - 1 / Ratio);
+
+ result := FastdBtoAmpMinError3(result);
+end;
+
 
 { TCustomFeedbackCompressor }
 

@@ -282,8 +282,8 @@ const
   CSixthPi64        : Double = Pi / 6.0;  // pi/6.0, used in atan routines
   CTwelfthPi32      : Single = Pi / 12.0; // pi/12.0, used in atan routines
   CTwelfthPi64      : Double = Pi / 12.0; // pi/12.0, used in atan routines
-  CdBtoAmpExpGain32 : Single = 1.5051499783199059760686944736225E-2;
-  CdBtoAmpExpGain64 : Double = 1.5051499783199059760686944736225E-2;
+  CdBtoAmpExpGain32 : Single = 1.6609640474436811739351597147447E-1; //1.5051499783199059760686944736225E-2;
+  CdBtoAmpExpGain64 : Double = 1.6609640474436811739351597147447E-1;
   CFactor2IndB32    : Single = 6.0205999132796239042747778944899;
   CFactor2IndB64    : Double = 6.0205999132796239042747778944899;
 
@@ -1549,8 +1549,9 @@ begin
  IntCast := ((($7F + j) shl 23) and $FF800000);
  Result := result * (1 +
             Value * (CP2MinError3[0] +
-            Value * (CP2MinError3[1] *
+            Value * (CP2MinError3[1] +
             Value * (CP2MinError3[2]))));
+ result := result * (1 + Error);
 end;
 
 function FastPower2ContinousError3(Value: Single): Single;
@@ -1566,8 +1567,9 @@ begin
  IntCast := ((($7F + j) shl 23) and $FF800000);
  Result := result * (1 +
             Value * (CP2ContError3[0] +
-            Value * (CP2ContError3[1] *
-            Value * (CP2ContError3[2]))));
+            Value * (CP2ContError3[1] +
+            Value *  CP2ContError3[2])));
+ result := result * (1 + Error);
 end;
 
 function FastPower2MinError4(Value: Single): Single;
@@ -1877,7 +1879,7 @@ end;
 function FastdBtoAmpMinError2(const Value: Double): Double;
 begin
  if (Value > -1000.0)
-  then Result := FastPower2MinError2(Value * CdBtoAmpExpGain32)
+  then Result := FastPower2MinError2(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
@@ -1893,7 +1895,7 @@ end;
 function FastdBtoAmpContinousError2(const Value: Double): Double;
 begin
  if (Value > -1000.0)
-  then Result := FastPower2ContinousError2(Value * CdBtoAmpExpGain32)
+  then Result := FastPower2ContinousError2(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
@@ -1909,7 +1911,7 @@ end;
 function FastdBtoAmpMinError3(const Value: Double): Double;
 begin
  if (Value > -1000.0)
-  then Result := FastPower2MinError3(Value * CdBtoAmpExpGain32)
+  then Result := FastPower2MinError3(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
@@ -1925,7 +1927,7 @@ end;
 function FastdBtoAmpContinousError3(const Value: Double): Double;
 begin
  if (Value > -1000.0)
-  then Result := FastPower2ContinousError3(Value * CdBtoAmpExpGain32)
+  then Result := FastPower2ContinousError3(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
@@ -1941,7 +1943,7 @@ end;
 function FastdBtoAmpMinError4(const Value: Double): Double;
 begin
  if (Value > -1000.0)
-  then Result := FastPower2MinError4(Value * CdBtoAmpExpGain32)
+  then Result := FastPower2MinError4(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
@@ -1957,13 +1959,15 @@ end;
 function FastdBtoAmpContinousError4(const Value: Double): Double;
 begin
  if (Value > -1000.0)
-  then Result := FastPower2ContinousError4(Value * CdBtoAmpExpGain32)
+  then Result := FastPower2ContinousError4(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
 function FastdBtoAmpMinError5(const Value: Single): Single;
+var
+  IntCast : Integer absolute Value;
 begin
- if (Value > -1000.0)
+ if (IntCast and $FF800000) shr 23 > $3F
   then Result := FastPower2MinError5(Value * CdBtoAmpExpGain32)
   else Result := 0;
 end;
@@ -1971,13 +1975,15 @@ end;
 function FastdBtoAmpMinError5(const Value: Double): Double;
 begin
  if (Value > -1000.0)
-  then Result := FastPower2MinError5(Value * CdBtoAmpExpGain32)
+  then Result := FastPower2MinError5(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
 function FastdBtoAmpContinousError5(const Value: Single): Single;
+var
+  IntCast : Integer absolute Value;
 begin
- if (Value > -1000.0)
+ if (IntCast and $FF800000) shr 23 > $3F
   then Result := FastPower2ContinousError5(Value * CdBtoAmpExpGain32)
   else Result := 0;
 end;
@@ -1985,7 +1991,7 @@ end;
 function FastdBtoAmpContinousError5(const Value: Double): Double;
 begin
  if (Value > -1000.0)
-  then Result := FastPower2ContinousError5(Value * CdBtoAmpExpGain32)
+  then Result := FastPower2ContinousError5(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
