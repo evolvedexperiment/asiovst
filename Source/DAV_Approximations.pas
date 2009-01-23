@@ -14,9 +14,6 @@ uses
   function FastRoot(i: Single; n: Integer): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function FastIntPower(i: Single; n: Integer): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function FastPower(base, exp: Double) : Double; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2Laurent(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2ContinousError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2MinError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function FastLog2(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function FastPower2(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
   function FastFloorLn2(const Value: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
@@ -161,16 +158,34 @@ uses
   function FastArcCotan6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastArcCotan6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
+
   { 2^x Approximations }
 
-  function FastPower2MinError2(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
-  function FastPower2ContinousError2(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
-  function FastPower2MinError3(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
-  function FastPower2ContinousError3(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
-  function FastPower2MinError4(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
-  function FastPower2ContinousError4(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
-  function FastPower2MinError5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
-  function FastPower2ContinousError5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} 
+  function FastPower2MinError2(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastPower2ContinousError2(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastPower2MinError3(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastPower2ContinousError3(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastPower2MinError4(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastPower2ContinousError4(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastPower2MinError5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastPower2ContinousError5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+
+
+  { Log2 Approximations }
+
+  function FastLog2ContinousError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2Laurent2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2MinError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2ContinousError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2Laurent3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2MinError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2ContinousError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2Laurent4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2MinError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2ContinousError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2Laurent5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2MinError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+
 
   { TanH Approximations }
 
@@ -209,6 +224,39 @@ uses
   function FastdBtoAmpMinError3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastdBtoAmpContinousError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastdBtoAmpContinousError3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError4(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError4(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError5(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError5(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+
+  function FastAmptodBMinError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBMinError2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBMinError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBMinError3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBMinError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBMinError4(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError4(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent4(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBMinError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBMinError5(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError5(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent5(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
 
 var
   Ln10, Ln2, Ln2Half, Ln2Rez   : Double;
@@ -236,6 +284,8 @@ const
   CTwelfthPi64      : Double = Pi / 12.0; // pi/12.0, used in atan routines
   CdBtoAmpExpGain32 : Single = 1.5051499783199059760686944736225E-2;
   CdBtoAmpExpGain64 : Double = 1.5051499783199059760686944736225E-2;
+  CFactor2IndB32    : Single = 6.0205999132796239042747778944899;
+  CFactor2IndB64    : Double = 6.0205999132796239042747778944899;
 
 const
   CArcTanLike : Array [0..4] of Single = (0.0208351, -0.085133, 0.180141,
@@ -1454,55 +1504,6 @@ begin
              (IntCast and $007FFFFF) / $800000;
 end;
 
-function FastLog2Laurent(Value: Single): Single;
-var
-  log2 : Integer;
-  x    : Integer absolute Value;
-begin
- log2   := ((x shr 23) and $FF) - $80;
- x      := x and (not ($FF shl 23)) + $7F shl 23;
- Value  := ((CMinusOneThird * Value) + CTwo32) * Value + CMinusTwoThird;
- Result := Value + log2;
-end;
-
-function FastLog2MinError5(const Value: Single): Single;
-var
-  log2 : Integer;
-  x    : Integer absolute Result;
-const
-  CL2MinError5 : array [0..4] of Single = (-8.18038640187952054E-2,
-    6.46216635143615381E-1, -2.12293700635511007, 4.07217052527789480,
-    -1.51355930430330177);
-begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + (((CL2MinError5[0] *
-            Result + CL2MinError5[1]) *
-            Result + CL2MinError5[2]) *
-            Result + CL2MinError5[3]) *
-            Result + CL2MinError5[4];
-end;
-
-function FastLog2ContinousError5(const Value: Single): Single;
-var
-  log2 : Integer;
-  x    : Integer absolute Result;
-const
-  CL2Continous5 : array [0..4] of Single = (-8.21343513178931783E-2,
-    6.49732456739820052E-1, -2.13417801862571777, 4.08642207062728868,
-    -1.51984215742349793);
-begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + (((CL2Continous5[0] *
-           Result + CL2Continous5[1]) *
-           Result + CL2Continous5[2]) *
-           Result + CL2Continous5[3]) *
-           Result + CL2Continous5[4];
-end;
-
 function FastPower2MinError2(Value: Single): Single;
 var
   IntCast : Integer absolute result;
@@ -1649,10 +1650,226 @@ begin
  result := result * (1 + Error);
 end;
 
-// Convert a value in dB's to a linear amplitude
-function FastdBtoAmpMinError2(const Value: Single): Single;
+function FastLog2Laurent(Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Value;
 begin
- if (Value > -1000.0)
+ log2   := ((x shr 23) and $FF) - $80;
+ x      := x and (not ($FF shl 23)) + $7F shl 23;
+ Value  := ((CMinusOneThird * Value) + CTwo32) * Value + CMinusTwoThird;
+ Result := Value + log2;
+end;
+
+function FastLog2MinError2(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2MinError2 : array [0..1] of Single = (1.00055782634514956,
+    4.23544952666627533E-2);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + (CL2MinError2[0] *
+          Result + CL2MinError2[1]);
+end;
+
+function FastLog2ContinousError2(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2Continous2 : array [0..1] of Single = (1.00011486779516678,
+    3.26835576187857176E-4);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + (CL2Continous2[0] *
+           Result + CL2Continous2[1]);
+end;
+
+function FastLog2Laurent2(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2Laurent2 : array [0..1] of Single = (1.00000009294157932,
+    -8.24519535454190642E-8);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + (CL2Laurent2[0] *
+           Result + CL2Laurent2[1]);
+end;
+
+function FastLog2MinError3(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2MinError3 : array [0..2] of Single = (-3.45237616924014556E-1,
+    2.02572339392057543, -6.75567209748426434E-1);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + ((CL2MinError3[0] *
+           Result + CL2MinError3[1]) *
+           Result + CL2MinError3[2]);
+end;
+
+function FastLog2ContinousError3(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2Continous3 : array [0..2] of Single = (-3.33191603749037668E-1,
+    1.99957454862186501, -6.64176001948231232E-1);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + ((CL2Continous3[0] *
+           Result + CL2Continous3[1]) *
+           Result + CL2Continous3[2]);
+end;
+
+function FastLog2Laurent3(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2Laurent3 : array [0..2] of Single = (-3.46544729609133795E-1,
+    2.03963383654773933, -6.93089382045648295E-1);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + ((CL2Laurent3[0] *
+           Result + CL2Laurent3[1]) *
+           Result + CL2Laurent3[2]);
+end;
+
+function FastLog2MinError4(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2MinError4 : array [0..3] of Single = (1.58518682965714114E-1,
+    -1.05301320934821097, 3.04944518136610121, -1.15431731153602279);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + ((CL2MinError4[0] *
+           Result + CL2MinError4[1]) *
+           Result + CL2MinError4[2]) *
+           Result + CL2MinError4[3];
+end;
+
+function FastLog2ContinousError4(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2Continous4 : array [0..3] of Single = (1.63659707946391092E-1,
+    -1.09661081181213116, 3.14421441381158484, -1.21126297836588193);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + ((CL2Continous4[0] *
+           Result + CL2Continous4[1]) *
+           Result + CL2Continous4[2]) *
+           Result + CL2Continous4[3];
+end;
+
+function FastLog2Laurent4(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2Laurent4 : array [0..3] of Single = (1.59220899692695511E-1,
+    -1.05974853905456978, 3.06469939326067076, -1.16417164373658544);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + ((CL2Laurent4[0] *
+           Result + CL2Laurent4[1]) *
+           Result + CL2Laurent4[2]) *
+           Result + CL2Laurent4[3];
+end;
+
+function FastLog2MinError5(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2MinError5 : array [0..4] of Single = (-8.18038640187952054E-2,
+    6.46216635143615381E-1, -2.12293700635511007, 4.07217052527789480,
+    -1.51355930430330177);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + (((CL2MinError5[0] *
+            Result + CL2MinError5[1]) *
+            Result + CL2MinError5[2]) *
+            Result + CL2MinError5[3]) *
+            Result + CL2MinError5[4];
+end;
+
+function FastLog2ContinousError5(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2Continous5 : array [0..4] of Single = (-8.21343513178931783E-2,
+    6.49732456739820052E-1, -2.13417801862571777, 4.08642207062728868,
+    -1.51984215742349793);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + (((CL2Continous5[0] *
+           Result + CL2Continous5[1]) *
+           Result + CL2Continous5[2]) *
+           Result + CL2Continous5[3]) *
+           Result + CL2Continous5[4];
+end;
+
+function FastLog2Laurent5(const Value: Single): Single;
+var
+  log2 : Integer;
+  x    : Integer absolute Result;
+const
+  CL2Laurent5 : array [0..4] of Single = (-8.00848677328682978E-2,
+    6.38108601387251673E-1, -2.11019449052551389, 4.06509622185509922,
+    -1.51292537160088569);
+begin
+ Result := Value;
+ log2 := ((x shr 23) and $FF) - $80;
+ x := x and (not ($FF shl 23)) + $7F shl 23;
+ Result := log2 + (((CL2Laurent5[0] *
+           Result + CL2Laurent5[1]) *
+           Result + CL2Laurent5[2]) *
+           Result + CL2Laurent5[3]) *
+           Result + CL2Laurent5[4];
+end;
+
+
+// Convert a value in dB's to a linear amplitude
+
+function FastdBtoAmpMinError2(const Value: Single): Single;
+var
+  IntCast : Integer absolute Value;
+begin
+ if (IntCast and $FF800000) shr 23 > $3F
   then Result := FastPower2MinError2(Value * CdBtoAmpExpGain32)
   else Result := 0;
 end;
@@ -1665,8 +1882,10 @@ begin
 end;
 
 function FastdBtoAmpContinousError2(const Value: Single): Single;
+var
+  IntCast : Integer absolute Value;
 begin
- if (Value > -1000.0)
+ if (IntCast and $FF800000) shr 23 > $3F
   then Result := FastPower2ContinousError2(Value * CdBtoAmpExpGain32)
   else Result := 0;
 end;
@@ -1679,8 +1898,10 @@ begin
 end;
 
 function FastdBtoAmpMinError3(const Value: Single): Single;
+var
+  IntCast : Integer absolute Value;
 begin
- if (Value > -1000.0)
+ if (IntCast and $FF800000) shr 23 > $3F
   then Result := FastPower2MinError3(Value * CdBtoAmpExpGain32)
   else Result := 0;
 end;
@@ -1693,8 +1914,10 @@ begin
 end;
 
 function FastdBtoAmpContinousError3(const Value: Single): Single;
+var
+  IntCast : Integer absolute Value;
 begin
- if (Value > -1000.0)
+ if (IntCast and $FF800000) shr 23 > $3F
   then Result := FastPower2ContinousError3(Value * CdBtoAmpExpGain32)
   else Result := 0;
 end;
@@ -1704,6 +1927,189 @@ begin
  if (Value > -1000.0)
   then Result := FastPower2ContinousError3(Value * CdBtoAmpExpGain32)
   else Result := 0;
+end;
+
+function FastdBtoAmpMinError4(const Value: Single): Single;
+var
+  IntCast : Integer absolute Value;
+begin
+ if (IntCast and $FF800000) shr 23 > $3F
+  then Result := FastPower2MinError4(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpMinError4(const Value: Double): Double;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2MinError4(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpContinousError4(const Value: Single): Single;
+var
+  IntCast : Integer absolute Value;
+begin
+ if (IntCast and $FF800000) shr 23 > $3F
+  then Result := FastPower2ContinousError4(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpContinousError4(const Value: Double): Double;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2ContinousError4(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpMinError5(const Value: Single): Single;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2MinError5(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpMinError5(const Value: Double): Double;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2MinError5(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpContinousError5(const Value: Single): Single;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2ContinousError5(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+function FastdBtoAmpContinousError5(const Value: Double): Double;
+begin
+ if (Value > -1000.0)
+  then Result := FastPower2ContinousError5(Value * CdBtoAmpExpGain32)
+  else Result := 0;
+end;
+
+
+// Convert a value in dB's to a linear amplitude
+
+function FastAmptodBMinError2(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2MinError2(Value);
+end;
+
+function FastAmptodBMinError2(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2MinError2(Value);
+end;
+
+function FastAmptodBContinousError2(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2ContinousError2(Value);
+end;
+
+function FastAmptodBContinousError2(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2ContinousError2(Value);
+end;
+
+function FastAmptodBLaurent2(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2Laurent2(Value);
+end;
+
+function FastAmptodBLaurent2(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2Laurent2(Value);
+end;
+
+function FastAmptodBMinError3(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2MinError3(Value);
+end;
+
+function FastAmptodBMinError3(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2MinError3(Value);
+end;
+
+function FastAmptodBContinousError3(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2ContinousError3(Value);
+end;
+
+function FastAmptodBContinousError3(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2ContinousError3(Value);
+end;
+
+function FastAmptodBLaurent3(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2Laurent3(Value);
+end;
+
+function FastAmptodBLaurent3(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2Laurent3(Value);
+end;
+
+function FastAmptodBMinError4(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2MinError4(Value);
+end;
+
+function FastAmptodBMinError4(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2MinError4(Value);
+end;
+
+function FastAmptodBContinousError4(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2ContinousError4(Value);
+end;
+
+function FastAmptodBContinousError4(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2ContinousError4(Value);
+end;
+
+function FastAmptodBLaurent4(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2Laurent4(Value);
+end;
+
+function FastAmptodBLaurent4(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2Laurent4(Value);
+end;
+
+function FastAmptodBMinError5(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2MinError5(Value);
+end;
+
+function FastAmptodBMinError5(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2MinError5(Value);
+end;
+
+function FastAmptodBContinousError5(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2ContinousError5(Value);
+end;
+
+function FastAmptodBContinousError5(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2ContinousError5(Value);
+end;
+
+function FastAmptodBLaurent5(const Value: Single): Single;
+begin
+ result := CFactor2IndB32 * FastLog2Laurent5(Value);
+end;
+
+function FastAmptodBLaurent5(const Value: Double): Double;
+begin
+ result := CFactor2IndB64 * FastLog2Laurent5(Value);
 end;
 
 function FastIntPower(i: Single; n: Integer): Single;
