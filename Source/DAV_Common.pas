@@ -224,14 +224,17 @@ var
 
 const
   CDenorm32      : Single = 1E-24;
-  CDenorm64      : Double = 1E-34;
   CTwoPI32       : Single = 2 * Pi;
-  CTwoPI64       : Double = 2 * Pi;
   CFourPI32      : Single = 4 * Pi;
-  CFourPI64      : Double = 4 * Pi;
   CHalf32        : Single = 0.5;
-  CHalf64        : Double = 0.5;
+  CQuarter32     : Single = 0.25;
   CTwenty32      : Single = 20;
+
+  CDenorm64      : Double = 1E-34;
+  CTwoPI64       : Double = 2 * Pi;
+  CFourPI64      : Double = 4 * Pi;
+  CHalf64        : Double = 0.5;
+  CQuarter64     : Double = 0.25;
   CTwenty64      : Double = 20;
 
 const

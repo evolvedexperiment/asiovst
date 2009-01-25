@@ -9,8 +9,16 @@ uses
   Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};{$ENDIF}
 
   {$IFNDEF FPC}
-  function FastExp(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-
+  function FastInvSqrt(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastInvSqrt(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSqrt(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSqrt(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSqrtBab0(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSqrtBab1(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSqrtBab2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSqrtBab0(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSqrtBab1(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastSqrtBab2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
   function FastRoot(i: Single; n: Integer): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function FastIntPower(i: Single; n: Integer): Single; {$IFDEF useinlining} inline; {$ENDIF}
   function FastPower(base, exp: Double) : Double; {$IFDEF useinlining} inline; {$ENDIF}
@@ -24,10 +32,6 @@ uses
   function FastSinLike(const Value: Double): Double; overload;
   function FastCosLike(const Value: Single): Single; overload;
   function FastCosLike(const Value: Double): Double; overload;
-  function FastArcTan2(const Y, X: Extended): Extended;
-  function FastTan(const Value: Extended): Extended;
-  function FastCoTan(const Value: Extended): Extended;
-  function FastLog10(const Value: Extended): Extended;
   {$ENDIF}
 
   { Trigonomic Approximations }
@@ -187,6 +191,10 @@ uses
   function FastLog2MinError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
 
 
+  { Sqrt Approximations }
+
+//  function FastSqrtMinError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+
   { TanH Approximations }
 
   function FastTanhOpt3Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
@@ -315,82 +323,66 @@ const
     -43656.1579281292375769579, 12244.4839556747426927793,
     -336.611376245464339493);
   CArcTan3Term : array [0..2] of Single = (1.6867629106, 0.4378497304,
-    1.6867633134); 
+    1.6867633134);
   CArcTan6Term : array [0..5] of Double = (48.70107004404898384,
     49.5326263772254345, 9.40604244231624, 48.70107004404996166,
     65.7663163908956299, 21.587934067020262);
+  CP2MinError2 : array [0..1] of Single = (7.02679339377207945E-1,
+    2.39338555345344262E-1);
+  CP2ContError2 : array [0..1] of Single = (7.07990673676189286E-1,
+    2.47944580878438597E-1);
+  CP2MinError3 : array [0..2] of Single = (6.93292707161004662E-1,
+    2.42162975514835621E-1, 5.48668824216034384E-2);
+  CP2ContError3 : array [0..2] of Single = (6.93282526441610814E-1,
+    2.42201488582370950E-1, 5.50043626970249666E-2);
+  CP2MinError4 : array [0..3] of Single = (6.93125327471890484E-1,
+    2.40243955446532431E-1, 5.58964584033713671E-2, 9.56014434382608004E-3);
+  CP2ContError4 : array [0..3] of Single = (6.93118326815805763E-1,
+    2.40239617833581720E-1, 5.59538423222786241E-2, 9.60540553453761992E-3);
+  CP2MinError5 : array [0..4] of Single = (6.93146707655684646E-1,
+    2.40222758408825315E-1, 5.55115371076677494E-2, 9.66918194816469324E-3,
+    1.31179782896480692E-3);
   CP2ContError5 : array [0..4] of Single = (6.93147084150589565E-1,
     2.40221342016562145E-1, 5.55055126727891784E-2, 9.67692162036261003E-3,
     1.33355654772594713E-3);
+  CL2MinError2 : array [0..1] of Single = (1.00055782634514956,
+    4.23544952666627533E-2);
+  CL2Laurent2 : array [0..1] of Single = (1.00000009294157932,
+    -8.24519535454190642E-8);
+  CL2Continous2 : array [0..1] of Single = (1.00011486779516678,
+    3.26835576187857176E-4);
+  CL2MinError3 : array [0..2] of Single = (-3.45237616924014556E-1,
+    2.02572339392057543, -6.75567209748426434E-1);
+  CL2Continous3 : array [0..2] of Single = (-3.33191603749037668E-1,
+    1.99957454862186501, -6.64176001948231232E-1);
+  CL2Laurent3 : array [0..2] of Single = (-3.46544729609133795E-1,
+    2.03963383654773933, -6.93089382045648295E-1);
+  CL2MinError4 : array [0..3] of Single = (1.58518682965714114E-1,
+    -1.05301320934821097, 3.04944518136610121, -1.15431731153602279);
+  CL2Continous4 : array [0..3] of Single = (1.63659707946391092E-1,
+    -1.09661081181213116, 3.14421441381158484, -1.21126297836588193);
+  CL2Laurent4 : array [0..3] of Single = (1.59220899692695511E-1,
+    -1.05974853905456978, 3.06469939326067076, -1.16417164373658544);
+  CL2MinError5 : array [0..4] of Single = (-8.18038640187952054E-2,
+    6.46216635143615381E-1, -2.12293700635511007, 4.07217052527789480,
+    -1.51355930430330177);
+  CL2Continous5 : array [0..4] of Single = (-8.21343513178931783E-2,
+    6.49732456739820052E-1, -2.13417801862571777, 4.08642207062728868,
+    -1.51984215742349793);
+  CL2Laurent5 : array [0..4] of Single = (-8.00848677328682978E-2,
+    6.38108601387251673E-1, -2.11019449052551389, 4.06509622185509922,
+    -1.51292537160088569);
 
 implementation
 
 uses
   Math, SysUtils;
 
-{$IFNDEF FPC}
-{$WARNINGS OFF}
-function FastArcTan2(const Y, X: Extended): Extended;
-{$IFDEF PUREPASCAL}
-begin
- Result := ArcTan2(Y, X);
-{$ELSE}
-asm
- fld Y
- fld X
- fpatan
-{$ENDIF}
-end;
-
-function FastTan(const Value: Extended): Extended;
-{$IFDEF PUREPASCAL}
-begin
- Result := Tan(X);
-{$ELSE}
-asm
- fld Value
- fptan
- fstp st(0)
-{$ENDIF}
-end;
-
-function FastCoTan(const Value: Extended): Extended;
-{$IFDEF PUREPASCAL}
-begin
- Result := CoTan(X);
-{$ELSE}
-asm
- fld Value
- fptan
- fdivrp
-{$ENDIF}
-end;
-
-function FastLog10(const Value: Extended): Extended;
-{$IFDEF PUREPASCAL}
-begin
- Result := Log10(X);
-{$ELSE}
-asm
- fldlg2
- fld Value
- fyl2x
-{$ENDIF}
-end;
-{$ENDIF}
-
-function FastExp(const Value: Single): Single;
-begin
- Result := Exp(Value * Ln2);
-end;
-
-
 { Trigonomic Approximations }
 
 type
   TQuadrant = 0..3;
   TOctant   = 0..7;
-
 
 // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
 
@@ -1508,9 +1500,6 @@ function FastPower2MinError2(Value: Single): Single;
 var
   IntCast : Integer absolute result;
   j       : Integer;
-const
-  CP2MinError2 : array [0..1] of Single = (7.02679339377207945E-1,
-    2.39338555345344262E-1);
 begin
  j := round(Value);
  Value := Value - j;
@@ -1524,9 +1513,6 @@ function FastPower2ContinousError2(Value: Single): Single;
 var
   IntCast : Integer absolute result;
   j       : Integer;
-const
-  CP2ContError2 : array [0..1] of Single = (7.07990673676189286E-1,
-    2.47944580878438597E-1);
 begin
  j := round(Value);
  Value := Value - j;
@@ -1540,9 +1526,6 @@ function FastPower2MinError3(Value: Single): Single;
 var
   IntCast : Integer absolute result;
   j       : Integer;
-const
-  CP2MinError3 : array [0..2] of Single = (6.93292707161004662E-1,
-    2.42162975514835621E-1, 5.48668824216034384E-2);
 begin
  j := round(Value);
  Value := Value - j;
@@ -1558,9 +1541,6 @@ function FastPower2ContinousError3(Value: Single): Single;
 var
   IntCast : Integer absolute result;
   j       : Integer;
-const
-  CP2ContError3 : array [0..2] of Single = (6.93282526441610814E-1,
-    2.42201488582370950E-1, 5.50043626970249666E-2);
 begin
  j := round(Value);
  Value := Value - j;
@@ -1576,9 +1556,6 @@ function FastPower2MinError4(Value: Single): Single;
 var
   IntCast : Integer absolute result;
   j       : Integer;
-const
-  CP2MinError4 : array [0..3] of Single = (6.93125327471890484E-1,
-    2.40243955446532431E-1, 5.58964584033713671E-2, 9.56014434382608004E-3);
 begin
  j := round(Value);
  IntCast := ((($7F + j) shl 23) and $FF800000);
@@ -1596,9 +1573,6 @@ function FastPower2ContinousError4(Value: Single): Single;
 var
   IntCast : Integer absolute result;
   j       : Integer;
-const
-  CP2ContError4 : array [0..3] of Single = (6.93118326815805763E-1,
-    2.40239617833581720E-1, 5.59538423222786241E-2, 9.60540553453761992E-3);
 begin
  j := round(Value);
  IntCast := ((($7F + j) shl 23) and $FF800000);
@@ -1616,10 +1590,6 @@ function FastPower2MinError5(Value: Single): Single;
 var
   IntCast : Integer absolute result;
   j       : Integer;
-const
-  CP2MinError5 : array [0..4] of Single = (6.93146707655684646E-1,
-    2.40222758408825315E-1, 5.55115371076677494E-2, 9.66918194816469324E-3,
-    1.31179782896480692E-3);
 begin
  j := round(Value);
  IntCast := ((($7F + j) shl 23) and $FF800000);
@@ -1667,9 +1637,6 @@ function FastLog2MinError2(const Value: Single): Single;
 var
   log2 : Integer;
   x    : Integer absolute Result;
-const
-  CL2MinError2 : array [0..1] of Single = (1.00055782634514956,
-    4.23544952666627533E-2);
 begin
  Result := Value;
  log2 := ((x shr 23) and $FF) - $80;
@@ -1682,9 +1649,6 @@ function FastLog2ContinousError2(const Value: Single): Single;
 var
   log2 : Integer;
   x    : Integer absolute Result;
-const
-  CL2Continous2 : array [0..1] of Single = (1.00011486779516678,
-    3.26835576187857176E-4);
 begin
  Result := Value;
  log2 := ((x shr 23) and $FF) - $80;
@@ -1697,9 +1661,6 @@ function FastLog2Laurent2(const Value: Single): Single;
 var
   log2 : Integer;
   x    : Integer absolute Result;
-const
-  CL2Laurent2 : array [0..1] of Single = (1.00000009294157932,
-    -8.24519535454190642E-8);
 begin
  Result := Value;
  log2 := ((x shr 23) and $FF) - $80;
@@ -1712,9 +1673,6 @@ function FastLog2MinError3(const Value: Single): Single;
 var
   log2 : Integer;
   x    : Integer absolute Result;
-const
-  CL2MinError3 : array [0..2] of Single = (-3.45237616924014556E-1,
-    2.02572339392057543, -6.75567209748426434E-1);
 begin
  Result := Value;
  log2 := ((x shr 23) and $FF) - $80;
@@ -1728,9 +1686,6 @@ function FastLog2ContinousError3(const Value: Single): Single;
 var
   log2 : Integer;
   x    : Integer absolute Result;
-const
-  CL2Continous3 : array [0..2] of Single = (-3.33191603749037668E-1,
-    1.99957454862186501, -6.64176001948231232E-1);
 begin
  Result := Value;
  log2 := ((x shr 23) and $FF) - $80;
@@ -1742,128 +1697,113 @@ end;
 
 function FastLog2Laurent3(const Value: Single): Single;
 var
-  log2 : Integer;
-  x    : Integer absolute Result;
-const
-  CL2Laurent3 : array [0..2] of Single = (-3.46544729609133795E-1,
-    2.03963383654773933, -6.93089382045648295E-1);
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
 begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + ((CL2Laurent3[0] *
-           Result + CL2Laurent3[1]) *
-           Result + CL2Laurent3[2]);
+ Result := (((Val shr 23) and $FF) - $80) + (CL2Laurent3[0] *
+                                    Result + CL2Laurent3[1]) *
+                                    Result + CL2Laurent3[2];
 end;
 
 function FastLog2MinError4(const Value: Single): Single;
 var
-  log2 : Integer;
-  x    : Integer absolute Result;
-const
-  CL2MinError4 : array [0..3] of Single = (1.58518682965714114E-1,
-    -1.05301320934821097, 3.04944518136610121, -1.15431731153602279);
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
 begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + ((CL2MinError4[0] *
-           Result + CL2MinError4[1]) *
-           Result + CL2MinError4[2]) *
-           Result + CL2MinError4[3];
+ Result := (((Val shr 23) and $FF) - $80) + ((CL2MinError4[0] *
+                                     Result + CL2MinError4[1]) *
+                                     Result + CL2MinError4[2]) *
+                                     Result + CL2MinError4[3];
 end;
 
 function FastLog2ContinousError4(const Value: Single): Single;
 var
-  log2 : Integer;
-  x    : Integer absolute Result;
-const
-  CL2Continous4 : array [0..3] of Single = (1.63659707946391092E-1,
-    -1.09661081181213116, 3.14421441381158484, -1.21126297836588193);
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
 begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + ((CL2Continous4[0] *
-           Result + CL2Continous4[1]) *
-           Result + CL2Continous4[2]) *
-           Result + CL2Continous4[3];
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
+ Result := (((Val shr 23) and $FF) - $80) + ((CL2Continous4[0] *
+                                     Result + CL2Continous4[1]) *
+                                     Result + CL2Continous4[2]) *
+                                     Result + CL2Continous4[3];
 end;
 
 function FastLog2Laurent4(const Value: Single): Single;
 var
-  log2 : Integer;
-  x    : Integer absolute Result;
-const
-  CL2Laurent4 : array [0..3] of Single = (1.59220899692695511E-1,
-    -1.05974853905456978, 3.06469939326067076, -1.16417164373658544);
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
 begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + ((CL2Laurent4[0] *
-           Result + CL2Laurent4[1]) *
-           Result + CL2Laurent4[2]) *
-           Result + CL2Laurent4[3];
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
+ Result := (((Val shr 23) and $FF) - $80) + ((CL2Laurent4[0] *
+                                     Result + CL2Laurent4[1]) *
+                                     Result + CL2Laurent4[2]) *
+                                     Result + CL2Laurent4[3];
 end;
 
 function FastLog2MinError5(const Value: Single): Single;
 var
-  log2 : Integer;
-  x    : Integer absolute Result;
-const
-  CL2MinError5 : array [0..4] of Single = (-8.18038640187952054E-2,
-    6.46216635143615381E-1, -2.12293700635511007, 4.07217052527789480,
-    -1.51355930430330177);
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
 begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + (((CL2MinError5[0] *
-            Result + CL2MinError5[1]) *
-            Result + CL2MinError5[2]) *
-            Result + CL2MinError5[3]) *
-            Result + CL2MinError5[4];
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
+ Result := (((Val shr 23) and $FF) - $80) + (((CL2MinError5[0] *
+                                      Result + CL2MinError5[1]) *
+                                      Result + CL2MinError5[2]) *
+                                      Result + CL2MinError5[3]) *
+                                      Result + CL2MinError5[4];
 end;
 
 function FastLog2ContinousError5(const Value: Single): Single;
 var
-  log2 : Integer;
-  x    : Integer absolute Result;
-const
-  CL2Continous5 : array [0..4] of Single = (-8.21343513178931783E-2,
-    6.49732456739820052E-1, -2.13417801862571777, 4.08642207062728868,
-    -1.51984215742349793);
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
 begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + (((CL2Continous5[0] *
-           Result + CL2Continous5[1]) *
-           Result + CL2Continous5[2]) *
-           Result + CL2Continous5[3]) *
-           Result + CL2Continous5[4];
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
+ Result := (((Val shr 23) and $FF) - $80) + (((CL2Continous5[0] *
+                                      Result + CL2Continous5[1]) *
+                                      Result + CL2Continous5[2]) *
+                                      Result + CL2Continous5[3]) *
+                                      Result + CL2Continous5[4];
 end;
 
 function FastLog2Laurent5(const Value: Single): Single;
 var
-  log2 : Integer;
-  x    : Integer absolute Result;
-const
-  CL2Laurent5 : array [0..4] of Single = (-8.00848677328682978E-2,
-    6.38108601387251673E-1, -2.11019449052551389, 4.06509622185509922,
-    -1.51292537160088569);
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
 begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + (((CL2Laurent5[0] *
-           Result + CL2Laurent5[1]) *
-           Result + CL2Laurent5[2]) *
-           Result + CL2Laurent5[3]) *
-           Result + CL2Laurent5[4];
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
+ Result := (((Val shr 23) and $FF) - $80) + (((CL2Laurent5[0] *
+                                      Result + CL2Laurent5[1]) *
+                                      Result + CL2Laurent5[2]) *
+                                      Result + CL2Laurent5[3]) *
+                                      Result + CL2Laurent5[4];
 end;
 
+(*
+function FastSqrtMinError2(const Value: Single): Single;
+var
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
+  Apr : Single;
+  Ica : Integer absolute Apr;
+begin
+ Res := (((((Val shr 23) and $FF) - $7F) div 2) + $7F) shl 23;
+// Res := (((((Val shr 24) shl 1 and $FF) - $7F) div 2 + $7F) shl 23);
+
+ Ica := (Val and ($7FFFFFF)) or $3F000000 or (Val and $800000);
+
+ Apr := 1 + Apr;
+
+
+ Result := Apr * Result;
+
+// Result := Value + Result;
+// Res := (Val and (not ($FF shl 23))) or ($7F shl 23);
+// result := Apr;
+// Res := {(((((Val shr 23) and $FF) - $80) div 2) shl 23 + $80)} (((((Val shr 23) and $FF) + $7F) shr 1 - $7F) shl 23) or (Val and (not ($FF shl 23)));
+
+end;
+*)
 
 // Convert a value in dB's to a linear amplitude
 
@@ -2141,7 +2081,89 @@ function FastRoot(i: Single; n: Integer): Single;
 var
   l : Integer absolute i;
 begin
- Result := (l - $3F800000) shr (n-1) + $3F800000;
+ Result := (l - $3F800000) shr (n - 1) + $3F800000;
+end;
+
+function FastInvSqrt(const Value: Single): Single;
+var
+  IntCst : Integer absolute result;
+begin
+ result := Value;
+ IntCst := ($BE6EB50C - IntCst) shr 1;
+ result := CHalf32 * result * (3 - Value * sqr(result));
+end;
+
+function FastSqrt(const Value: Single): Single;
+begin
+ result := Value * FastInvSqrt(Value);
+end;
+
+function FastInvSqrt(const Value: Double): Double;
+var
+  IntCst : Int64 absolute result;
+begin
+ result := Value;
+ IntCst := ($BFCDD90BCFBC61B4 - IntCst) shr 1;
+ result := CHalf64 * result * (3 - Value * sqr(result));
+end;
+
+function FastSqrt(const Value: Double): Double;
+begin
+ result := Value * FastInvSqrt(Value);
+end;
+
+function FastSqrtBab0(const Value: Single): Single;
+var
+  IntCst : Integer absolute result;
+begin
+ result := Value;
+ IntCst := ((IntCst - (1 shl 23)) shr 1) + (1 shl 29);
+end;
+
+function FastSqrtBab1(const Value: Single): Single;
+var
+  IntCst : Integer absolute result;
+begin
+ result := Value;
+ IntCst := ((IntCst - (1 shl 23)) shr 1) + (1 shl 29);
+ Result := CHalf32 * (Result + Value / Result);
+end;
+
+function FastSqrtBab2(const Value: Single): Single;
+var
+  IntCst : Integer absolute result;
+begin
+ result := Value;
+ IntCst := ((IntCst - (1 shl 23)) shr 1) + (1 shl 29);
+ Result := Result + Value / Result;
+ Result := CQuarter32 * Result + Value / Result;
+end;
+
+function FastSqrtBab0(const Value: Double): Double;
+var
+  IntCst : Int64 absolute result;
+begin
+ result := Value;
+ IntCst := (Int64(1) shl 61) + ((IntCst - (Int64(1) shl 52)) shr 1);
+end;
+
+function FastSqrtBab1(const Value: Double): Double;
+var
+  IntCst : Int64 absolute result;
+begin
+ result := Value;
+ IntCst := (Int64(1) shl 61) + ((IntCst - (Int64(1) shl 52)) shr 1);
+ Result := CHalf32 * (Result + Value / Result);
+end;
+
+function FastSqrtBab2(const Value: Double): Double;
+var
+  IntCst : Int64 absolute result;
+begin
+ result := Value;
+ IntCst := (Int64(1) shl 61) + ((IntCst - (Int64(1) shl 52)) shr 1);
+ Result := Result + Value / Result;
+ Result := CQuarter64 * Result + Value / Result;
 end;
 
 function FastTanhOpt3Term(const Input: Single): Single;
