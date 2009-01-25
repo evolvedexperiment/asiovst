@@ -664,8 +664,18 @@ type
   end;
 
   TFastCompressor = class(TCustomKneeCompressor)
+  private
+    procedure CalculateKneeFactor;
+  protected
+    FRatioFactor : Single;
+    FThrshlddB   : Single;
+    FKneeFactor  : array [0..1] of Single;
+    procedure RatioChanged; override;
+    procedure KneeChanged; override;
+    procedure ThresholdChanged; override;
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
+    function ProcessSample(const Input: Double): Double; override;
   published
     property Knee_dB;
   end;
@@ -1812,22 +1822,67 @@ end;
 
 { TFastCompressor }
 
-function Diode(const Value: Single): Single;
+procedure TFastCompressor.KneeChanged;
 begin
- result := CHalf32 * (abs(Value) + Value);
+ inherited;
+ CalculateKneeFactor;
+end;
+
+function TFastCompressor.ProcessSample(const Input: Double): Double;
+var
+  Temp : Single;
+begin
+ Temp := CDenorm32 + abs(Input);
+ if Temp > FPeak
+  then FPeak := FPeak + (Temp - FPeak) * FAttackFactor
+  else FPeak := Temp + (FPeak - abs(Input)) * FReleaseFactor;
+
+ Temp := FPeak;
+ Temp := FKneeFactor[0] * (FastLog2ContinousError5(Temp) - FThrshlddB);
+ FGain := FastPower2MinError3((Temp - FastSqrtBab2(sqr(Temp) + FKneeFactor[1])));
+
+ // FGain := TranslatePeakToGain(FPeak);
+
+ result := FGain * Input;
+end;
+
+procedure TFastCompressor.RatioChanged;
+begin
+ inherited;
+ FRatioFactor := CHalf32 * (1 / Ratio - 1);
+ CalculateKneeFactor;
+end;
+
+procedure TFastCompressor.CalculateKneeFactor;
+begin
+ FKneeFactor[0] := CFactor2IndB32 * CdBtoAmpExpGain32 * FRatioFactor;
+ FKneeFactor[1] := sqr(CdBtoAmpExpGain32 * FRatioFactor * FKnee_dB);
+end;
+
+function Diode(const Value: Single): Single; inline;
+begin
+ result := (abs(Value) + Value);
+end;
+
+procedure TFastCompressor.ThresholdChanged;
+begin
+ inherited;
+ FThrshlddB := Threshold_dB / CFactor2IndB32;
 end;
 
 function TFastCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
- result := FastAmptodBContinousError5(PeakLevel);
 (*
- if result < FThreshold_dB
-  then result := 0
-  else result := (FThreshold_dB - result) * (1 - 1 / Ratio);
+ result := Diode(FastAmptodBContinousError5(PeakLevel) - FThreshold_dB);
+ result := result - 10 * FastTanhOpt3Term(0.1 * result);
 *)
- result := Diode(result - FThreshold_dB) * -(1 - 1 / Ratio);
+ result := FastAmptodBContinousError5(PeakLevel) - FThreshold_dB;
+ result := FKneeFactor[0] * result;
+ result := FKneeFactor[1] * (result + FastSqrtBab1(sqr(result) + 1));
 
- result := FastdBtoAmpMinError3(result);
+// result := Diode(FastAmptodBContinousError5(PeakLevel) - FThreshold_dB);
+
+ result := FastdBtoAmpMinError3(result * FRatioFactor);
 end;
 
 

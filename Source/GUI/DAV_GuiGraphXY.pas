@@ -372,7 +372,7 @@ begin
     6..9 : BaseGran := 10;
    end;
    FGranularity := BaseGran * IntPower(FGranBase, IntExp);
-   assert(FGranularity > MinGran);
+//   assert(FGranularity > MinGran);
    result := OldGranularity <> FGranularity;
   end
  else result := False;
