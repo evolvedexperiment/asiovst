@@ -244,6 +244,7 @@ type
 
   TGuiGraphXY = class(TCustomGuiGraphXY)
   published
+    property Font;
     property Align;
     property Anchors;
     property AntiAlias;
@@ -271,6 +272,11 @@ implementation
 
 uses
   ExtCtrls, Math, DAV_Common, DAV_Complex;
+
+resourcestring
+  RCStrCalculateRange = 'The upper value must not be equal to the lower value!' + #10#13 +
+                        'If you need to set both values at the same time use' +  #10#13 +
+                        'SetBounds(Lower, Upper: Double)';
 
 { TCustomAxis }
 
@@ -395,9 +401,7 @@ begin
  FRange := FUpper - FLower;
  if FRange <> 0
   then FRangeReci := 1 / FRange
-  else raise Exception.Create('The upper value must not be equal to the lower value!' + #10#13 +
-                              'If you need to set both values at the same time use' +  #10#13 +
-                              'SetBounds(Lower, Upper: Double)');
+  else raise Exception.Create(RCStrCalculateRange);
 end;
 
 procedure TCustomAxis.RangeChanged;
@@ -1012,7 +1016,8 @@ begin
    Pen.Color   := FLineColor;
    Pen.Width   := OversamplingFactor;
    Brush.Color := Color;
-   Font.Height := Self.Font.Height * OversamplingFactor; 
+   Font.Assign(Self.Font);
+   Font.Height := Self.Font.Height * OversamplingFactor;
 
    with XAxis do
     begin

@@ -9,24 +9,24 @@ uses
   Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};{$ENDIF}
 
   {$IFNDEF FPC}
-  function FastInvSqrt(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastInvSqrt(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSqrt(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSqrt(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSqrtBab0(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSqrtBab1(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSqrtBab2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSqrtBab0(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSqrtBab1(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSqrtBab2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastRoot(i: Single; n: Integer): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastIntPower(i: Single; n: Integer): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastPower(base, exp: Double) : Double; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastPower2(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastFloorLn2(const Value: Single): Integer; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastArctanLike(const Value: Single): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastArctanLike(const Value: Double): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastInvSqrt(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastInvSqrt(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrt(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrt(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab0(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab1(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab0(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab1(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastRoot(i: Single; n: Integer): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastIntPower(i: Single; n: Integer): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower(base, exp: Double) : Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower2(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastFloorLn2(const Value: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastArctanLike(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastArctanLike(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   function FastSinLike(const Value: Single): Single; overload;
   function FastSinLike(const Value: Double): Double; overload;
@@ -37,176 +37,176 @@ uses
   { Trigonomic Approximations }
 
   // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
-  function FastCosPart3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCosPart3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart3TermFPU(const Value: Single): Single; overload;
   function FastCosPart3TermFPU(const Value: Double): Double; overload;
-  function FastCos3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCos3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCsc3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCsc3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
-  function FastCosPart4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCosPart4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart4TermFPU(const Value: Single): Single; overload;
   function FastCosPart4TermFPU(const Value: Double): Double; overload;
-  function FastCos4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCos4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCsc4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCsc4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
-  function FastCosPart5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCosPart5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart5TermFPU(const Value: Single): Single; overload;
   function FastCosPart5TermFPU(const Value: Double): Double; overload;
-  function FastCosInBounds5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCosInBounds5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCos5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCos5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCsc5Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCsc5Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosInBounds5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 6-Term: Accurate to about ?.? decimal digits over the range [0, pi/2].
-  function FastCosPart6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCosPart6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart6TermFPU(const Value: Single): Single; overload;
   function FastCosPart6TermFPU(const Value: Double): Double; overload;
-  function FastCos6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCos6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCsc6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCsc6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCos6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
-  function FastCosPart7Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCosPart7Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCos7Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCos7Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin7Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSin7Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec7Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastSec7Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCsc7Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCsc7Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastCosPart7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart7Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos7Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin7Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec7Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc7Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 2-Term: Accurate to about 3.2 decimal digits over the range [0, pi/4].
-  function FastTanPart2Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPart2Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPInv2Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPInv2Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTan2Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTan2Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCoTan2Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCoTan2Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPart2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 3-Term: Accurate to about 5.6 decimal digits over the range [0, pi/4].
-  function FastTanPart3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPart3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPInv3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPInv3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTan3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTan3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCoTan3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCoTan3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPart3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 4-Term: Accurate to about 8.2 decimal digits over the range [0, pi/4].
-  function FastTanPart4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPart4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPInv4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPInv4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTan4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTan4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCoTan4Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCoTan4Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPart4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 6-Term: Accurate to about 14 decimal digits over the range [0, pi/4].
-  function FastTanPart6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPart6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPInv6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanPInv6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTan6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTan6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCoTan6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastCoTan6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanPart6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
-  function FastArcTanPart3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastArcTanPart3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastArcTan3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastArcTan3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastArcCotan3Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastArcCotan3Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcTanPart3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTanPart3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTan3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTan3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCotan3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCotan3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
-  function FastArcTanPart6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastArcTanPart6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastArcTan6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastArcTan6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastArcCotan6Term(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastArcCotan6Term(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastArcTanPart6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTanPart6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTan6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCotan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCotan6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
 
   { 2^x Approximations }
 
-  function FastPower2MinError2(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastPower2ContinousError2(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastPower2MinError3(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastPower2ContinousError3(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastPower2MinError4(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastPower2ContinousError4(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastPower2MinError5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastPower2ContinousError5(Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastPower2MinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower2ContinousError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower2MinError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower2ContinousError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower2MinError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower2ContinousError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower2MinError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower2ContinousError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 
   { Log2 Approximations }
 
-  function FastLog2ContinousError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2Laurent2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2MinError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2ContinousError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2Laurent3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2MinError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2ContinousError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2Laurent4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2MinError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2ContinousError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2Laurent5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
-  function FastLog2MinError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+  function FastLog2ContinousError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2Laurent2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2MinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2ContinousError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2Laurent3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2MinError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2ContinousError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2Laurent4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2MinError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2ContinousError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2Laurent5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2MinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 
   { Sqrt Approximations }
 
-//  function FastSqrtMinError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+//  function FastSqrtMinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   { TanH Approximations }
 
-  function FastTanhOpt3Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt4Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt5Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt6Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt7Term(const Input: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt3Term(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt4Term(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt5Term(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt6Term(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastTanhOpt7Term(const Input: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastTanhOpt3Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt4Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt5Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt6Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt7Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt3Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt4Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt5Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt6Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt7Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   function FastTanhOpt3TermFPU(const Input: Single): Single; assembler; overload;
   function FastTanhOpt4TermFPU(const Input: Single): Single; assembler; overload;
@@ -224,47 +224,47 @@ uses
   function FastTanh2Like2Term(const Input: Single): Single;
   function FastTanh2Like1Term(const Input: Single): Single;
 
-  function FastdBtoAmpMinError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError4(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError4(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError5(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError5(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError3(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError3(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError4(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError4(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError5(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError5(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-  function FastAmptodBMinError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBMinError2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent2(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent2(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBMinError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBMinError3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent3(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent3(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBMinError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBMinError4(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError4(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent4(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent4(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBMinError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBMinError5(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError5(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent5(const Value: Single): Single; {$IFDEF useinlining} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent5(const Value: Double): Double; {$IFDEF useinlining} inline; {$ENDIF} overload;
+  function FastAmptodBMinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError3(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError3(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent3(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError4(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError4(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent4(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError5(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError5(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent5(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
 var
   Ln10, Ln2, Ln2Half, Ln2Rez   : Double;
@@ -1499,11 +1499,10 @@ end;
 function FastPower2MinError2(Value: Single): Single;
 var
   IntCast : Integer absolute result;
-  j       : Integer;
 begin
- j := round(Value);
- Value := Value - j;
- IntCast := ((($7F + j) shl 23) and $FF800000);
+ IntCast := round(Value);
+ Value := Value - IntCast;
+ IntCast := ($7F + Intcast) shl 23;
  Result := result * (1 +
             Value * (CP2MinError2[0] +
             Value * (CP2MinError2[1])));
@@ -1512,11 +1511,10 @@ end;
 function FastPower2ContinousError2(Value: Single): Single;
 var
   IntCast : Integer absolute result;
-  j       : Integer;
 begin
- j := round(Value);
- Value := Value - j;
- IntCast := ((($7F + j) shl 23) and $FF800000);
+ IntCast := round(Value);
+ Value := Value - IntCast;
+ IntCast := ($7F + Intcast) shl 23;
  Result := result * (1 +
             Value * (CP2ContError2[0] +
             Value * (CP2ContError2[1])));
@@ -1525,101 +1523,85 @@ end;
 function FastPower2MinError3(Value: Single): Single;
 var
   IntCast : Integer absolute result;
-  j       : Integer;
 begin
- j := round(Value);
- Value := Value - j;
- IntCast := ((($7F + j) shl 23) and $FF800000);
- Result := result * (1 +
+ IntCast := round(Value);
+ Value := Value - IntCast;
+ IntCast := ($7F + Intcast) shl 23;
+ Result := result * (1.0 +
             Value * (CP2MinError3[0] +
             Value * (CP2MinError3[1] +
-            Value * (CP2MinError3[2]))));
- result := result * (1 + Error);
+            Value *  CP2MinError3[2])));
 end;
 
 function FastPower2ContinousError3(Value: Single): Single;
 var
   IntCast : Integer absolute result;
-  j       : Integer;
 begin
- j := round(Value);
- Value := Value - j;
- IntCast := ((($7F + j) shl 23) and $FF800000);
+ IntCast := round(Value);
+ Value := Value - IntCast;
+ IntCast := ($7F + Intcast) shl 23;
  Result := result * (1 +
             Value * (CP2ContError3[0] +
             Value * (CP2ContError3[1] +
             Value *  CP2ContError3[2])));
- result := result * (1 + Error);
 end;
 
 function FastPower2MinError4(Value: Single): Single;
 var
   IntCast : Integer absolute result;
-  j       : Integer;
 begin
- j := round(Value);
- IntCast := ((($7F + j) shl 23) and $FF800000);
- Value := Value - j;
+ IntCast := round(Value);
+ Value := Value - IntCast;
+ IntCast := ($7F + Intcast) shl 23;
  result :=  result * (1 +
              Value * (CP2MinError4[0] +
              Value * (CP2MinError4[1] +
              Value * (CP2MinError4[2] +
              Value *  CP2MinError4[3]))));
-
- result := result * (1 + Error);
 end;
 
 function FastPower2ContinousError4(Value: Single): Single;
 var
   IntCast : Integer absolute result;
-  j       : Integer;
 begin
- j := round(Value);
- IntCast := ((($7F + j) shl 23) and $FF800000);
- Value := Value - j;
+ IntCast := round(Value);
+ Value := Value - IntCast;
+ IntCast := ($7F + Intcast) shl 23;
  result :=  result * (1 +
              Value * (CP2ContError4[0] + Value *
                      (CP2ContError4[1] + Value *
                      (CP2ContError4[2] + Value *
                      (CP2ContError4[3])))));
-
- result := result * (1 + Error);
 end;
 
 function FastPower2MinError5(Value: Single): Single;
 var
   IntCast : Integer absolute result;
-  j       : Integer;
 begin
- j := round(Value);
- IntCast := ((($7F + j) shl 23) and $FF800000);
- Value := Value - j;
+ IntCast := round(Value);
+ Value := Value - IntCast;
+ IntCast := ($7F + Intcast) shl 23;
  result :=  result * (1 +
              Value * (CP2MinError5[0] +
              Value * (CP2MinError5[1] +
              Value * (CP2MinError5[2] +
              Value * (CP2MinError5[3] +
              Value *  CP2MinError5[4])))));
-
- result := result * (1 + Error);
 end;
 
 function FastPower2ContinousError5(Value: Single): Single;
 var
   IntCast : Integer absolute result;
-  j       : Integer;
 begin
- j := round(Value);
- IntCast := ((($7F + j) shl 23) and $FF800000);
- Value := Value - j;
+ IntCast := round(Value);
+ Value := Value - IntCast;
+ IntCast := ($7F + Intcast) shl 23;
  result :=  result * (1 +
              Value * (CP2ContError5[0] + Value *
                      (CP2ContError5[1] + Value *
                      (CP2ContError5[2] + Value *
                      (CP2ContError5[3] + Value *
                      (CP2ContError5[4]))))));
-
- result := result * (1 + Error);
 end;
 
 function FastLog2Laurent(Value: Single): Single;

@@ -1764,6 +1764,10 @@ begin
  FDialBitmap          := TBitmap.Create;
  FDialBitmap.OnChange := SettingsChanged;
  FLinkedDials         := TObjectList.Create(False);
+ if Collection.Owner is TGuiDialImageList then
+  with FDialBitmap.Canvas, TGuiDialImageList(Collection.Owner) do
+   if Owner is TForm
+    then Brush.Color := TForm(Owner).Color;
 end;
 
 destructor TGuiDialImageCollectionItem.Destroy;

@@ -619,8 +619,6 @@ type
   private
     procedure SetAutoMakeUp(const Value: Boolean);
     procedure SetMakeUpGain_dB(const Value: Double);
-    procedure AutoMakeUpChanged;
-    procedure MakeUpGainChanged;
   protected
     FAutoMakeUp    : Boolean;
     FMakeUpGain_dB : Double;
@@ -628,6 +626,8 @@ type
     procedure RatioChanged; override;
     procedure ThresholdChanged; override;
     procedure CalculateMakeUpGain; virtual;
+    procedure AutoMakeUpChanged; virtual;
+    procedure MakeUpGainChanged; virtual;
   public
     constructor Create; override;
     function ProcessSample(const Input : Double): Double; override;
@@ -666,17 +666,23 @@ type
   TFastCompressor = class(TCustomKneeCompressor)
   private
     procedure CalculateKneeFactor;
+    procedure CalculateAutoMakeUpGain;
   protected
     FRatioFactor : Single;
     FThrshlddB   : Single;
-    FKneeFactor  : array [0..1] of Single;
+    FMkpdB       : Single;
+    FKneeFactor  : Single;
     procedure RatioChanged; override;
     procedure KneeChanged; override;
     procedure ThresholdChanged; override;
+    procedure CalculateMakeUpGain; override;
+    procedure AutoMakeUpChanged; override;
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function ProcessSample(const Input: Double): Double; override;
+    function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
   published
+    property MakeUpGain_dB;
     property Knee_dB;
   end;
 
@@ -1828,24 +1834,6 @@ begin
  CalculateKneeFactor;
 end;
 
-function TFastCompressor.ProcessSample(const Input: Double): Double;
-var
-  Temp : Single;
-begin
- Temp := CDenorm32 + abs(Input);
- if Temp > FPeak
-  then FPeak := FPeak + (Temp - FPeak) * FAttackFactor
-  else FPeak := Temp + (FPeak - abs(Input)) * FReleaseFactor;
-
- Temp := FPeak;
- Temp := FKneeFactor[0] * (FastLog2ContinousError5(Temp) - FThrshlddB);
- FGain := FastPower2MinError3((Temp - FastSqrtBab2(sqr(Temp) + FKneeFactor[1])));
-
- // FGain := TranslatePeakToGain(FPeak);
-
- result := FGain * Input;
-end;
-
 procedure TFastCompressor.RatioChanged;
 begin
  inherited;
@@ -1853,36 +1841,80 @@ begin
  CalculateKneeFactor;
 end;
 
-procedure TFastCompressor.CalculateKneeFactor;
+procedure TFastCompressor.AutoMakeUpChanged;
 begin
- FKneeFactor[0] := CFactor2IndB32 * CdBtoAmpExpGain32 * FRatioFactor;
- FKneeFactor[1] := sqr(CdBtoAmpExpGain32 * FRatioFactor * FKnee_dB);
+ if AutoMakeUp
+  then CalculateAutoMakeUpGain
+  else CalculateMakeUpGain;
 end;
 
-function Diode(const Value: Single): Single; inline;
+procedure TFastCompressor.CalculateAutoMakeUpGain;
+var
+  Temp: Single;
 begin
- result := (abs(Value) + Value);
+ Temp := -FThreshold_dB * FRatioFactor;
+ FMakeUpGain_dB := FastSqrtBab2(sqr(Temp) + sqr(FKnee_dB)) - Temp;
+ CalculateMakeUpGain;
+end;
+
+procedure TFastCompressor.CalculateKneeFactor;
+begin
+ FKneeFactor := sqr(CdBtoAmpExpGain32 * FKnee_dB);
+ if AutoMakeUp
+  then CalculateAutoMakeUpGain;
 end;
 
 procedure TFastCompressor.ThresholdChanged;
 begin
  inherited;
  FThrshlddB := Threshold_dB / CFactor2IndB32;
+ if AutoMakeUp
+  then CalculateAutoMakeUpGain;
 end;
 
 function TFastCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
+ result := PeakLevel;
+ result := FRatioFactor * (FastLog2ContinousError5(result) - FThrshlddB);
+ result := FastPower2MinError3(result - FastSqrtBab2(sqr(result) + FKneeFactor) + FMkpdB);
+end;
+
+procedure TFastCompressor.CalculateMakeUpGain;
+begin
+ inherited;
+ FMkpdB := FMakeUpGain_dB * CdBtoAmpExpGain32;
+end;
+
+function TFastCompressor.CharacteristicCurve_dB(
+  const InputLevel_dB: Double): Double;
+var
+  Temp: Single;
+begin
+ Temp   := FRatioFactor * (InputLevel_dB - FThreshold_dB);
+ result := Temp - FastSqrtBab2(sqr(Temp) + sqr(FKnee_dB)) + MakeUpGain_dB + InputLevel_dB;
+end;
+
 (*
- result := Diode(FastAmptodBContinousError5(PeakLevel) - FThreshold_dB);
- result := result - 10 * FastTanhOpt3Term(0.1 * result);
+function Diode(const Value: Single): Single; inline;
+begin
+ result := (abs(Value) + Value);
+end;
 *)
- result := FastAmptodBContinousError5(PeakLevel) - FThreshold_dB;
- result := FKneeFactor[0] * result;
- result := FKneeFactor[1] * (result + FastSqrtBab1(sqr(result) + 1));
 
-// result := Diode(FastAmptodBContinousError5(PeakLevel) - FThreshold_dB);
+function TFastCompressor.ProcessSample(const Input: Double): Double;
+var
+  Temp : Single;
+begin
+ Temp := CDenorm32 + abs(Input);
 
- result := FastdBtoAmpMinError3(result * FRatioFactor);
+ if Temp > FPeak
+  then FPeak := FPeak + (Temp - FPeak) * FAttackFactor
+  else FPeak := Temp + (FPeak - Temp) * FReleaseFactor;
+
+ Temp  := FRatioFactor * (FastLog2ContinousError5(FPeak) - FThrshlddB);
+ FGain := FastPower2MinError3(Temp - FastSqrtBab2(sqr(Temp) + FKneeFactor) + FMkpdB);
+
+ result := FGain * Input;
 end;
 
 

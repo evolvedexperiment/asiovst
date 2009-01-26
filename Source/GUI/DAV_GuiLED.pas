@@ -41,6 +41,8 @@ type
     property LEDColor;
     property LineColor;
     property LineWidth;
+    property ParentColor;
+    property Visible;
     property OnChange;
     property OnClick;
     property OnMouseDown;
@@ -53,7 +55,6 @@ type
     property OnMouseWheelUp;
     property OnPaint;
     property OnResize;
-    property ParentColor;
   end;
 
 implementation
@@ -100,7 +101,7 @@ begin
   inherited Create(AOwner);
   FLEDColor    := clBlack;
   FLineColor   := clRed;
-  FLineWidth   := 2;
+  FLineWidth   := 1;
   FBrightness  := 100;
 end;
 
@@ -138,6 +139,7 @@ begin
 
    // draw circle
    Rad := 0.45 * Math.Min(Width, Height) - FLineWidth div 2;
+   if Rad = 0 then Exit;
    BW := 1 - FLineWidth * OversamplingFactor / Rad;
    if Rad < 0 then exit;
 

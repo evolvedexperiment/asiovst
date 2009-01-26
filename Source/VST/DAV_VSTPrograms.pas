@@ -35,7 +35,7 @@ type
     destructor Destroy; override;
     function ParameterCount: integer;
     procedure SetParameterCount(const Value: integer);
-    procedure SetParameters(const Parameters: TDAVSingleDynArray);
+    procedure SetParameters(const Parameters: array of Single);
     property Parameter[AIndex: Integer]: Single read GetParameter write SetParameter;
     property Chunk: TMemoryStream read fChunkData write fChunkData;
     property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
@@ -177,7 +177,7 @@ begin
  SetLength(FParameter, Value);
 end;
 
-procedure TCustomVstProgram.SetParameters(const Parameters: TDAVSingleDynArray);
+procedure TCustomVstProgram.SetParameters(const Parameters: array of Single);
 var
   i : Integer;
 begin
