@@ -2969,8 +2969,8 @@ begin
  SetProgram(ProgramNo);
  with result do
   begin
-   ChunkMagic := 'CcnK';
-   FXMagic    := 'FxCk';
+   ChunkMagic := 'KncC';
+   FXMagic    := 'kCxF';
    Version    := 1;
    FXID       := FVstEffect^.UniqueID;
    FXVersion  := FVstEffect^.version;
@@ -3035,8 +3035,8 @@ begin
  if effFlagsProgramChunks in EffectOptions then
   with FXChunkSet do
    begin
-    ChunkMagic  := 'CcnK';
-    FXMagic     := 'FPCh';
+    ChunkMagic  := 'KncC';
+    FXMagic     := 'hCPF';
     Version     := 1;
     FXID        := FVstEffect^.UniqueID;
     FXVersion   := FVstEffect^.version;
@@ -3100,8 +3100,8 @@ begin
    Stream.Read(FXChunkBank, SizeOf(TFXChunkBank) - SizeOf(Pointer));
    SwapLong(FXChunkBank.chunkMagic);
    SwapLong(FXChunkBank.fxMagic);
-   assert(FXChunkBank.chunkMagic = 'CcnK');
-   assert(FXChunkBank.fxMagic = 'FxCk');
+   assert(FXChunkBank.chunkMagic = 'KncC');
+   assert(FXChunkBank.fxMagic = 'kCxF');
 
    // swap unique ID
    SwapLong(FXChunkBank.fxId);
@@ -3124,8 +3124,8 @@ begin
    Stream.Read(FXSet, SizeOf(TFXSet) - SizeOf(Pointer));
    SwapLong(FXSet.chunkMagic);
    SwapLong(FXSet.fxMagic);
-   assert(FXSet.chunkMagic = 'CcnK');
-   assert(FXSet.fxMagic = 'FxCk');
+   assert(FXSet.chunkMagic = 'KncC');
+   assert(FXSet.fxMagic = 'kCxF');
 
    // swap
    SwapLong(FXSet.fxId);
@@ -3167,15 +3167,15 @@ var
   ChunkData      : Pointer;
   ChunkDataSize  : Integer;
   PatchChunkInfo : TVstPatchChunkInfo;
-  b              : Byte;
+  b              : Char;
   UseChunk       : Boolean;
 begin
  if not assigned(FVstEffect) then exit;
 
- // read nineth byte to check, whether chunk are used here 
+ // read nineth byte to check, whether chunk are used here
  Stream.Seek(9, 0);
  Stream.Read(b, 1);
- UseChunk := (b <> $78);
+ UseChunk := (b <> #$78);
  Stream.Seek(0, 0);
 
 // if eoProgramChunks in EffectOptions then
@@ -3246,8 +3246,8 @@ begin
  if effFlagsProgramChunks in EffectOptions then
   with FXChunkBank do
    begin
-    chunkMagic    := 'CcnK';
-    fxMagic       := 'FBCh';
+    chunkMagic    := 'KncC';
+    fxMagic       := 'hCBF';
     version       := 1;
     fxID          := FVstEffect^.UniqueID;
     fxVersion     := FVstEffect^.version;
@@ -3274,8 +3274,8 @@ begin
  else
   with FXSet do
    begin
-    chunkMagic    := 'CcnK';
-    fxMagic       := 'FBCh';
+    chunkMagic    := 'KncC';
+    fxMagic       := 'hCBF';
     version       := 1;
     fxID          := FVstEffect^.UniqueID;
     fxVersion     := FVstEffect^.version;

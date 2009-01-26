@@ -256,7 +256,7 @@ begin
    Ratio := Parameter[3];
    if Ratio <> DialRatio.Position
     then DialRatio.Position := Ratio;
-   LbRatioValue.Caption := ParameterDisplay[3] + ' ' + ParameterLabel[3];
+   LbRatioValue.Caption := '1 : ' + ParameterDisplay[3];
    GuiGraphXY.UpdateGraph;
   end;
 end;

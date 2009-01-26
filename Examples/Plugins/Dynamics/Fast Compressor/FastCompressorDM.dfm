@@ -34,6 +34,10 @@ object FastCompressorDataModule: TFastCompressorDataModule
       VSTModule = Owner
     end
     item
+      DisplayName = 'Pumpkin'
+      VSTModule = Owner
+    end
+    item
       DisplayName = 'More Compression'
       VSTModule = Owner
     end
@@ -71,6 +75,7 @@ object FastCompressorDataModule: TFastCompressorDataModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterAttackChange
+      OnCustomParameterLabel = ParameterTimeLabel
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item

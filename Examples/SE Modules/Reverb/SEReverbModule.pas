@@ -918,7 +918,6 @@ begin
     begin
      Name            := 'Output (left)';
      VariableAddress := @FOutputBuffer1;
-     VariableAddress := @FOutputBuffer2;
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
@@ -981,7 +980,7 @@ begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Inp   := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Outp1 := PDAVSingleFixedArray(@FOutputBuffer1[BufferOffset]);
- Outp2 := PDAVSingleFixedArray(@FOutputBuffer1[BufferOffset]);
+ Outp2 := PDAVSingleFixedArray(@FOutputBuffer2[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1 do
   begin

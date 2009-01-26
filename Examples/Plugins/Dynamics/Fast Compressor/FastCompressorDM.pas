@@ -32,8 +32,7 @@ type
     procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterMixChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FFastCompressor : array [0..1] of TFastCompressor;
     FMix            : array [0..1] of Single;
@@ -55,11 +54,12 @@ procedure TFastCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 const
-  CPresets : array [1..9, 0..9] of Single = (
+  CPresets : array [1..10, 0..9] of Single = (
     (50, 500, -10, 3, 4, 3, 0, 1, 0, 100),
     (20, 100, -12, 4, 2.5, 6, 0, 0, 0, 100),
     (20,  80, -15, 8, 2, 8, 0, 1, 0, 100),
     (5, 60, -20, 7, 3, 13, 1, 0, 0, 100),
+    (1, 50, -30, 6, 2, 18, 0, 0, 0, 100),
     (8, 64, -30, 12, 5, 17, 0, 0, 0, 100),
     (16, 78, -24, 15, 1.8, 19, 0, 1, 0, 100),
     (1, 20, -14, 5, 3, 8, 0, 1, 0, 100),
@@ -72,15 +72,16 @@ begin
    FFastCompressor[Channel].SampleRate := SampleRate;
   end;
 
- Parameter[0] := 1;
- Parameter[1] := 50;
- Parameter[2] := -30;
- Parameter[3] := 6;
+ Parameter[0] := 15;
+ Parameter[1] := 75;
+ Parameter[2] := -10;
+ Parameter[3] := 5;
  Parameter[4] := 2;
- Parameter[5] := 18;
+ Parameter[5] := 6;
  Parameter[6] := 0;
  Parameter[7] := 0;
  Parameter[8] := 0;
+ Parameter[9] := 100;
 
  Programs[0].SetParameters(FParameter);
  for Channel := 1 to numPrograms - 1
