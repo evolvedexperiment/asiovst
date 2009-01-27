@@ -1,4 +1,4 @@
-unit DAV_CorrelationMeter;
+unit DAV_GuiCorrelationMeter;
 
 interface
 

@@ -1,5 +1,6 @@
 package DAV_Gui_D7;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -29,7 +30,8 @@ requires
   vcl,
   DAV_Common_D7,
   DAV_VstPlugin_D7,
-  DAV_DSP_D7;
+  DAV_DSP_D7,
+  DAV_Modular_D7;
 
 contains
   DAV_GuiRegister in '..\Source\GUI\DAV_GuiRegister.pas',
@@ -48,6 +50,12 @@ contains
   DAV_GuiPanel in '..\Source\GUI\DAV_GuiPanel.pas',
   DAV_GuiSelectBox in '..\Source\GUI\DAV_GuiSelectBox.pas',
   DAV_GuiStaticWaveform in '..\Source\GUI\DAV_GuiStaticWaveform.pas',
-  DAV_GuiVUMeter in '..\Source\GUI\DAV_GuiVUMeter.pas';
+  DAV_GuiVUMeter in '..\Source\GUI\DAV_GuiVUMeter.pas',
+  DAV_GuiCommon in '..\Source\GUI\DAV_GuiCommon.pas',
+  DAV_GuiCorrelationMeter in '..\Source\GUI\DAV_GuiCorrelationMeter.pas',
+  DAV_GuiGraphXYDesign in '..\Source\GUI\DAV_GuiGraphXYDesign.pas',
+  DAV_GuiGraphXY in '..\Source\GUI\DAV_GuiGraphXY.pas',
+  DAV_GuiDesign in '..\Source\GUI\DAV_GuiDesign.pas',
+  DAV_GuiDialDesign in '..\Source\GUI\DAV_GuiDialDesign.pas';
 
 end.

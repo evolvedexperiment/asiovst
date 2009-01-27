@@ -26,7 +26,7 @@ uses
   {$IFDEF FPC} LResources, {$ELSE} DAV_GuiGroup, DAV_GuiLevelMeter, {$ENDIF}
   DAV_GuiADSRGraph, DAV_GuiStaticWaveform, DAV_GuiDynamicWaveform,
   DAV_GuiAudioDataDisplay, DAV_GuiDial, DAV_GuiLED, DAV_GuiPanel, DAV_GuiLabel,
-  DAV_GuiButton, DAV_GuiMidiKeys, DAV_GuiSelectBox, DAV_CorrelationMeter,
+  DAV_GuiButton, DAV_GuiMidiKeys, DAV_GuiSelectBox, DAV_GuiCorrelationMeter,
   DAV_GuiVUMeter, DAV_GuiGraphXY, DAV_GuiGraphXYDesign, DAV_GuiDialDesign;
 
 procedure Register;

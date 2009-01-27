@@ -9,8 +9,8 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = DAV_Common_D7.bpl DAV_VSTPlugin_D7.bpl DAV_ASIOHost_D7.bpl DAV_VSTHost_D7.bpl \
-  DAV_GUI_D7.bpl DAV_DSP_D7.bpl
+PROJECTS = DAV_Common_D7.bpl DAV_VSTPlugin_D7.bpl DAV_ASIOHost_D7.bpl \
+  DAV_VSTHost_D7.bpl DAV_GUI_D7.bpl DAV_DSP_D7.bpl DAV_Modular_D7.bpl
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -32,3 +32,8 @@ DAV_GUI_D7.bpl: DAV_GUI_D7.dpk
 
 DAV_DSP_D7.bpl: DAV_DSP_D7.dpk
   $(DCC)
+
+DAV_Modular_D7.bpl: DAV_Modular_D7.dpk
+  $(DCC)
+
+
