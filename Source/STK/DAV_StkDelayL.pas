@@ -14,7 +14,7 @@ interface
 
    Linear interpolation is an efficient technique for achieving fractional
    Delay lengths, though it does introduce high-frequency signal attenuation
-   to varying degrees depending on the fractional Delay setting.  The use of
+   to varying degrees depending on the fractional delay setting. The use of
    higher order Lagrange interpolators can typically improve (minimize) this
    attenuation characteristic.
 }
@@ -25,142 +25,131 @@ uses
 {$I ..\DAV_Compiler.inc}
 
 type
-  TDelayL = class(TDelay)
+  TStkDelayL = class(TStkDelay)
+  private
+    procedure SetDelay(const ADelay: Single);
   protected
-    FAlpha, FOmAlpha, FNextOutput: Single;
-    FDoNextOut: boolean;
+    FAlpha      : Single;
+    FOmAlpha    : Single;
+    FNextOutput : Single;
+    FDoNextOut  : Boolean;
+    FDelay      : Single;
   public
     // Default constructor creates a Delay-line with maximum length of 4095 samples and zero Delay.
-    constructor Create(ASampleRate: Single); overload;
+    constructor Create(const SampleRate: Single); overload; override;
 
     // Overloaded constructor which specifies the current and maximum Delay-line lengths.
 
-    constructor Create(ASampleRate, ADelay: Single; AMaxDelay: longint); overload;
+    constructor Create(const SampleRate, ADelay: Single; const AMaxDelay: Integer); overload; override;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy;  override;
 
-    // Set the Delay-line length.
-  {
-    The valid range for \e ADelay is from 0 to the maximum Delay-line length.
-  }
-    procedure setDelay(ADelay: Single);
-
-    // Return the current Delay-line length.
-    function getDelay: Single;
-
-    // Return the value which will be output by the next call to tick().
+    // Return the value which will be output by the next call to Tick().
   {
     This method is valid only for Delay settings greater than zero!
    }
-    function nextOut: Single;
+    function NextOut: Single;
 
-    // Input one sample to the Delay-line and return one output.
-    function tick(sample: Single): Single;
-
+    // Input one Sample to the Delay-line and return one output.
+    function Tick(const Sample: Single): Single; override;
+  published
+    property Delay: Single read FDelay write SetDelay;
   end;
 
 implementation
 
-{ TDelayL }
+{ TStkDelayL }
 
-constructor TDelayL.Create(ASampleRate: Single);
+constructor TStkDelayL.Create(const SampleRate: Single);
 begin
-  inherited Create(ASampleRate);
+  inherited Create(SampleRate);
   FDoNextOut := True;
 end;
 
-constructor TDelayL.Create(ASampleRate, ADelay: Single; AMaxDelay: longint);
+constructor TStkDelayL.Create(const SampleRate, ADelay: Single; const AMaxDelay: Integer);
 begin
-  inherited Create(ASampleRate);
+  inherited Create(SampleRate);
    // Writing before reading allows delays from 0 to length-1.
-  length := AMaxDelay + 1;
-  if (length > 4096) then
+  FLength := AMaxDelay + 1;
+  if (FLength > 4096) then
    begin
     // We need to delete the previously allocated inputs.
-    freemem(inputs);
-    getmem(inputs, sizeof(Single) * length);
+    Dispose(FInputs);
+    GetMem(FInputs, SizeOf(Single) * FLength);
     Clear;
    end;
-  inPoint := 0;
-  setDelay(ADelay);
+  FInPoint := 0;
+  Delay := ADelay;
   FDoNextOut := True;
 end;
 
-destructor TDelayL.Destroy;
+destructor TStkDelayL.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TDelayL.getDelay: Single;
-begin
-  Result := Delay;
-end;
-
-function TDelayL.nextOut: Single;
+function TStkDelayL.NextOut: Single;
 begin
   if (FDoNextOut) then
    begin
     // First 1/2 of interpolation
-    FNextOutput := index(inputs, outPoint) * FOmAlpha;
+    FNextOutput := FInputs^[FOutPoint] * FOmAlpha;
     // Second 1/2 of interpolation
-    if (outPoint + 1 < length) then
-      FNextOutput := FNextOutput + index(inputs, outPoint + 1) * FAlpha
+    if (FOutPoint + 1 < length) then
+      FNextOutput := FNextOutput + FInputs^[FOutPoint + 1] * FAlpha
     else
-      FNextOutput := FNextOutput + inputs^ * FAlpha;
+      FNextOutput := FNextOutput + FInputs^[0] * FAlpha;
     FDoNextOut := False;
    end;
   Result := FNextOutput;
 end;
 
-procedure TDelayL.setDelay(ADelay: Single);
+procedure TStkDelayL.SetDelay(const ADelay: Single);
 var
-  outPointer: Single;
+  OutPointer: Single;
 begin
   if (ADelay > length - 1) then
    begin
     // Force Delay to maxLength
-    outPointer := inPoint + 1.0;
-    Delay := length - 1;
+    OutPointer := FInPoint + 1;
+    Delay := FLength - 1;
    end
   else if (ADelay < 0) then
    begin
-    outPointer := inPoint;
+    OutPointer := FInPoint;
     Delay := 0;
    end
   else
    begin
-    outPointer := inPoint - ADelay;  // read chases write
+    OutPointer := FInPoint - ADelay;  // read chases write
     Delay := ADelay;
    end;
 
   while (outPointer < 0) do
     outPointer := outPointer + length; // modulo maximum length
 
-  outPoint := round(outPointer);  // integer part
-  FAlpha := outPointer - outPoint; // fractional part
+  FOutPoint := round(OutPointer);  // integer part
+  FAlpha := OutPointer - FOutPoint; // fractional part
   FOmAlpha := 1 - FAlpha;
 end;
 
-function TDelayL.tick(sample: Single): Single;
-var
-  p: pmy_float;
+function TStkDelayL.Tick(const Sample: Single): Single;
 begin
-  p := pindex(inputs, inpoint);
-  p^ := sample;
-  inPoint := inPoint + 1;
+  FInputs^[FInpoint] := Sample;
+  Inc(FInPoint);
   // Increment input pointer modulo length.
-  if (inPoint = length) then
-    inPoint := inPoint - length;
+  if FInPoint = FLength
+   then FInPoint := FInPoint - FLength;
 
-  outputs^ := nextOut;
+  FOutputs^[0] := NextOut;
   FDoNextOut := True;
 
   // Increment output pointer modulo length.
-  outPoint := outPoint + 1;
-  if (outPoint >= length) then
-    outPoint := outPoint - length;
-  Result := outputs^;
+  Inc(FOutPoint);
+  if (FOutPoint >= FLength)
+   then FOutPoint := FOutPoint - FLength;
+  Result := FOutputs[0];
 end;
 
 end.

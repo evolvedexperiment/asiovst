@@ -40,7 +40,7 @@ type
     constructor Create(const SampleRate: Single); overload; override;
 
     // Overloaded constructor which specifies the current and maximum delay-line lengths.
-    constructor Create(SampleRate, ADelay: Single; AMaxDelay: Integer); overload;
+    constructor Create(const SampleRate, ADelay: Single; const AMaxDelay: Integer); overload; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -73,7 +73,7 @@ begin
   Create(SampleRate, 4095, 4095);
 end;
 
-constructor TStkDelay.Create(SampleRate, ADelay: Single; AMaxDelay: Integer);
+constructor TStkDelay.Create(const SampleRate, ADelay: Single; const AMaxDelay: Integer);
 begin
   inherited Create(SampleRate);
   // Writing before reading allows delays from 0 to FLength - 1.
@@ -87,7 +87,7 @@ begin
   Clear;
 
   FInPoint := 0;
-  SetDelay(round(ADelay));
+  Delay := round(ADelay);
 end;
 
 procedure TStkDelay.DelayChanged(const Value: Integer);

@@ -7,62 +7,63 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk;
+  DAV_StkCommon;
 
 type
   TStkLFO = class(TStk)
+  private
+    procedure SetPhase(Value: Single);
+    procedure SetPhaseOffset(Value: Single);
+    procedure SetFreq(const Value: Single);
   protected
-    FWave  : Integer;
-    Cnt    : Single;
-    FTmp   : Single;
-    FPofs  : Single;
-    FPhase : Single;
-    FFreq  : Single;
+    FWave    : Integer;
+    FCnt     : Single;
+    FTmp     : Single;
+    FPOfs    : Single;
+    FPhase   : Single;
+    FFreq    : Single;
+    FFreqInv : Single;
+    procedure PhaseOffsetChanged; virtual;
+    procedure PhaseChanged; virtual;
+    procedure FrequencyChanged; virtual;
   public
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
     procedure Reset;
-    procedure SetPhase(Value: Single);
-    function GetPhase: Single;
-    procedure SetPhaseOffset(Value: Single);
     procedure AddPhaseOffset(Value: Single);
-    function GetPhaseOffset: Single;
-    procedure SetFrequency(sf: Single);
-    function GetFrequency: Single;
-    function Tick: Single;
-    procedure SetActiveWave(i: Integer);
-    function GetActiveWave: Integer;
+    function Tick: Single; virtual;
+  published
+    property ActiveWave: Integer read FWave write FWave;
+    property Phase: Single read FPhase write SetPhase;
+    property PhaseOffset: Single read FPofs write SetPhaseOffset;
+    property Frequency: Single read FFreq write SetFreq;
   end;
 
 implementation
 
 
-function TStkLFO.GetActiveWave: Integer;
-begin
-  Result := FWave;
-end;
-
-procedure TStkLFO.SetActiveWave(i: Integer);
-begin
-  FWave := i;
-end;
-
-constructor TStkLFO.Create(SampleRate: Single);
+constructor TStkLFO.Create(const SampleRate: Single);
 begin
   inherited Create(SampleRate);
-  SetFrequency(1);
-  SetPhase(0);
-  SetPhaseOffset(0);
-  Reset;
+  FFreq := 1;
+  FPOfs := 0;
+  FPhase := 0;
   FWave := 0;
+  FrequencyChanged;
+  PhaseChanged;
+end;
+
+destructor TStkLFO.Destroy;
+begin
+  inherited Destroy;
 end;
 
 function TStkLFO.Tick: Single;
 var
   y, j: Single;
 begin
-  j := srate / FFreq;
-  FPhase := Cnt / j;
+  j := SampleRate * FFreqInv;
+  FPhase := FCnt * FFreq * FSampleRateInv;
   case FWave of
     0 : y := sin(2 * pi * FPhase);
     1 : if FPhase < 0.5 then
@@ -81,64 +82,65 @@ begin
         y := 4 * (FPhase + 0.25) - 5;
     4 : y := FTmp;
   else y := random * 2 - 1;
-   end;
-  Cnt := Cnt + 1;
-  while (Cnt >= j) do
+  end;
+  FCnt := FCnt + 1;
+  while (FCnt >= j) do
    begin
-    Cnt := Cnt - j;
+    FCnt := FCnt - j;
     FTmp := random * 2 - 1;
    end;
   Result := y;
 end;
 
-procedure TStkLFO.SetFrequency(sf: Single);
-begin
-  FFreq := sf;
-end;
-
-function TStkLFO.GetFrequency: Single;
-begin
-  Result := FFreq;
-end;
-
 procedure TStkLFO.SetPhaseOffset(Value: Single);
 begin
-  while Value >= 1 do
-    Value := Value - 1;
-  while Value < 0 do
-    Value := Value + 1;
-  FPofs := Value;
-  SetPhase(FPofs + FPhase);
+ while Value >= 1 do Value := Value - 1;
+ while Value < 0 do Value := Value + 1;
+ if FPofs <> Value then
+  begin
+   FPofs := Value;
+   PhaseOffsetChanged;
+  end;
 end;
 
-function TStkLFO.GetPhaseOffset: Single;
+procedure TStkLFO.PhaseOffsetChanged;
 begin
-  Result := FPofs;
+ Phase := FPofs + FPhase;
+end;
+
+procedure TStkLFO.SetFreq(const Value: Single);
+begin
+ if FFreq <> Value then
+  begin
+   FFreq := Value;
+   FrequencyChanged;
+  end;
+end;
+
+procedure TStkLFO.FrequencyChanged;
+begin
+ FFreqInv := 1 / FFreq;
 end;
 
 procedure TStkLFO.SetPhase(Value: Single);
 begin
-  while Value >= 1 do
-    Value := Value - 1;
-  while Value < 0 do
-    Value := Value + 1;
-  FPhase := Value;
-  Cnt := FPhase * srate / FFreq;
+ while Value >= 1 do Value := Value - 1;
+ while Value < 0 do Value := Value + 1;
+ if FPhase <> Value then
+  begin
+   FPhase := Value;
+   PhaseChanged;
+  end;
 end;
 
-function TStkLFO.GetPhase: Single;
+procedure TStkLFO.PhaseChanged;
 begin
-  Result := FPhase;
+ FCnt := FPhase * SampleRate / FFreq;
 end;
 
-procedure TStkLFO.reset;
+procedure TStkLFO.Reset;
 begin
-  SetPhase(FPofs);
-end;
-
-destructor TStkLFO.Destroy;
-begin
-  inherited Destroy;
+  Phase := FPofs;
 end;
 
 procedure TStkLFO.AddPhaseOffset(Value: Single);
