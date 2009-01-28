@@ -59,6 +59,9 @@ type
 
 implementation
 
+uses
+  DAV_Common;
+
 { TStkDelayL }
 
 constructor TStkDelayL.Create(const SampleRate: Single);
@@ -69,17 +72,16 @@ end;
 
 constructor TStkDelayL.Create(const SampleRate, ADelay: Single; const AMaxDelay: Integer);
 begin
-  inherited Create(SampleRate);
-   // Writing before reading allows delays from 0 to length-1.
+  inherited Create(SampleRate, round(ADelay + CHalf32), AMaxDelay);
   FLength := AMaxDelay + 1;
+(*
   if (FLength > 4096) then
    begin
     // We need to delete the previously allocated inputs.
-    Dispose(FInputs);
-    GetMem(FInputs, SizeOf(Single) * FLength);
+    ReallocMem(FInputs, SizeOf(Single) * FLength);
     Clear;
    end;
-  FInPoint := 0;
+*)
   Delay := ADelay;
   FDoNextOut := True;
 end;
@@ -113,21 +115,20 @@ begin
    begin
     // Force Delay to maxLength
     OutPointer := FInPoint + 1;
-    Delay := FLength - 1;
+    FDelay := FLength - 1;
    end
   else if (ADelay < 0) then
    begin
     OutPointer := FInPoint;
-    Delay := 0;
+    FDelay := 0;
    end
   else
    begin
     OutPointer := FInPoint - ADelay;  // read chases write
-    Delay := ADelay;
+    FDelay := ADelay;
    end;
 
-  while (outPointer < 0) do
-    outPointer := outPointer + length; // modulo maximum length
+  while (outPointer < 0) do outPointer := outPointer + length; // modulo maximum length
 
   FOutPoint := round(OutPointer);  // integer part
   FAlpha := OutPointer - FOutPoint; // fractional part

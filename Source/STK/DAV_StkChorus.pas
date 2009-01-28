@@ -99,7 +99,7 @@ begin
  if FModDepth <> Value then
   begin
    FModDepth := Value;
-   
+   FBaseLength := SampleRate * FModDepth;
   end;
 end;
 
