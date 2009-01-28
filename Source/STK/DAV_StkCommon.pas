@@ -16,7 +16,7 @@ type
   SINT16 = shortint;
   SINT32 = smallint;
   FLOAT32 = Single;
-  FLOAT64 = double;
+  FLOAT64 = Double;
 
 type
   TStk = class

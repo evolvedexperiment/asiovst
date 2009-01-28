@@ -2,26 +2,21 @@ unit DAV_StkChorus;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{ STK TStkChorus effect class.
-
-  This class implements a TStkChorus effect.
-}
-
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkDelayl, DAV_StkLfo;
+  DAV_Common, DAV_StkCommon, DAV_StkDelayl, DAV_StkLfo;
 
 type
   TStkChorus = class(TStk)
   private
     function GetLastOutput: Single;
+    function GetModFrequency: Single;
     procedure SetModDepth(const Value: Single);
     procedure SetModFrequency(const Value: Single);
     procedure SetEffectMix(const Value: Single);
-    function GetModFrequency: Single;
   protected
     FDelayLine   : array[0..1] of TStkDelayL;
     FBaseLength  : Single;
@@ -29,22 +24,14 @@ type
     FEffectMix   : Single;
     FLastOutput  : array[0..1] of Single;
     FMods        : array[0..1] of TStkLFO;
+    procedure SampleRateChanged; override;
   public
-
-    // Class constructor, taking the longest desired delay length.
-    constructor Create(const SampleRate, BaseDelay: Single);
-
-    // Class destructor.
-    destructor Destroy;
-
-    // Reset and clear all internal state.
+    constructor Create(const SampleRate, BaseDelay: Single); reintroduce; overload; virtual;
+    constructor Create(const SampleRate: Single = 44100); overload; override;
+    destructor Destroy; override;
     procedure Clear;
-
-    // Compute one output sample.
     function Tick(const Input: Single): Single; overload;
-
-    // Take \e vectorSize inputs, compute the same number of outputs and return them in \e Vector.
-    function Tick(Vector: PSingle; vectorSize: Integer): PSingle; overload;
+    procedure Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
   published
     property LastOutput: Single read GetLastOutput;
     property LastOutputLeft: Single read FLastOutput[0];
@@ -73,6 +60,11 @@ begin
   Clear;
 end;
 
+constructor TStkChorus.Create(const SampleRate: Single = 44100);
+begin
+ Create(SampleRate, SampleRate);
+end;
+
 destructor TStkChorus.Destroy;
 begin
   inherited Destroy;
@@ -90,19 +82,25 @@ begin
   FLastOutput[1] := 0.0;
 end;
 
+procedure TStkChorus.SampleRateChanged;
+begin
+ inherited;
+ if assigned(FMods[0]) then FMods[0].SampleRate := SampleRate;
+ if assigned(FMods[1]) then FMods[1].SampleRate := SampleRate;
+end;
+
 procedure TStkChorus.SetEffectMix(const Value: Single);
 begin
-  if (Value < 0.0)
-   then FEffectMix := 0.0 else
-  if (Value > 1.0)
-   then FEffectMix := 1.0
-   else FEffectMix := Value;
+ FEffectMix := Limit(Value, 0, 1);
 end;
 
 procedure TStkChorus.SetModDepth(const Value: Single);
 begin
- if FModDepth <> Value
-  then FModDepth := Value;
+ if FModDepth <> Value then
+  begin
+   FModDepth := Value;
+   
+  end;
 end;
 
 procedure TStkChorus.SetModFrequency(const Value: Single);
@@ -135,18 +133,12 @@ begin
   Result := (FLastOutput[0] + FLastOutput[1]) * 0.5;
 end;
 
-function TStkChorus.Tick(Vector: PSingle; vectorSize: Integer): PSingle;
+procedure TStkChorus.Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  i: integer;
-  p: PSingle;
+  Sample: Integer;
 begin
-  p := Vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := Tick(p^);
-    Inc(p);
-   end;
-  Result := Vector;
+ for Sample := 0 to SampleFrames - 1
+  do Output^[Sample] := Tick(Input^[Sample]);
 end;
 
 end.

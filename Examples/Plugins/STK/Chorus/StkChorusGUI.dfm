@@ -71,7 +71,7 @@ object FmStkChorus: TFmStkChorus
     Height = 16
     Anchors = [akLeft, akTop, akRight]
     Max = 5000
-    Min = 20
+    Min = 1
     PageSize = 0
     Position = 20
     TabOrder = 0
@@ -83,12 +83,11 @@ object FmStkChorus: TFmStkChorus
     Width = 171
     Height = 16
     Anchors = [akLeft, akTop, akRight]
-    Max = 5000
-    Min = 20
+    Max = 1000
     PageSize = 0
     Position = 20
     TabOrder = 1
-    OnChange = SBModDepthChange
+    OnChange = SBModFreqChange
   end
   object SbEffectMix: TScrollBar
     Left = 70
@@ -96,11 +95,10 @@ object FmStkChorus: TFmStkChorus
     Width = 171
     Height = 16
     Anchors = [akLeft, akTop, akRight]
-    Max = 5000
-    Min = 20
+    Max = 1000
     PageSize = 0
     Position = 20
     TabOrder = 2
-    OnChange = SBModDepthChange
+    OnChange = SbEffectMixChange
   end
 end

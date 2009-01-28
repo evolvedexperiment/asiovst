@@ -40,8 +40,7 @@ object StkChorusModule: TStkChorusModule
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Depth'
       LargeStepFloat = 2.000000000000000000
-      Max = 5000.000000000000000000
-      Min = 10.000000000000000000
+      Max = 500.000000000000000000
       ShortLabel = 'ModDpth'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -56,12 +55,13 @@ object StkChorusModule: TStkChorusModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 2.000000000000000000
-      MaxInteger = 2
+      Max = 10.000000000000000000
+      MaxInteger = 10
       ReportVST2Properties = True
       ShortLabel = 'ModFreq'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParamModFreqChange
     end
