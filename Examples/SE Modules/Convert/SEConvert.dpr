@@ -26,6 +26,8 @@ begin
    9: TSEFloatToGuiFloatModule.GetModuleProperties(Properties);
   10: TSEDoubleToGuiDoubleModule.GetModuleProperties(Properties);
   11: TSEBooleanToGuiBooleanModule.GetModuleProperties(Properties);
+  12: TSESampleToFloatModule.GetModuleProperties(Properties);
+  13: TSESampleToDoubleModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -49,6 +51,8 @@ begin
    9: if (ProcessType = 1) then SEModuleBase := TSEFloatToGuiFloatModule.Create(SEAudioMaster, Reserved);
   10: if (ProcessType = 1) then SEModuleBase := TSEDoubleToGuiDoubleModule.Create(SEAudioMaster, Reserved);
   11: if (ProcessType = 1) then SEModuleBase := TSEBooleanToGuiBooleanModule.Create(SEAudioMaster, Reserved);
+  12: if (ProcessType = 1) then SEModuleBase := TSESampleToFloatModule.Create(SEAudioMaster, Reserved);
+  13: if (ProcessType = 1) then SEModuleBase := TSESampleToDoubleModule.Create(SEAudioMaster, Reserved);
  end;
 
  if assigned(SEModuleBase)
