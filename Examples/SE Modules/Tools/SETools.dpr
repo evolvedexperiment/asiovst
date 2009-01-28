@@ -11,17 +11,12 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..29] of TSEToolsModuleClass = (
+  CModuleClasses : array [0..23] of TSEToolsModuleClass = (
     TSELimitFloatModule, TSELimitDoubleModule, TSELimitIntegerModule,
     TSEIsPowerOf2Module, TSERoundToPowerOf2Module, TSETruncToPowerOf2Module,
     TSEExtendToPowerOf2Module, TSEFlipIntegerBytesModule, TSESincSingleModule,
     TSESincDoubleModule, TSESigmoidSingleModule, TSESigmoidDoubleModule,
     TSEFractionalSingleModule, TSEFractionalDoubleModule,
-    TSEFastSineApproximationSingleModule, TSEFastSineApproximationDoubleModule,
-    TSEFastCosineApproximationSingleModule,
-    TSEFastCosineApproximationDoubleModule,
-    TSEFastArcTanApproximationSingleModule,
-    TSEFastArcTanApproximationDoubleModule,
     TSEModuloSingleModule, TSEModuloDoubleModule,
     TSEMinimumIntModule, TSEMinimumSingleModule, TSEMinimumDoubleModule,
     TSEMaximumIntModule, TSEMaximumSingleModule, TSEMaximumDoubleModule,

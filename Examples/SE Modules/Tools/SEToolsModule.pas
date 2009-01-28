@@ -3,7 +3,7 @@ unit SEToolsModule;
 interface
 
 uses
-  DAV_Common, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DSPSineLFO;
+  DAV_Common, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DSPLFO;
 
 type
   TSEToolsModuleClass = class of TSEToolsModule;
@@ -172,66 +172,6 @@ type
   end;
 
   TSEAbsoluteDoubleModule = class(TSEToolsModule)
-  protected
-    FDoubleIn  : Double;
-    FDoubleOut : Double;
-    procedure PlugStateChange(const CurrentPin: TSEPin); override;
-  public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-  end;
-
-  TSEFastSineApproximationSingleModule = class(TSEToolsModule)
-  protected
-    FFloatIn  : Single;
-    FFloatOut : Single;
-    procedure PlugStateChange(const CurrentPin: TSEPin); override;
-  public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-  end;
-
-  TSEFastSineApproximationDoubleModule = class(TSEToolsModule)
-  protected
-    FDoubleIn  : Double;
-    FDoubleOut : Double;
-    procedure PlugStateChange(const CurrentPin: TSEPin); override;
-  public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-  end;
-
-  TSEFastCosineApproximationSingleModule = class(TSEToolsModule)
-  protected
-    FFloatIn  : Single;
-    FFloatOut : Single;
-    procedure PlugStateChange(const CurrentPin: TSEPin); override;
-  public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-  end;
-
-  TSEFastCosineApproximationDoubleModule = class(TSEToolsModule)
-  protected
-    FDoubleIn  : Double;
-    FDoubleOut : Double;
-    procedure PlugStateChange(const CurrentPin: TSEPin); override;
-  public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-  end;
-
-  TSEFastArcTanApproximationSingleModule = class(TSEToolsModule)
-  protected
-    FFloatIn  : Single;
-    FFloatOut : Single;
-    procedure PlugStateChange(const CurrentPin: TSEPin); override;
-  public
-    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-  end;
-
-  TSEFastArcTanApproximationDoubleModule = class(TSEToolsModule)
   protected
     FDoubleIn  : Double;
     FDoubleOut : Double;
@@ -412,7 +352,7 @@ procedure TSELimitFloatModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
  if CurrentPin.PinID in [0..2]
-  then FFloatOut := f_Limit(FFloatIn, FLower, FUpper);
+  then FFloatOut := Limit(FFloatIn, FLower, FUpper);
 end;
 
 // describe the pins (plugs)
@@ -1118,7 +1058,7 @@ procedure TSEFractionalSingleModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
  if CurrentPin.PinID = 0
-  then FFloatOut := f_Frac(FFloatIn);
+  then FFloatOut := Frac(FFloatIn);
 end;
 
 
@@ -1170,7 +1110,7 @@ procedure TSEFractionalDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
  if CurrentPin.PinID = 0
-  then FDoubleOut := f_Frac(FDoubleIn);
+  then FDoubleOut := Frac(FDoubleIn);
 end;
 
 { TSEAbsoluteSingleModule }
@@ -1277,318 +1217,6 @@ begin
 end;
 
 
-{ TSEFastSineApproximationSingleModule }
-
-class procedure TSEFastSineApproximationSingleModule.GetModuleProperties(
-  Properties: PSEModuleProperties);
-begin
- inherited;
- with Properties^ do
-  begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Fast Sine Approximation';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Fast Sine Approximation Single';
-  end;
-end;
-
-function TSEFastSineApproximationSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
-begin
- result := True;
- case index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
-      begin
-       Name            := 'In';
-       VariableAddress := @FFloatIn;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '0';
-      end;
-  1: with Properties^ do
-      begin
-       Name            := 'Out';
-       VariableAddress := @FFloatOut;
-       Direction       := drOut;
-       Datatype        := dtSingle;
-       DefaultValue    := '1';
-      end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
-end;
-
-procedure TSEFastSineApproximationSingleModule.PlugStateChange(const CurrentPin: TSEPin);
-begin
- inherited;
- if CurrentPin.PinID = 0
-  then FFloatOut := f_Sin(FFloatIn);
-end;
-
-
-{ TSEFastSineApproximationDoubleModule }
-
-class procedure TSEFastSineApproximationDoubleModule.GetModuleProperties(
-  Properties: PSEModuleProperties);
-begin
- inherited;
- with Properties^ do
-  begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Fast Sine Approximation';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Fast Sine Approximation Double';
-  end;
-end;
-
-function TSEFastSineApproximationDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
-begin
- result := True;
- case index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
-      begin
-       Name            := 'In';
-       VariableAddress := @FDoubleIn;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '0';
-      end;
-  1: with Properties^ do
-      begin
-       Name            := 'Out';
-       VariableAddress := @FDoubleOut;
-       Direction       := drOut;
-       Datatype        := dtSingle;
-       DefaultValue    := '1';
-      end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
-end;
-
-procedure TSEFastSineApproximationDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
-begin
- inherited;
- if CurrentPin.PinID = 0
-  then FDoubleOut := f_Sin(FDoubleIn);
-end;
-
-
-{ TSEFastCosineApproximationSingleModule }
-
-class procedure TSEFastCosineApproximationSingleModule.GetModuleProperties(
-  Properties: PSEModuleProperties);
-begin
- inherited;
- with Properties^ do
-  begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Fast Cosine Approximation';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Fast Cosine Approximation Single';
-  end;
-end;
-
-function TSEFastCosineApproximationSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
-begin
- result := True;
- case index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
-      begin
-       Name            := 'In';
-       VariableAddress := @FFloatIn;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '0';
-      end;
-  1: with Properties^ do
-      begin
-       Name            := 'Out';
-       VariableAddress := @FFloatOut;
-       Direction       := drOut;
-       Datatype        := dtSingle;
-       DefaultValue    := '1';
-      end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
-end;
-
-procedure TSEFastCosineApproximationSingleModule.PlugStateChange(const CurrentPin: TSEPin);
-begin
- inherited;
- if CurrentPin.PinID = 0
-  then FFloatOut := f_Cos(FFloatIn);
-end;
-
-
-{ TSEFastCosineApproximationDoubleModule }
-
-class procedure TSEFastCosineApproximationDoubleModule.GetModuleProperties(
-  Properties: PSEModuleProperties);
-begin
- inherited;
- with Properties^ do
-  begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Fast Cosine Approximation';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Fast Cosine Approximation Double';
-  end;
-end;
-
-function TSEFastCosineApproximationDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
-begin
- result := True;
- case index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
-      begin
-       Name            := 'In';
-       VariableAddress := @FDoubleIn;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '0';
-      end;
-  1: with Properties^ do
-      begin
-       Name            := 'Out';
-       VariableAddress := @FDoubleOut;
-       Direction       := drOut;
-       Datatype        := dtSingle;
-       DefaultValue    := '1';
-      end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
-end;
-
-procedure TSEFastCosineApproximationDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
-begin
- inherited;
- if CurrentPin.PinID = 0
-  then FDoubleOut := f_Cos(FDoubleIn);
-end;
-
-
-{ TSEFastArcTanApproximationSingleModule }
-
-class procedure TSEFastArcTanApproximationSingleModule.GetModuleProperties(
-  Properties: PSEModuleProperties);
-begin
- inherited;
- with Properties^ do
-  begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Fast ArcTan Approximation';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Fast ArcTan Approximation Single';
-  end;
-end;
-
-function TSEFastArcTanApproximationSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
-begin
- result := True;
- case index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
-      begin
-       Name            := 'In';
-       VariableAddress := @FFloatIn;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '0';
-      end;
-  1: with Properties^ do
-      begin
-       Name            := 'Out';
-       VariableAddress := @FFloatOut;
-       Direction       := drOut;
-       Datatype        := dtSingle;
-       DefaultValue    := '1';
-      end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
-end;
-
-procedure TSEFastArcTanApproximationSingleModule.PlugStateChange(const CurrentPin: TSEPin);
-begin
- inherited;
- if CurrentPin.PinID = 0
-  then FFloatOut := f_ArcTan(FFloatIn);
-end;
-
-
-{ TSEFastArcTanApproximationDoubleModule }
-
-class procedure TSEFastArcTanApproximationDoubleModule.GetModuleProperties(
-  Properties: PSEModuleProperties);
-begin
- inherited;
- with Properties^ do
-  begin
-   // describe the plugin, this is the name the end-user will see.
-   Name := 'Fast ArcTan Approximation';
-
-   // return a unique string 32 characters max
-   // if posible include manufacturer and plugin identity
-   // this is used internally by SE to identify the plug.
-   // No two plugs may have the same id.
-   ID := 'DAV Fast ArcTan Approximation Double';
-  end;
-end;
-
-function TSEFastArcTanApproximationDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
-begin
- result := True;
- case index of
-  // typical input plug (inputs are listed first)
-  0: with Properties^ do
-      begin
-       Name            := 'In';
-       VariableAddress := @FDoubleIn;
-       Direction       := drIn;
-       Datatype        := dtSingle;
-       DefaultValue    := '0';
-      end;
-  1: with Properties^ do
-      begin
-       Name            := 'Out';
-       VariableAddress := @FDoubleOut;
-       Direction       := drOut;
-       Datatype        := dtSingle;
-       DefaultValue    := '1';
-      end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;
-end;
-
-procedure TSEFastArcTanApproximationDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
-begin
- inherited;
- if CurrentPin.PinID = 0
-  then FDoubleOut := f_ArcTan(FDoubleIn);
-end;
-
-
 { TSEModuloSingleModule }
 
 class procedure TSEModuloSingleModule.GetModuleProperties(
@@ -1645,7 +1273,7 @@ procedure TSEModuloSingleModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
  if CurrentPin.PinID = 0
-  then FFloatOut := f_Mod(FFloatIn, FFloatMod);
+  then FFloatOut := FastMod(FFloatIn, FFloatMod);
 end;
 
 
@@ -1705,7 +1333,7 @@ procedure TSEModuloDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
  if CurrentPin.PinID = 0
-  then FDoubleOut := f_Mod(FDoubleIn, FDoubleMod);
+  then FDoubleOut := FastMod(FDoubleIn, FDoubleMod);
 end;
 
 
