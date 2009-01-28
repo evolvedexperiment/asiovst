@@ -56,7 +56,7 @@ type
 
     // Input one sample to the delay-line and return one output.
     function Tick(const Input: Single): Single; overload; override;
-
+    procedure Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
   published
     property NextOut: Single read GetNextOut;
     property Energy: Single read GetEnergy;
@@ -197,6 +197,15 @@ begin
  if (FOutPoint >= FLength)
   then FOutPoint := FOutPoint - FLength;
  result := FOutputs^[0];
+end;
+
+procedure TStkDelay.Tick(const Input, Output: PDAVSingleFixedArray;
+  const SampleFrames: Integer);
+var
+  i: integer;
+begin
+  for i := 0 to SampleFrames - 1
+   do Output^[i] := Tick(Input^[i])
 end;
 
 end.

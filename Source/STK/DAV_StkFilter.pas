@@ -87,8 +87,8 @@ type
 
     // Input one sample to the filter and return one output.
     function Tick(const Input: Single): Single; overload; virtual;
-    procedure Tick(const Input: PDAVSingleFixedArray;
-      out Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
+    procedure Tick(const Input, Output: PDAVSingleFixedArray;
+      const SampleFrames: Integer); overload; virtual;
 
     property LastOutput: Single read GetLastOutput; // Return the last computed output value.
     property Gain: Single read FGain write SetGain; // The gain is applied at the filter input and does not affect the coefficient values.
@@ -309,13 +309,13 @@ begin
   Move(BCoefficients^[0], FB^[0], FnumB * SizeOf(Single));
 end;
 
-procedure TStkFilter.Tick(const Input: PDAVSingleFixedArray;
-  out Output: PDAVSingleFixedArray; const SampleFrames: Integer);
+procedure TStkFilter.Tick(const Input, Output: PDAVSingleFixedArray;
+  const SampleFrames: Integer);
 var
-  i: integer;
+  Sample: integer;
 begin
-  for i := 0 to SampleFrames - 1
-   do Output^[i] := Tick(Input^[i])
+  for Sample := 0 to SampleFrames - 1
+   do Output^[Sample] := Tick(Input^[Sample])
 end;
 
 function TStkFilter.Tick(const Input: Single): Single;
