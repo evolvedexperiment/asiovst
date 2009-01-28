@@ -12,109 +12,82 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkDelay;
+  DAV_Common, DAV_StkCommon, DAV_StkDelay;
 
 type
-  TEcho = class(TStk)
+  TStkEcho = class(TStk)
+  private
+    procedure SetDelay(const Value: Single);
+    procedure SetEffectMix(const Value: Single);
+    function GetDelay: Single;
   protected
-    FDelayLine   : TDelay;
+    FDelayLine   : TStkDelay;
     FLength      : Integer;
     FLastOutput  : Single;
     FEffectMix   : Single;
   public
-    // Class constructor, taking the longest desired delay FLength.
-    constructor Create(sr, longestDelay: Single);
-
-    // Class destructor.
-    destructor Destroy;
-
-    // Reset and clear all internal state.
+    constructor Create(const SampleRate, LongestDelay: Single); reintroduce; virtual;
+    destructor Destroy; override;
     procedure Clear;
-
-    // Set the delay line FLength in samples.
-    procedure setDelay(delay: Single);
-
-    // Set the mixture of input and processed levels in the output (0.0 := input only, 1.0 := processed only). 
-    procedure setEffectMix(mix: Single);
-
-    // Return the last output value.
-    function lastOut: Single;
-
-    // Compute one output sample.
-    function tick(input: Single): Single; overload;
-
-    // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function tick(vector: PSingle; vectorSize: Integer): PSingle; overload;
+    function Tick(const Input: Single): Single; overload;
+    procedure Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+  published
+    property EffectMix: Single read FEffectMix write SetEffectMix;
+    property Delay: Single read GetDelay write SetDelay;
+    property LastOutput: Single read FLastOutput;
   end;
 
 implementation
 
-constructor TEcho.Create(sr, longestDelay: Single);
+constructor TStkEcho.Create(const SampleRate, LongestDelay: Single);
 begin
-  inherited Create(sr);
-  FLength := round(longestDelay) + 2;
-  FDelayLine := TDelay.Create(srate, FLength shr 1, FLength);
+  inherited Create(SampleRate);
+  FLength := round(LongestDelay) + 2;
+  FDelayLine := TStkDelay.Create(SampleRate, FLength shr 1, FLength);
   FEffectMix := 0.5;
   Clear;
 end;
 
-destructor TEcho.Destroy;
+destructor TStkEcho.Destroy;
 begin
   inherited Destroy;
   FDelayLine.Free;
 end;
 
-procedure TEcho.Clear;
+function TStkEcho.GetDelay: Single;
+begin
+ result := FDelayLine.Delay;
+end;
+
+procedure TStkEcho.Clear;
 begin
   FDelayLine.Clear;
   FLastOutput := 0.0;
 end;
 
-procedure TEcho.setDelay;
-var
-  size: Single;
+procedure TStkEcho.SetDelay(const Value: Single);
 begin
-  size := delay;
-  if (delay < 0.0) then
-    size := 0.0
-  else if (delay > FLength) then
-    size := FLength;
-  FDelayLine.setDelay(round(size));
+ FDelayLine.Delay := round(Limit(Value, 0, FLength));
 end;
 
-procedure TEcho.setEffectMix;
+procedure TStkEcho.SetEffectMix(const Value: Single);
 begin
-  FEffectMix := mix;
-  if (mix < 0.0) then
-    FEffectMix := 0.0
-  else if (mix > 1.0) then
-    FEffectMix := 1.0;
+  FEffectMix := Limit(Value, 0, 1);
 end;
 
-function TEcho.lastOut: Single;
+function TStkEcho.Tick(const Input: Single): Single;
 begin
+  FLastOutput := FEffectMix * FDelayLine.Tick(Input);
+  FLastOutput := FLastOutput + Input * (1.0 - FEffectMix);
   Result := FLastOutput;
 end;
 
-function TEcho.tick(input: Single): Single;
-begin
-  FLastOutput := FEffectMix * FDelayLine.tick(input);
-  FLastOutput := FLastOutput + input * (1.0 - FEffectMix);
-  Result := FLastOutput;
-end;
-
-function TEcho.tick(vector: PSingle; vectorSize: Integer): PSingle;
+procedure TStkEcho.Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  i: integer;
-  p: PSingle;
+  Sample: Integer;
 begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := tick(p^);
-    Inc(p);
-   end;
-  Result := vector;
+  for Sample := 0 to SampleFrames - 1
+   do Output^[Sample] := Tick(Input^[Sample]);
 end;
 
 end.
