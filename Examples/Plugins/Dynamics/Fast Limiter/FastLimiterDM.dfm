@@ -4,13 +4,13 @@ object FastLimiterDataModule: TFastLimiterDataModule
   Version = '1.0'
   EffectName = 'Fast Limiter'
   ProductName = 'DAV Dynamic Examples'
-  VendorName = 'Delphi ASIO & VST Package'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'DVFC'
+  UniqueID = 'DVFL'
   ShellPlugins = <>
   Programs = <
     item
@@ -121,17 +121,17 @@ object FastLimiterDataModule: TFastLimiterDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      Category = 'Characteristic'
-      DisplayName = 'Ratio'
+      DisplayName = 'Mix'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
-      ShortLabel = 'Ratio'
+      ShortLabel = 'Mix'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      Units = '%'
       VSTModule = Owner
-      OnCustomParameterDisplay = ParameterRatioDisplay
+      OnParameterChange = ParameterMixChange
     end
     item
       Curve = ctLinear
@@ -223,21 +223,6 @@ object FastLimiterDataModule: TFastLimiterDataModule
       VSTModule = Owner
       OnParameterChange = ParameterAutoMakeUpGainChange
       OnCustomParameterDisplay = ParameterOnOffDisplay
-    end
-    item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
-      DisplayName = 'Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
-      LargeStepFloat = 2.000000000000000000
-      Max = 100.000000000000000000
-      ReportVST2Properties = True
-      ShortLabel = 'Mix'
-      SmallStepFloat = 0.500000000000000000
-      StepFloat = 1.000000000000000000
-      Units = '%'
-      VSTModule = Owner
-      OnParameterChange = ParameterMixChange
     end>
   ParameterCategories = <
     item

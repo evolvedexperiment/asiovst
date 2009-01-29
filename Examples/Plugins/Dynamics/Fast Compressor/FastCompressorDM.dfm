@@ -4,7 +4,7 @@ object FastCompressorDataModule: TFastCompressorDataModule
   Version = '1.0'
   EffectName = 'Fast Compressor'
   ProductName = 'DAV Dynamic Examples'
-  VendorName = 'Delphi ASIO & VST Package'
+  VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0

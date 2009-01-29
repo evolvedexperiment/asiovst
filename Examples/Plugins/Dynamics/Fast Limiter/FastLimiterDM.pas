@@ -34,7 +34,6 @@ type
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FFastLimiter : array [0..1] of TFastSoftKneeLimiter;
-    FMix         : array [0..1] of Single;
     function GetFastLimiter(Index: Integer): TFastSoftKneeLimiter;
     procedure ChooseProcess;
   public
@@ -53,17 +52,17 @@ procedure TFastLimiterDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 const
-  CPresets : array [1..10, 0..9] of Single = (
-    (50, 500, -10, 3, 4, 3, 0, 1, 0, 100),
-    (20, 100, -12, 4, 2.5, 6, 0, 0, 0, 100),
-    (20,  80, -15, 8, 2, 8, 0, 1, 0, 100),
-    (5, 60, -20, 7, 3, 13, 1, 0, 0, 100),
-    (1, 50, -30, 6, 2, 18, 0, 0, 0, 100),
-    (8, 64, -30, 12, 5, 17, 0, 0, 0, 100),
-    (16, 78, -24, 15, 1.8, 19, 0, 1, 0, 100),
-    (1, 20, -14, 5, 3, 8, 0, 1, 0, 100),
-    (3, 44, -17, 7, 1, 9, 1, 0, 0, 100),
-    (8, 56, -11, 9, 4, 5, 1, 1, 0, 100));
+  CPresets : array [1..10, 0..8] of Single = (
+    (50, 500, -10, 100, 4, 3, 0, 1, 0),
+    (20, 100, -12, 100, 2.5, 6, 0, 0, 0),
+    (20,  80, -15, 100, 2, 8, 0, 1, 0),
+    (5, 60, -20, 100, 3, 13, 1, 0, 0),
+    (1, 50, -30, 100, 2, 18, 0, 0, 0),
+    (8, 64, -30, 100, 5, 17, 0, 0, 0),
+    (16, 78, -24, 100, 1.8, 19, 0, 1, 0),
+    (1, 20, -14, 100, 3, 8, 0, 1, 0),
+    (3, 44, -17, 100, 1, 9, 1, 0, 0),
+    (8, 56, -11, 100, 4, 5, 1, 1, 0));
 begin
  for Channel := 0 to Length(FFastLimiter) - 1 do
   begin
@@ -74,13 +73,12 @@ begin
  Parameter[0] := 15;
  Parameter[1] := 75;
  Parameter[2] := -10;
- Parameter[3] := 5;
+ Parameter[3] := 100;
  Parameter[4] := 2;
  Parameter[5] := 6;
  Parameter[6] := 0;
  Parameter[7] := 0;
  Parameter[8] := 0;
- Parameter[9] := 100;
 
  Programs[0].SetParameters(FParameter);
  for Channel := 1 to numPrograms - 1
