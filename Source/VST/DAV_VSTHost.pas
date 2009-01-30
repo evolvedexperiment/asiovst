@@ -170,14 +170,15 @@ type
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
-    function BeginLoadBank(PatchChunkInfo : PVstPatchChunkInfo): Integer;
+    function BeginLoadBank(const PatchChunkInfo : PVstPatchChunkInfo): Integer;
+    function BeginLoadProgram(const PatchChunkInfo : PVstPatchChunkInfo): Integer;
     function CanBeAutomated(const Index: Integer): Integer;
     function VstCanDo(const CanDoString: string): Integer;
-    function ConnectInput(InputNr: Integer; State: Boolean): Integer;
-    function ConnectOutput(OutputNr: Integer; State: Boolean): Integer;
-    function CopyCurrentProgramTo(Destination: Integer): Boolean;
-    function GetChunk(pntr: Pointer; isPreset: Boolean = False): Integer;
-    function GetCurrentMidiProgram(MidiProgramNamePointer : PMidiProgramName): Integer;
+    function ConnectInput(const InputNr: Integer; const State: Boolean): Integer;
+    function ConnectOutput(const OutputNr: Integer; const State: Boolean): Integer;
+    function CopyCurrentProgramTo(const Destination: Integer): Boolean;
+    function GetChunk(const Data: Pointer; const IsPreset: Boolean = False): Integer;
+    function GetCurrentMidiProgram(var MidiProgramName: TMidiProgramName): Integer;
     function GetCurrentPosition: Integer;
     function GetDestinationBuffer: Integer;
     function GetDisplayName: string; override;
@@ -185,10 +186,10 @@ type
     function GetErrorText: string;
     function GetFriendlyNameString(const StringLength: Integer): string;
     function GetIcon: Integer;
-    function GetInputProperties(InputNr: Integer): TVstPinProperties;
-    function GetMidiKeyName(MidiKeyNamePointer: PMidiKeyName): Integer;
-    function GetMidiProgramCategory(MidiProgramCategoryPointer : PMidiProgramCategory): Integer;
-    function GetMidiProgramName(MidiProgramNamePointer : PMidiProgramName): Integer;
+    function GetInputProperties(const InputNr: Integer): TVstPinProperties;
+    function GetMidiKeyName(var MidiKeyName: TMidiKeyName): Integer;
+    function GetMidiProgramCategory(var MidiProgramCategory: TMidiProgramCategory): Integer;
+    function GetMidiProgramName(var MidiProgramName: TMidiProgramName): Integer;
     function GetNumProgramCategories: Integer;
     function GetOutputProperties(OutputNr: Integer): TVstPinProperties;
     function GetParamDisplay(index: Integer): string;
@@ -200,9 +201,9 @@ type
     function GetProductString: string;
     function GetProgram: Integer;
     function GetProgramName: string;
-    function GetProgramNameIndexed(Category, index: Integer; var ProgramName: string): Integer;
+    function GetProgramNameIndexed(const Category, Index: Integer; var ProgramName: string): Integer;
     function GetRect: TRect;
-    function GetSpeakerArrangement(SpeakerIn, SpeakerOut:PVstSpeakerArrangement): Integer;
+    function GetSpeakerArrangement(const SpeakerIn, SpeakerOut: PVstSpeakerArrangement): Integer;
     function GetTailSize: Integer;
     function GetVendorString: string;
     function GetVendorVersion: Integer;
@@ -213,19 +214,18 @@ type
     function Idle: Integer;
     function KeysRequired: Integer;
 
-    function OfflineNotify(pntr: PVstAudioFile; numAudioFiles: Integer; start: Boolean): Integer;
-    function OfflinePrepare(pntr: PVstOfflineTaskRecord; count: Integer): Integer;
-    function OfflineRun(pntr: PVstOfflineTaskRecord; count :Integer): Integer;
-    function ProcessEvents(pntr: PVstEvents): Integer;
-    function ProcessVarIo(varIo: PVstVariableIo): Integer;
+    function OfflineNotify(var VstAudioFile: TVstAudioFile; const NumAudioFiles: Integer; const Start: Boolean): Integer;
+    function OfflinePrepare(var VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
+    function OfflineRun(var VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count :Integer): Integer;
+    function ProcessEvents(var VstEvents: TVstEvents): Integer;
+    function ProcessVarIo(var VarIo: TVstVariableIo): Integer;
     function SetBlockSizeAndSampleRate(const BlockSize: Integer; const SampleRate: Single): Integer;
     function SetBypass(const Value: Boolean): Integer;
-    function SetChunk(data: Pointer; ByteSize: Integer; isPreset: Boolean = False): Integer;
+    function SetChunk(const Data: Pointer; const ByteSize: Integer; const IsPreset: Boolean = False): Integer;
     function SetSpeakerArrangement(pluginInput: PVstSpeakerArrangement; pluginOutput: PVstSpeakerArrangement): Boolean;
     function ShellGetNextPlugin(var PluginName: string): Integer;
     function String2Parameter(const Index: Integer; const ParameterName: string): Integer;
     function VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
-    procedure BeginLoadProgram(PatchChunkInfo : PVstPatchChunkInfo);
     procedure BeginSetProgram;
     procedure Close;
     {$IFDEF VstHostGUI}
@@ -263,7 +263,7 @@ type
     procedure SaveBank(Stream: TStream); overload;
     procedure SavePreset(FileName: TFileName); overload;
     procedure SavePreset(Stream: TStream); overload;
-    procedure SetPanLaw(PanLaw: TVstPanLawType; Gain: Single);
+    procedure SetPanLaw(const PanLaw: TVstPanLawType; const Gain: Single);
     procedure SetParameter(index: Integer; parameter: Single); virtual;
     procedure SetProgram(const lValue: Integer);
     procedure SetProgramName(const newName: string);
@@ -2159,19 +2159,19 @@ begin
  result := VstDispatch(effIdentify);
 end;
 
-function TCustomVstPlugIn.GetChunk(pntr: Pointer; isPreset: Boolean = False): Integer;
+function TCustomVstPlugIn.GetChunk(const Data: Pointer; const IsPreset: Boolean = False): Integer;
 begin
- result := VstDispatch(effGetChunk, Integer(isPreset), 0, pntr);
+ result := VstDispatch(effGetChunk, Integer(isPreset), 0, Data);
 end;
 
-function TCustomVstPlugIn.SetChunk(data: Pointer; ByteSize: Integer; isPreset: Boolean = False): Integer;
+function TCustomVstPlugIn.SetChunk(const Data: Pointer; const ByteSize: Integer; const IsPreset: Boolean = False): Integer;
 begin
- result := VstDispatch(effSetChunk, Integer(isPreset), ByteSize, data);
+ result := VstDispatch(effSetChunk, Integer(isPreset), ByteSize, Data);
 end;
 
-function TCustomVstPlugIn.ProcessEvents(pntr: PVstEvents): Integer;
+function TCustomVstPlugIn.ProcessEvents(var VstEvents: TVstEvents): Integer;
 begin
- result := VstDispatch(effProcessEvents, 0, 0, pntr);
+ result := VstDispatch(effProcessEvents, 0, 0, @VstEvents);
 end;
 
 function TCustomVstPlugIn.CanBeAutomated(const Index: Integer): Integer;
@@ -2198,7 +2198,7 @@ begin
   else result := 0;
 end;
 
-function TCustomVstPlugIn.GetProgramNameIndexed(Category, Index: Integer; var ProgramName: string): Integer;
+function TCustomVstPlugIn.GetProgramNameIndexed(const Category, Index: Integer; var ProgramName: string): Integer;
 var
   Temp : PAnsiChar;
 const
@@ -2225,28 +2225,28 @@ begin
  end;
 end;
 
-function TCustomVstPlugIn.CopyCurrentProgramTo(Destination: Integer): Boolean;
+function TCustomVstPlugIn.CopyCurrentProgramTo(const Destination: Integer): Boolean;
 begin
  if FActive
   then result := Boolean(VstDispatch(effCopyProgram, Destination))
   else result := False;
 end;
 
-function TCustomVstPlugIn.ConnectInput(InputNr: Integer; State: Boolean): Integer;
+function TCustomVstPlugIn.ConnectInput(const InputNr: Integer; const State: Boolean): Integer;
 begin
  if FActive
   then result := VstDispatch(effConnectInput, InputNr, Integer(State))
   else result := -1;
 end;
 
-function TCustomVstPlugIn.ConnectOutput(OutputNr: Integer; State: Boolean): Integer;
+function TCustomVstPlugIn.ConnectOutput(const OutputNr: Integer; const State: Boolean): Integer;
 begin
  if FActive
   then result := VstDispatch(effConnectOutput, OutputNr, Integer(State))
   else result := -1;
 end;
 
-function TCustomVstPlugIn.GetInputProperties(InputNr: Integer): TVstPinProperties;
+function TCustomVstPlugIn.GetInputProperties(const InputNr: Integer): TVstPinProperties;
 begin
  FillChar(result, SizeOf(TVstPinProperties), 0);
  if FActive
@@ -2295,24 +2295,24 @@ begin
   else result := -1;
 end;
 
-function TCustomVstPlugIn.OfflineNotify(pntr: PVstAudioFile; numAudioFiles: Integer; start: Boolean): Integer;
+function TCustomVstPlugIn.OfflineNotify(var VstAudioFile: TVstAudioFile; const NumAudioFiles: Integer; const Start: Boolean): Integer;
 begin
- result := VstDispatch(effOfflineNotify, Integer(start), numAudioFiles, pntr);
+ result := VstDispatch(effOfflineNotify, Integer(Start), NumAudioFiles, @VstAudioFile);
 end;
 
-function TCustomVstPlugIn.OfflinePrepare(pntr: PVstOfflineTaskRecord; count: Integer): Integer;
+function TCustomVstPlugIn.OfflinePrepare(var VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
 begin
- result := VstDispatch(effOfflinePrepare, 0, count, pntr);
+ result := VstDispatch(effOfflinePrepare, 0, count, @VstOfflineTaskRecord);
 end;
 
-function TCustomVstPlugIn.OfflineRun(pntr: PVstOfflineTaskRecord; count: Integer): Integer;
+function TCustomVstPlugIn.OfflineRun(var VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
 begin
- result := VstDispatch(effOfflineRun, 0, count, pntr);
+ result := VstDispatch(effOfflineRun, 0, count, @VstOfflineTaskRecord);
 end;
 
-function TCustomVstPlugIn.ProcessVarIo(varIo: PVstVariableIo): Integer;
+function TCustomVstPlugIn.ProcessVarIo(var VarIo: TVstVariableIo): Integer;
 begin
- result := VstDispatch(effProcessVarIo, 0, 0, varIo);
+ result := VstDispatch(effProcessVarIo, 0, 0, @VarIo);
 end;
 
 function TCustomVstPlugIn.SetSpeakerArrangement(pluginInput: PVstSpeakerArrangement; pluginOutput: PVstSpeakerArrangement): Boolean;
@@ -2612,14 +2612,14 @@ end;
 {$ENDIF}
 
 // midi plugins channel dependent programs
-function TCustomVstPlugIn.GetMidiProgramName(MidiProgramNamePointer : PMidiProgramName): Integer;
+function TCustomVstPlugIn.GetMidiProgramName(var MidiProgramName: TMidiProgramName): Integer;
 begin
  // struct will be filled with information for 'thisProgramIndex'.
  // returns number of used programIndexes.
  // if 0 is returned, no MidiProgramNames supported.
 
  if FActive
-  then Result := VstDispatch(effGetMidiProgramName, 0, 0, MidiProgramNamePointer, 0)
+  then Result := VstDispatch(effGetMidiProgramName, 0, 0, @MidiProgramName, 0)
   else Result := 0;
 end;
 
@@ -2644,24 +2644,24 @@ begin
   else result := 0;
 end;
 
-function TCustomVstPlugIn.GetCurrentMidiProgram(MidiProgramNamePointer : PMidiProgramName): Integer;
+function TCustomVstPlugIn.GetCurrentMidiProgram(var MidiProgramName: TMidiProgramName): Integer;
 begin
  // returns the programIndex of the current program.
  // passed <ptr> points to MidiProgramName struct.
  // struct will be filled with information for the current program.
  if FActive
-  then Result := VstDispatch(effGetCurrentMidiProgram, 0, 0, MidiProgramNamePointer, 0)
+  then Result := VstDispatch(effGetCurrentMidiProgram, 0, 0, @MidiProgramName, 0)
   else Result := 0;
 end;
 
-function TCustomVstPlugIn.GetMidiProgramCategory(MidiProgramCategoryPointer : PMidiProgramCategory): Integer;
+function TCustomVstPlugIn.GetMidiProgramCategory(var MidiProgramCategory: TMidiProgramCategory): Integer;
 begin
  // passed <ptr> points to MidiProgramCategory struct.
  // struct will be filled with information for 'thisCategoryIndex'.
  // returns number of used CategoryIndexes.
  // if 0 is returned, no MidiProgramCategories supported.
  if FActive
-  then Result := VstDispatch(effGetMidiProgramCategory, 0, 0, MidiProgramCategoryPointer, 0)
+  then Result := VstDispatch(effGetMidiProgramCategory, 0, 0, @MidiProgramCategory, 0)
   else Result := 0;
 end;
 
@@ -2675,14 +2675,14 @@ begin
   else Result := 0;
 end;
 
-function TCustomVstPlugIn.GetMidiKeyName(MidiKeyNamePointer: PMidiKeyName): Integer;
+function TCustomVstPlugIn.GetMidiKeyName(var MidiKeyName: TMidiKeyName): Integer;
 begin
  // struct will be filled with information for 'thisProgramIndex' and
  // 'thisKeyNumber'. If keyName is "" the standard name of the key
  // will be displayed. If 0 is returned, no MidiKeyNames are
  // defined for 'thisProgramIndex'.
  if FActive
-  then Result := VstDispatch(effGetMidiKeyName, 0, 0, MidiKeyNamePointer, 0)
+  then Result := VstDispatch(effGetMidiKeyName, 0, 0, @MidiKeyName, 0)
   else Result := 0;
 end;
 
@@ -2699,7 +2699,7 @@ begin
   then VstDispatch(effEndSetProgram);
 end;
 
-function TCustomVstPlugIn.GetSpeakerArrangement(SpeakerIn, SpeakerOut:PVstSpeakerArrangement): Integer;
+function TCustomVstPlugIn.GetSpeakerArrangement(const SpeakerIn, SpeakerOut: PVstSpeakerArrangement): Integer;
 begin
 // VstSpeakerArrangement** pluginInput in <value>
 // VstSpeakerArrangement** pluginOutput in <ptr>
@@ -2757,7 +2757,7 @@ begin
  if FActive then VstDispatch(effSetTotalSampleToProcess);
 end;
 
-procedure TCustomVstPlugIn.SetPanLaw(PanLaw: TVstPanLawType; Gain: Single);
+procedure TCustomVstPlugIn.SetPanLaw(const PanLaw: TVstPanLawType; const Gain: Single);
 var
   i : Integer;
 begin
@@ -2767,19 +2767,23 @@ begin
  if FActive then VstDispatch(effSetPanLaw, 0, i, nil, Gain);
 end;
 
-function TCustomVstPlugIn.BeginLoadBank(PatchChunkInfo : PVstPatchChunkInfo): Integer;
+function TCustomVstPlugIn.BeginLoadBank(const PatchChunkInfo : PVstPatchChunkInfo): Integer;
 begin
  // Called before a Bank is loaded, <ptr> points to VstPatchChunkInfo structure
  // return -1 if the Bank can not be loaded, return 1 if it can be loaded else 0 (for compatibility)
- if FActive then VstDispatch(effBeginLoadBank);
- Result := 0;
+ if FActive
+  then Result := VstDispatch(effBeginLoadBank, 0, 0, PatchChunkInfo)
+  else Result := 0;
 end;
 
-procedure TCustomVstPlugIn.BeginLoadProgram(PatchChunkInfo : PVstPatchChunkInfo);
+function TCustomVstPlugIn.BeginLoadProgram(const PatchChunkInfo : PVstPatchChunkInfo): Integer;
 begin
  // Called before a Program is loaded, <ptr> points to VstPatchChunkInfo structure
+ // return -1 if the Program can not be loaded, return 1 if it can be loaded else 0 (for compatibility)
 
- if FActive then VstDispatch(effBeginLoadProgram, 0, 0, PatchChunkInfo);
+ if FActive
+  then Result := VstDispatch(effBeginLoadProgram, 0, 0, PatchChunkInfo)
+  else Result := 0;
 end;
 
 procedure TCustomVstPlugIn.InitializeVstEffect;

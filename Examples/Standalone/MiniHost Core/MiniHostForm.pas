@@ -2226,7 +2226,7 @@ begin
     // by Daniel :  this is a critical path, better save this cando in a value
     // instead of calling VstDispatch here
  //   if VSTHost[0].VstCanDo('receiveVstMidiEvent') >= 0 then
-    VSTHost[0].ProcessEvents(@FMyEvents);
+    VSTHost[0].ProcessEvents(FMyEvents);
  
     if (FCurrentMIDIOut > 0) and MIMidiThru.Checked then
      begin

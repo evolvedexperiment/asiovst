@@ -73,7 +73,6 @@ var
   theRect  : TRect;
   i        : Integer;
   s, p     : string;
-  PinProps : TVstPinProperties;
 begin
  with VstHost[0] do
   begin
