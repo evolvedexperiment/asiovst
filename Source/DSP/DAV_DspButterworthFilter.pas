@@ -313,7 +313,7 @@ begin
   end;
  if (FOrder mod 2) = 1 then
   begin
-   i := ((FOrder+1) div 2) - 1;
+   i := ((FOrder + 1) div 2) - 1;
    x             := FAB[4 * i] * Result;
    Result        := x + FState[2 * i];
    FState[2 * i] := x + FAB[4 * i + 2] * Result;

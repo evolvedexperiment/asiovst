@@ -942,8 +942,8 @@ type
   end;
 
   TVstPanLawType = (
-    kLinearPanLaw,      // L = pan * M; R = (1 - pan) * M;
-    kEqualPowerPanLaw); // L = pow (pan, 0.5) * M; R = pow ((1 - pan), 0.5) * M;
+    plLinear,      // L := pan * M; R := (1 - pan) * M;
+    plEqualPower); // L := Power(pan, 0.5) * M; R := Power((1 - pan), 0.5) * M;
 
 const
   cMagic           = 'CcnK';

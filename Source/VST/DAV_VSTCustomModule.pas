@@ -26,7 +26,7 @@ type
   TInOutConnectedEvent   = procedure(Sender: TObject; const Index: Integer; const State: Boolean) of object;
   TSetKnobModeEvent      = procedure(Sender: TObject; val: Integer) of object;
   TSoftBypassEvent       = procedure(Sender: TObject; const isBypass: Boolean) of object;
-  TOnSetPanLawEvent      = procedure(Sender: TObject; var vType: Integer; var val: single) of object;
+  TOnSetPanLawEvent      = procedure(Sender: TObject; const LawType: TVstPanLawType; const Value: Single) of object;
   TGetEditorEvent        = procedure(Sender: TObject; var GUI: TForm; ParentWindow : THandle) of object;
   TOnVendorSpecificEvent = function(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: pointer; const floatArg: Single): Integer of object;
   TOnCanDoEvent          = function(Sender: TObject; const CanDoText: string): Integer of object;
@@ -79,9 +79,11 @@ type
     FOnCheckKey             : TOnCheckKey;
     FVstShellPlugins        : TCustomVstShellPlugins;
     FCurrentVstShellPlugin  : Integer;
-    {$IFDEF Debug} FLog     : TStringList; {$ENDIF}
-    {$IFDEF Debug} FTmStmp  : TDateTime; {$ENDIF}
-
+    {$IFDEF Debug}
+    FLog                    : TStringList;
+    FTmStmp                 : TDateTime;
+    procedure AddLogMessage(const Text: string);
+    {$ENDIF}
     procedure SetNumInputs(const Inputs: Integer);
     procedure SetNumOutputs(const Outputs: Integer);
     procedure SetVstShellPlugins(const Value: TCustomVstShellPlugins);
@@ -89,6 +91,8 @@ type
     procedure ReadOnlyString(s: string); virtual;
     function GetHostProduct: string;
     function GetHostVendor: string;
+    function GetCanHostDo(canDo: string): Integer;
+    function GetHostVendorVersion: Integer;
   protected
     FBlockSize              : Integer;
     FEditorForm             : TForm;
@@ -138,57 +142,58 @@ type
     procedure NumInputsChanged; virtual;
     procedure NumOutputsChanged; virtual;
 
-    procedure HostCallDispatchEffect(opcode : TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single); override;
+    procedure HostCallDispatchEffect(const opcode : TDispatcherOpcode; const Index, Value: Integer; const ptr: pointer; const opt: Single); override;
     procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
 
     // HostCalls, protected methods that can be overwritten, but shall remain
     // hidden, since the user should not be able to call them directly!
-    function HostCallOpen                      (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallClose                     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetVu                     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetSampleRate             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetBlockSize              (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallMainsChanged              (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallEditGetRect               (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallEditOpen                  (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallEditClose                 (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallEditIdle                  (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallEditTop                   (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallEditSleep                 (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallProcessEvents             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallConnectInput              (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallConnectOutput             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetInputProperties        (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetOutputProperties       (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetPlugCategory           (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallOfflineNotify             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallOfflinePrepare            (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallOfflineRun                (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallProcessVarIo              (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetBlockSizeAndSampleRate (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetBypass                 (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetEffectName             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetVendorString           (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetProductString          (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetVendorVersion          (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallVendorSpecific            (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallCanDo                     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetTailSize               (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallKeysRequired              (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetVstVersion             (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallEditKeyDown               (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallEditKeyUp                 (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetEditKnobMode           (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetSpeakerArrangement     (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallShellGetNextPlugin        (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallStartProcess              (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallStopProcess               (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetTotalSampleToProcess   (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetPanLaw                 (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallSetProcessPrecision       (Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallOpen                      (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallClose                     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetVu                     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallSetSampleRate             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallSetBlockSize              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallMainsChanged              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallEditGetRect               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallEditOpen                  (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallEditClose                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallEditIdle                  (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallEditTop                   (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallEditSleep                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallProcessEvents             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallConnectInput              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallConnectOutput             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetInputProperties        (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetOutputProperties       (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetPlugCategory           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallOfflineNotify             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallOfflinePrepare            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallOfflineRun                (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallProcessVarIo              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallSetBlockSizeAndSampleRate (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallSetBypass                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetEffectName             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetVendorString           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetProductString          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetVendorVersion          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallVendorSpecific            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallCanDo                     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetTailSize               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallKeysRequired              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetVstVersion             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallEditKeyDown               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallEditKeyUp                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallSetEditKnobMode           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetSpeakerArrangement     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallShellGetNextPlugin        (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallStartProcess              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallStopProcess               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallSetTotalSampleToProcess   (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallSetPanLaw                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallSetProcessPrecision       (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
 
+    function GetSpeakerArrangement(var InputArrangement, OutputArrangement: PVstSpeakerArrangement): Boolean; virtual;
     function AllocateArrangement(var Arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean; virtual;   // Allocate memory for a VstSpeakerArrangement containing the given number of channels
     function DeallocateArrangement(var Arrangement: PVstSpeakerArrangement): Boolean; virtual;                      // Delete/free memory for a speaker Arrangement
     function CopySpeaker(copyTo, copyFrom: PVstSpeakerProperties): Boolean; virtual;    // Feed the "to" speaker Properties with the same Values than "from"'s ones. It is assumed here that "to" exists yet, ie this function won't allocate memory for the speaker (this will prevent from having a difference between an Arrangement's number of channels and its actual speakers...)
@@ -318,6 +323,29 @@ begin
  FNumCategories := 1;
 end;
 
+destructor TCustomVSTModule.Destroy;
+begin
+ try
+  if Assigned(FEditorForm) then FreeAndNil(FEditorForm);
+  if Assigned(FVstShellPlugins) then FreeAndNil(FVstShellPlugins);
+  {$IFDEF Debug} if assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
+ finally
+  {$IFDEF Debug} if assigned(FLog) then FLog.Free; {$ENDIF}
+  inherited;
+ end;
+end;
+
+{$IFDEF Debug}
+procedure TCustomVSTModule.AddLogMessage(const Text: string);
+begin
+ if assigned(FLog) then
+  begin
+   FLog.Add(TimeToStr(Now - FTmStmp) + ' | ' + Text);
+   FLog.SaveToFile('Debug.log');
+  end;
+end;
+{$ENDIF}
+
 procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 var
   Ins     : TDAVArrayOfSingleDynArray absolute Inputs;
@@ -355,19 +383,7 @@ begin
   if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins, Outs,SampleFrames);
 end;
 
-destructor TCustomVSTModule.Destroy;
-begin
- try
-  if Assigned(FEditorForm) then FreeAndNil(FEditorForm);
-  if Assigned(FVstShellPlugins) then FreeAndNil(FVstShellPlugins);
-  {$IFDEF Debug} if assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
- finally
-  {$IFDEF Debug} if assigned(FLog) then FLog.Free; {$ENDIF}
-  inherited;
- end;
-end;
-
-Procedure TCustomVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
+procedure TCustomVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
 var
   rUID : TChunkName;
   i    : Integer;
@@ -409,39 +425,37 @@ begin
    then PlugCategory := vpcUnknown;
 end;
 
-procedure TCustomVSTModule.HostCallDispatchEffect(opcode: TDispatcherOpcode; Index, Value: Integer; ptr: pointer; opt: Single);
+procedure TCustomVSTModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index, Value: Integer; const ptr: pointer; const opt: Single);
 begin
  if Assigned(FOnDispatcher) then FOnDispatcher(Self, Opcode);
 
  {$IFDEF Debug}
- if not (opcode in [effIdle, effEditIdle])
-  then FLog.Add(TimeToStr(Now - FTmStmp) +
-                ' Opcode: ' + opcode2String(opcode) +
-                ' Value: ' + IntToStr(Value));
- FLog.SaveToFile('Debug.log');
+ if not (Opcode in [effIdle, effEditIdle])
+  then AddLogMessage(' Opcode: ' + Opcode2String(Opcode) +
+                     ' Value: ' + IntToStr(Value));
  {$ENDIF}
 end;
 
 procedure TCustomVSTModule.ReadOnlyString(s: string); begin end;
 
-function TCustomVSTModule.HostCallOpen(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallOpen(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallOpen'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallOpen'); {$ENDIF}
  if Assigned(FOnOpen) then FOnOpen(Self);
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallClose(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallClose(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallClose'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallClose'); {$ENDIF}
  if Assigned(FOnClose) then FOnClose(Self);
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallGetVu(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetVu(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var s: single;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetVu'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallGetVu'); {$ENDIF}
  if Assigned(FOnGetVUEvent) then
   begin
    s := 0;
@@ -450,23 +464,23 @@ begin
   end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallSetSampleRate(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallSetSampleRate(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetSampleRate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallSetSampleRate'); {$ENDIF}
  setSampleRate(opt);
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallSetBlockSize(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallSetBlockSize(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetBlockSize'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallSetBlockSize'); {$ENDIF}
  setBlockSize(Value);
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallMainsChanged(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallMainsChanged(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallMainsChanged'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallMainsChanged'); {$ENDIF}
  if (Value = 0) then
   if Assigned(FOnSuspend)
    then FOnSuspend(Self)
@@ -479,9 +493,9 @@ begin
   Result := 0;
 end;
 
-function TCustomVSTModule.HostCallEditGetRect(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallEditGetRect(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditGetRect'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallEditGetRect'); {$ENDIF}
  PPERect(ptr)^ := @FEditorRect;
  FEditorRect.top := 0;
  FEditorRect.left := 0;
@@ -494,9 +508,9 @@ begin
   end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallEditOpen(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallEditOpen(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditOpen'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallEditOpen'); {$ENDIF}
  Result := 0;
  if (effFlagsHasEditor in FEffect.EffectFlags) then
   begin
@@ -522,11 +536,11 @@ begin
   end;
 end;
 
-function TCustomVSTModule.HostCallEditClose(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallEditClose(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   DestroyForm: Boolean;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditClose'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallEditClose'); {$ENDIF}
  if (effFlagsHasEditor in FEffect.EffectFlags) then
   begin
    DestroyForm := True;
@@ -537,7 +551,7 @@ begin
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallEditIdle(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallEditIdle(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  if (effFlagsHasEditor in FEffect.EffectFlags) and FEditorNeedUpdate and Assigned(FEditorForm)then
   begin
@@ -548,41 +562,41 @@ begin
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallEditTop(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallEditTop(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditTop'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallEditTop'); {$ENDIF}
  if Assigned(FOnEditTop) then FOnEditTop(Self);
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallEditSleep(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallEditSleep(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditSleep'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallEditSleep'); {$ENDIF}
  if Assigned(FOnEditSleep) then FOnEditSleep(Self);
  Result := 0;
 end;
 
-function TCustomVSTModule.HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallProcessEvents(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallProcessEvents'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallProcessEvents'); {$ENDIF}
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallConnectInput(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallConnectInput(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallConnectInput'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallConnectInput'); {$ENDIF}
  if Assigned(FOnInConnected) then FOnInConnected(Self,Index,(Value <> 0));
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallConnectOutput(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallConnectOutput(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallConnectOutput'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallConnectOutput'); {$ENDIF}
  if Assigned(FOnOutConnected) then FOnOutConnected(Self,Index,(Value <> 0));
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallGetInputProperties(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetInputProperties(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   str1  : string[63];
   str2  : string[7];
@@ -590,7 +604,7 @@ var
   cpf   : TVstPinPropertiesFlags;
 begin
  Result := 0;
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetInputProperties'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallGetInputProperties'); {$ENDIF}
  if (Index < FEffect.numInputs) then
   with PVstPinProperties(ptr)^ do
    begin
@@ -611,7 +625,7 @@ begin
   end;
 end;
 
-function TCustomVSTModule.HostCallGetOutputProperties(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetOutputProperties(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   str1  : string[63];
   str2  : string[7];
@@ -619,7 +633,7 @@ var
   cpf   : TVstPinPropertiesFlags;
 begin
  Result := 0;
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetOutputProperties'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallGetOutputProperties'); {$ENDIF}
  if (Index < FEffect.numOutputs) then
   with PVstPinProperties(ptr)^ do
    begin
@@ -640,15 +654,15 @@ begin
    end;
 end;
 
-function TCustomVSTModule.HostCallGetPlugCategory(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetPlugCategory(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetPlugCategory'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallGetPlugCategory'); {$ENDIF}
  Result := Integer(FPlugCategory);
 end;
 
-function TCustomVSTModule.HostCallOfflineNotify(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallOfflineNotify(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallOfflineNotify'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallOfflineNotify'); {$ENDIF}
  if Assigned(FOnOfflineNotify) then
   begin
    FOnOfflineNotify(Self, PVstAudioFile(ptr)^, Value, (Index <> 0));
@@ -694,21 +708,21 @@ begin
   end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallOfflinePrepare(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallOfflinePrepare(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallOfflinePrepare'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallOfflinePrepare'); {$ENDIF}
  Result := OfflinePrepare(PVstOfflineTaskRecord(ptr), Value);
 end;
 
-function TCustomVSTModule.HostCallOfflineRun(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallOfflineRun(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallOfflineRun'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallOfflineRun'); {$ENDIF}
  Result := OfflineRun(PVstOfflineTaskRecord(ptr), Value);
 end;
 
-function TCustomVSTModule.HostCallProcessVarIo(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallProcessVarIo(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallProcessVarIo'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallProcessVarIo'); {$ENDIF}
  if Assigned(FOnProcessVarIO) then
   begin
    FOnProcessVarIO(Self, PVstVariableIo(ptr)^);
@@ -716,9 +730,9 @@ begin
   end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallSetBlockSizeAndSampleRate(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallSetBlockSizeAndSampleRate(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetBlockSizeAndSampleRate: Blocksize ' + IntToStr(Value) + ' Samplerate ' + FloatToStr(opt)); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallSetBlockSizeAndSampleRate: Blocksize ' + IntToStr(Value) + ' Samplerate ' + FloatToStr(opt)); {$ENDIF}
  if FSampleRate <> opt then
   begin
    FSampleRate := opt;
@@ -732,13 +746,12 @@ begin
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallSetBypass(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallSetBypass(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
   {$IFDEF Debug}
   if Value <> 0
    then FLog.Add('SoftBypass: On')
    else FLog.Add('SoftBypass: Off');
-  FLog.SaveToFile('Debug.log');
   {$ENDIF}
   if Assigned(FOnSoftBypass) then
    begin
@@ -747,47 +760,47 @@ begin
    end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallGetEffectName(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetEffectName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetEffectName'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallGetEffectName'); {$ENDIF}
  StrPCopy(ptr, FEffectName);
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallGetVendorString(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetVendorString(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetVendorString'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallGetVendorString'); {$ENDIF}
  StrPCopy(ptr, fVendorName);
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallGetProductString(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetProductString(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetProductString'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallGetProductString'); {$ENDIF}
  if fProductName <> ''
   then StrPCopy(ptr, fProductName)
   else StrPCopy(ptr, FEffectName);
  Result := 1;
 end;
 
-function TCustomVSTModule.HostCallGetVendorVersion(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetVendorVersion(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetVendorVersion'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallGetVendorVersion'); {$ENDIF}
  Result := FEffect.Version;
 end;
 
-function TCustomVSTModule.HostCallVendorSpecific(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallVendorSpecific(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallVendorSpecific'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallVendorSpecific'); {$ENDIF}
  if Assigned(FOnVendorSpecific)
   then Result := FOnVendorSpecific(Self, Index, Value, ptr, opt)
   else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallCanDo(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallCanDo(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  Result := 0;
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallCanDo'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallCanDo'); {$ENDIF}
  if StrComp(ptr, 'receiveVstEvents')      = 0 then Result := 2 * Integer(vcdReceiveVstEvents      in FCanDos)-1 else
  if StrComp(ptr, 'receiveVstMidiEvent')   = 0 then Result := 2 * Integer(vcdReceiveVstMidiEvent   in FCanDos)-1 else
  if StrComp(ptr, 'receiveVstTimeInfo')    = 0 then Result := 2 * Integer(vcdReceiveVstTimeInfo    in FCanDos)-1 else
@@ -822,34 +835,34 @@ begin
  if Assigned(FOnCanDo) then FOnCanDo(Self,pchar(ptr));
 end;
 
-function TCustomVSTModule.HostCallGetTailSize(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetTailSize(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetTailSize'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallGetTailSize'); {$ENDIF}
  Result := fTailSize;
 end;
 
 
 
-function TCustomVSTModule.HostCallKeysRequired(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallKeysRequired(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallKeysRequired'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallKeysRequired'); {$ENDIF}
  Result := Integer(not fKeysRequired); // reversed to keep v1 compatibility
 end;
 
-function TCustomVSTModule.HostCallGetVstVersion(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetVstVersion(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetVstVersion'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallGetVstVersion'); {$ENDIF}
  Result := 2400;
 end;
 
-function TCustomVSTModule.HostCallEditKeyDown(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallEditKeyDown(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   keyCode : TVstKeyCode;
   a,b     : Integer;
   Hndl    : THandle;
 begin
  Result := 0;
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditKeyDown'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallEditKeyDown'); {$ENDIF}
  if fKeysRequired then
   try
    keyCode.character := Index;
@@ -889,14 +902,14 @@ begin
  else Result := -1;
 end;
 
-function TCustomVSTModule.HostCallEditKeyUp(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallEditKeyUp(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   keyCode : TVstKeyCode;
   a, b    : Integer;
   Hndl    : THandle;
 begin
  Result := 0;
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallEditKeyDown'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallEditKeyDown'); {$ENDIF}
  if fKeysRequired then
   try
    keyCode.character := Index;
@@ -936,9 +949,9 @@ begin
   end else Result := -1;
 end;
 
-function TCustomVSTModule.HostCallSetEditKnobMode(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallSetEditKnobMode(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetEditKnobMode'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallSetEditKnobMode'); {$ENDIF}
  if Assigned(FOnSetKnobMode) then
   begin
    FOnSetKnobMode(Self, Value);
@@ -946,17 +959,15 @@ begin
   end else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallGetSpeakerArrangement(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallGetSpeakerArrangement(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallGetSpeakerArrangement'); FLog.SaveToFile('Debug.log'); {$ENDIF}
- PVstSpeakerArrangement(Value) := nil;
- PVstSpeakerArrangement(ptr) := nil;
- Result := 0;
+ {$IFDEF Debug} AddLogMessage('HostCallGetSpeakerArrangement'); {$ENDIF}
+ Result := Integer(GetSpeakerArrangement(PVstSpeakerArrangement(Pointer(Value)^), PVstSpeakerArrangement(ptr^)));
 end;
 
-function TCustomVSTModule.HostCallShellGetNextPlugin(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallShellGetNextPlugin(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallShellGetNextPlugin'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallShellGetNextPlugin'); {$ENDIF}
  if FCurrentVstShellPlugin < FVstShellPlugins.Count then
   begin
    StrPCopy(pchar(ptr),FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
@@ -970,42 +981,42 @@ begin
   end;
 end;
 
-function TCustomVSTModule.HostCallStartProcess(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallStartProcess(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  Result := 1;
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallStartProcess'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallStartProcess'); {$ENDIF}
  if Assigned(FOnStartProcess)
   then FOnStartProcess(Self)
   else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallStopProcess(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallStopProcess(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  Result := 1;
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallStopProcess'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallStopProcess'); {$ENDIF}
  if Assigned(FOnStopProcess)
   then FOnStopProcess(Self)
   else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallSetTotalSampleToProcess(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallSetTotalSampleToProcess(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetTotalSampleToProcess'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallSetTotalSampleToProcess'); {$ENDIF}
  Result := Value;
 end;
 
-function TCustomVSTModule.HostCallSetPanLaw(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallSetPanLaw(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  Result := 1;
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetPanLaw'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallSetPanLaw'); {$ENDIF}
  if Assigned(FOnSetPanLaw)
-  then FOnSetPanLaw(Self, Value, opt)
+  then FOnSetPanLaw(Self, TVstPanLawType(Value), Opt)
   else Result := 0;
 end;
 
-function TCustomVSTModule.HostCallSetProcessPrecision(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TCustomVSTModule.HostCallSetProcessPrecision(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('HostCallSetProcessPrecision'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallSetProcessPrecision'); {$ENDIF}
  Result := Integer(fProcessPrecisition); // [value]: @see VstProcessPrecision  @see AudioEffectX::setProcessPrecision
 end;
 
@@ -1083,6 +1094,13 @@ begin
  Result := FEffect.EffectFlags;
 end;
 
+function TCustomVSTModule.GetSpeakerArrangement(var InputArrangement,
+  OutputArrangement: PVstSpeakerArrangement): Boolean;
+begin
+ {$IFDEF Debug} AddLogMessage('GetSpeakerArrangement'); {$ENDIF}
+ result := False;
+end;
+
 procedure TCustomVSTModule.SetInitialDelay(const Delay: Integer);
 begin
  if FInitialDelay <> Delay then
@@ -1106,21 +1124,18 @@ end;
 {$IFDEF UseDelphi}
 procedure TCustomVSTModule.ReadState(Reader: TReader);
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('Before ReadState'); {$ENDIF}
- {$IFDEF Debug} if assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('Before ReadState'); {$ENDIF}
  inherited;
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('After ReadState'); {$ENDIF}
- {$IFDEF Debug} if assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('After ReadState'); {$ENDIF}
 
  if Assigned(FOnInitialize) then FOnInitialize(Self);
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('End ReadState'); {$ENDIF}
- {$IFDEF Debug} if assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('End ReadState'); {$ENDIF}
 end;
 {$ENDIF}
 
 function TCustomVSTModule.UpdateSampleRate: Double;
 begin
-  {$IFDEF Debug} if assigned(FLog) then FLog.Add('Update Samplerate'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+  {$IFDEF Debug} AddLogMessage('Update Samplerate'); {$ENDIF}
 
   Result := inherited UpdateSampleRate;
   if (Result>0) and (Result<>FSampleRate) then
@@ -1132,7 +1147,7 @@ end;
 
 function TCustomVSTModule.UpdateBlockSize: Integer;
 begin
- {$IFDEF Debug} if assigned(FLog) then FLog.Add('UpdateBlockSize'); FLog.SaveToFile('Debug.log'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('UpdateBlockSize'); {$ENDIF}
  Result := inherited UpdateBlockSize;
  if (Result > 0) and (Result <> FBlockSize) then
   begin
@@ -1263,6 +1278,11 @@ begin
   then SetLength(FProductName, 64);
 end;
 
+function TCustomVSTModule.GetCanHostDo(canDo: string): Integer;
+begin
+
+end;
+
 function TCustomVSTModule.GetHostProduct: string;
 var
   Text : PChar;
@@ -1311,6 +1331,11 @@ begin
    end;
   end
  else Result := FHostVendor;
+end;
+
+function TCustomVSTModule.GetHostVendorVersion: Integer;
+begin
+
 end;
 
 procedure TCustomVSTModule.SetVersionMajor(Value: Integer);

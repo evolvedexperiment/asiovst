@@ -2,14 +2,16 @@ unit DAV_DspFilterLinkwitzRiley;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Classes, DAV_Common, DAV_DspFilter, DAV_DspButterworthFilter;
 
 type
   TLinkwitzRiley = class(TObject)
   private
-    fLowpass    : Array [0..1] of TButterworthLP;
-    fHighpass   : Array [0..1] of TButterworthHP;
+    FLowpass    : Array [0..1] of TButterworthLP;
+    FHighpass   : Array [0..1] of TButterworthHP;
     FSampleRate : Single;
     FFrequency  : Single;
     FOrder      : Integer;
@@ -42,10 +44,10 @@ uses
 constructor TLinkwitzRiley.Create;
 begin
  inherited;
- fLowpass[0]  := TButterworthLP.Create;
- fLowpass[1]  := TButterworthLP.Create;
- fHighpass[0] := TButterworthHP.Create;
- fHighpass[1] := TButterworthHP.Create;
+ FLowpass[0]  := TButterworthLP.Create;
+ FLowpass[1]  := TButterworthLP.Create;
+ FHighpass[0] := TButterworthHP.Create;
+ FHighpass[1] := TButterworthHP.Create;
  FSampleRate  := 44100;
  FOrder       := 4;
  FSign        := 1;
@@ -56,10 +58,10 @@ end;
 
 destructor TLinkwitzRiley.Destroy;
 begin
- FreeAndNil(fLowpass[0]);
- FreeAndNil(fLowpass[1]);
- FreeAndNil(fHighpass[0]);
- FreeAndNil(fHighpass[1]);
+ FreeAndNil(FLowpass[0]);
+ FreeAndNil(FLowpass[1]);
+ FreeAndNil(FHighpass[0]);
+ FreeAndNil(FHighpass[1]);
  inherited;
 end;
 
@@ -92,45 +94,45 @@ end;
 
 procedure TLinkwitzRiley.FrequencyChanged;
 begin
- fLowpass[0].Frequency  := FFrequency;
- fLowpass[1].Frequency  := FFrequency;
- fHighpass[0].Frequency := FFrequency;
- fHighpass[1].Frequency := FFrequency;
+ FLowpass[0].Frequency  := FFrequency;
+ FLowpass[1].Frequency  := FFrequency;
+ FHighpass[0].Frequency := FFrequency;
+ FHighpass[1].Frequency := FFrequency;
 end;
 
 procedure TLinkwitzRiley.OrderChanged;
 begin
- fLowpass[0].Order  := FOrder;
- fLowpass[1].Order  := FOrder;
- fHighpass[0].Order := FOrder;
- fHighpass[1].Order := FOrder;
+ FLowpass[0].Order  := FOrder;
+ FLowpass[1].Order  := FOrder;
+ FHighpass[0].Order := FOrder;
+ FHighpass[1].Order := FOrder;
  FSign := 1 - 2 * (FOrder mod 2);
 end;
 
 procedure TLinkwitzRiley.ProcessSample(const Input: Single; var Low,
   High: Single);
 begin
- Low  := fLowpass[0].ProcessSample(
-         fLowpass[1].ProcessSample(Input));
- High := fHighpass[0].ProcessSample(
-         fHighpass[1].ProcessSample(FSign * Input));
+ Low  := FLowpass[0].ProcessSample(
+         FLowpass[1].ProcessSample(Input));
+ High := FHighpass[0].ProcessSample(
+         FHighpass[1].ProcessSample(FSign * Input));
 end;
 
 procedure TLinkwitzRiley.ProcessSample(const Input: Double; var Low,
   High: Double);
 begin
- Low  := fLowpass[0].ProcessSample(
-         fLowpass[1].ProcessSample(Input));
- High := fHighpass[0].ProcessSample(
-         fHighpass[1].ProcessSample(Input));
+ Low  := FLowpass[0].ProcessSample(
+         FLowpass[1].ProcessSample(Input));
+ High := FHighpass[0].ProcessSample(
+         FHighpass[1].ProcessSample(Input));
 end;
 
 procedure TLinkwitzRiley.SampleRateChanged;
 begin
- fLowpass[0].SampleRate  := FSampleRate;
- fLowpass[1].SampleRate  := FSampleRate;
- fHighpass[0].SampleRate := FSampleRate;
- fHighpass[1].SampleRate := FSampleRate;
+ FLowpass[0].SampleRate  := FSampleRate;
+ FLowpass[1].SampleRate  := FSampleRate;
+ FHighpass[0].SampleRate := FSampleRate;
+ FHighpass[1].SampleRate := FSampleRate;
 end;
 
 end.

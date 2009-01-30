@@ -16,7 +16,7 @@ type
     FMidiEvent       : TVstEvents;
     FOnProcessMidi   : TProcessMidiEvent;
     FOnProcessEvents : TProcessEvents;
-    procedure ProcessMidiEvent(MidiEvent: TVstMidiEvent); virtual;
+    procedure ProcessMidiEvent(const MidiEvent: TVstMidiEvent); virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -25,10 +25,10 @@ type
     procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
 
-    function HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
-    function HostCallGetCurrentMidiProgram(Index, Value: Integer; ptr: pointer; opt: Single): Integer; override;
+    function HostCallProcessEvents(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetCurrentMidiProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
 
-    procedure MIDI_Out(b1, b2, b3: Byte; b4: Byte = 0; const Offset: Integer = 0);
+    procedure MIDI_Out(const b1, b2, b3: Byte; b4: Byte = 0; const Offset: Integer = 0);
     procedure MIDI_SendSysEx(Data: array of Byte; const Offset: Integer = 0);
     procedure MIDI_CC(ch, num, val: Integer; const Offset: Integer = 0);
     procedure MIDI_ChannelAftertouch(ch, val: Integer; const Offset: Integer = 0);
@@ -77,12 +77,12 @@ begin
  end;
 end;
 
-procedure TVSTModuleWithMidi.ProcessMidiEvent(MidiEvent: TVstMidiEvent);
+procedure TVSTModuleWithMidi.ProcessMidiEvent(const MidiEvent: TVstMidiEvent);
 begin
-  if Assigned(FOnProcessMidi) then FOnProcessMidi(Self, MidiEvent);
+ if Assigned(FOnProcessMidi) then FOnProcessMidi(Self, MidiEvent);
 end;
 
-function TVSTModuleWithMidi.HostCallProcessEvents(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TVSTModuleWithMidi.HostCallProcessEvents(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   i: Integer;
 begin
@@ -94,7 +94,7 @@ begin
       ProcessMidiEvent(PVstMidiEvent(PVstEvents(ptr)^.events[i])^);
 end;
 
-function TVSTModuleWithMidi.HostCallGetCurrentMidiProgram(Index, Value: Integer; ptr: pointer; opt: Single): Integer;
+function TVSTModuleWithMidi.HostCallGetCurrentMidiProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
   Result := -1;
 end;
@@ -133,7 +133,7 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.MIDI_Out(b1, b2, b3: Byte; b4: Byte = 0; const Offset: Integer = 0);
+procedure TVSTModuleWithMidi.MIDI_Out(const b1, b2, b3: Byte; b4: Byte = 0; const Offset: Integer = 0);
 begin
  with PVstMidiEvent(FMidiEvent.events[FMidiEvent.numEvents])^ do
   begin

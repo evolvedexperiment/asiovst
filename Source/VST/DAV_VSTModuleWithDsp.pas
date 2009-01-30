@@ -41,7 +41,7 @@ type
     procedure DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer); overload;
     procedure DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer); overload;
 
-    procedure ProcessMidiEvent(MidiEvent: TVstMidiEvent); override;
+    procedure ProcessMidiEvent(const MidiEvent: TVstMidiEvent); override;
 
     procedure NumInputsChanged; override;
     procedure NumOutputsChanged; override;
@@ -181,10 +181,10 @@ begin
   then SetInitialDelay(FInitialDelay);
 end;
 
-procedure TDspVSTModule.ProcessMidiEvent(MidiEvent: TVstMidiEvent);
+procedure TDspVSTModule.ProcessMidiEvent(const MidiEvent: TVstMidiEvent);
 var
   tmp    : TDAVMidiEvent;
-  filter : Boolean;
+  Filter : Boolean;
 begin
  with MidiEvent do
   begin
@@ -198,10 +198,10 @@ begin
    tmp.NoteOffVelocity := NoteOffVelocity;
   end;
 
- filter := false;
- FDspQueueList.ProcessMidiEventQueue(tmp, filter);
+ Filter := False;
+ FDspQueueList.ProcessMidiEventQueue(tmp, Filter);
 
- if not filter then inherited;
+ if not Filter then inherited;
 end;
 
 

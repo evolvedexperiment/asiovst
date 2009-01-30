@@ -1483,7 +1483,7 @@ asm
  fabs
  fadd  CDenorm32              // Stack: temp
 
- fcom  [edx.FPeak].Double    // Stack: temp
+ fcom  [edx.FPeak].Double     // Stack: temp
  fstsw ax
  sahf
  jbe   @Release
@@ -1495,7 +1495,7 @@ asm
  jmp   @AmpTodB
 @Release:
  fld   [edx.FPeak]            // Stack: FPeak, temp
- fsubr st(0), st(1)           // Stack: (FPeak - temp), temp
+ fsub  st(0), st(1)           // Stack: (FPeak - temp), temp
  fmul  [edx.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
  faddp                        // Stack: (FPeak - temp) * FReleaseFactor + temp
  fst   [edx.FPeak]
@@ -1557,7 +1557,7 @@ asm
  fist  IntCast                 // Stack: round(temp), temp
  fsubp                         // Stack: newtemp = temp - round(temp)
 
- mov   eax, IntCast            // EAX
+ mov   eax, IntCast          
  add   eax, $7F
  shl   eax, $17
  mov   IntCast, eax
@@ -1570,7 +1570,7 @@ asm
  fmulp                               // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
  fld1
  faddp                               // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
- fmul  CastedSingle                  // == 1.976848
+ fmul  CastedSingle
 
  fst  [edx.FGain]
  fmul Input

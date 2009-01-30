@@ -139,11 +139,11 @@ type
     function GetRealQualities: LongInt;
     function GetUniqueID: string;
     function GetVersion: Integer;
-    function VstDispatch(opCode : TDispatcherOpcode; Index: Integer = 0; value: Integer = 0; pntr: Pointer = nil; opt: Single = 0): Integer; {overload;} //virtual;
+    function VstDispatch(const opCode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
     procedure InitializeVstEffect;
-    procedure SetActive(Value: Boolean);
-    procedure SetBlockSize(Value: Integer);
-    procedure SetVstDllFileName(Value: TFilename);
+    procedure SetActive(const Value: Boolean);
+    procedure SetBlockSize(const Value: Integer);
+    procedure SetVstDllFileName(const Value: TFilename);
     {$IFDEF VstHostGUI}
     procedure SetGUIStyle(const Value: TGUIStyle);
     procedure FormCloseHandler(Sender: TObject; var Action: TCloseAction);
@@ -171,8 +171,8 @@ type
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     function BeginLoadBank(PatchChunkInfo : PVstPatchChunkInfo): Integer;
-    function CanBeAutomated(index: Integer): Integer;
-    function VstCanDo(pntr: PChar): Integer;
+    function CanBeAutomated(const Index: Integer): Integer;
+    function VstCanDo(const CanDoString: string): Integer;
     function ConnectInput(InputNr: Integer; State: Boolean): Integer;
     function ConnectOutput(OutputNr: Integer; State: Boolean): Integer;
     function CopyCurrentProgramTo(Destination: Integer): Boolean;
@@ -218,13 +218,13 @@ type
     function OfflineRun(pntr: PVstOfflineTaskRecord; count :Integer): Integer;
     function ProcessEvents(pntr: PVstEvents): Integer;
     function ProcessVarIo(varIo: PVstVariableIo): Integer;
-    function SetBlockSizeAndSampleRate(blockSize: Integer; sampleRate: Single): Integer;
-    function SetBypass(Value: Boolean): Integer;
+    function SetBlockSizeAndSampleRate(const BlockSize: Integer; const SampleRate: Single): Integer;
+    function SetBypass(const Value: Boolean): Integer;
     function SetChunk(data: Pointer; ByteSize: Integer; isPreset: Boolean = False): Integer;
     function SetSpeakerArrangement(pluginInput: PVstSpeakerArrangement; pluginOutput: PVstSpeakerArrangement): Boolean;
     function ShellGetNextPlugin(var PluginName: string): Integer;
-    function String2Parameter(ParameterName: string): Integer;
-    function VendorSpecific(index, value:Integer; pntr: Pointer; opt: Single): Integer;
+    function String2Parameter(const Index: Integer; const ParameterName: string): Integer;
+    function VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
     procedure BeginLoadProgram(PatchChunkInfo : PVstPatchChunkInfo);
     procedure BeginSetProgram;
     procedure Close;
@@ -249,7 +249,7 @@ type
     {$ENDIF}
     procedure LoadFromVSTEffect(const Value: PVSTEffect);
 
-    procedure MainsChanged(IsOn: Boolean);
+    procedure MainsChanged(const IsOn: Boolean);
     procedure Open;
     procedure Process(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
     procedure ProcessAudio(Inputs, Outputs: PPSingle; SampleFrames: Integer);
@@ -1543,7 +1543,7 @@ begin
   else Result := [];
 end;
 
-procedure TCustomVstPlugIn.SetActive(Value: Boolean);
+procedure TCustomVstPlugIn.SetActive(const Value: Boolean);
 begin
   if FActive <> Value then
   if Value then Open else Close;
@@ -1577,7 +1577,8 @@ begin
   FVSTCanDosScannedComplete := False;
 
   SetPanLaw(kLinearPanLaw, sqrt(2));
-  SetBlockSizeAndSampleRate(FBlocksize, FSampleRate);
+  SetBlockSize(FBlocksize);
+  SetSampleRate(FSampleRate);
   if vcdBypass in FVSTCanDos
    then SetBypass(False);
   FVstVersion   := GetVstVersion;
@@ -1598,7 +1599,7 @@ begin
  FPlugCategory := vpcUnknown;
 end;
 
-function TCustomVstPlugIn.VstDispatch(opCode : TDispatcherOpcode; Index, Value: Integer; Pntr: Pointer; opt: Single): Integer;
+function TCustomVstPlugIn.VstDispatch(const opCode : TDispatcherOpcode; const Index, Value: Integer; const Pntr: Pointer; const opt: Single): Integer;
 begin
  try
   DontRaiseExceptionsAndSetFPUcodeword;
@@ -1781,12 +1782,12 @@ begin
  VstDispatch(effSetSampleRate, 0, 0, nil, Value);
 end;
 
-procedure TCustomVstPlugIn.SetBlockSize(value: Integer);
+procedure TCustomVstPlugIn.SetBlockSize(const Value: Integer);
 begin
- VstDispatch(effSetBlockSize, 0, value);
+ VstDispatch(effSetBlockSize, 0, Value);
 end;
 
-procedure TCustomVstPlugIn.MainsChanged(IsOn: Boolean);
+procedure TCustomVstPlugIn.MainsChanged(const IsOn: Boolean);
 begin
  VstDispatch(effMainsChanged, 0, Integer(IsOn));
 end;
@@ -2173,18 +2174,14 @@ begin
  result := VstDispatch(effProcessEvents, 0, 0, pntr);
 end;
 
-function TCustomVstPlugIn.CanBeAutomated(index: Integer): Integer;
+function TCustomVstPlugIn.CanBeAutomated(const Index: Integer): Integer;
 begin
- result := VstDispatch(effCanBeAutomated, index);
+ result := VstDispatch(effCanBeAutomated, Index);
 end;
 
-function TCustomVstPlugIn.String2Parameter(ParameterName: string): Integer;
-var
-  temp: Integer;
+function TCustomVstPlugIn.String2Parameter(const Index: Integer; const ParameterName: string): Integer;
 begin
- temp := 0;
- VstDispatch(effString2Parameter, temp, 0, PChar(ParameterName));
- result := temp;
+ result := VstDispatch(effString2Parameter, Index, 0, PChar(ParameterName));
 end;
 
 function TCustomVstPlugIn.GetNumProgramCategories: Integer;
@@ -2323,12 +2320,12 @@ begin
  result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, Integer(pluginInput), pluginOutput));
 end;
 
-function TCustomVstPlugIn.SetBlockSizeAndSampleRate(blockSize :Integer; sampleRate:Single): Integer;
+function TCustomVstPlugIn.SetBlockSizeAndSampleRate(const BlockSize: Integer; const SampleRate: Single): Integer;
 begin
- result := VstDispatch(effSetBlockSizeAndSampleRate, 0, blockSize, nil, sampleRate);
+ result := VstDispatch(effSetBlockSizeAndSampleRate, 0, BlockSize, nil, SampleRate);
 end;
 
-function TCustomVstPlugIn.SetBypass(Value: Boolean): Integer;
+function TCustomVstPlugIn.SetBypass(const Value: Boolean): Integer;
 begin
  result := VstDispatch(effSetBypass, 0, Integer(Value));
 end;
@@ -2513,14 +2510,14 @@ begin
    end;
 end;
 
-function TCustomVstPlugIn.VendorSpecific(index, value: Integer; pntr: Pointer; opt :Single):Integer;
+function TCustomVstPlugIn.VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
 begin
  result := VstDispatch(effVendorSpecific, index, value, pntr, opt);
 end;
 
-function TCustomVstPlugIn.VstCanDo(pntr: PChar): Integer;
+function TCustomVstPlugIn.VstCanDo(const CanDoString: string): Integer;
 begin
- result := VstDispatch(effCanDo, 0, 0, pntr);
+ result := VstDispatch(effCanDo, 0, 0, PChar(CanDoString));
 end;
 
 function TCustomVstPlugIn.GetTailSize: Integer;
@@ -2808,7 +2805,7 @@ begin
  if Assigned(FOnAfterLoad) then FOnAfterLoad(Self);
 end;
 
-procedure TCustomVstPlugIn.SetVstDllFileName(Value: TFilename);
+procedure TCustomVstPlugIn.SetVstDllFileName(const Value: TFilename);
 begin
  if FVstDllFileName <> Value then
   if FileExists(Value)

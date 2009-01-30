@@ -56,6 +56,7 @@ type
   TParameterChangeEvent        = procedure(Sender: TObject; const Index: Integer; var Value: Single) of object;
   TCustomParameterLabelEvent   = procedure(Sender: TObject; const Index: Integer; var PreDefined: string) of object;
   TCustomParameterDisplayEvent = procedure(Sender: TObject; const Index: Integer; var PreDefined: string) of object;
+  TString2ParameterEvent       = procedure(Sender: TObject; const ParameterString: string; var Value: Single) of object;
 
   TCustomVstParameterProperty = class(TCollectionItem)
   private
@@ -82,9 +83,10 @@ type
     FCategoryString   : string[24];
 
     FVSTModule        : TBasicVSTModule;
-    FOnSPC            : TParameterChangeEvent;
-    FOnCPL            : TCustomParameterLabelEvent;
-    FOnCPD            : TCustomParameterDisplayEvent;
+    FOnParamChange    : TParameterChangeEvent;
+    FOnCParamLabel    : TCustomParameterLabelEvent;
+    FOnCParamDisp     : TCustomParameterDisplayEvent;
+    FOnStr2Param      : TString2ParameterEvent;
 
     function GetShortLabel: string;
     function GetCategoryString: string;
@@ -101,10 +103,10 @@ type
   protected
     function GetDisplayName: string; override;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure SetDisplayName(const AValue: string); override;
     procedure CurveFactorChanged; virtual;
     procedure MaximumChanged; virtual;
     procedure MinimumChanged; virtual;
+    procedure SetDisplayName(const AValue: string); override;
     procedure ShortLabelChanged; virtual;
     procedure UnitsChanged; virtual;
   public
@@ -140,9 +142,10 @@ type
     property StepInteger: Integer read FStepInteger write FStepInteger default 1;
     property Units: string read FUnits write SetUnits;
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
-    property OnParameterChange: TParameterChangeEvent read FOnSPC write FOnSPC;
-    property OnCustomParameterLabel: TCustomParameterLabelEvent read FOnCPL write FOnCPL;
-    property OnCustomParameterDisplay: TCustomParameterDisplayEvent read FOnCPD write FOnCPD;
+    property OnParameterChange: TParameterChangeEvent read FOnParamChange write FOnParamChange;
+    property OnCustomParameterLabel: TCustomParameterLabelEvent read FOnCParamLabel write FOnCParamLabel;
+    property OnCustomParameterDisplay: TCustomParameterDisplayEvent read FOnCParamDisp write FOnCParamDisp;
+    property OnStringToParameterDisplay: TString2ParameterEvent read FOnStr2Param write FOnStr2Param;
   end;
 
   TCustomVstParameterProperties = class(TOwnedCollection)

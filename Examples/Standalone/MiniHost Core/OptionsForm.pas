@@ -132,7 +132,7 @@ begin
  Host.Wavefile.Volume := SbWavVolume.Position * 0.01;
  LbWavVolume.caption := 'WAV Volume: ' + IntToStr(SbWavVolume.Position);
  Host.VSTHost.Tempo := SbTempo.Position;
- LbTempo.caption := 'Tempo: ' + IntToStr(SbTempo.Position)+' bpm';
+ LbTempo.caption := 'Tempo: ' + IntToStr(SbTempo.Position) + ' bpm';
 end;
 
 {$IFDEF FPC}
