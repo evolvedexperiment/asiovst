@@ -51,7 +51,7 @@ type
   TGetPlayState = function: Integer;
   TSetEditCurPos = procedure(Time: Double; MoveView, SeekPlay: Boolean);
   TGetSetRepeat =  function(Parm: Integer): Integer;
-  TGetProjectPath =  procedure(Buffer: PChar; BufferSize: Integer);
+  TGetProjectPath =  procedure(Buffer: PAnsiChar; BufferSize: Integer);
   TOnPlayButton = procedure;
   TOnPauseButton = procedure;
   TOnStopButton = procedure;
@@ -692,18 +692,18 @@ begin
     // check for REAPER extension
     if (Ptr <> nil) and (Cardinal(Opcode) = $DEADBEEF) and (Cardinal(Index) = $DEADBEEF) then
      begin
-      if PChar(Ptr) = 'GetPlayPosition' then else
-      if PChar(Ptr) = 'GetPlayPosition2' then else
-      if PChar(Ptr) = 'GetCursorPosition' then else
-      if PChar(Ptr) = 'GetPlayState' then else
-      if PChar(Ptr) = 'SetEditCurPos' then else
-      if PChar(Ptr) = 'GetSetRepeat' then else
-      if PChar(Ptr) = 'GetProjectPath' then else
-      if PChar(Ptr) = 'OnPlayButton' then else
-      if PChar(Ptr) = 'OnPauseButton' then else
-      if PChar(Ptr) = 'OnStopButton' then else
-      if PChar(Ptr) = 'IsInRealTimeAudio' then else
-      if PChar(Ptr) = 'Audio_IsRunning' then else;
+      if PAnsiChar(Ptr) = 'GetPlayPosition' then else
+      if PAnsiChar(Ptr) = 'GetPlayPosition2' then else
+      if PAnsiChar(Ptr) = 'GetCursorPosition' then else
+      if PAnsiChar(Ptr) = 'GetPlayState' then else
+      if PAnsiChar(Ptr) = 'SetEditCurPos' then else
+      if PAnsiChar(Ptr) = 'GetSetRepeat' then else
+      if PAnsiChar(Ptr) = 'GetProjectPath' then else
+      if PAnsiChar(Ptr) = 'OnPlayButton' then else
+      if PAnsiChar(Ptr) = 'OnPauseButton' then else
+      if PAnsiChar(Ptr) = 'OnStopButton' then else
+      if PAnsiChar(Ptr) = 'IsInRealTimeAudio' then else
+      if PAnsiChar(Ptr) = 'Audio_IsRunning' then else;
       exit;
      end;
 
@@ -848,14 +848,14 @@ begin
    audioMasterGetOutputspeakerArrangement : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetSpeakerArrangement, (long)input in <value>, output in <ptr>') {$ENDIF Debug};
    audioMasterGetVendorString             : begin
                                              if assigned(theHost)
-                                              then StrCopy(PChar(ptr), PChar(theHost.VendorString))
-                                              else StrCopy(PChar(ptr), 'Delphi ASIO & VST Project');
+                                              then StrCopy(PAnsiChar(ptr), PAnsiChar(theHost.VendorString))
+                                              else StrCopy(PAnsiChar(ptr), 'Delphi ASIO & VST Project');
                                              result := 1;
                                             end;
    audioMasterGetProductString            : begin
                                              if assigned(theHost)
-                                              then StrCopy(PChar(ptr), PChar(theHost.ProductString))
-                                              else StrCopy(PChar(ptr), 'Delphi VST Host');
+                                              then StrCopy(PAnsiChar(ptr), PAnsiChar(theHost.ProductString))
+                                              else StrCopy(PAnsiChar(ptr), 'Delphi VST Host');
                                              result := 1;
                                             end;
    audioMasterGetVendorVersion            : if assigned(theHost)
@@ -869,24 +869,24 @@ begin
    audioMasterSetIcon                     : {$IFDEF Debug} ShowMessage('TODO: audioMasterSetIcon, void* in <ptr>, format not defined yet, Could be a CBitmap .') {$ENDIF Debug};
    audioMasterCanDo                       : begin
                                              if not assigned(ptr) then result := 0 else 
-                                             if      ShortString(PChar(ptr)) = 'sendVstEvents' then Result := Integer(hcdSendVstEvents in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'sendVstMidiEvent' then Result := Integer(hcdSendVstMidiEvent in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'sendVstTimeInfo' then Result := Integer(hcdSendVstTimeInfo in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'receiveVstEvents' then Result := Integer(hcdReceiveVstEvents in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'receiveVstMidiEvent' then Result := Integer(hcdReceiveVstMidiEvent in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'receiveVstTimeInfo' then Result := Integer(hcdReceiveVstTimeInfo in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'reportConnectionChanges' then Result := Integer(hcdReportConnectionChanges in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'acceptIOChanges' then Result := Integer(hcdAcceptIOChanges in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'sizeWindow' then Result := Integer(hcdSizeWindow in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'asyncProcessing' then Result := Integer(hcdAsyncProcessing in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'offline' then Result := Integer(hcdOffline in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'supplyIdle' then Result := Integer(hcdSupplyIdle in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'supportShell' then Result := Integer(hcdSupportShell in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'openFileSelector' then Result := Integer(hcdOpenFileSelector in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'closeFileSelector' then Result := Integer(hcdcloseFileSelector in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'editFile' then Result := Integer(hcdEditFile in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'shellCategory' then Result := Integer(hcdShellCategory in FHostCanDos)
-                                             else if ShortString(PChar(ptr)) = 'startStopProcess' then Result := Integer(hcdStartStopProcess in FHostCanDos)
+                                             if      ShortString(PAnsiChar(ptr)) = 'sendVstEvents' then Result := Integer(hcdSendVstEvents in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'sendVstMidiEvent' then Result := Integer(hcdSendVstMidiEvent in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'sendVstTimeInfo' then Result := Integer(hcdSendVstTimeInfo in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'receiveVstEvents' then Result := Integer(hcdReceiveVstEvents in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'receiveVstMidiEvent' then Result := Integer(hcdReceiveVstMidiEvent in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'receiveVstTimeInfo' then Result := Integer(hcdReceiveVstTimeInfo in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'reportConnectionChanges' then Result := Integer(hcdReportConnectionChanges in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'acceptIOChanges' then Result := Integer(hcdAcceptIOChanges in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'sizeWindow' then Result := Integer(hcdSizeWindow in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'asyncProcessing' then Result := Integer(hcdAsyncProcessing in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'offline' then Result := Integer(hcdOffline in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'supplyIdle' then Result := Integer(hcdSupplyIdle in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'supportShell' then Result := Integer(hcdSupportShell in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'openFileSelector' then Result := Integer(hcdOpenFileSelector in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'closeFileSelector' then Result := Integer(hcdcloseFileSelector in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'editFile' then Result := Integer(hcdEditFile in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'shellCategory' then Result := Integer(hcdShellCategory in FHostCanDos)
+                                             else if ShortString(PAnsiChar(ptr)) = 'startStopProcess' then Result := Integer(hcdStartStopProcess in FHostCanDos)
                                              else Result := 0;
                                             end;
    audioMasterGetLanguage                 : if assigned(theHost)
@@ -919,7 +919,7 @@ begin
                                              {$ENDIF Debug};
                                             end;
    audioMasterGetDirectory                : if assigned(theHost)
-                                             then result := LongInt(PChar(theHost.FPlugInDir));
+                                             then result := LongInt(PAnsiChar(theHost.FPlugInDir));
    audioMasterUpdateDisplay               : if Assigned(thePlug) then
                                              if Assigned(thePlug.FOnAMUpdateDisplay)
                                               then thePlug.FOnAMUpdateDisplay(thePlug);
@@ -947,8 +947,8 @@ begin
                                                                     ')|*.' + PVstFileType(PVstFileSelect(ptr).fileTypes).dosType + '|';
                                                     if Execute then
                                                      begin
-//                                                      PVstFileSelect(ptr).returnPath := PChar(TOpenDialog(HostDialog).FileName);
-//                                                      StrCopy(PVstFileSelect(ptr).returnPath,PChar(TOpenDialog(HostDialog).FileName));
+//                                                      PVstFileSelect(ptr).returnPath := PAnsiChar(TOpenDialog(HostDialog).FileName);
+//                                                      StrCopy(PVstFileSelect(ptr).returnPath,PAnsiChar(TOpenDialog(HostDialog).FileName));
                                                       PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
                                                      end;
                                                    end;
@@ -967,7 +967,7 @@ begin
                                                       ')|*.' + PVstFileType(PVstFileSelect(ptr).fileTypes).dosType + '|';
                                                     if Execute then
                                                     begin
-                                                     PVstFileSelect(ptr).returnPath := PChar(FileName);
+                                                     PVstFileSelect(ptr).returnPath := PAnsiChar(FileName);
                                                      PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
                                                     end;
                                                    end;
@@ -987,7 +987,7 @@ begin
                                                     if TOpenDialog(HostDialog).Execute
                                                      then
                                                       begin
-                                                       PVstFileSelect(ptr).returnPath := PChar(FileName);
+                                                       PVstFileSelect(ptr).returnPath := PAnsiChar(FileName);
                                                        PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
                                                       end;
                                                   end;
@@ -1576,7 +1576,7 @@ begin
    else FVSTCanDos := [];
   FVSTCanDosScannedComplete := False;
 
-  SetPanLaw(kLinearPanLaw, sqrt(2));
+  SetPanLaw(plLinear, sqrt(2));
   SetBlockSize(FBlocksize);
   SetSampleRate(FSampleRate);
   if vcdBypass in FVSTCanDos
@@ -1664,12 +1664,12 @@ end;
 procedure TCustomVstPlugIn.SetProgramName(const NewName: string);
 begin
  if FActive
-  then VstDispatch(effSetProgramName, 0, 0, PChar(NewName));
+  then VstDispatch(effSetProgramName, 0, 0, PAnsiChar(NewName));
 end;
 
 function TCustomVstPlugIn.GetProgramName: string;
 var
-  Temp : PChar;
+  Temp : PAnsiChar;
 const
   Lngth = 256;
 begin
@@ -1695,7 +1695,7 @@ end;
 
 function TCustomVstPlugIn.GetParamLabel(index: Integer): string;
 var
-  Temp : PChar;
+  Temp : PAnsiChar;
 const
   Lngth = 256;
 begin
@@ -1723,7 +1723,7 @@ end;
 
 function TCustomVstPlugIn.GetParamDisplay(index: Integer): string;
 var
-  Temp : PChar;
+  Temp : PAnsiChar;
 const
   Lngth = 256;
 begin
@@ -1751,7 +1751,7 @@ end;
 
 function TCustomVstPlugIn.GetParamName(index: Integer): string;
 var
-  Temp : PChar;
+  Temp : PAnsiChar;
 const
   Lngth = 256;
 begin
@@ -2181,7 +2181,7 @@ end;
 
 function TCustomVstPlugIn.String2Parameter(const Index: Integer; const ParameterName: string): Integer;
 begin
- result := VstDispatch(effString2Parameter, Index, 0, PChar(ParameterName));
+ result := VstDispatch(effString2Parameter, Index, 0, PAnsiChar(ParameterName));
 end;
 
 function TCustomVstPlugIn.GetNumProgramCategories: Integer;
@@ -2200,7 +2200,7 @@ end;
 
 function TCustomVstPlugIn.GetProgramNameIndexed(Category, Index: Integer; var ProgramName: string): Integer;
 var
-  Temp : PChar;
+  Temp : PAnsiChar;
 const
   Lngth = 256;
 begin
@@ -2332,7 +2332,7 @@ end;
 
 function TCustomVstPlugIn.GetEffectName: string;
 var
-  Temp : PChar;
+  Temp : PAnsiChar;
 const
   Lngth = 256;
 begin
@@ -2358,7 +2358,7 @@ end;
 
 function TCustomVstPlugIn.GetErrorText: string;
 var
-  Temp : PChar;
+  Temp : PAnsiChar;
 const
   Lngth = 512;
 begin
@@ -2410,7 +2410,7 @@ end;
 
 function TCustomVstPlugIn.GetVendorString: string;
 var
-  Temp : PChar;
+  Temp : PAnsiChar;
 const
   Lngth = 256;
 begin
@@ -2436,7 +2436,7 @@ end;
 
 function TCustomVstPlugIn.GetProductString: string;
 var
-  Temp : PChar;
+  Temp : PAnsiChar;
 const
   Lngth = 256;
 begin
@@ -2517,7 +2517,7 @@ end;
 
 function TCustomVstPlugIn.VstCanDo(const CanDoString: string): Integer;
 begin
- result := VstDispatch(effCanDo, 0, 0, PChar(CanDoString));
+ result := VstDispatch(effCanDo, 0, 0, PAnsiChar(CanDoString));
 end;
 
 function TCustomVstPlugIn.GetTailSize: Integer;
@@ -2710,7 +2710,7 @@ end;
 
 function TCustomVstPlugIn.ShellGetNextPlugin(var PluginName: string): Integer;
 var
-  Temp : PChar;
+  Temp : PAnsiChar;
 const
   Lngth = 256;
 begin
@@ -2849,8 +2849,8 @@ begin
  FVstDllFileName := FileName;
 
  try
-  FVstDllHandle := SafeLoadLibrary(PChar(DLLFileName),7);
- // FVstDllHandle := LoadLibraryEx(PChar(DLLFileName), 0, DONT_RESOLVE_DLL_REFERENCES);
+  FVstDllHandle := SafeLoadLibrary(PAnsiChar(DLLFileName),7);
+ // FVstDllHandle := LoadLibraryEx(PAnsiChar(DLLFileName), 0, DONT_RESOLVE_DLL_REFERENCES);
 
   if FVstDllHandle = 0 then
    begin
@@ -2973,7 +2973,7 @@ begin
    FXVersion  := FVstEffect^.version;
    NumParams  := Self.numParams;
    str        := GetProgramName + #0;
-   StrLCopy(prgName, PChar(str), 26);
+   StrLCopy(prgName, PAnsiChar(str), 26);
 
    GetMem(Params, numParams * SizeOf(Single));
    for i := 0 to numParams - 1 do
@@ -3040,7 +3040,7 @@ begin
     NumPrograms := FVstEffect^.numPrograms;
 
     str := GetProgramName + #0;
-    StrLCopy(prgName, PChar(str), 26);
+    StrLCopy(prgName, PAnsiChar(str), 26);
 
     IntChkSize := GetChunk(@ChunkData, True);
     chunkSize := IntChkSize;

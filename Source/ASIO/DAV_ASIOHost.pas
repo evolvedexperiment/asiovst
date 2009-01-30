@@ -37,8 +37,8 @@ const
 type
   TAsioDriverDesc = packed record
     id   : TGUID; //TCLSID;
-    name : array[0..511] of char;
-    path : array[0..511] of char;
+    name : array[0..511] of AnsiChar;
+    path : array[0..511] of AnsiChar;
   end;
   PAsioDriverDesc = ^TAsioDriverDesc;
   TASIOBufferList = array [0..0] of TASIOBufferInfo;
@@ -543,7 +543,7 @@ var
   reg     : TRegistry;
   success : Boolean;
   {$IFNDEF FPC}
-  buf     : array[0..1024] of char;
+  buf     : array[0..1024] of AnsiChar;
   s       : string;
   temps   : string;
   {$ENDIF}
@@ -1006,7 +1006,7 @@ end;
 
 procedure TCustomASIOHostBasic.SetDriverIndex(Value: Integer);
 var
-  DrName: array[0..255] of Char;
+  DrName: array[0..255] of AnsiChar;
   tmpActive : Boolean;
 begin
  if (Value <> FDriverIndex) then
