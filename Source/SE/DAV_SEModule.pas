@@ -356,6 +356,8 @@ type
     function GetPin(Index: Integer): TSEPin;
     function GetPinPropertiesClean(const Index: Integer; Properties: PSEPinProperties): Boolean;
     function GetTotalPinCount: Integer;
+    function GetInputPinCount: Integer;
+    function GetOutputPinCount: Integer;
     procedure SetProcess(const Value: TSE2ProcessEvent);
     procedure SetSampleRate(const Value: Single);
     procedure SetBlockSize(const Value: Integer);
@@ -403,6 +405,8 @@ type
     property Pin[Index: Integer]: TSEPin read GetPin;
     property SampleClock: Cardinal read GetSampleClock;
     property TotalPinCount: Integer read GetTotalPinCount;
+    property InputPinCount: Integer read GetInputPinCount;
+    property OutputPinCount: Integer read GetOutputPinCount;
   published
     property SampleRate: Single read FSampleRate;
     property BlockSize: Integer read FBlockSize;
@@ -844,6 +848,16 @@ end;
 function TSEModuleBase.GetName(name: PChar): Boolean;
 begin
  result := False;
+end;
+
+function TSEModuleBase.GetInputPinCount: Integer;
+begin
+ result := CallHost(SEAudioMasterGetInputPinCount);
+end;
+
+function TSEModuleBase.GetOutputPinCount: Integer;
+begin
+ result := CallHost(SEAudioMasterGetOutputPinCount);
 end;
 
 function TSEModuleBase.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;

@@ -3,7 +3,7 @@ unit SELinkwitzRileyModule;
 interface
 
 uses
-  DAV_Common, DAV_DSPButterworthFilter, DAV_SECommon, DAV_SEModule;
+  DAV_Common, DAV_DSPFilterLinkwitzRiley, DAV_SECommon, DAV_SEModule;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -20,8 +20,7 @@ type
     FOutHiBuffer : PDAVSingleFixedArray;
     FOrder       : Integer;
     FHighSign    : Single;
-    FFilterLP    : array [0..1] of TButterworthLP;
-    FFilterHP    : array [0..1] of TButterworthHP;
+    FFilter      : TLinkwitzRiley;
     FStaticCount : Integer;
     procedure SampleRateChanged; override;
     procedure Open; override;
@@ -73,22 +72,16 @@ constructor TSELinkwitzRileyModule.Create(SEAudioMaster: TSE2AudioMasterCallback
 begin
  inherited Create(SEAudioMaster, Reserved);
 
- FFilterLP[0] := TButterworthLP.Create;
- FFilterLP[1] := TButterworthLP.Create;
- FFilterHP[0] := TButterworthHP.Create;
- FFilterHP[1] := TButterworthHP.Create;
-
- FOrder     := 2;
- FHighSign  := 1;
+ FFilter := TLinkwitzRiley.Create;
+ FFilter.Frequency := 1000;
+ FFilter.Order := 2;
+ FOrder := 2;
 end;
 
 destructor TSELinkwitzRileyModule.Destroy;
 begin
  // This is where you free any memory/resources your module has created
- FreeAndNil(FFilterLP[0]);
- FreeAndNil(FFilterLP[1]);
- FreeAndNil(FFilterHP[0]);
- FreeAndNil(FFilterHP[1]);
+ FreeAndNil(FFilter);
  inherited;
 end;
 
@@ -105,10 +98,7 @@ end;
 procedure TSELinkwitzRileyModule.SampleRateChanged;
 begin
  inherited;
- FFilterLP[0].SampleRate := SampleRate;
- FFilterLP[1].SampleRate := SampleRate;
- FFilterHP[0].SampleRate := SampleRate;
- FFilterHP[1].SampleRate := SampleRate;
+ FFilter.SampleRate := SampleRate;
 end;
 
 procedure TSELinkwitzRileyModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
@@ -201,16 +191,7 @@ begin
               ChooseProcess;
               Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
              end;
-  pinOrder :
-   begin
-    FFilterLP[0].Order := FOrder;
-    FFilterHP[0].Order := FOrder;
-    FFilterLP[1].Order := FOrder;
-    FFilterHP[1].Order := FOrder;
-    if FOrder mod 2 = 1
-     then FHighSign := -1
-     else FHighSign :=  1
-   end;
+  pinOrder : FFilter.Order := FOrder;
  end;
  inherited;
 end;
@@ -280,13 +261,7 @@ procedure TSELinkwitzRileyStaticModule.PlugStateChange(
 begin
  // has user altered LinkwitzRiley time parameter?
  case TSELinkwitzRileyPins(CurrentPin.PinID) of
-  pinFrequency:
-   begin
-    FFilterLP[0].Frequency := FFrequency;
-    FFilterHP[0].Frequency := FFrequency;
-    FFilterLP[1].Frequency := FFrequency;
-    FFilterHP[1].Frequency := FFrequency;
-   end;
+  pinFrequency: FFilter.Frequency := FFrequency;
  end;
  inherited;
 end;
@@ -298,22 +273,14 @@ var
   OutLo  : PDAVSingleFixedArray;
   OutHi  : PDAVSingleFixedArray;
   Sample : Integer;
-  Temp   : Double;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Input := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  OutLo := PDAVSingleFixedArray(@FOutLoBuffer[BufferOffset]);
  OutHi := PDAVSingleFixedArray(@FOutHiBuffer[BufferOffset]);
 
- for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
-  begin
-   // do the actual processing (multiplying the two input samples together)
-   Temp           := Input[Sample] + cDenorm32;
-   OutLo^[Sample] := FFilterLP[0].ProcessSample(
-                     FFilterLP[1].ProcessSample(Temp));
-   OutHi^[Sample] := FFilterHP[0].ProcessSample(
-                     FFilterHP[1].ProcessSample(Temp)) * FHighSign;
-  end;
+ for Sample := 0 to SampleFrames - 1
+  do FFilter.ProcessSample(Input[Sample] + cDenorm32, OutLo^[Sample], OutHi^[Sample]);
 end;
 
 
@@ -408,7 +375,6 @@ var
   OutHi  : PDAVSingleFixedArray;
   Freq   : PDAVSingleFixedArray;
   Sample : Integer;
-  Temp   : Double;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Input := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
@@ -416,19 +382,10 @@ begin
  OutHi := PDAVSingleFixedArray(@FOutHiBuffer[BufferOffset]);
  Freq  := PDAVSingleFixedArray(@FFreqBuffer[BufferOffset]);
 
- for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
+ for Sample := 0 to SampleFrames - 1 do
   begin
-   FFilterLP[0].Frequency := 10000 * Freq^[Sample];
-   FFilterLP[1].Frequency := 10000 * Freq^[Sample];
-   FFilterHP[0].Frequency := 10000 * Freq^[Sample];
-   FFilterHP[1].Frequency := 10000 * Freq^[Sample];
-
-   // do the actual processing
-   Temp           := Input[Sample] + cDenorm32;
-   OutLo^[Sample] := FFilterLP[0].ProcessSample(
-                     FFilterLP[1].ProcessSample(Temp));
-   OutHi^[Sample] := FFilterHP[0].ProcessSample(
-                     FFilterHP[1].ProcessSample(Temp)) * FHighSign;
+   FFilter.Frequency := 10000 * Freq^[Sample];
+   FFilter.ProcessSample(Input[Sample] + cDenorm32, OutLo^[Sample], OutHi^[Sample]);
   end;
 end;
 

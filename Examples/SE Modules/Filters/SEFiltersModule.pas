@@ -16,6 +16,7 @@ type
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FFilter       : TBiquadIIRFilter;
+    FFilterRef    : Pointer;
     FStaticCount  : Integer;
     procedure ChooseProcess;
     procedure Open; override;
@@ -127,6 +128,9 @@ begin
 
  // choose which function is used to process audio
  OnProcess := SubProcess;
+ FFilterRef := FFilter;
+
+ Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stStatic);
 
  // let 'downstream' modules know audio data is coming
  Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
@@ -157,6 +161,9 @@ var
 begin
  Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+
+ FFilterRef := @FFilter;
+ Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stStatic);
 
  for Sample := 0 to SampleFrames - 1
   do Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
@@ -225,7 +232,7 @@ begin
     with Properties^ do
      begin
       Name            := 'Filter Reference';
-      VariableAddress := @FFilter;
+      VariableAddress := @FFilterRef;
       Direction       := drOut;
       Datatype        := dtInteger;
      end;
@@ -297,8 +304,8 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
-   FFilter.Frequency := 10000 * Freq[Sample] * FFilter.SampleRate;
-   FFilter.Gain      := 15 * Gain[Sample];
+   FFilter.Frequency := 10000 * Freq[Sample];
+   FFilter.Gain      := 10 * Gain[Sample];
    FFilter.Bandwidth := 0.1 + 9.9 * abs(BW[Sample]);
    Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;

@@ -461,7 +461,7 @@ begin
    FLinkwitzRiley[0, 0].ProcessSample(CDenorm32 + FD[0, 1], FD[0, 0], FD[0, 1]);
    FLinkwitzRiley[1, 0].ProcessSample(CDenorm32 + FD[1, 1], FD[1, 0], FD[1, 1]);
 
-   // split low
+   // split high
    FLinkwitzRiley[0, 2].ProcessSample(CDenorm32 + FD[0, 3], FD[0, 2], FD[0, 3]);
    FLinkwitzRiley[1, 2].ProcessSample(CDenorm32 + FD[1, 3], FD[1, 2], FD[1, 3]);
 

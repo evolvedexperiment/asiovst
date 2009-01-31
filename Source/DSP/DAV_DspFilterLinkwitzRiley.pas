@@ -108,12 +108,10 @@ end;
 
 procedure TLinkwitzRiley.ProcessSample(const Input: Single; out Low,
   High: Single);
-var
-  DLow, DHigh: Double;
 begin
- FSplit.ProcessSample(Input, DLow, DHigh);
- Low  := FLowpass.ProcessSample(DLow);
- High := FHighpass.ProcessSample(FSign * DHigh);
+ FSplit.ProcessSample(Input, Low, High);
+ Low  := FLowpass.ProcessSample(Low);
+ High := FHighpass.ProcessSample(FSign * High);
 end;
 
 procedure TLinkwitzRiley.ProcessSample(const Input: Double; out Low,

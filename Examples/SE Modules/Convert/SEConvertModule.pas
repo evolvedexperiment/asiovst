@@ -86,6 +86,7 @@ type
   TSETextToGuiTextModule = class(TSEConvertModule)
   protected
     FText    : PChar;
+    FOutText : PChar;
     FGuiText : PChar;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
@@ -603,8 +604,11 @@ end;
 
 procedure TSETextToGuiTextModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if CurrentPin.PinID = 0
-  then FGUIText := PChar(FText + #0);
+ if CurrentPin.PinID = 0 then
+  begin
+   FOutText := PChar(FText + #0);
+   Pin[1].TransmitStatusChange(SampleClock, stStatic);
+  end;
  inherited;
 end;
 
@@ -613,7 +617,6 @@ function TSETextToGuiTextModule.GetPinProperties(const Index: Integer; Propertie
 begin
  result := True;
  case index of
-  // typical input plug (inputs are listed first)
   0: with Properties^ do
       begin
        Name            := 'Text';
@@ -623,6 +626,23 @@ begin
        DefaultValue    := 'Text';
       end;
   1: with Properties^ do
+      begin
+       Name            := 'Text';
+       VariableAddress := @FOutText;
+       Flags           := [iofPatchStore, iofHidePin];
+       Direction       := drOut;
+       Datatype        := dtText;
+       DefaultValue    := 'Text';
+      end;
+  2: with Properties^ do
+      begin
+       Name            := 'GUI Text';
+       Flags           := [iofUICommunication, iofPatchStore, iofHidePin];
+       Direction       := drIn;
+       Datatype        := dtText;
+       DefaultValue    := 'Text';
+      end;
+  3: with Properties^ do
       begin
        Name            := 'GUI Text';
        VariableAddress := @FGUIText;

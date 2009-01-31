@@ -22,6 +22,7 @@ type
     FSinW0, FW0  : Double;
     FSampleRate  : Double;
     FSRR         : Double; // reciprocal of FSampleRate
+    FOnChange    : TNotifyEvent;
     procedure CalculateW0; virtual;
     procedure CalculateGainFactor; virtual;
     procedure CalculateCoefficients; virtual; abstract;
@@ -57,6 +58,7 @@ type
     property Gain: Double read FGain_dB write SetGaindB;
     property Frequency: Double read FFrequency write SetFrequency;
     property SampleRate: Double read FSampleRate write SetSampleRate;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange; 
   end;
 
   TOrderFilterClass = class of TCustomOrderFilter;
@@ -92,13 +94,13 @@ type
   private
     procedure SetKernelSize(const Value: Integer);
   protected
-    fKernelSize : Integer;
-    fIR         : TDAVDoubleDynArray;
-    fHistory    : TDAVDoubleDynArray;
-    fCircular   : TDAVDoubleDynArray;
-    fSpeedTab   : TDAVDoubleDynArray;
-    fStateStack : TDAVDoubleDynArray;
-    fBufferPos  : Integer;
+    FKernelSize : Integer;
+    FIR         : TDAVDoubleDynArray;
+    FHistory    : TDAVDoubleDynArray;
+    FCircular   : TDAVDoubleDynArray;
+    FSpeedTab   : TDAVDoubleDynArray;
+    FStateStack : TDAVDoubleDynArray;
+    FBufferPos  : Integer;
   public
     constructor Create; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -108,7 +110,7 @@ type
 //    function ProcessSampleASM: Double; override;
     procedure PushStates; override;
     procedure PopStates; override;
-    property KernelSize: Integer Read fKernelSize Write SetKernelSize;
+    property KernelSize: Integer Read FKernelSize Write SetKernelSize;
   end;
 
   TIIRFilterClass = class of TCustomIIRFilter;
@@ -280,12 +282,14 @@ procedure TCustomFilter.FrequencyChanged;
 begin
  CalculateW0;
  CalculateCoefficients;
+ if assigned(FOnChange) then FOnChange(Self);
 end;
 
 procedure TCustomFilter.GainChanged;
 begin
  CalculateGainFactor;
  CalculateCoefficients;
+ if assigned(FOnChange) then FOnChange(Self);
 end;
 
 procedure TCustomFilter.GetIR(ImpulseResonse: TDAVSingleDynArray);
@@ -335,6 +339,7 @@ procedure TCustomFilter.SampleRateChanged;
 begin
  CalculateW0;
  CalculateCoefficients;
+ if assigned(FOnChange) then FOnChange(Self);
 end;
 
 procedure TCustomFilter.SetFrequency(Value: Double);
@@ -407,6 +412,7 @@ procedure TCustomBandwidthFilter.BandwidthChanged;
 begin
  CalculateAlpha;
  CalculateCoefficients;
+ if assigned(FOnChange) then FOnChange(Self);
 end;
 
 procedure TCustomBandwidthFilter.CalculateW0;
@@ -448,14 +454,14 @@ function TCustomFIRFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
   Cmplx    : TComplexDouble;
 begin
- Cmplx := Goertzel(PDAVDoubleFixedArray(@fIR[0]), fKernelSize, Pi * Frequency / SampleRate);
+ Cmplx := Goertzel(PDAVDoubleFixedArray(@FIR[0]), FKernelSize, Pi * Frequency / SampleRate);
  Result := FGainFactor * (sqr(Cmplx.Re) + sqr(Cmplx.Im));
 end;
 
 procedure TCustomFIRFilter.PopStates;
 begin
- Move(fStateStack[0], fHistory[0], Length(fHistory) * SizeOf(Double));
- Move(fStateStack[Length(fHistory)], fCircular[0], Length(fCircular) * SizeOf(Double));
+ Move(FStateStack[0], FHistory[0], Length(FHistory) * SizeOf(Double));
+ Move(FStateStack[Length(FHistory)], FCircular[0], Length(FCircular) * SizeOf(Double));
 end;
 
 procedure ConvolveIR_X87(InOutBuffer, IRBuffer: PDouble; samples: Integer;
@@ -533,29 +539,29 @@ end;
 
 function TCustomFIRFilter.ProcessSample(const Input: Double): Double;
 begin
- fHistory[fBufferPos] := Input;
- Result := (fCircular[fBufferPos] + fHistory[fBufferPos] * fIR[0]);
- ConvolveIR_X87large(@fCircular[fBufferPos], @fIR[0], fKernelSize, fHistory[fBufferPos]);
- Inc(fBufferPos);
- if fBufferPos >= fKernelSize then
+ FHistory[FBufferPos] := Input;
+ Result := (FCircular[FBufferPos] + FHistory[FBufferPos] * FIR[0]);
+ ConvolveIR_X87large(@FCircular[FBufferPos], @FIR[0], FKernelSize, FHistory[FBufferPos]);
+ Inc(FBufferPos);
+ if FBufferPos >= FKernelSize then
   begin
-   fBufferPos := 0;
-   move(fCircular[fKernelSize], fCircular[0], fKernelSize * SizeOf(Double));
-   FillChar(fCircular[fKernelSize], fKernelSize * SizeOf(Double), 0);
+   FBufferPos := 0;
+   move(FCircular[FKernelSize], FCircular[0], FKernelSize * SizeOf(Double));
+   FillChar(FCircular[FKernelSize], FKernelSize * SizeOf(Double), 0);
   end;
 end;
 
 procedure TCustomFIRFilter.PushStates;
 begin
- Move(fHistory[0], fStateStack[0], Length(fHistory) * SizeOf(Double));
- Move(fCircular[0], fStateStack[Length(fHistory)], Length(fCircular) * SizeOf(Double));
+ Move(FHistory[0], FStateStack[0], Length(FHistory) * SizeOf(Double));
+ Move(FCircular[0], FStateStack[Length(FHistory)], Length(FCircular) * SizeOf(Double));
 end;
 
 procedure TCustomFIRFilter.SetKernelSize(const Value: Integer);
 begin
- if fKernelSize <> Value then
+ if FKernelSize <> Value then
   begin
-   fKernelSize := Value;
+   FKernelSize := Value;
   end;
 end;
 

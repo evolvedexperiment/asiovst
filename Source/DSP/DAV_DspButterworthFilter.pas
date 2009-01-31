@@ -75,7 +75,8 @@ type
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;
-    procedure ProcessSample(const Input: Double; out Lowpass, Highpass: Double); reintroduce;
+    procedure ProcessSample(const Input: Double; out Lowpass, Highpass: Double); reintroduce; overload;
+    procedure ProcessSample(const Input: Single; out Lowpass, Highpass: Single); reintroduce; overload;
     function MagnitudeSquared(const Frequency: Double): Double; override;
   published
     property Gain;
@@ -459,6 +460,7 @@ begin
 {$ELSE}
 asm
  fld  Input.Double
+ fadd CDenorm64
  fmul [self.FFilterGain].Double
  mov  ecx, [self.FOrder]
  test ecx, ecx
@@ -539,8 +541,148 @@ begin
 end;
 
 function TButterworthSplit.MagnitudeSquared(const Frequency: Double): Double;
+var
+  i  : Integer;
+  cw : Double;
 begin
- raise Exception.Create('not implemented yet');
+ cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal);
+ Result := sqr(FFilterGain) * sqr(FKs);
+ for i := 0 to (FOrder div 2) - 1 do
+  begin
+   Result := Result * sqr(cw + 2) * sqr(cw - 2) / sqr(1 + sqr(FAB[2 * i]) +
+     sqr(FAB[2 * i + 1]) + 2 * FAB[2 * i + 1] +
+     cw * ((FAB[2 * i] - cw) * FAB[2 * i + 1] - FAB[2 * i]));
+  end;
+ if (FOrder mod 2) = 1 then
+  begin
+   i := ((FOrder + 1) div 2) - 1;
+   Result := Result * (cw + 2) * (cw - 2) / sqr(1 + sqr(FAB[2 * i]) - cw * FAB[2 * i]);
+  end;
+
+ Result := CDenorm64 + Abs(sqr(FFilterGain) * Result);
+end;
+
+procedure TButterworthSplit.ProcessSample(const Input: Single; out Lowpass,
+  Highpass: Single);
+{$IFDEF PUREPASCAL}
+var
+  x : Double;
+  i : Integer;
+begin
+ Highpass := FFilterGain * Input;
+ Lowpass  := FFilterGain * Input * FKs;
+ for i := 0 to (FOrder div 2) - 1 do
+  begin
+   x := Lowpass;
+   Lowpass             :=      x + FState[2 * i];
+   FState[2 * i    ]   :=  2 * x + FAB[2 * i] * Lowpass + FState[2 * i + 1];
+   FState[2 * i + 1]   :=      x + FAB[2 * i + 1] * Lowpass;
+
+   x := Highpass;
+   Highpass            :=      x + FHPState[2 * i];
+   FHPState[2 * i    ] := -2 * x + FAB[2 * i] * Highpass + FHPState[2 * i + 1];
+   FHPState[2 * i + 1] :=      x + FAB[2 * i + 1] * Highpass;
+  end;
+ if (FOrder mod 2) = 1 then
+  begin
+   i := ((FOrder + 1) div 2) - 1;
+   x               :=  Lowpass;
+   Lowpass        :=   x + FState[2 * i];
+   FState[2 * i]   :=  x + FAB[2 * i] * Lowpass;
+
+   x               :=  Highpass;
+   Highpass        :=  x + FHPState[2 * i];
+   FHPState[2 * i] := -x + FAB[2 * i] * Highpass;
+  end;
+{$ELSE}
+asm
+ fld  Input.Single               // highpass
+ fmul [self.FFilterGain].Double
+ fld  Input.Single               // lowpass, highpass
+ fsub CDenorm64
+ fmul [self.FFilterGain].Double
+ fmul [self.FKs].Double
+ push ecx
+ mov  ecx, [self.FOrder]
+ test ecx, ecx
+ jz  @End
+ shr  ecx, 1
+ shl  ecx, 2
+ push ecx
+ jz @SingleStage
+ @FilterLoop:
+  sub  ecx, 4
+
+  // lowpass
+  fld  st(0)
+  fadd [self.FState + ecx * 4].Double
+  fld  st(0)
+  fld  st(0)
+  fmul [self.FAB + ecx * 4].Double
+  fadd [self.FState + ecx * 4 + 8].Double
+  fld  st(3)
+  fadd st(0), st(0)
+  faddp
+  fstp [self.FState + ecx * 4].Double
+  fmul [self.FAB + ecx * 4 + 8].Double
+  fxch
+  fxch st(2)
+  faddp
+  fstp [self.FState + ecx * 4 + 8].Double
+  fxch
+
+  // highpass
+  fld  st(0)
+  fadd [self.FHPState + ecx * 4].Double
+  fld  st(0)
+  fld  st(0)
+  fmul [self.FAB + ecx * 4].Double
+  fadd [self.FHPState + ecx * 4 + 8].Double
+  fld  st(3)
+  fadd st(0), st(0)
+  fsubp
+  fstp [self.FHPState + ecx * 4].Double
+  fmul [self.FAB + ecx * 4 + 8].Double
+  fxch
+  fxch st(2)
+  faddp
+  fstp [self.FHPState + ecx * 4 + 8].Double
+  fxch
+ ja @FilterLoop
+
+ @SingleStage:
+ pop ecx
+ shr ecx, 1
+ sub ecx, [self.FOrder]
+ jz @End
+  mov ecx, [self.FOrder]
+  dec ecx
+  shl ecx, 1
+
+  // lowpass
+  fld st(0)
+  fadd [self.FState + ecx * 4].Double
+  fld st(0)
+  fmul [self.FAB + ecx * 4].Double
+  faddp st(2), st(0)
+  fxch
+  fstp [self.FState + ecx * 4].Double
+  fxch
+
+  // highpass
+  fld st(0)
+  fadd [self.FHPState + ecx * 4].Double
+  fld st(0)
+  fmul [self.FAB + ecx * 4].Double
+  fsubrp st(2), st(0)
+  fxch
+  fstp [self.FHPState + ecx * 4].Double
+  fxch
+ @End:
+ fstp Lowpass.Single
+ pop ecx
+ fstp Highpass.Single
+ {$ENDIF}
 end;
 
 procedure TButterworthSplit.ProcessSample(const Input: Double; out Lowpass,
