@@ -91,8 +91,6 @@ type
     procedure ReadOnlyString(s: string); virtual;
     function GetHostProduct: string;
     function GetHostVendor: string;
-    function GetCanHostDo(canDo: string): Integer;
-    function GetHostVendorVersion: Integer;
   protected
     FBlockSize              : Integer;
     FEditorForm             : TForm;
@@ -1278,11 +1276,6 @@ begin
   then SetLength(FProductName, 64);
 end;
 
-function TCustomVSTModule.GetCanHostDo(canDo: string): Integer;
-begin
-
-end;
-
 function TCustomVSTModule.GetHostProduct: string;
 var
   Text : PChar;
@@ -1331,11 +1324,6 @@ begin
    end;
   end
  else Result := FHostVendor;
-end;
-
-function TCustomVSTModule.GetHostVendorVersion: Integer;
-begin
-
 end;
 
 procedure TCustomVSTModule.SetVersionMajor(Value: Integer);

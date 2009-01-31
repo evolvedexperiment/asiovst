@@ -14,12 +14,9 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOrderDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FLinkwitzRiley : TLinkwitzRiley;
   public
@@ -48,7 +45,7 @@ var
   Sample: Integer;
 begin
  for Sample := 0 to SampleFrames - 1
-  do FLinkwitzRiley.ProcessSample(Inputs[0, Sample], Outputs[0, Sample], Outputs[1, Sample])
+  do FLinkwitzRiley.ProcessSample(CDenorm32 + Inputs[0, Sample], Outputs[0, Sample], Outputs[1, Sample])
 end;
 
 procedure TLinkwitzRileyModule.ParameterOrderDisplay(

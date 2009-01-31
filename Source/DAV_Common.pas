@@ -134,6 +134,7 @@ type
 
   function Limit(const Value: Single; Lower: Single = -1; Upper: Single = 1): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function Limit(const Value: Double; Lower: Double = -1; Upper: Double = 1): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Limit(const Value: Integer; Lower: Integer = 0; Upper: Integer = 1): Integer; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function BranchlessClip(const Value, Lower, Upper: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function BranchlessClip(const Value, Lower, Upper: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function BranchlessClipLower(Value: Single; const Lower: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -563,6 +564,13 @@ end;
 
 // Limit a Value to be Lower <= Value <= Upper
 function Limit(const Value: Double; Lower: Double = -1; Upper: Double = 1): Double;
+begin
+ if Value < Lower then Result := Lower else
+ if Value > Upper then Result := Upper else Result := Value;
+end;
+
+// Limit a Value to be Lower <= Value <= Upper
+function Limit(const Value: Integer; Lower: Integer = 0; Upper: Integer = 1): Integer;
 begin
  if Value < Lower then Result := Lower else
  if Value > Upper then Result := Upper else Result := Value;

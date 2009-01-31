@@ -10,8 +10,9 @@ uses
 type
   TLinkwitzRiley = class(TObject)
   private
-    FLowpass    : Array [0..1] of TButterworthLP;
-    FHighpass   : Array [0..1] of TButterworthHP;
+    FLowpass    : TButterworthLP;
+    FHighpass   : TButterworthHP;
+    FSplit      : TButterworthSplit;
     FSampleRate : Single;
     FFrequency  : Single;
     FOrder      : Integer;
@@ -26,8 +27,8 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure ProcessSample(const Input: Single; var Low, High: Single); overload;
-    procedure ProcessSample(const Input: Double; var Low, High: Double); overload;
+    procedure ProcessSample(const Input: Single; out Low, High: Single); overload;
+    procedure ProcessSample(const Input: Double; out Low, High: Double); overload;
   published
     property SampleRate: Single read FSampleRate write SetSampleRate;
     property Frequency: Single read FFrequency write SetFrequency;
@@ -44,24 +45,22 @@ uses
 constructor TLinkwitzRiley.Create;
 begin
  inherited;
- FLowpass[0]  := TButterworthLP.Create;
- FLowpass[1]  := TButterworthLP.Create;
- FHighpass[0] := TButterworthHP.Create;
- FHighpass[1] := TButterworthHP.Create;
- FSampleRate  := 44100;
- FOrder       := 4;
- FSign        := 1;
- FFrequency   := 1000;
+ FLowpass    := TButterworthLP.Create;
+ FHighpass   := TButterworthHP.Create;
+ FSplit      := TButterworthSplit.Create;
+ FSampleRate := 44100;
+ FOrder      := 4;
+ FSign       := 1;
+ FFrequency  := 1000;
  FrequencyChanged;
  OrderChanged;
 end;
 
 destructor TLinkwitzRiley.Destroy;
 begin
- FreeAndNil(FLowpass[0]);
- FreeAndNil(FLowpass[1]);
- FreeAndNil(FHighpass[0]);
- FreeAndNil(FHighpass[1]);
+ FreeAndNil(FLowpass);
+ FreeAndNil(FHighpass);
+ FreeAndNil(FSplit);
  inherited;
 end;
 
@@ -94,45 +93,42 @@ end;
 
 procedure TLinkwitzRiley.FrequencyChanged;
 begin
- FLowpass[0].Frequency  := FFrequency;
- FLowpass[1].Frequency  := FFrequency;
- FHighpass[0].Frequency := FFrequency;
- FHighpass[1].Frequency := FFrequency;
+ FLowpass.Frequency  := FFrequency;
+ FHighpass.Frequency := FFrequency;
+ FSplit.Frequency    := FFrequency;
 end;
 
 procedure TLinkwitzRiley.OrderChanged;
 begin
- FLowpass[0].Order  := FOrder;
- FLowpass[1].Order  := FOrder;
- FHighpass[0].Order := FOrder;
- FHighpass[1].Order := FOrder;
+ FLowpass.Order  := FOrder;
+ FHighpass.Order := FOrder;
+ FSplit.Order    := FOrder;
  FSign := 1 - 2 * (FOrder mod 2);
 end;
 
-procedure TLinkwitzRiley.ProcessSample(const Input: Single; var Low,
+procedure TLinkwitzRiley.ProcessSample(const Input: Single; out Low,
   High: Single);
+var
+  DLow, DHigh: Double;
 begin
- Low  := FLowpass[0].ProcessSample(
-         FLowpass[1].ProcessSample(Input));
- High := FHighpass[0].ProcessSample(
-         FHighpass[1].ProcessSample(FSign * Input));
+ FSplit.ProcessSample(Input, DLow, DHigh);
+ Low  := FLowpass.ProcessSample(DLow);
+ High := FHighpass.ProcessSample(FSign * DHigh);
 end;
 
-procedure TLinkwitzRiley.ProcessSample(const Input: Double; var Low,
+procedure TLinkwitzRiley.ProcessSample(const Input: Double; out Low,
   High: Double);
 begin
- Low  := FLowpass[0].ProcessSample(
-         FLowpass[1].ProcessSample(Input));
- High := FHighpass[0].ProcessSample(
-         FHighpass[1].ProcessSample(Input));
+ FSplit.ProcessSample(Input, Low, High);
+ Low  := FLowpass.ProcessSample(Low);
+ High := FHighpass.ProcessSample(FSign * High);
 end;
 
 procedure TLinkwitzRiley.SampleRateChanged;
 begin
- FLowpass[0].SampleRate  := FSampleRate;
- FLowpass[1].SampleRate  := FSampleRate;
- FHighpass[0].SampleRate := FSampleRate;
- FHighpass[1].SampleRate := FSampleRate;
+ FLowpass.SampleRate  := FSampleRate;
+ FHighpass.SampleRate := FSampleRate;
+ FSplit.SampleRate    := FSampleRate;
 end;
 
 end.

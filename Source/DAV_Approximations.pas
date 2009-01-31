@@ -622,6 +622,7 @@ begin
   2 : Result := -FastCosPart5Term(Result - Pi);
   3 : Result :=  FastCosPart5Term(CTwoPI32 - Result);
   4 : Result :=  FastCosPart5Term(Result);
+  else Result := 0;
  end;
 end;
 
@@ -633,6 +634,7 @@ begin
   2 : Result := -FastCosPart5Term(Result - Pi);
   3 : Result :=  FastCosPart5Term(CTwoPI64 - Result);
   4 : Result :=  FastCosPart5Term(Result);
+  else Result := 0;
  end;
 end;
 
