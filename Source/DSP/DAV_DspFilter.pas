@@ -464,8 +464,8 @@ begin
  Move(FStateStack[Length(FHistory)], FCircular[0], Length(FCircular) * SizeOf(Double));
 end;
 
-procedure ConvolveIR_X87(InOutBuffer, IRBuffer: PDouble; samples: Integer;
- Current: Double);
+procedure ConvolveIR_X87(InOutBuffer, IRBuffer: PDAVDoubleFixedArray; SampleFrames: Integer;
+  Current: Double);
 asm
   fld   Current.Double
   @SmallLoop:
@@ -483,8 +483,8 @@ asm
   ffree st(0)
 end;
 
-procedure ConvolveIR_X87large(InOutBuffer, IRBuffer: PDouble;
- samples: Integer; Current: Double);
+procedure ConvolveIR_X87large(InOutBuffer, IRBuffer: PDAVDoubleFixedArray;
+  SampleFrames: Integer; Current: Double);
 asm
   fld   Current.Double
 

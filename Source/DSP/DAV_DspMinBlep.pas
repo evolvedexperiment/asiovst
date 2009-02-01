@@ -23,13 +23,13 @@ uses
   Math, DAV_Complex, DAV_DspDFT;
 
 // Complex Exponential
-procedure ComplexExponential(Re, Im: Double; zx, zy: PSingle);
+procedure ComplexExponential(Re, Im: Double; var zx, zy: Single);
 var
   expx: Double;
 begin
   expx := exp(Re);
-  zx^ := expx * cos(Im);
-  zy^ := expx * sin(Im);
+  zx := expx * cos(Im);
+  zy := expx * sin(Im);
 end;
 
 // Compute Real Cepstrum Of Signal
@@ -111,7 +111,7 @@ begin
   DFT(realTime, imagTime, realFreq, imagFreq);
 
   for i := 0 to n - 1 do
-    ComplexExponential(realFreq[i], imagFreq[i], @realFreq[i], @imagFreq[i]);
+    ComplexExponential(realFreq[i], imagFreq[i], realFreq[i], imagFreq[i]);
   InverseDFT(realTime, imagTime, realFreq, imagFreq);
 
   for i := 0 to n - 1 do

@@ -95,7 +95,7 @@ end;
 
 function TVSTEditorCreator.GetImplFileName: string;
 begin
-  Result := IncludeTrailingPathDelimiter(FConfig.ProjectPath) +
+  Result := {$IFDEF DELPHI6_UP}IncludeTrailingPathDelimiter{$ENDIF}(FConfig.ProjectPath) +
     FConfig.EditorUnitName + '.pas';
 end;
 

@@ -8,6 +8,7 @@ uses
   DAV_Common, DAV_DspCommon, DAV_DspButterworthFilter;
 
 type
+  {$IFDEF DELPHI7_UP}
   //////////////////////////////////////////////////////////////////////////////
   //                                                                          //
   //  IDynamicProcessorKnee                                                   //
@@ -23,6 +24,7 @@ type
     procedure SetKnee_dB(Value: Double);
     property Knee_dB: Double read GetKnee_dB write SetKnee_dB;
   end;
+  {$ENDIF}
 
   //////////////////////////////////////////////////////////////////////////////
   //                                                                          //
@@ -815,6 +817,19 @@ implementation
 uses
   SysUtils, Math, DAV_Approximations;
 
+const
+  CDenorm32      : Single = 1E-24;
+  CDenorm64      : Double = 1E-34;
+  CHalf32        : Single = 0.5;
+  CHalf64        : Double = 0.5;
+  CQuarter32     : Single = 0.25;
+  CQuarter64     : Double = 0.25;
+
+  CSoftKnee : array [0..7] of Single = (-8.21343513178931783E-2,
+    6.49732456739820052E-1, -2.13417801862571777, 4.08642207062728868,
+    -1.51984215742349793, 5.48668824216034384E-2, 2.42162975514835621E-1,
+    6.93292707161004662E-1);
+
 { TCustomDynamicProcessor }
 
 constructor TCustomDynamicProcessor.Create;
@@ -1508,14 +1523,14 @@ asm
  add   eax, $3f800000
  mov   IntCast, eax
  fld   CastedSingle
- fmul  [CL2Continous5        ].Single
- fadd  [CL2Continous5 + 4    ].Single
+ fmul  [CSoftKnee        ].Single
+ fadd  [CSoftKnee + 4    ].Single
  fmul  CastedSingle
- fadd  [CL2Continous5 + 4 * 2].Single
+ fadd  [CSoftKnee + 4 * 2].Single
  fmul  CastedSingle
- fadd  [CL2Continous5 + 4 * 3].Single
+ fadd  [CSoftKnee + 4 * 3].Single
  fmul  CastedSingle
- fadd  [CL2Continous5 + 4 * 4].Single
+ fadd  [CSoftKnee + 4 * 4].Single
 
  shr   ecx, $17
  and   ecx, $000000ff
@@ -1557,19 +1572,19 @@ asm
  fist  IntCast                 // Stack: round(temp), temp
  fsubp                         // Stack: newtemp = temp - round(temp)
 
- mov   eax, IntCast          
+ mov   eax, IntCast
  add   eax, $7F
  shl   eax, $17
  mov   IntCast, eax
 
- fld   st(0)                         // Stack: newtemp, newtemp
- fmul  [CP2MinError3 + 4 * 2].Single // Stack: CP2MinError3[2] * newtemp, newtemp
- fadd  [CP2MinError3 + 4    ].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
- fmul  st(0), st(1)                  // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fadd  [CP2MinError3        ].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
- fmulp                               // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+ fld   st(0)                      // Stack: newtemp, newtemp
+ fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
+ fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
+ fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+ fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+ fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
  fld1
- faddp                               // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+ faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
  fmul  CastedSingle
 
  fst  [edx.FGain]

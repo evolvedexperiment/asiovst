@@ -83,6 +83,8 @@ type
   {$IFDEF Delphi5}
   PCardinal = ^Cardinal;
 //  TValueSign = set of (-1, 0, 1);
+  PSingle = ^Single;
+  PDouble = ^Double;
   {$ENDIF}
 
   TDAVMidiEvent = record
@@ -105,6 +107,14 @@ type
   procedure FlipWord(var Value); overload;
   procedure FlipLong(var Value); overload;
   procedure FlipExtended(var Value : Extended); overload;
+
+
+  { Compatibility }
+
+  {$IFDEF DELPHI5}
+  function Sign(const AValue: Single): Single; overload;
+  function Sign(const AValue: Double): Double; overload;
+  {$ENDIF}
 
 
   { Convert }
@@ -156,6 +166,9 @@ type
   procedure FastAbs(var Value: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   procedure FastAbs(var Value: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   procedure FastAbs(var Value: TDAV4SingleArray); overload;
+  function FastSgn(const Value: Single): Integer;
+  function FastMin(const A, B: Single) : Single;
+  function FastMax(const A, B: Single) : Single;
   function FastMod(const Arg1, Arg2: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   {$IFNDEF FPC}
@@ -187,10 +200,6 @@ type
   function Sigmoid(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function Sinc(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function Sinc(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-
-  {$IFDEF DELPHI5}
-  function Sign(const AValue: Double): Double;
-  {$ENDIF}
 
   { String Stuff & Messages }
 
@@ -855,9 +864,11 @@ asm
 end;
 
 {$IFNDEF FPC}
-function FastSgn(f: Single): Integer;
+function FastSgn(const Value: Single): Integer;
+var
+  IntCast : Integer absolute Value;
 begin
- Result := 1 - ((Integer((@f)^) shr 31) shl 1);
+ Result := 1 - ((Intcast shr 31) shl 1);
 end;
 {$ENDIF}
 
@@ -1097,65 +1108,6 @@ begin
    end;
 end;
 
-function Tanh2a(Input: Single): Single;
-var
-  a, b: Single;
-begin
- a := abs(Input);
- b := 12 + a * (6 + a * (3 + a));
- Result := (Input * b) / (a * b + 24);
-end;
-
-function Tanh2b(Input: Single): Single;
-var
-  a, b: Single;
-begin
- a := abs(Input);
- b := (6 + a * (3 + a));
- Result := (Input * b) / (a * b + 12);
-end;
-
-function Tanh2c(Input: Single): Single;
-{$IFDEF PUREPASCAL}
-var
-  a, b: Single;
-begin
- a := abs(Input);
- b := 3 + a;
- Result := (Input * b) / (a * b + 6 );
-{$ELSE}
-const
-  c3: Single = 3;
-  c6: Single = 6;
-asm
- fld Input.Single;
- fabs
- fld c3
- fadd st(0),st(1)
- fld st(0)
- fmul Input.Single
- fxch st(2)
- fmulp
- fadd c6.Single
- fdiv
-{$ENDIF}
-end;
-
-function Tanh2d(Input: Single):Single;
-{$IFDEF PUREPASCAL}
-begin
- Result := Input / (abs(Input) + 3);
-{$ELSE}
-const c3 : Single = 3;
-asm
- fld Input.Single;
- fld Input.Single;
- fabs
- fadd c3
- fdiv
-{$ENDIF}
-end;
-
 function Sigmoid(const Input: Single): Single;
 begin
  if (abs(Input) < 1)
@@ -1176,10 +1128,18 @@ begin
     else Result :=  1;
 end;
 
-{$IFDEF DELPHI5}
-{$DEFINE PUREPASCAL}
+{ Compatibility }
 
-function Sign(const AValue: Double): Double;//TValueSign;
+{$IFDEF DELPHI5}
+function Sign(const AValue: Single): Single;
+begin
+ if ((PInt64(@AValue)^ and $7FFFFFFFFFFFFFFF) = $0000000000000000)
+  then Result := 0 else
+ if ((PInt64(@AValue)^ and $8000000000000000) = $8000000000000000)
+  then Result := -1 else Result := 1;
+end;
+
+function Sign(const AValue: Double): Double;
 begin
  if ((PInt64(@AValue)^ and $7FFFFFFFFFFFFFFF) = $0000000000000000)
   then Result := 0 else
@@ -1187,6 +1147,8 @@ begin
   then Result := -1 else Result := 1;
 end;
 {$ENDIF}
+
+{$DEFINE PUREPASCAL}
 
 {$IFNDEF FPC}
 function FastMin(const A, B: Single) : Single;
@@ -1494,3 +1456,4 @@ initialization
  InitConstants;
 
 end.
+

@@ -1,7 +1,6 @@
 package DAV_SEHost_D5;
 
-{$R *.res}
-{$ALIGN 8}
+{$A+}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -26,8 +25,7 @@ package DAV_SEHost_D5;
 {$IMPLICITBUILD OFF}
 
 requires
-  vcl,
-  rtl,
+  vcl50,
   DAV_Common_D5;
 
 contains

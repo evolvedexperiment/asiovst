@@ -2802,9 +2802,12 @@ begin
 
  // set host related variables
  FVstEffect.ReservedForHost := Self;
+ {$IFDEF DELPHI6_UP}
  if assigned(Collection)
   then FVstEffect.resvd2    := Collection.Owner
   else FVstEffect.resvd2    := nil;
+ {$ENDIF}
+
  DontRaiseExceptionsAndSetFPUcodeword;
  if Assigned(FOnAfterLoad) then FOnAfterLoad(Self);
 end;
@@ -2853,7 +2856,8 @@ begin
  FVstDllFileName := FileName;
 
  try
-  FVstDllHandle := SafeLoadLibrary(PAnsiChar(DLLFileName),7);
+  DontRaiseExceptionsAndSetFPUcodeword;
+  FVstDllHandle := SafeLoadLibrary(PAnsiChar(DLLFileName), 7);
  // FVstDllHandle := LoadLibraryEx(PAnsiChar(DLLFileName), 0, DONT_RESOLVE_DLL_REFERENCES);
 
   if FVstDllHandle = 0 then

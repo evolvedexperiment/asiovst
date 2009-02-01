@@ -25,6 +25,7 @@ const
 type
   PPLongWord = ^PLongWord;
   PPWord = ^PWord;
+  PPointer = ^Pointer;
 
   PWordArray = ^TWordArray;
   TWordArray = array[0..(2147483647 div SizeOf(Word)) - 1] of Word;
@@ -505,7 +506,7 @@ begin
    end;
 end;
 
-function TDLLLoader.GetExternalLibraryHandle(LibraryName: string): LongWord;
+function TDLLLoader.GetExternalLibraryHandle(LibraryName: string): HInst;
 var
   I: Integer;
 begin

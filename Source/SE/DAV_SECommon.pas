@@ -16,13 +16,15 @@ const
 
 type
   // plug datatype
-  TSEPlugDataType = (dtNone = -1, dtEnum, dtText, dtMidi2, dtDouble, dtBoolean,
-       dtFSample, dtSingle, dtVstParam, dtInteger, dtBlob, dtExperimental,
-       dtFilterReference = $666);
+  TSEPlugDataType = ({$IFDEF DELPHI6_UP}dtNone = -1, {$ENDIF}dtEnum, dtText,
+       dtMidi2, dtDouble, dtBoolean, dtFSample, dtSingle, dtVstParam,
+       dtInteger, dtBlob {$IFDEF DELPHI6_UP}, dtExperimental,
+       dtFilterReference = $666{$ENDIF});
 
   // plug direction (use drNone in order to create a 32bit type)
-  TSEDirection = (drIn = 0, drOut, drContainerIO, drParameter,
-    drNone = $7FFFFFFF, drFeature = drIn, drCntrl = drOut);
+  TSEDirection = (drIn {$IFDEF DELPHI6_UP}= 0 {$ENDIF}, drOut, drContainerIO,
+    drParameter {$IFDEF DELPHI6_UP}, drNone = $7FFFFFFF, drFeature = drIn,
+    drCntrl = drOut{$ENDIF});
 
   TSeSdkString = string;
   TSeSdkString2 = WideString; 

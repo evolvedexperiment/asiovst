@@ -26,8 +26,7 @@ package DAV_VSTHost_D5;
 
 requires
   vcl50,
-  DAV_Common_D5,
-  DAV_VstPlugin_D5;
+  DAV_Common_D5;
 
 contains
   DAV_VSTHost in '..\Source\VST\DAV_VSTHost.pas',

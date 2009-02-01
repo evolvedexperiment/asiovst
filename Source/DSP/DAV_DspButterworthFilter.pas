@@ -94,6 +94,10 @@ implementation
 uses
   Math, SysUtils, DAV_Complex;
 
+const
+  CDenorm32      : Single = 1E-24;
+  CDenorm64      : Double = 1E-34;
+
 constructor TButterworthFilter.Create;
 begin
  inherited;
