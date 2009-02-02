@@ -22,14 +22,14 @@ uses
   DAV_Stk, DAV_StkWavePlayer, DAV_StkSampler, DAV_StkFormantSweep;
 
 type
-  TMoog = class(TSampler)
+  TStkMoog = class(TStkSampler)
   protected
     FFilters    : array[0..1] of TFormantSweep;
     FModDepth   : Single;
     FFilterQ    : Single;
     FFilterRate : Single;
   public
-    constructor Create(SampleRate: Single); override;
+    constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
     // Set instrument parameters for a particular AFrequency.
@@ -53,12 +53,12 @@ type
 
 implementation
 
-constructor TMoog.Create;
+constructor TStkMoog.Create;
 begin
   inherited Create(SampleRate);
-  attacks[0] := TWavePlayer.Create(srate, 'c:\stk\mandpluk.wav');
-  loops[0] := TWavePlayer.Create(srate, 'c:\stk\impuls20.wav');
-  loops[1] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
+  attacks[0] := TWavePlayer.Create(srate, 'mandpluk.wav');
+  loops[0] := TWavePlayer.Create(srate, 'impuls20.wav');
+  loops[1] := TWavePlayer.Create(srate, 'sinewave.wav');
   loops[0].SetOneShot(False);
   loops[1].SetOneShot(False);
   loops[1].SetFrequency(6.122);
@@ -72,7 +72,7 @@ begin
   FModDepth := 0.0;
 end;
 
-destructor TMoog.Destroy;
+destructor TStkMoog.Destroy;
 begin
   inherited Destroy;
   attacks[0].Free;
@@ -82,7 +82,7 @@ begin
   FFilters[1].Free;
 end;
 
-procedure TMoog.SetFrequency;
+procedure TStkMoog.SetFrequency;
 var
   rate: Single;
 begin
@@ -95,7 +95,7 @@ begin
   loops[0].SetFrequency(baseFrequency);
 end;
 
-procedure TMoog.NoteOn;
+procedure TStkMoog.NoteOn;
 var
   temp: Single;
 begin
@@ -116,17 +116,17 @@ begin
   FFilters[1].setSweepRate(FFilterRate * 22050.0 / srate);
 end;
 
-procedure TMoog.SetModulationSpeed;
+procedure TStkMoog.SetModulationSpeed;
 begin
   loops[1].SetFrequency(mSpeed);
 end;
 
-procedure TMoog.SetModulationDepth;
+procedure TStkMoog.SetModulationDepth;
 begin
   FModDepth := mDepth * 0.5;
 end;
 
-function TMoog.Tick: Single;
+function TStkMoog.Tick: Single;
 var
   temp: Single;
 begin
@@ -142,7 +142,7 @@ begin
   Result := lastOutput * 3.0;
 end;
 
-procedure TMoog.ControlChange;
+procedure TStkMoog.ControlChange;
 var
   norm: Single;
 begin

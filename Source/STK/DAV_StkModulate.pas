@@ -13,30 +13,27 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkSubNoise, DAV_StkOnePole, DAV_StkLfo;
+  DAV_StkCommon, DAV_StkSubNoise, DAV_StkOnePole, DAV_StkLfo;
 
 type
   TStkModulate = class(TStk)
+  private
+    procedure SetVibratoRate(const Value: Single); // in Hz
+    procedure SetVibratoGain(const Value: Single);
+    procedure SetRandomGain(const Value: Single);
   protected
-    FVibrato: TLFO;
-    FNoise: TSubNoise;
-    FFilter: TOnePole;
-    FVibratoGain, FRandomGain, FLastOutput: Single;
+    FVibrato     : TLFO;
+    FNoise       : TSubNoise;
+    FFilter      : TOnePole;
+    FVibratoGain : Single;
+    FRandomGain  : Single;
+    FLastOutput  : Single;
   public
-    constructor Create(SampleRate: Single); override;
+    constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
     // Reset internal state.
-    procedure reset;
-
-    // Set the periodic (FVibrato) rate or frequency in Hz.
-    procedure setVibratoRate(ARate: Single);
-
-    // Set the periodic (FVibrato) gain.
-    procedure setVibratoGain(AGain: Single);
-
-    // Set the random modulation gain.
-    procedure setRandomGain(AGain: Single);
+    procedure Reset;
 
     // Compute one output sample.
     function Tick: Single; overload;
@@ -44,8 +41,11 @@ type
     // Return \e VectorSize outputs in \e Vector.
     function Tick(Vector: PSingle; VectorSize: Integer): PSingle; overload;
 
-    // Return the last computed output value.
-    function LastOut: Single;
+  published
+    property VibratoRate: Single read GetVibratoRate write SetVibratoRate;
+    property VibratoGain: Single read FVibratoRate write SetVibratoGain;
+    property RandomGain: Single read FRandomGain write SetRandomGain;
+    property LastOutput: Single read FLastOutput;
   end;
 
 implementation
@@ -54,14 +54,14 @@ constructor TModulate.Create;
 begin
   inherited Create(SampleRate);
   FVibrato := TLFO.Create(SampleRate);
-  FVibrato.setFrequency(6.0);
+  FVibrato.Frequency := 6.0;
   FVibratoGain := 0.04;
 
   FNoise := TSubNoise.Create(SampleRate, 330);
   FRandomGain := 0.05;
 
   FFilter := TOnePole.Create(SampleRate, 0.999);
-  FFilter.setGain(FRandomGain);
+  FFilter.Gain := FRandomGain;
 end;
 
 destructor TModulate.Destroy;
@@ -72,25 +72,39 @@ begin
   FFilter.Free;
 end;
 
-procedure TModulate.reset;
+procedure TModulate.Reset;
 begin
   FLastOutput := 0.0;
 end;
 
-procedure TModulate.setVibratoRate;
+function TModulate.GetVibratoRate: Single;
 begin
-  FVibrato.setFrequency(ARate);
+ result := FVibrato.Frequency;
 end;
 
-procedure TModulate.setVibratoGain;
+procedure TModulate.SetVibratoRate(const Value: Single);
 begin
-  FVibratoGain := AGain;
+ if VibratoRate <> Value then
+  begin
+   FVibrato.Frequency := Value;
+  end;
 end;
 
-procedure TModulate.setRandomGain;
+procedure TModulate.SetVibratoGain(const Value: Single);
 begin
-  FRandomGain := AGain;
-  FFilter.setGain(FRandomGain);
+ if FVibratoGain <> Value then
+  begin
+   FVibratoGain := Value;
+  end;
+end;
+
+procedure TModulate.SetRandomGain(const Value: Single);
+begin
+ if FRandomGain <> Value then
+  begin
+   FRandomGain := Value;
+   FFilter.Gain := FRandomGain;
+  end;
 end;
 
 function TModulate.Tick: Single;
@@ -103,7 +117,7 @@ end;
 
 function TModulate.Tick(Vector: PSingle; VectorSize: Integer): PSingle;
 var
-  i: integer;
+  i: Integer;
   p: PSingle;
 begin
   p := Vector;
@@ -114,11 +128,5 @@ begin
    end;
   Result := Vector;
 end;
-
-function TModulate.LastOut: Single;
-begin
-  Result := FLastOutput;
-end;
-
 
 end.
