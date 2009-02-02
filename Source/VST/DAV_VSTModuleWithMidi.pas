@@ -105,7 +105,7 @@ begin
   inherited;
   if FMidiEvent.numEvents > 0 then
   begin
-    sendVstEventsToHost(@FMidiEvent);
+    SendVstEventsToHost(FMidiEvent);
     FMidiEvent.numEvents := 0;
   end;
 end;
@@ -115,7 +115,7 @@ begin
   inherited;
   if FMidiEvent.numEvents > 0 then
   begin
-    sendVstEventsToHost(@FMidiEvent);
+    SendVstEventsToHost(FMidiEvent);
     FMidiEvent.numEvents := 0;
   end;
 end;
@@ -128,7 +128,7 @@ begin
   inherited;
   if FMidiEvent.numEvents > 0 then
   begin
-    sendVstEventsToHost(@FMidiEvent);
+    SendVstEventsToHost(FMidiEvent);
     FMidiEvent.numEvents := 0;
   end;
 end;

@@ -26,57 +26,57 @@ type
     function  GetMasterVersion: Integer; virtual;
     function  GetCurrentUniqueID: TChunkName; virtual;
     procedure MasterIdle; virtual;
-    function  IsInputConnected(input: Integer): Boolean; virtual;
-    function  IsOutputConnected(output: Integer): Boolean; virtual;
+    function  IsInputConnected(const Input: Integer): Boolean; virtual;
+    function  IsOutputConnected(const Output: Integer): Boolean; virtual;
 
-    procedure WantEvents(filter: Integer);  // filter is currently ignored, midi channel data only (default) virtual void wantEvents (long filter = 1); default is 1 for this!
-    function  GetTimeInfo(filter: Integer): PVstTimeInfo; virtual;  // returns const VstTimeInfo* (or 0 if not supported) filter should contain a mask indicating which fields are requested (see valid masks in aeffectx.h), as some items may require extensive conversions
-    procedure SetTimeInfo(filter: Integer; ti: PVstTimeInfo); virtual;
-    function  TempoAt(pos: Integer): Integer; virtual; // returns tempo (in bpm * 10000) at sample frame location <pos>
-    function  SendVstEventsToHost(events: PVstEvents): Boolean;  // True: success
+    procedure WantEvents(const Filter: Integer);  // filter is currently ignored, midi channel data only (default) virtual void wantEvents (long filter = 1); default is 1 for this!
+    function  GetTimeInfo(const Filter: Integer): PVstTimeInfo; virtual;  // returns const VstTimeInfo* (or 0 if not supported) filter should contain a mask indicating which fields are requested (see valid masks in aeffectx.h), as some items may require extensive conversions
+    procedure SetTimeInfo(const Filter: Integer; var VstTimeInfo: PVstTimeInfo); virtual;
+    function  TempoAt(const pos: Integer): Integer; virtual; // returns tempo (in bpm * 10000) at sample frame location <pos>
+    function  SendVstEventsToHost(var Events: TVstEvents): Boolean;  // True: success
 
     function  GetNumAutomatableParameters: Integer; virtual;
-    procedure SetParameterAutomated(Index: Integer; Value: Single); virtual;
+    procedure SetParameterAutomated(Index: Integer; const Value: Single); virtual;
     function  GetParameterQuantization: Integer; virtual; // returns the Integer Value for +1.0 representation, or 1 if full single float precision is maintained in automation. parameter Index in <Value> (-1: all, any)
 
     function  GetInputLatency: Integer; virtual;
     function  GetOutputLatency: Integer; virtual;
-    function  GetPreviousPlug(input: Integer): PVSTEffect; virtual;  // input can be -1 in which case the first found is returned
-    function  GetNextPlug(output: Integer): PVSTEffect; virtual;     // output can be -1 in which case the first found is returned
+    function  GetPreviousPlug(const Input: Integer): PVSTEffect; virtual;  // input can be -1 in which case the first found is returned
+    function  GetNextPlug(const Output: Integer): PVSTEffect; virtual;     // output can be -1 in which case the first found is returned
 
     function  WillProcessReplacing: Integer; virtual; // returns 0: not implemented, 1: replacing, 2: accumulating
     function  GetCurrentProcessLevel: Integer; virtual;  // returns: 0: not supported, 1: currently in user thread (gui) 2: currently in audio thread or irq (where Process is called) 3: currently in 'sequencer' thread or irq (midi, timer etc) 4: currently offline Processing and thus in user thread other: not defined, but probably pre-empting user thread.
     function  GetAutomationState: Integer; virtual;  // returns 0: not supported, 1: off, 2:read, 3:write, 4:read/write
 
-    function  OfflineRead(offline: PVstOfflineTaskRecord; option: TVstOfflineOption; readSource: Boolean): Boolean; virtual;
-    function  OfflineWrite(offline: PVstOfflineTaskRecord; option: TVstOfflineOption): Boolean; virtual;
-    function  OfflineStart(ptr: PVstAudioFile; numAudioFiles: Integer; numNewAudioFiles: Integer): Boolean; virtual;
+    function  OfflineRead(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption; const ReadSource: Boolean): Boolean; virtual;
+    function  OfflineWrite(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption): Boolean; virtual;
+    function  OfflineStart(var AudioFile: TVstAudioFile; const numAudioFiles, numNewAudioFiles: Integer): Boolean; virtual;
     function  OfflineGetCurrentPass: Integer; virtual;
     function  OfflineGetCurrentMetaPass: Integer; virtual;
 
-    procedure SetOutputSampleRate(samplerate: Single); virtual;
+    procedure SetOutputSampleRate(const Samplerate: Single); virtual;
 
-    function  GetHostVendorString(Text: pchar): Boolean; virtual;  // fills <Text> with a string identifying the vendor (max 64 char)
-    function  GetHostProductString(Text: pchar): Boolean; virtual; // fills <Text> with a string with product name (max 64 char)
+    function  GetHostVendorString(const Text: string): Boolean; virtual;  // fills <Text> with a string identifying the vendor (max 64 char)
+    function  GetHostProductString(const Text: string): Boolean; virtual; // fills <Text> with a string with product name (max 64 char)
     function  GetHostVendorVersion: Integer; virtual;  // returns vendor-specific version
-    function  HostVendorSpecific(lArg1, lArg2: Integer; ptrArg: pointer; floatArg: Single): Integer; virtual;  // no definition
+    function  HostVendorSpecific(const Arg1, Arg2: Integer; const ptrArg: pointer; const floatArg: Single): Integer; virtual;  // no definition
     function  GetCanHostDo(Text: string): Integer; virtual;  // see 'hostCanDos' in audioeffectx.cpp returns 0: don't know (default), 1: yes, -1: no
     function  GetHostLanguage: Integer; virtual;   // returns VstHostLanguage
-    function  OpenWindow(aWindow: PVstWindow): pointer; virtual;  // create new window
-    function  CloseWindow(aWindow: PVstWindow): Boolean; virtual; // close a newly created window
-    function  GetDirectory: pointer; virtual;  // get the plug's directory, FSSpec on mac, else char*
+    function  OpenWindow(const aWindow: PVstWindow): pointer; virtual;  // create new window
+    function  CloseWindow(const aWindow: PVstWindow): Boolean; virtual; // close a newly created window
+    function  GetDirectory: Pointer; virtual;  // get the plug's directory, FSSpec on mac, else char*
 
     function  UpdateDisplay: Boolean; virtual; // something has changed, update 'multi-fx' display returns True if supported
     function  IOChanged: Boolean; virtual;   // tell host numInputs and/or numOutputs and/or numParameters has changed
     function  NeedIdle: Boolean; virtual;    // plug needs idle calls (outside its editor window)
-    function  SizeWindow(width, height: Integer): Boolean; virtual;
+    function  SizeWindow(const Width, Height: Integer): Boolean; virtual;
 
-    function  BeginEdit(Index: Integer): Boolean; virtual;  // to be called before a setParameterAutomated with mouse move (one per Mouse Down)
-    function  EndEdit(Index: Integer): Boolean; virtual;    // to be called after a setParameterAutomated (on Mouse Up)
+    function  BeginEdit(const Index: Integer): Boolean; virtual; // to be called before a setParameterAutomated with mouse move (one per Mouse Down)
+    function  EndEdit(const Index: Integer): Boolean; virtual;   // to be called after a setParameterAutomated (on Mouse Up)
 
-    function  OpenFileSelector(ptr: PVstFileSelect): Boolean; virtual;
-    function  CloseFileSelector(ptr: PVstFileSelect): Boolean;
-    function  GetChunkFile(nativePath: pointer): Boolean;
+    function  OpenFileSelector(var VstFileSelect: TVstFileSelect): Boolean; virtual;
+    function  CloseFileSelector(var VstFileSelect: TVstFileSelect): Boolean;
+    function  GetChunkFile(const NativePath: Pointer): Boolean;
 
     // HostCalls, protected methods that can be overwritten, but shall remain
     // hidden, since the user should not be able to call them directly!
@@ -270,7 +270,7 @@ begin
  if Assigned(FAudioMaster) then FAudioMaster(@FEffect, audioMasterIdle, 0, 0, nil, 0);
 end;
 
-function TBasicVSTModule.IsInputConnected(input: Integer): Boolean;
+function TBasicVSTModule.IsInputConnected(const Input: Integer): Boolean;
 var
   ret: Integer;
 begin
@@ -281,7 +281,7 @@ begin
  Result := (ret = 0);
 end;
 
-function TBasicVSTModule.IsOutputConnected(output: Integer): Boolean;
+function TBasicVSTModule.IsOutputConnected(const Output: Integer): Boolean;
 var
   ret: Integer;
 begin
@@ -292,36 +292,36 @@ begin
  Result := (ret = 0);
 end;
 
-procedure TBasicVSTModule.WantEvents(filter: Integer);
+procedure TBasicVSTModule.WantEvents(const Filter: Integer);
 begin
  if Assigned(FAudioMaster)
   then FAudioMaster(@FEffect, audioMasterWantMidi, 0, filter, nil, 0);
 end;
 
-function TBasicVSTModule.GetTimeInfo(filter: Integer): PVstTimeInfo;
+function TBasicVSTModule.GetTimeInfo(const Filter: Integer): PVstTimeInfo;
 begin
  if Assigned(FAudioMaster)
   then Result := PVstTimeInfo(FAudioMaster (@FEffect, audioMasterGetTime, 0, filter, nil, 0))
   else Result := nil;
 end;
 
-procedure TBasicVSTModule.SetTimeInfo(filter: Integer; ti: PVstTimeInfo);
+procedure TBasicVSTModule.SetTimeInfo(const Filter: Integer; var VstTimeInfo: PVstTimeInfo);
 begin
  if Assigned(FAudioMaster)
-  then FAudioMaster(@FEffect, audioMasterSetTime, 0, filter, ti, 0);
+  then FAudioMaster(@FEffect, audioMasterSetTime, 0, Filter, @VstTimeInfo, 0);
 end;
 
-function TBasicVSTModule.TempoAt(pos: Integer): Integer;
+function TBasicVSTModule.TempoAt(const Pos: Integer): Integer;
 begin
  if Assigned(FAudioMaster)
   then Result := FAudioMaster(@FEffect, audioMasterTempoAt, 0, pos, nil, 0)
   else Result := 0;
 end;
 
-function TBasicVSTModule.SendVstEventsToHost(events: PVstEvents): Boolean;
+function TBasicVSTModule.SendVstEventsToHost(var Events: TVstEvents): Boolean;
 begin
   if Assigned(FAudioMaster) then
-    Result := FAudioMaster(@FEffect, audioMasterProcessEvents, 0, 0, events, 0) = 1
+    Result := FAudioMaster(@FEffect, audioMasterProcessEvents, 0, 0, @Events, 0) = 1
   else
     Result := False;
 end;
@@ -334,7 +334,7 @@ begin
     Result := 0;
 end;
 
-procedure TBasicVSTModule.SetParameterAutomated(Index: Integer; Value: Single);
+procedure TBasicVSTModule.SetParameterAutomated(Index: Integer; const Value: Single);
 begin
   if Assigned(FAudioMaster)
    then FAudioMaster(@FEffect, audioMasterAutomate, Index, 0, nil, Value);
@@ -364,7 +364,7 @@ begin
     Result := 0;
 end;
 
-function TBasicVSTModule.GetPreviousPlug(input: Integer): PVSTEffect;
+function TBasicVSTModule.GetPreviousPlug(const Input: Integer): PVSTEffect;
 begin
   if Assigned(FAudioMaster) then
     Result := PVSTEffect(FAudioMaster(@FEffect, audioMasterGetPreviousPlug, 0, 0, nil, 0))
@@ -377,7 +377,7 @@ begin
  result := 'Delphi ASIO & VST Package Plugin';
 end;
 
-function TBasicVSTModule.GetNextPlug(output: Integer): PVSTEffect;
+function TBasicVSTModule.GetNextPlug(const Output: Integer): PVSTEffect;
 begin
   if Assigned(FAudioMaster) then
     Result := PVSTEffect(FAudioMaster(@FEffect, audioMasterGetNextPlug, 0, 0, nil, 0))
@@ -409,26 +409,26 @@ begin
     Result := 0;
 end;
 
-function TBasicVSTModule.OfflineRead(Offline: PVstOfflineTaskRecord; Option: TVstOfflineOption; readSource: Boolean): Boolean;
+function TBasicVSTModule.OfflineRead(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption; const ReadSource: Boolean): Boolean;
 begin
   if Assigned(FAudioMaster) then
-    Result := (FAudioMaster(@FEffect, audioMasterOfflineRead, Integer(readSource), Integer(option), offline, 0) <> 0)
+    Result := (FAudioMaster(@FEffect, audioMasterOfflineRead, Integer(ReadSource), Integer(Option), @Offline, 0) <> 0)
   else
     Result := False;
 end;
 
-function TBasicVSTModule.OfflineWrite(offline: PVstOfflineTaskRecord; option: TVstOfflineOption): Boolean;
+function TBasicVSTModule.OfflineWrite(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption): Boolean;
 begin
   if Assigned(FAudioMaster) then
-    Result := (FAudioMaster(@FEffect, audioMasterOfflineWrite, 0, Integer(option), offline, 0) <> 0)
+    Result := (FAudioMaster(@FEffect, audioMasterOfflineWrite, 0, Integer(Option), @Offline, 0) <> 0)
   else
     Result := False;
 end;
 
-function TBasicVSTModule.OfflineStart(ptr: PVstAudioFile; numAudioFiles: Integer; numNewAudioFiles: Integer): Boolean;
+function TBasicVSTModule.OfflineStart(var AudioFile: TVstAudioFile; const numAudioFiles, numNewAudioFiles: Integer): Boolean;
 begin
   if Assigned(FAudioMaster) then
-    Result := (FAudioMaster(@FEffect, audioMasterOfflineStart, numNewAudioFiles, numAudioFiles, ptr, 0) <> 0)
+    Result := (FAudioMaster(@FEffect, audioMasterOfflineStart, numNewAudioFiles, numAudioFiles, @AudioFile, 0) <> 0)
   else
     Result := False;
 end;
@@ -449,24 +449,24 @@ begin
     Result := 0;
 end;
 
-procedure TBasicVSTModule.SetOutputSampleRate(sampleRate: Single);
+procedure TBasicVSTModule.SetOutputSampleRate(const SampleRate: Single);
 begin
   if Assigned(FAudioMaster) then
-    FAudioMaster(@FEffect, audioMasterSetOutputSampleRate, 0, 0, nil, sampleRate);
+    FAudioMaster(@FEffect, audioMasterSetOutputSampleRate, 0, 0, nil, SampleRate);
 end;
 
-function TBasicVSTModule.GetHostVendorString(Text: pchar): Boolean;
+function TBasicVSTModule.GetHostVendorString(const Text: string): Boolean;
 begin
   if Assigned(FAudioMaster) then
-    Result := (FAudioMaster(@FEffect, audioMasterGetVendorString, 0, 0, Text, 0) <> 0)
+    Result := (FAudioMaster(@FEffect, audioMasterGetVendorString, 0, 0, PAnsiChar(Text), 0) <> 0)
   else
     Result := False;
 end;
 
-function TBasicVSTModule.GetHostProductString(Text: pchar): Boolean;
+function TBasicVSTModule.GetHostProductString(const Text: string): Boolean;
 begin
   if Assigned(FAudioMaster) then
-    Result := (FAudioMaster(@FEffect, audioMasterGetProductString, 0, 0, Text, 0) <> 0)
+    Result := (FAudioMaster(@FEffect, audioMasterGetProductString, 0, 0, PAnsiChar(Text), 0) <> 0)
   else
     Result := False;
 end;
@@ -479,19 +479,18 @@ begin
     Result := 0;
 end;
 
-function TBasicVSTModule.HostVendorSpecific(lArg1, lArg2: Integer; ptrArg: pointer; floatArg: Single): Integer;
+function TBasicVSTModule.HostVendorSpecific(const Arg1, Arg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
 begin
   Result := 0;
   if Assigned(FAudioMaster) then
-    Result := FAudioMaster(@FEffect, audioMasterVendorSpecific, lArg1, lArg2, ptrArg, floatArg);
+    Result := FAudioMaster(@FEffect, audioMasterVendorSpecific, Arg1, Arg2, ptrArg, floatArg);
 end;
 
 function TBasicVSTModule.GetCanHostDo(Text: string): Integer;
 begin
   Result := 0;
-  Text := Text + '#0';
   if Assigned(FAudioMaster) then
-    Result := FAudioMaster(@FEffect, audioMasterCanDo, 0, 0, @Text[1], 0);
+    Result := FAudioMaster(@FEffect, audioMasterCanDo, 0, 0, PChar(Text), 0);
 end;
 
 function TBasicVSTModule.GetHostLanguage: Integer;
@@ -502,7 +501,7 @@ begin
     Result := 0;
 end;
 
-function TBasicVSTModule.OpenWindow(aWindow: PVstWindow): pointer;
+function TBasicVSTModule.OpenWindow(const aWindow: PVstWindow): pointer;
 begin
   if Assigned(FAudioMaster) then
     Result := pointer(FAudioMaster(@FEffect, audioMasterOpenWindow, 0, 0, aWindow, 0))
@@ -510,7 +509,7 @@ begin
     Result := nil;
 end;
 
-function TBasicVSTModule.CloseWindow(aWindow: PVstWindow): Boolean;
+function TBasicVSTModule.CloseWindow(const aWindow: PVstWindow): Boolean;
 begin
   if Assigned(FAudioMaster) then
     Result := (FAudioMaster(@FEffect, audioMasterCloseWindow, 0, 0, aWindow, 0) <> 0)
@@ -518,7 +517,7 @@ begin
     Result := False;
 end;
 
-function TBasicVSTModule.GetDirectory: pointer;
+function TBasicVSTModule.GetDirectory: Pointer;
 begin
   if Assigned(FAudioMaster) then
     Result := pointer(FAudioMaster(@FEffect, audioMasterGetDirectory, 0, 0, nil, 0))
@@ -550,15 +549,15 @@ begin
     Result := False;
 end;
 
-function TBasicVSTModule.SizeWindow(width, height: Integer): Boolean;
+function TBasicVSTModule.SizeWindow(const Width, Height: Integer): Boolean;
 begin
   if Assigned(FAudioMaster) then
-    Result := (FAudioMaster(@FEffect, audioMasterSizeWindow, width, height, nil, 0) <> 0)
+    Result := (FAudioMaster(@FEffect, audioMasterSizeWindow, Width, Height, nil, 0) <> 0)
   else
     Result := False;
 end;
 
-function TBasicVSTModule.BeginEdit(Index: Integer): Boolean;
+function TBasicVSTModule.BeginEdit(const Index: Integer): Boolean;
 begin
   if Assigned(FAudioMaster) then
     Result := (FAudioMaster(@FEffect, audioMasterBeginEdit, Index, 0, nil, 0) <> 0)
@@ -566,7 +565,7 @@ begin
     Result := False;
 end;
 
-function TBasicVSTModule.EndEdit(Index: Integer): Boolean;
+function TBasicVSTModule.EndEdit(const Index: Integer): Boolean;
 begin
   if Assigned(FAudioMaster) then
     Result := (FAudioMaster(@FEffect, audioMasterEndEdit, Index, 0, nil, 0) <> 0)
@@ -574,26 +573,26 @@ begin
     Result := False;
 end;
 
-function TBasicVSTModule.OpenFileSelector(ptr: PVstFileSelect): Boolean;
+function TBasicVSTModule.OpenFileSelector(var VstFileSelect: TVstFileSelect): Boolean;
 begin
-  if Assigned(FAudioMaster) and (ptr <> nil) then
-    Result := (FAudioMaster(@FEffect, audioMasterOpenFileSelector, 0, 0, ptr, 0) <> 0)
+  if Assigned(FAudioMaster) then
+    Result := (FAudioMaster(@FEffect, audioMasterOpenFileSelector, 0, 0, @VstFileSelect, 0) <> 0)
   else
     Result := False;
 end;
 
-function TBasicVSTModule.CloseFileSelector(ptr: PVstFileSelect): Boolean;
+function TBasicVSTModule.CloseFileSelector(var VstFileSelect: TVstFileSelect): Boolean;
 begin
-  if Assigned(FAudioMaster) and (ptr <> nil) then
-    Result := (FAudioMaster(@FEffect, audioMasterCloseFileSelector, 0, 0, ptr, 0) <> 0)
+  if Assigned(FAudioMaster) then
+    Result := (FAudioMaster(@FEffect, audioMasterCloseFileSelector, 0, 0, @VstFileSelect, 0) <> 0)
   else
     Result := False;
 end;
 
-function TBasicVSTModule.GetChunkFile(nativePath: pointer): Boolean;
+function TBasicVSTModule.GetChunkFile(const NativePath: Pointer): Boolean;
 begin
   if Assigned(FAudioMaster) and (nativePath <> nil) then
-    Result := (FAudioMaster(@FEffect, audioMasterGetChunkFile, 0, 0, nativePath, 0) <> 0)
+    Result := (FAudioMaster(@FEffect, audioMasterGetChunkFile, 0, 0, NativePath, 0) <> 0)
   else
     Result := False;
 end;

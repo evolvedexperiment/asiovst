@@ -60,7 +60,7 @@ type
     procedure SetNumParams(const Value: Integer); virtual;
     procedure SetNumPrograms(const Value: Integer); virtual;
     procedure SetParameter(const Index: Integer; Value: Single); virtual;
-    procedure SetParameterAutomated(Index: Integer; Value: Single); override;
+    procedure SetParameterAutomated(Index: Integer; const Value: Single); override;
     procedure SetProgram(const AProgramIndex: Integer); virtual;
     procedure Loaded; override;
   public
@@ -103,7 +103,7 @@ type
     property ProgramByName[ProgramName: string]: TVstProgram read GetVstProgramByName write SetVstProgramByName;
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
     property ParameterCategories: TCustomVstParameterCategories read FParameterCategories write SetParameterCategories;
-    property Parameter[Index: Integer]: Single read getParameter write setParameterAutomated;
+    property Parameter[Index: Integer]: Single read GetParameter write SetParameterAutomated;
     property ParameterByName[ParameterName: string]: Single read GetParameterByName write SetParameterByName;
 
     property ParameterName[Index: Integer]: string read GetParameterName;
@@ -712,7 +712,7 @@ begin
  Result := FParameterProperties[Index].VSTParameter2Parameter(Value);
 end;
 
-procedure TVSTModuleWithPrograms.SetParameterAutomated(Index: Integer; Value: Single);
+procedure TVSTModuleWithPrograms.SetParameterAutomated(Index: Integer; const Value: Single);
 begin
  if (Index >= numParams) or (Index >= FParameterProperties.Count) then Exit;
  setParameter(Index, Value);
