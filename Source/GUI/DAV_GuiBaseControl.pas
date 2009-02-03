@@ -450,6 +450,7 @@ constructor TBufferedGraphicControl.Create(AOwner: TComponent);
 begin
   inherited;
   FBuffer      := TBitmap.Create;
+  FBuffer.PixelFormat := pf24bit;
   ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
                    csDoubleClicks, csReplicatable, csOpaque];
 end;

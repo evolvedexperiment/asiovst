@@ -384,6 +384,21 @@ object MBCDataModule: TMBCDataModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = MBCDMHighReleaseChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Limiter'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'Limiter'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterLimiterChange
+      OnCustomParameterDisplay = ParameterOnOffDisplay
     end>
   ParameterCategories = <
     item

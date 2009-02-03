@@ -51,7 +51,7 @@ contains
   DAV_GuiSelectBox in '..\Source\GUI\DAV_GuiSelectBox.pas',
   DAV_GuiStaticWaveform in '..\Source\GUI\DAV_GuiStaticWaveform.pas',
   DAV_GuiVUMeter in '..\Source\GUI\DAV_GuiVUMeter.pas',
-  DAV_CorrelationMeter in '..\Source\GUI\DAV_CorrelationMeter.pas',
+  DAV_GuiCorrelationMeter in '..\Source\GUI\DAV_GuiCorrelationMeter.pas',
   DAV_GuiGraphXY in '..\Source\GUI\DAV_GuiGraphXY.pas',
   DAV_GuiGraphXYDesign in '..\Source\GUI\DAV_GuiGraphXYDesign.pas',
   DAV_GuiDialDesign in '..\Source\GUI\DAV_GuiDialDesign.pas',

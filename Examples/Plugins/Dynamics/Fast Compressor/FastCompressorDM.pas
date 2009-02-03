@@ -35,7 +35,6 @@ type
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FFastCompressor : array [0..1] of TFastCompressor;
-    FMix            : array [0..1] of Single;
     function GetFastCompressor(Index: Integer): TFastCompressor;
     procedure ChooseProcess;
   public
@@ -291,8 +290,8 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   with FFastCompressor[0] do
   begin
-   ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-   Temp := GainReductionFactor;
+   InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+   Temp := MakeUpGain * GainReductionFactor;
    Outputs[0, Sample] := Temp * Inputs[0, Sample];
    Outputs[1, Sample] := Temp * Inputs[1, Sample];
   end;
@@ -319,8 +318,8 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   with FFastCompressor[0] do
   begin
-   ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-   Temp := GainReductionFactor;
+   InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+   Temp := MakeUpGain * GainReductionFactor;
    Outputs[0, Sample] := FastTanhOpt3Term(Temp * Inputs[0, Sample]);
    Outputs[1, Sample] := FastTanhOpt3Term(Temp * Inputs[1, Sample]);
   end;

@@ -34,9 +34,9 @@ begin
   RegisterComponents('ASIO/VST GUI', [TGuiDynamicWaveform, TGuiStaticWaveform,
     TGuiADSRGraph, TGuiAudioDataDisplay, TGuiLabel, TGuiPanel, TGuiLED,
     TGuiVUMeter, TGuiDial, TGuiDialMetal, TGuiCorrelationMeter, TGuiSelectBox,
-    TGuiMidiKeys, TGuiButton, {$IFNDEF FPC} TGuiGroupA, TGuiGroupB, TGuiGroup, 
-    TGuiLevelMeter, {$ENDIF} TGuiGraphXY, TGuiDialEx, TGuiDialImageList,
-    TGuiDialImageRenderer, TGuiSwitch]);
+    TGuiMidiKeys, TGuiButton, {$IFNDEF FPC} TGuiGroupA, TGuiGroupB, TGuiGroup,
+    TGuiLevelMeter, TGuiColorLevelMeter, {$ENDIF} TGuiGraphXY, TGuiDialEx,
+    TGuiDialImageList, TGuiDialImageRenderer, TGuiSwitch]);
 
   RegisterPropertyEditor(TypeInfo(string), TGuiDialLayerCollectionItem, 'PrimitiveClassName', nil);
   RegisterPropertyEditor(TypeInfo(TCustomGuiDialPrimitive), TGuiDialLayerCollectionItem, 'Primitive', TPrimitiveClassProperty);

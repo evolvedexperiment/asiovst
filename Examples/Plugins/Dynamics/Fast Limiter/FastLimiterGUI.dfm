@@ -164,7 +164,7 @@ object FmFastLimiter: TFmFastLimiter
     Font.Style = []
   end
   object DialKnee: TGuiDial
-    Left = 139
+    Left = 123
     Top = 120
     Width = 36
     Height = 36
@@ -185,7 +185,7 @@ object FmFastLimiter: TFmFastLimiter
     StitchKind = skHorizontal
   end
   object LbKnee: TGuiLabel
-    Left = 115
+    Left = 99
     Top = 96
     Width = 82
     Height = 25
@@ -199,7 +199,7 @@ object FmFastLimiter: TFmFastLimiter
     Font.Style = []
   end
   object LbKneeValue: TGuiLabel
-    Left = 120
+    Left = 104
     Top = 154
     Width = 74
     Height = 20
@@ -212,8 +212,8 @@ object FmFastLimiter: TFmFastLimiter
     Font.Style = []
   end
   object GuiGraphXY: TGuiGraphXY
-    Left = 168
-    Top = 11
+    Left = 244
+    Top = 9
     Width = 74
     Height = 74
     FrameColor = 6844281
@@ -246,7 +246,7 @@ object FmFastLimiter: TFmFastLimiter
     LineWidth = 2
   end
   object DialMakeUpGain: TGuiDial
-    Left = 259
+    Left = 210
     Top = 120
     Width = 36
     Height = 36
@@ -267,7 +267,7 @@ object FmFastLimiter: TFmFastLimiter
     StitchKind = skHorizontal
   end
   object LbMakeUpGain: TGuiLabel
-    Left = 242
+    Left = 193
     Top = 96
     Width = 72
     Height = 25
@@ -281,7 +281,7 @@ object FmFastLimiter: TFmFastLimiter
     Font.Style = []
   end
   object LbMakeUpGainValue: TGuiLabel
-    Left = 240
+    Left = 191
     Top = 154
     Width = 74
     Height = 20
@@ -294,7 +294,7 @@ object FmFastLimiter: TFmFastLimiter
     Font.Style = []
   end
   object LEDStereo: TGuiLED
-    Left = 248
+    Left = 161
     Top = 9
     Width = 15
     Height = 15
@@ -305,7 +305,7 @@ object FmFastLimiter: TFmFastLimiter
     OnClick = LEDStereoClick
   end
   object LbStereo: TGuiLabel
-    Left = 267
+    Left = 180
     Top = 8
     Width = 46
     Height = 17
@@ -319,7 +319,7 @@ object FmFastLimiter: TFmFastLimiter
     OnClick = LEDStereoClick
   end
   object LEDLimit: TGuiLED
-    Left = 248
+    Left = 161
     Top = 30
     Width = 15
     Height = 15
@@ -330,7 +330,7 @@ object FmFastLimiter: TFmFastLimiter
     OnClick = LEDLimitClick
   end
   object GuiLabel2: TGuiLabel
-    Left = 267
+    Left = 180
     Top = 29
     Width = 54
     Height = 17
@@ -344,7 +344,7 @@ object FmFastLimiter: TFmFastLimiter
     OnClick = LEDLimitClick
   end
   object LEDAutoGain: TGuiLED
-    Left = 248
+    Left = 161
     Top = 69
     Width = 15
     Height = 15
@@ -355,7 +355,7 @@ object FmFastLimiter: TFmFastLimiter
     OnClick = LEDAutoGainClick
   end
   object GuiLabel3: TGuiLabel
-    Left = 267
+    Left = 180
     Top = 70
     Width = 54
     Height = 13
@@ -367,6 +367,24 @@ object FmFastLimiter: TFmFastLimiter
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     OnClick = LEDAutoGainClick
+  end
+  object GuiColorLevelMeter1: TGuiColorLevelMeter
+    Left = 273
+    Top = 96
+    Width = 10
+    Height = 64
+    BorderColor = 14277598
+    PeakLevel = 0.200000002980232200
+    Upper = 1.000000000000000000
+  end
+  object GuiColorLevelMeter2: TGuiColorLevelMeter
+    Left = 286
+    Top = 96
+    Width = 10
+    Height = 64
+    BorderColor = 14277598
+    PeakLevel = 0.200000002980232200
+    Upper = 1.000000000000000000
   end
   object GuiDialImageList: TGuiDialImageList
     DialImages = <

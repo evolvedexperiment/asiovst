@@ -2,10 +2,10 @@ unit FastLimiterGUI;
 
 interface
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED;
+  DAV_GuiLED, DAV_GuiLevelMeter;
 
 type
   TFmFastLimiter = class(TForm)
@@ -32,6 +32,8 @@ type
     LEDAutoGain: TGuiLED;
     LEDLimit: TGuiLED;
     LEDStereo: TGuiLED;
+    GuiColorLevelMeter1: TGuiColorLevelMeter;
+    GuiColorLevelMeter2: TGuiColorLevelMeter;
     procedure FormCreate(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);

@@ -4,25 +4,18 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspFilter, DAV_DspButterworthFilter, DAV_DspDynamics;
+  DAV_DspFilter, DAV_DspFilterLinkwitzRiley, DAV_DspDynamics;
 
 type
-  TMultiband = record
-    Lowpass      : TButterworthLP;
-    LowComp      : TSimpleCompressor;
-    MidHighpass  : TButterworthHP;
-    MidComp      : TSimpleCompressor;
-    MidLowpass   : TButterworthLP;
-    Highpass     : TButterworthHP;
-    HighComp     : TSimpleCompressor;
-  end;
-
+  TBandState = (bsNone, bsMute, bsBypass); 
   TMBCDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(Inputs, Outputs: TDAVArrayOfSingleDynArray; sampleframes: Integer);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const sampleframes: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacingLimiter(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessLimiter(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure MBCDMLowFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMHighFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDCLowOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -42,9 +35,44 @@ type
     procedure MBCDMLowReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMMidReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMHighReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterLimiterChange(Sender: TObject;
+      const Index: Integer; var Value: Single);
   private
-    FMultiband : Array [0..1] of TMultiband;
+    FLowSplit     : array [0..1] of TLinkwitzRiley;
+    FHighSplit    : array [0..1] of TLinkwitzRiley;
+    FInputPeak    : array [0..7] of Single;
+    FOutputPeak   : array [0..7] of Single;
+    FLowState     : TBandState;
+    FMidState     : TBandState;
+    FHighState    : TBandState;
+    FLowComp      : TFastCompressor;
+    FMidComp      : TFastCompressor;
+    FHighComp     : TFastCompressor;
+    FMeterRelease : Single;
+    function GetHighGainReduction: Single;
+    function GetLowGainReduction: Single;
+    function GetMidGainReduction: Single;
   public
+    property LowGainReduction: Single read GetLowGainReduction;
+    property MidGainReduction: Single read GetMidGainReduction;
+    property HighGainReduction: Single read GetHighGainReduction;
+    property InputPeakLeft: Single read FInputPeak[0];
+    property InputPeakRight: Single read FInputPeak[1];
+    property OutputPeakLeft: Single read FOutputPeak[0];
+    property OutputPeakRight: Single read FOutputPeak[1];
+    property LowInputPeakLeft: Single read FInputPeak[2];
+    property LowInputPeakRight: Single read FInputPeak[3];
+    property LowOutputPeakLeft: Single read FOutputPeak[2];
+    property LowOutputPeakRight: Single read FOutputPeak[3];
+    property MidInputPeakLeft: Single read FInputPeak[4];
+    property MidInputPeakRight: Single read FInputPeak[5];
+    property MidOutputPeakLeft: Single read FOutputPeak[4];
+    property MidOutputPeakRight: Single read FOutputPeak[5];
+    property HighInputPeakLeft: Single read FInputPeak[6];
+    property HighInputPeakRight: Single read FInputPeak[7];
+    property HighOutputPeakLeft: Single read FOutputPeak[6];
+    property HighOutputPeakRight: Single read FOutputPeak[7];
   end;
 
 implementation
@@ -52,23 +80,23 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, MBCGUI;
+  Math, DAV_Approximations, MBCGUI;
 
 procedure TMBCDataModule.VSTModuleOpen(Sender: TObject);
 var
   i : Integer;
 begin
  for i := 0 to 1 do
-  with FMultiband[i] do
-   begin
-    Lowpass      := TButterworthLP.Create;
-    LowComp      := TSimpleCompressor.Create;
-    MidHighpass  := TButterworthHP.Create;
-    MidComp      := TSimpleCompressor.Create;
-    MidLowpass   := TButterworthLP.Create;
-    Highpass     := TButterworthHP.Create;
-    HighComp     := TSimpleCompressor.Create;
-   end;
+  begin
+   FLowSplit[i]  := TLinkwitzRiley.Create;
+   FHighSplit[i] := TLinkwitzRiley.Create;
+  end;
+ FLowComp      := TFastCompressor.Create;
+ FMidComp      := TFastCompressor.Create;
+ FHighComp     := TFastCompressor.Create;
+ FLowState     := bsNone;
+ FMidState     := bsNone;
+ FHighState    := bsNone;
  Parameter[ 0] := 0;
  Parameter[ 1] := 200;
  Parameter[ 2] := 2;
@@ -88,6 +116,7 @@ begin
  Parameter[16] := 4;
  Parameter[17] := 0.01;
  Parameter[18] := 0.1;
+ FMeterRelease := 0.9999;
 end;
 
 procedure TMBCDataModule.VSTModuleClose(Sender: TObject);
@@ -95,16 +124,13 @@ var
   i : Integer;
 begin
  for i := 0 to 1 do
-  with FMultiband[i] do
    begin
-    FreeAndNil(Lowpass);
-    FreeAndNil(LowComp);
-    FreeAndNil(MidHighpass);
-    FreeAndNil(MidComp);
-    FreeAndNil(MidLowpass);
-    FreeAndNil(Highpass);
-    FreeAndNil(HighComp);
+    FreeAndNil(FLowSplit[i]);
+    FreeAndNil(FHighSplit[i]);
    end;
+ FreeAndNil(FLowComp);
+ FreeAndNil(FMidComp);
+ FreeAndNil(FHighComp);
 end;
 
 procedure TMBCDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
@@ -116,12 +142,8 @@ end;
 procedure TMBCDataModule.MBCDMLowFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
 var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   begin
-    Lowpass.Frequency := Value;
-    MidHighpass.Frequency := Value;
-   end;
+ for i := 0 to 1
+  do FLowSplit[i].Frequency := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -134,22 +156,16 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDCLowOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   begin
-    Lowpass.Order := round(Value);
-    MidHighpass.Order := round(Value);
-   end;
+ for i := 0 to 1
+  do FLowSplit[i].Order := round(Value);
 end;
 
 procedure TMBCDataModule.MBCDMLowGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i]
-   do LowComp.MakeUpGain_dB := Value;
+ FLowComp.MakeUpGain_dB := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -161,11 +177,8 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMMidGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i]
-   do MidComp.MakeUpGain_dB := Value;
+ FMidComp.MakeUpGain_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -176,11 +189,8 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMHighGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i]
-   do HighComp.MakeUpGain_dB := Value;
+ FHighComp.MakeUpGain_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -191,11 +201,8 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMLowThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i]
-   do LowComp.Threshold_dB := Value;
+ FLowComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -206,11 +213,8 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMMidThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i]
-   do MidComp.Threshold_dB := Value;
+ FMidComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -221,11 +225,8 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMHighThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i]
-   do HighComp.Threshold_dB := Value;
+ FHighComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -237,11 +238,8 @@ end;
 
 procedure TMBCDataModule.MBCDMLowRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   LowComp.Ratio := 1 / Value;
+ FLowComp.Ratio := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -252,11 +250,8 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMMidRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   MidComp.Ratio := 1 / Value;
+ FMidComp.Ratio := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -267,11 +262,8 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMHighRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   HighComp.Ratio := 1 / Value;
+ FHighComp.Ratio := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -282,11 +274,8 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMLowAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   LowComp.Attack := Value;
+ FLowComp.Attack := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -298,11 +287,8 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMMidAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   MidComp.Attack := Value;
+ FMidComp.Attack := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -314,11 +300,8 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMHighAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   HighComp.Attack := Value;
+ FHighComp.Attack := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -330,73 +313,85 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMLowReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   LowComp.Release := Value;
+ FLowComp.Release := Value;
 
  if Assigned(EditorForm) then
-  with TFmMBC(EditorForm) do
-   begin
-    LbLowReleaseValue.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' ms';
-    if DlLowRelease.Position <> Log10(Value)
-     then DlLowRelease.Position := Log10(Value);
-   end;
+  with TFmMBC(EditorForm)
+   do UpdateLowRelease;
 end;
 
 procedure TMBCDataModule.MBCDMMidReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   MidComp.Release := Value;
+ FMidComp.Release := Value;
 
  if Assigned(EditorForm) then
-  with TFmMBC(EditorForm) do
-   begin
-    LbMidReleaseValue.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' ms';
-    if DlMidRelease.Position <> Log10(Value)
-     then DlMidRelease.Position := Log10(Value);
-   end;
+  with TFmMBC(EditorForm)
+   do UpdateMidRelease; 
 end;
 
 procedure TMBCDataModule.MBCDMHighReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   HighComp.Release := Value;
+ FHighComp.Release := Value;
 
  if Assigned(EditorForm) then
-  with TFmMBC(EditorForm) do
-   begin
-    LbHighReleaseValue.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' ms';
-    if DlHighRelease.Position <> Log10(Value)
-     then DlHighRelease.Position := Log10(Value);
-   end;
+  with TFmMBC(EditorForm)
+   do UpdateHighRelease;
+end;
+
+function TMBCDataModule.GetHighGainReduction: Single;
+begin
+ result := 1 - FHighComp.GainReductionFactor;
+end;
+
+function TMBCDataModule.GetLowGainReduction: Single;
+begin
+ result := 1 - FLowComp.GainReductionFactor;
+end;
+
+function TMBCDataModule.GetMidGainReduction: Single;
+begin
+ result := 1 - FMidComp.GainReductionFactor;
+end;
+
+procedure TMBCDataModule.ParameterOnOffDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if round(Parameter[Index]) = 0
+  then PreDefined := 'Off'
+  else PreDefined := 'On';
+end;
+
+procedure TMBCDataModule.ParameterLimiterChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ case round(Value) of
+  0: begin
+      OnProcess := VSTModuleProcess;
+      OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacing;
+     end;
+  1: begin
+      OnProcess := VSTModuleProcessLimiter;
+      OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacingLimiter;
+     end;
+ end;
+ OnProcessReplacing := OnProcess; 
 end;
 
 procedure TMBCDataModule.MBCDCHighOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   begin
-    MidLowpass.Order := round(Value);
-    Highpass.Order := round(Value);
-   end;
+ for i := 0 to 1
+  do FHighSplit[i].Order := round(Value);
 end;
 
 procedure TMBCDataModule.MBCDMHighFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  i : Integer;
 begin
- for i := 0 to 1 do
-  with FMultiband[i] do
-   begin
-    MidLowpass.Frequency := Value;
-    Highpass.Frequency := Value;
-   end;
+ for i := 0 to 1
+  do FHighSplit[i].Frequency := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -408,45 +403,376 @@ begin
    end;
 end;
 
-procedure TMBCDataModule.VSTModuleProcess(Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; sampleframes: Integer);
-var i : Integer;
+procedure TMBCDataModule.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  i       : Integer;
+  L, M, H : array [0..1] of Single;
 begin
- for i := 0 to sampleframes - 1 do
+ for i := 0 to SampleFrames - 1 do
   begin
-(*
-   with FMultiband[0] do
-    Outputs[0, i] := Lowpass.ProcessSample(Inputs[0, i]) +
-                     MidHighpass.ProcessSample(Inputs[0, i]);
-   with FMultiband[1] do
-    Outputs[1, i] := Lowpass.ProcessSample(Inputs[1, i]) +
-                     MidHighpass.ProcessSample(Inputs[1, i]);
-*)
-   with FMultiband[0] do
-    Outputs[0, i] := LowComp.ProcessSample(Lowpass.ProcessSample(Inputs[0, i])) +
-                     MidComp.ProcessSample(MidHighpass.ProcessSample(MidLowpass.ProcessSample(Inputs[0, i]))) -
-                     HighComp.ProcessSample(Highpass.ProcessSample(Inputs[0, i]));
-   with FMultiband[1] do
-    Outputs[1, i] := LowComp.ProcessSample(Lowpass.ProcessSample(Inputs[1, i])) +
-                     MidComp.ProcessSample(MidHighpass.ProcessSample(MidLowpass.ProcessSample(Inputs[0, i]))) -
-                     HighComp.ProcessSample(Highpass.ProcessSample(Inputs[1, i]));
+   if abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := abs(Inputs[0, i]);
+   FInputPeak[0] := FMeterRelease * FInputPeak[0];
+   if abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := abs(Inputs[1, i]);
+   FInputPeak[1] := FMeterRelease * FInputPeak[1];
+
+   FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
+   FLowSplit[1].ProcessSample(Inputs[1, i], L[1], M[1]);
+   FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
+   FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
+
+   if abs(L[0]) > FInputPeak[2] then FInputPeak[2] := abs(L[0]);
+   FInputPeak[2] := FMeterRelease * FInputPeak[2];
+   if abs(L[1]) > FInputPeak[3] then FInputPeak[3] := abs(L[1]);
+   FInputPeak[3] := FMeterRelease * FInputPeak[3];
+
+   if abs(M[0]) > FInputPeak[4] then FInputPeak[4] := abs(M[0]);
+   FInputPeak[4] := FMeterRelease * FInputPeak[4];
+   if abs(M[1]) > FInputPeak[5] then FInputPeak[5] := abs(M[1]);
+   FInputPeak[5] := FMeterRelease * FInputPeak[5];
+
+   if abs(H[0]) > FInputPeak[6] then FInputPeak[6] := abs(H[0]);
+   FInputPeak[6] := FMeterRelease * FInputPeak[6];
+   if abs(H[1]) > FInputPeak[7] then FInputPeak[7] := abs(H[1]);
+   FInputPeak[7] := FMeterRelease * FInputPeak[7];
+
+   FLowComp.InputSample(CHalf32 * (L[0] + L[1]));
+   FMidComp.InputSample(CHalf32 * (M[0] + M[1]));
+   FHighComp.InputSample(CHalf32 * (H[0] + H[1]));
+
+   case FLowState of
+    bsNone : begin
+              L[0] := FLowComp.GainSample(L[0]);
+              L[1] := FLowComp.GainSample(L[1]);
+             end;
+    bsMute : begin
+              L[0] := 0;
+              L[1] := 0;
+             end;
+   end;
+   case FMidState of
+    bsNone : begin
+              M[0] := FMidComp.GainSample(M[0]);
+              M[1] := FMidComp.GainSample(M[1]);
+             end;
+    bsMute : begin
+              M[0] := 0;
+              M[1] := 0;
+             end;
+   end;
+   case FHighState of
+    bsNone : begin
+              H[0] := FHighComp.GainSample(H[0]);
+              H[1] := FHighComp.GainSample(H[1]);
+             end;
+    bsMute : begin
+              H[0] := 0;
+              H[1] := 0;
+             end;
+   end;
+
+   if abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := abs(L[0]);
+   FOutputPeak[2] := FMeterRelease * FOutputPeak[2];
+   if abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := abs(L[1]);
+   FOutputPeak[3] := FMeterRelease * FOutputPeak[3];
+
+   if abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := abs(M[0]);
+   FOutputPeak[4] := FMeterRelease * FOutputPeak[4];
+   if abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := abs(M[1]);
+   FOutputPeak[5] := FMeterRelease * FOutputPeak[5];
+
+   if abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := abs(H[0]);
+   FOutputPeak[6] := FMeterRelease * FOutputPeak[6];
+   if abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := abs(H[1]);
+   FOutputPeak[7] := FMeterRelease * FOutputPeak[7];
+
+   Outputs[0, i] := L[0] + M[0] + H[0];
+   Outputs[1, i] := L[1] + M[1] + H[1];
+
+   if abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := abs(Outputs[0, i]);
+   FOutputPeak[0] := FMeterRelease * FOutputPeak[0];
+   if abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := abs(Outputs[1, i]);
+   FOutputPeak[1] := FMeterRelease * FOutputPeak[1];
   end;
 end;
 
 procedure TMBCDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
-  Outputs: TDAVArrayOfDoubleDynArray; const sampleframes: Integer);
-var i : Integer;
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  i       : Integer;
+  L, M, H : array [0..1] of Single;
 begin
- for i := 0 to sampleframes - 1 do
+ for i := 0 to SampleFrames - 1 do
   begin
-   with FMultiband[0] do
-   Outputs[0, i] := Lowpass.ProcessSample(Inputs[0, i]) +
-                    MidHighpass.ProcessSample(MidLowpass.ProcessSample(Inputs[0, i])) +
-                    Highpass.ProcessSample(Inputs[0, i]);
-   with FMultiband[1] do
-   Outputs[1, i] := Lowpass.ProcessSample(Inputs[1, i]) +
-                    MidHighpass.ProcessSample(MidLowpass.ProcessSample(Inputs[0, i])) +
-                    Highpass.ProcessSample(Inputs[1, i]);
+   if abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := abs(Inputs[0, i]);
+   FInputPeak[0] := FMeterRelease * FInputPeak[0];
+   if abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := abs(Inputs[1, i]);
+   FInputPeak[1] := FMeterRelease * FInputPeak[1];
+
+   FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
+   FLowSplit[1].ProcessSample(Inputs[1, i], L[1], M[1]);
+   FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
+   FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
+
+   if abs(L[0]) > FInputPeak[2] then FInputPeak[2] := abs(L[0]);
+   FInputPeak[2] := FMeterRelease * FInputPeak[2];
+   if abs(L[1]) > FInputPeak[3] then FInputPeak[3] := abs(L[1]);
+   FInputPeak[3] := FMeterRelease * FInputPeak[3];
+
+   if abs(M[0]) > FInputPeak[4] then FInputPeak[4] := abs(M[0]);
+   FInputPeak[4] := FMeterRelease * FInputPeak[4];
+   if abs(M[1]) > FInputPeak[5] then FInputPeak[5] := abs(M[1]);
+   FInputPeak[5] := FMeterRelease * FInputPeak[5];
+
+   if abs(H[0]) > FInputPeak[6] then FInputPeak[6] := abs(H[0]);
+   FInputPeak[6] := FMeterRelease * FInputPeak[6];
+   if abs(H[1]) > FInputPeak[7] then FInputPeak[7] := abs(H[1]);
+   FInputPeak[7] := FMeterRelease * FInputPeak[7];
+
+   FLowComp.InputSample(CHalf32 * (L[0] + L[1]));
+   FMidComp.InputSample(CHalf32 * (M[0] + M[1]));
+   FHighComp.InputSample(CHalf32 * (H[0] + H[1]));
+
+   case FLowState of
+    bsNone : begin
+              L[0] := FLowComp.GainSample(L[0]);
+              L[1] := FLowComp.GainSample(L[1]);
+             end;
+    bsMute : begin
+              L[0] := 0;
+              L[1] := 0;
+             end;
+   end;
+   case FMidState of
+    bsNone : begin
+              M[0] := FMidComp.GainSample(M[0]);
+              M[1] := FMidComp.GainSample(M[1]);
+             end;
+    bsMute : begin
+              M[0] := 0;
+              M[1] := 0;
+             end;
+   end;
+   case FHighState of
+    bsNone : begin
+              H[0] := FHighComp.GainSample(H[0]);
+              H[1] := FHighComp.GainSample(H[1]);
+             end;
+    bsMute : begin
+              H[0] := 0;
+              H[1] := 0;
+             end;
+   end;
+
+   if abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := abs(L[0]);
+   FOutputPeak[2] := FMeterRelease * FOutputPeak[2];
+   if abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := abs(L[1]);
+   FOutputPeak[3] := FMeterRelease * FOutputPeak[3];
+
+   if abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := abs(M[0]);
+   FOutputPeak[4] := FMeterRelease * FOutputPeak[4];
+   if abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := abs(M[1]);
+   FOutputPeak[5] := FMeterRelease * FOutputPeak[5];
+
+   if abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := abs(H[0]);
+   FOutputPeak[6] := FMeterRelease * FOutputPeak[6];
+   if abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := abs(H[1]);
+   FOutputPeak[7] := FMeterRelease * FOutputPeak[7];
+
+   Outputs[0, i] := L[0] + M[0] + H[0];
+   Outputs[1, i] := L[1] + M[1] + H[1];
+
+   if abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := abs(Outputs[0, i]);
+   FOutputPeak[0] := FMeterRelease * FOutputPeak[0];
+   if abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := abs(Outputs[1, i]);
+   FOutputPeak[1] := FMeterRelease * FOutputPeak[1];
+  end;
+end;
+
+
+procedure TMBCDataModule.VSTModuleProcessLimiter(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  i       : Integer;
+  L, M, H : array [0..1] of Single;
+begin
+ for i := 0 to SampleFrames - 1 do
+  begin
+   if abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := abs(Inputs[0, i]);
+   FInputPeak[0] := FMeterRelease * FInputPeak[0];
+   if abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := abs(Inputs[1, i]);
+   FInputPeak[1] := FMeterRelease * FInputPeak[1];
+
+   FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
+   FLowSplit[1].ProcessSample(Inputs[1, i], L[1], M[1]);
+   FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
+   FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
+
+   if abs(L[0]) > FInputPeak[2] then FInputPeak[2] := abs(L[0]);
+   FInputPeak[2] := FMeterRelease * FInputPeak[2];
+   if abs(L[1]) > FInputPeak[3] then FInputPeak[3] := abs(L[1]);
+   FInputPeak[3] := FMeterRelease * FInputPeak[3];
+
+   if abs(M[0]) > FInputPeak[4] then FInputPeak[4] := abs(M[0]);
+   FInputPeak[4] := FMeterRelease * FInputPeak[4];
+   if abs(M[1]) > FInputPeak[5] then FInputPeak[5] := abs(M[1]);
+   FInputPeak[5] := FMeterRelease * FInputPeak[5];
+
+   if abs(H[0]) > FInputPeak[6] then FInputPeak[6] := abs(H[0]);
+   FInputPeak[6] := FMeterRelease * FInputPeak[6];
+   if abs(H[1]) > FInputPeak[7] then FInputPeak[7] := abs(H[1]);
+   FInputPeak[7] := FMeterRelease * FInputPeak[7];
+
+   FLowComp.InputSample(CHalf32 * (L[0] + L[1]));
+   FMidComp.InputSample(CHalf32 * (M[0] + M[1]));
+   FHighComp.InputSample(CHalf32 * (H[0] + H[1]));
+
+   case FLowState of
+    bsNone : begin
+              L[0] := FLowComp.GainSample(L[0]);
+              L[1] := FLowComp.GainSample(L[1]);
+             end;
+    bsMute : begin
+              L[0] := 0;
+              L[1] := 0;
+             end;
+   end;
+   case FMidState of
+    bsNone : begin
+              M[0] := FMidComp.GainSample(M[0]);
+              M[1] := FMidComp.GainSample(M[1]);
+             end;
+    bsMute : begin
+              M[0] := 0;
+              M[1] := 0;
+             end;
+   end;
+   case FHighState of
+    bsNone : begin
+              H[0] := FHighComp.GainSample(H[0]);
+              H[1] := FHighComp.GainSample(H[1]);
+             end;
+    bsMute : begin
+              H[0] := 0;
+              H[1] := 0;
+             end;
+   end;
+
+   if abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := abs(L[0]);
+   FOutputPeak[2] := FMeterRelease * FOutputPeak[2];
+   if abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := abs(L[1]);
+   FOutputPeak[3] := FMeterRelease * FOutputPeak[3];
+
+   if abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := abs(M[0]);
+   FOutputPeak[4] := FMeterRelease * FOutputPeak[4];
+   if abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := abs(M[1]);
+   FOutputPeak[5] := FMeterRelease * FOutputPeak[5];
+
+   if abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := abs(H[0]);
+   FOutputPeak[6] := FMeterRelease * FOutputPeak[6];
+   if abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := abs(H[1]);
+   FOutputPeak[7] := FMeterRelease * FOutputPeak[7];
+
+   Outputs[0, i] := FastTanhOpt3Term(L[0] + M[0] + H[0]);
+   Outputs[1, i] := FastTanhOpt3Term(L[1] + M[1] + H[1]);
+
+   if abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := abs(Outputs[0, i]);
+   FOutputPeak[0] := FMeterRelease * FOutputPeak[0];
+   if abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := abs(Outputs[1, i]);
+   FOutputPeak[1] := FMeterRelease * FOutputPeak[1];
+  end;
+end;
+
+procedure TMBCDataModule.VSTModuleProcessDoubleReplacingLimiter(const Inputs,
+  Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+var
+  i       : Integer;
+  L, M, H : array [0..1] of Single;
+begin
+ for i := 0 to SampleFrames - 1 do
+  begin
+   if abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := abs(Inputs[0, i]);
+   FInputPeak[0] := FMeterRelease * FInputPeak[0];
+   if abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := abs(Inputs[1, i]);
+   FInputPeak[1] := FMeterRelease * FInputPeak[1];
+
+   FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
+   FLowSplit[1].ProcessSample(Inputs[1, i], L[1], M[1]);
+   FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
+   FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
+
+   if abs(L[0]) > FInputPeak[2] then FInputPeak[2] := abs(L[0]);
+   FInputPeak[2] := FMeterRelease * FInputPeak[2];
+   if abs(L[1]) > FInputPeak[3] then FInputPeak[3] := abs(L[1]);
+   FInputPeak[3] := FMeterRelease * FInputPeak[3];
+
+   if abs(M[0]) > FInputPeak[4] then FInputPeak[4] := abs(M[0]);
+   FInputPeak[4] := FMeterRelease * FInputPeak[4];
+   if abs(M[1]) > FInputPeak[5] then FInputPeak[5] := abs(M[1]);
+   FInputPeak[5] := FMeterRelease * FInputPeak[5];
+
+   if abs(H[0]) > FInputPeak[6] then FInputPeak[6] := abs(H[0]);
+   FInputPeak[6] := FMeterRelease * FInputPeak[6];
+   if abs(H[1]) > FInputPeak[7] then FInputPeak[7] := abs(H[1]);
+   FInputPeak[7] := FMeterRelease * FInputPeak[7];
+
+   FLowComp.InputSample(CHalf32 * (L[0] + L[1]));
+   FMidComp.InputSample(CHalf32 * (M[0] + M[1]));
+   FHighComp.InputSample(CHalf32 * (H[0] + H[1]));
+
+   case FLowState of
+    bsNone : begin
+              L[0] := FLowComp.GainSample(L[0]);
+              L[1] := FLowComp.GainSample(L[1]);
+             end;
+    bsMute : begin
+              L[0] := 0;
+              L[1] := 0;
+             end;
+   end;
+   case FMidState of
+    bsNone : begin
+              M[0] := FMidComp.GainSample(M[0]);
+              M[1] := FMidComp.GainSample(M[1]);
+             end;
+    bsMute : begin
+              M[0] := 0;
+              M[1] := 0;
+             end;
+   end;
+   case FHighState of
+    bsNone : begin
+              H[0] := FHighComp.GainSample(H[0]);
+              H[1] := FHighComp.GainSample(H[1]);
+             end;
+    bsMute : begin
+              H[0] := 0;
+              H[1] := 0;
+             end;
+   end;
+
+   if abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := abs(L[0]);
+   FOutputPeak[2] := FMeterRelease * FOutputPeak[2];
+   if abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := abs(L[1]);
+   FOutputPeak[3] := FMeterRelease * FOutputPeak[3];
+
+   if abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := abs(M[0]);
+   FOutputPeak[4] := FMeterRelease * FOutputPeak[4];
+   if abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := abs(M[1]);
+   FOutputPeak[5] := FMeterRelease * FOutputPeak[5];
+
+   if abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := abs(H[0]);
+   FOutputPeak[6] := FMeterRelease * FOutputPeak[6];
+   if abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := abs(H[1]);
+   FOutputPeak[7] := FMeterRelease * FOutputPeak[7];
+
+   Outputs[0, i] := FastTanhOpt3Term(L[0] + M[0] + H[0]);
+   Outputs[1, i] := FastTanhOpt3Term(L[1] + M[1] + H[1]);
+
+   if abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := abs(Outputs[0, i]);
+   FOutputPeak[0] := FMeterRelease * FOutputPeak[0];
+   if abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := abs(Outputs[1, i]);
+   FOutputPeak[1] := FMeterRelease * FOutputPeak[1];
   end;
 end;
 

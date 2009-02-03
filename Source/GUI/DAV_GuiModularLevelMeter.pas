@@ -1,4 +1,4 @@
-unit DAV_GuiLevelMeter;
+unit DAV_GuiModularLevelMeter;
 
 interface
 
