@@ -193,6 +193,9 @@ procedure SetParameterFunc(const Effect: PVSTEffect; const Index: Integer; const
 procedure ProcessFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 procedure ProcessReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 procedure ProcessDoubleReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+function  GetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
+procedure SetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
+procedure ProcessFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: Pointer; const SampleFrames: Integer); cdecl;
 
 implementation
 
@@ -218,12 +221,12 @@ begin
    numInputs       := 2;
    numOutputs      := 2;
 
-   dispatcher             := @DispatchEffectFunc;
+   Dispatcher             := @DispatchEffectFunc;
    Process                := @ProcessFunc;
-   setParameter           := @setParameterFunc;
-   GetParameter           := @getParameterFunc;
-   ProcessReplacing       := ProcessReplacingFunc;
-   ProcessDoubleReplacing := ProcessDoubleReplacingFunc;
+   ProcessReplacing       := @ProcessReplacingFunc;
+   ProcessDoubleReplacing := @ProcessDoubleReplacingFunc;
+   SetParameter           := @SetParameterFunc;
+   GetParameter           := @GetParameterFunc;
   end;
 end;
 
@@ -637,10 +640,30 @@ end;
 // ------------------------------------------------------------------
 
 function TBasicVSTModule.HostCallOpen(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
-begin Result := 0; end;
+begin
+ Effect^.GetParameter           := @GetParameterFunc;
+ Effect^.SetParameter           := @SetParameterFunc;
+ Effect^.Process                := ProcessFunc;
+ Effect^.ProcessReplacing       := ProcessReplacingFunc;
+ Effect^.ProcessDoubleReplacing := ProcessDoubleReplacingFunc;
+ Result := 0;
+end;
 
 function TBasicVSTModule.HostCallClose(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
-begin Result := 0; end;
+begin
+ try
+  Effect^.GetParameter := @GetParameterFuncDummy;
+  Effect^.SetParameter := @SetParameterFuncDummy;
+  Effect^.Process := @ProcessFuncDummy;
+  Effect^.ProcessReplacing := @ProcessFuncDummy;
+  Effect^.ProcessDoubleReplacing := @ProcessFuncDummy;
+  Effect^.vObject := nil;
+  Free;
+  Result := 1;
+ except
+  Result := 0;
+ end;
+end;
 
 function TBasicVSTModule.HostCallSetProgramm(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin Result := 0; end;
@@ -893,14 +916,7 @@ begin
 
     case OpCode of
      effOpen:                      Result := HostCallOpen(Index, Value, ptr, opt);
-     effClose:                     try
-                                    HostCallClose(Index, Value, ptr, opt);
-                                    Effect^.vObject := nil;
-                                    Free;
-                                    Result := 1;
-                                   except
-                                    Result := 0;
-                                   end;
+     effClose:                     Result := HostCallClose(Index, Value, ptr, opt);
      effSetProgram:                Result := HostCallSetProgramm(Index, Value, ptr, opt);
      effGetProgram:                Result := HostCallGetProgramm(Index, Value, ptr, opt);
      effSetProgramName:            Result := HostCallSetProgramName(Index, Value, ptr, opt);
@@ -1028,21 +1044,14 @@ end;
 
 function GetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
 begin
+ result := 0;
 end;
 
 procedure SetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
 begin
 end;
 
-procedure ProcessFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
-begin
-end;
-
-procedure ProcessReplacingFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
-begin
-end;
-
-procedure ProcessDoubleReplacingFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+procedure ProcessFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: Pointer; const SampleFrames: Integer); cdecl;
 begin
 end;
 

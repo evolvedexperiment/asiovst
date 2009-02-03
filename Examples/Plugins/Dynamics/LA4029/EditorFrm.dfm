@@ -47,6 +47,7 @@ object FmLA4029: TFmLA4029
       Min = -0.699000000953674300
       NumGlyphs = 65
       OnChange = DialAttackChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
     end
@@ -66,6 +67,7 @@ object FmLA4029: TFmLA4029
       Min = 1.000000000000000000
       NumGlyphs = 65
       OnChange = DialReleaseChange
+      ParentColor = False
       Position = 1.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
@@ -120,13 +122,14 @@ object FmLA4029: TFmLA4029
       Top = 11
       Width = 16
       Height = 16
-      OnClick = LEDOnOffClick
       Brightness_Percent = 100.000000000000000000
       Color = clBlack
       LineWidth = 2
       LEDColor = clRed
       AntiAlias = gaaLinear4x
       LineColor = clRed
+      ParentColor = False
+      OnClick = LEDOnOffClick
     end
     object LbOnOff: TGuiLabel
       Left = 86
@@ -180,7 +183,7 @@ object FmLA4029: TFmLA4029
       Width = 168
       Height = 72
       Color = clBlack
-      Position = 0
+      GlyphIndex = 0
       NumGlyphs = 65
       StitchKind = skHorizontal
       PopupMenu = PopupVUMeterSpeed
@@ -322,6 +325,7 @@ object FmLA4029: TFmLA4029
       Max = 100.000000000000000000
       NumGlyphs = 65
       OnChange = DialMixChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
     end
@@ -383,6 +387,7 @@ object FmLA4029: TFmLA4029
       Min = -24.000000000000000000
       NumGlyphs = 65
       OnChange = DialInputChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
     end
@@ -401,6 +406,7 @@ object FmLA4029: TFmLA4029
       Min = -24.000000000000000000
       NumGlyphs = 65
       OnChange = DialOutputChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
     end
@@ -448,6 +454,7 @@ object FmLA4029: TFmLA4029
       Max = 2.000000000000000000
       NumGlyphs = 65
       OnChange = DialRatioChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
     end
@@ -480,6 +487,7 @@ object FmLA4029: TFmLA4029
       Max = 10.000000000000000000
       NumGlyphs = 65
       OnChange = DialKneeChange
+      ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
     end

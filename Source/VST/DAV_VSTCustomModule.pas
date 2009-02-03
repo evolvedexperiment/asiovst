@@ -439,19 +439,20 @@ procedure TCustomVSTModule.ReadOnlyString(s: string); begin end;
 function TCustomVSTModule.HostCallOpen(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallOpen'); {$ENDIF}
+ Result := inherited HostCallOpen(Index, Value, ptr, opt);
  if Assigned(FOnOpen) then FOnOpen(Self);
- Result := 0;
 end;
 
 function TCustomVSTModule.HostCallClose(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallClose'); {$ENDIF}
  if Assigned(FOnClose) then FOnClose(Self);
- Result := 0;
+ Result := inherited HostCallClose(Index, Value, ptr, opt);
 end;
 
 function TCustomVSTModule.HostCallGetVu(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
-var s: single;
+var
+  s: Single;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallGetVu'); {$ENDIF}
  if Assigned(FOnGetVUEvent) then

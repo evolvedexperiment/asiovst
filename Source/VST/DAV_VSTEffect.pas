@@ -243,7 +243,7 @@ type
                                             //     will always return true.
 
   TAudioMasterCallbackFunc = function(const Effect: PVSTEffect; const Opcode: TAudioMasterOpcode; const Index, Value: Integer; const Ptr: Pointer; const Opt: Single): LongInt; cdecl;
-  TDispatcherFunc = function(const Effect: PVSTEffect; const Opcode : TDispatcherOpcode; const Index, Value: Integer; const Ptr: Pointer; const Opt: Single): LongInt; cdecl;
+  TDispatcherFunc = function(const Effect: PVSTEffect; const Opcode : TDispatcherOpcode; const Index, Value: Integer; const Ptr: Pointer; const Opt: Single): Integer; cdecl;
   TProcessProc = procedure(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const Sampleframes: Integer); cdecl;
   TProcessDoubleProc = procedure(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const Sampleframes: Integer); cdecl;
   TSetParameterProc = procedure(const Effect: PVSTEffect; const Index: Longint; const Parameter: Single); cdecl;

@@ -98,7 +98,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PngImage, LA4029DM;
+  Math, PngImage, DAV_GuiCommon, LA4029DM;
 
 procedure TFmLA4029.FormCreate(Sender: TObject);
 var
@@ -395,9 +395,9 @@ procedure TFmLA4029.VUMeterTimerTimer(Sender: TObject);
 begin
  with TLA4029DataModule(Owner) do
   case LevelState of
-    lsIn : VUMeter.Position := VUMeterValueToPos(InLevel_dB);
-    lsGR : VUMeter.Position := VUMeterValueToPos(GRReduction_dB);
-   lsOut : VUMeter.Position := VUMeterValueToPos(OutLevel_dB);
+    lsIn : VUMeter.GlyphIndex := VUMeterValueToPos(InLevel_dB);
+    lsGR : VUMeter.GlyphIndex := VUMeterValueToPos(GRReduction_dB);
+   lsOut : VUMeter.GlyphIndex := VUMeterValueToPos(OutLevel_dB);
   end;
 end;
 

@@ -26,7 +26,7 @@ type
     FGain            : Double;
     FLevel           : Double;
     FRatio           : Double;
-    fRatioReciprocal : Double;
+    FRatioReciprocal : Double;
     FSampleRate      : Double;
     FSampleRateRez   : Double;
     FRelease_ms      : Double;
@@ -44,9 +44,9 @@ type
     procedure SampleRateChanged; virtual;
   public
     constructor Create; virtual;
-    function TranslatePeakToGain(PeakLevel: Double): Double; virtual;
-    function CharacteristicCurve(InputLevel: Double): Double; virtual;
-    function CharacteristicCurve_dB(InputLevel_dB: Double): Double; virtual;
+    function TranslatePeakToGain(const PeakLevel: Double): Double; virtual;
+    function CharacteristicCurve(const InputLevel: Double): Double; virtual;
+    function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; virtual;
     function ProcessSample(const Input : Double): Double; virtual;
     procedure Sidechain(const Input : Double); virtual;
 
@@ -77,7 +77,7 @@ type
   private
     FMinReleaseFactor : Double;
     FMaxReleaseFactor : Double;
-    fProgramDependency: Double;
+    FProgramDependency: Double;
     procedure SetProgramDependency(const Value: Double);
   protected
     procedure CalculateReleaseFactor; override;
@@ -89,7 +89,7 @@ type
     property Output_dB;
     property Attack_ms;
     property Release_ms;
-    property ProgramDependency: Double read fProgramDependency write SetProgramDependency;
+    property ProgramDependency: Double read FProgramDependency write SetProgramDependency;
     property Ratio;
     property SampleRate;
     property Knee;
@@ -137,12 +137,12 @@ begin
   else FReleaseFactor := exp( -ln2 / (FRelease_ms * 0.001 * SampleRate));
 end;
 
-function TCustomLevelingAmplifier.CharacteristicCurve(InputLevel: Double): Double;
+function TCustomLevelingAmplifier.CharacteristicCurve(const InputLevel: Double): Double;
 begin
  result := TranslatePeakToGain(InputLevel) * InputLevel;
 end;
 
-function TCustomLevelingAmplifier.CharacteristicCurve_dB(InputLevel_dB: Double): Double;
+function TCustomLevelingAmplifier.CharacteristicCurve_dB(const InputLevel_dB: Double): Double;
 begin
  result := Amp_to_dB(1E-30 + abs(CharacteristicCurve(dB_to_Amp(InputLevel_dB))));
 end;
@@ -194,7 +194,7 @@ begin
  if fRatio <> Value then
   begin
    fRatio := Value;
-   fRatioReciprocal := 1 / fRatio;
+   FRatioReciprocal := 1 / fRatio;
   end;
 end;
 
@@ -253,7 +253,7 @@ begin
  Result := 0.005 * (x + (b * x) / (b * a + 1));
 end;
 
-function SimpleDiode(x: Single): Single;
+function SimpleDiode(const x: Single): Single;
 begin
  Result := 0.5 * (abs(x) + x);
 end;
@@ -266,36 +266,35 @@ begin
  Value := Input * FInputLevel;
 
  // smooth input by attack
- FOldInput := abs(Value) + (FOldInput - abs(Value)) * fAttackFactor;
+ FOldInput := abs(Value) + (FOldInput - abs(Value)) * FAttackFactor;
 
  // add fall off (released) caused by electroluminicence effect of an LED
- fPeak := fPeak * fReleaseFactor;
+ FPeak := FPeak * FReleaseFactor;
 
  // calculate difference to current peak level
- Value := SimpleDiode(FOldInput - fPeak);
+ Value := SimpleDiode(FOldInput - FPeak);
 
  // apply release phase
- fPeak := fPeak + Value;
+ FPeak := FPeak + Value;
 
- fGain := TranslatePeakToGain(fPeak);
+ FGain := TranslatePeakToGain(FPeak);
 end;
 
-function TCustomLevelingAmplifier.TranslatePeakToGain(PeakLevel: Double): Double;
+function TCustomLevelingAmplifier.TranslatePeakToGain(const PeakLevel: Double): Double;
 var
-  d : Double;
+  d : Single;
 begin
-  begin
-   d := SimpleDiode(PeakLevel * FThresholdReci - sqr(1 - Knee));
-   d := (d - sqr(Knee) * FastTanhOpt3(d));
-   result := Power(1 + d, fRatio * (1 - fRatioReciprocal));
-  end;
+ d := SimpleDiode(PeakLevel * FThresholdReci - sqr(1 - Knee));
+ d := d - sqr(Knee) * FastTanhOpt3Term(d);
+// result := Power(1 + d, (FRatio - 1));
+ result := FastPower2MinError3(FastLog2ContinousError5(1 + d) * (FRatio - 1));
 end;
 
 function TCustomLevelingAmplifier.ProcessSample(const Input: Double): Double;
 begin
  result := FInputLevel * (Harms[0] + Input * (1 + Input *
            (Harms[1] + sqr(Input) * (Harms[2] + sqr(Input) * Harms[3]))));
- result := FOutputLevel * fGain * result;
+ result := FOutputLevel * FGain * result;
 end;
 
 { TLevelingAmplifierProgramDependentRelease }
@@ -303,22 +302,22 @@ end;
 procedure TLevelingAmplifierProgramDependentRelease.CalculateReleaseFactor;
 begin
  inherited;
- FMinReleaseFactor := Power(FReleaseFactor,     fProgramDependency);
- FMaxReleaseFactor := Power(FReleaseFactor, 1 / fProgramDependency);
+ FMinReleaseFactor := Power(FReleaseFactor,     FProgramDependency);
+ FMaxReleaseFactor := Power(FReleaseFactor, 1 / FProgramDependency);
 end;
 
 constructor TLevelingAmplifierProgramDependentRelease.Create;
 begin
  inherited;
- fProgramDependency := 2;
+ FProgramDependency := 2;
 end;
 
 procedure TLevelingAmplifierProgramDependentRelease.SetProgramDependency(
   const Value: Double);
 begin
- if fProgramDependency <> Value then
+ if FProgramDependency <> Value then
   begin
-   fProgramDependency := Value;
+   FProgramDependency := Value;
    CalculateReleaseFactor;
   end;
 end;
@@ -332,18 +331,18 @@ begin
  Value := Input * FInputLevel;
 
  // smooth input by attack
- FOldInput := abs(Value) + (FOldInput - abs(Value)) * fAttackFactor;
+ FOldInput := abs(Value) + (FOldInput - abs(Value)) * FAttackFactor;
 
  // add fall off (released) caused by electroluminicence effect of an LED
- fPeak := fPeak * fReleaseFactor;
+ FPeak := FPeak * FReleaseFactor;
 
  // calculate difference to current peak level
- Value := SimpleDiode(FOldInput - fPeak);
+ Value := SimpleDiode(FOldInput - FPeak);
 
  // apply release phase
- fPeak := fPeak + Value;
+ FPeak := FPeak + Value;
 
- fGain := TranslatePeakToGain(fPeak);
+ FGain := TranslatePeakToGain(FPeak);
 end;
 
 end.

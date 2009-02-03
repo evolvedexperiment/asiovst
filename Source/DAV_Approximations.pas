@@ -617,11 +617,11 @@ end;
 function FastCosInBounds5Term(const Value: Single): Single;
 begin
  case round(Value * CTwoDivPi32 - CHalf32) of
-  0 : Result :=  FastCosPart5Term(Result);
-  1 : Result := -FastCosPart5Term(Pi - Result);
-  2 : Result := -FastCosPart5Term(Result - Pi);
-  3 : Result :=  FastCosPart5Term(CTwoPI32 - Result);
-  4 : Result :=  FastCosPart5Term(Result);
+  0 : Result :=  FastCosPart5Term(Value);
+  1 : Result := -FastCosPart5Term(Pi - Value);
+  2 : Result := -FastCosPart5Term(Value - Pi);
+  3 : Result :=  FastCosPart5Term(CTwoPI32 - Value);
+  4 : Result :=  FastCosPart5Term(Value);
   else Result := 0;
  end;
 end;
@@ -629,11 +629,11 @@ end;
 function FastCosInBounds5Term(const Value: Double): Double;
 begin
  case round(Value * CTwoDivPi64 - CHalf64) of
-  0 : Result :=  FastCosPart5Term(Result);
-  1 : Result := -FastCosPart5Term(Pi - Result);
-  2 : Result := -FastCosPart5Term(Result - Pi);
-  3 : Result :=  FastCosPart5Term(CTwoPI64 - Result);
-  4 : Result :=  FastCosPart5Term(Result);
+  0 : Result :=  FastCosPart5Term(Value);
+  1 : Result := -FastCosPart5Term(Pi - Value);
+  2 : Result := -FastCosPart5Term(Value - Pi);
+  3 : Result :=  FastCosPart5Term(CTwoPI64 - Value);
+  4 : Result :=  FastCosPart5Term(Value);
   else Result := 0;
  end;
 end;
