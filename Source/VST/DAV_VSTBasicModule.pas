@@ -56,8 +56,8 @@ type
 
     procedure SetOutputSampleRate(const Samplerate: Single); virtual;
 
-    function  GetHostVendorString(const Text: string): Boolean; virtual;  // fills <Text> with a string identifying the vendor (max 64 char)
-    function  GetHostProductString(const Text: string): Boolean; virtual; // fills <Text> with a string with product name (max 64 char)
+    function  GetHostVendorString(const Text: PAnsiChar): Boolean; virtual;  // fills <Text> with a string identifying the vendor (max 64 char)
+    function  GetHostProductString(const Text: PAnsiChar): Boolean; virtual; // fills <Text> with a string with product name (max 64 char)
     function  GetHostVendorVersion: Integer; virtual;  // returns vendor-specific version
     function  HostVendorSpecific(const Arg1, Arg2: Integer; const ptrArg: pointer; const floatArg: Single): Integer; virtual;  // no definition
     function  GetCanHostDo(Text: string): Integer; virtual;  // see 'hostCanDos' in audioeffectx.cpp returns 0: don't know (default), 1: yes, -1: no
@@ -188,11 +188,11 @@ type
   end;
 
 function  DispatchEffectFunc(Effect: PVSTEffect; OpCode : TDispatcherOpCode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; cdecl;
-function  GetParameterFunc(Effect: PVSTEffect; Index: Integer): Single; cdecl;
-procedure SetParameterFunc(Effect: PVSTEffect; Index: Integer; Value: Single); cdecl;
-procedure ProcessFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
-procedure ProcessReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
-procedure ProcessDoubleReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPDouble; SampleFrames: Integer); cdecl;
+function  GetParameterFunc(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
+procedure SetParameterFunc(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
+procedure ProcessFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure ProcessReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure ProcessDoubleReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 
 implementation
 
@@ -455,18 +455,18 @@ begin
     FAudioMaster(@FEffect, audioMasterSetOutputSampleRate, 0, 0, nil, SampleRate);
 end;
 
-function TBasicVSTModule.GetHostVendorString(const Text: string): Boolean;
+function TBasicVSTModule.GetHostVendorString(const Text: PAnsiChar): Boolean;
 begin
   if Assigned(FAudioMaster) then
-    Result := (FAudioMaster(@FEffect, audioMasterGetVendorString, 0, 0, PAnsiChar(Text), 0) <> 0)
+    Result := (FAudioMaster(@FEffect, audioMasterGetVendorString, 0, 0, Text, 0) <> 0)
   else
     Result := False;
 end;
 
-function TBasicVSTModule.GetHostProductString(const Text: string): Boolean;
+function TBasicVSTModule.GetHostProductString(const Text: PAnsiChar): Boolean;
 begin
   if Assigned(FAudioMaster) then
-    Result := (FAudioMaster(@FEffect, audioMasterGetProductString, 0, 0, PAnsiChar(Text), 0) <> 0)
+    Result := (FAudioMaster(@FEffect, audioMasterGetProductString, 0, 0, Text, 0) <> 0)
   else
     Result := False;
 end;
@@ -990,34 +990,60 @@ begin
  else Result := 0;
 end;
 
-function GetParameterFunc(Effect: PVSTEffect; Index: Integer): Single; cdecl;
+function GetParameterFunc(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
 begin
- assert(TObject(Effect^.vObject) is TBasicVSTModule);
- Result := TBasicVSTModule(Effect^.vObject).HostCallGetParameter(Index);
+ assert(assigned(Effect));
+ if TObject(Effect^.vObject) is TBasicVSTModule
+  then Result := TBasicVSTModule(Effect^.vObject).HostCallGetParameter(Index)
+  else Result := 0;
 end;
 
-procedure SetParameterFunc(Effect: PVSTEffect; Index: Integer; Value: Single); cdecl;
+procedure SetParameterFunc(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
 begin
- assert(TObject(Effect^.vObject) is TBasicVSTModule);
- TBasicVSTModule(Effect^.vObject).HostCallSetParameter(Index, Value);
+ assert(assigned(Effect));
+ if TObject(Effect^.vObject) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.vObject).HostCallSetParameter(Index, Value);
 end;
 
-procedure ProcessFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
+procedure ProcessFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 begin
- assert(TObject(Effect^.vObject) is TBasicVSTModule);
- TBasicVSTModule(Effect^.vObject).HostCallProcess(Inputs, Outputs, SampleFrames);
+ assert(assigned(Effect));
+ if TObject(Effect^.vObject) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.vObject).HostCallProcess(Inputs, Outputs, SampleFrames);
 end;
 
-procedure ProcessReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPSingle; SampleFrames: Integer); cdecl;
+procedure ProcessReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 begin
- assert(TObject(Effect^.vObject) is TBasicVSTModule);
- TBasicVSTModule(Effect^.vObject).HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
+ assert(assigned(Effect));
+ if TObject(Effect^.vObject) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.vObject).HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
 end;
 
-procedure ProcessDoubleReplacingFunc(Effect: PVSTEffect; Inputs, Outputs: PPDouble; SampleFrames: Integer); cdecl;
+procedure ProcessDoubleReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 begin
- assert(TObject(Effect^.vObject) is TBasicVSTModule);
- TBasicVSTModule(Effect^.vObject).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
+ assert(assigned(Effect));
+ if TObject(Effect^.vObject) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.vObject).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
+end;
+
+function GetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
+begin
+end;
+
+procedure SetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
+begin
+end;
+
+procedure ProcessFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+begin
+end;
+
+procedure ProcessReplacingFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+begin
+end;
+
+procedure ProcessDoubleReplacingFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+begin
 end;
 
 end.

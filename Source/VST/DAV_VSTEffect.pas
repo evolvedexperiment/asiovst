@@ -242,14 +242,14 @@ type
     audioMasterGetInputSpeakerArrangement); // 49: NOT USED IN 2.4 - result a VstSpeakerArrangement in ret
                                             //     will always return true.
 
-  TAudioMasterCallbackFunc = function(Effect: PVSTEffect; Opcode: TAudioMasterOpcode; Index, Value: Integer; Ptr: Pointer; Opt: Single): LongInt; cdecl;
-  TDispatcherFunc = function(Effect: PVSTEffect; Opcode : TDispatcherOpcode; Index, Value: Integer; Ptr: Pointer; Opt: Single): LongInt; cdecl;
-  TProcessProc = procedure(Effect: PVSTEffect; Inputs, Outputs: PPSingle; Sampleframes: Integer); cdecl;
-  TProcessDoubleProc = procedure(Effect: PVSTEffect; Inputs, Outputs: PPDouble; Sampleframes: Integer); cdecl;
-  TSetParameterProc = procedure(Effect: PVSTEffect; Index: Longint; Parameter: Single); cdecl;
-  TGetParameterFunc = function(Effect: PVSTEffect; Index: LongInt): Single; cdecl;
+  TAudioMasterCallbackFunc = function(const Effect: PVSTEffect; const Opcode: TAudioMasterOpcode; const Index, Value: Integer; const Ptr: Pointer; const Opt: Single): LongInt; cdecl;
+  TDispatcherFunc = function(const Effect: PVSTEffect; const Opcode : TDispatcherOpcode; const Index, Value: Integer; const Ptr: Pointer; const Opt: Single): LongInt; cdecl;
+  TProcessProc = procedure(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const Sampleframes: Integer); cdecl;
+  TProcessDoubleProc = procedure(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const Sampleframes: Integer); cdecl;
+  TSetParameterProc = procedure(const Effect: PVSTEffect; const Index: Longint; const Parameter: Single); cdecl;
+  TGetParameterFunc = function(const Effect: PVSTEffect; const Index: LongInt): Single; cdecl;
 
-  TMainProc = function(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl;
+  TMainProc = function(const audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl;
 
   TEffFlag = (
     effFlagsHasEditor,           // if set, is expected to react to editor messages

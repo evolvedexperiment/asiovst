@@ -671,7 +671,7 @@ asm
  fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
 end;
 
-function AudioMasterCallback(Effect: PVstEffect; Opcode : TAudioMasterOpcode; Index, Value: LongInt; Ptr: Pointer; Opt: Single): LongInt; cdecl;
+function AudioMasterCallback(const Effect: PVstEffect; const Opcode : TAudioMasterOpcode; const Index, Value: LongInt; const Ptr: Pointer; const Opt: Single): LongInt; cdecl;
 var
   thePlug : TCustomVstPlugIn;
   theHost : TCustomVstHost;
@@ -759,7 +759,7 @@ begin
                                              if Assigned(thePlug.FOnAMPinConnected)
                                               then
                                                begin
-                                                if thePlug.FOnAMPinConnected(thePlug,Index,value=0)
+                                                if thePlug.FOnAMPinConnected(thePlug, Index, value = 0)
                                                  then Result := 0
                                                  else Result := 1;
                                                end
@@ -784,7 +784,7 @@ begin
                                               else {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetParameterQuantization, returns the Integer value for +1.0 representation') {$ENDIF Debug}
                                              // or 1 if full Single float precision is maintained
                                              // in automation. parameter index in <value> (-1: all, any)
-                                            else result := 0;  
+                                            else result := 0;
    audioMasterIOChanged                   : if Assigned(thePlug)
                                              then thePlug.IOChanged;
    audioMasterNeedIdle                    : if Assigned(thePlug) then
@@ -852,11 +852,16 @@ begin
                                               else StrCopy(PAnsiChar(ptr), 'Delphi ASIO & VST Project');
                                              result := 1;
                                             end;
-   audioMasterGetProductString            : begin
+   audioMasterGetProductString            : try
+                                             result := 1;
                                              if assigned(theHost)
                                               then StrCopy(PAnsiChar(ptr), PAnsiChar(theHost.ProductString))
-                                              else StrCopy(PAnsiChar(ptr), 'Delphi VST Host');
-                                             result := 1;
+                                              else
+                                               if assigned(ptr)
+                                                then StrCopy(PAnsiChar(ptr), 'Delphi VST Host')
+                                                else result := 0;
+                                            except
+                                             result := 0;
                                             end;
    audioMasterGetVendorVersion            : if assigned(theHost)
                                              then result := theHost.FVendorVersion

@@ -35,9 +35,10 @@ type
     procedure BtSetupClick(Sender: TObject);
     procedure BtExitClick(Sender: TObject);
     procedure CBPresetChange(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
-    VSTInBuffer: TDAVArrayOfSingleDynArray;
-    VSTOutBuffer: TDAVArrayOfSingleDynArray;
+    FVSTInBuffer  : array of PDAVSingleFixedArray;
+    FVSTOutBuffer : array of PDAVSingleFixedArray;
   public
   end;
 
@@ -52,21 +53,6 @@ implementation
 
 uses
   IniFiles, DAV_VSTEffect, EditorSetup;
-
-procedure TFmVSTEditor.CBPresetChange(Sender: TObject);
-begin
- VstHost[0].ProgramNr := CBPreset.ItemIndex;
-end;
-
-procedure TFmVSTEditor.FormActivate(Sender: TObject);
-begin
- VstHost[0].EditActivate;
-end;
-
-procedure TFmVSTEditor.FormDeactivate(Sender: TObject);
-begin
- VstHost[0].EditDeActivate;
-end;
 
 procedure TFmVSTEditor.FormCreate(Sender: TObject);
 var
@@ -90,6 +76,12 @@ begin
       Free;
      end;
 
+   if not FileExists(DLLFileName) then
+    begin
+     Application.Terminate;
+     Exit;
+    end;
+   
    Active := True;
    Idle;
    ShowEdit(VSTPanel);
@@ -135,8 +127,8 @@ begin
    ClientWidth := theRect.Right - theRect.Left;
    ClientHeight := theRect.Bottom - theRect.Top + ToolBar.Height;
   end;
- SetLength(VSTInBuffer, 2);
- SetLength(VSTOutBuffer, 2);
+ SetLength(FVSTInBuffer, 2);
+ SetLength(FVSTOutBuffer, 2);
  with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
   try
    Top  := ReadInteger('Layout', 'Main Top', Top);
@@ -144,6 +136,26 @@ begin
   finally
    Free;
   end;
+end;
+
+procedure TFmVSTEditor.FormActivate(Sender: TObject);
+begin
+ VstHost[0].EditActivate;
+end;
+
+procedure TFmVSTEditor.FormDeactivate(Sender: TObject);
+begin
+ VstHost[0].EditDeActivate;
+end;
+
+procedure TFmVSTEditor.FormDestroy(Sender: TObject);
+var
+  Channel: Integer;
+begin
+ for Channel := 0 to Length(FVSTInBuffer) - 1
+  do Dispose(FVSTInBuffer[Channel]);
+ for Channel := 0 to Length(FVSTOutBuffer) - 1
+  do Dispose(FVSTOutBuffer[Channel]);
 end;
 
 procedure TFmVSTEditor.BtSetupClick(Sender: TObject);
@@ -156,36 +168,43 @@ begin
  Close;
 end;
 
+procedure TFmVSTEditor.CBPresetChange(Sender: TObject);
+begin
+ VstHost[0].ProgramNr := CBPreset.ItemIndex;
+end;
+
 procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
   OutBuffer: TDAVArrayOfSingleDynArray);
 begin
- VSTHost[0].ProcessReplacing(@InBuffer[ASIOHost.InputChannelOffset],
-                             @OutBuffer[ASIOHost.OutputChannelOffset],
-                             ASIOHost.BufferSize);
+ if VSTHost[0].Active
+  then VSTHost[0].ProcessReplacing(@InBuffer[ASIOHost.InputChannelOffset],
+                                   @OutBuffer[ASIOHost.OutputChannelOffset],
+                                   ASIOHost.BufferSize);
 end;
 
 procedure TFmVSTEditor.ASIOHostReset(Sender: TObject);
+var
+  Channel: Integer;
 begin
  VSTHost.BlockSize := ASIOHost.BufferSize;
- SetLength(VSTInBuffer[0],  VSTHost.BlockSize);
- SetLength(VSTInBuffer[1],  VSTHost.BlockSize);
- SetLength(VSTOutBuffer[0], VSTHost.BlockSize);
- SetLength(VSTOutBuffer[1], VSTHost.BlockSize);
+ for Channel := 0 to Length(FVSTInBuffer) - 1
+  do ReallocMem(FVSTInBuffer[Channel], VSTHost.BlockSize * SizeOf(Single));
+ for Channel := 0 to Length(FVSTOutBuffer) - 1
+  do ReallocMem(FVSTOutBuffer[Channel], VSTHost.BlockSize * SizeOf(Single));
 end;
 
 procedure TFmVSTEditor.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
- with VSTHost[0] do
-  try
-   Active := False; UnLoad;
-  except
-  end;
+ ASIOHost.Active := False;
+ VSTHost[0].Active := False;
+ sleep(10);
+ Application.ProcessMessages;
  ASIOHOST.Active := False;
- with TIniFile.Create(ExtractFilePath(ParamStr(0))+'VSTEditor.INI') do
+ with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
   try
-   WriteInteger('Layout','Main Top',Top);
-   WriteInteger('Layout','Main Left',Left);
+   WriteInteger('Layout', 'Main Top', Top);
+   WriteInteger('Layout', 'Main Left', Left);
   finally
    Free;
   end;

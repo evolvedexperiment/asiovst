@@ -3,41 +3,71 @@ unit AdhesiveGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED, DAV_GuiVUMeter, ExtCtrls;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
+  DAV_Common, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
+  DAV_GuiVUMeter;
 
 type
   TFmAdhesive = class(TForm)
     DialAttack: TGuiDial;
+    DialFilter: TGuiDial;
     DialKnee: TGuiDial;
     DialMakeUpGain: TGuiDial;
+    DialMix: TGuiDial;
     DialRatio: TGuiDial;
     DialRelease: TGuiDial;
     DialThreshold: TGuiDial;
     GuiDialImageList: TGuiDialImageList;
+    LbTimeConstants: TGuiLabel;
+    LbCharacteristic: TGuiLabel;
+    LbIO: TGuiLabel;
     LbAttack: TGuiLabel;
+    LbExt: TGuiLabel;
+    LbIn: TGuiLabel;
     LbKnee: TGuiLabel;
     LbMakeUpGain: TGuiLabel;
+    LbMix: TGuiLabel;
+    LbPeakClip: TGuiLabel;
     LbRatio: TGuiLabel;
     LbRelease: TGuiLabel;
-    LbThreshold: TGuiLabel;
-    VUMeter: TGuiVUMeter;
-    DialMix: TGuiDial;
-    LbMix: TGuiLabel;
-    DialFilter: TGuiDial;
     LbSCHP: TGuiLabel;
-    SwOnOff: TGuiSwitch;
-    SwLimit: TGuiSwitch;
-    SwSideChain: TGuiSwitch;
-    LbTitle: TGuiLabel;
-    LbIn: TGuiLabel;
-    LbPeakClip: TGuiLabel;
-    LbExt: TGuiLabel;
     LbSideChain: TGuiLabel;
+    LbThreshold: TGuiLabel;
+    LbTitle: TGuiLabel;
     Shape1: TShape;
     Shape2: TShape;
+    Shape3: TShape;
+    Shape4: TShape;
+    Shape5: TShape;
+    Shape6: TShape;
+    Shape7: TShape;
+    Shape8: TShape;
+    SwLimit: TGuiSwitch;
+    SwOnOff: TGuiSwitch;
+    SwSideChain: TGuiSwitch;
     Timer: TTimer;
+    VUMeter: TGuiVUMeter;
+    LbThresholdMin: TGuiLabel;
+    LbThresholdMid: TGuiLabel;
+    LbThresholdMax: TGuiLabel;
+    LbMakeupMin: TGuiLabel;
+    LbMakeUpMid: TGuiLabel;
+    LbMakeUpMax: TGuiLabel;
+    LbRatioMin: TGuiLabel;
+    LbRatioMax: TGuiLabel;
+    LbRatioMed: TGuiLabel;
+    LbKneeMin: TGuiLabel;
+    LbKneeMax: TGuiLabel;
+    GuiLabel1: TGuiLabel;
+    GuiLabel2: TGuiLabel;
+    GuiLabel3: TGuiLabel;
+    LbSCmin: TGuiLabel;
+    GuiLabel4: TGuiLabel;
+    GuiLabel5: TGuiLabel;
+    GuiLabel6: TGuiLabel;
+    GuiLabel7: TGuiLabel;
+    GuiLabel8: TGuiLabel;
+    GuiLabel9: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
@@ -55,7 +85,10 @@ type
     procedure SwSideChainChange(Sender: TObject);
     procedure SwLimitChange(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
   private
+    FBackground : TBitmap;
   public
     procedure UpdateAttack;
     procedure UpdateRelease;
@@ -73,7 +106,7 @@ type
 implementation
 
 uses
-  AdhesiveDM, PngImage, DAV_VSTModuleWithPrograms, Graphics;
+  AdhesiveDM, PngImage, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}
 
@@ -82,6 +115,8 @@ var
   RS     : TResourceStream;
   PngBmp : TPngObject;
 begin
+ FBackground := TBitmap.Create;
+ FBackground.PixelFormat := pf24bit;
  PngBmp := TPngObject.Create;
  try
   RS := TResourceStream.Create(hInstance, 'CytomicBlue', 'PNG');
@@ -134,6 +169,35 @@ begin
  finally
   FreeAndNil(PngBmp);
  end;
+end;
+
+procedure TFmAdhesive.FormPaint(Sender: TObject);
+begin
+ Canvas.Draw(0, 0, FBackground);
+end;
+
+procedure TFmAdhesive.FormResize(Sender: TObject);
+var
+  x, y : Integer;
+  b    : Byte;
+  Line : PRGB24Array;
+begin
+ with FBackground do
+  begin
+   Width := ClientWidth;
+   Height := ClientHeight;
+   for y := 0 to Height - 1 do
+    begin
+     Line := ScanLine[y];
+     for x := 0 to Width - 1 do
+      begin
+       b := random(16);
+       Line[x].B := b;
+       Line[x].G := b;
+       Line[x].R := b;
+      end;
+    end;
+  end;
 end;
 
 procedure TFmAdhesive.FormShow(Sender: TObject);

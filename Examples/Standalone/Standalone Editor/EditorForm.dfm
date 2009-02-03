@@ -15,6 +15,7 @@ object FmVSTEditor: TFmVSTEditor
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnDeactivate = FormDeactivate
   PixelsPerInch = 96
   TextHeight = 16
