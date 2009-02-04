@@ -450,6 +450,8 @@ var
   Sample : Integer;
   Temp   : array [0..3] of Single;
   FD     : array [0..1, 0..3] of Single;
+const
+  CDenorm32 : Single = 1E-12;
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
@@ -458,24 +460,35 @@ begin
    FLinkwitzRiley[1, 1].ProcessSample(CDenorm32 + Inputs[1, Sample], FD[1, 1], FD[1, 3]);
 
    // split low
-   FLinkwitzRiley[0, 0].ProcessSample(CDenorm32 + FD[0, 1], FD[0, 0], FD[0, 1]);
-   FLinkwitzRiley[1, 0].ProcessSample(CDenorm32 + FD[1, 1], FD[1, 0], FD[1, 1]);
+   FLinkwitzRiley[0, 0].ProcessSample(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
+   FLinkwitzRiley[1, 0].ProcessSample(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
 
    // split high
-   FLinkwitzRiley[0, 2].ProcessSample(CDenorm32 + FD[0, 3], FD[0, 2], FD[0, 3]);
-   FLinkwitzRiley[1, 2].ProcessSample(CDenorm32 + FD[1, 3], FD[1, 2], FD[1, 3]);
+   FLinkwitzRiley[0, 2].ProcessSample(FD[0, 3] - CDenorm32, FD[0, 2], FD[0, 3]);
+   FLinkwitzRiley[1, 2].ProcessSample(FD[1, 3] - CDenorm32, FD[1, 2], FD[1, 3]);
 
-   // compress
-   FFastMultibandCompressor[0].ProcessSample(CHalf32 * (FD[0, 0] + FD[1, 0]));
-   FFastMultibandCompressor[1].ProcessSample(CHalf32 * (FD[0, 1] + FD[1, 1]));
-   FFastMultibandCompressor[2].ProcessSample(CHalf32 * (FD[0, 2] + FD[1, 2]));
-   FFastMultibandCompressor[3].ProcessSample(CHalf32 * (FD[0, 3] + FD[1, 3]));
+   // compress & copy gain reduction
+   with FFastMultibandCompressor[0] do
+    begin
+     InputSample(CHalf32 * (FD[0, 0] + FD[1, 0]));
+     Temp[0] := GainReductionFactor * MakeUpGain;
+    end;
+   with FFastMultibandCompressor[1] do
+    begin
+     InputSample(CHalf32 * (FD[0, 1] + FD[1, 1]));
+     Temp[1] := GainReductionFactor * MakeUpGain;
+    end;
+   with FFastMultibandCompressor[2] do
+    begin
+     InputSample(CHalf32 * (FD[0, 2] + FD[1, 2]));
+     Temp[2] := GainReductionFactor * MakeUpGain;
+    end;
+   with FFastMultibandCompressor[3] do
+    begin
+     InputSample(CHalf32 * (FD[0, 3] + FD[1, 3]));
+     Temp[3] := GainReductionFactor * MakeUpGain;
+    end;
 
-   // copy gain reduction
-   Temp[0] := FFastMultibandCompressor[0].GainReductionFactor;
-   Temp[1] := FFastMultibandCompressor[1].GainReductionFactor;
-   Temp[2] := FFastMultibandCompressor[2].GainReductionFactor;
-   Temp[3] := FFastMultibandCompressor[3].GainReductionFactor;
 
    // gain and combine
    Outputs[0, Sample] := Temp[0] * FD[0, 0] + Temp[1] * FD[0, 1] - Temp[2] * FD[0, 2] - Temp[3] * FD[0, 3];

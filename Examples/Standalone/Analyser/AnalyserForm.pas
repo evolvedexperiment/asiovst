@@ -1,17 +1,17 @@
 unit AnalyserForm;
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 interface
 
 uses {$IFDEF FPC} LCLIntf, LResources, TAGraph,
      {$ELSE} Windows, TeeProcs, TeEngine, Series, {$ENDIF}
-     SysUtils, Classes, Controls, Forms, StdCtrls, ComCtrls, DAVDCommon,
-     DDspFilter, Chart, Spin, Buttons, DAVASIOHost, ExtCtrls;
+     SysUtils, Classes, Controls, Forms, StdCtrls, ComCtrls, DAV_Common,
+     Chart, Spin, Buttons, ExtCtrls, DAV_DspFilter, DAV_ASIOHost;
 
 const
-  cNumFrequencies = 32;
-  cThirdOctaveFrequencies : Array [0..cNumFrequencies-1] of Single =
+  CNumFrequencies = 32;
+  CThirdOctaveFrequencies : Array [0..CNumFrequencies - 1] of Single =
       (16,20,25,31,40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,
        1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000);
 
@@ -38,7 +38,7 @@ type
     SEFullscaleGain: TSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
     procedure Bt_AnalyseClick(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
@@ -47,11 +47,11 @@ type
     procedure RB_SlowClick(Sender: TObject);
     procedure SEFullscaleGainChange(Sender: TObject);
   private
-    fFilterArray : Array [0..cNumFrequencies-1] of TSimpleBandpass;
-    fFilterRMS   : Array [0..cNumFrequencies-1] of Single;
-    fChannelNr   : Integer;
-    fSpeedConst  : T2SingleArray;
-    fFSGain      : Single;
+    FFilterArray : Array [0..CNumFrequencies - 1] of TSimpleBandpass;
+    FFilterRMS   : Array [0..CNumFrequencies - 1] of Single;
+    FChannelNr   : Integer;
+    FSpeedConst  : TDAV2SingleArray;
+    FFSGain      : Single;
     procedure UpdateBarGraph;
   public
   published
@@ -73,10 +73,10 @@ procedure TFmAnalyser.FormCreate(Sender: TObject);
 var
   i : Integer;
 begin
- fChannelNr := 0;
- fSpeedConst[0] := 0.999;
- fSpeedConst[1] := 1 - fSpeedConst[0];
- fFSGain        := SEFullscaleGain.Value;
+ FChannelNr := 0;
+ FSpeedConst[0] := 0.999;
+ FSpeedConst[1] := 1 - FSpeedConst[0];
+ FFSGain        := SEFullscaleGain.Value;
  DriverCombo.Items := ASIOHost.DriverList;
  if DriverCombo.Items.Count = 0 then
   try
@@ -99,8 +99,8 @@ begin
 
  for i := 0 to cNumFrequencies - 1 do
   begin
-   fFilterArray[i] := TSimpleBandpass.Create;
-   with fFilterArray[i] do
+   FFilterArray[i] := TSimpleBandpass.Create;
+   with FFilterArray[i] do
     begin
      SampleRate := 44100;
      Gain := 0;
@@ -133,29 +133,29 @@ begin
   finally
    Free;
   end;
- for i := 0 to cNumFrequencies-1 do fFilterArray[i].Free;
+ for i := 0 to cNumFrequencies-1 do FFilterArray[i].Free;
 end;
 
 procedure TFmAnalyser.RB_FastClick(Sender: TObject);
 begin
- fSpeedConst[0] := 0.99; fSpeedConst[1] := 1-fSpeedConst[0];
+ FSpeedConst[0] := 0.99; FSpeedConst[1] := 1-FSpeedConst[0];
 end;
 
 procedure TFmAnalyser.RB_MediumClick(Sender: TObject);
 begin
- fSpeedConst[0] := 0.999; fSpeedConst[1] := 1-fSpeedConst[0];
+ FSpeedConst[0] := 0.999; FSpeedConst[1] := 1-FSpeedConst[0];
 end;
 
 procedure TFmAnalyser.RB_SlowClick(Sender: TObject);
 begin
- fSpeedConst[0] := 0.9999; fSpeedConst[1] := 1-fSpeedConst[0];
+ FSpeedConst[0] := 0.9999; FSpeedConst[1] := 1-FSpeedConst[0];
 end;
 
 procedure TFmAnalyser.SEFullscaleGainChange(Sender: TObject);
 begin
- fFSGain := SEFullscaleGain.Value;
+ FFSGain := SEFullscaleGain.Value;
  {$IFNDEF FPC}
- AnalyserChart.LeftAxis.Maximum := fFSGain+20;
+ AnalyserChart.LeftAxis.Maximum := FFSGain+20;
  {$ENDIF}
 end;
 
@@ -209,25 +209,25 @@ var
 begin
  {$IFNDEF FPC}
  for j := 0 to cNumFrequencies - 1
-  do BarSeries.YValue[j] := fFilterRMS[j] + fFSGain;
+  do BarSeries.YValue[j] := FFilterRMS[j] + FFSGain;
  AnalyserChart.Invalidate;
  {$ELSE}
  for j := 0 to cNumFrequencies - 1
-  do TBar(AnalyserChart.Bars.Items[j]).Value := round(fFilterRMS[j] + fFSGain);
+  do TBar(AnalyserChart.Bars.Items[j]).Value := round(FFilterRMS[j] + FFSGain);
  AnalyserChart.Invalidate;
  {$ENDIF}
 end;
 
-procedure TFmAnalyser.ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TAVDArrayOfSingleDynArray);
+procedure TFmAnalyser.ASIOHostBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
 var
   i, j : Integer;
   s    : Single;
 begin
  for i := 0 to ASIOHost.BufferSize - 1 do
   begin
-   s := InBuffer[fChannelNr,i];
+   s := InBuffer[FChannelNr,i];
    for j := 0 to cNumFrequencies - 1
-    do fFilterRMS[j] := fSpeedConst[0] * fFilterRMS[j] + fSpeedConst[1] * Amp_to_dB(abs(fFilterArray[j].ProcessSample(s + 1E-24)));
+    do FFilterRMS[j] := FSpeedConst[0] * FFilterRMS[j] + FSpeedConst[1] * Amp_to_dB(abs(FFilterArray[j].ProcessSample(s + 1E-24)));
   end;
  UpdateBarGraph;
 end;

@@ -1014,7 +1014,9 @@ end;
 
 function TAudioChannel32.GetChannelDataPointer: PDAVSingleFixedArray;
 begin
- result := FChannelData.ChannelDataPointer;
+ if FChannelData is TAudioData32
+  then result := FChannelData.ChannelDataPointer
+  else result := nil;
 end;
 
 function TAudioChannel32.GetPeak: Double;
@@ -1326,13 +1328,14 @@ procedure TCustomAudioDataCollection32.RebuildChannelList(Sender: TObject);
 var
   i : Integer;
 begin
- if not FExternalData then
+ if (not FExternalData) and assigned(FChannels) then
   begin
    SetLength(FChannelDataPointerList, FChannels.Count);
    for i := 0 to FChannels.Count - 1 do
     if FChannels.Items[i] is TAudioChannel32 then
-     with TAudioChannel32(FChannels.Items[i])
-      do FChannelDataPointerList[i] := ChannelDataPointer;
+     with TAudioChannel32(FChannels.Items[i]) do
+//      if assigned(FChannelData) then // it might be necessary to remove this check in the future!
+       FChannelDataPointerList[i] := ChannelDataPointer;
   end;
 end;
 

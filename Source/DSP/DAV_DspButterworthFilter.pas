@@ -58,7 +58,8 @@ type
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample(const Input: Single): Single; overload;
+    function ProcessSample(const Input: Double): Double; overload; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
   published
     property Gain;
@@ -94,6 +95,8 @@ implementation
 uses
   Math, SysUtils, DAV_Complex;
 
+var
+  DenormRandom   : Single;
 const
   CDenorm32      : Single = 1E-24;
   CDenorm64      : Double = 1E-34;
@@ -342,6 +345,7 @@ begin
 {$ELSE}
 asm
  fld Input.Double;
+ fadd CDenorm32
  fmul [Self.FFilterGain].Double
  mov ecx, [self.FOrder]
  test ecx, ecx
@@ -394,6 +398,7 @@ constructor TButterworthHP.Create;
 begin
  inherited Create;
  FGainFactor := 1;
+ DenormRandom := Random;
 end;
 
 procedure TButterworthHP.CalculateCoefficients;
@@ -440,6 +445,86 @@ begin
  Result := CDenorm32 + Abs(sqr(FFilterGain) * Result);
 end;
 
+function TButterworthHP.ProcessSample(const Input: Single): Single;
+{$IFDEF PUREPASCAL}
+var
+  x : Double;
+  i : Integer;
+begin
+ Result := FFilterGain * Input;
+ for i := 0 to (FOrder div 2) - 1 do
+  begin
+   x := Result;
+   Result            :=      x + FState[2 * i];
+   FState[2 * i    ] := -2 * x + FAB[2 * i] * Result + FState[2 * i + 1];
+   FState[2 * i + 1] :=      x + FAB[2 * i + 1] * Result;
+  end;
+ if (FOrder mod 2) = 1 then
+  begin
+   i             := ((FOrder + 1) div 2) - 1;
+   x             := Result;
+   Result        :=  x + FState[2 * i];
+   FState[2 * i] := -x + FAB[2 * i] * Result;
+  end;
+{$ELSE}
+asm
+ fld  Input.Single
+
+ // add denormal
+ mov  edx, DenormRandom
+ imul edx, DenormRandom, $08088405
+ inc  edx
+ shr  edx, 23
+ or   edx, $20000000
+ mov  DenormRandom, edx
+ fadd DenormRandom
+
+ fmul [self.FFilterGain].Double
+ mov  ecx, [self.FOrder]
+ test ecx, ecx
+ jz @End
+ shr ecx, 1
+ shl ecx, 2
+ push ecx
+ jz @SingleStage
+ @FilterLoop:
+  sub  ecx, 4
+  fld  st(0)
+  fadd [self.FState + ecx * 4].Double
+  fld  st(0)
+  fld  st(0)
+  fmul [self.FAB + ecx * 4].Double
+  fadd [self.FState + ecx * 4 + 8].Double
+  fld  st(3)
+  fadd st(0), st(0)
+  fsubp
+  fstp [self.FState + ecx * 4].Double
+  fmul [self.FAB + ecx * 4 + 8].Double
+  fxch
+  fxch st(2)
+  faddp
+  fstp [self.FState + ecx * 4 + 8].Double
+ ja @FilterLoop
+
+ @SingleStage:
+ pop ecx
+ shr ecx, 1
+ sub ecx, [self.FOrder]
+ jz @End
+  mov ecx, [self.FOrder]
+  dec ecx
+  shl ecx, 1
+  fld st(0)
+  fadd [self.FState + ecx * 4].Double
+  fld st(0)
+  fmul [self.FAB + ecx * 4].Double
+  fsubrp st(2), st(0)
+  fxch
+  fstp [self.FState + ecx * 4].Double
+ @End:
+ {$ENDIF}
+end;
+
 function TButterworthHP.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
@@ -464,7 +549,16 @@ begin
 {$ELSE}
 asm
  fld  Input.Double
- fadd CDenorm64
+
+ // add denormal
+ mov  edx, DenormRandom
+ imul edx, DenormRandom, $08088405
+ inc  edx
+ shr  edx, 23
+ or   edx, $20000000
+ mov  DenormRandom, edx
+ fadd DenormRandom
+
  fmul [self.FFilterGain].Double
  mov  ecx, [self.FOrder]
  test ecx, ecx
@@ -517,6 +611,8 @@ constructor TButterworthSplit.Create;
 begin
  inherited Create;
  FGainFactor := 1;
+ Randomize;
+ DenormRandom := Random;
 end;
 
 procedure TButterworthSplit.CalculateCoefficients;
@@ -601,10 +697,20 @@ begin
 {$ELSE}
 asm
  fld  Input.Single               // highpass
+
+ // add denormal
+ push ebx
+ mov  ebx, DenormRandom
+ imul ebx, DenormRandom, $08088405
+ inc  ebx
+ shr  ebx, 23
+ or   ebx, $20000000
+ mov  DenormRandom, ebx
+ fadd DenormRandom
+ pop ebx
+
  fmul [self.FFilterGain].Double
- fld  Input.Single               // lowpass, highpass
- fsub CDenorm64
- fmul [self.FFilterGain].Double
+ fld  st(0)                      // lowpass, highpass
  fmul [self.FKs].Double
  push ecx
  mov  ecx, [self.FOrder]
@@ -696,8 +802,8 @@ var
   x : Double;
   i : Integer;
 begin
- Highpass := FFilterGain * Input;
- Lowpass  := FFilterGain * Input * FKs;
+ Highpass := CDenorm32 + FFilterGain * Input;
+ Lowpass  := CDenorm32 + FFilterGain * Input * FKs;
  for i := 0 to (FOrder div 2) - 1 do
   begin
    x := Lowpass;
@@ -725,8 +831,19 @@ begin
 asm
  fld  Input.Double               // highpass
  fmul [self.FFilterGain].Double
- fld  Input.Double               // lowpass, highpass
- fmul [self.FFilterGain].Double
+
+ // add denormal
+ push ebx
+ mov  ebx, DenormRandom
+ imul ebx, DenormRandom, $08088405
+ inc  ebx
+ shr  ebx, 23
+ or   ebx, $20000000
+ mov  DenormRandom, ebx
+ fadd DenormRandom
+ pop ebx
+
+ fld st(0)                       // lowpass, highpass
  fmul [self.FKs].Double
  push ecx
  mov  ecx, [self.FOrder]
