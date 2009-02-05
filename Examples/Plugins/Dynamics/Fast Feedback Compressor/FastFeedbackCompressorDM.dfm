@@ -1,8 +1,8 @@
-object FastCompressorDataModule: TFastCompressorDataModule
+object FastFeedbackCompressorDataModule: TFastFeedbackCompressorDataModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.1'
-  EffectName = 'Fast Compressor'
+  EffectName = 'Fast FeedbackCompressor'
   ProductName = 'DAV Dynamic Examples'
   VendorName = 'Delphi ASIO & VST Project'
   VersionRelease = 1
@@ -11,7 +11,7 @@ object FastCompressorDataModule: TFastCompressorDataModule
   CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'DVFC'
+  UniqueID = 'DVFF'
   ShellPlugins = <>
   Programs = <
     item
