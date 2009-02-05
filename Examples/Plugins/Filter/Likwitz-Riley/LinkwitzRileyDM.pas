@@ -96,7 +96,9 @@ begin
  FLinkwitzRiley.SampleRate := SampleRate;
 end;
 
+{$IFDEF FPC}
 initialization
   {$i LinkwitzRileyDM.lrs}
+{$ENDIF}
 
 end.
