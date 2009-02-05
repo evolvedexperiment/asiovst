@@ -77,7 +77,7 @@ object FmFastCompressor: TFmFastCompressor
     LineColor = 14277598
     LineWidth = 2
     Max = 1000.000000000000000000
-    Min = 0.100000001490116100
+    Min = 0.009999999776482582
     NumGlyphs = 65
     OnChange = DialAttackChange
     PointerAngles.Start = 225

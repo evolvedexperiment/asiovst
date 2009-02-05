@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Fast Limiter Installer
+;Fast Multiband Compressor Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Fast Limiter Installer"
-  OutFile "Fast_Limiter_Install.exe"
+  Name "Fast Multiband Compressor Installer"
+  OutFile "Fast_Multiband_Compressor_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Fast Limiter"
+  !define PRODUCT_NAME "Fast Multiband Compressor"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,44 +69,44 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Fast Limiter VST-Plugin" SecVSTPlugin
+Section "Fast Multiband Compressor VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\FastLimiter.dll"
+  File "..\Bin\FastMultibandCompressor.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallFastLimiter.exe"
+  WriteUninstaller "$INSTDIR\UninstallMultibandCompressor.exe"
 SectionEnd
 
-Section "Fast Limiter Manual" SecManual
+Section "Fast Multiband Compressor Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Fast Limiter Manual.pdf"
+  File "..\Bin\Fast Multiband Compressor Manual.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallFastLimiter.exe"
+  WriteUninstaller "$INSTDIR\UninstallMultibandCompressor.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Fast Limiter VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Fast Multiband Compressor VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Fast Limiter VST Plugin"
-  LangString DESC_SecManual ${LANG_ENGLISH} "Fast Limiter Manual"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Fast Multiband Compressor VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Fast Multiband Compressor Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -120,8 +120,8 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\FastLimiter.dll"
-  Delete "$INSTDIR\Fast Limiter Manual.pdf"
+  Delete "$INSTDIR\FastMultibandCompressor.dll"
+  Delete "$INSTDIR\Fast Multiband Compressor Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

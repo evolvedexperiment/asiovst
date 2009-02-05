@@ -119,12 +119,12 @@ type
     LbLowMidSolo: TGuiLabel;
     LbLowMidMute: TGuiLabel;
     LbLowMidBypass: TGuiLabel;
-    GuiLabel5: TGuiLabel;
-    GuiLabel6: TGuiLabel;
-    GuiLabel7: TGuiLabel;
-    GuiLabel8: TGuiLabel;
-    GuiLabel9: TGuiLabel;
-    GuiLabel10: TGuiLabel;
+    LbHighMidSolo: TGuiLabel;
+    LbHighMidMute: TGuiLabel;
+    LbHighMidBypass: TGuiLabel;
+    LbHighSolo: TGuiLabel;
+    LbHighMute: TGuiLabel;
+    LbHighBypass: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);

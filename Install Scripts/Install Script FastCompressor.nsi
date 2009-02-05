@@ -31,7 +31,7 @@ SetCompressor lzma
 ;Interface Settings
 
   !define PRODUCT_NAME "Fast Compressor"
-  !define PRODUCT_VERSION "1.0.0"
+  !define PRODUCT_VERSION "1.0.1"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
@@ -69,7 +69,7 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Fast Compressor VST-Plugin" SecProgramFiles
+Section "Fast Compressor VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -80,8 +80,19 @@ Section "Fast Compressor VST-Plugin" SecProgramFiles
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallFastCompressor.exe"
+SectionEnd
 
+Section "Fast Compressor Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\Fast Compressor Manual.pdf"
 
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\UninstallFastCompressor.exe"
 SectionEnd
 
 ;--------------------------------
@@ -94,11 +105,13 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Fast Compressor VST Plugin"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Fast Compressor VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Fast Compressor Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -108,6 +121,7 @@ Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\FastCompressor.dll"
+  Delete "$INSTDIR\Fast Compressor Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

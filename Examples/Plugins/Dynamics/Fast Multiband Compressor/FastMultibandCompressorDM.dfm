@@ -21,6 +21,7 @@ object FastMultibandCompressorDataModule: TFastMultibandCompressorDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Crossover'
       DisplayName = 'Low Split Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -41,6 +42,7 @@ object FastMultibandCompressorDataModule: TFastMultibandCompressorDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Crossover'
       DisplayName = 'Mid Split Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -61,6 +63,7 @@ object FastMultibandCompressorDataModule: TFastMultibandCompressorDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'Crossover'
       DisplayName = 'High Split Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -613,6 +616,10 @@ object FastMultibandCompressorDataModule: TFastMultibandCompressorDataModule
       OnParameterChange = ParameterMixChange
     end>
   ParameterCategories = <
+    item
+      DisplayName = 'Crossover'
+      VSTModule = Owner
+    end
     item
       DisplayName = 'Time Constants'
       VSTModule = Owner

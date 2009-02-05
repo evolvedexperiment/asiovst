@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Fast Compressor Installer
+;Fast Gate Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -69,7 +69,7 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Fast Gate VST-Plugin" SecProgramFiles
+Section "Fast Gate VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -80,8 +80,19 @@ Section "Fast Gate VST-Plugin" SecProgramFiles
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallFastGate.exe"
+SectionEnd
 
+Section "Fast Gate Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\Fast Gate Manual.pdf"
 
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\UninstallFastGate.exe"
 SectionEnd
 
 ;--------------------------------
@@ -94,11 +105,13 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Fast Gate VST Plugin"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Fast Gate VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Fast Gate Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------

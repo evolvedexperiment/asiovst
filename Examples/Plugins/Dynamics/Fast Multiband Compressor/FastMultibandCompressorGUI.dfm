@@ -295,7 +295,7 @@ object FmFastMultibandCompressor: TFmFastMultibandCompressor
     Visible = False
     OnClick = LEDSoftClipClick
   end
-  object GuiLabel5: TGuiLabel
+  object LbHighMidSolo: TGuiLabel
     Left = 293
     Top = 42
     Width = 9
@@ -310,7 +310,7 @@ object FmFastMultibandCompressor: TFmFastMultibandCompressor
     Visible = False
     OnClick = LEDSoftClipClick
   end
-  object GuiLabel6: TGuiLabel
+  object LbHighMidMute: TGuiLabel
     Left = 302
     Top = 42
     Width = 11
@@ -325,7 +325,7 @@ object FmFastMultibandCompressor: TFmFastMultibandCompressor
     Visible = False
     OnClick = LEDSoftClipClick
   end
-  object GuiLabel7: TGuiLabel
+  object LbHighMidBypass: TGuiLabel
     Left = 314
     Top = 42
     Width = 8
@@ -340,7 +340,7 @@ object FmFastMultibandCompressor: TFmFastMultibandCompressor
     Visible = False
     OnClick = LEDSoftClipClick
   end
-  object GuiLabel8: TGuiLabel
+  object LbHighSolo: TGuiLabel
     Left = 421
     Top = 42
     Width = 9
@@ -355,7 +355,7 @@ object FmFastMultibandCompressor: TFmFastMultibandCompressor
     Visible = False
     OnClick = LEDSoftClipClick
   end
-  object GuiLabel9: TGuiLabel
+  object LbHighMute: TGuiLabel
     Left = 430
     Top = 42
     Width = 11
@@ -370,7 +370,7 @@ object FmFastMultibandCompressor: TFmFastMultibandCompressor
     Visible = False
     OnClick = LEDSoftClipClick
   end
-  object GuiLabel10: TGuiLabel
+  object LbHighBypass: TGuiLabel
     Left = 442
     Top = 42
     Width = 8
@@ -399,7 +399,6 @@ object FmFastMultibandCompressor: TFmFastMultibandCompressor
     Radius = 9
     TabOrder = 1
     UseDockManager = True
-    ExplicitTop = 85
     object DialLowThreshold: TGuiDial
       Left = 185
       Top = 31
@@ -772,7 +771,6 @@ object FmFastMultibandCompressor: TFmFastMultibandCompressor
     Radius = 9
     TabOrder = 3
     UseDockManager = True
-    ExplicitTop = 183
     object DialLowMidThreshold: TGuiDial
       Tag = 1
       Left = 185
@@ -1166,7 +1164,6 @@ object FmFastMultibandCompressor: TFmFastMultibandCompressor
     Radius = 9
     TabOrder = 2
     UseDockManager = True
-    ExplicitTop = 281
     object DialHighMidThreshold: TGuiDial
       Tag = 2
       Left = 185
@@ -1560,7 +1557,6 @@ object FmFastMultibandCompressor: TFmFastMultibandCompressor
     Radius = 9
     TabOrder = 0
     UseDockManager = True
-    ExplicitTop = 379
     object DialHighThreshold: TGuiDial
       Tag = 3
       Left = 185

@@ -1,10 +1,11 @@
 object FastCompressorDataModule: TFastCompressorDataModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
-  Version = '1.0'
+  Version = '1.0.1'
   EffectName = 'Fast Compressor'
   ProductName = 'DAV Dynamic Examples'
   VendorName = 'Delphi ASIO & VST Project'
+  VersionRelease = 1
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
@@ -59,8 +60,8 @@ object FastCompressorDataModule: TFastCompressorDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
@@ -79,8 +80,8 @@ object FastCompressorDataModule: TFastCompressorDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Release'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
@@ -119,13 +120,15 @@ object FastCompressorDataModule: TFastCompressorDataModule
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
+      Curve = ctLogarithmic
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Ratio'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
+      Min = 0.009999999776482582
+      MinInteger = 1
       ReportVST2Properties = True
       ShortLabel = 'Ratio'
       SmallStepFloat = 0.500000000000000000
