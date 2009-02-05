@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED, DAV_GuiLevelMeter;
+  DAV_GuiLED, DAV_GuiLevelMeter, ExtCtrls;
 
 type
   TFmFastLimiter = class(TForm)
@@ -32,8 +32,12 @@ type
     LEDAutoGain: TGuiLED;
     LEDLimit: TGuiLED;
     LEDStereo: TGuiLED;
-    GuiColorLevelMeter1: TGuiColorLevelMeter;
-    GuiColorLevelMeter2: TGuiColorLevelMeter;
+    LMGainReduction: TGuiColorLevelMeter;
+    GuiLabel1: TGuiLabel;
+    GuiLabel4: TGuiLabel;
+    GuiLabel5: TGuiLabel;
+    GuiLabel6: TGuiLabel;
+    Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
@@ -44,6 +48,7 @@ type
     procedure LEDStereoClick(Sender: TObject);
     procedure LEDLimitClick(Sender: TObject);
     procedure LEDAutoGainClick(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   public
     procedure UpdateAttack;
     procedure UpdateRelease;
@@ -129,6 +134,16 @@ begin
  with TFastLimiterDataModule(Owner) do
   begin
    Parameter[6] := Integer(LEDStereo.Brightness_Percent < 50);
+  end;
+end;
+
+procedure TFmFastLimiter.TimerTimer(Sender: TObject);
+begin
+ with TFastLimiterDataModule(Owner), LMGainReduction do
+  begin
+   if FastLimiter[0].GainReductiondB > PeakLevel
+    then PeakLevel := FastLimiter[0].GainReductiondB
+    else PeakLevel := 0.5 * PeakLevel - 0.5 * FastLimiter[0].GainReductiondB;
   end;
 end;
 

@@ -839,6 +839,7 @@ begin
   FThreshold_dB := -40;
   FThreshold    := dB_to_Amp(FThreshold_dB);
   FKnee_dB      := 0;
+  FGain         := 1;
 end;
 
 procedure TCustomDynamicProcessor.CalculateThreshold;

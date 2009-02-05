@@ -185,7 +185,7 @@ begin
    Ratio := 1 / Parameter[3];
    if Ratio <> DialRatio.Position
     then DialRatio.Position := Ratio;
-   LbRatioValue.Caption := FloatToStrF(Ratio, ffGeneral, 3, 3) + ': 1';
+   LbRatioValue.Caption := '1 : ' + FloatToStrF(Ratio, ffGeneral, 3, 3);
    GuiGraphXY.UpdateGraph;
   end;
 end;

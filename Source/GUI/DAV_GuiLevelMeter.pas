@@ -118,11 +118,12 @@ type
 
   TCustomGuiColorLevelMeter = class(TGuiBaseControl)
   private
-    FLevelDirection : TGuiLevelDirection;
-    FPeakLevel      : Single;
-    FLower          : Single;
-    FUpper          : Single;
-    FBorderColor    : TColor;
+    FLevelDirection   : TGuiLevelDirection;
+    FPeakLevel        : Single;
+    FLower            : Single;
+    FUpper            : Single;
+    FBorderColor      : TColor;
+    FContrastLuminanz : Single;
 
     procedure SetLevelDirection(const Value: TGuiLevelDirection);
     procedure SetPeakLevel(const Value: Single);
@@ -130,6 +131,7 @@ type
     procedure SetUpper(const Value: Single);
     procedure SetBorderColor(const Value: TColor);
     procedure DrawVertical(ClipRect: TRect);
+    procedure SetContrastLuminanz(const Value: Single);
   protected
     procedure RedrawBuffer(doBufferFlip: Boolean); override;
   public
@@ -139,6 +141,7 @@ type
     property PeakLevel: Single read FPeakLevel write SetPeakLevel;
     property Lower: Single read FLower write SetLower;
     property Upper: Single read FUpper write SetUpper;
+    property ContrastLuminanz: Single read FContrastLuminanz write SetContrastLuminanz;
     property LevelDirection: TGuiLevelDirection read FLevelDirection write SetLevelDirection default ldmVertical;
   end;
 
@@ -148,6 +151,7 @@ type
     property Anchors;
     property BorderColor;
     property Color;
+    property ContrastLuminanz;
     property LevelDirection;
     property PeakLevel;
     property Lower;
@@ -563,10 +567,11 @@ end;
 constructor TCustomGuiColorLevelMeter.Create(AOwner: TComponent);
 begin
  inherited;
- FLevelDirection := ldmVertical; 
+ FLevelDirection := ldmVertical;
  FPeakLevel := 0;
  FLower := 0;
  FUpper := 1;
+ FContrastLuminanz := 0.3;
  FBorderColor := clWindowFrame;
 end;
 
@@ -575,6 +580,15 @@ begin
  if FBorderColor <> Value then
   begin
    FBorderColor := Value;
+   RedrawBuffer(True);
+  end;
+end;
+
+procedure TCustomGuiColorLevelMeter.SetContrastLuminanz(const Value: Single);
+begin
+ if FContrastLuminanz <> Value then
+  begin
+   FContrastLuminanz := Value;
    RedrawBuffer(True);
   end;
 end;
@@ -637,7 +651,7 @@ begin
       then S := 1
       else S := 0;
      H := 0.66 * (1 - sqr(1 - H));
-     L := 0.3 *(1 + (y div FLineWidth) mod 2);
+     L := FContrastLuminanz *(1 + (y div FLineWidth) mod 2);
      Pen.Color := HLSToRGB(H, L, S);
      MoveTo(ClipRect.Left, y);
      LineTo(ClipRect.Right, y);

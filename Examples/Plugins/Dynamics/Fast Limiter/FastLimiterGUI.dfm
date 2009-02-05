@@ -368,23 +368,70 @@ object FmFastLimiter: TFmFastLimiter
     Font.Style = [fsBold]
     OnClick = LEDAutoGainClick
   end
-  object GuiColorLevelMeter1: TGuiColorLevelMeter
-    Left = 273
-    Top = 96
-    Width = 10
-    Height = 64
+  object LMGainReduction: TGuiColorLevelMeter
+    Left = 275
+    Top = 121
+    Width = 14
+    Height = 53
     BorderColor = 14277598
-    PeakLevel = 0.200000002980232200
-    Upper = 1.000000000000000000
+    ContrastLuminanz = 0.180000007152557400
+    Upper = 20.000000000000000000
   end
-  object GuiColorLevelMeter2: TGuiColorLevelMeter
-    Left = 286
+  object GuiLabel1: TGuiLabel
+    Left = 275
     Top = 96
-    Width = 10
-    Height = 64
-    BorderColor = 14277598
-    PeakLevel = 0.200000002980232200
-    Upper = 1.000000000000000000
+    Width = 33
+    Height = 25
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'GR'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object GuiLabel4: TGuiLabel
+    Left = 292
+    Top = 163
+    Width = 24
+    Height = 11
+    AntiAlias = gaaLinear4x
+    Caption = '0 dB'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    OnClick = LEDAutoGainClick
+  end
+  object GuiLabel5: TGuiLabel
+    Left = 292
+    Top = 121
+    Width = 30
+    Height = 11
+    AntiAlias = gaaLinear4x
+    Caption = '20 dB'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    OnClick = LEDAutoGainClick
+  end
+  object GuiLabel6: TGuiLabel
+    Left = 292
+    Top = 142
+    Width = 30
+    Height = 11
+    AntiAlias = gaaLinear4x
+    Caption = '10 dB'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    OnClick = LEDAutoGainClick
   end
   object GuiDialImageList: TGuiDialImageList
     DialImages = <
@@ -561,6 +608,12 @@ object FmFastLimiter: TFmFastLimiter
         Width = 36
       end>
     Left = 48
+    Top = 16
+  end
+  object Timer: TTimer
+    Interval = 50
+    OnTimer = TimerTimer
+    Left = 80
     Top = 16
   end
 end
