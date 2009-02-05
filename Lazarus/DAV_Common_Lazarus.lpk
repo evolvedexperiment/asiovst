@@ -7,15 +7,20 @@
       <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\Source\;C:\Users\Christian Budde\Projects\VSTPack\Source\ASIO\;C:\Users\Christian Budde\Projects\VSTPack\Resources\"/>
+        <OtherUnitFiles Value="..\Source\;..\Resources\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <CStyleOperator Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
       <Other>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="9">
+    <Files Count="11">
       <Item1>
         <Filename Value="..\Source\DAV_Common.pas"/>
         <UnitName Value="DAV_Common"/>
@@ -42,17 +47,24 @@
         <UnitName Value="DAV_MidiIO"/>
       </Item6>
       <Item7>
-        <Filename Value="..\Source\ASIOVST.inc"/>
-        <Type Value="Include"/>
-      </Item7>
-      <Item8>
         <Filename Value="..\Source\DAV_AudioData.pas"/>
         <UnitName Value="DAV_AudioData"/>
-      </Item8>
-      <Item9>
+      </Item7>
+      <Item8>
         <Filename Value="..\Resources\DAV_CommonRegister.lrs"/>
         <Type Value="LRS"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\Source\DAV_Approximations.pas"/>
       </Item9>
+      <Item10>
+        <Filename Value="..\Source\DAV_Compiler.inc"/>
+        <Type Value="Include"/>
+      </Item10>
+      <Item11>
+        <Filename Value="..\Source\DAV_CompilerSwitches.inc"/>
+        <Type Value="Include"/>
+      </Item11>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

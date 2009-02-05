@@ -422,27 +422,29 @@ function Amp_to_dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  result := CTwenty32 * Log10(Value);
+end;
 {$ELSE}
 asm
  fldlg2
  fld Value
  fyl2x
  fmul CTwenty32
-{$ENDIF}
 end;
+{$ENDIF}
 
 function Amp_to_dB(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  result := CTwenty64 * Log10(Value);
+end;
 {$ELSE}
 asm
  fldlg2
  fld Value
  fyl2x
  fmul CTwenty64
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure Amp_to_dB(var v: TDAV4SingleArray);
 {$IFDEF PUREPASCAL}
@@ -451,6 +453,7 @@ begin
  v[1] := Amp_to_dB(v[1]);
  v[2] := Amp_to_dB(v[2]);
  v[3] := Amp_to_dB(v[3]);
+end;
 {$ELSE}
 asm
  fldlg2
@@ -473,14 +476,15 @@ asm
  fyl2x
  fmul   CTwenty32.Double
  fstp   [eax + 12].Single
-{$ENDIF}
 end;
+{$ENDIF}
 
 // scale logarithmicly from 20 Hz to 20 kHz
 function FreqLinearToLog(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  Result := (CTwenty32 * Exp(value * 6.907755279));
+end;
 {$ELSE}
 const
   fltl2: Single = 6.907755279;
@@ -499,13 +503,14 @@ asm
  fscale
  fstp    st(1)
  fmul CTwenty64.Double
-{$ENDIF}
 end;
+{$ENDIF}
 
 function FreqLinearToLog(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  Result := (CTwenty64 * Exp(value * 6.907755279));
+end;
 {$ELSE}
 const
   fltl2: Double = 6.907755279;
@@ -524,8 +529,8 @@ asm
  fscale
  fstp    st(1)
  fmul CTwenty64.Double
-{$ENDIF}
 end;
+{$ENDIF}
 
 function FreqLogToLinear(const Value: Single): Single;
 const
@@ -534,6 +539,7 @@ const
 {$IFDEF PUREPASCAL}
 begin
  Result := ln(value * fltl1) * fltl2;
+end;
 {$ELSE}
 asm
  fldln2
@@ -541,8 +547,8 @@ asm
  fmul fltl1
  fyl2x
  fmul fltl2
+end;
 {$ENDIF}
-end;   
 
 function FreqLogToLinear(const Value: Double): Double;
 const
@@ -551,6 +557,7 @@ const
 {$IFDEF PUREPASCAL}
 begin
  Result := ln(value * fltl1) * fltl2;
+end;
 {$ELSE}
 asm
  fldln2
@@ -558,8 +565,8 @@ asm
  fmul fltl1
  fyl2x
  fmul fltl2
-{$ENDIF}
 end;
+{$ENDIF}
 
 
 { Limit & Clip, Min & Max }
@@ -682,6 +689,7 @@ function FastFractional(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  result := Value - Round(Value - 0.5);
+end;
 {$ELSE}
 var i : Integer;
 asm
@@ -690,13 +698,14 @@ asm
  fsub CHalf64
  frndint
  fsubp
-{$ENDIF}
 end;
+{$ENDIF}
 
 function FastFractional(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  result := Value - Round(Value - 0.5);
+end;
 {$ELSE}
 var i : Integer;
 asm
@@ -705,8 +714,8 @@ asm
  fsub CHalf64
  frndint
  fsubp
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure FastAbs(var Value: Single);
 var
@@ -734,6 +743,7 @@ begin
  i1 := i1 and $7FFFFFFF;
  i2 := i2 and $7FFFFFFF;
  i3 := i3 and $7FFFFFFF;
+end;
 {$ELSE}
 asm
  fld  [eax].Single
@@ -748,8 +758,8 @@ asm
  fld  [eax + 12].Single
  fabs
  fstp [eax + 12].Single
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure FastNegative(var Value: Single);
 var
@@ -768,31 +778,33 @@ begin
  result := (Norm - round(Norm - 0.5)) * Arg2
 end;
 
-function FastTrunc(const Value: Single): Integer;
+function FastTrunc(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  result := Round(Value - 0.5);
+end;
 {$ELSE}
 asm
  fld Value.Single
  fsub CHalf64
  fistp Result.Integer
-{$ENDIF}
 end;
+{$ENDIF}
 
-function FastTrunc(const Value :Double):Integer;
+function FastTrunc(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  result := Round(Value - 0.5);
+end;
 {$ELSE}
 asm
  fld Value.Double
  fsub CHalf64
  fistp Result.Integer
-{$ENDIF}
 end;
+{$ENDIF}
 
-procedure FastTrunc(Input: PSingle; Output: PInteger; SampleFrames: Integer);
+procedure FastTrunc(Input: PSingle; Output: PInteger; SampleFrames: Integer); overload;
 {$IFDEF PUREPASCAL}
 var
   i : Integer;
@@ -803,6 +815,7 @@ begin
    inc(Output);
    inc(Input);
   end;
+end;
 {$ELSE}
 asm
  @Start:
@@ -812,107 +825,112 @@ asm
  add eax,4
  add edx,4
  loop    @Start
-{$ENDIF}
 end;
+{$ENDIF}
 
-function FastInt(Sample: Single): Single;
+function FastInt(Sample: Single): Single; overload;
 {$IFDEF PUREPASCAL}
 begin
  result := Round(Sample - 0.5);
+end;
 {$ELSE}
 asm
  fld Sample.Single
  fsub CHalf64
  frndint
-{$ENDIF}
 end;
+{$ENDIF}
 
-function FastInt(Sample: Double): Double;
+function FastInt(Sample: Double): Double; overload;
 {$IFDEF PUREPASCAL}
 begin
  result := Round(Sample - 0.5);
+end;
 {$ELSE}
 asm
  fld Sample.Double
  fsub CHalf64
  frndint
-{$ENDIF}
 end;
+{$ENDIF}
 
-function FastRound(Sample: Single): Integer;
+function FastRound(Sample: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  result := Round(Sample);
+end;
 {$ELSE}
 asm
  fld Sample.Single
  frndint
  fistp Result.Integer
-{$ENDIF}
 end;
+{$ENDIF}
 
-function FastRound(Sample: Double): Integer;
+function FastRound(Sample: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
  result := Round(Sample);
+end;
 {$ELSE}
 asm
  fld Sample.Double
  frndint
  fistp Result.Integer
-{$ENDIF}
 end;
+{$ENDIF}
 
-{$IFNDEF FPC}
 function FastSgn(const Value: Single): Integer;
 var
   IntCast : Integer absolute Value;
 begin
  Result := 1 - ((Intcast shr 31) shl 1);
 end;
-{$ENDIF}
 
 procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
  CosValue := Cos(Frequency);
+end;
 {$ELSE}
 asm
   fld Frequency;
   fsincos
   fstp    tbyte ptr [edx]    // Cos
   fstp    tbyte ptr [eax]    // Sin
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure GetSinCos(const Frequency: Double; var SinValue, CosValue : Double);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
  CosValue := Cos(Frequency);
+end;
 {$ELSE}
 asm
  fld Frequency.Double;
  fsincos
  fstp [CosValue].Double;
  fstp [SinValue].Double;
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure GetSinCos(const Frequency: Single; var SinValue, CosValue : Single);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
  CosValue := Cos(Frequency);
+end;
 {$ELSE}
 asm
  fld Frequency;
  fsincos
  fstp [CosValue].Single;
  fstp [SinValue].Single;
-{$ENDIF}
 end;
+{$ENDIF}
 
 function IsPowerOf2(const Value: Integer): Boolean;
 begin
@@ -942,19 +960,21 @@ function TruncLog2(Value : Extended): Integer;
 {$IFDEF PUREPASCAL}
 begin
  result := round(log2(Value));
+end;
 {$ELSE}
 asm
  fld Value.Extended
  fxtract
  fstp st(0)
  fistp result.Integer
-{$ENDIF}
 end;
+{$ENDIF}
 
 function TruncLog2(Value : Integer): Integer;
 {$IFDEF PUREPASCAL}
 begin
  result := round(log2(Value));
+end;
 {$ELSE}
 var
   temp : Integer;
@@ -965,13 +985,14 @@ asm
  fxtract
  fstp st(0)
  fistp result.Integer
-{$ENDIF}
 end;
+{$ENDIF}
 
 function CeilLog2(Value : Extended): Integer;
 {$IFDEF PUREPASCAL}
 begin
  result := round(log2(Value) + 1);
+end;
 {$ELSE}
 asm
  fld Value.Extended
@@ -982,13 +1003,14 @@ asm
  fld1
  faddp
  fistp result.Integer
-{$ENDIF}
 end;
+{$ENDIF}
 
 function CeilLog2(Value : Integer): Integer;
 {$IFDEF PUREPASCAL}
 begin
  result := round(log2(Value) + 1);
+end;
 {$ELSE}
 var
   temp : Integer;
@@ -1000,8 +1022,8 @@ asm
  fstp st(0)
  fistp result.Integer
  inc result
-{$ENDIF}
 end;
+{$ENDIF}
 
 function OnOff(const value: Single): Boolean;
 begin Result := value > 0.5 end;
@@ -1015,6 +1037,7 @@ end;
 
 { String Functions }
 
+{$IFNDEF FPC}
 function GetApplicationFilename: string;
 var
   s : array[0..$7FF] of char;
@@ -1033,7 +1056,6 @@ begin
  Result := ExtractFileDir(Result);
 end;
 
-{$IFNDEF FPC}
 procedure Msg(b: Boolean);
 begin if b then Msg('TRUE') else Msg('FALSE');end;
 procedure Msg(m: string; m2: string = '');
@@ -1078,7 +1100,6 @@ begin
    then Result := Result + s[i]
    else Result := Result + '-';
 end;
-
 {$ENDIF}
 
 // SINC Function
@@ -1150,13 +1171,13 @@ end;
 
 {$DEFINE PUREPASCAL}
 
-{$IFNDEF FPC}
 function FastMin(const A, B: Single) : Single;
 {$IFDEF PUREPASCAL}
 begin
  if A > B
   then result := B
   else result := A
+end;
 {$ELSE}
 asm
  fld     DWORD PTR [EBP + $08]
@@ -1164,15 +1185,16 @@ asm
  fcomi   st(0), st(1)
  fcmovnb st(0), st(1)
  ffree   st(1)
-{$ENDIF}
 end;
+{$ENDIF}
 
 function FastMax(const A, B: Single) : Single;
 {$IFDEF PUREPASCAL}
 begin
- if A<B
-  then result:=B
-  else result:=A
+ if A < B
+  then result := B
+  else result := A
+end;
 {$ELSE}
 asm
  fld     DWORD PTR [EBP + $0C]
@@ -1180,7 +1202,6 @@ asm
  fcomi   st(0), st(1)
  fcmovnb st(0), st(1)
  ffree   st(1)
-{$ENDIF}
 end;
 {$ENDIF}
 
@@ -1228,6 +1249,7 @@ begin
  d := d / Samples;
  for i := 0 to Samples - 1
   do InBuf[i] := InBuf[i] - d;
+end;
 {$ELSE}
 asm
  test EDX, EDX
@@ -1254,8 +1276,8 @@ asm
  fstp st(0)                      // clear stack
 
  @End:
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure DCSubstract(InBuffer: PDouble; Samples: Integer);
 {$IFDEF PUREPASCAL}
@@ -1271,6 +1293,7 @@ begin
  d := d / Samples;
  for i := 0 to Samples - 1
   do InBuf[i] := InBuf[i] - d;
+end;
 {$ELSE}
 asm
  test edx,edx
@@ -1297,8 +1320,8 @@ asm
  fstp st(0)                    // clear stack
 
  @End:
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure ConvertSingleToDouble(Singles : PSingle; Doubles : PDouble; SampleFrames: Integer);
 {$IFDEF PUREPASCAL}
@@ -1310,14 +1333,15 @@ begin
    inc(Singles);
    inc(Doubles);
   end;
+end;
 {$ELSE}
 asm
 @MarioLand:
  fld  [eax + ecx * 4 - 4].Single
  fstp [edx + ecx * 8 - 8].Double
  loop @MarioLand
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure ConvertDoubleToSingle(Doubles : PDouble; Singles : PSingle; SampleFrames: Integer);
 {$IFDEF PUREPASCAL}
@@ -1329,14 +1353,15 @@ begin
    inc(Singles);
    inc(Doubles);
   end;
+end;
 {$ELSE}
 asm
 @MarioLand:
  fld [eax + ecx * 8 - 8].Double
  fstp [edx + ecx * 4 - 4].Single
  loop @MarioLand
-{$ENDIF}
 end;
+{$ENDIF}
 
 function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer;
 {$IFDEF PUREPASCAL}
@@ -1355,6 +1380,7 @@ begin
     end;
    inc(InBuffer);
   end;
+end;
 {$ELSE}
 asm
  test edx,edx
@@ -1387,8 +1413,8 @@ asm
  mov result,edx              // Result := edx
 
  @End:
-{$ENDIF}
 end;
+{$ENDIF}
 
 function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer;
 {$DEFINE PUREPASCAL}
@@ -1409,6 +1435,7 @@ begin
     end;
    inc(InBuffer);
   end;
+end;
 {$ELSE}
 asm
  test edx,edx
@@ -1441,14 +1468,14 @@ asm
  mov result,edx              // Result := edx
 
  @End:
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure InitConstants;
 begin
  ln2    := ln(2);
- ln22   := ln2*0.5;
- ln2Rez := 1/ln2;
+ ln22   := ln2 * 0.5;
+ ln2Rez := 1 / ln2;
  ln10   := ln(10);
 end;
 

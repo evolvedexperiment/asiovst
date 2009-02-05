@@ -94,5 +94,5 @@
 { In the very early days it was possible to call the control panel from the
   application (right click -> "control panel"). This was handy in case some
   settings needed to be tweaked from within the IDE. The current state is
-  unknown, but it might work (only Delphi 5 though).
+  unknown, but it might work (only Delphi 5 though).}
 {.$DEFINE D5CP}

@@ -95,16 +95,15 @@
         <UnitName Value="DAV_DSPLevelingAmplifier"/>
       </Item18>
       <Item19>
-        <Filename Value="..\Source\DSP\DAV_DSPSineLFO.pas"/>
-        <UnitName Value="DAV_DSPSineLFO"/>
-      </Item19>
-      <Item20>
         <Filename Value="..\Source\DSP\DAV_DSPUpDownsampling.pas"/>
         <UnitName Value="DAV_DSPUpDownsampling"/>
-      </Item20>
-      <Item21>
+      </Item19>
+      <Item20>
         <Filename Value="..\Resources\DAV_DSPRegister.lrs"/>
         <Type Value="LRS"/>
+      </Item20>
+      <Item21>
+        <Filename Value="..\Source\DSP\DAV_DSPLFO.pas"/>
       </Item21>
     </Files>
     <Type Value="RunAndDesignTime"/>

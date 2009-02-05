@@ -177,7 +177,11 @@ uses
 
 { TCustomVstParameterCategory }
 
+{$IFDEF FPC}
+constructor TCustomVstParameterCategory.Create(ACollection: TCollection);
+{$ELSE}
 constructor TCustomVstParameterCategory.Create(Collection: TCollection);
+{$ENDIF}
 begin
  inherited;
  FDisplayName := 'Category ' + IntTostr(Collection.Count);

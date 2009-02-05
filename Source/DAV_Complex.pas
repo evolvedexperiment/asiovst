@@ -3,6 +3,9 @@ unit DAV_Complex;
 interface
 
 {$I DAV_Compiler.inc}
+{$IFDEF FPC}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
 
 type
   PComplexSingle = ^TComplexSingle;
@@ -449,7 +452,6 @@ begin
   A.Re := A.Re * B.Re - A.Im * B.Im;
   A.Im := A.Im * B.Re + Temp * B.Im;
 end;
-
 {$ELSE}
 asm
  fld A.Re.Single    // A.Re

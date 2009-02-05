@@ -79,10 +79,10 @@ uses
 
 resourcestring
   RCStrParameterMismatch = 'Parameter mismatch (%d)';
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
 {$IFDEF FPC}
 constructor TCustomVstProgram.Create(ACollection: TCollection);
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 {$ELSE}
 constructor TCustomVstProgram.Create(Collection: TCollection);
 {$ENDIF}

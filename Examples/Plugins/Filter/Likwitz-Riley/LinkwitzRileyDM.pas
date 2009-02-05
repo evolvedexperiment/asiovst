@@ -1,9 +1,12 @@
 unit LinkwitzRileyDM;
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
+  Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_DspFilterLinkwitzRiley;
 
 type
@@ -24,7 +27,9 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TLinkwitzRileyModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -90,5 +95,8 @@ procedure TLinkwitzRileyModule.VSTModuleSampleRateChange(Sender: TObject;
 begin
  FLinkwitzRiley.SampleRate := SampleRate;
 end;
+
+initialization
+  {$i LinkwitzRileyDM.lrs}
 
 end.

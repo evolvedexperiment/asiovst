@@ -8,7 +8,6 @@ uses
   DAV_Common, {$IFDEF FPC} LCLIntf; {$DEFINE PUREPASCAL}{$ELSE}
   Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};{$ENDIF}
 
-  {$IFNDEF FPC}
   function FastInvSqrt(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastInvSqrt(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSqrt(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -32,7 +31,6 @@ uses
   function FastSinLike(const Value: Double): Double; overload;
   function FastCosLike(const Value: Single): Single; overload;
   function FastCosLike(const Value: Double): Double; overload;
-  {$ENDIF}
 
   { Trigonomic Approximations }
 
@@ -1362,7 +1360,7 @@ end;
 
 
 
-function FastSinLike(const Value: Single): Single;
+function FastSinLike(const Value: Single): Single; overload;
 const
   C1 : Single = 7.61E-03;
   C2 : Single = -1.6605E-01;
@@ -1386,7 +1384,7 @@ asm
 {$ENDIF}
 end;
 
-function FastSinLike(const Value: Double): Double;
+function FastSinLike(const Value: Double): Double; overload;
 const
   C1 : Double = 7.61E-03;
   C2 : Double = -1.6605E-01;
@@ -1411,7 +1409,7 @@ asm
 {$ENDIF}
 end;
 
-function FastCosLike(const Value: Single): Single;
+function FastCosLike(const Value: Single): Single; overload;
 const
   C1 : Single =  3.705e-02;
   C2 : Single = -4.967e-01;
@@ -1436,7 +1434,7 @@ asm
 {$ENDIF}
 end;
 
-function FastCosLike(const Value: Double): Double;
+function FastCosLike(const Value: Double): Double; overload;
 const
   C1 : Double =  3.705e-02;
   C2 : Double = -4.967e-01;
@@ -1461,7 +1459,7 @@ asm
 {$ENDIF}
 end;
 
-function FastArctanLike(const Value: Single): Single;
+function FastArctanLike(const Value: Single): Single; overload;
 var
   VSqr : Single;
 begin
@@ -1473,7 +1471,7 @@ begin
                CArcTanLike[4]) * Value;
 end;
 
-function FastArctanLike(const Value: Double): Double;
+function FastArctanLike(const Value: Double): Double; overload;
 var
   VSqr : Single;
 begin
@@ -2068,7 +2066,7 @@ begin
  Result := (l - $3F800000) shr (n - 1) + $3F800000;
 end;
 
-function FastInvSqrt(const Value: Single): Single;
+function FastInvSqrt(const Value: Single): Single; overload;
 var
   IntCst : Integer absolute result;
 begin
@@ -2077,12 +2075,12 @@ begin
  result := CHalf32 * result * (3 - Value * sqr(result));
 end;
 
-function FastSqrt(const Value: Single): Single;
+function FastSqrt(const Value: Single): Single; overload;
 begin
  result := Value * FastInvSqrt(Value);
 end;
 
-function FastInvSqrt(const Value: Double): Double;
+function FastInvSqrt(const Value: Double): Double; overload;
 var
   IntCst : Int64 absolute result;
 begin
@@ -2091,12 +2089,12 @@ begin
  result := CHalf64 * result * (3 - Value * sqr(result));
 end;
 
-function FastSqrt(const Value: Double): Double;
+function FastSqrt(const Value: Double): Double; overload;
 begin
  result := Value * FastInvSqrt(Value);
 end;
 
-function FastSqrtBab0(const Value: Single): Single;
+function FastSqrtBab0(const Value: Single): Single; overload;
 var
   IntCst : Integer absolute result;
 begin
@@ -2104,7 +2102,7 @@ begin
  IntCst := ((IntCst - (1 shl 23)) shr 1) + (1 shl 29);
 end;
 
-function FastSqrtBab1(const Value: Single): Single;
+function FastSqrtBab1(const Value: Single): Single; overload;
 var
   IntCst : Integer absolute result;
 begin
@@ -2113,7 +2111,7 @@ begin
  Result := CHalf32 * (Result + Value / Result);
 end;
 
-function FastSqrtBab2(const Value: Single): Single;
+function FastSqrtBab2(const Value: Single): Single; overload;
 var
   IntCst : Integer absolute result;
 begin
@@ -2123,7 +2121,7 @@ begin
  Result := CQuarter32 * Result + Value / Result;
 end;
 
-function FastSqrtBab0(const Value: Double): Double;
+function FastSqrtBab0(const Value: Double): Double; overload;
 var
   IntCst : Int64 absolute result;
 begin
@@ -2131,7 +2129,7 @@ begin
  IntCst := (Int64(1) shl 61) + ((IntCst - (Int64(1) shl 52)) shr 1);
 end;
 
-function FastSqrtBab1(const Value: Double): Double;
+function FastSqrtBab1(const Value: Double): Double; overload;
 var
   IntCst : Int64 absolute result;
 begin
@@ -2140,7 +2138,7 @@ begin
  Result := CHalf32 * (Result + Value / Result);
 end;
 
-function FastSqrtBab2(const Value: Double): Double;
+function FastSqrtBab2(const Value: Double): Double; overload;
 var
   IntCst : Int64 absolute result;
 begin

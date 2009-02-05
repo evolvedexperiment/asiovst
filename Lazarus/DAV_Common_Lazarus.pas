@@ -8,8 +8,9 @@ unit DAV_Common_Lazarus;
 interface
 
 uses
-  DAV_Common, DAV_CommonRegister, DAV_Complex, DAV_ComplexData, DAV_MidiFile, 
-  DAV_MidiIO, DAV_AudioData, LazarusPackageIntf;
+    DAV_Common, DAV_CommonRegister, DAV_Complex, DAV_ComplexData, 
+  DAV_MidiFile, DAV_MidiIO, DAV_AudioData, DAV_Approximations, 
+  LazarusPackageIntf;
 
 implementation
 
