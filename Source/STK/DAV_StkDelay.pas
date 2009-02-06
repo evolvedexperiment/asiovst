@@ -56,7 +56,7 @@ type
 
     // Input one sample to the delay-line and return one output.
     function Tick(const Input: Single): Single; overload; override;
-    procedure Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
+    procedure Tick(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); overload; override;
   published
     property NextOut: Single read GetNextOut;
     property Energy: Single read GetEnergy;

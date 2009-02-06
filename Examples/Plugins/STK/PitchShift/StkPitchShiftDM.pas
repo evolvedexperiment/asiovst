@@ -18,8 +18,8 @@ type
     procedure ParamDelayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FPitchShift      : array [0..1] of TStkPitchShifter;
-    FSemaphore : Integer;
+    FPitchShift : array [0..1] of TStkPitchShifter;
+    FSemaphore  : Integer;
   public
   end;
 
@@ -41,11 +41,13 @@ begin
  FPitchShift[1] := TStkPitchShifter.Create(SampleRate);
  Parameter[0] := 0;
  Parameter[1] := 100;
+(*
  Programs[0].SetParameters(FParameter);
  Programs[1].SetParameters(FParameter);
  Programs[2].SetParameters(FParameter);
  Programs[3].SetParameters(FParameter);
  Programs[4].SetParameters(FParameter);
+*)
 end;
 
 procedure TStkPitchShiftModule.VSTModuleClose(Sender: TObject);
@@ -112,8 +114,12 @@ end;
 procedure TStkPitchShiftModule.ParamMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FPitchShift[0].EffectMix := 0.01 * Value;
- FPitchShift[1].EffectMix := FPitchShift[0].EffectMix;
+ if assigned(FPitchShift[0]) then
+  with FPitchShift[0] do
+   begin
+    EffectMix := 0.01 * Value;
+    FPitchShift[1].EffectMix := EffectMix;
+   end;
 
  if EditorForm is TFmStkPitchShift
   then TFmStkPitchShift(EditorForm).UpdateEffectMix;
