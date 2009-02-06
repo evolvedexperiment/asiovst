@@ -82,6 +82,7 @@ begin
   end else
  if FBufferSize > newLatency then
   begin
+   FBufferSize := newLatency;
    for Channel := 0 to Length(FBuffer) - 1 do
     begin
      ReallocMem(FBuffer[Channel], newLatency * SizeOf(Single));
@@ -90,7 +91,6 @@ begin
     end;
    if FBufferPos >= FBufferSize
     then FBufferPos := 0;
-   FBufferSize := newLatency;
   end;
  if EditorForm is TFmSimpleSampleDelay
   then TFmSimpleSampleDelay(EditorForm).UpdateDelayLength;

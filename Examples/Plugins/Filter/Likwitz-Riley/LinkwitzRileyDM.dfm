@@ -5,6 +5,8 @@ object LinkwitzRileyModule: TLinkwitzRileyModule
   ProductName = 'DAV Filter Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
+  TailSize = 131072
+  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in2out]
   SampleRate = 44100.000000000000000000
   numInputs = 1
   CurrentProgram = 0
