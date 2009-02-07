@@ -16,7 +16,7 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleCreate(Sender: TObject);
   private
-    FConvolution : array [0..1] of TCustomConvolution32;
+    FConvolution : array [0..1] of TConvolution32;
     FSemaphore   : Integer;
   public
     procedure LoadIR(FileName: TFileName);
@@ -36,8 +36,8 @@ end;
 
 procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FConvolution[0] := TCustomConvolution32.Create;
- FConvolution[1] := TCustomConvolution32.Create;
+ FConvolution[0] := TConvolution32.Create;
+ FConvolution[1] := TConvolution32.Create;
  FConvolution[0].FFTOrder := CeilLog2(BlockModeSize);
  FConvolution[1].FFTOrder := CeilLog2(BlockModeSize);
 end;

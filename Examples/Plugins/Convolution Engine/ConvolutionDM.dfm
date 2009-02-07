@@ -10,10 +10,9 @@ object ConvolutionDataModule: TConvolutionDataModule
   SampleRate = 44100.000000000000000000
   BlockSize = 8192
   CurrentProgram = -1
-  ProcessingMode = pmBlockSave
   BlockModeSize = 8192
   BlockModeOverlap = 4096
-  InitialDelay = 512
+  InitialDelay = 4096
   IORatio = 1.000000000000000000
   UniqueID = 'Conv'
   ShellPlugins = <>
