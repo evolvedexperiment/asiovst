@@ -1,4 +1,4 @@
-unit FastFeedbackCompressorDM;
+unit LightweightLimiterDM;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   DAV_DspDynamics;
 
 type
-  TFastFeedbackCompressorDataModule = class(TVSTModule)
+  TLightweightLimiterDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -19,7 +19,6 @@ type
     procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterThresholdDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -34,12 +33,12 @@ type
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FFastFeedbackCompressor : array [0..1] of TFastFeedbackCompressor;
-    function GetFastFeedbackCompressor(Index: Integer): TFastFeedbackCompressor;
+    FLightweightLimiter : array [0..1] of TLightweightSoftKneeLimiter;
+    function GetLightweightLimiter(Index: Integer): TLightweightSoftKneeLimiter;
     procedure ChooseProcess;
   public
     function EvaluateCharacteristic(const Input: Single): Single;
-    property FastFeedbackCompressor[Index: Integer]: TFastFeedbackCompressor read GetFastFeedbackCompressor;
+    property LightweightLimiter[Index: Integer]: TLightweightSoftKneeLimiter read GetLightweightLimiter;
   end;
 
 implementation
@@ -47,70 +46,69 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, FastFeedbackCompressorGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Approximations, LightweightLimiterGUI, DAV_VSTModuleWithPrograms;
 
-procedure TFastFeedbackCompressorDataModule.VSTModuleOpen(Sender: TObject);
+procedure TLightweightLimiterDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 const
-  CPresets : array [1..10, 0..9] of Single = (
-    (50, 500, -10, 3, 4, 3, 0, 1, 0, 100),
-    (20, 100, -12, 4, 2.5, 6, 0, 0, 0, 100),
-    (20,  80, -15, 8, 2, 8, 0, 1, 0, 100),
-    (5, 60, -20, 7, 3, 13, 1, 0, 0, 100),
-    (1, 50, -30, 6, 2, 18, 0, 0, 0, 100),
-    (8, 64, -30, 12, 5, 17, 0, 0, 0, 100),
-    (16, 78, -24, 15, 1.8, 19, 0, 1, 0, 100),
-    (1, 20, -14, 5, 3, 8, 0, 1, 0, 100),
-    (3, 44, -17, 7, 1, 9, 1, 0, 0, 100),
-    (8, 56, -11, 9, 4, 5, 1, 1, 0, 100));
+  CPresets : array [1..10, 0..8] of Single = (
+    (50, 500, -10, 100, 4, 3, 0, 1, 0),
+    (20, 100, -12, 100, 2.5, 6, 0, 0, 0),
+    (20,  80, -15, 100, 2, 8, 0, 1, 0),
+    (5, 60, -20, 100, 3, 13, 1, 0, 0),
+    (1, 50, -30, 100, 2, 18, 0, 0, 0),
+    (8, 64, -30, 100, 5, 17, 0, 0, 0),
+    (16, 78, -24, 100, 1.8, 19, 0, 1, 0),
+    (1, 20, -14, 100, 3, 8, 0, 1, 0),
+    (3, 44, -17, 100, 1, 9, 1, 0, 0),
+    (8, 56, -11, 100, 4, 5, 1, 1, 0));
 begin
- for Channel := 0 to Length(FFastFeedbackCompressor) - 1 do
+ for Channel := 0 to Length(FLightweightLimiter) - 1 do
   begin
-   FFastFeedbackCompressor[Channel] := TFastFeedbackCompressor.Create;
-   FFastFeedbackCompressor[Channel].SampleRate := SampleRate;
+   FLightweightLimiter[Channel] := TLightweightSoftKneeLimiter.Create;
+   FLightweightLimiter[Channel].SampleRate := SampleRate;
   end;
 
  Parameter[0] := 15;
  Parameter[1] := 75;
  Parameter[2] := -10;
- Parameter[3] := 5;
+ Parameter[3] := 100;
  Parameter[4] := 2;
  Parameter[5] := 6;
  Parameter[6] := 0;
  Parameter[7] := 0;
  Parameter[8] := 0;
- Parameter[9] := 100;
 
  Programs[0].SetParameters(FParameter);
  for Channel := 1 to numPrograms - 1
   do Programs[Channel].SetParameters(CPresets[Channel]);
 end;
 
-procedure TFastFeedbackCompressorDataModule.VSTModuleClose(Sender: TObject);
+procedure TLightweightLimiterDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FFastFeedbackCompressor[0]);
- FreeAndNil(FFastFeedbackCompressor[1]);
+ FreeAndNil(FLightweightLimiter[0]);
+ FreeAndNil(FLightweightLimiter[1]);
 end;
 
-procedure TFastFeedbackCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TLightweightLimiterDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmFastFeedbackCompressor.Create(Self);
+  GUI := TFmLightweightLimiter.Create(Self);
 end;
 
-function TFastFeedbackCompressorDataModule.EvaluateCharacteristic(
+function TLightweightLimiterDataModule.EvaluateCharacteristic(
   const Input: Single): Single;
 begin
- result:= FFastFeedbackCompressor[0].CharacteristicCurve_dB(Input);
+ result:= FLightweightLimiter[0].CharacteristicCurve_dB(Input);
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterMixChange(
+procedure TLightweightLimiterDataModule.ParameterMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Value := 100;
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterTimeLabel(
+procedure TLightweightLimiterDataModule.ParameterTimeLabel(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Val : Single;
@@ -122,7 +120,7 @@ begin
   then PreDefined := 's';
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterTimeDisplay(
+procedure TLightweightLimiterDataModule.ParameterTimeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Val : Single;
@@ -135,40 +133,40 @@ begin
   else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterMakeUpGainDisplay(
+procedure TLightweightLimiterDataModule.ParameterMakeUpGainDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterMakeUpGainChange(
+procedure TLightweightLimiterDataModule.ParameterMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastFeedbackCompressor[0].MakeUpGain_dB := Value;
- FFastFeedbackCompressor[1].MakeUpGain_dB := FFastFeedbackCompressor[0].MakeUpGain_dB;
- if EditorForm is TFmFastFeedbackCompressor
-  then TFmFastFeedbackCompressor(EditorForm).UpdateMakeUp;
+ FLightweightLimiter[0].MakeUpGain_dB := Value;
+ FLightweightLimiter[1].MakeUpGain_dB := FLightweightLimiter[0].MakeUpGain_dB;
+ if EditorForm is TFmLightweightLimiter
+  then TFmLightweightLimiter(EditorForm).UpdateMakeUp;
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterThresholdDisplay(
+procedure TLightweightLimiterDataModule.ParameterThresholdDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterRatioDisplay(
+procedure TLightweightLimiterDataModule.ParameterRatioDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterKneeDisplay(
+procedure TLightweightLimiterDataModule.ParameterKneeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterOnOffDisplay(
+procedure TLightweightLimiterDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
@@ -177,23 +175,23 @@ begin
  end;
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterStereoChange(
+procedure TLightweightLimiterDataModule.ParameterStereoChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  ChooseProcess;
- if EditorForm is TFmFastFeedbackCompressor
-  then TFmFastFeedbackCompressor(EditorForm).UpdateStereo;
+ if EditorForm is TFmLightweightLimiter
+  then TFmLightweightLimiter(EditorForm).UpdateStereo;
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterLimitChange(
+procedure TLightweightLimiterDataModule.ParameterLimitChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  ChooseProcess;
- if EditorForm is TFmFastFeedbackCompressor
-  then TFmFastFeedbackCompressor(EditorForm).UpdateLimit;
+ if EditorForm is TFmLightweightLimiter
+  then TFmLightweightLimiter(EditorForm).UpdateLimit;
 end;
 
-procedure TFastFeedbackCompressorDataModule.ChooseProcess;
+procedure TLightweightLimiterDataModule.ChooseProcess;
 begin
  case round(Parameter[7]) of
   0 : case round(Parameter[6]) of
@@ -208,134 +206,119 @@ begin
  OnProcessReplacing := OnProcess;
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterAutoMakeUpGainChange(
+procedure TLightweightLimiterDataModule.ParameterAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastFeedbackCompressor[0].AutoMakeUp := Boolean(round(Value));
- FFastFeedbackCompressor[1].AutoMakeUp := FFastFeedbackCompressor[0].AutoMakeUp;
- if EditorForm is TFmFastFeedbackCompressor
-  then TFmFastFeedbackCompressor(EditorForm).UpdateAutoMakeUpGain;
+ FLightweightLimiter[0].AutoMakeUp := Boolean(round(Value));
+ FLightweightLimiter[1].AutoMakeUp := FLightweightLimiter[0].AutoMakeUp;
+ if EditorForm is TFmLightweightLimiter
+  then TFmLightweightLimiter(EditorForm).UpdateAutoMakeUpGain;
 end;
 
-function TFastFeedbackCompressorDataModule.GetFastFeedbackCompressor(Index: Integer): TFastFeedbackCompressor;
+function TLightweightLimiterDataModule.GetLightweightLimiter(Index: Integer): TLightweightSoftKneeLimiter;
 begin
- if Index in [0..Length(FFastFeedbackCompressor) - 1]
-  then result := FFastFeedbackCompressor[Index]
+ if Index in [0..Length(FLightweightLimiter) - 1]
+  then result := FLightweightLimiter[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterAttackChange(
+procedure TLightweightLimiterDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastFeedbackCompressor[0].Attack := Value;
- FFastFeedbackCompressor[1].Attack := FFastFeedbackCompressor[0].Attack;
- if EditorForm is TFmFastFeedbackCompressor
-  then TFmFastFeedbackCompressor(EditorForm).UpdateAttack;
+ FLightweightLimiter[0].Attack := Value;
+ FLightweightLimiter[1].Attack := FLightweightLimiter[0].Attack;
+ if EditorForm is TFmLightweightLimiter
+  then TFmLightweightLimiter(EditorForm).UpdateAttack;
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterReleaseChange(
+procedure TLightweightLimiterDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastFeedbackCompressor[0].Release := Value;
- FFastFeedbackCompressor[1].Release := FFastFeedbackCompressor[0].Release;
- if EditorForm is TFmFastFeedbackCompressor
-  then TFmFastFeedbackCompressor(EditorForm).UpdateRelease;
+ FLightweightLimiter[0].Release := Value;
+ FLightweightLimiter[1].Release := FLightweightLimiter[0].Release;
+ if EditorForm is TFmLightweightLimiter
+  then TFmLightweightLimiter(EditorForm).UpdateRelease;
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterThresholdChange(
+procedure TLightweightLimiterDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastFeedbackCompressor[0].Threshold_dB := Value;
- FFastFeedbackCompressor[1].Threshold_dB := Value;
- if EditorForm is TFmFastFeedbackCompressor
-  then TFmFastFeedbackCompressor(EditorForm).UpdateThreshold;
+ FLightweightLimiter[0].Threshold_dB := Value;
+ FLightweightLimiter[1].Threshold_dB := Value;
+ if EditorForm is TFmLightweightLimiter
+  then TFmLightweightLimiter(EditorForm).UpdateThreshold;
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterRatioChange(
+procedure TLightweightLimiterDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastFeedbackCompressor[0].Ratio := Value;
- FFastFeedbackCompressor[1].Ratio := Value;
- if EditorForm is TFmFastFeedbackCompressor
-  then TFmFastFeedbackCompressor(EditorForm).UpdateRatio;
+ FLightweightLimiter[0].Knee_dB := Value;
+ FLightweightLimiter[1].Knee_dB := Value;
+ if EditorForm is TFmLightweightLimiter
+  then TFmLightweightLimiter(EditorForm).UpdateKnee;
 end;
 
-procedure TFastFeedbackCompressorDataModule.ParameterKneeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FFastFeedbackCompressor[0].Knee_dB := Value;
- FFastFeedbackCompressor[1].Knee_dB := Value;
- if EditorForm is TFmFastFeedbackCompressor
-  then TFmFastFeedbackCompressor(EditorForm).UpdateKnee;
-end;
-
-procedure TFastFeedbackCompressorDataModule.VSTModuleProcessStereo(const Inputs,
+procedure TLightweightLimiterDataModule.VSTModuleProcessStereo(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FFastFeedbackCompressor[0].ProcessSample(Inputs[0, Sample]);
-   Outputs[1, Sample] := FFastFeedbackCompressor[1].ProcessSample(Inputs[1, Sample]);
+   Outputs[0, Sample] := FLightweightLimiter[0].ProcessSample(Inputs[0, Sample]);
+   Outputs[1, Sample] := FLightweightLimiter[1].ProcessSample(Inputs[1, Sample]);
   end;
 end;
 
-procedure TFastFeedbackCompressorDataModule.VSTModuleProcessMono(const Inputs,
+procedure TLightweightLimiterDataModule.VSTModuleProcessMono(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
   Temp   : Single;
 begin
  for Sample := 0 to SampleFrames - 1 do
-  with FFastFeedbackCompressor[0] do
+  with FLightweightLimiter[0] do
   begin
    InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-   Temp := MakeUpGain * GainReductionFactor;
+   Temp := GainReductionFactor * MakeUpGain;
    Outputs[0, Sample] := Temp * Inputs[0, Sample];
    Outputs[1, Sample] := Temp * Inputs[1, Sample];
   end;
 end;
 
-procedure TFastFeedbackCompressorDataModule.VSTModuleProcessStereoSoftClip(const Inputs,
+procedure TLightweightLimiterDataModule.VSTModuleProcessStereoSoftClip(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FastTanhOpt3Term(FFastFeedbackCompressor[0].ProcessSample(Inputs[0, Sample]));
-   Outputs[1, Sample] := FastTanhOpt3Term(FFastFeedbackCompressor[1].ProcessSample(Inputs[1, Sample]));
+   Outputs[0, Sample] := FastTanhOpt3Term(FLightweightLimiter[0].ProcessSample(Inputs[0, Sample]));
+   Outputs[1, Sample] := FastTanhOpt3Term(FLightweightLimiter[1].ProcessSample(Inputs[1, Sample]));
   end;
 end;
 
-procedure TFastFeedbackCompressorDataModule.VSTModuleProcessMonoSoftClip(const Inputs,
+procedure TLightweightLimiterDataModule.VSTModuleProcessMonoSoftClip(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
   Temp   : Single;
 begin
  for Sample := 0 to SampleFrames - 1 do
-  with FFastFeedbackCompressor[0] do
+  with FLightweightLimiter[0] do
   begin
    InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-   Temp := MakeUpGain * GainReductionFactor;
+   Temp := GainReductionFactor * MakeUpGain;
    Outputs[0, Sample] := FastTanhOpt3Term(Temp * Inputs[0, Sample]);
    Outputs[1, Sample] := FastTanhOpt3Term(Temp * Inputs[1, Sample]);
   end;
 end;
 
-procedure TFastFeedbackCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TLightweightLimiterDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FFastFeedbackCompressor[0].SampleRate := SampleRate;
- FFastFeedbackCompressor[1].SampleRate := SampleRate;
- if EditorForm is TFmFastFeedbackCompressor then
-  with TFmFastFeedbackCompressor(EditorForm) do
-   begin
-    DialAttack.Min  := max(0.01, 2000 / SampleRate);
-    DialRelease.Min := max(0.1, 2000 / SampleRate);
-   end;
+ FLightweightLimiter[0].SampleRate := SampleRate;
+ FLightweightLimiter[1].SampleRate := SampleRate;
 end;
 
 end.

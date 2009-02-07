@@ -1,7 +1,7 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library FastMultibandCompressor;
+library LightweightLimiter;
 
-{$R 'MultibandCompressor.res' 'MultibandCompressor.rc'}
+{$R 'Limiter.res' 'Limiter.rc'}
 
 uses
   FastMM4,
@@ -13,13 +13,13 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,
-  FastMultibandCompressorDM in 'FastMultibandCompressorDM.pas' {FastMultibandCompressorDataModule: TVSTModule},
-  FastMultibandCompressorGUI in 'FastMultibandCompressorGUI.pas' {FmFastMultibandCompressor};
+  LightweightLimiterDM in 'LightweightLimiterDM.pas' {LightweightLimiterDataModule: TVSTModule},
+  LightweightLimiterGUI in 'LightweightLimiterGUI.pas' {FmLightweightLimiter};
 
 function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
   try
-    with TFastMultibandCompressorDataModule.Create(Application) do
+    with TLightweightLimiterDataModule.Create(Application) do
      begin
       AudioMaster := AudioMasterCallback;
       Result := Effect;

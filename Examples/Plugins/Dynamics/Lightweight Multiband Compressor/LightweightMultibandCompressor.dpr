@@ -1,7 +1,7 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library FastGate;
+library LightweightMultibandCompressor;
 
-{$R 'Gate.res' 'Gate.rc'}
+{$R 'MultibandCompressor.res' 'MultibandCompressor.rc'}
 
 uses
   FastMM4,
@@ -13,13 +13,13 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,
-  FastGateDM in 'FastGateDM.pas' {FastGateDataModule: TVSTModule},
-  FastGateGUI in 'FastGateGUI.pas' {FmFastGate};
+  LightweightMultibandCompressorDM in 'LightweightMultibandCompressorDM.pas' {LightweightMultibandCompressorDataModule: TVSTModule},
+  LightweightMultibandCompressorGUI in 'LightweightMultibandCompressorGUI.pas' {FmLightweightMultibandCompressor};
 
 function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
   try
-    with TFastGateDataModule.Create(Application) do
+    with TLightweightMultibandCompressorDataModule.Create(Application) do
      begin
       AudioMaster := AudioMasterCallback;
       Result := Effect;

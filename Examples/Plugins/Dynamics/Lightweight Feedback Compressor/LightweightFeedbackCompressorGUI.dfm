@@ -1,10 +1,10 @@
-object FmFastGate: TFmFastGate
+object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
   Left = 286
   Top = 77
   BorderStyle = bsNone
-  Caption = 'Fast Gate'
+  Caption = 'Fast FeedbackCompressor'
   ClientHeight = 178
-  ClientWidth = 253
+  ClientWidth = 329
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -77,7 +77,7 @@ object FmFastGate: TFmFastGate
     LineColor = 14277598
     LineWidth = 2
     Max = 1000.000000000000000000
-    Min = 0.100000001490116100
+    Min = 0.009999999776482582
     NumGlyphs = 65
     OnChange = DialAttackChange
     PointerAngles.Start = 225
@@ -293,6 +293,156 @@ object FmFastGate: TFmFastGate
     AntiAlias = gaaLinear2x
     LineColor = 3948356
     LineWidth = 2
+  end
+  object DialMakeUpGain: TGuiDial
+    Left = 267
+    Top = 120
+    Width = 36
+    Height = 36
+    CurveMapping = -0.800000011920929000
+    DefaultPosition = 10.000000000000000000
+    DialImageList = GuiDialImageList
+    DialImageIndex = -1
+    LineColor = 14277598
+    LineWidth = 2
+    Max = 60.000000000000000000
+    NumGlyphs = 65
+    OnChange = DialMakeUpGainChange
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 3.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
+    StitchKind = skHorizontal
+  end
+  object LbMakeUpGain: TGuiLabel
+    Left = 250
+    Top = 96
+    Width = 72
+    Height = 25
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Make Up'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object LbMakeUpGainValue: TGuiLabel
+    Left = 248
+    Top = 154
+    Width = 74
+    Height = 20
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object LEDStereo: TGuiLED
+    Left = 248
+    Top = 9
+    Width = 15
+    Height = 15
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = 14277598
+    AntiAlias = gaaLinear3x
+    LineColor = clRed
+    OnClick = LEDStereoClick
+  end
+  object LbStereo: TGuiLabel
+    Left = 267
+    Top = 8
+    Width = 46
+    Height = 17
+    AntiAlias = gaaLinear4x
+    Caption = 'Stereo'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    OnClick = LEDStereoClick
+  end
+  object LEDLimit: TGuiLED
+    Left = 248
+    Top = 30
+    Width = 15
+    Height = 15
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = 14277598
+    AntiAlias = gaaLinear3x
+    LineColor = clRed
+    OnClick = LEDLimitClick
+  end
+  object GuiLabel2: TGuiLabel
+    Left = 267
+    Top = 29
+    Width = 36
+    Height = 17
+    AntiAlias = gaaLinear4x
+    Caption = 'Limit'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    OnClick = LEDLimitClick
+  end
+  object LEDAutoGain: TGuiLED
+    Left = 248
+    Top = 69
+    Width = 15
+    Height = 15
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = 14277598
+    AntiAlias = gaaLinear3x
+    LineColor = clRed
+    OnClick = LEDAutoGainClick
+  end
+  object GuiLabel3: TGuiLabel
+    Left = 267
+    Top = 70
+    Width = 54
+    Height = 13
+    AntiAlias = gaaLinear4x
+    Caption = 'Auto Gain'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    OnClick = LEDAutoGainClick
+  end
+  object LEDOversample: TGuiLED
+    Left = 248
+    Top = 51
+    Width = 15
+    Height = 15
+    Brightness_Percent = 10.000000000000000000
+    LEDColor = 14277598
+    AntiAlias = gaaLinear3x
+    LineColor = clRed
+    Visible = False
+    OnClick = LEDAutoGainClick
+  end
+  object LbOversample: TGuiLabel
+    Left = 267
+    Top = 52
+    Width = 61
+    Height = 13
+    AntiAlias = gaaLinear4x
+    Caption = 'Oversample'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    Visible = False
+    OnClick = LEDAutoGainClick
   end
   object GuiDialImageList: TGuiDialImageList
     DialImages = <

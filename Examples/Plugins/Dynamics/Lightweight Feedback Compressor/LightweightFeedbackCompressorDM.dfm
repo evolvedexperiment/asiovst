@@ -1,16 +1,17 @@
-object FastGateDataModule: TFastGateDataModule
+object LightweightFeedbackCompressorDataModule: TLightweightFeedbackCompressorDataModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
-  Version = '1.0'
-  EffectName = 'Fast Gate'
+  Version = '1.0.2'
+  EffectName = 'Lightweight Feedback Compressor'
   ProductName = 'DAV Dynamic Examples'
   VendorName = 'Delphi ASIO & VST Project'
+  VersionRelease = 2
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'DVFG'
+  UniqueID = 'DVLF'
   ShellPlugins = <>
   Programs = <
     item
@@ -18,31 +19,31 @@ object FastGateDataModule: TFastGateDataModule
       VSTModule = Owner
     end
     item
-      DisplayName = 'Soft Gate'
+      DisplayName = 'Soft Compression'
       VSTModule = Owner
     end
     item
-      DisplayName = 'Light Gate'
+      DisplayName = 'Light Compression'
       VSTModule = Owner
     end
     item
-      DisplayName = 'Moderate Gate'
+      DisplayName = 'Moderate Compression'
       VSTModule = Owner
     end
     item
-      DisplayName = 'Doorway'
+      DisplayName = 'Independent'
       VSTModule = Owner
     end
     item
-      DisplayName = 'Staccato'
+      DisplayName = 'Pumpkin'
       VSTModule = Owner
     end
     item
-      DisplayName = 'More Gating'
+      DisplayName = 'More Compression'
       VSTModule = Owner
     end
     item
-      DisplayName = 'Heavy Gate'
+      DisplayName = 'Heavy Compression'
       VSTModule = Owner
     end
     item
@@ -59,8 +60,8 @@ object FastGateDataModule: TFastGateDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
@@ -79,8 +80,8 @@ object FastGateDataModule: TFastGateDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Release'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
@@ -119,15 +120,15 @@ object FastGateDataModule: TFastGateDataModule
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 10000.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Ratio'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
-      Max = 1.000000000000000000
-      MaxInteger = 1
+      Max = 100.000000000000000000
       Min = 0.009999999776482582
+      MinInteger = 1
       ReportVST2Properties = True
       ShortLabel = 'Ratio'
       SmallStepFloat = 0.500000000000000000
@@ -153,6 +154,94 @@ object FastGateDataModule: TFastGateDataModule
       VSTModule = Owner
       OnParameterChange = ParameterKneeChange
       OnCustomParameterDisplay = ParameterKneeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Characteristic'
+      DisplayName = 'MakeUp Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 60.000000000000000000
+      MaxInteger = 60
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterMakeUpGainChange
+      OnCustomParameterDisplay = ParameterMakeUpGainDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Mode'
+      DisplayName = 'Stereo'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Stereo'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterStereoChange
+      OnCustomParameterDisplay = ParameterOnOffDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Mode'
+      DisplayName = 'Limit'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Limit'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterLimitChange
+      OnCustomParameterDisplay = ParameterOnOffDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Mode'
+      DisplayName = 'Auto Make Up Gain'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Auto Ma'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterAutoMakeUpGainChange
+      OnCustomParameterDisplay = ParameterOnOffDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Mix'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      ReportVST2Properties = True
+      ShortLabel = 'Mix'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
+      VSTModule = Owner
+      OnParameterChange = ParameterMixChange
     end>
   ParameterCategories = <
     item
@@ -170,8 +259,8 @@ object FastGateDataModule: TFastGateDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
-  OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess = VSTModuleProcessMono
+  OnProcessReplacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 77

@@ -1,4 +1,4 @@
-unit FastGateGUI;
+unit LightweightGateGUI;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   DAV_GuiLED;
 
 type
-  TFmFastGate = class(TForm)
+  TFmLightweightGate = class(TForm)
     DialAttack: TGuiDial;
     DialKnee: TGuiDial;
     DialRatio: TGuiDial;
@@ -45,11 +45,11 @@ type
 implementation
 
 uses
-  FastGateDM, PngImage, DAV_VSTModuleWithPrograms;
+  LightweightGateDM, PngImage, DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}
 
-procedure TFmFastGate.FormCreate(Sender: TObject);
+procedure TFmLightweightGate.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
   PngBmp : TPngObject;
@@ -81,7 +81,7 @@ begin
   end;
 end;
 
-procedure TFmFastGate.FormShow(Sender: TObject);
+procedure TFmLightweightGate.FormShow(Sender: TObject);
 begin
  UpdateAttack;
  UpdateRelease;
@@ -90,57 +90,57 @@ begin
  UpdateKnee;
 end;
 
-procedure TFmFastGate.DialAttackChange(Sender: TObject);
+procedure TFmLightweightGate.DialAttackChange(Sender: TObject);
 begin
- with TFastGateDataModule(Owner) do
+ with TLightweightGateDataModule(Owner) do
   begin
    Parameter[0] := DialAttack.Position;
   end;
 end;
 
-procedure TFmFastGate.DialReleaseChange(Sender: TObject);
+procedure TFmLightweightGate.DialReleaseChange(Sender: TObject);
 begin
- with TFastGateDataModule(Owner) do
+ with TLightweightGateDataModule(Owner) do
   begin
    Parameter[1] := DialRelease.Position;
   end;
 end;
 
-procedure TFmFastGate.DialThresholdChange(Sender: TObject);
+procedure TFmLightweightGate.DialThresholdChange(Sender: TObject);
 begin
- with TFastGateDataModule(Owner) do
+ with TLightweightGateDataModule(Owner) do
   begin
    Parameter[2] := DialThreshold.Position;
   end;
 end;
 
-function TFmFastGate.EvaluateCharacteristic(Sender: TObject;
+function TFmLightweightGate.EvaluateCharacteristic(Sender: TObject;
   X: Double): Double;
 begin
- result := TFastGateDataModule(Owner).EvaluateCharacteristic(X);
+ result := TLightweightGateDataModule(Owner).EvaluateCharacteristic(X);
 end;
 
-procedure TFmFastGate.DialRatioChange(Sender: TObject);
+procedure TFmLightweightGate.DialRatioChange(Sender: TObject);
 begin
- with TFastGateDataModule(Owner) do
+ with TLightweightGateDataModule(Owner) do
   begin
    Parameter[3] := 1 / DialRatio.Position;
   end;
 end;
 
-procedure TFmFastGate.DialKneeChange(Sender: TObject);
+procedure TFmLightweightGate.DialKneeChange(Sender: TObject);
 begin
- with TFastGateDataModule(Owner) do
+ with TLightweightGateDataModule(Owner) do
   begin
    Parameter[4] := DialKnee.Position;
   end;
 end;
 
-procedure TFmFastGate.UpdateAttack;
+procedure TFmLightweightGate.UpdateAttack;
 var
   Attack : Single;
 begin
- with TFastGateDataModule(Owner) do
+ with TLightweightGateDataModule(Owner) do
   begin
    Attack := Parameter[0];
    if Attack <> DialAttack.Position
@@ -149,11 +149,11 @@ begin
   end;
 end;
 
-procedure TFmFastGate.UpdateRelease;
+procedure TFmLightweightGate.UpdateRelease;
 var
   Release : Single;
 begin
- with TFastGateDataModule(Owner) do
+ with TLightweightGateDataModule(Owner) do
   begin
    Release := Parameter[1];
    if Release <> DialRelease.Position
@@ -162,11 +162,11 @@ begin
   end;
 end;
 
-procedure TFmFastGate.UpdateKnee;
+procedure TFmLightweightGate.UpdateKnee;
 var
   Knee : Single;
 begin
- with TFastGateDataModule(Owner) do
+ with TLightweightGateDataModule(Owner) do
   begin
    Knee := Parameter[4];
    if Knee <> DialKnee.Position
@@ -176,11 +176,11 @@ begin
   end;
 end;
 
-procedure TFmFastGate.UpdateRatio;
+procedure TFmLightweightGate.UpdateRatio;
 var
   Ratio : Single;
 begin
- with TFastGateDataModule(Owner) do
+ with TLightweightGateDataModule(Owner) do
   begin
    Ratio := 1 / Parameter[3];
    if Ratio <> DialRatio.Position
@@ -190,11 +190,11 @@ begin
   end;
 end;
 
-procedure TFmFastGate.UpdateThreshold;
+procedure TFmLightweightGate.UpdateThreshold;
 var
   Threshold : Single;
 begin
- with TFastGateDataModule(Owner) do
+ with TLightweightGateDataModule(Owner) do
   begin
    Threshold := Parameter[2];
    if Threshold <> DialThreshold.Position

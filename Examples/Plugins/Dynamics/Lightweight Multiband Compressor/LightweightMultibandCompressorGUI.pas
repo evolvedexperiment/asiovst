@@ -1,4 +1,4 @@
-unit FastMultibandCompressorGUI;
+unit LightweightMultibandCompressorGUI;
 
 interface
 
@@ -10,7 +10,7 @@ uses
 type
   TGraph = (gLow, gLowMid, gHighMid, gHigh);
   TGraphs = set of TGraph;
-  TFmFastMultibandCompressor = class(TForm)
+  TFmLightweightMultibandCompressor = class(TForm)
     DialLowAttack: TGuiDial;
     DialLowKnee: TGuiDial;
     DialLowMakeUpGain: TGuiDial;
@@ -189,11 +189,11 @@ type
 implementation
 
 uses
-  FastMultibandCompressorDM, PngImage, DAV_VSTModuleWithPrograms;
+  LightweightMultibandCompressorDM, PngImage, DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}
 
-procedure TFmFastMultibandCompressor.FormCreate(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
   PngBmp : TPngObject;
@@ -267,7 +267,7 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.FormShow(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.FormShow(Sender: TObject);
 begin
  UpdateLowAttack;
  UpdateLowAutoMakeUpGain;
@@ -300,35 +300,35 @@ begin
  UpdateLimit;
 end;
 
-function TFmFastMultibandCompressor.EvaluateLowCharacteristic(Sender: TObject;
+function TFmLightweightMultibandCompressor.EvaluateLowCharacteristic(Sender: TObject;
   X: Double): Double;
 begin
- result := TFastMultibandCompressorDataModule(Owner).EvaluateLowCharacteristic(X);
+ result := TLightweightMultibandCompressorDataModule(Owner).EvaluateLowCharacteristic(X);
 end;
 
-function TFmFastMultibandCompressor.EvaluateLowMidCharacteristic(Sender: TObject;
+function TFmLightweightMultibandCompressor.EvaluateLowMidCharacteristic(Sender: TObject;
   X: Double): Double;
 begin
- result := TFastMultibandCompressorDataModule(Owner).EvaluateLowMidCharacteristic(X);
+ result := TLightweightMultibandCompressorDataModule(Owner).EvaluateLowMidCharacteristic(X);
 end;
 
-function TFmFastMultibandCompressor.EvaluateHighMidCharacteristic(Sender: TObject;
+function TFmLightweightMultibandCompressor.EvaluateHighMidCharacteristic(Sender: TObject;
   X: Double): Double;
 begin
- result := TFastMultibandCompressorDataModule(Owner).EvaluateHighMidCharacteristic(X);
+ result := TLightweightMultibandCompressorDataModule(Owner).EvaluateHighMidCharacteristic(X);
 end;
 
-function TFmFastMultibandCompressor.EvaluateHighCharacteristic(Sender: TObject;
+function TFmLightweightMultibandCompressor.EvaluateHighCharacteristic(Sender: TObject;
   X: Double): Double;
 begin
- result := TFastMultibandCompressorDataModule(Owner).EvaluateHighCharacteristic(X);
+ result := TLightweightMultibandCompressorDataModule(Owner).EvaluateHighCharacteristic(X);
 end;
 
 // Low Frequency
 
-procedure TFmFastMultibandCompressor.DialLowFreqChange(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.DialLowFreqChange(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Parameter[0] := DialLowFreq.Position;
   end;
@@ -336,9 +336,9 @@ end;
 
 // Mid Frequency
 
-procedure TFmFastMultibandCompressor.DialMidFreqChange(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.DialMidFreqChange(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Parameter[1] := DialMidFreq.Position;
   end;
@@ -346,9 +346,9 @@ end;
 
 // High Frequency
 
-procedure TFmFastMultibandCompressor.DialHighFreqChange(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.DialHighFreqChange(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Parameter[2] := DialHighFreq.Position;
   end;
@@ -356,15 +356,15 @@ end;
 
 // Soft Clip
 
-procedure TFmFastMultibandCompressor.LEDSoftClipClick(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.LEDSoftClipClick(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Parameter[3] := Integer(LEDSoftClip.Brightness_Percent < 50);
   end;
 end;
 
-procedure TFmFastMultibandCompressor.SetGraphNeedUpdate(const Value: TGraphs);
+procedure TFmLightweightMultibandCompressor.SetGraphNeedUpdate(const Value: TGraphs);
 begin
  if FGraphNeedUpdate <> Value then
   begin
@@ -373,7 +373,7 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.TimerTimer(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.TimerTimer(Sender: TObject);
 begin
  if gLow in GraphNeedUpdate then GXYLow.UpdateGraph;
  if gLowMid in GraphNeedUpdate then GXYLowMid.UpdateGraph;
@@ -382,84 +382,84 @@ begin
  GraphNeedUpdate := [];
 end;
 
-procedure TFmFastMultibandCompressor.DialAttackChange(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.DialAttackChange(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
   begin
    Parameter[4 + Tag * 7] := Position;
   end;
 end;
 
-procedure TFmFastMultibandCompressor.DialReleaseChange(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.DialReleaseChange(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
   begin
    Parameter[5 + Tag * 7] := Position;
   end;
 end;
 
-procedure TFmFastMultibandCompressor.DialThresholdChange(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.DialThresholdChange(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
   begin
    Parameter[6 + Tag * 7] := Position;
   end;
 end;
 
-procedure TFmFastMultibandCompressor.DialRatioChange(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.DialRatioChange(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
   begin
    Parameter[7 + Tag * 7] := Position;
   end;
 end;
 
-procedure TFmFastMultibandCompressor.DialKneeChange(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.DialKneeChange(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
   begin
    Parameter[8 + Tag * 7] := Position;
   end;
 end;
 
-procedure TFmFastMultibandCompressor.DialMakeUpGainChange(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.DialMakeUpGainChange(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
+ with TLightweightMultibandCompressorDataModule(Owner), TGuiDial(Sender) do
   begin
    Parameter[9 + Tag * 7] := Position;
   end;
 end;
 
-procedure TFmFastMultibandCompressor.LEDLowAutoGainClick(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.LEDLowAutoGainClick(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    AutoGain[0] := LEDLowAutoGain.Brightness_Percent < 50;
    if not DialLowMakeUpGain.Enabled then UpdateLowMakeUp;
   end;
 end;
 
-procedure TFmFastMultibandCompressor.LEDLowMidAutoGainClick(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.LEDLowMidAutoGainClick(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    AutoGain[1] := LEDLowMidAutoGain.Brightness_Percent < 50;
    if not DialLowMidMakeUpGain.Enabled then UpdateLowMidMakeUp;
   end;
 end;
 
-procedure TFmFastMultibandCompressor.LEDHighMidAutoGainClick(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.LEDHighMidAutoGainClick(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    AutoGain[2] := LEDHighMidAutoGain.Brightness_Percent < 50;
    if not DialHighMidMakeUpGain.Enabled then UpdateHighMidMakeUp;
   end;
 end;
 
-procedure TFmFastMultibandCompressor.LEDHighAutoGainClick(Sender: TObject);
+procedure TFmLightweightMultibandCompressor.LEDHighAutoGainClick(Sender: TObject);
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    AutoGain[3] := LEDHighAutoGain.Brightness_Percent < 50;
    if not DialHighMakeUpGain.Enabled then UpdateHighMakeUp;
@@ -470,11 +470,11 @@ end;
 // Update //
 ////////////
 
-procedure TFmFastMultibandCompressor.UpdateLowFrequency;
+procedure TFmLightweightMultibandCompressor.UpdateLowFrequency;
 var
   Freq : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Freq := Parameter[0];
    if Freq <> DialLowFreq.Position
@@ -484,11 +484,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateMidFrequency;
+procedure TFmLightweightMultibandCompressor.UpdateMidFrequency;
 var
   Freq : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Freq := Parameter[1];
    if Freq <> DialMidFreq.Position
@@ -499,11 +499,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighFrequency;
+procedure TFmLightweightMultibandCompressor.UpdateHighFrequency;
 var
   Freq : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Freq := Parameter[2];
    if Freq <> DialHighFreq.Position
@@ -513,11 +513,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowAttack;
+procedure TFmLightweightMultibandCompressor.UpdateLowAttack;
 var
   Attack : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Attack := Parameter[4];
    if Attack <> DialLowAttack.Position
@@ -526,11 +526,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowRelease;
+procedure TFmLightweightMultibandCompressor.UpdateLowRelease;
 var
   Release : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Release := Parameter[5];
    if Release <> DialLowRelease.Position
@@ -539,11 +539,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowThreshold;
+procedure TFmLightweightMultibandCompressor.UpdateLowThreshold;
 var
   Threshold : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[6];
    if Threshold <> DialLowThreshold.Position
@@ -553,11 +553,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowRatio;
+procedure TFmLightweightMultibandCompressor.UpdateLowRatio;
 var
   Ratio : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[7];
    if Ratio <> DialLowRatio.Position
@@ -567,11 +567,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowKnee;
+procedure TFmLightweightMultibandCompressor.UpdateLowKnee;
 var
   Knee : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Knee := Parameter[8];
    if Knee <> DialLowKnee.Position
@@ -581,13 +581,13 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowMakeUp;
+procedure TFmLightweightMultibandCompressor.UpdateLowMakeUp;
 var
   MakeUp : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
-   MakeUp := FastMultibandCompressor[0].MakeUpGain_dB;
+   MakeUp := LightweightMultibandCompressor[0].MakeUpGain_dB;
    if MakeUp <> DialLowMakeUpGain.Position
     then DialLowMakeUpGain.Position := MakeUp;
    LbLowMakeUpGainValue.Caption := ParameterDisplay[9] + ' ' + ParameterLabel[9];
@@ -595,11 +595,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowAutoMakeUpGain;
+procedure TFmLightweightMultibandCompressor.UpdateLowAutoMakeUpGain;
 var
   Brightness : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Brightness := Limit(100 * (0.1 + 0.9 * Integer(AutoGain[0])), 10, 100);
    if Brightness <> LEDLowAutoGain.Brightness_Percent
@@ -609,11 +609,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowMidAttack;
+procedure TFmLightweightMultibandCompressor.UpdateLowMidAttack;
 var
   Attack : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Attack := Parameter[11];
    if Attack <> DialLowMidAttack.Position
@@ -622,11 +622,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowMidRelease;
+procedure TFmLightweightMultibandCompressor.UpdateLowMidRelease;
 var
   Release : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Release := Parameter[12];
    if Release <> DialLowMidRelease.Position
@@ -635,11 +635,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowMidThreshold;
+procedure TFmLightweightMultibandCompressor.UpdateLowMidThreshold;
 var
   Threshold : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[13];
    if Threshold <> DialLowMidThreshold.Position
@@ -649,11 +649,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowMidRatio;
+procedure TFmLightweightMultibandCompressor.UpdateLowMidRatio;
 var
   Ratio : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[14];
    if Ratio <> DialLowMidRatio.Position
@@ -663,11 +663,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowMidKnee;
+procedure TFmLightweightMultibandCompressor.UpdateLowMidKnee;
 var
   Knee : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Knee := Parameter[15];
    if Knee <> DialLowMidKnee.Position
@@ -677,13 +677,13 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowMidMakeUp;
+procedure TFmLightweightMultibandCompressor.UpdateLowMidMakeUp;
 var
   MakeUp : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
-   MakeUp := FastMultibandCompressor[1].MakeUpGain_dB;
+   MakeUp := LightweightMultibandCompressor[1].MakeUpGain_dB;
    if MakeUp <> DialLowMidMakeUpGain.Position
     then DialLowMidMakeUpGain.Position := MakeUp;
    LbLowMidMakeUpGainValue.Caption := ParameterDisplay[16] + ' ' + ParameterLabel[16];
@@ -691,11 +691,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLowMidAutoMakeUpGain;
+procedure TFmLightweightMultibandCompressor.UpdateLowMidAutoMakeUpGain;
 var
   Brightness : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Brightness := Limit(100 * (0.1 + 0.9 * Integer(AutoGain[1])), 10, 100);
    if Brightness <> LEDLowMidAutoGain.Brightness_Percent
@@ -705,11 +705,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighMidAttack;
+procedure TFmLightweightMultibandCompressor.UpdateHighMidAttack;
 var
   Attack : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Attack := Parameter[18];
    if Attack <> DialHighMidAttack.Position
@@ -718,11 +718,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighMidRelease;
+procedure TFmLightweightMultibandCompressor.UpdateHighMidRelease;
 var
   Release : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Release := Parameter[19];
    if Release <> DialHighMidRelease.Position
@@ -731,11 +731,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighMidThreshold;
+procedure TFmLightweightMultibandCompressor.UpdateHighMidThreshold;
 var
   Threshold : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[20];
    if Threshold <> DialHighMidThreshold.Position
@@ -745,11 +745,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighMidRatio;
+procedure TFmLightweightMultibandCompressor.UpdateHighMidRatio;
 var
   Ratio : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[21];
    if Ratio <> DialHighMidRatio.Position
@@ -759,11 +759,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighMidKnee;
+procedure TFmLightweightMultibandCompressor.UpdateHighMidKnee;
 var
   Knee : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Knee := Parameter[22];
    if Knee <> DialHighMidKnee.Position
@@ -773,13 +773,13 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighMidMakeUp;
+procedure TFmLightweightMultibandCompressor.UpdateHighMidMakeUp;
 var
   MakeUp : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
-   MakeUp := FastMultibandCompressor[2].MakeUpGain_dB;
+   MakeUp := LightweightMultibandCompressor[2].MakeUpGain_dB;
    if MakeUp <> DialHighMidMakeUpGain.Position
     then DialHighMidMakeUpGain.Position := MakeUp;
    LbHighMidMakeUpGainValue.Caption := ParameterDisplay[23] + ' ' + ParameterLabel[23];
@@ -787,11 +787,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighMidAutoMakeUpGain;
+procedure TFmLightweightMultibandCompressor.UpdateHighMidAutoMakeUpGain;
 var
   Brightness : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Brightness := Limit(100 * (0.1 + 0.9 * Integer(AutoGain[2])), 10, 100);
    if Brightness <> LEDHighMidAutoGain.Brightness_Percent
@@ -801,11 +801,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighAttack;
+procedure TFmLightweightMultibandCompressor.UpdateHighAttack;
 var
   Attack : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Attack := Parameter[25];
    if Attack <> DialHighAttack.Position
@@ -814,11 +814,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighRelease;
+procedure TFmLightweightMultibandCompressor.UpdateHighRelease;
 var
   Release : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Release := Parameter[26];
    if Release <> DialHighRelease.Position
@@ -827,11 +827,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighThreshold;
+procedure TFmLightweightMultibandCompressor.UpdateHighThreshold;
 var
   Threshold : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Threshold := Parameter[27];
    if Threshold <> DialHighThreshold.Position
@@ -841,11 +841,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighRatio;
+procedure TFmLightweightMultibandCompressor.UpdateHighRatio;
 var
   Ratio : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Ratio := Parameter[28];
    if Ratio <> DialHighRatio.Position
@@ -855,11 +855,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighKnee;
+procedure TFmLightweightMultibandCompressor.UpdateHighKnee;
 var
   Knee : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Knee := Parameter[29];
    if Knee <> DialHighKnee.Position
@@ -869,13 +869,13 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighMakeUp;
+procedure TFmLightweightMultibandCompressor.UpdateHighMakeUp;
 var
   MakeUp : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
-   MakeUp := FastMultibandCompressor[3].MakeUpGain_dB;
+   MakeUp := LightweightMultibandCompressor[3].MakeUpGain_dB;
    if MakeUp <> DialHighMakeUpGain.Position
     then DialHighMakeUpGain.Position := MakeUp;
    LbHighMakeUpGainValue.Caption := ParameterDisplay[30] + ' ' + ParameterLabel[30];
@@ -883,11 +883,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateHighAutoMakeUpGain;
+procedure TFmLightweightMultibandCompressor.UpdateHighAutoMakeUpGain;
 var
   Brightness : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Brightness := Limit(100 * (0.1 + 0.9 * Integer(AutoGain[3])), 10, 100);
    if Brightness <> LEDHighAutoGain.Brightness_Percent
@@ -897,11 +897,11 @@ begin
   end;
 end;
 
-procedure TFmFastMultibandCompressor.UpdateLimit;
+procedure TFmLightweightMultibandCompressor.UpdateLimit;
 var
   Brightness : Single;
 begin
- with TFastMultibandCompressorDataModule(Owner) do
+ with TLightweightMultibandCompressorDataModule(Owner) do
   begin
    Brightness := 100 * (0.1 + 0.9 * Parameter[3]);
    if Brightness <> LEDSoftClip.Brightness_Percent

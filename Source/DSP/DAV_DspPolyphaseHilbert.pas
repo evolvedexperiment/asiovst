@@ -30,7 +30,7 @@ type
     FPHilbertSample32 : TProcessHilbertSample32;
     FPEnvSample32     : TProcessEnvelopeSample32;
     FPrev             : Single;
-    FPhase            : Integer; 
+    FPhase            : Integer;
     FMem              : TPhaseMem32;
   protected
     procedure SetProcedures; override;

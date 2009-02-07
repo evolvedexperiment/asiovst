@@ -1,16 +1,17 @@
-object FastMultibandCompressorDataModule: TFastMultibandCompressorDataModule
+object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressorDataModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
-  Version = '1.0'
-  EffectName = 'Fast MultibandCompressor'
+  Version = '1.0.2'
+  EffectName = 'Lightweight Multiband Compressor'
   ProductName = 'DAV Dynamic Examples'
   VendorName = 'Delphi ASIO & VST Project'
+  VersionRelease = 2
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'DVFC'
+  UniqueID = 'DVLC'
   ShellPlugins = <>
   Programs = <
     item

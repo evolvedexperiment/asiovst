@@ -361,11 +361,10 @@ end;
 
 procedure TCustomGuiLevelMeter.RedrawBuffer(doBufferFlip: Boolean);
 var
-  CurrentPeak, CurrentMax: Single;
-  i: Integer;
-  DestBarRect: TRect;
-  SplitSize: Single;
-  BarPadding: Single;
+  i           : Integer;
+  DestBarRect : TRect;
+  SplitSize   : Single;
+  BarPadding  : Single;
 begin
   if (Width > 0) and (Height > 0) then
   with FBuffer.Canvas do
@@ -634,8 +633,7 @@ end;
 
 procedure TCustomGuiColorLevelMeter.DrawVertical(ClipRect: TRect);
 var
-  x, y    : Integer;
-  Line    : TRGB24Array;
+  y    : Integer;
   H, S, L : Single;
   PeakRel : Single;
 begin

@@ -1,16 +1,17 @@
-object FastLimiterDataModule: TFastLimiterDataModule
+object LightweightCompressorDataModule: TLightweightCompressorDataModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
-  Version = '1.0'
-  EffectName = 'Fast Limiter'
+  Version = '1.0.2'
+  EffectName = 'Lightweight Compressor'
   ProductName = 'DAV Dynamic Examples'
   VendorName = 'Delphi ASIO & VST Project'
+  VersionRelease = 2
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'DVFL'
+  UniqueID = 'DVLC'
   ShellPlugins = <>
   Programs = <
     item
@@ -59,8 +60,8 @@ object FastLimiterDataModule: TFastLimiterDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Attack'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
@@ -79,8 +80,8 @@ object FastLimiterDataModule: TFastLimiterDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Release'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
@@ -119,19 +120,22 @@ object FastLimiterDataModule: TFastLimiterDataModule
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
-      DisplayName = 'Mix'
+      Curve = ctLogarithmic
+      CurveFactor = 10000.000000000000000000
+      Category = 'Characteristic'
+      DisplayName = 'Ratio'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
+      Min = 0.009999999776482582
+      MinInteger = 1
       ReportVST2Properties = True
-      ShortLabel = 'Mix'
+      ShortLabel = 'Ratio'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
-      Units = '%'
       VSTModule = Owner
-      OnParameterChange = ParameterMixChange
+      OnParameterChange = ParameterRatioChange
+      OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
       Curve = ctLinear
@@ -223,6 +227,21 @@ object FastLimiterDataModule: TFastLimiterDataModule
       VSTModule = Owner
       OnParameterChange = ParameterAutoMakeUpGainChange
       OnCustomParameterDisplay = ParameterOnOffDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Mix'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      ReportVST2Properties = True
+      ShortLabel = 'Mix'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
+      VSTModule = Owner
+      OnParameterChange = ParameterMixChange
     end>
   ParameterCategories = <
     item

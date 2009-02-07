@@ -396,15 +396,15 @@ type
 
   //////////////////////////////////////////////////////////////////////////////
   //                                                                          //
-  //  TFastSoftKneeLimiter                                                    //
-  //  --------------------                                                    //
+  //  TLightweightSoftKneeLimiter                                             //
+  //  ---------------------------                                             //
   //                                                                          //
-  //  Fast soft knee limiter that uses approximations to obtain a             //
+  //  Lightweight soft knee limiter that uses approximations to obtain a      //
   //  controllable knee [in dB] around a given threshold.                     //
   //                                                                          //
   //////////////////////////////////////////////////////////////////////////////
 
-  TFastSoftKneeLimiter = class(TCustomKneeLimiter)
+  TLightweightSoftKneeLimiter = class(TCustomKneeLimiter)
   private
     procedure CalculateKneeFactor;
     procedure CalculateAutoMakeUpGain;
@@ -705,7 +705,7 @@ type
     property Knee_dB;
   end;
 
-  TFastCompressor = class(TCustomKneeCompressor)
+  TLightweightSoftKneeCompressor = class(TCustomKneeCompressor)
   private
     procedure CalculateKneeFactor;
     procedure CalculateAutoMakeUpGain;
@@ -728,7 +728,7 @@ type
     property Knee_dB;
   end;
 
-  TFastFeedbackCompressor = class(TCustomKneeCompressor)
+  TLightweightSoftKneeFeedbackCompressor = class(TCustomKneeCompressor)
   private
     procedure CalculateKneeFactor;
     procedure CalculateAutoMakeUpGain;
@@ -1432,21 +1432,21 @@ begin
  result := Power(1 + Power(PeakLevel * FThresholdReciprocal, FSoftKnee[1]), -FSoftKnee[0]);
 end;
 
-{ TFastSoftKneeLimiter }
+{ TLightweightSoftKneeLimiter }
 
-procedure TFastSoftKneeLimiter.KneeChanged;
+procedure TLightweightSoftKneeLimiter.KneeChanged;
 begin
  inherited;
  CalculateKneeFactor;
 end;
 
-procedure TFastSoftKneeLimiter.AutoMakeUpChanged;
+procedure TLightweightSoftKneeLimiter.AutoMakeUpChanged;
 begin
  if AutoMakeUp
   then CalculateAutoMakeUpGain;
 end;
 
-procedure TFastSoftKneeLimiter.CalculateAutoMakeUpGain;
+procedure TLightweightSoftKneeLimiter.CalculateAutoMakeUpGain;
 var
   Temp: Single;
 begin
@@ -1455,14 +1455,14 @@ begin
  FMakeUpGain := FastdBtoAmpMinError3(FMakeUpGain_dB);
 end;
 
-procedure TFastSoftKneeLimiter.CalculateKneeFactor;
+procedure TLightweightSoftKneeLimiter.CalculateKneeFactor;
 begin
  FKneeFactor := sqr(2 * CdBtoAmpExpGain32 * FKnee_dB);
  if AutoMakeUp
   then CalculateAutoMakeUpGain;
 end;
 
-procedure TFastSoftKneeLimiter.ThresholdChanged;
+procedure TLightweightSoftKneeLimiter.ThresholdChanged;
 begin
  inherited;
  FThrshlddB := Threshold_dB / CFactor2IndB32;
@@ -1470,14 +1470,14 @@ begin
   then CalculateAutoMakeUpGain;
 end;
 
-function TFastSoftKneeLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
+function TLightweightSoftKneeLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  result := PeakLevel;
  result := FastLog2ContinousError5(result) - FThrshlddB;
  result := FastPower2MinError3(-CHalf32 * (result + FastSqrtBab2(sqr(result) + FKneeFactor)));
 end;
 
-function TFastSoftKneeLimiter.CharacteristicCurve_dB(
+function TLightweightSoftKneeLimiter.CharacteristicCurve_dB(
   const InputLevel_dB: Double): Double;
 var
   Temp: Single;
@@ -1486,12 +1486,12 @@ begin
  result := Temp - FastSqrtBab2(sqr(Temp) + sqr(FKnee_dB)) + MakeUpGain_dB + InputLevel_dB;
 end;
 
-function TFastSoftKneeLimiter.GainSample(const Input: Double): Double;
+function TLightweightSoftKneeLimiter.GainSample(const Input: Double): Double;
 begin
  result := FGain * FMakeUpGain * Input;
 end;
 
-procedure TFastSoftKneeLimiter.InputSample(const Input: Double);
+procedure TLightweightSoftKneeLimiter.InputSample(const Input: Double);
 {$IFDEF XPUREPASCAL}
 var
   Temp : Single;
@@ -1608,7 +1608,7 @@ asm
 end;
 {$ENDIF}
 
-function TFastSoftKneeLimiter.ProcessSample(const Input: Double): Double;
+function TLightweightSoftKneeLimiter.ProcessSample(const Input: Double): Double;
 {$IFDEF XPUREPASCAL}
 var
   Temp : Single;
@@ -2213,28 +2213,28 @@ begin
 end;
 
 
-{ TFastCompressor }
+{ TLightweightSoftKneeCompressor }
 
-procedure TFastCompressor.KneeChanged;
+procedure TLightweightSoftKneeCompressor.KneeChanged;
 begin
  inherited;
  CalculateKneeFactor;
 end;
 
-procedure TFastCompressor.RatioChanged;
+procedure TLightweightSoftKneeCompressor.RatioChanged;
 begin
  inherited;
  FRatioFactor := CHalf32 * (1 / Ratio - 1);
 end;
 
-procedure TFastCompressor.AutoMakeUpChanged;
+procedure TLightweightSoftKneeCompressor.AutoMakeUpChanged;
 begin
  if AutoMakeUp
   then CalculateAutoMakeUpGain
   else CalculateMakeUpGain;
 end;
 
-procedure TFastCompressor.CalculateAutoMakeUpGain;
+procedure TLightweightSoftKneeCompressor.CalculateAutoMakeUpGain;
 var
   Temp: Single;
 begin
@@ -2243,14 +2243,14 @@ begin
  CalculateMakeUpGain;
 end;
 
-procedure TFastCompressor.CalculateKneeFactor;
+procedure TLightweightSoftKneeCompressor.CalculateKneeFactor;
 begin
  FKneeFactor := sqr(CdBtoAmpExpGain32 * FKnee_dB);
  if AutoMakeUp
   then CalculateAutoMakeUpGain;
 end;
 
-procedure TFastCompressor.ThresholdChanged;
+procedure TLightweightSoftKneeCompressor.ThresholdChanged;
 begin
  inherited;
  FThrshlddB := Threshold_dB / CFactor2IndB32;
@@ -2258,14 +2258,14 @@ begin
   then CalculateAutoMakeUpGain;
 end;
 
-function TFastCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
+function TLightweightSoftKneeCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  result := PeakLevel;
  result := FRatioFactor * (FastLog2ContinousError5(result) - FThrshlddB);
  result := FastPower2MinError3(result - FastSqrtBab2(sqr(result) + FKneeFactor));
 end;
 
-function TFastCompressor.CharacteristicCurve_dB(
+function TLightweightSoftKneeCompressor.CharacteristicCurve_dB(
   const InputLevel_dB: Double): Double;
 var
   Temp: Single;
@@ -2274,12 +2274,12 @@ begin
  result := Temp - FastSqrtBab2(sqr(Temp) + sqr(FKnee_dB)) + MakeUpGain_dB + InputLevel_dB;
 end;
 
-function TFastCompressor.GainSample(const Input: Double): Double;
+function TLightweightSoftKneeCompressor.GainSample(const Input: Double): Double;
 begin
  result := FGain * FMakeUpGain * Input;
 end;
 
-procedure TFastCompressor.InputSample(const Input: Double);
+procedure TLightweightSoftKneeCompressor.InputSample(const Input: Double);
 {$IFDEF PUREPASCAL}
 var
   Temp : Single;
@@ -2409,34 +2409,34 @@ asm
 end;
 {$ENDIF}
 
-function TFastCompressor.ProcessSample(const Input: Double): Double;
+function TLightweightSoftKneeCompressor.ProcessSample(const Input: Double): Double;
 begin
  InputSample(Input);
  result := FGain * FMakeUpGain * Input;
 end;
 
 
-{ TFastFeedbackCompressor }
+{ TLightweightSoftKneeFeedbackCompressor }
 
-procedure TFastFeedbackCompressor.CalculateAttackFactor;
+procedure TLightweightSoftKneeFeedbackCompressor.CalculateAttackFactor;
 begin
   if FAttack = 0 then FAttackFactor := 0
   else FAttackFactor := 1 - exp( -ln2 / (FAttack * 0.001 * SampleRate * FRatio));
 end;
 
-procedure TFastFeedbackCompressor.CalculateReleaseFactor;
+procedure TLightweightSoftKneeFeedbackCompressor.CalculateReleaseFactor;
 begin
   if FRelease = 0 then FReleaseFactor := 0
   else FReleaseFactor := exp( -ln2 / (FRelease * 0.001 * SampleRate * FRatio));
 end;
 
-procedure TFastFeedbackCompressor.KneeChanged;
+procedure TLightweightSoftKneeFeedbackCompressor.KneeChanged;
 begin
  inherited;
  CalculateKneeFactor;
 end;
 
-procedure TFastFeedbackCompressor.RatioChanged;
+procedure TLightweightSoftKneeFeedbackCompressor.RatioChanged;
 begin
  inherited;
  CalculateAttackFactor;
@@ -2445,14 +2445,14 @@ begin
  CalculateKneeFactor;
 end;
 
-procedure TFastFeedbackCompressor.AutoMakeUpChanged;
+procedure TLightweightSoftKneeFeedbackCompressor.AutoMakeUpChanged;
 begin
  if AutoMakeUp
   then CalculateAutoMakeUpGain
   else CalculateMakeUpGain;
 end;
 
-procedure TFastFeedbackCompressor.CalculateAutoMakeUpGain;
+procedure TLightweightSoftKneeFeedbackCompressor.CalculateAutoMakeUpGain;
 var
   Temp: Single;
 begin
@@ -2461,14 +2461,14 @@ begin
  CalculateMakeUpGain;
 end;
 
-procedure TFastFeedbackCompressor.CalculateKneeFactor;
+procedure TLightweightSoftKneeFeedbackCompressor.CalculateKneeFactor;
 begin
  FKneeFactor := sqr(CdBtoAmpExpGain32 * FKnee_dB) * Ratio;
  if AutoMakeUp
   then CalculateAutoMakeUpGain;
 end;
 
-procedure TFastFeedbackCompressor.ThresholdChanged;
+procedure TLightweightSoftKneeFeedbackCompressor.ThresholdChanged;
 begin
  inherited;
  FThrshlddB := Threshold_dB / CFactor2IndB32;
@@ -2476,14 +2476,14 @@ begin
   then CalculateAutoMakeUpGain;
 end;
 
-function TFastFeedbackCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
+function TLightweightSoftKneeFeedbackCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  result := PeakLevel;
  result := FRatioFactor * (FastLog2ContinousError5(result) - FThrshlddB);
  result := FastPower2MinError3(result - FastSqrtBab2(sqr(result) + FKneeFactor));
 end;
 
-function TFastFeedbackCompressor.CharacteristicCurve_dB(
+function TLightweightSoftKneeFeedbackCompressor.CharacteristicCurve_dB(
   const InputLevel_dB: Double): Double;
 var
   Temp: Single;
@@ -2492,12 +2492,12 @@ begin
  result := Temp - FastSqrtBab2(sqr(Temp) + sqr(FKnee_dB)) + MakeUpGain_dB + InputLevel_dB;
 end;
 
-function TFastFeedbackCompressor.GainSample(const Input: Double): Double;
+function TLightweightSoftKneeFeedbackCompressor.GainSample(const Input: Double): Double;
 begin
  result := FGain * FMakeUpGain * Input;
 end;
 
-procedure TFastFeedbackCompressor.InputSample(const Input: Double);
+procedure TLightweightSoftKneeFeedbackCompressor.InputSample(const Input: Double);
 {$IFNDEF XPUREPASCAL}
 var
   Temp : Single;
@@ -2615,7 +2615,7 @@ asm
 end;
 {$ENDIF}
 
-function TFastFeedbackCompressor.ProcessSample(const Input: Double): Double;
+function TLightweightSoftKneeFeedbackCompressor.ProcessSample(const Input: Double): Double;
 begin
  InputSample(Input);
  result := FGain * FMakeUpGain * Input;

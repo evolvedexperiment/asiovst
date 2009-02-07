@@ -58,7 +58,7 @@ type
     property Gain: Double read FGain_dB write SetGaindB;
     property Frequency: Double read FFrequency write SetFrequency;
     property SampleRate: Double read FSampleRate write SetSampleRate;
-    property OnChange: TNotifyEvent read FOnChange write FOnChange; 
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
   TOrderFilterClass = class of TCustomOrderFilter;
@@ -121,6 +121,16 @@ type
     property Order: Integer read GetOrder;
   end;
 
+  TFirstOrderAllpassFilter = class(TCustomIIRFilter)
+  protected
+    FState : Double;
+    function GetOrder: Integer; override;
+    procedure CalculateCoefficients; override;
+  public
+    function ProcessSample(const Input: Double): Double; override;
+    constructor Create; override;
+  end;
+
   TBiquadIIRFilter = class(TCustomIIRFilter)
   protected
     FDenominator  : array[1..2] of Double;
@@ -137,9 +147,9 @@ type
     constructor Create; override;
     procedure ResetStates; override;
     procedure ResetStatesInt64; override;
-    function ProcessSample(const Input:Double):Double; override;
-    function ProcessSample(const Input:Int64):Int64; override;
-    function ProcessSampleASM:Double; override;
+    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample(const Input: Int64): Int64; override;
+    function ProcessSampleASM: Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double):Double; override;
     function Phase(const Frequency: Double):Double; override;
@@ -565,6 +575,31 @@ begin
   end;
 end;
 
+{ TFirstOrderAllpassFilter }
+
+procedure TFirstOrderAllpassFilter.CalculateCoefficients;
+begin
+ // do nothing yet;
+end;
+
+constructor TFirstOrderAllpassFilter.Create;
+begin
+ inherited;
+ FState := 0;
+end;
+
+function TFirstOrderAllpassFilter.GetOrder: Integer;
+begin
+ result := 1;
+end;
+
+function TFirstOrderAllpassFilter.ProcessSample(const Input: Double): Double;
+begin
+ result := FState + FBandWidth * Input;
+ FState := Input - FBandWidth * result;
+end;
+
+
 { TBiquadIIRFilter }
 
 constructor TBiquadIIRFilter.Create;
@@ -849,10 +884,10 @@ var
 begin
  t               := 1 / (1 + FAlpha);
  a               := sqr(FGainFactor);
- FDenominator[1] := 2 * cos(FW0) * t;
- FDenominator[2] := (FAlpha - 1) * t;
- FNominator[1]   := -FDenominator[1] * a;
- FNominator[0]   := -FDenominator[2] * a;
+ FDenominator[1] := -2 * cos(FW0) * t;
+ FDenominator[2] := -(FAlpha - 1) * t;
+ FNominator[1]   := FDenominator[1] * a;
+ FNominator[0]   := FDenominator[2] * a;
  FNominator[2]   := a;
 end;
 
@@ -941,14 +976,15 @@ end;
 { TSimpleNotch }
 
 procedure TSimpleNotch.CalculateCoefficients;
-var t,a : Double;
+var
+  t, a : Double;
 begin
  try
   t := 1 / (1 + FAlpha);
   a := sqr(FGainFactor);
-  FDenominator[1] := 2 * cos(FW0)*t;
-  FNominator[1]   := -FDenominator[1]*a;
-  FDenominator[2] := (FAlpha-1)*t;
+  FDenominator[1] := -2 * cos(FW0) * t;
+  FNominator[1]   := FDenominator[1] * a;
+  FDenominator[2] := (1 - FAlpha) * t;
 
   FNominator[0] := a * t;
   FNominator[2] := FNominator[0];

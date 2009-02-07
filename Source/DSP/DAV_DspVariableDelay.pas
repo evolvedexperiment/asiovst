@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspInterpolation;
+  DAV_Common, DAV_DspCommon, DAV_DspInterpolation, DAV_DspFilter;
 
 type
   TCustomVariableDelay = class(TDspObject)
@@ -58,10 +58,22 @@ type
     function ProcessSample(const Input: Single): Single; override;
   end;
 
+  TVariableDelay32Allpass = class(TCustomVariableDelay32)
+  protected
+    FAllpassFilter : TFirstOrderAllpassFilter;
+    class function InterpolatorLength: Integer; override;
+    procedure DelayChanged; override;
+    procedure SampleRateChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    function ProcessSample(const Input: Single): Single; override;
+  end;
+
 implementation
 
 uses
-  Math;
+  Math, SysUtils;
 
 { TCustomVariableDelay }
 
@@ -76,7 +88,11 @@ end;
 
 procedure TCustomVariableDelay.ResetBufferPosition;
 begin
- FBufferPos := InterpolatorLength - 1;
+ if InterpolatorLength < FBufferSize
+  then FBufferPos := InterpolatorLength else
+ if FBufferSize > 0
+  then FBufferPos := FBufferSize - 1
+  else FBufferPos := 0;
 end;
 
 procedure TCustomVariableDelay.SetDelay(const Value: Single);
@@ -106,7 +122,7 @@ procedure TCustomVariableDelay.DelayChanged;
 var
   NewSize : Integer;
 begin
- NewSize := round(FSampleRate * FDelay + 0.5);
+ NewSize := round(FSampleRate * FDelay + 0.50000001);
  FFractional := NewSize - FSampleRate * FDelay;
  ChangeBuffer(NewSize + InterpolatorLength);
 end;
@@ -247,6 +263,45 @@ procedure TVariableDelay32Hermite.ResetBufferPosition;
 begin
  inherited;
 // FBufferOutPos := FBufferPos + 1;
+end;
+
+{ TVariableDelay32Allpass }
+
+constructor TVariableDelay32Allpass.Create;
+begin
+ inherited;
+ FAllpassFilter := TFirstOrderAllpassFilter.Create;
+end;
+
+procedure TVariableDelay32Allpass.DelayChanged;
+begin
+ inherited;
+ FAllpassFilter.BandWidth := 0.5 * FFractional;
+end;
+
+destructor TVariableDelay32Allpass.Destroy;
+begin
+ FreeAndNil(FAllpassFilter);
+ inherited;
+end;
+
+class function TVariableDelay32Allpass.InterpolatorLength: Integer;
+begin
+ result := 0;
+end;
+
+function TVariableDelay32Allpass.ProcessSample(const Input: Single): Single;
+begin
+ FBuffer[FBufferPos] := Input;
+ inc(FBufferPos);
+ if FBufferPos >= FBufferSize then FBufferPos := 0;
+ result := FAllpassFilter.ProcessSample(FBuffer[FBufferPos]);
+end;
+
+procedure TVariableDelay32Allpass.SampleRateChanged;
+begin
+ inherited;
+ FAllpassFilter.SampleRate := SampleRate;
 end;
 
 end.

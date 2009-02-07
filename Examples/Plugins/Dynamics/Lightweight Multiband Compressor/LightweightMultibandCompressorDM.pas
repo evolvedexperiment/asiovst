@@ -1,4 +1,4 @@
-﻿unit FastMultibandCompressorDM;
+﻿unit LightweightMultibandCompressorDM;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   DAV_DspDynamics, DAV_DspFilterLinkwitzRiley;
 
 type
-  TFastMultibandCompressorDataModule = class(TVSTModule)
+  TLightweightMultibandCompressorDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -36,9 +36,9 @@ type
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    FFastMultibandCompressor : array [0..3] of TFastCompressor;
-    FLinkwitzRiley           : array [0..1, 0..2] of TLinkwitzRiley;
-    function GetFastMultibandCompressor(Index: Integer): TFastCompressor;
+    FLightweightMultibandCompressor : array [0..3] of TLightweightSoftKneeCompressor;
+    FLinkwitzRiley                  : array [0..1, 0..2] of TLinkwitzRiley;
+    function GetLightweightMultibandCompressor(Index: Integer): TLightweightSoftKneeCompressor;
     procedure ChooseProcess;
     function GetAutoGain(Index: Integer): Boolean;
     procedure SetAutoGain(Index: Integer; const Value: Boolean);
@@ -47,7 +47,7 @@ type
     function EvaluateLowMidCharacteristic(const Input: Single): Single;
     function EvaluateHighMidCharacteristic(const Input: Single): Single;
     function EvaluateHighCharacteristic(const Input: Single): Single;
-    property FastMultibandCompressor[Index: Integer]: TFastCompressor read GetFastMultibandCompressor;
+    property LightweightMultibandCompressor[Index: Integer]: TLightweightSoftKneeCompressor read GetLightweightMultibandCompressor;
     property AutoGain[Index: Integer]: Boolean read GetAutoGain write SetAutoGain;
   end;
 
@@ -56,9 +56,9 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, FastMultibandCompressorGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Approximations, LightweightMultibandCompressorGUI, DAV_VSTModuleWithPrograms;
 
-procedure TFastMultibandCompressorDataModule.VSTModuleOpen(Sender: TObject);
+procedure TLightweightMultibandCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 const
@@ -74,10 +74,10 @@ const
     (3, 44, -17, 7, 1, 9, 1, 0, 0, 100),
     (8, 56, -11, 9, 4, 5, 1, 1, 0, 100));
 begin
- for Channel := 0 to Length(FFastMultibandCompressor) - 1 do
+ for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
   begin
-   FFastMultibandCompressor[Channel] := TFastCompressor.Create;
-   FFastMultibandCompressor[Channel].SampleRate := SampleRate;
+   FLightweightMultibandCompressor[Channel] := TLightweightSoftKneeCompressor.Create;
+   FLightweightMultibandCompressor[Channel].SampleRate := SampleRate;
    FLinkwitzRiley[Channel, 0] := TLinkwitzRiley.Create;
    FLinkwitzRiley[Channel, 0].SampleRate := SampleRate;
    FLinkwitzRiley[Channel, 0].Order := 1;
@@ -129,32 +129,32 @@ begin
 *)
 end;
 
-procedure TFastMultibandCompressorDataModule.VSTModuleClose(Sender: TObject);
+procedure TLightweightMultibandCompressorDataModule.VSTModuleClose(Sender: TObject);
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FFastMultibandCompressor) - 1
-  do FreeAndNil(FFastMultibandCompressor[Channel]);
+ for Channel := 0 to Length(FLightweightMultibandCompressor) - 1
+  do FreeAndNil(FLightweightMultibandCompressor[Channel]);
 end;
 
-procedure TFastMultibandCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TLightweightMultibandCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmFastMultibandCompressor.Create(Self);
+  GUI := TFmLightweightMultibandCompressor.Create(Self);
 end;
 
-function TFastMultibandCompressorDataModule.EvaluateLowCharacteristic(
+function TLightweightMultibandCompressorDataModule.EvaluateLowCharacteristic(
   const Input: Single): Single;
 begin
- result:= FFastMultibandCompressor[0].CharacteristicCurve_dB(Input);
+ result:= FLightweightMultibandCompressor[0].CharacteristicCurve_dB(Input);
 end;
 
-function TFastMultibandCompressorDataModule.EvaluateLowMidCharacteristic(
+function TLightweightMultibandCompressorDataModule.EvaluateLowMidCharacteristic(
   const Input: Single): Single;
 begin
- result:= FFastMultibandCompressor[1].CharacteristicCurve_dB(Input);
+ result:= FLightweightMultibandCompressor[1].CharacteristicCurve_dB(Input);
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterFrequencyLabel(
+procedure TLightweightMultibandCompressorDataModule.ParameterFrequencyLabel(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Val : Single;
@@ -164,7 +164,7 @@ begin
   then PreDefined := 'kHz';
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterFrequencyDisplay(
+procedure TLightweightMultibandCompressorDataModule.ParameterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Val : Single;
@@ -175,25 +175,25 @@ begin
   else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
 end;
 
-function TFastMultibandCompressorDataModule.EvaluateHighMidCharacteristic(
+function TLightweightMultibandCompressorDataModule.EvaluateHighMidCharacteristic(
   const Input: Single): Single;
 begin
- result:= FFastMultibandCompressor[2].CharacteristicCurve_dB(Input);
+ result:= FLightweightMultibandCompressor[2].CharacteristicCurve_dB(Input);
 end;
 
-function TFastMultibandCompressorDataModule.EvaluateHighCharacteristic(
+function TLightweightMultibandCompressorDataModule.EvaluateHighCharacteristic(
   const Input: Single): Single;
 begin
- result:= FFastMultibandCompressor[3].CharacteristicCurve_dB(Input);
+ result:= FLightweightMultibandCompressor[3].CharacteristicCurve_dB(Input);
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterMixChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Value := 100;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterTimeLabel(
+procedure TLightweightMultibandCompressorDataModule.ParameterTimeLabel(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Val : Single;
@@ -205,14 +205,14 @@ begin
   then PreDefined := 's';
 end;
 
-procedure TFastMultibandCompressorDataModule.SetAutoGain(Index: Integer;
+procedure TLightweightMultibandCompressorDataModule.SetAutoGain(Index: Integer;
   const Value: Boolean);
 begin
- if Index in [0..Length(FFastMultibandCompressor) - 1] then
+ if Index in [0..Length(FLightweightMultibandCompressor) - 1] then
   begin
-   FFastMultibandCompressor[Index].AutoMakeUp := Value;
-   if EditorForm is TFmFastMultibandCompressor then
-    with TFmFastMultibandCompressor(EditorForm) do
+   FLightweightMultibandCompressor[Index].AutoMakeUp := Value;
+   if EditorForm is TFmLightweightMultibandCompressor then
+    with TFmLightweightMultibandCompressor(EditorForm) do
      case Index of
       0: UpdateLowAutoMakeUpGain;
       1: UpdateLowMidAutoMakeUpGain;
@@ -222,7 +222,7 @@ begin
   end else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterTimeDisplay(
+procedure TLightweightMultibandCompressorDataModule.ParameterTimeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Val : Single;
@@ -235,31 +235,31 @@ begin
   else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterMakeUpGainDisplay(
+procedure TLightweightMultibandCompressorDataModule.ParameterMakeUpGainDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterThresholdDisplay(
+procedure TLightweightMultibandCompressorDataModule.ParameterThresholdDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterRatioDisplay(
+procedure TLightweightMultibandCompressorDataModule.ParameterRatioDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterKneeDisplay(
+procedure TLightweightMultibandCompressorDataModule.ParameterKneeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterOnOffDisplay(
+procedure TLightweightMultibandCompressorDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
@@ -268,48 +268,48 @@ begin
  end;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterLowFreqChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterLowFreqChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FFastMultibandCompressor) - 1
+ for Channel := 0 to Length(FLightweightMultibandCompressor) - 1
   do FLinkwitzRiley[Channel, 0].Frequency := Value;
- if EditorForm is TFmFastMultibandCompressor then
-  with TFmFastMultibandCompressor(EditorForm) do UpdateLowFrequency;
+ if EditorForm is TFmLightweightMultibandCompressor then
+  with TFmLightweightMultibandCompressor(EditorForm) do UpdateLowFrequency;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterMidFreqChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterMidFreqChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FFastMultibandCompressor) - 1
+ for Channel := 0 to Length(FLightweightMultibandCompressor) - 1
   do FLinkwitzRiley[Channel, 1].Frequency := Value;
- if EditorForm is TFmFastMultibandCompressor then
-  with TFmFastMultibandCompressor(EditorForm) do UpdateMidFrequency;
+ if EditorForm is TFmLightweightMultibandCompressor then
+  with TFmLightweightMultibandCompressor(EditorForm) do UpdateMidFrequency;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterHighChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterHighChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FFastMultibandCompressor) - 1
+ for Channel := 0 to Length(FLightweightMultibandCompressor) - 1
   do FLinkwitzRiley[Channel, 2].Frequency := Value;
- if EditorForm is TFmFastMultibandCompressor then
-  with TFmFastMultibandCompressor(EditorForm) do UpdateHighFrequency;
+ if EditorForm is TFmLightweightMultibandCompressor then
+  with TFmLightweightMultibandCompressor(EditorForm) do UpdateHighFrequency;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterLimitChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterLimitChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  ChooseProcess;
- if EditorForm is TFmFastMultibandCompressor
-  then TFmFastMultibandCompressor(EditorForm).UpdateLimit;
+ if EditorForm is TFmLightweightMultibandCompressor
+  then TFmLightweightMultibandCompressor(EditorForm).UpdateLimit;
 end;
 
-procedure TFastMultibandCompressorDataModule.ChooseProcess;
+procedure TLightweightMultibandCompressorDataModule.ChooseProcess;
 begin
  case round(Parameter[3]) of
   0 : OnProcess := VSTModuleProcessMono;
@@ -318,30 +318,30 @@ begin
  OnProcessReplacing := OnProcess;
 end;
 
-function TFastMultibandCompressorDataModule.GetAutoGain(
+function TLightweightMultibandCompressorDataModule.GetAutoGain(
   Index: Integer): Boolean;
 begin
- if Index in [0..Length(FFastMultibandCompressor) - 1]
-  then result := FFastMultibandCompressor[Index].AutoMakeUp
+ if Index in [0..Length(FLightweightMultibandCompressor) - 1]
+  then result := FLightweightMultibandCompressor[Index].AutoMakeUp
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
-function TFastMultibandCompressorDataModule.GetFastMultibandCompressor(Index: Integer): TFastCompressor;
+function TLightweightMultibandCompressorDataModule.GetLightweightMultibandCompressor(Index: Integer): TLightweightSoftKneeCompressor;
 begin
- if Index in [0..Length(FFastMultibandCompressor) - 1]
-  then result := FFastMultibandCompressor[Index]
+ if Index in [0..Length(FLightweightMultibandCompressor) - 1]
+  then result := FLightweightMultibandCompressor[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterAttackChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Band : Integer;
 begin
  Band := (Index - 4) div 7;
- FFastMultibandCompressor[Band].Attack := Value;
- if EditorForm is TFmFastMultibandCompressor then
-  with TFmFastMultibandCompressor(EditorForm) do
+ FLightweightMultibandCompressor[Band].Attack := Value;
+ if EditorForm is TFmLightweightMultibandCompressor then
+  with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
     0: UpdateLowAttack;
     1: UpdateLowMidAttack;
@@ -350,15 +350,15 @@ begin
    end;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterReleaseChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Band : Integer;
 begin
  Band := (Index - 5) div 7;
- FFastMultibandCompressor[Band].Release := Value;
- if EditorForm is TFmFastMultibandCompressor then
-  with TFmFastMultibandCompressor(EditorForm) do
+ FLightweightMultibandCompressor[Band].Release := Value;
+ if EditorForm is TFmLightweightMultibandCompressor then
+  with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
     0: UpdateLowRelease;
     1: UpdateLowMidRelease;
@@ -367,15 +367,15 @@ begin
    end;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterThresholdChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Band : Integer;
 begin
  Band := (Index - 6) div 7;
- FFastMultibandCompressor[Band].Threshold_dB := Value;
- if EditorForm is TFmFastMultibandCompressor then
-  with TFmFastMultibandCompressor(EditorForm) do
+ FLightweightMultibandCompressor[Band].Threshold_dB := Value;
+ if EditorForm is TFmLightweightMultibandCompressor then
+  with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
     0: UpdateLowThreshold;
     1: UpdateLowMidThreshold;
@@ -384,15 +384,15 @@ begin
    end;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterRatioChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Band : Integer;
 begin
  Band := (Index - 7) div 7;
- FFastMultibandCompressor[Band].Ratio := Value;
- if EditorForm is TFmFastMultibandCompressor then
-  with TFmFastMultibandCompressor(EditorForm) do
+ FLightweightMultibandCompressor[Band].Ratio := Value;
+ if EditorForm is TFmLightweightMultibandCompressor then
+  with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
     0: UpdateLowRatio;
     1: UpdateLowMidRatio;
@@ -401,15 +401,15 @@ begin
    end;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterKneeChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Band : Integer;
 begin
  Band := (Index - 8) div 7;
- FFastMultibandCompressor[Band].Knee_dB := Value;
- if EditorForm is TFmFastMultibandCompressor then
-  with TFmFastMultibandCompressor(EditorForm) do
+ FLightweightMultibandCompressor[Band].Knee_dB := Value;
+ if EditorForm is TFmLightweightMultibandCompressor then
+  with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
     0: UpdateLowKnee;
     1: UpdateLowMidKnee;
@@ -418,16 +418,16 @@ begin
    end;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterMakeUpGainChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Band : Integer;
 begin
  Band := (Index - 9) div 7;
- FFastMultibandCompressor[Band].MakeUpGain_dB := Value;
+ FLightweightMultibandCompressor[Band].MakeUpGain_dB := Value;
 
- if EditorForm is TFmFastMultibandCompressor then
-  with TFmFastMultibandCompressor(EditorForm) do
+ if EditorForm is TFmLightweightMultibandCompressor then
+  with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
     0: UpdateLowMakeUp;
     1: UpdateLowMidMakeUp;
@@ -436,7 +436,7 @@ begin
    end;
 end;
 
-procedure TFastMultibandCompressorDataModule.ParameterAutoMakeUpGainChange(
+procedure TLightweightMultibandCompressorDataModule.ParameterAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Band : Integer;
@@ -444,7 +444,7 @@ begin
  Band := (Index - 10) div 7;
 end;
 
-procedure TFastMultibandCompressorDataModule.VSTModuleProcessMono(const Inputs,
+procedure TLightweightMultibandCompressorDataModule.VSTModuleProcessMono(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
@@ -468,22 +468,22 @@ begin
    FLinkwitzRiley[1, 2].ProcessSample(FD[1, 3] - CDenorm32, FD[1, 2], FD[1, 3]);
 
    // compress & copy gain reduction
-   with FFastMultibandCompressor[0] do
+   with FLightweightMultibandCompressor[0] do
     begin
      InputSample(CHalf32 * (FD[0, 0] + FD[1, 0]));
      Temp[0] := GainReductionFactor * MakeUpGain;
     end;
-   with FFastMultibandCompressor[1] do
+   with FLightweightMultibandCompressor[1] do
     begin
      InputSample(CHalf32 * (FD[0, 1] + FD[1, 1]));
      Temp[1] := GainReductionFactor * MakeUpGain;
     end;
-   with FFastMultibandCompressor[2] do
+   with FLightweightMultibandCompressor[2] do
     begin
      InputSample(CHalf32 * (FD[0, 2] + FD[1, 2]));
      Temp[2] := GainReductionFactor * MakeUpGain;
     end;
-   with FFastMultibandCompressor[3] do
+   with FLightweightMultibandCompressor[3] do
     begin
      InputSample(CHalf32 * (FD[0, 3] + FD[1, 3]));
      Temp[3] := GainReductionFactor * MakeUpGain;
@@ -496,7 +496,7 @@ begin
   end;
 end;
 
-procedure TFastMultibandCompressorDataModule.VSTModuleProcessMonoSoftClip(const Inputs,
+procedure TLightweightMultibandCompressorDataModule.VSTModuleProcessMonoSoftClip(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
@@ -518,16 +518,16 @@ begin
    FLinkwitzRiley[1, 2].ProcessSample(FD[1, 3] - CDenorm32, FD[1, 2], FD[1, 3]);
 
    // compress
-   FFastMultibandCompressor[0].ProcessSample(CHalf32 * (FD[0, 0] + FD[1, 0]));
-   FFastMultibandCompressor[1].ProcessSample(CHalf32 * (FD[0, 1] + FD[1, 1]));
-   FFastMultibandCompressor[2].ProcessSample(CHalf32 * (FD[0, 2] + FD[1, 2]));
-   FFastMultibandCompressor[3].ProcessSample(CHalf32 * (FD[0, 3] + FD[1, 3]));
+   FLightweightMultibandCompressor[0].ProcessSample(CHalf32 * (FD[0, 0] + FD[1, 0]));
+   FLightweightMultibandCompressor[1].ProcessSample(CHalf32 * (FD[0, 1] + FD[1, 1]));
+   FLightweightMultibandCompressor[2].ProcessSample(CHalf32 * (FD[0, 2] + FD[1, 2]));
+   FLightweightMultibandCompressor[3].ProcessSample(CHalf32 * (FD[0, 3] + FD[1, 3]));
 
    // copy gain reduction
-   Temp[0] := FFastMultibandCompressor[0].GainReductionFactor;
-   Temp[1] := FFastMultibandCompressor[1].GainReductionFactor;
-   Temp[2] := FFastMultibandCompressor[2].GainReductionFactor;
-   Temp[3] := FFastMultibandCompressor[3].GainReductionFactor;
+   Temp[0] := FLightweightMultibandCompressor[0].GainReductionFactor;
+   Temp[1] := FLightweightMultibandCompressor[1].GainReductionFactor;
+   Temp[2] := FLightweightMultibandCompressor[2].GainReductionFactor;
+   Temp[3] := FLightweightMultibandCompressor[3].GainReductionFactor;
 
    // gain and combine
    Outputs[0, Sample] := FastTanhOpt3Term(Temp[0] * FD[0, 0] + Temp[1] * FD[0, 1] - Temp[2] * FD[0, 2] - Temp[3] * FD[0, 3]);
@@ -535,14 +535,14 @@ begin
   end;
 end;
 
-procedure TFastMultibandCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TLightweightMultibandCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FFastMultibandCompressor) - 1 do
+ for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
   begin
-   FFastMultibandCompressor[Channel].SampleRate := SampleRate;
+   FLightweightMultibandCompressor[Channel].SampleRate := SampleRate;
    FLinkwitzRiley[Channel, 0].SampleRate := SampleRate;
    FLinkwitzRiley[Channel, 1].SampleRate := SampleRate;
    FLinkwitzRiley[Channel, 2].SampleRate := SampleRate;

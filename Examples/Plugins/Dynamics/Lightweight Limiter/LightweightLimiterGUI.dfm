@@ -1,4 +1,4 @@
-object FmFastLimiter: TFmFastLimiter
+object FmLightweightLimiter: TFmLightweightLimiter
   Left = 286
   Top = 77
   BorderStyle = bsNone

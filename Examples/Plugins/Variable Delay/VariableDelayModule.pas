@@ -16,8 +16,8 @@ type
     procedure ParamDryMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterWetMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FVariDelay    : array[0..1] of TCustomVariableDelay32;
-    FMix          : array[0..1] of Single;
+    FVariDelay    : array [0..1] of TCustomVariableDelay32;
+    FMix          : array [0..1] of Single;
   end;
 
 implementation
@@ -28,9 +28,17 @@ uses
   VariableDelayGUI, DAV_VSTCustomModule;
 
 procedure TVariableDelayVST.VSTModuleOpen(Sender: TObject);
+var
+  Channel : Integer;
 begin
+(*
  FVariDelay[0] := TVariableDelay32Hermite.Create; // Hermite
  FVariDelay[1] := TVariableDelay32Linear.Create;  // vs. Linear
+*)
+
+ FVariDelay[0] := TVariableDelay32Allpass.Create; // Hermite
+ FVariDelay[1] := TVariableDelay32Allpass.Create;  // vs. Linear
+
  Parameter[0] := 100;
  Parameter[1] := 0;
  Parameter[2] := 100;
@@ -47,7 +55,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FVariDelay) - 1
-  do FVariDelay[Channel].Delay := 1E-3 * Value;
+  do FVariDelay[Channel].Delay := 1E-4 * Value;
 
  if EditorForm is TVSTGUI
   then TVSTGUI(EditorForm).UpdateDelayLength;

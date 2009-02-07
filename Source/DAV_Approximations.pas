@@ -2068,7 +2068,7 @@ end;
 
 function FastInvSqrt(const Value: Single): Single; overload;
 var
-  IntCst : Integer absolute result;
+  IntCst : Cardinal absolute result;
 begin
  result := Value;
  IntCst := ($BE6EB50C - IntCst) shr 1;

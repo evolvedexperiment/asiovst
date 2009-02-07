@@ -1,4 +1,4 @@
-unit FastGateDM;
+unit LightweightGateDM;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   DAV_DspDynamics;
 
 type
-  TFastGateDataModule = class(TVSTModule)
+  TLightweightGateDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -26,11 +26,11 @@ type
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FFastGate : array [0..1] of TFastCompressor;
-    function GetFastGate(Index: Integer): TFastCompressor;
+    FLightweightGate : array [0..1] of TLightweightSoftKneeCompressor;
+    function GetLightweightGate(Index: Integer): TLightweightSoftKneeCompressor;
   public
     function EvaluateCharacteristic(const Input: Single): Single;
-    property FastGate[Index: Integer]: TFastCompressor read GetFastGate;
+    property LightweightGate[Index: Integer]: TLightweightSoftKneeCompressor read GetLightweightGate;
   end;
 
 implementation
@@ -38,9 +38,9 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, FastGateGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Approximations, LightweightGateGUI, DAV_VSTModuleWithPrograms;
 
-procedure TFastGateDataModule.VSTModuleOpen(Sender: TObject);
+procedure TLightweightGateDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 const
@@ -56,10 +56,10 @@ const
     (0.3, 4.4, -37, 0.1, 9),
     (0.8, 5.6, -41, 0.1, 5));
 begin
- for Channel := 0 to Length(FFastGate) - 1 do
+ for Channel := 0 to Length(FLightweightGate) - 1 do
   begin
-   FFastGate[Channel] := TFastCompressor.Create;
-   FFastGate[Channel].SampleRate := SampleRate;
+   FLightweightGate[Channel] := TLightweightSoftKneeCompressor.Create;
+   FLightweightGate[Channel].SampleRate := SampleRate;
   end;
 
  Parameter[0] := 1.5;
@@ -73,30 +73,30 @@ begin
   do Programs[Channel].SetParameters(CPresets[Channel]);
 end;
 
-procedure TFastGateDataModule.VSTModuleClose(Sender: TObject);
+procedure TLightweightGateDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FFastGate[0]);
- FreeAndNil(FFastGate[1]);
+ FreeAndNil(FLightweightGate[0]);
+ FreeAndNil(FLightweightGate[1]);
 end;
 
-procedure TFastGateDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TLightweightGateDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmFastGate.Create(Self);
+  GUI := TFmLightweightGate.Create(Self);
 end;
 
-function TFastGateDataModule.EvaluateCharacteristic(
+function TLightweightGateDataModule.EvaluateCharacteristic(
   const Input: Single): Single;
 begin
- result:= FFastGate[0].CharacteristicCurve_dB(Input);
+ result:= FLightweightGate[0].CharacteristicCurve_dB(Input);
 end;
 
-procedure TFastGateDataModule.ParameterMixChange(
+procedure TLightweightGateDataModule.ParameterMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Value := 100;
 end;
 
-procedure TFastGateDataModule.ParameterTimeLabel(
+procedure TLightweightGateDataModule.ParameterTimeLabel(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Val : Single;
@@ -108,7 +108,7 @@ begin
   then PreDefined := 's';
 end;
 
-procedure TFastGateDataModule.ParameterTimeDisplay(
+procedure TLightweightGateDataModule.ParameterTimeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Val : Single;
@@ -121,96 +121,96 @@ begin
   else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastGateDataModule.ParameterThresholdDisplay(
+procedure TLightweightGateDataModule.ParameterThresholdDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastGateDataModule.ParameterRatioDisplay(
+procedure TLightweightGateDataModule.ParameterRatioDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TFastGateDataModule.ParameterKneeDisplay(
+procedure TLightweightGateDataModule.ParameterKneeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-function TFastGateDataModule.GetFastGate(Index: Integer): TFastCompressor;
+function TLightweightGateDataModule.GetLightweightGate(Index: Integer): TLightweightSoftKneeCompressor;
 begin
- if Index in [0..Length(FFastGate) - 1]
-  then result := FFastGate[Index]
+ if Index in [0..Length(FLightweightGate) - 1]
+  then result := FLightweightGate[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
-procedure TFastGateDataModule.ParameterAttackChange(
+procedure TLightweightGateDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastGate[0].Release := Value;
- FFastGate[1].Release := FFastGate[0].Release;
- if EditorForm is TFmFastGate
-  then TFmFastGate(EditorForm).UpdateAttack;
+ FLightweightGate[0].Attack := Value;
+ FLightweightGate[1].Attack := FLightweightGate[0].Attack;
+ if EditorForm is TFmLightweightGate
+  then TFmLightweightGate(EditorForm).UpdateAttack;
 end;
 
-procedure TFastGateDataModule.ParameterReleaseChange(
+procedure TLightweightGateDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastGate[0].Attack := Value;
- FFastGate[1].Attack := FFastGate[0].Attack;
- if EditorForm is TFmFastGate
-  then TFmFastGate(EditorForm).UpdateRelease;
+ FLightweightGate[0].Release := Value;
+ FLightweightGate[1].Release := FLightweightGate[0].Release;
+ if EditorForm is TFmLightweightGate
+  then TFmLightweightGate(EditorForm).UpdateRelease;
 end;
 
-procedure TFastGateDataModule.ParameterThresholdChange(
+procedure TLightweightGateDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastGate[0].Threshold_dB := Value;
- FFastGate[1].Threshold_dB := Value;
- if EditorForm is TFmFastGate
-  then TFmFastGate(EditorForm).UpdateThreshold;
+ FLightweightGate[0].Threshold_dB := Value;
+ FLightweightGate[1].Threshold_dB := Value;
+ if EditorForm is TFmLightweightGate
+  then TFmLightweightGate(EditorForm).UpdateThreshold;
 end;
 
-procedure TFastGateDataModule.ParameterRatioChange(
+procedure TLightweightGateDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastGate[0].Ratio := Value;
- FFastGate[1].Ratio := Value;
- if EditorForm is TFmFastGate
-  then TFmFastGate(EditorForm).UpdateRatio;
+ FLightweightGate[0].Ratio := Value;
+ FLightweightGate[1].Ratio := Value;
+ if EditorForm is TFmLightweightGate
+  then TFmLightweightGate(EditorForm).UpdateRatio;
 end;
 
-procedure TFastGateDataModule.ParameterKneeChange(
+procedure TLightweightGateDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFastGate[0].Knee_dB := Value;
- FFastGate[1].Knee_dB := Value;
- if EditorForm is TFmFastGate
-  then TFmFastGate(EditorForm).UpdateKnee;
+ FLightweightGate[0].Knee_dB := Value;
+ FLightweightGate[1].Knee_dB := Value;
+ if EditorForm is TFmLightweightGate
+  then TFmLightweightGate(EditorForm).UpdateKnee;
 end;
 
-procedure TFastGateDataModule.VSTModuleProcessStereo(const Inputs,
+procedure TLightweightGateDataModule.VSTModuleProcessStereo(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FFastGate[0].ProcessSample(Inputs[0, Sample]);
-   Outputs[1, Sample] := FFastGate[1].ProcessSample(Inputs[1, Sample]);
+   Outputs[0, Sample] := FLightweightGate[0].ProcessSample(Inputs[0, Sample]);
+   Outputs[1, Sample] := FLightweightGate[1].ProcessSample(Inputs[1, Sample]);
   end;
 end;
 
-procedure TFastGateDataModule.VSTModuleProcess(const Inputs,
+procedure TLightweightGateDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
   Temp   : Single;
 begin
  for Sample := 0 to SampleFrames - 1 do
-  with FFastGate[0] do
+  with FLightweightGate[0] do
   begin
    ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
    Temp := GainReductionFactor;
@@ -219,11 +219,11 @@ begin
   end;
 end;
 
-procedure TFastGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TLightweightGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FFastGate[0].SampleRate := SampleRate;
- FFastGate[1].SampleRate := SampleRate;
+ FLightweightGate[0].SampleRate := SampleRate;
+ FLightweightGate[1].SampleRate := SampleRate;
 end;
 
 end.

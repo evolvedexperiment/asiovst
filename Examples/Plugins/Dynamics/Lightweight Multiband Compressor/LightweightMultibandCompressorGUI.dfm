@@ -1,4 +1,4 @@
-object FmFastMultibandCompressor: TFmFastMultibandCompressor
+object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
   Left = 286
   Top = 77
   BorderStyle = bsNone

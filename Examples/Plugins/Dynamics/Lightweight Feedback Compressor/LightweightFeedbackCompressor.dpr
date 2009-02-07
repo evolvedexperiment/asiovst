@@ -1,5 +1,5 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library FastFeedbackCompressor;
+library LightweightFeedbackCompressor;
 
 {$R 'FeedbackCompressor.res' 'FeedbackCompressor.rc'}
 
@@ -13,13 +13,13 @@ uses
   Forms,
   DAV_VSTEffect,
   DAV_VSTModule,
-  FastFeedbackCompressorDM in 'FastFeedbackCompressorDM.pas' {FastFeedbackCompressorDataModule: TVSTModule},
-  FastFeedbackCompressorGUI in 'FastFeedbackCompressorGUI.pas' {FmFastFeedbackCompressor};
+  LightweightFeedbackCompressorDM in 'LightweightFeedbackCompressorDM.pas' {LightweightFeedbackCompressorDataModule: TVSTModule},
+  LightweightFeedbackCompressorGUI in 'LightweightFeedbackCompressorGUI.pas' {FmLightweightFeedbackCompressor};
 
 function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
   try
-    with TFastFeedbackCompressorDataModule.Create(Application) do
+    with TLightweightFeedbackCompressorDataModule.Create(Application) do
      begin
       AudioMaster := AudioMasterCallback;
       Result := Effect;
