@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Fast Gate Installer
+;Lightweight Compressor Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Fast Gate Installer"
-  OutFile "Fast_Gate_Install.exe"
+  Name "Lightweight Compressor Installer"
+  OutFile "Lightweight_Compressor_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,8 +30,8 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Fast Gate"
-  !define PRODUCT_VERSION "1.0.0"
+  !define PRODUCT_NAME "Lightweight Compressor"
+  !define PRODUCT_VERSION "1.0.1"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
@@ -69,44 +69,44 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Fast Gate VST-Plugin" SecVSTPlugin
+Section "Lightweight Compressor VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\FastGate.dll"
+  File "..\Bin\LightweightCompressor.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallFastGate.exe"
+  WriteUninstaller "$INSTDIR\UninstallLightweightCompressor.exe"
 SectionEnd
 
-Section "Fast Gate Manual" SecManual
+Section "Lightweight Compressor Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Fast Gate Manual.pdf"
+  File "..\Bin\Lightweight Compressor Manual.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallFastGate.exe"
+  WriteUninstaller "$INSTDIR\UninstallLightweightCompressor.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Fast Gate VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Lightweight Compressor VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Fast Gate VST Plugin"
-  LangString DESC_SecManual ${LANG_ENGLISH} "Fast Gate Manual"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Lightweight Compressor VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Lightweight Compressor Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -120,7 +120,8 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\FastGate.dll"
+  Delete "$INSTDIR\LightweightCompressor.dll"
+  Delete "$INSTDIR\Lightweight Compressor Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Fast Compressor Installer
+;Lightweight Limiter Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Fast Compressor Installer"
-  OutFile "Fast_Compressor_Install.exe"
+  Name "Lightweight Limiter Installer"
+  OutFile "Lightweight_Limiter_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,8 +30,8 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Fast Compressor"
-  !define PRODUCT_VERSION "1.0.1"
+  !define PRODUCT_NAME "Lightweight Limiter"
+  !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
@@ -69,44 +69,44 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Fast Compressor VST-Plugin" SecVSTPlugin
+Section "Lightweight Limiter VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\FastCompressor.dll"
+  File "..\Bin\LightweightLimiter.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallFastCompressor.exe"
+  WriteUninstaller "$INSTDIR\UninstallLightweightLimiter.exe"
 SectionEnd
 
-Section "Fast Compressor Manual" SecManual
+Section "Lightweight Limiter Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Fast Compressor Manual.pdf"
+  File "..\Bin\Lightweight Limiter Manual.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallFastCompressor.exe"
+  WriteUninstaller "$INSTDIR\UninstallLightweightLimiter.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Fast Compressor VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Lightweight Limiter VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Fast Compressor VST Plugin"
-  LangString DESC_SecManual ${LANG_ENGLISH} "Fast Compressor Manual"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Lightweight Limiter VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Lightweight Limiter Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -120,8 +120,8 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\FastCompressor.dll"
-  Delete "$INSTDIR\Fast Compressor Manual.pdf"
+  Delete "$INSTDIR\LightweightLimiter.dll"
+  Delete "$INSTDIR\Lightweight Limiter Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

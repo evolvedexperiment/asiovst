@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Fast Compressor Installer
+;Lightweight Multiband Compressor Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Fast Feedback Compressor Installer"
-  OutFile "Fast_Feedback_Compressor_Install.exe"
+  Name "Lightweight Multiband Compressor Installer"
+  OutFile "Lightweight_Multiband_Compressor_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,8 +30,8 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Fast Feedback Compressor"
-  !define PRODUCT_VERSION "1.0.1"
+  !define PRODUCT_NAME "Lightweight Multiband Compressor"
+  !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
@@ -69,44 +69,44 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Fast Feedback Compressor VST-Plugin" SecVSTPlugin
+Section "Lightweight Multiband Compressor VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\FastFeedbackCompressor.dll"
+  File "..\Bin\LightweightMultibandCompressor.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallFastCompressor.exe"
+  WriteUninstaller "$INSTDIR\UninstallMultibandCompressor.exe"
 SectionEnd
 
-Section "Fast Feedback Compressor Manual" SecManual
+Section "Lightweight Multiband Compressor Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Fast Feedback Compressor Manual.pdf"
+  File "..\Bin\Lightweight Multiband Compressor Manual.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallFastCompressor.exe"
+  WriteUninstaller "$INSTDIR\UninstallMultibandCompressor.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Fast Feedback Compressor VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Lightweight Multiband Compressor VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Fast Feedback Compressor VST Plugin"
-  LangString DESC_SecManual ${LANG_ENGLISH} "Fast Feedback Compressor Manual"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Lightweight Multiband Compressor VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Lightweight Multiband Compressor Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -120,8 +120,8 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\FastFeedbackCompressor.dll"
-  Delete "$INSTDIR\Fast Feedback Compressor Manual.pdf"
+  Delete "$INSTDIR\LightweightMultibandCompressor.dll"
+  Delete "$INSTDIR\Lightweight Multiband Compressor Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd
