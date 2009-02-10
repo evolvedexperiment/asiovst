@@ -1,14 +1,14 @@
 library SEConvolution;
 
+{$I DAV_Compiler.INC}
+
 uses
   SysUtils,
   Classes,
   DAV_SECommon,
-  {$IFDEF Use_CUDA}
-  DAV_CudaRuntime,
-  {$ENDIF}
   DAV_SEModule,
-  SEConvolutionModule in 'SEConvolutionModule.pas';
+  SEConvolutionModule in 'SEConvolutionModule.pas',
+  SELowLatencyConvolutionModule in 'SELowLatencyConvolutionModule.pas';
 
 {$E sem}
 {$R *.res}
@@ -18,16 +18,7 @@ begin
  result := True;
  case Index of
   0: TSEConvolutionModule.GetModuleProperties(Properties);
-  {$IFDEF Use_CUDA}
-  1: if CudaRuntimeLoaded then
-      try
-       TSEConvolutionModuleCUDA.GetModuleProperties(Properties);
-      except
-       result := False;
-      end
-     else result := False;
-  {$ENDIF}
-//  2: TSEConvolutionModule.GetModuleProperties(Properties);
+  1: TSELowLatencyConvolutionModule.GetModuleProperties(Properties);
   else result := False;
  end;;
 end;
@@ -40,15 +31,7 @@ begin
  if (ProcessType = 1) then
   case Index of
    0: SEModuleBase := TSEConvolutionModule.Create(SEAudioMaster, Reserved);
-   {$IFDEF Use_CUDA}
-   1: if CudaRuntimeLoaded then
-       try
-        SEModuleBase := TSEConvolutionModuleCUDA.Create(SEAudioMaster, Reserved);
-       except
-        SEModuleBase := nil;
-       end
-      else SEModuleBase := nil;
-   {$ENDIF}
+   1: SEModuleBase := TSELowLatencyConvolutionModule.Create(SEAudioMaster, Reserved);
   end;
  if assigned(SEModuleBase)
   then result := SEModuleBase.Effect

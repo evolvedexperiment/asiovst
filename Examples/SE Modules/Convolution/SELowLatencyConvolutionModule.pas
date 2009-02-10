@@ -1,4 +1,4 @@
-unit SEConvolutionModule;
+unit SELowLatencyConvolutionModule;
 
 interface
 
@@ -10,10 +10,10 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEConvolutionPins = (pinInput, pinOutput, pinFileName, pinMaxIRSize,
-    pinDesiredLatency, pinRealLatency);
+  TSELowLatencyConvolutionPins = (pinInput, pinOutput, pinFileName,
+    pinMaxFFTOrder, pinDesiredLatency, pinRealLatency);
 
-  TSEConvolutionModule = class(TSEModuleBase)
+  TSELowLatencyConvolutionModule = class(TSEModuleBase)
   private
     procedure ChooseProcess;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
@@ -21,12 +21,12 @@ type
     FInputBuffer         : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer        : PDAVSingleFixedArray;
 
-    FConvolver           : TConvolution32;
+    FConvolver           : TLowLatencyConvolution32;
 
     FSemaphore           : Integer;
     FStaticCount         : Integer;
     FFileName            : PChar;
-    FMaxIRSize           : Integer;
+    FMaxIRBlockOrder     : Integer;
     FRealLatency         : Integer;
     FDesiredLatencyIndex : Integer;
     procedure SampleRateChanged; override;
@@ -52,7 +52,7 @@ uses
 resourcestring
   RCStrSynthEditOnly = 'This module is not allowed to be embedded into a VST Plugin';
 
-constructor TSEConvolutionModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TSELowLatencyConvolutionModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 {$IFDEF Use_IPPS}
 var
   VSTHostParams : TSECallVstHostParams;
@@ -62,8 +62,8 @@ begin
  inherited Create(SEAudioMaster, Reserved);
  FFileName            := '';
  FSemaphore           := 0;
- FConvolver           := TConvolution32.Create;
- FMaxIRSize           := 16384;
+ FConvolver           := TLowLatencyConvolution32.Create;
+ FMaxIRBlockOrder     := 16;
  FDesiredLatencyIndex := 5;
 
  {$IFDEF Use_IPPS}
@@ -76,13 +76,13 @@ begin
  {$ENDIF}
 end;
 
-destructor TSEConvolutionModule.Destroy;
+destructor TSELowLatencyConvolutionModule.Destroy;
 begin
  FreeAndNil(FConvolver);
  inherited;
 end;
 
-procedure TSEConvolutionModule.Open;
+procedure TSELowLatencyConvolutionModule.Open;
 begin
  inherited Open;
 
@@ -93,19 +93,19 @@ begin
  Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
 end;
 
-procedure TSEConvolutionModule.SampleRateChanged;
+procedure TSELowLatencyConvolutionModule.SampleRateChanged;
 begin
  inherited;
  // ignore
 end;
 
 // The most important part, processing the audio
-procedure TSEConvolutionModule.SubProcessBypass(const BufferOffset, SampleFrames: Integer);
+procedure TSELowLatencyConvolutionModule.SubProcessBypass(const BufferOffset, SampleFrames: Integer);
 begin
  Move(FInputBuffer[BufferOffset], FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single));
 end;
 
-procedure TSEConvolutionModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+procedure TSELowLatencyConvolutionModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
@@ -113,7 +113,7 @@ begin
   then CallHost(SEAudioMasterSleepMode);
 end;
 
-procedure TSEConvolutionModule.ChooseProcess;
+procedure TSELowLatencyConvolutionModule.ChooseProcess;
 begin
  if Pin[Integer(pinInput)].Status = stRun then
   if FileExists(FFileName)
@@ -127,7 +127,7 @@ begin
 end;
 
 // describe your module
-class procedure TSEConvolutionModule.GetModuleProperties(Properties : PSEModuleProperties);
+class procedure TSELowLatencyConvolutionModule.GetModuleProperties(Properties : PSEModuleProperties);
 begin
  with Properties^ do
   begin
@@ -144,10 +144,10 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEConvolutionModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSELowLatencyConvolutionModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSEConvolutionPins(index) of
+ case TSELowLatencyConvolutionPins(index) of
   // typical input plug (inputs are listed first)
   pinInput:
     with Properties^ do
@@ -179,14 +179,14 @@ begin
       DataType        := dtText;
       DefaultValue    := 'IR.wav';
      end;
-  pinMaxIRSize:
+  pinMaxFFTOrder:
     with Properties^ do
      begin
-      Name            := 'Maximum IR Size';
-      VariableAddress := @FMaxIRSize;
+      Name            := 'Maximum FFT Order';
+      VariableAddress := @FMaxIRBlockOrder;
       Direction       := drIn;
-      DataType        := dtInteger;
-      DefaultValue    := '16384';
+      DataType        := dtEnum;
+      DefaultValue    := 'range 6;16';
      end;
   pinDesiredLatency:
     with Properties^ do
@@ -213,10 +213,10 @@ end;
 // this routine is called whenever an input changes status.
 // e.g when the user changes a module's parameters,
 // or when audio stops/starts streaming into a pin
-procedure TSEConvolutionModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSELowLatencyConvolutionModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  // has user altered a filter parameter?
- case TSEConvolutionPins(CurrentPin.PinID) of
+ case TSELowLatencyConvolutionPins(CurrentPin.PinID) of
            pinInput : begin
                        ChooseProcess;
                        Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
@@ -226,22 +226,21 @@ begin
                         then LoadIR(StrPas(FFileName));
                        ChooseProcess;
                       end;
-       pinMaxIRSize : begin
+     pinMaxFFTOrder : begin
                        while FSemaphore > 0 do;
                        Inc(FSemaphore);
                        try
-                        if FConvolver.IRSize > FMaxIRSize
-                         then FConvolver.IRSize := FMaxIRSize;
+                        FConvolver.MaximumIRBlockOrder := FMaxIRBlockOrder;
                        finally
                         Dec(FSemaphore);
                        end;
                       end;
-  pinDesiredLatency : FConvolver.FFTOrder := 6 + FDesiredLatencyIndex;
+  pinDesiredLatency : FConvolver.MinimumIRBlockOrder := 6 + FDesiredLatencyIndex;
  end; inherited;
 end;
 
 
-procedure TSEConvolutionModule.LoadIR(FileName: TFileName);
+procedure TSELowLatencyConvolutionModule.LoadIR(FileName: TFileName);
 var
   sr, c, sz : Integer;
   pt        : PSingle;
@@ -256,7 +255,7 @@ begin
  end;
 end;
 
-procedure TSEConvolutionModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+procedure TSELowLatencyConvolutionModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  // lock processing
  while FSemaphore > 0 do;
