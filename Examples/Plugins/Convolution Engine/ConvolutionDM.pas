@@ -16,8 +16,9 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleCreate(Sender: TObject);
   private
-    FConvolution : array [0..1] of TConvolution32;
-    FSemaphore   : Integer;
+    FConvolutionClassic    : TConvolution32;
+    FConvolutionLowLatency : TLowLatencyConvolution32;
+    FSemaphore    : Integer;
   public
     procedure LoadIR(FileName: TFileName);
   end;
@@ -36,16 +37,17 @@ end;
 
 procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FConvolution[0] := TConvolution32.Create;
- FConvolution[1] := TConvolution32.Create;
- FConvolution[0].FFTOrder := CeilLog2(BlockModeSize);
- FConvolution[1].FFTOrder := CeilLog2(BlockModeSize);
+ FConvolutionClassic := TConvolution32.Create;
+ FConvolutionLowLatency := TLowLatencyConvolution32.Create;
+ FConvolutionClassic.FFTOrder := 8; //CeilLog2(BlockModeSize);
+ FConvolutionLowLatency.MinimumIRBlockOrder := 7
+// FConvolutionLowLatency.FFTOrder := CeilLog2(BlockModeSize);
 end;
 
 procedure TConvolutionDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FConvolution[0]);
- FreeAndNil(FConvolution[1]);
+ FreeAndNil(FConvolutionLowLatency);
+ FreeAndNil(FConvolutionClassic);
 end;
 
 procedure TConvolutionDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -62,8 +64,8 @@ begin
  inc(FSemaphore);
  try
   pt := LoadWAVFileMono(FileName, sr, c, sz);
-  FConvolution[0].LoadImpulseResponse(@pt^, sz);
-  FConvolution[1].LoadImpulseResponse(@pt^, sz);
+  FConvolutionLowLatency.LoadImpulseResponse(@pt^, sz);
+  FConvolutionClassic.LoadImpulseResponse(@pt^, sz);
  finally
   dec(FSemaphore);
  end;
@@ -76,8 +78,8 @@ begin
  while FSemaphore > 0 do;
  inc(FSemaphore);
  try
-  FConvolution[0].ProcessBlock(@Inputs[0, 0], @Outputs[0, 0], SampleFrames);
-  FConvolution[1].ProcessBlock(@Inputs[1, 0], @Outputs[1, 0], SampleFrames);
+  FConvolutionClassic.ProcessBlock(@Inputs[0, 0], @Outputs[0, 0], SampleFrames);
+  FConvolutionLowLatency.ProcessBlock(@Inputs[1, 0], @Outputs[1, 0], SampleFrames);
  finally
   dec(FSemaphore);
  end;

@@ -37,7 +37,7 @@ type
     procedure SetParameterCount(const Value: integer);
     procedure SetParameters(const Parameters: array of Single);
     property Parameter[AIndex: Integer]: Single read GetParameter write SetParameter;
-    property Chunk: TMemoryStream read fChunkData write fChunkData;
+    property Chunk: TMemoryStream read FChunkData write FChunkData;
     property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
     property OnInitialize: TNotifyEvent read FOnInitialize write FOnInitialize;
@@ -95,7 +95,7 @@ begin
   begin
    if not (effFlagsProgramChunks in VSTModule.Effect^.EffectFlags)
     then SetLength(FParameter, numParams)
-    else fChunkData := TMemoryStream.Create;
+    else FChunkData := TMemoryStream.Create;
    if CurrentProgram < 0 then CurrentProgram := 0;
   end;
 end;
@@ -104,7 +104,7 @@ destructor TCustomVstProgram.Destroy;
 begin
  try
   SetLength(FParameter, 0);
-  FreeAndNil(fChunkData);
+  FreeAndNil(FChunkData);
  finally
   inherited;
  end;

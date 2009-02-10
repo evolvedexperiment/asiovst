@@ -11,8 +11,6 @@ object ConvolutionDataModule: TConvolutionDataModule
   BlockSize = 8192
   CurrentProgram = -1
   BlockModeSize = 8192
-  BlockModeOverlap = 4096
-  InitialDelay = 4096
   IORatio = 1.000000000000000000
   UniqueID = 'Conv'
   ShellPlugins = <>

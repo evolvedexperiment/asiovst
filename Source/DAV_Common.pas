@@ -159,10 +159,12 @@ type
   function LimitAngle(const Angle: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 
-  function Factorial(const Order : Integer) : Double;
-  procedure FastNegative(var Value: Single); overload;
+  function Factorial(const Order: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Factorial(const Order: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Factorial(const Order: Integer): Integer; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastFractional(const Value: Single): Single; overload;
   function FastFractional(const Value: Double): Double; overload;
+  procedure FastNegative(var Value: Single); overload;
   procedure FastAbs(var Value: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   procedure FastAbs(var Value: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   procedure FastAbs(var Value: TDAV4SingleArray); overload;
@@ -671,18 +673,31 @@ end;
 
 { Math }
 
-function Factorial(const Order : Integer) : Double;
+function Factorial(const Order : Single): Single;
 var
   i : Integer;
 begin
- if Order = 0
-  then result := 1
-  else
-   begin
-    result := 1;
-    for i := 2 to Order
-     do result := result * i;
-   end;
+ result := 1;
+ for i := 2 to round(Order)
+  do result := result * i;
+end;
+
+function Factorial(const Order : Double): Double;
+var
+  i : Integer;
+begin
+ result := 1;
+ for i := 2 to round(Order)
+  do result := result * i;
+end;
+
+function Factorial(const Order : Integer): Integer;
+var
+  i : Integer;
+begin
+ result := 1;
+ for i := 2 to Order
+  do result := result * i;
 end;
 
 function FastFractional(const Value: Single): Single;
@@ -981,7 +996,6 @@ var
 asm
  mov temp, Value;
  fild temp.Integer
- fld Value.Extended
  fxtract
  fstp st(0)
  fistp result.Integer

@@ -56,6 +56,7 @@ type
     function  Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
     function  VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
     function  HostCallVendorSpecific(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    procedure CurrentProgramChanged; virtual;
     procedure SetCurrentProgramName(AName: string); virtual;
     procedure SetNumParams(const Value: Integer); virtual;
     procedure SetNumPrograms(const Value: Integer); virtual;
@@ -614,22 +615,29 @@ end;
 
 procedure TVSTModuleWithPrograms.SetProgram(const AProgramIndex: Integer);
 var
-  i: Integer;
+  NeedProgramUpdate: Boolean;
 begin
  if (AProgramIndex >= 0) and (AProgramIndex < FEffect.numPrograms) and (numPrograms > 0) then
   begin
    if Assigned(FOnBeforeProgramChange) then FOnBeforeProgramChange(Self);
+   NeedProgramUpdate := FCurProgram >= 0;
    FCurProgram := AProgramIndex;
    if Assigned(FOnAfterProgramChange) then FOnAfterProgramChange(Self);
-//   if (effFlagsProgramChunks in FEffect.EffectFlags) then
-    try
-     for i := 0 to Programs[FCurProgram].ParameterCount - 1
-      do SetParameter(i, Programs[FCurProgram].Parameter[i]);
-    except
-    end;
-   FEditorNeedUpdate := True;
+   if NeedProgramUpdate then CurrentProgramChanged;
   end;
- updateDisplay;
+end;
+
+procedure TVSTModuleWithPrograms.CurrentProgramChanged;
+var
+  i: Integer;
+begin
+ try
+  for i := 0 to Programs[FCurProgram].ParameterCount - 1
+   do SetParameter(i, Programs[FCurProgram].Parameter[i]);
+ except
+ end;
+ FEditorNeedUpdate := True;
+ UpdateDisplay;
 end;
 
 procedure TVSTModuleWithPrograms.SetProgramParameters(
