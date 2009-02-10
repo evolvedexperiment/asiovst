@@ -132,11 +132,11 @@ begin
  with Properties^ do
   begin
    {$IFDEF Use_IPPS}
-   Name       := 'Convolution Module (IPP based)';
-   ID         := 'IPP Convolution Module';
+   Name       := 'Low Latency Convolution Module (IPP based)';
+   ID         := 'IPP Low Latency Convolution Module';
    {$ELSE}
-   Name       := 'Simple Convolution Module';
-   ID         := 'DAV Simple Convolution Module';
+   Name       := 'Low Latency Convolution Module';
+   ID         := 'DAV Low Latency Convolution Module';
    {$ENDIF}
    About      := 'by Christian-W. Budde';
    SdkVersion := CSeSdkVersion;
@@ -186,7 +186,8 @@ begin
       VariableAddress := @FMaxIRBlockOrder;
       Direction       := drIn;
       DataType        := dtEnum;
-      DefaultValue    := 'range 6;16';
+      DefaultValue    := '16';
+      DatatypeExtra   := 'range 6,20';
      end;
   pinDesiredLatency:
     with Properties^ do
@@ -230,12 +231,14 @@ begin
                        while FSemaphore > 0 do;
                        Inc(FSemaphore);
                        try
-                        FConvolver.MaximumIRBlockOrder := FMaxIRBlockOrder;
+                        if FMaxIRBlockOrder <= FConvolver.MinimumIRBlockOrder
+                         then FMaxIRBlockOrder := FConvolver.MinimumIRBlockOrder + 1;
+                        FConvolver.MaximumIRBlockOrder := FMaxIRBlockOrder
                        finally
                         Dec(FSemaphore);
                        end;
                       end;
-  pinDesiredLatency : FConvolver.MinimumIRBlockOrder := 6 + FDesiredLatencyIndex;
+  pinDesiredLatency : FConvolver.MinimumIRBlockOrder := 5 + FDesiredLatencyIndex;
  end; inherited;
 end;
 

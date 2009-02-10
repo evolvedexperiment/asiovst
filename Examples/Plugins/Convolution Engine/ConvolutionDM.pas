@@ -40,8 +40,8 @@ begin
  FConvolutionClassic := TConvolution32.Create;
  FConvolutionLowLatency := TLowLatencyConvolution32.Create;
  FConvolutionClassic.FFTOrder := 8; //CeilLog2(BlockModeSize);
- FConvolutionLowLatency.MinimumIRBlockOrder := 7
-// FConvolutionLowLatency.FFTOrder := CeilLog2(BlockModeSize);
+ FConvolutionLowLatency.MinimumIRBlockOrder := 7;
+ FConvolutionLowLatency.MaximumIRBlockOrder := 13;
 end;
 
 procedure TConvolutionDataModule.VSTModuleClose(Sender: TObject);

@@ -3,7 +3,7 @@ unit DAV_DspConvolution;
 interface
 
 {$I DAV_Compiler.INC}
-{$DEFINE Use_IPPS}
+{.$DEFINE Use_IPPS}
 {.$DEFINE Use_CUDA}
 
 uses
@@ -40,6 +40,7 @@ type
     function GetFft : TFftReal2ComplexNativeFloat32;
     {$ENDIF}{$ENDIF}
     procedure SetIRSizePadded(const Value: Integer);
+    procedure SetIRSize(const Value: Integer);
   protected
     FImpulseResponse    : PDAVSingleFixedArray;
     FFilterFreqs        : array of PDAVComplexSingleFixedArray;
@@ -61,9 +62,6 @@ type
     procedure FFTOrderChanged; override;
     procedure PerformConvolution(SignalIn, SignalOut: PDAVSingleFixedArray); virtual;
 
-    property IRSize: Integer read FIRSize;
-    property IRSizePadded: Integer read FIRSizePadded write SetIRSizePadded;
-
     {$IFDEF Use_IPPS}
     property Fft : TFftReal2ComplexIPPSFloat32 read GetFft;
     {$ELSE} {$IFDEF Use_CUDA}
@@ -71,6 +69,7 @@ type
     {$ELSE}
     property Fft : TFftReal2ComplexNativeFloat32  read GetFft;
     {$ENDIF}{$ENDIF}
+    property IRSizePadded: Integer read FIRSizePadded write SetIRSizePadded;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -80,6 +79,7 @@ type
   published
     property FFTOrder;
     property FFTSize;
+    property IRSize: Integer read FIRSize write SetIRSize;
   end;
 
   TConvolution64 = class(TCustomConvolution)
@@ -515,6 +515,8 @@ begin
  FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FConvolvedTime^[0], FFFTSize * SizeOf(Single), 0);
+
+ ImpulseResponseChanged;
 end;
 
 {$IFDEF Use_IPPS}
@@ -562,9 +564,9 @@ begin
   end
  else
   begin
+   ReallocMem(FImpulseResponse, SampleFrames * SizeOf(Single));
+   Move(Data^[0], FImpulseResponse^[0], SampleFrames * SizeOf(Single));
    FIRSize := SampleFrames;
-   ReallocMem(FImpulseResponse, FIRSize * SizeOf(Single));
-   Move(Data^[0], FImpulseResponse^[0], FIRSize * SizeOf(Single));
    ImpulseResponseChanged;
   end;
 end;
@@ -631,10 +633,27 @@ begin
     Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * Sizeof(Single));
 
     // increase current position and reset block position
-    Inc(CurrentPosition, FFFTSizeHalf);
+    Inc(CurrentPosition, (FFFTSizeHalf - FBlockPosition));
     FBlockPosition := 0;
    end;
   until CurrentPosition >= SampleFrames;
+end;
+
+procedure TConvolution32.SetIRSize(const Value: Integer);
+begin
+ if FIRSize < Value then
+  begin
+   ReallocMem(FImpulseResponse, Value * SizeOf(Single));
+   FillChar(FImpulseResponse^[FIRSize], (Value - FIRSize) * SizeOf(Single), 0);
+   FIRSize := Value;
+   ImpulseResponseChanged;
+  end
+ else
+  begin
+   FIRSize := Value;
+   ReallocMem(FImpulseResponse, FIRSize * SizeOf(Single));
+   ImpulseResponseChanged;
+  end;
 end;
 
 procedure TConvolution32.SetIRSizePadded(const Value: Integer);
@@ -818,24 +837,30 @@ begin
  repeat
   if FBlockPosition + (SampleFrames - CurrentPosition) < FFFTSizeHalf then
    begin
+    // copy to ring buffer only
     Move(Input^[CurrentPosition], FInputBuffer^[FFFTSizeHalf + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
     Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
 
-    FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
-    CurrentPosition := SampleFrames;
+    // increase block position and break
+    inc(FBlockPosition, SampleFrames - CurrentPosition);
+    break;
    end
   else
    begin
     Move(Input^[CurrentPosition], FInputBuffer^[FFFTSizeHalf + FBlockPosition], (FFFTSizeHalf - FBlockPosition) * Sizeof(Double));
     Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (FFFTSizeHalf - FBlockPosition) * Sizeof(Double));
 
+    // discard already used output buffer part and make space for new data
     Move(FOutputBuffer^[FFFTSizeHalf], FOutputBuffer^[0], (FIRSizePadded - FFFTSizeHalf) * SizeOf(Double));
     FillChar(FOutputBuffer^[(FIRSizePadded - FFFTSizeHalf)], FFFTSizeHalf * SizeOf(Double), 0);
 
     PerformConvolution(FInputBuffer, FOutputBuffer);
+
+    // discard already used input buffer part to make space for new data
     Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * Sizeof(Double));
 
-    CurrentPosition := CurrentPosition + FFFTSizeHalf;
+    // increase current position and reset block position
+    Inc(CurrentPosition, (FFFTSizeHalf - FBlockPosition));
     FBlockPosition := 0;
    end;
   until CurrentPosition >= SampleFrames;
@@ -1173,7 +1198,7 @@ begin
     Move(FInputBuffer[FLatency], FInputBuffer[0], (FInputBufferSize - FLatency) * Sizeof(Single));
 
     // increase current position and reset block position
-    Inc(CurrentPosition, FLatency);
+    Inc(CurrentPosition, (FLatency - FBlockPosition));
     FBlockPosition := 0;
    end;
   until CurrentPosition >= SampleFrames;
