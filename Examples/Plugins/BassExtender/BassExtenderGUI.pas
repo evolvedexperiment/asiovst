@@ -41,6 +41,7 @@ type
     LbShapeValue: TGuiLabel;
     LbThreshold: TGuiLabel;
     LbThresholdValue: TGuiLabel;
+    DIL: TGuiDialImageList;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
@@ -117,14 +118,19 @@ begin
   RS := TResourceStream.Create(hInstance, 'BassExtender', 'PNG');
   try
    PngBmp.LoadFromStream(RS);
-   DialFrequency.DialBitmap.Assign(PngBmp);
-   DialOrder.DialBitmap.Assign(PngBmp);
-   DialDivide.DialBitmap.Assign(PngBmp);
-   DialShape.DialBitmap.Assign(PngBmp);
-   DialRatio.DialBitmap.Assign(PngBmp);
-   DialAttack.DialBitmap.Assign(PngBmp);
-   DialRelease.DialBitmap.Assign(PngBmp);
-   DialCompression.DialBitmap.Assign(PngBmp);
+   with DIL.DialImages.Add do
+    begin
+     NumGlyphs := 65;
+     DialBitmap.Assign(PngBmp);
+    end;
+   DialFrequency.DialImageIndex := 0;
+   DialOrder.DialImageIndex := 0;
+   DialDivide.DialImageIndex := 0;
+   DialShape.DialImageIndex := 0;
+   DialRatio.DialImageIndex := 0;
+   DialAttack.DialImageIndex := 0;
+   DialRelease.DialImageIndex := 0;
+   DialCompression.DialImageIndex := 0;
   finally
    RS.Free;
   end;
@@ -283,7 +289,7 @@ begin
    if DialBalance.Position <> Balance
     then DialBalance.Position := Balance;
 //   Balance := round(1E5 * Balance) * 1E-5;
-   LbBalanceValue.Caption := FloatToStrF(Balance, ffGeneral, 3, 4) + '%';
+   LbBalanceValue.Caption := FloatToStrF(RoundTo(Balance, -2), ffGeneral, 3, 4) + '%';
   end;
 end;
 
@@ -296,7 +302,7 @@ begin
    Compression := ParameterByName['Compression Mix'];
    if DialCompression.Position <> Compression
     then DialCompression.Position := Compression;
-   LbCompressionValue.Caption := FloatToStrF(Compression, ffGeneral, 3, 3) + '%';
+   LbCompressionValue.Caption := FloatToStrF(RoundTo(Compression, -2), ffGeneral, 3, 3) + '%';
   end;
 end;
 
@@ -352,7 +358,7 @@ begin
    Shape := ParameterByName['Shape'];
    if DialShape.Position <> Shape
     then DialShape.Position := Shape;
-   LbShapeValue.Caption := FloatToStrF(Shape, ffGeneral, 3, 2) + '%';
+   LbShapeValue.Caption := FloatToStrF(RoundTo(Shape, -2), ffGeneral, 3, 2) + '%';
   end;
 end;
 
@@ -394,7 +400,7 @@ begin
    if DialThreshold.Position <> Threshold
     then DialThreshold.Position := Threshold;
    Threshold := round(1E4 * Threshold) * 1E-4;
-   LbThresholdValue.Caption := FloatToStrF(Threshold, ffGeneral, 3, 4) + 'dB';
+   LbThresholdValue.Caption := FloatToStrF(RoundTo(Threshold, -2), ffGeneral, 3, 4) + 'dB';
   end;
 end;
 

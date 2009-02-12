@@ -3,9 +3,9 @@ object FmBassExtender: TFmBassExtender
   Top = 148
   BorderStyle = bsNone
   Caption = 'Bass Extender'
-  ClientHeight = 285
+  ClientHeight = 287
   ClientWidth = 543
-  Color = 3163213
+  Color = 2372409
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -19,7 +19,7 @@ object FmBassExtender: TFmBassExtender
   PixelsPerInch = 96
   TextHeight = 13
   object PnMain: TGuiPanel
-    Left = 8
+    Left = 6
     Top = 8
     Width = 529
     Height = 271
@@ -55,6 +55,7 @@ object FmBassExtender: TFmBassExtender
       Color = 2372409
       CurveMapping = -0.250000000000000000
       DefaultPosition = 80.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
@@ -62,6 +63,7 @@ object FmBassExtender: TFmBassExtender
       Min = 16.000000000000000000
       NumGlyphs = 65
       OnChange = DialFrequencyChange
+      ParentColor = False
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
@@ -123,6 +125,7 @@ object FmBassExtender: TFmBassExtender
       Color = 2372409
       CurveMapping = -0.400000005960464500
       DefaultPosition = 2.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
@@ -130,6 +133,7 @@ object FmBassExtender: TFmBassExtender
       Min = 1.000000000000000000
       NumGlyphs = 65
       OnChange = DialOrderChange
+      ParentColor = False
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
@@ -175,12 +179,14 @@ object FmBassExtender: TFmBassExtender
       CircleColor = 3163213
       Color = 2372409
       DefaultPosition = 50.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
       OnChange = DialDivideChange
+      ParentColor = False
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
@@ -226,12 +232,14 @@ object FmBassExtender: TFmBassExtender
       CircleColor = 3163213
       Color = 2372409
       DefaultPosition = 50.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
       OnChange = DialShapeChange
+      ParentColor = False
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
@@ -276,6 +284,7 @@ object FmBassExtender: TFmBassExtender
       Height = 64
       CircleColor = 3163213
       Color = 2372409
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
@@ -283,6 +292,7 @@ object FmBassExtender: TFmBassExtender
       Min = -100.000000000000000000
       NumGlyphs = 65
       OnChange = DialBalanceChange
+      ParentColor = False
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
@@ -311,12 +321,14 @@ object FmBassExtender: TFmBassExtender
       Height = 64
       CircleColor = 3163213
       Color = 2372409
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
       Min = -80.000000000000000000
       NumGlyphs = 65
       OnChange = DialThresholdChange
+      ParentColor = False
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
@@ -377,6 +389,7 @@ object FmBassExtender: TFmBassExtender
       Color = 2372409
       CurveMapping = -1.799999952316284000
       DefaultPosition = 10.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
@@ -384,6 +397,7 @@ object FmBassExtender: TFmBassExtender
       Min = 1.000000000000000000
       NumGlyphs = 65
       OnChange = DialRatioChange
+      ParentColor = False
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
@@ -430,6 +444,7 @@ object FmBassExtender: TFmBassExtender
       Color = 2372409
       CurveMapping = -2.200000047683716000
       DefaultPosition = 100.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
@@ -437,10 +452,11 @@ object FmBassExtender: TFmBassExtender
       Min = 10.000000000000000000
       NumGlyphs = 65
       OnChange = DialAttackChange
+      ParentColor = False
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
-      Position = 2000.000000000000000000
+      Position = 1000.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
     end
@@ -483,6 +499,7 @@ object FmBassExtender: TFmBassExtender
       Color = 2372409
       CurveMapping = -1.100000023841858000
       DefaultPosition = 100.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
@@ -490,6 +507,7 @@ object FmBassExtender: TFmBassExtender
       Min = 20.000000000000000000
       NumGlyphs = 65
       OnChange = DialReleaseChange
+      ParentColor = False
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
@@ -535,12 +553,14 @@ object FmBassExtender: TFmBassExtender
       CircleColor = 3163213
       Color = 2372409
       DefaultPosition = 50.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
       Max = 100.000000000000000000
       NumGlyphs = 65
       OnChange = DialCompressionChange
+      ParentColor = False
       PointerAngles.Start = 220
       PointerAngles.Range = 280
       PointerAngles.Resolution = 280.000000000000000000
@@ -563,5 +583,10 @@ object FmBassExtender: TFmBassExtender
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
     end
+  end
+  object DIL: TGuiDialImageList
+    DialImages = <>
+    Left = 24
+    Top = 40
   end
 end

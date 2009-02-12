@@ -14,7 +14,7 @@ SetCompressor lzma
 
   ;Name and file
   Name "DitherNoiseshaper Installer"
-  OutFile "DitherNoiseshaper_Install.exe"
+  OutFile "Delayla_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "DitherNoiseshaper"
+  !define PRODUCT_NAME "Delayla"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,17 +69,17 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "DitherNoiseshaper VST-Plugin" SecProgramFiles
+Section "Delayla VST-Plugin" SecProgramFiles
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\DitherNoiseshaper.dll"
+  File "..\Bin\Delayla.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallDitherNoiseshaper.exe"
+  WriteUninstaller "$INSTDIR\UninstallDelayla.exe"
 
 
 SectionEnd
@@ -88,13 +88,13 @@ SectionEnd
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "DitherNoiseshaper VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Delayla VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "DitherNoiseshaper VST Plugin"
+  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Delayla VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -107,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\DitherNoiseshaper.dll"
+  Delete "$INSTDIR\Delayla.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

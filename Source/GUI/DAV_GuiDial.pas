@@ -208,7 +208,7 @@ type
     property CurveMapping;
     property DefaultPosition;
     property DialBitmap;
-    property DialAlpha;
+//    property DialAlpha;
     property DialImageList;
     property DialImageIndex;
     property ImageList;

@@ -96,3 +96,25 @@
   settings needed to be tweaked from within the IDE. The current state is
   unknown, but it might work (only Delphi 5 though).}
 {.$DEFINE D5CP}
+
+
+/////////////////////////////
+//  DSP Compiler Switches  //
+/////////////////////////////
+
+{.$DEFINE Use_IPPS}
+{ If this compiler switch is enabled the Intel Performance Primitives are used.
+  Right now there only exists a unit (not part of the package) to integrate the
+  FFT found in the IPP. You need to purchase the IPP separately from Intel in
+  order to use this.
+  The default is disabled.}
+
+{.$DEFINE Use_CUDA}
+{ If this compiler switch is enabled CUDA can be used.
+  Right now there exists only a wrapper to use the 32-bit precision FFT from
+  the CUDA library, but further options might be implemented in the future as
+  well. The unit for interfacing can be found in the repository, but it is
+  mandatory to install CUDA first. Also you need to have a nVidia graphic
+  adapter in order to use this. Otherwise only an emulation will be used. This
+  emulation is very slow!
+  The default is disabled.}

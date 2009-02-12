@@ -1550,7 +1550,7 @@ end;
 
 procedure TCustomVstPlugIn.SetActive(const Value: Boolean);
 begin
-  if FActive <> Value then
+ if FActive <> Value then
   if Value then Open else Close;
 end;
 
@@ -2923,6 +2923,7 @@ end;
 
 procedure TCustomVstPlugIn.UnLoad;
 begin
+ Active := False;
  if FVstDllHandle > 0 then
   try
    FreeLibrary(FVstDllHandle);

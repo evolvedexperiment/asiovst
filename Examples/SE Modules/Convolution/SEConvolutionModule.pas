@@ -70,8 +70,7 @@ begin
  if CSepMagic <> 2 * $29A2A826
   then raise Exception.Create(RCStrSynthEditOnly);
  VSTHostParams.Opcode := 32;
- VendorString := StrPas(PChar(CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams)));
- if VendorString <> ''
+ if CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams) <> -1
   then raise Exception.Create(RCStrSynthEditOnly);
  {$ENDIF}
 end;

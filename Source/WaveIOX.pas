@@ -46,32 +46,32 @@ type
 
   TWaveStream = class(TObject)
   private
-    fFormat            : PWaveFormatEx;
-    fDataOffset, fSize : LongInt;
-    fFullsize, fFlSize : LongInt;
-    fMM                : hmmIO;
-    fPck, fPckRIFF     : TMMCKINFO;
+    FFormat            : PWaveFormatEx;
+    FDataOffset, FSize : LongInt;
+    FFullsize, FFlSize : LongInt;
+    FMM                : hmmIO;
+    FPck, FPckRIFF     : TMMCKINFO;
 
     function GetPosition: LongInt;
     procedure SetPosition(Pos: LongInt);
     procedure CheckMMIOWave;
 
   public
-    constructor Create(fMMIO: hmmIO; WriteFormat: PWaveFormatEx);
+    constructor Create(FMMIO: hmmIO; WriteFormat: PWaveFormatEx);
     destructor Destroy; override;
     function Read(var Buffer; Count: LongInt): LongInt; virtual;
     function Seek(Offset: LongInt; Origin: Word): LongInt; virtual;
     function Write(var Buffer; Count: LongInt): LongInt; virtual;
 
-    property Format: PWaveFormatEx read fFormat;
+    property Format: PWaveFormatEx read FFormat;
     property Position: LongInt read GetPosition write SetPosition;
-    property Size: LongInt read fSize;
-    property FloatSize: LongInt read fFlSize;
+    property Size: LongInt read FSize;
+    property FloatSize: LongInt read FFlSize;
   end;
 
   TMemoryWaveStream = class(TWaveStream)
   private
-    fMMIO: hmmIO;
+    FMMIO: hmmIO;
   public
     constructor Create(Memory: Pointer; Size: LongInt;
       WriteFormat: PWaveFormatEx); virtual;
@@ -80,7 +80,7 @@ type
 
   TFilewaveStream = class(TWaveStream)
   private
-    fMMIO: hmmIO;
+    FMMIO: hmmIO;
   public
     constructor Create(FileName: String; WriteFormat: PWaveFormatEx); virtual;
     destructor Destroy; override;
@@ -88,25 +88,25 @@ type
 
   TPCMWaveReader = class(TObject)
   private
-    fPosition              : LongInt;
-    fStream                : TWaveStream;
-    fSize                  : LongInt;
-    fBufferLength          : LongInt;
-    fACMStream             : Integer;
-    fACMStreamHeader       : TACMStreamHeader;
-    fDstWFx                : PWaveFormatEx;
-    fPFullSize, fPFlSize   : LongInt;
+    FPosition              : LongInt;
+    FStream                : TWaveStream;
+    FSize                  : LongInt;
+    FBufferLength          : LongInt;
+    FACMStream             : Integer;
+    FACMStreamHeader       : TACMStreamHeader;
+    FDstWFx                : PWaveFormatEx;
+    FPFullSize, FPFlSize   : LongInt;
 
-    fRawBuffer             : Pointer;
-    fRawBufferByteSize     : LongInt;
-    fRawBufferSampleSize   : LongInt;
+    FRawBuffer             : Pointer;
+    FRawBufferByteSize     : LongInt;
+    FRawBufferSampleSize   : LongInt;
 
-    fPCMBuffer             : Pointer;
-    fPCMBufferByteSize     : LongInt;   // size of total buffer in Bytes
-    fPCMBufferSampleSize   : LongInt;   // size of converted samples in buffer
+    FPCMBuffer             : Pointer;
+    FPCMBufferByteSize     : LongInt;   // size of total buffer in Bytes
+    FPCMBufferSampleSize   : LongInt;   // size of converted samples in buffer
 
-    fPCMSamplesPerSample   : LongInt;
-    fPCMBufferSamplePos    : LongInt;
+    FPCMSamplesPerSample   : LongInt;
+    FPCMBufferSamplePos    : LongInt;
 
     procedure AllocBuffers;
     procedure DestroyBuffers;
@@ -119,11 +119,11 @@ type
     destructor Destroy; override;
     function Read(var Buffer; Count: LongInt): LongInt;
 
-    property Format: PWaveFormatEx read fDstWFx;
-    property BufferLength: LongInt read fBufferLength write SetBufferLength;
-    property Position: LongInt read fPosition write SetPosition;
-    property Size: LongInt read fSize;
-    property Stream: TWaveStream read fStream;
+    property Format: PWaveFormatEx read FDstWFx;
+    property BufferLength: LongInt read FBufferLength write SetBufferLength;
+    property Position: LongInt read FPosition write SetPosition;
+    property Size: LongInt read FSize;
+    property Stream: TWaveStream read FStream;
     function BufferToFloat(makemono: boolean): pointer;
   end;
 
@@ -148,47 +148,47 @@ begin
             Integer(Chr4) shl 24;
 end;
 
-constructor TWaveStream.Create(fMMIO: hmmIO; WriteFormat: PWaveFormatEx);
+constructor TWaveStream.Create(FMMIO: hmmIO; WriteFormat: PWaveFormatEx);
 begin
   inherited Create;
   filemode := 0;
-  fMM := fMMIO;
+  FMM := FMMIO;
 
   if (WriteFormat <> nil) then
    begin
     // Create the output file RIFF chunk of form type 'WAVE'.
-    fPckRIFF.fccType := mmioFOURCC('W', 'A', 'V', 'E');
-    fPckRIFF.cksize := 0;
-    if (mmioCreateChunk(fMM, @fPckRIFF, MMIO_CREATERIFF) <> 0) then
+    FPckRIFF.fccType := mmioFOURCC('W', 'A', 'V', 'E');
+    FPckRIFF.cksize := 0;
+    if (mmioCreateChunk(FMM, @FPckRIFF, MMIO_CREATERIFF) <> 0) then
       raise EWaveIOError.Create('Error 01: Cannot create chunk.');
 
     // We are now descended into the 'RIFF' chunk we just created.
     // * Now create the 'fmt ' chunk. Since we know the size of this chunk,
-    // specify it in the MMCKINFO structure so fMMIO doesn't have to seek
+    // specify it in the MMCKINFO structure so FMMIO doesn't have to seek
     // back and set the chunk size after ascending from the chunk.
 
-    fPck.ckid := mmioFOURCC('f', 'm', 't', ' ');
-    fPck.cksize := SizeOf(WriteFormat^) + WriteFormat^.cbSize;
-    if (mmioCreateChunk(fMM, @fPck, 0) <> 0) then
+    FPck.ckid := mmioFOURCC('f', 'm', 't', ' ');
+    FPck.cksize := SizeOf(WriteFormat^) + WriteFormat^.cbSize;
+    if (mmioCreateChunk(FMM, @FPck, 0) <> 0) then
       raise EWaveIOError.Create('Error 02: Cannot create chunk.');
 
     // Write the variable length size.
-    if (mmioWrite(fMM, Pointer(WriteFormat), SizeOf(WriteFormat^) +
+    if (mmioWrite(FMM, Pointer(WriteFormat), SizeOf(WriteFormat^) +
       WriteFormat^.cbSize) <> SizeOf(WriteFormat^) + WriteFormat^.cbSize) then
       raise EWaveIOError.Create('Error 03: Cannot write wave format.');
 
-    GetMem(fFormat, SizeOf(fFormat^));
-    CopyMemory(fFormat, WriteFormat, SizeOf(fFormat^));
+    GetMem(FFormat, SizeOf(FFormat^));
+    CopyMemory(FFormat, WriteFormat, SizeOf(FFormat^));
 
     // Ascend out of the 'fmt ' chunk,back into the 'RIFF' chunk.
-    if (mmioAscend(fMM, @fPck, 0) <> 0) then
+    if (mmioAscend(FMM, @FPck, 0) <> 0) then
       raise EWaveIOError.Create('Error 04: Cannot ascend chunk.');
 
     // We are now descended into the 'RIFF' chunk we just created.
     // * Now create the 'data' chunk.
-    fPck.ckid := mmioFOURCC('d', 'a', 't', 'a');
-    fPck.cksize := 0;
-    if (mmioCreateChunk(fMM, @fPck, 0) <> 0) then
+    FPck.ckid := mmioFOURCC('d', 'a', 't', 'a');
+    FPck.cksize := 0;
+    if (mmioCreateChunk(FMM, @FPck, 0) <> 0) then
       raise EWaveIOError.Create('Error 05: Cannot create chunk.');
    end
   else
@@ -196,24 +196,24 @@ begin
     CheckMMIOWave;
 
     // put in the beggining of the file
-    mmioSeek(fMM, fDataOffset, SEEK_SET);
+    mmioSeek(FMM, FDataOffset, SEEK_SET);
    end;
 end;
 
 
 destructor TWaveStream.Destroy;
 begin
-  if (fFormat <> nil) then FreeMem(fFormat);
+  if (FFormat <> nil) then FreeMem(FFormat);
 
-  mmioSeek(fMM, 0, SEEK_END);
+  mmioSeek(FMM, 0, SEEK_END);
 
-  if (mmioAscend(fMM, @fPck, 0) <> 0)
+  if (mmioAscend(FMM, @FPck, 0) <> 0)
    then raise EWaveIOError.Create('Error 06: Cannot ascend chunk.');
 
-  if (mmioAscend(fMM, @fPckRIFF, 0) <> 0)
+  if (mmioAscend(FMM, @FPckRIFF, 0) <> 0)
    then raise EWaveIOError.Create('Error 07: Cannot ascend chunk.');
 
-  if (mmioFlush(fMM, 0) <> 0)
+  if (mmioFlush(FMM, 0) <> 0)
    then raise EWaveIOError.Create('Error 08: Cannot flush.');
 
   inherited Destroy;
@@ -236,17 +236,17 @@ var
 begin
   p := @Buffer;
 
-  Result := mmioRead(fMM, p, Count * fFormat^.nBlockAlign);
+  Result := mmioRead(FMM, p, Count * FFormat^.nBlockAlign);
   if (Result = -1)
    then raise EWaveIOError.Create('Error 09: Cannot read from file.')
-   else Result := Result div fFormat^.nBlockAlign;
+   else Result := Result div FFormat^.nBlockAlign;
 end;
 
 function TWaveStream.Seek(Offset: LongInt; Origin: Word): LongInt;
 begin
  if (Origin = SEEK_SET)
-  then Result := (mmioSeek(fMM, Offset * fFormat^.nBlockAlign + fDataOffset, Origin) - fDataOffset) div fFormat^.nBlockAlign
-  else Result := (mmioSeek(fMM, Offset * fFormat^.nBlockAlign, Origin) - fDataOffset) div fFormat^.nBlockAlign;
+  then Result := (mmioSeek(FMM, Offset * FFormat^.nBlockAlign + FDataOffset, Origin) - FDataOffset) div FFormat^.nBlockAlign
+  else Result := (mmioSeek(FMM, Offset * FFormat^.nBlockAlign, Origin) - FDataOffset) div FFormat^.nBlockAlign;
 
  if (Result < 0)
   then raise EWaveIOError.Create('Error 10: Cannot seek in file.');
@@ -254,10 +254,10 @@ end;
 
 function TWaveStream.Write(var Buffer; Count: LongInt): LongInt;
 begin
- Result := mmioWrite(fMM, @Buffer, Count * fFormat^.nBlockAlign);
+ Result := mmioWrite(FMM, @Buffer, Count * FFormat^.nBlockAlign);
  if (Result = -1)
   then raise EWaveIOError.Create('Error 11: Cannot write to file.')
-  else Result := Result div fFormat^.nBlockAlign;
+  else Result := Result div FFormat^.nBlockAlign;
 end;
 
 procedure TWaveStream.CheckMMIOWave;
@@ -266,25 +266,25 @@ var
   FormatTmp  : TWaveFormatEx;
   ExtraAlloc : Word;
 begin
-  if (mmioDescend(fMM, @fPckRIFF, nil, 0) <> 0) then
+  if (mmioDescend(FMM, @FPckRIFF, nil, 0) <> 0) then
     raise EWaveIOError.Create('Error 12: Invalid multimedia file!');
 
-  if (fPckRIFF.ckid <> FOURCC_RIFF) or
-    (fPckRIFF.fccType <> mmioFOURCC('W', 'A', 'V', 'E')) then
+  if (FPckRIFF.ckid <> FOURCC_RIFF) or
+    (FPckRIFF.fccType <> mmioFOURCC('W', 'A', 'V', 'E')) then
     raise EWaveIOError.Create('Error 13: Not a wave file!');
 
   // Search the input file for for the 'fmt ' chunk.     */
-  fPck.ckid := mmioFOURCC('f', 'm', 't', ' ');
-  if (mmioDescend(fMM, @fPck, @fPckRIFF, MMIO_FINDCHUNK) <> 0) then
+  FPck.ckid := mmioFOURCC('f', 'm', 't', ' ');
+  if (mmioDescend(FMM, @FPck, @FPckRIFF, MMIO_FINDCHUNK) <> 0) then
     raise EWaveIOError.Create('Error 14: Cannot find ''fmt'' chunk!');
 
   // Expect the 'fmt' chunk to be at least as large as <PCMWAVEFORMAT>;
   // if there are extra parameters at the end,we'll ignore them */
-  if (fPck.cksize < 16) then
+  if (FPck.cksize < 16) then
     raise EWaveIOError.Create('Error 15: Abnormal ''fmt'' size!');
 
   // Read the 'fmt ' chunk into <pcmWaveFormat>.*/
-  if (mmioRead(fMM, PChar(@FormatTmp), 16) <> 16) then
+  if (mmioRead(FMM, PChar(@FormatTmp), 16) <> 16) then
     raise EWaveIOError.Create('Error 16: Cannot read ''fmt'' chunk!');
 
   // Ok, allocate the waveformatex, but if its not PCM
@@ -294,37 +294,37 @@ begin
    then ExtraAlloc := 0 else
 
   // Read in length of extra Bytes.
-  if (mmioRead(fMM, @ExtraAlloc, SizeOf(ExtraAlloc)) <> SizeOf(ExtraAlloc))
+  if (mmioRead(FMM, @ExtraAlloc, SizeOf(ExtraAlloc)) <> SizeOf(ExtraAlloc))
    then raise EWaveIOError.Create('Error 17: Cannot read ''waveformatex'' length!');
 
-  GetMem(fFormat, SizeOf(fFormat^) + ExtraAlloc);
-  CopyMemory(fFormat, @FormatTmp, SizeOf(fFormat^));
-  fFormat^.cbSize := ExtraAlloc;
+  GetMem(FFormat, SizeOf(FFormat^) + ExtraAlloc);
+  CopyMemory(FFormat, @FormatTmp, SizeOf(FFormat^));
+  FFormat^.cbSize := ExtraAlloc;
   if (ExtraAlloc <> 0) then
-   if (mmioRead(fMM, PChar(fFormat) + SizeOf(fFormat^), ExtraAlloc) <> ExtraAlloc)
+   if (mmioRead(FMM, PChar(FFormat) + SizeOf(FFormat^), ExtraAlloc) <> ExtraAlloc)
     then raise EWaveIOError.Create('Error 18: Cannot read ''waveformatex''!');
 
-  if (fFormat^.wFormatTag = cMPEGLayer3)
+  if (FFormat^.wFormatTag = cMPEGLayer3)
    then raise EWaveIOError.Create('Error 19: MPEG Layer-3 compression is not supported.');
 
   // Ascend the input file out of the 'fmt ' chunk. */
-  if (mmioAscend(fMM, @fPck, 0) <> 0)
+  if (mmioAscend(FMM, @FPck, 0) <> 0)
    then raise EWaveIOError.Create('Error 20: Cannot ascend from ''fmt'' chunk!');
 
   // Do a nice little seek...
-  if (mmioSeek(fMM, fPckRIFF.dwDataOffset + SizeOf(FOURCC), SEEK_SET) = -1)
+  if (mmioSeek(FMM, FPckRIFF.dwDataOffset + SizeOf(FOURCC), SEEK_SET) = -1)
    then raise EWaveIOError.Create('Error 21: Cannot seek to data!');
 
   // Search the input file for the 'data' chunk.
-  fPck.ckid := mmioFOURCC('d', 'a', 't', 'a');
-  mmioDescend(fMM, @fPck, @fPckRIFF, MMIO_FINDCHUNK);
+  FPck.ckid := mmioFOURCC('d', 'a', 't', 'a');
+  mmioDescend(FMM, @FPck, @FPckRIFF, MMIO_FINDCHUNK);
 
-  if (mmioGetInfo(fMM, @mmioInfo, 0) <> 0) then
+  if (mmioGetInfo(FMM, @mmioInfo, 0) <> 0) then
     raise EWaveIOError.Create('Error 22: Cannot get info!');
 
-  fDataOffset := fPck.dwDataOffset;
-  fSize := fPck.cksize div fFormat^.nBlockAlign;
-  fFlSize := fSize;
+  FDataOffset := FPck.dwDataOffset;
+  FSize := FPck.cksize div FFormat^.nBlockAlign;
+  FFlSize := FSize;
 end;
 
 
@@ -346,18 +346,18 @@ begin
    end;
 
   // Initialization...
-  fMMIO := mmioOpen(nil, @info, MMIO_READ);
-  if (fMMIO = 0) then
+  FMMIO := mmioOpen(nil, @info, MMIO_READ);
+  if (FMMIO = 0) then
     raise EWaveIOError.Create('Error 23: Cannot open memory stream.');
 
-  inherited Create(fMMIO, WriteFormat);
+  inherited Create(FMMIO, WriteFormat);
 end;
 
 destructor TMemoryWaveStream.Destroy;
 begin
   inherited Destroy;
 
-  if (fMMIO <> 0) then mmioClose(fMMIO, 0);
+  if (FMMIO <> 0) then mmioClose(FMMIO, 0);
 end;
 
 
@@ -379,22 +379,22 @@ begin
       raise EWaveIOError.Create('Error 24: Cannot open file.')
     else
      begin
-      fFullsize := filesize(f);
+      FFullsize := filesize(f);
       closefile(f);
      end;
-    fMMIO := mmioOpen(Pointer(FileName), nil, MMIO_READ or MMIO_ALLOCBUF)
+    FMMIO := mmioOpen(Pointer(FileName), nil, MMIO_READ or MMIO_ALLOCBUF)
    end
-  else fMMIO := mmioOpen(Pointer(FileName), nil, MMIO_CREATE or MMIO_READWRITE or MMIO_ALLOCBUF);
+  else FMMIO := mmioOpen(Pointer(FileName), nil, MMIO_CREATE or MMIO_READWRITE or MMIO_ALLOCBUF);
 
-  if (fMMIO = 0) then raise EWaveIOError.Create('Error 25: Cannot open file stream.');
+  if (FMMIO = 0) then raise EWaveIOError.Create('Error 25: Cannot open file stream.');
 
-  inherited Create(fMMIO, WriteFormat);
+  inherited Create(FMMIO, WriteFormat);
 end;
 
 destructor TFilewaveStream.Destroy;
 begin
   inherited Destroy;
-  if (fMMIO <> 0) then mmioClose(fMMIO, 0);
+  if (FMMIO <> 0) then mmioClose(FMMIO, 0);
 end;
 
 
@@ -406,66 +406,66 @@ constructor TPCMWaveReader.Create(Stream: TWaveStream);
 begin
   inherited Create;
 
-  fStream := Stream;
-  GetMem(fDstWFx, SizeOf(fDstWFx^));
+  FStream := Stream;
+  GetMem(FDstWFx, SizeOf(FDstWFx^));
 
-//  fBufferLength := 4096;
-  fBufferLength := 20000;
+//  FBufferLength := 4096;
+  FBufferLength := 20000;
 
-  if (fStream.Format^.wFormatTag <> WAVE_FORMAT_PCM) and (fStream.Format^.wFormatTag <> 3) then
+  if (FStream.Format^.wFormatTag <> WAVE_FORMAT_PCM) and (FStream.Format^.wFormatTag <> 3) then
    begin
     // prepare acm stream converter
-    ZeroMemory(fDstWFx, SizeOf(fDstWFx^));
-    fDstWFx^.wFormatTag := WAVE_FORMAT_PCM;
-    if (acmFormatSuggest(0, fStream.fFormat, fDstWFx, SizeOf(fDstWFx^),
+    ZeroMemory(FDstWFx, SizeOf(FDstWFx^));
+    FDstWFx^.wFormatTag := WAVE_FORMAT_PCM;
+    if (acmFormatSuggest(0, FStream.FFormat, FDstWFx, SizeOf(FDstWFx^),
       ACM_FORMATSUGGESTF_WFORMATTAG) <> 0) then
       raise EWaveIOError.Create('Error 26: Cannot suggest pcm format.');
 
-    if (acmStreamOpen(PHACMSTREAM(@fACMStream), 0, fStream.Format^, fDstWFx^,
+    if (acmStreamOpen(PHACMSTREAM(@FACMStream), 0, FStream.Format^, FDstWFx^,
       nil, 0, 0, 0) <> 0) then
       raise EWaveIOError.Create('Error 27: Cannot open acm stream.');
 
     AllocBuffers;
 
     // prepare buffers
-    ZeroMemory(@fACMStreamHeader, SizeOf(fACMStreamHeader));
-    with fACMStreamHeader do
+    ZeroMemory(@FACMStreamHeader, SizeOf(FACMStreamHeader));
+    with FACMStreamHeader do
      begin
-      cbStruct := SizeOf(fACMStreamHeader);
-      pbSrc := Pointer(fRawBuffer);
-      cbSrcLength := fRawBufferByteSize;
+      cbStruct := SizeOf(FACMStreamHeader);
+      pbSrc := Pointer(FRawBuffer);
+      cbSrcLength := FRawBufferByteSize;
       dwSrcUser := cbSrcLength;
-      pbDst := Pointer(fPCMBuffer);
-      cbDstLength := fPCMBufferByteSize;
+      pbDst := Pointer(FPCMBuffer);
+      cbDstLength := FPCMBufferByteSize;
       dwDstUser := cbDstLength;
      end;
 
-    if (acmStreamPrepareHeader(fACMStream, fACMStreamHeader, 0) <> 0) then
+    if (acmStreamPrepareHeader(FACMStream, FACMStreamHeader, 0) <> 0) then
       raise EWaveIOError.Create('Error 28: Cannot prepare headers.');
    end
-  else fDstWFx^ := fStream.Format^;
+  else FDstWFx^ := FStream.Format^;
 
-  if (fStream.Format^.wFormatTag <> WAVE_FORMAT_PCM) and
-    (fStream.Format^.wFormatTag <> 3) then
-    fPCMSamplesPerSample :=
-      (fPCMBufferByteSize * fStream.Format^.nBlockAlign) div
-      (fRawBufferByteSize * fDstWFx^.nBlockAlign)
-  else fPCMSamplesPerSample := 1;
-  fSize := fPCMSamplesPerSample * fStream.Size;
-  fPCMBufferSampleSize := 0;
+  if (FStream.Format^.wFormatTag <> WAVE_FORMAT_PCM) and
+    (FStream.Format^.wFormatTag <> 3) then
+    FPCMSamplesPerSample :=
+      (FPCMBufferByteSize * FStream.Format^.nBlockAlign) div
+      (FRawBufferByteSize * FDstWFx^.nBlockAlign)
+  else FPCMSamplesPerSample := 1;
+  FSize := FPCMSamplesPerSample * FStream.Size;
+  FPCMBufferSampleSize := 0;
 end;
 
 
 destructor TPCMWaveReader.Destroy;
 begin
-  if (fACMStream <> 0) then
+  if (FACMStream <> 0) then
    begin
-    fACMStreamHeader.cbSrcLength := fRawBufferByteSize;
-    acmStreamUnprepareHeader(fACMStream, fACMStreamHeader, 0);
-    acmStreamClose(fACMStream, 0);
+    FACMStreamHeader.cbSrcLength := FRawBufferByteSize;
+    acmStreamUnprepareHeader(FACMStream, FACMStreamHeader, 0);
+    acmStreamClose(FACMStream, 0);
    end;
 
-  if (fDstWFx <> nil) then FreeMem(fDstWFx);
+  if (FDstWFx <> nil) then FreeMem(FDstWFx);
 
   DestroyBuffers;
 
@@ -480,52 +480,52 @@ begin
   DestroyBuffers;
 
   // calc space needed for holding the decompression of one sample
-  if (acmStreamSize(fACMStream, fStream.Format^.nBlockAlign, dd, ACM_STREAMSIZEF_SOURCE) <> 0)
+  if (acmStreamSize(FACMStream, FStream.Format^.nBlockAlign, dd, ACM_STREAMSIZEF_SOURCE) <> 0)
    then raise EWaveIOError.Create('Error 29: Cannot recommend an acm stream size.');
 
   // calc minimum size block of the source
-  if (acmStreamSize(fACMStream, dd, ss, ACM_STREAMSIZEF_DESTINATION) <> 0)
+  if (acmStreamSize(FACMStream, dd, ss, ACM_STREAMSIZEF_DESTINATION) <> 0)
    then raise EWaveIOError.Create('Error 30: Cannot recommend an acm stream size.');
 
   // alloc source buffer(raw)
-  fRawBufferSampleSize := fBufferLength div dd;
-  if (fRawBufferSampleSize = 0)
-   then fRawBufferSampleSize := 1;
-  fRawBufferByteSize := fRawBufferSampleSize * ss;
-  GetMem(fRawBuffer, fRawBufferByteSize);
+  FRawBufferSampleSize := FBufferLength div dd;
+  if (FRawBufferSampleSize = 0)
+   then FRawBufferSampleSize := 1;
+  FRawBufferByteSize := FRawBufferSampleSize * ss;
+  GetMem(FRawBuffer, FRawBufferByteSize);
 
   // Alloc destination buffer(decompressed)
-  if (acmStreamSize(fACMStream, DWord(fRawBufferByteSize), DWord(fPCMBufferByteSize), ACM_STREAMSIZEF_SOURCE) <> 0)
+  if (acmStreamSize(FACMStream, DWord(FRawBufferByteSize), DWord(FPCMBufferByteSize), ACM_STREAMSIZEF_SOURCE) <> 0)
    then raise EWaveIOError.Create('Error 31: Cannot recommend an acm stream size.');
-  GetMem(fPCMBuffer, fPCMBufferByteSize);
+  GetMem(FPCMBuffer, FPCMBufferByteSize);
 end;
 
 
 procedure TPCMWaveReader.DestroyBuffers;
 begin
-  fPCMBufferSampleSize := 0;
+  FPCMBufferSampleSize := 0;
 
-  if (fPCMBuffer <> nil) then FreeMem(fPCMBuffer);
-  fPCMBuffer := nil;
+  if (FPCMBuffer <> nil) then FreeMem(FPCMBuffer);
+  FPCMBuffer := nil;
 
-  if (fRawBuffer <> nil) then FreeMem(fRawBuffer);
-  fRawBuffer := nil;
+  if (FRawBuffer <> nil) then FreeMem(FRawBuffer);
+  FRawBuffer := nil;
 end;
 
 procedure TPCMWaveReader.SetBufferLength(Value: LongInt);
 begin
-  if (Value <> fBufferLength) and (Value >= 1024) then
+  if (Value <> FBufferLength) and (Value >= 1024) then
    begin
-    fBufferLength := Value;
-    if (fPCMBuffer <> nil) then AllocBuffers;
+    FBufferLength := Value;
+    if (FPCMBuffer <> nil) then AllocBuffers;
    end;
 end;
 
 procedure TPCMWaveReader.SetPosition(Value: LongInt);
 begin
-  if (Value <> fPosition) then
-   if (Value >= 0) and (Value < fSize)
-    then fPosition := Value
+  if (Value <> FPosition) then
+   if (Value >= 0) and (Value < FSize)
+    then FPosition := Value
     else raise EWaveIOError.Create('Error 32: Position out of bounds.');
 end;
 
@@ -540,63 +540,63 @@ begin
     Exit;
    end;
 
-  if (fStream.Format^.wFormatTag = WAVE_FORMAT_PCM) or
-    (fStream.Format^.wFormatTag = 3) then
+  if (FStream.Format^.wFormatTag = WAVE_FORMAT_PCM) or
+    (FStream.Format^.wFormatTag = 3) then
    begin
-    fStream.Position := fPosition;
-    Result := fStream.Read(Buffer, Count);
-    fPosition := fPosition + Result;
+    FStream.Position := FPosition;
+    Result := FStream.Read(Buffer, Count);
+    FPosition := FPosition + Result;
    end
   else
    begin
-    if (Count + fPosition >= fSize) then
-      Count := fSize - fPosition;                                 // limit to wave size
-    if (fPosition >= fPCMBufferSamplePos) and
-      (fPosition < fPCMBufferSamplePos + fPCMBufferSampleSize)
+    if (Count + FPosition >= FSize) then
+      Count := FSize - FPosition;                                 // limit to wave size
+    if (FPosition >= FPCMBufferSamplePos) and
+      (FPosition < FPCMBufferSamplePos + FPCMBufferSampleSize)
  // use current buffer data if possible
     then
      begin
-      len := fPCMBufferSamplePos + fPCMBufferSampleSize - fPosition;
+      len := FPCMBufferSamplePos + FPCMBufferSampleSize - FPosition;
       if (len > Count) then
         len := Count;
-      CopyMemory(PChar(@Buffer), PChar(fPCMBuffer) +
-        (fPosition - fPCMBufferSamplePos) * fDstWFx^.nBlockAlign, len * fDstWFx^.nBlockAlign);
+      CopyMemory(PChar(@Buffer), PChar(FPCMBuffer) +
+        (FPosition - FPCMBufferSamplePos) * FDstWFx^.nBlockAlign, len * FDstWFx^.nBlockAlign);
       pos := len;
      end
     else
       pos := 0;
     while (pos < Count) do // put next data
      begin
-      ReadSamples((fPosition + pos) div fPCMSamplesPerSample);
+      ReadSamples((FPosition + pos) div FPCMSamplesPerSample);
  // calc. range of current pcm buffer that can be used to fill request
-      posi := fPosition + pos;
-      if (fPosition + pos < fPCMBufferSamplePos) then
+      posi := FPosition + pos;
+      if (FPosition + pos < FPCMBufferSamplePos) then
         raise EWaveIOError.Create(
           'Error 33: Position smaller than PCMBufferSamplePos');
-      if (fPosition + Count > fPCMBufferSamplePos + fPCMBufferSampleSize) then
-        posf := fPCMBufferSamplePos + fPCMBufferSampleSize
+      if (FPosition + Count > FPCMBufferSamplePos + FPCMBufferSampleSize) then
+        posf := FPCMBufferSamplePos + FPCMBufferSampleSize
       else
-        posf := fPosition + Count;
+        posf := FPosition + Count;
       len := posf - posi;
       // put pcm buffer data into target
-      CopyMemory(PChar(@Buffer) + (posi - fPosition) * fDstWFx^.nBlockAlign,
-        PChar(fPCMBuffer) + (posi - fPCMBufferSamplePos) * fDstWFx^.nBlockAlign,
-        len * fDstWFx^.nBlockAlign);
+      CopyMemory(PChar(@Buffer) + (posi - FPosition) * FDstWFx^.nBlockAlign,
+        PChar(FPCMBuffer) + (posi - FPCMBufferSamplePos) * FDstWFx^.nBlockAlign,
+        len * FDstWFx^.nBlockAlign);
       pos := pos + len;
      end;
-    fPosition := fPosition + Count;
+    FPosition := FPosition + Count;
     Result := Count;
    end;
 end;
 
 procedure TPCMWaveReader.ReadSamples(Index: LongInt);
 begin
-  fStream.Position := Index;
-  fACMStreamHeader.cbSrcLength := fStream.Read(fRawBuffer^, fRawBufferSampleSize) * fStream.Format^.nBlockAlign;
-  if (acmStreamConvert(fACMStream, fACMStreamHeader, ACM_STREAMCONVERTF_BLOCKALIGN) <> 0)
+  FStream.Position := Index;
+  FACMStreamHeader.cbSrcLength := FStream.Read(FRawBuffer^, FRawBufferSampleSize) * FStream.Format^.nBlockAlign;
+  if (acmStreamConvert(FACMStream, FACMStreamHeader, ACM_STREAMCONVERTF_BLOCKALIGN) <> 0)
    then raise EWaveIOError.Create('Error 34: Unable to convert sample.');
-  fPCMBufferSampleSize := fACMStreamHeader.cbDstLengthUsed div fDstWFx^.nBlockAlign;
-  fPCMBufferSamplePos := Index * fPCMSamplesPerSample;
+  FPCMBufferSampleSize := FACMStreamHeader.cbDstLengthUsed div FDstWFx^.nBlockAlign;
+  FPCMBufferSamplePos := Index * FPCMSamplesPerSample;
 end;
 
 function TPCMWaveReader.BufferToFloat(makemono: boolean): pointer;
@@ -766,8 +766,8 @@ var
   end;
 
 begin
-  if fPFullSize > fPFlSize then fPFlSize := fPFullSize;
-  l := format.nChannels * fPFlSize * SizeOf(Single);
+  if FPFullSize > FPFlSize then FPFlSize := FPFullSize;
+  l := format.nChannels * FPFlSize * SizeOf(Single);
   if makemono then l := l div format.nChannels;
   GetMem(FBuffer, l);
   GetMem(buffer, cBufferSize * SizeOf(smallint) * 4);
@@ -785,8 +785,8 @@ begin
     l := Read(buffer^, cBufferSize);
    end;
   if makemono
-   then fPFlSize := fSize
-   else fPFlSize := format.nChannels * fSize;
+   then FPFlSize := FSize
+   else FPFlSize := format.nChannels * FSize;
   FreeMem(buffer);
   Result := fbuffer;
 end;
@@ -895,9 +895,9 @@ begin
     try
      SampleRate := wave.format.nSamplesPerSec;
      Channels   := wave.format.nChannels;
-     fPFullSize := wave.fFullsize;
+     FPFullSize := wave.FFullsize;
      Result     := BufferToFloat(False);
-     WavSize    := fPFlSize;
+     WavSize    := FPFlSize;
     finally
      Free;
     end;
@@ -915,10 +915,10 @@ begin
    with TPCMWaveReader.Create(Wave) do
     try
      SampleRate := Wave.format.nSamplesPerSec;
-     fPFullSize := Wave.fFullsize;
+     FPFullSize := Wave.FFullsize;
      Channels   := 1;
      Result     := BufferToFloat(True);
-     WavSize    := fPFlSize;
+     WavSize    := FPFlSize;
     finally
      Free;
     end;

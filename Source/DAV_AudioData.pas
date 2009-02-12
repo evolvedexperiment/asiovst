@@ -347,7 +347,7 @@ type
     procedure Rectify; virtual;
     procedure RemoveDC; virtual;
 
-    property SampleFrames: Cardinal read FSampleFrames write SetSampleFrames;
+    property SampleFrames: Cardinal read FSampleFrames write SetSampleFrames default 0;
     property Channels: TCustomAudioChannels read FChannels write FChannels;
     property ChannelCount: Integer read GetChannelCount write SetChannelCount;
   end;
@@ -1178,6 +1178,7 @@ end;
 constructor TCustomAudioDataCollection.Create(AOwner: TComponent);
 begin
  inherited;
+ FSampleFrames := 0;
  CreateChannels;
 end;
 
