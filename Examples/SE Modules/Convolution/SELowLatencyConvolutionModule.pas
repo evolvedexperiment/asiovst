@@ -56,7 +56,6 @@ constructor TSELowLatencyConvolutionModule.Create(SEAudioMaster: TSE2AudioMaster
 {$IFDEF Use_IPPS}
 var
   VSTHostParams : TSECallVstHostParams;
-  VendorString  : string;
 {$ENDIF}
 begin
  inherited Create(SEAudioMaster, Reserved);
@@ -120,7 +119,7 @@ begin
    else OnProcess := SubProcessBypass
   else
    begin
-    FStaticCount := BlockSize;
+    FStaticCount := BlockSize + FConvolver.IRSize;
     OnProcess := SubProcessStatic;
    end;
 end;

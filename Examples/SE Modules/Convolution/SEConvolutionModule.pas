@@ -120,7 +120,7 @@ begin
    else OnProcess := SubProcessBypass
   else
    begin
-    FStaticCount := BlockSize;
+    FStaticCount := BlockSize + FConvolver.IRSize;
     OnProcess := SubProcessStatic;
    end;
 end;
