@@ -1,4 +1,4 @@
-unit DAV_StkJetTabl;
+unit DAV_StkJetTable;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
@@ -16,7 +16,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk;
+  DAV_StkCommon;
 
 type
   TStkJetTable = class(TStk)
@@ -26,7 +26,7 @@ type
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
-    function Tick(Input: Single): Single; overload;
+    function Tick(const Input: Single): Single; overload;
     function Tick(Vector: PSingle; VectorSize: Integer): PSingle; overload;
 
     property LastOutput: Single read FLastOutput;
@@ -45,12 +45,7 @@ begin
   inherited Destroy;
 end;
 
-function TStkJetTable.LastOut: Single;
-begin
-  Result := FLastOutput;
-end;
-
-function TStkJetTable.Tick(Input: Single): Single;
+function TStkJetTable.Tick(const Input: Single): Single;
 begin
   // Perform "table lookup" using a polynomial
   // calculation (x^3 - x), which approximates

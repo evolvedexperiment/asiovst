@@ -1,4 +1,4 @@
-unit DAV_StkBlowBotl;
+unit DAV_StkBlowBottle;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
@@ -19,8 +19,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrmnt, DAV_StkJettabl, DAV_StkBiquad,
-  DAV_StkPolezero, DAV_StkNoise, DAV_StkAdsr, DAV_StkLfo;
+  DAV_StkCommon, DAV_StkInstrument, DAV_StkJetTable, DAV_StkNoise,
+  DAV_StkBiquad, DAV_StkPolezero, DAV_StkAdsr, DAV_StkLfo;
 
 type
   TBlowBotl = class(TInstrmnt)

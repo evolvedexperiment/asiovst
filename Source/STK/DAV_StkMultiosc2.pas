@@ -8,12 +8,12 @@ uses
   mm_osc, Math;
 
 type
-  TMultiOsc2 = class(TOsc)
+  TStkMultiOsc2 = class(TOsc)
   private
     Wave: Integer;
     Pwm: Single;
   public
-    constructor Create(sr: Integer);
+    constructor Create(const SampleRate: Integer);
     procedure SetMorph(morph: Single);
     function GetMorph: Single;
     procedure SetActiveWave(i: Integer);
@@ -177,23 +177,23 @@ begin
   Result := -2 * power(sin(b * pi), 2) + 1;
 end;
 
-constructor TMultiOsc2.Create(sr: Integer);
+constructor TStkMultiOsc2.Create(SampleRate: Integer);
 begin
   Wave := 0;
-  inherited Create(sr);
+  inherited Create(SampleRate);
 end;
 
-function TMultiOsc2.GetActiveWave: Integer;
+function TStkMultiOsc2.GetActiveWave: Integer;
 begin
   Result := Wave;
 end;
 
-function TMultiOsc2.GetMorph: Single;
+function TStkMultiOsc2.GetMorph: Single;
 begin
   Result := Pwm;
 end;
 
-function TMultiOsc2.Process: Single;
+function TStkMultiOsc2.Process: Single;
 var
   y, j: Single;
 begin
@@ -259,12 +259,12 @@ begin
   Result := y;
 end;
 
-procedure TMultiOsc2.SetActiveWave(i: Integer);
+procedure TStkMultiOsc2.SetActiveWave(i: Integer);
 begin
   Wave := i;
 end;
 
-procedure TMultiOsc2.SetMorph(morph: Single);
+procedure TStkMultiOsc2.SetMorph(morph: Single);
 begin
   if morph > 1 then
     morph := 1

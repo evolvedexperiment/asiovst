@@ -25,22 +25,25 @@ uses
   DAV_StkCommon, DAV_StkDelay;
 
 type
-  TDelayA = class(TDelay)
+  TStkDelayA = class(TStkDelay)
   protected
-    FAlpha, FCoeff, FApInput, FNextOutput: Single;
-    FDoNextOut: Boolean;
+    FAlpha      : Single;
+    FCoeff      : Single;
+    FApInput    : Single;
+    FNextOutput : Single;
+    FDoNextOut  : Boolean;
   public
     // Default constructor creates a delay-line with maximum length of 4095 samples and zero delay.
-    constructor Create(SampleRate: Single); overload;
+    constructor Create(const SampleRate: Single); overload; override;
 
     // Overloaded constructor which specifies the current and maximum delay-line lengths.
-    constructor Create(SampleRate, ADelay: Single; AMaxDelay: longint); overload;
+    constructor Create(const SampleRate, ADelay: Single; const AMaxDelay: longint); overload; override;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Clears the internal state of the delay line.
-    procedure Clear;
+    procedure Clear; override;
 
     // Set the delay-line length
   {
@@ -64,15 +67,15 @@ type
 
 implementation
 
-{ TDelayA }
+{ TStkDelayA }
 
-procedure TDelayA.Clear;
+procedure TStkDelayA.Clear;
 begin
   inherited Clear;
   FApInput := 0.0;
 end;
 
-constructor TDelayA.Create(SampleRate: Single);
+constructor TStkDelayA.Create(const SampleRate: Single);
 begin
   inherited Create(SampleRate);
   setDelay(0.5);
@@ -80,36 +83,36 @@ begin
   FDoNextOut := True;
 end;
 
-constructor TDelayA.Create(SampleRate, ADelay: Single; AMaxDelay: Integer);
+constructor TStkDelayA.Create(const SampleRate, ADelay: Single; const AMaxDelay: Integer);
 begin
   inherited Create(SampleRate);
    // Writing before reading allows delays from 0 to length-1.
-  length := AMaxDelay + 1;
+  FLength := AMaxDelay + 1;
 
-  if (length > 4096) then
+  if (FLength > 4096) then
    begin
     // We need to delete the previously allocated inputs.
-    freemem(inputs);
-    getmem(inputs, sizeof(Single) * length);
+    Dispose(FInputs);
+    GetMem(FInputs, SizeOf(Single) * FLength);
     Clear;
    end;
 
-  inPoint := 0;
+  FInPoint := 0;
   setDelay(ADelay);
   FDoNextOut := True;
 end;
 
-destructor TDelayA.Destroy;
+destructor TStkDelayA.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TDelayA.getDelay: Single;
+function TStkDelayA.getDelay: Single;
 begin
   Result := inherited getdelay;
 end;
 
-function TDelayA.nextOut: Single;
+function TStkDelayA.nextOut: Single;
 begin
   if (FDoNextOut) then
    begin
@@ -121,7 +124,7 @@ begin
   Result := FNextOutput;
 end;
 
-procedure TDelayA.setDelay(ADelay: Single);
+procedure TStkDelayA.setDelay(ADelay: Single);
 var
   outPointer: Single;
 begin
@@ -160,7 +163,7 @@ begin
   FCoeff := (1 - FAlpha) / (1 + FAlpha);         // coefficient for all pass
 end;
 
-function TDelayA.tick(sample: Single): Single;
+function TStkDelayA.tick(sample: Single): Single;
 var
   p: pmy_float;
 begin

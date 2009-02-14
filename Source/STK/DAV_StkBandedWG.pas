@@ -1,4 +1,4 @@
-unit DAV_BandedWG;
+unit DAV_StkBandedWG;
 
 { Banded waveguide modeling class.
 
@@ -27,7 +27,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_Instrmnt, DAV_Delayl, DAV_Bowtabl, DAV_Adsr, DAV_Biquad, Math;
+  DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayL, DAV_StkBowtabl,
+  DAV_StkAdsr, DAV_StkBiquad, Math;
 
 const
   CMaxBandedModes = 20;

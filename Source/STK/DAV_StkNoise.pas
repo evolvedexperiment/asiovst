@@ -13,14 +13,14 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk;
+  DAV_StkCommon;
 
 type
-  TNoise = class(TStk)
+  TStkNoise = class(TStk)
   protected
     FLastOutput: Single;
   public
-    constructor Create(SampleRate: Single); override;
+    constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
     // Return a random number between -1.0 and 1.0 using rand().
@@ -29,29 +29,29 @@ type
     // Return VectorSize random numbers between -1.0 and 1.0 in \ Vector.
     function Tick(Vector: PSingle; VectorSize: Integer): PSingle; overload;
 
-    property FLastOutput: Single read FLastOutput;
+    property LastOutput: Single read FLastOutput;
   end;
 
 implementation
 
-constructor TNoise.Create;
+constructor TStkNoise.Create(const SampleRate: Single);
 begin
   inherited Create(SampleRate);
   FLastOutput := 0.0;
 end;
 
-destructor TNoise.Destroy;
+destructor TStkNoise.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TNoise.Tick: Single;
+function TStkNoise.Tick: Single;
 begin
   FLastOutput := (2.0 * random) - 1;
   Result := FLastOutput;
 end;
 
-function TNoise.Tick(Vector: PSingle; VectorSize: Integer): PSingle;
+function TStkNoise.Tick(Vector: PSingle; VectorSize: Integer): PSingle;
 var
   i: integer;
   p: PSingle;
@@ -63,11 +63,6 @@ begin
     Inc(p);
    end;
   Result := Vector;
-end;
-
-function TNoise.lastOut;
-begin
-  Result := FLastOutput;
 end;
 
 end.

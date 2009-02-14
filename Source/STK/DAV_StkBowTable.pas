@@ -1,4 +1,4 @@
-unit DAV_StkBowTabl;
+unit DAV_StkBowTable;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
@@ -23,10 +23,10 @@ type
     FLastOutput : Single;
   public
     // Default constructor.
-    constructor Create(SampleRate: Single);
+    constructor Create(const SampleRate: Single); override;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Set the table FOffSet value.
   {
@@ -52,15 +52,15 @@ type
     The function input represents differential
     string-to-bow velocity.
   }
-    function tick(input: Single): Single; overload;
+    function Tick(const Input: Single): Single; overload;
 
     // Take \e vectorSize inputs and return the corresponding function values in \e vector.
-    function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
+    function Tick(vector: PSingle; vectorSize: longint): PSingle; overload;
   end;
 
 implementation
 
-constructor TStkBowTable.Create(SampleRate: Single);
+constructor TStkBowTable.Create(const SampleRate: Single);
 begin
   inherited Create(SampleRate);
   FOffSet := 0.0;
@@ -87,7 +87,7 @@ begin
   Result := FLastOutput;
 end;
 
-function TStkBowTable.tick(input: Single): Single;
+function TStkBowTable.Tick(const Input: Single): Single;
 var
   sample: Single;
 begin
@@ -106,10 +106,10 @@ begin
   Result := FLastOutput;
 end;
 
-function TStkBowTable.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TStkBowTable.tick(vector: PSingle; vectorSize: longint): PSingle;
 var
   i: integer;
-  p: pmy_float;
+  p: pSingle;
 begin
   p := vector;
   for i := 0 to vectorSize - 1 do
