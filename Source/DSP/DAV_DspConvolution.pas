@@ -201,7 +201,6 @@ type
     procedure PartitionizeIR; virtual;
     procedure PaddedIRSizeChanged; virtual;
 
-    property IRSize: Integer read FIRSize;
     property MinimumIRBlockSize: Integer read FLatency;
     property MaximumIRBlockSize: Integer read GetMaximumIRBlockSize;
     property PaddedIRSize: Integer read FIRSizePadded write SetIRSizePadded;
@@ -216,6 +215,7 @@ type
     property MinimumIRBlockOrder: Byte read FMinimumIRBlockOrder write SetMinimumIRBlockOrder;
     property MaximumIRBlockOrder: Byte read FMaximumIRBlockOrder write SetMaximumIRBlockOrder;
     property Latency: Integer read FLatency;
+    property IRSize: Integer read FIRSize;
   end;
 
   TLowLatencyConvolutionStereo32 = class(TLowLatencyConvolution32)

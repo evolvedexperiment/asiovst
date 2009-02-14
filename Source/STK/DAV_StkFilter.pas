@@ -92,7 +92,6 @@ type
 
     property LastOutput: Single read GetLastOutput; // Return the last computed output value.
     property Gain: Single read FGain write SetGain; // The gain is applied at the filter input and does not affect the coefficient values.
-
   end;
 
 implementation

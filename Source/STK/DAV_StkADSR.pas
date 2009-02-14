@@ -7,12 +7,12 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkEnvelope, DAV_Stk;
+  DAV_StkEnvelope, DAV_StkCommon;
 
 type
   TADSRStates = (asAttack, asDecay, asSustain, asRelease, asDone);
 
-  TADSR = class(TStkEnvelope)
+  TStkADSR = class(TStkEnvelope)
   protected
     FAttackRate   : Single;
     FDecayRate    : Single;
@@ -20,7 +20,7 @@ type
     FReleaseRate  : Single;
     FState        : TADSRStates;
   public
-    constructor Create(SampleRate: Single); override;
+    constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
     procedure KeyOn; override;
@@ -64,7 +64,7 @@ type
 
 implementation
 
-constructor TADSR.Create;
+constructor TStkADSR.Create;
 begin
   inherited Create(SampleRate);
   FTarget       := 0.0;
@@ -76,26 +76,26 @@ begin
   FState        := asAttack;
 end;
 
-destructor TADSR.Destroy;
+destructor TStkADSR.Destroy;
 begin
  inherited Destroy;
 end;
 
-procedure TADSR.KeyOn;
+procedure TStkADSR.KeyOn;
 begin
  FTarget := 1.0;
  FRate := FAttackRate;
  FState := asAttack;
 end;
 
-procedure TADSR.KeyOff;
+procedure TStkADSR.KeyOff;
 begin
  FTarget := 0.0;
  FRate := FReleaseRate;
  FState := asRelease;
 end;
 
-procedure TADSR.SetAttackRate(aRate: Single);
+procedure TStkADSR.SetAttackRate(aRate: Single);
 begin
   if (aRate < 0.0) then
     FAttackRate := -aRate
@@ -103,7 +103,7 @@ begin
     FAttackRate := aRate;
 end;
 
-procedure TADSR.SetDecayRate(aRate: Single);
+procedure TStkADSR.SetDecayRate(aRate: Single);
 begin
   if (aRate < 0.0) then
     FDecayRate := -aRate
@@ -111,7 +111,7 @@ begin
     FDecayRate := aRate;
 end;
 
-procedure TADSR.SetSustainLevel(aLevel: Single);
+procedure TStkADSR.SetSustainLevel(aLevel: Single);
 begin
   if (aLevel < 0.0) then
     FSustainLevel := 0.0
@@ -119,21 +119,21 @@ begin
     FSustainLevel := aLevel;
 end;
 
-procedure TADSR.setReleaseRate(aRate: Single);
+procedure TStkADSR.setReleaseRate(aRate: Single);
 begin
   if (aRate < 0.0)
    then FReleaseRate := -aRate
    else FReleaseRate := aRate;
 end;
 
-procedure TADSR.SetAttackTime(aTime: Single);
+procedure TStkADSR.SetAttackTime(aTime: Single);
 begin
   if (aTime < 0.0)
    then FAttackRate := 1.0 / (-aTime * SampleRate)
    else FAttackRate := 1.0 / (aTime * SampleRate);
 end;
 
-procedure TADSR.SetDecayTime(aTime: Single);
+procedure TStkADSR.SetDecayTime(aTime: Single);
 begin
   if (aTime < 0.0) then
     FDecayRate := 1.0 / (-aTime * SampleRate)
@@ -141,7 +141,7 @@ begin
     FDecayRate := 1.0 / (aTime * SampleRate);
 end;
 
-procedure TADSR.SetReleaseTime(aTime: Single);
+procedure TStkADSR.SetReleaseTime(aTime: Single);
 begin
   if (aTime < 0.0) then
     FReleaseRate := 1.0 / (-aTime * SampleRate)
@@ -149,7 +149,7 @@ begin
     FReleaseRate := 1.0 / (aTime * SampleRate);
 end;
 
-procedure TADSR.SetAllTimes;
+procedure TStkADSR.SetAllTimes;
 begin
   SetAttackTime(aTime);
   SetDecayTime(dTime);
@@ -157,7 +157,7 @@ begin
   SetReleaseTime(rTime);
 end;
 
-procedure TADSR.SetTarget(aTarget: Single);
+procedure TStkADSR.SetTarget(aTarget: Single);
 begin
   FTarget := aTarget;
   if (FCurrentValue < FTarget) then
@@ -174,7 +174,7 @@ begin
    end;
 end;
 
-procedure TADSR.SetValue(Value: Single);
+procedure TStkADSR.SetValue(Value: Single);
 begin
   FState := asSustain;
   FTarget := Value;
@@ -183,12 +183,12 @@ begin
   FRate := 0.0;
 end;
 
-function TADSR.GetState: TADSRStates;
+function TStkADSR.GetState: TADSRStates;
 begin
   Result := FState;
 end;
 
-function TADSR.Tick: Single;
+function TStkADSR.Tick: Single;
 begin
   case FState of
     asAttack :

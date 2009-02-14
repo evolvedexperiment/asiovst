@@ -27,13 +27,14 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
-uses DAV_Stk, DAV_StkFm, DAV_StkWavePlayer, Windows;
+uses
+  DAV_StkCommon, DAV_StkFm, DAV_StkWavePlayer, Windows;
 
 type
   TStkWurley = class(TStkFM)
   public
-    constructor Create(SampleRate: Single); // Class constructor.
-    destructor Destroy; // Class destructor.
+    constructor Create(const SampleRate: Single); override;
+    destructor Destroy; override;
     procedure SetFrequency(Frequency: Single);
 
     // Set instrument parameters for a particular Frequency.

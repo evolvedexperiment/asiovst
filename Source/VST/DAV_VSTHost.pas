@@ -135,14 +135,13 @@ type
     function GetNumParams: Integer;
     function GetNumPrograms: Integer;
     function GetOffQualities: LongInt;
-    function GetPreset(ProgramNo: Integer): TFXPreset;
+    function GetPreset(const ProgramNo: Integer): TFXPreset;
     function GetRealQualities: LongInt;
     function GetUniqueID: string;
     function GetVersion: Integer;
     function VstDispatch(const opCode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
     procedure InitializeVstEffect;
     procedure SetActive(const Value: Boolean);
-    procedure SetBlockSize(const Value: Integer);
     procedure SetVstDllFileName(const Value: TFilename);
     {$IFDEF VstHostGUI}
     procedure SetGUIStyle(const Value: TGUIStyle);
@@ -267,6 +266,7 @@ type
     procedure SetParameter(index: Integer; parameter: Single); virtual;
     procedure SetProgram(const lValue: Integer);
     procedure SetProgramName(const newName: string);
+    procedure SetBlockSize(const Value: Integer);
     procedure SetSampleRate(const Value: Single);
     procedure SetTotalSampleToProcess;
     procedure SetViewPosition(const x, y: Integer);
@@ -2972,7 +2972,7 @@ begin
  end; 
 end;
 
-function TCustomVstPlugIn.GetPreset(ProgramNo: Integer): TFXPreset;
+function TCustomVstPlugIn.GetPreset(const ProgramNo: Integer): TFXPreset;
 var
   str : string;
   i   : Integer;
@@ -2987,6 +2987,7 @@ begin
    FXVersion  := FVstEffect^.version;
    NumParams  := Self.numParams;
    str        := GetProgramName + #0;
+   FillChar(prgName, 26, #0);
    StrLCopy(prgName, PAnsiChar(str), 26);
 
    GetMem(Params, numParams * SizeOf(Single));

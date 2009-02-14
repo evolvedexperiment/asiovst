@@ -7,7 +7,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, Windows;
+  DAV_Common, DAV_StkCommon, Windows;
 
 type
   TStkEnvelope = class(TStk)
@@ -37,15 +37,18 @@ type
 
     property CurrentValue: Single read FCurrentValue write SetCurrentValue;
     property Rate: Single read FRate write SetRate;
-    property Targer: Single read FTarget write SetTarget;
-    property State: Single read FState;
+    property Target: Single read FTarget write SetTarget;
+    property State: Integer read FState;
   end;
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TStkEnvelope.Create;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   FTarget := 0;
   FCurrentValue := 0;
   FRate := 0.001;
@@ -71,9 +74,9 @@ begin
    then FState := 1;
 end;
 
-procedure TStkEnvelope.SetRate(Value: Single);
+procedure TStkEnvelope.SetRate(const Value: Single);
 begin
- if ARate < 0
+ if Value < 0
   then raise Exception.Create('Rate must be above 0!');
  if FRate <> Value then
   begin
@@ -94,9 +97,9 @@ end;
 
 procedure TStkEnvelope.SetTarget(const Value: Single);
 begin
- if FTarget <> ATarget then
+ if FTarget <> Value then
   begin
-   FTarget := ATarget;
+   FTarget := Value;
    TargetChanged;
   end;
 end;
@@ -111,7 +114,7 @@ procedure TStkEnvelope.SetCurrentValue(const Value: Single);
 begin
  if FCurrentValue <> Value then
   begin
-   FCurrentValue := AValue;
+   FCurrentValue := Value;
    CurrentValueChanged;
   end;
 end;

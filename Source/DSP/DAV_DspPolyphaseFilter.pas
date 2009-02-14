@@ -20,13 +20,14 @@ type
     procedure NumberOfCoeffsChanged; virtual;
     procedure TransitionChanged; virtual;
     procedure SetProcedures; virtual; abstract;
-    procedure SetCoefficients(const Coefficients: TDAVDoubleDynArray); overload; virtual;
-    procedure SetCoefficients(const NumberOfCoefficients: Integer = 8; const Transition: Double = 0.1); overload; virtual;
 
     property Coefficients: PDAVDoubleFixedArray read FCoefficients;
   public
     constructor Create; virtual;
     destructor Destroy; override;
+
+    procedure SetCoefficients(const Coefficients: TDAVDoubleDynArray); overload; virtual;
+    procedure SetCoefficients(const NumberOfCoefficients: Integer = 8; const Transition: Double = 0.1); overload; virtual;
 
     property NumberOfCoefficients: Integer read FNumberOfCoeffs write SetNumberOfCoeffs;
     property Attenuation: Double read FAttenuation;
