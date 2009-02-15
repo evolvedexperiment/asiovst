@@ -15,6 +15,10 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleCreate(Sender: TObject);
+    procedure ParameterMaximumIROrderChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterLatencyChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
     FConvolutionClassic    : TConvolution32;
     FConvolutionLowLatency : TLowLatencyConvolution32;
@@ -39,9 +43,9 @@ procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
 begin
  FConvolutionClassic := TConvolution32.Create;
  FConvolutionLowLatency := TLowLatencyConvolution32.Create;
- FConvolutionClassic.FFTOrder := 8; //CeilLog2(BlockModeSize);
- FConvolutionLowLatency.MinimumIRBlockOrder := 7;
- FConvolutionLowLatency.MaximumIRBlockOrder := 13;
+ FConvolutionClassic.FFTOrder := max(7, CeilLog2(InitialDelay)) + 1;
+ FConvolutionLowLatency.MinimumIRBlockOrder := max(7, CeilLog2(InitialDelay));
+ FConvolutionLowLatency.MaximumIRBlockOrder := 17;
 end;
 
 procedure TConvolutionDataModule.VSTModuleClose(Sender: TObject);
@@ -55,6 +59,35 @@ begin
  GUI := TFmConvolution.Create(Self);
 end;
 
+procedure TConvolutionDataModule.ParameterMaximumIROrderChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ while FSemaphore > 0 do;
+ inc(FSemaphore);
+ try
+  if Value >= FConvolutionLowLatency.MinimumIRBlockOrder
+   then FConvolutionLowLatency.MaximumIRBlockOrder := round(Limit(Value, 7, 20))
+   else Value := FConvolutionLowLatency.MinimumIRBlockOrder;
+ finally
+  dec(FSemaphore);
+ end;
+end;
+
+procedure TConvolutionDataModule.ParameterLatencyChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ while FSemaphore > 0 do;
+ inc(FSemaphore);
+ try
+  if Value > FConvolutionLowLatency.MaximumIRBlockOrder
+   then Value := FConvolutionLowLatency.MaximumIRBlockOrder;
+  FConvolutionLowLatency.MinimumIRBlockOrder := round(Value);
+  FConvolutionClassic.FFTOrder := round(Value) + 1;
+ finally
+  dec(FSemaphore);
+ end;
+end;
+
 procedure TConvolutionDataModule.LoadIR(FileName: TFileName);
 var
   sr, sz, c : Integer;
@@ -64,6 +97,7 @@ begin
  inc(FSemaphore);
  try
   pt := LoadWAVFileMono(FileName, sr, c, sz);
+
   FConvolutionLowLatency.LoadImpulseResponse(@pt^, sz);
   FConvolutionClassic.LoadImpulseResponse(@pt^, sz);
  finally
@@ -76,12 +110,12 @@ procedure TConvolutionDataModule.VSTModuleProcess(const Inputs,
 begin
  // lock processing
  while FSemaphore > 0 do;
- inc(FSemaphore);
+ Inc(FSemaphore);
  try
   FConvolutionClassic.ProcessBlock(@Inputs[0, 0], @Outputs[0, 0], SampleFrames);
   FConvolutionLowLatency.ProcessBlock(@Inputs[1, 0], @Outputs[1, 0], SampleFrames);
  finally
-  dec(FSemaphore);
+  Dec(FSemaphore);
  end;
 end;
 

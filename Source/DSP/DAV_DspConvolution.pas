@@ -180,6 +180,10 @@ type
     procedure SetMaximumIRBlockOrder(const Value: Byte);
     procedure SetIRSizePadded(const Value: Integer);
     function CalculatePaddedIRSize: Integer;
+    procedure AllocatePaddedIRSizeDependentBuffers;
+    procedure InputBufferSizeChanged;
+    procedure OutputBufferSizeChanged;
+    procedure CalculateLatency;
   protected
     FImpulseResponse     : PDAVSingleFixedArray;
     FConvStages          : array of TLowLatencyConvolutionStage32;
@@ -270,11 +274,12 @@ type
     function GetMaximumIRBlockSize: Integer;
     procedure SetMinimumIRBlockOrder(const Value: Byte);
     procedure SetMaximumIRBlockOrder(const Value: Byte);
-    procedure MaximumIRBlockOrderChanged;
     procedure SetIRSizePadded(const Value: Integer);
-    procedure PaddedIRSizeChanged;
-    procedure BuildIRSpectrums;
     function CalculatePaddedIRSize: Integer;
+    procedure AllocatePaddedIRSizeDependentBuffers;
+    procedure InputBufferSizeChanged;
+    procedure OutputBufferSizeChanged;
+    procedure CalculateLatency;
   protected
     FImpulseResponse     : PDAVDoubleFixedArray;
     FConvStages          : array of TLowLatencyConvolutionStage64;
@@ -289,25 +294,38 @@ type
     FLatency             : Integer;
     FMinimumIRBlockOrder : Byte;
     FMaximumIRBlockOrder : Byte;
-
-    procedure PartitionizeIR; virtual;
+    procedure BuildIRSpectrums; virtual;
     procedure MinimumIRBlockOrderChanged; virtual;
-
-    property IRSize: Integer read FIRSize;
+    procedure MaximumIRBlockOrderChanged; virtual;
+    procedure PartitionizeIR; virtual;
+    procedure PaddedIRSizeChanged; virtual;
     property MinimumIRBlockSize: Integer read FLatency;
     property MaximumIRBlockSize: Integer read GetMaximumIRBlockSize;
     property PaddedIRSize: Integer read FIRSizePadded write SetIRSizePadded;
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    procedure ProcessBlock(const Input, Output: PDAVDoubleFixedArray; const SampleFrames: Integer); overload; virtual;
-    procedure ProcessBlock(const Inplace: PDAVDoubleFixedArray; const SampleFrames: Integer); overload; virtual;
+    procedure ProcessBlock(const Input, Output : PDAVDoubleFixedArray; const SampleFrames: Integer); overload; virtual;
+    procedure ProcessBlock(const Inplace : PDAVDoubleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure LoadImpulseResponse(const Data: PDAVDoubleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure LoadImpulseResponse(const Data: TDAVDoubleDynArray); overload; virtual;
   published
     property MinimumIRBlockOrder: Byte read FMinimumIRBlockOrder write SetMinimumIRBlockOrder;
     property MaximumIRBlockOrder: Byte read FMaximumIRBlockOrder write SetMaximumIRBlockOrder;
     property Latency: Integer read FLatency;
+    property IRSize: Integer read FIRSize;
+  end;
+
+  TLowLatencyConvolutionStereo64 = class(TLowLatencyConvolution64)
+  protected
+    FInputBuffer2  : PDAVDoubleFixedArray;
+    FOutputBuffer2 : PDAVDoubleFixedArray;
+    procedure PartitionizeIR; override;
+    procedure PaddedIRSizeChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure ProcessBlock(const Left, Right: PDAVDoubleFixedArray; const SampleFrames: Integer); reintroduce; virtual;
   end;
 
 implementation
@@ -1150,8 +1168,10 @@ begin
  FIRSizePadded         := 0;
  FIRSize               := 0;
  FMinimumIRBlockOrder  := 7;
- FMaximumIRBlockOrder  := 15;
- MinimumIRBlockOrderChanged;
+ FMaximumIRBlockOrder  := 16;
+ FLatency              := 1 shl FMinimumIRBlockOrder;
+ FInputBufferSize      := 2 shl FMaximumIRBlockOrder;
+ InputBufferSizeChanged;
 end;
 
 destructor TLowLatencyConvolution32.Destroy;
@@ -1164,6 +1184,20 @@ begin
  for Stage := 0 to Length(FConvStages) - 1
   do FreeAndNil(FConvStages[Stage]);
  inherited;
+end;
+
+procedure TLowLatencyConvolution32.InputBufferSizeChanged;
+begin
+ FInputHistorySize     := FInputBufferSize - FLatency;
+ ReallocMem(FInputBuffer, FInputBufferSize * SizeOf(Single));
+ FillChar(FInputBuffer^[0], FInputBufferSize * SizeOf(Single), 0);
+end;
+
+procedure TLowLatencyConvolution32.OutputBufferSizeChanged;
+begin
+ FOutputHistorySize := (FIRSizePadded - FLatency);
+ ReallocMem(FOutputBuffer, FIRSizePadded * SizeOf(Single));
+ FillChar(FOutputBuffer^[0], FIRSizePadded * SizeOf(Single), 0);
 end;
 
 function TLowLatencyConvolution32.GetMaximumIRBlockSize: Integer;
@@ -1234,27 +1268,50 @@ begin
   end;
 end;
 
-procedure TLowLatencyConvolution32.PaddedIRSizeChanged;
+procedure TLowLatencyConvolution32.AllocatePaddedIRSizeDependentBuffers;
 begin
  // zero pad filter
  ReallocMem(FImpulseResponse, FIRSizePadded * SizeOf(Single));
  FillChar(FImpulseResponse^[FIRSize], (FIRSizePadded - FIRSize) * SizeOf(Single), 0);
 
  // reallocate output buffer
- FOutputHistorySize := (FIRSizePadded - FLatency);
- ReallocMem(FOutputBuffer, FIRSizePadded * SizeOf(Single));
- FillChar(FOutputBuffer^[0], FIRSizePadded * SizeOf(Single), 0);
+ OutputBufferSizeChanged;
+end;
+
+procedure TLowLatencyConvolution32.PaddedIRSizeChanged;
+begin
+ AllocatePaddedIRSizeDependentBuffers;
 
  // re partitionize IR
  PartitionizeIR;
 end;
 
-procedure TLowLatencyConvolution32.BuildIRSpectrums;
-var
-  Stage : Integer;
+function TLowLatencyConvolution32.CalculatePaddedIRSize: Integer;
 begin
- for Stage := 0 to Length(FConvStages) - 1
-  do FConvStages[Stage].CalculateIRSpectrums(FImpulseResponse);
+ result := MinimumIRBlockSize * ((IRSize + MinimumIRBlockSize - 1) div MinimumIRBlockSize);
+end;
+
+procedure TLowLatencyConvolution32.CalculateLatency;
+begin
+ FLatency           := 1 shl FMinimumIRBlockOrder;
+ FInputHistorySize  := FInputBufferSize - FLatency;
+ FOutputHistorySize := FIRSizePadded - FLatency;
+end;
+
+procedure TLowLatencyConvolution32.MinimumIRBlockOrderChanged;
+begin
+ CalculateLatency;
+
+ if PaddedIRSize <> CalculatePaddedIRSize then
+  begin
+   PaddedIRSize := CalculatePaddedIRSize; // implicitely partitionize IR
+   BuildIRSpectrums;
+  end
+ else
+  begin
+   PartitionizeIR;
+   BuildIRSpectrums;
+  end;
 end;
 
 procedure TLowLatencyConvolution32.MaximumIRBlockOrderChanged;
@@ -1263,19 +1320,12 @@ begin
  BuildIRSpectrums;
 end;
 
-procedure TLowLatencyConvolution32.MinimumIRBlockOrderChanged;
+procedure TLowLatencyConvolution32.BuildIRSpectrums;
+var
+  Stage : Integer;
 begin
- FLatency := 1 shl FMinimumIRBlockOrder;
- if PaddedIRSize <> CalculatePaddedIRSize then
-  begin
-   PaddedIRSize := CalculatePaddedIRSize;
-   BuildIRSpectrums;
-  end;
-end;
-
-function TLowLatencyConvolution32.CalculatePaddedIRSize: Integer;
-begin
- result := MinimumIRBlockSize * ((IRSize + MinimumIRBlockSize - 1) div MinimumIRBlockSize);
+ for Stage := 0 to Length(FConvStages) - 1
+  do FConvStages[Stage].CalculateIRSpectrums(FImpulseResponse);
 end;
 
 function BitCountToBits(const BitCount: Byte): Integer;
@@ -1294,6 +1344,8 @@ begin
  for c := 0 to Length(FConvStages) - 1 do FreeAndNil(FConvStages[c]);
  if FIRSizePadded = 0 then exit;
 
+ assert(FMaximumIRBlockOrder >= FMinimumIRBlockOrder);
+
  // calculate maximum FFT order (to create proper buffers later)
  MaxIROrd := TruncLog2(FIRSizePadded + MinimumIRBlockSize) - 1;
 
@@ -1301,7 +1353,7 @@ begin
  ResIRSize := FIRSizePadded - (BitCountToBits(MaxIROrd) - BitCountToBits(FMinimumIRBlockOrder - 1));
 
  // check if highest block is only convolved once otherwise decrease
- if (ResIRSize and (1 shl MaxIROrd)) shr MaxIROrd = 0
+ if ((ResIRSize and (1 shl MaxIROrd)) shr MaxIROrd = 0) and (MaxIROrd > FMinimumIRBlockOrder)
   then Dec(MaxIROrd);
 
  // check if max. possible IR block order exceeds the bound and clip
@@ -1328,9 +1380,7 @@ begin
  FConvStages[Length(FConvStages) - 1] := TLowLatencyConvolutionStage32.Create(MaxIROrd, StartPos, FLatency, cnt);
 
  FInputBufferSize := 2 shl MaxIROrd;
- FInputHistorySize := FInputBufferSize - FLatency;
- ReallocMem(FInputBuffer, FInputBufferSize * SizeOf(Single));
- FillChar(FInputBuffer^, FInputBufferSize * SizeOf(Single), 0);
+ InputBufferSizeChanged;
 end;
 
 procedure TLowLatencyConvolution32.ProcessBlock(
@@ -1594,8 +1644,10 @@ begin
  FIRSizePadded         := 0;
  FIRSize               := 0;
  FMinimumIRBlockOrder  := 7;
- FMaximumIRBlockOrder  := 15;
- MinimumIRBlockOrderChanged;
+ FMaximumIRBlockOrder  := 16;
+ FLatency              := 1 shl FMinimumIRBlockOrder;
+ FInputBufferSize      := 2 shl FMaximumIRBlockOrder;
+ InputBufferSizeChanged;
 end;
 
 destructor TLowLatencyConvolution64.Destroy;
@@ -1608,6 +1660,20 @@ begin
  for Stage := 0 to Length(FConvStages) - 1
   do FreeAndNil(FConvStages[Stage]);
  inherited;
+end;
+
+procedure TLowLatencyConvolution64.InputBufferSizeChanged;
+begin
+ FInputHistorySize     := FInputBufferSize - FLatency;
+ ReallocMem(FInputBuffer, FInputBufferSize * SizeOf(Double));
+ FillChar(FInputBuffer^[0], FInputBufferSize * SizeOf(Double), 0);
+end;
+
+procedure TLowLatencyConvolution64.OutputBufferSizeChanged;
+begin
+ FOutputHistorySize := (FIRSizePadded - FLatency);
+ ReallocMem(FOutputBuffer, FIRSizePadded * SizeOf(Double));
+ FillChar(FOutputBuffer^[0], FIRSizePadded * SizeOf(Double), 0);
 end;
 
 function TLowLatencyConvolution64.GetMaximumIRBlockSize: Integer;
@@ -1678,27 +1744,50 @@ begin
   end;
 end;
 
-procedure TLowLatencyConvolution64.PaddedIRSizeChanged;
+procedure TLowLatencyConvolution64.AllocatePaddedIRSizeDependentBuffers;
 begin
  // zero pad filter
  ReallocMem(FImpulseResponse, FIRSizePadded * SizeOf(Double));
  FillChar(FImpulseResponse^[FIRSize], (FIRSizePadded - FIRSize) * SizeOf(Double), 0);
 
  // reallocate output buffer
- FOutputHistorySize := (FIRSizePadded - FLatency);
- ReallocMem(FOutputBuffer, FIRSizePadded * SizeOf(Double));
- FillChar(FOutputBuffer^[0], FIRSizePadded * SizeOf(Double), 0);
+ OutputBufferSizeChanged;
+end;
+
+procedure TLowLatencyConvolution64.PaddedIRSizeChanged;
+begin
+ AllocatePaddedIRSizeDependentBuffers;
 
  // re partitionize IR
  PartitionizeIR;
 end;
 
-procedure TLowLatencyConvolution64.BuildIRSpectrums;
-var
-  Stage : Integer;
+function TLowLatencyConvolution64.CalculatePaddedIRSize: Integer;
 begin
- for Stage := 0 to Length(FConvStages) - 1
-  do FConvStages[Stage].CalculateIRSpectrums(FImpulseResponse);
+ result := MinimumIRBlockSize * ((IRSize + MinimumIRBlockSize - 1) div MinimumIRBlockSize);
+end;
+
+procedure TLowLatencyConvolution64.CalculateLatency;
+begin
+ FLatency           := 1 shl FMinimumIRBlockOrder;
+ FInputHistorySize  := FInputBufferSize - FLatency;
+ FOutputHistorySize := FIRSizePadded - FLatency;
+end;
+
+procedure TLowLatencyConvolution64.MinimumIRBlockOrderChanged;
+begin
+ CalculateLatency;
+
+ if PaddedIRSize <> CalculatePaddedIRSize then
+  begin
+   PaddedIRSize := CalculatePaddedIRSize; // implicitely partitionize IR
+   BuildIRSpectrums;
+  end
+ else
+  begin
+   PartitionizeIR;
+   BuildIRSpectrums;
+  end;
 end;
 
 procedure TLowLatencyConvolution64.MaximumIRBlockOrderChanged;
@@ -1707,19 +1796,12 @@ begin
  BuildIRSpectrums;
 end;
 
-procedure TLowLatencyConvolution64.MinimumIRBlockOrderChanged;
+procedure TLowLatencyConvolution64.BuildIRSpectrums;
+var
+  Stage : Integer;
 begin
- FLatency := 1 shl FMinimumIRBlockOrder;
- if PaddedIRSize <> CalculatePaddedIRSize then
-  begin
-   PaddedIRSize := CalculatePaddedIRSize;
-   BuildIRSpectrums;
-  end;
-end;
-
-function TLowLatencyConvolution64.CalculatePaddedIRSize: Integer;
-begin
- result := MinimumIRBlockSize * ((IRSize + MinimumIRBlockSize - 1) div MinimumIRBlockSize);
+ for Stage := 0 to Length(FConvStages) - 1
+  do FConvStages[Stage].CalculateIRSpectrums(FImpulseResponse);
 end;
 
 procedure TLowLatencyConvolution64.PartitionizeIR;
@@ -1733,6 +1815,8 @@ begin
  for c := 0 to Length(FConvStages) - 1 do FreeAndNil(FConvStages[c]);
  if FIRSizePadded = 0 then exit;
 
+ assert(FMaximumIRBlockOrder >= FMinimumIRBlockOrder);
+
  // calculate maximum FFT order (to create proper buffers later)
  MaxIROrd := TruncLog2(FIRSizePadded + MinimumIRBlockSize) - 1;
 
@@ -1740,7 +1824,7 @@ begin
  ResIRSize := FIRSizePadded - (BitCountToBits(MaxIROrd) - BitCountToBits(FMinimumIRBlockOrder - 1));
 
  // check if highest block is only convolved once otherwise decrease
- if (ResIRSize and (1 shl MaxIROrd)) shr MaxIROrd = 0
+ if ((ResIRSize and (1 shl MaxIROrd)) shr MaxIROrd = 0) and (MaxIROrd > FMinimumIRBlockOrder)
   then Dec(MaxIROrd);
 
  // check if max. possible IR block order exceeds the bound and clip
@@ -1767,15 +1851,13 @@ begin
  FConvStages[Length(FConvStages) - 1] := TLowLatencyConvolutionStage64.Create(MaxIROrd, StartPos, FLatency, cnt);
 
  FInputBufferSize := 2 shl MaxIROrd;
- FInputHistorySize := FInputBufferSize - FLatency;
- ReallocMem(FInputBuffer, FInputBufferSize * SizeOf(Double));
- FillChar(FInputBuffer^, FInputBufferSize * SizeOf(Double), 0);
+ InputBufferSizeChanged;
 end;
 
 procedure TLowLatencyConvolution64.ProcessBlock(
   const Inplace: PDAVDoubleFixedArray; const SampleFrames: Integer);
 begin
- ProcessBlock(Inplace, Inplace, SampleFrames); 
+ ProcessBlock(Inplace, Inplace, SampleFrames);
 end;
 
 procedure TLowLatencyConvolution64.ProcessBlock(const Input,
@@ -1812,6 +1894,90 @@ begin
 
     // discard already used input buffer part to make space for new data
     Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * Sizeof(Double));
+
+    // increase current position and reset block position
+    Inc(CurrentPosition, (FLatency - FBlockPosition));
+    FBlockPosition := 0;
+   end;
+  until CurrentPosition >= SampleFrames;
+end;
+
+{ TLowLatencyConvolutionStereo64 }
+
+constructor TLowLatencyConvolutionStereo64.Create;
+begin
+ inherited;
+ FInputBuffer2 := nil;
+ FOutputBuffer2 := nil;
+end;
+
+destructor TLowLatencyConvolutionStereo64.Destroy;
+begin
+ Dispose(FInputBuffer2);
+ Dispose(FOutputBuffer2);
+ inherited;
+end;
+
+procedure TLowLatencyConvolutionStereo64.PaddedIRSizeChanged;
+begin
+ inherited;
+ ReallocMem(FOutputBuffer2, FIRSizePadded * SizeOf(Double));
+ FillChar(FOutputBuffer2^[0], FIRSizePadded * SizeOf(Double), 0);
+end;
+
+procedure TLowLatencyConvolutionStereo64.PartitionizeIR;
+begin
+ inherited;
+ ReallocMem(FInputBuffer2, FInputBufferSize * SizeOf(Double));
+ FillChar(FInputBuffer2^, FInputBufferSize * SizeOf(Double), 0);
+end;
+
+procedure TLowLatencyConvolutionStereo64.ProcessBlock(const Left,
+  Right: PDAVDoubleFixedArray; const SampleFrames: Integer);
+var
+  CurrentPosition : Integer;
+  Part            : Integer;
+begin
+ CurrentPosition := 0;
+
+ repeat
+  if FBlockPosition + (SampleFrames - CurrentPosition) < FLatency then
+   begin
+    // copy to ring buffer only
+    Move(Left^[CurrentPosition], FInputBuffer2^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
+    Move(Right^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
+    Move(FOutputBuffer2^[FBlockPosition], Left^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
+    Move(FOutputBuffer^[FBlockPosition], Right^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
+
+    // increase block position and break
+    inc(FBlockPosition, SampleFrames - CurrentPosition);
+    break;
+   end
+  else
+   begin
+    Move(Left^[CurrentPosition], FInputBuffer2^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * Sizeof(Double));
+    Move(Right^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * Sizeof(Double));
+    Move(FOutputBuffer2^[FBlockPosition], Left^[CurrentPosition], (FLatency - FBlockPosition) * Sizeof(Double));
+    Move(FOutputBuffer^[FBlockPosition], Right^[CurrentPosition], (FLatency - FBlockPosition) * Sizeof(Double));
+
+    // discard already used output buffer part and make space for new data
+    Move(FOutputBuffer^[FLatency], FOutputBuffer^[0], FOutputHistorySize * SizeOf(Double));
+    Move(FOutputBuffer2^[FLatency], FOutputBuffer2^[0], FOutputHistorySize * SizeOf(Double));
+    FillChar(FOutputBuffer^[FOutputHistorySize], FLatency * SizeOf(Double), 0);
+    FillChar(FOutputBuffer2^[FOutputHistorySize], FLatency * SizeOf(Double), 0);
+
+    // actually perform partitioned convolution
+    for Part := 0 to Length(FConvStages) - 1 do
+     with FConvStages[Part] do
+      begin
+       PerformConvolution(@FInputBuffer[FInputBufferSize], FOutputBuffer);
+       FMod := (FMod + FModAnd) and FModAnd;
+       PerformConvolution(@FInputBuffer2[FInputBufferSize], FOutputBuffer2);
+      end;
+
+    // discard already used input buffer part to make space for new data
+    Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * Sizeof(Double));
+    Move(FInputBuffer2[FLatency], FInputBuffer2[0], FInputHistorySize * Sizeof(Double));
 
     // increase current position and reset block position
     Inc(CurrentPosition, (FLatency - FBlockPosition));

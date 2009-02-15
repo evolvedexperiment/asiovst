@@ -87,6 +87,8 @@ begin
  FFft.AutoScaleType := astDivideInvByN;
  FFft.DataOrder := doPackedComplex;
  CalculateFilterKernel;
+
+ Parameter[0] := 20000;
 end;
 
 procedure TLinearPhaseDataModule.VSTModuleClose(Sender: TObject);

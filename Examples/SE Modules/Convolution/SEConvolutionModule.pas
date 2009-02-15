@@ -56,7 +56,6 @@ constructor TSEConvolutionModule.Create(SEAudioMaster: TSE2AudioMasterCallback; 
 {$IFDEF Use_IPPS}
 var
   VSTHostParams : TSECallVstHostParams;
-  VendorString  : string;
 {$ENDIF}
 begin
  inherited Create(SEAudioMaster, Reserved);

@@ -9,13 +9,54 @@ object ConvolutionDataModule: TConvolutionDataModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   BlockSize = 8192
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   BlockModeSize = 8192
+  InitialDelay = 2048
   IORatio = 1.000000000000000000
   UniqueID = 'Conv'
   ShellPlugins = <>
-  Programs = <>
-  ParameterProperties = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
+  ParameterProperties = <
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Latency Order'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 16.000000000000000000
+      MaxInteger = 16
+      Min = 6.000000000000000000
+      MinInteger = 6
+      ShortLabel = 'Latency'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterLatencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Maximum IR Order'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 20.000000000000000000
+      MaxInteger = 20
+      Min = 7.000000000000000000
+      MinInteger = 7
+      ReportVST2Properties = True
+      ShortLabel = 'Maximum'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterMaximumIROrderChange
+    end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose

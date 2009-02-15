@@ -86,7 +86,7 @@ begin
 
  FFft.AutoScaleType := astDivideInvByN;
  FFft.DataOrder := doPackedComplex;
- Parameter[0] := 100;
+ Parameter[0] := 20;
  CalculateFilterKernel;
 end;
 

@@ -62,7 +62,7 @@ begin
  FFileName            := '';
  FSemaphore           := 0;
  FConvolver           := TLowLatencyConvolution32.Create;
- FMaxIRBlockOrder     := 16;
+ FMaxIRBlockOrder     := FConvolver.MaximumIRBlockOrder;
  FDesiredLatencyIndex := 5;
 
  {$IFDEF Use_IPPS}
@@ -81,8 +81,13 @@ begin
 end;
 
 procedure TSELowLatencyConvolutionModule.Open;
+var
+  SingleImpulse : Single;
 begin
  inherited Open;
+
+ SingleImpulse := 1;
+ FConvolver.LoadImpulseResponse(@SingleImpulse, 1);
 
  // choose which function is used to process audio
  OnProcess := SubProcessBypass;
@@ -113,15 +118,15 @@ end;
 
 procedure TSELowLatencyConvolutionModule.ChooseProcess;
 begin
- if Pin[Integer(pinInput)].Status = stRun then
-  if FileExists(FFileName)
+ if FileExists(FFileName) then
+  if Pin[Integer(pinInput)].Status = stRun
    then OnProcess := SubProcess
-   else OnProcess := SubProcessBypass
-  else
-   begin
-    FStaticCount := BlockSize + FConvolver.IRSize;
-    OnProcess := SubProcessStatic;
-   end;
+   else
+    begin
+     FStaticCount := BlockSize + FConvolver.IRSize + FConvolver.Latency;
+     OnProcess := SubProcessStatic;
+    end
+  else OnProcess := SubProcessBypass
 end;
 
 // describe your module
@@ -146,7 +151,6 @@ function TSELowLatencyConvolutionModule.GetPinProperties(const Index: Integer; P
 begin
  result := True;
  case TSELowLatencyConvolutionPins(index) of
-  // typical input plug (inputs are listed first)
   pinInput:
     with Properties^ do
      begin
@@ -157,8 +161,6 @@ begin
       Datatype        := dtFSample;
       DefaultValue    := '0';
      end;
-
-  // typical output plug
   pinOutput:
     with Properties^ do
      begin
@@ -194,7 +196,7 @@ begin
       VariableAddress := @FDesiredLatencyIndex;
       Direction       := drParameter;
       DataType        := dtEnum;
-      DefaultValue    := '3';
+      DefaultValue    := '2';
       DatatypeExtra   := '64, 128, 256, 512, 1024, 2048, 4096, 8192';
      end;
   pinRealLatency:
@@ -236,7 +238,15 @@ begin
                         Dec(FSemaphore);
                        end;
                       end;
-  pinDesiredLatency : FConvolver.MinimumIRBlockOrder := 5 + FDesiredLatencyIndex;
+  pinDesiredLatency : begin
+                       while FSemaphore > 0 do;
+                       Inc(FSemaphore);
+                       try
+                        FConvolver.MinimumIRBlockOrder := 5 + FDesiredLatencyIndex;
+                       finally
+                        Dec(FSemaphore);
+                       end;
+                      end;
  end; inherited;
 end;
 

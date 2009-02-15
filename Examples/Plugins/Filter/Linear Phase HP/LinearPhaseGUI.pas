@@ -13,7 +13,7 @@ type
     LbFrequencyValue: TGuiLabel;
     procedure DialFrequencyChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-  private
+    procedure FormShow(Sender: TObject);
   public
     procedure UpdateFrequency;
   end;
@@ -35,6 +35,11 @@ begin
  finally
   RS.Free;
  end;
+end;
+
+procedure TFmLinearPhase.FormShow(Sender: TObject);
+begin
+ UpdateFrequency;
 end;
 
 procedure TFmLinearPhase.DialFrequencyChange(Sender: TObject);
