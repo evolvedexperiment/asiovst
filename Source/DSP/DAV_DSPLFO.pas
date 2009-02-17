@@ -169,7 +169,7 @@ end;
 
 procedure TCustomLFOSine.Reset;
 begin
-  Phase := 0;
+ Phase := 0;
 end;
 
 procedure TCustomLFOSine.SampleRateChanged;
@@ -199,7 +199,7 @@ begin
    else
     begin
      FPosition.Re := FPosition.Re / FAmplitude * Value;
-     FPosition.Im := FPosition.Re / FAmplitude * Value;
+     FPosition.Im := FPosition.Im / FAmplitude * Value;
     end;
    FAmplitude := Value;
   end;

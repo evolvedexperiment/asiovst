@@ -1,7 +1,7 @@
 unit DAV_DspLorenzOscilator;
 
 interface
-//
+
 // C++ version (c) 2004 Russell Borogove / www.tinygod.com
 // Delphi Pascal Version ©2005, Thaddy de Koning / www.thaddy.com
 //
@@ -48,21 +48,14 @@ interface
 //
 
 
-//
-// Lorenz function - very broad spectrum noise function with amplitude
-// decreasing with increasing frequency, but tight short-term correlation.
-//
-// The scale of waveform features will change somewhat with the set frequency
-// and sample SampleRate, but not drastically - it's fairly fractal. In particular,
-// there will not be substantial spectral peaks at multiples of the frequency
-// selected by SetFreq.
-//
-
 uses
   SysUtils;
+
 const
-  CLorenzScale:Single = 0.05107;
-  CLorenzAltScale:Single = 0.03679;
+  CLorenzScale: Single = 0.05107;
+  CLorenzAltScale: Single = 0.03679;
+  CRosslerScale: Single = 0.05757;
+  CRosslerAltScale: Single = 0.06028;
 
 type
   TCustomLorenzRosslerOsc = class
@@ -84,6 +77,15 @@ type
     function Iterate: Single; virtual; abstract;
   end;
 
+
+  // Lorenz function - very broad spectrum noise function with amplitude
+  // decreasing with increasing frequency, but tight short-term correlation.
+  //
+  // The scale of waveform features will change somewhat with the set frequency
+  // and sample SampleRate, but not drastically - it's fairly fractal. In particular,
+  // there will not be substantial spectral peaks at multiples of the frequency
+  // selected by SetFreq.
+
   TLorenzOsc = class(TCustomLorenzRosslerOsc)
   public
     constructor Create; virtual;
@@ -95,22 +97,15 @@ type
   end;
 
 
-//
-// Rossler function - broad spectrum noise function with amplitude
-// decreasing with increasing frequency, and distinct harmonic peaks. The
-// peaks should occur at harmonics of the frequency set by SetFreq.
-//
+  // Rossler function - broad spectrum noise function with amplitude
+  // decreasing with increasing frequency, and distinct harmonic peaks. The
+  // peaks should occur at harmonics of the frequency set by SetFreq.
 
-const
-  CRosslerScale: Single = 0.05757;
-  CRosslerAltScale: Single = 0.06028;
-
-type
   TRosslerOsc = class(TCustomLorenzRosslerOsc)
   public
     constructor Create; virtual;
     procedure SetSampleRate(const SampleRate: Single);
-    procedure SetFreq(Frequency: Single);
+    procedure SetFreq(const Frequency: Single);
     function GetCurrent: Single;
     function GetAlternate: Single;
     function Iterate: Single; override;
@@ -134,7 +129,7 @@ end;
 { TLorenzOsc }
 
 constructor TLorenzOsc.Create;
-begin
+begin  
   inherited;
   FA := 10.0;
   FB := 28.0;
@@ -189,7 +184,7 @@ end;
 
 { TRosslerOsc }
 
-constructor TRosslerOsc.Create; virtual;
+constructor TRosslerOsc.Create;
 begin
   inherited;
   FA := 0.15;
@@ -236,11 +231,5 @@ begin
   Result := FX * CRosslerScale;
 end;
 
-{ TCustomLorenzRosslerOsc }
-
-econstructor TCustomLorenzRosslerOsc.Create;
-begin
-
-end;
-
-nd.
+end.
+

@@ -21,7 +21,7 @@ type
     procedure CalculateW0; override;
     class function GetMaxOrder: Cardinal; override;
   public
-    constructor Create; override;
+    constructor Create(const Order: Integer = 0); reintroduce; virtual;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     procedure SetFilterValues(const AFrequency, AGain : Single); virtual;
@@ -41,7 +41,7 @@ type
 
   TButterworthLP = class(TButterworthFilter)
   public
-    constructor Create; override;
+    constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -56,7 +56,7 @@ type
 
   TButterworthHP = class(TButterworthFilter)
   public
-    constructor Create; override;
+    constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input: Single): Single; overload;
     function ProcessSample(const Input: Double): Double; overload; override;
@@ -74,7 +74,7 @@ type
     FKs      : Double;
     FHPState : array [0..63] of Double;
   public
-    constructor Create; override;
+    constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
     procedure ProcessSample(const Input: Double; out Lowpass, Highpass: Double); reintroduce; overload;
     procedure ProcessSample(const Input: Single; out Lowpass, Highpass: Single); reintroduce; overload;
@@ -97,9 +97,10 @@ const
   CDenorm32      : Single = 1E-24;
   CDenorm64      : Double = 1E-34;
 
-constructor TButterworthFilter.Create;
+constructor TButterworthFilter.Create(const Order: Integer = 0);
 begin
- inherited;
+ inherited Create;
+ FOrder := Order;
  FDownsamplePow := 0;
  FDownsampleFak := 1;
  CalculateCoefficients;
@@ -251,9 +252,9 @@ end;
 
 { TButterworthFilterLP }
 
-constructor TButterworthLP.Create;
+constructor TButterworthLP.Create(const Order: Integer = 0);
 begin
- inherited Create;
+ inherited Create(Order);
  FGainFactor := 1;
 end;
 
@@ -390,9 +391,9 @@ end;
 
 { TButterworthFilterHP }
 
-constructor TButterworthHP.Create;
+constructor TButterworthHP.Create(const Order: Integer = 0);
 begin
- inherited Create;
+ inherited Create(Order);
  FGainFactor := 1;
  DenormRandom := Random;
 end;
@@ -603,9 +604,9 @@ end;
 
 { TButterworthSplit }
 
-constructor TButterworthSplit.Create;
+constructor TButterworthSplit.Create(const Order: Integer = 0);
 begin
- inherited Create;
+ inherited Create(Order);
  FGainFactor := 1;
  Randomize;
  DenormRandom := Random;

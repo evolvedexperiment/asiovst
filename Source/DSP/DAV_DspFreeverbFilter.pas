@@ -32,7 +32,7 @@ type
   protected
     procedure BuffersizeChanged; virtual;
   public
-    constructor Create(const Buffersize: Integer); virtual;
+    constructor Create(const Buffersize: Integer = 1); virtual;
     destructor Destroy; override;
     function Process(const Input: Single): Single; register;
     procedure Mute;
@@ -70,7 +70,7 @@ implementation
 
 { TFreeverbAllpass }
 
-constructor TFreeverbAllpass.Create(const Buffersize: Integer);
+constructor TFreeverbAllpass.Create(const Buffersize: Integer = 1);
 begin
  inherited Create;
  FBuffersize := Buffersize;
@@ -140,7 +140,7 @@ asm
   jb   @OK
   xor  edx, edx                           // if so, reset FBuffer index
 @OK:
-  mov  [eax].FBufferPos, edx            // and store new index,
+  mov  [eax].FBufferPos, edx              // and store new index,
                                           // result already in st(0),
                                           // hence the fxch
 end;
