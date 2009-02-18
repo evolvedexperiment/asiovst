@@ -23,20 +23,20 @@ type
     procedure ParameterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    FFilters     : array [0..1, 0..9] of TCustomIIRFilter;
+    FFilters     : array [0..1, 0..9] of TCustomBandwidthIIRFilter;
     FUpSampler   : array [0..1] of TPolyphaseUpsampler64;
     FDownSampler : array [0..1] of TPolyphaseDownSampler64;
     FPeaks       : array [0..1, 0..1] of Single;
     FGains       : array [0..1] of Single;
-    procedure SetFilterClass(Index: Integer; const Value: TIIRFilterClass);
-    function GetFilterClass(Index: Integer): TIIRFilterClass;
+    procedure SetFilterClass(Index: Integer; const Value: TBandwidthIIRFilterClass);
+    function GetFilterClass(Index: Integer): TBandwidthIIRFilterClass;
     function GetDownSampler(Index: Integer): TPolyphaseDownSampler64;
     function GetUpSampler(Index: Integer): TPolyphaseUpSampler64;
     function GetInputPeakLevel: Single;
     function GetOutputPeakLevel: Single;
     function GetFilter(Index: Integer): TCustomIIRFilter;
   public
-    property FilterClass[Index: Integer]: TIIRFilterClass read GetFilterClass write SetFilterClass;
+    property FilterClass[Index: Integer]: TBandwidthIIRFilterClass read GetFilterClass write SetFilterClass;
     property Filter[Index: Integer]: TCustomIIRFilter read GetFilter;
     property DownSampler[Index: Integer]: TPolyphaseDownSampler64 read GetDownSampler;
     property UpSampler[Index: Integer]: TPolyphaseUpSampler64 read GetUpSampler;
@@ -49,7 +49,7 @@ implementation
 {$R *.DFM}
 
 uses
-  ParametriQLiteGUI, DAV_VSTModuleWithPrograms;
+  ParametriQLiteGUI, DAV_Approximations, DAV_VSTModuleWithPrograms;
 
 procedure TParametriQLiteDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -153,8 +153,8 @@ begin
        Temp[0] := ProcessSample(Temp[0]);
        Temp[1] := ProcessSample(Temp[1]);
       end;
-    Temp[0] := FastTanhOpt5asm(Temp[0]);
-    Temp[1] := FastTanhOpt5asm(Temp[1]);
+    Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
+    Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
     Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
 
     // Peak Meter (Output)
@@ -188,8 +188,8 @@ begin
        Temp[0] := ProcessSample(Temp[0]);
        Temp[1] := ProcessSample(Temp[1]);
       end;
-    Temp[0] := FastTanhOpt5asm(Temp[0]);
-    Temp[1] := FastTanhOpt5asm(Temp[1]);
+    Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
+    Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
     Outputs[Channel, Sample] := FGains[1] * FDownSampler[Channel].ProcessSample(Temp);
 
     // Peak Meter (Output)
@@ -280,14 +280,14 @@ begin
 end;
 
 procedure TParametriQLiteDataModule.SetFilterClass(Index: Integer;
-  const Value: TIIRFilterClass);
+  const Value: TBandwidthIIRFilterClass);
 var
   OldFilter : TCustomIIRFilter;
   Channel   : Integer;
 begin
  if (Index >= 0) and (Index < Length(FFilters[0])) then
   for Channel := 0 to Length(FFilters) - 1 do
-   if TIIRFilterClass(FFilters[Channel, Index].ClassType) <> Value then
+   if TBandwidthIIRFilterClass(FFilters[Channel, Index].ClassType) <> Value then
     begin
      OldFilter := FFilters[Channel, Index];
      FFilters[Channel, Index] := Value.Create;
@@ -325,10 +325,10 @@ begin
 end;
 
 function TParametriQLiteDataModule.GetFilterClass(
-  Index: Integer): TIIRFilterClass;
+  Index: Integer): TBandwidthIIRFilterClass;
 begin
  if (Index >= 0) and (Index < Length(FFilters[0]))
-  then result := TIIRFilterClass(FFilters[0, Index].ClassType)
+  then result := TBandwidthIIRFilterClass(FFilters[0, Index].ClassType)
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
@@ -339,7 +339,7 @@ begin
  if FPeaks[0, 0] > FPeaks[1, 0]
   then result := FPeaks[0, 0]
   else result := FPeaks[1, 0];
- result := CdBFactor * f_Log2Continous5(result);
+ result := CdBFactor * FastLog2ContinousError5(result);
 end;
 
 function TParametriQLiteDataModule.GetOutputPeakLevel: Single;
@@ -349,7 +349,7 @@ begin
  if FPeaks[0, 1] > FPeaks[1, 1]
   then result := FPeaks[0, 1]
   else result := FPeaks[1, 1];
- result := CdBFactor * f_Log2Continous5(result);
+ result := CdBFactor * FastLog2ContinousError5(result);
 end;
 
 function TParametriQLiteDataModule.GetUpSampler(

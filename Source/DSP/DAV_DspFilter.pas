@@ -119,6 +119,7 @@ type
     constructor Create; override;
   end;
 
+  TBandwidthIIRFilterClass = class of TCustomBandwidthIIRFilter;
   TCustomBandwidthIIRFilter = class(TCustomIIRFilter)
   private
     procedure SetBW(Value: Double);

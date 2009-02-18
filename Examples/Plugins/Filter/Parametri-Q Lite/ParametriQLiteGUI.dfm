@@ -1928,10 +1928,11 @@ object FmParametriQLite: TFmParametriQLite
     Color = 1447701
     DefaultGlyphNr = 0
     DialImageIndex = -1
+    GlyphNr = 0
     LineColor = 9145737
     LineWidth = 2
     NumGlyphs = 2
-    GlyphNr = 0
+    ParentColor = False
     StitchKind = skHorizontal
   end
   object LbIn: TGuiLabel

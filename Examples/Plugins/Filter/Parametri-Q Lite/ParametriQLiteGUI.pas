@@ -199,18 +199,21 @@ type
 implementation
 
 uses
-  PngImage, ParametriQLiteDM, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
+  PngImage, ParametriQLiteDM, DAV_GuiCommon, DAV_Approximations,
+  DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}
 
 procedure TFmParametriQLite.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
+  PngBmp : TPngObject;
+(*
   x, y   : Integer;
   s      : array[0..1] of Single;
   b      : ShortInt;
   Line   : PRGB24Array;
-  PngBmp : TPngObject;
+*)
 begin
  PngBmp := TPngObject.Create;
  try
@@ -452,7 +455,7 @@ const
 begin
  with TParametriQLiteDataModule(Owner), PlotBox.Canvas do
   begin
-   R := ClipRect;
+   R := PlotBox.ClientRect;
    Pen.Color := $00424341;
    RoundRect(R.Left, R.Top, R.Right, R.Bottom, 2, 2);
    InflateRect(R, -1, -1);
@@ -485,14 +488,14 @@ begin
    Magn := Filter[0].MagnitudeSquared(20);
    for Band := 1 to 7
     do Magn := Magn * Filter[Band].MagnitudeSquared(20);
-   MoveTo(1, round(HalfHght * (1 - f_Log2MinError5(Magn) * CdBFactor)));
+   MoveTo(1, round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor)));
    for c := 2 to Wdth do
     begin
      Frq := FreqLinearToLog(c * WdthRez);
      Magn := Filter[0].MagnitudeSquared(Frq);
      for Band := 1 to 7
       do Magn := Magn * Filter[Band].MagnitudeSquared(Frq);
-     LineTo(c, round(HalfHght * (1 - f_Log2MinError5(Magn) * CdBFactor )));
+     LineTo(c, round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor )));
     end;
   end;
 end;
@@ -528,7 +531,7 @@ begin
     then PeakLevel := InputPeakLevel
     else PeakLevel := OutputPeakLevel;
 
-   VUMeter.GlyphIndex := round((25 + F_Limit(PeakLevel, -25, 0)) * VUMeter.NumGlyphs * COne25th);
+   VUMeter.GlyphIndex := round((25 + Limit(PeakLevel, -25, 0)) * VUMeter.NumGlyphs * COne25th);
   end;
 end;
 
