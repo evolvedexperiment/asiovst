@@ -362,7 +362,7 @@ type
     Flags           : LongInt;              // not defined yet
     dumpBytes       : LongInt;              // byte size of sysexDump
     resvd1          : Pointer;              // zero (Reserved for future use)
-    sysexDump       : PChar;                // sysex dump
+    sysexDump       : PAnsiChar;            // sysex dump
     resvd2          : Pointer;              // zero (Reserved for future use)
   end;
 
@@ -448,13 +448,13 @@ type
     StepFloat        : Single;
     SmallStepFloat   : Single;
     LargeStepFloat   : Single;
-    Caption          : array[0..63] of Char;
+    Caption          : array[0..63] of AnsiChar;
     Flags            : TVstParameterPropertiesFlags;
     MinInteger       : LongInt;
     MaxInteger       : LongInt;
     StepInteger      : LongInt;
     LargeStepInteger : LongInt;
-    ShortLabel       : array[0..7] of Char;   // recommended: 6 + delimiter
+    ShortLabel       : array[0..7] of AnsiChar;   // recommended: 6 + delimiter
 
     // the following are for remote controller display purposes.
     // note that the kVstParameterSupportsDisplayIndex flag must be set.
@@ -472,8 +472,8 @@ type
     Category                : SmallInt;     // 0: no category, else group index + 1
     numParametersInCategory : SmallInt;
     Reserved                : SmallInt;
-    CategoryLabel           : array[0..23] of Char;    // for instance, "Osc 1"
-    Future                  : array[0..15] of Char;
+    CategoryLabel           : array[0..23] of AnsiChar; // for instance, "Osc 1"
+    Future                  : array[0..15] of AnsiChar;
   end;
 
   TVstPinPropertiesFlag = (vppIsActive, vppIsStereo, vppUseSpeaker);
@@ -481,10 +481,10 @@ type
 
   PVstPinProperties = ^TVstPinProperties;
   TVstPinProperties = packed record
-    Caption         : array[0..63] of char;
-    Flags           : TVstPinPropertiesFlags; // see pin properties flags
+    Caption         : array[0..63] of AnsiChar;
+    Flags           : TVstPinPropertiesFlags;  // see pin properties flags
     ArrangementType : LongInt;
-    ShortLabel      : array[0..7] of Char;    // recommended: 6 + delimiter
+    ShortLabel      : array[0..7] of AnsiChar; // recommended: 6 + delimiter
     Future          : array[0..47] of Byte;
   end;
 
@@ -509,7 +509,7 @@ type
   PMidiProgramName = ^TMidiProgramName;
   TMidiProgramName = packed record
     ThisProgramIndex      : LongInt;  // >= 0. fill struct for this program index.
-    Name                  : array[0..63] of char;
+    Name                  : array[0..63] of AnsiChar;
     MidiProgram           : shortint;  // -1:off, 0-127
     MidiBankMsb           : shortint;  // -1:off, 0-127
     MidiBankLsb           : shortint;  // -1:off, 0-127
@@ -521,7 +521,7 @@ type
   PMidiProgramCategory = ^TMidiProgramCategory;
   TMidiProgramCategory = packed record
     ThisCategoryIndex   : LongInt;      // >= 0. fill struct for this category index.
-    Name                : array[0..63] of Char;
+    Name                : array[0..63] of AnsiChar;
     ParentCategoryIndex : LongInt;      // -1:no parent category
     Flags               : LongInt;      // reserved, none defined yet, zero.
   end;
@@ -530,7 +530,7 @@ type
   TMidiKeyName = packed record
     ThisProgramIndex : LongInt;    // >= 0. fill struct for this program index.
     ThisKeyNumber    : LongInt;    // 0 - 127. fill struct for this key number.
-    KeyName          : array[0..63] of char;
+    KeyName          : array[0..63] of AnsiChar;
     Reserved         : LongInt;    // zero
     Flags            : LongInt;    // reserved, none defined yet, zero.
   end;
@@ -600,13 +600,13 @@ type
     stLfe2     {$IFDEF DELPHI6_UP} = 19 {$ENDIF}); // Subbass 2 (Lfe2)
 
   PVstSpeakerProperties = ^TVstSpeakerProperties;
-  TVstSpeakerProperties = record      // units:      range:            except:
-    Azimuth   : Single;               // rad         -PI...PI    10.f for LFE channel
-    Elevation : Single;               // rad         -PI/2...PI/2  10.f for LFE channel
-    Radius    : Single;               // meter                          0.f for LFE channel
-    Reserved  : Single;               // 0.
-    Name      : array[0..63] of char; // for new setups, new names should be given (L/R/C... won't do)
-    vType     : TVstSpeakerType;      // speaker type
+  TVstSpeakerProperties = record          // units:      range:            except:
+    Azimuth   : Single;                   // rad        -PI...PI    10.f for LFE channel
+    Elevation : Single;                   // rad      -PI/2...PI/2  10.f for LFE channel
+    Radius    : Single;                   // meter                   0.f for LFE channel
+    Reserved  : Single;                   // 0.
+    Name      : array[0..63] of AnsiChar; // for new setups, new names should be given (L/R/C... won't do)
+    vType     : TVstSpeakerType;          // speaker type
     Future    : array[0..27] of Byte;
   end;
 
@@ -684,45 +684,45 @@ type
 
   PVstOfflineTaskRecord = ^TVstOfflineTaskRecord;
   TVstOfflineTaskRecord = packed record
-    ProcessName            : array[0..95] of char;  // set by plug
+    ProcessName            : array[0..95] of AnsiChar;  // set by plug
 
-    // audio access
-    ReadPosition           : Double;                // set by plug/host
-    WritePosition          : Double;                // set by plug/host
-    ReadCount              : LongInt;               // set by plug/host
-    WriteCount             : LongInt;               // set by plug
-    SizeInputBuffer        : LongInt;               // set by host
-    SizeOutputBuffer       : LongInt;               // set by host
-    InputBuffer            : Pointer;               // set by host
-    OutputBuffer           : Pointer;               // set by host
-    PositionToProcessFrom  : Double;                // set by host
-    NumFramesToProcess     : Double;                // set by host
-    MaxFramesToWrite       : Double;                // set by plug
+                                                        // audio access
+    ReadPosition           : Double;                    // set by plug/host
+    WritePosition          : Double;                    // set by plug/host
+    ReadCount              : LongInt;                   // set by plug/host
+    WriteCount             : LongInt;                   // set by plug
+    SizeInputBuffer        : LongInt;                   // set by host
+    SizeOutputBuffer       : LongInt;                   // set by host
+    InputBuffer            : Pointer;                   // set by host
+    OutputBuffer           : Pointer;                   // set by host
+    PositionToProcessFrom  : Double;                    // set by host
+    NumFramesToProcess     : Double;                    // set by host
+    MaxFramesToWrite       : Double;                    // set by plug
 
-    // other data access
-    ExtraBuffer            : Pointer;               // set by plug
-    Value                  : LongInt;               // set by host or plug
-    Index                  : LongInt;               // set by host or plug
+                                                        // other data access
+    ExtraBuffer            : Pointer;                   // set by plug
+    Value                  : LongInt;                   // set by host or plug
+    Index                  : LongInt;                   // set by host or plug
 
-    // file attributes
-    NumFramesInSourceFile  : Double;                // set by host
-    SourceSampleRate       : Double;                // set by host or plug
-    DestinationSampleRate  : Double;                // set by host or plug
-    NumSourceChannels      : LongInt;               // set by host or plug
-    NumDestinationChannels : LongInt;               // set by host or plug
-    SourceFormat           : LongInt;               // set by host
-    DestinationFormat      : LongInt;               // set by plug
-    OutputText             : array[0..511] of Char; // set by plug or host
+                                                        // file attributes
+    NumFramesInSourceFile  : Double;                    // set by host
+    SourceSampleRate       : Double;                    // set by host or plug
+    DestinationSampleRate  : Double;                    // set by host or plug
+    NumSourceChannels      : LongInt;                   // set by host or plug
+    NumDestinationChannels : LongInt;                   // set by host or plug
+    SourceFormat           : LongInt;                   // set by host
+    DestinationFormat      : LongInt;                   // set by plug
+    OutputText             : array[0..511] of AnsiChar; // set by plug or host
 
-    // progress notification
-    Progress               : Double;                // set by plug
-    ProgressMode           : LongInt;               // reserved for future
-    ProgressText           : array[0..99] of Char;  // set by plug
+                                                        // progress notification
+    Progress               : Double;                    // set by plug
+    ProgressMode           : LongInt;                   // reserved for future
+    ProgressText           : array[0..99] of AnsiChar;  // set by plug
 
-    Flags                  : TVstOfflineTaskFlags;  // set by host and plug; see TVstOfflineTaskFlags
-    ReturnValue            : LongInt;               // reserved for future
-    HostOwned              : Pointer;               // set by host
-    PlugOwned              : Pointer;               // set by plug
+    Flags                  : TVstOfflineTaskFlags;      // set by host and plug; see TVstOfflineTaskFlags
+    ReturnValue            : LongInt;                   // reserved for future
+    HostOwned              : Pointer;                   // set by host
+    PlugOwned              : Pointer;                   // set by plug
 
     Future                 : array[0..1023] of Byte;
   end;
@@ -763,34 +763,34 @@ type
 
   PVstAudioFile = ^TVstAudioFile;
   TVstAudioFile = packed record
-    Flags                : TVstAudioFileFlags;     // see enum TVstAudioFileFlags
-    HostOwned            : Pointer;                // any data private to host
-    PlugOwned            : Pointer;                // any data private to plugin
-    Name                 : array[0..99] of char;   // file title
-    UniqueId             : TChunkName;             // uniquely identify a file during a session
-    SampleRate           : Double;                 // file sample rate
-    NumChannels          : LongInt;                // number of channels (1 for mono, 2 for stereo...)
-    NumFrames            : Double;                 // number of frames in the audio file
-    Format               : LongInt;                // reserved for future
-    EditCursorPosition   : Double;                 // -1 if no such cursor
-    SelectionStart       : Double;                 // frame index of first selected frame, or -1
-    SelectionSize        : Double;                 // number of frames in selection, or 0
-    SelectedChannelsMask : LongInt;                // 1 bit per channel
-    NumMarkers           : LongInt;                // number of markers in the file
-    TimeRulerUnit        : LongInt;                // see doc for possible values
-    TimeRulerOffset      : Double;                 // offset in time ruler (positive or negative)
-    Tempo                : Double;                 // as bpm
-    TimeSigNumerator     : LongInt;                // time signature numerator
-    TimeSigDenominator   : LongInt;                // time signature denominator
-    TicksPerBlackNote    : LongInt;                // resolution
-    SmpteFrameRate       : LongInt;                // smpte rate (set as in TVstTimeInfo)
+    Flags                : TVstAudioFileFlags;       // see enum TVstAudioFileFlags
+    HostOwned            : Pointer;                  // any data private to host
+    PlugOwned            : Pointer;                  // any data private to plugin
+    Name                 : array[0..99] of AnsiChar; // file title
+    UniqueId             : TChunkName;               // uniquely identify a file during a session
+    SampleRate           : Double;                   // file sample rate
+    NumChannels          : LongInt;                  // number of channels (1 for mono, 2 for stereo...)
+    NumFrames            : Double;                   // number of frames in the audio file
+    Format               : LongInt;                  // reserved for future
+    EditCursorPosition   : Double;                   // -1 if no such cursor
+    SelectionStart       : Double;                   // frame index of first selected frame, or -1
+    SelectionSize        : Double;                   // number of frames in selection, or 0
+    SelectedChannelsMask : LongInt;                  // 1 bit per channel
+    NumMarkers           : LongInt;                  // number of markers in the file
+    TimeRulerUnit        : LongInt;                  // see doc for possible values
+    TimeRulerOffset      : Double;                   // offset in time ruler (positive or negative)
+    Tempo                : Double;                   // as bpm
+    TimeSigNumerator     : LongInt;                  // time signature numerator
+    TimeSigDenominator   : LongInt;                  // time signature denominator
+    TicksPerBlackNote    : LongInt;                  // resolution
+    SmpteFrameRate       : LongInt;                  // smpte rate (set as in TVstTimeInfo)
     Future               : array[0..63] of Byte;
   end;
 
   PVstAudioFileMarker = ^TVstAudioFileMarker;
   TVstAudioFileMarker = packed record
     Position : Double;
-    Name     : array[0..31] of char;
+    Name     : array[0..31] of AnsiChar;
     vType    : LongInt;
     ID       : LongInt;
     Reserved : LongInt;
@@ -798,8 +798,8 @@ type
 
   PVstWindow = ^TVstWindow;
   TVstWindow = packed record
-    Title      : array[0..127] of Char; // Title
-    xPos       : SmallInt;              // Position and Size
+    Title      : array[0..127] of AnsiChar; // Title
+    xPos       : SmallInt;                  // Position and Size
     yPos       : SmallInt;
     Width      : SmallInt;
     Height     : SmallInt;
@@ -895,12 +895,12 @@ type
 type
   PVstFileType = ^TVstFileType;
   TVstFileType = packed record
-    name      : array[0..127] of Char;
-    macType   : array[0..7] of Char;
-    dosType   : array[0..7] of Char;
-    unixType  : array[0..7] of Char;
-    mimeType1 : array[0..127] of Char;
-    mimeType2 : array[0..127] of Char;
+    name      : array[0..127] of AnsiChar;
+    macType   : array[0..7] of AnsiChar;
+    dosType   : array[0..7] of AnsiChar;
+    unixType  : array[0..7] of AnsiChar;
+    mimeType1 : array[0..127] of AnsiChar;
+    mimeType2 : array[0..127] of AnsiChar;
   end;
 
   TVstFileCommand = (
@@ -919,16 +919,16 @@ type
     MacCreator           : LongInt;          // optional: 0 = no creator
     nbFileTypes          : LongInt;          // nb of fileTypes to used
     FileTypes            : PVstFileType;     // list of fileTypes
-    Title                : array[0..1023] of char;  // text display in the file selector's title
-    InitialPath          : PChar;   // initial path
-    ReturnPath           : PChar;   // use with kVstFileLoad and kVstDirectorySelect
-                                    // if null is passed, the host will allocated memory
-                                    // the plugin should then called closeOpenFileSelector for freeing memory
+    Title                : array[0..1023] of AnsiChar; // text display in the file selector's title
+    InitialPath          : PAnsiChar;  // initial path
+    ReturnPath           : PAnsiChar;  // use with kVstFileLoad and kVstDirectorySelect
+                                       // if null is passed, the host will allocated memory
+                                       // the plugin should then called closeOpenFileSelector for freeing memory
     SizeReturnPath       : LongInt;
-    ReturnMultiplePaths  : ^PChar;  // use with kVstMultipleFilesLoad
-                                    // the host allocates this array. The plugin should then called closeOpenFileSelector for freeing memory
-    nbReturnPath         : LongInt; // number of selected paths
-    Reserved             : LongInt; // reserved for host application
+    ReturnMultiplePaths  : ^PAnsiChar; // use with kVstMultipleFilesLoad
+                                       // the host allocates this array. The plugin should then called closeOpenFileSelector for freeing memory
+    nbReturnPath         : LongInt;    // number of selected paths
+    Reserved             : LongInt;    // reserved for host application
     Future               : array[0..115] of Byte;   // future use
   end;
 
@@ -938,7 +938,7 @@ type
     pluginUniqueID : TChunkName;            // UniqueID of the plugin
     pluginVersion  : LongInt;               // Plugin Version
     numElements    : LongInt;               // Number of Programs (Bank) or Parameters (Program)
-    future         : array[0..47] of char;
+    future         : array[0..47] of AnsiChar;
   end;
 
   TVstPanLawType = (
@@ -968,7 +968,7 @@ type
     FXVersion  : LongInt;
 
     NumParams  : LongInt;
-    PrgName    : array[0..27] of Char;
+    PrgName    : array[0..27] of AnsiChar;
     Params     : PSingle;    // variable no. of parameters
   end;
 
@@ -985,7 +985,7 @@ type
     FXVersion   : LongInt;
 
     NumPrograms : LongInt;
-    PrgName     : array[0..27] of Char;
+    PrgName     : array[0..27] of AnsiChar;
 
     ChunkSize   : LongInt;
     Chunk       : Pointer;     // variable
@@ -1035,17 +1035,17 @@ type
     Bottom, Right : Smallint;
   end;
 
-function FourCharToLong(C1, C2, C3, C4: Char): Longint;
+function FourCharToLong(C1, C2, C3, C4: AnsiChar): Longint;
 function FMod(d1, d2: Double): Double;
 function Rect(Left, Top, Right, Bottom : Smallint):ERect;
 
-procedure dB2string(value: Single; text: PChar);
-procedure dB2stringRound(value: Single; text: PChar);
-procedure float2string(value: Single; text: PChar);
-procedure long2string(value: Longint; text: PChar);
-procedure float2stringAsLong(value: Single; text: PChar);
-procedure Hz2string(samples, sampleRate: Single; text: PChar);
-procedure ms2string(samples, sampleRate: Single; text: PChar);
+procedure dB2string(value: Single; text: PAnsiChar);
+procedure dB2stringRound(value: Single; text: PAnsiChar);
+procedure Float2String(value: Single; text: PAnsiChar);
+procedure Long2string(value: Longint; text: PAnsiChar);
+procedure Float2StringAsLong(value: Single; text: PAnsiChar);
+procedure Hz2string(samples, sampleRate: Single; text: PAnsiChar);
+procedure ms2string(samples, sampleRate: Single; text: PAnsiChar);
 
 function gapSmallValue(value, maxValue: Double): Double;
 function invGapSmallValue(value, maxValue: Double): Double;
@@ -1076,55 +1076,55 @@ begin
  Result := d1 - (i * d2);
 end;
 
-procedure dB2string(value: Single; text: PChar);
+procedure dB2string(value: Single; text: PAnsiChar);
 begin
  if (value <= 0)
   then StrCopy(text, '   -oo  ')
-  else float2string(20 * log10(value), text);
+  else Float2String(20 * log10(value), text);
 end;
 
-procedure dB2stringRound(value: Single; text: PChar);
+procedure dB2stringRound(value: Single; text: PAnsiChar);
 begin
  if (value <= 0)
   then StrCopy(text, '    -96 ')
   else long2string(Round(20 * log10(value)), text);
 end;
 
-procedure float2string(value: Single; text: PChar);
+procedure Float2String(value: Single; text: PAnsiChar);
 begin
- StrCopy(text, PChar(Format('%f', [value])));
+ StrCopy(text, PAnsiChar(Format('%f', [value])));
 end;
 
-procedure long2string(value: Longint; text: PChar);
+procedure Long2string(value: Longint; text: PAnsiChar);
 begin
   if (value >= 100000000) then
   begin
     StrCopy(text, ' Huge!  ');
     Exit;
   end;
-  StrCopy(text, PChar(Format('%7d', [Value])));
+  StrCopy(text, PAnsiChar(Format('%7d', [Value])));
 end;
 
-procedure float2stringAsLong(value: Single; text: PChar);
+procedure Float2StringAsLong(value: Single; text: PAnsiChar);
 begin
  if (value >= 100000000) then
   begin
    StrCopy(text, ' Huge!  ');
    Exit;
   end;
- StrCopy(text, PChar(Format('%7.0f', [value])));
+ StrCopy(text, PAnsiChar(Format('%7.0f', [value])));
 end;
 
-procedure Hz2string(samples, sampleRate: Single; text: PChar);
+procedure Hz2string(samples, sampleRate: Single; text: PAnsiChar);
 begin
  if (samples = 0)
-  then float2string(0, text)
-  else float2string(sampleRate / samples, text);
+  then Float2String(0, text)
+  else Float2String(sampleRate / samples, text);
 end;
 
-procedure ms2string(Samples, SampleRate: Single; Text: PChar);
+procedure ms2string(Samples, SampleRate: Single; Text: PAnsiChar);
 begin
- float2string(samples * 1000 / sampleRate, text);
+ Float2String(samples * 1000 / sampleRate, text);
 end;
 
 function gapSmallValue(value, maxValue: double): Double;

@@ -355,8 +355,8 @@ begin
   then FBufferInPos := FBufferInPos - FInternalBufferSize;
  SPos := Excursion * FLFO.Sine;
  Pos := round(SPos);
- FAllpass.BandWidth := Pos - SPos;
- assert(abs(FAllpass.BandWidth) < 1);
+ FAllpass.Frequency := Pos - SPos;
+ assert(abs(FAllpass.Frequency) < 1);
  Pos := FBufferInPos + Pos;
 
  if Pos >= FInternalBufferSize then Pos := Pos - FInternalBufferSize else
@@ -615,8 +615,8 @@ begin
                                        FDelays[3].Sample[121]);
 
   end;
- FResampleAllpass[1].BandWidth := CHalf32 * FResamplePos;
- FResampleAllpass[2].BandWidth := CHalf32 * FResamplePos;
+ FResampleAllpass[1].Frequency := CHalf32 * FResamplePos;
+ FResampleAllpass[2].Frequency := CHalf32 * FResamplePos;
  FCurrentOutput[0] := FResampleAllpass[1].ProcessSample(
                       FResampleFilters[1].ProcessSample(FCurrentOutput[0]));
  FCurrentOutput[1] := FResampleAllpass[2].ProcessSample(

@@ -1,4 +1,4 @@
-unit TuningMap;
+unit DAV_TuningMap;
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -29,23 +29,26 @@ unit TuningMap;
 
 interface
 
+uses
+  Windows, SysUtils;
+
 type
   TTuningMap = class
   private
     function GetNoteFreq(Index: Integer): Double; // Absolute tune in Hz
     function GetRelativeTune(Index: Integer): Double; // Relative tune in cents
-    function SetRelativeTune(nNoteIndex: Integer; dblTune: Double): Boolean;
+    procedure SetRelativeTune(Index: Integer; Value: Double);
+    procedure SetBaseFreq(const Value: Double); // BaseFreq in Hz
   protected
-    FTunes       : array [0..127] of Double;  // Unit: Cents
-    FBaseFreq    : Double;                    // Unit: Hz
-    function SetBaseFreq(const dblBaseFreq: Double): Boolean; // BaseFreq in Hz
+    FTunes    : array [0..127] of Double;  // Unit: Cents
+    FBaseFreq : Double;                    // Unit: Hz
   public
     constructor Create; virtual;
     procedure Reset;
 
-    function SaveToFile(const FileName: TFileName; SaveBaseFrequency: Boolean = False): Boolean;
-    function LoadFromFile(const FileName: TFileName): Boolean;
-  published
+    procedure SaveToFile(const FileName: TFileName; const SaveBaseFrequency: Boolean = False);
+    procedure LoadFromFile(const FileName: TFileName);
+
     property BaseFrequency: Double read FBaseFreq write SetBaseFreq; // Unit: Hz
     property NoteFrequency[Index: Integer]: Double read GetNoteFreq;
     property RelativeTune[Index: Integer]: Double read GetRelativeTune write SetRelativeTune; // Relative tune in cents
@@ -54,7 +57,7 @@ type
 implementation
 
 uses
-  Math, Classes, SysUtils, Windows, Dialogs;
+  Math, Classes;
 
 type
   eSection = (SEC_None, SEC_Unknown, SEC_Tuning, SEC_ExactTuning);
@@ -99,8 +102,7 @@ begin
  for i := 0 to 127 do FTunes[i] := 100 * i;
 end;
 
-function TTuningMap.SaveToFile(FileName: string;
-  bSaveBaseFreq: Boolean): Boolean;
+procedure TTuningMap.SaveToFile(const FileName: TFileName; const SaveBaseFrequency: Boolean = False);
 var
   i   : Integer;
   ofs : TFileStream;
@@ -139,7 +141,7 @@ begin
   s := '[Exact Tuning]' + endl;
   ofs.Write(s[1], length(s));
 
-  if (bSaveBaseFreq) then
+  if (SaveBaseFrequency) then
    begin
     s := 'basefreq = ' + FloatToStr(FBaseFreq) + endl;
     ofs.Write(s[1], length(s));
@@ -151,12 +153,10 @@ begin
     ofs.Write(s[1], length(s));
    end;
 
-  ofs.Free;
- // Always returns true, because currently there's no error processing
-  Result := True;
+  FreeAndNil(ofs);
 end;
 
-function TTuningMap.LoadFromFile(const FileName: TFileName): Boolean;
+procedure TTuningMap.LoadFromFile(const FileName: TFileName);
 var
   secCurr: eSection;
   lTunes: array[0..127] of Longint; // For temporary use, unit: Cents
@@ -178,7 +178,7 @@ var
     d: Double;
     j, k, lc: Longint;
   begin
-    assignfile(f, fn);
+    assignfile(f, FileName);
     system.reset(f);
     for lc := 0 to 127 do
       tunes[lc] := 0;
@@ -352,7 +352,7 @@ begin
        if j < 1 then
         begin
          FreeAndNil(ifs);
-         raise Exception.CreateFmt('Syntax error: "=" missing! (line %s)', lLineCount);
+         raise Exception.CreateFmt('Syntax error: "=" missing! (line %s)', [lLineCount]);
         end;
        szParam := copy(szCurr, 1, j - 1);
        szValue := copy(szCurr, j + 1, length(szCurr) - j);
@@ -419,50 +419,39 @@ begin
 
     FreeAndNil(ifs);
    end;
-  Result := True; // Everything nice!
 end;
 
-function TTuningMap.GetNoteFreq(const Index: Integer): Double;
+function TTuningMap.GetNoteFreq(Index: Integer): Double;
 begin
-  Result := GetBaseFreq * Power(2, GetRelativeTune(Index) / 1200);
+  Result := FBaseFreq * Power(2, GetRelativeTune(Index) / 1200);
 end;
 
 function TTuningMap.GetRelativeTune(Index: Integer): Double;
 begin
  // First make sure, that the note index is in the valid range
  // If not, return a "standard value"
-  if ((nNoteIndex >= 0) and (Index <= 127))
+  if ((Index >= 0) and (Index <= 127))
    then Result := FTunes[Index]
    else Result := 100 * Index;
 end;
 
-function TTuningMap.SetBaseFreq(dblBaseFreq: Double): Boolean;
+procedure TTuningMap.SetBaseFreq(const Value: Double);
 var
   pstr: array[0..255] of Char;
 begin
  // First make sure, that the base frequency is in the valid range
- // If not, return false;
-  if (dblBaseFreq > 0) then
-   begin
-    FBaseFreq := dblBaseFreq;
-    Result := True;
-   end
-  else raise Exception.CreateFmt('Base frequency out of range: %s', [FloatToStr(dblBaseFreq)]);
+  if (Value > 0)
+   then FBaseFreq := Value
+   else raise Exception.CreateFmt('Base frequency out of range: %s', [FloatToStr(Value)]);
 end;
 
-function TTuningMap.SetRelativeTune(Index: Integer;
-  dblTune: Double): Boolean;
-var
-  pstr: array[0..255] of Char;
+procedure TTuningMap.SetRelativeTune(Index: Integer; Value: Double);
 begin
  // First make sure, that the note index is in the valid range
  // If not, return false;
- if ((Index >= 0) and (Index <= 127)) then
-  begin
-   FTunes[Index] := dblTune;
-   Result := True;
-  end
- else raise Exception.CreateFmt('Note index out of range: %d', [Index]);
+ if ((Index >= 0) and (Index <= 127))
+  then FTunes[Index] := Value
+  else raise Exception.CreateFmt('Note index out of range: %d', [Index]);
 end;
 
 end.

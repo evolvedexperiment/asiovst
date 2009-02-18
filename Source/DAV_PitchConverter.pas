@@ -34,6 +34,9 @@ unit DAV_PitchConverter;
 
 interface
 
+uses
+  SysUtils;
+
 type
   TPitchConverter = class
   private
@@ -43,7 +46,7 @@ type
     FMidi         : Integer;
     FName         : string;
     FGlobalTuneA4 : Double;
-    procedure SetCps(const Value: Double);
+    procedure SetCPS(const Value: Double);
     procedure SetMidi(const Value: Integer);
     procedure SetOct(const Value: Double);
     procedure SetPch(const Value: Double);
@@ -60,12 +63,12 @@ type
     function CyclesPerSampleToPch(Value: Double): Double;
     function CyclesPerSampleToOct(Value: Double): Double;
     function CyclesPerSampleToMidi(Value: Double): Integer;
-    function MidiToPch(const Value: Integer): Double;
+    function MidiToPch(Value: Integer): Double;
     function MidiToOct(const Value: Integer): Double;
     function MidiToCyclesPerSample(const Value: Integer): Double;
     function MidiToName(const Value: Integer): String;
 
-    property CyclesPerSample: Double read FCps write SetCps;
+    property CyclesPerSample: Double read FCps write SetCPS;
     property OctaveFraction: Double read FOct write SetOct;
     property PitchClass: Double read FPch write SetPch;
     property Midi: Integer read FMidi write SetMidi;
@@ -80,7 +83,7 @@ const
 implementation
 
 uses
-  Math, SysUtils;
+  Math;
 
 { TPitchConverter }
 
@@ -121,7 +124,7 @@ begin
    else Result := -1;
 end;
 
-function TPitchConverter.MidiToName(Value: Integer): String;
+function TPitchConverter.MidiToName(const Value: Integer): String;
 begin
  if (Value >= 0) and (Value <= 127)
   then Result := CNotes[Value mod 12] + IntToStr(Value div 12 - 2)
@@ -135,7 +138,7 @@ begin
   else Result := -1;
 end;
 
-function TPitchConverter.MidiToPch(const Value: Integer): Double;
+function TPitchConverter.MidiToPch(Value: Integer): Double;
 var
   k: Double;
 begin
@@ -205,7 +208,7 @@ begin
   Result := int(Value) + 100 * z / 12;
 end;
 
-procedure TPitchConverter.SetCyclesPerSample(const Value: Double);
+procedure TPitchConverter.SetCPS(const Value: Double);
 begin
  if FCps <> Value then
   begin
@@ -223,19 +226,19 @@ var
   i, j : Integer;
   s    : string;
 begin
-  assignfile(f, fn);
+  assignfile(f, FileName);
   rewrite(f);
   s := 'const FrequTable : array[0..127] of double = (';
   writeln(f, s);
   for i := 0 to 126 do
    begin
-    s := FloatToStr(MidiToCps(i)) + ',';
+    s := FloatToStr(MidiToCyclesPerSample(i)) + ',';
     for j := 1 to Length(s) - 1 do
       if s[j] = ',' then
         s[j] := '.';
     writeln(f, s);
    end;
-  s := FloatToStr(MidiToCps(127)) + ');';
+  s := FloatToStr(MidiToCyclesPerSample(127)) + ');';
   for j := 1 to Length(s) - 1 do
     if s[j] = ',' then
       s[j] := '.';
@@ -250,7 +253,7 @@ begin
    FMidi := Value;
    FOct  := MidiToOct(FMidi);
    FPch  := MidiToPch(FMidi);
-   FCps  := MidiToCps(FMidi);
+   FCps  := MidiToCyclesPerSample(FMidi);
    FName := MidiToName(FMidi);
   end;
 end;
@@ -290,7 +293,7 @@ begin
  if FOct <> Value then
   begin
    FOct := Value;
-   FCps := OctToCps(FOct);
+   FCps := OctToCyclesPerSample(FOct);
    FPch := OctToPch(FOct);
    FMidi := OctToMidi(FOct);
    FName := MidiToName(FMidi);
@@ -302,7 +305,7 @@ begin
  if FPch <> Value then
   begin
    FPch := Value;
-   FCps := PchToCps(FPch);
+   FCps := PchToCyclesPerSample(FPch);
    FOct := PchToOct(FPch);
    FMidi := PchToMidi(FPch);
    FName := MidiToName(FMidi);

@@ -31,6 +31,10 @@ type
     procedure FrequencyChanged; virtual;
     procedure GainChanged; virtual;
 
+    // Order
+    function GetOrder: Cardinal; virtual; abstract;
+    procedure SetOrder(const Value: Cardinal); virtual; abstract;
+
     property GainFactor: Double read FGainFactor;
     property SampleRateReciprocal: Double read FSRR;
     property SinW0: Double read FSinW0;
@@ -57,23 +61,65 @@ type
 
     property Gain: Double read FGain_dB write SetGaindB;
     property Frequency: Double read FFrequency write SetFrequency;
+    property Order: Cardinal read GetOrder write SetOrder;
     property SampleRate: Double read FSampleRate write SetSampleRate;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
-  TOrderFilterClass = class of TCustomOrderFilter;
   TCustomOrderFilter = class(TCustomFilter)
-  private
-    procedure SetOrder(Value: Cardinal);
   protected
-    FOrder : Cardinal;
+    FOrder: Cardinal;
     class function GetMaxOrder: Cardinal; virtual; abstract;
     procedure OrderChanged; virtual;
-  public
-    property Order: Cardinal read FOrder write SetOrder;
+    function GetOrder: Cardinal; override;
+    procedure SetOrder(const Value: Cardinal); override;
   end;
 
-  TCustomBandwidthFilter = class(TCustomFilter)
+  TFIRFilterClass = class of TCustomFIRFilter;
+  TCustomFIRFilter = class(TCustomFilter)
+  private
+    procedure SetKernelSize(const Value: Integer);
+  protected
+    FKernelSize : Integer;
+    FIR         : TDAVDoubleDynArray;
+    FHistory    : TDAVDoubleDynArray;
+    FCircular   : TDAVDoubleDynArray;
+    FSpeedTab   : TDAVDoubleDynArray;
+    FStateStack : TDAVDoubleDynArray;
+    FBufferPos  : Integer;
+
+    // Order
+    function GetOrder: Cardinal; override;
+    procedure SetOrder(const Value: Cardinal); override;
+  public
+    constructor Create; override;
+    function MagnitudeSquared(const Frequency: Double): Double; override;
+    function MagnitudeLog10(const Frequency: Double): Double; override;
+    function ProcessSample(const Input: Double): Double; override;
+//    function ProcessSample(const Input: Int64): Int64; override;
+//    function ProcessSampleASM: Double; override;
+    procedure PushStates; override;
+    procedure PopStates; override;
+    property KernelSize: Integer Read FKernelSize Write SetKernelSize;
+  end;
+
+  TIIRFilterClass = class of TCustomIIRFilter;
+  TCustomIIRFilter = class(TCustomFilter)
+  end;
+
+  TFirstOrderAllpassFilter = class(TCustomIIRFilter)
+  protected
+    FState : Double;
+    procedure FrequencyChanged; override;
+    function GetOrder: Cardinal; override;
+    procedure CalculateCoefficients; override;
+    procedure SetOrder(const Value: Cardinal); override;
+  public
+    function ProcessSample(const Input: Double): Double; override;
+    constructor Create; override;
+  end;
+
+  TCustomBandwidthIIRFilter = class(TCustomIIRFilter)
   private
     procedure SetBW(Value: Double);
   protected
@@ -90,48 +136,7 @@ type
     property BandWidth: Double read FBandWidth write SetBW;
   end;
 
-  TCustomFIRFilter = class(TCustomOrderFilter)
-  private
-    procedure SetKernelSize(const Value: Integer);
-  protected
-    FKernelSize : Integer;
-    FIR         : TDAVDoubleDynArray;
-    FHistory    : TDAVDoubleDynArray;
-    FCircular   : TDAVDoubleDynArray;
-    FSpeedTab   : TDAVDoubleDynArray;
-    FStateStack : TDAVDoubleDynArray;
-    FBufferPos  : Integer;
-  public
-    constructor Create; override;
-    function MagnitudeSquared(const Frequency: Double): Double; override;
-    function MagnitudeLog10(const Frequency: Double): Double; override;
-    function ProcessSample(const Input: Double): Double; override;
-//    function ProcessSample(const Input: Int64): Int64; override;
-//    function ProcessSampleASM: Double; override;
-    procedure PushStates; override;
-    procedure PopStates; override;
-    property KernelSize: Integer Read FKernelSize Write SetKernelSize;
-  end;
-
-  TIIRFilterClass = class of TCustomIIRFilter;
-  TCustomIIRFilter = class(TCustomBandwidthFilter)
-  protected
-    function GetOrder: Integer; virtual; abstract;
-  public
-    property Order: Integer read GetOrder;
-  end;
-
-  TFirstOrderAllpassFilter = class(TCustomIIRFilter)
-  protected
-    FState : Double;
-    function GetOrder: Integer; override;
-    procedure CalculateCoefficients; override;
-  public
-    function ProcessSample(const Input: Double): Double; override;
-    constructor Create; override;
-  end;
-
-  TBiquadIIRFilter = class(TCustomIIRFilter)
+  TBiquadIIRFilter = class(TCustomBandwidthIIRFilter)
   protected
     FDenominator  : array[1..2] of Double;
     FNominator    : array[0..2] of Double;
@@ -142,7 +147,7 @@ type
     procedure CalcPolesZeros; virtual;
     function GetPoles: TPNType;
     function GetZeros: TPNType;
-    function GetOrder: Integer; override;
+    function GetOrder: Cardinal; override;
   public
     constructor Create; override;
     procedure ResetStates; override;
@@ -247,7 +252,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_DspDFT;
+  Math, SysUtils, DAV_DspDFT;
 
 { TCustomFilter }
 
@@ -383,76 +388,44 @@ begin
   end;
 end;
 
+
 { TCustomOrderFilter }
+
+function TCustomOrderFilter.GetOrder: Cardinal;
+begin
+ result := FOrder;
+end;
 
 procedure TCustomOrderFilter.OrderChanged;
 begin
  CalculateCoefficients;
 end;
 
-procedure TCustomOrderFilter.SetOrder(Value: Cardinal);
+procedure TCustomOrderFilter.SetOrder(const Value: Cardinal);
+var
+  NewOrder: Cardinal;
 begin
- if Value > GetMaxOrder then Value := GetMaxOrder;
- if FOrder <> Value then
+ NewOrder := GetMaxOrder;
+ if Value < NewOrder
+  then NewOrder := Value;
+ if NewOrder <> Order then
   begin
-   FOrder := Value;
+   FOrder := NewOrder;
    OrderChanged;
   end;
 end;
 
-{ TCustomBandwidthFilter }
-
-constructor TCustomBandwidthFilter.Create;
-begin
- FBandWidth := 1;
- inherited;
- CalculateAlpha;
-end;
-
-procedure TCustomBandwidthFilter.AssignTo(Dest: TPersistent);
-begin
- inherited;
- if Dest is TCustomBandwidthFilter then
-  begin
-   TCustomBandwidthFilter(Dest).BandWidth := Bandwidth;
-  end;
-end;
-
-procedure TCustomBandwidthFilter.BandwidthChanged;
-begin
- CalculateAlpha;
- CalculateCoefficients;
- if assigned(FOnChange) then FOnChange(Self);
-end;
-
-procedure TCustomBandwidthFilter.CalculateW0;
-begin
- inherited;
- CalculateAlpha;
-end;
-
-procedure TCustomBandwidthFilter.CalculateAlpha;
-begin
- if (FSinW0 = 0)
-  then FAlpha := FSinW0 /( 2 * FBandWidth)
-  else FAlpha := Sinh(ln22 * cos(FW0 * 0.5) * FBandWidth * (FW0 / FSinW0)) * FSinW0;
-end;
-
-procedure TCustomBandwidthFilter.SetBW(Value: Double);
-begin
- if Value <= 1E-3 then Value := 1E-3;
- if FBandWidth <> Value then
-  begin
-   FBandWidth := Value;
-   BandwidthChanged;
-  end;
-end;
 
 { TCustomFIRFilter }
 
 constructor TCustomFIRFilter.Create;
 begin
  inherited;
+end;
+
+function TCustomFIRFilter.GetOrder: Cardinal;
+begin
+ result := FKernelSize;
 end;
 
 function TCustomFIRFilter.MagnitudeLog10(const Frequency: Double): Double;
@@ -575,6 +548,11 @@ begin
   end;
 end;
 
+procedure TCustomFIRFilter.SetOrder(const Value: Cardinal);
+begin
+ KernelSize := Value;
+end;
+
 { TFirstOrderAllpassFilter }
 
 procedure TFirstOrderAllpassFilter.CalculateCoefficients;
@@ -588,17 +566,75 @@ begin
  FState := 0;
 end;
 
-function TFirstOrderAllpassFilter.GetOrder: Integer;
+procedure TFirstOrderAllpassFilter.FrequencyChanged;
+begin
+ assert (FFrequency >= -0.5);
+ assert (FFrequency <= 1);
+end;
+
+function TFirstOrderAllpassFilter.GetOrder: Cardinal;
 begin
  result := 1;
 end;
 
 function TFirstOrderAllpassFilter.ProcessSample(const Input: Double): Double;
 begin
- result := FState + FBandWidth * Input;
- FState := Input - FBandWidth * result;
+ result := FState + FFrequency * Input;
+ FState := Input - FFrequency * result;
 end;
 
+procedure TFirstOrderAllpassFilter.SetOrder(const Value: Cardinal);
+begin
+ raise Exception.Create('Order is fixed!');
+end;
+
+{ TCustomBandwidthIIRFilter }
+
+constructor TCustomBandwidthIIRFilter.Create;
+begin
+ FBandWidth := 1;
+ inherited;
+ CalculateAlpha;
+end;
+
+procedure TCustomBandwidthIIRFilter.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomBandwidthIIRFilter then
+  begin
+   TCustomBandwidthIIRFilter(Dest).BandWidth := Bandwidth;
+  end;
+end;
+
+procedure TCustomBandwidthIIRFilter.BandwidthChanged;
+begin
+ CalculateAlpha;
+ CalculateCoefficients;
+ if assigned(FOnChange) then FOnChange(Self);
+end;
+
+procedure TCustomBandwidthIIRFilter.CalculateW0;
+begin
+ inherited;
+ CalculateAlpha;
+end;
+
+procedure TCustomBandwidthIIRFilter.CalculateAlpha;
+begin
+ if (FSinW0 = 0)
+  then FAlpha := FSinW0 /( 2 * FBandWidth)
+  else FAlpha := Sinh(ln22 * cos(FW0 * 0.5) * FBandWidth * (FW0 / FSinW0)) * FSinW0;
+end;
+
+procedure TCustomBandwidthIIRFilter.SetBW(Value: Double);
+begin
+ if Value <= 1E-3 then Value := 1E-3;
+ if FBandWidth <> Value then
+  begin
+   FBandWidth := Value;
+   BandwidthChanged;
+  end;
+end;
 
 { TBiquadIIRFilter }
 
@@ -833,7 +869,7 @@ begin
   end;
 end;
 
-function TBiquadIIRFilter.GetOrder: Integer;
+function TBiquadIIRFilter.GetOrder: Cardinal;
 begin
  result := 2;
 end;
