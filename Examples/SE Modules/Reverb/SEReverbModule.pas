@@ -280,8 +280,8 @@ end;
 function TCustomSEFreeverbModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSEStkReverbPins(index) of
-  pinInput:
+ case TSEFreeverbPins(index) of
+  pinFvInput:
    with Properties^ do
     begin
      Name            := 'Input';
@@ -291,7 +291,7 @@ begin
      Datatype        := dtFSample;
      DefaultValue    := '0';
     end;
-  pinOutput:
+  pinFvOutput:
    with Properties^ do
     begin
      Name            := 'Output';
@@ -361,7 +361,7 @@ begin
      begin
       Name            := 'Roomsize';
       VariableAddress := @FRoomsize;
-      Direction       := drIn;
+      Direction       := drParameter;
       Datatype        := dtSingle;
       DefaultValue    := '1';
       result          := True;
@@ -371,7 +371,7 @@ begin
     begin
      Name            := 'Damp';
      VariableAddress := @FDamp;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
      result          := True;
@@ -381,7 +381,7 @@ begin
     begin
      Name            := 'Wet [%]';
      VariableAddress := @FWet;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '70';
      result          := True;
@@ -391,7 +391,7 @@ begin
     begin
      Name            := 'Dry [%]';
      VariableAddress := @FDry;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
      result          := True;
@@ -583,7 +583,7 @@ begin
     begin
      Name            := 'T60 [s]';
      VariableAddress := @FT60;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
      result          := True;
@@ -593,7 +593,7 @@ begin
     begin
      Name            := 'EffectMix [%]';
      VariableAddress := @FEffectMix;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
      result          := True;
@@ -783,7 +783,7 @@ begin
     begin
      Name            := 'T60 [s]';
      VariableAddress := @FT60;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
      result          := True;
@@ -793,7 +793,7 @@ begin
     begin
      Name            := 'EffectMix [%]';
      VariableAddress := @FEffectMix;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
      result          := True;
@@ -1000,7 +1000,7 @@ begin
     begin
      Name            := 'T60 [s]';
      VariableAddress := @FT60;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
      result          := True;
@@ -1010,7 +1010,7 @@ begin
     begin
      Name            := 'EffectMix [%]';
      VariableAddress := @FEffectMix;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
      result          := True;
@@ -1218,7 +1218,7 @@ begin
     begin
      Name            := 'T60 [s]';
      VariableAddress := @FT60;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
      result          := True;
@@ -1228,7 +1228,7 @@ begin
     begin
      Name            := 'EffectMix [%]';
      VariableAddress := @FEffectMix;
-     Direction       := drIn;
+     Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
      result          := True;
