@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Barberpole Flanger Installer
+;Bass Extender Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Barberpole Flanger Installer"
-  OutFile "Barberpole Flanger_Install.exe"
+  Name "Bass Extender Installer"
+  OutFile "Bass_Extender_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Barberpole Flanger"
+  !define PRODUCT_NAME "Bass Extender"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,17 +69,17 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Barberpole Flanger VST-Plugin" SecProgramFiles
+Section "Bass Extender VST-Plugin" SecProgramFiles
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\BarberpoleFlanger.dll"
+  File "..\Bin\BassExtender.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallBarberpoleFlanger.exe"
+  WriteUninstaller "$INSTDIR\UninstallBassExtender.exe"
 
 
 SectionEnd
@@ -88,13 +88,13 @@ SectionEnd
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Barberpole Flanger VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Bass Extender VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Barberpole Flanger VST Plugin"
+  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Bass Extender VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -107,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\BarberpoleFlanger.dll"
+  Delete "$INSTDIR\BassExtender.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

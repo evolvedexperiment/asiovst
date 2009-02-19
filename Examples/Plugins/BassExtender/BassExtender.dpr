@@ -13,9 +13,7 @@ uses
   DAV_SeModule,
   DAV_SeGUI,
   BassExtenderDM in 'BassExtenderDM.pas' {BassExtenderModule: TVSTModule},
-  BassExtenderGUI in 'BassExtenderGUI.pas' {FmBassExtender},
-  DAV_DSPFrequencyDivider in '..\..\..\Source\DSP\DAV_DSPFrequencyDivider.pas',
-  DAV_DspFilterLinkwitzRiley in '..\..\..\Source\DSP\DAV_DspFilterLinkwitzRiley.pas';
+  BassExtenderGUI in 'BassExtenderGUI.pas' {FmBassExtender};
 
 {
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
@@ -62,6 +60,19 @@ exports makeModule name 'makeModule';
 exports GetModuleProperties name 'getModuleProperties';
 }
 
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- BasicVSTModuleClass := TBassExtenderModule;
+ Result := VstModuleMain(AudioMasterCallback, TBassExtenderModule);
+end;
+
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(TBassExtenderModule);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
+
+begin
 end.

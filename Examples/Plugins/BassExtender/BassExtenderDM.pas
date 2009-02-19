@@ -83,6 +83,7 @@ begin
    FCompressor[ch].AutoMakeUp := True;
    FOctaveDivider[ch] := TOcatveDivider.Create;
   end;
+
  Parameter[ 0] := 70;    // Split Frequency [Hz]
  Parameter[ 1] := 3;     // Split Order
  Parameter[ 2] := 50;    // Divider [%]
@@ -95,20 +96,7 @@ begin
  Parameter[ 9] := 0;     // Balance [%]
  Parameter[10] := 3;     // Mode (0 = Stereo, 1 = Mid only, 2 = Light, 1 = Light Mid only)
 
- with Programs[0] do
-  begin
-   Parameter[ 0] := 70;    // Split Frequency [Hz]
-   Parameter[ 1] := 3;     // Split Order
-   Parameter[ 2] := 50;    // Divider [%]
-   Parameter[ 3] := 30;    // Shape [%]
-   Parameter[ 4] := -20;   // Threshold [dB]
-   Parameter[ 5] := 6;     // Ratio (1 : x)
-   Parameter[ 6] := 50;    // Attack [µs]
-   Parameter[ 7] := 50;    // Release [ms]
-   Parameter[ 8] := 20;    // Mix [%]
-   Parameter[ 9] := 0;     // Balance [%]
-   Parameter[10] := 3;     // Mode (0 = Stereo, 1 = Mid only, 2 = Light, 1 = Light Mid only)
-  end;
+ Programs[0].SetParameters(FParameter);
 
  with Programs[1] do
   begin
