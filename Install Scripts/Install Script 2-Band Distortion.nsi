@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;AmpSim Installer
+;2-Band Distortion Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Crossover Distortion Installer"
-  OutFile "CrossoverDistortion_Install.exe"
+  Name "2-Band Distortion Installer"
+  OutFile "2-Band_Distortion_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Crossover Distortion"
+  !define PRODUCT_NAME "2-Band Distortion"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,36 +69,51 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Crossover Distortion VST-Plugin" SecProgramFiles
+Section "2-Band Distortion VST-Plugin" SecProgramFiles
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\TwoBandDistortion.dll" "..\Bin\2-Band Distortion.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\CrossoverDistortion.dll"
+  File "..\Bin\2-Band Distortion.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallCrossover Distortion.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_2-Band_Distortion.exe"
+SectionEnd
 
+Section "2-Band Distortion Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\2-Band Distortion Manual.pdf"
 
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall_2-Band_Distortion.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Crossover Distortion VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "2-Band Distortion VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Crossover Distortion VST Plugin"
+  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "2-Band Distortion VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "2-Band Distortion Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -107,7 +122,8 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Crossover Distortion.dll"
+  Delete "$INSTDIR\2-Band Distortion.dll"
+  Delete "$INSTDIR\2-Band Distortion Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd
