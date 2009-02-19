@@ -683,7 +683,7 @@ begin
   then OnProcess := SubProcess
   else
    begin
-    FStaticCount := BlockSize + round(FJCReverb.T60 * SampleRate);;
+    FStaticCount := BlockSize + round(FJCReverb.T60 * SampleRate);
     OnProcess := SubProcessStatic;
    end;
 end;
@@ -872,19 +872,29 @@ procedure TCustomSEStkNReverb2Module.SubProcessStatic(const BufferOffset, Sample
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
- if FStaticCount <= 0
-  then CallHost(SEAudioMasterSleepMode);
+ if FStaticCount <= 0 then
+  begin
+   FillChar(FOutputBuffer1[BufferOffset], SampleFrames * SizeOf(Single), 0);
+   FillChar(FOutputBuffer2[BufferOffset], SampleFrames * SizeOf(Single), 0);
+   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+   Pin[2].TransmitStatusChange(SampleClock, Pin[0].Status);
+   CallHost(SEAudioMasterSleepMode);
+  end;
 end;
 
 procedure TCustomSEStkNReverb2Module.ChooseProcess;
 begin
- if Pin[Integer(pinInput)].Status = stRun
-  then OnProcess := SubProcess
-  else
-   begin
-    FStaticCount := BlockSize + round(FNReverb.T60 * SampleRate);;
-    OnProcess := SubProcessStatic;
-   end;
+ if Pin[Integer(pinInput)].Status = stRun then
+  begin
+   OnProcess := SubProcess;
+   Pin[1].TransmitStatusChange(SampleClock, stRun);
+   Pin[2].TransmitStatusChange(SampleClock, stRun);
+  end
+ else
+  begin
+   FStaticCount := BlockSize + round(FNReverb.T60 * SampleRate);
+   OnProcess := SubProcessStatic;
+  end;
 end;
 
 // describe your module
@@ -935,17 +945,10 @@ end;
 
 // An input plug has changed value
 procedure TCustomSEStkNReverb2Module.PlugStateChange(const CurrentPin: TSEPin);
-var
-  InState : TSEStateType;
 begin
  inherited;
  case CurrentPin.PinID of
-  0..1: begin
-         ChooseProcess;
-         InState := Pin[0].Status;
-         if Pin[1].Status < InState then InState := Pin[1].Status;
-         Pin[2].TransmitStatusChange(SampleClock, InState);
-        end;
+  0: ChooseProcess;
  end;
 end;
 
@@ -1090,19 +1093,29 @@ procedure TCustomSEStkJCReverb2Module.SubProcessStatic(const BufferOffset, Sampl
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
- if FStaticCount <= 0
-  then CallHost(SEAudioMasterSleepMode);
+ if FStaticCount <= 0 then
+  begin
+   FillChar(FOutputBuffer1[BufferOffset], SampleFrames * SizeOf(Single), 0);
+   FillChar(FOutputBuffer2[BufferOffset], SampleFrames * SizeOf(Single), 0);
+   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+   Pin[2].TransmitStatusChange(SampleClock, Pin[0].Status);
+   CallHost(SEAudioMasterSleepMode);
+  end;
 end;
 
 procedure TCustomSEStkJCReverb2Module.ChooseProcess;
 begin
- if Pin[Integer(pinInput)].Status = stRun
-  then OnProcess := SubProcess
-  else
-   begin
-    FStaticCount := BlockSize + round(FJCReverb.T60 * SampleRate);;
-    OnProcess := SubProcessStatic;
-   end;
+ if Pin[Integer(pinInput)].Status = stRun then
+  begin
+   Pin[1].TransmitStatusChange(SampleClock, stRun);
+   Pin[2].TransmitStatusChange(SampleClock, stRun);
+   OnProcess := SubProcess
+  end
+ else
+  begin
+   FStaticCount := BlockSize + round(FJCReverb.T60 * SampleRate);
+   OnProcess := SubProcessStatic;
+  end;
 end;
 
 // describe your module
@@ -1153,17 +1166,10 @@ end;
 
 // An input plug has changed value
 procedure TCustomSEStkJCReverb2Module.PlugStateChange(const CurrentPin: TSEPin);
-var
-  InState : TSEStateType;
 begin
  inherited;
  case CurrentPin.PinID of
-  0..1: begin
-         ChooseProcess;
-         InState := Pin[0].Status;
-         if Pin[1].Status < InState then InState := Pin[1].Status;
-         Pin[2].TransmitStatusChange(SampleClock, InState);
-        end;
+  0..1: ChooseProcess;
  end;
 end;
 

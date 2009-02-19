@@ -94,19 +94,29 @@ procedure TCustomSEPlateReverbModule.SubProcessStatic(const BufferOffset, Sample
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
- if (FStaticCount <= 0) and (FPeak < 3.16E-5)
-  then CallHost(SEAudioMasterSleepMode);
+ if (FStaticCount <= 0) and (FPeak < 1.E-5) then
+  begin
+   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+   Pin[2].TransmitStatusChange(SampleClock, Pin[0].Status);
+   FillChar(FOutputBuffer[0, BufferOffset], SampleFrames * SizeOf(Single), 0);
+   FillChar(FOutputBuffer[1, BufferOffset], SampleFrames * SizeOf(Single), 0);
+   CallHost(SEAudioMasterSleepMode);
+  end;
 end;
 
 procedure TCustomSEPlateReverbModule.ChooseProcess;
 begin
- if Pin[Integer(pinInput)].Status = stRun
-  then OnProcess := SubProcess
-  else
-   begin
-    FStaticCount := BlockSize + round(SampleRate);
-    OnProcess := SubProcessStatic;
-   end;
+ if Pin[0].Status = stRun then
+  begin
+   OnProcess := SubProcess;
+   Pin[1].TransmitStatusChange(SampleClock, stRun);
+   Pin[2].TransmitStatusChange(SampleClock, stRun);
+  end
+ else
+  begin
+   FStaticCount := BlockSize + round(SampleRate);
+   OnProcess := SubProcessStatic;
+  end;
 end;
 
 // describe your module
@@ -162,7 +172,6 @@ begin
  case TSEPlateVerbPins(CurrentPin.PinID) of
        pinInput: begin
                   ChooseProcess;
-                  Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
                  end;
  end;
 end;
@@ -223,11 +232,11 @@ begin
    pinPreDelay:
     with Properties^ do
      begin
-      Name            := 'Pre-Delay';
+      Name            := 'Pre-Delay [ms]';
       VariableAddress := @FPreDelay;
       Direction       := drParameter;
       Datatype        := dtSingle;
-      DefaultValue    := '1';
+      DefaultValue    := '10';
       result          := True;
      end;
    pinDecay:
@@ -298,8 +307,8 @@ procedure TSEPlateReverbStaticModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
  case TSEPlateVerbPins(CurrentPin.PinID) of
-        pinPreDelay : FPlateReverb.PreDelay := 4E-4 * FPreDelay;
-           pinDecay : FPlateReverb.Decay := 1E-2 * FDecay;
+        pinPreDelay : FPlateReverb.PreDelay := 1E-3 * FPreDelay;
+           pinDecay : FPlateReverb.Decay := 4E-3 * FDecay;
          pinDamping : FPlateReverb.DampingFrequency := 1E3 * FDamping;
   pinInputDiffusion : FPlateReverb.InputDiffusion := 1E-2 * FInputDiff;
   pinDecayDiffusion : FPlateReverb.DecayDiffusion := 1E-2 * FDecayDiff;
