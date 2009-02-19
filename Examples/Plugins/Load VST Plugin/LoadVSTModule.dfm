@@ -14,6 +14,7 @@ object PlugInPlugModule: TPlugInPlugModule
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <>
+  ParameterCategories = <>
   OnOpen = VST2ModuleOpen
   OnClose = VST2ModuleClose
   OnEditOpen = VSTModuleEditOpen

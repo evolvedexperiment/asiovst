@@ -184,7 +184,7 @@ begin
   for Channel := 0 to numOutputs - 1 do
    begin
     {$IFDEF Use_IPPS}
-    FFft.Perform_FFT(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
+    FFft.PerformFFT(PDAVComplexSingleFixedArray(FSignalFreq), @Inputs[Channel, 0]);
 
     // DC & Nyquist
     FSignalFreq^[0].Re := FFilterFreq^[0].Re * FSignalFreq^[0].Re;
@@ -193,7 +193,7 @@ begin
     for Bin := 1 to Half - 1
      do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
-    FFft.Perform_IFFT(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
+    FFft.PerformIFFT(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
 
     {$ELSE}{$IFDEF Use_CUDA}
     FFft.PerformFFT(FSignalFreq, @Inputs[Channel, 0]);

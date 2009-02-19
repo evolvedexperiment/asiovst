@@ -6,32 +6,18 @@ library BassExtender;
 uses
   FastMM4,  // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here
-  Forms,
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   DAV_SeCommon,
   DAV_SeModule,
   DAV_SeGUI,
-  DAV_WinAmp,
   BassExtenderDM in 'BassExtenderDM.pas' {BassExtenderModule: TVSTModule},
   BassExtenderGUI in 'BassExtenderGUI.pas' {FmBassExtender},
   DAV_DSPFrequencyDivider in '..\..\..\Source\DSP\DAV_DSPFrequencyDivider.pas',
-  DAV_DspFilterLinkwitzRiley in '..\..\..\Source\DSP\DAV_DspFilterLinkwitzRiley.pas',
-  DAV_PluginWrapper in 'DAV_PluginWrapper.pas';
+  DAV_DspFilterLinkwitzRiley in '..\..\..\Source\DSP\DAV_DspFilterLinkwitzRiley.pas';
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-begin
-  try
-    with TBassExtenderModule.Create(Application) do
-     begin
-      AudioMaster := AudioMasterCallback;
-      Result := Effect;
-     end;
-  except
-    Result := nil;
-  end;
-end;
-
+{
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
 (*
@@ -72,41 +58,10 @@ begin
 *)
 end;
 
-function GetWinampModule(Which : Integer) : PWinAmpDSPModule; cdecl;
-begin
- case Which of
-   0 : begin
-        Result := @WADSPModule;
-        Result^.Description := PChar(TBassExtenderModule.GetStaticDescription);
-       end
- else
-  Result := nil;
- end;
-end;
-
-var
-  WADSPHeader  : TWinAmpDSPheader;
-
-function winampDSPGetHeader2 : PWinAmpDSPHeader; cdecl;
-begin
- try
-  with WADSPHeader do
-   begin
-    Version     := $20;
-    Description := PChar(TBassExtenderModule.GetStaticDescription);
-    GetModule   := GetWinampModule;
-   end;
-  Result := @WADSPHeader;
- except
-  Result := nil;
- end;
-end;
-
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
 exports makeModule name 'makeModule';
-exports getModuleProperties name 'getModuleProperties';
-exports winampDSPGetHeader2 name 'winampDSPGetHeader2';
+exports GetModuleProperties name 'getModuleProperties';
+}
 
 begin
+ BasicVSTModuleClass := TBassExtenderModule;
 end.

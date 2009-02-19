@@ -52,12 +52,14 @@ begin
  Parameter[1] :=  0.2;
  Parameter[2] :=  5;
  Parameter[3] := 50;
+ Parameter[4] :=  2;
  with Programs[0] do
   begin
    Parameter[0] :=  2;
    Parameter[1] :=  0.2;
    Parameter[2] :=  5;
    Parameter[3] := 50;
+   Parameter[4] :=  2;
   end;
  with Programs[1] do
   begin
@@ -65,6 +67,7 @@ begin
    Parameter[1] :=  0.02;
    Parameter[2] :=  2;
    Parameter[3] := 50;
+   Parameter[4] :=  2;
   end;
  with Programs[2] do
   begin
@@ -72,6 +75,7 @@ begin
    Parameter[1] :=  0.04;
    Parameter[2] :=  4;
    Parameter[3] := 50;
+   Parameter[4] :=  2;
   end;
  with Programs[3] do
   begin
@@ -79,6 +83,7 @@ begin
    Parameter[1] :=  0.62;
    Parameter[2] :=  4.5;
    Parameter[3] := 50;
+   Parameter[4] :=  2;
   end;
 end;
 

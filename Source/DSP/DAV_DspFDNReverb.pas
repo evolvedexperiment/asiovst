@@ -148,7 +148,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_DspInterpolation;
+  Math, SysUtils, DAV_Approximations, DAV_DspInterpolation;
 
 { TDampingFilter }
 
@@ -616,10 +616,10 @@ procedure TDspFDNReverb32.ProcessFeedbackPath(var FeedbackVector: TDAVVector32);
 begin
  if FNonLinearActive then
   begin
-   FeedbackVector[0] := FastTanhOpt5asm(FNonLinearGain * FeedbackVector[0]);
-   FeedbackVector[1] := FastTanhOpt5asm(FNonLinearGain * FeedbackVector[1]);
-   FeedbackVector[2] := FastTanhOpt5asm(FNonLinearGain * FeedbackVector[2]);
-   FeedbackVector[3] := FastTanhOpt5asm(FNonLinearGain * FeedbackVector[3]);
+   FeedbackVector[0] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[0]);
+   FeedbackVector[1] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[1]);
+   FeedbackVector[2] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[2]);
+   FeedbackVector[3] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[3]);
   end;
 
  // Halflife

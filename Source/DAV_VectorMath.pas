@@ -3,7 +3,7 @@ unit DAV_VectorMath;
 interface
 
 uses
-  Math, DAV_Common;
+  Windows, Math, DAV_Common;
 
 type
   TDAVVector32 = TDAV4SingleArray;

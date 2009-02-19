@@ -1,4 +1,4 @@
-unit EditorFrm;
+unit HardKneeCompressorGUI;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel;
 
 type
-  TEditorForm = class(TForm)
+  TFmHardKneeCompressor = class(TForm)
     DialAttack: TGuiDial;
     DialRatio: TGuiDial;
     DialRelease: TGuiDial;
@@ -38,9 +38,9 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, SimpleCompressor2DM;
+  Math, HardKneeCompressorDM;
 
-procedure TEditorForm.FormCreate(Sender: TObject);
+procedure TFmHardKneeCompressor.FormCreate(Sender: TObject);
 var
   RS  : TResourceStream;
 begin
@@ -55,7 +55,7 @@ begin
  end;
 end;
 
-procedure TEditorForm.FormShow(Sender: TObject);
+procedure TFmHardKneeCompressor.FormShow(Sender: TObject);
 begin
  UpdateAttack;
  UpdateRatio;
@@ -63,9 +63,9 @@ begin
  UpdateRelease;
 end;
 
-procedure TEditorForm.UpdateThreshold;
+procedure TFmHardKneeCompressor.UpdateThreshold;
 begin
- with TSoftKneeCompressorDataModule(Owner) do
+ with THardKneeCompressorDataModule(Owner) do
   begin
    if Parameter[0] <> DialThreshold.Position
     then DialThreshold.Position := Parameter[0];
@@ -73,11 +73,11 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateAttack;
+procedure TFmHardKneeCompressor.UpdateAttack;
 var
   AttackTemp : Single;
 begin
- with TSoftKneeCompressorDataModule(Owner) do
+ with THardKneeCompressorDataModule(Owner) do
   begin
    AttackTemp := 100 * Log10(Parameter[2]);
    if DialAttack.Position <> AttackTemp
@@ -86,11 +86,11 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateRatio;
+procedure TFmHardKneeCompressor.UpdateRatio;
 var
   RatioTemp : Single;
 begin
- with TSoftKneeCompressorDataModule(Owner) do
+ with THardKneeCompressorDataModule(Owner) do
   begin
    RatioTemp := 100 * Log10(Parameter[1]);
    if DialRatio.Position <> RatioTemp
@@ -99,11 +99,11 @@ begin
   end;
 end;
 
-procedure TEditorForm.UpdateRelease;
+procedure TFmHardKneeCompressor.UpdateRelease;
 var
   ReleaseTemp : Single;
 begin
- with TSoftKneeCompressorDataModule(Owner) do
+ with THardKneeCompressorDataModule(Owner) do
   begin
    ReleaseTemp := 1000 * Log10(Parameter[3]);
    if DialRelease.Position <> ReleaseTemp
@@ -112,20 +112,20 @@ begin
   end;
 end;
 
-procedure TEditorForm.DialThresholdChange(Sender: TObject);
+procedure TFmHardKneeCompressor.DialThresholdChange(Sender: TObject);
 begin
- with TSoftKneeCompressorDataModule(Owner) do
+ with THardKneeCompressorDataModule(Owner) do
   begin
    if Parameter[0] <> DialThreshold.Position
     then Parameter[0] := DialThreshold.Position;
   end;
 end;
 
-procedure TEditorForm.DialRatioChange(Sender: TObject);
+procedure TFmHardKneeCompressor.DialRatioChange(Sender: TObject);
 var
   TempRatio : Single;
 begin
- with TSoftKneeCompressorDataModule(Owner) do
+ with THardKneeCompressorDataModule(Owner) do
   begin
    TempRatio := Power(10, 0.01 * DialRatio.Position);
    if Parameter[1] <> TempRatio
@@ -133,11 +133,11 @@ begin
   end;
 end;
 
-procedure TEditorForm.DialAttackChange(Sender: TObject);
+procedure TFmHardKneeCompressor.DialAttackChange(Sender: TObject);
 var
   TempAttack : Single;
 begin
- with TSoftKneeCompressorDataModule(Owner) do
+ with THardKneeCompressorDataModule(Owner) do
   begin
    TempAttack := Power(10, 0.01 * DialAttack.Position);
    if Parameter[2] <> TempAttack
@@ -145,11 +145,11 @@ begin
   end;
 end;
 
-procedure TEditorForm.DialReleaseChange(Sender: TObject);
+procedure TFmHardKneeCompressor.DialReleaseChange(Sender: TObject);
 var
   TempRelease : Single;
 begin
- with TSoftKneeCompressorDataModule(Owner) do
+ with THardKneeCompressorDataModule(Owner) do
   begin
    TempRelease := Power(10, 0.001 * DialRelease.Position);
    if Parameter[3] <> TempRelease

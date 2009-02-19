@@ -11,7 +11,7 @@ uses
 type
   TDAVResampling = class(TAudioObject)
   private
-    FFilterClass         : TOrderFilterClass;
+    FFilterClass : TOrderFilterClass;
     procedure SetFactor(const Value: Integer);
     procedure SetOrder(const Value: Integer);
     procedure SetTransitionBandwidth(const Value: Double);

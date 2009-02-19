@@ -449,7 +449,7 @@ var
 begin
  for n := 0 to VstHost.Count - 1 do
   begin
-   VstHost[n].ProcessEvents(Events);
+   VstHost[n].ProcessEvents(Events^);
   end;
 end;
 
@@ -498,8 +498,10 @@ procedure TCustomWrapperDataModule.VSTModuleProcessVarIO(Sender: TObject;
 var
   n : Integer;
 begin
+(*
  for n := 0 to VstHost.Count - 1
-  do VstHost[n].ProcessVarIo(@varIO);
+  do VstHost[n].ProcessVarIo(VarIO);
+*)
 end;
 
 procedure TCustomWrapperDataModule.VSTModuleResume(Sender: TObject);

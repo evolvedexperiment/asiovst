@@ -6,27 +6,9 @@ uses
   madExcept,
   madLinkDisAsm,
   FastMove, // either download the library or comment if there is an error here
-  RTLVCLOptimize,
-  Forms,
-  DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   CustomWrapperDM in 'CustomWrapperDM.pas' {CustomWrapperDataModule: TVSTModule};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TCustomWrapperDataModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
-end;
-
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
-
-begin
+ BasicVSTModuleClass := TCustomWrapperDataModule;
 end.

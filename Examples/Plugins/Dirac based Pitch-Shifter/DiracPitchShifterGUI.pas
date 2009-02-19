@@ -3,8 +3,8 @@ unit DiracPitchShifterGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_GuiLabel, Controls, Graphics, DAV_GuiBaseControl, DAV_GuiDial;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, DAV_Common,
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiCommon, DAV_GuiBaseControl, DAV_GuiDial;
 
 type
   TFmDiracPitchShifter = class(TForm)

@@ -1,4 +1,4 @@
-unit DAV_DspPitchShifter;
+unit DAV_DspGranularPitchShifter;
 
 {$I DAV_Compiler.inc}
 
@@ -19,7 +19,7 @@ type
     property Fractional: Single read FFractional write FFractional;
   end;
 
-  TPitchShifterStage = class(TDspObject)
+  TGranularPitchShifterStage = class(TDspObject)
   private
     FAllpass        : TFractionalDelayAllpass;
     FBufferOffset   : Integer;
@@ -33,7 +33,7 @@ type
     property Fractional: Double read GetFractional write SetFractional;
   end;
 
-  TCustomDspPitchShifter = class(TDspObject)
+  TCustomDspGranularPitchShifter = class(TDspObject)
   private
     FSampleRate        : Double;
     FSampleRateInv     : Double;
@@ -41,7 +41,7 @@ type
     FEnvelopeOffset    : Double;
     FBufferSize        : Integer;
     FBufferPos         : Integer;
-    FPitchShifterStage : array of TPitchShifterStage;
+    FPitchShifterStage : array of TGranularPitchShifterStage;
     FStages            : Byte;
     FStageMix          : Double;
     FSemitones         : Double;
@@ -68,7 +68,7 @@ type
     property Stages: Byte read FStages write SetStages default 0;
   end;
 
-  TDspPitchShifter32 = class(TCustomDspPitchShifter)
+  TDspGranularPitchShifter32 = class(TCustomDspGranularPitchShifter)
   private
     FBuffer32 : PDAVSingleFixedArray;
   protected
@@ -83,7 +83,7 @@ type
     property Stages;
   end;
 
-  TDspPitchShifter64 = class(TCustomDspPitchShifter)
+  TDspGranularPitchShifter64 = class(TCustomDspGranularPitchShifter)
   private
     FBuffer64 : PDAVDoubleFixedArray;
   protected
@@ -122,21 +122,21 @@ begin
  FState := Input - FFractional * result;
 end;
 
-{ TPitchShifterStage }
+{ TGranularPitchShifterStage }
 
-constructor TPitchShifterStage.Create;
+constructor TGranularPitchShifterStage.Create;
 begin
  inherited;
  FAllpass := TFractionalDelayAllpass.Create;
  FBufferOffset := 0;
 end;
 
-function TPitchShifterStage.GetFractional: Double;
+function TGranularPitchShifterStage.GetFractional: Double;
 begin
  result := FAllpass.Fractional;
 end;
 
-procedure TPitchShifterStage.SetFractional(const Value: Double);
+procedure TGranularPitchShifterStage.SetFractional(const Value: Double);
 begin
  if FAllpass.Fractional <> Value then
   begin
@@ -155,9 +155,9 @@ begin
 end;
 
 
-{ TCustomDspPitchShifter }
+{ TCustomDspGranularPitchShifter }
 
-constructor TCustomDspPitchShifter.Create;
+constructor TCustomDspGranularPitchShifter.Create;
 begin
  FBufferPos     := 0;
  FSemitones     := 0;
@@ -167,10 +167,10 @@ begin
  SampleRateChanged;
 end;
 
-procedure TCustomDspPitchShifter.AssignTo(Dest: TPersistent);
+procedure TCustomDspGranularPitchShifter.AssignTo(Dest: TPersistent);
 begin
- if Dest is TCustomDspPitchShifter then
-  with TCustomDspPitchShifter(Dest) do
+ if Dest is TCustomDspGranularPitchShifter then
+  with TCustomDspGranularPitchShifter(Dest) do
    begin
     SampleRate   := Self.FSampleRate;
     Semitones    := Self.FSemitones;
@@ -179,7 +179,7 @@ begin
  else inherited;
 end;
 
-procedure TCustomDspPitchShifter.StagesChanged;
+procedure TCustomDspGranularPitchShifter.StagesChanged;
 var
   i            : Integer;
   BaseStage, d : Double;
@@ -209,7 +209,7 @@ begin
  FStageMix := StageOffset;
 end;
 
-procedure TCustomDspPitchShifter.UpdateBuffer;
+procedure TCustomDspGranularPitchShifter.UpdateBuffer;
 begin
  // determine buffer size
  FBufferSize  := round(FGranularity * FSampleRate) + 1; // quarter second
@@ -222,19 +222,19 @@ begin
  CalculateEnvelopeOffset;
 end;
 
-procedure TCustomDspPitchShifter.SampleRateChanged;
+procedure TCustomDspGranularPitchShifter.SampleRateChanged;
 begin
  FSampleRateInv := 1 / SampleRate;
  UpdateBuffer;
 end;
 
-procedure TCustomDspPitchShifter.SemitonesChanged;
+procedure TCustomDspGranularPitchShifter.SemitonesChanged;
 begin
  FSampleOffset := Power(2, FSemitones / 12) - 1;
  CalculateEnvelopeOffset;
 end;
 
-procedure TCustomDspPitchShifter.SetGranularity(const Value: Double);
+procedure TCustomDspGranularPitchShifter.SetGranularity(const Value: Double);
 begin
  if FGranularity <> Value then
   begin
@@ -243,17 +243,17 @@ begin
   end;
 end;
 
-procedure TCustomDspPitchShifter.CalculateEnvelopeOffset;
+procedure TCustomDspGranularPitchShifter.CalculateEnvelopeOffset;
 begin
  FEnvelopeOffset := abs(FSampleOffset / FBufferSize);
 end;
 
-procedure TCustomDspPitchShifter.GranularityChanged;
+procedure TCustomDspGranularPitchShifter.GranularityChanged;
 begin
  UpdateBuffer;
 end;
 
-procedure TCustomDspPitchShifter.SetSampleRate(const Value: Double);
+procedure TCustomDspGranularPitchShifter.SetSampleRate(const Value: Double);
 begin
  if FSampleRate <> Value then
   begin
@@ -262,7 +262,7 @@ begin
   end;
 end;
 
-procedure TCustomDspPitchShifter.SetSemitones(const Value: Double);
+procedure TCustomDspGranularPitchShifter.SetSemitones(const Value: Double);
 begin
  if FSemitones <> Value then
   begin
@@ -271,7 +271,7 @@ begin
   end;
 end;
 
-procedure TCustomDspPitchShifter.SetStages(const Value: Byte);
+procedure TCustomDspGranularPitchShifter.SetStages(const Value: Byte);
 var
   i : Integer;
 begin
@@ -288,33 +288,33 @@ begin
     begin
      SetLength(FPitchShifterStage, Value);
      for i := FStages to Length(FPitchShifterStage) - 1
-      do FPitchShifterStage[i] := TPitchShifterStage.Create;
+      do FPitchShifterStage[i] := TGranularPitchShifterStage.Create;
      FStages := Value;
     end;
    StagesChanged;
   end;
 end;
 
-{ TDspPitchShifter32 }
+{ TDspGranularPitchShifter32 }
 
-constructor TDspPitchShifter32.Create;
+constructor TDspGranularPitchShifter32.Create;
 begin
  FBuffer32 := nil;
  inherited;
 end;
 
-destructor TDspPitchShifter32.Destroy;
+destructor TDspGranularPitchShifter32.Destroy;
 begin
  Dispose(FBuffer32);
  inherited;
 end;
 
-procedure TDspPitchShifter32.Reset;
+procedure TDspGranularPitchShifter32.Reset;
 begin
  FillChar(FBuffer32^[0], FBufferSize * SizeOf(Single), 0);
 end;
 
-procedure TDspPitchShifter32.UpdateBuffer;
+procedure TDspGranularPitchShifter32.UpdateBuffer;
 var
   OldBufferSize : Integer;
 begin
@@ -327,7 +327,7 @@ begin
   then FillChar(FBuffer32^[OldBufferSize], (FBufferSize - OldBufferSize) * SizeOf(Single), 0);
 end;
 
-function TDspPitchShifter32.Process(const Input: Single): Single;
+function TDspGranularPitchShifter32.Process(const Input: Single): Single;
 var
   i, p : Integer;
   d, m : Double;
@@ -376,26 +376,26 @@ begin
    end;
 end;
 
-{ TDspPitchShifter64 }
+{ TDspGranularPitchShifter64 }
 
-constructor TDspPitchShifter64.Create;
+constructor TDspGranularPitchShifter64.Create;
 begin
  inherited;
  FBuffer64 := nil;
 end;
 
-destructor TDspPitchShifter64.Destroy;
+destructor TDspGranularPitchShifter64.Destroy;
 begin
  Dispose(FBuffer64);
  inherited;
 end;
 
-procedure TDspPitchShifter64.Reset;
+procedure TDspGranularPitchShifter64.Reset;
 begin
  FillChar(FBuffer64^[0], FBufferSize * SizeOf(Double), 0);
 end;
 
-procedure TDspPitchShifter64.UpdateBuffer;
+procedure TDspGranularPitchShifter64.UpdateBuffer;
 var
   OldBufferSize : Integer;
 begin
@@ -408,7 +408,7 @@ begin
   then FillChar(FBuffer64^[OldBufferSize], (FBufferSize - OldBufferSize) * SizeOf(Double), 0);
 end;
 
-function TDspPitchShifter64.Process(const Input: Double): Double;
+function TDspGranularPitchShifter64.Process(const Input: Double): Double;
 var
   i, p : Integer;
   d, m : Double;

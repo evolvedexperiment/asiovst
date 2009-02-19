@@ -1,4 +1,4 @@
-object SoftKneeCompressorDataModule: TSoftKneeCompressorDataModule
+object HardKneeCompressorDataModule: THardKneeCompressorDataModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'

@@ -46,9 +46,9 @@ type
     FLowState     : TBandState;
     FMidState     : TBandState;
     FHighState    : TBandState;
-    FLowComp      : TFastCompressor;
-    FMidComp      : TFastCompressor;
-    FHighComp     : TFastCompressor;
+    FLowComp      : TLightweightSoftKneeCompressor;
+    FMidComp      : TLightweightSoftKneeCompressor;
+    FHighComp     : TLightweightSoftKneeCompressor;
     FMeterRelease : Single;
     function GetHighGainReduction: Single;
     function GetLowGainReduction: Single;
@@ -91,9 +91,9 @@ begin
    FLowSplit[i]  := TLinkwitzRiley.Create;
    FHighSplit[i] := TLinkwitzRiley.Create;
   end;
- FLowComp      := TFastCompressor.Create;
- FMidComp      := TFastCompressor.Create;
- FHighComp     := TFastCompressor.Create;
+ FLowComp      := TLightweightSoftKneeCompressor.Create;
+ FMidComp      := TLightweightSoftKneeCompressor.Create;
+ FHighComp     := TLightweightSoftKneeCompressor.Create;
  FLowState     := bsNone;
  FMidState     := bsNone;
  FHighState    := bsNone;

@@ -7,21 +7,52 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, {$IFDEF Delphi5} Forms, {$ENDIF} DAV_Common, DAV_VSTEffect;
+  Classes, Forms, DAV_Common, DAV_VSTEffect,
+  DAV_WinAmp;
 
 type
+  TBasicVSTModuleClass = class of TBasicVSTModule;
   TBasicVSTModule = class({$IFDEF UseDelphi}TDataModule{$ELSE}TComponent{$ENDIF})
+  private
+    procedure ConvertDummy(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
+    procedure ConvertFloatToInterleaved(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
+    procedure ConvertFloatToInterleaved16bit(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
+    procedure ConvertFloatToInterleaved24bit(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
+    procedure ConvertFloatToInterleaved8bit(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
+    procedure ConvertInterleaved16bitToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
+    procedure ConvertInterleaved24bitToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
+    procedure ConvertInterleaved8bitToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
+    procedure ConvertInterleavedToFloat(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
   protected
-    FEffect      : TVSTEffect;
-    FAudioMaster : TAudioMasterCallbackFunc;
+    FEffect             : TVSTEffect;
+    FAudioMaster        : TAudioMasterCallbackFunc;
+
     {$IFNDEF UseDelphi}
-    FOnCreate    : TNotifyEvent;
-    FOnDestroy   : TNotifyEvent;
+    FOnCreate           : TNotifyEvent;
+    FOnDestroy          : TNotifyEvent;
     {$ENDIF}
+
+    // WinAmp
+    FWinAmpDSPModule    : PWinampDSPModule;
+    FWinAmpEditorForm   : TForm;
+    FWinAmpBypass       : Boolean;
+    FWinAmpInputBuffer  : array of PDAVSingleFixedArray;
+    FWinAmpOutputBuffer : array of PDAVSingleFixedArray;
+    FWinAmpNrChannels   : Integer;
+    FWinAmpSampleRate   : Integer;
+    FWinAmpSampleFrames : Integer;
+
+    FWinAmpConvertIn    : TWinAmpConvert;
+    FWinAmpConvertOut   : TWinAmpConvert;
 
     function GetEffect: PVSTEffect; virtual;
 
     procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); virtual;
+
+    procedure WinAmpConfig; virtual;
+    procedure WinAmpQuit; virtual;
+    function WinAmpModifySamples(const Samples: Pointer; const SampleFrames,
+      BitPerSample, ChannelCount, SampleRate: Integer): Integer; virtual;
 
     function  GetMasterVersion: Integer; virtual;
     function  GetCurrentUniqueID: TChunkName; virtual;
@@ -174,6 +205,7 @@ type
     function  GetOutputSpeakerArrangement: PVstSpeakerArrangement; virtual;
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
 
     class function GetStaticDescription: string; virtual;
     function  HostCallGetParameter(const Index: Integer): Single; virtual; abstract;
@@ -187,22 +219,101 @@ type
     {$ENDIF}
   end;
 
-function  DispatchEffectFunc(Effect: PVSTEffect; OpCode : TDispatcherOpCode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; cdecl;
-function  GetParameterFunc(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
-procedure SetParameterFunc(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
-procedure ProcessFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
-procedure ProcessReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
-procedure ProcessDoubleReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
-function  GetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
-procedure SetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
-procedure ProcessFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: Pointer; const SampleFrames: Integer); cdecl;
+function DispatchEffectFunc(Effect: PVSTEffect; OpCode : TDispatcherOpCode;
+  const Index, Value: Integer; const ptr: pointer;
+  const opt: Single): Integer; cdecl;
+function GetParameterFunc(const Effect: PVSTEffect;
+  const Index: Integer): Single; cdecl;
+procedure SetParameterFunc(const Effect: PVSTEffect; const Index: Integer;
+  const Value: Single); cdecl;
+procedure ProcessFunc(const Effect: PVSTEffect;
+  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure ProcessReplacingFunc(const Effect: PVSTEffect;
+  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure ProcessDoubleReplacingFunc(const Effect: PVSTEffect;
+  const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+function  GetParameterFuncDummy(const Effect: PVSTEffect;
+  const Index: Integer): Single; cdecl;
+procedure SetParameterFuncDummy(const Effect: PVSTEffect;
+  const Index: Integer; const Value: Single); cdecl;
+procedure ProcessFuncDummy(const Effect: PVSTEffect;
+  const Inputs, Outputs: Pointer; const SampleFrames: Integer); cdecl;
+
+// WinAmp
+function Init(const WinAmpDSPModule: PWinAmpDSPModule): Integer; cdecl;
+procedure Config(const WinAmpDSPModule: PWinAmpDSPModule); cdecl;
+function ModifySamples(const WinAmpDSPModule: PWinAmpDSPModule;
+  const Samples: Pointer; const SampleFrames, BitPerSample, ChannelCount,
+  SampleRate: Integer): Integer; cdecl;
+function ModifySamplesDummy(const WinAmpDSPModule: PWinAmpDSPModule;
+  const Samples: Pointer; const SampleFrames, BitPerSample, ChannelCount,
+  SampleRate: Integer): Integer; cdecl;
+procedure Quit(const WinAmpDSPModule: PWinAmpDSPModule); cdecl;
+
+function VstModuleMain(AudioMasterCallback: TAudioMasterCallbackFunc;
+  const BasicVSTModuleClass: TBasicVSTModuleClass): PVSTEffect;
+function WinampDSPModuleHeader(const BasicVSTModuleClass: TBasicVSTModuleClass): PWinAmpDSPHeader;
+function GetWinampModule(const Which : Integer): PWinAmpDSPModule; cdecl;
 
 implementation
 
 uses
-  Sysutils;
+  Math, Sysutils;
+
+function VstModuleMain(AudioMasterCallback: TAudioMasterCallbackFunc;
+  const BasicVSTModuleClass: TBasicVSTModuleClass): PVSTEffect;
+begin
+ try
+  with BasicVSTModuleClass.Create(Application) do
+   begin
+    AudioMaster := AudioMasterCallback;
+    Result := Effect;
+   end;
+ except
+  Result := nil;
+ end;
+end;
+
+var
+  WADSPHeader  : TWinAmpDSPheader;
+  WAVstModule  : TBasicVSTModuleClass;
+
+function GetWinampModule(const Which : Integer): PWinAmpDSPModule; cdecl;
+begin
+ case Which of
+   0 : begin
+        GetMem(Result, SizeOf(TWinAmpDSPModule));
+        Result^.Description := PChar(WAVstModule.GetStaticDescription);
+        Result^.Init := Init;
+        Result^.Config := Config;
+        Result^.ModifySamples := ModifySamplesDummy;
+        Result^.Quit := Quit;
+       end
+ else
+  Result := nil;
+ end;
+end;
+
+function WinampDSPModuleHeader(const BasicVSTModuleClass: TBasicVSTModuleClass): PWinAmpDSPHeader;
+begin
+ WAVstModule := BasicVSTModuleClass;
+ try
+  with WADSPHeader do
+   begin
+    Version     := $20;
+    Key         := $21;
+    Description := PChar(WAVstModule.GetStaticDescription);
+    GetModule   := GetWinampModule;
+   end;
+  Result := @WADSPHeader;
+ except
+  Result := nil;
+ end;
+end;
+
 
 { TBasicVSTModule }
+
 constructor TBasicVSTModule.Create(AOwner: TComponent);
 begin
  {$IFDEF UseDelphi} inherited CreateNew(AOwner); {$ENDIF}
@@ -228,6 +339,24 @@ begin
    SetParameter           := @SetParameterFunc;
    GetParameter           := @GetParameterFunc;
   end;
+
+ FWinAmpDspModule    := nil;
+ FWinAmpSampleRate   := 44100;
+ FWinAmpSampleFrames := 0;
+ FWinAmpNrChannels   := 0;
+ FWinAmpBypass       := False;
+end;
+
+destructor TBasicVSTModule.Destroy;
+var
+  i : Integer;
+begin
+ try
+  for i := 0 to Length(FWinAmpInputBuffer)  - 1 do Dispose(FWinAmpInputBuffer[i]);
+  for i := 0 to Length(FWinAmpOutputBuffer) - 1 do Dispose(FWinAmpOutputBuffer[i]);
+ except
+ end;
+ inherited;
 end;
 
 function TBasicVSTModule.GetEffect: PVSTEffect;
@@ -631,6 +760,201 @@ begin
     Result := PVstSpeakerArrangement(FAudioMaster(@FEffect, audioMasterGetOutputSpeakerArrangement, 0, 0, nil, 0))
   else
     Result := nil;
+end;
+
+function TBasicVSTModule.WinAmpModifySamples(const Samples: Pointer;
+  const SampleFrames, BitPerSample, ChannelCount, SampleRate: Integer): Integer;
+var
+ i : Integer;
+begin
+ Result := SampleFrames;
+
+ // test if maximum blocksize changed
+ if SampleFrames > FWinAmpSampleRate then
+  begin
+   FWinAmpSampleRate := SampleFrames;
+//   SetBlockSize(SampleFrames);
+
+   // reallocate input VST buffers
+   for i := 0 to Length(FWinAmpInputBuffer) - 1
+    do ReallocMem(FWinAmpInputBuffer[i], SampleFrames * SizeOf(Single));
+
+   // reallocate output VST buffers
+   for i := 0 to Length(FWinAmpOutputBuffer) - 1
+    do ReallocMem(FWinAmpOutputBuffer[i], SampleFrames * SizeOf(Single));
+  end;
+
+ // test if samplerate changed
+ if SampleRate <> FWinAmpSampleRate then
+  begin
+   FWinAmpSampleRate := SampleRate;
+//   SetSampleRate(SampleRate);
+  end;
+
+ case BitPerSample of
+   8: begin
+       FWinAmpConvertIn  := ConvertInterleaved8bitToFloat;
+       FWinAmpConvertOut := ConvertFloatToInterleaved8bit;
+      end;
+  16: begin
+       FWinAmpConvertIn  := ConvertInterleaved16bitToFloat;
+       FWinAmpConvertOut := ConvertFloatToInterleaved16bit;
+      end;
+  24: begin
+       FWinAmpConvertIn  := ConvertInterleaved24bitToFloat;
+       FWinAmpConvertOut := ConvertFloatToInterleaved24bit;
+      end;
+  32: begin
+       FWinAmpConvertIn  := ConvertInterleavedToFloat;
+       FWinAmpConvertOut := ConvertFloatToInterleaved;
+      end;
+  else
+   begin
+    FWinAmpConvertIn  := ConvertDummy;
+    FWinAmpConvertOut := ConvertDummy;
+   end;
+ end;
+
+ // convert interleaved to float data
+ FWinAmpConvertIn(Samples, ChannelCount, SampleFrames);
+
+ // process VST plugin
+ FEffect.ProcessReplacing(@FEffect, @FWinAmpInputBuffer[0],
+   @FWinAmpOutputBuffer[0], SampleFrames);
+
+ // convert float to interleaved data
+ FWinAmpConvertOut(Samples, ChannelCount, SampleFrames);
+end;
+
+procedure TBasicVSTModule.WinAmpConfig;
+begin
+ if not assigned(FWinAmpEditorForm) then
+  begin
+   FWinAmpEditorForm := TForm.Create(Self);
+  end;
+ FWinAmpEditorForm.Show;
+end;
+
+procedure TBasicVSTModule.WinAmpQuit;
+begin
+ FWinAmpBypass := True;
+end;
+
+procedure TBasicVSTModule.ConvertDummy(const Data: Pointer; const ChannelCount,
+  SampleFrames: Integer);
+begin
+ // do nothing (dummy)
+end;
+
+procedure TBasicVSTModule.ConvertFloatToInterleaved8bit(const Data: Pointer;
+  const ChannelCount, SampleFrames: Integer);
+var
+  I8 : PShortIntArray absolute Data;
+  Channel, Sample : Integer;
+const
+  MulFakDith8 : Single = $7E;
+begin
+ for Channel := 0 to min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
+  for Sample := 0 to SampleFrames - 1
+   do I8^[Sample * ChannelCount + Channel] := round(FWinAmpOutputBuffer[Channel]^[Sample] * MulFakDith8 + random - random);
+end;
+
+procedure TBasicVSTModule.ConvertFloatToInterleaved16bit(const Data: Pointer;
+  const ChannelCount, SampleFrames: Integer);
+var
+  I16             : PSmallIntArray absolute Data;
+  Channel, Sample : Integer;
+const
+  MulFakDith16 : Single = $7FFE;
+begin
+ for Channel := 0 to min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
+  for Sample := 0 to SampleFrames - 1
+   do I16^[Sample * ChannelCount + Channel] := round(Limit(FWinAmpOutputBuffer[Channel]^[Sample]) * MulFakDith16 + random - random);
+end;
+
+procedure TBasicVSTModule.ConvertFloatToInterleaved24bit(const Data: Pointer;
+  const ChannelCount, SampleFrames: Integer);
+var
+  I24             : P3ByteArray absolute Data;
+  Channel, Sample : Integer;
+  TempData        : Integer;
+  TempDataBytes   : array [0..3] of Byte absolute TempData;
+const
+  MulFakDith24 : Single = 1 / $7FFFFE;
+begin
+ for Channel := 0 to min(Length(FWinAmpOutputBuffer), ChannelCount) - 1 do
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    TempData := round(Limit(FWinAmpOutputBuffer[Channel]^[Sample]) * MulFakDith24 + random - random);
+    Move(TempDataBytes[1], I24^[Sample * ChannelCount + Channel], 3);
+   end;
+end;
+
+procedure TBasicVSTModule.ConvertFloatToInterleaved(const Data: Pointer;
+  const ChannelCount, SampleFrames: Integer);
+var
+  Interleaved     : PDAVSingleFixedArray absolute Data;
+  Channel, Sample : Integer;
+begin
+ for Channel := 0 to min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+  for Sample := 0 to SampleFrames - 1
+   do FWinAmpInputBuffer[Channel]^[Sample] := Interleaved^[Sample * ChannelCount + Channel];
+end;
+
+procedure TBasicVSTModule.ConvertInterleaved8bitToFloat(const Data: Pointer;
+  const ChannelCount, SampleFrames: Integer);
+var
+  I8              : PShortIntArray absolute Data;
+  Channel, Sample : Integer;
+const
+  DivFak8 : Single = 1 / $80;
+begin
+ for Channel := 0 to min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+  for Sample := 0 to SampleFrames - 1
+   do FWinAmpInputBuffer[Channel]^[Sample] := I8^[Sample * ChannelCount + Channel] * DivFak8;
+end;
+
+procedure TBasicVSTModule.ConvertInterleaved16bitToFloat(const Data: Pointer;
+  const ChannelCount, SampleFrames: Integer);
+var
+  I16             : PSmallIntArray absolute Data;
+  Channel, Sample : Integer;
+const
+  DivFak16 : Single = 1 / $8000;
+begin
+ for Channel := 0 to min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+  for Sample := 0 to SampleFrames - 1
+   do FWinAmpInputBuffer[Channel]^[Sample] := I16^[Sample * ChannelCount + Channel] * DivFak16;
+end;
+
+procedure TBasicVSTModule.ConvertInterleaved24bitToFloat(const Data: Pointer;
+  const ChannelCount, SampleFrames: Integer);
+var
+  I24             : P3ByteArray absolute Data;
+  Channel, Sample : Integer;
+  TempData        : Integer;
+const
+  DivFak24 : Single = 1 / $800000;
+begin
+ for Channel := 0 to min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    TempData := (ShortInt(I24^[Sample * ChannelCount + Channel][2]) shl 16) +
+                         (I24^[Sample * ChannelCount + Channel][1]  shl 8)  +
+                         (I24^[Sample * ChannelCount + Channel][0]);
+    FWinAmpInputBuffer[Channel]^[Sample] := TempData * DivFak24;
+   end;
+end;
+
+procedure TBasicVSTModule.ConvertInterleavedToFloat(const Data: Pointer;
+  const ChannelCount, SampleFrames: Integer);
+var
+  Interleaved     : PDAVSingleFixedArray absolute Data;
+  Channel, Sample : Integer;
+begin
+ for Channel := 0 to min(Length(FWinAmpInputBuffer), ChannelCount) - 1 do
+  for Sample := 0 to SampleFrames - 1
+   do FWinAmpInputBuffer[Channel]^[Sample] := Interleaved^[Sample * ChannelCount + Channel];
 end;
 
 
@@ -1053,6 +1377,76 @@ end;
 
 procedure ProcessFuncDummy(const Effect: PVSTEffect; const Inputs, Outputs: Pointer; const SampleFrames: Integer); cdecl;
 begin
+end;
+
+function Init(const WinAmpDSPModule: PWinAmpDSPModule): Integer;
+begin
+ // make sure a pointer to the TWinAmpDSPModule exists
+ if not Assigned(WinAmpDSPModule) then
+  begin
+   result := 1;
+   exit;
+  end;
+
+ // assert that no other instance exists already
+ assert(WinAmpDSPModule^.UserData = nil);
+
+ try
+  // instanciate TWinAmpObject
+  WinAmpDSPModule^.UserData := WAVstModule.Create(Application);
+  TBasicVSTModule(WinAmpDSPModule^.UserData).FWinAmpDSPModule := WinAmpDSPModule;
+  WinAmpDSPModule^.ModifySamples := ModifySamples;
+  Result := 0;
+ except
+  Result := 1;
+ end;
+end;
+
+procedure Config(const WinAmpDSPModule: PWinAmpDSPModule);
+begin
+ // assert that a pointer to the TWinAmpDSPModule exists
+ assert(assigned(WinAmpDSPModule));
+
+ // open config dialog
+ if Assigned(WinAmpDSPModule^.UserData)
+  then TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpConfig;
+end;
+
+function ModifySamples(const WinAmpDSPModule: PWinAmpDSPModule;
+  const Samples: Pointer; const SampleFrames, BitPerSample, ChannelCount,
+  SampleRate: Integer): Integer; cdecl;
+begin
+ result := SampleFrames;
+
+ // make sure a pointer to the TWinAmpDSPModule exists
+ if not Assigned(WinAmpDSPModule) then exit;
+
+ // make sure a TWinAmpObject instance exists
+ if not Assigned(WinAmpDSPModule^.UserData) then exit;
+
+ // call the objects 'ModifySamples'
+ Result := TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpModifySamples(Samples,
+   SampleFrames, BitPerSample, ChannelCount, SampleRate);
+end;
+
+function ModifySamplesDummy(const WinAmpDSPModule: PWinAmpDSPModule;
+  const Samples: Pointer; const SampleFrames, BitPerSample, ChannelCount,
+  SampleRate: Integer): Integer; cdecl;
+begin
+ result := SampleFrames;
+end;
+
+procedure Quit(const WinAmpDSPModule: PWinAmpDSPModule);
+begin
+ // assert that a pointer to the TWinAmpDSPModule exists
+ assert(assigned(WinAmpDSPModule));
+ try
+  WinAmpDSPModule^.ModifySamples := ModifySamplesDummy;
+  sleep(5);
+  TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpQuit;
+ finally
+  FreeAndNil(WinAmpDSPModule^.UserData);
+ end;
 end;
 
 end.

@@ -2,28 +2,27 @@
 library OversampledTanh;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  Forms,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   OversampledTanhModule in 'OversampledTanhModule.pas' {VST2Module1: TVST2Module},
   OversampledTanhGUI in 'OversampledTanhGUI.pas' {FmOversampledTanh};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVstEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TOversampledTanhModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+ Result := VstModuleMain(AudioMasterCallback, TOversampledTanhModule);
 end;
 
-exports
-Main name 'main';
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(TOversampledTanhModule);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
 end.

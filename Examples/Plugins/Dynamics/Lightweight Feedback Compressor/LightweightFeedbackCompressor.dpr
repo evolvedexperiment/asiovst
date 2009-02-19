@@ -10,27 +10,10 @@ uses
   madListProcesses,
   madListModules,
   FastMove,
-  Forms,
-  DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   LightweightFeedbackCompressorDM in 'LightweightFeedbackCompressorDM.pas' {LightweightFeedbackCompressorDataModule: TVSTModule},
   LightweightFeedbackCompressorGUI in 'LightweightFeedbackCompressorGUI.pas' {FmLightweightFeedbackCompressor};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    with TLightweightFeedbackCompressorDataModule.Create(Application) do
-     begin
-      AudioMaster := AudioMasterCallback;
-      Result := Effect;
-     end;
-  except
-    Result := nil;
-  end;
-end;
-
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
-
-begin
+ BasicVSTModuleClass := TLightweightFeedbackCompressorDataModule;
 end.

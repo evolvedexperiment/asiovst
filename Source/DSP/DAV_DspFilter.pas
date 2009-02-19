@@ -66,6 +66,7 @@ type
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
+  TOrderFilterClass = class of TCustomOrderFilter;
   TCustomOrderFilter = class(TCustomFilter)
   protected
     FOrder: Cardinal;
@@ -109,7 +110,8 @@ type
 
   TFirstOrderAllpassFilter = class(TCustomIIRFilter)
   protected
-    FState : Double;
+    FState  : Double;
+    FStates : TDAVDoubleDynArray;
     procedure FrequencyChanged; override;
     function GetOrder: Cardinal; override;
     procedure CalculateCoefficients; override;
@@ -117,6 +119,13 @@ type
   public
     function ProcessSample(const Input: Double): Double; override;
     constructor Create; override;
+    function MagnitudeLog10(const Frequency: Double): Double; override;
+    function MagnitudeSquared(const Frequency: Double): Double; override;
+    procedure Reset; override;
+    procedure ResetStates; override;
+    procedure ResetStatesInt64; override;
+    procedure PushStates; override;
+    procedure PopStates; override; 
   end;
 
   TBandwidthIIRFilterClass = class of TCustomBandwidthIIRFilter;
@@ -149,6 +158,7 @@ type
     function GetPoles: TPNType;
     function GetZeros: TPNType;
     function GetOrder: Cardinal; override;
+    procedure SetOrder(const Value: Cardinal); override;
   public
     constructor Create; override;
     procedure ResetStates; override;
@@ -578,10 +588,49 @@ begin
  result := 1;
 end;
 
+function TFirstOrderAllpassFilter.MagnitudeLog10(
+  const Frequency: Double): Double;
+begin
+ result := FGain_dB;
+end;
+
+function TFirstOrderAllpassFilter.MagnitudeSquared(
+  const Frequency: Double): Double;
+begin
+ result := FGainFactor;
+end;
+
+procedure TFirstOrderAllpassFilter.PopStates;
+begin
+ FState := FStates[Length(FStates) - 1];
+ SetLength(FStates, Length(FStates) - 1);
+end;
+
 function TFirstOrderAllpassFilter.ProcessSample(const Input: Double): Double;
 begin
  result := FState + FFrequency * Input;
  FState := Input - FFrequency * result;
+end;
+
+procedure TFirstOrderAllpassFilter.PushStates;
+begin
+ SetLength(FStates, Length(FStates) + 1);
+ FStates[Length(FStates) - 1] := FState;
+end;
+
+procedure TFirstOrderAllpassFilter.Reset;
+begin
+ FFrequency := 0;
+end;
+
+procedure TFirstOrderAllpassFilter.ResetStates;
+begin
+ FState := 0;
+end;
+
+procedure TFirstOrderAllpassFilter.ResetStatesInt64;
+begin
+ FState := 0;
 end;
 
 procedure TFirstOrderAllpassFilter.SetOrder(const Value: Cardinal);
@@ -740,10 +789,9 @@ begin
  PInt64(@FState[1])^ := 0;
 end;
 
-function dB_to_Amp(g:single):single;
+procedure TBiquadIIRFilter.SetOrder(const Value: Cardinal);
 begin
- if (g>-90.0) then result := math.power(10,g*0.05)
- else result := 0;
+ raise Exception.Create('Order is fixed!');
 end;
 
 procedure TBiquadIIRFilter.CalcPolesZeros;

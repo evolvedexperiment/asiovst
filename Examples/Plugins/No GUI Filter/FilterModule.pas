@@ -66,8 +66,8 @@ begin
    FOld[0,1] := FOld[0, 1] + cut * (Inputs[1, i] - FOld[0, 1] + fb * (FOld[0, 1] - FOld[1, 1])) + CDenorm32;
    FOld[1,0] := FOld[1, 0] + cut * (FOld[0, 0] - FOld[1, 0]);
    FOld[1,1] := FOld[1, 1] + cut * (FOld[0, 1] - FOld[1, 1]);
-   Outputs[0,i] := f_limit(FOld[1, 0]);
-   Outputs[1,i] := f_limit(FOld[1, 1]);
+   Outputs[0,i] := Limit(FOld[1, 0]);
+   Outputs[1,i] := Limit(FOld[1, 1]);
   end;
 end;
 
@@ -92,8 +92,8 @@ begin
    FOld[0, 1] := FOld[0, 1] + cut * (Inputs[1, i] - FOld[0, 1] + fb * (FOld[0, 1] - FOld[1, 1])) + CDenorm32;
    FOld[1, 0] := FOld[1, 0] + cut * (FOld[0, 0] - FOld[1, 0]);
    FOld[1, 1] := FOld[1, 1] + cut * (FOld[0, 1] - FOld[1, 1]);
-   Outputs[0, i] := f_limit(FOld[1,0]);
-   Outputs[1, i] := f_limit(FOld[1,1]);
+   Outputs[0, i] := Limit(FOld[1,0]);
+   Outputs[1, i] := Limit(FOld[1,1]);
   end;
 end;
 

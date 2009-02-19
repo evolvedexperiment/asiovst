@@ -8,7 +8,6 @@ object CustomWrapperDataModule: TCustomWrapperDataModule
   ProductName = 'DAV Wrapper Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = -1
   IORatio = 1.000000000000000000
@@ -16,6 +15,7 @@ object CustomWrapperDataModule: TCustomWrapperDataModule
   ShellPlugins = <>
   Programs = <>
   ParameterProperties = <>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

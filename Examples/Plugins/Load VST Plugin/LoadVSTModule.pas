@@ -90,7 +90,7 @@ end;
 
 function TPlugInPlugModule.VST2ModuleCanDo(Sender: TObject; CanDoText: String): Integer;
 begin
- result := VstHost[0].CanDo(@CanDoText);
+ result := VstHost[0].VstCanDo(CanDoText);
 end;
 
 procedure TPlugInPlugModule.VST2ModuleEditTop(Sender: TObject);
@@ -111,7 +111,7 @@ end;
 procedure TPlugInPlugModule.VST2ModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- VstHost[0].Parameters[Index] := Value;
+ VstHost[0].Parameter[Index] := Value;
 end;
 
 procedure TPlugInPlugModule.VST2ModuleSampleRateChange(Sender: TObject;

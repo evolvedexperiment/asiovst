@@ -1,4 +1,4 @@
-object EditorForm: TEditorForm
+object HardKneeCompressorGUI: THardKneeCompressorGUI
   Left = 355
   Top = 328
   BorderStyle = bsNone

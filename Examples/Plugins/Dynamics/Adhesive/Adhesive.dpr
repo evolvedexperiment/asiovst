@@ -10,27 +10,10 @@ uses
   madListProcesses,
   madListModules,
   FastMove,
-  Forms,
-  DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   AdhesiveDM in 'AdhesiveDM.pas' {AdhesiveDataModule: TVSTModule},
   AdhesiveGUI in 'AdhesiveGUI.pas' {FmAdhesive};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    with TAdhesiveDataModule.Create(Application) do
-     begin
-      AudioMaster := AudioMasterCallback;
-      Result := Effect;
-     end;
-  except
-    Result := nil;
-  end;
-end;
-
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
-
-begin
+ BasicVSTModuleClass := TAdhesiveDataModule;
 end.

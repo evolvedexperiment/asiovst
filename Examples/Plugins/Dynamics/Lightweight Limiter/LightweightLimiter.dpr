@@ -10,27 +10,10 @@ uses
   madListProcesses,
   madListModules,
   FastMove,
-  Forms,
-  DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   LightweightLimiterDM in 'LightweightLimiterDM.pas' {LightweightLimiterDataModule: TVSTModule},
   LightweightLimiterGUI in 'LightweightLimiterGUI.pas' {FmLightweightLimiter};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    with TLightweightLimiterDataModule.Create(Application) do
-     begin
-      AudioMaster := AudioMasterCallback;
-      Result := Effect;
-     end;
-  except
-    Result := nil;
-  end;
-end;
-
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
-
-begin
+ BasicVSTModuleClass := TLightweightLimiterDataModule;
 end.

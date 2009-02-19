@@ -101,8 +101,8 @@ begin
  if ssLeft in Shift then
   with TBugpassLiteDataModule(Owner), FrequencyBar do
    case FMouseEdit of
-    meLow  : Parameter[0] := f_Limit(FreqLinearToLog(f_Limit(X / Width, 0, Width)), 20, 20000);
-    meHigh : Parameter[1] := f_Limit(FreqLinearToLog(f_Limit(X / Width, 0, Width)), 20, 20000);
+    meLow  : Parameter[0] := Limit(FreqLinearToLog(Limit(X / Width, 0, Width)), 20, 20000);
+    meHigh : Parameter[1] := Limit(FreqLinearToLog(Limit(X / Width, 0, Width)), 20, 20000);
    end;
 end;
 

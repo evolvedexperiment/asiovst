@@ -4,27 +4,27 @@ library ParametriQLite;
 {$R 'ParametriQLite.res' 'ParametriQLite.rc'}
 
 uses
-  Forms,
+  FastMM4,
+  FastMove,
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   ParametriQLiteDM in 'ParametriQLiteDM.pas' {ParametriQLiteDataModule: TVSTModule},
   ParametriQLiteGUI in 'ParametriQLiteGUI.pas' {FmParametriQLite};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TParametriQLiteDataModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result      := Effect;
-   end;
- except
-  Result        := nil;
- end;
+ Result := VstModuleMain(AudioMasterCallback, TParametriQLiteDataModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(TParametriQLiteDataModule);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
 end.

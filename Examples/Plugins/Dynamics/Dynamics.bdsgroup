@@ -1,27 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-  <PersonalityInfo>
-    <Option>
-      <Option Name="Personality">Default.Personality</Option>
-      <Option Name="ProjectType"></Option>
-      <Option Name="Version">1.0</Option>
-      <Option Name="GUID">{282C0A6E-7320-4352-867C-E11E52D2DC1D}</Option>
-    </Option>
-  </PersonalityInfo>
-  <Default.Personality>
-    
-    <Projects>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{282C0A6E-7320-4352-867C-E11E52D2DC1D}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  <Projects>
       <Projects Name="EnhancedGate.dll">Enhanced Gate\EnhancedGate.bdsproj</Projects>
       <Projects Name="LA1701.dll">LA1701\LA1701.bdsproj</Projects>
       <Projects Name="LA4029.dll">LA4029\LA4029.bdsproj</Projects>
       <Projects Name="MultibandCompressor.dll">Multiband Compressor\MultibandCompressor.bdsproj</Projects>
       <Projects Name="SimpleCompressor.dll">Simple Compressor\SimpleCompressor.bdsproj</Projects>
-      <Projects Name="SimpleCompressor2.dll">Simple Compressor II\SimpleCompressor2.bdsproj</Projects>
       <Projects Name="SimpleFeedbackCompressor.dll">Simple Feedback Compressor\SimpleFeedbackCompressor.bdsproj</Projects>
       <Projects Name="SimpleGate.dll">Simple Gate\SimpleGate.bdsproj</Projects>
       <Projects Name="SoftKneeFeedbackCompressor.dll">Soft Knee Feedback Compressor\SoftKneeFeedbackCompressor.bdsproj</Projects>
       <Projects Name="SoftKneeLimiter.dll">Soft Knee Limiter\SoftKneeLimiter.bdsproj</Projects>
-      <Projects Name="Targets">EnhancedGate.dll LA1701.dll LA4029.dll MultibandCompressor.dll SimpleCompressor.dll SimpleCompressor2.dll SimpleFeedbackCompressor.dll SimpleGate.dll SoftKneeFeedbackCompressor.dll SoftKneeLimiter.dll</Projects>
+      <Projects Name="Targets">EnhancedGate.dll LA1701.dll LA4029.dll MultibandCompressor.dll SimpleCompressor.dll SimpleFeedbackCompressor.dll SimpleGate.dll SoftKneeFeedbackCompressor.dll SoftKneeLimiter.dll</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>

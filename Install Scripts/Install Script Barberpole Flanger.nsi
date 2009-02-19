@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Chorus Installer
+;Barberpole Flanger Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -14,7 +14,7 @@ SetCompressor lzma
 
   ;Name and file
   Name "Chorus Installer"
-  OutFile "Chorus_Install.exe"
+  OutFile "Barberpole Flanger_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Chorus"
+  !define PRODUCT_NAME "Barberpole Flanger"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,17 +69,17 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Chorus VST-Plugin" SecProgramFiles
+Section "Barberpole Flanger VST-Plugin" SecProgramFiles
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Chorus.dll"
+  File "..\Bin\BarberpoleFlanger.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallChorus.exe"
+  WriteUninstaller "$INSTDIR\UninstallBarberpoleFlanger.exe"
 
 
 SectionEnd
@@ -88,13 +88,13 @@ SectionEnd
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Chorus VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Barberpole Flanger VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Chorus VST Plugin"
+  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Barberpole Flanger VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -107,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Chorus.dll"
+  Delete "$INSTDIR\BarberpoleFlanger.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

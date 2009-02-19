@@ -36,13 +36,13 @@ type
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    FCompressor : TFastCompressor;
+    FCompressor : TLightweightSoftKneeCompressor;
     FFilter     : TButterworthHP;
     FMix        : array [0..1] of Single;
     procedure ChooseProcess;
     procedure MixChanged;
   public
-    property FastCompressor: TFastCompressor read FCompressor;
+    property FastCompressor: TLightweightSoftKneeCompressor read FCompressor;
   end;
 
 implementation
@@ -68,7 +68,7 @@ const
     (-22, 16, 10, 3, 0.1, 400, 100, 1, 1, 20, 0),
     (-22, 16, 10, 3, 0.1, 400, 100, 1, 1, 20, 0));
 begin
- FCompressor := TFastCompressor.Create;
+ FCompressor := TLightweightSoftKneeCompressor.Create;
  FCompressor.SampleRate := SampleRate;
  FFilter := TButterworthHP.Create;
  FFilter.SampleRate := SampleRate;

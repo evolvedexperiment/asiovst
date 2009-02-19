@@ -26,8 +26,8 @@ const
   CAllpassTuningL4 = 225;
 
 type
-  TCombArray    = array [0..1] of TComb;
-  TAllpassArray = array [0..1] of TAllpass;
+  TCombArray    = array [0..1] of TFreeverbCombFilter;
+  TAllpassArray = array [0..1] of TFreeverbAllpass;
 
   TfReeverbVST = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
@@ -99,30 +99,30 @@ begin
  SetLength(FComb, 8);
  SetLength(FAllpass, 4);
 
- FComb[0, 0] := TComb.Create(CCombTuningL1);
- FComb[0, 1] := TComb.Create(CCombTuningL1 + CStereoSpread);
- FComb[1, 0] := TComb.Create(CCombTuningL2);
- FComb[1, 1] := TComb.Create(CCombTuningL2 + CStereoSpread);
- FComb[2, 0] := TComb.Create(CCombTuningL3);
- FComb[2, 1] := TComb.Create(CCombTuningL3 + CStereoSpread);
- FComb[3, 0] := TComb.Create(CCombTuningL4);
- FComb[3, 1] := TComb.Create(CCombTuningL4 + CStereoSpread);
- FComb[4, 0] := TComb.Create(CCombTuningL5);
- FComb[4, 1] := TComb.Create(CCombTuningL5 + CStereoSpread);
- FComb[5, 0] := TComb.Create(CCombTuningL6);
- FComb[5, 1] := TComb.Create(CCombTuningL6 + CStereoSpread);
- FComb[6, 0] := TComb.Create(CCombTuningL7);
- FComb[6, 1] := TComb.Create(CCombTuningL7 + CStereoSpread);
- FComb[7, 0] := TComb.Create(CCombTuningL8);
- FComb[7, 1] := TComb.Create(CCombTuningL8 + CStereoSpread);
- FAllpass[0, 0] := TAllpass.Create(CAllpassTuningL1);
- FAllpass[0, 1] := TAllpass.Create(CAllpassTuningL1 + CStereoSpread);
- FAllpass[1, 0] := TAllpass.Create(CAllpassTuningL2);
- FAllpass[1, 1] := TAllpass.Create(CAllpassTuningL2 + CStereoSpread);
- FAllpass[2, 0] := TAllpass.Create(CAllpassTuningL3);
- FAllpass[2, 1] := TAllpass.Create(CAllpassTuningL3 + CStereoSpread);
- FAllpass[3, 0] := TAllpass.Create(CAllpassTuningL4);
- FAllpass[3, 1] := TAllpass.Create(CAllpassTuningL4 + CStereoSpread);
+ FComb[0, 0] := TFreeverbCombFilter.Create(CCombTuningL1);
+ FComb[0, 1] := TFreeverbCombFilter.Create(CCombTuningL1 + CStereoSpread);
+ FComb[1, 0] := TFreeverbCombFilter.Create(CCombTuningL2);
+ FComb[1, 1] := TFreeverbCombFilter.Create(CCombTuningL2 + CStereoSpread);
+ FComb[2, 0] := TFreeverbCombFilter.Create(CCombTuningL3);
+ FComb[2, 1] := TFreeverbCombFilter.Create(CCombTuningL3 + CStereoSpread);
+ FComb[3, 0] := TFreeverbCombFilter.Create(CCombTuningL4);
+ FComb[3, 1] := TFreeverbCombFilter.Create(CCombTuningL4 + CStereoSpread);
+ FComb[4, 0] := TFreeverbCombFilter.Create(CCombTuningL5);
+ FComb[4, 1] := TFreeverbCombFilter.Create(CCombTuningL5 + CStereoSpread);
+ FComb[5, 0] := TFreeverbCombFilter.Create(CCombTuningL6);
+ FComb[5, 1] := TFreeverbCombFilter.Create(CCombTuningL6 + CStereoSpread);
+ FComb[6, 0] := TFreeverbCombFilter.Create(CCombTuningL7);
+ FComb[6, 1] := TFreeverbCombFilter.Create(CCombTuningL7 + CStereoSpread);
+ FComb[7, 0] := TFreeverbCombFilter.Create(CCombTuningL8);
+ FComb[7, 1] := TFreeverbCombFilter.Create(CCombTuningL8 + CStereoSpread);
+ FAllpass[0, 0] := TFreeverbAllpass.Create(CAllpassTuningL1);
+ FAllpass[0, 1] := TFreeverbAllpass.Create(CAllpassTuningL1 + CStereoSpread);
+ FAllpass[1, 0] := TFreeverbAllpass.Create(CAllpassTuningL2);
+ FAllpass[1, 1] := TFreeverbAllpass.Create(CAllpassTuningL2 + CStereoSpread);
+ FAllpass[2, 0] := TFreeverbAllpass.Create(CAllpassTuningL3);
+ FAllpass[2, 1] := TFreeverbAllpass.Create(CAllpassTuningL3 + CStereoSpread);
+ FAllpass[3, 0] := TFreeverbAllpass.Create(CAllpassTuningL4);
+ FAllpass[3, 1] := TFreeverbAllpass.Create(CAllpassTuningL4 + CStereoSpread);
 
  // Set default values
  for i := 0 to Length(FAllpass)-1 do
@@ -488,8 +488,8 @@ begin
    SetLength(FAllpass, Round(Value));
    for i := oldLength to Length(FAllpass) - 1 do
     begin
-     FAllpass[i, 0] := TAllpass.Create(1000);
-     FAllpass[i, 1] := TAllpass.Create(1023);
+     FAllpass[i, 0] := TFreeverbAllpass.Create(1000);
+     FAllpass[i, 1] := TFreeverbAllpass.Create(1023);
     end;
   end
  else SetLength(FAllpass, Round(Value));
@@ -508,8 +508,8 @@ begin
    SetLength(FComb, Round(Value));
    for i := oldLength to Length(FComb) - 1 do
     begin
-     FComb[i, 0] := TComb.Create(1000);
-     FComb[i, 1] := TComb.Create(1023);
+     FComb[i, 0] := TFreeverbCombFilter.Create(1000);
+     FComb[i, 1] := TFreeverbCombFilter.Create(1023);
     end;
   end
  else

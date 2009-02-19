@@ -26,7 +26,7 @@ implementation
 {$R *.DFM}
 
 uses
-  OversampledTanhGUI;
+  DAV_Approximations, OversampledTanhGUI;
 
 procedure TOversampledTanhModule.VSTModuleOpen(Sender: TObject);
 var
@@ -109,7 +109,7 @@ begin
     begin
      FUpSampler2x[Channel].ProcessBlock(@inputs[Channel][0], @FBuffer[0], 16);
      for Sample := 0 to 2 * SampleFrames - 1
-      do FBuffer[Sample] := CDenorm32 + FastTanhOpt5(FBuffer[Sample]);
+      do FBuffer[Sample] := CDenorm32 + FastTanhOpt5Term(FBuffer[Sample]);
      FDownsampler2x[Channel].ProcessBlock(@FBuffer[0], @outputs[Channel][0], 16);
     end;
   finally

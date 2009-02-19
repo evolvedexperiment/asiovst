@@ -276,7 +276,7 @@ end;
 procedure TVariableDelay32Allpass.DelayChanged;
 begin
  inherited;
- FAllpassFilter.BandWidth := 0.5 * FFractional;
+ FAllpassFilter.Frequency := 0.5 * FFractional;
 end;
 
 destructor TVariableDelay32Allpass.Destroy;

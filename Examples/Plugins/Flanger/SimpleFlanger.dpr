@@ -1,25 +1,27 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library Valueable;
+library SimpleFlanger;
 
-{$R 'Valueable.res' 'Valueable.rc'}
+{$R 'Flanger.res' 'Flanger.rc'}
 
 uses
   FastMM4,  // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here
+  madExcept,
+  madLinkDisAsm,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  VTModule in 'VTModule.pas' {VTVSTModule: TVST2Module},
-  VTGUI in 'VTGUI.pas' {FmVT};
+  SimpleFlangerDM in 'SimpleFlangerDM.pas' {SimpleFlangerModule: TVSTModule},
+  SimpleFlangerGUI in 'SimpleFlangerGUI.pas' {FmSimpleFlanger};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TVTVSTModule);
+ Result := VstModuleMain(AudioMasterCallback, TSimpleFlangerModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TVTVSTModule);
+ Result := WinampDSPModuleHeader(TSimpleFlangerModule);
 end;
 
 exports VstPluginMain name 'main';

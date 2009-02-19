@@ -1,4 +1,4 @@
-unit SimpleCompressor2DM;
+unit HardKneeCompressorDM;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   DAV_DspDynamics;
 
 type
-  TSoftKneeCompressorDataModule = class(TVSTModule)
+  THardKneeCompressorDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -18,37 +18,38 @@ type
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FSimpleCompressors : Array [0..1] of TSoftKneeCompressor;
-    function GetCompressor(Index: Integer): TSoftKneeCompressor;
+    FSimpleCompressors : Array [0..1] of TSimpleCompressor;
+    function GetCompressor(Index: Integer): TSimpleCompressor;
   public
-    property Compressor[Index: Integer]: TSoftKneeCompressor read GetCompressor;
+    property Compressor[Index: Integer]: TSimpleCompressor read GetCompressor;
   end;
 
 implementation
 
 {$R *.DFM}
 
-uses Math, EditorFrm;
+uses
+  Math, HardKneeCompressorGUI;
 
-procedure TSoftKneeCompressorDataModule.VSTModuleOpen(Sender: TObject);
+procedure THardKneeCompressorDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FSimpleCompressors[0] := TSoftKneeCompressor.Create;
- FSimpleCompressors[1] := TSoftKneeCompressor.Create;
+ FSimpleCompressors[0] := TSimpleCompressor.Create;
+ FSimpleCompressors[1] := TSimpleCompressor.Create;
 end;
 
-procedure TSoftKneeCompressorDataModule.VSTModuleClose(Sender: TObject);
+procedure THardKneeCompressorDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FSimpleCompressors[0]);
  FreeAndNil(FSimpleCompressors[1]);
 end;
 
-procedure TSoftKneeCompressorDataModule.VSTModuleEditOpen(Sender: TObject;
+procedure THardKneeCompressorDataModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
- GUI := TEditorForm.Create(Self);
+ GUI := TFmHardKneeCompressor.Create(Self);
 end;
 
-procedure TSoftKneeCompressorDataModule.SLThresholdChange(
+procedure THardKneeCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   ch : Integer;
@@ -59,12 +60,12 @@ begin
    then FSimpleCompressors[ch].Threshold_dB := Value;
 
  // update GUI
- if EditorForm is TEditorForm then
-  with TEditorForm(EditorForm)
+ if EditorForm is TFmHardKneeCompressor then
+  with TFmHardKneeCompressor(EditorForm)
    do UpdateThreshold;
 end;
 
-procedure TSoftKneeCompressorDataModule.SLRatioChange(
+procedure THardKneeCompressorDataModule.SLRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   ch : Integer;
@@ -75,12 +76,12 @@ begin
    then FSimpleCompressors[ch].Ratio := 1 / Value;
 
  // update GUI
- if EditorForm is TEditorForm then
-  with TEditorForm(EditorForm)
+ if EditorForm is TFmHardKneeCompressor then
+  with TFmHardKneeCompressor(EditorForm)
    do UpdateRatio;
 end;
 
-procedure TSoftKneeCompressorDataModule.SLReleaseChange(
+procedure THardKneeCompressorDataModule.SLReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   ch : Integer;
@@ -91,12 +92,12 @@ begin
    then FSimpleCompressors[ch].Release := Value;
 
  // update GUI
- if EditorForm is TEditorForm then
-  with TEditorForm(EditorForm)
+ if EditorForm is TFmHardKneeCompressor then
+  with TFmHardKneeCompressor(EditorForm)
    do UpdateRelease;
 end;
 
-procedure TSoftKneeCompressorDataModule.SLAttackChange(
+procedure THardKneeCompressorDataModule.SLAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   ch : Integer;
@@ -107,20 +108,20 @@ begin
    then FSimpleCompressors[ch].Attack := Value;
 
  // update GUI
- if EditorForm is TEditorForm then
-  with TEditorForm(EditorForm)
+ if EditorForm is TFmHardKneeCompressor then
+  with TFmHardKneeCompressor(EditorForm)
    do UpdateAttack;
 end;
 
-function TSoftKneeCompressorDataModule.GetCompressor(
-  Index: Integer): TSoftKneeCompressor;
+function THardKneeCompressorDataModule.GetCompressor(
+  Index: Integer): TSimpleCompressor;
 begin
  if Index in [0..1]
   then result := FSimpleCompressors[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
-procedure TSoftKneeCompressorDataModule.VSTModuleProcess(const Inputs,
+procedure THardKneeCompressorDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i : Integer;
@@ -132,7 +133,7 @@ begin
   end;
 end;
 
-procedure TSoftKneeCompressorDataModule.VSTModuleSampleRateChange(
+procedure THardKneeCompressorDataModule.VSTModuleSampleRateChange(
   Sender: TObject; const SampleRate: Single);
 begin
  FSimpleCompressors[0].SampleRate := SampleRate;
