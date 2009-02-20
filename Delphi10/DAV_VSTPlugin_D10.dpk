@@ -1,5 +1,6 @@
 package DAV_VSTPlugin_D10;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -51,6 +52,7 @@ contains
   DAV_VSTCustomModule in '..\Source\VST\DAV_VSTCustomModule.pas',
   DAV_VSTOfflineTask in '..\Source\VST\DAV_VSTOfflineTask.pas',
   DAV_VSTEffect in '..\Source\VST\DAV_VSTEffect.pas',
-  DAV_VSTParameters in '..\Source\VST\DAV_VSTParameters.pas';
+  DAV_VSTParameters in '..\Source\VST\DAV_VSTParameters.pas',
+  DAV_WinAmp in '..\Source\DAV_WinAmp.pas';
 
 end.
