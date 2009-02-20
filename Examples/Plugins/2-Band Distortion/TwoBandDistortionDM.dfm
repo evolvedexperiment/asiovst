@@ -1,5 +1,6 @@
 object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'TwoBand Distortion'

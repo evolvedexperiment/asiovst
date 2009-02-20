@@ -43,7 +43,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_GUICommon, PNGImage, DAV_VSTModuleWithPrograms, TwoBandDistortionDM;
+  Math, DAV_GUICommon, PNGImage, TwoBandDistortionDM;
 
 procedure TFmTwoBandDistortion.FormCreate(Sender: TObject);
 var
@@ -153,13 +153,15 @@ end;
 procedure TFmTwoBandDistortion.UpdateFrequency;
 var
   Freq : Single;
+const
+  CThousand : Single = 1000;
 begin
  with Owner as TTwoBandDistortionDataModule do
   begin
    Freq := ParameterByName['Frequency'];
-   if Freq < 1000
-    then LbFreqValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 3) + 'Hz'
-    else LbFreqValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + 'kHz';
+   if Freq < CThousand
+    then LbFreqValue.Caption := FloatToStrF(Freq, ffGeneral, 3, 4) + ' Hz'
+    else LbFreqValue.Caption := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3) + ' kHz';
    if DialFreq.Position <> Freq
     then DialFreq.Position := Freq;
   end;
@@ -172,7 +174,7 @@ begin
  with Owner as TTwoBandDistortionDataModule do
   begin
    HighDist := ParameterByName['High Distortion'];
-   LbHighDistValue.Caption := FloatToStrF(HighDist, ffGeneral, 3, 1) + '%';
+   LbHighDistValue.Caption := FloatToStrF(RoundTo(HighDist, -2), ffGeneral, 3, 1) + '%';
    if DialHighDist.Position <> HighDist
     then DialHighDist.Position := HighDist;
   end;
@@ -185,7 +187,7 @@ begin
  with Owner as TTwoBandDistortionDataModule do
   begin
    LowDist := ParameterByName['Low Distortion'];
-   LbLowDistValue.Caption := FloatToStrF(LowDist, ffGeneral, 3, 1) + '%';
+   LbLowDistValue.Caption := FloatToStrF(RoundTo(LowDist, -2), ffGeneral, 3, 1) + '%';
    if DialLowDist.Position <> LowDist
     then DialLowDist.Position := LowDist;
   end;
