@@ -7,7 +7,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Include Modern UI
 ;  !include "Sections.nsh"
-  !include "MUI.nsh"
+  !include "MUI.nsh"                           
 
 ;--------------------------------
 ;General
@@ -17,7 +17,7 @@ SetCompressor lzma
   OutFile "Exciter_Install.exe"
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\VSTPlugIns"
+  InstallDir "$VSTPlugin\VSTPlugIns"
   
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
@@ -66,22 +66,34 @@ SetCompressor lzma
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
-Section "Exciter VST-Plugin" SecProgramFiles
+Section "Exciter VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\ChebyshevExciter.dll" "..\Bin\Chebyshev Exciter.dll"'
+  
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Exciter.dll"
+  File "..\Bin\Chebyshev Exciter.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallExciter.exe"
+SectionEnd
 
+Section "Exciter Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\Chebyshev Exciter Manual.pdf"
 
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\UninstallExciter.exe"
 SectionEnd
 
 ;--------------------------------
@@ -94,11 +106,13 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Exciter VST Plugin"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Exciter VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Exciter Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -108,6 +122,7 @@ Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\Exciter.dll"
+  Delete "$INSTDIR\Exciter Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

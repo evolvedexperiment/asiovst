@@ -17,7 +17,7 @@ SetCompressor lzma
   OutFile "Chorus_Install.exe"
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\VSTPlugIns"
+  InstallDir "$VSTPlugin\VSTPlugIns"
   
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
@@ -66,10 +66,9 @@ SetCompressor lzma
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
-Section "Chorus VST-Plugin" SecProgramFiles
+Section "Chorus VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -80,8 +79,19 @@ Section "Chorus VST-Plugin" SecProgramFiles
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallChorus.exe"
+SectionEnd
 
+Section "Chorus Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\Chorus Manual.pdf"
 
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\UninstallChorus.exe"
 SectionEnd
 
 ;--------------------------------
@@ -94,11 +104,13 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Chorus VST Plugin"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Chorus VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Chorus Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -108,6 +120,7 @@ Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\Chorus.dll"
+  Delete "$INSTDIR\Chorus Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd
