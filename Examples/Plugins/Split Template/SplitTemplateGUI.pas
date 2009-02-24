@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, DAV_Common, DAV_GuiBaseControl, DAV_GuiButton, DAV_GuiLabel,
-  DAV_GuiLED, DAV_GuiDial, DAV_GuiPanel, DAV_GuiSelectBox;
+  DAV_GuiLED, DAV_GuiDial, DAV_GuiPanel, DAV_GuiSelectBox, DAV_GuiCommon;
 
 type
   TFmSplitter = class(TForm)
@@ -241,7 +241,7 @@ procedure TFmSplitter.GuiLEDOversamplingClick(Sender: TObject);
 begin
  with TSplitTemplateDataModule(Owner) do
   begin
-   ParameterByName['Oversampling'] := f_Limit(1 - ParameterByName['Oversampling'], 0, 1);
+   ParameterByName['Oversampling'] := Limit(1 - ParameterByName['Oversampling'], 0, 1);
   end;
 end;
 
@@ -331,7 +331,7 @@ procedure TFmSplitter.UpdateOverSampling;
 begin
  with TSplitTemplateDataModule(Owner) do
   begin
-   GuiLEDOversampling.Brightness_Percent := 20 + 60 * (f_Limit(ParameterByName['Oversampling'], 0, 1));
+   GuiLEDOversampling.Brightness_Percent := 20 + 60 * (Limit(ParameterByName['Oversampling'], 0, 1));
 
    DialOversampling.Visible     := round(ParameterByName['Oversampling']) = 1;
    LbOversamplingFactor.Visible := DialOversampling.Visible;

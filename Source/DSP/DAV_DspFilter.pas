@@ -872,7 +872,7 @@ begin
  PInt64(@FState[1])^ := Round(FNominator[2]*Input) - Round(FDenominator[2]*result);
 end;
 
-function TBiquadIIRFilter.ProcessSampleASM:Double;
+function TBiquadIIRFilter.ProcessSampleASM: Double;
 {$IFDEF PUREPASCAL}
 begin
 end;

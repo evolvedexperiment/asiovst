@@ -1,27 +1,28 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library SplitTemplate;
+library SoundTouchPitchShifter;
+
+{$R 'SoundTouchKnob.res' 'SoundTouchKnob.rc'}
 
 uses
-  FastMM4,  // either download the library or comment if there is an error here
-  FastMove, // either download the library or comment if there is an error here
+  FastMM4,
   madExcept,
   madLinkDisAsm,
-  RTLVCLOptimize,
-  Forms,
+  madListProcesses,
+  madListModules,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  SplitTemplateDM in 'SplitTemplateDM.pas' {SplitTemplateDataModule: TVSTModule},
-  SplitTemplateGUI in 'SplitTemplateGUI.pas' {FmSplitter};
+  SoundTouchPitchShifterDM in 'SoundTouchPitchShifterDM.pas' {SoundTouchPitchShifterModule: TVSTModule},
+  SoundTouchPitchShifterGUI in 'SoundTouchPitchShifterGUI.pas' {FmSoundTouchPitchShifter};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TSplitTemplateDataModule);
+ Result := VstModuleMain(AudioMasterCallback, TSoundTouchPitchShifterModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSplitTemplateDataModule);
+ Result := WinampDSPModuleHeader(TSoundTouchPitchShifterModule);
 end;
 
 exports VstPluginMain name 'main';

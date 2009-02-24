@@ -26,19 +26,6 @@ type
     function VSTModuleInputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     function VSTModuleVendorSpecific(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
-    procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure HighParameterAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
-    procedure LowParameterAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
-    procedure ParamFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamModeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOSFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
     procedure VSTModuleEditIdle(Sender: TObject);
@@ -89,10 +76,25 @@ type
     procedure VSTModuleStartProcess(Sender: TObject);
     procedure VSTModuleStopProcess(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
+
+    // Parameters
+    procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure HighParameterAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
+    procedure LowParameterAutomate(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single);
     procedure ParamVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamFreqDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamFreqLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamOrderLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamModeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOSFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FLowpass          : array of TLowPassArray;
     FHighpass         : array of THighPassArray;
@@ -116,7 +118,7 @@ type
     FVolumeFactor     : Double;
     FPlugNr           : Integer;
     FDifferentPlugins : Boolean;
-    procedure SetOSFactor(NewOSFactor: Integer);
+    procedure SetOSFactor(const NewOSFactor: Integer);
     procedure SetTempBufferSize(const Value: Integer);
     procedure VSTBuffersChanged;
     procedure PluginSampleRateChanged;
@@ -451,9 +453,12 @@ end;
 
 procedure TSplitTemplateDataModule.VSTModuleOfflineNotify(Sender: TObject;
   const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean);
+var
+  AF: TVstAudioFile;
 begin
- if VstHost[0].Active then VstHost[0].OfflineNotify(@AudioFile, numAudioFiles, start);
- if VstHost[1].Active then VstHost[1].OfflineNotify(@AudioFile, numAudioFiles, start);
+ AF := AudioFile;
+ if VstHost[0].Active then VstHost[0].OfflineNotify(AF, numAudioFiles, start);
+ if VstHost[1].Active then VstHost[1].OfflineNotify(AF, numAudioFiles, start);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleOpen(Sender: TObject);
@@ -644,9 +649,12 @@ end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcessVarIO(Sender: TObject;
   const varIo: TVstVariableIo);
+var
+  vio : TVstVariableIo;
 begin
- with VstHost[0] do if Active then ProcessVarIo(@varIo);
- with VstHost[1] do if Active then ProcessVarIo(@varIo);
+ vio := varIo;
+ with VstHost[0] do if Active then ProcessVarIo(vio);
+ with VstHost[1] do if Active then ProcessVarIo(vio);
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleResume(Sender: TObject);
@@ -764,7 +772,7 @@ begin
   then TFmSplitter(EditorForm).UpdateOSFactor;
 end;
 
-procedure TSplitTemplateDataModule.SetOSFactor(NewOSFactor: Integer);
+procedure TSplitTemplateDataModule.SetOSFactor(const NewOSFactor: Integer);
 var
   ch, n : Integer;
 begin
@@ -963,8 +971,8 @@ end;
 procedure TSplitTemplateDataModule.VSTModuleProcessEvents(Sender: TObject;
   Events: PVstEvents);
 begin
- if VstHost[0].Active then VstHost[0].ProcessEvents(Events);
- if VstHost[1].Active then VstHost[1].ProcessEvents(Events);
+ if VstHost[0].Active then VstHost[0].ProcessEvents(Events^);
+ if VstHost[1].Active then VstHost[1].ProcessEvents(Events^);
 end;
 
 procedure TSplitTemplateDataModule.CheckSampleFrames(const SampleFrames: Integer);
@@ -1550,7 +1558,7 @@ begin
   end;
 end;
 
-function SimpleDiode(x: Single): Single;
+function SimpleDiode(const x: Single): Single;
 begin
  Result := 0.5 * (abs(x) + x);
 end;

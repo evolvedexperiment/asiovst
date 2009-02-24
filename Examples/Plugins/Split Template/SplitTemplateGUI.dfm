@@ -46,21 +46,20 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 20
       Height = 20
-      LineWidth = 1
-      LineColor = clBlack
-      CircleColor = 6450289
       AntiAlias = gaaLinear4x
+      CircleColor = 6450289
       CurveMapping = -2.099999904632568000
       DefaultPosition = 100.000000000000000000
+      DialImageIndex = -1
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
+      OnChange = DialSplitFrequencyChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 1000.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialSplitFrequencyChange
     end
     object LbSplitFrequency: TGuiLabel
       Left = 129
@@ -80,21 +79,20 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 20
       Height = 20
-      LineWidth = 1
-      LineColor = clBlack
-      CircleColor = 6450289
       AntiAlias = gaaLinear4x
+      CircleColor = 6450289
       CurveMapping = -1.250000000000000000
       DefaultPosition = 8.000000000000000000
+      DialImageIndex = -1
       Max = 16.000000000000000000
       Min = 1.000000000000000000
+      OnChange = DialSplitOrderChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 8.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialSplitOrderChange
     end
     object LbSplitOrder: TGuiLabel
       Left = 219
@@ -114,12 +112,12 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 20
       Height = 20
-      OnClick = GuiLEDOversamplingClick
       Brightness_Percent = 20.000000000000000000
       LineWidth = 2
       LEDColor = clLime
       AntiAlias = gaaLinear4x
       LineColor = clLime
+      OnClick = GuiLEDOversamplingClick
     end
     object LbOversampling: TGuiLabel
       Left = 279
@@ -154,22 +152,21 @@ object FmSplitter: TFmSplitter
       Top = 9
       Width = 20
       Height = 20
-      Visible = False
-      LineWidth = 1
-      LineColor = clBlack
-      CircleColor = 6450289
       AntiAlias = gaaLinear4x
+      CircleColor = 6450289
       CurveMapping = -1.250000000000000000
       DefaultPosition = 4.000000000000000000
+      DialImageIndex = -1
       Max = 16.000000000000000000
       Min = 1.000000000000000000
+      OnChange = DialOversamplingChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 4.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialOversamplingChange
+      Visible = False
     end
     object BtLow: TGuiButton
       Left = 447
@@ -216,7 +213,6 @@ object FmSplitter: TFmSplitter
       Height = 26
       AntiAlias = gaaLinear4x
       ArrowColor = 6450289
-      ArrowWidth = 1
       ButtonColor = 6450289
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -238,8 +234,9 @@ object FmSplitter: TFmSplitter
         'Bypass')
       LineColor = clBlack
       LineWidth = 2
-      SelectBoxColor = 7701642
+      ParentFont = False
       Radius = 4
+      SelectBoxColor = 7701642
       OnChange = SBModeChange
     end
   end

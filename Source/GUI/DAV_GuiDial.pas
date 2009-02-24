@@ -228,6 +228,7 @@ type
     {$IFNDEF FPC}
     property Transparent;
     {$ENDIF}
+    property Visible;
   end;
 
   TGuiDialMetal = class(TCustomGuiDialMetal)
@@ -258,6 +259,7 @@ type
     {$IFNDEF FPC}
     property Transparent;
     {$ENDIF}
+    property Visible;
   end;
 
   TGuiDialEx = class(TCustomGuiDialEx)
@@ -289,6 +291,7 @@ type
     {$IFNDEF FPC}
     property Transparent;
     {$ENDIF}
+    property Visible;
   end;
 
   TGuiSwitch = class(TCustomGuiSwitch)
@@ -314,6 +317,7 @@ type
     {$IFNDEF FPC}
     property Transparent;
     {$ENDIF}
+    property Visible;
   end;
 
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
