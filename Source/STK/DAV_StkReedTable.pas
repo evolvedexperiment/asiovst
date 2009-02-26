@@ -1,4 +1,4 @@
-unit DAV_StkReedTabl;
+unit DAV_StkReedTable;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
@@ -16,7 +16,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk;
+  DAV_StkCommon;
 
 type
   TStkReedTable = class(TStk)
@@ -53,7 +53,7 @@ type
     function tick(input: Single): Single; overload;
 
     // Take \e vectorSize inputs and return the corresponding function values in \e vector.
-    function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
+    function tick(vector: PSingle; vectorSize: longint): PSingle; overload;
   end;
 
 implementation
@@ -103,10 +103,10 @@ begin
   Result := FLastOutput;
 end;
 
-function TStkReedTable.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TStkReedTable.tick(vector: PSingle; vectorSize: longint): PSingle;
 var
   i: integer;
-  p: pmy_float;
+  p: pSingle;
 begin
   p := vector;
   for i := 0 to vectorSize - 1 do

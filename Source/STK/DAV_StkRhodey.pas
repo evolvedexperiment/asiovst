@@ -29,102 +29,102 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkFm, DAV_StkWavePlayer;
+  DAV_StkCommon, DAV_StkFm, DAV_StkWavePlayer;
 
 type
   TStkRhodey = class(TStkFM)
   public
     // Class constructor.
-    constructor Create(SampleRate: Single);
+    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Set instrument parameters for a particular Frequency.
     procedure SetFrequency(Frequency: Single);
 
     // Start a note with the given Frequency and Amplitude.
-    procedure NoteOn(Frequency, Amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Compute one output sample.
-    function Tick: Single;
+    function Tick: Single; override;
   end;
 
 implementation
 
-constructor TStkRhodey.Create;
+constructor TStkRhodey.Create(const SampleRate: Single; const Operators: Integer = 4);
 var
   i: integer;
 begin
   inherited Create(SampleRate);
-  waves[0] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  waves[1] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  waves[2] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  waves[3] := TWavePlayer.Create(srate, 'c:\stk\fwavblnk.wav');
-  waves[0].SetOneShot(False);
-  waves[1].SetOneShot(False);
-  waves[2].SetOneShot(False);
-  waves[3].SetOneShot(False);
+  FWaves[0] := TStkWavePlayer.Create(Samplerate, 'sinewave.wav');
+  FWaves[1] := TStkWavePlayer.Create(Samplerate, 'sinewave.wav');
+  FWaves[2] := TStkWavePlayer.Create(Samplerate, 'sinewave.wav');
+  FWaves[3] := TStkWavePlayer.Create(Samplerate, 'fwavblnk.wav');
+  FWaves[0].OneShot := False;
+  FWaves[1].OneShot := False;
+  FWaves[2].OneShot := False;
+  FWaves[3].OneShot := False;
 
-  setRatio(0, 1.0);
-  setRatio(1, 0.5);
-  setRatio(2, 1.0);
-  setRatio(3, 15.0);
+  Ratio[0] := 1.0;
+  Ratio[1] := 0.5;
+  Ratio[2] := 1.0;
+  Ratio[3] := 15.0;
 
-  gains[0] := __TFM_gains[99];
-  gains[1] := __TFM_gains[90];
-  gains[2] := __TFM_gains[99];
-  gains[3] := __TFM_gains[67];
+  FGains[0] := FFmGains[99];
+  FGains[1] := FFmGains[90];
+  FGains[2] := FFmGains[99];
+  FGains[3] := FFmGains[67];
 
-  adsr[0].setAllTimes(0.001, 1.50, 0.0, 0.04);
-  adsr[1].setAllTimes(0.001, 1.50, 0.0, 0.04);
-  adsr[2].setAllTimes(0.001, 1.00, 0.0, 0.04);
-  adsr[3].setAllTimes(0.001, 0.25, 0.0, 0.04);
+  FAdsr[0].setAllTimes(0.001, 1.50, 0.0, 0.04);
+  FAdsr[1].setAllTimes(0.001, 1.50, 0.0, 0.04);
+  FAdsr[2].setAllTimes(0.001, 1.00, 0.0, 0.04);
+  FAdsr[3].setAllTimes(0.001, 0.25, 0.0, 0.04);
 
-  twozero.setGain(1.0);
+  FTwoZero.Gain := 1.0;
 end;
 
 destructor TStkRhodey.Destroy;
 begin
-  inherited Destroy;
+ inherited Destroy;
 end;
 
 procedure TStkRhodey.SetFrequency;
 var
   i: integer;
 begin
-  baseFrequency := Frequency * 2.0;
-  for i := 0 to nOperators - 1 do
-    waves[i].SetFrequency(baseFrequency * ratios[i]);
+ FBaseFrequency := Frequency * 2.0;
+ for i := 0 to FNOperators - 1
+  do FWaves[i].Frequency := FBaseFrequency * FRatios[i];
 end;
 
 procedure TStkRhodey.NoteOn;
 begin
-  gains[0] := Amplitude * __TFM_gains[99];
-  gains[1] := Amplitude * __TFM_gains[90];
-  gains[2] := Amplitude * __TFM_gains[99];
-  gains[3] := Amplitude * __TFM_gains[67];
-  SetFrequency(Frequency);
-  keyOn;
+ FGains[0] := Amplitude * FFmGains[99];
+ FGains[1] := Amplitude * FFmGains[90];
+ FGains[2] := Amplitude * FFmGains[99];
+ FGains[3] := Amplitude * FFmGains[67];
+ Self.Frequency := Frequency;
+ KeyOn;
 end;
 
 function TStkRhodey.Tick: Single;
 var
   temp, temp2: Single;
 begin
-  temp := gains[1] * adsr[1].Tick * waves[1].Tick;
-  temp := temp * control1;
-  waves[0].addPhaseOffset(temp);
-  waves[3].addPhaseOffset(twozero.lastOut);
-  temp := gains[3] * adsr[3].Tick * waves[3].Tick;
-  twozero.Tick(temp);
-  waves[2].addPhaseOffset(temp);
-  temp := (1.0 - (control2 * 0.5)) * gains[0] * adsr[0].Tick * waves[0].Tick;
-  temp := temp + control2 * 0.5 * gains[2] * adsr[2].Tick * waves[2].Tick;
+  temp := FGains[1] * FAdsr[1].Tick * FWaves[1].Tick;
+  temp := temp * 2 * FControlA;
+  FWaves[0].addPhaseOffset(temp);
+  FWaves[3].addPhaseOffset(FTwoZero.LastOutput);
+  temp := FGains[3] * FAdsr[3].Tick * FWaves[3].Tick;
+  FTwoZero.Tick(temp);
+  FWaves[2].addPhaseOffset(temp);
+  temp := (1.0 - FControlB) * FGains[0] * FAdsr[0].Tick * FWaves[0].Tick;
+  temp := temp + FControlB * FGains[2] * FAdsr[2].Tick * FWaves[2].Tick;
   // Calculate Amplitude modulation and apply it to output.
-  temp2 := vibrato.Tick * modDepth;
+  temp2 := FVibrato.Tick * FModDepth;
   temp := temp * (1.0 + temp2);
-  lastOutput := temp * 0.5;
+  FLastOutput := temp * 0.5;
   Result := lastOutput;
 end;
 

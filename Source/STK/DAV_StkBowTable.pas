@@ -17,6 +17,23 @@ uses
 
 type
   TStkBowTable = class(TStk)
+  private
+    // Set the table FOffSet value.
+  {
+    The table FOffSet is a bias which controls the
+    symmetry of the friction.  If you want the
+    friction to vary with direction, use a non-zero
+    value for the FOffSet.  The default value is zero.
+  }
+    procedure SetOffset(aValue: Single);
+
+    // Set the table FSlope value.
+  {
+   The table FSlope controls the width of the friction
+   pulse, which is related to bow force.
+  }
+    procedure setSlope(aValue: Single);
+
   protected
     FOffSet     : Single;
     FSlope      : Single;
@@ -28,25 +45,6 @@ type
     // Class destructor.
     destructor Destroy; override;
 
-    // Set the table FOffSet value.
-  {
-    The table FOffSet is a bias which controls the
-    symmetry of the friction.  If you want the
-    friction to vary with direction, use a non-zero
-    value for the FOffSet.  The default value is zero.
-  }
-    procedure setOffset(aValue: Single);
-
-    // Set the table FSlope value.
-  {
-   The table FSlope controls the width of the friction
-   pulse, which is related to bow force.
-  }
-    procedure setSlope(aValue: Single);
-
-    // Return the last output value.
-    function lastOut: Single;
-
     // Return the function value for \e input.
   {
     The function input represents differential
@@ -56,6 +54,8 @@ type
 
     // Take \e vectorSize inputs and return the corresponding function values in \e vector.
     function Tick(vector: PSingle; vectorSize: longint): PSingle; overload;
+
+    property LastOutput: Single read FLastOutput;
   end;
 
 implementation
@@ -80,11 +80,6 @@ end;
 procedure TStkBowTable.setSlope;
 begin
   FSlope := aValue;
-end;
-
-function TStkBowTable.lastOut: Single;
-begin
-  Result := FLastOutput;
 end;
 
 function TStkBowTable.Tick(const Input: Single): Single;

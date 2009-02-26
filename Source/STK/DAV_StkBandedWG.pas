@@ -27,7 +27,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayL, DAV_StkBowtabl,
+  DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayL, DAV_StkBowTable,
   DAV_StkAdsr, DAV_StkBiquad, Math;
 
 const

@@ -14,10 +14,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkFilter;
+  DAV_StkCommon, DAV_StkFilter;
 
 type
-  TOneZero = class(TFilter)
+  TOneZero = class(TStkFilter)
   public
     // Default constructor creates a first-order low-pass filter.
     constructor Create(SampleRate: Single); overload;
@@ -64,7 +64,7 @@ type
     function tick(sample: Single): Single; overload;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
+    function tick(vector: PSingle; vectorSize: longint): PSingle; overload;
   end;
 
 implementation
@@ -109,16 +109,13 @@ begin
 end;
 
 procedure TOneZero.setB0(b0: Single);
-var
-  p: pmy_float;
 begin
-  p := pindex(b, 0);
-  p^ := b0;
+ FB^[0] := b0;
 end;
 
 procedure TOneZero.setB1(b1: Single);
 var
-  p: pmy_float;
+  p: pSingle;
 begin
   p := pindex(b, 1);
   p^ := b1;
@@ -126,7 +123,7 @@ end;
 
 procedure TOneZero.setZero;
 var
-  p: pmy_float;
+  p: pSingle;
 begin
   // Normalize coefficients for unity gain.
   if (theZero > 0.0) then
@@ -154,7 +151,7 @@ end;
 
 function TOneZero.tick(sample: Single): Single;
 var
-  p: pmy_float;
+  p: pSingle;
 begin
   inputs^ := gain * sample;
 
@@ -165,10 +162,10 @@ begin
   Result := outputs^;
 end;
 
-function TOneZero.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
+function TOneZero.tick(vector: PSingle; vectorSize: longint): PSingle;
 var
   i: integer;
-  p: pmy_float;
+  p: pSingle;
 begin
   p := vector;
   for i := 0 to vectorSize - 1 do

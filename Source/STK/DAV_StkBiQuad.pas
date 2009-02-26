@@ -14,7 +14,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkFilter;
+  DAV_Common, DAV_StkCommon, DAV_StkFilter;
 
 type
   TStkBiQuad = class(TStkFilter)
@@ -55,7 +55,7 @@ type
     Frequency.  The closer the poles are to the unit-circle (\e Radius
     close to one), the narrower the resulting resonance width.
   }
-    procedure SetResonance(Frequency, Radius: Single; Normalize: Boolean = False);
+    procedure SetResonance(const Frequency, Radius: Single; const Normalize: Boolean = False);
 
     // Set the filter coefficients for a notch at \e Frequency (in Hz).
   {
@@ -64,7 +64,7 @@ type
     and \e Radius from the z-plane origin.  No filter normalization
     is attempted.
   }
-    procedure SetNotch(Frequency, Radius: Single);
+    procedure SetNotch(const Frequency, Radius: Single);
 
     // Sets the filter zeroes for equal resonance gain.
   {
@@ -74,21 +74,8 @@ type
   }
     procedure SetEqualGainZeroes;
 
-    // Set the filter gain.
-  {
-    The gain is applied at the filter input and does not affect the
-    coefficient values.  The default gain value is 1.0.
-   }
-    procedure SetGain(theGain: Single);
-
-    // Return the current filter gain.
-    function GetGain: Single;
-
-    // Return the last computed output value.
-    function lastOut: Single;
-
     // Input one sample to the filter and return one output.
-    function Tick(sample: Single): Single; overload;
+    function Tick(const Sample: Single): Single; overload;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
     function Tick(vector: PSingle; vectorSize: longint): PSingle; overload;
@@ -122,107 +109,65 @@ end;
 
 procedure TStkBiQuad.SetB0(b0: Single);
 begin
-  b^ := b0;
+  FB^[0] := b0;
 end;
 
 procedure TStkBiQuad.SetB1(b1: Single);
-var
-  p: PSingle;
 begin
-  p := pindex(b, 1);
-  p^ := b1;
+ PDav4SingleArray(FB)^[1] := b1;
 end;
 
 procedure TStkBiQuad.setB2(b2: Single);
-var
-  p: PSingle;
 begin
-  p := pindex(b, 2);
-  p^ := b2;
+ PDav4SingleArray(FB)^[2] := b2;
 end;
 
-procedure TStkBiQuad.setA1(a1: Single);
-var
-  p: PSingle;
+procedure TStkBiQuad.SetA1(a1: Single);
 begin
-  p := pindex(a, 1);
-  p^ := a1;
+ PDav4SingleArray(FA)^[1] := a1;
 end;
 
 procedure TStkBiQuad.setA2(a2: Single);
-var
-  p: PSingle;
 begin
-  p := pindex(a, 2);
-  p^ := a2;
+ PDav4SingleArray(FA)^[2] := a2;
 end;
 
-procedure TStkBiQuad.SetResonance;
-var
-  p: PSingle;
+procedure TStkBiQuad.SetResonance(const Frequency, Radius: Single; const Normalize: Boolean = False);
 begin
-  p := pindex(a, 2);
-  p^ := Radius * Radius;
-  Dec(p);
-  p^ := -2.0 * Radius * cos(TWO_PI * Frequency / srate);
+  PDav4SingleArray(FA)^[2] := Radius * Radius;
+  PDav4SingleArray(FA)^[1] := -2.0 * Radius * cos(2 * Pi * Frequency * FSampleRateInv);
   if (Normalize) then
    begin
-   // Use zeros at +- 1 and Normalize the filter peak gain.
-    p := b;
-    p^ := 0.5 - 0.5 * index(a, 2);
-    Inc(p);
-    p^ := 0.0;
-    Inc(p);
-    p^ := -b^;
+    // Use zeros at +- 1 and Normalize the filter peak gain.
+    PDav4SingleArray(FB)^[0] := 0.5 - 0.5 * PDav4SingleArray(FA)^[2];
+    PDav4SingleArray(FB)^[1] := 0.0;
+    PDav4SingleArray(FB)^[2] := -PDav4SingleArray(FB)^[0];
    end;
 end;
 
-procedure TStkBiQuad.SetNotch;
-var
-  p: PSingle;
+procedure TStkBiQuad.SetNotch(const Frequency, Radius: Single);
 begin
-  p := pindex(b, 2);
- // This method does not attempt to Normalize the filter gain.
-  p^ := Radius * Radius;
-  Dec(p);
-  p^ := -2.0 * Radius * cos(TWO_PI * Frequency / srate);
+  // This method does not attempt to Normalize the filter gain.
+  PDav4SingleArray(FA)^[2] := Radius * Radius;
+  PDav4SingleArray(FA)^[1] := -2.0 * Radius * cos(2 * Pi * Frequency * FSampleRateInv);
 end;
 
 procedure TStkBiQuad.SetEqualGainZeroes;
+begin
+  PDav4SingleArray(FB)^[0] := 1.0;
+  PDav4SingleArray(FB)^[1] := 0.0;
+  PDav4SingleArray(FB)^[2] := -1.0;
+end;
+
+function TStkBiQuad.Tick(const Sample: Single): Single;
 var
   p: PSingle;
 begin
-  p := b;
-  p^ := 1.0;
-  Inc(p);
-  p^ := 0.0;
-  Inc(p);
-  p^ := -1.0;
-end;
-
-procedure TStkBiQuad.SetGain;
-begin
-  inherited SetGain(theGain);
-end;
-
-function TStkBiQuad.GetGain;
-begin
-  Result := inherited GetGain;
-end;
-
-function TStkBiQuad.lastOut;
-begin
-  Result := inherited lastOut;
-end;
-
-function TStkBiQuad.Tick(sample: Single): Single;
-var
-  p: PSingle;
-begin
-  inputs^ := gain * sample;
-  outputs^ := b^ * inputs^ + index(b, 1) * index(inputs, 1) +
-    index(b, 2) * index(inputs, 2);
-  outputs^ := outputs^ - (index(a, 2) * index(outputs, 2) +
+  FInputs^[0] := FGain * Sample;
+  FOutputs^[0] := FB^[0] * FInputs^[0] +
+    PDav4SingleArray(FB)^[1] * PDav4SingleArray(FInputs)^[1] +
+    PDav4SingleArray(FB)^[2] * PDav4SingleArray(FInputs)^[2];
+  FOutputs^[0] := FOutputs^[0] - (index(a, 2) * index(outputs, 2) +
     index(a, 1) * index(outputs, 1));
   p := pindex(inputs, 2);
   p^ := index(inputs, 1);

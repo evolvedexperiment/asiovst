@@ -31,7 +31,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrmnt, DAV_StkDelayl, DAV_StkReedtabl, DAV_StkLfo,
+  DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayl, DAV_StkReedTable, DAV_StkLfo,
   DAV_StkOneZero, DAV_StkPoleZero, DAV_StkEnvelope, DAV_StkNoise, Math;
 
 type

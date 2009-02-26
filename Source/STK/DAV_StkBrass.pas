@@ -23,7 +23,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrmnt, DAV_StkDelaya, DAV_StkBiquad,
+  DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayA, DAV_StkBiquad,
   DAV_StkPolezero, DAV_StkAdsr, DAV_StkLfo, Math;
 
 type

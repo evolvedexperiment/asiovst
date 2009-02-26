@@ -34,49 +34,49 @@ uses
 type
   TStkBeeThree = class(TStkFM)
   public
-    constructor Create(const SampleRate: Single); override;
+    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
     destructor Destroy; override;
 
     // Start a note with the given Frequency and Amplitude.
-    procedure NoteOn(Frequency, Amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Compute one output sample.
-    function Tick: Single;
+    function Tick: Single; override;
   end;
 
 implementation
 
 { TStkBeeThree }
 
-constructor TStkBeeThree.Create(SampleRate: Single);
+constructor TStkBeeThree.Create(const SampleRate: Single; const Operators: Integer = 4);
 begin
   inherited Create(SampleRate);
 
-  waves[0] := TWavePlayer.Create(srate, 'sinewave.wav');
-  waves[1] := TWavePlayer.Create(srate, 'sinewave.wav');
-  waves[2] := TWavePlayer.Create(srate, 'sinewave.wav');
-  waves[3] := TWavePlayer.Create(srate, 'fwavblnk.wav');
-  waves[0].SetOneShot(False);
-  waves[1].SetOneShot(False);
-  waves[2].SetOneShot(False);
-  waves[3].SetOneShot(False);
+  FWaves[0] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[1] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[2] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[3] := TStkWavePlayer.Create(SampleRate, 'fwavblnk.wav');
+  FWaves[0].OneShot := False;
+  FWaves[1].OneShot := False;
+  FWaves[2].OneShot := False;
+  FWaves[3].OneShot := False;
 
-  setRatio(0, 0.999);
-  setRatio(1, 1.997);
-  setRatio(2, 3.006);
-  setRatio(3, 6.009);
+  Ratio[0] := 0.999;
+  Ratio[1] := 1.997;
+  Ratio[2] := 3.006;
+  Ratio[3] := 6.009;
 
-  gains[0] := __TFM_gains[95];
-  gains[1] := __TFM_gains[95];
-  gains[2] := __TFM_gains[99];
-  gains[3] := __TFM_gains[95];
+  FGains[0] := FFmGains[95];
+  FGains[1] := FFmGains[95];
+  FGains[2] := FFmGains[99];
+  FGains[3] := FFmGains[95];
 
-  adsr[0].setAllTimes(0.005, 0.003, 1.0, 0.01);
-  adsr[1].setAllTimes(0.005, 0.003, 1.0, 0.01);
-  adsr[2].setAllTimes(0.005, 0.003, 1.0, 0.01);
-  adsr[3].setAllTimes(0.005, 0.001, 0.4, 0.03);
+  FAdsr[0].setAllTimes(0.005, 0.003, 1.0, 0.01);
+  FAdsr[1].setAllTimes(0.005, 0.003, 1.0, 0.01);
+  FAdsr[2].setAllTimes(0.005, 0.003, 1.0, 0.01);
+  FAdsr[3].setAllTimes(0.005, 0.001, 0.4, 0.03);
 
-  twozero.setGain(0.1);
+  FTwoZero.Gain := 0.1;
 end;
 
 destructor TStkBeeThree.Destroy;
@@ -84,37 +84,37 @@ begin
   inherited Destroy;
 end;
 
-procedure TStkBeeThree.noteOn(Frequency, Amplitude: Single);
+procedure TStkBeeThree.noteOn(const Frequency, Amplitude: Single);
 begin
-  gains[0] := Amplitude * __TFM_gains[95];
-  gains[1] := Amplitude * __TFM_gains[95];
-  gains[2] := Amplitude * __TFM_gains[99];
-  gains[3] := Amplitude * __TFM_gains[95];
-  setFrequency(Frequency);
+  FGains[0] := Amplitude * FFmGains[95];
+  FGains[1] := Amplitude * FFmGains[95];
+  FGains[2] := Amplitude * FFmGains[99];
+  FGains[3] := Amplitude * FFmGains[95];
+  Self.Frequency := Frequency;
   keyOn;
 end;
 
-function TStkBeeThree.tick: Single;
+function TStkBeeThree.Tick: Single;
 var
   temp: Single;
 begin
-  if (modDepth > 0.0) then
+  if (FModDepth > 0.0) then
    begin
-    temp := 1.0 + (modDepth * vibrato.tick * 0.1);
-    waves[0].setFrequency(baseFrequency * temp * ratios[0]);
-    waves[1].setFrequency(baseFrequency * temp * ratios[1]);
-    waves[2].setFrequency(baseFrequency * temp * ratios[2]);
-    waves[3].setFrequency(baseFrequency * temp * ratios[3]);
+    temp := 1.0 + (FModDepth * FVibrato.Tick * 0.1);
+    FWaves[0].Frequency := FBaseFrequency * temp * FRatios[0];
+    FWaves[1].Frequency := FBaseFrequency * temp * FRatios[1];
+    FWaves[2].Frequency := FBaseFrequency * temp * FRatios[2];
+    FWaves[3].Frequency := FBaseFrequency * temp * FRatios[3];
    end;
 
-  waves[3].addPhaseOffset(twozero.lastOut);
-  temp := control1 * 2.0 * gains[3] * adsr[3].tick * waves[3].tick;
-  twozero.tick(temp);
+  FWaves[3].addPhaseOffset(FTwoZero.LastOutput);
+  temp := FControlA * 4.0 * FGains[3] * FAdsr[3].Tick * FWaves[3].Tick;
+  FTwoZero.Tick(temp);
 
-  temp := temp + control2 * 2.0 * gains[2] * adsr[2].tick * waves[2].tick;
-  temp := temp + gains[1] * adsr[1].tick * waves[1].tick;
-  temp := temp + gains[0] * adsr[0].tick * waves[0].tick;
-  lastOutput := temp * 0.125;
+  temp := temp + FControlB * 4.0 * FGains[2] * FAdsr[2].Tick * FWaves[2].Tick;
+  temp := temp + FGains[1] * FAdsr[1].Tick * FWaves[1].Tick;
+  temp := temp + FGains[0] * FAdsr[0].Tick * FWaves[0].Tick;
+  FLastOutput := temp * 0.125;
   Result := lastOutput;
 end;
 
