@@ -75,17 +75,17 @@ const
   CMidiPlayerSkill            = 2001;
   CMidiChord                  = 2002;
   CMidiChordOff               = 2003;
-  CMidiSINGERFilePath         = 3000;
-  CMidiSINGERFrequency        = 3001;
-  CMidiSINGERNoteName         = 3002;
-  CMidiSINGERShape            = 3003;
-  CMidiSINGERGlot             = 3004;
-  CMidiSINGERVoicedUnVoiced   = 3005;
-  CMidiSINGERSynthesize       = 3006;
-  CMidiSINGERSilence          = 3007;
-  CMidiSINGERVibratoAmt       = CMidiModWheel;
-  CMidiSINGERRndVibAmt        = 3008;
-  CMidiSINGERVibFreq          = CMidiExpression;
+  CMidiSingerFilePath         = 3000;
+  CMidiSingerFrequency        = 3001;
+  CMidiSingerNoteName         = 3002;
+  CMidiSingerShape            = 3003;
+  CMidiSingerGlot             = 3004;
+  CMidiSingerVoicedUnVoiced   = 3005;
+  CMidiSingerSynthesize       = 3006;
+  CMidiSingerSilence          = 3007;
+  CMidiSingerVibratoAmt       = CMidiModWheel;
+  CMidiSingerRndVibAmt        = 3008;
+  CMidiSingerVibFreq          = CMidiExpression;
 
 const
   Midi2Pitch: array[0..128] of Single = (

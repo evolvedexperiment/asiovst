@@ -11,12 +11,14 @@ uses
 
 {$I DAV_StkConsts.inc}
 
+(*
 type
   STK_FORMAT = LongInt;
   SINT16 = shortint;
   SINT32 = smallint;
   FLOAT32 = Single;
   FLOAT64 = Double;
+*)
 
 type
   TStk = class

@@ -41,7 +41,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Top = 24
       Width = 64
       Height = 64
-      Color = 7039851
+      Color = 6908265
       CurveMapping = -2.099999904632568000
       DefaultPosition = 20.000000000000000000
       DialImageIndex = -1
@@ -64,7 +64,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
-      Color = 7039851
+      Color = 6908265
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
@@ -79,7 +79,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '1kHz'
-      Color = 7039851
+      Color = 6908265
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
@@ -91,7 +91,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Top = 24
       Width = 64
       Height = 64
-      Color = 7039851
+      Color = 6908265
       DialImageIndex = -1
       LineColor = 116222
       LineWidth = 2
@@ -111,7 +111,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Low Dist.'
-      Color = 7039851
+      Color = 6908265
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
@@ -126,7 +126,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '50%'
-      Color = 7039851
+      Color = 6908265
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
@@ -141,7 +141,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'High Dist.'
-      Color = 7039851
+      Color = 6908265
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
@@ -153,7 +153,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Top = 24
       Width = 64
       Height = 64
-      Color = 7039851
+      Color = 6908265
       DialImageIndex = -1
       LineColor = 116222
       LineWidth = 2
@@ -173,7 +173,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '50%'
-      Color = 7039851
+      Color = 6908265
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
@@ -185,7 +185,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Top = 24
       Width = 64
       Height = 64
-      Color = 7039851
+      Color = 6908265
       DefaultPosition = 16.000000000000000000
       DialImageIndex = -1
       LineColor = 116222
@@ -207,7 +207,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '2'
-      Color = 7039851
+      Color = 6908265
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13
@@ -222,7 +222,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Order'
-      Color = 7039851
+      Color = 6908265
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -13

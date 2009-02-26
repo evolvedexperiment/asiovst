@@ -21,9 +21,9 @@ object FmAudioEditor: TFmAudioEditor
     Width = 62
     Height = 375
     Align = alRight
-    BarWidthPercentage = 0.800000011920928900
-    MaximumTimeFactor = 3.000000000000000000
-    RedrawInterval = 30
+    BarWidthPercentage = 0.800000011920929000
+    MaximumPeakLevel = 1.000000000000000000
+    PeakLevel = 0.500000000000000000
     ExplicitHeight = 355
   end
   object GuiAudioDataDisplay: TGuiAudioDataDisplay

@@ -101,7 +101,7 @@ type
   end;
   {$IFDEF DELPHI10_UP} {$endregion 'TASIOTimeSub'} {$ENDIF}
 
-{$IFDEF D5CP}
+  {$IFDEF D5CP}
   TASIOControlPanel = class(TComponentEditor)
   public
     procedure Edit; override;

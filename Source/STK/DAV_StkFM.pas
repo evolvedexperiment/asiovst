@@ -20,258 +20,307 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrument, DAV_StkAdsr, DAV_StkTwoZero, DAV_StkLfo,
-  DAV_StkWavePlayer;
+  SysUtils, DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkAdsr,
+  DAV_StkTwoZero, DAV_StkLfo, DAV_StkWavePlayer;
 
 const
   CMaxOperators = 20;
 
 type
-  TFM = class(TInstrmnt)
+  TStkFM = class(TStkInstrument)
+  private
+    function GetModulationSpeed: Single;
+
+    // Set the modulation speed in Hz.
+    procedure SetModulationSpeed(const Value: Single);
+
+    // Set the modulation depth.
+    procedure SetModulationDepth(const Value: Single);
+
+    // Set the value of FControlA.
+    procedure SetControlA(const Value: Single);
+
+    // Set the value of FControlB.
+    procedure SetControlB(const Value: Single);
+
+    // Set the frequency ratio for the specified wave.
+    procedure SetRatio(WaveIndex: Integer; ratio: Single);
+    function GetRatio(WaveIndex: Integer): Single;
+
+    // Set the gain for the specified wave.
+    procedure SetGain(WaveIndex: Integer; gain: Single);
+    function GetGain(WaveIndex: Integer): Single;
   protected
-    FAdsr           : array[0..CMaxOperators - 1] of TAdsr;
-    FWaves          : array[0..CMaxOperators - 1] of TWaveplayer;
-    FVibrato        : TLfo;
-    FTwoZero        : TTwozero;
+    FAdsr           : array[0..CMaxOperators - 1] of TStkAdsr;
+    FWaves          : array[0..CMaxOperators - 1] of TStkWaveplayer;
+    FVibrato        : TStkLfo;
+    FTwoZero        : TStkTwozero;
     FNOperators     : Integer;
     FModDepth       : Single;
-    FControl1       : Single;
-    FControl2       : Single;
+    FControlA       : Single; // = 0.5 * Control1 !!!
+    FControlB       : Single; // = 0.5 * Control2 !!!
     FBaseFrequency  : Single;
     FGains          : array[0..CMaxOperators - 1] of Single;
     FRatios         : array[0..CMaxOperators - 1] of Single;
-    __TFM_gains     : array[0..99] of Single;
-    __TFM_susLevels : array[0..15] of Single;
-    __TFM_attTimes  : array[0..31] of Single;
+    FFmGains        : array[0..99] of Single;
+    FFmSusLevels    : array[0..15] of Single;
+    FFmAttTimes     : array[0..31] of Single;
+
+    // Set instrument parameters for a particular frequency.
+    procedure SetFrequency(const Value: Single); override;
+
+    procedure FrequencyChanged; virtual;
+    procedure GainsChanged; virtual;
+    procedure RatioChanged(const WaveIndex: Integer); virtual;
   public
     // Class constructor, taking the number of wave/envelope Operators to control.
-    constructor Create(SampleRate: Single; Operators: Integer = 4);
+    constructor Create(const SampleRate: Single; const Operators: Integer = 4); reintroduce; virtual;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Reset and clear all wave and envelope states.
     procedure Clear;
 
     // Load the rawwave filenames in FWaves.
-    procedure LoadWave(waveindex: Integer; filename: string);
-
-    // Set instrument parameters for a particular frequency.
-    procedure SetFrequency(frequency: Single);
-
-    // Set the frequency ratio for the specified wave.
-    procedure SetRatio(waveIndex: Integer; ratio: Single);
-
-    // Set the gain for the specified wave.
-    procedure SetGain(waveIndex: Integer; gain: Single);
-
-    // Set the modulation speed in Hz.
-    procedure SetModulationSpeed(mSpeed: Single);
-
-    // Set the modulation depth.
-    procedure SetModulationDepth(mDepth: Single);
-
-    // Set the value of FControl1.
-    procedure SetControl1(cVal: Single);
-
-    // Set the value of FControl2.
-    procedure SetControl2(cVal: Single);
+    procedure LoadWave(const WaveIndex: Integer; const FileName: TFileName);
 
     // Start envelopes toward "on" targets.
-    procedure KeyOn;
+    procedure KeyOn; virtual;
 
     // Start envelopes toward "off" targets.
-    procedure KeyOff;
+    procedure KeyOff; virtual;
 
     // Stop a note with the given amplitude (speed of decay).
-    procedure NoteOff(amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Pure virtual function ... must be defined in subclasses.
-    function Tick: Single;
+    function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(number: Integer; Value: Single);
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
 
+    property ControlA: Single read FControlA write SetControlA;
+    property ControlB: Single read FControlB write SetControlB;
+
+    property Ratio[WaveIndex: Integer]: Single read GetRatio write SetRatio;
+    property Gain[WaveIndex: Integer]: Single read GetGain write SetGain;
+
+    property Frequency: Single read FBaseFrequency write SetFrequency;
+    property ModulationSpeed: Single read GetModulationSpeed write SetModulationSpeed;
+    property ModulationDepth: Single read FModDepth write SetModulationDepth;
   end;
 
 implementation
 
 { TFM }
 
-procedure TFM.Clear;
+procedure TStkFM.Clear;
 begin
 
 end;
 
-procedure TFM.ControlChange(number: Integer; Value: Single);
+procedure TStkFM.ControlChange(const number: Integer; const Value: Single);
 var
   norm: Single;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value); // * ONE_OVER_128;
 
-  if (number = __SK_Breath_) then // 2
-    SetControl1(norm)
-  else if (number = __SK_FootControl_) then // 4
-    SetControl2(norm)
-  else if (number = __SK_ModFrequency_) then // 11
-    SetModulationSpeed(norm * 12.0)
-  else if (number = __SK_ModWheel_) then // 1
-    SetModulationDepth(norm)
-  else if (number = __SK_AfterTouch_Cont_) then
-   begin // 128
-    //FAdsr[0].setTarget( norm );
-    FAdsr[1].setTarget(norm);
-    //FAdsr[2].setTarget( norm );
-    FAdsr[3].setTarget(norm);
-   end;
+  case Number of
+   CMidiBreath         : SetControlA(norm); // 2
+   CMidiFootControl    : SetControlB(norm); // 4
+   CMidiModFrequency   : SetModulationSpeed(norm * 12.0); // 11
+   CMidiModWheel       : SetModulationDepth(norm); //1
+   CMidiAfterTouchCont : // 128
+    begin
+     // FAdsr[0].SetTarget(norm);
+     FAdsr[1].SetTarget(norm);
+     // FAdsr[2].setTarget(norm);
+     FAdsr[3].SetTarget(norm);
+    end;
+  end;
 end;
 
-constructor TFM.Create(SampleRate: Single; Operators: Integer);
+constructor TStkFM.Create(const SampleRate: Single; const Operators: Integer = 4);
 var
   i: Integer;
   temp: Single;
 begin
   inherited Create(SampleRate);
-  if (FNOperators <= 0) then
-    FNOperators := 4;
+  if (FNOperators <= 0) then FNOperators := 4;
 
-  FTwoZero := TTwozero.Create(SampleRate);
-  FTwoZero.setB2(-1.0);
-  FTwoZero.SetGain(0.0);
+  FTwoZero := TStkTwozero.Create(SampleRate);
+  FTwoZero.SetB2(-1.0);
+  FTwoZero.Gain := 0.0;
 
-  FVibrato := TLfo.Create(SampleRate);
-  FVibrato.SetFrequency(6.0);
+  FVibrato := TStkLfo.Create(SampleRate);
+  FVibrato.Frequency := 6.0;
 
   for i := 0 to FNOperators - 1 do
    begin
     FRatios[i] := 1.0;
     FGains[i] := 1.0;
-    FAdsr[i] := TAdsr.Create(SampleRate);
-    ;
+    FAdsr[i] := TStkAdsr.Create(SampleRate);
    end;
 
   FModDepth := 0.0;
-  FControl1 := 1.0;
-  FControl2 := 1.0;
+  FControlA := 1.0;
+  FControlB := 1.0;
   FBaseFrequency := 440.0;
 
   temp := 1.0;
   for i := 99 downto 0 do
    begin
-    __TFM_gains[i] := temp;
+    FFmGains[i] := temp;
     temp := temp * 0.933033;
    end;
 
   temp := 1.0;
   for i := 15 downto 0 do
    begin
-    __TFM_susLevels[i] := temp;
+    FFmSusLevels[i] := temp;
     temp := temp * 0.707101;
    end;
 
   temp := 8.498186;
   for i := 0 to 31 do
    begin
-    __TFM_attTimes[i] := temp;
+    FFmAttTimes[i] := temp;
     temp := temp * 0.707101;
    end;
-
 end;
 
-destructor TFM.Destroy;
+destructor TStkFM.Destroy;
 var
   i: Integer;
 begin
-  inherited Destroy;
-  FVibrato.Free;
-  FTwoZero.Free;
-  for i := 0 to FNOperators - 1 do
-   begin
-    FAdsr[i].Free;
-    FWaves[i].Free;
-   end;
+ FreeAndNil(FVibrato);
+ FreeAndNil(FTwoZero);
+ for i := 0 to FNOperators - 1 do
+  begin
+   FreeAndNil(FAdsr[i]);
+   FreeAndNil(FWaves[i]);
+  end;
+ inherited Destroy;
 end;
 
-procedure TFM.KeyOff;
+procedure TStkFM.KeyOff;
 var
   i: Integer;
 begin
-  for i := 0 to FNOperators - 1 do
-    FAdsr[i].KeyOff;
+ for i := 0 to FNOperators - 1 do FAdsr[i].KeyOff;
 end;
 
-procedure TFM.KeyOn;
+procedure TStkFM.KeyOn;
 var
   i: Integer;
 begin
-  for i := 0 to FNOperators - 1 do
-    FAdsr[i].KeyOn;
+ for i := 0 to FNOperators - 1 do FAdsr[i].KeyOn;
 end;
 
-procedure TFM.LoadWave(waveIndex: Integer; filename: string);
+procedure TStkFM.LoadWave(const WaveIndex: Integer; const FileName: TFileName);
 begin
-  FWaves[waveIndex] := TWaveplayer.Create(srate, filename);
+  FWaves[WaveIndex] := TStkWaveplayer.Create(SampleRate, Filename);
 end;
 
-procedure TFM.NoteOff(amplitude: Single);
+procedure TStkFM.NoteOff(const Amplitude: Single);
 begin
   KeyOff;
 end;
 
-procedure TFM.SetControl1(cVal: Single);
+procedure TStkFM.SetControlA(const Value: Single);
 begin
-  FControl1 := cVal * 2.0;
+ FControlA := Value;
 end;
 
-procedure TFM.SetControl2(cVal: Single);
+procedure TStkFM.SetControlB(const Value: Single);
 begin
-  FControl2 := cVal * 2.0;
+ FControlB := Value;
 end;
 
-procedure TFM.SetFrequency(frequency: Single);
+procedure TStkFM.SetFrequency(const Value: Single);
+begin
+ if FBaseFrequency <> Value then
+  begin
+   FBaseFrequency := Value;
+   FrequencyChanged;
+  end;
+end;
+
+procedure TStkFM.FrequencyChanged;
 var
   i: Integer;
 begin
-  FBaseFrequency := frequency;
-  for i := 0 to FNOperators - 1 do
-    FWaves[i].SetFrequency(FBaseFrequency * FRatios[i]);
+ for i := 0 to FNOperators - 1
+  do FWaves[i].Frequency := FBaseFrequency * FRatios[i];
 end;
 
-procedure TFM.SetGain(waveIndex: Integer; gain: Single);
+function TStkFM.GetGain(WaveIndex: Integer): Single;
 begin
-  if (waveIndex < 0) then
-    exit
-  else if (waveIndex >= FNOperators) then
-    exit;
-  FGains[waveIndex] := gain;
+ if WaveIndex in [0..FNOperators]
+  then result := FGains[WaveIndex]
+  else result := 0;
 end;
 
-procedure TFM.SetModulationDepth(mDepth: Single);
+function TStkFM.GetModulationSpeed: Single;
 begin
-  FModDepth := mDepth;
+ result := FVibrato.Frequency;
 end;
 
-procedure TFM.SetModulationSpeed(mSpeed: Single);
+function TStkFM.GetRatio(WaveIndex: Integer): Single;
 begin
-  FVibrato.SetFrequency(mSpeed);
+  if WaveIndex in [0..FNOperators]
+   then result := FRatios[WaveIndex]
+   else result := 0;
 end;
 
-procedure TFM.SetRatio(waveIndex: Integer; ratio: Single);
+procedure TStkFM.SetGain(WaveIndex: Integer; Gain: Single);
 begin
-  if (waveIndex < 0) or (waveIndex >= FNOperators) then
-    exit;
-  FRatios[waveIndex] := ratio;
-  if (ratio > 0.0) then
-    FWaves[waveIndex].SetFrequency(FBaseFrequency * ratio)
-  else
-    FWaves[waveIndex].SetFrequency(ratio);
+ if not (WaveIndex in [0..FNOperators])
+  then raise Exception.CreateFmt('WaveIndex out of bounds (%d)', [WaveIndex]);
+ if FGains[WaveIndex] <> Gain then
+  begin
+   FGains[WaveIndex] := Gain;
+   GainsChanged;
+  end;
 end;
 
-function TFM.Tick: Single;
+procedure TStkFM.GainsChanged;
+begin
+ // nothing todo here yet
+end;
+
+procedure TStkFM.SetModulationDepth(const Value: Single);
+begin
+  FModDepth := Value;
+end;
+
+procedure TStkFM.SetModulationSpeed(const Value: Single);
+begin
+  FVibrato.Frequency := Value;
+end;
+
+procedure TStkFM.SetRatio(WaveIndex: Integer; ratio: Single);
+begin
+ if not (WaveIndex in [0..FNOperators])
+  then raise Exception.CreateFmt('WaveIndex out of bounds (%d)', [WaveIndex]);
+
+ if FRatios[WaveIndex] <> Ratio then
+  begin
+   FRatios[WaveIndex] := Ratio;
+   RatioChanged(WaveIndex);
+  end;
+end;
+
+procedure TStkFM.RatioChanged(const WaveIndex: Integer);
+begin
+ if (FRatios[WaveIndex] > 0.0)
+  then FWaves[WaveIndex].Frequency := FBaseFrequency * FRatios[WaveIndex]
+  else FWaves[WaveIndex].Frequency := FRatios[WaveIndex];
+end;
+
+
+function TStkFM.Tick: Single;
 begin
   Result := 0;
 end;

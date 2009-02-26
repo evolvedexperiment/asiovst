@@ -54,7 +54,7 @@ type
     function Tick(const sample: Single): Single; overload; override;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function tick(vector: pSingle; vectorSize: longint): PSingle; overload;
+    procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
   end;
 
 implementation
@@ -120,32 +120,25 @@ begin
 end;
 
 function TStkTwoZero.Tick(const Sample: Single): Single;
-var
-  p: pSingle;
 begin
-  inputs^ := gain * sample;
+ FInputs^[0] := FGain * Sample;
 
-  outputs^ := index(b, 2) * index(inputs, 2) + index(b, 1) * index(inputs, 1) + b^ * inputs^;
-  p := pindex(inputs, 2);
-  p^ := index(inputs, 1);
-  Dec(p);
-  p^ := inputs^;
+ FOutputs^[0] := PDAV4SingleArray(FB)^[2] * PDAV4SingleArray(FInputs)^[2] +
+                 PDAV4SingleArray(FB)^[1] * PDAV4SingleArray(FInputs)^[1] +
+                 PDAV4SingleArray(FB)^[0] * PDAV4SingleArray(FInputs)^[0];
 
-  Result := outputs^;
+ Move(PDAV4SingleArray(FInputs)^[1],
+      PDAV4SingleArray(FInputs)^[0], 2 * SizeOf(Single));
+
+ Result := FOutputs^[0];
 end;
 
-function TStkTwoZero.tick(vector: PSingle; vectorSize: longint): PSingle;
+procedure TStkTwoZero.Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  i: integer;
-  p: pSingle;
+  Sample: Integer;
 begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := tick(p^);
-    Inc(p);
-   end;
-  Result := vector;
+ for Sample := 0 to SampleFrames - 1
+  do Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

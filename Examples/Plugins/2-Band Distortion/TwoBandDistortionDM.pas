@@ -8,6 +8,7 @@ uses
 
 type
   TTwoBandDistortionDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -17,7 +18,6 @@ type
     procedure ParamLowDistChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHighDistChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
   private
     FSemaphore      : Integer;
     FLinkwitzRiley  : array [0..1] of TLinkwitzRiley;

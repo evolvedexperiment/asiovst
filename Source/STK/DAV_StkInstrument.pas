@@ -17,19 +17,18 @@ type
   TStkInstrument = class(TStk)
   protected
     FLastOutput: Single;
-  public
-    // Start a note with the given Frequency and Amplitude.
-    procedure NoteOn(Frequency, Amplitude: Single); virtual; abstract;
-
-    // Stop a note with the given Amplitude (speed of decay).
-    procedure NoteOff(Amplitude: Single); virtual; abstract;
-
-    // Perform the control change specified by number and value (0.0 - 128.0).
-    procedure ControlChange(Number: Integer; Value: Single); virtual; abstract;
 
     // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(Frequency: Single); virtual; abstract;
+    procedure SetFrequency(const Frequency: Single); virtual; abstract;
+  public
+    // Start a note with the given Frequency and Amplitude.
+    procedure NoteOn(const Frequency, Amplitude: Single); virtual; abstract;
 
+    // Stop a note with the given Amplitude (speed of decay).
+    procedure NoteOff(const Amplitude: Single); virtual; abstract;
+
+    // Perform the control change specified by number and value (0.0 - 128.0).
+    procedure ControlChange(const Number: Integer; const Value: Single); virtual; abstract;
 
     // Compute one output sample.
     function Tick: Single; overload; virtual;
