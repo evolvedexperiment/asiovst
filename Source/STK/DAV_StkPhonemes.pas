@@ -12,35 +12,36 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
-uses DAV_Stk;
+uses
+  DAV_StkCommon;
 
 type
-  TPhonemes = class(tstk)
+  TStkPhonemes = class(TStk)
   public
-    constructor Create(sr: my_float);
-    destructor Destroy;
+    constructor Create(const SampleRate: Single); override;
+    destructor Destroy; override;
 
-    // Returns the phoneme name for the given index (0-31).
-    function Name(index: integer): string;
+    // Returns the phoneme name for the given Index (0-31).
+    function Name(const Index: Integer): string;
 
-    // Returns the voiced component gain for the given phoneme index (0-31).
-    function voiceGain(index: integer): my_float;
+    // Returns the voiced component gain for the given phoneme Index (0-31).
+    function VoiceGain(const Index: Integer): Single;
 
-    // Returns the unvoiced component gain for the given phoneme index (0-31).
-    function noiseGain(index: integer): my_float;
+    // Returns the unvoiced component gain for the given phoneme Index (0-31).
+    function NoiseGain(const Index: Integer): Single;
 
-    // Returns the formant frequency for the given phoneme index (0-31) and partial (0-3).
-    function formantFrequency(index, partial: integer): my_float;
+    // Returns the formant frequency for the given phoneme Index (0-31) and Partial (0-3).
+    function FormantFrequency(const Index, Partial: Integer): Single;
 
-    // Returns the formant radius for the given phoneme index (0-31) and partial (0-3).
-    function formantRadius(index, partial: integer): my_float;
+    // Returns the formant radius for the given phoneme Index (0-31) and Partial (0-3).
+    function FormantRadius(const Index, Partial: Integer): Single;
 
-    // Returns the formant gain for the given phoneme index (0-31) and partial (0-3).
-    function formantGain(index, partial: integer): my_float;
+    // Returns the formant gain for the given phoneme Index (0-31) and Partial (0-3).
+    function FormantGain(const Index, Partial: Integer): Single;
  end;
 
 const
-  phonemeNames: array[0..31] of string[3] =
+  CPhonemeNames: array[0..31] of string[3] =
     ('eee', 'ihh', 'ehh', 'aaa',
     'ahh', 'aww', 'ohh', 'uhh',
     'uuu', 'ooo', 'rrr', 'lll',
@@ -50,8 +51,7 @@ const
     'bbb', 'ddd', 'jjj', 'ggg',
     'vvv', 'zzz', 'thz', 'zhh');
 
-const
-  phonemeGains: array[0..31, 0..1] of my_float =
+  CPhonemeGains: array[0..31, 0..1] of Single =
     ((1.0, 0.0),    // eee
     (1.0, 0.0),    // ihh
     (1.0, 0.0),    // ehh
@@ -92,8 +92,7 @@ const
     (1.0, 1.0),    // thz
     (1.0, 1.0));     // zhh
 
-const
-  phonemeParameters: array[0..31, 0..3, 0..2] of my_float =
+  CPhonemeParameters: array[0..31, 0..3, 0..2] of Single =
     (((273, 0.996, 10),       // eee (beet)
     (2086, 0.945, -16),
     (2754, 0.979, -12),
@@ -232,62 +231,62 @@ const
 
 implementation
 
-constructor TPhonemes.Create;
+constructor TStkPhonemes.Create;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
 end;
 
-destructor TPhonemes.Destroy;
+destructor TStkPhonemes.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TPhonemes.Name(index: integer): string;
+function TStkPhonemes.Name(const Index: Integer): string;
 begin
-  if (index > 31) then
+  if (Index > 31) then
     Result := ''
   else
-    Result := phonemeNames[index];
+    Result := CPhonemeNames[Index];
 end;
 
-function TPhonemes.voiceGain;
+function TStkPhonemes.VoiceGain;
 begin
-  if (index > 31) then
+  if (Index > 31) then
     Result := 0.0
   else
-    Result := phonemeGains[index][0];
+    Result := CPhonemeGains[Index][0];
 end;
 
-function TPhonemes.noiseGain;
+function TStkPhonemes.NoiseGain;
 begin
-  if (index > 31) then
+  if (Index > 31) then
     Result := 0.0
   else
-    Result := phonemeGains[index][1];
+    Result := CPhonemeGains[Index][1];
 end;
 
-function TPhonemes.formantFrequency;
+function TStkPhonemes.FormantFrequency;
 begin
-  if (partial > 3) or (index > 31) then
+  if (Partial > 3) or (Index > 31) then
     Result := 0
   else
-    Result := phonemeParameters[index][partial][0];
+    Result := CPhonemeParameters[Index][Partial][0];
 end;
 
-function TPhonemes.formantRadius;
+function TStkPhonemes.FormantRadius;
 begin
-  if (partial > 3) or (index > 31) then
+  if (Partial > 3) or (Index > 31) then
     Result := 0
   else
-    Result := phonemeParameters[index][partial][1];
+    Result := CPhonemeParameters[Index][Partial][1];
 end;
 
-function TPhonemes.formantGain;
+function TStkPhonemes.FormantGain;
 begin
-  if (partial > 3) or (index > 31) then
+  if (Partial > 3) or (Index > 31) then
     Result := 0
   else
-    Result := phonemeParameters[index][partial][2];
+    Result := CPhonemeParameters[Index][Partial][2];
 end;
 
 end.

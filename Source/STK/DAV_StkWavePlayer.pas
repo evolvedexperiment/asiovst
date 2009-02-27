@@ -115,7 +115,7 @@ begin
     FSampleData := p;
     FSize := sz;
     FInvSize := 1 / FSize;
-    FLength := FSize / SampleRate;
+    FLength := FSize  * FSampleRateInv;
     FLoopstart := 0;
     FLoopend := FSize - 1;
     FStart := 0;

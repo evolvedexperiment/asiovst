@@ -25,14 +25,14 @@ type
     friction to vary with direction, use a non-zero
     value for the FOffSet.  The default value is zero.
   }
-    procedure SetOffset(aValue: Single);
+    procedure SetOffset(const Value: Single);
 
     // Set the table FSlope value.
   {
    The table FSlope controls the width of the friction
    pulse, which is related to bow force.
   }
-    procedure setSlope(aValue: Single);
+    procedure SetSlope(aValue: Single);
 
   protected
     FOffSet     : Single;
@@ -56,6 +56,8 @@ type
     function Tick(vector: PSingle; vectorSize: longint): PSingle; overload;
 
     property LastOutput: Single read FLastOutput;
+    property Offset: Single read FOffSet write SetOffset;
+    property Slope: Single read FSlope write SetSlope;
   end;
 
 implementation
@@ -74,10 +76,10 @@ end;
 
 procedure TStkBowTable.setOffset;
 begin
-  FOffSet := aValue;
+  FOffSet := Value;
 end;
 
-procedure TStkBowTable.setSlope;
+procedure TStkBowTable.SetSlope;
 begin
   FSlope := aValue;
 end;

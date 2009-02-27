@@ -15,25 +15,25 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_Filter;
+  DAV_Common, DAV_StkCommon, DAV_StkFilter;
 
 type
-  TPoleZero = class(TFilter)
+  TStkPoleZero = class(TStkFilter)
   public
-    constructor Create(SampleRate: Single); override;
+    constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
     // Clears the internal states of the filter.
-    procedure Clear;
+    procedure Clear; override;
 
     // Set the b[0] coefficient value.
-    procedure setB0(b0: Single);
+    procedure setB0(const b0: Single);
 
     // Set the b[1] coefficient value.
-    procedure setB1(b1: Single);
+    procedure setB1(const b1: Single);
 
     // Set the a[1] coefficient value.
-    procedure setA1(a1: Single);
+    procedure setA1(const a1: Single);
 
     // Set the filter for allpass behavior using \e coefficient.
   {
@@ -41,7 +41,7 @@ type
     which has unity gain at all frequencies.  Note that the \e
     coefficient magnitude must be less than one to maintain stability.
   }
-    procedure setAllpass(coefficient: Single);
+    procedure SetAllpass(const Coefficient: Single);
 
     // Create a DC blocking filter with the given pole position in the z-plane.
   {
@@ -49,31 +49,23 @@ type
     at z=1, to create a DC blocking filter.  \e thePole should be
     close to one to minimize low-frequency attenuation.
   }
-    procedure setBlockZero(thePole: Single = 0.99);
+    procedure setBlockZero(const thePole: Single = 0.99);
 
     // Set the filter gain.
   {
     The gain is applied at the filter input and does not affect the
     coefficient values.  The default gain value is 1.0.
    }
-    procedure setGain(theGain: Single);
-
-    // Return the current filter gain.
-    function getGain: Single;
-
-    // Return the last computed output value.
-    function lastOut: Single;
-
     // Input one sample to the filter and return one output.
-    function tick(sample: Single): Single; overload;
+    function Tick(const Input: Single): Single; overload; override;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT; overload;
+    procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload; 
   end;
 
 implementation
 
-constructor TPoleZero.Create;
+constructor TStkPoleZero.Create(const SampleRate: Single);
 var
   a, b: array[0..1] of Single;
 begin
@@ -86,109 +78,64 @@ begin
   inherited setCoefficients(2, @B, 2, @A);
 end;
 
-destructor TPoleZero.Destroy;
+destructor TStkPoleZero.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TPoleZero.Clear;
+procedure TStkPoleZero.Clear;
 begin
   inherited Clear;
 end;
 
-procedure TPoleZero.setB0;
+procedure TStkPoleZero.setB0(const b0: Single);
+begin
+  FB^[0] := b0;
+end;
+
+procedure TStkPoleZero.setB1(const b1: Single);
+begin
+ PDav4SingleArray(FB)^[1] := b1;
+end;
+
+procedure TStkPoleZero.setA1(const a1: Single);
+begin
+ PDav4SingleArray(FA)^[1] := a1;
+end;
+
+procedure TStkPoleZero.SetAllpass(const Coefficient: Single);
+begin
+  FB^[0] := Coefficient;
+  PDav4SingleArray(FB)^[1] := 1.0;
+  FA^[0] := 1.0; // just in case
+  PDav4SingleArray(FA)^[1] := Coefficient;
+end;
+
+procedure TStkPoleZero.SetBlockZero(const thePole: Single = 0.99);//0.99
+begin
+  fB^[0] := 1.0;
+  PDav4SingleArray(FB)^[1] := -1.0;
+  FA^[0] := 1.0; // just in case
+  PDav4SingleArray(FA)^[1] := -thePole;
+end;
+
+function TStkPoleZero.Tick(const Input: Single): Single;
+begin
+  FInputs^[0] := FGain * Input;
+  FOutputs^[0] := fB^[0] * FInputs^[0] +
+    PDav4SingleArray(FB)^[1] * PDav4SingleArray(FInputs)^[1] -
+    PDav4SingleArray(FA)^[1] * PDav4SingleArray(FOutputs)^[1];
+  PDav4SingleArray(FInputs)^[1] := FInputs^[0];
+  PDav4SingleArray(FOutputs)^[1] := FOutputs^[0];
+  Result := FOutputs^[0];
+end;
+
+procedure TStkPoleZero.Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  p: pmy_float;
+  Sample: integer;
 begin
-  p := pindex(b, 0);
-  p^ := b0;
-end;
-
-procedure TPoleZero.setB1;
-var
-  p: pmy_float;
-begin
-  p := pindex(b, 1);
-  p^ := b1;
-end;
-
-procedure TPoleZero.setA1;
-var
-  p: pmy_float;
-begin
-  p := pindex(a, 1);
-  p^ := a1;
-end;
-
-procedure TPoleZero.setAllpass;
-var
-  p: pmy_float;
-begin
-  p := b;
-  p^ := coefficient;
-  Inc(p);
-  p^ := 1.0;
-  p := a;
-  p^ := 1.0; // just in case
-  Inc(p);
-  p^ := coefficient;
-end;
-
-procedure TPoleZero.setBlockZero;//0.99
-var
-  p: pmy_float;
-begin
-  p := b;
-  p^ := 1.0;
-  Inc(p);
-  p^ := -1.0;
-  p := a;
-  p^ := 1.0; // just in case
-  Inc(p);
-  p^ := -thePole;
-end;
-
-procedure TPoleZero.setGain;
-begin
-  inherited setGain(theGain);
-end;
-
-function TPoleZero.getGain: Single;
-begin
-  Result := inherited getGain;
-end;
-
-function TPoleZero.lastOut: Single;
-begin
-  Result := inherited lastOut;
-end;
-
-function TPoleZero.tick(sample: Single): Single;
-var
-  p: pmy_float;
-begin
-  inputs^ := gain * sample;
-  outputs^ := b^ * inputs^ + index(b, 1) * index(inputs, 1) -
-    index(a, 1) * index(outputs, 1);
-  p := pindex(inputs, 1);
-  p^ := inputs^;
-  p := pindex(outputs, 1);
-  p^ := outputs^;
-  Result := outputs^;
-end;
-
-function TPoleZero.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
-var
-  i: integer;
-  p: pmy_float;
-begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := tick(p^);
-    Inc(p);
-   end;
-  Result := vector;
+  for Sample := 0 to SampleFrames - 1
+   do Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

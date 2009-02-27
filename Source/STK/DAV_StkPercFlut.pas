@@ -14,7 +14,7 @@ unit DAV_StkPercFlut;
     - Modulator Crossfade = 4
     - LFO Speed = 11
     - LFO Depth = 1
-    - ADSR 2 & 4 Target = 128
+    - FAdsr 2 & 4 Target = 128
 
   The basic Chowning/Stanford FM patent expired in 1995, but there exist
   follow-on patents, mostly assigned to Yamaha. If you are of the type who
@@ -26,57 +26,60 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkFm, DAV_StkWavePlayer;
+  DAV_Common, DAV_StkCommon, DAV_StkFm, DAV_StkWavePlayer;
 
 type
   TStkPercFlut = class(TStkFM)
-  public
-    // Class constructor.
-    constructor Create(SampleRate: Single);
-
-    // Class destructor.
-    destructor Destroy;
+  protected
 
     // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(Frequency: Single);
+    procedure SetFrequency(const Frequency: Single); override;
 
-    // Start a note with the given Frequency and amplitude.
-    procedure NoteOn(Frequency, amplitude: Single);
+  public
+    // Class constructor.
+    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
+
+    // Class destructor.
+    destructor Destroy; override;
+
+    // Start a note with the given Frequency and Amplitude.
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Compute one output sample.
-    function Tick: Single;
+    function Tick: Single; override;
   end;
 
 implementation
 
-constructor TStkPercFlut.Create;
-var
-  i: integer;
-begin
-  inherited Create(SampleRate);
-  waves[0] := TWavePlayer.Create(SampleRate, 'sinewave.wav');
-  waves[1] := TWavePlayer.Create(SampleRate, 'sinewave.wav');
-  waves[2] := TWavePlayer.Create(SampleRate, 'sinewave.wav');
-  waves[3] := TWavePlayer.Create(SampleRate, 'fwavblnk.wav');
-  waves[0].SetOneShot(False);
-  waves[1].SetOneShot(False);
-  waves[2].SetOneShot(False);
-  waves[3].SetOneShot(False);
+uses
+  SysUtils;
 
-  setRatio(0, 1.50 * 1.000);
-  setRatio(1, 3.00 * 0.995);
-  setRatio(2, 2.99 * 1.005);
-  setRatio(3, 6.00 * 0.997);
-  gains[0] := __TFM_gains[99];
-  gains[1] := __TFM_gains[71];
-  gains[2] := __TFM_gains[93];
-  gains[3] := __TFM_gains[85];
-  adsr[0].setAllTimes(0.05, 0.05, __TFM_susLevels[14], 0.05);
-  adsr[1].setAllTimes(0.02, 0.50, __TFM_susLevels[13], 0.5);
-  adsr[2].setAllTimes(0.02, 0.30, __TFM_susLevels[11], 0.05);
-  adsr[3].setAllTimes(0.02, 0.05, __TFM_susLevels[13], 0.01);
-  twozero.setGain(0.0);
-  modDepth := 0.005;
+constructor TStkPercFlut.Create;
+begin
+  inherited Create(SampleRate, Operators);
+  FWaves[0] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[1] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[2] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[3] := TStkWavePlayer.Create(SampleRate, 'fwavblnk.wav');
+  FWaves[0].OneShot := False;
+  FWaves[1].OneShot := False;
+  FWaves[2].OneShot := False;
+  FWaves[3].OneShot := False;
+
+  Ratio[0] :=  1.50 * 1.000;
+  Ratio[1] :=  3.00 * 0.995;
+  Ratio[2] :=  2.99 * 1.005;
+  Ratio[3] :=  6.00 * 0.997;
+  FGains[0] := FFmGains[99];
+  FGains[1] := FFmGains[71];
+  FGains[2] := FFmGains[93];
+  FGains[3] := FFmGains[85];
+  FAdsr[0].SetAllTimes(0.05, 0.05, FFmSusLevels[14], 0.05);
+  FAdsr[1].SetAllTimes(0.02, 0.50, FFmSusLevels[13], 0.5);
+  FAdsr[2].SetAllTimes(0.02, 0.30, FFmSusLevels[11], 0.05);
+  FAdsr[3].SetAllTimes(0.02, 0.05, FFmSusLevels[13], 0.01);
+  FTwozero.Gain := 0.0;
+  FModDepth := 0.005;
 end;
 
 destructor TStkPercFlut.Destroy;
@@ -86,15 +89,15 @@ end;
 
 procedure TStkPercFlut.SetFrequency;
 begin
-  baseFrequency := Frequency;
+  FBaseFrequency := Frequency;
 end;
 
 procedure TStkPercFlut.NoteOn;
 begin
-  gains[0] := amplitude * __TFM_gains[99] * 0.5;
-  gains[1] := amplitude * __TFM_gains[71] * 0.5;
-  gains[2] := amplitude * __TFM_gains[93] * 0.5;
-  gains[3] := amplitude * __TFM_gains[85] * 0.5;
+  FGains[0] := Amplitude * FFmGains[99] * 0.5;
+  FGains[1] := Amplitude * FFmGains[71] * 0.5;
+  FGains[2] := Amplitude * FFmGains[93] * 0.5;
+  FGains[3] := Amplitude * FFmGains[85] * 0.5;
   SetFrequency(Frequency);
   keyOn;
 end;
@@ -103,22 +106,22 @@ function TStkPercFlut.Tick: Single;
 var
   temp: Single;
 begin
-  temp := vibrato.Tick * modDepth * 0.2;
-  waves[0].SetFrequency(baseFrequency * (1.0 + temp) * ratios[0]);
-  waves[1].SetFrequency(baseFrequency * (1.0 + temp) * ratios[1]);
-  waves[2].SetFrequency(baseFrequency * (1.0 + temp) * ratios[2]);
-  waves[3].SetFrequency(baseFrequency * (1.0 + temp) * ratios[3]);
-  waves[3].addPhaseOffset(twozero.lastOut);
-  temp := gains[3] * adsr[3].Tick * waves[3].Tick;
-  twozero.Tick(temp);
-  waves[2].addPhaseOffset(temp);
-  temp := (1.0 - (control2 * 0.5)) * gains[2] * adsr[2].Tick * waves[2].Tick;
-  temp := temp + control2 * 0.5 * gains[1] * adsr[1].Tick * waves[1].Tick;
-  temp := temp * control1;
-  waves[0].addPhaseOffset(temp);
-  temp := gains[0] * adsr[0].Tick * waves[0].Tick;
-  lastOutput := temp * 0.5;
-  Result := lastOutput;
+  temp := FVibrato.Tick * FModDepth * 0.2;
+  FWaves[0].Frequency := FBaseFrequency * (1.0 + temp) * FRatios[0];
+  FWaves[1].Frequency := FBaseFrequency * (1.0 + temp) * FRatios[1];
+  FWaves[2].Frequency := FBaseFrequency * (1.0 + temp) * FRatios[2];
+  FWaves[3].Frequency := FBaseFrequency * (1.0 + temp) * FRatios[3];
+  FWaves[3].addPhaseOffset(FTwozero.LastOutput);
+  temp := FGains[3] * FAdsr[3].Tick * FWaves[3].Tick;
+  FTwozero.Tick(temp);
+  FWaves[2].addPhaseOffset(temp);
+  temp := (1.0 - FControlB) * FGains[2] * FAdsr[2].Tick * FWaves[2].Tick;
+  temp := temp + FControlB * FGains[1] * FAdsr[1].Tick * FWaves[1].Tick;
+  temp := temp * FControlA;
+  FWaves[0].addPhaseOffset(temp);
+  temp := FGains[0] * FAdsr[0].Tick * FWaves[0].Tick;
+  FLastOutput := temp * 0.5;
+  Result := FLastOutput;
 end;
 
 end.

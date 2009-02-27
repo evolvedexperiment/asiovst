@@ -13,58 +13,58 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkWavePlayer, DAV_StkInstrument, DAV_StkAdsr, DAV_StkOnePole;
+  DAV_Common, DAV_StkCommon, DAV_StkWavePlayer, DAV_StkInstrument, DAV_StkAdsr,
+  DAV_StkOnePole;
 
 type
-  TStkSampler = class(TStkInstrument)
+  TStkSampler = class(TStkControlableInstrument)
   protected
-    FADSR: TAdsr;
-    FAttacks: array[0..4] of TWavePlayer;
-    FLoops: array[0..4] of TWavePlayer;
-    FFilter: TOnepole;
-    FAttackGain, FLoopGain, FBaseFrequency: Single;
-    FLoopratios, FAttackRatios: array[0..4] of Single;
-    FWhichOne: Integer;
+    FADSR          : TStkAdsr;
+    FAttacks       : array[0..4] of TStkWavePlayer;
+    FLoops         : array[0..4] of TStkWavePlayer;
+    FFilter        : TStkOnepole;
+    FAttackGain    : Single;
+    FLoopGain      : Single;
+    FBaseFrequency : Single;
+    FLoopratios    : Single;
+    FAttackRatios  : array[0..4] of Single;
+    FWhichOne      : Integer;
   public
     // Default constructor.
-    constructor Create(SampleRate: Single);
+    constructor Create(const SampleRate: Single); override;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Reset and clear all internal state.
-    procedure Clear;
-
-    // Set instrument parameters for a particular Frequency.
-    procedure setFrequency(Frequency: Single);
+    procedure Clear; virtual;
 
     // Initiate the envelopes with a key-on event and reset the attack waves.
-    procedure KeyOn;
+    procedure KeyOn; virtual;
 
     // Signal a key-off event to the envelopes.
-    procedure KeyOff;
+    procedure KeyOff; virtual;
 
     // Stop a note with the given amplitude (speed of decay).
-    procedure NoteOff(amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function Tick: Single;
-
-    // Perform the control change specified by \e Number and \e value (0.0 - 128.0).
-    procedure ControlChange(Number: Integer; Value: Single);
+    function Tick: Single; override;
   end;
 
 implementation
 
+uses
+  SysUtils;
 
-constructor TStkSampler.Create;
+constructor TStkSampler.Create(const SampleRate: Single);
 begin
   inherited Create(SampleRate);
   // We don't make the waves here yet, because
   // we don't know what they will be.
-  FADSR := TAdsr.Create(srate);
+  FADSR := TStkAdsr.Create(SampleRate);
   FBaseFrequency := 440.0;
-  FFilter := TOnepole.Create(srate);
+  FFilter := TStkOnepole.Create(SampleRate);
   FAttackGain := 0.25;
   FLoopGain := 0.25;
   FWhichOne := 0;
@@ -72,9 +72,9 @@ end;
 
 destructor TStkSampler.Destroy;
 begin
-  inherited Destroy;
-  FADSR.Free;
-  FFilter.Free;
+ FreeAndNil(FADSR);
+ FreeAndNil(FFilter);
+ inherited Destroy;
 end;
 
 procedure TStkSampler.KeyOn;
@@ -95,26 +95,15 @@ end;
 
 function TStkSampler.Tick: Single;
 begin
-  lastOutput := FAttackGain * FAttacks[FWhichOne].Tick;
-  lastOutput := lastoutput + FLoopGain * FLoops[FWhichOne].Tick;
-  lastOutput := FFilter.Tick(lastOutput);
-  lastOutput := lastoutput * FADSR.Tick;
-  Result := lastOutput;
+  FLastOutput := FAttackGain * FAttacks[FWhichOne].Tick;
+  FLastOutput := FLastOutput + FLoopGain * FLoops[FWhichOne].Tick;
+  FLastOutput := FFilter.Tick(FLastOutput) * FADSR.Tick;
+  Result := FLastOutput;
 end;
 
 procedure TStkSampler.Clear;
 begin
-
-end;
-
-procedure TStkSampler.ControlChange(Number: Integer; Value: Single);
-begin
-
-end;
-
-procedure TStkSampler.setFrequency(Frequency: Single);
-begin
-
+ // nothing in here yet
 end;
 
 end.

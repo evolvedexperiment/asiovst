@@ -19,55 +19,73 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkInstrument, DAV_StkDelayl, DAV_StkDelaya, DAV_StkOneZero;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayl, DAV_StkDelaya,
+  DAV_StkOneZero;
 
 type
-  TStkPluckTwo = class(TStkInstrument)
-  protected
-    FDelayLine, FDelayline2: TDelaya;
-    FCombDelay: TDelayl;
-    FFilter, FFilter2: TOneZero;
-    FLength: Longint;
-    FLoopGain, FBaseLoopGain, FLastFrequency, FLastLength,
-    FDetuning, FPluckAmplitude, FPluckPosition: Single;
-  public
-    // Class constructor, taking the lowest desired playing Frequency.
-    constructor Create(SampleRate, lowestFrequency: Single);
-
-    // Class destructor.
-    destructor Destroy;
-
-    // Reset and clear all internal state.
-    procedure Clear;
-
-    // Set instrument parameters for a particular Frequency.
-    procedure setFrequency(Frequency: Single);
-
-    // Detune the two strings by the given factor.  A value of 1.0 produces unison strings.
-    procedure setDetune(detune: Single);
-
-    // Efficient combined setting of Frequency and FDetuning.
-    procedure setFreqAndDetune(Frequency, detune: Single);
-
-    // Set the pluck or "excitation" position along the string (0.0 - 1.0).
-    procedure setPluckPosition(position: Single);
-
+  TStkPluckTwo = class(TStkControlableInstrument)
+  private
     // Set the base loop gain.
   {
     The actual loop gain is set according to the Frequency.
     Because of high-Frequency loop FFilter roll-off, higher
     Frequency settings have greater loop gains.
   }
-    procedure setBaseLoopGain(aGain: Single);
+    procedure SetBaseLoopGain(const Value: Single);
+
+    // Detune the two strings by the given factor.  A value of 1.0 produces unison strings.
+    procedure SetDetune(const Value: Single);
+
+    // Set the pluck or "excitation" position along the string (0.0 - 1.0).
+    procedure SetPluckPosition(const Value: Single);
+  protected
+    FDelayLine      : TStkDelayA;
+    FDelayline2     : TStkDelayA;
+    FCombDelay      : TStkDelayl;
+    FFilter         : TStkOneZero;
+    FFilter2        : TStkOneZero;
+    FLength         : Longint;
+    FLoopGain       : Single;
+    FBaseLoopGain   : Single;
+    FLastFrequency  : Single;
+    FLastLength     : Single;
+    FDetuning       : Single;
+    FPluckAmplitude : Single;
+    FPluckPosition  : Single;
+
+    // Set instrument parameters for a particular Frequency.
+    procedure SetFrequency(const Value: Single); override;
+
+    procedure FrequencyChanged; virtual;
+    procedure DetuneChanged; virtual;
+  public
+    // Class constructor, taking the lowest desired playing Frequency.
+    constructor Create(const SampleRate, lowestFrequency: Single); reintroduce; virtual;
+
+    // Class destructor.
+    destructor Destroy; override;
+
+    // Reset and clear all internal state.
+    procedure Clear;
+
+    // Efficient combined setting of Frequency and FDetuning.
+    procedure SetFreqAndDetune(const Frequency, Detune: Single);
 
     // Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Virtual (abstract) tick function is implemented by subclasses.
-    function tick: Single;
+    function Tick: Single; override;
+
+    property BaseLoopGain: Single read FBaseLoopGain write SetBaseLoopGain;
+    property Detune: Single read FDetuning write SetDetune;
+    property PluckPosition: Single read FPluckPosition write SetPluckPosition;
   end;
 
 implementation
+
+uses
+  SysUtils;
 
 constructor TStkPluckTwo.Create;
 begin
@@ -75,11 +93,11 @@ begin
   FLength := round(SampleRate / lowestFrequency + 1);
   FBaseLoopGain := 0.995;
   FLoopGain := 0.999;
-  FDelayLine := TDelaya.Create(SampleRate, (FLength / 2.0), FLength);
-  FDelayline2 := TDelaya.Create(SampleRate, (FLength / 2.0), FLength);
-  FCombDelay := TDelayl.Create(SampleRate, (FLength / 2.0), FLength);
-  FFilter := TOneZero.Create(SampleRate);
-  FFilter2 := TOneZero.Create(SampleRate);
+  FDelayLine := TStkDelayA.Create(SampleRate, (FLength / 2.0), FLength);
+  FDelayline2 := TStkDelayA.Create(SampleRate, (FLength / 2.0), FLength);
+  FCombDelay := TStkDelayl.Create(SampleRate, (FLength / 2.0), FLength);
+  FFilter := TStkOneZero.Create(SampleRate);
+  FFilter2 := TStkOneZero.Create(SampleRate);
   FPluckAmplitude := 0.3;
   FPluckPosition := 0.4;
   FDetuning := 0.995;
@@ -89,12 +107,12 @@ end;
 
 destructor TStkPluckTwo.Destroy;
 begin
-  inherited Destroy;
-  FDelayLine.Free;
-  FDelayline2.Free;
-  FCombDelay.Free;
-  FFilter.Free;
-  FFilter2.Free;
+ FreeAndNil(FDelayLine);
+ FreeAndNil(FDelayline2);
+ FreeAndNil(FCombDelay);
+ FreeAndNil(FFilter);
+ FreeAndNil(FFilter2);
+ inherited Destroy;
 end;
 
 procedure TStkPluckTwo.Clear;
@@ -106,73 +124,81 @@ begin
   FFilter2.Clear;
 end;
 
-procedure TStkPluckTwo.setFrequency;
+procedure TStkPluckTwo.SetFrequency(const Value: Single);
+begin
+ if FLastFrequency <> Value then
+  begin
+   FLastFrequency := Value;
+   if (FLastFrequency <= 0.0)
+    then FLastFrequency := 220.0;
+  end;
+end;
+
+procedure TStkPluckTwo.FrequencyChanged;
 var
-  delay: Single;
+  Delay: Single;
 begin
-  FLastFrequency := Frequency;
-  if (FLastFrequency <= 0.0) then
-    FLastFrequency := 220.0;
+ // Delay := FLength - approximate FFilter delay.
+ FLastLength := (SampleRate / FLastFrequency);
+ Delay := (FLastLength / FDetuning) - 0.5;
+ if (delay <= 0.0) then Delay := 0.3
+ else if (Delay > FLength) then
+   Delay := FLength;
+ FDelayLine.setDelay(Delay);
 
-  // Delay := FLength - approximate FFilter delay.
-  FLastLength := (SampleRate / FLastFrequency);
-  delay := (FLastLength / FDetuning) - 0.5;
-  if (delay <= 0.0) then
-    delay := 0.3
-  else if (delay > FLength) then
-    delay := FLength;
-  FDelayLine.setDelay(delay);
+ Delay := (FLastLength * FDetuning) - 0.5;
+ if (Delay <= 0.0) then
+   Delay := 0.3
+ else if (Delay > FLength) then Delay := FLength;
+ FDelayline2.setDelay(Delay);
 
-  delay := (FLastLength * FDetuning) - 0.5;
-  if (delay <= 0.0) then
-    delay := 0.3
-  else if (delay > FLength) then
-    delay := FLength;
-  FDelayline2.setDelay(delay);
-
-  FLoopGain := FBaseLoopGain + (Frequency * 0.000005);
-  if (FLoopGain > 1.0) then
-    FLoopGain := 0.99999;
+ FLoopGain := FBaseLoopGain + (FLastFrequency * 0.000005);
+ if (FLoopGain > 1.0) then FLoopGain := 0.99999;
 end;
 
-procedure TStkPluckTwo.setDetune;
+procedure TStkPluckTwo.SetDetune(const Value: Single);
 begin
-  FDetuning := detune;
-  if (FDetuning <= 0.0) then
-    FDetuning := 0.1;
-  FDelayLine.setDelay((FLastLength / FDetuning) - 0.5);
-  FDelayline2.setDelay((FLastLength * FDetuning) - 0.5);
+ if FDetuning <> Value then
+  begin
+   FDetuning := Value;
+   if (FDetuning <= 0.0) then FDetuning := 0.1;
+   DetuneChanged;
+  end;
 end;
 
-procedure TStkPluckTwo.setFreqAndDetune;
+procedure TStkPluckTwo.DetuneChanged;
 begin
-  FDetuning := detune;
-  setFrequency(Frequency);
+ FDelayLine.Delay  := FLastLength / FDetuning - 0.5;
+ FDelayline2.Delay := FLastLength * FDetuning - 0.5;
 end;
 
-procedure TStkPluckTwo.setPluckPosition;
+procedure TStkPluckTwo.SetFreqAndDetune(const Frequency, Detune: Single);
 begin
-  FPluckPosition := position;
-  if (position < 0.0) then
-    FPluckPosition := 0.0
-  else if (position > 1.0) then
-    FPluckPosition := 1.0;
+ FDetuning := Detune;
+ SetFrequency(Frequency);
 end;
 
-procedure TStkPluckTwo.setBaseLoopGain;
+procedure TStkPluckTwo.SetPluckPosition(const Value: Single);
 begin
-  FBaseLoopGain := aGain;
-  FLoopGain := FBaseLoopGain + (FLastFrequency * 0.000005);
-  if (FLoopGain > 0.99999) then
-    FLoopGain := 0.99999;
+ FPluckPosition := Limit(Value, 0, 1);
 end;
 
-procedure TStkPluckTwo.noteOff;
+procedure TStkPluckTwo.SetBaseLoopGain(const Value: Single);
 begin
-  FLoopGain := (1.0 - amplitude) * 0.5;
+ if FBaseLoopGain <> Value then
+  begin
+   FBaseLoopGain := Value;
+   FLoopGain := FBaseLoopGain + (FLastFrequency * 0.000005);
+   if (FLoopGain > 0.99999) then FLoopGain := 0.99999;
+  end;
 end;
 
-function TStkPluckTwo.tick: Single;
+procedure TStkPluckTwo.NoteOff(const Amplitude: Single);
+begin
+  FLoopGain := (1.0 - Amplitude) * 0.5;
+end;
+
+function TStkPluckTwo.Tick: Single;
 begin
   Result := 0;
 end;

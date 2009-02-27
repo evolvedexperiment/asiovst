@@ -7,18 +7,43 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkEnvelope, DAV_StkCommon;
+  DAV_Common, DAV_StkEnvelope, DAV_StkCommon;
 
 type
   TADSRStates = (asAttack, asDecay, asSustain, asRelease, asDone);
 
   TStkADSR = class(TStkEnvelope)
+  private
+    FTarget: Single;
+    // Return the current envelope \e FState (asAttack, asDecay, asSustain, asRelease, asDone).
+    function GetState: TADSRStates;
+
+    // Set the asAttack FRate.
+    procedure SetAttackRate(const Value: Single);
+
+    // Set the asDecay FRate.
+    procedure SetDecayRate(const Value: Single);
+
+    // Set the asSustain level.
+    procedure SetSustainLevel(const Value: Single);
+
+    // Set the asRelease FRate.
+    procedure setReleaseRate(const Value: Single);
+
+    // Set the asAttack FRate based on a time duration.
+    procedure SetAttackTime(const Value: Single);
+
+    // Set the asDecay FRate based on a time duration.
+    procedure SetDecayTime(const Value: Single);
+
   protected
     FAttackRate   : Single;
     FDecayRate    : Single;
     FSustainLevel : Single;
     FReleaseRate  : Single;
     FState        : TADSRStates;
+
+    procedure TargetChanged; override;
   public
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
@@ -26,40 +51,23 @@ type
     procedure KeyOn; override;
     procedure KeyOff; override;
 
-    // Set the asAttack FRate.
-    procedure SetAttackRate(aRate: Single);
-
-    // Set the asDecay FRate.
-    procedure SetDecayRate(aRate: Single);
-
-    // Set the asSustain level.
-    procedure SetSustainLevel(aLevel: Single);
-
-    // Set the asRelease FRate.
-    procedure setReleaseRate(aRate: Single);
-
-    // Set the asAttack FRate based on a time duration.
-    procedure SetAttackTime(aTime: Single);
-
-    // Set the asDecay FRate based on a time duration.
-    procedure SetDecayTime(aTime: Single);
-
     // Set the asRelease FRate based on a time duration.
-    procedure SetReleaseTime(aTime: Single);
+    procedure SetReleaseTime(const Value: Single);
 
     // Set asSustain level and asAttack, asDecay, and asRelease FState rates based on time durations.
-    procedure SetAllTimes(aTime, dTime, sLevel, rTime: Single);
-
-    // Set the FTarget FCurrentValue.
-    procedure SetTarget(aTarget: Single);
-
-    // Return the current envelope \e FState (asAttack, asDecay, asSustain, asRelease, asDone).
-    function GetState: TADSRStates;
+    procedure SetAllTimes(const aTime, dTime, sLevel, rTime: Single);
 
     // Set to FState := ADSR::asSustain with current and FTarget values of \e Value.
     procedure SetValue(Value: Single);
 
     function Tick: Single; overload; override;
+
+    property State: TADSRStates read GetState;
+
+    property AttackRate: Single read FAttackRate write SetAttackRate;
+    property DecayRate: Single read FDecayRate write SetDecayRate;
+    property ReleaseRate: Single read FReleaseRate write SetReleaseRate;
+    property SustainLevel: Single read FSustainLevel write SetSustainLevel;
   end;
 
 implementation
@@ -95,83 +103,63 @@ begin
  FState := asRelease;
 end;
 
-procedure TStkADSR.SetAttackRate(aRate: Single);
+procedure TStkADSR.SetAttackRate(const Value: Single);
 begin
-  if (aRate < 0.0) then
-    FAttackRate := -aRate
-  else
-    FAttackRate := aRate;
+ FAttackRate := abs(Value);
 end;
 
-procedure TStkADSR.SetDecayRate(aRate: Single);
+procedure TStkADSR.SetDecayRate(const Value: Single);
 begin
-  if (aRate < 0.0) then
-    FDecayRate := -aRate
-  else
-    FDecayRate := aRate;
+ FDecayRate := abs(Value);
 end;
 
-procedure TStkADSR.SetSustainLevel(aLevel: Single);
+procedure TStkADSR.SetSustainLevel(const Value: Single);
 begin
-  if (aLevel < 0.0) then
-    FSustainLevel := 0.0
-  else
-    FSustainLevel := aLevel;
+ FSustainLevel := Limit(Value, 0, Value);
 end;
 
-procedure TStkADSR.setReleaseRate(aRate: Single);
+procedure TStkADSR.SetReleaseRate(const Value: Single);
 begin
-  if (aRate < 0.0)
-   then FReleaseRate := -aRate
-   else FReleaseRate := aRate;
+ FReleaseRate := abs(Value);
 end;
 
-procedure TStkADSR.SetAttackTime(aTime: Single);
+procedure TStkADSR.SetAttackTime(const Value: Single);
 begin
-  if (aTime < 0.0)
-   then FAttackRate := 1.0 / (-aTime * SampleRate)
-   else FAttackRate := 1.0 / (aTime * SampleRate);
+  FAttackRate := 1.0 / abs(Value * SampleRate);
 end;
 
-procedure TStkADSR.SetDecayTime(aTime: Single);
+procedure TStkADSR.SetDecayTime(const Value: Single);
 begin
-  if (aTime < 0.0) then
-    FDecayRate := 1.0 / (-aTime * SampleRate)
-  else
-    FDecayRate := 1.0 / (aTime * SampleRate);
+ FDecayRate := 1.0 / abs(Value * SampleRate);
 end;
 
-procedure TStkADSR.SetReleaseTime(aTime: Single);
+procedure TStkADSR.SetReleaseTime(const Value: Single);
 begin
-  if (aTime < 0.0) then
-    FReleaseRate := 1.0 / (-aTime * SampleRate)
-  else
-    FReleaseRate := 1.0 / (aTime * SampleRate);
+ FReleaseRate := 1.0 / abs(Value * SampleRate);
 end;
 
-procedure TStkADSR.SetAllTimes;
+procedure TStkADSR.SetAllTimes(const aTime, dTime, sLevel, rTime: Single);
 begin
-  SetAttackTime(aTime);
-  SetDecayTime(dTime);
-  SetSustainLevel(sLevel);
-  SetReleaseTime(rTime);
+ SetAttackTime(aTime);
+ SetDecayTime(dTime);
+ SetSustainLevel(sLevel);
+ SetReleaseTime(rTime);
 end;
 
-procedure TStkADSR.SetTarget(aTarget: Single);
+procedure TStkADSR.TargetChanged;
 begin
-  FTarget := aTarget;
-  if (FCurrentValue < FTarget) then
-   begin
-    FState := asAttack;
-    SetSustainLevel(FTarget);
-    FRate := FAttackRate;
-   end;
-  if (FCurrentValue > FTarget) then
-   begin
-    SetSustainLevel(FTarget);
-    FState := asDecay;
-    FRate := FDecayRate;
-   end;
+ if (FCurrentValue < FTarget) then
+  begin
+   FState := asAttack;
+   SetSustainLevel(FTarget);
+   FRate := FAttackRate;
+  end;
+ if (FCurrentValue > FTarget) then
+  begin
+   SetSustainLevel(FTarget);
+   FState := asDecay;
+   FRate := FDecayRate;
+  end;
 end;
 
 procedure TStkADSR.SetValue(Value: Single);

@@ -40,6 +40,9 @@ type
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TStkPitchShifter.Create;
 begin
   inherited Create(SampleRate);
@@ -54,9 +57,9 @@ end;
 
 destructor TStkPitchShifter.Destroy;
 begin
-  inherited Destroy;
-  FDelayLine[0].Free;
-  FDelayLine[1].Free;
+ FreeAndNil(FDelayLine[0]);
+ FreeAndNil(FDelayLine[1]);
+ inherited Destroy;
 end;
 
 procedure TStkPitchShifter.Clear;

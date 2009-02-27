@@ -27,7 +27,7 @@ const
   CMaxOperators = 20;
 
 type
-  TStkFM = class(TStkInstrument)
+  TStkFM = class(TStkControlableInstrument)
   private
     function GetModulationSpeed: Single;
 
@@ -124,7 +124,7 @@ procedure TStkFM.ControlChange(const number: Integer; const Value: Single);
 var
   norm: Single;
 begin
-  norm := Limit(Value); // * ONE_OVER_128;
+  norm := Limit(Value, 0, 1);
 
   case Number of
    CMidiBreath         : SetControlA(norm); // 2
@@ -134,9 +134,9 @@ begin
    CMidiAfterTouchCont : // 128
     begin
      // FAdsr[0].SetTarget(norm);
-     FAdsr[1].SetTarget(norm);
+     FAdsr[1].Target := norm;
      // FAdsr[2].setTarget(norm);
-     FAdsr[3].SetTarget(norm);
+     FAdsr[3].Target := norm;
     end;
   end;
 end;

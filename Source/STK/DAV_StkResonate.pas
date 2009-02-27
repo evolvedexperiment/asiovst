@@ -20,97 +20,103 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkInstrument, DAV_StkAdsr, DAV_StkBiquad, DAV_StkNoise;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkAdsr, DAV_StkBiquad, DAV_StkNoise;
 
 type
-  TStkResonate = class(TStkInstrmnt)
+  TStkResonate = class(TStkControlableInstrument)
   protected
-    ADSR: TAdsr;
-    FFilter: TBiquad;
-    FNoise: TNoise;
-    FPoleFrequency, FPoleRadius, FZeroFrequency, FZeroRadius: Single;
+    FAdsr          : TStkAdsr;
+    FFilter        : TStkBiquad;
+    FNoise         : TStkNoise;
+    FPoleFrequency : Single;
+    FPoleRadius    : Single;
+    FZeroFrequency : Single;
+    FZeroRadius    : Single;
   public
-    constructor Create(SampleRate: Single); override;
+    constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
     // Reset and clear all internal state.
     procedure Clear;
 
     // Set the FFilter for a resonance at the given frequency (Hz) and radius.
-    procedure setResonance(frequency, radius: Single);
+    procedure SetResonance(frequency, radius: Single);
 
     // Set the FFilter for a notch at the given frequency (Hz) and radius.
-    procedure setNotch(frequency, radius: Single);
+    procedure SetNotch(frequency, radius: Single);
 
     // Set the FFilter zero coefficients for contant resonance gain.
-    procedure setEqualGainZeroes;
+    procedure SetEqualGainZeroes;
 
     // Initiate the envelope with a key-on event.
-    procedure keyOn;
+    procedure KeyOn;
 
     // Signal a key-off event to the envelope.
-    procedure keyOff;
+    procedure KeyOff;
 
     // Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function tick: Single;
+    function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: Integer; Value: Single);
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
   end;
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TStkResonate.Create;
 begin
   inherited Create(SampleRate);
-  adsr := TAdsr.Create(srate);
-  FNoise := TNoise.Create(srate);
-  FFilter := TBiquad.Create(srate);
+  FAdsr := TStkAdsr.Create(SampleRate);
+  FNoise := TStkNoise.Create(SampleRate);
+  FFilter := TStkBiquad.Create(SampleRate);
   FPoleFrequency := 4000.0;
   FPoleRadius := 0.95;
   // Set the FFilter parameters.
-  FFilter.setResonance(FPoleFrequency, FPoleRadius, True);
+  FFilter.SetResonance(FPoleFrequency, FPoleRadius, True);
   FZeroFrequency := 0.0;
   FZeroRadius := 0.0;
 end;
 
 destructor TStkResonate.Destroy;
 begin
-  inherited Destroy;
-  adsr.Free;
-  FFilter.Free;
-  FNoise.Free;
+ FreeAndNil(FAdsr);
+ FreeAndNil(FFilter);
+ FreeAndNil(FNoise);
+ inherited Destroy;
 end;
 
-procedure TStkResonate.keyOn;
+procedure TStkResonate.KeyOn;
 begin
-  adsr.keyOn();
+  FAdsr.KeyOn();
 end;
 
-procedure TStkResonate.keyOff;
+procedure TStkResonate.KeyOff;
 begin
-  adsr.keyOff();
+  FAdsr.KeyOff();
 end;
 
-procedure TStkResonate.noteOn;
+procedure TStkResonate.NoteOn(const Frequency, Amplitude: Single);
 begin
-  adsr.setTarget(amplitude);
-  keyOn();
-  setResonance(frequency, FPoleRadius);
+  FAdsr.Target := Amplitude;
+  KeyOn;
+  SetResonance(frequency, FPoleRadius);
 end;
 
-procedure TStkResonate.noteOff;
+procedure TStkResonate.NoteOff(const Amplitude: Single);
 begin
-  keyOff();
+  KeyOff;
 end;
 
-procedure TStkResonate.setResonance;
+procedure TStkResonate.SetResonance;
 begin
   FPoleFrequency := frequency;
   if (frequency < 0.0) then
@@ -120,10 +126,10 @@ begin
     FPoleRadius := 0.0
   else if (radius >= 1.0) then
     FPoleRadius := 0.9999;
-  FFilter.setResonance(FPoleFrequency, FPoleRadius, True);
+  FFilter.SetResonance(FPoleFrequency, FPoleRadius, True);
 end;
 
-procedure TStkResonate.setNotch;
+procedure TStkResonate.SetNotch;
 begin
   FZeroFrequency := frequency;
   if (frequency < 0.0) then
@@ -131,41 +137,36 @@ begin
   FZeroRadius := radius;
   if (radius < 0.0) then
     FZeroRadius := 0.0;
-  FFilter.setNotch(FZeroFrequency, FZeroRadius);
+  FFilter.SetNotch(FZeroFrequency, FZeroRadius);
 end;
 
-procedure TStkResonate.setEqualGainZeroes;
+procedure TStkResonate.SetEqualGainZeroes;
 begin
-  FFilter.setEqualGainZeroes;
+  FFilter.SetEqualGainZeroes;
 end;
 
-function TStkResonate.tick: Single;
+function TStkResonate.Tick: Single;
 begin
-  lastOutput := FFilter.tick(FNoise.tick());
-  lastOutput := lastOutput * adsr.tick();
-  Result := lastOutput;
+  FLastOutput := FFilter.Tick(FNoise.Tick) * FAdsr.Tick;
+  Result := FLastOutput;
 end;
 
-procedure TStkResonate.controlChange;
+procedure TStkResonate.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
   if (number = 2) then // 2
-    setResonance(norm * srate * 0.5, FPoleRadius)
+    SetResonance(norm * SampleRate * 0.5, FPoleRadius)
   else if (number = 4) then // 4
-    setResonance(FPoleFrequency, norm * 0.9999)
+    SetResonance(FPoleFrequency, norm * 0.9999)
   else if (number = 11) then // 11
-    setNotch(norm * srate * 0.5, FZeroRadius)
+    SetNotch(norm * SampleRate * 0.5, FZeroRadius)
   else if (number = 1) then
-    setNotch(FZeroFrequency, norm)
-  else if (number = __SK_AfterTouch_Cont_) then // 128
-    adsr.setTarget(norm);
+    SetNotch(FZeroFrequency, norm)
+  else if (number = CMidiAfterTouchCont) then // 128
+    FAdsr.Target := norm;
 end;
 
 procedure TStkResonate.Clear;

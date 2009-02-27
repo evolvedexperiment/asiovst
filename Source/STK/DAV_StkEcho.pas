@@ -39,6 +39,9 @@ type
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TStkEcho.Create(const SampleRate, LongestDelay: Single);
 begin
   inherited Create(SampleRate);
@@ -50,8 +53,8 @@ end;
 
 destructor TStkEcho.Destroy;
 begin
-  inherited Destroy;
-  FDelayLine.Free;
+ FreeAndNil(FDelayLine);
+ inherited Destroy;
 end;
 
 function TStkEcho.GetDelay: Single;

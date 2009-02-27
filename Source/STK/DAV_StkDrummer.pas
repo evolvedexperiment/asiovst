@@ -15,23 +15,22 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrument, DAV_StkWaveplayer, DAV_StkOnePole,
-  Dialogs, SysUtils;
+  DAV_StkCommon, DAV_StkInstrument, DAV_StkWaveplayer, DAV_StkOnePole;
 
 const
   CDrumWaveCount = 11;
   CDrumPolyphony = 8;
 
 type
-  TDrummer = class(TInstrmnt)
+  TStkDrummer = class(TStkInstrument)
   protected
-    FWaves     : array[0..CDrumPolyphony - 1] of TWavePlayer;
-    FFilters   : array[0..CDrumPolyphony - 1] of TOnePole;
+    FWaves     : array[0..CDrumPolyphony - 1] of TStkWavePlayer;
+    FFilters   : array[0..CDrumPolyphony - 1] of TStkOnePole;
     FSounding  : array[0..CDrumPolyphony - 1] of Integer;
     FNSounding : Integer;
   public
-    constructor Create(SampleRate: Single);
-    destructor Destroy;
+    constructor Create(const SampleRate: Single); override;
+    destructor Destroy; override;
 
     // Start a note with the given drum type and amplitude.
   {*!
@@ -39,16 +38,19 @@ type
     frequency values as if MIDI note numbers, to select a
     particular instrument.
   *}
-    procedure NoteOn(instrument, amplitude: Single);
+    procedure NoteOn(const Instrument, Amplitude: Single); override;
 
     // Stop a note with the given amplitude (speed of decay).
-    procedure NoteOff(amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function Tick: Single;
+    function Tick: Single; override;
   end;
 
 implementation
+
+uses
+  SysUtils;
 
 // Not really General MIDI yet.  Coming soon.
 const
@@ -72,7 +74,7 @@ const
     );
 
 const
-  waveNames: array[0..DRUM_NUMWAVES - 1] of string =
+  waveNames: array[0..CDrumWaveCount - 1] of TFileName =
     (
     'dope.wav',
     'bassdrum.wav',
@@ -87,37 +89,35 @@ const
     'tambourn.wav'
     );
 
-constructor TDrummer.Create;
+constructor TStkDrummer.Create;
 var
   i: Integer;
 begin
-  inherited Create(SampleRate);
-  for i := 0 to CDrumPolyphony - 1 do
-   begin
-    FFilters[i] := TOnePole.Create(srate);
-    FSounding[i] := -1;
-   end;
+ inherited Create(SampleRate);
+ for i := 0 to CDrumPolyphony - 1 do
+  begin
+   FFilters[i] := TStkOnePole.Create(SampleRate);
+   FSounding[i] := -1;
+  end;
  // This counts the number of FSounding voices.
-  FNSounding := 0;
+ FNSounding := 0;
 end;
 
-destructor TDrummer.Destroy;
+destructor TStkDrummer.Destroy;
 var
   i: Integer;
 begin
+  for i := 0 to FNSounding - 2 do FreeAndNil(FWaves[i]);
+  for i := 0 to CDrumPolyphony - 1 do FreeAndNil(FFilters[i]);
   inherited Destroy;
-  for i := 0 to FNSounding - 2 do
-    FWaves[i].Free;
-  for i := 0 to CDrumPolyphony - 1 do
-    FFilters[i].Free;
 end;
 
-procedure TDrummer.NoteOn;
+procedure TStkDrummer.NoteOn;
 var
   gain: Single;
   i, waveindex, notenum: Integer;
-  tempWv: ^TWavePlayer;
-  tempFilt: ^TOnePole;
+  tempWv: ^TStkWavePlayer;
+  tempFilt: ^TStkOnePole;
 begin
   gain := amplitude;
   if (amplitude > 1.0) then
@@ -138,15 +138,15 @@ begin
   if (waveIndex >= 0) then
    begin
     // Reset this sound.
-    FWaves[waveIndex].reset;
-    FFilters[waveIndex].setPole(0.999 - (gain * 0.6));
-    FFilters[waveIndex].setGain(gain);
+    FWaves[waveIndex].Reset;
+    FFilters[waveIndex].SetPole(0.999 - (gain * 0.6));
+    FFilters[waveIndex].Gain := gain;
    end else
    begin
     if (FNSounding = CDrumPolyphony) then
      begin
       // If we're already at maximum polyphony, then preempt the oldest voice.
-      FWaves[0].Free;
+      FreeAndNil(FWaves[0]);
       FFilters[0].Clear;
       tempWv := @FWaves[0];
       tempFilt := @FFilters[0];
@@ -164,20 +164,20 @@ begin
 
     FSounding[FNSounding - 1] := noteNum;
 
-    FWaves[FNSounding - 1] := TWavePlayer.Create(
-      srate, wavenames[genmidimap[notenum]]);
-    FWaves[FNSounding - 1].SetOneShot(True);
-    FWaves[FNSounding - 1].reset;
+    FWaves[FNSounding - 1] := TStkWavePlayer.Create(
+      SampleRate, wavenames[genmidimap[notenum]]);
+    FWaves[FNSounding - 1].OneShot := True;
+    FWaves[FNSounding - 1].Reset;
 //    inputbox(floattostr(FWaves[FNSounding-1].length),'','');
 {    if (srate <> 22050.0) then
       FWaves[FNSounding-1].setRate( 22050.0 / srate );}
-    FWaves[FNSounding - 1].setfrequency((1 / FWaves[FNSounding - 1].length));
-    FFilters[FNSounding - 1].setPole(0.999 - (gain * 0.6));
-    FFilters[FNSounding - 1].setGain(gain);
+    FWaves[FNSounding - 1].Frequency := 1 / FWaves[FNSounding - 1].Length;
+    FFilters[FNSounding - 1].SetPole(0.999 - (gain * 0.6));
+    FFilters[FNSounding - 1].Gain := gain;
    end;
 end;
 
-procedure TDrummer.NoteOff;
+procedure TStkDrummer.NoteOff(const Amplitude: Single);
 var
   i: Integer;
 begin
@@ -185,15 +185,15 @@ begin
   i := 0;
   while (i < FNSounding) do
    begin
-    FFilters[i].setGain(amplitude * 0.01);
+    FFilters[i].Gain:= Amplitude * 0.01;
     i := i + 1;
    end;
 end;
 
-function TDrummer.Tick: Single;
+function TStkDrummer.Tick: Single;
 var
   output: Single;
-  tempfilt: ^TOnePole;
+  tempfilt: ^TStkOnePole;
   i, j: Integer;
 begin
   output := 0.0;
@@ -202,7 +202,7 @@ begin
    begin
     if (FWaves[i].isFinished) then
      begin
-      FWaves[i].Free;
+      FreeAndNil(FWaves[i]);
       tempFilt := @FFilters[i];
       // Re-order the list.
       for j := i to FNSounding - 2 do

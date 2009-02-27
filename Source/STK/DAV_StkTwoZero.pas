@@ -109,7 +109,7 @@ var
 begin
  Temp     := @FB^;
  Temp^[2] := Sqr(Radius);
- Temp^[1] := -2.0 * Radius * Cos(CTwoPI32 * Frequency / SampleRate);
+ Temp^[1] := -2.0 * Radius * Cos(CTwoPI32 * Frequency * FSampleRateInv);
 
   // Normalize the filter gain.
   if Temp^[1] > 0.0
@@ -127,8 +127,8 @@ begin
                  PDAV4SingleArray(FB)^[1] * PDAV4SingleArray(FInputs)^[1] +
                  PDAV4SingleArray(FB)^[0] * PDAV4SingleArray(FInputs)^[0];
 
- Move(PDAV4SingleArray(FInputs)^[1],
-      PDAV4SingleArray(FInputs)^[0], 2 * SizeOf(Single));
+ Move(PDAV4SingleArray(FInputs)^[0],
+      PDAV4SingleArray(FInputs)^[1], 2 * SizeOf(Single));
 
  Result := FOutputs^[0];
 end;

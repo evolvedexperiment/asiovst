@@ -10,20 +10,24 @@ uses
 type
   TStkMultiOsc2 = class(TOsc)
   private
-    Wave: Integer;
-    Pwm: Single;
-  public
-    constructor Create(const SampleRate: Integer);
-    procedure SetMorph(morph: Single);
+    procedure SetMorph(const morph: Single);
     function GetMorph: Single;
     procedure SetActiveWave(i: Integer);
     function GetActiveWave: Integer;
+  protected
+    FWave: Integer;
+    FPwm: Single;
+  public
+    constructor Create(const SampleRate: Integer); override;
     function Process: Single; override;
+
+    property Morph: Single read GetMorph write SetMorph;
+    property ActiveWave: Integer read GetActiveWave write SetActiveWave;
   end;
 
 implementation
 
-function fmod(x: Single): Single;
+function fmod(const x: Single): Single;
 begin
   Result := x - floor(x);
 end;
@@ -177,7 +181,7 @@ begin
   Result := -2 * power(sin(b * pi), 2) + 1;
 end;
 
-constructor TStkMultiOsc2.Create(SampleRate: Integer);
+constructor TStkMultiOsc2.Create(const SampleRate: Integer);
 begin
   Wave := 0;
   inherited Create(SampleRate);

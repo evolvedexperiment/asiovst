@@ -13,7 +13,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkVector3D, Windows;
+  DAV_Common, DAV_StkCommon, DAV_StkVector3D;
 
 type
   TSphere = class
@@ -28,7 +28,7 @@ type
     constructor Create(initRadius: Double);
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Set the 3D center position of the TSphere.
     procedure setPosition(anX, aY, aZ: Double);
@@ -69,6 +69,9 @@ type
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TSphere.Create;
 begin
   myRadius := initRadius;
@@ -79,8 +82,9 @@ end;
 
 destructor TSphere.Destroy;
 begin
-  myPosition.Free;
-  myVelocity.Free;
+ FreeAndNil(myPosition);
+ FreeAndNil(myVelocity);
+ inherited;
 end;
 
 procedure TSphere.setPosition;

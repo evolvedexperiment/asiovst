@@ -13,18 +13,20 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkSubNoise, DAV_StkOnePole, DAV_StkLfo;
+  DAV_Common, DAV_StkCommon, DAV_StkSubNoise, DAV_StkOnePole, DAV_StkLfo;
 
 type
   TStkModulate = class(TStk)
   private
+    FVibratoRate: Single;
     procedure SetVibratoRate(const Value: Single); // in Hz
     procedure SetVibratoGain(const Value: Single);
     procedure SetRandomGain(const Value: Single);
+    function GetVibratoRate: Single;
   protected
-    FVibrato     : TLFO;
-    FNoise       : TSubNoise;
-    FFilter      : TOnePole;
+    FVibrato     : TStkLFO;
+    FNoise       : TStkSubNoise;
+    FFilter      : TStkOnePole;
     FVibratoGain : Single;
     FRandomGain  : Single;
     FLastOutput  : Single;
@@ -39,7 +41,7 @@ type
     function Tick: Single; overload;
 
     // Return \e VectorSize outputs in \e Vector.
-    function Tick(Vector: PSingle; VectorSize: Integer): PSingle; overload;
+    procedure Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer); overload;
 
   published
     property VibratoRate: Single read GetVibratoRate write SetVibratoRate;
@@ -50,39 +52,42 @@ type
 
 implementation
 
-constructor TModulate.Create;
+uses
+  SysUtils;
+
+constructor TStkModulate.Create;
 begin
   inherited Create(SampleRate);
-  FVibrato := TLFO.Create(SampleRate);
+  FVibrato := TStkLFO.Create(SampleRate);
   FVibrato.Frequency := 6.0;
   FVibratoGain := 0.04;
 
-  FNoise := TSubNoise.Create(SampleRate, 330);
+  FNoise := TStkSubNoise.Create(SampleRate, 330);
   FRandomGain := 0.05;
 
-  FFilter := TOnePole.Create(SampleRate, 0.999);
+  FFilter := TStkOnePole.Create(SampleRate, 0.999);
   FFilter.Gain := FRandomGain;
 end;
 
-destructor TModulate.Destroy;
+destructor TStkModulate.Destroy;
 begin
+  FreeAndNil(FVibrato);
+  FreeAndNil(FNoise);
+  FreeAndNil(FFilter);
   inherited Destroy;
-  FVibrato.Free;
-  FNoise.Free;
-  FFilter.Free;
 end;
 
-procedure TModulate.Reset;
+procedure TStkModulate.Reset;
 begin
   FLastOutput := 0.0;
 end;
 
-function TModulate.GetVibratoRate: Single;
+function TStkModulate.GetVibratoRate: Single;
 begin
  result := FVibrato.Frequency;
 end;
 
-procedure TModulate.SetVibratoRate(const Value: Single);
+procedure TStkModulate.SetVibratoRate(const Value: Single);
 begin
  if VibratoRate <> Value then
   begin
@@ -90,7 +95,7 @@ begin
   end;
 end;
 
-procedure TModulate.SetVibratoGain(const Value: Single);
+procedure TStkModulate.SetVibratoGain(const Value: Single);
 begin
  if FVibratoGain <> Value then
   begin
@@ -98,7 +103,7 @@ begin
   end;
 end;
 
-procedure TModulate.SetRandomGain(const Value: Single);
+procedure TStkModulate.SetRandomGain(const Value: Single);
 begin
  if FRandomGain <> Value then
   begin
@@ -107,7 +112,7 @@ begin
   end;
 end;
 
-function TModulate.Tick: Single;
+function TStkModulate.Tick: Single;
 begin
   // Compute periodic and random modulations.
   FLastOutput := FVibratoGain * FVibrato.Tick;
@@ -115,18 +120,13 @@ begin
   Result := FLastOutput;
 end;
 
-function TModulate.Tick(Vector: PSingle; VectorSize: Integer): PSingle;
+procedure TStkModulate.Tick(const Data: PDavSingleFixedArray;
+  const SampleFrames: Integer);
 var
-  i: Integer;
-  p: PSingle;
+  Sample: Integer;
 begin
-  p := Vector;
-  for i := 0 to VectorSize - 1 do
-   begin
-    p^ := Tick;
-    Inc(p);
-   end;
-  Result := Vector;
+ for Sample := 0 to SampleFrames - 1
+  do Data^[Sample] := Tick; 
 end;
 
 end.

@@ -1,4 +1,4 @@
-unit DAV_StkFormSwep;
+unit DAV_StkFormantSweep;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
@@ -14,10 +14,30 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkBiquad;
+  DAV_Common, DAV_StkCommon, DAV_StkBiquad;
 
 type
   TStkFormantSweep = class(TStkBiQuad)
+  private
+    // Set the sweep rate (between 0.0 - 1.0).
+  {
+    The formant parameters are varied in increments of the
+    sweep rate between their current and target values.
+    A sweep rate of 1.0 will produce an immediate change in
+    resonance parameters from their current values to the
+    target values.  A sweep rate of 0.0 will produce no
+    change in resonance parameters.
+  }
+    procedure SetSweepRate(const Value: Single);
+
+    // Set the sweep rate in terms of a time value in seconds.
+  {
+    This method adjusts the sweep rate based on a
+    given time for the formant parameters to reach
+    their target values.
+ }
+    procedure SetSweepTime(const Value: Single);
+    function GetSweepTime: Single;
   protected
     FDirty             : Boolean;
     FFrequency         : Single;
@@ -57,35 +77,19 @@ type
     // Set target resonance parameters.
     procedure setTargets(AFrequency, ARadius: Single; AGain: Single = 1.0);
 
-    // Set the sweep rate (between 0.0 - 1.0).
-  {
-    The formant parameters are varied in increments of the
-    sweep rate between their current and target values.
-    A sweep rate of 1.0 will produce an immediate change in
-    resonance parameters from their current values to the
-    target values.  A sweep rate of 0.0 will produce no
-    change in resonance parameters.  
-  }
-    procedure SetSweepRate(ARate: Single);
-
-    // Set the sweep rate in terms of a time value in seconds.
-  {
-    This method adjusts the sweep rate based on a
-    given time for the formant parameters to reach
-    their target values.
- }
-    procedure SetSweepTime(ATime: Single);
-
     // Input one sample to the filter and return one output.
-    function Tick(sample: Single): Single; overload;
+    function Tick(const Sample: Single): Single; overload; override;
 
     // Input \e VectorSize samples to the filter and return an equal number of outputs in \e vector.
     function Tick(vector: PSingle; VectorSize: Integer): PSingle; overload;
+
+    property SweepRate: Single read FSweepRate write SetSweepRate;
+    property SweepTime: Single read GetSweepTime write SetSweepTime;
   end;
 
 implementation
 
-constructor TStkFormantSweep.Create;
+constructor TStkFormantSweep.Create(const SampleRate: Single); 
 begin
   inherited Create(SampleRate);
   FFrequency       := 0;
@@ -147,23 +151,20 @@ end;
 
 procedure TStkFormantSweep.SetSweepRate;
 begin
-  FSweepRate := ARate;
-  if (FSweepRate > 1.0) then
-    FSweepRate := 1.0;
-  if (FSweepRate < 0.0) then
-    FSweepRate := 0.0;
+ FSweepRate := Limit(Value, 0, 1);
 end;
 
-procedure TStkFormantSweep.SetSweepTime;
+procedure TStkFormantSweep.SetSweepTime(const Value: Single);
 begin
-  FSweepRate := 1.0 / (ATime * srate);
-  if (FSweepRate > 1.0) then
-    FSweepRate := 1.0;
-  if (FSweepRate < 0.0) then
-    FSweepRate := 0.0;
+  FSweepRate := Limit(1.0 / (Value * SampleRate), 0, 1);
 end;
 
-function TStkFormantSweep.Tick(sample: Single): Single;
+function TStkFormantSweep.GetSweepTime: Single;
+begin
+  result := 1.0 / (FSweepRate * SampleRate);
+end;
+
+function TStkFormantSweep.Tick(const Sample: Single): Single;
 begin
   if (FDirty) then
    begin

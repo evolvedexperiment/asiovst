@@ -1,4 +1,4 @@
-unit DAV_StkVoicForm;
+unit DAV_StkVoiceFormant;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
@@ -25,7 +25,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkInstrument, DAV_StkEnvelope, DAV_StkNoise, DAV_StkSingWave,
+  DAV_StkCommon, DAV_StkInstrument, DAV_StkEnvelope, DAV_StkNoise, DAV_StkSingWave,
   DAV_StkFormantSweep, DAV_StkOnePole, DAV_StkOneZero, DAV_StkPhonemes, Math;
 
 type
@@ -120,15 +120,14 @@ destructor TVoicForm.Destroy;
 var
   i: integer;
 begin
-  inherited Destroy;
-  FVoiced.Free;
-  FNoise.Free;
-  FOneZero.Free;
-  FOnePole.Free;
-  FNoiseEnv.Free;
-  FPhonemes.Free;
-  for i := 0 to 3 do
-    FFilters[i].Free;
+ FreeAndNil(FVoiced);
+ FreeAndNil(FNoise);
+ FreeAndNil(FOneZero);
+ FreeAndNil(FOnePole);
+ FreeAndNil(FNoiseEnv);
+ FreeAndNil(FPhonemes);
+ for i := 0 to 3 do FreeAndNil(FFilters[i]);
+ inherited Destroy;
 end;
 
 procedure TVoicForm.Clear;
@@ -242,11 +241,8 @@ var
   temp, norm: Single;
   i: integer;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
+
   if (number = __SK_Breath_) then
    begin // 2
     setVoiced(1.0 - norm);

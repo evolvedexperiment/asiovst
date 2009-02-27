@@ -16,23 +16,18 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon;
+  DAV_Common, DAV_StkCommon;
 
 type
   TStkReedTable = class(TStk)
-  protected
-    FOffSet, FSlope, FLastOutput: Single;
-  public
-    constructor Create(const SampleRate: Single); override;
-    destructor Destroy; override;
-
+  private
     // Set the table FOffSet value.
   {
     The table FOffSet roughly corresponds to the size
     of the initial reed tip opening (a greater FOffSet
     represents a smaller opening).
   }
-    procedure setOffset(aValue: Single);
+    procedure SetOffset(const Value: Single);
 
     // Set the table FSlope value.
   {
@@ -40,20 +35,29 @@ type
    stiffness (a greater FSlope represents a harder
    reed).
   }
-    procedure setSlope(aValue: Single);
+    procedure SetSlope(const Value: Single);
 
-    // Return the last output value.
-    function lastOut: Single;
+  protected
+    FOffSet     : Single;
+    FSlope      : Single;
+    FLastOutput : Single;
+  public
+    constructor Create(const SampleRate: Single); override;
+    destructor Destroy; override;
 
     // Return the function value for \e input.
   {
     The function input represents the differential
     pressure across the reeds.
   }
-    function tick(input: Single): Single; overload;
+    function Tick(const Input: Single): Single; overload; virtual;
 
     // Take \e vectorSize inputs and return the corresponding function values in \e vector.
-    function tick(vector: PSingle; vectorSize: longint): PSingle; overload;
+    procedure Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer); overload; virtual;
+
+    property OffSet: Single read FOffSet write SetOffset;
+    property Slope: Single read FSlope write SetSlope;
+    property LastOutput: Single read FLastOutput;
   end;
 
 implementation
@@ -70,25 +74,20 @@ begin
   inherited Destroy;
 end;
 
-procedure TStkReedTable.setOffset;
+procedure TStkReedTable.SetOffset(const Value: Single);
 begin
-  FOffSet := aValue;
+  FOffSet := Value;
 end;
 
-procedure TStkReedTable.setSlope;
+procedure TStkReedTable.SetSlope(const Value: Single);
 begin
-  FSlope := aValue;
+  FSlope := Value;
 end;
 
-function TStkReedTable.lastOut: Single;
-begin
-  Result := FLastOutput;
-end;
-
-function TStkReedTable.tick(input: Single): Single;
+function TStkReedTable.Tick(const Input: Single): Single;
 begin
   // The input is differential pressure across the reed.
-  FLastOutput := FOffSet + (FSlope * input);
+  FLastOutput := FOffSet + (FSlope * Input);
 
   // If output is > 1, the reed has slammed shut and the
   // reflection function value saturates at 1.0.
@@ -103,18 +102,12 @@ begin
   Result := FLastOutput;
 end;
 
-function TStkReedTable.tick(vector: PSingle; vectorSize: longint): PSingle;
+procedure TStkReedTable.Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer);
 var
-  i: integer;
-  p: pSingle;
+  Sample: integer;
 begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := tick(p^);
-    Inc(p);
-   end;
-  Result := vector;
+  for Sample := 0 to SampleFrames - 1
+   do Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

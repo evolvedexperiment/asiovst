@@ -44,6 +44,9 @@ type
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TStkChorus.Create(const SampleRate, BaseDelay: Single);
 begin
   inherited Create(SampleRate);
@@ -67,11 +70,11 @@ end;
 
 destructor TStkChorus.Destroy;
 begin
+  FreeAndNil(FDelayLine[0]);
+  FreeAndNil(FDelayLine[1]);
+  FreeAndNil(FMods[0]);
+  FreeAndNil(FMods[1]);
   inherited Destroy;
-  FDelayLine[0].Free;
-  FDelayLine[1].Free;
-  FMods[0].Free;
-  FMods[1].Free;
 end;
 
 procedure TStkChorus.Clear;

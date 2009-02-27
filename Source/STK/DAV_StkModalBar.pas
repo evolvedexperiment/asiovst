@@ -30,7 +30,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkModal, DAV_StkWavePlayer, Math;
+  DAV_Common, DAV_StkCommon, DAV_StkModal, DAV_StkWavePlayer, Math;
 
   // CPresets:
   //     First line:  relative modal frequencies (negative number is
@@ -81,57 +81,70 @@ const
     (0.390625, 0.570312, 0.078125, 0)));
 
 type
-  TModalBar = class(TModal)
-  public
-    constructor Create(const SampleRate: Single); override;
-    destructor Destroy; override;
+  TStkModalBar = class(TStkModal)
+  private
+    FPreset: Integer;
 
-    // Set stick hardness (0.0 - 1.0).
-    procedure SetStickHardness(Hardness: Single);
-
-    // Set stick position (0.0 - 1.0).
-    procedure SetStrikePosition(Position: Single);
-
-    // Select a bar preset (currently modulo 9).
-    procedure SetPreset(Preset: Integer);
-
-    // Set the modulation (vibrato) depth.
+// Set the modulation (vibrato) depth.
 //  procedure setModulationDepth(mDepth:Single);
 
+    // Set stick hardness (0.0 - 1.0).
+    procedure SetStickHardness(const Hardness: Single);
+
+    // Set stick position (0.0 - 1.0).
+    procedure SetStrikePosition(const Position: Single);
+
+    // Select a bar preset (currently modulo 9).
+    procedure SetPreset(const Value: Integer);
+  protected
+    procedure PresetChanged; virtual;
+  public
+    constructor Create(const SampleRate: Single; const Modes: Integer = 4); override;
+    destructor Destroy; override;
+
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(number: Integer; Value: Single);
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
+
+    property StickHardness: Single read FStickHardness write SetStickHardness;
+    property StrikePosition: Single read FStrikePosition write SetStrikePosition;
+    property Preset: Integer read FPreset write SetPreset;
   end;
 
 implementation
 
-constructor TModalBar.Create;
+uses
+  SysUtils;
+
+constructor TStkModalBar.Create(const SampleRate: Single; const Modes: Integer = 4);
 begin
-  inherited Create(SampleRate);
-  wave := TWavePlayer.Create(srate, 'marmstk1.wav');
-  wave.SetOneShot(False);
-  wave.setFrequency(22050);
+  inherited Create(SampleRate, Modes);
+  FWave := TStkWavePlayer.Create(SampleRate, 'marmstk1.wav');
+  FWave.OneShot := False;
+  FWave.Frequency := 22050;
+
   // Set the resonances for preset 0 (marimba).
-  setPreset(0);
+  FPreset := 0;
+  PresetChanged;
 end;
 
-destructor TModalBar.Destroy;
+destructor TStkModalBar.Destroy;
 begin
-  inherited Destroy;
-  wave.Free;
+ FreeAndNil(FWave);
+ inherited Destroy;
 end;
 
-procedure TModalBar.setStickHardness;
+procedure TStkModalBar.setStickHardness;
 begin
-  stickHardness := hardness;
+  FStickHardness := hardness;
   if (hardness < 0.0) then
-    stickHardness := 0.0
+    FStickHardness := 0.0
   else if (hardness > 1.0) then
-    stickHardness := 1.0;
-  wave.setFrequency((0.25 * power(4.0, stickHardness)));
-  masterGain := 0.1 + (1.8 * stickHardness);
+    FStickHardness := 1.0;
+  FWave.Frequency := 0.25 * Power(4.0, FStickHardness);
+  FMasterGain := 0.1 + (1.8 * FStickHardness);
 end;
 
-procedure TModalBar.setStrikePosition;
+procedure TStkModalBar.setStrikePosition;
 var
   temp, temp2: Single;
 begin
@@ -153,51 +166,55 @@ begin
   setModeGain(2, 0.11 * temp);
 end;
 
-procedure TModalBar.setPreset;
+procedure TStkModalBar.SetPreset(const Value: Integer);
+begin
+ if FPreset <> Value then
+  begin
+   FPreset := Value;
+   PresetChanged;
+  end;
+end;
+
+procedure TStkModalBar.PresetChanged;
 var
   i, temp: Integer;
 begin
-  temp := (preset mod 9);
-  for i := 0 to nModes - 1 do
-   begin
-    setRatioAndRadius(i, CPresets[temp][0][i], CPresets[temp][1][i]);
-    setModeGain(i, CPresets[temp][2][i]);
-   end;
+ temp := (preset mod 9);
+ for i := 0 to CMaxModes - 1 do
+  begin
+   SetRatioAndRadius(i, CPresets[temp][0][i], CPresets[temp][1][i]);
+   SetModeGain(i, CPresets[temp][2][i]);
+  end;
 
-  setStickHardness(CPresets[temp][3][0]);
-  setStrikePosition(CPresets[temp][3][1]);
-  directGain := CPresets[temp][3][2];
+ setStickHardness(CPresets[temp][3][0]);
+ setStrikePosition(CPresets[temp][3][1]);
+ directGain := CPresets[temp][3][2];
 
-  if (temp = 1) then // vibraphone
-    vibratoGain := 0.2
-  else
-    vibratoGain := 0.0;
+ if (temp = 1)
+  then FVibratoGain := 0.2 // vibraphone
+  else FVibratoGain := 0.0;
 end;
 
-procedure TModalBar.controlChange;
+procedure TStkModalBar.controlChange;
 var
   norm: Single;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
-  if (number = __SK_StickHardness_) then // 2
+  if (number = CMidiStickHardness) then // 2
     setStickHardness(norm)
-  else if (number = __SK_StrikePosition_) then // 4
+  else if (number = CMidiStrikePosition) then // 4
     setStrikePosition(norm)
-  else if (number = __SK_ProphesyRibbon_) then // 3
+  else if (number = CMidiProphesyRibbon) then // 3
     setPreset(round(Value))
-{  else if (number = __SK_ModWheel_) then // 1
+{  else if (number = CMidiModWheel) then // 1
     directGain:=norm}
   else if (number = 11) then // 11
-    vibratoGain := norm * 0.3
-  else if (number = __SK_ModFrequency_) then // 1
-    vibrato.setFrequency(norm * 12.0)
-  else if (number = __SK_AfterTouch_Cont_) then // 128
-    envelope.setTarget(norm);
+    FVibratoGain := norm * 0.3
+  else if (number = CMidiModFrequency) then // 1
+    FVibrato.Frequency := norm * 12.0
+  else if (number = CMidiAfterTouchCont) then // 128
+    FEnvelope.Target := norm;
 end;
 
 end.

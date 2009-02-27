@@ -1,4 +1,4 @@
-unit DAV_Clarinet;
+unit DAV_StkClarinet;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
@@ -13,81 +13,84 @@ unit DAV_Clarinet;
   held by Stanford University, Yamaha, and others.
 
   Control Change Numbers:
-    - Reed Stiffness := 2
-    - FNoise Gain := 4
-    - FVibrato Frequency := 11
-    - FVibrato Gain := 1
-    - Breath Pressure := 128
+    - Reed Stiffness = 2
+    - Noise Gain = 4
+    - Vibrato Frequency = 11
+    - Vibrato Gain = 1
+    - Breath Pressure = 128
 }
 
 interface
 
-{$Integer ..\DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_Instrmnt, DAV_Delayl, DAV_Reedtabl, DAV_Onezero, DAV_Envelope,
-  DAV_Noise, DAV_LFO;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayl, DAV_StkReedTable,
+  DAV_StkOnezero, DAV_StkEnvelope, DAV_StkNoise, DAV_StkLFO;
 
 type
-  TStkClarinet = class(TInstrmnt)
+  TStkClarinet = class(TStkControlableInstrument)
   protected
-    FDelayLine   : TDelayl;
-    FReedTable   : TReedTable;
-    FFilter      : TOneZero;
-    FEnvelope    : TEnvelope;
-    FNoise       : TNoise;
-    FVibrato     : TLfo;
+    FDelayLine   : TStkDelayL;
+    FReedTable   : TStkReedTable;
+    FFilter      : TStkOneZero;
+    FEnvelope    : TStkEnvelope;
+    FNoise       : TStkNoise;
+    FVibrato     : TStkLfo;
     FLength      : Integer;
     FOutputGain  : Single;
     FNoiseGain   : Single;
     FVibratoGain : Single;
+
+    // Set instrument parameters for a particular frequency.
+    procedure SetFrequency(const Frequency: Single); override;
   public
     // Class constructor, taking the lowest desired playing frequency.
-    constructor Create(sr, lowestFrequency: Single);
+    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: Single);
-
     // Apply breath pressure to instrument with given amplitude and rate of increase.
-    procedure startBlowing(amplitude, rate: Single);
+    procedure StartBlowing(const Amplitude, Rate: Single);
 
     // Decrease breath pressure with given rate of decrease.
-    procedure stopBlowing(rate: Single);
+    procedure StopBlowing(const Rate: Single);
 
-    // Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: Single);
+    // Start a note with the given Frequency and Amplitude.
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
-    // Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: Single);
+    // Stop a note with the given Amplitude (speed of decay).
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function tick: Single;
+    function Tick: Single; override;
 
-    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: Single);
+    // Perform the control change specified by \e Number and \e value (0.0 - 128.0).
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
   end;
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TStkClarinet.Create;
 begin
-  inherited Create(sr);
-  FLength := round(srate / lowestFrequency + 1);
-  FDelayLine := TDelayl.Create(srate, (FLength / 2.0), FLength);
-  FReedTable := TReedTable.Create(srate);
-  FReedTable.setOffset(0.7);
-  FReedTable.setSlope(-0.3);
-  FFilter := TOneZero.Create(srate);
-  FEnvelope := TEnvelope.Create(srate);
-  FNoise := TNoise.Create(srate);
-  FVibrato := TLfo.Create(srate);
-  FVibrato.setFrequency(5.735);
+  inherited Create(SampleRate);
+  FLength := round(SampleRate / lowestFrequency + 1);
+  FDelayLine := TStkDelayL.Create(SampleRate, (FLength / 2.0), FLength);
+  FReedTable := TStkReedTable.Create(SampleRate);
+  FReedTable.Offset := 0.7;
+  FReedTable.Slope := -0.3;
+  FFilter := TStkOneZero.Create(SampleRate);
+  FEnvelope := TStkEnvelope.Create(SampleRate);
+  FNoise := TStkNoise.Create(SampleRate);
+  FVibrato := TStkLfo.Create(SampleRate);
+  FVibrato.Frequency := 5.735;
   FOutputGain := 1.0;
   FNoiseGain := 0.2;
   FVibratoGain := 0.1;
@@ -95,108 +98,103 @@ end;
 
 destructor TStkClarinet.Destroy;
 begin
+  FreeAndNil(FDelayLine);
+  FreeAndNil(FReedTable);
+  FreeAndNil(FFilter);
+  FreeAndNil(FEnvelope);
+  FreeAndNil(FNoise);
+  FreeAndNil(FVibrato);
   inherited Destroy;
-  FDelayLine.Free;
-  FReedTable.Free;
-  FFilter.Free;
-  FEnvelope.Free;
-  FNoise.Free;
-  FVibrato.Free;
 end;
 
 procedure TStkClarinet.Clear;
 begin
   FDelayLine.Clear;
-  FFilter.tick(0.0);
+  FFilter.Tick(0.0);
 end;
 
-procedure TStkClarinet.setFrequency;
+procedure TStkClarinet.SetFrequency;
 var
   delay, freakency: Single;
 begin
-  freakency := frequency;
-  if (frequency <= 0.0) then
+  freakency := Frequency;
+  if (Frequency <= 0.0) then
     freakency := 220.0;
 
   // Delay := FLength - approximate FFilter delay.
-  delay := (srate / freakency) * 0.5 - 1.5;
+  delay := (SampleRate / freakency) * 0.5 - 1.5;
   if (delay <= 0.0) then
     delay := 0.3
   else if (delay > FLength) then
     delay := FLength;
-  FDelayLine.setDelay(delay);
+  FDelayLine.Delay := Delay;
 end;
 
-procedure TStkClarinet.startBlowing;
+procedure TStkClarinet.StartBlowing;
 begin
-  FEnvelope.setRate(rate);
-  FEnvelope.setTarget(amplitude);
+  FEnvelope.Rate := rate;
+  FEnvelope.Target := Amplitude;
 end;
 
-procedure TStkClarinet.stopBlowing;
+procedure TStkClarinet.StopBlowing;
 begin
-  FEnvelope.setRate(rate);
-  FEnvelope.setTarget(0.0);
+  FEnvelope.Rate := rate;
+  FEnvelope.Target := 0.0;
 end;
 
-procedure TStkClarinet.noteOn(frequency, amplitude: Single);
+procedure TStkClarinet.NoteOn(const Frequency, Amplitude: Single);
 begin
-  setFrequency(frequency);
-  startBlowing(0.55 + (amplitude * 0.30), amplitude * 0.005);
-  FOutputGain := amplitude + 0.001;
+  SetFrequency(Frequency);
+  StartBlowing(0.55 + (Amplitude * 0.30), Amplitude * 0.005);
+  FOutputGain := Amplitude + 0.001;
 end;
 
-procedure TStkClarinet.noteOff;
+procedure TStkClarinet.NoteOff;
 begin
-  stopBlowing(amplitude * 0.01);
+  StopBlowing(Amplitude * 0.01);
 end;
 
-function TStkClarinet.tick: Single;
+function TStkClarinet.Tick: Single;
 var
   breathPressure, pressureDiff: Single;
 begin
   // Calculate the breath pressure (FEnvelope + FNoise + FVibrato)
-  breathPressure := FEnvelope.tick;
-  breathPressure := breathPressure + breathPressure * FNoiseGain * FNoise.tick;
+  breathPressure := FEnvelope.Tick;
+  breathPressure := breathPressure + breathPressure * FNoiseGain * FNoise.Tick;
   breathPressure := breathPressure + breathPressure * FVibratoGain *
-    FVibrato.tick;
+    FVibrato.Tick;
 
   // Perform commuted loss filtering.
-  pressureDiff := -0.95 * FFilter.tick(FDelayLine.lastOut);
+  pressureDiff := -0.95 * FFilter.Tick(FDelayLine.LastOutput);
 
   // Calculate pressure difference of reflected and mouthpiece pressures.
   pressureDiff := pressureDiff - breathPressure;
 
   // Perform non-linear scattering using pressure difference in reed function.
-  lastOutput := FDelayLine.tick(breathPressure + pressureDiff *
-    FReedTable.tick(pressureDiff));
+  FLastOutput := FDelayLine.Tick(breathPressure + pressureDiff * FReedTable.Tick(pressureDiff));
 
   // Apply output gain.
-  lastOutput := lastOutput * FOutputGain;
+  FLastOutput := FLastOutput * FOutputGain;
 
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
-procedure TStkClarinet.controlChange(number: integer; Value: Single);
+procedure TStkClarinet.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
-  if (number = __SK_ReedStiffness_) then // 2
-    FReedTable.setSlope(-0.44 + (0.26 * norm))
-  else if (number = __SK_NoiseLevel_) then // 4
+  if (Number = CMidiReedStiffness) then // 2
+    FReedTable.Slope := -0.44 + (0.26 * norm)
+  else if (Number = CMidiNoiseLevel) then // 4
     FNoiseGain := (norm * 0.4)
-  else if (number = __SK_ModFrequency_) then // 11
-    FVibrato.setFrequency((norm * 12.0))
-  else if (number = __SK_ModWheel_) then // 1
+  else if (Number = CMidiModFrequency) then // 11
+    FVibrato.Frequency := norm * 12
+  else if (Number = CMidiModWheel) then // 1
     FVibratoGain := (norm * 0.5)
-  else if (number = __SK_AfterTouch_Cont_) then // 128
-    FEnvelope.setValue(norm);
+  else if (Number = CMidiAfterTouchCont) then // 128
+    FEnvelope.CurrentValue := norm;
 end;
 
 end.

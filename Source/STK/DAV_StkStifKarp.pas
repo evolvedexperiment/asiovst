@@ -28,17 +28,26 @@ uses
 type
   TStkStifKarp = class(TStkInstrument)
   protected
-    FDelayLine: tdelaya;
-    FCombDelay: tdelayl;
-    FFilter: tonezero;
-    FNoise: tnoise;
-    FBiQuad: array[0..3] of tbiquad;
-    FLength: longint;
-    FLoopGain, FBaseLoopGain, FLastFrequency, FLastLength,
-    FStretching, FPluckAmplitude, FPickupPosition: Single;
+    FDelayLine      : TStkDelayA;
+    FCombDelay      : TStkDelayl;
+    FFilter         : TStkOneZero;
+    FNoise          : TStkMoise;
+    FBiQuad         : array[0..3] of TStkBiquad;
+    FLength         : Integer;
+    FLoopGain       : Single;
+    FBaseLoopGain   : Single;
+    FLastFrequency  : Single;
+    FLastLength     : Single;
+    FStretching     : Single;
+    FPluckAmplitude : Single;
+    FPickupPosition : Single;
+
+    // Set instrument parameters for a particular Frequency.
+    procedure SetFrequency(const Frequency: Single); override;
+
   public
     // Class constructor, taking the lowest desired playing Frequency.
-    constructor Create(SampleRate, LowestFrequency: Single); override;
+    constructor Create(const SampleRate, LowestFrequency: Single); override;
 
     // Class destructor.
     destructor Destroy; override;
@@ -46,14 +55,11 @@ type
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(Frequency: Single);
-
     // Set the Stretch "factor" of the string (0.0 - 1.0).
-    procedure SetStretch(Stretch: Single);
+    procedure SetStretch(const Stretch: Single);
 
     // Set the Pluck or "excitation" position along the string (0.0 - 1.0).
-    procedure SetPickupPosition(position: Single);
+    procedure SetPickupPosition(const position: Single);
 
     // Set the base loop gain.
   {
@@ -61,22 +67,22 @@ type
     Because of high-Frequency loop FFilter roll-off, higher
     Frequency settings have greater loop gains.
   }
-    procedure SetBaseLoopGain(aGain: Single);
+    procedure SetBaseLoopGain(const aGain: Single);
 
     // Pluck the string with the given amplitude using the current Frequency.
-    procedure Pluck(amplitude: Single);
+    procedure Pluck(const amplitude: Single);
 
     // Start a note with the given Frequency and amplitude.
-    procedure NoteOn(Frequency, amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Stop a note with the given amplitude (speed of decay).
-    procedure NoteOff(amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function Tick: Single;
+    function Tick: Single; override;
 
     // Perform the control change specified by \e Number and \e value (0.0 - 128.0).
-    procedure controlChange(Number: integer; Value: Single);
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
   end;
 
 implementation
@@ -85,15 +91,15 @@ constructor TStkStifKarp.Create;
 begin
   inherited Create(SampleRate);
   FLength := round(SampleRate / LowestFrequency + 1);
-  FDelayLine := TDelayA.Create(SampleRate, 0.5 * FLength, FLength);
-  FCombDelay := TDelayL.Create(SampleRate, 0.2 * FLength, FLength);
+  FDelayLine := TStkDelayA.Create(SampleRate, 0.5 * FLength, FLength);
+  FCombDelay := TStkDelayl.Create(SampleRate, 0.2 * FLength, FLength);
 
-  FFilter := TOneZero.Create(SampleRate);
-  FNoise := TNoise.Create(SampleRate);
-  FBiQuad[0] := TBiQuad.Create(SampleRate);
-  FBiQuad[1] := TBiQuad.Create(SampleRate);
-  FBiQuad[2] := TBiQuad.Create(SampleRate);
-  FBiQuad[3] := TBiQuad.Create(SampleRate);
+  FFilter := TStkOneZero.Create(SampleRate);
+  FNoise := TStkMoise.Create(SampleRate);
+  FBiQuad[0] := TStkBiquad.Create(SampleRate);
+  FBiQuad[1] := TStkBiquad.Create(SampleRate);
+  FBiQuad[2] := TStkBiquad.Create(SampleRate);
+  FBiQuad[3] := TStkBiquad.Create(SampleRate);
 
   FPluckAmplitude := 0.3;
   FPickupPosition := 0.4;
@@ -108,15 +114,15 @@ end;
 
 destructor TStkStifKarp.Destroy;
 begin
-  inherited Destroy;
-  FDelayLine.Free;
-  FCombDelay.Free;
-  FFilter.Free;
-  FNoise.Free;
-  FBiQuad[0].Free;
-  FBiQuad[1].Free;
-  FBiQuad[2].Free;
-  FBiQuad[3].Free;
+ FreeAndNil(FDelayLine);
+ FreeAndNil(FCombDelay);
+ FreeAndNil(FFilter);
+ FreeAndNil(FNoise);
+ FreeAndNil(FBiQuad[0]);
+ FreeAndNil(FBiQuad[1]);
+ FreeAndNil(FBiQuad[2]);
+ FreeAndNil(FBiQuad[3]);
+ inherited Destroy;
 end;
 
 procedure TStkStifKarp.Clear;
@@ -168,7 +174,7 @@ begin
     FBiQuad[i].setB0(coefficient);
     FBiQuad[i].setB2(1.0);
 
-    coefficient := -2.0 * temp * cos(TWO_PI * freq / SampleRate);
+    coefficient := -2.0 * temp * cos(2 * Pi * freq * FSampleRateInv);
     FBiQuad[i].setA1(coefficient);
     FBiQuad[i].setB1(coefficient);
 
@@ -199,7 +205,7 @@ end;
 procedure TStkStifKarp.Pluck;
 var
   gain: Single;
-  i: longint;
+  i: Integer;
 begin
   gain := amplitude;
   if (gain > 1.0) then
@@ -252,16 +258,17 @@ begin
   Result := lastOutput;
 end;
 
-procedure TStkStifKarp.controlChange;
+procedure TStkStifKarp.ControlChange;
 var
   norm: Single;
 begin
-  norm := Value; // * ONE_OVER_128;
-  if (Number = __SK_PickPosition_) then // 4
+  norm := Limit(Value, 0, 1);
+
+  if (Number = CMidiPickPosition) then // 4
     SetPickupPosition(norm)
-  else if (Number = __SK_StringDamping_) then // 11
+  else if (Number = CMidiStringDamping) then // 11
     SetBaseLoopGain(0.97 + (norm * 0.03))
-  else if (Number = __SK_StringDetune_) then // 1
+  else if (Number = CMidiStringDetune) then // 1
     SetStretch(0.9 + (0.1 * (1.0 - norm)));
 end;
 

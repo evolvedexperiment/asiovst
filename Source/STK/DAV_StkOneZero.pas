@@ -14,22 +14,22 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkFilter;
+  DAV_Common, DAV_StkCommon, DAV_StkFilter;
 
 type
-  TOneZero = class(TStkFilter)
+  TStkOneZero = class(TStkFilter)
   public
     // Default constructor creates a first-order low-pass filter.
-    constructor Create(SampleRate: Single); overload;
+    constructor Create(const SampleRate: Single); overload; override;
 
     // Overloaded constructor which sets the pole position during instantiation.
-    constructor Create(SampleRate, theZero: Single); overload;
+    constructor Create(const SampleRate, theZero: Single); overload; virtual;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Clears the internal state of the filter.
-    procedure Clear;
+    procedure Clear; override; 
 
     // Set the b[0] coefficient value.
     procedure setB0(b0: Single);
@@ -47,29 +47,16 @@ type
   }
     procedure setZero(theZero: Single);
 
-    // Set the filter gain.
-  {
-    The gain is applied at the filter input and does not affect the
-    coefficient values.  The default gain value is 1.0.
-   }
-    procedure setGain(theGain: Single);
-
-    // Return the current filter gain.
-    function getGain: Single;
-
-    // Return the last computed output value.
-    function lastOut: Single;
-
     // Input one sample to the filter and return one output.
-    function tick(sample: Single): Single; overload;
+    function Tick(const Sample: Single): Single; overload; override;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function tick(vector: PSingle; vectorSize: longint): PSingle; overload;
+    procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
   end;
 
 implementation
 
-constructor TOneZero.Create(SampleRate: Single);
+constructor TStkOneZero.Create(const SampleRate: Single);
 var
   b: array[0..1] of Single;
   a: Single;
@@ -81,7 +68,7 @@ begin
   inherited setCoefficients(2, @B, 1, @A);
 end;
 
-constructor TOneZero.Create(SampleRate, theZero: Single);
+constructor TStkOneZero.Create(const SampleRate, theZero: Single);
 var
   b: array[0..1] of Single;
   a: Single;
@@ -98,82 +85,52 @@ begin
   inherited setCoefficients(2, @B, 1, @A);
 end;
 
-destructor TOneZero.Destroy;
+destructor TStkOneZero.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TOneZero.Clear;
+procedure TStkOneZero.Clear;
 begin
   inherited Clear;
 end;
 
-procedure TOneZero.setB0(b0: Single);
+procedure TStkOneZero.setB0(b0: Single);
 begin
  FB^[0] := b0;
 end;
 
-procedure TOneZero.setB1(b1: Single);
-var
-  p: pSingle;
+procedure TStkOneZero.setB1(b1: Single);
 begin
-  p := pindex(b, 1);
-  p^ := b1;
+ PDAV4SingleArray(FB)^[1] := b1;
 end;
 
-procedure TOneZero.setZero;
-var
-  p: pSingle;
+procedure TStkOneZero.setZero;
 begin
   // Normalize coefficients for unity gain.
-  if (theZero > 0.0) then
-    b^ := 1.0 / (1.0 + theZero)
-  else
-    b^ := 1.0 / (1.0 - theZero);
-  p := pindex(b, 1);
-  p^ := -theZero * b^;
+  if (theZero > 0.0)
+   then FB^[0] := 1.0 / (1.0 + theZero)
+   else FB^[0] := 1.0 / (1.0 - theZero);
+  PDAV4SingleArray(FB)^[1] := -theZero * FB^[0];
 end;
 
-procedure TOneZero.setGain;
+function TStkOneZero.Tick(const sample: Single): Single;
 begin
-  inherited setGain(theGain);
+  FInputs^[0] := Gain * sample;
+
+  FOutputs^[0] := PDAV4SingleArray(FB)^[1] * PDAV4SingleArray(FInputs)^[1] +
+    FB^[0] * FInputs^[0];
+  PDAV4SingleArray(FInputs)^[1] := FInputs^[0];
+
+  Result := FOutputs^[0];
 end;
 
-function TOneZero.getGain;
-begin
-  Result := inherited getGain;
-end;
-
-function TOneZero.lastOut;
-begin
-  Result := inherited lastOut;
-end;
-
-function TOneZero.tick(sample: Single): Single;
+procedure TStkOneZero.Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  p: pSingle;
+  Sample: integer;
 begin
-  inputs^ := gain * sample;
-
-  outputs^ := index(b, 1) * index(inputs, 1) + b^ * inputs^;
-  p := pindex(inputs, 1);
-  p^ := inputs^;
-
-  Result := outputs^;
-end;
-
-function TOneZero.tick(vector: PSingle; vectorSize: longint): PSingle;
-var
-  i: integer;
-  p: pSingle;
-begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := tick(p^);
-    Inc(p);
-   end;
-  Result := vector;
+  for Sample := 0 to SampleFrames - 1
+   do Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

@@ -19,136 +19,135 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkInstrument, DAV_StkAdsr, DAV_StkWavePlayer, DAV_StkOnePole,
-  DAV_StkBiquad, DAV_StkNoise;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkAdsr, DAV_StkWavePlayer,
+  DAV_StkOnePole, DAV_StkBiquad, DAV_StkNoise;
 
 type
-  TStkSimple = class(TStkInstrmnt)
+  TStkSimple = class(TStkControlableInstrument)
   protected
-    FADSR          : TAdsr;
-    FLoop          : TWavePlayer;
-    FFilter        : TOnePole;
-    FBiQuad        : TBiquad;
-    FNoise         : TNoise;
+    FADSR          : TStkAdsr;
+    FLoop          : TStkWavePlayer;
+    FFilter        : TStkOnePole;
+    FBiQuad        : TStkBiquad;
+    FNoise         : TStkNoise;
     FBaseFrequency : Single;
     FLoopGain      : Single;
+
+    // Set instrument parameters for a particular Frequency.
+    procedure SetFrequency(const Frequency: Single); override;
+
   public
     // Class constructor.
-    constructor Create(SampleRate: Single);
+    constructor Create(const SampleRate: Single); override;
 
     // Class destructor.
-    destructor Destroy;
-
-    // Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: Single);
+    destructor Destroy; override;
 
     // Start envelope toward "on" target.
-    procedure keyOn;
+    procedure KeyOn;
 
     // Start envelope toward "off" target.
-    procedure keyOff;
+    procedure KeyOff;
 
-    // Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: Single);
+    // Start a note with the given Frequency and Amplitude.
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
-    // Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: Single);
+    // Stop a note with the given Amplitude (speed of decay).
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function tick: Single;
+    function Tick: Single; override;
 
-    // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: Integer; Value: Single);
+    // Perform the control change specified by number and value (0.0 - 1.0).
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
   end;
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TStkSimple.Create;
 begin
   inherited Create(SampleRate);
-  FADSR := TAdsr.Create(srate);
+  FADSR := TStkAdsr.Create(SampleRate);
   FBaseFrequency := 440.0;
 
-  FLoop := TWavePlayer.Create(srate, 'impuls10.raw');
+  FLoop := TStkWavePlayer.Create(SampleRate, 'impuls10.raw');
 
-  FFilter := TOnePole.Create(srate, 0.5);
-  FNoise := TNoise.Create(srate);
-  FBiQuad := TBiquad.Create(srate);
+  FFilter := TStkOnePole.Create(SampleRate, 0.5);
+  FNoise := TStkNoise.Create(SampleRate);
+  FBiQuad := TStkBiquad.Create(SampleRate);
 
-  setFrequency(FBaseFrequency);
+  SetFrequency(FBaseFrequency);
   FLoopGain := 0.5;
 end;
 
 destructor TStkSimple.Destroy;
 begin
-  inherited Destroy;
-  FADSR.Free;
-  FLoop.Free;
-  FFilter.Free;
-  FBiQuad.Free;
+ FreeAndNil(FADSR);
+ FreeAndNil(FLoop);
+ FreeAndNil(FFilter);
+ FreeAndNil(FBiQuad);
+ inherited Destroy;
 end;
 
-procedure TStkSimple.keyOn;
+procedure TStkSimple.KeyOn;
 begin
-  FADSR.keyOn;
+  FADSR.KeyOn;
 end;
 
-procedure TStkSimple.keyOff;
+procedure TStkSimple.KeyOff;
 begin
-  FADSR.keyOff;
+  FADSR.KeyOff;
 end;
 
-procedure TStkSimple.noteOn;
+procedure TStkSimple.NoteOn;
 begin
-  keyOn;
-  setFrequency(frequency);
-  FFilter.setGain(amplitude);
+  KeyOn;
+  SetFrequency(Frequency);
+  FFilter.Gain := Amplitude;
 end;
 
-procedure TStkSimple.noteOff;
+procedure TStkSimple.NoteOff;
 begin
-  keyOff;
+  KeyOff;
 end;
 
-procedure TStkSimple.setFrequency;
+procedure TStkSimple.SetFrequency;
 begin
-  FBiQuad.setResonance(frequency, 0.98, True);
-  FLoop.setFrequency(frequency);
+  FBiQuad.setResonance(Frequency, 0.98, True);
+  FLoop.Frequency := Frequency;
 end;
 
-function TStkSimple.tick: Single;
+function TStkSimple.Tick: Single;
 begin
-  lastOutput := FLoopGain * FLoop.tick;
-  FBiQuad.tick(FNoise.tick);
-  lastOutput := lastoutput + (1.0 - FLoopGain) * FBiQuad.lastOut;
-  lastOutput := FFilter.tick(lastOutput);
-  lastOutput := lastoutput * FADSR.tick;
-  Result := lastOutput;
+  FLastOutput := FLoopGain * FLoop.Tick;
+  FBiQuad.Tick(FNoise.Tick);
+  FLastOutput := lastoutput + (1.0 - FLoopGain) * FBiQuad.LastOutput;
+  FLastOutput := FFilter.Tick(lastOutput) * FADSR.Tick;
+  Result := FLastOutput;
 end;
 
-procedure TStkSimple.controlChange;
+procedure TStkSimple.ControlChange;
 var
   norm: Single;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
-  if (number = __SK_Breath_) then // 2
+  if (Number = CMidiBreath) then // 2
     FFilter.setPole(0.99 * (1.0 - (norm * 2.0)))
-  else if (number = __SK_NoiseLevel_) then // 4
+  else if (Number = CMidiNoiseLevel) then // 4
     FLoopGain := norm
-  else if (number = __SK_ModFrequency_) then
+  else if (Number = CMidiModFrequency) then
    begin // 11
-    norm := norm / (0.2 * srate);
-    FADSR.setAttackRate(norm);
-    FADSR.setDecayRate(norm);
-    FADSR.setReleaseRate(norm);
+    norm := norm / (0.2 * SampleRate);
+    FADSR.AttackRate := norm;
+    FADSR.DecayRate := norm;
+    FADSR.ReleaseRate := norm;
    end
-  else if (number = __SK_AfterTouch_Cont_) then // 128
-    FADSR.setTarget(norm);
+  else if (Number = CMidiAfterTouchCont) then // 128
+    FADSR.Target := norm;
 end;
 
 end.

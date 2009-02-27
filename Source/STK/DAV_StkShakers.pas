@@ -51,73 +51,61 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkInstrument, Math;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, Math;
 
 const
-  MAX_FREQS = 8;
+  CMaxFreqs = 8;
   NUM_INSTR = 24;
 
 type
-  TShakers = class(TInstrmnt)
+  TShakers = class(TStkControlableInstrument)
   public
     // Class constructor.
-    constructor Create(sr: my_float);
+    constructor Create(const SampleRate: Single); override;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Start a note with the given instrument and amplitude.
   {
     Use the instrument numbers above, converted to frequency values
     as if MIDI note numbers, to select a particular instrument.
   }
-    procedure noteOn(frequency, amplitude: MY_FLOAT); overload;
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: MY_FLOAT);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function tick: MY_FLOAT;
+    function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: MY_FLOAT);
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
 
   protected
     shakeEnergy, sndLevel, baseGain, soundDecay, systemDecay,
-    nObjects, collLikely, totalEnergy, ratchet, ratchetDelta: my_float;
+    nObjects, collLikely, totalEnergy, ratchet, ratchetDelta: Single;
     center_freqs, t_center_freqs, gains,
-    freq_rand, resons, inputs: array[0..MAX_FREQS - 1] of my_float;
-    coeffs, outputs: array[0..MAX_FREQS - 1, 0..1] of my_float;
-    finalZCoeffs, finalZ: array[0..2] of my_float;
-    decayScale, defDecays, defObjs: array[0..NUM_INSTR - 1] of my_float;
-    freqalloc: array[0..MAX_FREQS - 1] of integer;
+    freq_rand, resons, inputs: array[0..CMaxFreqs - 1] of Single;
+    coeffs, outputs: array[0..CMaxFreqs - 1, 0..1] of Single;
+    finalZCoeffs, finalZ: array[0..2] of Single;
+    decayScale, defDecays, defObjs: array[0..NUM_INSTR - 1] of Single;
+    freqalloc: array[0..CMaxFreqs - 1] of integer;
     nFreqs, ratchetPos, lastRatchetPos, instType: integer;
   //  int setupName(char* instr);
-    function setFreqAndReson(which: integer; freq, reson: my_float): integer;
-    procedure setDecays(sndDecay, sysDecay: my_float);
-    procedure setFinalZs(z0, z1, z2: my_float);
+    function setFreqAndReson(which: integer; freq, reson: Single): integer;
+    procedure setDecays(sndDecay, sysDecay: Single);
+    procedure setFinalZs(z0, z1, z2: Single);
     function setupNum(inst: integer): integer;
-    function wuter_tick: my_float;
-    function tbamb_tick: my_float;
-    function ratchet_tick: my_float;
+    function wuter_tick: Single;
+    function tbamb_tick: Single;
+    function ratchet_tick: Single;
   end;
 
 implementation
 
-function my_random(max: integer): integer;
- //  Return Random Int Between 0 and max
-begin
-  Result := round(max * random);
-end;
-
-function float_random(max: my_float): my_float;
- // Return random float between 0.0 and max
-begin
-  Result := max * random;
-end;
-
-function noise_tick: my_float;
- //  Return random MY_FLOAT float between -1.0 and 1.0
+function NoiseTick: Single;
+ //  Return random Single float between -1.0 and 1.0
 begin
   Result := 2 * random - 1;
 end;
@@ -323,17 +311,17 @@ const
 
 // Finally ... the class code!
 
-constructor TShakers.Create;
+constructor TShakers.Create(const SampleRate: Single);
 var
   i: integer;
 begin
-  inherited Create(sr);
+  inherited Create(SampleRate);
   instType := 0;
   shakeEnergy := 0.0;
   nFreqs := 0;
   sndLevel := 0.0;
 
-  for i := 0 to MAX_FREQS - 1 do
+  for i := 0 to CMaxFreqs - 1 do
    begin
     inputs[i] := 0.0;
     outputs[i][0] := 0.0;
@@ -414,15 +402,15 @@ begin
   systemDecay := sysDecay;
 end;
 
-function TShakers.setFreqAndReson(which: integer; freq, reson: my_float): integer;
+function TShakers.setFreqAndReson(which: integer; freq, reson: Single): integer;
 begin
-  if (which < MAX_FREQS) then
+  if (which < CMaxFreqs) then
    begin
     resons[which] := reson;
     center_freqs[which] := freq;
     t_center_freqs[which] := freq;
     coeffs[which][1] := reson * reson;
-    coeffs[which][0] := -reson * 2.0 * cos(freq * TWO_PI / srate);
+    coeffs[which][0] := -reson * 2.0 * cos(freq * 2 * Pi / SampleRate);
     Result := 1;
    end
   else
@@ -432,7 +420,7 @@ end;
 function TShakers.setupNum(inst: integer): integer;
 var
   i, rv: integer;
-  temp: my_float;
+  temp: Single;
 begin
   if (inst = 1) then
    begin // Cabasa
@@ -872,7 +860,7 @@ begin
   Result := rv;
 end;
 
-procedure TShakers.noteOn(frequency, amplitude: MY_FLOAT);
+procedure TShakers.NoteOn(const Frequency, Amplitude: Single);
 var
   notenum: integer;
 begin
@@ -898,25 +886,25 @@ end;
 const
   MIN_ENERGY = 0.3;
 
-function TShakers.tick: MY_FLOAT;
+function TShakers.tick: Single;
 var
-  Data, temp_rand: my_float;
+  Data, temp_rand: Single;
   i: integer;
 begin
   if (instType = 4) then
    begin
     if (shakeEnergy > MIN_ENERGY) then
      begin
-      lastOutput := wuter_tick;
-      lastOutput := lastoutput * 0.0001;
+      FLastOutput := wuter_tick;
+      FLastOutput := lastoutput * 0.0001;
      end
     else
      begin
-      lastOutput := 0.0;
+      FLastOutput := 0.0;
      end;
    end
   else if (instType = 22) then
-    lastOutput := tbamb_tick
+    FLastOutput := tbamb_tick
   else if ((instType = 10) or (instType = 3)) then
    begin
     if (ratchetPos > 0) then
@@ -928,28 +916,28 @@ begin
         ratchetPos := ratchetpos - 1;
        end;
       totalEnergy := ratchet;
-      lastOutput := ratchet_tick;
-      lastOutput := lastoutput * 0.0001;
+      FLastOutput := ratchet_tick;
+      FLastOutput := FLastOutput * 0.0001;
      end
     else
-      lastOutput := 0.0;
+      FLastOutput := 0.0;
    end
   else
   if (shakeEnergy > MIN_ENERGY) then
    begin
     shakeEnergy := shakeenergy * systemDecay;
                // Exponential system decay
-    if (float_random(1024.0) < nObjects) then
+    if (random(1024) < nObjects) then
      begin
       sndLevel := sndlevel + shakeEnergy;
       for i := 0 to nFreqs - 1 do
         if (freqalloc[i] > 0) then
          begin
-          temp_rand := t_center_freqs[i] * (1.0 + (freq_rand[i] * noise_tick));
-          coeffs[i][0] := -resons[i] * 2.0 * cos(temp_rand * TWO_PI / srate);
+          temp_rand := t_center_freqs[i] * (1.0 + (freq_rand[i] * NoiseTick));
+          coeffs[i][0] := -resons[i] * 2.0 * cos(temp_rand * 2 * Pi / SampleRate);
          end;
      end;
-    inputs[0] := sndLevel * noise_tick;      // Actual Sound is Random
+    inputs[0] := sndLevel * NoiseTick;      // Actual Sound is Random
     for i := 1 to nFreqs - 1 do
       inputs[i] := inputs[0];
     sndLevel := sndlevel * soundDecay;
@@ -972,27 +960,22 @@ begin
       Data := 10000.0;
     if (Data < -10000.0) then
       Data := -10000.0;
-    lastOutput := Data * 0.0001;
+    FLastOutput := Data * 0.0001;
    end
   else
-    lastOutput := 0.0//  MY_FLOAT generic_tick  begin
-  ;
+    FLastOutput := 0.0;//  Single generic_tick  begin
 
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TShakers.controlChange;
 var
-  temp, norm: my_float;
+  temp, norm: Single;
   i: integer;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
-  if (number = __SK_Breath_) then
+  if (number = CMidiBreath) then
    begin // 2 ... energy
     shakeEnergy := shakeenergy + norm * MAX_SHAKE * 0.1;
     if (shakeEnergy > MAX_SHAKE) then
@@ -1004,7 +987,7 @@ begin
       lastRatchetPos := round(Value);
      end;
    end
-  else if (number = __SK_ModFrequency_) then
+  else if (number = CMidiModFrequency) then
    begin // 4 ... decay
     if ((instType <> 3) and (instType <> 10)) then
      begin
@@ -1033,7 +1016,7 @@ begin
         gains[i] := gains[i] * ((128 - Value) / 100.0 + 0.36);
      end;
    end
-  else if (number = __SK_FootControl_) then
+  else if (number = CMidiFootControl) then
    begin // 11 ... number of objects
     if (instType = 5) then // bamboo
       nObjects := (Value * defObjs[instType] / 64.0) + 0.3
@@ -1066,7 +1049,7 @@ begin
         gains[i] := gains[i] * ((128 - temp) / 100.0 + 0.36);
      end;
    end
-  else if (number = __SK_ModWheel_) then
+  else if (number = CMidiModWheel) then
    begin // 1 ... resonance frequency
     for i := 0 to nFreqs - 1 do
      begin
@@ -1077,11 +1060,11 @@ begin
         temp := center_freqs[i] * power(1.015, Value - 64);
       t_center_freqs[i] := temp;
 
-      coeffs[i][0] := -resons[i] * 2.0 * cos(temp * TWO_PI / srate);
+      coeffs[i][0] := -resons[i] * 2.0 * cos(temp * 2 * Pi / SampleRate);
       coeffs[i][1] := resons[i] * resons[i];
      end;
    end
-  else if (number = __SK_AfterTouch_Cont_) then
+  else if (number = CMidiAfterTouchCont) then
    begin // 128
     shakeEnergy := shakeenergy + norm * MAX_SHAKE * 0.1;
     if (shakeEnergy > MAX_SHAKE) then
@@ -1093,7 +1076,7 @@ begin
       lastRatchetPos := round(Value);
      end;
    end
-  else if (number = __SK_ShakerInst_) then
+  else if (number = CMidiShakerInst) then
    begin // 1071
     instType := round(norm * 22);  //  Just to be safe
     setupNum(instType);
@@ -1102,31 +1085,31 @@ end;
 
 // KLUDGE-O-MATIC-O-RAMA
 
-function TShakers.wuter_tick: my_float;
+function TShakers.wuter_tick: Single;
 var
-  Data: my_float;
+  Data: Single;
   j: integer;
 begin
   shakeEnergy := shakeenergy * systemDecay;
                // Exponential system decay
-  if (my_random(32767) < nObjects) then
+  if (random(32767) < nObjects) then
    begin
     sndLevel := shakeEnergy;
-    j := my_random(3);
+    j := random(3);
     if (j = 0) then
      begin
-      center_freqs[0] := WUTR_CENTER_FREQ1 * (0.75 + (0.25 * noise_tick));
-      gains[0] := abs(noise_tick);
+      center_freqs[0] := WUTR_CENTER_FREQ1 * (0.75 + (0.25 * NoiseTick));
+      gains[0] := abs(NoiseTick);
      end
     else if (j = 1) then
      begin
-      center_freqs[1] := WUTR_CENTER_FREQ1 * (1.0 + (0.25 * noise_tick));
-      gains[1] := abs(noise_tick);
+      center_freqs[1] := WUTR_CENTER_FREQ1 * (1.0 + (0.25 * NoiseTick));
+      gains[1] := abs(NoiseTick);
      end
     else
      begin
-      center_freqs[2] := WUTR_CENTER_FREQ1 * (1.25 + (0.25 * noise_tick));
-      gains[2] := abs(noise_tick);
+      center_freqs[2] := WUTR_CENTER_FREQ1 * (1.25 + (0.25 * NoiseTick));
+      gains[2] := abs(NoiseTick);
      end;
    end;
 
@@ -1135,27 +1118,27 @@ begin
    begin
     center_freqs[0] := center_freqs[0] * WUTR_FREQ_SWEEP;
     coeffs[0][0] := -resons[0] * 2.0 * cos(center_freqs[0] *
-      TWO_PI / srate);
+      2 * Pi / SampleRate);
    end;
   gains[1] := gains[1] * resons[1];
   if (gains[1] > 0.001) then
    begin
     center_freqs[1] := center_freqs[1] * WUTR_FREQ_SWEEP;
     coeffs[1][0] := -resons[1] * 2.0 * cos(center_freqs[1] *
-      TWO_PI / srate);
+      2 * Pi / SampleRate);
    end;
   gains[2] := gains[2] * resons[2];
   if (gains[2] > 0.001) then
    begin
     center_freqs[2] := center_freqs[2] * WUTR_FREQ_SWEEP;
     coeffs[2][0] := -resons[2] * 2.0 * cos(center_freqs[2] *
-      TWO_PI / srate);
+      2 * Pi / SampleRate);
    end;
 
   sndLevel := sndlevel * soundDecay;        // Each (all) event(s) 
                                  // decay(s) exponentially 
   inputs[0] := sndLevel;
-  inputs[0] := inputs[0] * noise_tick;     // Actual Sound is Random
+  inputs[0] := inputs[0] * NoiseTick;     // Actual Sound is Random
   inputs[1] := inputs[0] * gains[1];
   inputs[2] := inputs[0] * gains[2];
   inputs[0] := inputs[0] * gains[0];
@@ -1183,14 +1166,14 @@ begin
   Result := Data;
 end;
 
-function TShakers.ratchet_tick: my_float;
+function TShakers.ratchet_tick: Single;
 var
-  Data: my_float;
+  Data: Single;
 begin
-  if (my_random(1024) < nObjects) then
+  if (random(1024) < nObjects) then
     sndLevel := sndlevel + 512 * ratchet * totalEnergy;
   inputs[0] := sndLevel;
-  inputs[0] := inputs[0] * noise_tick * ratchet;
+  inputs[0] := inputs[0] * NoiseTick * ratchet;
   sndLevel := sndlevel * soundDecay;
 
   inputs[1] := inputs[0];
@@ -1210,49 +1193,50 @@ begin
   Result := Data;
 end;
 
-function TShakers.tbamb_tick: my_float;
+function TShakers.tbamb_tick: Single;
 var
-  Data, temp: my_float;
+  Data, temp: Single;
   which, i: integer;
 begin
-  if (shakeEnergy > MIN_ENERGY) then
-   begin
-    shakeEnergy := shakeenergy * systemDecay;    // Exponential system decay
-    if (float_random(1024.0) < nObjects) then
-     begin
-      sndLevel := sndlevel + shakeEnergy;
-      which := my_random(7);
-     end;
-    temp := sndLevel * noise_tick;      // Actual Sound is Random
-    for i := 0 to nFreqs - 1 do
-      inputs[i] := 0;
-    inputs[which mod 7] := temp;
-    sndLevel := sndlevel * soundDecay;
-                   // Exponential Sound decay
-    finalZ[2] := finalZ[1];
-    finalZ[1] := finalZ[0];
-    finalZ[0] := 0;
-    for i := 0 to nFreqs - 1 do
-     begin
-      inputs[i] := inputs[i] - outputs[i][0] * coeffs[i][0];  // Do
-      inputs[i] := inputs[i] - outputs[i][1] * coeffs[i][1];  // resonant
-      outputs[i][1] := outputs[i][0];            // filter
-      outputs[i][0] := inputs[i];                // calculations
-      finalZ[0] := finalz[0] + gains[i] * outputs[i][1];
-     end;
-    Data := finalZCoeffs[0] * finalZ[0];     // Extra zero(s) for shape
-    Data := Data + finalZCoeffs[1] * finalZ[1];    // Extra zero(s) for shape
-    Data := Data + finalZCoeffs[2] * finalZ[2];    // Extra zero(s) for shape
-    if (Data > 10000.0) then
-      Data := 10000.0
-    else
-    if (Data < -10000.0) then
-      Data := -10000.0;
-    Data := Data * 0.0001;
-   end
-  else
-    Data := 0.0;
-  Result := Data;
+ which := 0;
+ if (shakeEnergy > MIN_ENERGY) then
+  begin
+   shakeEnergy := shakeenergy * systemDecay;    // Exponential system decay
+   if (random(1024) < nObjects) then
+    begin
+     sndLevel := sndlevel + shakeEnergy;
+     which := random(7);
+    end;
+   temp := sndLevel * NoiseTick;      // Actual Sound is Random
+   for i := 0 to nFreqs - 1 do
+     inputs[i] := 0;
+   inputs[which mod 7] := temp;
+   sndLevel := sndlevel * soundDecay;
+                  // Exponential Sound decay
+   finalZ[2] := finalZ[1];
+   finalZ[1] := finalZ[0];
+   finalZ[0] := 0;
+   for i := 0 to nFreqs - 1 do
+    begin
+     inputs[i] := inputs[i] - outputs[i][0] * coeffs[i][0];  // Do
+     inputs[i] := inputs[i] - outputs[i][1] * coeffs[i][1];  // resonant
+     outputs[i][1] := outputs[i][0];            // filter
+     outputs[i][0] := inputs[i];                // calculations
+     finalZ[0] := finalz[0] + gains[i] * outputs[i][1];
+    end;
+   Data := finalZCoeffs[0] * finalZ[0];     // Extra zero(s) for shape
+   Data := Data + finalZCoeffs[1] * finalZ[1];    // Extra zero(s) for shape
+   Data := Data + finalZCoeffs[2] * finalZ[2];    // Extra zero(s) for shape
+   if (Data > 10000.0) then
+     Data := 10000.0
+   else
+   if (Data < -10000.0) then
+     Data := -10000.0;
+   Data := Data * 0.0001;
+  end
+ else
+   Data := 0.0;
+ Result := Data;
 end;
 
 end.

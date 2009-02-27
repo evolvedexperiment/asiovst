@@ -23,7 +23,7 @@ uses
   DAV_StkLfo, DAV_StkOnePole, DAV_StkEnvelope, Math, Windows;
 
 type
-  TStkWhistle = class(TStkInstrmnt)
+  TStkWhistle = class(TStkInstrument)
   protected
     tempvector, tempvectorp: TVector3D;
     OnePole: Tonepole;
@@ -118,15 +118,15 @@ end;
 
 destructor TStkWhistle.Destroy;
 begin
-  inherited Destroy;
-  tempVector.Free;
-  can.Free;
-  pea.Free;
-  bumper.Free;
-  sine.Free;
-  envelope.Free;
-  onepole.Free;
-  noise.Free;
+ FreeAndNil(tempVector);
+ FreeAndNil(can);
+ FreeAndNil(pea);
+ FreeAndNil(bumper);
+ FreeAndNil(sine);
+ FreeAndNil(envelope);
+ FreeAndNil(onepole);
+ FreeAndNil(noise);
+ inherited Destroy;
 end;
 
 procedure TStkWhistle.Clear;
@@ -257,11 +257,8 @@ procedure TStkWhistle.controlChange;
 var
   norm: Single;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
+
   if (number = __SK_NoiseLevel_) then // 4
     noiseGain := 0.25 * norm
   else if (number = __SK_ModFrequency_) then // 11

@@ -49,10 +49,10 @@ type
   {
     The valid range for \e ADelay is from 0.5 to the maximum delay-line length.
   }
-    procedure setDelay(ADelay: Single);
+    procedure SetDelay(const ADelay: Single);
 
     // Return the current delay-line length.
-    function getDelay: Single;
+    function GetDelay: Single;
 
     // Return the value which will be output by the next call to tick().
   {
@@ -61,8 +61,9 @@ type
     function nextOut: Single;
 
     // Input one sample to the delay-line and return one output.
-    function tick(sample: Single): Single;
-
+    function Tick(const Sample: Single): Single; override;
+  published
+    property Delay: Single read GetDelay write SetDelay;
   end;
 
 implementation
@@ -107,9 +108,9 @@ begin
   inherited Destroy;
 end;
 
-function TStkDelayA.getDelay: Single;
+function TStkDelayA.GetDelay: Single;
 begin
-  Result := inherited getdelay;
+ Result := inherited Delay;
 end;
 
 function TStkDelayA.nextOut: Single;
@@ -117,73 +118,69 @@ begin
   if (FDoNextOut) then
    begin
     // Do allpass interpolation delay.
-    FNextOutput := -coeff * outputs^;
-    FNextOutput := FNextOutput + FApInput + (FCoeff * index(inputs, outPoint));
+    FNextOutput := -FCoeff * FOutputs^[0];
+    FNextOutput := FNextOutput + FApInput + (FCoeff * FInputs[FOutPoint]);
     FDoNextOut := False;
    end;
   Result := FNextOutput;
 end;
 
-procedure TStkDelayA.setDelay(ADelay: Single);
+procedure TStkDelayA.SetDelay(const ADelay: Single);
 var
-  outPointer: Single;
+  OutPointer: Single;
 begin
-  if (ADelay > length - 1) then
-   begin
-    // Force delay to maxLength
-    outPointer := inPoint + 1.0;
-    delay := length - 1;
-   end
-  else if (ADelay < 0.5) then
-   begin
-    outPointer := inPoint + 0.4999999999;
-    delay := 0.5;
-   end
-  else
-   begin
-    outPointer := inPoint - ADelay + 1.0;     // outPoint chases inpoint
-    delay := ADelay;
-   end;
+ if (ADelay > length - 1) then
+  begin
+   // Force delay to maxLength
+   OutPointer := FInPoint + 1.0;
+   Delay := length - 1;
+  end
+ else if (ADelay < 0.5) then
+  begin
+   OutPointer := FInPoint + 0.4999999999;
+   Delay := 0.5;
+  end
+ else
+  begin
+   OutPointer := FInPoint - ADelay + 1.0;     // OutPoint chases inpoint
+   Delay := ADelay;
+  end;
 
-  if (outPointer < 0) then
-    outPointer := outPointer + length;  // modulo maximum length
+  if (OutPointer < 0)
+   then OutPointer := OutPointer + length;  // modulo maximum length
 
-  outPoint := round(outPointer);        // integer part
-  FAlpha := 1.0 + outPoint - outPointer; // fractional part
+  FOutPoint := round(OutPointer);        // integer part
+  FAlpha := 1.0 + FOutPoint - OutPointer; // fractional part
 
   if (FAlpha < 0.5) then
    begin
     // The optimal range for FAlpha is about 0.5 - 1.5 in order to
     // achieve the flattest phase delay response.
-    outPoint := outPoint + 1;
-    if (outPoint >= length) then
-      outPoint := outPoint - length;
+    Inc(FOutPoint);
+    if (FOutPoint >= length)
+     then FOutPoint := FOutPoint - length;
     FAlpha := FAlpha + 1;
    end;
   FCoeff := (1 - FAlpha) / (1 + FAlpha);         // coefficient for all pass
 end;
 
-function TStkDelayA.tick(sample: Single): Single;
-var
-  p: pmy_float;
+function TStkDelayA.Tick(const Sample: Single): Single;
 begin
-  p := pindex(inputs, inPoint);
-  p^ := sample;
-  inPoint := inPoint + 1;
+  FInputs^[FInPoint] := Sample;
+  Inc(FInPoint);
 
  // Increment input pointer modulo length.
-  if (inPoint = length) then
-    inPoint := inPoint - length;
+  if (FInPoint = length) then
+    FInPoint := FInPoint - length;
 
-  outputs^ := nextOut;
+  FOutputs^[0] := nextOut;
   FDoNextOut := True;
 
  // Save the allpass input and increment modulo length.
-  FApInput := index(inputs, outPoint);
-  if (outPoint = length) then
-    outPoint := outPoint - length;
-  Result := outputs^;
-  outPoint := outPoint + 1;
+  FApInput := FInputs[FOutPoint];
+  if (FOutPoint = length) then FOutPoint := FOutPoint - length;
+  Result := FOutputs^[0];
+  Inc(FOutPoint);
 end;
 
 end.

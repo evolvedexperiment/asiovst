@@ -19,168 +19,166 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrument, DAV_StkJetTable, DAV_StkNoise,
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkJetTable, DAV_StkNoise,
   DAV_StkBiquad, DAV_StkPolezero, DAV_StkAdsr, DAV_StkLfo;
 
 type
-  TBlowBotl = class(TInstrmnt)
+  TStkBlowBottle = class(TStkControlableInstrument)
   protected
-    FJetTable    : TJetTable;
-    FResonator   : TBiquad;
-    FDCBlock     : TPoleZero;
-    FNoise       : TNoise;
-    FAdsr        : TAdsr;
-    FVibrato     : TLfo;
+    FJetTable    : TStkJetTable;
+    FResonator   : TStkBiquad;
+    FDCBlock     : TStkPoleZero;
+    FNoise       : TStkNoise;
+    FAdsr        : TStkAdsr;
+    FVibrato     : TStkLfo;
     FMaxPressure : Single;
     FNoiseGain   : Single;
     FVibratoGain : Single;
     FOutputGain  : Single;
+
+    // Set instrument parameters for a particular frequency.
+    procedure SetFrequency(const Frequency: Single); override;
+
   public
     // Class constructor.
-    constructor Create(sr: Single);
+    constructor Create(const SampleRate: Single); override;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Set instrument parameters for a particular frequency.
-    procedure SetFrequency(frequency: Single);
-
     // Apply breath velocity to instrument with given Amplitude and rate of increase.
-    procedure StartBlowing(Amplitude, rate: Single);
+    procedure StartBlowing(const Amplitude, Rate: Single);
 
     // Decrease breath velocity with given rate of decrease.
-    procedure StopBlowing(rate: Single);
+    procedure StopBlowing(const Rate: Single);
 
     // Start a note with the given frequency and Amplitude.
-    procedure noteOn(frequency, Amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Stop a note with the given Amplitude (speed of decay).
-    procedure noteOff(Amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function tick: Single;
+    function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(number: Integer; Value: Single);
-
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
   end;
 
 implementation
 
+uses
+  SysUtils, DAV_StkFilter;
+
 const
   CBottleRadius = 0.999;
 
-constructor TBlowBotl.Create;
+constructor TStkBlowBottle.Create(const SampleRate: Single);
 begin
-  inherited Create(sr);
-  FJetTable := TJetTable.Create(Samplerate);
-  FDCBlock := TPoleZero.Create(Samplerate);
+  inherited Create(SampleRate);
+  FJetTable := TStkJetTable.Create(Samplerate);
+  FDCBlock := TStkPoleZero.Create(Samplerate);
   FDCBlock.SetBlockZero;
-  FVibrato := TLfo.Create(Samplerate);
-  FVibrato.SetFrequency(5.925);
+  FVibrato := TStkLfo.Create(Samplerate);
+  FVibrato.Frequency := 5.925;
   FVibratoGain := 0.0;
-  FResonator := TBiquad.Create(Samplerate);
+  FResonator := TStkBiquad.Create(Samplerate);
   FResonator.SetResonance(500.0, CBottleRadius, True);
-  FAdsr := TAdsr.Create(Samplerate);
+  FAdsr := TStkAdsr.Create(Samplerate);
   FAdsr.SetAllTimes(0.005, 0.01, 0.8, 0.010);
-  FNoise := TNoise.Create(Samplerate);
+  FNoise := TStkNoise.Create(Samplerate);
   FNoiseGain := 20.0;
   FMaxPressure := 0.0;
 end;
 
-destructor TBlowBotl.Destroy;
+destructor TStkBlowBottle.Destroy;
 begin
   inherited Destroy;
-  FJetTable.Free;
-  FResonator.Free;
-  FDCBlock.Free;
-  FNoise.Free;
-  FAdsr.Free;
-  FVibrato.Free;
+  FreeAndNil(FJetTable);
+  FreeAndNil(FResonator);
+  FreeAndNil(FDCBlock);
+  FreeAndNil(FNoise);
+  FreeAndNil(FAdsr);
+  FreeAndNil(FVibrato);
 end;
 
-procedure TBlowBotl.Clear;
+procedure TStkBlowBottle.Clear;
 begin
   FResonator.Clear;
 end;
 
-procedure TBlowBotl.SetFrequency;
+procedure TStkBlowBottle.SetFrequency(const Frequency: Single);
 var
   Freakency: Single;
 begin
   Freakency := frequency;
-  if (frequency <= 0.0) then
-    Freakency := 220.0;
+  if (frequency <= 0.0) then Freakency := 220.0;
   FResonator.SetResonance(Freakency, CBottleRadius, True);
 end;
 
-procedure TBlowBotl.StartBlowing;
+procedure TStkBlowBottle.StartBlowing(const Amplitude, Rate: Single);
 begin
-  FAdsr.SetAttackRate(rate);
+  FAdsr.AttackRate := rate;
   FMaxPressure := Amplitude;
-  FAdsr.keyOn();
+  FAdsr.KeyOn;
 end;
 
-procedure TBlowBotl.StopBlowing;
+procedure TStkBlowBottle.StopBlowing(const Rate: Single);
 begin
-  FAdsr.setReleaseRate(rate);
-  FAdsr.keyOff();
+  FAdsr.ReleaseRate := rate;
+  FAdsr.KeyOff;
 end;
 
-procedure TBlowBotl.noteOn;
+procedure TStkBlowBottle.NoteOn(const Frequency, Amplitude: Single);
 begin
-  SetFrequency(frequency);
+  SetFrequency(Frequency);
   StartBlowing(1.1 + (Amplitude * 0.20), Amplitude * 0.02);
   FOutputGain := Amplitude + 0.001;
 end;
 
-procedure TBlowBotl.noteOff;
+procedure TStkBlowBottle.NoteOff(const Amplitude: Single);
 begin
   StopBlowing(Amplitude * 0.02);
 end;
 
-function TBlowBotl.tick: Single;
+function TStkBlowBottle.Tick: Single;
 var
   breathPressure, randPressure, pressureDiff: Single;
 begin
   // Calculate the breath pressure (envelope + FVibrato)
-  breathPressure := FMaxPressure * FAdsr.tick();
-  breathPressure := breathPressure + FVibratoGain * FVibrato.tick();
+  breathPressure := FMaxPressure * FAdsr.tick;
+  breathPressure := breathPressure + FVibratoGain * FVibrato.tick;
 
-  pressureDiff := breathPressure - FResonator.lastOut();
+  pressureDiff := breathPressure - FResonator.LastOutput;
 
-  randPressure := FNoiseGain * FNoise.tick();
+  randPressure := FNoiseGain * FNoise.tick;
   randPressure := randPressure * breathPressure;
   randPressure := randpressure * (1.0 + pressureDiff);
 
   FResonator.tick(breathPressure + randPressure -
     (FJetTable.tick(pressureDiff) * pressureDiff));
-  lastOutput := 0.2 * FOutputGain * FDCBlock.tick(pressureDiff);
+  FLastOutput := 0.2 * FOutputGain * FDCBlock.tick(pressureDiff);
 
   Result := lastOutput;
 end;
 
-procedure TBlowBotl.ControlChange;
+procedure TStkBlowBottle.ControlChange;
 var
   norm: Single;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
-  if (number = __SK_NoiseLevel_) then // 4
+  if (number = CMidiNoiseLevel) then // 4
     FNoiseGain := norm * 30.0
-  else if (number = __SK_ModFrequency_) then // 11
-    FVibrato.SetFrequency(norm * 12.0)
-  else if (number = __SK_ModWheel_) then // 1
+  else if (number = CMidiModFrequency) then // 11
+    FVibrato.Frequency := norm * 12.0
+  else if (number = CMidiModWheel) then // 1
     FVibratoGain := norm * 0.4
-  else if (number = __SK_AfterTouch_Cont_) then // 128
-    FAdsr.setTarget(norm);
+  else if (number = CMidiAfterTouchCont) then // 128
+    FAdsr.Target := norm;
 end;
 
 end.

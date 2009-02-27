@@ -475,7 +475,7 @@ end;
 
 procedure TPCMWaveReader.AllocBuffers;
 var
-  ss, dd: DWord;
+  ss, dd : Cardinal;
 begin
   DestroyBuffers;
 
@@ -488,10 +488,10 @@ begin
    then raise EWaveIOError.Create('Error 30: Cannot recommend an acm stream size.');
 
   // alloc source buffer(raw)
-  FRawBufferSampleSize := FBufferLength div dd;
+  FRawBufferSampleSize := FBufferLength div Integer(dd);
   if (FRawBufferSampleSize = 0)
    then FRawBufferSampleSize := 1;
-  FRawBufferByteSize := FRawBufferSampleSize * ss;
+  FRawBufferByteSize := FRawBufferSampleSize * Integer(ss);
   GetMem(FRawBuffer, FRawBufferByteSize);
 
   // Alloc destination buffer(decompressed)

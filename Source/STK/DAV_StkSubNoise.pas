@@ -13,61 +13,55 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkNoise;
+  DAV_Common, DAV_StkCommon, DAV_StkNoise;
 
 type
-  TSubNoise = class(TNoise)
+  TStkSubNoise = class(TStkNoise)
+  private
+    // Set the sub-sampling rate.
+    procedure SetSubRate(const Value: Integer);
+  protected
+    FCounter : Integer;
+    FSubRate : Integer;
   public
     // Default constructor sets sub-sample rate to 16.
-    constructor Create(sr: my_float; subRate: integer);
+    constructor Create(const SampleRate: Single; const subRate: Integer); reintroduce; virtual;
 
     // Class destructor.
-    destructor Destroy;
-
-    // Return the current sub-sampling rate.
-    function subRate: integer;
-
-    // Set the sub-sampling rate.
-    procedure setRate(subRate: integer);
+    destructor Destroy; override;
 
     // Return a sub-sampled random number between -1.0 and 1.0.
-    function tick: my_float;
-  protected
-    counter, rate: integer;
+    function Tick: Single; override;
+
+    property SubRate: Integer read FSubRate write SetSubRate;
   end;
 
 implementation
 
-constructor TSubNoise.Create;
+constructor TStkSubNoise.Create;
 begin
-  inherited Create(sr);
-  rate := subRate;
-  counter := rate;
+  inherited Create(SampleRate);
+  FSubRate := subRate;
+  FCounter := FSubRate;
 end;
 
-destructor TSubNoise.Destroy;
+destructor TStkSubNoise.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TSubNoise.subRate;
+procedure TStkSubNoise.SetSubRate(const Value: Integer);
 begin
-  Result := rate;
+  if (Value > 0) then FSubRate := Value;
 end;
 
-procedure TSubNoise.setRate;
+function TStkSubNoise.Tick: Single;
 begin
-  if (subRate > 0) then
-    rate := subRate;
-end;
-
-function TSubNoise.tick: my_float;
-begin
-  counter := counter + 1;
-  if (counter > rate) then
+  FCounter := FCounter + 1;
+  if (FCounter > FSubRate) then
    begin
     inherited tick;
-    counter := 1;
+    FCounter := 1;
    end;
   Result := lastOutput;
 end;

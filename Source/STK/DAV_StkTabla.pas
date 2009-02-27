@@ -17,64 +17,68 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkInstrument, DAV_StkWavePlayer, DAV_StkOnePole;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkWavePlayer,
+  DAV_StkOnePole;
 
 const
   CTablaNumWaves = 15;
   CTablaPolyphony = 4;
 
 type
-  TTabla = class(TInstrmnt)
+  TStkTabla = class(TStkInstrument)
   protected
-    FWaves: array[0..CTablaPolyphony - 1] of TWavePlayer;
-    FFilters: array[0..CTablaPolyphony - 1] of TOnePole;
-    FSounding: array[0..CTablaPolyphony - 1] of Integer;
-    FNumSounding: Integer;
+    FWaves       : array[0..CTablaPolyphony - 1] of TStkWavePlayer;
+    FFilters     : array[0..CTablaPolyphony - 1] of TStkOnePole;
+    FSounding    : array[0..CTablaPolyphony - 1] of Integer;
+    FNumSounding : Integer;
+
+    procedure SetFrequency(const Frequency: Single); override;
   public
     // Class constructor.
-    constructor Create(SampleRate: Single);
+    constructor Create(const SampleRate: Single); override;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Start a note with the given drum type and amplitude.
-    procedure noteOn(instrument, amplitude: Single);
+    procedure NoteOn(const Instrument, Amplitude: Single); override;
 
     // Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function tick: Single;
+    function Tick: Single; override;
   end;
 
 implementation
 
-constructor TTabla.Create;
+uses
+  SysUtils;
+
+constructor TStkTabla.Create;
 var
   i: Integer;
 begin
   inherited Create(SampleRate);
   for i := 0 to CTablaPolyphony - 1 do
    begin
-    FFilters[i] := TOnePole.Create(srate);
+    FFilters[i] := TStkOnePole.Create(SampleRate);
     FSounding[i] := -1;
    end;
   // This counts the number of FSounding voices.
   FNumSounding := 0;
 end;
 
-destructor TTabla.Destroy;
+destructor TStkTabla.Destroy;
 var
   i: Integer;
 begin
-  inherited Destroy;
-  for i := 0 to FNumSounding - 2 do
-    FWaves[i].Free;
-  for i := 0 to CTablaPolyphony - 1 do
-    FFilters[i].Free;
+ for i := 0 to FNumSounding - 2 do FreeAndNil(FWaves[i]);
+ for i := 0 to CTablaPolyphony - 1 do FreeAndNil(FFilters[i]);
+ inherited Destroy;
 end;
 
-procedure TTabla.noteOn;
+procedure TStkTabla.noteOn;
 const
   tablawaves: array[0..CTablaNumWaves - 1] of string =
     ('Drdak2.wav', 'Drdak3.wav', 'Drdak4.wav', 'Drddak1.wav',
@@ -84,8 +88,8 @@ const
 var
   gain: Single;
   i, waveindex, notenum: Integer;
-  tempwv: ^TWavePlayer;
-  tempfilt: ^TOnePole;
+  tempwv: ^TStkWavePlayer;
+  tempfilt: ^TStkOnePole;
 begin
   gain := amplitude;
   if (amplitude > 1.0) then
@@ -104,13 +108,13 @@ begin
     // Reset this sound.
     FWaves[waveIndex].reset;
     FFilters[waveIndex].setPole(0.999 - (gain * 0.6));
-    FFilters[waveIndex].setGain(gain);
+    FFilters[waveIndex].Gain := Gain;
    end else
    begin
     if (FNumSounding = CTablaPolyphony) then
      begin
       // If we're already at maximum polyphony, then preempt the oldest voice.
-      FWaves[0].Free;
+      FreeAndNil(FWaves[0]);
       FFilters[0].Clear;
       tempWv := @FWaves[0];
       tempFilt := @FFilters[0];
@@ -126,16 +130,22 @@ begin
       FNumSounding := FNumSounding + 1;
     FSounding[FNumSounding - 1] := noteNum;
     FWaves[FNumSounding - 1] :=
-      TWavePlayer.Create(srate, 'c:\stk\' + tablawaves[notenum]);
-    FWaves[FNumSounding - 1].SetOneShot(True);
-    FWaves[FNumSounding - 1].reset;
-    FWaves[FNumSounding - 1].setfrequency((1 / FWaves[FNumSounding - 1].length));
+      TStkWavePlayer.Create(SampleRate, tablawaves[notenum]);
+    FWaves[FNumSounding - 1].OneShot := True;
+    FWaves[FNumSounding - 1].Reset;
+    FWaves[FNumSounding - 1].Frequency := 1 / FWaves[FNumSounding - 1].length;
     FFilters[FNumSounding - 1].setPole(0.999 - (gain * 0.6));
-    FFilters[FNumSounding - 1].setGain(gain);
+    FFilters[FNumSounding - 1].Gain := gain;
    end;
 end;
 
-procedure TTabla.noteOff;
+procedure TStkTabla.SetFrequency(const Frequency: Single);
+begin
+ inherited;
+ // nothing in here yet
+end;
+
+procedure TStkTabla.NoteOff(const Amplitude: Single);
 var
   i: Integer;
 begin
@@ -143,16 +153,16 @@ begin
   i := 0;
   while (i < FNumSounding) do
    begin
-    FFilters[i].setGain(amplitude * 0.01);
+    FFilters[i].Gain := amplitude * 0.01;
     i := i + 1;
    end;
 end;
 
-function TTabla.tick: Single;
+function TStkTabla.Tick: Single;
 var
-  output: Single;
-  tempfilt: ^TOnePole;
-  i, j: Integer;
+  output   : Single;
+  tempfilt : TStkOnePole;
+  i, j     : Integer;
 begin
   output := 0.0;
   i := 0;
@@ -160,8 +170,8 @@ begin
    begin
     if (FWaves[i].isFinished) then
      begin
-      FWaves[i].Free;
-      tempFilt := @FFilters[i];
+      FreeAndNil(FWaves[i]);
+      tempFilt := FFilters[i];
       // Re-order the list.
       for j := i to FNumSounding - 2 do
        begin
@@ -169,7 +179,7 @@ begin
         FWaves[j] := FWaves[j + 1];
         FFilters[j] := FFilters[j + 1];
        end;
-      FFilters[FNumSounding - 2] := tempFilt^;
+      FFilters[FNumSounding - 2] := tempFilt;
       FFilters[FNumSounding - 2].Clear;
       FSounding[FNumSounding - 2] := -1;
       FNumSounding := FNumSounding - 1;

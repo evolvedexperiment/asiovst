@@ -11,7 +11,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon;
+  DAV_Common, DAV_StkCommon;
 
 type
   TStkInstrument = class(TStk)
@@ -27,16 +27,19 @@ type
     // Stop a note with the given Amplitude (speed of decay).
     procedure NoteOff(const Amplitude: Single); virtual; abstract;
 
-    // Perform the control change specified by number and value (0.0 - 128.0).
-    procedure ControlChange(const Number: Integer; const Value: Single); virtual; abstract;
-
     // Compute one output sample.
     function Tick: Single; overload; virtual;
 
     // Computer VectorSize outputs and return them in Vector.
-    function Tick(Vector: PSingle; VectorSize: longint): PSingle; overload; virtual;
+    procedure Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer); overload; virtual;
 
     property LastOutput: Single read FLastOutput;
+  end;
+
+  TStkControlableInstrument = class(TStkInstrument)
+  public
+    // Perform the control change specified by number and value (0.0 - 128.0).
+    procedure ControlChange(const Number: Integer; const Value: Single); virtual; abstract;
   end;
 
 implementation
@@ -46,18 +49,12 @@ begin
   Result := 0;
 end;
 
-function TStkInstrument.Tick(Vector: PSingle; VectorSize: longint): PSingle;
+procedure TStkInstrument.Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer);
 var
-  i: Integer;
-  p: PSingle;
+  Sample: Integer;
 begin
-  p := Vector;
-  for i := 0 to VectorSize - 1 do
-   begin
-    p^ := Tick;
-    Inc(p);
-   end;
-  Result := Vector;
+  for Sample := 0 to SampleFrames - 1
+   do Data^[Sample] := Tick; 
 end;
 
 end.

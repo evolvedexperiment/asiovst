@@ -13,7 +13,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon;
+  DAV_Common, DAV_StkCommon;
 
 type
   TStkNoise = class(TStk)
@@ -24,10 +24,10 @@ type
     destructor Destroy; override;
 
     // Return a random number between -1.0 and 1.0 using rand().
-    function Tick: Single; overload;
+    function Tick: Single; overload; virtual;
 
     // Return VectorSize random numbers between -1.0 and 1.0 in \ Vector.
-    function Tick(Vector: PSingle; VectorSize: Integer): PSingle; overload;
+    procedure Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer); overload;
 
     property LastOutput: Single read FLastOutput;
   end;
@@ -51,18 +51,12 @@ begin
   Result := FLastOutput;
 end;
 
-function TStkNoise.Tick(Vector: PSingle; VectorSize: Integer): PSingle;
+procedure TStkNoise.Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer);
 var
-  i: integer;
-  p: PSingle;
+  Sample: Integer;
 begin
-  p := Vector;
-  for i := 0 to VectorSize - 1 do
-   begin
-    p^ := Tick;
-    Inc(p);
-   end;
-  Result := Vector;
+ for Sample := 0 to SampleFrames - 1
+  do Data^[Sample] := Tick; 
 end;
 
 end.

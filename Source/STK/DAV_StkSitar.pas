@@ -17,76 +17,80 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkInstrument, DAV_StkDelaya, DAV_StkOneZero, DAV_StkNoise,
-  DAV_StkAdsr;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkDelaya, DAV_StkOneZero,
+  DAV_StkNoise, DAV_StkAdsr;
 
 type
   TStkSitar = class(TStkInstrument)
   protected
-    FDelayLine   : TDelayA;
-    FLoopFilter  : TOneZero;
-    FNoise       : TNoise;
+    FDelayLine   : TStkDelayA;
+    FLoopFilter  : TStkOneZero;
+    FNoise       : TStkNoise;
     FLength      : Longint;
     FAmGain      : Single;
     FDelay       : Single;
     FTargetDelay : Single;
     FLoopGain    : Single;
-  public
-    Envelope     : TADSR;
 
-    // Class constructor, taking the lowest desired playing frequency.
-    constructor Create(sr, lowestFrequency: Single);
+    // Set instrument parameters for a particular Frequency.
+    procedure SetFrequency(const Frequency: Single); override;
+
+  public
+    FEnvelope     : TStkADSR;
+
+    // Class constructor, taking the lowest desired playing Frequency.
+    constructor Create(const SampleRate, lowestFrequency: Single); reintroduce; virtual;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Set instrument parameters for a particular frequency.
-    procedure setFrequency(frequency: Single);
-
     // Pluck the string with the given amplitude using the current frequency.
-    procedure pluck(amplitude: Single);
+    procedure Pluck(Amplitude: Single);
 
     // Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
-    // Stop a note with the given amplitude (speed of decay).
-    procedure noteOff(amplitude: Single);
+    // Stop a note with the given Amplitude (speed of decay).
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function tick: Single;
+    function Tick: Single; override;
 
   end;
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TStkSitar.Create;
 begin
-  inherited Create(sr);
-  FLength := round(srate / lowestFrequency + 1);
+  inherited Create(SampleRate);
+  FLength := round(SampleRate / lowestFrequency + 1);
   FLoopGain := 0.999;
-  FDelayLine := TDelayA.Create(srate, (FLength / 2.0), FLength);
+  FDelayLine := TStkDelayA.Create(SampleRate, (FLength / 2.0), FLength);
   FDelay := FLength / 2.0;
   FTargetDelay := FDelay;
 
-  FLoopFilter := TOneZero.Create(srate);
+  FLoopFilter := TStkOneZero.Create(SampleRate);
   FLoopFilter.setZero(0.01);
 
-  envelope := TADSR.Create(srate);
-  envelope.setAllTimes(0.001, 0.04, 0.0, 0.5);
-  FNoise := TNoise.Create(srate);
+  FEnvelope := TStkADSR.Create(SampleRate);
+  FEnvelope.setAllTimes(0.001, 0.04, 0.0, 0.5);
+  FNoise := TStkNoise.Create(SampleRate);
   Clear;
 end;
 
 destructor TStkSitar.Destroy;
 begin
-  inherited Destroy;
-  FDelayLine.Free;
-  FLoopFilter.Free;
-  Envelope.Free;
-  FNoise.Free;
+ FreeAndNil(FDelayLine);
+ FreeAndNil(FLoopFilter);
+ FreeAndNil(FEnvelope);
+ FreeAndNil(FNoise);
+ inherited Destroy;
 end;
 
 procedure TStkSitar.Clear;
@@ -95,44 +99,44 @@ begin
   FLoopFilter.Clear;
 end;
 
-procedure TStkSitar.setFrequency;
+procedure TStkSitar.SetFrequency;
 var
   freakency: Single;
 begin
-  freakency := frequency;
-  if (frequency <= 0.0) then
+  freakency := Frequency;
+  if (Frequency <= 0.0) then
     freakency := 220.0;
 
-  FTargetDelay := (srate / freakency);
-  FDelay := FTargetDelay * (1.0 + (0.05 * FNoise.tick()));
+  FTargetDelay := (SampleRate / freakency);
+  FDelay := FTargetDelay * (1.0 + (0.05 * FNoise.Tick()));
   FDelayLine.setDelay(FDelay);
   FLoopGain := 0.995 + (freakency * 0.0000005);
   if (FLoopGain > 0.9995) then
     FLoopGain := 0.9995;
 end;
 
-procedure TStkSitar.pluck;
+procedure TStkSitar.Pluck;
 begin
-  envelope.keyOn;
+  FEnvelope.KeyOn;
 end;
 
-procedure TStkSitar.noteOn;
+procedure TStkSitar.NoteOn(const Frequency, Amplitude: Single);
 begin
-  setFrequency(frequency);
-  pluck(amplitude);
-  FAmGain := 0.1 * amplitude;
+  SetFrequency(Frequency);
+  pluck(Amplitude);
+  FAmGain := 0.1 * Amplitude;
 end;
 
-procedure TStkSitar.noteOff;
+procedure TStkSitar.NoteOff(const Amplitude: Single);
 begin
-  FLoopGain := 1.0 - amplitude;
+  FLoopGain := 1.0 - Amplitude;
   if (FLoopGain < 0.0) then
     FLoopGain := 0.0
   else if (FLoopGain > 1.0) then
     FLoopGain := 0.99999;
 end;
 
-function TStkSitar.tick: Single;
+function TStkSitar.Tick: Single;
 begin
   if (abs(FTargetDelay - FDelay) > 0.001) then
    begin
@@ -142,9 +146,9 @@ begin
       FDelay := FDelay * 1.00001;
     FDelayLine.setDelay(FDelay);
    end;
-  lastOutput := FDelayLine.tick(FLoopFilter.tick(FDelayLine.lastOut *
-    FLoopGain) + (FAmGain * envelope.tick * FNoise.tick));
-  Result := lastOutput;
+  FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.LastOutput *
+    FLoopGain) + (FAmGain * FEnvelope.Tick * FNoise.Tick));
+  Result := FLastOutput;
 end;
 
 end.

@@ -33,15 +33,15 @@ uses
 
 type
   TStkRhodey = class(TStkFM)
+  protected
+    // Set instrument parameters for a particular Frequency.
+    procedure SetFrequency(const Frequency: Single); override;
   public
     // Class constructor.
     constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
 
     // Class destructor.
     destructor Destroy; override;
-
-    // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(Frequency: Single);
 
     // Start a note with the given Frequency and Amplitude.
     procedure NoteOn(const Frequency, Amplitude: Single); override;
@@ -53,8 +53,6 @@ type
 implementation
 
 constructor TStkRhodey.Create(const SampleRate: Single; const Operators: Integer = 4);
-var
-  i: integer;
 begin
   inherited Create(SampleRate);
   FWaves[0] := TStkWavePlayer.Create(Samplerate, 'sinewave.wav');

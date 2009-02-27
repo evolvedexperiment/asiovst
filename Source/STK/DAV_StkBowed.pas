@@ -23,56 +23,63 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrmnt, DAV_StkDelayl, DAV_StkBowtabl,
-  DAV_StkOnepole, DAV_StkBiquad, DAV_StkLfo, DAV_StkAdsr, Windows;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayl, DAV_StkBowTable,
+  DAV_StkOnepole, DAV_StkBiquad, DAV_StkLfo, DAV_StkAdsr;
 
 type
-  TStkBowed = class(TInstrmnt)
+  TStkBowed = class(TStkControlableInstrument)
+  private
+    // Set FVibrato Gain.
+    procedure SetVibrato(const Value: Single);
   protected
-    FNeckDelay    : TDelayl;
-    FBridgeDelay  : TDelayl;
-    FBowTable     : TBowTable;
-    FStringFilter : TOnePole;
-    FBodyFilter   : TBiquad;
-    FVibrato      : TLfo;
-    FAdsr         : TAdsr;
+    FNeckDelay    : TStkDelayl;
+    FBridgeDelay  : TStkDelayl;
+    FBowTable     : TStkBowTable;
+    FStringFilter : TStkOnePole;
+    FBodyFilter   : TStkBiquad;
+    FVibrato      : TStkLfo;
+    FAdsr         : TStkAdsr;
     FMaxVelocity  : Single;
     FBaseDelay    : Single;
+    FFrequency    : Single;
     FVibratoGain  : Single;
     FBetaRatio    : Single;
   public
-    constructor Create(SampleRate, lowestFrequency: Single); override;
+    constructor Create(const SampleRate, lowestFrequency: Single); reintroduce; virtual;
     destructor Destroy; override;
+
+    // Set instrument parameters for a particular Frequency.
+    procedure SetFrequency(const Value: Single); override;
 
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Set instrument parameters for a particular Frequency.
-    procedure setFrequency(Frequency: Single);
-
-    // Set FVibrato Gain.
-    procedure setVibrato(Gain: Single);
-
     // Apply breath pressure to instrument with given Amplitude and Rate of increase.
-    procedure startBowing(Amplitude, Rate: Single);
+    procedure StartBowing(const Amplitude, Rate: Single);
 
     // Decrease breath pressure with given Rate of decrease.
-    procedure stopBowing(Rate: Single);
+    procedure StopBowing(const Rate: Single);
 
     // Start a note with the given Frequency and Amplitude.
-    procedure noteOn(Frequency, Amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Stop a note with the given Amplitude (speed of decay).
-    procedure noteOff(Amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function Tick: Single;
+    function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: integer; Value: Single);
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
+
+    property Vibrato: Single read FVibratoGain write SetVibrato;
+    property Frequency: Single read FFrequency write SetFrequency;
   end;
 
 implementation
+
+uses
+  SysUtils, DAV_StkFilter;
 
 constructor TStkBowed.Create;
 var
@@ -80,24 +87,24 @@ var
 begin
   inherited Create(SampleRate);
   Length := round(SampleRate / lowestFrequency + 1);
-  FNeckDelay := TDelayl.Create(SampleRate, 100.0, Length);
+  FNeckDelay := TStkDelayl.Create(SampleRate, 100.0, Length);
   Length := Length shr 1;
-  FBridgeDelay := TDelayl.Create(SampleRate, 29.0, Length);
-  FBowTable := TBowTable.Create(SampleRate);
-  FBowTable.setSlope(3.0);
-  FVibrato := TLfo.Create(SampleRate);
-  FVibrato.setFrequency(6.12723);
+  FBridgeDelay := TStkDelayl.Create(SampleRate, 29.0, Length);
+  FBowTable := TStkBowTable.Create(SampleRate);
+  FBowTable.Slope := 3.0;
+  FVibrato := TStkLfo.Create(SampleRate);
+  FVibrato.Frequency := 6.12723;
   FVibratoGain := 0.0;
 
-  FStringFilter := TOnePole.Create(SampleRate);
-  FStringFilter.setPole((0.6 - (0.1 * 22050.0 / SampleRate)));
-  FStringFilter.setGain(0.95);
+  FStringFilter := TStkOnePole.Create(SampleRate);
+  FStringFilter.setPole((0.6 - (0.1 * 22050.0 * FSampleRateInv)));
+  FStringFilter.Gain := 0.95;
 
-  FBodyFilter := TBiquad.Create(SampleRate);
+  FBodyFilter := TStkBiquad.Create(SampleRate);
   FBodyFilter.setResonance(500.0, 0.85, True);
-  FBodyFilter.setGain(0.2);
+  FBodyFilter.Gain := 0.2;
 
-  FAdsr := TAdsr.Create(SampleRate);
+  FAdsr := TStkAdsr.Create(SampleRate);
   FAdsr.setAllTimes(0.02, 0.005, 0.9, 0.01);
 
   FBetaRatio := 0.127236;
@@ -108,14 +115,14 @@ end;
 
 destructor TStkBowed.Destroy;
 begin
+  FreeAndNil(FNeckDelay);
+  FreeAndNil(FBridgeDelay);
+  FreeAndNil(FBowTable);
+  FreeAndNil(FStringFilter);
+  FreeAndNil(FBodyFilter);
+  FreeAndNil(FVibrato);
+  FreeAndNil(FAdsr);
   inherited Destroy;
-  FNeckDelay.Free;
-  FBridgeDelay.Free;
-  FBowTable.Free;
-  FStringFilter.Free;
-  FBodyFilter.Free;
-  FVibrato.Free;
-  FAdsr.Free;
 end;
 
 procedure TStkBowed.Clear;
@@ -124,60 +131,59 @@ begin
   FBridgeDelay.Clear;
 end;
 
-procedure TStkBowed.setFrequency;
-var
-  Freakwency: Single;
+procedure TStkBowed.SetFrequency(const Value: Single);
 begin
-  Freakwency := Frequency;
-  if (Frequency <= 0.0) then
-    Freakwency := 220.0;
+ if FFrequency <> Value then
+  begin
+   FFrequency := Value;
+   if (Value <= 0.0) then FFrequency := 220.0;
 
-  // Delay := length - approximate filter delay.
-  FBaseDelay := srate / Freakwency - 4.0;
-  if (FBaseDelay <= 0.0) then
-    FBaseDelay := 0.3;
-  FBridgeDelay.setDelay(FBaseDelay * FBetaRatio);
-                  // bow to bridge length
-  FNeckDelay.setDelay(FBaseDelay * (1.0 - FBetaRatio));
- // bow to nut (finger) length
+   // Delay := length - approximate filter delay.
+   FBaseDelay := SampleRate / FFrequency - 4.0;
+   if (FBaseDelay <= 0.0) then FBaseDelay := 0.3;
+   FBridgeDelay.Delay := FBaseDelay * FBetaRatio;
+                   // bow to bridge length
+   FNeckDelay.Delay := FBaseDelay * (1.0 - FBetaRatio);
+   // bow to nut (finger) length
+  end;
 end;
 
-procedure TStkBowed.startBowing;
+procedure TStkBowed.startBowing(const Amplitude, Rate: Single);
 begin
-  FAdsr.setRate(Rate);
-  FAdsr.keyOn();
+  FAdsr.Rate := Rate;
+  FAdsr.KeyOn;
   FMaxVelocity := 0.03 + (0.2 * Amplitude);
 end;
 
-procedure TStkBowed.stopBowing;
+procedure TStkBowed.stopBowing(const Rate: Single);
 begin
-  FAdsr.setRate(Rate);
-  FAdsr.keyOff();
+  FAdsr.Rate := Rate;
+  FAdsr.KeyOff;
 end;
 
-procedure TStkBowed.noteOn;
+procedure TStkBowed.NoteOn(const Frequency, Amplitude: Single);
 begin
-  startBowing(Amplitude, Amplitude * 0.001);
-  setFrequency(Frequency);
+ StartBowing(Amplitude, Amplitude * 0.001);
+ SetFrequency(Frequency);
 end;
 
-procedure TStkBowed.noteOff;
+procedure TStkBowed.NoteOff(const Amplitude: Single);
 begin
-  stopBowing((1.0 - Amplitude) * 0.005);
+ StopBowing((1.0 - Amplitude) * 0.005);
 end;
 
-procedure TStkBowed.setVibrato;
+procedure TStkBowed.SetVibrato(const Value: Single);
 begin
-  FVibratoGain := Gain;
+ FVibratoGain := Value;
 end;
 
 function TStkBowed.Tick: Single;
 var
   bowVelocity, bridgeRefl, nutRefl, newVel, velDiff, stringVel: Single;
 begin
-  bowVelocity := FMaxVelocity * FAdsr.Tick();
-  bridgeRefl := -stringFilter.Tick(FBridgeDelay.lastOut());
-  nutRefl := -FNeckDelay.lastOut();
+  bowVelocity := FMaxVelocity * FAdsr.Tick;
+  bridgeRefl := -FStringFilter.Tick(FBridgeDelay.LastOutput);
+  nutRefl := -FNeckDelay.LastOutput;
   stringVel := bridgeRefl + nutRefl;               // Sum is String Velocity
   velDiff := bowVelocity - stringVel;              // Differential Velocity
   newVel := velDiff * FBowTable.Tick(velDiff);   // Non-Linear Bow Function
@@ -185,34 +191,32 @@ begin
   FBridgeDelay.Tick(nutRefl + newVel);
 
   if (FVibratoGain > 0.0) then
-    FNeckDelay.setDelay((FBaseDelay * (1.0 - FBetaRatio)) +
-      (FBaseDelay * FVibratoGain * FVibrato.Tick()));
-  lastOutput := FBodyFilter.Tick(FBridgeDelay.lastOut());
-  Result := lastOutput;
+    FNeckDelay.Delay := (FBaseDelay * (1.0 - FBetaRatio)) +
+      (FBaseDelay * FVibratoGain * FVibrato.Tick);
+  FLastOutput := FBodyFilter.Tick(FBridgeDelay.LastOutput);
+  Result := LastOutput;
 end;
 
-procedure TStkBowed.controlChange;
+procedure TStkBowed.controlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then norm := 0.0
-  else if (norm > 1.0) then norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
   if (number = CMIDIBowPressure) then // 2
-    FBowTable.setSlope(5.0 - (4.0 * norm))
+    FBowTable.Slope := (5.0 - (4.0 * norm))
   else if (number = CMIDIBowPosition) then
    begin // 4
     FBetaRatio := 0.027236 + (0.2 * norm);
-    FBridgeDelay.setDelay(FBaseDelay * FBetaRatio);
-    FNeckDelay.setDelay(FBaseDelay * (1.0 - FBetaRatio));
+    FBridgeDelay.Delay := (FBaseDelay * FBetaRatio);
+    FNeckDelay.Delay := (FBaseDelay * (1.0 - FBetaRatio));
    end
   else if (number = CMIDIModFrequency) then // 11
-    FVibrato.setFrequency(norm * 12.0)
+    FVibrato.Frequency := (norm * 12.0)
   else if (number = CMIDIModWheel) then // 1
     FVibratoGain := (norm * 0.4)
   else if (number = CMIDIAfterTouchCont) then // 128
-    FAdsr.setTarget(norm);
+    FAdsr.Target := norm;
 end;
 
 end.

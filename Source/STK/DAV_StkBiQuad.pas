@@ -20,13 +20,13 @@ type
   TStkBiQuad = class(TStkFilter)
   public
     // Default constructor creates a second-order pass-through filter.
-    constructor Create(SampleRate: Single);
+    constructor Create(const SampleRate: Single); override;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Clears all internal states of the filter.
-    procedure Clear;
+    procedure Clear; override;
 
     // Set the b[0] coefficient value.
     procedure SetB0(b0: Single);
@@ -75,15 +75,15 @@ type
     procedure SetEqualGainZeroes;
 
     // Input one sample to the filter and return one output.
-    function Tick(const Sample: Single): Single; overload;
+    function Tick(const Sample: Single): Single; overload; override;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function Tick(vector: PSingle; vectorSize: longint): PSingle; overload;
+    procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
   end;
 
 implementation
 
-constructor TStkBiQuad.Create;
+constructor TStkBiQuad.Create(const SampleRate: Single);
 var
   a, b: array[0..2] of Single;
 begin
@@ -160,38 +160,30 @@ begin
 end;
 
 function TStkBiQuad.Tick(const Sample: Single): Single;
-var
-  p: PSingle;
 begin
   FInputs^[0] := FGain * Sample;
   FOutputs^[0] := FB^[0] * FInputs^[0] +
     PDav4SingleArray(FB)^[1] * PDav4SingleArray(FInputs)^[1] +
     PDav4SingleArray(FB)^[2] * PDav4SingleArray(FInputs)^[2];
-  FOutputs^[0] := FOutputs^[0] - (index(a, 2) * index(outputs, 2) +
-    index(a, 1) * index(outputs, 1));
-  p := pindex(inputs, 2);
-  p^ := index(inputs, 1);
-  Dec(p);
-  p^ := inputs^;
-  p := pindex(outputs, 2);
-  p^ := index(outputs, 1);
-  Dec(p);
-  p^ := outputs^;
-  Result := outputs^;
+  FOutputs^[0] := FOutputs^[0] -
+    PDav4SingleArray(FA)^[2] * PDav4SingleArray(FOutputs)^[2] +
+    PDav4SingleArray(FA)^[1] * PDav4SingleArray(FOutputs)^[1];
+
+ Move(PDAV4SingleArray(FInputs)^[0],
+      PDAV4SingleArray(FInputs)^[1], 2 * SizeOf(Single));
+
+ Move(PDAV4SingleArray(FOutputs)^[0],
+      PDAV4SingleArray(FOutputs)^[1], 2 * SizeOf(Single));
+
+ Result := FOutputs^[0];
 end;
 
-function TStkBiQuad.Tick(vector: PSingle; vectorSize: longint): PSingle;
+procedure TStkBiQuad.Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  i: integer;
-  p: PSingle;
+  Sample: integer;
 begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := Tick(p^);
-    Inc(p);
-   end;
-  Result := vector;
+  for Sample := 0 to SampleFrames - 1
+   do Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

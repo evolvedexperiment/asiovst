@@ -23,17 +23,17 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayA, DAV_StkBiquad,
-  DAV_StkPolezero, DAV_StkAdsr, DAV_StkLfo, Math;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayA, DAV_StkBiquad,
+  DAV_StkPolezero, DAV_StkAdsr, DAV_StkLfo;
 
 type
-  TStkBrass = class(TInstrmnt)
+  TStkBrass = class(TStkControlableInstrument)
   protected
-    FDelayLine   : TDelayA;
-    FLipFilter   : TBiQuad;
-    FDcBlock     : TPoleZero;
-    FAdsr        : TADSR;
-    FVibrato     : TLFO;
+    FDelayLine   : TStkDelayA;
+    FLipFilter   : TStkBiQuad;
+    FDcBlock     : TStkPoleZero;
+    FAdsr        : TStkADSR;
+    FVibrato     : TStkLFO;
     FLength      : Integer;
     FLipTarget   : Single;
     FSlideTarget : Single;
@@ -41,7 +41,7 @@ type
     FMaxPressure : Single;
   public
     // Class constructor, taking the lowest desired playing Frequency.
-    constructor Create(const SampleRate, LowestFrequency: Single); override;
+    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -50,49 +50,52 @@ type
     procedure Clear;
 
     // Set instrument parameters for a particular Frequency.
-    procedure setFrequency(Frequency: Single);
+    procedure SetFrequency(const Frequency: Single); override;
 
     // Set the lips Frequency.
-    procedure setLip(Frequency: Single);
+    procedure SetLip(const Frequency: Single);
 
     // Apply breath pressure to instrument with given Amplitude and Rate of increase.
-    procedure startBlowing(Amplitude, Rate: Single);
+    procedure StartBlowing(const Amplitude, Rate: Single);
 
     // Decrease breath pressure with given Rate of decrease.
-    procedure stopBlowing(Rate: Single);
+    procedure StopBlowing(const Rate: Single);
 
     // Start a note with the given Frequency and Amplitude.
-    procedure noteOn(Frequency, Amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Stop a note with the given Amplitude (speed of decay).
-    procedure noteOff(Amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function tick: Single;
+    function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure controlChange(number: Integer; Value: Single);
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
 
   end;
 
 implementation
 
+uses
+  SysUtils, Math, DAV_StkFilter;
+
 constructor TStkBrass.Create;
 begin
   inherited Create(SampleRate);
   FLength := round(SampleRate / LowestFrequency + 1);
-  FDelayLine := TDelayA.Create(SampleRate, 0.5 * FLength, FLength);
+  FDelayLine := TStkDelayA.Create(SampleRate, 0.5 * FLength, FLength);
 
-  FLipFilter := TBiQuad.Create(SampleRate);
-  FLipFilter.SetGain(0.03);
-  FDcBlock := TPoleZero.Create(SampleRate);
+  FLipFilter := TStkBiQuad.Create(SampleRate);
+  FLipFilter.Gain := 0.03;
+  FDcBlock := TStkPoleZero.Create(SampleRate);
   FDcBlock.setBlockZero(0.99);
 
-  FAdsr := TADSR.Create(SampleRate);
+  FAdsr := TStkADSR.Create(SampleRate);
   FAdsr.setAllTimes(0.005, 0.001, 1.0, 0.010);
 
-  FVibrato := TLFO.Create(SampleRate);
-  FVibrato.setFrequency(6.137);
+  FVibrato := TStkLFO.Create(SampleRate);
+  FVibrato.Frequency := 6.137;
   FVibratoGain := 0.0;
 
   Clear;
@@ -105,12 +108,12 @@ end;
 
 destructor TStkBrass.Destroy;
 begin
+  FreeAndNil(FDelayLine);
+  FreeAndNil(FLipFilter);
+  FreeAndNil(FDcBlock);
+  FreeAndNil(FAdsr);
+  FreeAndNil(FVibrato);
   inherited Destroy;
-  FDelayLine.Free;
-  FLipFilter.Free;
-  FDcBlock.Free;
-  FAdsr.Free;
-  FVibrato.Free;
 end;
 
 procedure TStkBrass.Clear;
@@ -147,31 +150,31 @@ begin
   FLipFilter.setResonance(Freakency, 0.997, False);
 end;
 
-procedure TStkBrass.startBlowing;
+procedure TStkBrass.StartBlowing(const Amplitude, Rate: Single);
 begin
-  FAdsr.setAttackRate(Rate);
+  FAdsr.AttackRate := Rate;
   FMaxPressure := Amplitude;
   FAdsr.keyOn;
 end;
 
-procedure TStkBrass.stopBlowing;
+procedure TStkBrass.StopBlowing(const Rate: Single);
 begin
-  FAdsr.setReleaseRate(Rate);
+  FAdsr.ReleaseRate := Rate;
   FAdsr.keyOff;
 end;
 
-procedure TStkBrass.noteOn;
+procedure TStkBrass.NoteOn(const Frequency, Amplitude: Single);
 begin
-  setFrequency(Frequency);
-  startBlowing(Amplitude, Amplitude * 0.001);
+  SetFrequency(Frequency);
+  StartBlowing(Amplitude, Amplitude * 0.001);
 end;
 
-procedure TStkBrass.noteOff;
+procedure TStkBrass.NoteOff(const Amplitude: Single);
 begin
-  stopBlowing(Amplitude * 0.005);
+  StopBlowing(Amplitude * 0.005);
 end;
 
-function TStkBrass.tick: Single;
+function TStkBrass.Tick: Single;
 var
   deltaPressure, borePressure, mouthPressure, breathPressure: Single;
 begin
@@ -179,7 +182,7 @@ begin
   breathPressure := breathPressure + FVibratoGain * FVibrato.tick;
 
   mouthPressure := 0.3 * breathPressure;
-  borePressure := 0.85 * FDelayLine.lastOut;
+  borePressure := 0.85 * FDelayLine.LastOutput;
   deltaPressure := mouthPressure - borePressure; // Differential pressure.
   deltaPressure := FLipFilter.tick(deltaPressure);      // Force - > position.
   deltaPressure := deltaPressure * deltaPressure;
@@ -187,36 +190,32 @@ begin
   if (deltaPressure > 1.0) then
     deltaPressure := 1.0;         // Non-linear saturation.
   // The following input scattering assumes the mouthPressure := area.
-  lastOutput := deltaPressure * mouthPressure + (1.0 - deltaPressure) *
+  FLastOutput := deltaPressure * mouthPressure + (1.0 - deltaPressure) *
     borePressure;
-  lastOutput := FDelayLine.tick(FDcBlock.tick(lastOutput));
+  FLastOutput := FDelayLine.tick(FDcBlock.tick(lastOutput));
 
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
 procedure TStkBrass.controlChange;
 var
   temp, norm: Single;
 begin
-  norm := Value; // * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
-  if (number = __SK_LipTension_) then
+  if (number = CMidiLipTension) then
    begin // 2
     temp := FLipTarget * power(4.0, (2.0 * norm) - 1.0);
     setLip(temp);
    end
-  else if (number = __SK_SlideLength_) then // 4
+  else if (number = CMidiSlideLength) then // 4
     FDelayLine.setDelay(FSlideTarget * (0.5 + norm))
-  else if (number = __SK_ModFrequency_) then // 11
-    FVibrato.setFrequency(norm * 12.0)
-  else if (number = __SK_ModWheel_) then // 1
+  else if (number = CMidiModFrequency) then // 11
+    FVibrato.Frequency := norm * 12
+  else if (number = CMidiModWheel) then // 1
     FVibratoGain := norm * 0.4
-  else if (number = __SK_AfterTouch_Cont_) then // 128
-    FAdsr.setTarget(norm);
+  else if (number = CMidiAfterTouchCont) then // 128
+    FAdsr.Target := norm;
 end;
 
 end.

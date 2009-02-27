@@ -22,60 +22,64 @@ uses
   DAV_StkNoise;
 
 type
-  TStkDrone = class(TInstrmnt)
+  TStkDrone = class(TStkInstrument)
   protected
-    FDelayLine: TDelayA;
-    FLoopFilter: TOneZero;
-    FEnvelope: TAdsr;
-    FNoise: TNoise;
-    FLength: Integer;
-    FLoopGain: Single;
+    FDelayLine  : TStkDelayA;
+    FLoopFilter : TStkOneZero;
+    FEnvelope   : TStkAdsr;
+    FNoise      : TStkNoise;
+    FLength     : Integer;
+    FLoopGain   : Single;
+
+    // Set instrument parameters for a particular Frequency.
+    procedure SetFrequency(const Frequency: Single); override;
   public
     // Class constructor, taking the lowest desired playing Frequency.
-    constructor Create(const SampleRate, LowestFrequency: Single);
+    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
 
     destructor Destroy; override;
 
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Set instrument parameters for a particular Frequency.
-    procedure setFrequency(Frequency: Single);
-
     // Pluck the string with the given Amplitude using the current Frequency.
-    procedure pluck(Amplitude: Single);
+    procedure Pluck(Amplitude: Single);
 
     // Start a note with the given Frequency and Amplitude.
-    procedure noteOn(Frequency, Amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Stop a note with the given Amplitude (speed of decay).
-    procedure noteOff(Amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function Tick: Single;
+    function Tick: Single; override;
   end;
 
 implementation
 
-constructor TStkDrone.Create(SampleRate: Single, LowestFrequency: Single);
+uses
+  SysUtils;
+
+constructor TStkDrone.Create(const SampleRate, LowestFrequency: Single);
 begin
   inherited Create(SampleRate);
   FLength := round(FSampleRate / LowestFrequency + 1);
   FLoopGain := 0.999;
-  FDelayLine := TDelayA.Create(FSampleRate, (FLength / 2.0), FLength);
-  FLoopFilter := TOneZero.Create(FSampleRate);
-  FNoise := TNoise.Create(FSampleRate);
-  FEnvelope := TAdsr.Create(FSampleRate);
+  FDelayLine := TStkDelayA.Create(FSampleRate, (FLength / 2.0), FLength);
+  FLoopFilter := TStkOneZero.Create(FSampleRate);
+  FNoise := TStkNoise.Create(FSampleRate);
+  FEnvelope := TStkAdsr.Create(FSampleRate);
   FEnvelope.setAllTimes(2.0, 0.5, 0.0, 0.5);
   Clear;
 end;
 
 destructor TStkDrone.Destroy;
 begin
-  FDelayLine.Free;
-  FLoopFilter.Free;
-  FEnvelope.Free;
-  FNoise.Free;
+ FreeAndNil(FDelayLine);
+ FreeAndNil(FLoopFilter);
+ FreeAndNil(FEnvelope);
+ FreeAndNil(FNoise);
+ inherited;
 end;
 
 procedure TStkDrone.Clear;
@@ -84,7 +88,7 @@ begin
   FLoopFilter.Clear;
 end;
 
-procedure TStkDrone.setFrequency;
+procedure TStkDrone.SetFrequency;
 var
   delay, freakency: Single;
 begin
@@ -103,18 +107,18 @@ begin
     FLoopGain := 0.99999;
 end;
 
-procedure TStkDrone.pluck;
+procedure TStkDrone.Pluck;
 begin
   FEnvelope.keyOn;
 end;
 
-procedure TStkDrone.noteOn;
+procedure TStkDrone.NoteOn;
 begin
-  setFrequency(Frequency);
-  pluck(Amplitude);
+  SetFrequency(Frequency);
+  Pluck(Amplitude);
 end;
 
-procedure TStkDrone.noteOff;
+procedure TStkDrone.NoteOff;
 begin
   FLoopGain := 1.0 - Amplitude;
   if (FLoopGain < 0.0) then
@@ -126,9 +130,9 @@ end;
 function TStkDrone.Tick: Single;
 begin
  // Here's the whole inner loop of the instrument!!
-  lastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.lastOut * FLoopGain) +
+  FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.LastOutput * FLoopGain) +
     (0.005 * FEnvelope.Tick * FNoise.Tick));
-  Result := lastOutput;
+  Result := FLastOutput;
 end;
 
 end.

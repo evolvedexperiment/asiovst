@@ -12,6 +12,7 @@ uses
 type
   TStkEnvelope = class(TStk)
   private
+    function GetTime: Single;
     procedure SetCurrentValue(const Value: Single);
     procedure SetRate(const Value: Single);
     procedure SetTime(const Value: Single);
@@ -37,6 +38,7 @@ type
 
     property CurrentValue: Single read FCurrentValue write SetCurrentValue;
     property Rate: Single read FRate write SetRate;
+    property Time: Single read GetTime write SetTime;
     property Target: Single read FTarget write SetTarget;
     property State: Integer read FState;
   end;
@@ -58,6 +60,11 @@ end;
 destructor TStkEnvelope.Destroy;
 begin
   inherited Destroy;
+end;
+
+function TStkEnvelope.GetTime: Single;
+begin
+ result := -1.0 / (Rate * SampleRate);
 end;
 
 procedure TStkEnvelope.KeyOn;

@@ -25,52 +25,55 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkFm, DAV_StkWavePlayer, DAV_StkPhoneMes;
+  DAV_Common, DAV_StkCommon, DAV_StkFm, DAV_StkWavePlayer, DAV_StkPhoneMes;
 
 type
-  TStkFMVoices = class(TFM)
+  TStkFMVoices = class(TStkFM)
   protected
     FCurrentVowel : Integer;
-    FPhonems      : TPhonemes;
+    FPhonems      : TStkPhonemes;
     FMods, FTilt  : array[0..2] of Single;
+    procedure SetFrequency(const Value: Single); override;
   public
-    constructor Create(SampleRate: Single);
-    destructor Destroy;
-    procedure SetFrequency(AFrequency: Single);
-    procedure NoteOn(AFrequency, AAmplitude: Single);
-    function Ttick: Single;
-    procedure ControlChange(Number: Integer; Value: Single);
+    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
+    destructor Destroy; override;
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
+    function Tick: Single; override;
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
   end;
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TStkFMVoices.Create;
 begin
-  inherited Create(SampleRate);
-  FPhonems := TPhonemes.Create(SampleRate);
-  Waves[0] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  Waves[1] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  Waves[2] := TWavePlayer.Create(srate, 'c:\stk\sinewave.wav');
-  Waves[3] := TWavePlayer.Create(srate, 'c:\stk\fwavblnk.wav');
-  Waves[0].SetOneShot(False);
-  Waves[1].SetOneShot(False);
-  Waves[2].SetOneShot(False);
-  Waves[3].SetOneShot(False);
+  inherited Create(SampleRate, Operators);
+  FPhonems := TStkPhonemes.Create(SampleRate);
+  FWaves[0] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[1] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[2] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[3] := TStkWavePlayer.Create(SampleRate, 'fwavblnk.wav');
+  FWaves[0].OneShot := False;
+  FWaves[1].OneShot := False;
+  FWaves[2].OneShot := False;
+  FWaves[3].OneShot := False;
 
-  SetRatio(0, 2.00);
-  SetRatio(1, 4.00);
-  SetRatio(2, 12.0);
-  SetRatio(3, 1.00);
+  Ratio[0] := 2.00;
+  Ratio[1] := 4.00;
+  Ratio[2] := 12.0;
+  Ratio[3] := 1.00;
 
-  Gains[3] := __TFM_gains[80];
+  FGains[3] := FFMGains[80];
 
-  Adsr[0].setAllTimes(0.05, 0.05, __TFM_susLevels[15], 0.05);
-  Adsr[1].setAllTimes(0.05, 0.05, __TFM_susLevels[15], 0.05);
-  Adsr[2].setAllTimes(0.05, 0.05, __TFM_susLevels[15], 0.05);
-  Adsr[3].setAllTimes(0.01, 0.01, __TFM_susLevels[15], 0.5);
+  FAdsr[0].SetAllTimes(0.05, 0.05, FFMSusLevels[15], 0.05);
+  FAdsr[1].SetAllTimes(0.05, 0.05, FFMSusLevels[15], 0.05);
+  FAdsr[2].SetAllTimes(0.05, 0.05, FFMSusLevels[15], 0.05);
+  FAdsr[3].SetAllTimes(0.01, 0.01, FFMSusLevels[15], 0.5);
 
-  Twozero.setGain(0.0);
-  ModDepth := 0.005;
+  FTwoZero.Gain := 0.0;
+  FModDepth := 0.005;
   FCurrentVowel := 0;
   FTilt[0] := 1.0;
   FTilt[1] := 0.5;
@@ -78,23 +81,22 @@ begin
   FMods[0] := 1.0;
   FMods[1] := 1.1;
   FMods[2] := 1.1;
-  BaseFrequency := 110.0;
+  FBaseFrequency := 110.0;
   SetFrequency(110.0);
 end;
 
 destructor TStkFMVoices.Destroy;
 begin
-  inherited Destroy;
-  FPhonems.Free;
+ FreeAndNil(FPhonems);
+ inherited Destroy;
 end;
 
-procedure TStkFMVoices.SetFrequency;
+procedure TStkFMVoices.SetFrequency(const Value: Single);
 var
   temp, temp2: Single;
   i, tempi: Integer;
 begin
   temp2 := 0.0;
-  tempi := 0;
   i := 0;
 
   if (FCurrentVowel < 32) then
@@ -118,50 +120,50 @@ begin
     temp2 := 1.2;
    end;
 
-  BaseFrequency := AFrequency;
-  temp := (temp2 * FPhonems.formantFrequency(i, 0) / BaseFrequency) + 0.5;
+  FBaseFrequency := Value;
+  temp := (temp2 * FPhonems.FormantFrequency(i, 0) / FBaseFrequency) + 0.5;
   tempi := round(temp);
-  SetRatio(0, tempi);
-  temp := (temp2 * FPhonems.formantFrequency(i, 1) / BaseFrequency) + 0.5;
+  Ratio[0] := tempi;
+  temp := (temp2 * FPhonems.FormantFrequency(i, 1) / FBaseFrequency) + 0.5;
   tempi := round(temp);
-  SetRatio(1, tempi);
-  temp := (temp2 * FPhonems.formantFrequency(i, 2) / BaseFrequency) + 0.5;
+  Ratio[1] := tempi;
+  temp := (temp2 * FPhonems.FormantFrequency(i, 2) / FBaseFrequency) + 0.5;
   tempi := round(temp);
-  SetRatio(2, tempi);
-  Gains[0] := 1.0;
-  Gains[1] := 1.0;
-  Gains[2] := 1.0;
+  Ratio[2] := tempi;
+  FGains[0] := 1.0;
+  FGains[1] := 1.0;
+  FGains[2] := 1.0;
 end;
 
-procedure TStkFMVoices.NoteOn;
+procedure TStkFMVoices.NoteOn(const Frequency, Amplitude: Single);
 begin
-  SetFrequency(AFrequency);
-  FTilt[0] := AAmplitude;
-  FTilt[1] := AAmplitude * AAmplitude;
-  FTilt[2] := FTilt[1] * AAmplitude;
+  SetFrequency(Frequency);
+  FTilt[0] := Amplitude;
+  FTilt[1] := sqr(Amplitude);
+  FTilt[2] := FTilt[1] * Amplitude;
   keyOn;
 end;
 
-function TStkFMVoices.Ttick: Single;
+function TStkFMVoices.Tick: Single;
 var
   temp, temp2: Single;
 begin
-  temp := Gains[3] * Adsr[3].Ttick * Waves[3].Ttick;
-  temp2 := Vibrato.Ttick * ModDepth * 0.1;
+  temp := FGains[3] * FAdsr[3].Tick * FWaves[3].Tick;
+  temp2 := FVibrato.Tick * FModDepth * 0.1;
 
-  Waves[0].SetFrequency(BaseFrequency * (1.0 + temp2) * ratios[0]);
-  Waves[1].SetFrequency(BaseFrequency * (1.0 + temp2) * ratios[1]);
-  Waves[2].SetFrequency(BaseFrequency * (1.0 + temp2) * ratios[2]);
-  Waves[3].SetFrequency(BaseFrequency * (1.0 + temp2) * ratios[3]);
+  FWaves[0].Frequency := FBaseFrequency * (1.0 + temp2) * FRatios[0];
+  FWaves[1].Frequency := FBaseFrequency * (1.0 + temp2) * FRatios[1];
+  FWaves[2].Frequency := FBaseFrequency * (1.0 + temp2) * FRatios[2];
+  FWaves[3].Frequency := FBaseFrequency * (1.0 + temp2) * FRatios[3];
 
-  Waves[0].addPhaseOffset(temp * FMods[0]);
-  Waves[1].addPhaseOffset(temp * FMods[1]);
-  Waves[2].addPhaseOffset(temp * FMods[2]);
-  Waves[3].addPhaseOffset(Twozero.lastOut);
-  Twozero.Ttick(temp);
-  temp := Gains[0] * FTilt[0] * Adsr[0].Ttick * Waves[0].Ttick;
-  temp := temp + Gains[1] * FTilt[1] * Adsr[1].Ttick * Waves[1].Ttick;
-  temp := temp + Gains[2] * FTilt[2] * Adsr[2].Ttick * Waves[2].Ttick;
+  FWaves[0].addPhaseOffset(temp * FMods[0]);
+  FWaves[1].addPhaseOffset(temp * FMods[1]);
+  FWaves[2].addPhaseOffset(temp * FMods[2]);
+  FWaves[3].addPhaseOffset(FTwoZero.LastOutput);
+  FTwoZero.Tick(temp);
+  temp := FGains[0] * FTilt[0] * FAdsr[0].Tick * FWaves[0].Tick;
+  temp := temp + FGains[1] * FTilt[1] * FAdsr[1].Tick * FWaves[1].Tick;
+  temp := temp + FGains[2] * FTilt[2] * FAdsr[2].Tick * FWaves[2].Tick;
 
   Result := temp * 0.33;
 end;
@@ -170,27 +172,23 @@ procedure TStkFMVoices.ControlChange;
 var
   norm: Single;
 begin
-  norm := Value;// * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
-  if (Number = __SK_Breath_) then // 2
-    Gains[3] := __TFM_gains[round(norm * 99.9)]
-  else if (Number = __SK_FootControl_) then
+  if (Number = CMidiBreath) then // 2
+    FGains[3] := FFmGains[round(norm * 99.9)]
+  else if (Number = CMidiFootControl) then
    begin // 4
     FCurrentVowel := round(norm * 128.0);
-    SetFrequency(BaseFrequency);
+    SetFrequency(FBaseFrequency);
    end
-  else if (Number = __SK_ModFrequency_) then // 11
-    setModulationSpeed(norm * 12.0)
-  else if (Number = __SK_ModWheel_) then // 1
-    setModulationDepth(norm)
-  else if (Number = __SK_AfterTouch_Cont_) then
+  else if (Number = CMidiModFrequency) then // 11
+    ModulationSpeed := norm * 12.0
+  else if (Number = CMidiModWheel) then // 1
+    ModulationDepth := norm
+  else if (Number = CMidiAfterTouchCont) then
    begin // 128
     FTilt[0] := norm;
-    FTilt[1] := norm * norm;
+    FTilt[1] := sqr(norm);
     FTilt[2] := FTilt[1] * norm;
    end;
 end;

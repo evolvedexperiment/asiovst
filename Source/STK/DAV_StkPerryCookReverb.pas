@@ -1,4 +1,4 @@
-unit DAV_StkPRCRev;
+unit DAV_StkPerryCookReverb;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
@@ -16,32 +16,32 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkReverb, DAV_StkDelay, Math;
+  DAV_Common, DAV_StkCommon, DAV_StkReverb, DAV_StkDelay, Math;
 
 type
-  TPRCRev = class(TReverb)
+  TStkPerryCookReverb = class(TStkReverb)
   protected
-    FAllpassDelays: array[0..1] of TDelay;
-    FCcombDelays: array[0..1] of TDelay;
-    FAllpassCoefficient: Single;
-    FCombCoefficient: array[0..1] of Single;
+    FAllpassDelays      : array[0..1] of TStkDelay;
+    FCcombDelays        : array[0..1] of TStkDelay;
+    FAllpassCoefficient : Single;
+    FCombCoefficient    : array[0..1] of Single;
   public
     // Class constructor taking a T60 decay time argument.
-    constructor Create(const SampleRate, T60: Single);
+    constructor Create(const SampleRate, T60: Single); override;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Reset and clear all internal state.
     procedure Clear;
 
     // Compute one output sample.
-    function tick(Input: Single): Single;
+    function Tick(Input: Single): Single; override;
   end;
 
 implementation
 
-constructor TPRCRev.Create(const SampleRate, T60: Single);
+constructor TStkPerryCookReverb.Create(const SampleRate, T60: Single);
 const
   lengths: array[0..3] of integer = (353, 1097, 1777, 2137);
 var
@@ -66,8 +66,8 @@ begin
 
   for i := 0 to 1 do
    begin
-    FAllpassDelays[i] := TDelay.Create(srate, lengths[i], lengths[i]);
-    FCcombDelays[i] := TDelay.Create(srate, lengths[i + 2], lengths[i + 2]);
+    FAllpassDelays[i] := TStkDelay.Create(srate, lengths[i], lengths[i]);
+    FCcombDelays[i] := TStkDelay.Create(srate, lengths[i + 2], lengths[i + 2]);
     FCombCoefficient[i] := power(10, (-3 * lengths[i + 2] / (T60 * srate)));
    end;
 
@@ -76,16 +76,16 @@ begin
   Clear;
 end;
 
-destructor TPRCRev.Destroy;
+destructor TStkPerryCookReverb.Destroy;
 begin
-  inherited Destroy;
-  FAllpassDelays[0].Free;
-  FAllpassDelays[1].Free;
-  FCcombDelays[0].Free;
-  FCcombDelays[1].Free;
+ FreeAndNil(FAllpassDelays[0]);
+ FreeAndNil(FAllpassDelays[1]);
+ FreeAndNil(FCcombDelays[0]);
+ FreeAndNil(FCcombDelays[1]);
+ inherited Destroy;
 end;
 
-procedure TPRCRev.Clear;
+procedure TStkPerryCookReverb.Clear;
 begin
   FAllpassDelays[0].Clear();
   FAllpassDelays[1].Clear();
@@ -95,7 +95,7 @@ begin
   lastOutput[1] := 0.0;
 end;
 
-function TPRCRev.tick(Input: Single): Single;
+function TStkPerryCookReverb.tick(Input: Single): Single;
 var
   temp, temp0, temp1, temp2, temp3: Single;
 begin

@@ -2,9 +2,9 @@ unit DAV_StkFlute;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{  STK TFlute physical model class.
+{  STK TStkFlute physical model class.
 
-   This class implements a simple TFlute physical model, as discussed by
+   This class implements a simple TStkFlute physical model, as discussed by
    Karjalainen, Smith, Waryznyk, etc.  The jet model uses a polynomial, a la
    Cook.
 
@@ -24,20 +24,29 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkLfo, DAV_StkInstrument, DAV_StkJetTable, DAV_StkDelayl,
-  DAV_StkOnePole, DAV_StkPoleZero, DAV_StkNoise, DAV_StkAdsr;
+  DAV_Common, DAV_StkCommon, DAV_StkLfo, DAV_StkInstrument, DAV_StkJetTable,
+  DAV_StkDelayl, DAV_StkOnePole, DAV_StkPoleZero, DAV_StkNoise, DAV_StkAdsr;
 
 type
-  TFlute = class(TInstrmnt)
+  TStkFlute = class(TStkControlableInstrument)
+  private
+    // Set the reflection ACoefficient for the jet delay (-1.0 - 1.0).
+    procedure SetJetReflection(const Coefficient: Single);
+
+    // Set the reflection ACoefficient for the air column delay (-1.0 - 1.0).
+    procedure SetEndReflection(const Coefficient: Single);
+
+    // Set the FLength of the jet delay in terms of a ratio of jet delay to air column delay lengths.
+    procedure SetJetDelay(const Value: Single);
   protected
-    FJetDelay      : TDelayl;
-    FBoreDelay     : TDelayl;
-    FJetTable      : TJetTabl;
-    FFilter        : TOnePole;
-    FDCBlock       : TPoleZero;
-    FNoise         : TNoise;
-    FAdsr          : TADSR;
-    FVibrato       : TLFO;
+    FJetDelay      : TStkDelayL;
+    FBoreDelay     : TStkDelayL;
+    FJetTable      : TStkJetTable;
+    FFilter        : TStkOnePole;
+    FDCBlock       : TStkPoleZero;
+    FNoise         : TStkNoise;
+    FAdsr          : TStkADSR;
+    FVibrato       : TStkLFO;
     FLength        : Integer;
     FLastFrequency : Single;
     FMaxPressure   : Single;
@@ -47,72 +56,71 @@ type
     FVibratoGain   : Single;
     FOutputGain    : Single;
     FJetRatio      : Single;
+
+    procedure JetRatioChanged; virtual;
+
+    // Set instrument parameters for a particular AFrequency.
+    procedure SetFrequency(const Value: Single); override;
   public
     // Class constructor, taking the lowest desired playing AFrequency.
-    constructor Create(sr, lowestFrequency: Single);
+    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Set instrument parameters for a particular AFrequency.
-    procedure SetFrequency(AFrequency: Single);
-
-    // Set the reflection ACoefficient for the jet delay (-1.0 - 1.0).
-    procedure SetJetReflection(ACoefficient: Single);
-
-    // Set the reflection ACoefficient for the air column delay (-1.0 - 1.0).
-    procedure SetEndReflection(ACoefficient: Single);
-
-    // Set the FLength of the jet delay in terms of a ratio of jet delay to air column delay lengths.
-    procedure SetJetDelay(aRatio: Single);
-
     // Apply breath velocity to instrument with given amplitude and rate of increase.
-    procedure StartBlowing(amplitude, rate: Single);
+    procedure StartBlowing(const Amplitude, Rate: Single);
 
     // Decrease breath velocity with given rate of decrease.
-    procedure StopBlowing(rate: Single);
+    procedure StopBlowing(const Rate: Single);
 
     // Start a note with the given AFrequency and amplitude.
-    procedure NoteOn(AFrequency, amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Stop a note with the given amplitude (speed of decay).
-    procedure NoteOff(amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
-    function Tick: Single;
+    function Tick: Single; override;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(number: integer; Value: Single);
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
 
+    property JetDelay: Single read FJetRatio write SetJetDelay;
+    property JetReflection: Single read FJetReflection write SetJetReflection;
+    property EndReflection: Single read FEndReflection write SetEndReflection;
   end;
 
 implementation
 
-constructor TFlute.Create;
-begin
-  inherited Create(sr);
-  FLength := round(srate / lowestFrequency + 1);
-  FBoreDelay := TDelayL.Create(srate, 100.0, FLength);
-  FLength := FLength shr 1;
-  FJetDelay := TDelayL.Create(srate, 49.0, FLength);
-  FJetTable := TJetTabl.Create(srate);
-  FFilter := TOnePole.Create(srate);
-  FDCBlock := TPoleZero.Create(srate);
-  FDCBlock.setBlockZero(0.99);
-  FNoise := TNoise.Create(srate);
-  FAdsr := TADSR.Create(srate);
+uses
+  SysUtils;
 
-  FVibrato := TLFO.Create(srate);
-  FVibrato.SetFrequency(5.925);
+constructor TStkFlute.Create;
+begin
+  inherited Create(SampleRate);
+  FLength := round(SampleRate / LowestFrequency + 1);
+  FBoreDelay := TStkDelayL.Create(SampleRate, 100.0, FLength);
+  FLength := FLength shr 1;
+  FJetDelay := TStkDelayL.Create(SampleRate, 49.0, FLength);
+  FJetTable := TStkJetTable.Create(SampleRate);
+  FFilter := TStkOnePole.Create(SampleRate);
+  FDCBlock := TStkPoleZero.Create(SampleRate);
+  FDCBlock.setBlockZero(0.99);
+  FNoise := TStkNoise.Create(SampleRate);
+  FAdsr := TStkADSR.Create(SampleRate);
+
+  FVibrato := TStkLFO.Create(SampleRate);
+  FVibrato.Frequency := 5.925;
 
   Clear;
 
-  FFilter.setPole(0.7 - (0.1 * 22050.0 / srate));
-  FFilter.setGain(-1.0);
-  FAdsr.setAllTimes(0.005, 0.01, 0.8, 0.010);
+  FFilter.SetPole(0.7 - (0.1 * 22050.0 * FSampleRateInv));
+  FFilter.Gain := -1.0;
+  FAdsr.SetAllTimes(0.005, 0.01, 0.8, 0.010);
   FEndReflection := 0.5;
   FJetReflection := 0.5;
   FNoiseGain := 0.15;             // Breath pressure random component.
@@ -123,20 +131,20 @@ begin
   FLastFrequency := 220.0;
 end;
 
-destructor TFlute.Destroy;
+destructor TStkFlute.Destroy;
 begin
+  FreeAndNil(FJetDelay);
+  FreeAndNil(FBoreDelay);
+  FreeAndNil(FJetTable);
+  FreeAndNil(FFilter);
+  FreeAndNil(FDCBlock);
+  FreeAndNil(FNoise);
+  FreeAndNil(FAdsr);
+  FreeAndNil(FVibrato);
   inherited Destroy;
-  FJetDelay.Free;
-  FBoreDelay.Free;
-  FJetTable.Free;
-  FFilter.Free;
-  FDCBlock.Free;
-  FNoise.Free;
-  FAdsr.Free;
-  FVibrato.Free;
 end;
 
-procedure TFlute.Clear;
+procedure TStkFlute.Clear;
 begin
   FJetDelay.Clear;
   FBoreDelay.Clear;
@@ -144,73 +152,78 @@ begin
   FDCBlock.Clear;
 end;
 
-procedure TFlute.SetFrequency;
+procedure TStkFlute.SetFrequency(const Value: Single);
 var
   delay: Single;
 begin
-  FLastFrequency := AFrequency;
-  if (AFrequency <= 0.0) then
-    FLastFrequency := 220.0;
+  FLastFrequency := Value;
+  if (Value <= 0.0) then FLastFrequency := 220.0;
 
   // We're overblowing here.
   FLastFrequency := FLastFrequency * 0.66666;
   // Delay := FLength - approximate FFilter delay.
-  delay := srate / FLastFrequency - 2.0;
-  if (delay <= 0.0) then
-    delay := 0.3
-  else if (delay > FLength) then
-    delay := FLength;
+  delay := SampleRate / FLastFrequency - 2.0;
+  if (delay <= 0.0) then delay := 0.3
+  else if (delay > FLength) then delay := FLength;
 
-  FBoreDelay.setDelay(delay);
-  FJetDelay.setDelay(delay * FJetRatio);
+  FBoreDelay.Delay := Delay;
+  FJetDelay.Delay := Delay * FJetRatio;
 end;
 
-procedure TFlute.StartBlowing;
+procedure TStkFlute.StartBlowing(const Amplitude, Rate: Single);
 begin
-  FAdsr.setAttackRate(rate);
-  FMaxPressure := amplitude / 0.8;
+  FAdsr.AttackRate := Rate;
+  FMaxPressure := Amplitude / 0.8;
   FAdsr.keyOn;
 end;
 
-procedure TFlute.StopBlowing;
+procedure TStkFlute.StopBlowing(const Rate: Single);
 begin
-  FAdsr.setReleaseRate(rate);
-  FAdsr.keyOff;
+  FAdsr.ReleaseRate := Rate;
+  FAdsr.KeyOff;
 end;
 
-procedure TFlute.NoteOn;
+procedure TStkFlute.NoteOn(const Frequency, Amplitude: Single);
 begin
-  SetFrequency(AFrequency);
-  StartBlowing(1.1 + (amplitude * 0.20), amplitude * 0.02);
-  FOutputGain := amplitude + 0.001;
+  SetFrequency(Frequency);
+  StartBlowing(1.1 + (Amplitude * 0.20), Amplitude * 0.02);
+  FOutputGain := Amplitude + 0.001;
 end;
 
-procedure TFlute.NoteOff;
+procedure TStkFlute.NoteOff(const Amplitude: Single);
 begin
-  StopBlowing(amplitude * 0.02);
+ StopBlowing(Amplitude * 0.02);
 end;
 
-procedure TFlute.SetJetReflection;
+procedure TStkFlute.SetJetReflection(const Coefficient: Single);
 begin
-  FJetReflection := ACoefficient;
+  FJetReflection := Coefficient;
 end;
 
-procedure TFlute.SetEndReflection;
+procedure TStkFlute.SetEndReflection(const Coefficient: Single);
 begin
-  FEndReflection := ACoefficient;
+  FEndReflection := Coefficient;
 end;
 
-procedure TFlute.SetJetDelay;
+procedure TStkFlute.SetJetDelay(const Value: Single);
+begin
+ if FJetRatio <> Value then
+  begin
+   FJetRatio := Value;
+   JetRatioChanged;
+  end;
+end;
+
+procedure TStkFlute.JetRatioChanged;
 var
   temp: Single;
 begin
-  // Delay := FLength - approximate FFilter delay.
-  temp := srate / FLastFrequency - 2.0;
-  FJetRatio := aRatio;
-  FJetDelay.setDelay(temp * aRatio); // Scaled by ratio.
-end;
+ // Delay := FLength - approximate FFilter delay.
+ temp := SampleRate / FLastFrequency - 2.0;
+ FJetDelay.Delay := temp * FJetRatio; // Scaled by ratio.
+end; 
 
-function TFlute.Tick: Single;
+function TStkFlute.Tick: Single;
 var
   temp, pressureDiff, breathPressure: Single;
 begin
@@ -220,39 +233,33 @@ begin
   breathPressure := breathpressure + breathPressure * FVibratoGain *
     FVibrato.Tick;
 
-  temp := FFilter.Tick(FBoreDelay.lastOut);
+  temp := FFilter.Tick(FBoreDelay.LastOutput);
   temp := FDCBlock.Tick(temp); // Block DC on reflection.
 
   pressureDiff := breathPressure - (FJetReflection * temp);
   pressureDiff := FJetDelay.Tick(pressureDiff);
   pressureDiff := FJetTable.Tick(pressureDiff) + (FEndReflection * temp);
-  lastOutput := 0.3 * FBoreDelay.Tick(pressureDiff);
+  FLastOutput := 0.3 * FBoreDelay.Tick(pressureDiff) * FOutputGain;
 
-  lastOutput := lastoutput * FOutputGain;
-  Result := lastOutput;
-
+  Result := FLastOutput;
 end;
 
-procedure TFlute.ControlChange;
+procedure TStkFlute.ControlChange;
 var
   norm: Single;
 begin
-  norm := Value; // * ONE_OVER_128;
-  if (norm < 0) then
-    norm := 0.0
-  else if (norm > 1.0) then
-    norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
-  if (number = __SK_JetDelay_) then // 2
+  if (number = CMidiJetDelay) then // 2
     SetJetDelay((0.08 + (0.48 * norm)))
-  else if (number = __SK_NoiseLevel_) then // 4
+  else if (number = CMidiNoiseLevel) then // 4
     FNoiseGain := (norm * 0.4)
-  else if (number = __SK_ModFrequency_) then // 11
-    FVibrato.SetFrequency(norm * 12.0)
-  else if (number = __SK_ModWheel_) then // 1
+  else if (number = CMidiModFrequency) then // 11
+    FVibrato.Frequency := norm * 12
+  else if (number = CMidiModWheel) then // 1
     FVibratoGain := (norm * 0.4)
-  else if (number = __SK_AfterTouch_Cont_) then // 128
-    FAdsr.setTarget(norm);
+  else if (number = CMidiAfterTouchCont) then // 128
+    FAdsr.Target := norm;
 end;
 
 end.

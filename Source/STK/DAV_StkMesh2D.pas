@@ -24,38 +24,15 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkInstrument, DAV_StkOnePole;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkOnePole;
 
 const
   CNxMax = 12;
   CNyMax = 12;
 
 type
-  TStkMesh2D = class(TStkInstrument)
-  protected
-    FNX, FNY            : Integer;
-    FXInput, FYInput    : Integer;
-    FFilterX            : array[0..CNxMax - 1] of TOnePole;
-    FFilterY            : array[0..CNyMax - 1] of TOnePole;
-    FJunctionVelocities : array[0..CNxMax - 2, 0..CNyMax - 2] of Single; // junction velocities
-    FVxp1, FVxm1        : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
-    FVyp1, FVym1        : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
-    FVxm, FVyp          : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
-    FVym, FVxp          : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
-    FCounter            : Integer; // time in samples
-    procedure ClearMesh;
-    function Tick0: Single;
-    function Tick1: Single;
-  public
-    // Class constructor, taking the x and y dimensions in samples.
-    constructor Create(SampleRate: Single; FNX, FNY: Integer);
-
-    // Class destructor.
-    destructor Destroy;
-
-    // Reset and clear all internal state.
-    procedure Clear;
-
+  TStkMesh2D = class(TStkControlableInstrument)
+  private
     // Set the x dimension size in samples.
     procedure SetNX(lenX: Integer);
 
@@ -68,27 +45,54 @@ type
     // Set the loss filters gains (0.0 - 1.0).
     procedure SetDecay(DecayFactor: Single);
 
+  protected
+    FNX, FNY            : Integer;
+    FXInput, FYInput    : Integer;
+    FFilterX            : array[0..CNxMax - 1] of TStkOnePole;
+    FFilterY            : array[0..CNyMax - 1] of TStkOnePole;
+    FJunctionVelocities : array[0..CNxMax - 2, 0..CNyMax - 2] of Single; // junction velocities
+    FVxp1, FVxm1        : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
+    FVyp1, FVym1        : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
+    FVxm, FVyp          : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
+    FVym, FVxp          : array[0..CNxMax - 1, 0..CNyMax - 1] of Single;
+    FCounter            : Integer; // time in samples
+    procedure ClearMesh;
+    function Tick0: Single;
+    function Tick1: Single;
+  public
+    // Class constructor, taking the x and y dimensions in samples.
+    constructor Create(const SampleRate: Single; const NX, NY: Integer); reintroduce; virtual;
+
+    // Class destructor.
+    destructor Destroy; override;
+
+    // Reset and clear all internal state.
+    procedure Clear;
+
     // Impulse the mesh with the given Amplitude (frequency ignored).
-    procedure NoteOn(frequency, Amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Stop a note with the given Amplitude (speed of decay) ... currently ignored.
-    procedure NoteOff(Amplitude: Single);
+    procedure NoteOff(const Amplitude: Single); override;
 
     // Calculate and return the signal Energy stored in the mesh.
     function Energy: Single;
 
     // Compute one output sample, without adding Energy to the mesh.
-    function Tick: Single; overload;
+    function Tick: Single; overload; override;
 
     // Input a sample to the mesh and compute one output sample.
-    function Tick(Input: Single): Single; overload;
+    function Tick(const Input: Single): Single; overload;
 
     // Perform the control change specified by \e number and \e value (0.0 - 128.0).
-    procedure ControlChange(number: Integer; Value: Single);
+    procedure ControlChange(const Number: Integer; const Value: Single); override;
 
   end;
 
 implementation
+
+uses
+  SysUtils;
 
 constructor TStkMesh2D.Create;
 var
@@ -96,18 +100,18 @@ var
   i: Integer;
 begin
   inherited Create(SampleRate);
-  SetNX(FNX);
-  SetNY(FNY);
+  SetNX(NX);
+  SetNY(NY);
   Pole := 0.05;
   for i := 0 to CNyMax - 1 do
    begin
-    FFilterY[i] := TOnePole.Create(SampleRate, Pole);
-    FFilterY[i].SetGain(0.99);
+    FFilterY[i] := TStkOnePole.Create(SampleRate, Pole);
+    FFilterY[i].Gain := 0.99;
    end;
   for i := 0 to CNxMax - 1 do
    begin
-    FFilterX[i] := TOnePole.Create(SampleRate, Pole);
-    FFilterX[i].SetGain(0.99);
+    FFilterX[i] := TStkOnePole.Create(SampleRate, Pole);
+    FFilterX[i].Gain := 0.99;
    end;
   ClearMesh;
   FCounter := 0;
@@ -119,11 +123,9 @@ destructor TStkMesh2D.Destroy;
 var
   i: Integer;
 begin
-  inherited Destroy;
-  for i := 0 to CNyMax - 1 do
-    FFilterY[i].Free;
-  for i := 0 to CNxMax - 1 do
-    FFilterX[i].Free;
+ for i := 0 to CNyMax - 1 do FreeAndNil(FFilterY[i]);
+ for i := 0 to CNxMax - 1 do FreeAndNil(FFilterX[i]);
+ inherited Destroy;
 end;
 
 procedure TStkMesh2D.Clear;
@@ -228,26 +230,20 @@ begin
   else if (DecayFactor > 1.0) then
     Gain := 1.0;
   for i := 0 to CNyMax - 1 do
-    FFilterY[i].SetGain(Gain);
+    FFilterY[i].Gain := Gain;
   for i := 0 to CNxMax - 1 do
-    FFilterX[i].SetGain(Gain);
+    FFilterX[i].Gain := Gain;
 end;
 
 procedure TStkMesh2D.SetInputPosition;
 begin
-  if (xFactor < 0.0) then
-    FXInput := 0
-  else if (xFactor > 1.0) then
-    FXInput := FNX - 1
-  else
-    FXInput := round(xFactor * (FNX - 1));
+  if (xFactor < 0.0) then FXInput := 0
+  else if (xFactor > 1.0) then FXInput := FNX - 1
+  else FXInput := round(xFactor * (FNX - 1));
 
-  if (yFactor < 0.0) then
-    FYInput := 0
-  else if (yFactor > 1.0) then
-    FYInput := FNY - 1
-  else
-    FYInput := round(yFactor * (FNY - 1));
+  if (yFactor < 0.0) then FYInput := 0
+  else if (yFactor > 1.0) then FYInput := FNY - 1
+  else FYInput := round(yFactor * (FNY - 1));
 end;
 
 procedure TStkMesh2D.NoteOn;
@@ -269,31 +265,30 @@ procedure TStkMesh2D.NoteOff;
 begin
 end;
 
-function TStkMesh2D.Tick(Input: Single): Single;
+function TStkMesh2D.Tick(const Input: Single): Single;
 begin
   if (FCounter and 1 > 0) then
    begin
     FVxp1[FXInput][FYInput] := FVxp1[FXInput][FYInput] + Input;
     FVyp1[FXInput][FYInput] := FVyp1[FXInput][FYInput] + Input;
-    LastOutput := Tick1;
+    FLastOutput := Tick1;
    end
   else
    begin
     FVxp[FXInput][FYInput] := FVxp[FXInput][FYInput] + Input;
     FVyp[FXInput][FYInput] := FVyp[FXInput][FYInput] + Input;
-    LastOutput := Tick0;
+    FLastOutput := Tick0;
    end;
 
   FCounter := FCounter + 1;
-  Result := LastOutput;
+  Result := FLastOutput;
 end;
 
 function TStkMesh2D.Tick: Single;
 begin
-  if (FCounter and 1 > 0) then
-    LastOutput := Tick1
-  else
-    LastOutput := Tick0;
+  if (FCounter and 1 > 0)
+   then FLastOutput := Tick1
+   else FLastOutput := Tick0;
   FCounter := FCounter + 1;
   Result := LastOutput;
 end;
@@ -400,11 +395,7 @@ procedure TStkMesh2D.ControlChange;
 var
   Norm: Single;
 begin
-  Norm := Value;// * ONE_OVER_128;
-  if (Norm < 0) then
-    Norm := 0.0
-  else if (Norm > 1.0) then
-    Norm := 1.0;
+  norm := Limit(Value, 0, 1);
 
   if (number = 2) then // 2
     SetNX(round(Norm * (CNxMax - 2) + 2))
@@ -412,7 +403,7 @@ begin
     SetNY(round(Norm * (CNyMax - 2) + 2))
   else if (number = 11) then // 11
     SetDecay(0.9 + (Norm * 0.1))
-  else if (number = __SK_ModWheel_) then // 1
+  else if (number = CMidiModWheel) then // 1
     SetInputPosition(Norm, Norm);
 end;
 
