@@ -20,59 +20,47 @@ uses
 
 type
   TStkPerryCookReverb = class(TStkReverb)
+  private
+    FT60: SIngle;
+    procedure SetT60(const Value: SIngle);
+    procedure UpdateDelayTimes;
   protected
     FAllpassDelays      : array[0..1] of TStkDelay;
-    FCcombDelays        : array[0..1] of TStkDelay;
+    FCombDelays         : array[0..1] of TStkDelay;
     FAllpassCoefficient : Single;
     FCombCoefficient    : array[0..1] of Single;
+    FInternalLengths    : array[0..3] of Integer;
+
+    procedure CalculateInternalLengths; virtual;
+    procedure T60Changed; virtual;
+    procedure SampleRateChanged; override;
   public
     // Class constructor taking a T60 decay time argument.
-    constructor Create(const SampleRate, T60: Single); override;
+    constructor Create(const SampleRate: Single = 44100); override;
 
     // Class destructor.
     destructor Destroy; override;
 
     // Reset and clear all internal state.
-    procedure Clear;
+    procedure Clear; override;
 
     // Compute one output sample.
-    function Tick(Input: Single): Single; override;
+    function Tick(const Input: Single): Single; override;
+
+    property T60: SIngle read FT60 write SetT60;
   end;
 
 implementation
 
-constructor TStkPerryCookReverb.Create(const SampleRate, T60: Single);
-const
-  lengths: array[0..3] of integer = (353, 1097, 1777, 2137);
-var
-  scaler: double;
-  delay, i: integer;
+uses
+  SysUtils, DAV_StkFilter;
+
+constructor TStkPerryCookReverb.Create(const SampleRate: Single = 44100);
 begin
-  inherited Create(constsr);
-  // Delay lengths for 44100 Hz sample rate.
-  scaler := srate / 44100.0;
-
-  // Scale the delay lengths if necessary.
-  if (scaler <> 1.0) then
-    for i := 0 to 3 do
-     begin
-      delay := round(floor(scaler * lengths[i]));
-      if ((delay and 1) = 0) then
-        delay := delay + 1;
-      while (not isPrime(delay)) do
-        delay := delay + 2;
-      lengths[i] := delay;
-     end;
-
-  for i := 0 to 1 do
-   begin
-    FAllpassDelays[i] := TStkDelay.Create(srate, lengths[i], lengths[i]);
-    FCcombDelays[i] := TStkDelay.Create(srate, lengths[i + 2], lengths[i + 2]);
-    FCombCoefficient[i] := power(10, (-3 * lengths[i + 2] / (T60 * srate)));
-   end;
-
+  inherited Create(SampleRate);
+  FT60 := 1;
   FAllpassCoefficient := 0.7;
-  effectMix := 0.5;
+  FEffectMix := 0.5;
   Clear;
 end;
 
@@ -80,46 +68,103 @@ destructor TStkPerryCookReverb.Destroy;
 begin
  FreeAndNil(FAllpassDelays[0]);
  FreeAndNil(FAllpassDelays[1]);
- FreeAndNil(FCcombDelays[0]);
- FreeAndNil(FCcombDelays[1]);
+ FreeAndNil(FCombDelays[0]);
+ FreeAndNil(FCombDelays[1]);
  inherited Destroy;
+end;
+
+procedure TStkPerryCookReverb.SampleRateChanged;
+begin
+ inherited;
+ UpdateDelayTimes;
+end;
+
+procedure TStkPerryCookReverb.SetT60(const Value: SIngle);
+begin
+ if FT60 <> Value then
+  begin
+   FT60 := Value;
+   T60Changed;
+  end;
+end;
+
+procedure TStkPerryCookReverb.T60Changed;
+begin
+ UpdateDelayTimes;
+end;
+
+procedure TStkPerryCookReverb.UpdateDelayTimes;
+var
+  i : Integer;
+begin
+ CalculateInternalLengths;
+ for i := 0 to 1 do
+  begin
+   FAllpassDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i], FInternalLengths[i]);
+   FCombDelays[i] := TStkDelay.Create(SampleRate, FInternalLengths[i + 2], FInternalLengths[i + 2]);
+   FCombCoefficient[i] := Power(10, (-3 * FInternalLengths[i + 2] / (FT60 * SampleRate)));
+  end;
+end;
+
+procedure TStkPerryCookReverb.CalculateInternalLengths;
+const
+  CFInternalLengths: array[0..3] of Integer = (353, 1097, 1777, 2137);
+var
+  Scaler   : double;
+  Delay, i : integer;
+begin
+ // Delay FInternalLengths for 44100 Hz sample rate.
+ Scaler := SampleRate / 44100.0;
+
+ // Scale the delay FInternalLengths if necessary.
+ if (Scaler <> 1.0) then
+  for i := 0 to 3 do
+   begin
+    Delay := round(floor(scaler * CFInternalLengths[i]));
+    if ((Delay and 1) = 0)
+     then Delay := Delay + 1;
+    while (not isPrime(Delay)) do Delay := Delay + 2;
+    FInternalLengths[i] := Delay;
+   end
+ else  Move(CFInternalLengths[0], FInternalLengths[0], Length(FInternalLengths) * SizeOf(Integer));
 end;
 
 procedure TStkPerryCookReverb.Clear;
 begin
-  FAllpassDelays[0].Clear();
-  FAllpassDelays[1].Clear();
-  FCcombDelays[0].Clear();
-  FCcombDelays[1].Clear();
-  lastOutput[0] := 0.0;
-  lastOutput[1] := 0.0;
+ inherited;
+ FAllpassDelays[0].Clear;
+ FAllpassDelays[1].Clear;
+ FCombDelays[0].Clear;
+ FCombDelays[1].Clear;
+ FLastOutput[0] := 0.0;
+ FLastOutput[1] := 0.0;
 end;
 
-function TStkPerryCookReverb.tick(Input: Single): Single;
+function TStkPerryCookReverb.Tick(const Input: Single): Single;
 var
   temp, temp0, temp1, temp2, temp3: Single;
 begin
-  temp := FAllpassDelays[0].lastOut();
+  temp := FAllpassDelays[0].LastOutput;
   temp0 := FAllpassCoefficient * temp;
   temp0 := temp0 + Input;
-  FAllpassDelays[0].tick(temp0);
+  FAllpassDelays[0].Tick(temp0);
   temp0 := -(FAllpassCoefficient * temp0) + temp;
 
-  temp := FAllpassDelays[1].lastOut();
+  temp := FAllpassDelays[1].LastOutput;
   temp1 := FAllpassCoefficient * temp;
   temp1 := temp1 + temp0;
-  FAllpassDelays[1].tick(temp1);
+  FAllpassDelays[1].Tick(temp1);
   temp1 := -(FAllpassCoefficient * temp1) + temp;
 
-  temp2 := temp1 + (FCombCoefficient[0] * FCcombDelays[0].lastOut());
-  temp3 := temp1 + (FCombCoefficient[1] * FCcombDelays[1].lastOut());
+  temp2 := temp1 + (FCombCoefficient[0] * FCombDelays[0].LastOutput);
+  temp3 := temp1 + (FCombCoefficient[1] * FCombDelays[1].LastOutput);
 
-  lastOutput[0] := effectMix * (FCcombDelays[0].tick(temp2));
-  lastOutput[1] := effectMix * (FCcombDelays[1].tick(temp3));
+  FLastOutput[0] := FEffectMix * (FCombDelays[0].Tick(temp2));
+  FLastOutput[1] := FEffectMix * (FCombDelays[1].Tick(temp3));
   temp := (1.0 - effectMix) * Input;
-  lastOutput[0] := lastOutput[0] + temp;
-  lastOutput[1] := lastOutput[1] + temp;
-  Result := (lastOutput[0] + lastOutput[1]) * 0.5;
+  FLastOutput[0] := FLastOutput[0] + temp;
+  FLastOutput[1] := FLastOutput[1] + temp;
+  Result := (FLastOutput[0] + FLastOutput[1]) * 0.5;
 end;
 
 end.

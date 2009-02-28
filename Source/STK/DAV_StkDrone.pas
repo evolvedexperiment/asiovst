@@ -18,23 +18,27 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkInstrument, DAV_StkDelaya, DAV_StkOneZero, DAV_StkAdsr,
-  DAV_StkNoise;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayA, DAV_StkOneZero,
+  DAV_StkAdsr, DAV_StkNoise;
 
 type
   TStkDrone = class(TStkInstrument)
+  private
+    procedure FrequencyChanged;
   protected
-    FDelayLine  : TStkDelayA;
-    FLoopFilter : TStkOneZero;
-    FEnvelope   : TStkAdsr;
-    FNoise      : TStkNoise;
-    FLength     : Integer;
-    FLoopGain   : Single;
+    FDelayLine     : TStkDelayA;
+    FLoopFilter    : TStkOneZero;
+    FEnvelope      : TStkAdsr;
+    FNoise         : TStkNoise;
+    FLength        : Integer;
+    FLoopGain      : Single;
+    FBaseFrequency : Single;
 
-    // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(const Frequency: Single); override;
+    // Set instrument parameters for a particular frequency.
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
   public
-    // Class constructor, taking the lowest desired playing Frequency.
+    // Class constructor, taking the lowest desired playing frequency.
     constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
 
     destructor Destroy; override;
@@ -42,13 +46,13 @@ type
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Pluck the string with the given Amplitude using the current Frequency.
-    procedure Pluck(Amplitude: Single);
+    // Pluck the string with the given amplitude using the current frequency.
+    procedure Pluck(const Amplitude: Single);
 
-    // Start a note with the given Frequency and Amplitude.
+    // Start a note with the given frequency and amplitude.
     procedure NoteOn(const Frequency, Amplitude: Single); override;
 
-    // Stop a note with the given Amplitude (speed of decay).
+    // Stop a note with the given amplitude (speed of decay).
     procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
@@ -88,43 +92,50 @@ begin
   FLoopFilter.Clear;
 end;
 
-procedure TStkDrone.SetFrequency;
+procedure TStkDrone.SetFrequency(const Value: Single);
+begin
+ if FBaseFrequency <> Value then
+  begin
+   if (Value <= 0.0)
+    then FBaseFrequency := 220.0
+    else FBaseFrequency := Value;
+
+   FrequencyChanged;
+  end;
+end;
+
+procedure TStkDrone.FrequencyChanged;
 var
-  delay, freakency: Single;
+  Delay: Single;
 begin
-  freakency := Frequency;
-  if (Frequency <= 0.0) then
-    freakency := 220.0;
- // Delay=FLength - approximate filter delay.
-  delay := (FSampleRate / freakency) - 0.5;
-  if (delay <= 0.0) then
-    delay := 0.3
-  else if (delay > FLength) then
-    delay := FLength;
-  FDelayLine.setDelay(delay);
-  FLoopGain := 0.997 + (freakency * 0.000002);
-  if (FLoopGain >= 1.0) then
-    FLoopGain := 0.99999;
+ // Delay = FLength - approximate filter Delay.
+  Delay := (FSampleRate / FBaseFrequency) - 0.5;
+  if (Delay <= 0.0) then Delay := 0.3
+  else if (Delay > FLength) then Delay := FLength;
+  FDelayLine.Delay := Delay;
+  FLoopGain := 0.997 + (FBaseFrequency * 0.000002);
+  if (FLoopGain >= 1.0) then FLoopGain := 0.99999;
 end;
 
-procedure TStkDrone.Pluck;
+function TStkDrone.GetFrequency: Single;
 begin
-  FEnvelope.keyOn;
+ result := FBaseFrequency;
 end;
 
-procedure TStkDrone.NoteOn;
+procedure TStkDrone.Pluck(const Amplitude: Single);
+begin
+ FEnvelope.KeyOn;
+end;
+
+procedure TStkDrone.NoteOn(const Frequency, Amplitude: Single);
 begin
   SetFrequency(Frequency);
   Pluck(Amplitude);
 end;
 
-procedure TStkDrone.NoteOff;
+procedure TStkDrone.NoteOff(const Amplitude: Single);
 begin
-  FLoopGain := 1.0 - Amplitude;
-  if (FLoopGain < 0.0) then
-    FLoopGain := 0.0
-  else if (FLoopGain > 1.0) then
-    FLoopGain := 0.99999;
+  FLoopGain := Limit(1.0 - Amplitude, 0, 0.99999);
 end;
 
 function TStkDrone.Tick: Single;

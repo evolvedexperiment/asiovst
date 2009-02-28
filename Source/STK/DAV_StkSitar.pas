@@ -23,18 +23,21 @@ uses
 type
   TStkSitar = class(TStkInstrument)
   protected
-    FDelayLine   : TStkDelayA;
-    FLoopFilter  : TStkOneZero;
-    FNoise       : TStkNoise;
-    FLength      : Longint;
-    FAmGain      : Single;
-    FDelay       : Single;
-    FTargetDelay : Single;
-    FLoopGain    : Single;
+    FDelayLine     : TStkDelayA;
+    FLoopFilter    : TStkOneZero;
+    FNoise         : TStkNoise;
+    FLength        : Longint;
+    FAmGain        : Single;
+    FDelay         : Single;
+    FTargetDelay   : Single;
+    FLoopGain      : Single;
+    FBaseFrequency : Single;
 
     // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(const Frequency: Single); override;
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
 
+    procedure FrequencyChanged; virtual;
   public
     FEnvelope     : TStkADSR;
 
@@ -93,26 +96,35 @@ begin
  inherited Destroy;
 end;
 
+function TStkSitar.GetFrequency: Single;
+begin
+ result := FBaseFrequency;
+end;
+
 procedure TStkSitar.Clear;
 begin
   FDelayLine.Clear;
   FLoopFilter.Clear;
 end;
 
-procedure TStkSitar.SetFrequency;
-var
-  freakency: Single;
+procedure TStkSitar.SetFrequency(const Value: Single);
 begin
-  freakency := Frequency;
-  if (Frequency <= 0.0) then
-    freakency := 220.0;
+ if FBaseFrequency <> Frequency then
+  begin
+   if (Value <= 0.0)
+    then FBaseFrequency := 220.0
+    else FBaseFrequency := Value;
+   FrequencyChanged; 
+  end;
+end;
 
-  FTargetDelay := (SampleRate / freakency);
-  FDelay := FTargetDelay * (1.0 + (0.05 * FNoise.Tick()));
-  FDelayLine.setDelay(FDelay);
-  FLoopGain := 0.995 + (freakency * 0.0000005);
-  if (FLoopGain > 0.9995) then
-    FLoopGain := 0.9995;
+procedure TStkSitar.FrequencyChanged;
+begin
+ FTargetDelay := (SampleRate / FBaseFrequency);
+ FDelay := FTargetDelay * (1.0 + (0.05 * FNoise.Tick));
+ FDelayLine.Delay := FDelay;
+ FLoopGain := 0.995 + (FBaseFrequency * 0.0000005);
+ if (FLoopGain > 0.9995) then FLoopGain := 0.9995;
 end;
 
 procedure TStkSitar.Pluck;
@@ -140,11 +152,10 @@ function TStkSitar.Tick: Single;
 begin
   if (abs(FTargetDelay - FDelay) > 0.001) then
    begin
-    if (FTargetDelay < FDelay) then
-      FDelay := FDelay * 0.99999
-    else
-      FDelay := FDelay * 1.00001;
-    FDelayLine.setDelay(FDelay);
+    if (FTargetDelay < FDelay)
+     then FDelay := FDelay * 0.99999
+     else FDelay := FDelay * 1.00001;
+    FDelayLine.Delay := FDelay;
    end;
   FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.LastOutput *
     FLoopGain) + (FAmGain * FEnvelope.Tick * FNoise.Tick));

@@ -4,7 +4,7 @@ unit DAV_StkFM;
 
 { STK abstract TFM synthesis base class.
 
-  This class controls an arbitrary number of FWaves and envelopes, determined
+  This class controls an arbitrary number of waves and envelopes, determined
   via a constructor argument.
 
   Control Change Numbers:
@@ -68,13 +68,16 @@ type
 
     // Set instrument parameters for a particular frequency.
     procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
 
     procedure FrequencyChanged; virtual;
     procedure GainsChanged; virtual;
     procedure RatioChanged(const WaveIndex: Integer); virtual;
   public
+    constructor Create(const SampleRate: Single = 44100); overload; override;
+
     // Class constructor, taking the number of wave/envelope Operators to control.
-    constructor Create(const SampleRate: Single; const Operators: Integer = 4); reintroduce; virtual;
+    constructor Create(const SampleRate: Single; const Operators: Integer); reintroduce; overload; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -141,7 +144,12 @@ begin
   end;
 end;
 
-constructor TStkFM.Create(const SampleRate: Single; const Operators: Integer = 4);
+constructor TStkFM.Create(const SampleRate: Single = 44100);
+begin
+ Create(SampleRate, 4);
+end;
+
+constructor TStkFM.Create(const SampleRate: Single; const Operators: Integer);
 var
   i: Integer;
   temp: Single;
@@ -253,6 +261,11 @@ var
 begin
  for i := 0 to FNOperators - 1
   do FWaves[i].Frequency := FBaseFrequency * FRatios[i];
+end;
+
+function TStkFM.GetFrequency: Single;
+begin
+ result := FBaseFrequency;
 end;
 
 function TStkFM.GetGain(WaveIndex: Integer): Single;

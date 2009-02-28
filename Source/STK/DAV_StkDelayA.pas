@@ -26,6 +26,13 @@ uses
 
 type
   TStkDelayA = class(TStkDelay)
+  private
+    // Set the delay-line length
+    // The valid range for the value is from 0.5 to the maximum delay-line length.
+    procedure SetDelay(const Value: Single);
+
+    // Return the current delay-line length.
+    function GetDelay: Single;
   protected
     FAlpha      : Single;
     FCoeff      : Single;
@@ -45,20 +52,9 @@ type
     // Clears the internal state of the delay line.
     procedure Clear; override;
 
-    // Set the delay-line length
-  {
-    The valid range for \e ADelay is from 0.5 to the maximum delay-line length.
-  }
-    procedure SetDelay(const ADelay: Single);
-
-    // Return the current delay-line length.
-    function GetDelay: Single;
-
     // Return the value which will be output by the next call to tick().
-  {
-    This method is valid only for delay settings greater than zero!
-   }
-    function nextOut: Single;
+    // This method is valid only for delay settings greater than zero!
+    function NextOut: Single;
 
     // Input one sample to the delay-line and return one output.
     function Tick(const Sample: Single): Single; override;
@@ -125,25 +121,25 @@ begin
   Result := FNextOutput;
 end;
 
-procedure TStkDelayA.SetDelay(const ADelay: Single);
+procedure TStkDelayA.SetDelay(const Value: Single);
 var
   OutPointer: Single;
 begin
- if (ADelay > length - 1) then
+ if (Value > length - 1) then
   begin
    // Force delay to maxLength
    OutPointer := FInPoint + 1.0;
    Delay := length - 1;
   end
- else if (ADelay < 0.5) then
+ else if (Value < 0.5) then
   begin
    OutPointer := FInPoint + 0.4999999999;
    Delay := 0.5;
   end
  else
   begin
-   OutPointer := FInPoint - ADelay + 1.0;     // OutPoint chases inpoint
-   Delay := ADelay;
+   OutPointer := FInPoint - Value + 1.0;     // OutPoint chases inpoint
+   Delay := Value;
   end;
 
   if (OutPointer < 0)

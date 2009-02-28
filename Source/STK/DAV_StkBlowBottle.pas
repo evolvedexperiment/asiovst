@@ -4,13 +4,13 @@ unit DAV_StkBlowBottle;
 
 { STK blown bottle instrument class.
 
-  This class implements a helmholtz FResonator (Biquad Filter) with a
+  This class implements a helmholtz resonator (Biquad Filter) with a
   polynomial jet excitation (a la Cook).
 
   Control Change Numbers:
-    - FNoise Gain := 4
-    - FVibrato Frequency := 11
-    - FVibrato Gain := 1
+    - Noise Gain := 4
+    - Vibrato Frequency := 11
+    - Vibrato Gain := 1
     - Volume := 128
 }
 
@@ -24,21 +24,25 @@ uses
 
 type
   TStkBlowBottle = class(TStkControlableInstrument)
+  private
   protected
-    FJetTable    : TStkJetTable;
-    FResonator   : TStkBiquad;
-    FDCBlock     : TStkPoleZero;
-    FNoise       : TStkNoise;
-    FAdsr        : TStkAdsr;
-    FVibrato     : TStkLfo;
-    FMaxPressure : Single;
-    FNoiseGain   : Single;
-    FVibratoGain : Single;
-    FOutputGain  : Single;
+    FJetTable      : TStkJetTable;
+    FResonator     : TStkBiquad;
+    FDCBlock       : TStkPoleZero;
+    FNoise         : TStkNoise;
+    FAdsr          : TStkAdsr;
+    FVibrato       : TStkLfo;
+    FMaxPressure   : Single;
+    FNoiseGain     : Single;
+    FVibratoGain   : Single;
+    FOutputGain    : Single;
+    FBaseFrequency : Single;
 
     // Set instrument parameters for a particular frequency.
-    procedure SetFrequency(const Frequency: Single); override;
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
 
+    procedure FrequencyChanged; virtual;
   public
     // Class constructor.
     constructor Create(const SampleRate: Single); override;
@@ -49,16 +53,16 @@ type
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Apply breath velocity to instrument with given Amplitude and rate of increase.
+    // Apply breath velocity to instrument with given amplitude and rate of increase.
     procedure StartBlowing(const Amplitude, Rate: Single);
 
     // Decrease breath velocity with given rate of decrease.
     procedure StopBlowing(const Rate: Single);
 
-    // Start a note with the given frequency and Amplitude.
+    // Start a note with the given frequency and amplitude.
     procedure NoteOn(const Frequency, Amplitude: Single); override;
 
-    // Stop a note with the given Amplitude (speed of decay).
+    // Stop a note with the given amplitude (speed of decay).
     procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
@@ -110,13 +114,25 @@ begin
   FResonator.Clear;
 end;
 
-procedure TStkBlowBottle.SetFrequency(const Frequency: Single);
-var
-  Freakency: Single;
+procedure TStkBlowBottle.SetFrequency(const Value: Single);
 begin
-  Freakency := frequency;
-  if (frequency <= 0.0) then Freakency := 220.0;
-  FResonator.SetResonance(Freakency, CBottleRadius, True);
+ if FBaseFrequency <> Value then
+  begin
+   if (FBaseFrequency <= 0.0)
+    then FBaseFrequency := 220.0
+    else FBaseFrequency := Value;
+   FrequencyChanged;
+  end;
+end;
+
+procedure TStkBlowBottle.FrequencyChanged;
+begin
+ FResonator.SetResonance(FBaseFrequency, CBottleRadius, True);
+end;
+
+function TStkBlowBottle.GetFrequency: Single;
+begin
+ result := FBaseFrequency;
 end;
 
 procedure TStkBlowBottle.StartBlowing(const Amplitude, Rate: Single);
@@ -165,7 +181,7 @@ begin
   Result := lastOutput;
 end;
 
-procedure TStkBlowBottle.ControlChange;
+procedure TStkBlowBottle.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin

@@ -16,7 +16,7 @@ unit DAV_StkTubeBell;
     - Crossfade of Outputs:=4
     - LFO Speed:=11
     - LFO Depth:=1
-    - ADSR 2 & 4 Target:=128
+    - FAdsr 2 & 4 Target:=128
 
   The basic Chowning/Stanford FM patent expired in 1995, but there exist
   follow-on patents, mostly assigned to Yamaha. If you are of the type who
@@ -28,94 +28,92 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkFm, DAV_StkWavePlayer;
+  DAV_Common, DAV_StkCommon, DAV_StkFm, DAV_StkWavePlayer;
 
 type
-  TTubeBell = class(TFM)
+  TStkTubeBell = class(TStkFM)
   public
-    constructor Create(SampleRate: Single); override;
+    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
     destructor Destroy; override;
 
     // Start a note with the given frequency and amplitude.
-    procedure noteOn(frequency, amplitude: Single);
+    procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Compute one output sample.
-    function tick: Single;
+    function Tick: Single; override;
   end;
 
 implementation
 
-constructor TTubeBell.Create;
-var
-  i: integer;
+constructor TStkTubeBell.Create(const SampleRate: Single; const Operators: Integer = 4);
 begin
-  inherited Create(SampleRate);
-  waves[0] := TWavePlayer.Create(srate, 'sinewave.wav');
-  waves[1] := TWavePlayer.Create(srate, 'sinewave.wav');
-  waves[2] := TWavePlayer.Create(srate, 'sinewave.wav');
-  waves[3] := TWavePlayer.Create(srate, 'fwavblnk.wav');
-  waves[0].SetOneShot(False);
-  waves[1].SetOneShot(False);
-  waves[2].SetOneShot(False);
-  waves[3].SetOneShot(False);
+  inherited Create(SampleRate, Operators);
+  FWaves[0] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[1] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[2] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
+  FWaves[3] := TStkWavePlayer.Create(SampleRate, 'fwavblnk.wav');
+  FWaves[0].OneShot := False;
+  FWaves[1].OneShot := False;
+  FWaves[2].OneShot := False;
+  FWaves[3].OneShot := False;
 
-  setRatio(0, 1.0 * 0.995);
-  setRatio(1, 1.414 * 0.995);
-  setRatio(2, 1.0 * 1.005);
-  setRatio(3, 1.414 * 1.000);
+  Ratio[0] := 1.0 * 0.995;
+  Ratio[1] := 1.414 * 0.995;
+  Ratio[2] := 1.0 * 1.005;
+  Ratio[3] := 1.414 * 1.000;
 
-  gains[0] := __TFM_gains[94];
-  gains[1] := __TFM_gains[76];
-  gains[2] := __TFM_gains[99];
-  gains[3] := __TFM_gains[71];
+  FGains[0] := FFmGains[94];
+  FGains[1] := FFmGains[76];
+  FGains[2] := FFmGains[99];
+  FGains[3] := FFmGains[71];
 
-  adsr[0].setAllTimes(0.005, 4.0, 0.0, 0.04);
-  adsr[1].setAllTimes(0.005, 4.0, 0.0, 0.04);
-  adsr[2].setAllTimes(0.001, 2.0, 0.0, 0.04);
-  adsr[3].setAllTimes(0.004, 4.0, 0.0, 0.04);
+  FAdsr[0].SetAllTimes(0.005, 4.0, 0.0, 0.04);
+  FAdsr[1].SetAllTimes(0.005, 4.0, 0.0, 0.04);
+  FAdsr[2].SetAllTimes(0.001, 2.0, 0.0, 0.04);
+  FAdsr[3].SetAllTimes(0.004, 4.0, 0.0, 0.04);
 
-  twozero.setGain(0.5);
-  vibrato.setFrequency(2.0);
+  FTwoZero.Gain := 0.5;
+  FVibrato.Frequency := 2.0;
 end;
 
-destructor TTubeBell.Destroy;
+destructor TStkTubeBell.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TTubeBell.noteOn;
+procedure TStkTubeBell.noteOn;
 begin
-  gains[0] := amplitude * __TFM_gains[94];
-  gains[1] := amplitude * __TFM_gains[76];
-  gains[2] := amplitude * __TFM_gains[99];
-  gains[3] := amplitude * __TFM_gains[71];
+  FGains[0] := amplitude * FFmGains[94];
+  FGains[1] := amplitude * FFmGains[76];
+  FGains[2] := amplitude * FFmGains[99];
+  FGains[3] := amplitude * FFmGains[71];
   setFrequency(frequency);
   keyOn;
 end;
 
-function TTubeBell.tick: Single;
+function TStkTubeBell.tick: Single;
 var
   temp, temp2: Single;
 begin
-  temp := gains[1] * adsr[1].tick * waves[1].tick;
-  temp := temp * control1;
-  waves[0].addPhaseOffset(temp);
+  temp := FGains[1] * FAdsr[1].tick * FWaves[1].tick;
+  temp := temp * 2 * FControlA;
+  FWaves[0].addPhaseOffset(temp);
 
-  waves[3].addPhaseOffset(twozero.lastOut);
-  temp := gains[3] * adsr[3].tick * waves[3].tick;
-  twozero.tick(temp);
-  temp := temp * control1;
-  waves[2].addPhaseOffset(temp);
+  FWaves[3].addPhaseOffset(FTwoZero.LastOutput);
+  temp := FGains[3] * FAdsr[3].tick * FWaves[3].tick;
+  FTwoZero.tick(temp);
+  temp := temp * FEnvelope.Target;
+  FWaves[2].addPhaseOffset(temp);
 
-  temp := gains[0] * adsr[0].tick * waves[0].tick;
-//  temp:=( 1.0 - (control2 * 0.5)) * gains[0] * adsr[0].tick * waves[0].tick;
-  temp :={temp+control2 * 0.5 * }temp + gains[2] * adsr[2].tick * waves[2].tick;
+  temp := FGains[0] * FAdsr[0].tick * FWaves[0].tick;
+//  temp:=( 1.0 - (control2 * 0.5)) * FGains[0] * FAdsr[0].tick * FWaves[0].tick;
+  temp :={temp+control2 * 0.5 * }temp + FGains[2] * FAdsr[2].tick * FWaves[2].tick;
 
   // Calculate amplitude modulation and apply it to output.
-  temp2 := vibrato.tick * modDepth;
+  temp2 := FVibrato.tick * modDepth;
   temp := temp * (1.0 + temp2);
-  lastOutput := temp * 0.5;
-  Result := lastOutput;
+  FLastOutput := temp * 0.5;
+  Result := FLastOutput;
 end;
 
 end.

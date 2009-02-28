@@ -4,7 +4,7 @@ unit DAV_StkTwoZero;
 
 { STK two-zero filter class.
 
-  This protected Filter subclass implements a two-zero digital filter. A method
+  This protected filter subclass implements a two-zero digital filter. A method
   is provided for creating a "notch" in the frequency response while
   maintaining a constant filter gain.
 }
@@ -51,7 +51,7 @@ type
     procedure SetNotch(const Frequency, Radius: Single);
 
     // Input one sample to the filter and return one output.
-    function Tick(const sample: Single): Single; overload; override;
+    function Tick(const Sample: Single): Single; overload; override;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
     procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
@@ -88,35 +88,26 @@ begin
 end;
 
 procedure TStkTwoZero.setB1(const Value: Single);
-var
-  Temp : PDAV2SingleArray;
 begin
- Temp := @FB^;
- Temp^[1] := Value;
+ PDAV2SingleArray(FB)^[1] := Value;
 end;
 
 procedure TStkTwoZero.setB2(const Value: Single);
-var
-  Temp : PDAV4SingleArray;
 begin
- Temp := @FB^;
- Temp^[2] := Value;
+ PDAV4SingleArray(FB)^[2] := Value;
 end;
 
 procedure TStkTwoZero.SetNotch(const Frequency, Radius: Single);
-var
-  Temp : PDAV4SingleArray;
 begin
- Temp     := @FB^;
- Temp^[2] := Sqr(Radius);
- Temp^[1] := -2.0 * Radius * Cos(CTwoPI32 * Frequency * FSampleRateInv);
+ PDAV4SingleArray(FB)^[2] := Sqr(Radius);
+ PDAV4SingleArray(FB)^[1] := -2.0 * Radius * Cos(CTwoPI32 * Frequency * FSampleRateInv);
 
   // Normalize the filter gain.
-  if Temp^[1] > 0.0
-   then Temp^[0] := 1.0 / (1.0 + Temp^[1] + Temp^[2])  // Maximum at z = 0.
-   else Temp^[0] := 1.0 / (1.0 - Temp^[1] + Temp^[2]); // Maximum at z = -1.
-  Temp^[1] := Temp^[1] * Temp^[0];
-  Temp^[2] := Temp^[2] * Temp^[0];
+  if PDAV4SingleArray(FB)^[1] > 0.0
+   then PDAV4SingleArray(FB)^[0] := 1.0 / (1.0 + PDAV4SingleArray(FB)^[1] + PDAV4SingleArray(FB)^[2])  // Maximum at z = 0.
+   else PDAV4SingleArray(FB)^[0] := 1.0 / (1.0 - PDAV4SingleArray(FB)^[1] + PDAV4SingleArray(FB)^[2]); // Maximum at z = -1.
+  PDAV4SingleArray(FB)^[1] := PDAV4SingleArray(FB)^[1] * PDAV4SingleArray(FB)^[0];
+  PDAV4SingleArray(FB)^[2] := PDAV4SingleArray(FB)^[2] * PDAV4SingleArray(FB)^[0];
 end;
 
 function TStkTwoZero.Tick(const Sample: Single): Single;

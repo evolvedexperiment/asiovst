@@ -5,7 +5,7 @@ unit DAV_StkTabla;
 { STK tabla drum class.
 
   This class implements a drum sampling synthesizer using WvIn objects and
-  one-pole FFilters. The drum rawwave files are sampled at 22050 Hz, but will be
+  one-pole filters. The drum rawwave files are sampled at 22050 Hz, but will be
   appropriately interpolated for other sample rates. You can specify the
   maximum polyphony (maximum number of simultaneous voices) via a #define in
   the Drummer.h.
@@ -32,7 +32,8 @@ type
     FSounding    : array[0..CTablaPolyphony - 1] of Integer;
     FNumSounding : Integer;
 
-    procedure SetFrequency(const Frequency: Single); override;
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
   public
     // Class constructor.
     constructor Create(const SampleRate: Single); override;
@@ -78,7 +79,12 @@ begin
  inherited Destroy;
 end;
 
-procedure TStkTabla.noteOn;
+function TStkTabla.GetFrequency: Single;
+begin
+ result := 0;
+end;
+
+procedure TStkTabla.NoteOn;
 const
   tablawaves: array[0..CTablaNumWaves - 1] of string =
     ('Drdak2.wav', 'Drdak3.wav', 'Drdak4.wav', 'Drddak1.wav',
@@ -86,10 +92,12 @@ const
     'Drdoo3.wav', 'Drjun1.wav', 'Drjun2.wav', 'DrDoi1.wav',
     'DrDoi2.wav', 'DrTak1.wav', 'DrTak2.wav');
 var
-  gain: Single;
-  i, waveindex, notenum: Integer;
-  tempwv: ^TStkWavePlayer;
-  tempfilt: ^TStkOnePole;
+  gain      : Single;
+  i         : Integer;
+  waveindex : Integer;
+  notenum   : Integer;
+  tempwv    : TStkWavePlayer;
+  tempfilt  : TStkOnePole;
 begin
   gain := amplitude;
   if (amplitude > 1.0) then
@@ -116,16 +124,16 @@ begin
       // If we're already at maximum polyphony, then preempt the oldest voice.
       FreeAndNil(FWaves[0]);
       FFilters[0].Clear;
-      tempWv := @FWaves[0];
-      tempFilt := @FFilters[0];
+      tempWv := FWaves[0];
+      tempFilt := FFilters[0];
       // Re-order the list.
       for i := 0 to CTablaPolyphony - 2 do
        begin
         FWaves[i] := FWaves[i + 1];
         FFilters[i] := FFilters[i + 1];
        end;
-      FWaves[CTablaPolyphony - 1] := tempWv^;
-      FFilters[CTablaPolyphony - 1] := tempFilt^;
+      FWaves[CTablaPolyphony - 1] := tempWv;
+      FFilters[CTablaPolyphony - 1] := tempFilt;
      end else
       FNumSounding := FNumSounding + 1;
     FSounding[FNumSounding - 1] := noteNum;
@@ -139,7 +147,7 @@ begin
    end;
 end;
 
-procedure TStkTabla.SetFrequency(const Frequency: Single);
+procedure TStkTabla.SetFrequency(const Value: Single);
 begin
  inherited;
  // nothing in here yet
@@ -149,7 +157,7 @@ procedure TStkTabla.NoteOff(const Amplitude: Single);
 var
   i: Integer;
 begin
-  // Set all FSounding wave filter gains low.
+  // Set all sounding wave filter gains low.
   i := 0;
   while (i < FNumSounding) do
    begin

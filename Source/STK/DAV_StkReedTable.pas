@@ -23,16 +23,16 @@ type
   private
     // Set the table FOffSet value.
   {
-    The table FOffSet roughly corresponds to the size
-    of the initial reed tip opening (a greater FOffSet
+    The table offset roughly corresponds to the size
+    of the initial reed tip opening (a greater offset
     represents a smaller opening).
   }
     procedure SetOffset(const Value: Single);
 
-    // Set the table FSlope value.
+    // Set the table slope value.
   {
-   The table FSlope roughly corresponds to the reed
-   stiffness (a greater FSlope represents a harder
+   The table slope roughly corresponds to the reed
+   stiffness (a greater slope represents a harder
    reed).
   }
     procedure SetSlope(const Value: Single);
@@ -52,7 +52,7 @@ type
   }
     function Tick(const Input: Single): Single; overload; virtual;
 
-    // Take \e vectorSize inputs and return the corresponding function values in \e vector.
+    // Processes 'SampleFrames' samples in-place
     procedure Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer); overload; virtual;
 
     property OffSet: Single read FOffSet write SetOffset;

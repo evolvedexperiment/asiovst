@@ -3,13 +3,13 @@ unit DAV_StkMoog;
 {  STK moog-like swept filter sampling synthesis class.
 
    This instrument uses one attack wave, one looped wave, and an ADSR envelope
-   (inherited from the Sampler class) and adds two sweepable formant (FormSwep)
-   FFilters.
+   (inherited from the Sampler class) and adds two sweepable formant
+   (FormantSweep) filters.
 
     Control Change Numbers:
        - Filter Q = 2
        - Filter Sweep Rate = 4
-       - Vibrato AFrequency = 11
+       - Vibrato Frequency = 11
        - Vibrato Gain = 1
        - Gain = 128
 }
@@ -36,19 +36,18 @@ type
     FFilterQ    : Single;
     FFilterRate : Single;
 
-    // Set instrument parameters for a particular AFrequency.
-    procedure SetFrequency(const Frequency: Single); override;
+    procedure FrequencyChanged; override;
   public
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
-    // Start a note with the given AFrequency and AAmplitude.
+    // Start a note with the given frequency and amplitude.
     procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Compute one output sample.
     function Tick: Single; override;
 
-    // Perform the control change specified by Number and value (0.0 - 128.0).
+    // Perform the control change specified by number and value (0.0 - 128.0).
     procedure ControlChange(const Number: Integer; const Value: Single); override;
   end;
 
@@ -86,12 +85,10 @@ begin
  inherited Destroy;
 end;
 
-procedure TStkMoog.SetFrequency(const Frequency: Single);
+procedure TStkMoog.FrequencyChanged;
 begin
-  FBaseFrequency := Frequency;
-  if (Frequency <= 0.0) then FBaseFrequency := 220.0;
-//  rate:=FAttacks[0].getSize * 0.01 * baseFrequency * FSampleRateInv;
-//  FAttacks[0].setRate( rate );
+//  rate := FAttacks[0].Size * 0.01 * FBaseFrequency * FSampleRateInv;
+//  FAttacks[0].Rate := rate;
   FAttacks[0].Frequency := FBaseFrequency;
   FLoops[0].Frequency := FBaseFrequency;
 end;
@@ -143,7 +140,7 @@ begin
   Result := lastOutput * 3.0;
 end;
 
-procedure TStkMoog.ControlChange;
+procedure TStkMoog.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin

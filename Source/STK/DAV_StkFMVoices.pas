@@ -35,7 +35,7 @@ type
     FMods, FTilt  : array[0..2] of Single;
     procedure SetFrequency(const Value: Single); override;
   public
-    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
+    constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
     procedure NoteOn(const Frequency, Amplitude: Single); override;
     function Tick: Single; override;
@@ -47,9 +47,9 @@ implementation
 uses
   SysUtils;
 
-constructor TStkFMVoices.Create;
+constructor TStkFMVoices.Create(const SampleRate: Single);
 begin
-  inherited Create(SampleRate, Operators);
+  inherited Create(SampleRate);
   FPhonems := TStkPhonemes.Create(SampleRate);
   FWaves[0] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
   FWaves[1] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
@@ -168,7 +168,7 @@ begin
   Result := temp * 0.33;
 end;
 
-procedure TStkFMVoices.ControlChange;
+procedure TStkFMVoices.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin

@@ -12,11 +12,11 @@ unit DAV_StkFlute;
    patents held by Stanford University, Yamaha, and others.
 
    Control Change Numbers:
-     - Jet Delay := 2
-     - FNoise Gain := 4
-     - FVibrato AFrequency := 11
-     - FVibrato Gain := 1
-     - Breath Pressure := 128
+     - Jet Delay = 2
+     - Noise Gain = 4
+     - Vibrato Frequency = 11
+     - Vibrato Gain = 1
+     - Breath Pressure = 128
 }
 
 interface
@@ -25,7 +25,7 @@ interface
 
 uses
   DAV_Common, DAV_StkCommon, DAV_StkLfo, DAV_StkInstrument, DAV_StkJetTable,
-  DAV_StkDelayl, DAV_StkOnePole, DAV_StkPoleZero, DAV_StkNoise, DAV_StkAdsr;
+  DAV_StkDelayL, DAV_StkOnePole, DAV_StkPoleZero, DAV_StkNoise, DAV_StkAdsr;
 
 type
   TStkFlute = class(TStkControlableInstrument)
@@ -58,6 +58,7 @@ type
     FJetRatio      : Single;
 
     procedure JetRatioChanged; virtual;
+    procedure FrequencyChanged; virtual;
 
     // Set instrument parameters for a particular AFrequency.
     procedure SetFrequency(const Value: Single); override;
@@ -153,21 +154,28 @@ begin
 end;
 
 procedure TStkFlute.SetFrequency(const Value: Single);
-var
-  delay: Single;
 begin
-  FLastFrequency := Value;
-  if (Value <= 0.0) then FLastFrequency := 220.0;
+ if FLastFrequency <> Value then
+  begin
+   if (Value <= 0.0)
+    then FLastFrequency := 220.0
+    else FLastFrequency := Value;
 
-  // We're overblowing here.
-  FLastFrequency := FLastFrequency * 0.66666;
-  // Delay := FLength - approximate FFilter delay.
-  delay := SampleRate / FLastFrequency - 2.0;
-  if (delay <= 0.0) then delay := 0.3
-  else if (delay > FLength) then delay := FLength;
+   FrequencyChanged;
+  end;
+end;
 
-  FBoreDelay.Delay := Delay;
-  FJetDelay.Delay := Delay * FJetRatio;
+procedure TStkFlute.FrequencyChanged;
+var
+  Delay: Single;
+begin
+ // Delay := FLength - approximate FFilter delay.
+ Delay := SampleRate / (0.66666 * FLastFrequency - 2.0);
+ if (Delay <= 0.0) then Delay := 0.3
+ else if (Delay > FLength) then Delay := FLength;
+
+ FBoreDelay.Delay := Delay;
+ FJetDelay.Delay := Delay * FJetRatio;
 end;
 
 procedure TStkFlute.StartBlowing(const Amplitude, Rate: Single);
@@ -216,12 +224,12 @@ end;
 
 procedure TStkFlute.JetRatioChanged;
 var
-  temp: Single;
+  Delay: Single;
 begin
  // Delay := FLength - approximate FFilter delay.
- temp := SampleRate / FLastFrequency - 2.0;
- FJetDelay.Delay := temp * FJetRatio; // Scaled by ratio.
-end; 
+ Delay := SampleRate / (0.66666 * FLastFrequency - 2.0);
+ FJetDelay.Delay := Delay * FJetRatio; // Scaled by ratio.
+end;
 
 function TStkFlute.Tick: Single;
 var
@@ -244,7 +252,7 @@ begin
   Result := FLastOutput;
 end;
 
-procedure TStkFlute.ControlChange;
+procedure TStkFlute.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin

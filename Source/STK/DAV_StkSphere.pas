@@ -2,7 +2,7 @@ unit DAV_StkSphere;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{ STK TSphere class.
+{ STK TStkSphere class.
 
   This class implements a spherical ball with radius, mass, position, and
   velocity parameters.
@@ -16,55 +16,57 @@ uses
   DAV_Common, DAV_StkCommon, DAV_StkVector3D;
 
 type
-  TSphere = class
+  TStkSphere = class
   private
-    myPosition    : TVector3d;
-    myVelocity    : TVector3d;
-    workingVector : TVector3d;
-    myRadius      : Double;
-    myMass        : Double;
+    // Set the radius of the TStkSphere.
+    procedure SetRadius(aRadius: Double);
+
+    // Set the mass of the TStkSphere.
+    procedure SetMass(aMass: Double);
+
+    // Get the current TStkSphere radius.
+    function GetRadius: Double;
+
+    // Get the current TStkSphere mass.
+    function GetMass: Double;
+
+  protected
+    FPosition      : TStkVector3d;
+    FVelocity      : TStkVector3d;
+    FWorkingVector : TStkVector3d;
+    FRadius        : Double;
+    FMass          : Double;
   public
     // Constructor taking an initial radius value.
-    constructor Create(initRadius: Double);
+    constructor Create(const InitialRadius: Double);
 
     // Class destructor.
     destructor Destroy; override;
 
-    // Set the 3D center position of the TSphere.
-    procedure setPosition(anX, aY, aZ: Double);
+    // Set the 3D center position of the TStkSphere.
+    procedure SetPosition(anX, aY, aZ: Double);
 
-    // Set the 3D velocity of the TSphere.
-    procedure setVelocity(anX, aY, aZ: Double);
+    // Set the 3D velocity of the TStkSphere.
+    procedure SetVelocity(anX, aY, aZ: Double);
 
-    // Set the radius of the TSphere.
-    procedure setRadius(aRadius: Double);
+    // Get the relative position of the given point to the TStkSphere as a 3D vector.
+    function GetRelativePosition(aPosition: TStkVector3d): TStkVector3d;
 
-    // Set the mass of the TSphere.
-    procedure setMass(aMass: Double);
+    // Set the velcoity of the TStkSphere as a 3D vector.
+    function GetVelocity(aVelocity: TStkVector3d): Double;
 
-    // Get the current position of the TSphere as a 3D vector.
-    function getPosition: TVector3d;
+    // Returns the distance from the TStkSphere boundary to the given position (< 0 if inside).
+    function IsInside(aPosition: TStkVector3d): Double;
 
-    // Get the relative position of the given point to the TSphere as a 3D vector.
-    function getRelativePosition(aPosition: TVector3d): TVector3d;
+    // Increase the current TStkSphere velocity by the given 3D components.
+    procedure AddVelocity(anX, aY, aZ: Double);
 
-    // Set the velcoity of the TSphere as a 3D vector.
-    function getVelocity(aVelocity: TVector3d): Double;
+    // Move the TStkSphere for the given time increment.
+    procedure Tick(TimeIncrement: Double);
 
-    // Returns the distance from the TSphere boundary to the given position (< 0 if inside).
-    function isInside(aPosition: TVector3d): Double;
-
-    // Get the current TSphere radius.
-    function getRadius: Double;
-
-    // Get the current TSphere mass.
-    function getMass: Double;
-
-    // Increase the current TSphere velocity by the given 3D components.
-    procedure addVelocity(anX, aY, aZ: Double);
-
-    // Move the TSphere for the given time increment.
-    procedure tick(timeIncrement: Double);
+    property Position: TStkVector3d read FPosition;
+    property Mass: Double read GetMass write SetMass;
+    property Radius: Double read GetRadius write SetRadius;
   end;
 
 implementation
@@ -72,94 +74,89 @@ implementation
 uses
   SysUtils;
 
-constructor TSphere.Create;
+constructor TStkSphere.Create(const InitialRadius: Double);
 begin
-  myRadius := initRadius;
-  myMass := 1.0;
-  myPosition := TVector3d.Create(0, 0, 0);
-  myVelocity := TVector3d.Create(0, 0, 0);
+  FRadius := InitialRadius;
+  FMass := 1.0;
+  FPosition := TStkVector3d.Create(0, 0, 0);
+  FVelocity := TStkVector3d.Create(0, 0, 0);
 end;
 
-destructor TSphere.Destroy;
+destructor TStkSphere.Destroy;
 begin
- FreeAndNil(myPosition);
- FreeAndNil(myVelocity);
+ FreeAndNil(FPosition);
+ FreeAndNil(FVelocity);
  inherited;
 end;
 
-procedure TSphere.setPosition;
+procedure TStkSphere.SetPosition;
 begin
-  myPosition.setXYZ(anX, aY, aZ);
+  FPosition.SetXYZ(anX, aY, aZ);
 end;
 
-procedure TSphere.setVelocity;
+procedure TStkSphere.SetVelocity;
 begin
-  myVelocity.setXYZ(anX, aY, aZ);
+  FVelocity.SetXYZ(anX, aY, aZ);
 end;
 
-procedure TSphere.setRadius;
+procedure TStkSphere.SetRadius;
 begin
-  myRadius := aRadius;
+  FRadius := aRadius;
 end;
 
-procedure TSphere.setMass;
+procedure TStkSphere.SetMass;
 begin
-  myMass := aMass;
+  FMass := aMass;
 end;
 
-function TSphere.getPosition: TVector3d;
+function TStkSphere.GetRelativePosition(aPosition: TStkVector3d): TStkVector3d;
 begin
-  Result := myPosition;
+  FWorkingVector.SetXYZ(aPosition.getX - FPosition.getX,
+    aPosition.getY - FPosition.getY,
+    aPosition.getZ - FPosition.getZ);
+  Result := FWorkingVector;
 end;
 
-function TSphere.getRelativePosition(aPosition: TVector3d): TVector3d;
+function TStkSphere.GetVelocity(aVelocity: TStkVector3d): Double;
 begin
-  workingVector.setXYZ(aPosition.getX - myPosition.getX,
-    aPosition.getY - myPosition.getY,
-    aPosition.getZ - myPosition.getZ);
-  Result := workingVector;
+  aVelocity.SetXYZ(FVelocity.getX, FVelocity.getY, FVelocity.getZ);
+  Result := FVelocity.getLength;
 end;
 
-function TSphere.getVelocity(aVelocity: TVector3d): Double;
-begin
-  aVelocity.setXYZ(myVelocity.getX, myVelocity.getY, myVelocity.getZ);
-  Result := myVelocity.getLength;
-end;
-
-function TSphere.isInside(aPosition: TVector3d): Double;
+function TStkSphere.IsInside(aPosition: TStkVector3d): Double;
 var
   distance: Double;
-  tvector: TVector3d;
+  tvector: TStkVector3d;
 begin
  // Return directed distance from aPosition to spherical boundary ( <
  // 0 if inside).
-  tVector := getRelativePosition(aPosition);
+  tVector := GetRelativePosition(aPosition);
   distance := tVector.getLength;
-  Result := distance - myRadius;
+  Result := distance - FRadius;
 end;
 
-function TSphere.getRadius: Double;
+function TStkSphere.GetRadius: Double;
 begin
-  Result := myRadius;
+  Result := FRadius;
 end;
 
-function TSphere.getMass: Double;
+function TStkSphere.GetMass: Double;
 begin
-  Result := myMass;
+  Result := FMass;
 end;
 
-procedure TSphere.addVelocity(anX, aY, aZ: Double);
+procedure TStkSphere.AddVelocity(anX, aY, aZ: Double);
 begin
-  myVelocity.setX(myVelocity.getX + anX);
-  myVelocity.setY(myVelocity.getY + aY);
-  myVelocity.setZ(myVelocity.getZ + aZ);
+  FVelocity.setX(FVelocity.getX + anX);
+  FVelocity.setY(FVelocity.getY + aY);
+  FVelocity.setZ(FVelocity.getZ + aZ);
 end;
 
-procedure TSphere.tick(timeIncrement: Double);
+procedure TStkSphere.Tick(TimeIncrement: Double);
 begin
-  myPosition.setX(myPosition.getX + (timeIncrement * myVelocity.getX));
-  myPosition.setY(myPosition.getY + (timeIncrement * myVelocity.getY));
-  myPosition.setZ(myPosition.getZ + (timeIncrement * myVelocity.getZ));
+  FPosition.setX(FPosition.getX + (TimeIncrement * FVelocity.getX));
+  FPosition.setY(FPosition.getY + (TimeIncrement * FVelocity.getY));
+  FPosition.setZ(FPosition.getZ + (TimeIncrement * FVelocity.getZ));
 end;
 
 end.

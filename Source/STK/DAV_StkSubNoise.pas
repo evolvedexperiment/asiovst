@@ -4,8 +4,8 @@ unit DAV_StkSubNoise;
 
 { STK sub-sampled noise generator.
 
-  Generates a new random number every "rate" ticks using the C rand() function.
-  The quality of the rand() function varies from one OS to another.
+  Generates a new random number every "rate" ticks using the random function.
+  The quality of the random function varies from one OS to another.
 }
 
 interface

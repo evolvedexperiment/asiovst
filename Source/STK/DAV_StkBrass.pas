@@ -13,8 +13,8 @@ unit DAV_StkBrass;
   Control Change Numbers:
     - Lip Tension = 2
     - Slide FLength = 4
-    - FVibrato Frequency = 11
-    - FVibrato Gain = 1
+    - Vibrato Frequency = 11
+    - Vibrato Gain = 1
     - Volume = 128
 }
 
@@ -29,18 +29,25 @@ uses
 type
   TStkBrass = class(TStkControlableInstrument)
   protected
-    FDelayLine   : TStkDelayA;
-    FLipFilter   : TStkBiQuad;
-    FDcBlock     : TStkPoleZero;
-    FAdsr        : TStkADSR;
-    FVibrato     : TStkLFO;
-    FLength      : Integer;
-    FLipTarget   : Single;
-    FSlideTarget : Single;
-    FVibratoGain : Single;
-    FMaxPressure : Single;
+    FDelayLine     : TStkDelayA;
+    FLipFilter     : TStkBiQuad;
+    FDcBlock       : TStkPoleZero;
+    FAdsr          : TStkADSR;
+    FVibrato       : TStkLFO;
+    FLength        : Integer;
+    FLipTarget     : Single;
+    FSlideTarget   : Single;
+    FVibratoGain   : Single;
+    FMaxPressure   : Single;
+    FBaseFrequency : Single;
+
+    // Set instrument parameters for a particular frequency.
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
+
+    procedure FrequencyChanged; virtual;
   public
-    // Class constructor, taking the lowest desired playing Frequency.
+    // Class constructor, taking the lowest desired playing frequency.
     constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
 
     // Class destructor.
@@ -49,22 +56,19 @@ type
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(const Frequency: Single); override;
-
-    // Set the lips Frequency.
+    // Set the lips frequency.
     procedure SetLip(const Frequency: Single);
 
-    // Apply breath pressure to instrument with given Amplitude and Rate of increase.
+    // Apply breath pressure to instrument with given amplitude and rate of increase.
     procedure StartBlowing(const Amplitude, Rate: Single);
 
-    // Decrease breath pressure with given Rate of decrease.
+    // Decrease breath pressure with given rate of decrease.
     procedure StopBlowing(const Rate: Single);
 
-    // Start a note with the given Frequency and Amplitude.
+    // Start a note with the given frequency and amplitude.
     procedure NoteOn(const Frequency, Amplitude: Single); override;
 
-    // Stop a note with the given Amplitude (speed of decay).
+    // Stop a note with the given amplitude (speed of decay).
     procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
@@ -123,29 +127,39 @@ begin
   FDcBlock.Clear;
 end;
 
-procedure TStkBrass.setFrequency;
-var
-  Freakency: Single;
+procedure TStkBrass.SetFrequency(const Value: Single);
 begin
-  Freakency := Frequency;
-  if (Frequency <= 0.0) then
-    Freakency := 220.0;
-
-  // Fudge correction for filter delays.
-  FSlideTarget := (SampleRate / Freakency * 2.0) + 3.0;
-  FDelayLine.setDelay(FSlideTarget); // play a harmonic
-
-  FLipTarget := Freakency;
-  FLipFilter.setResonance(Freakency, 0.997, False);
+ if FBaseFrequency <> Frequency then
+  begin
+   if (Value <= 0.0)
+    then FBaseFrequency := 220.0
+    else FBaseFrequency := Frequency;
+   FrequencyChanged;
+  end;
 end;
 
-procedure TStkBrass.setLip;
+procedure TStkBrass.FrequencyChanged;
+begin
+  // Fudge correction for filter delays.
+  FSlideTarget := (SampleRate / FBaseFrequency * 2.0) + 3.0;
+  FDelayLine.Delay := FSlideTarget; // play a harmonic
+
+  FLipTarget := FBaseFrequency;
+  FLipFilter.setResonance(FBaseFrequency, 0.997, False);
+end;
+
+function TStkBrass.GetFrequency: Single;
+begin
+ result := FBaseFrequency;
+end;
+
+procedure TStkBrass.SetLip(const Frequency: Single);
 var
   Freakency: Single;
 begin
   Freakency := Frequency;
-  if (Frequency <= 0.0) then
-    Freakency := 220.0;
+  if (Frequency <= 0.0)
+   then Freakency := 220.0;
 
   FLipFilter.setResonance(Freakency, 0.997, False);
 end;
@@ -197,7 +211,7 @@ begin
   Result := FLastOutput;
 end;
 
-procedure TStkBrass.controlChange;
+procedure TStkBrass.ControlChange(const Number: Integer; const Value: Single);
 var
   temp, norm: Single;
 begin
@@ -209,7 +223,7 @@ begin
     setLip(temp);
    end
   else if (number = CMidiSlideLength) then // 4
-    FDelayLine.setDelay(FSlideTarget * (0.5 + norm))
+    FDelayLine.Delay := FSlideTarget * (0.5 + norm)
   else if (number = CMidiModFrequency) then // 11
     FVibrato.Frequency := norm * 12
   else if (number = CMidiModWheel) then // 1

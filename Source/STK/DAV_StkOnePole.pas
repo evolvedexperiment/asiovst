@@ -2,11 +2,11 @@ unit DAV_StkOnePole;
 
 // based on DAV_Stk by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{ DAV_Stk one-pole DAV_StkFilter class.
+{ Stk one-pole filter class.
 
-  This protected DAV_StkFilter subclass implements a one-pole digital DAV_StkFilter. A method
+  This protected filter subclass implements a one-pole digital filter. A method
   is provided for setting the pole position along the real axis of the z-plane
-  while maintaining a constant peak DAV_StkFilter gain.
+  while maintaining a constant peak filter gain.
 }
 
 interface
@@ -19,7 +19,7 @@ uses
 type
   TStkOnePole = class(TStkFilter)
   public
-    // Default constructor creates a first-order low-pass DAV_StkFilter.
+    // Default constructor creates a first-order low-pass filter.
     constructor Create(const SampleRate: Single); overload; override;
 
     // Overloaded constructor which sets the pole position during instantiation.
@@ -28,29 +28,29 @@ type
     // Class destructor.
     destructor Destroy; override;
 
-    // Clears the internal state of the DAV_StkFilter.
+    // Clears the internal state of the filter.
     procedure Clear; override;
 
     // Set the b[0] coefficient value.
-    procedure setB0(b0: Single);
+    procedure SetB0(const Value: Single);
 
     // Set the a[1] coefficient value.
-    procedure setA1(a1: Single);
+    procedure SetA1(const Value: Single);
 
     // Set the pole position in the z-plane.
   {
     This method sets the pole position along the real-axis of the
     z-plane and normalizes the coefficients for a maximum gain of one.
-    A positive pole value produces a low-pass DAV_StkFilter, while a negative
-    pole value produces a high-pass DAV_StkFilter.  This method does not
-    affect the DAV_StkFilter \e gain value.
+    A positive pole value produces a low-pass filter, while a negative
+    pole value produces a high-pass filter.  This method does not
+    affect the filter \e gain value.
   }
-    procedure setPole(thePole: Single);
+    procedure SetPole(const Value: Single);
 
-    // Input one sample to the DAV_StkFilter and return one output.
+    // Input one sample to the filter and return one output.
     function Tick(const Sample: Single): Single; overload; override;
 
-    // Input \e vectorSize samples to the DAV_StkFilter and return an equal number of outputs in \e vector.
+    // Processes 'SampleFrames' samples inplace
     procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
   end;
 
@@ -77,13 +77,9 @@ begin
   A[0] := 1.0;
   A[1] := -0.9;
   // Normalize coefficients for peak unity gain.
-  if (thePole > 0.0) then
-    B := (1.0 - thePole)
-  else
-    B := (1.0 + thePole);
-
+  B := (1.0 - abs(thePole));
   A[1] := -thePole;
-  inherited setCoefficients(1, @B, 2, @A);
+  inherited SetCoefficients(1, @B, 2, @A);
 end;
 
 destructor TStkOnePole.Destroy;
@@ -96,21 +92,21 @@ begin
   inherited Clear;
 end;
 
-procedure TStkOnePole.setB0(b0: Single);
+procedure TStkOnePole.setB0(const Value: Single);
 begin
-  FB^[0] := b0;
+  FB^[0] := Value;
 end;
 
-procedure TStkOnePole.setA1(a1: Single);
+procedure TStkOnePole.setA1(const Value: Single);
 begin
- PDAV4SingleArray(FA)^[1];
+ PDAV4SingleArray(FA)^[1] := Value;
 end;
 
-procedure TStkOnePole.setPole;
+procedure TStkOnePole.SetPole(const Value: Single);
 begin
   // Normalize coefficients for peak unity gain.
-  FB^[0] := (1.0 - abs(thePole));
-  PDAV4SingleArray(FA)^[1] := -thePole;
+  FB^[0] := (1.0 - abs(Value));
+  PDAV4SingleArray(FA)^[1] := -Value;
 end;
 
 function TStkOnePole.Tick(const Sample: Single): Single;

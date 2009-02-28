@@ -16,7 +16,7 @@ unit DAV_StkWurley;
     - Crossfade of Outputs = 4
     - LFO Speed = 11
     - LFO Depth = 1
-    - FAdsr 2 & 4 Target = 128
+    - ADSR 2 & 4 Target = 128
 
   The basic Chowning/Stanford FM patent expired in 1995, but there exist
   follow-on patents, mostly assigned to Yamaha. If you are of the type who
@@ -36,7 +36,7 @@ type
     // Set instrument parameters for a particular Frequency.
     procedure FrequencyChanged; override;
   public
-    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
+    constructor Create(const SampleRate: Single = 44100); override;
     destructor Destroy; override;
 
     // Start a note with the given Frequency and Amplitude.
@@ -47,7 +47,7 @@ type
 
 implementation
 
-constructor TStkWurley.Create(const SampleRate: Single; const Operators: Integer = 4);
+constructor TStkWurley.Create(const SampleRate: Single = 44100);
 begin
   inherited Create(SampleRate);
   FWaves[0] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');

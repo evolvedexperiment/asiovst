@@ -4,10 +4,9 @@ unit DAV_StkPoleZero;
 
 { STK one-pole, one-zero filter class.
 
-  This protected Filter subclass implements a one-pole, one-zero digital
+  This protected filter subclass implements a one-pole, one-zero digital
   filter. A method is provided for creating an allpass filter with a given
   coefficient. Another method is provided to create a DC blocking filter.
-
 }
 
 interface
@@ -27,13 +26,13 @@ type
     procedure Clear; override;
 
     // Set the b[0] coefficient value.
-    procedure setB0(const b0: Single);
+    procedure SetB0(const Value: Single);
 
     // Set the b[1] coefficient value.
-    procedure setB1(const b1: Single);
+    procedure SetB1(const Value: Single);
 
     // Set the a[1] coefficient value.
-    procedure setA1(const a1: Single);
+    procedure SetA1(const Value: Single);
 
     // Set the filter for allpass behavior using \e coefficient.
   {
@@ -49,7 +48,7 @@ type
     at z=1, to create a DC blocking filter.  \e thePole should be
     close to one to minimize low-frequency attenuation.
   }
-    procedure setBlockZero(const thePole: Single = 0.99);
+    procedure SetBlockZero(const Value: Single = 0.99);
 
     // Set the filter gain.
   {
@@ -88,19 +87,19 @@ begin
   inherited Clear;
 end;
 
-procedure TStkPoleZero.setB0(const b0: Single);
+procedure TStkPoleZero.setB0(const Value: Single);
 begin
-  FB^[0] := b0;
+  FB^[0] := Value;
 end;
 
-procedure TStkPoleZero.setB1(const b1: Single);
+procedure TStkPoleZero.setB1(const Value: Single);
 begin
- PDav4SingleArray(FB)^[1] := b1;
+ PDav4SingleArray(FB)^[1] := Value;
 end;
 
-procedure TStkPoleZero.setA1(const a1: Single);
+procedure TStkPoleZero.setA1(const Value: Single);
 begin
- PDav4SingleArray(FA)^[1] := a1;
+ PDav4SingleArray(FA)^[1] := Value;
 end;
 
 procedure TStkPoleZero.SetAllpass(const Coefficient: Single);
@@ -111,12 +110,12 @@ begin
   PDav4SingleArray(FA)^[1] := Coefficient;
 end;
 
-procedure TStkPoleZero.SetBlockZero(const thePole: Single = 0.99);//0.99
+procedure TStkPoleZero.SetBlockZero(const Value: Single = 0.99);//0.99
 begin
   fB^[0] := 1.0;
   PDav4SingleArray(FB)^[1] := -1.0;
   FA^[0] := 1.0; // just in case
-  PDav4SingleArray(FA)^[1] := -thePole;
+  PDav4SingleArray(FA)^[1] := -Value;
 end;
 
 function TStkPoleZero.Tick(const Input: Single): Single;

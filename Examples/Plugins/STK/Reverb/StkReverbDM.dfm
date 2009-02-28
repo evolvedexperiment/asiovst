@@ -69,8 +69,8 @@ object StkReverbModule: TStkReverbModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 2.000000000000000000
-      MaxInteger = 2
+      Max = 4.000000000000000000
+      MaxInteger = 4
       ReportVST2Properties = True
       ShortLabel = 'Algo'
       SmallStepFloat = 1.000000000000000000

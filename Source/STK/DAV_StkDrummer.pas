@@ -5,7 +5,7 @@ unit DAV_StkDrummer;
 { STK drum sample player class.
 
   This class implements a drum sampling synthesizer using WvIn objects and
-  one-pole FFilters.  The drum rawwave files are sampled at 22050 Hz, but will
+  one-pole filters.  The drum rawwave files are sampled at 22050 Hz, but will
   be appropriately interpolated for other sample rates. You can specify the
   maximum polyphony (maximum number of simultaneous voices)
 }
@@ -28,6 +28,8 @@ type
     FFilters   : array[0..CDrumPolyphony - 1] of TStkOnePole;
     FSounding  : array[0..CDrumPolyphony - 1] of Integer;
     FNSounding : Integer;
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
   public
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
@@ -99,7 +101,7 @@ begin
    FFilters[i] := TStkOnePole.Create(SampleRate);
    FSounding[i] := -1;
   end;
- // This counts the number of FSounding voices.
+ // This counts the number of sounding voices.
  FNSounding := 0;
 end;
 
@@ -112,12 +114,17 @@ begin
   inherited Destroy;
 end;
 
-procedure TStkDrummer.NoteOn;
+function TStkDrummer.GetFrequency: Single;
+begin
+ result := 0;
+end;
+
+procedure TStkDrummer.NoteOn(const Instrument, Amplitude: Single);
 var
   gain: Single;
   i, waveindex, notenum: Integer;
-  tempWv: ^TStkWavePlayer;
-  tempFilt: ^TStkOnePole;
+  tempWv: TStkWavePlayer;
+  tempFilt: TStkOnePole;
 begin
   gain := amplitude;
   if (amplitude > 1.0) then
@@ -126,7 +133,7 @@ begin
     gain := 0;
 
   // Yes, this is tres kludgey.
-//  int noteNum:=(int) ((12*log(instrument/220.0)/log(2.0)) + 57.01);
+  // int noteNum:=(int) ((12 * log(instrument / 220.0) / log(2.0)) + 57.01);
   notenum := round(instrument);
 
   // Check first to see if there's already one like this sounding.
@@ -148,16 +155,16 @@ begin
       // If we're already at maximum polyphony, then preempt the oldest voice.
       FreeAndNil(FWaves[0]);
       FFilters[0].Clear;
-      tempWv := @FWaves[0];
-      tempFilt := @FFilters[0];
+      tempWv := FWaves[0];
+      tempFilt := FFilters[0];
       // Re-order the list.
       for i := 0 to CDrumPolyphony - 2 do
        begin
         FWaves[i] := FWaves[i + 1];
         FFilters[i] := FFilters[i + 1];
        end;
-      FWaves[CDrumPolyphony - 1] := tempWv^;
-      FFilters[CDrumPolyphony - 1] := tempFilt^;
+      FWaves[CDrumPolyphony - 1] := tempWv;
+      FFilters[CDrumPolyphony - 1] := tempFilt;
      end
     else
       FNSounding := FNSounding + 1;
@@ -168,20 +175,26 @@ begin
       SampleRate, wavenames[genmidimap[notenum]]);
     FWaves[FNSounding - 1].OneShot := True;
     FWaves[FNSounding - 1].Reset;
-//    inputbox(floattostr(FWaves[FNSounding-1].length),'','');
-{    if (srate <> 22050.0) then
-      FWaves[FNSounding-1].setRate( 22050.0 / srate );}
+//    inputbox(FloatToStr(FWaves[FNSounding-1].length),'','');
+{    if (SampleRate <> 22050.0) then
+      FWaves[FNSounding-1].Rate := 22050.0 * FSampleRateInv;}
     FWaves[FNSounding - 1].Frequency := 1 / FWaves[FNSounding - 1].Length;
     FFilters[FNSounding - 1].SetPole(0.999 - (gain * 0.6));
     FFilters[FNSounding - 1].Gain := gain;
    end;
 end;
 
+procedure TStkDrummer.SetFrequency(const Value: Single);
+begin
+ inherited;
+ // nothing here yet
+end;
+
 procedure TStkDrummer.NoteOff(const Amplitude: Single);
 var
   i: Integer;
 begin
-  // Set all FSounding wave filter gains low.
+  // Set all sounding wave filter gains low.
   i := 0;
   while (i < FNSounding) do
    begin
@@ -193,7 +206,7 @@ end;
 function TStkDrummer.Tick: Single;
 var
   output: Single;
-  tempfilt: ^TStkOnePole;
+  tempfilt: TStkOnePole;
   i, j: Integer;
 begin
   output := 0.0;
@@ -203,7 +216,7 @@ begin
     if (FWaves[i].isFinished) then
      begin
       FreeAndNil(FWaves[i]);
-      tempFilt := @FFilters[i];
+      tempFilt := FFilters[i];
       // Re-order the list.
       for j := i to FNSounding - 2 do
        begin
@@ -211,7 +224,7 @@ begin
         FWaves[j] := FWaves[j + 1];
         FFilters[j] := FFilters[j + 1];
        end;
-      FFilters[FNSounding - 2] := tempFilt^;
+      FFilters[FNSounding - 2] := tempFilt;
       FFilters[FNSounding - 2].Clear;
       FSounding[FNSounding - 2] := -1;
       FNSounding := FNSounding - 1;

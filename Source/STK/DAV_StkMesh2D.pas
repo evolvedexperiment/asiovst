@@ -34,16 +34,16 @@ type
   TStkMesh2D = class(TStkControlableInstrument)
   private
     // Set the x dimension size in samples.
-    procedure SetNX(lenX: Integer);
+    procedure SetNX(const lenX: Integer);
 
     // Set the y dimension size in samples.
-    procedure SetNY(lenY: Integer);
+    procedure SetNY(const lenY: Integer);
 
     // Set the x, y Input position on a 0.0 - 1.0 scale.
-    procedure SetInputPosition(xFactor, yFactor: Single);
+    procedure SetInputPosition(const xFactor, yFactor: Single);
 
     // Set the loss filters gains (0.0 - 1.0).
-    procedure SetDecay(DecayFactor: Single);
+    procedure SetDecay(const DecayFactor: Single);
 
   protected
     FNX, FNY            : Integer;
@@ -59,6 +59,9 @@ type
     procedure ClearMesh;
     function Tick0: Single;
     function Tick1: Single;
+
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
   public
     // Class constructor, taking the x and y dimensions in samples.
     constructor Create(const SampleRate: Single; const NX, NY: Integer); reintroduce; virtual;
@@ -133,10 +136,8 @@ var
   i: Integer;
 begin
   ClearMesh;
-  for i := 0 to FNY - 1 do
-    FFilterY[i].Clear;
-  for i := 0 to FNX - 1 do
-    FFilterX[i].Clear;
+  for i := 0 to FNY - 1 do FFilterY[i].Clear;
+  for i := 0 to FNX - 1 do FFilterX[i].Clear;
   FCounter := 0;
 end;
 
@@ -144,21 +145,21 @@ procedure TStkMesh2D.ClearMesh;
 var
   x, y: Integer;
 begin
-  for x := 0 to CNxMax - 2 do
-    for y := 0 to CNyMax - 2 do
-      FJunctionVelocities[x][y] := 0;
-  for x := 0 to CNxMax - 1 do
-    for y := 0 to CNyMax - 1 do
-     begin
-      FVxp[x][y] := 0;
-      FVxm[x][y] := 0;
-      FVyp[x][y] := 0;
-      FVym[x][y] := 0;
-      FVxp1[x][y] := 0;
-      FVxm1[x][y] := 0;
-      FVyp1[x][y] := 0;
-      FVym1[x][y] := 0;
-     end;
+ for x := 0 to CNxMax - 2 do
+  for y := 0 to CNyMax - 2
+   do FJunctionVelocities[x][y] := 0;
+ for x := 0 to CNxMax - 1 do
+  for y := 0 to CNyMax - 1 do
+   begin
+    FVxp[x][y] := 0;
+    FVxm[x][y] := 0;
+    FVyp[x][y] := 0;
+    FVym[x][y] := 0;
+    FVxp1[x][y] := 0;
+    FVxm1[x][y] := 0;
+    FVyp1[x][y] := 0;
+    FVym1[x][y] := 0;
+   end;
 end;
 
 function TStkMesh2D.Energy: Single;
@@ -170,83 +171,82 @@ begin
   // Energy is also contained in any filter delay elements.
   e := 0;
   if (FCounter and 1 > 0) then
-    for x := 0 to FNX - 1 do
-      for y := 0 to FNY - 1 do
-       begin
-        t := FVxp1[x][y];
-        e := e + t * t;
-        t := FVxm1[x][y];
-        e := e + t * t;
-        t := FVyp1[x][y];
-        e := e + t * t;
-        t := FVym1[x][y];
-        e := e + t * t;
-       end// Ready for TStkMesh2D::Tick1() to be called.
-
+   for x := 0 to FNX - 1 do
+    for y := 0 to FNY - 1 do
+     begin
+      t := FVxp1[x][y];
+      e := e + t * t;
+      t := FVxm1[x][y];
+      e := e + t * t;
+      t := FVyp1[x][y];
+      e := e + t * t;
+      t := FVym1[x][y];
+      e := e + t * t;
+     end// Ready for TStkMesh2D::Tick1() to be called.
   else
-    for x := 0 to FNX - 1 do
-      for y := 0 to FNY - 1 do
-       begin
-        t := FVxp[x][y];
-        e := e + t * t;
-        t := FVxm[x][y];
-        e := e + t * t;
-        t := FVyp[x][y];
-        e := e + t * t;
-        t := FVym[x][y];
-        e := e + t * t;
-       end// Ready for TStkMesh2D::Tick0() to be called.
-  ;
+   for x := 0 to FNX - 1 do
+    for y := 0 to FNY - 1 do
+     begin
+      t := FVxp[x][y];
+      e := e + t * t;
+      t := FVxm[x][y];
+      e := e + t * t;
+      t := FVyp[x][y];
+      e := e + t * t;
+      t := FVym[x][y];
+      e := e + t * t;
+     end; // Ready for TStkMesh2D::Tick0() to be called.
 
   Result := e;
 end;
 
-procedure TStkMesh2D.SetNX;
+function TStkMesh2D.GetFrequency: Single;
+begin
+ result := 0;
+end;
+
+procedure TStkMesh2D.SetNX(const lenX: Integer);
 begin
   FNX := lenX;
-  if (lenX < 2) then
-    FNX := 2
-  else if (lenX > CNxMax) then
-    FNX := CNxMax;
+  if (lenX < 2) then FNX := 2
+  else if (lenX > CNxMax) then FNX := CNxMax;
 end;
 
-procedure TStkMesh2D.SetNY;
+procedure TStkMesh2D.SetNY(const lenY: Integer);
 begin
   FNY := lenY;
-  if (lenY < 2) then
-    FNY := 2
-  else if (lenY > CNyMax) then
-    FNY := CNyMax;
+  if (lenY < 2) then FNY := 2
+  else if (lenY > CNyMax) then FNY := CNyMax;
 end;
 
-procedure TStkMesh2D.SetDecay;
+procedure TStkMesh2D.SetDecay(const DecayFactor: Single);
 var
   Gain: Single;
   i: Integer;
 begin
-  Gain := DecayFactor;
-  if (DecayFactor < 0.0) then
-    Gain := 0.0
-  else if (DecayFactor > 1.0) then
-    Gain := 1.0;
-  for i := 0 to CNyMax - 1 do
-    FFilterY[i].Gain := Gain;
-  for i := 0 to CNxMax - 1 do
-    FFilterX[i].Gain := Gain;
+ Gain := Limit(DecayFactor, 0, 1);
+ for i := 0 to CNyMax - 1 do FFilterY[i].Gain := Gain;
+ for i := 0 to CNxMax - 1 do FFilterX[i].Gain := Gain;
 end;
 
-procedure TStkMesh2D.SetInputPosition;
+procedure TStkMesh2D.SetFrequency(const Value: Single);
 begin
-  if (xFactor < 0.0) then FXInput := 0
-  else if (xFactor > 1.0) then FXInput := FNX - 1
-  else FXInput := round(xFactor * (FNX - 1));
-
-  if (yFactor < 0.0) then FYInput := 0
-  else if (yFactor > 1.0) then FYInput := FNY - 1
-  else FYInput := round(yFactor * (FNY - 1));
+ inherited;
+ // nothing here yet
 end;
 
-procedure TStkMesh2D.NoteOn;
+procedure TStkMesh2D.SetInputPosition(const xFactor, yFactor: Single);
+begin
+ if (xFactor < 0.0) then FXInput := 0
+ else if (xFactor > 1.0) then FXInput := FNX - 1
+ else FXInput := round(xFactor * (FNX - 1));
+
+ if (yFactor < 0.0) then FYInput := 0
+ else if (yFactor > 1.0) then FYInput := FNY - 1
+ else FYInput := round(yFactor * (FNY - 1));
+end;
+
+procedure TStkMesh2D.NoteOn(const Frequency, Amplitude: Single);
 begin
   // Input at corner.
   if (FCounter and 1 > 0) then
@@ -261,7 +261,7 @@ begin
    end;
 end;
 
-procedure TStkMesh2D.NoteOff;
+procedure TStkMesh2D.NoteOff(const Amplitude: Single);
 begin
 end;
 
@@ -294,7 +294,7 @@ begin
 end;
 
 const
-  VSCALE = 0.5;
+  CVScale = 0.5;
 
 function TStkMesh2D.Tick0: Single;
 var
@@ -305,7 +305,7 @@ begin
   for x := 0 to FNX - 2 do
     for y := 0 to FNY - 2 do
       FJunctionVelocities[x][y] := (FVxp[x][y] + FVxm[x + 1][y] + FVyp[x][y] +
-        FVym[x][y + 1]) * VSCALE;
+        FVym[x][y + 1]) * CVScale;
 
   // Update junction outgoing waves, using alternate wave-variable buffers.
   for x := 0 to FNX - 2 do
@@ -353,7 +353,7 @@ begin
   for x := 0 to FNX - 2 do
     for y := 0 to FNY - 2 do
       FJunctionVelocities[x][y] := (FVxp1[x][y] + FVxm1[x + 1][y] + FVyp1[x][y] +
-        FVym1[x][y + 1]) * VSCALE;
+        FVym1[x][y + 1]) * CVScale;
 
   // Update junction outgoing waves, 
   // using alternate wave-variable buffers.
@@ -391,7 +391,7 @@ begin
   Result := Outsamp;
 end;
 
-procedure TStkMesh2D.ControlChange;
+procedure TStkMesh2D.ControlChange(const Number: Integer; const Value: Single);
 var
   Norm: Single;
 begin

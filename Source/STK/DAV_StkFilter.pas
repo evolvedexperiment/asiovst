@@ -13,7 +13,7 @@ unit DAV_StkFilter;
    A[0] * y[n] := B[0] * x[n] + ... + B[numB] * x[n - numB] -
                   A[1] * y[n-1] - ... - A[numA] * y[n - numA]
 
-   If FA[0] is not equal to 1, the filter coeffcients are normalized by FA[0].
+   If A[0] is not equal to 1, the filter coeffcients are normalized by A[0].
 
    The gain parameter is applied at the filter input and does not affect the
    coefficient values. The default gain value is 1.0.  This structure results
@@ -55,9 +55,9 @@ type
 
     // Set filter coefficients.
   {
-    An StkError can be thrown if either \e FnumB or \e FnumA is less than
-    one, or if the FA[0] coefficient is equal to zero.  If FA[0] is not
-    equal to 1, the filter coeffcients are normalized by FA[0].
+    An StkError can be thrown if either \e numB or \e numA is less than
+    one, or if the A[0] coefficient is equal to zero.  If A[0] is not
+    equal to 1, the filter coeffcients are normalized by A[0].
   }
     procedure SetCoefficients(const BCoefficientCount: Integer;
       BCoefficients: PDAVSingleFixedArray; const ACoefficientCount: Integer;
@@ -65,21 +65,21 @@ type
 
     // Set numerator coefficients.
   {
-    An StkError can be thrown if \e FnumB is less than one.  Any
+    An StkError can be thrown if \e numB is less than one.  Any
     previously set denominator coefficients are left unaffected.
     Note that the default constructor sets the single denominator
-    coefficient FA[0] to 1.0.
+    coefficient A[0] to 1.0.
   }
     procedure SetNumerator(BCoefficientCount: Integer;
       BCoefficients: PDAVSingleFixedArray);
 
     // Set denominator coefficients.
   {
-    An StkError can be thrown if \e FnumA is less than one or if the
-    FA[0] coefficient is equal to zero.  Previously set numerator
-    coefficients are unaffected unless FA[0] is not equal to 1, in
-    which case all coeffcients are normalized by FA[0].  Note that the
-    default constructor sets the single numerator coefficient FB[0]
+    An StkError can be thrown if \e numA is less than one or if the
+    A[0] coefficient is equal to zero.  Previously set numerator
+    coefficients are unaffected unless A[0] is not equal to 1, in
+    which case all coeffcients are normalized by A[0].  Note that the
+    default constructor sets the single numerator coefficient B[0]
     to 1.0.
   }
     procedure setDenominator(ACoefficientCount: Integer;

@@ -5,8 +5,8 @@ unit DAV_StkFormantSweep;
 {  STK sweepable formant filter class.
 
    This public BiQuad filter subclass implements a formant (resonance) which
-   can be "swept" over time from one FFrequency setting to another.
-   It provides methods for controlling the sweep rate and target FFrequency.
+   can be "swept" over time from one frequency setting to another.
+   It provides methods for controlling the sweep rate and target frequency.
 }
 
 interface
@@ -57,25 +57,25 @@ type
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
-    // Sets the filter coefficients for a resonance at \e FFrequency (in Hz).
+    // Sets the filter coefficients for a resonance at \e frequency (in Hz).
   {
     This method determines the filter coefficients corresponding to
-    two complex-conjugate poles with the given \e FFrequency (in Hz)
-    and \e FRadius from the z-plane origin.  The filter zeros are
+    two complex-conjugate poles with the given \e frequency (in Hz)
+    and \e radius from the z-plane origin.  The filter zeros are
     placed at z := 1, z := -1, and the coefficients are then normalized to
     produce a constant unity gain (independent of the filter \e gain
-    parameter).  The resulting filter FFrequency response has a
-    resonance at the given \e FFrequency.  The closer the poles are to
-    the unit-circle (\e FRadius close to one), the narrower the
+    parameter).  The resulting filter frequency response has a
+    resonance at the given \e frequency.  The closer the poles are to
+    the unit-circle (\e radius close to one), the narrower the
     resulting resonance width.
   }
-    procedure setResonance(AFrequency, ARadius: Single);
+    procedure SetResonance(const Frequency, Radius: Single);
 
     // Set both the current and target resonance parameters.
-    procedure setStates(AFrequency, ARadius: Single; AGain: Single = 1.0);
+    procedure SetStates(const Frequency, Radius: Single; const Gain: Single = 1.0);
 
     // Set target resonance parameters.
-    procedure setTargets(AFrequency, ARadius: Single; AGain: Single = 1.0);
+    procedure SetTargets(const Frequency, Radius: Single; const Gain: Single = 1.0);
 
     // Input one sample to the filter and return one output.
     function Tick(const Sample: Single): Single; overload; override;
@@ -111,41 +111,41 @@ begin
   inherited Destroy;
 end;
 
-procedure TStkFormantSweep.setResonance;
+procedure TStkFormantSweep.SetResonance(const Frequency, Radius: Single);
 begin
   FDirty := False;
-  FRadius := ARadius;
-  FFrequency := AFrequency;
+  FRadius := Radius;
+  FFrequency := Frequency;
   inherited setResonance(FFrequency, FRadius, True);
 end;
 
-procedure TStkFormantSweep.setStates;
+procedure TStkFormantSweep.SetStates(const Frequency, Radius: Single; const Gain: Single = 1.0);
 begin
   FDirty := False;
 
-  if ((FFrequency <> AFrequency) or (FRadius <> ARadius)) then
-    inherited setResonance(AFrequency, ARadius, True);
+  if (FFrequency <> Frequency) or (FRadius <> Radius)
+   then inherited SetResonance(Frequency, Radius, True);
 
-  FFrequency := AFrequency;
-  FRadius := ARadius;
-  FGain := AGain;
-  FTargetFrequency := AFrequency;
-  FTargetRadius := ARadius;
-  FTargetGain := AGain;
+  FFrequency := Frequency;
+  FRadius := Radius;
+  FGain := Gain;
+  FTargetFrequency := Frequency;
+  FTargetRadius := Radius;
+  FTargetGain := Gain;
 end;
 
-procedure TStkFormantSweep.setTargets;
+procedure TStkFormantSweep.SetTargets(const Frequency, Radius: Single; const Gain: Single = 1.0);
 begin
   FDirty := True;
   FStartFrequency := FFrequency;
   FStartRadius := FRadius;
-  FStartGain := gain;
-  FTargetFrequency := AFrequency;
-  FTargetRadius := ARadius;
-  FTargetGain := AGain;
-  FDeltaFrequency := AFrequency - FFrequency;
-  FDeltaRadius := ARadius - FRadius;
-  FDeltaGain := AGain - gain;
+  FStartGain := FGain;
+  FTargetFrequency := Frequency;
+  FTargetRadius := Radius;
+  FTargetGain := Gain;
+  FDeltaFrequency := Frequency - FFrequency;
+  FDeltaRadius := Radius - FRadius;
+  FDeltaGain := Gain - FGain;
   FSweepState := 0;
 end;
 

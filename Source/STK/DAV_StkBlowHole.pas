@@ -2,17 +2,17 @@ unit DAV_StkBlowHole;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{ STK clarinet physical model with one register hole and one FTonehole
+{ STK clarinet physical model with one register hole and one tonehole
   -------------------------------------------------------------------
 
   This class is based on the clarinet model, with the addition of a two-port
-  register hole and a three-port dynamic FTonehole implementation, as discussed
+  register hole and a three-port dynamic tonehole implementation, as discussed
   by Scavone and Cook (1998).
 
   In this implementation, the distances between the reed/register hole and
-  FTonehole/bell are fixed.  As a result, both the FTonehole and register hole
+  tonehole/bell are fixed.  As a result, both the tonehole and register hole
   will have variable influence on the playing frequency, which is dependent on
-  the FLength of the air column.  In addition, the highest playing freqeuency is
+  the length of the air column.  In addition, the highest playing freqeuency is
   limited by these fixed lengths.
 
   This is a digital waveguide model, making its use possibly subject to patents
@@ -20,8 +20,8 @@ unit DAV_StkBlowHole;
 
   Control Change Numbers:
     - Reed Stiffness = 2
-    - FNoise Gain = 4
-    - FTonehole State = 11
+    - Noise Gain = 4
+    - Tonehole State = 11
     - Register State = 1
     - Breath Pressure = 128
 }
@@ -37,28 +37,32 @@ uses
 type
   TStkBlowHole = class(TStkControlableInstrument)
   protected
-    FDelays       : array[0..2] of TStkDelayL;
-    FReedTable    : TStkReedTable;
-    FFilter       : TStkOneZero;
-    FTonehole     : TStkPoleZero;
-    FVent         : TStkPoleZero;
-    FEnvelope     : TStkEnvelope;
-    FNoise        : TStkNoise;
-    FVibrato      : TStkLfo;
-    FLength       : Integer;
-    FScatter      : Single;
-    FThCoeff      : Single;
-    FRth          : Single;
-    FRhCoeff      : Single;
-    FRhGain       : Single;
-    FOutputGain   : Single;
-    FNoiseGain    : Single;
-    FVibratoGain  : Single;
+    FDelays        : array[0..2] of TStkDelayL;
+    FReedTable     : TStkReedTable;
+    FFilter        : TStkOneZero;
+    FTonehole      : TStkPoleZero;
+    FVent          : TStkPoleZero;
+    FEnvelope      : TStkEnvelope;
+    FNoise         : TStkNoise;
+    FVibrato       : TStkLfo;
+    FLength        : Integer;
+    FScatter       : Single;
+    FThCoeff       : Single;
+    FRth           : Single;
+    FRhCoeff       : Single;
+    FRhGain        : Single;
+    FOutputGain    : Single;
+    FNoiseGain     : Single;
+    FVibratoGain   : Single;
+    FBaseFrequency : Single;
 
     //! Set instrument parameters for a particular frequency.
     procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
 
-    //! Set the FTonehole state (0.0 := closed, 1.0 := fully open).
+    procedure FrequencyChanged; virtual;
+
+    //! Set the tonehole state (0.0 := closed, 1.0 := fully open).
     procedure SetTonehole(const Value: Single);
 
     //! Set the register hole state (0.0 := closed, 1.0 := fully open).
@@ -179,21 +183,32 @@ begin
 end;
 
 procedure TStkBlowHole.SetFrequency(const Value: Single);
-var
-  delay, freakency: Single;
 begin
-  freakency := Value;
-  if (Value <= 0.0) then freakency := 220.0;
+ if FBaseFrequency <> Value then
+  begin
+   if (Value <= 0.0)
+    then FBaseFrequency := 220.0
+    else FBaseFrequency := Value;
+   FrequencyChanged;
+  end;
+end;
 
-  // Delay := FLength - approximate FFilter delay.
-  delay := (SampleRate / freakency) * 0.5 - 3.5;
-  delay := delay - (FDelays[0].Delay + FDelays[2].Delay);
+procedure TStkBlowHole.FrequencyChanged;
+var
+  Delay: Single;
+begin
+ // Delay := FLength - approximate FFilter delay.
+ Delay := (SampleRate / FBaseFrequency) * 0.5 - 3.5;
+ Delay := Delay - (FDelays[0].Delay + FDelays[2].Delay);
 
-  if (delay <= 0.0) then
-    delay := 0.3
-  else if (delay > FLength) then
-    delay := FLength;
-  FDelays[1].Delay := delay;
+ if (Delay <= 0.0) then Delay := 0.3
+ else if (Delay > FLength) then Delay := FLength;
+ FDelays[1].Delay := Delay;
+end;
+
+function TStkBlowHole.GetFrequency: Single;
+begin
+ result := FBaseFrequency;
 end;
 
 procedure TStkBlowHole.SetVent(const Value: Single);
@@ -220,8 +235,8 @@ begin
  if (Value <= 0.0) then NewCoeff := 0.9995
   else if (Value >= 1.0) then NewCoeff := FThCoeff
   else NewCoeff := (Value * (FThCoeff - 0.9995)) + 0.9995;
- FTonehole.setA1(-NewCoeff);
- FTonehole.setB0(NewCoeff);
+ FTonehole.SetA1(-NewCoeff);
+ FTonehole.SetB0(NewCoeff);
 end;
 
 procedure TStkBlowHole.StartBlowing(const Amplitude, Rate: Single);
@@ -232,15 +247,15 @@ end;
 
 procedure TStkBlowHole.StopBlowing(const Rate: Single);
 begin
-  FEnvelope.Rate := rate;
+  FEnvelope.Rate := Rate;
   FEnvelope.Target := 0.0;
 end;
 
 procedure TStkBlowHole.NoteOn(const Frequency, Amplitude: Single);
 begin
-  setFrequency(frequency);
-  startBlowing(0.55 + (amplitude * 0.30), amplitude * 0.005);
-  FOutputGain := amplitude + 0.001;
+  SetFrequency(frequency);
+  StartBlowing(0.55 + (Amplitude * 0.30), Amplitude * 0.005);
+  FOutputGain := Amplitude + 0.001;
 end;
 
 procedure TStkBlowHole.NoteOff(const Amplitude: Single);

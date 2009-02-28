@@ -55,6 +55,7 @@ type
 
     // Set instrument parameters for a particular Frequency.
     procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
 
     procedure FrequencyChanged; virtual;
     procedure DetuneChanged; virtual;
@@ -144,16 +145,21 @@ begin
  if (delay <= 0.0) then Delay := 0.3
  else if (Delay > FLength) then
    Delay := FLength;
- FDelayLine.setDelay(Delay);
+ FDelayLine.Delay := Delay;
 
  Delay := (FLastLength * FDetuning) - 0.5;
  if (Delay <= 0.0) then
    Delay := 0.3
  else if (Delay > FLength) then Delay := FLength;
- FDelayline2.setDelay(Delay);
+ FDelayline2.Delay := Delay;
 
  FLoopGain := FBaseLoopGain + (FLastFrequency * 0.000005);
  if (FLoopGain > 1.0) then FLoopGain := 0.99999;
+end;
+
+function TStkPluckTwo.GetFrequency: Single;
+begin
+ result := FLastFrequency;
 end;
 
 procedure TStkPluckTwo.SetDetune(const Value: Single);

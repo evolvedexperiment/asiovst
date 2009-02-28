@@ -12,13 +12,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 type
-  TVector3D = class
+  TStkVector3D = class
   public
     // Default constructor taking optional initial X, Y, and Z values.
-    constructor Create(initX, initY, initZ: double);
-
-    // Class destructor.
-    destructor Destroy;
+    constructor Create(const initX, initY, initZ: Double); reintroduce; virtual;
 
     // Get the current X value.
     function getX: double;
@@ -30,19 +27,19 @@ type
     function getZ: double;
 
     // Calculate the vector length.
-    function getLength: double;
+    function GetLength: Double;
 
     // Set the X, Y, and Z values simultaniously.
-    procedure setXYZ(anX, aY, aZ: double);
+    procedure SetXYZ(anX, aY, aZ: double);
 
     // Set the X value.
-    procedure setX(aval: double);
+    procedure SetX(const aval: double);
 
     // Set the Y value.
-    procedure setY(aval: double);
+    procedure SetY(const aval: double);
 
     // Set the Z value.
-    procedure setZ(aval: double);
+    procedure SetZ(const aval: double);
 
   protected
     myX, myY, myZ: double
@@ -50,33 +47,29 @@ type
 
 implementation
 
-constructor TVector3D.Create;
+constructor TStkVector3D.Create;
 begin
   myX := initX;
   myY := initY;
   myZ := initZ;
 end;
 
-destructor TVector3D.Destroy;
-begin
-end;
-
-function TVector3D.getX;
+function TStkVector3D.getX;
 begin
   Result := myX;
 end;
 
-function TVector3D.getY;
+function TStkVector3D.getY;
 begin
   Result := myY;
 end;
 
-function TVector3D.getZ;
+function TStkVector3D.getZ;
 begin
   Result := myZ;
 end;
 
-function TVector3D.getLength;
+function TStkVector3D.getLength;
 var
   temp: double;
 begin
@@ -87,24 +80,24 @@ begin
   Result := temp;
 end;
 
-procedure TVector3D.setXYZ;
+procedure TStkVector3D.setXYZ;
 begin
   myX := anX;
   myY := aY;
   myZ := aZ;
 end;
 
-procedure TVector3D.setX;
+procedure TStkVector3D.setX;
 begin
   myX := aval;
 end;
 
-procedure TVector3D.setY;
+procedure TStkVector3D.setY;
 begin
   myY := aval;
 end;
 
-procedure TVector3D.setZ;
+procedure TStkVector3D.setZ;
 begin
   myZ := aval;
 end;

@@ -30,20 +30,25 @@ uses
 
 type
   TStkClarinet = class(TStkControlableInstrument)
+  private
   protected
-    FDelayLine   : TStkDelayL;
-    FReedTable   : TStkReedTable;
-    FFilter      : TStkOneZero;
-    FEnvelope    : TStkEnvelope;
-    FNoise       : TStkNoise;
-    FVibrato     : TStkLfo;
-    FLength      : Integer;
-    FOutputGain  : Single;
-    FNoiseGain   : Single;
-    FVibratoGain : Single;
+    FDelayLine     : TStkDelayL;
+    FReedTable     : TStkReedTable;
+    FFilter        : TStkOneZero;
+    FEnvelope      : TStkEnvelope;
+    FNoise         : TStkNoise;
+    FVibrato       : TStkLfo;
+    FLength        : Integer;
+    FOutputGain    : Single;
+    FNoiseGain     : Single;
+    FVibratoGain   : Single;
+    FBaseFrequency : Single;
 
     // Set instrument parameters for a particular frequency.
-    procedure SetFrequency(const Frequency: Single); override;
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
+
+    procedure FrequencyChanged; virtual;
   public
     // Class constructor, taking the lowest desired playing frequency.
     constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
@@ -113,32 +118,42 @@ begin
   FFilter.Tick(0.0);
 end;
 
-procedure TStkClarinet.SetFrequency;
-var
-  delay, freakency: Single;
+procedure TStkClarinet.SetFrequency(const Value: Single);
 begin
-  freakency := Frequency;
-  if (Frequency <= 0.0) then
-    freakency := 220.0;
-
-  // Delay := FLength - approximate FFilter delay.
-  delay := (SampleRate / freakency) * 0.5 - 1.5;
-  if (delay <= 0.0) then
-    delay := 0.3
-  else if (delay > FLength) then
-    delay := FLength;
-  FDelayLine.Delay := Delay;
+ if FBaseFrequency <> Value then
+  begin
+   if (Value <= 0.0)
+    then FBaseFrequency := 220.0
+    else FBaseFrequency := Value;
+   FrequencyChanged;
+  end;
 end;
 
-procedure TStkClarinet.StartBlowing;
+procedure TStkClarinet.FrequencyChanged;
+var
+  Delay: Single;
 begin
-  FEnvelope.Rate := rate;
+ // Delay := FLength - approximate FFilter delay.
+ Delay := (SampleRate / FBaseFrequency) * 0.5 - 1.5;
+ if (Delay <= 0.0) then Delay := 0.3
+ else if (Delay > FLength) then Delay := FLength;
+ FDelayLine.Delay := Delay;
+end;
+
+function TStkClarinet.GetFrequency: Single;
+begin
+ result := FBaseFrequency;
+end;
+
+procedure TStkClarinet.StartBlowing(const Amplitude, Rate: Single);
+begin
+  FEnvelope.Rate := Rate;
   FEnvelope.Target := Amplitude;
 end;
 
-procedure TStkClarinet.StopBlowing;
+procedure TStkClarinet.StopBlowing(const Rate: Single);
 begin
-  FEnvelope.Rate := rate;
+  FEnvelope.Rate := Rate;
   FEnvelope.Target := 0.0;
 end;
 
@@ -149,7 +164,7 @@ begin
   FOutputGain := Amplitude + 0.001;
 end;
 
-procedure TStkClarinet.NoteOff;
+procedure TStkClarinet.NoteOff(const Amplitude: Single);
 begin
   StopBlowing(Amplitude * 0.01);
 end;
@@ -161,8 +176,7 @@ begin
   // Calculate the breath pressure (FEnvelope + FNoise + FVibrato)
   breathPressure := FEnvelope.Tick;
   breathPressure := breathPressure + breathPressure * FNoiseGain * FNoise.Tick;
-  breathPressure := breathPressure + breathPressure * FVibratoGain *
-    FVibrato.Tick;
+  breathPressure := breathPressure + breathPressure * FVibratoGain * FVibrato.Tick;
 
   // Perform commuted loss filtering.
   pressureDiff := -0.95 * FFilter.Tick(FDelayLine.LastOutput);

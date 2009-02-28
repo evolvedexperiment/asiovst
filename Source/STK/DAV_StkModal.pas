@@ -4,8 +4,8 @@ unit DAV_StkModal;
 
 { STK resonance model instrument.
 
-  This class contains an excitation wavetable, an FEnvelope, an oscillator, and
-  N resonances (non-sweeping BiQuad FFilters), where N is set during
+  This class contains an excitation wavetable, an envelope, an oscillator, and
+  N resonances (non-sweeping BiQuad filters), where N is set during
   instantiation.
 }
 
@@ -23,10 +23,10 @@ const
 type
   TStkModal = class(TStkControlableInstrument)
   private
-    // Set the master AGain.
-    procedure SetMasterGain(const AGain: Single);
+    // Set the master gain.
+    procedure SetMasterGain(const Value: Single);
 
-    // Set the direct AGain.
+    // Set the direct gAGain.
     procedure SetDirectGain(const Value: Single);
 
   protected
@@ -46,7 +46,8 @@ type
     FRatios         : array[0..CMaxModes - 1] of Single;
 
     // Set instrument parameters for a particular AFrequency.
-    procedure SetFrequency(const AFrequency: Single); override;
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
   public
     // Class constructor, taking the desired number of modes to create.
     constructor Create(const SampleRate: Single; const Modes: Integer = 4); reintroduce; virtual;
@@ -58,10 +59,10 @@ type
     procedure Clear;
 
     // Set the ARatio and ARadius for a specified mode filter.
-    procedure SetRatioAndRadius(AModeIndex: Integer; ARatio, ARadius: Single);
+    procedure SetRatioAndRadius(const ModeIndex: Integer; const Ratio, Radius: Single);
 
     // Set the AGain for a specified mode filter.
-    procedure SetModeGain(const AModeIndex: Integer; const Value: Single);
+    procedure SetModeGain(const ModeIndex: Integer; const Value: Single);
 
     // Initiate a Strike with the given Amplitude (0.0 - 1.0).
     procedure Strike(const Amplitude: Single);
@@ -137,6 +138,11 @@ begin
  inherited Destroy;
 end;
 
+function TStkModal.GetFrequency: Single;
+begin
+ result := FBaseFrequency;
+end;
+
 procedure TStkModal.Clear;
 var
   i: Integer;
@@ -146,46 +152,45 @@ begin
     FFilters[i].Clear;
 end;
 
-procedure TStkModal.SetFrequency;
+procedure TStkModal.SetFrequency(const Value: Single);
 var
   i: Integer;
 begin
-  FBaseFrequency := AFrequency;
-  for i := 0 to FNModes - 1 do
-    SetRatioAndRadius(i, FRatios[i], FRadii[i]);
+ if FBaseFrequency <> Value then
+  begin
+   FBaseFrequency := Value;
+   for i := 0 to FNModes - 1
+    do SetRatioAndRadius(i, FRatios[i], FRadii[i]);
+  end;
 end;
 
-procedure TStkModal.SetRatioAndRadius;
+procedure TStkModal.SetRatioAndRadius(const ModeIndex: Integer; const Ratio, Radius: Single);
 var
   nyquist, temp: Single;
 begin
-  if (AModeIndex < 0) then
-    exit
-  else if (AModeIndex >= FNModes) then
-    exit;
+  if not ModeIndex in [0..FNModes]
+   then raise Exception.CreateFmt('Mode index out of bounds (%d)', [ModeIndex]);
 
   nyquist := SampleRate * 0.5;
-  if (ARatio * FBaseFrequency < nyquist) then
-    FRatios[AModeIndex] := ARatio
-  else
-   begin
-    temp := ARatio;
-    while (temp * FBaseFrequency > nyquist) do
-      temp := temp * 0.5;
-    FRatios[AModeIndex] := temp;
-   end;
-  FRadii[AModeIndex] := ARadius;
-  if (ARatio < 0) then
-    temp := -ARatio
-  else
-    temp := ARatio * FBaseFrequency;
+  if (Ratio * FBaseFrequency < nyquist)
+   then FRatios[ModeIndex] := Ratio
+   else
+    begin
+     temp := Ratio;
+     while (temp * FBaseFrequency > nyquist) do temp := temp * 0.5;
+     FRatios[ModeIndex] := temp;
+    end;
+  FRadii[ModeIndex] := Radius;
+  if (Ratio < 0)
+   then temp := -Ratio
+   else temp := Ratio * FBaseFrequency;
 
-  FFilters[AModeIndex].setResonance(temp, ARadius);
+  FFilters[ModeIndex].SetResonance(temp, Radius);
 end;
 
-procedure TStkModal.SetMasterGain;
+procedure TStkModal.SetMasterGain(const Value: Single);
 begin
-  FMasterGain := AGain;
+  FMasterGain := Value;
 end;
 
 procedure TStkModal.SetDirectGain(const Value: Single);
@@ -193,11 +198,11 @@ begin
   FDirectGain := Value;
 end;
 
-procedure TStkModal.SetModeGain(const AModeIndex: Integer; const Value: Single);
+procedure TStkModal.SetModeGain(const ModeIndex: Integer; const Value: Single);
 begin
-  if not AModeIndex in [0..FNModes]
-   then raise Exception.CreateFmt('Mode index out of bounds (%d)', [AModeIndex])
-   else FFilters[AModeIndex].Gain := Value;
+  if not ModeIndex in [0..FNModes]
+   then raise Exception.CreateFmt('Mode index out of bounds (%d)', [ModeIndex])
+   else FFilters[ModeIndex].Gain := Value;
 end;
 
 procedure TStkModal.Strike(const Amplitude: Single);
@@ -205,24 +210,19 @@ var
   temp, AGain: Single;
   i: Integer;
 begin
-  AGain := Amplitude;
-  if (Amplitude < 0.0) then
-    AGain := 0.0
-  else if (Amplitude > 1.0) then
-    AGain := 1.0;
+  AGain := Limit(Amplitude, 0, 1);
 
   FEnvelope.Rate := 1.0;
   FEnvelope.Target := AGain;
   FOnePole.setPole(1.0 - AGain);
   FEnvelope.Tick;
-  FWave.reset;
+  FWave.Reset;
 
   for i := 0 to FNModes - 1 do
    begin
-    if (FRatios[i] < 0) then
-      temp := -FRatios[i]
-    else
-      temp := FRatios[i] * FBaseFrequency;
+    if (FRatios[i] < 0)
+     then temp := -FRatios[i]
+     else temp := FRatios[i] * FBaseFrequency;
     FFilters[i].setResonance(temp, FRadii[i]);
    end;
 end;
@@ -233,7 +233,7 @@ begin
   SetFrequency(Frequency);
 end;
 
-procedure TStkModal.NoteOff;
+procedure TStkModal.NoteOff(const Amplitude: Single);
 begin
   // This calls Damp, but inverts the meaning of Amplitude (high
   // Amplitude means fast damping).
@@ -247,10 +247,9 @@ var
 begin
   for i := 0 to FNModes - 1 do
    begin
-    if (FRatios[i] < 0) then
-      temp := -FRatios[i]
-    else
-      temp := FRatios[i] * FBaseFrequency;
+    if (FRatios[i] < 0)
+     then temp := -FRatios[i]
+     else temp := FRatios[i] * FBaseFrequency;
     FFilters[i].setResonance(temp, FRadii[i] * Amplitude);
    end;
 end;
@@ -263,8 +262,8 @@ begin
   temp := FMasterGain * FOnePole.Tick(FWave.Tick * FEnvelope.Tick);
 
   temp2 := 0.0;
-  for i := 0 to FNModes - 1 do
-    temp2 := temp2 + FFilters[i].Tick(temp);
+  for i := 0 to FNModes - 1
+   do temp2 := temp2 + FFilters[i].Tick(temp);
 
   temp2 := temp2 - temp2 * FDirectGain;
   temp2 := temp2 + FDirectGain * temp;
@@ -280,7 +279,7 @@ begin
   Result := FLastOutput;
 end;
 
-procedure TStkModal.ControlChange;
+procedure TStkModal.ControlChange(const Number: Integer; const Value: Single);
 begin
   // nothing in here yet!
 end;

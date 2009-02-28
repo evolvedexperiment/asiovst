@@ -2,14 +2,14 @@ unit DAV_StkSimple;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{ STK wavetable/FNoise instrument.
+{ STK wavetable/noise instrument.
 
-  This class combines a looped wave, a FNoise source, a FBiQuad resonance FFilter,
-  a one-pole FFilter, and an FADSR envelope to create some interesting sounds.
+  This class combines a looped wave, a noise source, a biquad resonance filter,
+  a one-pole filter, and an ADSR envelope to create some interesting sounds.
 
   Control Change Numbers:
-    - FFilter Pole Position = 2
-    - FNoise/Pitched Cross-Fade = 4
+    - Filter Pole Position = 2
+    - Noise/Pitched Cross-Fade = 4
     - Envelope Rate = 11
     - Gain = 128
 }
@@ -34,8 +34,8 @@ type
     FLoopGain      : Single;
 
     // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(const Frequency: Single); override;
-
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
   public
     // Class constructor.
     constructor Create(const SampleRate: Single); override;
@@ -92,6 +92,11 @@ begin
  inherited Destroy;
 end;
 
+function TStkSimple.GetFrequency: Single;
+begin
+ result := FLoop.Frequency;
+end;
+
 procedure TStkSimple.KeyOn;
 begin
   FADSR.KeyOn;
@@ -102,22 +107,22 @@ begin
   FADSR.KeyOff;
 end;
 
-procedure TStkSimple.NoteOn;
+procedure TStkSimple.NoteOn(const Frequency, Amplitude: Single);
 begin
   KeyOn;
   SetFrequency(Frequency);
   FFilter.Gain := Amplitude;
 end;
 
-procedure TStkSimple.NoteOff;
+procedure TStkSimple.NoteOff(const Amplitude: Single);
 begin
   KeyOff;
 end;
 
-procedure TStkSimple.SetFrequency;
+procedure TStkSimple.SetFrequency(const Value: Single);
 begin
-  FBiQuad.setResonance(Frequency, 0.98, True);
-  FLoop.Frequency := Frequency;
+  FBiQuad.SetResonance(Value, 0.98, True);
+  FLoop.Frequency := Value;
 end;
 
 function TStkSimple.Tick: Single;
@@ -129,7 +134,7 @@ begin
   Result := FLastOutput;
 end;
 
-procedure TStkSimple.ControlChange;
+procedure TStkSimple.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin

@@ -4,7 +4,7 @@ unit DAV_StkBiQuad;
 
 { STK TStkBiQuad (two-pole, two-zero) filter class.
 
-  This protected Filter subclass implements a two-pole, two-zero digital
+  This protected filter subclass implements a two-pole, two-zero digital
   filter. A method is provided for creating a resonance in the frequency
   response while maintaining a constant filter gain.
 }
@@ -29,39 +29,39 @@ type
     procedure Clear; override;
 
     // Set the b[0] coefficient value.
-    procedure SetB0(b0: Single);
+    procedure SetB0(const Value: Single);
 
     // Set the b[1] coefficient value.
-    procedure SetB1(b1: Single);
+    procedure SetB1(const Value: Single);
 
     // Set the b[2] coefficient value.
-    procedure setB2(b2: Single);
+    procedure SetB2(const Value: Single);
 
     // Set the a[1] coefficient value.
-    procedure setA1(a1: Single);
+    procedure SetA1(const Value: Single);
 
     // Set the a[2] coefficient value.
-    procedure setA2(a2: Single);
+    procedure SetA2(const Value: Single);
 
-    // Sets the filter coefficients for a resonance at \e Frequency (in Hz).
+    // Sets the filter coefficients for a resonance at \e frequency (in Hz).
   {
     This method determines the filter coefficients corresponding to
-    two complex-conjugate poles with the given \e Frequency (in Hz)
-    and \e Radius from the z-plane origin.  If \e Normalize is true,
+    two complex-conjugate poles with the given \e frequency (in Hz)
+    and \e radius from the z-plane origin.  If \e Normalize is true,
     the filter zeros are placed at z := 1, z := -1, and the coefficients
     are then normalized to produce a constant unity peak gain
     (independent of the filter \e gain parameter).  The resulting
-    filter Frequency response has a resonance at the given \e
-    Frequency.  The closer the poles are to the unit-circle (\e Radius
+    filter frequency response has a resonance at the given \e
+    frequency.  The closer the poles are to the unit-circle (\e radius
     close to one), the narrower the resulting resonance width.
   }
     procedure SetResonance(const Frequency, Radius: Single; const Normalize: Boolean = False);
 
-    // Set the filter coefficients for a notch at \e Frequency (in Hz).
+    // Set the filter coefficients for a notch at \e frequency (in Hz).
   {
     This method determines the filter coefficients corresponding to
-    two complex-conjugate zeros with the given \e Frequency (in Hz)
-    and \e Radius from the z-plane origin.  No filter normalization
+    two complex-conjugate zeros with the given \e frequency (in Hz)
+    and \e radius from the z-plane origin.  No filter normalization
     is attempted.
   }
     procedure SetNotch(const Frequency, Radius: Single);
@@ -70,7 +70,7 @@ type
   {
     When using the filter as a resonator, zeroes places at z := 1, z
     := -1 will result in a constant gain at resonance of 1 / (1 - R),
-    where R is the pole Radius setting.
+    where R is the pole radius setting.
   }
     procedure SetEqualGainZeroes;
 
@@ -107,29 +107,29 @@ begin
   inherited Clear;
 end;
 
-procedure TStkBiQuad.SetB0(b0: Single);
+procedure TStkBiQuad.SetB0(const Value: Single);
 begin
-  FB^[0] := b0;
+  FB^[0] := Value;
 end;
 
-procedure TStkBiQuad.SetB1(b1: Single);
+procedure TStkBiQuad.SetB1(const Value: Single);
 begin
- PDav4SingleArray(FB)^[1] := b1;
+ PDav4SingleArray(FB)^[1] := Value;
 end;
 
-procedure TStkBiQuad.setB2(b2: Single);
+procedure TStkBiQuad.setB2(const Value: Single);
 begin
- PDav4SingleArray(FB)^[2] := b2;
+ PDav4SingleArray(FB)^[2] := Value;
 end;
 
-procedure TStkBiQuad.SetA1(a1: Single);
+procedure TStkBiQuad.SetA1(const Value: Single);
 begin
- PDav4SingleArray(FA)^[1] := a1;
+ PDav4SingleArray(FA)^[1] := Value;
 end;
 
-procedure TStkBiQuad.setA2(a2: Single);
+procedure TStkBiQuad.setA2(const Value: Single);
 begin
- PDav4SingleArray(FA)^[2] := a2;
+ PDav4SingleArray(FA)^[2] := Value;
 end;
 
 procedure TStkBiQuad.SetResonance(const Frequency, Radius: Single; const Normalize: Boolean = False);

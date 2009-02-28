@@ -11,15 +11,6 @@ uses
 
 {$I DAV_StkConsts.inc}
 
-(*
-type
-  STK_FORMAT = LongInt;
-  SINT16 = shortint;
-  SINT32 = smallint;
-  FLOAT32 = Single;
-  FLOAT64 = Double;
-*)
-
 type
   TStk = class
   public
@@ -35,41 +26,6 @@ type
   end;
 
 implementation
-
-(*
-const
-  COne128th : Single = 0.0078125;
-
-function PIndex(p: PSingle; i: LongInt): PSingle;
-function Index(p: PSingle; i: LongInt): Single;
-
-function pindex(p: pSingle; i: LongInt): pSingle;
-begin
-  Result := pSingle(LongInt(p) + sizeof(Single) * i);
-end;
-
-function index(p: pSingle; i: LongInt): Single;
-var
-  q: PSingle;
-begin
-  q := pSingle(LongInt(p) + sizeof(Single) * i);
-  Result := q^;
-end;
-
-    STK_SINT8,   //*!< -128 to +127 */
-    STK_SINT16,  //*!< -32768 to +32767 */
-    STK_SINT32,  //*!< -2147483648 to +2147483647. */
-    STK_FLOAT32, //*!< Normalized between plus/minus 1.0. */
-    STK_FLOAT64: //*!< Normalized between plus/minus 1.0. */
-    stk_format;
-
-Single Stk :: srate = (Single) SRATE;
-const Stk::STK_FORMAT Stk :: STK_SINT8 = 1;
-const Stk::STK_FORMAT Stk :: STK_SINT16 = 2;
-const Stk::STK_FORMAT Stk :: STK_SINT32 = 8;
-const Stk::STK_FORMAT Stk :: STK_FLOAT32 = 16;
-const Stk::STK_FORMAT Stk :: STK_FLOAT64 = 32;
-*)
 
 constructor TStk.Create(const SampleRate: Single = 44100);
 begin

@@ -20,6 +20,30 @@ uses
 
 type
   TStkSingWave = class(TStk)
+  private
+    // Set the vibrato frequency in Hz.
+    procedure SetVibratoRate(const Value: Single);
+
+    // Set the vibrato gain.
+    procedure SetVibratoGain(const Value: Single);
+
+    // Set the random-ness amount.
+    procedure SetRandomGain(const Value: Single);
+
+    // Set the sweep rate.
+    procedure SetSweepRate(const Value: Single);
+
+    // Set the gain rate.
+    procedure SetGainRate(const Value: Single);
+
+    // Set the gain target value.
+    procedure SetGainTarget(const Value: Single);
+    function GetGainRate: Single;
+    function GetGainTarget: Single;
+    function GetRandomGain: Single;
+    function GetVibratoGain: Single;
+    function GetVibratoRate: Single;
+
   protected
     FWave          : TStkWavePlayer;
     FModulator     : TStkModulate;
@@ -28,6 +52,10 @@ type
     FRate          : Single;
     FSweepRate     : Single;
     FLastOutput    : Single;
+
+    // Set instrument parameters for a particular frequency.
+    procedure SetFrequency(Frequency: Single);
+
   public
     // Class constructor taking filename argument.
   {
@@ -42,27 +70,6 @@ type
     // Reset file to beginning.
     procedure Reset;
 
-    // Set instrument parameters for a particular frequency.
-    procedure SetFrequency(Frequency: Single);
-
-    // Set the vibrato frequency in Hz.
-    procedure SetVibratoRate(aRate: Single);
-
-    // Set the vibrato gain.
-    procedure SetVibratoGain(gain: Single);
-
-    // Set the random-ness amount.
-    procedure SetRandomGain(gain: Single);
-
-    // Set the sweep FRate.
-    procedure SetSweepRate(aRate: Single);
-
-    // Set the gain FRate.
-    procedure SetGainRate(aRate: Single);
-
-    // Set the gain Target value.
-    procedure SetGainTarget(Target: Single);
-
     // Start a note.
     procedure NoteOn;
 
@@ -74,28 +81,38 @@ type
 
     // Compute one output sample.
     function Tick: Single;
+
+    property VibratoRate: Single read GetVibratoRate write SetVibratoRate;
+    property VibratoGain: Single read GetVibratoGain write SetVibratoGain;
+    property RandomGain: Single read GetRandomGain write SetRandomGain;
+    property SweepRate: Single read FSweepRate write SetSweepRate;
+    property GainRate: Single read GetGainRate write SetGainRate;
+    property GainTarget: Single read GetGainTarget write SetGainTarget;
   end;
 
 implementation
+
+uses
+  SysUtils;
 
 constructor TStkSingWave.Create;
 begin
   inherited Create(SampleRate);
   FWave := TStkWavePlayer.Create(SampleRate, FileName);
-  FWave.SetOneShot(False);
+  FWave.OneShot := False;
   FRate := 1.0;
   FSweepRate := 0.001;
   FModulator := TStkModulate.Create(SampleRate);
-  FModulator.SetVibratoRate(6.0);
-  FModulator.SetVibratoGain(0.04);
-  FModulator.SetRandomGain(0.005);
+  FModulator.VibratoRate := 6.0;
+  FModulator.VibratoGain := 0.04;
+  FModulator.RandomGain := 0.005;
   FEnvelope := TStkEnvelope.Create(SampleRate);
   FPitchEnvelope := TStkEnvelope.Create(SampleRate);
   setFrequency(75.0);
-  FPitchEnvelope.SetRate(1.0);
+  FPitchEnvelope.Rate := 1.0;
   Tick;
   Tick;
-  FPitchEnvelope.SetRate(FSweepRate * FRate);
+  FPitchEnvelope.Rate := FSweepRate * FRate;
 end;
 
 destructor TStkSingWave.Destroy;
@@ -122,43 +139,68 @@ begin
   temp := temp - FRate;
   if (temp < 0) then
     temp := -temp;
-  FPitchEnvelope.setTarget(FRate);
-  FPitchEnvelope.SetRate(FSweepRate * temp);
+  FPitchEnvelope.Target := FRate;
+  FPitchEnvelope.Rate := FSweepRate * temp;
 end;
 
-procedure TStkSingWave.SetVibratoRate;
+procedure TStkSingWave.SetVibratoRate(const Value: Single);
 begin
-  FModulator.SetVibratoRate(aRate);
+  FModulator.VibratoRate := Value;
 end;
 
-procedure TStkSingWave.SetVibratoGain;
+function TStkSingWave.GetVibratoRate: Single;
 begin
-  FModulator.SetVibratoGain(gain);
+ result := FModulator.VibratoRate;
 end;
 
-procedure TStkSingWave.SetRandomGain;
+procedure TStkSingWave.SetVibratoGain(const Value: Single);
 begin
-  FModulator.SetRandomGain(gain);
+ FModulator.VibratoGain := Value;
 end;
 
-procedure TStkSingWave.setSweepRate;
+function TStkSingWave.GetVibratoGain: Single;
 begin
-  FSweepRate := aRate;
+ result := FModulator.VibratoGain
 end;
 
-procedure TStkSingWave.SetGainRate;
+procedure TStkSingWave.SetRandomGain(const Value: Single);
 begin
-  FEnvelope.SetRate(aRate);
+  FModulator.RandomGain := Value;
 end;
 
-procedure TStkSingWave.SetGainTarget;
+function TStkSingWave.GetRandomGain: Single;
 begin
-  FEnvelope.setTarget(Target);
+ result := FModulator.RandomGain;
+end;
+
+procedure TStkSingWave.setSweepRate(const Value: Single);
+begin
+  FSweepRate := Value;
+end;
+
+procedure TStkSingWave.SetGainRate(const Value: Single);
+begin
+  FEnvelope.Rate := Value;
+end;
+
+function TStkSingWave.GetGainRate: Single;
+begin
+ result := FEnvelope.Rate;
+end;
+
+procedure TStkSingWave.SetGainTarget(const Value: Single);
+begin
+  FEnvelope.Target := Value;
+end;
+
+function TStkSingWave.GetGainTarget: Single;
+begin
+ result := FEnvelope.Target;
 end;
 
 procedure TStkSingWave.NoteOn;
 begin
-  FEnvelope.keyOn;
+  FEnvelope.KeyOn;
 end;
 
 procedure TStkSingWave.NoteOff;
@@ -173,7 +215,7 @@ begin
   // Set the FWave FRate.
   newRate := FPitchEnvelope.Tick;
   newRate := newrate + newRate * FModulator.Tick;
-  FWave.setfrequency(newRate);
+  FWave.Frequency := newRate;
   FLastOutput := FWave.Tick;
   FLastOutput := FLastOutput * FEnvelope.Tick;
   Result := FLastOutput;

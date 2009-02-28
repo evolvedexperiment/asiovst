@@ -2,17 +2,17 @@ unit DAV_StkResonate;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{ STK FNoise driven formant FFilter.
+{ STK noise driven formant filter.
 
-  This instrument contains a FNoise source, which excites a biquad resonance
-  FFilter, with volume controlled by an ADSR.
+  This instrument contains a noise source, which excites a biquad resonance
+  filter, with volume controlled by an ADSR.
 
   Control Change Numbers:
-    - Resonance Frequency (0-Nyquist) := 2
-    - Pole Radii := 4
-    - Notch Frequency (0-Nyquist) := 11
-    - Zero Radii := 1
-    - Envelope Gain := 128
+    - Resonance Frequency (0-Nyquist) = 2
+    - Pole Radii = 4
+    - Notch Frequency (0-Nyquist) = 11
+    - Zero Radii = 1
+    - Envelope Gain = 128
 }
 
 interface
@@ -39,13 +39,13 @@ type
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Set the FFilter for a resonance at the given frequency (Hz) and radius.
-    procedure SetResonance(frequency, radius: Single);
+    // Set the filter for a resonance at the given frequency (Hz) and radius.
+    procedure SetResonance(const Frequency, Radius: Single);
 
-    // Set the FFilter for a notch at the given frequency (Hz) and radius.
-    procedure SetNotch(frequency, radius: Single);
+    // Set the filter for a notch at the given frequency (Hz) and radius.
+    procedure SetNotch(const Frequency, Radius: Single);
 
-    // Set the FFilter zero coefficients for contant resonance gain.
+    // Set the filter zero coefficients for contant resonance gain.
     procedure SetEqualGainZeroes;
 
     // Initiate the envelope with a key-on event.
@@ -108,7 +108,7 @@ procedure TStkResonate.NoteOn(const Frequency, Amplitude: Single);
 begin
   FAdsr.Target := Amplitude;
   KeyOn;
-  SetResonance(frequency, FPoleRadius);
+  SetResonance(Frequency, FPoleRadius);
 end;
 
 procedure TStkResonate.NoteOff(const Amplitude: Single);
@@ -116,20 +116,19 @@ begin
   KeyOff;
 end;
 
-procedure TStkResonate.SetResonance;
+procedure TStkResonate.SetResonance(const Frequency, Radius: Single);
 begin
-  FPoleFrequency := frequency;
-  if (frequency < 0.0) then
-    FPoleFrequency := 0.0;
-  FPoleRadius := radius;
-  if (radius < 0.0) then
-    FPoleRadius := 0.0
-  else if (radius >= 1.0) then
-    FPoleRadius := 0.9999;
-  FFilter.SetResonance(FPoleFrequency, FPoleRadius, True);
+ FPoleFrequency := Frequency;
+ if (frequency < 0.0) then FPoleFrequency := 0.0;
+ FPoleRadius := radius;
+ if (radius < 0.0) then
+   FPoleRadius := 0.0
+ else if (radius >= 1.0) then
+   FPoleRadius := 0.9999;
+ FFilter.SetResonance(FPoleFrequency, FPoleRadius, True);
 end;
 
-procedure TStkResonate.SetNotch;
+procedure TStkResonate.SetNotch(const Frequency, Radius: Single);
 begin
   FZeroFrequency := frequency;
   if (frequency < 0.0) then
@@ -142,7 +141,7 @@ end;
 
 procedure TStkResonate.SetEqualGainZeroes;
 begin
-  FFilter.SetEqualGainZeroes;
+ FFilter.SetEqualGainZeroes;
 end;
 
 function TStkResonate.Tick: Single;

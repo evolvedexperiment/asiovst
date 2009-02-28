@@ -23,8 +23,8 @@ type
   protected
     FPport      : Integer;
     FRagaStep   : Integer;
-    ragaPoint   : Integer;
-    voicNote    : Integer;
+    FRagaPoint  : Integer;
+    FVoiceNote  : Integer;
     FT60        : Single;
     FDrone_prob : Single;
     FNote_prob  : Single;
@@ -32,13 +32,15 @@ type
     FVoic_prob  : Single;
     FDroneFreqs : array[0..2] of Single;
     FTempo      : Integer;
-    counter     : Integer;
-    key         : Integer;
+    FCounter    : Integer;
+    FKey        : Integer;
     FDrones     : array[0..2] of TStkDrone;
     FTabla      : TStkTabla;
     FVoicdrums  : TStkVoicedrum;
     FSitar      : TStkSitar;
     FReverbs    : array[0..1] of TStkJCReverb;
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
   public
     constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
@@ -64,9 +66,9 @@ begin
   FDroneFreqs[1] := 82.5;
   FDroneFreqs[2] := 220.0;
   FTempo := 3000;
-  counter := 3000;
-  key := 0;
-  ragaPoint := 6;
+  FCounter := 3000;
+  FKey := 0;
+  FRagaPoint := 6;
   FPport := -1;
 
   FDrones[0] := TStkDrone.Create(SampleRate, 50.0);
@@ -86,11 +88,13 @@ begin
   FDrones[2].noteOn(FDroneFreqs[2], 0.1);
 
 { Single outSamples[2];
- for (i=0;i<SampleRate;i++) begin /* warm everybody up a little */
-   outSamples[0]:=FReverbs[0].tick(FDrones[0].tick + FDrones[2].tick);
-   outSamples[1]:=FReverbs[1].tick(1.5 * FDrones[1].tick);
-   output.tickFrame(outSamples);
- end;}
+ for (i := 0 to SampleRate - 1 do // warm everybody up a little
+  begin
+   outSamples[0] := FReverbs[0].Tick(FDrones[0].Tick + FDrones[2].Tick);
+   outSamples[1] := FReverbs[1].Tick(1.5 * FDrones[1].Tick);
+   output.Tick(outSamples);
+ end;
+}
 end;
 
 destructor TStkRagamat.Destroy;
@@ -110,105 +114,103 @@ procedure TStkRagamat.Tick(var i1, i2: Single);
 var
   temp, rateScaler: Single;
 begin
-{ i1:=FReverbs[0].tick(FSitar.tick);
- i2:=i1;
- counter:=counter-1;
- if (counter<=0) then
- begin
-  rateScaler:=22050.0/SampleRate;
-  counter:=round(FTempo/rateScaler);
-  FSitar.noteOn(Midi2Pitch[ragaUp[key][ragaPoint]],0.5+ random * 0.3)
- end;
+{
+ i1 := FReverbs[0].Tick(FSitar.Tick);
+ i2 := i1;
+ FCounter := FCounter - 1;
+ if (FCounter <= 0) then
+  begin
+   rateScaler := 22050.0 * FSampleRateInv;
+   FCounter := round(FTempo / rateScaler);
+   FSitar.noteOn(Midi2Pitch[ragaUp[FKey][FRagaPoint]], 0.5 + random * 0.3)
+  end;
  exit;
-
  //x}
-  i1 := FReverbs[0].tick(FDrones[0].tick + FDrones[2].tick + FSitar.tick);
-  i2 := FReverbs[1].tick(1.5 * FDrones[1].tick + 0.5 *
-    FVoicdrums.tick + 0.5 * FTabla.tick);
+
+ i1 := FReverbs[0].Tick(FDrones[0].Tick + FDrones[2].Tick + FSitar.Tick);
+ i2 := FReverbs[1].Tick(1.5 * FDrones[1].Tick + 0.5 * FVoicdrums.Tick + 0.5 * FTabla.Tick);
  // mix a little left to right and back
-  temp := i1;
-  i1 := i1 + 0.3 * i2;
-  i2 := i2 + 0.3 * temp;
-  counter := counter - 1;
-  if (counter <= 0) then
-   begin
-    rateScaler := 22050.0 / SampleRate;
-    counter := round(FTempo / rateScaler);
-    if (random < FDrone_prob) then
-      FDrones[0].noteOn(FDroneFreqs[0] + random(10), 0.1);
-    if (random < FDrone_prob) then
-      FDrones[1].noteOn(FDroneFreqs[1] + random(10), 0.1);
-    if (random < FDrone_prob) then
-      FDrones[2].noteOn(FDroneFreqs[2] + random(10), 0.1);
-    if (random < FNote_prob) then
-     begin
-      temp := random;
-      if (temp < 0.1) then
-        FRagaStep := 0
-      else if (temp < 0.5) then
-        FRagaStep := 1
-      else
-        FRagaStep := -1;
-      ragaPoint := ragapoint + FRagaStep;
-      if (ragaPoint < 0) then
-        ragaPoint := ragapoint - (2 * FRagaStep);
-      if (ragaPoint > 11) then
-        ragaPoint := 11;
-      if (FRagaStep > 0) then
-        FSitar.noteOn(Midi2Pitch[ragaUp[key][ragaPoint]], 0.05 + random * 0.3)
-      else
-        FSitar.noteOn(Midi2Pitch[ragaDown[key][ragaPoint]],
-          0.05 + random * 0.3);
-     end;
-    if (random < FVoic_prob) then
-     begin
-      voicNote := random(11);
-      FVoicdrums.noteOn(voicNote, 0.3 + (0.4 * FDrum_prob) +
-        random * 0.3 * FVoic_prob);
-     end;
-    if (random < FDrum_prob) then
-     begin
-      voicNote := random(CTablaNumWaves);
-      FTabla.noteOn(voicNote, 0.2 + (0.2 * FDrum_prob) + random * 0.6 * FDrum_prob);
-     end;
-   end;
+ temp := i1;
+ i1 := i1 + 0.3 * i2;
+ i2 := i2 + 0.3 * temp;
+ FCounter := FCounter - 1;
+ if (FCounter <= 0) then
+  begin
+   rateScaler := 22050.0 * FSampleRateInv;
+   FCounter := round(FTempo / rateScaler);
+   if (random < FDrone_prob) then FDrones[0].noteOn(FDroneFreqs[0] + random(10), 0.1);
+   if (random < FDrone_prob) then FDrones[1].noteOn(FDroneFreqs[1] + random(10), 0.1);
+   if (random < FDrone_prob) then FDrones[2].noteOn(FDroneFreqs[2] + random(10), 0.1);
+   if (random < FNote_prob) then
+    begin
+     temp := random;
+     if (temp < 0.1) then FRagaStep := 0
+     else if (temp < 0.5) then FRagaStep := 1
+     else FRagaStep := -1;
+     FRagaPoint := FRagaPoint + FRagaStep;
+     if (FRagaPoint < 0) then FRagaPoint := FRagaPoint - (2 * FRagaStep);
+     if (FRagaPoint > 11) then FRagaPoint := 11;
+     if (FRagaStep > 0)
+      then FSitar.NoteOn(Midi2Pitch[ragaUp[FKey][FRagaPoint]], 0.05 + Random * 0.3)
+      else FSitar.NoteOn(Midi2Pitch[ragaDown[FKey][FRagaPoint]], 0.05 + random * 0.3);
+    end;
+   if (random < FVoic_prob) then
+    begin
+     FVoiceNote := Random(11);
+     FVoicdrums.noteOn(FVoiceNote, 0.3 + (0.4 * FDrum_prob) + random * 0.3 * FVoic_prob);
+    end;
+   if (random < FDrum_prob) then
+    begin
+     FVoiceNote := Random(CTablaNumWaves);
+     FTabla.NoteOn(FVoiceNote, 0.2 + (0.2 * FDrum_prob) + random * 0.6 * FDrum_prob);
+    end;
+  end;
 end;
 
 procedure TStkRagamat.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin
-  norm := Limit(Value, 0, 1);
+ norm := Limit(Value, 0, 1);
 
-  if (number = CMidiBreath) then // 2
-    FDrone_prob := norm
-  else if (number = CMidiFootControl) then // 4
-    FNote_prob := norm
-  else if (number = CMidiModFrequency) then // 11
-    FVoic_prob := norm
-  else if (number = CMidiModWheel) then // 1
-    FDrum_prob := norm
-  else if (number = 3) then // 3
-    FTempo := round(11025 - (norm * 128 * 70))
-  else if (number = CMidiAfterTouchCont) then
-    if norm < 0.5 then
-     begin
-      key := 1;
-      FDroneFreqs[0] := 55.0;
-      FDroneFreqs[1] := 82.5;
-      FDroneFreqs[2] := 220.0;
-     end else
-     begin
-      key := 0;
-      FDroneFreqs[0] := 82.5;
-      FDroneFreqs[1] := 123.5;
-      FDroneFreqs[2] := 330.0;
-     end;// 128
+ case number of
+  CMidiBreath      : FDrone_prob := norm; // 2
+  CMidiFootControl : FNote_prob := norm;  // 4
+  CMidiModFrequency : FVoic_prob := norm; // 11
+
+  CMidiModWheel : FDrum_prob := norm; // 1
+  3: FTempo := round(11025 - (norm * 128 * 70)); // 3
+  CMidiAfterTouchCont: // 128
+   if norm < 0.5 then
+    begin
+     FKey := 1;
+     FDroneFreqs[0] := 55.0;
+     FDroneFreqs[1] := 82.5;
+     FDroneFreqs[2] := 220.0;
+    end else
+    begin
+     FKey := 0;
+     FDroneFreqs[0] := 82.5;
+     FDroneFreqs[1] := 123.5;
+     FDroneFreqs[2] := 330.0;
+    end;
+ end;
 end;
 
-procedure TStkRagamat.noteOn(const Instrument, Amplitude: Single);
+procedure TStkRagamat.NoteOn(const Instrument, Amplitude: Single);
 begin
-  FSitar.NoteOn(instrument, amplitude);
+  FSitar.NoteOn(Instrument, Amplitude);
+end;
+
+procedure TStkRagamat.SetFrequency(const Value: Single);
+begin
+ inherited;
+ // nothing in here yet
+end;
+
+function TStkRagamat.GetFrequency: Single;
+begin
+ result := 0;
 end;
 
 end.

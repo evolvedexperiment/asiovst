@@ -2,23 +2,22 @@ unit DAV_StkVoicer;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{ STK TVoice manager class.
+{ STK voice manager class.
 
-  This class can be used to manage a group of STK Instrument classes.
-  Individual FVoices can be controlled via unique note Tags. Instrument groups
-  can be controlled by Channel number.
+  This class can be used to manage a group of STK instrument classes.
+  Individual voices can be controlled via unique note tags. instrument groups
+  can be controlled by channel number.
 
-  A previously constructed STK Instrument class is linked with a TVoice manager
-  using the addInstrument function. An optional Channel number argument can be
-  specified to the addInstrument function as well (default Channel:=0).
-  The TVoice manager does not delete any Instrument instances ... it is the
+  A previously constructed STK instrument class is linked with a voice manager
+  using the addInstrument function. An optional channel number argument can be
+  specified to the addInstrument function as well (default channel = 0).
+  The voice manager does not delete any instrument instances ... it is the
   responsibility of the user to allocate and deallocate all instruments.
 
-  The tick function result:=s the mix of all Sounding FVoices. Each noteOn
-  result := s a unique Tag (credits to the NeXT MusicKit), so you can send
-  control changes to specific FVoices within an ensemble. Alternately, control
-  changes can be sent to all FVoices on a given Channel.
-
+  The tick function returns the mix of all sounding voices. Each noteOn
+  returns a unique Tag (credits to the NeXT MusicKit), so you can send
+  control changes to specific voices within an ensemble. Alternately, control
+  changes can be sent to all voices on a given Channel.
 }
 
 interface
@@ -26,16 +25,16 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkInstrument, Math;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, Math;
 
 type
-  PStkInstrument = ^TStkInstrument;
-
   TVoice = object
-    Instrument: PStkInstrument;
-    Tag: Integer;
-    NoteNumber, Frequency: Single;
-    Sounding, Channel: Integer;
+    Instrument : TStkControlableInstrument;
+    Tag        : Integer;
+    NoteNumber : Single;
+    Frequency  : Single;
+    Sounding   : Integer;
+    Channel    : Integer;
   end;
 
   TVoiceManager = class(TStk)
@@ -47,96 +46,97 @@ type
     FLastOutput     : Single;
   public
     // Class constructor taking the maximum number of instruments to control and an optional note decay time (in seconds).
-    constructor Create(SampleRate: Single; maxInstruments: Integer;
-      decayTime: Single = 0.2);
+    constructor Create(const SampleRate: Single; const maxInstruments: Integer;
+      const decayTime: Single = 0.2); reintroduce; virtual;
 
     // Class destructor.
-    destructor Destroy;
+    destructor Destroy; override;
 
-    // Add an Instrument with an optional Channel number to the TVoice manager.
+    // Add an Instrument with an optional channel number to the voice manager.
   {
-    A set of instruments can be grouped by Channel number and
-    controlled via the functions which take a Channel number argument.
+    A set of instruments can be grouped by channel number and
+    controlled via the functions which take a channel number argument.
   }
-    procedure addInstrument(Instrument: PStkInstrument; Channel: Integer = 0);
+    procedure AddInstrument(const Instrument: TStkControlableInstrument; const Channel: Integer = 0);
 
-    // Remove the given Instrument pointer from the TVoice manager's control.
+    // Remove the given Instrument pointer from the voice manager's control.
   {
     It is important that any instruments which are to be deleted by
-    the user while the TVoice manager is running be first removed from
+    the user while the voice manager is running be first removed from
     the manager's control via this function!!
    }
-    procedure removeInstrument(Instrument: PStkInstrument);
+    procedure RemoveInstrument(const Instrument: TStkControlableInstrument);
 
     // Initiate a noteOn event with the given note number and amplitude and result:= a unique note Tag.
   {
     Send the noteOn message to the first available unused TVoice.
-    If all FVoices are Sounding, the oldest TVoice is interrupted and
-    sent the noteOn message.  If the optional Channel argument is
-    non-zero, only FVoices on that Channel are used.  If no FVoices are
-    found for a specified non-zero Channel value, the function returns
+    If all voices are Sounding, the oldest TVoice is interrupted and
+    sent the noteOn message.  If the optional channel argument is
+    non-zero, only voices on that channel are used.  If no voices are
+    found for a specified non-zero channel value, the function returns
     -1.  The amplitude value should be in the range 0.0 - 1.0.
   }
-    function noteOn(NoteNumber, amplitude: Single; Channel: Integer = 0): Integer;
+    function NoteOn(const NoteNumber, Amplitude: Single; const Channel: Integer = 0): Integer;
 
-    // Send a noteOff to all FVoices having the given NoteNumber and optional Channel (default Channel:=0).
+    // Send a noteOff to all voices having the given NoteNumber and optional channel (default Channel:=0).
   {
     The amplitude value should be in the range 0.0 - 1.0.
   }
-    procedure noteOff(NoteNumber, amplitude: Single; Channel: Integer = 0); overload;
+    procedure NoteOff(const NoteNumber, Amplitude: Single; const Channel: Integer = 0); overload;
 
     // Send a noteOff to the TVoice with the given note Tag.
   {
     The amplitude value should be in the range 0.0 - 1.0.
   }
-    procedure noteOff(Tag: Integer; amplitude: Single); overload;
+    procedure NoteOff(const Tag: Integer; const Amplitude: Single); overload;
 
-    // Send a Frequency update message to all FVoices assigned to the optional Channel argument (default Channel:=0).
+    // Send a Frequency update message to all voices assigned to the optional channel argument (default Channel:=0).
   {
     The \e NoteNumber argument corresponds to a MIDI note number, though it is a floating-point value and can range beyond the normal 0-127 range.
   }
-    procedure setFrequency(NoteNumber: Single; Channel: Integer = 0); overload;
+    procedure SetFrequency(const NoteNumber: Single; const Channel: Integer = 0); overload;
 
     // Send a Frequency update message to the TVoice with the given note Tag.
   {
     The \e NoteNumber argument corresponds to a MIDI note number, though it is a floating-point value and can range beyond the normal 0-127 range.
   }
-    procedure setFrequency(Tag: Integer; NoteNumber: Single); overload;
+    procedure SetFrequency(const Tag: Integer; const NoteNumber: Single); overload;
 
-    // Send a pitchBend message to all FVoices assigned to the optional Channel argument (default Channel:=0).
-    procedure pitchBend(Value: Single; Channel: Integer = 0); overload;
+    // Send a pitchBend message to all voices assigned to the optional channel argument (default channel = 0).
+    procedure PitchBend(const Value: Single; const Channel: Integer = 0); overload;
 
-    // Send a pitchBend message to the TVoice with the given note Tag.
-    procedure pitchBend(Tag: Integer; Value: Single); overload;
+    // Send a pitchBend message to the voice with the given note Tag.
+    procedure PitchBend(const Tag: Integer; Value: Single); overload;
 
-    // Send a controlChange to all instruments assigned to the optional Channel argument (default Channel:=0).
-    procedure controlChange(number: Integer; Value: Single;
-      Channel: Integer = 0); overload;
+    // Send a controlChange to all instruments assigned to the optional channel argument (default channel = 0).
+    procedure ControlChange(const Number: Integer; const Value: Single;
+      const Channel: Integer = 0); overload;
 
-    // Send a controlChange to the TVoice with the given note Tag.
-    procedure controlChange(Tag: Integer; number: Integer; Value: Single); overload;
+    // Send a controlChange to the voice with the given note tag.
+    procedure ControlChange(const Tag, Number: Integer; const Value: Single); overload;
 
-    // Send a noteOff message to all existing FVoices.
-    procedure silence;
+    // Send a noteOff message to all existing voices.
+    procedure Silence;
 
-    // Mix the output for all Sounding FVoices.
+    // Mix the output for all sounding voices.
     function tick: Single; overload;
 
     // Computer \e vectorSize output mixes and result:= them in \e vector.
-    function tick(vector: pMY_FLOAT; vectorSize: Integer): PMY_FLOAT; overload;
+    function tick(vector: pSingle; vectorSize: Integer): PSingle; overload;
 
-    // Return the last output value.
-    function lastOut: Single;
+    property LastOutput: Single read FLastOutput;
   end;
 
 implementation
 
+uses
+  SysUtils;
+
 { TVoiceManager }
 
-procedure TVoiceManager.addInstrument(Instrument: PStkInstrument; Channel: Integer);
+procedure TVoiceManager.AddInstrument(const Instrument: TStkControlableInstrument; const Channel: Integer);
 begin
-  if (FVoiceCount >= FMaxVoiceCount) then
-    exit;
+  if (FVoiceCount >= FMaxVoiceCount) then exit;
   FVoices[FVoiceCount].Instrument := Instrument;
   FVoices[FVoiceCount].Tag := 0;
   FVoices[FVoiceCount].Channel := Channel;
@@ -146,17 +146,17 @@ begin
   FVoiceCount := FVoiceCount + 1;
 end;
 
-procedure TVoiceManager.controlChange(number: Integer; Value: Single;
-  Channel: Integer);
+procedure TVoiceManager.ControlChange(const Number: Integer; const Value: Single;
+  const Channel: Integer);
 var
   i: Integer;
 begin
   for i := 0 to FVoiceCount - 1 do
     if (FVoices[i].Channel = Channel) then
-      FVoices[i].Instrument.controlChange(number, Value);
+      FVoices[i].Instrument.ControlChange(number, Value);
 end;
 
-procedure TVoiceManager.controlChange(Tag, number: Integer; Value: Single);
+procedure TVoiceManager.controlChange(const Tag, Number: Integer; const Value: Single);
 var
   i: Integer;
 begin
@@ -168,14 +168,14 @@ begin
      end;
 end;
 
-constructor TVoiceManager.Create(SampleRate: Single; maxInstruments: Integer;
-  decayTime: Single);
+constructor TVoiceManager.Create(const SampleRate: Single; const MaxInstruments: Integer;
+  const DecayTime: Single);
 begin
   inherited Create(SampleRate);
   FVoiceCount := 0;
   FMaxVoiceCount := maxInstruments;
   Tags := 23456;
-  FMutetime := round(decayTime * srate);
+  FMutetime := round(decayTime * SampleRate);
 end;
 
 destructor TVoiceManager.Destroy;
@@ -183,12 +183,7 @@ begin
   inherited Destroy;
 end;
 
-function TVoiceManager.lastOut: Single;
-begin
-  Result := FLastOutput;
-end;
-
-procedure TVoiceManager.noteOff(Tag: Integer; amplitude: Single);
+procedure TVoiceManager.noteOff(const Tag: Integer; const Amplitude: Single);
 var
   i: Integer;
 begin
@@ -201,7 +196,7 @@ begin
      end;
 end;
 
-procedure TVoiceManager.noteOff(NoteNumber, amplitude: Single; Channel: Integer);
+procedure TVoiceManager.NoteOff(const NoteNumber, Amplitude: Single; const Channel: Integer);
 var
   i: Integer;
 begin
@@ -213,8 +208,8 @@ begin
      end;
 end;
 
-function TVoiceManager.noteOn(NoteNumber, amplitude: Single;
-  Channel: Integer): Integer;
+function TVoiceManager.NoteOn(const NoteNumber, Amplitude: Single;
+  const Channel: Integer): Integer;
 var
   ovoice, i: Integer;
   Frequency: Single;
@@ -257,25 +252,25 @@ begin
   Result := -1;
 end;
 
-procedure TVoiceManager.pitchBend(Tag: Integer; Value: Single);
+procedure TVoiceManager.PitchBend(const Tag: Integer; Value: Single);
 var
   pitchScaler: Single;
   i: Integer;
 begin
   Value := Value * 128;
   if (Value < 64.0) then
-    pitchScaler := power(0.5, (64.0 - Value) / 64.0)
+    pitchScaler := Power(0.5, (64.0 - Value) / 64.0)
   else
-    pitchScaler := power(2.0, (Value - 64.0) / 64.0);
+    pitchScaler := Power(2.0, (Value - 64.0) / 64.0);
   for i := 0 to FVoiceCount - 1 do
     if (FVoices[i].Tag = Tag) then
      begin
-      FVoices[i].Instrument.setFrequency((FVoices[i].Frequency * pitchScaler));
+      FVoices[i].Instrument.Frequency := FVoices[i].Frequency * pitchScaler;
       break;
      end;
 end;
 
-procedure TVoiceManager.pitchBend(Value: Single; Channel: Integer);
+procedure TVoiceManager.PitchBend(const Value: Single; const Channel: Integer);
 var
   pitchScaler: Single;
   i: Integer;
@@ -287,11 +282,11 @@ begin
     pitchScaler := power(2.0, (Value - 64.0) / 64.0);
   for i := 0 to FVoiceCount - 1 do
     if (FVoices[i].Channel = Channel) then
-      FVoices[i].Instrument.setFrequency(
+      FVoices[i].Instrument.SetFrequency(
         (FVoices[i].Frequency * pitchScaler));
 end;
 
-procedure TVoiceManager.removeInstrument(Instrument: PStkInstrument);
+procedure TVoiceManager.removeInstrument(const Instrument: PStkInstrument);
 var
   found: boolean;
   i: Integer;
@@ -314,7 +309,7 @@ begin
     FVoiceCount := FVoiceCount - 1;
 end;
 
-procedure TVoiceManager.setFrequency(Tag: Integer; NoteNumber: Single);
+procedure TVoiceManager.SetFrequency(const Tag: Integer; const NoteNumber: Single);
 var
   Frequency: Single;
   i: Integer;
@@ -325,12 +320,12 @@ begin
      begin
       FVoices[i].NoteNumber := NoteNumber;
       FVoices[i].Frequency := Frequency;
-      FVoices[i].Instrument.setFrequency(Frequency);
+      FVoices[i].Instrument.SetFrequency(Frequency);
       break;
      end;
 end;
 
-procedure TVoiceManager.setFrequency(NoteNumber: Single; Channel: Integer);
+procedure TVoiceManager.SetFrequency(const NoteNumber: Single; const Channel: Integer);
 var
   Frequency: Single;
   i: Integer;
@@ -341,23 +336,23 @@ begin
      begin
       FVoices[i].NoteNumber := NoteNumber;
       FVoices[i].Frequency := Frequency;
-      FVoices[i].Instrument.setFrequency(Frequency);
+      FVoices[i].Instrument.SetFrequency(Frequency);
      end;
 end;
 
-procedure TVoiceManager.silence;
+procedure TVoiceManager.Silence;
 var
   i: Integer;
 begin
   for i := 0 to FVoiceCount - 1 do
     if (FVoices[i].Sounding > 0) then
-      FVoices[i].Instrument.noteOff(0.5);
+      FVoices[i].Instrument.NoteOff(0.5);
 end;
 
-function TVoiceManager.tick(vector: pMY_FLOAT; vectorSize: Integer): PMY_FLOAT;
+function TVoiceManager.tick(vector: pSingle; vectorSize: Integer): PSingle;
 var
   i: Integer;
-  p: pmy_float;
+  p: pSingle;
 begin
   p := vector;
   for i := 0 to vectorSize - 1 do

@@ -5,7 +5,7 @@ unit DAV_StkModalBar;
 { STK resonant bar instrument class.
 
   This class implements a number of different struck bar instruments.
-  It inherits from the Modal class.
+  It inherits from the modal class.
 
   Control Change Numbers:
     - Stick Hardness = 2
@@ -195,7 +195,7 @@ begin
   else FVibratoGain := 0.0;
 end;
 
-procedure TStkModalBar.controlChange;
+procedure TStkModalBar.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin

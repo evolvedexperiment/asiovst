@@ -4,8 +4,8 @@ unit DAV_StkNoise;
 
 {  STK noise generator.
 
-   Generic random number generation using the C rand() function.
-   The quality of the rand() function varies from one OS to another.
+   Generic random number generation using the random function.
+   The quality of the random function varies from one OS to another.
 }
 
 interface

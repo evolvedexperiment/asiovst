@@ -29,7 +29,7 @@ uses
 type
   TStkBowed = class(TStkControlableInstrument)
   private
-    // Set FVibrato Gain.
+    // Set vibrato gain.
     procedure SetVibrato(const Value: Single);
   protected
     FNeckDelay    : TStkDelayl;
@@ -48,22 +48,22 @@ type
     constructor Create(const SampleRate, lowestFrequency: Single); reintroduce; virtual;
     destructor Destroy; override;
 
-    // Set instrument parameters for a particular Frequency.
+    // Set instrument parameters for a particular frequency.
     procedure SetFrequency(const Value: Single); override;
 
     // Reset and clear all internal state.
     procedure Clear;
 
-    // Apply breath pressure to instrument with given Amplitude and Rate of increase.
+    // Apply breath pressure to instrument with given amplitude and rate of increase.
     procedure StartBowing(const Amplitude, Rate: Single);
 
-    // Decrease breath pressure with given Rate of decrease.
+    // Decrease breath pressure with given rate of decrease.
     procedure StopBowing(const Rate: Single);
 
-    // Start a note with the given Frequency and Amplitude.
+    // Start a note with the given frequency and amplitude.
     procedure NoteOn(const Frequency, Amplitude: Single); override;
 
-    // Stop a note with the given Amplitude (speed of decay).
+    // Stop a note with the given amplitude (speed of decay).
     procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
@@ -148,7 +148,7 @@ begin
   end;
 end;
 
-procedure TStkBowed.startBowing(const Amplitude, Rate: Single);
+procedure TStkBowed.StartBowing(const Amplitude, Rate: Single);
 begin
   FAdsr.Rate := Rate;
   FAdsr.KeyOn;

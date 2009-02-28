@@ -2,7 +2,7 @@ unit DAV_StkMandolin;
 
 // based on DAV_Stk by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
-{  DAV_Stk TStkMandolin instrument model class.
+{  Stk TStkMandolin instrument model class.
 
    This class inherits from PluckTwo and uses "commuted synthesis" techniques
    to model a mandolin instrument.
@@ -32,10 +32,8 @@ uses
 type
   TStkMandolin = class(TStkPluckTwo)
   private
-
     // Set the body Size (a value of 1.0 produces the "default" Size).
     procedure SetBodySize(const Value: Single);
-
   protected
     FSoundFile  : array[0..11] of TStkWavePlayer;
     FBodySize   : Single;
@@ -49,13 +47,13 @@ type
     constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
     destructor Destroy; override;
 
-    // Pluck the strings with the given Amplitude (0.0 - 1.0) using the current Frequency.
+    // Pluck the strings with the given amplitude (0.0 - 1.0) using the current frequency.
     procedure Pluck(const Amplitude: Single); overload;
 
-    // Pluck the strings with the given Amplitude (0.0 - 1.0) and APosition (0.0 - 1.0).
+    // Pluck the strings with the given amplitude (0.0 - 1.0) and position (0.0 - 1.0).
     procedure Pluck(const Amplitude, Position: Single); overload;
 
-    // Start a note with the given Frequency and Amplitude (0.0 - 1.0).
+    // Start a note with the given frequency and amplitude (0.0 - 1.0).
     procedure NoteOn(const Frequency, Amplitude: Single); override;
 
     // Compute one output sample.

@@ -11,11 +11,11 @@ unit DAV_StkHeavyMetal;
                     3->2--+->1->Out
 
    Control Change Numbers:
-     - Total Modulator Index:=2
-     - Modulator Crossfade:=4
-     - LFO Speed:=11
-     - LFO Depth:=1
-     - ADSR 2 & 4 Target:=128
+     - Total Modulator Index = 2
+     - Modulator Crossfade = 4
+     - LFO Speed = 11
+     - LFO Depth = 1
+     - ADSR 2 & 4 Target = 128
 
    The basic Chowning/Stanford StkFm patent expired in 1995, but there exist
    follow-on patents, mostly assigned to Yamaha. If you are of the type who
@@ -32,7 +32,7 @@ uses
 type
   TStkHeavyMetal = class(TStkFM)
   public
-    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
+    constructor Create(const SampleRate: Single = 44100); override;
     destructor Destroy; override;
 
     procedure NoteOn(const Frequency, Amplitude: Single); override;
@@ -44,9 +44,9 @@ implementation
 uses
   SysUtils;
 
-constructor TStkHeavyMetal.Create(const SampleRate: Single; const Operators: Integer = 4);
+constructor TStkHeavyMetal.Create(const SampleRate: Single = 44100);
 begin
-  inherited Create(SampleRate, Operators);
+  inherited Create(SampleRate);
   FWaves[0] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
   FWaves[1] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
   FWaves[2] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');

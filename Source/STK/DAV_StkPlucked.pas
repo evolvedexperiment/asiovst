@@ -22,17 +22,21 @@ uses
 
 type
   TStkPlucked = class(TStkInstrument)
+  private
   protected
-    FDelayLine   : TStkDelayA;
-    FLoopFilter  : TStkOneZero;
-    FPpickFilter : TStkOnePole;
-    FNoise       : TStkNoise;
-    FLength      : Integer;
-    FLoopGain    : Single;
+    FDelayLine     : TStkDelayA;
+    FLoopFilter    : TStkOneZero;
+    FPpickFilter   : TStkOnePole;
+    FNoise         : TStkNoise;
+    FLength        : Integer;
+    FLoopGain      : Single;
+    FBaseFrequency : Single;
 
     // Set instrument parameters for a particular frequency.
-    procedure SetFrequency(const Frequency: Single); override;
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
 
+    procedure FrequencyChanged; virtual;
   public
     // Class constructor, taking the lowest desired playing frequency.
     constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
@@ -89,66 +93,65 @@ begin
   FPpickFilter.Clear;
 end;
 
-procedure TStkPlucked.SetFrequency;
-var
-  delay, freakency: Single;
+procedure TStkPlucked.SetFrequency(const Value: Single);
 begin
-  freakency := frequency;
-  if (frequency <= 0.0) then
-    freakency := 220.0;
-
-  // Delay := FLength - approximate filter delay.
-  delay := (SampleRate / freakency) - 0.5;
-  if (delay <= 0.0) then
-    delay := 0.3
-  else if (delay > FLength) then
-    delay := FLength;
-  FDelayLine.setDelay(delay);
-  FLoopGain := 0.995 + (freakency * 0.000005);
-  if (FLoopGain >= 1.0) then
-    FLoopGain := 0.99999;
+ if FBaseFrequency <> Value then
+  begin
+   if Value <= 0.0
+    then FBaseFrequency := 220.0
+    else FBaseFrequency := Value;
+   FrequencyChanged;
+  end;
 end;
 
-procedure TStkPlucked.Pluck;
+procedure TStkPlucked.FrequencyChanged;
 var
-  gain: Single;
+  Delay: Single;
+begin
+ // Delay := FLength - approximate filter Delay.
+ Delay := (SampleRate / FBaseFrequency) - 0.5;
+ if (Delay <= 0.0) then Delay := 0.3
+ else if (Delay > FLength) then Delay := FLength;
+ FDelayLine.Delay := Delay;
+ FLoopGain := 0.995 + (FBaseFrequency * 0.000005);
+ if (FLoopGain >= 1.0) then FLoopGain := 0.99999;
+end;
+
+function TStkPlucked.GetFrequency: Single;
+begin
+ result := FBaseFrequency;
+end;
+
+procedure TStkPlucked.Pluck(const Amplitude: Single);
+var
+  Gain: Single;
   i: Integer;
 begin
-  gain := Amplitude;
-  if (gain > 1.0) then
-    gain := 1.0
-  else if (gain < 0.0) then
-    gain := 0.0;
+  Gain := Limit(Amplitude, 0, 1);
 
-  FPpickFilter.setPole(0.999 - (gain * 0.15));
-  FPpickFilter.Gain := gain * 0.5;
-  for i := 0 to FLength - 1 do
+  FPpickFilter.SetPole(0.999 - (gain * 0.15));
+  FPpickFilter.Gain := Gain * 0.5;
 
-  // Fill delay with FNoise additively with current contents.
-    FDelayLine.Tick(0.6 * FDelayLine.LastOutput + FPpickFilter.Tick(FNoise.Tick));
+  // Fill delay with noise additively with current contents.
+  for i := 0 to FLength - 1
+   do FDelayLine.Tick(0.6 * FDelayLine.LastOutput + FPpickFilter.Tick(FNoise.Tick));
 end;
 
-procedure TStkPlucked.NoteOn;
+procedure TStkPlucked.NoteOn(const Frequency, Amplitude: Single);
 begin
-  SetFrequency(frequency);
+  SetFrequency(Frequency);
   Pluck(Amplitude);
 end;
 
-procedure TStkPlucked.NoteOff;
+procedure TStkPlucked.NoteOff(const Amplitude: Single);
 begin
-  FLoopGain := 1.0 - Amplitude;
-  if (FLoopGain < 0.0) then
-    FLoopGain := 0.0
-  else if (FLoopGain > 1.0) then
-    FLoopGain := 0.99999;
+  FLoopGain := Limit(1.0 - Amplitude, 0, 0.99999);
 end;
 
 function TStkPlucked.Tick: Single;
 begin
   // Here's the whole inner loop of the instrument!!
-  FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(
-    FDelayLine.LastOutput * FLoopGain));
-  FLastOutput := FLastOutput * 3;
+  FLastOutput := FDelayLine.Tick(FLoopFilter.Tick(FDelayLine.LastOutput * FLoopGain)) * 3;
   Result := FLastOutput;
 end;
 

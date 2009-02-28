@@ -52,7 +52,7 @@ type
   {
     The valid range for \e tapDelay is 1 to the delay-line FLength.
   }
-    function contentsAt(const TapDelay: Integer): Single;
+    function ContentsAt(const TapDelay: Integer): Single;
 
     // Input one sample to the delay-line and return one output.
     function Tick(const Input: Single): Single; overload; override;

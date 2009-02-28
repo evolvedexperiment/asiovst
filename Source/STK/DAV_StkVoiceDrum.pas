@@ -5,7 +5,7 @@ unit DAV_StkVoiceDrum;
 { STK vocal drum sample player class.
 
   This class implements a drum sampling synthesizer using WvIn objects and
-  one-pole FFilters.  The drum rawwave files are sampled at 22050 Hz, but will
+  one-pole filters.  The drum rawwave files are sampled at 22050 Hz, but will
   be appropriately interpolated for other sample rates. You can specify the
   maximum polyphony (maximum number of simultaneous voices) via a #define in
   the Drummer.h.
@@ -31,7 +31,8 @@ type
     FFilters     : array[0..CVoicePolyphony - 1] of TStkOnePole;
     FSounding    : array[0..CVoicePolyphony - 1] of Integer;
     FNumSounding : Integer;
-
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
   public
     // Class constructor.
     constructor Create(const SampleRate: Single); override;
@@ -39,10 +40,10 @@ type
     // Class destructor.
     destructor Destroy; override;
 
-    // Start a note with the given drum type and Amplitude.
+    // Start a note with the given drum type and amplitude.
     procedure NoteOn(const Instrument, Amplitude: Single); override;
 
-    // Stop a note with the given Amplitude (speed of decay).
+    // Stop a note with the given amplitude (speed of decay).
     procedure NoteOff(const Amplitude: Single); override;
 
     // Compute one output sample.
@@ -86,7 +87,12 @@ begin
   inherited Destroy;
 end;
 
-procedure TStkVoiceDrum.NoteOn;
+function TStkVoiceDrum.GetFrequency: Single;
+begin
+ result := 0;
+end;
+
+procedure TStkVoiceDrum.NoteOn(const Instrument, Amplitude: Single);
 const
   CVoiceNames: array[0..CVoiceNumWaves - 1] of String = (
     'tak2.wav', 'tak1.wav', 'bee1.wav', 'dee1.wav', 'dee2.wav',
@@ -146,7 +152,13 @@ begin
    end;
 end;
 
-procedure TStkVoiceDrum.NoteOff;
+procedure TStkVoiceDrum.SetFrequency(const Value: Single);
+begin
+ inherited;
+ // nothing in here yet!
+end;
+
+procedure TStkVoiceDrum.NoteOff(const Amplitude: Single);
 var
   i: Integer;
 begin

@@ -19,7 +19,8 @@ type
     FLastOutput: Single;
 
     // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(const Frequency: Single); virtual; abstract;
+    procedure SetFrequency(const Value: Single); virtual; abstract;
+    function GetFrequency: Single; virtual; abstract;
   public
     // Start a note with the given Frequency and Amplitude.
     procedure NoteOn(const Frequency, Amplitude: Single); virtual; abstract;
@@ -34,6 +35,7 @@ type
     procedure Tick(const Data: PDavSingleFixedArray; const SampleFrames: Integer); overload; virtual;
 
     property LastOutput: Single read FLastOutput;
+    property Frequency: Single read GetFrequency write SetFrequency;
   end;
 
   TStkControlableInstrument = class(TStkInstrument)

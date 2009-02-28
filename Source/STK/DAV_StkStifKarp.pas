@@ -22,16 +22,30 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkInstrument, DAV_StkDelayl, DAV_StkDelaya, DAV_StkOneZero,
-  DAV_StkNoise, DAV_StkBiquad;
+  DAV_Common, DAV_StkCommon, DAV_StkInstrument, DAV_StkDelayl, DAV_StkDelaya,
+  DAV_StkOneZero, DAV_StkNoise, DAV_StkBiquad;
 
 type
-  TStkStifKarp = class(TStkInstrument)
+  TStkStifKarp = class(TStkControlableInstrument)
+  private
+    // Set the Stretch "factor" of the string (0.0 - 1.0).
+    procedure SetStretch(const Value: Single);
+
+    // Set the Pluck or "excitation" position along the string (0.0 - 1.0).
+    procedure SetPickupPosition(const Value: Single);
+
+    // Set the base loop gain.
+  {
+    The actual loop gain is set according to the Frequency.
+    Because of high-Frequency loop FFilter roll-off, higher
+    Frequency settings have greater loop gains.
+  }
+    procedure SetBaseLoopGain(const aGain: Single);
   protected
     FDelayLine      : TStkDelayA;
     FCombDelay      : TStkDelayl;
     FFilter         : TStkOneZero;
-    FNoise          : TStkMoise;
+    FNoise          : TStkNoise;
     FBiQuad         : array[0..3] of TStkBiquad;
     FLength         : Integer;
     FLoopGain       : Single;
@@ -43,31 +57,20 @@ type
     FPickupPosition : Single;
 
     // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(const Frequency: Single); override;
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
 
+    procedure FrequencyChanged; virtual;
+    procedure StretchChanged; virtual;
   public
     // Class constructor, taking the lowest desired playing Frequency.
-    constructor Create(const SampleRate, LowestFrequency: Single); override;
+    constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
 
     // Class destructor.
     destructor Destroy; override;
 
     // Reset and clear all internal state.
     procedure Clear;
-
-    // Set the Stretch "factor" of the string (0.0 - 1.0).
-    procedure SetStretch(const Stretch: Single);
-
-    // Set the Pluck or "excitation" position along the string (0.0 - 1.0).
-    procedure SetPickupPosition(const position: Single);
-
-    // Set the base loop gain.
-  {
-    The actual loop gain is set according to the Frequency.
-    Because of high-Frequency loop FFilter roll-off, higher
-    Frequency settings have greater loop gains.
-  }
-    procedure SetBaseLoopGain(const aGain: Single);
 
     // Pluck the string with the given amplitude using the current Frequency.
     procedure Pluck(const amplitude: Single);
@@ -87,6 +90,9 @@ type
 
 implementation
 
+uses
+  SysUtils;
+
 constructor TStkStifKarp.Create;
 begin
   inherited Create(SampleRate);
@@ -95,7 +101,7 @@ begin
   FCombDelay := TStkDelayl.Create(SampleRate, 0.2 * FLength, FLength);
 
   FFilter := TStkOneZero.Create(SampleRate);
-  FNoise := TStkMoise.Create(SampleRate);
+  FNoise := TStkNoise.Create(SampleRate);
   FBiQuad[0] := TStkBiquad.Create(SampleRate);
   FBiQuad[1] := TStkBiquad.Create(SampleRate);
   FBiQuad[2] := TStkBiquad.Create(SampleRate);
@@ -132,66 +138,83 @@ begin
   FFilter.Clear;
 end;
 
-procedure TStkStifKarp.SetFrequency;
-var
-  delay: Single;
+procedure TStkStifKarp.SetFrequency(const Value: Single);
 begin
-  FLastFrequency := Frequency;
-  if (Frequency <= 0.0) then
-    FLastFrequency := 220.0;
-  FLastLength := SampleRate / FLastFrequency;
-  delay := FLastLength - 0.5;
-  if (delay <= 0.0) then
-    delay := 0.3
-  else if (delay > FLength) then
-    delay := FLength;
-  FDelayLine.setDelay(delay);
-
-  FLoopGain := FBaseLoopGain + (Frequency * 0.000005);
-  if (FLoopGain >= 1.0) then
-    FLoopGain := 0.99999;
-
-  SetStretch(FStretching);
-
-  FCombDelay.setDelay(0.5 * FPickupPosition * FLastLength);
+ if FLastFrequency <> Frequency then
+  begin
+   if (Frequency <= 0.0)
+    then FLastFrequency := 220.0
+    else FLastFrequency := Value;
+   FrequencyChanged;
+  end;
 end;
 
-procedure TStkStifKarp.SetStretch;
+
+procedure TStkStifKarp.FrequencyChanged;
 var
-  temp, dfreq, freq, coefficient: Single;
-  i: integer;
+  Delay: Single;
 begin
-  FStretching := Stretch;
-  freq := FLastFrequency * 2.0;
-  dFreq := ((0.5 * SampleRate) - freq) * 0.25;
-  temp := 0.5 + (Stretch * 0.5);
-  if (temp > 0.9999) then
-    temp := 0.9999;
-  for i := 0 to 3 do
-   begin
-    coefficient := temp * temp;
-    FBiQuad[i].setA2(coefficient);
-    FBiQuad[i].setB0(coefficient);
-    FBiQuad[i].setB2(1.0);
+ FLastLength := SampleRate / FLastFrequency;
+ Delay := FLastLength - 0.5;
+ if (Delay <= 0.0) then Delay := 0.3
+ else if (Delay > FLength) then Delay := FLength;
+ FDelayLine.Delay := Delay;
 
-    coefficient := -2.0 * temp * cos(2 * Pi * freq * FSampleRateInv);
-    FBiQuad[i].setA1(coefficient);
-    FBiQuad[i].setB1(coefficient);
+ FLoopGain := FBaseLoopGain + (Frequency * 0.000005);
+ if (FLoopGain >= 1.0) then FLoopGain := 0.99999;
 
-    freq := freq + dFreq;
-   end;
+ StretchChanged;
+
+ FCombDelay.Delay := 0.5 * FPickupPosition * FLastLength;
+end;
+
+function TStkStifKarp.GetFrequency: Single;
+begin
+ result := FLastFrequency;
+end;
+
+procedure TStkStifKarp.SetStretch(const Value: Single);
+begin
+ if FStretching <> Value then
+  begin
+   FStretching := Value;
+   StretchChanged;
+  end;
+end;
+
+procedure TStkStifKarp.StretchChanged;
+var
+  temp        : Single;
+  dfreq       : Single;
+  freq        : Single;
+  coefficient : Single;
+  i           : Integer;
+begin
+ freq := FLastFrequency * 2.0;
+ dFreq := ((0.5 * SampleRate) - freq) * 0.25;
+ temp := 0.5 + (FStretching * 0.5);
+ if (temp > 0.9999) then temp := 0.9999;
+ for i := 0 to 3 do
+  begin
+   coefficient := temp * temp;
+   FBiQuad[i].setA2(coefficient);
+   FBiQuad[i].setB0(coefficient);
+   FBiQuad[i].setB2(1.0);
+
+   coefficient := -2.0 * temp * cos(2 * Pi * freq * FSampleRateInv);
+   FBiQuad[i].setA1(coefficient);
+   FBiQuad[i].setB1(coefficient);
+
+   freq := freq + dFreq;
+  end;
 end;
 
 procedure TStkStifKarp.SetPickupPosition;
 begin
-  FPickupPosition := position;
-  if (position < 0.0) then
-    FPickupPosition := 0.0
-  else if (position > 1.0) then
-    FPickupPosition := 1.0;
+  FPickupPosition := Limit(Value, 0, 1);
 
   // Set the pick position, which puts zeroes at position * FLength.
-  FCombDelay.setDelay(0.5 * FPickupPosition * FLastLength);
+  FCombDelay.Delay := 0.5 * FPickupPosition * FLastLength;
 end;
 
 procedure TStkStifKarp.SetBaseLoopGain;
@@ -215,28 +238,20 @@ begin
 
   FPluckAmplitude := gain;
   for i := 0 to FLength - 1 do
-    FDelayLine.Tick((FDelayLine.lastOut * 0.6) + 0.4 * FNoise.Tick *
-      FPluckAmplitude)// Fill delay with FNoise additively with current contents.
+    FDelayLine.Tick((FDelayLine.LastOutput * 0.6) + 0.4 * FNoise.Tick * FPluckAmplitude)// Fill delay with FNoise additively with current contents.
 //FDelayLine->Tick( FCombDelay->Tick((FDelayLine->lastOut() * 0.6) + 0.4 * FNoise->Tick() * FPluckAmplitude));
   ;
 end;
 
-procedure TStkStifKarp.NoteOn;
+procedure TStkStifKarp.NoteOn(const Frequency, Amplitude: Single);
 begin
   SetFrequency(Frequency);
   Pluck(amplitude);
 end;
 
-procedure TStkStifKarp.NoteOff;
-var
-  gain: Single;
+procedure TStkStifKarp.NoteOff(const Amplitude: Single);
 begin
-  gain := amplitude;
-  if (gain > 1.0) then
-    gain := 1.0
-  else if (gain < 0.0) then
-    gain := 0.0;
-  FLoopGain := (1.0 - gain) * 0.5;
+  FLoopGain := (1.0 - Limit(Amplitude, 0, 1)) * 0.5;
 end;
 
 function TStkStifKarp.Tick: Single;
@@ -244,21 +259,21 @@ var
   temp: Single;
   i: integer;
 begin
-  temp := FDelayLine.lastOut * FLoopGain;
+  temp := FDelayLine.LastOutput * FLoopGain;
 
   // Calculate allpass FStretching.
-  for i := 0 to 3 do
-    temp := FBiQuad[i].Tick(temp);
+  for i := 0 to 3
+   do temp := FBiQuad[i].Tick(temp);
 
   // Moving average FFilter.
   temp := FFilter.Tick(temp);
 
-  lastOutput := FDelayLine.Tick(temp);
-  lastOutput := lastOutput - FCombDelay.Tick(lastOutput);
-  Result := lastOutput;
+  FLastOutput := FDelayLine.Tick(temp);
+  FLastOutput := FLastOutput - FCombDelay.Tick(FLastOutput);
+  Result := FLastOutput;
 end;
 
-procedure TStkStifKarp.ControlChange;
+procedure TStkStifKarp.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin

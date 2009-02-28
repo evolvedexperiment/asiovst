@@ -34,7 +34,7 @@ uses
 type
   TStkBeeThree = class(TStkFM)
   public
-    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
+    constructor Create(const SampleRate: Single = 44100); override;
     destructor Destroy; override;
 
     // Start a note with the given Frequency and Amplitude.
@@ -48,7 +48,7 @@ implementation
 
 { TStkBeeThree }
 
-constructor TStkBeeThree.Create(const SampleRate: Single; const Operators: Integer = 4);
+constructor TStkBeeThree.Create(const SampleRate: Single = 44100);
 begin
   inherited Create(SampleRate);
 

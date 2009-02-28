@@ -4,7 +4,7 @@ unit DAV_StkTwoPole;
 
 { STK two-pole filter class.
 
-  This protected Filter subclass implements a two-pole digital filter. A method
+  This protected filter subclass implements a two-pole digital filter. A method
   is provided for creating a resonance in the frequency response while
   maintaining a nearly constant filter gain.
 }
@@ -14,25 +14,25 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Stk, DAV_StkFilter;
+  DAV_Common, DAV_StkCommon, DAV_StkFilter;
 
 type
   TStkTwoPole = class(TStkFilter)
   public
-    constructor Create(SampleRate: Single); override;
+    constructor Create(const SampleRate: Single); override;
     destructor Destroy; override;
 
     // Clears the internal states of the filter.
-    procedure Clear;
+    procedure Clear; override;
 
     // Set the b[0] coefficient value.
-    procedure setB0(b0: Single);
+    procedure SetB0(const Value: Single);
 
     // Set the a[1] coefficient value.
-    procedure setA1(a1: Single);
+    procedure SetA1(const Value: Single);
 
     // Set the a[2] coefficient value.
-    procedure setA2(a2: Single);
+    procedure SetA2(const Value: Single);
 
     // Sets the filter coefficients for a resonance at \e frequency (in Hz).
   {
@@ -48,31 +48,18 @@ type
     An unstable filter will result for \e radius >= 1.0.  For a better
     resonance filter, use a BiQuad filter. \sa BiQuad filter class
   }
-    procedure setResonance(frequency, radius: Single; normalize: boolean = False);
-
-    // Set the filter gain.
-  {
-    The gain is applied at the filter input and does not affect the
-    coefficient values.  The default gain value is 1.0.
-   }
-    procedure setGain(theGain: Single);
-
-    // Return the current filter gain.
-    function getGain: Single;
-
-    // Return the last computed output value.
-    function lastOut: Single;
+    procedure SetResonance(const Frequency, Radius: Single; const Normalize: Boolean = False);
 
     // Input one sample to the filter and return one output.
-    function tick(sample: Single): Single; overload;
+    function Tick(const Sample: Single): Single; overload; override;
 
     // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
-    function tick(vector: pmy_float; vectorSize: longint): Pmy_float; overload;
+    procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
   end;
 
 implementation
 
-constructor TTwoPole.Create;
+constructor TStkTwoPole.Create(const SampleRate: Single);
 var
   b: Single;
   a: array[0..2] of Single;
@@ -85,101 +72,70 @@ begin
   inherited setCoefficients(1, @B, 3, @A);
 end;
 
-destructor TTwoPole.Destroy;
+destructor TStkTwoPole.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TTwoPole.Clear;
+procedure TStkTwoPole.Clear;
 begin
   inherited Clear;
 end;
 
-procedure TTwoPole.setB0;
+procedure TStkTwoPole.SetB0(const Value: Single);
 begin
-  b^ := b0;
+  FB^[0] := Value;
 end;
 
-procedure TTwoPole.setA1;
-var
-  p: pmy_float;
+procedure TStkTwoPole.SetA1(const Value: Single);
 begin
-  p := a;
-  Inc(p);
-  p^ := a1;
+ PDAV4SingleArray(FA)^[1] := Value;
 end;
 
-procedure TTwoPole.setA2;
-var
-  p: pmy_float;
+procedure TStkTwoPole.SetA2(const Value: Single);
 begin
-  p := a;
-  Inc(p);
-  Inc(p);
-  p^ := a2;
+ PDAV4SingleArray(FA)^[2] := Value;
 end;
 
-procedure TTwoPole.setResonance;
+procedure TStkTwoPole.setResonance;
 var
-  p: pmy_float;
   real, imag: Single;
 begin
-  p := pindex(a, 2);
-  p^ := radius * radius;
-  Dec(p);
-  p^ := -2.0 * radius * cos(TWO_PI * frequency / srate);
+  PDAV4SingleArray(FA)^[2] := sqr(Radius);
+  PDAV4SingleArray(FA)^[1] := 2.0 * radius * cos(2 * Pi * Frequency * FSampleRateInv);
 
-  if (normalize) then
+  if Normalize then
    begin
     // Normalize the filter gain ... not terribly efficient.
-    real := 1 - radius + (index(a, 2) - radius) *
-      cos(TWO_PI * 2 * frequency / srate);
-    imag := (index(a, 2) - radius) * sin(TWO_PI * 2 * frequency / srate);
-    b^ := sqrt(real * real + imag * imag);
+    real := 1 - radius + (PDAV4SingleArray(FA)^[2] - radius) *
+      cos(4 * Pi * Frequency * FSampleRateInv);
+    imag := (PDAV4SingleArray(FA)^[2] - radius) *
+      sin(4 * Pi * Frequency * FSampleRateInv);
+    FB^[0] := sqrt(real * real + imag * imag);
    end;
 end;
 
-procedure TTwoPole.setGain;
+function TStkTwoPole.Tick(const Sample: Single): Single;
 begin
-  inherited setGain(theGain);
+ FInputs^[0] := FGain * Sample;
+ FOutputs^[0] := FB^[0] * FInputs^[0] -
+   PDAV4SingleArray(FA)^[2] * PDAV4SingleArray(FOutputs)^[2] -
+   PDAV4SingleArray(FA)^[1] * PDAV4SingleArray(FOutputs)^[1];
+
+ Move(PDAV4SingleArray(FOutputs)^[0],
+      PDAV4SingleArray(FOutputs)^[1], 2 * SizeOf(Single));
+
+ Result := FOutputs^[0];
+
 end;
 
-function TTwoPole.getGain: Single;
-begin
-  Result := inherited getGain;
-end;
-
-function TTwoPole.lastOut: Single;
-begin
-  Result := inherited lastOut;
-end;
-
-function TTwoPole.tick(sample: Single): Single;
+procedure TStkTwoPole.Tick(const Data: PDAVSingleFixedArray;
+  const SampleFrames: Integer);
 var
-  p: pmy_float;
+  Sample: Integer;
 begin
-  inputs^ := gain * sample;
-  outputs^ := b^ * inputs^ - index(a, 2) * index(outputs, 2) -
-    index(a, 1) * index(outputs, 1);
-  p := pindex(outputs, 2);
-  p^ := index(outputs, 1);
-  Dec(p);
-  p^ := outputs^;
-  Result := outputs^;
-end;
-
-function TTwoPole.tick(vector: PMY_FLOAT; vectorSize: longint): PMY_FLOAT;
-var
-  i: integer;
-  p: pmy_float;
-begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := tick(p^);
-    Inc(p);
-   end;
-  Result := vector;
+  for Sample := 0 to SampleFrames - 1
+   do Data^[Sample] := Tick(Data^[Sample]);
 end;
 
 end.

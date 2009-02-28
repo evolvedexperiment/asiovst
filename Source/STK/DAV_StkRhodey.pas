@@ -12,11 +12,11 @@ unit DAV_StkRhodey;
                     2.1--/
 
   Control Change Numbers:
-    - Modulator Index One:=2
-    - Crossfade of Outputs:=4
-    - LFO Speed:=11
-    - LFO Depth:=1
-    - ADSR 2 & 4 Target:=128
+    - Modulator Index One = 2
+    - Crossfade of Outputs = 4
+    - LFO Speed = 11
+    - LFO Depth = 1
+    - ADSR 2 & 4 Target = 128
 
   The basic Chowning/Stanford FM patent expired in 1995, but there exist
   follow-on patents, mostly assigned to Yamaha. If you are of the type who
@@ -34,11 +34,10 @@ uses
 type
   TStkRhodey = class(TStkFM)
   protected
-    // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(const Frequency: Single); override;
+    procedure FrequencyChanged; override;
   public
     // Class constructor.
-    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
+    constructor Create(const SampleRate: Single = 44100); override;
 
     // Class destructor.
     destructor Destroy; override;
@@ -52,7 +51,7 @@ type
 
 implementation
 
-constructor TStkRhodey.Create(const SampleRate: Single; const Operators: Integer = 4);
+constructor TStkRhodey.Create(const SampleRate: Single = 44100);
 begin
   inherited Create(SampleRate);
   FWaves[0] := TStkWavePlayer.Create(Samplerate, 'sinewave.wav');
@@ -87,16 +86,16 @@ begin
  inherited Destroy;
 end;
 
-procedure TStkRhodey.SetFrequency;
+procedure TStkRhodey.FrequencyChanged;
 var
-  i: integer;
+  i: Integer;
 begin
- FBaseFrequency := Frequency * 2.0;
  for i := 0 to FNOperators - 1
-  do FWaves[i].Frequency := FBaseFrequency * FRatios[i];
+  do FWaves[i].Frequency := 2 * FBaseFrequency * FRatios[i];
 end;
 
-procedure TStkRhodey.NoteOn;
+
+procedure TStkRhodey.NoteOn(const Frequency, Amplitude: Single);
 begin
  FGains[0] := Amplitude * FFmGains[99];
  FGains[1] := Amplitude * FFmGains[90];

@@ -4,7 +4,7 @@ unit DAV_StkOneZero;
 
 { STK one-zero filter class.
 
-  This protected Filter subclass implements a one-zero digital filter. A method
+  This protected filter subclass implements a one-zero digital filter. A method
   is provided for setting the zero position along the real axis of the z-plane
   while maintaining a constant filter gain.
 }
@@ -32,10 +32,10 @@ type
     procedure Clear; override; 
 
     // Set the b[0] coefficient value.
-    procedure setB0(b0: Single);
+    procedure setB0(const Value: Single);
 
     // Set the b[1] coefficient value.
-    procedure setB1(b1: Single);
+    procedure setB1(const Value: Single);
 
     // Set the zero position in the z-plane.
   {
@@ -45,12 +45,12 @@ type
     negative zero value produces a low-pass filter.  This method does
     not affect the filter \e gain value.
   }
-    procedure setZero(theZero: Single);
+    procedure SetZero(const Value: Single);
 
     // Input one sample to the filter and return one output.
     function Tick(const Sample: Single): Single; overload; override;
 
-    // Input \e vectorSize samples to the filter and return an equal number of outputs in \e vector.
+    // Processes 'SampleFrames' samples in-place
     procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
   end;
 
@@ -75,12 +75,9 @@ var
 begin
   inherited Create(SampleRate);
   A := 1.0;
-  // Normalize coefficients for unity gain.
-  if (theZero > 0.0) then
-    B[0] := 1.0 / (1.0 + theZero)
-  else
-    B[0] := 1.0 / (1.0 - theZero);
 
+  // Normalize coefficients for unity gain.
+  B[0] := 1.0 / (1.0 + abs(theZero));
   B[1] := -theZero * B[0];
   inherited setCoefficients(2, @B, 1, @A);
 end;
@@ -95,26 +92,24 @@ begin
   inherited Clear;
 end;
 
-procedure TStkOneZero.setB0(b0: Single);
+procedure TStkOneZero.setB0(const Value: Single);
 begin
- FB^[0] := b0;
+ FB^[0] := Value;
 end;
 
-procedure TStkOneZero.setB1(b1: Single);
+procedure TStkOneZero.setB1(const Value: Single);
 begin
- PDAV4SingleArray(FB)^[1] := b1;
+ PDAV4SingleArray(FB)^[1] := Value;
 end;
 
-procedure TStkOneZero.setZero;
+procedure TStkOneZero.setZero(const Value: Single);
 begin
   // Normalize coefficients for unity gain.
-  if (theZero > 0.0)
-   then FB^[0] := 1.0 / (1.0 + theZero)
-   else FB^[0] := 1.0 / (1.0 - theZero);
-  PDAV4SingleArray(FB)^[1] := -theZero * FB^[0];
+  FB^[0] := 1.0 / (1.0 + abs(Value));
+  PDAV4SingleArray(FB)^[1] := -Value * FB^[0];
 end;
 
-function TStkOneZero.Tick(const sample: Single): Single;
+function TStkOneZero.Tick(const Sample: Single): Single;
 begin
   FInputs^[0] := Gain * sample;
 

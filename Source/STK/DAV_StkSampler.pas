@@ -4,7 +4,7 @@ unit DAV_StkSampler;
 
 { STK sampling synthesis abstract base class.
 
-  This instrument contains up to 5 attack waves, 5 looped waves, and an FADSR
+  This instrument contains up to 5 attack waves, 5 looped waves, and an ADSR
   envelope.
 }
 
@@ -29,6 +29,12 @@ type
     FLoopratios    : Single;
     FAttackRatios  : array[0..4] of Single;
     FWhichOne      : Integer;
+
+    // Set instrument parameters for a particular AFrequency.
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
+
+    procedure FrequencyChanged; virtual; abstract;
   public
     // Default constructor.
     constructor Create(const SampleRate: Single); override;
@@ -77,6 +83,11 @@ begin
  inherited Destroy;
 end;
 
+function TStkSampler.GetFrequency: Single;
+begin
+ result := FBaseFrequency;
+end;
+
 procedure TStkSampler.KeyOn;
 begin
   FADSR.KeyOn;
@@ -88,9 +99,21 @@ begin
   FADSR.KeyOff;
 end;
 
-procedure TStkSampler.NoteOff;
+procedure TStkSampler.NoteOff(const Amplitude: Single);
 begin
   KeyOff;
+end;
+
+procedure TStkSampler.SetFrequency(const Value: Single);
+begin
+ if FBaseFrequency <> Value then
+  begin
+   if (Value <= 0.0)
+    then FBaseFrequency := 220.0
+    else FBaseFrequency := Value;
+   FrequencyChanged;
+  end;
+ inherited;
 end;
 
 function TStkSampler.Tick: Single;

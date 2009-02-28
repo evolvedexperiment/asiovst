@@ -20,10 +20,10 @@ unit DAV_StkSaxofony;
   Control Change Numbers:
     - Reed Stiffness = 2
     - Reed Aperture = 26
-    - FNoise Gain = 4
-    - Blow FPosition = 11
-    - FVibrato AFrequency = 29
-    - FVibrato Gain = 1
+    - Noise Gain = 4
+    - Blow Position = 11
+    - Vibrato Frequency = 29
+    - Vibrato Gain = 1
     - Breath Pressure = 128
 }
 
@@ -41,23 +41,25 @@ type
     // Set the "blowing" FPosition between the air column terminations (0.0 - 1.0).
     procedure SetBlowPosition(const Position: Single);
     procedure BlowPositionChanged;
+    procedure FrequencyChanged;
 
   protected
-    FDelays      : array[0..1] of TStkDelayL;
-    FReedTable   : TStkReedTable;
-    FFilter      : TStkOnezero;
-    FEnvelope    : TStkEnvelope;
-    FNoise       : TStkNoise;
-    FVibrato     : TStkLfo;
-    FLength      : Integer;
-    FOutputGain  : Single;
-    FNoiseGain   : Single;
-    FVibratoGain : Single;
-    FPosition    : Single;
+    FDelays        : array[0..1] of TStkDelayL;
+    FReedTable     : TStkReedTable;
+    FFilter        : TStkOnezero;
+    FEnvelope      : TStkEnvelope;
+    FNoise         : TStkNoise;
+    FVibrato       : TStkLfo;
+    FLength        : Integer;
+    FOutputGain    : Single;
+    FNoiseGain     : Single;
+    FVibratoGain   : Single;
+    FPosition      : Single;
+    FBaseFrequency : Single;
 
     // Set instrument parameters for a particular AFrequency.
-    procedure SetFrequency(const Frequency: Single); override;
-
+    procedure SetFrequency(const Value: Single); override;
+    function GetFrequency: Single; override;
   public
     // Class constructor, taking the lowest desired playing AFrequency.
     constructor Create(const SampleRate, LowestFrequency: Single); reintroduce; virtual;
@@ -135,21 +137,32 @@ begin
   FFilter.Tick(0.0);
 end;
 
-procedure TStkSaxofony.SetFrequency;
-var
-  delay, freakency: Single;
+procedure TStkSaxofony.SetFrequency(const Value: Single);
 begin
-  Freakency := Frequency;
-  if (Frequency <= 0.0) then freakency := 220.0;
+ if FBaseFrequency <> Value then
+  begin
+   if (Value <= 0.0)
+    then FBaseFrequency := 220.0
+    else FBaseFrequency := Value;
+   FrequencyChanged;
+  end;
+end;
 
-  delay := (SampleRate / freakency) - 3.0;
-  if (delay <= 0.0) then
-    delay := 0.3
-  else if (delay > FLength) then
-    delay := FLength;
+procedure TStkSaxofony.FrequencyChanged;
+var
+  Delay: Single;
+begin
+ Delay := (SampleRate / FBaseFrequency) - 3.0;
+ if (Delay <= 0.0) then Delay := 0.3
+ else if (Delay > FLength) then Delay := FLength;
 
-  FDelays[0].Delay := (1.0 - FPosition) * delay;
-  FDelays[1].Delay := FPosition * delay;
+ FDelays[0].Delay := (1.0 - FPosition) * Delay;
+ FDelays[1].Delay := FPosition * Delay;
+end;
+
+function TStkSaxofony.GetFrequency: Single;
+begin
+ result := FBaseFrequency;
 end;
 
 procedure TStkSaxofony.SetBlowPosition(const Position: Single);
@@ -217,7 +230,7 @@ begin
   Result := FLastOutput;
 end;
 
-procedure TStkSaxofony.ControlChange;
+procedure TStkSaxofony.ControlChange(const Number: Integer; const Value: Single);
 var
   norm: Single;
 begin

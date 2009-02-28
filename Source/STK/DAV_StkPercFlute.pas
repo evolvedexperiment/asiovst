@@ -1,4 +1,4 @@
-unit DAV_StkPercFlut;
+unit DAV_StkPercFlute;
 
 // based on STK by Perry R. Cook and Gary P. Scavone, 1995 - 2002.
 
@@ -14,7 +14,7 @@ unit DAV_StkPercFlut;
     - Modulator Crossfade = 4
     - LFO Speed = 11
     - LFO Depth = 1
-    - FAdsr 2 & 4 Target = 128
+    - ADSR 2 & 4 Target = 128
 
   The basic Chowning/Stanford FM patent expired in 1995, but there exist
   follow-on patents, mostly assigned to Yamaha. If you are of the type who
@@ -29,15 +29,10 @@ uses
   DAV_Common, DAV_StkCommon, DAV_StkFm, DAV_StkWavePlayer;
 
 type
-  TStkPercFlut = class(TStkFM)
-  protected
-
-    // Set instrument parameters for a particular Frequency.
-    procedure SetFrequency(const Frequency: Single); override;
-
+  TStkPercFlute = class(TStkFM)
   public
     // Class constructor.
-    constructor Create(const SampleRate: Single; const Operators: Integer = 4); override;
+    constructor Create(const SampleRate: Single = 44100); override;
 
     // Class destructor.
     destructor Destroy; override;
@@ -54,9 +49,9 @@ implementation
 uses
   SysUtils;
 
-constructor TStkPercFlut.Create;
+constructor TStkPercFlute.Create(const SampleRate: Single = 44100);
 begin
-  inherited Create(SampleRate, Operators);
+  inherited Create(SampleRate);
   FWaves[0] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
   FWaves[1] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
   FWaves[2] := TStkWavePlayer.Create(SampleRate, 'sinewave.wav');
@@ -82,17 +77,12 @@ begin
   FModDepth := 0.005;
 end;
 
-destructor TStkPercFlut.Destroy;
+destructor TStkPercFlute.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TStkPercFlut.SetFrequency;
-begin
-  FBaseFrequency := Frequency;
-end;
-
-procedure TStkPercFlut.NoteOn;
+procedure TStkPercFlute.NoteOn(const Frequency, Amplitude: Single);
 begin
   FGains[0] := Amplitude * FFmGains[99] * 0.5;
   FGains[1] := Amplitude * FFmGains[71] * 0.5;
@@ -102,7 +92,7 @@ begin
   keyOn;
 end;
 
-function TStkPercFlut.Tick: Single;
+function TStkPercFlute.Tick: Single;
 var
   temp: Single;
 begin
