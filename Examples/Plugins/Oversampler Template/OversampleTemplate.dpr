@@ -8,26 +8,25 @@ uses
   FastMove, // either download the library or comment if there is an error here
   RTLVCLOptimize, // "
   Forms,
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   OversampleTemplateDM in 'OversampleTemplateDM.pas' {OversampleTemplateDataModule: TVSTModule},
   OversampleTemplateGUI in 'OversampleTemplateGUI.pas' {FmOversampleter};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TOversampleTemplateDataModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+ Result := VstModuleMain(AudioMasterCallback, TOversampleTemplateDataModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(TOversampleTemplateDataModule);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
 end.

@@ -17,7 +17,7 @@ type
     procedure SetRipple(const Value: Double); virtual;
     procedure CalculateRippleFactors; virtual; abstract;
   public
-    constructor Create; override;
+    constructor Create(const Order: Integer = 0); reintroduce; virtual;
     property Ripple : Double read GetRipple write SetRipple;
   end;
 
@@ -27,6 +27,7 @@ type
   protected
     FDownsamplePow  : Integer;
     FDownsampleFak  : Integer;
+    FFilterGain     : Double;
     FCoeffs         : array [0..127] of Double;
     FState          : array [0.. 63] of Double;
     procedure CalculateW0; override;
@@ -34,7 +35,7 @@ type
     procedure OrderChanged; override;
     class function GetMaxOrder: Cardinal; override;
   public
-    constructor Create; override;
+    constructor Create(const Order: Integer = 0); override;
     procedure SetFilterValues(const AFrequency, AGain, ARipple : Single); virtual;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
@@ -46,7 +47,7 @@ type
 
   TChebyshev1LP = class(TCustomChebyshev1Filter)
   public
-    constructor Create; override;
+    constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -55,7 +56,7 @@ type
 
   TChebyshev1HP = class(TCustomChebyshev1Filter)
   public
-    constructor Create; override;
+    constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -71,7 +72,7 @@ type
     procedure OrderChanged; override;
     procedure CalculateRippleFactors; override;
   public
-    constructor Create; override;
+    constructor Create(const Order: Integer = 0); override;
     procedure SetFilterValues(const AFrequency, AGain, ARipple : Single); virtual;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
@@ -114,9 +115,10 @@ const
 
 { TCustomChebyshevFilter }
 
-constructor TCustomChebyshevFilter.Create;
+constructor TCustomChebyshevFilter.Create(const Order: Integer = 0);
 begin
- inherited;
+ inherited Create;
+ FOrder := Order;
  FRipple := 1;
 end;
 
@@ -139,14 +141,15 @@ end;
 
 constructor TCustomChebyshev1Filter.Create;
 begin
- inherited;
  FDownsamplePow := 0;
  FDownsampleFak := 1;
+ FFilterGain := 1;
+ inherited;
 end;
 
 procedure TCustomChebyshev1Filter.CalculateW0;
 begin
- fW0    := 2 * Pi * fSRR * (FFrequency * FDownsampleFak);
+ FW0    := 2 * Pi * FSRR * (FFrequency * FDownsampleFak);
  fSinW0 := sin(fW0);
  if fW0 > 3.14 then fW0 := 3.14;
 end;
@@ -220,35 +223,35 @@ end;
 
 { TChebyshev1FilterLP }
 
-constructor TChebyshev1LP.Create;
+constructor TChebyshev1LP.Create(const Order: Integer = 0);
 begin
  inherited;
  CalculateCoefficients;
 end;
 
-{.$DEFINE PUREPASCAL}
 procedure TChebyshev1LP.CalculateCoefficients;
-{$IFDEF PUREPASCAL}
+{$IFNDEF XPUREPASCAL}
 var
-  K, K2     : Double;
-  t, t1, t2 : Double;
-  i         : Integer;
+  Pi2ndOrder : Double;
+  K, K2      : Double;
+  t, t1, t2  : Double;
+  i          : Integer;
 begin
- K  := tan(fW0 * 0.5);
+ Pi2ndOrder := Pi / (2 * FOrder);
+ K  := tan(FW0 * 0.5);
  K2 := sqr(K);
+ FFilterGain := FGainFactorSquared;
  for i := (FOrder div 2) - 1 downto 0 do
   begin
-   t  := cos(((i * 2 + 1) * Pi * 0.05));
+   t  := cos( (i * 2 + 1) * Pi2ndOrder );
    t1 := 1 / (FRippleFactors[0] - sqr(t));
    t2 := K * t1 * FRippleFactors[1] * (2 * t);
    t  := 1 / (t2 + K2 + t1);
-   FCoeffs[4 * i    ] := K2 * t;
-   FCoeffs[4 * i + 1] := 2 * FCoeffs[4 * i];
+
+   FFilterGain := FFilterGain * K2 * t;
    FCoeffs[4 * i + 2] := 2 * (-K2 + t1) * t;
    FCoeffs[4 * i + 3] :=   (-K2 - t1 + t2) * t;
   end;
- FCoeffs[0] := FCoeffs[0] * FGainFactor;
- FCoeffs[1] := FCoeffs[1] * FGainFactor;
 {$ELSE}
 asm
  mov ecx, [self.FOrder]                     // ecx = order
@@ -258,12 +261,15 @@ asm
  test ecx, ecx                              // set flags according to ecx
  jz @done                                   // exit if filter order = 0
 
+ fld  [self.FGainFactor].Double
+ fstp [self.FFilterGain].Double
+
  fld1                                       // 1
  fild [self.FOrder]                         // FOrder, 1
  fadd st(0), st(0)                          // 2 * FOrder, 1
- fdivp                                      // FOrder / 2 
+ fdivp                                      // FOrder / 2
 
- fld [self.fW0]                             // fW0, 1 / 2*FOrder
+ fld [self.fW0]                             // fW0, 1 / 2 * FOrder
  fmul CHalf32                               // fW0 / 2, 1 / 2 * FOrder
  fsincos                                    // sin(fW0/2), cos(fW0/2), 1/2*FOrder
  fdivp                                      // K = tan(fW0*0.5), 1/2*FOrder
@@ -300,9 +306,14 @@ asm
   fld1                                      // 1, t1 + t2 + K², t2, t1, K, K², 1 / 2 * FOrder
   fdivrp                                    // (1 / t1 + t2 + K²) = t, t2, t1, K, K², 1 / 2 * FOrder
   fld st(0)                                 // t, t, t2, t1, K, K², 1/2*FOrder
-  fmul st(0),st(5)                          // t*K²=fA[2*i], t, t2, t1, K, K², 1/2*FOrder
+  fmul st(0),st(5)                          // t * K²=fA[2*i], t, t2, t1, K, K², 1/2*FOrder
+
+   fld  [self.FFilterGain].Double
+   fmul st(0), st(1)
+   fstp [self.FFilterGain].Double
+
   fst [Self.FCoeffs + 8 * edx].Double       // store to fA[2*i], 1/2*FOrder
-  fadd st(0),st(0)                          // 2*fA[2*i], t, t2, t1, K, K², 1/2*FOrder
+  fadd st(0),st(0)                          // 2 * fA[2 * i], t, t2, t1, K, K², 1/2*FOrder
   fstp [self.FCoeffs + 8 * edx + 8].Double  // store to fA[2*i+1], 1/2*FOrder
 
   fld st(2)                                 // t1, t, t2, t1, K, K², 1/2*FOrder
@@ -358,56 +369,56 @@ begin
  Result := 10 * Log10(Result);
 end;
 
+{$DEFINE PUREPASCAL}
 function TChebyshev1LP.ProcessSample(const Input: Double): Double;
-{$IFDEF PUREPASCAL}
+{$IFNDEF PUREPASCAL}
 var
   x : Double;
   i : Integer;
 begin
- Result := Input;
+ Result := FFilterGain * Input;
  for i := 0 to (FOrder div 2) - 1 do
   begin
    x := Result;
-   Result            := FCoeffs[4 * i    ] * x                               + FState[2 * i    ];
-   FState[2 * i    ] := FCoeffs[4 * i + 1] * x + FCoeffs[4 * i + 2] * Result + FState[2 * i + 1];
-   FState[2 * i + 1] := FCoeffs[4 * i    ] * x + FCoeffs[4 * i + 3] * Result;
+   Result            :=     x                               + FState[2 * i    ];
+   FState[2 * i    ] := 2 * x + FCoeffs[4 * i + 2] * Result + FState[2 * i + 1];
+   FState[2 * i + 1] :=     x + FCoeffs[4 * i + 3] * Result;
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   x             := FCoeffs[4 * i] * Result;
+   x             := Result;
    Result        := x + FState[2 * i];
    FState[2 * i] := x + FCoeffs[4 * i + 2] * Result;
   end;
 {$ELSE}
 asm
- fld Input.Double;
- mov ecx, [self.FOrder]
- test ecx, ecx
- jz @End
- shr ecx, 1
- shl ecx, 2
- push ecx
+ fld   Input.Double;
+ fmul  [Self.FFilterGain].Double;
+ mov   ecx, [Self.FOrder]
+ test  ecx, ecx
+ jz    @End
+ shr   ecx, 1
+ shl   ecx, 2
+ push  ecx
  jz @SingleStage
  @FilterLoop:
-  sub ecx, 4
-  fld st(0)
-  fmul [self.FCoeffs + ecx * 8].Double
-  fadd [self.FState + ecx * 4].Double
-  fld st(0)
-  fld st(0)
-  fmul [self.FCoeffs + ecx * 8 + 16].Double
-  fadd [self.FState + ecx * 4 + 8].Double
-  fld st(3)
-  fmul [self.FCoeffs + ecx * 8 + 8].Double
+  sub   ecx, 4
+  fld   st(0)
+  fadd  [self.FState + ecx * 4].Double
+  fld   st(0)
+  fld   st(0)
+  fmul  [self.FCoeffs + ecx * 8 + 16].Double
+  fadd  [self.FState + ecx * 4 + 8].Double
+  fld   st(3)
+  fadd  st(0), st(0)
   faddp
-  fstp [self.FState + ecx * 4].Double
-  fmul [self.FCoeffs + ecx * 8 + 24].Double
+  fstp  [self.FState + ecx * 4].Double
+  fmul  [self.FCoeffs + ecx * 8 + 24].Double
   fxch
-  fxch st(2)
-  fmul [self.FCoeffs + ecx * 8].Double
+  fxch  st(2)
   faddp
-  fstp [self.FState + ecx * 4 + 8].Double
+  fstp  [self.FState + ecx * 4 + 8].Double
  ja @FilterLoop
 
  @SingleStage:
@@ -433,36 +444,33 @@ end;
 
 { TChebyshev1FilterHP }
 
-constructor TChebyshev1HP.Create;
+constructor TChebyshev1HP.Create(const Order: Integer = 0);
 begin
  inherited Create;
- FGainFactor := 1;
 end;
 
-{$DEFINE PUREPASCAL}
-
 procedure TChebyshev1HP.CalculateCoefficients;
-{$IFDEF PUREPASCAL}
+{$IFNDEF XPUREPASCAL}
 var
-  K, K2     : Double;
-  t, t1, t2 : Double;
-  i         : Integer;
+  Pi4thOrder : Double;
+  K, K2      : Double;
+  t, t1, t2  : Double;
+  i          : Integer;
 begin
- K  := tan(fW0 * 0.5);
+ Pi4thOrder := Pi / (4 * FOrder);
+ K  := tan(FW0 * 0.5);
  K2 := sqr(K);
+ FFilterGain := FGainFactorSquared;
  for i := (FOrder div 2) - 1 downto 0 do
   begin
-   t  := sqr( sin( ((i * 2 + 1) * Pi / (4 * FOrder)) ) );
+   t  := sqr( sin( (i * 2 + 1) * Pi4thOrder ) );
    t1 := 1 / (FRippleFactors[0] + 4 * t - 4 * sqr(t)-1);
    t2 := 2 * K * t1 * FRippleFactors[1] * (1 - 2 * t);
    t  := 1 / (t2 + 1 + t1 * K2);
-   FCoeffs[4 * i    ] := t;
-   FCoeffs[4 * i + 1] :=-2 * t;
-   FCoeffs[4 * i + 2] := 2 * (     1 - t1 * K2) * t;
-   FCoeffs[4 * i + 3] :=     (t2 - 1 - t1 * K2) * t;
+   FFilterGain := FFilterGain * t;
+   FCoeffs[2 * i    ] := 2 * (     1 - t1 * K2) * t;
+   FCoeffs[2 * i + 1] :=     (t2 - 1 - t1 * K2) * t;
   end;
- FCoeffs[0] := FCoeffs[0] * FGainFactor;
- FCoeffs[1] := FCoeffs[1] * FGainFactor;
 {$ELSE}
 asm
  mov ecx, [self.FOrder]                     // ecx = order
@@ -472,87 +480,89 @@ asm
  test ecx, ecx                              // set flags according to ecx
  jz @done                                   // exit if filter order = 0
 
- fld1                                       // 1
- fild [self.FOrder]                         // FOrder, 1
- fadd st(0),st(0)                           // 2 * FOrder, 1
- fadd st(0),st(0)                           // 4 * FOrder, 1
- fdivp                                      // FOrder / 4
+ fldpi                                      // Pi
+ fild [self.FOrder]                         // FOrder, Pi
+ fadd st(0),st(0)                           // 2 * FOrder, Pi
+ fadd st(0),st(0)                           // 4 * FOrder, Pi
+ fdivp                                      // Pi / (4 * FOrder)
 
- fld [self.fW0]                             // fW0, 1 / 2 * FOrder
- fmul CHalf32                               // fW0/2, 1/2*FOrder
- fsincos                                    // sin(fW0/2), cos(fW0/2), 1/2*FOrder
- fdivp                                      // K = tan(fW0*0.5), 1/2*FOrder
- fld st(0)                                  // K, K, 1/2*FOrder
- fmul st(0),st(0)                           // K², K, 1/2*FOrder
- fxch                                       // K, K², 1/2*FOrder
+ fld [self.FW0]                             // FW0, Pi / (4 * FOrder)
+ fmul CHalf32                               // FW0 * 0.5, Pi / (4 * FOrder)
+ fsincos                                    // sin(FW0 * 0.5), cos(FW0 * 0.5), Pi / (4 * FOrder)
+ fdivp                                      // K = tan(FW0 * 0.5), Pi / (4 * FOrder)
+ fld st(0)                                  // K, K, Pi / (4 * FOrder)
+ fmul st(0),st(0)                           // K², K, Pi / (4 * FOrder)
+ fxch                                       // K, K², Pi / (4 * FOrder)
+
+ fld  [self.FFilterGain]
+ fmul [self.FGainFactorSquared]
+ fstp [self.FFilterGain]
 
  mov ecx, [self.FOrder]                     // ecx = order
  @OrderLoop:
-  mov edx, ecx                              // edx = 2*i
-  dec edx                                   // edx = 2*i+1
-  mov [esp - 4],edx                         // edx to stack
-  dec edx                                   // edx = 2*i
-  shl edx,1                                 // edx = 4*i
-  fild [esp - 4].Integer                    // edx in st(0) = 2*i+1, K, K²
-  fldpi                                     // Pi, 2*i+1, K, K², 1/2*FOrder
-  fmulp                                     // Pi * (2*i+1), K, K², 1/2*FOrder
-  fmul st(0),st(3)                          // Pi * (2*i+1) / (4*Order), K, K², 1/2*FOrder
-  fsin                                      // sin((i*2+1)*Pi/(2*Order)) = t, K, K², 1/2*FOrder
-  fmul st(0),st(0)                          // sqr(sin((i*2+1)*Pi*0.025)), K, K², 1/2*FOrder
+  mov edx, ecx                              // edx = 2 * i
+  dec edx                                   // edx = 2 * i + 1
+  mov [esp - 4], edx                        // edx to stack
+  dec edx                                   // edx = 2 * i
+  shl edx, 1                                // edx = 4 * i
+  fild [esp - 4].Integer                    // edx in st(0) = 2 * i + 1, K, K², Pi / (4 * FOrder)
+  fmul st(0), st(3)                         // (2 * i + 1) * Pi / (4 * Order), K, K², Pi / (4 * FOrder)
+  fsin                                      // sin((2 * i + 1) * Pi / (4 * Order)), K, K², Pi / (4 * FOrder)
+  fmul st(0),st(0)                          // t = sqr(sin((2 * i + 1) * Pi / (4 * Order))), K, K², Pi / (4 * FOrder)
 
-  fld st(0)                                 // t, t, K, K², FOrder / 2
-  fmul st(0),st(0)                          // t²,t, K, K², FOrder / 2
-  fld st(1)                                 // t, t²,t, K, K², FOrder / 2
-  fsubrp                                    // t - t²,t, K, K², FOrder / 2
-  fadd st(0),st(0)                          // 2 * (t-t²), t, K, K², FOrder / 2
-  fadd st(0),st(0)                          // 4 * (t-t²), t, K, K², FOrder / 2
-  fld [self.FRippleFactors].Double          // FRipple[0], 4*t²,t, K, K², 1/2*FOrder// FRipple[0] - 4*t²,t, K, K², 1/2*FOrder
-  faddp
-  fld1                                      // 1, FRipple[0]+4*t-4*t²,t, K, K², 1/2*FOrder
-  fsub st(1),st(0)                          // 1, FRipple[0]+4*t-4*t²-1,t, K, K², 1/2*FOrder
-  fdivrp                                    // 1 / (FRipple[0]+4*t-4*t²-1) = t1, t, K, K², 1/2*FOrder
+  fld st(0)                                 // t, t, K, K², Pi / (4 * Order)
+  fmul st(0),st(0)                          // t²,t, K, K², Pi / (4 * Order)
+  fld st(1)                                 // t, t²,t, K, K², Pi / (4 * Order)
+  fsubrp                                    // t - t²,t, K, K², Pi / (4 * Order)
+  fadd st(0),st(0)                          // 2 * (t-t²), t, K, K², Pi / (4 * Order)
+  fadd st(0),st(0)                          // 4 * (t-t²), t, K, K², Pi / (4 * Order)
+  fld [self.FRippleFactors].Double          // FRipple[0], 4*t²,t, K, K², Pi / (4 * Order)
+  faddp                                     // FRipple[0] + 4 * t², t, K, K², Pi / (4 * Order)
+  fld1                                      // 1, FRipple[0]+4*t-4*t²,t, K, K², Pi / (4 * Order)
+  fsub st(1),st(0)                          // 1, FRipple[0]+4*t-4*t²-1,t, K, K², Pi / (4 * Order)
+  fdivrp                                    // 1 / (FRipple[0]+4*t-4*t²-1) = t1, t, K, K², Pi / (4 * Order)
 
-  fxch                                      // t, t1, K, K², 1/2*FOrder
-  fadd st(0),st(0)                          // 2*t, t1, K, K², 1/2*FOrder
-  fld1                                      // 1, 2*t, t1, K, K², 1/2*FOrder
-  fsubrp                                    // 1 - 2*t, t1, K, K², 1/2*FOrder
-  fmul [self.FRippleFactors + 8].Double     // FRipple[1]*(1-2*t), t1, K, K², 1/2*FOrder
-  fmul st(0),st(2)                          // K*FRipple[1]*(1-2*t), t1, K, K², 1/2*FOrder
-  fmul st(0),st(1)                          // t1*K*FRipple[1]*(1-2*t), t1, K, K², 1/2*FOrder
-  fadd st(0),st(0)                          // t2=2*t1*K*FRipple[1]*(1-2*t), t1, K, K², 1/2*FOrder
-  fld st(1)                                 // t1, t2, t1, K, K², 1/2*FOrder
-  fmul st(0),st(4)                          // t1*K², t2, t1, K, K², 1/2*FOrder
-  fld1                                      // 1, t1*K², t2, t1, K, K², 1/2*FOrder
-  faddp                                     // 1+t1*K², t2, t1, K, K², 1/2*FOrder
-  fadd st(0),st(1)                          // 1+t1*K²+t2, t2, t1, K, K², 1/2*FOrder
-  fld1                                      // 1, 1+t1*K²+t2, t2, t1, K, K², 1/2*FOrder
-  fdivrp                                    // 1/(1+t1*K²+t2)=A[2*i], t2, t1, K, K², 1/2*FOrder
+  fxch                                      // t, t1, K, K², Pi / (4 * Order)
+  fadd st(0),st(0)                          // 2*t, t1, K, K², Pi / (4 * Order)
+  fld1                                      // 1, 2*t, t1, K, K², Pi / (4 * Order)
+  fsubrp                                    // 1 - 2*t, t1, K, K², Pi / (4 * Order)
+  fmul [self.FRippleFactors + 8].Double     // FRipple[1]*(1-2*t), t1, K, K², Pi / (4 * Order)
+  fmul st(0),st(2)                          // K*FRipple[1]*(1-2*t), t1, K, K², Pi / (4 * Order)
+  fmul st(0),st(1)                          // t1*K*FRipple[1]*(1-2*t), t1, K, K², Pi / (4 * Order)
+  fadd st(0),st(0)                          // t2=2*t1*K*FRipple[1]*(1-2*t), t1, K, K², Pi / (4 * Order)
+  fld st(1)                                 // t1, t2, t1, K, K², Pi / (4 * Order)
+  fmul st(0),st(4)                          // t1*K², t2, t1, K, K², Pi / (4 * Order)
+  fld1                                      // 1, t1*K², t2, t1, K, K², Pi / (4 * Order)
+  faddp                                     // 1+t1*K², t2, t1, K, K², Pi / (4 * Order)
+  fadd st(0),st(1)                          // 1+t1*K²+t2, t2, t1, K, K², Pi / (4 * Order)
+  fld1                                      // 1, 1+t1*K²+t2, t2, t1, K, K², Pi / (4 * Order)
+  fdivrp                                    // 1/(1+t1*K²+t2)=A[2*i], t2, t1, K, K², Pi / (4 * Order)
   fst [Self.FCoeffs + 8 * edx].Double       // store to fA[2*i]
 
-  fld st(0)                                 // A[2*i], A[2*i], t2, t1, K, K², 1/2*FOrder
-  fadd st(0),st(0)                          // 2*A[2*i], A[2*i], t2, t1, K, K², 1/2*FOrder
-  fchs                                      // -2*A[2*i], A[2*i], t2, t1, K, K², 1/2*FOrder
+  fld st(0)                                 // A[2*i], A[2*i], t2, t1, K, K², Pi / (4 * Order)
+  fadd st(0),st(0)                          // 2*A[2*i], A[2*i], t2, t1, K, K², Pi / (4 * Order)
+  fchs                                      // -2*A[2*i], A[2*i], t2, t1, K, K², Pi / (4 * Order)
   fstp [self.FCoeffs + 8 * edx + 8].Double  // store to fA[2*i+1]
 
-  fld st(2)                                 // t1, A[2*i], t2, t1, K, K², 1/2*FOrder
-  fmul st(0), st(5)                         // t1*K², A[2*i], t2, t1, K, K², 1/2*FOrder
-  fld1                                      // 1, t1*K², A[2*i], t2, t1, K, K², 1/2*FOrder
-  fsubrp                                    // 1-t1*K², A[2*i], t2, t1, K, K², 1/2*FOrder
-  fadd st(0), st(0)                         // 2*(1-t1*K²), A[2*i], t2, t1, K, K², 1/2*FOrder
-  fmul st(0), st(1)                         // 2*(1-t1*K²)*A[2*i], A[2*i], t2, t1, K, K², 1/2*FOrder
+  fld st(2)                                 // t1, A[2*i], t2, t1, K, K², Pi / (4 * Order)
+  fmul st(0), st(5)                         // t1*K², A[2*i], t2, t1, K, K², Pi / (4 * Order)
+  fld1                                      // 1, t1*K², A[2*i], t2, t1, K, K², Pi / (4 * Order)
+  fsubrp                                    // 1-t1*K², A[2*i], t2, t1, K, K², Pi / (4 * Order)
+  fadd st(0), st(0)                         // 2*(1-t1*K²), A[2*i], t2, t1, K, K², Pi / (4 * Order)
+  fmul st(0), st(1)                         // 2*(1-t1*K²)*A[2*i], A[2*i], t2, t1, K, K², Pi / (4 * Order)
   fstp [self.FCoeffs + 8 * edx + 16].Double // store to fB[2*i]
 
-  fxch st(2)                                // t1, t2, A[2*i], K, K², 1/2*FOrder
-  fmul st(0), st(4)                         // t1*K², t2, A[2*i], K, K², 1/2*FOrder
-  fld1                                      // 1, t1*K², t2, A[2*i], K, K², 1/2*FOrder
-  faddp                                     // 1 + t1*K², t2, A[2*i], K, K², 1/2*FOrder
-  fsubp                                     // t2 - (1 + t1*K²), A[2*i], K, K², 1/2*FOrder
-  fmulp                                     // (t2 - (1 + t1*K²)) * A[2*i], K, K², 1/2*FOrder
-  fstp [self.FCoeffs + 8 * edx + 24].Double // store to fB[2*i+1], 1/2*FOrder
+  fxch st(2)                                // t1, t2, A[2*i], K, K², Pi / (4 * Order)
+  fmul st(0), st(4)                         // t1*K², t2, A[2*i], K, K², Pi / (4 * Order)
+  fld1                                      // 1, t1*K², t2, A[2*i], K, K², Pi / (4 * Order)
+  faddp                                     // 1 + t1*K², t2, A[2*i], K, K², Pi / (4 * Order)
+  fsubp                                     // t2 - (1 + t1*K²), A[2*i], K, K², Pi / (4 * Order)
+  fmulp                                     // (t2 - (1 + t1*K²)) * A[2*i], K, K², Pi / (4 * Order)
+  fstp [self.FCoeffs + 8 * edx + 24].Double // store to fB[2*i+1], Pi / (4 * Order)
   sub ecx, 2
  jnz @OrderLoop
- fstp st(0)                                 // K², 1/2*FOrder
- fstp st(0)                                 // 1/2*FOrder
+ fstp st(0)                                 // K², Pi / (4 * Order)
+ fstp st(0)                                 // Pi / (4 * Order)
  fstp st(0)                                 // stack free!
 
  fld  [self.FCoeffs].Double                 // load fA[0]
@@ -561,6 +571,8 @@ asm
  fld  [self.FCoeffs + 8].Double             // load fA[1]
  fmul [self.FGainFactor].Double             // apply FGainFactor
  fstp [self.FCoeffs + 8].Double             // store fA[1]
+
+@done:
 {$ENDIF}
 end;
 
@@ -592,51 +604,69 @@ begin
 end;
 
 function TChebyshev1HP.ProcessSample(const Input: Double): Double;
-{$IFNDEF PUREPASCAL}
-asm
- mov ecx, [self.FOrder]
- shl ecx, 1
- fld Input.Double;
- @FilterLoop:
-  sub ecx,4
-  fld st(0)
-  fmul [self.FCoeffs+ecx*8].Double
-  fadd [self.FState+ecx*4].Double
-  fld st(0)
-  fld st(0)
-  fmul [self.FCoeffs+ecx*8+16].Double
-  fadd [self.FState+ecx*4+8].Double
-  fld st(3)
-  fmul [self.FCoeffs+ecx*8+8].Double
-  faddp
-  fstp [self.FState + ecx*4].Double
-  fmul [self.FCoeffs + ecx * 8 + 24].Double
-  fxch
-  fxch st(2)
-  fmul [self.FCoeffs + ecx * 8].Double
-  faddp
-  fstp [self.FState + ecx * 4 + 8].Double
- jnz @FilterLoop
-end;
-{$ELSE}
+{$IFDEF PUREPASCAL}
 var
   x : Double;
   i : Integer;
 begin
- Result:=Input;
+ Result := FFilterGain * Input;
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   x:=Result;
-   Result          := FCoeffs[4 * i    ] * x                          + FState[2 * i];
-   FState[2 * i    ] := FCoeffs[4 * i + 1] * x + FCoeffs[4 * i + 2]*Result  + FState[2 * i + 1];
-   FState[2 * i + 1] := FCoeffs[4 * i    ] * x + FCoeffs[4 * i + 3]*Result;
+   x := Result;
+   Result            :=      x                                + FState[2 * i];
+   FState[2 * i    ] := -2 * x + FCoeffs[2 * i    ] * Result  + FState[2 * i + 1];
+   FState[2 * i + 1] :=      x + FCoeffs[2 * i + 1] * Result;
   end;
+ if (FOrder mod 2) = 1 then
+  begin
+   i := ((FOrder + 1) div 2) - 1;
+   x             := Result;
+   Result        := x + FState[2 * i];
+   FState[2 * i] := x + FCoeffs[2 * i] * Result;
+  end;
+end;
+{$ELSE}
+asm
+ fld   Input.Double;
+ fmul  [Self.FFilterGain].Double
+ mov   ecx, [Self.FOrder]
+ test  ecx, ecx
+ jz    @End
+ push  ecx
+ shr   ecx, 1
+ shl   ecx, 1
+ @FilterLoopBiquad:
+  sub  ecx, 2
+  fld  st(0)
+  fadd [self.FState + ecx * 8].Double
+  fld  st(0)
+  fld  st(0)
+  fmul [self.FCoeffs + ecx * 8].Double
+  fadd [self.FState + ecx * 8 + 8].Double
+  fld  st(3)
+  fadd st(0), st(0)
+  fsubp
+  fstp [self.FState + ecx * 8].Double
+  fmul [self.FCoeffs + ecx * 8 + 8].Double
+  fxch
+  fxch st(2)
+  faddp
+  fstp [self.FState + ecx * 8 + 8].Double
+ jnz @FilterLoopBiquad
+ pop  ecx
+ and  ecx, 1
+ test  ecx, ecx
+ jz    @End
+
+ // add first order here
+
+ @End:
 end;
 {$ENDIF}
 
 { TCustomChebyshev2Filter }
 
-constructor TCustomChebyshev2Filter.Create;
+constructor TCustomChebyshev2Filter.Create(const Order: Integer = 0);
 begin
  inherited;
 end;

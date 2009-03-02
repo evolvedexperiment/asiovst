@@ -5,7 +5,7 @@ unit DAV_StkVoicer;
 { STK voice manager class.
 
   This class can be used to manage a group of STK instrument classes.
-  Individual voices can be controlled via unique note tags. instrument groups
+  Individual voices can be controlled via unique note tags. Instrument groups
   can be controlled by channel number.
 
   A previously constructed STK instrument class is linked with a voice manager
@@ -28,7 +28,7 @@ uses
   DAV_Common, DAV_StkCommon, DAV_StkInstrument, Math;
 
 type
-  TVoice = object
+  TStkVoice = class
     Instrument : TStkControlableInstrument;
     Tag        : Integer;
     NoteNumber : Single;
@@ -37,17 +37,21 @@ type
     Channel    : Integer;
   end;
 
-  TVoiceManager = class(TStk)
+  TStkVoiceManager = class(TStk)
+  private
+    function GetVoiceCount: Integer;
   protected
-    FVoiceCount     : Integer;
-    FMaxVoiceCount  : Integer;
-    FVoices         : array[0..128] of TVoice;
-    FMutetime, Tags : Integer;
-    FLastOutput     : Single;
+    FMaxVoiceCount : Integer;
+    FVoices        : array of TStkVoice;
+    FMutetime      : Integer;
+    FTags          : Integer;
+    FLastOutput    : Single;
+    FScale         : Single;
+    procedure SampleRateChanged; override;
   public
     // Class constructor taking the maximum number of instruments to control and an optional note decay time (in seconds).
-    constructor Create(const SampleRate: Single; const maxInstruments: Integer;
-      const decayTime: Single = 0.2); reintroduce; virtual;
+    constructor Create(const SampleRate: Single; const MaxInstruments: Integer;
+      const DecayTime: Single = 0.2); reintroduce; virtual;
 
     // Class destructor.
     destructor Destroy; override;
@@ -69,8 +73,8 @@ type
 
     // Initiate a noteOn event with the given note number and amplitude and result:= a unique note Tag.
   {
-    Send the noteOn message to the first available unused TVoice.
-    If all voices are Sounding, the oldest TVoice is interrupted and
+    Send the noteOn message to the first available unused voice.
+    If all voices are Sounding, the oldest voice is interrupted and
     sent the noteOn message.  If the optional channel argument is
     non-zero, only voices on that channel are used.  If no voices are
     found for a specified non-zero channel value, the function returns
@@ -84,7 +88,7 @@ type
   }
     procedure NoteOff(const NoteNumber, Amplitude: Single; const Channel: Integer = 0); overload;
 
-    // Send a noteOff to the TVoice with the given note Tag.
+    // Send a noteOff to the TStkVoice with the given note Tag.
   {
     The amplitude value should be in the range 0.0 - 1.0.
   }
@@ -96,7 +100,7 @@ type
   }
     procedure SetFrequency(const NoteNumber: Single; const Channel: Integer = 0); overload;
 
-    // Send a Frequency update message to the TVoice with the given note Tag.
+    // Send a Frequency update message to the TStkVoice with the given note Tag.
   {
     The \e NoteNumber argument corresponds to a MIDI note number, though it is a floating-point value and can range beyond the normal 0-127 range.
   }
@@ -106,7 +110,7 @@ type
     procedure PitchBend(const Value: Single; const Channel: Integer = 0); overload;
 
     // Send a pitchBend message to the voice with the given note Tag.
-    procedure PitchBend(const Tag: Integer; Value: Single); overload;
+    procedure PitchBend(const Tag: Integer; const Value: Single); overload;
 
     // Send a controlChange to all instruments assigned to the optional channel argument (default channel = 0).
     procedure ControlChange(const Number: Integer; const Value: Single;
@@ -119,12 +123,14 @@ type
     procedure Silence;
 
     // Mix the output for all sounding voices.
-    function tick: Single; overload;
+    function Tick: Single; overload;
 
-    // Computer \e vectorSize output mixes and result:= them in \e vector.
-    function tick(vector: pSingle; vectorSize: Integer): PSingle; overload;
+    // Processes 'SampleFrames' samples in-place
+    procedure Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
 
     property LastOutput: Single read FLastOutput;
+    property VoiceCount: Integer read GetVoiceCount;
+    property MaxVoiceCount: Integer read FMaxVoiceCount; 
   end;
 
 implementation
@@ -132,254 +138,253 @@ implementation
 uses
   SysUtils;
 
-{ TVoiceManager }
+{ TStkVoiceManager }
 
-procedure TVoiceManager.AddInstrument(const Instrument: TStkControlableInstrument; const Channel: Integer);
-begin
-  if (FVoiceCount >= FMaxVoiceCount) then exit;
-  FVoices[FVoiceCount].Instrument := Instrument;
-  FVoices[FVoiceCount].Tag := 0;
-  FVoices[FVoiceCount].Channel := Channel;
-  FVoices[FVoiceCount].NoteNumber := -1;
-  FVoices[FVoiceCount].Frequency := 0.0;
-  FVoices[FVoiceCount].Sounding := 0;
-  FVoiceCount := FVoiceCount + 1;
-end;
-
-procedure TVoiceManager.ControlChange(const Number: Integer; const Value: Single;
-  const Channel: Integer);
-var
-  i: Integer;
-begin
-  for i := 0 to FVoiceCount - 1 do
-    if (FVoices[i].Channel = Channel) then
-      FVoices[i].Instrument.ControlChange(number, Value);
-end;
-
-procedure TVoiceManager.controlChange(const Tag, Number: Integer; const Value: Single);
-var
-  i: Integer;
-begin
-  for i := 0 to FVoiceCount - 1 do
-    if (FVoices[i].Tag = Tag) then
-     begin
-      FVoices[i].Instrument.controlChange(number, Value);
-      break;
-     end;
-end;
-
-constructor TVoiceManager.Create(const SampleRate: Single; const MaxInstruments: Integer;
+constructor TStkVoiceManager.Create(const SampleRate: Single; const MaxInstruments: Integer;
   const DecayTime: Single);
 begin
   inherited Create(SampleRate);
-  FVoiceCount := 0;
-  FMaxVoiceCount := maxInstruments;
-  Tags := 23456;
-  FMutetime := round(decayTime * SampleRate);
+  SetLength(FVoices, 0);
+  FMaxVoiceCount := MaxInstruments;
+  FTags := 0;
+  FMutetime := Round(DecayTime * SampleRate);
 end;
 
-destructor TVoiceManager.Destroy;
+destructor TStkVoiceManager.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TVoiceManager.noteOff(const Tag: Integer; const Amplitude: Single);
-var
-  i: Integer;
+function TStkVoiceManager.GetVoiceCount: Integer;
 begin
-  for i := 0 to FVoiceCount - 1 do
-    if (FVoices[i].Tag = Tag) then
-     begin
-      FVoices[i].Instrument.noteOff(amplitude);
-      FVoices[i].Sounding := -FMutetime;
-      break;
-     end;
+ result := Length(FVoices);
 end;
 
-procedure TVoiceManager.NoteOff(const NoteNumber, Amplitude: Single; const Channel: Integer);
+procedure TStkVoiceManager.AddInstrument(const Instrument: TStkControlableInstrument; const Channel: Integer);
 var
-  i: Integer;
+  Voice: Integer;
 begin
-  for i := 0 to FVoiceCount - 1 do
-    if (FVoices[i].NoteNumber = NoteNumber) and (FVoices[i].Channel = Channel) then
-     begin
-      FVoices[i].Instrument.noteOff(amplitude);
-      FVoices[i].Sounding := -FMutetime;
-     end;
+  if (Length(FVoices) >= FMaxVoiceCount) then exit;
+
+  Voice := Length(FVoices);
+  SetLength(FVoices, Length(FVoices) + 1);
+  FVoices[Voice] := TStkVoice.Create;
+  FVoices[Voice].Instrument := Instrument;
+  FVoices[Voice].Tag := 0;
+  FVoices[Voice].Channel := Channel;
+  FVoices[Voice].NoteNumber := -1;
+  FVoices[Voice].Frequency := 0.0;
+  FVoices[Voice].Sounding := 0;
+
+  FScale := 1 / Length(FVoices);
 end;
 
-function TVoiceManager.NoteOn(const NoteNumber, Amplitude: Single;
+procedure TStkVoiceManager.RemoveInstrument(const Instrument: TStkControlableInstrument);
+var
+  Voice : Integer;
+begin
+ for Voice := 0 to Length(FVoices) - 1 do
+  if (FVoices[Voice].Instrument = Instrument) then
+   begin
+    FreeAndNil(FVoices[Voice]);
+    if (Voice + 1 < Length(FVoices))
+     then Move(FVoices[Voice + 1], FVoices[Voice], (Length(FVoices) - Voice - 1) * SizeOf(Pointer));
+    SetLength(FVoices, Length(FVoices) - 1);
+    break;
+   end;
+end;
+
+procedure TStkVoiceManager.ControlChange(const Number: Integer; const Value: Single;
+  const Channel: Integer = 0);
+var
+  Voice: Integer;
+begin
+ for Voice := 0 to Length(FVoices) - 1 do
+  if (FVoices[Voice].Channel = Channel)
+   then FVoices[Voice].Instrument.ControlChange(Number, Value);
+end;
+
+procedure TStkVoiceManager.ControlChange(const Tag, Number: Integer; const Value: Single);
+var
+  Voice: Integer;
+begin
+ for Voice := 0 to Length(FVoices) - 1 do
+  if (FVoices[Voice].Tag = Tag) then
+   begin
+    FVoices[Voice].Instrument.ControlChange(Number, Value);
+    Break;
+   end;
+end;
+
+procedure TStkVoiceManager.NoteOff(const Tag: Integer; const Amplitude: Single);
+var
+  Voice: Integer;
+begin
+ for Voice := 0 to Length(FVoices) - 1 do
+  if (FVoices[Voice].Tag = Tag) then
+   begin
+    FVoices[Voice].Instrument.NoteOff(Amplitude);
+    FVoices[Voice].Sounding := -FMutetime;
+    Break;
+   end;
+end;
+
+procedure TStkVoiceManager.NoteOff(const NoteNumber, Amplitude: Single; const Channel: Integer);
+var
+  Voice: Integer;
+begin
+ for Voice := 0 to Length(FVoices) - 1 do
+  if (FVoices[Voice].NoteNumber = NoteNumber) and (FVoices[Voice].Channel = Channel) then
+   begin
+    FVoices[Voice].Instrument.NoteOff(Amplitude);
+    FVoices[Voice].Sounding := -FMuteTime;
+   end;
+end;
+
+function TStkVoiceManager.NoteOn(const NoteNumber, Amplitude: Single;
   const Channel: Integer): Integer;
 var
-  ovoice, i: Integer;
-  Frequency: Single;
+  OldVoice  : Integer;
+  Voice     : Integer;
+  Frequency : Single;
 begin
-  Frequency := 220.0 * power(2.0, (NoteNumber - 57.0) / 12.0);
-  for i := 0 to FVoiceCount - 1 do
-    if (FVoices[i].NoteNumber < 0) and (FVoices[i].Channel = Channel) then
-     begin
-      FVoices[i].Tag := Tags;
-      Tags := Tags + 1;
-      FVoices[i].Channel := Channel;
-      FVoices[i].NoteNumber := NoteNumber;
-      FVoices[i].Frequency := Frequency;
-      FVoices[i].Instrument.noteOn(Frequency, amplitude);
-      FVoices[i].Sounding := 1;
-      Result := FVoices[i].Tag;
-      exit;
-     end;
-  // All FVoices are Sounding, so interrupt the oldest TVoice.
-  ovoice := -1;
-  for i := 0 to FVoiceCount - 1 do
-    if (FVoices[i].Channel = Channel) then
-      if (ovoice = -1) then
-        ovoice := i
-      else if (FVoices[i].Tag < FVoices[ovoice].Tag) then
-        ovoice := i;
+  // calculate frequency
+  Frequency := 220.0 * Power(2.0, (NoteNumber - 57.0) * COneTwelfth32);
 
-  if (ovoice >= 0) then
+  for Voice := 0 to Length(FVoices) - 1 do
+   if (FVoices[Voice].NoteNumber < 0) and (FVoices[Voice].Channel = Channel) then
+    begin
+     FVoices[Voice].Tag := FTags;
+     Inc(FTags);
+     FVoices[Voice].Channel := Channel;
+     FVoices[Voice].NoteNumber := NoteNumber;
+     FVoices[Voice].Frequency := Frequency;
+     FVoices[Voice].Instrument.NoteOn(Frequency, Amplitude);
+     FVoices[Voice].Sounding := 1;
+     Result := FVoices[Voice].Tag;
+     exit;
+    end;
+
+  // All voices are sounding, so interrupt the oldest voice.
+  OldVoice := -1;
+  for Voice := 0 to Length(FVoices) - 1 do
+   if (FVoices[Voice].Channel = Channel) then
+    if (OldVoice = -1) then OldVoice := Voice else
+     if (FVoices[Voice].Tag < FVoices[OldVoice].Tag)
+      then OldVoice := Voice;
+
+  if (OldVoice >= 0) then
    begin
-    FVoices[ovoice].Tag := Tags;
-    Tags := Tags + 1;
-    FVoices[ovoice].Channel := Channel;
-    FVoices[ovoice].NoteNumber := NoteNumber;
-    FVoices[ovoice].Frequency := Frequency;
-    FVoices[ovoice].Instrument.noteOn(Frequency, amplitude);
-    FVoices[ovoice].Sounding := 1;
-    Result := FVoices[ovoice].Tag;
+    FVoices[OldVoice].Tag := FTags;
+    Inc(FTags);
+    FVoices[OldVoice].Channel := Channel;
+    FVoices[OldVoice].NoteNumber := NoteNumber;
+    FVoices[OldVoice].Frequency := Frequency;
+    FVoices[OldVoice].Instrument.NoteOn(Frequency, Amplitude);
+    FVoices[OldVoice].Sounding := 1;
+    Result := FVoices[OldVoice].Tag;
     exit;
    end;
   Result := -1;
 end;
 
-procedure TVoiceManager.PitchBend(const Tag: Integer; Value: Single);
+procedure TStkVoiceManager.PitchBend(const Tag: Integer; const Value: Single);
 var
-  pitchScaler: Single;
-  i: Integer;
+  PitchScaler : Single;
+  Voice       : Integer;
 begin
-  Value := Value * 128;
-  if (Value < 64.0) then
-    pitchScaler := Power(0.5, (64.0 - Value) / 64.0)
-  else
-    pitchScaler := Power(2.0, (Value - 64.0) / 64.0);
-  for i := 0 to FVoiceCount - 1 do
-    if (FVoices[i].Tag = Tag) then
-     begin
-      FVoices[i].Instrument.Frequency := FVoices[i].Frequency * pitchScaler;
-      break;
-     end;
-end;
-
-procedure TVoiceManager.PitchBend(const Value: Single; const Channel: Integer);
-var
-  pitchScaler: Single;
-  i: Integer;
-begin
-  Value := Value * 128;
-  if (Value < 64.0) then
-    pitchScaler := power(0.5, (64.0 - Value) / 64.0)
-  else
-    pitchScaler := power(2.0, (Value - 64.0) / 64.0);
-  for i := 0 to FVoiceCount - 1 do
-    if (FVoices[i].Channel = Channel) then
-      FVoices[i].Instrument.SetFrequency(
-        (FVoices[i].Frequency * pitchScaler));
-end;
-
-procedure TVoiceManager.removeInstrument(const Instrument: PStkInstrument);
-var
-  found: boolean;
-  i: Integer;
-begin
-  for i := 0 to FVoiceCount - 1 do
+ PitchScaler := Power(2.0, Value * 2 - 1);
+ for Voice := 0 to Length(FVoices) - 1 do
+  if (FVoices[Voice].Tag = Tag) then
    begin
-    if (FVoices[i].Instrument = Instrument) then
-      found := True;
-    if (found) and (i + 1 < FVoiceCount) then
-     begin
-      FVoices[i].Instrument := FVoices[i + 1].Instrument;
-      FVoices[i].Tag := FVoices[i + 1].Tag;
-      FVoices[i].NoteNumber := FVoices[i + 1].NoteNumber;
-      FVoices[i].Frequency := FVoices[i + 1].Frequency;
-      FVoices[i].Sounding := FVoices[i + 1].Sounding;
-      FVoices[i].Channel := FVoices[i + 1].Channel;
-     end;
+    FVoices[Voice].Instrument.Frequency := FVoices[Voice].Frequency * PitchScaler;
+    Break;
    end;
-  if (found) then
-    FVoiceCount := FVoiceCount - 1;
 end;
 
-procedure TVoiceManager.SetFrequency(const Tag: Integer; const NoteNumber: Single);
+procedure TStkVoiceManager.PitchBend(const Value: Single; const Channel: Integer);
 var
-  Frequency: Single;
-  i: Integer;
+  PitchScaler : Single;
+  Voice       : Integer;
 begin
-  Frequency := 220.0 * power(2.0, (NoteNumber - 57.0) / 12.0);
-  for i := 0 to FVoiceCount - 1 do
-    if (FVoices[i].Tag = Tag) then
+ PitchScaler := Power(2.0, Value * 2 - 1);
+ for Voice := 0 to Length(FVoices) - 1 do
+  if (FVoices[Voice].Channel = Channel)
+   then FVoices[Voice].Instrument.Frequency := FVoices[Voice].Frequency * PitchScaler;
+end;
+
+procedure TStkVoiceManager.SampleRateChanged;
+var
+  Voice : Integer;
+begin
+  for Voice := 0 to Length(FVoices) - 1
+   do FVoices[Voice].Instrument.SampleRate := SampleRate;
+end;
+
+procedure TStkVoiceManager.SetFrequency(const Tag: Integer; const NoteNumber: Single);
+var
+  Frequency : Single;
+  Voice     : Integer;
+begin
+  Frequency := 220.0 * Power(2.0, (NoteNumber - 57.0) * COneTwelfth32);
+  for Voice := 0 to Length(FVoices) - 1 do
+    if (FVoices[Voice].Tag = Tag) then
      begin
-      FVoices[i].NoteNumber := NoteNumber;
-      FVoices[i].Frequency := Frequency;
-      FVoices[i].Instrument.SetFrequency(Frequency);
-      break;
+      FVoices[Voice].NoteNumber := NoteNumber;
+      FVoices[Voice].Frequency := Frequency;
+      FVoices[Voice].Instrument.Frequency := Frequency;
+      Break;
      end;
 end;
 
-procedure TVoiceManager.SetFrequency(const NoteNumber: Single; const Channel: Integer);
+procedure TStkVoiceManager.SetFrequency(const NoteNumber: Single; const Channel: Integer);
 var
   Frequency: Single;
   i: Integer;
 begin
-  Frequency := 220.0 * power(2.0, (NoteNumber - 57.0) / 12.0);
-  for i := 0 to FVoiceCount - 1 do
+  Frequency := 220.0 * Power(2.0, (NoteNumber - 57.0) * COneTwelfth32);
+  for i := 0 to Length(FVoices) - 1 do
     if (FVoices[i].Channel = Channel) then
      begin
       FVoices[i].NoteNumber := NoteNumber;
       FVoices[i].Frequency := Frequency;
-      FVoices[i].Instrument.SetFrequency(Frequency);
+      FVoices[i].Instrument.Frequency := Frequency;
      end;
 end;
 
-procedure TVoiceManager.Silence;
+procedure TStkVoiceManager.Silence;
 var
   i: Integer;
 begin
-  for i := 0 to FVoiceCount - 1 do
+  for i := 0 to Length(FVoices) - 1 do
     if (FVoices[i].Sounding > 0) then
       FVoices[i].Instrument.NoteOff(0.5);
 end;
 
-function TVoiceManager.tick(vector: pSingle; vectorSize: Integer): PSingle;
+procedure TStkVoiceManager.Tick(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  i: Integer;
-  p: pSingle;
+  Sample: Integer;
 begin
-  p := vector;
-  for i := 0 to vectorSize - 1 do
-   begin
-    p^ := tick;
-    Inc(p);
-   end;
-  Result := vector;
+ for Sample := 0 to SampleFrames - 1 do Data^[Sample] := Tick;
 end;
 
-function TVoiceManager.tick: Single;
+function TStkVoiceManager.Tick: Single;
 var
   i: Integer;
 begin
   FLastOutput := 0.0;
-  for i := 0 to FVoiceCount - 1 do
+  for i := 0 to Length(FVoices) - 1 do
    begin
-    if (FVoices[i].Sounding <> 0) then
-      FLastOutput := FLastOutput + FVoices[i].Instrument.tick;
+    if (FVoices[i].Sounding <> 0)
+     then FLastOutput := FLastOutput + FVoices[i].Instrument.Tick;
     if (FVoices[i].Sounding < 0) then
      begin
       FVoices[i].Sounding := FVoices[i].Sounding + 1;
-      if (FVoices[i].Sounding = 0) then
-        FVoices[i].NoteNumber := -1;
+      if (FVoices[i].Sounding = 0)
+       then FVoices[i].NoteNumber := -1;
      end;
    end;
-  Result := FLastOutput / FVoiceCount;
+  Result := FLastOutput * FScale;
 end;
 
 end.

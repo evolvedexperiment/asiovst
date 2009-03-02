@@ -17,7 +17,9 @@ type
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   SineSynthModule, SineSynthVoice, VoiceList;
@@ -27,33 +29,31 @@ procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
 var
   newNote : TSineSynthVoice;
 begin
- if Owner is TVSTSSModule then
-  with TVSTSSModule(Owner) do
-   begin
-    MIDI_NoteOn(0, KeyNr, round(Velocity * 128));
-    newNote := TSineSynthVoice.Create(TVSTSSModule(Owner));
-    newNote.MidiKeyNr := KeyNr;
-    newNote.Velocity := round(Velocity * 127);
-    newNote.NoteOn(Midi2Pitch[KeyNr], Velocity);
-    Voices.Add(newNote);
-   end;
+ with TVSTSSModule(Owner) do
+  begin
+   MidiNoteOn(0, KeyNr, round(Velocity * 128));
+   newNote := TSineSynthVoice.Create(TVSTSSModule(Owner));
+   newNote.MidiKeyNr := KeyNr;
+   newNote.Velocity := round(Velocity * 127);
+   newNote.NoteOn(Midi2Pitch[KeyNr], Velocity);
+   Voices.Add(newNote);
+  end;
 end;
 
 procedure TVSTGUI.MidiKeysNoteOff(Sender: TObject; KeyNr: Byte);
 var
   i : Integer;
 begin
- if Owner is TVSTSSModule then
-  with TVSTSSModule(Owner) do
-   begin
-    MIDI_NoteOff(0, KeyNr, 0);
-    for i := Voices.Count - 1 downto 0 do
-     if (Voices[i].MidiKeyNr = KeyNr) then
-      begin
-       Voices.Delete(i);
-       Break;
-      end;
-   end;
+ with TVSTSSModule(Owner) do
+  begin
+   MidiNoteOff(0, KeyNr, 0);
+   for i := Voices.Count - 1 downto 0 do
+    if (Voices[i].MidiKeyNr = KeyNr) then
+     begin
+      Voices.Delete(i);
+      Break;
+     end;
+  end;
 end;
 
 procedure TVSTGUI.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -84,18 +84,20 @@ begin
   82  : Note := 77;
   else Exit;
  end;
- if Owner is TVSTSSModule then
-  with TVSTSSModule(Owner) do
-   begin
-    for i := 0 to Voices.Count - 1 do
-     if (Voices[i].MidiKeyNr = Note) then Exit;
-    MIDI_NoteOn(0, Note, 100);
-    newNote := TSineSynthVoice.Create(TVSTSSModule(Owner));
-    newNote.MidiKeyNr := Note;
-    newNote.Velocity := 100;
-    newNote.NoteOn(Midi2Pitch[Note], newNote.Velocity * CVeloDiv);
-    Voices.Add(newNote);
-   end;
+
+ assert(Owner is TVSTSSModule);
+
+ with TVSTSSModule(Owner) do
+  begin
+   for i := 0 to Voices.Count - 1 do
+    if (Voices[i].MidiKeyNr = Note) then Exit;
+   MidiNoteOn(0, Note, 100);
+   newNote := TSineSynthVoice.Create(TVSTSSModule(Owner));
+   newNote.MidiKeyNr := Note;
+   newNote.Velocity := 100;
+   newNote.NoteOn(Midi2Pitch[Note], newNote.Velocity * CVeloDiv);
+   Voices.Add(newNote);
+  end;
 end;
 
 procedure TVSTGUI.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -126,7 +128,7 @@ begin
  if Owner is TVSTSSModule then
   with TVSTSSModule(Owner) do
    begin
-    MIDI_NoteOff(0, Note, 100);
+    MidiNoteOff(0, Note, 100);
     for i := 0 to Voices.Count - 1 do
      if (Voices[i].MidiKeyNr=Note) then
       begin

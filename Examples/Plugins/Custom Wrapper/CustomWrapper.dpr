@@ -6,9 +6,24 @@ uses
   madExcept,
   madLinkDisAsm,
   FastMove, // either download the library or comment if there is an error here
+  DAV_WinAmp,
+  DAV_VSTEffect,
   DAV_VSTBasicModule,
   CustomWrapperDM in 'CustomWrapperDM.pas' {CustomWrapperDataModule: TVSTModule};
 
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- BasicVSTModuleClass := TCustomWrapperDataModule;
+ Result := VstModuleMain(AudioMasterCallback, TCustomWrapperDataModule);
+end;
+
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(TCustomWrapperDataModule);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
+
+begin
 end.

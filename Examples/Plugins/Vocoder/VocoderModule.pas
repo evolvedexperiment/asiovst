@@ -7,18 +7,18 @@ uses
   VocoderVoice, VoiceList, DAV_DspChebyshevFilter, DAV_DspFilter;
 
 const
-  cNumFrequencies = 32;
-  cThirdOctaveFrequencies : Array [0..cNumFrequencies - 1] of Single =
-      (16, 20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500,
-       630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000,
-       10000, 12500, 16000, 20000);
+  CNumFrequencies = 32;
+  CThirdOctaveFrequencies : Array [0..cNumFrequencies - 1] of Single =
+    (16, 20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500,
+     630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000,
+     10000, 12500, 16000, 20000);
 
 type
   TVSTSSModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
     procedure VocInputVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VocSynthVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -41,23 +41,23 @@ implementation
 {$R *.DFM}
 
 uses
-  VocoderGUI, Math;
+  Math, DAV_Approximations, VocoderGUI;
 
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 var
   i : Integer;
 const
-  HalfThirdMulFak : Double = 1.1224620483093729814335330496792; // = Power(2,1/6)
+  HalfThirdMulFak64 : Double = 1.1224620483093729814335330496792; // = Power(2,1/6)
 begin
  FVoices := TVoiceList.Create(True);
  FDownSampler := 0;
- for i := 0 to cNumFrequencies - 1 do
+ for i := 0 to CNumFrequencies - 1 do
   begin
    FAnalysisFiltersLP[i] := TChebyshev1LP.Create;
    with FAnalysisFiltersLP[i] do
     begin
      SampleRate := 44100;
-     SetFilterValues(0.87 * (cThirdOctaveFrequencies[cNumFrequencies - i - 1] * HalfThirdMulFak), 0, 10);
+     SetFilterValues(0.87 * (CThirdOctaveFrequencies[CNumFrequencies - i - 1] * HalfThirdMulFak64), 0, 10);
      if FDownSampler = -1 then DownsampleAmount := 0 else
       while Power(2, DownsampleAmount) * Frequency < 0.2 * SampleRate
        do DownsampleAmount := DownsampleAmount + 1;
@@ -68,7 +68,7 @@ begin
    with FAnalysisFiltersHP[i] do
     begin
      SampleRate := 44100;
-     SetFilterValues(1.149 * (cThirdOctaveFrequencies[cNumFrequencies - i - 1] / HalfThirdMulFak), 0, 10);
+     SetFilterValues(1.149 * (CThirdOctaveFrequencies[CNumFrequencies - i - 1] / HalfThirdMulFak64), 0, 10);
      DownsampleAmount := FAnalysisFiltersLP[i].DownsampleAmount;
      CalculateCoefficients;
     end;
@@ -78,11 +78,11 @@ begin
     begin
      SampleRate := 44100;
      Gain := 0; Bandwidth := 0.5;
-     Frequency := cThirdOctaveFrequencies[cNumFrequencies - i - 1];
+     Frequency := CThirdOctaveFrequencies[CNumFrequencies - i - 1];
     end;
   end;
 
- FDownSampleMax := FAnalysisFiltersLP[cNumFrequencies - 1].DownsampleFaktor;
+ FDownSampleMax := FAnalysisFiltersLP[CNumFrequencies - 1].DownsampleFaktor;
 
  Parameter[0] := -80;
  Parameter[1] := -80;
@@ -93,7 +93,7 @@ procedure TVSTSSModule.VSTModuleClose(Sender: TObject);
 var
   i : Integer;
 begin
- for i := 0 to cNumFrequencies - 1 do
+ for i := 0 to CNumFrequencies - 1 do
   begin
    FreeAndNil(FAnalysisFiltersLP[i]);
    FreeAndNil(FAnalysisFiltersHP[i]);
@@ -115,17 +115,16 @@ begin
   end;
 end;
 
-procedure TVSTSSModule.VSTModuleProcess(const inputs,
-  outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TVSTSSModule.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i, j    : Integer;
   d, z, s : Double;
 begin
- exit;
  for i := 0 to SampleFrames - 1 do
   begin
-   d := inputs[0, i];
-   for j := 0 to cNumFrequencies - 1 do
+   d := Inputs[0, i];
+   for j := 0 to CNumFrequencies - 1 do
     begin
      if (FDownSampler mod FAnalysisFiltersLP[j].DownsampleFaktor) <> 0
       then Break;
@@ -147,15 +146,13 @@ begin
    for i := 0 to Voices.Count - 1
     do d := d + Voices[i].Process;
    z := 0;
-   for i := 0 to cNumFrequencies - 1 do
-    begin
-     z := z + FSynthesisFilters[i].ProcessSample(FAnalysisRMS[i] * d);
-    end;
-   outputs[0,j] := Tanh2b(FVolFactors[2] * z + FVolFactors[1] * d + FVolFactors[0] * inputs[0, j]);
+   for i := 0 to CNumFrequencies - 1
+    do z := z + FSynthesisFilters[i].ProcessSample(FAnalysisRMS[i] * d);
+   Outputs[0,j] := FastTanhOpt5TermFPU(FVolFactors[2] * z + FVolFactors[1] * d + FVolFactors[0] * Inputs[0, j]);
   end;
 
  for i := 1 to numOutputs - 1
-  do Move(outputs[0, 0], outputs[i, 0], SampleFrames * SizeOf(Single));
+  do Move(Outputs[0, 0], Outputs[i, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TVSTSSModule.VSTModuleProcessMidi(Sender: TObject;

@@ -17,6 +17,10 @@ object PluginDataModule: TPluginDataModule
     item
       DisplayName = 'Default'
       VSTModule = Owner
+    end
+    item
+      DisplayName = 'Empty'
+      VSTModule = Owner
     end>
   ParameterProperties = <
     item

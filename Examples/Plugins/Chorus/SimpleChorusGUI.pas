@@ -23,6 +23,7 @@ type
     DialDrift: TGuiDial;
     LbDrift: TGuiLabel;
     LbDriftValue: TGuiLabel;
+    DIL: TGuiDialImageList;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialSpeedChange(Sender: TObject);
@@ -54,12 +55,17 @@ begin
  try
   RS := TResourceStream.Create(hInstance, 'ChorusKnob', 'PNG');
   try
-   PngBmp.LoadFromStream(RS);
-   DialSpeed.DialBitmap.Assign(PngBmp);
-   DialDepth.DialBitmap.Assign(PngBmp);
-   DialStages.DialBitmap.Assign(PngBmp);
-   DialMix.DialBitmap.Assign(PngBmp);
-   DialDrift.DialBitmap.Assign(PngBmp);
+   with DIL.DialImages.Add do
+    begin
+     NumGlyphs := 65;
+     PngBmp.LoadFromStream(RS);
+     DialBitmap.Assign(PngBmp);
+    end;
+   DialSpeed.DialImageIndex  := 0;
+   DialDepth.DialImageIndex  := 0;
+   DialStages.DialImageIndex := 0;
+   DialMix.DialImageIndex    := 0;
+   DialDrift.DialImageIndex  := 0;
   finally
    RS.Free;
   end;

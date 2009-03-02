@@ -190,7 +190,7 @@ type
     function GetMidiProgramCategory(var MidiProgramCategory: TMidiProgramCategory): Integer;
     function GetMidiProgramName(var MidiProgramName: TMidiProgramName): Integer;
     function GetNumProgramCategories: Integer;
-    function GetOutputProperties(OutputNr: Integer): TVstPinProperties;
+    function GetOutputProperties(const OutputNr: Integer): TVstPinProperties;
     function GetParamDisplay(index: Integer): string;
     function GetParameter(index: Integer): Single; virtual;
     function GetParameterProperties(const Parameter: Integer): TVstParameterPropertyRecord;
@@ -213,15 +213,17 @@ type
     function Idle: Integer;
     function KeysRequired: Integer;
 
-    function OfflineNotify(var VstAudioFile: TVstAudioFile; const NumAudioFiles: Integer; const Start: Boolean): Integer;
-    function OfflinePrepare(var VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
-    function OfflineRun(var VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count :Integer): Integer;
-    function ProcessEvents(var VstEvents: TVstEvents): Integer;
-    function ProcessVarIo(var VarIo: TVstVariableIo): Integer;
+    function OfflineNotify(const VstAudioFile: TVstAudioFile; const NumAudioFiles: Integer; const Start: Boolean): Integer;
+    function OfflinePrepare(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
+    function OfflineRun(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count :Integer): Integer;
+    function ProcessEvents(const VstEvents: TVstEvents): Integer;
+    function ProcessVarIo(const VarIo: TVstVariableIo): Integer;
     function SetBlockSizeAndSampleRate(const BlockSize: Integer; const SampleRate: Single): Integer;
     function SetBypass(const Value: Boolean): Integer;
     function SetChunk(const Data: Pointer; const ByteSize: Integer; const IsPreset: Boolean = False): Integer;
-    function SetSpeakerArrangement(pluginInput: PVstSpeakerArrangement; pluginOutput: PVstSpeakerArrangement): Boolean;
+    function SetSpeakerArrangement(const PluginInput, PluginOutput: TVstSpeakerArrangement): Boolean;
+    function SetInputSpeakerArrangement(const PluginInput: TVstSpeakerArrangement): Boolean;
+    function SetOutputSpeakerArrangement(const PluginOutput: TVstSpeakerArrangement): Boolean;
     function ShellGetNextPlugin(var PluginName: string): Integer;
     function String2Parameter(const Index: Integer; const ParameterName: string): Integer;
     function VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
@@ -235,7 +237,7 @@ type
     function EditIdle: Integer;
     function EditKeyDown(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
     function EditKeyUp(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
-    function EditOpen(Handle: THandle): Integer;
+    function EditOpen(const Handle: THandle): Integer;
     {$ENDIF}
     procedure EndSetProgram;
     procedure LoadBank(FileName: TFileName); overload;
@@ -1848,7 +1850,7 @@ begin
  end;
 end;
 
-function TCustomVstPlugIn.EditOpen(Handle: THandle): Integer;
+function TCustomVstPlugIn.EditOpen(const Handle: THandle): Integer;
 var
   i : Integer;
 begin
@@ -2174,7 +2176,17 @@ begin
  result := VstDispatch(effSetChunk, Integer(isPreset), ByteSize, Data);
 end;
 
-function TCustomVstPlugIn.ProcessEvents(var VstEvents: TVstEvents): Integer;
+function TCustomVstPlugIn.SetInputSpeakerArrangement(const PluginInput: TVstSpeakerArrangement): Boolean;
+begin
+ result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, Integer(@PluginInput), nil));
+end;
+
+function TCustomVstPlugIn.SetOutputSpeakerArrangement(const PluginOutput: TVstSpeakerArrangement): Boolean;
+begin
+ result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, 0, @PluginOutput));
+end;
+
+function TCustomVstPlugIn.ProcessEvents(const VstEvents: TVstEvents): Integer;
 begin
  result := VstDispatch(effProcessEvents, 0, 0, @VstEvents);
 end;
@@ -2272,21 +2284,21 @@ begin
   else result := 0;
 end;
 
-function TCustomVstPlugIn.GetOutputProperties(OutputNr: Integer): TVstPinProperties;
+function TCustomVstPlugIn.GetOutputProperties(const OutputNr: Integer): TVstPinProperties;
 begin
  FillChar(result, SizeOf(TVstPinProperties), 0);
  if FActive
   then VstDispatch(effGetOutputProperties, OutputNr, 0, @result);
 end;
 
-function TCustomVstPlugIn.GetPlugCategory:TVstPluginCategory;
+function TCustomVstPlugIn.GetPlugCategory: TVstPluginCategory;
 begin
  if FActive
   then result := TVstPluginCategory(VstDispatch(effGetPlugCategory))
   else result := vpcUnknown;
 end;
 
-function TCustomVstPlugIn.GetCurrentPosition:Integer;
+function TCustomVstPlugIn.GetCurrentPosition: Integer;
 begin
  if FActive
   then result := VstDispatch(effGetCurrentPosition)
@@ -2300,29 +2312,29 @@ begin
   else result := -1;
 end;
 
-function TCustomVstPlugIn.OfflineNotify(var VstAudioFile: TVstAudioFile; const NumAudioFiles: Integer; const Start: Boolean): Integer;
+function TCustomVstPlugIn.OfflineNotify(const VstAudioFile: TVstAudioFile; const NumAudioFiles: Integer; const Start: Boolean): Integer;
 begin
  result := VstDispatch(effOfflineNotify, Integer(Start), NumAudioFiles, @VstAudioFile);
 end;
 
-function TCustomVstPlugIn.OfflinePrepare(var VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
+function TCustomVstPlugIn.OfflinePrepare(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
 begin
- result := VstDispatch(effOfflinePrepare, 0, count, @VstOfflineTaskRecord);
+ result := VstDispatch(effOfflinePrepare, 0, Count, @VstOfflineTaskRecord);
 end;
 
-function TCustomVstPlugIn.OfflineRun(var VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
+function TCustomVstPlugIn.OfflineRun(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
 begin
- result := VstDispatch(effOfflineRun, 0, count, @VstOfflineTaskRecord);
+ result := VstDispatch(effOfflineRun, 0, Count, @VstOfflineTaskRecord);
 end;
 
-function TCustomVstPlugIn.ProcessVarIo(var VarIo: TVstVariableIo): Integer;
+function TCustomVstPlugIn.ProcessVarIo(const VarIo: TVstVariableIo): Integer;
 begin
  result := VstDispatch(effProcessVarIo, 0, 0, @VarIo);
 end;
 
-function TCustomVstPlugIn.SetSpeakerArrangement(pluginInput: PVstSpeakerArrangement; pluginOutput: PVstSpeakerArrangement): Boolean;
+function TCustomVstPlugIn.SetSpeakerArrangement(const PluginInput, PluginOutput: TVstSpeakerArrangement): Boolean;
 begin
- result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, Integer(pluginInput), pluginOutput));
+ result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, Integer(@PluginInput), @PluginOutput));
 end;
 
 function TCustomVstPlugIn.SetBlockSizeAndSampleRate(const BlockSize: Integer; const SampleRate: Single): Integer;

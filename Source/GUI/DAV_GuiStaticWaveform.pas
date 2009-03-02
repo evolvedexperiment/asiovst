@@ -49,8 +49,9 @@ type
     destructor Destroy; override;
     procedure RedrawBuffer(doBufferFlip: Boolean); override;
 
-    procedure SetWaveForm(NewWaveData: TDAVSingleDynArray;  DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False); overload;
-    procedure SetWaveForm(NewWaveData: TDAVArrayOfSingleDynArray; DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False);overload;
+    procedure SetWaveForm(const NewWaveData: PDAVSingleFixedArray; const NewWaveDataLength: Integer; const DoRedrawBuffer: Boolean = False; const DoFlipBuffer: Boolean = False); overload;
+    procedure SetWaveForm(const NewWaveData: TDAVSingleDynArray; const DoRedrawBuffer: Boolean = False; const DoFlipBuffer: Boolean = False); overload;
+    procedure SetWaveForm(const NewWaveData: TDAVArrayOfSingleDynArray; const DoRedrawBuffer: Boolean = False; const DoFlipBuffer: Boolean = False);overload;
     procedure ClearWaveForm(DoRedrawBuffer: Boolean = False; DoFlipBuffer: Boolean = False);
 
     property Wavedata: TDAVArrayOfSingleDynArray read FWaveData;
@@ -243,7 +244,7 @@ begin
   inherited;
 end;
 
-procedure TCustomGuiStaticWaveform.SetWaveForm(NewWaveData: TDAVSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
+procedure TCustomGuiStaticWaveform.SetWaveForm(const NewWaveData: TDAVSingleDynArray; const DoRedrawBuffer, DoFlipBuffer: Boolean);
 begin
   ClearWaveForm;
   SetLength(FWaveData, 1);
@@ -252,8 +253,7 @@ begin
   if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
 end;
 
-
-procedure TCustomGuiStaticWaveform.SetWaveForm(NewWaveData: TDAVArrayOfSingleDynArray; DoRedrawBuffer, DoFlipBuffer: Boolean);
+procedure TCustomGuiStaticWaveform.SetWaveForm(const NewWaveData: TDAVArrayOfSingleDynArray; const DoRedrawBuffer, DoFlipBuffer: Boolean);
 var
   i, len: Integer;
 begin
@@ -272,6 +272,17 @@ begin
 
      if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
     end;
+end;
+
+procedure TCustomGuiStaticWaveform.SetWaveForm(
+  const NewWaveData: PDAVSingleFixedArray; const NewWaveDataLength: Integer;
+  const DoRedrawBuffer, DoFlipBuffer: Boolean);
+begin
+  ClearWaveForm;
+  SetLength(FWaveData, 1, NewWaveDataLength);
+  Move(NewWaveData^, FWaveData[0, 0], NewWaveDataLength * SizeOf(Single));
+
+  if DoRedrawBuffer then RedrawBuffer(DoFlipBuffer);
 end;
 
 procedure TCustomGuiStaticWaveform.SetWaveLength(const Value: Integer);

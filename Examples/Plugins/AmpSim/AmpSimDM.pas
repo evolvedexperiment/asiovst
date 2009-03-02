@@ -11,6 +11,7 @@ uses
 type
   TModelType = (mtDI, mtSpeakerSim, mtRadio, mtMesaBoogie1, mtMesaBoogie8,
     mtMarshall4x12, mtScoopedOutMetal);
+
   TComboDataModule = class(TVSTModule)
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -61,7 +62,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_VSTEffect, AmpSimGUI, Controls;
+  Math, Controls, DAV_VSTEffect, AmpSimGUI;
 
 procedure TComboDataModule.ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
@@ -131,67 +132,67 @@ begin
      FMix[1]   := 0;
      FDelay[0] := 0;
      FDelay[1] := 0;
-     FHPF      := filterFreq(25);
+     FHPF      := FilterFreq(25);
     end;
 
   mtSpeakerSim:
     begin
-     FLPF      := filterFreq(2700);
+     FLPF      := FilterFreq(2700);
      FMix[0]   := 0;
      FMix[1]   := 0;
      FDelay[0] := 0;
      FDelay[1] := 0;
-     FHPF      := filterFreq(382);
+     FHPF      := FilterFreq(382);
     end;
 
   mtRadio:
     begin
-     FLPF      := filterFreq(1685);
+     FLPF      := FilterFreq(1685);
      FMix[0]   := -1.7;
      FMix[1]   := 0.82;
      FDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
      FDelay[1] := round(SampleRate * 2.3174971031286210892236384704519E-4);
-     FHPF      := filterFreq(25);
+     FHPF      := FilterFreq(25);
     end;
 
   mtMesaBoogie1:
     begin
-     FLPF      := filterFreq(1385);
+     FLPF      := FilterFreq(1385);
      FMix[0]   := -0.53;
      FMix[1]   := 0.21;
      FDelay[0] := round(SampleRate * 1.361470388019060585432266848196E-4);
      FDelay[1] := round(SampleRate * 8.382229673093042749371332774518E-4);
-     FHPF      := filterFreq(25);
+     FHPF      := FilterFreq(25);
     end;
 
   mtMesaBoogie8:
     begin
-     FLPF      := filterFreq(1685);
+     FLPF      := FilterFreq(1685);
      FMix[0]   := -0.85;
      FMix[1]   := 0.41;
      FDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
      FDelay[1] := round(SampleRate * 3.0165912518853695324283559577677E-4);
-     FHPF      := filterFreq(25);
+     FHPF      := FilterFreq(25);
     end;
 
   mtMarshall4x12:
     begin
-     FLPF      := filterFreq(2795);
+     FLPF      := FilterFreq(2795);
      FMix[0]   := -0.29;
      FMix[1]   := 0.38;
      FDelay[0] := round(SampleRate * 1.0183299389002036659877800407332E-3);
      FDelay[1] := round(SampleRate * 4.1631973355537052456286427976686E-4);
-     FHPF      := filterFreq(459);
+     FHPF      := FilterFreq(459);
     end;
 
   mtScoopedOutMetal:
     begin
-     FLPF      := filterFreq(1744);
+     FLPF      := FilterFreq(1744);
      FMix[0]   := -0.96;
      FMix[1]   := 1.6;
      FDelay[0] := round(SampleRate * 2.8089887640449438202247191011236E-3);
      FDelay[1] := round(SampleRate * 7.9176563737133808392715756136184E-4);
-     FHPF      := filterFreq(382);
+     FHPF      := FilterFreq(382);
     end;
  end;
 end;

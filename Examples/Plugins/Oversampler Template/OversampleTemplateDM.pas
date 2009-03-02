@@ -28,7 +28,7 @@ type
     procedure VSTModuleProcess32OversampleSingle(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess64OversampleSingle(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 
-    procedure VSTModuleProcessEvents(Sender: TObject; Events: PVstEvents);
+    procedure VSTModuleProcessEvents(Sender: TObject; const Events: TVstEvents);
     procedure VSTModuleProcessVarIO(Sender: TObject; const varIo: TVstVariableIo);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -42,6 +42,8 @@ type
     function VSTModuleInputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     function VSTModuleVendorSpecific(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
+    procedure VSTModuleOfflinePrepare(Sender: TObject; const OfflineTasks: array of TVstOfflineTask);
+    procedure VSTModuleOfflineRun(Sender: TObject; const OfflineTasks: array of TVstOfflineTask);
 
     procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -58,8 +60,6 @@ type
     procedure ParamPostOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPostFilterBWChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPostCharChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleOfflinePrepare(Sender: TObject; const OfflineTasks: array of TVstOfflineTask);
-    procedure VSTModuleOfflineRun(Sender: TObject; const OfflineTasks: array of TVstOfflineTask);
   private
     FUpsampler        : array of TDAVUpsampling;
     FDownsampler      : array of TDAVDownsampling;
@@ -77,8 +77,8 @@ type
     procedure PluginSampleRateChanged;
     procedure CheckSampleFrames(const SampleFrames: Integer);
   public
-    function HostCallIdle(Index: Integer; Value: Integer; ptr: Pointer; opt: Single): Integer; override;
-    function HostCallGetTailSize(Index: Integer; Value: Integer; ptr: Pointer; opt: Single): Integer; override;
+    function HostCallIdle(const Index, Value: Integer; const ptr: Pointer; const opt: Single): Integer; override;
+    function HostCallGetTailSize(const Index, Value: Integer; const ptr: Pointer; const opt: Single): Integer; override;
   published
     property TempBufferSize: Integer read FTempBufferSize write SetTempBufferSize default 0;
   end;
@@ -396,7 +396,7 @@ end;
 procedure TOversampleTemplateDataModule.VSTModuleOfflineNotify(Sender: TObject;
   const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean);
 begin
- if VstHost[0].Active then VstHost[0].OfflineNotify(@AudioFile, numAudioFiles, start);
+ if VstHost[0].Active then VstHost[0].OfflineNotify(AudioFile, numAudioFiles, start);
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleOfflinePrepare(Sender: TObject;
@@ -410,7 +410,7 @@ begin
    SetLength(VstOfflineTaskRecords, Length(OfflineTasks));
    for i := 0 to Length(OfflineTasks) - 1
     do VstOfflineTaskRecords[i] := OfflineTasks[i].VstOfflineTaskRecord;
-   VstHost[0].OfflinePrepare(@VstOfflineTaskRecords[0], Length(OfflineTasks));
+   VstHost[0].OfflinePrepare(VstOfflineTaskRecords[0], Length(OfflineTasks));
   end;
 end;
 
@@ -425,7 +425,7 @@ begin
    SetLength(VstOfflineTaskRecords, Length(OfflineTasks));
    for i := 0 to Length(OfflineTasks) - 1
     do VstOfflineTaskRecords[i] := OfflineTasks[i].VstOfflineTaskRecord;
-   VstHost[0].OfflineRun(@VstOfflineTaskRecords[0], Length(OfflineTasks));
+   VstHost[0].OfflineRun(VstOfflineTaskRecords[0], Length(OfflineTasks));
   end;
 end;
 
@@ -551,7 +551,7 @@ end;
 procedure TOversampleTemplateDataModule.VSTModuleProcessVarIO(Sender: TObject;
   const varIo: TVstVariableIo);
 begin
- with VstHost[0] do if Active then ProcessVarIo(@varIo);
+ with VstHost[0] do if Active then ProcessVarIo(VarIo);
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleResume(Sender: TObject);
@@ -611,8 +611,8 @@ begin
   then PreDefined := VstHost[n].GetParamLabel(Index - pnr);
 end;
 
-function TOversampleTemplateDataModule.HostCallGetTailSize(Index,
-  Value: Integer; ptr: Pointer; opt: Single): Integer;
+function TOversampleTemplateDataModule.HostCallGetTailSize(const Index,
+  Value: Integer; const ptr: Pointer; const opt: Single): Integer;
 begin
  with VstHost[0] do
   if Active
@@ -620,8 +620,8 @@ begin
    else result := -1;
 end;
 
-function TOversampleTemplateDataModule.HostCallIdle(Index, Value: Integer;
-  ptr: Pointer; opt: Single): Integer;
+function TOversampleTemplateDataModule.HostCallIdle(const Index, Value: Integer;
+  const ptr: Pointer; const opt: Single): Integer;
 begin
  with VstHost[0] do if Active then
   begin
@@ -771,7 +771,7 @@ begin
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleProcessEvents(Sender: TObject;
-  Events: PVstEvents);
+  const Events: TVstEvents);
 begin
  if VstHost[0].Active then VstHost[0].ProcessEvents(Events);
 end;

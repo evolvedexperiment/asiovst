@@ -4,7 +4,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspFilter;
+  DAV_DspFilter, DAV_DspFilterBasics;
 
 type
   TPluginDataModule = class(TVSTModule)
@@ -16,7 +16,7 @@ type
     procedure VSTModuleProcessMS(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
-    FEQs : Array [0..1, 0..10] of TSimplePeakFilter;
+    FEQs : Array [0..1, 0..10] of TBasicPeakFilter;
   public
   end;
 
@@ -38,7 +38,7 @@ begin
   for Band := 0 to Length(FEQs[Channel]) - 1 do
    begin
     if not Assigned(FEQs[Channel, Band])
-     then FEQs[Channel, Band] := TSimplePeakFilter.Create;
+     then FEQs[Channel, Band] := TBasicPeakFilter.Create;
     with FEQs[Channel, Band] do
      begin
       SampleRate := Self.SampleRate;
@@ -157,7 +157,7 @@ begin
   for Band := 0 to Length(FEQs[Channel]) - 1 do
    begin
     if not Assigned(FEQs[Channel, Band])
-     then FEQs[Channel, Band] := TSimplePeakFilter.Create;
+     then FEQs[Channel, Band] := TBasicPeakFilter.Create;
     FEQs[Channel, Band].SampleRate := SampleRate;
    end;
 end;

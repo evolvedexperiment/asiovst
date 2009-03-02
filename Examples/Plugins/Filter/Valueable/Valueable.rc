@@ -1,8 +1,8 @@
-ValueableKnob PNG ..\..\..\Resources\Knobs\ValueableKnob.png
-ValueableMiniKnob PNG ..\..\..\Resources\Knobs\ValueableMiniKnob.png
-ValueableSelector PNG ..\..\..\Resources\Knobs\ValueableSelector2.png
-ValueableSwitchRed PNG ..\..\..\Resources\Knobs\ValueableSwitchRed.png
-ValueableSwitchYellow PNG ..\..\..\Resources\Knobs\ValueableSwitchYellow.png
+ValueableKnob PNG ..\..\..\..\Resources\Knobs\ValueableKnob.png
+ValueableMiniKnob PNG ..\..\..\..\Resources\Knobs\ValueableMiniKnob.png
+ValueableSelector PNG ..\..\..\..\Resources\Knobs\ValueableSelector2.png
+ValueableSwitchRed PNG ..\..\..\..\Resources\Knobs\ValueableSwitchRed.png
+ValueableSwitchYellow PNG ..\..\..\..\Resources\Knobs\ValueableSwitchYellow.png
 Roasty1Bass RCDATA R1B148.raw
 Roasty2Bass RCDATA R2B144.raw
 Roasty1Treble RCDATA R1T55.raw

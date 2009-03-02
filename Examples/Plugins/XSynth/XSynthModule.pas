@@ -50,7 +50,7 @@ implementation
 {$R *.DFM}
 
 uses
-  XSynthGUI, Math;
+  Math, DAV_Approximations, XSynthGUI;
 
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -153,10 +153,8 @@ begin
   end;
 
  if FDrive > 1 then
-  for j := 0 to SampleFrames - 1 do
-   begin
-    Outputs[0, j] := FastTanhOpt5asm(FDrive * Outputs[0, j]);
-   end;
+  for j := 0 to SampleFrames - 1
+   do Outputs[0, j] := FastTanhOpt5TermFPU(FDrive * Outputs[0, j]);
 
  FCutoff[1] := 0.9 * FCutoff[1] + 0.1 * FCutoff[0];
  FRes[1] := 0.9 * FRes[1] + 0.1 * FRes[0];
@@ -166,7 +164,7 @@ begin
   begin
    FOld[0] := FOld[0] + FCutoff[1] * (Outputs[0,j] - FOld[0] + fb * (FOld[0] - FOld[1])) + CDenorm32;
    FOld[1] := FOld[1] + FCutoff[1] * (FOld[0] - FOld[1]);
-   Outputs[0,j] := FLevel*FOld[1];
+   Outputs[0, j] := FLevel * FOld[1];
   end;
 
  for i := 1 to numOutputs - 1
@@ -180,7 +178,7 @@ var
   i       : Integer;
   newNote : TXSynthVoice;
 const
-  VeloDiv : Single = 1 / 128;
+  CVeloDiv : Single = 1 / 128;
 begin
  Status := MidiEvent.midiData[0] and $F0; // channel information is removed
  if (Status = $90) and (MidiEvent.mididata[2] > 0) then // "note on" ?
@@ -191,7 +189,7 @@ begin
     begin
      MidiKeyNr := MidiEvent.midiData[1];
      Velocity := MidiEvent.midiData[2];
-     NoteOn(Midi2Pitch[MidiKeyNr], Velocity * VeloDiv);
+     NoteOn(Midi2Pitch[MidiKeyNr], Velocity * CVeloDiv);
     end;
    Voices.Add(newNote);
   end
@@ -207,11 +205,8 @@ begin
       end;
     end;
   end
- else if (Status = $B0) and (MidiEvent.midiData[1] = $7E) then
-  begin
-   // all notes off
-   Voices.Clear;
-  end;
+ else if (Status = $B0) and (MidiEvent.midiData[1] = $7E)
+  then Voices.Clear; // all notes off
 end;
 
 procedure TVSTSSModule.VSTSSModuleLevelParameterChange(Sender: TObject;

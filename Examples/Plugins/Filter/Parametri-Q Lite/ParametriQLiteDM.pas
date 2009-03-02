@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspFilter, DAV_DspPolyphaseFilter, DAV_DspPolyphaseUpsampler,
-  DAV_DspPolyphaseDownsampler;
+  DAV_DspFilter, DAV_DspFilterBasics, DAV_DspPolyphaseFilter,
+  DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
 
 type
   TParametriQLiteDataModule = class(TVSTModule)
@@ -23,7 +23,7 @@ type
     procedure ParameterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    FFilters     : array [0..1, 0..9] of TCustomBandwidthIIRFilter;
+    FFilters     : array [0..1, 0..7] of TCustomBandwidthIIRFilter;
     FUpSampler   : array [0..1] of TPolyphaseUpsampler64;
     FDownSampler : array [0..1] of TPolyphaseDownSampler64;
     FPeaks       : array [0..1, 0..1] of Single;
@@ -67,7 +67,7 @@ begin
    FDownSampler[Channel].NumberOfCoefficients := 6;
    for Band := 0 to Length(FFilters[Channel]) - 1 do
     begin
-     FFilters[Channel, Band] := TSimpleGainFilter.Create;
+     FFilters[Channel, Band] := TBasicGainFilter.Create;
      FFilters[Channel, Band].SampleRate := SampleRate;
      FFilters[Channel, Band].Frequency := 1000;
      FFilters[Channel, Band].Gain := 0;
@@ -249,15 +249,19 @@ var
 begin
  Band := (Index - 1) div 4;
  case round(Value) of
-  0 : FilterClass[Band] := TSimpleGainFilter;
-  1 : FilterClass[Band] := TSimplePeakFilter;
-  2 : FilterClass[Band] := TSimpleLowShelfFilter;
-  3 : FilterClass[Band] := TSimpleHighShelfFilter;
-  4 : FilterClass[Band] := TSimpleLowpassFilter;
-  5 : FilterClass[Band] := TSimpleHighpassFilter;
-  6 : FilterClass[Band] := TSimpleBandpass;
-  7 : FilterClass[Band] := TSimpleNotch;
-  8 : FilterClass[Band] := TSimpleAllpassFilter;
+   0 : FilterClass[Band] := TBasicGainFilter;
+   1 : FilterClass[Band] := TBasicPeakFilter;
+   2 : FilterClass[Band] := TBasicLowShelfFilter;
+   3 : FilterClass[Band] := TBasicHighShelfFilter;
+   4 : FilterClass[Band] := TBasicLowpassFilter;
+   5 : FilterClass[Band] := TBasicHighpassFilter;
+   6 : FilterClass[Band] := TBasicBandpassFilter;
+   7 : FilterClass[Band] := TBasicNotchFilter;
+   8 : FilterClass[Band] := TBasicAllpassFilter;
+   9 : FilterClass[Band] := TBasicLowShelfAFilter;
+  10 : FilterClass[Band] := TBasicLowShelfBFilter;
+  11 : FilterClass[Band] := TBasicHighShelfAFilter;
+  12 : FilterClass[Band] := TBasicHighShelfBFilter;
  end;
  if EditorForm is TFmParametriQLite
   then TFmParametriQLite(EditorForm).UpdateFilterType(Band);
@@ -267,15 +271,19 @@ procedure TParametriQLiteDataModule.ParameterTypeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
-  0 : PreDefined := 'Bypass';
-  1 : PreDefined := 'Peak';
-  2 : PreDefined := 'LoShlf';
-  3 : PreDefined := 'HiShlf';
-  4 : PreDefined := 'LoPass';
-  5 : PreDefined := 'HiPass';
-  6 : PreDefined := 'Bndpss';
-  7 : PreDefined := 'Notch';
-  8 : PreDefined := 'Allpass';
+   0 : PreDefined := 'Bypass';
+   1 : PreDefined := 'Peak';
+   2 : PreDefined := 'LoShlf';
+   3 : PreDefined := 'HiShlf';
+   4 : PreDefined := 'LoPass';
+   5 : PreDefined := 'HiPass';
+   6 : PreDefined := 'Bndpss';
+   7 : PreDefined := 'Notch';
+   8 : PreDefined := 'Allpass';
+   9 : PreDefined := 'LoSlfA';
+  10 : PreDefined := 'LoSlfB';
+  11 : PreDefined := 'HiSlfA';
+  12 : PreDefined := 'HiSlfB';
  end;
 end;
 

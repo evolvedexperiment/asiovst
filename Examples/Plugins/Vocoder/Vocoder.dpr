@@ -4,29 +4,20 @@ library Vocoder;
 uses
   FastMM4,  // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here
-  Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   VocoderModule in 'VocoderModule.pas' {VSTSSModule: TVSTModule},
   VocoderGUI in 'VocoderGUI.pas' {VSTGUI},
   VocoderVoice in 'VocoderVoice.pas',
   VoiceList in 'VoiceList.pas';
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TVSTSSModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+ Result := VstModuleMain(AudioMasterCallback, TVSTSSModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

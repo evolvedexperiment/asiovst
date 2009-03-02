@@ -16,13 +16,14 @@ type
     procedure SetSampleRate(const Value: Double);
     procedure SetGaindB(const Value: Double);
   protected
-    FGain_dB     : Double;
-    FGainFactor  : Double;
-    FFrequency   : Double;
-    FSinW0, FW0  : Double;
-    FSampleRate  : Double;
-    FSRR         : Double; // reciprocal of FSampleRate
-    FOnChange    : TNotifyEvent;
+    FGain_dB           : Double;
+    FGainFactor        : Double;
+    FGainFactorSquared : Double;
+    FFrequency         : Double;
+    FSinW0, FW0        : Double;
+    FSampleRate        : Double;
+    FSRR               : Double; // reciprocal of FSampleRate
+    FOnChange          : TNotifyEvent;
     procedure CalculateW0; virtual;
     procedure CalculateGainFactor; virtual;
     procedure CalculateCoefficients; virtual; abstract;
@@ -185,57 +186,6 @@ type
     property Bandwidth;
   end;
 
-  TSimpleGainFilter = class(TBiquadIIRFilter)
-  protected
-    procedure CalculateCoefficients; override;
-  public
-    function ProcessSample(const Input: Double): Double; override;
-    function ProcessSampleASM: Double; override;
-  end;
-
-  TSimplePeakFilter = class(TBiquadIIRFilter)
-  protected
-    procedure CalculateCoefficients; override;
-  end;
-
-  TSimpleAllpassFilter = class(TBiquadIIRFilter)
-  protected
-    procedure CalculateCoefficients; override;
-  end;
-
-  TSimpleLowShelfFilter = class(TBiquadIIRFilter)
-  protected
-    procedure CalculateCoefficients; override;
-  end;
-
-  TSimpleHighShelfFilter = class(TBiquadIIRFilter)
-  protected
-    procedure CalculateCoefficients; override;
-  end;
-
-  TSimpleHighcutFilter = class(TBiquadIIRFilter)
-  protected
-    procedure CalculateCoefficients; override;
-  end;
-
-  TSimpleLowcutFilter = class(TBiquadIIRFilter)
-  protected
-    procedure CalculateCoefficients; override;
-  end;
-
-  TSimpleLowpassFilter = class(TSimpleHighcutFilter);
-  TSimpleHighpassFilter = class(TSimpleLowcutFilter);
-
-  TSimpleBandpass = class(TBiquadIIRFilter)
-  protected
-    procedure CalculateCoefficients; override;
-  end;
-
-  TSimpleNotch = class(TBiquadIIRFilter)
-  protected
-    procedure CalculateCoefficients; override;
-  end;
-
 (*
   TDspLowpassFilter = class(TDspBaseComponent)
   private
@@ -294,6 +244,7 @@ end;
 procedure TCustomFilter.CalculateGainFactor;
 begin
  FGainFactor := dB_to_Amp(CHalf32 * FGain_dB); // do not change this!
+ FGainFactorSquared := sqr(FGainFactor);
 end;
 
 procedure TCustomFilter.CalculateW0;
@@ -692,6 +643,7 @@ constructor TBiquadIIRFilter.Create;
 begin
  inherited;
  FBandWidth := 1;
+ CalculateCoefficients;
  ResetStates;
 end;
 
@@ -700,33 +652,29 @@ var
   cw : Double;
 begin
  cw := 2 * cos(2 * Frequency * Pi * FSRR);
- Result := sqrt((sqr(FNominator[0] - FNominator[2])+sqr(FNominator[1]) + (FNominator[1]*(FNominator[0]+FNominator[2])+FNominator[0]*FNominator[2]*cw)*cw)
-             /(sqr(1-FDenominator[2])+sqr(FDenominator[1])+(FDenominator[1]*(FDenominator[2]+1)+cw*FDenominator[2])*cw ));
+ Result := (sqr(FNominator[0] - FNominator[2]) + sqr(FNominator[1]) + (FNominator[1] * (FNominator[0] + FNominator[2]) + FNominator[0] * FNominator[2] * cw) * cw)
+         / (sqr(1 - FDenominator[2]) + sqr(FDenominator[1]) + (FDenominator[1] * (FDenominator[2] + 1) + cw * FDenominator[2]) * cw );
 end;
 
 function TBiquadIIRFilter.MagnitudeLog10(const Frequency: Double): Double;
-var
-  cw : Double;
 begin
- cw := 2 * cos(2 * Frequency * Pi * FSRR);
- Result := 10*log10((sqr(FNominator[0]-FNominator[2])+sqr(FNominator[1])+(FNominator[1]*(FNominator[0]+FNominator[2])+FNominator[0]*FNominator[2]*cw)*cw)
-                 /(sqr(1-FDenominator[2])+sqr(FDenominator[1])+(FDenominator[1]*(FDenominator[2]+1)+cw*FDenominator[2])*cw ));
+ Result := 10 * Log10(MagnitudeSquared(Frequency));
 end;
 
 function TBiquadIIRFilter.Phase(const Frequency: Double): Double;
 var
   cw, sw : Double;
 begin
- GetSinCos(2 * Frequency * pi * FSRR, sw, cw);
- Result := ArcTan2(-sw*(FNominator[0]*(2*cw*FDenominator[2]+FDenominator[1])+FNominator[1]*(FDenominator[2]-1)-FNominator[2]*(2*cw+FDenominator[1])),
-                     (FNominator[0]*(FDenominator[2]*(2*sqr(cw)-1)+1+FDenominator[1]*cw)+FNominator[1]*(cw*FDenominator[2]+cw+FDenominator[1])+FNominator[2]*(2*sqr(cw)+FDenominator[1]*cw+FDenominator[2]-1)));
+ GetSinCos(2 * Frequency * Pi * FSRR, sw, cw);
+ Result := ArcTan2(-sw * (FNominator[0] * (2 * cw * FDenominator[2] + FDenominator[1]) + FNominator[1] * (FDenominator[2] - 1) - FNominator[2] * (2 * cw + FDenominator[1])),
+                  (FNominator[0] * (FDenominator[2] * (2 * sqr(cw) - 1) + 1 + FDenominator[1] * cw) + FNominator[1] * (cw * (FDenominator[2] + 1) + FDenominator[1]) + FNominator[2] * (2 * sqr(cw) + FDenominator[1] * cw + FDenominator[2] - 1)));
 end;
 
 function TBiquadIIRFilter.Real(const Frequency: Double): Double;
 var
   cw : Double;
 begin
- cw := cos(2 * Frequency * pi * FSRR);
+ cw := cos(2 * Frequency * Pi * FSRR);
  Real := (FNominator[0] + FNominator[1] * FDenominator[1] + FNominator[2] * FDenominator[2]
           +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
           + (2 * sqr(cw) - 1) * (FNominator[0] * FDenominator[2] + FNominator[2]))
@@ -738,7 +686,7 @@ function TBiquadIIRFilter.Imaginary(const Frequency: Double): Double;
 var
   cw : Double;
 begin
- cw := cos(2 * Frequency * pi * FSRR);
+ cw := cos(2 * Frequency * Pi * FSRR);
  Imaginary := (FDenominator[1] * (FNominator[2] - FNominator[0]) + FNominator[1] * (1 - FDenominator[2])
               + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - sqr(cw))
               / ( sqr(FDenominator[2]) - 2 * FDenominator[2] + sqr(FDenominator[1]) + 1
@@ -749,25 +697,26 @@ procedure TBiquadIIRFilter.Complex(const Frequency: Double; out Real, Imaginary:
 var
   cw, Divider : Double;
 begin
- cw := cos(2 * Frequency * pi * FSRR);
+ cw := cos(2 * Frequency * Pi * FSRR);
  Divider   := 1 / ( sqr(FDenominator[2]) - 2 * FDenominator[2] + sqr(FDenominator[1]) + 1
                     + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
  Real      := (FNominator[0] + FNominator[1] * FDenominator[1] + FNominator[2] * FDenominator[2]
               +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
-              + (2*sqr(cw)-1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
+              + (2 * sqr(cw)-1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
  Imaginary := (FDenominator[1] * (FNominator[2] - FNominator[0]) + FNominator[1] * (1 - FDenominator[2])
               + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - sqr(cw)) * Divider;
 end;
 
 procedure TBiquadIIRFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
-var cw, Divider : Double;
+var
+  Cw, Divider : Double;
 begin
  cw := cos(2 * Frequency * pi * FSRR);
  Divider   := 1 / ( sqr(FDenominator[2]) - 2 * FDenominator[2] + sqr(FDenominator[1]) + 1
                     + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
  Real      := (FNominator[0] + FNominator[1] * FDenominator[1] + FNominator[2] * FDenominator[2]
               +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
-              + (2*sqr(cw)-1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
+              + (2 * sqr(cw) - 1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
  Imaginary := (FDenominator[1] * (FNominator[2] - FNominator[0]) + FNominator[1] * (1 - FDenominator[2])
               + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - sqr(cw)) * Divider;
 end;
@@ -795,15 +744,16 @@ begin
 end;
 
 procedure TBiquadIIRFilter.CalcPolesZeros;
-var p,q : Double;
-    e   : Double;
+var
+  p, q : Double;
+  e    : Double;
 begin
- p := -FNominator[1]/(2*FNominator[0]);
- q := (FNominator[2]/FNominator[0]);
+ p := -FNominator[1] / (2 * FNominator[0]);
+ q := (FNominator[2] / FNominator[0]);
  FZeros[0].Re := p;
  FZeros[1].Re := p;
  e := q-(p*p);
- if e>0
+ if e > 0
   then
    begin
     FZeros[0].Im := sqrt(e);
@@ -811,18 +761,18 @@ begin
    end
   else
    begin
-    FZeros[0].Re := FZeros[0].Re+sqrt(-e);
-    FZeros[1].Re := FZeros[0].Re-sqrt(-e);
+    FZeros[0].Re := FZeros[0].Re + sqrt(-e);
+    FZeros[1].Re := FZeros[0].Re - sqrt(-e);
     FZeros[0].Im := 0;
     FZeros[1].Im := 0;
    end;
 
- p := -FDenominator[1]/2;
- q := FDenominator[2];
+ p := -FDenominator[1] * 0.5;
+ q :=  FDenominator[2];
  FPoles[0].Re := p;
  FPoles[1].Re := p;
- e := q-(p*p);
- if e>0
+ e := q - sqr(p);
+ if e > 0
   then
    begin
     FPoles[0].Im := sqrt(e);
@@ -830,8 +780,8 @@ begin
    end
   else
    begin
-    FPoles[0].Re := FPoles[0].Re+sqrt(-e);
-    FPoles[1].Re := FPoles[0].Re-sqrt(-e);
+    FPoles[0].Re := FPoles[0].Re + sqrt(-e);
+    FPoles[1].Re := FPoles[0].Re - sqrt(-e);
     FPoles[0].Im := 0;
     FPoles[1].Im := 0;
    end;
@@ -944,160 +894,6 @@ begin
  Result[1].Re := p;
  Result[0].Im := sqrt(q-(p*p));
  Result[1].Im := -sqrt(q-(p*p));
-end;
-
-{ TSimplePeakFilter }
-
-procedure TSimplePeakFilter.CalculateCoefficients;
-var
-  t : Double;
-begin
- t := FGainFactor / (FGainFactor + FAlpha);
- FDenominator[2] := (FGainFactor - FAlpha) / (FGainFactor + FAlpha);
- FDenominator[1] := -2 * cos(FW0) * t;
- FNominator[1] := FDenominator[1];
- FNominator[0] := (1 + FAlpha * FGainFactor) * t;
- FNominator[2] := (1 - FAlpha * FGainFactor) * t;
- CalcPolesZeros;
-end;
-
-{ TSimpleAllpassFilter }
-
-procedure TSimpleAllpassFilter.CalculateCoefficients;
-var
-  t, a : Double;
-begin
- t               := 1 / (1 + FAlpha);
- a               := sqr(FGainFactor);
- FDenominator[1] := -2 * cos(FW0) * t;
- FDenominator[2] := -(FAlpha - 1) * t;
- FNominator[1]   := FDenominator[1] * a;
- FNominator[0]   := FDenominator[2] * a;
- FNominator[2]   := a;
-end;
-
-{ TSimpleLowShelfFilter }
-
-procedure TSimpleLowShelfFilter.CalculateCoefficients;
-var
-  t, A1, A2 : Double;
-  cn, sA    : Double;
-begin
- sA := 2 * sqrt(FGainFactor) * FAlpha;
- cn := cos(FW0);
- A1 := FGainFactor + 1;
- A2 := FGainFactor - 1;
- t  := 1 / (A1 + A2 * cn + sA);
- FDenominator[1] := -2 * (A2 + A1 * cn) * t;
- FDenominator[2] := (A1 + A2 * cn - sA) * t;
- FNominator[0] := FGainFactor * t * (A1 - A2 * cn + sA);
- FNominator[1] := FGainFactor * t * (A2 - A1 * cn) * 2;
- FNominator[2] := FGainFactor * t * (A1 - A2 * cn - sA);
- CalcPolesZeros;
-end;
-
-{ TSimpleHighShelfFilter }
-
-procedure TSimpleHighShelfFilter.CalculateCoefficients;
-var t,A1,A2 : Double;
-    cn,sA   : Double;
-begin
- cn := cos(FW0);
- sA := 2*sqrt(FGainFactor)*FAlpha;
- A1 := FGainFactor + 1;
- A2 := FGainFactor - 1;
- t  := 1 / (A1 - (A2 * cn) + sA);
- FDenominator[1] := 2 * (A2 -A1 * cn) * t;
- FDenominator[2] := (A1 - A2 * cn - sA) * t;
- FNominator[0] := FGainFactor * (A1 + A2 * cn + sA) * t;
- FNominator[1] := FGainFactor * (A2 + A1 * cn) * -2 * t;
- FNominator[2] := FGainFactor * (A1 + A2 * cn - sA) * t;
- CalcPolesZeros;
-end;
-
-{ TSimpleHighcut }
-
-procedure TSimpleHighcutFilter.CalculateCoefficients;
-var cn, t : Double;
-begin
- t := 1/(1+FAlpha);
- cn := cos(FW0);
- FNominator[0]   := sqr(FGainFactor) * (1 - cn) * 0.5 * t;
- FNominator[1]   := 2 * FNominator[0];
- FNominator[2]   := FNominator[0];
- FDenominator[1] := -2 * cn * t;
- FDenominator[2] := (1 - FAlpha) * t;
- CalcPolesZeros;
-end;
-
-{ TSimpleLowcutFilter }
-
-procedure TSimpleLowcutFilter.CalculateCoefficients;
-var cn, t : Double;
-begin
- t := 1 / (1 + FAlpha);
- cn := cos(FW0);
- FNominator[0]   := sqr(FGainFactor) * (1 + cn) * 0.5 * t;
- FNominator[1]   := -2 * FNominator[0];
- FNominator[2]   := FNominator[0];
- FDenominator[1] := -2 * cn * t;
- FDenominator[2] := (1 - FAlpha) * t;
- CalcPolesZeros;
-end;
-
-{ TSimpleBandpass }
-
-procedure TSimpleBandpass.CalculateCoefficients;
-var t : Double;
-begin
- t := 1 / (1 + FAlpha);
- FNominator[0]   := FGainFactor*FGainFactor*FAlpha*t;
- FNominator[2]   := -FNominator[0];
- FDenominator[1] := -2*cos(FW0)*t;
- FDenominator[2] := (1-FAlpha)*t;
- FNominator[1]   := 0;
-end;
-
-{ TSimpleNotch }
-
-procedure TSimpleNotch.CalculateCoefficients;
-var
-  t, a : Double;
-begin
- try
-  t := 1 / (1 + FAlpha);
-  a := sqr(FGainFactor);
-  FDenominator[1] := -2 * cos(FW0) * t;
-  FNominator[1]   := FDenominator[1] * a;
-  FDenominator[2] := (1 - FAlpha) * t;
-
-  FNominator[0] := a * t;
-  FNominator[2] := FNominator[0];
- except
-  FNominator[0] := 1; FNominator[1] := 0; FNominator[2] := 0; FDenominator[1] := 0; FDenominator[2] := 0;
- end;
-end;
-
-{ TSimpleGainFilter }
-
-procedure TSimpleGainFilter.CalculateCoefficients;
-begin
- FNominator[0] := sqr(FGainFactor);
- FNominator[1] := 0;
- FNominator[2] := 0;
- FDenominator[1] := 0;
- FDenominator[2] := 0;
-end;
-
-function TSimpleGainFilter.ProcessSample(const Input: Double): Double;
-begin
- result := Input * sqr(FGainFactor);
-end;
-
-function TSimpleGainFilter.ProcessSampleASM: Double;
-asm
- fmul [eax.FGainFactor].Double
- fmul [eax.FGainFactor].Double
 end;
 
 (*

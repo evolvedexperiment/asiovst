@@ -15,10 +15,14 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
   private
-    FVoices : TVoiceList;
+    FVoices       : TVoiceList;
+    FSample       : PDAVSingleFixedArray;
+    FSampleLength : Integer;
   public
-    Sample  : TDAVSingleDynArray;
+    procedure LoadFromFile(const FileName: TFileName);
     property Voices: TVoiceList read FVoices;
+    property Sample: PDAVSingleFixedArray read FSample;
+    property SampleLength: Integer read FSampleLength;
   end;
 
 implementation
@@ -26,11 +30,21 @@ implementation
 {$R *.DFM}
 
 uses
-  Math;
+  Math, WaveIOX;
 
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 begin
  FVoices := TVoiceList.Create(True);
+end;
+
+procedure TVSTSSModule.LoadFromFile(const FileName: TFileName);
+var
+  sr, c : Integer;
+  pt    : PSingle;
+begin
+ pt := LoadWAVFileMono(FileName, sr, c, FSampleLength);
+ ReallocMem(FSample, FSampleLength * SizeOf(Single));
+ Move(pt^, FSample^[0], FSampleLength * SizeOf(Single));
 end;
 
 procedure TVSTSSModule.VSTModuleClose(Sender: TObject);

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
-  Dialogs, DAV_Common, DAV_VSTModule, WaveIOX, DAV_GuiStaticWaveform,
+  Dialogs, DAV_Common, DAV_VSTModule, DAV_GuiStaticWaveform,
   DAV_GuiBaseControl, DAV_GuiMidiKeys;
 
 type
@@ -36,33 +36,31 @@ procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
 var
   newNote : TSimpleSamplerVoice;
 begin
- if (Owner is TVSTSSModule) then
-  with TVSTSSModule(Owner) do
-   begin
-    MIDI_NoteOn(0, KeyNr, round(Velocity * 128));
-    newNote := TSimpleSamplerVoice.Create(TVSTSSModule(Owner));
-    newNote.MidiKeyNr := KeyNr;
-    newNote.Velocity := round(Velocity * 127);
-    newNote.NoteOn(Midi2Pitch[KeyNr], Velocity);
-    Voices.Add(newNote);
-   end;
+ with TVSTSSModule(Owner) do
+  begin
+   MidiNoteOn(0, KeyNr, round(Velocity * 128));
+   newNote := TSimpleSamplerVoice.Create(TVSTSSModule(Owner));
+   newNote.MidiKeyNr := KeyNr;
+   newNote.Velocity := round(Velocity * 127);
+   newNote.NoteOn(Midi2Pitch[KeyNr], Velocity);
+   Voices.Add(newNote);
+  end;
 end;
 
 procedure TVSTGUI.MidiKeysNoteOff(Sender: TObject; KeyNr: Byte);
 var
   i : Integer;
 begin
- if (Owner is TVSTSSModule) then
-  with TVSTSSModule(Owner) do
-   begin
-    MIDI_NoteOff(0, KeyNr, 0);
-    for i := Voices.Count - 1 downto 0 do
-     if (Voices[i].MidiKeyNr = KeyNr) then
-      begin
-       Voices.Delete(i);
-       Break;
-      end;
-   end;
+ with TVSTSSModule(Owner) do
+  begin
+   MidiNoteOff(0, KeyNr, 0);
+   for i := Voices.Count - 1 downto 0 do
+    if (Voices[i].MidiKeyNr = KeyNr) then
+     begin
+      Voices.Delete(i);
+      Break;
+     end;
+  end;
 end;
 
 procedure TVSTGUI.BtSampleSelectClick(Sender: TObject);
@@ -72,20 +70,12 @@ begin
 end;
 
 procedure TVSTGUI.EditSampleChange(Sender: TObject);
-var
-  sr, c, sz : Integer;
-  pt        : PSingle;
 begin
  if FileExists(EditSample.Text) then
   begin
-   pt := LoadWAVFileMono(EditSample.Text,sr, c, sz);
-   SetLength(TVSTSSModule(Owner).Sample, sz);
-   for c := 0 to sz - 1 do
-    begin
-     TVSTSSModule(Owner).Sample[c] := pt^;
-     Inc(pt);
-    end;
-   Waveform.SetWaveForm(TVSTSSModule(Owner).Sample, True, True);
+   TVSTSSModule(Owner).LoadFromFile(EditSample.Text);
+   with TVSTSSModule(Owner)
+    do Waveform.SetWaveForm(Sample, SampleLength, True, True);
   end;
 end;
 
@@ -121,7 +111,7 @@ begin
   begin
    for i := 0 to Voices.Count - 1 do
     if (Voices[i].MidiKeyNr = Note) then Exit;
-   MIDI_NoteOn(0, Note, 100);
+   MidiNoteOn(0, Note, 100);
   end;
  with newNote do
   begin
@@ -159,7 +149,7 @@ begin
  end;
  with (Owner as TVSTSSModule) do
   begin
-   MIDI_NoteOff(0, Note, 100);
+   MidiNoteOff(0, Note, 100);
    for i := 0 to Voices.Count - 1 do
     if (Voices[i].MidiKeyNr = Note) then
      begin

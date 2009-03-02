@@ -14,10 +14,10 @@ SetCompressor lzma
 
   ;Name and file
   Name "Advanced Clipper Installer"
-  OutFile "Clipper_Install.exe"
+  OutFile "Advanced_Clipper_Install.exe"
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\VSTPlugIns"
+  InstallDir "$VSTPlugin\VSTPlugIns"
   
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
@@ -31,7 +31,7 @@ SetCompressor lzma
 ;Interface Settings
 
   !define PRODUCT_NAME "Advanced Clipper"
-  !define PRODUCT_VERSION "1.0.0"
+  !define PRODUCT_VERSION "1.1.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
@@ -69,45 +69,59 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Clipper VST-Plugin" SecProgramFiles
+Section "Clipper VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\AdvancedClipper.dll" "..\Bin\Advanced Clipper.dll"'  
+   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\AdvancedClipper.dll"
+  File "..\Bin\Advanced Clipper.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallClipper.exe"
+  WriteUninstaller "$INSTDIR\Uninstall Advanced Clipper.exe"
+SectionEnd
 
+Section "Clipper Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\Advanced Clipper Manual.pdf"
 
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall Advanced Clipper.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Clipper VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Advanced Clipper VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Clipper VST Plugin"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Advanced Clipper VST Plugin"
+LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Advanced Clipper Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
 ;Uninstaller Section
 
 Section "Uninstall"
-
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\AdvancedClipper.dll"
+  Delete "$INSTDIR\Advanced Clipper.dll"
+  Delete "$INSTDIR\Advanced Clipper Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
-
 SectionEnd

@@ -80,7 +80,7 @@ end;
 
 function TSimpleSamplerVoice.Process: Single;
 begin
- if Length(TVSTSSModule(FVSTModule).Sample) <= 0 then
+ if TVSTSSModule(FVSTModule).SampleLength <= 0 then
   begin
    result := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
    FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
@@ -93,7 +93,7 @@ begin
    while FSampleFrac >= 1 do
      begin
       inc(FSamplePos);
-      if FSamplePos >= Length(TVSTSSModule(FVSTModule).Sample)
+      if FSamplePos >= TVSTSSModule(FVSTModule).SampleLength
        then FSamplePos := 0;
       FSampleFrac := FSampleFrac - 1;
       Move(FMem[1], FMem[0], 12);

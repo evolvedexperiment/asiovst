@@ -264,7 +264,10 @@ begin
     LineTo(rct.Right, HHOffs);
 
     Pen.Color := FGraphColorLight;
-    i := 10;
+    if FMaxGain <=  5 then w := 1 else
+    if FMaxGain <= 10 then w := 5 else
+    if FMaxGain >= 180 then w := 45 else w := 10;
+    i := w;
     while i * NormFactor < HalfHeight do
      begin
       MoveTo(rct.Left,  round(rct.Top + HalfHeight - i * NormFactor));
@@ -273,7 +276,7 @@ begin
       MoveTo(rct.Left,  round(rct.Top + HalfHeight + i * NormFactor));
       LineTo(rct.Right, round(rct.Top + HalfHeight + i * NormFactor));
 
-      inc(i, 10);
+      inc(i, w);
      end;
 
     i := 10; j := 3;
@@ -315,7 +318,8 @@ begin
      dlsLeft:
       begin
        if FMaxGain <=  5 then w := 1 else
-       if FMaxGain <= 10 then w := 5 else w := 10;
+       if FMaxGain <= 10 then w := 5 else 
+       if FMaxGain >= 180 then w := 45 else w := 10;
        i := w;
        while i * NormFactor < HalfHeight do
         begin
@@ -327,7 +331,8 @@ begin
      dlsRight:
       begin
        if FMaxGain <=  5 then w := 1 else
-       if FMaxGain <= 10 then w := 5 else w := 10;
+       if FMaxGain <= 10 then w := 5 else 
+       if FMaxGain >= 180 then w := 45 else w := 10;
        i := w;
        while i * NormFactor < HalfHeight do
         begin
@@ -339,13 +344,13 @@ begin
     end;
 
     Pen.Color := GraphColorDark;
-    Pen.Width := 1;
+    Pen.Width := 2;
     if assigned(FOnGetFilterGain) then
      begin
-      MoveTo(rct.Left, round(HHOffs + FOnGetFilterGain(Self, 20) * NormFactor));
+      MoveTo(rct.Left, round(HHOffs - FOnGetFilterGain(Self, 20) * NormFactor));
       Temp[0] := 1 / (rct.Right - rct.Left);
       for w := rct.Left + 1 to rct.Right - 1
-       do LineTo(w, round(HHOffs + FOnGetFilterGain(Self, FreqLinearToLog((w - rct.Left) * Temp[0]))));
+       do LineTo(w, round(HHOffs - FOnGetFilterGain(Self, FreqLinearToLog((w - rct.Left) * Temp[0])) * NormFactor));
      end;
 
 

@@ -1,9 +1,11 @@
 const
+(*
   NOPE    =-32767;
-  YEP     =1;
+  YEP     = 1;
   SK_DBL  =-32766;
   SK_INT  =-32765;
   SK_STR  =-32764;
+*)
   CMidiNoteOff                = 128;
   CMidiNoteOn                 = 144;
   CMidiPolyPressure           = 160;
@@ -31,7 +33,7 @@ const
   CMidiSustain                = 64;
   CMidiDamper                 = CMidiSustain;
   CMidiExpression             = 11;
-  CMidiAfterTouchCont         = 128;
+  CMidiAfterTouchContour      = 128;
   CMidiModFrequency           = CMidiExpression;
   CMidiProphesyRibbon         = 16;
   CMidiProphesyWheelUp        = 2;

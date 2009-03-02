@@ -4,29 +4,20 @@ library SineSynth;
 uses
   FastMM4,  // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here
-  Forms,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   SineSynthModule in 'SineSynthModule.pas' {VSTSSModule: TVSTModule},
   SineSynthGUI in 'SineSynthGUI.pas' {VSTGUI},
   SineSynthVoice in 'SineSynthVoice.pas',
   VoiceList in 'VoiceList.pas';
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var VSTSSModule : TVSTSSModule;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  VSTSSModule:=TVSTSSModule.Create(Application);
-  VSTSSModule.Effect^.user:=VSTSSModule;
-  VSTSSModule.AudioMaster:=audioMaster;
-  Result := VSTSSModule.Effect;
- except
-  Result := nil;
- end;
+ Result := VstModuleMain(AudioMasterCallback, TVSTSSModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

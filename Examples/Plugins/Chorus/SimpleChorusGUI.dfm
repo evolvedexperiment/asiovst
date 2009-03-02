@@ -24,8 +24,9 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 36
     CurveMapping = -1.799999952316284000
     DefaultPosition = 1.000000000000000000
+    DialImageList = DIL
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 12632777
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.009999999776482582
@@ -44,8 +45,9 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 36
     Height = 36
     DefaultPosition = 4.000000000000000000
+    DialImageList = DIL
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 12632777
     LineWidth = 2
     Max = 8.000000000000000000
     Min = 1.000000000000000000
@@ -64,8 +66,9 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 36
     Height = 36
     DefaultPosition = 10.000000000000000000
+    DialImageList = DIL
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 12632777
     LineWidth = 2
     Max = 100.000000000000000000
     NumGlyphs = 65
@@ -83,8 +86,9 @@ object FmSimpleChorus: TFmSimpleChorus
     Width = 36
     Height = 36
     DefaultPosition = 50.000000000000000000
+    DialImageList = DIL
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 12632777
     LineWidth = 2
     Max = 100.000000000000000000
     NumGlyphs = 65
@@ -211,8 +215,9 @@ object FmSimpleChorus: TFmSimpleChorus
     Height = 36
     CurveMapping = -1.000000000000000000
     DefaultPosition = 10.000000000000000000
+    DialImageList = DIL
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 12632777
     LineWidth = 2
     Max = 100.000000000000000000
     NumGlyphs = 65
@@ -250,5 +255,10 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+  end
+  object DIL: TGuiDialImageList
+    DialImages = <>
+    Left = 16
+    Top = 16
   end
 end

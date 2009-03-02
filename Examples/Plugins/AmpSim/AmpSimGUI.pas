@@ -3,9 +3,9 @@ unit AmpSimGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, 
-  StdCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiSelectBox,
-  DAV_GuiLED, ExtCtrls, DAV_GuiPanel;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
+  ExtCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiSelectBox,
+  DAV_GuiLED, DAV_GuiPanel;
 
 type
   TFmCombo = class(TForm)
@@ -14,6 +14,7 @@ type
     DialFrequency: TGuiDial;
     DialOutput: TGuiDial;
     DialResonance: TGuiDial;
+    DIL: TGuiDialImageList;
     GuiLED: TGuiLED;
     GuiPanel1: TGuiPanel;
     LbBias: TGuiLabel;
@@ -73,11 +74,16 @@ var
 begin
  RS := TResourceStream.Create(hInstance, 'AmpKnob', 'BMP');
  try
-  DialDrive.DialBitmap.LoadFromStream(RS); RS.Position := 0;
-  DialBias.DialBitmap.Assign(DialDrive.DialBitmap);
-  DialOutput.DialBitmap.Assign(DialDrive.DialBitmap);
-  DialFrequency.DialBitmap.Assign(DialDrive.DialBitmap);
-  DialResonance.DialBitmap.Assign(DialDrive.DialBitmap);
+  with DIL.DialImages.Add do
+   begin
+    NumGlyphs := 65;
+    DialBitmap.LoadFromStream(RS);
+   end;
+  DialDrive.DialImageIndex := 0;
+  DialBias.DialImageIndex := 0;
+  DialOutput.DialImageIndex := 0;
+  DialFrequency.DialImageIndex := 0;
+  DialResonance.DialImageIndex := 0;
  finally
   RS.Free;
  end;

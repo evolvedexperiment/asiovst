@@ -85,7 +85,9 @@ type
     property OnProcess;
     property OnProcessDoubleReplacing;
     property OnProcessEvents;
+    property OnProcessEvent;
     property OnProcessMidi;
+    property OnProcessMidiSysEx;
     property OnProcessReplacing;
     property OnProcessVarIO;
     property OnResume;

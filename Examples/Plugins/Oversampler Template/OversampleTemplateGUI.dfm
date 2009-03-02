@@ -52,12 +52,12 @@ object FmOversampler: TFmOversampler
       Top = 4
       Width = 16
       Height = 16
-      OnClick = GuiLEDOversamplingClick
       Brightness_Percent = 20.000000000000000000
       LineWidth = 2
       LEDColor = clLime
       AntiAlias = gaaLinear4x
       LineColor = clLime
+      OnClick = GuiLEDOversamplingClick
     end
     object LbOversampling: TGuiLabel
       Left = 26
@@ -92,22 +92,21 @@ object FmOversampler: TFmOversampler
       Top = 4
       Width = 16
       Height = 16
-      Visible = False
-      LineWidth = 1
-      LineColor = clBlack
-      CircleColor = 6450289
       AntiAlias = gaaLinear4x
+      CircleColor = 6450289
       CurveMapping = -1.250000000000000000
       DefaultPosition = 4.000000000000000000
+      DialImageIndex = -1
       Max = 16.000000000000000000
       Min = 1.000000000000000000
+      OnChange = DialOversamplingChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 4.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
-      OnChange = DialOversamplingChange
+      Visible = False
     end
   end
   object PnGui: TPanel

@@ -110,8 +110,8 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 10.000000000000000000
-      MaxInteger = 10
+      Max = 14.000000000000000000
+      MaxInteger = 14
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
@@ -182,8 +182,8 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 10.000000000000000000
-      MaxInteger = 10
+      Max = 14.000000000000000000
+      MaxInteger = 14
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
@@ -254,8 +254,8 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 10.000000000000000000
-      MaxInteger = 10
+      Max = 14.000000000000000000
+      MaxInteger = 14
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
@@ -326,8 +326,8 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 10.000000000000000000
-      MaxInteger = 10
+      Max = 14.000000000000000000
+      MaxInteger = 14
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
@@ -398,8 +398,8 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 10.000000000000000000
-      MaxInteger = 10
+      Max = 14.000000000000000000
+      MaxInteger = 14
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
@@ -470,8 +470,8 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 10.000000000000000000
-      MaxInteger = 10
+      Max = 14.000000000000000000
+      MaxInteger = 14
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
@@ -542,8 +542,8 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 10.000000000000000000
-      MaxInteger = 10
+      Max = 14.000000000000000000
+      MaxInteger = 14
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
@@ -614,8 +614,8 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 10.000000000000000000
-      MaxInteger = 10
+      Max = 14.000000000000000000
+      MaxInteger = 14
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000

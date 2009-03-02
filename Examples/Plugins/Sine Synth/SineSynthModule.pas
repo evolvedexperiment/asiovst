@@ -22,7 +22,9 @@ type
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   SineSynthGUI, Math;
@@ -115,5 +117,10 @@ begin
    Voices.Clear;
   end;
 end;
+
+{$IFNDEF FPC}
+initialization
+
+{$ENDIF}
 
 end.

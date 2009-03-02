@@ -4,7 +4,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPFilter;
+  DAV_DSPFilter, DAV_DSPFilterBasics;
 
 type
   TUniQuEDataModule = class(TVSTModule)
@@ -26,10 +26,10 @@ type
   private
     FFade   : array [0..1] of Single;
     FVolume : Single;
-    FLow    : array [0..1] of TSimpleLowShelfFilter;
-    FMid    : array [0..1] of TSimplePeakFilter;
-    FPres   : array [0..1] of TSimplePeakFilter;
-    FHigh   : array [0..1] of TSimpleHighShelfFilter;
+    FLow    : array [0..1] of TBasicLowShelfFilter;
+    FMid    : array [0..1] of TBasicPeakFilter;
+    FPres   : array [0..1] of TBasicPeakFilter;
+    FHigh   : array [0..1] of TBasicHighShelfFilter;
     procedure UpdateVolume;
   public
   end;
@@ -47,28 +47,28 @@ var
 begin
  for ch := 0 to 1 do
   begin
-   FLow[ch]  := TSimpleLowShelfFilter.Create;
+   FLow[ch]  := TBasicLowShelfFilter.Create;
    with FLow[ch] do
     begin
      Frequency := 777;
      Gain      := 0;
      Bandwidth := 3.2;
     end;
-   FMid[ch]  := TSimplePeakFilter.Create;
+   FMid[ch]  := TBasicPeakFilter.Create;
    with FMid[ch] do
     begin
      Frequency := 1700;
      Gain      := 0;
      Bandwidth := 3.6;
     end;
-   FPres[ch] := TSimplePeakFilter.Create;
+   FPres[ch] := TBasicPeakFilter.Create;
    with FPres[ch] do
     begin
      Frequency := 7280;
      Gain      := 0;
      Bandwidth := 1.0;
     end;
-   FHigh[ch] := TSimpleHighShelfFilter.Create;
+   FHigh[ch] := TBasicHighShelfFilter.Create;
    with FHigh[ch] do
     begin
      Frequency := 4340;

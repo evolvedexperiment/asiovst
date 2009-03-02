@@ -96,7 +96,7 @@ object FmCombo: TFmCombo
     Width = 361
     Height = 125
     AntiAlias = gaaLinear4x
-    Caption = 'GuiPanel1'
+    Caption = 'Panel'
     LineColor = clBlack
     PanelColor = 4227200
     ParentColor = True
@@ -154,6 +154,7 @@ object FmCombo: TFmCombo
       Top = 35
       Width = 64
       Height = 64
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = clMaroon
       LineWidth = 2
@@ -188,6 +189,7 @@ object FmCombo: TFmCombo
       Top = 35
       Width = 64
       Height = 64
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = clMaroon
       LineWidth = 2
@@ -221,6 +223,7 @@ object FmCombo: TFmCombo
       Top = 35
       Width = 64
       Height = 64
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = clMaroon
       LineWidth = 2
@@ -241,6 +244,7 @@ object FmCombo: TFmCombo
       Height = 64
       CurveMapping = -1.750000000000000000
       DefaultPosition = 100.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = clMaroon
       LineWidth = 2
@@ -260,6 +264,7 @@ object FmCombo: TFmCombo
       Top = 35
       Width = 64
       Height = 64
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = clMaroon
       LineWidth = 2
@@ -317,5 +322,10 @@ object FmCombo: TFmCombo
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
     end
+  end
+  object DIL: TGuiDialImageList
+    DialImages = <>
+    Left = 56
+    Top = 24
   end
 end

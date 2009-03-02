@@ -380,7 +380,7 @@ begin
     else
      begin
       FFullsize := filesize(f);
-      closefile(f);
+      CloseFile(f);
      end;
     FMMIO := mmioOpen(Pointer(FileName), nil, MMIO_READ or MMIO_ALLOCBUF)
    end

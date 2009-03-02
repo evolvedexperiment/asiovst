@@ -64,10 +64,10 @@ begin
   Ratio[2] := -510.0;
   Ratio[3] := -510.0;
 
-  FGains[0] := FFmgains[99];
-  FGains[1] := FFmgains[82];
-  FGains[2] := FFmgains[92];
-  FGains[3] := FFmgains[68];
+  FGains[0] := FFmGains[99];
+  FGains[1] := FFmGains[82];
+  FGains[2] := FFmGains[92];
+  FGains[3] := FFmGains[68];
 
   FAdsr[0].setAllTimes(0.001, 1.50, 0.0, 0.04);
   FAdsr[1].setAllTimes(0.001, 1.50, 0.0, 0.04);
@@ -93,20 +93,19 @@ end;
 
 procedure TStkWurley.NoteOn(const Frequency, Amplitude: Single);
 begin
-  FGains[0] := Amplitude * FFmgains[99];
-  FGains[1] := Amplitude * FFmgains[82];
-  FGains[2] := Amplitude * FFmgains[82];
-  FGains[3] := Amplitude * FFmgains[68];
+  FGains[0] := Amplitude * FFmGains[99];
+  FGains[1] := Amplitude * FFmGains[82];
+  FGains[2] := Amplitude * FFmGains[82];
+  FGains[3] := Amplitude * FFmGains[68];
   Self.Frequency := Frequency;
   KeyOn;
 end;
 
 function TStkWurley.Tick: Single;
 var
-  temp, temp2: Single;
+  temp: Single;
 begin
-  temp := FGains[1] * FAdsr[1].Tick * FWaves[1].Tick;
-  temp := temp * 2 * FControlA;
+  temp := FGains[1] * FAdsr[1].Tick * FWaves[1].Tick * 2 * FControlA;
   FWaves[0].addPhaseOffset(temp);
   FWaves[3].addPhaseOffset(FTwoZero.LastOutput);
   temp := FGains[3] * FAdsr[3].Tick * FWaves[3].Tick;
@@ -114,11 +113,11 @@ begin
   FWaves[2].AddPhaseOffset(temp);
   temp := (1.0 - FControlB) * FGains[0] * FAdsr[0].Tick * FWaves[0].Tick;
   temp := temp + FControlB * FGains[2] * FAdsr[2].Tick * FWaves[2].Tick;
- // Calculate Amplitude modulation and apply it to output.
-  temp2 := FVibrato.Tick * FModDepth;
-  temp := temp * (1.0 + temp2);
-  FLastOutput := temp * 0.5;
-  Result := lastOutput;
+
+  // Calculate Amplitude modulation and apply it to output.
+  FLastOutput := 0.5 * temp * (1.0 + FVibrato.Tick * FModDepth);
+
+  Result := FLastOutput;
 end;
 
 end.

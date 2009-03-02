@@ -40,7 +40,7 @@ implementation
 {$R *.dfm}
 
 uses
-  OversampleTemplateDM, DAV_VSTModuleWithPrograms;
+  OversampleTemplateDM, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
 
 procedure TFmOversampler.ShowPlugin;
 var
@@ -195,7 +195,7 @@ procedure TFmOversampler.GuiLEDOversamplingClick(Sender: TObject);
 begin
  with TOversampleTemplateDataModule(Owner) do
   begin
-   ParameterByName['Oversampling'] := f_Limit(1 - ParameterByName['Oversampling'], 0, 1);
+   ParameterByName['Oversampling'] := Limit(1 - ParameterByName['Oversampling'], 0, 1);
   end;
 end;
 
@@ -220,7 +220,7 @@ procedure TFmOversampler.UpdateOverSampling;
 begin
  with TOversampleTemplateDataModule(Owner) do
   begin
-   GuiLEDOversampling.Brightness_Percent := 20 + 60 * (f_Limit(ParameterByName['Oversampling'], 0, 1));
+   GuiLEDOversampling.Brightness_Percent := 20 + 60 * (Limit(ParameterByName['Oversampling'], 0, 1));
 
    DialOversampling.Visible     := round(ParameterByName['Oversampling']) = 1;
    LbOversamplingFactor.Visible := DialOversampling.Visible;

@@ -130,11 +130,11 @@ begin
   norm := Limit(Value, 0, 1);
 
   case Number of
-   CMidiBreath         : SetControlA(norm); // 2
-   CMidiFootControl    : SetControlB(norm); // 4
-   CMidiModFrequency   : SetModulationSpeed(norm * 12.0); // 11
-   CMidiModWheel       : SetModulationDepth(norm); //1
-   CMidiAfterTouchCont : // 128
+              CMidiBreath : SetControlA(norm); // 2
+         CMidiFootControl : SetControlB(norm); // 4
+        CMidiModFrequency : SetModulationSpeed(norm * 12.0); // 11
+            CMidiModWheel : SetModulationDepth(norm); //1
+   CMidiAfterTouchContour : // 128
     begin
      // FAdsr[0].SetTarget(norm);
      FAdsr[1].Target := norm;
@@ -200,14 +200,14 @@ end;
 
 destructor TStkFM.Destroy;
 var
-  i: Integer;
+  Op: Integer;
 begin
  FreeAndNil(FVibrato);
  FreeAndNil(FTwoZero);
- for i := 0 to FNOperators - 1 do
+ for Op := 0 to FNOperators - 1 do
   begin
-   FreeAndNil(FAdsr[i]);
-   FreeAndNil(FWaves[i]);
+   FreeAndNil(FAdsr[Op]);
+   FreeAndNil(FWaves[Op]);
   end;
  inherited Destroy;
 end;

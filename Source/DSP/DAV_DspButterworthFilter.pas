@@ -46,6 +46,7 @@ type
     function ProcessSample(const Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
+    procedure Complex(const Frequency: Double; out Real: Double; out Imaginary: Double); override;
   published
     property Gain;
     property Order;
@@ -61,6 +62,8 @@ type
     function ProcessSample(const Input: Single): Single; overload;
     function ProcessSample(const Input: Double): Double; overload; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
+    function Phase(const Frequency: Double): Double; override;
+    procedure Complex(const Frequency: Double; out Real: Double; out Imaginary: Double); override;
   published
     property Gain;
     property Order;
@@ -99,10 +102,10 @@ const
 
 constructor TButterworthFilter.Create(const Order: Integer = 0);
 begin
- inherited Create;
  FOrder := Order;
  FDownsamplePow := 0;
  FDownsampleFak := 1;
+ inherited Create;
  CalculateCoefficients;
 end;
 
@@ -255,7 +258,6 @@ end;
 constructor TButterworthLP.Create(const Order: Integer = 0);
 begin
  inherited Create(Order);
- FGainFactor := 1;
 end;
 
 procedure TButterworthLP.CalculateCoefficients;
@@ -304,18 +306,40 @@ end;
 
 function TButterworthLP.Phase(const Frequency: Double): Double;
 var
-  cw, sw, Nom, Den : Double;
-  i : Integer;
+  cw, sw   : Double;
+  Nom, Den : Double;
+  i        : Integer;
 begin
  GetSinCos(2 * Frequency * Pi * SampleRateReciprocal, sw, cw);
- Nom := FFilterGain;
- Den := FFilterGain;
+ Nom := 0; Den := 1;
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   Nom := Nom * sw * 2 * (FAB[2 * i + 1] - 1) * (cw + 1);
-   Den := Den * (2 * FAB[2 * i] * (1 + cw) + cw * (2 * FAB[2 * i + 1] * (cw + 1) + 2 * (1 + cw)));
+   ComplexMultiplyInplace(Den, Nom,
+     (cw * (1 - FAB[2 * i + 1] - FAB[2 * i] + cw * (1 - FAB[2 * i + 1])) - FAB[2 * i]),
+     (sw * (1 + FAB[2 * i + 1]) * (cw + 1)));
   end;
+// Complex(Frequency, Den, Nom);
  Result := ArcTan2(Nom, Den);
+end;
+
+procedure TButterworthLP.Complex(const Frequency: Double; out Real,
+  Imaginary: Double);
+var
+  i           : Integer;
+  cw, Divider : Double;
+begin
+ cw := cos(2 * Frequency * Pi * FSRR);
+ Real := FFilterGain;
+ Imaginary := FFilterGain;
+ for i := 0 to (FOrder div 2) - 1 do
+  begin
+   Divider   := 1 / (sqr(FAB[2 * i + 1]) + 2 * FAB[2 * i + 1] + sqr(FAB[2 * i]) + 1
+                      + 2 * cw * (FAB[2 * i] * (FAB[2 * i + 1] - 1) - 2 * cw * FAB[2 * i + 1]));
+   Real      := (1 - 2 * FAB[2 * i] - FAB[2 * i + 1]
+                + 2 * cw * (1 - FAB[2 * i + 1] - FAB[2 * i])
+                + (2 * sqr(cw) - 1) * (1 - FAB[2 * i + 1])) * Divider * Real;
+   Imaginary := 2 * (1 + FAB[2 * i + 1]) * sqrt(1 - sqr(cw)) * Divider * Imaginary;
+  end;
 end;
 
 function TButterworthLP.ProcessSample(const Input: Double): Double;
@@ -440,6 +464,48 @@ begin
    Result := Result * (cw - 2) / (1 + sqr(FAB[2 * i]) - cw * FAB[2 * i]);
   end;
  Result := CDenorm32 + Abs(sqr(FFilterGain) * Result);
+end;
+
+function TButterworthHP.Phase(const Frequency: Double): Double;
+var
+  cw, sw   : Double;
+  Nom, Den : Double;
+  i        : Integer;
+begin
+ GetSinCos(2 * Frequency * Pi * SampleRateReciprocal, sw, cw);
+ Nom := 0; Den := 1;
+ for i := 0 to (FOrder div 2) - 1 do
+  begin
+   ComplexMultiplyInplace(Den, Nom,
+     (cw * (FAB[2 * i + 1] - FAB[2 * i] - 1 + cw * (1 - FAB[2 * i + 1])) + FAB[2 * i]),
+     (sw * (FAB[2 * i + 1] + 1) * (cw - 1)));
+  end;
+ if (FOrder mod 2) = 1 then
+  begin
+   i := ((FOrder + 1) div 2) - 1;
+   ComplexMultiplyInplace(Den, Nom, (1 + FAB[2 * i]) * (1 - cw),
+     sw * (FAB[2 * i] - 1));
+  end;
+ Complex(Frequency, Den, Nom);
+ Result := ArcTan2(Nom, Den);
+end;
+
+procedure TButterworthHP.Complex(const Frequency: Double; out Real,
+  Imaginary: Double);
+var
+  i           : Integer;
+  cw, Divider : Double;
+begin
+ cw := cos(2 * Frequency * Pi * FSRR);
+ for i := 0 to (FOrder div 2) - 1 do
+  begin
+   Divider   := 1 / (sqr(FAB[2 * i + 1]) + 2 * FAB[2 * i + 1] + sqr(FAB[2 * i]) + 1
+                      + 2 * cw * (FAB[2 * i] * (FAB[2 * i + 1] - 1) - 2 * cw * FAB[2 * i + 1]));
+   Real      := (1 + 2 * FAB[2 * i] - FAB[2 * i + 1]
+                +        cw     * (2 * (FAB[2 * i + 1] - 1) - FAB[2 * i] * 2)
+                + (2 * sqr(cw) - 1) * (1 - FAB[2 * i + 1])) * Divider;
+   Imaginary := (- 2 * (1 + FAB[2 * i + 1])) * sqrt(1 - sqr(cw)) * Divider;
+  end;
 end;
 
 function TButterworthHP.ProcessSample(const Input: Single): Single;
@@ -607,7 +673,6 @@ end;
 constructor TButterworthSplit.Create(const Order: Integer = 0);
 begin
  inherited Create(Order);
- FGainFactor := 1;
  Randomize;
  DenormRandom := Random;
 end;

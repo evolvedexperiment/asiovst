@@ -241,6 +241,7 @@ const
   CHalf32        : Single = 0.5;
   CQuarter32     : Single = 0.25;
   CTwenty32      : Single = 20;
+  COneTwelfth32  : Single = 1 / 12;
 
   CDenorm64      : Double = 1E-34;
   CTwoPI64       : Double = 2 * Pi;

@@ -8,10 +8,10 @@ unit DAV_StkBlowBottle;
   polynomial jet excitation (a la Cook).
 
   Control Change Numbers:
-    - Noise Gain := 4
-    - Vibrato Frequency := 11
-    - Vibrato Gain := 1
-    - Volume := 128
+    - Noise Gain = 4
+    - Vibrato Frequency = 11
+    - Vibrato Gain = 1
+    - Volume = 128
 }
 
 interface
@@ -100,13 +100,13 @@ end;
 
 destructor TStkBlowBottle.Destroy;
 begin
-  inherited Destroy;
   FreeAndNil(FJetTable);
   FreeAndNil(FResonator);
   FreeAndNil(FDCBlock);
   FreeAndNil(FNoise);
   FreeAndNil(FAdsr);
   FreeAndNil(FVibrato);
+  inherited Destroy;
 end;
 
 procedure TStkBlowBottle.Clear;
@@ -137,14 +137,14 @@ end;
 
 procedure TStkBlowBottle.StartBlowing(const Amplitude, Rate: Single);
 begin
-  FAdsr.AttackRate := rate;
+  FAdsr.AttackRate := Rate;
   FMaxPressure := Amplitude;
   FAdsr.KeyOn;
 end;
 
 procedure TStkBlowBottle.StopBlowing(const Rate: Single);
 begin
-  FAdsr.ReleaseRate := rate;
+  FAdsr.ReleaseRate := Rate;
   FAdsr.KeyOff;
 end;
 
@@ -162,39 +162,36 @@ end;
 
 function TStkBlowBottle.Tick: Single;
 var
-  breathPressure, randPressure, pressureDiff: Single;
+  BreathPressure, RandPressure, PressureDiff: Single;
 begin
-  // Calculate the breath pressure (envelope + FVibrato)
-  breathPressure := FMaxPressure * FAdsr.tick;
-  breathPressure := breathPressure + FVibratoGain * FVibrato.tick;
+  // Calculate the breath pressure (envelope + vibrato)
+  BreathPressure := FMaxPressure * FAdsr.Tick + FVibratoGain * FVibrato.Tick;
 
-  pressureDiff := breathPressure - FResonator.LastOutput;
+  PressureDiff := BreathPressure - FResonator.LastOutput;
 
-  randPressure := FNoiseGain * FNoise.tick;
-  randPressure := randPressure * breathPressure;
-  randPressure := randpressure * (1.0 + pressureDiff);
+  RandPressure := FNoiseGain * FNoise.Tick * BreathPressure *
+    (1.0 + PressureDiff);
 
-  FResonator.tick(breathPressure + randPressure -
-    (FJetTable.tick(pressureDiff) * pressureDiff));
-  FLastOutput := 0.2 * FOutputGain * FDCBlock.tick(pressureDiff);
+  FResonator.Tick(BreathPressure + RandPressure -
+    FJetTable.Tick(PressureDiff) * PressureDiff);
 
-  Result := lastOutput;
+  FLastOutput := 0.2 * FOutputGain * FDCBlock.Tick(PressureDiff);
+
+  Result := FLastOutput;
 end;
 
 procedure TStkBlowBottle.ControlChange(const Number: Integer; const Value: Single);
 var
-  norm: Single;
+  Norm: Single;
 begin
-  norm := Limit(Value, 0, 1);
+  Norm := Limit(Value, 0, 1);
 
-  if (number = CMidiNoiseLevel) then // 4
-    FNoiseGain := norm * 30.0
-  else if (number = CMidiModFrequency) then // 11
-    FVibrato.Frequency := norm * 12.0
-  else if (number = CMidiModWheel) then // 1
-    FVibratoGain := norm * 0.4
-  else if (number = CMidiAfterTouchCont) then // 128
-    FAdsr.Target := norm;
+  case Number of
+          CMidiNoiseLevel : FNoiseGain := Norm * 30.0; // 4
+        CMidiModFrequency : FVibrato.Frequency := Norm * 12.0 // 11
+            CMidiModWheel : FVibratoGain := Norm * 0.4 // 1
+   CMidiAfterTouchContour : FAdsr.Target := Norm; // 128
+  end;
 end;
 
 end.

@@ -69,7 +69,7 @@ type
     procedure VSTModuleProcess64SplitDynLFO(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess64SplitSpin(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 
-    procedure VSTModuleProcessEvents(Sender: TObject; Events: PVstEvents);
+    procedure VSTModuleProcessEvents(Sender: TObject; const Events: TVstEvents);
     procedure VSTModuleProcessVarIO(Sender: TObject; const varIo: TVstVariableIo);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -969,10 +969,10 @@ begin
 end;
 
 procedure TSplitTemplateDataModule.VSTModuleProcessEvents(Sender: TObject;
-  Events: PVstEvents);
+  const Events: TVstEvents);
 begin
- if VstHost[0].Active then VstHost[0].ProcessEvents(Events^);
- if VstHost[1].Active then VstHost[1].ProcessEvents(Events^);
+ if VstHost[0].Active then VstHost[0].ProcessEvents(Events);
+ if VstHost[1].Active then VstHost[1].ProcessEvents(Events);
 end;
 
 procedure TSplitTemplateDataModule.CheckSampleFrames(const SampleFrames: Integer);

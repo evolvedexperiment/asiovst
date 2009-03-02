@@ -39,6 +39,8 @@ uses
   function FastCosPart3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart3TermFPU(const Value: Single): Single; overload;
   function FastCosPart3TermFPU(const Value: Double): Double; overload;
+  function FastCosInBounds3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSin3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -53,6 +55,8 @@ uses
   function FastCosPart4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart4TermFPU(const Value: Single): Single; overload;
   function FastCosPart4TermFPU(const Value: Double): Double; overload;
+  function FastCosInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSin4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -418,29 +422,41 @@ asm
  fadd  [CCos3Term].Single
 end;
 
+function FastCosInBounds3Term(const Value: Single): Single;
+begin
+ case round(Value * CTwoDivPi32 - CHalf32) of
+   0 : Result :=  FastCosPart3Term(Value);
+   1 : Result := -FastCosPart3Term(Pi - Value);
+   2 : Result := -FastCosPart3Term(Value - Pi);
+   3 : Result :=  FastCosPart3Term(CTwoPI32 - Value);
+  else Result :=  FastCosPart3Term(Value);
+ end;
+end;
+
+function FastCosInBounds3Term(const Value: Double): Double;
+begin
+ case round(Value * CTwoDivPi64 - CHalf64) of
+   0 : Result :=  FastCosPart3Term(Value);
+   1 : Result := -FastCosPart3Term(Pi - Value);
+   2 : Result := -FastCosPart3Term(Value - Pi);
+   3 : Result :=  FastCosPart3Term(CTwoPI64 - Value);
+  else Result :=  FastCosPart3Term(Value);
+ end;
+end;
+
 function FastCos3Term(const Value: Single): Single;
 begin
- Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
- case round(Result * CTwoDivPi32 - CHalf32) of
-  0 : Result :=  FastCosPart3Term(Result);
-  1 : Result := -FastCosPart3Term(Pi - Result);
-  2 : Result := -FastCosPart3Term(Result - Pi);
-  3 : Result :=  FastCosPart3Term(CTwoPI32 - Result);
-  4 : Result :=  FastCosPart3Term(Result);
- end;
+ // Get rid of values > 2 * pi
+ Result := abs(FastMod(Value, CTwoPi32));
+ Result := FastCosInBounds3Term(Result);
 end;
 
 function FastCos3Term(const Value: Double): Double;
 begin
- Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
- case round(Result * CTwoDivPi64 - CHalf64) of
-  0 : Result :=  FastCosPart3Term(Result);
-  1 : Result := -FastCosPart3Term(Pi - Result);
-  2 : Result := -FastCosPart3Term(Result - Pi);
-  3 : Result :=  FastCosPart3Term(CTwoPI64 - Result);
-  4 : Result :=  FastCosPart3Term(Result);
- end;
+ // Get rid of values > 2 * pi
+ Result := FastCosInBounds3Term(abs(FastMod(Value, CTwoPi64)));
 end;
+
 
 function FastSin3Term(const Value: Single): Single;
 begin
@@ -513,28 +529,39 @@ asm
  fadd  [CCos4Term].Single
 end;
 
+function FastCosInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+begin
+ case Round(Value * CTwoDivPi32 - CHalf32) of
+   0 : Result :=  FastCosPart4Term(Value);
+   1 : Result := -FastCosPart4Term(Pi - Value);
+   2 : Result := -FastCosPart4Term(Value - Pi);
+   3 : Result :=  FastCosPart4Term(CTwoPI32 - Value);
+  else Result :=  FastCosPart4Term(Value);
+ end;
+end;
+
+function FastCosInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+begin
+ case round(Value * CTwoDivPi64 - CHalf64) of
+   0 : Result :=  FastCosPart4Term(Value);
+   1 : Result := -FastCosPart4Term(Pi - Value);
+   2 : Result := -FastCosPart4Term(Value - Pi);
+   3 : Result :=  FastCosPart4Term(CTwoPI64 - Value);
+  else Result :=  FastCosPart4Term(Value);
+ end;
+end;
+
 function FastCos4Term(const Value: Single): Single;
 begin
-  Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
-  case round(Result * CTwoDivPi32 - CHalf32) of
-   0 : Result :=  FastCosPart4Term(Result);
-   1 : Result := -FastCosPart4Term(Pi - Result);
-   2 : Result := -FastCosPart4Term(Result - Pi);
-   3 : Result :=  FastCosPart4Term(CTwoPI32 - Result);
-   4 : Result :=  FastCosPart4Term(Result);
-  end;
+ // Get rid of values > 2 * pi
+ Result := abs(FastMod(Value, CTwoPi32));
+ Result := FastCosInBounds4Term(Result);
 end;
 
 function FastCos4Term(const Value: Double): Double;
 begin
-  Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
-  case round(Result * CTwoDivPi64 - CHalf64) of
-   0 : Result :=  FastCosPart4Term(Result);
-   1 : Result := -FastCosPart4Term(Pi - Result);
-   2 : Result := -FastCosPart4Term(Result - Pi);
-   3 : Result :=  FastCosPart4Term(CTwoPI64 - Result);
-   4 : Result :=  FastCosPart4Term(Result);
-  end;
+ // Get rid of values > 2 * pi
+ Result := FastCosInBounds4Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastSin4Term(const Value: Single): Single;
@@ -614,7 +641,7 @@ end;
 
 function FastCosInBounds5Term(const Value: Single): Single;
 begin
- case round(Value * CTwoDivPi32 - CHalf32) of
+ case Round(Value * CTwoDivPi32 - CHalf32) of
   0 : Result :=  FastCosPart5Term(Value);
   1 : Result := -FastCosPart5Term(Pi - Value);
   2 : Result := -FastCosPart5Term(Value - Pi);
@@ -646,8 +673,7 @@ end;
 function FastCos5Term(const Value: Double): Double;
 begin
  // Get rid of values > 2 * pi
- Result := abs(FastMod(Value, CTwoPi64));
- Result := FastCosInBounds5Term(Result);
+ Result := FastCosInBounds5Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastSin5Term(const Value: Single): Single;

@@ -26,7 +26,7 @@ type
     procedure CustomParameterLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
-    procedure VSTModuleProcessEvents(Sender: TObject; Events: PVstEvents);
+    procedure VSTModuleProcessEvents(Sender: TObject; const Events: TVstEvents);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleSoftBypass(Sender: TObject; const isBypass: Boolean);
@@ -443,14 +443,12 @@ begin
 end;
 
 procedure TCustomWrapperDataModule.VSTModuleProcessEvents(Sender: TObject;
-  Events: PVstEvents);
+  const Events: TVstEvents);
 var
   n : Integer;
 begin
- for n := 0 to VstHost.Count - 1 do
-  begin
-   VstHost[n].ProcessEvents(Events^);
-  end;
+ for n := 0 to VstHost.Count - 1
+  do VstHost[n].ProcessEvents(Events);
 end;
 
 procedure TCustomWrapperDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -498,10 +496,8 @@ procedure TCustomWrapperDataModule.VSTModuleProcessVarIO(Sender: TObject;
 var
   n : Integer;
 begin
-(*
  for n := 0 to VstHost.Count - 1
   do VstHost[n].ProcessVarIo(VarIO);
-*)
 end;
 
 procedure TCustomWrapperDataModule.VSTModuleResume(Sender: TObject);
